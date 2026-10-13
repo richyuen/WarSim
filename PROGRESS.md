@@ -14810,3 +14810,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (920 of 923) red only by the three timing tests of
   BLOCKERS (3,829 ms, 4.35 ms, 26.1 ms); the pin, build, the new spec (by hand) and parity green.
 - **Next:** PLAN 5.7c.
+
+## 2026-10-13 — PLAN 5.7c: the air-superiority map mode (ADR-325)
+
+- **Done:** `airHolders`; the worker's `airControl`; the mode `airControl` (shader mode 4,
+  legend, i18n). One picture looked at. SPEC §6.3, PARITY.
+- **Tests:** `airHolders.test.ts` (1), `airControl1938.spec.ts` (1); `mapModes1938` green by hand.
+- **The pin holds** at 321cd835.
+- **The gate:** the related unit tests (1,008 of 1,011) red only by the three timing tests of
+  BLOCKERS (3,280 ms, 3.80 ms, 29.5 ms); the pin, build, the new spec (by hand) and parity green.
+- **Next:** PLAN 5.7d.

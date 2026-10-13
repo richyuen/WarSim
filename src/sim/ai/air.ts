@@ -20,11 +20,11 @@
 import { isDayStart } from '../../shared/calendar';
 import { basePlace, kmFromBase, orderMission, wingRange } from '../systems/air';
 import { hypot } from '../core/dmath';
-import { airSuperiority } from '../systems/airSuperiority';
+import { AIR_HELD, airSuperiority } from '../systems/airSuperiority';
 import { airOf, navOf, type World } from '../world';
 
 /** A strategic bomber group bombs industry only in an air zone its nation's superiority is this or more in. */
-export const BOMB_SUPERIORITY = 0.6;
+export const BOMB_SUPERIORITY = AIR_HELD;
 
 /** A wing's role by the class of its aircraft (its template's first squadron's). */
 const ROLE: Record<string, 'patrol' | 'front' | 'naval' | 'bomb' | undefined> = {

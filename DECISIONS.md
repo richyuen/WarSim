@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-325 · 2026-10-13 · accepted — The air-superiority map mode (PLAN 5.7c)
+
+- **Decision.**
+  - *Who holds an air zone's air* (`airHolders`, derived from `world.airPower`): the nation that
+    flew the most there where its superiority is `AIR_HELD` (0.6, the strategic bombers' bar now
+    named once: `BOMB_SUPERIORITY` is it) or more; `AIR_CONTESTED` (65535) where it is less; 0
+    where no one flew.
+  - *The worker* sends it (`airControl`) at a day's first hour when it changed, with the cells'
+    air zones the first time, and once all none where the page was shown holders and none fly;
+    the client keeps the last for a late listener.
+  - *The mode* `airControl` ("Air superiority", the bottom bar's last): the shader's mode 4 fades
+    land as the sea-control mode does, and tints an air zone held, land and sea, with its holder's
+    colour (`AIR_HELD_TINT` 0.55); one contested is striped in `AIR_CONTESTED_COLOR`. A legend of
+    three lines.
+- **Looked at** (`docs/evidence/5.7/d-air-superiority-mode.png`): seed 1, Germany on Poland, day 3:
+  Germany's grey over the zone of the front and of Germany, the Low Countries and France; Britain's
+  red over the North Sea (its war on the Netherlands); Italy's over Italy; the rest faded. Zones
+  show their cells' steps at the edge, as the sea's do.
+- **The pin holds** at 321cd835: derived, sent; nothing of the state.
+- **Tests.** `airHolders.test.ts`: held, contested, an ally's power on its side, a nation outside
+  the war its own, open. `tests/e2e/airControl1938.spec.ts`: Germany's zone's pixel its colour over
+  the faded land by the tint, the open sea the sea, a contested zone striped where there is one
+  (none on day 3 of this game).
+
 ### ADR-324 · 2026-10-13 · accepted — The air war's effects from its events (PLAN 5.7b)
 
 - **Decision.**

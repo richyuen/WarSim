@@ -1790,6 +1790,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - *As built (PLAN 5.7b, ADR-324; `render/fx/air.ts`):* an hour's air fight is tracers and flak with
   smoke trails for the aircraft lost; a strike, bombs bursting about its target; a sortie under
   AA (`FlakFired`), flak puffs about it; on the render clock, T0 to T2.
+- *As built (PLAN 5.7c, ADR-325):* the air-superiority map mode tints each air zone whose air a
+  nation holds (superiority 0.6 or more) with its colour, stripes a contested one, and fades the
+  rest; daily from the worker.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

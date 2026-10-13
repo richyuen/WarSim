@@ -61,7 +61,9 @@ import { Sim } from '../sim/sim';
 import { contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace, wrapDx } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
-import { Domain, laneOf, seaOf, TILE, type World } from '../sim/world';
+import { airOf, Domain, laneOf, seaOf, TILE, type World } from '../sim/world';
+import { airHolders } from '../sim/systems/airSuperiority';
+import type { AirZones } from '../sim/nav/airZones';
 import { BufferPool } from './pool';
 
 export type Post = (msg: FromWorker, transfer: Transferable[]) => void;
@@ -146,6 +148,10 @@ export class SimServer {
   private seaHoldersSent = '';
   /** Whether the page was last sent a zone held by someone: kept over a load, which it outlives. */
   private seaShown = false;
+  /** The air zones and holders last sent (PLAN 5.7c), and whether the page was shown a holder. */
+  private airZonesSent: AirZones | null = null;
+  private airHoldersSent = '';
+  private airShown = false;
   /**
    * The formations a player ordered, to the cell of the order (PLAN 4.9c): what becomes of it is
    * told. `before`: the order it replaced, which stands again if this one is refused.
@@ -642,6 +648,22 @@ export class SimServer {
         else this.post({ type: 'seaControl', holder }, [holder.buffer]);
         this.seaZonesSent = zones;
         this.seaHoldersSent = key;
+      }
+    }
+    // Who holds the air of each air zone, for its map mode (PLAN 5.7c): at a day's first hour
+    // when it changed, with the zones of the cells the first time; once more all none where the
+    // page was shown holders and none fly now.
+    if ((world.airPower.size > 0 || this.airShown) && (world.tick % 24 === 0 || this.airZonesSent === null)) {
+      const zones = airOf(world);
+      const holder = airHolders(world, zones.count);
+      const key = holder.join(',');
+      if (zones !== this.airZonesSent || key !== this.airHoldersSent) {
+        this.airShown = holder.some((h) => h !== 0);
+        const fresh = zones !== this.airZonesSent ? zones.zoneOf.slice() : undefined;
+        if (fresh) this.post({ type: 'airControl', holder, zones: fresh }, [holder.buffer, fresh.buffer]);
+        else this.post({ type: 'airControl', holder }, [holder.buffer]);
+        this.airZonesSent = zones;
+        this.airHoldersSent = key;
       }
     }
     const changed = world.controlChanges !== this.labelVersion || world.namesVersion !== this.labelNames;

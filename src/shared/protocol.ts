@@ -390,6 +390,7 @@ export type FromWorker =
   /** Unrest per province id, 0..100 (index 0 unused; PLAN 1.30b), sent when it changes. */
   | { type: 'provinceStats'; unrest: Uint8Array }
   /** Sea control for its map mode (PLAN 4.7a): the holder of each zone (index 0 unused), and the zone of each cell when the zones are new to the client; sent when either changes. */
+  | { type: 'airControl'; holder: Uint16Array; zones?: Uint16Array }
   | { type: 'seaControl'; holder: Uint16Array; zones?: Uint16Array; /** With `zones`: each zone's sea's name ('' for none), index 0 unused (PLAN 4.10c). */ names?: string[] }
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }

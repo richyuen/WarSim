@@ -14,7 +14,9 @@
  */
 
 import { SHORE_NOISE } from '../../shared/landMask';
-import { SEA_HELD_TINT, SEA_LAND_FADE } from '../../shared/mapModes';
+import { AIR_CONTESTED_COLOR, AIR_HELD_TINT, SEA_HELD_TINT, SEA_LAND_FADE } from '../../shared/mapModes';
+
+const AIR_CONTESTED_RGB = [16, 8, 0].map((s) => (((AIR_CONTESTED_COLOR >> s) & 255) / 255).toFixed(3)).join(', ');
 import { BORDER_BAND, BORDER_CAST, GROUND_CAST, HATCH_AT_GROUND, OCCUPIED_CAST, SEA_DEEP, SEA_DEPTH_FULL, SEA_DEPTH_KNEE, SEA_SHALLOW } from './ground';
 
 export const MAP_VS = `#version 300 es
@@ -47,11 +49,13 @@ uniform sampler2D uLand;   // fine land coverage, 0..1, bilinear (PLAN 1.28b)
 uniform int uHasLand;
 uniform int uHasTerrain;           // a real terrain layer is loaded (water from terrain, PLAN 1.37a)
 uniform highp usampler2D uTerrain;  // terrain class per cell
-uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = province unrest, 3 = sea control
+uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = province unrest, 3 = sea control, 4 = air superiority
 uniform highp usampler2D uProvince; // admin-1 province per cell
 uniform sampler2D uUnrest;          // unrest per province id, 128 wide, 0..1
 uniform highp usampler2D uSeaZone;  // sea zone per cell (0 = none; PLAN 4.7a)
 uniform highp usampler2D uSeaHolder; // the nation that holds each zone, 128 wide (0 = none)
+uniform highp usampler2D uAirZone;  // air zone per cell (0 = none; PLAN 5.7c)
+uniform highp usampler2D uAirHolder; // who holds each air zone's air, 128 wide (0 = none, 65535 = contested)
 uniform vec3 uTerrainCol[12];
 #ifdef GROUND
 uniform highp isampler2D uElevation; // the land's height in metres, one texel a cell (PLAN 2.8a)
@@ -361,7 +365,20 @@ void main() {
   uint fid = best != 0u ? best : secondId;
 
   vec3 col;
-  if (water && uMode == 3) {
+  if (uMode == 4) {
+    // Air superiority (PLAN 5.7c): land and sea faded as the sea-control mode fades the land; an
+    // air zone held tinted with its holder's colour, one contested striped.
+    col = water ? pal(0u) : mix(fid == 0u ? vec3(0.62, 0.62, 0.58) : pal(fid), vec3(0.78, 0.78, 0.75), ${SEA_LAND_FADE.toFixed(3)});
+    ivec2 ac = wrapCell(ivec2(floor(cellPos)));
+    uint azone = inMap(ac) ? texelFetch(uAirZone, ac, 0).r : 0u;
+    uint aholder = azone == 0u ? 0u : texelFetch(uAirHolder, ivec2(int(azone % 128u), int(azone / 128u)), 0).r;
+    if (aholder == 65535u) {
+      float band = step(0.5, fract((gl_FragCoord.x - gl_FragCoord.y) / (10.0 * uDpr)));
+      col = mix(col, vec3(${AIR_CONTESTED_RGB}), ${AIR_HELD_TINT.toFixed(3)} * band);
+    } else if (aholder != 0u) {
+      col = mix(col, pal(aholder), ${AIR_HELD_TINT.toFixed(3)});
+    }
+  } else if (water && uMode == 3) {
     // Sea control (PLAN 4.7a): a zone held is tinted with its holder's colour.
     ivec2 sc = wrapCell(ivec2(floor(cellPos)));
     uint zone = inMap(sc) ? texelFetch(uSeaZone, sc, 0).r : 0u;

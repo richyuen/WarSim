@@ -318,6 +318,16 @@ export class MapView {
       this.scatterKey = '';
       this.dirty = true;
     });
+    // Who holds the air of each air zone (PLAN 5.7c), for its map mode.
+    sim.onAirControl((holder, zones) => {
+      if (zones) {
+        this.map.setAirZones(this.geo.w, this.geo.h, zones);
+        this.airZoneOf = zones.slice();
+      }
+      this.map.setAirHolders(holder);
+      this.airHolder = holder.slice();
+      this.dirty = true;
+    });
     sim.onSeaControl((holder, zones, names) => {
       if (zones) {
         this.map.setSeaZones(this.geo.w, this.geo.h, zones);
@@ -542,7 +552,7 @@ export class MapView {
   setMapMode(mode: MapMode): void {
     if (mode === this.mapMode) return;
     this.mapMode = mode;
-    this.map.fillMode = mode === 'terrain' ? 1 : mode === 'revolts' ? 2 : mode === 'seaControl' ? 3 : 0;
+    this.map.fillMode = mode === 'terrain' ? 1 : mode === 'revolts' ? 2 : mode === 'seaControl' ? 3 : mode === 'airControl' ? 4 : 0;
     this.applyPalette();
     this.dirty = true;
   }
@@ -654,6 +664,10 @@ export class MapView {
   private formWay = new Float32Array(0);
   private majors = new Float32Array(0);
   private seas = new Float32Array(0);
+  /** Who holds each air zone's air, by zone (PLAN 5.7c; 0 none, `AIR_CONTESTED`). */
+  airHolder = new Uint16Array(0);
+  /** The air zone of each cell (PLAN 5.7c), as the worker sent it. */
+  airZoneOf = new Uint16Array(0);
   /** The sorties in the air (PLAN 5.7a, SORTIE_STRIDE each), their launches from the snapshot's tick. */
   private sorties = new Float32Array(0);
   private seaKey = '';

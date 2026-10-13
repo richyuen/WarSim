@@ -32,7 +32,7 @@ quick sweep as a smoke test.
   air's events (`AirBattle`, `AirStrike`) have no picture. One cause a commit:
   - [x] 5.7a Sorties drawn: the snapshot carries the sorties in the air (their launches, nation, […]
   - [x] 5.7b Dogfight tracers and flak where an hour's air fight is (`AirBattle`), bomb […]
-  - [ ] 5.7c The air superiority map mode: each air zone by the side that holds its air.
+  - [x] 5.7c The air superiority map mode: each air zone by the side that holds its air.
   - [ ] 5.7d The air battle demo e2e, its pictures looked at: the AT.
 - [ ] 5.8 Phase 5 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
   and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the

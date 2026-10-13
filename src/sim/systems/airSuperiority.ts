@@ -58,3 +58,31 @@ export function airSuperiority(world: World, n: number, zone: number): number {
   }
   return own + enemy === 0 ? 0.5 : own / (own + enemy);
 }
+
+/** An air zone's holder in `airHolders` where two sides at war fly and neither holds it. */
+export const AIR_CONTESTED = 0xffff;
+/** A nation holds the air of a zone where its superiority is this or more (the strategic bombers' bar, PLAN 5.6). */
+export const AIR_HELD = 0.6;
+
+/**
+ * Per air zone (index 0 unused), who holds its air (PLAN 5.7c, the map mode): the nation that
+ * flew the most there where its superiority is `AIR_HELD` or more; `AIR_CONTESTED` where it is
+ * less (its enemies flew there too); 0 where no one flew. Derived from `world.airPower`.
+ */
+export function airHolders(world: World, count: number): Uint16Array {
+  const out = new Uint16Array(count + 1);
+  for (const [z, byNation] of world.airPower) {
+    if (z <= 0 || z > count) continue;
+    let top = 0;
+    let most = -1;
+    for (const [n, p] of [...byNation].sort((a, b) => a[0] - b[0])) {
+      if (p > most) {
+        most = p;
+        top = n;
+      }
+    }
+    if (top === 0) continue;
+    out[z] = airSuperiority(world, top, z) >= AIR_HELD ? top : AIR_CONTESTED;
+  }
+  return out;
+}
