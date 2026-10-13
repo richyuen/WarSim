@@ -7,7 +7,7 @@ import { boundKm, boundWeight, findPath, makeNavGrid, MIN_COST, Mobility, MOVE_C
 import { findRoute } from '../../src/sim/nav/provinceGraph';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { foreignTo, MARCH_DUTY } from '../../src/sim/systems/movement';
+import { foreignTo, MARCH_DUTY, orderMove } from '../../src/sim/systems/movement';
 import { equipFormation } from '../../src/sim/systems/elements';
 import { navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -84,13 +84,17 @@ describe('land movement (PLAN 1.11)', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const id = spawn(s.world, 'FRA', INF, 2.35, 48.86);
     const [tx, ty] = cellOf(-0.13, 51.51, W, H);
-    s.command({ kind: 'moveFormation', id, x: tx, y: ty });
+    // The march, as the AI orders it (`orderMove` without `byPort`).
+    s.world.out.events.length = 0;
+    orderMove(s.world, id, tx, ty);
     let rejected = false;
-    s.step(1, (w) => {
-      for (let i = 0; i < w.out.events.length; i += 6) if (w.out.events[i + 1] === EventKind.MoveRejected) rejected = true;
-    });
+    for (let i = 0; i < s.world.out.events.length; i += 6) if (s.world.out.events[i + 1] === EventKind.MoveRejected) rejected = true;
     expect(rejected).toBe(true);
     expect(s.world.formations.cols.moving[id]).toBe(0);
+    // A player's order goes by sea instead (PLAN 4.9b): it marches to a French port with transports.
+    s.command({ kind: 'moveFormation', id, x: tx, y: ty });
+    s.step(1);
+    expect(s.world.seaBound.has(id) || s.world.embarked.has(id)).toBe(true);
   });
 
   // PLAN 2.16Rk: a freed id goes to the next formation made. A player's order names its nation,

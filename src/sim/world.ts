@@ -386,6 +386,8 @@ class WorldCore implements Stateful {
       // The sea battles (PLAN 4.3c), each [n, fleets, ships, range, a, b, lostA, lostB, x, y]:
       // only while there is one, so a world with no sea battle saves and hashes as before.
       // The embarked (PLAN 4.5a): [id, fleet, land, water, target] each, only while there is one.
+      // A player's order over the sea marching to its port (PLAN 4.9b): [id, target] each, only while there is one.
+      ...(w.seaBound.size === 0 ? [] : [{ name: 'world.seaBound', dtype: 'f64' as const, data: Float64Array.from([...w.seaBound].sort((a, b) => a[0] - b[0]).flat()) }]),
       ...(w.embarked.size === 0 ? [] : [{ name: 'world.embarked', dtype: 'f64' as const, data: Float64Array.from([...w.embarked].sort((a, b) => a[0] - b[0]).flatMap(([id, e]) => [id, e.fleet, e.land, e.water, e.target])) }]),
       // Sea control (PLAN 4.4a): [zones + 1, holders..., days...], only while a zone is held.
       ...(w.seaControl === null || !w.seaControl.holder.some((h) => h !== 0) ? [] : [{ name: 'world.seaControl', dtype: 'f64' as const, data: Float64Array.from([w.seaControl.holder.length, ...w.seaControl.holder, ...w.seaControl.days]) }]),
@@ -426,6 +428,9 @@ class WorldCore implements Stateful {
     const control = sections.find((s) => s.name === 'world.seaControl')?.data as Float64Array | undefined;
     w.seaControl = control ? { holder: Uint16Array.from(control.subarray(1, 1 + control[0]!)), days: Uint8Array.from(control.subarray(1 + control[0]!, 1 + 2 * control[0]!)) } : null;
     w.seaLinks = new Map();
+    w.seaBound = new Map();
+    const bound = sections.find((s) => s.name === 'world.seaBound')?.data as Float64Array | undefined;
+    for (let at = 0; bound && at < bound.length; at += 2) w.seaBound.set(bound[at]!, bound[at + 1]!);
     w.embarked = new Map();
     const emb = sections.find((s) => s.name === 'world.embarked')?.data as Float64Array | undefined;
     for (let at = 0; emb && at < emb.length; at += 5) w.embarked.set(emb[at]!, { fleet: emb[at + 1]!, land: emb[at + 2]!, water: emb[at + 3]!, target: emb[at + 4]! });
@@ -872,6 +877,12 @@ export class World {
   seaBattles: SeaBattle[] = [];
   /** The land formations aboard transports (PLAN 4.5a, `amphibiousSystem`), by id: state, saved while not empty. */
   embarked = new Map<number, Embarked>();
+  /**
+   * A player's land formations marching to a port to go over the sea (PLAN 4.9b), by id: the cell
+   * their order was for. State, saved while not empty; `amphibiousSystem` embarks them at the end
+   * of the march.
+   */
+  seaBound = new Map<number, number>();
   /** Per bloc, the land components its cities feed at the last refresh hour (PLAN 4.4c, `markSeaLinks`): derived. */
   seaLinks = new Map<number, string>();
   /** Who holds each sea zone (PLAN 4.4a, `seaControlSystem`): state, saved while a zone is held; null until its first day. */

@@ -69,7 +69,7 @@ import { nearestCellWhere } from '../data/ownership';
 import { findRoute, nodeGroups } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
 import { Domain, navOf, type World } from '../world';
-import { tryLanding } from './amphibious';
+import { transportsPort, tryLanding } from './amphibious';
 import { noteMove } from './elements';
 import { spawnPoint } from './production';
 import { orderSail, sailStep } from './sail';
@@ -263,7 +263,14 @@ function overSea(world: World, id: number, x: number, y: number): boolean {
   return here !== 0 && there !== 0 && here !== there;
 }
 
-export function orderMove(world: World, id: number, x: number, y: number, pass?: Passage): boolean {
+/**
+ * `byPort` (a player's order, PLAN 4.9b): an order over the sea from where no transports wait
+ * marches to the nearest port of its land with transports that have room (`transportsPort`), and
+ * the order is kept (`world.seaBound`) for the amphibious system to embark it there. Any order
+ * ends an order kept so.
+ */
+export function orderMove(world: World, id: number, x: number, y: number, pass?: Passage, byPort = false): boolean {
+  world.seaBound.delete(id);
   // A fleet sails (PLAN 4.2c): its order is its own.
   if (world.formations.has(id) && world.isFleet(id)) return orderSail(world, id, x, y);
   // Aboard transports it takes no order (PLAN 4.5a).
@@ -276,6 +283,20 @@ export function orderMove(world: World, id: number, x: number, y: number, pass?:
   // the sea was refused (PLAN 4.9a).
   const sea = world.formations.has(id) && overSea(world, id, x, y) ? tryLanding(world, id, x, y) : RejectReason.NoRoute;
   if (sea === 0) return true;
+  if (byPort && (sea === RejectReason.NoPort || sea === RejectReason.NoTransports)) {
+    const port = transportsPort(world, id);
+    const w = world.cells.w;
+    const tx = Math.floor(x);
+    const ty = Math.floor(y);
+    if (port >= 0) {
+      const at = world.ports[port]!.cell;
+      if (order(world, id, (at % w) + 0.5, Math.floor(at / w) + 0.5, pass, 0, sea)) {
+        world.seaBound.set(id, ty * w + tx);
+        return true;
+      }
+      return false;
+    }
+  }
   return order(world, id, x, y, pass, 0, sea);
 }
 

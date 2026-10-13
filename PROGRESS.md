@@ -14478,3 +14478,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (129 files, 859 tests), red only by two timing tests of
   BLOCKERS (`snapshot-perf`, the `scenario1938` build); the pin, build and parity green by hand.
 - **Next:** PLAN 4.9b.
+
+## 2026-10-13 — PLAN 4.9b: a player's order over the sea from inland goes by a port (ADR-299)
+
+- **Done:** `transportsPort`, `world.seaBound` (saved): a player's order over the sea refused for
+  no port or no transports marches to the nearest port with transports with room and embarks at
+  the march's end, or says why. A formation is at a port by its city or its water (the critic's
+  London case: the water 7.5 cells down the Thames), at the first with transports for it. The
+  AI's orders as before. SPEC §6.2 says so.
+- **Tests:** `seaBound1938.test.ts` (4); `rejectReasons1938.test.ts` (NoPort by the AI's order).
+- **The pin moves** 8622df0d → c0a89199 (the AI's landings from such ports).
+- **The gate:** the related unit tests (126 files, 827 tests), red by two timing tests of
+  BLOCKERS and `movement.test.ts`'s "no land route to Britain", whose player's command now goes
+  by sea: its march is now ordered as the AI's (still refused), and the command checked to go by
+  a port (ADR-299); the file then 34 of 34; the pin, lint, build and parity green by hand.
+- **Next:** PLAN 4.9c.

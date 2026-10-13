@@ -113,7 +113,8 @@ function applyCommand(world: World, cmd: Command): Refusal {
       if (cmd.nation !== undefined && (!world.formations.has(cmd.id) || world.formations.cols.nation[cmd.id] !== cmd.nation)) return Refusal.NoSuch;
       // On the retreat it takes no order (PLAN 3.7m, ADR-173): its march is held by no enemy's ground, and it is in no battle.
       if (world.formations.has(cmd.id) && world.formations.cols.retreat[cmd.id]! > 0) return Refusal.OnRetreat;
-      orderMove(world, cmd.id, cmd.x, cmd.y);
+      // A player's order: over the sea from inland by way of a port with transports (PLAN 4.9b).
+      orderMove(world, cmd.id, cmd.x, cmd.y, undefined, true);
       return Refusal.None;
     case 'setSetting':
       if (cmd.key === 'winnerTakesAll') world.settings.winnerTakesAll = cmd.value;

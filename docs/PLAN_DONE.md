@@ -7246,3 +7246,21 @@ Of 4.9 (open in PLAN.md):
     no land formation, no way by land, a march barred on the way; by sea: at no port of its
     nation, no transports there with room, no water by the target, no way for the transports;
     a fleet's: no water, no lane). Unit test of each.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.9 (open in PLAN.md):
+
+  - [x] 4.9b An order over the sea from inland: the formation marches to its nation's nearest
+    port with transports that have room for it, embarks there and sails (the sea order kept
+    as state while it marches, saved). Unit test: London to the German coast; a save loaded
+    on the march.

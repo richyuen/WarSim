@@ -4,6 +4,7 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, PORTS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { destroyFormation } from '../../src/sim/systems/elements';
+import { orderMove } from '../../src/sim/systems/movement';
 import { assets1938 } from '../helpers/earth';
 import { addDivision } from '../helpers/sim1938';
 
@@ -34,6 +35,18 @@ function refused(s: Sim, f: number, lon: number, lat: number): number[] {
     for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.MoveRejected && ev[i + 2] === f) out.push(ev[i + 4]!);
     ev.length = 0;
   });
+  return out;
+}
+
+/** The AI's order (`orderMove` without `byPort`): the reasons of its refusals, at once. */
+function refusedAi(s: Sim, f: number, lon: number, lat: number): number[] {
+  const ev = s.world.out.events;
+  ev.length = 0;
+  const [x, y] = at(lon, lat);
+  orderMove(s.world, f, x, y);
+  const out: number[] = [];
+  for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.MoveRejected && ev[i + 2] === f) out.push(ev[i + 4]!);
+  ev.length = 0;
   return out;
 }
 
@@ -77,7 +90,8 @@ describe('a refused order says why (PLAN 4.9a)', () => {
   it('over the sea: at no port, no transports with room, no water by the target, aboard', () => {
     const s = world([ENG, GER]);
     const inland = addDivision(s.world, ENG, ...at(-1.9, 52.48)); // Birmingham
-    expect(refused(s, inland, 2.35, 48.86)).toEqual([RejectReason.NoPort]);
+    // The AI's order is refused; a player's marches to a port with transports (PLAN 4.9b).
+    expect(refusedAi(s, inland, 2.35, 48.86)).toEqual([RejectReason.NoPort]);
     const [px, py] = portsmouth(s);
     const far = addDivision(s.world, ENG, px, py);
     expect(refused(s, far, 9.5, 51.3), 'Kassel: no water within reach').toEqual([RejectReason.NoLanding]);
@@ -104,12 +118,11 @@ describe('a refused order says why (PLAN 4.9a)', () => {
     const s = world();
     const f = addDivision(s.world, FRA, ...at(2.35, 48.86));
     const [x, y] = at(-1.9, 52.48);
-    s.command({ kind: 'moveFormation', id: f, x, y });
+    const ev = s.world.out.events;
+    ev.length = 0;
+    orderMove(s.world, f, x, y);
     let ys: number[] = [];
-    s.step(1, (w) => {
-      const ev = w.out.events;
-      for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.MoveRejected && ev[i + 2] === f) ys = [ev[i + 4]!, ev[i + 5]!];
-    });
+    for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.MoveRejected && ev[i + 2] === f) ys = [ev[i + 4]!, ev[i + 5]!];
     expect(ys[0]).toBe(RejectReason.NoPort);
     expect(Number.isNaN(ys[1])).toBe(true);
   });

@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-299 · 2026-10-13 · accepted — A player's order over the sea from inland goes by a port; a formation is at a port by its city too (PLAN 4.9b)
+
+- **Found** (the critic's R4-B2): a British division in London ordered onto Germany did nothing:
+  London's water is given by hand 7.5 cells down the Thames, and a formation was at a port only
+  within 3 cells of the port's water, so a division in the city was at none (`NoPort`). And a
+  player's order over the sea from inland was refused: only two orders by hand (to the port,
+  then over the sea) did it.
+- **Decision.** A formation is at a port within `AT_PORT_CELLS` of its land cell or of its water;
+  of the ports it is at, it embarks at the first with transports for it. A player's order
+  (`moveFormation`, `orderMove`'s `byPort`) over the sea refused for no port or no transports
+  marches to the nearest port of its land that its nation holds with transports standing there
+  with room (`transportsPort`), and keeps the order (`world.seaBound`: state, saved while not
+  empty); at the end of the march the amphibious system embarks it (`tryLanding`) or emits the
+  refusal with its reason. Any order, and the formation's end, ends it. The AI's orders are as
+  before: its landings are planned by its own (PLAN 4.6b).
+- **The pin moves** 8622df0d → c0a89199: the AI's landings from a port whose water is far from
+  its city.
+- **Tests.** `seaBound1938.test.ts`: Birmingham to Cuxhaven at war marches, embarks and sails; a
+  save loaded on the march embarks at the same hour with the same hash; another order ends it;
+  with no British transports it is refused with its reason. `rejectReasons1938.test.ts`: the
+  `NoPort` case by the AI's order. `movement.test.ts`'s "no land route to Britain" gave its
+  order as a player's command, which now goes by sea: the march is now ordered as the AI orders
+  it (`orderMove`), still refused and still standing, and the player's command is checked to go
+  by a port.
+
 ### ADR-298 · 2026-10-12 · accepted — A refused order says why (PLAN 4.9a)
 
 - **Context** (the critic's R4-B2): a refused order emitted `MoveRejected` with nothing of why,

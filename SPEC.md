@@ -1683,7 +1683,7 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   at most 0.5, then marches on to the target. Transports that stop elsewhere land it at the
   land within 3 cells of its side (its nation's, its bloc's, an ally's in the war) or no one's,
   no one's not where an enemy holds the sea there; else it stays aboard (PLAN 4.8n, ADR-294); sunk, they take it with them. With no port or no room the order
-  is a march as before (PLAN 4.5a, ADR-262). When the transports reach the landing water and its zone
+  is a march as before (PLAN 4.5a, ADR-262). A formation is at a port within 3 cells of its land cell or of its water (London's water is 7.5 cells down the Thames), and embarks at the first such port with transports for it (PLAN 4.9b, ADR-299). A player's order over the sea from where no transports wait marches to the nearest port of its land whose transports have room, and the order is kept (`world.seaBound`, saved) until the march ends: it embarks there and sails, or is refused with its reason; any order ends it. The AI's orders do not do this (its landings are its own, PLAN 4.6b). When the transports reach the landing water and its zone
   is held by a nation at war with the formation's, the landing is thrown back: they sail for
   their nation's nearest port and it lands there. A landing on an enemy's cell takes that
   cell (the beachhead), from which the front spreads; its disorder (org 0.5, fire 0.625) is

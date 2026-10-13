@@ -40,10 +40,7 @@ quick sweep as a smoke test.
   were caught by the German navy off the Weser, broke off (hour 99, `FormationRetreated`) and
   sailed home, and the division came ashore there (`strayLanding`); nothing told the player.
   - [x] 4.9a The sim says why it refuses an order: a reason with every `MoveRejected` (aboard, […]
-  - [ ] 4.9b An order over the sea from inland: the formation marches to its nation's nearest
-    port with transports that have room for it, embarks there and sails (the sea order kept
-    as state while it marches, saved). Unit test: London to the German coast; a save loaded
-    on the march.
+  - [x] 4.9b An order over the sea from inland: the formation marches to its nation's nearest […]
   - [ ] 4.9c The page says what became of an order: a refused one's reason by the formation
     and in the ticker within a second; a landing thrown back; transports that broke off and
     brought their troops ashore elsewhere. e2e.

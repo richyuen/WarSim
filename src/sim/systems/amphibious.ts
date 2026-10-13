@@ -104,19 +104,24 @@ export function tryLanding(world: World, id: number, x: number, y: number): 0 | 
   const here = cellOfPlace(world, id);
   // A port of its nation it stands at.
   const water = portSeaOf(world);
-  let port = -1;
+  // At the port: by its land cell or by its water (PLAN 4.9b: London's water is 7.5 cells down
+  // the Thames). Of the ports it stands at, the first with transports for it.
+  const at: number[] = [];
   world.ports.forEach((p, i) => {
-    if (port < 0 && water[i]! >= 0 && world.cells.controller[p.cell] === nation && near(world, here, water[i]!, AT_PORT_CELLS)) port = i;
+    if (water[i]! >= 0 && world.cells.controller[p.cell] === nation && (near(world, here, p.cell, AT_PORT_CELLS) || near(world, here, water[i]!, AT_PORT_CELLS))) at.push(i);
   });
-  if (port < 0) return RejectReason.NoPort;
+  if (at.length === 0) return RejectReason.NoPort;
   // Transports of its nation there, standing, with room.
   const men = c.strength[id]!;
   let fleet = 0;
-  f.forEach((o) => {
-    if (fleet !== 0 || !world.isFleet(o) || c.nation[o] !== nation || c.moving[o] === 1 || c.engaged[o] === 1) return;
-    if (!near(world, cellOfPlace(world, o), water[port]!, AT_PORT_CELLS)) return;
-    if (transportRoom(world, o) - aboard(world, o) >= men) fleet = o;
-  });
+  for (const i of at) {
+    f.forEach((o) => {
+      if (fleet !== 0 || !world.isFleet(o) || c.nation[o] !== nation || c.moving[o] === 1 || c.engaged[o] === 1) return;
+      if (!near(world, cellOfPlace(world, o), water[i]!, AT_PORT_CELLS)) return;
+      if (transportRoom(world, o) - aboard(world, o) >= men) fleet = o;
+    });
+    if (fleet !== 0) break;
+  }
   if (fleet === 0) return RejectReason.NoTransports;
   // The landing: the zoned water nearest the target, and the land of the target's nearest to it.
   const z = seaOf(world);
@@ -141,6 +146,42 @@ export function tryLanding(world: World, id: number, x: number, y: number): 0 | 
   c.y[id] = c.y[fleet]!;
   world.out.emit(world.tick, EventKind.FormationEmbarked, id, nation, c.x[id]!, c.y[id]!);
   return 0;
+}
+
+/**
+ * The port a player's land formation `id` marches to for an order over the sea (PLAN 4.9b), index
+ * in `world.ports`, or -1: of the ports on its land that its nation holds, with transports of its
+ * nation standing at them (not under way, in no battle) with room for it, the nearest by straight
+ * cells.
+ */
+export function transportsPort(world: World, id: number): number {
+  const f = world.formations;
+  const c = f.cols;
+  const nation = c.nation[id]!;
+  const men = c.strength[id]!;
+  const w = world.cells.w;
+  const water = portSeaOf(world);
+  const comp = navOf(world).grid.component;
+  const here = cellOfPlace(world, id);
+  const fleets: number[] = [];
+  f.forEach((o) => {
+    if (world.isFleet(o) && c.nation[o] === nation && c.moving[o] !== 1 && c.engaged[o] !== 1 && transportRoom(world, o) - aboard(world, o) >= men) fleets.push(o);
+  });
+  let best = -1;
+  let bd = Infinity;
+  world.ports.forEach((p, i) => {
+    if (water[i]! < 0 || world.cells.controller[p.cell] !== nation || comp[p.cell] !== comp[here]) return;
+    if (!fleets.some((o) => near(world, cellOfPlace(world, o), water[i]!, AT_PORT_CELLS))) return;
+    let dx = Math.abs((p.cell % w) - (here % w));
+    if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+    const dy = Math.floor(p.cell / w) - Math.floor(here / w);
+    const d = dx * dx + dy * dy;
+    if (d < bd) {
+      bd = d;
+      best = i;
+    }
+  });
+  return best;
 }
 
 /** Lands embarked formation `id` at land cell `cell`. */
@@ -189,9 +230,23 @@ export function strayLanding(world: World, nation: number, at: number): number {
 }
 
 export function amphibiousSystem(world: World): void {
-  if (world.embarked.size === 0) return;
   const f = world.formations;
   const c = f.cols;
+  // At the port (PLAN 4.9b): a player's order over the sea, its march ended, embarks or says why not.
+  if (world.seaBound.size > 0) {
+    const w = world.cells.w;
+    for (const [id, target] of [...world.seaBound].sort((a, b) => a[0] - b[0])) {
+      if (!f.has(id)) {
+        world.seaBound.delete(id);
+        continue;
+      }
+      if (c.moving[id] === 1) continue;
+      world.seaBound.delete(id);
+      const why = tryLanding(world, id, (target % w) + 0.5, Math.floor(target / w) + 0.5);
+      if (why !== 0) world.out.emit(world.tick, EventKind.MoveRejected, id, c.nation[id]!, why, NaN);
+    }
+  }
+  if (world.embarked.size === 0) return;
   for (const [id, e] of [...world.embarked].sort((a, b) => a[0] - b[0])) {
     if (!f.has(id)) {
       world.embarked.delete(id);
