@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-349 · 2026-10-13 · accepted — The paradrop (PLAN 5.8u2)
+
+- **Found** (5.8b): SPEC §6.3 has the paradrop; no formation could go by air.
+- **Decision.** `orderParadrop` (command `paradrop`, of its nation's alone): a formation of
+  infantry alone (every element of class `inf`: no guns, no engines; the 1938 templates'
+  garrison brigade of 3,000 men), not in contact, standing within `BASE_PICK_CELLS` of an
+  airbase its nation holds, is flown by its nation's transport wings based there with no
+  sortie, the fewest by ascending id whose `PARA_MEN` 64 men an aircraft lift its men (a wing's
+  aircraft stand for about three of the record's: Germany's two groups lift 3,072), to a land
+  cell within their range held by its side, an enemy or no one. It stands there at once, as a
+  rebase is at once; the wings fly the sortie out and home (flown and fought as any; their
+  missions end); its org is at most `PARA_ORG` 0.5 and an enemy's cell it lands on is taken as
+  a landing's beachhead (PLAN 4.5b), `FormationLanded`. Else `MoveRejected` with why: `NotLand`,
+  `Aboard`, `NoLanding` (water), `NoRoute` (a nation at peace), `OutOfRange`, and the new
+  `NoAirlift` 12 (no lift at the airbase it stands at, none at all, or in contact), with its
+  line in the page's words.
+- **The pin holds** at 048c4760: no AI drops.
+- **Tests.** `paradrop1938` (3, new): a German garrison brigade dropped at Warsaw by both
+  groups, there at once, org 0.5, the cell German, the wings flying, their missions ended; each
+  refusal (one group short, a division with guns, a motorised one, a wing in the air, away from
+  an airbase, the Baltic, Stockholm and Moscow at peace, Kazan out of range), the brigade where it
+  was; by command of its nation's alone, saved, the same game.
+
 ### ADR-348 · 2026-10-13 · accepted — Air supply (PLAN 5.8u1)
 
 - **Found** (5.8b): SPEC §6.3 has the transports' missions; a transport wing could only patrol

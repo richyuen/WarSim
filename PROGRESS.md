@@ -15051,3 +15051,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (923 of 925) red only by two timing tests of BLOCKERS
   (3,081 ms, 2.35 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8u2.
+
+## 2026-10-13 — PLAN 5.8u2: the paradrop (ADR-349)
+
+- **Done:** `orderParadrop` and the `paradrop` command: a formation of infantry at an airbase,
+  flown by its transport wings there (`PARA_MEN` an aircraft) to a land cell in range, at once,
+  org at most `PARA_ORG`; `RejectReason.NoAirlift` with its line.
+- **Tests:** `paradrop1938` (3, new).
+- **The pin holds** at 048c4760.
+- **The gate:** the related unit tests (1,033 of 1,035) red only by two timing tests of
+  BLOCKERS (3,000 ms, 2.56 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8u3.

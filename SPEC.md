@@ -1797,6 +1797,13 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   arrives, lifts 1/48 of a formation's supply an aircraft (a group of 24: a half) to its side's
   formations on the land within a cell that are short of it, the same share each, none past
   full. No AI flies it yet (5.8u3).
+- *As built (PLAN 5.8u2, ADR-349; `orderParadrop`, the `paradrop` command):* a formation of
+  infantry alone, not in contact, at an airbase its nation holds, is flown by its nation's
+  transport wings based there and on the ground (the fewest by id whose 64 men a plane lift its
+  men) to a land cell in their range held by its side, an enemy or no one. It stands there at
+  once, its org at most 0.5, an enemy's cell its (a beachhead's rule); the wings fly the sortie
+  out and home. Else refused: `NotLand`, `NoLanding` (water), `NoRoute` (a nation at peace),
+  `OutOfRange`, `NoAirlift` (no lift there, or in contact). No AI drops yet (5.8u3).
 - *As built (PLAN 5.4b, ADR-317; `strikes`):* a strike sortie at its target fires once on the
   enemy's land elements within a cell: its aircraft × soft or hard attack × 0.2, in units over
   their hp, spread by their health; carried as on the land. A close support group takes about

@@ -22,6 +22,8 @@ export type Command =
   | { kind: 'moveFormation'; id: number; x: number; y: number; nation?: number }
   /** An air wing's mission (PLAN 5.1e): patrol about (x, y) or strike it; refused beyond its range from its base. */
   | { kind: 'wingMission'; id: number; mission: 'patrol' | 'strike' | 'supply'; x: number; y: number; nation?: number }
+  /** A paradrop (PLAN 5.8u2): formation `id`, of infantry at an airbase, flown by its transport wings there to (x, y). */
+  | { kind: 'paradrop'; id: number; x: number; y: number; nation?: number }
   /** An air wing to another base (PLAN 5.1e): its side's airbase or its nation's carrier at (x, y), in range, with room. */
   | { kind: 'wingRebase'; id: number; x: number; y: number; nation?: number }
   /** Global sim setting (PLAN 1.15): capturing a capital annexes the loser's territory. */
@@ -128,6 +130,7 @@ export const COMMAND_KINDS: Record<Command['kind'], true> = {
   moveFormation: true,
   wingMission: true,
   wingRebase: true,
+  paradrop: true,
   setSetting: true,
   setEfficiency: true,
   lockEfficiency: true,
