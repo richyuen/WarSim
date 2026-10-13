@@ -7966,3 +7966,21 @@ Of 5.8 (open in PLAN.md):
   - [x] 5.8l Wings outlive their carriers: a fleet whose carriers are sunk and whose other ships
     live keeps its wings, and they fly, see and strike for it; a rebase counts the template's
     carriers, not the live ones. The wings beyond its live carriers are lost.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8m Wings fly from an airbase the enemy took (SPEC: who holds the cell holds the base):
+    a wing whose base is held by a nation not of its side rebases to its nation's nearest
+    airbase with room, or is lost with none.

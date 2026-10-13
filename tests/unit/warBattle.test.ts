@@ -371,7 +371,9 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
     // Since PLAN 5.6 (ADR-322) a war of this game has, at times, only its allies in contact: a
     // battle of neither leader is named then, and only then.
     expect(n.passedOver).toBe(0);
-    expect(n.leaders[0]).toBeLessThan(n.battles / 100);
+    // Since PLAN 5.8m (ADR-336) 7 of 687 (1.0 %): such hours are this game's, and the rule is the
+    // line above; under 2 %, the rare case it was (6 of 687 before).
+    expect(n.leaders[0]).toBeLessThan(n.battles / 50);
     // The front is there on the last day: the banner of this war leads somewhere. Since PLAN 5.6
     // (ADR-322) its contact comes and goes from hour to hour (none at hour 1440 itself, the last
     // look, and at 1386, 1422, 1446 before it): a battle at a look of the last day.

@@ -1734,7 +1734,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   the start stands for about three first-line groups of the record) and a naval bomber group on
   each of the 18 carriers. A wing's base is state (`world.wingBase`: an airbase, or a carrier's
   fleet, which it follows hourly, `airSystem`; it is lost with its carrier: a fleet keeps a wing to
-  each of its live carriers, the lowest ids, and a rebase to it counts them, PLAN 5.8l, ADR-335). It is paid; it weighs
+  each of its live carriers, the lowest ids, and a rebase to it counts them, PLAN 5.8l, ADR-335;
+  one whose airbase a nation not of its side took falls back to its nation's nearest airbase with
+  room, its mission ended, or is lost with none, PLAN 5.8m, ADR-336). It is paid; it weighs
   nothing in a reckoning of forces; no rule of the land's march, supply or fire reads it
   (`World.offLand`: afloat or a wing); a wing at its base is not drawn (left out of the
   snapshot's formations), its sorties are (5.7a).

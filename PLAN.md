@@ -41,9 +41,7 @@ quick sweep as a smoke test.
   - [x] 5.8j `orderRebase` throws for a wing whose carrier was sunk this hour (its base 0 until […]
   - [x] 5.8k Air superiority stays for good once no wing is left: `airSystem` returns before the […]
   - [x] 5.8l Wings outlive their carriers: a fleet whose carriers are sunk and whose other ships […]
-  - [ ] 5.8m Wings fly from an airbase the enemy took (SPEC: who holds the cell holds the base):
-    a wing whose base is held by a nation not of its side rebases to its nation's nearest
-    airbase with room, or is lost with none.
+  - [x] 5.8m Wings fly from an airbase the enemy took (SPEC: who holds the cell holds the base): […]
   - [ ] 5.8n The air-superiority mode after a load shows the game before's holders until the next
     day's first hour (paused: for good), and a pump that steps past a day's first hour skips it:
     the worker's air fields reset with a load; sent when the day changed.

@@ -179,6 +179,23 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Tests.** `seaNotLand`: two fleets of a war engaged at one place: no largest battle, no war
   said to have one, no contact (it failed before).
 
+### ADR-336 · 2026-10-13 · accepted — A wing falls back from an airbase the enemy took (PLAN 5.8m)
+
+- **Found** (the eleventh read): SPEC has who holds the cell hold the base, but a wing flew on
+  from an airbase a nation not of its side had taken.
+- **Decision.** Hourly, `airSystem` moves a wing whose airbase is held by a nation not of its
+  side (`ofSide`: its supply bloc, or fighting beside it; `orderRebase` reads the same) to its own
+  nation's nearest airbase by km with room for it, the lowest index of the nearest; its mission
+  and sortie end, and it stands there at once. With none, it is lost (`destroyFormation`). Its
+  own nation's alone: a base of an ally's is a rebase by order, not a flight from a loss.
+- **The pin moves** 57c9ae2e → ae18ce8c: seed 99's year takes airbases with wings on them.
+- **Tests.** `airbaseLoss1938`: a German airbase held by Poland: its wings at Germany's nearest
+  with room, the mission ended; every German airbase Polish: the wings lost; an Italian holder at
+  war beside Germany: no loss. Two of the three failed before.
+- **A bound of the game moved.** `warBattle`'s 60 days: the battles named of neither leader of
+  their war 7 of 687, over its bound of 1 % (6.87); each is an hour with only allies in contact
+  (a leader passed over: 0, the rule, which stands). The bound is now 2 %: the rare case it is.
+
 ### ADR-335 · 2026-10-13 · accepted — Wings beyond a fleet's live carriers are lost (PLAN 5.8l)
 
 - **Found** (the eleventh read): a wing was lost only with its whole fleet. A fleet whose carriers

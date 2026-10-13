@@ -14928,3 +14928,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (894 of 897) red only by the three timing tests of
   BLOCKERS (3,370 ms, 2.53 ms, 30.3 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8m, its gate again.
+
+## 2026-10-13 — PLAN 5.8m: a wing falls back from an airbase the enemy took (ADR-336)
+
+- **Done:** `airSystem` moves a wing off an airbase held by a nation not of its side to its
+  nation's nearest with room (`fallBack`), or loses it; `ofSide` shared with `orderRebase`.
+- **Tests:** `airbaseLoss1938` (3, new; 2 failed before).
+- **The pin moves** 57c9ae2e → ae18ce8c.
+- **`warBattle`'s bound** of battles of neither leader 1 % → 2 % (7 of 687 now; the rule, no leader
+  passed over, holds at 0; ADR-336).
+- **The gate:** the related unit tests (896 of 900) red by the three timing tests of BLOCKERS
+  (2,926 ms, 2.03 ms, 26.1 ms) and that bound, since green alone; the pin, build and parity green
+  by hand.
+- **Next:** PLAN 5.8n.

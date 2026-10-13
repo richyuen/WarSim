@@ -2,7 +2,9 @@
  * The air wings at their bases (PLAN 5.1d). A wing's base is state (`world.wingBase`): an airbase
  * (its index + 1) or a carrier's fleet (the fleet's id, negative). Hourly after the movement, a
  * wing on a carrier is where its fleet is; one whose carrier is gone (`destroyFormation` sets its
- * base to 0) is lost with it, as are the wings beyond its fleet's live carriers (PLAN 5.8l). Then the scheduler (PLAN 5.2b): a wing with a mission and no sortie,
+ * base to 0) is lost with it, as are the wings beyond its fleet's live carriers (PLAN 5.8l); one
+ * whose airbase a nation not of its side took falls back to its nation's nearest, or is lost
+ * (PLAN 5.8m). Then the scheduler (PLAN 5.2b): a wing with a mission and no sortie,
  * ready on its base, launches one; then the air power flown by zone (`airPowerSystem`, PLAN 5.3c)
  * and the hour's air fights (`airCombat`, PLAN 5.3a). No rule
  * of the land reads a wing yet (`World.offLand`).
@@ -39,6 +41,18 @@ export function airSystem(world: World): void {
       destroyFormation(world, id);
       continue;
     }
+    if (base > 0 && !ofSide(world, c.nation[id]!, world.cells.controller[world.airbases[base - 1]!.cell]!)) {
+      // Its airbase taken (PLAN 5.8m): to its nation's nearest with room, or lost.
+      const to = fallBack(world, id, base);
+      if (to === 0) {
+        destroyFormation(world, id);
+        continue;
+      }
+      world.wingBase.set(id, to);
+      world.wingMission.delete(id);
+      world.sorties.delete(id);
+      [c.x[id], c.y[id]] = basePlace(world, to)!;
+    }
     if (base < 0) {
       const left = decks.get(-base) ?? liveCarriers(world, -base);
       if (left === 0) {
@@ -57,6 +71,35 @@ export function airSystem(world: World): void {
   strikes(world);
   if (byZone.size > 0) airCombat(world, byZone);
   antiAir(world);
+}
+
+/** Whether `holder` is nation `nation` or of its side: its supply bloc, or fighting beside it. */
+function ofSide(world: World, nation: number, holder: number): boolean {
+  return holder === nation || blocOf(world, holder) === blocOf(world, nation) || world.wars.sameSide(nation, holder);
+}
+
+/**
+ * The airbase wing `id` falls back to from airbase `from`, taken (PLAN 5.8m): its nation's
+ * nearest by km with room for it, the lowest index of the nearest; 0 for none.
+ */
+function fallBack(world: World, id: number, from: number): number {
+  const c = world.formations.cols;
+  const nation = c.nation[id]!;
+  const need = wingAircraft(world, c.template[id]!);
+  const used = new Map<number, number>();
+  for (const [o, b] of world.wingBase) if (b > 0 && o !== id) used.set(b, (used.get(b) ?? 0) + wingAircraft(world, c.template[o]!));
+  const [fx, fy] = world.cellPoint(world.airbases[from - 1]!.cell);
+  let best = 0;
+  let bd = Infinity;
+  world.airbases.forEach((b, i) => {
+    if (world.cells.controller[b.cell] !== nation || (used.get(i + 1) ?? 0) + need > airbaseRoom(b)) return;
+    const d = seaKm(world, fx, fy, ...world.cellPoint(b.cell));
+    if (d < bd) {
+      bd = d;
+      best = i + 1;
+    }
+  });
+  return best;
 }
 
 /** Fleet `fleet`'s carriers afloat: its live elements of a carrier class (PLAN 5.8l). */
@@ -185,7 +228,6 @@ export function orderRebase(world: World, id: number, x: number, y: number): 0 |
   if (!from) return reject(world, id, RejectReason.NoBase);
   const c = world.formations.cols;
   const nation = c.nation[id]!;
-  const bloc = blocOf(world, nation);
   const near = (px: number, py: number): boolean => Math.abs(wrapDx(world, x, px)) <= BASE_PICK_CELLS && Math.abs(py - y) <= BASE_PICK_CELLS;
   const need = wingAircraft(world, c.template[id]!);
   const used = (base: number): { aircraft: number; wings: number } => {
@@ -214,8 +256,7 @@ export function orderRebase(world: World, id: number, x: number, y: number): 0 |
     }
   };
   world.airbases.forEach((b, i) => {
-    const holder = world.cells.controller[b.cell]!;
-    if (holder !== nation && blocOf(world, holder) !== bloc && !world.wars.sameSide(nation, holder)) return;
+    if (!ofSide(world, nation, world.cells.controller[b.cell]!)) return;
     consider(i + 1, ...world.cellPoint(b.cell), (u) => u.aircraft + need <= airbaseRoom(b));
   });
   world.formations.forEach((f) => {
