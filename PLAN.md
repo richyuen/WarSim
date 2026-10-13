@@ -27,6 +27,31 @@ quick sweep as a smoke test.
 
 - [ ] 5.1 Air wings, airbases, carriers, range; air zones.
   AT: a wing cannot be assigned a mission outside its range (test).
+  Split 2026-10-13, as 4.1 and 4.2 were. Found first: `data/units/air.json` has eight aircraft
+  types (fighters to transports, range 500 to 3,000 km) and `data/buildings/buildings.json` an
+  airbase (50 aircraft a level); no air template, no airbase in the 1938 scenario, no wing in
+  the state. One cause a commit:
+  - [ ] 5.1a Air zones: the map in zones an hour's air war is reckoned by (SPEC §6.3), the sea
+    zones over water as they are, the land in regions of whole provinces of about the same
+    area, by the same spread from seeds. Derived, not saved, not hashed, read by nothing yet.
+    Test: every cell with a province or a sea zone in one air zone, each zone in one piece,
+    their areas within a factor of the target.
+  - [ ] 5.1b Air templates: six wing templates (fighter, tactical bomber, strategic bomber,
+    close support, naval bomber and transport groups) in the scenario's rules after the sea
+    ones, a template of the air domain; a wing is a formation of one. None exists: the queue
+    and the spawn refuse one, as the sea's did before 4.2b. Test.
+  - [ ] 5.1c Airbases: the 1938 scenario's airbases, data (the major air stations by hand and
+    the cities of the larger nations), with levels; a base is its cell's controller's; its
+    room is `airCapacity` × level aircraft. Test: every nation with an air force in 1938 has
+    one; a base taken is its taker's.
+  - [ ] 5.1d The 1938 start's air forces: each nation's wings at its airbases by the record
+    (`data/scenarios/1938/air.json`), the carriers' air groups aboard the carriers of the
+    fleets; paid from the first month; no rule reads a wing yet. Test: counts by nation; ten
+    years, every wing at its base.
+  - [ ] 5.1e Range: a wing's base (an airbase, or a carrier, which moves with its fleet) and its
+    range (the least `range_km` of its aircraft); a mission order (an air zone to patrol, a
+    place to strike) refused beyond its range from its base, with its reason (`RejectReason`),
+    and an order to rebase to its side's airbase or carrier in range with room. Saved. The AT.
 - [ ] 5.2 Mission scheduler + sorties as derived kinematics.
   AT: the sortie position function is pure (same inputs → same output, property test) and matches the sim's interception points.
 - [ ] 5.3 Air combat, interception, AA; air superiority per zone.

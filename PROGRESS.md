@@ -14583,3 +14583,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin:** the sim is not changed.
 - **Next:** the critic's blocking issues of run 4 filed under Phase 4 are done (4.9 to 4.11);
   PLAN 5.1.
+
+## 2026-10-13 — PLAN 5.1 split into parts (documents)
+
+- **Found:** eight aircraft types in `data/units/air.json` and an airbase building in the data; no
+  air template, airbase or wing in the game. Parts: 5.1a air zones, 5.1b air templates, 5.1c
+  airbases, 5.1d the 1938 air forces, 5.1e range and the mission order (the AT).
+- **Next:** PLAN 5.1a.
