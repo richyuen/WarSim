@@ -1770,6 +1770,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - *As built (PLAN 5.4c, ADR-318):* a strike on enemy ships fires its aircraft's hard attack
   (halved on armour beyond its piercing) × 1 in hit points over the ships in reach by their
   health; what is aboard is not struck.
+- *As built (PLAN 5.4d, ADR-319):* a carrier's wings on board see and strike for its fleet as far
+  as a quarter of their range (250 km): its detection and its reach in a sea battle; once in 4
+  hours they strike the enemy's surface ships of the battle as a naval strike does.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

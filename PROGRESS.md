@@ -14737,3 +14737,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests red only by two timing tests of BLOCKERS (3,031 ms,
   3.49 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.4d.
+
+## 2026-10-13 — PLAN 5.4d: carrier air groups in fleet battles (ADR-319). PLAN 5.4 done
+
+- **Done:** a carrier's wings on board are its fleet's detection and reach (a quarter of their
+  range, 250 km) and strike the enemy's surface ships of its battle once in 4 hours. SPEC §6.3,
+  PARITY.
+- **Tests:** `carrierAir1938.test.ts` (2).
+- **The pin moves** 1377ab88 → a6c4ac55.
+- **The gate:** the related unit tests (871 of 873) red only by two timing tests of BLOCKERS
+  (3,173 ms, 2.48 ms); the pin (a6c4ac55), build and parity green by hand.
+- **Next:** PLAN 5.5.

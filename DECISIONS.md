@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-319 · 2026-10-13 · accepted — Carrier air groups in fleet battles (PLAN 5.4d)
+
+- **Decision.** In `navalCombat.ts`:
+  - *Who flies for a fleet* (`carrierWings`): the wings based on its carriers with aircraft, not
+    in the air on a sortie of their own.
+  - *Sight and reach.* They see and strike for it as far as `CARRIER_SPOT_SHARE` (a quarter) of
+    their range (`wingRange`; a search out and back, and the strike): a naval bomber group 250 km.
+    That is the fleet's detection where it is more than its ships' (a battleship's 18 km), and
+    its reach (`FleetFacts.reach`): the range of its battle is held open by the rule of reaches
+    (ADR-254), the carrier side the longer, as a battle line holds off a cruiser.
+  - *The strike.* Once in `CARRIER_CYCLE` (4) hours of the world's clock, each wing whose reach
+    covers the battle's range strikes the enemy's surface ships of the battle, as a naval strike
+    does (ADR-318): its aircraft × `shipEffectiveness` × `NAVAL_STRIKE_FIRE` × its nation's attack
+    buffs, spread over the ships by their hit points, ÷ the target's defence buffs and hp; with
+    the hour's other fire, before any loss.
+  - *A carrier no longer breaks off at once* (ADR-256): with its wings it has a weapon. With none
+    (lost, or away) it does as before.
+- **Not yet.** The enemy's AA on a carrier's strike, and fighters of a carrier against another's
+  (the sortie's air fight is PLAN 5.3's, a carrier strike is not a sortie); spotting by a
+  cruiser's floatplane: PLAN 7.
+- **The pin moves** 1377ab88 → a6c4ac55: carrier fleets see and fight from 250 km in the year
+  of seed 99.
+- **Tests.** `carrierAir1938.test.ts`: a Japanese carrier group sees an American battle squadron
+  150 km off by its wings, not with them away nor at 300 km; its two wings strike once in 4
+  hours by the rule, the battle squadron's guns out of reach, and it stays in the battle.
+
 ### ADR-318 · 2026-10-13 · accepted — Naval strike (PLAN 5.4c)
 
 - **Decision.** `strikes` (ADR-317) takes fleets among its targets: the elements of the formations

@@ -7667,3 +7667,29 @@ Of 5.4 (open in PLAN.md):
 
   - [x] 5.4c Naval strike: a strike sortie at its target fires on the enemy's ships there by
     its aircraft's hard attack and piercing against their armour.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.4 CAS + tactical bombing effects on ground battles; naval strike; carrier air groups in fleet battles.
+  From PLAN 4.3 (2026-10-10, ADR-254): a battleship sees 18 km by the units' data, so a
+  battle line sees a cruiser at 17 km and its 32 km guns hold a stand-off only where the
+  enemy sees it first: spotting aircraft (a cruiser's or a carrier's) are to give a fleet
+  its detection. A carrier has no weapon in a sea battle and breaks off at once (ADR-256).
+  AT: a battle with air superiority has a better outcome by the expected margin.
+  Split 2026-10-13. Found first: air superiority is reckoned per zone (PLAN 5.3c) and nothing
+  reads it; a strike sortie reaches its target and does nothing there. One cause a commit:
+  - [x] 5.4a Air superiority in ground combat: a formation's fire × a factor of its nation's […]
+  - [x] 5.4b CAS and tactical bombing: a strike sortie at its target fires on the enemy's land […]
+  - [x] 5.4c Naval strike: a strike sortie at its target fires on the enemy's ships there by […]
+  - [x] 5.4d Carrier air groups in fleet battles: a carrier's wings strike the fleets it is in
+    battle with, and a fleet with aircraft (a carrier's) sees by them (its detection).

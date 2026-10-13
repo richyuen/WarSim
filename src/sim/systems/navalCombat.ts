@@ -40,6 +40,11 @@
  * A battle with no fleet of one side left, or with no contact in an hour, is over: one row in the
  * history log (`SeaBattle`: each side with the ships it lost; where it began).
  *
+ * Carrier air groups (PLAN 5.4d): a fleet's carriers' wings (on board, not in the air on a sortie
+ * of their own) see for it and are its weapon as far as `CARRIER_SPOT_SHARE` of their range:
+ * its detection and its reach; once in `CARRIER_CYCLE` hours each that reaches the range strikes
+ * the enemy's surface ships of the battle, as a naval strike does.
+ *
  * Not here: sea control (PLAN 4.4); the AI's orders (PLAN 4.6).
  */
 import { hash32, hashToUnit } from '../core/hash';
@@ -51,6 +56,9 @@ import { basinOf, navOf, portSeaOf, seaOf, type SeaBattle, type World } from '..
 import { orderSail } from './sail';
 import { applyLoss, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
 import { ARMOR_PEN, COOLDOWN } from './combat';
+import { wingRange } from './air';
+import { NAVAL_STRIKE_FIRE, shipEffectiveness } from './airCombat';
+import { Leg, sortieAt } from './sorties';
 
 /** Ships removed per hour by one ship per point of `hard` against a target of 1 hit point. */
 export const SEA_FIRE_SCALE = 2;
@@ -61,6 +69,29 @@ const SALT_HUNT = 0x5e49;
 /** Hours a fleet that broke off is out of every sea battle (PLAN 4.3c). */
 export const BREAK_HOURS = 24;
 const SALT_SUBTICK = 0x5e48;
+/**
+ * How far a carrier's wings see and strike for its fleet (PLAN 5.4d): this share of the wing's
+ * range (`wingRange`; a search out and back and its strike): a naval bomber group's 1,000 km
+ * gives 250 km.
+ */
+export const CARRIER_SPOT_SHARE = 0.25;
+/** A carrier's wings strike the enemy's fleets of its battle once in this many hours (their sortie and turn round). */
+export const CARRIER_CYCLE = 4;
+
+/** Per fleet, the wings on its carriers with aircraft, and not in the air on a sortie of their own (PLAN 5.4d). */
+function carrierWings(world: World): Map<number, number[]> {
+  const out = new Map<number, number[]>();
+  if (world.wingBase.size === 0) return out;
+  for (const [wing, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
+    if (base >= 0 || !world.formations.has(wing)) continue;
+    const s = world.sorties.get(wing);
+    if (s && sortieAt(s, world.tick, world.cells.w).leg !== Leg.Home) continue;
+    const list = out.get(-base);
+    if (list) list.push(wing);
+    else out.set(-base, [wing]);
+  }
+  return out;
+}
 
 /** What the battle reads of a fleet at the hour's start. */
 interface FleetFacts {
@@ -100,7 +131,7 @@ export function nextRange(r: number, reachA: number, kmhA: number, reachB: numbe
   return r;
 }
 
-function factsOf(world: World, id: number, els: readonly number[]): FleetFacts | null {
+function factsOf(world: World, id: number, els: readonly number[], air: Map<number, number[]>): FleetFacts | null {
   const units = world.rules!.units;
   const ec = world.elements.cols;
   let detection = 0;
@@ -121,6 +152,12 @@ function factsOf(world: World, id: number, els: readonly number[]): FleetFacts |
     else surface = true;
   }
   if (stealth === Infinity) return null;
+  // Its carriers' wings (PLAN 5.4d) see and strike for it as far as the farthest of them reaches.
+  for (const wing of air.get(id) ?? []) {
+    const km = CARRIER_SPOT_SHARE * wingRange(world, wing);
+    detection = Math.max(detection, km);
+    reach = Math.max(reach, km);
+  }
   const rule = world.rules!.templates[world.formations.cols.template[id]!];
   return { id, nation: world.formations.cols.nation[id]!, detection, stealth, reach, kmh: rule?.speedKmh ?? 0, asw, surface, submerged };
 }
@@ -136,13 +173,14 @@ export function findSeaBattles(world: World): { fleets: number[]; km: number }[]
   const c = f.cols;
   const idx = elementIndex(world);
   const atWar = world.wars.nations();
+  const air = carrierWings(world);
   const facts: FleetFacts[] = [];
   f.forEach((id) => {
     // A fleet that broke off is out of every sea battle while it retreats (PLAN 4.8l), as a land
     // formation is out of every fight (`findBattles`).
     if (!world.isFleet(id) || !atWar.has(c.nation[id]!) || c.retreat[id]! > 0) return;
     const els = idx.get(id);
-    const ff = els ? factsOf(world, id, els) : null;
+    const ff = els ? factsOf(world, id, els, air) : null;
     if (ff) facts.push(ff);
   });
   const parent = new Map<number, number>();
@@ -319,6 +357,7 @@ export function navalCombatSystem(world: World): void {
   const idx = elementIndex(world);
   const fires = world.out.fires;
   const bf = world.buffs;
+  const air = carrierWings(world);
   for (const battle of groups) {
     // Its record: the first that has one of its fleets; another that has one is merged into it.
     const mine = records.filter((rec) => rec.fleets.some((id) => battle.fleets.includes(id)));
@@ -352,7 +391,7 @@ export function navalCombatSystem(world: World): void {
     let kmhA = Infinity;
     let kmhB = Infinity;
     for (const id of battle.fleets) {
-      const ff = factsOf(world, id, idx.get(id)!)!;
+      const ff = factsOf(world, id, idx.get(id)!, air)!;
       if (world.wars.atWar(first, ff.nation)) {
         reachB = Math.max(reachB, ff.reach);
         kmhB = Math.min(kmhB, ff.kmh);
@@ -464,6 +503,25 @@ export function navalCombatSystem(world: World): void {
           if (t !== 0) volley(s, t, (us.asw * full) / defOf(t) / units[ec.unit[t]!]!.hpPerUnit);
         }
       }
+      // Its carriers' wings (PLAN 5.4d): once in CARRIER_CYCLE hours, each wing that reaches the
+      // range strikes the enemy's surface ships of the battle, as a naval strike does (`strikes`):
+      // its aircraft × `shipEffectiveness` × NAVAL_STRIKE_FIRE, spread by the ships' hit points.
+      if (world.tick % CARRIER_CYCLE === 0) {
+        const table = tableOf(false);
+        for (const wing of air.get(sf) ?? []) {
+          if (table.total <= 0 || CARRIER_SPOT_SHARE * wingRange(world, wing) < r) continue;
+          for (const s of idx.get(wing) ?? []) {
+            if (ec.strength[s]! <= 0) continue;
+            const us = units[ec.unit[s]!]!;
+            for (const t of table.cand) {
+              const ut = units[ec.unit[t]!]!;
+              const share = (ut.hpPerUnit * ec.strength[t]!) / table.total;
+              const dmg = (ec.strength[s]! * shipEffectiveness(us, ut) * NAVAL_STRIKE_FIRE * buffAtk * share) / defOf(t) / ut.hpPerUnit;
+              if (dmg > 0) pending.set(t, (pending.get(t) ?? 0) + dmg);
+            }
+          }
+        }
+      }
     }
     for (const t of [...pending.keys()].sort((p, q) => p - q)) applyLoss(world, t, pending.get(t)!);
     for (const id of battle.fleets) {
@@ -474,7 +532,7 @@ export function navalCombatSystem(world: World): void {
     }
     // Who breaks off: a fleet under half the ships it came in with, or with no weapon against an
     // enemy that has one.
-    const reachOf = (id: number): number => (world.formations.has(id) ? (factsOf(world, id, idx.get(id) ?? [])?.reach ?? 0) : 0);
+    const reachOf = (id: number): number => (world.formations.has(id) ? (factsOf(world, id, idx.get(id) ?? [], air)?.reach ?? 0) : 0);
     const out = new Set<number>();
     rec.fleets.forEach((id, k) => {
       if (!world.formations.has(id)) return void out.add(id);
