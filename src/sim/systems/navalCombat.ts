@@ -3,7 +3,8 @@
  * by range, at the level of the ship.
  *
  * Detection (hourly): a fleet of a nation at war sees an enemy fleet within its best ship's
- * `detection` (km) × (1 − the enemy's least stealthy ship's `stealth` / 100). Two fleets of
+ * `detection` (km; × 1 + AIR_DETECTION × (2s − 1), s its side's air superiority over it, PLAN
+ * 5.8t2) × (1 − the enemy's least stealthy ship's `stealth` / 100). Two fleets of
  * nations at war in which either sees the other, and of which one has a weapon (a gun: `rangeKm`
  * and `hard` above 0; torpedoes: `torpedoKm` and `torpedo`), are in contact; fleets in contact, joined, are one sea battle. A fleet in a battle
  * is `engaged`: it holds (the movement system leaves it), as a land formation in contact does.
@@ -52,12 +53,13 @@ import { hypot } from '../core/dmath';
 import { EventKind } from '../../shared/events';
 import { SIDE_SHIPS } from '../../shared/history';
 import { nearestCellWhere } from '../data/ownership';
-import { basinOf, navOf, portSeaOf, seaOf, type SeaBattle, type World } from '../world';
+import { airOf, basinOf, navOf, portSeaOf, seaOf, type SeaBattle, type World } from '../world';
 import { orderSail } from './sail';
 import { applyLoss, elementIndex, elementPlace, loopW, settleFormation, slotCount } from './elements';
 import { ARMOR_PEN, COOLDOWN } from './combat';
 import { wingRange } from './air';
 import { NAVAL_STRIKE_FIRE, shipEffectiveness } from './airCombat';
+import { AIR_DETECTION, airSuperiority } from './airSuperiority';
 import { Leg, sortieAt } from './sorties';
 
 /** Ships removed per hour by one ship per point of `hard` against a target of 1 hit point. */
@@ -158,8 +160,20 @@ function factsOf(world: World, id: number, els: readonly number[], air: Map<numb
     detection = Math.max(detection, km);
     reach = Math.max(reach, km);
   }
-  const rule = world.rules!.templates[world.formations.cols.template[id]!];
-  return { id, nation: world.formations.cols.nation[id]!, detection, stealth, reach, kmh: rule?.speedKmh ?? 0, asw, surface, submerged };
+  // The air over it (PLAN 5.8t2): its side's sees for it, the enemy's keeps it blind.
+  const c = world.formations.cols;
+  if (world.airPower.size > 0) {
+    const s = airSuperiority(world, c.nation[id]!, airOf(world).zoneOf[Math.floor(c.y[id]!) * world.cells.w + Math.floor(c.x[id]!)]!);
+    detection *= 1 + AIR_DETECTION * (2 * s - 1);
+  }
+  const rule = world.rules!.templates[c.template[id]!];
+  return { id, nation: c.nation[id]!, detection, stealth, reach, kmh: rule?.speedKmh ?? 0, asw, surface, submerged };
+}
+
+/** Fleet `id`'s detection this hour, km (PLAN 4.3a; its carriers' wings and the air over it with it): 0 for one with no ship. */
+export function fleetDetection(world: World, id: number): number {
+  const els = elementIndex(world).get(id);
+  return (els && factsOf(world, id, els, carrierWings(world))?.detection) || 0;
 }
 
 /** Whether a fleet of `a`'s facts has a weapon a ship of `b`'s can be hit by. */

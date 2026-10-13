@@ -15020,3 +15020,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (906 of 909) red only by the three timing tests of
   BLOCKERS (3,007 ms, 2.18 ms, 25.3 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8t2.
+
+## 2026-10-13 — PLAN 5.8t2: air superiority on a fleet's detection (ADR-346)
+
+- **Done:** `factsOf` takes a fleet's detection × (1 + `AIR_DETECTION` × (2s − 1));
+  `fleetDetection` tells it.
+- **Tests:** `airDetection1938` (2, new).
+- **The pin moves** acbc49c7 → 675ec86f.
+- **The gate:** the related unit tests (908 of 911) red only by the three timing tests of
+  BLOCKERS (2,811 ms, 2.19 ms, 25.6 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8t3.

@@ -67,6 +67,12 @@ export function airSuperiority(world: World, n: number, zone: number): number {
  */
 export const AIR_SUPPLY = 0.5;
 
+/**
+ * The air's factor on a fleet's detection (PLAN 5.8t2): its detection (its carriers' wings with
+ * it) × (1 + AIR_DETECTION × (2s − 1)), s its nation's superiority in its air zone.
+ */
+export const AIR_DETECTION = 0.25;
+
 /** An air zone's holder in `airHolders` where two sides at war fly and neither holds it. */
 export const AIR_CONTESTED = 0xffff;
 /** A nation holds the air of a zone where its superiority is this or more (the strategic bombers' bar, PLAN 5.6). */

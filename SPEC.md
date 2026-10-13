@@ -1786,6 +1786,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   without, 1 at a half.
 - *As built (PLAN 5.8t1, ADR-345; `supplySystem`):* a formation fed gains its supply × (1 + 0.5
   × (2s − 1)) an hour: half the rate under the enemy's air, one and a half under its own.
+- *As built (PLAN 5.8t2, ADR-346; `factsOf` in `navalCombat.ts`):* a fleet's detection (its
+  carriers' wings with it) × (1 + 0.25 × (2s − 1)): 1.25 under its side's air, 0.75 under the
+  enemy's.
 - *As built (PLAN 5.4b, ADR-317; `strikes`):* a strike sortie at its target fires once on the
   enemy's land elements within a cell: its aircraft × soft or hard attack × 0.2, in units over
   their hp, spread by their health; carried as on the land. A close support group takes about

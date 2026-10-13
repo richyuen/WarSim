@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-346 · 2026-10-13 · accepted — Air superiority on a fleet's detection (PLAN 5.8t2)
+
+- **Found** (5.8b): SPEC §6.3 has the air on naval detection; a fleet saw as far under the
+  enemy's air as under its own.
+- **Decision.** A fleet's detection, its carriers' wings with it, × (1 + `AIR_DETECTION` ×
+  (2s − 1)), s its nation's air superiority in its air zone: `AIR_DETECTION` 0.25, so 1.25 under
+  its side's air, 0.75 under the enemy's, 1 at a half and where no one flew. Its stealth, reach
+  and weapons are not the air's. The row bound of 4.8i reads the factored detection, so no pair
+  in sight is skipped. `fleetDetection` tells it.
+- **The pin moves** acbc49c7 → 675ec86f.
+- **Tests.** `airDetection1938` (2, new; `fleetDetection` was not there): a Japanese battle
+  squadron's detection × 1.25 under Japan's air, the American's × 0.75 there, × 1 under none
+  and a bystander's; a pair 10 % beyond what either sees with no air is in battle under either
+  side's air.
+
 ### ADR-345 · 2026-10-13 · accepted — Air superiority on supply (PLAN 5.8t1)
 
 - **Found** (5.8b): SPEC §6.3 has the air on supply; only the land's fire read it (ADR-316).
