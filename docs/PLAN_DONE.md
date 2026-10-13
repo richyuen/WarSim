@@ -7364,3 +7364,34 @@ Of 4.10 (open in PLAN.md):
 
   - [x] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the
     zone under the cursor named with its holder. e2e.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.10 Critic R4-B4: naval warfare can be seen. Seen by the critic: at T0 a fleet's counter
+  is an army's (`critic/shots/c4a_11_crop_scapa_counter_4000m.png`); at T3 a battle is a few
+  small ship shapes; in its war on seed 6131 no shot was drawn in 14 sampled hours or 32 hours
+  watched running (`critic/c4_b_6131.json`, `critic/c4_b2_6131.json`); the sea-control mode is
+  blocky and its colours do not say whose navy holds a zone. The critic's fix: a ship glyph on
+  a naval counter; both fleets of an engagement in one T2 view with their fire; a sea-control
+  legend.
+  AT: e2e: a fleet's counter at T0 differs from an army's (pixels); on seed 6131's war the
+  first sea battle, followed from its event, draws gunfire within its first hours at T2; the
+  sea-control mode names the holder of the zone under the cursor or in a legend.
+  Split 2026-10-13 into parts, one cause a commit. Found first (seed 6131, the critic's war):
+  the sim fires (28 naval shots in hour 41, 11 to 74 an hour after) and the page receives and
+  draws them (11 to 23 shots in a battle's hour, stepped); at ×1 a sea battle's five hours
+  pass in five seconds, each hour's shots in a part of it, and in this container a sample came
+  every 5.5 s: 2 of 100 had shots. Nothing on the map stands for a sea battle while it lasts.
+  - [x] 4.10a A fleet's counter at T0 is a fleet's: fleets clustered apart from armies, with a […]
+  - [x] 4.10b A sea battle is seen while it lasts: a mark at its place at T0 to T2 (crossed […]
+  - [x] 4.10c The sea-control mode says whose: a legend of the holders on the screen, and the […]
+  - [x] 4.10d The AT's specs (above), and the tick of 4.10.

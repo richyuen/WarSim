@@ -14567,3 +14567,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests 284 of 285, red only by `snapshot-perf` of BLOCKERS (the
   snapshot is not changed here); the pin, build and parity green by hand.
 - **Next:** PLAN 4.10d.
+
+## 2026-10-13 — PLAN 4.10 done: naval warfare can be seen (4.10d)
+
+- **The AT:** `navalCounter1938`, `seaBattleSeen1938`, `seaLegend1938` together on 5be0ba5: 3 of 3
+  (2.0 min). PARITY additions row 3 has them.
+- **Next:** PLAN 4.11.
