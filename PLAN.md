@@ -36,8 +36,7 @@ quick sweep as a smoke test.
   - [x] 5.8b SPEC re-read for drift: each decision since the last review (ADR-288 to ADR-326) […]
   - [x] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing […]
   - [x] 5.8d Missing tests over the phase: each system of Phase 5 has a unit test of its rule […]
-  - [ ] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's
-    systems' share; over the budget of PLAN 7.1, the numbers in BLOCKERS.
+  - [x] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's […]
   - [ ] 5.8i A saved game plays on otherwise than the same game left running: air superiority
     sums each side's power in the order of the zone's map, the nations' order of first flight in
     a running game and by id after a load (`airSuperiority`; read by every land shot's

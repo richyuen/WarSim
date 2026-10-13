@@ -144,6 +144,13 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     control 0.101, the invasion AI 0.032; combat 1.774 → 1.555. PLAN 4.8i brings it back.
     The T1 frame with the fine mask (ADR-284) is not measured: no GPU here (`npm run bench`
     wants one); for a machine with one.
+  - *Phase 5's cost* (2026-10-13, PLAN 5.8e; a cloud container, unpinned, one run each, the same
+    hour): seed 99's five years 7.971 ms a tick at `759e1aa` (before Phase 5, ends on 0bf5a7ce)
+    and 9.390 at `8075af8` (ends on 9775a3cd): × 1.18, about 1.6 ms on the budget machine at
+    the 4.8i figure, over 1.5. The air's own systems: `air` (sorties, fights, AA, strikes, bombs)
+    0.603 and the air AI 0.297 ms a tick, the five years' means: 0.90 ms, 9.6 % of the tick. The
+    rest moved with the game (the air war is another war): the operational AI 1.875 → 2.206,
+    movement 1.080 → 1.256, supply 0.805 → 0.957, combat 1.737 → 1.497. For PLAN 7.1 (ADR-289).
   - *A march round a bay or over a river, with fleets under way* (2026-10-12, PLAN 4.7h,
     ADR-285; a cloud container, unpinned, about 5 × the budget machine's time): seed 99's
     first year, 9.87 ms a tick (hash 841d4422): combat 3.42, the operational AI 1.40,

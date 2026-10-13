@@ -7877,3 +7877,20 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8d Missing tests over the phase: each system of Phase 5 has a unit test of its rule
     and its save; a gap found is a test added (one that fails first where it finds a defect).
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's
+    systems' share; over the budget of PLAN 7.1, the numbers in BLOCKERS.

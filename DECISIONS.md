@@ -167,6 +167,16 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-331 · 2026-10-13 · accepted — Phase 5's tick time (PLAN 5.8e)
+
+- **Measured** (a cloud container, unpinned, one five-year run of seed 99 each, the same hour):
+  7.971 ms a tick before Phase 5 (`759e1aa`), 9.390 after it (`8075af8`): × 1.18. The air's
+  systems 0.90 ms of it (`air` 0.603, the air AI 0.297; 9.6 %); the rest moved with the game
+  (the operational AI, movement and supply higher, combat lower). The air AI was 1.73 ms before
+  its industry was sorted once (ADR-322).
+- **Decision:** over the budget of PLAN 7.1, as Phase 4's was (ADR-289: the tick's work after
+  Phase 4 is PLAN 7.1's, the user's decision): the numbers in BLOCKERS, nothing tuned here.
+
 ### ADR-330 · 2026-10-13 · accepted — Missing tests over Phase 5 (PLAN 5.8d)
 
 - **Looked over:** each system and state of Phase 5 against its tests. A rule's test and a save's

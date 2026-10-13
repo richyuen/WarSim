@@ -14874,3 +14874,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Done:** every system of Phase 5 has a test of its rule and its save; the worker's `airControl`
   had none: `serverAirControl.test.ts` (1). No defect found by it.
 - **Next:** PLAN 5.8e.
+
+## 2026-10-13 — PLAN 5.8e: tick time (ADR-331, documents)
+
+- **Done:** seed 99's five years, 7.971 ms a tick before Phase 5 and 9.390 after (× 1.18, this
+  container); the air's systems 0.90 ms of it (9.6 %). In BLOCKERS for PLAN 7.1 (ADR-289).
+- **Next:** PLAN 5.8i (the parts the read found; 5.8g and 5.8h last).
