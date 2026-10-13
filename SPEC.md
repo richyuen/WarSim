@@ -1748,6 +1748,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   no sortie launches one from its base (state: `world.sorties`, saved; the wing's row stays at
   its base); home, it turns round 2 hours. `airborne` gives the sorties in the air at a time by
   air zone, from `sortieAt`: where interception is reckoned (PLAN 5.3).
+- *As built (PLAN 5.3a, ADR-313; `airCombat`):* each hour the sorties in one air zone of nations
+  at war fire on each other: a squadron's aircraft × its air attack × 0.25 over the target's
+  defence, in hit points, the losses in aircraft carried as on the land. A wing with none left is
+  lost; a sortie that lost a quarter in the hour turns home. Fighters beat bombers by the data.
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy.
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,

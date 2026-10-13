@@ -119,6 +119,8 @@ export const EventKind = {
   LandingRepulsed: 45,
   /** A nation short of money laid up fleets in a month (PLAN 4.6e1): a = nation, b = how many. */
   FleetsLaidUp: 46,
+  /** An hour's air fight in an air zone (PLAN 5.3a): a = the zone, b = the aircraft lost in it, both sides; (x, y) = a sortie's place in it. */
+  AirBattle: 47,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

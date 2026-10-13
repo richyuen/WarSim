@@ -14672,3 +14672,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   build's 3,522 ms, `snapshot-perf` 2.28 ms, the territory's 25.5 ms a tick); the pin, build and
   parity green by hand.
 - **Next:** PLAN 5.3.
+
+## 2026-10-13 — PLAN 5.3a: air combat (ADR-313)
+
+- **Done:** PLAN 5.3 split into 5.3a–c. `airCombat`: sorties of nations at war in one zone fire
+  by air attack against defence; losses carried; a wing at none lost; a sortie that lost a
+  quarter turns home; `AirBattle` events. `aa` and `defense` in the rules' units. SPEC §6.3,
+  PARITY.
+- **Tests:** `airCombat1938.test.ts` (4): fighters beat bombers.
+- **The pin holds** at 1377ab88.
+- **The gate:** the related unit tests red only by the three timing tests of BLOCKERS (3,327 ms,
+  3.81 ms, 25.8 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.3b.

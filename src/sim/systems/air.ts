@@ -3,10 +3,12 @@
  * (its index + 1) or a carrier's fleet (the fleet's id, negative). Hourly after the movement, a
  * wing on a carrier is where its fleet is; one whose carrier is gone (`destroyFormation` sets its
  * base to 0) is lost with it. Then the scheduler (PLAN 5.2b): a wing with a mission and no sortie,
- * ready on its base, launches one. No other rule reads a wing yet (`World.offLand`).
+ * ready on its base, launches one; then the hour's air fights (`airCombat`, PLAN 5.3a). No rule
+ * of the land reads a wing yet (`World.offLand`).
  */
 import { EventKind, RejectReason } from '../../shared/events';
 import { airbaseRoom } from '../data/airbases';
+import { airCombat } from './airCombat';
 import { destroyFormation } from './elements';
 import { seaKm } from './navalCombat';
 import { Leg, patrolHours, sortieAt, sortieEnd } from './sorties';
@@ -33,6 +35,7 @@ export function airSystem(world: World): void {
     }
     schedule(world, id);
   }
+  if (world.sorties.size > 0) airCombat(world, airborne(world, world.tick));
 }
 
 /** Hours a wing is on its base after a sortie before it can fly the next (refuelled, rearmed). */

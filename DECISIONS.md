@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-313 · 2026-10-13 · accepted — Air combat between sorties in a zone (PLAN 5.3a)
+
+- **Decision.** `src/sim/systems/airCombat.ts`, at the end of `airSystem` each hour over
+  `airborne`'s zones:
+  - A wing fights the wings in its zone of nations at war with its own. A squadron's fire is its
+    aircraft × its air attack (`aa`, now in the rules' units with `defense`) × `AIR_FIRE`
+    (0.25), spread over the enemy wings by their aircraft and within a wing over its squadrons
+    by theirs; it is hit points over the target's `defense`, and aircraft lost are those ÷ its
+    `hpPerUnit`, carried as on the land (`applyLoss`). All fire of the hour is reckoned before
+    any loss, so the order of the wings is nothing.
+  - A wing with no aircraft left is lost (`settleFormation`). A sortie out or over its target
+    that lost `BREAK_OFF` (a quarter) of its aircraft in the hour turns home from where it is: a
+    new sortie to here with no time over, launched so that now is its turn (still a function of
+    its launch).
+  - `AirBattle` (47) per zone fought in: the zone, the aircraft lost, a sortie's place.
+- **The figures.** A fighter group (36 fighters, air attack 25) on a tactical bomber group (24,
+  defence 10, 8 hp each) takes 2.8 bombers an hour and loses 0.5 fighters (air attack 4 against
+  defence 12, 4 hp): fighters beat bombers by the unit data alone. Two fighter groups lose 4.7
+  fighters each an hour (36 × 25 × 0.25 ÷ 12 ÷ 4).
+- **Not yet.** Detection (a sortie that does not see its enemy), escorts that shield bombers,
+  a wing's losses made good: later parts or PLAN 7.
+- **The pin holds** at 1377ab88: no AI gives a mission yet.
+- **Tests.** `airCombat1938.test.ts`: the hour's losses by the formula; 8 hours: the bombers
+  under a quarter, the fighters over 85%; fighters against fighters alike; no fight at peace or
+  alone; four fighter groups turn a bomber sortie home from Strasbourg, and then destroy it; in
+  the game, German fighters and French bombers on patrol over Strasbourg for 48 hours.
+
 ### ADR-312 · 2026-10-13 · accepted — The sortie scheduler; the hour's sorties by air zone (PLAN 5.2b)
 
 - **Decision.**

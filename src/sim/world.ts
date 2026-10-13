@@ -153,6 +153,9 @@ export interface UnitRule {
   armor: number;
   piercing: number;
   hpPerUnit: number;
+  /** Its fire at aircraft and its defence against them, a unit's (`aa`, `defense` of the unit data; read in the air, PLAN 5.3a). */
+  aa: number;
+  defense: number;
   /** Fuel an element of it burns in an hour on the march (`fuelPerHour` of the unit data). */
   fuel: number;
   /** Its guns' reach, km; how far it sees, km; how hard it is to see, 0..100 (`range_km`, `detection`, `stealth`; read at sea, PLAN 4.3a). */

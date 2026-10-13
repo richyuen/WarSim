@@ -7559,3 +7559,22 @@ Of 5.2 (open in PLAN.md):
     base, launches a sortie (state, saved: its launch and its target); home, it turns round
     for some hours. The hour's sorties by air zone, from the sortie function: the points of
     PLAN 5.3's interception, the same as the function's. The AT.
+
+<!-- moved 2026-10-13 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.3 (open in PLAN.md):
+
+  - [x] 5.3a Air combat: the sorties of nations at war in one air zone in an hour fire on each
+    other by their aircraft's air attack against the target's defence, losses in aircraft
+    (carried, as on the land); a wing with none left is lost; a sortie that lost a quarter of
+    its aircraft in the hour turns home. Logged. Outcome test: fighters beat bombers.
