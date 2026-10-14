@@ -51,7 +51,8 @@ test('T0 counters: Σ strength is the world total; zooming T0 ↔ T1 never pops 
     v.draw(performance.now() + 10_000);
   }, { w: W, h: H });
   const s = await page.evaluate(() => window.__warsim!.sim.inspect(true));
-  const total = s.formations.reduce((a, f) => a + f.strength, 0);
+  // Of what is drawn: a wing at its base is not (PLAN 5.1d, 5.8w3).
+  const total = s.formations.reduce((a, f) => a + (f.wing ? 0 : f.strength), 0);
   const drawn = await page.evaluate(() => window.__warsim!.view!.counters.drawn.map((d) => d.strength));
   expect(drawn.length).toBeGreaterThan(30);
   expect(drawn.reduce((a, b) => a + b, 0)).toBe(total);

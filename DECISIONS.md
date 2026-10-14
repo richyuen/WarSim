@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-358 · 2026-10-14 · accepted — What is drawn against what the sim has: wings (PLAN 5.8w3)
+
+- **Found** (5.8h, `check:review`): `counters1938` and `declutter1938` held the T0 counters to
+  the sum of every formation's strength the inspection gives, and `elements1938` the T2 elements
+  in view to every formation's in its box; since 5.1d the world's 216 wings have strength
+  (23,190 men) and elements, and a wing at its base is not drawn. The drawn were 10,344,260 men
+  of 10,367,450.
+- **Decision.** The inspection says which formation is a wing (`wing`); the three tests hold
+  what is drawn to the formations that are drawn. No drawing changed: the T0 counters are the
+  armies' and the fleets', and a wing is seen by its sorties (5.7a).
+- **The pin holds** at 76983901.
+- **Tests.** The three specs green by hand (`declutter1938` with one worker, as the review runs a
+  red file again: its running sample ran short of frames beside two other specs).
+
 ### ADR-357 · 2026-10-14 · accepted — An annexed nation's hold on a third's land (PLAN 5.8w2)
 
 - **Found** (5.8h, `heldYears`, seed 7 at tick 17,520): a revolt (106) took two Soviet cells; a

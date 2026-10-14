@@ -46,7 +46,8 @@ test('T2 elements: interest-managed, at their formations, strengths add up; none
   expect(got.truncated).toBe(false);
   const full = await page.evaluate(() => window.__warsim!.sim.inspect(true));
   const [x0, y0, x1, y1] = got.sub.bbox;
-  const inside = full.formations.filter((f) => f.elements > 0 && f.x >= x0 && f.x <= x1 && f.y >= y0 && f.y <= y1);
+  // A wing's elements are not drawn (PLAN 5.1d, 5.8w3): the land's and the sea's are.
+  const inside = full.formations.filter((f) => !f.wing && f.elements > 0 && f.x >= x0 && f.x <= x1 && f.y >= y0 && f.y <= y1);
   // Exactly the formations in the bbox, with all of their elements.
   const per = new Map<number, number>();
   got.f.forEach((f) => per.set(f, (per.get(f) ?? 0) + 1));

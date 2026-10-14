@@ -579,7 +579,8 @@ export interface Inspection {
    * Formations (`full` only, else empty; PLAN 2.1): the formation's strength and, independently,
    * the men summed over its elements (Σ element units × men per unit).
    */
-  formations: { id: number; nation: number; strength: number; elementMen: number; elements: number; x: number; y: number }[];
+  /** `wing`: an air wing (PLAN 5.8w3), which the view does not draw at its base (5.1d). */
+  formations: { id: number; nation: number; strength: number; elementMen: number; elements: number; x: number; y: number; wing: boolean }[];
   /** Nations with a core or claim per province that has any (PLAN 1.36; `full` only, else empty). */
   cores: { province: number; nations: number[] }[];
 }

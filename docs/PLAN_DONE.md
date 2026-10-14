@@ -8231,3 +8231,21 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8w2 Seed 7 at tick 17,520 (`heldYears`): nation 105 holds 2 cells of nation 10 with no
     war between them. A test first, then the cause.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w3 The T0 counters' and T2 elements' sums (`counters1938`, `declutter1938`,
+    `elements1938`): what is drawn against the world's total since wings, which are not drawn
+    at their bases (5.1d), have strength.

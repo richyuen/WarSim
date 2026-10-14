@@ -63,9 +63,7 @@ quick sweep as a smoke test.
   - [x] 5.8v4 Wings built from the page (found by 5.8v1: the Actions tab leaves air templates […]
   - [x] 5.8w1 The review's sweeps ask a wing as a formation of the land (found by 5.8h's […]
   - [x] 5.8w2 Seed 7 at tick 17,520 (`heldYears`): nation 105 holds 2 cells of nation 10 with no […]
-  - [ ] 5.8w3 The T0 counters' and T2 elements' sums (`counters1938`, `declutter1938`,
-    `elements1938`): what is drawn against the world's total since wings, which are not drawn
-    at their bases (5.1d), have strength.
+  - [x] 5.8w3 The T0 counters' and T2 elements' sums (`counters1938`, `declutter1938`, […]
   - [ ] 5.8w4 `formationPlace1938`: the view centred on a formation in contact holds its
     elements. A cause first.
   - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one

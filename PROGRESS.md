@@ -15165,3 +15165,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (923 of 926) red only by the three timing tests of
   BLOCKERS (2,834 ms, 2.95 ms, 27.0 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8w3.
+
+## 2026-10-14 — PLAN 5.8w3: what is drawn against what the sim has, wings (ADR-358)
+
+- **Done:** the inspection's formations say `wing`; `counters1938`, `declutter1938` and
+  `elements1938` hold what is drawn to the formations that are drawn.
+- **Tests:** the three specs green by hand.
+- **The pin holds** at 76983901.
+- **The gate:** the related unit tests (161 of 162) red only by `snapshot-perf` of BLOCKERS
+  (4.24 ms); the pin, build, parity and the changed specs green by hand.
+- **Next:** PLAN 5.8w4.
