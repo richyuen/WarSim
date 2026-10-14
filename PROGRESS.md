@@ -15342,3 +15342,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Deferred (ADR-58), logged once:** R5-B3, the world shatters into statelets (seed 7321: 93
   nations alive in year 1, 149 in year 25). Balance, waits for Phase 7; not disputed.
 - **Next:** PLAN 4.12.
+
+## 2026-10-14 — PLAN 4.12a: a sea battle's row frames both sides (ADR-368)
+
+- **Found:** the critic's R5-B4: the row flew to the battle's place, by the British carrier, at
+  most 250 m/px; the German fleets were 23.7 cells off.
+- **Done:** the snapshot's sea battle has its fleets' box; `MapView.showSeaBattle` holds it in
+  the band between the side panels, out to 1,800 m/px. 4.12 split: 4.12b (a carrier's strike
+  drawn), 4.12c (ships readable at 20 m/px).
+- **Tests:** `seaBattleSeen1938` (both sides on the map under no panel, fire drawn; 443 m/px),
+  `seaBattle1938`, `navalDemo1938`, `seaControl1938` green by hand; `warBattle.test.ts` 11 of 11.
+- **Looked at:** `docs/evidence/4.10/sea-battle-t2.png` (2 January 1938): British fleets off
+  Frisia, German off the Jade, both left of the ranking; taken in with `sea-battle-mark-t0.png`.
+- **The gate:** green (the related unit tests 172 of 172; the pin; the changed spec).
+- **Next:** PLAN 4.12b.

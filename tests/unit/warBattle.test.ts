@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { battleViewM } from '../../src/app/battleView';
+import { battleViewM, SEA_VIEW_MAX_M } from '../../src/app/battleView';
 import { maskLand } from '../../src/shared/landMask';
 import type { FromWorker, Inspection, WarBattle } from '../../src/shared/protocol';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
@@ -293,6 +293,15 @@ describe('the largest battle of a war across water (PLAN 4.1d1)', () => {
     // The battle's own view of 28 by 14 km where that is wider.
     expect(battleViewM(700, 400, 19.57, [0.05, 0])).toBe(40);
     expect(battleViewM(100, 100, 19.57, [1.5, 1.5])).toBe(250);
+  });
+
+  it('a sea battle goes out to its limit to hold fleets a carrier\'s reach apart (PLAN 4.12a)', () => {
+    // The critic's: a box of 23.3 cells and a cell round it, in the 1,132 px left of the ranking.
+    expect(battleViewM(1132, 800, 19.57, [25.3, 7], false, SEA_VIEW_MAX_M)).toBeCloseTo(((25.3 * 19.57 + 6) * 1000) / 1132, 9);
+    // A land battle's view of the same stops at the tier of elements.
+    expect(battleViewM(1132, 800, 19.57, [25.3, 7])).toBe(250);
+    // And no sea battle beyond T1.
+    expect(battleViewM(1132, 800, 19.57, [200, 7], false, SEA_VIEW_MAX_M)).toBe(SEA_VIEW_MAX_M);
   });
 });
 

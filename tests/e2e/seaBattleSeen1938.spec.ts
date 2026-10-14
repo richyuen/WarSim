@@ -46,7 +46,36 @@ test('the first sea battle of the critic\'s war: marked through its hours, liste
     const v = window.__warsim!.view!;
     return { m: v.metresPerPx, cx: v.controller.cam.cx, cy: v.controller.cam.cy };
   });
-  expect(Math.hypot(view.cx - first!.x, view.cy - first!.y), 'over the battle').toBeLessThan(2);
+  // Over the middle of its fleets, and both sides' fleets in it on the screen (PLAN 4.12a: the
+  // row flew to the battle's place, by one side, the other's 23.7 cells off in the critic's).
+  // (The middle of their box is the middle of the band between the panels at the view's sides.)
+  expect(await page.evaluate((b) => {
+    const v = window.__warsim!.view!;
+    const cam = v.controller.cam;
+    const x = (b.cx - cam.cx) * cam.scale + window.innerWidth / 2;
+    const y = (b.cy - cam.cy) * cam.scale + window.innerHeight / 2;
+    return document.elementFromPoint(x, y)?.tagName;
+  }, first!), 'the middle of the battle\'s fleets on the map, under no panel').toBe('CANVAS');
+  const sides = await page.evaluate(async (b) => {
+    const v = window.__warsim!.view!;
+    const cam = v.controller.cam;
+    const out: { nation: number; x: number; y: number; on: boolean }[] = [];
+    for (const f of (await window.__warsim!.sim.inspect(true)).formations) {
+      if ((f.nation !== b.a && f.nation !== b.b) || !v.formationAfloat(f.id) || !v.formationEngaged(f.id)) continue;
+      const p = v.formationPos(f.id);
+      if (!p || Math.abs(p[0] - b.cx) > b.span[0] / 2 + 1 || Math.abs(p[1] - b.cy) > b.span[1] / 2 + 1) continue;
+      const x = (p[0] - cam.cx) * cam.scale + window.innerWidth / 2;
+      const y = (p[1] - cam.cy) * cam.scale + window.innerHeight / 2;
+      // On the screen and under no panel of the page: the map is what is at its point.
+      const on = x >= 0 && x <= window.innerWidth && y >= 0 && y <= window.innerHeight && document.elementFromPoint(x, y)?.tagName === 'CANVAS';
+      out.push({ nation: f.nation, x: Math.round(x), y: Math.round(y), on });
+    }
+    return out;
+  }, first!);
+  console.log(`sea battle of ${first!.a} and ${first!.b}: its fleets' box ${first!.span[0].toFixed(1)} × ${first!.span[1].toFixed(1)} cells, viewed at ${view.m.toFixed(0)} m/px; ${sides.length} engaged fleets of the two in it, ${sides.filter((s) => s.on).length} on the screen`);
+  expect(sides.some((s) => s.nation === first!.a), 'a fleet of the one side').toBe(true);
+  expect(sides.some((s) => s.nation === first!.b), 'a fleet of the other').toBe(true);
+  expect(sides.filter((s) => !s.on), 'engaged fleets of the battle off the screen or under a panel').toEqual([]);
   let shots = 0;
   let marked = 0;
   for (let h = 0; h < 6 && (await page.evaluate(() => window.__warsim!.view!.seaBattles().length)) > 0; h++) {

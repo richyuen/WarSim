@@ -56,6 +56,8 @@ export class Hud {
   onSelectNation: (id: number) => void = (id) => (this.selected.value = id);
   /** Brings a place into view at a zoom that shows a battle (PLAN 2.14e); main wires it to the map view. */
   onShowBattle: (x: number, y: number, span?: readonly [number, number], fight?: boolean) => void = () => {};
+  /** A sea battle's view of its fleets' box (`MapView.showSeaBattle`, PLAN 4.12a). */
+  onShowSeaBattle: (x: number, y: number, span: readonly [number, number]) => void = () => {};
 
   /** Brings the place of an event into view (a click on a row of the ticker, PLAN 3.12c); main wires it to the map view. */
   onShowPlace: (x: number, y: number) => void = () => {};

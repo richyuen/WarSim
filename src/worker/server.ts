@@ -1332,13 +1332,22 @@ export class SimServer {
     const fway = this.view(Float32Array, fwayStart[fc]!, buffers);
     for (let i = 0; i < fc; i++) fway.set(ways[i]!, fwayStart[i]!);
     const majors = Float32Array.from(world.battles.majors.flatMap((m) => [m.x, m.y]));
-    // The sea battles (PLAN 4.10b): the place, the cells to the furthest fleet, the two sides.
+    // The sea battles (PLAN 4.10b): the place, the cells to the furthest fleet, the two sides;
+    // the middle and the size of the box of its fleets (PLAN 4.12a).
     const fc0 = world.formations.cols;
     const seas = Float32Array.from(
       world.seaBattles.flatMap((b) => {
         let r = 0;
-        for (const f of b.fleets) if (world.formations.has(f)) r = Math.max(r, Math.hypot(wrapDx(world, b.x, fc0.x[f]!), fc0.y[f]! - b.y));
-        return [b.x, b.y, r, b.a, b.b];
+        let [x0, x1, y0, y1] = [0, 0, 0, 0];
+        for (const f of b.fleets) {
+          if (!world.formations.has(f)) continue;
+          const dx = wrapDx(world, b.x, fc0.x[f]!);
+          const dy = fc0.y[f]! - b.y;
+          r = Math.max(r, Math.hypot(dx, dy));
+          [x0, x1, y0, y1] = [Math.min(x0, dx), Math.max(x1, dx), Math.min(y0, dy), Math.max(y1, dy)];
+        }
+        const w = world.cells.w;
+        return [b.x, b.y, r, b.a, b.b, (((b.x + (x0 + x1) / 2) % w) + w) % w, b.y + (y0 + y1) / 2, x1 - x0, y1 - y0];
       }),
     );
     // The sorties in the air (PLAN 5.7a): what `sortieAt` needs, the launch from this tick.

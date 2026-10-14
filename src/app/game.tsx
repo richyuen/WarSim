@@ -46,6 +46,12 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     view.onSelect = (id) => (hud.selected.value = id);
     hud.onSelectNation = (id) => view.select(id);
     hud.onShowBattle = (x, y, span, fight) => view.showBattle(x, y, span, fight);
+    hud.onShowSeaBattle = (x, y, span) => view.showSeaBattle(x, y, span);
+    // A sea battle's view keeps its fleets clear of the panels at the view's sides (PLAN 4.12a).
+    view.sidePanels = () => [...document.querySelectorAll('aside')].map((e) => {
+      const r = e.getBoundingClientRect();
+      return { x: r.left, y: r.top, w: r.width, h: r.height };
+    });
     hud.onShowPlace = (x, y) => view.showPlace(x, y);
     // The sea battles going on, for the ticker (PLAN 4.10b).
     view.onSeaBattles = (b) => (hud.seaBattles.value = b);

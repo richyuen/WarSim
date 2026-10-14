@@ -112,8 +112,9 @@ export function App({
           seas={seas}
           onSea={(key) => {
             const b = seaBattles.find((s) => seaKey(s) === key);
-            // A view of both fleets, within T2 (`showBattle`'s span: the cells across them).
-            if (b) hud.onShowBattle(b.x, b.y, [2 * b.r + 2, 2 * b.r + 2]);
+            // A view of both sides' fleets (PLAN 4.12a): their box and a cell around it, clear of
+            // the panels; out to T1 for a battle at a carrier's reach.
+            if (b) hud.onShowSeaBattle(b.cx, b.cy, [b.span[0] + 2, b.span[1] + 2]);
           }}
           onOrder={(seq) => {
             const n = orderNews.find((o) => o.seq === seq);

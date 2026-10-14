@@ -14,6 +14,12 @@ export const BATTLE_VIEW_M = 20;
 export const BATTLE_VIEW_KM = 28;
 export const BATTLE_VIEW_MAX_M = 250;
 /**
+ * A sea battle's view (PLAN 4.12a): its two sides may stand a carrier's reach apart, hundreds of
+ * km, more than a view under T2's limit holds. It goes out as far as holds both, up to this: in
+ * T1 (under T1_MAX_M, 2,000, less the handover's margin), where fleets are markers.
+ */
+export const SEA_VIEW_MAX_M = 1800;
+/**
  * A formation's fight (PLAN 3.11b): its block and the block of the enemy it faces, which stand
  * up to a cell apart for a formation a line or more behind its side's front. The view holds
  * both blocks' middles with this much ground around the two, the half of a block and its tag
@@ -40,9 +46,10 @@ export const FIGHT_VIEW_MAX_M = 28;
  *   - Not `fight` (a war's largest battle, PLAN 4.1d1): to BATTLE_VIEW_MAX_M. Two formations
  *     in contact with water between them keep their blocks on their shores, up to the reach of
  *     a contact apart: the view of a battle held one block and a part of the other.
+ *   - `maxM` in place of BATTLE_VIEW_MAX_M: a sea battle's, SEA_VIEW_MAX_M (PLAN 4.12a).
  */
-export function battleViewM(viewW: number, viewH: number, kmPerCell: number, span?: readonly [number, number], fight = false): number {
+export function battleViewM(viewW: number, viewH: number, kmPerCell: number, span?: readonly [number, number], fight = false, maxM = BATTLE_VIEW_MAX_M): number {
   const base = Math.max(BATTLE_VIEW_M, (BATTLE_VIEW_KM * 1000) / Math.max(1, viewW), (BATTLE_VIEW_KM * 500) / Math.max(1, viewH));
   const both = span ? Math.max(((span[0] * kmPerCell + FIGHT_PAD_KM) * 1000) / Math.max(1, viewW), ((span[1] * kmPerCell + FIGHT_PAD_KM) * 1000) / Math.max(1, viewH * FIGHT_VIEW_CLEAR)) : 0;
-  return Math.min(BATTLE_VIEW_MAX_M, Math.max(base, Math.min(both, fight && base <= FIGHT_VIEW_MAX_M ? FIGHT_VIEW_MAX_M : BATTLE_VIEW_MAX_M)));
+  return Math.min(maxM, Math.max(base, Math.min(both, fight && base <= FIGHT_VIEW_MAX_M ? FIGHT_VIEW_MAX_M : maxM)));
 }

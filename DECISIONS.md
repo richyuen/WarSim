@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-368 · 2026-10-14 · accepted — A sea battle's row frames both sides (PLAN 4.12a)
+
+- **Found** (the critic's R5-B4, run 5): the ticker's sea-battle row flew to the battle's place
+  (where it began: by one side's fleet) at most 250 m/px (`battleViewM`'s limit, T2). A battle
+  at a carrier's reach has its sides hundreds of km apart: on seed 6131 the British carrier
+  group in the middle of the view, the German fleets 23.7 cells off it.
+- **Decision.** The snapshot's sea battle carries the middle and the size of the box of its
+  fleets (`SEA_STRIDE` 9). The row's click (`MapView.showSeaBattle`) holds the box and a cell
+  round it in the band of the view between the panels at its sides (the page's `aside`s: the
+  ranking, a nation's or a formation's panel), the band's middle over the box's; out to
+  `SEA_VIEW_MAX_M` (1,800 m/px, in T1, where fleets are markers) where the box asks for it.
+  The battle's mark stays at its place. Fire is drawn to 450 m/px (tier 1.5): a battle whose
+  box is wider than that holds is seen without it.
+- **No sim input changed**; the pin holds.
+- **Tests.** `seaBattleSeen1938`: its row's view has the middle of the fleets' box on the map
+  under no panel, and every engaged fleet of the two leaders in the box on the screen under no
+  panel (the first battle: 23.3 × 5 cells, 443 m/px, 3 fleets; before, 250 m/px over the
+  British side, then under the ranking with the box in the view's middle); its fire drawn.
+  `warBattle.test.ts`: a sea battle's view to its limit. The evidence of PLAN 4.10b taken in
+  (`docs/evidence/4.10/`, never committed before): `sea-battle-t2.png` shows the British
+  fleets off Frisia and the German off the Jade, left of the ranking.
+
 ### ADR-367 · 2026-10-14 · accepted — An element struck from the air ends where it was drawn (PLAN 5.8w13)
 
 - **Found** (5.8h, `check:review`, the fourth run): `wrecks1938` (PLAN 2.4b): on day 14 of seed

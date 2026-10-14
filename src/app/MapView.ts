@@ -22,7 +22,7 @@ import { WreckFx } from '../render/fx/wrecks';
 import { FADE_MS, progress, running, smooth, SwitchBank, TimedSwitch, ZOOM_HYSTERESIS } from '../render/timing';
 import { BLOCK_STRIDE, FormationFlag, marching, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
 import { viewSubscription } from './subscription';
-import { battleViewM } from './battleView';
+import { battleViewM, SEA_VIEW_MAX_M } from './battleView';
 
 /** Flags are drawn at capitals from this zoom (px per cell), at this size (PLAN 1.37b). */
 const FLAG_MIN_SCALE = 3;
@@ -450,7 +450,7 @@ export class MapView {
     this.seas = s.seas.slice();
     this.sorties = s.sorties.slice();
     // The sea battles going on, for the ticker (PLAN 4.10b): told when the set changes.
-    const seaKey = Array.from(this.seas, (v, k) => (k % SEA_STRIDE < 3 ? Math.round(v) : v)).join(',');
+    const seaKey = Array.from(this.seas, (v, k) => (k % SEA_STRIDE === 3 || k % SEA_STRIDE === 4 ? v : Math.round(v))).join(',');
     if (seaKey !== this.seaKey) {
       this.seaKey = seaKey;
       this.onSeaBattles(this.seaBattles());
@@ -712,7 +712,10 @@ export class MapView {
   /** The sea battles going on, from the last snapshot (PLAN 4.10b). */
   seaBattles(): SeaBattleView[] {
     const out: SeaBattleView[] = [];
-    for (let i = 0; i + SEA_STRIDE <= this.seas.length; i += SEA_STRIDE) out.push({ x: this.seas[i]!, y: this.seas[i + 1]!, r: this.seas[i + 2]!, a: this.seas[i + 3]!, b: this.seas[i + 4]! });
+    for (let i = 0; i + SEA_STRIDE <= this.seas.length; i += SEA_STRIDE) {
+      const s = this.seas;
+      out.push({ x: s[i]!, y: s[i + 1]!, r: s[i + 2]!, a: s[i + 3]!, b: s[i + 4]!, cx: s[i + 5]!, cy: s[i + 6]!, span: [s[i + 7]!, s[i + 8]!] });
+    }
     return out;
   }
   private templates: TemplateInfo[] = [];
@@ -1088,6 +1091,39 @@ export class MapView {
     const el = this.canvas;
     const m = battleViewM(el.clientWidth, el.clientHeight, this.geo.kmPerCell, span, fight);
     this.controller.flyTo({ cx: x, cy: y, scale: (this.geo.kmPerCell * 1000) / m });
+    this.dirty = true;
+  }
+
+  /**
+   * The page's panels at the view's sides (game.tsx: the ranking, a nation's or a formation's
+   * panel), in CSS px of the page: what a sea battle's view keeps its fleets clear of.
+   */
+  sidePanels: () => { x: number; y: number; w: number; h: number }[] = () => [];
+
+  /**
+   * A sea battle's view (PLAN 4.12a): its fleets' box (`span` cells across, about (x, y)) in the
+   * band of the view between the panels at its sides, the band's middle over the box's; as far
+   * out as holds the box (`battleViewM`), up to SEA_VIEW_MAX_M, in T1 for a battle at a
+   * carrier's reach. The row of the ticker flew to the battle's place, by one side's fleet, and
+   * at most 250 m/px: the other side was 23.7 cells off, or under the ranking.
+   */
+  showSeaBattle(x: number, y: number, span: readonly [number, number]): void {
+    const el = this.canvas;
+    const vw = el.clientWidth;
+    const at = el.getBoundingClientRect();
+    let left = 0;
+    let right = vw;
+    for (const p of this.sidePanels()) {
+      if (p.w <= 0 || p.h <= 0) continue;
+      const l = p.x - at.left;
+      if (l + p.w / 2 < vw / 2) left = Math.max(left, l + p.w);
+      else right = Math.min(right, l);
+    }
+    // Panels that leave less than a third of the view: the whole view, as for a battle on land.
+    if (right - left < vw / 3) [left, right] = [0, vw];
+    const m = battleViewM(right - left, el.clientHeight, this.geo.kmPerCell, span, false, SEA_VIEW_MAX_M);
+    const scale = (this.geo.kmPerCell * 1000) / m;
+    this.controller.flyTo({ cx: x - ((left + right) / 2 - vw / 2) / scale, cy: y, scale });
     this.dirty = true;
   }
 
@@ -1827,11 +1863,18 @@ export class MapView {
   }
 }
 
-/** A sea battle going on, as the page has it (PLAN 4.10b): its place, the cells to its furthest fleet, its two sides' leaders. */
+/**
+ * A sea battle going on, as the page has it (PLAN 4.10b): its place, the cells to its furthest
+ * fleet, its two sides' leaders; the middle of the box of its fleets and the box's cells across
+ * (PLAN 4.12a).
+ */
 export interface SeaBattleView {
   x: number;
   y: number;
   r: number;
   a: number;
   b: number;
+  cx: number;
+  cy: number;
+  span: readonly [number, number];
 }
