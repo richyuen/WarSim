@@ -16,7 +16,8 @@
  * What is researched next (`nextTech`): of the techs the nation does not know and is not working
  * on, whose prerequisites it knows and whose year has come, the earliest (the first in the
  * scenario's order on ties). The year is a floor: nobody is ahead of the calendar. The nuclear
- * techs are left out: whether to go for the bomb is a decision of Phase 6, not a place in a queue.
+ * techs are left out, but for a nation that goes for the bomb (`goesForBomb`, PLAN 6.1a); a
+ * nuclear line of a nation no longer allowed nukes is not paid.
  *
  * A dead nation's lines are dropped (`eliminateNation`); what it knew it knows when it returns.
  */
@@ -24,6 +25,7 @@ import { civilFromDays, isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { grantTechs, knowsTechs, techMask } from '../tech';
 import type { ScenarioRules, World } from '../world';
+import { goesForBomb, nukesAllowed } from './nuclear';
 
 /** Share of a nation's monthly income its research budget is. */
 export const RESEARCH_SHARE = 0.05;
@@ -56,10 +58,11 @@ export function researchBudget(rules: ScenarioRules, gold: number, income: numbe
 /** The tech `nation` takes up next in `year`, not one of `busy` (indices); -1 when there is none. */
 export function nextTech(world: World, nation: number, year: number, busy: readonly number[]): number {
   const techs = world.rules?.techs ?? [];
+  const bomb = goesForBomb(world, nation);
   let best = -1;
   for (let i = 0; i < techs.length; i++) {
     const t = techs[i]!;
-    if (t.year > year || HELD_CATEGORIES.includes(t.category) || busy.includes(i)) continue;
+    if (t.year > year || (HELD_CATEGORIES.includes(t.category) && !(bomb && t.category === 'nuclear')) || busy.includes(i)) continue;
     if (best >= 0 && t.year >= techs[best]!.year) continue;
     if (knowsTechs(world, nation, techMask([i])) || !knowsTechs(world, nation, techMask(t.prereqs))) continue;
     best = i;
@@ -98,6 +101,8 @@ export function researchSystem(world: World): void {
       }
       const t = r.cols.tech[id]!;
       const rule = rules.techs[t]!;
+      // A nuclear line of a nation no longer allowed nukes (PLAN 6.1a): kept, not paid.
+      if (rule.category === 'nuclear' && !nukesAllowed(world, n)) continue;
       const pay = Math.min(rule.gold / rule.days, rule.gold - r.cols.paid[id]!, left);
       if (nc.gold[n]! < pay) return;
       nc.gold[n] = nc.gold[n]! - pay;

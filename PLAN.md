@@ -28,6 +28,10 @@ quick sweep as a smoke test.
 ## Phase 6 — Nuclear AI
 
 - [ ] 6.1 Nuclear tech chain, warhead production, stockpile, upkeep; global and per-nation toggles.
+  Split 2026-10-14: two causes, one a commit.
+  - [x] 6.1a The toggles (the world's, from the scenario; a nation's, God Mode) and the […]
+  - [ ] 6.1b Warheads: built by a nation that knows the bomb, a stockpile with its upkeep; God
+    Mode grants them.
   AT: with nukes disabled, the warhead count is always 0; enabled, a test nation builds warheads.
 - [ ] 6.2 Delivery: bombers (interceptable) and missiles (later tech).
   AT: bomber strikes are intercepted at the expected rate under air superiority.

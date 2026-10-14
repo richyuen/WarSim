@@ -60,6 +60,11 @@ test('God Mode through the UI: every action reaches the sim', async ({ page }, i
   await expect.poll(async () => nation(await inspect(page), GER).aiOff).toBe(true);
   await page.getByTestId('god-world-ai').uncheck();
   await expect.poll(async () => (await inspect(page)).settings.aiEnabled).toBe(false);
+  // Nuclear weapons, a nation's and the world's (PLAN 6.1a).
+  await page.getByTestId('god-nukes').uncheck();
+  await expect.poll(async () => nation(await inspect(page), GER).nukesAllowed).toBe(false);
+  await page.getByTestId('god-world-nukes').uncheck();
+  await expect.poll(async () => (await inspect(page)).settings.nukesEnabled).toBe(false);
 
   // War on Poland, then peace from the war's row.
   await page.getByTestId('god-target').selectOption(String(id('POL')));

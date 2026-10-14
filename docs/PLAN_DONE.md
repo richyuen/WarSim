@@ -8628,3 +8628,21 @@ Of 4.12 (open in PLAN.md):
   third of year 5's (3.1) or more, year 20 3.0. The critic's run had 0.2 to 1.8. Accepted as it
   is by the user's decision (2026-10-14, ADR-377): the air war no longer fades; what is left of
   the fall is the land war's, deferred to Phase 7 (ADR-58; the line under PLAN 1.42).
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+Of 6.1 (open in PLAN.md):
+
+  - [x] 6.1a The toggles (the world's, from the scenario; a nation's, God Mode) and the
+    programme: a nation allowed nukes with the income of a great power researches the chain.

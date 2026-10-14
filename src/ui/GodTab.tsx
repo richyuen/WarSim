@@ -43,6 +43,8 @@ export interface GodTabProps {
   wars: WarStat[];
   dead: { id: number; name: string }[];
   aiEnabled: boolean;
+  /** The world's toggle of nuclear weapons (PLAN 6.1a). */
+  nukesEnabled: boolean;
   tool: GodToolId | null;
   /** Why the last command sent was not carried out (`Refusal`; 0 = it was). */
   refusal: number;
@@ -55,7 +57,7 @@ export interface GodTabProps {
  * nation, plus map tools (revolt, breakthrough, territory brush) that take the next map clicks.
  * Kill asks for a second click instead of a browser dialog.
  */
-export function GodTab({ nation, nations, wars, dead, aiEnabled, tool, refusal, onCommand, onTool }: GodTabProps) {
+export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, tool, refusal, onCommand, onTool }: GodTabProps) {
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
   // The name typed and the armed Kill are this nation's (PLAN 2.17e3): each is kept with the
@@ -107,6 +109,14 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, tool, refusal, 
       <label class="god-row">
         <input type="checkbox" data-testid="god-world-ai" checked={aiEnabled} onChange={(e) => onCommand({ kind: 'setSetting', key: 'aiEnabled', value: (e.currentTarget as HTMLInputElement).checked })} />
         {t('god.worldAi')}
+      </label>
+      <label class="god-row">
+        <input type="checkbox" data-testid="god-nukes" checked={nation.nukesAllowed} onChange={(e) => onCommand({ kind: 'setNukes', nation: n, allowed: (e.currentTarget as HTMLInputElement).checked })} />
+        {t('god.nationNukes')}
+      </label>
+      <label class="god-row">
+        <input type="checkbox" data-testid="god-world-nukes" checked={nukesEnabled} onChange={(e) => onCommand({ kind: 'setSetting', key: 'nukesEnabled', value: (e.currentTarget as HTMLInputElement).checked })} />
+        {t('god.worldNukes')}
       </label>
 
       <div class="panel-sub">{t('god.diplomacy')}</div>

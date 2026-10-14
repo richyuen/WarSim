@@ -15479,3 +15479,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** green (the related unit tests 839 of 839; the pin).
 - **Next:** Phase 6, PLAN 6.1 (the critic's blocking issues of Phase 5 filed and done but R5-B3,
   deferred, and R5-B5, Phase 6 itself).
+
+## 2026-10-14 — PLAN 6.1a: the nuclear programme and its toggles (ADR-378)
+
+- **Done:** PLAN 6.1 split (6.1a, 6.1b). The world's toggle (the scenario's, saved, God Mode),
+  a nation's (God Mode, its own section); a great power allowed nukes (income 1,000 a month or
+  more) researches the nuclear chain from 1939.
+- **Tests:** `nuclearProgramme1938` (new), `godUi1938`, `research`, `researchYears` green by hand.
+- **The pin moves** 69d55c80 → 45df324d.
+- **The gate:** green (the related unit tests 1,050 of 1,050; the pin; `godUi1938`).
+- **Next:** PLAN 6.1b.

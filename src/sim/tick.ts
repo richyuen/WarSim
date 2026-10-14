@@ -133,6 +133,7 @@ function applyCommand(world: World, cmd: Command): Refusal {
       if (cmd.key === 'winnerTakesAll') world.settings.winnerTakesAll = cmd.value;
       else if (cmd.key === 'revoltMode') world.settings.revoltMode = cmd.value;
       else if (cmd.key === 'ceMode') world.settings.ceMode = cmd.value;
+      else if (cmd.key === 'nukesEnabled') world.settings.nukesEnabled = cmd.value;
       else world.settings.aiEnabled = cmd.value;
       return Refusal.None;
     case 'setEfficiency': {
@@ -174,6 +175,14 @@ function applyCommand(world: World, cmd: Command): Refusal {
     case 'setAi': {
       const why = whyNoNation(world, cmd.nation);
       if (!why) world.nations.cols.aiOff[cmd.nation] = cmd.enabled ? 0 : 1;
+      return why;
+    }
+    case 'setNukes': {
+      const why = whyNoNation(world, cmd.nation);
+      if (!why) {
+        if (cmd.allowed) world.nukesBanned.delete(cmd.nation);
+        else world.nukesBanned.add(cmd.nation);
+      }
       return why;
     }
     case 'reviveNation':

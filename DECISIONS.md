@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-378 · 2026-10-14 · accepted — The nuclear programme and its toggles (PLAN 6.1a)
+
+- **Decision** (SPEC §6.4: a tech chain gated by `nukesAllowed`, global and per nation; SPEC
+  §3.7: who goes for the bomb is Phase 6's). PLAN 6.1 split: 6.1a this, 6.1b warheads.
+  - The world's toggle: `settings.nukesEnabled`, from the scenario's `nukesEnabled` (1938 and the
+    random world on, the toy world's off but the toy world sets nothing), in `world.meta` (an
+    older save reads it on), God Mode's `setSetting` `nukesEnabled`.
+  - A nation's: God Mode's `setNukes` bars it or allows it again (`world.nukesBanned`, a section
+    of its own: an older save loads with none barred). The God tab has both checkboxes.
+  - Who goes for the bomb (`goesForBomb`, systems/nuclear.ts): a nation allowed nukes with a
+    monthly income of NUKE_PROGRAMME_INCOME (1,000) or more. On 1 February 1938 of seed 1 that
+    is the United States (5,538), the United Kingdom (2,412), Germany (2,304), the Soviet Union
+    (1,154) and France (1,074); Japan (810) and Italy (667) not. For it `nextTech` no longer
+    holds the nuclear category back: it takes the chain by year and prerequisites, the first
+    tech (atomic research) from 1939.
+  - A nation that loses the right keeps what it knows and its lines; a nuclear line is not paid.
+- **The pin moves** 69d55c80 → 45df324d: the settings carry the toggle. No rule acts in 1938
+  (the chain starts in 1939).
+- **Tests.** `nuclearProgramme1938.test.ts` (new): with all else of 1939 known, a great power's
+  next tech is atomic research, a poor nation's, a barred one's and any with the world's toggle
+  off not; a barred nation's nuclear line kept, unpaid; both toggles by command, through a save.
+  `godUi1938`: the two checkboxes. `research.test.ts` (its title: never a nuclear one but a great
+  power's), `researchYears` (the rich know the heavy tank by 1944) green.
+
 ### ADR-377 · 2026-10-14 · accepted — A nation at war flies with no front in contact (PLAN 5.12b)
 
 - **Found** (ADR-376's count): from about year 13 of seed 7321 no land formation is in contact

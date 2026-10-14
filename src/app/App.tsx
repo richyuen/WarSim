@@ -280,6 +280,7 @@ export function App({
                   wars: stats.wars,
                   dead: stats.dead,
                   aiEnabled: stats.aiEnabled,
+                  nukesEnabled: stats.nukesEnabled,
                   tool: hud.godTool.value,
                   refusal: hud.refusal.value,
                   onCommand: (c) => hud.command(c),

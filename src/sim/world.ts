@@ -368,7 +368,7 @@ class WorldCore implements Stateful {
 
   serialize(): Section[] {
     const w = this.world;
-    const meta = new Float64Array([w.seed, w.tick, w.cells.w, w.cells.h, w.nextCommandSeq, w.startDay, w.settings.winnerTakesAll ? 1 : 0, w.settings.revoltMode === 'region' ? 1 : 0, CE_MODES.indexOf(w.settings.ceMode), w.settings.aiEnabled ? 0 : 1, w.settings.player, w.settings.loopingMap ? 0 : 1]);
+    const meta = new Float64Array([w.seed, w.tick, w.cells.w, w.cells.h, w.nextCommandSeq, w.startDay, w.settings.winnerTakesAll ? 1 : 0, w.settings.revoltMode === 'region' ? 1 : 0, CE_MODES.indexOf(w.settings.ceMode), w.settings.aiEnabled ? 0 : 1, w.settings.player, w.settings.loopingMap ? 0 : 1, w.settings.nukesEnabled ? 0 : 1]);
     // Pending (queued, not yet applied) commands are saved too, so a save taken between
     // enqueue and the next tick boundary loses nothing.
     const log = new TextEncoder().encode(JSON.stringify({ log: w.commandLog, pending: w.pending }));
@@ -415,6 +415,8 @@ class WorldCore implements Stateful {
       ...(w.seaBattles.length === 0 ? [] : [{ name: 'world.seaBattles', dtype: 'f64' as const, data: Float64Array.from(w.seaBattles.flatMap((b) => [b.fleets.length, ...b.fleets, ...b.ships, b.range, b.a, b.b, b.lostA, b.lostB, b.x, b.y])) }]),
       // The month's air war (PLAN 5.11a): [fight, a, b, va, vb, x, y] each, only while there is one.
       ...(w.airMonth.length === 0 ? [] : [{ name: 'world.airMonth', dtype: 'f64' as const, data: Float64Array.from(w.airMonth.flatMap((t) => [t.fight, t.a, t.b, t.va, t.vb, t.x, t.y])) }]),
+      // The nations barred from nuclear weapons (PLAN 6.1a), only while there is one.
+      ...(w.nukesBanned.size === 0 ? [] : [{ name: 'world.nukesBanned', dtype: 'f64' as const, data: Float64Array.from([...w.nukesBanned].sort((a, b) => a - b)) }]),
       // Each nation's air totals (PLAN 5.11b): [nation, lost, bombed] each, only while there is one.
       ...(w.airTotals.size === 0 ? [] : [{ name: 'world.airTotals', dtype: 'f64' as const, data: Float64Array.from([...w.airTotals].sort((a, b) => a[0] - b[0]).flatMap(([n, t]) => [n, t.lost, t.bombed])) }]),
     ];
@@ -423,13 +425,13 @@ class WorldCore implements Stateful {
   deserialize(sections: readonly Section[]): void {
     const w = this.world;
     const meta = takeSection(sections, 'world.meta', 'f64');
-    const [seed = 0, tick = 0, cw = 0, ch = 0, nextSeq = 0, startDay = 0, winnerTakesAll = 0, revoltRegion = 0, ceMode = 0, aiOff = 0, player = 0, noLoop = 0] = meta;
+    const [seed = 0, tick = 0, cw = 0, ch = 0, nextSeq = 0, startDay = 0, winnerTakesAll = 0, revoltRegion = 0, ceMode = 0, aiOff = 0, player = 0, noLoop = 0, nukesOff = 0] = meta;
     if (cw !== w.cells.w || ch !== w.cells.h) throw new Error(`map size mismatch: save ${cw}×${ch}, world ${w.cells.w}×${w.cells.h}`);
     w.seed = seed;
     w.tick = tick;
     w.nextCommandSeq = nextSeq;
     w.startDay = startDay;
-    w.settings = { winnerTakesAll: winnerTakesAll === 1, revoltMode: revoltRegion === 1 ? 'region' : 'province', ceMode: CE_MODES[ceMode] ?? 'dynamic', aiEnabled: aiOff !== 1, player, loopingMap: noLoop !== 1 };
+    w.settings = { winnerTakesAll: winnerTakesAll === 1, revoltMode: revoltRegion === 1 ? 'region' : 'province', ceMode: CE_MODES[ceMode] ?? 'dynamic', aiEnabled: aiOff !== 1, player, loopingMap: noLoop !== 1, nukesEnabled: nukesOff !== 1 };
     w.rng.load(takeSection(sections, 'world.rng', 'u32'));
     const parsed = JSON.parse(new TextDecoder().decode(takeSection(sections, 'world.commandLog', 'u8'))) as {
       log: LoggedCommand[];
@@ -498,6 +500,7 @@ class WorldCore implements Stateful {
     w.airMonth = [];
     const air = sections.find((s) => s.name === 'world.airMonth')?.data as Float64Array | undefined;
     for (let at = 0; air && at + 7 <= air.length; at += 7) w.airMonth.push({ fight: air[at]!, a: air[at + 1]!, b: air[at + 2]!, va: air[at + 3]!, vb: air[at + 4]!, x: air[at + 5]!, y: air[at + 6]! });
+    w.nukesBanned = new Set(Array.from((sections.find((s) => s.name === 'world.nukesBanned')?.data as Float64Array | undefined) ?? []));
     w.airTotals = new Map();
     const tot = sections.find((s) => s.name === 'world.airTotals')?.data as Float64Array | undefined;
     for (let at = 0; tot && at + 3 <= tot.length; at += 3) w.airTotals.set(tot[at]!, { lost: tot[at + 1]!, bombed: tot[at + 2]! });
@@ -766,11 +769,12 @@ export class World {
   /** Derived: bumped when God Mode renames a nation (labels re-derive, PLAN 1.32b). */
   namesVersion = 0;
   /** Global settings (state, saved in world.meta). */
-  settings: { winnerTakesAll: boolean; revoltMode: 'province' | 'region'; ceMode: CeMode; aiEnabled: boolean; player: number; loopingMap: boolean } = {
+  settings: { winnerTakesAll: boolean; revoltMode: 'province' | 'region'; ceMode: CeMode; aiEnabled: boolean; player: number; loopingMap: boolean; nukesEnabled: boolean } = {
     winnerTakesAll: false,
     revoltMode: 'province',
     ceMode: 'dynamic',
     aiEnabled: true,
+    nukesEnabled: true,
     /** The nation the player controls (0 = none; PLAN 1.33, saved so a load keeps control). */
     player: 0,
     /** The map wraps east–west (PLAN 1.39b1 new-game option; scenario default on). */
@@ -1009,6 +1013,8 @@ export class World {
    * empty, so that a save from before loads (with none), as a column of the nations' table would not.
    */
   airTotals = new Map<number, { lost: number; bombed: number }>();
+  /** The nations God Mode has barred from nuclear weapons (PLAN 6.1a, `setNukes`): state, saved while not empty. */
+  nukesBanned = new Set<number>();
   /** The land formations aboard transports (PLAN 4.5a, `amphibiousSystem`), by id: state, saved while not empty. */
   embarked = new Map<number, Embarked>();
   /**

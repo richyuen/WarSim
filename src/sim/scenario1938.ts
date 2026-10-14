@@ -321,6 +321,7 @@ export function applyScenarioSettings(world: World, set: (typeof scenario1938)['
   world.settings.winnerTakesAll = set.winnerTakesAll;
   world.settings.loopingMap = set.loopingMap;
   world.settings.aiEnabled = set.aiEnabled;
+  world.settings.nukesEnabled = set.nukesEnabled;
 }
 
 /** The placed cities as rows of the world, in their order; a capital gives its nation its place. They keep their index into cities.json (`def`), so names resolve without state. */

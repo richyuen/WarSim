@@ -45,7 +45,7 @@ const allUpTo = (year: number, but: string[] = []): number[] =>
   RULES_1938.techs.flatMap((t, i) => (t.year <= year && t.category !== 'nuclear' && !but.includes(t.id) ? [i] : []));
 
 describe('research (PLAN 3.1b)', () => {
-  it('the next tech is the earliest one whose prerequisites are known and whose year has come; never a nuclear one', () => {
+  it('the next tech is the earliest one whose prerequisites are known and whose year has come; never a nuclear one but a great power\'s', () => {
     const w = sim1938().world;
     const LUX = id('LUX');
     // 1938: Luxembourg knows what is dated before 1938. The first of 1938 in the scenario's order.
@@ -66,7 +66,8 @@ describe('research (PLAN 3.1b)', () => {
     grantTechs(w, MON, techMask(allUpTo(1960, ['armor_medium_1', 'armor_medium_2', 'armored_doctrine', 'armor_heavy_1', 'armor_mbt'])));
     expect(nextTech(w, MON, 1960, [])).toBe(tech('armor_medium_1'));
     expect(nextTech(w, MON, 1960, [tech('armor_medium_1')])).toBe(-1);
-    // With everything else known, the nuclear techs are still nobody's next.
+    // With everything else known, the nuclear techs are still not Mongolia's next: only a great power
+    // allowed nukes goes for the bomb (PLAN 6.1a, `nuclearProgramme1938.test.ts`).
     grantTechs(w, MON, techMask(allUpTo(1960)));
     expect(RULES_1938.techs.some((t) => t.category === 'nuclear' && t.year <= 1960)).toBe(true);
     expect(nextTech(w, MON, 1960, [])).toBe(-1);
