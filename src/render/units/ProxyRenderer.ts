@@ -42,14 +42,15 @@ uniform float uTime;        // seconds, for the walk/drive animation (PLAN 2.3)
 uniform float uAlpha;       // layer opacity (tier fades)
 uniform float uSmall;       // the small frames' share, 0–1 (PLAN 3.6e3b)
 uniform float uSmallOf[${ATLAS_FRAMES}]; // each frame's small one (smallFrameOf)
+uniform float uFrameMinPx[${ATLAS_FRAMES}]; // each frame's least size in device px (a ship's, PLAN 4.12c)
 out vec2 vUv;
 out vec2 vUvSmall;
 out float vSmall;
 out vec4 vColor;
 void main() {
   vec2 pos = mix(aPrevCur.xy, aPrevCur.zw, uT);
-  float sizePx = min(max(aMisc.y * uScale, uMinPx), uMaxPx) * uSizeMul;
   float frame = floor(aMisc.z);
+  float sizePx = min(max(aMisc.y * uScale, max(uMinPx, uFrameMinPx[int(frame)])), uMaxPx) * uSizeMul;
   // Moving (frame + 0.5 and up): infantry sway side to side at a walking cadence, vehicles judder.
   // The rest of the fraction is the sprite's phase (marchFraction): its own from tick to tick,
   // and a turret's is its hull's (PLAN 3.6a).
@@ -94,6 +95,8 @@ void main() {
 
 /** `smallFrameOf` of every frame of the atlas, for the shader. */
 const SMALL_OF = Array.from({ length: ATLAS_FRAMES }, (_, frame) => smallFrameOf(frame));
+/** No least size by frame. */
+const NO_FRAME_MIN: readonly number[] = Array.from({ length: ATLAS_FRAMES }, () => 0);
 
 /** No upper limit to a sprite's size (a finite number: the shader takes it as a float). */
 const NO_MAX_PX = 1e9;
@@ -191,8 +194,9 @@ export class ProxyRenderer {
    * sides. A sprite is its size in cells at the zoom, at least `minPx` and at most `maxPx` CSS
    * px (before `sizeMul`).
    * `small`: the share of its small frame in each sprite that has one (`smallFrameOf`), 0–1.
+   * `frameMinPx`: a least size in CSS px by frame, besides `minPx` (a ship's, PLAN 4.12c).
    */
-  draw(cam: Camera, dpr: number, t: number, minPx = 3, wrapOffsets: readonly number[] = [0], sizeMul = 1, timeS = 0, alpha = 1, maxPx = NO_MAX_PX, small = 0): void {
+  draw(cam: Camera, dpr: number, t: number, minPx = 3, wrapOffsets: readonly number[] = [0], sizeMul = 1, timeS = 0, alpha = 1, maxPx = NO_MAX_PX, small = 0, frameMinPx: readonly number[] = NO_FRAME_MIN): void {
     if (this.count === 0) return;
     const gl = this.gl;
     gl.enable(gl.BLEND);
@@ -211,6 +215,7 @@ export class ProxyRenderer {
       uAlpha: alpha,
       uSmall: small,
       uSmallOf: SMALL_OF,
+      uFrameMinPx: frameMinPx.map((v) => v * dpr),
     });
     gl.bindVertexArray(this.vao);
     for (const off of wrapOffsets) {

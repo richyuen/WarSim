@@ -64,5 +64,9 @@ test('a battle squadron at T2: a sprite for each class of its ships, and wakes w
   await lookAt(page, now[0], now[1], 5);
   await page.waitForTimeout(300);
   await page.screenshot({ path: path.join(out, 'ships-t3-under-way.png') });
+  // At 20 m/px, where a ship's length is a few px, it is drawn its least length (PLAN 4.12c).
+  await lookAt(page, now[0], now[1], 20);
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: path.join(out, 'ships-t3-20m.png') });
   console.log(`fleet ${fleet}: ${frames.length} ships (${[...new Set(frames)].join(', ')}), ${wakes} wakes under way`);
 });

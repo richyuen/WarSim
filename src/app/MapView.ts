@@ -47,7 +47,7 @@ import { cityIndex, scatter, type Scatter, type ScatterWorld } from '../render/m
 import { drawUnitAtlas } from '../render/units/atlas';
 import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
 import { appendTurrets, TurretAims } from '../render/units/turrets';
-import { shipSideCells } from '../render/units/ships';
+import { SHIP_FRAME_MIN_PX, shipSideCells } from '../render/units/ships';
 import { appendWakes } from '../render/units/wakes';
 import { spriteTint } from '../render/units/tint';
 import { hash2 } from '../render/hash';
@@ -1179,7 +1179,7 @@ export class MapView {
       // Where a sprite is too small for a hull, a tank is its small mark (PLAN 3.6e3b).
       this.elementSmall = smallShare(this.elementPx);
       if (figures < 0.99) this.elementProxies.draw(cam, dpr, t, ELEMENT_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * (1 - figures), undefined, this.elementSmall);
-      if (figures > 0.01) this.individualProxies.draw(cam, dpr, t, FIGURE_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * figures);
+      if (figures > 0.01) this.individualProxies.draw(cam, dpr, t, FIGURE_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * figures, undefined, 0, SHIP_FRAME_MIN_PX);
     }
   }
 

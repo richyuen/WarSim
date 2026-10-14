@@ -23,21 +23,6 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
-- [ ] 4.12 Critic R5-B4 (report of 2026-10-14 on `c850346`): a sea battle shows both sides. The
-  ticker's sea-battle row (ADR-303: "a T2 view of both fleets") flies to the British carrier at
-  the battle's centre while the German fleets it fights are 23.7 cells away, off the screen: no
-  German ship, no fire, no carrier planes; at 20 m/px a carrier group is seven small pills
-  (`critic/c5_j.json`, `critic/c5_e_6131.json`, `critic/c5_d_6131.json`). The critic's fix:
-  frame both sides (zoom out to the span when it exceeds T2, or centre between them); a
-  carrier's strike drawn as sorties flying to its target; ships large enough to read at
-  20 m/px.
-  AT: e2e: a sea battle's ticker row on seed 6131 brings both sides' fleets on the screen at
-  once, each with a ship drawn, and their fire within the battle's first hours.
-  Split 2026-10-14: three causes, one a commit.
-  - [x] 4.12a The row frames both sides: the snapshot's sea battle has its fleets' box; the […]
-  - [x] 4.12b A carrier's strike drawn as sorties flying from the carrier to its target (with […]
-  - [ ] 4.12c Ships large enough to read at 20 m/px: a carrier group was seven small pills.
-
 ## Phase 5 — Air
 
 - [ ] 5.9 Critic R5-B1 (report of 2026-10-14 on `c850346`), first of three: the air war seen at
@@ -746,3 +731,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 5.6 Air AI tasking. […]
 - [x] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode. […]
 - [x] 5.8 Phase 5 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]
+- [x] 4.12 Critic R5-B4 (report of 2026-10-14 on `c850346`): a sea battle shows both sides. The […]

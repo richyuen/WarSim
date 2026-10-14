@@ -68,14 +68,17 @@ test('the first sea battle of the critic\'s war: marked through its hours, liste
       const y = (p[1] - cam.cy) * cam.scale + window.innerHeight / 2;
       // On the screen and under no panel of the page: the map is what is at its point.
       const on = x >= 0 && x <= window.innerWidth && y >= 0 && y <= window.innerHeight && document.elementFromPoint(x, y)?.tagName === 'CANVAS';
-      out.push({ nation: f.nation, x: Math.round(x), y: Math.round(y), on });
+      // Its ships drawn: elements of it in the view's snapshot (PLAN 4.12 AT).
+      let ships = 0;
+      for (let i = 0; i < v.elementCount; i++) if (v.elementFormation[i] === f.id) ships++;
+      out.push({ nation: f.nation, x: Math.round(x), y: Math.round(y), on: on && ships > 0 });
     }
     return out;
   }, first!);
   console.log(`sea battle of ${first!.a} and ${first!.b}: its fleets' box ${first!.span[0].toFixed(1)} × ${first!.span[1].toFixed(1)} cells, viewed at ${view.m.toFixed(0)} m/px; ${sides.length} engaged fleets of the two in it, ${sides.filter((s) => s.on).length} on the screen`);
   expect(sides.some((s) => s.nation === first!.a), 'a fleet of the one side').toBe(true);
   expect(sides.some((s) => s.nation === first!.b), 'a fleet of the other').toBe(true);
-  expect(sides.filter((s) => !s.on), 'engaged fleets of the battle off the screen or under a panel').toEqual([]);
+  expect(sides.filter((s) => !s.on), 'engaged fleets of the battle off the screen, under a panel or with no ship drawn').toEqual([]);
   let shots = 0;
   let marked = 0;
   // A carrier's strikes drawn (PLAN 4.12b): sorties from a fleet of the battle, in its hours.

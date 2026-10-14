@@ -15368,3 +15368,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin holds** at 76983901.
 - **The gate:** green (the related unit tests 930 of 930; the pin; the changed spec).
 - **Next:** PLAN 4.12c.
+
+## 2026-10-14 — PLAN 4.12c: a ship's least length on the screen (ADR-370); PLAN 4.12 done
+
+- **Done:** a least sprite size by frame in the renderer; a ship's at T3 is 26 px for a
+  battleship, in proportion for the others. PLAN 4.12 (the critic's R5-B4) ticked: its AT
+  whole in `seaBattleSeen1938` (both sides on the screen with their ships drawn, their fire,
+  the carrier's strikes).
+- **Tests:** `shipMinLength` (new); `ships1938`, `seaBattleSeen1938` green by hand.
+- **Looked at:** `docs/evidence/4.7/ships-t3-20m.png` (new): a British battle squadron at
+  20 m/px, hulls and turrets readable, two ships at its head touching.
+- **The gate:** green (the related unit tests 46 of 46; the two changed specs).
+- **Next:** PLAN 5.9.

@@ -8507,3 +8507,29 @@ Of 4.12 (open in PLAN.md):
 
   - [x] 4.12b A carrier's strike drawn as sorties flying from the carrier to its target (with
     PLAN 5.9's drawing of a strike, if that comes first).
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+- [x] 4.12 Critic R5-B4 (report of 2026-10-14 on `c850346`): a sea battle shows both sides. The
+  ticker's sea-battle row (ADR-303: "a T2 view of both fleets") flies to the British carrier at
+  the battle's centre while the German fleets it fights are 23.7 cells away, off the screen: no
+  German ship, no fire, no carrier planes; at 20 m/px a carrier group is seven small pills
+  (`critic/c5_j.json`, `critic/c5_e_6131.json`, `critic/c5_d_6131.json`). The critic's fix:
+  frame both sides (zoom out to the span when it exceeds T2, or centre between them); a
+  carrier's strike drawn as sorties flying to its target; ships large enough to read at
+  20 m/px.
+  AT: e2e: a sea battle's ticker row on seed 6131 brings both sides' fleets on the screen at
+  once, each with a ship drawn, and their fire within the battle's first hours.
+  Split 2026-10-14: three causes, one a commit.
+  - [x] 4.12a The row frames both sides: the snapshot's sea battle has its fleets' box; the […]
+  - [x] 4.12b A carrier's strike drawn as sorties flying from the carrier to its target (with […]
+  - [x] 4.12c Ships large enough to read at 20 m/px: a carrier group was seven small pills.

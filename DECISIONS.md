@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-370 · 2026-10-14 · accepted — A ship's least length on the screen (PLAN 4.12c)
+
+- **Found** (the critic's R5-B4, run 5): at 20 m/px (T3) a ship is drawn its own length (PLAN
+  4.7b): a battleship 12.5 px, a destroyer 7.5; a carrier group was seven small pills.
+- **Decision.** The sprite renderer takes a least size by frame (`uFrameMinPx`, besides the
+  layer's `minPx`); for the figures of T3 a ship's is SHIP_MIN_PX (26 px) for a battleship and
+  in proportion to its length for the others (`SHIP_FRAME_MIN_PX`): about twice its length at
+  20 m/px, its own from 9.6 m/px in; the largest, a carrier's (27 px), under the 29 px between
+  two slots at 20 m/px. Every other frame's is 0: a rifleman is drawn as before.
+- **No sim input changed**; the pin holds.
+- **Tests.** `shipMinLength.test.ts` (new): the table, in proportion, and at 20 m/px over
+  twice a ship's length and under a slot. `ships1938` green, with a shot at 20 m/px
+  (`docs/evidence/4.7/ships-t3-20m.png`: the hulls of a British battle squadron with their
+  turrets; two at its head touch). `seaBattleSeen1938`: every engaged fleet of the battle in
+  its row's view has its ships drawn (PLAN 4.12's AT, whole).
+
 ### ADR-369 · 2026-10-14 · accepted — A carrier's strike is drawn as its flight (PLAN 4.12b)
 
 - **Found** (the critic's R5-B4, run 5): a carrier's wings strike the enemy's ships of its sea
