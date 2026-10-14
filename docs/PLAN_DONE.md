@@ -8818,3 +8818,19 @@ Of 6.5 (open in PLAN.md):
   Split 2026-10-14: what tells of a strike, then how it looks.
   - [x] 6.6a God Mode's strike (a map tool); the alert banner with its go-to; the auto-pause option.
   - [x] 6.6b The FX at every tier: flash, shockwave, mushroom cloud, scaled; the screenshots.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+- [x] 6.7 Scripted AI nuclear strike demo (seeded scenario where the AI *decides* to strike, not God Mode).
+  AT: e2e passes and asserts that the decision record came from AI utility.

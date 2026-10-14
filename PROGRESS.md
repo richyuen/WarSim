@@ -15608,3 +15608,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin holds** at 45df324d.
 - **The gate:** green (the related unit tests 18 of 18; the pin; `nukeFx1938.spec`).
 - **Next:** PLAN 6.7.
+
+## 2026-10-14 — PLAN 6.7: the AI's strike demo (ADR-390)
+
+- **Done:** France, fighting to the death with the Germans before Paris and given missiles, decides
+  on its own to strike Berlin; the decision a history entry. What the demo found, fixed: a bomber
+  on a sortie can be retasked; a target's value is expected damage (× the chance of getting there);
+  the taboo weighs half in extreme desperation; targets where enemy armies are massed. A
+  `grantTech` command. PARITY additions row 6 updated.
+- **Tests:** `nukeDemo1938.spec` (new; `docs/evidence/6.7/ai-strike.png`, looked at),
+  `nukeDemoRules1938` (new); the nuclear tests' verdicts unchanged.
+- **The pin holds** at 45df324d.
+- **The gate:** green (the related unit tests 1097 of 1097; the pin; `nukeDemo1938.spec`).
+- **Next:** PLAN 6.8.

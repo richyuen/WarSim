@@ -27,8 +27,6 @@ quick sweep as a smoke test.
 
 ## Phase 6 — Nuclear AI
 
-- [ ] 6.7 Scripted AI nuclear strike demo (seeded scenario where the AI *decides* to strike, not God Mode).
-  AT: e2e passes and asserts that the decision record came from AI utility.
 - [ ] 6.8 Multi-decade sweep with nukes on: no runaway extinction; MAD dynamics observed.
   AT: sweep report: in ≥ 1 seed nukes are used; in no seed does > 50% of land carry fallout.
 - [ ] 6.9 Phase 6 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
@@ -706,3 +704,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 6.4 Nuclear decision utility (target value, desperation, retaliation incl. allies, taboo, MAD, doctrine). […]
 - [x] 6.5 Consequences: relations, alliance unity, outrage, economic shock, peace/retaliation responses. […]
 - [x] 6.6 Nuke FX at every tier (flash, shockwave, mushroom cloud, fallout overlay), alert banner, auto-pause option, go-to button. […]
+- [x] 6.7 Scripted AI nuclear strike demo (seeded scenario where the AI *decides* to strike, not God Mode). […]

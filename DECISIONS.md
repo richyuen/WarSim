@@ -167,6 +167,44 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-390 · 2026-10-14 · accepted — The AI's strike demo, and what it showed the AI lacked (PLAN 6.7)
+
+- **Decision.** The demo (`nukeDemo1938.spec.ts`), set by commands on seed 1, 1 January 1938:
+  nukes on; France one warhead and ballistic missiles (`grantTech`, new); Germany declares war on
+  France; France's side fights to the death; six German divisions at Reims, 130 km from Paris.
+  France's desperation is extreme (fighting to the death, its capital threatened), and at the next
+  day's first hour it decides (utility 0.257) and strikes Berlin by missile, an hour later the
+  burst: "France struck Germany with an atomic bomb: 1,015,356 dead". The decision is now a history
+  entry (`NukeDecided`, "Nuclear decision": "France decided on a nuclear strike: its utility 257 in
+  a thousand"), what the AT asserts; no command of the test launched it (each command sent is
+  recorded: none is `launchNuke` nor `godNuke`).
+- **What the demo found** (each a rule of PLAN 6.4 changed; the tests of 6.4 and 6.5 keep their
+  verdicts, at the utilities given):
+  - A bomber out on a conventional sortie can be retasked for a warhead (`nukeBomber`: a free one
+    first, then the nearest busy one). At war the air AI kept France's one strategic bomber out at
+    every day's first hour: France could never strike.
+  - A target's value is expected damage (SPEC): × the chance the warhead gets there (1 by missile,
+    1 − the bomber's interception chance by bomber; `bomberIntercept`). France aimed its one bomber
+    at Berlin under Germany's air and lost it (0.4 to stop it, the roll against it); against the
+    Germans massed at Reims its interception rose from 0.45 to 0.75 in ten days. So in 1938 France
+    does not strike by bomber, and the demo gives it missiles. The desperate French of ADR-384:
+    0.45 → 0.27; MAD −1.50; the taboo's −0.46 → −0.04; the decision of ADR-385 0.22.
+  - The taboo weighs half for a nation in extreme desperation (`EXTREME_TABOO` 0.5). France fighting
+    to the death with its capital threatened was at most 0 against its best target with the taboo
+    whole: SPEC lifts even MAD for extreme desperation; a taboo it could not pass against an enemy
+    without the bomb was the stronger bar.
+  - The places weighed are where enemy land formations are most massed (`nukeTargets`: the
+    formations with the most enemy men within a blast radius, each a radius from those before),
+    not the six strongest formations: twelve fresh divisions at Reims lost every tie to older ones.
+  - `grantTech` (a nation, a tech id): the tech and its prerequisites, for scenarios and demos; an
+    unknown id refused (NoSuch). No button: the God tab grants warheads, not techs.
+- **The pin holds** at 45df324d: no warhead in the pinned year.
+- **Tests.** `nukeDemo1938.spec.ts` (new; `docs/evidence/6.7/ai-strike.png`, looked at: the banner,
+  the ring and cloud over Berlin, the ticker's war and strike). `nukeDemoRules1938.test.ts` (new):
+  `grantTech` and its prerequisites; a busy bomber retasked; twelve divisions at Reims worth more
+  than one (0.60 against 0.10) and among the places weighed; Berlin by missile worth 1, by bomber
+  0.6. `nukeUtility1938`, `nukeDecision1938`, `nukeOutrage1938`, `nukeDelivery1938` as before.
+
 ### ADR-389 · 2026-10-14 · accepted — A nuclear burst's effects (PLAN 6.6b); PLAN 6.6 done
 
 - **Decision** (SPEC §6.4 "flash, shockwave ring and mushroom cloud at every tier (scaled)").

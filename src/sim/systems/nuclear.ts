@@ -59,10 +59,14 @@
  *   U = targetValue × desperation × doctrine − RETALIATION_WEIGHT × retaliationRisk
  *       − allianceCost − outrage − TABOO_WEIGHT × taboo  (+ RETALIATION_BONUS when striking back)
  * and, when both sides have an assured second strike (MAD), first use is at most 0 unless the
- * striker's desperation is extreme. A strike back at who struck it is not first use.
+ * striker's desperation is extreme. A strike back at who struck it is not first use. The taboo
+ * weighs EXTREME_TABOO of itself for a nation in extreme desperation (PLAN 6.7: France fighting to
+ * the death, the Germans before Paris, was at most 0 against its best target with the taboo whole).
  * - targetValue (`targetValue`), 0 to 1: TARGET_SCALE × the share of the enemy side's output
  *   (the cells it holds, as bombs and fallout leave them) and of its men within the blast, less
- *   the striker's side's men there; + TARGET_CAPITAL with an enemy capital in it.
+ *   the striker's side's men there; + TARGET_CAPITAL with an enemy capital in it; × the chance the
+ *   warhead gets there (PLAN 6.7, SPEC's "expected damage": 1 by missile, 1 − the bomber's
+ *   interception chance there by bomber).
  * - desperation (`desperationOf`), 0 to 2: how far its side is losing the war (−score / 100), the
  *   share of its land held by others, DESPERATION_CAPITAL with enemy land forces within
  *   CAPITAL_THREAT_KM of its capital, DESPERATION_FTD when its side fights to the death.
@@ -79,9 +83,10 @@
  *
  * The decision (PLAN 6.4b; `nukeDecisions`), daily, with the AI on: each nation with a warhead,
  * living, not switched off nor a puppet, nukes allowed, in each of its wars weighs each enemy
- * capital and the NUKE_TARGETS strongest enemy land formations, and strikes the one of most
- * utility above 0 (by missile when it knows them and one reaches, else by bomber; one out of reach,
- * the next), once a day at most. The decision is told (`NukeDecided`).
+ * capital and the NUKE_TARGETS places where enemy land formations are most massed (`nukeTargets`),
+ * and strikes the one of most utility above 0 (by missile when it knows them and one reaches, else
+ * by bomber, a free one or one retasked from a sortie; one out of reach, the next), once a day at
+ * most. The decision is told (`NukeDecided`).
  * Retaliation: a burst on a nation's land (its owner's, not the striker's) gives it a grievance
  * against the striker for RETALIATION_DAYS (`world.nukeGrievance`). A nation of retaliation
  * doctrine (aggression at least RETALIATION_AGGRESSION) striking at the side of who struck it is
@@ -169,27 +174,39 @@ export function carriesNuke(world: World, id: number): boolean {
 
 /** The chance a launch is stopped short (PLAN 6.2): a bomber's by the air over its target, a missile's none. */
 export function interceptChance(world: World, l: NukeLaunch): number {
-  if (l.missile === 1) return 0;
-  const cell = Math.min(world.cells.h - 1, Math.max(0, Math.floor(l.ty))) * world.cells.w + Math.floor(l.tx);
-  const zone = airOf(world).zoneOf[cell] ?? 0;
-  return BOMBER_INTERCEPT * (1 - (zone === 0 ? 0.5 : airSuperiority(world, l.nation, zone)));
+  return l.missile === 1 ? 0 : bomberIntercept(world, l.nation, l.tx, l.ty);
 }
 
-/** The nearest strategic bomber of `n`'s at its base, free, that reaches (x, y) (PLAN 6.2); null for none. */
+/** The chance `n`'s bomber is stopped short of (x, y) (PLAN 6.2): BOMBER_INTERCEPT × (1 − its superiority there). */
+export function bomberIntercept(world: World, n: number, x: number, y: number): number {
+  const cell = Math.min(world.cells.h - 1, Math.max(0, Math.floor(y))) * world.cells.w + Math.floor(x);
+  const zone = airOf(world).zoneOf[cell] ?? 0;
+  return BOMBER_INTERCEPT * (1 - (zone === 0 ? 0.5 : airSuperiority(world, n, zone)));
+}
+
+/**
+ * The strategic bomber of `n`'s that flies a warhead to (x, y) (PLAN 6.2), from its base, within
+ * its range: the nearest free one, else the nearest out on a conventional sortie, retasked (PLAN
+ * 6.7: at war the air AI keeps a nation's bombers out nearly every hour, and France, desperate,
+ * never had one free at its day's decision). Null for none.
+ */
 export function nukeBomber(world: World, n: number, x: number, y: number): { wing: number; from: [number, number]; km: number } | null {
   const c = world.formations.cols;
   const rules = world.rules!;
-  let best: { wing: number; from: [number, number]; km: number } | null = null;
+  let best: { wing: number; from: [number, number]; km: number; busy: boolean } | null = null;
   for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
-    if (base <= 0 || c.nation[id] !== n || world.sorties.has(id) || carriesNuke(world, id) || !world.formations.has(id)) continue;
+    if (base <= 0 || c.nation[id] !== n || carriesNuke(world, id) || !world.formations.has(id)) continue;
     const first = rules.templates[c.template[id]!]?.elements[0];
     if (!first || rules.units[first.unit]!.cls !== STRATEGIC) continue;
     const at = basePlace(world, base);
     if (!at) continue;
     const d = seaKm(world, at[0], at[1], x, y);
-    if (d <= wingRange(world, id) && d < (best?.km ?? Infinity)) best = { wing: id, from: at, km: d };
+    if (d > wingRange(world, id)) continue;
+    // A free bomber before one out on a sortie, then the nearest (PLAN 6.7: one on a sortie is retasked).
+    const busy = world.sorties.has(id);
+    if (!best || (best.busy && !busy) || (best.busy === busy && d < best.km)) best = { wing: id, from: at, km: d, busy };
   }
-  return best;
+  return best && { wing: best.wing, from: best.from, km: best.km };
 }
 
 /**
@@ -419,6 +436,8 @@ export const MAD_WARHEADS = 2;
 export const ALLIANCE_COST = 0.05;
 export const ALLIANCE_COST_MAX = 0.3;
 export const TABOO_WEIGHT = 0.6;
+/** The taboo's weight for a nation in extreme desperation (PLAN 6.7): it fights for its life. */
+export const EXTREME_TABOO = 0.5;
 export const TABOO_AFTER = 0.3;
 export const TABOO_RECOVERY = 0.0005;
 
@@ -441,7 +460,7 @@ export interface NukeInputs {
 
 /** A strike's utility (PLAN 6.4a): see the head of the file. */
 export function nuclearUtility(i: NukeInputs): number {
-  const u = i.targetValue * i.desperation * i.doctrine + (i.retaliating ? RETALIATION_BONUS : 0) - RETALIATION_WEIGHT * i.retaliation - i.allianceCost - i.outrage - TABOO_WEIGHT * i.taboo;
+  const u = i.targetValue * i.desperation * i.doctrine + (i.retaliating ? RETALIATION_BONUS : 0) - RETALIATION_WEIGHT * i.retaliation - i.allianceCost - i.outrage - TABOO_WEIGHT * i.taboo * (i.extreme ? EXTREME_TABOO : 1);
   return i.mad && !i.extreme && !i.retaliating ? Math.min(0, u) : u;
 }
 
@@ -539,7 +558,9 @@ export function targetValue(world: World, n: number, war: War, side: number, x: 
   const nc = world.nations.cols;
   let capital = 0;
   for (const m of enemy) if (nc.living[m] === 1 && blastShare(seaKm(world, x, y, nc.capitalX[m]!, nc.capitalY[m]!), radius) > 0) capital = TARGET_CAPITAL;
-  return Math.max(0, Math.min(1, TARGET_SCALE * share + capital));
+  // Expected damage (SPEC): as likely as the warhead gets there, by missile when `n` knows them.
+  const through = knows(world, n, 'ballistic_missiles') ? 1 : 1 - bomberIntercept(world, n, x, y);
+  return Math.max(0, Math.min(1, TARGET_SCALE * share + capital)) * through;
 }
 
 /**
@@ -575,8 +596,13 @@ function retaliates(world: World, n: number, war: War, side: number): boolean {
   return !!g && g.until > world.tick && world.nations.cols.aggression[n]! >= RETALIATION_AGGRESSION && war.sides[1 - side]!.includes(g.by);
 }
 
-/** The places `n` weighs in `war` on `side` (PLAN 6.4b): enemy capitals, then the strongest enemy land formations. */
-function nukeTargets(world: World, war: War, side: number): [number, number][] {
+/**
+ * The places `n` weighs in `war` on `side` (PLAN 6.4b): enemy capitals, then the NUKE_TARGETS
+ * enemy land formations with the most enemy men within a blast radius of them, each at least a
+ * radius from those taken before (PLAN 6.7: massed formations; the strongest formations alone
+ * passed over twelve divisions massed before Paris for older ones of the same strength).
+ */
+export function nukeTargets(world: World, n: number, war: War, side: number): [number, number][] {
   const nc = world.nations.cols;
   const out: [number, number][] = [];
   for (const m of war.sides[1 - side]!) if (nc.living[m] === 1) out.push([nc.capitalX[m]!, nc.capitalY[m]!]);
@@ -586,8 +612,22 @@ function nukeTargets(world: World, war: War, side: number): [number, number][] {
   world.formations.forEach((id) => {
     if (enemy.has(c.nation[id]!) && !world.isFleet(id) && !world.isWing(id) && !world.offLand(id)) land.push(id);
   });
-  land.sort((a, b) => c.strength[b]! - c.strength[a]! || a - b);
-  for (const id of land.slice(0, NUKE_TARGETS)) out.push([c.x[id]!, c.y[id]!]);
+  const radius = blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1);
+  const near = (a: number, b: number): boolean => Math.abs(c.y[a]! - c.y[b]!) <= radius / 10 && seaKm(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) <= radius;
+  const mass = new Map<number, number>();
+  for (const a of land) {
+    let m = 0;
+    for (const b of land) if (near(a, b)) m += c.strength[b]!;
+    mass.set(a, m);
+  }
+  land.sort((a, b) => mass.get(b)! - mass.get(a)! || a - b);
+  const taken: number[] = [];
+  for (const id of land) {
+    if (taken.length >= NUKE_TARGETS) break;
+    if (taken.some((t) => near(t, id))) continue;
+    taken.push(id);
+    out.push([c.x[id]!, c.y[id]!]);
+  }
   return out;
 }
 
@@ -602,7 +642,7 @@ function nukeDecisions(world: World): void {
       const side = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
       if (side < 0) continue;
       const back = retaliates(world, n, war, side);
-      for (const [x, y] of nukeTargets(world, war, side)) {
+      for (const [x, y] of nukeTargets(world, n, war, side)) {
         const u = nuclearUtility(nukeInputs(world, n, war, side, x, y, back));
         if (u > 0) options.push({ u, x, y, back });
       }

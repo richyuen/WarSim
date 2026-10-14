@@ -22,6 +22,7 @@ import { decodeRuns, decodeRunsU32 } from '../shared/mapImport';
 import { FLAG_H, FLAG_W } from '../shared/flagPixels';
 import { Domain, navOf, type World } from './world';
 import { launchNuke, WARHEAD_MAX, detonate } from './systems/nuclear';
+import { grantTechs, techClosure } from './tech';
 
 export type System = (world: World) => void;
 
@@ -183,6 +184,16 @@ function applyCommand(world: World, cmd: Command): Refusal {
     case 'godNuke':
       detonate(world, 0, cmd.thermonuclear ? 2 : 1, cmd.x, Math.min(world.cells.h - 0.5, Math.max(0.5, cmd.y)));
       return Refusal.None;
+    case 'grantTech': {
+      const why = whyNoNation(world, cmd.nation);
+      if (why) return why;
+      const techs = world.rules?.techs ?? [];
+      const i = techs.findIndex((t) => t.id === cmd.tech);
+      if (i < 0) return Refusal.NoSuch;
+      // The tech and what it stands on, all of it.
+      grantTechs(world, cmd.nation, techClosure(techs, [i]));
+      return Refusal.None;
+    }
     case 'grantWarheads': {
       const why = whyNoNation(world, cmd.nation);
       if (!why) {

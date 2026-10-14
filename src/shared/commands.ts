@@ -54,6 +54,8 @@ export type Command =
   | { kind: 'setNukes'; nation: number; allowed: boolean }
   /** PLAN 6.1b God Mode: `count` warheads to a nation's stockpile (to WARHEAD_MAX). */
   | { kind: 'grantWarheads'; nation: number; count: number }
+  /** PLAN 6.7: `nation` knows the tech `tech` (its id) and those it stands on, from now (scenarios and demos: a nuclear power's missiles). */
+  | { kind: 'grantTech'; nation: number; tech: string }
   /** PLAN 6.2: a nation launches a warhead at (x, y), by a strategic bomber or a missile (the player's, God Mode's). */
   | { kind: 'launchNuke'; nation: number; x: number; y: number; missile: boolean }
   /** PLAN 6.6a God Mode: a warhead bursts at (x, y) at once, no nation's (no warhead, no delivery, no outrage). */
@@ -152,6 +154,7 @@ export const COMMAND_KINDS: Record<Command['kind'], true> = {
   setAi: true,
   setNukes: true,
   grantWarheads: true,
+  grantTech: true,
   launchNuke: true,
   godNuke: true,
   forceBreakthrough: true,

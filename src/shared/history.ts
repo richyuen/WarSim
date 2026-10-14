@@ -54,6 +54,8 @@ export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, Histo
   [EventKind.AirWar]: ['side', 'side'],
   [EventKind.AirRaids]: ['nation', 'side'],
   [EventKind.NukeCasualties]: ['nation', 'strike'],
+  // An AI's decision to strike (PLAN 6.7): its utility × 1000.
+  [EventKind.NukeDecided]: ['nation', 'number'],
 };
 
 /** Stable English type name of a kind (filters, CSV/JSON `type`). */
