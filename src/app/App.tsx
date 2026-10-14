@@ -65,7 +65,13 @@ export function App({
   const formationTitle = view && hud.formation.value !== 0 ? view.formationTitle(hud.formation.value) : null;
   // What became of the player's orders (PLAN 4.9c), in words, with the formation's name as its tag has it.
   const orderNews = hud.orderNews.value;
-  const orderName = (id: number): string => (view ? view.formationTitle(id)?.name : undefined) ?? t('order.aFormation');
+  // A wing at its base is not drawn (PLAN 5.1d): it is named by its template (PLAN 5.8v3).
+  const wingName = (id: number): string | undefined => {
+    const wing = stats?.wings.find((w) => w.id === id);
+    const key = wing ? hud.templates.value[wing.template]?.nameKey : undefined;
+    return key ? t(key as MessageKey) : undefined;
+  };
+  const orderName = (id: number): string => (view ? view.formationTitle(id)?.name : undefined) ?? wingName(id) ?? t('order.aFormation');
   const orders = orderNews.map((n) => ({ seq: n.seq, kind: n.kind, text: orderNewsText(n, orderName(n.id)) }));
   // The sea battles going on (PLAN 4.10b), each by its two sides' names.
   const seaBattles = hud.seaBattles.value;

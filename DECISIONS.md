@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-354 · 2026-10-13 · accepted — A wing's and a paradrop's refusal told (PLAN 5.8v3)
+
+- **Found** (5.8g): the worker told a player's refused march (4.9c), not a wing's order or a
+  paradrop; the page had no words for the reasons 10 and 11.
+- **Decision.** A player's `wingMission`, `wingRebase` and `paradrop` (they name its nation) are
+  kept by the worker as a march is (`ordered`), marked with the tick they are applied at: a
+  `MoveRejected` of the formation then is told (`orderNews`, refused, with its reason); after
+  that hour the order is forgotten (what was ordered before stands again, as after a refusal),
+  so a wing's given order is not kept for good. A paradrop that lands is forgotten at its
+  landing, as a landing is. The reasons 10 (`OutOfRange`) and 11 (`NoBase`) have their words; a
+  wing, which has no tag on the map, is named by its template.
+- **The pin holds** at 76983901: the worker's.
+- **Tests.** `serverAirOrderNews` (2, new): a fighter group's strike on Moscow refused,
+  `OutOfRange`, told once and forgotten; its patrol over Berlin given, nothing told, forgotten;
+  a brigade at no airbase refused a paradrop, `NoAirlift`; the three reasons in words.
+
 ### ADR-353 · 2026-10-13 · accepted — A paradrop from the page (PLAN 5.8v2)
 
 - **Decision.** The Actions tab's air force has a Paradrop button where the nation has a

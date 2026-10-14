@@ -15111,3 +15111,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin holds** at 76983901.
 - **The gate:** green (the related unit tests, 129; the changed spec, 2).
 - **Next:** PLAN 5.8v3.
+
+## 2026-10-13 — PLAN 5.8v3: a wing's and a paradrop's refusal told (ADR-354)
+
+- **Done:** the worker keeps a player's wing orders and paradrops for their hour and tells a
+  refusal (`orderNews`); `order.why.10` and `11`; a wing named by its template on the page.
+- **Tests:** `serverAirOrderNews` (2, new).
+- **The pin holds** at 76983901.
+- **The gate:** the related unit tests (254 of 255) red only by `snapshot-perf` of BLOCKERS
+  (2.26 ms); build and parity green by hand.
+- **Next:** PLAN 5.8v4.

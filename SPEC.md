@@ -2599,7 +2599,8 @@ on screen.
     a button arms its order (Patrol, Strike, or Supply for a transport; Rebase), the next map
     click gives it there (`wingMission`, `wingRebase`, with the nation), and Escape disarms it.
     Paradrop (PLAN 5.8v2, ADR-353), with transports: armed for the formations selected, the
-    next map click drops each there (`paradrop`).
+    next map click drops each there (`paradrop`). A refusal of either is told as a march's is
+    (PLAN 5.8v3, ADR-354: `orderNews`, with its reason in words; a wing named by its template).
 - **God Mode UI** (PLAN 1.32b, `src/ui/GodTab.tsx`): the bottom bar's God Mode button adds a God
   tab to the nation panel. It has rename, income bonus ±10, AI switches (nation and world), war/
   ally/puppet on a chosen target, peace per war, buffs, revive (dead nations), Kill (two clicks).

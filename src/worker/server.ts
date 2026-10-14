@@ -160,7 +160,7 @@ export class SimServer {
    * The formations a player ordered, to the cell of the order (PLAN 4.9c): what becomes of it is
    * told. `before`: the order it replaced, which stands again if this one is refused.
    */
-  private ordered = new Map<number, { target: number; before: number | undefined }>();
+  private ordered = new Map<number, { target: number; before: number | undefined; once?: number }>();
   private labelNames = -1;
   private terrainSent = -1;
   private citiesSent = -1;
@@ -224,6 +224,11 @@ export class SimServer {
         // A player's order of a formation (it names its nation): what becomes of it is told (PLAN 4.9c).
         if (msg.cmd.kind === 'moveFormation' && msg.cmd.nation !== undefined) {
           this.ordered.set(msg.cmd.id, { target: Math.floor(msg.cmd.y) * sim.world.cells.w + Math.floor(msg.cmd.x), before: this.ordered.get(msg.cmd.id)?.target });
+        }
+        // A wing's order and a paradrop (PLAN 5.8v3): told if refused, as a march is; given or
+        // refused in the hour it is applied (`once`, the tick it is applied at), so forgotten after it.
+        if ((msg.cmd.kind === 'wingMission' || msg.cmd.kind === 'wingRebase' || msg.cmd.kind === 'paradrop') && msg.cmd.nation !== undefined) {
+          this.ordered.set(msg.cmd.id, { target: Math.floor(msg.cmd.y) * sim.world.cells.w + Math.floor(msg.cmd.x), before: this.ordered.get(msg.cmd.id)?.target, once: sim.world.tick });
         }
         // `now` (God Mode UI): apply at once, between ticks, with the tick stamp the next step
         // would give (PLAN 1.32b); the snapshot and stats follow. Plain commands stay pending.
@@ -1002,6 +1007,13 @@ export class SimServer {
       this.eventQueue.push(this.nextEventSeq++, ev[i]!, ev[i + 1]!, ev[i + 2]!, b, ev[i + 4]!, ev[i + 5]!);
     }
     ev.length = 0;
+    // A wing's order or a paradrop told nothing of in its hour was given (PLAN 5.8v3): what the
+    // formation was ordered before stands again, as after a refusal.
+    for (const [id, o] of this.ordered) {
+      if (o.once === undefined || o.once >= world.tick) continue;
+      if (o.before === undefined) this.ordered.delete(id);
+      else this.ordered.set(id, { target: o.before, before: undefined });
+    }
     this.drainFires(world);
     const over = this.eventQueue.length / EVENT_STRIDE - EVENT_QUEUE_CAP;
     if (over > 0) {

@@ -59,8 +59,7 @@ quick sweep as a smoke test.
   - [x] 5.8g PARITY rows of Phase 5 updated with evidence (row 5 and the rows it touched).
   - [x] 5.8v1 The page's orders for a wing (found by 5.8g: a mission, a rebase and a paradrop […]
   - [x] 5.8v2 A paradrop of a selected formation at an airbase, from the page.
-  - [ ] 5.8v3 A wing's and a paradrop's refusal told as a march's is (PLAN 4.9a): the worker's
-    order news of them, and the reasons 10 to 12 in the page's words.
+  - [x] 5.8v3 A wing's and a paradrop's refusal told as a march's is (PLAN 4.9a): the worker's […]
   - [ ] 5.8v4 Wings built from the page (found by 5.8v1: the Actions tab leaves air templates
     out, "no air formation is built", since 5.8s1 untrue): with its airfield's word, as a
     fleet's "no port".
