@@ -280,6 +280,13 @@ quick sweep as a smoke test.
   for 141,844 cells (Germany 3,297 for 4,944), at war, 2,399 gold, nothing in production;
   France 4 formations, China 14. To find: why the income of a great land falls so (its cells
   occupied, unrest, the econ of its cells) and why a nation at war with gold builds nothing.
+  From PLAN 6.8's sweep with nukes on (2026-10-14, ADR-391, `docs/sweeps/2026-10-14-sweep-nukes.md`),
+  for the Phase 6 review: the limits hold on 8 of 10 seeds; seeds 6 and 7 have 255 and 253
+  nations alive in some year, over 250 (the break-up above; BLOCKERS). And how often nuclear
+  weapons are used: 4 to 177 bursts in 50 years, 3.5 a year in seed 4; the world's outrage and
+  the taboo after a first use were not tuned. SPEC §6.4's second strike counts "survivable assets
+  (subs, dispersed bombers)": a bomber flying counts (ADR-385), submarines and SLBMs do not; the
+  SLBM is in the tech chain and delivers nothing.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.

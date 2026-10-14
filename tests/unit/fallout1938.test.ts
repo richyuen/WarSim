@@ -4,7 +4,7 @@ import { ECONOMY_TABLES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { monthlyAccounts } from '../../src/sim/systems/economy';
 import { elementIndex } from '../../src/sim/systems/elements';
-import { FALLOUT_ATTRITION, FALLOUT_FLOOR, FALLOUT_HALF_LIFE, FALLOUT_INCOME, FALLOUT_KM, falloutAt, layFallout, nuclearSystem, windAt } from '../../src/sim/systems/nuclear';
+import { FALLOUT_ATTRITION, FALLOUT_FLOOR, FALLOUT_HALF_LIFE, FALLOUT_INCOME, FALLOUT_KM, FALLOUT_SLOW, falloutAt, layFallout, nuclearSystem, windAt } from '../../src/sim/systems/nuclear';
 import { seaKm } from '../../src/sim/systems/navalCombat';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -89,5 +89,35 @@ describe('fallout (PLAN 6.3b)', () => {
     const lost = income - monthlyAccounts(w, ECONOMY_TABLES_1938).gross[GER]!;
     if (w.cells.econ[cell]! > 0) expect(lost).toBeGreaterThan(0);
     expect(FALLOUT_INCOME).toBeGreaterThan(0);
+  });
+
+  it('a march across fallout takes 1 ÷ (1 − FALLOUT_SLOW × it) as long: a German division from Berlin towards Hanover, a day, about half as far through fallout 1 (PLAN 6.9)', () => {
+    const hanover = cellOf(9.73, 52.37, W, H);
+    const run = (fallout: boolean): number => {
+      const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+      const w = s.world;
+      w.settings.aiEnabled = false;
+      const c = w.formations.cols;
+      let id = -1;
+      let best = Infinity;
+      w.formations.forEach((f) => {
+        if (c.nation[f] !== GER || w.isFleet(f) || w.isWing(f) || w.offLand(f)) return;
+        const d = Math.hypot(c.x[f]! - berlin[0], c.y[f]! - berlin[1]);
+        if (d < best) [best, id] = [d, f];
+      });
+      if (fallout) for (let y = Math.floor(hanover[1]) - 4; y <= Math.floor(berlin[1]) + 4; y++) for (let x = Math.floor(hanover[0]) - 4; x <= Math.floor(berlin[0]) + 4; x++) w.fallout.set(y * W + x, 1);
+      const x0 = c.x[id]!;
+      s.command({ kind: 'moveFormation', id, x: hanover[0], y: hanover[1] });
+      s.step(24);
+      return Math.abs(c.x[id]! - x0);
+    };
+    const clean = run(false);
+    const hot = run(true);
+    process.stderr.write(`a day's march: ${clean.toFixed(2)} cells clean, ${hot.toFixed(2)} through fallout
+`);
+    expect(clean).toBeGreaterThan(1);
+    // The fallout decays a little in the day: a share of the clean march near 1 − FALLOUT_SLOW.
+    expect(hot / clean).toBeGreaterThan(1 - FALLOUT_SLOW - 0.1);
+    expect(hot / clean).toBeLessThan(1 - FALLOUT_SLOW + 0.1);
   });
 });

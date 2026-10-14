@@ -3,7 +3,7 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { declareWar } from '../../src/sim/systems/war';
-import { nukeInputs, nuclearUtility, TABOO_AFTER, TABOO_RECOVERY, TABOO_WEIGHT, type NukeInputs } from '../../src/sim/systems/nuclear';
+import { madWar, MAD_WARHEADS, nukeInputs, nuclearUtility, TABOO_AFTER, TABOO_RECOVERY, TABOO_WEIGHT, type NukeInputs } from '../../src/sim/systems/nuclear';
 import { ATTACKERS, DEFENDERS } from '../../src/sim/wars';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -53,12 +53,17 @@ describe('the nuclear use utility (PLAN 6.4a)', () => {
     const i = nukeInputs(w, ENG, war, ATTACKERS, ...moscow);
     process.stderr.write(`MAD: ${JSON.stringify(i)} U ${nuclearUtility(i).toFixed(3)}\n`);
     expect(i.mad).toBe(true);
+    expect(madWar(w, war)).toBe(true);
     expect(i.extreme).toBe(false);
     expect(nuclearUtility(i)).toBeLessThanOrEqual(0);
     // The Soviet side the same against London.
     const j = nukeInputs(w, SOV, war, DEFENDERS, ...london);
     expect(j.mad).toBe(true);
     expect(nuclearUtility(j)).toBeLessThanOrEqual(0);
+    // One side short of an assured second strike: no MAD (PLAN 6.9).
+    w.warheads.get(SOV)!.stock = MAD_WARHEADS - 1;
+    expect(madWar(w, war)).toBe(false);
+    expect(nukeInputs(w, ENG, war, ATTACKERS, ...moscow).mad).toBe(false);
   });
 
   it('from the world: France fighting to the death and losing, Germany without the bomb: a warhead on Berlin is worth it', () => {

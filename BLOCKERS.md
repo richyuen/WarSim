@@ -5,6 +5,14 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 6.8 sweep: nations alive over 250 in 2 of 10 seeds (2026-10-14)
+The sweep with nukes on (`docs/sweeps/2026-10-14-sweep-nukes.md`, seeds 1–10 × 50 years): seeds
+6 and 7 had 255 and 253 nations alive in some year; the limit is 250. The other four limits hold
+on every seed, riser and faller on 10 of 10. The world breaking up into revolts and releases is
+the critic's R4-B3 and R5-B3, deferred to Phase 7 (PLAN 1.42); no constant was tuned in answer
+(PROMPT: a failing limit waits for Phase 7 unless a defect of the phase's feature is its cause,
+and nuclear weapons are not: fallout's most was 0.65 % of the land).
+
 ### PLAN 1.42 / critic B1: the leader-share and top-ten criteria do not hold on every unseen seed (2026-10-03)
 Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thresholds
 (≥ 2 newcomers in the top ten by land, leader-share range ≥ 3 points) were never moved.

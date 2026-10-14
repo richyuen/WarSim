@@ -14,13 +14,13 @@
  * least MIN_PX: at T0 a burst is still a mark one sees. Every tier: the same picture, scaled.
  */
 import { EVENT_STRIDE, EventKind } from '../../shared/events';
+import { BLAST_KM } from '../../shared/nuclear';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 
 export const FLASH_MS = 700;
 export const SHOCK_MS = 2600;
 export const CLOUD_MS = 9000;
-/** The blast radius at yield 1, km (the sim's BLAST_KM), and the ring's reach in radii. */
-const BLAST_KM = 25;
+/** The ring's reach in blast radii. */
 const SHOCK_RADII = 4;
 /** The least radius drawn, CSS px: a burst at T0 is seen. */
 export const MIN_PX = 18;

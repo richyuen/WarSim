@@ -15634,3 +15634,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** stopped on `scenario1938`'s build time (known red under load; 7 of 7 alone); the
   rest by hand: the related unit tests 986 of 987, the pin, build, parity.
 - **Next:** PLAN 6.9, the Phase 6 review.
+
+## 2026-10-14 — PLAN 6.9 (Phase 6 review): the review's pass
+
+- **Done:** missing tests added: a march through fallout (0.43 of a clean day's, ADR-382 had none)
+  and MAD of a war (`madWar`: both sides armed; one side short of MAD_WARHEADS, none). The blast
+  radius in one place (`src/shared/nuclear.ts`), read by the sim and the page's effects. No dead
+  code in Phase 6's files (every export of `nuclear.ts` is a rule or its constant). SPEC §6.4
+  re-read: submarines and SLBMs deliver nothing (a line under PLAN 1.42); AoC's −2 combat
+  efficiency of a God nuke is not taken (ADR-386). PLAN 1.42 and BLOCKERS have the 6.8 sweep's
+  failing limit (nations alive over 250 in seeds 6 and 7) and the frequency of nuclear use.
+- **The gate:** stopped on `scenario1938`'s build time (known red under load; 7 of 7 alone); the
+  rest by hand: the related unit tests 980 of 981, the pin, build, parity, `nukeFx1938.spec`.
+- **Next:** `npm run check:review`, then the tick.

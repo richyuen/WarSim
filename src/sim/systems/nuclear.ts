@@ -114,6 +114,7 @@
 import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
 import { packNukeStrike } from '../../shared/history';
+import { BLAST_KM } from '../../shared/nuclear';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { pow, sin, cos } from '../core/dmath';
@@ -256,8 +257,8 @@ export function launchNuke(world: World, n: number, x: number, y: number, missil
   return Refusal.None;
 }
 
-/** A yield's blast radius, km (PLAN 6.3a), at yield 1; the share destroyed at its centre. */
-export const BLAST_KM = 25;
+/** A yield's blast radius at yield 1, km (shared with the page's effects), and the share destroyed at its centre (PLAN 6.3a). */
+export { BLAST_KM };
 export const BLAST_KILL = 0.9;
 /** The share of a cell's people a blast kills, of its share (PLAN 6.3a): 13.5 % at the centre. */
 export const BLAST_PEOPLE = 0.15;
