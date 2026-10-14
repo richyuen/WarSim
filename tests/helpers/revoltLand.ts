@@ -8,18 +8,25 @@ import type { World } from '../../src/sim/world';
  * a revolt founded, revived or enlarged (`RevoltSpawned`, a = that nation, b = the holder), the
  * land it took from its holders is at most REGION_KM2 for each of its revolts, beside the
  * provinces that are larger than that alone (such a province rises whole and alone, ADR-186).
+ * A defection of the same holder's land to that nation in the tick (its core nation's, PLAN
+ * 2.15d: `LandCeded`, a = the nation, b = the holder) is an area of its own, bound as one more
+ * (PLAN 5.8w6: seed 2, a nation founded by a revolt and given a second area in the hour).
  * Returns the nations that took more, as text; empty when none did.
  */
 export function revoltLand(w: World, before: Uint16Array, events: readonly number[], name: (n: number) => string): string[] {
   const revolts = new Map<number, Set<number>>();
   const count = new Map<number, number>();
+  /** The tick's handovers of land by nation and holder (`LandCeded`), counted where that nation rose against that holder. */
+  const ceded: [number, number][] = [];
   for (let i = 0; i < events.length; i += 6) {
+    if (events[i + 1] === EventKind.LandCeded) ceded.push([events[i + 2]!, events[i + 3]!]);
     if (events[i + 1] !== EventKind.RevoltSpawned) continue;
     const a = events[i + 2]!;
     revolts.set(a, (revolts.get(a) ?? new Set<number>()).add(events[i + 3]!));
     count.set(a, (count.get(a) ?? 0) + 1);
   }
   if (revolts.size === 0) return [];
+  for (const [a, b] of ceded) if (revolts.get(a)?.has(b)) count.set(a, count.get(a)! + 1);
   const { owner, province, w: width, h } = w.cells;
   const rowKm2 = w.landCounts().rowKm2;
   // nation → province → km² taken from a holder it rose against.
@@ -42,7 +49,7 @@ export function revoltLand(w: World, before: Uint16Array, events: readonly numbe
       if (km2 > REGION_KM2) giants += km2;
     }
     const bound = count.get(n)! * REGION_KM2 + giants;
-    if (land > bound) out.push(`${name(n)}: ${land} km² in ${by.size} provinces by ${count.get(n)} revolts (bound ${bound})`);
+    if (land > bound) out.push(`${name(n)}: ${land} km² in ${by.size} provinces by ${count.get(n)} revolts and defections (bound ${bound})`);
   }
   return out;
 }

@@ -8283,3 +8283,26 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8w5 The review's second run (found by it): `aiSweep` held a fleet gone with its
     nation alive to no rule; since 5.4c a strike from the air sinks ships with no sea battle.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w6 The review's third run (found by it): `aiSweep2`, seed 2 at tick 27,721: nation 116
+    holds 1,075,177 km² in 10 provinces by one revolt (the bound 1,000,000, PLAN 3.9). A test
+    first, then the cause.
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w7 `aiSweep3` runs past its 900 s (1,064 s): the tick's cost since Phase 5 (BLOCKERS,
+    PLAN 7.1). The user's call: the timeout, or the known reds with its BLOCKERS entry.

@@ -15206,3 +15206,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   - `aiSweep1`, `heldYears`, `standYear` are green.
 - **Stopped:** a background run ends at 2 hours and every code change starts the review anew;
   each run reaches e2e chunk 1 of 6. How to go on is put to the user.
+
+## 2026-10-14 — PLAN 5.8w6, 5.8w7: a revolt and a defection in one hour; `aiSweep3` known (ADR-361)
+
+- **Done:** `revoltLand` bounds a defection to a revolt's nation in the same tick as one more
+  area; `aiSweep3` on the known reds (its time, 1,064 s of 900; BLOCKERS: Phase 5's cost).
+- **Tests:** `revoltLandHelper` (1, new; failed before); `aiSweep2` green (839 s).
+- **The pin holds** at 76983901.
+- **The gate:** the whole unit suite (a helper changed: 1,389 of 1,391) red only by two timing
+  tests of BLOCKERS; the pin, build and parity green by hand.
+- **Next:** PLAN 5.8h: `check:review`, on the user's machine, on this commit.

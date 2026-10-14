@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-361 · 2026-10-14 · accepted — The sweep's measure of a revolt's land counts a defection (PLAN 5.8w6, 5.8w7)
+
+- **Found** (5.8h, the review's third run): `aiSweep2`, seed 2 at tick 27,721, "nation 116:
+  1,075,177 km² in 10 provinces by 1 revolts (bound 1,000,000)". In that month's first hour the
+  Soviet Union's land rose twice: one area founded nation 116 (`RevoltSpawned`), and another,
+  whose core nation 116 then was, went over to it by defection (PLAN 2.15d, `LandCeded`). Each
+  area within a region's bound (`revoltArea`: REGION_MAX provinces, REGION_KM2); `revoltLand`
+  held the two to one. No rule of the game is wrong.
+- **Decision.** `revoltLand` counts a defection of the same holder's land to that nation in the
+  tick as one more area of a region's bound. What it holds a revolt to is unchanged: a revolt
+  alone with the same land is still over. 5.8w7: `aiSweep3` ran 1,064 s against its 900 s, the
+  tick's cost since Phase 5 (BLOCKERS: Phase 5's cost); on `tools/gate/knownRed.json` until
+  PLAN 7.1, its assertions unchanged.
+- **The pin holds** at 76983901.
+- **Tests.** `revoltLandHelper` (1, new; failed before): a revolt and a defection to one nation
+  in one hour within a bound each, none told; the revolt alone, one told. `aiSweep2` green over
+  its ten years (839 s).
+
 ### ADR-360 · 2026-10-14 · accepted — A fleet struck from the air is not held to stand (PLAN 5.8w5)
 
 - **Found** (5.8h, the review's second run): `aiSweep1`–`3` red on day 7, "fleet 1248 of nation
