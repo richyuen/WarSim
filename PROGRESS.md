@@ -15461,3 +15461,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** green (the related unit tests 932 of 932; the pin). `navalAi1938`'s Greek test has
   Italy's AI off: its bombers sank Greece's fleet before it sailed (ADR-376).
 - **Next:** PLAN 5.12b.
+
+## 2026-10-14 — PLAN 5.12b: a nation at war flies with no front in contact (ADR-377)
+
+- **Done:** with none of the front in range, fighters patrol and strikers strike over the
+  enemy's nearest land formation in range, in contact or not.
+- **Tests:** `airNoContact1938` (new; failed before).
+- **Measured** (seed 7321, 25 years, mean sorties aloft): year 5 9.3; years 13–25 3.0 to 9.4
+  (the critic's 0.2 to 1.8). PLAN 5.12's AT met in 12 of 13 years (year 20: 3.0 of 3.1).
+- **The user's decision:** PLAN 5.12 accepted so; the land war's collapse (the world's land men
+  halve in two years, with the air or without) to Phase 7 (ADR-58). 5.12 ticked.
+- **Tests changed** (their case gone, not their rule): `invasionAi1938` without the three
+  nations' wings (the air won Britain the peace before its landing), `wingRange1938`'s missions
+  compared by id.
+- **The pin moves** 054cf839 → 69d55c80.
+- **The pin holds** at 69d55c80 (its move above).
+- **The gate:** green (the related unit tests 839 of 839; the pin).
+- **Next:** Phase 6, PLAN 6.1 (the critic's blocking issues of Phase 5 filed and done but R5-B3,
+  deferred, and R5-B5, Phase 6 itself).

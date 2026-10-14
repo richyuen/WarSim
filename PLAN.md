@@ -25,22 +25,6 @@ quick sweep as a smoke test.
 
 ## Phase 5 — Air
 
-- [ ] 5.12 Critic R5-B2: the AI's air war keeps flying. Seed 7321: mean sorties aloft 19.1 in
-  year 1, 11.7 in year 5, then 0.2 to 1.8 in every year from 13 to 25 while the wings grow from
-  132 to 236; 345 air fights in year 1, 111 in years 13 to 25 together; 0 to 16 wings with a
-  mission at a year's end (`critic/c5_headless_7321.json`). The critic's fix: look first at the
-  air AI's tasking; keep the wings of nations at war flying; lay up or disband wings no one
-  flies.
-  AT: a headless run of seed 7321 for 25 years: in every year with a war, sorties aloft in each
-  year from 13 on at least a third of year 5's.
-  Split 2026-10-14, by what a count on seed 7321 found (ADR-376): in years 1 and 5, 77 and 70 of
-  the AI's wings at war out of range of every front (the median front 2.6 and 1.8 ranges off),
-  4 and 8 with a mission; in years 13 and 20 no land formation anywhere in contact (60 nations
-  at war; the armies collapsed: the Soviet Union one formation, its income 418 on 141,844
-  cells), and the air AI tasks only from contact.
-  - [x] 5.12a A wing of a nation at war with no target in its range rebases toward the front.
-  - [ ] 5.12b A nation at war flies where its enemy has land forces in range, in contact or not.
-
 ## Phase 6 — Nuclear AI
 
 - [ ] 6.1 Nuclear tech chain, warhead production, stockpile, upkeep; global and per-nation toggles.
@@ -730,3 +714,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 5.9 Critic R5-B1 (report of 2026-10-14 on `c850346`), first of three: the air war seen at […]
 - [x] 5.10 Critic R5-B1, second: the air-superiority mode is read. On day 20 of a war it shows 2 […]
 - [x] 5.11 Critic R5-B1, third: the air war in what is read afterwards. No air event reaches the […]
+- [x] 5.12 Critic R5-B2: the AI's air war keeps flying. Seed 7321: mean sorties aloft 19.1 in […]

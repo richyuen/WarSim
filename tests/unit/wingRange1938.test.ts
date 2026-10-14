@@ -179,7 +179,9 @@ describe('orders by command, and saved (PLAN 5.1e)', () => {
     expect(w.wingMission.get(fighter)).toEqual({ kind: 'strike', x: prague[0], y: prague[1] });
     const u = sim();
     u.load(s.save());
-    expect([...u.world.wingMission]).toEqual([...w.wingMission]);
+    // By id: the AI's missions of the day before it are set in its order, a load's in the save's (PLAN 5.12b).
+    const byId = (m: Map<number, unknown>): [number, unknown][] => [...m].sort((a, b) => a[0] - b[0]);
+    expect(byId(u.world.wingMission)).toEqual(byId(w.wingMission));
     expect(u.hash()).toBe(s.hash());
     s.step(24);
     u.step(24);

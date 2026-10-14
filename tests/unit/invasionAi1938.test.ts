@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { destroyFormation } from '../../src/sim/systems/elements';
 import { declareWar } from '../../src/sim/systems/war';
 import { navOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -23,6 +24,9 @@ describe('the AI\'s invasions (PLAN 4.6b)', () => {
     const w = s.world;
     const home = navOf(w).grid.component[Math.floor(w.nations.cols.capitalY[ENG]!) * W + Math.floor(w.nations.cols.capitalX[ENG]!)]!;
     expect(declareWar(w, ENG, ICE, true)).not.toBeNull();
+    // The air out of it (PLAN 5.12b): British strikes on Denmark's forces, in contact or not, won
+    // Britain the peace on the seventh day, before its landing on the ninth. The case is the landing.
+    for (const [wing] of [...w.wingBase]) if ([ENG, ICE, DEN].includes(w.formations.cols.nation[wing]!)) destroyFormation(w, wing);
     let embarked = -1;
     let landed = -1;
     let where = -1;

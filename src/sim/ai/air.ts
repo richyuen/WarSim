@@ -19,6 +19,11 @@
  *   `LIFT_BELOW`) nearest their base within range; none, no mission. At peace, a nation's wings
  *   have none.
  *
+ * Where none of the front is in range, a nation at war flies at the enemy's land forces still
+ * (PLAN 5.12b: on seed 7321 no formation was in contact anywhere from about year 13, 60 nations at
+ * war, and every wing sat): fighters patrol, and close support, tactical and naval bombers strike,
+ * over the enemy's land formation nearest their base within range, in contact or not.
+ *
  * An order is given only where it is within range (`kmFromBase`), so the AI is never refused.
  *
  * A wing with a front to serve and none of it in its range (PLAN 5.12a: on seed 7321 most
@@ -67,14 +72,16 @@ export function airAi(world: World): void {
     list.push(id);
   }
   if (wings.size === 0) return;
-  // The front: every land formation in contact; the fleets.
+  // The front: every land formation in contact; every land formation (PLAN 5.12b); the fleets.
   const engaged: number[] = [];
+  const land: number[] = [];
   const fleets: number[] = [];
   /** The land formations short of supply, for the transports. */
   const short: number[] = [];
   world.formations.forEach((id) => {
     if (world.isFleet(id)) fleets.push(id);
     else if (!world.offLand(id)) {
+      if (!world.embarked.has(id)) land.push(id);
       if (c.engaged[id] === 1) engaged.push(id);
       if (c.supply[id]! < LIFT_BELOW) short.push(id);
     }
@@ -100,16 +107,19 @@ export function airAi(world: World): void {
     }
     const own = engaged.filter((g) => c.nation[g] === n);
     const enemy = engaged.filter((g) => world.wars.atWar(n, c.nation[g]!));
+    // The enemy's land forces, in contact or not (PLAN 5.12b): made when a wing has none of the front in range.
+    let enemyLand: number[] | null = null;
+    const enemyForces = (): number[] => (enemyLand ??= land.filter((g) => world.wars.atWar(n, c.nation[g]!)));
     const enemyFleets = fleets.filter((g) => world.wars.atWar(n, c.nation[g]!) && !world.embarked.has(g));
     for (const id of list) {
       const role = roleOf(world, id);
       let target: [number, number] | null = null;
       let kind: 'patrol' | 'strike' | 'supply' = 'strike';
       if (role === 'patrol') {
-        target = nearest(world, id, own);
+        target = nearest(world, id, own) ?? nearest(world, id, enemyForces());
         kind = 'patrol';
-      } else if (role === 'front') target = nearest(world, id, enemy);
-      else if (role === 'naval') target = nearest(world, id, enemyFleets) ?? nearest(world, id, enemy);
+      } else if (role === 'front') target = nearest(world, id, enemy) ?? nearest(world, id, enemyForces());
+      else if (role === 'naval') target = nearest(world, id, enemyFleets) ?? nearest(world, id, enemy) ?? nearest(world, id, enemyForces());
       else if (role === 'bomb') target = industry(world, id, n, richest);
       else if (role === 'lift') {
         target = nearest(world, id, short.filter((g) => c.nation[g] === n));
@@ -117,8 +127,9 @@ export function airAi(world: World): void {
       }
       if (!target) {
         world.wingMission.delete(id);
-        // A front out of its range: a hop toward it (PLAN 5.12a).
-        const front = role === 'patrol' ? own : role === 'front' ? enemy : role === 'naval' ? (enemyFleets.length > 0 ? enemyFleets : enemy) : [];
+        // A front out of its range: a hop toward it (PLAN 5.12a); with no front, the enemy's land forces (PLAN 5.12b).
+        let front = role === 'patrol' ? own : role === 'front' ? enemy : role === 'naval' ? (enemyFleets.length > 0 ? enemyFleets : enemy) : [];
+        if (front.length === 0 && (role === 'patrol' || role === 'front' || role === 'naval')) front = enemyForces();
         if (front.length > 0) toward(world, id, front, usedAt());
         continue;
       }

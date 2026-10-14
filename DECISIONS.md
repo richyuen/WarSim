@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-377 · 2026-10-14 · accepted — A nation at war flies with no front in contact (PLAN 5.12b)
+
+- **Found** (ADR-376's count): from about year 13 of seed 7321 no land formation is in contact
+  anywhere, with 60 nations at war; the air AI tasked only from contact.
+- **Decision.** Where none of the front is in its range, a wing of a nation at war flies at the
+  enemy's land forces still: fighters patrol, close support, tactical and naval bombers strike,
+  over the enemy's land formation nearest their base within range, in contact or not (not
+  aboard a fleet). With no front at all, the rebase of PLAN 5.12a heads for those forces. The
+  front in contact stays first; strategic bombers and transports as before.
+- **Measured** (seed 7321, 25 years, mean sorties aloft): 26.6 in year 1, 9.3 in year 5; years 13
+  to 25 6.8, 9.4, 9.1, 8.9, 3.2, 4.4, 4.4, 3.0, 5.2, 3.9, 5.9, 8.5, 3.5, a war in each (the
+  critic's run: 0.2 to 1.8). The land formations in contact a day over the world 0.2 to 3.7 in
+  those years. PLAN 5.12's AT (a third of year 5's, 3.1, in each) met in 12 of 13: year 20 3.0.
+- **The user's decision (2026-10-14):** PLAN 5.12 accepted with its AT so (the air war no longer
+  fades; the sorties follow the land war, which collapses with or without the air: the world's
+  land men 9.78 M at the start, about 4.8 M two years on, the same with and without this change),
+  and the land war's collapse deferred to Phase 7 as ADR-58 has it (the line under PLAN 1.42).
+- **The pin moves** 054cf839 → 69d55c80.
+- **Tests.** `airNoContact1938.test.ts` (new; failed before): with no formation in contact,
+  Germany's fighters and strikers with Poland in range are tasked at the nearest Polish
+  formation; at peace none. Two tests whose case the air took away, not their rule:
+  `invasionAi1938`'s British landing (seed 4601): British strikes on Denmark's forces, in
+  contact or not, won Britain the peace on day 7, before its landing on day 9; the three
+  nations' wings are taken out at its start (aboard day 8, ashore day 12). `wingRange1938`'s
+  save test compares the missions by id: the AI's of the day before are set in its order, a
+  load's in the save's (no system reads them in order; the save writes them by id).
+
 ### ADR-376 · 2026-10-14 · accepted — What the AI's air war fades with; a wing far from its front rebases toward it (PLAN 5.12, 5.12a)
 
 - **Found** (the critic's R5-B2, run 5: on seed 7321 sorties aloft 19.1 in year 1, 11.7 in year 5,
