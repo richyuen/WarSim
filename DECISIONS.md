@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-386 · 2026-10-14 · accepted — A burst's shocks and its history entry (PLAN 6.5a)
+
+- **Decision** (SPEC §6.4 "a stability shock and a war-exhaustion jump", "the striker's alliance
+  unity drops, the target may sue for peace or retaliate ... economic shocks follow"). PLAN 6.5
+  split: 6.5a the shocks, 6.5b outrage and relations. `aftermath`, at each burst, on the nation
+  whose land it is (the cell's owner; none at sea or on the striker's own):
+  - War exhaustion: 30 more on each side it is of (`world.nukeShock`, state saved while not empty;
+    to 60; less 0.5 a day). Exhaustion is recomputed daily from the war's days, men and land, so
+    the shock is a term of it, not a jump that the next day would undo. A side at EXHAUSTED (80)
+    sues for peace (war.ts): the target's peace response; retaliation is PLAN 6.4b's.
+  - Its treasury: 10 % of what it has (AoC's God Mode nuke takes 10 % of its target's gold; its
+    combat efficiency −2 is not taken: the dynamic CE is recomputed daily).
+  - Stability: 40 more unrest in each province with land within twice the blast radius (no
+    stability value exists; unrest is what revolts read).
+  - The striker's alliance: 20 less unity.
+  - The history entry: `NukeCasualties`, now historic and in the ticker: a = the striker, b = the
+    nation struck, the yield and the dead (men and people) packed as a sea battle's side is
+    (`packNukeStrike`, `nukeStrike`), a role `strike`. "France struck Germany with an atomic bomb:
+    1,025,202 dead"; at sea, "... set off an atomic bomb where no nation holds the land". `blast`
+    no longer emits it (nor takes the striker).
+    Its type in the history's filter is "Nuclear strike"; in the ticker it has a death's cue until
+    PLAN 6.6 gives it its own.
+- **The pin holds** at 45df324d.
+- **Tests.** `nukeAftermath1938.test.ts` (new; the AT's test per consequence): France's burst at
+  Berlin takes a tenth of Germany's gold, sets its shock to 30 (60 after three), raises Berlin's
+  province's unrest by 40 and lowers France's alliance's unity by 20; none on a burst on the
+  striker's own land; Germany's side's exhaustion 29.5 above a twin's the next day, the shock
+  decaying; Germany 520 days at war sues when struck, not otherwise; the history row of a real
+  strike: Germany, yield 1, its dead, its sentence; a save carries the shock. `nukeBlast1938`: the
+  toll told by `aftermath`, packed.
+
 ### ADR-385 · 2026-10-14 · accepted — The nuclear decision (PLAN 6.4b); PLAN 6.4 done
 
 - **Decision** (SPEC §6.4 "Use decision (nuclear AI, daily, at war only)").

@@ -39,7 +39,7 @@
  * formation's place), BLAST_PEOPLE of it of each cell's population (`cells.pop`, its people: they
  * do not come back; a cell is 20 km across, and its whole share would have killed more than
  * Berlin's people at Berlin), and of its industry, as bombs put it out of work (`world.bombDamage`, at least that share,
- * repaired as bombing's is). Its toll: `NukeCasualties`.
+ * repaired as bombing's is). Its toll is told with its consequences (`aftermath`, PLAN 6.5a).
  *
  * Fallout (PLAN 6.3b, SPEC §6.4 "FALLOUT (attrition, income loss, movement penalty) that drifts
  * with a deterministic seasonal wind field and decays over years"): `world.fallout`, by cell, 0 to 1.
@@ -85,9 +85,20 @@
  * against the striker for RETALIATION_DAYS (`world.nukeGrievance`). A nation of retaliation
  * doctrine (aggression at least RETALIATION_AGGRESSION) striking at the side of who struck it is
  * retaliating: RETALIATION_BONUS, and no MAD bar; its strike back spends the grievance (one for one).
+ *
+ * A burst's consequences (PLAN 6.5a, SPEC §6.4 "a stability shock and a war-exhaustion jump ...
+ * economic shocks follow"; `aftermath`), on the nation whose land it burst on (none at sea or on
+ * the striker's own):
+ * - its war exhaustion: NUKE_SHOCK more in each of its wars (`world.nukeShock`, to NUKE_SHOCK_MAX,
+ *   less NUKE_SHOCK_DECAY a day): at EXHAUSTED a side sues for peace (war.ts), the peace response;
+ * - its treasury: NUKE_GOLD of what it has (AoC's God Mode nuke takes 10 % of its target's gold);
+ * - stability: NUKE_UNREST more unrest in each province with land within twice the blast radius;
+ * - and the striker's alliance: NUKE_UNITY less unity.
+ * The strike's history entry is `NukeCasualties`: the nation struck, the yield, the dead.
  */
 import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
+import { packNukeStrike } from '../../shared/history';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { pow, sin, cos } from '../core/dmath';
@@ -237,10 +248,10 @@ export function blastShare(km: number, radius: number): number {
 }
 
 /**
- * A warhead of `yieldN` bursts at (x, y), `nation`'s (PLAN 6.3a): see the head of the file.
- * Returns its toll: men of formations lost, people killed.
+ * A warhead of `yieldN` bursts at (x, y) (PLAN 6.3a): see the head of the file. Returns its toll:
+ * men of formations lost, people killed (told by `aftermath`, PLAN 6.5a).
  */
-export function blast(world: World, nation: number, yieldN: number, x: number, y: number): { men: number; people: number } {
+export function blast(world: World, yieldN: number, x: number, y: number): { men: number; people: number } {
   const radius = blastRadius(yieldN);
   const { w, h, pop, econ } = world.cells;
   // The cells within reach: a cell is 20 km down and at least about 5 km across (far north).
@@ -282,7 +293,6 @@ export function blast(world: World, nation: number, yieldN: number, x: number, y
     settleFormation(world, id);
     men += before - (world.formations.has(id) ? c.strength[id]! : 0);
   }
-  world.out.emit(world.tick, EventKind.NukeCasualties, nation, men + people, x, y);
   return { men, people };
 }
 
@@ -601,6 +611,61 @@ function nukeDecisions(world: World): void {
   for (const [n, g] of [...world.nukeGrievance]) if (g.until <= world.tick) world.nukeGrievance.delete(n);
 }
 
+/** A burst's consequences (PLAN 6.5a): see the head of the file. */
+export const NUKE_SHOCK = 30;
+export const NUKE_SHOCK_MAX = 60;
+export const NUKE_SHOCK_DECAY = 0.5;
+export const NUKE_GOLD = 0.1;
+export const NUKE_UNREST = 40;
+export const NUKE_UNITY = 20;
+
+/** The nation whose land is at (x, y), 0 for none. */
+function ownerAt(world: World, x: number, y: number): number {
+  const xx = cellX(world, Math.floor(x));
+  return xx === null ? 0 : (world.cells.owner[Math.min(world.cells.h - 1, Math.max(0, Math.floor(y))) * world.cells.w + xx] ?? 0);
+}
+
+/** `striker`'s burst of `yieldN` at (x, y), `dead` killed: its consequences and its history entry (PLAN 6.5a). */
+export function aftermath(world: World, striker: number, yieldN: number, x: number, y: number, dead: number): void {
+  const struck = ownerAt(world, x, y);
+  world.out.emit(world.tick, EventKind.NukeCasualties, striker, packNukeStrike(struck === striker ? 0 : struck, yieldN, dead), x, y);
+  const ally = world.alliances.allianceOf(striker);
+  if (ally) {
+    ally.unity = Math.max(0, ally.unity - NUKE_UNITY);
+    world.alliances.changed();
+  }
+  if (struck === 0 || struck === striker) return;
+  world.nukeShock.set(struck, Math.min(NUKE_SHOCK_MAX, (world.nukeShock.get(struck) ?? 0) + NUKE_SHOCK));
+  const nc = world.nations.cols;
+  nc.gold[struck] = nc.gold[struck]! - Math.max(0, nc.gold[struck]!) * NUKE_GOLD;
+  // Unrest: each province with land within twice the radius, once.
+  const reach = 2 * blastRadius(yieldN);
+  const { w, h, province } = world.cells;
+  const ry = Math.ceil(reach / 10) + 1;
+  const rx = Math.ceil(reach / 4) + 1;
+  const seen = new Set<number>();
+  for (let yy = Math.max(0, Math.floor(y) - ry); yy <= Math.min(h - 1, Math.floor(y) + ry); yy++) {
+    for (let dx = -rx; dx <= rx; dx++) {
+      const xx = cellX(world, Math.floor(x) + dx);
+      if (xx === null) continue;
+      const p = province[yy * w + xx]!;
+      if (p === 0 || seen.has(p) || seaKm(world, x, y, xx + 0.5, yy + 0.5) > reach) continue;
+      seen.add(p);
+    }
+  }
+  const pv = world.provinces;
+  for (const p of [...seen].sort((a, b) => a - b)) if (p < pv.unrest.length) pv.unrest[p] = Math.min(100, pv.unrest[p]! + NUKE_UNREST);
+  if (seen.size > 0) pv.version++;
+}
+
+/** The shock's day (PLAN 6.5a): less by NUKE_SHOCK_DECAY, gone at 0. */
+function shockDay(world: World): void {
+  for (const [n, v] of [...world.nukeShock]) {
+    if (v <= NUKE_SHOCK_DECAY) world.nukeShock.delete(n);
+    else world.nukeShock.set(n, v - NUKE_SHOCK_DECAY);
+  }
+}
+
 /** The taboo's day (PLAN 6.4a): back towards 1. Nothing while it is 1. */
 function tabooDay(world: World): void {
   if (world.nukeTaboo >= 1) return;
@@ -624,10 +689,11 @@ function arrivals(world: World): void {
       world.out.emit(world.tick, EventKind.NukeDetonated, l.nation, yieldN, l.tx, l.ty);
       // The taboo broken (PLAN 6.4a); the owner of the land struck has a grievance (PLAN 6.4b).
       world.nukeTaboo = Math.min(world.nukeTaboo, TABOO_AFTER);
-      const struck = world.cells.owner[Math.min(world.cells.h - 1, Math.max(0, Math.floor(l.ty))) * world.cells.w + Math.floor(l.tx)] ?? 0;
+      const struck = ownerAt(world, l.tx, l.ty);
       if (struck !== 0 && struck !== l.nation) world.nukeGrievance.set(struck, { by: l.nation, until: world.tick + RETALIATION_DAYS * 24 });
-      blast(world, l.nation, yieldN, l.tx, l.ty);
+      const toll = blast(world, yieldN, l.tx, l.ty);
       layFallout(world, yieldN, l.tx, l.ty);
+      aftermath(world, l.nation, yieldN, l.tx, l.ty, toll.men + toll.people);
     }
   }
   world.nukeLaunches = left;
@@ -641,6 +707,7 @@ export function nuclearSystem(world: World): void {
   if (!isDayStart(world.tick)) return;
   falloutDay(world);
   tabooDay(world);
+  shockDay(world);
   nukeDecisions(world);
   const bomb = rules.techs.findIndex((t) => t.id === 'atomic_bomb');
   const nc = world.nations.cols;

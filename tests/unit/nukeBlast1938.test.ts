@@ -5,7 +5,8 @@ import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { elementIndex } from '../../src/sim/systems/elements';
 import { seaKm } from '../../src/sim/systems/navalCombat';
-import { BLAST_KILL, BLAST_KM, BLAST_PEOPLE, blast, blastRadius, blastShare } from '../../src/sim/systems/nuclear';
+import { packNukeStrike, nukeStrike } from '../../src/shared/history';
+import { aftermath, BLAST_KILL, BLAST_KM, BLAST_PEOPLE, blast, blastRadius, blastShare } from '../../src/sim/systems/nuclear';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
 
@@ -51,7 +52,7 @@ describe('a warhead\'s blast (PLAN 6.3a)', () => {
     const centre = Math.floor(berlin[1]) * W + Math.floor(berlin[0]);
     const pop = w.cells.pop[centre]!;
     w.out.events.length = 0;
-    const toll = blast(w, ENG, 1, ...berlin);
+    const toll = blast(w, 1, ...berlin);
     // Each element of each: its strength less its share, to the unit (losses whole, wounds carried).
     german.forEach((id, k) => {
       const els = before[k]!;
@@ -68,9 +69,12 @@ describe('a warhead\'s blast (PLAN 6.3a)', () => {
     if (w.cells.econ[centre]! > 0) expect(w.bombDamage.get(centre)).toBeCloseTo(Math.min(0.95, cs), 12);
     expect(toll.men).toBeGreaterThan(0);
     expect(toll.people).toBeGreaterThan(0);
+    // The toll told, with the strike's consequences (PLAN 6.5a): England struck Germany, yield 1.
+    aftermath(w, ENG, 1, ...berlin, toll.men + toll.people);
     const told: number[][] = [];
     for (let i = 0; i < w.out.events.length; i += 6) if (w.out.events[i + 1] === EventKind.NukeCasualties) told.push(Array.from(w.out.events.slice(i + 2, i + 6)));
-    expect(told).toEqual([[ENG, toll.men + toll.people, ...berlin]]);
+    expect(told).toEqual([[ENG, packNukeStrike(GER, 1, toll.men + toll.people), ...berlin]]);
+    expect(nukeStrike(told[0]![1]!)).toEqual({ nation: GER, yieldN: 1, dead: toll.men + toll.people });
     process.stderr.write(`Berlin: shares ${share.map((s) => s.toFixed(3)).join(', ')}; ${toll.men} men and ${toll.people} people\n`);
   });
 });

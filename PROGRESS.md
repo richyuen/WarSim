@@ -15565,3 +15565,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin holds** at 45df324d.
 - **The gate:** green (the related unit tests 1000 of 1000; the pin).
 - **Next:** PLAN 6.5.
+
+## 2026-10-14 — PLAN 6.5a: a burst's shocks and its history entry (ADR-386)
+
+- **Done:** PLAN 6.5 split (6.5a shocks, 6.5b outrage). The nation struck: war exhaustion (a
+  decaying term; at the threshold it sues), a tenth of its gold, unrest about the burst; the
+  striker's alliance less united. The strike is a history and ticker entry with yield and dead.
+- **Tests:** `nukeAftermath1938` (new), `nukeBlast1938`.
+- **The pin holds** at 45df324d.
+- **The gate:** green (the related unit tests 1072 of 1072; the pin). Two completeness tests
+  (`history`, `sound`) asked for the kind's type name and cue: added.
+- **Next:** PLAN 6.5b.

@@ -19,6 +19,8 @@ const CUE_OF_KIND: Readonly<Record<number, Cue>> = {
   [EventKind.NationCollapsed]: 'death',
   [EventKind.NationAnnexed]: 'death',
   [EventKind.NationRevived]: 'return',
+  // A nuclear strike (PLAN 6.5a): a death's cue, until PLAN 6.6 gives it its own.
+  [EventKind.NukeCasualties]: 'death',
   // The month's air war (PLAN 5.11a): the quietest, heard only with no other news.
   [EventKind.AirWar]: 'air',
   [EventKind.AirRaids]: 'air',

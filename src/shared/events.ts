@@ -144,7 +144,11 @@ export const EventKind = {
   NukeIntercepted: 54,
   /** A warhead burst at its target (PLAN 6.2; its effects PLAN 6.3): a = the nation, b = its yield (1, 2 thermonuclear); (x, y) = where. */
   NukeDetonated: 55,
-  /** A warhead's toll (PLAN 6.3a): a = the striker, b = men of its formations lost and people killed; (x, y) = where it burst. */
+  /**
+   * A warhead's toll (PLAN 6.3a), the strike's history entry (PLAN 6.5a): a = the striker, b = the
+   * nation whose land it burst on, its yield and the dead (men and people), packed (`nukeStrike`
+   * in shared/history.ts); (x, y) = where it burst.
+   */
   NukeCasualties: 56,
   /** An AI's decision to strike (PLAN 6.4b): a = the nation, b = round(its utility × 1000); (x, y) = the target. */
   NukeDecided: 57,

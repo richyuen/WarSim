@@ -8758,3 +8758,21 @@ Of 6.3 (open in PLAN.md):
   - [x] 6.4a The utility and its inputs from the world; the taboo, state.
   - [x] 6.4b The daily decision: an AI nation at war strikes its best target when the utility is
     above 0; retaliation doctrine; the decision told as an event (6.7 asserts on it).
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+Of 6.5 (open in PLAN.md):
+
+  - [x] 6.5a The burst's shocks: war exhaustion (peace when it reaches the threshold), treasury,
+    unrest, the striker's alliance's unity; the history entry with yield and casualties.

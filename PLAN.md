@@ -29,6 +29,10 @@ quick sweep as a smoke test.
 
 - [ ] 6.5 Consequences: relations, alliance unity, outrage, economic shock, peace/retaliation responses.
   AT: tests per consequence; the history log has a nuke entry with yield and casualties.
+  Split 2026-10-14: what a burst does at once, then what it leaves in the world's opinion.
+  - [x] 6.5a The burst's shocks: war exhaustion (peace when it reaches the threshold), treasury, […]
+  - [ ] 6.5b Outrage: global and against the striker, decaying; relations with every nation hit by
+    distance and alliance (the strategic AI's wars and coalitions); the utility's outrage term.
 - [ ] 6.6 Nuke FX at every tier (flash, shockwave, mushroom cloud, fallout overlay), alert banner, auto-pause option, go-to button.
   From the critic's report of 2026-10-14 (R5-B5, run 5 on `c850346`): AoC has a nuke among its
   God tools; SPEC's God Mode grants warheads and forces a strike, and no task of this phase

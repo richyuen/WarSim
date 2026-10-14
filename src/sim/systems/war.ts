@@ -334,6 +334,8 @@ export function warSystem(world: World): void {
       const lost = war.startMen[s]! > 0 ? Math.max(0, 1 - m / war.startMen[s]!) : 0;
       const occ = s === ATTACKERS ? oDA.share : oAD.share;
       war.exhaustion[s] = Math.min(100, 0.1 * days + 80 * lost + 60 * occ);
+      // A nuclear strike's shock on a nation of the side (PLAN 6.5a), the most of them.
+      if (world.nukeShock.size > 0) war.exhaustion[s] = Math.min(100, war.exhaustion[s]! + Math.max(0, ...war.sides[s]!.map((m) => world.nukeShock.get(m) ?? 0)));
     }
     // Capitulation: an overrun side has lost, whatever its stance.
     const dDown = oAD.share >= CAPITULATE || overrun(land, D[0]!);

@@ -1,4 +1,4 @@
-import { HISTORY_ROLES, kindName, seaSide, type HistoryRow } from '../shared/history';
+import { HISTORY_ROLES, kindName, nukeStrike, seaSide, type HistoryRow } from '../shared/history';
 import { displayName, t, type MessageKey } from './i18n';
 import en from './i18n/en.json';
 
@@ -33,6 +33,8 @@ export function historyText(r: HistoryRow): string {
   // what their bombs took (PLAN 5.11a): {na} and {nb}.
   const count = (v: number): string => v.toLocaleString('en-US');
   const ships = ra === 'side' || rb === 'side' ? { na: count(ra === 'side' ? seaSide(r.a).ships : 0), nb: count(rb === 'side' ? seaSide(r.b).ships : 0) } : {};
-  const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships });
+  // A nuclear strike's bomb and its dead (PLAN 6.5a): {bomb} and {nb}.
+  const strike = rb === 'strike' ? { bomb: t(nukeStrike(r.b).yieldN >= 2 ? 'history.hBomb' : 'history.aBomb'), nb: count(nukeStrike(r.b).dead) } : {};
+  const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships, ...strike });
   return s.charAt(0).toLocaleUpperCase() + s.slice(1);
 }
