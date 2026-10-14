@@ -30,7 +30,7 @@ import { SIDE_SHIPS } from '../../shared/history';
 import { bleedFormation } from './elements';
 import { convoyLosses, convoyShare } from './convoys';
 import { BLOCKADE_SHARE, blockadedCells } from './seaControl';
-import { WARHEAD_UPKEEP, warheadsOf } from './nuclear';
+import { FALLOUT_INCOME, falloutAt, WARHEAD_UPKEEP, warheadsOf } from './nuclear';
 
 /** `cells.econ` unit: millions of 1990 $ (GDP per year, industrial-weighted). */
 export const ECON_PER_BN = 1000;
@@ -128,6 +128,8 @@ export function monthlyAccounts(
       if (v !== 0 && convoys) v *= convoyShare(world, convoys, n, c);
       // Bombs (PLAN 5.5a): what is out of work there until it is repaired.
       if (v !== 0 && damage.size > 0) v *= 1 - (damage.get(c) ?? 0);
+      // Fallout (PLAN 6.3b): what it keeps from working.
+      if (v !== 0 && world.fallout.size > 0) v *= 1 - FALLOUT_INCOME * falloutAt(world, c);
       if (v !== 0) land[n]! += own ? v : v * OCCUPIED_SHARE;
       if (own) population[n]! += pop[c]! * 1000;
     }

@@ -15522,3 +15522,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** green (the related unit tests 982 of 982; the pin). `warheads1938`'s first test
   given 300 s (two runs of 130 days; it ran past 90 s beside the others).
 - **Next:** PLAN 6.3b.
+
+## 2026-10-14 — PLAN 6.3b: fallout (ADR-382)
+
+- **Done:** a deterministic seasonal wind; a burst's plume laid downwind; fallout decaying by half
+  in a year; attrition, income and pace lost where it lies.
+- **Tests:** `fallout1938` (new; the half-life).
+- **The pin holds** at 45df324d.
+- **The gate:** green (the related unit tests 946 of 946; the pin).
+- **Next:** PLAN 6.3c.

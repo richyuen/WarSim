@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-382 · 2026-10-14 · accepted — Fallout (PLAN 6.3b)
+
+- **Decision** (SPEC §6.4: "FALLOUT (attrition, income loss, movement penalty) that drifts with a
+  deterministic seasonal wind field and decays over years"). `world.fallout` by cell, 0 to 1
+  (state, a section of its own).
+  - The wind (`windAt`): a function of the latitude and the day of the year, no chance in it:
+    easterlies under 30° and over 60°, westerlies between, turned up to 30° poleward in each
+    hemisphere's summer.
+  - A burst lays its fallout downwind as it bursts (`layFallout`): a plume 200 km × the yield's
+    cube root long, 20 km half-wide at the burst and 0.3 of the way along wider; at a cell (1 −
+    along / length) × (1 − across / half-width), added, to 1; 20 km about the burst upwind. It
+    stays where it fell (the drift is the plume's: SPEC's "drifts" read as laid by the wind).
+  - It decays by half in FALLOUT_HALF_LIFE (365) days, daily (`pow`, the sim's); a cell under 0.005
+    is clean.
+  - Where it lies at level f: a formation on the cell (not a wing) loses 0.02 × f of each element a
+    day; the cell's output is (1 − 0.8 f) of itself (`monthlyAccounts`); a march across it takes
+    1 ÷ (1 − 0.5 f) as long. Each read only while there is fallout: a game without it is the same.
+- **The pin holds** at 45df324d.
+- **Tests.** `fallout1938.test.ts` (new; the AT's half-life): the wind by latitude and season; a
+  burst at Berlin lays its plume east, within its length, to 1; 0.8 is 0.4 after 365 days and 0.2
+  after 730, a cell at the floor clean; a formation on fallout 1 loses 2 % of each element in a
+  day, the cell's output falls. The march's pace across fallout has no test of its own.
+
 ### ADR-381 · 2026-10-14 · accepted — A warhead's blast (PLAN 6.3a)
 
 - **Decision** (SPEC §6.4: "blast radius (by yield) kills elements by distance falloff and destroys

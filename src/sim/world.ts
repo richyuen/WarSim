@@ -419,6 +419,8 @@ class WorldCore implements Stateful {
       ...(w.nukesBanned.size === 0 ? [] : [{ name: 'world.nukesBanned', dtype: 'f64' as const, data: Float64Array.from([...w.nukesBanned].sort((a, b) => a - b)) }]),
       // The warheads in flight (PLAN 6.2): [next id, then id, nation, missile, wing, bx, by, tx, ty, launch, arrive each], only while there is one.
       ...(w.nukeLaunches.length === 0 && w.nextLaunchId === 1 ? [] : [{ name: 'world.nukeLaunches', dtype: 'f64' as const, data: Float64Array.from([w.nextLaunchId, ...w.nukeLaunches.flatMap((l) => [l.id, l.nation, l.missile, l.wing, l.bx, l.by, l.tx, l.ty, l.launch, l.arrive])]) }]),
+      // Fallout (PLAN 6.3b): [cell, level] each, by cell, only while there is some.
+      ...(w.fallout.size === 0 ? [] : [{ name: 'world.fallout', dtype: 'f64' as const, data: Float64Array.from([...w.fallout].sort((a, b) => a[0] - b[0]).flat()) }]),
       // The warheads (PLAN 6.1b): [nation, stock, paid] each, only while there is one.
       ...(w.warheads.size === 0 ? [] : [{ name: 'world.warheads', dtype: 'f64' as const, data: Float64Array.from([...w.warheads].sort((a, b) => a[0] - b[0]).flatMap(([n, h]) => [n, h.stock, h.paid])) }]),
       // Each nation's air totals (PLAN 5.11b): [nation, lost, bombed] each, only while there is one.
@@ -509,6 +511,9 @@ class WorldCore implements Stateful {
     const nl = sections.find((s) => s.name === 'world.nukeLaunches')?.data as Float64Array | undefined;
     w.nextLaunchId = nl && nl.length > 0 ? nl[0]! : 1;
     for (let at = 1; nl && at + 10 <= nl.length; at += 10) w.nukeLaunches.push({ id: nl[at]!, nation: nl[at + 1]!, missile: nl[at + 2]!, wing: nl[at + 3]!, bx: nl[at + 4]!, by: nl[at + 5]!, tx: nl[at + 6]!, ty: nl[at + 7]!, launch: nl[at + 8]!, arrive: nl[at + 9]! });
+    w.fallout = new Map();
+    const fo = sections.find((s) => s.name === 'world.fallout')?.data as Float64Array | undefined;
+    for (let at = 0; fo && at + 2 <= fo.length; at += 2) w.fallout.set(fo[at]!, fo[at + 1]!);
     w.warheads = new Map();
     const heads = sections.find((s) => s.name === 'world.warheads')?.data as Float64Array | undefined;
     for (let at = 0; heads && at + 3 <= heads.length; at += 3) w.warheads.set(heads[at]!, { stock: heads[at + 1]!, paid: heads[at + 2]! });
@@ -1047,6 +1052,8 @@ export class World {
   warheads = new Map<number, { stock: number; paid: number }>();
   /** The warheads in flight (PLAN 6.2, `nuclearSystem`), and the id the next launch takes: state, a section of its own saved while there is one. */
   nukeLaunches: NukeLaunch[] = [];
+  /** Fallout by cell, 0 to 1 (PLAN 6.3b, `nuclear.ts`): state, a section of its own saved while not empty. */
+  fallout = new Map<number, number>();
   nextLaunchId = 1;
   /** The land formations aboard transports (PLAN 4.5a, `amphibiousSystem`), by id: state, saved while not empty. */
   embarked = new Map<number, Embarked>();

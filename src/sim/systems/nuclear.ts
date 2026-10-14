@@ -40,14 +40,29 @@
  * do not come back; a cell is 20 km across, and its whole share would have killed more than
  * Berlin's people at Berlin), and of its industry, as bombs put it out of work (`world.bombDamage`, at least that share,
  * repaired as bombing's is). Its toll: `NukeCasualties`.
+ *
+ * Fallout (PLAN 6.3b, SPEC §6.4 "FALLOUT (attrition, income loss, movement penalty) that drifts
+ * with a deterministic seasonal wind field and decays over years"): `world.fallout`, by cell, 0 to 1.
+ * - The wind (`windAt`): a function of the latitude and the day of the year, no chance in it:
+ *   easterlies under 30° and over 60° of latitude, westerlies between; swinging WIND_SWING to
+ *   the pole in its summer and to the equator in its winter.
+ * - A burst lays a plume downwind (`layFallout`): FALLOUT_KM × the yield's cube root long, its
+ *   half-width FALLOUT_WIDTH_KM and FALLOUT_SPREAD of the way along more; at a cell the level
+ *   (1 − along / length) × (1 − across / half-width), added to what lies there, to 1; and
+ *   FALLOUT_WIDTH_KM about the burst upwind. The plume is laid where it falls and stays there.
+ * - It decays by half in FALLOUT_HALF_LIFE days, daily; a cell under FALLOUT_FLOOR is clean.
+ * - Where it lies, at level f: a formation on the cell loses FALLOUT_ATTRITION × f of each
+ *   element a day; the cell's output is (1 − FALLOUT_INCOME × f) of itself (`monthlyAccounts`);
+ *   a march across it takes 1 ÷ (1 − FALLOUT_SLOW × f) as long (`movementSystem`).
  */
 import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
-import { pow } from '../core/dmath';
+import { pow, sin, cos } from '../core/dmath';
+import { unproject } from '../data/projection';
 import { knowsTechs, techMask } from '../tech';
-import { airOf, type NukeLaunch, type World } from '../world';
+import { airOf, navOf, type NukeLaunch, type World } from '../world';
 import { basePlace, wingRange } from './air';
 import { applyLoss, cellX, elementIndex, settleFormation, wrapDx } from './elements';
 import { airSuperiority } from './airSuperiority';
@@ -213,6 +228,106 @@ export function blast(world: World, nation: number, yieldN: number, x: number, y
   return { men, people };
 }
 
+/** A plume's length at yield 1, km; its half-width at the burst, and how much more it widens per km along (PLAN 6.3b). */
+export const FALLOUT_KM = 200;
+export const FALLOUT_WIDTH_KM = 20;
+export const FALLOUT_SPREAD = 0.3;
+/** Days in which fallout decays by half (SPEC: over years); under FALLOUT_FLOOR a cell is clean. */
+export const FALLOUT_HALF_LIFE = 365;
+export const FALLOUT_FLOOR = 0.005;
+/** A day's decay: fallout × this. */
+export const FALLOUT_DECAY = pow(0.5, 1 / FALLOUT_HALF_LIFE);
+/** At level 1: the share of each element a formation loses a day, of a cell's output lost, of a march's pace lost. */
+export const FALLOUT_ATTRITION = 0.02;
+export const FALLOUT_INCOME = 0.8;
+export const FALLOUT_SLOW = 0.5;
+/** The wind's swing with the season, radians (30°). */
+export const WIND_SWING = Math.PI / 6;
+
+/**
+ * The way the wind blows at row `y` on day `day` of the year (PLAN 6.3b): an angle, radians, on the
+ * map (0 east, π/2 south: rows grow southward). Easterlies under 30° and over 60° of latitude,
+ * westerlies between; turned WIND_SWING × sin(2π day / 365) poleward (the northern summer's).
+ */
+export function windAt(world: World, y: number, day: number): number {
+  const lat = unproject(0.5, Math.min(world.cells.h - 1, Math.max(0, y)) / world.cells.h)[1];
+  const abs = Math.abs(lat);
+  const base = abs < 30 || abs >= 60 ? Math.PI : 0;
+  // Poleward is north (−y) in the north, south (+y) in the south; westerlies turn one way, easterlies the other.
+  const pole = lat >= 0 ? -1 : 1;
+  const swing = WIND_SWING * sin((2 * Math.PI * day) / 365) * (lat >= 0 ? 1 : -1);
+  return base + (base === 0 ? 1 : -1) * pole * swing;
+}
+
+/** The day of the year of tick `tick` (0 to 364). */
+function dayOfYear(world: World): number {
+  return Math.floor((world.startDay + world.tick / 24) % 365);
+}
+
+/** Lays a burst's fallout at (x, y) of `yieldN`, downwind (PLAN 6.3b): see the head of the file. */
+export function layFallout(world: World, yieldN: number, x: number, y: number): void {
+  const length = FALLOUT_KM * pow(Math.max(1, yieldN), 1 / 3);
+  const a = windAt(world, y, dayOfYear(world));
+  const [ux, uy] = [cos(a), sin(a)];
+  const { w, h } = world.cells;
+  const g = navOf(world).grid;
+  const reach = length + FALLOUT_WIDTH_KM + FALLOUT_SPREAD * length;
+  const ry = Math.ceil(reach / 15) + 1;
+  const cy = Math.floor(y);
+  const cx = Math.floor(x);
+  for (let dy = -ry; dy <= ry; dy++) {
+    const yy = cy + dy;
+    if (yy < 0 || yy >= h) continue;
+    const row = Math.min(g.h - 1, Math.max(0, Math.floor((y + yy + 0.5) / 2)));
+    const kx = g.kx[row]!;
+    const ky = g.ky[row]!;
+    const rx = Math.ceil(reach / Math.max(1, kx)) + 1;
+    for (let dx = -rx; dx <= rx; dx++) {
+      const xx = cellX(world, cx + dx);
+      if (xx === null) continue;
+      const ex = wrapDx(world, x, xx + 0.5) * kx;
+      const ey = (yy + 0.5 - y) * ky;
+      const along = ex * ux + ey * uy;
+      const across = Math.abs(-ex * uy + ey * ux);
+      const half = FALLOUT_WIDTH_KM + FALLOUT_SPREAD * Math.max(0, along);
+      if (along < -FALLOUT_WIDTH_KM || along >= length || across >= half) continue;
+      const f = (1 - Math.max(0, along) / length) * (1 - across / half);
+      if (f <= 0) continue;
+      const c = yy * w + xx;
+      world.fallout.set(c, Math.min(1, (world.fallout.get(c) ?? 0) + f));
+    }
+  }
+}
+
+/** The fallout at cell `c` (0 where clean). */
+export function falloutAt(world: World, c: number): number {
+  return world.fallout.size === 0 ? 0 : (world.fallout.get(c) ?? 0);
+}
+
+/** A day's fallout (PLAN 6.3b): its attrition on the formations on it, then its decay. */
+function falloutDay(world: World): void {
+  if (world.fallout.size === 0) return;
+  const c = world.formations.cols;
+  const ec = world.elements.cols;
+  const w = world.cells.w;
+  const idx = elementIndex(world);
+  const hit: [number, number][] = [];
+  world.formations.forEach((id) => {
+    if (world.isWing(id)) return;
+    const f = falloutAt(world, Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!));
+    if (f > 0) hit.push([id, f]);
+  });
+  for (const [id, f] of hit.sort((a, b) => a[0] - b[0])) {
+    for (const e of idx.get(id) ?? []) applyLoss(world, e, ec.strength[e]! * FALLOUT_ATTRITION * f);
+    settleFormation(world, id);
+  }
+  for (const [cell, f] of [...world.fallout]) {
+    const left = f * FALLOUT_DECAY;
+    if (left < FALLOUT_FLOOR) world.fallout.delete(cell);
+    else world.fallout.set(cell, left);
+  }
+}
+
 /** The hour's arrivals (PLAN 6.2): each launch there by now bursts or is stopped short. */
 function arrivals(world: World): void {
   if (world.nukeLaunches.length === 0) return;
@@ -229,6 +344,7 @@ function arrivals(world: World): void {
       const yieldN = knows(world, l.nation, 'thermonuclear') ? 2 : 1;
       world.out.emit(world.tick, EventKind.NukeDetonated, l.nation, yieldN, l.tx, l.ty);
       blast(world, l.nation, yieldN, l.tx, l.ty);
+      layFallout(world, yieldN, l.tx, l.ty);
     }
   }
   world.nukeLaunches = left;
@@ -240,6 +356,7 @@ export function nuclearSystem(world: World): void {
   if (!rules) return;
   arrivals(world);
   if (!isDayStart(world.tick)) return;
+  falloutDay(world);
   const bomb = rules.techs.findIndex((t) => t.id === 'atomic_bomb');
   const nc = world.nations.cols;
   // A dead nation's stockpile goes with it.

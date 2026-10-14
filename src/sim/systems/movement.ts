@@ -74,6 +74,7 @@ import { noteMove } from './elements';
 import { spawnPoint } from './production';
 import { orderSail, sailStep } from './sail';
 import { blocOf } from './supply';
+import { FALLOUT_SLOW, falloutAt } from './nuclear';
 
 /** Share of each hour a formation marches (rest, forming up, roads): infantry ≈ 29 km/day. */
 export const MARCH_DUTY = 0.3;
@@ -457,7 +458,9 @@ export function movementSystem(world: World): void {
       if (dx > 1) dx -= w; // wrap
       if (dx < -1) dx += w;
       const ground = world.cells.terrain[b]!;
-      const segHours = (stepKm(nav.grid, by > ay ? ay : by, dx, by - ay) * costRow[ground]!) / (kmPerHour * rule.terrainSpeed[ground]!);
+      let segHours = (stepKm(nav.grid, by > ay ? ay : by, dx, by - ay) * costRow[ground]!) / (kmPerHour * rule.terrainSpeed[ground]!);
+      // Fallout on the cell (PLAN 6.3b): slower across it.
+      if (world.fallout.size > 0) segHours /= 1 - FALLOUT_SLOW * falloutAt(world, b);
       const left = segHours * (1 - frac);
       if (budget >= left) {
         budget -= left;
