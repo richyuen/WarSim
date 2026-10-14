@@ -23,7 +23,46 @@ quick sweep as a smoke test.
 
 ## Phase 4 — Naval
 
+- [ ] 4.12 Critic R5-B4 (report of 2026-10-14 on `c850346`): a sea battle shows both sides. The
+  ticker's sea-battle row (ADR-303: "a T2 view of both fleets") flies to the British carrier at
+  the battle's centre while the German fleets it fights are 23.7 cells away, off the screen: no
+  German ship, no fire, no carrier planes; at 20 m/px a carrier group is seven small pills
+  (`critic/c5_j.json`, `critic/c5_e_6131.json`, `critic/c5_d_6131.json`). The critic's fix:
+  frame both sides (zoom out to the span when it exceeds T2, or centre between them); a
+  carrier's strike drawn as sorties flying to its target; ships large enough to read at
+  20 m/px.
+  AT: e2e: a sea battle's ticker row on seed 6131 brings both sides' fleets on the screen at
+  once, each with a ship drawn, and their fire within the battle's first hours.
+
 ## Phase 5 — Air
+
+- [ ] 5.9 Critic R5-B1 (report of 2026-10-14 on `c850346`), first of three: the air war seen at
+  T3. No plane, bomb or flak is drawn there, by design: none in 17 live hours at 20 m/px over a
+  war (`critic/c5_b_8317.json`). The critic's fix: sorties, bombs and strafing drawn at T3 over
+  the men they hit.
+  AT: e2e: at T3 over a land battle with a strike in its hours, the strike's aircraft and its
+  bombs are drawn over the formation it hits (pixels and the view's state), and nothing of it
+  after.
+- [ ] 5.10 Critic R5-B1, second: the air-superiority mode is read. On day 20 of a war it shows 2
+  of 515 zones held; Germany's zones are grey on a grey country, and its legend names no
+  nation (`critic/c5_h_8317.json`). The critic's fix: a legend by nation and a tint or
+  hatching that stands out from the political colours.
+  AT: e2e: in the mode, a zone a nation holds differs from a zone no one holds (pixels) and the
+  legend or the cursor names its holder.
+- [ ] 5.11 Critic R5-B1, third: the air war in what is read afterwards. No air event reaches the
+  history, the ticker, the charts, the ranking or the nation panel (`critic/c5_g_5519.json`).
+  The critic's fix: air battles and raids in the history and the ticker; aircraft, losses and
+  bomb damage in the nation panel and the charts.
+  AT: e2e: in a war with air fights, the ticker and the history have their rows and the nation
+  panel the nation's aircraft and losses; a unit test of the rows.
+- [ ] 5.12 Critic R5-B2: the AI's air war keeps flying. Seed 7321: mean sorties aloft 19.1 in
+  year 1, 11.7 in year 5, then 0.2 to 1.8 in every year from 13 to 25 while the wings grow from
+  132 to 236; 345 air fights in year 1, 111 in years 13 to 25 together; 0 to 16 wings with a
+  mission at a year's end (`critic/c5_headless_7321.json`). The critic's fix: look first at the
+  air AI's tasking; keep the wings of nations at war flying; lay up or disband wings no one
+  flies.
+  AT: a headless run of seed 7321 for 25 years: in every year with a war, sorties aloft in each
+  year from 13 on at least a third of year 5's.
 
 ## Phase 6 — Nuclear AI
 
@@ -38,6 +77,9 @@ quick sweep as a smoke test.
 - [ ] 6.5 Consequences: relations, alliance unity, outrage, economic shock, peace/retaliation responses.
   AT: tests per consequence; the history log has a nuke entry with yield and casualties.
 - [ ] 6.6 Nuke FX at every tier (flash, shockwave, mushroom cloud, fallout overlay), alert banner, auto-pause option, go-to button.
+  From the critic's report of 2026-10-14 (R5-B5, run 5 on `c850346`): AoC has a nuke among its
+  God tools; SPEC's God Mode grants warheads and forces a strike, and no task of this phase
+  has it yet. It comes with this one: a God Mode strike at a cell, its FX the AI's.
   AT: screenshots at T0/T1/T2 viewed.
 - [ ] 6.7 Scripted AI nuclear strike demo (seeded scenario where the AI *decides* to strike, not God Mode).
   AT: e2e passes and asserts that the decision record came from AI utility.
@@ -284,6 +326,11 @@ quick sweep as a smoke test.
   `critic/c4_d_3889.json`). What the critic asks: revolts return land to a core owner or a
   neighbour first; weak statelets are absorbed; a run whose count of living nations rises
   for 20 years fails.
+  From the critic's report of 2026-10-14 (R5-B3, run 5 on `c850346`; deferred by ADR-58, not
+  disputed, logged once in PROGRESS): still so. Seed 7321: 93 nations alive in year 1, 149 in
+  year 25, 180 founded in play; seed 5519 in the browser: 54 nations of generated names after
+  12 years, "Free Inner Mongolia III" among them (`critic/c5_headless_7321.json`,
+  `critic/c5_g_5519.json`). What the critic asks is as in run 4.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.

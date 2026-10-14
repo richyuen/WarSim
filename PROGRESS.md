@@ -15329,3 +15329,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   not a balance verdict (ADR-58).
 - **Phase 5 done.** The critic is due (a phase review ticked since its report, ADR-59).
 - **Next:** the critic run (PROMPT step 2a), then PLAN 6.
+
+## 2026-10-14 — The critic's fifth report, on `c850346` (Phase 5, air), filed
+
+- **Critic run 5** (PROMPT step 2a, after the Phase 5 review): map 6, diplomacy 6, dynamics 5,
+  God Mode 5, editor 6, stats 5, UI 6, performance 6, stability 7; semantic zoom 6, naval 5,
+  tanks 5, aircraft 4, nuclear 0. **5 blocking.**
+- **Filed:** R5-B4 (a sea battle shows one side) PLAN 4.12; R5-B1 (the air war unseen and
+  unread) PLAN 5.9 to 5.11, a cause each; R5-B2 (the AI's air war fades out) PLAN 5.12; R5-B5
+  (no nuclear weapons) is Phase 6, its God Mode nuke a line under 6.6; R5-B3 (statelets) a
+  line under 1.42.
+- **Deferred (ADR-58), logged once:** R5-B3, the world shatters into statelets (seed 7321: 93
+  nations alive in year 1, 149 in year 25). Balance, waits for Phase 7; not disputed.
+- **Next:** PLAN 4.12.
