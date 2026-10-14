@@ -29,8 +29,10 @@ export function historyText(r: HistoryRow): string {
   const kind = `history.${kindName(r.kind)}`;
   const key = r.as && `${kind}.${r.as}` in en ? `${kind}.${r.as}` : kind;
   const none = `${key}.none`;
-  // A sea battle's sides carry the ships each lost (PLAN 4.3c): {na} and {nb}.
-  const ships = ra === 'side' ? { na: seaSide(r.a).ships, nb: seaSide(r.b).ships } : {};
+  // A sea battle's sides carry the ships each lost (PLAN 4.3c), the air's rows their aircraft or
+  // what their bombs took (PLAN 5.11a): {na} and {nb}.
+  const count = (v: number): string => v.toLocaleString('en-US');
+  const ships = ra === 'side' || rb === 'side' ? { na: count(ra === 'side' ? seaSide(r.a).ships : 0), nb: count(rb === 'side' ? seaSide(r.b).ships : 0) } : {};
   const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships });
   return s.charAt(0).toLocaleUpperCase() + s.slice(1);
 }

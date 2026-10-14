@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-373 · 2026-10-14 · accepted — The month's air war in the history log and the ticker (PLAN 5.11a)
+
+- **Found** (the critic's R5-B1, run 5): no air event reached the history, the ticker, the
+  charts, the ranking or the nation panel. PLAN 5.11 split in three: this the log and the
+  ticker; 5.11b the nation panel; 5.11c the charts.
+- **Decision.**
+  - The world keeps the month's air war (`world.airMonth`, state, saved while not empty): each
+    air fight with losses is tallied under the two nations that lead its sides (the most aircraft
+    in it), with the aircraft each side lost; each strike under its nation and each nation it
+    hit, with what it took.
+  - At the month's end (`runEconomyMonth`, with the convoy raids) the log takes the AIR_ROWS (3)
+    largest air wars by the aircraft lost (`AirWar`, 51: each side its nation and its losses)
+    and the three largest raids by what they took (`AirRaids`, 52); then the tally is cleared.
+    All the month's tallies would be about 19 rows a month on seed 99, more than the rest of the
+    log; three of each tell the air war's turns.
+  - Both are major events of the ticker: one row of each a month, the largest. Their sound is a
+    new cue, `air`, the quietest (an engine's drone passing): heard only with no other news.
+  - A row's counts are written with thousands' separators ("124,001").
+- **The pin moves** 76983901 → a0896a3a: the state records the tally and the log the rows. A
+  year of seed 99 compared part by part: `history.rows` 197 → 253 rows and `world.airMonth`, every
+  other part bit for bit. No rule changed.
+- **Tests.** `airHistory1938.test.ts` (new): seed 1, Germany at war with Poland: at the first
+  month's end the rows are the three largest of each of the month's last tally, told by name
+  with their numbers; the ticker has one of each, the largest; a game saved twenty days in goes
+  on to the same rows and hash. `sound.test.ts`: the air rows' cue. Seen on the page (a probe,
+  not kept): on 1 February 1938 the ticker's "Italy and France fought in the air this month:
+  Italy lost 174 aircraft, France 195" and "Germany's air force struck Poland this month: 124001
+  men, guns and vehicles lost" (the separators since), and the history's six rows.
+
 ### ADR-372 · 2026-10-14 · accepted — The air-superiority mode, read (PLAN 5.10)
 
 - **Found** (the critic's R5-B1, run 5): in the mode an air zone held was tinted with its

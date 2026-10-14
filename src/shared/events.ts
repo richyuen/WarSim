@@ -127,6 +127,17 @@ export const EventKind = {
   FlakFired: 49,
   /** A strike's bombs on a formation (PLAN 5.9): a = the formation hit, b = the wing; (x, y) = the formation's place. Drawn at T3 over its men. */
   StrikeHit: 50,
+  /**
+   * A month's air war of two nations (PLAN 5.11a, `airMonth`): their fights with losses, each the
+   * leader of its side in them; a and b each its nation and the aircraft it lost, as nation +
+   * SIDE_SHIPS × aircraft (`seaSide`); (x, y) = its first such fight of the month. Global.
+   */
+  AirWar: 51,
+  /**
+   * A month's strikes of a nation on another (PLAN 5.11a): a = the striker; b = the nation struck
+   * and the men, guns and vehicles it lost, as nation + SIDE_SHIPS × them; (x, y) = the first.
+   */
+  AirRaids: 52,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

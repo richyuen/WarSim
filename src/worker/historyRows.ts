@@ -27,7 +27,7 @@
  * Albania ended: Albania is now a puppet of Italy").
  */
 import { EventKind } from '../shared/events';
-import { HISTORY_ROLES, seaSide, TICKER_HOURS, TICKER_KINDS, TICKER_ROWS, type HistoryAs, type HistoryRole, type HistoryRow, type TickerRow } from '../shared/history';
+import { HISTORY_ROLES, seaSide, TICKER_HOURS, TICKER_KINDS, TICKER_ONE_AN_HOUR, TICKER_ROWS, type HistoryAs, type HistoryRole, type HistoryRow, type TickerRow } from '../shared/history';
 import { HISTORY_STRIDE } from '../sim/history';
 import type { World } from '../sim/world';
 
@@ -142,10 +142,16 @@ export function tickerRows(world: World, nationName: (id: number) => string): Ti
     for (let j = i + HISTORY_STRIDE; j < rows.length && rows[j] === rows[i]; j += HISTORY_STRIDE) if (is(j)) return true;
     return false;
   };
+  /** tick * 256 + kind of the one-an-hour rows taken (PLAN 5.11a). */
+  const taken = new Set<number>();
   for (let i = rows.length - HISTORY_STRIDE; i >= 0 && out.length < TICKER_ROWS; i -= HISTORY_STRIDE) {
     const [tick, kind, a, b, x, y] = [rows[i]!, rows[i + 1]!, rows[i + 2]!, rows[i + 3]!, rows[i + 4]!, rows[i + 5]!];
     if (world.tick - tick > TICKER_HOURS) break;
     if (!TICKER_KINDS.has(kind)) continue;
+    if (TICKER_ONE_AN_HOUR.has(kind)) {
+      if (taken.has(tick * 256 + kind)) continue;
+      taken.add(tick * 256 + kind);
+    }
     if (kind === EventKind.NationEliminated) {
       let told = false;
       for (let j = i - HISTORY_STRIDE; j >= 0 && rows[j] === tick && !told; j -= HISTORY_STRIDE) told = (rows[j + 1] === EventKind.NationCollapsed || rows[j + 1] === EventKind.NationAnnexed) && rows[j + 2] === a;
@@ -154,8 +160,10 @@ export function tickerRows(world: World, nationName: (id: number) => string): Ti
     if (kind === EventKind.PeaceSigned && annexedThen(i, b, a)) continue;
     const at = PLACE_OF_B.has(kind) ? b : a;
     const placed = !Number.isNaN(x) && !Number.isNaN(y);
-    const rb = (HISTORY_ROLES[kind] ?? ['number', 'number'])[1];
-    const row: TickerRow = { i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: nation(a), bn: rb === 'nation' ? nation(b) : '', of: '' };
+    const [ra, rb] = HISTORY_ROLES[kind] ?? ['number', 'number'];
+    // A side is its nation and a count (PLAN 5.11a: the air's rows).
+    const who = (role: HistoryRole, v: number): string => (role === 'nation' ? nation(v) : role === 'side' ? nation(seaSide(v).nation) : '');
+    const row: TickerRow = { i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: ra === 'side' ? who(ra, a) : nation(a), bn: who(rb, b), of: '' };
     const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
     if (over) [row.as, row.cn] = ['puppet', over];
     out.push(row);

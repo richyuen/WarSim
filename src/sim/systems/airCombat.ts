@@ -8,7 +8,7 @@
  * `antiAir`): what is below a sortie of an enemy's fires on it.
  */
 import { EventKind } from '../../shared/events';
-import { Domain, type UnitRule, type World } from '../world';
+import { Domain, tallyAir, type UnitRule, type World } from '../world';
 import { applyLoss, cellX, elementIndex, loopW, settleFormation, wrapDx } from './elements';
 import { seaKm } from './navalCombat';
 import { bombIndustry } from './bombing';
@@ -105,10 +105,18 @@ export function airCombat(world: World, byZone: Map<number, number[]>): void {
   for (const [e, units] of [...loss].sort((a, b) => a[0] - b[0])) applyLoss(world, e, units);
   fought.forEach(({ zone, wings }, k) => {
     let lost = 0;
+    // The month's tally (PLAN 5.11a): each side's aircraft and losses by nation, the side of the
+    // fight's first wing and the other.
+    const first = fc.nation[wings[0]!]!;
+    const sides = [new Map<number, number>(), new Map<number, number>()];
+    const lostBy = [0, 0];
     for (const id of wings) {
       const was = before.get(id)!;
       const now = aircraftOf(world, id);
       lost += was - now;
+      const side = world.wars.atWar(first, fc.nation[id]!) ? 1 : 0;
+      sides[side]!.set(fc.nation[id]!, (sides[side]!.get(fc.nation[id]!) ?? 0) + was);
+      lostBy[side] = lostBy[side]! + was - now;
       const s = world.sorties.get(id);
       const p = s && sortieAt(s, world.tick, loopW(world));
       settleFormation(world, id);
@@ -116,6 +124,12 @@ export function airCombat(world: World, byZone: Map<number, number[]>): void {
       if (p && p.leg !== Leg.Back && was - now >= BREAK_OFF * was) turnHome(world, id);
     }
     world.out.emit(world.tick, EventKind.AirBattle, zone, lost, places[k]!.x, places[k]!.y);
+    if (lost > 0 && sides[1]!.size > 0) {
+      // Each side's leader: the nation with the most aircraft in the fight (of equals, the lowest id).
+      const lead = sides.map((m) => [...m].sort((p, q) => q[1] - p[1] || p[0] - q[0])[0]![0]);
+      const swap = lead[0]! > lead[1]!;
+      tallyAir(world, 1, swap ? lead[1]! : lead[0]!, swap ? lead[0]! : lead[1]!, swap ? lostBy[1]! : lostBy[0]!, swap ? lostBy[0]! : lostBy[1]!, places[k]!.x, places[k]!.y);
+    }
   });
 }
 
@@ -316,10 +330,16 @@ export function strikes(world: World): void {
     }
     let took = 0;
     const hit = new Set<number>();
+    // What it took of each nation (PLAN 5.11a: the month's tally).
+    const tookOf = new Map<number, number>();
     for (const [t, units] of loss) {
-      took += applyLoss(world, t, units);
+      const lost = applyLoss(world, t, units);
+      took += lost;
       hit.add(ec.formation[t]!);
+      const struck = fc.nation[ec.formation[t]!]!;
+      tookOf.set(struck, (tookOf.get(struck) ?? 0) + lost);
     }
+    for (const [struck, n] of [...tookOf].sort((a, b) => a[0] - b[0])) tallyAir(world, 0, fc.nation[id]!, struck, 1, n, s.tx, s.ty);
     for (const g of [...hit].sort((a, b) => a - b)) {
       // Where its bombs fell, for the view at T3 (PLAN 5.9): the formation, before it may go.
       world.out.emit(world.tick, EventKind.StrikeHit, g, id, fc.x[g]!, fc.y[g]!);

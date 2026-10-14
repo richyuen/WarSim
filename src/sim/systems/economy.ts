@@ -25,7 +25,8 @@ import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { pow } from '../core/dmath';
 import { cellKm2ByRow } from '../landCounts';
-import { seaOf, type World } from '../world';
+import { seaOf, type AirTally, type World } from '../world';
+import { SIDE_SHIPS } from '../../shared/history';
 import { bleedFormation } from './elements';
 import { convoyLosses, convoyShare } from './convoys';
 import { BLOCKADE_SHARE, blockadedCells } from './seaControl';
@@ -147,6 +148,9 @@ export function monthlyAccounts(
   return { gross, expenses, upkeep, held, population };
 }
 
+/** Rows of the month's air war in the log, of each kind (PLAN 5.11a): its largest, so that the log stays a log of the war's turns. */
+export const AIR_ROWS = 3;
+
 /** One economic month (exported for tests and God Mode). */
 export function runEconomyMonth(world: World, tables: EconomyTables): void {
   const nc = world.nations.cols;
@@ -158,6 +162,15 @@ export function runEconomyMonth(world: World, tables: EconomyTables): void {
     const seed = z.seedCell[r.zone]!;
     world.out.emit(world.tick, EventKind.ConvoyRaided, r.raider, r.bloc, (seed % world.cells.w) + 0.5, Math.floor(seed / world.cells.w) + 0.5);
   }
+  // The month's air war (PLAN 5.11a): rows of the AIR_ROWS largest fights of two nations, by the
+  // aircraft lost, then of the AIR_ROWS largest strikes of a nation on another, by what they took;
+  // the least first of each (the ticker takes an hour's last). Then anew.
+  const size = (t: AirTally): number => (t.fight === 1 ? t.va + t.vb : t.vb);
+  const order = (p: AirTally, q: AirTally): number => size(p) - size(q) || p.a - q.a || p.b - q.b;
+  const largest = (fight: number): AirTally[] => world.airMonth.filter((r) => r.fight === fight).sort(order).slice(-AIR_ROWS);
+  for (const t of largest(1)) world.out.emit(world.tick, EventKind.AirWar, t.a + SIDE_SHIPS * Math.round(t.va), t.b + SIDE_SHIPS * Math.round(t.vb), t.x, t.y);
+  for (const t of largest(0)) world.out.emit(world.tick, EventKind.AirRaids, t.a, t.b + SIDE_SHIPS * Math.round(t.vb), t.x, t.y);
+  world.airMonth = [];
   const deserting = new Uint8Array(world.nations.highWater);
   world.nations.forEach((n) => {
     if (nc.living[n] !== 1) return;

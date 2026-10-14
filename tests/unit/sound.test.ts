@@ -55,6 +55,8 @@ describe('sound cues (PLAN 3.12d)', () => {
     expect(cueOfKind(EventKind.CapitalCaptured)).toBe('capital');
     expect(cueOfKind(EventKind.NationRevived)).toBe('return');
     for (const k of [EventKind.NationEliminated, EventKind.NationCollapsed, EventKind.NationAnnexed]) expect(cueOfKind(k)).toBe('death');
+    // The month's air war (PLAN 5.11a), the quietest.
+    for (const k of [EventKind.AirWar, EventKind.AirRaids]) expect(cueOfKind(k)).toBe('air');
     for (const k of Object.values(EventKind)) expect(cueOfKind(k) !== null, `kind ${k}`).toBe(TICKER_KINDS.has(k));
   });
 

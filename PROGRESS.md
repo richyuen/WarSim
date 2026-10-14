@@ -15405,3 +15405,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin holds** at 76983901.
 - **The gate:** green (the related unit tests 1,021 of 1,021; the pin; the changed spec).
 - **Next:** PLAN 5.11.
+
+## 2026-10-14 — PLAN 5.11a: the month's air war in the history log and the ticker (ADR-373)
+
+- **Done:** PLAN 5.11 split (5.11a log and ticker, 5.11b nation panel, 5.11c charts). The
+  month's air tally (state); at its end the three largest air wars and raids in the log; one of
+  each in the ticker, with a quiet `air` cue.
+- **Tests:** `airHistory1938` (new), `sound` green.
+- **Looked at** (a probe on the page): the ticker's two air rows on 1 February 1938 and the
+  history's six.
+- **The pin moves** 76983901 → a0896a3a (the tally and the rows; every other part of the state
+  bit for bit, ADR-373).
+- **The gate:** the related unit tests (1,038 of 1,039) red only by `scenario1938`'s build time of
+  BLOCKERS (green alone); the pin, build and parity green by hand.
+- **Next:** PLAN 5.11b.

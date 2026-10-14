@@ -413,6 +413,8 @@ class WorldCore implements Stateful {
       // Sea control (PLAN 4.4a): [zones + 1, holders..., days...], only while a zone is held.
       ...(w.seaControl === null || !w.seaControl.holder.some((h) => h !== 0) ? [] : [{ name: 'world.seaControl', dtype: 'f64' as const, data: Float64Array.from([w.seaControl.holder.length, ...w.seaControl.holder, ...w.seaControl.days]) }]),
       ...(w.seaBattles.length === 0 ? [] : [{ name: 'world.seaBattles', dtype: 'f64' as const, data: Float64Array.from(w.seaBattles.flatMap((b) => [b.fleets.length, ...b.fleets, ...b.ships, b.range, b.a, b.b, b.lostA, b.lostB, b.x, b.y])) }]),
+      // The month's air war (PLAN 5.11a): [fight, a, b, va, vb, x, y] each, only while there is one.
+      ...(w.airMonth.length === 0 ? [] : [{ name: 'world.airMonth', dtype: 'f64' as const, data: Float64Array.from(w.airMonth.flatMap((t) => [t.fight, t.a, t.b, t.va, t.vb, t.x, t.y])) }]),
     ];
   }
 
@@ -491,6 +493,9 @@ class WorldCore implements Stateful {
       at += 7;
       w.seaBattles.push({ fleets, ships, range, a, b, lostA, lostB, x, y });
     }
+    w.airMonth = [];
+    const air = sections.find((s) => s.name === 'world.airMonth')?.data as Float64Array | undefined;
+    for (let at = 0; air && at + 7 <= air.length; at += 7) w.airMonth.push({ fight: air[at]!, a: air[at + 1]!, b: air[at + 2]!, va: air[at + 3]!, vb: air[at + 4]!, x: air[at + 5]!, y: air[at + 6]! });
     // Derived caches describe the previous state: drop them (rebuilt on demand).
     w.elementIndex = null;
     w.contacts = null;
@@ -628,6 +633,30 @@ export function provinceCellsOf(world: World): { start: Int32Array; cells: Int32
 export type { SeaControl } from './systems/seaControl';
 import type { SeaControl } from './systems/seaControl';
 import type { Embarked } from './systems/amphibious';
+
+/**
+ * A tally of the month's air war (PLAN 5.11a): `fight` 1 for the fights of nations a and b (a
+ * the lower id; va, vb the aircraft each side lost), 0 for the strikes of a on b (va the strikes,
+ * vb what they took); (x, y) where the first was.
+ */
+export interface AirTally {
+  fight: number;
+  a: number;
+  b: number;
+  va: number;
+  vb: number;
+  x: number;
+  y: number;
+}
+
+/** Adds to the month's tally of `fight` of a and b (PLAN 5.11a), made where (x, y) is the first. */
+export function tallyAir(world: World, fight: number, a: number, b: number, va: number, vb: number, x: number, y: number): void {
+  const t = world.airMonth.find((r) => r.fight === fight && r.a === a && r.b === b);
+  if (t) {
+    t.va += va;
+    t.vb += vb;
+  } else world.airMonth.push({ fight, a, b, va, vb, x, y });
+}
 
 export interface SeaBattle {
   fleets: number[];
@@ -953,6 +982,12 @@ export class World {
   paths = new Map<number, Int32Array>();
   /** The sea battles going on (PLAN 4.3a, 4.3c; `navalCombatSystem`): state, saved while there is one. */
   seaBattles: SeaBattle[] = [];
+  /**
+   * The month's air war so far (PLAN 5.11a): its fights with losses by the two nations leading
+   * them and its strikes by striker and struck, told in the log at the month's end
+   * (`runEconomyMonth`) and cleared. State, saved while not empty.
+   */
+  airMonth: AirTally[] = [];
   /** The land formations aboard transports (PLAN 4.5a, `amphibiousSystem`), by id: state, saved while not empty. */
   embarked = new Map<number, Embarked>();
   /**

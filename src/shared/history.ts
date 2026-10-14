@@ -41,6 +41,8 @@ export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, Histo
   [EventKind.WarEnded]: ['nation', 'nation'],
   [EventKind.SeaBattle]: ['side', 'side'],
   [EventKind.ConvoyRaided]: ['nation', 'nation'],
+  [EventKind.AirWar]: ['side', 'side'],
+  [EventKind.AirRaids]: ['nation', 'side'],
 };
 
 /** Stable English type name of a kind (filters, CSV/JSON `type`). */
@@ -88,7 +90,12 @@ export const TICKER_KINDS: ReadonlySet<number> = new Set<number>([
   EventKind.NationCollapsed,
   EventKind.NationAnnexed,
   EventKind.NationRevived,
+  // The month's air war (PLAN 5.11a): its largest row of each kind (`tickerRows`).
+  EventKind.AirWar,
+  EventKind.AirRaids,
 ]);
+/** Kinds of which the ticker takes one row an hour, the last logged: a month's air rows, logged the largest last. */
+export const TICKER_ONE_AN_HOUR: ReadonlySet<number> = new Set<number>([EventKind.AirWar, EventKind.AirRaids]);
 /** The ticker holds this many rows at most, */
 export const TICKER_ROWS = 5;
 /** and none older than this many hours of the game (30 days). */
