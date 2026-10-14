@@ -8491,3 +8491,19 @@ Of 4.12 (open in PLAN.md):
 
   - [x] 4.12a The row frames both sides: the snapshot's sea battle has its fleets' box; the
     view holds it in the band between the side panels, out to T1 (ADR-368).
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+
+Of 4.12 (open in PLAN.md):
+
+  - [x] 4.12b A carrier's strike drawn as sorties flying from the carrier to its target (with
+    PLAN 5.9's drawing of a strike, if that comes first).

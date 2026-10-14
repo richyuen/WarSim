@@ -60,7 +60,7 @@ import { ARMOR_PEN, COOLDOWN } from './combat';
 import { wingRange } from './air';
 import { NAVAL_STRIKE_FIRE, shipEffectiveness } from './airCombat';
 import { AIR_DETECTION, airSuperiority } from './airSuperiority';
-import { Leg, sortieAt } from './sorties';
+import { Leg, sortieAt, type Sortie } from './sorties';
 
 /** Ships removed per hour by one ship per point of `hard` against a target of 1 hit point. */
 export const SEA_FIRE_SCALE = 2;
@@ -569,4 +569,49 @@ export function navalCombatSystem(world: World): void {
   }
   // A battle with no contact this hour is over.
   for (const rec of [...records]) if (!seen.has(rec)) endBattle(world, rec);
+}
+
+/**
+ * The flights of the carriers' strikes (PLAN 4.12b), for the page: derived from the state, never
+ * stored, as `sortieAt` is. A carrier's wing in reach of its battle's range strikes once in
+ * CARRIER_CYCLE hours (`navalCombatSystem`), at once; its flight is drawn as a sortie that is over
+ * its target at that hour: from its fleet to the nearest enemy fleet of the battle with a ship on
+ * the surface, at its template's speed, and back. The strikes of the cycle's hour just gone (the
+ * flight home) and of the next (the flight out). A battle's first strike may come after the hour
+ * just gone: its flight home is drawn all the same (the record keeps no first hour). Reads only.
+ */
+export function carrierStrikes(world: World): { wing: number; nation: number; sortie: Sortie }[] {
+  const out: { wing: number; nation: number; sortie: Sortie }[] = [];
+  if (world.seaBattles.length === 0 || !world.rules) return out;
+  const rules = world.rules;
+  const air = carrierWings(world);
+  const c = world.formations.cols;
+  const ec = world.elements.cols;
+  const idx = elementIndex(world);
+  const afloat = (id: number): boolean => (idx.get(id) ?? []).some((e) => ec.strength[e]! > 0 && rules.units[ec.unit[e]!]!.cls !== 'ss');
+  const last = world.tick - (world.tick % CARRIER_CYCLE);
+  for (const rec of world.seaBattles) {
+    for (const sf of rec.fleets) {
+      const wings = air.get(sf);
+      if (!wings || !world.formations.has(sf)) continue;
+      let target = -1;
+      let km = Infinity;
+      for (const o of rec.fleets) {
+        if (!world.formations.has(o) || !world.wars.atWar(c.nation[sf]!, c.nation[o]!) || !afloat(o)) continue;
+        const d = seaKm(world, c.x[sf]!, c.y[sf]!, c.x[o]!, c.y[o]!);
+        if (d < km) [target, km] = [o, d];
+      }
+      if (target < 0) continue;
+      for (const wing of wings) {
+        const kmh = rules.templates[c.template[wing]!]?.speedKmh ?? 0;
+        if (kmh <= 0 || CARRIER_SPOT_SHARE * wingRange(world, wing) < rec.range) continue;
+        const hours = km / kmh;
+        for (const strike of [last, last + CARRIER_CYCLE]) {
+          if (strike - hours > world.tick || strike + hours < world.tick - 1) continue;
+          out.push({ wing, nation: c.nation[wing]!, sortie: { bx: c.x[sf]!, by: c.y[sf]!, tx: c.x[target]!, ty: c.y[target]!, launch: strike - hours, kmh, km, over: 0 } });
+        }
+      }
+    }
+  }
+  return out;
 }

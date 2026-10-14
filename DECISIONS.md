@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-369 · 2026-10-14 · accepted — A carrier's strike is drawn as its flight (PLAN 4.12b)
+
+- **Found** (the critic's R5-B4, run 5): a carrier's wings strike the enemy's ships of its sea
+  battle at once, once in `CARRIER_CYCLE` hours (PLAN 5.4d), with no sortie and no event: on
+  the screen a carrier battle had no plane.
+- **Decision.** `carrierStrikes` (navalCombat.ts, reads only) derives each strike's flight from
+  the state, as `sortieAt` derives a sortie's: from the carrier's fleet to the nearest enemy
+  fleet of its battle with a ship on the surface, at its wing's speed, over the target at the
+  strike's hour (a multiple of `CARRIER_CYCLE`) and back; the cycle's strike just gone (flying
+  home) and the next (flying out). The snapshot's sortie section carries them as naval bombers'
+  sorties, drawn as every sortie is (PLAN 5.7a). A battle's first strike may come after the
+  hour just gone; its flight home is drawn all the same (the record keeps no first hour).
+- **The pin holds**: nothing of the state changes.
+- **Tests.** `carrierStrikes1938.test.ts` (new): seed 6131's first carrier battle: each flight
+  from a fleet of the battle to an enemy's, over it at a strike's hour. `seaBattleSeen1938`:
+  sorties from the battle's fleets drawn in its hours (2; 0 without this change).
+  `sea-battle-strike.png`: a British strike's vee over the Netherlands on its way to the German
+  fleets off the Jade.
+
 ### ADR-368 · 2026-10-14 · accepted — A sea battle's row frames both sides (PLAN 4.12a)
 
 - **Found** (the critic's R5-B4, run 5): the ticker's sea-battle row flew to the battle's place

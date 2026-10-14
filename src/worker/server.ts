@@ -22,7 +22,7 @@ import { historyRows, tickerNews, tickerRows } from './historyRows';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
-import { AT_PORT_CELLS } from '../sim/systems/navalCombat';
+import { AT_PORT_CELLS, carrierStrikes } from '../sim/systems/navalCombat';
 import { aircraftOf } from '../sim/systems/airCombat';
 import { isTransport, wingAircraft } from '../sim/systems/air';
 import { airbaseRoom } from '../sim/data/airbases';
@@ -1407,7 +1407,7 @@ const ROLE_OF_CLASS: Record<string, number> = { fighter: SortieRole.fighter, cas
 /** The snapshot's sorties (PLAN 5.7a): those in the air in the hour before the tick (the hour the page plays) or at it, by wing id. */
 export function sortieSection(world: World): Float32Array {
   const rows: number[] = [];
-  if (world.sorties.size === 0 || !world.rules) return new Float32Array(0);
+  if (!world.rules) return new Float32Array(0);
   const c = world.formations.cols;
   for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
     if (!world.formations.has(id) || sortieEnd(s) <= world.tick - 1 || s.launch > world.tick) continue;
@@ -1415,6 +1415,8 @@ export function sortieSection(world: World): Float32Array {
     const role = first ? (ROLE_OF_CLASS[world.rules.units[first.unit]!.cls] ?? SortieRole.fighter) : SortieRole.fighter;
     rows.push(s.bx, s.by, s.tx, s.ty, s.launch - world.tick, s.kmh, s.km, s.over, c.nation[id]!, aircraftOf(world, id), role);
   }
+  // A carrier's strikes in its sea battle (PLAN 4.12b): their flights, as sorties of naval bombers.
+  for (const { wing, nation, sortie: s } of carrierStrikes(world)) rows.push(s.bx, s.by, s.tx, s.ty, s.launch - world.tick, s.kmh, s.km, s.over, nation, aircraftOf(world, wing), SortieRole.navalBomber);
   return Float32Array.from(rows);
 }
 

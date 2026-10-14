@@ -35,8 +35,7 @@ quick sweep as a smoke test.
   once, each with a ship drawn, and their fire within the battle's first hours.
   Split 2026-10-14: three causes, one a commit.
   - [x] 4.12a The row frames both sides: the snapshot's sea battle has its fleets' box; the […]
-  - [ ] 4.12b A carrier's strike drawn as sorties flying from the carrier to its target (with
-    PLAN 5.9's drawing of a strike, if that comes first).
+  - [x] 4.12b A carrier's strike drawn as sorties flying from the carrier to its target (with […]
   - [ ] 4.12c Ships large enough to read at 20 m/px: a carrier group was seven small pills.
 
 ## Phase 5 — Air

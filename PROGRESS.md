@@ -15356,3 +15356,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   Frisia, German off the Jade, both left of the ranking; taken in with `sea-battle-mark-t0.png`.
 - **The gate:** green (the related unit tests 172 of 172; the pin; the changed spec).
 - **Next:** PLAN 4.12b.
+
+## 2026-10-14 — PLAN 4.12b: a carrier's strike is drawn as its flight (ADR-369)
+
+- **Done:** `carrierStrikes` derives a carrier's strike's flight (to the nearest enemy fleet,
+  over it at the strike's hour); the snapshot sends them as sorties.
+- **Tests:** `carrierStrikes1938` (new); `seaBattleSeen1938` (sorties from the battle's fleets:
+  2, and 0 with the change stashed) green by hand.
+- **Looked at:** `docs/evidence/4.10/sea-battle-strike.png` (new): a vee of British naval
+  bombers over the Netherlands, flying for the German fleets.
+- **The pin holds** at 76983901.
+- **The gate:** green (the related unit tests 930 of 930; the pin; the changed spec).
+- **Next:** PLAN 4.12c.
