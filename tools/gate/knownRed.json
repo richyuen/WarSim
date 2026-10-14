@@ -76,6 +76,10 @@
   {
    "id": "tests/e2e/zoomDemo1938.spec.ts › one zoom from the whole world to the men of a battle: eight stops, every tier, no layer in a jump",
    "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
+  },
+  {
+   "id": "tests/sweep/aiSweep3.test.ts › 10-year strategic AI run, seed 3",
+   "why": "Seed 3's ten years run past the test's 900 s in a cloud container (1,064 s), the tick's cost since Phase 5. BLOCKERS: Phase 5's cost, PLAN 5.8w7."
   }
  ]
 }

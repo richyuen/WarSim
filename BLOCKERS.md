@@ -151,6 +151,9 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     0.603 and the air AI 0.297 ms a tick, the five years' means: 0.90 ms, 9.6 % of the tick. The
     rest moved with the game (the air war is another war): the operational AI 1.875 → 2.206,
     movement 1.080 → 1.256, supply 0.805 → 0.957, combat 1.737 → 1.497. For PLAN 7.1 (ADR-289).
+    `tests/sweep/aiSweep3.test.ts` (seed 3's ten years) ran past its 900 s here, 1,064 s, in the
+    review's third run (PLAN 5.8w7, 2026-10-14; `aiSweep1` 875 s, `aiSweep2` 839 s alone): on
+    `tools/gate/knownRed.json` until 7.1, its assertions unchanged.
   - *A march round a bay or over a river, with fleets under way* (2026-10-12, PLAN 4.7h,
     ADR-285; a cloud container, unpinned, about 5 × the budget machine's time): seed 99's
     first year, 9.87 ms a tick (hash 841d4422): combat 3.42, the operational AI 1.40,

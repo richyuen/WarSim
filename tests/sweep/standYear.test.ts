@@ -26,8 +26,9 @@ it('seed 1, every day of a year: every formation at rest stands on sure land', (
     w.formations.forEach((id) => {
       // On the march a formation is between two cells' points; a crossing has no land to stand
       // on, nor has a cell without a land pixel in the mask (an atoll): those keep their middle.
-      // A fleet stands on the mask's water (PLAN 4.2b, `fleets1938.test.ts`): of the land only.
-      if (f.moving[id] === 1 || w.afloat(id)) return;
+      // A fleet stands on the mask's water (PLAN 4.2b, `fleets1938.test.ts`): of the land only;
+      // nor a wing, a carrier's at sea with its fleet (PLAN 5.8w1).
+      if (f.moving[id] === 1 || w.offLand(id)) return;
       const [x, y] = [f.x[id]!, f.y[id]!];
       const [cx, cy] = [Math.floor(x), Math.floor(y)];
       if (w.cells.terrain[cy * W + cx] === Terrain.Crossing || landPoint(mask, W, cx, cy, true) === null) return;

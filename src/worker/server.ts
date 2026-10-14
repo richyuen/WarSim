@@ -817,7 +817,7 @@ export class SimServer {
     world.elements.forEach((e) => men.set(ec.formation[e]!, (men.get(ec.formation[e]!) ?? 0) + ec.strength[e]! * (units[ec.unit[e]!]?.menPerUnit ?? 0)));
     const out: Inspection['formations'] = [];
     const fc = world.formations.cols;
-    world.formations.forEach((f) => out.push({ id: f, nation: fc.nation[f]!, strength: fc.strength[f]!, elementMen: Math.round(men.get(f) ?? 0), elements: count.get(f) ?? 0, x: fc.x[f]!, y: fc.y[f]! }));
+    world.formations.forEach((f) => out.push({ id: f, nation: fc.nation[f]!, strength: fc.strength[f]!, elementMen: Math.round(men.get(f) ?? 0), elements: count.get(f) ?? 0, x: fc.x[f]!, y: fc.y[f]!, wing: world.isWing(f) }));
     return out;
   }
 

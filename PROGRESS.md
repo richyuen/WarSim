@@ -15132,3 +15132,102 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (292 of 293) red only by `snapshot-perf` of BLOCKERS
   (2.47 ms); the pin, build, parity and the changed spec green by hand.
 - **Next:** PLAN 5.8h, the review's last.
+
+## 2026-10-13 — PLAN 5.8h: `check:review`, cut off at its 2-hour limit; nine new reds
+
+- **Done** (recorded in `.cache/gate/review.json`, resumable): typecheck, lint, build, parity,
+  the unit tests (red only by the known `scenario1938` and `snapshot-perf`), the sweep tests,
+  e2e chunks 1 and 2. Then the run was stopped at the background limit.
+- **Red twice and not known** (the review's findings, PLAN 5.8w1 to w4):
+  - `aiSweep1`–`3`: 18 formations on day 1 in a cell no route enters.
+  - `standYear`: 6 formations at rest off sure land. Both are the carriers' naval bomber
+    groups, a wing asked as a formation of the land.
+  - `heldYears`: seed 7, tick 17,520, nation 105 holds 2 cells of nation 10 with no war.
+  - `counters1938`, `declutter1938`, `elements1938`: sums of strength.
+  - `formationPlace1938`: elements in the view.
+- **Known reds as listed:** `cityNames1938` (2), `fallen1938`, `fightSeen1938` (2).
+- **Next:** PLAN 5.8w1.
+
+## 2026-10-14 — PLAN 5.8w1: the sweeps ask the land's formations alone (ADR-356)
+
+- **Done:** `aiSweep`'s and `standYear`'s checks skip a wing as they skip a fleet (`offLand`).
+- **Tests:** `standYear` green (262 s); `aiSweep1`–`3` at the review's next run.
+- **The gate:** the whole unit suite (a helper changed: 1,386 of 1,389) red only by the three
+  timing tests of BLOCKERS (2,969 ms, 3.45 ms, 28.7 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8w2.
+
+## 2026-10-14 — PLAN 5.8w2: an annexed nation's hold on a third's land (ADR-357)
+
+- **Done:** `annexInto` gives a third nation's cell the annexed held back to its owner unless the
+  annexer is at war with it.
+- **Tests:** `annexHeld` (1, new; failed before); `heldYears` green (seeds 99 and 7, 311 s).
+- **The pin holds** at 76983901.
+- **The gate:** the related unit tests (923 of 926) red only by the three timing tests of
+  BLOCKERS (2,834 ms, 2.95 ms, 27.0 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8w3.
+
+## 2026-10-14 — PLAN 5.8w3: what is drawn against what the sim has, wings (ADR-358)
+
+- **Done:** the inspection's formations say `wing`; `counters1938`, `declutter1938` and
+  `elements1938` hold what is drawn to the formations that are drawn.
+- **Tests:** the three specs green by hand.
+- **The pin holds** at 76983901.
+- **The gate:** the related unit tests (161 of 162) red only by `snapshot-perf` of BLOCKERS
+  (4.24 ms); the pin, build, parity and the changed specs green by hand.
+- **Next:** PLAN 5.8w4.
+
+## 2026-10-14 — PLAN 5.8w4: the critic's day 21 has no German armour in contact (ADR-359)
+
+- **Done:** `formationPlace1938` steps on from day 21 to the first day with German armour in
+  contact (day 22) and asks the same of the view.
+- **Tests:** `formationPlace1938` green by hand (4 min).
+- **The gate:** green (the changed spec).
+- **Next:** PLAN 5.8h: `check:review` again.
+
+## 2026-10-14 — PLAN 5.8w5: a fleet struck from the air is not held to stand (ADR-360)
+
+- **Found:** the review's second run, cut off at its limit after the sweeps and e2e chunk 1:
+  `aiSweep1`–`3` red on day 7 (a fleet gone, its nation alive: a naval strike); the rest as
+  known.
+- **Done:** `fleetsStand` counts a fleet about an `AirStrike`, or one that lost a ship, as
+  fought.
+- **Tests:** `aiSweep1` green (875 s).
+- **The gate:** the whole unit suite (a helper changed: 1,387 of 1,390) red only by the three
+  timing tests of BLOCKERS; the pin, build and parity green by hand.
+- **Next:** PLAN 5.8h: `check:review` again.
+
+## 2026-10-14 — PLAN 5.8h: the review's third run, cut off; two new reds; the loop stopped
+
+- **Done** (on the code of `fef493d`): typecheck, lint, build, parity, the unit tests (the two
+  known), the sweep tests, e2e chunk 1 (the known `cityNames1938`); cut off at the 2-hour limit.
+- **New reds:**
+  - `aiSweep2`: a revolt's land past its bound (PLAN 5.8w6).
+  - `aiSweep3`: timed out at 900 s after 1,064 s (PLAN 5.8w7).
+  - `aiSweep1`, `heldYears`, `standYear` are green.
+- **Stopped:** a background run ends at 2 hours and every code change starts the review anew;
+  each run reaches e2e chunk 1 of 6. How to go on is put to the user.
+
+## 2026-10-14 — PLAN 5.8w6, 5.8w7: a revolt and a defection in one hour; `aiSweep3` known (ADR-361)
+
+- **Done:** `revoltLand` bounds a defection to a revolt's nation in the same tick as one more
+  area; `aiSweep3` on the known reds (its time, 1,064 s of 900; BLOCKERS: Phase 5's cost).
+- **Tests:** `revoltLandHelper` (1, new; failed before); `aiSweep2` green (839 s).
+- **The pin holds** at 76983901.
+- **The gate:** the whole unit suite (a helper changed: 1,389 of 1,391) red only by two timing
+  tests of BLOCKERS; the pin, build and parity green by hand.
+- **Next:** PLAN 5.8h: `check:review`, on the user's machine, on this commit.
+
+## 2026-10-14 — PLAN 5.8h: the review's fourth run, to its end on the user's machine; six new reds
+
+- **Done** (on the code of `0720761`, with the working tree's `package.json`, its `allowScripts`
+  for esbuild): every step in 36 minutes: typecheck, lint, build, parity, the unit tests and
+  the sweep tests green (the timing tests of BLOCKERS too), e2e chunks 1 to 6 and the perf spec.
+- **Known reds:** `fallen1938`, `zoomDemo1938`.
+- **New reds** (each red twice, the second alone):
+  - `loadedEffects1938`: no element of the loaded game in the view (PLAN 5.8w8).
+  - `markerStacks1938`: the T1 boxes not parted at rest back from T2 (PLAN 5.8w9).
+  - `research1938`: Germany on 2 techs, not 3 (PLAN 5.8w10).
+  - `stackBlocks1938`: the flank case's formations not engaged (PLAN 5.8w11).
+  - `toBattle1938`: the banner's two formations not front to front (PLAN 5.8w12).
+  - `wrecks1938`: a wreck 0.35 from its sprite (PLAN 5.8w13).
+- **Next:** PLAN 5.8w8.

@@ -8195,3 +8195,114 @@ Of 5.8 (open in PLAN.md):
   - [x] 5.8v4 Wings built from the page (found by 5.8v1: the Actions tab leaves air templates
     out, "no air formation is built", since 5.8s1 untrue): with its airfield's word, as a
     fleet's "no port".
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w1 The review's sweeps ask a wing as a formation of the land (found by 5.8h's
+    `check:review`): `aiSweep` (formations in a cell no route enters, 18 on day 1) and `standYear`
+    (6 at rest off sure land): the naval bomber groups on their carriers, at sea since 5.1d. A
+    wing is not of the land (`offLand`), as the tests say of what they ask.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w2 Seed 7 at tick 17,520 (`heldYears`): nation 105 holds 2 cells of nation 10 with no
+    war between them. A test first, then the cause.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w3 The T0 counters' and T2 elements' sums (`counters1938`, `declutter1938`,
+    `elements1938`): what is drawn against the world's total since wings, which are not drawn
+    at their bases (5.1d), have strength.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w4 `formationPlace1938`: the view centred on a formation in contact holds its
+    elements. A cause first.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w5 The review's second run (found by it): `aiSweep` held a fleet gone with its
+    nation alive to no rule; since 5.4c a strike from the air sinks ships with no sea battle.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w6 The review's third run (found by it): `aiSweep2`, seed 2 at tick 27,721: nation 116
+    holds 1,075,177 km² in 10 provinces by one revolt (the bound 1,000,000, PLAN 3.9). A test
+    first, then the cause.
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w7 `aiSweep3` runs past its 900 s (1,064 s): the tick's cost since Phase 5 (BLOCKERS,
+    PLAN 7.1). The user's call: the timeout, or the known reds with its BLOCKERS entry.

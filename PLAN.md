@@ -61,6 +61,26 @@ quick sweep as a smoke test.
   - [x] 5.8v2 A paradrop of a selected formation at an airbase, from the page.
   - [x] 5.8v3 A wing's and a paradrop's refusal told as a march's is (PLAN 4.9a): the worker's […]
   - [x] 5.8v4 Wings built from the page (found by 5.8v1: the Actions tab leaves air templates […]
+  - [x] 5.8w1 The review's sweeps ask a wing as a formation of the land (found by 5.8h's […]
+  - [x] 5.8w2 Seed 7 at tick 17,520 (`heldYears`): nation 105 holds 2 cells of nation 10 with no […]
+  - [x] 5.8w3 The T0 counters' and T2 elements' sums (`counters1938`, `declutter1938`, […]
+  - [x] 5.8w4 `formationPlace1938`: the view centred on a formation in contact holds its […]
+  - [x] 5.8w5 The review's second run (found by it): `aiSweep` held a fleet gone with its […]
+  - [x] 5.8w6 The review's third run (found by it): `aiSweep2`, seed 2 at tick 27,721: nation 116 […]
+  - [x] 5.8w7 `aiSweep3` runs past its 900 s (1,064 s): the tick's cost since Phase 5 (BLOCKERS, […]
+  - [ ] 5.8w8 The review's fourth run (found by it, the first to its end): `loadedEffects1938`
+    (:95): a game loaded into a running one, the view holds none of the loaded game's elements
+    (0, more than 0 wanted). A defect until shown otherwise: the cause first.
+  - [ ] 5.8w9 `markerStacks1938` (:229): back from T2, the T1 boxes are not parted at rest at
+    1800 m/px (more than 5 wanted). The cause first: the view, or the 1938 game it is given.
+  - [ ] 5.8w10 `research1938` (:30): Germany works on 2 techs, not 3, within 20 s. The cause
+    first: the rule, or the 1938 game since Phase 5 (air builds).
+  - [ ] 5.8w11 `stackBlocks1938` (:167): the flank case finds its three formations, none engaged
+    (`[false, false, false]`). Its day was picked in the game before Phase 5 changed it.
+  - [ ] 5.8w12 `toBattle1938` (:327): weeks into Germany against Poland, the two formations the
+    banner leads to do not stand front to front (`leaders` `[false, false]`).
+  - [ ] 5.8w13 `wrecks1938` (:158): wreck 15063 lies 0.35 from where its sprite stood (less than
+    0.015 wanted). A defect until shown otherwise: the cause first.
   - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed if a
     defect of Phase 5 caused it, no constant tuned), and the tick of 5.8; then the critic (due

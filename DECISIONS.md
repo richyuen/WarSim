@@ -167,6 +167,90 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-361 · 2026-10-14 · accepted — The sweep's measure of a revolt's land counts a defection (PLAN 5.8w6, 5.8w7)
+
+- **Found** (5.8h, the review's third run): `aiSweep2`, seed 2 at tick 27,721, "nation 116:
+  1,075,177 km² in 10 provinces by 1 revolts (bound 1,000,000)". In that month's first hour the
+  Soviet Union's land rose twice: one area founded nation 116 (`RevoltSpawned`), and another,
+  whose core nation 116 then was, went over to it by defection (PLAN 2.15d, `LandCeded`). Each
+  area within a region's bound (`revoltArea`: REGION_MAX provinces, REGION_KM2); `revoltLand`
+  held the two to one. No rule of the game is wrong.
+- **Decision.** `revoltLand` counts a defection of the same holder's land to that nation in the
+  tick as one more area of a region's bound. What it holds a revolt to is unchanged: a revolt
+  alone with the same land is still over. 5.8w7: `aiSweep3` ran 1,064 s against its 900 s, the
+  tick's cost since Phase 5 (BLOCKERS: Phase 5's cost); on `tools/gate/knownRed.json` until
+  PLAN 7.1, its assertions unchanged.
+- **The pin holds** at 76983901.
+- **Tests.** `revoltLandHelper` (1, new; failed before): a revolt and a defection to one nation
+  in one hour within a bound each, none told; the revolt alone, one told. `aiSweep2` green over
+  its ten years (839 s).
+
+### ADR-360 · 2026-10-14 · accepted — A fleet struck from the air is not held to stand (PLAN 5.8w5)
+
+- **Found** (5.8h, the review's second run): `aiSweep1`–`3` red on day 7, "fleet 1248 of nation
+  14 is gone and its nation lives". `fleetsStand` let a fleet go only in a sea battle, at a
+  lay-up or with its nation; since 5.4c a naval strike sinks ships with no sea battle.
+- **Decision.** In its hourly look, a fleet within a cell and a half of an `AirStrike`'s place,
+  or that lost a ship of the start (`ElementDestroyed`), is counted with those that fought, and
+  no longer held to stand. What it holds a fleet no rule touched to is unchanged.
+- **The pin holds** at 76983901.
+- **Tests.** `aiSweep1` green over its ten years (875 s): 197 fleets, 153 sailed, 21 in sea
+  battles, none gone with its nation alive.
+
+### ADR-359 · 2026-10-14 · accepted — The critic's day 21 has no German armour in contact (PLAN 5.8w4)
+
+- **Found** (5.8h, `check:review`): `formationPlace1938` (PLAN 3.11a) plays the critic's game
+  (seed 4242, Germany on Poland) to day 21 and asks the view of each German formation in contact,
+  the armour among them. Since Phase 5 the game is another (the air war) and on day 21 no
+  German armour is in contact: the test failed before it looked at the view.
+- **Decision.** The test steps on from day 21 a day at a time, up to day 45, to the first day
+  with German armour in contact (day 22 now), and asks the same of the view there. What it
+  holds the view to is unchanged: each formation's elements on the screen at 6 and 2 m/px, the
+  panel's place the view's.
+- **The pin holds** at 76983901.
+- **Tests.** `formationPlace1938` green by hand (day 22: 21 in contact, 2 armour; 0.28 km at
+  most from the place each is said to be at to its elements).
+
+### ADR-358 · 2026-10-14 · accepted — What is drawn against what the sim has: wings (PLAN 5.8w3)
+
+- **Found** (5.8h, `check:review`): `counters1938` and `declutter1938` held the T0 counters to
+  the sum of every formation's strength the inspection gives, and `elements1938` the T2 elements
+  in view to every formation's in its box; since 5.1d the world's 216 wings have strength
+  (23,190 men) and elements, and a wing at its base is not drawn. The drawn were 10,344,260 men
+  of 10,367,450.
+- **Decision.** The inspection says which formation is a wing (`wing`); the three tests hold
+  what is drawn to the formations that are drawn. No drawing changed: the T0 counters are the
+  armies' and the fleets', and a wing is seen by its sorties (5.7a).
+- **The pin holds** at 76983901.
+- **Tests.** The three specs green by hand (`declutter1938` with one worker, as the review runs a
+  red file again: its running sample ran short of frames beside two other specs).
+
+### ADR-357 · 2026-10-14 · accepted — An annexed nation's hold on a third's land (PLAN 5.8w2)
+
+- **Found** (5.8h, `heldYears`, seed 7 at tick 17,520): a revolt (106) took two Soviet cells; a
+  third nation (105), at war with the revolt and at peace with the Soviet Union, annexed it at
+  the peace, and `annexInto` handed it every cell the revolt held: the two Soviet cells were then
+  held with no war with their owner (ADR-147's rule). The air war near them is no part of it;
+  the game before Phase 5 had not come by that annexation.
+- **Decision.** A cell of a third nation's that the annexed nation held is the annexer's where
+  the annexer is at war with its owner, else its owner's again, as a cell taken with no war is
+  (ADR-147). The annexed nation's own land, and what others held of it, as before (ADR-112).
+- **The pin holds** at 76983901: no such annexation in seed 99's year.
+- **Tests.** `annexHeld` (1, new; failed before): an Italian cell held by Austria, Austria
+  annexed by Germany at peace with Italy: Italy's, and nothing more held with no war; at war, Germany's.
+  `heldYears` green on seeds 99 and 7 (311 s).
+
+### ADR-356 · 2026-10-14 · accepted — The sweeps ask the land's formations alone (PLAN 5.8w1)
+
+- **Found** (5.8h, `check:review`): `aiSweep` (a formation in a cell no route enters) and
+  `standYear` (a formation at rest on sure land) asked every formation not afloat; since 5.1d
+  the naval bomber groups stand with their carriers at sea, 18 and 6 of them red on day 1. The
+  sweeps ran at no review since.
+- **Decision.** Both ask the formations of the land, as they say they do: not a fleet, not a
+  wing (`offLand`). No rule changed; what they ask of an army is the same.
+- **The pin holds** at 76983901.
+- **Tests.** `standYear` green (262 s); `aiSweep1`–`3` at the review's next run.
+
 ### ADR-355 · 2026-10-13 · accepted — Wings built from the page (PLAN 5.8v4)
 
 - **Found** (5.8v1): the Actions tab left air templates off its build list ("no air formation

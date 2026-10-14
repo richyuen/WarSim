@@ -38,7 +38,8 @@ async function rest(page: Page, cx: number, cy: number, scale: number): Promise<
   await settle(page);
   return boxes(page);
 }
-const simStrength = (page: Page): Promise<number> => page.evaluate(async () => (await window.__warsim!.sim.inspect(true)).formations.reduce((a, f) => a + f.strength, 0));
+/** Σ strength of what is drawn: a wing at its base is not (PLAN 5.1d, 5.8w3). */
+const simStrength = (page: Page): Promise<number> => page.evaluate(async () => (await window.__warsim!.sim.inspect(true)).formations.reduce((a, f) => a + (f.wing ? 0 : f.strength), 0));
 
 test('T0 counters never overlap: what does not fit is folded into a neighbour, and the sum holds', async ({ page }, info) => {
   test.setTimeout(300_000);
