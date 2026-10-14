@@ -15554,3 +15554,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** stopped on `territory`'s cost per tick (known red under load; 13 of 13 alone); the
   rest by hand: the related unit tests 956 of 957, the pin, build, parity.
 - **Next:** PLAN 6.4b.
+
+## 2026-10-14 — PLAN 6.4b: the nuclear decision (ADR-385); PLAN 6.4 done
+
+- **Done:** the AI strikes: daily, each armed AI nation at war weighs enemy capitals and the strongest
+  enemy formations and strikes the best above 0, the decision an event; a nation struck strikes back
+  once (the grievance spent); a bomber on a sortie counts towards a second strike. PARITY additions
+  row 6 updated.
+- **Tests:** `nukeDecision1938` (new).
+- **The pin holds** at 45df324d.
+- **The gate:** green (the related unit tests 1000 of 1000; the pin).
+- **Next:** PLAN 6.5.

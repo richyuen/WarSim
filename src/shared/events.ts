@@ -146,6 +146,8 @@ export const EventKind = {
   NukeDetonated: 55,
   /** A warhead's toll (PLAN 6.3a): a = the striker, b = men of its formations lost and people killed; (x, y) = where it burst. */
   NukeCasualties: 56,
+  /** An AI's decision to strike (PLAN 6.4b): a = the nation, b = round(its utility × 1000); (x, y) = the target. */
+  NukeDecided: 57,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

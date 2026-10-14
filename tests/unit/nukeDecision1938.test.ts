@@ -1,0 +1,118 @@
+import { describe, expect, it } from 'vitest';
+import { EventKind } from '../../src/shared/events';
+import { cellOf } from '../../src/sim/data/terrain';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { declareWar } from '../../src/sim/systems/war';
+import { RETALIATION_DAYS, warheadsOf } from '../../src/sim/systems/nuclear';
+import { DEFENDERS, type War } from '../../src/sim/wars';
+import type { World } from '../../src/sim/world';
+import { assets1938 } from '../helpers/earth';
+import { nationId } from '../helpers/sim1938';
+
+// PLAN 6.4b: the daily decision. An AI nation at war with a warhead strikes its best target when
+// the utility is above 0, and tells it (`NukeDecided`, its utility × 1000); a nation struck, of
+// retaliation doctrine, strikes back at who struck it, MAD or not.
+
+const { w: W, h: H } = SIZE_1938;
+const [ENG, FRA, GER] = ['ENG', 'FRA', 'GER'].map(nationId) as [number, number, number];
+const paris = cellOf(2.35, 48.86, W, H);
+
+/** The events of kind `k` over `hours`, each [a, b, x, y]. */
+function run(s: Sim, hours: number, k: number, score?: () => void): number[][] {
+  const out: number[][] = [];
+  for (let h = 0; h < hours; h++) {
+    score?.();
+    s.step(1, (w: World) => {
+      const ev = w.out.events;
+      for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === k) out.push([ev[i + 2]!, ev[i + 3]!, ev[i + 4]!, ev[i + 5]!]);
+      ev.length = 0;
+      w.out.fires.length = 0;
+    });
+  }
+  return out;
+}
+
+/** France at war with Germany, given `warheads`; Germany has none. */
+function franceAtWar(warheads: number): { s: Sim; war: War } {
+  const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+  const w = s.world;
+  w.settings.nukesEnabled = true;
+  s.command({ kind: 'grantWarheads', nation: FRA, count: warheads });
+  s.step(1);
+  const war = declareWar(w, GER, FRA, true)!;
+  return { s, war };
+}
+
+describe('the nuclear decision (PLAN 6.4b)', () => {
+  it('France, fighting to the death and losing, strikes Germany by bomber on the next day, and tells why', () => {
+    const { s, war } = franceAtWar(1);
+    const decided = run(s, 30, EventKind.NukeDecided, () => {
+      war.fightToDeath[DEFENDERS] = true;
+      war.score = 100;
+    });
+    expect(decided.length).toBe(1);
+    const [n, u] = decided[0]!;
+    expect(n).toBe(FRA);
+    expect(u).toBeGreaterThan(0);
+    expect(warheadsOf(s.world, FRA)).toBe(0);
+    process.stderr.write(`France decided: utility ${u! / 1000} at (${decided[0]![2]!.toFixed(1)}, ${decided[0]![3]!.toFixed(1)})\n`);
+  });
+
+  it('France neither losing nor fighting to the death, or its AI off: no strike in ten days', () => {
+    const a = franceAtWar(1);
+    expect(run(a.s, 240, EventKind.NukeDecided, () => (a.war.score = 0))).toEqual([]);
+    expect(warheadsOf(a.s.world, FRA)).toBe(1);
+    const b = franceAtWar(1);
+    b.s.world.nations.cols.aiOff[FRA] = 1;
+    expect(run(b.s, 240, EventKind.NukeDecided, () => {
+      b.war.fightToDeath[DEFENDERS] = true;
+      b.war.score = 100;
+    })).toEqual([]);
+  });
+
+  it('struck by England, France (MAD: both armed, bombers both) strikes back within days; not struck, it does not', () => {
+    const make = (): { s: Sim; war: War } => {
+      const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+      const w = s.world;
+      w.settings.nukesEnabled = true;
+      w.nations.cols.aiOff[ENG] = 1;
+      w.nations.cols.aggression[FRA] = Math.max(w.nations.cols.aggression[FRA]!, 20);
+      s.command({ kind: 'grantWarheads', nation: ENG, count: 5 });
+      s.command({ kind: 'grantWarheads', nation: FRA, count: 5 });
+      s.step(1);
+      // Allies in 1938: France leaves its alliance, that the two may be at war.
+      w.alliances.leave(FRA);
+      const war = declareWar(w, ENG, FRA, true);
+      expect(war).not.toBeNull();
+      return { s, war: war! };
+    };
+    const calm = make();
+    expect(run(calm.s, 24 * 5, EventKind.NukeDecided)).toEqual([]);
+    const hit = make();
+    hit.s.command({ kind: 'launchNuke', nation: ENG, x: paris[0], y: paris[1], missile: false });
+    const tick0 = hit.s.world.tick;
+    // England's burst on Paris: France's grievance against it, for RETALIATION_DAYS from then.
+    let g: { by: number; until: number } | undefined;
+    for (let h = 0; h < 48 && !g; h++) {
+      run(hit.s, 1, EventKind.NukeDecided);
+      g = hit.s.world.nukeGrievance.get(FRA);
+    }
+    expect(g?.by).toBe(ENG);
+    expect(g!.until).toBeGreaterThan(tick0 + (RETALIATION_DAYS - 1) * 24);
+    expect(g!.until).toBeLessThanOrEqual(tick0 + (RETALIATION_DAYS + 2) * 24);
+    // One strike back for one hit, the grievance spent; then MAD again: no more in ten days.
+    const back = run(hit.s, 24 * 10, EventKind.NukeDecided);
+    process.stderr.write(`France strikes back: ${JSON.stringify(back)}
+`);
+    expect(back.length).toBe(1);
+    expect(back[0]![0]).toBe(FRA);
+    expect(back[0]![1]).toBeGreaterThan(0);
+    expect(hit.s.world.nukeGrievance.has(FRA)).toBe(false);
+    // A save carries a grievance: England's, struck back by France.
+    expect(hit.s.world.nukeGrievance.get(ENG)?.by).toBe(FRA);
+    const c = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    c.load(hit.s.save());
+    expect(c.world.nukeGrievance.get(ENG)).toEqual(hit.s.world.nukeGrievance.get(ENG));
+  });
+});

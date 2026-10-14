@@ -419,6 +419,8 @@ class WorldCore implements Stateful {
       ...(w.nukesBanned.size === 0 ? [] : [{ name: 'world.nukesBanned', dtype: 'f64' as const, data: Float64Array.from([...w.nukesBanned].sort((a, b) => a - b)) }]),
       // The warheads in flight (PLAN 6.2): [next id, then id, nation, missile, wing, bx, by, tx, ty, launch, arrive each], only while there is one.
       ...(w.nukeLaunches.length === 0 && w.nextLaunchId === 1 ? [] : [{ name: 'world.nukeLaunches', dtype: 'f64' as const, data: Float64Array.from([w.nextLaunchId, ...w.nukeLaunches.flatMap((l) => [l.id, l.nation, l.missile, l.wing, l.bx, l.by, l.tx, l.ty, l.launch, l.arrive])]) }]),
+      // Grievances (PLAN 6.4b): [nation, by, until] each, by nation, only while there is one.
+      ...(w.nukeGrievance.size === 0 ? [] : [{ name: 'world.nukeGrievance', dtype: 'f64' as const, data: Float64Array.from([...w.nukeGrievance].sort((a, b) => a[0] - b[0]).flatMap(([n, g]) => [n, g.by, g.until])) }]),
       // The nuclear taboo (PLAN 6.4a), only while it is under 1.
       ...(w.nukeTaboo === 1 ? [] : [{ name: 'world.nukeTaboo', dtype: 'f64' as const, data: Float64Array.of(w.nukeTaboo) }]),
       // Fallout (PLAN 6.3b): [cell, level] each, by cell, only while there is some.
@@ -514,6 +516,9 @@ class WorldCore implements Stateful {
     w.nextLaunchId = nl && nl.length > 0 ? nl[0]! : 1;
     for (let at = 1; nl && at + 10 <= nl.length; at += 10) w.nukeLaunches.push({ id: nl[at]!, nation: nl[at + 1]!, missile: nl[at + 2]!, wing: nl[at + 3]!, bx: nl[at + 4]!, by: nl[at + 5]!, tx: nl[at + 6]!, ty: nl[at + 7]!, launch: nl[at + 8]!, arrive: nl[at + 9]! });
     w.nukeTaboo = (sections.find((s) => s.name === 'world.nukeTaboo')?.data as Float64Array | undefined)?.[0] ?? 1;
+    w.nukeGrievance = new Map();
+    const gr = sections.find((s) => s.name === 'world.nukeGrievance')?.data as Float64Array | undefined;
+    for (let at = 0; gr && at + 3 <= gr.length; at += 3) w.nukeGrievance.set(gr[at]!, { by: gr[at + 1]!, until: gr[at + 2]! });
     w.fallout = new Map();
     const fo = sections.find((s) => s.name === 'world.fallout')?.data as Float64Array | undefined;
     for (let at = 0; fo && at + 2 <= fo.length; at += 2) w.fallout.set(fo[at]!, fo[at + 1]!);
@@ -1059,6 +1064,8 @@ export class World {
   fallout = new Map<number, number>();
   /** The nuclear taboo, 0 to 1 (PLAN 6.4a, `nuclear.ts`): 1 until the first burst; state, saved while under 1. */
   nukeTaboo = 1;
+  /** Who struck each nation last and until when it may strike back (PLAN 6.4b): state, saved while not empty. */
+  nukeGrievance = new Map<number, { by: number; until: number }>();
   nextLaunchId = 1;
   /** The land formations aboard transports (PLAN 4.5a, `amphibiousSystem`), by id: state, saved while not empty. */
   embarked = new Map<number, Embarked>();

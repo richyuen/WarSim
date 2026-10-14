@@ -8738,3 +8738,23 @@ Of 6.3 (open in PLAN.md):
   - [x] 6.3b Fallout: laid downwind by a deterministic wind, decaying by a half-life; attrition, […]
   - [x] 6.3c The fallout map mode.
   AT: unit tests on casualty falloff and fallout decay half-life; fallout map mode screenshot.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+- [x] 6.4 Nuclear decision utility (target value, desperation, retaliation incl. allies, taboo, MAD, doctrine).
+  AT: table-driven tests: MAD pair → no first use; desperate fightToDeath nation vs non-nuclear enemy → use; post-first-use taboo drop raises others' propensity.
+  Split 2026-10-14: the sum, then the choice made with it.
+  - [x] 6.4a The utility and its inputs from the world; the taboo, state.
+  - [x] 6.4b The daily decision: an AI nation at war strikes its best target when the utility is
+    above 0; retaliation doctrine; the decision told as an event (6.7 asserts on it).

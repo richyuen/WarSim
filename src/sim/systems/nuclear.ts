@@ -75,6 +75,16 @@
  * - allianceCost: ALLIANCE_COST for each ally not at its side in that war, to ALLIANCE_COST_MAX.
  * - outrage: 0 until PLAN 6.5.
  * - taboo (`world.nukeTaboo`): 1, TABOO_AFTER after any burst, back by TABOO_RECOVERY a day.
+ *
+ * The decision (PLAN 6.4b; `nukeDecisions`), daily, with the AI on: each nation with a warhead,
+ * living, not switched off nor a puppet, nukes allowed, in each of its wars weighs each enemy
+ * capital and the NUKE_TARGETS strongest enemy land formations, and strikes the one of most
+ * utility above 0 (by missile when it knows them and one reaches, else by bomber; one out of reach,
+ * the next), once a day at most. The decision is told (`NukeDecided`).
+ * Retaliation: a burst on a nation's land (its owner's, not the striker's) gives it a grievance
+ * against the striker for RETALIATION_DAYS (`world.nukeGrievance`). A nation of retaliation
+ * doctrine (aggression at least RETALIATION_AGGRESSION) striking at the side of who struck it is
+ * retaliating: RETALIATION_BONUS, and no MAD bar; its strike back spends the grievance (one for one).
  */
 import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
@@ -144,10 +154,7 @@ export function interceptChance(world: World, l: NukeLaunch): number {
   return BOMBER_INTERCEPT * (1 - (zone === 0 ? 0.5 : airSuperiority(world, l.nation, zone)));
 }
 
-/**
- * The nearest strategic bomber of `n`'s at its base, free, that reaches (x, y) (PLAN 6.2), or any
- * that reaches anywhere with `x` NaN; null for none.
- */
+/** The nearest strategic bomber of `n`'s at its base, free, that reaches (x, y) (PLAN 6.2); null for none. */
 export function nukeBomber(world: World, n: number, x: number, y: number): { wing: number; from: [number, number]; km: number } | null {
   const c = world.formations.cols;
   const rules = world.rules!;
@@ -158,16 +165,28 @@ export function nukeBomber(world: World, n: number, x: number, y: number): { win
     if (!first || rules.units[first.unit]!.cls !== STRATEGIC) continue;
     const at = basePlace(world, base);
     if (!at) continue;
-    if (Number.isNaN(x)) return { wing: id, from: at, km: 0 };
     const d = seaKm(world, at[0], at[1], x, y);
     if (d <= wingRange(world, id) && d < (best?.km ?? Infinity)) best = { wing: id, from: at, km: d };
   }
   return best;
 }
 
-/** Whether `n` can deliver a warhead (PLAN 6.4a): it has one, and missiles or a strategic bomber at a base. */
+/**
+ * Whether `n` can deliver a warhead (PLAN 6.4a): it has one, and missiles or a strategic bomber of
+ * its own with a base, flying or not (a second strike's capacity: at war its bombers are out on
+ * sorties most hours, and back at their bases soon after).
+ */
 export function canDeliver(world: World, n: number): boolean {
-  return nukesAllowed(world, n) && warheadsOf(world, n) >= 1 && (knows(world, n, 'ballistic_missiles') || nukeBomber(world, n, NaN, NaN) !== null);
+  if (!nukesAllowed(world, n) || warheadsOf(world, n) < 1) return false;
+  if (knows(world, n, 'ballistic_missiles')) return true;
+  const c = world.formations.cols;
+  const rules = world.rules!;
+  for (const [id, base] of world.wingBase) {
+    if (base <= 0 || c.nation[id] !== n || !world.formations.has(id)) continue;
+    const first = rules.templates[c.template[id]!]?.elements[0];
+    if (first && rules.units[first.unit]!.cls === STRATEGIC) return true;
+  }
+  return false;
 }
 
 /** Nation `n` launches a warhead at (x, y) by bomber or missile (PLAN 6.2): see the head of the file; why not, else None. */
@@ -525,6 +544,63 @@ export function nukeInputs(world: World, n: number, war: War, side: number, x: n
   };
 }
 
+/** The decision's targets (PLAN 6.4b): the strongest enemy land formations weighed, and the grievance's days and doctrine. */
+export const NUKE_TARGETS = 6;
+export const RETALIATION_DAYS = 90;
+export const RETALIATION_AGGRESSION = 20;
+
+/** Whether `n`, struck, strikes back at `war`'s other side from `side` (PLAN 6.4b). */
+function retaliates(world: World, n: number, war: War, side: number): boolean {
+  const g = world.nukeGrievance.get(n);
+  return !!g && g.until > world.tick && world.nations.cols.aggression[n]! >= RETALIATION_AGGRESSION && war.sides[1 - side]!.includes(g.by);
+}
+
+/** The places `n` weighs in `war` on `side` (PLAN 6.4b): enemy capitals, then the strongest enemy land formations. */
+function nukeTargets(world: World, war: War, side: number): [number, number][] {
+  const nc = world.nations.cols;
+  const out: [number, number][] = [];
+  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1) out.push([nc.capitalX[m]!, nc.capitalY[m]!]);
+  const c = world.formations.cols;
+  const enemy = new Set(war.sides[1 - side]!);
+  const land: number[] = [];
+  world.formations.forEach((id) => {
+    if (enemy.has(c.nation[id]!) && !world.isFleet(id) && !world.isWing(id) && !world.offLand(id)) land.push(id);
+  });
+  land.sort((a, b) => c.strength[b]! - c.strength[a]! || a - b);
+  for (const id of land.slice(0, NUKE_TARGETS)) out.push([c.x[id]!, c.y[id]!]);
+  return out;
+}
+
+/** The day's decisions to strike (PLAN 6.4b): see the head of the file. */
+function nukeDecisions(world: World): void {
+  if (!world.settings.aiEnabled || world.warheads.size === 0) return;
+  const nc = world.nations.cols;
+  for (const n of [...world.warheads.keys()].sort((a, b) => a - b)) {
+    if (warheadsOf(world, n) < 1 || nc.living[n] !== 1 || nc.aiOff[n] === 1 || nc.overlord[n] !== 0 || !nukesAllowed(world, n)) continue;
+    const options: { u: number; x: number; y: number; back: boolean }[] = [];
+    for (const war of world.wars.list) {
+      const side = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
+      if (side < 0) continue;
+      const back = retaliates(world, n, war, side);
+      for (const [x, y] of nukeTargets(world, war, side)) {
+        const u = nuclearUtility(nukeInputs(world, n, war, side, x, y, back));
+        if (u > 0) options.push({ u, x, y, back });
+      }
+    }
+    options.sort((a, b) => b.u - a.u);
+    const missiles = knows(world, n, 'ballistic_missiles');
+    for (const o of options) {
+      const ok = (missiles && launchNuke(world, n, o.x, o.y, true) === Refusal.None) || launchNuke(world, n, o.x, o.y, false) === Refusal.None;
+      if (!ok) continue;
+      world.out.emit(world.tick, EventKind.NukeDecided, n, Math.round(o.u * 1000), o.x, o.y);
+      // A strike back spends the grievance: one for one.
+      if (o.back) world.nukeGrievance.delete(n);
+      break;
+    }
+  }
+  for (const [n, g] of [...world.nukeGrievance]) if (g.until <= world.tick) world.nukeGrievance.delete(n);
+}
+
 /** The taboo's day (PLAN 6.4a): back towards 1. Nothing while it is 1. */
 function tabooDay(world: World): void {
   if (world.nukeTaboo >= 1) return;
@@ -546,8 +622,10 @@ function arrivals(world: World): void {
     else {
       const yieldN = knows(world, l.nation, 'thermonuclear') ? 2 : 1;
       world.out.emit(world.tick, EventKind.NukeDetonated, l.nation, yieldN, l.tx, l.ty);
-      // The taboo broken (PLAN 6.4a).
+      // The taboo broken (PLAN 6.4a); the owner of the land struck has a grievance (PLAN 6.4b).
       world.nukeTaboo = Math.min(world.nukeTaboo, TABOO_AFTER);
+      const struck = world.cells.owner[Math.min(world.cells.h - 1, Math.max(0, Math.floor(l.ty))) * world.cells.w + Math.floor(l.tx)] ?? 0;
+      if (struck !== 0 && struck !== l.nation) world.nukeGrievance.set(struck, { by: l.nation, until: world.tick + RETALIATION_DAYS * 24 });
       blast(world, l.nation, yieldN, l.tx, l.ty);
       layFallout(world, yieldN, l.tx, l.ty);
     }
@@ -563,6 +641,7 @@ export function nuclearSystem(world: World): void {
   if (!isDayStart(world.tick)) return;
   falloutDay(world);
   tabooDay(world);
+  nukeDecisions(world);
   const bomb = rules.techs.findIndex((t) => t.id === 'atomic_bomb');
   const nc = world.nations.cols;
   // A dead nation's stockpile goes with it.

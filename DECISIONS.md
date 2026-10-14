@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-385 · 2026-10-14 · accepted — The nuclear decision (PLAN 6.4b); PLAN 6.4 done
+
+- **Decision** (SPEC §6.4 "Use decision (nuclear AI, daily, at war only)").
+  - `nukeDecisions`, in the nuclear system's day, with the AI on and only while some nation has a
+    warhead: each nation with one, living, its AI on, not a puppet, nukes allowed, weighs in each of
+    its wars each enemy capital and the 6 strongest enemy land formations, and strikes the target of
+    most utility above 0: by missile when it knows them and one reaches, else by a free strategic
+    bomber; one it cannot reach, the next. Once a day at most. `NukeDecided` (57): the nation, its
+    utility × 1000, the target (PLAN 6.7 asserts on it).
+  - Retaliation: a burst on a nation's land (the cell's owner, not the striker) gives it a grievance
+    against the striker for 90 days (`world.nukeGrievance`, state saved while not empty). A nation
+    of retaliation doctrine (aggression at least 20) weighing a strike at the side of who struck it
+    is retaliating (the utility's + 1, and no MAD bar), and its strike back spends the grievance:
+    one for one. Without that, France, struck once, struck London with each of its five warheads on
+    five days.
+  - A second strike's capacity (`canDeliver`: retaliation risk, MAD) counts a strategic bomber
+    flying a sortie: at war the air AI keeps nearly all of them out, and England and France, armed,
+    were not MAD by the free bombers alone. A launch still wants a free bomber.
+- **The pin holds** at 45df324d: no nation has a warhead in the pinned year.
+- **Tests.** `nukeDecision1938.test.ts` (new): France, fighting to the death and losing to Germany,
+  strikes on the next day by bomber (utility 0.5) and its stock is spent; neither losing nor fighting
+  to the death, or its AI off, it does not in ten days; England and France at war (France out of
+  its alliance), five warheads each: MAD, no strike in five days; England strikes Paris, France has a
+  grievance for 90 days and strikes London back once (0.308), then no more in ten days; a save
+  carries England's grievance.
+
 ### ADR-384 · 2026-10-14 · accepted — The nuclear use utility (PLAN 6.4a)
 
 - **Decision** (SPEC §6.4 "Use decision"). PLAN 6.4 split: 6.4a the utility, 6.4b the decision.
