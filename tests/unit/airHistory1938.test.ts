@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
+import { decodeSections, encodeSections } from '../../src/sim/core/sections';
 import { seaSide } from '../../src/shared/history';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { HISTORY_STRIDE } from '../../src/sim/history';
@@ -17,6 +18,9 @@ import { assets1938 } from '../helpers/earth';
 // Poland, seed 1, as `airFx1938`.
 
 const id = (t: string): number => NATIONS_1938.findIndex((n) => n.tag === t) + 1;
+
+/** A save with its section `name` left out: a save from before it. */
+const saveWithout = (bytes: Uint8Array, name: string): Uint8Array => encodeSections(decodeSections(bytes).filter((s) => s.name !== name));
 
 /** The log's rows of a kind: [tick, a, b]. */
 const rowsOf = (sim: Sim, kind: number): number[][] => {
@@ -67,6 +71,13 @@ describe('the air war in the history log (PLAN 5.11a)', () => {
     expect(tickerAir(EventKind.AirWar)).toEqual([wars.at(-1)![2]]);
     expect(tickerAir(EventKind.AirRaids)).toEqual([raids.at(-1)![2]]);
     expect(ticker.find((r) => r.kind === EventKind.AirRaids)!.an, 'named in the ticker').not.toBe('');
+    // Each nation's totals (PLAN 5.11b): Germany's aircraft lost, what the strikes took of Poland.
+    expect(sim.world.airTotals.get(id('GER'))?.lost ?? 0, 'Germany\'s aircraft lost').toBeGreaterThan(0);
+    expect(sim.world.airTotals.get(id('POL'))?.bombed ?? 0, 'what the strikes took of Poland').toBeGreaterThan(0);
+    // A save from before the totals (no section) loads with none.
+    const old = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
+    old.load(saveWithout(saved, 'world.airTotals'));
+    expect(old.world.airTotals.size).toBe(0);
     // The tally is state: the game saved in the month goes on to the same rows.
     const again = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
     again.load(saved);

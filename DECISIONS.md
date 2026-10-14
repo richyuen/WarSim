@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-374 · 2026-10-14 · accepted — A nation's air war in its panel (PLAN 5.11b)
+
+- **Found** (the critic's R5-B1, run 5): the nation panel said nothing of a nation's air force.
+- **Decision.**
+  - The world keeps each nation's air totals (`world.airTotals`, state): the aircraft it lost,
+    in air fights and to flak, and the men, guns and vehicles strikes took of it. A section of
+    its own, saved while not empty: a save from before loads with none. (A column of the
+    nations' table would have been the way of `casualties`, but every column added so far left
+    the saves before it unloadable, "missing section", ADR-135, ADR-150; the page's autosaves
+    among them.)
+  - The panel's overview has an "Air war" block where a nation has aircraft or totals: its
+    aircraft and wings, its aircraft lost, and what it lost to air strikes (`NationStat`'s
+    `aircraft`, `wings`, `airLost`, `bombed`).
+- **The pin moves** a0896a3a → 3874ca11: the state records the totals. No rule changed.
+- **Tests.** `airHistory1938.test.ts`: a month in, Germany's aircraft lost and Poland's toll of
+  the strikes; a save without the section loads with no totals. `airRead1938.spec.ts` (new,
+  PLAN 5.11's AT): on 1 February 1938 of seed 1, the ticker's air rows, Germany's panel (399
+  aircraft in 21 wings, 441 lost), Poland's toll (125,889) and the history's rows.
+  `docs/evidence/5.11/air-panel-germany.png`, `air-history.png`.
+
 ### ADR-373 · 2026-10-14 · accepted — The month's air war in the history log and the ticker (PLAN 5.11a)
 
 - **Found** (the critic's R5-B1, run 5): no air event reached the history, the ticker, the

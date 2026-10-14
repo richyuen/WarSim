@@ -459,6 +459,11 @@ export interface NationStat {
   /** Men in its formations, and their count. */
   men: number;
   formations: number;
+  /** Its air force (PLAN 5.11b): its wings' aircraft and how many wings; the aircraft it has lost, in the air and to flak; the men, guns and vehicles strikes took of it. */
+  aircraft: number;
+  wings: number;
+  airLost: number;
+  bombed: number;
   efficiency: number;
   alliance: { id: number; name: string; leader: number; unity: number; loyalty: number } | null;
   overlord: number;

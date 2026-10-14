@@ -15419,3 +15419,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (1,038 of 1,039) red only by `scenario1938`'s build time of
   BLOCKERS (green alone); the pin, build and parity green by hand.
 - **Next:** PLAN 5.11b.
+
+## 2026-10-14 — PLAN 5.11b: a nation's air war in its panel (ADR-374)
+
+- **Done:** each nation's air totals (state, its own section: older saves load); the panel's
+  "Air war" block: aircraft and wings, aircraft lost, lost to air strikes.
+- **Tests:** `airHistory1938` (the totals, an old save), `airRead1938` (new: PLAN 5.11's AT on
+  the page) green by hand.
+- **Looked at:** `docs/evidence/5.11/air-panel-germany.png` (1 February 1938): Germany's
+  "Aircraft (wings) 399 (21)", "Aircraft lost 441", "Lost to air strikes 5,435".
+- **The pin moves** a0896a3a → 3874ca11 (the totals; ADR-374).
+- **The gate:** the related unit tests (1,035 of 1,036) red only by `territory`'s cost of BLOCKERS
+  (green alone); the pin, build, the new spec and parity green by hand.
+- **Next:** PLAN 5.11c.

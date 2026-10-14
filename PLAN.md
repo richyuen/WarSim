@@ -33,7 +33,7 @@ quick sweep as a smoke test.
   panel the nation's aircraft and losses; a unit test of the rows.
   Split 2026-10-14: three causes, one a commit.
   - [x] 5.11a The month's air war and raids in the history log and the ticker.
-  - [ ] 5.11b A nation's aircraft, its losses and the bomb damage it took in the nation panel.
+  - [x] 5.11b A nation's aircraft, its losses and the bomb damage it took in the nation panel.
   - [ ] 5.11c The air war in the charts.
 - [ ] 5.12 Critic R5-B2: the AI's air war keeps flying. Seed 7321: mean sorties aloft 19.1 in
   year 1, 11.7 in year 5, then 0.2 to 1.8 in every year from 13 to 25 while the wings grow from

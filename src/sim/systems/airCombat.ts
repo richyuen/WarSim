@@ -8,7 +8,7 @@
  * `antiAir`): what is below a sortie of an enemy's fires on it.
  */
 import { EventKind } from '../../shared/events';
-import { Domain, tallyAir, type UnitRule, type World } from '../world';
+import { addAirTotal, Domain, tallyAir, type UnitRule, type World } from '../world';
 import { applyLoss, cellX, elementIndex, loopW, settleFormation, wrapDx } from './elements';
 import { seaKm } from './navalCombat';
 import { bombIndustry } from './bombing';
@@ -117,6 +117,7 @@ export function airCombat(world: World, byZone: Map<number, number[]>): void {
       const side = world.wars.atWar(first, fc.nation[id]!) ? 1 : 0;
       sides[side]!.set(fc.nation[id]!, (sides[side]!.get(fc.nation[id]!) ?? 0) + was);
       lostBy[side] = lostBy[side]! + was - now;
+      addAirTotal(world, fc.nation[id]!, was - now, 0);
       const s = world.sorties.get(id);
       const p = s && sortieAt(s, world.tick, loopW(world));
       settleFormation(world, id);
@@ -243,10 +244,14 @@ export function antiAir(world: World): void {
   });
   if (loss.size === 0) return;
   const hit = new Set<number>();
+  // The aircraft each wing fired on had (PLAN 5.11b: what the flak took counted).
+  const had = new Map<number, number>();
+  for (const e of loss.keys()) if (!had.has(ec.formation[e]!)) had.set(ec.formation[e]!, aircraftOf(world, ec.formation[e]!));
   for (const [e, units] of [...loss].sort((a, b) => a[0] - b[0])) {
     applyLoss(world, e, units);
     hit.add(ec.formation[e]!);
   }
+  for (const [id, n] of [...had].sort((a, b) => a[0] - b[0])) addAirTotal(world, fc.nation[id]!, n - aircraftOf(world, id), 0);
   for (const id of [...hit].sort((a, b) => a - b)) {
     // Its flak, where it flies (PLAN 5.7b: a picture, not state).
     const p = sortieAt(world.sorties.get(id)!, world.tick, loopW(world));
@@ -339,7 +344,10 @@ export function strikes(world: World): void {
       const struck = fc.nation[ec.formation[t]!]!;
       tookOf.set(struck, (tookOf.get(struck) ?? 0) + lost);
     }
-    for (const [struck, n] of [...tookOf].sort((a, b) => a[0] - b[0])) tallyAir(world, 0, fc.nation[id]!, struck, 1, n, s.tx, s.ty);
+    for (const [struck, n] of [...tookOf].sort((a, b) => a[0] - b[0])) {
+      tallyAir(world, 0, fc.nation[id]!, struck, 1, n, s.tx, s.ty);
+      addAirTotal(world, struck, 0, n);
+    }
     for (const g of [...hit].sort((a, b) => a - b)) {
       // Where its bombs fell, for the view at T3 (PLAN 5.9): the formation, before it may go.
       world.out.emit(world.tick, EventKind.StrikeHit, g, id, fc.x[g]!, fc.y[g]!);

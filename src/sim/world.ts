@@ -415,6 +415,8 @@ class WorldCore implements Stateful {
       ...(w.seaBattles.length === 0 ? [] : [{ name: 'world.seaBattles', dtype: 'f64' as const, data: Float64Array.from(w.seaBattles.flatMap((b) => [b.fleets.length, ...b.fleets, ...b.ships, b.range, b.a, b.b, b.lostA, b.lostB, b.x, b.y])) }]),
       // The month's air war (PLAN 5.11a): [fight, a, b, va, vb, x, y] each, only while there is one.
       ...(w.airMonth.length === 0 ? [] : [{ name: 'world.airMonth', dtype: 'f64' as const, data: Float64Array.from(w.airMonth.flatMap((t) => [t.fight, t.a, t.b, t.va, t.vb, t.x, t.y])) }]),
+      // Each nation's air totals (PLAN 5.11b): [nation, lost, bombed] each, only while there is one.
+      ...(w.airTotals.size === 0 ? [] : [{ name: 'world.airTotals', dtype: 'f64' as const, data: Float64Array.from([...w.airTotals].sort((a, b) => a[0] - b[0]).flatMap(([n, t]) => [n, t.lost, t.bombed])) }]),
     ];
   }
 
@@ -496,6 +498,9 @@ class WorldCore implements Stateful {
     w.airMonth = [];
     const air = sections.find((s) => s.name === 'world.airMonth')?.data as Float64Array | undefined;
     for (let at = 0; air && at + 7 <= air.length; at += 7) w.airMonth.push({ fight: air[at]!, a: air[at + 1]!, b: air[at + 2]!, va: air[at + 3]!, vb: air[at + 4]!, x: air[at + 5]!, y: air[at + 6]! });
+    w.airTotals = new Map();
+    const tot = sections.find((s) => s.name === 'world.airTotals')?.data as Float64Array | undefined;
+    for (let at = 0; tot && at + 3 <= tot.length; at += 3) w.airTotals.set(tot[at]!, { lost: tot[at + 1]!, bombed: tot[at + 2]! });
     // Derived caches describe the previous state: drop them (rebuilt on demand).
     w.elementIndex = null;
     w.contacts = null;
@@ -647,6 +652,16 @@ export interface AirTally {
   vb: number;
   x: number;
   y: number;
+}
+
+/** Adds to nation `n`'s air totals (PLAN 5.11b): aircraft it lost, what strikes took of it. */
+export function addAirTotal(world: World, n: number, lost: number, bombed: number): void {
+  if (lost === 0 && bombed === 0) return;
+  const t = world.airTotals.get(n);
+  if (t) {
+    t.lost += lost;
+    t.bombed += bombed;
+  } else world.airTotals.set(n, { lost, bombed });
 }
 
 /** Adds to the month's tally of `fight` of a and b (PLAN 5.11a), made where (x, y) is the first. */
@@ -988,6 +1003,12 @@ export class World {
    * (`runEconomyMonth`) and cleared. State, saved while not empty.
    */
   airMonth: AirTally[] = [];
+  /**
+   * Each nation's air war so far (PLAN 5.11b): the aircraft it lost, in the air and to flak, and
+   * the men, guns and vehicles strikes took of it. State, a section of its own saved while not
+   * empty, so that a save from before loads (with none), as a column of the nations' table would not.
+   */
+  airTotals = new Map<number, { lost: number; bombed: number }>();
   /** The land formations aboard transports (PLAN 4.5a, `amphibiousSystem`), by id: state, saved while not empty. */
   embarked = new Map<number, Embarked>();
   /**

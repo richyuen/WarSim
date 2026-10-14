@@ -714,6 +714,15 @@ export class SimServer {
       men.set(n, (men.get(n) ?? 0) + fc.strength[f]!);
       count.set(n, (count.get(n) ?? 0) + 1);
     });
+    // Each nation's air force (PLAN 5.11b): its wings and their aircraft.
+    const aircraft = new Map<number, number>();
+    const wings = new Map<number, number>();
+    for (const [o] of world.wingBase) {
+      if (!world.formations.has(o)) continue;
+      const n = fc.nation[o]!;
+      aircraft.set(n, (aircraft.get(n) ?? 0) + aircraftOf(world, o));
+      wings.set(n, (wings.get(n) ?? 0) + 1);
+    }
     // The most room for aircraft at an airbase each nation holds (PLAN 5.8v4), as `airfield` reckons it.
     const used = new Map<number, number>();
     for (const [o, b] of world.wingBase) if (b > 0 && world.formations.has(o)) used.set(b, (used.get(b) ?? 0) + wingAircraft(world, fc.template[o]!));
@@ -777,6 +786,10 @@ export class SimServer {
         manpower: nc.manpower[id]!,
         men: men.get(id) ?? 0,
         formations: count.get(id) ?? 0,
+        aircraft: aircraft.get(id) ?? 0,
+        wings: wings.get(id) ?? 0,
+        airLost: world.airTotals.get(id)?.lost ?? 0,
+        bombed: world.airTotals.get(id)?.bombed ?? 0,
         efficiency: nc.efficiency[id]!,
         alliance: al ? { id: al.id, name: al.nameKey, leader: al.leader, unity: al.unity, loyalty: al.loyalty[k] ?? 0 } : null,
         overlord: nc.overlord[id]!,
