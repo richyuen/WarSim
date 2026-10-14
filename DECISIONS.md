@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-379 · 2026-10-14 · accepted — Warheads, a stockpile and its upkeep (PLAN 6.1b); PLAN 6.1 done
+
+- **Decision** (SPEC §6.4: warheads built over time, with upkeep; God Mode grants them).
+  - A nation that goes for the bomb (ADR-378) and knows it (`atomic_bomb`) builds one warhead
+    at a time (`nuclearSystem`, daily, after research): WARHEAD_GOLD (400) paid by the day over
+    WARHEAD_DAYS (90), the day's share only out of a treasury that holds it, never into debt, not
+    while bankrupt; up to WARHEAD_MAX (100). About 133 gold a month, 6 % of Germany's income of
+    1938.
+  - A stockpile costs WARHEAD_UPKEEP (10) a warhead a month, with the nation's expenses.
+  - `world.warheads` (stock and the gold paid toward the next): state, a section of its own (an
+    older save loads with none). A nation that dies loses its stockpile.
+  - God Mode's `grantWarheads` adds to a stockpile, to WARHEAD_MAX, whatever the toggles; the God
+    tab has a "+1" button. The nation panel shows a nation's warheads where it has any.
+- **The pin holds** at 45df324d: nobody knows the bomb in 1938.
+- **PLAN 6.1 done** (6.1a, 6.1b). Its AT: `warheads1938.test.ts` (new): with nukes disabled no
+  nation has a warhead on any day of 130 (the United States knowing the bomb, its gold plenty);
+  enabled, it has one within them; ten granted cost 100 gold more a month; a grant held to
+  WARHEAD_MAX; a save carries the stockpile. `godUi1938`: the grant from the God tab.
+  `headless.test.ts`: 31 systems, each named (the system's name, `nuclear`, had been left out of
+  `SYSTEM_NAMES_1938`: the profile's names after research one off; found by it).
+
 ### ADR-378 · 2026-10-14 · accepted — The nuclear programme and its toggles (PLAN 6.1a)
 
 - **Decision** (SPEC §6.4: a tech chain gated by `nukesAllowed`, global and per nation; SPEC

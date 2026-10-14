@@ -65,6 +65,10 @@ test('God Mode through the UI: every action reaches the sim', async ({ page }, i
   await expect.poll(async () => nation(await inspect(page), GER).nukesAllowed).toBe(false);
   await page.getByTestId('god-world-nukes').uncheck();
   await expect.poll(async () => (await inspect(page)).settings.nukesEnabled).toBe(false);
+  // A warhead granted (PLAN 6.1b), whatever the toggles: God Mode's.
+  await page.getByTestId('god-grant-warhead').click();
+  await expect.poll(async () => nation(await inspect(page), GER).warheads).toBe(1);
+  await expect(page.getByTestId('god-warheads')).toHaveText('1');
 
   // War on Poland, then peace from the war's row.
   await page.getByTestId('god-target').selectOption(String(id('POL')));

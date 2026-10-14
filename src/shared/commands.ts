@@ -52,6 +52,8 @@ export type Command =
   | { kind: 'setAi'; nation: number; enabled: boolean }
   /** PLAN 6.1a God Mode: a nation allowed nuclear weapons or barred. */
   | { kind: 'setNukes'; nation: number; allowed: boolean }
+  /** PLAN 6.1b God Mode: `count` warheads to a nation's stockpile (to WARHEAD_MAX). */
+  | { kind: 'grantWarheads'; nation: number; count: number }
   /** PLAN 1.23 God Mode: a custom Major Battle won by `nation`: a corridor from (x, y) to (toX, toY). */
   | { kind: 'forceBreakthrough'; nation: number; x: number; y: number; toX: number; toY: number }
   | { kind: 'collapseNation'; nation: number }
@@ -145,6 +147,7 @@ export const COMMAND_KINDS: Record<Command['kind'], true> = {
   removeBuff: true,
   setAi: true,
   setNukes: true,
+  grantWarheads: true,
   forceBreakthrough: true,
   collapseNation: true,
   paintControl: true,

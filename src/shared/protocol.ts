@@ -475,6 +475,8 @@ export interface NationStat {
   aiOff: boolean;
   /** Whether God Mode has left it allowed nuclear weapons (PLAN 6.1a; the world's toggle apart). */
   nukesAllowed: boolean;
+  /** Its warheads (PLAN 6.1b). */
+  warheads: number;
   /** AI aggression 0..100 and income multiplier from traits (PLAN 1.39b1 options). */
   aggression: number;
   incomeMult: number;

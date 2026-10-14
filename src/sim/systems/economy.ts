@@ -30,6 +30,7 @@ import { SIDE_SHIPS } from '../../shared/history';
 import { bleedFormation } from './elements';
 import { convoyLosses, convoyShare } from './convoys';
 import { BLOCKADE_SHARE, blockadedCells } from './seaControl';
+import { WARHEAD_UPKEEP, warheadsOf } from './nuclear';
 
 /** `cells.econ` unit: millions of 1990 $ (GDP per year, industrial-weighted). */
 export const ECON_PER_BN = 1000;
@@ -143,7 +144,8 @@ export function monthlyAccounts(
   world.nations.forEach((n) => {
     if (nc.living[n] !== 1) return;
     gross[n] = (((land[n]! / ECON_PER_BN) * INCOME_PER_BN * nc.incomeMult[n]! * (100 + nc.incomeBonus[n]!)) / 100) * (1 + world.buffs.sum('income', 'nation', n));
-    expenses[n] = upkeep[n]! + Math.min(adminCost(held[n]!), ADMIN_CAP_SHARE * gross[n]!);
+    // A stockpile of warheads is kept (PLAN 6.1b).
+    expenses[n] = upkeep[n]! + Math.min(adminCost(held[n]!), ADMIN_CAP_SHARE * gross[n]!) + WARHEAD_UPKEEP * warheadsOf(world, n);
   });
   return { gross, expenses, upkeep, held, population };
 }

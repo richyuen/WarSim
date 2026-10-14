@@ -8646,3 +8646,23 @@ Of 6.1 (open in PLAN.md):
 
   - [x] 6.1a The toggles (the world's, from the scenario; a nation's, God Mode) and the
     programme: a nation allowed nukes with the income of a great power researches the chain.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+- [x] 6.1 Nuclear tech chain, warhead production, stockpile, upkeep; global and per-nation toggles.
+  Split 2026-10-14: two causes, one a commit.
+  - [x] 6.1a The toggles (the world's, from the scenario; a nation's, God Mode) and the […]
+  - [x] 6.1b Warheads: built by a nation that knows the bomb, a stockpile with its upkeep; God
+    Mode grants them.
+  AT: with nukes disabled, the warhead count is always 0; enabled, a test nation builds warheads.

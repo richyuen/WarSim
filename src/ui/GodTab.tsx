@@ -114,6 +114,11 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, t
         <input type="checkbox" data-testid="god-nukes" checked={nation.nukesAllowed} onChange={(e) => onCommand({ kind: 'setNukes', nation: n, allowed: (e.currentTarget as HTMLInputElement).checked })} />
         {t('god.nationNukes')}
       </label>
+      <div class="god-row">
+        <span>{t('panel.warheads')}</span>
+        <span data-testid="god-warheads">{nation.warheads}</span>
+        {btn('god-grant-warhead', '+1', () => onCommand({ kind: 'grantWarheads', nation: n, count: 1 }))}
+      </div>
       <label class="god-row">
         <input type="checkbox" data-testid="god-world-nukes" checked={nukesEnabled} onChange={(e) => onCommand({ kind: 'setSetting', key: 'nukesEnabled', value: (e.currentTarget as HTMLInputElement).checked })} />
         {t('god.worldNukes')}

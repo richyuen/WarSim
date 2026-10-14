@@ -417,6 +417,8 @@ class WorldCore implements Stateful {
       ...(w.airMonth.length === 0 ? [] : [{ name: 'world.airMonth', dtype: 'f64' as const, data: Float64Array.from(w.airMonth.flatMap((t) => [t.fight, t.a, t.b, t.va, t.vb, t.x, t.y])) }]),
       // The nations barred from nuclear weapons (PLAN 6.1a), only while there is one.
       ...(w.nukesBanned.size === 0 ? [] : [{ name: 'world.nukesBanned', dtype: 'f64' as const, data: Float64Array.from([...w.nukesBanned].sort((a, b) => a - b)) }]),
+      // The warheads (PLAN 6.1b): [nation, stock, paid] each, only while there is one.
+      ...(w.warheads.size === 0 ? [] : [{ name: 'world.warheads', dtype: 'f64' as const, data: Float64Array.from([...w.warheads].sort((a, b) => a[0] - b[0]).flatMap(([n, h]) => [n, h.stock, h.paid])) }]),
       // Each nation's air totals (PLAN 5.11b): [nation, lost, bombed] each, only while there is one.
       ...(w.airTotals.size === 0 ? [] : [{ name: 'world.airTotals', dtype: 'f64' as const, data: Float64Array.from([...w.airTotals].sort((a, b) => a[0] - b[0]).flatMap(([n, t]) => [n, t.lost, t.bombed])) }]),
     ];
@@ -501,6 +503,9 @@ class WorldCore implements Stateful {
     const air = sections.find((s) => s.name === 'world.airMonth')?.data as Float64Array | undefined;
     for (let at = 0; air && at + 7 <= air.length; at += 7) w.airMonth.push({ fight: air[at]!, a: air[at + 1]!, b: air[at + 2]!, va: air[at + 3]!, vb: air[at + 4]!, x: air[at + 5]!, y: air[at + 6]! });
     w.nukesBanned = new Set(Array.from((sections.find((s) => s.name === 'world.nukesBanned')?.data as Float64Array | undefined) ?? []));
+    w.warheads = new Map();
+    const heads = sections.find((s) => s.name === 'world.warheads')?.data as Float64Array | undefined;
+    for (let at = 0; heads && at + 3 <= heads.length; at += 3) w.warheads.set(heads[at]!, { stock: heads[at + 1]!, paid: heads[at + 2]! });
     w.airTotals = new Map();
     const tot = sections.find((s) => s.name === 'world.airTotals')?.data as Float64Array | undefined;
     for (let at = 0; tot && at + 3 <= tot.length; at += 3) w.airTotals.set(tot[at]!, { lost: tot[at + 1]!, bombed: tot[at + 2]! });
@@ -1015,6 +1020,8 @@ export class World {
   airTotals = new Map<number, { lost: number; bombed: number }>();
   /** The nations God Mode has barred from nuclear weapons (PLAN 6.1a, `setNukes`): state, saved while not empty. */
   nukesBanned = new Set<number>();
+  /** Each nation's warheads and the gold paid toward the next (PLAN 6.1b, `nuclearSystem`): state, a section of its own saved while not empty. */
+  warheads = new Map<number, { stock: number; paid: number }>();
   /** The land formations aboard transports (PLAN 4.5a, `amphibiousSystem`), by id: state, saved while not empty. */
   embarked = new Map<number, Embarked>();
   /**

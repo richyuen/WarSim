@@ -15489,3 +15489,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin moves** 69d55c80 → 45df324d.
 - **The gate:** green (the related unit tests 1,050 of 1,050; the pin; `godUi1938`).
 - **Next:** PLAN 6.1b.
+
+## 2026-10-14 — PLAN 6.1b: warheads, a stockpile and its upkeep (ADR-379); PLAN 6.1 done
+
+- **Done:** a nation that goes for the bomb and knows it builds warheads (400 gold over 90 days
+  each, up to 100), kept at 10 a month each; God Mode grants them; the panel shows them.
+- **Tests:** `warheads1938` (new: PLAN 6.1's AT), `godUi1938` green by hand.
+- **The pin holds** at 45df324d.
+- **The gate:** green (the related unit tests 1,052 of 1,052; the pin; `godUi1938`). `headless`
+  found the system unnamed in the profile's list: named.
+- **Next:** PLAN 6.2.

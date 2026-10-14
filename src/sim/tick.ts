@@ -21,6 +21,7 @@ import { importLayer, paint, redoEdit, undoEdit } from './editor';
 import { decodeRuns, decodeRunsU32 } from '../shared/mapImport';
 import { FLAG_H, FLAG_W } from '../shared/flagPixels';
 import { Domain, navOf, type World } from './world';
+import { WARHEAD_MAX } from './systems/nuclear';
 
 export type System = (world: World) => void;
 
@@ -175,6 +176,15 @@ function applyCommand(world: World, cmd: Command): Refusal {
     case 'setAi': {
       const why = whyNoNation(world, cmd.nation);
       if (!why) world.nations.cols.aiOff[cmd.nation] = cmd.enabled ? 0 : 1;
+      return why;
+    }
+    case 'grantWarheads': {
+      const why = whyNoNation(world, cmd.nation);
+      if (!why) {
+        const h = world.warheads.get(cmd.nation) ?? { stock: 0, paid: 0 };
+        h.stock = Math.max(0, Math.min(WARHEAD_MAX, h.stock + Math.floor(cmd.count)));
+        world.warheads.set(cmd.nation, h);
+      }
       return why;
     }
     case 'setNukes': {

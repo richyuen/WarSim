@@ -104,6 +104,7 @@ export function NationPanel({
           {row('panel.land', num(nation.area), 'stat-land')}
           {row('panel.landShare', `${(nation.landShare * 100).toFixed(1)}%`, 'stat-land-share')}
           {row('panel.army', `${num(nation.men)} (${nation.formations})`, 'stat-army')}
+          {nation.warheads > 0 ? row('panel.warheads', num(nation.warheads), 'stat-warheads') : null}
           {nation.aircraft > 0 || nation.airLost > 0 || nation.bombed > 0 ? (
             <div class="panel-block" data-testid="panel-air">
               <div class="panel-sub">{t('panel.airWar')}</div>

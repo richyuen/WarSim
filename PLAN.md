@@ -27,12 +27,6 @@ quick sweep as a smoke test.
 
 ## Phase 6 — Nuclear AI
 
-- [ ] 6.1 Nuclear tech chain, warhead production, stockpile, upkeep; global and per-nation toggles.
-  Split 2026-10-14: two causes, one a commit.
-  - [x] 6.1a The toggles (the world's, from the scenario; a nation's, God Mode) and the […]
-  - [ ] 6.1b Warheads: built by a nation that knows the bomb, a stockpile with its upkeep; God
-    Mode grants them.
-  AT: with nukes disabled, the warhead count is always 0; enabled, a test nation builds warheads.
 - [ ] 6.2 Delivery: bombers (interceptable) and missiles (later tech).
   AT: bomber strikes are intercepted at the expected rate under air superiority.
 - [ ] 6.3 Blast + fallout (deterministic wind drift, decay) on cells, elements, cities.
@@ -719,3 +713,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 5.10 Critic R5-B1, second: the air-superiority mode is read. On day 20 of a war it shows 2 […]
 - [x] 5.11 Critic R5-B1, third: the air war in what is read afterwards. No air event reaches the […]
 - [x] 5.12 Critic R5-B2: the AI's air war keeps flying. Seed 7321: mean sorties aloft 19.1 in […]
+- [x] 6.1 Nuclear tech chain, warhead production, stockpile, upkeep; global and per-nation toggles. […]

@@ -31,6 +31,7 @@ const nation = (id: number, v: number): NationStat => ({
   enemies: [],
   aiOff: false,
   nukesAllowed: true,
+  warheads: 0,
   queue: [],
   aggression: 50,
   incomeMult: 1,
