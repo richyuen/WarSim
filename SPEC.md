@@ -1257,7 +1257,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   - The dead hold no land (PLAN 2.16Rf, ADR-112; `leaveLand`): when a nation is eliminated, the
     cells it occupied go back to their owners, and the cells of its own that a living nation
     occupies become that nation's (`LandCeded`, one event for each receiver). Its cores stay
-    the provinces', so it can revive there.
+    the provinces', so it can revive there. An annexed nation's (`annexInto`): what it held of
+    a third nation's is the annexer's where the annexer is at war with that nation, else its
+    owner's again (PLAN 5.8w2, ADR-357).
   - `winnerTakesAll` (a saved setting; command `setSetting`) annexes everything the loser
     controls, plus the loser's land the capturer already occupies.
   - `paintControl {nation, x, y, r}` sets control on land cells; with `x2, y2`, on the

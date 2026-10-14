@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-357 · 2026-10-14 · accepted — An annexed nation's hold on a third's land (PLAN 5.8w2)
+
+- **Found** (5.8h, `heldYears`, seed 7 at tick 17,520): a revolt (106) took two Soviet cells; a
+  third nation (105), at war with the revolt and at peace with the Soviet Union, annexed it at
+  the peace, and `annexInto` handed it every cell the revolt held: the two Soviet cells were then
+  held with no war with their owner (ADR-147's rule). The air war near them is no part of it;
+  the game before Phase 5 had not come by that annexation.
+- **Decision.** A cell of a third nation's that the annexed nation held is the annexer's where
+  the annexer is at war with its owner, else its owner's again, as a cell taken with no war is
+  (ADR-147). The annexed nation's own land, and what others held of it, as before (ADR-112).
+- **The pin holds** at 76983901: no such annexation in seed 99's year.
+- **Tests.** `annexHeld` (1, new; failed before): an Italian cell held by Austria, Austria
+  annexed by Germany at peace with Italy: Italy's, and nothing more held with no war; at war, Germany's.
+  `heldYears` green on seeds 99 and 7 (311 s).
+
 ### ADR-356 · 2026-10-14 · accepted — The sweeps ask the land's formations alone (PLAN 5.8w1)
 
 - **Found** (5.8h, `check:review`): `aiSweep` (a formation in a cell no route enters) and

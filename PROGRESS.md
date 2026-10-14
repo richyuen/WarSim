@@ -15155,3 +15155,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the whole unit suite (a helper changed: 1,386 of 1,389) red only by the three
   timing tests of BLOCKERS (2,969 ms, 3.45 ms, 28.7 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8w2.
+
+## 2026-10-14 — PLAN 5.8w2: an annexed nation's hold on a third's land (ADR-357)
+
+- **Done:** `annexInto` gives a third nation's cell the annexed held back to its owner unless the
+  annexer is at war with it.
+- **Tests:** `annexHeld` (1, new; failed before); `heldYears` green (seeds 99 and 7, 311 s).
+- **The pin holds** at 76983901.
+- **The gate:** the related unit tests (923 of 926) red only by the three timing tests of
+  BLOCKERS (2,834 ms, 2.95 ms, 27.0 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8w3.

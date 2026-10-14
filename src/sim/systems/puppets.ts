@@ -123,6 +123,8 @@ export function annexNation(world: World, annexer: number, target: number): bool
  * Moves `from`'s cells, formations and cores to `to`. A cell of `from`'s that a third nation
  * holds is that nation's, as at a death (ADR-112, ADR-269): before, it was `to`'s and the third
  * held it on with no war with its owner (seed 7: Hungary annexed Austria, 18 cells Italy held).
+ * A third nation's cell `from` held is `to`'s where `to` is at war with its owner, else its
+ * owner's (PLAN 5.8w2: seed 7, a revolt's Soviet land annexed by a nation at peace with it).
  */
 function annexInto(world: World, to: number, from: number): void {
   const overlord = to;
@@ -131,7 +133,12 @@ function annexInto(world: World, to: number, from: number): void {
   for (let c = 0; c < owner.length; c++) {
     const held = controller[c]!;
     if (owner[c] === subject) world.setOwner(c, held !== 0 && held !== subject && held !== overlord ? held : overlord);
-    if (controller[c] === subject) world.setController(c, overlord);
+    // A third nation's cell it held is the annexer's only where the annexer is at war with its
+    // owner; else its owner's again (PLAN 5.8w2, as a cell taken with no war is, ADR-147).
+    if (controller[c] === subject) {
+      const o = owner[c]!;
+      world.setController(c, o === 0 || o === overlord || world.wars.atWar(overlord, o) ? overlord : o);
+    }
   }
   const f = world.formations.cols;
   world.formations.forEach((id) => {
