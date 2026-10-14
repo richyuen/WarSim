@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
-import { CHART_METRICS } from '../../src/shared/statSeries';
+import { CHART_METRICS, SERIES_STRIDE } from '../../src/shared/statSeries';
 import { NATIONS_1938 } from '../../src/sim/scenario1938';
 
 // PLAN 1.34b AT (e2e part): the chart renders the selected nations: the top 5 of the metric at
@@ -31,9 +31,9 @@ test('statistics charts: top nations plus the selected one, every metric', async
   expect(nations).toContain(POL);
   const rows = await page.evaluate(() => window.__warsim!.sim.statSeries().then((r) => Array.from(r)));
   // The first five lines are the top 5 by land at the latest sample.
-  const last = Math.max(...rows.filter((_, i) => i % 7 === 0));
+  const last = Math.max(...rows.filter((_, i) => i % SERIES_STRIDE === 0));
   const top = [] as [number, number][];
-  for (let i = 0; i < rows.length; i += 7) if (rows[i] === last) top.push([rows[i + 1]!, rows[i + 2]!]);
+  for (let i = 0; i < rows.length; i += SERIES_STRIDE) if (rows[i] === last) top.push([rows[i + 1]!, rows[i + 2]!]);
   top.sort((a, b) => b[1] - a[1] || a[0] - b[0]);
   expect(nations.slice(0, 5)).toEqual(top.slice(0, 5).map((x) => x[0]));
   // 92 days from 1 January sample 1 Jan (the first tick), 1 Feb, 1 Mar and 1 Apr.
@@ -53,6 +53,9 @@ test('statistics charts: top nations plus the selected one, every metric', async
   mkdirSync(out, { recursive: true });
   await page.getByTestId('chart-metric').selectOption('men');
   await page.screenshot({ path: path.join(out, 'charts.png') });
+  // The air (PLAN 5.11c): the aircraft of the five largest air forces, month by month.
+  await page.getByTestId('chart-metric').selectOption('aircraft');
+  await page.screenshot({ path: path.join(out, 'charts-aircraft.png') });
   // Top-centre panels are exclusive (review after PLAN 1.36): History closes the charts.
   await page.getByTestId('history-btn').click();
   await expect(page.getByTestId('history-panel')).toBeVisible();

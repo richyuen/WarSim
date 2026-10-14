@@ -1,11 +1,12 @@
 /**
  * Statistics series helpers for charts (PLAN 1.34b), over the worker's flat f32 records
- * [tick, nation, land, income, gold, men, casualties] (STAT_STRIDE 7, src/sim/stats.ts).
+ * [tick, nation, land, income, gold, men, casualties, aircraft, airLost] (SERIES_STRIDE 9: the
+ * sim's STAT_STRIDE 7 and its air's 2, joined by `chartRows`, PLAN 5.11c).
  */
-export const SERIES_STRIDE = 7;
-export const CHART_METRICS = ['land', 'income', 'gold', 'men', 'casualties'] as const;
+export const SERIES_STRIDE = 9;
+export const CHART_METRICS = ['land', 'income', 'gold', 'men', 'casualties', 'aircraft', 'airLost'] as const;
 export type ChartMetric = (typeof CHART_METRICS)[number];
-const COLUMN: Record<ChartMetric, number> = { land: 2, income: 3, gold: 4, men: 5, casualties: 6 };
+const COLUMN: Record<ChartMetric, number> = { land: 2, income: 3, gold: 4, men: 5, casualties: 6, aircraft: 7, airLost: 8 };
 
 /** [tick, value] points of `nation` for `metric`, in tick order. */
 export function seriesOf(rows: ArrayLike<number>, nation: number, metric: ChartMetric): [number, number][] {

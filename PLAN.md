@@ -25,16 +25,6 @@ quick sweep as a smoke test.
 
 ## Phase 5 — Air
 
-- [ ] 5.11 Critic R5-B1, third: the air war in what is read afterwards. No air event reaches the
-  history, the ticker, the charts, the ranking or the nation panel (`critic/c5_g_5519.json`).
-  The critic's fix: air battles and raids in the history and the ticker; aircraft, losses and
-  bomb damage in the nation panel and the charts.
-  AT: e2e: in a war with air fights, the ticker and the history have their rows and the nation
-  panel the nation's aircraft and losses; a unit test of the rows.
-  Split 2026-10-14: three causes, one a commit.
-  - [x] 5.11a The month's air war and raids in the history log and the ticker.
-  - [x] 5.11b A nation's aircraft, its losses and the bomb damage it took in the nation panel.
-  - [ ] 5.11c The air war in the charts.
 - [ ] 5.12 Critic R5-B2: the AI's air war keeps flying. Seed 7321: mean sorties aloft 19.1 in
   year 1, 11.7 in year 5, then 0.2 to 1.8 in every year from 13 to 25 while the wings grow from
   132 to 236; 345 air fights in year 1, 111 in years 13 to 25 together; 0 to 16 wings with a
@@ -725,3 +715,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 4.12 Critic R5-B4 (report of 2026-10-14 on `c850346`): a sea battle shows both sides. The […]
 - [x] 5.9 Critic R5-B1 (report of 2026-10-14 on `c850346`), first of three: the air war seen at […]
 - [x] 5.10 Critic R5-B1, second: the air-superiority mode is read. On day 20 of a war it shows 2 […]
+- [x] 5.11 Critic R5-B1, third: the air war in what is read afterwards. No air event reaches the […]

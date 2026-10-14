@@ -4,7 +4,7 @@ import { seriesOf, topNations } from '../../src/shared/statSeries';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { ownedAreas } from '../../src/sim/landArea';
 import { Sim } from '../../src/sim/sim';
-import { STAT_STRIDE, StatSeries } from '../../src/sim/stats';
+import { chartRows, STAT_STRIDE, StatSeries } from '../../src/sim/stats';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -59,7 +59,7 @@ describe('statistics series (PLAN 1.34b)', () => {
     // A war of three months costs both sides men.
     expect(s.world.nations.cols.casualties[GER!]).toBeGreaterThan(0);
     expect(s.world.nations.cols.casualties[POL!]).toBeGreaterThan(0);
-    const pol = seriesOf(s.world.stats.rows, POL!, 'casualties');
+    const pol = seriesOf(chartRows(s.world.stats), POL!, 'casualties');
     expect(pol.length).toBe(months);
     for (let i = 1; i < pol.length; i++) expect(pol[i]![1]).toBeGreaterThanOrEqual(pol[i - 1]![1]); // cumulative
   }, 180_000);
@@ -69,6 +69,7 @@ describe('statistics series (PLAN 1.34b)', () => {
     const t = new Sim({ scenario: '1938', seed: 5, assets: assets1938(W) });
     t.load(s.save());
     expect(t.world.stats.rows).toEqual(s.world.stats.rows);
+    expect(t.world.stats.air).toEqual(s.world.stats.air);
     // A save from before PLAN 1.42d2 (land in cells, section `stats.rows`) starts an empty series.
     const old = new StatSeries();
     old.deserialize([{ name: 'stats.rows', dtype: 'f32', data: Float32Array.from([0, 1, 5, 0, 0, 0, 0]) }]);
@@ -79,12 +80,20 @@ describe('statistics series (PLAN 1.34b)', () => {
   }, 180_000);
 
   it('chart helpers: series per nation and top nations at the latest sample', () => {
-    // [tick, nation, land, income, gold, men, casualties]
-    const rows = [10, 1, 5, 0, 0, 0, 0, 10, 2, 9, 0, 0, 0, 0, 20, 1, 12, 0, 0, 0, 0, 20, 2, 7, 0, 0, 0, 0, 20, 3, 12, 0, 0, 0, 0];
+    // [tick, nation, land, income, gold, men, casualties, aircraft, airLost] (PLAN 5.11c: the air's two joined)
+    const rows = [10, 1, 5, 0, 0, 0, 0, 40, 0, 10, 2, 9, 0, 0, 0, 0, 0, 0, 20, 1, 12, 0, 0, 0, 0, 35, 9, 20, 2, 7, 0, 0, 0, 0, 0, 0, 20, 3, 12, 0, 0, 0, 0, 0, 0];
     expect(seriesOf(rows, 1, 'land')).toEqual([
       [10, 5],
       [20, 12],
     ]);
     expect(topNations(rows, 'land', 2)).toEqual([1, 3]); // tie at 12 broken by id
+    expect(seriesOf(rows, 1, 'aircraft')).toEqual([
+      [10, 40],
+      [20, 35],
+    ]);
+    expect(seriesOf(rows, 1, 'airLost')).toEqual([
+      [10, 0],
+      [20, 9],
+    ]);
   });
 });

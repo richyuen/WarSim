@@ -23,6 +23,7 @@ import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
 import { AT_PORT_CELLS, carrierStrikes } from '../sim/systems/navalCombat';
+import { chartRows } from '../sim/stats';
 import { aircraftOf } from '../sim/systems/airCombat';
 import { isTransport, wingAircraft } from '../sim/systems/air';
 import { airbaseRoom } from '../sim/data/airbases';
@@ -265,7 +266,8 @@ export class SimServer {
         break;
       }
       case 'stats': {
-        const rows = Float32Array.from(this.requireSim().world.stats.rows);
+        // With the air's numbers (PLAN 5.11c): CHART_STRIDE records.
+        const rows = chartRows(this.requireSim().world.stats);
         this.reply(msg.reqId, new Uint8Array(rows.buffer), false);
         break;
       }

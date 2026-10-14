@@ -15432,3 +15432,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (1,035 of 1,036) red only by `territory`'s cost of BLOCKERS
   (green alone); the pin, build, the new spec and parity green by hand.
 - **Next:** PLAN 5.11c.
+
+## 2026-10-14 — PLAN 5.11c: the air war in the charts (ADR-375); PLAN 5.11 done
+
+- **Done:** each month's statistics with a nation's aircraft and aircraft lost (a section
+  beside them; older saves keep their charts); two chart metrics. PLAN 5.11 (the critic's
+  R5-B1, third) ticked.
+- **Tests:** `stats`, `charts1938` green by hand.
+- **Looked at:** `docs/evidence/1.34/charts-aircraft.png` (3 April 1938): six lines, the Soviet
+  Union's near 3,000, Germany's falling.
+- **The pin moves** 3874ca11 → 29d27034 (ADR-375).
+- **The gate:** the related unit tests (1,032 of 1,034) red only by `scenario1938`'s and
+  `territory`'s times of BLOCKERS (green alone); the pin, build, the changed spec and parity green
+  by hand.
+- **Next:** PLAN 5.12.

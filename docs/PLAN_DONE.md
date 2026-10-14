@@ -8572,3 +8572,26 @@ Of 4.12 (open in PLAN.md):
   hatching that stands out from the political colours.
   AT: e2e: in the mode, a zone a nation holds differs from a zone no one holds (pixels) and the
   legend or the cursor names its holder.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.11 Critic R5-B1, third: the air war in what is read afterwards. No air event reaches the
+  history, the ticker, the charts, the ranking or the nation panel (`critic/c5_g_5519.json`).
+  The critic's fix: air battles and raids in the history and the ticker; aircraft, losses and
+  bomb damage in the nation panel and the charts.
+  AT: e2e: in a war with air fights, the ticker and the history have their rows and the nation
+  panel the nation's aircraft and losses; a unit test of the rows.
+  Split 2026-10-14: three causes, one a commit.
+  - [x] 5.11a The month's air war and raids in the history log and the ticker.
+  - [x] 5.11b A nation's aircraft, its losses and the bomb damage it took in the nation panel.
+  - [x] 5.11c The air war in the charts.

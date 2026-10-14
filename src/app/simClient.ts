@@ -353,7 +353,7 @@ export class SimClient {
     return { bytes: r.bytes, hash: r.scenarioHash, tick: r.status.tick };
   }
 
-  /** Statistics series (PLAN 1.34b): flat STAT_STRIDE f32 records. */
+  /** Statistics series (PLAN 1.34b): flat SERIES_STRIDE f32 records (the air's numbers joined, PLAN 5.11c). */
   async statSeries(): Promise<Float32Array> {
     const r = await this.status({ type: 'stats' });
     if (!r.bytes) throw new Error('stats reply without bytes');

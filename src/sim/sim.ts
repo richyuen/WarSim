@@ -163,11 +163,12 @@ export class Sim {
    */
   exportScenario(): { bytes: Uint8Array; hash: number } {
     const w = this.world;
-    const keep = { log: w.commandLog, pending: w.pending, history: w.history.rows, stats: w.stats.rows, undo: w.edits.undo, redo: w.edits.redo };
+    const keep = { log: w.commandLog, pending: w.pending, history: w.history.rows, stats: w.stats.rows, air: w.stats.air, undo: w.edits.undo, redo: w.edits.redo };
     w.commandLog = [];
     w.pending = [];
     w.history.rows = [];
     w.stats.rows = [];
+    w.stats.air = [];
     w.edits.undo = [];
     w.edits.redo = [];
     try {
@@ -177,6 +178,7 @@ export class Sim {
       w.pending = keep.pending;
       w.history.rows = keep.history;
       w.stats.rows = keep.stats;
+      w.stats.air = keep.air;
       w.edits.undo = keep.undo;
       w.edits.redo = keep.redo;
     }

@@ -76,7 +76,7 @@ export type ToWorker =
   | { type: 'formation'; reqId: number; id: number; generation?: number }
   /** PLAN 2.14e: the largest battle of war `war` as JSON `WarBattle` in the reply bytes (`null` when it has none). */
   | { type: 'warBattle'; reqId: number; war: number }
-  /** PLAN 1.34b: the statistics series as raw f32 bytes (STAT_STRIDE records). */
+  /** PLAN 1.34b: the statistics series as raw f32 bytes (SERIES_STRIDE records: `chartRows`, PLAN 5.11c). */
   | { type: 'stats'; reqId: number }
   | { type: 'save'; reqId: number }
   /** PLAN 1.38: the world as a scenario (run history dropped): state bytes + their hash. */

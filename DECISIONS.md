@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-375 · 2026-10-14 · accepted — The air war in the charts (PLAN 5.11c); PLAN 5.11 done
+
+- **Found** (the critic's R5-B1, run 5): the charts had no air.
+- **Decision.**
+  - The monthly statistics keep, beside each record, a nation's aircraft (its wings' strength)
+    and the aircraft it has lost (`world.airTotals`): `StatSeries.air`, AIR_STRIDE 2, in a
+    section of its own (`stats.air`). A save from before has none, and its records read 0 there:
+    its charts stay (widening the records' section would have emptied them, as land in cells
+    did at PLAN 1.42d2). A scenario's export drops it with the rest of the statistics.
+  - The worker sends the two joined (`chartRows`, SERIES_STRIDE 9); the charts have two metrics
+    more: aircraft and aircraft lost.
+- **The pin moves** 3874ca11 → 29d27034: the statistics' new section. No rule changed.
+- **PLAN 5.11 done** (5.11a log and ticker, 5.11b panel, 5.11c charts): the critic's R5-B1, all
+  three parts, with 5.9 and 5.10.
+- **Tests.** `stats.test.ts`: its chart fixture in the new records with an aircraft series; the
+  air's numbers survive a save and load. `charts1938`: its stride by SERIES_STRIDE, every metric
+  (the two new) drawn; `docs/evidence/1.34/charts-aircraft.png`: the five largest air forces and
+  Poland, January to April 1938.
+
 ### ADR-374 · 2026-10-14 · accepted — A nation's air war in its panel (PLAN 5.11b)
 
 - **Found** (the critic's R5-B1, run 5): the nation panel said nothing of a nation's air force.
