@@ -15147,3 +15147,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   - `formationPlace1938`: elements in the view.
 - **Known reds as listed:** `cityNames1938` (2), `fallen1938`, `fightSeen1938` (2).
 - **Next:** PLAN 5.8w1.
+
+## 2026-10-14 — PLAN 5.8w1: the sweeps ask the land's formations alone (ADR-356)
+
+- **Done:** `aiSweep`'s and `standYear`'s checks skip a wing as they skip a fleet (`offLand`).
+- **Tests:** `standYear` green (262 s); `aiSweep1`–`3` at the review's next run.
+- **The gate:** the whole unit suite (a helper changed: 1,386 of 1,389) red only by the three
+  timing tests of BLOCKERS (2,969 ms, 3.45 ms, 28.7 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8w2.

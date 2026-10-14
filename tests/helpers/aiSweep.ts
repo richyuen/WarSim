@@ -44,7 +44,7 @@ import { strayNaN } from './stateNumbers';
  *
  * PLAN 3.12Rm AT: on every day no formation of the land is in a cell no route enters (a cell of
  * component 0 of the grid: water), where it could take no order. A fleet stands on water and
- * is not asked (PLAN 4.2b).
+ * is not asked (PLAN 4.2b), nor is a wing (PLAN 5.8w1).
  *
  * PLAN 4.2b AT: on every day every fleet of the start is at its cell with its ships
  * (`fleetsStand`), or is gone with its nation.
@@ -189,7 +189,8 @@ export function aiSweep(seed: number): void {
         const comp = navOf(w).grid.component;
         const closed: string[] = [];
         w.formations.forEach((f) => {
-          if (w.afloat(f)) return;
+          // Of the land: a fleet, and a wing (a carrier's is at sea with its fleet, PLAN 5.8w1), are not asked.
+          if (w.offLand(f)) return;
           formationDays++;
           if (comp[Math.floor(fc.y[f]!) * w.cells.w + Math.floor(fc.x[f]!)] === 0) closed.push(`formation ${f} of ${tag(fc.nation[f]!)} at (${fc.x[f]!.toFixed(3)}, ${fc.y[f]!.toFixed(3)})`);
         });

@@ -8195,3 +8195,22 @@ Of 5.8 (open in PLAN.md):
   - [x] 5.8v4 Wings built from the page (found by 5.8v1: the Actions tab leaves air templates
     out, "no air formation is built", since 5.8s1 untrue): with its airfield's word, as a
     fleet's "no port".
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w1 The review's sweeps ask a wing as a formation of the land (found by 5.8h's
+    `check:review`): `aiSweep` (formations in a cell no route enters, 18 on day 1) and `standYear`
+    (6 at rest off sure land): the naval bomber groups on their carriers, at sea since 5.1d. A
+    wing is not of the land (`offLand`), as the tests say of what they ask.

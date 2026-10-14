@@ -167,6 +167,17 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-356 · 2026-10-14 · accepted — The sweeps ask the land's formations alone (PLAN 5.8w1)
+
+- **Found** (5.8h, `check:review`): `aiSweep` (a formation in a cell no route enters) and
+  `standYear` (a formation at rest on sure land) asked every formation not afloat; since 5.1d
+  the naval bomber groups stand with their carriers at sea, 18 and 6 of them red on day 1. The
+  sweeps ran at no review since.
+- **Decision.** Both ask the formations of the land, as they say they do: not a fleet, not a
+  wing (`offLand`). No rule changed; what they ask of an army is the same.
+- **The pin holds** at 76983901.
+- **Tests.** `standYear` green (262 s); `aiSweep1`–`3` at the review's next run.
+
 ### ADR-355 · 2026-10-13 · accepted — Wings built from the page (PLAN 5.8v4)
 
 - **Found** (5.8v1): the Actions tab left air templates off its build list ("no air formation

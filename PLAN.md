@@ -61,10 +61,7 @@ quick sweep as a smoke test.
   - [x] 5.8v2 A paradrop of a selected formation at an airbase, from the page.
   - [x] 5.8v3 A wing's and a paradrop's refusal told as a march's is (PLAN 4.9a): the worker's […]
   - [x] 5.8v4 Wings built from the page (found by 5.8v1: the Actions tab leaves air templates […]
-  - [ ] 5.8w1 The review's sweeps ask a wing as a formation of the land (found by 5.8h's
-    `check:review`): `aiSweep` (formations in a cell no route enters, 18 on day 1) and `standYear`
-    (6 at rest off sure land): the naval bomber groups on their carriers, at sea since 5.1d. A
-    wing is not of the land (`offLand`), as the tests say of what they ask.
+  - [x] 5.8w1 The review's sweeps ask a wing as a formation of the land (found by 5.8h's […]
   - [ ] 5.8w2 Seed 7 at tick 17,520 (`heldYears`): nation 105 holds 2 cells of nation 10 with no
     war between them. A test first, then the cause.
   - [ ] 5.8w3 The T0 counters' and T2 elements' sums (`counters1938`, `declutter1938`,
