@@ -15082,3 +15082,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (918 of 921) red only by the three timing tests of
   BLOCKERS (2,866 ms, 2.46 ms, 25.2 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8g.
+
+## 2026-10-13 — PLAN 5.8g: the PARITY rows of Phase 5
+
+- **Done:** `docs/PARITY.md` additions 5 (aircraft: 5.8's work and its 13 test files; its
+  "missing" brought up to date), 3 (naval), 7 (supply), 8 (production). SPEC's "not built yet"
+  of the transports' missions now "as built since".
+- **Found:** the page has no control for a wing's mission, rebase or paradrop: PLAN 5.8v.
+- **The gate:** documents only, parity.
+- **Next:** PLAN 5.8v.

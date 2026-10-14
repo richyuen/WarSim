@@ -56,7 +56,11 @@ quick sweep as a smoke test.
   - [x] 5.8u2 A paradrop of a formation from an airbase within range.
   - [x] 5.8u3a The air AI's transports: supply to its formations cut off.
   - [x] 5.8u3b The AI's paradrops.
-  - [ ] 5.8g PARITY rows of Phase 5 updated with evidence (row 5 and the rows it touched).
+  - [x] 5.8g PARITY rows of Phase 5 updated with evidence (row 5 and the rows it touched).
+  - [ ] 5.8v The page's orders for a wing (found by 5.8g: a mission, a rebase and a paradrop are
+    commands with no control): a selected wing's mission (patrol, strike, supply) and rebase by
+    a click on the map, a paradrop of a selected formation at an airbase; refusals told as a
+    march's are (PLAN 4.9a).
   - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed if a
     defect of Phase 5 caused it, no constant tuned), and the tick of 5.8; then the critic (due

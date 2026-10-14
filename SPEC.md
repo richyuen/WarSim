@@ -1844,8 +1844,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy. *As built:* ground combat (5.4a); supply, naval
   detection and bombing accuracy not yet (PLAN 5.8t).
-- *Not built yet* (PLAN 5.8u): the transports' missions (paradrop, air supply); interception is
-  no mission of its own: a patrol meets what comes within 150 km of it (5.7d).
+- *As built since* (PLAN 5.8u, ADR-348 to ADR-351): the transports' missions, air supply and the
+  paradrop, above. Interception is no mission of its own: a patrol meets what comes within 150 km
+  of it (5.7d).
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,
   flak. *As built:* 5.7a and 5.7b, at T0 to T2.
 
