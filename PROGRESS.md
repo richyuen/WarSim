@@ -15195,3 +15195,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the whole unit suite (a helper changed: 1,387 of 1,390) red only by the three
   timing tests of BLOCKERS; the pin, build and parity green by hand.
 - **Next:** PLAN 5.8h: `check:review` again.
+
+## 2026-10-14 — PLAN 5.8h: the review's third run, cut off; two new reds; the loop stopped
+
+- **Done** (on the code of `fef493d`): typecheck, lint, build, parity, the unit tests (the two
+  known), the sweep tests, e2e chunk 1 (the known `cityNames1938`); cut off at the 2-hour limit.
+- **New reds:**
+  - `aiSweep2`: a revolt's land past its bound (PLAN 5.8w6).
+  - `aiSweep3`: timed out at 900 s after 1,064 s (PLAN 5.8w7).
+  - `aiSweep1`, `heldYears`, `standYear` are green.
+- **Stopped:** a background run ends at 2 hours and every code change starts the review anew;
+  each run reaches e2e chunk 1 of 6. How to go on is put to the user.

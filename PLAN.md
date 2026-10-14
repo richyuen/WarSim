@@ -66,6 +66,11 @@ quick sweep as a smoke test.
   - [x] 5.8w3 The T0 counters' and T2 elements' sums (`counters1938`, `declutter1938`, […]
   - [x] 5.8w4 `formationPlace1938`: the view centred on a formation in contact holds its […]
   - [x] 5.8w5 The review's second run (found by it): `aiSweep` held a fleet gone with its […]
+  - [ ] 5.8w6 The review's third run (found by it): `aiSweep2`, seed 2 at tick 27,721: nation 116
+    holds 1,075,177 km² in 10 provinces by one revolt (the bound 1,000,000, PLAN 3.9). A test
+    first, then the cause.
+  - [ ] 5.8w7 `aiSweep3` runs past its 900 s (1,064 s): the tick's cost since Phase 5 (BLOCKERS,
+    PLAN 7.1). The user's call: the timeout, or the known reds with its BLOCKERS entry.
   - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed if a
     defect of Phase 5 caused it, no constant tuned), and the tick of 5.8; then the critic (due
