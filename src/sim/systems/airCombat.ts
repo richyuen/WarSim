@@ -320,7 +320,11 @@ export function strikes(world: World): void {
       took += applyLoss(world, t, units);
       hit.add(ec.formation[t]!);
     }
-    for (const g of [...hit].sort((a, b) => a - b)) settleFormation(world, g);
+    for (const g of [...hit].sort((a, b) => a - b)) {
+      // Where its bombs fell, for the view at T3 (PLAN 5.9): the formation, before it may go.
+      world.out.emit(world.tick, EventKind.StrikeHit, g, id, fc.x[g]!, fc.y[g]!);
+      settleFormation(world, g);
+    }
     world.out.emit(world.tick, EventKind.AirStrike, id, took, s.tx, s.ty);
   }
 }

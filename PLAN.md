@@ -25,13 +25,6 @@ quick sweep as a smoke test.
 
 ## Phase 5 — Air
 
-- [ ] 5.9 Critic R5-B1 (report of 2026-10-14 on `c850346`), first of three: the air war seen at
-  T3. No plane, bomb or flak is drawn there, by design: none in 17 live hours at 20 m/px over a
-  war (`critic/c5_b_8317.json`). The critic's fix: sorties, bombs and strafing drawn at T3 over
-  the men they hit.
-  AT: e2e: at T3 over a land battle with a strike in its hours, the strike's aircraft and its
-  bombs are drawn over the formation it hits (pixels and the view's state), and nothing of it
-  after.
 - [ ] 5.10 Critic R5-B1, second: the air-superiority mode is read. On day 20 of a war it shows 2
   of 515 zones held; Germany's zones are grey on a grey country, and its legend names no
   nation (`critic/c5_h_8317.json`). The critic's fix: a legend by nation and a tint or
@@ -732,3 +725,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode. […]
 - [x] 5.8 Phase 5 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]
 - [x] 4.12 Critic R5-B4 (report of 2026-10-14 on `c850346`): a sea battle shows both sides. The […]
+- [x] 5.9 Critic R5-B1 (report of 2026-10-14 on `c850346`), first of three: the air war seen at […]

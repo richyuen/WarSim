@@ -125,6 +125,8 @@ export const EventKind = {
   AirStrike: 48,
   /** A sortie fired on by AA in an hour (PLAN 5.7b): a = the wing, b = its nation; (x, y) = its place. Drawn as flak. */
   FlakFired: 49,
+  /** A strike's bombs on a formation (PLAN 5.9): a = the formation hit, b = the wing; (x, y) = the formation's place. Drawn at T3 over its men. */
+  StrikeHit: 50,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

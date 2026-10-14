@@ -8533,3 +8533,23 @@ Of 4.12 (open in PLAN.md):
   - [x] 4.12a The row frames both sides: the snapshot's sea battle has its fleets' box; the […]
   - [x] 4.12b A carrier's strike drawn as sorties flying from the carrier to its target (with […]
   - [x] 4.12c Ships large enough to read at 20 m/px: a carrier group was seven small pills.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.9 Critic R5-B1 (report of 2026-10-14 on `c850346`), first of three: the air war seen at
+  T3. No plane, bomb or flak is drawn there, by design: none in 17 live hours at 20 m/px over a
+  war (`critic/c5_b_8317.json`). The critic's fix: sorties, bombs and strafing drawn at T3 over
+  the men they hit.
+  AT: e2e: at T3 over a land battle with a strike in its hours, the strike's aircraft and its
+  bombs are drawn over the formation it hits (pixels and the view's state), and nothing of it
+  after.

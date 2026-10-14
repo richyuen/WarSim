@@ -709,6 +709,13 @@ export class MapView {
     this.onSeaHover(at ? { name: at.name, holder: at.holder } : null);
   }
 
+  /** Where formation `f`'s elements are drawn, cells, from the last snapshot (PLAN 5.9: a strike's bombs at T3). */
+  elementPlaces(f: number): [number, number][] {
+    const out: [number, number][] = [];
+    for (let i = 0; i < this.elementCount; i++) if (this.elementFormation[i] === f) out.push([this.elementX[i]!, this.elementY[i]!]);
+    return out;
+  }
+
   /** The sea battles going on, from the last snapshot (PLAN 4.10b). */
   seaBattles(): SeaBattleView[] {
     const out: SeaBattleView[] = [];
@@ -1318,14 +1325,15 @@ export class MapView {
     for (let i = 0; i < this.formIds.length; i++) src.push({ x: this.formX[i]!, y: this.formY[i]!, nation: counterNation(this.formNation[i]!, this.templates[this.formTemplate[i]!]?.domain === 1), strength: this.formStrength[i]! });
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
-    // The sorties in flight (PLAN 5.7a), at T0 to T2, where they are at this frame's time: under
+    // The sorties in flight (PLAN 5.7a), at every tier (PLAN 5.9), where they are at this frame's time: under
     // the counters, which stay readable over them. A snapshot of tick T + 1 is the world after the
     // hour that began at T, which the page plays from its arrival (the formations go from where
     // they were to where they are): the frame's time is T + its share of the tick (PLAN 5.7d: it
     // was T + 1 + the share, the sorties an hour ahead of all else and of their own fights).
-    this.sortieMarks = drawSorties(ctx, this.sorties, this.tickProgress(now) - 1, cam, this.geo, vw, vh, 1 - this.shares.individuals, (n) => hex(n), this.unitScale);
-    // The air's fights, bombs and flak (PLAN 5.7b), with the sorties.
-    this.airFx.draw(ctx, cam, this.geo, vw, vh, now, 1 - this.shares.individuals, this.unitScale * planeZoom(cam.scale));
+    this.sortieMarks = drawSorties(ctx, this.sorties, this.tickProgress(now) - 1, cam, this.geo, vw, vh, 1, (n) => hex(n), this.unitScale);
+    // The air's fights, bombs and flak (PLAN 5.7b), with the sorties; at T3 a strike's bombs on
+    // the men it hit, its formation's drawn elements (PLAN 5.9).
+    this.airFx.draw(ctx, cam, this.geo, vw, vh, now, this.unitScale * planeZoom(cam.scale), this.shares.individuals, (f) => this.elementPlaces(f));
     this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);
     // The sea battles going on (PLAN 4.10b), at T0 to T2: gone with the figures of T3.
     this.seaMarks = drawSeaBattles(ctx, this.seas, cam, this.geo, vw, vh, 1 - this.shares.individuals, this.unitScale);

@@ -39,6 +39,13 @@ describe('AirFx (PLAN 5.7b)', () => {
     expect([fx.marks.length, fx.animating(DOGFIGHT_MS + 2)]).toEqual([0, false]);
   });
 
+  it('a strike\'s bombs on a formation are a mark of that formation, living as the bombs do (PLAN 5.9)', () => {
+    const fx = new AirFx();
+    add(fx, [[EventKind.StrikeHit, 479, 1369, 1695, 409.5]], 100);
+    expect(fx.marks.map((m) => [m.kind, m.formation, m.x, m.y, m.born])).toEqual([[AirMark.hit, 479, 1695, 409.5, 100]]);
+    expect(fx.until).toBe(100 + BOMBS_MS);
+  });
+
   it('the same event, the same picture: a mark\'s seed is its event\'s', () => {
     const a = new AirFx();
     const b = new AirFx();

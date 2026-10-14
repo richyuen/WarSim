@@ -15380,3 +15380,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   20 m/px, hulls and turrets readable, two ships at its head touching.
 - **The gate:** green (the related unit tests 46 of 46; the two changed specs).
 - **Next:** PLAN 5.9.
+
+## 2026-10-14 — PLAN 5.9: the air war at T3 (ADR-371)
+
+- **Done:** sorties, air fights and flak drawn at every tier; a strike's bombs at T3 over the
+  men it hit (`StrikeHit`, an event of each formation a strike hits).
+- **Tests:** `airT3_1938` (new), `airFx1938` green by hand; `airFx.test.ts` 4 of 4.
+- **Looked at:** `docs/evidence/5.9/strike-t3-20m.png` (new): bursts among the Chinese men at
+  20 m/px; small, but on the men.
+- **The pin holds** at 76983901.
+- **The gate:** green (the whole unit suite, a helper added: 1,397 of 1,397; the pin; the new
+  spec).
+- **Next:** PLAN 5.10.

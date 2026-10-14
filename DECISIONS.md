@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-371 · 2026-10-14 · accepted — The air war at T3 (PLAN 5.9)
+
+- **Found** (the critic's R5-B1, run 5): no plane, bomb or flak at T3, by design (PLAN 5.7a,
+  5.7b drew the sorties and the air's effects at T0 to T2 and faded them with T3's figures):
+  none in 17 live hours of a war at 20 m/px.
+- **Decision.**
+  - The sorties, the air fights' tracers and the flak are drawn at every tier.
+  - A strike's bombs about its target cell (`AirStrike`) stay of T0 to T2. At T3 its bombs burst
+    over the men it hit, as drawn: the sim tells each formation a strike hits (`StrikeHit`, 50:
+    the formation, the wing, the formation's place; an event, not state), and the view puts each
+    bomb on one of that formation's drawn elements, by the strike's seed (`AirMark.hit`,
+    `MapView.elementPlaces`).
+  - A strike turns over its target at once: at 20 m/px (28 km across) its planes are in view
+    for a moment of the hour, if at all.
+- **The pin holds**: the event is no state.
+- **Tests.** `airT3_1938.spec.ts` (new; the first strike on a land formation from day 3 of seed
+  1938, found in Node by `tests/helpers/strikeHit.ts`: Chinese division 479, hour 73): at T3,
+  bombs over its men, none about the target cell, none after their time; a sortie seen further
+  out drawn at T3 where it is (at T3 none was drawn before). `airFx.test.ts`: a `StrikeHit` is a
+  mark of its formation. `airFx1938` green. `docs/evidence/5.9/strike-t3-20m.png`: bursts among
+  the men of Chinese divisions 479 and 482 facing Japanese 387, tracers between the blocks.
+
 ### ADR-370 · 2026-10-14 · accepted — A ship's least length on the screen (PLAN 4.12c)
 
 - **Found** (the critic's R5-B4, run 5): at 20 m/px (T3) a ship is drawn its own length (PLAN
