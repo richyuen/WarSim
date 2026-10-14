@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-387 · 2026-10-14 · accepted — Outrage at a nuclear strike (PLAN 6.5b); PLAN 6.5 done
+
+- **Decision** (SPEC §6.4 "relations hit with every nation (scaled by distance and alliance) ...
+  global outrage persists"; the utility's "globalOutrage").
+  - A burst on another nation's land raises the world's outrage at its striker by 40, to 100
+    (`world.nukeOutrage`, state saved while not empty), less 0.025 a day: one strike's lasts 4.4
+    years.
+  - Relations: no relations value exists, so a nation's relations with a striker are a function of
+    the outrage (`relationHit`): outrage / 100 × 1 with capitals within 2,000 km, falling straight
+    to 0.25 at 8,000 km and beyond, × 0.25 for its ally, overlord or puppet. After France's strike
+    on Berlin: Poland 0.40, the United States 0.18, Japan 0.10, England (its ally) 0.10.
+  - The strategic AI reads it: its war utility against a neighbour + 0.5 × the hit; and the monthly
+    coalition forms about the worst pariah (outrage 40 or more) as about a hegemon, but as a league
+    of its own ('alliance.pariah', "League against the Bomb"): France's neighbours joined the
+    coalition Mexico had founded against the United States before. The hegemon's coalition is as
+    before.
+  - The utility's outrage term (0 until now): 0.1 for any strike + 0.3 × the outrage at the striker
+    already / 100. Every utility of ADR-384 and ADR-385 is 0.1 less: MAD −1.36, the desperate French
+    0.45, the taboo −0.27 → 0.15, France's decision 0.4, its strike back 0.208; each test's verdict
+    is unchanged.
+- **The pin holds** at 45df324d: no outrage, no read.
+- **Tests.** `nukeOutrage1938.test.ts` (new; the AT's test of outrage and relations): outrage by 40
+  a strike to 100, none for a burst on the striker's own land, a day's decay; the relations hit of
+  Poland, the United States, Japan and England by the formula and in that order; the utility's
+  term; the Netherlands, the world outraged at it for 62 days, has 4 wars declared on it (2 without)
+  and Belgium and Brazil found a League against the Bomb without it (none without); a save carries
+  the outrage. France with its allies is too strong a target for the push to tip a war in 62 days.
+
 ### ADR-386 · 2026-10-14 · accepted — A burst's shocks and its history entry (PLAN 6.5a)
 
 - **Decision** (SPEC §6.4 "a stability shock and a war-exhaustion jump", "the striker's alliance

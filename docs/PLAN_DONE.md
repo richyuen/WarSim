@@ -8776,3 +8776,23 @@ Of 6.5 (open in PLAN.md):
 
   - [x] 6.5a The burst's shocks: war exhaustion (peace when it reaches the threshold), treasury,
     unrest, the striker's alliance's unity; the history entry with yield and casualties.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+- [x] 6.5 Consequences: relations, alliance unity, outrage, economic shock, peace/retaliation responses.
+  AT: tests per consequence; the history log has a nuke entry with yield and casualties.
+  Split 2026-10-14: what a burst does at once, then what it leaves in the world's opinion.
+  - [x] 6.5a The burst's shocks: war exhaustion (peace when it reaches the threshold), treasury, […]
+  - [x] 6.5b Outrage: global and against the striker, decaying; relations with every nation hit by
+    distance and alliance (the strategic AI's wars and coalitions); the utility's outrage term.

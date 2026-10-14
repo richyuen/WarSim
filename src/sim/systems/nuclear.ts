@@ -73,7 +73,8 @@
  * - MAD (`assured`): a side has an assured second strike when a nation of it (with its allies)
  *   has MAD_WARHEADS and a means of delivery.
  * - allianceCost: ALLIANCE_COST for each ally not at its side in that war, to ALLIANCE_COST_MAX.
- * - outrage: 0 until PLAN 6.5.
+ * - outrage (PLAN 6.5b): OUTRAGE_COST, the world's outrage at any strike, + OUTRAGE_WEIGHT × the
+ *   outrage at the striker already (to 1 at 100): a pariah is nearer the world turning on it.
  * - taboo (`world.nukeTaboo`): 1, TABOO_AFTER after any burst, back by TABOO_RECOVERY a day.
  *
  * The decision (PLAN 6.4b; `nukeDecisions`), daily, with the AI on: each nation with a warhead,
@@ -95,6 +96,15 @@
  * - stability: NUKE_UNREST more unrest in each province with land within twice the blast radius;
  * - and the striker's alliance: NUKE_UNITY less unity.
  * The strike's history entry is `NukeCasualties`: the nation struck, the yield, the dead.
+ *
+ * Outrage (PLAN 6.5b, SPEC §6.4 "relations hit with every nation (scaled by distance and
+ * alliance) ... global outrage persists"): a burst on another nation's land raises the world's
+ * outrage at its striker by OUTRAGE_STRIKE, to 100 (`world.nukeOutrage`), less OUTRAGE_DECAY a
+ * day (four years and more for one strike). A nation's relations with a striker are hit by
+ * `relationHit`: the outrage / 100 × by distance (1 with capitals within RELATION_NEAR_KM, down to
+ * RELATION_FAR_SHARE beyond RELATION_FAR_KM) × ALLY_SHARE for its ally, its overlord or its puppet.
+ * The strategic AI reads it: in its war utility against a neighbour, and the monthly coalition,
+ * formed about a hegemon until then, forms about the worst pariah too (outrage PARIAH_COALITION).
  */
 import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
@@ -546,7 +556,7 @@ export function nukeInputs(world: World, n: number, war: War, side: number, x: n
     doctrine: doctrineOf(world, n),
     retaliation: retaliationRisk(world, war, side),
     allianceCost: Math.min(ALLIANCE_COST_MAX, ALLIANCE_COST * apart),
-    outrage: 0,
+    outrage: OUTRAGE_COST + OUTRAGE_WEIGHT * Math.min(1, (world.nukeOutrage.get(n) ?? 0) / 100),
     taboo: world.nukeTaboo,
     mad: assured(world, ownCoalition(world, war, side)) && assured(world, enemyCoalition(world, war, side)),
     extreme,
@@ -635,6 +645,7 @@ export function aftermath(world: World, striker: number, yieldN: number, x: numb
     world.alliances.changed();
   }
   if (struck === 0 || struck === striker) return;
+  world.nukeOutrage.set(striker, Math.min(100, (world.nukeOutrage.get(striker) ?? 0) + OUTRAGE_STRIKE));
   world.nukeShock.set(struck, Math.min(NUKE_SHOCK_MAX, (world.nukeShock.get(struck) ?? 0) + NUKE_SHOCK));
   const nc = world.nations.cols;
   nc.gold[struck] = nc.gold[struck]! - Math.max(0, nc.gold[struck]!) * NUKE_GOLD;
@@ -658,12 +669,47 @@ export function aftermath(world: World, striker: number, yieldN: number, x: numb
   if (seen.size > 0) pv.version++;
 }
 
-/** The shock's day (PLAN 6.5a): less by NUKE_SHOCK_DECAY, gone at 0. */
+/** The shock's and outrage's day (PLAN 6.5a, 6.5b): each less by its decay, gone at 0. */
 function shockDay(world: World): void {
   for (const [n, v] of [...world.nukeShock]) {
     if (v <= NUKE_SHOCK_DECAY) world.nukeShock.delete(n);
     else world.nukeShock.set(n, v - NUKE_SHOCK_DECAY);
   }
+  for (const [n, v] of [...world.nukeOutrage]) {
+    if (v <= OUTRAGE_DECAY) world.nukeOutrage.delete(n);
+    else world.nukeOutrage.set(n, v - OUTRAGE_DECAY);
+  }
+}
+
+/** Outrage (PLAN 6.5b): see the head of the file. */
+export const OUTRAGE_STRIKE = 40;
+export const OUTRAGE_DECAY = 0.025;
+export const OUTRAGE_COST = 0.1;
+export const OUTRAGE_WEIGHT = 0.3;
+export const RELATION_NEAR_KM = 2000;
+export const RELATION_FAR_KM = 8000;
+export const RELATION_FAR_SHARE = 0.25;
+export const ALLY_SHARE = 0.25;
+export const PARIAH_COALITION = 40;
+
+/** How far `observer`'s relations with `striker` are hit by the world's outrage at it (PLAN 6.5b), 0 to 1. */
+export function relationHit(world: World, observer: number, striker: number): number {
+  const o = world.nukeOutrage.size === 0 || observer === striker ? 0 : (world.nukeOutrage.get(striker) ?? 0);
+  if (o <= 0) return 0;
+  const nc = world.nations.cols;
+  const km = seaKm(world, nc.capitalX[observer]!, nc.capitalY[observer]!, nc.capitalX[striker]!, nc.capitalY[striker]!);
+  const far = km <= RELATION_NEAR_KM ? 1 : km >= RELATION_FAR_KM ? RELATION_FAR_SHARE : 1 - ((1 - RELATION_FAR_SHARE) * (km - RELATION_NEAR_KM)) / (RELATION_FAR_KM - RELATION_NEAR_KM);
+  const close = world.alliances.allied(observer, striker) || nc.overlord[observer] === striker || nc.overlord[striker] === observer;
+  return (Math.min(100, o) / 100) * far * (close ? ALLY_SHARE : 1);
+}
+
+/** The nation the world is most outraged at, PARIAH_COALITION or more, living; 0 for none (PLAN 6.5b). */
+export function worstPariah(world: World): number {
+  let worst = 0;
+  for (const [n, v] of [...world.nukeOutrage].sort((a, b) => a[0] - b[0])) {
+    if (v >= PARIAH_COALITION && world.nations.has(n) && world.nations.cols.living[n] === 1 && (worst === 0 || v > world.nukeOutrage.get(worst)!)) worst = n;
+  }
+  return worst;
 }
 
 /** The taboo's day (PLAN 6.4a): back towards 1. Nothing while it is 1. */

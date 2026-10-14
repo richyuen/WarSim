@@ -12,6 +12,7 @@
  * Declare war (aggression ≥ PACIFIST_BELOW, not a puppet, not broke, in < MAX_WARS wars):
  *   utility(t) = aggression/100 × (min(RATIO_CAP, attack(n)/defence(t)) − 1) + OPPORTUNITY (t already at war)
  *              + CLAIM (n has a core on land t holds) − exhaustion/100 − WARS_PENALTY × wars
+ *              + PARIAH_WAR × relationHit(n, t)  (the world's outrage at t's nuclear strikes, PLAN 6.5b)
  * over neighbours t that are valid targets; the best t with utility > DECLARE_AT is attacked
  * with probability DECLARE_P × aggression/100.
  * Stalemate peace: a war older than STALEMATE_DAYS with |score| < STALEMATE_SCORE and both
@@ -20,7 +21,9 @@
  * than THREAT_RATIO × stronger joins the strongest alliance among its other neighbours, or
  * forms one with an unaligned neighbour of that threat (probability ALLY_P).
  * Coalition (monthly): against a nation earning > HEGEMON_SHARE of world gross income, its
- * unaligned neighbours (not its puppets) form or join a coalition alliance.
+ * unaligned neighbours (not its puppets) form or join a coalition alliance; and those of the nation
+ * the world is most outraged at for its nuclear strikes (`worstPariah`, PLAN 6.5b) a league of
+ * their own, 'alliance.pariah', that does not have it.
  * God Mode can switch the AI off globally (setting `aiEnabled`) or per nation (`setAi`).
  */
 import { isDayStart, isMonthStart } from '../../shared/calendar';
@@ -29,6 +32,7 @@ import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { makePeace, declareWar, whyNotWar } from '../systems/war';
 import { canJoin, noWarAmong } from '../systems/alliances';
+import { relationHit, worstPariah } from '../systems/nuclear';
 import { forceMen } from '../systems/seaControl';
 import { navOf, type World } from '../world';
 
@@ -52,6 +56,8 @@ export const THREAT_AGGRESSION = 50;
 export const THREAT_RATIO = 1.5;
 export const ALLY_P = 0.3;
 export const HEGEMON_SHARE = 0.25;
+/** The war utility's weight of a neighbour's nuclear outrage (PLAN 6.5b). */
+export const PARIAH_WAR = 0.5;
 const SALT_WAR = 0xa101;
 const SALT_ALLY = 0xa102;
 
@@ -159,7 +165,7 @@ export function strategicAi(world: World): void {
       for (const t of neighbours) {
         // Whom it may declare on (PLAN 3.8: not a puppet of its ally either, which it used to pick).
         if (whyNotWar(world, n, t) !== Refusal.None) continue;
-        const u = (nc.aggression[n]! / 100) * (Math.min(RATIO_CAP, attack / defence(t)) - 1) + (warsOf(world, t) > 0 ? OPPORTUNITY : 0) + (claimsOn(world, n, t) ? CLAIM : 0) - exhaustionOf(world, n) / 100 - WARS_PENALTY * wars;
+        const u = (nc.aggression[n]! / 100) * (Math.min(RATIO_CAP, attack / defence(t)) - 1) + (warsOf(world, t) > 0 ? OPPORTUNITY : 0) + (claimsOn(world, n, t) ? CLAIM : 0) - exhaustionOf(world, n) / 100 - WARS_PENALTY * wars + PARIAH_WAR * relationHit(world, n, t);
         if (u > bestU) {
           bestU = u;
           best = t;
@@ -185,7 +191,7 @@ export function strategicAi(world: World): void {
   if (isMonthStart(world.startDay, world.tick)) coalition(world, nb, str);
 }
 
-/** Monthly: unaligned neighbours of a hegemon (> HEGEMON_SHARE of world income) ally. */
+/** Monthly: unaligned neighbours of a hegemon (> HEGEMON_SHARE of world income) ally; and of the worst nuclear pariah (PLAN 6.5b). */
 function coalition(world: World, nb: Map<number, Set<number>>, str: Float64Array): void {
   const nc = world.nations.cols;
   let total = 0;
@@ -195,12 +201,23 @@ function coalition(world: World, nb: Map<number, Set<number>>, str: Float64Array
     total += Math.max(0, nc.income[n]!);
     if (top === 0 || nc.income[n]! > nc.income[top]!) top = n;
   });
-  if (top === 0 || total <= 0 || nc.income[top]! / total <= HEGEMON_SHARE) return;
+  const hegemon = top !== 0 && total > 0 && nc.income[top]! / total > HEGEMON_SHARE ? top : 0;
+  if (hegemon !== 0) coalitionAbout(world, nb, str, hegemon);
+  const pariah = worstPariah(world);
+  if (pariah !== 0 && pariah !== hegemon) coalitionAbout(world, nb, str, pariah, 'alliance.pariah');
+}
+
+/**
+ * The unaligned neighbours of `top` form or join an alliance named `nameKey`: a coalition about a
+ * hegemon, the first of its name; a league about a pariah (PLAN 6.5b), one that does not have it.
+ */
+function coalitionAbout(world: World, nb: Map<number, Set<number>>, str: Float64Array, top: number, nameKey = 'alliance.coalition'): void {
+  const nc = world.nations.cols;
   const al = world.alliances;
   const members = [...(nb.get(top) ?? [])]
     .filter((m) => nc.living[m] === 1 && nc.overlord[m] !== top && nc.overlord[m] === 0 && !al.allied(m, top))
     .sort((a, b) => str[b]! - str[a]! || a - b);
-  const existing = al.list.find((a) => a.nameKey === 'alliance.coalition');
+  const existing = al.list.find((a) => a.nameKey === nameKey && (nameKey === 'alliance.coalition' || !a.members.includes(top)));
   for (const m of members) {
     if (al.allianceOf(m)) continue;
     if (existing) {
@@ -210,7 +227,7 @@ function coalition(world: World, nb: Map<number, Set<number>>, str: Float64Array
   if (!existing) {
     const free = members.filter((m) => !al.allianceOf(m));
     if (free.length >= 2 && noWarAmong(world, free)) {
-      const a = al.create(free[0]!, free.slice(1), 'alliance.coalition', 50);
+      const a = al.create(free[0]!, free.slice(1), nameKey, 50);
       if (a) for (const m of a.members) world.out.emit(world.tick, EventKind.AllianceJoined, m, a.id, NaN, NaN);
     }
   }

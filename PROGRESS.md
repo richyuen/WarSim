@@ -15576,3 +15576,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** green (the related unit tests 1072 of 1072; the pin). Two completeness tests
   (`history`, `sound`) asked for the kind's type name and cue: added.
 - **Next:** PLAN 6.5b.
+
+## 2026-10-14 — PLAN 6.5b: outrage (ADR-387); PLAN 6.5 done
+
+- **Done:** the world's outrage at a striker, lasting years; relations hit by distance and alliance;
+  the strategic AI's war utility and a League against the Bomb about the worst pariah; the
+  utility's outrage term. PARITY additions row 6 updated.
+- **Tests:** `nukeOutrage1938` (new); the nuclear tests' utilities 0.1 lower, their verdicts the same.
+- **The pin holds** at 45df324d.
+- **The gate:** green (the related unit tests 1036 of 1036; the pin).
+- **Next:** PLAN 6.6.
