@@ -78,6 +78,9 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     expect(declareWar(w, GRE, ITA, true)).not.toBeNull();
     const ships = own(s, GRE);
     expect(ships.length).toBeGreaterThan(0);
+    // Italy's AI off (PLAN 5.12a): its naval bombers, rebased toward the war, sank Greece's fleet on
+    // the second day, before it was ordered. Its fleets stand; their power is what Greece weighs.
+    w.nations.cols.aiOff[ITA] = 1;
     // The hour Greece's fleets are first ordered: each one's target zone against the Greek fleets in port near it.
     let checked = 0;
     for (let h = 0; h < 8 * 24 && checked === 0; h++) {

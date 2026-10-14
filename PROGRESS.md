@@ -15446,3 +15446,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   `territory`'s times of BLOCKERS (green alone); the pin, build, the changed spec and parity green
   by hand.
 - **Next:** PLAN 5.12.
+
+## 2026-10-14 — PLAN 5.12a: a wing far from its front rebases toward it (ADR-376)
+
+- **Found:** on seed 7321 the AI's air war fades with the land war: no formation in contact at
+  years 13 and 20 (60 nations at war, the armies collapsed: a line under PLAN 1.42); in years 1
+  and 5 most wings at war out of range of every front. PLAN 5.12 split: 5.12a, 5.12b.
+- **Done:** a wing at war with no target in range rebases toward its front, a hop a day; a
+  rebase is a ferry flight (two ranges).
+- **Tests:** `airToward1938` (new), `wingRange1938`, `airOrders1938` green by hand.
+- **Measured** (seed 7321, mean sorties aloft, years 1–5): 19.1, 3.6, 6.5, 4.7, 11.7 before;
+  23.8, 13.6, 3.2, 4.9, 3.2 after. The AT waits for 5.12b.
+- **The pin moves** 29d27034 → 054cf839.
+- **The gate:** green (the related unit tests 932 of 932; the pin). `navalAi1938`'s Greek test has
+  Italy's AI off: its bombers sank Greece's fleet before it sailed (ADR-376).
+- **Next:** PLAN 5.12b.

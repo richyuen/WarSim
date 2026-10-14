@@ -76,7 +76,7 @@ export function airSystem(world: World): void {
 }
 
 /** Whether `holder` is nation `nation` or of its side: its supply bloc, or fighting beside it. */
-function ofSide(world: World, nation: number, holder: number): boolean {
+export function ofSide(world: World, nation: number, holder: number): boolean {
   return holder === nation || blocOf(world, holder) === blocOf(world, nation) || world.wars.sameSide(nation, holder);
 }
 
@@ -224,9 +224,16 @@ export function orderMission(world: World, id: number, kind: WingMission['kind']
 }
 
 /**
+ * How far a rebase flies, in ranges (PLAN 5.12a): a wing's range is a radius, out and back
+ * (`patrolHours`); a rebase is one way, a ferry flight. (At one range a wing could not cross the
+ * gaps between Siberia's airbases to a front in the east.)
+ */
+export const FERRY_RANGE = 2;
+
+/**
  * Orders wing `id` to the base at (x, y) (PLAN 5.1e): an airbase within `BASE_PICK_CELLS` held by
  * its nation or a nation of its side (its supply bloc, or one fighting beside it), or a fleet of
- * its nation's with a carrier there; within its range of its base now, with room for it (an
+ * its nation's with a carrier there; within FERRY_RANGE of its range of its base now, with room for it (an
  * airbase's `airbaseRoom` in aircraft; a fleet's a wing to each live carrier). The wing is at its new
  * base at once (the flight is PLAN 5.2's) and its mission ends. Else refused: `OutOfRange`, or
  * `NoBase`. 0 when ordered.
@@ -255,7 +262,7 @@ export function orderRebase(world: World, id: number, x: number, y: number): 0 |
   let far = false;
   const consider = (base: number, px: number, py: number, room: (u: { aircraft: number; wings: number }) => boolean): void => {
     if (base === world.wingBase.get(id) || !near(px, py) || !room(used(base))) return;
-    if (seaKm(world, from[0], from[1], px, py) > wingRange(world, id)) {
+    if (seaKm(world, from[0], from[1], px, py) > FERRY_RANGE * wingRange(world, id)) {
       far = true;
       return;
     }

@@ -33,6 +33,13 @@ quick sweep as a smoke test.
   flies.
   AT: a headless run of seed 7321 for 25 years: in every year with a war, sorties aloft in each
   year from 13 on at least a third of year 5's.
+  Split 2026-10-14, by what a count on seed 7321 found (ADR-376): in years 1 and 5, 77 and 70 of
+  the AI's wings at war out of range of every front (the median front 2.6 and 1.8 ranges off),
+  4 and 8 with a mission; in years 13 and 20 no land formation anywhere in contact (60 nations
+  at war; the armies collapsed: the Soviet Union one formation, its income 418 on 141,844
+  cells), and the air AI tasks only from contact.
+  - [x] 5.12a A wing of a nation at war with no target in its range rebases toward the front.
+  - [ ] 5.12b A nation at war flies where its enemy has land forces in range, in contact or not.
 
 ## Phase 6 — Nuclear AI
 
@@ -301,6 +308,13 @@ quick sweep as a smoke test.
   year 25, 180 founded in play; seed 5519 in the browser: 54 nations of generated names after
   12 years, "Free Inner Mongolia III" among them (`critic/c5_headless_7321.json`,
   `critic/c5_g_5519.json`). What the critic asks is as in run 4.
+  Found by PLAN 5.12's count (2026-10-14, ADR-376), of the same: on seed 7321 the land war
+  stops. Land formations in contact, a day's mean over the world: 29 in year 1, 5.6 in year 2,
+  11 in year 5; none at all at the start of years 13 and 20, with 60 nations at war. At year 13:
+  575 land formations in the world, the Soviet Union one (37 men) on an income of 418 a month
+  for 141,844 cells (Germany 3,297 for 4,944), at war, 2,399 gold, nothing in production;
+  France 4 formations, China 14. To find: why the income of a great land falls so (its cells
+  occupied, unrest, the econ of its cells) and why a nation at war with gold builds nothing.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.

@@ -20,9 +20,16 @@
  *   have none.
  *
  * An order is given only where it is within range (`kmFromBase`), so the AI is never refused.
+ *
+ * A wing with a front to serve and none of it in its range (PLAN 5.12a: on seed 7321 most
+ * of the AI's wings at war sat out of range, the median front 2 ranges off) rebases toward it, a
+ * hop a day (`toward`): to the airbase of its side with room for it, within a ferry flight
+ * (FERRY_RANGE ranges), nearest the front's formation nearest it, where that is nearer than its base.
  */
 import { isDayStart } from '../../shared/calendar';
-import { basePlace, kmFromBase, orderMission, wingRange } from '../systems/air';
+import { basePlace, FERRY_RANGE, kmFromBase, ofSide, orderMission, orderRebase, wingAircraft, wingRange } from '../systems/air';
+import { airbaseRoom } from '../data/airbases';
+import { seaKm } from '../systems/navalCombat';
 import { canParadrop, orderParadrop } from '../systems/airLift';
 import { wrapDx } from '../systems/elements';
 import { hypot } from '../core/dmath';
@@ -77,6 +84,14 @@ export function airAi(world: World): void {
   let rich: readonly number[] | null = null;
   const richest = (): readonly number[] => (rich ??= byIndustry(world));
   const atWar = world.wars.nations();
+  // The aircraft at each airbase, for a rebase's room (PLAN 5.12a): made when one is looked for.
+  let used: Map<number, number> | null = null;
+  const usedAt = (): Map<number, number> => {
+    if (used) return used;
+    used = new Map();
+    for (const [o, b] of world.wingBase) if (b > 0 && world.formations.has(o)) used.set(b, (used.get(b) ?? 0) + wingAircraft(world, c.template[o]!));
+    return used;
+  };
   for (const n of [...wings.keys()].sort((a, b) => a - b)) {
     const list = wings.get(n)!;
     if (!atWar.has(n)) {
@@ -102,6 +117,9 @@ export function airAi(world: World): void {
       }
       if (!target) {
         world.wingMission.delete(id);
+        // A front out of its range: a hop toward it (PLAN 5.12a).
+        const front = role === 'patrol' ? own : role === 'front' ? enemy : role === 'naval' ? (enemyFleets.length > 0 ? enemyFleets : enemy) : [];
+        if (front.length > 0) toward(world, id, front, usedAt());
         continue;
       }
       const m = world.wingMission.get(id);
@@ -152,6 +170,45 @@ function roleOf(world: World, id: number): 'patrol' | 'front' | 'naval' | 'bomb'
   const rules = world.rules!;
   const first = rules.templates[world.formations.cols.template[id]!]?.elements[0];
   return first ? ROLE[rules.units[first.unit]!.cls] : undefined;
+}
+
+/**
+ * Rebases wing `id` a hop toward `front` (PLAN 5.12a): of the airbases its side holds with room
+ * for it (`used`: the aircraft at each, kept up to date) within its range, the one nearest the
+ * formation of `front` nearest its base, where that is nearer than its base, within a ferry's
+ * reach (FERRY_RANGE ranges) of it; none, it stays.
+ * Of equals, the lowest index.
+ */
+function toward(world: World, id: number, front: readonly number[], used: Map<number, number>): void {
+  const base = world.wingBase.get(id)!;
+  const at = basePlace(world, base);
+  if (!at) return;
+  const c = world.formations.cols;
+  let goal = -1;
+  let gd = Infinity;
+  for (const f of front) {
+    const d = seaKm(world, at[0], at[1], c.x[f]!, c.y[f]!);
+    if (d < gd) [goal, gd] = [f, d];
+  }
+  if (goal < 0) return;
+  const [gx, gy] = [c.x[goal]!, c.y[goal]!];
+  const nation = c.nation[id]!;
+  const need = wingAircraft(world, c.template[id]!);
+  const range = FERRY_RANGE * wingRange(world, id);
+  let best = 0;
+  let bd = gd;
+  world.airbases.forEach((b, i) => {
+    if (i + 1 === base || !ofSide(world, nation, world.cells.controller[b.cell]!) || (used.get(i + 1) ?? 0) + need > airbaseRoom(b)) return;
+    const [px, py] = world.cellPoint(b.cell);
+    if (seaKm(world, at[0], at[1], px, py) > range) return;
+    const d = seaKm(world, px, py, gx, gy);
+    if (d < bd) [best, bd] = [i + 1, d];
+  });
+  if (best === 0) return;
+  const [px, py] = world.cellPoint(world.airbases[best - 1]!.cell);
+  if (orderRebase(world, id, px, py) !== 0 || world.wingBase.get(id) !== best) return;
+  if (base > 0) used.set(base, (used.get(base) ?? 0) - need);
+  used.set(best, (used.get(best) ?? 0) + need);
 }
 
 /** The place of the formation of `among` nearest wing `id`'s base within its range; null for none. */

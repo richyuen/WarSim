@@ -167,6 +167,40 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-376 · 2026-10-14 · accepted — What the AI's air war fades with; a wing far from its front rebases toward it (PLAN 5.12, 5.12a)
+
+- **Found** (the critic's R5-B2, run 5: on seed 7321 sorties aloft 19.1 in year 1, 11.7 in year 5,
+  0.2 to 1.8 from year 13 while the wings grow 132 to 236). A count of the AI's wings on seed 7321:
+  - Years 1 and 5: 77 and 70 of the wings of nations at war out of range of every front (its own
+    formations in contact for a fighter, the enemy's for a striker), the median front 2.6 and 1.8
+    ranges off; 4 and 8 with a mission.
+  - Years 13 and 20: no land formation anywhere in contact, with 60 nations at war; 85 and 121
+    wings at war with no front at all. The air AI tasks only from contact, and the land war has
+    stopped: the armies collapsed (a line under PLAN 1.42 with the figures).
+  - The mean sorties aloft follow the formations in contact over the world, year by year.
+- **Decision.** PLAN 5.12 split: 5.12a (this) the wings out of range; 5.12b a nation at war flies
+  where its enemy has land forces in range, in contact or not.
+  - A wing of a nation at war with a front to serve and none of it in its range rebases toward
+    it, a hop a day (`toward`, ai/air.ts): to the airbase of its side with room for it within a
+    ferry flight, nearest the front's formation nearest it, where that is nearer than its base;
+    tasked there once in range.
+  - A rebase is a ferry flight: FERRY_RANGE (2) ranges, for the AI and the player
+    (`orderRebase`): a range is a radius, out and back (`patrolHours`), a rebase one way.
+  - 1938's airbases are few (the Soviet Union's six, all west of Central Asia, the nearest 5,290
+    km from a front in the far east): where no base is within a ferry flight nearer the front,
+    the wing stays.
+- **Measured** (seed 7321, mean sorties aloft, years 1 to 5): before 19.1, 3.6, 6.5, 4.7, 11.7;
+  after 23.8, 13.6, 3.2, 4.9, 3.2: the games part after the first months; the land formations in
+  contact a day 35.7, 11.0, 5.7, 12.8, 5.4 (before 29.4, 5.6, 14.5, 3.6, 11.2). The wings out of
+  range of a front at the starts of years 1 and 5: none. PLAN 5.12's AT waits for 5.12b.
+- **The pin moves** 29d27034 → 054cf839: the AI's wings rebase.
+- **Tests.** `airToward1938.test.ts` (new): a Soviet fighter 840 km from a front on the Polish
+  border (range 800) hops to a base 354 km from it and patrols. `wingRange1938` (a rebase across
+  the continent still out of reach), `airOrders1938` green.
+  `navalAi1938`'s Greek test (PLAN 4.6c) has Italy's AI off, as its neighbour has: Italy's naval
+  bombers, rebased toward the war, sank Greece's one fleet on the second day, before it was
+  ordered to sail (its case gone, not its rule).
+
 ### ADR-375 · 2026-10-14 · accepted — The air war in the charts (PLAN 5.11c); PLAN 5.11 done
 
 - **Found** (the critic's R5-B1, run 5): the charts had no air.
