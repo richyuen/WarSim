@@ -65,6 +65,7 @@ quick sweep as a smoke test.
   - [x] 5.8w2 Seed 7 at tick 17,520 (`heldYears`): nation 105 holds 2 cells of nation 10 with no […]
   - [x] 5.8w3 The T0 counters' and T2 elements' sums (`counters1938`, `declutter1938`, […]
   - [x] 5.8w4 `formationPlace1938`: the view centred on a formation in contact holds its […]
+  - [x] 5.8w5 The review's second run (found by it): `aiSweep` held a fleet gone with its […]
   - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed if a
     defect of Phase 5 caused it, no constant tuned), and the tick of 5.8; then the critic (due

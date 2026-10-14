@@ -21,7 +21,9 @@ import { seaRangeOf, type World } from '../../src/sim/world';
  * a player or the AI ordered to another land (`World.embarked`, read by `hour`): from the hour
  * it carries one it is counted in `carried` and no longer held to stand. Any other change is
  * still a line. Since PLAN 4.6e1 a nation short of money lays up fleets (`FleetsLaidUp`, read by
- * `hour`): as many of its fleets as it laid up may be gone, counted in `laid`.
+ * `hour`): as many of its fleets as it laid up may be gone, counted in `laid`. Since PLAN 5.4c a
+ * strike from the air hits a fleet with no sea battle (PLAN 5.8w5): one within a cell of an
+ * `AirStrike`, or that lost a ship (`ElementDestroyed`), in an hour is counted in `fought` too.
  */
 export function fleetsStand(world: World): { start: number; gone: number; sailed: number; fought: number; carried: number; laid: number; hour: (w: World) => void; day: (w: World) => string[] } {
   const f = world.formations;
@@ -48,7 +50,18 @@ export function fleetsStand(world: World): { start: number; gone: number; sailed
     laid: 0,
     hour(w: World): void {
       const ev = w.out.events;
-      for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.FleetsLaidUp) laidUp.set(ev[i + 2]!, (laidUp.get(ev[i + 2]!) ?? 0) + ev[i + 3]!);
+      for (let i = 0; i < ev.length; i += 6) {
+        if (ev[i + 1] === EventKind.FleetsLaidUp) laidUp.set(ev[i + 2]!, (laidUp.get(ev[i + 2]!) ?? 0) + ev[i + 3]!);
+        // Struck from the air (PLAN 5.4c, 5.8w5): the fleets about the strike's place, and one whose ship was lost.
+        if (ev[i + 1] === EventKind.ElementDestroyed && shipOf.has(ev[i + 2]!)) inBattle.add(shipOf.get(ev[i + 2]!)!);
+        if (ev[i + 1] === EventKind.AirStrike) {
+          for (const id of fleets.keys()) {
+            if (!w.formations.has(id)) continue;
+            const dx = Math.abs(w.formations.cols.x[id]! - ev[i + 4]!);
+            if (Math.min(dx, w.cells.w - dx) <= 1.5 && Math.abs(w.formations.cols.y[id]! - ev[i + 5]!) <= 1.5) inBattle.add(id);
+          }
+        }
+      }
       for (const e of w.embarked.values()) carrying.add(e.fleet);
       for (const b of w.seaBattles) for (const id of b.fleets) inBattle.add(id);
       // A battle can begin and end in one hour: its volleys name the ships (shooter, target).

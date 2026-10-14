@@ -167,6 +167,18 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-360 · 2026-10-14 · accepted — A fleet struck from the air is not held to stand (PLAN 5.8w5)
+
+- **Found** (5.8h, the review's second run): `aiSweep1`–`3` red on day 7, "fleet 1248 of nation
+  14 is gone and its nation lives". `fleetsStand` let a fleet go only in a sea battle, at a
+  lay-up or with its nation; since 5.4c a naval strike sinks ships with no sea battle.
+- **Decision.** In its hourly look, a fleet within a cell and a half of an `AirStrike`'s place,
+  or that lost a ship of the start (`ElementDestroyed`), is counted with those that fought, and
+  no longer held to stand. What it holds a fleet no rule touched to is unchanged.
+- **The pin holds** at 76983901.
+- **Tests.** `aiSweep1` green over its ten years (875 s): 197 fleets, 153 sailed, 21 in sea
+  battles, none gone with its nation alive.
+
 ### ADR-359 · 2026-10-14 · accepted — The critic's day 21 has no German armour in contact (PLAN 5.8w4)
 
 - **Found** (5.8h, `check:review`): `formationPlace1938` (PLAN 3.11a) plays the critic's game

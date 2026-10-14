@@ -15183,3 +15183,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `formationPlace1938` green by hand (4 min).
 - **The gate:** green (the changed spec).
 - **Next:** PLAN 5.8h: `check:review` again.
+
+## 2026-10-14 — PLAN 5.8w5: a fleet struck from the air is not held to stand (ADR-360)
+
+- **Found:** the review's second run, cut off at its limit after the sweeps and e2e chunk 1:
+  `aiSweep1`–`3` red on day 7 (a fleet gone, its nation alive: a naval strike); the rest as
+  known.
+- **Done:** `fleetsStand` counts a fleet about an `AirStrike`, or one that lost a ship, as
+  fought.
+- **Tests:** `aiSweep1` green (875 s).
+- **The gate:** the whole unit suite (a helper changed: 1,387 of 1,390) red only by the three
+  timing tests of BLOCKERS; the pin, build and parity green by hand.
+- **Next:** PLAN 5.8h: `check:review` again.
