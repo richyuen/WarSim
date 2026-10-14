@@ -15266,3 +15266,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** green (the whole unit suite, 1,391 of 1,391: the working tree's `package.json`;
   the changed spec).
 - **Next:** PLAN 5.8w11.
+
+## 2026-10-14 — PLAN 5.8w11: the flank case, found (ADR-365)
+
+- **Found:** the test's three formations (German 3, 4, Polish 550 on day 21 of seed 4242) are
+  not in contact in today's game.
+- **Done:** `tests/helpers/flankCase.ts` (new) finds the first day from 14 with a German block
+  that comes to a Polish one from its flank (day 15: 548, 14, 10 from 94°); the test plays it.
+- **Tests:** `stackBlocks1938` green by hand (2 of 2).
+- **Looked at:** `docs/evidence/3.11/c2-from-the-flank-20m.png` (16 January 1938): divisions 10,
+  14 and 548 three blocks, none in another.
+- **The gate:** the whole unit suite (a helper added: 1,390 of 1,391) red only by `scenario1938`'s
+  build time of BLOCKERS (green alone); the pin, build, parity and the changed spec green.
+- **Next:** PLAN 5.8w12.

@@ -3,6 +3,7 @@ import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { NATIONS_1938 } from '../../src/sim/scenario1938';
+import { flankCase } from '../helpers/flankCase';
 
 // PLAN 3.11c1 (the critic's R3-B3: "five tank formations share one cell as interleaved
 // diamonds", `critic/shots/c3j_11_tank_paused_0040m.png`): the critic's game (seed 1212, the
@@ -136,25 +137,29 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
 // German division 4 comes to the Pole's block from 72° off the way it faces, its flank: it
 // stopped a block's depth from the block's middle and stood in it (their middles 0.17 cells
 // apart, a block being 0.24 wide) and in division 3's block. It now stops the gap short of both.
+// Since the air AI the game is another, and those three are not in contact on day 21: the case
+// is found in Node, the first day from day 14 with one (`flankCase`, PLAN 5.8w11).
 test('a block that comes to an enemy block from its flank stands in neither it nor the block it faces', async ({ page }, info) => {
   test.setTimeout(300_000);
   const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/3.11') : info.outputPath();
   mkdirSync(out, { recursive: true });
   const GER = nation('GER');
-  const [FACED, COMER, POLE] = [3, 4, 550];
+  const flank = flankCase(14, 45);
+  const [FACED, COMER, POLE] = [flank.faced, flank.comer, flank.pole];
+  console.log(`day ${flank.day}: Polish ${POLE} faces German ${FACED}; German ${COMER} comes to it ${flank.angle.toFixed(0)}° off the way it faces`);
   await page.setViewportSize(VIEW);
   await page.goto('/?scenario=1938&paused=1&seed=4242');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
-  await page.evaluate(async ({ GER, POL }) => {
+  await page.evaluate(async ({ GER, POL, days }) => {
     const sim = window.__warsim!.sim;
     sim.command({ kind: 'declareWar', attacker: GER, defender: POL });
     let tick = 0;
-    for (let d = 0; d < 21; d++) tick = (await sim.step(24)).tick;
+    for (let d = 0; d < days; d++) tick = (await sim.step(24)).tick;
     await new Promise<void>((done) => {
       const wait = (): void => (window.__warsim!.view!.lastTick === tick ? done() : void setTimeout(wait, 5));
       wait();
     });
-  }, { GER, POL });
+  }, { GER, POL, days: flank.day });
 
   // The three are who the test says they are: of Germany and of Poland, in contact.
   const who = await page.evaluate(async ({ ids, GER, POL }) => {

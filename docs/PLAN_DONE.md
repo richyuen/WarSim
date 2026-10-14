@@ -8358,3 +8358,20 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8w10 `research1938` (:30): Germany works on 2 techs, not 3, within 20 s. The cause
     first: the rule, or the 1938 game since Phase 5 (air builds).
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w11 `stackBlocks1938` (:167): the flank case finds its three formations, none engaged
+    (`[false, false, false]`). Its day was picked in the game before Phase 5 changed it.

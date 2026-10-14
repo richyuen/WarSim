@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-365 · 2026-10-14 · accepted — The flank case, found (PLAN 5.8w11)
+
+- **Found** (5.8h, `check:review`, the fourth run): `stackBlocks1938`'s flank test (PLAN 3.11c2)
+  named its three formations (German 3 and 4, Polish 550, day 21 of seed 4242 with Germany at
+  war with Poland); none of them is in contact on day 21 now (the game since the air AI).
+- **Decision.** The case is found in Node (`tests/helpers/flankCase.ts`, as `armourLosses`):
+  the first day from day 14 on which a Pole is front to front with a German formation and one
+  other German formation, whose nearest enemy is that Pole and no third's, stands 45° to 135°
+  off the way the Pole's block faces. Day 15 now: Polish 548 faces German 14, German 10 comes
+  to it from 94°. What the test holds the blocks to is unchanged.
+- **The pin holds**: no sim input changed.
+- **Tests.** `stackBlocks1938` green by hand (2 of 2; 1.38 to 1.92 km between the three blocks'
+  nearest elements). The evidence of 3.11 taken again (`c2-from-the-flank-20m.png`: three
+  blocks, none in another).
+
 ### ADR-364 · 2026-10-14 · accepted — Research on the page, in 1939 (PLAN 5.8w10)
 
 - **Found** (5.8h, `check:review`, the fourth run): `research1938` (PLAN 3.1e) wants Germany's

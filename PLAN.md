@@ -71,8 +71,7 @@ quick sweep as a smoke test.
   - [x] 5.8w8 The review's fourth run (found by it, the first to its end): `loadedEffects1938` […]
   - [x] 5.8w9 `markerStacks1938` (:229): back from T2, the T1 boxes are not parted at rest at […]
   - [x] 5.8w10 `research1938` (:30): Germany works on 2 techs, not 3, within 20 s. The cause […]
-  - [ ] 5.8w11 `stackBlocks1938` (:167): the flank case finds its three formations, none engaged
-    (`[false, false, false]`). Its day was picked in the game before Phase 5 changed it.
+  - [x] 5.8w11 `stackBlocks1938` (:167): the flank case finds its three formations, none engaged […]
   - [ ] 5.8w12 `toBattle1938` (:327): weeks into Germany against Poland, the two formations the
     banner leads to do not stand front to front (`leaders` `[false, false]`).
   - [ ] 5.8w13 `wrecks1938` (:158): wreck 15063 lies 0.35 from where its sprite stood (less than
