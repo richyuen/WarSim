@@ -15091,3 +15091,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Found:** the page has no control for a wing's mission, rebase or paradrop: PLAN 5.8v.
 - **The gate:** documents only, parity.
 - **Next:** PLAN 5.8v.
+
+## 2026-10-13 — PLAN 5.8v1: the page's orders for a wing (ADR-352)
+
+- **Done:** `nationStats.wings` (the player's); the Actions tab's "Air force" with each wing's
+  orders, armed by a button and given by the next map click (`PlayerControl.wingOrder`).
+  5.8v split: v2 the paradrop, v3 refusals told, v4 wings built from the page.
+- **Tests:** `serverWings` (1, new); `airOrders1938.spec.ts` (new, green by hand: 18 s).
+- **The pin holds** at 76983901.
+- **The gate:** the related unit tests (287 of 288) red only by `snapshot-perf` of BLOCKERS
+  (2.30 ms); the pin, build, parity and the changed spec green by hand.
+- **Next:** PLAN 5.8v2.

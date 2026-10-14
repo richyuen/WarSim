@@ -24,6 +24,7 @@ import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
 import { AT_PORT_CELLS } from '../sim/systems/navalCombat';
 import { aircraftOf } from '../sim/systems/airCombat';
+import { isTransport } from '../sim/systems/air';
 import { sortieEnd } from '../shared/sorties';
 import {
   BLOCK_STRIDE,
@@ -46,6 +47,7 @@ import {
   type WarBattle,
   type WarStat,
   type OrderNews,
+  type PlayerWing,
 } from '../shared/protocol';
 import { SCENARIO_GEOMETRY, SCENARIO_INFO } from '../shared/scenarios';
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
@@ -596,7 +598,7 @@ export class SimServer {
     });
     const news = this.newsFrom < 0 ? [] : tickerNews(world, this.newsFrom);
     this.newsFrom = world.history.length;
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id)), news, world: this.worldNo }, []);
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id)), news, world: this.worldNo, wings: playerWings(world) }, []);
   }
 
   /**
@@ -1383,4 +1385,17 @@ export function sortieSection(world: World): Float32Array {
     rows.push(s.bx, s.by, s.tx, s.ty, s.launch - world.tick, s.kmh, s.km, s.over, c.nation[id]!, aircraftOf(world, id), role);
   }
   return Float32Array.from(rows);
+}
+
+/** The player's wings (PLAN 5.8v1), by ascending id; none without a player. */
+function playerWings(world: World): PlayerWing[] {
+  const n = world.settings.player;
+  if (n === 0 || world.wingBase.size === 0) return [];
+  const c = world.formations.cols;
+  const out: PlayerWing[] = [];
+  for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
+    if (!world.formations.has(id) || c.nation[id] !== n) continue;
+    out.push({ id, template: c.template[id]!, transport: isTransport(world, id), carrier: base < 0, mission: world.wingMission.get(id)?.kind ?? null, flying: world.sorties.has(id) });
+  }
+  return out;
 }

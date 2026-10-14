@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-352 · 2026-10-13 · accepted — The page's orders for a wing (PLAN 5.8v1)
+
+- **Found** (5.8g): a wing's mission and rebase were commands with no control on the page; a
+  wing at its base is not drawn (5.1d), so it cannot be clicked either.
+- **Decision.** The worker's stats carry the player's wings (`nationStats.wings`:
+  `PlayerWing`, by id: template, transport, carrier, mission, flying). The Actions tab lists
+  them under "Air force" with buttons that arm an order (Patrol, Strike, Supply for a
+  transport, Rebase; `PlayerControl.wingOrder`, the same button again disarms it); the next map
+  click gives it at the clicked cell with the player's nation, and Escape disarms it, as it
+  clears a selection. PLAN 5.8v split: v1 a wing's orders, v2 the paradrop, v3 their refusals
+  told, v4 wings built from the page (found here: the Actions tab leaves air templates out).
+- **The pin holds** at 76983901: the page's.
+- **Tests.** `serverWings` (1, new): none without a player, Germany's with their missions.
+  `airOrders1938.spec.ts` (new): as Germany, a fighter group's Strike armed and the map clicked
+  near Poznań: its mission there; a transport has Supply and no Strike, a fighter the other way;
+  Rebase armed, then Escape, disarmed.
+
 ### ADR-351 · 2026-10-13 · accepted — The AI's paradrops (PLAN 5.8u3b)
 
 - **Found** (5.8b): with the paradrop (5.8u2) no AI dropped.

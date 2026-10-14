@@ -2594,6 +2594,10 @@ on screen.
     (`NationStat.shipyard`, PLAN 4.2f, ADR-253; the worker asks `shipyard` of each living
     nation, about 3 ms for all, by the ports' water of the zones alone, `portSeaOf`: the
     zones are built at the first stats of a game, not the lane graph).
+  - The air force (PLAN 5.8v1, ADR-352): its wings (`nationStats.wings`, the player's, by
+    id), each with its template, base (an airbase, a carrier), mission and whether it flies;
+    a button arms its order (Patrol, Strike, or Supply for a transport; Rebase), the next map
+    click gives it there (`wingMission`, `wingRebase`, with the nation), and Escape disarms it.
 - **God Mode UI** (PLAN 1.32b, `src/ui/GodTab.tsx`): the bottom bar's God Mode button adds a God
   tab to the nation panel. It has rename, income bonus ±10, AI switches (nation and world), war/
   ally/puppet on a chosen target, peace per war, buffs, revive (dead nations), Kill (two clicks).

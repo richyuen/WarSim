@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 import type { Command } from '../shared/commands';
-import type { NationStat, TemplateInfo, WarStat } from '../shared/protocol';
+import type { NationStat, PlayerWing, TemplateInfo, WarStat } from '../shared/protocol';
 import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
 
@@ -12,16 +12,25 @@ export interface ActionsTabProps {
   /** Current day (ticks / 24), for "ready in N days". */
   day: number;
   onCommand: (cmd: Command) => void;
+  /** Its air wings (PLAN 5.8v1), the order armed for the next map click, and the arming of one. */
+  wings: PlayerWing[];
+  wingOrder: { wing: number; kind: WingOrderKind } | null;
+  onArmWing: (wing: number, kind: WingOrderKind) => void;
 }
+
+/** A wing's order at a place (PLAN 5.8v1); `WingOrder` of the page's player control. */
+export type WingOrderKind = 'patrol' | 'strike' | 'supply' | 'rebase';
 
 const num = (v: number): string => Math.round(v).toLocaleString('en-US');
 
 /**
  * Actions of the nation the player controls (PLAN 1.33b): diplomacy that the other side may
  * refuse (declare war, offer peace per war, propose an alliance) and production (build a template
- * if gold and manpower allow; the training queue with days left).
+ * if gold and manpower allow; the training queue with days left). Its air wings (PLAN 5.8v1):
+ * each with its base and mission, and its orders, armed by a button and given by the next click
+ * on the map (patrol, strike, supply for a transport, rebase).
  */
-export function ActionsTab({ nation, nations, wars, templates, day, onCommand }: ActionsTabProps) {
+export function ActionsTab({ nation, nations, wars, templates, day, onCommand, wings, wingOrder, onArmWing }: ActionsTabProps) {
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
   const [target, setTarget] = useState(0);
@@ -65,6 +74,43 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand }:
           </div>
         );
       })}
+
+      {wings.length > 0 ? (
+        <>
+          <div class="panel-sub">{t('act.air')}</div>
+          {wingOrder ? (
+            <div class="panel-note" data-testid="act-wing-armed">
+              {t('act.wingArmed', { order: t(`act.wingOrder.${wingOrder.kind}` as MessageKey) })}
+            </div>
+          ) : null}
+          {wings.map((wg) => (
+            <div class="god-row act-wing" key={wg.id} data-testid={`act-wing-${wg.id}`}>
+              <span class="god-war-name">
+                {t((templates[wg.template]?.nameKey ?? 'template.fighter_group') as MessageKey)}
+                <span class="act-cost">
+                  {' '}
+                  {t(wg.carrier ? 'act.wingCarrier' : 'act.wingAirbase')} · {t(`act.mission.${wg.mission ?? 'none'}` as MessageKey)}
+                  {wg.flying ? ` · ${t('act.wingFlying')}` : ''}
+                </span>
+              </span>
+              {(['patrol', 'strike', 'supply', 'rebase'] as const)
+                .filter((k) => k === 'rebase' || (wg.transport ? k === 'supply' : k !== 'supply'))
+                .map((k) => (
+                  <button
+                    type="button"
+                    key={k}
+                    class={wingOrder && wingOrder.wing === wg.id && wingOrder.kind === k ? 'god-btn active' : 'god-btn'}
+                    data-testid={`act-wing-${wg.id}-${k}`}
+                    title={t(`act.wingOrder.${k}` as MessageKey)}
+                    onClick={() => onArmWing(wg.id, k)}
+                  >
+                    {t(`act.wingButton.${k}` as MessageKey)}
+                  </button>
+                ))}
+            </div>
+          ))}
+        </>
+      ) : null}
 
       <div class="panel-sub">{t('act.production')}</div>
       {templates.map((tp, i) => {
