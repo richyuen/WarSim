@@ -25,60 +25,6 @@ quick sweep as a smoke test.
 
 ## Phase 5 — Air
 
-- [ ] 5.8 Phase 5 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
-  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence, and the
-  smoke run of ADR-58: one `npm run sweep:quick`, not a balance verdict.
-  AT: the five limits of the quick sweep are in PROGRESS; a limit that fails is in BLOCKERS,
-  or fixed if a defect of this phase's feature caused it. No constant is tuned for it.
-  Split 2026-10-13, as 4.8 was: the pass is several causes, one a commit. A part is not a
-  numbered task; the last part ticks 5.8 after `npm run check:review` (ADR-297).
-  - [x] 5.8a The independent read (ADR-74), the eleventh: the 71 files of `src/`, `data/` and […]
-  - [x] 5.8b SPEC re-read for drift: each decision since the last review (ADR-288 to ADR-326) […]
-  - [x] 5.8c Dead code and refactor debt in the files changed since `deafedf`: exports nothing […]
-  - [x] 5.8d Missing tests over the phase: each system of Phase 5 has a unit test of its rule […]
-  - [x] 5.8e Tick time: `npm run sim -- --scenario 1938 --seed 99 --years 5 --profile`: the air's […]
-  - [x] 5.8i A saved game plays on otherwise than the same game left running: air superiority […]
-  - [x] 5.8j `orderRebase` throws for a wing whose carrier was sunk this hour (its base 0 until […]
-  - [x] 5.8k Air superiority stays for good once no wing is left: `airSystem` returns before the […]
-  - [x] 5.8l Wings outlive their carriers: a fleet whose carriers are sunk and whose other ships […]
-  - [x] 5.8m Wings fly from an airbase the enemy took (SPEC: who holds the cell holds the base): […]
-  - [x] 5.8n The air-superiority mode after a load shows the game before's holders until the next […]
-  - [x] 5.8o An air wing can be put aboard transports (`tryLanding` checks `afloat` only): […]
-  - [x] 5.8p `check:review` can call a run green with a test file red: a unit file that fails to […]
-  - [x] 5.8q The review's code key holds `critic/` (its tracked files stay in the scratch index): […]
-  - [x] 5.8r The suspicion of 5.8a: `byIndustry`'s order is kept by a weighted sum of the […]
-  - [x] 5.8s1 Wings built (found by 5.8b: SPEC §6.3 has them, the rules refuse them): an air […]
-  - [x] 5.8s2 The economic AI keeps its air force, a share of its army's upkeep. Until then a […]
-  - [x] 5.8t1 Air superiority's other effects (SPEC §6.3, found by 5.8b), each a factor of the […]
-  - [x] 5.8t2 The same on a fleet's detection.
-  - [x] 5.8t3 The same on a strike's bombs.
-  - [x] 5.8u1 The transports' missions (SPEC §6.3, found by 5.8b): air supply to a formation cut […]
-  - [x] 5.8u2 A paradrop of a formation from an airbase within range.
-  - [x] 5.8u3a The air AI's transports: supply to its formations cut off.
-  - [x] 5.8u3b The AI's paradrops.
-  - [x] 5.8g PARITY rows of Phase 5 updated with evidence (row 5 and the rows it touched).
-  - [x] 5.8v1 The page's orders for a wing (found by 5.8g: a mission, a rebase and a paradrop […]
-  - [x] 5.8v2 A paradrop of a selected formation at an airbase, from the page.
-  - [x] 5.8v3 A wing's and a paradrop's refusal told as a march's is (PLAN 4.9a): the worker's […]
-  - [x] 5.8v4 Wings built from the page (found by 5.8v1: the Actions tab leaves air templates […]
-  - [x] 5.8w1 The review's sweeps ask a wing as a formation of the land (found by 5.8h's […]
-  - [x] 5.8w2 Seed 7 at tick 17,520 (`heldYears`): nation 105 holds 2 cells of nation 10 with no […]
-  - [x] 5.8w3 The T0 counters' and T2 elements' sums (`counters1938`, `declutter1938`, […]
-  - [x] 5.8w4 `formationPlace1938`: the view centred on a formation in contact holds its […]
-  - [x] 5.8w5 The review's second run (found by it): `aiSweep` held a fleet gone with its […]
-  - [x] 5.8w6 The review's third run (found by it): `aiSweep2`, seed 2 at tick 27,721: nation 116 […]
-  - [x] 5.8w7 `aiSweep3` runs past its 900 s (1,064 s): the tick's cost since Phase 5 (BLOCKERS, […]
-  - [x] 5.8w8 The review's fourth run (found by it, the first to its end): `loadedEffects1938` […]
-  - [x] 5.8w9 `markerStacks1938` (:229): back from T2, the T1 boxes are not parted at rest at […]
-  - [x] 5.8w10 `research1938` (:30): Germany works on 2 techs, not 3, within 20 s. The cause […]
-  - [x] 5.8w11 `stackBlocks1938` (:167): the flank case finds its three formations, none engaged […]
-  - [x] 5.8w12 `toBattle1938` (:327): weeks into Germany against Poland, the two formations the […]
-  - [x] 5.8w13 `wrecks1938` (:158): wreck 15063 lies 0.35 from where its sprite stood (less than […]
-  - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one
-    `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed if a
-    defect of Phase 5 caused it, no constant tuned), and the tick of 5.8; then the critic (due
-    after a phase review, ADR-59).
-
 ## Phase 6 — Nuclear AI
 
 - [ ] 6.1 Nuclear tech chain, warhead production, stockpile, upkeep; global and per-nation toggles.
@@ -748,3 +694,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 5.5 Strategic bombing of industry, ports and cities (income/production damage, repair). […]
 - [x] 5.6 Air AI tasking. […]
 - [x] 5.7 Air visuals: planes along sortie paths, dogfight tracers, flak, bomb impacts; air superiority map mode. […]
+- [x] 5.8 Phase 5 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]

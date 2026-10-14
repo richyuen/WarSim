@@ -15310,3 +15310,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin holds** at 76983901.
 - **The gate:** green (the whole unit suite, 1,392 of 1,392; the pin).
 - **Next:** PLAN 5.8h: `check:review` again.
+
+## 2026-10-14 — PLAN 5.8 done: the Phase 5 review (5.8h, its last part)
+
+- **check:review**, the fifth run, on the code of `bac913c` with the working tree's
+  `package.json` (its `allowScripts` for esbuild, committed with this tick), on the user's
+  machine in 40 minutes: green. Typecheck, lint, build, parity, the unit tests and the sweep
+  tests green (the timing tests of BLOCKERS too); e2e chunks 1 to 6 and the perf spec, red only
+  by the known `fallen1938` and `zoomDemo1938`. The six of the fourth run are green (5.8w8 to
+  5.8w13).
+- **sweep:quick** (10 seeds × 20 years, 14.7 min, 10 processes): LIMITS GREEN, 10 of 10 seeds.
+  - land moving in the last 5 years: 10.7 to 29.1 % (≥ 1 %);
+  - the largest nation's land at the end: 8.3 to 17.9 % (< 35 %);
+  - the largest income at the end: 28.6 to 30.1 % (< 40 %);
+  - nations alive: 94 to 165 (20–250);
+  - years with a war: 100 % in every seed (≥ 80 %).
+  Reported, not judged at 20 years: a riser in 8 of 10 seeds, a faller in 10 of 10. A smoke test,
+  not a balance verdict (ADR-58).
+- **Phase 5 done.** The critic is due (a phase review ticked since its report, ADR-59).
+- **Next:** the critic run (PROMPT step 2a), then PLAN 6.
