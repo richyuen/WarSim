@@ -15,7 +15,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { TAGS_1938 } from '../../src/sim/scenario1938';
-import { ALIVE_MAX, ALIVE_MIN, DYNAMISM_QUORUM, DYNAMISM_YEARS, FALLER_KEPT, judge, judgeSweep, MAX_INCOME, MAX_LAND, MOVING_MIN, ratio, RISER_GROWTH, RISER_MIN_SHARE, WAR_YEARS, type LandChange, type Verdict } from './criteria';
+import { ALIVE_MAX, ALIVE_MIN, DYNAMISM_QUORUM, FALLOUT_MAX_LAND, NUKES_USED_SEEDS, DYNAMISM_YEARS, FALLER_KEPT, judge, judgeSweep, MAX_INCOME, MAX_LAND, MOVING_MIN, ratio, RISER_GROWTH, RISER_MIN_SHARE, WAR_YEARS, type LandChange, type Verdict } from './criteria';
 import type { SeedResult } from './seed';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
@@ -69,6 +69,29 @@ async function main(): Promise<void> {
   const change = (c: LandChange | null): string => (c ? `${TAGS_1938[c.nation - 1] ?? `#${c.nation}`} × ${ratio(c).toFixed(2)} (${mkm(c.from)} → ${mkm(c.to)})` : 'none');
   const rows = verdicts.map((v: Verdict) => `| ${v.seed} | ${pct(v.moving)} ${mark(v.pass.moving)} | ${pct(v.topLand)} ${mark(v.pass.land)} | ${pct(v.topIncome)} ${mark(v.pass.income)} | ${v.aliveMin}–${v.aliveMax} ${mark(v.pass.alive)} | ${pct(v.warYears)} ${mark(v.pass.war)} | ${change(v.riser)}${dyn(v.pass.riser)} | ${change(v.faller)}${dyn(v.pass.faller)} | ${v.churn} | ${pct(v.swing)} |`);
   const n = verdicts.length;
+  // The nuclear years (PLAN 6.8).
+  const startYear = 1938;
+  const nukeRows = results.map((r) => {
+    const s = r.samples;
+    const firstBomb = s.find((y) => (y.warheads ?? 0) > 0);
+    const sum = (k: 'decisions' | 'bursts' | 'madDays'): number => s.reduce((t, y) => t + (y[k] ?? 0), 0);
+    const fallout = s.reduce((m, y) => Math.max(m, y.falloutMax ?? 0), 0);
+    const last = s.at(-1);
+    return { seed: r.seed, firstBomb: firstBomb ? startYear + firstBomb.year - 1 : null, warheads: last?.warheads ?? 0, nuclear: last?.nuclear ?? 0, decisions: sum('decisions'), bursts: sum('bursts'), madDays: sum('madDays'), fallout };
+  });
+  const used = nukeRows.filter((r) => r.bursts > 0).length;
+  const worstFallout = nukeRows.reduce((m, r) => Math.max(m, r.fallout), 0);
+  const nukesOk = used >= NUKES_USED_SEEDS && worstFallout <= FALLOUT_MAX_LAND;
+  const nukeTable = [
+    '## Nuclear weapons (PLAN 6.8)',
+    '',
+    '| Seed | First warhead | Warheads at the end (nations) | AI decisions | Bursts | Most land under fallout | Days of war under MAD |',
+    '|---|---|---|---|---|---|---|',
+    ...nukeRows.map((r) => `| ${r.seed} | ${r.firstBomb ?? 'none'} | ${r.warheads} (${r.nuclear}) | ${r.decisions} | ${r.bursts} | ${(r.fallout * 100).toFixed(2)}% | ${r.madDays} |`),
+    '',
+    `Nukes used in ${used} of ${n} seeds (at least ${NUKES_USED_SEEDS}: ${mark(used >= NUKES_USED_SEEDS)}); the most land under fallout on a day ${(worstFallout * 100).toFixed(2)}% (at most ${pct(FALLOUT_MAX_LAND)}: ${mark(worstFallout <= FALLOUT_MAX_LAND)}).`,
+    '',
+  ];
   const status = !sweep.limits ? 'FAILING (limits)' : !sweep.judged ? `LIMITS GREEN (riser and faller not judged: runs shorter than ${DYNAMISM_YEARS} years)` : sweep.ok ? 'ALL GREEN' : 'FAILING (dynamism)';
   const md = [
     `# Sweep ${date}: seeds ${first}–${first + seeds - 1} × ${years} years — ${status}`,
@@ -81,13 +104,14 @@ async function main(): Promise<void> {
     '',
     `Limits: ${verdicts.filter((v) => v.limits).length} of ${n} seeds. Riser: ${sweep.risers} of ${n}. Faller: ${sweep.fallers} of ${n}.${sweep.judged ? ` Needed: ${sweep.needed} of ${n} each.` : ` Not judged at ${years} years.`}`,
     '',
+    ...nukeTable,
     `Wall time ${((Date.now() - t0) / 60000).toFixed(1)} min with ${parallel} processes (per seed: ${results.map((r) => `${r.seed}: ${(r.wallS / 60).toFixed(1)} min`).join(', ')}).`,
     '',
   ].join('\n');
   writeFileSync(`${base}.md`, md);
   writeFileSync(`${base}.json`, JSON.stringify({ date, seeds, years, sweep, verdicts, results: results.map((r) => ({ seed: r.seed, wallS: r.wallS, landKm2: r.landKm2, realmStart: r.realmStart, realmEnd: r.realmEnd, samples: r.samples })) }, null, 1));
   console.log(md);
-  if (!sweep.ok) process.exitCode = 1;
+  if (!sweep.ok || !nukesOk) process.exitCode = 1;
 }
 
 void main();

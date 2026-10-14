@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-391 · 2026-10-14 · accepted — The sweep with nukes on (PLAN 6.8)
+
+- **Decision.** The sweep's samples have the nuclear year (`tools/sweep/seed.ts`): warheads held and
+  the nations holding them, the AI's decisions and the bursts (the history's), the most land under
+  fallout on a day (by area), the days of war between two sides each with an assured second strike
+  (`madWar`). Optional fields: the reports before have none. The report has a table of them and the
+  AT's two checks (`NUKES_USED_SEEDS` 1, `FALLOUT_MAX_LAND` 0.5); failing one fails the run.
+- **The run** (`docs/sweeps/2026-10-14-sweep-nukes.md`, 10 seeds × 50 years, 113 minutes):
+  - The AT: nukes used in 10 of 10 seeds (at least 1: pass); the most land under fallout 0.65 %
+    (at most 50 %: pass). The first warheads in 1946 in every seed; 3 to 8 nations hold 110 to 448
+    at the end; 4 to 177 bursts a run, each an AI decision but one (seed 8: 31 decisions, 30
+    bursts; a missile or bomber stopped short); MAD: 501 to 9,471 days of war under it a run, so
+    armed powers fight long wars without striking each other first. No runaway: 93 to 255 nations
+    alive, the largest at most 10.6 % of the land.
+  - The limits (ADR-58: the features are in, sweeps judge again from here): 8 of 10 seeds. Seeds 6
+    and 7 had 255 and 253 nations alive in some year, over 250 (revolts and releases). Riser 10 of
+    10, faller 10 of 10. For PLAN 6.9's list for Phase 7, with the frequency of nuclear use (177
+    bursts in 50 years in seed 4, 3.5 a year).
+- **The pin holds** at 45df324d (tools alone).
+
 ### ADR-390 · 2026-10-14 · accepted — The AI's strike demo, and what it showed the AI lacked (PLAN 6.7)
 
 - **Decision.** The demo (`nukeDemo1938.spec.ts`), set by commands on seed 1, 1 January 1938:

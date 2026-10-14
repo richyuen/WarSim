@@ -33,6 +33,10 @@
  */
 import type { SeedResult } from './seed';
 
+/** PLAN 6.8, the nuclear checks of a sweep with nukes on: used in at least NUKES_USED_SEEDS seeds; in no seed fallout on more than FALLOUT_MAX_LAND of the land on any day. */
+export const NUKES_USED_SEEDS = 1;
+export const FALLOUT_MAX_LAND = 0.5;
+
 export const MOVING_MIN = 0.01;
 export const MAX_LAND = 0.35;
 export const MAX_INCOME = 0.4;

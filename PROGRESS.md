@@ -15621,3 +15621,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin holds** at 45df324d.
 - **The gate:** green (the related unit tests 1097 of 1097; the pin; `nukeDemo1938.spec`).
 - **Next:** PLAN 6.8.
+
+## 2026-10-14 — PLAN 6.8: the sweep with nukes on (ADR-391)
+
+- **Done:** the sweep reports the nuclear year and checks the AT. 10 seeds × 50 years (113 min):
+  nukes used in 10 of 10 (first warheads 1946; 4–177 bursts a run); the most land under fallout
+  0.65 %; MAD wars in every seed (501–9,471 days a run). Limits 8 of 10: seeds 6 and 7 over 250
+  nations alive (255, 253); riser and faller 10 of 10. `docs/sweeps/2026-10-14-sweep-nukes.md`.
+- **For PLAN 6.9's list for Phase 7:** the nations-alive limit in 2 of 10 seeds; how often nukes are
+  used (up to 3.5 a year).
+- **The pin holds** at 45df324d.
+- **The gate:** stopped on `scenario1938`'s build time (known red under load; 7 of 7 alone); the
+  rest by hand: the related unit tests 986 of 987, the pin, build, parity.
+- **Next:** PLAN 6.9, the Phase 6 review.

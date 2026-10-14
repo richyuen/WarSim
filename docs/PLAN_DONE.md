@@ -8834,3 +8834,19 @@ Of 6.5 (open in PLAN.md):
 
 - [x] 6.7 Scripted AI nuclear strike demo (seeded scenario where the AI *decides* to strike, not God Mode).
   AT: e2e passes and asserts that the decision record came from AI utility.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+- [x] 6.8 Multi-decade sweep with nukes on: no runaway extinction; MAD dynamics observed.
+  AT: sweep report: in ≥ 1 seed nukes are used; in no seed does > 50% of land carry fallout.

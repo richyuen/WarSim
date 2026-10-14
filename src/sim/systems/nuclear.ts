@@ -488,6 +488,11 @@ function assured(world: World, nations: readonly number[]): boolean {
   return nations.some((m) => warheadsOf(world, m) >= MAD_WARHEADS && canDeliver(world, m));
 }
 
+/** Whether `war` is between two sides that each, with their allies, have an assured second strike (PLAN 6.8: MAD). */
+export function madWar(world: World, war: War): boolean {
+  return world.warheads.size > 1 && assured(world, ownCoalition(world, war, 0)) && assured(world, ownCoalition(world, war, 1));
+}
+
 /** The risk of a strike back from the enemy side of `war` and its allies (PLAN 6.4a). */
 export function retaliationRisk(world: World, war: War, side: number): number {
   let r = 0;

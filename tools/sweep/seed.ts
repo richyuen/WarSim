@@ -11,6 +11,9 @@ import { landStandings } from '../../src/sim/landArea';
 import { cellAreaByRow } from '../../src/sim/nav/grid';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { EventKind } from '../../src/shared/events';
+import { HISTORY_STRIDE } from '../../src/sim/history';
+import { madWar } from '../../src/sim/systems/nuclear';
 import { loadAssets1938 } from '../headless/assets';
 
 export interface YearSample {
@@ -27,6 +30,18 @@ export interface YearSample {
   warDays: number;
   /** km² of land whose controller changed during the year (net, start vs end of the year). */
   changedKm2: number;
+  /**
+   * The nuclear year (PLAN 6.8): warheads held at its end and the nations holding them; the AI's
+   * decisions to strike and the bursts (the history's); the most of the land under fallout on a
+   * day, by area; the days of war between two sides each with an assured second strike (MAD).
+   * Absent in the reports before it.
+   */
+  warheads?: number;
+  nuclear?: number;
+  decisions?: number;
+  bursts?: number;
+  falloutMax?: number;
+  madDays?: number;
 }
 
 export interface SeedResult {
@@ -85,10 +100,31 @@ function main(): void {
   let realmEnd: [number, number][] = [];
   for (let y = 0; y < years; y++) {
     const before = Uint16Array.from(land, (c) => w.cells.controller[c]!);
+    const logFrom = w.history.rows.length;
     let warDays = 0;
+    let falloutMax = 0;
+    let madDays = 0;
     for (let d = 0; d < 365; d++) {
       sim.step(24);
       if (w.wars.list.length > 0) warDays++;
+      if (w.wars.list.some((x) => madWar(w, x))) madDays++;
+      if (w.fallout.size > 0) {
+        let km2 = 0;
+        for (const c of w.fallout.keys()) if (isLand(w.cells.terrain[c]!)) km2 += areaOf(c);
+        falloutMax = Math.max(falloutMax, km2 / landKm2);
+      }
+    }
+    let decisions = 0;
+    let bursts = 0;
+    for (let i = logFrom; i < w.history.rows.length; i += HISTORY_STRIDE) {
+      if (w.history.rows[i + 1] === EventKind.NukeDecided) decisions++;
+      if (w.history.rows[i + 1] === EventKind.NukeCasualties) bursts++;
+    }
+    let warheads = 0;
+    let nuclear = 0;
+    for (const h of w.warheads.values()) {
+      warheads += h.stock;
+      if (h.stock > 0) nuclear++;
     }
     const nc = w.nations.cols;
     const { area, owned, ranked } = landStandings(w);
@@ -105,8 +141,8 @@ function main(): void {
     land.forEach((c, i) => {
       if (w.cells.controller[c] !== before[i]) changedKm2 += areaOf(c);
     });
-    samples.push({ year: y + 1, alive: ranked.length, topLand: owned > 0 ? area[top]! / owned : 0, topIncome: income > 0 ? topIncome / income : 0, topNation: top, top10: ranked.slice(0, 10), wars: w.wars.list.length, warDays, changedKm2 });
-    process.stdout.write(`seed ${seed} year ${y + 1}/${years}: alive ${ranked.length}, top land ${(samples.at(-1)!.topLand * 100).toFixed(1)}%, wars ${w.wars.list.length}, changed ${Math.round(changedKm2)} km²\n`);
+    samples.push({ year: y + 1, alive: ranked.length, topLand: owned > 0 ? area[top]! / owned : 0, topIncome: income > 0 ? topIncome / income : 0, topNation: top, top10: ranked.slice(0, 10), wars: w.wars.list.length, warDays, changedKm2, warheads, nuclear, decisions, bursts, falloutMax, madDays });
+    process.stdout.write(`seed ${seed} year ${y + 1}/${years}: alive ${ranked.length}, top land ${(samples.at(-1)!.topLand * 100).toFixed(1)}%, wars ${w.wars.list.length}, changed ${Math.round(changedKm2)} km², warheads ${warheads} (${nuclear} nations), strikes ${bursts}, MAD days ${madDays}, fallout ${(falloutMax * 100).toFixed(2)}%\n`);
   }
   const result: SeedResult = { seed, years, wallS: (performance.now() - t0) / 1000, landKm2, realmStart, realmEnd, samples };
   writeFileSync(out, JSON.stringify(result));
