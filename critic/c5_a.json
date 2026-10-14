@@ -1,0 +1,153 @@
+{
+ "shots": [
+  "critic/shots/c5a_00_title.png",
+  "critic/shots/c5a_01_boot.png",
+  "critic/shots/c5a_02_world_20000m.png",
+  "critic/shots/c5a_03_europe_4000m.png",
+  "critic/shots/c5a_04_britain_4000m.png",
+  "critic/shots/c5a_20_mode_political.png",
+  "critic/shots/c5a_20_mode_alliances.png",
+  "critic/shots/c5a_20_mode_wars.png",
+  "critic/shots/c5a_20_mode_seaControl.png",
+  "critic/shots/c5a_20_mode_airControl.png",
+  "critic/shots/c5a_30_nation_panel.png",
+  "critic/shots/c5a_40_phone_390.png"
+ ],
+ "steps": [
+  {
+   "titleMs": 1717
+  },
+  {
+   "bootMs": 3691
+  }
+ ],
+ "titleText": "WarSim\n\nWorld war simulator\n\nLanguage\nEnglish\nPseudo-locale (i18n test)\nScenarios\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nScenario file\n\nStart from a .warsim-scenario file, as the editor exports them.\n\nWorld, 1938\n\nThe world on the eve of the Second World War.\n\nStart date\n1 January 1938\nMap\nEarth · 2048 × 1024\nNations\n102\nSeed\nRandom\nNew game options\nLooping map\nOn\nOff\nNation aggression\nAs in the scenario\nRandom\nNation traits\nAs in the scenario\nRandom\nStarting gold\nAs in the scenario\nRandom\nEqual for all\nCombat efficiency\nAs in the scenario\nDynamic\nProgressive\nStatic\nLocked\nRandom\nStart",
+ "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Ti (0x00002782) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "ranking": [
+  {
+   "text": "1.Soviet Union21,193,716",
+   "top": 44,
+   "h": 22
+  },
+  {
+   "text": "2.United States9,282,129",
+   "top": 66,
+   "h": 22
+  },
+  {
+   "text": "3.Canada9,118,631",
+   "top": 87,
+   "h": 22
+  },
+  {
+   "text": "4.Brazil8,505,607",
+   "top": 109,
+   "h": 22
+  },
+  {
+   "text": "5.Australia8,138,822",
+   "top": 130,
+   "h": 22
+  },
+  {
+   "text": "6.China4,937,220",
+   "top": 152,
+   "h": 22
+  },
+  {
+   "text": "7.French West Africa4,691,721",
+   "top": 174,
+   "h": 22
+  },
+  {
+   "text": "8.British India4,209,609",
+   "top": 195,
+   "h": 22
+  },
+  {
+   "text": "9.Italy3,662,344",
+   "top": 217,
+   "h": 22
+  },
+  {
+   "text": "10.France2,995,306",
+   "top": 238,
+   "h": 22
+  },
+  {
+   "text": "11.French Equatorial Africa2,917,557",
+   "top": 260,
+   "h": 22
+  },
+  {
+   "text": "12.United Kingdom2,806,758",
+   "top": 282,
+   "h": 22
+  },
+  {
+   "text": "13.Argentina2,778,728",
+   "top": 303,
+   "h": 22
+  },
+  {
+   "text": "14.Anglo-Egyptian Sudan2,501,730",
+   "top": 325,
+   "h": 22
+  },
+  {
+   "text": "15.Belgian Congo2,368,177",
+   "top": 346,
+   "h": 22
+  }
+ ],
+ "inspectKeys": [
+  "tick",
+  "seed",
+  "settings",
+  "nations",
+  "wars",
+  "alliances",
+  "buffs",
+  "majors",
+  "corridors",
+  "unrest",
+  "terrainCounts",
+  "rasters",
+  "edits",
+  "cities",
+  "formations",
+  "cores"
+ ],
+ "formationCount": 1251,
+ "fleetCount": 197,
+ "kinds": {
+  "Infantry division": 334,
+  "Armoured division": 3,
+  "Light mechanised division": 12,
+  "Motorised division": 10,
+  "Mountain division": 19,
+  "Tank brigade": 53,
+  "Rifle division": 96,
+  "Cavalry division": 47,
+  "Tank corps": 4,
+  "Colonial infantry division": 100,
+  "Garrison brigade": 37,
+  "Square infantry division": 29,
+  "Light infantry division": 190,
+  "Cavalry brigade": 19,
+  "Cadre infantry division": 101,
+  "Battle squadron": 15,
+  "Carrier group": 9,
+  "Cruiser squadron": 31,
+  "Destroyer flotilla": 60,
+  "Submarine flotilla": 64,
+  "Transport group": 18
+ },
+ "legendAir": "Air superiorityAn air zone tinted with the colour of the air force that holds itContested: both sides fly there, neither holds itNo one flies there",
+ "afterF2": "political",
+ "afterM": "political",
+ "panelOpen": true,
+ "panelAfterEsc": true,
+ "living": 102,
+ "errors": []
+}

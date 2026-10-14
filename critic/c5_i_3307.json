@@ -1,0 +1,149 @@
+{
+ "seed": 3307,
+ "shots": [
+  "critic/shots/c5i_3307_41_150m.png",
+  "critic/shots/c5i_3307_41_040m.png",
+  "critic/shots/c5i_3307_41_012m.png",
+  "critic/shots/c5i_3307_41_004m.png",
+  "critic/shots/c5i_3307_43_150m.png",
+  "critic/shots/c5i_3307_43_040m.png",
+  "critic/shots/c5i_3307_43_012m.png",
+  "critic/shots/c5i_3307_43_004m.png"
+ ],
+ "views": [
+  {
+   "f": 41,
+   "m": 150,
+   "el": 240,
+   "ind": 0,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    3
+   ],
+   "wrecks": null
+  },
+  {
+   "f": 41,
+   "m": 40,
+   "el": 128,
+   "ind": 0,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0
+   ],
+   "wrecks": null
+  },
+  {
+   "f": 41,
+   "m": 12,
+   "el": 128,
+   "ind": 5030,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0
+   ],
+   "wrecks": null
+  },
+  {
+   "f": 41,
+   "m": 4,
+   "el": 72,
+   "ind": 2072,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0
+   ],
+   "wrecks": null
+  },
+  {
+   "f": 43,
+   "m": 150,
+   "el": 469,
+   "ind": 2072,
+   "sorties": 0,
+   "air": [
+    1,
+    5,
+    8
+   ],
+   "wrecks": null
+  },
+  {
+   "f": 43,
+   "m": 40,
+   "el": 135,
+   "ind": 2072,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0
+   ],
+   "wrecks": null
+  },
+  {
+   "f": 43,
+   "m": 12,
+   "el": 75,
+   "ind": 1855,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0
+   ],
+   "wrecks": null
+  },
+  {
+   "f": 43,
+   "m": 4,
+   "el": 50,
+   "ind": 1176,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0
+   ],
+   "wrecks": null
+  }
+ ],
+ "day": 4,
+ "picks": [
+  {
+   "f": 41,
+   "t": {
+    "name": "Armoured division 41",
+    "kind": "Armoured division",
+    "nation": 1
+   },
+   "pos": [
+    1070.0707106781188,
+    292.92928932188136
+   ],
+   "e": true
+  },
+  {
+   "f": 43,
+   "t": {
+    "name": "Light mechanised division 43",
+    "kind": "Light mechanised division",
+    "nation": 1
+   },
+   "pos": [
+    1061.5,
+    289.68547622334154
+   ],
+   "e": true
+  }
+ ],
+ "errors": []
+}

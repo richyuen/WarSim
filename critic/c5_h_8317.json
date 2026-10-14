@@ -1,0 +1,70 @@
+{
+ "seed": 8317,
+ "shots": [
+  "critic/shots/c5h_8317_day1_aircontrol.png",
+  "critic/shots/c5h_8317_day7_aircontrol.png",
+  "critic/shots/c5h_8317_day20_aircontrol.png",
+  "critic/shots/c5h_8317_day60_aircontrol.png"
+ ],
+ "samples": [
+  {
+   "label": "day1",
+   "updates": 1,
+   "zones": 515,
+   "byHolder": {
+    "0": 513,
+    "15": 2
+   },
+   "sorties": 0,
+   "tick": 24
+  },
+  {
+   "label": "day7",
+   "updates": 2,
+   "zones": 515,
+   "byHolder": {
+    "0": 498,
+    "1": 1,
+    "4": 1,
+    "15": 2,
+    "20": 6,
+    "24": 1,
+    "75": 6
+   },
+   "sorties": 8,
+   "tick": 168
+  },
+  {
+   "label": "day20",
+   "updates": 3,
+   "zones": 515,
+   "byHolder": {
+    "0": 500,
+    "1": 2,
+    "20": 7,
+    "25": 1,
+    "75": 4,
+    "65535": 1
+   },
+   "sorties": 5,
+   "tick": 480
+  },
+  {
+   "label": "day60",
+   "updates": 4,
+   "zones": 515,
+   "byHolder": {
+    "0": 499,
+    "1": 1,
+    "10": 2,
+    "20": 6,
+    "23": 1,
+    "71": 2,
+    "75": 4
+   },
+   "sorties": 8,
+   "tick": 1440
+  }
+ ],
+ "errors": []
+}

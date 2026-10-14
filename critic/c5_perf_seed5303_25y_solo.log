@@ -1,0 +1,31 @@
+
+> warsim@0.0.1 sim
+> tsx tools/headless/cli.ts --scenario 1938 --seed 5303 --years 25 --affinity 0xFFFF
+
+pinned to CPUs 0xffff
+year   1  tick 8760  hash b6bcdb91  nations 95  formations 1140  flipped 32844  tick ms mean 3.1114 p95 9.7606  (27.31 s)
+year   2  tick 17520  hash c590ab2c  nations 94  formations 1077  flipped 29708  tick ms mean 1.9700 p95 6.8032  (17.29 s)
+year   3  tick 26280  hash fb8ede4f  nations 98  formations 1113  flipped 28293  tick ms mean 2.0316 p95 7.2684  (17.84 s)
+year   4  tick 35040  hash 5abb45e5  nations 108  formations 1198  flipped 13844  tick ms mean 1.8541 p95 6.5736  (16.28 s)
+year   5  tick 43800  hash 036d3c6e  nations 116  formations 1271  flipped 29845  tick ms mean 1.9406 p95 7.5144  (17.03 s)
+year   6  tick 52560  hash a0b93f8e  nations 126  formations 1314  flipped 22628  tick ms mean 1.9937 p95 7.8596  (17.50 s)
+year   7  tick 61320  hash 8a832fa6  nations 130  formations 1190  flipped 27081  tick ms mean 2.4302 p95 9.8360  (21.32 s)
+year   8  tick 70080  hash 64561999  nations 127  formations 1095  flipped 60730  tick ms mean 2.5508 p95 11.9025  (22.38 s)
+year   9  tick 78840  hash 359e3b95  nations 128  formations 1060  flipped 20713  tick ms mean 2.3142 p95 9.2882  (20.30 s)
+year  10  tick 87600  hash 629a8804  nations 131  formations 1074  flipped 15584  tick ms mean 2.5637 p95 12.5531  (22.49 s)
+year  11  tick 96360  hash 2012383b  nations 132  formations 1073  flipped 26252  tick ms mean 2.6029 p95 14.6819  (22.83 s)
+year  12  tick 105120  hash a256981c  nations 137  formations 1069  flipped 48285  tick ms mean 4.0587 p95 19.9087  (35.59 s)
+year  13  tick 113880  hash 2166c567  nations 132  formations 1056  flipped 33082  tick ms mean 3.2586 p95 16.9391  (28.58 s)
+year  14  tick 122640  hash cf2aec0b  nations 134  formations 1077  flipped 29035  tick ms mean 3.0297 p95 12.5135  (26.57 s)
+year  15  tick 131400  hash d5a3e7ea  nations 137  formations 1109  flipped 43456  tick ms mean 3.7319 p95 19.2590  (32.72 s)
+year  16  tick 140160  hash 6497f245  nations 138  formations 1162  flipped 41484  tick ms mean 3.3757 p95 18.5327  (29.60 s)
+year  17  tick 148920  hash b72fa71f  nations 140  formations 1182  flipped 43604  tick ms mean 2.9596 p95 14.3187  (25.96 s)
+year  18  tick 157680  hash 72d14fe1  nations 138  formations 1155  flipped 40009  tick ms mean 2.5622 p95 12.5895  (22.48 s)
+year  19  tick 166440  hash c7923f4d  nations 138  formations 1142  flipped 77193  tick ms mean 3.5630 p95 18.9878  (31.24 s)
+year  20  tick 175200  hash a0bb9709  nations 138  formations 1150  flipped 40791  tick ms mean 3.4220 p95 19.5248  (30.01 s)
+year  21  tick 183960  hash 7e294be4  nations 136  formations 1149  flipped 52323  tick ms mean 3.8544 p95 21.0372  (33.80 s)
+year  22  tick 192720  hash ed741e2d  nations 136  formations 1176  flipped 34538  tick ms mean 3.5765 p95 19.9089  (31.36 s)
+year  23  tick 201480  hash ec28e953  nations 133  formations 1177  flipped 51698  tick ms mean 3.6679 p95 21.1870  (32.16 s)
+year  24  tick 210240  hash 0988edf3  nations 132  formations 1148  flipped 67286  tick ms mean 2.9102 p95 13.7808  (25.53 s)
+year  25  tick 219000  hash 80a2e658  nations 136  formations 1141  flipped 21919  tick ms mean 2.1927 p95 10.0859  (19.24 s)
+done: 25 years, 627.4 s wall, mean tick 2.8610 ms, final hash 80a2e658 → .cache/runs/1938-seed5303-25y.json

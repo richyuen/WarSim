@@ -1,0 +1,56 @@
+
+> warsim@0.0.1 build
+> tsc -b && vite build
+
+[36mvite v8.3.2 [32mbuilding client environment for production...[36m[39m
+transforming...
+✓ 840 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/bench.html                                     0.63 kB │ gzip:  0.38 kB
+dist/index.html                                     1.24 kB │ gzip:  0.45 kB
+dist/assets/entry-CTMRZ1I6.js                     717.41 kB
+dist/assets/main-DPniXX64.css                      11.06 kB │ gzip:  2.99 kB
+dist/assets/webworkerAll-D9ofPBVB.js                0.05 kB │ gzip:  0.06 kB
+dist/assets/WebGLRenderer-DSNEf6Mr.js               0.07 kB │ gzip:  0.07 kB
+dist/assets/CanvasRenderer-34zQxQdn.js              0.07 kB │ gzip:  0.08 kB
+dist/assets/WebGPURenderer-BDAW1ZX3.js              0.07 kB │ gzip:  0.08 kB
+dist/assets/hash-VYJsGXV-.js                        0.25 kB │ gzip:  0.21 kB │ map:   1.20 kB
+dist/assets/getTextureBatchBindGroup-BrlgokzH.js    0.40 kB │ gzip:  0.31 kB │ map:   2.01 kB
+dist/assets/lib-V_1D7L5s.js                         0.48 kB │ gzip:  0.29 kB
+dist/assets/modulepreload-polyfill-P2Xu9kJm.js      0.67 kB │ gzip:  0.38 kB
+dist/assets/lib-DbCLpB2p.js                         0.85 kB │ gzip:  0.46 kB │ map:  56.45 kB
+dist/assets/provincesView-BXcMwA7f.js               0.91 kB │ gzip:  0.60 kB │ map:   2.97 kB
+dist/assets/flagGrid-DBPDzALD.js                    1.15 kB │ gzip:  0.71 kB │ map:   3.97 kB
+dist/assets/benchUtil-BJEkoupA.js                   1.15 kB │ gzip:  0.66 kB │ map:   4.95 kB
+dist/assets/proxyScene-CQ4tytK9.js                  1.26 kB │ gzip:  0.59 kB │ map:   4.74 kB
+dist/assets/preload-helper-BaNbYf_w.js              1.39 kB │ gzip:  0.75 kB
+dist/assets/precision-ZOYG-Oc3.js                   1.54 kB │ gzip:  0.94 kB │ map:   6.71 kB
+dist/assets/bench-GWLBejQM.js                       1.78 kB │ gzip:  0.81 kB │ map:   1.13 kB
+dist/assets/benchB-D6XfXwac.js                      2.20 kB │ gzip:  1.24 kB │ map:   7.78 kB
+dist/assets/synthetic-BocosXmq.js                   2.32 kB │ gzip:  1.19 kB │ map:  10.85 kB
+dist/assets/politicalView-DnrVaKgr.js               2.55 kB │ gzip:  1.30 kB │ map:   8.81 kB
+dist/assets/terrainView-OVfdBdiP.js                 3.24 kB │ gzip:  1.24 kB │ map:   7.57 kB
+dist/assets/benchA-CyizaKfC.js                      3.67 kB │ gzip:  1.86 kB │ map:  14.67 kB
+dist/assets/atlas-Bi3XdiWf.js                       5.63 kB │ gzip:  1.89 kB │ map:  27.17 kB
+dist/assets/ProxyRenderer-CJNtgxUX.js               5.97 kB │ gzip:  2.45 kB │ map:  14.22 kB
+dist/assets/canvasUtils-BlZ1xmP9.js                 6.10 kB │ gzip:  2.09 kB │ map:  23.28 kB
+dist/assets/cityLabels-3EiQTC45.js                  6.22 kB │ gzip:  2.75 kB │ map:  34.96 kB
+dist/assets/simClient-D_W2RAaM.js                   7.59 kB │ gzip:  2.06 kB │ map:  25.93 kB
+dist/assets/GroundInstances-CK5e8Lj_.js             8.31 kB │ gzip:  3.76 kB │ map:  25.39 kB
+dist/assets/getTexelRangeRects-MBtImDLS.js         11.37 kB │ gzip:  3.01 kB │ map:  29.21 kB
+dist/assets/init-D4uv2SHD.js                       15.34 kB │ gzip:  4.81 kB │ map:  55.02 kB
+dist/assets/nations-8MCbRKIb.js                    23.69 kB │ gzip:  4.54 kB │ map:  34.62 kB
+dist/assets/benchBP-B7FE59J0.js                    24.13 kB │ gzip:  8.03 kB │ map:  90.40 kB
+dist/assets/init-BCwhXt3x.js                       24.87 kB │ gzip:  8.59 kB │ map: 110.39 kB
+dist/assets/browserAll-BeoXm1ev.js                 43.64 kB │ gzip: 11.37 kB │ map: 163.54 kB
+dist/assets/WebGPURenderer-CbPCKE_y.js             55.51 kB │ gzip: 15.94 kB │ map: 190.88 kB
+dist/assets/WebGLRenderer-B6tRmjsE.js              73.35 kB │ gzip: 20.17 kB │ map: 245.27 kB
+dist/assets/MapRenderer-DZ6XmjJl.js                77.54 kB │ gzip: 24.02 kB │ map: 575.13 kB
+dist/assets/RenderTargetSystem-Ca9gn23k.js         78.69 kB │ gzip: 22.40 kB │ map: 297.76 kB
+dist/assets/flags-DrbzIPoL.js                      83.09 kB │ gzip: 25.77 kB │ map: 163.81 kB
+dist/assets/CanvasRenderer-BmWdQc2j.js             89.08 kB │ gzip: 28.10 kB │ map: 493.68 kB
+dist/assets/Geometry-BXYIVPra.js                  113.45 kB │ gzip: 34.41 kB │ map: 562.60 kB
+dist/assets/main-Dq9_jSdV.js                      169.63 kB │ gzip: 55.49 kB │ map: 794.83 kB
+
+[32m✓ built in 317ms[39m
