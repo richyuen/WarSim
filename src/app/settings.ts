@@ -19,6 +19,8 @@ export const VOLUMES = [0.25, 0.5, 0.75, 1] as const;
 const KEY_UNIT = 'warsim.unitScale';
 const KEY_VOLUME = 'warsim.volume';
 const KEY_MUTED = 'warsim.muted';
+/** '0' when a nuclear strike does not pause the game (PLAN 6.6a); it does by default. */
+const KEY_NUKE_PAUSE = 'warsim.nukePause';
 
 function load(key: string, allowed: readonly number[], fallback: number): number {
   try {
@@ -26,6 +28,14 @@ function load(key: string, allowed: readonly number[], fallback: number): number
     return allowed.includes(v) ? v : fallback;
   } catch {
     return fallback;
+  }
+}
+
+function loadText(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
   }
 }
 
@@ -71,6 +81,8 @@ export class Settings {
   readonly unitScale = signal(load(KEY_UNIT, UNIT_SCALES, 1));
   readonly volume = signal(load(KEY_VOLUME, VOLUMES, 0.5));
   readonly muted = signal(loadFlag(KEY_MUTED));
+  /** A nuclear strike pauses the game (PLAN 6.6a). */
+  readonly nukePause = signal(loadText(KEY_NUKE_PAUSE) !== '0');
 
   constructor(
     private readonly view: MapView | null,
@@ -104,6 +116,11 @@ export class Settings {
     this.muted.value = v;
     store(KEY_MUTED, v ? '1' : '0');
     this.apply();
+  }
+
+  setNukePause(v: boolean): void {
+    this.nukePause.value = v;
+    store(KEY_NUKE_PAUSE, v ? '1' : '0');
   }
 
   private apply(): void {

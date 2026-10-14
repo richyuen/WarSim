@@ -56,6 +56,8 @@ export type Command =
   | { kind: 'grantWarheads'; nation: number; count: number }
   /** PLAN 6.2: a nation launches a warhead at (x, y), by a strategic bomber or a missile (the player's, God Mode's). */
   | { kind: 'launchNuke'; nation: number; x: number; y: number; missile: boolean }
+  /** PLAN 6.6a God Mode: a warhead bursts at (x, y) at once, no nation's (no warhead, no delivery, no outrage). */
+  | { kind: 'godNuke'; x: number; y: number; thermonuclear: boolean }
   /** PLAN 1.23 God Mode: a custom Major Battle won by `nation`: a corridor from (x, y) to (toX, toY). */
   | { kind: 'forceBreakthrough'; nation: number; x: number; y: number; toX: number; toY: number }
   | { kind: 'collapseNation'; nation: number }
@@ -151,6 +153,7 @@ export const COMMAND_KINDS: Record<Command['kind'], true> = {
   setNukes: true,
   grantWarheads: true,
   launchNuke: true,
+  godNuke: true,
   forceBreakthrough: true,
   collapseNation: true,
   paintControl: true,

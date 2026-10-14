@@ -15586,3 +15586,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin holds** at 45df324d.
 - **The gate:** green (the related unit tests 1036 of 1036; the pin).
 - **Next:** PLAN 6.6.
+
+## 2026-10-14 — PLAN 6.6a: God Mode's strike, the alert banner, the auto-pause (ADR-388)
+
+- **Done:** PLAN 6.6 split (6.6a these, 6.6b the FX). God Mode's Nuke map tool (a burst no
+  nation's: no outrage, no grievance); the alert banner with "Go to"; "Pause on a nuclear strike"
+  (on by default). The ticker named no struck nation: fixed.
+- **Tests:** `godNuke1938` (new), `nukeAlert1938.spec` (new; `docs/evidence/6.6/nuke-alert.png`,
+  looked at); `godUi1938.spec` and the settings specs by hand.
+- **The pin holds** at 45df324d.
+- **The gate:** stopped on `snapshot-perf` (known red under load; passes alone); the rest by hand:
+  the related unit tests 1054 of 1055, the pin, build, `nukeAlert1938.spec`, parity.
+- **Next:** PLAN 6.6b.

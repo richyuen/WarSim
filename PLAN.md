@@ -32,6 +32,9 @@ quick sweep as a smoke test.
   God tools; SPEC's God Mode grants warheads and forces a strike, and no task of this phase
   has it yet. It comes with this one: a God Mode strike at a cell, its FX the AI's.
   AT: screenshots at T0/T1/T2 viewed.
+  Split 2026-10-14: what tells of a strike, then how it looks.
+  - [x] 6.6a God Mode's strike (a map tool); the alert banner with its go-to; the auto-pause option.
+  - [ ] 6.6b The FX at every tier: flash, shockwave, mushroom cloud, scaled; the screenshots.
 - [ ] 6.7 Scripted AI nuclear strike demo (seeded scenario where the AI *decides* to strike, not God Mode).
   AT: e2e passes and asserts that the decision record came from AI utility.
 - [ ] 6.8 Multi-decade sweep with nukes on: no runaway extinction; MAD dynamics observed.

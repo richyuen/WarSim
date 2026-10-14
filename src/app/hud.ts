@@ -9,6 +9,7 @@ import { dateOfTick } from '../shared/calendar';
 import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/speed';
 import type { Command } from '../shared/commands';
+import type { TickerRow } from '../shared/history';
 import type { NationStats, SimClient } from './simClient';
 import type { FormationDetail, OrderNews, TechInfo, TemplateInfo } from '../shared/protocol';
 import type { SeaBattleView } from './MapView';
@@ -23,7 +24,7 @@ const KEY_MAP_MODE = 'warsim.mapMode';
 /** God territory brush radius in cells. */
 const BRUSH_RADIUS = 5;
 
-export type GodTool = 'revolt' | 'battle' | 'brush';
+export type GodTool = 'revolt' | 'battle' | 'brush' | 'nuke';
 const KEY_SHOW_STATS = 'warsim.showStats';
 const KEY_RANK_METRIC = 'warsim.rankMetric';
 
@@ -47,6 +48,8 @@ export class Hud {
   readonly tick = signal(0);
   readonly speedLevel = signal(DEFAULT_SPEED_LEVEL);
   readonly paused = signal(true);
+  /** The last nuclear strike, for its alert banner (PLAN 6.6a); null when closed or none. */
+  readonly nukeAlert = signal<TickerRow | null>(null);
   /** Map mode (PLAN 1.17), persisted; `onMapMode` applies it to the map view. */
   readonly mapMode = signal<MapMode>('political');
   onMapMode: (mode: MapMode) => void = () => {};
@@ -448,6 +451,10 @@ export class Hud {
     if (!tool) return false;
     if (tool === 'revolt') {
       if (province > 0) this.command({ kind: 'spawnRevolt', province });
+      this.godTool.value = null;
+    } else if (tool === 'nuke') {
+      // God Mode's strike (PLAN 6.6a): a bomb at the cell clicked, at once.
+      this.command({ kind: 'godNuke', x: x + 0.5, y: y + 0.5, thermonuclear: false });
       this.godTool.value = null;
     } else if (tool === 'battle') {
       if (!this.battleStart) {

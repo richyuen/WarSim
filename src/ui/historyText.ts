@@ -27,7 +27,8 @@ export function historyText(r: HistoryRow): string {
     return name ? displayName(name) : t('history.nobody');
   };
   const kind = `history.${kindName(r.kind)}`;
-  const key = r.as && `${kind}.${r.as}` in en ? `${kind}.${r.as}` : kind;
+  // A strike of God Mode's (PLAN 6.6a): no nation struck.
+  const key = r.as && `${kind}.${r.as}` in en ? `${kind}.${r.as}` : rb === 'strike' && r.a === 0 ? `${kind}.god` : kind;
   const none = `${key}.none`;
   // A sea battle's sides carry the ships each lost (PLAN 4.3c), the air's rows their aircraft or
   // what their bombs took (PLAN 5.11a): {na} and {nb}.

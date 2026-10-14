@@ -162,8 +162,8 @@ export function tickerRows(world: World, nationName: (id: number) => string): Ti
     const at = PLACE_OF_B.has(kind) ? b : a;
     const placed = !Number.isNaN(x) && !Number.isNaN(y);
     const [ra, rb] = HISTORY_ROLES[kind] ?? ['number', 'number'];
-    // A side is its nation and a count (PLAN 5.11a: the air's rows).
-    const who = (role: HistoryRole, v: number): string => (role === 'nation' ? nation(v) : role === 'side' ? nation(seaSide(v).nation) : '');
+    // A side is its nation and a count (PLAN 5.11a: the air's rows); a strike the nation struck (PLAN 6.6a).
+    const who = (role: HistoryRole, v: number): string => (role === 'nation' ? nation(v) : role === 'side' ? nation(seaSide(v).nation) : role === 'strike' ? nation(nukeStrike(v).nation) : '');
     const row: TickerRow = { i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: ra === 'side' ? who(ra, a) : nation(a), bn: who(rb, b), of: '' };
     const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
     if (over) [row.as, row.cn] = ['puppet', over];

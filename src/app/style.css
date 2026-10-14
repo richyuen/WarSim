@@ -862,3 +862,38 @@ body {
 .ticker-row.sea-battle {
   border-left-color: #8ec5ff;
 }
+
+/* The nuclear alert banner (PLAN 6.6a): below the top bar, centred, over the map. */
+.nuke-alert {
+  position: absolute;
+  top: 3.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: min(44rem, calc(100% - 2rem));
+  padding: 0.45rem 0.7rem;
+  background: rgba(58, 12, 8, 0.94);
+  border: 2px solid #f2c230;
+  border-radius: 6px;
+  color: #fff3d6;
+  box-shadow: 0 0 18px rgba(242, 194, 48, 0.45);
+  z-index: 30;
+}
+.nuke-icon {
+  font-size: 1.5rem;
+  color: #f2c230;
+  line-height: 1;
+}
+.nuke-text {
+  font-weight: 600;
+}
+.nuke-close {
+  background: none;
+  border: none;
+  color: #fff3d6;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 0.2rem;
+}

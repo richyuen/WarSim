@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-388 · 2026-10-14 · accepted — God Mode's strike, the alert banner, the auto-pause (PLAN 6.6a)
+
+- **Decision** (SPEC §6.4 "an alert banner, an auto-pause option, a camera 'go to' button";
+  "God Mode: ... force a strike"; the critic's R5-B5). PLAN 6.6 split: 6.6a these, 6.6b the FX.
+  - `godNuke` (x, y, thermonuclear): a burst there at once, whatever the toggles, no warhead, no
+    delivery. It is no nation's (striker 0): its blast, fallout, shock, gold and unrest as any
+    burst's, and the taboo broken; no outrage and no grievance (no one strikes back at God), no
+    alliance's unity. A launch's and God's burst are one function now (`detonate`). The God tab's
+    map tools have "Nuke": the next map click, an atomic bomb there, one-shot as Revolt is.
+    History: "A bomb fell from the heavens on Germany: an atomic bomb, 1,179,205 dead".
+  - The alert (`NukeAlert`, `newStrikes`): a statistics message's strikes not seen before, by the
+    rule of the sound's cue (a world's first message is its past; the message's news catches a
+    strike gone from the ticker's five rows). The banner, below the top bar, tells the last strike
+    in the history's sentence, with "Go to" (the camera to the burst) and a close button; it stays
+    until closed or another strike comes, and a new world clears it.
+  - Auto-pause: a strike pauses a running game, the settings' "Pause on a nuclear strike", on by
+    default (localStorage `warsim.nukePause`, '0' off).
+  - The ticker's rows named no struck nation ("where no nation holds the land" at Berlin): its
+    builder's own role names lacked `strike` (6.5a's history rows had it). Fixed.
+- **The pin holds** at 45df324d: a command no one sends.
+- **Tests.** `godNuke1938.test.ts` (new): God's hydrogen bomb on Berlin with nukes off: burst,
+  fallout, Germany's shock, the taboo; no outrage, no grievance; its history sentence; and
+  `newStrikes` on six cases. `nukeAlert1938.spec.ts` (new): God Mode's Nuke tool on Berlin while the
+  game runs: the banner's sentence, the game paused, the tool spent; "Go to" from Madrid brings the
+  camera within 3 cells of Berlin; closed; the option off, a strike on Warsaw shows its banner and
+  the game runs on; the option kept (`docs/evidence/6.6/nuke-alert.png`, looked at: the banner
+  under the top bar, the ticker's row, "Paused"). `godUi1938.spec.ts` and the settings specs by hand.
+
 ### ADR-387 · 2026-10-14 · accepted — Outrage at a nuclear strike (PLAN 6.5b); PLAN 6.5 done
 
 - **Decision** (SPEC §6.4 "relations hit with every nation (scaled by distance and alliance) ...

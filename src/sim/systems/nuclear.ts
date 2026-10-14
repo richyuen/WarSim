@@ -639,13 +639,14 @@ function ownerAt(world: World, x: number, y: number): number {
 export function aftermath(world: World, striker: number, yieldN: number, x: number, y: number, dead: number): void {
   const struck = ownerAt(world, x, y);
   world.out.emit(world.tick, EventKind.NukeCasualties, striker, packNukeStrike(struck === striker ? 0 : struck, yieldN, dead), x, y);
-  const ally = world.alliances.allianceOf(striker);
+  const ally = striker === 0 ? undefined : world.alliances.allianceOf(striker);
   if (ally) {
     ally.unity = Math.max(0, ally.unity - NUKE_UNITY);
     world.alliances.changed();
   }
   if (struck === 0 || struck === striker) return;
-  world.nukeOutrage.set(striker, Math.min(100, (world.nukeOutrage.get(striker) ?? 0) + OUTRAGE_STRIKE));
+  // No outrage at God (striker 0, PLAN 6.6a).
+  if (striker !== 0) world.nukeOutrage.set(striker, Math.min(100, (world.nukeOutrage.get(striker) ?? 0) + OUTRAGE_STRIKE));
   world.nukeShock.set(struck, Math.min(NUKE_SHOCK_MAX, (world.nukeShock.get(struck) ?? 0) + NUKE_SHOCK));
   const nc = world.nations.cols;
   nc.gold[struck] = nc.gold[struck]! - Math.max(0, nc.gold[struck]!) * NUKE_GOLD;
@@ -718,6 +719,21 @@ function tabooDay(world: World): void {
   world.nukeTaboo = Math.min(1, world.nukeTaboo + TABOO_RECOVERY);
 }
 
+/**
+ * A warhead of `nation`'s (0: God Mode's, PLAN 6.6a) of `yieldN` bursts at (x, y): told, the taboo
+ * broken (PLAN 6.4a), the land's owner's grievance (PLAN 6.4b, not against God), the blast, the
+ * fallout and the consequences.
+ */
+export function detonate(world: World, nation: number, yieldN: number, x: number, y: number): void {
+  world.out.emit(world.tick, EventKind.NukeDetonated, nation, yieldN, x, y);
+  world.nukeTaboo = Math.min(world.nukeTaboo, TABOO_AFTER);
+  const struck = ownerAt(world, x, y);
+  if (nation !== 0 && struck !== 0 && struck !== nation) world.nukeGrievance.set(struck, { by: nation, until: world.tick + RETALIATION_DAYS * 24 });
+  const toll = blast(world, yieldN, x, y);
+  layFallout(world, yieldN, x, y);
+  aftermath(world, nation, yieldN, x, y, toll.men + toll.people);
+}
+
 /** The hour's arrivals (PLAN 6.2): each launch there by now bursts or is stopped short. */
 function arrivals(world: World): void {
   if (world.nukeLaunches.length === 0) return;
@@ -730,17 +746,7 @@ function arrivals(world: World): void {
     // A bomber lost on the way, or stopped short by the air over its target.
     const lost = l.missile === 0 && (!world.formations.has(l.wing) || world.formations.cols.nation[l.wing] !== l.nation);
     if (lost || hashToUnit(hash32(world.seed, l.id, SALT_INTERCEPT)) < interceptChance(world, l)) world.out.emit(world.tick, EventKind.NukeIntercepted, l.nation, l.id, l.tx, l.ty);
-    else {
-      const yieldN = knows(world, l.nation, 'thermonuclear') ? 2 : 1;
-      world.out.emit(world.tick, EventKind.NukeDetonated, l.nation, yieldN, l.tx, l.ty);
-      // The taboo broken (PLAN 6.4a); the owner of the land struck has a grievance (PLAN 6.4b).
-      world.nukeTaboo = Math.min(world.nukeTaboo, TABOO_AFTER);
-      const struck = ownerAt(world, l.tx, l.ty);
-      if (struck !== 0 && struck !== l.nation) world.nukeGrievance.set(struck, { by: l.nation, until: world.tick + RETALIATION_DAYS * 24 });
-      const toll = blast(world, yieldN, l.tx, l.ty);
-      layFallout(world, yieldN, l.tx, l.ty);
-      aftermath(world, l.nation, yieldN, l.tx, l.ty, toll.men + toll.people);
-    }
+    else detonate(world, l.nation, knows(world, l.nation, 'thermonuclear') ? 2 : 1, l.tx, l.ty);
   }
   world.nukeLaunches = left;
 }

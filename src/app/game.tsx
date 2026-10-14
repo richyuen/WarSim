@@ -13,6 +13,8 @@ import { saveScreenshot, Settings } from './settings';
 import { screenshotLabel } from './screenshotLabel';
 import { SimClient } from './simClient';
 import { Sound } from './sound';
+import { newStrikes } from '../shared/nukeAlert';
+import type { Heard } from '../shared/sound';
 import { installTestApi } from './testApi';
 
 /**
@@ -111,6 +113,15 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
   for (const type of ['pointerdown', 'keydown'] as const) window.addEventListener(type, () => sound.unlock(), { capture: true });
   sim.onStats((m) => sound.onTicker(m.ticker, m.world, m.news));
   const settings = new Settings(view, sound);
+  // The nuclear alert (PLAN 6.6a): a new strike's banner, and a pause when the setting asks.
+  let seenStrikes: Heard | null = null;
+  sim.onStats((m) => {
+    const s = newStrikes(m.ticker, m.world, seenStrikes, m.news);
+    if (seenStrikes && seenStrikes.world !== m.world) hud.nukeAlert.value = null;
+    seenStrikes = s.seen;
+    if (s.rows.length > 0) hud.nukeAlert.value = s.rows[s.rows.length - 1]!;
+    if (s.struck && settings.nukePause.value && !hud.paused.value) hud.togglePause();
+  });
   // F2 saves a screenshot of the map (PLAN 1.39a; AoC uses F11, which browsers keep for fullscreen).
   window.addEventListener('keydown', (e) => {
     if (e.key !== 'F2' || !view) return;

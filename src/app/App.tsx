@@ -11,6 +11,7 @@ import { NationPanel } from '../ui/NationPanel';
 import { StatsRanking } from '../ui/StatsRanking';
 import { WarBanners } from '../ui/WarBanners';
 import { Ticker } from '../ui/Ticker';
+import { NukeAlert } from '../ui/NukeAlert';
 import { orderNewsText } from '../ui/orderNewsText';
 import { TopBar } from '../ui/TopBar';
 import type { Hud } from './hud';
@@ -124,6 +125,16 @@ export function App({
           }}
         />
       ) : null}
+      {stats && hud.nukeAlert.value ? (
+        <NukeAlert
+          row={hud.nukeAlert.value}
+          onGo={() => {
+            const r = hud.nukeAlert.value;
+            if (r) hud.onShowPlace(r.x, r.y);
+          }}
+          onClose={() => (hud.nukeAlert.value = null)}
+        />
+      ) : null}
       {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} onBattle={(war) => hud.toBattle(war)} /> : null}
       {hud.showSettings.value ? (
         <SettingsPanel
@@ -142,6 +153,8 @@ export function App({
           muted={settings.muted.value}
           onVolume={(v) => settings.setVolume(v)}
           onMuted={(v) => settings.setMuted(v)}
+          nukePause={settings.nukePause.value}
+          onNukePause={(v) => settings.setNukePause(v)}
           onScreenshot={() => {
             if (view) void saveScreenshot(view, screenshotLabel(hud));
           }}
