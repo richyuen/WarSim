@@ -11,7 +11,8 @@ import { armourLosses } from '../helpers/armourLosses';
 // that was gone for as long as they last.
 //
 // The ground is that of `burning1938`: where armour loses tanks under fire, found in Node. A
-// save at the window's start (A) and one at its end (B), the camera at T3 over it.
+// save at the window's start (A) and one at its end (B), the camera at T3 over it. The tanks lost
+// are of elements on that ground at the window's start (PLAN 5.8w8): the view of A holds them.
 
 const FIRST_DAY = 14;
 const LAST_DAY = 120;
@@ -21,7 +22,7 @@ const M_PER_PX = 4;
 
 test('T3: a game loaded into a running one leaves no hull, wreck or shot of the game before, and none for what lies between', async ({ page }) => {
   test.setTimeout(300_000);
-  const node = armourLosses(FIRST_DAY, LAST_DAY, HOURS, LEAST, true);
+  const node = armourLosses(FIRST_DAY, LAST_DAY, HOURS, LEAST, true, true);
 
   await page.setViewportSize({ width: 1400, height: 800 });
   await page.goto('/?scenario=1938&paused=1&seed=1938');

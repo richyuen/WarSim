@@ -36,8 +36,11 @@ const SQUARE = 0.2;
  * stands for `HULL_LIFE_MS` of the render clock, and a spec that looks at one after the window
  * needs a loss at its end, however long its machine takes over an hour. So a window starts at
  * any hour, not on a grid of `hours`.
+ *
+ * With `atStart`, a loss counts only if its element stood on that square at the window's start
+ * (PLAN 5.8w8): a spec that loads the window's first state needs the elements in its view then.
  */
-export function armourLosses(firstDay: number, lastDay: number, hours: number, least: number, underFire = true): LossWindow {
+export function armourLosses(firstDay: number, lastDay: number, hours: number, least: number, underFire = true, atStart = false): LossWindow {
   const sim = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
   sim.step(24 * firstDay - 1);
   let was = new Map<number, number>();
@@ -49,7 +52,7 @@ export function armourLosses(firstDay: number, lastDay: number, hours: number, l
     w.out.events.length = 0;
   });
   // The last `hours` hours: the state's hash before each, its strengths, and its losses of the kind asked for by square.
-  const past: { before: number; hour: Strengths; lost: Map<string, { x: number; y: number; n: number }[]> }[] = [];
+  const past: { before: number; hour: Strengths; lost: Map<string, { id: number; x: number; y: number; n: number }[]>; stood: Map<number, [number, number]> }[] = [];
   for (let end = 24 * firstDay + 1; end <= 24 * lastDay; end++) {
     const before = sim.hash();
     const now = new Map<number, number>();
@@ -63,27 +66,33 @@ export function armourLosses(firstDay: number, lastDay: number, hours: number, l
       w.out.events.length = 0;
     });
     const hour: Strengths = new Map();
-    const lost = new Map<string, { x: number; y: number; n: number }[]>();
+    const lost = new Map<string, { id: number; x: number; y: number; n: number }[]>();
     for (const [id, n] of was) {
       const left = now.get(id) ?? 0;
       hour.set(id, [n, left, hit.has(id)]);
       const p = stood.get(id)!;
       if (left === 0 || left >= n || hit.has(id) !== underFire) continue;
-      const k = `${Math.floor(p[0] / SQUARE)},${Math.floor(p[1] / SQUARE)}`;
-      lost.set(k, [...(lost.get(k) ?? []), { x: p[0], y: p[1], n: n - left }]);
+      const k = key(p);
+      lost.set(k, [...(lost.get(k) ?? []), { id, x: p[0], y: p[1], n: n - left }]);
     }
+    past.push({ before, hour, lost, stood });
     was = now;
     stood = places;
-    past.push({ before, hour, lost });
     if (past.length > hours) past.shift();
     if (past.length < hours) continue;
     // The squares with a loss in this hour, each with its losses of the whole window.
-    const top = [...lost.keys()].map((k) => past.flatMap((h) => h.lost.get(k) ?? [])).sort((a, b) => sum(b) - sum(a))[0];
+    const first = past[0]!.stood;
+    const there = (k: string) => (d: { id: number }): boolean => {
+      const p = first.get(d.id);
+      return !atStart || (p !== undefined && key(p) === k);
+    };
+    const top = [...lost].filter(([k, l]) => l.some(there(k))).map(([k]) => k).map((k) => past.flatMap((h) => h.lost.get(k) ?? []).filter(there(k))).sort((a, b) => sum(b) - sum(a))[0];
     if (top && sum(top) >= least) return { start: end - hours, before: past[0]!.before, after: sim.hash(), hours: past.map((h) => h.hour), x: top.reduce((s, d) => s + d.x, 0) / top.length, y: top.reduce((s, d) => s + d.y, 0) / top.length, lost: sum(top) };
   }
   throw new Error(`no ${hours} hours from day ${firstDay} to ${lastDay} that end with a loss and in which ${least} tanks are lost ${underFire ? 'under fire' : 'without fire'} on one ground`);
 }
 
+const key = (p: readonly [number, number]): string => `${Math.floor(p[0] / SQUARE)},${Math.floor(p[1] / SQUARE)}`;
 const sum = (list: readonly { n: number }[]): number => list.reduce((s, d) => s + d.n, 0);
 
 type World = Parameters<NonNullable<Parameters<Sim['step']>[1]>>[0];

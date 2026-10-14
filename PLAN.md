@@ -68,9 +68,7 @@ quick sweep as a smoke test.
   - [x] 5.8w5 The review's second run (found by it): `aiSweep` held a fleet gone with its […]
   - [x] 5.8w6 The review's third run (found by it): `aiSweep2`, seed 2 at tick 27,721: nation 116 […]
   - [x] 5.8w7 `aiSweep3` runs past its 900 s (1,064 s): the tick's cost since Phase 5 (BLOCKERS, […]
-  - [ ] 5.8w8 The review's fourth run (found by it, the first to its end): `loadedEffects1938`
-    (:95): a game loaded into a running one, the view holds none of the loaded game's elements
-    (0, more than 0 wanted). A defect until shown otherwise: the cause first.
+  - [x] 5.8w8 The review's fourth run (found by it, the first to its end): `loadedEffects1938` […]
   - [ ] 5.8w9 `markerStacks1938` (:229): back from T2, the T1 boxes are not parted at rest at
     1800 m/px (more than 5 wanted). The cause first: the view, or the 1938 game it is given.
   - [ ] 5.8w10 `research1938` (:30): Germany works on 2 techs, not 3, within 20 s. The cause

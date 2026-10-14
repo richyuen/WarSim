@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-362 · 2026-10-14 · accepted — The loaded window's tanks stand in it at its start (PLAN 5.8w8)
+
+- **Found** (5.8h, `check:review`, the fourth run): `loadedEffects1938` (PLAN 3.7n) loads the
+  window's first state and asks that the view hold its elements; it held none. The load is
+  whole (the hash is the save's). Since 5.8m (`c814290`, found by a bisect from `5e91a56`) the
+  game is another, and the window `armourLosses` finds (day 20.9, tick 502) is one of armour
+  that drives onto the ground in its hours: at tick 502 the view's box holds no element, at
+  tick 514 49.
+- **Decision.** `armourLosses` takes `atStart`: a loss counts only when its element stood on the
+  same square at the window's start, and the window ends with such a loss. `loadedEffects1938`
+  asks for it; `burning1938` and the tank-battle helper keep the window they had. What the spec
+  holds the view to is unchanged.
+- **The pin holds**: no sim input changed.
+- **Tests.** `loadedEffects1938` green by hand (day 30.5: 5 hulls, 108 shots at most, none after
+  either load); `burning1938` green.
+
 ### ADR-361 · 2026-10-14 · accepted — The sweep's measure of a revolt's land counts a defection (PLAN 5.8w6, 5.8w7)
 
 - **Found** (5.8h, the review's third run): `aiSweep2`, seed 2 at tick 27,721, "nation 116:

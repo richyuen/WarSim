@@ -15231,3 +15231,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   - `toBattle1938`: the banner's two formations not front to front (PLAN 5.8w12).
   - `wrecks1938`: a wreck 0.35 from its sprite (PLAN 5.8w13).
 - **Next:** PLAN 5.8w8.
+
+## 2026-10-14 — PLAN 5.8w8: the loaded window's tanks stand in it at its start (ADR-362)
+
+- **Found:** a bisect from `5e91a56` puts the red at 5.8m (`c814290`): the game since then gives
+  `loadedEffects1938` a window of armour that drives onto its ground (none in the view at its
+  start, 49 twelve hours on). The load and the view are whole.
+- **Done:** `armourLosses` counts, when asked, only the losses of elements on the ground at the
+  window's start; `loadedEffects1938` asks.
+- **Tests:** `loadedEffects1938` and `burning1938` green by hand.
+- **The gate:** the whole unit suite (a helper changed: 1,390 of 1,391) red only by `scenario1938`'s
+  build time of BLOCKERS (3,136 ms; green alone); the pin, build, parity and the changed spec green.
+- **Next:** PLAN 5.8w9.

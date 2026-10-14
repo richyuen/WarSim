@@ -8306,3 +8306,21 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8w7 `aiSweep3` runs past its 900 s (1,064 s): the tick's cost since Phase 5 (BLOCKERS,
     PLAN 7.1). The user's call: the timeout, or the known reds with its BLOCKERS entry.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w8 The review's fourth run (found by it, the first to its end): `loadedEffects1938`
+    (:95): a game loaded into a running one, the view holds none of the loaded game's elements
+    (0, more than 0 wanted). A defect until shown otherwise: the cause first.
