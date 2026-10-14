@@ -8553,3 +8553,22 @@ Of 4.12 (open in PLAN.md):
   AT: e2e: at T3 over a land battle with a strike in its hours, the strike's aircraft and its
   bombs are drawn over the formation it hits (pixels and the view's state), and nothing of it
   after.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+- [x] 5.10 Critic R5-B1, second: the air-superiority mode is read. On day 20 of a war it shows 2
+  of 515 zones held; Germany's zones are grey on a grey country, and its legend names no
+  nation (`critic/c5_h_8317.json`). The critic's fix: a legend by nation and a tint or
+  hatching that stands out from the political colours.
+  AT: e2e: in the mode, a zone a nation holds differs from a zone no one holds (pixels) and the
+  legend or the cursor names its holder.

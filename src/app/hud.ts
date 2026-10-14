@@ -67,6 +67,9 @@ export class Hud {
   readonly seaHolders = signal<{ id: number; zones: number }[]>([]);
   /** The sea zone under the cursor in the sea-control mode (PLAN 4.10c), null off the sea. */
   readonly seaHover = signal<{ name: string; holder: number } | null>(null);
+  /** Who holds the air zones (PLAN 5.10), the most first, and the zone under the cursor: for the legend. */
+  readonly airHolders = signal<{ id: number; zones: number }[]>([]);
+  readonly airHover = signal<{ holder: number } | null>(null);
 
   /** To the largest battle of war `war` (a click on its banner, PLAN 2.14e). A war with no formations in contact leaves the camera where it is. */
   toBattle(war: number): void {

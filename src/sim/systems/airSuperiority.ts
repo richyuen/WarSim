@@ -5,6 +5,7 @@
  * side's share of the power of its side and its enemies there: 0 to 1, a half where neither
  * flew. Read by the rules of PLAN 5.4 and 5.5.
  */
+import { AIR_CONTESTED } from '../../shared/mapModes';
 import { airOf, type World } from '../world';
 import { elementIndex } from './elements';
 
@@ -87,8 +88,8 @@ export function strikeFactor(world: World, wing: number, x: number, y: number): 
   return 1 + AIR_STRIKE * (2 * airSuperiority(world, world.formations.cols.nation[wing]!, zone) - 1);
 }
 
-/** An air zone's holder in `airHolders` where two sides at war fly and neither holds it. */
-export const AIR_CONTESTED = 0xffff;
+/** An air zone's holder in `airHolders` where two sides at war fly and neither holds it (shared: the page's legend reads it). */
+export { AIR_CONTESTED };
 /** A nation holds the air of a zone where its superiority is this or more (the strategic bombers' bar, PLAN 5.6). */
 export const AIR_HELD = 0.6;
 

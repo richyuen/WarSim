@@ -19,6 +19,8 @@ export const SEA_LAND_FADE = 0.65;
 /** Air superiority (PLAN 5.7c): how much of its holder's colour an air zone held takes, and the stripes of one contested. */
 export const AIR_HELD_TINT = 0.55;
 export const AIR_CONTESTED_COLOR = 0xe0632a;
+/** An air zone's holder where two sides at war fly and neither holds it (the sim's `airHolders`; the legend, PLAN 5.10). */
+export const AIR_CONTESTED = 0xffff;
 
 export type Relation = 'none' | 'self' | 'ally' | 'enemy' | 'subject' | 'neutral';
 

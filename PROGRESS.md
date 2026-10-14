@@ -15392,3 +15392,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** green (the whole unit suite, a helper added: 1,397 of 1,397; the pin; the new
   spec).
 - **Next:** PLAN 5.10.
+
+## 2026-10-14 — PLAN 5.10: the air-superiority mode, read (ADR-372)
+
+- **Done:** the mode's ground of no nation's colour; a held zone hatched in its holder's colour;
+  the legend lists the holders and names the zone under the cursor.
+- **Tests:** `airControl1938` (rewritten for the new rule: hatching, held and not apart, the
+  legend, the hover) green by hand.
+- **Looked at:** `docs/evidence/5.7/d-air-superiority-mode.png` (3 January 1938): Germany's grey
+  hatching over Germany and the Low Countries, Britain's red over the North Sea, Poland's pink,
+  Italy's green; the legend's six holders and "This air zone: held by Germany".
+- **The pin holds** at 76983901.
+- **The gate:** green (the related unit tests 1,021 of 1,021; the pin; the changed spec).
+- **Next:** PLAN 5.11.

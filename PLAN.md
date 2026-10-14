@@ -25,12 +25,6 @@ quick sweep as a smoke test.
 
 ## Phase 5 — Air
 
-- [ ] 5.10 Critic R5-B1, second: the air-superiority mode is read. On day 20 of a war it shows 2
-  of 515 zones held; Germany's zones are grey on a grey country, and its legend names no
-  nation (`critic/c5_h_8317.json`). The critic's fix: a legend by nation and a tint or
-  hatching that stands out from the political colours.
-  AT: e2e: in the mode, a zone a nation holds differs from a zone no one holds (pixels) and the
-  legend or the cursor names its holder.
 - [ ] 5.11 Critic R5-B1, third: the air war in what is read afterwards. No air event reaches the
   history, the ticker, the charts, the ranking or the nation panel (`critic/c5_g_5519.json`).
   The critic's fix: air battles and raids in the history and the ticker; aircraft, losses and
@@ -726,3 +720,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 5.8 Phase 5 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]
 - [x] 4.12 Critic R5-B4 (report of 2026-10-14 on `c850346`): a sea battle shows both sides. The […]
 - [x] 5.9 Critic R5-B1 (report of 2026-10-14 on `c850346`), first of three: the air war seen at […]
+- [x] 5.10 Critic R5-B1, second: the air-superiority mode is read. On day 20 of a war it shows 2 […]

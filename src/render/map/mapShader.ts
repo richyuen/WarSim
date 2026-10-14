@@ -366,9 +366,11 @@ void main() {
 
   vec3 col;
   if (uMode == 4) {
-    // Air superiority (PLAN 5.7c): land and sea faded as the sea-control mode fades the land; an
-    // air zone held tinted with its holder's colour, one contested striped.
-    col = water ? pal(0u) : mix(fid == 0u ? vec3(0.62, 0.62, 0.58) : pal(fid), vec3(0.78, 0.78, 0.75), ${SEA_LAND_FADE.toFixed(3)});
+    // Air superiority (PLAN 5.7c): an air zone held hatched in its holder's colour, one contested
+    // striped the other way. On a ground of no nation's colour (PLAN 5.10, the critic's R5-B1:
+    // over the political colours faded, a nation's air over its own land was its colour on its
+    // colour, Germany's grey on grey): the land a light neutral, the sea faded.
+    col = water ? mix(pal(0u), vec3(0.78, 0.78, 0.75), 0.45) : vec3(0.80, 0.80, 0.76);
     ivec2 ac = wrapCell(ivec2(floor(cellPos)));
     uint azone = inMap(ac) ? texelFetch(uAirZone, ac, 0).r : 0u;
     uint aholder = azone == 0u ? 0u : texelFetch(uAirHolder, ivec2(int(azone % 128u), int(azone / 128u)), 0).r;
@@ -376,7 +378,8 @@ void main() {
       float band = step(0.5, fract((gl_FragCoord.x - gl_FragCoord.y) / (10.0 * uDpr)));
       col = mix(col, vec3(${AIR_CONTESTED_RGB}), ${AIR_HELD_TINT.toFixed(3)} * band);
     } else if (aholder != 0u) {
-      col = mix(col, pal(aholder), ${AIR_HELD_TINT.toFixed(3)});
+      float hatch = step(0.45, fract((gl_FragCoord.x + gl_FragCoord.y) / (8.0 * uDpr)));
+      col = mix(col, pal(aholder), mix(${AIR_HELD_TINT.toFixed(3)}, 1.0, hatch));
     }
   } else if (water && uMode == 3) {
     // Sea control (PLAN 4.7a): a zone held is tinted with its holder's colour.

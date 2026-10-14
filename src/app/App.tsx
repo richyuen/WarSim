@@ -1,4 +1,5 @@
 import { BottomBar } from '../ui/BottomBar';
+import { AIR_CONTESTED, AIR_CONTESTED_COLOR } from '../shared/mapModes';
 import { MapLegend } from '../ui/MapLegend';
 import { FormationPanel } from '../ui/FormationPanel';
 import { HistoryPanel } from '../ui/HistoryPanel';
@@ -293,6 +294,8 @@ export function App({
         selected={hud.selected.value ? nameOf(hud.selected.value) : null}
         seaHolders={hud.seaHolders.value.map((h) => ({ name: displayName(byId.get(h.id)?.name ?? `#${h.id}`), color: byId.get(h.id)?.color ?? 0x777777, zones: h.zones }))}
         seaHover={hud.seaHover.value ? { name: hud.seaHover.value.name, holder: hud.seaHover.value.holder ? displayName(byId.get(hud.seaHover.value.holder)?.name ?? `#${hud.seaHover.value.holder}`) : null } : null}
+        airHolders={hud.airHolders.value.map((h) => (h.id === AIR_CONTESTED ? { name: null, color: AIR_CONTESTED_COLOR, zones: h.zones } : { name: displayName(byId.get(h.id)?.name ?? `#${h.id}`), color: byId.get(h.id)?.color ?? 0x777777, zones: h.zones }))}
+        airHover={hud.airHover.value ? { holder: hud.airHover.value.holder === AIR_CONTESTED ? 'contested' : hud.airHover.value.holder ? displayName(byId.get(hud.airHover.value.holder)?.name ?? `#${hud.airHover.value.holder}`) : null } : null}
       />
     </>
   );

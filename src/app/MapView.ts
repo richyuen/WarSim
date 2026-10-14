@@ -226,9 +226,10 @@ export class MapView {
     let stroke: { id: number; cx: number; cy: number } | null = null;
     // The sea zone under the cursor in the sea-control mode (PLAN 4.10c), told when it changes.
     canvas.addEventListener('pointermove', (e) => {
-      if (this.mapMode !== 'seaControl') return;
+      if (this.mapMode !== 'seaControl' && this.mapMode !== 'airControl') return;
       const [wx, wy] = worldAt(e);
-      this.hoverSea(wx, wy);
+      if (this.mapMode === 'seaControl') this.hoverSea(wx, wy);
+      else this.hoverAir(wx, wy);
     });
     window.addEventListener('pointermove', (e) => {
       if (!stroke || e.pointerId !== stroke.id) return;
@@ -326,6 +327,11 @@ export class MapView {
       }
       this.map.setAirHolders(holder);
       this.airHolder = holder.slice();
+      // The holders and their zones, for the legend (PLAN 5.10), the most first; the contested apart.
+      const count = new Map<number, number>();
+      for (let z = 1; z < this.airHolder.length; z++) if (this.airHolder[z]! !== 0) count.set(this.airHolder[z]!, (count.get(this.airHolder[z]!) ?? 0) + 1);
+      this.onAirHolders([...count].sort((a, b) => b[1] - a[1] || a[0] - b[0]).map(([id, zones]) => ({ id, zones })));
+      this.airHovered = -1;
       this.dirty = true;
     });
     sim.onSeaControl((holder, zones, names) => {
@@ -707,6 +713,31 @@ export class MapView {
     if (key === this.seaHovered) return;
     this.seaHovered = key;
     this.onSeaHover(at ? { name: at.name, holder: at.holder } : null);
+  }
+
+  /** The holders of the air zones and how many each holds, the most first (PLAN 5.10; `AIR_CONTESTED` for the contested). */
+  onAirHolders: (holders: { id: number; zones: number }[]) => void = () => {};
+  /** The air zone under the cursor in the air-superiority mode: its holder (0 none), or null where no zone is (the legend). */
+  onAirHover: (zone: { holder: number } | null) => void = () => {};
+  private airHovered = -1;
+
+  /** The air zone at (x, y), in cells, with its holder; null where no zone is. */
+  airZoneAt(x: number, y: number): { zone: number; holder: number } | null {
+    const { w, h } = this.geo;
+    const cx = ((Math.floor(x) % w) + w) % w;
+    const cy = Math.floor(y);
+    if (cy < 0 || cy >= h || this.airZoneOf.length !== w * h) return null;
+    const zone = this.airZoneOf[cy * w + cx]!;
+    return zone === 0 ? null : { zone, holder: this.airHolder[zone] ?? 0 };
+  }
+
+  /** Tells the air zone at (x, y) when it is another than the last, or its holder changed (PLAN 5.10; the pointer, tests). */
+  hoverAir(x: number, y: number): void {
+    const at = this.airZoneAt(x, y);
+    const key = at ? at.zone * 65536 + at.holder : 0;
+    if (key === this.airHovered) return;
+    this.airHovered = key;
+    this.onAirHover(at ? { holder: at.holder } : null);
   }
 
   /** Where formation `f`'s elements are drawn, cells, from the last snapshot (PLAN 5.9: a strike's bombs at T3). */

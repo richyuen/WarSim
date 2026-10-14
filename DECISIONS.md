@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-372 · 2026-10-14 · accepted — The air-superiority mode, read (PLAN 5.10)
+
+- **Found** (the critic's R5-B1, run 5): in the mode an air zone held was tinted with its
+  holder's colour over the political colours faded: a nation's air over its own land was its
+  colour on its colour (Germany's grey on grey, seed 8317 day 20), and the legend named no
+  nation.
+- **Decision.**
+  - The ground of the mode is of no nation's colour: the land a light neutral (0.80, 0.80,
+    0.76), the sea faded (0.45 towards the land's fade). A zone held is hatched in its holder's
+    colour (bands of it whole between bands of AIR_HELD_TINT of it), one contested striped the
+    other way, as before.
+  - The legend lists the holders by their zones, the most first (eight, then "and n more"; the
+    contested as one row), and names the zone under the cursor with its holder, as the
+    sea-control mode does (PLAN 4.10c).
+  - `AIR_CONTESTED` is shared (`shared/mapModes`), the sim's re-exported: the page reads it.
+- **The pin holds**: no rule changed.
+- **Tests.** `airControl1938` (its checks of the old tint rewritten for the new rule): a zone
+  Germany holds hatched (pixels of its colour whole and tinted), land whose air no one holds
+  the ground, the two apart; the sea faded; the legend's row of Germany; the hover names it.
+  `docs/evidence/5.7/d-air-superiority-mode.png` taken again: Europe on day 3 of seed 1, the
+  holders hatched in their colours, the legend listing six.
+
 ### ADR-371 · 2026-10-14 · accepted — The air war at T3 (PLAN 5.9)
 
 - **Found** (the critic's R5-B1, run 5): no plane, bomb or flak at T3, by design (PLAN 5.7a,
