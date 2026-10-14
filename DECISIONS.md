@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-364 · 2026-10-14 · accepted — Research on the page, in 1939 (PLAN 5.8w10)
+
+- **Found** (5.8h, `check:review`, the fourth run): `research1938` (PLAN 3.1e) wants Germany's
+  panel to list three lines on the second day of 1938; it lists two. A bisect from `5e91a56`
+  puts the change at the start's air forces (5.1d, `82a45f5`): a nation knows from the start
+  the techs its wings need (ADR-309), and Germany has two techs of 1938 left to learn
+  (`assembly_line`, `bombers_str_1`). The rule of research is whole: a line opens only for a
+  tech whose year has come. On day 2 of seed 1938 no nation has three lines (97 have one, 5
+  two): the United States has the budget and two techs, Italy three techs and the budget for
+  two.
+- **Decision.** The test takes its second day from 1939: on 2 January 1939 Germany opens three
+  lines of 1939 (`infantry_weapons_2`, `naval_aviation`, `armored_doctrine`), each a fifth paid a
+  month on. What it holds the page to is unchanged; its time 300 s (a year in the worker,
+  about 30 s here). The evidence shot is taken again (1 February 1939).
+- **The pin holds**: no sim input changed.
+- **Tests.** `research1938` green by hand (42 s).
+
 ### ADR-363 · 2026-10-14 · accepted — Back from T2, a day with boxes parted (PLAN 5.8w9)
 
 - **Found** (5.8h, `check:review`, the fourth run): `markerStacks1938`'s test of the way back

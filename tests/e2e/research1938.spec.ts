@@ -5,14 +5,14 @@ import type {} from '../../src/app/testApi';
 import { NATIONS_1938, RULES_1938 } from '../../src/sim/scenario1938';
 
 // PLAN 3.1e AT: Germany's panel in 1938 lists three techs by name with a share paid that grows
-// over a month, and its research budget.
+// over a month, and its research budget (in 1939 since PLAN 5.8w10).
 
 const en = JSON.parse(readFileSync(path.resolve(import.meta.dirname, '../../src/ui/i18n/en.json'), 'utf8')) as Record<string, string>;
 const id = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
 const int = (s: string | null): number => Number((s ?? '').replace(/[^0-9]/g, ''));
 
 test('research on the page: Germany works on three techs, and a month pays more of each', async ({ page }, info) => {
-  test.setTimeout(180_000);
+  test.setTimeout(300_000);
   await page.setViewportSize({ width: 1400, height: 800 });
   await page.goto('/?scenario=1938&paused=1&seed=1938');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.hud.techs.value.length > 0, null, { timeout: 60_000 });
@@ -25,8 +25,10 @@ test('research on the page: Germany works on three techs, and a month pays more 
   await expect(page.getByTestId('panel-research')).toContainText(en['panel.researchNone']!);
   await expect(lines).toHaveCount(0);
 
-  // The budget is set on the first day and the lines are opened on the second.
-  await page.evaluate(() => window.__warsim!.sim.step(24 * 2));
+  // The budget is set on the first day and the lines are opened on the second. Of 1939 (PLAN
+  // 5.8w10, ADR-364): since the start's air forces (5.1d) a nation knows the techs its wings need,
+  // and Germany has two techs of 1938 left to learn; on 2 January 1939 it opens three of 1939.
+  await page.evaluate(() => window.__warsim!.sim.step(24 * 366));
   await expect(lines).toHaveCount(3, { timeout: 20_000 });
   const read = async (): Promise<{ name: string; paid: number }[]> => {
     const out: { name: string; paid: number }[] = [];

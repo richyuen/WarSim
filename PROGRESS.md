@@ -15253,3 +15253,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** green (the whole unit suite, 1,391 of 1,391: the working tree's `package.json`;
   the changed spec).
 - **Next:** PLAN 5.8w10.
+
+## 2026-10-14 — PLAN 5.8w10: research on the page, in 1939 (ADR-364)
+
+- **Found:** a bisect from `5e91a56` puts the change at the start's air forces (5.1d,
+  `82a45f5`): Germany knows its wings' techs and has two of 1938 left; no nation has three
+  lines on day 2 of 1938. The rule of research is whole.
+- **Done:** `research1938` opens its lines on 2 January 1939 (Germany: three of 1939).
+- **Tests:** `research1938` green by hand (42 s).
+- **Looked at:** `docs/evidence/3.1/research-germany.png` (1 February 1939): "Budget / month
+  122", "Infantry weapons II 22%", "Naval aviation 18%", "Armoured doctrine 20%".
+- **The gate:** green (the whole unit suite, 1,391 of 1,391: the working tree's `package.json`;
+  the changed spec).
+- **Next:** PLAN 5.8w11.
