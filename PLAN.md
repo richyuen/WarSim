@@ -55,7 +55,7 @@ quick sweep as a smoke test.
   - [x] 5.8u1 The transports' missions (SPEC §6.3, found by 5.8b): air supply to a formation cut […]
   - [x] 5.8u2 A paradrop of a formation from an airbase within range.
   - [x] 5.8u3a The air AI's transports: supply to its formations cut off.
-  - [ ] 5.8u3b The AI's paradrops.
+  - [x] 5.8u3b The AI's paradrops.
   - [ ] 5.8g PARITY rows of Phase 5 updated with evidence (row 5 and the rows it touched).
   - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed if a

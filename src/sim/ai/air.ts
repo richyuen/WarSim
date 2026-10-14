@@ -13,6 +13,8 @@
  *   (`airSuperiority`, PLAN 5.3c); with none, no mission. Superiority there comes of the
  *   fighters over the front, and of the air zones being wide (a zone of 1.5 M km² holds a front
  *   and the industry behind it).
+ * - Paradrops first (PLAN 5.8u3b, `paradrops`): a formation of infantry alone at an airbase with
+ *   the transports to lift it, not on the front, is dropped on its own front formation nearest it.
  * - Transports fly supply (PLAN 5.8u3a) to its own land formation short of it (supply under
  *   `LIFT_BELOW`) nearest their base within range; none, no mission. At peace, a nation's wings
  *   have none.
@@ -21,6 +23,8 @@
  */
 import { isDayStart } from '../../shared/calendar';
 import { basePlace, kmFromBase, orderMission, wingRange } from '../systems/air';
+import { canParadrop, orderParadrop } from '../systems/airLift';
+import { wrapDx } from '../systems/elements';
 import { hypot } from '../core/dmath';
 import { AIR_HELD, airSuperiority } from '../systems/airSuperiority';
 import { airOf, navOf, type World } from '../world';
@@ -68,6 +72,7 @@ export function airAi(world: World): void {
       if (c.supply[id]! < LIFT_BELOW) short.push(id);
     }
   });
+  paradrops(world, wings, engaged);
   // The cells of industry, richest first, for a strategic bomber: made when one is tasked.
   let rich: readonly number[] | null = null;
   const richest = (): readonly number[] => (rich ??= byIndustry(world));
@@ -103,6 +108,42 @@ export function airAi(world: World): void {
       if (m && m.kind === kind && m.x === target[0] && m.y === target[1]) continue;
       orderMission(world, id, kind, target[0], target[1]);
     }
+  }
+}
+
+/**
+ * The day's paradrops (PLAN 5.8u3b): of each AI nation at war with wings (`wings`), each of its
+ * land formations that can be dropped (`canParadrop`: of infantry alone, at an airbase with its
+ * transports there on the ground to lift it), not on the front, by ascending id, is dropped on
+ * the place of its own formation on the front (`engaged`) nearest it. Before the wings' missions,
+ * so the transports it takes fly the drop.
+ */
+function paradrops(world: World, wings: Map<number, number[]>, engaged: readonly number[]): void {
+  const c = world.formations.cols;
+  const rules = world.rules!;
+  const atWar = world.wars.nations();
+  const fronts = new Map<number, number[]>();
+  for (const g of engaged) {
+    const list = fronts.get(c.nation[g]!);
+    if (list) list.push(g);
+    else fronts.set(c.nation[g]!, [g]);
+  }
+  for (const id of [...world.formations.ids()].sort((a, b) => a - b)) {
+    const n = c.nation[id]!;
+    const front = fronts.get(n);
+    if (!front || !wings.has(n) || !atWar.has(n) || world.offLand(id) || c.engaged[id] === 1) continue;
+    if (rules.templates[c.template[id]!]!.elements.some((e) => rules.units[e.unit]!.cls !== 'inf')) continue;
+    let best = -1;
+    let bd = Infinity;
+    for (const g of front) {
+      const dx = wrapDx(world, c.x[id]!, c.x[g]!);
+      const d = dx * dx + (c.y[g]! - c.y[id]!) * (c.y[g]! - c.y[id]!);
+      if (d < bd) {
+        bd = d;
+        best = g;
+      }
+    }
+    if (best >= 0 && canParadrop(world, id, c.x[best]!, c.y[best]!) === 0) orderParadrop(world, id, c.x[best]!, c.y[best]!);
   }
 }
 

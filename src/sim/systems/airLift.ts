@@ -60,39 +60,35 @@ export const PARA_MEN = 64;
 /** A formation's org on landing from the air, at most (a landing's from the sea, PLAN 4.5b). */
 export const PARA_ORG = 0.5;
 
-/** Orders formation `id` dropped at (x, y) (see the head of the file); 0 when done, else why not (`MoveRejected`). */
-export function orderParadrop(world: World, id: number, x: number, y: number): 0 | RejectReason {
+/** The wings that would drop formation `id` at (x, y), and the airbase they fly from; or why not (no event). */
+function paradropPlan(world: World, id: number, x: number, y: number): { wings: number[]; base: number; cell: number } | RejectReason {
   const f = world.formations;
   const c = f.cols;
   const rules = world.rules;
-  const no = (why: RejectReason): RejectReason => {
-    world.out.emit(world.tick, EventKind.MoveRejected, id, f.has(id) ? c.nation[id]! : 0, why, NaN);
-    return why;
-  };
-  if (!f.has(id) || !rules) return no(RejectReason.NotLand);
-  if (world.embarked.has(id)) return no(RejectReason.Aboard);
+  if (!f.has(id) || !rules) return RejectReason.NotLand;
+  if (world.embarked.has(id)) return RejectReason.Aboard;
   const t = rules.templates[c.template[id]!];
-  if (world.offLand(id) || !t || t.elements.some((e) => rules.units[e.unit]!.cls !== 'inf')) return no(RejectReason.NotLand);
+  if (world.offLand(id) || !t || t.elements.some((e) => rules.units[e.unit]!.cls !== 'inf')) return RejectReason.NotLand;
   const { w, h, terrain, controller } = world.cells;
   const tx = Math.floor(x);
   const ty = Math.floor(y);
-  if (tx < 0 || tx >= w || ty < 0 || ty >= h || !isLand(terrain[ty * w + tx]!)) return no(RejectReason.NoLanding);
+  if (tx < 0 || tx >= w || ty < 0 || ty >= h || !isLand(terrain[ty * w + tx]!)) return RejectReason.NoLanding;
   const cell = ty * w + tx;
   const nation = c.nation[id]!;
   const held = controller[cell]!;
-  if (held !== 0 && held !== nation && !world.wars.sameSide(nation, held) && !world.wars.atWar(nation, held)) return no(RejectReason.NoRoute);
+  if (held !== 0 && held !== nation && !world.wars.sameSide(nation, held) && !world.wars.atWar(nation, held)) return RejectReason.NoRoute;
   // The airbase it stands at.
   const base = world.airbases.findIndex((b) => {
     const [bx, by] = world.cellPoint(b.cell);
     return controller[b.cell] === nation && Math.abs(wrapDx(world, c.x[id]!, bx)) <= BASE_PICK_CELLS && Math.abs(c.y[id]! - by) <= BASE_PICK_CELLS;
   });
-  if (base < 0 || c.engaged[id] === 1) return no(RejectReason.NoAirlift);
+  if (base < 0 || c.engaged[id] === 1) return RejectReason.NoAirlift;
   const [bx, by] = world.cellPoint(world.airbases[base]!.cell);
   const [px, py] = world.cellPoint(cell);
   const km = seaKm(world, bx, by, px, py);
   const ec = world.elements.cols;
   const men = c.strength[id]!;
-  const used: number[] = [];
+  const wings: number[] = [];
   let lift = 0;
   let far = false;
   for (const [g, b] of [...world.wingBase].sort((p, q) => p[0] - q[0])) {
@@ -102,13 +98,36 @@ export function orderParadrop(world: World, id: number, x: number, y: number): 0
       far = true;
       continue;
     }
-    used.push(g);
+    wings.push(g);
     for (const e of elementIndex(world).get(g) ?? []) lift += ec.strength[e]! * PARA_MEN;
   }
-  if (lift < men) return no(far ? RejectReason.OutOfRange : RejectReason.NoAirlift);
-  for (const g of used) {
+  if (lift < men) return far ? RejectReason.OutOfRange : RejectReason.NoAirlift;
+  return { wings, base, cell };
+}
+
+/** Whether formation `id` can be dropped at (x, y) now (`orderParadrop`'s checks; no event): 0, or why not. */
+export function canParadrop(world: World, id: number, x: number, y: number): 0 | RejectReason {
+  const plan = paradropPlan(world, id, x, y);
+  return typeof plan === 'number' ? plan : 0;
+}
+
+/** Orders formation `id` dropped at (x, y) (see the head of the file); 0 when done, else why not (`MoveRejected`). */
+export function orderParadrop(world: World, id: number, x: number, y: number): 0 | RejectReason {
+  const c = world.formations.cols;
+  const plan = paradropPlan(world, id, x, y);
+  if (typeof plan === 'number') {
+    world.out.emit(world.tick, EventKind.MoveRejected, id, world.formations.has(id) ? c.nation[id]! : 0, plan, NaN);
+    return plan;
+  }
+  const { wings, base, cell } = plan;
+  const nation = c.nation[id]!;
+  const held = world.cells.controller[cell]!;
+  const [bx, by] = world.cellPoint(world.airbases[base]!.cell);
+  const [px, py] = world.cellPoint(cell);
+  const km = seaKm(world, bx, by, px, py);
+  for (const g of wings) {
     world.wingMission.delete(g);
-    const kmh = rules.templates[c.template[g]!]!.speedKmh;
+    const kmh = world.rules!.templates[c.template[g]!]!.speedKmh;
     world.sorties.set(g, { bx, by, tx: px, ty: py, launch: world.tick, kmh, km, over: 0 });
   }
   c.moving[id] = 0;

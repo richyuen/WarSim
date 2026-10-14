@@ -15072,3 +15072,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (823 of 826) red only by the three timing tests of
   BLOCKERS (3,036 ms, 2.15 ms, 26.2 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8u3b.
+
+## 2026-10-13 — PLAN 5.8u3b: the AI's paradrops (ADR-351)
+
+- **Done:** `airAi` drops each formation that can be dropped (`canParadrop`), not on the front,
+  on its nation's front formation nearest it, before the wings' missions.
+- **Tests:** `airAi1938` (1 more).
+- **The pin holds** at 76983901 (no drop in the year: no AI formation can be dropped).
+- **The gate:** the related unit tests (918 of 921) red only by the three timing tests of
+  BLOCKERS (2,866 ms, 2.46 ms, 25.2 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8g.

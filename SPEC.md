@@ -1804,7 +1804,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   men) to a land cell in their range held by its side, an enemy or no one. It stands there at
   once, its org at most 0.5, an enemy's cell its (a beachhead's rule); the wings fly the sortie
   out and home. Else refused: `NotLand`, `NoLanding` (water), `NoRoute` (a nation at peace),
-  `OutOfRange`, `NoAirlift` (no lift there, or in contact). No AI drops yet (5.8u3).
+  `OutOfRange`, `NoAirlift` (no lift there, or in contact). The air AI drops (5.8u3b, ADR-351):
+  daily, before its wings' missions, a formation that can be dropped, not on the front, on its
+  nation's front formation nearest it.
 - *As built (PLAN 5.4b, ADR-317; `strikes`):* a strike sortie at its target fires once on the
   enemy's land elements within a cell: its aircraft × soft or hard attack × 0.2, in units over
   their hp, spread by their health; carried as on the land. A close support group takes about

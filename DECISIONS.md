@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-351 · 2026-10-13 · accepted — The AI's paradrops (PLAN 5.8u3b)
+
+- **Found** (5.8b): with the paradrop (5.8u2) no AI dropped.
+- **Decision.** Daily, before the wings' missions (so the transports it takes fly the drop), each
+  AI nation at war with wings drops each of its land formations, by ascending id, that is not
+  on the front and can be dropped (`canParadrop`: the order's checks without its event, so the
+  AI is never refused) on the place of its own formation on the front (`engaged`) nearest it.
+  A reinforcement of the front, not a raid behind it: where to strike behind the enemy's front
+  is a plan the operational AI does not make. `orderParadrop` is the check (`paradropPlan`)
+  and the drop.
+- **What it does.** Little in 1938: of its 37 formations of infantry alone (garrison brigades),
+  those at an airbase of their nation's are 29 of small nations without transports, and
+  Britain's two; the AI builds none. The rule waits for a garrison raised there, or a player's.
+- **The pin holds** at 76983901: no drop in seed 99's year.
+- **Tests.** `airAi1938` (1 more): a German garrison brigade at the airbase of Germany's two
+  transport groups dropped on the German division on the front; with one group, too few, it
+  stays, and the AI gives no order that is refused.
+
 ### ADR-350 · 2026-10-13 · accepted — The AI flies supply (PLAN 5.8u3a)
 
 - **Found** (5.8b): with air supply (5.8u1) the air AI gave its transports no mission.
