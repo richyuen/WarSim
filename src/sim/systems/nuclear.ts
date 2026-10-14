@@ -31,14 +31,25 @@
  * A launch takes a warhead from the stockpile, needs nukes allowed, and is state in flight
  * (`world.nukeLaunches`); its arrival, hourly, is `NukeDetonated` or `NukeIntercepted` (the
  * burst's effects: PLAN 6.3). A wing carrying a warhead is left alone by the air AI.
+ *
+ * The blast (PLAN 6.3a, SPEC §6.4 "blast radius by yield, kills elements by distance falloff and
+ * destroys city industry and population"; `blast`): a radius of BLAST_KM × the yield's cube root;
+ * at distance d within it the share BLAST_KILL × (1 − d / radius) is destroyed (`blastShare`):
+ * of each element of every formation there (land, fleets in port, wings at their base: by its
+ * formation's place), BLAST_PEOPLE of it of each cell's population (`cells.pop`, its people: they
+ * do not come back; a cell is 20 km across, and its whole share would have killed more than
+ * Berlin's people at Berlin), and of its industry, as bombs put it out of work (`world.bombDamage`, at least that share,
+ * repaired as bombing's is). Its toll: `NukeCasualties`.
  */
 import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
+import { pow } from '../core/dmath';
 import { knowsTechs, techMask } from '../tech';
 import { airOf, type NukeLaunch, type World } from '../world';
 import { basePlace, wingRange } from './air';
+import { applyLoss, cellX, elementIndex, settleFormation, wrapDx } from './elements';
 import { airSuperiority } from './airSuperiority';
 import { seaKm } from './navalCombat';
 
@@ -134,6 +145,74 @@ export function launchNuke(world: World, n: number, x: number, y: number, missil
   return Refusal.None;
 }
 
+/** A yield's blast radius, km (PLAN 6.3a), at yield 1; the share destroyed at its centre. */
+export const BLAST_KM = 25;
+export const BLAST_KILL = 0.9;
+/** The share of a cell's people a blast kills, of its share (PLAN 6.3a): 13.5 % at the centre. */
+export const BLAST_PEOPLE = 0.15;
+/** The most of a cell's industry a blast puts out of work. */
+const BLAST_DAMAGE_MAX = 0.95;
+
+/** The blast radius, km, of a warhead of `yieldN`. */
+export function blastRadius(yieldN: number): number {
+  return BLAST_KM * pow(Math.max(1, yieldN), 1 / 3);
+}
+
+/** The share a blast destroys at `km` from its centre, of radius `radius` (PLAN 6.3a): BLAST_KILL × (1 − km / radius), 0 beyond. */
+export function blastShare(km: number, radius: number): number {
+  return km >= radius ? 0 : BLAST_KILL * (1 - km / radius);
+}
+
+/**
+ * A warhead of `yieldN` bursts at (x, y), `nation`'s (PLAN 6.3a): see the head of the file.
+ * Returns its toll: men of formations lost, people killed.
+ */
+export function blast(world: World, nation: number, yieldN: number, x: number, y: number): { men: number; people: number } {
+  const radius = blastRadius(yieldN);
+  const { w, h, pop, econ } = world.cells;
+  // The cells within reach: a cell is 20 km down and at least about 5 km across (far north).
+  const ry = Math.ceil(radius / 10) + 1;
+  const rx = Math.ceil(radius / 4) + 1;
+  const cy = Math.floor(y);
+  const cx = Math.floor(x);
+  let people = 0;
+  for (let dy = -ry; dy <= ry; dy++) {
+    const yy = cy + dy;
+    if (yy < 0 || yy >= h) continue;
+    for (let dx = -rx; dx <= rx; dx++) {
+      const xx = cellX(world, cx + dx);
+      if (xx === null) continue;
+      const f = blastShare(seaKm(world, x, y, xx + 0.5, yy + 0.5), radius);
+      if (f <= 0) continue;
+      const c = yy * w + xx;
+      const killed = Math.round(pop[c]! * f * BLAST_PEOPLE);
+      pop[c] = pop[c]! - killed;
+      people += killed * 1000;
+      if (econ[c]! > 0) world.bombDamage.set(c, Math.max(world.bombDamage.get(c) ?? 0, Math.min(BLAST_DAMAGE_MAX, f)));
+    }
+  }
+  // The formations within it, by their place.
+  const c = world.formations.cols;
+  const ec = world.elements.cols;
+  const idx = elementIndex(world);
+  const hit: number[] = [];
+  world.formations.forEach((id) => {
+    if (Math.abs(c.y[id]! - y) > ry || Math.abs(wrapDx(world, x, c.x[id]!)) > rx) return;
+    const f = blastShare(seaKm(world, x, y, c.x[id]!, c.y[id]!), radius);
+    if (f > 0) hit.push(id);
+  });
+  let men = 0;
+  for (const id of hit.sort((a, b) => a - b)) {
+    const f = blastShare(seaKm(world, x, y, c.x[id]!, c.y[id]!), radius);
+    const before = c.strength[id]!;
+    for (const e of idx.get(id) ?? []) applyLoss(world, e, ec.strength[e]! * f);
+    settleFormation(world, id);
+    men += before - (world.formations.has(id) ? c.strength[id]! : 0);
+  }
+  world.out.emit(world.tick, EventKind.NukeCasualties, nation, men + people, x, y);
+  return { men, people };
+}
+
 /** The hour's arrivals (PLAN 6.2): each launch there by now bursts or is stopped short. */
 function arrivals(world: World): void {
   if (world.nukeLaunches.length === 0) return;
@@ -146,7 +225,11 @@ function arrivals(world: World): void {
     // A bomber lost on the way, or stopped short by the air over its target.
     const lost = l.missile === 0 && (!world.formations.has(l.wing) || world.formations.cols.nation[l.wing] !== l.nation);
     if (lost || hashToUnit(hash32(world.seed, l.id, SALT_INTERCEPT)) < interceptChance(world, l)) world.out.emit(world.tick, EventKind.NukeIntercepted, l.nation, l.id, l.tx, l.ty);
-    else world.out.emit(world.tick, EventKind.NukeDetonated, l.nation, knows(world, l.nation, 'thermonuclear') ? 2 : 1, l.tx, l.ty);
+    else {
+      const yieldN = knows(world, l.nation, 'thermonuclear') ? 2 : 1;
+      world.out.emit(world.tick, EventKind.NukeDetonated, l.nation, yieldN, l.tx, l.ty);
+      blast(world, l.nation, yieldN, l.tx, l.ty);
+    }
   }
   world.nukeLaunches = left;
 }

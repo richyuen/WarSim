@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-381 · 2026-10-14 · accepted — A warhead's blast (PLAN 6.3a)
+
+- **Decision** (SPEC §6.4: "blast radius (by yield) kills elements by distance falloff and destroys
+  city industry and population"). PLAN 6.3 split: 6.3a the blast, 6.3b fallout, 6.3c its map mode.
+  - A burst (`blast`, at a launch's `NukeDetonated`) reaches BLAST_KM (25) × the yield's cube root
+    (`pow`, the sim's; 31.5 km for a thermonuclear yield of 2). At d km within it the share
+    BLAST_KILL (0.9) × (1 − d / radius) is destroyed (`blastShare`):
+    - of each element of every formation there, land, fleets in port, wings at their base (by its
+      formation's place; losses as a battle's, settled);
+    - of each cell's industry, put out of work as bombs put it (`world.bombDamage`: at least that
+      share, to 0.95; repaired as bombing's is; fallout's is 6.3b);
+    - and BLAST_PEOPLE (0.15) of it of each cell's people (`cells.pop`: they do not come back).
+      With the whole share a warhead killed 6,754,000 people at Berlin, more than Berlin's people
+      in 1938 (about 4.3 M): a cell is 20 km across, and a bomb does not kill nine in ten of all
+      who live within 25 km. With BLAST_PEOPLE, 1,012,000.
+  - Its toll is an event (`NukeCasualties`: the striker, the men and people killed), for the
+    history of PLAN 6.5.
+- **The pin holds** at 45df324d: no warhead bursts in a game nobody launches in.
+- **Tests.** `nukeBlast1938.test.ts` (new; the AT's casualty falloff): the share at the centre,
+  halfway and at the radius; a yield of 2's radius × 2^(1/3); at Berlin three German formations at
+  0, a cell and eight cells off lose 0.9, 0.472 and nothing of each element (to the unit); the cell
+  of the burst its share × BLAST_PEOPLE of its people; its industry out of work; the toll told
+  (20,512 men, 1,012,000 people).
+
 ### ADR-380 · 2026-10-14 · accepted — A warhead delivered: by bomber or missile (PLAN 6.2)
 
 - **Decision** (SPEC §6.4: bombers, intercepted by fighters and AA, needing range; missiles, a

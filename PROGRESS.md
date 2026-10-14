@@ -15511,3 +15511,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (1,056 of 1,057) red only by `scenario1938`'s build time of
   BLOCKERS (green alone); the pin, build and parity green by hand.
 - **Next:** PLAN 6.3.
+
+## 2026-10-14 — PLAN 6.3a: a warhead's blast (ADR-381)
+
+- **Done:** PLAN 6.3 split (6.3a blast, 6.3b fallout, 6.3c its map mode). A burst destroys, within
+  25 km × the yield's cube root, 0.9 × (1 − d / radius) of the formations' elements and of the
+  cells' industry, and 0.15 of that of their people; its toll an event.
+- **Tests:** `nukeBlast1938` (new; at Berlin 20,512 men and 1,012,000 people), `nukeDelivery1938`.
+- **The pin holds** at 45df324d.
+- **The gate:** green (the related unit tests 982 of 982; the pin). `warheads1938`'s first test
+  given 300 s (two runs of 130 days; it ran past 90 s beside the others).
+- **Next:** PLAN 6.3b.

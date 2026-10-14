@@ -33,7 +33,7 @@ describe('warheads (PLAN 6.1b)', () => {
     const on = withBomb(true);
     on.step(24 * (WARHEAD_DAYS + 40));
     expect(warheadsOf(on.world, USA), 'a warhead in the first 90 days of paying').toBeGreaterThanOrEqual(1);
-  });
+  }, 300_000);
 
   it('a stockpile is kept at WARHEAD_UPKEEP a warhead a month; God Mode grants warheads, to WARHEAD_MAX; a save carries them', () => {
     const a = withBomb(true);

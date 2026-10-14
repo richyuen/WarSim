@@ -8682,3 +8682,21 @@ Of 6.1 (open in PLAN.md):
 
 - [x] 6.2 Delivery: bombers (interceptable) and missiles (later tech).
   AT: bomber strikes are intercepted at the expected rate under air superiority.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+Of 6.3 (open in PLAN.md):
+
+  - [x] 6.3a The blast: elements, the population and the industry of the cells within its radius,
+    by distance.
