@@ -13,13 +13,15 @@ import { armourFires, busiest } from '../helpers/armourFire';
 // Node, the camera is put on it at T3, one hour is stepped, and each shot's flash is read from
 // the frame drawn as it starts.
 
-const START = 24 * 14;
+/** From the first week's end: the first hour of armour fire after it (`armourFires`). */
+const FROM = 24 * 7;
 const M_PER_PX = 4;
 const NEAR_M_PER_PX = 1.5;
 
 test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ page }, info) => {
   test.setTimeout(240_000);
-  const node = armourFires(START);
+  const node = armourFires(FROM);
+  const START = node.start;
   expect(node.fires.length).toBeGreaterThan(30);
   const [bx, by] = busiest(node.fires);
   const at = node.fires.reduce((a, b) => (Math.hypot(a.x0 - bx, a.y0 - by) <= Math.hypot(b.x0 - bx, b.y0 - by) ? a : b));

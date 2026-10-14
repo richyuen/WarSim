@@ -14,23 +14,31 @@ export interface Fire {
   y1: number;
 }
 
-/** The FireEvents of armour in the hour after `start` (seed 1938), and the state hashes around it. */
-export function armourFires(start: number): { fires: Fire[]; before: number; after: number } {
+/**
+ * The first hour from `from` on (seed 1938) in which armour fires more than `least` shots, its
+ * FireEvents and the state hashes around it (PLAN 6.9: a fixed hour, day 14, lost its armour's
+ * fight when the rules changed the world's course; the hour is found, not taken on trust). More
+ * than 50: the specs want more than 20 tanks firing in view; the first week's fights had 20.
+ */
+export function armourFires(from: number, least = 50): { start: number; fires: Fire[]; before: number; after: number } {
   const sim = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
-  sim.step(start);
-  const before = sim.hash();
-  const fires: Fire[] = [];
-  sim.step(1, (w) => {
-    const raw = w.out.fires;
-    const units = w.rules!.units;
-    for (let i = 0; i < raw.length; i += FIRE_STRIDE) {
-      if (!units[raw[i + FireField.weapon]!]?.cls.startsWith('armor')) continue; // a torpedo's record is negative (PLAN 4.7c)
-      fires.push({ shooter: raw[i + FireField.shooter]!, x0: raw[i + FireField.x0]!, y0: raw[i + FireField.y0]!, x1: raw[i + FireField.x1]!, y1: raw[i + FireField.y1]! });
-    }
-    w.out.fires.length = 0;
-    w.out.events.length = 0;
-  });
-  return { fires, before, after: sim.hash() };
+  sim.step(from);
+  for (let start = from; start < from + 24 * 60; start++) {
+    const before = sim.hash();
+    const fires: Fire[] = [];
+    sim.step(1, (w) => {
+      const raw = w.out.fires;
+      const units = w.rules!.units;
+      for (let i = 0; i < raw.length; i += FIRE_STRIDE) {
+        if (!units[raw[i + FireField.weapon]!]?.cls.startsWith('armor')) continue; // a torpedo's record is negative (PLAN 4.7c)
+        fires.push({ shooter: raw[i + FireField.shooter]!, x0: raw[i + FireField.x0]!, y0: raw[i + FireField.y0]!, x1: raw[i + FireField.x1]!, y1: raw[i + FireField.y1]! });
+      }
+      w.out.fires.length = 0;
+      w.out.events.length = 0;
+    });
+    if (fires.length > least) return { start, fires, before, after: sim.hash() };
+  }
+  throw new Error(`no hour of armour fire in the 60 days from ${from}`);
 }
 
 /** Centre of the 2-cell square with the most shooters. */

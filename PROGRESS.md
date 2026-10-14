@@ -15647,3 +15647,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** stopped on `scenario1938`'s build time (known red under load; 7 of 7 alone); the
   rest by hand: the related unit tests 980 of 981, the pin, build, parity, `nukeFx1938.spec`.
 - **Next:** `npm run check:review`, then the tick.
+- **`check:review` (first run):** red, 2 known and 5 not: `markerStacks1938`, `muzzles1938`,
+  `smallMark1938`, `stackBlocks1938`, `turrets1938`. Fixed (ADR-392): the armour helper finds
+  its hour (day 15 now, 60 shooters; the fixed day 14 had lost its fight); `stackBlocks1938`
+  judges the formations in contact (two marching columns at one place: a line under PLAN 7.4);
+  `NUDGE_MAX_PX` 6 → 7 (two pairs of Spain's markers a hair over a quarter). The five specs and
+  `markers1938`, `countersRest1938`, `handover1938`, `declutter1938` by hand; the gate: the
+  whole unit suite 1447 of 1448 (the known red build time), the pin.

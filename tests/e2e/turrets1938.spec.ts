@@ -9,7 +9,8 @@ import { armourFires, busiest } from '../helpers/armourFire';
 // T2, one hour is stepped, and the turrets are read from the instance data of frames drawn at
 // chosen times: before the shots, as the last has left, and after the silence.
 
-const START = 24 * 14;
+/** From the first week's end: the first hour of armour fire after it (`armourFires`). */
+const FROM = 24 * 7;
 const M_PER_PX = 60;
 const CLOSE_M_PER_PX = 4;
 const NEAR_M_PER_PX = 1.5;
@@ -19,7 +20,8 @@ const off = (a: number, b: number): number => Math.atan2(Math.sin(b - a), Math.c
 
 test('T2 and T3: a tank that fires has its turret on its target, and back on its hull after a silence', async ({ page }, info) => {
   test.setTimeout(240_000);
-  const node = armourFires(START);
+  const node = armourFires(FROM);
+  const START = node.start;
   expect(node.fires.length).toBeGreaterThan(30);
   const [cx, cy] = busiest(node.fires);
 

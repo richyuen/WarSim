@@ -333,6 +333,10 @@ quick sweep as a smoke test.
     across the fight to the middle of its elements, with open ground much nearer its block.
     Which of the blocks in the picture are that division's was not read; a division whose
     elements span the view has its box's side far from their middle.
+  - **Two marching formations at one place drawn in one another** (seen 2026-10-14, PLAN 6.9,
+    `stackBlocks1938.spec.ts` on seed 1212, day 6): Soviet formations 52 and 57, one template,
+    both on the march from the same point, have their columns' elements at the same places.
+    The blocks of a stack in contact stand clear of each other (PLAN 3.11c1); columns do not.
   - **The seam of the looping map** (the 180° meridian in 1938). What is drawn knows the seam
     one layer at a time, and most layers do not:
     - `wrapOffsets` has no margin: a counter, marker, flag or name within its own half-width

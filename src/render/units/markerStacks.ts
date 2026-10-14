@@ -96,8 +96,12 @@ export function stackMarkers(items: readonly StackItem[], w: number, h: number, 
   return out;
 }
 
-/** No shown box is moved further than this from its formation, px. */
-export const NUDGE_MAX_PX = 6;
+/**
+ * No shown box is moved further than this from its formation, px. 7 since PLAN 6.9 (6 before): on
+ * Spain's front, day 14 of seed 1938, two pairs of markers stayed a hair over a quarter under each
+ * other with their boxes 6 px out.
+ */
+export const NUDGE_MAX_PX = 7;
 /** A box eases to a new place over this long. */
 export const NUDGE_MS = 150;
 /** Boxes are moved until neither is under the other by more than this (a little under the quarter, for room). */

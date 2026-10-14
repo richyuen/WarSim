@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-392 · 2026-10-14 · accepted — What the Phase 6 review's run found red (PLAN 6.9)
+
+- **Decision.** `check:review`'s first run had five tests red twice and not known. None of nuclear
+  weapons: each a picture whose scene the world's course since the Phase 5 review moved (the pin
+  moved at PLAN 6.1a, and Phase 5's fixes before it).
+  - `muzzles1938`, `turrets1938`, `smallMark1938`: their armour fired in a fixed hour, day 14 of
+    seed 1938, and fires no more there. The helper (`armourFires`) now finds the first hour from
+    day 7 with more than 50 armour shots (day 15, 60 shooters; the first week's fights had 20 tanks
+    firing, the specs want more than 20 in view). The hour is found, not adopted.
+  - `stackBlocks1938`: the formations nearest each other were two marching Soviet columns from one
+    point, their elements at the same places; the spec is of the blocks of a stack in contact, and
+    now judges those (1.24 km between the nearest). Columns drawn in one another: a line under
+    PLAN 7.4.
+  - `markerStacks1938`: on Spain's front at 1,900 m/px two pairs of markers stayed a hair over a
+    quarter under each other with their boxes 6 px out, the most the push allowed. `NUDGE_MAX_PX`
+    6 → 7 (a few px still); the spec's bound is the constant + 0.75 px of rounding, not 6.75 written
+    out. At 1,900, 1,800 and 1,200 m/px: no pair over a quarter, the furthest box 7.0, 6.0, 4.9 px.
+- **The pin holds** at 45df324d (tests and the page).
+
 ### ADR-391 · 2026-10-14 · accepted — The sweep with nukes on (PLAN 6.8)
 
 - **Decision.** The sweep's samples have the nuclear year (`tools/sweep/seed.ts`): warheads held and

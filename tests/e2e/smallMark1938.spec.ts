@@ -13,12 +13,14 @@ import { armourFires, busiest } from '../helpers/armourFire';
 // drawn once as they are and once with the small share held at 0, and the pixel in the middle of
 // each tank is compared with its tint. A mark is its nation's colour there; a hull of 5 px is not.
 
-const START = 24 * 14;
+/** From the first week's end: the first hour of armour fire after it (`armourFires`). */
+const FROM = 24 * 7;
 const HULLS: readonly number[] = [Frame.tank, Frame.tankMedium, Frame.tankHeavy];
 
 test('T2: a tank is its small mark where a sprite is at its least size, and a hull with its turret from 60 m/px in', async ({ page }, info) => {
   test.setTimeout(240_000);
-  const node = armourFires(START);
+  const node = armourFires(FROM);
+  const START = node.start;
   const [cx, cy] = busiest(node.fires);
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/3.6') : info.outputPath();
   mkdirSync(out, { recursive: true });

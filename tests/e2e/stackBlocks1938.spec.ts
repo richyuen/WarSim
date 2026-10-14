@@ -69,9 +69,14 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
 
   await goTo(40);
   // For every two formations of the section: how near an element of one stands to an element of the other.
-  const pairs = await page.evaluate((SOV) => {
+  // Of the Soviet formations, those in contact: the stack's blocks (PLAN 6.9: marching formations
+  // at one place came into the view when the world's course changed; their columns are another
+  // matter, a line under PLAN 7.4).
+  const pairs = await page.evaluate(async (SOV) => {
+    const { sim } = window.__warsim!;
     const v = window.__warsim!.view!;
-    const soviet = new Set(v.formationsOf(SOV));
+    const soviet = new Set<number>();
+    for (const id of v.formationsOf(SOV)) if ((await sim.formation(id))?.engaged) soviet.add(id);
     const by = new Map<number, [number, number][]>();
     for (let i = 0; i < v.elementCount; i++) {
       const f = v.elementFormation[i]!;
@@ -92,7 +97,7 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
   }, SOV);
   const own = pairs.out.filter((p) => p.soviet);
   expect(pairs.formations, 'formations with elements in the view at 40 m/px').toBeGreaterThanOrEqual(6);
-  expect(own.length, 'pairs of Soviet formations in the view').toBeGreaterThanOrEqual(10);
+  expect(own.length, 'pairs of Soviet formations in contact in the view').toBeGreaterThanOrEqual(10);
   const nearest = own.reduce((best, p) => (p.least < best.least ? p : best));
   info.annotations.push({ type: 'stack', description: `${pairs.formations} formations, ${pairs.elements} elements; the two Soviet blocks nearest each other (${nearest.a}, ${nearest.b}): ${(nearest.least * 19.57).toFixed(2)} km between their nearest elements` });
   console.log(info.annotations.at(-1)!.description);
