@@ -148,6 +148,8 @@ export class SimServer {
   private labelVersion = -1;
   private lastLabelMs = -1;
   private unrestVersion = -1;
+  /** The fallout last sent (PLAN 6.3c): its day and how many cells, -1 for none sent. */
+  private falloutSent = { day: -1, cells: -1 };
   /** The sea control last sent (PLAN 4.7a): the zones' object and the holders, as a key. */
   private seaZonesSent: unknown = null;
   private seaHoldersSent = '';
@@ -287,6 +289,7 @@ export class SimServer {
         this.newsFrom = -1;
         this.labelVersion = -1; // the controller layer was replaced wholesale
         this.unrestVersion = -1;
+        this.falloutSent = { day: -1, cells: -1 };
         this.seaZonesSent = null;
         this.seaHoldersSent = '';
         // The loaded game's holders, at once (PLAN 5.8n); `airShown` outlives it, as `seaShown`.
@@ -377,6 +380,7 @@ export class SimServer {
     this.labelVersion = -1;
     this.lastLabelMs = -1;
     this.unrestVersion = -1;
+    this.falloutSent = { day: -1, cells: -1 };
     this.seaZonesSent = null;
     this.seaHoldersSent = '';
     this.airZonesSent = null;
@@ -642,6 +646,15 @@ export class SimServer {
         this.post({ type: 'terrainLayer', data, landChanged }, [data.buffer]);
       }
       this.terrainSent = world.terrainVersion;
+    }
+    // Fallout for its map mode (PLAN 6.3c): when it changed (a burst, a day's decay, the last clean).
+    const foDay = Math.floor(world.tick / 24);
+    if ((world.fallout.size > 0 || this.falloutSent.cells > 0) && (foDay !== this.falloutSent.day || world.fallout.size !== this.falloutSent.cells)) {
+      const sorted = [...world.fallout].sort((a, b) => a[0] - b[0]);
+      const cells = Uint32Array.from(sorted.map(([c]) => c));
+      const levels = Uint8Array.from(sorted.map(([, f]) => Math.max(1, Math.round(f * 255))));
+      this.falloutSent = { day: foDay, cells: world.fallout.size };
+      this.post({ type: 'fallout', cells, levels }, [cells.buffer, levels.buffer]);
     }
     // Province unrest for the revolts map mode (cheap: a byte per province), when it changed.
     if (world.provinces.version !== this.unrestVersion && world.provinces.count > 0) {

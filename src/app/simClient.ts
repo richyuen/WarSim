@@ -77,6 +77,11 @@ export class SimClient {
       for (const l of this.airControlListeners) l(msg.holder, msg.zones);
       return;
     }
+    if (msg.type === 'fallout') {
+      this.fallout = { cells: msg.cells, levels: msg.levels };
+      for (const l of this.falloutListeners) l(msg.cells, msg.levels);
+      return;
+    }
     if (msg.type === 'provinceStats') {
       this.unrest = msg.unrest;
       for (const l of this.unrestListeners) l(msg.unrest);
@@ -178,6 +183,15 @@ export class SimClient {
     this.airControlListeners.add(l);
     if (this.airControl) l(this.airControl.holder, this.airControl.zones);
     return () => this.airControlListeners.delete(l);
+  }
+  /** The last fallout from the worker (PLAN 6.3c): a late listener gets it at once. */
+  private fallout: { cells: Uint32Array; levels: Uint8Array } | null = null;
+  private readonly falloutListeners = new Set<(cells: Uint32Array, levels: Uint8Array) => void>();
+  /** Fallout for its map mode (PLAN 6.3c): its cells and their levels × 255. */
+  onFallout(l: (cells: Uint32Array, levels: Uint8Array) => void): () => void {
+    this.falloutListeners.add(l);
+    if (this.fallout) l(this.fallout.cells, this.fallout.levels);
+    return () => this.falloutListeners.delete(l);
   }
   private readonly unrestListeners = new Set<(u: Uint8Array) => void>();
   onUnrest(l: (u: Uint8Array) => void): () => void {

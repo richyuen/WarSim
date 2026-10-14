@@ -14,9 +14,10 @@
  */
 
 import { SHORE_NOISE } from '../../shared/landMask';
-import { AIR_CONTESTED_COLOR, AIR_HELD_TINT, SEA_HELD_TINT, SEA_LAND_FADE } from '../../shared/mapModes';
+import { AIR_CONTESTED_COLOR, AIR_HELD_TINT, FALLOUT_COLOR, FALLOUT_FADE, FALLOUT_TINT, SEA_HELD_TINT, SEA_LAND_FADE } from '../../shared/mapModes';
 
 const AIR_CONTESTED_RGB = [16, 8, 0].map((s) => (((AIR_CONTESTED_COLOR >> s) & 255) / 255).toFixed(3)).join(', ');
+const FALLOUT_RGB = [16, 8, 0].map((s) => (((FALLOUT_COLOR >> s) & 255) / 255).toFixed(3)).join(', ');
 import { BORDER_BAND, BORDER_CAST, GROUND_CAST, HATCH_AT_GROUND, OCCUPIED_CAST, SEA_DEEP, SEA_DEPTH_FULL, SEA_DEPTH_KNEE, SEA_SHALLOW } from './ground';
 
 export const MAP_VS = `#version 300 es
@@ -49,9 +50,11 @@ uniform sampler2D uLand;   // fine land coverage, 0..1, bilinear (PLAN 1.28b)
 uniform int uHasLand;
 uniform int uHasTerrain;           // a real terrain layer is loaded (water from terrain, PLAN 1.37a)
 uniform highp usampler2D uTerrain;  // terrain class per cell
-uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = province unrest, 3 = sea control, 4 = air superiority
+uniform int uMode;         // 0 = palette fills, 1 = terrain colours, 2 = province unrest, 3 = sea control, 4 = air superiority, 5 = fallout
 uniform highp usampler2D uProvince; // admin-1 province per cell
 uniform sampler2D uUnrest;          // unrest per province id, 128 wide, 0..1
+uniform sampler2D uFallout;         // fallout per cell, 0..1 (PLAN 6.3c); 1×1 of none
+uniform ivec2 uFalloutSize;         // its size: the map's, or 1×1
 uniform highp usampler2D uSeaZone;  // sea zone per cell (0 = none; PLAN 4.7a)
 uniform highp usampler2D uSeaHolder; // the nation that holds each zone, 128 wide (0 = none)
 uniform highp usampler2D uAirZone;  // air zone per cell (0 = none; PLAN 5.7c)
@@ -365,7 +368,15 @@ void main() {
   uint fid = best != 0u ? best : secondId;
 
   vec3 col;
-  if (uMode == 4) {
+  if (uMode == 5) {
+    // Fallout (PLAN 6.3c): the political colours faded, and over them the fallout's colour by its
+    // level's square root (light fallout, the plume's wide fringe, still seen), at sea too (a plume
+    // falls where the wind takes it).
+    col = water ? pal(0u) : mix(fid == 0u ? vec3(0.62, 0.62, 0.58) : pal(fid), vec3(0.78, 0.78, 0.75), ${FALLOUT_FADE.toFixed(3)});
+    ivec2 fc = wrapCell(ivec2(floor(cellPos)));
+    float fo = uFalloutSize.x > 1 && inMap(fc) ? texelFetch(uFallout, fc, 0).r : 0.0;
+    col = mix(col, vec3(${FALLOUT_RGB}), ${FALLOUT_TINT.toFixed(3)} * sqrt(fo));
+  } else if (uMode == 4) {
     // Air superiority (PLAN 5.7c): an air zone held hatched in its holder's colour, one contested
     // striped the other way. On a ground of no nation's colour (PLAN 5.10, the critic's R5-B1:
     // over the political colours faded, a nation's air over its own land was its colour on its

@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-383 · 2026-10-14 · accepted — The fallout map mode (PLAN 6.3c); PLAN 6.3 done
+
+- **Decision.** A map mode `fallout` (shader mode 5): the political colours faded (0.55 toward a
+  light grey, as the other overlay modes), the sea too, and over them the fallout's colour
+  (0xc6e83a) at 0.85 × the level's square root. By the level itself, the plume's wide, light
+  fringe (0.1 to 0.3) hardly showed and a strike read as a line one cell high: the square root
+  shows its fan. The legend: heavy, light, clean ground.
+  - The worker sends the fallout's cells and their levels (a byte) when they changed: a burst, a
+    day's decay, the last cell clean. The page draws them as a cell texture, 1×1 while there is none.
+- **The pin holds** at 45df324d (the page alone).
+- **Tests.** `fallout1938.spec.ts` (new; the AT's screenshot, `docs/evidence/6.3/fallout-mode.png`,
+  looked at): before a strike the mode is each place's political colour faded; England, given a
+  warhead, strikes Hamburg by bomber on 1 January 1938; Hamburg's pixel then lies toward the
+  fallout's colour, Madrid's as it was; in the political mode no fallout is drawn. The screenshot
+  shows the plume fanning east from Hamburg towards the Baltic coast north of Berlin. Seed 1's
+  England declares war on the Netherlands on its first day with or without the strike (a probe,
+  headless); it is in the screenshot's news, not of the strike's making.
+
 ### ADR-382 · 2026-10-14 · accepted — Fallout (PLAN 6.3b)
 
 - **Decision** (SPEC §6.4: "FALLOUT (attrition, income loss, movement penalty) that drifts with a

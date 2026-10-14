@@ -8718,3 +8718,23 @@ Of 6.3 (open in PLAN.md):
 
   - [x] 6.3b Fallout: laid downwind by a deterministic wind, decaying by a half-life; attrition,
     income and movement where it lies.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+- [x] 6.3 Blast + fallout (deterministic wind drift, decay) on cells, elements, cities.
+  Split 2026-10-14: three causes, one a commit.
+  - [x] 6.3a The blast: elements, the population and the industry of the cells within its radius, […]
+  - [x] 6.3b Fallout: laid downwind by a deterministic wind, decaying by a half-life; attrition, […]
+  - [x] 6.3c The fallout map mode.
+  AT: unit tests on casualty falloff and fallout decay half-life; fallout map mode screenshot.

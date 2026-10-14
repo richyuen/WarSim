@@ -56,6 +56,8 @@ export class MapRenderer {
   private airZoneTex: WebGLTexture;
   private airHolderTex: WebGLTexture;
   private unrestTex: WebGLTexture;
+  /** Fallout by cell, 0..255 (PLAN 6.3c), the map's size; 1×1 of none until some falls. */
+  private falloutTex: WebGLTexture;
   private terrainColors = new Float32Array(12 * 3);
   /** 0 = palette fills (political, alliances, puppets, …), 1 = terrain colours, 2 = unrest, 3 = sea control. */
   fillMode = 0;
@@ -97,6 +99,7 @@ export class MapRenderer {
     this.airZoneTex = this.makeTexture(gl.R16UI, gl.RED_INTEGER, gl.UNSIGNED_SHORT, 1, 1, new Uint16Array([0]), gl.NEAREST);
     this.airHolderTex = this.makeTexture(gl.R16UI, gl.RED_INTEGER, gl.UNSIGNED_SHORT, 1, 1, new Uint16Array([0]), gl.NEAREST);
     this.unrestTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
+    this.falloutTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
     this.elevationTex = this.makeTexture(gl.R16I, gl.RED_INTEGER, gl.SHORT, 1, 1, new Int16Array([0]), gl.NEAREST);
     this.maskTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
   }
@@ -163,6 +166,21 @@ export class MapRenderer {
   }
 
   /** Unrest per province id (0..100), laid out 128 per row. */
+  /** Fallout for its map mode (PLAN 6.3c): `cells` of a map `w` × `h` at `levels` (× 255); the rest clean. */
+  setFallout(w: number, h: number, cells: Uint32Array, levels: Uint8Array): void {
+    this.gl.deleteTexture(this.falloutTex);
+    if (cells.length === 0) {
+      this.falloutTex = this.makeTexture(this.gl.R8, this.gl.RED, this.gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), this.gl.NEAREST);
+      this.falloutSize = [1, 1];
+      return;
+    }
+    const data = new Uint8Array(w * h);
+    for (let i = 0; i < cells.length; i++) data[cells[i]!] = levels[i]!;
+    this.falloutTex = this.makeTexture(this.gl.R8, this.gl.RED, this.gl.UNSIGNED_BYTE, w, h, data, this.gl.NEAREST);
+    this.falloutSize = [w, h];
+  }
+  private falloutSize: [number, number] = [1, 1];
+
   setUnrest(unrest: Uint8Array): void {
     const rows = Math.max(1, Math.ceil(unrest.length / 128));
     const data = new Uint8Array(rows * 128);
@@ -309,6 +327,8 @@ export class MapRenderer {
       uMode: this.fillMode,
       uProvince: this.provinceTex,
       uUnrest: this.unrestTex,
+      uFallout: this.falloutTex,
+      uFalloutSize: this.falloutSize,
       uSeaZone: this.seaZoneTex,
       uSeaHolder: this.seaHolderTex,
       uAirZone: this.airZoneTex,
@@ -340,6 +360,7 @@ export class MapRenderer {
     gl.deleteTexture(this.terrainTex);
     gl.deleteTexture(this.provinceTex);
     gl.deleteTexture(this.unrestTex);
+    gl.deleteTexture(this.falloutTex);
     gl.deleteTexture(this.seaZoneTex);
     gl.deleteTexture(this.seaHolderTex);
     gl.deleteTexture(this.airZoneTex);

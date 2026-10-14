@@ -392,6 +392,8 @@ export type FromWorker =
   | { type: 'terrainLayer'; data: Uint8Array; landChanged: boolean }
   /** Unrest per province id, 0..100 (index 0 unused; PLAN 1.30b), sent when it changes. */
   | { type: 'provinceStats'; unrest: Uint8Array }
+  /** Fallout for its map mode (PLAN 6.3c): its cells, by ascending index, and each one's level × 255; sent when it changed. */
+  | { type: 'fallout'; cells: Uint32Array; levels: Uint8Array }
   /** Sea control for its map mode (PLAN 4.7a): the holder of each zone (index 0 unused), and the zone of each cell when the zones are new to the client; sent when either changes. */
   | { type: 'airControl'; holder: Uint16Array; zones?: Uint16Array }
   | { type: 'seaControl'; holder: Uint16Array; zones?: Uint16Array; /** With `zones`: each zone's sea's name ('' for none), index 0 unused (PLAN 4.10c). */ names?: string[] }

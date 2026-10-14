@@ -348,6 +348,12 @@ export class MapView {
       this.onSeaHolders([...count].sort((a, b) => b[1] - a[1] || a[0] - b[0]).map(([id, zones]) => ({ id, zones })));
       this.dirty = true;
     });
+    // Fallout for its map mode (PLAN 6.3c).
+    sim.onFallout((cells, levels) => {
+      this.map.setFallout(this.geo.w, this.geo.h, cells, levels);
+      this.falloutCells = cells.length;
+      this.dirty = true;
+    });
     sim.onUnrest((u) => {
       this.map.setUnrest(u);
       this.dirty = true;
@@ -558,7 +564,7 @@ export class MapView {
   setMapMode(mode: MapMode): void {
     if (mode === this.mapMode) return;
     this.mapMode = mode;
-    this.map.fillMode = mode === 'terrain' ? 1 : mode === 'revolts' ? 2 : mode === 'seaControl' ? 3 : mode === 'airControl' ? 4 : 0;
+    this.map.fillMode = mode === 'terrain' ? 1 : mode === 'revolts' ? 2 : mode === 'seaControl' ? 3 : mode === 'airControl' ? 4 : mode === 'fallout' ? 5 : 0;
     this.applyPalette();
     this.dirty = true;
   }
@@ -670,6 +676,8 @@ export class MapView {
   private formWay = new Float32Array(0);
   private majors = new Float32Array(0);
   private seas = new Float32Array(0);
+  /** Cells with fallout in the last message (PLAN 6.3c; tests). */
+  falloutCells = 0;
   /** Who holds each air zone's air, by zone (PLAN 5.7c; 0 none, `AIR_CONTESTED`). */
   airHolder = new Uint16Array(0);
   /** The air zone of each cell (PLAN 5.7c), as the worker sent it. */

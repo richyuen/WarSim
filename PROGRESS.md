@@ -15531,3 +15531,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The pin holds** at 45df324d.
 - **The gate:** green (the related unit tests 946 of 946; the pin).
 - **Next:** PLAN 6.3c.
+
+## 2026-10-14 — PLAN 6.3c: the fallout map mode (ADR-383); PLAN 6.3 done
+
+- **Done:** a `fallout` map mode, the faded political colours with the fallout tinted over them
+  by its level's square root; the worker sends the fallout when it changed. PARITY additions row 6
+  now partial.
+- **Tests:** `fallout1938.spec.ts` (new; Hamburg struck by England's bomber;
+  `docs/evidence/6.3/fallout-mode.png`, looked at: a fan east of Hamburg).
+- **The pin holds** at 45df324d.
+- **The gate:** stopped on `scenario1938`'s build time (known red under load; 7 of 7 alone); the
+  rest by hand: the related unit tests 1071 of 1072, the pin, build, `fallout1938.spec`, parity.
+- **Next:** PLAN 6.4.

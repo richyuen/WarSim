@@ -27,12 +27,6 @@ quick sweep as a smoke test.
 
 ## Phase 6 — Nuclear AI
 
-- [ ] 6.3 Blast + fallout (deterministic wind drift, decay) on cells, elements, cities.
-  Split 2026-10-14: three causes, one a commit.
-  - [x] 6.3a The blast: elements, the population and the industry of the cells within its radius, […]
-  - [x] 6.3b Fallout: laid downwind by a deterministic wind, decaying by a half-life; attrition, […]
-  - [ ] 6.3c The fallout map mode.
-  AT: unit tests on casualty falloff and fallout decay half-life; fallout map mode screenshot.
 - [ ] 6.4 Nuclear decision utility (target value, desperation, retaliation incl. allies, taboo, MAD, doctrine).
   AT: table-driven tests: MAD pair → no first use; desperate fightToDeath nation vs non-nuclear enemy → use; post-first-use taboo drop raises others' propensity.
 - [ ] 6.5 Consequences: relations, alliance unity, outrage, economic shock, peace/retaliation responses.
@@ -717,3 +711,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 5.12 Critic R5-B2: the AI's air war keeps flying. Seed 7321: mean sorties aloft 19.1 in […]
 - [x] 6.1 Nuclear tech chain, warhead production, stockpile, upkeep; global and per-nation toggles. […]
 - [x] 6.2 Delivery: bombers (interceptable) and missiles (later tech). […]
+- [x] 6.3 Blast + fallout (deterministic wind drift, decay) on cells, elements, cities. […]

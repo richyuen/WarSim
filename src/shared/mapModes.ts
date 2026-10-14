@@ -1,5 +1,5 @@
 /** Map modes (SPEC §9): palette swaps over the same id textures (SPEC §8). */
-export const MAP_MODES = ['political', 'alliances', 'puppets', 'terrain', 'wars', 'diplomacy', 'income', 'revolts', 'seaControl', 'airControl'] as const;
+export const MAP_MODES = ['political', 'alliances', 'puppets', 'terrain', 'wars', 'diplomacy', 'income', 'revolts', 'seaControl', 'airControl', 'fallout'] as const;
 export type MapMode = (typeof MAP_MODES)[number];
 
 /** Nations outside any alliance (alliance mode) or puppet bloc (puppet mode), 0xRRGGBB. */
@@ -21,6 +21,10 @@ export const AIR_HELD_TINT = 0.55;
 export const AIR_CONTESTED_COLOR = 0xe0632a;
 /** An air zone's holder where two sides at war fly and neither holds it (the sim's `airHolders`; the legend, PLAN 5.10). */
 export const AIR_CONTESTED = 0xffff;
+/** Fallout (PLAN 6.3c): its colour at full strength, over the political colours faded (FALLOUT_FADE), at FALLOUT_TINT × its level's square root. */
+export const FALLOUT_COLOR = 0xc6e83a;
+export const FALLOUT_FADE = 0.55;
+export const FALLOUT_TINT = 0.85;
 
 export type Relation = 'none' | 'self' | 'ally' | 'enemy' | 'subject' | 'neutral';
 
@@ -106,5 +110,7 @@ export function legendFor(mode: MapMode): [number | null, string][] {
       return [[null, 'legend.seaHeld'], [null, 'legend.seaOpen']];
     case 'airControl':
       return [[null, 'legend.airHeld'], [AIR_CONTESTED_COLOR, 'legend.airContested'], [null, 'legend.airOpen']];
+    case 'fallout':
+      return [[FALLOUT_COLOR, 'legend.falloutHeavy'], [0xa9b37a, 'legend.falloutLight'], [null, 'legend.falloutClean']];
   }
 }
