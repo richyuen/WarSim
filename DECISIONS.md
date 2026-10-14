@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-366 · 2026-10-14 · accepted — The leaders' front, and the full row of banners a day after (PLAN 5.8w12)
+
+- **Found** (5.8h, `check:review`, the fourth run): `toBattle1938`'s front test (PLAN 2.14f5a)
+  took the first tenth day with a battle of a front in Germany's war on Poland and eight wars
+  (a full row of banners, for PLAN 2.14f5b3's check): day 70 now. That day the war's largest
+  battle is Italy's against France's (2 + 2 formations): Germany and Poland have no pair front
+  to front (ADR-95 puts the leaders' battle first only when there is one), and the banner leads
+  to an Italian and a French formation. In Node, seed 99: the leaders' front battles run from
+  day 7 to about day 50, with 3 to 7 wars; the eighth war comes after them. The two never meet
+  in the 90 days.
+- **Decision.** The test asks the two of different days: the click on the first tenth day with
+  a battle of a front of the leaders (day 20 now: German 44 and Polish 544, 3 + 2 formations,
+  29,985 and 20,116 men), and the full row of banners, each saying what its click would find,
+  on the first tenth day after it with eight wars (day 70: 4 of 8 lit). Every check is as it
+  was; its time 420 s.
+- **The pin holds**: no sim input changed.
+- **Tests.** `toBattle1938` green by hand (2 of 2, 31 s). The evidence taken again
+  (`docs/evidence/2.14/to-battle-front.png`, 21 January 1938: the two blocks front to front at
+  Grudziądz).
+
 ### ADR-365 · 2026-10-14 · accepted — The flank case, found (PLAN 5.8w11)
 
 - **Found** (5.8h, `check:review`, the fourth run): `stackBlocks1938`'s flank test (PLAN 3.11c2)

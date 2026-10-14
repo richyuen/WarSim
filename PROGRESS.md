@@ -15279,3 +15279,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the whole unit suite (a helper added: 1,390 of 1,391) red only by `scenario1938`'s
   build time of BLOCKERS (green alone); the pin, build, parity and the changed spec green.
 - **Next:** PLAN 5.8w12.
+
+## 2026-10-14 — PLAN 5.8w12: the leaders' front, and the full row of banners a day after (ADR-366)
+
+- **Found:** on the test's day 70 (the first tenth day with a front battle and eight wars) the
+  war's largest battle is Italy's against France's; Germany's and Poland's front battles end
+  about day 50, before the eighth war.
+- **Done:** the click on the first tenth day with a front battle of the leaders (day 20), the
+  full row of banners on the first tenth day after it with eight wars (day 70). Every check
+  kept.
+- **Tests:** `toBattle1938` green by hand (2 of 2).
+- **Looked at:** `docs/evidence/2.14/to-battle-front.png` (21 January 1938): German motorised
+  division 44 and Polish infantry division 544 front to front at Grudziądz, at 20 m/px.
+- **The gate:** green (the whole unit suite, 1,391 of 1,391: the working tree's `package.json`;
+  the changed spec).
+- **Next:** PLAN 5.8w13.

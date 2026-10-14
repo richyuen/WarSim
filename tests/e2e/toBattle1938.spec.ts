@@ -226,8 +226,10 @@ test('a click on a war\'s banner brings its largest battle into view', async ({ 
 // it was day 60 by hand, and the game of seed 99 is another with every rule. With the ground
 // in the march (ADR-138) Poland's front is gone by day 50, and day 60's largest battle was one
 // formation against one, 56 men against 10,325. What is asked of the day is asked below, as before.
+// Since the air AI (PLAN 5.8w12) the day asks for a battle of the leaders, and the full row of
+// banners is asked of the first tenth day after it with eight wars: the two no longer meet.
 test('weeks into Germany against Poland the banner leads to two formations front to front', async ({ page }, info) => {
-  test.setTimeout(300_000);
+  test.setTimeout(420_000);
   const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/2.14') : info.outputPath();
   mkdirSync(out, { recursive: true });
   await page.setViewportSize(VIEW);
@@ -237,18 +239,20 @@ test('weeks into Germany against Poland the banner leads to two formations front
   const war = await page.evaluate(async ({ ger, pol }) => (await window.__warsim!.sim.inspect()).wars.find((w) => w.attackers.includes(ger) && w.defenders.includes(pol))!.id, { ger: GER, pol: POL });
   await step(page, [], 239);
   let day = 10;
-  // A battle of a front: more than two formations, and neither side ten times the other's men.
-  // And a world with a full row of banners (8, `MAX_BANNERS`), which the test reads below.
-  const front = async (): Promise<boolean> => page.evaluate(async (war) => {
+  // A battle of a front: more than two formations, and neither side ten times the other's men;
+  // and of the war's leaders (PLAN 5.8w12): with Italy and France in the war, the largest is
+  // theirs once Germany and Poland are in no pair front to front (from day 70 of today's game).
+  // A full row of banners is asked of a later day, below: eight wars come after that front.
+  const front = async (): Promise<boolean> => page.evaluate(async ({ war, ger, pol }) => {
     const b = await window.__warsim!.sim.warBattle(war);
-    const wars = (await window.__warsim!.sim.inspect()).wars.length;
-    return wars >= 8 && b !== null && b.count[0] + b.count[1] > 2 && Math.min(...b.men) * 10 > Math.max(...b.men);
-  }, war);
+    const v = window.__warsim!.view!;
+    return b !== null && b.count[0] + b.count[1] > 2 && Math.min(...b.men) * 10 > Math.max(...b.men) && v.formationsOf(ger).includes(b.formations[0]) && v.formationsOf(pol).includes(b.formations[1]);
+  }, { war, ger: GER, pol: POL });
   do {
     await step(page, [], 240);
     day += 10;
   } while (!(await front()) && day < 90);
-  expect(await front(), 'no tenth day to the 90th has a battle of a front in this war and eight wars').toBe(true);
+  expect(await front(), 'no tenth day to the 90th has a battle of a front of the leaders in this war').toBe(true);
   console.log(`the war has a battle of a front on day ${day}`);
 
   const start = await page.evaluate(() => ({ m: window.__warsim!.view!.metresPerPx, elements: window.__warsim!.view!.elementCount }));
@@ -256,19 +260,6 @@ test('weeks into Germany against Poland the banner leads to two formations front
   expect(start.elements).toBe(0);
   const banner = page.locator(`[data-testid="war-banner"][data-war="${war}"]`);
   await expect(banner).toHaveCount(1, { timeout: 20_000 });
-  // Every banner shown says what its click would find (PLAN 2.14f5b3): lit with a battle, dim without.
-  await expect.poll(async () => page.evaluate(async () => {
-    const wrong: string[] = [];
-    let lit = 0;
-    for (const b of document.querySelectorAll<HTMLElement>('[data-testid="war-banner"]')) {
-      const has = (await window.__warsim!.sim.warBattle(Number(b.dataset['war']))) !== null;
-      if (has) lit++;
-      if ((b.dataset['battle'] === '1') !== has) wrong.push(b.dataset['war']!);
-    }
-    return { wrong, banners: document.querySelectorAll('[data-testid="war-banner"]').length, some: lit > 0 };
-  }), { timeout: 20_000 }).toEqual({ wrong: [], banners: 8, some: true });
-  const lit = await page.locator('[data-testid="war-banner"][data-battle="1"]').count();
-  console.log(`day ${day}: ${lit} of 8 banners have a battle`);
   await banner.click();
   await page.waitForFunction((m0) => window.__warsim!.view!.metresPerPx < m0 / 10, start.m, { timeout: 20_000 });
   // A flight (PLAN 2.14f5b4): what follows is asked of where it ends.
@@ -341,4 +332,26 @@ test('weeks into Germany against Poland the banner leads to two formations front
 
   console.log(`day ${day}, banner of war ${war}: to (${seen.battle.x.toFixed(2)}, ${seen.battle.y.toFixed(2)}) at ${seen.m.toFixed(1)} m/px; the battle has ${seen.battle.count[0]} + ${seen.battle.count[1]} formations, ${seen.battle.men[0]} + ${seen.battle.men[1]} men; formations ${seen.battle.formations.join(' and ')}: ${seen.a.on} of ${seen.a.all} and ${seen.b.on} of ${seen.b.all} elements on the screen, the blocks' middles ${apart.toFixed(0)} px apart; ${seen.formationsOnScreen} formations have elements on the screen`);
   await page.screenshot({ path: path.join(out, 'to-battle-front.png') });
+
+  // A world with a full row of banners (8, `MAX_BANNERS`): the first tenth day on from that front
+  // with eight wars (PLAN 5.8w12).
+  const wars = async (): Promise<number> => page.evaluate(async () => (await window.__warsim!.sim.inspect()).wars.length);
+  while ((await wars()) < 8 && day < 150) {
+    await step(page, [], 240);
+    day += 10;
+  }
+  expect(await wars(), 'no tenth day to the 150th has eight wars').toBeGreaterThanOrEqual(8);
+  // Every banner shown says what its click would find (PLAN 2.14f5b3): lit with a battle, dim without.
+  await expect.poll(async () => page.evaluate(async () => {
+    const wrong: string[] = [];
+    let lit = 0;
+    for (const b of document.querySelectorAll<HTMLElement>('[data-testid="war-banner"]')) {
+      const has = (await window.__warsim!.sim.warBattle(Number(b.dataset['war']))) !== null;
+      if (has) lit++;
+      if ((b.dataset['battle'] === '1') !== has) wrong.push(b.dataset['war']!);
+    }
+    return { wrong, banners: document.querySelectorAll('[data-testid="war-banner"]').length, some: lit > 0 };
+  }), { timeout: 20_000 }).toEqual({ wrong: [], banners: 8, some: true });
+  const lit = await page.locator('[data-testid="war-banner"][data-battle="1"]').count();
+  console.log(`day ${day}: ${lit} of 8 banners have a battle`);
 });
