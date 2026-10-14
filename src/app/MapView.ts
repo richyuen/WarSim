@@ -13,6 +13,7 @@ import { CounterLayer, counterNation, type CounterSource } from '../render/units
 import { drawSeaBattles } from '../render/units/seaBattles';
 import { drawSorties, planeZoom, type PlacedSortie } from '../render/units/sorties';
 import { AirFx } from '../render/fx/air';
+import { NukeFx } from '../render/fx/nuke';
 import { TierHandover } from '../render/units/handover';
 import { smallShare, spriteAlpha } from '../render/units/elementSprite';
 import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
@@ -525,6 +526,7 @@ export class MapView {
     this.firesDropped = s.fires.dropped;
     this.wrecks.add(s.events.count, s.events.data, arrived);
     this.airFx.add(s.events.count, s.events.data, arrived);
+    this.nukeFx.add(s.events.count, s.events.data, arrived);
     // A tank lost under fire burns: the snapshot says which elements were fired at, the fire
     // records only of the shots with an end in the box (PLAN 3.6e5). What a battalion, a battery
     // and a half-track company lose lies there too (PLAN 3.11d).
@@ -546,6 +548,7 @@ export class MapView {
     this.hulls.clear();
     this.wrecks.clear();
     this.airFx.clear();
+    this.nukeFx.clear();
     this.fire.clear();
     this.turretAims.clear();
     this.dirty = true;
@@ -693,6 +696,8 @@ export class MapView {
   sortieMarks: PlacedSortie[] = [];
   /** The air's fights, bombs and flak (PLAN 5.7b). */
   airFx = new AirFx();
+  /** Nuclear bursts' flash, shockwave and cloud (PLAN 6.6b). */
+  nukeFx = new NukeFx();
 
   /** Sea control (PLAN 4.10c): each cell's zone, each zone's holder and sea's name, as the worker sent them. */
   private seaZoneOf = new Uint16Array(0);
@@ -802,7 +807,7 @@ export class MapView {
    */
   unitsAnimating(now = performance.now()): boolean {
     const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now) || this.flagsIn.animating(now) || this.cityLabels.animating(now) || this.nameStates.animating(now);
-    return this.counters.animating(now) || this.markerStacks.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.turretAims.animating(now) || this.wrecks.bursting(now) || this.airFx.animating(now);
+    return this.counters.animating(now) || this.markerStacks.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.turretAims.animating(now) || this.wrecks.bursting(now) || this.airFx.animating(now) || this.nukeFx.animating(now);
   }
 
   /** Opacity of the element sprites, their figures and their fire in the frame being drawn: in as the T1 markers go out. */
@@ -1858,6 +1863,9 @@ export class MapView {
     this.drawFlags(cam, now);
     this.drawCityLayer(cam, dpr, now);
     this.drawSelection(cam);
+    // A nuclear burst's flash, shockwave and cloud (PLAN 6.6b): over all of the overlay, the
+    // formations' tags too, at every tier.
+    this.nukeFx.draw(this.overlay.getContext('2d')!, cam, this.geo, this.canvas.clientWidth, this.canvas.clientHeight, now);
     this.frames++;
   }
 

@@ -8796,3 +8796,25 @@ Of 6.5 (open in PLAN.md):
   - [x] 6.5a The burst's shocks: war exhaustion (peace when it reaches the threshold), treasury, […]
   - [x] 6.5b Outrage: global and against the striker, decaying; relations with every nation hit by
     distance and alliance (the strategic AI's wars and coalitions); the utility's outrage term.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+- [x] 6.6 Nuke FX at every tier (flash, shockwave, mushroom cloud, fallout overlay), alert banner, auto-pause option, go-to button.
+  From the critic's report of 2026-10-14 (R5-B5, run 5 on `c850346`): AoC has a nuke among its
+  God tools; SPEC's God Mode grants warheads and forces a strike, and no task of this phase
+  has it yet. It comes with this one: a God Mode strike at a cell, its FX the AI's.
+  AT: screenshots at T0/T1/T2 viewed.
+  Split 2026-10-14: what tells of a strike, then how it looks.
+  - [x] 6.6a God Mode's strike (a map tool); the alert banner with its go-to; the auto-pause option.
+  - [x] 6.6b The FX at every tier: flash, shockwave, mushroom cloud, scaled; the screenshots.

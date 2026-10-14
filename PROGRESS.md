@@ -15598,3 +15598,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** stopped on `snapshot-perf` (known red under load; passes alone); the rest by hand:
   the related unit tests 1054 of 1055, the pin, build, `nukeAlert1938.spec`, parity.
 - **Next:** PLAN 6.6b.
+
+## 2026-10-14 — PLAN 6.6b: a nuclear burst's effects (ADR-389); PLAN 6.6 done
+
+- **Done:** the flash, the shockwave ring and the mushroom cloud at every tier, scaled, over the
+  tags; a strike's own sound. PARITY additions row 6 updated.
+- **Tests:** `nukeFx1938.spec` (new; `docs/evidence/6.6/nuke-t0.png`, `nuke-t1.png`, `nuke-t2.png`,
+  looked at), `nukeFx` (new), `sound`.
+- **The pin holds** at 45df324d.
+- **The gate:** green (the related unit tests 18 of 18; the pin; `nukeFx1938.spec`).
+- **Next:** PLAN 6.7.

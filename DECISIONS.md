@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-389 · 2026-10-14 · accepted — A nuclear burst's effects (PLAN 6.6b); PLAN 6.6 done
+
+- **Decision** (SPEC §6.4 "flash, shockwave ring and mushroom cloud at every tier (scaled)").
+  `NukeFx` (render/fx/nuke.ts), from the snapshot's `NukeDetonated`, on the render clock, nothing
+  of it sim state, drawn last on the overlay (over the formations' tags: drawn under them at
+  first, a tag stood on the cloud's cap):
+  - the flash (0.7 s): a white glow about the burst and the view whitened a moment;
+  - the shockwave (2.6 s): a ring out to 4 blast radii, a bright front over a dark band of dust
+    (a pale ring alone did not show over Germany's grey at T1);
+  - the mushroom cloud (9 s): a fireball rising on a stem into a billowing cap, orange to smoke,
+    a skirt of dust at its foot, drifting away at the end.
+  Sized by the blast radius (25 km × the yield's cube root) at the camera's scale, at least 18 px.
+  The render does not import the sim: the km per cell is the equator's, so a burst at 50° is
+  drawn about two-thirds its size. `hold` draws every burst at one age (tests): a screenshot takes
+  a second and more, and at T1 the ring had run its time before the shot.
+  - A sound of its own (`nuke`, the loudest cue): a deep boom falling away with a rumble, within
+    the cues' 1.5 s and 40 Hz.
+- **The pin holds** at 45df324d (the page alone).
+- **Tests.** `nukeFx1938.spec.ts` (new; the AT's screenshots, looked at): God Mode's bomb on Berlin
+  while paused draws at once; T0 (6.5 km/px) the flash, the ring and the fireball, the view
+  whitened (`nuke-t0.png`); T1 (1.2 km/px) the ring about Berlin and the fireball on its stem
+  (`nuke-t1.png`); T2 (196 m/px) the smoke cloud over the tags (`nuke-t2.png`); nothing after 9.5 s.
+  `nukeFx.test.ts` (new): bursts only, the life, the hold, the radius by yield and the least.
+  `sound.test.ts`: the cue within its rules.
+
 ### ADR-388 · 2026-10-14 · accepted — God Mode's strike, the alert banner, the auto-pause (PLAN 6.6a)
 
 - **Decision** (SPEC §6.4 "an alert banner, an auto-pause option, a camera 'go to' button";
