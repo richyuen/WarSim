@@ -27,8 +27,6 @@ quick sweep as a smoke test.
 
 ## Phase 6 — Nuclear AI
 
-- [ ] 6.2 Delivery: bombers (interceptable) and missiles (later tech).
-  AT: bomber strikes are intercepted at the expected rate under air superiority.
 - [ ] 6.3 Blast + fallout (deterministic wind drift, decay) on cells, elements, cities.
   AT: unit tests on casualty falloff and fallout decay half-life; fallout map mode screenshot.
 - [ ] 6.4 Nuclear decision utility (target value, desperation, retaliation incl. allies, taboo, MAD, doctrine).
@@ -714,3 +712,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 5.11 Critic R5-B1, third: the air war in what is read afterwards. No air event reaches the […]
 - [x] 5.12 Critic R5-B2: the AI's air war keeps flying. Seed 7321: mean sorties aloft 19.1 in […]
 - [x] 6.1 Nuclear tech chain, warhead production, stockpile, upkeep; global and per-nation toggles. […]
+- [x] 6.2 Delivery: bombers (interceptable) and missiles (later tech). […]

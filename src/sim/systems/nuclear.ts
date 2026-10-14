@@ -18,10 +18,29 @@
  * debt), up to WARHEAD_MAX in its stockpile (`world.warheads`, state). A stockpile costs
  * WARHEAD_UPKEEP a warhead a month, with the rest of its expenses (`monthlyAccounts`). God Mode
  * grants warheads (`grantWarheads`). A nation that dies loses its stockpile.
+ *
+ * Delivery (PLAN 6.2, SPEC §6.4; `launchNuke`, the command `launchNuke`): a warhead goes
+ * - by bomber: the nation's strategic bomber wing at its airbase, not in the air nor carrying a
+ *   warhead, with the place within its range, the nearest; it flies a sortie there, with no
+ *   mission (so it drops no bombs of its own), met by the enemy's fighters and AA as any sortie.
+ *   At its arrival it is stopped short with the chance BOMBER_INTERCEPT × (1 − s), s its nation's
+ *   air superiority in the target's air zone (`airSuperiority`): none where it holds the air, 0.4
+ *   where neither side does, 0.8 where the enemy holds it; and a wing lost on the way loses it.
+ * - by missile (`ballistic_missiles` known): from its capital, MISSILE_KM at most, at MISSILE_KMH;
+ *   nothing stops it.
+ * A launch takes a warhead from the stockpile, needs nukes allowed, and is state in flight
+ * (`world.nukeLaunches`); its arrival, hourly, is `NukeDetonated` or `NukeIntercepted` (the
+ * burst's effects: PLAN 6.3). A wing carrying a warhead is left alone by the air AI.
  */
 import { isDayStart } from '../../shared/calendar';
+import { Refusal } from '../../shared/commands';
+import { EventKind } from '../../shared/events';
+import { hash32, hashToUnit } from '../core/hash';
 import { knowsTechs, techMask } from '../tech';
-import type { World } from '../world';
+import { airOf, type NukeLaunch, type World } from '../world';
+import { basePlace, wingRange } from './air';
+import { airSuperiority } from './airSuperiority';
+import { seaKm } from './navalCombat';
 
 /** Monthly income, gold, from which a nation allowed nukes runs a programme. */
 export const NUKE_PROGRAMME_INCOME = 1000;
@@ -49,10 +68,95 @@ export function warheadsOf(world: World, n: number): number {
   return world.warheads.get(n)?.stock ?? 0;
 }
 
-/** The day's warhead work (PLAN 6.1b): see the head of the file. */
+/** A bomber's warhead stopped short at most (PLAN 6.2): × (1 − its side's superiority over the target). */
+export const BOMBER_INTERCEPT = 0.8;
+/** A missile's reach, km, and speed, km/h. */
+export const MISSILE_KM = 10000;
+export const MISSILE_KMH = 20000;
+/** The class of a strategic bomber's squadrons. */
+const STRATEGIC = 'bomber_str';
+const SALT_INTERCEPT = 0x6e756b65;
+
+/** Whether nation `n` knows tech `id`. */
+function knows(world: World, n: number, id: string): boolean {
+  const i = world.rules?.techs.findIndex((t) => t.id === id) ?? -1;
+  return i >= 0 && knowsTechs(world, n, techMask([i]));
+}
+
+/** Whether wing `id` carries a warhead in flight (PLAN 6.2): the air AI leaves it alone. */
+export function carriesNuke(world: World, id: number): boolean {
+  return world.nukeLaunches.some((l) => l.missile === 0 && l.wing === id);
+}
+
+/** The chance a launch is stopped short (PLAN 6.2): a bomber's by the air over its target, a missile's none. */
+export function interceptChance(world: World, l: NukeLaunch): number {
+  if (l.missile === 1) return 0;
+  const cell = Math.min(world.cells.h - 1, Math.max(0, Math.floor(l.ty))) * world.cells.w + Math.floor(l.tx);
+  const zone = airOf(world).zoneOf[cell] ?? 0;
+  return BOMBER_INTERCEPT * (1 - (zone === 0 ? 0.5 : airSuperiority(world, l.nation, zone)));
+}
+
+/** Nation `n` launches a warhead at (x, y) by bomber or missile (PLAN 6.2): see the head of the file; why not, else None. */
+export function launchNuke(world: World, n: number, x: number, y: number, missile: boolean): Refusal {
+  if (!nukesAllowed(world, n)) return Refusal.NoNukes;
+  if (warheadsOf(world, n) < 1) return Refusal.NoWarhead;
+  const c = world.formations.cols;
+  let from: [number, number] | null = null;
+  let wing = 0;
+  let kmh = MISSILE_KMH;
+  let km = Infinity;
+  if (missile) {
+    const nc = world.nations.cols;
+    if (!knows(world, n, 'ballistic_missiles')) return Refusal.NoDelivery;
+    from = [nc.capitalX[n]!, nc.capitalY[n]!];
+    km = seaKm(world, from[0], from[1], x, y);
+    if (km > MISSILE_KM) return Refusal.NoDelivery;
+  } else {
+    const rules = world.rules!;
+    for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
+      if (base <= 0 || c.nation[id] !== n || world.sorties.has(id) || carriesNuke(world, id) || !world.formations.has(id)) continue;
+      const first = rules.templates[c.template[id]!]?.elements[0];
+      if (!first || rules.units[first.unit]!.cls !== STRATEGIC) continue;
+      const at = basePlace(world, base);
+      if (!at) continue;
+      const d = seaKm(world, at[0], at[1], x, y);
+      if (d <= wingRange(world, id) && d < km) [wing, from, km] = [id, at, d];
+    }
+    if (wing === 0 || !from) return Refusal.NoDelivery;
+    kmh = rules.templates[c.template[wing]!]!.speedKmh;
+    world.wingMission.delete(wing);
+    world.sorties.set(wing, { bx: from[0], by: from[1], tx: x, ty: y, launch: world.tick, kmh, km, over: 0 });
+  }
+  const h = world.warheads.get(n)!;
+  h.stock--;
+  world.nukeLaunches.push({ id: world.nextLaunchId++, nation: n, missile: missile ? 1 : 0, wing, bx: from![0], by: from![1], tx: x, ty: y, launch: world.tick, arrive: world.tick + km / Math.max(1, kmh) });
+  world.out.emit(world.tick, EventKind.NukeLaunched, n, missile ? 1 : 0, x, y);
+  return Refusal.None;
+}
+
+/** The hour's arrivals (PLAN 6.2): each launch there by now bursts or is stopped short. */
+function arrivals(world: World): void {
+  if (world.nukeLaunches.length === 0) return;
+  const left: NukeLaunch[] = [];
+  for (const l of world.nukeLaunches) {
+    if (l.arrive > world.tick) {
+      left.push(l);
+      continue;
+    }
+    // A bomber lost on the way, or stopped short by the air over its target.
+    const lost = l.missile === 0 && (!world.formations.has(l.wing) || world.formations.cols.nation[l.wing] !== l.nation);
+    if (lost || hashToUnit(hash32(world.seed, l.id, SALT_INTERCEPT)) < interceptChance(world, l)) world.out.emit(world.tick, EventKind.NukeIntercepted, l.nation, l.id, l.tx, l.ty);
+    else world.out.emit(world.tick, EventKind.NukeDetonated, l.nation, knows(world, l.nation, 'thermonuclear') ? 2 : 1, l.tx, l.ty);
+  }
+  world.nukeLaunches = left;
+}
+
+/** The hour's nuclear work (PLAN 6.1b, 6.2): see the head of the file. */
 export function nuclearSystem(world: World): void {
   const rules = world.rules;
-  if (!rules || !isDayStart(world.tick)) return;
+  if (!rules) return;
+  arrivals(world);
+  if (!isDayStart(world.tick)) return;
   const bomb = rules.techs.findIndex((t) => t.id === 'atomic_bomb');
   const nc = world.nations.cols;
   // A dead nation's stockpile goes with it.

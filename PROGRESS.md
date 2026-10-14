@@ -15499,3 +15499,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** green (the related unit tests 1,052 of 1,052; the pin; `godUi1938`). `headless`
   found the system unnamed in the profile's list: named.
 - **Next:** PLAN 6.2.
+
+## 2026-10-14 — PLAN 6.2: a warhead delivered, by bomber or missile (ADR-380)
+
+- **Done:** `launchNuke` (a command): a strategic bomber in range flies the warhead, stopped
+  short at 0.8 × (1 − the air superiority over the target); a missile (a later tech) from the
+  capital, never stopped. Launches in flight are state; their arrival a burst or an interception.
+- **Tests:** `nukeDelivery1938` (new; the AT: stopped 0, 0.378, 0.603 of 600 at superiority 1,
+  0.5, 0.25 for 0, 0.4, 0.6).
+- **The pin holds** at 45df324d.
+- **The gate:** the related unit tests (1,056 of 1,057) red only by `scenario1938`'s build time of
+  BLOCKERS (green alone); the pin, build and parity green by hand.
+- **Next:** PLAN 6.3.

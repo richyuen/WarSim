@@ -8666,3 +8666,19 @@ Of 6.1 (open in PLAN.md):
   - [x] 6.1b Warheads: built by a nation that knows the bomb, a stockpile with its upkeep; God
     Mode grants them.
   AT: with nukes disabled, the warhead count is always 0; enabled, a test nation builds warheads.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+- [x] 6.2 Delivery: bombers (interceptable) and missiles (later tech).
+  AT: bomber strikes are intercepted at the expected rate under air superiority.

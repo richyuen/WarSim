@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-380 · 2026-10-14 · accepted — A warhead delivered: by bomber or missile (PLAN 6.2)
+
+- **Decision** (SPEC §6.4: bombers, intercepted by fighters and AA, needing range; missiles, a
+  later tech, hard to stop). `launchNuke` (systems/nuclear.ts; the command `launchNuke`, for the
+  player and God Mode; the nuclear AI's is PLAN 6.4):
+  - Refused where nukes are not allowed (`NoNukes`), with no warhead (`NoWarhead`), or with no
+    means to the place (`NoDelivery`). A launch takes a warhead.
+  - By bomber: the nation's strategic bomber wing at its airbase, not in the air nor carrying a
+    warhead, the place within its range, the nearest. It flies a sortie there with no mission
+    (so `strikes` drops nothing of its own: a sortie's target is not its mission's), drawn and
+    met by fighters and AA as any. At its arrival it is stopped short with the chance
+    BOMBER_INTERCEPT (0.8) × (1 − s), s its nation's air superiority in the target's air zone (a
+    half where nobody flew): 0 where it holds the air, 0.4 where neither side does, 0.8 where the
+    enemy holds it all; by a hash of the seed and the launch. A wing lost on the way loses it.
+  - By missile (`ballistic_missiles` known): from its capital, MISSILE_KM (10,000) at most, at
+    MISSILE_KMH (20,000); never stopped.
+  - In flight it is state (`world.nukeLaunches`, its own section). The arrival, hourly, emits
+    `NukeDetonated` (the yield: 2 with `thermonuclear`, else 1; its effects PLAN 6.3) or
+    `NukeIntercepted`. A wing carrying a warhead is left alone by the air AI.
+  - Of the nations of 1938 Britain, France, the Soviet Union and the United States have
+    strategic bombers; Germany none (it builds them once it knows them).
+- **The pin holds** at 45df324d: nothing is launched in a game nobody launches in.
+- **Tests.** `nukeDelivery1938.test.ts` (new; the AT): Britain at war with Germany, 600 bombers'
+  warheads at Berlin under each of three skies: superiority 1, 0.5, 0.25 stopped 0, 227 (0.378,
+  0.4 expected), 362 (0.603, 0.6), each within four standard deviations; the refusals; a bomber's
+  launch flies a sortie with no mission and takes a warhead; a missile's from London, never
+  stopped; a save in flight goes on to the same game, the warheads burst.
+
 ### ADR-379 · 2026-10-14 · accepted — Warheads, a stockpile and its upkeep (PLAN 6.1b); PLAN 6.1 done
 
 - **Decision** (SPEC §6.4: warheads built over time, with upkeep; God Mode grants them).

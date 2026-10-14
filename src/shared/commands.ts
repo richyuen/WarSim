@@ -54,6 +54,8 @@ export type Command =
   | { kind: 'setNukes'; nation: number; allowed: boolean }
   /** PLAN 6.1b God Mode: `count` warheads to a nation's stockpile (to WARHEAD_MAX). */
   | { kind: 'grantWarheads'; nation: number; count: number }
+  /** PLAN 6.2: a nation launches a warhead at (x, y), by a strategic bomber or a missile (the player's, God Mode's). */
+  | { kind: 'launchNuke'; nation: number; x: number; y: number; missile: boolean }
   /** PLAN 1.23 God Mode: a custom Major Battle won by `nation`: a corridor from (x, y) to (toX, toY). */
   | { kind: 'forceBreakthrough'; nation: number; x: number; y: number; toX: number; toY: number }
   | { kind: 'collapseNation'; nation: number }
@@ -148,6 +150,7 @@ export const COMMAND_KINDS: Record<Command['kind'], true> = {
   setAi: true,
   setNukes: true,
   grantWarheads: true,
+  launchNuke: true,
   forceBreakthrough: true,
   collapseNation: true,
   paintControl: true,
@@ -247,6 +250,12 @@ export const Refusal = {
   Overrun: 23,
   /** A spawn of a fleet's template: the command puts a formation on land (PLAN 4.2a). */
   NotOfLand: 24,
+  /** A nuclear launch by a nation not allowed nuclear weapons (PLAN 6.2). */
+  NoNukes: 25,
+  /** A nuclear launch by a nation with no warhead (PLAN 6.2). */
+  NoWarhead: 26,
+  /** A nuclear launch with no means to the place: no strategic bomber of the nation's at its base within range, or no missile that reaches it (PLAN 6.2). */
+  NoDelivery: 27,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 

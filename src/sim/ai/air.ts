@@ -40,6 +40,7 @@ import { wrapDx } from '../systems/elements';
 import { hypot } from '../core/dmath';
 import { AIR_HELD, airSuperiority } from '../systems/airSuperiority';
 import { airOf, navOf, type World } from '../world';
+import { carriesNuke } from '../systems/nuclear';
 
 /** A strategic bomber group bombs industry only in an air zone its nation's superiority is this or more in. */
 export const BOMB_SUPERIORITY = AIR_HELD;
@@ -64,7 +65,8 @@ export function airAi(world: World): void {
   const c = world.formations.cols;
   const wings = new Map<number, number[]>();
   for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
-    if (base <= 0 || !world.formations.has(id)) continue;
+    // A wing carrying a warhead flies on (PLAN 6.2).
+    if (base <= 0 || !world.formations.has(id) || carriesNuke(world, id)) continue;
     const n = c.nation[id]!;
     if (nc.living[n] !== 1 || nc.aiOff[n] === 1) continue;
     let list = wings.get(n);

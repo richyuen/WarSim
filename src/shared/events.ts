@@ -138,6 +138,12 @@ export const EventKind = {
    * and the men, guns and vehicles it lost, as nation + SIDE_SHIPS × them; (x, y) = the first.
    */
   AirRaids: 52,
+  /** A warhead launched (PLAN 6.2): a = the nation, b = 1 by missile, 0 by bomber; (x, y) = its target. */
+  NukeLaunched: 53,
+  /** A warhead's bomber stopped short of its target (PLAN 6.2): a = the nation, b = the launch's id; (x, y) = the target. */
+  NukeIntercepted: 54,
+  /** A warhead burst at its target (PLAN 6.2; its effects PLAN 6.3): a = the nation, b = its yield (1, 2 thermonuclear); (x, y) = where. */
+  NukeDetonated: 55,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 
