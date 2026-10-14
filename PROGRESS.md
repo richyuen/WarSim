@@ -15102,3 +15102,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (287 of 288) red only by `snapshot-perf` of BLOCKERS
   (2.30 ms); the pin, build, parity and the changed spec green by hand.
 - **Next:** PLAN 5.8v2.
+
+## 2026-10-13 — PLAN 5.8v2: a paradrop from the page (ADR-353)
+
+- **Done:** the Actions tab's Paradrop, armed for the selection and given by the next map click
+  (`PlayerControl.dropArmed`, the `paradrop` command).
+- **Tests:** `airOrders1938.spec.ts` (1 more; both green by hand, 37 s).
+- **The pin holds** at 76983901.
+- **The gate:** green (the related unit tests, 129; the changed spec, 2).
+- **Next:** PLAN 5.8v3.

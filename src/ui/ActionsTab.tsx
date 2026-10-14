@@ -16,6 +16,10 @@ export interface ActionsTabProps {
   wings: PlayerWing[];
   wingOrder: { wing: number; kind: WingOrderKind } | null;
   onArmWing: (wing: number, kind: WingOrderKind) => void;
+  /** The formations selected (PLAN 5.8v2), whether their paradrop is armed, and the arming of it. */
+  selected: number;
+  dropArmed: boolean;
+  onArmDrop: () => void;
 }
 
 /** A wing's order at a place (PLAN 5.8v1); `WingOrder` of the page's player control. */
@@ -28,9 +32,10 @@ const num = (v: number): string => Math.round(v).toLocaleString('en-US');
  * refuse (declare war, offer peace per war, propose an alliance) and production (build a template
  * if gold and manpower allow; the training queue with days left). Its air wings (PLAN 5.8v1):
  * each with its base and mission, and its orders, armed by a button and given by the next click
- * on the map (patrol, strike, supply for a transport, rebase).
+ * on the map (patrol, strike, supply for a transport, rebase); and a paradrop of the formations
+ * selected, the same way (PLAN 5.8v2).
  */
-export function ActionsTab({ nation, nations, wars, templates, day, onCommand, wings, wingOrder, onArmWing }: ActionsTabProps) {
+export function ActionsTab({ nation, nations, wars, templates, day, onCommand, wings, wingOrder, onArmWing, selected, dropArmed, onArmDrop }: ActionsTabProps) {
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
   const [target, setTarget] = useState(0);
@@ -78,9 +83,17 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
       {wings.length > 0 ? (
         <>
           <div class="panel-sub">{t('act.air')}</div>
-          {wingOrder ? (
+          {wingOrder || dropArmed ? (
             <div class="panel-note" data-testid="act-wing-armed">
-              {t('act.wingArmed', { order: t(`act.wingOrder.${wingOrder.kind}` as MessageKey) })}
+              {t('act.wingArmed', { order: wingOrder ? t(`act.wingOrder.${wingOrder.kind}` as MessageKey) : t('act.dropOrder', { n: selected }) })}
+            </div>
+          ) : null}
+          {wings.some((wg) => wg.transport) ? (
+            <div class="god-row">
+              <span class="god-war-name">{t('act.drop', { n: selected })}</span>
+              <button type="button" class={dropArmed ? 'god-btn active' : 'god-btn'} data-testid="act-drop" disabled={selected === 0} title={t('act.dropHint')} onClick={onArmDrop}>
+                {t('act.dropButton')}
+              </button>
             </div>
           ) : null}
           {wings.map((wg) => (

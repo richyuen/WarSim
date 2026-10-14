@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-353 · 2026-10-13 · accepted — A paradrop from the page (PLAN 5.8v2)
+
+- **Decision.** The Actions tab's air force has a Paradrop button where the nation has a
+  transport wing, enabled with formations selected: it arms a drop (`PlayerControl.dropArmed`;
+  a wing's order and a drop disarm each other); the next map click gives `paradrop` with the
+  player's nation for each selected formation, by ascending id, at the clicked cell; Escape
+  disarms it. What can be dropped is the sim's to say (5.8u2); its refusal told is 5.8v3.
+- **The pin holds** at 76983901: the page's.
+- **Tests.** `airOrders1938.spec.ts` (1 more): as Germany at war with Poland, its second
+  transport group rebased to the first's airbase and a garrison brigade raised there; the
+  button disabled with none selected; the brigade selected, Paradrop armed, Warsaw clicked:
+  the brigade within 2 cells of it.
+
 ### ADR-352 · 2026-10-13 · accepted — The page's orders for a wing (PLAN 5.8v1)
 
 - **Found** (5.8g): a wing's mission and rebase were commands with no control on the page; a

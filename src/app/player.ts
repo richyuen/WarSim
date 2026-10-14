@@ -6,7 +6,8 @@
  * The controlled nation follows the sim (stats), so a load or resumed autosave keeps it.
  *
  * A wing's order (PLAN 5.8v1): its mission or rebase, chosen in the Actions tab, is armed
- * (`wingOrder`); the next map click gives it at the clicked cell, and Escape disarms it.
+ * (`wingOrder`); the next map click gives it at the clicked cell, and Escape disarms it. So does
+ * a paradrop of the selected formations (PLAN 5.8v2, `dropArmed`): each is dropped there.
  */
 import { signal } from '@preact/signals';
 import type { Hud } from './hud';
@@ -21,6 +22,8 @@ export class PlayerControl {
   readonly selectedCount = signal(0);
   /** A wing's order waiting for its place on the map (PLAN 5.8v1), or null. */
   readonly wingOrder = signal<{ wing: number; kind: WingOrder } | null>(null);
+  /** A paradrop of the selection waiting for its place on the map (PLAN 5.8v2). */
+  readonly dropArmed = signal(false);
 
   constructor(
     private readonly hud: Hud,
@@ -55,6 +58,7 @@ export class PlayerControl {
 
   clearSelection(): void {
     this.wingOrder.value = null;
+    this.dropArmed.value = false;
     this.view.selectionNation = this.nation.value;
     this.view.selectedFormations.clear();
     this.selectedCount.value = 0;
@@ -73,7 +77,14 @@ export class PlayerControl {
   /** Arms wing `wing`'s order `kind` for the next map click (PLAN 5.8v1); the same again disarms it. */
   armWing(wing: number, kind: WingOrder): void {
     const now = this.wingOrder.value;
+    this.dropArmed.value = false;
     this.wingOrder.value = now && now.wing === wing && now.kind === kind ? null : { wing, kind };
+  }
+
+  /** Arms a paradrop of the selected formations for the next map click (PLAN 5.8v2); again disarms it. */
+  armDrop(): void {
+    this.wingOrder.value = null;
+    this.dropArmed.value = !this.dropArmed.value && this.view.selectedFormations.size > 0;
   }
 
   /**
@@ -90,6 +101,12 @@ export class PlayerControl {
       this.wingOrder.value = null;
       const at = { id: armed.wing, x: x + 0.5, y: y + 0.5, nation: n };
       this.hud.command(armed.kind === 'rebase' ? { kind: 'wingRebase', ...at } : { kind: 'wingMission', mission: armed.kind, ...at });
+      return true;
+    }
+    // A paradrop armed (PLAN 5.8v2): the selection is dropped here.
+    if (this.dropArmed.value) {
+      this.dropArmed.value = false;
+      for (const id of [...this.view.selectedFormations].sort((a, b) => a - b)) this.hud.command({ kind: 'paradrop', id, x: x + 0.5, y: y + 0.5, nation: n });
       return true;
     }
     const sel = this.view.selectedFormations;

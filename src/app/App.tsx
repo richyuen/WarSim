@@ -250,6 +250,9 @@ export function App({
                   wings: stats.wings,
                   wingOrder: player.wingOrder.value,
                   onArmWing: (wing, kind) => player.armWing(wing, kind),
+                  selected: player.selectedCount.value,
+                  dropArmed: player.dropArmed.value,
+                  onArmDrop: () => player.armDrop(),
                 }
               : null
           }
