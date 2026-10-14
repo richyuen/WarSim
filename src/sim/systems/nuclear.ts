@@ -54,6 +54,27 @@
  * - Where it lies, at level f: a formation on the cell loses FALLOUT_ATTRITION × f of each
  *   element a day; the cell's output is (1 − FALLOUT_INCOME × f) of itself (`monthlyAccounts`);
  *   a march across it takes 1 ÷ (1 − FALLOUT_SLOW × f) as long (`movementSystem`).
+ *
+ * The use decision's utility (PLAN 6.4a, SPEC §6.4; `nuclearUtility`, its inputs `nukeInputs`):
+ *   U = targetValue × desperation × doctrine − RETALIATION_WEIGHT × retaliationRisk
+ *       − allianceCost − outrage − TABOO_WEIGHT × taboo  (+ RETALIATION_BONUS when striking back)
+ * and, when both sides have an assured second strike (MAD), first use is at most 0 unless the
+ * striker's desperation is extreme. A strike back at who struck it is not first use.
+ * - targetValue (`targetValue`), 0 to 1: TARGET_SCALE × the share of the enemy side's output
+ *   (the cells it holds, as bombs and fallout leave them) and of its men within the blast, less
+ *   the striker's side's men there; + TARGET_CAPITAL with an enemy capital in it.
+ * - desperation (`desperationOf`), 0 to 2: how far its side is losing the war (−score / 100), the
+ *   share of its land held by others, DESPERATION_CAPITAL with enemy land forces within
+ *   CAPITAL_THREAT_KM of its capital, DESPERATION_FTD when its side fights to the death.
+ *   Extreme: at least 1, fighting to the death or its capital threatened.
+ * - doctrine, 0.5 to 1.5: 0.5 + aggression / 100 (no trait of its own: aggression read as one).
+ * - retaliationRisk (`retaliationRisk`): the most of any enemy and any ally of an enemy that can
+ *   deliver a warhead (`canDeliver`): its warheads / RETALIATION_FULL, to 1, × its doctrine.
+ * - MAD (`assured`): a side has an assured second strike when a nation of it (with its allies)
+ *   has MAD_WARHEADS and a means of delivery.
+ * - allianceCost: ALLIANCE_COST for each ally not at its side in that war, to ALLIANCE_COST_MAX.
+ * - outrage: 0 until PLAN 6.5.
+ * - taboo (`world.nukeTaboo`): 1, TABOO_AFTER after any burst, back by TABOO_RECOVERY a day.
  */
 import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
@@ -62,6 +83,7 @@ import { hash32, hashToUnit } from '../core/hash';
 import { pow, sin, cos } from '../core/dmath';
 import { unproject } from '../data/projection';
 import { knowsTechs, techMask } from '../tech';
+import type { War } from '../wars';
 import { airOf, navOf, type NukeLaunch, type World } from '../world';
 import { basePlace, wingRange } from './air';
 import { applyLoss, cellX, elementIndex, settleFormation, wrapDx } from './elements';
@@ -122,15 +144,40 @@ export function interceptChance(world: World, l: NukeLaunch): number {
   return BOMBER_INTERCEPT * (1 - (zone === 0 ? 0.5 : airSuperiority(world, l.nation, zone)));
 }
 
+/**
+ * The nearest strategic bomber of `n`'s at its base, free, that reaches (x, y) (PLAN 6.2), or any
+ * that reaches anywhere with `x` NaN; null for none.
+ */
+export function nukeBomber(world: World, n: number, x: number, y: number): { wing: number; from: [number, number]; km: number } | null {
+  const c = world.formations.cols;
+  const rules = world.rules!;
+  let best: { wing: number; from: [number, number]; km: number } | null = null;
+  for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
+    if (base <= 0 || c.nation[id] !== n || world.sorties.has(id) || carriesNuke(world, id) || !world.formations.has(id)) continue;
+    const first = rules.templates[c.template[id]!]?.elements[0];
+    if (!first || rules.units[first.unit]!.cls !== STRATEGIC) continue;
+    const at = basePlace(world, base);
+    if (!at) continue;
+    if (Number.isNaN(x)) return { wing: id, from: at, km: 0 };
+    const d = seaKm(world, at[0], at[1], x, y);
+    if (d <= wingRange(world, id) && d < (best?.km ?? Infinity)) best = { wing: id, from: at, km: d };
+  }
+  return best;
+}
+
+/** Whether `n` can deliver a warhead (PLAN 6.4a): it has one, and missiles or a strategic bomber at a base. */
+export function canDeliver(world: World, n: number): boolean {
+  return nukesAllowed(world, n) && warheadsOf(world, n) >= 1 && (knows(world, n, 'ballistic_missiles') || nukeBomber(world, n, NaN, NaN) !== null);
+}
+
 /** Nation `n` launches a warhead at (x, y) by bomber or missile (PLAN 6.2): see the head of the file; why not, else None. */
 export function launchNuke(world: World, n: number, x: number, y: number, missile: boolean): Refusal {
   if (!nukesAllowed(world, n)) return Refusal.NoNukes;
   if (warheadsOf(world, n) < 1) return Refusal.NoWarhead;
-  const c = world.formations.cols;
-  let from: [number, number] | null = null;
+  let from: [number, number];
   let wing = 0;
   let kmh = MISSILE_KMH;
-  let km = Infinity;
+  let km: number;
   if (missile) {
     const nc = world.nations.cols;
     if (!knows(world, n, 'ballistic_missiles')) return Refusal.NoDelivery;
@@ -138,24 +185,16 @@ export function launchNuke(world: World, n: number, x: number, y: number, missil
     km = seaKm(world, from[0], from[1], x, y);
     if (km > MISSILE_KM) return Refusal.NoDelivery;
   } else {
-    const rules = world.rules!;
-    for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
-      if (base <= 0 || c.nation[id] !== n || world.sorties.has(id) || carriesNuke(world, id) || !world.formations.has(id)) continue;
-      const first = rules.templates[c.template[id]!]?.elements[0];
-      if (!first || rules.units[first.unit]!.cls !== STRATEGIC) continue;
-      const at = basePlace(world, base);
-      if (!at) continue;
-      const d = seaKm(world, at[0], at[1], x, y);
-      if (d <= wingRange(world, id) && d < km) [wing, from, km] = [id, at, d];
-    }
-    if (wing === 0 || !from) return Refusal.NoDelivery;
-    kmh = rules.templates[c.template[wing]!]!.speedKmh;
+    const b = nukeBomber(world, n, x, y);
+    if (!b) return Refusal.NoDelivery;
+    ({ wing, from, km } = b);
+    kmh = world.rules!.templates[world.formations.cols.template[wing]!]!.speedKmh;
     world.wingMission.delete(wing);
     world.sorties.set(wing, { bx: from[0], by: from[1], tx: x, ty: y, launch: world.tick, kmh, km, over: 0 });
   }
   const h = world.warheads.get(n)!;
   h.stock--;
-  world.nukeLaunches.push({ id: world.nextLaunchId++, nation: n, missile: missile ? 1 : 0, wing, bx: from![0], by: from![1], tx: x, ty: y, launch: world.tick, arrive: world.tick + km / Math.max(1, kmh) });
+  world.nukeLaunches.push({ id: world.nextLaunchId++, nation: n, missile: missile ? 1 : 0, wing, bx: from[0], by: from[1], tx: x, ty: y, launch: world.tick, arrive: world.tick + km / Math.max(1, kmh) });
   world.out.emit(world.tick, EventKind.NukeLaunched, n, missile ? 1 : 0, x, y);
   return Refusal.None;
 }
@@ -328,6 +367,170 @@ function falloutDay(world: World): void {
   }
 }
 
+/** The use decision's weights (PLAN 6.4a): see the head of the file. */
+export const TARGET_SCALE = 10;
+export const TARGET_CAPITAL = 0.3;
+export const DESPERATION_CAPITAL = 0.5;
+export const DESPERATION_FTD = 0.5;
+export const CAPITAL_THREAT_KM = 150;
+export const RETALIATION_WEIGHT = 0.8;
+export const RETALIATION_FULL = 5;
+export const RETALIATION_BONUS = 1;
+export const MAD_WARHEADS = 2;
+export const ALLIANCE_COST = 0.05;
+export const ALLIANCE_COST_MAX = 0.3;
+export const TABOO_WEIGHT = 0.6;
+export const TABOO_AFTER = 0.3;
+export const TABOO_RECOVERY = 0.0005;
+
+/** What a strike's utility is made of (PLAN 6.4a). */
+export interface NukeInputs {
+  targetValue: number;
+  desperation: number;
+  doctrine: number;
+  retaliation: number;
+  allianceCost: number;
+  outrage: number;
+  taboo: number;
+  /** Both sides have an assured second strike. */
+  mad: boolean;
+  /** The striker's desperation is extreme. */
+  extreme: boolean;
+  /** A strike back at a nation that struck it: not first use. */
+  retaliating: boolean;
+}
+
+/** A strike's utility (PLAN 6.4a): see the head of the file. */
+export function nuclearUtility(i: NukeInputs): number {
+  const u = i.targetValue * i.desperation * i.doctrine + (i.retaliating ? RETALIATION_BONUS : 0) - RETALIATION_WEIGHT * i.retaliation - i.allianceCost - i.outrage - TABOO_WEIGHT * i.taboo;
+  return i.mad && !i.extreme && !i.retaliating ? Math.min(0, u) : u;
+}
+
+/** `n`'s doctrine (PLAN 6.4a): 0.5 + aggression / 100. */
+export function doctrineOf(world: World, n: number): number {
+  return 0.5 + world.nations.cols.aggression[n]! / 100;
+}
+
+/** The nations of the other side of `war` from `side`, and the allies of each. */
+function enemyCoalition(world: World, war: War, side: number): number[] {
+  const out = new Set<number>(war.sides[1 - side]!);
+  for (const m of war.sides[1 - side]!) for (const a of world.alliances.allianceOf(m)?.members ?? []) if (!war.sides[side]!.includes(a)) out.add(a);
+  return [...out].sort((a, b) => a - b);
+}
+
+/** The nations of `side` of `war` and their allies not on the other side. */
+function ownCoalition(world: World, war: War, side: number): number[] {
+  const out = new Set<number>(war.sides[side]!);
+  for (const m of war.sides[side]!) for (const a of world.alliances.allianceOf(m)?.members ?? []) if (!war.sides[1 - side]!.includes(a)) out.add(a);
+  return [...out].sort((a, b) => a - b);
+}
+
+/** Whether one of `nations` has an assured second strike (PLAN 6.4a): MAD_WARHEADS and a means of delivery. */
+function assured(world: World, nations: readonly number[]): boolean {
+  return nations.some((m) => warheadsOf(world, m) >= MAD_WARHEADS && canDeliver(world, m));
+}
+
+/** The risk of a strike back from the enemy side of `war` and its allies (PLAN 6.4a). */
+export function retaliationRisk(world: World, war: War, side: number): number {
+  let r = 0;
+  for (const m of enemyCoalition(world, war, side)) if (canDeliver(world, m)) r = Math.max(r, Math.min(1, warheadsOf(world, m) / RETALIATION_FULL) * doctrineOf(world, m));
+  return r;
+}
+
+/** `n`'s desperation in `war` on `side` (PLAN 6.4a), 0 to 2, and whether it is extreme. */
+export function desperationOf(world: World, n: number, war: War, side: number): { desperation: number; extreme: boolean } {
+  const nc = world.nations.cols;
+  const losing = Math.max(0, side === 0 ? -war.score : war.score) / 100;
+  const land = world.landCounts();
+  const owned = land.owned[n] ?? 0;
+  const lost = owned > 0 ? (land.lost[n] ?? 0) / owned : 0;
+  const cx = nc.capitalX[n]!;
+  const cy = nc.capitalY[n]!;
+  const c = world.formations.cols;
+  let threatened = false;
+  world.formations.forEach((id) => {
+    if (threatened || world.isFleet(id) || world.isWing(id) || world.offLand(id)) return;
+    if (!war.sides[1 - side]!.includes(c.nation[id]!)) return;
+    if (seaKm(world, cx, cy, c.x[id]!, c.y[id]!) <= CAPITAL_THREAT_KM) threatened = true;
+  });
+  const ftd = war.fightToDeath[side]!;
+  const desperation = Math.min(2, losing + lost + (threatened ? DESPERATION_CAPITAL : 0) + (ftd ? DESPERATION_FTD : 0));
+  return { desperation, extreme: desperation >= 1 && (ftd || threatened) };
+}
+
+/** What a burst of `n`'s at (x, y) is worth against the other side of `war` from `side` (PLAN 6.4a), 0 to 1. */
+export function targetValue(world: World, n: number, war: War, side: number, x: number, y: number): number {
+  const radius = blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1);
+  const enemy = new Set(war.sides[1 - side]!);
+  const own = new Set(ownCoalition(world, war, side));
+  const { w, h, econ, controller } = world.cells;
+  // The enemy side's output within the blast.
+  let hit = 0;
+  const ry = Math.ceil(radius / 10) + 1;
+  const rx = Math.ceil(radius / 4) + 1;
+  for (let yy = Math.max(0, Math.floor(y) - ry); yy <= Math.min(h - 1, Math.floor(y) + ry); yy++) {
+    for (let dx = -rx; dx <= rx; dx++) {
+      const xx = cellX(world, Math.floor(x) + dx);
+      if (xx === null) continue;
+      const cell = yy * w + xx;
+      if (econ[cell] === 0 || !enemy.has(controller[cell]!)) continue;
+      const f = blastShare(seaKm(world, x, y, xx + 0.5, yy + 0.5), radius);
+      if (f > 0) hit += econ[cell]! * (1 - (world.bombDamage.get(cell) ?? 0)) * (1 - FALLOUT_INCOME * falloutAt(world, cell)) * f;
+    }
+  }
+  // Men: the enemy side's within it, the striker's side's there taken off.
+  const c = world.formations.cols;
+  let menAll = 0;
+  let menHit = 0;
+  let ownHit = 0;
+  let ownAll = 0;
+  world.formations.forEach((id) => {
+    const m = c.nation[id]!;
+    const isEnemy = enemy.has(m);
+    if (!isEnemy && !own.has(m)) return;
+    const s = c.strength[id]!;
+    const f = blastShare(seaKm(world, x, y, c.x[id]!, c.y[id]!), radius) * s;
+    if (isEnemy) [menAll, menHit] = [menAll + s, menHit + f];
+    else [ownAll, ownHit] = [ownAll + s, ownHit + f];
+  });
+  // As a share of all the enemy side's output (summed only when the blast reaches some).
+  let econAll = 0;
+  if (hit > 0) for (let cell = 0; cell < econ.length; cell++) if (econ[cell] !== 0 && enemy.has(controller[cell]!)) econAll += econ[cell]!;
+  const share = (econAll > 0 ? hit / econAll : 0) + (menAll > 0 ? menHit / menAll : 0) - (ownAll > 0 ? ownHit / ownAll : 0);
+  const nc = world.nations.cols;
+  let capital = 0;
+  for (const m of enemy) if (nc.living[m] === 1 && blastShare(seaKm(world, x, y, nc.capitalX[m]!, nc.capitalY[m]!), radius) > 0) capital = TARGET_CAPITAL;
+  return Math.max(0, Math.min(1, TARGET_SCALE * share + capital));
+}
+
+/**
+ * The inputs of `n`'s strike at (x, y) in `war` (PLAN 6.4a): `n` on `side`; `retaliating` when the
+ * target's side struck it (PLAN 6.4b).
+ */
+export function nukeInputs(world: World, n: number, war: War, side: number, x: number, y: number, retaliating = false): NukeInputs {
+  const { desperation, extreme } = desperationOf(world, n, war, side);
+  const ally = world.alliances.allianceOf(n);
+  const apart = (ally?.members ?? []).filter((m) => m !== n && !war.sides[side]!.includes(m)).length;
+  return {
+    targetValue: targetValue(world, n, war, side, x, y),
+    desperation,
+    doctrine: doctrineOf(world, n),
+    retaliation: retaliationRisk(world, war, side),
+    allianceCost: Math.min(ALLIANCE_COST_MAX, ALLIANCE_COST * apart),
+    outrage: 0,
+    taboo: world.nukeTaboo,
+    mad: assured(world, ownCoalition(world, war, side)) && assured(world, enemyCoalition(world, war, side)),
+    extreme,
+    retaliating,
+  };
+}
+
+/** The taboo's day (PLAN 6.4a): back towards 1. Nothing while it is 1. */
+function tabooDay(world: World): void {
+  if (world.nukeTaboo >= 1) return;
+  world.nukeTaboo = Math.min(1, world.nukeTaboo + TABOO_RECOVERY);
+}
+
 /** The hour's arrivals (PLAN 6.2): each launch there by now bursts or is stopped short. */
 function arrivals(world: World): void {
   if (world.nukeLaunches.length === 0) return;
@@ -343,6 +546,8 @@ function arrivals(world: World): void {
     else {
       const yieldN = knows(world, l.nation, 'thermonuclear') ? 2 : 1;
       world.out.emit(world.tick, EventKind.NukeDetonated, l.nation, yieldN, l.tx, l.ty);
+      // The taboo broken (PLAN 6.4a).
+      world.nukeTaboo = Math.min(world.nukeTaboo, TABOO_AFTER);
       blast(world, l.nation, yieldN, l.tx, l.ty);
       layFallout(world, yieldN, l.tx, l.ty);
     }
@@ -357,6 +562,7 @@ export function nuclearSystem(world: World): void {
   arrivals(world);
   if (!isDayStart(world.tick)) return;
   falloutDay(world);
+  tabooDay(world);
   const bomb = rules.techs.findIndex((t) => t.id === 'atomic_bomb');
   const nc = world.nations.cols;
   // A dead nation's stockpile goes with it.

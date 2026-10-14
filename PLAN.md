@@ -29,6 +29,10 @@ quick sweep as a smoke test.
 
 - [ ] 6.4 Nuclear decision utility (target value, desperation, retaliation incl. allies, taboo, MAD, doctrine).
   AT: table-driven tests: MAD pair → no first use; desperate fightToDeath nation vs non-nuclear enemy → use; post-first-use taboo drop raises others' propensity.
+  Split 2026-10-14: the sum, then the choice made with it.
+  - [x] 6.4a The utility and its inputs from the world; the taboo, state.
+  - [ ] 6.4b The daily decision: an AI nation at war strikes its best target when the utility is
+    above 0; retaliation doctrine; the decision told as an event (6.7 asserts on it).
 - [ ] 6.5 Consequences: relations, alliance unity, outrage, economic shock, peace/retaliation responses.
   AT: tests per consequence; the history log has a nuke entry with yield and casualties.
 - [ ] 6.6 Nuke FX at every tier (flash, shockwave, mushroom cloud, fallout overlay), alert banner, auto-pause option, go-to button.

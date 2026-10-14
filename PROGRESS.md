@@ -15543,3 +15543,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** stopped on `scenario1938`'s build time (known red under load; 7 of 7 alone); the
   rest by hand: the related unit tests 1071 of 1072, the pin, build, `fallout1938.spec`, parity.
 - **Next:** PLAN 6.4.
+
+## 2026-10-14 — PLAN 6.4a: the nuclear use utility (ADR-384)
+
+- **Done:** PLAN 6.4 split (6.4a the utility, 6.4b the decision). SPEC's utility with its inputs
+  from the world: target value, desperation, doctrine (aggression), retaliation risk, MAD,
+  alliance cost; the taboo as state, broken by a burst and recovering.
+- **Tests:** `nukeUtility1938` (new; MAD −1.26, the desperate French 0.55, the taboo −0.17 → 0.25).
+- **The pin holds** at 45df324d.
+- **The gate:** stopped on `territory`'s cost per tick (known red under load; 13 of 13 alone); the
+  rest by hand: the related unit tests 956 of 957, the pin, build, parity.
+- **Next:** PLAN 6.4b.

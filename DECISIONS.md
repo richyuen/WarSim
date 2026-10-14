@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-384 · 2026-10-14 · accepted — The nuclear use utility (PLAN 6.4a)
+
+- **Decision** (SPEC §6.4 "Use decision"). PLAN 6.4 split: 6.4a the utility, 6.4b the decision.
+  - `nuclearUtility`: U = targetValue × desperation × doctrine − 0.8 × retaliationRisk −
+    allianceCost − outrage − 0.6 × taboo (+ 1 when striking back at a nation that struck it, 6.4b).
+    With MAD, first use is at most 0 unless the striker's desperation is extreme; a strike back is
+    not first use.
+  - Its inputs from the world (`nukeInputs`):
+    - targetValue, 0 to 1: 10 × (the enemy side's output within the blast as a share of all of it,
+      as bombs and fallout leave the cells, + the share of its men there − the share of the
+      striker's coalition's men there) + 0.3 with an enemy capital in it.
+    - desperation, 0 to 2: −score / 100 from its side, the share of its land others hold, 0.5 with
+      enemy land forces within 150 km of its capital, 0.5 when its side fights to the death.
+      Extreme: at least 1, and fighting to the death or the capital threatened (SPEC's "fightToDeath
+      or capital falling").
+    - doctrine: 0.5 + aggression / 100. No doctrine trait exists: SPEC says doctrine and
+      aggression come from traits; aggression is read as both.
+    - retaliationRisk: the most, over the enemy side and its allies able to deliver (a warhead, and
+      missiles or a strategic bomber at its base: `canDeliver`), of warheads / 5 (to 1) × doctrine.
+    - MAD: each side, with its allies, has a nation with 2 warheads and a means of delivery.
+    - allianceCost: 0.05 for each ally not on its side in that war, to 0.3. outrage: 0 (PLAN 6.5).
+  - The taboo (`world.nukeTaboo`, state saved while under 1): 1; 0.3 at any burst; back by 0.0005
+    a day (1.4 years to whole), nothing while whole.
+  - `nukeBomber` (the strategic bomber that reaches) is split from `launchNuke`, and used by both.
+- **The pin holds** at 45df324d: nothing changes while the taboo is whole and no one strikes.
+- **Tests.** `nukeUtility1938.test.ts` (new; the AT): a table on the sum, with the control (the same
+  inputs without MAD worth it) beside the MAD row; England and the Soviet Union with five warheads
+  each and bombers: MAD, no first use (U −1.26, England losing); France fighting to the death and
+  losing to Germany, which has no bomb: Berlin worth it (U 0.55, the taboo whole); England's burst
+  at Hamburg drops the taboo to 0.3 and France's utility against Berlin rises (−0.17 → 0.25);
+  a day's recovery; a save carries it.
+
 ### ADR-383 · 2026-10-14 · accepted — The fallout map mode (PLAN 6.3c); PLAN 6.3 done
 
 - **Decision.** A map mode `fallout` (shader mode 5): the political colours faded (0.55 toward a
