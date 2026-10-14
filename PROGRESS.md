@@ -15175,3 +15175,11 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (161 of 162) red only by `snapshot-perf` of BLOCKERS
   (4.24 ms); the pin, build, parity and the changed specs green by hand.
 - **Next:** PLAN 5.8w4.
+
+## 2026-10-14 — PLAN 5.8w4: the critic's day 21 has no German armour in contact (ADR-359)
+
+- **Done:** `formationPlace1938` steps on from day 21 to the first day with German armour in
+  contact (day 22) and asks the same of the view.
+- **Tests:** `formationPlace1938` green by hand (4 min).
+- **The gate:** green (the changed spec).
+- **Next:** PLAN 5.8h: `check:review` again.

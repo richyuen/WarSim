@@ -11,8 +11,9 @@ import { settle } from './settle';
 // elements and no figure: a tag over an empty field. The snapshot and the panel now say where
 // the block stands.
 //
-// The critic's game: seed 4242, Germany against Poland by God Mode, day 21 of the war. Every
-// German formation in contact, the armour among them: the camera goes to where the view has
+// The critic's game: seed 4242, Germany against Poland by God Mode, day 21 of the war (or the
+// first day after it with German armour in contact, PLAN 5.8w4). Every German formation in
+// contact, the armour among them: the camera goes to where the view has
 // the formation (`formationPos`: its marker, its click, its panel) and finds its elements.
 
 const nation = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
@@ -41,30 +42,44 @@ test('the view centred on a formation in contact holds its elements, at 6 and at
   await page.setViewportSize(VIEW);
   await page.goto('/?scenario=1938&paused=1&seed=4242');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
-  await page.evaluate(async ({ GER, POL }) => {
-    const sim = window.__warsim!.sim;
-    sim.command({ kind: 'declareWar', attacker: GER, defender: POL });
-    let tick = 0;
-    for (let d = 0; d < 21; d++) tick = (await sim.step(24)).tick;
-    await new Promise<void>((done) => {
-      const wait = (): void => (window.__warsim!.view!.lastTick === tick ? done() : void setTimeout(wait, 5));
-      wait();
-    });
-  }, { GER, POL });
+  /** Steps `days` days and waits for the view to have the last. */
+  const step = (days: number): Promise<void> =>
+    page.evaluate(async (days) => {
+      const sim = window.__warsim!.sim;
+      let tick = 0;
+      for (let d = 0; d < days; d++) tick = (await sim.step(24)).tick;
+      await new Promise<void>((done) => {
+        const wait = (): void => (window.__warsim!.view!.lastTick === tick ? done() : void setTimeout(wait, 5));
+        wait();
+      });
+    }, days);
+  await page.evaluate(({ GER, POL }) => window.__warsim!.sim.command({ kind: 'declareWar', attacker: GER, defender: POL }), { GER, POL });
+  await step(21);
 
   // The German formations in contact, as the panel has them.
-  const engaged = await page.evaluate(async (GER) => {
-    const { sim, view } = window.__warsim!;
-    const templates = sim.mapLayers!.templates;
-    const out: { id: number; armour: boolean }[] = [];
-    for (const id of view!.formationsOf(GER)) {
-      const d = await sim.formation(id);
-      if (d?.engaged) out.push({ id, armour: templates[d.template]?.symbol === 'armour' });
-    }
-    return out;
-  }, GER);
-  expect(engaged.length, 'German formations in contact on day 21').toBeGreaterThan(5);
-  expect(engaged.filter((e) => e.armour).length, 'German armour in contact on day 21').toBeGreaterThan(0);
+  const contact = (): Promise<{ id: number; armour: boolean }[]> =>
+    page.evaluate(async (GER) => {
+      const { sim, view } = window.__warsim!;
+      const templates = sim.mapLayers!.templates;
+      const out: { id: number; armour: boolean }[] = [];
+      for (const id of view!.formationsOf(GER)) {
+        const d = await sim.formation(id);
+        if (d?.engaged) out.push({ id, armour: templates[d.template]?.symbol === 'armour' });
+      }
+      return out;
+    }, GER);
+  // Since Phase 5 (PLAN 5.8w4: the air war plays the critic's game on otherwise) day 21 may have
+  // no German armour in contact: the first day from it that has, up to day 45.
+  let engaged = await contact();
+  let day = 21;
+  while (!engaged.some((e) => e.armour) && day < 45) {
+    await step(1);
+    day++;
+    engaged = await contact();
+  }
+  console.log(`German formations in contact on day ${day}: ${engaged.length}, armour ${engaged.filter((e) => e.armour).length}`);
+  expect(engaged.length, `German formations in contact on day ${day}`).toBeGreaterThan(5);
+  expect(engaged.filter((e) => e.armour).length, `German armour in contact by day ${day}`).toBeGreaterThan(0);
 
   const look = (id: number, armour: boolean): Promise<Seen> =>
     page.evaluate(async ({ id, armour }) => {
@@ -111,7 +126,7 @@ test('the view centred on a formation in contact holds its elements, at 6 and at
   const seen: Seen[] = [];
   for (const e of engaged) seen.push(await look(e.id, e.armour));
   const far = Math.max(...seen.map((s) => s.offKm));
-  console.log(`seed 4242, day 21: ${seen.length} German formations in contact, ${seen.filter((s) => s.armour).length} of them armour; from the place each is said to be at to the middle of its elements ${far.toFixed(2)} km at most; elements on the screen at 6 m/px ${Math.min(...seen.map((s) => s.on6))} to ${Math.max(...seen.map((s) => s.on6))}, at 2 m/px ${Math.min(...seen.map((s) => s.on2))} to ${Math.max(...seen.map((s) => s.on2))}`);
+  console.log(`seed 4242, day ${day}: ${seen.length} German formations in contact, ${seen.filter((s) => s.armour).length} of them armour; from the place each is said to be at to the middle of its elements ${far.toFixed(2)} km at most; elements on the screen at 6 m/px ${Math.min(...seen.map((s) => s.on6))} to ${Math.max(...seen.map((s) => s.on6))}, at 2 m/px ${Math.min(...seen.map((s) => s.on2))} to ${Math.max(...seen.map((s) => s.on2))}`);
   for (const s of seen) {
     const what = `formation ${s.id}${s.armour ? ' (armour)' : ''}`;
     expect(s.all, `${what}: its elements in the section at 6 m/px`).toBeGreaterThan(0);

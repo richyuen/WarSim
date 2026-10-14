@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-359 · 2026-10-14 · accepted — The critic's day 21 has no German armour in contact (PLAN 5.8w4)
+
+- **Found** (5.8h, `check:review`): `formationPlace1938` (PLAN 3.11a) plays the critic's game
+  (seed 4242, Germany on Poland) to day 21 and asks the view of each German formation in contact,
+  the armour among them. Since Phase 5 the game is another (the air war) and on day 21 no
+  German armour is in contact: the test failed before it looked at the view.
+- **Decision.** The test steps on from day 21 a day at a time, up to day 45, to the first day
+  with German armour in contact (day 22 now), and asks the same of the view there. What it
+  holds the view to is unchanged: each formation's elements on the screen at 6 and 2 m/px, the
+  panel's place the view's.
+- **The pin holds** at 76983901.
+- **Tests.** `formationPlace1938` green by hand (day 22: 21 in contact, 2 armour; 0.28 km at
+  most from the place each is said to be at to its elements).
+
 ### ADR-358 · 2026-10-14 · accepted — What is drawn against what the sim has: wings (PLAN 5.8w3)
 
 - **Found** (5.8h, `check:review`): `counters1938` and `declutter1938` held the T0 counters to
