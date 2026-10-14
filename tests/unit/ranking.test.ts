@@ -31,6 +31,7 @@ const nation = (id: number, v: number): NationStat => ({
   incomeMult: 1,
   techs: [0, 0],
   shipyard: false,
+  airRoom: 0,
   research: 0,
   lines: [],
 });

@@ -407,8 +407,10 @@ export interface TemplateInfo {
   men: number;
   /** Marker symbol class from the template's elements (PLAN 2.1); a fleet's is `fleet` (PLAN 4.2b). */
   symbol: UnitSymbol;
-  /** Of the land (0), or a fleet (1): `Domain` of the sim. Only one of the land can be queued yet (PLAN 4.2e). */
+  /** Of the land (0), a fleet (1) or an air wing (2): `Domain` of the sim. */
   domain: number;
+  /** An air wing's aircraft (PLAN 5.8v4; 0 for the land's and the sea's): the room it takes at an airfield. */
+  aircraft: number;
   /** The techs a nation must know to raise it, as bits (PLAN 3.1a; `NationStat.techs`). */
   techs: readonly [number, number];
 }
@@ -473,6 +475,8 @@ export interface NationStat {
   techs: readonly [number, number];
   /** Whether it holds a port a ship reaches, where a fleet it orders is built (PLAN 4.2e–f, `shipyard`). */
   shipyard: boolean;
+  /** The most room for aircraft at one of the airbases it holds, beside the wings there (PLAN 5.8v4): a wing of more is not built (`airfield`). */
+  airRoom: number;
   /** Its research budget in gold per month, like `income` (the sim holds it per day; PLAN 3.1b). */
   research: number;
   /** What it is researching, in the order the lines were opened: index into `mapLayers.techs` and the gold paid. */

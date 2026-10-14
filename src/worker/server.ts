@@ -24,7 +24,8 @@ import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
 import { AT_PORT_CELLS } from '../sim/systems/navalCombat';
 import { aircraftOf } from '../sim/systems/airCombat';
-import { isTransport } from '../sim/systems/air';
+import { isTransport, wingAircraft } from '../sim/systems/air';
+import { airbaseRoom } from '../sim/data/airbases';
 import { sortieEnd } from '../shared/sorties';
 import {
   BLOCK_STRIDE,
@@ -434,7 +435,7 @@ export class SimServer {
       const province = world.cells.province.slice();
       const rules = world.rules?.templates ?? [];
       // Every template of the rules, by its index, the fleets' with the land's (PLAN 4.2b): a formation is named and drawn by it.
-      const templates = TEMPLATES_1938.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: rules[i]!.domain === Domain.sea ? ('fleet' as const) : symbolOf(t), domain: rules[i]!.domain, techs: rules[i]!.techs }));
+      const templates = TEMPLATES_1938.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: rules[i]!.domain === Domain.sea ? ('fleet' as const) : symbolOf(t), domain: rules[i]!.domain, aircraft: rules[i]!.domain === Domain.air ? wingAircraft(world, i) : 0, techs: rules[i]!.techs }));
       const techs = (world.rules?.techs ?? []).map((t) => ({ nameKey: `tech.${t.id}`, gold: t.gold, days: t.days }));
       this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province, templates, techs }, [land.data.buffer, terrain.data.buffer, province.buffer]);
     } catch {
@@ -713,6 +714,14 @@ export class SimServer {
       men.set(n, (men.get(n) ?? 0) + fc.strength[f]!);
       count.set(n, (count.get(n) ?? 0) + 1);
     });
+    // The most room for aircraft at an airbase each nation holds (PLAN 5.8v4), as `airfield` reckons it.
+    const used = new Map<number, number>();
+    for (const [o, b] of world.wingBase) if (b > 0 && world.formations.has(o)) used.set(b, (used.get(b) ?? 0) + wingAircraft(world, fc.template[o]!));
+    const airRoom = new Map<number, number>();
+    world.airbases.forEach((b, i) => {
+      const n = world.cells.controller[b.cell]!;
+      if (n !== 0) airRoom.set(n, Math.max(airRoom.get(n) ?? 0, airbaseRoom(b) - (used.get(i + 1) ?? 0)));
+    });
     const queues = new Map<number, { template: number; readyDay: number }[]>();
     const pc = world.production.cols;
     world.production.forEach((p) => {
@@ -783,6 +792,7 @@ export class SimServer {
         queue: (queues.get(id) ?? []).sort((x, y) => x.readyDay - y.readyDay),
         techs: [nc.tech0[id]!, nc.tech1[id]!],
         shipyard: nc.living[id] === 1 && shipyard(world, id) >= 0,
+        airRoom: nc.living[id] === 1 ? (airRoom.get(id) ?? 0) : 0,
         research: nc.research[id]! * DAYS_PER_MONTH,
         lines: lines.get(id) ?? [],
       });

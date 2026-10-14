@@ -15121,3 +15121,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (254 of 255) red only by `snapshot-perf` of BLOCKERS
   (2.26 ms); build and parity green by hand.
 - **Next:** PLAN 5.8v4.
+
+## 2026-10-13 — PLAN 5.8v4: wings built from the page (ADR-355)
+
+- **Done:** the Actions tab lists the air templates; a wing's button needs `NationStat.airRoom`
+  of its `TemplateInfo.aircraft` ("no airfield with room").
+- **Tests:** `serverWings` (1 more); `airOrders1938.spec.ts` (1 more; its three green by hand,
+  55 s); `playerActions1938.spec.ts` green by hand.
+- **The pin holds** at 76983901.
+- **The gate:** the related unit tests (292 of 293) red only by `snapshot-perf` of BLOCKERS
+  (2.47 ms); the pin, build, parity and the changed spec green by hand.
+- **Next:** PLAN 5.8h, the review's last.

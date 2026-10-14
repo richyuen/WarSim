@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-355 · 2026-10-13 · accepted — Wings built from the page (PLAN 5.8v4)
+
+- **Found** (5.8v1): the Actions tab left air templates off its build list ("no air formation
+  is built", untrue since 5.8s1).
+- **Decision.** Every template is on the list. A wing's needs the nation's most room for
+  aircraft at an airbase it holds, beside the wings based there (`NationStat.airRoom`, as
+  `airfield` reckons it), to be its aircraft or more (`TemplateInfo.aircraft`, 0 for the land's
+  and the sea's); else its button is disabled, "no airfield with room", as a fleet's is "no
+  port". The techs come first, as for any template.
+- **The pin holds** at 76983901: the page's.
+- **Tests.** `serverWings` (1 more): Germany's room at least a fighter group's aircraft, where
+  `airfield` finds one. `airOrders1938.spec.ts` (1 more): as Germany a fighter group built from
+  the list, in its queue; a nation that knows the fighter's techs with its airbases painted
+  Germany's (God Mode): room 0, the button disabled, "no airfield with room".
+  `playerActions1938.spec.ts` green by hand with the longer list.
+
 ### ADR-354 · 2026-10-13 · accepted — A wing's and a paradrop's refusal told (PLAN 5.8v3)
 
 - **Found** (5.8g): the worker told a player's refused march (4.9c), not a wing's order or a

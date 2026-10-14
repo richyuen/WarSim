@@ -127,17 +127,17 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
 
       <div class="panel-sub">{t('act.production')}</div>
       {templates.map((tp, i) => {
-        // Land and sea templates; no air formation is built (PLAN 5). `i` stays the template's index.
-        if (tp.domain > 1) return null;
+        // Every template, the land's, the sea's and the air's (PLAN 5.8v4). `i` stays the template's index.
         const affordable = nation.gold >= tp.gold && nation.manpower >= tp.manpower;
-        // The sim refuses a template whose techs the nation does not know (PLAN 3.1a), and a fleet of a nation with no port (PLAN 4.2e).
+        // The sim refuses a template whose techs the nation does not know (PLAN 3.1a), a fleet of a
+        // nation with no port (PLAN 4.2e), and a wing of one with no airbase with room for it (PLAN 5.8s1).
         const known = (nation.techs[0] & tp.techs[0]) >>> 0 === tp.techs[0] && (nation.techs[1] & tp.techs[1]) >>> 0 === tp.techs[1];
-        const port = tp.domain === 0 || nation.shipyard;
+        const port = tp.domain === 0 || (tp.domain === 1 ? nation.shipyard : nation.airRoom >= tp.aircraft);
         return (
           <div class="god-row act-template" key={i}>
             <span class="god-war-name" title={t('act.templateInfo', { men: num(tp.men), gold: num(tp.gold), manpower: num(tp.manpower), days: tp.days })}>
               {t(tp.nameKey as MessageKey)}
-              <span class="act-cost"> {!known ? t('act.needsResearch') : !port ? t('act.needsPort') : t('act.cost', { gold: num(tp.gold), days: tp.days })}</span>
+              <span class="act-cost"> {!known ? t('act.needsResearch') : !port ? t(tp.domain === 1 ? 'act.needsPort' : 'act.needsAirfield') : t('act.cost', { gold: num(tp.gold), days: tp.days })}</span>
             </span>
             <button type="button" class="god-btn" data-testid={`act-build-${i}`} disabled={!affordable || !known || !port} onClick={() => onCommand({ kind: 'queueFormation', nation: n, template: i })}>
               {t('act.build')}

@@ -60,9 +60,7 @@ quick sweep as a smoke test.
   - [x] 5.8v1 The page's orders for a wing (found by 5.8g: a mission, a rebase and a paradrop […]
   - [x] 5.8v2 A paradrop of a selected formation at an airbase, from the page.
   - [x] 5.8v3 A wing's and a paradrop's refusal told as a march's is (PLAN 4.9a): the worker's […]
-  - [ ] 5.8v4 Wings built from the page (found by 5.8v1: the Actions tab leaves air templates
-    out, "no air formation is built", since 5.8s1 untrue): with its airfield's word, as a
-    fleet's "no port".
+  - [x] 5.8v4 Wings built from the page (found by 5.8v1: the Actions tab leaves air templates […]
   - [ ] 5.8h Last: `npm run check:review` (ADR-297: every stage, every sweep test), one
     `npm run sweep:quick` (its five limits in PROGRESS; one that fails in BLOCKERS, or fixed if a
     defect of Phase 5 caused it, no constant tuned), and the tick of 5.8; then the critic (due

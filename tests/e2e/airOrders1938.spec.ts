@@ -10,6 +10,8 @@ import { lookAt, open1938 } from './mapView';
 // a fighter group's Strike armed, a click on the map near Poznań gives it there; Rebase armed
 // and Escape disarms it, and the next click is no wing's. PLAN 5.8v2: a garrison brigade at the
 // airbase of Germany's transports, selected, Paradrop armed and Warsaw clicked: it is there.
+// PLAN 5.8v4: an air template on the build list, built where an airfield has room; refused its
+// button where none has.
 
 const GER = NATIONS_1938.findIndex((n) => n.tag === 'GER') + 1;
 const wings = (page: Page) => page.evaluate(() => window.__warsim!.hud.stats.value?.wings ?? []);
@@ -94,4 +96,43 @@ test('a paradrop of the selected brigade by the Actions tab and a click on Warsa
   await clickMiddle(page);
   await page.evaluate(() => window.__warsim!.sim.step(1));
   await expect.poll(async () => page.evaluate((id) => window.__warsim!.view!.formationPos(id), brigade).then((p) => (p ? Math.hypot(p[0] - wx, p[1] - wy) : Infinity)), { timeout: 30_000 }).toBeLessThan(2);
+});
+
+test('a fighter group built from the Actions tab; with no airfield of room, its button disabled', async ({ page }) => {
+  test.setTimeout(150_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await open1938(page);
+  await page.evaluate((n) => window.__warsim!.view!.select(n), GER);
+  await page.getByTestId('take-control').click();
+  await page.getByTestId('tab-actions').click();
+  const tps = await page.evaluate(() => window.__warsim!.hud.templates.value);
+  const fighter = tps.findIndex((t) => t.nameKey === 'template.fighter_group');
+  expect(tps[fighter]!.domain).toBe(2);
+  expect(tps[fighter]!.aircraft).toBeGreaterThan(0);
+  expect(tps[0]!.aircraft).toBe(0);
+  const build = page.getByTestId(`act-build-${fighter}`);
+  await expect(build).toBeEnabled();
+  await build.click();
+  await expect(page.getByTestId('act-queue-row')).toHaveCount(1);
+  await expect(page.getByTestId('act-queue-row')).toContainText('Fighter group');
+  // A nation that knows the fighter's techs, its airbases painted Germany's (God Mode): its
+  // button disabled, and why.
+  const w = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) }).world;
+  const need = w.rules!.templates[fighter]!.techs;
+  const knows = (n: number): boolean => (w.nations.cols.tech0[n]! & need[0]) >>> 0 === need[0] && (w.nations.cols.tech1[n]! & need[1]) >>> 0 === need[1];
+  const bases = (n: number): number[] => w.airbases.filter((b) => w.cells.controller[b.cell] === n).map((b) => b.cell);
+  const none = [...w.nations.ids()].find((n) => n !== GER && w.nations.cols.living[n] === 1 && knows(n) && bases(n).length > 0 && bases(n).length <= 3)!;
+  expect(none, 'a nation with the techs and few airbases').toBeGreaterThan(0);
+  await page.getByTestId('release-control').click();
+  await page.evaluate(({ cells, W, GER }) => {
+    const sim = window.__warsim!.sim;
+    for (const c of cells) sim.command({ kind: 'paintControl', nation: GER, x: (c % W) + 0.5, y: Math.floor(c / W) + 0.5, r: 0 }, true);
+  }, { cells: bases(none), W: SIZE_1938.w, GER });
+  await page.evaluate(() => window.__warsim!.sim.step(1));
+  await expect.poll(async () => page.evaluate((n) => window.__warsim!.hud.stats.value!.nations.find((x) => x.id === n)?.airRoom ?? -1, none), { timeout: 30_000 }).toBe(0);
+  await page.evaluate((n) => window.__warsim!.view!.select(n), none);
+  await page.getByTestId('take-control').click();
+  await page.getByTestId('tab-actions').click();
+  await expect(page.getByTestId(`act-build-${fighter}`)).toBeDisabled();
+  await expect(page.getByTestId(`act-build-${fighter}`).locator('xpath=..')).toContainText('no airfield with room');
 });
