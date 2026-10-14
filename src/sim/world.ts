@@ -496,6 +496,7 @@ class WorldCore implements Stateful {
     w.contacts = null;
     w.deployed = null;
     w.deployedBefore = null;
+    w.deployedTick = -1;
     // The nav caches and the seas' are of the map: kept if the map loaded is the same (`checkNav`).
     w.navStale = true;
     w.frontier = null;
@@ -766,6 +767,11 @@ export class World {
   movedTick = -1;
   /** The deployments of the hour before (see elementPlaceBefore in systems/elements.ts); null: not known. */
   deployedBefore: Map<number, { x: number; y: number; facing: number } | null> | null = null;
+  /**
+   * The tick `deployAll` last ran in. Before it runs in a tick, `deployed` is still the hour
+   * before's, what was last drawn, and `deployedBefore` the hour before that (PLAN 5.8w13). Derived.
+   */
+  deployedTick = -1;
   /** Scenario rules for commands (set by the Sim; not state). */
   rules: ScenarioRules | null = null;
   /**

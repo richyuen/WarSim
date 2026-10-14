@@ -461,10 +461,13 @@ export function elementPlace(world: World, f: number, slot: number, count: numbe
  * has marched in this hour before it met the enemy stood where `noteMove` has it (PLAN 3.5a:
  * the wreck of an element that died in its first hour of contact lay an hour's march from its
  * sprite). Where the hour before is not known (a loaded game's first hour, after a command) it
- * is the place of now.
+ * is the place of now. An element that dies before this hour's contacts are found (an air
+ * strike's, `airSystem` before `combatSystem`) stood where the hour before deployed it: then
+ * that hour is still `deployed` (PLAN 5.8w13: the wrecks of a formation struck from the air lay
+ * where its block stood two hours before).
  */
 export function elementPlaceBefore(world: World, f: number, slot: number, count: number, element: number): [number, number] {
-  const before = world.deployedBefore;
+  const before = world.deployedTick === world.tick ? world.deployedBefore : world.deployed;
   if (!before) return elementPlace(world, f, slot, count, element);
   const c = world.formations.cols;
   const d = before.get(f);
@@ -491,6 +494,7 @@ export function noteMove(world: World, f: number): void {
  */
 export function deployAll(world: World, contacts: Map<number, number>): void {
   world.deployedBefore = world.deployed;
+  world.deployedTick = world.tick;
   world.contacts = contacts;
   world.deployed = new Map();
   const idx = elementIndex(world);

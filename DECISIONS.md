@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-367 · 2026-10-14 · accepted — An element struck from the air ends where it was drawn (PLAN 5.8w13)
+
+- **Found** (5.8h, `check:review`, the fourth run): `wrecks1938` (PLAN 2.4b): on day 14 of seed
+  1938 the 18 elements of an Austrian infantry division (formation 627, in contact) end 0.32 to
+  0.36 cells from where their sprites stood the hour before. The end's place is
+  `elementPlaceBefore`: the hour before's deployments (`deployedBefore`), which `deployAll`
+  sets when `combatSystem` finds the hour's contacts. An air strike (PLAN 5.4b) settles the
+  formations it hits in `airSystem`, before `combatSystem`: then `deployed` is still the hour
+  before's, what was drawn, and `deployedBefore` the hour before that. The wrecks lay where the
+  block stood two hours before. A defect of Phase 5 (every end before the hour's contacts are
+  found; the air strike is the one of them that kills a formation in contact).
+- **Decision.** The world keeps the tick `deployAll` last ran in (`deployedTick`, derived);
+  before it in a tick, `elementPlaceBefore` reads `deployed`, after it `deployedBefore`, as
+  before.
+- **The pin holds**: where an element ends is an event, not state.
+- **Tests.** `tests/unit/wreckPlace1938.test.ts` (new; failed before: element 15063 0.349 cells
+  from where it was drawn): day 14 of seed 1938, 16 hours, every end within half a slot of the
+  place drawn the hour before, some in an hour of air strikes. `wrecks1938` green (22 ends, 0
+  cells from their sprites), `burning1938`, `loadedEffects1938` green; `fallen1938` red as known
+  (tools/gate/knownRed.json).
+
 ### ADR-366 · 2026-10-14 · accepted — The leaders' front, and the full row of banners a day after (PLAN 5.8w12)
 
 - **Found** (5.8h, `check:review`, the fourth run): `toBattle1938`'s front test (PLAN 2.14f5a)

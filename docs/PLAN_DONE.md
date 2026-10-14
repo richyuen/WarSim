@@ -8392,3 +8392,20 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8w12 `toBattle1938` (:327): weeks into Germany against Poland, the two formations the
     banner leads to do not stand front to front (`leaders` `[false, false]`).
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w13 `wrecks1938` (:158): wreck 15063 lies 0.35 from where its sprite stood (less than
+    0.015 wanted). A defect until shown otherwise: the cause first.

@@ -15294,3 +15294,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** green (the whole unit suite, 1,391 of 1,391: the working tree's `package.json`;
   the changed spec).
 - **Next:** PLAN 5.8w13.
+
+## 2026-10-14 — PLAN 5.8w13: an element struck from the air ends where it was drawn (ADR-367)
+
+- **Found:** an air strike settles the formations it hits in `airSystem`, before `combatSystem`
+  finds the hour's contacts; `elementPlaceBefore` then read the deployments of two hours before.
+  On day 14 of seed 1938 an Austrian division's 18 elements ended 0.32 to 0.36 cells from their
+  sprites. A defect of Phase 5.
+- **Done:** `World.deployedTick` (derived): before the hour's `deployAll` an end is placed by
+  `deployed`, after it by `deployedBefore`.
+- **Tests:** `wreckPlace1938` (new; failed before); `wrecks1938` (22 ends, 0 cells from their
+  sprites), `burning1938`, `loadedEffects1938` green by hand; `fallen1938` red as known.
+- **Looked at:** the evidence of 2.4 taken again shows no wreck to tell from the units at 120 and
+  40 m/px (the burst and the rest frames alike); not taken in. The test's figures stand for it.
+- **The pin holds** at 76983901.
+- **The gate:** green (the whole unit suite, 1,392 of 1,392; the pin).
+- **Next:** PLAN 5.8h: `check:review` again.
