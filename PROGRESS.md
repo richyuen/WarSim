@@ -15132,3 +15132,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (292 of 293) red only by `snapshot-perf` of BLOCKERS
   (2.47 ms); the pin, build, parity and the changed spec green by hand.
 - **Next:** PLAN 5.8h, the review's last.
+
+## 2026-10-13 — PLAN 5.8h: `check:review`, cut off at its 2-hour limit; nine new reds
+
+- **Done** (recorded in `.cache/gate/review.json`, resumable): typecheck, lint, build, parity,
+  the unit tests (red only by the known `scenario1938` and `snapshot-perf`), the sweep tests,
+  e2e chunks 1 and 2. Then the run was stopped at the background limit.
+- **Red twice and not known** (the review's findings, PLAN 5.8w1 to w4):
+  - `aiSweep1`–`3`: 18 formations on day 1 in a cell no route enters.
+  - `standYear`: 6 formations at rest off sure land. Both are the carriers' naval bomber
+    groups, a wing asked as a formation of the land.
+  - `heldYears`: seed 7, tick 17,520, nation 105 holds 2 cells of nation 10 with no war.
+  - `counters1938`, `declutter1938`, `elements1938`: sums of strength.
+  - `formationPlace1938`: elements in the view.
+- **Known reds as listed:** `cityNames1938` (2), `fallen1938`, `fightSeen1938` (2).
+- **Next:** PLAN 5.8w1.
