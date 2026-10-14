@@ -4,15 +4,26 @@
  * select its formations and order them to move. Moving into enemy land is the attack order:
  * movement stops at enemy cells and combat starts. Releasing control switches its AI back on.
  * The controlled nation follows the sim (stats), so a load or resumed autosave keeps it.
+ *
+ * A wing's order (PLAN 5.8v1): its mission or rebase, chosen in the Actions tab, is armed
+ * (`wingOrder`); the next map click gives it at the clicked cell, and Escape disarms it. So does
+ * a paradrop of the selected formations (PLAN 5.8v2, `dropArmed`): each is dropped there.
  */
 import { signal } from '@preact/signals';
 import type { Hud } from './hud';
 import type { MapView } from './MapView';
 
+/** What a wing can be ordered to do at a place (PLAN 5.8v1): a mission, or a rebase there. */
+export type WingOrder = 'patrol' | 'strike' | 'supply' | 'rebase';
+
 export class PlayerControl {
   /** The controlled nation (0 = none) and how many of its formations are selected. */
   readonly nation = signal(0);
   readonly selectedCount = signal(0);
+  /** A wing's order waiting for its place on the map (PLAN 5.8v1), or null. */
+  readonly wingOrder = signal<{ wing: number; kind: WingOrder } | null>(null);
+  /** A paradrop of the selection waiting for its place on the map (PLAN 5.8v2). */
+  readonly dropArmed = signal(false);
 
   constructor(
     private readonly hud: Hud,
@@ -46,6 +57,8 @@ export class PlayerControl {
   }
 
   clearSelection(): void {
+    this.wingOrder.value = null;
+    this.dropArmed.value = false;
     this.view.selectionNation = this.nation.value;
     this.view.selectedFormations.clear();
     this.selectedCount.value = 0;
@@ -61,14 +74,41 @@ export class PlayerControl {
     this.view.requestDraw();
   }
 
+  /** Arms wing `wing`'s order `kind` for the next map click (PLAN 5.8v1); the same again disarms it. */
+  armWing(wing: number, kind: WingOrder): void {
+    const now = this.wingOrder.value;
+    this.dropArmed.value = false;
+    this.wingOrder.value = now && now.wing === wing && now.kind === kind ? null : { wing, kind };
+  }
+
+  /** Arms a paradrop of the selected formations for the next map click (PLAN 5.8v2); again disarms it. */
+  armDrop(): void {
+    this.wingOrder.value = null;
+    this.dropArmed.value = !this.dropArmed.value && this.view.selectedFormations.size > 0;
+  }
+
   /**
-   * A map click (cell x, y; CSS px sx, sy). On one of the player's formations: select it (Shift
+   * A map click (cell x, y; CSS px sx, sy). With a wing's order armed: give it there. On one of the player's formations: select it (Shift
    * toggles it in the selection). Elsewhere with a selection: order the selected formations to
    * march there. Returns true when the click was used.
    */
   click(x: number, y: number, sx: number, sy: number, shift: boolean): boolean {
     const n = this.nation.value;
     if (n === 0) return false;
+    // A wing's order armed (PLAN 5.8v1): this click is its place.
+    const armed = this.wingOrder.value;
+    if (armed) {
+      this.wingOrder.value = null;
+      const at = { id: armed.wing, x: x + 0.5, y: y + 0.5, nation: n };
+      this.hud.command(armed.kind === 'rebase' ? { kind: 'wingRebase', ...at } : { kind: 'wingMission', mission: armed.kind, ...at });
+      return true;
+    }
+    // A paradrop armed (PLAN 5.8v2): the selection is dropped here.
+    if (this.dropArmed.value) {
+      this.dropArmed.value = false;
+      for (const id of [...this.view.selectedFormations].sort((a, b) => a - b)) this.hud.command({ kind: 'paradrop', id, x: x + 0.5, y: y + 0.5, nation: n });
+      return true;
+    }
     const sel = this.view.selectedFormations;
     const f = this.view.formationAt(sx, sy, n);
     if (f !== 0) {

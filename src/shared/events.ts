@@ -152,6 +152,8 @@ export const RejectReason = {
   OutOfRange: 10,
   /** An air wing's rebase: no airbase of its side and no carrier of its nation there with room for it (PLAN 5.1e). */
   NoBase: 11,
+  /** A paradrop (PLAN 5.8u2): no transport wings of its nation, on the ground at an airbase it stands at, can lift it now (or it is in contact). */
+  NoAirlift: 12,
 } as const;
 export type RejectReason = (typeof RejectReason)[keyof typeof RejectReason];
 

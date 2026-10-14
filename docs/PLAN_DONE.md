@@ -8142,3 +8142,56 @@ Of 5.8 (open in PLAN.md):
 
   - [x] 5.8u1 The transports' missions (SPEC §6.3, found by 5.8b): air supply to a formation cut
     off.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8v1 The page's orders for a wing (found by 5.8g: a mission, a rebase and a paradrop
+    are commands with no control): a wing's mission (patrol, strike, supply) and rebase by a
+    click on the map.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8v3 A wing's and a paradrop's refusal told as a march's is (PLAN 4.9a): the worker's
+    order news of them, and the reasons 10 to 12 in the page's words.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8v4 Wings built from the page (found by 5.8v1: the Actions tab leaves air templates
+    out, "no air formation is built", since 5.8s1 untrue): with its airfield's word, as a
+    fleet's "no port".

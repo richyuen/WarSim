@@ -396,7 +396,7 @@ export type FromWorker =
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance; the ticker's rows (PLAN 3.12c), the kinds of every major event since the message before (`news`, PLAN 3.12Rh2: the ticker's rows are the last five), and the number of the worker's world, which a new game or a load changes (PLAN 3.12d). */
-  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; aiEnabled: boolean; player: number; edits: { undo: number; redo: number }; ticker: TickerRow[]; news: number[]; world: number };
+  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; aiEnabled: boolean; player: number; edits: { undo: number; redo: number }; ticker: TickerRow[]; news: number[]; world: number; wings: PlayerWing[] };
 
 /** A buildable land template for the production UI (PLAN 1.33b). */
 export interface TemplateInfo {
@@ -407,8 +407,10 @@ export interface TemplateInfo {
   men: number;
   /** Marker symbol class from the template's elements (PLAN 2.1); a fleet's is `fleet` (PLAN 4.2b). */
   symbol: UnitSymbol;
-  /** Of the land (0), or a fleet (1): `Domain` of the sim. Only one of the land can be queued yet (PLAN 4.2e). */
+  /** Of the land (0), a fleet (1) or an air wing (2): `Domain` of the sim. */
   domain: number;
+  /** An air wing's aircraft (PLAN 5.8v4; 0 for the land's and the sea's): the room it takes at an airfield. */
+  aircraft: number;
   /** The techs a nation must know to raise it, as bits (PLAN 3.1a; `NationStat.techs`). */
   techs: readonly [number, number];
 }
@@ -423,6 +425,21 @@ export interface TechInfo {
 export type UnitSymbol = 'infantry' | 'armour' | 'motorised' | 'cavalry' | 'mountain' | 'garrison' | 'fleet';
 
 /** One living nation for the UI panels (PLAN 1.31). Names are i18n keys or '=' + literal. */
+/** An air wing of the nation the player controls (PLAN 5.8v1): what its Actions tab lists and orders. */
+export interface PlayerWing {
+  id: number;
+  /** Its template's index. */
+  template: number;
+  /** Of transports (it flies supply, PLAN 5.8u1). */
+  transport: boolean;
+  /** Based on a carrier (its fleet's), not an airbase. */
+  carrier: boolean;
+  /** Its mission, none for null. */
+  mission: 'patrol' | 'strike' | 'supply' | null;
+  /** In the air on a sortie now. */
+  flying: boolean;
+}
+
 export interface NationStat {
   id: number;
   name: string;
@@ -458,6 +475,8 @@ export interface NationStat {
   techs: readonly [number, number];
   /** Whether it holds a port a ship reaches, where a fleet it orders is built (PLAN 4.2e–f, `shipyard`). */
   shipyard: boolean;
+  /** The most room for aircraft at one of the airbases it holds, beside the wings there (PLAN 5.8v4): a wing of more is not built (`airfield`). */
+  airRoom: number;
   /** Its research budget in gold per month, like `income` (the sim holds it per day; PLAN 3.1b). */
   research: number;
   /** What it is researching, in the order the lines were opened: index into `mapLayers.techs` and the gold paid. */

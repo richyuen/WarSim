@@ -13,12 +13,18 @@
  *   (`airSuperiority`, PLAN 5.3c); with none, no mission. Superiority there comes of the
  *   fighters over the front, and of the air zones being wide (a zone of 1.5 M km² holds a front
  *   and the industry behind it).
- * - Transports: no mission. At peace, a nation's wings have none.
+ * - Paradrops first (PLAN 5.8u3b, `paradrops`): a formation of infantry alone at an airbase with
+ *   the transports to lift it, not on the front, is dropped on its own front formation nearest it.
+ * - Transports fly supply (PLAN 5.8u3a) to its own land formation short of it (supply under
+ *   `LIFT_BELOW`) nearest their base within range; none, no mission. At peace, a nation's wings
+ *   have none.
  *
  * An order is given only where it is within range (`kmFromBase`), so the AI is never refused.
  */
 import { isDayStart } from '../../shared/calendar';
 import { basePlace, kmFromBase, orderMission, wingRange } from '../systems/air';
+import { canParadrop, orderParadrop } from '../systems/airLift';
+import { wrapDx } from '../systems/elements';
 import { hypot } from '../core/dmath';
 import { AIR_HELD, airSuperiority } from '../systems/airSuperiority';
 import { airOf, navOf, type World } from '../world';
@@ -26,13 +32,17 @@ import { airOf, navOf, type World } from '../world';
 /** A strategic bomber group bombs industry only in an air zone its nation's superiority is this or more in. */
 export const BOMB_SUPERIORITY = AIR_HELD;
 
+/** The AI's transports fly supply to its formations whose supply is under this (PLAN 5.8u3a). */
+export const LIFT_BELOW = 0.5;
+
 /** A wing's role by the class of its aircraft (its template's first squadron's). */
-const ROLE: Record<string, 'patrol' | 'front' | 'naval' | 'bomb' | undefined> = {
+const ROLE: Record<string, 'patrol' | 'front' | 'naval' | 'bomb' | 'lift' | undefined> = {
   fighter: 'patrol',
   cas: 'front',
   bomber_tac: 'front',
   naval_bomber: 'naval',
   bomber_str: 'bomb',
+  transport_air: 'lift',
 };
 
 /** The day's missions of every AI nation's land-based wings. */
@@ -53,10 +63,16 @@ export function airAi(world: World): void {
   // The front: every land formation in contact; the fleets.
   const engaged: number[] = [];
   const fleets: number[] = [];
+  /** The land formations short of supply, for the transports. */
+  const short: number[] = [];
   world.formations.forEach((id) => {
     if (world.isFleet(id)) fleets.push(id);
-    else if (!world.offLand(id) && c.engaged[id] === 1) engaged.push(id);
+    else if (!world.offLand(id)) {
+      if (c.engaged[id] === 1) engaged.push(id);
+      if (c.supply[id]! < LIFT_BELOW) short.push(id);
+    }
   });
+  paradrops(world, wings, engaged);
   // The cells of industry, richest first, for a strategic bomber: made when one is tasked.
   let rich: readonly number[] | null = null;
   const richest = (): readonly number[] => (rich ??= byIndustry(world));
@@ -73,13 +89,17 @@ export function airAi(world: World): void {
     for (const id of list) {
       const role = roleOf(world, id);
       let target: [number, number] | null = null;
-      let kind: 'patrol' | 'strike' = 'strike';
+      let kind: 'patrol' | 'strike' | 'supply' = 'strike';
       if (role === 'patrol') {
         target = nearest(world, id, own);
         kind = 'patrol';
       } else if (role === 'front') target = nearest(world, id, enemy);
       else if (role === 'naval') target = nearest(world, id, enemyFleets) ?? nearest(world, id, enemy);
       else if (role === 'bomb') target = industry(world, id, n, richest);
+      else if (role === 'lift') {
+        target = nearest(world, id, short.filter((g) => c.nation[g] === n));
+        kind = 'supply';
+      }
       if (!target) {
         world.wingMission.delete(id);
         continue;
@@ -91,8 +111,44 @@ export function airAi(world: World): void {
   }
 }
 
+/**
+ * The day's paradrops (PLAN 5.8u3b): of each AI nation at war with wings (`wings`), each of its
+ * land formations that can be dropped (`canParadrop`: of infantry alone, at an airbase with its
+ * transports there on the ground to lift it), not on the front, by ascending id, is dropped on
+ * the place of its own formation on the front (`engaged`) nearest it. Before the wings' missions,
+ * so the transports it takes fly the drop.
+ */
+function paradrops(world: World, wings: Map<number, number[]>, engaged: readonly number[]): void {
+  const c = world.formations.cols;
+  const rules = world.rules!;
+  const atWar = world.wars.nations();
+  const fronts = new Map<number, number[]>();
+  for (const g of engaged) {
+    const list = fronts.get(c.nation[g]!);
+    if (list) list.push(g);
+    else fronts.set(c.nation[g]!, [g]);
+  }
+  for (const id of [...world.formations.ids()].sort((a, b) => a - b)) {
+    const n = c.nation[id]!;
+    const front = fronts.get(n);
+    if (!front || !wings.has(n) || !atWar.has(n) || world.offLand(id) || c.engaged[id] === 1) continue;
+    if (rules.templates[c.template[id]!]!.elements.some((e) => rules.units[e.unit]!.cls !== 'inf')) continue;
+    let best = -1;
+    let bd = Infinity;
+    for (const g of front) {
+      const dx = wrapDx(world, c.x[id]!, c.x[g]!);
+      const d = dx * dx + (c.y[g]! - c.y[id]!) * (c.y[g]! - c.y[id]!);
+      if (d < bd) {
+        bd = d;
+        best = g;
+      }
+    }
+    if (best >= 0 && canParadrop(world, id, c.x[best]!, c.y[best]!) === 0) orderParadrop(world, id, c.x[best]!, c.y[best]!);
+  }
+}
+
 /** Wing `id`'s role (`ROLE`), by its first squadron's class. */
-function roleOf(world: World, id: number): 'patrol' | 'front' | 'naval' | 'bomb' | undefined {
+function roleOf(world: World, id: number): 'patrol' | 'front' | 'naval' | 'bomb' | 'lift' | undefined {
   const rules = world.rules!;
   const first = rules.templates[world.formations.cols.template[id]!]?.elements[0];
   return first ? ROLE[rules.units[first.unit]!.cls] : undefined;

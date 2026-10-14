@@ -167,6 +167,122 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-355 · 2026-10-13 · accepted — Wings built from the page (PLAN 5.8v4)
+
+- **Found** (5.8v1): the Actions tab left air templates off its build list ("no air formation
+  is built", untrue since 5.8s1).
+- **Decision.** Every template is on the list. A wing's needs the nation's most room for
+  aircraft at an airbase it holds, beside the wings based there (`NationStat.airRoom`, as
+  `airfield` reckons it), to be its aircraft or more (`TemplateInfo.aircraft`, 0 for the land's
+  and the sea's); else its button is disabled, "no airfield with room", as a fleet's is "no
+  port". The techs come first, as for any template.
+- **The pin holds** at 76983901: the page's.
+- **Tests.** `serverWings` (1 more): Germany's room at least a fighter group's aircraft, where
+  `airfield` finds one. `airOrders1938.spec.ts` (1 more): as Germany a fighter group built from
+  the list, in its queue; a nation that knows the fighter's techs with its airbases painted
+  Germany's (God Mode): room 0, the button disabled, "no airfield with room".
+  `playerActions1938.spec.ts` green by hand with the longer list.
+
+### ADR-354 · 2026-10-13 · accepted — A wing's and a paradrop's refusal told (PLAN 5.8v3)
+
+- **Found** (5.8g): the worker told a player's refused march (4.9c), not a wing's order or a
+  paradrop; the page had no words for the reasons 10 and 11.
+- **Decision.** A player's `wingMission`, `wingRebase` and `paradrop` (they name its nation) are
+  kept by the worker as a march is (`ordered`), marked with the tick they are applied at: a
+  `MoveRejected` of the formation then is told (`orderNews`, refused, with its reason); after
+  that hour the order is forgotten (what was ordered before stands again, as after a refusal),
+  so a wing's given order is not kept for good. A paradrop that lands is forgotten at its
+  landing, as a landing is. The reasons 10 (`OutOfRange`) and 11 (`NoBase`) have their words; a
+  wing, which has no tag on the map, is named by its template.
+- **The pin holds** at 76983901: the worker's.
+- **Tests.** `serverAirOrderNews` (2, new): a fighter group's strike on Moscow refused,
+  `OutOfRange`, told once and forgotten; its patrol over Berlin given, nothing told, forgotten;
+  a brigade at no airbase refused a paradrop, `NoAirlift`; the three reasons in words.
+
+### ADR-353 · 2026-10-13 · accepted — A paradrop from the page (PLAN 5.8v2)
+
+- **Decision.** The Actions tab's air force has a Paradrop button where the nation has a
+  transport wing, enabled with formations selected: it arms a drop (`PlayerControl.dropArmed`;
+  a wing's order and a drop disarm each other); the next map click gives `paradrop` with the
+  player's nation for each selected formation, by ascending id, at the clicked cell; Escape
+  disarms it. What can be dropped is the sim's to say (5.8u2); its refusal told is 5.8v3.
+- **The pin holds** at 76983901: the page's.
+- **Tests.** `airOrders1938.spec.ts` (1 more): as Germany at war with Poland, its second
+  transport group rebased to the first's airbase and a garrison brigade raised there; the
+  button disabled with none selected; the brigade selected, Paradrop armed, Warsaw clicked:
+  the brigade within 2 cells of it.
+
+### ADR-352 · 2026-10-13 · accepted — The page's orders for a wing (PLAN 5.8v1)
+
+- **Found** (5.8g): a wing's mission and rebase were commands with no control on the page; a
+  wing at its base is not drawn (5.1d), so it cannot be clicked either.
+- **Decision.** The worker's stats carry the player's wings (`nationStats.wings`:
+  `PlayerWing`, by id: template, transport, carrier, mission, flying). The Actions tab lists
+  them under "Air force" with buttons that arm an order (Patrol, Strike, Supply for a
+  transport, Rebase; `PlayerControl.wingOrder`, the same button again disarms it); the next map
+  click gives it at the clicked cell with the player's nation, and Escape disarms it, as it
+  clears a selection. PLAN 5.8v split: v1 a wing's orders, v2 the paradrop, v3 their refusals
+  told, v4 wings built from the page (found here: the Actions tab leaves air templates out).
+- **The pin holds** at 76983901: the page's.
+- **Tests.** `serverWings` (1, new): none without a player, Germany's with their missions.
+  `airOrders1938.spec.ts` (new): as Germany, a fighter group's Strike armed and the map clicked
+  near Poznań: its mission there; a transport has Supply and no Strike, a fighter the other way;
+  Rebase armed, then Escape, disarmed.
+
+### ADR-351 · 2026-10-13 · accepted — The AI's paradrops (PLAN 5.8u3b)
+
+- **Found** (5.8b): with the paradrop (5.8u2) no AI dropped.
+- **Decision.** Daily, before the wings' missions (so the transports it takes fly the drop), each
+  AI nation at war with wings drops each of its land formations, by ascending id, that is not
+  on the front and can be dropped (`canParadrop`: the order's checks without its event, so the
+  AI is never refused) on the place of its own formation on the front (`engaged`) nearest it.
+  A reinforcement of the front, not a raid behind it: where to strike behind the enemy's front
+  is a plan the operational AI does not make. `orderParadrop` is the check (`paradropPlan`)
+  and the drop.
+- **What it does.** Little in 1938: of its 37 formations of infantry alone (garrison brigades),
+  those at an airbase of their nation's are 29 of small nations without transports, and
+  Britain's two; the AI builds none. The rule waits for a garrison raised there, or a player's.
+- **The pin holds** at 76983901: no drop in seed 99's year.
+- **Tests.** `airAi1938` (1 more): a German garrison brigade at the airbase of Germany's two
+  transport groups dropped on the German division on the front; with one group, too few, it
+  stays, and the AI gives no order that is refused.
+
+### ADR-350 · 2026-10-13 · accepted — The AI flies supply (PLAN 5.8u3a)
+
+- **Found** (5.8b): with air supply (5.8u1) the air AI gave its transports no mission.
+- **Decision.** Daily, an AI nation at war tasks each land-based transport wing with `supply`
+  to its own land formation whose supply is under `LIFT_BELOW` 0.5 nearest the wing's base
+  within its range (`nearest`, as the fighters' front); with none, no mission. An ally's
+  formation is not its to feed, nor one aboard. PLAN 5.8u3 split: u3a supply, u3b the AI's
+  paradrops.
+- **The pin moves** 048c4760 → 76983901.
+- **Tests.** `airAi1938` (1 more): a German division on the front at a quarter's supply,
+  Germany's transports in range fly supply to it; fed again, with a Polish one short beside it,
+  no mission.
+
+### ADR-349 · 2026-10-13 · accepted — The paradrop (PLAN 5.8u2)
+
+- **Found** (5.8b): SPEC §6.3 has the paradrop; no formation could go by air.
+- **Decision.** `orderParadrop` (command `paradrop`, of its nation's alone): a formation of
+  infantry alone (every element of class `inf`: no guns, no engines; the 1938 templates'
+  garrison brigade of 3,000 men), not in contact, standing within `BASE_PICK_CELLS` of an
+  airbase its nation holds, is flown by its nation's transport wings based there with no
+  sortie, the fewest by ascending id whose `PARA_MEN` 64 men an aircraft lift its men (a wing's
+  aircraft stand for about three of the record's: Germany's two groups lift 3,072), to a land
+  cell within their range held by its side, an enemy or no one. It stands there at once, as a
+  rebase is at once; the wings fly the sortie out and home (flown and fought as any; their
+  missions end); its org is at most `PARA_ORG` 0.5 and an enemy's cell it lands on is taken as
+  a landing's beachhead (PLAN 4.5b), `FormationLanded`. Else `MoveRejected` with why: `NotLand`,
+  `Aboard`, `NoLanding` (water), `NoRoute` (a nation at peace), `OutOfRange`, and the new
+  `NoAirlift` 12 (no lift at the airbase it stands at, none at all, or in contact), with its
+  line in the page's words.
+- **The pin holds** at 048c4760: no AI drops.
+- **Tests.** `paradrop1938` (3, new): a German garrison brigade dropped at Warsaw by both
+  groups, there at once, org 0.5, the cell German, the wings flying, their missions ended; each
+  refusal (one group short, a division with guns, a motorised one, a wing in the air, away from
+  an airbase, the Baltic, Stockholm and Moscow at peace, Kazan out of range), the brigade where it
+  was; by command of its nation's alone, saved, the same game.
+
 ### ADR-348 · 2026-10-13 · accepted — Air supply (PLAN 5.8u1)
 
 - **Found** (5.8b): SPEC §6.3 has the transports' missions; a transport wing could only patrol

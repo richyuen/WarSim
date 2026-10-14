@@ -3,6 +3,7 @@
  * and reads no wall-clock time, render state or subscriptions.
  */
 import { orderMission, orderRebase } from './systems/air';
+import { orderParadrop } from './systems/airLift';
 import { finiteCommand, Refusal, type Command } from '../shared/commands';
 import { EventKind } from '../shared/events';
 import { destroyFormation, equipFormation } from './systems/elements';
@@ -108,6 +109,10 @@ function applyCommand(world: World, cmd: Command): Refusal {
       return Refusal.None;
     case 'queueFormation':
       queueFormation(world, cmd.nation, cmd.template);
+      return Refusal.None;
+    case 'paradrop':
+      if (cmd.nation !== undefined && (!world.formations.has(cmd.id) || world.formations.cols.nation[cmd.id] !== cmd.nation)) return Refusal.NoSuch;
+      orderParadrop(world, cmd.id, cmd.x, cmd.y);
       return Refusal.None;
     case 'wingMission':
     case 'wingRebase':

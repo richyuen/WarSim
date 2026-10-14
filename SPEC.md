@@ -1796,7 +1796,17 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   wing not of transports is refused it, `NotLand`). Its sortie, at the target in the hour it
   arrives, lifts 1/48 of a formation's supply an aircraft (a group of 24: a half) to its side's
   formations on the land within a cell that are short of it, the same share each, none past
-  full. No AI flies it yet (5.8u3).
+  full. The air AI's transports fly it (5.8u3a, ADR-350): daily, to the nation's own land
+  formation under half its supply nearest their base within range.
+- *As built (PLAN 5.8u2, ADR-349; `orderParadrop`, the `paradrop` command):* a formation of
+  infantry alone, not in contact, at an airbase its nation holds, is flown by its nation's
+  transport wings based there and on the ground (the fewest by id whose 64 men a plane lift its
+  men) to a land cell in their range held by its side, an enemy or no one. It stands there at
+  once, its org at most 0.5, an enemy's cell its (a beachhead's rule); the wings fly the sortie
+  out and home. Else refused: `NotLand`, `NoLanding` (water), `NoRoute` (a nation at peace),
+  `OutOfRange`, `NoAirlift` (no lift there, or in contact). The air AI drops (5.8u3b, ADR-351):
+  daily, before its wings' missions, a formation that can be dropped, not on the front, on its
+  nation's front formation nearest it.
 - *As built (PLAN 5.4b, ADR-317; `strikes`):* a strike sortie at its target fires once on the
   enemy's land elements within a cell: its aircraft × soft or hard attack × 0.2, in units over
   their hp, spread by their health; carried as on the land. A close support group takes about
@@ -1834,8 +1844,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - **Air superiority** per zone per side (0–1) modifies ground combat, supply,
   naval detection and bombing accuracy. *As built:* ground combat (5.4a); supply, naval
   detection and bombing accuracy not yet (PLAN 5.8t).
-- *Not built yet* (PLAN 5.8u): the transports' missions (paradrop, air supply); interception is
-  no mission of its own: a patrol meets what comes within 150 km of it (5.7d).
+- *As built since* (PLAN 5.8u, ADR-348 to ADR-351): the transports' missions, air supply and the
+  paradrop, above. Interception is no mission of its own: a patrol meets what comes within 150 km
+  of it (5.7d).
 - Tactical view: plane sprites flying sortie paths, dogfight tracers, bomb impacts,
   flak. *As built:* 5.7a and 5.7b, at T0 to T2.
 
@@ -2582,7 +2593,17 @@ on screen.
     (`NationStat.queue`). A fleet is disabled, "no port", for a nation with no shipyard
     (`NationStat.shipyard`, PLAN 4.2f, ADR-253; the worker asks `shipyard` of each living
     nation, about 3 ms for all, by the ports' water of the zones alone, `portSeaOf`: the
-    zones are built at the first stats of a game, not the lane graph).
+    zones are built at the first stats of a game, not the lane graph). A wing is disabled, "no
+    airfield with room", where the nation's most room for aircraft at an airbase it holds
+    (`NationStat.airRoom`) is under the wing's aircraft (`TemplateInfo.aircraft`; PLAN 5.8v4,
+    ADR-355).
+  - The air force (PLAN 5.8v1, ADR-352): its wings (`nationStats.wings`, the player's, by
+    id), each with its template, base (an airbase, a carrier), mission and whether it flies;
+    a button arms its order (Patrol, Strike, or Supply for a transport; Rebase), the next map
+    click gives it there (`wingMission`, `wingRebase`, with the nation), and Escape disarms it.
+    Paradrop (PLAN 5.8v2, ADR-353), with transports: armed for the formations selected, the
+    next map click drops each there (`paradrop`). A refusal of either is told as a march's is
+    (PLAN 5.8v3, ADR-354: `orderNews`, with its reason in words; a wing named by its template).
 - **God Mode UI** (PLAN 1.32b, `src/ui/GodTab.tsx`): the bottom bar's God Mode button adds a God
   tab to the nation panel. It has rename, income bonus ±10, AI switches (nation and world), war/
   ally/puppet on a chosen target, peace per war, buffs, revive (dead nations), Kill (two clicks).

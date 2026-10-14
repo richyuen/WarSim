@@ -24,6 +24,8 @@ import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
 import { AT_PORT_CELLS } from '../sim/systems/navalCombat';
 import { aircraftOf } from '../sim/systems/airCombat';
+import { isTransport, wingAircraft } from '../sim/systems/air';
+import { airbaseRoom } from '../sim/data/airbases';
 import { sortieEnd } from '../shared/sorties';
 import {
   BLOCK_STRIDE,
@@ -46,6 +48,7 @@ import {
   type WarBattle,
   type WarStat,
   type OrderNews,
+  type PlayerWing,
 } from '../shared/protocol';
 import { SCENARIO_GEOMETRY, SCENARIO_INFO } from '../shared/scenarios';
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
@@ -158,7 +161,7 @@ export class SimServer {
    * The formations a player ordered, to the cell of the order (PLAN 4.9c): what becomes of it is
    * told. `before`: the order it replaced, which stands again if this one is refused.
    */
-  private ordered = new Map<number, { target: number; before: number | undefined }>();
+  private ordered = new Map<number, { target: number; before: number | undefined; once?: number }>();
   private labelNames = -1;
   private terrainSent = -1;
   private citiesSent = -1;
@@ -222,6 +225,11 @@ export class SimServer {
         // A player's order of a formation (it names its nation): what becomes of it is told (PLAN 4.9c).
         if (msg.cmd.kind === 'moveFormation' && msg.cmd.nation !== undefined) {
           this.ordered.set(msg.cmd.id, { target: Math.floor(msg.cmd.y) * sim.world.cells.w + Math.floor(msg.cmd.x), before: this.ordered.get(msg.cmd.id)?.target });
+        }
+        // A wing's order and a paradrop (PLAN 5.8v3): told if refused, as a march is; given or
+        // refused in the hour it is applied (`once`, the tick it is applied at), so forgotten after it.
+        if ((msg.cmd.kind === 'wingMission' || msg.cmd.kind === 'wingRebase' || msg.cmd.kind === 'paradrop') && msg.cmd.nation !== undefined) {
+          this.ordered.set(msg.cmd.id, { target: Math.floor(msg.cmd.y) * sim.world.cells.w + Math.floor(msg.cmd.x), before: this.ordered.get(msg.cmd.id)?.target, once: sim.world.tick });
         }
         // `now` (God Mode UI): apply at once, between ticks, with the tick stamp the next step
         // would give (PLAN 1.32b); the snapshot and stats follow. Plain commands stay pending.
@@ -427,7 +435,7 @@ export class SimServer {
       const province = world.cells.province.slice();
       const rules = world.rules?.templates ?? [];
       // Every template of the rules, by its index, the fleets' with the land's (PLAN 4.2b): a formation is named and drawn by it.
-      const templates = TEMPLATES_1938.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: rules[i]!.domain === Domain.sea ? ('fleet' as const) : symbolOf(t), domain: rules[i]!.domain, techs: rules[i]!.techs }));
+      const templates = TEMPLATES_1938.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: rules[i]!.domain === Domain.sea ? ('fleet' as const) : symbolOf(t), domain: rules[i]!.domain, aircraft: rules[i]!.domain === Domain.air ? wingAircraft(world, i) : 0, techs: rules[i]!.techs }));
       const techs = (world.rules?.techs ?? []).map((t) => ({ nameKey: `tech.${t.id}`, gold: t.gold, days: t.days }));
       this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province, templates, techs }, [land.data.buffer, terrain.data.buffer, province.buffer]);
     } catch {
@@ -596,7 +604,7 @@ export class SimServer {
     });
     const news = this.newsFrom < 0 ? [] : tickerNews(world, this.newsFrom);
     this.newsFrom = world.history.length;
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id)), news, world: this.worldNo }, []);
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id)), news, world: this.worldNo, wings: playerWings(world) }, []);
   }
 
   /**
@@ -706,6 +714,14 @@ export class SimServer {
       men.set(n, (men.get(n) ?? 0) + fc.strength[f]!);
       count.set(n, (count.get(n) ?? 0) + 1);
     });
+    // The most room for aircraft at an airbase each nation holds (PLAN 5.8v4), as `airfield` reckons it.
+    const used = new Map<number, number>();
+    for (const [o, b] of world.wingBase) if (b > 0 && world.formations.has(o)) used.set(b, (used.get(b) ?? 0) + wingAircraft(world, fc.template[o]!));
+    const airRoom = new Map<number, number>();
+    world.airbases.forEach((b, i) => {
+      const n = world.cells.controller[b.cell]!;
+      if (n !== 0) airRoom.set(n, Math.max(airRoom.get(n) ?? 0, airbaseRoom(b) - (used.get(i + 1) ?? 0)));
+    });
     const queues = new Map<number, { template: number; readyDay: number }[]>();
     const pc = world.production.cols;
     world.production.forEach((p) => {
@@ -776,6 +792,7 @@ export class SimServer {
         queue: (queues.get(id) ?? []).sort((x, y) => x.readyDay - y.readyDay),
         techs: [nc.tech0[id]!, nc.tech1[id]!],
         shipyard: nc.living[id] === 1 && shipyard(world, id) >= 0,
+        airRoom: nc.living[id] === 1 ? (airRoom.get(id) ?? 0) : 0,
         research: nc.research[id]! * DAYS_PER_MONTH,
         lines: lines.get(id) ?? [],
       });
@@ -1000,6 +1017,13 @@ export class SimServer {
       this.eventQueue.push(this.nextEventSeq++, ev[i]!, ev[i + 1]!, ev[i + 2]!, b, ev[i + 4]!, ev[i + 5]!);
     }
     ev.length = 0;
+    // A wing's order or a paradrop told nothing of in its hour was given (PLAN 5.8v3): what the
+    // formation was ordered before stands again, as after a refusal.
+    for (const [id, o] of this.ordered) {
+      if (o.once === undefined || o.once >= world.tick) continue;
+      if (o.before === undefined) this.ordered.delete(id);
+      else this.ordered.set(id, { target: o.before, before: undefined });
+    }
     this.drainFires(world);
     const over = this.eventQueue.length / EVENT_STRIDE - EVENT_QUEUE_CAP;
     if (over > 0) {
@@ -1383,4 +1407,17 @@ export function sortieSection(world: World): Float32Array {
     rows.push(s.bx, s.by, s.tx, s.ty, s.launch - world.tick, s.kmh, s.km, s.over, c.nation[id]!, aircraftOf(world, id), role);
   }
   return Float32Array.from(rows);
+}
+
+/** The player's wings (PLAN 5.8v1), by ascending id; none without a player. */
+function playerWings(world: World): PlayerWing[] {
+  const n = world.settings.player;
+  if (n === 0 || world.wingBase.size === 0) return [];
+  const c = world.formations.cols;
+  const out: PlayerWing[] = [];
+  for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
+    if (!world.formations.has(id) || c.nation[id] !== n) continue;
+    out.push({ id, template: c.template[id]!, transport: isTransport(world, id), carrier: base < 0, mission: world.wingMission.get(id)?.kind ?? null, flying: world.sorties.has(id) });
+  }
+  return out;
 }

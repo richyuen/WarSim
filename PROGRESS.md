@@ -15051,3 +15051,84 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the related unit tests (923 of 925) red only by two timing tests of BLOCKERS
   (3,081 ms, 2.35 ms); the pin, build and parity green by hand.
 - **Next:** PLAN 5.8u2.
+
+## 2026-10-13 — PLAN 5.8u2: the paradrop (ADR-349)
+
+- **Done:** `orderParadrop` and the `paradrop` command: a formation of infantry at an airbase,
+  flown by its transport wings there (`PARA_MEN` an aircraft) to a land cell in range, at once,
+  org at most `PARA_ORG`; `RejectReason.NoAirlift` with its line.
+- **Tests:** `paradrop1938` (3, new).
+- **The pin holds** at 048c4760.
+- **The gate:** the related unit tests (1,033 of 1,035) red only by two timing tests of
+  BLOCKERS (3,000 ms, 2.56 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8u3.
+
+## 2026-10-13 — PLAN 5.8u3a: the AI flies supply (ADR-350)
+
+- **Done:** `airAi` tasks transports (`lift`) with supply to the nation's own land formation
+  under `LIFT_BELOW` nearest their base in range. 5.8u3 split: u3b the AI's paradrops.
+- **Tests:** `airAi1938` (1 more).
+- **The pin moves** 048c4760 → 76983901.
+- **The gate:** the related unit tests (823 of 826) red only by the three timing tests of
+  BLOCKERS (3,036 ms, 2.15 ms, 26.2 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8u3b.
+
+## 2026-10-13 — PLAN 5.8u3b: the AI's paradrops (ADR-351)
+
+- **Done:** `airAi` drops each formation that can be dropped (`canParadrop`), not on the front,
+  on its nation's front formation nearest it, before the wings' missions.
+- **Tests:** `airAi1938` (1 more).
+- **The pin holds** at 76983901 (no drop in the year: no AI formation can be dropped).
+- **The gate:** the related unit tests (918 of 921) red only by the three timing tests of
+  BLOCKERS (2,866 ms, 2.46 ms, 25.2 ms); the pin, build and parity green by hand.
+- **Next:** PLAN 5.8g.
+
+## 2026-10-13 — PLAN 5.8g: the PARITY rows of Phase 5
+
+- **Done:** `docs/PARITY.md` additions 5 (aircraft: 5.8's work and its 13 test files; its
+  "missing" brought up to date), 3 (naval), 7 (supply), 8 (production). SPEC's "not built yet"
+  of the transports' missions now "as built since".
+- **Found:** the page has no control for a wing's mission, rebase or paradrop: PLAN 5.8v.
+- **The gate:** documents only, parity.
+- **Next:** PLAN 5.8v.
+
+## 2026-10-13 — PLAN 5.8v1: the page's orders for a wing (ADR-352)
+
+- **Done:** `nationStats.wings` (the player's); the Actions tab's "Air force" with each wing's
+  orders, armed by a button and given by the next map click (`PlayerControl.wingOrder`).
+  5.8v split: v2 the paradrop, v3 refusals told, v4 wings built from the page.
+- **Tests:** `serverWings` (1, new); `airOrders1938.spec.ts` (new, green by hand: 18 s).
+- **The pin holds** at 76983901.
+- **The gate:** the related unit tests (287 of 288) red only by `snapshot-perf` of BLOCKERS
+  (2.30 ms); the pin, build, parity and the changed spec green by hand.
+- **Next:** PLAN 5.8v2.
+
+## 2026-10-13 — PLAN 5.8v2: a paradrop from the page (ADR-353)
+
+- **Done:** the Actions tab's Paradrop, armed for the selection and given by the next map click
+  (`PlayerControl.dropArmed`, the `paradrop` command).
+- **Tests:** `airOrders1938.spec.ts` (1 more; both green by hand, 37 s).
+- **The pin holds** at 76983901.
+- **The gate:** green (the related unit tests, 129; the changed spec, 2).
+- **Next:** PLAN 5.8v3.
+
+## 2026-10-13 — PLAN 5.8v3: a wing's and a paradrop's refusal told (ADR-354)
+
+- **Done:** the worker keeps a player's wing orders and paradrops for their hour and tells a
+  refusal (`orderNews`); `order.why.10` and `11`; a wing named by its template on the page.
+- **Tests:** `serverAirOrderNews` (2, new).
+- **The pin holds** at 76983901.
+- **The gate:** the related unit tests (254 of 255) red only by `snapshot-perf` of BLOCKERS
+  (2.26 ms); build and parity green by hand.
+- **Next:** PLAN 5.8v4.
+
+## 2026-10-13 — PLAN 5.8v4: wings built from the page (ADR-355)
+
+- **Done:** the Actions tab lists the air templates; a wing's button needs `NationStat.airRoom`
+  of its `TemplateInfo.aircraft` ("no airfield with room").
+- **Tests:** `serverWings` (1 more); `airOrders1938.spec.ts` (1 more; its three green by hand,
+  55 s); `playerActions1938.spec.ts` green by hand.
+- **The pin holds** at 76983901.
+- **The gate:** the related unit tests (292 of 293) red only by `snapshot-perf` of BLOCKERS
+  (2.47 ms); the pin, build, parity and the changed spec green by hand.
+- **Next:** PLAN 5.8h, the review's last.

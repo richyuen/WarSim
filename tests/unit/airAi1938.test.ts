@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { EventKind } from '../../src/shared/events';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { airAi, BOMB_SUPERIORITY, byIndustry } from '../../src/sim/ai/air';
+import { airAi, BOMB_SUPERIORITY, byIndustry, LIFT_BELOW } from '../../src/sim/ai/air';
 import { kmFromBase, wingRange } from '../../src/sim/systems/air';
 import { airSuperiority } from '../../src/sim/systems/airSuperiority';
 import { airOf, type World } from '../../src/sim/world';
@@ -103,5 +104,56 @@ describe('the order of industry kept (PLAN 5.8r)', () => {
     const fresh = [...econ.keys()].filter((c) => econ[c]! > 0).sort((x, y) => econ[y]! - econ[x]! || x - y);
     expect(byIndustry(w)).toEqual(fresh);
     expect(byIndustry(w)[0]).toBe(b);
+  });
+});
+
+// PLAN 5.8u3a: the AI's transports fly supply to its own land formation short of it (under
+// LIFT_BELOW) nearest their base within range; with none, no mission.
+describe('the AI\'s transports (PLAN 5.8u3a)', () => {
+  it('a German division short of supply on the front: Germany\'s transports fly supply to it; fed again, no mission', () => {
+    const { w, ger, pol } = front();
+    const lifts = wingsOf(w, GER, 'air_transport_group');
+    expect(lifts.length).toBeGreaterThan(0);
+    w.formations.cols.supply[ger] = LIFT_BELOW / 2;
+    airAi(w);
+    for (const id of lifts) {
+      const m = w.wingMission.get(id);
+      if (kmFromBase(w, id, FX, FY) > wingRange(w, id)) continue;
+      expect(m).toEqual({ kind: 'supply', x: w.formations.cols.x[ger], y: w.formations.cols.y[ger] });
+    }
+    expect(lifts.some((id) => w.wingMission.get(id)?.kind === 'supply')).toBe(true);
+    // Fed again, and a Polish one short beside it: no German transport's mission.
+    w.formations.cols.supply[ger] = 1;
+    w.formations.cols.supply[pol] = LIFT_BELOW / 2;
+    w.tick += 24;
+    airAi(w);
+    for (const id of lifts) expect(w.wingMission.has(id)).toBe(false);
+  });
+});
+
+// PLAN 5.8u3b: the AI's paradrops. A formation of infantry alone at an airbase with the
+// transports to lift it, not on the front, is dropped on its nation's front formation nearest it.
+describe('the AI\'s paradrops (PLAN 5.8u3b)', () => {
+  /** The front, Germany's transport groups at one airbase, a German garrison brigade there. */
+  function drop(groups: number): { w: World; ger: number; brigade: number } {
+    const { w, ger } = front();
+    const lifts = wingsOf(w, GER, 'air_transport_group');
+    const base = w.wingBase.get(lifts[0]!)!;
+    for (const id of lifts.slice(1)) w.wingBase.set(id, groups > 1 ? base : base === 1 ? 2 : 1);
+    const brigade = addDivision(w, GER, ...w.cellPoint(w.airbases[base - 1]!.cell), TEMPLATES_1938.findIndex((t) => t.id === 'garrison_brigade'));
+    return { w, ger, brigade };
+  }
+
+  it('a German garrison brigade at the transports\' airbase is dropped on the German division on the front; with one group, too few to lift it, it stays', () => {
+    const { w, ger, brigade } = drop(2);
+    const c = w.formations.cols;
+    airAi(w);
+    expect([c.x[brigade], c.y[brigade]]).toEqual(w.cellPoint(Math.floor(c.y[ger]!) * w.cells.w + Math.floor(c.x[ger]!)));
+    const one = drop(1);
+    const before = [one.w.formations.cols.x[one.brigade], one.w.formations.cols.y[one.brigade]];
+    airAi(one.w);
+    expect([one.w.formations.cols.x[one.brigade], one.w.formations.cols.y[one.brigade]]).toEqual(before);
+    // No order the AI gives is refused.
+    for (let i = 0; i < one.w.out.events.length; i += 6) expect(one.w.out.events[i + 1]).not.toBe(EventKind.MoveRejected);
   });
 });
