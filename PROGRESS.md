@@ -15216,3 +15216,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the whole unit suite (a helper changed: 1,389 of 1,391) red only by two timing
   tests of BLOCKERS; the pin, build and parity green by hand.
 - **Next:** PLAN 5.8h: `check:review`, on the user's machine, on this commit.
+
+## 2026-10-14 — PLAN 5.8h: the review's fourth run, to its end on the user's machine; six new reds
+
+- **Done** (on the code of `0720761`, with the working tree's `package.json`, its `allowScripts`
+  for esbuild): every step in 36 minutes: typecheck, lint, build, parity, the unit tests and
+  the sweep tests green (the timing tests of BLOCKERS too), e2e chunks 1 to 6 and the perf spec.
+- **Known reds:** `fallen1938`, `zoomDemo1938`.
+- **New reds** (each red twice, the second alone):
+  - `loadedEffects1938`: no element of the loaded game in the view (PLAN 5.8w8).
+  - `markerStacks1938`: the T1 boxes not parted at rest back from T2 (PLAN 5.8w9).
+  - `research1938`: Germany on 2 techs, not 3 (PLAN 5.8w10).
+  - `stackBlocks1938`: the flank case's formations not engaged (PLAN 5.8w11).
+  - `toBattle1938`: the banner's two formations not front to front (PLAN 5.8w12).
+  - `wrecks1938`: a wreck 0.35 from its sprite (PLAN 5.8w13).
+- **Next:** PLAN 5.8w8.
