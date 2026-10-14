@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-363 · 2026-10-14 · accepted — Back from T2, a day with boxes parted (PLAN 5.8w9)
+
+- **Found** (5.8h, `check:review`, the fourth run): `markerStacks1938`'s test of the way back
+  from T2 (PLAN 2.7z) needs more than 5 boxes parted at rest on Spain's front at 1800 m/px, on
+  day 14 of seed 1938, for its case; it found 4. A bisect from `5e91a56` puts the change at the
+  air AI (5.6, `0c51dac`): from there the game is another. At 5.6 and the commits after it the
+  test's own checks failed on day 14 too (a pair of two nations' boxes 32% on each other, 15
+  parted); on today's code they hold (0 pairs, no box moved).
+- **Decision.** The test steps on from day 14 a day at a time, up to day 45, to the first day
+  with more than 5 boxes parted at rest (day 15 now: 7), and asks the same there. What it holds
+  the view to is unchanged.
+- **The pin holds**: no sim input changed.
+- **Tests.** `markerStacks1938` green by hand (4 of 4).
+
 ### ADR-362 · 2026-10-14 · accepted — The loaded window's tanks stand in it at its start (PLAN 5.8w8)
 
 - **Found** (5.8h, `check:review`, the fourth run): `loadedEffects1938` (PLAN 3.7n) loads the

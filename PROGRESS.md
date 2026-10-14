@@ -15243,3 +15243,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The gate:** the whole unit suite (a helper changed: 1,390 of 1,391) red only by `scenario1938`'s
   build time of BLOCKERS (3,136 ms; green alone); the pin, build, parity and the changed spec green.
 - **Next:** PLAN 5.8w9.
+
+## 2026-10-14 — PLAN 5.8w9: back from T2, a day with boxes parted (ADR-363)
+
+- **Found:** a bisect from `5e91a56` puts the change at the air AI (5.6, `0c51dac`): day 14 of
+  seed 1938 has 4 boxes parted at rest on Spain's front, the test's case wants more than 5.
+- **Done:** the test steps on a day at a time to the first day with more than 5 (day 15: 7).
+- **Tests:** `markerStacks1938` green by hand (4 of 4).
+- **The gate:** green (the whole unit suite, 1,391 of 1,391: the working tree's `package.json`;
+  the changed spec).
+- **Next:** PLAN 5.8w10.

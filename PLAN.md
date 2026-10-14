@@ -69,8 +69,7 @@ quick sweep as a smoke test.
   - [x] 5.8w6 The review's third run (found by it): `aiSweep2`, seed 2 at tick 27,721: nation 116 […]
   - [x] 5.8w7 `aiSweep3` runs past its 900 s (1,064 s): the tick's cost since Phase 5 (BLOCKERS, […]
   - [x] 5.8w8 The review's fourth run (found by it, the first to its end): `loadedEffects1938` […]
-  - [ ] 5.8w9 `markerStacks1938` (:229): back from T2, the T1 boxes are not parted at rest at
-    1800 m/px (more than 5 wanted). The cause first: the view, or the 1938 game it is given.
+  - [x] 5.8w9 `markerStacks1938` (:229): back from T2, the T1 boxes are not parted at rest at […]
   - [ ] 5.8w10 `research1938` (:30): Germany works on 2 techs, not 3, within 20 s. The cause
     first: the rule, or the 1938 game since Phase 5 (air builds).
   - [ ] 5.8w11 `stackBlocks1938` (:167): the flank case finds its three formations, none engaged

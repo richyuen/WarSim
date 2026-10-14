@@ -172,8 +172,15 @@ test('back from T2 the T1 markers stand where they will rest: none on another, n
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
   await page.evaluate(() => window.__warsim!.sim.step(24 * 14));
   // Spain's front, where boxes of two nations are parted at 1800 m/px (the test above): from T2.
-  const atRest = await look(page, -3, 40.5, 1800);
-  const parted = atRest.filter((m) => Math.hypot(m.x + m.w / 2 - m.fx, m.y + 17 / 2 - m.fy) > 1).length;
+  // From day 14 a day at a time to the first with more than 5 boxes parted at rest (PLAN 5.8w9:
+  // since the air AI, 5.6, day 14 has 4).
+  const partedAt = async (): Promise<number> => (await look(page, -3, 40.5, 1800)).filter((m) => Math.hypot(m.x + m.w / 2 - m.fx, m.y + 17 / 2 - m.fy) > 1).length;
+  let day = 14;
+  let parted = await partedAt();
+  for (; parted <= 5 && day < 45; day++) {
+    await page.evaluate(() => window.__warsim!.sim.step(24));
+    parted = await partedAt();
+  }
   expect((await look(page, -3, 40.5, 250)).length, 'markers at T2').toBe(0);
 
   // The step back out, and the view's frames 16 ms apart at times the test gives.
@@ -224,7 +231,7 @@ test('back from T2 the T1 markers stand where they will rest: none on another, n
     }
     return { frames, growing, full, markers: first.size, worstMove, moved, deep };
   }, { cx, cy });
-  console.log(`T2 → 1800 m/px: ${got.frames} frames, ${got.growing} of them with the boxes growing, ${got.full} with them in full; ${got.markers} markers, ${parted} of them parted at rest; a box moved from where it first stood by ${got.worstMove.toFixed(2)} px at most; pairs of two nations more than a quarter on each other: ${got.deep.length}`);
+  console.log(`day ${day}, T2 → 1800 m/px: ${got.frames} frames, ${got.growing} of them with the boxes growing, ${got.full} with them in full; ${got.markers} markers, ${parted} of them parted at rest; a box moved from where it first stood by ${got.worstMove.toFixed(2)} px at most; pairs of two nations more than a quarter on each other: ${got.deep.length}`);
   // The case: the morph was seen, boxes in full after it, and boxes that rest off their formations.
   expect(parted, 'boxes parted at rest at 1800 m/px').toBeGreaterThan(5);
   expect(got.growing, 'frames of the morph').toBeGreaterThan(15);

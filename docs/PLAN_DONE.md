@@ -8324,3 +8324,20 @@ Of 5.8 (open in PLAN.md):
   - [x] 5.8w8 The review's fourth run (found by it, the first to its end): `loadedEffects1938`
     (:95): a game loaded into a running one, the view holds none of the loaded game's elements
     (0, more than 0 wanted). A defect until shown otherwise: the cause first.
+
+<!-- moved 2026-10-14 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+
+Of 5.8 (open in PLAN.md):
+
+  - [x] 5.8w9 `markerStacks1938` (:229): back from T2, the T1 boxes are not parted at rest at
+    1800 m/px (more than 5 wanted). The cause first: the view, or the 1938 game it is given.
