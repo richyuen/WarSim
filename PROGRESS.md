@@ -16280,3 +16280,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   ms, another sim (half the hour's work, or a coarse path for unwatched fronts) and the user's
   decision. Parity row 64 has the figures.
 - **Next:** PLAN 7.1l11.
+
+## 2026-10-15 — PLAN 7.1l11a: the supply refresh that goes full (performance)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Split:** 7.1l11 in seven parts (a to g), one lead each (ADR-414).
+- **a, dropped:** in seed 99's five years 9 of 3,633 supply refreshes went full after a partial one
+  (96 ms in all, 0.002 ms a tick); counted with a counter in a copy of `supply.ts`, the pin's
+  year-1 hash unchanged, the source restored.
+- **Next:** PLAN 7.1l11b.

@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-414 · 2026-10-15 · accepted — The older leads of 7.1, one a part (PLAN 7.1l11)
+
+7.1l11 is split in seven parts (a to g), one lead each, measured on HEAD and cut, moved or
+dropped. Each part's finding is added here when it is done.
+
+- **a. The supply refresh that goes full (ADR-81): dropped.** A partial refresh is done again in
+  full when a lane a bloc held is not its own afterwards, or a lower bloc's flood takes one. In
+  seed 99's five years (counted in a copy of `supply.ts` with a counter, the hashes of each year
+  the pin's): 3,633 refreshes; 30 asked in full; 9 partial ones went full (4, 1, 2 and 2 in years
+  1 to 4, none in 5). Those 9 cost 96 ms, the partial and the full together; the partial
+  refreshes 1,470 ms; the asked full ones 261 ms. 96 ms of a run of 64.9 s, 0.002 ms a tick:
+  not worth a cut.
+
 ### ADR-413 · 2026-10-15 · accepted — The top speed is the tick's: dropped from the performance pass (PLAN 7.1l10)
 
 - **Context.** At Max the worker runs ticks as fast as it can: the top speed is the tick's

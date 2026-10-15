@@ -226,6 +226,20 @@ quick sweep as a smoke test.
       Left by 7.1l5 (ADR-408): one zoom from the world to 1 m/px still has a long task of 50 to
       55 ms from the world to T1 (the longest frame 50.1 ms at 60 Hz); with the nation names off it
       has none.
+      Split on 2026-10-15, one cause a part, each measured on HEAD and cut, moved or dropped:
+      - [x] 7.1l11a The supply refresh that goes full (ADR-81): how often in seed 99's five years,
+        what it costs; cut if worth it, the pin unchanged.
+      - [ ] 7.1l11b The hulls' frame: 2,000 hulls with flames on this GPU at T3 (only 5 were timed,
+        on a CPU), the small mark's second sample at T2, the turrets' pass.
+      - [ ] 7.1l11c The ground's cost with no GPU (the software rasteriser): what a frame of T2's
+        ground costs there, and whether anything follows.
+      - [ ] 7.1l11d The AI's refused orders (476 and 1,082 a year at 3.5b; seed 5303's year 21, two
+        failing searches of 31 ms asked each day): counted and timed on HEAD; a rule that does not
+        ask again moves the pin.
+      - [ ] 7.1l11e The call of 361.7 ms in year 4 of seed 4242: found again on HEAD or not.
+      - [ ] 7.1l11f The long ways of seed 5303's year 5 (searches of 8 to 9 ms, ways of 880 cells
+        between ends 50 apart): why so long; shorter searches change the route rule.
+      - [ ] 7.1l11g The zoom's last long task (50 to 55 ms, the world to T1, the nation names).
     - [ ] 7.1l12 The AT of 7.1: seed 99's five years at 1.5 ms a tick and year 1 at 2.4, on the
       budget machine, pinned, alone.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
