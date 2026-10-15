@@ -189,6 +189,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - `nukeDemoRules1938`'s twelve massed divisions stood at Reims, on France's own land, and France
     weighed them: under this rule it must not. They stand at Saarbrücken now, on German land; the
     assertion is the same.
+- **6.11b, no second warhead on one spot:** none within a blast radius (the striker's) of a burst
+  of the last `RESTRIKE_DAYS` = 7, or of the target of a warhead in flight, anyone's. The bursts
+  are state (`world.nukeBursts`, a section saved while there is one; none in seed 99's first
+  year, so the pin holds). A week, not "while its formations are gone": after a week a mass that
+  gathered again, or a capital, may be struck again, and no count of what is left is needed.
 
 ### ADR-392 · 2026-10-14 · accepted — What the Phase 6 review's run found red (PLAN 6.9)
 

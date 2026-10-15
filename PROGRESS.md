@@ -15724,3 +15724,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   Berlin.
 - **Gate:** green (182 related files, 982 tests; the pin unmoved).
 - **Next:** PLAN 6.11b.
+
+## 2026-10-15 — PLAN 6.11b: no second warhead on one spot within a week
+
+- **The rule** (ADR-393): no place weighed within a blast radius of a burst of the last
+  `RESTRIKE_DAYS` = 7, or of a warhead in flight. The bursts are saved (`world.nukeBursts`).
+- **AT:** `nukeTargets1938.test.ts`: London, struck the day before, is not weighed; Kent, a warhead
+  on its way to it, is not; a week on London is again and the burst is forgotten; a save carries
+  the burst. Red on the old source, green on the new.
+- **Gate:** green (983 related tests; the pin unmoved).
+- **Next:** PLAN 6.11c.

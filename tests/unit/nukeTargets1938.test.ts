@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { FRONT_KM, nukeTargets } from '../../src/sim/systems/nuclear';
+import { blastRadius, detonate, FRONT_KM, nukeTargets, RESTRIKE_DAYS } from '../../src/sim/systems/nuclear';
+import { seaKm } from '../../src/sim/systems/navalCombat';
 import { declareWar } from '../../src/sim/systems/war';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -12,6 +13,8 @@ import { nationId } from '../helpers/sim1938';
 // Germany at war with the United Kingdom: twelve British divisions massed in Kent are weighed;
 // twelve at Aden, a colony far from every front, are not; nor twelve on Germany's own land at
 // Cologne, nor twelve in neutral Belgium, nor those in Kent once no one holds their land.
+// PLAN 6.11b: nor a place within a blast radius of a burst of the last RESTRIKE_DAYS, or of a
+// warhead in flight; the bursts are saved.
 
 const { w: W, h: H } = SIZE_1938;
 const [ENG, GER] = ['ENG', 'GER'].map(nationId) as [number, number];
@@ -77,5 +80,37 @@ describe('where the AI\'s warheads may fall (PLAN 6.11a)', () => {
     nc.capitalX[ENG] = london[0];
     nc.capitalY[ENG] = london[1];
     expect(near(nukeTargets(w, GER, war, 0), london)).toBe(true);
+  });
+
+  it('a spot struck the day before, or one a warhead is flying to, is not weighed again; a week on it is; the bursts are saved', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.nukesEnabled = true;
+    s.step(1);
+    const war = declareWar(w, GER, ENG, true)!;
+    for (let k = 0; k < 12; k++) s.command({ kind: 'spawnFormation', nation: ENG, x: kent[0] + (k % 4) * 0.3, y: kent[1] + Math.floor(k / 4) * 0.3, strength: 0, template: inf });
+    s.step(1);
+    expect(near(nukeTargets(w, GER, war, 0), kent)).toBe(true);
+    // A burst at London (God's: no grievance, no outrage): London is not weighed for a week.
+    const london = [w.nations.cols.capitalX[ENG]!, w.nations.cols.capitalY[ENG]!] as const;
+    expect(near(nukeTargets(w, GER, war, 0), london)).toBe(true);
+    detonate(w, 0, 1, london[0], london[1]);
+    s.step(24);
+    const places = nukeTargets(w, GER, war, 0);
+    expect(near(places, london), 'London the day after').toBe(false);
+    for (const [x, y] of places) for (const b of w.nukeBursts) expect(seaKm(w, x, y, b.x, b.y)).toBeGreaterThan(blastRadius(1));
+    // A save carries the burst.
+    const c = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    c.load(s.save());
+    expect(c.world.nukeBursts).toEqual(w.nukeBursts);
+    expect(w.nukeBursts.length).toBe(1);
+    // A warhead flying to Kent: Kent is not weighed while it flies.
+    w.nukeLaunches.push({ id: w.nextLaunchId++, nation: GER, missile: 1, wing: 0, bx: 0, by: 0, tx: kent[0], ty: kent[1], launch: w.tick, arrive: w.tick + 1000 });
+    expect(near(nukeTargets(w, GER, war, 0), kent), 'Kent, a warhead on its way').toBe(false);
+    w.nukeLaunches.length = 0;
+    // A week on, London is weighed again, and the burst forgotten.
+    s.step(RESTRIKE_DAYS * 24);
+    expect(w.nukeBursts.length).toBe(0);
+    expect(near(nukeTargets(w, GER, war, 0), london), 'London a week on').toBe(true);
   });
 });

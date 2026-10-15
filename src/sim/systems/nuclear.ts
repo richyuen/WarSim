@@ -679,6 +679,8 @@ function retaliates(world: World, n: number, war: War, side: number): boolean {
 
 /** How far from the striker's side a place may be to be weighed (PLAN 6.11a), km: from its land formations or its capitals. */
 export const FRONT_KM = 1000;
+/** How long a burst keeps another warhead off its place (PLAN 6.11b), days. */
+export const RESTRIKE_DAYS = 7;
 
 /**
  * The places `n` weighs in `war` on `side` (PLAN 6.4b): enemy capitals, then the NUKE_TARGETS
@@ -688,6 +690,8 @@ export const FRONT_KM = 1000;
  * Each on land the enemy side owns and controls (PLAN 6.11a: not the striker's own land, a
  * neutral's nor the sea), within FRONT_KM of a land formation or a capital of `side`: a colony
  * or a capital-in-exile far from every front is not weighed (critic R6-B2: Paramaribo, Aden).
+ * None within a blast radius of a burst of the last RESTRIKE_DAYS or of a warhead in flight
+ * (PLAN 6.11b: the critic saw three in a row on one spot, its formations gone after the first).
  */
 export function nukeTargets(world: World, n: number, war: War, side: number): [number, number][] {
   const nc = world.nations.cols;
@@ -704,17 +708,21 @@ export function nukeTargets(world: World, n: number, war: War, side: number): [n
     else if (own.has(c.nation[id]!)) anchors.push(c.x[id]!, c.y[id]!);
   });
   const { w, h, owner, controller } = world.cells;
+  const radius = blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1);
+  const struck: number[] = [];
+  for (const b of world.nukeBursts) struck.push(b.x, b.y);
+  for (const l of world.nukeLaunches) struck.push(l.tx, l.ty);
   const fair = (x: number, y: number): boolean => {
     const xx = cellX(world, Math.floor(x));
     const yy = Math.floor(y);
     if (xx === null || yy < 0 || yy >= h) return false;
     const cell = yy * w + xx;
     if (!enemy.has(owner[cell]!) || !enemy.has(controller[cell]!)) return false;
+    for (let k = 0; k < struck.length; k += 2) if (seaKm(world, x, y, struck[k]!, struck[k + 1]!) <= radius) return false;
     for (let k = 0; k < anchors.length; k += 2) if (seaKm(world, x, y, anchors[k]!, anchors[k + 1]!) <= FRONT_KM) return true;
     return false;
   };
   for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && fair(nc.capitalX[m]!, nc.capitalY[m]!)) out.push([nc.capitalX[m]!, nc.capitalY[m]!]);
-  const radius = blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1);
   const near = (a: number, b: number): boolean => Math.abs(c.y[a]! - c.y[b]!) <= radius / 10 && seaKm(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) <= radius;
   const mass = new Map<number, number>();
   for (const a of land) {
@@ -865,13 +873,14 @@ function tabooDay(world: World): void {
 }
 
 /**
- * A warhead of `nation`'s (0: God Mode's, PLAN 6.6a) of `yieldN` bursts at (x, y): told, the taboo
- * broken (PLAN 6.4a), the land's owner's grievance (PLAN 6.4b, not against God), the blast, the
- * fallout and the consequences.
+ * A warhead of `nation`'s (0: God Mode's, PLAN 6.6a) of `yieldN` bursts at (x, y): told,
+ * remembered for RESTRIKE_DAYS (PLAN 6.11b), the taboo broken (PLAN 6.4a), the land's owner's
+ * grievance (PLAN 6.4b, not against God), the blast, the fallout and the consequences.
  */
 export function detonate(world: World, nation: number, yieldN: number, x: number, y: number): void {
   world.out.emit(world.tick, EventKind.NukeDetonated, nation, yieldN, x, y);
   world.nukeTaboo = Math.min(world.nukeTaboo, TABOO_AFTER);
+  world.nukeBursts.push({ x, y, tick: world.tick });
   const struck = ownerAt(world, x, y);
   if (nation !== 0 && struck !== 0 && struck !== nation) world.nukeGrievance.set(struck, { by: nation, until: world.tick + RETALIATION_DAYS * 24 });
   const toll = blast(world, yieldN, x, y);
@@ -903,6 +912,8 @@ export function nuclearSystem(world: World): void {
   arrivals(world);
   if (!isDayStart(world.tick)) return;
   falloutDay(world);
+  // The bursts older than RESTRIKE_DAYS forgotten (PLAN 6.11b).
+  if (world.nukeBursts.length > 0) world.nukeBursts = world.nukeBursts.filter((b) => b.tick > world.tick - RESTRIKE_DAYS * 24);
   tabooDay(world);
   shockDay(world);
   nukeDecisions(world);

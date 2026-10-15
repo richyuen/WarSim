@@ -44,7 +44,7 @@ quick sweep as a smoke test.
     colony or a capital-in-exile far from every front is not weighed).
     AT: unit tests: a colony far from every front against a city on the front; enemy formations
     on the striker's own land and on land no one holds are not weighed.
-  - [ ] 6.11b No second warhead within a blast radius of a burst of the last RESTRIKE_DAYS, or of
+  - [x] 6.11b No second warhead within a blast radius of a burst of the last RESTRIKE_DAYS, or of
     a warhead in flight (state: the week's bursts, saved).
     AT: unit tests: a spot struck the day before, a spot a warhead is flying to; save and load
     of the bursts.
