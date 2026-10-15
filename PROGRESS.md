@@ -16245,3 +16245,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Specs:** `coast1938`, `coastElements1938`, `coastPicture1938` (now through `view.maskBit`),
   `groundThings1938`: 11 green.
 - **Next:** PLAN 7.1l8.
+
+## 2026-10-15 — PLAN 7.1l8: fractional device pixel ratios (rendering)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Fixed** (ADR-411): the markers' box picture in the morph to T2 was rounded up to whole device
+  px and drawn whole (at 1.25 the box 3 % short), and at 1.5 half a px off the box at rest. Now
+  made at the context's scale and the box's sub-pixel place, the unrounded part drawn.
+- **AT:** screenshots of every tier at 1, 1.25 and 1.5 (1280 × 720), looked at; the morph's first
+  frame against the box at rest: 92 and 135 px differ where 20,695 and 22,089 did.
+- **Spec:** `morphRatio1938.spec.ts` (new; fails before); `fades1938`, `handover1938`,
+  `markers1938`, `markerStacks1938`, `morphNations1938`, `tiers1938`: 9 green.
+- **Next:** PLAN 7.1l9.

@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-411 · 2026-10-15 · accepted — The markers' morph at fractional pixel ratios; every tier looked at, at 1.25 and 1.5 (PLAN 7.1l8)
+
+- **The defect** (ADR-74's watch list). On their way into the T2 sprites the T1 markers' boxes
+  are pictures of themselves (ADR-72): made at the ratio, the size rounded up to whole device
+  px, and drawn whole into the box's rectangle. At 1.25 the picture is 38 × 27 px for art of
+  37.5 × 26.25: the box 1 % narrow and 3 % short. At 1.5 its size is whole, but a box at rest
+  stands at a whole CSS px, half a device px off the grid, and the picture did not.
+- **Decision.** The picture is made at the scale of the device px the box is drawn in (the
+  context's), its corner as far between two device px as the box at rest (eighths of a px, a
+  picture for each), and the part its art fills, unrounded, is drawn into the box's rectangle.
+  The first frame of a morph is the box at rest: at 1.25 and 1.5, 92 and 135 of 101,092 and
+  143,085 drawn pixels of the overlay differ (20,695 and 22,089 before); at 1.0 as before.
+  `morphRatio1938.spec.ts` holds it (fails on the code before).
+- **Every tier looked at**, 1280 × 720 at 1, 1.25 and 1.5 (T0 the world and Europe, T1 over
+  Berlin, the morph, T2, T3): the map, the borders, the names, the counters, the markers, the
+  tags, the sprites, the figures and the ground draw at the ratio, crisp; nothing else seen
+  out of place. The canvases are the CSS size × the ratio, rounded (`resize`).
+
 ### ADR-410 · 2026-10-15 · accepted — The page keeps the fine mask's coast, not the mask (PLAN 7.1l7)
 
 - **Context.** The worker sends the page a copy of the fine land mask (16,384 × 8,192 bits,

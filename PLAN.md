@@ -208,7 +208,7 @@ quick sweep as a smoke test.
       line below which the trees thin.
     - [x] 7.1l7 The land mask held twice in the page (16.8 MB for the scatter, as much on the
       GPU). AT: one copy, or an ADR.
-    - [ ] 7.1l8 Fractional device pixel ratios (1.25, 1.5): a marker's box drawn into its
+    - [x] 7.1l8 Fractional device pixel ratios (1.25, 1.5): a marker's box drawn into its
       unrounded rectangle; every layer looked at. AT: screenshots at 1.25 and 1.5, looked at.
     - [ ] 7.1l9 A GPU with no texture of 8192 px draws the coarse coast at T2 and T3 and nothing
       says so. AT: the game says so, or uses the fine mask in parts; an ADR.

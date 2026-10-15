@@ -195,17 +195,24 @@ function boxArt(ctx: CanvasRenderingContext2D, m: MarkerInput, x: number, y: num
 /** Room around the box in its picture, CSS px (the engaged outline reaches half a pixel out). */
 const SPRITE_PAD = 2;
 
-/** A picture of a marker's box at `dpr` device px per CSS px, as it is drawn at rest. */
-function boxSprite(m: MarkerInput, colorOf: (nation: number) => string, flagOf: (nation: number) => CanvasImageSource | null, dpr: number): HTMLCanvasElement {
+/**
+ * A picture of a marker's box at `scale` device px per CSS px, as it is drawn at rest, its corner
+ * (`fx`, `fy`) device px into the picture: where the box at rest stands between two device
+ * pixels, its picture does too (PLAN 7.1l8; at a ratio of 1.5 a box's corner is on a half pixel).
+ */
+function boxSprite(m: MarkerInput, colorOf: (nation: number) => string, flagOf: (nation: number) => CanvasImageSource | null, scale: number, fx: number, fy: number): HTMLCanvasElement {
   const c = document.createElement('canvas');
-  c.width = Math.ceil((BOX_W + 2 * SPRITE_PAD) * dpr);
-  c.height = Math.ceil((BOX_H + 2 * SPRITE_PAD) * dpr);
+  c.width = Math.ceil((BOX_W + 2 * SPRITE_PAD) * scale + fx);
+  c.height = Math.ceil((BOX_H + 2 * SPRITE_PAD) * scale + fy);
   const g = c.getContext('2d')!;
-  g.scale(dpr, dpr);
+  g.setTransform(scale, 0, 0, scale, fx, fy);
   g.imageSmoothingEnabled = false;
   boxArt(g, m, SPRITE_PAD, SPRITE_PAD, colorOf, flagOf);
   return c;
 }
+
+/** A device pixel's share a picture's corner is placed by: 8 places between two pixels. */
+const PHASE_STEPS = 8;
 
 /**
  * Draws the markers (already in the CSS-px transform of `ctx`) and returns where they went.
@@ -285,7 +292,6 @@ export function drawMarkers(
   ctx.setLineDash([]);
   // Pictures of the boxes, made when a morph needs them (one for each nation, symbol and state).
   const sprites = new Map<string, HTMLCanvasElement>();
-  const dpr = Math.max(1, ctx.getTransform().a);
   // Boxes, back to front by y.
   const order = [...markers].sort((a, b) => a.y - b.y || a.id - b.id);
   ctx.font = '600 9px system-ui, sans-serif';
@@ -343,14 +349,25 @@ export function drawMarkers(
           // Shrinking, the box is a picture of itself, scaled smoothly. Scaling its parts would
           // make the pixels of the flag chip (drawn without smoothing) and of the hairlines snap
           // from one frame to the next: measured, a jump of 188 of 255.
-          const key = `${m.nation}|${m.symbol}|${m.engaged ? 1 : 0}`;
+          // Made at the scale of the device px the box is drawn in, and as far between two of
+          // them as the box at rest: so at the morph's first frame the picture is the box
+          // (PLAN 7.1l8). The art fills a part of it whose size is not whole device px (37.5 ×
+          // 26.25 at a ratio of 1.25), drawn into the box's rectangle: drawn whole, the box was
+          // 3 % short, and at 1.5 half a pixel off.
+          const t = ctx.getTransform();
+          const k = Math.max(1, t.a);
+          const [dx, dy] = [t.a * (x - SPRITE_PAD) + t.e, t.d * (y - SPRITE_PAD) + t.f];
+          const fx = Math.round((dx - Math.floor(dx)) * PHASE_STEPS) / PHASE_STEPS;
+          const fy = Math.round((dy - Math.floor(dy)) * PHASE_STEPS) / PHASE_STEPS;
+          const key = `${m.nation}|${m.symbol}|${m.engaged ? 1 : 0}|${k}|${fx}|${fy}`;
           let sprite = sprites.get(key);
-          if (!sprite) sprites.set(key, (sprite = boxSprite(m, colorOf, flagOf, dpr)));
+          if (!sprite) sprites.set(key, (sprite = boxSprite(m, colorOf, flagOf, k, fx, fy)));
           ctx.imageSmoothingEnabled = true;
           ctx.translate(x + BOX_W / 2, y + BOX_H / 2);
           ctx.scale(morph.scale, morph.scale);
           ctx.translate(-(x + BOX_W / 2), -(y + BOX_H / 2));
-          ctx.drawImage(sprite, x - SPRITE_PAD, y - SPRITE_PAD, BOX_W + 2 * SPRITE_PAD, BOX_H + 2 * SPRITE_PAD);
+          const [sw, sh] = [(BOX_W + 2 * SPRITE_PAD) * k + fx, (BOX_H + 2 * SPRITE_PAD) * k + fy];
+          ctx.drawImage(sprite, 0, 0, sw, sh, x - SPRITE_PAD - fx / k, y - SPRITE_PAD - fy / k, sw / k, sh / k);
           ctx.imageSmoothingEnabled = false;
         }
       }
