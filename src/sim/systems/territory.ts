@@ -111,15 +111,48 @@ export function frontierOf(world: World): Set<number> {
   return f;
 }
 
+/**
+ * The hour's pressure (PLAN 7.1h), kept between calls: per frontier cell a chain of (nation,
+ * pressure) entries from `head`, in the order the nations first pressed it, so that the sums over
+ * a chain are those over a `Map` of the cell's nations. `head` is -1 off the hour's cells, which
+ * `touched` lists and the call resets.
+ */
+let head = new Int32Array(0);
+let entryNation = new Int32Array(1024);
+let entryP = new Float64Array(1024);
+let entryNext = new Int32Array(1024);
+let touched = new Int32Array(1024);
+
+function growEntries(): void {
+  const n = entryNation.length * 2;
+  const nation = new Int32Array(n);
+  nation.set(entryNation);
+  const p = new Float64Array(n);
+  p.set(entryP);
+  const next = new Int32Array(n);
+  next.set(entryNext);
+  entryNation = nation;
+  entryP = p;
+  entryNext = next;
+}
+
+function growTouched(): void {
+  const t = new Int32Array(touched.length * 2);
+  t.set(touched);
+  touched = t;
+}
+
 export function territorySystem(world: World): void {
   const frontier = frontierOf(world);
   const { w, h, controller, terrain, flip } = world.cells;
   if (frontier.size === 0) return;
   const mask = world.frontierMask!;
+  if (head.length !== w * h) head = new Int32Array(w * h).fill(-1);
 
   // Pressure per cell per nation, from formations of nations at war (ascending ids).
   const fighting = world.wars.nations();
-  const pressure = new Map<number, Map<number, number>>();
+  let entries = 0;
+  let cells = 0;
   const f = world.formations.cols;
   const wrap = world.settings.loopingMap;
   world.formations.forEach((id) => {
@@ -141,9 +174,30 @@ export function territorySystem(world: World): void {
         const p = base * (1 - d / (PRESSURE_RADIUS + 1));
         const c = y * w + xw;
         if (mask[c] !== 1) continue; // only frontier cells can flip
-        let m = pressure.get(c);
-        if (!m) pressure.set(c, (m = new Map()));
-        m.set(nation, (m.get(nation) ?? 0) + p);
+        let e = head[c]!;
+        if (e === -1) {
+          if (cells === touched.length) growTouched();
+          touched[cells++] = c;
+        } else {
+          // The cell's chain: this nation's entry, or the last one, to append after.
+          for (;;) {
+            if (entryNation[e] === nation) break;
+            const next = entryNext[e]!;
+            if (next === -1) break;
+            e = next;
+          }
+          if (entryNation[e] === nation) {
+            entryP[e] = entryP[e]! + p;
+            continue;
+          }
+        }
+        if (entries === entryNation.length) growEntries();
+        entryNation[entries] = nation;
+        entryP[entries] = p;
+        entryNext[entries] = -1;
+        if (e === -1) head[c] = entries;
+        else entryNext[e] = entries;
+        entries++;
       }
     }
   });
@@ -154,28 +208,40 @@ export function territorySystem(world: World): void {
   // Candidates: frontier cells under pressure, plus cells holding progress (which may reset).
   // Every other frontier cell would compute best = 0 with flip already 0: a no-op.
   const flipping = flippingOf(world);
-  const candidates = new Set(pressure.keys());
-  for (const c of flipping) candidates.add(c);
-  for (const c of [...candidates].sort((p, q) => p - q)) {
+  let count = cells;
+  for (const c of flipping) {
+    if (head[c] !== -1) continue;
+    if (count === touched.length) growTouched();
+    touched[count++] = c;
+  }
+  const candidates = touched.subarray(0, count).sort();
+  for (let i = 0; i < count; i++) {
+    const c = candidates[i]!;
     if (!frontier.has(c)) {
       flip[c] = 0;
       flipping.delete(c);
       continue;
     }
     const d = controller[c]!;
-    const m = pressure.get(c);
+    const first = head[c]!;
     let defence = GARRISON;
     let best = 0;
     let bestNation = 0;
-    if (m) {
+    if (first !== -1) {
       const dBloc = blocOf(world, d);
       const wars = world.wars;
-      for (const [n, p] of m) if (blocOf(world, n) === dBloc || wars.sameSide(n, d)) defence += p;
+      for (let e = first; e !== -1; e = entryNext[e]!) {
+        const n = entryNation[e]!;
+        if (blocOf(world, n) === dBloc || wars.sameSide(n, d)) defence += entryP[e]!;
+      }
       for (const a of neighbours(world, c, nb)) {
         const an = controller[a]!;
         if (an === 0 || an === bestNation || !wars.atWar(an, d)) continue;
         let own = 0;
-        for (const [n, p] of m) if (n === an || wars.together(n, an, d)) own += p;
+        for (let e = first; e !== -1; e = entryNext[e]!) {
+          const n = entryNation[e]!;
+          if (n === an || wars.together(n, an, d)) own += entryP[e]!;
+        }
         const corridor = inCorridor(world, an, c) ? CORRIDOR_PRESSURE : 1; // PLAN 1.23 breakthrough
         const p = (own * corridor) / (TERRAIN_DEF[terrain[c]!] ?? 1);
         if (p > best || (p === best && an < bestNation)) {
@@ -193,6 +259,7 @@ export function territorySystem(world: World): void {
       flipping.delete(c);
     }
   }
+  for (let i = 0; i < count; i++) head[candidates[i]!] = -1;
   const { owner } = world.cells;
   const living = world.nations.cols.living;
   for (const [c, n] of flips) {
