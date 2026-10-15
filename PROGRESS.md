@@ -15981,3 +15981,43 @@ No rule changed and nothing on screen changed. One task came out of it.
   quiet, and by the AI's share of the tick. The gate's known-red `scenario1938` build time failed
   once under that load and passed alone; the gate again with `VITEST_MAX_WORKERS=4` was green.
 - **Next:** PLAN 7.1h.
+
+## 2026-10-15 — PLAN 7.1h: territory and supply (performance)
+
+- **Start:** gate green on a clean tree; critic not due (report of `228d083`, older than the last
+  ten commits).
+- **Found** (year-1 profile of seed 99 on the E-cores, `.cache/prof71/ph0`; counters by wrapping a
+  bundle's functions, `.cache/prof71/timeit.py`): territory 4,183 ms of 35.8 s (pressure in a `Map`
+  of `Map`s, its candidates a `Set` spread and sorted, the flipping set found again by a grid scan
+  after each of 65 frontier rebuilds, every formation of a nation at war walking 25 cells). Supply
+  3,590 ms: the refresh's whole floods (729 refreshes; a city that changed hands flooded both blocs
+  whole, 759 blocs and 17.7 million cells; a ring that did not hold, 664 blocs and 15.7 million),
+  the hourly formation loop, `seaReach` (1,099 calls, 5,757 cities each).
+- **Cuts** (ADR-400), one commit each, pin unchanged (45df324d) at each: `4ffc0f9` pressure in kept
+  typed arrays (chains in first-pressed order, so the sums are the `Map`'s); `db22c02` the flipping
+  set gathered by the rebuild; `da0ba2b` 8 × 8 blocks of frontier counts, a formation far from any
+  front passed over (a unit test holds the counts to the mask's); `90fe9fe` a search of up to 4,096
+  network cells before a bloc is flooded whole, for a ring that does not hold and a city lost or
+  won; `c2d1474` a part cut off from every source cleared alone; `2aac59d` the hourly loop asks the
+  air only of a formation not full; `65dc303`, `de7a6c4` `seaReach`'s cities in flat arrays and
+  their counts typed.
+- **Tests moved** (`c2d1474`, ADR-400): the random walk of `supply.test.ts` counted the old
+  mechanism (blocs flooded whole over 500, now 81). Its check of every refresh against the rule,
+  cell by cell, is unchanged; its floors are now blocs flooded over 50, refreshes that cleared a
+  part alone over 300 (459), refreshes with no bloc flooded over 1,000 (was 400; 1,341). The
+  pocket test asserts the new path exactly; two new tests pin a pocket too large to search and a
+  city taken, cut off and given back. Checked the new tests catch a missed block decrement
+  (`territory.test.ts`, by a mutation).
+- **AT:** five alternating rounds of bundled pinned pairs (`--profile --affinity 0xFFFF`,
+  `e252ca2` against `de7a6c4`, all quiet): territory 0.2941 → 0.1744 ms a tick (−40.7 %), supply
+  0.2495 → 0.1507 (−39.6 %); mean tick 2.040 → 1.807 ms. Year 1 on a map that does not loop: the
+  same hash at each quarter (620968e1). `saveYear` green by hand after the refresh's cuts and at
+  the end.
+- **Left** (under PLAN 7.1l): the frontier rebuild's 65 grid scans of about 12 ms each; the 369
+  calls of `seaReach` in an hour that already asked it.
+- **Specs:** none run by hand; nothing drawn changed, and the pin and the hashes say the game is
+  the same.
+- **Gotcha:** Python's text mode writes CRLF on Windows: open with `newline=''` (and
+  `encoding='utf-8'`) to keep LF. The gate's known-red `scenario1938` build time failed once under
+  load; with `VITEST_MAX_WORKERS=4` every gate was green.
+- **Next:** PLAN 7.1i.

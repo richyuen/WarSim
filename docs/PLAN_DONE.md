@@ -9226,3 +9226,22 @@ Of 7.1 (open in PLAN.md):
     map that does not loop; the AT read as 7.1e's, by bundled pinned pairs (7.1a's 0.62 ms was
     under `tsx`, 0.44 bundled): 0.44 → 0.29 to 0.31 ms, −32.4 % in the mean of four quiet pairs
     and −33.2 % in their median.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1 (open in PLAN.md):
+
+  - [x] 7.1h Territory (8.5 %: `territorySystem`'s own 3.1 %, `frontierOf` 1.9 %) and supply
+    (7.9 %). AT: the pin unchanged; each down by a third in year 1.

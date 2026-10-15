@@ -193,7 +193,7 @@ break it.
   city held and owned by a member, on a land its sea reaches, `seaLinked`), also when its bloc
   still holds its cell; a source made is flooded from by the mend wherever it lies, its land's
   sea reached. A lane in the ring or a search that runs out: flooded whole, as before.
-- **A part cut off from every source is cleared alone** (the next commit). When the parts are
+- **A part cut off from every source is cleared alone** (`c2d1474`). When the parts are
   apart, each is searched alone: one with no source and no lane beside it is dry by the rule
   (nothing joins it to a source but its own cells; a cell of the bloc's beside it with no mark
   is a gain, and the mend floods from the gains beside the network after), and its marks are
@@ -204,6 +204,20 @@ break it.
   times (a part of 675 cells on average) and ran out 128 times.
   **Relies on:** the network being the rule's at the last refresh (the tests hold every partial
   refresh to it); a loss that relied on another lost source being found at that one's own search.
+- **Supply's hourly loop asks the air only of what it changes** (`2aac59d`): a fed formation
+  already full stays full whatever the air (`min(1, 1 + gain)`), so its zone and superiority are
+  not asked. **Relies on:** the gain never below nothing, so AIR_SUPPLY at most 1. The
+  superiority asked is kept by (nation, zone) in typed arrays stamped by call, and off land is a
+  byte per template (sea or air) or the embarked, as `World.offLand` has it.
+- **The sea's reach reads its cities from flat arrays** (`65dc303`, `de7a6c4`, `landCities` in
+  `systems/seaSupply.ts`): the cities on a land, their cells and their lands' slots, kept while
+  `citiesVersion`, the cities' count and high water and the grid's components are the same; the
+  (land, bloc) pairs counted in a typed array and listed in the order first met, so the blocs'
+  maps are built in the order the `Map` of pairs gave (that order is the convoys' ways').
+
+**The AT** (bundled pinned pairs, `--profile --affinity 0xFFFF`, five alternating rounds of
+`e252ca2` and `de7a6c4`, all quiet): territory 0.2941 → 0.1744 ms a tick (−40.7 %), supply 0.2495
+→ 0.1507 (−39.6 %), the mean tick 2.040 → 1.807 ms.
 
 **The tests moved** (`tests/unit/supply.test.ts`): the random walk's floors counted the old
 mechanism. Its check, every refresh to the rule's network cell by cell, is unchanged. Its floor

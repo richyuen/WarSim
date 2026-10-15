@@ -160,8 +160,7 @@ quick sweep as a smoke test.
   - [x] 7.1e Combat's fire (`combatSystem`'s own 6.3 %, `placeOf` 3.2 %, `deployAll` 3.0 %). AT: […]
   - [x] 7.1f The air's anti-aircraft and strikes (`systems/airCombat.ts`: `antiAir` 4.5 %, […]
   - [x] 7.1g The operational AI (15.3 %: `planNation` 13.1, `orderMove` 5.1, `passageOf` 3.4, […]
-  - [ ] 7.1h Territory (8.5 %: `territorySystem`'s own 3.1 %, `frontierOf` 1.9 %) and supply
-    (7.9 %). AT: the pin unchanged; each down by a third in year 1.
+  - [x] 7.1h Territory (8.5 %: `territorySystem`'s own 3.1 %, `frontierOf` 1.9 %) and supply […]
   - [ ] 7.1i The operational AI's war years. The line of R4-B5 holds on HEAD (7.1a: seed 5303's
     first five years 2.19 ms a tick, its last five 1.97, × 0.90), but the middle years peak with
     the AI: years 8 to 10, 12 and 17 are 3.6 to 4.4 ms, of which the operational AI is 1.6 to 2.7
@@ -182,7 +181,12 @@ quick sweep as a smoke test.
   - [ ] 7.1l The leads above that no part takes (the ground's cap, the land mask twice, the
     fractional pixel ratios, the top speed, the hitches at T3): each done, moved to the task it
     belongs to, or dropped with an ADR. Then the five years of seed 99 again: AT of 7.1 (1.5 ms,
-    year 1 2.4).
+    year 1 2.4). Left by 7.1h: the frontier's rebuild scans all 2,097,152 cells, 65 times in year 1
+    of seed 99 at about 12 ms each (a hitch each); a border index kept by `setController` would
+    make it the border's size, but four AIs read the frontier `Set` in its order, so a rebuild must
+    still add its cells in ascending order. And `seaReach` is asked again in the same hour by the
+    convoys and the naval AI (369 of its 1,099 calls a year): kept for the hour if nothing it
+    reads changes between.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
