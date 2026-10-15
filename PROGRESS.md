@@ -15946,4 +15946,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Specs run by hand:** `airDemo1938`, `airFx1938`, `airRead1938`, `airT3_1938` green.
 - **Gate:** green with `VITEST_MAX_WORKERS=4` for each cut; the first run of cut 1 failed only
   the known red timing tests (`scenario1938` build time, `territory` frontier cost).
+- **The map that does not loop** (the pin's 1938 world loops): year 1 of seed 99 with
+  `loopingMap` off, bundles of `d1ef8cd` and of the task's code: the same hash at each quarter
+  (620968e1 at the year's end; `.cache/prof71/nl/`).
 - **Next:** PLAN 7.1g.
