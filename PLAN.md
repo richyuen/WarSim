@@ -156,8 +156,7 @@ quick sweep as a smoke test.
   cut, and says so in DECISIONS:
   - [x] 7.1a The baseline on the budget machine (i7-13700KF, `0xFFFF`), HEAD `3649c23`: seed 99 […]
   - [x] 7.1c The air AI's order of the rich cells (`byIndustry`, `ai/air.ts`): each call […]
-  - [ ] 7.1d Combat's battles (`findBattles`, 8.3 % of year 1 with what it calls; 4.6 % its own):
-    the buckets and the contacts. AT: the pin unchanged; `findBattles` halved in a year-1 profile.
+  - [x] 7.1d Combat's battles (`findBattles`, 8.3 % of year 1 with what it calls; 4.6 % its own): […]
   - [ ] 7.1e Combat's fire (`combatSystem`'s own 6.3 %, `placeOf` 3.2 %, `deployAll` 3.0 %). AT:
     the pin unchanged; combat's mean in year 1 of the profiled run down by a third (1.21 ms).
   - [ ] 7.1f The air's anti-aircraft and strikes (`systems/airCombat.ts`: `antiAir` 4.5 %,

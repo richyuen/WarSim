@@ -185,7 +185,15 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   tests hold. Pin unchanged (45df324d).
 - **Measured** (`node --cpu-prof` on an esbuild bundle of the headless CLI, year 1 of seed 99 on
   the E-cores, as in 7.1a; `.cache/prof71/p3*`): `findBattles` with what it calls 3,860 ms of
-  45.1 s (8.6 %) → 2,403 ms of 43.4 s (5.5 %); its own and `pair`'s 2,153 → 990 ms.
+  45.1 s (8.6 %) → 2,403 ms of 43.4 s (5.5 %); its own and `pair`'s 2,153 → 990 ms. Without
+  `deployAll`, which PLAN 7.1e takes with combat's fire (3.0 % of 7.1a's profile), 2,388 ms
+  (5.3 %) → 1,117 ms (2.6 %): the AT's half.
+- **The contacts, tried and dropped:** `deployOf`'s pass over every contact of the hour for each
+  block on the way to another's (a third of its own time by line) was cut first by a grid of the
+  contacts (`nearContacts`; 0.6 s more, as the contacts of an hour lie on a few fronts and the
+  grid's candidates had to be put back in the contacts' order), then by a north-south pre-check
+  before the distance (no change past the noise: on a front nearly every contact is in reach).
+  What is left of `deployOf` is real work on dense fronts; `deployAll` is 7.1e's.
 
 ### ADR-395 · 2026-10-15 · accepted — The air AI's order of industry checked by its own cells (PLAN 7.1c)
 

@@ -15884,3 +15884,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   cells has a floor of about 0.5 % (scattered reads over the 8 MB array), and a version alone
   misses PLAN 5.8r's direct write. `airAi1938`, `airEdges`, `scenarioEdit`, `bombing1938` green.
 - **Next:** PLAN 7.1d.
+
+## 2026-10-15 — PLAN 7.1d: combat's battles found with each pair once (performance)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Found** (year-1 profile of seed 99 on the E-cores, `node --cpu-prof` on an esbuild bundle;
+  `.cache/prof71/bundle.sh`, `prof.ps1`, `lines.mjs` sums a function's ticks by line): not the
+  empty lookups of the `Map` of buckets but the full ones. A front's cell holds a stack, and nine
+  buckets a fighter met each pair twice.
+- **The cut** (`da836a1`, ADR-396): arrays for the buckets kept between calls; a fighter meets its
+  own bucket from itself on and the four after it, each pair once; the old walk for a place off
+  the map. Pin unchanged (45df324d), gate green (991 related tests).
+- **AT:** `findBattles` without `deployAll` (7.1e's) 2,388 → 1,117 ms (5.3 → 2.6 %), with it 8.6 →
+  5.5 %. Tried and dropped (no gain): a grid of the hour's contacts for `deployOf` (0.6 s worse:
+  the contacts lie on a few fronts) and a north-south pre-check before its distance.
+- **Gotcha:** a `cat > file` with no heredoc in a Bash call waits on stdin until the timeout.
+- **Next:** PLAN 7.1e.

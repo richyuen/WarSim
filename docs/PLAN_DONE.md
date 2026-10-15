@@ -9138,3 +9138,23 @@ Of 7.1 (open in PLAN.md):
     AT: the pin unchanged; `byIndustry` and `same` under 0.3 % of a year-1 profile. Moved
     (ADR-395): an exact check reads the 292,139 cells with industry, a floor of about 0.5 %; AT
     the pin unchanged, `byIndustry` inclusive 2.7 % → 0.6 % of year 1, PLAN 5.8r's test green.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1 (open in PLAN.md):
+
+  - [x] 7.1d Combat's battles (`findBattles`, 8.3 % of year 1 with what it calls; 4.6 % its own):
+    the buckets and the contacts. AT: the pin unchanged; `findBattles` halved in a year-1 profile.
+    Done (ADR-396): each pair once; without `deployAll` (7.1e's) 5.3 % → 2.6 %, with it 8.6 → 5.5 %.
