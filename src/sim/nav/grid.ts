@@ -378,20 +378,27 @@ export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell:
     const c = walked[at]!;
     const cx = c % w;
     const cy = (c - cx) / w;
+    // Away from the map's edges (most cells): the neighbours by their offsets (PLAN 7.1i).
+    const inner = cx > 0 && cx < w - 1 && cy > 0 && cy < h - 1;
     for (let k = 0; k < 8; k++) {
       const dx = DIR_X[k]!;
       const dy = DIR_Y[k]!;
-      const ny = cy + dy;
-      if (ny < 0 || ny >= h) continue;
-      let nx = cx + dx;
-      if (nx < 0 || nx >= w) {
-        if (!wrapX) continue;
-        nx = (nx + w) % w;
+      let n: number;
+      if (inner) n = c + dy * w + dx;
+      else {
+        const ny = cy + dy;
+        if (ny < 0 || ny >= h) continue;
+        let nx = cx + dx;
+        if (nx < 0 || nx >= w) {
+          if (!wrapX) continue;
+          nx = (nx + w) % w;
+        }
+        n = ny * w + nx;
       }
-      const n = ny * w + nx;
       if (component[n] === 0 || ok[holder[n]!] !== 1) continue;
-      // No corner cutting, as in `findPath`: by the terrain, whoever holds the two cells.
-      if (dx !== 0 && dy !== 0 && (component[cy * w + nx] === 0 || component[ny * w + cx] === 0)) continue;
+      // No corner cutting, as in `findPath`: by the terrain, whoever holds the two cells (the
+      // one of c's row and n's column, and the one of n's row and c's column).
+      if (k >= 4 && (component[n - dy * w] === 0 || component[inner ? c + dy * w : n - (n % w) + cx] === 0)) continue;
       if (stamp[n] === gen) {
         const was = id[n]!;
         if (was <= 0 && was !== IN_HAND) {

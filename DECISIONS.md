@@ -191,6 +191,12 @@ here, because a rule change can break it.
   most of what is left is genuine (a war of a nation closed to the planner moves its border).
   A unit test opens a gap in a wall with the provinces' holders as they were (no bump of
   `heldKeys`): the answer turns, and a mutation that misses the change fails it.
+- **`pocketOf`'s steps by offset** (`grid.ts`): away from the map's edges a neighbour is the
+  cell plus its offset, and the corner test reads the two cells beside the step by offset; the
+  order of the eight steps is as it was (a walk's marks and answer depend on it). And
+  `planNation`'s `wideCell` reads what `wideNode` has answered (`Passage.wide`) before it calls
+  it. A few per cent of `pocketOf`; the walks themselves are not cut: what a walk marks decides
+  the answers of the walks after it in the plan, so none is left out or kept for another plan.
 
 ### ADR-400 · 2026-10-15 · accepted — Territory's hour and supply's refresh without what the rule does not need (PLAN 7.1h)
 

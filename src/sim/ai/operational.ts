@@ -362,7 +362,12 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const land = nav.grid.component;
   const nodeOf = nav.graph.nodeOf;
   const group = pass.group!;
-  const wideCell = (c: number): number => wideNode(nav.graph, pass, nodeOf[c]!);
+  // What `wideNode` has answered is read here first (PLAN 7.1i: `pocketOf` asks it of each cell).
+  const wideCell = (c: number): number => {
+    const node = nodeOf[c]!;
+    const m = pass.wide?.[node] ?? 0;
+    return m > 0 ? m : m < 0 ? 0 : wideNode(nav.graph, pass, node);
+  };
   /**
    * The ground a cell of open ground lies in: a pocket (its number), a wide ground or ground
    * whose cells come to one (minus the wide ground's number), or 0 for ground too wide to walk
