@@ -188,6 +188,20 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - `tests/unit/nukeThreat1938.test.ts`: the Soviet Union with five warheads and missiles, losing
     to the death: no strike on a revolt of Soviet Armenia in 30 days (it struck on the first day
     on the old source); at war with Germany, strikes in East Prussia.
+- **6.12b, a strike back aims at the striker** (`grievanceIn`, `aimOf`'s `anywhere`): while a nation
+  holds a grievance against an enemy (RETALIATION_DAYS from the burst), it weighs that nation's land
+  alone, its capital and its massed formations from any distance, and strikes no one else. The
+  strike, of retaliation doctrine or not, spends the grievance; the doctrine still gives
+  RETALIATION_BONUS and lifts the MAD bar, as before.
+  - Why the United Kingdom struck Chungking: the grievance's bonus went to every place of the war
+    the striker was on (its allies' too), other wars' places were weighed beside them, and 6.11a's
+    FRONT_KM left no Soviet place within reach of the British side. The first that cleared 0 won.
+  - A nation that cannot reach the striker (no missile in range, no bomber) holds its warheads for
+    the grievance's days rather than spend them elsewhere.
+  - `tests/unit/nukeStrikeBack1938.test.ts`: France at war with Italy (losing to the death, twelve
+    divisions at Turin) and the United States; not struck, it strikes Turin (utility 0.700);
+    struck at Paris by the United States, it strikes the American east coast next (0.204), from
+    6,000 km; on the old source, Turin (red).
 
 ### ADR-393 · 2026-10-15 · accepted — Where the AI's warheads fall (PLAN 6.11, critic R6-B2)
 

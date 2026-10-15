@@ -42,11 +42,7 @@ quick sweep as a smoke test.
   history, retaliation at the striker; the findings in DECISIONS.
   Three causes, one commit each (ADR-394):
   - [x] 6.12a No first use on a nation that cannot threaten the striker: none of its warheads, […]
-  - [ ] 6.12b A strike back aims at the striker: while a grievance holds, its holder weighs only
-    the striker's own land, from a front or not (FRONT_KM does not bar it), and strikes no one
-    else.
-    AT: unit tests: England strikes Paris; France, at war with England and an ally of England's,
-    strikes English land; France at war with a third nation strikes no one there meanwhile.
+  - [x] 6.12b A strike back aims at the striker: while a grievance holds, its holder weighs only […]
   - [ ] 6.12c A nation founded in play does not inherit the nuclear techs of the nation it
     leaves (`spawnRebels` copied every tech: "Free Liège II", holding Berlin, knew the bomb
     on its first day and had the income of a programme).

@@ -91,9 +91,10 @@
  * by bomber, a free one or one retasked from a sortie; one out of reach, the next), once a day at
  * most. The decision is told (`NukeDecided`).
  * Retaliation: a burst on a nation's land (its owner's, not the striker's) gives it a grievance
- * against the striker for RETALIATION_DAYS (`world.nukeGrievance`). A nation of retaliation
- * doctrine (aggression at least RETALIATION_AGGRESSION) striking at the side of who struck it is
- * retaliating: RETALIATION_BONUS, and no MAD bar; its strike back spends the grievance (one for one).
+ * against the striker for RETALIATION_DAYS (`world.nukeGrievance`). While it holds one against an
+ * enemy, it weighs that nation's land alone, from any distance, and strikes no one else (PLAN
+ * 6.12b). Of retaliation doctrine (aggression at least RETALIATION_AGGRESSION) it is retaliating:
+ * RETALIATION_BONUS, and no MAD bar. Its strike back spends the grievance (one for one).
  *
  * A burst's consequences (PLAN 6.5a, SPEC §6.4 "a stability shock and a war-exhaustion jump ...
  * economic shocks follow"; `aftermath`), on the nation whose land it burst on (none at sea or on
@@ -674,10 +675,15 @@ export const NUKE_TARGETS = 6;
 export const RETALIATION_DAYS = 90;
 export const RETALIATION_AGGRESSION = 20;
 
-/** Whether `n`, struck, strikes back at `war`'s other side from `side` (PLAN 6.4b). */
-function retaliates(world: World, n: number, war: War, side: number): boolean {
+/** The nation that struck `n`, when `n` holds a grievance against it and it is on `war`'s other side from `side` (PLAN 6.12b); else 0. */
+function grievanceIn(world: World, n: number, war: War, side: number): number {
   const g = world.nukeGrievance.get(n);
-  return !!g && g.until > world.tick && world.nations.cols.aggression[n]! >= RETALIATION_AGGRESSION && war.sides[1 - side]!.includes(g.by);
+  return g && g.until > world.tick && war.sides[1 - side]!.includes(g.by) ? g.by : 0;
+}
+
+/** Whether `n`, struck, strikes back at `war`'s other side from `side` (PLAN 6.4b): a grievance there, and the doctrine. */
+function retaliates(world: World, n: number, war: War, side: number): boolean {
+  return grievanceIn(world, n, war, side) !== 0 && world.nations.cols.aggression[n]! >= RETALIATION_AGGRESSION;
 }
 
 /**
@@ -710,16 +716,26 @@ export function threatens(world: World, m: number, n: number, strength: Float64A
   return near;
 }
 
+/** Whose land a nation may strike in a war (PLAN 6.12): the nations, and whether from any distance. */
+export interface Aim {
+  at: ReadonlySet<number>;
+  /** Not only within FRONT_KM of the striker's side: a strike back at who struck it. */
+  anywhere: boolean;
+}
+
 /**
- * The enemies of `war` whose land `n`, on `side`, may strike (PLAN 6.12a): those that can threaten
- * it, and the nation that struck it when it strikes back (not first use).
+ * Whose land `n`, on `side` of `war`, may strike: while it holds a grievance against a nation of
+ * the other side, that nation's alone, from any distance (PLAN 6.12b, critic R6-B2: struck at
+ * London, the United Kingdom's one bomb went to Chungking, and no Soviet place was within FRONT_KM
+ * of it); else the enemies that can threaten it (PLAN 6.12a).
  */
-export function aimOf(world: World, n: number, war: War, side: number, strength: () => Float64Array): Set<number> {
+export function aimOf(world: World, n: number, war: War, side: number, strength: () => Float64Array): Aim {
+  const by = grievanceIn(world, n, war, side);
+  if (by !== 0) return { at: new Set([by]), anywhere: true };
   const nc = world.nations.cols;
-  const out = new Set<number>();
-  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && threatens(world, m, n, strength())) out.add(m);
-  if (retaliates(world, n, war, side)) out.add(world.nukeGrievance.get(n)!.by);
-  return out;
+  const at = new Set<number>();
+  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && threatens(world, m, n, strength())) at.add(m);
+  return { at, anywhere: false };
 }
 
 /** How far from the striker's side a place may be to be weighed (PLAN 6.11a), km: from its land formations or its capitals. */
@@ -737,10 +753,12 @@ export const RESTRIKE_DAYS = 7;
  * or a capital-in-exile far from every front is not weighed (critic R6-B2: Paramaribo, Aden).
  * None within a blast radius of a burst of the last RESTRIKE_DAYS or of a warhead in flight
  * (PLAN 6.11b: the critic saw three in a row on one spot, its formations gone after the first).
- * Only on land of the enemies in `at` (PLAN 6.12a: by default `aimOf`, those that can threaten
- * `n`); the massed men weighed are the whole enemy side's.
+ * Only on land of the enemies `aim` names (by default `aimOf`: those that can threaten `n`, PLAN
+ * 6.12a; the nation that struck it, from any distance, PLAN 6.12b); the massed men weighed are the
+ * whole enemy side's.
  */
-export function nukeTargets(world: World, n: number, war: War, side: number, at: ReadonlySet<number> = aimOf(world, n, war, side, () => strengths(world))): [number, number][] {
+export function nukeTargets(world: World, n: number, war: War, side: number, aim: Aim = aimOf(world, n, war, side, () => strengths(world))): [number, number][] {
+  const { at, anywhere } = aim;
   const nc = world.nations.cols;
   const out: [number, number][] = [];
   if (at.size === 0) return out;
@@ -767,6 +785,7 @@ export function nukeTargets(world: World, n: number, war: War, side: number, at:
     const cell = yy * w + xx;
     if (!at.has(owner[cell]!) || !enemy.has(controller[cell]!)) return false;
     for (let k = 0; k < struck.length; k += 2) if (seaKm(world, x, y, struck[k]!, struck[k + 1]!) <= radius) return false;
+    if (anywhere) return true;
     for (let k = 0; k < anchors.length; k += 2) if (seaKm(world, x, y, anchors[k]!, anchors[k + 1]!) <= FRONT_KM) return true;
     return false;
   };
@@ -799,17 +818,20 @@ function nukeDecisions(world: World): void {
   for (const n of [...world.warheads.keys()].sort((a, b) => a - b)) {
     if (warheadsOf(world, n) < 1 || nc.living[n] !== 1 || nc.aiOff[n] === 1 || nc.overlord[n] !== 0 || !nukesAllowed(world, n)) continue;
     const options: { u: number; x: number; y: number; back: boolean }[] = [];
+    const sideIn = (war: War): number => (war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1);
+    // While it holds a grievance against an enemy, it strikes no one else (PLAN 6.12b).
+    const avenging = world.wars.list.some((war) => sideIn(war) >= 0 && grievanceIn(world, n, war, sideIn(war)) !== 0);
     for (const war of world.wars.list) {
-      const side = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
-      if (side < 0) continue;
+      const side = sideIn(war);
+      if (side < 0 || (avenging && grievanceIn(world, n, war, side) === 0)) continue;
       const back = retaliates(world, n, war, side);
-      const at = aimOf(world, n, war, side, strength);
-      if (at.size === 0) continue;
+      const aim = aimOf(world, n, war, side, strength);
+      if (aim.at.size === 0) continue;
       const shared = warInputs(world, n, war, side, back);
       const view = strikeView(world, n, war, side, industry);
-      for (const [x, y] of nukeTargets(world, n, war, side, at)) {
+      for (const [x, y] of nukeTargets(world, n, war, side, aim)) {
         const u = nuclearUtility({ targetValue: valueIn(world, n, view, x, y), ...shared });
-        if (u > 0) options.push({ u, x, y, back });
+        if (u > 0) options.push({ u, x, y, back: avenging });
       }
     }
     options.sort((a, b) => b.u - a.u);
@@ -818,7 +840,7 @@ function nukeDecisions(world: World): void {
       const ok = (missiles && launchNuke(world, n, o.x, o.y, true) === Refusal.None) || launchNuke(world, n, o.x, o.y, false) === Refusal.None;
       if (!ok) continue;
       world.out.emit(world.tick, EventKind.NukeDecided, n, Math.round(o.u * 1000), o.x, o.y);
-      // A strike back spends the grievance: one for one.
+      // A strike back spends the grievance: one for one (of retaliation doctrine or not, PLAN 6.12b).
       if (o.back) world.nukeGrievance.delete(n);
       break;
     }

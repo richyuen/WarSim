@@ -15772,3 +15772,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   known red timing tests alone (`scenario1938` build 2,031 ms against 2,000; `territory`), which
   pass alone (20 of 20).
 - **Next:** PLAN 6.12b.
+
+## 2026-10-15 — PLAN 6.12b: a strike back aims at the striker (critic R6-B2)
+
+- **The rule** (`grievanceIn`, `aimOf` → `Aim { at, anywhere }`): while a nation holds a grievance
+  against an enemy, it weighs that nation's land alone (capital and massed formations), from any
+  distance (FRONT_KM does not bar it), and strikes no one else; the strike spends the grievance,
+  doctrine or not. Doctrine still gives the bonus and lifts the MAD bar.
+- **Why Chungking:** the bonus went to every place of the striker's war, other wars' places were
+  weighed beside them, and FRONT_KM (6.11a) left no Soviet place within reach of the British.
+- **AT:** `tests/unit/nukeStrikeBack1938.test.ts`: France at war with Italy (losing to the death,
+  twelve divisions at Turin) and the United States; not struck, it strikes Turin; struck at Paris
+  by the United States, it strikes the American east coast next (utility 0.204, over 5,000 km),
+  none on Italy before; on the 6.12a source it struck Turin (red).
+- **Gate:** six runs red on the known red build time alone (`scenario1938`, 2,031 to 2,817 ms
+  against 2,000; twice `territory` too; once four timeouts while the loop's capture script ran a
+  headless Chrome on ~13 cores). Alone 3 of 3, and beside the two new nuclear test files 11 of
+  11. Green with the pool capped (`VITEST_MAX_WORKERS=4`, 987 tests, the pin unmoved, build,
+  parity). Threshold and `knownRed.json` untouched.
+- **Next:** PLAN 6.12c.

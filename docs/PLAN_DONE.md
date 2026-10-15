@@ -8952,3 +8952,25 @@ Of 6.12 (open in PLAN.md):
     striker's capital. A strike back is not first use.
     AT: unit tests: the Soviet Union, armed and desperate, at war with a revolt statelet of its
     land: no strike; the same Soviet Union at war with Germany: a strike.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+Of 6.12 (open in PLAN.md):
+
+  - [x] 6.12b A strike back aims at the striker: while a grievance holds, its holder weighs only
+    the striker's own land, from a front or not (FRONT_KM does not bar it), and strikes no one
+    else.
+    AT: unit tests: France at war with Italy (losing, Italian divisions massed at Turin) and with
+    the United States: not struck, it strikes Turin; struck at Paris by the United States, its
+    next strike falls on American land, and none on Italy's before it.
