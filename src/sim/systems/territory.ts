@@ -69,6 +69,7 @@ function flippingOf(world: World): Set<number> {
 export function frontierOf(world: World): Set<number> {
   if (world.frontier && world.frontierWars === world.wars.version) return world.frontier;
   const f = new Set<number>();
+  const flipping = new Set<number>();
   const { w, h, controller: ctl, flip } = world.cells;
   const n = w * h;
   let mask = world.frontierMask;
@@ -100,6 +101,7 @@ export function frontierOf(world: World): Set<number> {
       if (on) {
         f.add(c);
         mask[c] = 1;
+        if (flip[c] !== 0) flipping.add(c);
       } else flip[c] = 0; // uncontested cells carry no hold progress
     }
   } else {
@@ -107,7 +109,9 @@ export function frontierOf(world: World): Set<number> {
   }
   world.frontier = f;
   world.frontierWars = world.wars.version;
-  world.flipping = null; // the rebuild cleared progress on uncontested cells
+  // The rebuild cleared progress on uncontested cells: what is left is on the frontier (PLAN 7.1h:
+  // gathered here, not by another scan of the grid).
+  world.flipping = flipping;
   return f;
 }
 
