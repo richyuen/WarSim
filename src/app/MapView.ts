@@ -44,7 +44,7 @@ import { groundReach } from '../render/map/ground';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
 import type { LandMask } from '../shared/landMask';
-import { cityIndex, scatter, type Scatter, type ScatterWorld } from '../render/map/scatter';
+import { cityIndex, groundCap, scatter, SCATTER_STRIDE, type Scatter, type ScatterWorld } from '../render/map/scatter';
 import { drawUnitAtlas } from '../render/units/atlas';
 import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
 import { appendTurrets, TurretAims } from '../render/units/turrets';
@@ -176,6 +176,8 @@ export class MapView {
   private scatterKey = '';
   /** The scatter of the last frame that drew instances (tests and stats); null: none were drawn. */
   groundScatter: Scatter | null = null;
+  /** What the scatter writes: as many instances as the view can hold (`groundCap`). */
+  private scatterOut = new Float32Array(0);
   /** The share of the ground of T2 and T3, and of what stands on it, in the frame drawn last (tests). */
   groundShare = 0;
   /** Whether the instances are drawn (off: the ground without them; tests of the ground's texture). */
@@ -1318,8 +1320,11 @@ export class MapView {
     const vh = this.canvas.clientHeight;
     const key = `${cam.cx},${cam.cy},${cam.scale},${vw},${vh}`;
     if (key !== this.scatterKey || !this.groundScatter) {
-      this.groundScatter = scatter(world, { cx: cam.cx, cy: cam.cy, halfW: vw / 2 / cam.scale, halfH: vh / 2 / cam.scale, pxPerCell: cam.scale }, GROUND_CAP, this.groundThings.data);
-      this.groundThings.upload(this.groundScatter.count);
+      // As many as the view can hold, thinned to what a frame affords (PLAN 7.1l6).
+      const cap = groundCap(vw, vh);
+      if (this.scatterOut.length < cap * SCATTER_STRIDE) this.scatterOut = new Float32Array(cap * SCATTER_STRIDE);
+      this.groundScatter = scatter(world, { cx: cam.cx, cy: cam.cy, halfW: vw / 2 / cam.scale, halfH: vh / 2 / cam.scale, pxPerCell: cam.scale }, cap, this.scatterOut, GROUND_CAP);
+      this.groundThings.upload(this.groundScatter.count, this.groundScatter.data);
       this.scatterKey = key;
     }
     this.groundThings.draw(vw, vh, dpr, share);

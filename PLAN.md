@@ -203,7 +203,7 @@ quick sweep as a smoke test.
     - [x] 7.1l5 The hitches: T0's two modes (p95 16.4 ms), T3's 100 to 157 ms while the sim runs,
       the 2.9 s freeze of one zoom from the world to 1 m/px. AT: the cause of each found, and a
       frame's longest under 50 ms at ×5 on bench G's cases, or a BLOCKERS line.
-    - [ ] 7.1l6 The ground's cap by the view's size, and an even thinning past what a frame
+    - [x] 7.1l6 The ground's cap by the view's size, and an even thinning past what a frame
       affords (not the finest level cut from the top). AT: a forest view at 1920 × 1080 with no
       line below which the trees thin.
     - [ ] 7.1l7 The land mask held twice in the page (16.8 MB for the scatter, as much on the

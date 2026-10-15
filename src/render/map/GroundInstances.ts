@@ -105,8 +105,12 @@ void main() {
 }
 `;
 
-/** The most instances drawn in a frame: a full view of forest at 1920 × 1080 has up to 10,900. */
-export const GROUND_CAP = 12_000;
+/**
+ * The most instances drawn in a frame, what a frame affords (PLAN 7.1l6): the scatter of 24,000
+ * is some 1.3 ms of the main thread, and the view thins to it evenly past it. A full view of
+ * forest at 1920 × 1080 has up to 16,569; at 2560 × 1440 29,068.
+ */
+export const GROUND_CAP = 24_000;
 
 export class GroundInstances {
   private readonly program: twgl.ProgramInfo;
@@ -142,11 +146,11 @@ export class GroundInstances {
   }
 
   /** Takes the first `count` instances of `data` (after the scatter has written them). */
-  upload(count: number): void {
+  upload(count: number, data = this.data): void {
     const gl = this.gl;
     this.count = Math.min(count, this.cap);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buf);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.data, 0, this.count * SCATTER_STRIDE);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, data, 0, this.count * SCATTER_STRIDE);
   }
 
   /** Draws them in a view of `viewW` × `viewH` CSS px, the layer at opacity `share`. */

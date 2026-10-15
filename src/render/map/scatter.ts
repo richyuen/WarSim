@@ -129,13 +129,38 @@ export interface Scatter {
   level: number;
   /** There were more than the cap. */
   truncated: boolean;
+  /** Instances left out by the thinning (PLAN 7.1l6). */
+  thinned: number;
 }
 
 /**
- * The instances of `view`, at most `cap`. `out` is reused when it is large enough.
+ * Instances a view of `vw` × `vh` CSS px can hold (PLAN 7.1l6): the most of a full view of
+ * forest is 0.008 a px², at the zoom where a finer level begins to come in (16,569 at 1920 ×
+ * 1080); a city's middle has a building at 0.85 of the points where a forest has a tree at
+ * 0.75. With room to spare, so that no view is cut at a line. (It was 12,000 at any size: the
+ * scatter filled it row by row, and below the row it reached the finer level stopped.)
  */
-export function scatter(world: ScatterWorld, view: ScatterView, cap: number, out?: Float32Array): Scatter {
+export function groundCap(vw: number, vh: number): number {
+  return Math.ceil(vw * vh * 0.01) + 1000;
+}
+
+/** Where the thinning ranks each instance: a level's and its place's, and its key. */
+let rankOf = new Uint16Array(0);
+let keyOf = new Uint16Array(0);
+
+/**
+ * The instances of `view`, at most `cap`. `out` is reused when it is large enough. Past
+ * `afford`, as many as a frame affords, they are thinned evenly (PLAN 7.1l6): the finest level
+ * first, each of its instances kept by a hash of its place, so the ones left are spread across
+ * the view as before, fewer; a coarser level only when the finer ones are gone. (A cut at the
+ * cap left the view's top in full and nothing of the finer level below a line.)
+ */
+export function scatter(world: ScatterWorld, view: ScatterView, cap: number, out?: Float32Array, afford = cap): Scatter {
   const data = out && out.length >= cap * SCATTER_STRIDE ? out : new Float32Array(cap * SCATTER_STRIDE);
+  if (afford < cap && rankOf.length < cap) {
+    rankOf = new Uint16Array(cap);
+    keyOf = new Uint16Array(cap);
+  }
   const f = Math.log2(view.pxPerCell / SPACING_PX);
   // Below level 0 the levels go on, coarser: level −k is every 2^k-th point of level 0 each way
   // (PLAN 2.11l; until then a view further out than level 0 got every point of it, however
@@ -198,6 +223,11 @@ export function scatter(world: ScatterWorld, view: ScatterView, cap: number, out
         }
         const size = SIZE[kind]!;
         const vary = 0.8 + 0.4 * variant;
+        if (afford < cap) {
+          // Finer, the sooner thinned: a level's own number, and a point coming in by its fade after those in full.
+          rankOf[count] = (alpha < 1 ? 64 : 0) + l;
+          keyOf[count] = hash2(h, 0x7417) & 0xffff;
+        }
         const o = count * SCATTER_STRIDE;
         data[o] = (x - view.cx) * view.pxPerCell;
         data[o + 1] = (y - view.cy) * view.pxPerCell;
@@ -209,5 +239,45 @@ export function scatter(world: ScatterWorld, view: ScatterView, cap: number, out
       }
     }
   }
-  return { count, data, level, truncated };
+  const kept = afford < count ? thin(data, count, afford) : count;
+  return { count: kept, data, level, truncated, thinned: count - kept };
+}
+
+/**
+ * Keeps `afford` of the `count` instances of `data`, in place, in their order: the finest rank
+ * goes first, and of the rank that is kept in part, those of the least keys.
+ */
+function thin(data: Float32Array, count: number, afford: number): number {
+  const byRank = new Map<number, number>();
+  for (let i = 0; i < count; i++) byRank.set(rankOf[i]!, (byRank.get(rankOf[i]!) ?? 0) + 1);
+  // The rank kept in part, and how many of it; the finer ranks go, the coarser stay.
+  let over = count - afford;
+  let part = -1;
+  let need = 0;
+  for (const r of [...byRank.keys()].sort((a, b) => b - a)) {
+    const n = byRank.get(r)!;
+    if (over >= n) {
+      over -= n;
+      continue;
+    }
+    part = r;
+    need = n - over;
+    break;
+  }
+  // Of that rank, the keys below `below` in full, and the first `atBelow` with the key `below`.
+  const hist = new Uint32Array(65536);
+  for (let i = 0; i < count; i++) if (rankOf[i] === part) hist[keyOf[i]!]!++;
+  let below = 0;
+  let under = 0;
+  while (under + hist[below]! <= need) under += hist[below++]!;
+  let atBelow = need - under;
+  let k = 0;
+  for (let i = 0; i < count; i++) {
+    const r = rankOf[i]!;
+    const keepIt = r < part || (r === part && (keyOf[i]! < below || (keyOf[i] === below && atBelow-- > 0)));
+    if (!keepIt) continue;
+    if (k !== i) data.copyWithin(k * SCATTER_STRIDE, i * SCATTER_STRIDE, (i + 1) * SCATTER_STRIDE);
+    k++;
+  }
+  return k;
 }

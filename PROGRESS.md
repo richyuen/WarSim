@@ -16214,3 +16214,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotchas:** a trace with the `devtools.timeline` category of 4 s is 1.3 GB, past what Node reads
   as one string. `vite build --minify false` minified anyway; `--minify=false` does not.
 - **Next:** PLAN 7.1l6.
+
+## 2026-10-15 — PLAN 7.1l6: the ground's cap by the view's size, an even thinning (rendering)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Found** (ADR-409): the cap of 12,000 at any size, filled level by level and row by row; a
+  forest at 1920 × 1080 wants up to 16,569 where a finer level comes in. In the 1938 world, the
+  densest forest at 88 px a cell: 13,361 wanted, the bottom 141 rows without the finer level.
+- **Done:** `groundCap(vw, vh)` (0.01 a px² + 1,000); past 24,000 a frame (`GROUND_CAP`) the
+  scatter keeps exactly that many, the finest rank first, by a hash of each point.
+- **AT:** the same forest view keeps all 13,361 (none thinned, none cut); a unit test over an
+  octave at 1920 × 1080: no instance left out and the bottom band as full as the top.
+- **Tests:** three in `scatter.test.ts` (no line at 1080p; 24,000 of 64,708 at 4K, even in 4 and
+  12 bands, the full levels first, each one of the full scatter's; the same twice). A key by the
+  scatter's order instead of the hash fails the second; the old cap fails the first two.
+- **Specs:** `groundThings1938` green (4).
+- **Next:** PLAN 7.1l7.

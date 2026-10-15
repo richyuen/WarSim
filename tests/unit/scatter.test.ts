@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cityIndex, scatter, ScatterKind, SCATTER_STRIDE, type ScatterView, type ScatterWorld } from '../../src/render/map/scatter';
+import { cityIndex, groundCap, scatter, ScatterKind, SCATTER_STRIDE, type ScatterView, type ScatterWorld } from '../../src/render/map/scatter';
 import { Terrain } from '../../src/shared/terrain';
 
 // PLAN 2.8c1 (ADR-78): where the trees, the rocks and the buildings of T2 and T3 stand. A
@@ -257,5 +257,67 @@ describe('the scatter of trees, rocks and buildings (PLAN 2.8c1)', () => {
     expect(east.filter((i) => i.x > W).length).toBeGreaterThan(50);
     // A map that does not loop has nothing beyond its edge.
     expect(instances(world(Terrain.Forest), view(W - 0.2, 12, 400)).filter((i) => i.x >= W).length).toBe(0);
+  });
+});
+
+// PLAN 7.1l6: the cap was 12,000 at any view's size, and the scatter filled it row by row: a
+// forest at 1920 × 1080 wants 16,569 where the finer level comes in, and below the row the cap
+// reached that level stopped, a line across the view.
+describe('the ground by the size of the view, and thinned evenly past what a frame affords (PLAN 7.1l6)', () => {
+  const [BW, BH] = [2048, 1024];
+  const forest: ScatterWorld = { w: BW, h: BH, wrapX: true, kmPerCell: 19.57, terrain: new Uint8Array(BW * BH).fill(Terrain.Forest), mask: null, cities: cityIndex([], BW, BH, 19.57) };
+  const sized = (vw: number, vh: number, px: number): ScatterView => ({ cx: 1100.3, cy: 500.7, halfW: vw / 2 / px, halfH: vh / 2 / px, pxPerCell: px });
+  /** The instances in each of `bands` rows of the view, top to bottom, by their place on the screen. */
+  const rows = (data: Float32Array, count: number, vh: number, bands: number): number[] => {
+    const out = new Array<number>(bands).fill(0);
+    for (let k = 0; k < count; k++) {
+      const y = data[k * SCATTER_STRIDE + 1]! + vh / 2;
+      if (y >= 0 && y < vh) out[Math.floor((y / vh) * bands)]!++;
+    }
+    return out;
+  };
+
+  it('a forest at 1920 × 1080 has the whole of every level, at every zoom of an octave: no line', () => {
+    for (const px of [14, 16, 18, 19.8, 21, 23, 25, 27.9]) {
+      const s = scatter(forest, sized(1920, 1080, px), groundCap(1920, 1080), undefined, 24_000);
+      expect(s.truncated, `${px} px a cell`).toBe(false);
+      expect(s.thinned, `${px} px a cell`).toBe(0);
+      expect(s.count).toBe(scatter(forest, sized(1920, 1080, px), 400_000).count);
+      // The bottom band as full as the top one.
+      const r = rows(s.data, s.count, 1080, 6);
+      expect(Math.min(...r) / Math.max(...r), `${px} px a cell: ${r.join(', ')}`).toBeGreaterThan(0.85);
+    }
+  });
+
+  it('past what a frame affords, as many as it affords, as dense at the bottom of the view as at its top, of the finer level first', () => {
+    // 3840 × 2160 where the finer level comes in: some 65,000 wanted.
+    const v = sized(3840, 2160, 19.8);
+    const all = scatter(forest, v, 400_000);
+    const s = scatter(forest, v, groundCap(3840, 2160), undefined, 24_000);
+    expect(all.count).toBeGreaterThan(60_000);
+    expect(s.count).toBe(24_000);
+    expect(s.thinned).toBe(all.count - 24_000);
+    expect(s.truncated).toBe(false);
+    for (const bands of [4, 12]) {
+      const r = rows(s.data, s.count, 2160, bands);
+      expect(Math.min(...r) / Math.max(...r), `${bands} bands: ${r.join(', ')}`).toBeGreaterThan(0.85);
+    }
+    // Every one kept is one of the full scatter's, as it was; those in full kept before those coming in.
+    const key = (d: Float32Array, k: number): string => Array.from(d.subarray(k * SCATTER_STRIDE, (k + 1) * SCATTER_STRIDE)).join(',');
+    const whole = new Set(Array.from({ length: all.count }, (_, k) => key(all.data, k)));
+    let full = 0;
+    for (let k = 0; k < s.count; k++) {
+      expect(whole.has(key(s.data, k))).toBe(true);
+      if (s.data[k * SCATTER_STRIDE + 4] === 1) full++;
+    }
+    let fullAll = 0;
+    for (let k = 0; k < all.count; k++) if (all.data[k * SCATTER_STRIDE + 4] === 1) fullAll++;
+    expect(full).toBe(Math.min(fullAll, 24_000));
+  });
+
+  it('a view thinned is the same twice', () => {
+    const a = scatter(forest, sized(3840, 2160, 19.8), groundCap(3840, 2160), undefined, 24_000);
+    const b = scatter(forest, sized(3840, 2160, 19.8), groundCap(3840, 2160), undefined, 24_000);
+    expect(Array.from(a.data.subarray(0, a.count * SCATTER_STRIDE))).toEqual(Array.from(b.data.subarray(0, b.count * SCATTER_STRIDE)));
   });
 });

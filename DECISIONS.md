@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-409 · 2026-10-15 · accepted — The ground's things: a cap by the view's size, and an even thinning past what a frame affords (PLAN 7.1l6)
+
+- **The line.** The scatter's cap was 12,000 at any view's size, and it fills its levels coarse
+  to fine, each row by row: where a view wanted more, the finer level stopped at a row. A full
+  forest at 1920 × 1080 wants up to 16,569 where a finer level begins to come in (19.8 px a cell
+  and each octave of it), 13,400 a fifth of an octave on; 2560 × 1440 up to 29,068, 3840 × 2160
+  up to 64,708 (a world of forest, `.cache/l6/count.ts`). In the 1938 world, the densest forest
+  at 88 px a cell: 13,361 wanted, 12,000 drawn, the bottom 141 rows of 1080 without the finer
+  level (faint there, its fade at a third).
+- **The cap by the view** (`groundCap`): 0.01 an px² and 1,000 more, above the densest view (0.008
+  of forest; a city's middle at 0.85 against a forest's 0.75). No view is cut at a line.
+- **What a frame affords:** 24,000 (`GROUND_CAP`, the GPU's buffer): a scatter of that many is
+  some 1.3 ms of the main thread (it runs when the camera moves), their draw a few hundredths of
+  a ms. Past it the scatter keeps exactly 24,000: the finest rank first (the level coming in by
+  its fade, then the finest in full), of the rank kept in part those of the least keys, a hash
+  of each point (so spread evenly, and the same in the same view). 1920 × 1080 is never thinned;
+  3840 × 2160 at 19.8 px a cell keeps 24,000 of 64,708, as dense in each of 12 bands of the view.
+- **Not changed:** the scatter's cut at its `cap` without `afford` (its test of the prefix
+  holds); where an instance stands, its look, its fade. The scatter's cost at 3840 × 2160 is the
+  scatter of all it wants (3.5 ms), thinned after: the thinning bounds the draw, not the scatter.
+
 ### ADR-408 · 2026-10-15 · accepted — The hitches: the uncapped loop's, and the names' at a new size each frame (PLAN 7.1l5)
 
 - **How measured** (`.cache/l5/hitch.ts`, scratch): the production build at 1920 × 1080, the game
