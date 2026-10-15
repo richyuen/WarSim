@@ -126,25 +126,21 @@ export function operationalAi(world: World, armour: readonly number[] = []): voi
   });
   const actors = [...fighting].filter((n) => nc.living[n] === 1 && nc.aiOff[n] !== 1 && (step + n) % STAGGER === 0 && free[n]! > 0).sort((a, b) => a - b);
   if (actors.length === 0) return;
-  const { w, h, controller } = world.cells;
-  // The frontier by holder, with the holders of each cell's four neighbours, once for all of this
-  // tick's planners. Each planner reads only its own cells and its partners' (PLAN 1.42f:
-  // scanning the whole frontier per planner was a quarter of the tick in a world of many wars).
+  const { w, controller } = world.cells;
+  // The frontier by holder, once for all of this tick's planners. Each planner reads only its own
+  // cells and its partners' (PLAN 1.42f: scanning the whole frontier per planner was a quarter of
+  // the tick in a world of many wars).
   const frontier = new Map<number, Front>();
   const nb: number[] = [];
-  const loop = world.settings.loopingMap;
   let last: Front | undefined;
   let lastHolder = -1;
   for (const c of frontierOf(world)) {
     const holder = controller[c]!;
     let fr = holder === lastHolder ? last! : frontier.get(holder);
-    if (!fr) frontier.set(holder, (fr = { cells: [], near: [] }));
+    if (!fr) frontier.set(holder, (fr = { cells: [] }));
     last = fr;
     lastHolder = holder;
     fr.cells.push(c);
-    // North, south, west, east (`neighbours4`'s); 0 where the map ends. They are read as a set.
-    const x = c % w;
-    fr.near.push(c >= w ? controller[c - w]! : 0, c < (h - 1) * w ? controller[c + w]! : 0, x > 0 ? controller[c - 1]! : loop ? controller[c + w - 1]! : 0, x < w - 1 ? controller[c + 1]! : loop ? controller[c - w + 1]! : 0);
   }
   // Planners with the same ground open to them (the members of a coalition) share one `Passage`.
   const passages = new Map<string, Passage>();
@@ -197,7 +193,7 @@ function sectorShape(world: World, side: number[], frontier: Map<number, Front>,
       const theirs = holder === n ? enemyOf : foesOf(world, holder, fighting, stand);
       const foe = new Uint8Array(world.nations.highWater);
       for (const m of enemies) if (theirs[m] === 1) foe[m] = 1;
-      stand.fronts.set(id, (part = frontPart(frontier.get(holder)!, foe, w, bw)));
+      stand.fronts.set(id, (part = frontPart(world, frontier.get(holder)!, foe, bw)));
     }
     for (let j = 0; j < part.keys.length; j++) {
       const key = part.keys[j]!;
@@ -239,16 +235,26 @@ interface FrontPart {
   sy: number[];
 }
 
-function frontPart(fr: Front, foe: Uint8Array, w: number, bw: number): FrontPart {
+function frontPart(world: World, fr: Front, foe: Uint8Array, bw: number): FrontPart {
   const part: FrontPart = { keys: [], cells: [], sx: [], sy: [] };
   const at = new Map<number, number>();
-  const { cells, near } = fr;
+  const { cells } = fr;
+  const { w, h, controller } = world.cells;
+  const loop = world.settings.loopingMap;
   let lastKey = -1;
   let j = -1;
   for (let i = 0; i < cells.length; i++) {
-    if (foe[near[4 * i]!] !== 1 && foe[near[4 * i + 1]!] !== 1 && foe[near[4 * i + 2]!] !== 1 && foe[near[4 * i + 3]!] !== 1) continue;
     const c = cells[i]!;
     const x = c % w;
+    // The holders of the four neighbours (north, south, west, east; none where the map ends), as
+    // they were when the frontier was taken: no plan of the tick moves a cell's controller.
+    if (
+      foe[c >= w ? controller[c - w]! : 0] !== 1 &&
+      foe[c < (h - 1) * w ? controller[c + w]! : 0] !== 1 &&
+      foe[x > 0 ? controller[c - 1]! : loop ? controller[c + w - 1]! : 0] !== 1 &&
+      foe[x < w - 1 ? controller[c + 1]! : loop ? controller[c - w + 1]! : 0] !== 1
+    )
+      continue;
     const y = (c - x) / w;
     const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
     if (key !== lastKey) {
@@ -308,10 +314,9 @@ function foesOf(world: World, m: number, fighting: Set<number>, stand: Standings
   return mask;
 }
 
-/** A holder's frontier cells and, four per cell, the holders of the neighbouring cells (0 = none). */
+/** A holder's frontier cells, in the frontier's order. */
 interface Front {
   cells: number[];
-  near: number[];
 }
 
 function planNation(world: World, n: number, fighting: Set<number>, frontier: Map<number, Front>, w: number, nb: number[], f: World['formations']['cols'], passages: Map<string, Passage>, armour: readonly number[], stand: Standings): void {
