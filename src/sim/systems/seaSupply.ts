@@ -97,6 +97,28 @@ export function convoyWays(world: World): Map<number, Map<number, number[]>> {
   return seaReach(world).ways;
 }
 
+/**
+ * The cities on a land of the nav grid (component not 0), in ascending id: their cells and their
+ * components, kept while the cities and the grid are the same (PLAN 7.1h).
+ */
+const cityLands = new WeakMap<World, { version: number; count: number; high: number; comp: Uint32Array; cells: Int32Array; comps: Uint32Array }>();
+function landCities(world: World, comp: Uint32Array): { cells: Int32Array; comps: Uint32Array } {
+  const t = world.cities;
+  const kept = cityLands.get(world);
+  if (kept && kept.version === world.citiesVersion && kept.count === t.count && kept.high === t.highWater && kept.comp === comp) return kept;
+  const cells: number[] = [];
+  const comps: number[] = [];
+  t.forEach((id) => {
+    const cell = t.cols.cell[id]!;
+    if (comp[cell] === 0) return;
+    cells.push(cell);
+    comps.push(comp[cell]!);
+  });
+  const out = { version: world.citiesVersion, count: t.count, high: t.highWater, comp, cells: Int32Array.from(cells), comps: Uint32Array.from(comps) };
+  cityLands.set(world, out);
+  return out;
+}
+
 function seaReach(world: World): { linked: Map<number, number[]>; ways: Map<number, Map<number, number[]>> } {
   const comp = navOf(world).grid.component;
   const { w, owner, controller } = world.cells;
@@ -134,15 +156,14 @@ function seaReach(world: World): { linked: Map<number, number[]>; ways: Map<numb
   // look-up a city, not two), then by bloc in the order the pairs were met, which is the order
   // a bloc's components were met in.
   const pairs = new Map<number, number>();
-  const cc = world.cities.cols;
-  world.cities.forEach((id) => {
-    const cell = cc.cell[id]!;
+  const { cells: cityCells, comps: cityComps } = landCities(world, comp);
+  for (let i = 0; i < cityCells.length; i++) {
+    const cell = cityCells[i]!;
     const ctl = controller[cell]!;
-    const c = comp[cell]!;
-    if (ctl === 0 || owner[cell] !== ctl || c === 0) return;
-    const key = c * 0x10000 + blocOfNation[ctl]!;
+    if (ctl === 0 || owner[cell] !== ctl) continue;
+    const key = cityComps[i]! * 0x10000 + blocOfNation[ctl]!;
     pairs.set(key, (pairs.get(key) ?? 0) + 1);
-  });
+  }
   const cities = new Map<number, Map<number, number>>();
   for (const [key, n] of pairs) {
     const b = key % 0x10000;
