@@ -164,6 +164,14 @@ export function fadeNationLabels(bank: SwitchBank<number>, now: number, layout: 
 }
 
 /** Draws placed labels at their opacity: dark glyphs with a light halo. */
+/** Steps of the font sizes the names are drawn at: 8 an octave, 9 % apart. */
+const LADDER_STEPS = 8;
+
+/** The size of the ladder nearest `px`, in hundredths of a px (as the font is written). */
+export function ladderPx(px: number): number {
+  return Math.round(100 * 2 ** (Math.round(Math.log2(px) * LADDER_STEPS) / LADDER_STEPS)) / 100;
+}
+
 export function drawNationLabels(ctx: CanvasRenderingContext2D, labels: readonly PlacedNationLabel[], font: string): void {
   ctx.save();
   ctx.textAlign = 'center';
@@ -171,14 +179,20 @@ export function drawNationLabels(ctx: CanvasRenderingContext2D, labels: readonly
   for (const l of labels) {
     if (l.alpha <= 0) continue;
     ctx.globalAlpha = l.alpha;
-    ctx.font = `600 ${l.fontPx.toFixed(1)}px ${font}`;
-    ctx.lineWidth = Math.max(2, l.fontPx * 0.14);
+    // The font at a size of the ladder, the rest of the size by the transform: in a zoom each
+    // frame's sizes are new, and the browser made each glyph's outline anew at each (frames of
+    // 50 to 60 ms from the world to T1; PLAN 7.1l5). The glyphs are where and as large as before.
+    const size = ladderPx(l.fontPx);
+    const k = l.fontPx / size;
+    ctx.font = `600 ${size}px ${font}`;
+    ctx.lineWidth = Math.max(2, l.fontPx * 0.14) / k;
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
     ctx.fillStyle = 'rgba(20, 22, 30, 0.82)';
     for (const g of l.glyphs) {
       ctx.save();
       ctx.translate(g.x, g.y);
       ctx.rotate(g.angle);
+      ctx.scale(k, k);
       ctx.strokeText(g.ch, 0, 0);
       ctx.fillText(g.ch, 0, 0);
       ctx.restore();

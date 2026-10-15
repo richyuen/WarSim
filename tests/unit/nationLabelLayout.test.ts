@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fadeNationLabels, layoutNationLabels, MIN_PX, type NameState, type PlacedNationLabel } from '../../src/render/labels/nationLabels';
+import { drawNationLabels, fadeNationLabels, ladderPx, layoutNationLabels, MIN_PX, type NameState, type PlacedNationLabel } from '../../src/render/labels/nationLabels';
 import { FADE_MS, SwitchBank, ZOOM_HYSTERESIS } from '../../src/render/timing';
 import { LABEL_STRIDE } from '../../src/shared/nationLabels';
 
@@ -142,5 +142,42 @@ describe('a name on a looping map (PLAN 2.7k)', () => {
     const out = fadeNationLabels(bank, 4000 + FADE_MS / 2, () => [copy(0), copy(0)]).map((l) => l.alpha);
     expect(out[0]).toBeCloseTo(0.5, 12);
     expect(out[1]).toBeCloseTo(0.5, 12);
+  });
+});
+
+describe('nation names drawn at sizes of a ladder (PLAN 7.1l5)', () => {
+  it('a size of the ladder is within 4.5 % of the one asked for (half a step), and a zoom asks few of them', () => {
+    const sizes = new Set<number>();
+    for (let px = 7; px <= 64; px *= 1.004) {
+      const q = ladderPx(px);
+      expect(Math.abs(q / px - 1)).toBeLessThan(0.045);
+      sizes.add(q);
+    }
+    // 7 to 64 px is 3.2 octaves: some 26 sizes, where every frame of a zoom had sizes of its own.
+    expect(sizes.size).toBeLessThanOrEqual(27);
+  });
+
+  it('each glyph is drawn as large as the label, where it was, the font of the ladder scaled', () => {
+    const calls: string[] = [];
+    let font = '';
+    let lineWidth = 0;
+    let scale = 1;
+    const ctx = {
+      save: () => {},
+      restore: () => { scale = 1; },
+      translate: (x: number, y: number) => calls.push(`at ${x},${y}`),
+      rotate: () => {},
+      scale: (k: number) => { scale = k; },
+      strokeText: (ch: string) => calls.push(`${ch} ${(parseFloat(/([\d.]+)px/.exec(font)![1]!) * scale).toFixed(3)} line ${(lineWidth * scale).toFixed(3)}`),
+      fillText: () => {},
+      set font(f: string) { font = f; },
+      get font() { return font; },
+      set lineWidth(w: number) { lineWidth = w; },
+      get lineWidth() { return lineWidth; },
+    } as unknown as CanvasRenderingContext2D;
+    const label: PlacedNationLabel = { id: 1, text: 'Ab', fontPx: 23.7, area: 1, curved: false, alpha: 1, glyphs: [{ ch: 'A', x: 10, y: 20, angle: 0 }, { ch: 'b', x: 25, y: 21, angle: 0.1 }] };
+    drawNationLabels(ctx, [label], 'sans-serif');
+    expect(ladderPx(23.7)).not.toBeCloseTo(23.7, 2);
+    expect(calls).toEqual(['at 10,20', `A 23.700 line ${(23.7 * 0.14).toFixed(3)}`, 'at 25,21', `b 23.700 line ${(23.7 * 0.14).toFixed(3)}`]);
   });
 });

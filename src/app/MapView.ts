@@ -116,6 +116,10 @@ const WRECK_MAX_PX = 30;
 
 /** Label typeface (system UI stack: every script renders). */
 const LABEL_FONT = 'system-ui, "Segoe UI", Roboto, sans-serif';
+/** The nation names are measured at this size and scaled (a width is linear in the size). */
+const LABEL_MEASURE_PX = 100;
+/** Widths kept at most (the names and their glyphs, in every language shown): beyond it they are measured again. */
+const LABEL_WIDTHS_MAX = 20_000;
 
 export class MapView {
   readonly gl: WebGL2RenderingContext;
@@ -1898,9 +1902,17 @@ export class MapView {
       this.nameStates.clear();
       return;
     }
+    // A width at the reference size, kept, and scaled: in a zoom every frame has its own sizes,
+    // and measuring each name and glyph at each was most of a frame of 50 ms (PLAN 7.1l5).
     const measure: Measure = (text, px) => {
-      ctx.font = `600 ${px.toFixed(1)}px ${LABEL_FONT}`;
-      return ctx.measureText(text).width;
+      let w = this.labelWidths.get(text);
+      if (w === undefined) {
+        if (this.labelWidths.size >= LABEL_WIDTHS_MAX) this.labelWidths.clear();
+        ctx.font = `600 ${LABEL_MEASURE_PX}px ${LABEL_FONT}`;
+        w = ctx.measureText(text).width;
+        this.labelWidths.set(text, w);
+      }
+      return (w * px) / LABEL_MEASURE_PX;
     };
     // Each name is a state (PLAN 2.7e): the layout is told what is on and what still fades out.
     const { data, names } = this.labelData;
@@ -1918,6 +1930,9 @@ export class MapView {
   private drawCityLayer(cam: Camera, dpr: number, now: number): void {
     this.cityLabels.draw(cam, dpr, now, this.nameObstacles(cam), (ctx) => drawNationLabels(ctx, this.nationLabels, LABEL_FONT));
   }
+
+  /** The nation names' widths and their glyphs', at LABEL_MEASURE_PX (`drawLabels`). */
+  private readonly labelWidths = new Map<string, number>();
 
   /** Each nation name in view: on or off, and the fade of a change (PLAN 2.7e). */
   private readonly nameStates = new SwitchBank<number>();
