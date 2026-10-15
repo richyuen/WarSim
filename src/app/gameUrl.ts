@@ -20,6 +20,9 @@ export function optionsFromUrl(params: URLSearchParams): GameOptions {
   // A whole number; the sim brings it into the range the random world allows.
   const nations = params.get('nations');
   if (nations !== null && /^\d{1,4}$/.test(nations)) o.nations = Number(nations);
+  // The map's size (PLAN 7.1b6); the game checks it against the map's sizes.
+  const size = params.get('size');
+  if (size !== null && /^[A-Z]{1,3}$/.test(size)) o.size = size;
   return o;
 }
 
@@ -32,6 +35,7 @@ export function newGameUrl(base: string, seed: number, o: GameOptions): string {
   if (o.gold && o.gold !== 'scenario') q.set('gold', o.gold);
   if (o.ceMode) q.set('ce', o.ceMode);
   if (o.nations !== undefined) q.set('nations', String(o.nations));
+  if (o.size !== undefined) q.set('size', o.size);
   return `?${q.toString()}`;
 }
 

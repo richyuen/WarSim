@@ -4,7 +4,7 @@
  */
 import type { ScenarioId } from '../../src/shared/protocol';
 import { EventKind } from '../../src/shared/events';
-import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { size1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from './assets';
 import { laneOf, type World } from '../../src/sim/world';
@@ -17,6 +17,8 @@ export interface HeadlessOptions {
   years: number;
   /** The random world: how many nations (absent: its default). */
   nations?: number;
+  /** The map's size, an id of the earth map's sizes (PLAN 7.1b6; absent: the scenario's own). */
+  size?: string;
   /** Called after each simulated year (progress output). */
   onYear?: (m: YearMetrics) => void;
   /** Wall-clock source (injectable for tests). */
@@ -118,7 +120,8 @@ function livingNations(world: World): number {
 
 export function runHeadless(opts: HeadlessOptions): HeadlessResult {
   const now = opts.now ?? (() => performance.now());
-  const sim = new Sim(opts.scenario !== 'toy' ? { scenario: opts.scenario, seed: opts.seed, assets: loadAssets1938(SIZE_1938.w), ...(opts.nations !== undefined ? { options: { nations: opts.nations } } : {}) } : { scenario: opts.scenario, seed: opts.seed });
+  const options = { ...(opts.nations !== undefined ? { nations: opts.nations } : {}), ...(opts.size !== undefined ? { size: opts.size } : {}) };
+  const sim = new Sim(opts.scenario !== 'toy' ? { scenario: opts.scenario, seed: opts.seed, assets: loadAssets1938(size1938(opts.size).w), ...(Object.keys(options).length > 0 ? { options } : {}) } : { scenario: opts.scenario, seed: opts.seed });
   if (opts.load) sim.load(opts.load);
   const world = sim.world;
   // The lane graph before the clock, as the game's worker builds it before the first tick (PLAN 4.8e).

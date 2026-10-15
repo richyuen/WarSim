@@ -15,7 +15,11 @@ import { KILL_CELLS_PER_STATE } from '../../src/sim/systems/revival';
 import { SUPPLY_REACH } from '../../src/sim/systems/supply';
 import { HOLD_TICKS, holdHours, PRESSURE_RADIUS } from '../../src/sim/systems/territory';
 import { World } from '../../src/sim/world';
-import { SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
+import { geometryOf, mapSizes, SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
+import { optionsFromUrl, newGameUrl } from '../../src/app/gameUrl';
+import { Sim } from '../../src/sim/sim';
+import { size1938 } from '../../src/sim/scenario1938';
+import { assets1938 } from '../helpers/earth';
 import { setSizeScale } from '../../src/render/sizeScale';
 import { figureCells, figureOffsets } from '../../src/render/units/individuals';
 
@@ -112,5 +116,34 @@ describe('what the view draws by the map size (PLAN 7.1b5)', () => {
       expect(got.side).toBeCloseTo(m.side * scale, 12);
       got.off.forEach((v, k) => expect(v, `offset ${k} at ${scale}`).toBeCloseTo(m.off[k]! * scale, 12));
     }
+  });
+});
+
+describe('a game at its own size (PLAN 7.1b6)', () => {
+  it('the geometry of a scenario at each size of its map, its own when none is asked', () => {
+    expect(mapSizes('1938')).toEqual(['S', 'M', 'L', 'XL']);
+    expect(mapSizes('toy')).toEqual(['T']);
+    expect(geometryOf('1938')).toEqual(SCENARIO_GEOMETRY['1938']);
+    expect(geometryOf('1938', 'S')).toMatchObject({ w: 1024, h: 512, scale: 0.5 });
+    expect(geometryOf('random', 'L')).toMatchObject({ w: 4096, h: 2048, scale: 2 });
+    expect(size1938('XL')).toEqual({ w: 6144, h: 3072, scale: 3 });
+    expect(size1938()).toEqual(SIZE_1938);
+    expect(() => size1938('XXL')).toThrow(/no size/);
+  });
+
+  it('the size goes in the URL of a new game and comes out of it', () => {
+    expect(optionsFromUrl(new URLSearchParams(newGameUrl('1938', 7, { size: 'S' }).slice(1))).size).toBe('S');
+    expect(optionsFromUrl(new URLSearchParams('size=../x')).size).toBeUndefined();
+  });
+
+  it('the 1938 world at S is built from the assets of S and runs: its cells, its scale, its armies', () => {
+    const sim = new Sim({ scenario: '1938', seed: 99, assets: assets1938(1024), options: { size: 'S' } });
+    const w = sim.world;
+    expect([w.cells.w, w.cells.h, w.sizeScale]).toEqual([1024, 512, 0.5]);
+    const formations = w.formations.ids().length;
+    expect(formations).toBeGreaterThan(1000);
+    sim.step(24 * 7);
+    expect(w.tick).toBe(24 * 7);
+    expect(w.formations.ids().length).toBeGreaterThan(formations * 0.9);
   });
 });

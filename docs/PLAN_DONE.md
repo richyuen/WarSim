@@ -9567,3 +9567,22 @@ Of 7.1b (open in PLAN.md):
   - [x] 7.1b2 The distances to km: the AI's, combat's and the elements', movement's and the sea's,
     the air's, territory's and supply's reaches, the data's snaps. AT: pin and the map that does
     not loop unchanged; a test that a game at S and at L has each reach the same in km as at M.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1b (open in PLAN.md):
+
+  - [x] 7.1b6 The game's own geometry where `SIZE_1938` is read; the provinces rasterised at the
+    game's size.

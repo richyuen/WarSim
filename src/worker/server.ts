@@ -51,7 +51,7 @@ import {
   type OrderNews,
   type PlayerWing,
 } from '../shared/protocol';
-import { SCENARIO_GEOMETRY, SCENARIO_INFO } from '../shared/scenarios';
+import { geometryOf, SCENARIO_INFO } from '../shared/scenarios';
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
 import { foundedName, foundedNth, provinceLabel } from '../shared/nationNames';
 import { xxhash32View } from '../sim/core/hash';
@@ -416,7 +416,7 @@ export class SimServer {
     try {
       if (!msg.assetBase) throw new Error(`scenario '${msg.init.scenario}' needs assetBase`);
       const store = new AssetStore(msg.assetBase);
-      const { w } = SCENARIO_GEOMETRY[msg.init.scenario];
+      const { w } = geometryOf(msg.init.scenario, msg.init.options?.size);
       // The fine land mask with the rest: the world is built on it (PLAN 2.9a).
       const [geo, meta, terrain, mask] = await Promise.all([store.load('admin1-geometry'), store.load('admin1-meta'), store.load('terrain', w), store.load('landmask')]);
       const landMask: LandMask = { w: mask.asset.width, h: mask.asset.height ?? mask.asset.width / 2, bits: mask.bytes };

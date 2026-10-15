@@ -128,9 +128,9 @@ class Heap {
   }
 }
 
-export function createRandomWorld(seed: number, asked: number | undefined, assets: ScenarioAssets): World {
-  const { w, h } = SIZE_1938;
-  const world = new World(seed, w, h, SIZE_1938.scale);
+export function createRandomWorld(seed: number, asked: number | undefined, assets: ScenarioAssets, size = SIZE_1938): World {
+  const { w, h } = size;
+  const world = new World(seed, w, h, size.scale);
   world.landMask = assets.landMask ?? null;
   world.seaSeeds = earthSeas.seas as unknown as SeaSeed[];
   world.seaPassages = earthPassages.passages as unknown as SeaPassage[];

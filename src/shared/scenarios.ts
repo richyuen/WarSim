@@ -62,13 +62,29 @@ interface ScenarioJson {
   settings: { loopingMap: boolean };
 }
 
-function geometry(map: MapJson, scenario: ScenarioJson): ScenarioGeometry {
-  const sizeId = scenario.size ?? map.defaultSize;
+function geometry(map: MapJson, scenario: ScenarioJson, sizeId = scenario.size ?? map.defaultSize): ScenarioGeometry {
   const size = map.sizes.find((s) => s.id === sizeId);
   if (!size) throw new Error(`map has no size '${sizeId}'`);
   const defaultSize = map.sizes.find((s) => s.id === map.defaultSize)!;
   return { w: size.w, h: size.h, kmPerCell: map.widthKm / size.w, wrapX: scenario.settings.loopingMap, scale: size.w / defaultSize.w };
 }
+
+/** The sizes a scenario's map comes in, by id (S, M, L, XL for the earth's; the toy world's one). */
+export function mapSizes(scenario: ScenarioId): readonly string[] {
+  return MAPS[scenario][0].sizes.map((s) => s.id);
+}
+
+/** A scenario's geometry at size `size` of its map (PLAN 7.1b6); its own size when not given. */
+export function geometryOf(scenario: ScenarioId, size?: string): ScenarioGeometry {
+  const [map, json] = MAPS[scenario];
+  return geometry(map, json, size ?? json.size ?? map.defaultSize);
+}
+
+const MAPS: Record<ScenarioId, readonly [MapJson, ScenarioJson]> = {
+  toy: [toyMap, toyScenario],
+  '1938': [earthMap, scenario1938],
+  random: [earthMap, scenarioRandom],
+};
 
 export const SCENARIO_GEOMETRY: Record<ScenarioId, ScenarioGeometry> = {
   toy: geometry(toyMap, toyScenario),

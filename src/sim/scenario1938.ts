@@ -215,6 +215,14 @@ const defaultSize = earthMap.sizes.find((s) => s.id === earthMap.defaultSize)!;
 /** Map size of the 1938 scenario (M by default), and its cells to a cell of the default size (`World.sizeScale`). */
 export const SIZE_1938 = { w: size.w, h: size.h, scale: size.w / defaultSize.w };
 
+/** The 1938 map at size `id` of the earth map (PLAN 7.1b6); the scenario's own when not given. */
+export function size1938(id?: string): { w: number; h: number; scale: number } {
+  if (id === undefined) return SIZE_1938;
+  const s = earthMap.sizes.find((z) => z.id === id);
+  if (!s) throw new Error(`the earth map has no size '${id}'`);
+  return { w: s.w, h: s.h, scale: s.w / defaultSize.w };
+}
+
 function parseColor(hex: string): number {
   return parseInt(hex.slice(1), 16);
 }
@@ -483,19 +491,19 @@ function templateKey(assets: ScenarioAssets): string {
   return [assets.terrain, assets.admin1Geometry, assets.admin1Meta].map((b) => `${b.length}:${xxhash32(b)}`).join('/');
 }
 
-export function createWorld1938(seed: number, assets: ScenarioAssets): World {
-  if (!templates) return buildWorld1938(seed, assets).world;
+export function createWorld1938(seed: number, assets: ScenarioAssets, size = SIZE_1938): World {
+  if (!templates) return buildWorld1938(seed, assets, size).world;
   const byMask = templates.get(assets.landMask ?? NO_MASK) ?? new Map<string, Template1938>();
   templates.set(assets.landMask ?? NO_MASK, byMask);
   const key = templateKey(assets);
   const t = byMask.get(key);
   if (!t) {
-    const built = buildWorld1938(seed, assets);
+    const built = buildWorld1938(seed, assets, size);
     const b = built.world;
     byMask.set(key, { bytes: saveBytes(b.parts()), islandCells: built.islandCells, ports: b.ports, airbases: b.airbases, capacities: b.parts().map((part) => (part instanceof Table ? part.capacity : -1)), nav: b.nav, navKey: b.navKey, sea: b.sea, lanes: b.lanes, portSea: b.portSea });
     return built.world;
   }
-  const { w, h, scale } = SIZE_1938;
+  const { w, h, scale } = size;
   const world = new World(seed, w, h, scale);
   staticParts1938(world, assets);
   if (world.landMask) for (const cell of t.islandCells) addIslet(world.landMask, w, cell % w, Math.floor(cell / w));
@@ -529,8 +537,8 @@ function staticParts1938(world: World, assets: ScenarioAssets): void {
   world.seaIce = earthIce.closed;
 }
 
-function buildWorld1938(seed: number, assets: ScenarioAssets): { world: World; islandCells: readonly number[] } {
-  const { w, h, scale } = SIZE_1938;
+function buildWorld1938(seed: number, assets: ScenarioAssets, size = SIZE_1938): { world: World; islandCells: readonly number[] } {
+  const { w, h, scale } = size;
   const world = new World(seed, w, h, scale);
   staticParts1938(world, assets);
   world.startDay = dayOfIso(scenario1938.startDate);

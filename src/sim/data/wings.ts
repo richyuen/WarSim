@@ -34,6 +34,14 @@ export function placeWings(bases: readonly Airbase[], controller: Uint16Array, g
         if (controller[b.cell] !== nation || left[i]! < need) return;
         if (best < 0 || left[i]! > left[best]!) best = i;
       });
+      // None with room: the nation's base with the most left, over its room (PLAN 7.1b6). At a
+      // coarser size two of its bases can be one cell, one base of the higher level (S: France's
+      // air transport). Where the world is built with room for all, as at M, this is not reached.
+      if (best < 0) {
+        bases.forEach((b, i) => {
+          if (controller[b.cell] === nation && (best < 0 || left[i]! > left[best]!)) best = i;
+        });
+      }
       if (best < 0) {
         unplaced.push(gi);
         return;

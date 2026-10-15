@@ -217,6 +217,20 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   and its place in it (`FOOTPRINT_CELLS`, `figureCells`, `figureOffsets`), a shot's scatter
   (`SCATTER_CELLS`), a sortie's orbit (`ORBIT_CELLS`). At M multiplied by 1: the picture as it
   was. `mapSizes.test.ts`: a figure's side and its offsets scale with it.
+- **Addendum (PLAN 7.1b6).** A game's own size: `GameOptions.size` (an id of its map's sizes;
+  `?size=` in a game's URL, kept by `newGameUrl`; a size the map has not is dropped), `geometryOf`
+  and `mapSizes` (shared), `size1938` (the sim). The 1938 and random worlds are built at the
+  options' size from the assets of that width (the worker loads terrain and elevation at it; the
+  provinces are rasterised at it, as they were at M; the template cache is keyed by the assets).
+  The page's view takes the geometry of that size. The headless runner takes `--size`. A save
+  already holds its size and refuses another (`map size mismatch`). Found at S: two of a
+  nation's airbases fall in one cell and are one base, and France's air transport found no base
+  with room; a wing that finds none goes to its nation's base with the most room left, over its
+  room (not reached where the world has room for all, as at M). The port's reach to its water
+  (`ports.json` `reachCells`) is the raster's own, as the other snaps: kept in cells. Seed 99's
+  year at S: 1.99 ms a tick, 7,903 cells flipped; the page at S draws the world, T1 and T2 with
+  no error. A scenario file at another size than the scenario's own is still refused
+  (`checkScenarioFile`): PLAN 7.1b8, with the picker.
 
 ### ADR-416 · 2026-10-15 · accepted — Map sizes: what is counted in cells, again (PLAN 7.1b1)
 

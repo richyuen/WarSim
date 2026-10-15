@@ -1,7 +1,7 @@
 import { effect, signal } from '@preact/signals';
 import { render } from 'preact';
 import type { Inspection, ScenarioId } from '../shared/protocol';
-import { SCENARIO_INFO } from '../shared/scenarios';
+import { geometryOf, mapSizes, SCENARIO_INFO } from '../shared/scenarios';
 import { App } from './App';
 import { Autosave } from './autosave';
 import { Hud } from './hud';
@@ -38,7 +38,10 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
   const scenario = SCENARIO_INFO[scenarioId];
   // New-game options (PLAN 1.39b1); a non-looping map also renders without wrap copies.
   const options = optionsFromUrl(params);
-  const geometry = options.loopingMap === false ? { ...scenario.geometry, wrapX: false } : scenario.geometry;
+  // At the size the options ask, one of its map's (PLAN 7.1b6); the scenario's own otherwise.
+  if (options.size !== undefined && !mapSizes(scenarioId).includes(options.size)) delete options.size;
+  const sized = options.size === undefined ? scenario.geometry : geometryOf(scenarioId, options.size);
+  const geometry = options.loopingMap === false ? { ...sized, wrapX: false } : sized;
   const view = params.get('view') === '0' ? null : new MapView(canvas, geometry, sim, scenario.nationTags, Number(params.get('maxTexture') ?? 0));
   const hud = new Hud(sim, scenario.startDay);
   let player: PlayerControl | null = null;

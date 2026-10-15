@@ -16403,3 +16403,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `mapSizes.test.ts`, a figure's side and offsets by the scale.
 - **Specs:** none run: at M nothing drawn changes.
 - **Next:** PLAN 7.1b6.
+
+## 2026-10-15 — PLAN 7.1b6: a game at its own size (sim, worker, page)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-417, addendum): `GameOptions.size` and `?size=`, `geometryOf`, `mapSizes`,
+  `size1938`; the worlds built at the size, the worker's assets at its width, the view's geometry
+  of it, the runner's `--size`. At S a nation's wing with no base with room goes over its room
+  (France's air transport: two bases one cell at S).
+- **AT:** the 1938 world at S builds and runs a week (unit test); seed 99's year at S headless
+  (1.99 ms a tick); the page at S, looked at (world, T1, T2), no error. Pin and the map that does
+  not loop unchanged.
+- **Next:** PLAN 7.1b7.

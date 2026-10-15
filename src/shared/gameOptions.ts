@@ -7,4 +7,6 @@ export interface GameOptions {
   /** The random world only (PLAN 2.16): how many nations it starts with. */
   nations?: number;
   ceMode?: 'dynamic' | 'progressive' | 'static' | 'locked' | 'random';
+  /** The map's size, an id of its map's `sizes` (PLAN 7.1b6): the scenario's own when not given. */
+  size?: string;
 }
