@@ -210,7 +210,7 @@ quick sweep as a smoke test.
       GPU). AT: one copy, or an ADR.
     - [x] 7.1l8 Fractional device pixel ratios (1.25, 1.5): a marker's box drawn into its
       unrounded rectangle; every layer looked at. AT: screenshots at 1.25 and 1.5, looked at.
-    - [ ] 7.1l9 A GPU with no texture of 8192 px draws the coarse coast at T2 and T3 and nothing
+    - [x] 7.1l9 A GPU with no texture of 8192 px draws the coarse coast at T2 and T3 and nothing
       says so. AT: the game says so, or uses the fine mask in parts; an ADR.
     - [ ] 7.1l10 The top speed (885 ticks a second at the start; AoC's usual speed about twice
       ours, text): moved to its task or dropped, with an ADR.

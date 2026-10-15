@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-412 · 2026-10-15 · accepted — The fine mask on the GPU in bands of rows (PLAN 7.1l9)
+
+- **Context.** The fine land mask goes to the GPU a byte to a texel: 2048 × 8192 for the
+  Earth's. A GPU whose largest texture is 4096 (WebGL2 asks no more than 2048) took none:
+  `setLandMask` said false, and the coast of T2 and T3 was the coverage's, four times as
+  coarse, with nothing to say so.
+- **Decision.** The mask is a texture array of bands of rows, as many as a band needs to fit
+  the largest texture (`MAX_TEXTURE_SIZE`; 2 at 4096, 4 at 2048); the shader reads the band of
+  a row (`uMaskBand`). One band where it fits, as before. The view can be told a lower limit
+  (`?maxTexture=`, `MapRendererOptions.maxTexture`) to draw as such a GPU would; nothing else
+  reads it. Chosen over the game saying so: the fine coast is drawn on every GPU WebGL2 runs on.
+- **Measured.** `maskBands1938.spec.ts`: four coasts, one in each band of four (Dover, the
+  Nile's delta, the Cape, Tierra del Fuego), at 150 and 20 m/px, are the same picture, pixel for
+  pixel, at a limit of 4096 (2 bands) and 2048 (4) as with the GPU's 16384; with the old rule 7
+  of the 8 differ and the mask is not on the GPU. The GPU's frame unchanged (T0 0.514 ms, T2's
+  map pass 1.03, back to back).
+- **Not done:** at a real limit of 2048 the land coverage (4096 × 2048) would not fit either; the
+  spec limits the mask alone. Not handled here.
+
 ### ADR-411 · 2026-10-15 · accepted — The markers' morph at fractional pixel ratios; every tier looked at, at 1.25 and 1.5 (PLAN 7.1l8)
 
 - **The defect** (ADR-74's watch list). On their way into the T2 sprites the T1 markers' boxes

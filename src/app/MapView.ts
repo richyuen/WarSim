@@ -150,6 +150,11 @@ export class MapView {
    */
   coast: CoastMask | null = null;
 
+  /** The bands of rows the fine mask is on the GPU in (PLAN 7.1l9; tests): 0 before it came, or where it does not fit. */
+  get maskBands(): number {
+    return this.map.maskBands;
+  }
+
   /** The fine mask's bit at pixel (`px`, `py`), as the worker has it (tests); false before it came. */
   maskBit(px: number, py: number): boolean {
     return this.coast !== null && coastBit(this.coast, px, py);
@@ -214,11 +219,13 @@ export class MapView {
     private readonly sim: SimClient,
     /** The tags of the scenario's nation table (`ScenarioInfo.nationTags`): whose flags it gives. */
     private readonly nationTags: readonly string[] = [],
+    /** The largest texture to make, px; 0 the GPU's (tests: a weaker GPU, PLAN 7.1l9). */
+    maxTexture = 0,
   ) {
     const gl = canvas.getContext('webgl2', { antialias: false, preserveDrawingBuffer: true });
     if (!gl) throw new Error('WebGL2 is required');
     this.gl = gl;
-    this.map = new MapRenderer(gl, geo.w, geo.h, { wrapX: geo.wrapX, cellM: geo.kmPerCell * 1000 });
+    this.map = new MapRenderer(gl, geo.w, geo.h, { wrapX: geo.wrapX, cellM: geo.kmPerCell * 1000, maxTexture });
     this.map.setColor(0, 0x1d3557);
     const atlas = drawUnitAtlas();
     this.proxies = new ProxyRenderer(gl, atlas);

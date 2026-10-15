@@ -19,6 +19,11 @@ export interface MapRendererOptions {
   reliefScale?: number;
   /** The slope the small relief of mountains is shaded with (PLAN 2.8b); other ground by its `bump` (ground.ts). */
   bumpSlope?: number;
+  /**
+   * The largest texture to make, px (0: the GPU's own). Less than the GPU's, the view is drawn as
+   * on a GPU that takes no more (tests: PLAN 7.1l9, `?maxTexture=`).
+   */
+  maxTexture?: number;
 }
 
 /**
@@ -67,9 +72,15 @@ export class MapRenderer {
   /** Whether the ground's relief is drawn where the zoom shows it (off: the map of T0 and T1 at every zoom). */
   relief = true;
   private readonly ground = groundUniform();
-  /** The fine land mask (PLAN 2.9b): eight of its pixels to a texel; a 1×1 placeholder until it comes. */
+  /**
+   * The fine land mask (PLAN 2.9b): eight of its pixels to a texel, in bands of rows, a layer of
+   * a texture array each (PLAN 7.1l9); a 1×1 placeholder until it comes.
+   */
   private maskTex: WebGLTexture;
   private maskSize: [number, number] = [8, 1];
+  /** The mask's rows to a band, and its bands. */
+  private maskBand = 1;
+  maskBands = 0;
   private hasMask = false;
 
   /** The ground of T2 and T3 is drawn where the zoom shows it: the switch is on and the land's height has come. */
@@ -81,7 +92,7 @@ export class MapRenderer {
     this.gl = gl;
     this.w = w;
     this.h = h;
-    this.opts = { borderPx: 1.25, warp: 0.32, cellM: 20_000, reliefScale: 12, bumpSlope: 0.16, ...opts };
+    this.opts = { borderPx: 1.25, warp: 0.32, cellM: 20_000, reliefScale: 12, bumpSlope: 0.16, maxTexture: 0, ...opts };
     this.program = twgl.createProgramInfo(gl, [MAP_VS, MAP_FS]);
     this.groundProgram = twgl.createProgramInfo(gl, [MAP_VS, MAP_FS_GROUND]);
     this.owner = this.makeIdTexture();
@@ -101,24 +112,48 @@ export class MapRenderer {
     this.unrestTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
     this.falloutTex = this.makeTexture(gl.R8, gl.RED, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
     this.elevationTex = this.makeTexture(gl.R16I, gl.RED_INTEGER, gl.SHORT, 1, 1, new Int16Array([0]), gl.NEAREST);
-    this.maskTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, 1, 1, new Uint8Array([0]), gl.NEAREST);
+    this.maskTex = this.makeBands(1, 1, 1, new Uint8Array([0]));
+  }
+
+  /** The largest texture made, px: the GPU's, or less (`maxTexture`). */
+  get maxTexture(): number {
+    const max = this.gl.getParameter(this.gl.MAX_TEXTURE_SIZE) as number;
+    return this.opts.maxTexture > 0 ? Math.min(max, this.opts.maxTexture) : max;
   }
 
   /**
    * The fine land mask, for the coast of T2 and T3 (PLAN 2.9b). Its bits go to the GPU as they
-   * are, a byte to a texel: a texture as wide as the mask (16384) is more than many a GPU takes.
-   * Returns false, and the coast stays the coverage's, when the texture would not fit.
+   * are, a byte to a texel: 2048 × 8192 for the Earth's. In bands of rows, as many as it takes
+   * for a band to fit the GPU's largest texture (PLAN 7.1l9: a GPU of 4096 drew the coarse coast
+   * at T2 and T3, and nothing said so); WebGL2's least is 2048, four bands. Returns false, and
+   * the coast stays the coverage's, when not even a band fits.
    */
   setLandMask(mask: LandMask): boolean {
     const gl = this.gl;
     const [tw, th] = [mask.w / 8, mask.h];
-    const max = gl.getParameter(gl.MAX_TEXTURE_SIZE) as number;
-    if (!Number.isInteger(tw) || tw > max || th > max || mask.w % this.w !== 0) return false;
+    const max = this.maxTexture;
+    let bands = Math.max(1, Math.ceil(th / max));
+    while (th % bands !== 0) bands++;
+    if (!Number.isInteger(tw) || tw > max || th / bands > max || bands > (gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS) as number) || mask.w % this.w !== 0) return false;
     gl.deleteTexture(this.maskTex);
-    this.maskTex = this.makeTexture(gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE, tw, th, mask.bits, gl.NEAREST);
+    this.maskTex = this.makeBands(tw, th / bands, bands, mask.bits);
     this.maskSize = [mask.w, mask.h];
+    this.maskBand = th / bands;
+    this.maskBands = bands;
     this.hasMask = true;
     return true;
+  }
+
+  /** An R8UI texture array of `layers` layers of `w` × `h`, from `data`, the layers one after another. */
+  private makeBands(w: number, h: number, layers: number, data: Uint8Array): WebGLTexture {
+    const gl = this.gl;
+    const t = gl.createTexture()!;
+    gl.bindTexture(gl.TEXTURE_2D_ARRAY, t);
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+    gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.R8UI, w, h, layers, 0, gl.RED_INTEGER, gl.UNSIGNED_BYTE, data);
+    for (const p of [gl.TEXTURE_MIN_FILTER, gl.TEXTURE_MAG_FILTER]) gl.texParameteri(gl.TEXTURE_2D_ARRAY, p, gl.NEAREST);
+    for (const p of [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T]) gl.texParameteri(gl.TEXTURE_2D_ARRAY, p, gl.CLAMP_TO_EDGE);
+    return t;
   }
 
   /** The land's height (metres, one value a cell: `w` × `h` must be the map's size). */
@@ -343,6 +378,7 @@ export class MapRenderer {
       uMask: this.maskTex,
       uHasMask: this.hasMask ? 1 : 0,
       uMaskSize: this.maskSize,
+      uMaskBand: this.maskBand,
       uMaskPerCell: this.maskSize[0] / this.w,
       uFine: fine,
     });

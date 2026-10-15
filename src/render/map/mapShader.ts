@@ -33,6 +33,7 @@ export const MAP_FS = `#version 300 es
 precision highp float;
 precision highp int;
 precision highp usampler2D;
+precision highp usampler2DArray;
 
 uniform usampler2D uOwner;
 uniform usampler2D uController;
@@ -68,9 +69,10 @@ uniform float uRelief;     // how much steeper than it is the ground is shaded
 uniform vec3 uGround[12];  // the ground of each terrain class: (bump, grain, shade) (PLAN 2.8b, ground.ts)
 uniform float uBump;       // the slope the small relief of mountains is shaded with
 #endif
-uniform highp usampler2D uMask;  // the fine land mask, eight of its pixels to a texel, the lowest bit first (PLAN 2.9b)
+uniform highp usampler2DArray uMask;  // the fine land mask, eight of its pixels to a texel, the lowest bit first (PLAN 2.9b)
 uniform int uHasMask;
 uniform ivec2 uMaskSize;   // the mask's size in its pixels
+uniform int uMaskBand;     // its rows to a layer of uMask (PLAN 7.1l9)
 uniform int uMaskPerCell;  // mask pixels to a cell
 uniform float uFine;       // how much of the coast is the fine mask's at T1 (PLAN 4.7g), 0..1; at T2 and T3 uDetail's
 
@@ -103,7 +105,7 @@ vec3 terrainCol(uint t) {
 float maskBitAt(ivec2 p) {
   if (p.y < 0 || p.y >= uMaskSize.y) return 0.0;
   int x = (p.x + 4 * uMaskSize.x) % uMaskSize.x;
-  uint b = texelFetch(uMask, ivec2(x >> 3, p.y), 0).r;
+  uint b = texelFetch(uMask, ivec3(x >> 3, p.y % uMaskBand, p.y / uMaskBand), 0).r;
   return float((b >> uint(x & 7)) & 1u);
 }
 

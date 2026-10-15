@@ -16257,3 +16257,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Spec:** `morphRatio1938.spec.ts` (new; fails before); `fades1938`, `handover1938`,
   `markers1938`, `markerStacks1938`, `morphNations1938`, `tiers1938`: 9 green.
 - **Next:** PLAN 7.1l9.
+
+## 2026-10-15 — PLAN 7.1l9: the fine mask on a GPU of 4096 (rendering)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-412): the fine mask on the GPU in bands of rows, a texture array, as many as a band
+  needs to fit the largest texture; `?maxTexture=` tells the view a lower limit (tests).
+- **AT:** `maskBands1938.spec.ts` (new): at 4096 (2 bands) and 2048 (4) four coasts at T2 and T3
+  are the picture of the GPU's own 16384, pixel for pixel; the old rule fails it (7 of 8 differ,
+  0 bands). GPU frame unchanged (T0 0.514, T2 map 1.03 ms).
+- **Specs:** `maskBands1938`, `coast1938`, `coastPicture1938`, `coastElements1938`: 8 green.
+- **Gotchas:** `git checkout` of a new spec does nothing: an edit made for a check had to be undone
+  by hand.
+- **Next:** PLAN 7.1l10.
