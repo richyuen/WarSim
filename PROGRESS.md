@@ -16142,3 +16142,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   2 s) and passed alone, as in 7.1k.
 - **Specs:** none; nothing drawn changed.
 - **Next:** PLAN 7.1l3.
+
+## 2026-10-15 — PLAN 7.1l3: the operational AI's leftovers of 7.1i (performance)
+
+- **Start:** gate green on a clean tree; critic not due. Seed 5303's year 17 from 7.1i's checkpoint
+  of year 16 still reads 13e25fc1 (the AI 1.55 ms of a 2.87 ms tick, profiled).
+- **Cut** (ADR-406), one commit each, pin unchanged (45df324d), the map that does not loop 620968e1
+  at each quarter, year 17 13e25fc1:
+  - `dc1cae5` the frontier map by holder without each cell's neighbours' holders beside it
+    (`frontPart` reads the controller). Year 17 pairs, swapped: the AI 1.345 → 1.314, 1.287 → 1.276
+    ms a tick.
+  - `d4e2b38` a route asked again on its passage is the one found (`Passage.routes`). The longest
+    call of year 17 was 18 searches of 3 ms for one route (a stack sent to one cell): that tick
+    74.7 → 20.1 ms; year 18's longest AI call 74.9 → 18.4 ms. The mean does not move (the year's
+    1,270 repeats cost 16 ms).
+- **Dropped:** `joinWide`'s walks (416 of 416 drops in year 17 genuine by a check per node; steps
+  by offset left its own time the same, reverted); the first call after a load (caches 24 ms of
+  83 to 137; the load 25 ms, the lane graph 590 ms; the rest is the code's first runs).
+- **Traced:** every call of 40 ms or more in the 25 years is one planner's route searches, none
+  repeated; the long ways of year 5 and the daily refusals of year 21 went under PLAN 7.1l11.
+- **Test:** `provinceGraph.test.ts`: no search on a route's second ask on a passage, one on a new
+  passage, the same cells; it fails with the lookup removed.
+- **Gotchas:** Python's text mode writes CRLF here; `open(..., newline='')` keeps LF (git warned,
+  the commit held LF). An esbuild `--banner:js=` with quotes breaks in an unquoted shell variable:
+  a script with the argument quoted. A run's long calls depend on the machine's state: the first
+  25 years logged 71 calls of 40 ms or more, the next pair 10 and 9.
+- **Specs:** none; nothing drawn changed.
+- **Next:** PLAN 7.1l4.

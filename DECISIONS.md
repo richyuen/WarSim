@@ -167,6 +167,57 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-406 · 2026-10-15 · accepted — The operational AI's leftovers of 7.1i: two cuts, two dropped, the long calls traced (PLAN 7.1l3)
+
+- **Context.** 7.1i left four leads in the operational AI, read on seed 5303 (year 17 from a
+  checkpoint of year 16, hash 13e25fc1; the 25 years from 1938, final hash 8297f9f7): `joinWide`'s
+  452 walks a year; the frontier map by holder built at each call; the first call after a load
+  (80 to 100 ms); calls of 42 to 108 ms in years 5, 11, 12, 18 and 21. At HEAD `171f0f6`, a CPU
+  profile of year 17 (esbuild bundle): `pocketOf` 13.2 % of the run, `planNation`'s own lines 9.9,
+  `joinWide` 9.2, `findPath` 4.2; the frontier map's lines about 2.
+- **The frontier map: cut** (`dc1cae5`). Each frontier cell's four neighbours' holders were
+  pushed into the map beside it (the hottest line of `operationalAi`, 1.3 % of the run); only
+  `frontPart` read them, in the same tick. It reads them from the controller now: no plan of a
+  tick moves a controller (an order moves formations; a landing's beachhead is the amphibious
+  system's, `land`). Year 17, same-time pairs on separate P-cores, swapped: the AI 1.345 → 1.314
+  and 1.287 → 1.276 ms a tick. A map with fewer arrays; the rest of its build (the cells by
+  holder) stays, since the frontier changes nearly every call in a war year (36,071 flips in
+  year 17, a call every 6 ticks).
+- **Repeated route searches: cut** (`d4e2b38`). The longest call of year 17 (nation 117, tick
+  153,786, 120 ms in the log of the 25 years) was 18 searches of 3 ms for one route: a stack of
+  formations at one cell, each sent to the same cell. `findRoute` keeps its answers on the
+  passage (`Passage.routes`, by mobility and ends). **Relies on:** a passage being made for one
+  hour's orders, with no cell changing hands while they are given (the AI's map of passages is
+  of one call; repatriation's of one call; the others are made per order); no caller writing to a
+  route (they copy its cells). That tick 74.7 → 20.1 ms; year 18's longest AI call 74.9 → 18.4 ms
+  in the 25 years run beside the start (both final hashes 8297f9f7). The mean does not move: the
+  1,270 repeats of year 17 cost 16 ms of its 1,012 ms of route searches.
+- **`joinWide`: dropped.** Every drop of its kept answer in year 17 is genuine: of 416, none
+  was of a flip outside the nodes with open and closed ground both (a check by the flipped cell's
+  node would keep none). The walk's cost is its reads of each neighbour's holder and its
+  openness; the steps by offset, as `pocketOf`'s (ADR-401), left `joinWide`'s own time the same
+  in profiles run at once (1.97 and 2.05 s against 2.05 and 1.97 s) and were not kept. An
+  incremental union-find was not tried: runs of open cells cross nodes, and a union cannot be
+  undone when a cell closes.
+- **The first call after a load: dropped.** The load is 25 ms and the lane graph before the
+  clock 590 ms. Of the first AI call's 83 to 137 ms, the caches that could be built at the load
+  are 24 ms (the border index 10, the land by node 6 to 7, the frontier 7); the second call is
+  still 59 to 71 ms. The rest is the code's first runs and each passage's own work, which a game
+  that did not load pays at its first calls too. Moving 24 ms into a load of 615 ms is not worth
+  the code.
+- **The long calls: traced.** In the 25 years (with the cut above) the calls of 40 ms or more
+  are 9, each one planner's route searches: year 1 nation 10 (196 formations, 54 of its 56 ms in
+  `findPath`); year 5 nations 27 and 28 (about 12 searches of 8 to 9 ms each, ways of 880 cells
+  for ends 50 apart, 92 to 99 ms); years 11 and 12 nations 59 and 131; year 21 nation 19 (two
+  searches that fail, 31 ms each, asked again each day: 59 ms at ticks 179,502, 179,526 and
+  179,550). None is a repeat on one passage. Shorter searches are a change of the route rule and
+  move the pin; refusals asked again each day are the AI's refused orders. Both go under PLAN
+  7.1l11, which has those leads.
+- **Measures.** Pin unchanged (45df324d) at each commit; seed 99's year on a map that does not
+  loop 620968e1 with the same hash at each quarter; year 17 13e25fc1. A run of the start's 25
+  years had a stall of 2.9 s in year 5 that the run beside it and the first run did not: the
+  machine's, not the code's.
+
 ### ADR-405 · 2026-10-15 · accepted — Supply over sea's answer kept within the hour (PLAN 7.1l2)
 
 - **Context.** `seaReach` (`systems/seaSupply.ts`) makes every bloc's lands joined by sea and its

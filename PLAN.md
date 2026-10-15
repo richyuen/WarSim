@@ -194,7 +194,7 @@ quick sweep as a smoke test.
       index to a scan and the rebuild to the rule in the set's own order; the rebuild's cost.
     - [x] 7.1l2 `seaReach` kept for the hour while nothing it reads changes (369 of 1,099 calls a
       year asked again). AT: pin unchanged; the calls that compute.
-    - [ ] 7.1l3 The operational AI's leftovers of 7.1i: `joinWide`'s 452 walks, the frontier `Map`
+    - [x] 7.1l3 The operational AI's leftovers of 7.1i: `joinWide`'s 452 walks, the frontier `Map`
       at each call, the first call after a load, the long calls of seed 5303 (years 5, 11, 12, 18,
       21). AT: pin unchanged; each cut measured, or dropped with its reason.
     - [ ] 7.1l4 The GPU's frame by layer, then 7.1j's misses: T0's GPU 1.58 ms (SPEC 1.0), T2's
@@ -217,6 +217,12 @@ quick sweep as a smoke test.
     - [ ] 7.1l11 The older leads of 7.1's list that no part above takes (the supply refresh gone
       full of ADR-81, the hulls' frame with many on a GPU, the ground's cost with no GPU, the
       AI's refused orders, the call of 361.7 ms of seed 4242): each measured, moved or dropped.
+      Left by 7.1l3 (ADR-406; seed 5303's 25 years): every AI call of 40 ms or more is one
+      planner's route searches, none repeated on its passage: year 5, nations 27 and 28, about 12
+      searches of 8 to 9 ms for ways of 880 cells between ends 50 apart (92 to 99 ms); year 21,
+      nation 19, two searches that fail at 31 ms each, asked again each day (ticks 179,502,
+      179,526, 179,550). Shorter searches change the route rule (the pin); the daily refusals are
+      the AI's refused orders above.
     - [ ] 7.1l12 The AT of 7.1: seed 99's five years at 1.5 ms a tick and year 1 at 2.4, on the
       budget machine, pinned, alone.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
