@@ -223,6 +223,16 @@ dropped. Each part's finding is added here when it is done.
   way round is that long. The search is right; a shorter one is a change of the passage or of
   where the AI sends them (formations far from their front, ordered to it each day), rules both:
   under PLAN 1.42 with the refused orders.
+- **g. The zoom's last long task: a first time's, dropped.** One zoom without a stop from the world
+  to 1 m/px (`.cache/l5/hitch.ts`, vsync on), three times in one page, twice: the first has one
+  long task (50 and 55 ms, at some 2.2 px a cell), the second and third none. Ladders of 2 and 1
+  steps an octave did not move it (52 to 57 ms): it is not the sizes' steps but the names drawn
+  for the first time at their sizes, some 85 % of it native. Left, and under PLAN 7.4: every zoom
+  from the world to T1 has frames of 33 ms at p95 (50 at most, 30 a second); with the nation
+  names off 16.8 (7.1l5).
+
+7.1l11 is done: of its seven leads one cut (b, the hulls), the rest measured and dropped, two
+rules under PLAN 1.42 (d, f) and one line under 7.4 (g).
 
 ### ADR-413 · 2026-10-15 · accepted — The top speed is the tick's: dropped from the performance pass (PLAN 7.1l10)
 

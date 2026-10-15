@@ -16332,3 +16332,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   to 117): Belgian and Dutch formations far from their front, the ground between closed to them.
 - **Dropped** as a cut; the AI's sending them is a rule, under PLAN 1.42 with the refused orders.
 - **Next:** PLAN 7.1l11g.
+
+## 2026-10-15 — PLAN 7.1l11g: the zoom's last long task; 7.1l11 done (measurement)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Found** (ADR-414 g): the task of 50 to 55 ms comes in a page's first zoom only (three zooms in
+  one page, twice: none in the second and third); a coarser ladder of the names' sizes does not
+  move it. Dropped as a first time's. The zoom's frames of 33 ms at p95 (the names) go under 7.4.
+- **7.1l11 done:** one cut (the hulls), the rest measured and dropped; rules under 1.42 (refused
+  orders, long ways), a line under 7.4.
+- **Next:** PLAN 7.1l12.

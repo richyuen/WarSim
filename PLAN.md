@@ -214,7 +214,7 @@ quick sweep as a smoke test.
       says so. AT: the game says so, or uses the fine mask in parts; an ADR.
     - [x] 7.1l10 The top speed (885 ticks a second at the start; AoC's usual speed about twice
       ours, text): moved to its task or dropped, with an ADR.
-    - [ ] 7.1l11 The older leads of 7.1's list that no part above takes (the supply refresh gone
+    - [x] 7.1l11 The older leads of 7.1's list that no part above takes (the supply refresh gone
       full of ADR-81, the hulls' frame with many on a GPU, the ground's cost with no GPU, the
       AI's refused orders, the call of 361.7 ms of seed 4242): each measured, moved or dropped.
       Left by 7.1l3 (ADR-406; seed 5303's 25 years): every AI call of 40 ms or more is one
@@ -239,7 +239,7 @@ quick sweep as a smoke test.
       - [x] 7.1l11e The call of 361.7 ms in year 4 of seed 4242: found again on HEAD or not.
       - [x] 7.1l11f The long ways of seed 5303's year 5 (searches of 8 to 9 ms, ways of 880 cells
         between ends 50 apart): why so long; shorter searches change the route rule.
-      - [ ] 7.1l11g The zoom's last long task (50 to 55 ms, the world to T1, the nation names).
+      - [x] 7.1l11g The zoom's last long task (50 to 55 ms, the world to T1, the nation names).
     - [ ] 7.1l12 The AT of 7.1: seed 99's five years at 1.5 ms a tick and year 1 at 2.4, on the
       budget machine, pinned, alone.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
@@ -596,6 +596,9 @@ quick sweep as a smoke test.
   - Against AoC's God panel: Annex, Recolor, Fight to the Death, Donate (Nuke: Phase 6).
   - The critic did not test a player building an armoured division (a step of its own
     script failed on a selector).
+  From PLAN 7.1l11g (ADR-414 g): a zoom from the world to T1 draws at 30 frames a second (33 ms
+  at p95, 50 at most, at 60 Hz): the nation names, drawn each frame of it (16.8 ms at p95 with
+  them off).
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
