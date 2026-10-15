@@ -233,7 +233,7 @@ quick sweep as a smoke test.
         on a CPU), the small mark's second sample at T2, the turrets' pass.
       - [x] 7.1l11c The ground's cost with no GPU (the software rasteriser): what a frame of T2's
         ground costs there, and whether anything follows.
-      - [ ] 7.1l11d The AI's refused orders (476 and 1,082 a year at 3.5b; seed 5303's year 21, two
+      - [x] 7.1l11d The AI's refused orders (476 and 1,082 a year at 3.5b; seed 5303's year 21, two
         failing searches of 31 ms asked each day): counted and timed on HEAD; a rule that does not
         ask again moves the pin.
       - [ ] 7.1l11e The call of 361.7 ms in year 4 of seed 4242: found again on HEAD or not.
@@ -377,6 +377,10 @@ quick sweep as a smoke test.
   years, 77 founded in play; seed 2953: 153; "Free Liège II" holds Berlin in 1953
   (`critic/c6_headless_6619.json`, `critic/c6_headless_2953.json`). What the critic asks is as
   in runs 4 and 5.
+  From PLAN 7.1l11d (ADR-414 d): the AI asks again each day for an order it was refused (seed
+  5303's year 21: 292 refused, 234 of them the same order again, 3 % of the year's tick; seed 99:
+  under 1 %). An AI that does not ask again until something it reads has changed is a rule: it
+  moves the pin and is judged with the balance.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.

@@ -16307,3 +16307,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Dropped** (ADR-414 c): on SwiftShader the ground doubles a T3 frame (251 against 126 ms at
   1400 × 800; 355 against 234 at 1920 × 1080); the map alone is 4 to 8 frames a second there.
 - **Next:** PLAN 7.1l11d.
+
+## 2026-10-15 — PLAN 7.1l11d: the AI's refused orders (measurement)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Counted** (ADR-414 d; a counter in a copy of `operational.ts`, restored): seed 99's five years
+  227 to 985 refused a year, 4 to 87 ms a year (0.004 ms a tick); seed 5303's year 21, 292
+  refused, 352 ms of 11.6 s (3 %), the daily calls of 59 ms among them.
+- **Dropped** as a cut; the rule (not asking again) moved under PLAN 1.42: it moves the pin.
+- **Next:** PLAN 7.1l11e.

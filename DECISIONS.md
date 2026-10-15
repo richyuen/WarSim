@@ -196,6 +196,17 @@ dropped. Each part's finding is added here when it is done.
   1920 × 1080; at T0 and where the ground's share is 0 the same with it or without (126 to 248).
   The ground doubles a frame of 4 to 8 a second: a picture there is a test's, not a game a
   player can play, and both are so with it or without. Nothing follows.
+- **d. The AI's refused orders: the cut dropped, the rule moved to PLAN 1.42.** Counted in a copy
+  of `operational.ts` with a counter at its two `orderMove`s (the hashes of each year the run's
+  own). Seed 99's five years: 227, 985, 244, 612 and 366 orders of the AI refused a year (of
+  19,459 to 2,954 given), most of them the same formation's to the same cell again (215, 895,
+  142, 295, 254); they cost 4, 23, 25, 87 and 51 ms a year, of 2.2 s of orders in five years:
+  0.004 ms a tick. Seed 5303's year 21 (from 7.1l3's checkpoint): 292 refused of 2,037, 352 ms
+  of the year's 11.6 s (3 %), 50 of them over 1 ms (270 ms: the daily calls of 59 ms), 169 ms the
+  same order again. Not asking again is a rule of the AI and moves the pin; a memo of refused
+  routes across days that kept the hash would have to know that no cell or relation a search
+  reads has changed, for some 170 ms in a year of war. The rule goes under PLAN 1.42, where the
+  AI's behaviour is tuned with the balance.
 
 ### ADR-413 · 2026-10-15 · accepted — The top speed is the tick's: dropped from the performance pass (PLAN 7.1l10)
 
