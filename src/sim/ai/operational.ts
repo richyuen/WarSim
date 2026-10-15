@@ -149,11 +149,14 @@ export function operationalAi(world: World, armour: readonly number[] = []): voi
  * The formations once for all of a tick's planners (PLAN 7.1g: each planner walked them all), in
  * the order of `formations.forEach`: by nation, and those on land by sector bucket. An order of a
  * plan moves a formation within its cell (`orderMove` sets it on the cell's point), so not out of
- * its bucket, or puts it aboard (`tryLanding`): off land is asked where they are read.
+ * its bucket, or puts it aboard (`tryLanding`), and none comes ashore (the amphibious system
+ * lands them): those of a bucket are asked whether they are off land once `world.embarked` has
+ * grown from `embarked`.
  */
 interface Standings {
   byNation: Map<number, number[]>;
   byBucket: Map<number, number[]>;
+  embarked: number;
 }
 
 function standings(world: World, w: number): Standings {
@@ -172,7 +175,7 @@ function standings(world: World, w: number): Standings {
     if (!at) byBucket.set(k, (at = []));
     at.push(id);
   });
-  return { byNation, byBucket };
+  return { byNation, byBucket, embarked: world.embarked.size };
 }
 
 /** A holder's frontier cells and, four per cell, the holders of the neighbouring cells (0 = none). */
@@ -194,6 +197,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   /** The column of sector buckets `dx` from column `sx`, or -1 where the map ends before it. */
   const bucketX = (sx: number, dx: number): number => (loop ? (sx + dx + bw) % bw : sx + dx < 0 || sx + dx >= bw ? -1 : sx + dx);
   const sectors = new Map<number, Sector>();
+  // The frontier's cells come by rows: the next is mostly in the sector of the one before.
+  let last: Sector | undefined;
   for (const [holder, { cells, near }] of frontier) {
     if (holder !== n && !wars.sameSide(holder, n)) continue;
     for (let i = 0; i < cells.length; i++) {
@@ -205,30 +210,30 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       const x = c % w;
       const y = (c - x) / w;
       const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
-      let s = sectors.get(key);
+      let s = last?.key === key ? last : sectors.get(key);
       if (!s) sectors.set(key, (s = { key, cells: [], cx: 0, cy: 0, threat: 0, formations: [], strength: 0, hold: -1, own: false }));
+      last = s;
       s.cells.push(c);
+      // The centre's sums, of half-integers: the same in any order of the cells (and no other
+      // reading of them takes their order: `holdCell` and `attackCell` take the lowest of equals).
+      s.cx += x + 0.5;
+      s.cy += y + 0.5;
       if (holder === n) s.own = true;
     }
   }
   if (sectors.size === 0) return;
   const list = [...sectors.values()].sort((a, b) => a.key - b.key);
   for (const s of list) {
-    // Sums of half-integers: the same in any order of the cells (and no other reading of them
-    // takes their order: `holdCell` and `attackCell` take the lowest of equals).
-    let sx = 0;
-    let sy = 0;
-    for (const c of s.cells) {
-      sx += (c % w) + 0.5;
-      sy += Math.floor(c / w) + 0.5;
-    }
-    s.cx = sx / s.cells.length;
-    s.cy = sy / s.cells.length;
+    s.cx /= s.cells.length;
+    s.cy /= s.cells.length;
   }
   /** The strength of n's enemies in a sector bucket. */
   const enemyAt = (k: number): number => {
     let sum = 0;
-    for (const id of stand.byBucket.get(k) ?? []) if (enemyOf[f.nation[id]!] === 1 && !world.offLand(id)) sum += f.strength[id]!;
+    const ids = stand.byBucket.get(k);
+    if (ids === undefined) return 0;
+    const aboard = world.embarked.size !== stand.embarked;
+    for (const id of ids) if (enemyOf[f.nation[id]!] === 1 && (!aboard || !world.offLand(id))) sum += f.strength[id]!;
     return sum;
   };
   /** By sector bucket, how many formations of n stand in it, free or not. */

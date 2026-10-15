@@ -129,39 +129,90 @@ export const SHUT_PRICE = 8;
 /**
  * Coarse A* over nodes; returns the node sequence or null. `only`: the nodes it may take (the
  * first is not asked). `dear`: the nodes that cost SHUT_PRICE times their own.
+ * The open nodes are taken by the lowest f, of equals the first put in (PLAN 7.1g: a heap of
+ * them with their f lowered in place takes them in the order of the list that was scanned).
  */
 export function coarseRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, from: number, to: number, only?: Uint8Array, dear?: Uint8Array): number[] | null {
   const cost = pg.meanCost[mobility]!;
   const price = (a: number): number => (dear !== undefined && dear[a] === 1 ? SHUT_PRICE * cost[a]! : cost[a]!);
   if (!Number.isFinite(cost[from]!) || !Number.isFinite(cost[to]!)) return null;
   const h = (a: number): number => boundKm(g, pg.centre[a]!, pg.centre[to]!) * MIN_COST[mobility]!;
-  const dist = new Float64Array(pg.nodeCount).fill(Infinity);
-  const came = new Int32Array(pg.nodeCount).fill(-1);
-  const done = new Uint8Array(pg.nodeCount);
+  let sc = COARSE_SCRATCH.get(pg);
+  if (!sc) {
+    const n = pg.nodeCount;
+    sc = { dist: new Float64Array(n), f: new Float64Array(n), came: new Int32Array(n), first: new Int32Array(n), at: new Int32Array(n), heap: new Int32Array(n), stamp: new Uint32Array(n), gen: 0 };
+    COARSE_SCRATCH.set(pg, sc);
+  }
+  if (++sc.gen === 0xffffffff) {
+    sc.stamp.fill(0);
+    sc.gen = 1;
+  }
+  // A node met in this call (`stamp` is `gen`) has its `dist`, `f`, `came` and `first` (the
+  // order it was put in); `at` is its place in the heap, -1 once it is taken.
+  const { dist, f, came, first, at, heap, stamp, gen } = sc;
+  const before = (a: number, b: number): boolean => f[a]! < f[b]! || (f[a] === f[b] && first[a]! < first[b]!);
+  const up = (i: number): void => {
+    const a = heap[i]!;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      const b = heap[p]!;
+      if (!before(a, b)) break;
+      heap[i] = b;
+      at[b] = i;
+      i = p;
+    }
+    heap[i] = a;
+    at[a] = i;
+  };
+  let size = 0;
+  const down = (i: number): void => {
+    const a = heap[i]!;
+    for (;;) {
+      let c = 2 * i + 1;
+      if (c >= size) break;
+      if (c + 1 < size && before(heap[c + 1]!, heap[c]!)) c++;
+      const b = heap[c]!;
+      if (!before(b, a)) break;
+      heap[i] = b;
+      at[b] = i;
+      i = c;
+    }
+    heap[i] = a;
+    at[a] = i;
+  };
+  let put = 0;
+  stamp[from] = gen;
   dist[from] = 0;
-  // Small graph (~5k nodes): an O(V²)-free open list sorted by insertion is enough.
-  const open: number[] = [from];
-  const f = new Float64Array(pg.nodeCount).fill(Infinity);
   f[from] = h(from);
-  while (open.length) {
-    let bi = 0;
-    for (let i = 1; i < open.length; i++) if (f[open[i]!]! < f[open[bi]!]!) bi = i;
-    const a = open.splice(bi, 1)[0]!;
+  first[from] = put++;
+  heap[size++] = from;
+  at[from] = 0;
+  while (size > 0) {
+    const a = heap[0]!;
+    at[a] = -1;
+    if (--size > 0) {
+      heap[0] = heap[size]!;
+      down(0);
+    }
     if (a === to) break;
-    if (done[a]) continue;
-    done[a] = 1;
     for (const b of pg.adj[a]!) {
-      if (done[b] || !Number.isFinite(cost[b]!) || (only !== undefined && only[b] !== 1)) continue;
+      const met = stamp[b] === gen;
+      if ((met && at[b] === -1) || !Number.isFinite(cost[b]!) || (only !== undefined && only[b] !== 1)) continue;
       const t = dist[a]! + boundKm(g, pg.centre[a]!, pg.centre[b]!) * 0.5 * (price(a) + price(b));
-      if (t < dist[b]!) {
-        dist[b] = t;
-        came[b] = a;
-        f[b] = t + h(b);
-        open.push(b);
+      if (met && t >= dist[b]!) continue;
+      dist[b] = t;
+      came[b] = a;
+      f[b] = t + h(b);
+      if (met) up(at[b]!);
+      else {
+        stamp[b] = gen;
+        first[b] = put++;
+        heap[size] = b;
+        up(size++);
       }
     }
   }
-  if (!Number.isFinite(dist[to]!)) return null;
+  if (stamp[to] !== gen) return null;
   const route = [to];
   for (let a = to; a !== from; ) {
     a = came[a]!;
@@ -169,6 +220,8 @@ export function coarseRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId,
   }
   return route.reverse();
 }
+/** By graph, `coarseRoute`'s arrays, kept between calls. */
+const COARSE_SCRATCH = new WeakMap<ProvinceGraph, { dist: Float64Array; f: Float64Array; came: Int32Array; first: Int32Array; at: Int32Array; heap: Int32Array; stamp: Uint32Array; gen: number }>();
 
 /**
  * The groups of nodes joined by neighbours, among the nodes marked in `open` (numbered from 1;

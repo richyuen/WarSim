@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { encodeRuns } from '../../src/shared/mapImport';
 import { Terrain } from '../../src/shared/terrain';
-import { Mobility, type Passage } from '../../src/sim/nav/grid';
-import { coarseRoute, findRoute, mayReach, nodeGroups } from '../../src/sim/nav/provinceGraph';
+import { boundKm, MIN_COST, Mobility, type MobilityId, type NavGrid, type Passage } from '../../src/sim/nav/grid';
+import { coarseRoute, findRoute, mayReach, nodeGroups, SHUT_PRICE, type ProvinceGraph } from '../../src/sim/nav/provinceGraph';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -186,5 +186,87 @@ describe('the coarse route goes round a province with closed ground (PLAN 3.10c2
     let seen = 0;
     for (let c = 0; c < stamp.length; c++) if (stamp[c]! >= 2 * (before + 1)) seen++;
     expect(seen).toBeLessThan(3000);
+  });
+});
+
+// PLAN 7.1g: the coarse route's open nodes are a heap whose f is lowered in place. It takes them in
+// the order of the list that was scanned before: the lowest f, of equals the first put in.
+describe('the coarse route of a heap is the route of the scanned list (PLAN 7.1g)', () => {
+  /** The coarse route as it was before PLAN 7.1g: the open list scanned for the lowest f. */
+  function scanned(grid: NavGrid, graph: ProvinceGraph, mobility: MobilityId, from: number, to: number, only?: Uint8Array, dear?: Uint8Array): number[] | null {
+    const cost = graph.meanCost[mobility]!;
+    const price = (a: number): number => (dear !== undefined && dear[a] === 1 ? SHUT_PRICE * cost[a]! : cost[a]!);
+    if (!Number.isFinite(cost[from]!) || !Number.isFinite(cost[to]!)) return null;
+    const h = (a: number): number => boundKm(grid, graph.centre[a]!, graph.centre[to]!) * MIN_COST[mobility]!;
+    const dist = new Float64Array(graph.nodeCount).fill(Infinity);
+    const came = new Int32Array(graph.nodeCount).fill(-1);
+    const done = new Uint8Array(graph.nodeCount);
+    const f = new Float64Array(graph.nodeCount).fill(Infinity);
+    dist[from] = 0;
+    f[from] = h(from);
+    const open: number[] = [from];
+    while (open.length) {
+      let bi = 0;
+      for (let i = 1; i < open.length; i++) if (f[open[i]!]! < f[open[bi]!]!) bi = i;
+      const a = open.splice(bi, 1)[0]!;
+      if (a === to) break;
+      if (done[a]) continue;
+      done[a] = 1;
+      for (const b of graph.adj[a]!) {
+        if (done[b] || !Number.isFinite(cost[b]!) || (only !== undefined && only[b] !== 1)) continue;
+        const t = dist[a]! + boundKm(grid, graph.centre[a]!, graph.centre[b]!) * 0.5 * (price(a) + price(b));
+        if (t < dist[b]!) {
+          dist[b] = t;
+          came[b] = a;
+          f[b] = t + h(b);
+          open.push(b);
+        }
+      }
+    }
+    if (!Number.isFinite(dist[to]!)) return null;
+    const route = [to];
+    for (let a = to; a !== from; ) {
+      a = came[a]!;
+      route.push(a);
+    }
+    return route.reverse();
+  }
+
+  it('the same nodes for 2,000 pairs of the 1938 graph, each mobility, open to all or to a nation, closed ground dear or not', () => {
+    const world = world1938();
+    const { grid, graph } = navOf(world);
+    const nations: number[] = [];
+    world.nations.forEach((n) => {
+      nations.push(n);
+    });
+    let s = 12345;
+    const rnd = (n: number): number => {
+      s ^= s << 13;
+      s ^= s >>> 17;
+      s ^= s << 5;
+      return (s >>> 0) % n;
+    };
+    let found = 0;
+    let none = 0;
+    for (let i = 0; i < 2000; i++) {
+      const a = 1 + rnd(graph.nodeCount - 1);
+      // The other end a walk of up to 300 steps over neighbours away: mostly on the same land.
+      let b = a;
+      for (let k = rnd(300); k > 0 && graph.adj[b]!.length > 0; k--) b = graph.adj[b]![rnd(graph.adj[b]!.length)]!;
+      const mobility = ([Mobility.foot, Mobility.motor, Mobility.tracked] as MobilityId[])[rnd(3)]!;
+      // Open to all, or to the holder of the first node's cell, or to a nation drawn.
+      const holder = world.cells.controller[graph.centre[a]!]!;
+      const draw = rnd(3);
+      const pass = draw === 0 ? undefined : passageOf(world, draw === 1 && holder !== 0 ? holder : nations[rnd(nations.length)]!);
+      const dear = pass !== undefined && rnd(2) === 1 ? pass.shut : undefined;
+      const want = scanned(grid, graph, mobility, a, b, pass?.open, dear);
+      expect(coarseRoute(grid, graph, mobility, a, b, pass?.open, dear)).toEqual(want);
+      if (want === null) none++;
+      else if (want.length > 2) found++;
+    }
+    // The pairs are not all refused or next to each other (823 routes of more than two nodes
+    // and 969 refused, when written).
+    expect(found).toBeGreaterThan(600);
+    expect(none).toBeLessThan(1200);
   });
 });
