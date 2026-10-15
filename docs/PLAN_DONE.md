@@ -9203,3 +9203,26 @@ Of 7.1 (open in PLAN.md):
     Done (`9e2703d`, `a023fea`, `facc2ff`, ADR-398): pin unchanged; by alternating pinned pairs
     0.46 → 0.18 ms (−61 %), the subtree by `--cpu-prof` 5,371 → 2,020 ms. What is left of
     strikes is their fire.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1 (open in PLAN.md):
+
+  - [x] 7.1g The operational AI (15.3 %: `planNation` 13.1, `orderMove` 5.1, `passageOf` 3.4,
+    `findRoute` 3.9). AT: the pin unchanged; its mean in year 1 down by a third (0.62 ms).
+    Done (`33b5c79`, `1e49c55`, `5293cdd`, `57c8003`, `d0a65a0`, ADR-399): pin unchanged, and the
+    map that does not loop; the AT read as 7.1e's, by bundled pinned pairs (7.1a's 0.62 ms was
+    under `tsx`, 0.44 bundled): 0.44 → 0.29 to 0.31 ms, −32.4 % in the mean of four quiet pairs
+    and −33.2 % in their median.

@@ -159,8 +159,7 @@ quick sweep as a smoke test.
   - [x] 7.1d Combat's battles (`findBattles`, 8.3 % of year 1 with what it calls; 4.6 % its own): […]
   - [x] 7.1e Combat's fire (`combatSystem`'s own 6.3 %, `placeOf` 3.2 %, `deployAll` 3.0 %). AT: […]
   - [x] 7.1f The air's anti-aircraft and strikes (`systems/airCombat.ts`: `antiAir` 4.5 %, […]
-  - [ ] 7.1g The operational AI (15.3 %: `planNation` 13.1, `orderMove` 5.1, `passageOf` 3.4,
-    `findRoute` 3.9). AT: the pin unchanged; its mean in year 1 down by a third (0.62 ms).
+  - [x] 7.1g The operational AI (15.3 %: `planNation` 13.1, `orderMove` 5.1, `passageOf` 3.4, […]
   - [ ] 7.1h Territory (8.5 %: `territorySystem`'s own 3.1 %, `frontierOf` 1.9 %) and supply
     (7.9 %). AT: the pin unchanged; each down by a third in year 1.
   - [ ] 7.1i The operational AI's war years. The line of R4-B5 holds on HEAD (7.1a: seed 5303's

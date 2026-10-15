@@ -167,6 +167,58 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-399 · 2026-10-15 · accepted — The operational AI's plans: what is the same between plans is made once (PLAN 7.1g)
+
+Each cut below is exact: the pin is unchanged, and so is year 1 of seed 99 on a map that does
+not loop (620968e1 at the year's end, each quarter as at the task's start). What each relies on
+is written here, because a rule change can break it.
+- **A passage's node parts** (`33b5c79`, `nodeParts` in `systems/movement.ts`, `World.heldKeys`
+  and `heldLog`): `passageOf` built `open`, `shut` and the node groups from every key of
+  `heldByNode` at each plan (8,432 times in year 1). They depend on those keys alone, so they are
+  kept by world and set of open holders (`Passage.ok` as a string), patched by the nodes whose
+  keys came or went since (`heldLog`, 4,096 bumps at most), and the groups (and `wideNode`'s
+  answers, `wide`) kept while `open` (and `shut`) are the same. **Relies on:** `heldByNode` being
+  kept by `setController` (a write of `controller` without it, and without `dropLandCounts`, is
+  wrong for `heldByNode` already); only node-level arrays are shared. Each passage is still a new
+  object, because `pocketOf`'s marks (by the passage's identity) and `joined` are of the cells.
+- **The planners' formations once a tick** (`1e49c55`, `standings` in `ai/operational.ts`): each
+  plan walked every formation (14,352 plans a year); they are put by nation and by sector bucket
+  once a tick, in the order of `formations.forEach`. **Relies on:** within the planners an order
+  moves a formation only within its cell (`order` sets it on the cell's point, a pixel of the
+  cell) or puts it aboard (`tryLanding`), and none comes ashore (only the amphibious system lands
+  them): so no formation leaves its bucket, and off land is asked again only once
+  `world.embarked` has grown.
+- **The nearest sector by rows** (`1e49c55`): `list` is by key, so by row; only a sector of the
+  rows within `DEPLOY_RANGE_CELLS` can be within it, so the nearest is the same where it is
+  within the range and beyond it where it is not. `holdCell` takes the lowest of equals itself,
+  and the sector's cells are not sorted.
+- **The coarse route's heap** (`5293cdd`, `coarseRoute` in `nav/provinceGraph.ts`): the open list
+  was scanned for the lowest current f, of equals the earliest entry. A node's earliest entry is
+  its first push, and a node taken is never put in again, so a heap keyed by (f, the order of
+  first push), with f lowered in place, takes the nodes in the same order. A unit test keeps the
+  scanned list and compares 2,000 pairs of the 1938 graph (20,000 by hand: all equal, 852 → 31
+  ms). **Relies on:** f only falls while a node is open (its bound is fixed by the node).
+- **In place** (`57c8003`): the frontier's four neighbour holders are read without
+  `neighbours4` (the planners read them as a set, so a cell at the map's edge need not pack its
+  slots); `findPath`'s corner test read `(cx + dx + w) % w`, which is `nx` there.
+- **A plan's sectors by stamped arrays** (`d0a65a0`, `SLOTS`): a sector's place by bucket in
+  place of a `Map`, then its number in the sorted list (`indexOf`); each bucket's enemy strength
+  summed once a plan (read only where no order is given in between); the count of a class's
+  formations within range of a sector over those within the range in y (a count, so in any
+  order); a partner holder's enemies as a mask once a tick (`foesOf`) in place of `atWar` at each
+  front cell.
+- **Measured.** By alternating pinned pairs (`--profile --affinity 0xFFFF`, esbuild bundles of
+  `cffd5ee` and `d0a65a0`, year 1 of seed 99), the runs where the machine was quiet (another
+  session's headless Chrome took up to 14 cores at times; a run of either code then read up to a
+  third slower): `operationalAi` 0.4397, 0.4445, 0.4412, 0.4357 ms → 0.2912, 0.2992, 0.2904, 0.3095
+  (−32.4 % in the mean of the pairs, −33.2 % in their median); its share of the tick 20.3 →
+  14.5 %. The plan's 0.62 ms was read under `tsx` (7.1a); the same code bundled reads 0.44.
+  Left: `findPath` (a quarter of the subtree), `frontierOf` (0.42 s of a year, a full scan after
+  each change of the wars: PLAN 7.1h), `pocketOf`, `snapTarget`.
+- **Tried and dropped:** the sector list from a sorted `Float64Array` of the keys
+  (`Array.from(Float64Array.from(map.keys()).sort(), …)`: 178 profile ticks against 68 for the
+  sort of the objects).
+
 ### ADR-398 · 2026-10-15 · accepted — The air's AA and strikes look near, not at the whole world (PLAN 7.1f)
 
 - **AA** (`9e2703d`, `antiAir`, `systems/airCombat.ts`): every formation walked the nine cells

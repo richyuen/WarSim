@@ -15950,3 +15950,34 @@ No rule changed and nothing on screen changed. One task came out of it.
   `loopingMap` off, bundles of `d1ef8cd` and of the task's code: the same hash at each quarter
   (620968e1 at the year's end; `.cache/prof71/nl/`).
 - **Next:** PLAN 7.1g.
+
+## 2026-10-15 — PLAN 7.1g: the operational AI (performance)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Found** (year-1 profile of seed 99 on the E-cores, `.cache/prof71/pg0`; counters in a bundle,
+  `gcount.mjs`): `planNation`'s subtree 5.8 s of 37.2. Its own lines 1.8 s (the sectors built from
+  the coalition's frontier, every formation walked by each of 14,352 plans), `findPath` 1.2 s,
+  `nodeGroups` and `passageOf` 0.9 s (8,432 passages built, 1,390 shared; the held keys change
+  2,520 times a year), `coarseRoute` 0.4 s (an open list scanned and spliced).
+- **Cuts** (ADR-399), pin unchanged (45df324d) at each: `33b5c79` a passage's node parts kept
+  between hours and patched by the nodes whose held keys changed; `1e49c55` the formations by
+  nation and bucket once a tick, the nearest sector by rows, no sort of a sector's cells;
+  `5293cdd` the coarse route's open nodes in a heap (a unit test keeps the scanned list: 2,000
+  pairs equal); `57c8003` the frontier's neighbours read in place, no modulo at a corner;
+  `d0a65a0` a plan's sectors by stamped arrays, each bucket's enemy summed once a plan, the
+  allotment's count by rows, a partner's enemies as a mask once a tick.
+- **AT:** bundled pinned pairs (`--profile --affinity 0xFFFF`, `cffd5ee` against `d0a65a0`), the
+  quiet ones: `operationalAi` 0.4397, 0.4445, 0.4412, 0.4357 → 0.2912, 0.2992, 0.2904, 0.3095 ms
+  (−32.4 % mean, −33.2 % median); share of the tick 20.3 → 14.5 %. Read as 7.1e's: 7.1a's 0.62 was
+  under `tsx`, 0.44 bundled. Year 1 on a map that does not loop: the same hash at each quarter
+  (620968e1). `saveYear` (the save/load twin) green by hand.
+- **Tried and dropped:** the sector list from a sorted `Float64Array` of keys (slower than the
+  objects' sort: `Array.from`/`Float64Array.from` of an iterator is a slow path).
+- **Left:** `findPath` a quarter of the subtree; `frontierOf` 0.42 s (its full scan after a change
+  of the wars, PLAN 7.1h); `pocketOf`, `snapTarget`.
+- **Gotchas:** a bare `npx tsc --noEmit -p .` printed nothing over a stray `}`; `npm run typecheck`
+  caught it. Another Claude session's headless Chrome (SwiftShader) took up to 14 cores at times:
+  every run of either code read up to a third slower; judged on the runs where the whole tick read
+  quiet, and by the AI's share of the tick. The gate's known-red `scenario1938` build time failed
+  once under that load and passed alone; the gate again with `VITEST_MAX_WORKERS=4` was green.
+- **Next:** PLAN 7.1h.
