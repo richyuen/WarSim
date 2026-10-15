@@ -13,6 +13,7 @@
  * (`portShut`): its transports embark no one, its yard delivers no fleet.
  */
 import type { World } from '../world';
+import type { Port } from '../data/ports';
 import { cellX, elementIndex, wrapDx } from './elements';
 import { strikeFactor } from './airSuperiority';
 
@@ -78,12 +79,43 @@ function bombPorts(world: World, nation: number, tons: number, tx: number, ty: n
   const { w, controller } = world.cells;
   const cx = Math.floor(tx);
   const cy = Math.floor(ty);
-  world.ports.forEach((p, i) => {
+  // The ports of the cells within reach, from the ports by cell (PLAN 7.1f); then the test of
+  // each, in the order of `world.ports`, as a walk of them all would make it.
+  const byCell = portsByCell(world.ports);
+  const near: number[] = [];
+  for (let y = cy - BOMB_CELLS; y <= cy + BOMB_CELLS; y++) {
+    if (y < 0 || y >= world.cells.h) continue;
+    for (let d = -BOMB_CELLS; d <= BOMB_CELLS; d++) {
+      const x = cellX(world, cx + d);
+      if (x === null) continue;
+      for (const i of byCell.get(y * w + x) ?? []) if (!near.includes(i)) near.push(i);
+    }
+  }
+  near.sort((a, b) => a - b);
+  for (const i of near) {
+    const p = world.ports[i]!;
     const dx = Math.abs(wrapDx(world, cx, p.cell % w));
-    if (dx > BOMB_CELLS || Math.abs(Math.floor(p.cell / w) - cy) > BOMB_CELLS) return;
-    if (!world.wars.atWar(nation, controller[p.cell]!)) return;
+    if (dx > BOMB_CELLS || Math.abs(Math.floor(p.cell / w) - cy) > BOMB_CELLS) continue;
+    if (!world.wars.atWar(nation, controller[p.cell]!)) continue;
     world.portDamage.set(i, Math.min(MAX_DAMAGE, (world.portDamage.get(i) ?? 0) + tons / (PORT_TONS * Math.max(1, p.port))));
-  });
+  }
+}
+
+/** The indices in `ports` by cell (PLAN 7.1f): the ports are the scenario's static data, so once a list. */
+const portCells = new WeakMap<readonly Port[], Map<number, number[]>>();
+
+function portsByCell(ports: readonly Port[]): Map<number, number[]> {
+  let m = portCells.get(ports);
+  if (!m) {
+    m = new Map();
+    ports.forEach((p, i) => {
+      const list = m!.get(p.cell);
+      if (list) list.push(i);
+      else m!.set(p.cell, [i]);
+    });
+    portCells.set(ports, m);
+  }
+  return m;
 }
 
 /** A day's repair, at its first hour: each damaged cell's and port's damage × (1 − REPAIR_DAILY). */
