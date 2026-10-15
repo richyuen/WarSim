@@ -10,6 +10,7 @@ import buildings from '../../../data/buildings/buildings.json' with { type: 'jso
 import type { PlacedCity } from './cities';
 import { nearestCellWhere, nearestOwnedCell } from './ownership';
 import { cellOf } from './terrain';
+import { atWidthSnap } from './projection';
 
 export interface AirbaseDef {
   name: string;
@@ -76,7 +77,7 @@ export function placeAirbases(rules: AirbaseRules, cities: readonly PlacedCity[]
   rules.bases.forEach((d, di) => {
     const [x, y] = cellOf(d.lonLat[0], d.lonLat[1], w, h);
     const nation = nations && d.nation !== undefined ? (idOf.get(d.nation) ?? -1) : 0;
-    const cell = nation !== 0 ? nearestOwnedCell(owner, nation, x, y, w, h, AIRBASE_SNAP_CELLS) : nearestCellWhere((c) => owner[c] !== 0, x, y, w, h, AIRBASE_SNAP_CELLS, true);
+    const cell = nation !== 0 ? nearestOwnedCell(owner, nation, x, y, w, h, atWidthSnap(w, AIRBASE_SNAP_CELLS)) : nearestCellWhere((c) => owner[c] !== 0, x, y, w, h, atWidthSnap(w, AIRBASE_SNAP_CELLS), true);
     if (cell < 0) {
       unplaced.push(di);
       return;

@@ -1222,6 +1222,16 @@ export class World {
     return Math.max(1, Math.round(cells * this.sizeScale));
   }
 
+  /**
+   * A snap of `cells` cells of the map's default size, onto the raster's land or water from a
+   * point given in degrees (PLAN 7.1b7): the larger of its cells and its km. At a finer size the
+   * point is as many km from its land as before, more cells; at a coarser one the raster's own
+   * cells are what it is out by.
+   */
+  atSizeSnap(cells: number): number {
+    return cells * Math.max(1, this.sizeScale);
+  }
+
   /** An area of `cells` cells of the map's default size, in this map's cells: the scale's square (PLAN 7.1b3). */
   atSizeArea(cells: number): number {
     return cells * this.sizeScale * this.sizeScale;

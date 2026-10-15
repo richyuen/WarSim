@@ -16415,3 +16415,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   (1.99 ms a tick); the page at S, looked at (world, T1, T2), no error. Pin and the map that does
   not loop unchanged.
 - **Next:** PLAN 7.1b7.
+
+## 2026-10-15 — PLAN 7.1b7: the assets of L (data, sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-418): L's elevation and terrain shipped (8.06 and 0.41 MB; M's and S's unchanged,
+  `data --check` clean); the snaps the larger of their cells and their km (`atSizeSnap`,
+  `atWidthSnap`); a fleet whose water is spent goes on from the nearest water (New York at L).
+- **AT:** the 1938 world at L builds and runs (unit test; three months headless); the page at L,
+  looked at (world, T1, T2), no error. Pin and the map that does not loop unchanged.
+- **Split:** XL to 7.1b7b (the mask is 2.67 px a cell at 6,144).
+- **Next:** PLAN 7.1b7b.

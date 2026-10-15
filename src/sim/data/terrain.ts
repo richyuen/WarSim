@@ -6,7 +6,7 @@
  * water. They are applied at load time, so editing the straits list needs no asset rebuild.
  */
 import { Terrain } from '../../shared/terrain';
-import { project } from './projection';
+import { project, atWidthSnap } from './projection';
 
 export interface StraitDef {
   id: string;
@@ -71,8 +71,8 @@ export function straitPath(s: StraitDef, w: number, h: number): number[] {
   if (bx - ax > w / 2) bx -= w;
   else if (ax - bx > w / 2) bx += w;
   const len = Math.sqrt((bx - ax) * (bx - ax) + (by - ay) * (by - ay));
-  const ex = len === 0 ? 0 : ((bx - ax) / len) * STRAIT_EXTEND_CELLS;
-  const ey = len === 0 ? 0 : ((by - ay) / len) * STRAIT_EXTEND_CELLS;
+  const ex = len === 0 ? 0 : ((bx - ax) / len) * atWidthSnap(w, STRAIT_EXTEND_CELLS);
+  const ey = len === 0 ? 0 : ((by - ay) / len) * atWidthSnap(w, STRAIT_EXTEND_CELLS);
   return segmentCells(ax - ex, ay - ey, bx + ex, by + ey, w, h);
 }
 

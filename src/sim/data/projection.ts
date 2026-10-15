@@ -51,6 +51,11 @@ export function atWidth(w: number, cells: number): number {
   return cells * (w / DEFAULT_W);
 }
 
+/** A snap of `cells` default cells onto the raster from a point in degrees, on a map `w` wide: the larger of its cells and its km (`World.atSizeSnap`). */
+export function atWidthSnap(w: number, cells: number): number {
+  return cells * Math.max(1, w / DEFAULT_W);
+}
+
 /** Equatorial km per cell for a map `w` cells wide. */
 export function kmPerCell(w: number): number {
   return 40075.017 / w;

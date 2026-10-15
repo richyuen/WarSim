@@ -40,6 +40,7 @@ import { monthlyAccounts } from './systems/economy';
 import { staticCe } from './systems/efficiency';
 import { initProvinceCores } from './systems/revolts';
 import { navOf, World } from './world';
+import { atWidthSnap } from './data/projection';
 
 /** The count a random world is built with (`RANDOM_NATIONS`, shared/scenarios) for the count asked for (none, a fraction, out of range). */
 export function randomNationCount(asked: number | undefined): number {
@@ -171,7 +172,7 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
   // and none on an islet.
   const cityCell = CITIES.map((d) => {
     const [x, y] = cellOf(d.lonLat[0], d.lonLat[1], w, h);
-    return nearestCellWhere(isLand, x, y, w, h, CITY_SNAP_CELLS, true);
+    return nearestCellWhere(isLand, x, y, w, h, atWidthSnap(w, CITY_SNAP_CELLS), true);
   });
   const pieceCells = new Map<number, number>();
   for (let cell = 0; cell < w * h; cell++) if (isLand(cell)) pieceCells.set(grid.component[cell]!, (pieceCells.get(grid.component[cell]!) ?? 0) + 1);
@@ -287,7 +288,7 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
   // they stood, and whoever has the land has them (PLAN 4.1c).
   world.ports = placePorts(PORTS_1938, cities, tags, c.owner, c.terrain, w, h, false).ports;
   world.airbases = placeAirbases(AIRBASES_1938, cities, tags, c.owner, w, h, false).airbases;
-  world.portReach = PORTS_1938.reachCells;
+  world.portReach = world.atSizeSnap(PORTS_1938.reachCells);
   const labels = meta.map(provinceLabel);
   // The name is state, as one given in God Mode is: no table of the scenario holds it.
   for (const p of cities) if (p.capitalOf !== 0) world.names.set(p.capitalOf, labels[province[p.cell]! - 1] || p.name);

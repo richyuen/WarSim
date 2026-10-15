@@ -36,6 +36,15 @@
       "sha256": "9cfa4fdd10858da761b79757f2e2059944edecc10b4bab92e0a96b6bd9fa59a6"
     },
     {
+      "path": "elev-4096x2048.i16d.wsz",
+      "kind": "elevation",
+      "width": 4096,
+      "height": 2048,
+      "encoding": "gzip(byte-planes(row-delta(int16 metres))), ocean quantised to 10 m",
+      "bytes": 8060400,
+      "sha256": "6cde8c53da4d9fbe1dbc2862d7ad9d08e1658084a213f3ff44b37aef1358fe97"
+    },
+    {
       "path": "elev-2048x1024.i16d.wsz",
       "kind": "elevation",
       "width": 2048,
@@ -61,6 +70,15 @@
       "encoding": "gzip(byte-planes(row-delta(int16 metres))), ocean quantised to 10 m",
       "bytes": 155394,
       "sha256": "41929055daf792e5abe25cb7cdc69f333d8b6781e93f0b64853a6558e5bdb808"
+    },
+    {
+      "path": "terrain-4096x2048.u8.wsz",
+      "kind": "terrain",
+      "width": 4096,
+      "height": 2048,
+      "encoding": "gzip(u8 terrain class per cell, row-major; src/shared/terrain.ts)",
+      "bytes": 414314,
+      "sha256": "6d6a2d14374278e1423ea2fe9c3854338f67eeb62ee19e90eab4e24ac01cbb60"
     },
     {
       "path": "terrain-2048x1024.u8.wsz",

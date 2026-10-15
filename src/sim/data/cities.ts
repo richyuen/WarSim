@@ -6,6 +6,7 @@
  */
 import { nearestCellWhere, nearestOwnedCell } from './ownership';
 import { cellOf } from './terrain';
+import { atWidthSnap } from './projection';
 
 export interface CityDef {
   name: string;
@@ -42,8 +43,8 @@ export function placeCities(defs: readonly CityDef[], tags: readonly string[], o
     // A capital belongs to its own nation; other cities to whoever owns the nearest land.
     const cell =
       capitalOf !== 0
-        ? nearestOwnedCell(owner, capitalOf, x, y, w, h, CITY_SNAP_CELLS)
-        : nearestCellWhere((c) => owner[c] !== 0, x, y, w, h, CITY_SNAP_CELLS, true);
+        ? nearestOwnedCell(owner, capitalOf, x, y, w, h, atWidthSnap(w, CITY_SNAP_CELLS))
+        : nearestCellWhere((c) => owner[c] !== 0, x, y, w, h, atWidthSnap(w, CITY_SNAP_CELLS), true);
     if (cell < 0) continue;
     out.push({ def: di, name: d.name, x, y, cell, size: d.size, owner: owner[cell]!, capitalOf });
   }

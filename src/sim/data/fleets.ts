@@ -12,6 +12,11 @@
  * no RNG, the groups in their order.
  */
 import { isLand } from '../../shared/terrain';
+import { nearestCellWhere } from './ownership';
+import { DEFAULT_W } from './projection';
+
+/** How far, default cells, a fleet of the start looks past its port's water at each size finer than the default (PLAN 7.1b7). */
+const FLEET_REACH = 4;
 
 export interface FleetGroup {
   nation: string;
@@ -60,7 +65,18 @@ export function placeFleets(inp: FleetInput): { fleets: PlacedFleet[]; unplaced:
     const queue = [start];
     seen[start] = 1;
     let left = g.count;
-    for (let qi = 0; qi < queue.length && left > 0; qi++) {
+    for (let qi = 0; left > 0; qi++) {
+      if (qi === queue.length) {
+        // The water of the port is spent and the group is not placed (a lake: not placed). At a
+        // size finer than the map's default a piece of a bay can be cut off from its sea by the
+        // finer raster alone (L: New York's nearest water): on from the nearest water not seen,
+        // within as many cells as the finer size adds (PLAN 7.1b7). None at the default size.
+        const reach = FLEET_REACH * Math.max(0, w / DEFAULT_W - 1);
+        const more = reach > 0 ? nearestCellWhere((k) => seen[k] === 0 && !isLand(terrain[k]!), (start % w) + 0.5, Math.floor(start / w) + 0.5, w, h, reach, wrapX) : -1;
+        if (more < 0) break;
+        seen[more] = 1;
+        queue.push(more);
+      }
       const c = queue[qi]!;
       if (used[c] === 0 && (inp.stands?.(c) ?? true)) {
         used[c] = 1;

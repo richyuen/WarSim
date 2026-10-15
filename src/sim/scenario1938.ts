@@ -509,7 +509,7 @@ export function createWorld1938(seed: number, assets: ScenarioAssets, size = SIZ
   if (world.landMask) for (const cell of t.islandCells) addIslet(world.landMask, w, cell % w, Math.floor(cell / w));
   world.ports = t.ports;
   world.airbases = t.airbases;
-  world.portReach = PORTS_1938.reachCells;
+  world.portReach = world.atSizeSnap(PORTS_1938.reachCells);
   world.rules = RULES_1938;
   // The tables with the room the build left them (a held `cols` lasts over as many creates).
   world.parts().forEach((part, i) => {
@@ -588,7 +588,7 @@ function buildWorld1938(seed: number, assets: ScenarioAssets, size = SIZE_1938):
   const placed = placePorts(PORTS_1938, map.cities, tags, map.owner, map.terrain, w, h);
   if (placed.unplaced.length) throw new Error(`1938 ports: ${placed.unplaced.map((i) => PORTS_1938.ports[i]!.name).join(', ')} found no land`);
   world.ports = placed.ports;
-  world.portReach = PORTS_1938.reachCells;
+  world.portReach = world.atSizeSnap(PORTS_1938.reachCells);
   const bases = placeAirbases(AIRBASES_1938, map.cities, tags, map.owner, w, h);
   if (bases.unplaced.length) throw new Error(`1938 airbases: ${bases.unplaced.map((i) => AIRBASES_1938.bases[i]!.name).join(', ')} found no land`);
   world.airbases = bases.airbases;

@@ -14,6 +14,7 @@
  */
 import type { Admin1Geometry } from '../../shared/admin1';
 import { rasterizePolygon } from '../../shared/rasterize';
+import { atWidthSnap } from './projection';
 
 export interface ProvinceSeed {
   /** Label point, normalised Miller (u, v). */
@@ -103,7 +104,7 @@ export function buildProvinceRaster(geo: Admin1Geometry, seeds: readonly Provinc
     }
     let placed = false;
     for (let pass = 0; pass < 3 && !placed; pass++) {
-      for (let r = 0; r <= MAX_RADIUS && !placed; r++) {
+      for (let r = 0; r <= atWidthSnap(w, MAX_RADIUS) && !placed; r++) {
         for (let dy = -r; dy <= r && !placed; dy++) {
           for (let dx = -r; dx <= r; dx++) {
             if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue; // ring perimeter only

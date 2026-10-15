@@ -6,9 +6,9 @@
 //    - landmask-16384x8192.bits.wsz: 1-bit land mask (LSB-first, row-major) from NE 10m land,
 //      rasterized in Miller projection (src/sim/data/projection.ts, ADR-7);
 //    - elev-<w>x<h>.i16d.wsz: elevation pyramid (metres; src/shared/elevation.ts codec) from ETOPO
-//      2022 60″, box-averaged into Miller cells at 4096×2048 and halved down to 512×256. The
-//      4096×2048 level stays in .cache/data/derived/ (ADR-13: shipped-asset budget).
-//    - terrain-<w>x<h>.u8.wsz: terrain classes at 2048×1024 and 1024×512 (PLAN 1.2,
+//      2022 60″, box-averaged into Miller cells at 4096×2048 and halved down to 512×256; every
+//      level shipped since PLAN 7.1b7 (ADR-418; ADR-13 kept the 4096 level local).
+//    - terrain-<w>x<h>.u8.wsz: terrain classes at 4096×2048, 2048×1024 and 1024×512 (PLAN 1.2,
 //      tools/data/terrain.ts) from the land mask, NE1 land cover, ETOPO relief and wetlands.
 //      The land mask has natural lakes (NE 10m lakes, scalerank <= 7, no reservoirs) cut out.
 //    - data/scenarios/1938/cities.json: the 1938 city list (PLAN 1.5, tools/data/cities.ts).
@@ -56,7 +56,7 @@ const ELEV_LEVELS: [number, number][] = [
   [512, 256],
 ];
 /** Levels wider than this are derived products only (not shipped). */
-const SHIP_MAX_W = 2048;
+const SHIP_MAX_W = 4096;
 
 interface Source {
   id: string;
@@ -385,7 +385,16 @@ async function main(): Promise<void> {
   for (const e of tb.exemplars) console.log(`    site ${e.name}: rgb ${e.rgb.map((v) => v.toFixed(0)).join(',')}`);
   const terrainColors = (JSON.parse(readFileSync(path.join(root, 'data/terrain.json'), 'utf8')) as { terrain: { color: string }[] }).terrain.map((t) => t.color);
   const terrainS = halveTerrain(tb.terrain, 2048, 1024, landFraction(landBits, MASK_W, MASK_H, 1024, 512));
-  for (const [t, w2, h2] of [[tb.terrain, 2048, 1024], [terrainS, 1024, 512]] as const) {
+  // L (PLAN 7.1b7, ADR-418): built at its own size from the same inputs, M's and S's as they were.
+  const tbL = await buildTerrain(4096, 2048, {
+    ne1Path: extracted(src('ne1_hr_lc'), raw.get('ne1_hr_lc')!),
+    etopoPath: path.join(cacheDir, src('etopo_2022_60s_surface').file),
+    landBits,
+    maskW: MASK_W,
+    maskH: MASK_H,
+    wetlands: wetlandPolygons(raw.get('ne_10m_geography_regions_polys')!),
+  });
+  for (const [t, w2, h2] of [[tbL.terrain, 4096, 2048], [tb.terrain, 2048, 1024], [terrainS, 1024, 512]] as const) {
     add(`terrain-${w2}x${h2}.u8.wsz`, 'terrain', w2, h2, 'gzip(u8 terrain class per cell, row-major; src/shared/terrain.ts)', t);
     derivedPng.set(`terrain-${w2}x${h2}.png`, encodePng(terrainPreview(t, terrainColors), w2, h2));
   }

@@ -147,3 +147,16 @@ describe('a game at its own size (PLAN 7.1b6)', () => {
     expect(w.formations.ids().length).toBeGreaterThan(formations * 0.9);
   });
 });
+
+describe('the assets of L (PLAN 7.1b7)', () => {
+  it('the 1938 world at L is built from its own terrain and runs: its cells, its scale, its fleets and ports', () => {
+    const sim = new Sim({ scenario: '1938', seed: 99, assets: assets1938(4096), options: { size: 'L' } });
+    const w = sim.world;
+    expect([w.cells.w, w.cells.h, w.sizeScale]).toEqual([4096, 2048, 2]);
+    // Every port by hand placed, and about as many cities' ports as at M (615): the snaps by km.
+    expect(w.ports.filter((p) => p.def >= 0).length).toBe(105);
+    expect(w.ports.length).toBeGreaterThan(580);
+    sim.step(24);
+    expect(w.tick).toBe(24);
+  }, 60_000);
+});

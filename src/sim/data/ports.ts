@@ -11,6 +11,7 @@ import { isLand } from '../../shared/terrain';
 import type { PlacedCity } from './cities';
 import { nearestCellWhere, nearestOwnedCell } from './ownership';
 import { cellOf } from './terrain';
+import { atWidthSnap } from './projection';
 
 export interface PortDef {
   name: string;
@@ -67,7 +68,7 @@ export const WATER_SNAP_CELLS = 2;
  */
 export function portWater(p: Port, terrain: Uint8Array, w: number, h: number, reach: number, wrapX: boolean): number {
   const water = (c: number): boolean => !isLand(terrain[c]!);
-  if (!Number.isNaN(p.waterX)) return nearestCellWhere(water, p.waterX, p.waterY, w, h, WATER_SNAP_CELLS, wrapX);
+  if (!Number.isNaN(p.waterX)) return nearestCellWhere(water, p.waterX, p.waterY, w, h, atWidthSnap(w, WATER_SNAP_CELLS), wrapX);
   const px = p.cell % w;
   const py = (p.cell - px) / w;
   const near = (c: number): boolean => {
@@ -105,7 +106,7 @@ export function placePorts(
   const at = new Map<number, number>();
   for (let i = 0; i < cities.length; i++) {
     const c = cities[i]!;
-    if (c.size < rules.minCitySize || at.has(c.cell) || !waterInReach(terrain, c.cell, w, h, rules.reachCells)) continue;
+    if (c.size < rules.minCitySize || at.has(c.cell) || !waterInReach(terrain, c.cell, w, h, atWidthSnap(w, rules.reachCells))) continue;
     at.set(c.cell, ports.length);
     const level = rules.levelBySize[Math.min(c.size - rules.minCitySize, rules.levelBySize.length - 1)]!;
     ports.push({ name: c.name, cell: c.cell, x: c.x, y: c.y, waterX: NaN, waterY: NaN, port: level, navalBase: 0, def: -1, city: i });
@@ -115,7 +116,7 @@ export function placePorts(
   rules.ports.forEach((d, di) => {
     const [x, y] = cellOf(d.lonLat[0], d.lonLat[1], w, h);
     const nation = nations && d.nation !== undefined ? (idOf.get(d.nation) ?? -1) : 0;
-    const cell = nation !== 0 ? nearestOwnedCell(owner, nation, x, y, w, h, PORT_SNAP_CELLS) : nearestCellWhere((c) => owner[c] !== 0, x, y, w, h, PORT_SNAP_CELLS, true);
+    const cell = nation !== 0 ? nearestOwnedCell(owner, nation, x, y, w, h, atWidthSnap(w, PORT_SNAP_CELLS)) : nearestCellWhere((c) => owner[c] !== 0, x, y, w, h, atWidthSnap(w, PORT_SNAP_CELLS), true);
     if (cell < 0) {
       unplaced.push(di);
       return;

@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-418 · 2026-10-15 · accepted — The assets of L shipped; XL is a part of its own (PLAN 7.1b7)
+
+- **ADR-13 again.** The shipped assets were 6.5 MB, the elevation up to 2048 and the 4096 level
+  kept local. L ships its elevation (`elev-4096x2048`, 8.06 MB) and a terrain built at its own size
+  from the inputs of M's (`buildTerrain(4096, 2048, …)`, 0.41 MB): 15 MB in all. M's and S's assets
+  are byte for byte as they were (`npm run data -- --check`: no changes).
+- **The snaps, corrected** (ADR-417 kept them in cells). A point given in degrees (a city, a port,
+  its water, an airbase, the smallest provinces, a strait's ends, a port's reach to its water) is
+  as many km from the raster's land at L as at M, twice the cells: kept in cells, New York's fleet
+  found no water at L. A snap is the larger of its cells and its km now (`World.atSizeSnap`,
+  `atWidthSnap`): at S and M the cells as before (the raster's own error is what it is out by
+  there), at L twice. With it L has 637 ports (M 615, S 681), all 105 by hand placed.
+- **A fleet's water** (`placeFleets`). At L New York's nearest water is a cell of its bay cut off
+  from the sea. A group whose water is spent before it is placed goes on from the nearest water not
+  seen, within 4 cells for each size finer than the default (4 at L, 8 at XL; none at S and M,
+  where water too small for a group, a lake, places none of it, as `fleets1938.test.ts` holds).
+- **AT:** the 1938 world at L builds (1.4 s) and runs three months headless; a unit test builds it
+  and runs a day (105 ports by hand, over 580 in all); the page at L draws the world, T1 and T2,
+  no error. A single cell of Poland's by Berlin at T1 at L, which M has not, was seen and not traced
+  (PLAN 7.1b9).
+- **XL** is split out (PLAN 7.1b7b): the earth map's XL is 6,144 wide, and the land mask's 16,384
+  pixels are 2.67 to its cell, where the renderer (`setLandMask`), the coast (`coastMask`) and the
+  sim's land points take a whole number; its elevation would be some 18 MB more; it has 9 times M's
+  cells. Whether XL is 8,192 (2 pixels a cell, 16 times M's cells), takes the mask by fractions, or
+  is dropped is decided there, with its tick and memory measured.
+
 ### ADR-417 · 2026-10-15 · accepted — The reaches by the map's size: cells of the default size, scaled (PLAN 7.1b2)
 
 - **The rule.** A reach the sim gave in cells is a number of cells of its map's default size

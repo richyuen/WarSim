@@ -9586,3 +9586,22 @@ Of 7.1b (open in PLAN.md):
 
   - [x] 7.1b6 The game's own geometry where `SIZE_1938` is read; the provinces rasterised at the
     game's size.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1b (open in PLAN.md):
+
+  - [x] 7.1b7 The assets of L and XL (terrain, elevation; ADR-13 again; the mask at 4 and 2 px a
+    cell).
