@@ -197,6 +197,14 @@ here, because a rule change can break it.
   `planNation`'s `wideCell` reads what `wideNode` has answered (`Passage.wide`) before it calls
   it. A few per cent of `pocketOf`; the walks themselves are not cut: what a walk marks decides
   the answers of the walks after it in the plan, so none is left out or kept for another plan.
+- **A partner's front, once a tick for a set of enemies** (`frontPart`, `Standings.fronts`):
+  each planner walked the frontier of every holder on its side, and four in five of those cells
+  (46 of 58 million in year 17) had been walked by another planner of the tick. A holder's front
+  cells for the planner's enemies (as a sorted list: the key) are put by sector bucket once a
+  tick and shared; a sector takes its cells part by part, in the order of the frontier as
+  before, and the sums of the centres by part. **Relies on:** the sums being of half-integers
+  far below 2^52 (exact in any order, as the sector's own sums already were); the frontier
+  being one for the tick's planners.
 
 ### ADR-400 · 2026-10-15 · accepted — Territory's hour and supply's refresh without what the rule does not need (PLAN 7.1h)
 
