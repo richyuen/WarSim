@@ -16360,3 +16360,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   snaps), four areas to km², territory's flips by the cell, five drawn sizes to metres; the
   grid's own bounds stay in cells; assets shipped at S and M only; `SIZE_1938` read in 2 places.
 - **Next:** PLAN 7.1b2.
+
+## 2026-10-15 — PLAN 7.1b2: the reaches by the map's size (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-417): `World.sizeScale` (a size's cells to a cell of the map's default size),
+  `atSize`, `atSizeWhole`, `atWidth`; the AI's, combat's and the elements', movement's and the
+  sea's, the air's, territory's and supply's reaches by it, five commits, each with the pin and
+  the map that does not loop unchanged.
+- **Kept in cells:** the raster's snaps and the straits' extension (scaled, S's straits failed).
+- **Cost:** none in same-time pairs (2.215/2.149, 2.013/2.011 ms, year 1).
+- **Test:** `mapSizes.test.ts`.
+- **Gotchas:** another project's loop on this machine (CPU at 60 %) made the gate's
+  `scenario1938` build-time and territory-cost tests fail under the full suite (2,022 to 3,659 ms
+  of 2,000; 25.9 of 25); they passed alone each time; the gate was retried until green.
+- **Next:** PLAN 7.1b3.

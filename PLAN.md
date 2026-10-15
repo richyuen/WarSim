@@ -39,9 +39,7 @@ quick sweep as a smoke test.
   tick and memory budgets.
   Split on 2026-10-15 (ADR-416, the audit), one cause a part, M identical (the pin) until 7.1b9:
   - [x] 7.1b1 The audit of what is counted in cells after Phases 2 to 6 (ADR-416).
-  - [ ] 7.1b2 The distances to km: the AI's, combat's and the elements', movement's and the sea's,
-    the air's, territory's and supply's reaches, the data's snaps. AT: pin and the map that does
-    not loop unchanged; a test that a game at S and at L has each reach the same in km as at M.
+  - [x] 7.1b2 The distances to km: the AI's, combat's and the elements', movement's and the sea's, […]
   - [ ] 7.1b3 The areas to km²: overextension, militia, a Kill's states, a collapse's fragment.
   - [ ] 7.1b4 Territory's rates by the km: a front moves as many km a day at every size.
   - [ ] 7.1b5 The sizes drawn in metres (elements, figures, markers, fire, orbits).

@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-417 · 2026-10-15 · accepted — The reaches by the map's size: cells of the default size, scaled (PLAN 7.1b2)
+
+- **The rule.** A reach the sim gave in cells is a number of cells of its map's default size
+  (the earth's M, 2,048 wide; the toy world's own), and a game's own size has `World.sizeScale`
+  times as many: 0.5 at S, 1 at M, 2 at L, 3 at XL (`SIZE_1938.scale`, the size's width over the
+  default's). `world.atSize(n)`; before there is a world, `atWidth(w, n)` (`DEFAULT_W`, held to
+  `map.json` by a test). A radius that a loop walks cell by cell, a bucket's side, a shift's
+  operand is whole: `atSizeWhole` (rounded, at least 1). At M the scale is 1 exactly and every
+  reach the same double as before; at S and L a power of two, so exact too.
+- **Why the default size and not true km.** The toy world's 256 cells span the same 40,075 km
+  (156 km a cell): true km would shrink its reaches eightfold and change a world the tests are
+  tuned on. Its scale is 1 at its own size.
+- **Done** (`48bef3a` the scale and the AI; `ba3a38f` combat and the elements, 49 sites;
+  `044d7e6` movement and the sea, 19; `9674003` the air, territory and supply, whole, hoisted to
+  a local a function; `e79a693` the anchor of the order of battle, production's spawn and
+  the editor's reach for a stranded formation). The pin (45df324d) and the map that does not
+  loop (620968e1) unchanged at each.
+- **Not scaled, the raster's own:** the snaps that bring a point given in degrees onto the
+  raster's land or water (cities', ports', their water's, airbases'), the provinces' placing of
+  the smallest ones, a strait's extension past its shores: how far a coast drawn in cells lies
+  from a point is a matter of the cells. Scaled, the straits at S (1,024 × 512) no longer reached
+  land on both shores (`terrain.test.ts`). `HOME_CELLS` (the random world) is an area: 7.1b3.
+- **Cost.** Seed 99's year 1 in pairs at the same time on separate cores, before and after:
+  2.215 and 2.149 ms, 2.013 and 2.011 (sequential runs read 1.67 to 1.72 for five years on a
+  machine another project's loop was loading).
+- **Test.** `mapSizes.test.ts`: each converted reach the same km at S, M, L and XL and the same
+  cells at M; a whole radius within half a cell of its km, at least one, exact at M and L.
+
 ### ADR-416 · 2026-10-15 · accepted — Map sizes: what is counted in cells, again (PLAN 7.1b1)
 
 ADR-43's audit was of Phase 1. Since then Phases 2 to 6 added the elements, the sea, the air and
