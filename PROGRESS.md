@@ -16316,3 +16316,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   refused, 352 ms of 11.6 s (3 %), the daily calls of 59 ms among them.
 - **Dropped** as a cut; the rule (not asking again) moved under PLAN 1.42: it moves the pin.
 - **Next:** PLAN 7.1l11e.
+
+## 2026-10-15 — PLAN 7.1l11e: seed 4242's call of 361.7 ms (measurement)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Not found again** (ADR-414 e): seed 4242's five years, pinned, profiled: the AI's longest call
+  by year 149.6, 23.4, 34.5, 14.3 and 40.5 ms; mean tick 1.514 ms, final hash 0739adf8.
+- **Next:** PLAN 7.1l11f.

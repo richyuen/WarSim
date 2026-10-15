@@ -207,6 +207,12 @@ dropped. Each part's finding is added here when it is done.
   routes across days that kept the hash would have to know that no cell or relation a search
   reads has changed, for some 170 ms in a year of war. The rule goes under PLAN 1.42, where the
   AI's behaviour is tuned with the balance.
+- **e. The call of 361.7 ms of seed 4242: not found again.** `npm run sim -- --seed 4242 --years 5
+  --profile --affinity 0xFFFF` on HEAD (final hash 0739adf8, mean tick 1.514 ms): the operational
+  AI's longest call by year 149.6, 23.4, 34.5, 14.3 and 40.5 ms. Year 4's is 14.3. The game of
+  PLAN 3.10 that had it is not this one (the rules and the pin have moved many times since).
+  Year 1's 149.6 ms was not taken apart (the AI's first calls build its caches, ADR-406; a
+  game's start is not a load).
 
 ### ADR-413 · 2026-10-15 · accepted — The top speed is the tick's: dropped from the performance pass (PLAN 7.1l10)
 
