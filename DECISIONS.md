@@ -189,6 +189,13 @@ dropped. Each part's finding is added here when it is done.
   pictures of 24 hulls at 10 and 2 m/px look as before. The sprites' GL pass, which has the
   small mark's second sample (T2) and the turrets (T3), is 0.002 ms back to back over the same
   division: nothing to cut. `fallen1938`'s test is red on HEAD as on this code (`knownRed`).
+- **c. The ground's cost with no GPU: dropped.** On the software rasteriser (SwiftShader, which
+  Chrome gives WebGL only with `--enable-unsafe-swiftshader`, as bench G and the gate's e2e run
+  it), the frame's WebGL passes to a pixel read back, median of 5, over Berlin: at T3 (10 m/px,
+  the ground in full) 251 ms with the ground and 126 without at 1400 × 800, 355 and 234 at
+  1920 × 1080; at T0 and where the ground's share is 0 the same with it or without (126 to 248).
+  The ground doubles a frame of 4 to 8 a second: a picture there is a test's, not a game a
+  player can play, and both are so with it or without. Nothing follows.
 
 ### ADR-413 · 2026-10-15 · accepted — The top speed is the tick's: dropped from the performance pass (PLAN 7.1l10)
 

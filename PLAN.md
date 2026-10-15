@@ -231,7 +231,7 @@ quick sweep as a smoke test.
         what it costs; cut if worth it, the pin unchanged.
       - [x] 7.1l11b The hulls' frame: 2,000 hulls with flames on this GPU at T3 (only 5 were timed,
         on a CPU), the small mark's second sample at T2, the turrets' pass.
-      - [ ] 7.1l11c The ground's cost with no GPU (the software rasteriser): what a frame of T2's
+      - [x] 7.1l11c The ground's cost with no GPU (the software rasteriser): what a frame of T2's
         ground costs there, and whether anything follows.
       - [ ] 7.1l11d The AI's refused orders (476 and 1,082 a year at 3.5b; seed 5303's year 21, two
         failing searches of 31 ms asked each day): counted and timed on HEAD; a rule that does not

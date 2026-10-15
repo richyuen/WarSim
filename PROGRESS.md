@@ -16300,3 +16300,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Specs:** `burning1938`, `fightSeen1938`, `loadedEffects1938` green; `fallen1938` red here and
   on HEAD (on `knownRed`), at different checks of its fight.
 - **Next:** PLAN 7.1l11c.
+
+## 2026-10-15 — PLAN 7.1l11c: the ground with no GPU (measurement)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Dropped** (ADR-414 c): on SwiftShader the ground doubles a T3 frame (251 against 126 ms at
+  1400 × 800; 355 against 234 at 1920 × 1080); the map alone is 4 to 8 frames a second there.
+- **Next:** PLAN 7.1l11d.
