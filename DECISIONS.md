@@ -167,6 +167,50 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-416 · 2026-10-15 · accepted — Map sizes: what is counted in cells, again (PLAN 7.1b1)
+
+ADR-43's audit was of Phase 1. Since then Phases 2 to 6 added the elements, the sea, the air and
+the bomb. This one is by the constants' names in `src/sim`, `src/shared`, `src/worker` and the
+render's sizes (a grep for `*CELLS*`, `*RADIUS*`, `*REACH*`, `*RANGE*` and their uses read); a
+number in cells written inline and not named is not found by it, and a conversion that finds
+one adds it here. At M a cell is 19.57 km (`ScenarioGeometry.kmPerCell`, 40,075 / 2,048).
+
+- **Distances, to km** (at L a cell is half as wide: the same number of cells is half the km):
+  - The AI: `SECTOR_CELLS` 4, `DEPLOY_RANGE_CELLS` 60, `REPATRIATE_CELLS` 80.
+  - Combat and the elements: `CONTACT_CELLS` 1.5 (and `DEPLOY_REACH`), `DEPLOY_GAP` 0.05,
+    `BLOCK_REACH` 0.5, `SLOT_SPACING` 0.03 (`core/pose`, 600 m), `BUCKET_CELLS` 2 (the bucket
+    must stay at least the contact's reach), retreat `cells` 3 and `reach` (`data/combat.json`),
+    Major Battles `MATCH_CELLS` 3 and `END_CELLS` 5 and the corridor (8 by 2).
+  - Movement and the sea: `TARGET_SNAP_CELLS` 3, `AT_PORT_CELLS` 3, `LANDING_REACH` 8,
+    `BANK_REACH` 4 (supply over sea).
+  - The air: `AA_CELLS` 1, `BOMB_CELLS` 1, `BASE_PICK_CELLS` 2 (ranges are km already).
+  - Territory and supply: `PRESSURE_RADIUS` 2, `SUPPLY_REACH` 2, `GARRISON_CELLS` 3.
+  - Placing the data: `CITY_SNAP_CELLS`, `PORT_SNAP_CELLS`, `WATER_SNAP_CELLS`,
+    `AIRBASE_SNAP_CELLS` 2, `ANCHOR_REACH_CELLS` 12, `STRAIT_EXTEND_CELLS` 4,
+    `SPAWN_REACH_CELLS` 40, the provinces' `MAX_RADIUS` 24, the random world's `HOME_CELLS` 12,
+    the editor's `STRANDED_REACH` 64.
+- **Areas, to km²:** `OVEREXT_CELLS` 80, `MILITIA_PER_CELLS` 40, `KILL_CELLS_PER_STATE` 200, the
+  largest fragment of a collapse (`revival.ts`). (A war's shares and the admin cost are km² since
+  ADR-57.)
+- **Rates by the cell, to km:** territory's flips, a cell at a time with a hold time and a
+  garrison of its own: at L a front would move half as fast in km. Per-km hold rates.
+- **The grid's own, staying in cells:** `POCKET_CELLS` and supply's `SEARCH_CELLS` 4096 (bounds
+  on work), `LONG_SEARCH_CELLS` 120 and `FAR_SEARCH_CELLS` 300 (when a search goes by the
+  provinces: its cost is the cells'), `WAY_MARGIN_CELLS` 1 (the mask's geometry), `UNDO_CELLS`.
+- **Sizes of things drawn, to metres:** `ELEMENT_CELLS` 0.026, `MARKER_CELLS` 0.9,
+  `FOOTPRINT_CELLS` 0.024, `SCATTER_CELLS` 0.012, `ORBIT_CELLS` 0.6 (a figure or a sprite in cells
+  would be half the metres at L).
+- **Fixed to the M map besides:** `SIZE_1938` (2 users outside its file) where the game's own
+  geometry should be; the assets (terrain and elevation shipped at S and M, none at L or XL; the
+  land mask is 16,384 wide at every size: 16, 8, 4 and 2 pixels a cell at S, M, L and XL; the
+  provinces rasterised at the game's size).
+- **The pin:** each conversion keeps M identical. A constant written as km and turned back into
+  cells by dividing by M's km a cell is not always the same double (`(a · k) / k`): a
+  conversion is checked by the pin and by the map that does not loop, at each commit.
+
+**The split** (PLAN 7.1b1 to 7.1b9): this audit; the distances; the areas; territory's rates; the
+sizes drawn; the game's own geometry; the assets of L and XL (ADR-13 again); the picker; the AT.
+
 ### ADR-415 · 2026-10-15 · accepted — The AT of 7.1 met: the tick and the frame within their budgets (PLAN 7.1l12)
 
 - **The tick.** `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF`, HEAD

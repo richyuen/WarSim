@@ -37,6 +37,21 @@ quick sweep as a smoke test.
   `MILITIA_PER_CELLS`, the largest fragment of a collapse (`revival.ts`).
   AT: S and L games start from the picker; the sweep criteria hold at S and L; XL meets its
   tick and memory budgets.
+  Split on 2026-10-15 (ADR-416, the audit), one cause a part, M identical (the pin) until 7.1b9:
+  - [x] 7.1b1 The audit of what is counted in cells after Phases 2 to 6 (ADR-416).
+  - [ ] 7.1b2 The distances to km: the AI's, combat's and the elements', movement's and the sea's,
+    the air's, territory's and supply's reaches, the data's snaps. AT: pin and the map that does
+    not loop unchanged; a test that a game at S and at L has each reach the same in km as at M.
+  - [ ] 7.1b3 The areas to km²: overextension, militia, a Kill's states, a collapse's fragment.
+  - [ ] 7.1b4 Territory's rates by the km: a front moves as many km a day at every size.
+  - [ ] 7.1b5 The sizes drawn in metres (elements, figures, markers, fire, orbits).
+  - [ ] 7.1b6 The game's own geometry where `SIZE_1938` is read; the provinces rasterised at the
+    game's size.
+  - [ ] 7.1b7 The assets of L and XL (terrain, elevation; ADR-13 again; the mask at 4 and 2 px a
+    cell).
+  - [ ] 7.1b8 The size picker in the new-game options.
+  - [ ] 7.1b9 The AT: S and L games from the picker; the sweep criteria at S and L; XL's tick and
+    memory budgets.
 - [ ] 1.42 **Moved here from Phase 1 on 2026-10-03 (ADR-58, the user's decision): balance is
   judged when the features are in. Blocked after three attempts before that (BLOCKERS.md);
   its prerequisites 1.42d, 1.42e and 1.42f are done. Judged by area, on seeds from 401.**

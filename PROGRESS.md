@@ -16351,3 +16351,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   Bench G green with every SPEC figure within (7.1l4).
 - **PLAN 7.1 done:** its text moved to `docs/PLAN_DONE.md` by `plan:archive`.
 - **Next:** PLAN 7.1b.
+
+## 2026-10-15 — PLAN 7.1b1: map sizes, the audit (decision)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Split** 7.1b in nine parts (ADR-416); 7.1b1 the audit: some 40 named distances in cells to km
+  (the AI, combat and the elements, movement, the sea, the air, territory, supply, the data's
+  snaps), four areas to km², territory's flips by the cell, five drawn sizes to metres; the
+  grid's own bounds stay in cells; assets shipped at S and M only; `SIZE_1938` read in 2 places.
+- **Next:** PLAN 7.1b2.
