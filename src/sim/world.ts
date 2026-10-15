@@ -752,6 +752,9 @@ export function seaRangeOf(world: World, id: number): number | undefined {
   return world.seaBattles.find((b) => b.fleets.includes(id))?.range;
 }
 
+/** The most bumps of `World.heldKeys` whose nodes are logged (`World.heldLog`). */
+const HELD_LOG_KEPT = 4096;
+
 export class World {
   seed: number;
   /** Ticks elapsed; 1 tick = 1 sim hour (ADR-5). */
@@ -843,6 +846,17 @@ export class World {
   frontier: Set<number> | null = null;
   /** Derived (not state): cells by node of the province graph and holder (`heldByNode`). */
   private held: { graph: ProvinceGraph; count: Map<number, number> } | null = null;
+  /**
+   * Derived (not state): bumped when a key of `heldByNode` comes or goes, and when the map is
+   * counted again: what is built from its keys alone is the same while this is (`passageOf`).
+   */
+  heldKeys = 0;
+  /**
+   * Derived (not state): the node of each bump of `heldKeys` from `heldLogBase` on
+   * (`heldLog[k - heldLogBase]` is that of the bump to k + 1). A count again starts it afresh.
+   */
+  heldLog: number[] = [];
+  heldLogBase = 0;
   /** Derived (not state): land tallies, kept by setOwner/setController once built. */
   private land: LandCounts | null = null;
   /** Derived (not state): the frontier set as a byte per cell (valid whenever `frontier` is). */
@@ -1195,9 +1209,14 @@ export class World {
       if (node !== 0) {
         const from = node * 65536 + c.controller[i]!;
         const left = this.held.count.get(from)! - 1;
-        if (left === 0) this.held.count.delete(from);
-        else this.held.count.set(from, left);
-        this.held.count.set(node * 65536 + nation, (this.held.count.get(node * 65536 + nation) ?? 0) + 1);
+        if (left === 0) {
+          this.held.count.delete(from);
+          this.heldBump(node);
+        } else this.held.count.set(from, left);
+        const to = node * 65536 + nation;
+        const had = this.held.count.get(to);
+        if (had === undefined) this.heldBump(node);
+        this.held.count.set(to, (had ?? 0) + 1);
       }
     }
     this.controlChanges++;
@@ -1247,6 +1266,16 @@ export class World {
     this.held = null;
   }
 
+  /** A key of `heldByNode` in `node` came or went. The log keeps HELD_LOG_KEPT bumps at most. */
+  private heldBump(node: number): void {
+    if (this.heldLog.length >= HELD_LOG_KEPT) {
+      this.heldLogBase += this.heldLog.length;
+      this.heldLog = [];
+    }
+    this.heldLog.push(node);
+    this.heldKeys++;
+  }
+
   /**
    * How many cells of each node of the province graph each holder has: node · 65536 + holder →
    * cells, no zero entries (PLAN 3.4Rl: which provinces have ground open to a nation's march).
@@ -1272,6 +1301,9 @@ export class World {
         run = 1;
       }
       this.held = { graph, count };
+      this.heldKeys++;
+      this.heldLog = [];
+      this.heldLogBase = this.heldKeys;
     }
     return this.held.count;
   }

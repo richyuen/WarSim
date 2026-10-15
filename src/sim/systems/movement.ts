@@ -66,7 +66,7 @@ import { EventKind, RejectReason } from '../../shared/events';
 import { atan2 } from '../core/dmath';
 import { Mobility, MOVE_COST, stepKm, type MobilityId, type NavGrid, type Passage } from '../nav/grid';
 import { nearestCellWhere } from '../data/ownership';
-import { findRoute, nodeGroups } from '../nav/provinceGraph';
+import { findRoute, nodeGroups, type ProvinceGraph } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
 import { Domain, navOf, type World } from '../world';
 import { transportsPort, tryLanding } from './amphibious';
@@ -112,16 +112,95 @@ export function passageOf(world: World, nation: number, shared?: Map<string, Pas
   world.nations.forEach((m) => {
     if (foreignTo(world, nation, m)) ok[m] = 0;
   });
-  const key = shared ? ok.join('') : '';
+  const key = ok.join('');
   const made = shared?.get(key);
   if (made) return made;
-  const graph = navOf(world).graph;
-  const open = new Uint8Array(graph.nodeCount);
-  const shut = new Uint8Array(graph.nodeCount);
-  for (const key of world.heldByNode().keys()) (ok[key % 65536] === 1 ? open : shut)[Math.floor(key / 65536)] = 1;
-  const pass = { ok, holder: world.cells.controller, open, group: nodeGroups(graph, open), shut };
+  const { open, shut, group, wide } = nodeParts(world, ok, key);
+  const pass = { ok, holder: world.cells.controller, open, group, shut, wide };
   shared?.set(key, pass);
   return pass;
+}
+
+/** What a passage has by node: of the graph and the keys of `heldByNode` alone (`nodeParts`). */
+interface NodeParts {
+  /** `World.heldKeys` when made. */
+  keys: number;
+  open: Uint8Array;
+  shut: Uint8Array;
+  group: Int32Array;
+  wide: Int32Array;
+}
+/** By world, the node parts last made for each set of open holders (`Passage.ok` as a string). */
+const NODE_PARTS = new WeakMap<World, { graph: ProvinceGraph; parts: Map<string, NodeParts> }>();
+/** The most sets of open holders kept by a world; more, and all are dropped. */
+const NODE_PARTS_KEPT = 256;
+/** Parts behind by more bumps of `World.heldKeys` than this are made afresh, not patched. */
+const NODE_PARTS_PATCH = 256;
+
+/**
+ * A passage's parts by node (PLAN 7.1g): `open` and `shut` come from the keys of `heldByNode`,
+ * and are the same while `World.heldKeys` is; `group` is the same while `open` is, and what
+ * `wideNode` answers (`wide`) while `open` and `shut` are. So they are kept between hours, and
+ * made again only as far as the keys have changed them: the nodes of the bumps since
+ * (`World.heldLog`) are asked again. What a passage learns of its cells (`pocketOf`'s marks,
+ * `joined`) is not kept: each passage is a new object.
+ */
+function nodeParts(world: World, ok: Uint8Array, key: string): NodeParts {
+  const graph = navOf(world).graph;
+  const held = world.heldByNode();
+  let kept = NODE_PARTS.get(world);
+  if (kept?.graph !== graph) NODE_PARTS.set(world, (kept = { graph, parts: new Map() }));
+  const was = kept.parts.get(key);
+  const keys = world.heldKeys;
+  if (was?.keys === keys) return was;
+  let open: Uint8Array;
+  let shut: Uint8Array;
+  let sameOpen = false;
+  let sameShut = false;
+  if (was !== undefined && was.keys >= world.heldLogBase && keys - was.keys <= NODE_PARTS_PATCH) {
+    open = was.open.slice();
+    shut = was.shut.slice();
+    sameOpen = sameShut = true;
+    const log = world.heldLog;
+    for (let k = was.keys - world.heldLogBase; k < keys - world.heldLogBase; k++) {
+      const a = log[k]!;
+      let o = 0;
+      let x = 0;
+      for (let h = 0; h < ok.length && (o === 0 || x === 0); h++) {
+        if (!held.has(a * 65536 + h)) continue;
+        if (ok[h] === 1) o = 1;
+        else x = 1;
+      }
+      if (open[a] !== o) sameOpen = false;
+      if (shut[a] !== x) sameShut = false;
+      open[a] = o;
+      shut[a] = x;
+    }
+  } else {
+    open = new Uint8Array(graph.nodeCount);
+    shut = new Uint8Array(graph.nodeCount);
+    for (const k of held.keys()) (ok[k % 65536] === 1 ? open : shut)[Math.floor(k / 65536)] = 1;
+    if (was !== undefined) {
+      sameOpen = sameBytes(was.open, open);
+      sameShut = sameBytes(was.shut, shut);
+    }
+  }
+  const parts: NodeParts = {
+    keys,
+    open,
+    shut,
+    group: was !== undefined && sameOpen ? was.group : nodeGroups(graph, open),
+    wide: was !== undefined && sameOpen && sameShut ? was.wide : new Int32Array(graph.nodeCount),
+  };
+  if (was === undefined && kept.parts.size >= NODE_PARTS_KEPT) kept.parts.clear();
+  kept.parts.set(key, parts);
+  return parts;
+}
+
+function sameBytes(a: Uint8Array, b: Uint8Array): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
 }
 
 /**
@@ -138,11 +217,8 @@ function homeward(world: World, nation: number): Passage {
     wars = true;
   });
   if (!wars) return { ok, holder: world.cells.controller };
-  const graph = navOf(world).graph;
-  const open = new Uint8Array(graph.nodeCount);
-  const shut = new Uint8Array(graph.nodeCount);
-  for (const key of world.heldByNode().keys()) (ok[key % 65536] === 1 ? open : shut)[Math.floor(key / 65536)] = 1;
-  return { ok, holder: world.cells.controller, open, group: nodeGroups(graph, open), shut };
+  const { open, shut, group, wide } = nodeParts(world, ok, ok.join(''));
+  return { ok, holder: world.cells.controller, open, group, shut, wide };
 }
 
 /** Where a formation stands in a cell of its path: the middle, or the cell's land point (PLAN 2.9a). */
