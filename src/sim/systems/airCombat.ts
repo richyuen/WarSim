@@ -208,11 +208,14 @@ export function antiAir(world: World): void {
     else above.set(cell, [id]);
   }
   if (above.size === 0) return;
+  const near = markNear(world, above);
   const loss = new Map<number, number>();
   world.formations.forEach((g) => {
-    if (world.isWing(g) || world.embarked.has(g)) return;
     const gx = Math.floor(fc.x[g]!);
     const gy = Math.floor(fc.y[g]!);
+    // No sortie in its reach: the walk below would find none (a place off the grid walks it).
+    if (gx >= 0 && gx < w && gy >= 0 && gy < h && near.mark[gy * w + gx] === 0) return;
+    if (world.isWing(g) || world.embarked.has(g)) return;
     const targets: number[] = [];
     for (let dy = -AA_CELLS; dy <= AA_CELLS; dy++) {
       const y = gy + dy;
@@ -242,6 +245,7 @@ export function antiAir(world: World): void {
       }
     });
   });
+  for (let i = 0; i < near.count; i++) near.mark[near.cells[i]!] = 0;
   if (loss.size === 0) return;
   const hit = new Set<number>();
   // The aircraft each wing fired on had (PLAN 5.11b: what the flak took counted).
@@ -258,6 +262,42 @@ export function antiAir(world: World): void {
     world.out.emit(world.tick, EventKind.FlakFired, id, fc.nation[id]!, p.x, p.y);
     settleFormation(world, id);
   }
+}
+
+/**
+ * The cells from which `antiAir`'s walk of `AA_CELLS` meets a cell of `above` (PLAN 7.1f), kept
+ * between calls (not state) and cleared by the caller after each: a byte a cell, and the cells
+ * marked. A key of `above` is matched as the walk matches it, by its row and column in the grid.
+ */
+const nearScratch = { mark: new Uint8Array(0), cells: new Int32Array(0), count: 0 };
+
+function markNear(world: World, above: Map<number, number[]>): typeof nearScratch {
+  const w = world.cells.w;
+  const h = world.cells.h;
+  const s = nearScratch;
+  if (s.mark.length !== w * h) s.mark = new Uint8Array(w * h);
+  const side = 2 * AA_CELLS + 1;
+  const most = above.size * side * side;
+  if (s.cells.length < most) s.cells = new Int32Array(Math.max(most, 2 * s.cells.length));
+  s.count = 0;
+  for (const key of above.keys()) {
+    if (key < 0 || key >= w * h) continue;
+    const sy = Math.floor(key / w);
+    const sx = key - sy * w;
+    for (let dy = -AA_CELLS; dy <= AA_CELLS; dy++) {
+      const gy = sy - dy;
+      if (gy < 0 || gy >= h) continue;
+      for (let dx = -AA_CELLS; dx <= AA_CELLS; dx++) {
+        const gx = world.settings.loopingMap ? (((sx - dx) % w) + w) % w : sx - dx;
+        if (gx < 0 || gx >= w) continue;
+        const c = gy * w + gx;
+        if (s.mark[c] === 1) continue;
+        s.mark[c] = 1;
+        s.cells[s.count++] = c;
+      }
+    }
+  }
+  return s;
 }
 
 /**
