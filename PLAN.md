@@ -237,7 +237,7 @@ quick sweep as a smoke test.
         failing searches of 31 ms asked each day): counted and timed on HEAD; a rule that does not
         ask again moves the pin.
       - [x] 7.1l11e The call of 361.7 ms in year 4 of seed 4242: found again on HEAD or not.
-      - [ ] 7.1l11f The long ways of seed 5303's year 5 (searches of 8 to 9 ms, ways of 880 cells
+      - [x] 7.1l11f The long ways of seed 5303's year 5 (searches of 8 to 9 ms, ways of 880 cells
         between ends 50 apart): why so long; shorter searches change the route rule.
       - [ ] 7.1l11g The zoom's last long task (50 to 55 ms, the world to T1, the nation names).
     - [ ] 7.1l12 The AT of 7.1: seed 99's five years at 1.5 ms a tick and year 1 at 2.4, on the
@@ -380,7 +380,10 @@ quick sweep as a smoke test.
   From PLAN 7.1l11d (ADR-414 d): the AI asks again each day for an order it was refused (seed
   5303's year 21: 292 refused, 234 of them the same order again, 3 % of the year's tick; seed 99:
   under 1 %). An AI that does not ask again until something it reads has changed is a rule: it
-  moves the pin and is judged with the balance.
+  moves the pin and is judged with the balance. From PLAN 7.1l11f: so are orders that reach their
+  front only by a long way round (seed 5303's year 5: Belgian and Dutch formations about 10° E
+  44° N sent to the coast at 53.5° N, ways of some 880 cells for ends 50 apart, the ground between
+  closed to them; searches of 8 to 10 ms each, a dozen a day).
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.

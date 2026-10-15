@@ -213,6 +213,16 @@ dropped. Each part's finding is added here when it is done.
   PLAN 3.10 that had it is not this one (the rules and the pin have moved many times since).
   Year 1's 149.6 ms was not taken apart (the AI's first calls build its caches, ADR-406; a
   game's start is not a load).
+- **f. The long ways of seed 5303's year 5: the passage's, not the search's; dropped.** In a copy
+  of `provinceGraph.ts` that logs each search over 5 ms with a way (year 5 from 7.1l3's
+  checkpoint; 32 of them, 5 to 10.7 ms): the way found, a search of the cells alone with the same
+  passage, and one with no passage. Nations 27 and 28 (Belgium and the Netherlands, by their ids
+  at the start), from cells about 10° E 44° N to the coast about 7° E 53.5° N: ways of 875 to
+  899 cells, the cells alone 826 to 852, with no passage 70 to 117. The corridor of the coarse
+  route adds some 6 %; the rest is the passage: the ground between is closed to them, and the
+  way round is that long. The search is right; a shorter one is a change of the passage or of
+  where the AI sends them (formations far from their front, ordered to it each day), rules both:
+  under PLAN 1.42 with the refused orders.
 
 ### ADR-413 · 2026-10-15 · accepted — The top speed is the tick's: dropped from the performance pass (PLAN 7.1l10)
 

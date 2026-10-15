@@ -16323,3 +16323,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not found again** (ADR-414 e): seed 4242's five years, pinned, profiled: the AI's longest call
   by year 149.6, 23.4, 34.5, 14.3 and 40.5 ms; mean tick 1.514 ms, final hash 0739adf8.
 - **Next:** PLAN 7.1l11f.
+
+## 2026-10-15 — PLAN 7.1l11f: the long ways of seed 5303's year 5 (measurement)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Traced** (ADR-414 f; a logging copy of `provinceGraph.ts`, restored): 32 searches over 5 ms;
+  the ways of 875 to 899 cells are the passage's (the cells alone 826 to 852, with no passage 70
+  to 117): Belgian and Dutch formations far from their front, the ground between closed to them.
+- **Dropped** as a cut; the AI's sending them is a rule, under PLAN 1.42 with the refused orders.
+- **Next:** PLAN 7.1l11g.
