@@ -46,7 +46,7 @@ test('God Mode\'s strike: the alert banner, its go-to and the auto-pause option'
   await lookAt(page, 13.4, 52.52);
   await page.mouse.click(700, 400);
   await expect(page.getByTestId('nuke-alert')).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByTestId('nuke-alert-text')).toHaveText(/^A bomb fell from the heavens on Germany: an atomic bomb, [\d,]+ dead$/);
+  await expect(page.getByTestId('nuke-alert-text')).toHaveText(/^A bomb fell from the heavens on Germany near Berlin: an atomic bomb, [\d,]+ dead$/);
   await expect.poll(() => paused(page), { message: 'the strike paused the game' }).toBe(true);
   await expect(page.getByTestId('god-tool-hint')).toHaveCount(0); // one-shot tool
   await page.screenshot({ path: path.join(out, 'nuke-alert.png') });

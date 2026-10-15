@@ -78,7 +78,7 @@ test('the AI decides on a nuclear strike: France, fighting to the death with the
   expect(sent).not.toContain('godNuke');
   process.stderr.write(`decided ${JSON.stringify(decided[0])}; struck ${JSON.stringify(struck[0])}; commands ${sent.join(', ')}\n`);
   // The alert tells it; the burst over Berlin at T1 (held at 1.6 s into it).
-  await expect(page.getByTestId('nuke-alert-text')).toHaveText(/^France struck Germany with an atomic bomb: [\d,]+ dead$/, { timeout: 15_000 });
+  await expect(page.getByTestId('nuke-alert-text')).toHaveText(/^France struck Germany with an atomic bomb near Berlin: [\d,]+ dead$/, { timeout: 15_000 });
   await page.evaluate(({ x, y }) => {
     const v = window.__warsim!.view!;
     v.controller.set({ cx: x, cy: y, scale: 14 });

@@ -194,6 +194,14 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   are state (`world.nukeBursts`, a section saved while there is one; none in seed 99's first
   year, so the pin holds). A week, not "while its formations are gone": after a week a mass that
   gathered again, or a capital, may be struck again, and no count of what is left is needed.
+- **6.11c, the place:** a strike's history row and ticker row (the alert's) carry the city nearest
+  the burst (`near`, resolved in the worker from the row's x, y; no sim state): "France struck
+  Germany with an atomic bomb near Berlin: 1,015,356 dead".
+- **The AT, seeds 6619 and 2953 × 30 years headless** (a probe over the Sim, each burst's owner and
+  controller and the bursts of the week before): 36 and 10 bursts; on land no one holds, the
+  striker's own or a neutral's: 0 and 0; within a blast radius of a burst of the week before: 0
+  and 0; no colony far from a front (the critic's Paramaribo, Aden, Malabo, Las Palmas are gone).
+  Most bursts still fall on revolt statelets (Liège, Athens, Kars): who strikes whom is PLAN 6.12.
 
 ### ADR-392 · 2026-10-14 · accepted — What the Phase 6 review's run found red (PLAN 6.9)
 

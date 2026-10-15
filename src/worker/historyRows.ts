@@ -20,6 +20,8 @@
  * 'founded' when no row before it names the alliance: a founder that left and joins again
  * joins, and so does the founder of an alliance older than the log.
  *
+ * A nuclear strike (`NukeCasualties`) has the city nearest its burst (PLAN 6.11c, `near`).
+ *
  * `WarEnded` is of a war that a bond ended (PLAN 3.12Rn): its b, the last of its side, got an
  * overlord tied to the other side. The row before it in its hour tells whose puppet it became:
  * its own `PuppetCreated` (a peace's term), or the `NationAnnexed` of its overlord, whose annexer
@@ -48,6 +50,26 @@ function overlordThen(rows: readonly number[], i: number): number {
     if (rows[j + 1] === EventKind.NationAnnexed) return rows[j + 3]!;
   }
   return 0;
+}
+
+/** The city nearest (x, y) on the map, its row, 0 when there is none. */
+function nearestCity(world: World, x: number, y: number): number {
+  const cc = world.cities.cols;
+  let best = 0;
+  let bd = Infinity;
+  world.cities.forEach((id) => {
+    const d = (cc.x[id]! - x) * (cc.x[id]! - x) + (cc.y[id]! - y) * (cc.y[id]! - y);
+    if (d < bd) [bd, best] = [d, id];
+  });
+  return best;
+}
+
+/** The name ('=' + literal) of the city nearest a strike at (x, y), '' when it has none (PLAN 6.11c). */
+function strikeNear(world: World, x: number, y: number, cityName: (row: number) => string): string {
+  if (Number.isNaN(x) || Number.isNaN(y)) return '';
+  const c = nearestCity(world, x, y);
+  const n = c !== 0 ? cityName(c) : '';
+  return n ? `=${n}` : '';
 }
 
 /**
@@ -114,6 +136,8 @@ export function historyRows(world: World, nationName: (id: number) => string, ci
     if (as) row.as = as;
     const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
     if (over) [row.as, row.cn] = ['puppet', over];
+    const near = kind === EventKind.NukeCasualties ? strikeNear(world, x, y, cityName) : '';
+    if (near) row.near = near;
     out.push(row);
   }
   return out;
@@ -130,8 +154,9 @@ const PLACE_OF_B: ReadonlySet<number> = new Set([EventKind.WarDeclared, EventKin
  * the first. A peace whose winner annexed its loser in that hour is one row too, the annexation
  * (PLAN 3.12Rg2, ADR-215), on whichever side of the peace the log has it: a game saved before
  * has the peace last. A war that a bond ended is told as the history tells it (PLAN 3.12Rn).
+ * A strike has the city nearest it when `cityName` names one (PLAN 6.11c).
  */
-export function tickerRows(world: World, nationName: (id: number) => string): TickerRow[] {
+export function tickerRows(world: World, nationName: (id: number) => string, cityName: (row: number) => string = () => ''): TickerRow[] {
   const rows = world.history.rows;
   const nc = world.nations.cols;
   const nation = (v: number): string => (v !== 0 && world.nations.has(v) ? nationName(v) : '');
@@ -167,6 +192,8 @@ export function tickerRows(world: World, nationName: (id: number) => string): Ti
     const row: TickerRow = { i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: ra === 'side' ? who(ra, a) : nation(a), bn: who(rb, b), of: '' };
     const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
     if (over) [row.as, row.cn] = ['puppet', over];
+    const near = kind === EventKind.NukeCasualties ? strikeNear(world, x, y, cityName) : '';
+    if (near) row.near = near;
     out.push(row);
   }
   return out.reverse();

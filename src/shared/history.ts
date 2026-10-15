@@ -89,6 +89,8 @@ export interface HistoryRow {
   as?: HistoryAs;
   /** A third nation's name, where the row's sentence has one ({c}): the new overlord of a `WarEnded` that is 'puppet'. */
   cn?: string;
+  /** The city nearest a nuclear strike, as a name ('=' + literal; PLAN 6.11c), where the log knows one. */
+  near?: string;
 }
 
 export type HistoryAs = 'revived' | 'joined' | 'left' | 'founded' | 'puppet';

@@ -27,29 +27,6 @@ quick sweep as a smoke test.
 
 ## Phase 6 — Nuclear AI
 
-- [ ] 6.11 Critic R6-B2 (report of 2026-10-15 on `228d083`), first of two: where the AI's warheads
-  fall. Seed 6619: one a day, three in a row on one spot (Pinsk and Kovel; Odense three times),
-  on distant colonies (Paramaribo, Aden, Malabo, Las Palmas) and on land no one holds
-  (`critic/c6_nuke_where.json`, `critic/c6_headless_6619.json`). The AI's targets: an enemy's
-  massed armies on a front or its core (its capital, its cores' cities), not a colony far from
-  any front; no second warhead on a place struck within a blast radius while its formations are
-  gone; no burst on land without a controller.
-  AT: unit tests of the target choice (a colony against a core city, a spot struck the day
-  before, land no one holds); a 30-year headless run of seed 6619: no burst on land no one
-  holds, none within a blast radius of the last week's, each named in the history by place.
-  Three causes, one commit each (ADR-393):
-  - [x] 6.11a The places weighed: on land the enemy side owns and controls (not the striker's
-    own land, which the history told as "where no nation holds the land", nor a neutral's, nor
-    the sea), and within FRONT_KM of the striker's side, its land formations or its capitals (a
-    colony or a capital-in-exile far from every front is not weighed).
-    AT: unit tests: a colony far from every front against a city on the front; enemy formations
-    on the striker's own land and on land no one holds are not weighed.
-  - [x] 6.11b No second warhead within a blast radius of a burst of the last RESTRIKE_DAYS, or of
-    a warhead in flight (state: the week's bursts, saved).
-    AT: unit tests: a spot struck the day before, a spot a warhead is flying to; save and load
-    of the bursts.
-  - [ ] 6.11c Each strike named in the history by place: the city nearest the burst.
-    AT: unit test of the row's sentence; seed 6619 × 30 years headless (this task's AT).
 - [ ] 6.12 Critic R6-B2, second: who strikes whom. The first use in history is the Soviet Union
   bombing the revolt statelet Free Van three times in two days at utility 0.01 to 0.39; struck
   at London (1.37 million dead), the United Kingdom never strikes back at the Soviet Union, its
@@ -753,3 +730,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 6.8 Multi-decade sweep with nukes on: no runaway extinction; MAD dynamics observed. […]
 - [x] 6.9 Phase 6 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]
 - [x] 6.10 Critic R6-B1 (report of 2026-10-15 on `228d083`): the nuclear years make the game crawl. […]
+- [x] 6.11 Critic R6-B2 (report of 2026-10-15 on `228d083`), first of two: where the AI's warheads […]

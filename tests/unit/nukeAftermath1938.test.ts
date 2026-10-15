@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import { EventKind } from '../../src/shared/events';
 import { nukeStrike } from '../../src/shared/history';
 import { cellOf } from '../../src/sim/data/terrain';
@@ -9,7 +10,7 @@ import { declareWar, EXHAUSTED } from '../../src/sim/systems/war';
 import { DEFENDERS } from '../../src/sim/wars';
 import type { World } from '../../src/sim/world';
 import { historyText } from '../../src/ui/historyText';
-import { historyRows } from '../../src/worker/historyRows';
+import { historyRows, tickerRows } from '../../src/worker/historyRows';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
 
@@ -110,6 +111,13 @@ describe('a burst\'s consequences (PLAN 6.5a)', () => {
     const text = historyText(rows[0]!);
     process.stderr.write(`${text}\n`);
     expect(text).toMatch(/^France struck Germany with an atomic bomb: [\d,]+ dead$/);
+    // PLAN 6.11c: named by place, the city nearest the burst, in the history and in the ticker (the alert's row).
+    const nation = (n: number): string => `nation.${NATIONS_1938[n - 1]!.tag}`;
+    const city = (v: number): string => cities1938.cities[w.cities.cols.def[v]!]?.name ?? '';
+    const named = historyRows(w, nation, city).filter((r) => r.kind === EventKind.NukeCasualties);
+    expect(historyText(named[0]!)).toMatch(/^France struck Germany with an atomic bomb near Berlin: [\d,]+ dead$/);
+    const ticked = tickerRows(w, nation, city).filter((r) => r.kind === EventKind.NukeCasualties);
+    expect(ticked.map(historyText)).toEqual([historyText(named[0]!)]);
     const c = sim();
     c.load(s.save());
     expect(c.world.nukeShock.get(GER)).toBe(w.nukeShock.get(GER));

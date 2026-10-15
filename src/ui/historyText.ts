@@ -34,8 +34,8 @@ export function historyText(r: HistoryRow): string {
   // what their bombs took (PLAN 5.11a): {na} and {nb}.
   const count = (v: number): string => v.toLocaleString('en-US');
   const ships = ra === 'side' || rb === 'side' ? { na: count(ra === 'side' ? seaSide(r.a).ships : 0), nb: count(rb === 'side' ? seaSide(r.b).ships : 0) } : {};
-  // A nuclear strike's bomb and its dead (PLAN 6.5a): {bomb} and {nb}.
-  const strike = rb === 'strike' ? { bomb: t(nukeStrike(r.b).yieldN >= 2 ? 'history.hBomb' : 'history.aBomb'), nb: count(nukeStrike(r.b).dead) } : {};
+  // A nuclear strike's bomb and its dead (PLAN 6.5a): {bomb} and {nb}; the city nearest it, {near} (PLAN 6.11c).
+  const strike = rb === 'strike' ? { bomb: t(nukeStrike(r.b).yieldN >= 2 ? 'history.hBomb' : 'history.aBomb'), nb: count(nukeStrike(r.b).dead), near: r.near ? t('history.strikeNear', { city: displayName(r.near) }) : '' } : {};
   const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships, ...strike });
   return s.charAt(0).toLocaleUpperCase() + s.slice(1);
 }

@@ -15734,3 +15734,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   the burst. Red on the old source, green on the new.
 - **Gate:** green (983 related tests; the pin unmoved).
 - **Next:** PLAN 6.11c.
+
+## 2026-10-15 — PLAN 6.11c, and 6.11 done: each strike named by place
+
+- **6.11c:** a strike's history and ticker rows carry the city nearest the burst (`near`); the alert
+  reads "France struck Germany with an atomic bomb near Berlin: 1,015,356 dead" (seen in
+  `nukeDemo1938.spec`'s picture). `nukeAftermath1938.test.ts` asserts it in both rows;
+  `nukeDemo1938.spec` and `nukeAlert1938.spec` expect "near Berlin" (by hand and in the gate).
+- **6.11's AT** (ADR-393): seeds 6619 and 2953 × 30 years headless, by a probe in `.cache/probe/`:
+  36 and 10 bursts; 0 on land no one holds, the striker's own or a neutral's; 0 within a blast radius
+  of the week before's; none on a distant colony. Most still on revolt statelets: PLAN 6.12. ~30 s a
+  year, 820 to 920 s for 30 years (two runs side by side).
+- **Gate:** green (1059 related tests, the two specs, the pin). Under the load of the two runs the
+  known red build time (`scenario1938`, 2,092 ms) failed once; alone 7 of 7.
+- **Next:** PLAN 6.12.
