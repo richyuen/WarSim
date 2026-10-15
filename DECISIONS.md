@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-396 · 2026-10-15 · accepted — Combat's battles found with each pair once (PLAN 7.1d)
+
+- **The buckets** (`findBattles`, `systems/combat.ts`): a `Map` of buckets of 2 cells, looked up
+  nine times a fighter an hour, is now arrays kept between calls and emptied after each (not
+  state): a byte a bucket says it has fighters, a first fighter and a next one, by ascending id.
+  Most of the cost was not the empty lookups but the full ones: a front's cell holds a stack, and
+  nine buckets a fighter met each pair twice (the second time to drop it, `b <= a`). Where every
+  fighter is in a bucket of the map and the map has three columns of buckets or more, a fighter
+  now meets its own bucket from itself on and the four buckets after it (right, and the three
+  below), each pair once, the lower id first as before. The old nine-bucket walk stays for the
+  rest (a place off the map, whose key's bucket is not its neighbours' neighbour).
+- **The same pairs, another order:** the order of the pairs decides only the insertion order of
+  the hour's contacts (`world.contacts`). What reads them does not hang on it: `orderOf`'s turns
+  (each formation is on one enemy's list), `deployOf`'s blocks in the way (a least), the war's
+  battles (a set). A loaded game's `contactsOf` builds them in another order again, and the twin
+  tests hold. Pin unchanged (45df324d).
+- **Measured** (`node --cpu-prof` on an esbuild bundle of the headless CLI, year 1 of seed 99 on
+  the E-cores, as in 7.1a; `.cache/prof71/p3*`): `findBattles` with what it calls 3,860 ms of
+  45.1 s (8.6 %) → 2,403 ms of 43.4 s (5.5 %); its own and `pair`'s 2,153 → 990 ms.
+
 ### ADR-395 · 2026-10-15 · accepted — The air AI's order of industry checked by its own cells (PLAN 7.1c)
 
 - **The cut** (`byIndustry`, `ai/air.ts`): the cached order of the rich cells was checked each day

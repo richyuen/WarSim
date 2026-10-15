@@ -88,6 +88,17 @@ const OPEN = TERRAIN_IDS.map((id) => (combatJson.open.terrain as string[]).inclu
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);
 const TERRAIN_ATK = terrainJson.terrain.map((t) => t.attack as Record<string, number | undefined>);
 
+/**
+ * The buckets of `findBattles`, kept between calls (not state) and empty between them: a
+ * bucket's first fighter is `head` (an index into the call's fighters), `full` says it has
+ * one, each fighter's next in its bucket is `next` (−1 at the end) and its bucket `key`. A
+ * bucket is read by its key plus one row (`bw`), so the row above the map and the row below
+ * it are buckets too; a key beyond those (a place off the map) has its bucket in `over`.
+ * PLAN 7.1d: a `Map` of the buckets was looked up nine times a fighter an hour, most of them
+ * empty, 4 % of year 1.
+ */
+const scratch = { full: new Uint8Array(0), head: new Int32Array(0), next: new Int32Array(0), key: new Int32Array(0) };
+
 /** Groups formations into battles (ascending ids); sets `engaged`. */
 export function findBattles(world: World): number[][] {
   const f = world.formations;
@@ -95,7 +106,7 @@ export function findBattles(world: World): number[][] {
   const idx = elementIndex(world);
   const w = world.cells.w;
   const bw = Math.ceil(w / BUCKET_CELLS);
-  const buckets = new Map<number, number[]>();
+  const bh = Math.ceil(world.cells.h / BUCKET_CELLS);
   const fighters: number[] = [];
   // Only formations of nations at war can make contact (review after PLAN 1.25).
   const atWar = world.wars.nations();
@@ -103,13 +114,41 @@ export function findBattles(world: World): number[][] {
     c.engaged[id] = 0;
     // One on the retreat is in no battle (PLAN 3.5a): it does not fire and is not fired on.
     // A fleet is in no battle of the land (PLAN 4.2b): the sea's are PLAN 4.3.
-    if (!idx.has(id) || !atWar.has(c.nation[id]!) || c.retreat[id]! > 0 || world.offLand(id)) return;
+    if (c.retreat[id]! > 0 || !atWar.has(c.nation[id]!) || !idx.has(id) || world.offLand(id)) return;
     fighters.push(id);
-    const k = Math.floor(c.y[id]! / BUCKET_CELLS) * bw + Math.floor(c.x[id]! / BUCKET_CELLS);
-    let b = buckets.get(k);
-    if (!b) buckets.set(k, (b = []));
-    b.push(id);
   });
+  const slots = (bh + 2) * bw;
+  if (scratch.full.length !== slots) {
+    scratch.full = new Uint8Array(slots);
+    scratch.head = new Int32Array(slots);
+  }
+  if (scratch.next.length < fighters.length) {
+    scratch.next = new Int32Array(Math.max(fighters.length, 2 * scratch.next.length));
+    scratch.key = new Int32Array(scratch.next.length);
+  }
+  const { full, head, next, key } = scratch;
+  const over = new Map<number, number[]>();
+  // Every fighter in a bucket of the map, which has three columns or more: each bucket's
+  // neighbours are each other's, and none is two of them.
+  let onMap = bw >= 3;
+  // Backwards, each to the front of its bucket: a bucket's fighters come out by ascending id.
+  for (let i = fighters.length - 1; i >= 0; i--) {
+    const id = fighters[i]!;
+    const bx = Math.floor(c.x[id]! / BUCKET_CELLS);
+    const by = Math.floor(c.y[id]! / BUCKET_CELLS);
+    if (bx < 0 || bx >= bw || by < 0 || by >= bh) onMap = false;
+    const k = by * bw + bx + bw;
+    key[i] = k;
+    if (k < 0 || k >= slots) {
+      let b = over.get(k);
+      if (!b) over.set(k, (b = []));
+      b.unshift(i);
+      continue;
+    }
+    next[i] = full[k] === 1 ? head[k]! : -1;
+    head[k] = i;
+    full[k] = 1;
+  }
   const near = new Map<number, [number, number]>();
   const parent = new Map<number, number>();
   const find = (a: number): number => {
@@ -122,34 +161,72 @@ export function findBattles(world: World): number[][] {
     }
     return r;
   };
-  for (const a of fighters) {
-    const bx = Math.floor(c.x[a]! / BUCKET_CELLS);
-    const by = Math.floor(c.y[a]! / BUCKET_CELLS);
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        // Over the seam whatever the map: candidates only, and `dist` keeps to the edges of a
-        // map that does not loop (PLAN 3.12Rs), so a bucket of the other edge gives no pair.
-        const list = buckets.get((by + dy) * bw + ((bx + dx + bw) % bw));
-        if (!list) continue;
-        for (const b of list) {
-          if (b <= a || !world.wars.atWar(c.nation[a]!, c.nation[b]!)) continue;
-          const d = dist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!);
-          if (d > CONTACT_CELLS) continue;
-          // Each one's nearest enemy in contact (the lower id on a tie): where its block deploys (`deployOf`).
-          const na = near.get(a);
-          if (!na || d < na[1] || (d === na[1] && b < na[0])) near.set(a, [b, d]);
-          const nb = near.get(b);
-          if (!nb || d < nb[1] || (d === nb[1] && a < nb[0])) near.set(b, [a, d]);
-          if (!parent.has(a)) parent.set(a, a);
-          if (!parent.has(b)) parent.set(b, b);
-          const ra = find(a);
-          const rb = find(b);
-          if (ra !== rb) parent.set(ra > rb ? ra : rb, ra > rb ? rb : ra);
-          c.engaged[a] = 1;
-          c.engaged[b] = 1;
+  const pair = (a: number, b: number): void => {
+    if (b <= a || !world.wars.atWar(c.nation[a]!, c.nation[b]!)) return;
+    const d = dist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!);
+    if (d > CONTACT_CELLS) return;
+    // Each one's nearest enemy in contact (the lower id on a tie): where its block deploys (`deployOf`).
+    const na = near.get(a);
+    if (!na || d < na[1] || (d === na[1] && b < na[0])) near.set(a, [b, d]);
+    const nb = near.get(b);
+    if (!nb || d < nb[1] || (d === nb[1] && a < nb[0])) near.set(b, [a, d]);
+    if (!parent.has(a)) parent.set(a, a);
+    if (!parent.has(b)) parent.set(b, b);
+    const ra = find(a);
+    const rb = find(b);
+    if (ra !== rb) parent.set(ra > rb ? ra : rb, ra > rb ? rb : ra);
+    c.engaged[a] = 1;
+    c.engaged[b] = 1;
+  };
+  // Fighter `a` with each of bucket `k`'s, the lower id first.
+  const across = (a: number, k: number): void => {
+    if (full[k] !== 1) return;
+    for (let i = head[k]!; i >= 0; i = next[i]!) {
+      const b = fighters[i]!;
+      if (a < b) pair(a, b);
+      else pair(b, a);
+    }
+  };
+  try {
+    // Each pair once (PLAN 7.1d: a fighter's own bucket from it on, then the four buckets after
+    // it), where nine buckets a fighter met each pair twice: a cell of a front holds a stack. The
+    // pairs are the same, and the lower id first, as `pair` asks.
+    if (onMap) {
+      for (let ia = 0; ia < fighters.length; ia++) {
+        const a = fighters[ia]!;
+        for (let i = next[ia]!; i >= 0; i = next[i]!) pair(a, fighters[i]!);
+        const k = key[ia]!;
+        const bx = (k - bw) % bw;
+        const row = k - bx;
+        const left = bx === 0 ? bw - 1 : bx - 1;
+        const right = bx === bw - 1 ? 0 : bx + 1;
+        across(a, row + right);
+        across(a, row + bw + left);
+        across(a, row + bw + bx);
+        across(a, row + bw + right);
+      }
+    } else {
+      for (const a of fighters) {
+        const bx = Math.floor(c.x[a]! / BUCKET_CELLS);
+        const by = Math.floor(c.y[a]! / BUCKET_CELLS);
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            // Over the seam whatever the map: candidates only, and `dist` keeps to the edges of a
+            // map that does not loop (PLAN 3.12Rs), so a bucket of the other edge gives no pair.
+            const k = (by + dy) * bw + ((bx + dx + bw) % bw) + bw;
+            if (k < 0 || k >= slots) {
+              for (const i of over.get(k) ?? []) pair(a, fighters[i]!);
+              continue;
+            }
+            if (full[k] !== 1) continue;
+            for (let i = head[k]!; i >= 0; i = next[i]!) pair(a, fighters[i]!);
+          }
         }
       }
     }
+  } finally {
+    // Empty again for the next call.
+    for (let i = 0; i < fighters.length; i++) if (key[i]! >= 0 && key[i]! < slots) full[key[i]!] = 0;
   }
   // Derived, for where the blocks stand this hour; not state (`contactsOf` gives the same from the state).
   deployAll(world, new Map([...near].map(([id, [enemy]]) => [id, enemy])));
