@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-413 · 2026-10-15 · accepted — The top speed is the tick's: dropped from the performance pass (PLAN 7.1l10)
+
+- **Context.** At Max the worker runs ticks as fast as it can: the top speed is the tick's
+  cost. The critic (2nd report) measured 885 ticks a second at the start and 794 after ten
+  years; AoC's text gives a month in 0.5 s at its 1×, some 60 days a second, about twice that.
+  Parity row 64 left "AoC's pace only at Max, to be confirmed on the 1938 world in Phase 7".
+- **Measured** (`.cache/l10/max.ts`, the production build, 1920 × 1080, the world in view, Max,
+  unpinned, alone): 431, 469, 688, 592, 514 and 597 ticks a second in six spans of 10 s over the
+  first 3.7 years of seed 1938: 18 to 29 days a second, a year in 12 to 20 s.
+- **Decision: dropped from PLAN 7.1.** The pass's budget is the tick's (1.5 ms, SPEC §2.5),
+  which allows some 670 ticks a second; AoC's pace needs a tick of 0.7 ms. That is not a cut of
+  this pass but another sim: half the work of every hour, or a coarse path for fronts no close
+  tier watches (the critic's fix), a change of the rules and of the pin. Which of the two, if
+  either, is the user's decision; until then the speed levels stay as SPEC §2.5 has them and
+  the pace at Max is what the tick allows. Parity row 64 says so with these figures.
+
 ### ADR-412 · 2026-10-15 · accepted — The fine mask on the GPU in bands of rows (PLAN 7.1l9)
 
 - **Context.** The fine land mask goes to the GPU a byte to a texel: 2048 × 8192 for the

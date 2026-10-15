@@ -16270,3 +16270,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotchas:** `git checkout` of a new spec does nothing: an edit made for a check had to be undone
   by hand.
 - **Next:** PLAN 7.1l10.
+
+## 2026-10-15 — PLAN 7.1l10: the top speed (decision)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Measured:** at Max in the browser, the world in view, 431 to 688 ticks a second (18 to 29 days a
+  second) over the first 3.7 years of seed 1938; AoC's text gives some 60 days a second at its 1×.
+- **Dropped** from 7.1 (ADR-413): the top speed is the tick's, and AoC's pace needs a tick of 0.7
+  ms, another sim (half the hour's work, or a coarse path for unwatched fronts) and the user's
+  decision. Parity row 64 has the figures.
+- **Next:** PLAN 7.1l11.

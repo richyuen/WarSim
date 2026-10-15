@@ -212,7 +212,7 @@ quick sweep as a smoke test.
       unrounded rectangle; every layer looked at. AT: screenshots at 1.25 and 1.5, looked at.
     - [x] 7.1l9 A GPU with no texture of 8192 px draws the coarse coast at T2 and T3 and nothing
       says so. AT: the game says so, or uses the fine mask in parts; an ADR.
-    - [ ] 7.1l10 The top speed (885 ticks a second at the start; AoC's usual speed about twice
+    - [x] 7.1l10 The top speed (885 ticks a second at the start; AoC's usual speed about twice
       ours, text): moved to its task or dropped, with an ADR.
     - [ ] 7.1l11 The older leads of 7.1's list that no part above takes (the supply refresh gone
       full of ADR-81, the hulls' frame with many on a GPU, the ground's cost with no GPU, the
