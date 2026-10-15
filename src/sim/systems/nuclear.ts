@@ -57,7 +57,8 @@
  *
  * The use decision's utility (PLAN 6.4a, SPEC §6.4; `nuclearUtility`, its inputs `nukeInputs`):
  *   U = targetValue × desperation × doctrine − RETALIATION_WEIGHT × retaliationRisk
- *       − allianceCost − outrage − TABOO_WEIGHT × taboo  (+ RETALIATION_BONUS when striking back)
+ *       − allianceCost − outrage − TABOO_WEIGHT × taboo  (+ RETALIATION_BONUS, and no retaliationRisk,
+ *       when striking back)
  * and, when both sides have an assured second strike (MAD), first use is at most 0 unless the
  * striker's desperation is extreme. A strike back at who struck it is not first use. The taboo
  * weighs EXTREME_TABOO of itself for a nation in extreme desperation (PLAN 6.7: France fighting to
@@ -94,7 +95,9 @@
  * against the striker for RETALIATION_DAYS (`world.nukeGrievance`). While it holds one against an
  * enemy, it weighs that nation's land alone, from any distance, and strikes no one else (PLAN
  * 6.12b). Of retaliation doctrine (aggression at least RETALIATION_AGGRESSION) it is retaliating:
- * RETALIATION_BONUS, and no MAD bar. Its strike back spends the grievance (one for one).
+ * RETALIATION_BONUS, no MAD bar, and no retaliation risk weighed (PLAN 6.12d: struck at London, a
+ * winning United Kingdom weighed 1 − 0.96 for the Soviet second strike and never struck back). Its
+ * strike back spends the grievance (one for one).
  *
  * A burst's consequences (PLAN 6.5a, SPEC §6.4 "a stability shock and a war-exhaustion jump ...
  * economic shocks follow"; `aftermath`), on the nation whose land it burst on (none at sea or on
@@ -466,7 +469,8 @@ export interface NukeInputs {
 
 /** A strike's utility (PLAN 6.4a): see the head of the file. */
 export function nuclearUtility(i: NukeInputs): number {
-  const u = i.targetValue * i.desperation * i.doctrine + (i.retaliating ? RETALIATION_BONUS : 0) - RETALIATION_WEIGHT * i.retaliation - i.allianceCost - i.outrage - TABOO_WEIGHT * i.taboo * (i.extreme ? EXTREME_TABOO : 1);
+  // A strike back does not weigh the enemy's second strike (PLAN 6.12d): deterrence failed when it was struck.
+  const u = i.targetValue * i.desperation * i.doctrine + (i.retaliating ? RETALIATION_BONUS : 0) - (i.retaliating ? 0 : RETALIATION_WEIGHT * i.retaliation) - i.allianceCost - i.outrage - TABOO_WEIGHT * i.taboo * (i.extreme ? EXTREME_TABOO : 1);
   return i.mad && !i.extreme && !i.retaliating ? Math.min(0, u) : u;
 }
 

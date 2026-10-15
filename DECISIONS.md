@@ -212,6 +212,17 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     play (the critic's run: 11 by Free Liège II); no burst on land no one holds, the striker's own
     or a neutral's, none again within a week. Two causes left, 6.12d and 6.12e: the United Kingdom,
     struck at London twice, never struck back; the Soviet Union struck statelets and Sweden.
+- **6.12d, a strike back is not deterred** (`nuclearUtility`): retaliating (doctrine and a grievance
+  against the enemy struck), the utility does not take off `RETALIATION_WEIGHT` × the enemy's
+  retaliation risk. Deterrence failed when the nation was struck; SPEC §6.4's "retaliation-doctrine
+  nations strike back after being hit" is unconditional. A first use still weighs it, and the MAD
+  bar on first use is unchanged.
+  - Seed 6619: struck at London, the United Kingdom, winning (desperation 0), 35 warheads and
+    missiles, Soviet places 2,500 to 4,700 km away, weighed 1 − 0.96 − 0.1 − 0.18 and never
+    struck back in 30 days (the probe read its aim and reach daily).
+  - `tests/unit/nukeUndeterred1938.test.ts`: Germany (aggression 90, five warheads, risk 1.12)
+    strikes London; the United Kingdom, winning, strikes Berlin (utility 0.620); none on the 6.12c
+    source (red).
 
 ### ADR-393 · 2026-10-15 · accepted — Where the AI's warheads fall (PLAN 6.11, critic R6-B2)
 

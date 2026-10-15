@@ -8995,3 +8995,25 @@ Of 6.12 (open in PLAN.md):
     on its first day and had the income of a programme).
     AT: unit test: a revolt from a nation knowing the bomb knows its other techs, not the
     nuclear ones; seeds 6619 and 2953 × 30 years headless: no decision by a nation founded in play.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+Of 6.12 (open in PLAN.md):
+
+  - [x] 6.12d A strike back is not deterred by the striker's second strike: a nation of
+    retaliation doctrine striking back does not weigh the retaliation risk (seed 6619: struck at
+    London, the United Kingdom, winning, 35 warheads and missiles, Soviet places 2,500 to 4,700 km
+    away, weighed 1 − 0.96 − 0.1 − 0.18 and never struck back).
+    AT: unit test: a high-doctrine striker with five warheads strikes a winning United Kingdom;
+    the United Kingdom strikes back on the striker's land (red on the 6.12c source).

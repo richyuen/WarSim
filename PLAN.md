@@ -44,12 +44,7 @@ quick sweep as a smoke test.
   - [x] 6.12a No first use on a nation that cannot threaten the striker: none of its warheads, […]
   - [x] 6.12b A strike back aims at the striker: while a grievance holds, its holder weighs only […]
   - [x] 6.12c A nation founded in play does not inherit the nuclear techs of the nation it […]
-  - [ ] 6.12d A strike back is not deterred by the striker's second strike: a nation of
-    retaliation doctrine striking back does not weigh the retaliation risk (seed 6619: struck at
-    London, the United Kingdom, winning, 35 warheads and missiles, Soviet places 2,500 to 4,700 km
-    away, weighed 1 − 0.96 − 0.1 − 0.18 and never struck back).
-    AT: unit test: a high-doctrine striker with five warheads strikes a winning United Kingdom;
-    the United Kingdom strikes back on the striker's land (red on the 6.12c source).
+  - [x] 6.12d A strike back is not deterred by the striker's second strike: a nation of […]
   - [ ] 6.12e What "small" means when the striker's army is gone (seed 6619: the Soviet
     strength fell from 649,000 to 22,000 in two years, and statelets of 6,000 to 38,000 men passed
     THREAT_SHARE; Sweden and Norway struck at desperation 0.6). First find what makes the

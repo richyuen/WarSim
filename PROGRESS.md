@@ -15807,3 +15807,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   THREAT_SHARE (PLAN 6.12e). Checkpoints `.cache/probe/ck612_6619_y17.bin`, `ck612_2953_y14.bin`.
 - **Deferred (ADR-58), logged:** the Soviet army's collapse (97 % in two years) is balance, R6-B3's.
   The United States' 87 unused warheads: never struck, aggression 15; no fix.
+
+## 2026-10-15 — PLAN 6.12d: a strike back is not deterred (critic R6-B2)
+
+- **The rule** (`nuclearUtility`): retaliating, the retaliation risk is not weighed. Seed 6619's
+  United Kingdom, winning, struck twice at London, weighed 1 − 0.96 − 0.1 − 0.18 and never answered.
+- **AT:** `tests/unit/nukeUndeterred1938.test.ts`: Germany (risk 1.12) strikes London; the United
+  Kingdom, winning, strikes Berlin (0.620); none on the 6.12c source (red). `nukeDecision1938`
+  (MAD after the strike back: no more) and `nukeUtility1938` green.
+- **Next:** PLAN 6.12e.
