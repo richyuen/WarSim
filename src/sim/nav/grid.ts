@@ -48,10 +48,10 @@ export interface NavGrid {
   /** The last search in a corridor that found no way on closed ground (`findRoute`). */
   barred: BarredSearch | null;
   /**
-   * The pockets found on one `Passage` (`pocketOf`; derived, never saved): `id[c]` is read where
-   * `stamp[c]` is `gen`, and another passage begins another `gen`.
+   * The pockets found on one `Passage` (`pocketOf`; derived, never saved): `id[c]` is a cell's
+   * mark, 0 for none (`markOf`); `walked` the cells marked, cleared when another passage asks.
    */
-  pockets: { id: Int32Array; stamp: Uint32Array; gen: number; pass: Passage | null } | null;
+  pockets: { id: Int32Array; walked: number[]; pass: Passage | null } | null;
 }
 
 /** Row scales for a Miller w×h grid (cell height in radians of latitude × R, width × cos φ). */
@@ -340,6 +340,8 @@ export interface Passage {
 export const POCKET_CELLS = 4096;
 /** `pocketOf`'s mark of a cell of the walk in hand (no pocket and no wide ground has the number). */
 const IN_HAND = -0x7fffffff;
+/** `pocketOf`'s mark of a cell whose answer is 0 (0 is no mark). */
+const MARK_ZERO = -0x7ffffffe;
 
 /**
  * The pocket a cell of open ground lies in (PLAN 3.10c2b, ADR-192): when the cells a route may
@@ -356,25 +358,24 @@ export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell:
   const { w, h, wrapX, component } = g;
   const { ok, holder } = pass;
   if (component[start] === 0 || ok[holder[start]!] !== 1) return 0;
-  if (!g.pockets || g.pockets.id.length !== w * h) g.pockets = { id: new Int32Array(w * h), stamp: new Uint32Array(w * h), gen: 0, pass: null };
+  // The marks in one array (PLAN 7.1i: a stamp beside them was a second read of each cell).
+  if (!g.pockets || g.pockets.id.length !== w * h) g.pockets = { id: new Int32Array(w * h), walked: [], pass: null };
   const p = g.pockets;
+  const { id, walked } = p;
   if (p.pass !== pass) {
     p.pass = pass;
-    if (++p.gen === 0xffffffff) {
-      p.stamp.fill(0);
-      p.gen = 1;
-    }
+    for (const c of walked) id[c] = 0;
+    walked.length = 0;
   }
-  const { id, stamp, gen } = p;
-  if (stamp[start] === gen) return id[start]!;
+  if (id[start] !== 0) return id[start] === MARK_ZERO ? 0 : id[start]!;
   // In hand: marked. Ground that an earlier walk found wider is wider from here too, and comes
   // to the wide ground that walk came to.
-  const walked = [start];
-  stamp[start] = gen;
+  const first = walked.length;
+  walked.push(start);
   id[start] = IN_HAND;
   let far = false;
   let ground = 0;
-  for (let at = 0; at < walked.length && !far; at++) {
+  for (let at = first; at < walked.length && !far; at++) {
     const c = walked[at]!;
     const cx = c % w;
     const cy = (c - cx) / w;
@@ -399,15 +400,14 @@ export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell:
       // No corner cutting, as in `findPath`: by the terrain, whoever holds the two cells (the
       // one of c's row and n's column, and the one of n's row and c's column).
       if (k >= 4 && (component[n - dy * w] === 0 || component[inner ? c + dy * w : n - (n % w) + cx] === 0)) continue;
-      if (stamp[n] === gen) {
-        const was = id[n]!;
-        if (was <= 0 && was !== IN_HAND) {
+      const was = id[n]!;
+      if (was !== 0) {
+        if (was < 0 && was !== IN_HAND) {
           far = true;
-          if (ground === 0) ground = was;
+          if (ground === 0) ground = was === MARK_ZERO ? 0 : was;
         }
         continue;
       }
-      stamp[n] = gen;
       id[n] = IN_HAND;
       walked.push(n);
       const met = wide === undefined ? 0 : wide(n);
@@ -416,10 +416,11 @@ export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell:
         if (ground === 0) ground = -met;
       }
     }
-    if (walked.length > POCKET_CELLS) far = true;
+    if (walked.length - first > POCKET_CELLS) far = true;
   }
   const pocket = far ? ground : start + 1;
-  for (const c of walked) id[c] = pocket;
+  const mark = pocket === 0 ? MARK_ZERO : pocket;
+  for (let k = first; k < walked.length; k++) id[walked[k]!] = mark;
   return pocket;
 }
 

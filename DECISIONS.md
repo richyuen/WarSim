@@ -213,6 +213,9 @@ here, because a rule change can break it.
   have cells in the sector. The threat is summed by the first plan and copied by the others
   while `world.embarked` has not grown: it reads the enemies' formations by bucket, and within a
   tick's plans none moves out of its bucket and none comes ashore (ADR-399's `standings`).
+- **`pocketOf`'s marks in one array** (`NavGrid.pockets`): a mark read where a stamp said it
+  was of this passage was two reads of each cell; now 0 is no mark (an answer of 0 is marked
+  `MARK_ZERO`), and the cells marked are listed and cleared when another passage asks.
 
 ### ADR-400 · 2026-10-15 · accepted — Territory's hour and supply's refresh without what the rule does not need (PLAN 7.1h)
 
