@@ -15706,3 +15706,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   (`scenario1938` "builds in well under a second", 2,286 and 3,564 ms against 2,000 in the loaded
   unit stage; alone 1 of 1 twice with the change and twice without, BLOCKERS).
 - **Next:** PLAN 6.11.
+
+## 2026-10-15 — PLAN 6.11a: the AI's warheads fall on enemy land near a front (critic R6-B2)
+
+- **Split** 6.11 in three (ADR-393): the places weighed (a), no second warhead on a spot struck or
+  about to be (b), the place in the history (c).
+- **Found:** the critic's "land no one holds" was mostly the striker's own (`aftermath` tells a burst
+  on it as struck 0; Batumi, Barabinsk, Mikhaylova are Soviet). Paramaribo was the Netherlands'
+  capital, moved there. The cores cannot tell a colony from a homeland (every province's core is its
+  1938 owner).
+- **The rule** (`nukeTargets`): a place on land the enemy side owns and controls, within `FRONT_KM`
+  = 1000 km of a land formation or a capital of the striker's side.
+- **AT:** `tests/unit/nukeTargets1938.test.ts`: Germany against the United Kingdom weighs a mass in
+  Kent and London; not one at Aden, on German land at Cologne, in neutral Belgium, nor Kent once no
+  one holds it; a capital moved to Aden is not weighed. `nukeDemoRules1938`'s massed divisions moved
+  from Reims (France's own land) to Saarbrücken. `nukeDemo1938.spec` by hand: France still strikes
+  Berlin.
+- **Gate:** green (182 related files, 982 tests; the pin unmoved).
+- **Next:** PLAN 6.11b.

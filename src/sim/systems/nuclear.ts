@@ -83,7 +83,8 @@
  *
  * The decision (PLAN 6.4b; `nukeDecisions`), daily, with the AI on: each nation with a warhead,
  * living, not switched off nor a puppet, nukes allowed, in each of its wars weighs each enemy
- * capital and the NUKE_TARGETS places where enemy land formations are most massed (`nukeTargets`),
+ * capital and the NUKE_TARGETS places where enemy land formations are most massed (`nukeTargets`;
+ * PLAN 6.11a: on land the enemy side holds, within FRONT_KM of its own side),
  * and strikes the one of most utility above 0 (by missile when it knows them and one reaches, else
  * by bomber, a free one or one retasked from a sortie; one out of reach, the next), once a day at
  * most. The decision is told (`NukeDecided`).
@@ -676,22 +677,43 @@ function retaliates(world: World, n: number, war: War, side: number): boolean {
   return !!g && g.until > world.tick && world.nations.cols.aggression[n]! >= RETALIATION_AGGRESSION && war.sides[1 - side]!.includes(g.by);
 }
 
+/** How far from the striker's side a place may be to be weighed (PLAN 6.11a), km: from its land formations or its capitals. */
+export const FRONT_KM = 1000;
+
 /**
  * The places `n` weighs in `war` on `side` (PLAN 6.4b): enemy capitals, then the NUKE_TARGETS
  * enemy land formations with the most enemy men within a blast radius of them, each at least a
  * radius from those taken before (PLAN 6.7: massed formations; the strongest formations alone
  * passed over twelve divisions massed before Paris for older ones of the same strength).
+ * Each on land the enemy side owns and controls (PLAN 6.11a: not the striker's own land, a
+ * neutral's nor the sea), within FRONT_KM of a land formation or a capital of `side`: a colony
+ * or a capital-in-exile far from every front is not weighed (critic R6-B2: Paramaribo, Aden).
  */
 export function nukeTargets(world: World, n: number, war: War, side: number): [number, number][] {
   const nc = world.nations.cols;
   const out: [number, number][] = [];
-  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1) out.push([nc.capitalX[m]!, nc.capitalY[m]!]);
   const c = world.formations.cols;
   const enemy = new Set(war.sides[1 - side]!);
+  const own = new Set(war.sides[side]!);
   const land: number[] = [];
+  const anchors: number[] = [];
+  for (const m of war.sides[side]!) if (nc.living[m] === 1) anchors.push(nc.capitalX[m]!, nc.capitalY[m]!);
   world.formations.forEach((id) => {
-    if (enemy.has(c.nation[id]!) && !world.isFleet(id) && !world.isWing(id) && !world.offLand(id)) land.push(id);
+    if (world.isFleet(id) || world.isWing(id) || world.offLand(id)) return;
+    if (enemy.has(c.nation[id]!)) land.push(id);
+    else if (own.has(c.nation[id]!)) anchors.push(c.x[id]!, c.y[id]!);
   });
+  const { w, h, owner, controller } = world.cells;
+  const fair = (x: number, y: number): boolean => {
+    const xx = cellX(world, Math.floor(x));
+    const yy = Math.floor(y);
+    if (xx === null || yy < 0 || yy >= h) return false;
+    const cell = yy * w + xx;
+    if (!enemy.has(owner[cell]!) || !enemy.has(controller[cell]!)) return false;
+    for (let k = 0; k < anchors.length; k += 2) if (seaKm(world, x, y, anchors[k]!, anchors[k + 1]!) <= FRONT_KM) return true;
+    return false;
+  };
+  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && fair(nc.capitalX[m]!, nc.capitalY[m]!)) out.push([nc.capitalX[m]!, nc.capitalY[m]!]);
   const radius = blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1);
   const near = (a: number, b: number): boolean => Math.abs(c.y[a]! - c.y[b]!) <= radius / 10 && seaKm(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) <= radius;
   const mass = new Map<number, number>();
@@ -704,7 +726,7 @@ export function nukeTargets(world: World, n: number, war: War, side: number): [n
   const taken: number[] = [];
   for (const id of land) {
     if (taken.length >= NUKE_TARGETS) break;
-    if (taken.some((t) => near(t, id))) continue;
+    if (taken.some((t) => near(t, id)) || !fair(c.x[id]!, c.y[id]!)) continue;
     taken.push(id);
     out.push([c.x[id]!, c.y[id]!]);
   }

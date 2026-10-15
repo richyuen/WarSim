@@ -37,6 +37,19 @@ quick sweep as a smoke test.
   AT: unit tests of the target choice (a colony against a core city, a spot struck the day
   before, land no one holds); a 30-year headless run of seed 6619: no burst on land no one
   holds, none within a blast radius of the last week's, each named in the history by place.
+  Three causes, one commit each (ADR-393):
+  - [x] 6.11a The places weighed: on land the enemy side owns and controls (not the striker's
+    own land, which the history told as "where no nation holds the land", nor a neutral's, nor
+    the sea), and within FRONT_KM of the striker's side, its land formations or its capitals (a
+    colony or a capital-in-exile far from every front is not weighed).
+    AT: unit tests: a colony far from every front against a city on the front; enemy formations
+    on the striker's own land and on land no one holds are not weighed.
+  - [ ] 6.11b No second warhead within a blast radius of a burst of the last RESTRIKE_DAYS, or of
+    a warhead in flight (state: the week's bursts, saved).
+    AT: unit tests: a spot struck the day before, a spot a warhead is flying to; save and load
+    of the bursts.
+  - [ ] 6.11c Each strike named in the history by place: the city nearest the burst.
+    AT: unit test of the row's sentence; seed 6619 × 30 years headless (this task's AT).
 - [ ] 6.12 Critic R6-B2, second: who strikes whom. The first use in history is the Soviet Union
   bombing the revolt statelet Free Van three times in two days at utility 0.01 to 0.39; struck
   at London (1.37 million dead), the United Kingdom never strikes back at the Soviet Union, its

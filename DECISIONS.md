@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-393 · 2026-10-15 · accepted — Where the AI's warheads fall (PLAN 6.11, critic R6-B2)
+
+- **Split** in three causes, one commit each: the places weighed (6.11a), no second warhead on a
+  spot struck or about to be (6.11b), the place in the history (6.11c).
+- **6.11a, the places weighed** (`nukeTargets`): on land the enemy side owns *and* controls, and
+  within `FRONT_KM` = 1000 km of a land formation or a capital of the striker's side.
+  - "Land no one holds" in the critic's runs was mostly the striker's own: `aftermath` tells a
+    burst on the striker's land as struck 0, and the history read "where no nation holds the
+    land" (Batumi, Barabinsk, Mikhaylova are Soviet). The Soviet Union was bombing enemy columns
+    on its own soil. Owner and controller on the enemy side bars that, a neutral's land, the sea
+    and land held by no one, with one test.
+  - **Not "its core".** The critic asked for "the front or the enemy's core, not distant
+    colonies". The cores cannot tell them apart: `initProvinceCores` gives every province to its
+    1938 owner, so Suriname is the Netherlands' core and the Canaries Nationalist Spain's.
+    Paramaribo was a capital: the Netherlands' moved there. So every place, a capital too, must
+    be within reach of the war: 1000 km of the striker's formations or capitals (London from
+    Berlin 930 km; Berlin from Paris 880 km, the AI demo's strike). An enemy's homeland far from
+    every front (Washington for the Soviet Union) is not weighed either; who strikes whom is
+    PLAN 6.12.
+  - `nukeDemoRules1938`'s twelve massed divisions stood at Reims, on France's own land, and France
+    weighed them: under this rule it must not. They stand at Saarbrücken now, on German land; the
+    assertion is the same.
+
 ### ADR-392 · 2026-10-14 · accepted — What the Phase 6 review's run found red (PLAN 6.9)
 
 - **Decision.** `check:review`'s first run had five tests red twice and not known. None of nuclear
