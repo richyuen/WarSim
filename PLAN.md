@@ -43,11 +43,19 @@ quick sweep as a smoke test.
   Three causes, one commit each (ADR-394):
   - [x] 6.12a No first use on a nation that cannot threaten the striker: none of its warheads, […]
   - [x] 6.12b A strike back aims at the striker: while a grievance holds, its holder weighs only […]
-  - [ ] 6.12c A nation founded in play does not inherit the nuclear techs of the nation it
-    leaves (`spawnRebels` copied every tech: "Free Liège II", holding Berlin, knew the bomb
-    on its first day and had the income of a programme).
-    AT: unit test: a revolt from a nation knowing the bomb knows its other techs, not the
-    nuclear ones; seeds 6619 and 2953 × 30 years headless (this task's AT).
+  - [x] 6.12c A nation founded in play does not inherit the nuclear techs of the nation it […]
+  - [ ] 6.12d A strike back is not deterred by the striker's second strike: a nation of
+    retaliation doctrine striking back does not weigh the retaliation risk (seed 6619: struck at
+    London, the United Kingdom, winning, 35 warheads and missiles, Soviet places 2,500 to 4,700 km
+    away, weighed 1 − 0.96 − 0.1 − 0.18 and never struck back).
+    AT: unit test: a high-doctrine striker with five warheads strikes a winning United Kingdom;
+    the United Kingdom strikes back on the striker's land (red on the 6.12c source).
+  - [ ] 6.12e What "small" means when the striker's army is gone (seed 6619: the Soviet
+    strength fell from 649,000 to 22,000 in two years, and statelets of 6,000 to 38,000 men passed
+    THREAT_SHARE; Sweden and Norway struck at desperation 0.6). First find what makes the
+    desperation (the land others hold, held by this war's enemy or by anyone), then the measure.
+    AT: from the checkpoints of years 17 (6619) and 14 (2953): no strike on a statelet without
+    warheads; seeds 6619 and 2953 × 30 years headless on the final code (this task's AT).
 
 ## Phase 7 — Balance, polish, soak
 

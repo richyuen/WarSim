@@ -47,6 +47,7 @@ import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { nearestCellWhere } from '../data/ownership';
+import { techMask, type TechMask } from '../tech';
 import { navOf, provinceCellsOf, type World } from '../world';
 import { relocateCapital } from './capitals';
 import { deadClaimant, reviveNation } from './revival';
@@ -334,6 +335,12 @@ function heldKm2(world: World, holder: number): (p: number) => number {
   };
 }
 
+/** The techs of the nuclear category (`data/tech/nuclear.json`), as a mask (PLAN 6.12c). */
+function nuclearMask(world: World): TechMask {
+  const techs = world.rules?.techs ?? [];
+  return techMask(techs.flatMap((t, i) => (t.category === 'nuclear' ? [i] : [])));
+}
+
 /**
  * Creates the rebel nation on `area` (province ids) and returns its id; with `revive`, that dead
  * nation returns instead (PLAN 1.20, called by `reviveNation`). Without `war` the holder does not
@@ -355,8 +362,12 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     nc.manpowerMult[id] = 1;
     nc.aggression[id] = REBEL_AGGRESSION;
     // It knows what the nation it leaves knew (PLAN 3.1a); a reused id does not keep the dead nation's.
-    nc.tech0[id] = world.nations.has(holder) ? nc.tech0[holder]! : 0;
-    nc.tech1[id] = world.nations.has(holder) ? nc.tech1[holder]! : 0;
+    // Not the nuclear techs (PLAN 6.12c, critic R6-B2: "Free Liège II", holding Berlin, knew the
+    // bomb on its first day and had the income of a programme): a programme is the state's, not
+    // the land's.
+    const [n0, n1] = nuclearMask(world);
+    nc.tech0[id] = world.nations.has(holder) ? (nc.tech0[holder]! & ~n0) >>> 0 : 0;
+    nc.tech1[id] = world.nations.has(holder) ? (nc.tech1[holder]! & ~n1) >>> 0 : 0;
     nc.research[id] = 0; // until the next month's budget (`researchBudget`)
   }
   nc.living[id] = 1;

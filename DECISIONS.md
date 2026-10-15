@@ -202,6 +202,16 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     divisions at Turin) and the United States; not struck, it strikes Turin (utility 0.700);
     struck at Paris by the United States, it strikes the American east coast next (0.204), from
     6,000 km; on the old source, Turin (red).
+- **6.12c, a revolt does not inherit the bomb** (`spawnRebels`): a nation founded in play keeps the
+  techs of the nation it leaves (PLAN 3.1a) but those of the nuclear category (`data/tech/
+  nuclear.json`: atomic research to thermonuclear, rocketry and missiles). "Free Liège II", founded
+  from Germany and holding Berlin, knew the bomb on its first day, and Berlin's industry gave it
+  the income of a programme (`goesForBomb`, 1,000): a programme is the state's, not the land's. A
+  revived nation keeps its own techs as before.
+  - Seeds 6619 and 2953 × 30 years headless on the 6.12c code: no decision by a nation founded in
+    play (the critic's run: 11 by Free Liège II); no burst on land no one holds, the striker's own
+    or a neutral's, none again within a week. Two causes left, 6.12d and 6.12e: the United Kingdom,
+    struck at London twice, never struck back; the Soviet Union struck statelets and Sweden.
 
 ### ADR-393 · 2026-10-15 · accepted — Where the AI's warheads fall (PLAN 6.11, critic R6-B2)
 

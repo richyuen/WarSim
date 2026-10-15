@@ -15791,3 +15791,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   11. Green with the pool capped (`VITEST_MAX_WORKERS=4`, 987 tests, the pin unmoved, build,
   parity). Threshold and `knownRed.json` untouched.
 - **Next:** PLAN 6.12c.
+
+## 2026-10-15 — PLAN 6.12c: a revolt does not inherit the bomb (critic R6-B2)
+
+- **Found:** `spawnRebels` copies the holder's techs (PLAN 3.1a), the bomb with them; Berlin's
+  industry then gave "Free Liège II" a programme's income. **The rule:** not the nuclear category.
+- **AT:** `tests/unit/nukeRevoltTechs1938.test.ts`: a revolt from a Germany that knows the bomb and
+  jet engines knows jet engines, no nuclear tech (red on the old source: `atomic_research`).
+  Seeds 6619 and 2953 × 30 years headless (`.cache/probe/nukeProbe612.ts`, 851 and 839 s side by
+  side): 35 and 10 decisions, none by a nation founded in play; bad bursts 0 and 0.
+- **Not yet:** the United Kingdom, struck at London twice (seed 6619), never struck back: 35
+  warheads, missiles, Soviet places in reach; utility 1 − 0.96 (the Soviet second strike) − 0.1 −
+  0.18 < 0 (PLAN 6.12d). The Soviet Union still struck statelets and Sweden: its strength fell from
+  649,000 to 22,000 men between years 18 and 20, so statelets of 6,000 to 38,000 passed
+  THREAT_SHARE (PLAN 6.12e). Checkpoints `.cache/probe/ck612_6619_y17.bin`, `ck612_2953_y14.bin`.
+- **Deferred (ADR-58), logged:** the Soviet army's collapse (97 % in two years) is balance, R6-B3's.
+  The United States' 87 unused warheads: never struck, aggression 15; no fix.

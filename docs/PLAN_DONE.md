@@ -8974,3 +8974,24 @@ Of 6.12 (open in PLAN.md):
     AT: unit tests: France at war with Italy (losing, Italian divisions massed at Turin) and with
     the United States: not struck, it strikes Turin; struck at Paris by the United States, its
     next strike falls on American land, and none on Italy's before it.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+Of 6.12 (open in PLAN.md):
+
+  - [x] 6.12c A nation founded in play does not inherit the nuclear techs of the nation it
+    leaves (`spawnRebels` copied every tech: "Free Liège II", holding Berlin, knew the bomb
+    on its first day and had the income of a programme).
+    AT: unit test: a revolt from a nation knowing the bomb knows its other techs, not the
+    nuclear ones; seeds 6619 and 2953 × 30 years headless: no decision by a nation founded in play.
