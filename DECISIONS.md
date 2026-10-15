@@ -167,6 +167,55 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-400 · 2026-10-15 · accepted — Territory's hour and supply's refresh without what the rule does not need (PLAN 7.1h)
+
+Each cut below is exact: the pin is unchanged (45df324d), and so is year 1 of seed 99 on a map
+that does not loop (620968e1). What each relies on is written here, because a rule change can
+break it.
+- **Territory's pressure in kept typed arrays** (`4ffc0f9`): per frontier cell a chain of
+  (nation, pressure) entries in the order the nations first pressed it, so every sum runs in the
+  order the old inner `Map` gave; the candidates a kept `Int32Array` sorted numerically.
+- **The cells holding progress gathered by the frontier's rebuild** (`db22c02`): the rebuild
+  zeroes the progress of every cell off the frontier and visits each cell on it.
+- **A formation far from any front presses no cells** (`da0ba2b`, `World.frontierBlocks`): the
+  frontier cells of each 8 × 8 block, kept with `frontierMask` by the rebuild and the upkeep after
+  flips (the only writers of the mask). **Relies on:** the pressure's reach (5 cells) being
+  narrower than a block, so it falls in two blocks a side; over an edge of the map it walks. A
+  unit test holds the counts to the mask's.
+- **A lost cell searched before its bloc is flooded whole** (`90fe9fe`, `part` and `holds` in
+  `systems/supply.ts`). A partial refresh keeps a bloc's network but for the cells that changed;
+  that is the rule's network when every part of it about a lost cell still reaches a source of
+  the bloc. The ring about the cell proved it for the parts joined in the eight about it; any
+  other answer flooded the bloc whole (664 blocs in year 1), as did a city that changed hands
+  (both its blocs, 759 blocs, 17.7 million cells filled). Now a search of up to 4,096 network
+  cells, lanes aside, asks whether the parts are joined another way; a source lost (a city that
+  was its bloc's source at the last refresh) must also leave them one of the bloc's sources (a
+  city held and owned by a member, on a land its sea reaches, `seaLinked`), also when its bloc
+  still holds its cell; a source made is flooded from by the mend wherever it lies, its land's
+  sea reached. A lane in the ring or a search that runs out: flooded whole, as before.
+- **A part cut off from every source is cleared alone** (the next commit). When the parts are
+  apart, each is searched alone: one with no source and no lane beside it is dry by the rule
+  (nothing joins it to a source but its own cells; a cell of the bloc's beside it with no mark
+  is a gain, and the mend floods from the gains beside the network after), and its marks are
+  cleared; one with a source stays; one too large to search stays when no other is fed, since
+  the parts hung together through the cell and the sources they reached are in it. Two large
+  parts, a large one beside a fed one, or a large one after a source is lost: flooded whole. In
+  year 1 of seed 99 the searches of the commit before found the parts joined 506 times, apart 621
+  times (a part of 675 cells on average) and ran out 128 times.
+  **Relies on:** the network being the rule's at the last refresh (the tests hold every partial
+  refresh to it); a loss that relied on another lost source being found at that one's own search.
+
+**The tests moved** (`tests/unit/supply.test.ts`): the random walk's floors counted the old
+mechanism. Its check, every refresh to the rule's network cell by cell, is unchanged. Its floor
+of blocs flooded whole went from over 500 to over 50 (81 now), with a new floor of refreshes that
+cleared a part alone (over 300; 459 now), and the floor of refreshes that changed the network with
+no bloc flooded went up from 400 to 1,000 (1,341 now). The pocket test asserts the new path
+exactly (its 25 cells cleared, no bloc flooded); two tests pin what the walk seldom meets: a
+pocket too large to search beside a part too large (flooded whole), and a city taken whose land
+reaches another city, a pocket fed by a city beside a large part (flooded whole), that city
+taken (its 24 cells cleared alone) and given back (a source made, mended from with no network
+beside it).
+
 ### ADR-399 · 2026-10-15 · accepted — The operational AI's plans: what is the same between plans is made once (PLAN 7.1g)
 
 Each cut below is exact: the pin is unchanged, and so is year 1 of seed 99 on a map that does

@@ -554,7 +554,8 @@ describe('a partial refresh mends the network at the cells that changed (PLAN 3.
     expect(refreshStats.written).toBe(2);
   });
 
-  it('a pocket is cut off by a flood of the whole bloc and relieved by a flood from the cell that relieves it', () => {
+  // PLAN 7.1h: until then the pocket was cut off by a flood of the whole first nation (flooded 1).
+  it('a pocket is cut off by clearing its marks alone and relieved by a flood from the cell that relieves it', () => {
     const [w, h] = [200, 100];
     const world = made(w, h, 2, 4, false);
     refreshSupplyNetwork(world);
@@ -573,7 +574,10 @@ describe('a partial refresh mends the network at the cells that changed (PLAN 3.
     refreshSupplyNetwork(world);
     expect(apart(world.cells.supply, byRule(world))).toBe(0);
     expect(world.cells.supply[cy * w + cx]).toBe(0);
-    expect(refreshStats.flooded).toBe(1); // the first nation's: the ring about the last cell did not hold
+    // The ring about the last cell did not hold: of its parts the pocket's 25 cells have no source
+    // and are cleared, and the rest is too large to search and stays (it had the sources).
+    expect([refreshStats.flooded, refreshStats.mended, refreshStats.dried, refreshStats.full]).toEqual([0, 0, 25, 0]);
+    expect(refreshStats.written).toBe(24 + 25);
     // One cell of the ring is given back: the pocket's 25 cells and that one, and no bloc whole.
     world.setController(cy * w + cx + 3, 1);
     refreshSupplyNetwork(world);
@@ -587,6 +591,60 @@ describe('a partial refresh mends the network at the cells that changed (PLAN 3.
     expect(apart(world.cells.supply, byRule(world))).toBe(0);
     expect([refreshStats.flooded, refreshStats.mended, refreshStats.full]).toEqual([1, 0, 0]);
     expect(refreshStats.written).toBe(w * h);
+  });
+
+  it('a pocket too large to search, two parts too large: the bloc is flooded whole (PLAN 7.1h)', () => {
+    const [w, h] = [200, 100];
+    const world = made(w, h, 2, 4, false);
+    refreshSupplyNetwork(world);
+    // A ring of the second nation's about 65 × 65 cells of the first (over 4,096), no city in it.
+    const [cx, cy, r] = [60, 50, 33];
+    for (let dy = -r; dy <= r; dy++) {
+      for (let dx = -r; dx <= r; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === r) world.setController((cy + dy) * w + cx + dx, 2);
+    }
+    refreshSupplyNetwork(world);
+    expect(apart(world.cells.supply, byRule(world))).toBe(0);
+    expect(world.cells.supply[cy * w + cx]).toBe(0);
+    expect([refreshStats.flooded, refreshStats.dried, refreshStats.full]).toEqual([1, 0, 0]);
+  });
+
+  it('a city taken: its land reaches another city and stays, or the pocket it fed is cleared alone (PLAN 7.1h)', () => {
+    const [w, h] = [200, 100];
+    const world = made(w, h, 2, 4, false);
+    refreshSupplyNetwork(world);
+    const [a, b] = [37 * w + 10, 62 * w + 17]; // two cities of the first nation's
+    expect([world.cells.supply[a], world.cells.supply[b]]).toEqual([1, 1]);
+    // The second nation takes the first (held, not owned): its neighbours reach another city.
+    world.setController(a, 2);
+    refreshSupplyNetwork(world);
+    expect(apart(world.cells.supply, byRule(world))).toBe(0);
+    expect(world.cells.supply[a]).toBe(0);
+    expect(world.cells.supply[a + 1]).toBe(1);
+    expect([refreshStats.flooded, refreshStats.mended, refreshStats.dried, refreshStats.full]).toEqual([0, 0, 0, 0]);
+    expect(refreshStats.written).toBe(1);
+    // A ring about the second: its pocket holds a city and stays fed, beside a part too large to
+    // search, so the first nation is flooded whole.
+    for (let dy = -3; dy <= 3; dy++) {
+      for (let dx = -3; dx <= 3; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === 3) world.setController(b + dy * w + dx, 2);
+    }
+    refreshSupplyNetwork(world);
+    expect(apart(world.cells.supply, byRule(world))).toBe(0);
+    expect(world.cells.supply[b + 1]).toBe(1);
+    expect([refreshStats.flooded, refreshStats.dried]).toEqual([1, 0]);
+    // The city is taken: the 24 cells about it have no source left, and are cleared alone.
+    world.setController(b, 2);
+    refreshSupplyNetwork(world);
+    expect(apart(world.cells.supply, byRule(world))).toBe(0);
+    expect(world.cells.supply[b + 1]).toBe(0);
+    expect([refreshStats.flooded, refreshStats.mended, refreshStats.dried, refreshStats.full]).toEqual([0, 0, 24, 0]);
+    // Given back, owned as before: a source made, which the mend floods from though no network is
+    // beside it.
+    world.setController(b, 1);
+    refreshSupplyNetwork(world);
+    expect(apart(world.cells.supply, byRule(world))).toBe(0);
+    expect(world.cells.supply[b + 1]).toBe(1);
+    expect([refreshStats.flooded, refreshStats.mended, refreshStats.full]).toEqual([0, 1, 0]);
+    expect(refreshStats.written).toBe(25);
   });
 
   it('after each of many random changes the mended network is the rule’s, to the cell', () => {
@@ -648,7 +706,7 @@ describe('a partial refresh mends the network at the cells that changed (PLAN 3.
       return cells;
     };
     const kinds = new Map<string, number>();
-    const stats = { partial: 0, full: 0, flooded: 0, mended: 0, alone: 0, cut: 0, relieved: 0, fed: 0 };
+    const stats = { partial: 0, full: 0, flooded: 0, mended: 0, dried: 0, alone: 0, cut: 0, relieved: 0, fed: 0 };
     const wrong: string[] = [];
     for (let step = 0; step < 2500 && wrong.length === 0; step++) {
       const nation = 1 + rnd(6);
@@ -704,6 +762,7 @@ describe('a partial refresh mends the network at the cells that changed (PLAN 3.
       if (refreshStats.full === 0) {
         stats.flooded += refreshStats.flooded;
         stats.mended += refreshStats.mended;
+        if (refreshStats.dried > 0) stats.dried++;
         // The network changed and no bloc was flooded from its sources.
         if (refreshStats.flooded === 0 && apart(before, rule) > 0) stats.alone++;
       }
@@ -719,16 +778,19 @@ describe('a partial refresh mends the network at the cells that changed (PLAN 3.
       if (relieved > 0) stats.relieved++;
     }
     expect(wrong).toEqual([]);
-    // Every kind of change was made, land stayed fed, and the mending did its share: 601 of
-    // 2,158 refreshes changed the network with no bloc flooded from its sources.
+    // Every kind of change was made, land stayed fed, and the mending did its share: 1,341 of
+    // 2,158 refreshes changed the network with no bloc flooded from its sources. Each path ran:
+    // 81 blocs flooded whole and 459 refreshes that cleared a part cut off alone (PLAN 7.1h; before
+    // it every cut flooded its bloc whole: 601 alone, over 500 blocs flooded).
     for (const kind of ['cells', 'given back', 'a city', 'a ring', 'the date line', 'a lane', 'a line', 'a peace']) expect(kinds.get(kind) ?? 0, kind).toBeGreaterThan(40);
     expect(stats.partial).toBeGreaterThan(2000);
     expect(stats.fed / stats.partial).toBeGreaterThan(0.3);
     expect(stats.full).toBeGreaterThan(5);
     expect(stats.full).toBeLessThan(stats.partial / 10);
-    expect(stats.alone).toBeGreaterThan(400);
+    expect(stats.alone).toBeGreaterThan(1000);
     expect(stats.mended).toBeGreaterThan(300);
-    expect(stats.flooded).toBeGreaterThan(500);
+    expect(stats.flooded).toBeGreaterThan(50);
+    expect(stats.dried).toBeGreaterThan(300);
     expect(stats.cut).toBeGreaterThan(200);
     expect(stats.relieved).toBeGreaterThan(150);
   });

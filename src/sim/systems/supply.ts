@@ -84,10 +84,11 @@ const ring = new Int32Array(8);
  * Derived, for the tests and the measurements: what the last call of `refreshSupplyNetwork` did.
  * `written` counts the cells it filled, the cells of the spans it cleared and the marks the
  * mending took away; `flooded` the blocs flooded from their sources, `mended` the ones flooded
- * from changed cells alone; `full` is 1 when every bloc was refreshed (the call's own doing, or
- * what a partial refresh ended in).
+ * from changed cells alone; `dried` the marks of parts cut off from every source that it cleared
+ * alone (PLAN 7.1h, also in `written`); `full` is 1 when every bloc was refreshed (the call's own
+ * doing, or what a partial refresh ended in).
  */
-export const refreshStats = { written: 0, flooded: 0, mended: 0, full: 0 };
+export const refreshStats = { written: 0, flooded: 0, mended: 0, dried: 0, full: 0 };
 
 /** What the ring about a cell says (`ringOf`). */
 const RING_JOINED = 1;
@@ -150,19 +151,31 @@ function ringOf(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, 
   return RING_JOINED;
 }
 
-/** How many cells the search of `joined` looks at before it gives up (PLAN 7.1h). */
+/** How many cells a search of `part` looks at before it gives up (PLAN 7.1h). */
 const SEARCH_CELLS = 4096;
-/** The search's marks (1 seen, 2 a start not met yet), 0 between searches, and its queue. */
+/** The searches' marks (1 seen, 2 a start not met yet), 0 between searches, and their queue. */
 let seen = new Uint8Array(0);
 const searchQueue = new Int32Array(SEARCH_CELLS);
+/** The cells of the network a search starts from: the first, then those it has not met. */
 const starts: number[] = [];
 
+/** What a search of `part` found. */
+const PART_JOINED = 0;
+const PART_FED = 1;
+const PART_DRY = 2;
+const PART_LARGE = 3;
+const PART_LANE = 4;
+
 /**
- * Whether the cells of bloc `m`'s network in `starts` are joined to each other by way of its
- * network, lanes aside, and to one of its sources when `source` is given, within SEARCH_CELLS
- * cells (PLAN 7.1h). A search that runs out answers no: the bloc is flooded whole, as before.
+ * The part of bloc `m`'s network that holds `starts[0]`, searched by way of its network cells,
+ * lanes aside (PLAN 7.1h). The starts it meets are taken out of `starts`.
+ * - PART_JOINED: `join` and it met every start, and a source (`source`) as well when `join` is 2.
+ * - PART_LARGE: it has more than SEARCH_CELLS cells; PART_LANE: it touches a lane (where the blocs
+ *   meet, and a part joined over a lane is joined).
+ * - PART_FED: it holds a source of the bloc; PART_DRY: it holds none, so the rule's flood reaches
+ *   none of its cells, and their marks are cleared here.
  */
-function joined(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, wrap: boolean, m: number, source: ((cell: number) => boolean) | null): boolean {
+function part(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, wrap: boolean, m: number, source: (cell: number) => boolean, join: number): number {
   if (seen.length !== supply.length) seen = new Uint8Array(supply.length);
   let left = 0;
   for (const s of starts) {
@@ -175,62 +188,74 @@ function joined(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, 
   left--;
   searchQueue[0] = first;
   let n = 1;
-  let found = source === null;
-  let ok = false;
+  let fed = false;
+  let lane = false;
+  let large = false;
+  let joinedAll = false;
   search: for (let head = 0; head < n; head++) {
     const at = searchQueue[head]!;
-    if (!found && source!(at)) found = true;
-    if (found && left === 0) {
-      ok = true;
+    if (!fed && source(at)) fed = true;
+    if (join > 0 && left === 0 && (fed || join === 1)) {
+      joinedAll = true;
       break;
     }
     const x = at % w;
     const row = at - x;
     for (let k = 0; k < 4; k++) {
       // Beyond an edge of a map that does not loop there is no cell, as above the first row.
-      const nb =
-        k === 0
-          ? row > 0
-            ? at - w
-            : -1
-          : k === 1
-            ? row < w * (h - 1)
-              ? at + w
-              : -1
-            : k === 2
-              ? x > 0
-                ? at - 1
-                : wrap
-                  ? at + w - 1
-                  : -1
-              : x < w - 1
-                ? at + 1
-                : wrap
-                  ? row
-                  : -1;
-      if (nb < 0 || seen[nb] === 1 || supply[nb] !== m || terrain[nb] === Terrain.Crossing) continue;
-      if (n === SEARCH_CELLS) break search;
+      let nb: number;
+      if (k === 0) nb = row > 0 ? at - w : -1;
+      else if (k === 1) nb = row < w * (h - 1) ? at + w : -1;
+      else if (k === 2) nb = x > 0 ? at - 1 : wrap ? at + w - 1 : -1;
+      else nb = x < w - 1 ? at + 1 : wrap ? row : -1;
+      if (nb < 0 || seen[nb] === 1) continue;
+      if (terrain[nb] === Terrain.Crossing) {
+        lane = true;
+        continue;
+      }
+      if (supply[nb] !== m) continue;
+      if (n === SEARCH_CELLS) {
+        large = true;
+        break search;
+      }
       if (seen[nb] === 2) left--;
       seen[nb] = 1;
       searchQueue[n++] = nb;
     }
   }
-  for (let i = 0; i < n; i++) seen[searchQueue[i]!] = 0;
-  for (const s of starts) seen[s] = 0;
-  return ok;
+  for (let i = starts.length - 1; i >= 0; i--) {
+    if (seen[starts[i]!] === 1) starts.splice(i, 1);
+    else seen[starts[i]!] = 0;
+  }
+  const out = joinedAll ? PART_JOINED : large ? PART_LARGE : lane ? PART_LANE : fed ? PART_FED : PART_DRY;
+  for (let i = 0; i < n; i++) {
+    const c = searchQueue[i]!;
+    seen[c] = 0;
+    if (out === PART_DRY) supply[c] = 0;
+  }
+  if (out === PART_DRY) {
+    refreshStats.written += n;
+    refreshStats.dried += n;
+  }
+  return out;
 }
 
 /**
- * Whether the network of bloc `m` is as before without cell `c`, whose mark has just been
- * cleared: the ring about it says so, or else the search of `joined` finds its network
- * neighbours joined another way. When `c` was a source of the bloc (`source`), they must also
- * reach another of its sources (PLAN 7.1h: until then a city that changed hands flooded its bloc
- * whole, as did a ring that did not hold).
+ * Whether the network of bloc `m` is the rule's without cell `c`, whose mark has just been
+ * cleared, when no more than its own parts change (PLAN 7.1h). It is when the ring about `c`
+ * says its network neighbours are joined (RING_JOINED), or a search (`part`) finds them joined
+ * another way; when `c` was a source of the bloc (`lostSource`), they must also reach another
+ * of its sources (`source`). When they are not, each part is searched alone: a part with no
+ * source is dry and cleared, one with a source stays, and one too large to search stays too when
+ * no other part is fed (they all hung together through `c`, so the sources they reached are in
+ * it). A lane in a part or about `c`, two large parts, a large one beside one that is fed, or a
+ * large one after a source is lost: no, and the bloc is flooded whole. Until 7.1h a ring that did
+ * not hold and a city that changed hands flooded their blocs whole.
  */
-function holds(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, wrap: boolean, c: number, m: number, source: ((cell: number) => boolean) | null): boolean {
+function holds(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, wrap: boolean, c: number, m: number, lostSource: boolean, source: (cell: number) => boolean): boolean {
   const ring = ringOf(supply, terrain, w, h, wrap, c, m);
   if (ring === RING_LANE) return false;
-  if (ring === RING_JOINED && source === null) return true;
+  if (ring === RING_JOINED && !lostSource) return true;
   const x = c % w;
   const row = c - x;
   starts.length = 0;
@@ -240,9 +265,16 @@ function holds(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, w
   if (l >= 0 && supply[l] === m) starts.push(l);
   const r = x < w - 1 ? c + 1 : wrap ? row : -1;
   if (r >= 0 && supply[r] === m) starts.push(r);
-  // No network about it: nothing hung on it.
-  if (starts.length === 0) return true;
-  return joined(supply, terrain, w, h, wrap, m, source);
+  let large = 0;
+  let fed = false;
+  for (let join = lostSource ? 2 : 1; starts.length > 0; join = 0) {
+    const found = part(supply, terrain, w, h, wrap, m, source, join);
+    if (found === PART_JOINED) return true;
+    if (found === PART_LANE) return false;
+    if (found === PART_LARGE && (lostSource || ++large > 1)) return false;
+    if (found === PART_FED) fed = true;
+  }
+  return large === 0 || !fed;
 }
 
 /** The cells with a city, kept while the cities are the same (PLAN 7.1h). */
@@ -287,7 +319,7 @@ function cityMask(world: World): Uint8Array {
  * that was saved.
  */
 export function refreshSupplyNetwork(world: World, linkedAll?: Map<number, number[]>): void {
-  refreshStats.written = refreshStats.flooded = refreshStats.mended = refreshStats.full = 0;
+  refreshStats.written = refreshStats.flooded = refreshStats.mended = refreshStats.dried = refreshStats.full = 0;
   refresh(world, linkedAll ?? seaLinkedAll(world));
 }
 
@@ -379,15 +411,16 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
       if (ctl !== 0 && blocOfNation[ctl] === m) continue;
       supply[c] = 0;
       cleared++;
-      if (m < only.length && only[m] !== 1 && !holds(supply, terrain, w, h, wrap, c, m, lost.get(c) === m ? sourceOf(m) : null)) only[m] = 1;
+      if (m < only.length && only[m] !== 1 && !holds(supply, terrain, w, h, wrap, c, m, lost.get(c) === m, sourceOf(m))) only[m] = 1;
     }
-    // A source lost on a cell its bloc still holds (another owns it now): its land in the network
-    // reaches another source.
+    // A source lost on a cell its bloc still holds (another owns it now): its part of the network
+    // reaches another source, or is dry.
     for (const [c, m] of lost) {
       if (supply[c] !== m || m >= only.length || only[m] === 1) continue;
       starts.length = 0;
       starts.push(c);
-      if (!joined(supply, terrain, w, h, wrap, m, sourceOf(m))) only[m] = 1;
+      const found = part(supply, terrain, w, h, wrap, m, sourceOf(m), 2);
+      if (found === PART_LARGE || found === PART_LANE) only[m] = 1;
     }
     // The blocs flooded whole are cleared, all of them before any flood. A span may hold cells
     // that have left the network since it was filled, and some of them bear another mark by now.
