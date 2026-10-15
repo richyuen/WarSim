@@ -9547,3 +9547,23 @@ Of 7.1 (open in PLAN.md):
       - [x] 7.1l11g The zoom's last long task (50 to 55 ms, the world to T1, the nation names).
     - [x] 7.1l12 The AT of 7.1: seed 99's five years at 1.5 ms a tick and year 1 at 2.4, on the
       budget machine, pinned, alone.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1b (open in PLAN.md):
+
+  - [x] 7.1b2 The distances to km: the AI's, combat's and the elements', movement's and the sea's,
+    the air's, territory's and supply's reaches, the data's snaps. AT: pin and the map that does
+    not loop unchanged; a test that a game at S and at L has each reach the same in km as at M.
