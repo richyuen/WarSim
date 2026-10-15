@@ -121,12 +121,12 @@ describe('what the view draws by the map size (PLAN 7.1b5)', () => {
 
 describe('a game at its own size (PLAN 7.1b6)', () => {
   it('the geometry of a scenario at each size of its map, its own when none is asked', () => {
-    expect(mapSizes('1938')).toEqual(['S', 'M', 'L', 'XL']);
+    expect(mapSizes('1938')).toEqual(['S', 'M', 'L']);
     expect(mapSizes('toy')).toEqual(['T']);
     expect(geometryOf('1938')).toEqual(SCENARIO_GEOMETRY['1938']);
     expect(geometryOf('1938', 'S')).toMatchObject({ w: 1024, h: 512, scale: 0.5 });
     expect(geometryOf('random', 'L')).toMatchObject({ w: 4096, h: 2048, scale: 2 });
-    expect(size1938('XL')).toEqual({ w: 6144, h: 3072, scale: 3 });
+    expect(() => size1938('XL')).toThrow(/no size/); // dropped (ADR-419)
     expect(size1938()).toEqual(SIZE_1938);
     expect(() => size1938('XXL')).toThrow(/no size/);
   });

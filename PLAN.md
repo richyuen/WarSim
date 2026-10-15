@@ -45,12 +45,11 @@ quick sweep as a smoke test.
   - [x] 7.1b5 The sizes drawn in metres (elements, figures, markers, fire, orbits).
   - [x] 7.1b6 The game's own geometry where `SIZE_1938` is read; the provinces rasterised at the […]
   - [x] 7.1b7 The assets of L and XL (terrain, elevation; ADR-13 again; the mask at 4 and 2 px a […]
-  - [ ] 7.1b7b XL (ADR-418): the mask is 2.67 px to its cell at 6,144; XL at 8,192, the mask by
-    fractions, or XL dropped, decided with its tick and memory measured; its assets if it stays.
+  - [x] 7.1b7b XL (ADR-418): the mask is 2.67 px to its cell at 6,144; XL at 8,192, the mask by […]
   - [ ] 7.1b8 The size picker in the new-game options; a scenario file at another size than its
     scenario's own (refused by `checkScenarioFile`) starts a game at its size.
-  - [ ] 7.1b9 The AT: S and L games from the picker; the sweep criteria at S and L; XL's tick and
-    memory budgets.
+  - [ ] 7.1b9 The AT: S and L games from the picker; the sweep criteria at S and L; L's tick and
+    memory reported (XL dropped, ADR-419).
 - [ ] 1.42 **Moved here from Phase 1 on 2026-10-03 (ADR-58, the user's decision): balance is
   judged when the features are in. Blocked after three attempts before that (BLOCKERS.md);
   its prerequisites 1.42d, 1.42e and 1.42f are done. Judged by area, on seeds from 401.**

@@ -44,7 +44,7 @@ export const HOLD_TICKS = 16;
 /**
  * The hours a cell is held under pressure before it flips, in `world` (PLAN 7.1b4): `HOLD_TICKS`
  * at the map's default size, as many fewer as its cells are narrower, so that a front moves as
- * many km a day at every size (one cell a hold: 16 h at M, 8 at L, 32 at S; 5 at XL, rounded).
+ * many km a day at every size (one cell a hold: 16 h at M, 8 at L, 32 at S).
  */
 export function holdHours(world: World): number {
   return Math.max(1, Math.round(HOLD_TICKS / world.sizeScale));

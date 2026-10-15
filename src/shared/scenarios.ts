@@ -20,7 +20,7 @@ export interface ScenarioGeometry {
   h: number;
   kmPerCell: number;
   wrapX: boolean;
-  /** The size's cells to a cell of the map's default size (ADR-417): 0.5 at S, 1 at M, 2 at L, 3 at XL. */
+  /** The size's cells to a cell of the map's default size (ADR-417): 0.5 at S, 1 at M, 2 at L. */
   scale: number;
 }
 
@@ -69,7 +69,7 @@ function geometry(map: MapJson, scenario: ScenarioJson, sizeId = scenario.size ?
   return { w: size.w, h: size.h, kmPerCell: map.widthKm / size.w, wrapX: scenario.settings.loopingMap, scale: size.w / defaultSize.w };
 }
 
-/** The sizes a scenario's map comes in, by id (S, M, L, XL for the earth's; the toy world's one). */
+/** The sizes a scenario's map comes in, by id (S, M, L for the earth's: XL was dropped, ADR-419; the toy world's one). */
 export function mapSizes(scenario: ScenarioId): readonly string[] {
   return MAPS[scenario][0].sizes.map((s) => s.id);
 }

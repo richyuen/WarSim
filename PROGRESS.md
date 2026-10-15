@@ -16426,3 +16426,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   looked at (world, T1, T2), no error. Pin and the map that does not loop unchanged.
 - **Split:** XL to 7.1b7b (the mask is 2.67 px a cell at 6,144).
 - **Next:** PLAN 7.1b7b.
+
+## 2026-10-15 — PLAN 7.1b7b: XL dropped (decision)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Measured** (seed 99's first year, pinned): M 1.78 ms a tick, 521 MB (192 MB of arrays); L 2.33
+  ms, 859 MB (642 MB). XL would be 1.4 to 2.5 GB of arrays and over 3 ms.
+- **Decided** (ADR-419): XL is not a size of the earth map; SPEC §3.1 says so and drops the
+  unmeasured budget of 160 MB; PARITY row 70.
+- **Next:** PLAN 7.1b8.

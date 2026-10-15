@@ -73,7 +73,7 @@ describe('data/** schemas (PLAN 1.1)', () => {
     const earth = data['maps/earth/map.json'] as { projection: { latTopDeg: number; latBottomDeg: number }; sizes: { id: string; w: number }[] };
     expect(earth.projection.latTopDeg).toBe(LAT_TOP_DEG);
     expect(earth.projection.latBottomDeg).toBe(LAT_BOTTOM_DEG);
-    expect(earth.sizes.map((s) => `${s.id}:${s.w}`)).toEqual(['S:1024', 'M:2048', 'L:4096', 'XL:6144']);
+    expect(earth.sizes.map((s) => `${s.id}:${s.w}`)).toEqual(['S:1024', 'M:2048', 'L:4096']);
     expect(SCENARIO_GEOMETRY.toy).toEqual({ w: 256, h: 128, kmPerCell: 40075 / 256, wrapX: true, scale: 1 });
   });
 });

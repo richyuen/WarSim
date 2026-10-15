@@ -1203,7 +1203,7 @@ export class World {
 
   /**
    * This map's cells to a cell of its map's default size (ADR-416): 1 at the 1938 world's M and in
-   * the toy world; 0.5 at S, 2 at L, 3 at XL. A reach given in cells of the default size is this
+   * the toy world; 0.5 at S, 2 at L. A reach given in cells of the default size is this
    * many times as many cells here, the same km (`atSize`). A power of two at S, M and L: the
    * reaches there are exact.
    */

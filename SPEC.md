@@ -324,8 +324,11 @@ As built (reviewed 2026-10-04; §2.5 has the details of saves and autosave):
 - Projection: **Miller cylindrical**, latitude cropped to 80°N … 64.165°S (exactly 2:1, square cells;
   `src/sim/data/projection.ts`, ADR-7). World units
   are projected km at the equator (`W_km ≈ 40 075`). `x` wraps when `loopingMap` is on.
-- The grid has `W×H` cells. Sizes: S 1024×512, **M 2048×1024 (default)**, L 4096×2048,
-  XL 6144×3072. Sim memory budget at XL is ≤ 160 MB.
+- The grid has `W×H` cells. Sizes: S 1024×512, **M 2048×1024 (default)**, L 4096×2048 (XL
+  6144×3072 dropped, ADR-419: its tick and memory, and the land mask at 2.67 px a cell). A first
+  year of seed 99 holds 192 MB of typed arrays at M and 642 MB at L (ADR-419; the budget of 160 MB
+  at XL this line had was never measured). Reaches, areas and the hold of a cell are given at the
+  default size and scaled to a game's (ADR-417).
 - Per-row scale table `kx[y]` and `ky[y]` (projected → true km) is used for movement speed,
   ranges, blast radii and per-cell area (economy weight).
 - **Fine land mask** (static): 1-bit 16384×8192 from Natural Earth 10m land, minus natural lakes

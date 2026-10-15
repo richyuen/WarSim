@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-419 · 2026-10-15 · accepted — XL dropped; the earth map's sizes are S, M and L (PLAN 7.1b7b)
+
+- **Measured** (seed 99's first year, headless, pinned, the bundle of HEAD): M 1.78 ms a tick, the
+  process 521 MB (192 MB of typed arrays); L 2.33 ms, 859 MB (642 MB of arrays): 4 times M's cells,
+  1.3 times its tick and 3.4 times its arrays. From these, XL at 6,144 (9 times M's cells) would be
+  some 1.4 GB of arrays in the worker alone and over 3 ms a tick, and at 8,192 (16 times; the width
+  the 16,384 mask needs to be 2 whole pixels a cell) some 2.5 GB and more. The tick budget of a
+  first year is 2.4 ms (L 2.33); a page holds the world's layers again on the main thread and the
+  GPU.
+- **Decision.** XL is not a size of the earth map (`map.json`): S, M and L. Besides the tick and
+  the memory, at 6,144 the mask is 2.67 px a cell, which the renderer, the coast and the sim's land
+  points cannot take, and its elevation would add some 18 MB to the shipped assets. L (8.4 million
+  cells, 9.8 km a cell) is already larger than AoC's largest map (imports up to 4 million px).
+- **SPEC §3.1's memory budget** ("≤ 160 MB at XL") was never measured: M alone holds 192 MB of
+  arrays. It is replaced by the figures above; no budget is set for L in its place (PLAN 7.1b9
+  reports L's).
+- **The user may undo it:** XL would come back with a mask of 12,288 or 24,576 px (whole pixels a
+  cell at 6,144), or the mask read by fractions, and a tick and memory budget of its own.
+
 ### ADR-418 · 2026-10-15 · accepted — The assets of L shipped; XL is a part of its own (PLAN 7.1b7)
 
 - **ADR-13 again.** The shipped assets were 6.5 MB, the elevation up to 2048 and the 4096 level
