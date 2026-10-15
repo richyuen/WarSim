@@ -1222,6 +1222,11 @@ export class World {
     return Math.max(1, Math.round(cells * this.sizeScale));
   }
 
+  /** An area of `cells` cells of the map's default size, in this map's cells: the scale's square (PLAN 7.1b3). */
+  atSizeArea(cells: number): number {
+    return cells * this.sizeScale * this.sizeScale;
+  }
+
   constructor(seed: number, w: number, h: number, sizeScale = 1) {
     this.sizeScale = sizeScale;
     this.seed = seed >>> 0;

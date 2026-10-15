@@ -10,7 +10,8 @@ import { END_CELLS, MATCH_CELLS } from '../../src/sim/systems/majorBattles';
 import { REPATRIATE_CELLS, TARGET_SNAP_CELLS } from '../../src/sim/systems/movement';
 import { AT_PORT_CELLS } from '../../src/sim/systems/navalCombat';
 import { RETREAT_CELLS, RETREAT_REACH } from '../../src/sim/systems/retreat';
-import { GARRISON_CELLS } from '../../src/sim/systems/revolts';
+import { GARRISON_CELLS, MILITIA_PER_CELLS, OVEREXT_CELLS } from '../../src/sim/systems/revolts';
+import { KILL_CELLS_PER_STATE } from '../../src/sim/systems/revival';
 import { SUPPLY_REACH } from '../../src/sim/systems/supply';
 import { PRESSURE_RADIUS } from '../../src/sim/systems/territory';
 import { World } from '../../src/sim/world';
@@ -19,7 +20,7 @@ import { World } from '../../src/sim/world';
 // `World.atSize` in a game's own. So a reach is the same km at S, M, L and XL, and at M (the
 // 1938 world's size) the same cells as before, which the pin holds.
 
-const REACHES: Record<string, number> = { SECTOR_CELLS, DEPLOY_RANGE_CELLS, REPATRIATE_CELLS, CONTACT_CELLS, DEPLOY_GAP, MATCH_CELLS, END_CELLS, TARGET_SNAP_CELLS, AT_PORT_CELLS, RETREAT_CELLS, RETREAT_REACH };
+const REACHES: Record<string, number> = { OVEREXT_CELLS, SECTOR_CELLS, DEPLOY_RANGE_CELLS, REPATRIATE_CELLS, CONTACT_CELLS, DEPLOY_GAP, MATCH_CELLS, END_CELLS, TARGET_SNAP_CELLS, AT_PORT_CELLS, RETREAT_CELLS, RETREAT_REACH };
 const WHOLE: Record<string, number> = { AA_CELLS, BOMB_CELLS, PRESSURE_RADIUS, SUPPLY_REACH, GARRISON_CELLS };
 
 describe('reaches by the map size (PLAN 7.1b2)', () => {
@@ -52,6 +53,19 @@ describe('reaches by the map size (PLAN 7.1b2)', () => {
         // Within half a cell of the km, unless held at one cell.
         if (r > 1) expect(Math.abs(r - cells * scale), `${name} at ${size.id}`).toBeLessThanOrEqual(0.5);
         if (scale >= 1) expect(r, `${name} at ${size.id}`).toBe(cells * scale);
+      }
+    }
+  });
+});
+
+describe('areas by the map size (PLAN 7.1b3)', () => {
+  it('an area of cells is the same km² at every size, and the same cells at M', () => {
+    const km2 = (w: number, cells: number): number => cells * kmPerCell(w) * kmPerCell(w);
+    for (const size of earthMap.sizes) {
+      const world = new World(1, size.w, size.h, size.w / DEFAULT_W);
+      for (const [name, cells] of Object.entries({ MILITIA_PER_CELLS, KILL_CELLS_PER_STATE })) {
+        expect(km2(size.w, world.atSizeArea(cells)), `${name} at ${size.id}`).toBeCloseTo(km2(DEFAULT_W, cells), 6);
+        if (size.w === DEFAULT_W) expect(world.atSizeArea(cells), `${name} at M`).toBe(cells);
       }
     }
   });

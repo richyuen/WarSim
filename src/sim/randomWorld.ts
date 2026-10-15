@@ -178,7 +178,7 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
   const count = randomNationCount(asked);
   const capitalCity: number[] = [];
   const taken = new Set<number>();
-  const free = (ci: number): boolean => cityCell[ci]! >= 0 && !taken.has(province[cityCell[ci]!]!) && pieceCells.get(grid.component[cityCell[ci]!]!)! >= HOME_CELLS;
+  const free = (ci: number): boolean => cityCell[ci]! >= 0 && !taken.has(province[cityCell[ci]!]!) && pieceCells.get(grid.component[cityCell[ci]!]!)! >= world.atSizeArea(HOME_CELLS);
   for (let n = 1; n <= count; n++) {
     let best = -1;
     let bestD = -1;

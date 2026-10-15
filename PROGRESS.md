@@ -16375,3 +16375,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   `scenario1938` build-time and territory-cost tests fail under the full suite (2,022 to 3,659 ms
   of 2,000; 25.9 of 25); they passed alone each time; the gate was retried until green.
 - **Next:** PLAN 7.1b3.
+
+## 2026-10-15 — PLAN 7.1b3: the areas by the map's size (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-417, addendum): `World.atSizeArea`, the scale's square; militia, a Kill's states
+  and the random world's home pieces by it; overextension's reach (a distance, not an area) by
+  `atSize`. Pin 45df324d, the map that does not loop 620968e1.
+- **Test:** `mapSizes.test.ts`, each area the same km² at every size.
+- **Next:** PLAN 7.1b4.

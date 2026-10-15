@@ -194,6 +194,14 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   machine another project's loop was loading).
 - **Test.** `mapSizes.test.ts`: each converted reach the same km at S, M, L and XL and the same
   cells at M; a whole radius within half a cell of its km, at least one, exact at M and L.
+- **Addendum (PLAN 7.1b3).** The areas: `World.atSizeArea(n)`, `n` cells of the default size times
+  the scale's square (0.25 at S, 1 at M, 4 at L, 9 at XL; exact at M, S and L). By it: the
+  militia of a revolt (one for each `MILITIA_PER_CELLS`), a Kill's states (one for each
+  `KILL_CELLS_PER_STATE`), the random world's least piece for a home (`HOME_CELLS`).
+  `OVEREXT_CELLS` was not an area, as ADR-416 had it, but a distance from the capital (compared
+  squared): by `atSize`, hoisted out of the check of each cell. A collapse's largest fragment
+  compares pieces with each other and needs no scale. The pin and the map that does not loop
+  unchanged; `mapSizes.test.ts` holds each area the same km² at every size.
 
 ### ADR-416 · 2026-10-15 · accepted — Map sizes: what is counted in cells, again (PLAN 7.1b1)
 

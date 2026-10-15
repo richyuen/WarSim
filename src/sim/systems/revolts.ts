@@ -144,12 +144,14 @@ export function revoltSystem(world: World): void {
   const overext = (n: number): number => (ownedLand > 0 ? Math.min(OVEREXT_MAX, Math.max(0, km2[n]! / ownedLand / OVEREXT_SHARE - 1)) : 0);
   const worn = new Set<number>();
   for (const war of world.wars.list) for (const side of [0, 1] as const) if (war.exhaustion[side] >= OVEREXT_EXHAUSTION) for (const m of war.sides[side]) worn.add(m);
+  const far = world.atSize(OVEREXT_CELLS);
+  const far2 = far * far;
   const farFromCapital = (cell: number, n: number): boolean => {
     const w = world.cells.w;
     let dx = Math.abs((cell % w) + 0.5 - nc.capitalX[n]!);
     if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
     const dy = Math.floor(cell / w) + 0.5 - nc.capitalY[n]!;
-    return dx * dx + dy * dy > OVEREXT_CELLS * OVEREXT_CELLS;
+    return dx * dx + dy * dy > far2;
   };
   const revolted = new Uint8Array(pv.count);
   // Garrison lookup: formations by nation in GARRISON_CELLS-sized buckets.
@@ -431,7 +433,7 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
   }
   // Militia.
   if (world.rules) {
-    const militia = Math.max(1, Math.min(MILITIA_MAX, Math.round(cells / MILITIA_PER_CELLS)));
+    const militia = Math.max(1, Math.min(MILITIA_MAX, Math.round(cells / world.atSizeArea(MILITIA_PER_CELLS))));
     for (let k = 0; k < militia; k++) {
       const f = world.formations.create();
       const fc = world.formations.cols;

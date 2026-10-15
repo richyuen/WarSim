@@ -297,7 +297,7 @@ function killNation(world: World, c: number, rest: number[], capitalProvince: nu
     pieces.push({ provinces: ps, cells: cellsOf(ps), weight: ps.reduce((a, p) => a + (weightOf.get(p) ?? 0), 0), seeds, states: 0 });
   }
   // Highest averages (D'Hondt) over the cities' weight.
-  const states = Math.max(1, Math.min(KILL_STATES, Math.round(held / KILL_CELLS_PER_STATE)));
+  const states = Math.max(1, Math.min(KILL_STATES, Math.round(held / world.atSizeArea(KILL_CELLS_PER_STATE))));
   for (let k = 0; k < states; k++) {
     let best: Piece | null = null;
     for (const pc of pieces) {
