@@ -329,6 +329,11 @@ export interface Passage {
   wide?: Int32Array;
   /** By node of a wide ground, the wide grounds the cells join it to (`wideJoined`), once asked. */
   joined?: Int32Array;
+  /**
+   * Where `joined`, once worked out, is kept for the passages after this one while it holds
+   * (`passageOf`, PLAN 7.1i): until the nodes' parts or a cell of a closed holder change.
+   */
+  keep?: { joined?: Int32Array | undefined };
 }
 
 /** The most cells of open ground that are a pocket (`pocketOf`). */

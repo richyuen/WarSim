@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-401 · 2026-10-15 · accepted — The operational AI's war years: what a plan learns of the cells, kept while it holds (PLAN 7.1i)
+
+Seed 5303's year 17 (from a checkpoint of year 16; HEAD `a2d438c`, pinned, `--profile`): the
+operational AI 1.65 ms of a 2.60 ms tick, 1,420 of its 1,460 calls 1 ms or more. By `--cpu-prof`
+of the same year: `planNation`'s own lines 17 %, `joinWide` 15 % (938 calls, every one a walk of
+the open cells of every province that has closed ground too), `pocketOf` 12 % (805,000 walks of
+68 million cells, 59 a plan, nine in ten of them from a sector's cell). Each cut below is exact:
+the pin is unchanged (45df324d), year 1 of seed 99 on a map that does not loop is the same
+(620968e1), and so is the year-17 hash of seed 5303 (13e25fc1). What each relies on is written
+here, because a rule change can break it.
+- **What joins two wide grounds, kept between passages** (`passageWith` in
+  `systems/movement.ts`, `World.flipLog`): `joinWide` reads the parts' `open` and `shut` and which
+  cells are open (`ok` of their holder), the rest is of the map. Its answer is kept on the nodes'
+  parts (`NodeParts.joined`), carried where the parts are patched with `open` and `shut` the same
+  (not where the map was counted again: cells written without `setController`), and dropped at
+  the next passage when a change of `flipLog` since went from an open holder to a closed one or
+  back (a cell between two open holders, or two closed ones, is as open before as after). The
+  answer's numbers are union-find roots, read only for equality. **Relies on:** every write of
+  `controller` after the scenario's build going through `setController` or being followed by
+  `dropLandCounts` (as `heldByNode` already does); no cell changing hands between a passage's
+  making and its last question (the planners' orders move none). In year 17: 938 → 452 walks;
+  most of what is left is genuine (a war of a nation closed to the planner moves its border).
+  A unit test opens a gap in a wall with the provinces' holders as they were (no bump of
+  `heldKeys`): the answer turns, and a mutation that misses the change fails it.
+
 ### ADR-400 · 2026-10-15 · accepted — Territory's hour and supply's refresh without what the rule does not need (PLAN 7.1h)
 
 Each cut below is exact: the pin is unchanged (45df324d), and so is year 1 of seed 99 on a map

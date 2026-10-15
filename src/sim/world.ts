@@ -754,6 +754,8 @@ export function seaRangeOf(world: World, id: number): number | undefined {
 
 /** The most bumps of `World.heldKeys` whose nodes are logged (`World.heldLog`). */
 const HELD_LOG_KEPT = 4096;
+/** The most changes of a cell's controller whose holders are logged (`World.flipLog`). */
+const FLIP_LOG_KEPT = 16384;
 
 export class World {
   seed: number;
@@ -828,6 +830,15 @@ export class World {
   supplySpans = new Map<number, { spans: Int32Array; n: number; base: number; lanes: number[] }>();
   /** Derived (not state): bumped by every controller change (label re-derivation, PLAN 1.29). */
   controlChanges = 0;
+  /**
+   * Derived (not state): the holders of each change by `setController` from `flipLogBase` on,
+   * `from · 65536 + to` (`flipLog[k - flipLogBase]` is that of change k + 1). What is kept of
+   * which cells are open to a nation is checked against it (`passageOf`'s `joined`, PLAN 7.1i).
+   * A write of `controller` without the setter is not logged: `dropLandCounts` must follow it,
+   * and what is kept by `World.heldKeys` is made again then.
+   */
+  flipLog: number[] = [];
+  flipLogBase = 0;
   /** Derived: bumped when God Mode renames a nation (labels re-derive, PLAN 1.32b). */
   namesVersion = 0;
   /** Global settings (state, saved in world.meta). */
@@ -1222,6 +1233,11 @@ export class World {
       }
     }
     this.controlChanges++;
+    if (this.flipLog.length >= FLIP_LOG_KEPT) {
+      this.flipLogBase += this.flipLog.length;
+      this.flipLog = [];
+    }
+    this.flipLog.push(c.controller[i]! * 65536 + nation);
     this.supplyDirtyNations.add(c.controller[i]!);
     this.supplyDirtyNations.add(nation);
     if (c.supply[i] !== 0) this.supplyDirtyBlocs.add(c.supply[i]!);

@@ -115,10 +115,34 @@ export function passageOf(world: World, nation: number, shared?: Map<string, Pas
   const key = ok.join('');
   const made = shared?.get(key);
   if (made) return made;
-  const { open, shut, group, wide } = nodeParts(world, ok, key);
-  const pass = { ok, holder: world.cells.controller, open, group, shut, wide };
+  const pass = passageWith(world, ok, nodeParts(world, ok, key));
   shared?.set(key, pass);
   return pass;
+}
+
+/**
+ * A passage on its nodes' parts, with `joined` where it is known and holds (PLAN 7.1i): it is
+ * of the parts' `open` and `shut` and of which cells are open, so it holds while no cell has
+ * gone from an open holder to a closed one or back (`World.flipLog`; a cell between two open
+ * holders, or two closed ones, is as open before as after).
+ */
+function passageWith(world: World, ok: Uint8Array, parts: NodeParts): Passage {
+  const now = world.flipLogBase + world.flipLog.length;
+  if (parts.joined !== undefined) {
+    if (parts.flips < world.flipLogBase) parts.joined = undefined;
+    else {
+      const log = world.flipLog;
+      for (let k = parts.flips - world.flipLogBase; k < log.length; k++) {
+        const from = Math.floor(log[k]! / 65536);
+        if (ok[from] === ok[log[k]! - from * 65536]) continue;
+        parts.joined = undefined;
+        break;
+      }
+    }
+  }
+  parts.flips = now;
+  const { open, shut, group, wide, joined } = parts;
+  return { ok, holder: world.cells.controller, open, group, shut, wide, keep: parts, ...(joined ? { joined } : {}) };
 }
 
 /** What a passage has by node: of the graph and the keys of `heldByNode` alone (`nodeParts`). */
@@ -129,6 +153,12 @@ interface NodeParts {
   shut: Uint8Array;
   group: Int32Array;
   wide: Int32Array;
+  /**
+   * `wideJoined`'s answer once a passage on these parts has asked it, and the count of
+   * `World.flipLog` when it was last known to hold (`passageWith`).
+   */
+  joined?: Int32Array | undefined;
+  flips: number;
 }
 /** By world, the node parts last made for each set of open holders (`Passage.ok` as a string). */
 const NODE_PARTS = new WeakMap<World, { graph: ProvinceGraph; parts: Map<string, NodeParts> }>();
@@ -142,8 +172,8 @@ const NODE_PARTS_PATCH = 256;
  * and are the same while `World.heldKeys` is; `group` is the same while `open` is, and what
  * `wideNode` answers (`wide`) while `open` and `shut` are. So they are kept between hours, and
  * made again only as far as the keys have changed them: the nodes of the bumps since
- * (`World.heldLog`) are asked again. What a passage learns of its cells (`pocketOf`'s marks,
- * `joined`) is not kept: each passage is a new object.
+ * (`World.heldLog`) are asked again. What a passage learns of its cells is not kept (each passage
+ * is a new object: `pocketOf`'s marks), but for `joined` (PLAN 7.1i, `passageWith`).
  */
 function nodeParts(world: World, ok: Uint8Array, key: string): NodeParts {
   const graph = navOf(world).graph;
@@ -157,7 +187,8 @@ function nodeParts(world: World, ok: Uint8Array, key: string): NodeParts {
   let shut: Uint8Array;
   let sameOpen = false;
   let sameShut = false;
-  if (was !== undefined && was.keys >= world.heldLogBase && keys - was.keys <= NODE_PARTS_PATCH) {
+  const patched = was !== undefined && was.keys >= world.heldLogBase && keys - was.keys <= NODE_PARTS_PATCH;
+  if (patched) {
     open = was.open.slice();
     shut = was.shut.slice();
     sameOpen = sameShut = true;
@@ -185,12 +216,17 @@ function nodeParts(world: World, ok: Uint8Array, key: string): NodeParts {
       sameShut = sameBytes(was.shut, shut);
     }
   }
+  // `joined` is of the cells too: kept only where they were all written by `setController`
+  // since (a patch, not a count again), and checked by the flips when a passage is made.
+  const same = was !== undefined && sameOpen && sameShut;
   const parts: NodeParts = {
     keys,
     open,
     shut,
     group: was !== undefined && sameOpen ? was.group : nodeGroups(graph, open),
-    wide: was !== undefined && sameOpen && sameShut ? was.wide : new Int32Array(graph.nodeCount),
+    wide: same ? was.wide : new Int32Array(graph.nodeCount),
+    joined: same && patched ? was.joined : undefined,
+    flips: same && patched ? was.flips : -1,
   };
   if (was === undefined && kept.parts.size >= NODE_PARTS_KEPT) kept.parts.clear();
   kept.parts.set(key, parts);
@@ -217,8 +253,7 @@ function homeward(world: World, nation: number): Passage {
     wars = true;
   });
   if (!wars) return { ok, holder: world.cells.controller };
-  const { open, shut, group, wide } = nodeParts(world, ok, ok.join(''));
-  return { ok, holder: world.cells.controller, open, group, shut, wide };
+  return passageWith(world, ok, nodeParts(world, ok, ok.join('')));
 }
 
 /** Where a formation stands in a cell of its path: the middle, or the cell's land point (PLAN 2.9a). */

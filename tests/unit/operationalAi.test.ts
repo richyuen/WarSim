@@ -6,7 +6,7 @@ import { Sim } from '../../src/sim/sim';
 import { frontierOf } from '../../src/sim/systems/territory';
 import { passageOf } from '../../src/sim/systems/movement';
 import { neighbours4 } from '../../src/sim/nav/grid';
-import { joinWalks, wideNode } from '../../src/sim/nav/provinceGraph';
+import { joinWalks, wideJoined, wideNode } from '../../src/sim/nav/provinceGraph';
 import { navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, eventKinds, nationId, runEvents } from '../helpers/sim1938';
@@ -663,7 +663,7 @@ describe('two wide grounds (PLAN 3.10c2b3a, ADR-193)', () => {
    * its ground is closed to the Americans), with `gap` cells of it left open. Six American
    * divisions stand three cells north of the wall. Neither side of it is a pocket.
    */
-  function walled(gap: number): { s: Sim; w: World; ids: number[]; USA: number; wall: number } {
+  function walled(gap: number): { s: Sim; w: World; ids: number[]; USA: number; wall: number; ax: number; foe: number } {
     const [USA, MEX, CAN] = ['USA', 'MEX', 'CAN'].map(nationId) as [number, number, number];
     const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
     const w = s.world;
@@ -712,7 +712,7 @@ describe('two wide grounds (PLAN 3.10c2b3a, ADR-193)', () => {
     const foe = neighbours4(a, W, H, true, nb).find((k) => w.cells.controller[k] === MEX)!;
     expect(wideNode(nav.graph, pass, node(foe))).toBeTruthy();
     expect(wideNode(nav.graph, pass, node((wall - 30) * W + ax))).toBeTruthy();
-    return { s, w, ids, USA, wall };
+    return { s, w, ids, USA, wall, ax, foe };
   }
   /** To the hour after the Americans' next plan: the orders refused in it. */
   function plan(s: Sim, USA: number): number[][] {
@@ -764,5 +764,35 @@ describe('two wide grounds (PLAN 3.10c2b3a, ADR-193)', () => {
     // The plan was one: the divisions march on the patch.
     for (const id of north) expect(f.moving[id], `division ${id}`).toBe(1);
     expect(joinWalks(nav.grid) - before).toBe(0);
+  });
+
+  it('what joins two wide grounds is kept between passages until a cell of the wall changes hands (PLAN 7.1i)', () => {
+    const { w, USA, wall, ax, foe } = walled(0);
+    const CAN = nationId('CAN');
+    const nav = navOf(w);
+    const node = (c: number): number => nav.graph.nodeOf[c]!;
+    // Of the wide ground north of the wall (`walled`'s own check).
+    const north = (wall - 30) * W + ax;
+    const joined = (): boolean => {
+      const pass = passageOf(w, USA);
+      return wideJoined(nav.grid, nav.graph, pass, wideNode(nav.graph, pass, node(north)), wideNode(nav.graph, pass, node(foe)));
+    };
+    const walks = joinWalks(nav.grid);
+    expect(joined()).toBe(false);
+    expect(joinWalks(nav.grid) - walks).toBe(1);
+    // Another passage asks again: the answer is kept.
+    expect(joined()).toBe(false);
+    expect(joinWalks(nav.grid) - walks).toBe(1);
+    // A cell between two open holders (the Americans' to the Mexicans', far from the wall): kept.
+    const south = neighbours4(foe, W, H, true, []).find((k) => w.cells.controller[k] === USA)!;
+    w.setController(south, nationId('MEX'));
+    expect(joined()).toBe(false);
+    expect(joinWalks(nav.grid) - walks).toBe(1);
+    // A gap of four cells in the wall, its provinces' holders as they were: walked again, and joined.
+    const keys = w.heldKeys;
+    for (let y = wall; y <= wall + 1; y++) for (let x = ax; x < ax + 4; x++) if (w.cells.controller[y * W + x] === CAN) w.setController(y * W + x, USA);
+    expect(w.heldKeys).toBe(keys);
+    expect(joined()).toBe(true);
+    expect(joinWalks(nav.grid) - walks).toBe(2);
   });
 });

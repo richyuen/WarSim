@@ -312,7 +312,11 @@ const STEP_Y = [0, 0, 1, -1, 1, -1, 1, -1];
  */
 export function wideJoined(g: NavGrid, pg: ProvinceGraph, pass: Passage, a: number, b: number): boolean {
   if (a === b) return true;
-  const joined = (pass.joined ??= joinWide(g, pg, pass));
+  let joined = pass.joined;
+  if (!joined) {
+    pass.joined = joined = joinWide(g, pg, pass);
+    if (pass.keep) pass.keep.joined = joined;
+  }
   return joined[a] === joined[b];
 }
 
@@ -327,7 +331,8 @@ export function joinWalks(g: NavGrid): number {
  * (`nodeGroups`: the cells of neighbours meet) are joined where a run of open cells in the
  * nodes that have closed ground touches two of them. Only those cells are walked (`findPath`'s
  * steps, as `pocketOf` walks them): 30,000 of the 1938 map's 204,000 in a fifth year, 18,000 of
- * them open.
+ * them open. What it reads: `open` and `shut`, and of the cells which are open (`ok` of their
+ * holder); the rest is of the map. `passageOf` keeps the answer on that (PLAN 7.1i).
  */
 function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage): Int32Array {
   const open = pass.open!;
