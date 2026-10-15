@@ -16393,3 +16393,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   stay by the cell. Pin 45df324d, the map that does not loop 620968e1.
 - **Test:** `mapSizes.test.ts`, km a day at each size (exact at S, M, L; within 10 % at XL).
 - **Next:** PLAN 7.1b5.
+
+## 2026-10-15 — PLAN 7.1b5: the sizes drawn by the map's size (rendering)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-417, addendum): `ScenarioGeometry.scale`, `render/sizeScale.ts` set by the view;
+  elements, markers' stand-ins, figures, shots' scatter and sorties' orbits by it. At M the same
+  picture (× 1).
+- **Test:** `mapSizes.test.ts`, a figure's side and offsets by the scale.
+- **Specs:** none run: at M nothing drawn changes.
+- **Next:** PLAN 7.1b6.

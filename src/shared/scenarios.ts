@@ -20,6 +20,8 @@ export interface ScenarioGeometry {
   h: number;
   kmPerCell: number;
   wrapX: boolean;
+  /** The size's cells to a cell of the map's default size (ADR-417): 0.5 at S, 1 at M, 2 at L, 3 at XL. */
+  scale: number;
 }
 
 /** What the main thread needs about a scenario before the first snapshot. */
@@ -64,7 +66,8 @@ function geometry(map: MapJson, scenario: ScenarioJson): ScenarioGeometry {
   const sizeId = scenario.size ?? map.defaultSize;
   const size = map.sizes.find((s) => s.id === sizeId);
   if (!size) throw new Error(`map has no size '${sizeId}'`);
-  return { w: size.w, h: size.h, kmPerCell: map.widthKm / size.w, wrapX: scenario.settings.loopingMap };
+  const defaultSize = map.sizes.find((s) => s.id === map.defaultSize)!;
+  return { w: size.w, h: size.h, kmPerCell: map.widthKm / size.w, wrapX: scenario.settings.loopingMap, scale: size.w / defaultSize.w };
 }
 
 export const SCENARIO_GEOMETRY: Record<ScenarioId, ScenarioGeometry> = {

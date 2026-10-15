@@ -54,6 +54,7 @@ import { spriteTint } from '../render/units/tint';
 import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
 import type { SimClient } from './simClient';
+import { setSizeScale, sizeScale } from '../render/sizeScale';
 
 /**
  * A tool that paints on a primary-button drag (PLAN 1.44). Positions are world cells, fractional,
@@ -225,6 +226,7 @@ export class MapView {
     const gl = canvas.getContext('webgl2', { antialias: false, preserveDrawingBuffer: true });
     if (!gl) throw new Error('WebGL2 is required');
     this.gl = gl;
+    setSizeScale(geo.scale ?? 1);
     this.map = new MapRenderer(gl, geo.w, geo.h, { wrapX: geo.wrapX, cellM: geo.kmPerCell * 1000, maxTexture });
     this.map.setColor(0, 0x1d3557);
     const atlas = drawUnitAtlas();
@@ -514,7 +516,7 @@ export class MapView {
       p.data[o + 2] = this.unwrapped(f.block[b]!, f.block[b + 2]!) - p.originX;
       p.data[o + 3] = f.block[b + 1]! - p.originY;
       p.data[o + 4] = f.facing[i]!;
-      p.data[o + 5] = MARKER_CELLS;
+      p.data[o + 5] = MARKER_CELLS * sizeScale;
       p.data[o + 6] = 0;
       p.data[o + 7] = 1;
       const col = this.nationColor(f.nation[i]!);
@@ -943,7 +945,7 @@ export class MapView {
       p.data[o + 2] = this.unwrapped(e.x[i]!, e.prevX[i]!) - p.originX;
       p.data[o + 3] = e.y[i]! - p.originY;
       p.data[o + 4] = e.facing[i]!;
-      p.data[o + 5] = ELEMENT_CELLS;
+      p.data[o + 5] = ELEMENT_CELLS * sizeScale;
       // The walk is for a formation on the march: one that holds in contact stands (PLAN 2.11e).
       // Infantry in contact is down and firing (PLAN 2.14c2).
       p.data[o + 6] = shownFrame(e.frame[i]!, (e.flags[i]! & FormationFlag.engaged) !== 0) + (marching(e.flags[i]!) ? marchFraction(e.id[i]!) : 0);
@@ -1358,7 +1360,7 @@ export class MapView {
 
   /** Side of an element sprite in CSS px (the shader's rule: ELEMENT_CELLS, at least ELEMENT_MIN_PX, × the size setting). */
   get elementPx(): number {
-    return Math.max(ELEMENT_CELLS * this.controller.cam.scale, ELEMENT_MIN_PX) * this.unitScale;
+    return Math.max(ELEMENT_CELLS * sizeScale * this.controller.cam.scale, ELEMENT_MIN_PX) * this.unitScale;
   }
 
   /**
@@ -1497,7 +1499,7 @@ export class MapView {
       }
     } else {
       // No elements arrived: the stand-in sprites of the formations (`drawSprites`).
-      const r = Math.min(STAND_IN_MAX_PX * this.unitScale, Math.max(8, MARKER_CELLS * cam.scale)) / 2;
+      const r = Math.min(STAND_IN_MAX_PX * this.unitScale, Math.max(8, MARKER_CELLS * sizeScale * cam.scale)) / 2;
       for (let i = 0; i < this.formIds.length; i++) {
         for (let k = 0; k < offs.length; k++) {
           const [px, py] = worldToScreen(cam, this.blockX[i]! + offs[k]!, this.blockY[i]!, vw, vh);

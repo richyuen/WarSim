@@ -27,6 +27,7 @@ import { ANIM_TAIL_MS, progress } from '../timing';
 import { muzzleOf } from '../units/atlas';
 import { figureCells, type FiringFigure } from '../units/individuals';
 import { TURN_MS } from '../units/turrets';
+import { sizeScale } from '../sizeScale';
 
 /** Over how long the shots of one tick start: the tick's wall time, within these. */
 export const MIN_SPREAD_MS = 250;
@@ -206,7 +207,7 @@ export class FireFx {
       // Where it lands: by the volley's shooter and tick.
       const tick = data[o + FireField.tick]!;
       const [jx, jy] = pair(hash2(shooter, tick));
-      this.shots.push({ shooter, target: data[o + FireField.target]!, weapon, x0, y0: data[o + FireField.y0]!, x1, y1: data[o + FireField.y1]!, dx: jx * SCATTER_CELLS, dy: jy * SCATTER_CELLS, start, from: figure?.(shooter, tick) ?? null });
+      this.shots.push({ shooter, target: data[o + FireField.target]!, weapon, x0, y0: data[o + FireField.y0]!, x1, y1: data[o + FireField.y1]!, dx: jx * SCATTER_CELLS * sizeScale, dy: jy * SCATTER_CELLS * sizeScale, start, from: figure?.(shooter, tick) ?? null });
       const end = start + lifeOf(weapon);
       this.busy.set(shooter, end);
       this.from = now;

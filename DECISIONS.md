@@ -210,6 +210,13 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   `GARRISON` and the formations' pressure stay as they are: both are by the cell, a front cell's
   defence against the pressure on it, and their balance is the same at every size (the pressure's
   reach is by the size since 7.1b2). The pin and the map that does not loop unchanged.
+- **Addendum (PLAN 7.1b5).** What the view draws at a size in cells is by the scale too:
+  `ScenarioGeometry.scale` (and `MapGeometry.scale`, 1 when not given) is the size's width over
+  the default's, and the view sets `render/sizeScale.ts` for its game (one view a page): an
+  element's sprite (`ELEMENT_CELLS`), a marker's stand-in (`MARKER_CELLS`), a figure's footprint
+  and its place in it (`FOOTPRINT_CELLS`, `figureCells`, `figureOffsets`), a shot's scatter
+  (`SCATTER_CELLS`), a sortie's orbit (`ORBIT_CELLS`). At M multiplied by 1: the picture as it
+  was. `mapSizes.test.ts`: a figure's side and its offsets scale with it.
 
 ### ADR-416 · 2026-10-15 · accepted — Map sizes: what is counted in cells, again (PLAN 7.1b1)
 

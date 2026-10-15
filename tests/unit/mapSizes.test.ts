@@ -15,6 +15,9 @@ import { KILL_CELLS_PER_STATE } from '../../src/sim/systems/revival';
 import { SUPPLY_REACH } from '../../src/sim/systems/supply';
 import { HOLD_TICKS, holdHours, PRESSURE_RADIUS } from '../../src/sim/systems/territory';
 import { World } from '../../src/sim/world';
+import { SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
+import { setSizeScale } from '../../src/render/sizeScale';
+import { figureCells, figureOffsets } from '../../src/render/units/individuals';
 
 // PLAN 7.1b2 (ADR-416): the reaches the sim counted in cells are cells of the map's default size,
 // `World.atSize` in a game's own. So a reach is the same km at S, M, L and XL, and at M (the
@@ -83,6 +86,31 @@ describe('territory by the map size (PLAN 7.1b4)', () => {
       if (HOLD_TICKS % world.sizeScale === 0 || world.sizeScale < 1) expect(kmPerDay(size.w, hold), `${size.id}`).toBeCloseTo(atM, 9);
       else expect(Math.abs(kmPerDay(size.w, hold) / atM - 1), `${size.id}: ${hold} h`).toBeLessThan(0.1);
       if (size.w === DEFAULT_W) expect(hold).toBe(HOLD_TICKS);
+    }
+  });
+});
+
+describe('what the view draws by the map size (PLAN 7.1b5)', () => {
+  it('the geometry of the scenarios carries the scale, 1 at their default sizes', () => {
+    expect(SCENARIO_GEOMETRY['1938'].scale).toBe(SIZE_1938.scale);
+    expect(SCENARIO_GEOMETRY['1938'].scale).toBe(1);
+    expect(SCENARIO_GEOMETRY.toy.scale).toBe(1);
+  });
+
+  it('a figure is as many metres at every size: its side and its place in cells by the scale', () => {
+    const at = (scale: number): { side: number; off: number[] } => {
+      setSizeScale(scale);
+      try {
+        return { side: figureCells(8), off: figureOffsets(77, 8, 12, 0.4, true) };
+      } finally {
+        setSizeScale(1);
+      }
+    };
+    const m = at(1);
+    for (const scale of [0.5, 2, 3]) {
+      const got = at(scale);
+      expect(got.side).toBeCloseTo(m.side * scale, 12);
+      got.off.forEach((v, k) => expect(v, `offset ${k} at ${scale}`).toBeCloseTo(m.off[k]! * scale, 12));
     }
   });
 });

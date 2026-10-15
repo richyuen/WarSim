@@ -19,6 +19,7 @@
  */
 import { hash2, pair } from '../hash';
 import { Frame, shownFrame } from '../../shared/unitLooks';
+import { sizeScale } from '../sizeScale';
 
 /** m/px up to which T3 is the unit layer (`tierOf`); the handover from the T2 sprites is at this zoom. */
 export const T3_MAX_M = 30;
@@ -66,7 +67,7 @@ export function gridSide(frame: number, whole: number): number {
 
 /** Side of one figure in a grid of `side`, cells. */
 export function figureCells(side: number): number {
-  return (FOOTPRINT_CELLS / side) * FILL;
+  return ((FOOTPRINT_CELLS * sizeScale) / side) * FILL;
 }
 
 /** The order in which the figures of `element` take the sub-slots of a grid of `side`: a shuffle by its id. */
@@ -82,7 +83,7 @@ export function subSlotOrder(element: number, side: number): number[] {
  * toward `facing` (radians).
  */
 export function figureOffsets(element: number, side: number, count: number, facing: number, firingLine = false): number[] {
-  const pitch = FOOTPRINT_CELLS / side;
+  const pitch = (FOOTPRINT_CELLS * sizeScale) / side;
   const order = subSlotOrder(element, side);
   const fx = Math.cos(facing);
   const fy = Math.sin(facing);
@@ -93,7 +94,7 @@ export function figureOffsets(element: number, side: number, count: number, faci
   const jitterAcross = firingLine ? LINE_JITTER_ACROSS : JITTER;
   const jitterAlong = firingLine ? LINE_JITTER_ALONG : JITTER;
   const depth = firingLine ? LINE_DEPTH : 1;
-  const forward = firingLine ? ((1 - LINE_DEPTH) * FOOTPRINT_CELLS) / 2 : 0;
+  const forward = firingLine ? ((1 - LINE_DEPTH) * FOOTPRINT_CELLS * sizeScale) / 2 : 0;
   for (let k = 0; k < count; k++) {
     const slot = order[k]!;
     const row = Math.floor(slot / side);

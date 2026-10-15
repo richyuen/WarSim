@@ -8,6 +8,7 @@
 import { SORTIE_STRIDE, SortieRole } from '../../shared/protocol';
 import { Leg, sortieAt, type Sortie } from '../../shared/sorties';
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { sizeScale } from '../sizeScale';
 
 /** A plane's span, CSS px (before the unit size), by role: a fighter's, a bomber's. */
 export const PLANE_PX = [13, 14, 16, 19, 15, 16] as const;
@@ -54,7 +55,7 @@ export function sortiePlace(rows: ArrayLike<number>, i: number, t: number, w: nu
     const own = s.bx * 12.9898 + s.by * 78.233 + s.launch * 3.7;
     const phase = (own - Math.floor(own)) * Math.PI * 2;
     const f = (((own * 7.31) % 1) + 1) % 1;
-    const r = ORBIT_CELLS * (0.7 + 0.6 * f);
+    const r = ORBIT_CELLS * sizeScale * (0.7 + 0.6 * f);
     const a = out + phase + ((t - s.launch) / ORBIT_HOURS) * Math.PI * 2;
     return { x: p.x + r * Math.cos(a), y: p.y + r * Math.sin(a), heading: a + Math.PI / 2, leg: p.leg, orbit: { cx: p.x, cy: p.y, angle: a, share: 0.7 + 0.6 * f } };
   }
@@ -126,7 +127,7 @@ export function drawSorties(
       if (at.orbit) {
         // Its circle no smaller on screen than ORBIT_MIN_PX × its share.
         const [ox, oy] = worldToScreen(cam, at.orbit.cx + off, at.orbit.cy, vw, vh);
-        const r = Math.max(ORBIT_CELLS * at.orbit.share * cam.scale, ORBIT_MIN_PX * at.orbit.share * size);
+        const r = Math.max(ORBIT_CELLS * sizeScale * at.orbit.share * cam.scale, ORBIT_MIN_PX * at.orbit.share * size);
         [x, y] = [ox + r * Math.cos(at.orbit.angle), oy + r * Math.sin(at.orbit.angle)];
       }
       if (x < -3 * span || y < -3 * span || x > vw + 3 * span || y > vh + 3 * span) continue;

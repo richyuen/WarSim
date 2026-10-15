@@ -21,6 +21,8 @@ export interface MapGeometry {
   kmPerCell: number;
   /** Looping map: x wraps. */
   wrapX: boolean;
+  /** The size's cells to a cell of the map's default size (`ScenarioGeometry.scale`); 1 when not given. */
+  scale?: number;
 }
 
 /** Splits a centre coordinate into (integer cell, fraction in [0, 1)). */

@@ -42,7 +42,7 @@ quick sweep as a smoke test.
   - [x] 7.1b2 The distances to km: the AI's, combat's and the elements', movement's and the sea's, […]
   - [x] 7.1b3 The areas to km²: overextension, militia, a Kill's states, a collapse's fragment.
   - [x] 7.1b4 Territory's rates by the km: a front moves as many km a day at every size.
-  - [ ] 7.1b5 The sizes drawn in metres (elements, figures, markers, fire, orbits).
+  - [x] 7.1b5 The sizes drawn in metres (elements, figures, markers, fire, orbits).
   - [ ] 7.1b6 The game's own geometry where `SIZE_1938` is read; the provinces rasterised at the
     game's size.
   - [ ] 7.1b7 The assets of L and XL (terrain, elevation; ADR-13 again; the mask at 4 and 2 px a
