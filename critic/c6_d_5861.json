@@ -1,0 +1,658 @@
+{
+ "seed": 5861,
+ "shots": [
+  "critic/shots/c6d_5861_10_tier_1000m.png",
+  "critic/shots/c6d_5861_10_tier_0150m.png",
+  "critic/shots/c6d_5861_10_tier_0040m.png",
+  "critic/shots/c6d_5861_10_tier_0015m.png",
+  "critic/shots/c6d_5861_20_live_20m_best.png",
+  "critic/shots/c6d_5861_20_live_20m_best.png",
+  "critic/shots/c6d_5861_21_live_20m_last.png",
+  "critic/shots/c6d_5861_30_sea_row_clicked.png",
+  "critic/shots/c6d_5861_31_sea_live_3.png",
+  "critic/shots/c6d_5861_31_sea_live_7.png",
+  "critic/shots/c6d_5861_40_aircontrol_day20.png",
+  "critic/shots/c6d_5861_50_history_day40.png",
+  "critic/shots/c6d_5861_51_germany_panel.png",
+  "critic/shots/c6d_5861_52_charts.png"
+ ],
+ "fightSearch": [
+  {
+   "h": 0,
+   "sorties": 86,
+   "fights": 0,
+   "bombs": 0
+  },
+  {
+   "h": 1,
+   "sorties": 80,
+   "fights": 2,
+   "bombs": 23
+  }
+ ],
+ "tiers": [
+  {
+   "tick": 2,
+   "m": 1000,
+   "el": 0,
+   "ind": 0,
+   "sorties": 29,
+   "air": [
+    1,
+    4,
+    17,
+    0
+   ]
+  },
+  {
+   "tick": 2,
+   "m": 150,
+   "el": 202,
+   "ind": 0,
+   "sorties": 3,
+   "air": [
+    0,
+    3,
+    3,
+    0
+   ]
+  },
+  {
+   "tick": 2,
+   "m": 40,
+   "el": 28,
+   "ind": 0,
+   "sorties": 3,
+   "air": [
+    0,
+    3,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 2,
+   "m": 15,
+   "el": 28,
+   "ind": 1560,
+   "sorties": 2,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ ],
+ "live": [
+  {
+   "tick": 3,
+   "m": 20,
+   "el": 28,
+   "ind": 1560,
+   "sorties": 2,
+   "air": [
+    0,
+    0,
+    3,
+    0
+   ]
+  },
+  {
+   "tick": 4,
+   "m": 20,
+   "el": 28,
+   "ind": 1560,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    3,
+    1
+   ]
+  },
+  {
+   "tick": 5,
+   "m": 20,
+   "el": 28,
+   "ind": 1560,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 6,
+   "m": 20,
+   "el": 28,
+   "ind": 1536,
+   "sorties": 1,
+   "air": [
+    0,
+    0,
+    0,
+    3
+   ]
+  },
+  {
+   "tick": 7,
+   "m": 20,
+   "el": 28,
+   "ind": 1512,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    4
+   ]
+  },
+  {
+   "tick": 8,
+   "m": 20,
+   "el": 28,
+   "ind": 1512,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    3,
+    2
+   ]
+  },
+  {
+   "tick": 9,
+   "m": 20,
+   "el": 28,
+   "ind": 1512,
+   "sorties": 1,
+   "air": [
+    0,
+    0,
+    6,
+    1
+   ]
+  },
+  {
+   "tick": 10,
+   "m": 20,
+   "el": 28,
+   "ind": 1512,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    3,
+    0
+   ]
+  },
+  {
+   "tick": 11,
+   "m": 20,
+   "el": 28,
+   "ind": 1512,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 12,
+   "m": 20,
+   "el": 28,
+   "ind": 1488,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    4
+   ]
+  },
+  {
+   "tick": 13,
+   "m": 20,
+   "el": 28,
+   "ind": 1488,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    4
+   ]
+  },
+  {
+   "tick": 14,
+   "m": 20,
+   "el": 28,
+   "ind": 1488,
+   "sorties": 3,
+   "air": [
+    0,
+    0,
+    3,
+    0
+   ]
+  },
+  {
+   "tick": 15,
+   "m": 20,
+   "el": 28,
+   "ind": 1488,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "tick": 16,
+   "m": 20,
+   "el": 28,
+   "ind": 1488,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    3,
+    0
+   ]
+  },
+  {
+   "tick": 17,
+   "m": 20,
+   "el": 28,
+   "ind": 1488,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 18,
+   "m": 20,
+   "el": 28,
+   "ind": 1488,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 19,
+   "m": 20,
+   "el": 28,
+   "ind": 1488,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 20,
+   "m": 20,
+   "el": 28,
+   "ind": 1488,
+   "sorties": 3,
+   "air": [
+    0,
+    0,
+    3,
+    0
+   ]
+  },
+  {
+   "tick": 21,
+   "m": 20,
+   "el": 28,
+   "ind": 1488,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "tick": 22,
+   "m": 20,
+   "el": 28,
+   "ind": 1488,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    3,
+    0
+   ]
+  }
+ ],
+ "sea": [
+  {
+   "tick": 41,
+   "m": 376.1,
+   "el": 286,
+   "ind": 4656,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 41,
+   "m": 376.1,
+   "el": 286,
+   "ind": 4656,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 43,
+   "m": 376.1,
+   "el": 310,
+   "ind": 4656,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 44,
+   "m": 376.1,
+   "el": 310,
+   "ind": 4656,
+   "sorties": 1,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 45,
+   "m": 376.1,
+   "el": 318,
+   "ind": 4656,
+   "sorties": 5,
+   "air": [
+    0,
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 46,
+   "m": 376.1,
+   "el": 317,
+   "ind": 4656,
+   "sorties": 0,
+   "air": [
+    0,
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 47,
+   "m": 376.1,
+   "el": 329,
+   "ind": 4656,
+   "sorties": 0,
+   "air": [
+    0,
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 48,
+   "m": 376.1,
+   "el": 335,
+   "ind": 4656,
+   "sorties": 0,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "tick": 49,
+   "m": 376.1,
+   "el": 334,
+   "ind": 4656,
+   "sorties": 4,
+   "air": [
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ ],
+ "fightHour": 1,
+ "fight": {
+  "x": 1063.2541019661,
+  "y": 292.6646329986
+ },
+ "seaRowCount": 2,
+ "seaRowText": "⚓ Sea battle: United Kingdom against Germany",
+ "seaCam": {
+  "cx": 1061.5134456720843,
+  "cy": 261,
+  "scale": 52.02832930633375,
+  "mpp": 376.10031601318155
+ },
+ "fleetsNear": [
+  {
+   "id": 844,
+   "nation": 28,
+   "s": 6240
+  },
+  {
+   "id": 848,
+   "nation": 28,
+   "s": 6240
+  },
+  {
+   "id": 849,
+   "nation": 28,
+   "s": 6240
+  },
+  {
+   "id": 1063,
+   "nation": 20,
+   "s": 7900
+  },
+  {
+   "id": 1064,
+   "nation": 20,
+   "s": 2000
+  },
+  {
+   "id": 1065,
+   "nation": 20,
+   "s": 2000
+  },
+  {
+   "id": 1075,
+   "nation": 20,
+   "s": 2000
+  },
+  {
+   "id": 1199,
+   "nation": 1,
+   "s": 13400
+  },
+  {
+   "id": 1200,
+   "nation": 1,
+   "s": 2000
+  },
+  {
+   "id": 1201,
+   "nation": 1,
+   "s": 400
+  },
+  {
+   "id": 1202,
+   "nation": 1,
+   "s": 400
+  },
+  {
+   "id": 1224,
+   "nation": 28,
+   "s": 4400
+  },
+  {
+   "id": 1225,
+   "nation": 28,
+   "s": 400
+  }
+ ],
+ "seaClicked": true,
+ "airLegend": "Air superiority\nAn air zone hatched in the colour of the air force that holds it\nContested: both sides fly there, neither holds it\nNo one flies there\nUnited Kingdom: 6 zones\nJapan: 6 zones\nSoviet Union: 3 zones\nItaly: 3 zones\nGermany: 1 zones\nEstonia: 1 zones\nRomania: 1 zones\nNationalist Spain: 1 zones\nand 1 more",
+ "legendAll": [
+  "Air superiorityAn air zone hatched in the colour of the air force that holds itContested: both sides fly there, neither holds itNo one flies thereUnited Kingdom: 6 zonesJapan: 6 zonesSoviet Union: 3 zonesItaly: 3 zonesGermany: 1 zonesEstonia: 1 zonesRomania: 1 zonesNationalist Spain: 1 zonesand 1 more",
+  "Air superiority",
+  "An air zone hatched in the colour of the air force that holds it",
+  "Contested: both sides fly there, neither holds it"
+ ],
+ "ticker": [
+  "30 January 1938 China captured Mengjiang's capital",
+  "1 February 1938 Italy and France fought in the air this month: Italy lost 186 aircraft, France 147",
+  "1 February 1938 Germany's air force struck Poland this month: 108,646 men, guns and vehicles lost",
+  "9 February 1938 China captured Mengjiang's capital",
+  "9 February 1938 Soviet Union made peace with Lithuania"
+ ],
+ "history": [
+  "9 February 1938 Soviet Union made peace with Lithuania",
+  "9 February 1938 China captured Mengjiang's capital",
+  "6 February 1938 A major battle began near Botoșani",
+  "1 February 1938 Iceland was freed from Denmark",
+  "1 February 1938 Ireland was freed from United Kingdom",
+  "1 February 1938 Germany's air force struck Poland this month: 108,646 men, guns and vehicles lost",
+  "1 February 1938 Japan's air force struck China this month: 80,473 men, guns and vehicles lost",
+  "1 February 1938 Italy's air force struck France this month: 39,276 men, guns and vehicles lost",
+  "1 February 1938 Italy and France fought in the air this month: Italy lost 186 aircraft, France 147",
+  "1 February 1938 Germany and France fought in the air this month: Germany lost 108 aircraft, France 140",
+  "1 February 1938 Czechoslovakia and Soviet Union fought in the air this month: Czechoslovakia lost 72 aircraft, Soviet Union 136",
+  "1 February 1938 United Kingdom's submarines raided the convoys of Japan",
+  "1 February 1938 Spanish Republic's submarines raided the convoys of Nationalist Spain",
+  "1 February 1938 Germany's submarines raided the convoys of United Kingdom",
+  "1 February 1938 Italy's submarines raided the convoys of United Kingdom",
+  "1 February 1938 Japan's submarines raided the convoys of France",
+  "1 February 1938 Japan's submarines raided the convoys of France",
+  "1 February 1938 Japan's submarines raided the convoys of France",
+  "30 January 1938 China captured Mengjiang's capital",
+  "27 January 1938 The major battle near Botoșani was won by Soviet Union",
+  "27 January 1938 The major battle near Pskov was won by Soviet Union",
+  "27 January 1938 A major battle began near Pskov",
+  "25 January 1938 The major battle near Botoșani was won by Soviet Union",
+  "25 January 1938 A major battle began near Botoșani",
+  "25 January 1938 A major battle began near Botoșani",
+  "25 January 1938 Turkey declared war on Bulgaria",
+  "24 January 1938 The major battle near Bălți was won by Soviet Union",
+  "22 January 1938 Netherlands joined the Anglo-French Entente",
+  "21 January 1938 A major battle began near Bălți",
+  "21 January 1938 Iran joined the Balkan Entente",
+  "18 January 1938 Poland declared war on Lithuania",
+  "17 January 1938 Switzerland joined the Anglo-French Entente",
+  "14 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 5 ships, Italy 3",
+  "14 January 1938 Luxembourg joined the Anglo-French Entente",
+  "12 January 1938 Soviet Union declared war on Lithuania",
+  "11 January 1938 Spanish Republic joined the Defensive Pact of Portugal",
+  "11 January 1938 Portugal founded a Defensive Pact",
+  "10 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 1 ships, Italy 0",
+  "9 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 2 ships, Italy 0",
+  "9 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 3 ships, Italy 0",
+  "8 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 5 ships, Italy 4",
+  "8 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 4 ships, Italy 4",
+  "8 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 2 ships, Italy 0",
+  "8 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 15 ships, Italy 0",
+  "7 January 1938 France and Italy fought at sea: France lost 0 ships, Italy 6",
+  "7 January 1938 United Kingdom and Italy fought at sea: United Kingdom lost 0 ships, Italy 6",
+  "6 January 1938 Soviet Union and Romania fought at sea: Soviet Union lost 2 ships, Romania 0",
+  "6 January 1938 Austria joined the Defensive Pact of Denmark",
+  "6 January 1938 Denmark founded a Defensive Pact",
+  "6 January 1938 Finland joined the Defensive Pact of Norway",
+  "5 January 1938 Soviet Union and Romania fought at sea: Soviet Union lost 0 ships, Romania 7",
+  "5 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 0 ships, Germany 0",
+  "5 January 1938 Poland joined the Defensive Pact of Norway",
+  "5 January 1938 Norway founded a Defensive Pact",
+  "5 January 1938 Soviet Union declared war on Romania",
+  "4 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 0 ships, Germany 0",
+  "4 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 4 ships, Germany 0",
+  "4 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 4 ships, Germany 0",
+  "4 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 13 ships, Germany 0",
+  "3 January 1938 United Kingdom and Germany fought at sea: United Kingdom lost 8 ships, Germany 0"
+ ],
+ "historyAir": [
+  "1 February 1938 Germany's air force struck Poland this month: 108,646 men, guns and vehicles lost",
+  "1 February 1938 Japan's air force struck China this month: 80,473 men, guns and vehicles lost",
+  "1 February 1938 Italy's air force struck France this month: 39,276 men, guns and vehicles lost",
+  "1 February 1938 Italy and France fought in the air this month: Italy lost 186 aircraft, France 147",
+  "1 February 1938 Germany and France fought in the air this month: Germany lost 108 aircraft, France 140",
+  "1 February 1938 Czechoslovakia and Soviet Union fought in the air this month: Czechoslovakia lost 72 aircraft, Soviet Union 136",
+  "1 February 1938 United Kingdom's submarines raided the convoys of Japan",
+  "1 February 1938 Spanish Republic's submarines raided the convoys of Nationalist Spain",
+  "1 February 1938 Germany's submarines raided the convoys of United Kingdom",
+  "1 February 1938 Italy's submarines raided the convoys of United Kingdom",
+  "1 February 1938 Japan's submarines raided the convoys of France",
+  "1 February 1938 Japan's submarines raided the convoys of France",
+  "1 February 1938 Japan's submarines raided the convoys of France"
+ ],
+ "germanyPanel": "Germany\n×\nTake control\nOverview\nEconomy\nLand (km²)\n468,102\nShare of world land\n0.4%\nArmy (men)\n341,009 (66)\nAir war\nAircraft (wings)\n297 (14)\nAircraft lost\n543\nLost to air strikes\n15,996\nCombat efficiency\n100%\nAnti-Comintern Pact\nAlliance unity\n66\nAt war with\nPoland\nFrance\nFrench West Africa\nFrench Equatorial Africa\nMadagascar\nFrench Morocco\nTunisia\nSyria\nLebanon\nFrench Indochina\nUnited Kingdom\nIreland\nEgypt\nAnglo-Egyptian Sudan\nBritish East Africa\nSouth Africa\nSouthern Rhodesia\nNigeria\nGold Coast\nPalestine\nTransjordan\nOman\nBritish India\nBurma\nCeylon\nBritish Malaya\nSarawak\nAustralia\nNew Zealand\nCanada\nNewfoundland",
+ "chartOptions": [
+  "English",
+  "Pseudo-locale (i18n test)",
+  "Land (km²)",
+  "Income / month",
+  "Treasury",
+  "Army (men)",
+  "Casualties (men)",
+  "Aircraft",
+  "Aircraft lost",
+  "Land",
+  "Army",
+  "Income",
+  "Treasury",
+  "Manpower"
+ ],
+ "errors": []
+}

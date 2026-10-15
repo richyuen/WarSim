@@ -1,75 +1,57 @@
 {
-  "commit": "c8503460bdd30f9234a48860de889015ee1177ec",
+  "commit": "228d08356ceec2b3f0d728769e2be18785f7a32e",
   "scores": {
     "mapVisuals": 6,
     "diplomacyWarDepth": 6,
     "emergentDynamics": 5,
-    "godMode": 5,
+    "godMode": 6,
     "editorScenarios": 6,
-    "statsHistory": 5,
+    "statsHistory": 6,
     "uiUxPolish": 6,
-    "performance": 6,
+    "performance": 4,
     "stability": 7,
     "semanticZoom": 6,
-    "naval": 5,
+    "naval": 6,
     "tanks": 5,
-    "aircraft": 4,
-    "aiNukes": 0
+    "aircraft": 5,
+    "aiNukes": 4
   },
   "blocking": [
     {
-      "id": "R5-B1",
-      "title": "The air war cannot be seen where a player watches or read anywhere afterwards: no plane, bomb or flak at T3 by design (0 in 17 live hours at 20 m/px); the air mode shows 2 of 515 zones held on day 20 of a war, Germany's grey on grey, no nation in its legend; no air event in history, ticker, charts, ranking or nation panel",
+      "id": "R6-B1",
+      "title": "The nuclear age makes the game crawl: from the first strikes (1949) the nuclear system takes 7.0 to 10.1 ms of a 9.7 to 12.8 ms tick in years 13 to 19 (69 to 79 %), one call a day of about 170 to 240 ms (max 436 ms), and still 3.4 ms (58 to 61 %) in years 20 and 21, pinned and alone; years 9 to 11, with warheads but no strike, ran 3 to 4 ms; in the browser at Max a year goes from 20 to 25 s to 129 to 216 s",
       "evidence": [
-        "critic/c5_b_8317.json",
-        "critic/shots/c5b_8317_10_tier_0015m.png",
-        "critic/c5_h_8317.json",
-        "critic/shots/c5h_8317_day20_aircontrol.png",
-        "critic/c5_g_5519.json"
+        "critic/c6_perf_6619_y13_21_solo.log",
+        "critic/c6_perf_6619_y13_15_solo.log",
+        "critic/c6_c_6619.json",
+        "critic/c6_perf_seed99_5y_solo.log"
       ],
-      "fix": "Sorties, bombs and strafing drawn at T3 over the men they hit; a per-nation legend and a visible tint or hatching in the air mode; air battles and raids in the history and ticker; aircraft, losses and bomb damage in the nation panel and charts."
+      "fix": "Profile which part of the daily `nuclear` call costs 170 to 240 ms once strikes have happened (it is cheap in years 9 to 11 with warheads but no strike, and falls by half by year 20, so look at state that strikes create and that decays: fallout, outrage, shock, grievance, taboo, or the target scoring they feed); hold the tick to its budget in the late game, not only in year 1."
     },
     {
-      "id": "R5-B2",
-      "title": "The AI's air war fades out over the game: mean sorties aloft 19.1 in year 1, 11.7 in year 5, then 0.2 to 1.8 in every year from 13 to 25 while wings grow 132 to 236; 345 air fights in year 1, 111 in years 13 to 25 together (seed 7321)",
+      "id": "R6-B2",
+      "title": "The AI's nuclear use is not credible: its first use in history is the Soviet Union, the largest nation on earth, bombing the revolt statelet Free Van three times in two days at utility 0.01 to 0.39; warheads then fall one a day, three in a row on one spot (Pinsk and Kovel; Odense three times), on Paramaribo, Aden, Malabo and Las Palmas, and on land no one holds; struck at London for 1.37 million dead, the United Kingdom never hits back at the Soviet Union and its one bomb goes to Chungking; the United States builds 87 warheads over 30 years and never uses one, while the revolt statelet 'Free Liège II' (founded #138, holding Berlin) builds warheads and makes 11 strike decisions on Germany, France, the Netherlands and British India in 1955 and 1956",
       "evidence": [
-        "critic/c5_headless_7321.json",
-        "critic/c5_headless_7321.log"
+        "critic/c6_headless_6619.json",
+        "critic/c6_headless_2953.json",
+        "critic/c6_nuke_where.json",
+        "critic/c6_c_6619.json",
+        "critic/shots/c6c_6619_a1_1_goto_1200.png",
+        "critic/shots/c6f_6619_pause_08.png"
       ],
-      "fix": "First look at the air AI's tasking (0 to 16 wings with a mission at a year's end); keep the wings of nations at war flying; lay up or disband wings no one flies."
+      "fix": "No first use against a nation that cannot threaten the striker (no warheads, tiny, not near the capital); no second warhead on a spot already struck; targets on the front or the enemy's core, not distant colonies; retaliation at the nation that struck; a bar on bursts on land no one holds."
     },
     {
-      "id": "R5-B3",
-      "title": "The world still shatters into statelets: 93 nations alive in year 1, 149 in year 25, 180 founded (seed 7321); 54 generated-name nations after 12 years in the browser, 'Free Inner Mongolia III' (seed 5519)",
+      "id": "R6-B3",
+      "title": "The world still shatters into statelets: 154 nations alive after 30 years on seed 6619 (77 founded in play), 153 on seed 2953; 'Free Liège II' holds Berlin in 1953; the builder's own sweep fails its nations-alive limit on 2 of 10 seeds (255, 253)",
       "evidence": [
-        "critic/c5_headless_7321.json",
-        "critic/c5_g_5519.json",
-        "critic/shots/c5g_5519_50_europe_end.png"
+        "critic/c6_headless_6619.json",
+        "critic/c6_headless_2953.json",
+        "critic/shots/c6c_6619_92_europe_end.png",
+        "docs/sweeps/2026-10-14-sweep-nukes.md"
       ],
-      "fix": "Revolts return land to a core owner or neighbour first; weak statelets are absorbed; a run whose living count rises for 20 years fails."
-    },
-    {
-      "id": "R5-B4",
-      "title": "A sea battle still shows one side: the ticker's row (ADR-303: 'a T2 view of both fleets') flies to the British carrier at the battle's centre while the engaged German fleets are 23.7 cells away off the screen; no German ship, no fire, no carrier planes; at 20 m/px a carrier group is seven pills",
-      "evidence": [
-        "critic/c5_j.json",
-        "critic/c5_e_6131.json",
-        "critic/shots/c5e_6131_11_sea_live_3.png",
-        "critic/c5_d_6131.json",
-        "critic/c5_d_2207.json",
-        "critic/shots/c5d_6131_20_live_20m_3.png"
-      ],
-      "fix": "Frame both sides (zoom out to the span when it exceeds T2, or centre on the enemy); draw a carrier's strike as sorties flying to its target; ships large enough to read at 20 m/px."
-    },
-    {
-      "id": "R5-B5",
-      "title": "Nuclear weapons do not exist: AI nuclear use is 0, and AoC has a nuke in its God tools",
-      "evidence": [
-        "critic/c5_f_4471.json",
-        "reference/text/AOC_TEXT_NOTES.md"
-      ],
-      "fix": "Phase 6, and a God Mode nuke as in AoC."
+      "fix": "As runs 4 and 5: revolts return land to a core owner or neighbour first; weak statelets are absorbed; the living count must not rise for 30 years."
     }
   ],
-  "timestamp": "2026-10-14T15:05:35Z"
+  "timestamp": "2026-10-15T01:36:58Z"
 }

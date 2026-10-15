@@ -1,0 +1,404 @@
+{
+ "seed": 4127,
+ "formationKeys": [
+  "id",
+  "nation",
+  "strength",
+  "elementMen",
+  "elements",
+  "x",
+  "y",
+  "wing"
+ ],
+ "before": {
+  "n": 22,
+  "men": 87540,
+  "list": [
+   {
+    "id": 1,
+    "nation": 1,
+    "s": 12460,
+    "d": 0.23
+   },
+   {
+    "id": 2,
+    "nation": 1,
+    "s": 12460,
+    "d": 1.81
+   },
+   {
+    "id": 3,
+    "nation": 1,
+    "s": 12460,
+    "d": 2.08
+   },
+   {
+    "id": 4,
+    "nation": 1,
+    "s": 12460,
+    "d": 1.52
+   },
+   {
+    "id": 5,
+    "nation": 1,
+    "s": 12460,
+    "d": 2.26
+   },
+   {
+    "id": 6,
+    "nation": 1,
+    "s": 12460,
+    "d": 3.76
+   },
+   {
+    "id": 40,
+    "nation": 1,
+    "s": 5700,
+    "d": 3.77
+   },
+   {
+    "id": 42,
+    "nation": 1,
+    "s": 5700,
+    "d": 2.7
+   },
+   {
+    "id": 1252,
+    "nation": 1,
+    "s": 90,
+    "d": 0.28
+   },
+   {
+    "id": 1253,
+    "nation": 1,
+    "s": 90,
+    "d": 0.28
+   },
+   {
+    "id": 1256,
+    "nation": 1,
+    "s": 90,
+    "d": 2.45
+   },
+   {
+    "id": 1257,
+    "nation": 1,
+    "s": 90,
+    "d": 4.43
+   }
+  ]
+ },
+ "shots": [
+  "critic/shots/c6b_4127_00_berlin_20m_before.png",
+  "critic/shots/c6b_4127_01_berlin_20m_after1h.png",
+  "critic/shots/c6b_4127_02_berlin_150m_after1h.png",
+  "critic/shots/c6b_4127_03_berlin_150m_after30d.png",
+  "critic/shots/c6b_4127_04_fallout_1500m_30d.png"
+ ],
+ "afterClick": {
+  "n": 22,
+  "men": 76335,
+  "list": [
+   {
+    "id": 1,
+    "nation": 1,
+    "s": 3801,
+    "d": 0.23
+   },
+   {
+    "id": 2,
+    "nation": 1,
+    "s": 12460,
+    "d": 1.81
+   },
+   {
+    "id": 3,
+    "nation": 1,
+    "s": 12460,
+    "d": 2.08
+   },
+   {
+    "id": 4,
+    "nation": 1,
+    "s": 10862,
+    "d": 1.52
+   },
+   {
+    "id": 5,
+    "nation": 1,
+    "s": 12028,
+    "d": 2.26
+   },
+   {
+    "id": 6,
+    "nation": 1,
+    "s": 12460,
+    "d": 3.76
+   },
+   {
+    "id": 40,
+    "nation": 1,
+    "s": 5700,
+    "d": 3.77
+   },
+   {
+    "id": 42,
+    "nation": 1,
+    "s": 5700,
+    "d": 2.7
+   },
+   {
+    "id": 1252,
+    "nation": 1,
+    "s": 15,
+    "d": 0.28
+   },
+   {
+    "id": 1253,
+    "nation": 1,
+    "s": 15,
+    "d": 0.28
+   },
+   {
+    "id": 1256,
+    "nation": 1,
+    "s": 90,
+    "d": 2.45
+   },
+   {
+    "id": 1257,
+    "nation": 1,
+    "s": 90,
+    "d": 4.43
+   }
+  ]
+ },
+ "after1h": {
+  "n": 22,
+  "men": 76071,
+  "list": [
+   {
+    "id": 1,
+    "nation": 1,
+    "s": 3729,
+    "d": 0.23
+   },
+   {
+    "id": 2,
+    "nation": 1,
+    "s": 12460,
+    "d": 1.81
+   },
+   {
+    "id": 3,
+    "nation": 1,
+    "s": 12460,
+    "d": 2.08
+   },
+   {
+    "id": 4,
+    "nation": 1,
+    "s": 10862,
+    "d": 1.52
+   },
+   {
+    "id": 5,
+    "nation": 1,
+    "s": 11836,
+    "d": 2.26
+   },
+   {
+    "id": 6,
+    "nation": 1,
+    "s": 12460,
+    "d": 3.76
+   },
+   {
+    "id": 40,
+    "nation": 1,
+    "s": 5700,
+    "d": 3.77
+   },
+   {
+    "id": 42,
+    "nation": 1,
+    "s": 5700,
+    "d": 2.7
+   },
+   {
+    "id": 1252,
+    "nation": 1,
+    "s": 15,
+    "d": 0.28
+   },
+   {
+    "id": 1253,
+    "nation": 1,
+    "s": 15,
+    "d": 0.28
+   },
+   {
+    "id": 1256,
+    "nation": 1,
+    "s": 90,
+    "d": 2.45
+   },
+   {
+    "id": 1257,
+    "nation": 1,
+    "s": 90,
+    "d": 4.43
+   }
+  ]
+ },
+ "after30d": {
+  "n": 20,
+  "men": 1399,
+  "list": [
+   {
+    "id": 1252,
+    "nation": 1,
+    "s": 8,
+    "d": 0.28
+   },
+   {
+    "id": 1253,
+    "nation": 1,
+    "s": 8,
+    "d": 0.28
+   },
+   {
+    "id": 1255,
+    "nation": 1,
+    "s": 90,
+    "d": 2.45
+   },
+   {
+    "id": 1256,
+    "nation": 1,
+    "s": 90,
+    "d": 2.45
+   },
+   {
+    "id": 1257,
+    "nation": 1,
+    "s": 83,
+    "d": 4.43
+   },
+   {
+    "id": 1258,
+    "nation": 1,
+    "s": 90,
+    "d": 2.45
+   },
+   {
+    "id": 1259,
+    "nation": 1,
+    "s": 8,
+    "d": 0.28
+   },
+   {
+    "id": 1261,
+    "nation": 1,
+    "s": 90,
+    "d": 0.28
+   },
+   {
+    "id": 1262,
+    "nation": 1,
+    "s": 90,
+    "d": 2.45
+   },
+   {
+    "id": 1263,
+    "nation": 1,
+    "s": 83,
+    "d": 4.43
+   },
+   {
+    "id": 1265,
+    "nation": 1,
+    "s": 15,
+    "d": 0.28
+   },
+   {
+    "id": 1269,
+    "nation": 1,
+    "s": 120,
+    "d": 2.45
+   }
+  ]
+ },
+ "germany": {
+  "id": 1,
+  "name": "nation.GER",
+  "color": 6118749,
+  "cells": 2689,
+  "area": 480823.03037413344,
+  "landShare": 0.0036093305977649135,
+  "gold": 7314.774995804378,
+  "income": 1913.3651171986266,
+  "expenses": 390.4829291832921,
+  "incomeBonus": 10,
+  "bankrupt": false,
+  "manpower": 791925.5,
+  "men": 577598,
+  "formations": 87,
+  "aircraft": 666,
+  "wings": 28,
+  "airLost": 15,
+  "bombed": 0,
+  "efficiency": 0.7,
+  "alliance": {
+   "id": 1,
+   "name": "alliance.anti_comintern",
+   "leader": 1,
+   "unity": 54.5,
+   "loyalty": 58.625
+  },
+  "overlord": 0,
+  "autonomy": 0,
+  "loyalty": 0,
+  "integration": 0,
+  "puppets": [],
+  "enemies": [
+   6,
+   7,
+   8
+  ],
+  "aiOff": false,
+  "nukesAllowed": true,
+  "warheads": 0,
+  "aggression": 90,
+  "incomeMult": 1,
+  "living": true,
+  "queue": [
+   {
+    "template": 7,
+    "readyDay": 225
+   },
+   {
+    "template": 21,
+    "readyDay": 400
+   }
+  ],
+  "techs": [
+   1383874385,
+   5
+  ],
+  "shipyard": true,
+  "airRoom": 20,
+  "research": 95.66825585993134,
+  "lines": [
+   {
+    "tech": 1,
+    "paid": 18
+   },
+   {
+    "tech": 29,
+    "paid": 18.947368421052634
+   }
+  ]
+ },
+ "errors": []
+}

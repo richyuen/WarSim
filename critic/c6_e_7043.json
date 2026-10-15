@@ -1,0 +1,289 @@
+{
+ "seed": 7043,
+ "shots": [
+  "critic/shots/c6e_7043_00_title.png",
+  "critic/shots/c6e_7043_10_settings.png",
+  "critic/shots/c6e_7043_11_editor.png",
+  "critic/shots/c6e_7043_20_fallout_after_load.png",
+  "critic/shots/c6e_7043_30_phone.png"
+ ],
+ "titleText": "WarSim\n\nWorld war simulator\n\nLanguage\nEnglish\nPseudo-locale (i18n test)\nScenarios\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nScenario file\n\nStart from a .warsim-scenario file, as the editor exports them.\n\nWorld, 1938\n\nThe world on the eve of the Second World War.\n\nStart date\n1 January 1938\nMap\nEarth · 2048 × 1024\nNations\n102\nSeed\nRandom\nNew game options\nLooping map\nOn\nOff\nNation aggression\nAs in the scenario\nRandom\nNation traits\nAs in the scenario\nRandom\nStarting gold\nAs in the scenario\nRandom\nEqual for all\nCombat efficiency\nAs in the scenario\nDynamic\nProgressive\nStatic\nLocked\nRandom\nStart",
+ "languages": [
+  "English",
+  "Pseudo-locale (i18n test)"
+ ],
+ "panelBeforeEsc": 1,
+ "panelAfterEsc": 1,
+ "keys": {
+  "2": "political",
+  "F2": "political",
+  "F3": "political",
+  "m": "political",
+  "M": "political"
+ },
+ "settingsText": "Settings\n×\nInterface size\n85%\n100%\n115%\n130%\nUnit size\n50%\n75%\n100%\n150%\n200%\nSound volume\n25%\n50%\n75%\n100%\nMute sound\nPause on a nuclear strike\nSave screenshot (F2)\nMain menu\nNew game\nThis game: seed 7043\nSeed\nRandom\nNew game options\nLooping map\nOn\nOff\nNation aggression\nAs in the scenario\nRandom\nNation traits\nAs in the scenario\nRandom\nStarting gold\nAs in the scenario\nRandom\nEqual for all\nCombat efficiency\nAs in the scenario\nDynamic\nProgressive\nStatic\nLocked\nRandom\nNew game",
+ "editorText": "Map editor\n×\nBrushLineBucketRadius\nNation\nTerrain\nUnowned\nAfghanistan\nAlbania\nAnglo-Egyptian Sudan\nAngola\nArgentina\nAustralia\nAustria\nBelgian Congo\nBelgium\nBolivia\nBrazil\nBritish East Africa\nBritish India\nBritish Malaya\nBulgaria\nBurma\nCanada\nCeylon\nChile\nChina\nColombia\nCommunist China\nCosta Rica\nCuba\nCzechoslovakia\nDenmark\nDominican Republic\nDutch East Indies\nEcuador\nEgypt\nEl Salvador\nEstonia\nFinland\nFrance\nFree City of Danzig\nFrench Equatorial Africa\nFrench Indochina\nFrench Morocco\nFrench West Africa\nGermany\nGold Coast\nGreece\nGuatemala\nHaiti\nHonduras\nHungary\nIceland\nIran\nIraq\nIreland\nItaly\nJapan\nLatvia\nLebanon\nLiberia\nLithuania\nLuxembourg\nMadagascar\nManchukuo\nMengjiang\nMexico\nMongolia\nMozambique\nNationalist Spain\nNepal\nNetherlands\nNew Zealand\nNewfoundland\nNicaragua\nNigeria\nNorway\nOman\nPalestine\nPanama\nParaguay\nPeru\nPhilippines\nPoland\nPortugal\nRomania\nSarawak\nSaudi Arabia\nSiam\nSouth Africa\nSouthern Rhodesia\nSoviet Union\nSpanish Republic\nSweden\nSwitzerland\nSyria\nTannu Tuva\nTibet\nTransjordan\nTunisia\nTurkey\nUnited Kingdom\nUnited States\nUruguay\nVenezuela\nXinjiang\nYemen\nYugoslavia\nEthiopia (dead)\nOnly on\neverything\nterrain\nnation\nUndo (0)Redo (0)\nScenario\nPlace cityRemove cityMake capitalAdd coreRemove core\nGold of FranceSet\nAnnex…\nAfghanistan\nAlbania\nAnglo-Egyptian Sudan\nAngola\nArgentina\nAustralia\nAustria\nBelgian Congo\nBelgium\nBolivia\nBrazil\nBritish East Africa\nBritish India\nBritish Malaya\nBulgaria\nBurma\nCanada\nCeylon\nChile\nChina\nColombia\nCommunist China\nCosta Rica\nCuba\nCzechoslovakia\nDenmark\nDominican Republic\nDutch East Indies\nEcuador\nEgypt\nEl Salvador\nEstonia\nFinland\nFree City of Danzig\nFrench Equatorial Africa\nFrench Indochina\nFrench Morocco\nFrench West Africa\nGermany\nGold Coast\nGreece\nGuatemala\nHaiti\nHonduras\nHungary\nIceland\nIran\nIraq\nIreland\nItaly\nJapan\nLatvia\nLebanon\nLiberia\nLithuania\nLuxembourg\nMadagascar\nManchukuo\nMengjiang\nMexico\nMongolia\nMozambique\nNationalist Spain\nNepal\nNetherlands\nNew Zealand\nNewfoundland\nNicaragua\nNigeria\nNorway\nOman\nPalestine\nPanama\nParaguay\nPeru\nPhilippines\nPoland\nPortugal\nRomania\nSarawak\nSaudi Arabia\nSiam\nSouth Africa\nSouthern Rhodesia\nSoviet Union\nSpanish Republic\nSweden\nSwitzerland\nSyria\nTannu Tuva\nTibet\nTransjordan\nTunisia\nTurkey\nUnited Kingdom\nUnited States\nUruguay\nVenezuela\nXinjiang\nYemen\nYugoslavia\nAnnex into France\nEdit flag\nImport image\nas terrain (terrain colours)\nas nations (nation colours)\nScenario file\nExport\nLoad scenario\nClick or drag on the map to paint. The right button moves the map.",
+ "launchHistory": [
+  {
+   "tick": 0,
+   "kind": 12,
+   "a": 1,
+   "b": 19,
+   "x": null,
+   "y": null,
+   "an": "nation.GER",
+   "bn": "nation.FRA",
+   "of": ""
+  },
+  {
+   "tick": 0,
+   "kind": 56,
+   "a": 0,
+   "b": 92609249283,
+   "x": 1106.0337777777777,
+   "y": 285.8330462629184,
+   "an": "",
+   "bn": "nation.CZS",
+   "of": ""
+  },
+  {
+   "tick": 0,
+   "kind": 18,
+   "a": 83,
+   "b": 8,
+   "x": null,
+   "y": null,
+   "an": "nation.MEX",
+   "bn": "alliance.coalition",
+   "of": "nation.MEX",
+   "as": "founded"
+  },
+  {
+   "tick": 0,
+   "kind": 18,
+   "a": 90,
+   "b": 8,
+   "x": null,
+   "y": null,
+   "an": "nation.CUB",
+   "bn": "alliance.coalition",
+   "of": "nation.MEX"
+  },
+  {
+   "tick": 0,
+   "kind": 42,
+   "a": 15,
+   "b": 20,
+   "x": 1147.5,
+   "y": 395.5,
+   "an": "nation.ITA",
+   "bn": "nation.ENG",
+   "of": ""
+  }
+ ],
+ "saved": {
+  "bytes": 38809800,
+  "hash": 137064258,
+  "tick": 3
+ },
+ "historyStraight": [
+  {
+   "tick": 68,
+   "kind": 41,
+   "a": 524308,
+   "b": 1,
+   "x": 1057.6229230665363,
+   "y": 246.6229230665362,
+   "an": "nation.ENG",
+   "bn": "nation.GER",
+   "of": ""
+  },
+  {
+   "tick": 72,
+   "kind": 18,
+   "a": 4,
+   "b": 1,
+   "x": null,
+   "y": null,
+   "an": "nation.POL",
+   "bn": "alliance.anti_comintern",
+   "of": "nation.GER"
+  },
+  {
+   "tick": 72,
+   "kind": 41,
+   "a": 655380,
+   "b": 1,
+   "x": 1059.4013784509655,
+   "y": 248.40137845096552,
+   "an": "nation.ENG",
+   "bn": "nation.GER",
+   "of": ""
+  },
+  {
+   "tick": 82,
+   "kind": 41,
+   "a": 262164,
+   "b": 1,
+   "x": 1071.5,
+   "y": 255.5,
+   "an": "nation.ENG",
+   "bn": "nation.GER",
+   "of": ""
+  },
+  {
+   "tick": 84,
+   "kind": 41,
+   "a": 262164,
+   "b": 1,
+   "x": 1070.5625,
+   "y": 259.0625,
+   "an": "nation.ENG",
+   "bn": "nation.GER",
+   "of": ""
+  },
+  {
+   "tick": 86,
+   "kind": 41,
+   "a": 20,
+   "b": 1,
+   "x": 1070.5625,
+   "y": 259.0625,
+   "an": "nation.ENG",
+   "bn": "nation.GER",
+   "of": ""
+  },
+  {
+   "tick": 96,
+   "kind": 18,
+   "a": 31,
+   "b": 9,
+   "x": null,
+   "y": null,
+   "an": "nation.NOR",
+   "bn": "alliance.defensive",
+   "of": "nation.NOR",
+   "as": "founded"
+  },
+  {
+   "tick": 96,
+   "kind": 18,
+   "a": 9,
+   "b": 9,
+   "x": null,
+   "y": null,
+   "an": "nation.FIN",
+   "bn": "alliance.defensive",
+   "of": "nation.NOR"
+  }
+ ],
+ "historyLoaded": [
+  {
+   "tick": 68,
+   "kind": 41,
+   "a": 524308,
+   "b": 1,
+   "x": 1057.6229230665363,
+   "y": 246.6229230665362,
+   "an": "nation.ENG",
+   "bn": "nation.GER",
+   "of": ""
+  },
+  {
+   "tick": 72,
+   "kind": 18,
+   "a": 4,
+   "b": 1,
+   "x": null,
+   "y": null,
+   "an": "nation.POL",
+   "bn": "alliance.anti_comintern",
+   "of": "nation.GER"
+  },
+  {
+   "tick": 72,
+   "kind": 41,
+   "a": 655380,
+   "b": 1,
+   "x": 1059.4013784509655,
+   "y": 248.40137845096552,
+   "an": "nation.ENG",
+   "bn": "nation.GER",
+   "of": ""
+  },
+  {
+   "tick": 82,
+   "kind": 41,
+   "a": 262164,
+   "b": 1,
+   "x": 1071.5,
+   "y": 255.5,
+   "an": "nation.ENG",
+   "bn": "nation.GER",
+   "of": ""
+  },
+  {
+   "tick": 84,
+   "kind": 41,
+   "a": 262164,
+   "b": 1,
+   "x": 1070.5625,
+   "y": 259.0625,
+   "an": "nation.ENG",
+   "bn": "nation.GER",
+   "of": ""
+  },
+  {
+   "tick": 86,
+   "kind": 41,
+   "a": 20,
+   "b": 1,
+   "x": 1070.5625,
+   "y": 259.0625,
+   "an": "nation.ENG",
+   "bn": "nation.GER",
+   "of": ""
+  },
+  {
+   "tick": 96,
+   "kind": 18,
+   "a": 31,
+   "b": 9,
+   "x": null,
+   "y": null,
+   "an": "nation.NOR",
+   "bn": "alliance.defensive",
+   "of": "nation.NOR",
+   "as": "founded"
+  },
+  {
+   "tick": 96,
+   "kind": 18,
+   "a": 9,
+   "b": 9,
+   "x": null,
+   "y": null,
+   "an": "nation.FIN",
+   "bn": "alliance.defensive",
+   "of": "nation.NOR"
+  }
+ ],
+ "twin": {
+  "straight": {
+   "tick": 99,
+   "hash": 4161424894
+  },
+  "loaded": {
+   "tick": 99,
+   "hash": 4161424894
+  },
+  "same": true
+ },
+ "nukeAlertPhone": {
+  "x": 97.5,
+  "y": 46.234375,
+  "width": 195,
+  "height": 142.21875
+ },
+ "errors": []
+}

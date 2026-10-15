@@ -1,0 +1,590 @@
+{
+ "seed": 6619,
+ "shots": [
+  "critic/shots/c6c_6619_90_world_end.png",
+  "critic/shots/c6c_6619_91_fallout_world_end.png",
+  "critic/shots/c6c_6619_92_europe_end.png",
+  "critic/shots/c6c_6619_93_history_end.png",
+  "critic/shots/c6c_6619_94_charts_end.png"
+ ],
+ "years": [
+  {
+   "year": 1,
+   "tick": 8977,
+   "wallS": 47.145,
+   "living": 96,
+   "wars": 7,
+   "warheads": []
+  },
+  {
+   "year": 2,
+   "tick": 17845,
+   "wallS": 70.442,
+   "living": 99,
+   "wars": 7,
+   "warheads": []
+  },
+  {
+   "year": 3,
+   "tick": 26308,
+   "wallS": 90.725,
+   "living": 107,
+   "wars": 10,
+   "warheads": []
+  },
+  {
+   "year": 4,
+   "tick": 35472,
+   "wallS": 108.976,
+   "living": 117,
+   "wars": 10,
+   "warheads": []
+  },
+  {
+   "year": 5,
+   "tick": 43873,
+   "wallS": 137.276,
+   "living": 120,
+   "wars": 10,
+   "warheads": []
+  },
+  {
+   "year": 6,
+   "tick": 52969,
+   "wallS": 159.591,
+   "living": 124,
+   "wars": 5,
+   "warheads": []
+  },
+  {
+   "year": 7,
+   "tick": 61548,
+   "wallS": 177.886,
+   "living": 134,
+   "wars": 7,
+   "warheads": []
+  },
+  {
+   "year": 8,
+   "tick": 70369,
+   "wallS": 199.169,
+   "living": 132,
+   "wars": 3,
+   "warheads": []
+  },
+  {
+   "year": 9,
+   "tick": 79004,
+   "wallS": 219.397,
+   "living": 135,
+   "wars": 2,
+   "warheads": [
+    "nation.SOV:2",
+    "nation.ENG:2",
+    "nation.USA:2"
+   ]
+  },
+  {
+   "year": 10,
+   "tick": 87661,
+   "wallS": 244.667,
+   "living": 135,
+   "wars": 4,
+   "warheads": [
+    "nation.SOV:6",
+    "nation.FRA:3",
+    "nation.ENG:6",
+    "nation.USA:6"
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 96376,
+   "wallS": 298.456,
+   "living": 138,
+   "wars": 1,
+   "warheads": [
+    "nation.SOV:10",
+    "nation.FRA:7",
+    "nation.ENG:10",
+    "nation.USA:10"
+   ]
+  },
+  {
+   "year": 12,
+   "tick": 105163,
+   "wallS": 437.159,
+   "living": 143,
+   "wars": 4,
+   "warheads": [
+    "nation.SOV:11",
+    "nation.FRA:11",
+    "nation.ENG:14",
+    "nation.USA:14"
+   ]
+  },
+  {
+   "year": 13,
+   "tick": 113965,
+   "wallS": 652.928,
+   "living": 144,
+   "wars": 12,
+   "warheads": [
+    "nation.SOV:15",
+    "nation.FRA:15",
+    "nation.ENG:18",
+    "nation.USA:18"
+   ]
+  },
+  {
+   "year": 14,
+   "tick": 122689,
+   "wallS": 796.582,
+   "living": 141,
+   "wars": 8,
+   "warheads": [
+    "nation.FRA:19",
+    "nation.ENG:21",
+    "nation.USA:22"
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 131467,
+   "wallS": 925.937,
+   "living": 146,
+   "wars": 10,
+   "warheads": [
+    "nation.FRA:23",
+    "nation.ENG:25",
+    "nation.USA:26"
+   ]
+  },
+  {
+   "year": 16,
+   "tick": 140203,
+   "wallS": 1091.311,
+   "living": 148,
+   "wars": 16,
+   "warheads": [
+    "nation.FRA:27",
+    "nation.ENG:29",
+    "nation.USA:30"
+   ]
+  }
+ ],
+ "alerts": [
+  {
+   "n": 1,
+   "text": "Soviet Union struck Free Van with an atomic bomb: 13,600 dead",
+   "tick": 103542,
+   "wallS": 383.647,
+   "pausedOnAlert": true,
+   "shots": [
+    "critic/shots/c6c_6619_a1_0_as_it_lands.png",
+    "critic/shots/c6c_6619_a1_1_goto_300.png",
+    "critic/shots/c6c_6619_a1_1_goto_1200.png",
+    "critic/shots/c6c_6619_a1_1_goto_2500.png",
+    "critic/shots/c6c_6619_a1_1_goto_5000.png",
+    "critic/shots/c6c_6619_a1_2_history.png",
+    "critic/shots/c6c_6619_a1_3_fallout.png",
+    "critic/shots/c6c_6619_a1_4_political.png"
+   ],
+   "cam0": {
+    "cx": 1024,
+    "cy": 512,
+    "scale": 0.791015625,
+    "mpp": 24737.654320987655
+   },
+   "cam1": {
+    "cx": 1265.5,
+    "cy": 348.943704065852,
+    "scale": 20.872395833333332,
+    "mpp": 937.5,
+    "bursts": 1
+   },
+   "ticker": [
+    "1 October 1949 Soviet Union declared war on Free Van",
+    "1 October 1949 Free Prague declared war on Free Loška Dolina",
+    "2 October 1949 United Kingdom declared war on Brazil",
+    "2 October 1949 Free Loška Dolina made peace with Free Prague",
+    "23 October 1949 Soviet Union struck Free Van with an atomic bomb: 13,600 dead"
+   ],
+   "history": [
+    "24 October 1949 Soviet Union decided on a nuclear strike: its utility 369 in a thousand",
+    "23 October 1949 Soviet Union struck Free Van with an atomic bomb: 13,600 dead",
+    "23 October 1949 Soviet Union decided on a nuclear strike: its utility 10 in a thousand",
+    "2 October 1949 Free Loška Dolina made peace with Free Prague",
+    "2 October 1949 United Kingdom declared war on Brazil",
+    "1 October 1949 Free Prague declared war on Free Loška Dolina",
+    "1 October 1949 Free Loška Dolina broke away from Free Prague",
+    "1 October 1949 Soviet Union declared war on Free Van",
+    "1 October 1949 Free Van broke away from Soviet Union",
+    "1 October 1949 Soviet Union declared war on Free Șoldănești",
+    "1 October 1949 More of Soviet Union rose and joined Free Șoldănești",
+    "1 October 1949 More of Soviet Union rose and joined Free Bacău",
+    "1 October 1949 Land held by Free Prague rose and went back to Italy",
+    "1 October 1949 The Balkan Entente became a union under Turkey",
+    "1 October 1949 China's air force struck Soviet Union this month: 38,863 men, guns and vehicles lost"
+   ]
+  },
+  {
+   "n": 2,
+   "text": "Soviet Union set off an atomic bomb where no nation holds the land: 9,277 dead",
+   "tick": 103549,
+   "wallS": 393.411,
+   "pausedOnAlert": true,
+   "shots": [
+    "critic/shots/c6c_6619_a2_0_as_it_lands.png",
+    "critic/shots/c6c_6619_a2_1_goto_300.png",
+    "critic/shots/c6c_6619_a2_1_goto_1200.png",
+    "critic/shots/c6c_6619_a2_1_goto_2500.png",
+    "critic/shots/c6c_6619_a2_1_goto_5000.png",
+    "critic/shots/c6c_6619_a2_2_history.png",
+    "critic/shots/c6c_6619_a2_3_fallout.png",
+    "critic/shots/c6c_6619_a2_4_political.png"
+   ],
+   "cam0": {
+    "cx": 1024,
+    "cy": 470,
+    "scale": 1.222991943359375,
+    "mpp": 16000
+   },
+   "cam1": {
+    "cx": 1265.5,
+    "cy": 346.5,
+    "scale": 20.872395833333332,
+    "mpp": 937.5,
+    "bursts": 1
+   },
+   "ticker": [
+    "1 October 1949 Free Prague declared war on Free Loška Dolina",
+    "2 October 1949 United Kingdom declared war on Brazil",
+    "2 October 1949 Free Loška Dolina made peace with Free Prague",
+    "23 October 1949 Soviet Union struck Free Van with an atomic bomb: 13,600 dead",
+    "24 October 1949 Soviet Union set off an atomic bomb where no nation holds the land: 9,277 dead"
+   ],
+   "history": [
+    "24 October 1949 Soviet Union set off an atomic bomb where no nation holds the land: 9,277 dead",
+    "24 October 1949 Soviet Union decided on a nuclear strike: its utility 369 in a thousand",
+    "23 October 1949 Soviet Union struck Free Van with an atomic bomb: 13,600 dead",
+    "23 October 1949 Soviet Union decided on a nuclear strike: its utility 10 in a thousand",
+    "2 October 1949 Free Loška Dolina made peace with Free Prague",
+    "2 October 1949 United Kingdom declared war on Brazil",
+    "1 October 1949 Free Prague declared war on Free Loška Dolina",
+    "1 October 1949 Free Loška Dolina broke away from Free Prague",
+    "1 October 1949 Soviet Union declared war on Free Van",
+    "1 October 1949 Free Van broke away from Soviet Union",
+    "1 October 1949 Soviet Union declared war on Free Șoldănești",
+    "1 October 1949 More of Soviet Union rose and joined Free Șoldănești",
+    "1 October 1949 More of Soviet Union rose and joined Free Bacău",
+    "1 October 1949 Land held by Free Prague rose and went back to Italy",
+    "1 October 1949 The Balkan Entente became a union under Turkey"
+   ]
+  },
+  {
+   "n": 3,
+   "text": "Soviet Union struck Free Van with an atomic bomb: 2,903 dead",
+   "tick": 103614,
+   "wallS": 404.043,
+   "pausedOnAlert": true,
+   "shots": [
+    "critic/shots/c6c_6619_a3_0_as_it_lands.png",
+    "critic/shots/c6c_6619_a3_1_goto_300.png",
+    "critic/shots/c6c_6619_a3_1_goto_1200.png",
+    "critic/shots/c6c_6619_a3_1_goto_2500.png",
+    "critic/shots/c6c_6619_a3_1_goto_5000.png",
+    "critic/shots/c6c_6619_a3_2_history.png",
+    "critic/shots/c6c_6619_a3_3_fallout.png",
+    "critic/shots/c6c_6619_a3_4_political.png"
+   ],
+   "cam0": {
+    "cx": 1024,
+    "cy": 470,
+    "scale": 1.222991943359375,
+    "mpp": 16000
+   },
+   "cam1": {
+    "cx": 1266.5928469991513,
+    "cy": 348.4071530008486,
+    "scale": 20.872395833333332,
+    "mpp": 937.5,
+    "bursts": 1
+   },
+   "ticker": [
+    "2 October 1949 Free Loška Dolina made peace with Free Prague",
+    "23 October 1949 Soviet Union struck Free Van with an atomic bomb: 13,600 dead",
+    "24 October 1949 Soviet Union set off an atomic bomb where no nation holds the land: 9,277 dead",
+    "25 October 1949 Free Van made peace with Soviet Union",
+    "25 October 1949 Soviet Union struck Free Van with an atomic bomb: 2,903 dead"
+   ],
+   "history": [
+    "25 October 1949 Soviet Union struck Free Van with an atomic bomb: 2,903 dead",
+    "25 October 1949 Free Van made peace with Soviet Union",
+    "25 October 1949 Soviet Union decided on a nuclear strike: its utility 394 in a thousand",
+    "24 October 1949 Soviet Union set off an atomic bomb where no nation holds the land: 9,277 dead",
+    "24 October 1949 Soviet Union decided on a nuclear strike: its utility 369 in a thousand",
+    "23 October 1949 Soviet Union struck Free Van with an atomic bomb: 13,600 dead",
+    "23 October 1949 Soviet Union decided on a nuclear strike: its utility 10 in a thousand",
+    "2 October 1949 Free Loška Dolina made peace with Free Prague",
+    "2 October 1949 United Kingdom declared war on Brazil",
+    "1 October 1949 Free Prague declared war on Free Loška Dolina",
+    "1 October 1949 Free Loška Dolina broke away from Free Prague",
+    "1 October 1949 Soviet Union declared war on Free Van",
+    "1 October 1949 Free Van broke away from Soviet Union",
+    "1 October 1949 Soviet Union declared war on Free Șoldănești",
+    "1 October 1949 More of Soviet Union rose and joined Free Șoldănești"
+   ]
+  },
+  {
+   "n": 4,
+   "text": "Soviet Union struck China with an atomic bomb: 562,183 dead",
+   "tick": 116835,
+   "wallS": 693.393,
+   "pausedOnAlert": true,
+   "shots": [
+    "critic/shots/c6c_6619_a4_0_as_it_lands.png",
+    "critic/shots/c6c_6619_a4_1_goto_300.png",
+    "critic/shots/c6c_6619_a4_1_goto_1200.png",
+    "critic/shots/c6c_6619_a4_1_goto_2500.png",
+    "critic/shots/c6c_6619_a4_1_goto_5000.png",
+    "critic/shots/c6c_6619_a4_2_history.png",
+    "critic/shots/c6c_6619_a4_3_fallout.png",
+    "critic/shots/c6c_6619_a4_4_political.png"
+   ],
+   "cam0": {
+    "cx": 1024,
+    "cy": 470,
+    "scale": 1.222991943359375,
+    "mpp": 16000
+   },
+   "cam1": {
+    "cx": 1630.3957333333337,
+    "cy": 424.06995164053455,
+    "scale": 20.872395833333332,
+    "mpp": 937.5,
+    "bursts": 7
+   },
+   "ticker": [
+    "30 April 1951 Soviet Union struck Free Volyn II with an atomic bomb: 1,039 dead",
+    "1 May 1951 Free Lower Austria declared war on Free Bavaria",
+    "1 May 1951 Nationalist Spain's air force struck Free Bavaria this month: 8,970 men, guns and vehicles lost",
+    "1 May 1951 Japan declared war on Free Tokyo",
+    "1 May 1951 Soviet Union struck China with an atomic bomb: 562,183 dead"
+   ],
+   "history": [
+    "1 May 1951 Soviet Union struck China with an atomic bomb: 562,183 dead",
+    "1 May 1951 Japan declared war on Free Tokyo",
+    "1 May 1951 Free Tokyo broke away from Japan",
+    "1 May 1951 Land held by Italy rose and went back to Yugoslavia",
+    "1 May 1951 Nationalist Spain's air force struck Free Bavaria this month: 8,970 men, guns and vehicles lost",
+    "1 May 1951 Free Liège II's air force struck Netherlands this month: 4,716 men, guns and vehicles lost",
+    "1 May 1951 United Kingdom's air force struck Free Bavaria this month: 4,560 men, guns and vehicles lost",
+    "1 May 1951 Soviet Union decided on a nuclear strike: its utility 147 in a thousand",
+    "1 May 1951 Free Liaoning II joined the League against the Bomb",
+    "1 May 1951 Free Volyn II joined the League against the Bomb",
+    "1 May 1951 Free Kırklareli joined the League against the Bomb",
+    "1 May 1951 Free Tartu II founded the League against the Bomb",
+    "1 May 1951 Free Lower Austria declared war on Free Bavaria",
+    "30 April 1951 Soviet Union struck Free Volyn II with an atomic bomb: 1,039 dead",
+    "30 April 1951 Free Volyn II made peace with Soviet Union"
+   ]
+  },
+  {
+   "n": 5,
+   "text": "Soviet Union set off an atomic bomb where no nation holds the land: 16,596 dead",
+   "tick": 117013,
+   "wallS": 703.642,
+   "pausedOnAlert": true,
+   "shots": [
+    "critic/shots/c6c_6619_a5_0_as_it_lands.png"
+   ],
+   "cam0": {
+    "cx": 1024,
+    "cy": 470,
+    "scale": 1.222991943359375,
+    "mpp": 16000
+   }
+  },
+  {
+   "n": 6,
+   "text": "Soviet Union struck Free Bacău with an atomic bomb: 7,965 dead",
+   "tick": 117529,
+   "wallS": 706.83,
+   "pausedOnAlert": true,
+   "shots": [
+    "critic/shots/c6c_6619_a6_0_as_it_lands.png"
+   ],
+   "cam0": {
+    "cx": 1024,
+    "cy": 470,
+    "scale": 1.222991943359375,
+    "mpp": 16000
+   }
+  },
+  {
+   "n": 7,
+   "text": "Soviet Union struck Japan with an atomic bomb: 720,325 dead",
+   "tick": 117684,
+   "wallS": 707.962,
+   "pausedOnAlert": true,
+   "shots": [
+    "critic/shots/c6c_6619_a7_0_as_it_lands.png"
+   ],
+   "cam0": {
+    "cx": 1024,
+    "cy": 470,
+    "scale": 1.222991943359375,
+    "mpp": 16000
+   }
+  },
+  {
+   "n": 8,
+   "text": "Soviet Union struck United Kingdom with an atomic bomb: 1,371,914 dead",
+   "tick": 119066,
+   "wallS": 732.323,
+   "pausedOnAlert": true,
+   "shots": [
+    "critic/shots/c6c_6619_a8_0_as_it_lands.png"
+   ],
+   "cam0": {
+    "cx": 1024,
+    "cy": 470,
+    "scale": 1.222991943359375,
+    "mpp": 16000
+   }
+  },
+  {
+   "n": 9,
+   "text": "United Kingdom struck China with an atomic bomb: 499,000 dead",
+   "tick": 119089,
+   "wallS": 733.449,
+   "pausedOnAlert": true,
+   "shots": [
+    "critic/shots/c6c_6619_a9_0_as_it_lands.png"
+   ],
+   "cam0": {
+    "cx": 1024,
+    "cy": 470,
+    "scale": 1.222991943359375,
+    "mpp": 16000
+   }
+  },
+  {
+   "n": 10,
+   "text": "Soviet Union struck Nationalist Spain with an atomic bomb: 163,474 dead",
+   "tick": 120439,
+   "wallS": 760.864,
+   "pausedOnAlert": true,
+   "shots": [
+    "critic/shots/c6c_6619_a10_0_as_it_lands.png"
+   ],
+   "cam0": {
+    "cx": 1024,
+    "cy": 470,
+    "scale": 1.222991943359375,
+    "mpp": 16000
+   }
+  },
+  {
+   "n": 11,
+   "text": "Soviet Union set off an atomic bomb where no nation holds the land: 11,183 dead",
+   "tick": 121903,
+   "wallS": 784.255,
+   "pausedOnAlert": true,
+   "shots": [
+    "critic/shots/c6c_6619_a11_0_as_it_lands.png"
+   ],
+   "cam0": {
+    "cx": 1024,
+    "cy": 470,
+    "scale": 1.222991943359375,
+    "mpp": 16000
+   }
+  }
+ ],
+ "historyEnd": [
+  "10 December 1953 Colombia made peace with Brazil",
+  "1 December 1953 Land held by British India rose and went back to Free Baghlan",
+  "1 December 1953 Denmark's air force struck Free Bavaria this month: 7,088 men, guns and vehicles lost",
+  "1 December 1953 Free Lower Austria's air force struck Free Bavaria this month: 4,096 men, guns and vehicles lost",
+  "1 December 1953 Brazil's air force struck Argentina this month: 3,164 men, guns and vehicles lost",
+  "1 December 1953 Siam's submarines raided the convoys of China",
+  "1 December 1953 United Kingdom's submarines raided the convoys of China",
+  "1 December 1953 Japan's submarines raided the convoys of Netherlands",
+  "1 December 1953 Soviet Union's submarines raided the convoys of United Kingdom",
+  "1 November 1953 Land held by Syria rose and went back to Turkey",
+  "1 November 1953 Land held by British India rose and went back to Free Baghlan",
+  "1 November 1953 Land held by Netherlands rose and went back to Free Prague",
+  "1 November 1953 Brazil's air force struck Argentina this month: 6,028 men, guns and vehicles lost",
+  "1 November 1953 United Kingdom's air force struck China this month: 848 men, guns and vehicles lost",
+  "1 November 1953 Denmark's air force struck Free Bavaria this month: 576 men, guns and vehicles lost",
+  "1 November 1953 Siam's submarines raided the convoys of China",
+  "1 November 1953 United Kingdom's submarines raided the convoys of China",
+  "1 November 1953 Japan's submarines raided the convoys of Netherlands",
+  "1 November 1953 Soviet Union's submarines raided the convoys of United Kingdom",
+  "6 October 1953 Free Lower Austria declared war on Free Bavaria",
+  "1 October 1953 Land held by Syria rose and went back to Turkey",
+  "1 October 1953 Land held by Nationalist Spain rose and went back to Italy",
+  "1 October 1953 Land held by Netherlands rose and went back to Soviet Union",
+  "1 October 1953 France's air force struck Soviet Union this month: 11,376 men, guns and vehicles lost",
+  "1 October 1953 Brazil's air force struck Argentina this month: 6,024 men, guns and vehicles lost",
+  "1 October 1953 United Kingdom's air force struck China this month: 5,732 men, guns and vehicles lost",
+  "1 October 1953 Siam's submarines raided the convoys of China",
+  "1 October 1953 United Kingdom's submarines raided the convoys of China",
+  "1 October 1953 Japan's submarines raided the convoys of Netherlands",
+  "1 October 1953 Soviet Union's submarines raided the convoys of Netherlands",
+  "1 October 1953 Soviet Union's submarines raided the convoys of United Kingdom",
+  "30 September 1953 Brazil made peace with Free Santa Cruz",
+  "29 September 1953 Free Liège II made peace with Free Volyn II",
+  "23 September 1953 Venezuela declared war on Brazil",
+  "20 September 1953 Free Berlin declared war on Free Bavaria",
+  "17 September 1953 Free Saxony-Anhalt declared war on Free Bavaria",
+  "9 September 1953 Argentina declared war on Brazil",
+  "7 September 1953 Free Lapland declared war on Soviet Union",
+  "2 September 1953 Free Bacău declared war on Soviet Union",
+  "1 September 1953 Land held by Netherlands rose and went back to Soviet Union",
+  "1 September 1953 Land held by Syria rose and went back to Turkey",
+  "1 September 1953 Land held by Siam rose and went back to Free Lampang",
+  "1 September 1953 More of United Kingdom rose and joined Free Mashonaland West",
+  "1 September 1953 Netherlands declared war on Free Liège II",
+  "1 September 1953 More of Netherlands rose and joined Free Liège II",
+  "1 September 1953 Free Liège II's air force struck Free Bavaria this month: 10,744 men, guns and vehicles lost",
+  "1 September 1953 Netherlands's air force struck Free Bavaria this month: 8,831 men, guns and vehicles lost",
+  "1 September 1953 United Kingdom's air force struck China this month: 5,802 men, guns and vehicles lost",
+  "1 September 1953 France and China fought in the air this month: France lost 0 aircraft, China 12",
+  "1 September 1953 Siam's submarines raided the convoys of China",
+  "1 September 1953 United Kingdom's submarines raided the convoys of China",
+  "1 September 1953 Japan's submarines raided the convoys of Netherlands",
+  "1 September 1953 Soviet Union's submarines raided the convoys of Netherlands",
+  "1 September 1953 Soviet Union's submarines raided the convoys of United Kingdom",
+  "30 August 1953 Free Volyn II made peace with Soviet Union",
+  "25 August 1953 France captured Free Central Banat's capital",
+  "23 August 1953 Netherlands made peace with Free Bavaria",
+  "23 August 1953 Free La Massana joined the Anglo-French Entente",
+  "19 August 1953 United Kingdom and Soviet Union fought at sea: United Kingdom lost 2 ships, Soviet Union 0",
+  "12 August 1953 United Kingdom and Soviet Union fought at sea: United Kingdom lost 0 ships, Soviet Union 6",
+  "1 August 1953 Land held by Netherlands rose and went back to Free Kaunas",
+  "1 August 1953 Netherlands's air force struck Free Bavaria this month: 9,084 men, guns and vehicles lost",
+  "1 August 1953 British India's air force struck Free Razavi Khorasan this month: 5,180 men, guns and vehicles lost",
+  "1 August 1953 Free Liège II's air force struck Free Tartu II this month: 3,812 men, guns and vehicles lost",
+  "1 August 1953 Free Liège II and Free Bavaria fought in the air this month: Free Liège II lost 0 aircraft, Free Bavaria 24",
+  "1 August 1953 Free Bucharest and Free Bavaria fought in the air this month: Free Bucharest lost 3 aircraft, Free Bavaria 15",
+  "1 August 1953 Siam's submarines raided the convoys of China",
+  "1 August 1953 United Kingdom's submarines raided the convoys of China",
+  "1 August 1953 Japan's submarines raided the convoys of Netherlands",
+  "1 August 1953 Soviet Union's submarines raided the convoys of Netherlands",
+  "1 August 1953 Soviet Union's submarines raided the convoys of United Kingdom",
+  "1 August 1953 Free Mashonaland West could not pay its army and disbanded formations: 1",
+  "31 July 1953 South Africa joined the Defensive Pact of Free Laâyoune-Boujdour-Sakia El Hamra",
+  "31 July 1953 Free Laâyoune-Boujdour-Sakia El Hamra founded a Defensive Pact",
+  "20 July 1953 Free Liège II declared war on Free Volyn II",
+  "11 July 1953 British India captured Free Razavi Khorasan's capital",
+  "1 July 1953 Land held by France rose and went back to Free Prague",
+  "1 July 1953 Land held by Netherlands rose and went back to Soviet Union",
+  "1 July 1953 Netherlands's air force struck Free Bavaria this month: 9,544 men, guns and vehicles lost",
+  "1 July 1953 Free Liège II's air force struck Soviet Union this month: 6,868 men, guns and vehicles lost"
+ ],
+ "errors": [],
+ "wallS": 1097.458
+}

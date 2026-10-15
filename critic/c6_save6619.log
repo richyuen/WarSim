@@ -1,0 +1,17 @@
+
+> warsim@0.0.1 sim
+> tsx tools/headless/cli.ts --scenario 1938 --seed 6619 --years 12 --save critic/c6_seed6619_y12.bin
+
+year   1  tick 8760  hash c1e915d6  nations 96  formations 1064  flipped 27450  tick ms mean 5.3801 p95 15.4218  (47.24 s)
+year   2  tick 17520  hash 42d86918  nations 97  formations 863  flipped 21440  tick ms mean 3.6807 p95 12.5069  (32.32 s)
+year   3  tick 26280  hash 33dbb916  nations 102  formations 848  flipped 11402  tick ms mean 3.1205 p95 11.4082  (27.42 s)
+year   4  tick 35040  hash ed50b36a  nations 116  formations 895  flipped 13956  tick ms mean 2.7221 p95 10.0578  (23.94 s)
+year   5  tick 43800  hash d7d95c54  nations 118  formations 945  flipped 35136  tick ms mean 3.3713 p95 11.8101  (29.60 s)
+year   6  tick 52560  hash 93a969fd  nations 122  formations 991  flipped 16263  tick ms mean 3.1060 p95 10.0601  (27.27 s)
+year   7  tick 61320  hash fcc587a4  nations 134  formations 1003  flipped 10775  tick ms mean 2.6578 p95 9.6246  (23.34 s)
+year   8  tick 70080  hash dc5fc71d  nations 132  formations 1035  flipped 47575  tick ms mean 1.8589 p95 6.5371  (16.32 s)
+year   9  tick 78840  hash ae95b810  nations 134  formations 1043  flipped 9111  tick ms mean 1.6584 p95 5.7147  (14.56 s)
+year  10  tick 87600  hash ffb1577c  nations 135  formations 1083  flipped 7889  tick ms mean 2.1918 p95 5.9099  (19.24 s)
+year  11  tick 96360  hash 7acf732b  nations 138  formations 1139  flipped 5927  tick ms mean 3.7982 p95 6.8149  (33.34 s)
+year  12  tick 105120  hash 11eca576  nations 143  formations 1124  flipped 26517  tick ms mean 6.7022 p95 14.0552  (58.75 s)
+done: 12 years, 353.4 s wall, mean tick 3.3540 ms, final hash 11eca576 → .cache/runs/1938-seed6619-12y.json
