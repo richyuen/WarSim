@@ -27,12 +27,6 @@ quick sweep as a smoke test.
 
 ## Phase 6 — Nuclear AI
 
-- [ ] 6.9 Phase 6 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
-  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence. The sweep
-  of 6.8 is this phase's smoke run (ADR-58); the features are in, so sweeps judge again from
-  here.
-  AT: the five limits of the 6.8 sweep are in PROGRESS, with what fails listed for Phase 7.
-
 ## Phase 7 — Balance, polish, soak
 
 - [ ] 7.1 Performance pass against all budgets (T0 60 fps, T2 30 fps @10k, tick ≤ 1.5 ms).
@@ -715,3 +709,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 6.6 Nuke FX at every tier (flash, shockwave, mushroom cloud, fallout overlay), alert banner, auto-pause option, go-to button. […]
 - [x] 6.7 Scripted AI nuclear strike demo (seeded scenario where the AI *decides* to strike, not God Mode). […]
 - [x] 6.8 Multi-decade sweep with nukes on: no runaway extinction; MAD dynamics observed. […]
+- [x] 6.9 Phase 6 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]

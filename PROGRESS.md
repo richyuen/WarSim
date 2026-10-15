@@ -15654,3 +15654,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   `NUDGE_MAX_PX` 6 → 7 (two pairs of Spain's markers a hair over a quarter). The five specs and
   `markers1938`, `countersRest1938`, `handover1938`, `declutter1938` by hand; the gate: the
   whole unit suite 1447 of 1448 (the known red build time), the pin.
+
+## 2026-10-14 — PLAN 6.9: Phase 6 review done
+
+- **`check:review`** on `4140a52`'s tree: green (2 known red: `fallen1938`, `zoomDemo1938`; 0 not
+  known). The tick's commit runs parity alone on that code.
+- **The five limits of the 6.8 sweep** (`docs/sweeps/2026-10-14-sweep-nukes.md`, seeds 1–10 × 50
+  years): land moving in the last 5 years ≥ 1 %: pass on 10 of 10 (13.9–40.9 %); largest land
+  < 35 %: pass on 10 (7.0–10.6 %); largest income < 40 %: pass on 10 (13.5–32.3 %); 20–250 nations
+  alive every year: **fail on 2** (seed 6: 255, seed 7: 253; BLOCKERS, PLAN 1.42); a war in ≥ 80 %
+  of the years: pass on 10 (100 %). Riser and faller: 10 of 10 each.
+- **For Phase 7** (PLAN 1.42, 7.4): nations alive over 250 in 2 of 10 seeds; how often nuclear
+  weapons are used (up to 3.5 bursts a year); no second strike from submarines; marching columns
+  at one place drawn in one another.
+- **Next:** the critic (a phase review ticked: `npm run critic:due`).

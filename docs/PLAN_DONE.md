@@ -8850,3 +8850,22 @@ Of 6.5 (open in PLAN.md):
 
 - [x] 6.8 Multi-decade sweep with nukes on: no runaway extinction; MAD dynamics observed.
   AT: sweep report: in ≥ 1 seed nukes are used; in no seed does > 50% of land carry fallout.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+- [x] 6.9 Phase 6 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code
+  and missing tests over the whole phase; re-read SPEC for drift, PARITY rows updated with evidence. The sweep
+  of 6.8 is this phase's smoke run (ADR-58); the features are in, so sweeps judge again from
+  here.
+  AT: the five limits of the 6.8 sweep are in PROGRESS, with what fails listed for Phase 7.
