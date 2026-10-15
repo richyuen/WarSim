@@ -16058,3 +16058,29 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Specs:** none run by hand; nothing drawn changed, and the pin and the hashes say the game is
   the same.
 - **Next:** PLAN 7.1j.
+
+## 2026-10-15 — PLAN 7.1j: the frame budgets on the game itself
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Built** (`41108cc`, ADR-402): bench G in `npm run bench` (`tools/bench/game.ts`): the production
+  build of the 1938 world at 1920 × 1080, running at ×5, the view's own loop with every frame
+  drawn. T0: the whole world, the camera panning. T2: 200 m/px over western China, 384 Japanese
+  divisions stood by God Mode until 10,000 element sprites or more are in the view. The verdict is
+  fps on this machine's GPU; SwiftShader beside it, reported; SPEC §8's GPU and draw budgets with
+  each case, reported. Report `docs/bench/G-game.json`, screenshots `docs/bench/G-game-*.png`
+  (looked at: the world with names and counters at T0, the grid of divisions with their sprites at
+  T2, the bottom bar at ×5).
+- **AT** (quiet machine, 3 % load): green. RTX 4070 Ti: T0 190.6 fps (budget 60; p50 3.3 ms, p95
+  16.4, longest 31.7), 102 nations; T2 108.9 fps (budget 30; p95 10.8 ms) with 10,752 sprites in
+  the view. SwiftShader: T0 2.8 fps, T2 2.3 fps (the stage lost divisions to China over the
+  minutes it took: 5,218 sprites at the end; not judged).
+- **Missed, to PLAN 7.1l:** the GPU's frame T0 1.58 ms (SPEC 1.0; 0.74 over 5 draws: the query
+  spans the draws' CPU, an upper bound), T2 2.57 (SPEC 2.0; 4.41 in the run before); the draw's
+  CPU at T2 7.8 ms (SPEC 6; 9.1 before), most likely the 384 tags and markers on the overlay.
+- **Gotchas:** tsx names the functions declared inside a `page.evaluate` callback with esbuild's
+  `__name`, which the page does not have: `addInitScript({ content: 'window.__name = (f) => f;' })`.
+  A write to `view.camera` is undone by the camera controller: `view.controller.set`. The sim
+  client's `setPaused` leaves the HUD saying "Paused": `hud.togglePause`. A screenshot under
+  SwiftShader needs more than Playwright's 30 s.
+- **Specs:** none; nothing in the game changed.
+- **Next:** PLAN 7.1k.

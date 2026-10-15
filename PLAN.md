@@ -162,11 +162,7 @@ quick sweep as a smoke test.
   - [x] 7.1g The operational AI (15.3 %: `planNation` 13.1, `orderMove` 5.1, `passageOf` 3.4, […]
   - [x] 7.1h Territory (8.5 %: `territorySystem`'s own 3.1 %, `frontierOf` 1.9 %) and supply […]
   - [x] 7.1i The operational AI's war years. The line of R4-B5 holds on HEAD (7.1a: seed 5303's […]
-  - [ ] 7.1j The frame budgets: a bench of the game itself (the 1938 world, 100+ nations, T0 at
-    1920 × 1080; T2 with 10,000 proxies or more on screen) in `npm run bench`, its report in
-    `docs/bench/` with the budget and pass or fail; the GPU of this machine (an RTX 4070 Ti) and
-    one weak setting (the software rasteriser or a throttled GPU) beside it. AT: the report green
-    on this machine.
+  - [x] 7.1j The frame budgets: a bench of the game itself (the 1938 world, 100+ nations, T0 at […]
   - [ ] 7.1k The tests parked until 7.1 (`tools/gate/knownRed.json`: `aiSweep3`'s 900 s; the three
     timing tests of the unit suite): each passes here alone, or stays with a BLOCKERS line on why.
     Found at 7.1e: `zoomDemo1938` is on the list for wall time on a software GPU, but here it fails
@@ -188,6 +184,14 @@ quick sweep as a smoke test.
     between plans; the frontier's `Map` is built at each call of the AI (8 % of it); the first
     call after a load builds every cache (80 to 100 ms). In the 25 years, calls of 42 to 108 ms
     in years 5, 11, 12, 18 and 21 (nation 20's plan of 37 ms in year 17 was not taken apart).
+    Left by 7.1j (`docs/bench/G-game.json`, ADR-402): SPEC §8's translations missed on the game
+    itself, at 1080p on the RTX 4070 Ti: the GPU's frame at T0 1.58 ms (budget 1.0; 0.74 over 5
+    draws), at T2 with 10,752 sprites 2.57 (budget 2.0; 4.41 in an earlier run); the main thread's
+    draw at T2 7.8 ms a frame (budget 6; 9.1 earlier). First the GPU of a frame by layer (the
+    timer query spans the draws' CPU); at T2 the 384 divisions' tags and markers on the Canvas2D
+    overlay, not the sprites, are what the screenshot shows. T0's frames are two-moded (p50 3.3 ms,
+    p95 16.4, longest 31.7): the hitches, likely at a snapshot's arrival, go with the T3 ones. 7.1l's
+    AT needs these met, the translation derived again with an ADR, or a BLOCKERS line.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.

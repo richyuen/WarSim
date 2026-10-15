@@ -9274,3 +9274,25 @@ Of 7.1 (open in PLAN.md):
     first 39.2 ms (the first, the load's caches, 80); the 25 years: year 17 1.360 ms (2.667), its
     longest 36.9 ms, first five years 1.259 ms a tick and last five 1.252 (× 0.99), the same final
     hash.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1 (open in PLAN.md):
+
+  - [x] 7.1j The frame budgets: a bench of the game itself (the 1938 world, 100+ nations, T0 at
+    1920 × 1080; T2 with 10,000 proxies or more on screen) in `npm run bench`, its report in
+    `docs/bench/` with the budget and pass or fail; the GPU of this machine (an RTX 4070 Ti) and
+    one weak setting (the software rasteriser or a throttled GPU) beside it. AT: the report green
+    on this machine.

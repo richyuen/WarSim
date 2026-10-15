@@ -1,0 +1,176 @@
+{
+  "bench": "G",
+  "date": "2026-10-15T13:54:05.339Z",
+  "budgets": {
+    "t0Fps": 60,
+    "t2Fps": 30,
+    "t2Proxies": 10000,
+    "specT0GpuMs": 1,
+    "specT2GpuMs": 2,
+    "specFrameCpuMs": 6,
+    "judgedBy": [
+      "gpu"
+    ]
+  },
+  "pass": true,
+  "settings": [
+    {
+      "setting": "gpu",
+      "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Ti (0x00002782) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "cases": [
+        {
+          "tier": "T0",
+          "proxiesOnScreen": 0,
+          "elements": 0,
+          "nations": 102,
+          "metresPerPx": 20614.711934156378,
+          "frames": 1526,
+          "seconds": 8.0055,
+          "fps": 190.61894947223786,
+          "rafFps": 190.4940353506964,
+          "frameMsP50": 3.3000000000010914,
+          "frameMsP95": 16.400000000001455,
+          "frameMsMax": 31.700000000000728,
+          "cpuMsP50": 2.3999999910593033,
+          "cpuMsP95": 2.9000000059604645,
+          "gpuFrameMs": 1.5756288,
+          "gpuFrameMs5": 0.7370752,
+          "budgetFps": 60,
+          "specGpuMs": {
+            "budget": 1,
+            "value": 1.5756288,
+            "within": false
+          },
+          "specCpuMs": {
+            "budget": 6,
+            "value": 2.3999999910593033,
+            "within": true
+          },
+          "pass": true
+        },
+        {
+          "tier": "T2",
+          "proxiesOnScreen": 10752,
+          "elements": 10752,
+          "nations": 102,
+          "metresPerPx": 200,
+          "frames": 874,
+          "seconds": 8.023699999988079,
+          "fps": 108.9273028654235,
+          "rafFps": 108.80267208411296,
+          "frameMsP50": 8.799999999999272,
+          "frameMsP95": 10.799999999999272,
+          "frameMsMax": 14.599999999998545,
+          "cpuMsP50": 7.799999997019768,
+          "cpuMsP95": 8.5,
+          "gpuFrameMs": 2.571776,
+          "gpuFrameMs5": 2.3963647999999997,
+          "budgetFps": 30,
+          "specGpuMs": {
+            "budget": 2,
+            "value": 2.571776,
+            "within": false
+          },
+          "specCpuMs": {
+            "budget": 6,
+            "value": 7.799999997019768,
+            "within": false
+          },
+          "stage": {
+            "nation": "JAP",
+            "template": "infantry_div",
+            "divisions": 384,
+            "grid": [
+              24,
+              16
+            ],
+            "site": [
+              1578.5,
+              338.5
+            ]
+          },
+          "pass": true
+        }
+      ]
+    },
+    {
+      "setting": "swiftshader",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "cases": [
+        {
+          "tier": "T0",
+          "proxiesOnScreen": 0,
+          "elements": 0,
+          "nations": 102,
+          "metresPerPx": 20614.711934156378,
+          "frames": 23,
+          "seconds": 8.11610000000894,
+          "fps": 2.8338734121036784,
+          "rafFps": 2.71066152462091,
+          "frameMsP50": 549.6000000000022,
+          "frameMsP95": 843.7999999999993,
+          "frameMsMax": 1148.7999999999993,
+          "cpuMsP50": 4.199999988079071,
+          "cpuMsP95": 5.299999997019768,
+          "gpuFrameMs": 195.67275999999998,
+          "gpuFrameMs5": 204.71704,
+          "budgetFps": 60,
+          "specGpuMs": {
+            "budget": 1,
+            "value": 195.67275999999998,
+            "within": false
+          },
+          "specCpuMs": {
+            "budget": 6,
+            "value": 4.199999988079071,
+            "within": true
+          },
+          "pass": null
+        },
+        {
+          "tier": "T2",
+          "proxiesOnScreen": 5218,
+          "elements": 5248,
+          "nations": 98,
+          "metresPerPx": 200,
+          "frames": 19,
+          "seconds": 8.29079999999702,
+          "fps": 2.291696820573024,
+          "rafFps": 2.171081198437602,
+          "frameMsP50": 584.5,
+          "frameMsP95": 911.5,
+          "frameMsMax": 911.5,
+          "cpuMsP50": 12.800000011920929,
+          "cpuMsP95": 23.299999997019768,
+          "gpuFrameMs": 647.2194833333334,
+          "gpuFrameMs5": 595.10318,
+          "budgetFps": 30,
+          "specGpuMs": {
+            "budget": 2,
+            "value": 647.2194833333334,
+            "within": false
+          },
+          "specCpuMs": {
+            "budget": 6,
+            "value": 12.800000011920929,
+            "within": false
+          },
+          "stage": {
+            "nation": "JAP",
+            "template": "infantry_div",
+            "divisions": 384,
+            "grid": [
+              24,
+              16
+            ],
+            "site": [
+              1578.5,
+              338.5
+            ]
+          },
+          "pass": null
+        }
+      ]
+    }
+  ]
+}

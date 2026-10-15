@@ -2488,7 +2488,11 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
 10 000 visible proxies. Snapshot build ≤ 2 ms. Main-thread frame CPU ≤ 6 ms.
 Sim tick ≤ 1.5 ms average (Node, M, 1938). Dev-GPU translation (ADR-4): T0 frame ≤ 1.0 ms
 GPU and T2 frame with 10k proxies ≤ 2.0 ms GPU at 1080p on the bench machine (Phase 0:
-0.46 and 0.41 ms). The map view redraws only when the camera, a snapshot or an
+0.46 and 0.41 ms). *As built (PLAN 7.1j, ADR-402):* `npm run bench -- G` measures the game
+itself, the 1938 world at 1080p with the game running: T0 190.6 fps, T2 108.9 fps with 10,752
+element sprites in the view (RTX 4070 Ti); the software rasteriser 2.8 and 2.3 fps, reported. The
+GPU and main-thread translations above were missed there (GPU T0 1.58 ms, T2 2.57; draw at T2
+7.8 ms) and are PLAN 7.1l's. The map view redraws only when the camera, a snapshot or an
 interpolation changes something, and once more after any frame that left a unit animation
 unfinished, however late that frame comes (PLAN 2.7m): the end of an animation is what stays
 on screen.

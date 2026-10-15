@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-402 · 2026-10-15 · accepted — The frame budgets judged on the game itself, by fps on this machine's GPU (PLAN 7.1j)
+
+Until now the frame budgets were measured on synthetic pages (benches A, B and R of Phase 0):
+a map and 10,000 proxies of the bench's own making. `npm run bench -- G` (`tools/bench/game.ts`)
+measures the game: the production build of the 1938 world (seed 1938) at 1920 × 1080 and a
+device pixel ratio of 1, the game running at its default speed (×5), the view's own loop with
+every frame drawn (`requestDraw` each animation frame; a frame counts when `view.frames` moves).
+- **T0:** the whole world across the view (102 living nations when measured), the camera panning
+  east 40 cells a second. Budget ≥ 60 fps.
+- **T2:** at 200 m/px over western China, God Mode stands 384 Japanese infantry divisions (a 24 × 16
+  grid across the view, on ground painted Japan's, Japan's AI off) and the measure starts when
+  10,000 element sprites or more have their place in the view. Budget ≥ 30 fps, with 10,000 or
+  more still in the view at the end. No natural view of the 1938 world holds 10,000 sprites at T2
+  (a division is 28 elements; 10,000 is some 360 divisions in 20 × 11 cells), so the stage is
+  made by the game's own commands: the sprites are the sim's elements, as at any other time.
+- **The verdict** (`pass`, the exit code) is PLAN 7.1's budgets, fps on this machine's GPU (RTX 4070
+  Ti, ANGLE/D3D11). The software rasteriser (SwiftShader) is the weak setting, run beside it and
+  reported without a verdict: it is what the gate's e2e runs on, not a mid-range laptop.
+- **SPEC §8's translations are reported, not judged:** the GPU's frame (T0 ≤ 1.0 ms, T2 ≤ 2.0 ms,
+  ADR-4) and the main thread's draw (≤ 6 ms, the median of `view.draw`) are written with each case
+  with `within`, and printed. They were missed at 7.1j (GPU T0 1.58, T2 2.57 and 4.41 in an
+  earlier run; draw T2 7.8 and 9.1) and go to PLAN 7.1l, whose AT cannot close without them met,
+  the translation derived again with an ADR, or a BLOCKERS line. The GPU's figure is a timer
+  query around 30 whole draws (and 5): it spans the draws' CPU, so where the GPU waits for the next
+  draw it counts: an upper bound. T0's 0.74 over 5 draws against 1.58 over 30 is such a wait.
+  The draw's CPU is `view.draw` alone; the snapshot's apply and upload on the main thread are
+  outside it.
+
+**Why.** PLAN 7.1's first line names the budgets (T0 60 fps, T2 30 fps at 10k); the SPEC's GPU
+milliseconds stand in for a mid-range laptop on a GPU that cannot fail the fps. Judging them in
+7.1j would have made it the optimisation's task, which is 7.1l's, and one cause a commit.
+
 ### ADR-401 · 2026-10-15 · accepted — The operational AI's war years: what a plan learns of the cells, kept while it holds (PLAN 7.1i)
 
 Seed 5303's year 17 (from a checkpoint of year 16; HEAD `a2d438c`, pinned, `--profile`): the
