@@ -111,10 +111,10 @@ async function measure(page: Page, seconds: number, panPerS: number): Promise<Me
       // The GPU's time of a frame (ADR-407): the frame's WebGL passes (`drawWebGl`) drawn n times
       // back to back in one timer query (EXT_disjoint_timer_query_webgl2), after as many again
       // to bring the GPU's clock up; the median of 5. Their CPU is a few hundredths of a ms, so
-      // the query holds the GPU's work alone. A query about a whole `draw` held the overlay's
-      // Canvas2D on the CPU too, which the GPU waits through (7.1j's 1.58 ms at T0); one about a
-      // single draw a frame read 1 to 5.5 ms for the same frame, the GPU's clock down between
-      // frames. `gpuDrawsMs` is 7.1j's figure, 30 whole draws in one query, kept beside it.
+      // the query holds the GPU's work alone. A query begun cold reads the GPU's clock as much as
+      // its work: 7.1j's 30 whole draws read 1.58 ms at T0, and one draw a frame 1 to 5.5 ms for
+      // the same frame. `gpuDrawsMs` is 7.1j's figure, 30 whole draws in one query, read after
+      // the passes: with the clock up it is theirs.
       const gl = v.gl;
       const ext = gl.getExtension('EXT_disjoint_timer_query_webgl2') as { TIME_ELAPSED_EXT: number; GPU_DISJOINT_EXT: number } | null;
       const gpu = async (n: number, draw: (t: number) => void, warm: boolean): Promise<number> => {

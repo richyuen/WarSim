@@ -177,11 +177,16 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   sprites 0.016, the ground's things 0.001: the frame's GL 1.05. On the main thread at T2 the
   tags were 7.3 ms of the draw's 7.8 (layout 6 of it), the names 0.3, the cities 0.2; at T0 the
   markers and counters 0.9, the cities 0.9, the names 0.4 of 2.4.
-- **The GPU's misses were the measure's.** 7.1j timed 30 whole `draw`s in one query: it holds
-  the overlay's CPU, which the GPU waits through (T0 1.58 ms where its passes are 0.51). A query
-  about each frame's draw, one a frame, read 1.0 to 5.5 ms for the same T2 frame, and 2 ms for
-  `tierShares`, which makes no GL call: between frames the GPU's clock drops, and the query reads
-  time, not work. Bench G now times the frame's WebGL passes (`MapView.drawWebGl`, what `draw`
+- **The GPU's misses were the measure's: the GPU's clock.** 7.1j timed 30 whole `draw`s in one
+  query, begun cold after the frames' loop (T0 1.58 ms where its passes are 0.51; HEAD's code
+  read 1.95 and 3.71 in a later run). A query about each frame's draw, one a frame, read 1.0 to
+  5.5 ms for the same T2 frame, and 2 ms for `tierShares`, which makes no GL call: between
+  frames the GPU's clock drops, and the query reads time, not work. The same 30 whole draws
+  read after the warmed passes give T0 0.511 and T2 1.045, the passes' figures: the overlay's
+  CPU between the GL calls is not in the query (ANGLE sends them at a flush), and ADR-402's
+  reading of T0's 0.74 over 5 draws as the GPU waiting for the next draw was the clock too.
+  The back-to-back measure is the one ADR-4's budgets were set by (`GpuTimer.measure`).
+  Bench G now times the frame's WebGL passes (`MapView.drawWebGl`, what `draw`
   calls between the shares and the overlay) n to a query after n to bring the clock up, the
   median of 5; n makes some 100 ms of work, 2 to 60 (the software rasteriser draws T2's ground in
   0.5 s, and 600 of them held its page for minutes, its screenshot timing out). `gpuDrawsMs` keeps

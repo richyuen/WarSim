@@ -16192,3 +16192,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   The crashed bench left its preview server on port 4174: stopped by hand.
 - **Specs:** `tags1938.spec.ts` green (16 s).
 - **Next:** PLAN 7.1l5.
+- **Correction:** the old measure's miss was the GPU's clock alone, not the overlay's CPU waited
+  through: the same 30 whole draws read after the warmed passes give the passes' figures (T0
+  0.511, T2 1.045). ADR-407 and the bench's comment say so now; `cf5f663`'s message does not.
