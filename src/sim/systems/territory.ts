@@ -168,6 +168,7 @@ function growTouched(): void {
 }
 
 export function territorySystem(world: World): void {
+  const pressureRadius = world.atSizeWhole(PRESSURE_RADIUS);
   const frontier = frontierOf(world);
   const { w, h, controller, terrain, flip } = world.cells;
   if (frontier.size === 0) return;
@@ -192,29 +193,29 @@ export function territorySystem(world: World): void {
     // No frontier cell in the blocks its reach falls in: nothing to press (PLAN 7.1h). The reach
     // is narrower than a block, so it falls in two blocks a side at most; over an edge of the map
     // the reach is walked.
-    const top = Math.max(0, cy - PRESSURE_RADIUS) >> BLOCK_SHIFT;
-    const bottom = Math.min(h - 1, cy + PRESSURE_RADIUS) >> BLOCK_SHIFT;
-    const left = (cx - PRESSURE_RADIUS) >> BLOCK_SHIFT;
-    const right = (cx + PRESSURE_RADIUS) >> BLOCK_SHIFT;
+    const top = Math.max(0, cy - pressureRadius) >> BLOCK_SHIFT;
+    const bottom = Math.min(h - 1, cy + pressureRadius) >> BLOCK_SHIFT;
+    const left = (cx - pressureRadius) >> BLOCK_SHIFT;
+    const right = (cx + pressureRadius) >> BLOCK_SHIFT;
     if (
-      cx >= PRESSURE_RADIUS &&
-      cx + PRESSURE_RADIUS < w &&
+      cx >= pressureRadius &&
+      cx + pressureRadius < w &&
       blocks[top * bw + left] === 0 &&
       blocks[top * bw + right] === 0 &&
       blocks[bottom * bw + left] === 0 &&
       blocks[bottom * bw + right] === 0
     )
       return;
-    for (let dy = -PRESSURE_RADIUS; dy <= PRESSURE_RADIUS; dy++) {
+    for (let dy = -pressureRadius; dy <= pressureRadius; dy++) {
       const y = cy + dy;
       if (y < 0 || y >= h) continue;
-      for (let dx = -PRESSURE_RADIUS; dx <= PRESSURE_RADIUS; dx++) {
+      for (let dx = -pressureRadius; dx <= pressureRadius; dx++) {
         // Beyond an edge of a map that does not loop there is no cell (PLAN 3.12Rsc).
         const x = cx + dx;
         const xw = x < 0 ? (wrap ? x + w : -1) : x >= w ? (wrap ? x - w : -1) : x;
         if (xw < 0) continue;
         const d = Math.max(Math.abs(dx), Math.abs(dy));
-        const p = base * (1 - d / (PRESSURE_RADIUS + 1));
+        const p = base * (1 - d / (pressureRadius + 1));
         const c = y * w + xw;
         if (mask[c] !== 1) continue; // only frontier cells can flip
         let e = head[c]!;

@@ -189,6 +189,7 @@ export const AA_CELLS = 1;
  * in the air. Losses carried; a wing with none left is lost.
  */
 export function antiAir(world: World): void {
+  const aaCells = world.atSizeWhole(AA_CELLS);
   if (world.sorties.size === 0) return;
   const rules = world.rules!;
   const ec = world.elements.cols;
@@ -217,10 +218,10 @@ export function antiAir(world: World): void {
     if (gx >= 0 && gx < w && gy >= 0 && gy < h && near.mark[gy * w + gx] === 0) return;
     if (world.isWing(g) || world.embarked.has(g)) return;
     const targets: number[] = [];
-    for (let dy = -AA_CELLS; dy <= AA_CELLS; dy++) {
+    for (let dy = -aaCells; dy <= aaCells; dy++) {
       const y = gy + dy;
       if (y < 0 || y >= h) continue;
-      for (let dx = -AA_CELLS; dx <= AA_CELLS; dx++) {
+      for (let dx = -aaCells; dx <= aaCells; dx++) {
         const x = cellX(world, gx + dx);
         if (x === null) continue;
         for (const id of above.get(y * w + x) ?? []) if (world.wars.atWar(fc.nation[g]!, fc.nation[id]!)) targets.push(id);
@@ -295,18 +296,19 @@ function clearMarks(): void {
  * `above` is matched as the walk matches it, by its row and column in the grid.
  */
 function markNear(world: World, above: Map<number, number[]>): typeof marks {
+  const aaCells = world.atSizeWhole(AA_CELLS);
   const w = world.cells.w;
   const h = world.cells.h;
-  const side = 2 * AA_CELLS + 1;
+  const side = 2 * aaCells + 1;
   const s = startMarks(world, above.size * side * side);
   for (const key of above.keys()) {
     if (key < 0 || key >= w * h) continue;
     const sy = Math.floor(key / w);
     const sx = key - sy * w;
-    for (let dy = -AA_CELLS; dy <= AA_CELLS; dy++) {
+    for (let dy = -aaCells; dy <= aaCells; dy++) {
       const gy = sy - dy;
       if (gy < 0 || gy >= h) continue;
-      for (let dx = -AA_CELLS; dx <= AA_CELLS; dx++) {
+      for (let dx = -aaCells; dx <= aaCells; dx++) {
         const gx = world.settings.loopingMap ? (((sx - dx) % w) + w) % w : sx - dx;
         if (gx < 0 || gx >= w) continue;
         markCell(gy * w + gx);
@@ -341,15 +343,16 @@ export function shipEffectiveness(us: UnitRule, ut: UnitRule): number {
  * the whole test of each.
  */
 function formationsByCell(world: World, aims: readonly { tx: number; ty: number }[]): { near(tx: number, ty: number): number[] } {
+  const aaCells = world.atSizeWhole(AA_CELLS);
   const fc = world.formations.cols;
   const w = world.cells.w;
   const h = world.cells.h;
-  const side = 2 * AA_CELLS + 1;
+  const side = 2 * aaCells + 1;
   const reach = startMarks(world, aims.length * side * side);
   for (const { tx, ty } of aims) {
-    for (let y = ty - AA_CELLS; y <= ty + AA_CELLS; y++) {
+    for (let y = ty - aaCells; y <= ty + aaCells; y++) {
       if (y < 0 || y >= h) continue;
-      for (let d = -AA_CELLS; d <= AA_CELLS; d++) {
+      for (let d = -aaCells; d <= aaCells; d++) {
         const x = cellX(world, tx + d);
         if (x !== null) markCell(y * w + x);
       }
@@ -375,9 +378,9 @@ function formationsByCell(world: World, aims: readonly { tx: number; ty: number 
   return {
     near(tx, ty) {
       const out = off.slice();
-      for (let y = ty - AA_CELLS; y <= ty + AA_CELLS; y++) {
+      for (let y = ty - aaCells; y <= ty + aaCells; y++) {
         if (y < 0 || y >= h) continue;
-        for (let d = -AA_CELLS; d <= AA_CELLS; d++) {
+        for (let d = -aaCells; d <= aaCells; d++) {
           const x = cellX(world, tx + d);
           if (x === null) continue;
           for (const g of at.get(y * w + x) ?? []) if (!out.includes(g)) out.push(g);
@@ -401,6 +404,7 @@ function formationsByCell(world: World, aims: readonly { tx: number; ty: number 
  * `AirStrike` per strike that found a target.
  */
 export function strikes(world: World): void {
+  const aaCells = world.atSizeWhole(AA_CELLS);
   if (world.sorties.size === 0) return;
   const rules = world.rules!;
   const ec = world.elements.cols;
@@ -429,7 +433,7 @@ export function strikes(world: World): void {
       if (!world.formations.has(g) || world.isWing(g) || world.embarked.has(g) || !world.wars.atWar(fc.nation[id]!, fc.nation[g]!)) continue;
       const dx = Math.abs(wrapDx(world, tx, Math.floor(fc.x[g]!)));
       const dy = Math.abs(Math.min(h - 1, Math.floor(fc.y[g]!)) - ty);
-      if (dx > AA_CELLS || dy > AA_CELLS) continue;
+      if (dx > aaCells || dy > aaCells) continue;
       // A submarine is under water: no strike's target, as no gun's (PLAN 5.6 found it sunk from the air).
       for (const e of index.get(g) ?? []) if (ec.strength[e]! > 0 && rules.units[ec.unit[e]!]!.cls !== 'ss') targets.push(e);
     }

@@ -591,6 +591,7 @@ let superiorityCall = 0;
 let offLandTemplate = new Uint8Array(0);
 
 export function supplySystem(world: World): void {
+  const supplyReach = world.atSizeWhole(SUPPLY_REACH);
   // Supply over sea (PLAN 4.4c): a bloc whose lands joined by sea changed is refreshed whole.
   if (world.tick % SUPPLY_REFRESH_HOURS === 0) {
     const linked = world.rules ? markSeaLinks(world) : undefined;
@@ -653,10 +654,10 @@ export function supplySystem(world: World): void {
         const cy = (cell - cx) / w;
         // The networks about a formation are few: the last one asked about answers for most cells.
         let last = 0;
-        for (let dy = -SUPPLY_REACH; dy <= SUPPLY_REACH && !inSupply; dy++) {
+        for (let dy = -supplyReach; dy <= supplyReach && !inSupply; dy++) {
           const y = cy + dy;
           if (y < 0 || y >= h) continue;
-          for (let dx = -SUPPLY_REACH; dx <= SUPPLY_REACH; dx++) {
+          for (let dx = -supplyReach; dx <= supplyReach; dx++) {
             // Beyond an edge of a map that does not loop there is no cell (PLAN 3.12Rsb).
             const x = cx + dx;
             const xw = x < 0 ? (wrap ? x + w : -1) : x >= w ? (wrap ? x - w : -1) : x;

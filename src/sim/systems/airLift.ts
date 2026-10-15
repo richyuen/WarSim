@@ -28,6 +28,7 @@ import { legHours } from './sorties';
 export const AIR_LIFT = 1 / 48;
 
 export function airLift(world: World): void {
+  const aaCells = world.atSizeWhole(AA_CELLS);
   if (world.sorties.size === 0) return;
   const fc = world.formations.cols;
   const ec = world.elements.cols;
@@ -44,7 +45,7 @@ export function airLift(world: World): void {
     world.formations.forEach((g) => {
       if (world.offLand(g) || fc.supply[g]! >= 1) return;
       if (fc.nation[g] !== nation && !world.wars.sameSide(nation, fc.nation[g]!)) return;
-      if (Math.abs(wrapDx(world, tx, Math.floor(fc.x[g]!))) > AA_CELLS || Math.abs(Math.min(h - 1, Math.floor(fc.y[g]!)) - ty) > AA_CELLS) return;
+      if (Math.abs(wrapDx(world, tx, Math.floor(fc.x[g]!))) > aaCells || Math.abs(Math.min(h - 1, Math.floor(fc.y[g]!)) - ty) > aaCells) return;
       short.push(g);
     });
     if (short.length === 0) continue;
@@ -80,7 +81,7 @@ function paradropPlan(world: World, id: number, x: number, y: number): { wings: 
   // The airbase it stands at.
   const base = world.airbases.findIndex((b) => {
     const [bx, by] = world.cellPoint(b.cell);
-    return controller[b.cell] === nation && Math.abs(wrapDx(world, c.x[id]!, bx)) <= BASE_PICK_CELLS && Math.abs(c.y[id]! - by) <= BASE_PICK_CELLS;
+    return controller[b.cell] === nation && Math.abs(wrapDx(world, c.x[id]!, bx)) <= world.atSize(BASE_PICK_CELLS) && Math.abs(c.y[id]! - by) <= world.atSize(BASE_PICK_CELLS);
   });
   if (base < 0 || c.engaged[id] === 1) return RejectReason.NoAirlift;
   const [bx, by] = world.cellPoint(world.airbases[base]!.cell);

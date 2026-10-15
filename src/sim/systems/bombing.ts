@@ -42,6 +42,7 @@ export function portShut(world: World, i: number): boolean {
  * header says. Returns the tons that fell on industry (0 where there is none of an enemy's).
  */
 export function bombIndustry(world: World, wing: number, tx: number, ty: number): number {
+  const bombCells = world.atSizeWhole(BOMB_CELLS);
   const rules = world.rules!;
   const ec = world.elements.cols;
   let tons = 0;
@@ -56,10 +57,10 @@ export function bombIndustry(world: World, wing: number, tx: number, ty: number)
   let total = 0;
   const cx = Math.floor(tx);
   const cy = Math.floor(ty);
-  for (let dy = -BOMB_CELLS; dy <= BOMB_CELLS; dy++) {
+  for (let dy = -bombCells; dy <= bombCells; dy++) {
     const y = cy + dy;
     if (y < 0 || y >= h) continue;
-    for (let dx = -BOMB_CELLS; dx <= BOMB_CELLS; dx++) {
+    for (let dx = -bombCells; dx <= bombCells; dx++) {
       const x = cellX(world, cx + dx);
       if (x === null) continue;
       const c = y * w + x;
@@ -76,6 +77,7 @@ export function bombIndustry(world: World, wing: number, tx: number, ty: number)
 
 /** The ports within `BOMB_CELLS` of (tx, ty) held by nations at war with `nation`: each damaged by `tons` ÷ (PORT_TONS × its level). */
 function bombPorts(world: World, nation: number, tons: number, tx: number, ty: number): void {
+  const bombCells = world.atSizeWhole(BOMB_CELLS);
   const { w, controller } = world.cells;
   const cx = Math.floor(tx);
   const cy = Math.floor(ty);
@@ -83,9 +85,9 @@ function bombPorts(world: World, nation: number, tons: number, tx: number, ty: n
   // each, in the order of `world.ports`, as a walk of them all would make it.
   const byCell = portsByCell(world.ports);
   const near: number[] = [];
-  for (let y = cy - BOMB_CELLS; y <= cy + BOMB_CELLS; y++) {
+  for (let y = cy - bombCells; y <= cy + bombCells; y++) {
     if (y < 0 || y >= world.cells.h) continue;
-    for (let d = -BOMB_CELLS; d <= BOMB_CELLS; d++) {
+    for (let d = -bombCells; d <= bombCells; d++) {
       const x = cellX(world, cx + d);
       if (x === null) continue;
       for (const i of byCell.get(y * w + x) ?? []) if (!near.includes(i)) near.push(i);
@@ -95,7 +97,7 @@ function bombPorts(world: World, nation: number, tons: number, tx: number, ty: n
   for (const i of near) {
     const p = world.ports[i]!;
     const dx = Math.abs(wrapDx(world, cx, p.cell % w));
-    if (dx > BOMB_CELLS || Math.abs(Math.floor(p.cell / w) - cy) > BOMB_CELLS) continue;
+    if (dx > bombCells || Math.abs(Math.floor(p.cell / w) - cy) > bombCells) continue;
     if (!world.wars.atWar(nation, controller[p.cell]!)) continue;
     world.portDamage.set(i, Math.min(MAX_DAMAGE, (world.portDamage.get(i) ?? 0) + tons / (PORT_TONS * Math.max(1, p.port))));
   }

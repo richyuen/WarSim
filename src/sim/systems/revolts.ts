@@ -122,6 +122,7 @@ function atWar(world: World, n: number): boolean {
 }
 
 export function revoltSystem(world: World): void {
+  const garrisonCells = world.atSizeWhole(GARRISON_CELLS);
   const pv = world.provinces;
   if (pv.count === 0 || !isMonthStart(world.startDay, world.tick)) return;
   const g = navOf(world).graph;
@@ -153,19 +154,19 @@ export function revoltSystem(world: World): void {
   const revolted = new Uint8Array(pv.count);
   // Garrison lookup: formations by nation in GARRISON_CELLS-sized buckets.
   const fc = world.formations.cols;
-  const bw = Math.ceil(world.cells.w / GARRISON_CELLS);
+  const bw = Math.ceil(world.cells.w / garrisonCells);
   const buckets = new Map<number, Set<number>>();
   world.formations.forEach((f) => {
     if (world.offLand(f)) return; // a fleet off the coast is no garrison (PLAN 4.2b)
-    const k = Math.floor(fc.y[f]! / GARRISON_CELLS) * bw + Math.floor(fc.x[f]! / GARRISON_CELLS);
+    const k = Math.floor(fc.y[f]! / garrisonCells) * bw + Math.floor(fc.x[f]! / garrisonCells);
     const set = buckets.get(k) ?? new Set<number>();
     set.add(fc.nation[f]!);
     buckets.set(k, set);
   });
   const garrisoned = (cell: number, n: number): boolean => {
     const w = world.cells.w;
-    const bx = Math.floor((cell % w) / GARRISON_CELLS);
-    const by = Math.floor(Math.floor(cell / w) / GARRISON_CELLS);
+    const bx = Math.floor((cell % w) / garrisonCells);
+    const by = Math.floor(Math.floor(cell / w) / garrisonCells);
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (buckets.get((by + dy) * bw + ((bx + dx + bw) % bw))?.has(n)) return true;
     return false;
   };

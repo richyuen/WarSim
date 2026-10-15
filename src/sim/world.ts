@@ -1214,6 +1214,14 @@ export class World {
     return cells * this.sizeScale;
   }
 
+  /**
+   * The same, whole, at least 1: a radius that a loop walks cell by cell, a bucket's side. At
+   * the default size it is `cells` (a whole number there); at S a reach of 1 stays 1.
+   */
+  atSizeWhole(cells: number): number {
+    return Math.max(1, Math.round(cells * this.sizeScale));
+  }
+
   constructor(seed: number, w: number, h: number, sizeScale = 1) {
     this.sizeScale = sizeScale;
     this.seed = seed >>> 0;

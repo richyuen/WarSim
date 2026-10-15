@@ -245,7 +245,7 @@ export function orderRebase(world: World, id: number, x: number, y: number): 0 |
   if (!from) return reject(world, id, RejectReason.NoBase);
   const c = world.formations.cols;
   const nation = c.nation[id]!;
-  const near = (px: number, py: number): boolean => Math.abs(wrapDx(world, x, px)) <= BASE_PICK_CELLS && Math.abs(py - y) <= BASE_PICK_CELLS;
+  const near = (px: number, py: number): boolean => Math.abs(wrapDx(world, x, px)) <= world.atSize(BASE_PICK_CELLS) && Math.abs(py - y) <= world.atSize(BASE_PICK_CELLS);
   const need = wingAircraft(world, c.template[id]!);
   const used = (base: number): { aircraft: number; wings: number } => {
     let aircraft = 0;
