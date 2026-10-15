@@ -9017,3 +9017,25 @@ Of 6.12 (open in PLAN.md):
     away, weighed 1 − 0.96 − 0.1 − 0.18 and never struck back).
     AT: unit test: a high-doctrine striker with five warheads strikes a winning United Kingdom;
     the United Kingdom strikes back on the striker's land (red on the 6.12c source).
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+Of 6.12 (open in PLAN.md):
+
+  - [x] 6.12e A strike back settles the score: its burst gives the nation it falls on no grievance
+    (with 6.12d, from seed 6619's checkpoint of year 17, the Soviet Union and the United Kingdom
+    struck each other every day for weeks, each answer a new grievance, about 50 strikes in two
+    weeks). The answering launches are state (saved).
+    AT: unit test: England strikes Paris, France answers; England holds no grievance and strikes
+    no more in ten days; a save carries an answer in flight.

@@ -15816,3 +15816,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   Kingdom, winning, strikes Berlin (0.620); none on the 6.12c source (red). `nukeDecision1938`
   (MAD after the strike back: no more) and `nukeUtility1938` green.
 - **Next:** PLAN 6.12e.
+
+## 2026-10-15 — PLAN 6.12e: a strike back settles the score (critic R6-B2)
+
+- **Found** (from `.cache/probe/ck612_6619_y17.bin`, `.cache/probe/nukeDesp612.ts`): with 6.12d the
+  Soviet Union and the United Kingdom struck each other daily for weeks, each answer a grievance.
+- **The rule:** an answer's burst gives no grievance (`world.nukeAnswers`, saved). Split the plan's
+  old 6.12e ("small") to 6.12f.
+- **AT:** `tests/unit/nukeAnswer1938.test.ts`: one answer, then quiet for twelve days; the answer in
+  flight saved; nine alternating strikes on the 6.12d source (red). `nukeDecision1938`'s third case
+  asserted England's grievance from France's answer: now that it has none (ADR-394).
+- **Found for 6.12f:** seed 2953's rump Germany (income 478, 17,325 men) strikes statelet #225
+  (income 10, 17,380 men): income tells a statelet from a power, the army does not.

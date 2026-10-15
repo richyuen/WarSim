@@ -223,6 +223,20 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - `tests/unit/nukeUndeterred1938.test.ts`: Germany (aggression 90, five warheads, risk 1.12)
     strikes London; the United Kingdom, winning, strikes Berlin (utility 0.620); none on the 6.12c
     source (red).
+- **6.12e, a strike back settles the score** (`world.nukeAnswers`, `detonate`'s `answer`): the
+  burst of a strike back gives the nation it falls on no grievance. With 6.12d alone, from seed
+  6619's checkpoint of year 17 the Soviet Union and the United Kingdom struck each other daily for
+  weeks (about 50 strikes): each answer, weighing no second strike, made a new grievance. One for
+  one: who struck first is answered once; a further strike of its is a first use again, under
+  the MAD bar and the desperation it needs.
+  - State: the ids of the answering launches in flight, a section saved while there is one (an
+    old save loads with none); none in seed 99's first year, the pin holds.
+  - `nukeDecision1938`'s third case asserted that France's answer gave England a grievance, and
+    saved that one. Under this rule it must not: the case now asserts England holds none, and the
+    save is checked on France's grievance before it answers. Nothing else in it changed.
+  - `tests/unit/nukeAnswer1938.test.ts`: England (AI on, aggression 30) strikes Paris; France
+    answers once and England strikes no more in twelve days; the answer in flight is saved. On the
+    6.12d source nine strikes alternate in twelve days (red).
 
 ### ADR-393 · 2026-10-15 · accepted — Where the AI's warheads fall (PLAN 6.11, critic R6-B2)
 

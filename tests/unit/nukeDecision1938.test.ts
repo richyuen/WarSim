@@ -12,7 +12,8 @@ import { nationId } from '../helpers/sim1938';
 
 // PLAN 6.4b: the daily decision. An AI nation at war with a warhead strikes its best target when
 // the utility is above 0, and tells it (`NukeDecided`, its utility × 1000); a nation struck, of
-// retaliation doctrine, strikes back at who struck it, MAD or not.
+// retaliation doctrine, strikes back at who struck it, MAD or not; its answer gives England no
+// grievance (PLAN 6.12e).
 
 const { w: W, h: H } = SIZE_1938;
 const [ENG, FRA, GER] = ['ENG', 'FRA', 'GER'].map(nationId) as [number, number, number];
@@ -101,6 +102,10 @@ describe('the nuclear decision (PLAN 6.4b)', () => {
     expect(g?.by).toBe(ENG);
     expect(g!.until).toBeGreaterThan(tick0 + (RETALIATION_DAYS - 1) * 24);
     expect(g!.until).toBeLessThanOrEqual(tick0 + (RETALIATION_DAYS + 2) * 24);
+    // A save carries a grievance: France's, against England.
+    const c = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    c.load(hit.s.save());
+    expect(c.world.nukeGrievance.get(FRA)).toEqual(hit.s.world.nukeGrievance.get(FRA));
     // One strike back for one hit, the grievance spent; then MAD again: no more in ten days.
     const back = run(hit.s, 24 * 10, EventKind.NukeDecided);
     process.stderr.write(`France strikes back: ${JSON.stringify(back)}
@@ -109,10 +114,7 @@ describe('the nuclear decision (PLAN 6.4b)', () => {
     expect(back[0]![0]).toBe(FRA);
     expect(back[0]![1]).toBeGreaterThan(0);
     expect(hit.s.world.nukeGrievance.has(FRA)).toBe(false);
-    // A save carries a grievance: England's, struck back by France.
-    expect(hit.s.world.nukeGrievance.get(ENG)?.by).toBe(FRA);
-    const c = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
-    c.load(hit.s.save());
-    expect(c.world.nukeGrievance.get(ENG)).toEqual(hit.s.world.nukeGrievance.get(ENG));
+    // France's answer settles the score (PLAN 6.12e): England holds no grievance from it.
+    expect(hit.s.world.nukeGrievance.has(ENG)).toBe(false);
   });
 });

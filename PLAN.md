@@ -45,7 +45,8 @@ quick sweep as a smoke test.
   - [x] 6.12b A strike back aims at the striker: while a grievance holds, its holder weighs only […]
   - [x] 6.12c A nation founded in play does not inherit the nuclear techs of the nation it […]
   - [x] 6.12d A strike back is not deterred by the striker's second strike: a nation of […]
-  - [ ] 6.12e What "small" means when the striker's army is gone (seed 6619: the Soviet
+  - [x] 6.12e A strike back settles the score: its burst gives the nation it falls on no grievance […]
+  - [ ] 6.12f What "small" means when the striker's army is gone (seed 6619: the Soviet
     strength fell from 649,000 to 22,000 in two years, and statelets of 6,000 to 38,000 men passed
     THREAT_SHARE; Sweden and Norway struck at desperation 0.6). First find what makes the
     desperation (the land others hold, held by this war's enemy or by anyone), then the measure.

@@ -97,7 +97,9 @@
  * 6.12b). Of retaliation doctrine (aggression at least RETALIATION_AGGRESSION) it is retaliating:
  * RETALIATION_BONUS, no MAD bar, and no retaliation risk weighed (PLAN 6.12d: struck at London, a
  * winning United Kingdom weighed 1 − 0.96 for the Soviet second strike and never struck back). Its
- * strike back spends the grievance (one for one).
+ * strike back spends the grievance (one for one), and its burst gives the nation it falls on none
+ * (PLAN 6.12e, `world.nukeAnswers`: with 6.12d, the Soviet Union and the United Kingdom struck each
+ * other daily, each answer a new grievance).
  *
  * A burst's consequences (PLAN 6.5a, SPEC §6.4 "a stability shock and a war-exhaustion jump ...
  * economic shocks follow"; `aftermath`), on the nation whose land it burst on (none at sea or on
@@ -844,8 +846,12 @@ function nukeDecisions(world: World): void {
       const ok = (missiles && launchNuke(world, n, o.x, o.y, true) === Refusal.None) || launchNuke(world, n, o.x, o.y, false) === Refusal.None;
       if (!ok) continue;
       world.out.emit(world.tick, EventKind.NukeDecided, n, Math.round(o.u * 1000), o.x, o.y);
-      // A strike back spends the grievance: one for one (of retaliation doctrine or not, PLAN 6.12b).
-      if (o.back) world.nukeGrievance.delete(n);
+      // A strike back spends the grievance: one for one (of retaliation doctrine or not, PLAN 6.12b),
+      // and its burst gives none (PLAN 6.12e).
+      if (o.back) {
+        world.nukeGrievance.delete(n);
+        world.nukeAnswers.add(world.nextLaunchId - 1);
+      }
       break;
     }
   }
@@ -955,12 +961,13 @@ function tabooDay(world: World): void {
  * remembered for RESTRIKE_DAYS (PLAN 6.11b), the taboo broken (PLAN 6.4a), the land's owner's
  * grievance (PLAN 6.4b, not against God), the blast, the fallout and the consequences.
  */
-export function detonate(world: World, nation: number, yieldN: number, x: number, y: number): void {
+export function detonate(world: World, nation: number, yieldN: number, x: number, y: number, answer = false): void {
   world.out.emit(world.tick, EventKind.NukeDetonated, nation, yieldN, x, y);
   world.nukeTaboo = Math.min(world.nukeTaboo, TABOO_AFTER);
   world.nukeBursts.push({ x, y, tick: world.tick });
   const struck = ownerAt(world, x, y);
-  if (nation !== 0 && struck !== 0 && struck !== nation) world.nukeGrievance.set(struck, { by: nation, until: world.tick + RETALIATION_DAYS * 24 });
+  // A strike back settles the score (PLAN 6.12e): its burst gives no grievance.
+  if (nation !== 0 && struck !== 0 && struck !== nation && !answer) world.nukeGrievance.set(struck, { by: nation, until: world.tick + RETALIATION_DAYS * 24 });
   const toll = blast(world, yieldN, x, y);
   layFallout(world, yieldN, x, y);
   aftermath(world, nation, yieldN, x, y, toll.men + toll.people);
@@ -977,8 +984,9 @@ function arrivals(world: World): void {
     }
     // A bomber lost on the way, or stopped short by the air over its target.
     const lost = l.missile === 0 && (!world.formations.has(l.wing) || world.formations.cols.nation[l.wing] !== l.nation);
+    const answer = world.nukeAnswers.delete(l.id);
     if (lost || hashToUnit(hash32(world.seed, l.id, SALT_INTERCEPT)) < interceptChance(world, l)) world.out.emit(world.tick, EventKind.NukeIntercepted, l.nation, l.id, l.tx, l.ty);
-    else detonate(world, l.nation, knows(world, l.nation, 'thermonuclear') ? 2 : 1, l.tx, l.ty);
+    else detonate(world, l.nation, knows(world, l.nation, 'thermonuclear') ? 2 : 1, l.tx, l.ty, answer);
   }
   world.nukeLaunches = left;
 }
