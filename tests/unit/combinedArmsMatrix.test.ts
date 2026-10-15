@@ -71,7 +71,7 @@ function fight(attacker: Mix, defender: Mix, terrain: number): Outcome {
     const left = new Map<number, number>();
     world.elements.forEach((el) => left.set(el, ec.strength[el]!));
     combatSystem(world);
-    const fr = world.out.fires;
+    const fr = world.out.fires.slice();
     for (let i = 0; i < fr.length; i += FIRE_STRIDE) {
       const shooter = fr[i + 4]!;
       const t = fr[i + 3]!;

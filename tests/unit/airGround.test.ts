@@ -28,7 +28,7 @@ function battle(air: number): { world: World; ger: number; pol: number } {
 function firstHour(air: number): { ger: number; pol: number } {
   const { world, ger } = battle(air);
   combatSystem(world);
-  const fr = world.out.fires;
+  const fr = world.out.fires.slice();
   const out = { ger: 0, pol: 0 };
   for (let i = 0; i < fr.length; i += FIRE_STRIDE) out[world.elements.cols.formation[fr[i + 2]!] === ger ? 'ger' : 'pol'] += fr[i + 5]!;
   return out;

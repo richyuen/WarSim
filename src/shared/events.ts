@@ -209,6 +209,43 @@ export interface SimEvent {
 export const FIRE_STRIDE = 10;
 export const FireField = { tick: 0, subtick: 1, shooter: 2, target: 3, weapon: 4, dmg: 5, x0: 6, y0: 7, x1: 8, y1: 9 } as const;
 
+/**
+ * The fire records of the sim (`World.out.fires`): `length` numbers in `data`, FIRE_STRIDE a
+ * record; `length = 0` empties it and keeps the buffer. PLAN 7.1e: a `number[]` emptied each
+ * hour gave its buffer back and grew it again from nothing, 0.5 s of combat's 6 in a year of
+ * seed 99. Read `data` below `length`, or a copy (`slice`).
+ */
+export class FireLog {
+  data = new Float64Array(FIRE_STRIDE * 256);
+  length = 0;
+
+  push(tick: number, subtick: number, shooter: number, target: number, weapon: number, dmg: number, x0: number, y0: number, x1: number, y1: number): void {
+    let d = this.data;
+    const i = this.length;
+    if (i + FIRE_STRIDE > d.length) {
+      d = new Float64Array(2 * d.length);
+      d.set(this.data);
+      this.data = d;
+    }
+    d[i] = tick;
+    d[i + 1] = subtick;
+    d[i + 2] = shooter;
+    d[i + 3] = target;
+    d[i + 4] = weapon;
+    d[i + 5] = dmg;
+    d[i + 6] = x0;
+    d[i + 7] = y0;
+    d[i + 8] = x1;
+    d[i + 9] = y1;
+    this.length = i + FIRE_STRIDE;
+  }
+
+  /** The records as numbers, a copy. */
+  slice(): number[] {
+    return Array.from(this.data.subarray(0, this.length));
+  }
+}
+
 export function readEvent(buf: Float64Array, i: number): SimEvent {
   const o = i * EVENT_STRIDE;
   return {

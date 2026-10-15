@@ -80,7 +80,7 @@ describe('org (PLAN 3.2c)', () => {
       combatSystem(w);
       let dealt = 0;
       let taken = 0;
-      const fires = w.out.fires;
+      const fires = w.out.fires.slice();
       for (let i = 0; i < fires.length; i += FIRE_STRIDE) {
         const from = w.elements.cols.formation[fires[i + 2]!];
         if (from === a) dealt += fires[i + 5]!;

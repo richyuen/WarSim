@@ -32,7 +32,7 @@ function battle(terrain: number, attacker: string, defender: string): { world: W
 function volleys(terrain: number, attacker: string, defender: string): number[][] {
   const { world, def } = battle(terrain, attacker, defender);
   combatSystem(world);
-  const fr = world.out.fires;
+  const fr = world.out.fires.slice();
   const out: number[][] = [];
   for (let i = 0; i < fr.length; i += FIRE_STRIDE) out.push([fr[i + 2]!, fr[i + 3]!, fr[i + 4]!, world.elements.cols.unit[fr[i + 3]!]!, fr[i + 5]!, world.elements.cols.formation[fr[i + 3]!] === def ? 1 : 0]);
   return out;

@@ -254,11 +254,11 @@ describe('torpedoes and the screen (PLAN 4.3b)', () => {
   function volleys(s: Sim): [string, string, number][] {
     const out: [string, string, number][] = [];
     s.step(1, (world) => {
-      const fr = world.out.fires;
+      const fr = world.out.fires.slice();
       // The target's unit is read before the hour's losses are settled: by the shooter's table.
       // A torpedo's record has −1 − the shooter's unit (PLAN 4.7c).
       for (let i = 0; i < fr.length; i += 10) out.push([UNIT_IDS_1938[fr[i + 4]! < 0 ? -1 - fr[i + 4]! : fr[i + 4]!]!, UNIT_IDS_1938[world.elements.has(fr[i + 3]!) ? world.elements.cols.unit[fr[i + 3]!]! : 0]!, fr[i + 5]!]);
-      fr.length = 0;
+      world.out.fires.length = 0;
       world.out.events.length = 0;
     });
     return out;
@@ -341,7 +341,7 @@ describe('a torpedo in the fire records (PLAN 4.7c)', () => {
     const kinds = new Set<number>();
     for (let h = 0; h < 6; h++) {
       s.step(1, (world) => {
-        const fr = world.out.fires;
+        const fr = world.out.fires.slice();
         for (let i = 0; i < fr.length; i += FIRE_STRIDE) kinds.add(fr[i + FireField.weapon]!);
         world.out.events.length = 0;
         world.out.fires.length = 0;

@@ -139,7 +139,7 @@ function nodeBattle(): Battle {
   sim.step(23);
   const firing = new Set<number>();
   sim.step(1, (wd) => {
-    for (let i = 0; i < wd.out.fires.length; i += FIRE_STRIDE) firing.add(ec.formation[wd.out.fires[i + FireField.shooter]!]!);
+    for (let i = 0; i < wd.out.fires.length; i += FIRE_STRIDE) firing.add(ec.formation[wd.out.fires.data[i + FireField.shooter]!]!);
     wd.out.fires.length = 0;
     wd.out.events.length = 0;
   });
@@ -185,7 +185,7 @@ function nodeBattle(): Battle {
   for (let k = 0; k < CLOSE; k++) {
     let n = 0;
     sim.step(1, (wd) => {
-      const f = wd.out.fires;
+      const f = wd.out.fires.slice();
       for (let i = 0; i < f.length; i += FIRE_STRIDE) if (own.has(f[i + FireField.shooter]!) || own.has(f[i + FireField.target]!)) n++;
       wd.out.fires.length = 0;
       wd.out.events.length = 0;

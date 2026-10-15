@@ -44,7 +44,7 @@ const ofKind = (w: World, k: number): number[][] => {
 
 /** Damage of German infantry shots at infantry in one hour (the per-shot value). */
 function gerInfantryShot(w: World): number {
-  const fr = w.out.fires;
+  const fr = w.out.fires.slice();
   const inf = w.rules!.units.findIndex((u) => u.cls === 'inf');
   for (let i = 0; i < fr.length; i += FIRE_STRIDE) {
     const shooter = fr[i + 2]!;

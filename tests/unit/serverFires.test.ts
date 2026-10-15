@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField } from '../../src/shared/events';
+import { EVENT_STRIDE, EventKind, FIRE_STRIDE, FireField, type FireLog } from '../../src/shared/events';
 import { Weapon, Wreck } from '../../src/shared/unitLooks';
 import type { FromWorker, Snapshot, Subscription } from '../../src/shared/protocol';
 import { Sim } from '../../src/sim/sim';
@@ -13,7 +13,7 @@ import { FIRE_QUEUE_CAP, SimServer } from '../../src/worker/server';
 
 const CLASSES = ['inf', 'art', 'armor_l'];
 
-function setup(): { world: World; fire: (sub: Subscription, recs: readonly number[][]) => Snapshot; resub: (sub: Subscription) => Snapshot; server: SimServer } {
+function setup(): { world: World; fire: (sub: Subscription, recs: readonly Rec[]) => Snapshot; resub: (sub: Subscription) => Snapshot; server: SimServer } {
   let last: Snapshot | null = null;
   let unacked: Snapshot | null = null;
   const server = new SimServer((m: FromWorker) => {
@@ -33,7 +33,7 @@ function setup(): { world: World; fire: (sub: Subscription, recs: readonly numbe
     ack();
     return last!;
   };
-  const fire = (sub: Subscription, recs: readonly number[][]): Snapshot => {
+  const fire = (sub: Subscription, recs: readonly Rec[]): Snapshot => {
     resub(sub);
     for (const r of recs) sim.world.out.fires.push(...r);
     server['drainEvents'](sim.world);
@@ -43,7 +43,8 @@ function setup(): { world: World; fire: (sub: Subscription, recs: readonly numbe
 }
 
 /** [tick, subtick, shooter, target, unit, dmg, x0, y0, x1, y1]. */
-const rec = (shooter: number, unit: number, x0: number, y0: number, x1: number, y1: number): number[] => [41, shooter % 60, shooter, 500 + shooter, unit, 0.25, x0, y0, x1, y1];
+type Rec = Parameters<FireLog['push']>;
+const rec = (shooter: number, unit: number, x0: number, y0: number, x1: number, y1: number): Rec => [41, shooter % 60, shooter, 500 + shooter, unit, 0.25, x0, y0, x1, y1];
 const sub = (tier: Subscription['tier'], bbox: Subscription['bbox'], wantsElements = true): Subscription => ({ bbox, z: 0, tier, wantsElements });
 const shooters = (s: Snapshot): number[] => Array.from({ length: s.fires.count }, (_, i) => s.fires.data[i * FIRE_STRIDE + FireField.shooter]!);
 

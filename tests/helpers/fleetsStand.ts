@@ -65,7 +65,7 @@ export function fleetsStand(world: World): { start: number; gone: number; sailed
       for (const e of w.embarked.values()) carrying.add(e.fleet);
       for (const b of w.seaBattles) for (const id of b.fleets) inBattle.add(id);
       // A battle can begin and end in one hour: its volleys name the ships (shooter, target).
-      const fr = w.out.fires;
+      const fr = w.out.fires.slice();
       for (let i = 0; i < fr.length; i += 10) {
         for (const el of [fr[i + 2]!, fr[i + 3]!]) {
           if (w.elements.has(el) && w.isFleet(w.elements.cols.formation[el]!)) inBattle.add(w.elements.cols.formation[el]!);

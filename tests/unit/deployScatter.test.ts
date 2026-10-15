@@ -56,7 +56,7 @@ describe('the elements of a deployed block stand off their slots and do not all 
     // The hours of the fight: every shot of either division leaves from its shooter's place and ends at its target's.
     let shots = 0;
     s.step(12, (world) => {
-      const fr = world.out.fires;
+      const fr = world.out.fires.slice();
       for (let i = 0; i < fr.length; i += FIRE_STRIDE) {
         for (const [who, x, y] of [[FireField.shooter, FireField.x0, FireField.y0], [FireField.target, FireField.x1, FireField.y1]] as const) {
           const e = fr[i + who]!;

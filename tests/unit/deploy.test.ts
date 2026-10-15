@@ -153,12 +153,12 @@ describe('the blocks of formations in contact are deployed against each other (P
     let longest = 0;
     let shots = 0;
     s.step(1, (w) => {
-      const f = w.out.fires;
+      const f = w.out.fires.slice();
       for (let i = 0; i < f.length; i += FIRE_STRIDE) {
         shots++;
         longest = Math.max(longest, Math.hypot(f[i + FireField.x1]! - f[i + FireField.x0]!, f[i + FireField.y1]! - f[i + FireField.y0]!));
       }
-      f.length = 0;
+      w.out.fires.length = 0;
       w.out.events.length = 0;
     });
     expect(shots).toBeGreaterThan(20);

@@ -12,7 +12,7 @@ import type { Airbase } from './data/airbases';
 import type { WingMission } from './systems/air';
 import type { Sortie } from './systems/sorties';
 import { isCommand, type Command, type LoggedCommand } from '../shared/commands';
-import type { EventKind } from '../shared/events';
+import { FireLog, type EventKind } from '../shared/events';
 import { xxhash32View } from './core/hash';
 import { RngStreams } from './core/rng';
 import { takeSection, type Section } from './core/sections';
@@ -337,7 +337,7 @@ export class TickOutputs {
   /** Flat [tick, kind, a, b, x, y] records since the consumer last drained. */
   events: number[] = [];
   /** Flat FIRE_STRIDE records [tick, subtick, shooter, target, unit, dmg, x0, y0, x1, y1] (SPEC §5.2.5). */
-  fires: number[] = [];
+  readonly fires = new FireLog();
 
   constructor(w: number, h: number) {
     this.tilesX = Math.ceil(w / TILE);

@@ -54,7 +54,7 @@ describe('buffs and debuffs (PLAN 1.21)', () => {
       for (const [kind, m] of buffs) w.buffs.add({ targetKind: kind === 'attack' ? 'formation' : 'nation', target: kind === 'attack' ? a : POL, kind: kind as 'attack', magnitude: m, expiresTick: 99, nameKey: 'buff.test' });
       combatSystem(w);
       let dealt = 0;
-      const fr = w.out.fires;
+      const fr = w.out.fires.slice();
       for (let i = 0; i < fr.length; i += FIRE_STRIDE) if (w.elements.cols.formation[fr[i + 2]!] === a) dealt += fr[i + 5]!;
       return dealt;
     };

@@ -27,7 +27,7 @@ export function armourFires(from: number, least = 50): { start: number; fires: F
     const before = sim.hash();
     const fires: Fire[] = [];
     sim.step(1, (w) => {
-      const raw = w.out.fires;
+      const raw = w.out.fires.slice();
       const units = w.rules!.units;
       for (let i = 0; i < raw.length; i += FIRE_STRIDE) {
         if (!units[raw[i + FireField.weapon]!]?.cls.startsWith('armor')) continue; // a torpedo's record is negative (PLAN 4.7c)

@@ -98,7 +98,7 @@ describe('engagement + element combat v1 (PLAN 1.13)', () => {
     const a = spawn(w, GER, X0 + 0.5, Y0 + 0.5);
     const b = spawn(w, POL, X0 + 1.5, Y0 + 0.5);
     combatSystem(w);
-    const fr = w.out.fires;
+    const fr = w.out.fires.slice();
     expect(fr.length % FIRE_STRIDE).toBe(0);
     const n = fr.length / FIRE_STRIDE;
     expect(n).toBe(2 * 28); // every element of both 28-element divisions fired once

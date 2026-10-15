@@ -60,7 +60,7 @@ export function armourLosses(firstDay: number, lastDay: number, hours: number, l
     const hit = new Set<number>();
     sim.step(1, (w) => {
       tanks(w, now, places);
-      const raw = w.out.fires;
+      const raw = w.out.fires.slice();
       for (let i = 0; i < raw.length; i += FIRE_STRIDE) hit.add(raw[i + FireField.target]!);
       w.out.fires.length = 0;
       w.out.events.length = 0;

@@ -33,7 +33,7 @@ function battle(stands: Stand[], terrain: number = Terrain.Plains): { world: Wor
 function volleysOf(world: World, of: number): Map<number, [number, number]> {
   world.out.fires.length = 0;
   combatSystem(world);
-  const fr = world.out.fires;
+  const fr = world.out.fires.slice();
   const out = new Map<number, [number, number]>();
   for (let i = 0; i < fr.length; i += FIRE_STRIDE) {
     if (world.elements.cols.formation[fr[i + 2]!] === of) out.set(fr[i + 2]!, [fr[i + 3]!, fr[i + 5]!]);

@@ -1116,11 +1116,11 @@ export class SimServer {
    * formation is sent whole, and an element of it outside the box is fired at from outside it.
    */
   private drainFires(world: World): void {
-    const fires = world.out.fires;
+    const fires = world.out.fires.data;
     const units = world.rules?.units;
     if (units && this.wantsElements()) {
       const q = this.fireQueue;
-      for (let i = 0; i < fires.length; i += FIRE_STRIDE) {
+      for (let i = 0; i < world.out.fires.length; i += FIRE_STRIDE) {
         this.firedAt.add(fires[i + FireField.target]!);
         const from = this.inBbox(fires[i + FireField.x0]!, fires[i + FireField.y0]!, world);
         if (!from && !this.inBbox(fires[i + FireField.x1]!, fires[i + FireField.y1]!, world)) continue;
@@ -1133,7 +1133,7 @@ export class SimServer {
         this.droppedFires += over;
       }
     }
-    fires.length = 0;
+    world.out.fires.length = 0;
   }
 
   /**

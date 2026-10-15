@@ -69,7 +69,7 @@ export function tankBattle(seed: number, firstDay: number, lastDay: number, shoo
     sim.step(1, (w) => {
       const units = w.rules!.units;
       const c = w.elements.cols;
-      const raw = w.out.fires;
+      const raw = w.out.fires.slice();
       for (let i = 0; i < raw.length; i += FIRE_STRIDE) {
         hour.hit.add(raw[i + FireField.target]!);
         if (!units[raw[i + FireField.weapon]!]?.cls.startsWith('armor')) continue; // a torpedo's record is negative (PLAN 4.7c)

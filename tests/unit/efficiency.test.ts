@@ -92,7 +92,7 @@ describe('combat-efficiency modes (PLAN 1.22)', () => {
       w.nations.cols.efficiency[GER] = ce;
       combatSystem(w);
       let sum = 0;
-      for (let i = 0; i < w.out.fires.length; i += FIRE_STRIDE) if (w.elements.cols.formation[w.out.fires[i + 2]!] === a) sum += w.out.fires[i + 5]!;
+      for (let i = 0; i < w.out.fires.length; i += FIRE_STRIDE) if (w.elements.cols.formation[w.out.fires.data[i + 2]!] === a) sum += w.out.fires.data[i + 5]!;
       return sum;
     };
     expect(dealt(1.2) / dealt(0.6)).toBeCloseTo(2, 9);
