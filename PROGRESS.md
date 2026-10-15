@@ -16106,3 +16106,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   not this task's; they were not run here.
 - **Specs:** `zoomDemo1938` (three runs, the last in the gate).
 - **Next:** PLAN 7.1l.
+
+## 2026-10-15 — PLAN 7.1l1: the frontier rebuilt from a border index (performance)
+
+- **Start:** gate green on a clean tree; critic not due. PLAN 7.1l (the leads no part took) split
+  into 7.1l1 to 7.1l12. HEAD `63e4ce6`, seed 99's five years alone, pinned: 1.580 ms a tick
+  (budget 1.5), year 1 2.206 (budget 2.4: met).
+- **Built** (ADR-404): `src/sim/border.ts`, a bit per cell where a 4-neighbour is held by another
+  nation, kept by `setController`; `frontierOf` walks its set bits lowest first (the ascending
+  order the AIs read) and clears hold progress on the flipping set's cells off the frontier.
+- **AT:** pin unchanged (45df324d; 700d7a84 after five years); the map that does not loop the same
+  at each quarter (620968e1); `saveYear` green. The rebuild 7.73 → 0.54 ms (day 60 of seed 99).
+  Profiled same-time pairs, swapped: territory's calls of 1 ms or more 0.046, 0.036 → 0.022, 0.017
+  ms a tick. Unprofiled pairs of five years: 1.829, 1.825 (HEAD) and 1.858, 1.893 (this) under
+  the load of both at once: the tick moves less than the pairs' noise, the wrong way here.
+- **Test:** `territory.test.ts` holds the kept index to a scan and the rebuild to the rule in the
+  set's own order; a mutation that drops the upkeep in `setController` fails it.
+- **Specs:** none; nothing drawn changed.
+- **Next:** PLAN 7.1l2.

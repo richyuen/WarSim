@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { Terrain } from '../../src/shared/terrain';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { scanBorder } from '../../src/sim/border';
 import { Sim } from '../../src/sim/sim';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import { frontierOf, HOLD_TICKS, territorySystem } from '../../src/sim/systems/territory';
@@ -170,6 +171,33 @@ describe('territory pressure and fronts (PLAN 1.14)', () => {
     }
     expect(w.frontierBlocks).toEqual(counts);
     expect(perTick).toBeLessThan(25);
+  });
+
+  it('the border index kept by setController is the scan of the map, and the rebuild from it is the rule in ascending order (PLAN 7.1l1)', () => {
+    const s = block(6);
+    const w = s.world;
+    for (const y of [Y0 + 2, Y0 + 5, Y0 + 9]) spawn(w, GER, SPLIT - 1, y);
+    const bits = w.borderBits();
+    s.step(24 * 4); // cells flip, through setController
+    expect(w.cells.controller.filter((n, c) => n === GER && c % W >= SPLIT).length).toBeGreaterThan(0);
+    w.wars.set(GER, nationId('LIT'), true); // a rebuild: a war declared
+    // A cell given away outside the territory system: the index follows, the frontier rebuilds.
+    w.setController(Y0 * W + X0 + 1, POL);
+    expect(w.borderBits()).toBe(bits);
+    expect(bits).toEqual(scanBorder(w.cells.controller, W, H));
+    const rebuilt = [...frontierOf(w)];
+    const ctl = w.cells.controller;
+    const byRule: number[] = [];
+    for (let c = 0; c < W * H; c++) {
+      const x = c % W;
+      const nb = [c - W, c + W, x > 0 ? c - 1 : c + W - 1, x < W - 1 ? c + 1 : c - W + 1].filter((n) => n >= 0 && n < W * H);
+      if (ctl[c] !== 0 && nb.some((n) => ctl[n] !== 0 && w.wars.atWar(ctl[c]!, ctl[n]!))) byRule.push(c);
+    }
+    expect(rebuilt).toEqual(byRule); // the set's own order, not sorted
+    // Hold progress is left on frontier cells alone, and the flipping set is exactly those cells.
+    const progress = [...w.cells.flip.keys()].filter((c) => w.cells.flip[c] !== 0);
+    for (const c of progress) expect(w.frontier!.has(c)).toBe(true);
+    expect([...w.flipping!]).toEqual(progress);
   });
 
   it('a front is deterministic across save/load into a live sim', () => {

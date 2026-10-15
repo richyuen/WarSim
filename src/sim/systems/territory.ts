@@ -67,11 +67,14 @@ function flippingOf(world: World): Set<number> {
   return s;
 }
 
-/** The frontier set, rebuilt by a grid scan only when invalidated. */
+/**
+ * The frontier set, rebuilt only when invalidated: from the cells of the border index in ascending
+ * order (PLAN 7.1l1: it scanned the grid, about 12 ms a rebuild on the 1938 map). Four AIs read the
+ * set in its order, so a rebuild adds its cells in that order, as the scan did.
+ */
 export function frontierOf(world: World): Set<number> {
   if (world.frontier && world.frontierWars === world.wars.version) return world.frontier;
   const f = new Set<number>();
-  const flipping = new Set<number>();
   const { w, h, controller: ctl, flip } = world.cells;
   const n = w * h;
   let mask = world.frontierMask;
@@ -82,9 +85,11 @@ export function frontierOf(world: World): Set<number> {
   let blocks = world.frontierBlocks;
   if (!blocks || blocks.length !== nBlocks) blocks = world.frontierBlocks = new Uint8Array(nBlocks);
   else blocks.fill(0);
+  // The cells with hold progress before the rebuild (all of them, `flippingOf`'s invariant).
+  const before = flippingOf(world);
   if (world.wars.size > 0) {
-    // The same test as onFrontier, inlined (PLAN 1.42a: this scan was 8% of the tick): cells of
-    // nations at peace are skipped, and a neighbour held by the same nation cannot be hostile.
+    // The same test as onFrontier, inlined (PLAN 1.42a): cells of nations at peace are skipped,
+    // and a neighbour held by the same nation cannot be hostile.
     const wars = world.wars;
     const wrap = world.settings.loopingMap;
     const fighting = new Uint8Array(65536);
@@ -93,35 +98,41 @@ export function frontierOf(world: World): Set<number> {
       const b = ctl[k]!;
       return b !== a && b !== 0 && wars.atWar(a, b);
     };
-    for (let c = 0; c < n; c++) {
-      const a = ctl[c]!;
-      let on = false;
-      if (fighting[a] === 1) {
-        if (c >= w && hostile(a, c - w)) on = true;
-        else if (c < n - w && hostile(a, c + w)) on = true;
-        else {
-          const x = c % w;
-          if (x > 0 ? hostile(a, c - 1) : wrap && hostile(a, c + w - 1)) on = true;
-          else if (x < w - 1 ? hostile(a, c + 1) : wrap && hostile(a, c - w + 1)) on = true;
+    const bits = world.borderBits();
+    for (let i = 0; i < bits.length; i++) {
+      // The word's cells in ascending order: its lowest set bit first.
+      for (let word = bits[i]!; word !== 0; ) {
+        const low = word & -word;
+        word ^= low;
+        const c = (i << 5) + 31 - Math.clz32(low);
+        const a = ctl[c]!;
+        if (fighting[a] !== 1) continue;
+        const x = c % w;
+        if (
+          (c >= w && hostile(a, c - w)) ||
+          (c < n - w && hostile(a, c + w)) ||
+          (x > 0 ? hostile(a, c - 1) : wrap && hostile(a, c + w - 1)) ||
+          (x < w - 1 ? hostile(a, c + 1) : wrap && hostile(a, c - w + 1))
+        ) {
+          f.add(c);
+          mask[c] = 1;
+          const block = ((c - x) / w >> BLOCK_SHIFT) * bw + (x >> BLOCK_SHIFT);
+          blocks[block] = blocks[block]! + 1;
         }
       }
-      if (on) {
-        f.add(c);
-        mask[c] = 1;
-        const x = c % w;
-        const block = ((c - x) / w >> BLOCK_SHIFT) * bw + (x >> BLOCK_SHIFT);
-        blocks[block] = blocks[block]! + 1;
-        if (flip[c] !== 0) flipping.add(c);
-      } else flip[c] = 0; // uncontested cells carry no hold progress
     }
-  } else {
-    flip.fill(0);
   }
+  // Uncontested cells carry no hold progress; what is left is on the frontier, in ascending order
+  // as the scan gathered it (PLAN 7.1h: gathered here, not by another scan of the grid).
+  const kept: number[] = [];
+  for (const c of before) {
+    if (mask[c] === 1) kept.push(c);
+    else flip[c] = 0;
+  }
+  kept.sort((a, b) => a - b);
   world.frontier = f;
   world.frontierWars = world.wars.version;
-  // The rebuild cleared progress on uncontested cells: what is left is on the frontier (PLAN 7.1h:
-  // gathered here, not by another scan of the grid).
-  world.flipping = flipping;
+  world.flipping = new Set(kept);
   return f;
 }
 

@@ -187,6 +187,38 @@ quick sweep as a smoke test.
     overlay, not the sprites, are what the screenshot shows. T0's frames are two-moded (p50 3.3 ms,
     p95 16.4, longest 31.7): the hitches, likely at a snapshot's arrival, go with the T3 ones. 7.1l's
     AT needs these met, the translation derived again with an ADR, or a BLOCKERS line.
+    Split on 2026-10-15 (HEAD `63e4ce6`: seed 99's five years 1.580 ms a tick, year 1 2.206, pinned,
+    alone). One cause a part:
+    - [x] 7.1l1 The frontier's rebuild from a border index kept by `setController`, its cells in
+      ascending order. AT: pin and the map that does not loop unchanged; a unit test holds the
+      index to a scan and the rebuild to the rule in the set's own order; the rebuild's cost.
+    - [ ] 7.1l2 `seaReach` kept for the hour while nothing it reads changes (369 of 1,099 calls a
+      year asked again). AT: pin unchanged; the calls that compute.
+    - [ ] 7.1l3 The operational AI's leftovers of 7.1i: `joinWide`'s 452 walks, the frontier `Map`
+      at each call, the first call after a load, the long calls of seed 5303 (years 5, 11, 12, 18,
+      21). AT: pin unchanged; each cut measured, or dropped with its reason.
+    - [ ] 7.1l4 The GPU's frame by layer, then 7.1j's misses: T0's GPU 1.58 ms (SPEC 1.0), T2's
+      2.57 (2.0), T2's draw on the main thread 7.8 ms (6; the overlay's 384 tags and markers).
+      AT: bench G met, or the translation derived again with an ADR.
+    - [ ] 7.1l5 The hitches: T0's two modes (p95 16.4 ms), T3's 100 to 157 ms while the sim runs,
+      the 2.9 s freeze of one zoom from the world to 1 m/px. AT: the cause of each found, and a
+      frame's longest under 50 ms at ×5 on bench G's cases, or a BLOCKERS line.
+    - [ ] 7.1l6 The ground's cap by the view's size, and an even thinning past what a frame
+      affords (not the finest level cut from the top). AT: a forest view at 1920 × 1080 with no
+      line below which the trees thin.
+    - [ ] 7.1l7 The land mask held twice in the page (16.8 MB for the scatter, as much on the
+      GPU). AT: one copy, or an ADR.
+    - [ ] 7.1l8 Fractional device pixel ratios (1.25, 1.5): a marker's box drawn into its
+      unrounded rectangle; every layer looked at. AT: screenshots at 1.25 and 1.5, looked at.
+    - [ ] 7.1l9 A GPU with no texture of 8192 px draws the coarse coast at T2 and T3 and nothing
+      says so. AT: the game says so, or uses the fine mask in parts; an ADR.
+    - [ ] 7.1l10 The top speed (885 ticks a second at the start; AoC's usual speed about twice
+      ours, text): moved to its task or dropped, with an ADR.
+    - [ ] 7.1l11 The older leads of 7.1's list that no part above takes (the supply refresh gone
+      full of ADR-81, the hulls' frame with many on a GPU, the ground's cost with no GPU, the
+      AI's refused orders, the call of 361.7 ms of seed 4242): each measured, moved or dropped.
+    - [ ] 7.1l12 The AT of 7.1: seed 99's five years at 1.5 ms a tick and year 1 at 2.4, on the
+      budget machine, pinned, alone.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.

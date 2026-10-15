@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-404 · 2026-10-15 · accepted — The frontier rebuilt from a border index kept by `setController` (PLAN 7.1l1)
+
+- **Context.** The frontier set (`frontierOf`, `systems/territory.ts`) is rebuilt when a war
+  begins or ends and when a cell changes hands outside the territory system (revolts, capitals,
+  peace terms): 65 times in year 1 of seed 99 (7.1h's count). Each rebuild scanned the 2,097,152 cells of
+  the map and wrote `flip` on every one off the frontier: 7.7 ms a rebuild on the world of day 60
+  (`.cache/l71/rebuild.ts`, median of 30), a hitch of the worker each time. Four AIs read the set
+  in its order, so a rebuild must add its cells in ascending order, as the scan did.
+- **Decision.** `src/sim/border.ts`: a bit per cell, set where the cell is held and a 4-neighbour
+  is held by another nation. Built by a scan on first use (`World.borderBits`), kept by
+  `setController` (the cell and its four neighbours), dropped with the land tallies
+  (`dropLandCounts`, a load). The neighbours over the east and west edges count whether the map
+  loops or not: the index is then a superset of either map's frontier, and the rebuild tests its
+  cells with the map's own rule, so a change of `loopingMap` needs nothing. The rebuild walks the
+  set bits word by word, lowest first: ascending order. Hold progress is cleared on the cells of
+  the flipping set that are off the new frontier, not by a write to every cell.
+- **What it stands on.** The flipping set holds every cell with progress: each write of `flip` is
+  in `territory.ts` and keeps the set, and a load drops it (rebuilt then by a scan of `flip`).
+  The old scan cleared `flip` whatever the set held; this one trusts it. A write of the
+  controllers without `setController` must drop the index, as it must the land tallies (the
+  scenario builds write them before the index is first built; a grep finds no other write).
+- **AT.** The pin unchanged (45df324d, year 1; 700d7a84 after five); the map that does not loop
+  620968e1 at the year's end and the same hash at each quarter as HEAD; `saveYear` green. A unit
+  test (`territory.test.ts`) holds the index kept through flips and a give-away to a fresh scan,
+  and the rebuild to the rule in the set's own order (a mutation that skips the upkeep fails it).
+  The rebuild 7.73 → 0.54 ms (18,404 border cells, 1,109 frontier cells). Year 1, profiled
+  same-time pairs on separate P-cores, swapped: territory's calls of 1 ms or more 0.046 and 0.036
+  → 0.022 and 0.017 ms a tick, territory 0.205 and 0.192 → 0.183 and 0.179. The tick's mean moves
+  less than the pairs' noise (±3 %).
+- **Consequences.** The first rebuild of a game pays the index's scan (four reads a cell) where
+  the old scan paid as much; the rebuilds after it are the border's size. `setController` does
+  20 reads more a change (about 40,000 changes a year).
+
 ### ADR-403 · 2026-10-15 · accepted — The zoom demo's battle is seed 1941's; the timing tests parked until 7.1 leave the list (PLAN 7.1k)
 
 - **Context.** `tools/gate/knownRed.json` held four tests until PLAN 7.1 for time on a cloud

@@ -28,6 +28,7 @@ import { EditStack } from './editor';
 import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
 import { LandCounts } from './landCounts';
+import { borderChanged, scanBorder } from './border';
 import type { TechMask, TechRule } from './tech';
 import { cellInland, landPoint, landWay, maskField, maskSure, waterPoint, type LandMask } from '../shared/landMask';
 
@@ -870,6 +871,8 @@ export class World {
   heldLogBase = 0;
   /** Derived (not state): land tallies, kept by setOwner/setController once built. */
   private land: LandCounts | null = null;
+  /** Derived (not state): the border index (`border.ts`, PLAN 7.1l1), kept by setController once built. */
+  private border: Uint32Array | null = null;
   /** Derived (not state): the frontier set as a byte per cell (valid whenever `frontier` is). */
   frontierMask: Uint8Array | null = null;
   /** Derived (not state): the frontier cells of each 8 × 8 block of cells (with `frontierMask`, PLAN 7.1h). */
@@ -1243,6 +1246,7 @@ export class World {
     if (c.supply[i] !== 0) this.supplyDirtyBlocs.add(c.supply[i]!);
     if (!this.supplyChanged.has(i)) this.supplyChanged.set(i, c.controller[i]! * 65536 + c.owner[i]!);
     c.controller[i] = nation;
+    if (this.border) borderChanged(this.border, c.controller, c.w, c.h, i);
     if (!keepFrontier) this.frontier = null;
     const x = i % c.w;
     const y = (i - x) / c.w;
@@ -1282,6 +1286,12 @@ export class World {
   dropLandCounts(): void {
     this.land = null;
     this.held = null;
+    this.border = null;
+  }
+
+  /** The border index of the current map (`border.ts`; built by a scan on first use, then kept by `setController`). */
+  borderBits(): Uint32Array {
+    return (this.border ??= scanBorder(this.cells.controller, this.cells.w, this.cells.h));
   }
 
   /** A key of `heldByNode` in `node` came or went. The log keeps HELD_LOG_KEPT bumps at most. */

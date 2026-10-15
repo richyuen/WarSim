@@ -18,7 +18,7 @@ const W = SIZE_1938.w;
 const build = (seed: number): Sim => new Sim({ scenario: '1938', seed, assets: assets1938(W) });
 
 /** Caches derived from the state (a load drops them; rebuilt on demand) and the drawing's version counters. */
-const DERIVED = new Set(['navKey', 'navStale', 'elementIndex', 'cellPoints', 'inland', 'nav', 'sea', 'portSea', 'lanes', 'contacts', 'frontier', 'frontierMask', 'frontierBlocks', 'held', 'land', 'stepWays', 'stepWaysGrid', 'deployed', 'deployedBefore', 'flipping', 'terrainVersion', 'citiesVersion', 'namesVersion', 'flagsVersion', 'out', 'rng']);
+const DERIVED = new Set(['navKey', 'navStale', 'elementIndex', 'cellPoints', 'inland', 'nav', 'sea', 'portSea', 'lanes', 'contacts', 'frontier', 'frontierMask', 'frontierBlocks', 'held', 'land', 'border', 'stepWays', 'stepWaysGrid', 'deployed', 'deployedBefore', 'flipping', 'terrainVersion', 'citiesVersion', 'namesVersion', 'flagsVersion', 'out', 'rng']);
 
 /** The world's fields outside its saved parts, but the derived ones: a typed array by its hash, the map data by identity. */
 function outside(w: World): Record<string, unknown> {
