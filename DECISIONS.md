@@ -179,6 +179,16 @@ dropped. Each part's finding is added here when it is done.
   1 to 4, none in 5). Those 9 cost 96 ms, the partial and the full together; the partial
   refreshes 1,470 ms; the asked full ones 261 ms. 96 ms of a run of 64.9 s, 0.002 ms a tick:
   not worth a cut.
+- **b. The hulls' frame: cut; the small mark's sample and the turrets' pass: dropped.** At T3 over
+  a German armoured division (1920 × 1080, this GPU), 2,000 hulls held (`MAX_HULLS`) in the view
+  took the main thread's draw from 0.6 ms to 53 ms on fire, 50 smoking, 49 left behind (18 to 20
+  fps): each hull and turret was an outline in two paths of all the hulls, filled and stroked,
+  whatever the hull's size (2.5 px here). 1,200 marks of the fallen alone cost 2.2 ms (their
+  stamps, PLAN 3.11d). Now each hull and its turret are stamps of their pictures (by weight,
+  state and size, `hullStamp`), turned: 10.7 ms on fire, 10.4 smoking, 6.5 left behind; the
+  pictures of 24 hulls at 10 and 2 m/px look as before. The sprites' GL pass, which has the
+  small mark's second sample (T2) and the turrets (T3), is 0.002 ms back to back over the same
+  division: nothing to cut. `fallen1938`'s test is red on HEAD as on this code (`knownRed`).
 
 ### ADR-413 · 2026-10-15 · accepted — The top speed is the tick's: dropped from the performance pass (PLAN 7.1l10)
 

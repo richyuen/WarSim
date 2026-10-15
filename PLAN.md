@@ -229,7 +229,7 @@ quick sweep as a smoke test.
       Split on 2026-10-15, one cause a part, each measured on HEAD and cut, moved or dropped:
       - [x] 7.1l11a The supply refresh that goes full (ADR-81): how often in seed 99's five years,
         what it costs; cut if worth it, the pin unchanged.
-      - [ ] 7.1l11b The hulls' frame: 2,000 hulls with flames on this GPU at T3 (only 5 were timed,
+      - [x] 7.1l11b The hulls' frame: 2,000 hulls with flames on this GPU at T3 (only 5 were timed,
         on a CPU), the small mark's second sample at T2, the turrets' pass.
       - [ ] 7.1l11c The ground's cost with no GPU (the software rasteriser): what a frame of T2's
         ground costs there, and whether anything follows.

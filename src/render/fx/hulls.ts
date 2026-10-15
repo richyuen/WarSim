@@ -263,9 +263,8 @@ export class HullFx {
     const offs = wrapOffsets(cam, geo, vw, SEAM_MARGIN);
     this.drawFallen(ctx, cam, offs, vw, vh, now, alpha, minPx, size);
     if (this.hulls.length === 0) return;
-    // Burnt hulls and those left behind: [hulls, turrets] of each.
-    const solid = [[new Path2D(), new Path2D()], [new Path2D(), new Path2D()]] as const;
-    const fading: { hull: Path2D; turret: Path2D; burnt: boolean; opacity: number }[] = [];
+    // The hulls to stamp, where they stand on the screen (PLAN 7.1l11b).
+    const placed: { h: BurningHull; x: number; y: number; s: number; opacity: number }[] = [];
     const puffs = PUFF_ALPHA.map(() => new Path2D());
     const glow = new Path2D();
     const fire = new Path2D();
@@ -287,11 +286,7 @@ export class HullFx {
         const [x, y] = worldToScreen(cam, h.x + off, h.y, vw, vh);
         if (x < -margin || x > vw + margin || y < -margin || y > vh + margin) continue;
         seen = true;
-        const whole = opacity >= 0.999;
-        const hull = whole ? solid[h.burns ? 0 : 1][0] : new Path2D();
-        const turret = whole ? solid[h.burns ? 0 : 1][1] : new Path2D();
-        outline(hull, turret, h, x, y, s);
-        if (!whole) fading.push({ hull, turret, burnt: h.burns, opacity });
+        placed.push({ h, x, y, s, opacity });
         // Smoke for as long as a burnt hull is whole: thick over the flame, thinner after.
         if (h.burns && opacity > 0.5) {
           for (let k = 0; k < PUFFS; k++) {
@@ -322,25 +317,24 @@ export class HullFx {
       if (seen) this.shown.push(h);
     }
     ctx.save();
-    ctx.lineJoin = 'round';
-    ctx.lineWidth = 1;
-    // Burnt: black iron with a rust edge. Left behind: the grey of bare steel, a dark edge.
-    const paint = (hull: Path2D, turret: Path2D, burnt: boolean): void => {
-      ctx.fillStyle = burnt ? 'rgba(24, 21, 19, 0.96)' : 'rgba(104, 106, 100, 0.96)';
-      ctx.strokeStyle = burnt ? 'rgba(150, 84, 44, 0.8)' : 'rgba(26, 26, 28, 0.9)';
-      ctx.fill(hull);
-      ctx.stroke(hull);
-      ctx.fillStyle = burnt ? 'rgba(52, 44, 38, 0.96)' : 'rgba(132, 134, 126, 0.96)';
-      ctx.fill(turret);
-      ctx.stroke(turret);
-    };
-    ctx.globalAlpha = alpha;
-    paint(solid[0][0], solid[0][1], true);
-    paint(solid[1][0], solid[1][1], false);
-    for (const f of fading) {
-      ctx.globalAlpha = alpha * f.opacity;
-      paint(f.hull, f.turret, f.burnt);
+    // Each hull and its turret thrown round are stamps of their pictures, turned (`hullStamp`):
+    // as two paths of every hull, 2,000 hulls cost a frame 49 ms (PLAN 7.1l11b).
+    const base = ctx.getTransform();
+    for (const p of placed) {
+      ctx.globalAlpha = alpha * p.opacity;
+      const weight = weightOf(p.h.frame);
+      let level = 0;
+      while (level < STAMP_FIGURES.length - 1 && STAMP_FIGURES[level]! < p.s * base.a) level++;
+      const k = p.s / STAMP_FIGURES[level]!;
+      for (const [part, angle] of [[0, p.h.facing], [1, p.h.facing + p.h.askew]] as const) {
+        const stamp = hullStamp(weight, p.h.burns, part, level);
+        const c = Math.cos(angle) * k;
+        const sn = Math.sin(angle) * k;
+        ctx.setTransform(base.a * c, base.d * sn, -base.a * sn, base.d * c, base.a * p.x + base.e, base.d * p.y + base.f);
+        ctx.drawImage(stamp, -stamp.width / 2, -stamp.height / 2);
+      }
     }
+    ctx.setTransform(base);
     ctx.globalAlpha = alpha * 0.45;
     ctx.fillStyle = 'rgb(255, 120, 20)';
     ctx.fill(glow);
@@ -486,33 +480,45 @@ function markShape(p: Path2D, kind: Wreck, x: number, y: number, s: number): voi
   }
 }
 
-/** Adds a burnt hull of `h` at (x, y), its figure `s` px across, to `hull`, and its turret, thrown round, to `turret`. */
-function outline(hull: Path2D, turret: Path2D, h: BurningHull, x: number, y: number, s: number): void {
-  const [len, wid] = HULL_SHAPE[weightOf(h.frame)]!;
-  const hl = (len * s) / 2;
-  const hw = (wid * s) / 2;
-  const c = Math.cos(h.facing);
-  const sn = Math.sin(h.facing);
-  hull.moveTo(x + hl * c - hw * sn, y + hl * sn + hw * c);
-  hull.lineTo(x - hl * c - hw * sn, y - hl * sn + hw * c);
-  hull.lineTo(x - hl * c + hw * sn, y - hl * sn - hw * c);
-  hull.lineTo(x + hl * c + hw * sn, y + hl * sn - hw * c);
-  hull.closePath();
-  // The turret: its ring and its gun, off the hull's line.
-  const a = h.facing + h.askew;
-  const r = hw * 0.62;
-  turret.moveTo(x + r, y);
-  turret.arc(x, y, r, 0, TAU);
-  const gc = Math.cos(a);
-  const gs = Math.sin(a);
-  const g0 = r * 0.9;
-  const g1 = hl * 1.05;
-  const gw = Math.max(0.5, hw * 0.16);
-  turret.moveTo(x + gc * g0 - gs * gw, y + gs * g0 + gc * gw);
-  turret.lineTo(x + gc * g1 - gs * gw, y + gs * g1 + gc * gw);
-  turret.lineTo(x + gc * g1 + gs * gw, y + gs * g1 - gc * gw);
-  turret.lineTo(x + gc * g0 + gs * gw, y + gs * g0 - gc * gw);
-  turret.closePath();
+const hullStamps = new Map<number, HTMLCanvasElement>();
+
+/**
+ * The picture of a hull of `weight` (0 light, 1 medium, 2 heavy), burnt or left behind, lying
+ * along +x, at size `level` of STAMP_FIGURES: its hull (`part` 0) or its turret with its gun
+ * (`part` 1), each turned on its own. Made once. Burnt: black iron with a rust edge. Left
+ * behind: the grey of bare steel, a dark edge. The edge is a twelfth of the figure, a CSS px
+ * where a figure is 12, as the marks' (`markStamp`).
+ */
+function hullStamp(weight: number, burnt: boolean, part: number, level: number): HTMLCanvasElement {
+  const key = ((weight * 2 + (burnt ? 1 : 0)) * 2 + part) * STAMP_FIGURES.length + level;
+  let c = hullStamps.get(key);
+  if (c) return c;
+  const figure = STAMP_FIGURES[level]!;
+  c = document.createElement('canvas');
+  c.width = c.height = Math.ceil(figure * 1.5);
+  const g = c.getContext('2d')!;
+  const mid = c.width / 2;
+  const [len, wid] = HULL_SHAPE[weight]!;
+  const hl = (len * figure) / 2;
+  const hw = (wid * figure) / 2;
+  const path = new Path2D();
+  if (part === 0) path.rect(mid - hl, mid - hw, 2 * hl, 2 * hw);
+  else {
+    // The turret: its ring and its gun.
+    const r = hw * 0.62;
+    path.moveTo(mid + r, mid);
+    path.arc(mid, mid, r, 0, TAU);
+    const gw = Math.max(0.5 * (figure / 12), hw * 0.16);
+    path.rect(mid + r * 0.9, mid - gw, hl * 1.05 - r * 0.9, 2 * gw);
+  }
+  g.lineJoin = 'round';
+  g.lineWidth = figure / 12;
+  g.fillStyle = part === 0 ? (burnt ? 'rgba(24, 21, 19, 0.96)' : 'rgba(104, 106, 100, 0.96)') : burnt ? 'rgba(52, 44, 38, 0.96)' : 'rgba(132, 134, 126, 0.96)';
+  g.strokeStyle = burnt ? 'rgba(150, 84, 44, 0.8)' : 'rgba(26, 26, 28, 0.9)';
+  g.fill(path);
+  g.stroke(path);
+  hullStamps.set(key, c);
+  return c;
 }
 
 /** 0, 1, 2 for a light, a medium and a heavy tank's hull. */

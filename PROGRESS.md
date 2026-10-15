@@ -16289,3 +16289,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   (96 ms in all, 0.002 ms a tick); counted with a counter in a copy of `supply.ts`, the pin's
   year-1 hash unchanged, the source restored.
 - **Next:** PLAN 7.1l11b.
+
+## 2026-10-15 — PLAN 7.1l11b: the hulls' frame (rendering)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Cut** (ADR-414 b): 2,000 hulls in view at T3 took the draw to 49 to 53 ms (two big paths of
+  every hull, filled and stroked); hulls and turrets are stamps now: 6.5 to 10.7 ms. Screenshots
+  of 24 hulls at 10 and 2 m/px against the old: the same to the eye.
+- **Dropped:** the small mark's second sample and the turrets' pass, 0.002 ms of GL at T2 and T3.
+- **Specs:** `burning1938`, `fightSeen1938`, `loadedEffects1938` green; `fallen1938` red here and
+  on HEAD (on `knownRed`), at different checks of its fight.
+- **Next:** PLAN 7.1l11c.
