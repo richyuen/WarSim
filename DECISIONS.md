@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-407 · 2026-10-15 · accepted — The GPU's frame timed by its WebGL passes alone; the tags' layout by a grid (PLAN 7.1l4)
+
+- **By layer** (a probe of bench G's two cases on the production build, each layer of `draw`
+  timed: the GPU by a timer query, the CPU by `performance.now`). The WebGL layers are the map's
+  pass, the ground's things and the sprites; the rest (names, markers, counters, tags, flags,
+  fire) is the overlay's Canvas2D, which Chrome rasters outside the page's GL context. Drawn back
+  to back, 60 a query: T0 the map 0.51 ms, nothing else; T2 the map (its ground pass) 1.04, the
+  sprites 0.016, the ground's things 0.001: the frame's GL 1.05. On the main thread at T2 the
+  tags were 7.3 ms of the draw's 7.8 (layout 6 of it), the names 0.3, the cities 0.2; at T0 the
+  markers and counters 0.9, the cities 0.9, the names 0.4 of 2.4.
+- **The GPU's misses were the measure's.** 7.1j timed 30 whole `draw`s in one query: it holds
+  the overlay's CPU, which the GPU waits through (T0 1.58 ms where its passes are 0.51). A query
+  about each frame's draw, one a frame, read 1.0 to 5.5 ms for the same T2 frame, and 2 ms for
+  `tierShares`, which makes no GL call: between frames the GPU's clock drops, and the query reads
+  time, not work. Bench G now times the frame's WebGL passes (`MapView.drawWebGl`, what `draw`
+  calls between the shares and the overlay) n to a query after n to bring the clock up, the
+  median of 5; n makes some 100 ms of work, 2 to 60 (the software rasteriser draws T2's ground in
+  0.5 s, and 600 of them held its page for minutes, its screenshot timing out). `gpuDrawsMs` keeps
+  7.1j's figure beside it, now read after the passes: T0 0.51, T2 1.05, the clock up.
+- **The tags: cut** (`67053c9`). Each of a tag's 20 places was tested against every formation's
+  elements and every placed tag, and twice more by distance to the middles of blocks. The layout
+  asks a grid of 64 px squares now, the same tests on the boxes of the squares a question's box
+  touches; a test lays out 60 crowded random views by both and wants the same tags. T2's tags 7.3
+  → 3.1 ms.
+- **Bench G** (`docs/bench/G-game.json`, RTX 4070 Ti): T0 188.1 fps, the GPU's frame 0.510 ms
+  (SPEC 1.0), the draw 2.4 ms (6); T2 196.3 fps (108.9 at 7.1j), 10,752 sprites in view, the GPU
+  1.049 ms (2.0), the draw 3.7 ms (6). Every SPEC figure is within; ADR-4's translation stands.
+  The software rasteriser, reported: 3.2 and 1.5 fps; its T2 stage loses sprites while it runs
+  (2,334 of 10,000 at the end; 9,731 in a run of the code before this beside it, 5,218 at 7.1j).
+- **Not done here:** T0's p95 of 16 ms (two modes) is PLAN 7.1l5's.
+
 ### ADR-406 · 2026-10-15 · accepted — The operational AI's leftovers of 7.1i: two cuts, two dropped, the long calls traced (PLAN 7.1l3)
 
 - **Context.** 7.1i left four leads in the operational AI, read on seed 5303 (year 17 from a

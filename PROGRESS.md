@@ -16171,3 +16171,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 7.1l4.
 - **Correction:** the stack's call of 18 searches (nation 117, tick 153,786) is in year 18, not
   year 17 (the instrumented log counted years from 0); ADR-406 and the test's comment say so now.
+
+## 2026-10-15 — PLAN 7.1l4: the GPU's frame by layer, and 7.1j's misses (performance)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **By layer** (ADR-407; a probe of bench G's cases, each layer of `draw` timed): the GL of a frame is
+  the map's pass (T0 0.51 ms, T2 1.04 with its ground), the sprites 0.016, the ground's things
+  0.001; on the main thread T2's tags were 7.3 of 7.8 ms.
+- **The GPU's misses were the measure's:** 30 whole draws in a query held the overlay's CPU, and
+  a query each frame read 1.0 to 5.5 ms for one frame (the GPU's clock down between frames).
+  Bench G times the WebGL passes (`MapView.drawWebGl`) back to back after a warm-up now.
+- **Cut:** `67053c9` the tags' layout by a grid of boxes, the same tags (a test against the
+  layout that asks every box); T2's tags 7.3 → 3.1 ms.
+- **AT:** bench G green with every SPEC figure within: T0 188.1 fps, GPU 0.510 ms (1.0), draw 2.4
+  (6); T2 196.3 fps, 10,752 sprites, GPU 1.049 (2.0), draw 3.7 (6).
+- **Gotchas:** the first new measure drew 600 of T2's passes on the software rasteriser (0.5 s
+  each) and its screenshot timed out; a run of HEAD's code beside it did not. The count is sized
+  by one pass's time to a pixel read back now, less a read back alone. A pipe into `tail` hid a
+  failed typecheck before a bench run (a name declared twice); the bench's own transform stopped it.
+  The crashed bench left its preview server on port 4174: stopped by hand.
+- **Specs:** `tags1938.spec.ts` green (16 s).
+- **Next:** PLAN 7.1l5.

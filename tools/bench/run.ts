@@ -161,7 +161,7 @@ async function runGame(): Promise<void> {
     for (const c of s.cases)
       console.log(
         `${s.setting} ${c.tier}: ${c.fps.toFixed(1)} fps (budget ${c.budgetFps}), p95 ${c.frameMsP95.toFixed(1)} ms, ${c.proxiesOnScreen} sprites on screen, ${c.nations} nations: ${c.pass === null ? 'reported' : c.pass ? 'PASS' : 'FAIL'}` +
-          ` | SPEC gpu ${c.specGpuMs.value.toFixed(3)} ${c.specGpuMs.within ? '<=' : '>'} ${c.specGpuMs.budget} (over 5 draws ${c.gpuFrameMs5.toFixed(3)}), draw cpu p50 ${c.specCpuMs.value.toFixed(2)} ${c.specCpuMs.within ? '<=' : '>'} ${c.specCpuMs.budget}`,
+          ` | SPEC gpu ${c.specGpuMs.value.toFixed(3)} ${c.specGpuMs.within ? '<=' : '>'} ${c.specGpuMs.budget} (30 whole draws ${c.gpuDrawsMs.toFixed(3)}), draw cpu p50 ${c.specCpuMs.value.toFixed(2)} ${c.specCpuMs.within ? '<=' : '>'} ${c.specCpuMs.budget}`,
       );
   if (!record.pass) process.exitCode = 1;
 }

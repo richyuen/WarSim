@@ -1847,12 +1847,7 @@ export class MapView {
     const cam = this.controller.cam;
     // T0 has counters (PLAN 2.2), T1 markers (PLAN 2.1), below them the sprites (PLAN 2.3, 2.6).
     this.tierShares(now);
-    // The ground of T2 and T3 comes with the sprites, by their share of the handover (PLAN
-    // 2.8a); and beyond T2 it goes with the zoom, whatever the handover's clock says (PLAN 2.11l).
-    this.groundShare = this.shares.elements * groundReach(this.metresPerPx, T1_MIN_M * ZOOM_HYSTERESIS);
-    this.map.draw(cam, dpr, this.groundShare);
-    this.drawGroundThings(cam, dpr);
-    this.drawSprites(cam, now);
+    this.drawWebGl(now);
     this.drawLabels(cam, dpr, now);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep
     // clear of the T0 counters (PLAN 1.45c), and the city names of the flags and of the unit
@@ -1867,6 +1862,22 @@ export class MapView {
     // formations' tags too, at every tier.
     this.nukeFx.draw(this.overlay.getContext('2d')!, cam, this.geo, this.canvas.clientWidth, this.canvas.clientHeight, now);
     this.frames++;
+  }
+
+  /**
+   * The frame's WebGL passes, at the tiers' shares of the last `draw`: the map, the ground's
+   * things and the sprites. The rest of a frame is the overlay's Canvas2D. Bench G times these
+   * alone, back to back (PLAN 7.1l4, ADR-407).
+   */
+  drawWebGl(now: number): void {
+    const dpr = window.devicePixelRatio || 1;
+    const cam = this.controller.cam;
+    // The ground of T2 and T3 comes with the sprites, by their share of the handover (PLAN
+    // 2.8a); and beyond T2 it goes with the zoom, whatever the handover's clock says (PLAN 2.11l).
+    this.groundShare = this.shares.elements * groundReach(this.metresPerPx, T1_MIN_M * ZOOM_HYSTERESIS);
+    this.map.draw(cam, dpr, this.groundShare);
+    this.drawGroundThings(cam, dpr);
+    this.drawSprites(cam, now);
   }
 
   /** Wipes the overlay for the frame, and lays out the curved nation names (PLAN 1.29) for `drawCityLayer` to draw. */

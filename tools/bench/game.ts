@@ -5,8 +5,9 @@
 //  - T2: God Mode stands divisions of one nation in western China until 10,000 element sprites or
 //    more are in the view, at 200 m/px; budget ≥ 30 fps.
 // A frame counts when the view drew it (`view.frames`); the CPU of a frame is `view.draw`'s
-// (the GL calls and the overlay's Canvas2D), the GPU's a timer query around 30 draws. The
-// verdict is the dedicated GPU's; a weak setting is run beside it and reported, not judged.
+// (the GL calls and the overlay's Canvas2D), the GPU's a timer query around the frame's WebGL
+// passes drawn back to back (ADR-407). The verdict is the dedicated GPU's; a weak setting is
+// run beside it and reported, not judged.
 import type { Browser, Page } from '@playwright/test';
 import type {} from '../../src/app/testApi';
 import type { Command } from '../../src/shared/commands';
@@ -45,8 +46,10 @@ interface Measured {
   cpuMsP50: number;
   cpuMsP95: number;
   gpuFrameMs: number;
-  /** The same over 5 draws. */
-  gpuFrameMs5: number;
+  /** 7.1j's figure: 30 whole draws in one query, their CPU in it (an upper bound). */
+  gpuDrawsMs: number;
+  /** The passes in each query of `gpuFrameMs`. */
+  gpuPasses: number;
 }
 
 /** A SPEC §8 budget of the bench machine (ADR-4), reported beside the verdict and not part of it (PLAN 7.1l). */
@@ -105,17 +108,22 @@ async function measure(page: Page, seconds: number, panPerS: number): Promise<Me
       const wall = (performance.now() - start) / 1000;
       const frames = v.frames - frames0;
       delete (v as { draw?: unknown }).draw;
-      // The GPU's time of a whole frame: draws in one timer query (EXT_disjoint_timer_query_webgl2),
-      // 30 and 5. The query spans the draws' CPU too: a figure that falls with more draws is the
-      // GPU waiting for the next one, not its work. Both are upper bounds of the GPU's frame.
+      // The GPU's time of a frame (ADR-407): the frame's WebGL passes (`drawWebGl`) drawn n times
+      // back to back in one timer query (EXT_disjoint_timer_query_webgl2), after as many again
+      // to bring the GPU's clock up; the median of 5. Their CPU is a few hundredths of a ms, so
+      // the query holds the GPU's work alone. A query about a whole `draw` held the overlay's
+      // Canvas2D on the CPU too, which the GPU waits through (7.1j's 1.58 ms at T0); one about a
+      // single draw a frame read 1 to 5.5 ms for the same frame, the GPU's clock down between
+      // frames. `gpuDrawsMs` is 7.1j's figure, 30 whole draws in one query, kept beside it.
       const gl = v.gl;
       const ext = gl.getExtension('EXT_disjoint_timer_query_webgl2') as { TIME_ELAPSED_EXT: number; GPU_DISJOINT_EXT: number } | null;
-      const gpu = async (n: number): Promise<number> => {
+      const gpu = async (n: number, draw: (t: number) => void, warm: boolean): Promise<number> => {
         if (!ext) return NaN;
-        const q = gl.createQuery()!;
         const t = performance.now();
+        if (warm) for (let i = 0; i < n; i++) draw(t);
+        const q = gl.createQuery()!;
         gl.beginQuery(ext.TIME_ELAPSED_EXT, q);
-        for (let i = 0; i < n; i++) v.draw(t + i * 16);
+        for (let i = 0; i < n; i++) draw(t + i * 16);
         gl.endQuery(ext.TIME_ELAPSED_EXT);
         gl.flush();
         let ms = NaN;
@@ -129,8 +137,26 @@ async function measure(page: Page, seconds: number, panPerS: number): Promise<Me
         gl.deleteQuery(q);
         return ms;
       };
-      const gpuFrameMs = await gpu(30);
-      const gpuFrameMs5 = await gpu(5);
+      v.draw(performance.now());
+      // As many as make some 100 ms of work, 60 at most: the software rasteriser draws the ground
+      // of T2 in 0.6 s, and 600 of them held the page for minutes. One pass's wall time to a
+      // pixel read back (which waits for the GPU), less a read back alone, is an upper bound of
+      // its work; the least of three.
+      const toPixel = (pass: boolean): number => {
+        let best = Infinity;
+        for (let k = 0; k < 3; k++) {
+          const t = performance.now();
+          if (pass) v.drawWebGl(t);
+          gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+          best = Math.min(best, performance.now() - t);
+        }
+        return best;
+      };
+      const n = Math.max(2, Math.min(60, Math.round(100 / Math.max(0.01, toPixel(true) - toPixel(false)))));
+      const passes: number[] = [];
+      for (let k = 0; k < 5; k++) passes.push(await gpu(n, (t) => v.drawWebGl(t), true));
+      const gpuFrameMs = pct(passes, 0.5);
+      const gpuDrawsMs = await gpu(30, (t) => v.draw(t), false);
       return {
         frames,
         seconds: wall,
@@ -142,7 +168,8 @@ async function measure(page: Page, seconds: number, panPerS: number): Promise<Me
         cpuMsP50: pct(cpu, 0.5),
         cpuMsP95: pct(cpu, 0.95),
         gpuFrameMs,
-        gpuFrameMs5,
+        gpuDrawsMs,
+        gpuPasses: n,
       };
     },
     { seconds, panPerS, w: SIZE_1938.w },

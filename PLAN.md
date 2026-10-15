@@ -197,7 +197,7 @@ quick sweep as a smoke test.
     - [x] 7.1l3 The operational AI's leftovers of 7.1i: `joinWide`'s 452 walks, the frontier `Map`
       at each call, the first call after a load, the long calls of seed 5303 (years 5, 11, 12, 18,
       21). AT: pin unchanged; each cut measured, or dropped with its reason.
-    - [ ] 7.1l4 The GPU's frame by layer, then 7.1j's misses: T0's GPU 1.58 ms (SPEC 1.0), T2's
+    - [x] 7.1l4 The GPU's frame by layer, then 7.1j's misses: T0's GPU 1.58 ms (SPEC 1.0), T2's
       2.57 (2.0), T2's draw on the main thread 7.8 ms (6; the overlay's 384 tags and markers).
       AT: bench G met, or the translation derived again with an ADR.
     - [ ] 7.1l5 The hitches: T0's two modes (p95 16.4 ms), T3's 100 to 157 ms while the sim runs,
