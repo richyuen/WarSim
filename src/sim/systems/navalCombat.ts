@@ -292,7 +292,7 @@ export function nearestOwnPort(world: World, id: number): number {
   const sea = seaOf(world);
   const { w, h } = world.cells;
   const { basin, ocean } = basinOf(world);
-  const here = nearestCellWhere((k) => sea.zoneOf[k] !== 0, c.x[id]!, c.y[id]!, w, h, AT_PORT_CELLS, world.settings.loopingMap);
+  const here = nearestCellWhere((k) => sea.zoneOf[k] !== 0, c.x[id]!, c.y[id]!, w, h, world.atSize(AT_PORT_CELLS), world.settings.loopingMap);
   const mine = here >= 0 && basin[sea.zoneOf[here]!] !== 0 ? basin[sea.zoneOf[here]!]! : ocean;
   let best = -1;
   let bd = Infinity;
@@ -351,7 +351,7 @@ export function atLostBase(world: World, id: number): boolean {
     if (at < 0) return;
     let dx = Math.abs((at % w) - (cell % w));
     if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
-    if (dx > AT_PORT_CELLS || Math.abs(Math.floor(at / w) - Math.floor(cell / w)) > AT_PORT_CELLS) return;
+    if (dx > world.atSize(AT_PORT_CELLS) || Math.abs(Math.floor(at / w) - Math.floor(cell / w)) > world.atSize(AT_PORT_CELLS)) return;
     const holder = ctl[p.cell]!;
     if (holder === n) own = true;
     else if (holder !== 0 && world.cells.owner[p.cell] === n && world.wars.atWar(holder, n)) lost = true;

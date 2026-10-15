@@ -110,7 +110,7 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
   const near = (a: number, b: number): boolean => {
     let dx = Math.abs((a % w) - (b % w));
     if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
-    return dx <= AT_PORT_CELLS && Math.abs(Math.floor(a / w) - Math.floor(b / w)) <= AT_PORT_CELLS;
+    return dx <= world.atSize(AT_PORT_CELLS) && Math.abs(Math.floor(a / w) - Math.floor(b / w)) <= world.atSize(AT_PORT_CELLS);
   };
   // A port of its bloc's is home: the Netherlands' East Indies squadrons stand at Surabaya, the
   // Dutch East Indies' (sent for Den Helder at peace, a way of 2 s to find, every week).

@@ -111,7 +111,7 @@ export function tryLanding(world: World, id: number, x: number, y: number): 0 | 
   // the Thames). Of the ports it stands at, the first with transports for it.
   const at: number[] = [];
   world.ports.forEach((p, i) => {
-    if (water[i]! >= 0 && world.cells.controller[p.cell] === nation && !portShut(world, i) && (near(world, here, p.cell, AT_PORT_CELLS) || near(world, here, water[i]!, AT_PORT_CELLS))) at.push(i);
+    if (water[i]! >= 0 && world.cells.controller[p.cell] === nation && !portShut(world, i) && (near(world, here, p.cell, world.atSize(AT_PORT_CELLS)) || near(world, here, water[i]!, world.atSize(AT_PORT_CELLS)))) at.push(i);
   });
   if (at.length === 0) return RejectReason.NoPort;
   // Transports of its nation there, standing, with room.
@@ -120,7 +120,7 @@ export function tryLanding(world: World, id: number, x: number, y: number): 0 | 
   for (const i of at) {
     f.forEach((o) => {
       if (fleet !== 0 || !world.isFleet(o) || c.nation[o] !== nation || c.moving[o] === 1 || c.engaged[o] === 1) return;
-      if (!near(world, cellOfPlace(world, o), water[i]!, AT_PORT_CELLS)) return;
+      if (!near(world, cellOfPlace(world, o), water[i]!, world.atSize(AT_PORT_CELLS))) return;
       if (transportRoom(world, o) - aboard(world, o) >= men) fleet = o;
     });
     if (fleet !== 0) break;
@@ -131,14 +131,14 @@ export function tryLanding(world: World, id: number, x: number, y: number): 0 | 
   const comp = navOf(world).grid.component;
   const targetComp = comp[target]!;
   if (!isLand(terrain[target]!) || targetComp === 0) return RejectReason.NoLanding;
-  const sea = nearestCellWhere((k) => z.zoneOf[k] !== 0 && z.closed[z.zoneOf[k]!] !== 1, tx + 0.5, ty + 0.5, w, h, LANDING_REACH, world.settings.loopingMap);
+  const sea = nearestCellWhere((k) => z.zoneOf[k] !== 0 && z.closed[z.zoneOf[k]!] !== 1, tx + 0.5, ty + 0.5, w, h, world.atSize(LANDING_REACH), world.settings.loopingMap);
   if (sea < 0) return RejectReason.NoLanding;
   // A cell of a nation's where the target is one's (PLAN 4.6b: a speck of no one's by the water
   // took no beachhead), else any.
   const owner = world.cells.owner;
   const owned = owner[target] !== 0;
-  let land = owned ? nearestCellWhere((k) => comp[k] === targetComp && owner[k] !== 0, (sea % w) + 0.5, Math.floor(sea / w) + 0.5, w, h, LANDING_REACH, world.settings.loopingMap) : -1;
-  if (land < 0) land = nearestCellWhere((k) => comp[k] === targetComp, (sea % w) + 0.5, Math.floor(sea / w) + 0.5, w, h, LANDING_REACH, world.settings.loopingMap);
+  let land = owned ? nearestCellWhere((k) => comp[k] === targetComp && owner[k] !== 0, (sea % w) + 0.5, Math.floor(sea / w) + 0.5, w, h, world.atSize(LANDING_REACH), world.settings.loopingMap) : -1;
+  if (land < 0) land = nearestCellWhere((k) => comp[k] === targetComp, (sea % w) + 0.5, Math.floor(sea / w) + 0.5, w, h, world.atSize(LANDING_REACH), world.settings.loopingMap);
   if (land < 0) return RejectReason.NoLanding;
   if (!orderSail(world, fleet, (sea % w) + 0.5, Math.floor(sea / w) + 0.5)) return RejectReason.NoSeaWay;
   world.embarked.set(id, { fleet, land, water: sea, target });
@@ -175,7 +175,7 @@ export function transportsPort(world: World, id: number, withTransports = true):
   let bd = Infinity;
   world.ports.forEach((p, i) => {
     if (water[i]! < 0 || world.cells.controller[p.cell] !== nation || comp[p.cell] !== comp[here] || portShut(world, i)) return;
-    if (withTransports && !fleets.some((o) => near(world, cellOfPlace(world, o), water[i]!, AT_PORT_CELLS))) return;
+    if (withTransports && !fleets.some((o) => near(world, cellOfPlace(world, o), water[i]!, world.atSize(AT_PORT_CELLS)))) return;
     let dx = Math.abs((p.cell % w) - (here % w));
     if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
     const dy = Math.floor(p.cell / w) - Math.floor(here / w);
@@ -230,7 +230,7 @@ export function strayLanding(world: World, nation: number, at: number): number {
     if (o === 0) return !enemySea;
     return o === nation || blocOf(world, o) === bloc || world.wars.sameSide(nation, o);
   };
-  return nearestCellWhere((k) => isLand(terrain[k]!) && comp[k] !== 0 && ours(k), (at % w) + 0.5, Math.floor(at / w) + 0.5, w, h, AT_PORT_CELLS, world.settings.loopingMap);
+  return nearestCellWhere((k) => isLand(terrain[k]!) && comp[k] !== 0 && ours(k), (at % w) + 0.5, Math.floor(at / w) + 0.5, w, h, world.atSize(AT_PORT_CELLS), world.settings.loopingMap);
 }
 
 export function amphibiousSystem(world: World): void {

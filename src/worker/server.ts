@@ -1095,7 +1095,7 @@ export class SimServer {
     } else if (kind === EventKind.FormationLanded) {
       const dx = Math.abs(Math.floor(ev[i + 4]!) - (target % w));
       const dy = Math.abs(Math.floor(ev[i + 5]!) - Math.floor(target / w));
-      if (Math.min(dx, w - dx) > AT_PORT_CELLS || dy > AT_PORT_CELLS) tell('landedAway', 0);
+      if (Math.min(dx, w - dx) > world.atSize(AT_PORT_CELLS) || dy > world.atSize(AT_PORT_CELLS)) tell('landedAway', 0);
       this.ordered.delete(id);
     } else if (kind === EventKind.FormationDestroyed || (kind === EventKind.FormationArrived && !world.seaBound.has(id) && !world.afloat(id))) {
       this.ordered.delete(id);

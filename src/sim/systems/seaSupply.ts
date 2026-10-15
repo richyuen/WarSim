@@ -68,7 +68,7 @@ export function passageBank(world: World, i: number): number {
   const p = world.seaPassages[i]!;
   const { w, h, terrain } = world.cells;
   const [x, y] = cellOf((p.a[0] + p.b[0]) / 2, (p.a[1] + p.b[1]) / 2, w, h);
-  return nearestCellWhere((k) => isLand(terrain[k]!), x, y, w, h, BANK_REACH, world.settings.loopingMap);
+  return nearestCellWhere((k) => isLand(terrain[k]!), x, y, w, h, world.atSize(BANK_REACH), world.settings.loopingMap);
 }
 
 /** Whether passage `i` is shut to a ship of `nation` (PLAN 4.4e): its bank is held by a nation at war with it. */

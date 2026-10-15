@@ -354,7 +354,7 @@ export function snapTarget(world: World, origin: number, tx: number, ty: number)
   if (!snaps) SNAPS.set(grid, (snaps = new Map()));
   const key = from * w * h + target;
   let to = snaps.get(key);
-  if (to === undefined) snaps.set(key, (to = nearestCellWhere((k) => comp[k] !== 0 && comp[k] === from, tx + 0.5, ty + 0.5, w, h, TARGET_SNAP_CELLS, world.settings.loopingMap)));
+  if (to === undefined) snaps.set(key, (to = nearestCellWhere((k) => comp[k] !== 0 && comp[k] === from, tx + 0.5, ty + 0.5, w, h, world.atSize(TARGET_SNAP_CELLS), world.settings.loopingMap)));
   return to;
 }
 const SNAPS = new WeakMap<object, Map<number, number>>();

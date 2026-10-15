@@ -77,7 +77,7 @@ function planLanding(world: World, n: number): void {
     const r = transportRoom(world, id);
     if (r <= room) return;
     const at = cellOf(id);
-    const i = world.ports.findIndex((p, k) => water[k]! >= 0 && ctl[p.cell] === n && near(world, at, water[k]!, AT_PORT_CELLS));
+    const i = world.ports.findIndex((p, k) => water[k]! >= 0 && ctl[p.cell] === n && near(world, at, water[k]!, world.atSize(AT_PORT_CELLS)));
     if (i < 0) return;
     [fleet, room, port] = [id, r, i];
   });
@@ -105,7 +105,7 @@ function planLanding(world: World, n: number): void {
   let sent = 0;
   const atPort: number[] = [];
   f.forEach((id) => {
-    if (free(id) && near(world, cellOf(id), water[port]!, AT_PORT_CELLS)) atPort.push(id);
+    if (free(id) && near(world, cellOf(id), water[port]!, world.atSize(AT_PORT_CELLS))) atPort.push(id);
   });
   for (const id of atPort) {
     if (!orderLanding(world, id, tx, ty)) break;
