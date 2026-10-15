@@ -37,8 +37,8 @@ import { Domain, type World } from '../world';
 export function slotPlace(world: World, fx: number, fy: number, facing: number, slot: number, count: number, element?: number): [number, number] {
   const p =
     element === undefined
-      ? slotPose(fx, fy, facing, slot, count, SLOT_SPACING)
-      : slotPose(fx, fy, facing, slot, count, SLOT_SPACING, shareOf(element, 1) * DEPLOY_SCATTER * SLOT_SPACING, shareOf(element, 2) * DEPLOY_SCATTER * SLOT_SPACING);
+      ? slotPose(fx, fy, facing, slot, count, world.atSize(SLOT_SPACING))
+      : slotPose(fx, fy, facing, slot, count, world.atSize(SLOT_SPACING), shareOf(element, 1) * DEPLOY_SCATTER * world.atSize(SLOT_SPACING), shareOf(element, 2) * DEPLOY_SCATTER * world.atSize(SLOT_SPACING));
   if (world.onLand(p[0], p[1])) return p;
   const afloat = !world.onLand(fx, fy);
   if (afloat && world.onMap(p[0], p[1])) return p;
@@ -169,7 +169,7 @@ export function contactsOf(world: World): Map<number, number> {
       const b = engaged[j]!;
       if (!world.wars.atWar(c.nation[a]!, c.nation[b]!)) continue;
       const d = cellDist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!);
-      if (d > CONTACT_CELLS) continue;
+      if (d > world.atSize(CONTACT_CELLS)) continue;
       note(a, b, d);
       note(b, a, d);
     }
@@ -280,7 +280,7 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
   if (enemy !== undefined && world.formations.has(enemy)) {
     const fx = c.x[f]!;
     const fy = c.y[f]!;
-    const depth = slotGrid(count).rows * SLOT_SPACING;
+    const depth = slotGrid(count).rows * world.atSize(SLOT_SPACING);
     // What it goes towards, and how far short of it its block's middle stops.
     let tx = c.x[enemy]!;
     let ty = c.y[enemy]!;
@@ -321,7 +321,7 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
         const mine = turns.get(f)!;
         const known = new Set<number>([enemy, faced, ...ahead]);
         for (const h of contacts.keys()) {
-          if (h === f || !world.formations.has(h) || cellDist(world, fx, fy, c.x[h]!, c.y[h]!) > 2 * DEPLOY_REACH + BLOCK_REACH) continue;
+          if (h === f || !world.formations.has(h) || cellDist(world, fx, fy, c.x[h]!, c.y[h]!) > 2 * world.atSize(DEPLOY_REACH) + world.atSize(BLOCK_REACH)) continue;
           if (known.has(h) || !world.wars.atWar(c.nation[f]!, c.nation[h]!)) continue;
           const its = turns.get(h)!;
           if (its > mine || (its === mine && h > f)) continue;
@@ -345,7 +345,7 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
       // nor a column of thirty km).
       const dx = wrapDx(world, fx, tx);
       const dy = ty - fy;
-      const room = sqrt(dx * dx + dy * dy) - (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 - DEPLOY_GAP;
+      const room = sqrt(dx * dx + dy * dy) - (slotGrid(enemySlots).rows * world.atSize(SLOT_SPACING)) / 2 - world.atSize(DEPLOY_GAP);
       let taken = 0;
       let lines = 0;
       let widest = slotGrid(count).cols;
@@ -354,17 +354,17 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
         const grid = g === f ? slotGrid(count) : slotGrid(slotCount(world, g, idx.get(g)?.length ?? 0));
         // The one that enemy faces is a line of the stack too.
         widest = Math.max(widest, grid.cols);
-        const deep = grid.rows * SLOT_SPACING;
+        const deep = grid.rows * world.atSize(SLOT_SPACING);
         if (taken > 0 && (lines >= DEPLOY_LINES || taken + deep / 2 > room)) {
           file++;
           taken = 0;
           lines = 0;
         }
         lines++;
-        if (g !== f) taken += deep + DEPLOY_GAP;
+        if (g !== f) taken += deep + world.atSize(DEPLOY_GAP);
       }
-      short = (slotGrid(enemySlots).rows * SLOT_SPACING) / 2 + DEPLOY_GAP + taken + depth / 2;
-      apart = widest * SLOT_SPACING + DEPLOY_GAP;
+      short = (slotGrid(enemySlots).rows * world.atSize(SLOT_SPACING)) / 2 + world.atSize(DEPLOY_GAP) + taken + depth / 2;
+      apart = widest * world.atSize(SLOT_SPACING) + world.atSize(DEPLOY_GAP);
     }
     const dx = wrapDx(world, fx, tx);
     const dy = ty - fy;
@@ -379,7 +379,7 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
       // whatever side of that block it comes to. A block is twice as wide as deep, and one that
       // came to a flank stood in it (PLAN 3.11c2). In its way: across the file's width and the
       // gap, before the formation's place.
-      const half = (slotGrid(count).cols * SLOT_SPACING) / 2 + DEPLOY_GAP - 1e-9;
+      const half = (slotGrid(count).cols * world.atSize(SLOT_SPACING)) / 2 + world.atSize(DEPLOY_GAP) - 1e-9;
       // Of each such block: where its near side is along this one's line, and its middle and its reach across it.
       const inWay: [number, number, number][] = [];
       for (const [b, slots] of stand) {
@@ -392,13 +392,13 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
         const bs = sin(b.facing);
         const turnedAlong = Math.abs(bc * ux + bs * uy);
         const turnedAcross = Math.abs(bs * ux - bc * uy);
-        const along = ((turnedAlong * grid.rows + turnedAcross * grid.cols) * SLOT_SPACING) / 2;
-        const across = ((turnedAcross * grid.rows + turnedAlong * grid.cols) * SLOT_SPACING) / 2;
+        const along = ((turnedAlong * grid.rows + turnedAcross * grid.cols) * world.atSize(SLOT_SPACING)) / 2;
+        const across = ((turnedAcross * grid.rows + turnedAlong * grid.cols) * world.atSize(SLOT_SPACING)) / 2;
         inWay.push([bx * ux + by * uy - along, by * ux - bx * uy, across + half]);
       }
       const free = (at: number): number => {
         let least = Infinity;
-        for (const [near, middle, reach] of inWay) if (Math.abs(middle - at) < reach) least = Math.min(least, near - DEPLOY_GAP - depth / 2);
+        for (const [near, middle, reach] of inWay) if (Math.abs(middle - at) < reach) least = Math.min(least, near - world.atSize(DEPLOY_GAP) - depth / 2);
         return least;
       };
       // A file with no room before the formation's place (a block of another bearing stands in
@@ -413,8 +413,8 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
       }
       // Each other's nearest: to the middle between the two, less half the gap and half its depth.
       // No further from its own place than `DEPLOY_REACH` (it binds only on the way to a block).
-      let shift = Math.min(DEPLOY_REACH, Math.max(0, d / 2 - DEPLOY_GAP / 2 - depth / 2));
-      if (short >= 0) shift = Math.min(sqrt(DEPLOY_REACH * DEPLOY_REACH - side * side), Math.max(0, d - short), Math.max(0, room));
+      let shift = Math.min(world.atSize(DEPLOY_REACH), Math.max(0, d / 2 - world.atSize(DEPLOY_GAP) / 2 - depth / 2));
+      if (short >= 0) shift = Math.min(sqrt(world.atSize(DEPLOY_REACH) * world.atSize(DEPLOY_REACH) - side * side), Math.max(0, d - short), Math.max(0, room));
       out = { x: fx, y: fy, facing: atan2(dy, dx) };
       // As far forward as the block's middle has land under it, in eighths of the way.
       for (let k = 8; k >= (side === 0 ? 1 : 0); k--) {
@@ -431,7 +431,7 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
       // The lower id faces east and the other west, each half the gap and half its depth back
       // from the point, where that is land.
       const ux = f < enemy ? 1 : -1;
-      const back = DEPLOY_GAP / 2 + depth / 2;
+      const back = world.atSize(DEPLOY_GAP) / 2 + depth / 2;
       const x = fx - ux * back;
       out = { x: world.onLand(x, fy) ? x : fx, y: fy, facing: atan2(0, ux) };
     }

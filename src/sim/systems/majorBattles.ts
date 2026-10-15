@@ -68,7 +68,7 @@ export function updateMajorBattles(world: World, groups: readonly number[][]): S
     const total = men[0] + men[1];
     const cx = (sx[0]! + sx[1]!) / Math.max(1, total);
     const cy = (sy[0]! + sy[1]!) / Math.max(1, total);
-    let mb = world.battles.majors.find((m) => !seen.has(m) && (m.x - cx) * (m.x - cx) + (m.y - cy) * (m.y - cy) <= MATCH_CELLS * MATCH_CELLS);
+    let mb = world.battles.majors.find((m) => !seen.has(m) && (m.x - cx) * (m.x - cx) + (m.y - cy) * (m.y - cy) <= world.atSize(MATCH_CELLS) * world.atSize(MATCH_CELLS));
     if (!mb && total < MAJOR_MEN) continue;
     if (!mb) {
       mb = { id: world.battles.nextId++, city: nearestCity(world, cx, cy), x: cx, y: cy, startTick: world.tick, lastTick: world.tick, camps, men, centroid: [[cx, cy], [cx, cy]] };
@@ -94,7 +94,7 @@ export function updateMajorBattles(world: World, groups: readonly number[][]): S
     const now = [0, 0];
     world.formations.forEach((id) => {
       const k = mb.camps[0].includes(f.nation[id]!) ? 0 : mb.camps[1].includes(f.nation[id]!) ? 1 : -1;
-      if (k < 0 || world.offLand(id) || (f.x[id]! - mb.x) * (f.x[id]! - mb.x) + (f.y[id]! - mb.y) * (f.y[id]! - mb.y) > END_CELLS * END_CELLS) return;
+      if (k < 0 || world.offLand(id) || (f.x[id]! - mb.x) * (f.x[id]! - mb.x) + (f.y[id]! - mb.y) * (f.y[id]! - mb.y) > world.atSize(END_CELLS) * world.atSize(END_CELLS)) return;
       now[k]! += f.strength[id]!;
     });
     const w = now[0] !== now[1] ? (now[0]! > now[1]! ? 0 : 1) : mb.men[0] >= mb.men[1] ? 0 : 1;
@@ -151,7 +151,7 @@ export function inCorridor(world: World, nation: number, cell: number): boolean 
     const ry = py - c.y;
     const along = rx * c.dx + ry * c.dy;
     const across = Math.abs(-rx * c.dy + ry * c.dx);
-    if (along >= -1 && along <= CORRIDOR_LEN && across <= CORRIDOR_HALF_WIDTH + 0.5) return true;
+    if (along >= -1 && along <= world.atSize(CORRIDOR_LEN) && across <= world.atSize(CORRIDOR_HALF_WIDTH) + 0.5) return true;
   }
   return false;
 }

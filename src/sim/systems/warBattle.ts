@@ -40,7 +40,7 @@ export function largestBattle(world: World, warId: number): WarBattleSite | null
   const pairs: [number, number][] = [];
   for (const a of sides[0]) {
     for (const b of sides[1]) {
-      if (cellDist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) > CONTACT_CELLS) continue;
+      if (cellDist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) > world.atSize(CONTACT_CELLS)) continue;
       pairs.push([a, b]);
       if (!parent.has(a)) parent.set(a, a);
       if (!parent.has(b)) parent.set(b, b);
@@ -148,7 +148,7 @@ export function warsWithBattle(world: World): Set<number> {
   for (const war of wars) {
     if (out.has(war.id)) continue;
     const [attackers, defenders] = war.sides.map((side) => side.flatMap((n) => engaged.get(n) ?? []));
-    if (attackers!.some((a) => defenders!.some((b) => cellDist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) <= CONTACT_CELLS))) out.add(war.id);
+    if (attackers!.some((a) => defenders!.some((b) => cellDist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) <= world.atSize(CONTACT_CELLS)))) out.add(war.id);
   }
   return out;
 }

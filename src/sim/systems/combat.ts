@@ -131,8 +131,8 @@ export function findBattles(world: World): number[][] {
   const c = f.cols;
   const idx = elementIndex(world);
   const w = world.cells.w;
-  const bw = Math.ceil(w / BUCKET_CELLS);
-  const bh = Math.ceil(world.cells.h / BUCKET_CELLS);
+  const bw = Math.ceil(w / world.atSize(BUCKET_CELLS));
+  const bh = Math.ceil(world.cells.h / world.atSize(BUCKET_CELLS));
   const fighters: number[] = [];
   // Only formations of nations at war can make contact (review after PLAN 1.25).
   const atWar = world.wars.nations();
@@ -160,8 +160,8 @@ export function findBattles(world: World): number[][] {
   // Backwards, each to the front of its bucket: a bucket's fighters come out by ascending id.
   for (let i = fighters.length - 1; i >= 0; i--) {
     const id = fighters[i]!;
-    const bx = Math.floor(c.x[id]! / BUCKET_CELLS);
-    const by = Math.floor(c.y[id]! / BUCKET_CELLS);
+    const bx = Math.floor(c.x[id]! / world.atSize(BUCKET_CELLS));
+    const by = Math.floor(c.y[id]! / world.atSize(BUCKET_CELLS));
     if (bx < 0 || bx >= bw || by < 0 || by >= bh) onMap = false;
     const k = by * bw + bx + bw;
     key[i] = k;
@@ -190,7 +190,7 @@ export function findBattles(world: World): number[][] {
   const pair = (a: number, b: number): void => {
     if (b <= a || !world.wars.atWar(c.nation[a]!, c.nation[b]!)) return;
     const d = dist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!);
-    if (d > CONTACT_CELLS) return;
+    if (d > world.atSize(CONTACT_CELLS)) return;
     // Each one's nearest enemy in contact (the lower id on a tie): where its block deploys (`deployOf`).
     const na = near.get(a);
     if (!na || d < na[1] || (d === na[1] && b < na[0])) near.set(a, [b, d]);
@@ -233,8 +233,8 @@ export function findBattles(world: World): number[][] {
       }
     } else {
       for (const a of fighters) {
-        const bx = Math.floor(c.x[a]! / BUCKET_CELLS);
-        const by = Math.floor(c.y[a]! / BUCKET_CELLS);
+        const bx = Math.floor(c.x[a]! / world.atSize(BUCKET_CELLS));
+        const by = Math.floor(c.y[a]! / world.atSize(BUCKET_CELLS));
         for (let dy = -1; dy <= 1; dy++) {
           for (let dx = -1; dx <= 1; dx++) {
             // Over the seam whatever the map: candidates only, and `dist` keeps to the edges of a

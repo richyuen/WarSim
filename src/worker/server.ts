@@ -1158,7 +1158,7 @@ export class SimServer {
         // By where its block stands: at the formation's place, or deployed against the enemy (PLAN 2.14c1).
         const slots = slotCount(world, f, list.length);
         const at = deployOf(world, f, slots);
-        if (!this.inBbox(at ? at.x : ft.cols.x[f]!, at ? at.y : ft.cols.y[f]!, world, blockReach(slots, SLOT_SPACING))) return;
+        if (!this.inBbox(at ? at.x : ft.cols.x[f]!, at ? at.y : ft.cols.y[f]!, world, blockReach(slots, world.atSize(SLOT_SPACING)))) return;
         if (total + list.length > MAX_SNAPSHOT_ELEMENTS) {
           truncated = true;
           return;
