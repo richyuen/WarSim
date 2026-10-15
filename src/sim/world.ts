@@ -861,6 +861,8 @@ export class World {
   private land: LandCounts | null = null;
   /** Derived (not state): the frontier set as a byte per cell (valid whenever `frontier` is). */
   frontierMask: Uint8Array | null = null;
+  /** Derived (not state): the frontier cells of each 8 × 8 block of cells (with `frontierMask`, PLAN 7.1h). */
+  frontierBlocks: Uint8Array | null = null;
   /** Derived (not state): cells with non-zero `cells.flip`; null = rebuild by scan. */
   flipping: Set<number> | null = null;
   frontierWars = -1;

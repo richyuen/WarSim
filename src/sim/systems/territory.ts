@@ -40,6 +40,8 @@ export const PRESSURE_RADIUS = 2;
 /** Abstract province garrison, in the same units as formation pressure (≈ 1,000 men at d = 0). */
 export const GARRISON = 1;
 export const HOLD_TICKS = 16;
+/** The side of a block of `World.frontierBlocks`, in cells: a log2 (8 cells, over the pressure's 5). */
+const BLOCK_SHIFT = 3;
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);
 
 function neighbours(world: World, c: number, out: number[]): number[] {
@@ -75,6 +77,11 @@ export function frontierOf(world: World): Set<number> {
   let mask = world.frontierMask;
   if (!mask || mask.length !== n) mask = world.frontierMask = new Uint8Array(n);
   else mask.fill(0);
+  const bw = (w + (1 << BLOCK_SHIFT) - 1) >> BLOCK_SHIFT;
+  const nBlocks = bw * ((h + (1 << BLOCK_SHIFT) - 1) >> BLOCK_SHIFT);
+  let blocks = world.frontierBlocks;
+  if (!blocks || blocks.length !== nBlocks) blocks = world.frontierBlocks = new Uint8Array(nBlocks);
+  else blocks.fill(0);
   if (world.wars.size > 0) {
     // The same test as onFrontier, inlined (PLAN 1.42a: this scan was 8% of the tick): cells of
     // nations at peace are skipped, and a neighbour held by the same nation cannot be hostile.
@@ -101,6 +108,9 @@ export function frontierOf(world: World): Set<number> {
       if (on) {
         f.add(c);
         mask[c] = 1;
+        const x = c % w;
+        const block = ((c - x) / w >> BLOCK_SHIFT) * bw + (x >> BLOCK_SHIFT);
+        blocks[block] = blocks[block]! + 1;
         if (flip[c] !== 0) flipping.add(c);
       } else flip[c] = 0; // uncontested cells carry no hold progress
     }
@@ -152,6 +162,8 @@ export function territorySystem(world: World): void {
   if (frontier.size === 0) return;
   const mask = world.frontierMask!;
   if (head.length !== w * h) head = new Int32Array(w * h).fill(-1);
+  const blocks = world.frontierBlocks!;
+  const bw = (w + (1 << BLOCK_SHIFT) - 1) >> BLOCK_SHIFT;
 
   // Pressure per cell per nation, from formations of nations at war (ascending ids).
   const fighting = world.wars.nations();
@@ -166,6 +178,22 @@ export function territorySystem(world: World): void {
     const base = (f.strength[id]! / 1000) * (0.5 + 0.5 * f.supply[id]!);
     const cx = Math.floor(f.x[id]!);
     const cy = Math.floor(f.y[id]!);
+    // No frontier cell in the blocks its reach falls in: nothing to press (PLAN 7.1h). The reach
+    // is narrower than a block, so it falls in two blocks a side at most; over an edge of the map
+    // the reach is walked.
+    const top = Math.max(0, cy - PRESSURE_RADIUS) >> BLOCK_SHIFT;
+    const bottom = Math.min(h - 1, cy + PRESSURE_RADIUS) >> BLOCK_SHIFT;
+    const left = (cx - PRESSURE_RADIUS) >> BLOCK_SHIFT;
+    const right = (cx + PRESSURE_RADIUS) >> BLOCK_SHIFT;
+    if (
+      cx >= PRESSURE_RADIUS &&
+      cx + PRESSURE_RADIUS < w &&
+      blocks[top * bw + left] === 0 &&
+      blocks[top * bw + right] === 0 &&
+      blocks[bottom * bw + left] === 0 &&
+      blocks[bottom * bw + right] === 0
+    )
+      return;
     for (let dy = -PRESSURE_RADIUS; dy <= PRESSURE_RADIUS; dy++) {
       const y = cy + dy;
       if (y < 0 || y >= h) continue;
@@ -276,10 +304,14 @@ export function territorySystem(world: World): void {
   // Local frontier upkeep around flipped cells.
   for (const [c] of flips) {
     for (const k of [c, ...neighbours(world, c, nb)]) {
+      const x = k % w;
+      const block = ((k - x) / w >> BLOCK_SHIFT) * bw + (x >> BLOCK_SHIFT);
       if (onFrontier(world, k)) {
         frontier.add(k);
+        if (mask[k] === 0) blocks[block] = blocks[block]! + 1;
         mask[k] = 1;
       } else if (frontier.delete(k)) {
+        blocks[block] = blocks[block]! - 1;
         mask[k] = 0;
         flip[k] = 0;
         flipping.delete(k);

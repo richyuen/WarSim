@@ -161,6 +161,14 @@ describe('territory pressure and fronts (PLAN 1.14)', () => {
     expect(maskCells()).toEqual(rebuilt);
     s.step(24 * 2);
     expect(maskCells()).toEqual([...frontierOf(w)].sort((a, b) => a - b));
+    // The blocks count the mask's cells (PLAN 7.1h): each 8 × 8 block, after the upkeep as well.
+    const BW = Math.ceil(W / 8);
+    const counts = new Uint8Array(BW * Math.ceil(H / 8));
+    for (const c of maskCells()) {
+      const block = Math.floor(Math.floor(c / W) / 8) * BW + Math.floor((c % W) / 8);
+      counts[block] = counts[block]! + 1;
+    }
+    expect(w.frontierBlocks).toEqual(counts);
     expect(perTick).toBeLessThan(25);
   });
 
