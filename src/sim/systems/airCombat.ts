@@ -13,7 +13,7 @@ import { applyLoss, cellX, elementIndex, loopW, settleFormation, wrapDx } from '
 import { seaKm } from './navalCombat';
 import { bombIndustry } from './bombing';
 import { ARMOR_PEN, effectiveness } from './combat';
-import { Leg, legHours, sortieAt } from './sorties';
+import { Leg, legHours, sortieAt, type Sortie } from './sorties';
 import { strikeFactor } from './airSuperiority';
 
 /** The share of an aircraft's air attack that is hit points on a target of defence 1 in an hour. */
@@ -245,7 +245,7 @@ export function antiAir(world: World): void {
       }
     });
   });
-  for (let i = 0; i < near.count; i++) near.mark[near.cells[i]!] = 0;
+  clearMarks();
   if (loss.size === 0) return;
   const hit = new Set<number>();
   // The aircraft each wing fired on had (PLAN 5.11b: what the flak took counted).
@@ -265,21 +265,40 @@ export function antiAir(world: World): void {
 }
 
 /**
- * The cells from which `antiAir`'s walk of `AA_CELLS` meets a cell of `above` (PLAN 7.1f), kept
- * between calls (not state) and cleared by the caller after each: a byte a cell, and the cells
- * marked. A key of `above` is matched as the walk matches it, by its row and column in the grid.
+ * Cells marked for a call of `antiAir` or `strikes` (PLAN 7.1f), kept between calls (not state)
+ * and cleared by the caller before it returns (`clearMarks`): a byte a cell, and the cells marked.
  */
-const nearScratch = { mark: new Uint8Array(0), cells: new Int32Array(0), count: 0 };
+const marks = { mark: new Uint8Array(0), cells: new Int32Array(0), count: 0 };
 
-function markNear(world: World, above: Map<number, number[]>): typeof nearScratch {
+/** Ready `marks` for a world of its size and up to `most` cells. */
+function startMarks(world: World, most: number): typeof marks {
+  const n = world.cells.w * world.cells.h;
+  if (marks.mark.length !== n) marks.mark = new Uint8Array(n);
+  if (marks.cells.length < most) marks.cells = new Int32Array(Math.max(most, 2 * marks.cells.length));
+  marks.count = 0;
+  return marks;
+}
+
+function markCell(c: number): void {
+  if (marks.mark[c] === 1) return;
+  marks.mark[c] = 1;
+  marks.cells[marks.count++] = c;
+}
+
+function clearMarks(): void {
+  for (let i = 0; i < marks.count; i++) marks.mark[marks.cells[i]!] = 0;
+  marks.count = 0;
+}
+
+/**
+ * Marks the cells from which `antiAir`'s walk of `AA_CELLS` meets a cell of `above`. A key of
+ * `above` is matched as the walk matches it, by its row and column in the grid.
+ */
+function markNear(world: World, above: Map<number, number[]>): typeof marks {
   const w = world.cells.w;
   const h = world.cells.h;
-  const s = nearScratch;
-  if (s.mark.length !== w * h) s.mark = new Uint8Array(w * h);
   const side = 2 * AA_CELLS + 1;
-  const most = above.size * side * side;
-  if (s.cells.length < most) s.cells = new Int32Array(Math.max(most, 2 * s.cells.length));
-  s.count = 0;
+  const s = startMarks(world, above.size * side * side);
   for (const key of above.keys()) {
     if (key < 0 || key >= w * h) continue;
     const sy = Math.floor(key / w);
@@ -290,10 +309,7 @@ function markNear(world: World, above: Map<number, number[]>): typeof nearScratc
       for (let dx = -AA_CELLS; dx <= AA_CELLS; dx++) {
         const gx = world.settings.loopingMap ? (((sx - dx) % w) + w) % w : sx - dx;
         if (gx < 0 || gx >= w) continue;
-        const c = gy * w + gx;
-        if (s.mark[c] === 1) continue;
-        s.mark[c] = 1;
-        s.cells[s.count++] = c;
+        markCell(gy * w + gx);
       }
     }
   }
@@ -318,6 +334,61 @@ export function shipEffectiveness(us: UnitRule, ut: UnitRule): number {
 }
 
 /**
+ * The formations that are not wings nor aboard within reach of the hour's strikes (`aims`, their
+ * targets' cells), by the cell of `strikes`' test (PLAN 7.1f): the column of their x, the row of
+ * their y up to the last. `near(tx, ty)` gives, in ascending id and once each, those whose cell is
+ * within `AA_CELLS` of (tx, ty) as that test reckons it, and those off the grid; the caller makes
+ * the whole test of each.
+ */
+function formationsByCell(world: World, aims: readonly { tx: number; ty: number }[]): { near(tx: number, ty: number): number[] } {
+  const fc = world.formations.cols;
+  const w = world.cells.w;
+  const h = world.cells.h;
+  const side = 2 * AA_CELLS + 1;
+  const reach = startMarks(world, aims.length * side * side);
+  for (const { tx, ty } of aims) {
+    for (let y = ty - AA_CELLS; y <= ty + AA_CELLS; y++) {
+      if (y < 0 || y >= h) continue;
+      for (let d = -AA_CELLS; d <= AA_CELLS; d++) {
+        const x = cellX(world, tx + d);
+        if (x !== null) markCell(y * w + x);
+      }
+    }
+  }
+  const at = new Map<number, number[]>();
+  const off: number[] = [];
+  world.formations.forEach((g) => {
+    const x = Math.floor(fc.x[g]!);
+    const y = Math.min(h - 1, Math.floor(fc.y[g]!));
+    const onGrid = x >= 0 && x < w && y >= 0;
+    if (onGrid && reach.mark[y * w + x] === 0) return;
+    if (world.isWing(g) || world.embarked.has(g)) return;
+    if (!onGrid) {
+      off.push(g);
+      return;
+    }
+    const list = at.get(y * w + x);
+    if (list) list.push(g);
+    else at.set(y * w + x, [g]);
+  });
+  clearMarks();
+  return {
+    near(tx, ty) {
+      const out = off.slice();
+      for (let y = ty - AA_CELLS; y <= ty + AA_CELLS; y++) {
+        if (y < 0 || y >= h) continue;
+        for (let d = -AA_CELLS; d <= AA_CELLS; d++) {
+          const x = cellX(world, tx + d);
+          if (x === null) continue;
+          for (const g of at.get(y * w + x) ?? []) if (!out.includes(g)) out.push(g);
+        }
+      }
+      return out.sort((a, b) => a - b);
+    },
+  };
+}
+
+/**
  * The hour's strikes (PLAN 5.4b, CAS and tactical bombing): a wing on a strike mission whose
  * sortie reaches its target in this hour (it is there in (tick − 1, tick]) fires once on the
  * elements of the formations of nations at war with its own within `AA_CELLS` of the target:
@@ -336,23 +407,32 @@ export function strikes(world: World): void {
   const fc = world.formations.cols;
   const h = world.cells.h;
   const index = elementIndex(world);
-  for (const [id, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
+  const sorties = [...world.sorties].sort((a, b) => a[0] - b[0]);
+  const arrives = ([id, s]: [number, Sortie]): boolean => {
     const m = world.wingMission.get(id);
-    if (!m || m.kind !== 'strike' || s.tx !== m.x || s.ty !== m.y || !world.formations.has(id)) continue;
+    if (!m || m.kind !== 'strike' || s.tx !== m.x || s.ty !== m.y || !world.formations.has(id)) return false;
     const arrive = s.launch + legHours(s);
-    if (!(arrive > world.tick - 1 && arrive <= world.tick)) continue;
+    return arrive > world.tick - 1 && arrive <= world.tick;
+  };
+  // The formations by cell within reach of the hour's strikes, once a call (PLAN 7.1f): the places
+  // do not change in this system; the rest of the test is made at each strike, in ascending id.
+  const aims = sorties.filter(arrives).map(([, s]) => ({ tx: Math.floor(s.tx), ty: Math.floor(s.ty) }));
+  if (aims.length === 0) return;
+  const groundAt = formationsByCell(world, aims);
+  for (const [id, s] of sorties) {
+    if (!arrives([id, s])) continue;
     const tx = Math.floor(s.tx);
     const ty = Math.floor(s.ty);
     const targets: number[] = [];
-    world.formations.forEach((g) => {
+    for (const g of groundAt.near(tx, ty)) {
       // The land's formations, and fleets (PLAN 5.4c); not wings, nor what is aboard a fleet.
-      if (world.isWing(g) || world.embarked.has(g) || !world.wars.atWar(fc.nation[id]!, fc.nation[g]!)) return;
+      if (!world.formations.has(g) || world.isWing(g) || world.embarked.has(g) || !world.wars.atWar(fc.nation[id]!, fc.nation[g]!)) continue;
       const dx = Math.abs(wrapDx(world, tx, Math.floor(fc.x[g]!)));
       const dy = Math.abs(Math.min(h - 1, Math.floor(fc.y[g]!)) - ty);
-      if (dx > AA_CELLS || dy > AA_CELLS) return;
+      if (dx > AA_CELLS || dy > AA_CELLS) continue;
       // A submarine is under water: no strike's target, as no gun's (PLAN 5.6 found it sunk from the air).
       for (const e of index.get(g) ?? []) if (ec.strength[e]! > 0 && rules.units[ec.unit[e]!]!.cls !== 'ss') targets.push(e);
-    });
+    }
     // Its bombs on the industry there (PLAN 5.5a), whether or not an enemy's formation is.
     const tons = bombIndustry(world, id, s.tx, s.ty);
     if (targets.length === 0) {
