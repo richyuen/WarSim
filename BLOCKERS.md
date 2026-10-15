@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### `zoomDemo1938` is red for the sim, not for the GPU (2026-10-15, PLAN 7.1e)
+### RESOLVED 2026-10-15 (PLAN 7.1k, ADR-403) · `zoomDemo1938` is red for the sim, not for the GPU (2026-10-15, PLAN 7.1e)
 `tools/gate/knownRed.json` has it for wall time on a software GPU. On this machine it fails on its
 node side, before the page: `expect(max battalion strength / size).toBeLessThan(0.5)` gets 0.672
 (`tests/e2e/zoomDemo1938.spec.ts:303`). The same figure on `4e36f27` (before 7.1e's code) and
@@ -13,6 +13,10 @@ after it, so not 7.1e's. The battle the spec picks does not bleed its battalions
 the hours it watches; why is not found (red since before this task). Left to PLAN 7.1k (find the
 battle again or fix the test; not by moving the threshold). The gate of `e640c98`, which had to
 edit the spec (its reads of `out.fires`), stopped on it; the rest of the gate was green.
+**Resolved:** the battle is found again, in seed 1941's game (a Nationalist Spanish division,
+battalions at 0.31 to 0.43 of their men, 54 shots an hour); in seed 1944's the division chosen
+also fires no shot in the four hours. The spec passes here (2.7 min); its expectations are
+unchanged. It stays on `knownRed.json` for a software GPU's wall time, as its siblings.
 
 ### PLAN 6.8 sweep: nations alive over 250 in 2 of 10 seeds (2026-10-14)
 The sweep with nukes on (`docs/sweeps/2026-10-14-sweep-nukes.md`, seeds 1–10 × 50 years): seeds
@@ -170,7 +174,8 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     movement 1.080 → 1.256, supply 0.805 → 0.957, combat 1.737 → 1.497. For PLAN 7.1 (ADR-289).
     `tests/sweep/aiSweep3.test.ts` (seed 3's ten years) ran past its 900 s here, 1,064 s, in the
     review's third run (PLAN 5.8w7, 2026-10-14; `aiSweep1` 875 s, `aiSweep2` 839 s alone): on
-    `tools/gate/knownRed.json` until 7.1, its assertions unchanged.
+    `tools/gate/knownRed.json` until 7.1, its assertions unchanged. 2026-10-15 (PLAN 7.1k,
+    ADR-403): 158 s alone on the budget machine; off the list.
   - *A march round a bay or over a river, with fleets under way* (2026-10-12, PLAN 4.7h,
     ADR-285; a cloud container, unpinned, about 5 × the budget machine's time): seed 99's
     first year, 9.87 ms a tick (hash 841d4422): combat 3.42, the operational AI 1.40,
@@ -627,7 +632,8 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     use). The tests were not changed. The ten-year run of seed 1 (`tests/sweep/aiSweep1`)
     timed out too, 758 s alone against its 600 s: a year of seed 1 here is 8.16 ms a tick on
     the commit and 8.19 on HEAD, the same hash fac8ee64 (1.9 ms on the budget's machine).
-    Seeds 2 and 3 and the pinned hash passed.
+    Seeds 2 and 3 and the pinned hash passed. 2026-10-15 (PLAN 7.1k, ADR-403): the three
+    timing tests pass alone on the budget machine, three runs of three; off `knownRed.json`.
   - The full gate at PLAN 4.8's tick, the Phase 4 review (2026-10-12, this container), each
     stage run on its own on the tree of 433e749 (the tick adds documents alone): typecheck,
     lint, build, parity green; the ten-year sweep tests 17 of 17 (24 min); the unit tests

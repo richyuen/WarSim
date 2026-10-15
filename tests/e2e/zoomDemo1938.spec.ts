@@ -54,6 +54,12 @@ import { leg, steps, type LegResult } from './flight';
 // march, to show that a division in contact does not walk. The seeds tried, nearest first:
 // 1947, 1945 and 1948 have battalions at 0.67, 0.54 and 0.59 of their men; 1944 passes all of
 // this spec (a Czechoslovak division: 24 battalions of 153 to 243 men of 500, four batteries).
+// And seed 1941's since PLAN 7.1k (ADR-403): a change before PLAN 7.1d (the same on `4e36f27`;
+// which one was not looked for) moved seed 1944's game. There the division chosen is a Polish
+// one with battalions at 0.56 to 0.67 of their men, and no shot is fired by or at it in the four
+// hours. The seeds tried, nearest first: 1943 and 1945 have battalions at 0.52 and 0.54 of their
+// men, 1942 at 0.81, 1946 has no division that fires, stands and fits; 1941 passes all of this
+// spec (a Nationalist Spanish division: 20 battalions of 156 to 217 men of 500, four batteries).
 //
 // The clock is the test's. The game is paused and stepped; the view's own loop is stopped and
 // its turns (`frameAt`: the camera eases, the view subscribes, the frame is drawn) are given
@@ -68,7 +74,7 @@ import { leg, steps, type LegResult } from './flight';
 
 const { w: W } = SIZE_1938;
 const START = 24 * 30;
-const SEED = 1944;
+const SEED = 1941;
 const VIEW = { width: 1400, height: 800 };
 /** Screen px to a cell at the stop that asks for the whole division. */
 const PX_PER_CELL_AT_12 = (SCENARIO_GEOMETRY['1938'].kmPerCell * 1000) / 12;
