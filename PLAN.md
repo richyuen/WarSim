@@ -200,7 +200,7 @@ quick sweep as a smoke test.
     - [x] 7.1l4 The GPU's frame by layer, then 7.1j's misses: T0's GPU 1.58 ms (SPEC 1.0), T2's
       2.57 (2.0), T2's draw on the main thread 7.8 ms (6; the overlay's 384 tags and markers).
       AT: bench G met, or the translation derived again with an ADR.
-    - [ ] 7.1l5 The hitches: T0's two modes (p95 16.4 ms), T3's 100 to 157 ms while the sim runs,
+    - [x] 7.1l5 The hitches: T0's two modes (p95 16.4 ms), T3's 100 to 157 ms while the sim runs,
       the 2.9 s freeze of one zoom from the world to 1 m/px. AT: the cause of each found, and a
       frame's longest under 50 ms at ×5 on bench G's cases, or a BLOCKERS line.
     - [ ] 7.1l6 The ground's cap by the view's size, and an even thinning past what a frame
@@ -223,6 +223,9 @@ quick sweep as a smoke test.
       nation 19, two searches that fail at 31 ms each, asked again each day (ticks 179,502,
       179,526, 179,550). Shorter searches change the route rule (the pin); the daily refusals are
       the AI's refused orders above.
+      Left by 7.1l5 (ADR-408): one zoom from the world to 1 m/px still has a long task of 50 to
+      55 ms from the world to T1 (the longest frame 50.1 ms at 60 Hz); with the nation names off it
+      has none.
     - [ ] 7.1l12 The AT of 7.1: seed 99's five years at 1.5 ms a tick and year 1 at 2.4, on the
       budget machine, pinned, alone.
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,

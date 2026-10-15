@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-408 · 2026-10-15 · accepted — The hitches: the uncapped loop's, and the names' at a new size each frame (PLAN 7.1l5)
+
+- **How measured** (`.cache/l5/hitch.ts`, scratch): the production build at 1920 × 1080, the game
+  at ×5, each frame's gap with the draw's time, the snapshots applied in it and the long tasks
+  (over 50 ms) of the main thread; bench G's flags (vsync off, no frame-rate limit) and the
+  browser's own (vsync on, 60 Hz). Cases: T0 panning (bench G's), T2 (bench G's 384 divisions),
+  T3 at 10 m/px over the same and over a formation in a fight, one zoom without a stop from the
+  world to 1 m/px over Poland after every tier was seen once.
+- **T0's two modes and T3's hitches are the uncapped loop's.** Uncapped, T0's frames are 3.3 ms
+  at p50 and 16 at p95 (longest 21 to 39); in its slow frames the draw is 2.5 to 3 ms and most
+  apply no snapshot. T3 over a fight drew 600 to 1,000 frames a second and had long tasks of 50 to 405 ms
+  in which the page's own code is not: 57 ms of a busy 100 ms in GL calls setting uniforms
+  (`uniform1i`), which wait when the GPU process is behind, the rest native.
+  The page hands the GPU process frames faster than it draws them (the overlay's Canvas2D, at T3
+  up to 1,200 marks of the fallen a frame), and the GPU process stops the page to catch up.
+  With vsync on, every case holds its 16.7 ms: T0, T2, T3 and the fight longest 16.8 ms in 8 to
+  10 s each. The critic's T3 frames of 124 to 157 ms (3rd report) are not seen at 60 Hz.
+- **The zoom's long tasks: the nation names** (`462923b`). Three or four of 50 to 60 ms in its
+  first 350 ms (the world to T1); none with the city layer's canvas off, none with the names alone
+  off. The names were measured at each frame's sizes (`measureText`, 14 to 27 ms of a busy
+  100 ms) and each outlined glyph drawn at its exact size, which the browser outlines anew. A
+  width is measured once at 100 px and scaled; a glyph is drawn at the nearest size of a ladder,
+  8 an octave, and scaled by the transform to its own. One long task of 50 to 55 ms is left in a
+  zoom (longest frame 50.1 ms, p95 33). The 2.9 s freeze of the critic's 2nd report is not seen.
+- **AT:** bench G (uncapped): T0 the longest frame 29.4 ms, T2 13.9 ms (p95 16.0 and 6.4), both
+  under 50; T0 GPU 0.583 ms, T2 1.049; the draw 2.1 and 3.5 ms.
+- **Not done:** the zoom's last task of 50 ms (PLAN 7.1l11); the 1,200 marks of the fallen drawn
+  one by one, a cost of the GPU process at a high frame rate, not at 60 Hz.
+
 ### ADR-407 · 2026-10-15 · accepted — The GPU's frame timed by its WebGL passes alone; the tags' layout by a grid (PLAN 7.1l4)
 
 - **By layer** (a probe of bench G's two cases on the production build, each layer of `draw`

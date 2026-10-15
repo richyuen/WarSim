@@ -16195,3 +16195,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Correction:** the old measure's miss was the GPU's clock alone, not the overlay's CPU waited
   through: the same 30 whole draws read after the warmed passes give the passes' figures (T0
   0.511, T2 1.045). ADR-407 and the bench's comment say so now; `cf5f663`'s message does not.
+
+## 2026-10-15 — PLAN 7.1l5: the hitches (performance)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Found** (ADR-408; each frame's gap with its draw, snapshots and long tasks, vsync off and on):
+  - T0's two modes (p95 16 ms) and T3's long tasks (50 to 405 ms over a fight) are the uncapped
+    loop's: the page hands the GPU process frames faster than it draws them and is stopped. At
+    60 Hz every case is 16.7 ms a frame, the longest 16.8.
+  - One zoom from the world to 1 m/px: three or four long tasks of 50 to 60 ms, the nation names
+    measured and drawn at each frame's new sizes. `462923b`: widths measured once and scaled,
+    glyphs drawn at a ladder of sizes (8 an octave) and scaled; one task of 50 to 55 ms left
+    (under PLAN 7.1l11). The critic's 2.9 s freeze is not seen.
+- **AT:** bench G's longest frames T0 29.4 ms, T2 13.9 ms (under 50); GPU 0.583 and 1.049 ms; the
+  draw 2.1 and 3.5 ms.
+- **Tests:** the ladder within half a step; a glyph at its label's size (fails without the scale).
+- **Specs:** `labels1938`, `labelFades1938`, `fades1938`, `cityNames1938`, `political` green.
+- **Gotchas:** a trace with the `devtools.timeline` category of 4 s is 1.3 GB, past what Node reads
+  as one string. `vite build --minify false` minified anyway; `--minify=false` does not.
+- **Next:** PLAN 7.1l6.
