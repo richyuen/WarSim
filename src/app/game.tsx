@@ -39,6 +39,8 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
   // New-game options (PLAN 1.39b1); a non-looping map also renders without wrap copies.
   const options = optionsFromUrl(params);
   // At the size the options ask, one of its map's (PLAN 7.1b6); the scenario's own otherwise.
+  // A scenario file at another size than its scenario's own starts the game at its size (PLAN 7.1b8).
+  if (staged?.size !== undefined) options.size = staged.size;
   if (options.size !== undefined && !mapSizes(scenarioId).includes(options.size)) delete options.size;
   const sized = options.size === undefined ? scenario.geometry : geometryOf(scenarioId, options.size);
   const geometry = options.loopingMap === false ? { ...sized, wrapX: false } : sized;
@@ -166,7 +168,7 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
   let loaded = false;
   if (staged) {
     try {
-      await importScenarioFile(sim, staged.bytes, scenarioId, scenario.geometry.w, scenario.geometry.h);
+      await importScenarioFile(sim, staged.bytes, scenarioId, geometry.w, geometry.h);
       loaded = true;
     } catch {
       location.replace(loadFailedUrl());

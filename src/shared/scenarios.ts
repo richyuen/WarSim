@@ -45,6 +45,17 @@ export interface ScenarioInfo {
    * the flag its scenario gives it (PLAN 2.16b).
    */
   nationTags: readonly string[];
+  /** Its map's sizes (PLAN 7.1b8): the new-game picker's, when there is more than one. */
+  sizes: readonly MapSize[];
+  /** The size it is at unless a game asks another. */
+  defaultSize: string;
+}
+
+/** A size of a map: its id and its cells across and down. */
+export interface MapSize {
+  id: string;
+  w: number;
+  h: number;
 }
 
 interface MapJson {
@@ -102,6 +113,8 @@ function info(id: ScenarioId, map: MapJson, scenario: ScenarioJson, nations: num
     nations,
     hidden: scenario.hidden === true,
     nationTags,
+    sizes: map.sizes.map((s) => ({ id: s.id, w: s.w, h: s.h })),
+    defaultSize: scenario.size ?? map.defaultSize,
   };
 }
 

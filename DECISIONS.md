@@ -276,6 +276,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   year at S: 1.99 ms a tick, 7,903 cells flipped; the page at S draws the world, T1 and T2 with
   no error. A scenario file at another size than the scenario's own is still refused
   (`checkScenarioFile`): PLAN 7.1b8, with the picker.
+- **Addendum (PLAN 7.1b8).** The picker: `ScenarioInfo.sizes` and `defaultSize`; the new-game
+  form (title screen and settings panel) has "Map size" where the map has more than one size
+  (Small, Medium, Large, with their cells); the scenario's own size leaves the option unset and the
+  URL as it was. A scenario file is accepted at any size of its map (`checkScenarioFile` names its
+  size; one its map has not is refused with the sizes it has) and starts its game at that size (the
+  staged file's `size`; the game imports it at that geometry).
 
 ### ADR-416 · 2026-10-15 · accepted — Map sizes: what is counted in cells, again (PLAN 7.1b1)
 

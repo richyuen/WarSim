@@ -262,8 +262,9 @@ test('a scenario file chosen on the title screen starts its game; a file that do
   await expect(error).toContainText('Could not load');
   await pick('other.warsim-scenario', Buffer.from('hello'));
   await expect(error).toContainText('not a WarSim scenario file');
-  await pick('small.warsim-scenario', Buffer.from(await encodeScenarioFile({ ...header, w: 1024, h: 512 }, bytes)));
-  await expect(error).toContainText('1024×512');
+  // A size its map has not (PLAN 7.1b8: a file at S or L starts its game at that size).
+  await pick('odd.warsim-scenario', Buffer.from(await encodeScenarioFile({ ...header, w: 1000, h: 500 }, bytes)));
+  await expect(error).toContainText('1000×500');
   await pick('atlantis.warsim-scenario', Buffer.from(await encodeScenarioFile({ ...header, base: 'atlantis' }, bytes)));
   await expect(error).toContainText('atlantis');
   expect(new URL(page.url()).search).toBe('');

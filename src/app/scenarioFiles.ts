@@ -6,7 +6,7 @@
  */
 import type { ScenarioId } from '../shared/protocol';
 import { decodeScenarioFile, encodeScenarioFile, SCENARIO_EXT, SCENARIO_FORMAT, type ScenarioHeader } from '../shared/scenarioFile';
-import { SCENARIO_GEOMETRY, scenarioIdOf } from '../shared/scenarios';
+import { SCENARIO_INFO, scenarioIdOf } from '../shared/scenarios';
 import { getRecord, putRecord } from './saveDb';
 import type { SimClient } from './simClient';
 
@@ -48,6 +48,8 @@ export interface StagedScenario {
   scenario: ScenarioId;
   name: string;
   bytes: Uint8Array;
+  /** The size of its map the file is at (PLAN 7.1b8); absent: the scenario's own. */
+  size?: string;
 }
 const STAGED_SLOT = 'scenario';
 
@@ -56,13 +58,14 @@ const STAGED_SLOT = 'scenario';
  * format, and its base scenario exists here at the file's map size. Throws a readable error
  * otherwise. The state hash is checked when the game loads it (`importScenarioFile`).
  */
-export async function checkScenarioFile(file: Uint8Array): Promise<{ header: ScenarioHeader; scenario: ScenarioId }> {
+export async function checkScenarioFile(file: Uint8Array): Promise<{ header: ScenarioHeader; scenario: ScenarioId; size: string }> {
   const { header } = await decodeScenarioFile(file);
   const scenario = scenarioIdOf(header.base);
   if (scenario === null) throw new Error(`scenario for ${header.base}, which this version does not have`);
-  const { w, h } = SCENARIO_GEOMETRY[scenario];
-  if (header.w !== w || header.h !== h) throw new Error(`scenario for ${header.base} ${header.w}×${header.h}; here ${header.base} is ${w}×${h}`);
-  return { header, scenario };
+  // At any size of its map (PLAN 7.1b8): the game starts at the file's.
+  const size = SCENARIO_INFO[scenario].sizes.find((s) => s.w === header.w && s.h === header.h);
+  if (!size) throw new Error(`scenario for ${header.base} ${header.w}×${header.h}; here ${header.base} is ${SCENARIO_INFO[scenario].sizes.map((s) => `${s.w}×${s.h}`).join(', ')}`);
+  return { header, scenario, size: size.id };
 }
 
 /**
@@ -70,8 +73,8 @@ export async function checkScenarioFile(file: Uint8Array): Promise<{ header: Sce
  * stored until another file replaces it, so reloading that game starts the scenario again.
  */
 export async function stageScenarioFile(file: Uint8Array): Promise<ScenarioId> {
-  const { header, scenario } = await checkScenarioFile(file);
-  const rec: StagedScenario = { slot: STAGED_SLOT, scenario, name: header.name, bytes: file };
+  const { header, scenario, size } = await checkScenarioFile(file);
+  const rec: StagedScenario = { slot: STAGED_SLOT, scenario, name: header.name, bytes: file, ...(size !== SCENARIO_INFO[scenario].defaultSize ? { size } : {}) };
   await putRecord(rec);
   return scenario;
 }

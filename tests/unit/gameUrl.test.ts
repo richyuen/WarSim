@@ -65,13 +65,19 @@ describe('a scenario file on the title screen (PLAN 1.43b)', () => {
     const ok = await checkScenarioFile(await file({}));
     expect(ok.scenario).toBe('1938');
     expect(ok.header).toMatchObject({ name: 'Test', base: '1938', w, h });
+    expect(ok.size).toBe('M');
+  });
+
+  it('accepts a file at another size of its map, and says which (PLAN 7.1b8)', async () => {
+    expect((await checkScenarioFile(await file({ w: 1024, h: 512 }))).size).toBe('S');
+    expect((await checkScenarioFile(await file({ w: 4096, h: 2048 }))).size).toBe('L');
   });
 
   it('refuses what cannot be started, with a readable reason', async () => {
     await expect(checkScenarioFile(new TextEncoder().encode('hello'))).rejects.toThrow('not a WarSim scenario file');
     await expect(checkScenarioFile(await file({ format: 99 }))).rejects.toThrow('format 99');
     await expect(checkScenarioFile(await file({ base: 'atlantis' }))).rejects.toThrow('scenario for atlantis, which this version does not have');
-    await expect(checkScenarioFile(await file({ w: 1024, h: 512 }))).rejects.toThrow(`scenario for 1938 1024×512; here 1938 is ${w}×${h}`);
+    await expect(checkScenarioFile(await file({ w: 1000, h: 500 }))).rejects.toThrow('scenario for 1938 1000×500; here 1938 is 1024×512, 2048×1024, 4096×2048');
     // A name on Object.prototype is not a scenario.
     await expect(checkScenarioFile(await file({ base: 'constructor' }))).rejects.toThrow('does not have');
   });

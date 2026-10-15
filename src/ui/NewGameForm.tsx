@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks';
 import { t, type MessageKey } from './i18n';
 import type { GameOptions } from '../shared/gameOptions';
+import type { MapSize } from '../shared/scenarios';
 
 export interface NewGameFormProps {
   /** The seed the field starts with. */
@@ -11,6 +12,9 @@ export interface NewGameFormProps {
   nationsRange?: { min: number; max: number; default: number } | undefined;
   /** The range is said beside the field (not where the page says it already: the title screen's facts). */
   rangeHint?: boolean;
+  /** The sizes of the scenario's map and its own (PLAN 7.1b8): a picker where there is more than one. */
+  sizes?: readonly MapSize[] | undefined;
+  defaultSize?: string | undefined;
   /** Label of the start button. */
   startLabel: string;
   onStart: (seed: number, options: GameOptions) => void;
@@ -31,7 +35,7 @@ function withCe(opts: GameOptions, v: string): GameOptions {
  * The seed (or a random one) and the new-game options of PLAN 1.39b1, with the button that starts
  * the game. Shared by the title screen (PLAN 1.43) and the settings panel.
  */
-export function NewGameForm({ seed, options, nationsRange, rangeHint = true, startLabel, onStart }: NewGameFormProps) {
+export function NewGameForm({ seed, options, nationsRange, rangeHint = true, sizes = [], defaultSize = 'M', startLabel, onStart }: NewGameFormProps) {
   const [next, setNext] = useState(String(seed));
   const [count, setCount] = useState(String(options.nations ?? nationsRange?.default ?? ''));
   const [opts, setOpts] = useState<GameOptions>(options);
@@ -82,6 +86,27 @@ export function NewGameForm({ seed, options, nationsRange, rangeHint = true, sta
         </label>
       ) : null}
       <div class="panel-sub">{t('settings.options')}</div>
+      {sizes.length > 1 ? (
+        <label class="form-row">
+          <span class="form-name">{t('settings.size')}</span>
+          <select
+            data-testid="opt-size"
+            value={opts.size ?? defaultSize}
+            onChange={(e) => {
+              // The scenario's own size is no option at all: the URL of such a game says nothing of it.
+              const v = (e.currentTarget as HTMLSelectElement).value;
+              const { size: _old, ...rest } = opts;
+              setOpts(v === defaultSize ? rest : { ...rest, size: v });
+            }}
+          >
+            {sizes.map((s) => (
+              <option key={s.id} value={s.id}>
+                {t(`settings.size.${s.id}` as MessageKey, { w: s.w, h: s.h })}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       <label class="form-row">
         <span class="form-name">{t('settings.looping')}</span>
         {sel('opt-looping', opts.loopingMap === false ? 'off' : 'on', ['on', 'off'], (v) => `settings.onOff.${v}` as MessageKey, (v) => setOpts({ ...opts, loopingMap: v === 'on' }))}

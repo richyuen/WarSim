@@ -16435,3 +16435,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Decided** (ADR-419): XL is not a size of the earth map; SPEC §3.1 says so and drops the
   unmeasured budget of 160 MB; PARITY row 70.
 - **Next:** PLAN 7.1b8.
+
+## 2026-10-15 — PLAN 7.1b8: the map size picker (UI)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-417, addendum): "Map size" in the new-game form (title screen, settings panel); a
+  scenario file at another size of its map starts its game at that size.
+- **Tests:** `gameUrl.test.ts` (a file at S and L accepted with its size; 1000×500 refused with the
+  sizes the map has); `gameOptions1938.spec.ts` (new: Small picked, the URL, the view and the sim at
+  1024×512, the picker says S in that game); `title.spec.ts` (its refused size now 1000×500).
+- **Specs:** `gameOptions1938`, `title`, `scenarioFile1938`, `settings1938` green.
+- **Next:** PLAN 7.1b9.

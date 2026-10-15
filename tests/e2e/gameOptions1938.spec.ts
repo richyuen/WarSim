@@ -79,3 +79,30 @@ test('new-game options from the settings panel take effect in the sim', async ({
   expect(back.settings.loopingMap).toBe(true);
   expect(living(back).map((n) => n.gold)).toEqual(living(plain).map((n) => n.gold));
 });
+
+// PLAN 7.1b8: the map's size among the new-game options. The scenario's own (M) is the picker's
+// first value and leaves the URL as it was; another starts the game at that size, and the sim's
+// world and the view are of it.
+test('a new game at another map size: the picker, the URL, the sim and the view at that size', async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=77');
+  await ready(page);
+  await page.getByTestId('settings-btn').click();
+  const size = page.getByTestId('opt-size');
+  await expect(size).toHaveValue('M');
+  await expect(size.locator('option')).toHaveText(['Small, 1024 × 512', 'Medium, 2048 × 1024', 'Large, 4096 × 2048']);
+  await size.selectOption('S');
+  await Promise.all([page.waitForURL(/size=S/), page.getByTestId('settings-new-game').click()]);
+  await ready(page);
+  const geo = await page.evaluate(() => window.__warsim!.view!.geo);
+  expect([geo.w, geo.h, geo.scale]).toEqual([1024, 512, 0.5]);
+  const s = await inspect(page);
+  expect(s.seed).toBe(77);
+  expect(s.nations.filter((n) => n.living).length).toBeGreaterThan(90);
+  const cells = await page.evaluate(async () => (await window.__warsim!.sim.inspect(true)).formations.length);
+  expect(cells).toBeGreaterThan(1000);
+  // In a game at S the picker says S.
+  await page.getByTestId('settings-btn').click();
+  await expect(page.getByTestId('opt-size')).toHaveValue('S');
+});

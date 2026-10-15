@@ -1,6 +1,7 @@
 import { t } from './i18n';
 import { NewGameForm } from './NewGameForm';
 import type { GameOptions } from '../shared/gameOptions';
+import type { MapSize } from '../shared/scenarios';
 
 export interface SettingsPanelProps {
   uiScale: number;
@@ -18,6 +19,9 @@ export interface SettingsPanelProps {
   options: GameOptions;
   /** This scenario lets the player say how many nations a new game has (the random world). */
   nationsRange?: { min: number; max: number; default: number } | undefined;
+  /** The sizes of the game's map and its scenario's own (PLAN 7.1b8). */
+  sizes?: readonly MapSize[];
+  defaultSize?: string;
   onUiScale: (v: number) => void;
   onUnitScale: (v: number) => void;
   onVolume: (v: number) => void;
@@ -37,7 +41,7 @@ export interface SettingsPanelProps {
  * random seed). Speed and pause persist on their own
  * (bottom bar).
  */
-export function SettingsPanel({ uiScale, unitScale, uiScales, uiOffered, unitScales, volume, volumes, muted, nukePause, seed, options, nationsRange, onUiScale, onUnitScale, onVolume, onMuted, onNukePause, onScreenshot, onNewGame, onMenu, onClose }: SettingsPanelProps) {
+export function SettingsPanel({ uiScale, unitScale, uiScales, uiOffered, unitScales, volume, volumes, muted, nukePause, seed, options, nationsRange, sizes, defaultSize, onUiScale, onUnitScale, onVolume, onMuted, onNukePause, onScreenshot, onNewGame, onMenu, onClose }: SettingsPanelProps) {
   const pct = (v: number): string => `${Math.round(v * 100)}%`;
   return (
     <aside class="history-panel settings-panel" data-testid="settings-panel">
@@ -99,7 +103,7 @@ export function SettingsPanel({ uiScale, unitScale, uiScales, uiOffered, unitSca
           {t('settings.currentSeed', { seed })}
         </span>
       </div>
-      <NewGameForm seed={seed} options={options} nationsRange={nationsRange} startLabel={t('settings.newGame')} onStart={onNewGame} />
+      <NewGameForm seed={seed} options={options} nationsRange={nationsRange} sizes={sizes} defaultSize={defaultSize} startLabel={t('settings.newGame')} onStart={onNewGame} />
     </aside>
   );
 }

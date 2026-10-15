@@ -9624,3 +9624,22 @@ Of 7.1b (open in PLAN.md):
 
   - [x] 7.1b7b XL (ADR-418): the mask is 2.67 px to its cell at 6,144; XL at 8,192, the mask by
     fractions, or XL dropped, decided with its tick and memory measured; its assets if it stays.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1b (open in PLAN.md):
+
+  - [x] 7.1b8 The size picker in the new-game options; a scenario file at another size than its
+    scenario's own (refused by `checkScenarioFile`) starts a game at its size.
