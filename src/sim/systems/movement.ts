@@ -489,7 +489,7 @@ export function repatriationSystem(world: World): void {
     if (!foreignTo(world, nation, holder)) return;
     let way = ways.get(nation);
     if (!way) ways.set(nation, (way = homeward(world, nation)));
-    const home = nearestCellWhere((k) => controller[k] === nation && comp[k] === comp[cell], c.x[id]!, c.y[id]!, w, h, REPATRIATE_CELLS, world.settings.loopingMap);
+    const home = nearestCellWhere((k) => controller[k] === nation && comp[k] === comp[cell], c.x[id]!, c.y[id]!, w, h, world.atSize(REPATRIATE_CELLS), world.settings.loopingMap);
     if (home >= 0 && order(world, id, (home % w) + 0.5, Math.floor(home / w) + 0.5, way, HOME_MARCH)) return;
     const at = spawnPoint(world, nation);
     if (!at) return;

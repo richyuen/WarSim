@@ -1201,7 +1201,21 @@ export class World {
   readonly out: TickOutputs;
   private readonly core = new WorldCore(this);
 
-  constructor(seed: number, w: number, h: number) {
+  /**
+   * This map's cells to a cell of its map's default size (ADR-416): 1 at the 1938 world's M and in
+   * the toy world; 0.5 at S, 2 at L, 3 at XL. A reach given in cells of the default size is this
+   * many times as many cells here, the same km (`atSize`). A power of two at S, M and L: the
+   * reaches there are exact.
+   */
+  readonly sizeScale: number;
+
+  /** A reach of `cells` cells of the map's default size, in this map's cells. */
+  atSize(cells: number): number {
+    return cells * this.sizeScale;
+  }
+
+  constructor(seed: number, w: number, h: number, sizeScale = 1) {
+    this.sizeScale = sizeScale;
     this.seed = seed >>> 0;
     this.rng = new RngStreams(this.seed);
     this.cells = new CellLayers(w, h);

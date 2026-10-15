@@ -69,7 +69,14 @@ export const THREAT_UNIT = 10_000;
  * from farther than this (PLAN 3.10c1, ADR-187).
  */
 export const DEPLOY_RANGE_CELLS = 60;
-const RANGE2 = DEPLOY_RANGE_CELLS * DEPLOY_RANGE_CELLS;
+/**
+ * This world's sector and deploy range, cells (ADR-416: `SECTOR_CELLS` and `DEPLOY_RANGE_CELLS`
+ * are of the map's default size, `World.atSize` here), and the squares of the range and of the
+ * spare range; set by `operationalAi` for the world it plans.
+ */
+let sector = SECTOR_CELLS;
+let range = DEPLOY_RANGE_CELLS;
+let range2 = range * range;
 /**
  * A formation that is far from every front sector it reaches is looked at on one day in this
  * many (PLAN 3.10c1a, ADR-190): a nation's far army sets out over these days and not in one
@@ -81,7 +88,7 @@ export const MARCH_DAYS = 8;
  * DEPLOY_RANGE_CELLS away (PLAN 3.10c1d, ADR-191): the far end of its front, not another theatre.
  */
 export const SPARE_RANGES = 3;
-const SPARE2 = SPARE_RANGES * SPARE_RANGES * RANGE2;
+let spare2 = SPARE_RANGES * SPARE_RANGES * range2;
 /**
  * A formation with this share of its upkeep in tanks is armour (`EconomyTables.templateArmour`:
  * the armour formations of 1938 have 0.66 to 0.93, the others 0.20 at most).
@@ -112,6 +119,10 @@ export function operationalAiOf(tables: { templateArmour: readonly number[] }) {
 
 /** `armour`: the tanks' share of the upkeep by template; none given, no formation is armour. */
 export function operationalAi(world: World, armour: readonly number[] = []): void {
+  sector = world.atSize(SECTOR_CELLS);
+  range = world.atSize(DEPLOY_RANGE_CELLS);
+  range2 = range * range;
+  spare2 = SPARE_RANGES * SPARE_RANGES * range2;
   if (!world.settings.aiEnabled || world.tick % 6 !== 0 || world.wars.list.length === 0) return;
   const step = world.tick / 6;
   const nc = world.nations.cols;
@@ -256,7 +267,7 @@ function frontPart(world: World, fr: Front, foe: Uint8Array, bw: number): FrontP
     )
       continue;
     const y = (c - x) / w;
-    const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
+    const key = Math.floor(y / sector) * bw + Math.floor(x / sector);
     if (key !== lastKey) {
       lastKey = key;
       const known = at.get(key);
@@ -277,7 +288,7 @@ function frontPart(world: World, fr: Front, foe: Uint8Array, bw: number): FrontP
 
 function standings(world: World, w: number): Standings {
   const f = world.formations.cols;
-  const bw = Math.ceil(w / SECTOR_CELLS);
+  const bw = Math.ceil(w / sector);
   const byNation = new Map<number, number[]>();
   const byBucket = new Map<number, number[]>();
   world.formations.forEach((id) => {
@@ -286,7 +297,7 @@ function standings(world: World, w: number): Standings {
     if (!ids) byNation.set(n, (ids = []));
     ids.push(id);
     if (world.offLand(id)) return;
-    const k = Math.floor(f.y[id]! / SECTOR_CELLS) * bw + Math.floor(f.x[id]! / SECTOR_CELLS);
+    const k = Math.floor(f.y[id]! / sector) * bw + Math.floor(f.x[id]! / sector);
     let at = byBucket.get(k);
     if (!at) byBucket.set(k, (at = []));
     at.push(id);
@@ -332,13 +343,13 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   // The planners of a tick with these enemies share a partner's front (`frontPart`).
   const enemyKey = enemies.sort((a, b) => a - b).join(',');
   const enemy = (m: number): boolean => enemyOf[m] === 1;
-  const bw = Math.ceil(w / SECTOR_CELLS);
+  const bw = Math.ceil(w / sector);
   // The two edges of a map that does not loop are a map apart (PLAN 3.12Rsd, ADR-237): no
   // distance below is the short way over the seam, and no sector bucket has one beyond an edge.
   const loop = world.settings.loopingMap;
   /** The column of sector buckets `dx` from column `sx`, or -1 where the map ends before it. */
   const bucketX = (sx: number, dx: number): number => (loop ? (sx + dx + bw) % bw : sx + dx < 0 || sx + dx >= bw ? -1 : sx + dx);
-  const buckets = bw * Math.ceil(world.cells.h / SECTOR_CELLS);
+  const buckets = bw * Math.ceil(world.cells.h / sector);
   if (SLOTS.stamp.length !== buckets) {
     SLOTS.stamp = new Uint32Array(buckets);
     SLOTS.at = new Int32Array(buckets);
@@ -386,7 +397,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   for (const id of stand.byNation.get(n) ?? []) {
     if (world.offLand(id)) continue; // neither one of its own to send nor an enemy's strength in a sector (PLAN 4.2b)
     all.push(id);
-    const k = Math.floor(f.y[id]! / SECTOR_CELLS) * bw + Math.floor(f.x[id]! / SECTOR_CELLS);
+    const k = Math.floor(f.y[id]! / sector) * bw + Math.floor(f.x[id]! / sector);
     stands.set(k, (stands.get(k) ?? 0) + 1);
     if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0) mine.push(id);
   }
@@ -423,10 +434,10 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     // farther in y alone, so the nearest is the same where it is within the range, and beyond
     // it where it is not.
     const y = f.y[id]!;
-    const last = rowStart(Math.floor((y + DEPLOY_RANGE_CELLS) / SECTOR_CELLS) + 1);
+    const last = rowStart(Math.floor((y + range) / sector) + 1);
     let d = Infinity;
-    for (let i = rowStart(Math.floor((y - DEPLOY_RANGE_CELLS) / SECTOR_CELLS)); i < last; i++) d = Math.min(d, dist2(id, list[i]!));
-    if (d > RANGE2) {
+    for (let i = rowStart(Math.floor((y - range) / sector)); i < last; i++) d = Math.min(d, dist2(id, list[i]!));
+    if (d > range2) {
       if (ownFront && idle(id)) out.push(id);
       continue;
     }
@@ -551,10 +562,10 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       d = Infinity;
       for (const i of reached[ci]!) {
         const di = dist2(id, list[i]!);
-        if (di < d && (di > RANGE2 || reaches(ci, i))) d = di;
+        if (di < d && (di > range2 || reaches(ci, i))) d = di;
       }
     }
-    if (d <= RANGE2) nearest.set(id, d);
+    if (d <= range2) nearest.set(id, d);
   }
   const ranked = [...nearest.keys()].sort((a, b) => nearest.get(a)! - nearest.get(b)! || a - b);
   const active = ranked.slice(0, ranked.length - Math.floor(ranked.length * RESERVE));
@@ -577,7 +588,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     shape.threat = list.map((s) => s.threat);
     shape.threatAt = world.embarked.size;
   } else for (let i = 0; i < list.length; i++) list[i]!.threat = shape.threat[i]!;
-  const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / SECTOR_CELLS) * bw + Math.floor((c % w) / SECTOR_CELLS);
+  const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / sector) * bw + Math.floor((c % w) / sector);
   /** The number in `list` of the sector of a bucket, if it has one. */
   const indexOf = (key: number): number | undefined => (slotStamp[key] === gen ? slotAt[key] : undefined);
   /** By sector, how many free formations of n march into it. */
@@ -610,12 +621,12 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     let tx = Math.abs(f.x[id]! - ((to % w) + 0.5));
     if (loop && tx > w / 2) tx = w - tx;
     const ty = f.y[id]! - (Math.floor(to / w) + 0.5);
-    if (tx * tx + ty * ty > RANGE2) return true;
+    if (tx * tx + ty * ty > range2) return true;
     const i = indexOf(sectorOfCell(to));
     if (i === undefined || marchers[i]! > 1) return false;
     const s = list[i]!;
-    const by = Math.floor(f.y[id]! / SECTOR_CELLS);
-    const bx = Math.floor(f.x[id]! / SECTOR_CELLS);
+    const by = Math.floor(f.y[id]! / sector);
+    const bx = Math.floor(f.x[id]! / sector);
     const sy = Math.floor(s.key / bw);
     let dx = Math.abs(bx - (s.key - sy * bw));
     if (loop && dx > bw / 2) dx = bw - dx;
@@ -655,11 +666,11 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       let hi = ys.length;
       while (lo < hi) {
         const mid = (lo + hi) >> 1;
-        if (ys[mid]! < s.cy - DEPLOY_RANGE_CELLS) lo = mid + 1;
+        if (ys[mid]! < s.cy - range) lo = mid + 1;
         else hi = mid;
       }
       let p = 0;
-      for (let k = lo; k < ys.length && ys[k]! <= s.cy + DEPLOY_RANGE_CELLS; k++) if (dist2(byY[k]!, s) <= RANGE2) p++;
+      for (let k = lo; k < ys.length && ys[k]! <= s.cy + range; k++) if (dist2(byY[k]!, s) <= range2) p++;
       if (p === 0 || !reaches(ci, i)) continue;
       front.push(i);
       pool.push(p);
@@ -734,7 +745,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         let bd = Infinity;
         for (const id of free) {
           const d = dist2(id, s);
-          if (d > RANGE2) continue;
+          if (d > range2) continue;
           if (d < bd || (d === bd && id < best)) {
             bd = d;
             best = id;
@@ -782,7 +793,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     /** Of a sector: 1 = no formation of n is within the range of it, 2 = one is (0: not asked yet). */
     const alone = new Uint8Array(sn);
     const isAlone = (i: number): boolean => {
-      if (alone[i] === 0) alone[i] = all.some((id) => dist2(id, list[i]!) <= RANGE2) ? 2 : 1;
+      if (alone[i] === 0) alone[i] = all.some((id) => dist2(id, list[i]!) <= range2) ? 2 : 1;
       return alone[i] === 1;
     };
     /**
@@ -791,7 +802,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
      */
     const emptyFor = (id: number, lone: boolean): [number, number] => {
       let best = -1;
-      let bd = lone ? SPARE2 : Infinity;
+      let bd = lone ? spare2 : Infinity;
       const ci = classOf[id]!;
       for (const i of reached[ci]!) {
         // Not to the shore across the water from it (where an order to another landmass ends).
@@ -860,7 +871,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     for (const id of s.formations) {
       const to = lead && !isArmour(id) ? s.hold : target;
       // Already heading there, or to a cell within one sector of it: no new route.
-      if (f.moving[id] === 1 && cellDist(f.targetCell[id]!, to, w, loop) <= SECTOR_CELLS) continue;
+      if (f.moving[id] === 1 && cellDist(f.targetCell[id]!, to, w, loop) <= sector) continue;
       const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
       if (here === to) continue;
       orderMove(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, pass);

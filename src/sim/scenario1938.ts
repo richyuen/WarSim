@@ -211,8 +211,9 @@ const traitIncome = new Map((traitsJson.traits as { id: string; modifiers: { inc
 
 const sizeId = scenario1938.size ?? earthMap.defaultSize;
 const size = earthMap.sizes.find((s) => s.id === sizeId)!;
-/** Map size of the 1938 scenario (M by default). */
-export const SIZE_1938 = { w: size.w, h: size.h };
+const defaultSize = earthMap.sizes.find((s) => s.id === earthMap.defaultSize)!;
+/** Map size of the 1938 scenario (M by default), and its cells to a cell of the default size (`World.sizeScale`). */
+export const SIZE_1938 = { w: size.w, h: size.h, scale: size.w / defaultSize.w };
 
 function parseColor(hex: string): number {
   return parseInt(hex.slice(1), 16);
@@ -494,8 +495,8 @@ export function createWorld1938(seed: number, assets: ScenarioAssets): World {
     byMask.set(key, { bytes: saveBytes(b.parts()), islandCells: built.islandCells, ports: b.ports, airbases: b.airbases, capacities: b.parts().map((part) => (part instanceof Table ? part.capacity : -1)), nav: b.nav, navKey: b.navKey, sea: b.sea, lanes: b.lanes, portSea: b.portSea });
     return built.world;
   }
-  const { w, h } = SIZE_1938;
-  const world = new World(seed, w, h);
+  const { w, h, scale } = SIZE_1938;
+  const world = new World(seed, w, h, scale);
   staticParts1938(world, assets);
   if (world.landMask) for (const cell of t.islandCells) addIslet(world.landMask, w, cell % w, Math.floor(cell / w));
   world.ports = t.ports;
@@ -529,8 +530,8 @@ function staticParts1938(world: World, assets: ScenarioAssets): void {
 }
 
 function buildWorld1938(seed: number, assets: ScenarioAssets): { world: World; islandCells: readonly number[] } {
-  const { w, h } = SIZE_1938;
-  const world = new World(seed, w, h);
+  const { w, h, scale } = SIZE_1938;
+  const world = new World(seed, w, h, scale);
   staticParts1938(world, assets);
   world.startDay = dayOfIso(scenario1938.startDate);
   const tags = TAGS_1938;
