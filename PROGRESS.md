@@ -15872,3 +15872,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No game frame bench exists:** `npm run bench` measures Phase 0's prototypes; the budgets of
   T0 and T2 have no report with a pass or fail (PLAN 7.1j).
 - **Next:** PLAN 7.1c.
+
+## 2026-10-15 — PLAN 7.1c: the air AI's order of industry (performance)
+
+- **The cut** (`byIndustry`, `ai/air.ts`): the daily check of the cached order reads the 292,139
+  cells with industry, not all 2,097,152 cells; a cell given industry is told by
+  `world.citiesVersion` (the editor's cities). ADR-395.
+- **AT:** pin unchanged (45df324d, year 1 by the CLI). Year-1 profile as in 7.1a (E-cores,
+  `node --cpu-prof`, `.cache/prof71/p2`; `.cache/prof71/sub.mjs` sums a function's subtree):
+  `byIndustry` inclusive 2.7 % → 0.6 %. The plan's "under 0.3 %" moved: an exact check of the
+  cells has a floor of about 0.5 % (scattered reads over the 8 MB array), and a version alone
+  misses PLAN 5.8r's direct write. `airAi1938`, `airEdges`, `scenarioEdit`, `bombing1938` green.
+- **Next:** PLAN 7.1d.

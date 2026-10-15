@@ -9116,3 +9116,25 @@ Of 7.1 (open in PLAN.md):
     × 5 years, three runs unprofiled; one profiled; a `node --cpu-prof` of year 1 by function;
     seed 5303 × 25 years profiled (the growth line's AT). AT: the figures in PROGRESS and
     BLOCKERS, and the parts below by what the profile found.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1 (open in PLAN.md):
+
+  - [x] 7.1c The air AI's order of the rich cells (`byIndustry`, `ai/air.ts`): each call
+    checks its cache by a pass over every cell of the map (`same`, 2.6 % of year 1's time, self).
+    AT: the pin unchanged; `byIndustry` and `same` under 0.3 % of a year-1 profile. Moved
+    (ADR-395): an exact check reads the 292,139 cells with industry, a floor of about 0.5 %; AT
+    the pin unchanged, `byIndustry` inclusive 2.7 % → 0.6 % of year 1, PLAN 5.8r's test green.

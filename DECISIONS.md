@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-395 · 2026-10-15 · accepted — The air AI's order of industry checked by its own cells (PLAN 7.1c)
+
+- **The cut** (`byIndustry`, `ai/air.ts`): the cached order of the rich cells was checked each day
+  by a pass over all 2,097,152 cells of the map. Now a cell that gains industry it had not is told
+  by `world.citiesVersion` (every write the sim makes to `cells.econ` after the build is a city of
+  the editor, `addCity` and `removeCity`, which bump it; a build and a load make new arrays), and
+  the 292,139 cells with industry are compared with their kept values. Exact for every write of
+  the sim; for a write to the array itself (a test's), exact for a cell that had industry, which is
+  what PLAN 5.8r's test asserts (a swap of two cells' industry that keeps every sum).
+- **Measured** (`node --cpu-prof` on an esbuild bundle of the headless CLI, year 1 of seed 99 on
+  the E-cores, `0xFF0000`, as in 7.1a): `byIndustry` with what it calls 2.7 % → 0.6 % of the
+  year (207 ms of 43.5 s in `same`, 41 ms the first sort); about 0.2 ms a call warm on a P-core.
+- **The AT moved:** 7.1a set "under 0.3 %" from a self-time figure, before knowing that an exact
+  check has a floor: 292,139 reads scattered over an 8 MB array touch nearly every cache line of
+  it. Below that floor the check must not read `econ`, and a version alone is blind to the write
+  PLAN 5.8r's test makes. Not done: a sim path that trusts the version while the exported function
+  gathers (the test would then pass through code the sim never runs). Pin unchanged (45df324d).
+
 ### ADR-394 · 2026-10-15 · accepted — Who the AI's warheads fall on (PLAN 6.12, critic R6-B2)
 
 - **Split** in three causes, one commit each: no first use on a nation that cannot threaten the

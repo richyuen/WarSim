@@ -271,35 +271,33 @@ function industry(world: World, id: number, n: number, rich: () => readonly numb
 }
 
 /** The cells with industry, richest first (the lower cell first of equals), per world, kept while its industry is unchanged. */
-const ORDER = new WeakMap<Uint32Array, { cells: number[]; at: Uint32Array; value: Uint32Array }>();
+const ORDER = new WeakMap<Uint32Array, { cells: number[]; at: Uint32Array; value: Uint32Array; cities: number }>();
 
 /**
  * The cells of `world` with industry (`cells.econ`), richest first: sorted once, and again only
  * when the industry changed (the editor's cities: PLAN 1.36). Told exactly (PLAN 5.8r): the cells
  * with industry and theirs are kept, in the cells' order, and the industry compared with them;
- * a sum of it let a change that kept the sum keep a stale order. A function of the industry
+ * a sum of it let a change that kept the sum keep a stale order. A cell given industry it had
+ * not is told by `world.citiesVersion` (PLAN 7.1c): only a city of the editor gives it (the
+ * scenario's industry is set before the first call, a loaded world has new arrays), and a look
+ * at the kept cells alone is a seventh of a pass over the map. A function of the industry
  * alone, so a loaded world has the same order.
  */
 export function byIndustry(world: World): readonly number[] {
   const econ = world.cells.econ;
   const kept = ORDER.get(econ);
-  if (kept && same(econ, kept.at, kept.value)) return kept.cells;
+  if (kept && kept.cities === world.citiesVersion && same(econ, kept.at, kept.value)) return kept.cells;
   const cells: number[] = [];
   for (let c = 0; c < econ.length; c++) if (econ[c]! > 0) cells.push(c);
   const at = Uint32Array.from(cells);
   const value = Uint32Array.from(cells, (c) => econ[c]!);
   cells.sort((a, b) => econ[b]! - econ[a]! || a - b);
-  ORDER.set(econ, { cells, at, value });
+  ORDER.set(econ, { cells, at, value, cities: world.citiesVersion });
   return cells;
 }
 
-/** Whether `econ`'s cells with industry are `at`, in order, with `value`. */
+/** Whether `econ`'s cells `at` still hold `value`. */
 function same(econ: Uint32Array, at: Uint32Array, value: Uint32Array): boolean {
-  let k = 0;
-  for (let c = 0; c < econ.length; c++) {
-    if (econ[c] === 0) continue;
-    if (k === at.length || at[k] !== c || value[k] !== econ[c]) return false;
-    k++;
-  }
-  return k === at.length;
+  for (let k = 0; k < at.length; k++) if (econ[at[k]!] !== value[k]) return false;
+  return true;
 }

@@ -155,9 +155,7 @@ quick sweep as a smoke test.
   its letter). One cause a part, one commit a cause; a part that moves the pin is a rule, not a
   cut, and says so in DECISIONS:
   - [x] 7.1a The baseline on the budget machine (i7-13700KF, `0xFFFF`), HEAD `3649c23`: seed 99 […]
-  - [ ] 7.1c The air AI's order of the rich cells (`byIndustry`, `ai/air.ts`): each call
-    checks its cache by a pass over every cell of the map (`same`, 2.6 % of year 1's time, self).
-    AT: the pin unchanged; `byIndustry` and `same` under 0.3 % of a year-1 profile.
+  - [x] 7.1c The air AI's order of the rich cells (`byIndustry`, `ai/air.ts`): each call […]
   - [ ] 7.1d Combat's battles (`findBattles`, 8.3 % of year 1 with what it calls; 4.6 % its own):
     the buckets and the contacts. AT: the pin unchanged; `findBattles` halved in a year-1 profile.
   - [ ] 7.1e Combat's fire (`combatSystem`'s own 6.3 %, `placeOf` 3.2 %, `deployAll` 3.0 %). AT:
