@@ -158,9 +158,7 @@ quick sweep as a smoke test.
   - [x] 7.1c The air AI's order of the rich cells (`byIndustry`, `ai/air.ts`): each call […]
   - [x] 7.1d Combat's battles (`findBattles`, 8.3 % of year 1 with what it calls; 4.6 % its own): […]
   - [x] 7.1e Combat's fire (`combatSystem`'s own 6.3 %, `placeOf` 3.2 %, `deployAll` 3.0 %). AT: […]
-  - [ ] 7.1f The air's anti-aircraft and strikes (`systems/airCombat.ts`: `antiAir` 4.5 %,
-    `strikes` 5.4 % of year 1).
-    AT: the pin unchanged; `air` in year 1 halved (0.49 ms).
+  - [x] 7.1f The air's anti-aircraft and strikes (`systems/airCombat.ts`: `antiAir` 4.5 %, […]
   - [ ] 7.1g The operational AI (15.3 %: `planNation` 13.1, `orderMove` 5.1, `passageOf` 3.4,
     `findRoute` 3.9). AT: the pin unchanged; its mean in year 1 down by a third (0.62 ms).
   - [ ] 7.1h Territory (8.5 %: `territorySystem`'s own 3.1 %, `frontierOf` 1.9 %) and supply

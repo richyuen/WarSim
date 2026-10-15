@@ -9180,3 +9180,26 @@ Of 7.1 (open in PLAN.md):
     Done (`b527b7d`, `e640c98`, ADR-397): pin unchanged; by alternating pinned pairs 0.70 → 0.49
     ms (−30.5 %), the subtree by `--cpu-prof` −24 %. The third moved: what is left is the
     deployments of dense fronts and `findBattles`, not the fire.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1 (open in PLAN.md):
+
+  - [x] 7.1f The air's anti-aircraft and strikes (`systems/airCombat.ts`: `antiAir` 4.5 %,
+    `strikes` 5.4 % of year 1).
+    AT: the pin unchanged; `air` in year 1 halved (0.49 ms).
+    Done (`9e2703d`, `a023fea`, `facc2ff`, ADR-398): pin unchanged; by alternating pinned pairs
+    0.46 → 0.18 ms (−61 %), the subtree by `--cpu-prof` 5,371 → 2,020 ms. What is left of
+    strikes is their fire.

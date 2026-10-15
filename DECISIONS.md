@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-398 · 2026-10-15 · accepted — The air's AA and strikes look near, not at the whole world (PLAN 7.1f)
+
+- **AA** (`9e2703d`, `antiAir`, `systems/airCombat.ts`): every formation walked the nine cells
+  about it for a sortie overhead each hour, nine lookups in a `Map` (a miss made an empty array)
+  and the wing test first. A byte grid of the map, kept between calls (not state) and cleared
+  before each call returns, marks the cells whose walk meets a sortie's cell (the key of `above`
+  read as the walk reads it, its row and column in the grid); a formation on an unmarked cell is
+  passed over before any other test, and one whose place is off the grid walks as before. The
+  fire is summed in ascending formation id as before.
+- **Ports** (`a023fea`, `bombPorts`, `systems/bombing.ts`): every strike tested every port of the
+  world. The ports are the scenario's static data (assigned whole when a world is built), so a
+  `WeakMap` of the ports list holds their indices by cell; a strike reads the cells in reach and
+  tests those ports with the test as before, in the order of `world.ports` (a port's damage is a
+  new key of a `Map` that the save and the repair read in order).
+- **Strikes** (`facc2ff`, `strikes`): every strike walked every formation. The cells in reach of
+  the hour's arriving strikes are marked first (the same kept grid); one pass puts the
+  formations on them, and any off the grid, by cell; each strike takes those near its target, in
+  ascending id, once each, and makes the whole test as before (alive, not a wing nor aboard, at
+  war, within reach). A bucket built at the first strike without the marks cost 433 ms of the
+  year's profile, the wing test of every formation.
+- **Measured.** Pin unchanged (45df324d). By the AT's measure, alternating pinned pairs on the
+  budget machine (`--profile --affinity 0xFFFF`, esbuild bundles of `d1ef8cd` and of `facc2ff`,
+  year 1 of seed 99): `air` 0.459 and 0.460 ms → 0.184 and 0.174 (−61 %); the mean tick 3.21 and
+  3.23 → 2.99 and 2.87. By `node --cpu-prof` on the E-cores: the air system's subtree 5,371 ms
+  → 2,020 (`antiAir` 2,142 → about 270, `bombIndustry` with `bombPorts` 683 → 37, `strikes`
+  without its bombs about 1,700 → 900, most of it the fire itself).
+
 ### ADR-397 · 2026-10-15 · accepted — Combat's fire: once an hour what was once a volley, and the fire records kept (PLAN 7.1e)
 
 - **Once an hour** (`b527b7d`, `systems/combat.ts`, `core/pose.ts`): the hour's losses, the

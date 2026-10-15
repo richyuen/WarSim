@@ -15928,3 +15928,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `arr.length = 0` gives a V8 array's buffer back; an output filled each hour wants a
   kept typed buffer.
 - **Next:** PLAN 7.1f.
+
+## 2026-10-15 — PLAN 7.1f: the air's AA and strikes (performance)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Found** (year-1 profile of seed 99 on the E-cores, `.cache/prof71/pf0`): the air system 5.4 s
+  of 41.6. `antiAir`'s walk of nine cells for every formation every hour 2.0 s; `bombPorts`'s
+  test of every port at every strike 0.7 s (inlined into `bombIndustry`, which the profile
+  credits); `strikes`' walk of every formation at every strike 0.8 s.
+- **Cuts** (ADR-398), one commit each, pin unchanged (45df324d): `9e2703d` a kept byte grid marks
+  the cells in reach of a sortie and the AA passes over formations elsewhere; `a023fea` the ports
+  by cell (a `WeakMap` of the static ports list); `facc2ff` the cells in reach of the hour's
+  strikes are marked and only the formations on them are put by cell. A bucket of every
+  formation built at the first strike cost 433 ms of the year (the wing test): marks first.
+- **AT:** alternating pinned pairs (`--profile --affinity 0xFFFF`, bundles of `d1ef8cd` and
+  `facc2ff`): `air` 0.459, 0.460 → 0.184, 0.174 ms (−61 %); mean tick 3.21, 3.23 → 2.99, 2.87.
+- **Specs run by hand:** `airDemo1938`, `airFx1938`, `airRead1938`, `airT3_1938` green.
+- **Gate:** green with `VITEST_MAX_WORKERS=4` for each cut; the first run of cut 1 failed only
+  the known red timing tests (`scenario1938` build time, `territory` frontier cost).
+- **Next:** PLAN 7.1g.
