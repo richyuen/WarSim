@@ -141,7 +141,38 @@ export function operationalAi(world: World, armour: readonly number[] = []): voi
   }
   // Planners with the same ground open to them (the members of a coalition) share one `Passage`.
   const passages = new Map<string, Passage>();
-  for (const n of actors) planNation(world, n, fighting, frontier, w, nb, f, passages, armour);
+  const stand = standings(world, w);
+  for (const n of actors) planNation(world, n, fighting, frontier, w, nb, f, passages, armour, stand);
+}
+
+/**
+ * The formations once for all of a tick's planners (PLAN 7.1g: each planner walked them all), in
+ * the order of `formations.forEach`: by nation, and those on land by sector bucket. An order of a
+ * plan moves a formation within its cell (`orderMove` sets it on the cell's point), so not out of
+ * its bucket, or puts it aboard (`tryLanding`): off land is asked where they are read.
+ */
+interface Standings {
+  byNation: Map<number, number[]>;
+  byBucket: Map<number, number[]>;
+}
+
+function standings(world: World, w: number): Standings {
+  const f = world.formations.cols;
+  const bw = Math.ceil(w / SECTOR_CELLS);
+  const byNation = new Map<number, number[]>();
+  const byBucket = new Map<number, number[]>();
+  world.formations.forEach((id) => {
+    const n = f.nation[id]!;
+    let ids = byNation.get(n);
+    if (!ids) byNation.set(n, (ids = []));
+    ids.push(id);
+    if (world.offLand(id)) return;
+    const k = Math.floor(f.y[id]! / SECTOR_CELLS) * bw + Math.floor(f.x[id]! / SECTOR_CELLS);
+    let at = byBucket.get(k);
+    if (!at) byBucket.set(k, (at = []));
+    at.push(id);
+  });
+  return { byNation, byBucket };
 }
 
 /** A holder's frontier cells and, four per cell, the holders of the neighbouring cells (0 = none). */
@@ -150,7 +181,7 @@ interface Front {
   near: number[];
 }
 
-function planNation(world: World, n: number, fighting: Set<number>, frontier: Map<number, Front>, w: number, nb: number[], f: World['formations']['cols'], passages: Map<string, Passage>, armour: readonly number[]): void {
+function planNation(world: World, n: number, fighting: Set<number>, frontier: Map<number, Front>, w: number, nb: number[], f: World['formations']['cols'], passages: Map<string, Passage>, armour: readonly number[], stand: Standings): void {
   const wars = world.wars;
   // n's enemies as a mask: the tests below run per frontier cell and per formation.
   const enemyOf = new Uint8Array(world.nations.highWater);
@@ -183,8 +214,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   if (sectors.size === 0) return;
   const list = [...sectors.values()].sort((a, b) => a.key - b.key);
   for (const s of list) {
-    // Sums of half-integers: the same in any order of the cells (they are sorted where their
-    // order is read, below).
+    // Sums of half-integers: the same in any order of the cells (and no other reading of them
+    // takes their order: `holdCell` and `attackCell` take the lowest of equals).
     let sx = 0;
     let sy = 0;
     for (const c of s.cells) {
@@ -194,26 +225,24 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     s.cx = sx / s.cells.length;
     s.cy = sy / s.cells.length;
   }
-  const enemyByBucket = new Map<number, number>();
+  /** The strength of n's enemies in a sector bucket. */
+  const enemyAt = (k: number): number => {
+    let sum = 0;
+    for (const id of stand.byBucket.get(k) ?? []) if (enemyOf[f.nation[id]!] === 1 && !world.offLand(id)) sum += f.strength[id]!;
+    return sum;
+  };
   /** By sector bucket, how many formations of n stand in it, free or not. */
   const stands = new Map<number, number>();
   const mine: number[] = [];
   /** n's formations, free or not. */
   const all: number[] = [];
-  world.formations.forEach((id) => {
-    if (world.offLand(id)) return; // neither one of its own to send nor an enemy's strength in a sector (PLAN 4.2b)
-    const m = f.nation[id]!;
-    if (m === n) {
-      all.push(id);
-      const k = Math.floor(f.y[id]! / SECTOR_CELLS) * bw + Math.floor(f.x[id]! / SECTOR_CELLS);
-      stands.set(k, (stands.get(k) ?? 0) + 1);
-      if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0) mine.push(id);
-      return;
-    }
-    if (!enemy(m)) return;
+  for (const id of stand.byNation.get(n) ?? []) {
+    if (world.offLand(id)) continue; // neither one of its own to send nor an enemy's strength in a sector (PLAN 4.2b)
+    all.push(id);
     const k = Math.floor(f.y[id]! / SECTOR_CELLS) * bw + Math.floor(f.x[id]! / SECTOR_CELLS);
-    enemyByBucket.set(k, (enemyByBucket.get(k) ?? 0) + f.strength[id]!);
-  });
+    stands.set(k, (stands.get(k) ?? 0) + 1);
+    if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0) mine.push(id);
+  }
   if (mine.length === 0) return;
   const dist2 = (id: number, s: Sector): number => {
     let dx = Math.abs(f.x[id]! - s.cx);
@@ -231,9 +260,25 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const near: number[] = [];
   const nearD: number[] = [];
   const out: number[] = [];
+  // The first sector of a row of buckets or after it (`list` is by key, so by row).
+  const rowStart = (row: number): number => {
+    let lo = 0;
+    let hi = list.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (list[mid]!.key < row * bw) lo = mid + 1;
+      else hi = mid;
+    }
+    return lo;
+  };
   for (const id of mine) {
+    // Only a sector of the rows within the range can be within it (PLAN 7.1g): one beyond is
+    // farther in y alone, so the nearest is the same where it is within the range, and beyond
+    // it where it is not.
+    const y = f.y[id]!;
+    const last = rowStart(Math.floor((y + DEPLOY_RANGE_CELLS) / SECTOR_CELLS) + 1);
     let d = Infinity;
-    for (const s of list) d = Math.min(d, dist2(id, s));
+    for (let i = rowStart(Math.floor((y - DEPLOY_RANGE_CELLS) / SECTOR_CELLS)); i < last; i++) d = Math.min(d, dist2(id, list[i]!));
     if (d > RANGE2) {
       if (ownFront && idle(id)) out.push(id);
       continue;
@@ -305,7 +350,6 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   };
   for (let i = 0; i < sn; i++) {
     const s = list[i]!;
-    s.cells.sort((a, b) => a - b); // `holdCell` takes the first of equals
     const hold = (s.hold = holdCell(s, w));
     // From another landmass: the cell of it within the snap of an order, once per landmass.
     let other: Map<number, number> | undefined;
@@ -372,7 +416,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     for (let dx = -1; dx <= 1; dx++) {
       const x = bucketX(sx, dx);
       if (x < 0) continue;
-      for (let dy = -1; dy <= 1; dy++) s.threat += enemyByBucket.get((sy + dy) * bw + x) ?? 0;
+      for (let dy = -1; dy <= 1; dy++) s.threat += enemyAt((sy + dy) * bw + x);
     }
   }
   const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / SECTOR_CELLS) * bw + Math.floor((c % w) / SECTOR_CELLS);
@@ -667,7 +711,7 @@ function holdCell(s: Sector, w: number): number {
     const ex = (c % w) + 0.5 - s.cx;
     const ey = Math.floor(c / w) + 0.5 - s.cy;
     const d = ex * ex + ey * ey;
-    if (d < bd) {
+    if (d < bd || (d === bd && c < best)) {
       bd = d;
       best = c;
     }
