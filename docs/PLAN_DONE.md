@@ -9296,3 +9296,26 @@ Of 7.1 (open in PLAN.md):
     `docs/bench/` with the budget and pass or fail; the GPU of this machine (an RTX 4070 Ti) and
     one weak setting (the software rasteriser or a throttled GPU) beside it. AT: the report green
     on this machine.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1 (open in PLAN.md):
+
+  - [x] 7.1k The tests parked until 7.1 (`tools/gate/knownRed.json`: `aiSweep3`'s 900 s; the three
+    timing tests of the unit suite): each passes here alone, or stays with a BLOCKERS line on why.
+    Found at 7.1e: `zoomDemo1938` is on the list for wall time on a software GPU, but here it fails
+    on the node side, before any frame: the battle's battalions keep 0.672 of their men where the
+    spec wants under a half (the same on `4e36f27`). Its entry's reason is wrong; the battle it
+    picks is to be found again or the test fixed (BLOCKERS 2026-10-15).

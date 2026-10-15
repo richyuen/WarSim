@@ -16084,3 +16084,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   SwiftShader needs more than Playwright's 30 s.
 - **Specs:** none; nothing in the game changed.
 - **Next:** PLAN 7.1k.
+
+## 2026-10-15 — PLAN 7.1k: the tests parked until 7.1
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Built** (`1fd62db`, ADR-403): the four tests on `tools/gate/knownRed.json` for time pass here
+  alone and leave it: `scenario1938`'s build, `snapshot-perf` (steady median 1.15 ms, p95 2.14
+  in the test's own count, budget 2 on its own measure) and `territory`'s cost a tick, three runs
+  of three; `aiSweep3` in 158 s of its 900. `zoomDemo1938` failed on its node side (BLOCKERS
+  2026-10-15): seed 1944's division on day 30 had battalions at 0.56 to 0.67 of their men and
+  fired no shot in the four hours. A probe of the spec's node side on seeds 1925 to 1965, nearest
+  first: 1943 0.52, 1945 0.54, 1942 0.81, 1946 none; 1941 passes the whole spec (a Nationalist
+  Spanish motorised division before Valencia, 54 shots an hour, a march and in contact; 2.7 min).
+  `zoomDemo1938` stays on the list with its siblings' reason, a software GPU's wall time.
+  BLOCKERS' entry marked resolved; the watch list's two entries say the tests pass here.
+- **Pictures:** `docs/evidence/2.10/` shot again (`EVIDENCE=1`); looked at stops 3, 5, 7 and 8:
+  Spain's front, the division's tag among its neighbours at 150 m/px, both sides' figures at
+  12 m/px, the thinned battalions at 3 m/px. Seen and not changed: at 150 m/px the tag of light
+  infantry division 794 has a line of about 230 px to its block.
+- **Not done:** the 16 other e2e entries of `knownRed.json` (cloud container, software GPU) are
+  not this task's; they were not run here.
+- **Specs:** `zoomDemo1938` (three runs, the last in the gate).
+- **Next:** PLAN 7.1l.

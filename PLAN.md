@@ -163,12 +163,7 @@ quick sweep as a smoke test.
   - [x] 7.1h Territory (8.5 %: `territorySystem`'s own 3.1 %, `frontierOf` 1.9 %) and supply […]
   - [x] 7.1i The operational AI's war years. The line of R4-B5 holds on HEAD (7.1a: seed 5303's […]
   - [x] 7.1j The frame budgets: a bench of the game itself (the 1938 world, 100+ nations, T0 at […]
-  - [ ] 7.1k The tests parked until 7.1 (`tools/gate/knownRed.json`: `aiSweep3`'s 900 s; the three
-    timing tests of the unit suite): each passes here alone, or stays with a BLOCKERS line on why.
-    Found at 7.1e: `zoomDemo1938` is on the list for wall time on a software GPU, but here it fails
-    on the node side, before any frame: the battle's battalions keep 0.672 of their men where the
-    spec wants under a half (the same on `4e36f27`). Its entry's reason is wrong; the battle it
-    picks is to be found again or the test fixed (BLOCKERS 2026-10-15).
+  - [x] 7.1k The tests parked until 7.1 (`tools/gate/knownRed.json`: `aiSweep3`'s 900 s; the three […]
   - [ ] 7.1l The leads above that no part takes (the ground's cap, the land mask twice, the
     fractional pixel ratios, the top speed, the hitches at T3): each done, moved to the task it
     belongs to, or dropped with an ADR. Then the five years of seed 99 again: AT of 7.1 (1.5 ms,
