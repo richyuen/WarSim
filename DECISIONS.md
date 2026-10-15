@@ -202,6 +202,14 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   squared): by `atSize`, hoisted out of the check of each cell. A collapse's largest fragment
   compares pieces with each other and needs no scale. The pin and the map that does not loop
   unchanged; `mapSizes.test.ts` holds each area the same km² at every size.
+- **Addendum (PLAN 7.1b4).** Territory's rate: a front advances at most one cell a hold, so its
+  km a day were the cell's width over the hold. The hold is `holdHours(world)` now,
+  `HOLD_TICKS` (16) over the size's scale, rounded, at least 1: 32 h at S, 16 at M, 8 at L, 5 at
+  XL; the same km a day at S, M and L, 6.7 % more at XL by the rounding. A Major Battle's corridor
+  counts `CORRIDOR_RATE` hours of the hold an hour, as before: its speed scales with the hold.
+  `GARRISON` and the formations' pressure stay as they are: both are by the cell, a front cell's
+  defence against the pressure on it, and their balance is the same at every size (the pressure's
+  reach is by the size since 7.1b2). The pin and the map that does not loop unchanged.
 
 ### ADR-416 · 2026-10-15 · accepted — Map sizes: what is counted in cells, again (PLAN 7.1b1)
 

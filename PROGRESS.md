@@ -16384,3 +16384,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   `atSize`. Pin 45df324d, the map that does not loop 620968e1.
 - **Test:** `mapSizes.test.ts`, each area the same km² at every size.
 - **Next:** PLAN 7.1b4.
+
+## 2026-10-15 — PLAN 7.1b4: territory's rate by the km (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-417, addendum): a cell's hold is `holdHours(world)`, 16 h over the size's scale
+  (32 at S, 8 at L, 5 at XL): a front moves as many km a day at every size. Garrison and pressure
+  stay by the cell. Pin 45df324d, the map that does not loop 620968e1.
+- **Test:** `mapSizes.test.ts`, km a day at each size (exact at S, M, L; within 10 % at XL).
+- **Next:** PLAN 7.1b5.

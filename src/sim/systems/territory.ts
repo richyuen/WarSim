@@ -40,6 +40,15 @@ export const PRESSURE_RADIUS = 2;
 /** Abstract province garrison, in the same units as formation pressure (≈ 1,000 men at d = 0). */
 export const GARRISON = 1;
 export const HOLD_TICKS = 16;
+
+/**
+ * The hours a cell is held under pressure before it flips, in `world` (PLAN 7.1b4): `HOLD_TICKS`
+ * at the map's default size, as many fewer as its cells are narrower, so that a front moves as
+ * many km a day at every size (one cell a hold: 16 h at M, 8 at L, 32 at S; 5 at XL, rounded).
+ */
+export function holdHours(world: World): number {
+  return Math.max(1, Math.round(HOLD_TICKS / world.sizeScale));
+}
 /** The side of a block of `World.frontierBlocks`, in cells: a log2 (8 cells, over the pressure's 5). */
 const BLOCK_SHIFT = 3;
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);
@@ -169,6 +178,7 @@ function growTouched(): void {
 
 export function territorySystem(world: World): void {
   const pressureRadius = world.atSizeWhole(PRESSURE_RADIUS);
+  const hold = holdHours(world);
   const frontier = frontierOf(world);
   const { w, h, controller, terrain, flip } = world.cells;
   if (frontier.size === 0) return;
@@ -297,7 +307,7 @@ export function territorySystem(world: World): void {
     if (bestNation !== 0 && best > defence) {
       flip[c] = Math.min(255, flip[c]! + (inCorridor(world, bestNation, c) ? CORRIDOR_RATE : 1));
       flipping.add(c);
-      if (flip[c]! >= HOLD_TICKS) flips.push([c, bestNation]);
+      if (flip[c]! >= hold) flips.push([c, bestNation]);
     } else {
       flip[c] = 0;
       flipping.delete(c);

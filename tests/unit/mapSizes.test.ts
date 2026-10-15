@@ -13,7 +13,7 @@ import { RETREAT_CELLS, RETREAT_REACH } from '../../src/sim/systems/retreat';
 import { GARRISON_CELLS, MILITIA_PER_CELLS, OVEREXT_CELLS } from '../../src/sim/systems/revolts';
 import { KILL_CELLS_PER_STATE } from '../../src/sim/systems/revival';
 import { SUPPLY_REACH } from '../../src/sim/systems/supply';
-import { PRESSURE_RADIUS } from '../../src/sim/systems/territory';
+import { HOLD_TICKS, holdHours, PRESSURE_RADIUS } from '../../src/sim/systems/territory';
 import { World } from '../../src/sim/world';
 
 // PLAN 7.1b2 (ADR-416): the reaches the sim counted in cells are cells of the map's default size,
@@ -67,6 +67,22 @@ describe('areas by the map size (PLAN 7.1b3)', () => {
         expect(km2(size.w, world.atSizeArea(cells)), `${name} at ${size.id}`).toBeCloseTo(km2(DEFAULT_W, cells), 6);
         if (size.w === DEFAULT_W) expect(world.atSizeArea(cells), `${name} at M`).toBe(cells);
       }
+    }
+  });
+});
+
+describe('territory by the map size (PLAN 7.1b4)', () => {
+  it('a front moves as many km a day at every size: one cell a hold, the hold as many hours fewer as the cells are narrower', () => {
+    const kmPerDay = (w: number, hold: number): number => (kmPerCell(w) * 24) / hold;
+    const atM = kmPerDay(DEFAULT_W, HOLD_TICKS);
+    for (const size of earthMap.sizes) {
+      const world = new World(1, size.w, size.h, size.w / DEFAULT_W);
+      const hold = holdHours(world);
+      expect(Number.isInteger(hold) && hold >= 1, `${size.id}`).toBe(true);
+      // Exact where the scale divides the hold (S, M, L); within the rounding of an hour at XL.
+      if (HOLD_TICKS % world.sizeScale === 0 || world.sizeScale < 1) expect(kmPerDay(size.w, hold), `${size.id}`).toBeCloseTo(atM, 9);
+      else expect(Math.abs(kmPerDay(size.w, hold) / atM - 1), `${size.id}: ${hold} h`).toBeLessThan(0.1);
+      if (size.w === DEFAULT_W) expect(hold).toBe(HOLD_TICKS);
     }
   });
 });
