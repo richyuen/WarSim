@@ -509,7 +509,7 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
       if (cost === Infinity || (on !== undefined && on[nodeOf![n]!] !== 1)) continue;
       if (ok !== undefined && ok[holder![n]!] !== 1 && holder![n] !== hc) continue;
       // No corner cutting: a diagonal step needs both orthogonal neighbours passable.
-      if (dx !== 0 && dy !== 0 && (!passable(cy * w + ((cx + dx + w) % w)) || !passable(ny * w + cx))) continue;
+      if (dx !== 0 && dy !== 0 && (!passable(cy * w + nx) || !passable(ny * w + cx))) continue;
       // stepKm, inlined: the row scales of the upper of the two rows.
       const row = dy > 0 ? cy : ny;
       const t = gc + (dy === 0 ? kx[row]! : dx === 0 ? ky[row]! : kd[row]!) * cost;

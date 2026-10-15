@@ -129,15 +129,19 @@ export function operationalAi(world: World, armour: readonly number[] = []): voi
   // scanning the whole frontier per planner was a quarter of the tick in a world of many wars).
   const frontier = new Map<number, Front>();
   const nb: number[] = [];
+  const loop = world.settings.loopingMap;
+  let last: Front | undefined;
+  let lastHolder = -1;
   for (const c of frontierOf(world)) {
     const holder = controller[c]!;
-    let fr = frontier.get(holder);
+    let fr = holder === lastHolder ? last! : frontier.get(holder);
     if (!fr) frontier.set(holder, (fr = { cells: [], near: [] }));
+    last = fr;
+    lastHolder = holder;
     fr.cells.push(c);
-    const at = fr.near.length;
-    fr.near.push(0, 0, 0, 0);
-    let k = 0;
-    for (const q of neighbours4(c, w, h, world.settings.loopingMap, nb)) fr.near[at + k++] = controller[q]!;
+    // North, south, west, east (`neighbours4`'s); 0 where the map ends. They are read as a set.
+    const x = c % w;
+    fr.near.push(c >= w ? controller[c - w]! : 0, c < (h - 1) * w ? controller[c + w]! : 0, x > 0 ? controller[c - 1]! : loop ? controller[c + w - 1]! : 0, x < w - 1 ? controller[c + 1]! : loop ? controller[c - w + 1]! : 0);
   }
   // Planners with the same ground open to them (the members of a coalition) share one `Passage`.
   const passages = new Map<string, Passage>();
