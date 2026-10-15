@@ -206,7 +206,7 @@ quick sweep as a smoke test.
     - [x] 7.1l6 The ground's cap by the view's size, and an even thinning past what a frame
       affords (not the finest level cut from the top). AT: a forest view at 1920 × 1080 with no
       line below which the trees thin.
-    - [ ] 7.1l7 The land mask held twice in the page (16.8 MB for the scatter, as much on the
+    - [x] 7.1l7 The land mask held twice in the page (16.8 MB for the scatter, as much on the
       GPU). AT: one copy, or an ADR.
     - [ ] 7.1l8 Fractional device pixel ratios (1.25, 1.5): a marker's box drawn into its
       unrounded rectangle; every layer looked at. AT: screenshots at 1.25 and 1.5, looked at.

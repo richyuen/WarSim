@@ -58,14 +58,122 @@ export const SURE_LAND = 0.85;
  * gives the same number.
  */
 export function maskField(mask: LandMask, mapW: number, mapH: number, x: number, y: number, wrapX: boolean): number {
-  const mx = (x * mask.w) / mapW - 0.5;
-  const my = (y * mask.h) / mapH - 0.5;
+  return fieldBy((px, py) => maskBit(mask, px, py), mask.w, mask.h, mapW, mapH, x, y, wrapX);
+}
+
+/**
+ * `maskField` of a mask of `w` × `h` pixels read through `bit` (as `maskBit`: `px` already
+ * wrapped, no land outside the rows): the one arithmetic of the field, for the mask the sim
+ * holds and the coast the page keeps (`CoastMask`).
+ */
+export function fieldBy(bit: (px: number, py: number) => boolean, w: number, h: number, mapW: number, mapH: number, x: number, y: number, wrapX: boolean): number {
+  const mx = (x * w) / mapW - 0.5;
+  const my = (y * h) / mapH - 0.5;
   const x0 = Math.floor(mx);
   const y0 = Math.floor(my);
   const tx = mx - x0;
   const ty = my - y0;
-  const at = (px: number, py: number): number => (maskBit(mask, wrapX ? ((px % mask.w) + mask.w) % mask.w : px, py) ? 1 : 0);
+  const at = (px: number, py: number): number => (bit(wrapX ? ((px % w) + w) % w : px, py) ? 1 : 0);
   return (at(x0, y0) * (1 - tx) + at(x0 + 1, y0) * tx) * (1 - ty) + (at(x0, y0 + 1) * (1 - tx) + at(x0 + 1, y0 + 1) * tx) * ty;
+}
+
+/**
+ * The fine mask as the page keeps it for the scatter (PLAN 7.1l7): by cell, all water, all
+ * land, or both, and the pixels of only the cells that have both. Most cells are of one kind:
+ * the mask of the Earth (16.8 MB) is some MB this way. Its bits are the mask's (`coastBit`).
+ */
+export interface CoastMask {
+  w: number;
+  h: number;
+  /** Mask pixels to a cell. */
+  k: number;
+  /** Cells across and down. */
+  cw: number;
+  ch: number;
+  /** By cell: 0 all water, 1 all land, 2 both (its pixels in `blocks`). */
+  state: Uint8Array;
+  /** By row of cells, where its cells of both kinds begin in `xs`; `ch` + 1 of them. */
+  rowStart: Int32Array;
+  /** The x of each cell of both kinds, ascending in each row. */
+  xs: Int32Array;
+  /** Their pixels, `k` × `k` bits a cell, row by row, the lowest bit of a byte first. */
+  blocks: Uint8Array;
+}
+
+/** The coast of `mask`, for a map `mapW` cells wide (its pixels to a cell a whole number). */
+export function coastMask(mask: LandMask, mapW: number): CoastMask {
+  const k = mask.w / mapW;
+  if (!Number.isInteger(k) || mask.h % k !== 0) throw new Error(`a mask of ${mask.w} for a map of ${mapW} cells`);
+  const [cw, ch] = [mapW, mask.h / k];
+  const state = new Uint8Array(cw * ch);
+  const rowStart = new Int32Array(ch + 1);
+  const xs: number[] = [];
+  const perBlock = Math.ceil((k * k) / 8);
+  const chunks: Uint8Array[] = [];
+  const all = new Uint8Array(cw);
+  const any = new Uint8Array(cw);
+  for (let cy = 0; cy < ch; cy++) {
+    rowStart[cy] = xs.length;
+    all.fill(1);
+    any.fill(0);
+    if (k % 8 === 0) {
+      // A cell's row of pixels is k / 8 whole bytes.
+      const bytes = k / 8;
+      for (let py = cy * k; py < cy * k + k; py++) {
+        const row = (py * mask.w) / 8;
+        for (let cx = 0; cx < cw; cx++) {
+          for (let b = 0; b < bytes; b++) {
+            const v = mask.bits[row + cx * bytes + b]!;
+            if (v !== 0) any[cx] = 1;
+            if (v !== 255) all[cx] = 0;
+          }
+        }
+      }
+    } else {
+      for (let py = cy * k; py < cy * k + k; py++)
+        for (let px = 0; px < mask.w; px++) {
+          const cx = Math.floor(px / k);
+          if (maskBit(mask, px, py)) any[cx] = 1;
+          else all[cx] = 0;
+        }
+    }
+    for (let cx = 0; cx < cw; cx++) {
+      const kind = all[cx] ? 1 : any[cx] ? 2 : 0;
+      state[cy * cw + cx] = kind;
+      if (kind !== 2) continue;
+      xs.push(cx);
+      const block = new Uint8Array(perBlock);
+      for (let j = 0; j < k; j++) for (let i = 0; i < k; i++) if (maskBit(mask, cx * k + i, cy * k + j)) block[(j * k + i) >> 3]! |= 1 << ((j * k + i) & 7);
+      chunks.push(block);
+    }
+  }
+  rowStart[ch] = xs.length;
+  const blocks = new Uint8Array(chunks.length * perBlock);
+  chunks.forEach((b, n) => blocks.set(b, n * perBlock));
+  return { w: mask.w, h: mask.h, k, cw, ch, state, rowStart, xs: Int32Array.from(xs), blocks };
+}
+
+/** The bit of pixel (`px`, `py`), as `maskBit` gives it of the mask the coast was made of. */
+export function coastBit(c: CoastMask, px: number, py: number): boolean {
+  if (py < 0 || py >= c.h || px < 0 || px >= c.w) return false;
+  const cx = Math.floor(px / c.k);
+  const cy = Math.floor(py / c.k);
+  const kind = c.state[cy * c.cw + cx]!;
+  if (kind !== 2) return kind === 1;
+  let lo = c.rowStart[cy]!;
+  let hi = c.rowStart[cy + 1]! - 1;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (c.xs[mid]! < cx) lo = mid + 1;
+    else hi = mid;
+  }
+  const bit = (py - cy * c.k) * c.k + (px - cx * c.k);
+  return ((c.blocks[lo * Math.ceil((c.k * c.k) / 8) + (bit >> 3)]! >> (bit & 7)) & 1) === 1;
+}
+
+/** `maskSure` of the coast. */
+export function coastSure(c: CoastMask, mapW: number, mapH: number, x: number, y: number, wrapX: boolean): boolean {
+  return fieldBy((px, py) => coastBit(c, px, py), c.w, c.h, mapW, mapH, x, y, wrapX) >= SURE_LAND;
 }
 
 /**

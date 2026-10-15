@@ -137,7 +137,7 @@ test('an atoll smaller than a pixel of the mask is land in the picture, zoomed o
   await page.setViewportSize({ width: 1000, height: 700 });
   await page.goto('/?scenario=1938&paused=1&seed=1938');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.view!.lastTick === 0, null, { timeout: 60_000 });
-  await page.waitForFunction(() => window.__warsim!.view!.hasFineCoast && window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.view!.hasFineCoast && window.__warsim!.view!.coast !== null, null, { timeout: 60_000 });
   const sea = [0x1d, 0x35, 0x57];
   for (const [name, cx, cy] of atolls) {
     // 40 px to a cell: the coverage's coast (T1). 400 and 1,600: the mask's (T2, T3).

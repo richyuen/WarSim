@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { cityIndex, groundCap, scatter, ScatterKind, SCATTER_STRIDE, type ScatterView, type ScatterWorld } from '../../src/render/map/scatter';
+import { coastMask } from '../../src/shared/landMask';
 import { Terrain } from '../../src/shared/terrain';
 
 // PLAN 2.8c1 (ADR-78): where the trees, the rocks and the buildings of T2 and T3 stand. A
@@ -92,7 +93,7 @@ describe('the scatter of trees, rocks and buildings (PLAN 2.8c1)', () => {
         const i = y * mask.w + x;
         mask.bits[i >> 3]! |= 1 << (i & 7);
       }
-    fine.mask = mask;
+    fine.mask = coastMask(mask, W);
     const b = instances(fine, view(20.5, 12, 300));
     expect(b.filter((i) => i.x < 20.4).length).toBeGreaterThan(100);
     expect(b.filter((i) => i.x > 20.5 - 0.3 / 8).length).toBe(0);

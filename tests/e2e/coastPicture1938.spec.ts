@@ -35,7 +35,7 @@ interface Agreement {
 function agreement(page: Page): Promise<Agreement> {
   return page.evaluate(({ W, H, SEA, RAMP }) => {
     const v = window.__warsim!.view!;
-    const m = window.__warsim!.sim.landMask!;
+    const m = window.__warsim!.view!.coast!;
     v.instances = false;
     v.sprites = false;
     v.draw(performance.now() + 1e6);
@@ -45,8 +45,7 @@ function agreement(page: Page): Promise<Agreement> {
     gl.readPixels(0, 0, c.width, c.height, gl.RGBA, gl.UNSIGNED_BYTE, px);
     const bit = (mx: number, my: number): boolean => {
       if (my < 0 || my >= m.h) return false;
-      const i = my * m.w + (((mx % m.w) + m.w) % m.w);
-      return ((m.bits[i >> 3]! >> (i & 7)) & 1) === 1;
+      return window.__warsim!.view!.maskBit(((mx % m.w) + m.w) % m.w, my);
     };
     /** 1 surely land, 0 surely water, -1 within a mask pixel of the coast. */
     const sure = (x: number, y: number): number => {
@@ -95,10 +94,9 @@ function agreement(page: Page): Promise<Agreement> {
 /** The place on the mask's coast nearest to cell (`x`, `y`): the middle of the edge between a land pixel and a water pixel. */
 function coastNear(page: Page, x: number, y: number): Promise<[number, number]> {
   return page.evaluate(({ x, y, W, H }) => {
-    const m = window.__warsim!.sim.landMask!;
+    const m = window.__warsim!.view!.coast!;
     const bit = (mx: number, my: number): boolean => {
-      const i = my * m.w + (((mx % m.w) + m.w) % m.w);
-      return ((m.bits[i >> 3]! >> (i & 7)) & 1) === 1;
+      return window.__warsim!.view!.maskBit(((mx % m.w) + m.w) % m.w, my);
     };
     const [cx, cy] = [Math.floor((x * m.w) / W), Math.floor((y * m.h) / H)];
     let best: [number, number] = [x, y];
@@ -120,7 +118,7 @@ function coastNear(page: Page, x: number, y: number): Promise<[number, number]> 
 test('at T2 and T3 land and water in the picture are the fine mask’s, to within a pixel of it', async ({ page }, info) => {
   test.setTimeout(240_000);
   await open1938(page);
-  await page.waitForFunction(() => window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.view!.coast !== null, null, { timeout: 60_000 });
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.9') : info.outputPath();
   mkdirSync(out, { recursive: true });
   for (const [name, lon, lat] of [['dover', 1.4, 51.0], ['aegean', 23.6, 37.9], ['norway', 6.0, 61.1]] as const) {
@@ -149,15 +147,14 @@ test('at T2 and T3 land and water in the picture are the fine mask’s, to withi
 test('at T3 no element near a coast has the drawn sea under its middle', async ({ page }) => {
   test.setTimeout(240_000);
   await open1938(page, 99);
-  await page.waitForFunction(() => window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.view!.coast !== null, null, { timeout: 60_000 });
   // The formations nearest the mask's water (as coastElements1938 finds them).
   const coastal = await page.evaluate(({ W, H }) => {
     const v = window.__warsim!.view!;
-    const m = window.__warsim!.sim.landMask!;
+    const m = window.__warsim!.view!.coast!;
     const bit = (px: number, py: number): boolean => {
       if (py < 0 || py >= m.h) return false;
-      const i = py * m.w + (((px % m.w) + m.w) % m.w);
-      return ((m.bits[i >> 3]! >> (i & 7)) & 1) === 1;
+      return window.__warsim!.view!.maskBit(((px % m.w) + m.w) % m.w, py);
     };
     const k = m.w / W;
     const list: { id: number; x: number; y: number; sea: number }[] = [];
@@ -187,7 +184,7 @@ test('at T3 no element near a coast has the drawn sea under its middle', async (
     }, c.id, { timeout: 30_000 });
     const got = await page.evaluate(({ id, W, H }) => {
       const v = window.__warsim!.view!;
-      const m = window.__warsim!.sim.landMask!;
+      const m = window.__warsim!.view!.coast!;
       v.instances = false;
       v.sprites = false;
       v.draw(performance.now() + 1e6);
@@ -205,8 +202,7 @@ test('at T3 no element near a coast has the drawn sea under its middle', async (
       };
       const bit = (mx: number, my: number): boolean => {
         if (my < 0 || my >= m.h) return false;
-        const i = my * m.w + (((mx % m.w) + m.w) % m.w);
-        return ((m.bits[i >> 3]! >> (i & 7)) & 1) === 1;
+        return window.__warsim!.view!.maskBit(((mx % m.w) + m.w) % m.w, my);
       };
       // The sea's colour in this view: at the middle of a mask pixel whose 3 × 3 are all water.
       let sea: number | null = null;
@@ -241,7 +237,7 @@ test('at T3 no element near a coast has the drawn sea under its middle', async (
 test('at T0 and T1 the coast is as it was: with the ground of T2 and without it the picture is one, pixel for pixel', async ({ page }) => {
   test.setTimeout(150_000);
   await open1938(page);
-  await page.waitForFunction(() => window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.view!.coast !== null, null, { timeout: 60_000 });
   const [x, y] = cellOf(1.4, 51.0, W, H); // the Strait of Dover
   // The ground does not change the coast: at T0 the coverage's, at T1 from 1,200 m/px the mask's
   // with the ground or without it (PLAN 4.7g, ADR-284; until then the mask's came with the ground).

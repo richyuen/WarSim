@@ -121,7 +121,9 @@ export class SimClient {
       return;
     }
     if (msg.type === 'landMask') {
-      this.landMask = msg.mask;
+      // Kept only until it is taken (PLAN 7.1l7): the view puts it on the GPU and keeps its coast,
+      // and 16.8 MB held here as well would be a second copy in the page.
+      this.landMask = this.landMaskListeners.size > 0 ? null : msg.mask;
       for (const l of this.landMaskListeners) l(msg.mask);
       return;
     }
@@ -250,12 +252,15 @@ export class SimClient {
     return () => this.layerListeners.delete(l);
   }
 
-  /** The fine land mask the world was built with (PLAN 2.9a); null until the worker has sent it, and for a world without one. */
+  /** The fine land mask the world was built with (PLAN 2.9a), until a listener takes it (PLAN 7.1l7); null before, after, and for a world without one. */
   landMask: LandMask | null = null;
   private readonly landMaskListeners = new Set<(m: LandMask) => void>();
   onLandMask(l: (m: LandMask) => void): () => void {
     this.landMaskListeners.add(l);
-    if (this.landMask) l(this.landMask);
+    if (this.landMask) {
+      l(this.landMask);
+      this.landMask = null;
+    }
     return () => this.landMaskListeners.delete(l);
   }
 

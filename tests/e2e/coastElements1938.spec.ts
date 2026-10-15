@@ -13,16 +13,15 @@ const { w: W, h: H } = SIZE_1938;
 test('at T3 no element of a formation near a coast stands on the fine mask’s water', async ({ page }) => {
   test.setTimeout(240_000);
   await open1938(page, 99);
-  await page.waitForFunction(() => window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.view!.coast !== null, null, { timeout: 60_000 });
 
   // The formations nearest a coast: those within half a cell of the mask's water, by the page's own copy.
   const coastal = await page.evaluate(({ W, H }) => {
     const v = window.__warsim!.view!;
-    const m = window.__warsim!.sim.landMask!;
+    const m = window.__warsim!.view!.coast!;
     const bit = (px: number, py: number): boolean => {
       if (py < 0 || py >= m.h) return false;
-      const i = py * m.w + (((px % m.w) + m.w) % m.w);
-      return ((m.bits[i >> 3]! >> (i & 7)) & 1) === 1;
+      return window.__warsim!.view!.maskBit(((px % m.w) + m.w) % m.w, py);
     };
     const k = m.w / W;
     const out: { id: number; x: number; y: number; sea: number }[] = [];
@@ -66,13 +65,12 @@ test('at T3 no element of a formation near a coast stands on the fine mask’s w
     }, c.id, { timeout: 30_000 });
     const got = await page.evaluate(({ id, W, H }) => {
       const v = window.__warsim!.view!;
-      const m = window.__warsim!.sim.landMask!;
+      const m = window.__warsim!.view!.coast!;
       const land = (x: number, y: number): boolean => {
         const px = (((Math.floor((x * m.w) / W) % m.w) + m.w) % m.w);
         const py = Math.floor((y * m.h) / H);
         if (py < 0 || py >= m.h) return false;
-        const i = py * m.w + px;
-        return ((m.bits[i >> 3]! >> (i & 7)) & 1) === 1;
+        return window.__warsim!.view!.maskBit(px, py);
       };
       const out = { n: 0, wet: [] as string[] };
       for (let i = 0; i < v.elementCount; i++) {

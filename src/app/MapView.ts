@@ -43,7 +43,7 @@ import { SEAM_MARGIN, cellOfPoint, screenToWorld, worldToScreen, wrapOffsets, ty
 import { groundReach } from '../render/map/ground';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
-import type { LandMask } from '../shared/landMask';
+import { coastBit, coastMask, type CoastMask } from '../shared/landMask';
 import { cityIndex, groundCap, scatter, SCATTER_STRIDE, type Scatter, type ScatterWorld } from '../render/map/scatter';
 import { drawUnitAtlas } from '../render/units/atlas';
 import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
@@ -144,8 +144,16 @@ export class MapView {
   private readonly controlGrid: Uint16Array;
   private provinceGrid: Uint16Array | null = null;
   private terrainColors: number[] | null = null;
-  /** The fine land mask the worker sent (PLAN 2.9b): the coast of T2 and T3, and where nothing of the scatter stands. */
-  private fineMask: LandMask | null = null;
+  /**
+   * The fine land mask the worker sent, as its coast (PLAN 2.9b, 7.1l7): where nothing of the
+   * scatter stands. The mask itself is on the GPU, for the coast of T2 and T3.
+   */
+  coast: CoastMask | null = null;
+
+  /** The fine mask's bit at pixel (`px`, `py`), as the worker has it (tests); false before it came. */
+  maskBit(px: number, py: number): boolean {
+    return this.coast !== null && coastBit(this.coast, px, py);
+  }
   private cities: { id: number; x: number; y: number }[] = [];
 
   /** The city row nearest cell (x, y) within `reach` cells, or 0 (editor tools, PLAN 1.36). */
@@ -321,7 +329,7 @@ export class MapView {
       this.hasFineCoast = !landChanged;
       if (this.scatterWorld) {
         this.scatterWorld.terrain = data;
-        this.scatterWorld.mask = landChanged ? null : this.fineMask;
+        this.scatterWorld.mask = landChanged ? null : this.coast;
       }
       this.scatterKey = '';
       this.dirty = true;
@@ -372,9 +380,11 @@ export class MapView {
     sim.onLandMask((mask) => {
       // The scatter's water, read on the CPU whatever the GPU takes, and the coast of T2 and T3
       // (PLAN 2.9b2). Where the texture does not fit, the drawn coast stays the coverage's.
-      this.fineMask = mask;
+      // The bits go to the GPU; the page keeps only the coast's (16.8 MB → 2.8 for the Earth's:
+      // PLAN 7.1l7), which says the same of every pixel.
+      this.coast = coastMask(mask, this.geo.w);
       this.map.setLandMask(mask);
-      if (this.scatterWorld) this.scatterWorld.mask = this.fineMask;
+      if (this.scatterWorld) this.scatterWorld.mask = this.coast;
       this.scatterKey = '';
       this.dirty = true;
     });
@@ -388,7 +398,7 @@ export class MapView {
       this.map.setProvinces(this.geo.w, this.geo.h, m.province);
       this.provinceGrid = m.province;
       this.hasFineCoast = true;
-      this.scatterWorld = { w: this.geo.w, h: this.geo.h, wrapX: this.geo.wrapX, kmPerCell: this.geo.kmPerCell, terrain: m.terrain.data, mask: this.fineMask, cities: cityIndex(m.cities, this.geo.w, this.geo.h, this.geo.kmPerCell) };
+      this.scatterWorld = { w: this.geo.w, h: this.geo.h, wrapX: this.geo.wrapX, kmPerCell: this.geo.kmPerCell, terrain: m.terrain.data, mask: this.coast, cities: cityIndex(m.cities, this.geo.w, this.geo.h, this.geo.kmPerCell) };
       this.scatterKey = '';
       this.dirty = true;
     });

@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-410 · 2026-10-15 · accepted — The page keeps the fine mask's coast, not the mask (PLAN 7.1l7)
+
+- **Context.** The worker sends the page a copy of the fine land mask (16,384 × 8,192 bits,
+  16.8 MB). The view put it on the GPU (the coast of T2 and T3) and kept it for the scatter's
+  "surely land" (`maskSure`), and the client kept it for listeners to come: 16.8 MB in the page's
+  memory beside the 16.8 on the GPU. The worker's own copy is the sim's.
+- **Decision.** The view keeps a `CoastMask` (`shared/landMask.ts`): by cell all water, all land,
+  or both, and the 8 × 8 pixels of only the cells of both, by row of cells. The Earth's: 59,834
+  of 2,097,152 cells have both, 2.82 MB, made in 54 ms; every one of its 134 million pixels is the
+  mask's. The scatter asks `coastSure`; `maskField`'s arithmetic is one function (`fieldBy`),
+  read through the mask's bits or the coast's, so "surely land" has one meaning. The client
+  keeps the mask only until a listener has taken it. The page's array buffers after a load, a
+  GC forced: 41.7 MB before, 28.0 after.
+- **The tests:** the coast's bit is the mask's at every pixel and its sure land at 8,000 places, at
+  4, 8 and 16 pixels to a cell (a lookup made wrong fails three of them). The specs that read the
+  page's mask (`coast1938`, `coastElements1938`, `coastPicture1938`) read it through
+  `view.maskBit` now, the same bits; they and `groundThings1938` pass.
+- **Not changed:** the GPU's copy (the shader reads the pixels where the coast is drawn); the
+  sim's (the pin, 45df324d).
+
 ### ADR-409 · 2026-10-15 · accepted — The ground's things: a cap by the view's size, and an even thinning past what a frame affords (PLAN 7.1l6)
 
 - **The line.** The scatter's cap was 12,000 at any view's size, and it fills its levels coarse

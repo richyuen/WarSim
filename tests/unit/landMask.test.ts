@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cellInland, landPoint, landWay, waterPoint, lineClear, maskBit, maskField, maskLand, maskSure, SHORE_NOISE, SURE_LAND, type LandMask } from '../../src/shared/landMask';
+import { cellInland, coastBit, coastMask, coastSure, landPoint, landWay, waterPoint, lineClear, maskBit, maskField, maskLand, maskSure, SHORE_NOISE, SURE_LAND, type LandMask } from '../../src/shared/landMask';
 
 // PLAN 2.9a (ADR-79): the fine land mask, read one way by the sim, the renderer and the tests.
 
@@ -248,5 +248,37 @@ describe('the fine land mask (PLAN 2.9a)', () => {
       expect(sure(seam, 4, 3, way, true)).toBe(true);
       expect(landWay(seam, 4, [3.5, 1.5], [4.5, 1.5], false)).toBeNull();
     });
+  });
+});
+
+// PLAN 7.1l7: the page keeps the mask's coast, not the mask: by cell all water, all land, or the
+// pixels of a cell of both. It must say what the mask says of every pixel and every place.
+describe('the coast the page keeps (PLAN 7.1l7)', () => {
+  for (const k of [4, 8, 16]) {
+    it(`gives the mask's bit of every pixel and its sure land at every place, ${k} pixels to a cell`, () => {
+      const [mw, mh] = [24, 12];
+      // An island, a lake, a ragged shore and a cell of one pixel of land.
+      const land = (px: number, py: number): boolean =>
+        (Math.hypot(px - 8 * k, py - 6 * k) < 4.3 * k && Math.hypot(px - 8 * k, py - 6 * k) > 1.2 * k) || px + ((py * 7) % 5) > 15 * k || (px === 3 * k + 1 && py === 2 * k + 2);
+      const m = mask(mw, mh, k, land);
+      const c = coastMask(m, mw);
+      const kinds = [0, 0, 0];
+      for (const st of c.state) kinds[st]!++;
+      expect(kinds.every((n) => n > 0), kinds.join(', ')).toBe(true);
+      for (let py = -2; py < m.h + 2; py++) for (let px = -2; px < m.w + 2; px++) expect(coastBit(c, px, py), `${px},${py}`).toBe(maskBit(m, px, py));
+      for (let i = 0; i < 4000; i++) {
+        const x = ((i * 0.6180339) % 1) * (mw + 2) - 1;
+        const y = ((i * 0.4142136) % 1) * mh;
+        for (const wrap of [false, true]) expect(coastSure(c, mw, mh, x, y, wrap), `${x},${y}`).toBe(maskSure(m, mw, mh, x, y, wrap));
+      }
+    });
+  }
+
+  it('keeps the pixels of the cells of both kinds only', () => {
+    const m = mask(64, 32, 8, (px) => px < 203);
+    const c = coastMask(m, 64);
+    // One column of cells has both: x 25, of pixels 200 to 207, three of them land.
+    expect(Array.from(c.xs)).toEqual(new Array(32).fill(25));
+    expect(c.blocks.length).toBe(32 * 8);
   });
 });

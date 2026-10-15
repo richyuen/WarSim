@@ -16230,3 +16230,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   scatter's order instead of the hash fails the second; the old cap fails the first two.
 - **Specs:** `groundThings1938` green (4).
 - **Next:** PLAN 7.1l7.
+
+## 2026-10-15 — PLAN 7.1l7: the land mask held once in the page (memory)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-410): the view keeps the fine mask's coast (`CoastMask`: a state a cell, the
+  pixels of the 59,834 cells of both kinds), 2.82 MB for 16.8, made in 54 ms, every pixel the
+  mask's; the scatter reads it through `fieldBy`, the one field of the sim's mask too; the client
+  lets go of the mask once the view has it. The GPU's copy stays.
+- **AT:** one copy of the mask in the page (on the GPU); the page's array buffers 41.7 → 28.0 MB
+  after a load (twice each); pin unchanged.
+- **Tests:** `landMask.test.ts`, the coast against the mask at every pixel at 4, 8 and 16 pixels a
+  cell; a wrong lookup fails three.
+- **Specs:** `coast1938`, `coastElements1938`, `coastPicture1938` (now through `view.maskBit`),
+  `groundThings1938`: 11 green.
+- **Next:** PLAN 7.1l8.
