@@ -15748,3 +15748,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** green (1059 related tests, the two specs, the pin). Under the load of the two runs the
   known red build time (`scenario1938`, 2,092 ms) failed once; alone 7 of 7.
 - **Next:** PLAN 6.12.
+- **Gotcha:** the tick's commit went in on a red gate: two load-sensitive timing tests
+  (`scenario1938` build time 2,699 ms, `territory` cost a tick 34.6 against 25; both on
+  `tools/gate/knownRed.json`), and the command chained the commit after `echo`, not after the gate.
+  The code was the code gated green just before; the two alone: 20 of 20; the gate on HEAD: green.
+  Chain the commit on the gate's exit code.
