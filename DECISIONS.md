@@ -217,6 +217,18 @@ here, because a rule change can break it.
   was of this passage was two reads of each cell; now 0 is no mark (an answer of 0 is marked
   `MARK_ZERO`), and the cells marked are listed and cleared when another passage asks.
 
+**The AT** (esbuild bundles, `--profile --affinity 0xFFFF`). This machine has two states: in one
+the task's start reads 1.65 ms for the AI in year 17, in the other 2.07 to 2.23, and runs one
+after another drift into the second. So the cuts were judged by pairs run at the same time on
+separate P-cores, then swapped: the five cuts together read × 0.70 to 0.75 of the start. Alone,
+quiet (supply 0.157 and territory 0.149 ms, the start's own levels): year 17 from the checkpoint
+1.164 ms; two runs after it read every system high and were not taken. The longest call after
+the first is 39.2 ms (instrumented); the first after a load builds every cache (`heldByNode`'s
+count, the nodes' parts, the cells by node) and is 80 ms. The 25 years in one run: year 17's AI
+1.360 ms (2.667 at 7.1a) and its longest call 36.9 ms; years 8 to 10 0.90 to 1.45 (1.58 to 2.14),
+12 1.39 (2.00); first five years 1.259 ms a tick, last five 1.252 (× 0.99); the final hash
+8297f9f7, 7.1a's.
+
 ### ADR-400 · 2026-10-15 · accepted — Territory's hour and supply's refresh without what the rule does not need (PLAN 7.1h)
 
 Each cut below is exact: the pin is unchanged (45df324d), and so is year 1 of seed 99 on a map

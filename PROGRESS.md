@@ -16021,3 +16021,40 @@ No rule changed and nothing on screen changed. One task came out of it.
   `encoding='utf-8'`) to keep LF. The gate's known-red `scenario1938` build time failed once under
   load; with `VITEST_MAX_WORKERS=4` every gate was green.
 - **Next:** PLAN 7.1i.
+
+## 2026-10-15 — PLAN 7.1i: the operational AI's war years (performance)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Found** (seed 5303, a checkpoint of year 16 at `a2d438c`, year 17 hash 13e25fc1 as 7.1a's
+  run; pinned, `--profile`): the AI 1.65 ms of a 2.60 ms tick, the longest call 101 ms (the first
+  after the load). By `--cpu-prof`: `planNation`'s own lines 17 %, `joinWide` 15 % (938 walks of
+  the open cells of every province with closed ground), `pocketOf` 12 % (805,000 walks, 68
+  million cells, nine in ten from a sector's cell). Of the frontier cells the planners walked,
+  four in five (46 of 58 million) had been walked by another planner of the same tick.
+- **Cuts** (ADR-401), one commit each, pin unchanged (45df324d), the map that does not loop
+  (620968e1) and year 17 (13e25fc1) the same at each: `e8b134b` what joins two wide grounds kept
+  on the nodes' parts and dropped when a cell goes from an open holder to a closed one or back
+  (`World.flipLog`; 938 → 452 walks); `19d6446` `pocketOf`'s steps by offset; `caf5271` a
+  partner's front once a tick for a set of enemies; `f4f4649` a side's sectors once a tick (list,
+  centres, hold cells, threat); `774e346` `pocketOf`'s marks in one array.
+- **AT:** same-time pairs on separate P-cores, swapped (the machine drifts between two states;
+  sequential pairs read ±10 %): × 0.70 to 0.75 of the start. Alone and quiet: year 17 from the
+  checkpoint 1.164 ms (under 1.2); the longest call after the first 39.2 ms (under 40; the
+  first, the load's caches, 80). The 25 years in one run: year 17 1.360 ms (2.667 at 7.1a), its
+  longest call 36.9 ms; first five years 1.259 ms a tick, last five 1.252 (× 0.99); final hash
+  8297f9f7, 7.1a's. `saveYear` green by hand.
+- **Tests:** a unit test (`operationalAi.test.ts`) opens a gap in a wall with the provinces'
+  holders as they were: the kept answer is dropped and turns; a mutation that skips the log's
+  check fails it.
+- **Tried and dropped:** keeping `pocketOf`'s marks between passages or across a tick's planners:
+  a walk's answer depends on the marks of the walks before it in the passage, so kept marks
+  change later answers (not exact). A sum of each nation's flips in place of the log: 467 walks
+  against the log's 452, but the log needs no array by nation.
+- **Left** (under PLAN 7.1l): `joinWide`'s remaining walks; the frontier `Map` at each call; the
+  first call after a load; long calls in years 5, 11, 12, 18 and 21 of the 25.
+- **Gotchas:** the instrumentation's count of walked cells broke when `walked` became the
+  passage's list (it is cumulative now). Read a run's quietness by the systems not touched
+  (supply, territory): of three runs one after another, only the first was quiet.
+- **Specs:** none run by hand; nothing drawn changed, and the pin and the hashes say the game is
+  the same.
+- **Next:** PLAN 7.1j.

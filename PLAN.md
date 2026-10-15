@@ -161,12 +161,7 @@ quick sweep as a smoke test.
   - [x] 7.1f The air's anti-aircraft and strikes (`systems/airCombat.ts`: `antiAir` 4.5 %, […]
   - [x] 7.1g The operational AI (15.3 %: `planNation` 13.1, `orderMove` 5.1, `passageOf` 3.4, […]
   - [x] 7.1h Territory (8.5 %: `territorySystem`'s own 3.1 %, `frontierOf` 1.9 %) and supply […]
-  - [ ] 7.1i The operational AI's war years. The line of R4-B5 holds on HEAD (7.1a: seed 5303's
-    first five years 2.19 ms a tick, its last five 1.97, × 0.90), but the middle years peak with
-    the AI: years 8 to 10, 12 and 17 are 3.6 to 4.4 ms, of which the operational AI is 1.6 to 2.7
-    (0.23 to 0.58 in the first five), 1,296 to 1,460 calls a year of 1 ms or more, the longest
-    46 to 108 ms. AT: the pin unchanged; seed 5303's year 17 (from a checkpoint of year 16) with
-    the operational AI under 1.2 ms and no call over 40 ms; the 25 years again, × 1.5 held.
+  - [x] 7.1i The operational AI's war years. The line of R4-B5 holds on HEAD (7.1a: seed 5303's […]
   - [ ] 7.1j The frame budgets: a bench of the game itself (the 1938 world, 100+ nations, T0 at
     1920 × 1080; T2 with 10,000 proxies or more on screen) in `npm run bench`, its report in
     `docs/bench/` with the budget and pass or fail; the GPU of this machine (an RTX 4070 Ti) and
@@ -187,6 +182,12 @@ quick sweep as a smoke test.
     still add its cells in ascending order. And `seaReach` is asked again in the same hour by the
     convoys and the naval AI (369 of its 1,099 calls a year): kept for the hour if nothing it
     reads changes between.
+    Left by 7.1i (seed 5303's year 17): `joinWide` still walks the open cells of every province
+    with closed ground 452 times (a closed nation's border moved, or `open`/`shut` changed);
+    `pocketOf`'s walks (68 million cells, 59 a plan) are bound by their order and not kept
+    between plans; the frontier's `Map` is built at each call of the AI (8 % of it); the first
+    call after a load builds every cache (80 to 100 ms). In the 25 years, calls of 42 to 108 ms
+    in years 5, 11, 12, 18 and 21 (nation 20's plan of 37 ms in year 17 was not taken apart).
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.

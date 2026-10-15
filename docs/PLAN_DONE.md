@@ -9245,3 +9245,32 @@ Of 7.1 (open in PLAN.md):
 
   - [x] 7.1h Territory (8.5 %: `territorySystem`'s own 3.1 %, `frontierOf` 1.9 %) and supply
     (7.9 %). AT: the pin unchanged; each down by a third in year 1.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1 (open in PLAN.md):
+
+  - [x] 7.1i The operational AI's war years. The line of R4-B5 holds on HEAD (7.1a: seed 5303's
+    first five years 2.19 ms a tick, its last five 1.97, × 0.90), but the middle years peak with
+    the AI: years 8 to 10, 12 and 17 are 3.6 to 4.4 ms, of which the operational AI is 1.6 to 2.7
+    (0.23 to 0.58 in the first five), 1,296 to 1,460 calls a year of 1 ms or more, the longest
+    46 to 108 ms. AT: the pin unchanged; seed 5303's year 17 (from a checkpoint of year 16) with
+    the operational AI under 1.2 ms and no call over 40 ms; the 25 years again, × 1.5 held.
+    Done (`e8b134b`, `19d6446`, `caf5271`, `f4f4649`, `774e346`, ADR-401): pin unchanged, the map
+    that does not loop and year 17's hash too; year 17 from the checkpoint, alone and quiet, 1.164
+    ms (1.65 at the start; by same-time pairs × 0.70 to 0.75); its longest call after the load's
+    first 39.2 ms (the first, the load's caches, 80); the 25 years: year 17 1.360 ms (2.667), its
+    longest 36.9 ms, first five years 1.259 ms a tick and last five 1.252 (× 0.99), the same final
+    hash.
