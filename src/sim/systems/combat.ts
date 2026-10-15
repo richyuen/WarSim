@@ -60,12 +60,22 @@ export const COMBINED_ARMS = combatJson.combinedArms.bonus;
  */
 export const AIR_SUPERIORITY = combatJson.air.superiority;
 
-/** The air's factor on formation `fid`'s fire (PLAN 5.4a): 1 where no one has flown. */
-export function airFactor(world: World, fid: number): number {
+/**
+ * The air's factor on formation `fid`'s fire (PLAN 5.4a): 1 where no one has flown. `memo`: the
+ * factors worked out in this hour, by zone and nation (PLAN 7.1e: the air of a battle's zone was
+ * summed again for each of its formations).
+ */
+export function airFactor(world: World, fid: number, memo?: Map<number, number>): number {
   if (world.airPower.size === 0) return 1;
   const c = world.formations.cols;
   const zone = airOf(world).zoneOf[Math.floor(c.y[fid]!) * world.cells.w + Math.floor(c.x[fid]!)]!;
-  return 1 + AIR_SUPERIORITY * (2 * airSuperiority(world, c.nation[fid]!, zone) - 1);
+  const key = zone * world.nations.highWater + c.nation[fid]!;
+  let a = memo?.get(key);
+  if (a === undefined) {
+    a = 1 + AIR_SUPERIORITY * (2 * airSuperiority(world, c.nation[fid]!, zone) - 1);
+    memo?.set(key, a);
+  }
+  return a;
 }
 /**
  * What armour takes on close ground (`CLOSE`) when its side has no infantry alive in the battle
@@ -87,6 +97,22 @@ const OPEN = TERRAIN_IDS.map((id) => (combatJson.open.terrain as string[]).inclu
 
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);
 const TERRAIN_ATK = terrainJson.terrain.map((t) => t.attack as Record<string, number | undefined>);
+/**
+ * The ground's factor on a unit type's fire, by unit type and terrain (`units.length` ×
+ * `TERRAIN_ATK.length`): its class's on that terrain × its own (PLAN 3.3a). Worked out once for
+ * a game's unit rules (PLAN 7.1e: the class's was looked up by name at every volley).
+ */
+const attacks = new WeakMap<readonly UnitRule[], Float64Array>();
+function attackTable(units: readonly UnitRule[]): Float64Array {
+  let table = attacks.get(units);
+  if (!table) {
+    const nt = TERRAIN_ATK.length;
+    table = new Float64Array(units.length * nt);
+    for (let u = 0; u < units.length; u++) for (let t = 0; t < nt; t++) table[u * nt + t] = (TERRAIN_ATK[t]![units[u]!.cls] ?? 1) * units[u]!.terrainAtk[t]!;
+    attacks.set(units, table);
+  }
+  return table;
+}
 
 /**
  * The buckets of `findBattles`, kept between calls (not state) and empty between them: a
@@ -253,6 +279,49 @@ export function effectiveness(us: UnitRule, ut: UnitRule): number {
  */
 export const ORG_FIRE = 0.25;
 
+/**
+ * The hour's fire of `combatSystem`, kept between calls (not state): by element, the damage it
+ * takes (`hurt`, 0 between calls; the elements hit are the first of `hit`) and where it stands (`px`,
+ * `py`, set where `placed` holds the call's `stamp`); by formation, its slots (`slots`) and its
+ * defence's buffs (`guard`), set where `counted` and `guarded` hold the stamp. PLAN 7.1e: a
+ * `Map` of each, and the buffs looked up by a string at every volley, were 2.5 % of year 1.
+ */
+const fire = {
+  stamp: 0,
+  hurt: new Float64Array(0),
+  hit: new Int32Array(0),
+  placed: new Uint32Array(0),
+  px: new Float64Array(0),
+  py: new Float64Array(0),
+  counted: new Uint32Array(0),
+  slots: new Int32Array(0),
+  guarded: new Uint32Array(0),
+  guard: new Float64Array(0),
+};
+
+/** Sizes `fire` to the tables' ids and starts a call: returns its stamp. */
+function fireCall(world: World): number {
+  const ne = world.elements.highWater;
+  if (fire.hurt.length < ne) {
+    const n = Math.max(ne, 2 * fire.hurt.length);
+    fire.hurt = new Float64Array(n);
+    fire.hit = new Int32Array(n);
+    fire.placed = new Uint32Array(n);
+    fire.px = new Float64Array(n);
+    fire.py = new Float64Array(n);
+  }
+  const nf = world.formations.highWater;
+  if (fire.slots.length < nf) {
+    const n = Math.max(nf, 2 * fire.slots.length);
+    fire.counted = new Uint32Array(n);
+    fire.slots = new Int32Array(n);
+    fire.guarded = new Uint32Array(n);
+    fire.guard = new Float64Array(n);
+  }
+  fire.stamp = (fire.stamp + 1) >>> 0 || 1;
+  return fire.stamp;
+}
+
 export function combatSystem(world: World): void {
   world.battleLosses.length = 0;
   const battles = findBattles(world);
@@ -267,17 +336,37 @@ export function combatSystem(world: World): void {
   const w = world.cells.w;
   const cellOf = (fid: number): number => Math.floor(f.y[fid]!) * w + Math.floor(f.x[fid]!);
   const fires = world.out.fires;
+  const stamp = fireCall(world);
+  const attack = attackTable(units);
+  const nt = TERRAIN_ATK.length;
+  const airs = new Map<number, number>();
+  const { hurt, hit, placed, px, py, counted, slots, guarded, guard } = fire;
   // Where each element stands this hour, worked out once: an element is shot at by many, and
   // its place holds for the hour (the blocks are set, and no formation moves in here).
-  const places = new Map<number, [number, number]>();
-  const placeOf = (fid: number, el: number): [number, number] => {
-    let p = places.get(el);
-    if (!p) places.set(el, (p = elementPlace(world, fid, ec.slot[el]!, slotCount(world, fid, idx.get(fid)!.length), el)));
-    return p;
+  const place = (fid: number, el: number): void => {
+    if (placed[el] === stamp) return;
+    if (counted[fid] !== stamp) {
+      slots[fid] = slotCount(world, fid, idx.get(fid)!.length);
+      counted[fid] = stamp;
+    }
+    const [x, y] = elementPlace(world, fid, ec.slot[el]!, slots[fid]!, el);
+    px[el] = x;
+    py[el] = y;
+    placed[el] = stamp;
+  };
+  const bf = world.buffs;
+  // The buffs on formation `tf`'s defence (they hold for the hour).
+  const guardOf = (tf: number): number => {
+    if (guarded[tf] !== stamp) {
+      guard[tf] = Math.max(0.05, 1 + bf.sum('defense', 'nation', f.nation[tf]!) + bf.sum('defense', 'formation', tf));
+      guarded[tf] = stamp;
+    }
+    return guard[tf]!;
   };
 
   for (const battle of battles) {
-    const pending = new Map<number, number>();
+    // How many elements are hit in the battle (the first of `hit`); what each takes is in `hurt`.
+    let hits = 0;
     const lossMult = inMajor.has(battle[0]!) ? MAJOR_LOSS_MULT : 1;
     // The arms each formation has alive at the hour's start (losses apply after the volleys).
     const arms = new Map<number, number>();
@@ -305,10 +394,13 @@ export function combatSystem(world: World): void {
       const { enemies, hostile } = sides.get(f.nation[sf]!)!;
       const sideArms = sideArmsOf(sf);
       // What every volley of the formation has: its supply, its org, its side's three arms, the air.
-      const shooterFactor = (0.5 + 0.5 * f.supply[sf]!) * (ORG_FIRE + (1 - ORG_FIRE) * f.org[sf]!) * ((sideArms & ARM_ALL) === ARM_ALL ? COMBINED_ARMS : 1) * airFactor(world, sf);
+      const shooterFactor = (0.5 + 0.5 * f.supply[sf]!) * (ORG_FIRE + (1 - ORG_FIRE) * f.org[sf]!) * ((sideArms & ARM_ALL) === ARM_ALL ? COMBINED_ARMS : 1) * airFactor(world, sf, airs);
       let enemyArms = 0;
       for (const o of enemies) enemyArms |= arms.get(o)!;
       const atFire = (enemyArms & ARM_ARTILLERY) !== 0 ? SUPPRESSED : 1;
+      // Combat efficiency (PLAN 1.22; 0 = unset, e.g. toy nations, counts as 1) and the buffs on its attack.
+      const ce = world.nations.cols.efficiency[f.nation[sf]!] || 1;
+      const buffAtk = ce * Math.max(0, 1 + bf.sum('attack', 'nation', f.nation[sf]!) + bf.sum('attack', 'formation', sf));
       const tables = new Map<number, { cand: number[]; cum: number[]; total: number }>();
       for (const s of idx.get(sf) ?? []) {
         const us = units[ec.unit[s]!]!;
@@ -363,13 +455,9 @@ export function combatSystem(world: World): void {
         const cell = cellOf(tf);
         const terrain = world.cells.terrain[cell]!;
         // The ground the target stands on, by the shooter's class and by its unit type (PLAN 3.3a).
-        const atk = (TERRAIN_ATK[terrain]![us.cls] ?? 1) * us.terrainAtk[terrain]!;
+        const atk = attack[ec.unit[s]! * nt + terrain]!;
         const def = f.moving[tf] === 1 ? 1 : (TERRAIN_DEF[terrain] ?? 1) * ut.terrainDef[terrain]!;
-        const bf = world.buffs;
-        // Combat efficiency (PLAN 1.22; 0 = unset, e.g. toy nations, counts as 1).
-        const ce = world.nations.cols.efficiency[f.nation[sf]!] || 1;
-        const buffAtk = ce * Math.max(0, 1 + bf.sum('attack', 'nation', f.nation[sf]!) + bf.sum('attack', 'formation', sf));
-        const buffDef = Math.max(0.05, 1 + bf.sum('defense', 'nation', f.nation[tf]!) + bf.sum('defense', 'formation', tf));
+        const buffDef = guardOf(tf);
         // Armour on close ground with no infantry of its side in the battle (PLAN 3.4b).
         const screen = (ut.arm & ARM_ARMOUR) !== 0 && CLOSE[terrain] && (sideArmsOf(tf) & ARM_INFANTRY) === 0 ? UNSCREENED : 1;
         // An AT gun under the enemy's artillery (PLAN 3.4c).
@@ -378,15 +466,20 @@ export function combatSystem(world: World): void {
         const open = (us.arm & ARM_ARMOUR) !== 0 && ut.armor === 0 && OPEN[terrain] && (sideArmsOf(tf) & ARM_AT) === 0 ? IN_THE_OPEN : 1;
         const dmg = (eff(t) * fullness * FIRE_SCALE * atk * shooterFactor * buffAtk * lossMult * screen * guns * open) / def / buffDef / ut.hpPerUnit;
         if (dmg <= 0) continue;
-        pending.set(t, (pending.get(t) ?? 0) + dmg);
-        const [x0, y0] = placeOf(sf, s);
-        const [x1, y1] = placeOf(tf, t);
+        if (hurt[t] === 0) hit[hits++] = t;
+        hurt[t] = hurt[t]! + dmg;
+        place(sf, s);
+        place(tf, t);
         const subtick = hash32(world.seed, world.tick, s, 0x5b7) % 60;
-        fires.push(world.tick, subtick, s, t, ec.unit[s]!, dmg, x0, y0, x1, y1);
+        fires.push(world.tick, subtick, s, t, ec.unit[s]!, dmg, px[s]!, py[s]!, px[t]!, py[t]!);
       }
     }
     // Simultaneous volleys: apply every loss after all fire is computed, in id order.
-    for (const t of [...pending.keys()].sort((p, q) => p - q)) applyLoss(world, t, pending.get(t)!);
+    const struck = hit.subarray(0, hits).sort();
+    for (const t of struck) {
+      applyLoss(world, t, hurt[t]!);
+      hurt[t] = 0;
+    }
     for (const fid of battle) {
       const before = f.strength[fid]!;
       settleFormation(world, fid);
