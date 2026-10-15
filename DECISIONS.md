@@ -183,7 +183,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   and 1.287 → 1.276 ms a tick. A map with fewer arrays; the rest of its build (the cells by
   holder) stays, since the frontier changes nearly every call in a war year (36,071 flips in
   year 17, a call every 6 ticks).
-- **Repeated route searches: cut** (`d4e2b38`). The longest call of year 17 (nation 117, tick
+- **Repeated route searches: cut** (`d4e2b38`). The longest AI call of year 18 (nation 117, tick
   153,786, 120 ms in the log of the 25 years) was 18 searches of 3 ms for one route: a stack of
   formations at one cell, each sent to the same cell. `findRoute` keeps its answers on the
   passage (`Passage.routes`, by mobility and ends). **Relies on:** a passage being made for one

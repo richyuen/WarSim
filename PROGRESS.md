@@ -16169,3 +16169,5 @@ No rule changed and nothing on screen changed. One task came out of it.
   25 years logged 71 calls of 40 ms or more, the next pair 10 and 9.
 - **Specs:** none; nothing drawn changed.
 - **Next:** PLAN 7.1l4.
+- **Correction:** the stack's call of 18 searches (nation 117, tick 153,786) is in year 18, not
+  year 17 (the instrumented log counted years from 0); ADR-406 and the test's comment say so now.

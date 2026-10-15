@@ -272,7 +272,7 @@ describe('the coarse route of a heap is the route of the scanned list (PLAN 7.1g
 });
 
 // PLAN 7.1l3: the formations of a stack sent to one cell each asked for the same search (18 of
-// 3 ms in one plan of seed 5303's year 17). A route asked again on the same passage is the one
+// 3 ms in one plan of seed 5303's year 18). A route asked again on the same passage is the one
 // found; a new passage searches.
 describe('a route asked again on its passage is not searched again (PLAN 7.1l3)', () => {
   it('east of Moscow: the second order on the passage makes no search, and a new passage finds the same way', () => {
