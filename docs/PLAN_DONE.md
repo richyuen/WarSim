@@ -9319,3 +9319,231 @@ Of 7.1 (open in PLAN.md):
     on the node side, before any frame: the battle's battalions keep 0.672 of their men where the
     spec wants under a half (the same on `4e36f27`). Its entry's reason is wrong; the battle it
     picks is to be found again or the test fixed (BLOCKERS 2026-10-15).
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.1 Performance pass against all budgets (T0 60 fps, T2 30 fps @10k, tick ≤ 1.5 ms).
+  AT: `docs/bench/` report green on the reference machine.
+  From the Phase 2 review (PLAN 2.11c, 2026-10-05), to settle in this pass:
+  - The ground's instances are capped at 12,000. A view of forest has up to 10,900 at
+    1920 × 1080, so a larger view passes the cap, and what is cut is the finest level, row by
+    row from the top: the trees thin out below a line. The cap by the view's size; beyond
+    what a frame affords, an even thinning. (The tests look at 1400 × 800.)
+  - The page holds the land mask twice (16.8 MB for the scatter, as much on the GPU) and the
+    worker once.
+  - A GPU that takes no texture of 8192 px (WebGL2 promises 2048) draws the coarse coast at
+    T2 and T3, where the fine mask's land can be sea, and nothing says so.
+  - Fractional device pixel ratios (Windows at 125% and 150%): a marker's box picture is
+    rounded up and drawn into the unrounded rectangle (38 px into 37.5 at 1.25). Not traced;
+    no layer has been looked at at such a ratio.
+  - What the ground costs a frame where there is no GPU (the tests' rasteriser: readings
+    varied by a quarter).
+  - From PLAN 2.11j (ADR-81): a supply refresh of some blocs is done again in full when a lane
+    one of them held is not its own afterwards, also when a lower bloc refreshed with it took
+    the lane, where the first result was right. How often a refresh goes full was not
+    counted; the tick rose by 0.036 ms.
+  From PLAN 3.4Rm (2026-10-06): the tick of seed 99 over five years is 1.81 ms (budget
+  1.5), year 1 2.49 (budget 2.4). What two years cost, of 39 s, and what was not cut:
+  - Long routes found: 4,604 at 0.82 ms, 3.8 s. The search fills its corridor; the heap's
+    two sift lines are 4.9 % of the tick. A faster heap must keep the order of (key,
+    sequence), or routes change with the ties.
+  - Orders refused after a search: 1,283 long ones at 1.5 ms and 312 short ones at 3.3 ms,
+    3.0 s. 45,987 of 58,232 orders were refused (38,978 by the provinces, at no cost): the
+    AI allots formations to fronts they cannot reach and asks every day (PLAN 3.5). An AI
+    that does not ask is a rule, and moves the pin.
+  - `passageOf`: 10,993 at 0.085 ms, 0.9 s, once for each plan that orders.
+  - `planNation` before its orders: 5.6 s before the cut of 3.4Rm (the frontier's cells by
+    sector 1.4 s, 1,228 cells and 300 sectors a plan; the threat 1.5 s; the allotment
+    1.5 s). Each planner of a coalition builds the sectors of all its partners' fronts.
+  - Not the AI: `refreshSupplyNetwork` 12 %, `findBattles` 8 % (half of it one line, the
+    lookup of a bucket's neighbours).
+  From PLAN 3.5b (2026-10-07, ADR-152): the tick of seed 99 over five years is 2.23 ms,
+  year 1 3.04 (1.86 and 2.46 before the rule: formations that stood idle march and fight).
+  What year 1 costs, of 28.7 s: `combatSystem` 8.2 s, `planNation` 8.3 s (its orders 3.7,
+  the sectors 1.0, the enemy scan 0.75, the passage and the reach 1.2, the nearest and the
+  threat 0.66, the allotment 0.57), `supplySystem` 4.0, `territorySystem` 2.7. Not cut:
+  - `passageOf` is made for every plan with a formation in range (0.9 s; planners with the
+    same open holders share one). It was made for the plans that ordered.
+  - The sectors and the threat are built for every class's allotment from one list; a
+    nation with formations on many islands has a class for each.
+  From PLAN 3.5e (2026-10-07): with the spearheads and the mix (3.5c, 3.5d) the tick of
+  seed 99 over five years is 1.67 ms (budget 1.5), year 1 2.44 (budget 2.4); year 5 is 1.94
+  (949 formations, 25,528 cells flipped). No profile was taken of this game: the parts
+  above are of 3.5b's.
+  From the Phase 3 review (PLAN 3.7c, 2026-10-07):
+  - The frame with hulls was timed with 5 of them, the script's part, in a browser that
+    draws on the CPU (0.58 ms, PLAN 3.6e4). Up to 2,000 are held: time a frame with many,
+    flames on, on a GPU. The same for the second sample of the small mark at T2 (3.6e3b)
+    and the turrets' pass (3.6b).
+  - What of year 1's rise from 2.06 ms is whose (the rules of Phase 3, the formations of
+    PLAN 3.1c, or the wars the pin's moves chose) was not taken apart (3.4Rm).
+  - The operational AI's own refused orders: 476 and 1,082 in a year (seed 99, seed 7),
+    where the provinces let a route through and the search finds none (3.5b).
+  From the critic's report of 2026-10-05 (the pace in R2-B5; its N9 and N19):
+  - **The top speed.** At Max the game makes 885 ticks a second at the start and 794 after
+    ten years: 33 to 37 days a second, 10 to 12 s a year. AoC's text gives a month in 0.5 s
+    at 1× and 5× at most, so its usual speed is about twice this game's fastest (text only).
+    A tick of 1.5 ms, the budget, allows no more on one thread: a faster top speed needs
+    another budget or another way (the critic: leave out element-level work where nothing is
+    watched). It is here and not before Phase 3 because each of Phases 3 to 6 adds to the
+    tick (ADR-83).
+  - One zoom without a stop from the world to 1 m/px froze for 2,878 ms, after every tier
+    had been seen once (so not a first compile). At Max with the camera at 400 m/px the
+    frame gaps were 113 ms at p95 and 452 ms at worst, 14 over 100 ms in four seconds; at ×5
+    the close tiers drop a frame of 124 to 146 ms every few seconds.
+  - Headless, 40 years of seed 31337: a mean tick of 1.14 ms, p95 up to 8.6 ms.
+  - T0 unthrottled at 1920 × 1080 on an RTX 4070 Ti: 116 to 144 fps (a draw of 4.4 to 5.7
+    ms). No weak GPU has been measured.
+  From the Phase 3 review (PLAN 3.7e, 2026-10-07): the quick sweep (10 seeds × 20 years, ten
+  processes) took 14.2 min where Phase 2's took 4.9 (8.4 to 14.2 min a seed). Five years of
+  seed 99 alone, pinned, the same hour: 1.521 ms a tick (1.466 at PLAN 3.4Rd), which is 4.4
+  min for 20 years. Not looked into: whether years 6 to 20 are slower than the first five
+  (95 to 171 nations alive, against 96 to 139), or ten processes side by side are (memory,
+  the cores), or the machine was busy. A 20-year run of one seed alone, with its tick by
+  year, tells the first from the rest.
+  From the critic's report of 2026-10-07 (R3-B5; the tick over its budget is PLAN 3.10):
+  - **The top speed, again.** At Max, alone, at the world view: 15 to 28 s a simulated year
+    (10 to 12 s in the last report). The 14-year script of run 2 took 16 to 61 s a year,
+    with other runs beside it, against 8 to 19 then. Fifty years are about 17 minutes of
+    watching. The critic's fix: a coarse path of the sim for fronts that no close tier
+    watches.
+  - Hitches of 100 to 157 ms at T3 while the sim runs; otherwise 115 to 860 frames a second
+    uncapped at 1920 × 1080 on every tier (an RTX 4070 Ti).
+  - From PLAN 3.10 (2026-10-08, `00c2e68`; pinned, `--profile`), what its AT of five years
+    did not ask for:
+    - The first year: 1.98, 1.67 and 2.24 ms on seeds 99, 4242 and 8128, combat 0.90, 0.70
+      and 1.00 of it in 2,787, 1,419 and 3,781 calls of 1 ms or more (0.21 to 0.50 in the
+      years after).
+    - A long war: seed 8128's years 7, 8 and 9 are 2.06, 2.26 and 1.59 ms (ten years:
+      1.557). The operational AI is 0.92, 1.02 and 0.79 of it and every one of its 1,460
+      calls a year takes 1 ms or more; territory is 0.40, 0.51 and 0.30 (0.14 to 0.27 in
+      the first five years); 53,540 to 77,033 cells change hands a year. The critic read
+      2.59 and 1.80 for years 8 and 9.
+    - One call of the operational AI of 361.7 ms, year 4 of seed 4242 (the next longest of
+      25 years: 43.3). Not looked at.
+    - Not looked at in 3.10: the quick sweep of 3.7e (14.2 min against 4.9) and 40 years of
+      seed 4242 headless (19.9 min, other runs beside it). Twenty years of 4242 were 1.847
+      ms at 3.10b and were not run again.
+  From the Phase 4 review (PLAN 4.8i, 2026-10-12; moved here, the user's decision, ADR-289):
+  seed 99's five years in a cloud container, alternating, two runs each: 5.841 ms a tick
+  before Phase 4 (`5d9f1a1`) and 7.008 after 4.8i1 and 4.8i2 (`c60c350`, ±10 % a run), × 1.20
+  where the budget allows × 1.12 (1.5 / 1.341, 6.53 ms there). Done in 4.8i: the sea's
+  contact search by rows (naval combat 0.253 → 0.148 ms), the lane graph before the clock,
+  supply over sea's cities in one look-up (2.69 → about 2 ms a call). Left, by the five
+  years' means: the naval AI 0.19, naval combat 0.17, sea control 0.11, bombardment 0.10,
+  supply over sea and convoys about 0.2; movement 0.67 → 1.08 with a larger game (1,152
+  formations and 121 nations in year 5 against 888 and 110). Tried, nothing: the convoys'
+  ways once a naval AI's day, a small key for `stepWay`. Measure on the budget machine,
+  pinned, with the game's size beside it: a comparison across commits does not part the
+  code's cost from a larger game.
+  From the critic's report of 2026-10-12 (R4-B5, run 4 on `5e91a56`): the tick grows with the
+  game's age. Seed 5303 alone: 5.34 ms a tick in year 5, 21.2 ms in year 21, 21.8 ms in year
+  23 (the allowance of this container 6.53 ms); p95 21 to 140 ms; the operational AI's calls
+  of 100 to 220 ms; about 3,200 refused AI orders a year (`critic/c4_perf_5303_24y_solo.log`,
+  `critic/c4_perf_profile_7717.log`). The critic's fix: find what grows with age (fleets,
+  nations, the refused orders) and cap or coarsen it; break up the operational AI's long
+  calls. AT for this line: a 25-year run of seed 5303, pinned and profiled, whose last five
+  years' tick is within 1.5 × its first five's.
+  Split on 2026-10-15 (PLAN 7.1a's baseline; 7.1b is the map sizes' task, so the parts skip
+  its letter). One cause a part, one commit a cause; a part that moves the pin is a rule, not a
+  cut, and says so in DECISIONS:
+  - [x] 7.1a The baseline on the budget machine (i7-13700KF, `0xFFFF`), HEAD `3649c23`: seed 99 […]
+  - [x] 7.1c The air AI's order of the rich cells (`byIndustry`, `ai/air.ts`): each call […]
+  - [x] 7.1d Combat's battles (`findBattles`, 8.3 % of year 1 with what it calls; 4.6 % its own): […]
+  - [x] 7.1e Combat's fire (`combatSystem`'s own 6.3 %, `placeOf` 3.2 %, `deployAll` 3.0 %). AT: […]
+  - [x] 7.1f The air's anti-aircraft and strikes (`systems/airCombat.ts`: `antiAir` 4.5 %, […]
+  - [x] 7.1g The operational AI (15.3 %: `planNation` 13.1, `orderMove` 5.1, `passageOf` 3.4, […]
+  - [x] 7.1h Territory (8.5 %: `territorySystem`'s own 3.1 %, `frontierOf` 1.9 %) and supply […]
+  - [x] 7.1i The operational AI's war years. The line of R4-B5 holds on HEAD (7.1a: seed 5303's […]
+  - [x] 7.1j The frame budgets: a bench of the game itself (the 1938 world, 100+ nations, T0 at […]
+  - [x] 7.1k The tests parked until 7.1 (`tools/gate/knownRed.json`: `aiSweep3`'s 900 s; the three […]
+  - [x] 7.1l The leads above that no part takes (the ground's cap, the land mask twice, the
+    fractional pixel ratios, the top speed, the hitches at T3): each done, moved to the task it
+    belongs to, or dropped with an ADR. Then the five years of seed 99 again: AT of 7.1 (1.5 ms,
+    year 1 2.4). Left by 7.1h: the frontier's rebuild scans all 2,097,152 cells, 65 times in year 1
+    of seed 99 at about 12 ms each (a hitch each); a border index kept by `setController` would
+    make it the border's size, but four AIs read the frontier `Set` in its order, so a rebuild must
+    still add its cells in ascending order. And `seaReach` is asked again in the same hour by the
+    convoys and the naval AI (369 of its 1,099 calls a year): kept for the hour if nothing it
+    reads changes between.
+    Left by 7.1i (seed 5303's year 17): `joinWide` still walks the open cells of every province
+    with closed ground 452 times (a closed nation's border moved, or `open`/`shut` changed);
+    `pocketOf`'s walks (68 million cells, 59 a plan) are bound by their order and not kept
+    between plans; the frontier's `Map` is built at each call of the AI (8 % of it); the first
+    call after a load builds every cache (80 to 100 ms). In the 25 years, calls of 42 to 108 ms
+    in years 5, 11, 12, 18 and 21 (nation 20's plan of 37 ms in year 17 was not taken apart).
+    Left by 7.1j (`docs/bench/G-game.json`, ADR-402): SPEC §8's translations missed on the game
+    itself, at 1080p on the RTX 4070 Ti: the GPU's frame at T0 1.58 ms (budget 1.0; 0.74 over 5
+    draws), at T2 with 10,752 sprites 2.57 (budget 2.0; 4.41 in an earlier run); the main thread's
+    draw at T2 7.8 ms a frame (budget 6; 9.1 earlier). First the GPU of a frame by layer (the
+    timer query spans the draws' CPU); at T2 the 384 divisions' tags and markers on the Canvas2D
+    overlay, not the sprites, are what the screenshot shows. T0's frames are two-moded (p50 3.3 ms,
+    p95 16.4, longest 31.7): the hitches, likely at a snapshot's arrival, go with the T3 ones. 7.1l's
+    AT needs these met, the translation derived again with an ADR, or a BLOCKERS line.
+    Split on 2026-10-15 (HEAD `63e4ce6`: seed 99's five years 1.580 ms a tick, year 1 2.206, pinned,
+    alone). One cause a part:
+    - [x] 7.1l1 The frontier's rebuild from a border index kept by `setController`, its cells in
+      ascending order. AT: pin and the map that does not loop unchanged; a unit test holds the
+      index to a scan and the rebuild to the rule in the set's own order; the rebuild's cost.
+    - [x] 7.1l2 `seaReach` kept for the hour while nothing it reads changes (369 of 1,099 calls a
+      year asked again). AT: pin unchanged; the calls that compute.
+    - [x] 7.1l3 The operational AI's leftovers of 7.1i: `joinWide`'s 452 walks, the frontier `Map`
+      at each call, the first call after a load, the long calls of seed 5303 (years 5, 11, 12, 18,
+      21). AT: pin unchanged; each cut measured, or dropped with its reason.
+    - [x] 7.1l4 The GPU's frame by layer, then 7.1j's misses: T0's GPU 1.58 ms (SPEC 1.0), T2's
+      2.57 (2.0), T2's draw on the main thread 7.8 ms (6; the overlay's 384 tags and markers).
+      AT: bench G met, or the translation derived again with an ADR.
+    - [x] 7.1l5 The hitches: T0's two modes (p95 16.4 ms), T3's 100 to 157 ms while the sim runs,
+      the 2.9 s freeze of one zoom from the world to 1 m/px. AT: the cause of each found, and a
+      frame's longest under 50 ms at ×5 on bench G's cases, or a BLOCKERS line.
+    - [x] 7.1l6 The ground's cap by the view's size, and an even thinning past what a frame
+      affords (not the finest level cut from the top). AT: a forest view at 1920 × 1080 with no
+      line below which the trees thin.
+    - [x] 7.1l7 The land mask held twice in the page (16.8 MB for the scatter, as much on the
+      GPU). AT: one copy, or an ADR.
+    - [x] 7.1l8 Fractional device pixel ratios (1.25, 1.5): a marker's box drawn into its
+      unrounded rectangle; every layer looked at. AT: screenshots at 1.25 and 1.5, looked at.
+    - [x] 7.1l9 A GPU with no texture of 8192 px draws the coarse coast at T2 and T3 and nothing
+      says so. AT: the game says so, or uses the fine mask in parts; an ADR.
+    - [x] 7.1l10 The top speed (885 ticks a second at the start; AoC's usual speed about twice
+      ours, text): moved to its task or dropped, with an ADR.
+    - [x] 7.1l11 The older leads of 7.1's list that no part above takes (the supply refresh gone
+      full of ADR-81, the hulls' frame with many on a GPU, the ground's cost with no GPU, the
+      AI's refused orders, the call of 361.7 ms of seed 4242): each measured, moved or dropped.
+      Left by 7.1l3 (ADR-406; seed 5303's 25 years): every AI call of 40 ms or more is one
+      planner's route searches, none repeated on its passage: year 5, nations 27 and 28, about 12
+      searches of 8 to 9 ms for ways of 880 cells between ends 50 apart (92 to 99 ms); year 21,
+      nation 19, two searches that fail at 31 ms each, asked again each day (ticks 179,502,
+      179,526, 179,550). Shorter searches change the route rule (the pin); the daily refusals are
+      the AI's refused orders above.
+      Left by 7.1l5 (ADR-408): one zoom from the world to 1 m/px still has a long task of 50 to
+      55 ms from the world to T1 (the longest frame 50.1 ms at 60 Hz); with the nation names off it
+      has none.
+      Split on 2026-10-15, one cause a part, each measured on HEAD and cut, moved or dropped:
+      - [x] 7.1l11a The supply refresh that goes full (ADR-81): how often in seed 99's five years,
+        what it costs; cut if worth it, the pin unchanged.
+      - [x] 7.1l11b The hulls' frame: 2,000 hulls with flames on this GPU at T3 (only 5 were timed,
+        on a CPU), the small mark's second sample at T2, the turrets' pass.
+      - [x] 7.1l11c The ground's cost with no GPU (the software rasteriser): what a frame of T2's
+        ground costs there, and whether anything follows.
+      - [x] 7.1l11d The AI's refused orders (476 and 1,082 a year at 3.5b; seed 5303's year 21, two
+        failing searches of 31 ms asked each day): counted and timed on HEAD; a rule that does not
+        ask again moves the pin.
+      - [x] 7.1l11e The call of 361.7 ms in year 4 of seed 4242: found again on HEAD or not.
+      - [x] 7.1l11f The long ways of seed 5303's year 5 (searches of 8 to 9 ms, ways of 880 cells
+        between ends 50 apart): why so long; shorter searches change the route rule.
+      - [x] 7.1l11g The zoom's last long task (50 to 55 ms, the world to T1, the nation names).
+    - [x] 7.1l12 The AT of 7.1: seed 99's five years at 1.5 ms a tick and year 1 at 2.4, on the
+      budget machine, pinned, alone.

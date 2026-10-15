@@ -16342,3 +16342,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **7.1l11 done:** one cut (the hulls), the rest measured and dropped; rules under 1.42 (refused
   orders, long ways), a line under 7.4.
 - **Next:** PLAN 7.1l12.
+
+## 2026-10-15 — PLAN 7.1l12: the AT of 7.1; PLAN 7.1 done (performance)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **AT** (ADR-415): seed 99's five years, pinned, alone, twice: 1.4755 and 1.4731 ms a tick
+  (budget 1.5), year 1 2.094 and 2.092 (budget 2.4); hashes 45df324d at year 1, 700d7a84 at five.
+  Bench G green with every SPEC figure within (7.1l4).
+- **PLAN 7.1 done:** its text moved to `docs/PLAN_DONE.md` by `plan:archive`.
+- **Next:** PLAN 7.1b.

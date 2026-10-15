@@ -192,6 +192,9 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     at 3.10 on this machine), year 1 3.13 to 3.21 (budget 2.4); ends on 700d7a84. Seed 5303's 25
     years 2.389 ms, first five 2.19, last five 1.97 (R4-B5's line holds), years 8 to 10, 12 and
     17 at 3.6 to 4.4 with the operational AI. The parts that take it down are PLAN 7.1c to 7.1l.
+  - *After 7.1* (2026-10-15, PLAN 7.1l12, ADR-415, HEAD `4d814c1`, pinned, alone): seed 99's five
+    years 1.4755 and 1.4731 ms a tick, year 1 2.094 and 2.092: within the budgets. The call of
+    361.7 ms is not found again (7.1l11e).
 
 - **From the eighth read (PLAN 3.7a, 2026-10-07), for the review of Phase 4.** What a player
   can meet of the read is PLAN 3.7j to 3.7n; two of its three suspicions go with the tasks

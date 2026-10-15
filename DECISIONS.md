@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-415 · 2026-10-15 · accepted — The AT of 7.1 met: the tick and the frame within their budgets (PLAN 7.1l12)
+
+- **The tick.** `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF`, HEAD
+  `4d814c1`, alone, twice: 1.4755 and 1.4731 ms a tick (budget 1.5), year 1 2.0942 and 2.0915
+  (budget 2.4); by year 2.09, 1.76, 1.39, 0.87, 1.26; the pin's hash at year 1 (45df324d) and
+  the five years' at the end (700d7a84). At 7.1a, on the same machine: 2.27 and 3.17. The
+  margin over five years is 1.7 %.
+- **The frame.** Bench G (ADR-407, `docs/bench/G-game.json`): T0 192 fps, T2 209 fps with 10,752
+  sprites, every SPEC figure within (GPU 0.583 and 1.049 ms, the draw 2.1 and 3.5 ms); the
+  longest frames 29.4 and 13.9 ms (ADR-408).
+- **PLAN 7.1 is done.** What its parts did not cut is measured and dropped or moved: the top
+  speed (ADR-413, the user's decision), the AI's refused orders and long ways (PLAN 1.42),
+  the zoom's frames at the names (PLAN 7.4).
+
 ### ADR-414 · 2026-10-15 · accepted — The older leads of 7.1, one a part (PLAN 7.1l11)
 
 7.1l11 is split in seven parts (a to g), one lead each, measured on HEAD and cut, moved or
