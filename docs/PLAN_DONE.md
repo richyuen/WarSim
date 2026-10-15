@@ -8869,3 +8869,28 @@ Of 6.5 (open in PLAN.md):
   of 6.8 is this phase's smoke run (ADR-58); the features are in, so sweeps judge again from
   here.
   AT: the five limits of the 6.8 sweep are in PROGRESS, with what fails listed for Phase 7.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+- [x] 6.10 Critic R6-B1 (report of 2026-10-15 on `228d083`): the nuclear years make the game crawl.
+  Seed 6619, pinned and alone: from the first strikes (1949) the `nuclear` system takes 7.0 to
+  10.1 ms of a 9.7 to 12.8 ms tick in years 13 to 19 (69 to 79 %), one call a day of 170 to
+  240 ms (436 at most); still 3.4 ms (58 to 61 %) in years 20 and 21. Years 9 to 11, warheads
+  but no strike, ran 3 to 4 ms. In the browser at Max a year takes 129 to 216 s, not 20 to 25
+  (`critic/c6_perf_6619_y13_21_solo.log`, `critic/c6_perf_6619_y13_15_solo.log`). To find with
+  `--profile`: which part of the daily call costs so (state that strikes create and that decays:
+  fallout, outrage, shocks, grievance, the taboo, or the target scoring they feed).
+  AT: seed 6619 years 13 to 21 (a checkpoint), `--profile --affinity 0xFFFF`: `nuclear` under
+  10 % of the tick and no call over 20 ms; a unit test that the day's nuclear call with fallout
+  and outrage in the world does work bounded by the warheads and wars, not by the cells struck.

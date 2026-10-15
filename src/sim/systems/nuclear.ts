@@ -522,11 +522,88 @@ export function desperationOf(world: World, n: number, war: War, side: number): 
   return { desperation, extreme: desperation >= 1 && (ftd || threatened) };
 }
 
-/** What a burst of `n`'s at (x, y) is worth against the other side of `war` from `side` (PLAN 6.4a), 0 to 1. */
-export function targetValue(world: World, n: number, war: War, side: number, x: number, y: number): number {
-  const radius = blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1);
+/** The industry (`cells.econ`) each nation controls, by nation id: one pass over the cells. */
+export function industryHeld(world: World): Float64Array {
+  const { econ, controller } = world.cells;
+  const out = new Float64Array(world.nations.highWater);
+  for (let c = 0; c < econ.length; c++) if (econ[c] !== 0) out[controller[c]!]! += econ[c]!;
+  return out;
+}
+
+/** How many times `industryHeld` has been summed for the decisions (PLAN 6.10: once a day at most). */
+let industrySums = 0;
+
+/** How many times the decisions have summed the industry by nation, in this process (PLAN 6.10's test). */
+export function industrySumCount(): number {
+  return industrySums;
+}
+
+/**
+ * What `n`'s places in `war` on `side` are weighed against that is the same at every place (PLAN
+ * 6.10): the enemy side, the radius, the two sides' formations (in the formations' order) and
+ * their men, and the enemy side's whole output, summed from `industry` when first needed. Before,
+ * each place weighed summed the whole map's industry again, and the daily call took 170 to 240 ms.
+ */
+interface StrikeView {
+  enemy: Set<number>;
+  radius: number;
+  fx: number[];
+  fy: number[];
+  fs: number[];
+  fEnemy: boolean[];
+  menAll: number;
+  ownAll: number;
+  econAll: () => number;
+}
+
+function strikeView(world: World, n: number, war: War, side: number, industry: () => Float64Array): StrikeView {
   const enemy = new Set(war.sides[1 - side]!);
   const own = new Set(ownCoalition(world, war, side));
+  const c = world.formations.cols;
+  const v: StrikeView = { enemy, radius: blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1), fx: [], fy: [], fs: [], fEnemy: [], menAll: 0, ownAll: 0, econAll: () => 0 };
+  world.formations.forEach((id) => {
+    const m = c.nation[id]!;
+    const isEnemy = enemy.has(m);
+    if (!isEnemy && !own.has(m)) return;
+    const s = c.strength[id]!;
+    v.fx.push(c.x[id]!);
+    v.fy.push(c.y[id]!);
+    v.fs.push(s);
+    v.fEnemy.push(isEnemy);
+    if (isEnemy) v.menAll += s;
+    else v.ownAll += s;
+  });
+  let all: number | null = null;
+  v.econAll = () => {
+    if (all === null) {
+      const held = industry();
+      all = 0;
+      for (const m of enemy) all += held[m] ?? 0;
+    }
+    return all;
+  };
+  return v;
+}
+
+/** A day's industry by nation, summed when first asked for (PLAN 6.10). */
+function industryOnce(world: World): () => Float64Array {
+  let held: Float64Array | null = null;
+  return () => {
+    if (!held) {
+      held = industryHeld(world);
+      industrySums++;
+    }
+    return held;
+  };
+}
+
+/** What a burst of `n`'s at (x, y) is worth against the other side of `war` from `side` (PLAN 6.4a), 0 to 1. */
+export function targetValue(world: World, n: number, war: War, side: number, x: number, y: number): number {
+  return valueIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y);
+}
+
+function valueIn(world: World, n: number, v: StrikeView, x: number, y: number): number {
+  const { radius, enemy } = v;
   const { w, h, econ, controller } = world.cells;
   // The enemy side's output within the blast.
   let hit = 0;
@@ -543,23 +620,16 @@ export function targetValue(world: World, n: number, war: War, side: number, x: 
     }
   }
   // Men: the enemy side's within it, the striker's side's there taken off.
-  const c = world.formations.cols;
-  let menAll = 0;
+  const { menAll, ownAll } = v;
   let menHit = 0;
   let ownHit = 0;
-  let ownAll = 0;
-  world.formations.forEach((id) => {
-    const m = c.nation[id]!;
-    const isEnemy = enemy.has(m);
-    if (!isEnemy && !own.has(m)) return;
-    const s = c.strength[id]!;
-    const f = blastShare(seaKm(world, x, y, c.x[id]!, c.y[id]!), radius) * s;
-    if (isEnemy) [menAll, menHit] = [menAll + s, menHit + f];
-    else [ownAll, ownHit] = [ownAll + s, ownHit + f];
-  });
+  for (let k = 0; k < v.fs.length; k++) {
+    const f = blastShare(seaKm(world, x, y, v.fx[k]!, v.fy[k]!), radius) * v.fs[k]!;
+    if (v.fEnemy[k]) menHit += f;
+    else ownHit += f;
+  }
   // As a share of all the enemy side's output (summed only when the blast reaches some).
-  let econAll = 0;
-  if (hit > 0) for (let cell = 0; cell < econ.length; cell++) if (econ[cell] !== 0 && enemy.has(controller[cell]!)) econAll += econ[cell]!;
+  const econAll = hit > 0 ? v.econAll() : 0;
   const share = (econAll > 0 ? hit / econAll : 0) + (menAll > 0 ? menHit / menAll : 0) - (ownAll > 0 ? ownHit / ownAll : 0);
   const nc = world.nations.cols;
   let capital = 0;
@@ -574,11 +644,15 @@ export function targetValue(world: World, n: number, war: War, side: number, x: 
  * target's side struck it (PLAN 6.4b).
  */
 export function nukeInputs(world: World, n: number, war: War, side: number, x: number, y: number, retaliating = false): NukeInputs {
+  return { targetValue: targetValue(world, n, war, side, x, y), ...warInputs(world, n, war, side, retaliating) };
+}
+
+/** The inputs of `n`'s strikes in `war` on `side` but the target's value: the same at every place (PLAN 6.10). */
+function warInputs(world: World, n: number, war: War, side: number, retaliating: boolean): Omit<NukeInputs, 'targetValue'> {
   const { desperation, extreme } = desperationOf(world, n, war, side);
   const ally = world.alliances.allianceOf(n);
   const apart = (ally?.members ?? []).filter((m) => m !== n && !war.sides[side]!.includes(m)).length;
   return {
-    targetValue: targetValue(world, n, war, side, x, y),
     desperation,
     doctrine: doctrineOf(world, n),
     retaliation: retaliationRisk(world, war, side),
@@ -641,6 +715,7 @@ export function nukeTargets(world: World, n: number, war: War, side: number): [n
 function nukeDecisions(world: World): void {
   if (!world.settings.aiEnabled || world.warheads.size === 0) return;
   const nc = world.nations.cols;
+  const industry = industryOnce(world);
   for (const n of [...world.warheads.keys()].sort((a, b) => a - b)) {
     if (warheadsOf(world, n) < 1 || nc.living[n] !== 1 || nc.aiOff[n] === 1 || nc.overlord[n] !== 0 || !nukesAllowed(world, n)) continue;
     const options: { u: number; x: number; y: number; back: boolean }[] = [];
@@ -648,8 +723,10 @@ function nukeDecisions(world: World): void {
       const side = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
       if (side < 0) continue;
       const back = retaliates(world, n, war, side);
+      const shared = warInputs(world, n, war, side, back);
+      const view = strikeView(world, n, war, side, industry);
       for (const [x, y] of nukeTargets(world, n, war, side)) {
-        const u = nuclearUtility(nukeInputs(world, n, war, side, x, y, back));
+        const u = nuclearUtility({ targetValue: valueIn(world, n, view, x, y), ...shared });
         if (u > 0) options.push({ u, x, y, back });
       }
     }

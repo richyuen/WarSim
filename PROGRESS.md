@@ -15680,3 +15680,29 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Deferred (ADR-58), logged once:** R6-B3, the world shatters into statelets (seed 6619: 154
   nations alive after 30 years, 77 founded in play). Balance, waits for Phase 7; not disputed.
 - **Next:** PLAN 6.10.
+
+## 2026-10-15 — PLAN 6.10: the nuclear years no longer crawl (critic R6-B1)
+
+- **The cause** (a CPU profile of year 13 from the critic's checkpoint `critic/c6_seed6619_y12.bin`):
+  85 of 115 s in `nukeInputs` → `targetValue`. Each place weighed (every nuclear nation × its wars ×
+  enemy capitals and six massed places) whose blast reached enemy industry summed the whole map's
+  industry again (2.1 M cells) for the share's denominator: 68 passes of the map in one day's call.
+  Not the state strikes leave (fallout, outrage, shocks, grievance, taboo): their daily work does not
+  show in the profile. It began with the strikes because only then did the nuclear nations' wars put
+  enemy industry within the blasts weighed.
+- **The fix** (`nuclear.ts`, no rule changed): the industry by nation summed once a day, when first
+  needed (`industryHeld`); what is the same at every place of a war (desperation, retaliation risk,
+  MAD, alliance cost, outrage, the two sides' formations and men) taken once a war, not once a place.
+  Sums of whole numbers in another order: the same state. Seed 6619's hashes for years 13 to 21 from
+  the checkpoint equal the critic's (558034b1 … c2a083dc); the pin unmoved.
+- **AT:** years 13 to 21 (`--profile --affinity 0xFFFF`): tick 2.5 to 4.1 ms (12.3 before in year
+  13), `nuclear` 0.10 to 0.17 ms, 3.5 to 5.2 % of the tick (69 to 79 % before); longest call 3.7 to
+  11.0 ms, but year 13's 28.8 ms: its day 0, the first call after the load (a day-by-day probe: day 0
+  29.0 ms, every other day of the year 6.5 ms at most). Year 13 runs in 25 s, not 107.
+  `tests/unit/nukeDayCost1938.test.ts`: six nuclear nations in three wars, fallout and outrage laid:
+  the day's call sums the industry once and reads 2.4 M cells' industry (fewer than two a cell); the
+  old code read 143 M there (the test fails on it).
+- **Gate:** the related unit tests (980), the pin; green twice, red twice between on the known red build time
+  (`scenario1938` "builds in well under a second", 2,286 and 3,564 ms against 2,000 in the loaded
+  unit stage; alone 1 of 1 twice with the change and twice without, BLOCKERS).
+- **Next:** PLAN 6.11.
