@@ -439,8 +439,20 @@ export const COARSE_ABOVE_KM = 500;
  * reason the plan over the provinces takes one that has closed ground too at SHUT_PRICE times
  * its cost (PLAN 3.10c2b3b, ADR-194): the way by the cells went round such a province through
  * provinces that were no neighbours of the route's, and the corridor did not hold it.
+ * A route asked again on the same passage is the one found the first time (`Passage.routes`).
  */
 export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass?: Passage): PathResult | null {
+  if (!pass) return searchRoute(g, pg, mobility, start, goal);
+  const key = (mobility * g.w * g.h + start) * g.w * g.h + goal;
+  const routes = (pass.routes ??= new Map());
+  const known = routes.get(key);
+  if (known !== undefined) return known;
+  const route = searchRoute(g, pg, mobility, start, goal, pass);
+  routes.set(key, route);
+  return route;
+}
+
+function searchRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass?: Passage): PathResult | null {
   if (!mayReach(g, pg, start, goal, pass)) return null; // O(1) unreachable
   const a = pg.nodeOf[start]!;
   const b = pg.nodeOf[goal]!;

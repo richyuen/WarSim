@@ -270,3 +270,30 @@ describe('the coarse route of a heap is the route of the scanned list (PLAN 7.1g
     expect(none).toBeLessThan(1200);
   });
 });
+
+// PLAN 7.1l3: the formations of a stack sent to one cell each asked for the same search (18 of
+// 3 ms in one plan of seed 5303's year 17). A route asked again on the same passage is the one
+// found; a new passage searches.
+describe('a route asked again on its passage is not searched again (PLAN 7.1l3)', () => {
+  it('east of Moscow: the second order on the passage makes no search, and a new passage finds the same way', () => {
+    const world = world1938();
+    const SOV = nationId('SOV');
+    const { grid, graph } = navOf(world);
+    const [mx, my] = cellOf(40, 56, W, SIZE_1938.h).map(Math.floor) as [number, number];
+    const [start, goal] = [at(mx, my), at(mx + 60, my)];
+    const pass = passageOf(world, SOV);
+    const first = findRoute(grid, graph, Mobility.foot, start, goal, pass)!;
+    expect(first.cells.length).toBe(61);
+    const gen = grid.scratch!.gen;
+    expect(findRoute(grid, graph, Mobility.foot, start, goal, pass)).toBe(first);
+    expect(grid.scratch!.gen, 'no search').toBe(gen);
+    // Another mobility or other ends are searched.
+    expect(findRoute(grid, graph, Mobility.motor, start, goal, pass)).not.toBe(first);
+    expect(grid.scratch!.gen).toBe(gen + 1);
+    // A passage of another hour searches, and finds the same way.
+    const again = findRoute(grid, graph, Mobility.foot, start, goal, passageOf(world, SOV))!;
+    expect(grid.scratch!.gen).toBe(gen + 2);
+    expect(again).not.toBe(first);
+    expect(again.cells).toEqual(first.cells);
+  });
+});

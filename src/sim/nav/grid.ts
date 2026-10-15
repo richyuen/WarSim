@@ -334,6 +334,13 @@ export interface Passage {
    * (`passageOf`, PLAN 7.1i): until the nodes' parts or a cell of a closed holder change.
    */
   keep?: { joined?: Int32Array | undefined };
+  /**
+   * The routes `findRoute` has answered on this passage, by mobility and ends (PLAN 7.1l3): the
+   * formations of a stack sent to one cell asked for the same search each, 18 of 3 ms in one plan
+   * of seed 5303. A passage is made for one hour's orders, and no cell changes hands while they
+   * are given; the answer is not written to (its callers copy the cells).
+   */
+  routes?: Map<number, PathResult | null>;
 }
 
 /** The most cells of open ground that are a pocket (`pocketOf`). */
