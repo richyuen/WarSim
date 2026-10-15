@@ -161,6 +161,8 @@ interface Standings {
   byNation: Map<number, number[]>;
   byBucket: Map<number, number[]>;
   embarked: number;
+  /** By nation, its enemies among those at war as a mask by nation, once asked (`foesOf`). */
+  foes: Map<number, Uint8Array>;
 }
 
 function standings(world: World, w: number): Standings {
@@ -179,7 +181,27 @@ function standings(world: World, w: number): Standings {
     if (!at) byBucket.set(k, (at = []));
     at.push(id);
   });
-  return { byNation, byBucket, embarked: world.embarked.size };
+  return { byNation, byBucket, embarked: world.embarked.size, foes: new Map() };
+}
+
+/**
+ * By sector bucket, the sector of the plan in hand there (PLAN 7.1g: in place of a `Map` by key):
+ * `at[k]` while `stamp[k]` is the plan's `gen`; its number in the plan's list once that is sorted.
+ * And the strength of the planner's enemies in it, `enemy[k]` while `summed[k]` is `gen`: the
+ * nine buckets about a sector are mostly those of its neighbours too. The plans of a tick come
+ * one after another.
+ */
+const SLOTS = { stamp: new Uint32Array(0), at: new Int32Array(0), summed: new Uint32Array(0), enemy: new Float64Array(0), gen: 0 };
+
+/** Nation m's enemies among `fighting`, as a mask by nation: once a tick (PLAN 7.1g). */
+function foesOf(world: World, m: number, fighting: Set<number>, stand: Standings): Uint8Array {
+  let mask = stand.foes.get(m);
+  if (!mask) {
+    mask = new Uint8Array(world.nations.highWater);
+    for (const e of fighting) if (world.wars.atWar(m, e)) mask[e] = 1;
+    stand.foes.set(m, mask);
+  }
+  return mask;
 }
 
 /** A holder's frontier cells and, four per cell, the holders of the neighbouring cells (0 = none). */
@@ -200,22 +222,42 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const loop = world.settings.loopingMap;
   /** The column of sector buckets `dx` from column `sx`, or -1 where the map ends before it. */
   const bucketX = (sx: number, dx: number): number => (loop ? (sx + dx + bw) % bw : sx + dx < 0 || sx + dx >= bw ? -1 : sx + dx);
-  const sectors = new Map<number, Sector>();
+  const buckets = bw * Math.ceil(world.cells.h / SECTOR_CELLS);
+  if (SLOTS.stamp.length !== buckets) {
+    SLOTS.stamp = new Uint32Array(buckets);
+    SLOTS.at = new Int32Array(buckets);
+    SLOTS.summed = new Uint32Array(buckets);
+    SLOTS.enemy = new Float64Array(buckets);
+    SLOTS.gen = 0;
+  }
+  if (++SLOTS.gen === 0xffffffff) {
+    SLOTS.stamp.fill(0);
+    SLOTS.summed.fill(0);
+    SLOTS.gen = 1;
+  }
+  const { stamp: slotStamp, at: slotAt, gen } = SLOTS;
+  /** The sectors in the order they were met. */
+  const made: Sector[] = [];
   // The frontier's cells come by rows: the next is mostly in the sector of the one before.
   let last: Sector | undefined;
   for (const [holder, { cells, near }] of frontier) {
     if (holder !== n && !wars.sameSide(holder, n)) continue;
+    const theirs = holder === n ? enemyOf : foesOf(world, holder, fighting, stand);
     for (let i = 0; i < cells.length; i++) {
       // A front cell touches an enemy of n whom its holder fights too.
       let front = false;
-      for (let k = 4 * i; k < 4 * i + 4 && !front; k++) front = enemyOf[near[k]!] === 1 && (holder === n || wars.atWar(holder, near[k]!));
+      for (let k = 4 * i; k < 4 * i + 4 && !front; k++) front = enemyOf[near[k]!] === 1 && theirs[near[k]!] === 1;
       if (!front) continue;
       const c = cells[i]!;
       const x = c % w;
       const y = (c - x) / w;
       const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
-      let s = last?.key === key ? last : sectors.get(key);
-      if (!s) sectors.set(key, (s = { key, cells: [], cx: 0, cy: 0, threat: 0, formations: [], strength: 0, hold: -1, own: false }));
+      let s = last?.key === key ? last : slotStamp[key] === gen ? made[slotAt[key]!] : undefined;
+      if (!s) {
+        slotStamp[key] = gen;
+        slotAt[key] = made.length;
+        made.push((s = { key, cells: [], cx: 0, cy: 0, threat: 0, formations: [], strength: 0, hold: -1, own: false }));
+      }
       last = s;
       s.cells.push(c);
       // The centre's sums, of half-integers: the same in any order of the cells (and no other
@@ -225,19 +267,27 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       if (holder === n) s.own = true;
     }
   }
-  if (sectors.size === 0) return;
-  const list = [...sectors.values()].sort((a, b) => a.key - b.key);
+  if (made.length === 0) return;
+  const keys = new Int32Array(made.length);
+  for (let i = 0; i < made.length; i++) keys[i] = made[i]!.key;
+  keys.sort();
+  const list: Sector[] = [];
+  for (const key of keys) list.push(made[slotAt[key]!]!);
+  for (let i = 0; i < list.length; i++) slotAt[list[i]!.key] = i;
   for (const s of list) {
     s.cx /= s.cells.length;
     s.cy /= s.cells.length;
   }
-  /** The strength of n's enemies in a sector bucket. */
+  /** The strength of n's enemies in a sector bucket (read where no order is given in between). */
   const enemyAt = (k: number): number => {
+    if (k < 0 || k >= buckets) return 0;
+    if (SLOTS.summed[k] === gen) return SLOTS.enemy[k]!;
     let sum = 0;
     const ids = stand.byBucket.get(k);
-    if (ids === undefined) return 0;
     const aboard = world.embarked.size !== stand.embarked;
-    for (const id of ids) if (enemyOf[f.nation[id]!] === 1 && (!aboard || !world.offLand(id))) sum += f.strength[id]!;
+    for (const id of ids ?? []) if (enemyOf[f.nation[id]!] === 1 && (!aboard || !world.offLand(id))) sum += f.strength[id]!;
+    SLOTS.summed[k] = gen;
+    SLOTS.enemy[k] = sum;
     return sum;
   };
   /** By sector bucket, how many formations of n stand in it, free or not. */
@@ -429,12 +479,13 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     }
   }
   const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / SECTOR_CELLS) * bw + Math.floor((c % w) / SECTOR_CELLS);
-  const index = new Map(list.map((s, i) => [s.key, i] as const));
+  /** The number in `list` of the sector of a bucket, if it has one. */
+  const indexOf = (key: number): number | undefined => (slotStamp[key] === gen ? slotAt[key] : undefined);
   /** By sector, how many free formations of n march into it. */
   const marchers = new Int32Array(sn);
   for (const id of mine) {
     if (f.moving[id] !== 1) continue;
-    const i = index.get(sectorOfCell(f.targetCell[id]!));
+    const i = indexOf(sectorOfCell(f.targetCell[id]!));
     if (i !== undefined) marchers[i]!++;
   }
   /** How many formations of n stand in the sector or next to it. */
@@ -461,7 +512,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     if (loop && tx > w / 2) tx = w - tx;
     const ty = f.y[id]! - (Math.floor(to / w) + 0.5);
     if (tx * tx + ty * ty > RANGE2) return true;
-    const i = index.get(sectorOfCell(to));
+    const i = indexOf(sectorOfCell(to));
     if (i === undefined || marchers[i]! > 1) return false;
     const s = list[i]!;
     const by = Math.floor(f.y[id]! / SECTOR_CELLS);
@@ -494,9 +545,22 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     // range (PLAN 3.10c1, ADR-187), with how many (`pool`).
     const front: number[] = [];
     const pool: number[] = [];
+    // By y (PLAN 7.1g): one that is farther in y alone than the range is beyond it, so a sector's
+    // count reads those of the rows within the range of its centre.
+    const byY = ids.slice().sort((a, b) => f.y[a]! - f.y[b]!);
+    const ys = new Float64Array(byY.length);
+    for (let k = 0; k < byY.length; k++) ys[k] = f.y[byY[k]!]!;
     for (const i of reached[ci]!) {
+      const s = list[i]!;
+      let lo = 0;
+      let hi = ys.length;
+      while (lo < hi) {
+        const mid = (lo + hi) >> 1;
+        if (ys[mid]! < s.cy - DEPLOY_RANGE_CELLS) lo = mid + 1;
+        else hi = mid;
+      }
       let p = 0;
-      for (const id of ids) if (dist2(id, list[i]!) <= RANGE2) p++;
+      for (let k = lo; k < ys.length && ys[k]! <= s.cy + DEPLOY_RANGE_CELLS; k++) if (dist2(byY[k]!, s) <= RANGE2) p++;
       if (p === 0 || !reaches(ci, i)) continue;
       front.push(i);
       pool.push(p);
@@ -554,7 +618,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const free = new Set(ids);
     for (const id of ids) {
       if (f.moving[id] !== 1) continue;
-      const i = index.get(sectorOfCell(f.targetCell[id]!));
+      const i = indexOf(sectorOfCell(f.targetCell[id]!));
       if (i === undefined) continue;
       free.delete(id);
       list[i]!.formations.push(id);
