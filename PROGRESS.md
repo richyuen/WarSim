@@ -15753,3 +15753,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   `tools/gate/knownRed.json`), and the command chained the commit after `echo`, not after the gate.
   The code was the code gated green just before; the two alone: 20 of 20; the gate on HEAD: green.
   Chain the commit on the gate's exit code.
+
+## 2026-10-15 — PLAN 6.12a: no first use on a nation that cannot threaten the striker (critic R6-B2)
+
+- **Split** 6.12 in three (ADR-394): who may be struck first (a), a strike back at the striker
+  (b), a revolt does not inherit the bomb (c).
+- **The rule** (`threatens`, `aimOf`): an enemy's land is weighed only when it has a warhead (or its
+  overlord), or its realm's strength is `THREAT_SHARE` = 0.25 of the striker's (`strengths`, the
+  strategic AI's), or its land forces stand within `CAPITAL_THREAT_KM` of the striker's capital.
+  The nation that struck it is always weighed (a strike back is not first use).
+- **Why it happened:** `desperationOf` counts the striker's land held by anyone, so a giant
+  carved by revolts is desperate in every war; a statelet has no warheads to weigh against it.
+- **AT:** `tests/unit/nukeThreat1938.test.ts`: the Soviet Union, 5 warheads and missiles, losing to
+  the death: no strike on a revolt of Soviet Armenia (12,460 men against 1.57 million) in 30 days
+  (on the old source it struck on day one: red); at war with Germany (722,000), strikes twelve
+  divisions massed in East Prussia.
+- **Gate:** green on the third run (985 related tests, the pin unmoved); twice before red on the
+  known red timing tests alone (`scenario1938` build 2,031 ms against 2,000; `territory`), which
+  pass alone (20 of 20).
+- **Next:** PLAN 6.12b.

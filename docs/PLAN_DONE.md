@@ -8931,3 +8931,24 @@ Of 6.5 (open in PLAN.md):
     of the bursts.
   - [x] 6.11c Each strike named in the history by place: the city nearest the burst.
     AT: unit test of the row's sentence; seed 6619 × 30 years headless (this task's AT).
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+Of 6.12 (open in PLAN.md):
+
+  - [x] 6.12a No first use on a nation that cannot threaten the striker: none of its warheads,
+    small against the striker (the strategic AI's strength), none of its land forces near the
+    striker's capital. A strike back is not first use.
+    AT: unit tests: the Soviet Union, armed and desperate, at war with a revolt statelet of its
+    land: no strike; the same Soviet Union at war with Germany: a strike.

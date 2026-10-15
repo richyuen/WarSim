@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-394 · 2026-10-15 · accepted — Who the AI's warheads fall on (PLAN 6.12, critic R6-B2)
+
+- **Split** in three causes, one commit each: no first use on a nation that cannot threaten the
+  striker (6.12a), a strike back aims at the striker (6.12b), a revolt does not inherit the bomb
+  (6.12c).
+- **6.12a, who may be struck first** (`threatens`, `aimOf`): an enemy whose land is weighed must be
+  able to threaten the striker: it or its overlord has a warhead, or its realm's strength (the
+  strategic AI's `strengths`: the army's men and the navy's weight) is `THREAT_SHARE` = 0.25 of the
+  striker's realm's, or its land forces stand within `CAPITAL_THREAT_KM` of the striker's capital.
+  The critic's three conditions, as a conjunction: a nation is barred only when none holds. The
+  massed men a place is weighed by stay the whole enemy side's; only the land struck is narrowed.
+  - Why it happened: `desperationOf` reads the share of the striker's land others hold, whoever
+    holds it, so a giant carved by revolts is desperate in every war, a statelet's too, and the
+    statelet has no warheads to make the retaliation risk weigh. A quarter: the revolt of Soviet
+    Armenia has 12,460 men against the Soviet Union's 1.57 million (0.8 %); Germany 722,000 (46 %);
+    the critic's Free Van, a statelet of a few provinces, far under it.
+  - A strike back is not first use: the nation that struck is always on the list (6.12b narrows it
+    to that nation).
+  - `tests/unit/nukeThreat1938.test.ts`: the Soviet Union with five warheads and missiles, losing
+    to the death: no strike on a revolt of Soviet Armenia in 30 days (it struck on the first day
+    on the old source); at war with Germany, strikes in East Prussia.
+
 ### ADR-393 · 2026-10-15 · accepted — Where the AI's warheads fall (PLAN 6.11, critic R6-B2)
 
 - **Split** in three causes, one commit each: the places weighed (6.11a), no second warhead on a

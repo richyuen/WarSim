@@ -40,6 +40,18 @@ quick sweep as a smoke test.
   struck nation's next decision aims at its striker); seeds 6619 and 2953 × 30 years headless:
   the first use by a nation desperate by SPEC §6.4's terms, each strike's utility in the
   history, retaliation at the striker; the findings in DECISIONS.
+  Three causes, one commit each (ADR-394):
+  - [x] 6.12a No first use on a nation that cannot threaten the striker: none of its warheads, […]
+  - [ ] 6.12b A strike back aims at the striker: while a grievance holds, its holder weighs only
+    the striker's own land, from a front or not (FRONT_KM does not bar it), and strikes no one
+    else.
+    AT: unit tests: England strikes Paris; France, at war with England and an ally of England's,
+    strikes English land; France at war with a third nation strikes no one there meanwhile.
+  - [ ] 6.12c A nation founded in play does not inherit the nuclear techs of the nation it
+    leaves (`spawnRebels` copied every tech: "Free Liège II", holding Berlin, knew the bomb
+    on its first day and had the income of a programme).
+    AT: unit test: a revolt from a nation knowing the bomb knows its other techs, not the
+    nuclear ones; seeds 6619 and 2953 × 30 years headless (this task's AT).
 
 ## Phase 7 — Balance, polish, soak
 
