@@ -192,7 +192,7 @@ quick sweep as a smoke test.
     - [x] 7.1l1 The frontier's rebuild from a border index kept by `setController`, its cells in
       ascending order. AT: pin and the map that does not loop unchanged; a unit test holds the
       index to a scan and the rebuild to the rule in the set's own order; the rebuild's cost.
-    - [ ] 7.1l2 `seaReach` kept for the hour while nothing it reads changes (369 of 1,099 calls a
+    - [x] 7.1l2 `seaReach` kept for the hour while nothing it reads changes (369 of 1,099 calls a
       year asked again). AT: pin unchanged; the calls that compute.
     - [ ] 7.1l3 The operational AI's leftovers of 7.1i: `joinWide`'s 452 walks, the frontier `Map`
       at each call, the first call after a load, the long calls of seed 5303 (years 5, 11, 12, 18,

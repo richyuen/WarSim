@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-405 · 2026-10-15 · accepted — Supply over sea's answer kept within the hour (PLAN 7.1l2)
+
+- **Context.** `seaReach` (`systems/seaSupply.ts`) makes every bloc's lands joined by sea and its
+  convoys' ways. It was made at each ask: 1,099 times in year 1 of seed 99, 369 of them a second
+  time in the same hour with nothing changed between. The repeats: `convoyWays` once for each
+  raiding nation in `navalAi`'s day, and `convoyLosses` twice in `runEconomyMonth` (the accounts,
+  then the raids' rows). A make is 0.39 ms on the world of day 120.
+- **Decision.** The last answer is kept per world (a `WeakMap`, derived, not state) with what it
+  read that can change within an hour: the tick; `World.controlChanges` and a new counter
+  `World.ownerChanges` (bumped by `setOwner`); `wars.version`; the cities' version, count and
+  high water (as `landCities` keys its own); the nav grid's components; each nation's bloc and
+  its capital's land when it lives (compared by content); the zones' holders (compared by
+  content: tests and the sea control write them in place). The grid, the zones, the ports, the
+  passages and the ice are the map's own. A load in place bumps `citiesVersion`. Callers only
+  read what it returns. Kept for the hour only: a key across hours would save more but asks
+  more of the key; the plan asked for the hour.
+- **AT.** Pin unchanged (45df324d); `saveYear` green. Year 1 of seed 99: 1,099 calls, 730 made
+  (369 kept). A kept answer costs 0.008 ms against 0.39: about 0.14 s a year, 0.016 ms a tick
+  (1 % of it). A unit test (`seaSupply1938.test.ts`) asks in one hour: kept when nothing
+  changed; made again after a port's controller, its owner, the zones' holders, a capital's land
+  and the hour change, each answer equal to one made afresh; dropping the owner key or the
+  holders' key fails it.
+- **Consequences.** `setOwner` does one increment more. A write of a nation's bloc, capital or
+  living flag needs nothing: they are read each call (about 120 nations).
+
 ### ADR-404 · 2026-10-15 · accepted — The frontier rebuilt from a border index kept by `setController` (PLAN 7.1l1)
 
 - **Context.** The frontier set (`frontierOf`, `systems/territory.ts`) is rebuilt when a war

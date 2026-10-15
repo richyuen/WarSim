@@ -136,16 +136,86 @@ function landCities(world: World, comp: Uint32Array): LandCities {
 let pairCount = new Uint32Array(0);
 let pairOrder = new Int32Array(0);
 
-function seaReach(world: World): { linked: Map<number, number[]>; ways: Map<number, Map<number, number[]>> } {
+interface Reach {
+  linked: Map<number, number[]>;
+  ways: Map<number, Map<number, number[]>>;
+}
+
+/**
+ * What `seaReach` answered last in an hour, and what it read that can change within one (PLAN
+ * 7.1l2): the hour; the counters of the cells' holders, the wars and the cities (with the
+ * cities' count and high water, as `landCities`); each nation's bloc and its capital's land (0
+ * when it is dead); the zones' holders. The grid, the zones, the ports and the passages are the
+ * map's own. Callers only read what it returns.
+ */
+interface ReachKept {
+  tick: number;
+  control: number;
+  owner: number;
+  wars: number;
+  cities: number;
+  cityCount: number;
+  cityHigh: number;
+  comp: Uint32Array;
+  nations: Int32Array;
+  holder: Uint16Array | null;
+  out: Reach;
+}
+const reachKept = new WeakMap<World, ReachKept>();
+
+/** Derived, for the tests and the measurements: the calls of `seaReach`, and those that computed. */
+export const reachStats = { calls: 0, computed: 0 };
+
+function sameArray(a: ArrayLike<number> | null, b: ArrayLike<number> | null): boolean {
+  if (a === null || b === null) return a === b;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
+
+/** The ways and the joined lands of every bloc, kept within the hour while nothing they are made from changes (`ReachKept`). */
+function seaReach(world: World): Reach {
+  reachStats.calls++;
   const comp = navOf(world).grid.component;
-  const { w, owner, controller } = world.cells;
+  const w = world.cells.w;
   const nc = world.nations.cols;
   const blocOfNation = new Uint16Array(world.nations.highWater + 1);
   world.nations.forEach((n) => (blocOfNation[n] = blocOf(world, n)));
+  /** Per nation: its bloc, and its capital's land if it lives. */
+  const nations = new Int32Array(2 * blocOfNation.length);
+  world.nations.forEach((n) => {
+    nations[2 * n] = blocOfNation[n]!;
+    if (nc.living[n] === 1) nations[2 * n + 1] = comp[Math.floor(nc.capitalY[n]!) * w + Math.floor(nc.capitalX[n]!)]!;
+  });
+  const holder = world.seaControl?.holder ?? null;
+  const kept = reachKept.get(world);
+  if (
+    kept &&
+    kept.tick === world.tick &&
+    kept.control === world.controlChanges &&
+    kept.owner === world.ownerChanges &&
+    kept.wars === world.wars.version &&
+    kept.cities === world.citiesVersion &&
+    kept.cityCount === world.cities.count &&
+    kept.cityHigh === world.cities.highWater &&
+    kept.comp === comp &&
+    sameArray(kept.nations, nations) &&
+    sameArray(kept.holder, holder)
+  ) {
+    return kept.out;
+  }
+  reachStats.computed++;
+  const out = reach(world, blocOfNation, nations);
+  reachKept.set(world, { tick: world.tick, control: world.controlChanges, owner: world.ownerChanges, wars: world.wars.version, cities: world.citiesVersion, cityCount: world.cities.count, cityHigh: world.cities.highWater, comp, nations, holder: holder && holder.slice(), out });
+  return out;
+}
+
+function reach(world: World, blocOfNation: Uint16Array, nations: Int32Array): Reach {
+  const comp = navOf(world).grid.component;
+  const { owner, controller } = world.cells;
   const home = new Map<number, Set<number>>();
   world.nations.forEach((n) => {
-    if (nc.living[n] !== 1) return;
-    const c = comp[Math.floor(nc.capitalY[n]!) * w + Math.floor(nc.capitalX[n]!)]!;
+    const c = nations[2 * n + 1]!;
     if (c === 0) return;
     const b = blocOfNation[n]!;
     let set = home.get(b);

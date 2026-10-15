@@ -16124,3 +16124,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   set's own order; a mutation that drops the upkeep in `setController` fails it.
 - **Specs:** none; nothing drawn changed.
 - **Next:** PLAN 7.1l2.
+
+## 2026-10-15 — PLAN 7.1l2: supply over sea's answer kept within the hour (performance)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Built** (ADR-405): `seaReach` (`systems/seaSupply.ts`) keeps its last answer per world for the
+  hour, while the counters of the cells' controllers and owners (`World.ownerChanges`, new, bumped
+  by `setOwner`), the wars and the cities, each nation's bloc and capital land, and the zones'
+  holders are what they were. The repeats were `convoyWays` once per raiding nation in `navalAi`
+  and `convoyLosses` twice in `runEconomyMonth`.
+- **AT:** pin unchanged (45df324d); `saveYear` green. Year 1 of seed 99: 1,099 calls, 730 made
+  (369 kept). A make 0.39 ms, a kept answer 0.008 (day 120): about 0.14 s a year, 0.016 ms a tick.
+- **Test:** `seaSupply1938.test.ts` asks within one hour: kept when nothing changed; made again
+  after a port's controller, its owner, the zones' holders, a capital's land and the hour change,
+  each equal to an answer made afresh. Dropping the owner key or the holders' key fails it.
+- **Gotchas:** `scenario1938`'s build-time test failed under `vitest related`'s load (2.9 s of
+  2 s) and passed alone, as in 7.1k.
+- **Specs:** none; nothing drawn changed.
+- **Next:** PLAN 7.1l3.

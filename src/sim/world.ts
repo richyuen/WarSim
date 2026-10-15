@@ -831,6 +831,8 @@ export class World {
   supplySpans = new Map<number, { spans: Int32Array; n: number; base: number; lanes: number[] }>();
   /** Derived (not state): bumped by every controller change (label re-derivation, PLAN 1.29). */
   controlChanges = 0;
+  /** Derived (not state): bumped by every owner change through `setOwner` (`seaReach`'s hour, PLAN 7.1l2). */
+  ownerChanges = 0;
   /**
    * Derived (not state): the holders of each change by `setController` from `flipLogBase` on,
    * `from · 65536 + to` (`flipLog[k - flipLogBase]` is that of change k + 1). What is kept of
@@ -1272,6 +1274,7 @@ export class World {
       this.land.cell(nation, c.controller[i]!, km2);
     }
     c.owner[i] = nation;
+    this.ownerChanges++;
     const x = i % c.w;
     const y = (i - x) / c.w;
     this.out.dirtyTiles[Math.floor(y / TILE) * this.out.tilesX + Math.floor(x / TILE)] = 1;

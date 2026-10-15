@@ -3,7 +3,7 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, PORTS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { seaControlOf } from '../../src/sim/systems/seaControl';
-import { seaLinked, zoneLinks } from '../../src/sim/systems/seaSupply';
+import { convoyWays, reachStats, seaLinked, seaLinkedAll, zoneLinks } from '../../src/sim/systems/seaSupply';
 import { blocOf, refreshSupplyNetwork } from '../../src/sim/systems/supply';
 import { declareWar } from '../../src/sim/systems/war';
 import { navOf, portSeaOf, seaOf, type World } from '../../src/sim/world';
@@ -128,6 +128,56 @@ describe('supply over sea (PLAN 4.4c)', () => {
     const portless = open.filter((c) => portZones(w, c).length === 0);
     for (const c of portless) expect(cut).toContain(c);
     process.stderr.write(`British lands fed: ${open.length} with the sea open, ${cut.length} with every zone held (${portless.length} of them with no British port)\n`);
+  });
+
+  it('the answer is kept within the hour while nothing it reads changes, and made again when something does (PLAN 7.1l2)', () => {
+    const s = sim();
+    const w = s.world;
+    const malta = compAt(w, 14.45, 35.9);
+    expect(declareWar(w, ITA, ENG, true)).not.toBeNull();
+    s.step(1);
+    /** The answer, and whether it was made (not kept); then the same made afresh. */
+    const ask = (): { linked: string; ways: string; made: boolean } => {
+      const before = reachStats.computed;
+      const linked = JSON.stringify([...seaLinkedAll(w)]);
+      const ways = JSON.stringify([...convoyWays(w)].map(([b, m]) => [b, [...m]]));
+      const made = reachStats.computed > before;
+      w.wars.version++;
+      expect(JSON.stringify([...seaLinkedAll(w)])).toBe(linked);
+      expect(JSON.stringify([...convoyWays(w)].map(([b, m]) => [b, [...m]]))).toBe(ways);
+      return { linked, ways, made };
+    };
+    const first = ask();
+    expect(JSON.parse(first.linked).find(([b]: [number]) => b === ENG)[1]).toContain(malta.comp);
+    // Asked again in the hour: kept.
+    expect(ask().made).toBe(false);
+    // Each thing it reads, changed within the hour, makes it again.
+    const zones = portZones(w, malta.comp);
+    const port = w.ports.find((p) => navOf(w).grid.component[p.cell] === malta.comp && w.cells.controller[p.cell] === ENG)!;
+    w.setController(port.cell, ITA);
+    expect(ask().made).toBe(true);
+    w.setController(port.cell, ENG);
+    w.setOwner(port.cell, ITA);
+    expect(ask().made).toBe(true);
+    w.setOwner(port.cell, ENG);
+    expect(ask().made).toBe(true);
+    for (const z of zones) seaControlOf(w).holder[z] = ITA;
+    const held = ask();
+    expect(held.made).toBe(true);
+    expect(JSON.parse(held.linked).find(([b]: [number]) => b === ENG)[1]).not.toContain(malta.comp);
+    for (const z of zones) seaControlOf(w).holder[z] = ENG;
+    expect(ask().made).toBe(true);
+    const nc = w.nations.cols;
+    // Italy's capital on Malta's land: a home of another land.
+    const was = [nc.capitalX[ITA]!, nc.capitalY[ITA]!] as const;
+    [nc.capitalX[ITA], nc.capitalY[ITA]] = [malta.x, malta.y];
+    expect(ask().made).toBe(true);
+    [nc.capitalX[ITA], nc.capitalY[ITA]] = was;
+    expect(ask().made).toBe(true);
+    expect(ask().made).toBe(false);
+    // The next hour: made again.
+    s.step(1);
+    expect(ask().made).toBe(true);
   });
 
   it('the zones a passage joins are joined: Suez joins the Mediterranean to the Red Sea', () => {
