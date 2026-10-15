@@ -43,6 +43,14 @@ export function unproject(u: number, v: number): [number, number] {
   return [u * 360 - 180, millerLat(Y_TOP - v * PI) / DEG];
 }
 
+/** The earth map's default width (M), cells: the size the data's reaches are given at (ADR-416; `map.json`'s `defaultSize`, held to it by a test). */
+export const DEFAULT_W = 2048;
+
+/** A reach of `cells` cells of the default width, on an earth map `w` cells wide (`World.atSize` before there is a world). */
+export function atWidth(w: number, cells: number): number {
+  return cells * (w / DEFAULT_W);
+}
+
 /** Equatorial km per cell for a map `w` cells wide. */
 export function kmPerCell(w: number): number {
   return 40075.017 / w;

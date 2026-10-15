@@ -335,7 +335,7 @@ function strandedToLand(world: World): void {
       return;
     }
     if (isLand(terrain[c]!)) return;
-    const to = nearestCellWhere((i) => isLand(terrain[i]!), fc.x[f]!, fc.y[f]!, w, h, STRANDED_REACH, world.settings.loopingMap);
+    const to = nearestCellWhere((i) => isLand(terrain[i]!), fc.x[f]!, fc.y[f]!, w, h, world.atSize(STRANDED_REACH), world.settings.loopingMap);
     if (to < 0) {
       gone.push(f);
       return;
