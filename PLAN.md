@@ -151,6 +151,41 @@ quick sweep as a smoke test.
   nations, the refused orders) and cap or coarsen it; break up the operational AI's long
   calls. AT for this line: a 25-year run of seed 5303, pinned and profiled, whose last five
   years' tick is within 1.5 × its first five's.
+  Split on 2026-10-15 (PLAN 7.1a's baseline; 7.1b is the map sizes' task, so the parts skip
+  its letter). One cause a part, one commit a cause; a part that moves the pin is a rule, not a
+  cut, and says so in DECISIONS:
+  - [x] 7.1a The baseline on the budget machine (i7-13700KF, `0xFFFF`), HEAD `3649c23`: seed 99 […]
+  - [ ] 7.1c The air AI's order of the rich cells (`byIndustry`, `ai/air.ts`): each call
+    checks its cache by a pass over every cell of the map (`same`, 2.6 % of year 1's time, self).
+    AT: the pin unchanged; `byIndustry` and `same` under 0.3 % of a year-1 profile.
+  - [ ] 7.1d Combat's battles (`findBattles`, 8.3 % of year 1 with what it calls; 4.6 % its own):
+    the buckets and the contacts. AT: the pin unchanged; `findBattles` halved in a year-1 profile.
+  - [ ] 7.1e Combat's fire (`combatSystem`'s own 6.3 %, `placeOf` 3.2 %, `deployAll` 3.0 %). AT:
+    the pin unchanged; combat's mean in year 1 of the profiled run down by a third (1.21 ms).
+  - [ ] 7.1f The air's anti-aircraft and strikes (`systems/airCombat.ts`: `antiAir` 4.5 %,
+    `strikes` 5.4 % of year 1).
+    AT: the pin unchanged; `air` in year 1 halved (0.49 ms).
+  - [ ] 7.1g The operational AI (15.3 %: `planNation` 13.1, `orderMove` 5.1, `passageOf` 3.4,
+    `findRoute` 3.9). AT: the pin unchanged; its mean in year 1 down by a third (0.62 ms).
+  - [ ] 7.1h Territory (8.5 %: `territorySystem`'s own 3.1 %, `frontierOf` 1.9 %) and supply
+    (7.9 %). AT: the pin unchanged; each down by a third in year 1.
+  - [ ] 7.1i The operational AI's war years. The line of R4-B5 holds on HEAD (7.1a: seed 5303's
+    first five years 2.19 ms a tick, its last five 1.97, × 0.90), but the middle years peak with
+    the AI: years 8 to 10, 12 and 17 are 3.6 to 4.4 ms, of which the operational AI is 1.6 to 2.7
+    (0.23 to 0.58 in the first five), 1,296 to 1,460 calls a year of 1 ms or more, the longest
+    46 to 108 ms. AT: the pin unchanged; seed 5303's year 17 (from a checkpoint of year 16) with
+    the operational AI under 1.2 ms and no call over 40 ms; the 25 years again, × 1.5 held.
+  - [ ] 7.1j The frame budgets: a bench of the game itself (the 1938 world, 100+ nations, T0 at
+    1920 × 1080; T2 with 10,000 proxies or more on screen) in `npm run bench`, its report in
+    `docs/bench/` with the budget and pass or fail; the GPU of this machine (an RTX 4070 Ti) and
+    one weak setting (the software rasteriser or a throttled GPU) beside it. AT: the report green
+    on this machine.
+  - [ ] 7.1k The tests parked until 7.1 (`tools/gate/knownRed.json`: `aiSweep3`'s 900 s; the three
+    timing tests of the unit suite): each passes here alone, or stays with a BLOCKERS line on why.
+  - [ ] 7.1l The leads above that no part takes (the ground's cap, the land mask twice, the
+    fractional pixel ratios, the top speed, the hitches at T3): each done, moved to the task it
+    belongs to, or dropped with an ADR. Then the five years of seed 99 again: AT of 7.1 (1.5 ms,
+    year 1 2.4).
 - [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
   hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
   ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.

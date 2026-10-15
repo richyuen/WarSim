@@ -15850,3 +15850,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate note:** the known red build time failed six gates in a row at 6.12b (2,031 to 2,817 ms);
   green with `VITEST_MAX_WORKERS=4`, used for 6.12b to 6.12f.
 - **Next:** the next unchecked task in PLAN.md.
+
+## 2026-10-15 — PLAN 7.1a: the performance pass's baseline (documents)
+
+- **Start:** gate green on a clean tree; critic not due (its report's three findings are 6.10 to
+  6.12 and a line under 1.42). The next task, 7.1, is split into 7.1a and 7.1c to 7.1l.
+- **Tick** (the budget machine, i7-13700KF, pinned to `0xFFFF`, alone): seed 99's five years
+  2.285, 2.255 and 2.268 ms (budget 1.5), year 1 3.209, 3.132 and 3.146 (budget 2.4); ends on
+  700d7a84. With `--profile`, year 1 (4.41 ms, the profile's own cost): combat 1.21, the
+  operational AI 0.62, movement 0.50, air 0.49, territory 0.42, supply 0.37, the air AI 0.19.
+- **By function** (`node --cpu-prof` on an esbuild bundle of `tools/headless/cli.ts`, year 1 of
+  seed 99 on the E-cores `0xFF0000`; `.cache/prof71/agg.mjs` sums self and inclusive time): no
+  one hot spot. Inclusive: combat 19.2 % (`findBattles` 8.3), the operational AI 15.3
+  (`planNation` 13.1), air 11.6 (`strikes` 5.4, `antiAir` 4.5), territory 8.5, supply 7.9,
+  movement 7.7, the air AI 4.8. Of the air AI, `same` (`ai/air.ts`) checks the cache of the rich
+  cells' order by a pass over every cell of the map at each call: 2.6 % self (PLAN 7.1c).
+- **Growth** (R4-B5's AT, seed 5303 × 25 years, pinned, profiled): 2.389 ms; first five years
+  2.19, last five 1.97 (× 0.90: holds). Years 8 to 10, 12 and 17 are 3.6 to 4.4 ms, the
+  operational AI 1.6 to 2.7 of it (calls of 46 to 108 ms); `nuclear` at most 0.076 (after 6.10).
+  That is PLAN 7.1i.
+- **No game frame bench exists:** `npm run bench` measures Phase 0's prototypes; the budgets of
+  T0 and T2 have no report with a pass or fail (PLAN 7.1j).
+- **Next:** PLAN 7.1c.

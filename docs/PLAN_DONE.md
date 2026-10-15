@@ -9095,3 +9095,24 @@ Of 6.12 (open in PLAN.md):
   - [x] 6.12d A strike back is not deterred by the striker's second strike: a nation of […]
   - [x] 6.12e A strike back settles the score: its burst gives the nation it falls on no grievance […]
   - [x] 6.12f What "small" means when the striker's army is gone (seed 6619: the Soviet […]
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1 (open in PLAN.md):
+
+  - [x] 7.1a The baseline on the budget machine (i7-13700KF, `0xFFFF`), HEAD `3649c23`: seed 99
+    × 5 years, three runs unprofiled; one profiled; a `node --cpu-prof` of year 1 by function;
+    seed 5303 × 25 years profiled (the growth line's AT). AT: the figures in PROGRESS and
+    BLOCKERS, and the parts below by what the profile found.
