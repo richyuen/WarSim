@@ -89,16 +89,22 @@ const ring = new Int32Array(8);
  */
 export const refreshStats = { written: 0, flooded: 0, mended: 0, full: 0 };
 
+/** What the ring about a cell says (`ringOf`). */
+const RING_JOINED = 1;
+const RING_OPEN = 0;
+const RING_LANE = -1;
+
 /**
  * Whether the network of bloc `m` hangs together as before without cell `c`, whose mark has
  * just been cleared (PLAN 3.10d1b). It does when the network cells among the four neighbours of
  * `c` are joined by way of the network cells of the eight about it: two of the eight that follow
- * one another are 4-neighbours, so what is joined in the ring is joined in the network. Not
- * joined in the ring may still be joined a longer way round: that is answered no, and the bloc is
- * flooded. So is a crossing lane in the cell or the eight (the lanes are where the blocs meet).
+ * one another are 4-neighbours, so what is joined in the ring is joined in the network
+ * (RING_JOINED). Not joined in the ring may still be joined a longer way round (RING_OPEN: the
+ * search of `holds` asks). A crossing lane in the cell or the eight (the lanes are where the
+ * blocs meet) is RING_LANE, and the bloc is flooded whole.
  */
-function ringHolds(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, wrap: boolean, c: number, m: number): boolean {
-  if (terrain[c] === Terrain.Crossing) return false;
+function ringOf(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, wrap: boolean, c: number, m: number): number {
+  if (terrain[c] === Terrain.Crossing) return RING_LANE;
   const x = c % w;
   const row = c - x;
   // Beyond an edge of a map that does not loop there is no cell, as above the first row.
@@ -119,10 +125,10 @@ function ringHolds(supply: Uint16Array, terrain: Uint8Array, w: number, h: numbe
   for (let i = 0; i < 8; i++) {
     const n = ring[i]!;
     if (n < 0) gap = i;
-    else if (terrain[n] === Terrain.Crossing) return false;
+    else if (terrain[n] === Terrain.Crossing) return RING_LANE;
     else if (supply[n] !== m) gap = i;
   }
-  if (gap < 0) return true;
+  if (gap < 0) return RING_JOINED;
   // The runs of network cells that hold a 4-neighbour (an even place): more than one is a cut.
   let runs = 0;
   let inRun = false;
@@ -137,11 +143,119 @@ function ringHolds(supply: Uint16Array, terrain: Uint8Array, w: number, h: numbe
       }
       if ((k & 1) === 0 && !counted) {
         counted = true;
-        if (++runs > 1) return false;
+        if (++runs > 1) return RING_OPEN;
       }
     } else inRun = false;
   }
-  return true;
+  return RING_JOINED;
+}
+
+/** How many cells the search of `joined` looks at before it gives up (PLAN 7.1h). */
+const SEARCH_CELLS = 4096;
+/** The search's marks (1 seen, 2 a start not met yet), 0 between searches, and its queue. */
+let seen = new Uint8Array(0);
+const searchQueue = new Int32Array(SEARCH_CELLS);
+const starts: number[] = [];
+
+/**
+ * Whether the cells of bloc `m`'s network in `starts` are joined to each other by way of its
+ * network, lanes aside, and to one of its sources when `source` is given, within SEARCH_CELLS
+ * cells (PLAN 7.1h). A search that runs out answers no: the bloc is flooded whole, as before.
+ */
+function joined(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, wrap: boolean, m: number, source: ((cell: number) => boolean) | null): boolean {
+  if (seen.length !== supply.length) seen = new Uint8Array(supply.length);
+  let left = 0;
+  for (const s of starts) {
+    if (seen[s] === 2) continue;
+    seen[s] = 2;
+    left++;
+  }
+  const first = starts[0]!;
+  seen[first] = 1;
+  left--;
+  searchQueue[0] = first;
+  let n = 1;
+  let found = source === null;
+  let ok = false;
+  search: for (let head = 0; head < n; head++) {
+    const at = searchQueue[head]!;
+    if (!found && source!(at)) found = true;
+    if (found && left === 0) {
+      ok = true;
+      break;
+    }
+    const x = at % w;
+    const row = at - x;
+    for (let k = 0; k < 4; k++) {
+      // Beyond an edge of a map that does not loop there is no cell, as above the first row.
+      const nb =
+        k === 0
+          ? row > 0
+            ? at - w
+            : -1
+          : k === 1
+            ? row < w * (h - 1)
+              ? at + w
+              : -1
+            : k === 2
+              ? x > 0
+                ? at - 1
+                : wrap
+                  ? at + w - 1
+                  : -1
+              : x < w - 1
+                ? at + 1
+                : wrap
+                  ? row
+                  : -1;
+      if (nb < 0 || seen[nb] === 1 || supply[nb] !== m || terrain[nb] === Terrain.Crossing) continue;
+      if (n === SEARCH_CELLS) break search;
+      if (seen[nb] === 2) left--;
+      seen[nb] = 1;
+      searchQueue[n++] = nb;
+    }
+  }
+  for (let i = 0; i < n; i++) seen[searchQueue[i]!] = 0;
+  for (const s of starts) seen[s] = 0;
+  return ok;
+}
+
+/**
+ * Whether the network of bloc `m` is as before without cell `c`, whose mark has just been
+ * cleared: the ring about it says so, or else the search of `joined` finds its network
+ * neighbours joined another way. When `c` was a source of the bloc (`source`), they must also
+ * reach another of its sources (PLAN 7.1h: until then a city that changed hands flooded its bloc
+ * whole, as did a ring that did not hold).
+ */
+function holds(supply: Uint16Array, terrain: Uint8Array, w: number, h: number, wrap: boolean, c: number, m: number, source: ((cell: number) => boolean) | null): boolean {
+  const ring = ringOf(supply, terrain, w, h, wrap, c, m);
+  if (ring === RING_LANE) return false;
+  if (ring === RING_JOINED && source === null) return true;
+  const x = c % w;
+  const row = c - x;
+  starts.length = 0;
+  if (row > 0 && supply[c - w] === m) starts.push(c - w);
+  if (row < w * (h - 1) && supply[c + w] === m) starts.push(c + w);
+  const l = x > 0 ? c - 1 : wrap ? c + w - 1 : -1;
+  if (l >= 0 && supply[l] === m) starts.push(l);
+  const r = x < w - 1 ? c + 1 : wrap ? row : -1;
+  if (r >= 0 && supply[r] === m) starts.push(r);
+  // No network about it: nothing hung on it.
+  if (starts.length === 0) return true;
+  return joined(supply, terrain, w, h, wrap, m, source);
+}
+
+/** The cells with a city, kept while the cities are the same (PLAN 7.1h). */
+const cityCells = new WeakMap<World, { version: number; count: number; high: number; mask: Uint8Array }>();
+function cityMask(world: World): Uint8Array {
+  const t = world.cities;
+  const kept = cityCells.get(world);
+  const n = world.cells.w * world.cells.h;
+  if (kept && kept.version === world.citiesVersion && kept.count === t.count && kept.high === t.highWater && kept.mask.length === n) return kept.mask;
+  const mask = new Uint8Array(n);
+  t.forEach((id) => (mask[t.cols.cell[id]!] = 1));
+  cityCells.set(world, { version: world.citiesVersion, count: t.count, high: t.highWater, mask });
+  return mask;
 }
 
 /**
@@ -193,6 +307,16 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
   const held: [number, number[]][] = [];
   /** Partial: per mended bloc, its changed cells with no mark. */
   const gains = new Map<number, number[]>();
+  /** Partial: cities made sources, which a mend floods from wherever they lie. */
+  const madeSources = new Set<number>();
+  const comp = navOf(world).grid.component;
+  /** The components a bloc's sources may lie in (`seaLinked`), besides those of no sea's ('0'). */
+  const linked = new Map<number, Set<number>>();
+  const linkedOf = (b: number): Set<number> => {
+    let ok = linked.get(b);
+    if (!ok) linked.set(b, (ok = new Set(linkedAll.get(b))));
+    return ok;
+  };
   if (full) {
     supply.fill(0);
     reached.clear();
@@ -221,7 +345,16 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
     // mends at its changed cells left a land newly joined unflooded).
     for (const b of world.supplySeaBlocs) whole(b);
     for (const [b, kept] of reached) if (own[b] === 1 && kept.n > 2 * kept.base) whole(b);
-    // A city that changed hands: a source made or lost.
+    // A city that changed hands: a source made or lost (PLAN 7.1h: until then its blocs were
+    // flooded whole). A source made is flooded from (below); the land that hung on a source lost
+    // must reach another of its bloc's, or the bloc is flooded whole.
+    const cities = cityMask(world);
+    const sourceOf = (m: number) => (cell: number): boolean => {
+      if (cities[cell] !== 1) return false;
+      const ctl = controller[cell]!;
+      return ctl !== 0 && owner[cell] === ctl && blocOfNation[ctl] === m && (comp[cell] === 0 || linkedOf(m).has(comp[cell]!));
+    };
+    const lost = new Map<number, number>();
     world.cities.forEach((id) => {
       const cell = cc.cell[id]!;
       const was = changed.get(cell);
@@ -232,9 +365,10 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
       const ctl = controller[cell]!;
       const isOf = ctl !== 0 && owner[cell] === ctl ? blocOfNation[ctl]! : 0;
       if (wasOf === isOf) return;
-      whole(wasOf);
-      whole(isOf);
-      whole(mark);
+      // Out of every network, it fed none (a source's cell is its bloc's to flood first).
+      if (wasOf !== 0 && mark === wasOf) lost.set(cell, wasOf);
+      else if (mark !== 0 && mark !== isOf) whole(mark);
+      if (isOf !== 0) madeSources.add(cell);
     });
     // The losses, each against the layer as the ones before it left it.
     let cleared = 0;
@@ -245,7 +379,15 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
       if (ctl !== 0 && blocOfNation[ctl] === m) continue;
       supply[c] = 0;
       cleared++;
-      if (m < only.length && only[m] !== 1 && !ringHolds(supply, terrain, w, h, wrap, c, m)) only[m] = 1;
+      if (m < only.length && only[m] !== 1 && !holds(supply, terrain, w, h, wrap, c, m, lost.get(c) === m ? sourceOf(m) : null)) only[m] = 1;
+    }
+    // A source lost on a cell its bloc still holds (another owns it now): its land in the network
+    // reaches another source.
+    for (const [c, m] of lost) {
+      if (supply[c] !== m || m >= only.length || only[m] === 1) continue;
+      starts.length = 0;
+      starts.push(c);
+      if (!joined(supply, terrain, w, h, wrap, m, sourceOf(m))) only[m] = 1;
     }
     // The blocs flooded whole are cleared, all of them before any flood. A span may hold cells
     // that have left the network since it was filled, and some of them bear another mark by now.
@@ -284,17 +426,13 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
   // Sources per bloc: cities owned and controlled by a member, on a land its supply reaches by
   // sea (PLAN 4.4c, `seaLinked`: home, joined by a way no enemy holds, or with no port of it).
   const sources = new Map<number, number[]>();
-  const linked = new Map<number, Set<number>>();
-  const comp = navOf(world).grid.component;
   world.cities.forEach((id) => {
     const cell = cc.cell[id]!;
     const ctl = controller[cell]!;
     if (ctl === 0 || owner[cell] !== ctl) return;
     const b = blocOfNation[ctl]!;
     if (!full && only[b] !== 1) return;
-    let ok = linked.get(b);
-    if (!ok) linked.set(b, (ok = new Set(linkedAll.get(b))));
-    if (comp[cell] !== 0 && !ok.has(comp[cell]!)) return;
+    if (comp[cell] !== 0 && !linkedOf(b).has(comp[cell]!)) return;
     let list = sources.get(b);
     if (!list) sources.set(b, (list = []));
     list.push(cell);
@@ -325,8 +463,13 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
     seeds.length = 0;
     const mend = gains.get(b);
     if (mend) {
-      // From the changed cells beside the network: the others are reached from these, or not at all.
+      // From the changed cells beside the network: the others are reached from these, or not at
+      // all; and from a source made there, which the bloc's sea reaches (PLAN 7.1h).
       for (const c of mend) {
+        if (madeSources.has(c) && (comp[c] === 0 || linkedOf(b).has(comp[c]!))) {
+          seeds.push(c);
+          continue;
+        }
         const x = c % w;
         const beside =
           (x > 0 ? supply[c - 1] === b : wrap && supply[c + w - 1] === b) ||
