@@ -9061,3 +9061,37 @@ Of 6.12 (open in PLAN.md):
     desperation (the land others hold, held by this war's enemy or by anyone), then the measure.
     AT: from the checkpoints of years 17 (6619) and 14 (2953): no strike on a statelet without
     warheads; seeds 6619 and 2953 × 30 years headless on the final code (this task's AT).
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+- [x] 6.12 Critic R6-B2, second: who strikes whom. The first use in history is the Soviet Union
+  bombing the revolt statelet Free Van three times in two days at utility 0.01 to 0.39; struck
+  at London (1.37 million dead), the United Kingdom never strikes back at the Soviet Union, its
+  one bomb goes to Chungking; the United States holds 87 warheads in 30 years and uses none,
+  while the revolt statelet "Free Liège II" (holding Berlin) builds warheads and makes 11 strike
+  decisions in 1955 and 1956 (`critic/c6_headless_6619.json`, `critic/c6_headless_2953.json`,
+  `critic/c6_c_6619.json`). What it asks: no first use against a nation that cannot threaten
+  the striker (no warheads, small, not near its capital); retaliation at the nation that struck;
+  and to find how a statelet founded in play comes to build warheads.
+  AT: unit tests from the world (a great power at war with a revolt statelet: no strike; a
+  struck nation's next decision aims at its striker); seeds 6619 and 2953 × 30 years headless:
+  the first use by a nation desperate by SPEC §6.4's terms, each strike's utility in the
+  history, retaliation at the striker; the findings in DECISIONS.
+  Three causes, one commit each (ADR-394):
+  - [x] 6.12a No first use on a nation that cannot threaten the striker: none of its warheads, […]
+  - [x] 6.12b A strike back aims at the striker: while a grievance holds, its holder weighs only […]
+  - [x] 6.12c A nation founded in play does not inherit the nuclear techs of the nation it […]
+  - [x] 6.12d A strike back is not deterred by the striker's second strike: a nation of […]
+  - [x] 6.12e A strike back settles the score: its burst gives the nation it falls on no grievance […]
+  - [x] 6.12f What "small" means when the striker's army is gone (seed 6619: the Soviet […]

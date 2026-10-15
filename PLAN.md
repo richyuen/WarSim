@@ -27,27 +27,6 @@ quick sweep as a smoke test.
 
 ## Phase 6 — Nuclear AI
 
-- [ ] 6.12 Critic R6-B2, second: who strikes whom. The first use in history is the Soviet Union
-  bombing the revolt statelet Free Van three times in two days at utility 0.01 to 0.39; struck
-  at London (1.37 million dead), the United Kingdom never strikes back at the Soviet Union, its
-  one bomb goes to Chungking; the United States holds 87 warheads in 30 years and uses none,
-  while the revolt statelet "Free Liège II" (holding Berlin) builds warheads and makes 11 strike
-  decisions in 1955 and 1956 (`critic/c6_headless_6619.json`, `critic/c6_headless_2953.json`,
-  `critic/c6_c_6619.json`). What it asks: no first use against a nation that cannot threaten
-  the striker (no warheads, small, not near its capital); retaliation at the nation that struck;
-  and to find how a statelet founded in play comes to build warheads.
-  AT: unit tests from the world (a great power at war with a revolt statelet: no strike; a
-  struck nation's next decision aims at its striker); seeds 6619 and 2953 × 30 years headless:
-  the first use by a nation desperate by SPEC §6.4's terms, each strike's utility in the
-  history, retaliation at the striker; the findings in DECISIONS.
-  Three causes, one commit each (ADR-394):
-  - [x] 6.12a No first use on a nation that cannot threaten the striker: none of its warheads, […]
-  - [x] 6.12b A strike back aims at the striker: while a grievance holds, its holder weighs only […]
-  - [x] 6.12c A nation founded in play does not inherit the nuclear techs of the nation it […]
-  - [x] 6.12d A strike back is not deterred by the striker's second strike: a nation of […]
-  - [x] 6.12e A strike back settles the score: its burst gives the nation it falls on no grievance […]
-  - [x] 6.12f What "small" means when the striker's army is gone (seed 6619: the Soviet […]
-
 ## Phase 7 — Balance, polish, soak
 
 - [ ] 7.1 Performance pass against all budgets (T0 60 fps, T2 30 fps @10k, tick ≤ 1.5 ms).
@@ -738,3 +717,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 6.9 Phase 6 review, the phase's one review pass (PROMPT step 9, ADR-266): refactor debt, dead code […]
 - [x] 6.10 Critic R6-B1 (report of 2026-10-15 on `228d083`): the nuclear years make the game crawl. […]
 - [x] 6.11 Critic R6-B2 (report of 2026-10-15 on `228d083`), first of two: where the AI's warheads […]
+- [x] 6.12 Critic R6-B2, second: who strikes whom. The first use in history is the Soviet Union […]

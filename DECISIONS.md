@@ -253,6 +253,21 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     from the Soviet capital that hour: the capital clause, as the rule reads.
   - `tests/unit/nukeThreat1938.test.ts`: a revolt grown to a third of the Soviet strength, its
     income nothing, is not struck in ten days (struck on the 6.12e source: red).
+- **The AT, seeds 6619 and 2953 × 30 years headless on the final code** (`.cache/probe/nukeProbe612.ts`,
+  774 and 707 s side by side): 5 and 7 decisions (the critic's runs: 36 and 10 bursts).
+  - First use: 6619, the Soviet Union on London in year 18, desperation 1.01, extreme (fighting to
+    the death), utility 0.174; 2953, Germany on London in year 15, desperation 1.35, extreme, 0.732.
+    Each decision's utility is in the history (`NukeDecided`).
+  - Retaliation at the striker: struck, the United Kingdom answered the Soviet Union on Moscow the
+    next day (0.720), and Germany near Geneva and on Munich (0.470, 0.475), each time on the
+    striker's land; no answer to an answer.
+  - Bursts on land no one holds, the striker's own or a neutral's, or within a week's blast radius:
+    0 and 0. Decisions by a nation founded in play: 0 and 0.
+  - Left as the rules read them: the Soviet Union's strike on #268 (income 1) near Rasht, its land
+    forces 200 km from the Soviet capital that hour; Germany's on Denmark (income 71 against a rump
+    Germany's 41). "Free Liège II" (#138, income 2,131, holding Berlin) researched the bomb itself
+    and holds 28 warheads in year 30, unused: a rich nation may. The United States' 87 warheads
+    unused: never struck, aggression 15.
 
 ### ADR-393 · 2026-10-15 · accepted — Where the AI's warheads fall (PLAN 6.11, critic R6-B2)
 

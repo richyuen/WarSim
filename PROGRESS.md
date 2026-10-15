@@ -15836,3 +15836,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **AT:** `nukeThreat1938`: a revolt a third as strong as the Soviet Union, income 0, is not struck
   (red on 6.12e). Checkpoints (6619 y17 + 6, 2953 y14 + 4): 5 and 7 decisions, none on a poor
   statelet but #268, whose land forces stood 200 km from the Soviet capital that hour.
+
+## 2026-10-15 — PLAN 6.12 done: who strikes whom (critic R6-B2)
+
+- **AT:** seeds 6619 and 2953 × 30 years headless on the final code (`.cache/probe/nukeProbe612.ts`,
+  774 and 707 s side by side): 5 and 7 decisions (36 and 10 bursts on the critic's code). First use:
+  the Soviet Union on London (desperation 1.01, extreme), Germany on London (1.35, extreme). The
+  United Kingdom answered each striker on its own land (Moscow; near Geneva, Munich), once each.
+  Bad bursts 0; decisions by a nation founded in play 0. Findings in ADR-394.
+- **Parity:** row 6 of Table 2 appended (the five new tests). `npm run parity` unchanged in score.
+- **Gotcha:** two background probes started with `&` from a shell call that then returned were
+  killed at year 3; start them in one `run_in_background` call that `wait`s.
+- **Gate note:** the known red build time failed six gates in a row at 6.12b (2,031 to 2,817 ms);
+  green with `VITEST_MAX_WORKERS=4`, used for 6.12b to 6.12f.
+- **Next:** the next unchecked task in PLAN.md.
