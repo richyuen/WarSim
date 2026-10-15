@@ -167,6 +167,42 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-397 · 2026-10-15 · accepted — Combat's fire: once an hour what was once a volley, and the fire records kept (PLAN 7.1e)
+
+- **Once an hour** (`b527b7d`, `systems/combat.ts`, `core/pose.ts`): the hour's losses, the
+  elements' places and the formations' slot counts in typed arrays kept between calls (not state;
+  a stamp a call says what is this hour's) instead of a `Map` each; the buffs on attack looked up
+  once a shooting formation and those on defence once a target formation, not by a string at
+  every volley; the ground's factor on fire from a table by unit type and terrain (a `WeakMap` of
+  the game's unit rules), not by the class's name in the terrain's record; the air's factor once
+  a zone and nation; `slotPose` keeps the cosine and sine of the last two facings (a shooter's and
+  its target's are asked for by turns). Every value is the one worked out before, in the same
+  order: the pin is unchanged (45df324d).
+- **The fire records** (`e640c98`, `shared/events.ts`): `World.out.fires` is a `FireLog`, a
+  `Float64Array` that grows by doubling and is kept, with `length` (numbers written; `length = 0`
+  empties it, as every reader already did), `push` of a record's ten numbers, `data` and `slice`.
+  A `number[]` emptied each hour (`length = 0`) gave its buffer back to V8 and grew it again from
+  nothing, some 1,200 records an hour in year 1. Tested first on a bundle with fixed writes in
+  the push's place: the line fell from ~270 profile ticks to ~90, so the growth was the cost and
+  not the form of the push (ten indexed writes into the array cost the same). The worker's drain
+  reads `data` below `length`; the tests read a copy, and the two that emptied their alias empty
+  the log.
+- **Measured.** By the AT's measure, alternating pinned pairs on the budget machine (`--profile
+  --affinity 0xFFFF`, esbuild bundles of `4e36f27` and of the task's code, year 1 of seed 99):
+  combat 0.703 and 0.701 ms → 0.486 and 0.491 (−30.5 %); the mean tick 3.34 and 3.31 → 3.09 and
+  3.16. By `node --cpu-prof` on the E-cores (as in 7.1a): combat's subtree 7,675 ms of 44.3 s →
+  5,807 of 42.2 s (−24 %); its own lines 2,942 → 1,672.
+- **The third moved** (as 7.1c's figure did): 7.1a's 1.21 ms was read on a busier machine (the
+  same code read 0.83 under tsx and 0.70 bundled today), so the AT is judged by pairs on one
+  day. What is left of combat is not the fire: `deployOf` 916 ms on its own (the blocks of dense
+  fronts: for each block in a stack, the lines before it and the contacts in reach), `findBattles`
+  845 (7.1d's), the places of the elements that fire (`elementPlace`, `place`, `slotPose` ~740,
+  real work: a deployment and a pose an element an hour) and the subtick's hash (122, an output
+  the view reads).
+- **Tried and dropped:** `deployOf`'s walk of the contacts over a typed copy of their ids with a
+  north-south pre-check (855 → 803 ms, inside the noise between runs of the same code; 7.1d found
+  the same).
+
 ### ADR-396 · 2026-10-15 · accepted — Combat's battles found with each pair once (PLAN 7.1d)
 
 - **The buckets** (`findBattles`, `systems/combat.ts`): a `Map` of buckets of 2 cells, looked up

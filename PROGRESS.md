@@ -15900,3 +15900,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   the contacts lie on a few fronts) and a north-south pre-check before its distance.
 - **Gotcha:** a `cat > file` with no heredoc in a Bash call waits on stdin until the timeout.
 - **Next:** PLAN 7.1e.
+
+## 2026-10-15 — PLAN 7.1e: combat's fire (performance)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Found** (year-1 profile of seed 99 on the E-cores, `.cache/prof71/pe0`): combat's own lines
+  2.9 s of its 7.7 s subtree: the hour's losses in a `Map` and their sort, the buffs looked up by
+  a string four times a volley, the class's terrain factor by name, the fire records' push.
+- **Cut 1** (`b527b7d`): typed arrays kept between calls for the losses, the places and the slot
+  counts; the buffs once a formation; a table of the ground's factor; the air's factor once a
+  zone and nation; `slotPose` keeps two facings' cosine and sine. Pin unchanged.
+- **Cut 2** (`e640c98`): `World.out.fires` is a `FireLog` (a kept `Float64Array`). A bundle with
+  fixed writes in the push's place showed the cost was the array's growth after each hour's
+  `length = 0`, not the push (indexed writes cost the same). 18 files read it; `tsc` named them.
+- **AT** (ADR-397): pin unchanged (45df324d). Alternating pinned pairs (`--profile --affinity
+  0xFFFF`, bundles of `4e36f27` and the task's code): combat 0.703, 0.701 → 0.486, 0.491 ms
+  (−30.5 %). The cpu-prof subtree 7,675 → 5,807 ms (−24 %). Short of the third: 7.1a's 1.21 ms
+  was a busier machine's (the old code read 0.70 bundled today); what is left is `deployOf` (916
+  ms on dense fronts), `findBattles` (845, 7.1d's) and the places of the elements that fire.
+- **Tried and dropped:** `deployOf`'s contacts over typed ids with a north-south pre-check
+  (855 → 803 ms, noise; as 7.1d found).
+- **Specs run by hand:** `fire1938`, `muzzles1938`, `turrets1938` green; `zoomDemo1938` red with
+  0.672 both before and after the task (its known-red reason is wrong: BLOCKERS, PLAN 7.1k).
+- **Gate:** green for cut 1; for cut 2 green but e2e, stopped on `zoomDemo1938` (above); parity
+  by hand.
+- **Gotcha:** `arr.length = 0` gives a V8 array's buffer back; an output filled each hour wants a
+  kept typed buffer.
+- **Next:** PLAN 7.1f.

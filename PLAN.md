@@ -157,8 +157,7 @@ quick sweep as a smoke test.
   - [x] 7.1a The baseline on the budget machine (i7-13700KF, `0xFFFF`), HEAD `3649c23`: seed 99 […]
   - [x] 7.1c The air AI's order of the rich cells (`byIndustry`, `ai/air.ts`): each call […]
   - [x] 7.1d Combat's battles (`findBattles`, 8.3 % of year 1 with what it calls; 4.6 % its own): […]
-  - [ ] 7.1e Combat's fire (`combatSystem`'s own 6.3 %, `placeOf` 3.2 %, `deployAll` 3.0 %). AT:
-    the pin unchanged; combat's mean in year 1 of the profiled run down by a third (1.21 ms).
+  - [x] 7.1e Combat's fire (`combatSystem`'s own 6.3 %, `placeOf` 3.2 %, `deployAll` 3.0 %). AT: […]
   - [ ] 7.1f The air's anti-aircraft and strikes (`systems/airCombat.ts`: `antiAir` 4.5 %,
     `strikes` 5.4 % of year 1).
     AT: the pin unchanged; `air` in year 1 halved (0.49 ms).
@@ -179,6 +178,10 @@ quick sweep as a smoke test.
     on this machine.
   - [ ] 7.1k The tests parked until 7.1 (`tools/gate/knownRed.json`: `aiSweep3`'s 900 s; the three
     timing tests of the unit suite): each passes here alone, or stays with a BLOCKERS line on why.
+    Found at 7.1e: `zoomDemo1938` is on the list for wall time on a software GPU, but here it fails
+    on the node side, before any frame: the battle's battalions keep 0.672 of their men where the
+    spec wants under a half (the same on `4e36f27`). Its entry's reason is wrong; the battle it
+    picks is to be found again or the test fixed (BLOCKERS 2026-10-15).
   - [ ] 7.1l The leads above that no part takes (the ground's cap, the land mask twice, the
     fractional pixel ratios, the top speed, the hitches at T3): each done, moved to the task it
     belongs to, or dropped with an ADR. Then the five years of seed 99 again: AT of 7.1 (1.5 ms,

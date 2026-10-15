@@ -9158,3 +9158,25 @@ Of 7.1 (open in PLAN.md):
   - [x] 7.1d Combat's battles (`findBattles`, 8.3 % of year 1 with what it calls; 4.6 % its own):
     the buckets and the contacts. AT: the pin unchanged; `findBattles` halved in a year-1 profile.
     Done (ADR-396): each pair once; without `deployAll` (7.1e's) 5.3 % → 2.6 %, with it 8.6 → 5.5 %.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.1 (open in PLAN.md):
+
+  - [x] 7.1e Combat's fire (`combatSystem`'s own 6.3 %, `placeOf` 3.2 %, `deployAll` 3.0 %). AT:
+    the pin unchanged; combat's mean in year 1 of the profiled run down by a third (1.21 ms).
+    Done (`b527b7d`, `e640c98`, ADR-397): pin unchanged; by alternating pinned pairs 0.70 → 0.49
+    ms (−30.5 %), the subtree by `--cpu-prof` −24 %. The third moved: what is left is the
+    deployments of dense fronts and `findBattles`, not the fire.
