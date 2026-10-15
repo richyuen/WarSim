@@ -15828,3 +15828,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   asserted England's grievance from France's answer: now that it has none (ADR-394).
 - **Found for 6.12f:** seed 2953's rump Germany (income 478, 17,325 men) strikes statelet #225
   (income 10, 17,380 men): income tells a statelet from a power, the army does not.
+
+## 2026-10-15 — PLAN 6.12f: "small" by income (critic R6-B2)
+
+- **The rule** (`threatens`): THREAT_SHARE of the striker's income, not of its strength (the Soviet
+  army fell to 22,000 men; statelets of incomes 1 to 30 passed). ADR-394.
+- **AT:** `nukeThreat1938`: a revolt a third as strong as the Soviet Union, income 0, is not struck
+  (red on 6.12e). Checkpoints (6619 y17 + 6, 2953 y14 + 4): 5 and 7 decisions, none on a poor
+  statelet but #268, whose land forces stood 200 km from the Soviet capital that hour.

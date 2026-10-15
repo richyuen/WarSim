@@ -15,7 +15,9 @@ import { nationId } from '../helpers/sim1938';
 // PLAN 6.12a (critic R6-B2): no first use on a nation that cannot threaten the striker. The first
 // strikes in the critic's history were the Soviet Union's, three on a revolt statelet of its own
 // land at utility 0.01 to 0.39. A nation threatens when it (or its overlord) has a warhead, its
-// strength is THREAT_SHARE of the striker's, or its land forces stand near the striker's capital.
+// income is THREAT_SHARE of the striker's (PLAN 6.12f; first its strength, which a collapsed army
+// made of no use: seed 6619's Soviet Union fell to 22,000 men, as many as a statelet's), or its land
+// forces stand near the striker's capital.
 // The Soviet Union, armed, losing and fighting to the death: no strike on a revolt of Soviet
 // Armenia in thirty days; the same Soviet Union at war with Germany strikes twelve German divisions
 // massed in East Prussia. Both by missile, that no bomber's range or interception decides it.
@@ -61,16 +63,35 @@ describe('no first use on a nation that cannot threaten the striker (PLAN 6.12a)
     const rebels = spawnRebels(w, [w.cells.province[cell]!], SOV);
     const war = w.wars.between(SOV, rebels)?.war;
     expect(war).toBeTruthy();
-    const str = strengths(w);
-    process.stderr.write(`strength: Soviet Union ${str[SOV]!.toFixed(0)}, the revolt ${str[rebels]!.toFixed(0)}\n`);
-    expect(str[rebels]!).toBeLessThan(THREAT_SHARE * str[SOV]!);
-    expect(threatens(w, rebels, SOV, str)).toBe(false);
+    const nc = w.nations.cols;
+    process.stderr.write(`income: Soviet Union ${nc.income[SOV]!.toFixed(0)}, the revolt ${nc.income[rebels]!.toFixed(0)}\n`);
+    expect(nc.income[rebels]!).toBeLessThan(THREAT_SHARE * nc.income[SOV]!);
+    expect(threatens(w, rebels, SOV)).toBe(false);
     expect(decisions(s, war!, 24 * 30)).toEqual([]);
     expect(warheadsOf(w, SOV)).toBe(5);
     // A warhead of its own: the revolt threatens.
     s.command({ kind: 'grantWarheads', nation: rebels, count: 1 });
     s.step(1);
-    expect(threatens(w, rebels, SOV, strengths(w))).toBe(true);
+    expect(threatens(w, rebels, SOV)).toBe(true);
+  });
+
+  it('a revolt a third as strong as the Soviet Union but poor (PLAN 6.12f) is not struck either', () => {
+    const s = armedSoviets();
+    const w = s.world;
+    const cell = Math.floor(yerevan[1]) * W + Math.floor(yerevan[0]);
+    const rebels = spawnRebels(w, [w.cells.province[cell]!], SOV);
+    const war = w.wars.between(SOV, rebels)!.war;
+    // Seed 6619: the Soviet Union fell to 22,000 men, statelets had 6,000 to 38,000. Here the revolt
+    // grows to more than a quarter of the Soviet strength instead, as poor as before.
+    w.formations.forEach((id) => {
+      const c = w.formations.cols;
+      if (c.nation[id] === rebels) c.strength[id] = c.strength[id]! * 40;
+    });
+    const str = strengths(w);
+    process.stderr.write(`strength: Soviet Union ${str[SOV]!.toFixed(0)}, the revolt ${str[rebels]!.toFixed(0)}\n`);
+    expect(str[rebels]!).toBeGreaterThan(THREAT_SHARE * str[SOV]!);
+    expect(threatens(w, rebels, SOV)).toBe(false);
+    expect(decisions(s, war, 24 * 10)).toEqual([]);
   });
 
   it('the same Soviet Union at war with Germany strikes it: twelve divisions massed in East Prussia', () => {
@@ -81,9 +102,9 @@ describe('no first use on a nation that cannot threaten the striker (PLAN 6.12a)
     expect(w.cells.owner[Math.floor(prussia[1]) * W + Math.floor(prussia[0])]).toBe(GER);
     for (let k = 0; k < 12; k++) s.command({ kind: 'spawnFormation', nation: GER, x: prussia[0] + (k % 4) * 0.3, y: prussia[1] + Math.floor(k / 4) * 0.3, strength: 0, template: inf });
     s.step(1);
-    const str = strengths(w);
-    process.stderr.write(`strength: Soviet Union ${str[SOV]!.toFixed(0)}, Germany ${str[GER]!.toFixed(0)}\n`);
-    expect(threatens(w, GER, SOV, str)).toBe(true);
+    const nc = w.nations.cols;
+    process.stderr.write(`income: Soviet Union ${nc.income[SOV]!.toFixed(0)}, Germany ${nc.income[GER]!.toFixed(0)}\n`);
+    expect(threatens(w, GER, SOV)).toBe(true);
     const decided = decisions(s, war, 24 * 30);
     process.stderr.write(`the Soviet Union decided: ${JSON.stringify(decided)}\n`);
     expect(decided.length).toBeGreaterThan(0);

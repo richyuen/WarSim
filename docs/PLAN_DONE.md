@@ -9039,3 +9039,25 @@ Of 6.12 (open in PLAN.md):
     weeks). The answering launches are state (saved).
     AT: unit test: England strikes Paris, France answers; England holds no grievance and strikes
     no more in ten days; a save carries an answer in flight.
+
+<!-- moved 2026-10-15 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+
+Of 6.12 (open in PLAN.md):
+
+  - [x] 6.12f What "small" means when the striker's army is gone (seed 6619: the Soviet
+    strength fell from 649,000 to 22,000 in two years, and statelets of 6,000 to 38,000 men passed
+    THREAT_SHARE; Sweden and Norway struck at desperation 0.6). First find what makes the
+    desperation (the land others hold, held by this war's enemy or by anyone), then the measure.
+    AT: from the checkpoints of years 17 (6619) and 14 (2953): no strike on a statelet without
+    warheads; seeds 6619 and 2953 × 30 years headless on the final code (this task's AT).

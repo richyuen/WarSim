@@ -86,8 +86,8 @@
  * living, not switched off nor a puppet, nukes allowed, in each of its wars weighs each enemy
  * capital and the NUKE_TARGETS places where enemy land formations are most massed (`nukeTargets`;
  * PLAN 6.11a: on land the enemy side holds, within FRONT_KM of its own side; PLAN 6.12a: of an
- * enemy that can threaten it, `threatens`: a warhead, THREAT_SHARE of its strength, or land forces
- * near its capital),
+ * enemy that can threaten it, `threatens`: a warhead, THREAT_SHARE of its income (PLAN 6.12f), or
+ * land forces near its capital),
  * and strikes the one of most utility above 0 (by missile when it knows them and one reaches, else
  * by bomber, a free one or one retasked from a sortie; one out of reach, the next), once a day at
  * most. The decision is told (`NukeDecided`).
@@ -135,7 +135,6 @@ import { basePlace, wingRange } from './air';
 import { applyLoss, cellX, elementIndex, settleFormation, wrapDx } from './elements';
 import { airSuperiority } from './airSuperiority';
 import { seaKm } from './navalCombat';
-import { strengths } from '../ai/strategic';
 
 /** Monthly income, gold, from which a nation allowed nukes runs a programme. */
 export const NUKE_PROGRAMME_INCOME = 1000;
@@ -693,24 +692,25 @@ function retaliates(world: World, n: number, war: War, side: number): boolean {
 }
 
 /**
- * How strong a nation must be, against the striker, to threaten it (PLAN 6.12a): a share of the
- * striker's strength, both read as the strategic AI reads them (`strengths`: the army's men and the
- * navy's weight, a puppet's with its overlord's).
+ * How large a nation must be, against the striker, to threaten it (PLAN 6.12a): a share of the
+ * striker's monthly income, a puppet's read as its overlord's (PLAN 6.12f: not the army's men, which
+ * a war can take from a great power in two years; seed 6619's Soviet Union fell from 649,000 men to
+ * 22,000, and statelets of 6,000 to 38,000 men, incomes of tens, passed a quarter of that).
  */
 export const THREAT_SHARE = 0.25;
 
 /**
  * Whether nation `m` can threaten `n` (PLAN 6.12a, critic R6-B2: the Soviet Union's first strikes in
  * history fell on a revolt statelet of its own land): `m` or its overlord has a warhead, or its
- * realm's strength is THREAT_SHARE of `n`'s realm's, or its land forces stand within
+ * realm's income is THREAT_SHARE of `n`'s realm's (PLAN 6.12f), or its land forces stand within
  * CAPITAL_THREAT_KM of `n`'s capital. A nation that cannot is not struck first.
  */
-export function threatens(world: World, m: number, n: number, strength: Float64Array): boolean {
+export function threatens(world: World, m: number, n: number): boolean {
   const nc = world.nations.cols;
   const realm = (k: number): number => (nc.overlord[k]! !== 0 ? nc.overlord[k]! : k);
   const rm = realm(m);
   if (warheadsOf(world, m) > 0 || warheadsOf(world, rm) > 0) return true;
-  if ((strength[rm] ?? 0) >= THREAT_SHARE * (strength[realm(n)] ?? 0)) return true;
+  if (nc.income[rm]! >= THREAT_SHARE * nc.income[realm(n)]!) return true;
   const cx = nc.capitalX[n]!;
   const cy = nc.capitalY[n]!;
   const c = world.formations.cols;
@@ -735,12 +735,12 @@ export interface Aim {
  * London, the United Kingdom's one bomb went to Chungking, and no Soviet place was within FRONT_KM
  * of it); else the enemies that can threaten it (PLAN 6.12a).
  */
-export function aimOf(world: World, n: number, war: War, side: number, strength: () => Float64Array): Aim {
+export function aimOf(world: World, n: number, war: War, side: number): Aim {
   const by = grievanceIn(world, n, war, side);
   if (by !== 0) return { at: new Set([by]), anywhere: true };
   const nc = world.nations.cols;
   const at = new Set<number>();
-  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && threatens(world, m, n, strength())) at.add(m);
+  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && threatens(world, m, n)) at.add(m);
   return { at, anywhere: false };
 }
 
@@ -763,7 +763,7 @@ export const RESTRIKE_DAYS = 7;
  * 6.12a; the nation that struck it, from any distance, PLAN 6.12b); the massed men weighed are the
  * whole enemy side's.
  */
-export function nukeTargets(world: World, n: number, war: War, side: number, aim: Aim = aimOf(world, n, war, side, () => strengths(world))): [number, number][] {
+export function nukeTargets(world: World, n: number, war: War, side: number, aim: Aim = aimOf(world, n, war, side)): [number, number][] {
   const { at, anywhere } = aim;
   const nc = world.nations.cols;
   const out: [number, number][] = [];
@@ -819,8 +819,6 @@ function nukeDecisions(world: World): void {
   if (!world.settings.aiEnabled || world.warheads.size === 0) return;
   const nc = world.nations.cols;
   const industry = industryOnce(world);
-  let str: Float64Array | null = null;
-  const strength = (): Float64Array => (str ??= strengths(world));
   for (const n of [...world.warheads.keys()].sort((a, b) => a - b)) {
     if (warheadsOf(world, n) < 1 || nc.living[n] !== 1 || nc.aiOff[n] === 1 || nc.overlord[n] !== 0 || !nukesAllowed(world, n)) continue;
     const options: { u: number; x: number; y: number; back: boolean }[] = [];
@@ -831,7 +829,7 @@ function nukeDecisions(world: World): void {
       const side = sideIn(war);
       if (side < 0 || (avenging && grievanceIn(world, n, war, side) === 0)) continue;
       const back = retaliates(world, n, war, side);
-      const aim = aimOf(world, n, war, side, strength);
+      const aim = aimOf(world, n, war, side);
       if (aim.at.size === 0) continue;
       const shared = warInputs(world, n, war, side, back);
       const view = strikeView(world, n, war, side, industry);

@@ -237,6 +237,22 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - `tests/unit/nukeAnswer1938.test.ts`: England (AI on, aggression 30) strikes Paris; France
     answers once and England strikes no more in twelve days; the answer in flight is saved. On the
     6.12d source nine strikes alternate in twelve days (red).
+- **6.12f, "small" by income** (`threatens`): a nation not small against the striker has
+  `THREAT_SHARE` of its monthly income (realm's, a puppet's its overlord's), not of its strength.
+  - Found (`.cache/probe/nukeWhy612.ts`, `nukeDesp612.ts`, seed 6619 from year 17): the Soviet
+    strength fell from 649,000 to 22,000 men between years 18 and 20 (the army's collapse is
+    balance, R6-B3's, deferred), so statelets of 6,000 to 38,000 men passed a quarter of it, and
+    Sweden and Norway too; seed 2953's rump Germany (income 478, 17,325 men) struck statelet #225
+    (income 10, 17,380 men). Desperation was not the leak: the land those wars' enemies held was
+    under 1 % of the striker's; the score and the land held by others made 0.46 to 0.6. Income
+    tells a statelet from a power where the army does not.
+  - From the checkpoints of years 17 (6619, 6 years) and 14 (2953, 4 years): 5 and 7 decisions
+    (75 and 10 on the 6.12e code, most of 6619's the exchange 6.12e ended); targets the United
+    Kingdom (warheads), Free Liège II (income 2,131), a statelet of income 174 against the Soviet
+    589, Poland, Denmark (against a rump Germany of 41), and #268 (income 1) with land forces 200 km
+    from the Soviet capital that hour: the capital clause, as the rule reads.
+  - `tests/unit/nukeThreat1938.test.ts`: a revolt grown to a third of the Soviet strength, its
+    income nothing, is not struck in ten days (struck on the 6.12e source: red).
 
 ### ADR-393 · 2026-10-15 · accepted — Where the AI's warheads fall (PLAN 6.11, critic R6-B2)
 

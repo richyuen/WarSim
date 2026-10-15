@@ -46,12 +46,7 @@ quick sweep as a smoke test.
   - [x] 6.12c A nation founded in play does not inherit the nuclear techs of the nation it […]
   - [x] 6.12d A strike back is not deterred by the striker's second strike: a nation of […]
   - [x] 6.12e A strike back settles the score: its burst gives the nation it falls on no grievance […]
-  - [ ] 6.12f What "small" means when the striker's army is gone (seed 6619: the Soviet
-    strength fell from 649,000 to 22,000 in two years, and statelets of 6,000 to 38,000 men passed
-    THREAT_SHARE; Sweden and Norway struck at desperation 0.6). First find what makes the
-    desperation (the land others hold, held by this war's enemy or by anyone), then the measure.
-    AT: from the checkpoints of years 17 (6619) and 14 (2953): no strike on a statelet without
-    warheads; seeds 6619 and 2953 × 30 years headless on the final code (this task's AT).
+  - [x] 6.12f What "small" means when the striker's army is gone (seed 6619: the Soviet […]
 
 ## Phase 7 — Balance, polish, soak
 
