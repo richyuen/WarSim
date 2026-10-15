@@ -179,8 +179,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **The cap by the view** (`groundCap`): 0.01 an px² and 1,000 more, above the densest view (0.008
   of forest; a city's middle at 0.85 against a forest's 0.75). No view is cut at a line.
 - **What a frame affords:** 24,000 (`GROUND_CAP`, the GPU's buffer): a scatter of that many is
-  some 1.3 ms of the main thread (it runs when the camera moves), their draw a few hundredths of
-  a ms. Past it the scatter keeps exactly 24,000: the finest rank first (the level coming in by
+  some 1.3 ms of the main thread (it runs when the camera moves); their draw was not timed at
+  that many (bench A draws 8,685 with the map's ground pass in 0.81 ms). Past it the scatter keeps exactly 24,000: the finest rank first (the level coming in by
   its fade, then the finest in full), of the rank kept in part those of the least keys, a hash
   of each point (so spread evenly, and the same in the same view). 1920 × 1080 is never thinned;
   3840 × 2160 at 19.8 px a cell keeps 24,000 of 64,708, as dense in each of 12 bands of the view.
