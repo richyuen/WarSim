@@ -90,7 +90,10 @@ export const SPEARHEAD_ARMOUR = 0.5;
 
 interface Sector {
   key: number;
-  cells: number[];
+  /** Its front cells, by the parts they came from (`FrontPart.cells`, shared: never written). */
+  cells: number[][];
+  /** How many. */
+  count: number;
   cx: number;
   cy: number;
   threat: number;
@@ -165,6 +168,61 @@ interface Standings {
   foes: Map<number, Uint8Array>;
   /** A holder's front for a set of enemies, by the holder and the set (`frontPart`). */
   fronts: Map<string, FrontPart>;
+  /** The sectors of a side for a set of enemies, by the set and the side (`sectorShape`). */
+  sectors: Map<string, SectorShape>;
+}
+
+/** A sector as the planners of a side with the same enemies all have it (`sectorShape`). */
+interface SectorShape {
+  /** By ascending key, with the holders of the side that have front cells in it. */
+  list: (Pick<Sector, 'key' | 'cells' | 'count' | 'cx' | 'cy' | 'hold'> & { holders: number[] })[];
+  /** The sectors' threats, once a plan has summed them, and `world.embarked.size` then (-1: none yet). */
+  threat: number[];
+  threatAt: number;
+}
+
+/**
+ * The sectors of the front cells of the side's holders (n and those on its side, in the
+ * frontier's order) that touch an enemy of n whom the holder fights too: by ascending key, each
+ * with its centre and the own front cell nearest it (`holdCell`).
+ */
+function sectorShape(world: World, side: number[], frontier: Map<number, Front>, enemyKey: string, enemyOf: Uint8Array, enemies: number[], n: number, fighting: Set<number>, stand: Standings, w: number, bw: number): SectorShape {
+  /** The sectors in the order they were met. */
+  const made: SectorShape['list'] = [];
+  const at = new Map<number, number>();
+  for (const holder of side) {
+    const id = `${holder}:${enemyKey}`;
+    let part = stand.fronts.get(id);
+    if (!part) {
+      const theirs = holder === n ? enemyOf : foesOf(world, holder, fighting, stand);
+      const foe = new Uint8Array(world.nations.highWater);
+      for (const m of enemies) if (theirs[m] === 1) foe[m] = 1;
+      stand.fronts.set(id, (part = frontPart(frontier.get(holder)!, foe, w, bw)));
+    }
+    for (let j = 0; j < part.keys.length; j++) {
+      const key = part.keys[j]!;
+      let i = at.get(key);
+      if (i === undefined) {
+        at.set(key, (i = made.length));
+        made.push({ key, cells: [], count: 0, cx: 0, cy: 0, hold: -1, holders: [] });
+      }
+      const s = made[i]!;
+      s.cells.push(part.cells[j]!);
+      s.count += part.cells[j]!.length;
+      // The centre's sums, of half-integers: the same in any order of the cells (and no other
+      // reading of them takes their order: `holdCell` and `attackCell` take the lowest of equals).
+      s.cx += part.sx[j]!;
+      s.cy += part.sy[j]!;
+      if (s.holders[s.holders.length - 1] !== holder) s.holders.push(holder);
+    }
+  }
+  const list = made.slice().sort((a, b) => a.key - b.key);
+  for (const s of list) {
+    s.cx /= s.count;
+    s.cy /= s.count;
+    s.hold = holdCell(s, w);
+  }
+  return { list, threat: [], threatAt: -1 };
 }
 
 /**
@@ -227,7 +285,7 @@ function standings(world: World, w: number): Standings {
     if (!at) byBucket.set(k, (at = []));
     at.push(id);
   });
-  return { byNation, byBucket, embarked: world.embarked.size, foes: new Map(), fronts: new Map() };
+  return { byNation, byBucket, embarked: world.embarked.size, foes: new Map(), fronts: new Map(), sectors: new Map() };
 }
 
 /**
@@ -289,46 +347,20 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     SLOTS.gen = 1;
   }
   const { stamp: slotStamp, at: slotAt, gen } = SLOTS;
-  /** The sectors in the order they were met. */
-  const made: Sector[] = [];
-  for (const [holder, fr] of frontier) {
-    if (holder !== n && !wars.sameSide(holder, n)) continue;
-    const id = `${holder}:${enemyKey}`;
-    let part = stand.fronts.get(id);
-    if (!part) {
-      // A front cell touches an enemy of n whom its holder fights too.
-      const theirs = holder === n ? enemyOf : foesOf(world, holder, fighting, stand);
-      const foe = new Uint8Array(world.nations.highWater);
-      for (const m of enemies) if (theirs[m] === 1) foe[m] = 1;
-      stand.fronts.set(id, (part = frontPart(fr, foe, w, bw)));
-    }
-    for (let j = 0; j < part.keys.length; j++) {
-      const key = part.keys[j]!;
-      let s = slotStamp[key] === gen ? made[slotAt[key]!] : undefined;
-      if (!s) {
-        slotStamp[key] = gen;
-        slotAt[key] = made.length;
-        made.push((s = { key, cells: [], cx: 0, cy: 0, threat: 0, formations: [], strength: 0, hold: -1, own: false }));
-      }
-      for (const c of part.cells[j]!) s.cells.push(c);
-      // The centre's sums, of half-integers: the same in any order of the cells (and no other
-      // reading of them takes their order: `holdCell` and `attackCell` take the lowest of equals).
-      s.cx += part.sx[j]!;
-      s.cy += part.sy[j]!;
-      if (holder === n) s.own = true;
-    }
+  // The planners of a tick on one side with the same enemies have the same sectors (PLAN 7.1i):
+  // they are made once, and each plan has its own copy of what it writes in them.
+  const side: number[] = [];
+  for (const holder of frontier.keys()) if (holder === n || wars.sameSide(holder, n)) side.push(holder);
+  const sideKey = `${enemyKey}|${side.join(',')}`;
+  let shape = stand.sectors.get(sideKey);
+  if (!shape) stand.sectors.set(sideKey, (shape = sectorShape(world, side, frontier, enemyKey, enemyOf, enemies, n, fighting, stand, w, bw)));
+  if (shape.list.length === 0) return;
+  const list: Sector[] = shape.list.map((k) => ({ key: k.key, cells: k.cells, count: k.count, cx: k.cx, cy: k.cy, threat: 0, formations: [], strength: 0, hold: k.hold, own: k.holders.includes(n) }));
+  for (let i = 0; i < list.length; i++) {
+    slotStamp[list[i]!.key] = gen;
+    slotAt[list[i]!.key] = i;
   }
-  if (made.length === 0) return;
-  const keys = new Int32Array(made.length);
-  for (let i = 0; i < made.length; i++) keys[i] = made[i]!.key;
-  keys.sort();
-  const list: Sector[] = [];
-  for (const key of keys) list.push(made[slotAt[key]!]!);
-  for (let i = 0; i < list.length; i++) slotAt[list[i]!.key] = i;
-  for (const s of list) {
-    s.cx /= s.cells.length;
-    s.cy /= s.cells.length;
-  }
+
   /** The strength of n's enemies in a sector bucket (read where no order is given in between). */
   const enemyAt = (k: number): number => {
     if (k < 0 || k >= buckets) return 0;
@@ -465,7 +497,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   };
   for (let i = 0; i < sn; i++) {
     const s = list[i]!;
-    const hold = (s.hold = holdCell(s, w));
+    const hold = s.hold;
     // From another landmass: the cell of it within the snap of an order, once per landmass.
     let other: Map<number, number> | undefined;
     // The cell last asked for its ground, and the answer.
@@ -524,16 +556,22 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   // Far from every sector they reach, standing still, and theirs the day (ascending).
   const far = ownFront ? [...near.filter((id) => !nearest.has(id) && idle(id)), ...out].sort((a, b) => a - b) : [];
   if (active.length === 0 && far.length === 0) return;
-  // Threat: enemy formations by sector bucket, summed over each sector's 3 × 3 neighbourhood.
-  for (const s of list) {
-    const sy = Math.floor(s.key / bw);
-    const sx = s.key - sy * bw;
-    for (let dx = -1; dx <= 1; dx++) {
-      const x = bucketX(sx, dx);
-      if (x < 0) continue;
-      for (let dy = -1; dy <= 1; dy++) s.threat += enemyAt((sy + dy) * bw + x);
+  // Threat: enemy formations by sector bucket, summed over each sector's 3 × 3 neighbourhood. The
+  // same for the plans that share the sectors (the enemies are the same) while nobody embarked
+  // between (an order puts a formation aboard; none comes ashore in a tick's plans).
+  if (shape.threatAt !== world.embarked.size) {
+    for (const s of list) {
+      const sy = Math.floor(s.key / bw);
+      const sx = s.key - sy * bw;
+      for (let dx = -1; dx <= 1; dx++) {
+        const x = bucketX(sx, dx);
+        if (x < 0) continue;
+        for (let dy = -1; dy <= 1; dy++) s.threat += enemyAt((sy + dy) * bw + x);
+      }
     }
-  }
+    shape.threat = list.map((s) => s.threat);
+    shape.threatAt = world.embarked.size;
+  } else for (let i = 0; i < list.length; i++) list[i]!.threat = shape.threat[i]!;
   const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / SECTOR_CELLS) * bw + Math.floor((c % w) / SECTOR_CELLS);
   /** The number in `list` of the sector of a bucket, if it has one. */
   const indexOf = (key: number): number | undefined => (slotStamp[key] === gen ? slotAt[key] : undefined);
@@ -833,16 +871,18 @@ function cellDist(a: number, b: number, w: number, loop: boolean): number {
 }
 
 /** The own front cell nearest the sector centre (lowest id on ties). */
-function holdCell(s: Sector, w: number): number {
+function holdCell(s: Pick<Sector, 'cells' | 'cx' | 'cy'>, w: number): number {
   let best = -1;
   let bd = Infinity;
-  for (const c of s.cells) {
-    const ex = (c % w) + 0.5 - s.cx;
-    const ey = Math.floor(c / w) + 0.5 - s.cy;
-    const d = ex * ex + ey * ey;
-    if (d < bd || (d === bd && c < best)) {
-      bd = d;
-      best = c;
+  for (const cells of s.cells) {
+    for (const c of cells) {
+      const ex = (c % w) + 0.5 - s.cx;
+      const ey = Math.floor(c / w) + 0.5 - s.cy;
+      const d = ex * ex + ey * ey;
+      if (d < bd || (d === bd && c < best)) {
+        bd = d;
+        best = c;
+      }
     }
   }
   return best;
@@ -853,15 +893,17 @@ function attackCell(world: World, s: Sector, enemy: (m: number) => boolean, nb: 
   const { w, h, controller } = world.cells;
   let best = -1;
   let bd = Infinity;
-  for (const c of s.cells) {
-    for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
-      if (!enemy(controller[k]!)) continue;
-      const ex = (k % w) + 0.5 - s.cx;
-      const ey = Math.floor(k / w) + 0.5 - s.cy;
-      const d = ex * ex + ey * ey;
-      if (d < bd || (d === bd && k < best)) {
-        bd = d;
-        best = k;
+  for (const cells of s.cells) {
+    for (const c of cells) {
+      for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
+        if (!enemy(controller[k]!)) continue;
+        const ex = (k % w) + 0.5 - s.cx;
+        const ey = Math.floor(k / w) + 0.5 - s.cy;
+        const d = ex * ex + ey * ey;
+        if (d < bd || (d === bd && k < best)) {
+          bd = d;
+          best = k;
+        }
       }
     }
   }

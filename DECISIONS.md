@@ -205,6 +205,14 @@ here, because a rule change can break it.
   before, and the sums of the centres by part. **Relies on:** the sums being of half-integers
   far below 2^52 (exact in any order, as the sector's own sums already were); the frontier
   being one for the tick's planners.
+- **A side's sectors, once a tick for a set of enemies** (`sectorShape`, `Standings.sectors`):
+  planners with the same enemies and the same holders on their side (in the frontier's order)
+  have the same sectors; their list by key, centres and hold cells are made once a tick, and a
+  sector's cells are the parts' arrays, not copied. Each plan has its own `Sector` objects for
+  what it writes (the threat, the formations, the strength), and `own` from the holders that
+  have cells in the sector. The threat is summed by the first plan and copied by the others
+  while `world.embarked` has not grown: it reads the enemies' formations by bucket, and within a
+  tick's plans none moves out of its bucket and none comes ashore (ADR-399's `standings`).
 
 ### ADR-400 · 2026-10-15 · accepted — Territory's hour and supply's refresh without what the rule does not need (PLAN 7.1h)
 
