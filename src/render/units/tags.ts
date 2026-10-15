@@ -98,6 +98,61 @@ const overlap = (a: { x: number; y: number; w: number; h: number }, b: { x: numb
 const far = (t: { x: number; y: number; w: number; h: number }, x: number, y: number): number => Math.hypot(Math.max(t.x - x, x - (t.x + t.w), 0), Math.max(t.y - y, y - (t.y + t.h), 0));
 
 /**
+ * Boxes by the squares of the view they touch (PLAN 7.1l4), for the layout's questions of the
+ * form "does any box near this one pass a test": each is asked of the boxes in the squares a
+ * question's box touches, with the same test, so the answer is the one asked of every box.
+ * (Asked of every box, 384 tags at T2 cost 6 ms of a frame.) A box beyond the view is kept in
+ * the squares of its edge: a question that reaches past it finds it there too.
+ */
+class BoxGrid {
+  private readonly cells: number[][];
+  private readonly nx: number;
+  private readonly ny: number;
+  /** The question each box was last asked in: a box in several squares is tested once. */
+  private readonly asked: number[] = [];
+  private question = 0;
+
+  constructor(
+    vw: number,
+    vh: number,
+    private readonly size: number,
+  ) {
+    this.nx = Math.max(1, Math.ceil(vw / size));
+    this.ny = Math.max(1, Math.ceil(vh / size));
+    this.cells = Array.from({ length: this.nx * this.ny }, () => []);
+  }
+
+  private col(x: number): number {
+    return Math.min(this.nx - 1, Math.max(0, Math.floor(x / this.size)));
+  }
+
+  private row(y: number): number {
+    return Math.min(this.ny - 1, Math.max(0, Math.floor(y / this.size)));
+  }
+
+  /** Box `i`, its corners x0 ≤ x1, y0 ≤ y1 (its edges in it). */
+  add(i: number, x0: number, y0: number, x1: number, y1: number): void {
+    for (let r = this.row(y0), r1 = this.row(y1); r <= r1; r++) for (let c = this.col(x0), c1 = this.col(x1); c <= c1; c++) this.cells[r * this.nx + c]!.push(i);
+  }
+
+  /** Whether `test` holds for a box that shares a square with the box x0 ≤ x1, y0 ≤ y1. */
+  some(x0: number, y0: number, x1: number, y1: number, test: (i: number) => boolean): boolean {
+    const q = ++this.question;
+    for (let r = this.row(y0), r1 = this.row(y1); r <= r1; r++)
+      for (let c = this.col(x0), c1 = this.col(x1); c <= c1; c++)
+        for (const i of this.cells[r * this.nx + c]!) {
+          if (this.asked[i] === q) continue;
+          this.asked[i] = q;
+          if (test(i)) return true;
+        }
+    return false;
+  }
+}
+
+/** The side of a square of `BoxGrid`, px: about two tags' height. */
+const GRID_PX = 64;
+
+/**
  * Places the tags of `items` in a view of vw × vh px. `measure(text, font)` is the width of a
  * line. The picked formation first, then the stronger ones (the lower id on a tie), so the
  * layout does not depend on the order of the list. No tag stands on one of `avoid`, nor nearer to it than to another tag.
@@ -112,6 +167,14 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
   const h = 2 * lineH + 2 * pad;
   const edge = 2;
   const kept = avoid.map((o) => ({ x: o.x - TAG_GAP, y: o.y - TAG_GAP, w: o.w + 2 * TAG_GAP, h: o.h + 2 * TAG_GAP }));
+  // The formations' elements; the placed tags; and each placed tag's reach, the square about
+  // its block's middle within which a place is nearer to that middle than the tag is.
+  const blocks = new BoxGrid(vw, vh, GRID_PX);
+  items.forEach((o, i) => blocks.add(i, o.x0, o.y0, o.x1, o.y1));
+  const tags = new BoxGrid(vw, vh, GRID_PX);
+  const reach = new BoxGrid(vw, vh, GRID_PX);
+  /** Whether a placed tag is nearer than `d` to (x, y). */
+  const tagNearer = (x: number, y: number, d: number): boolean => tags.some(x - d, y - d, x + d, y + d, (j) => far(placed[j]!, x, y) < d);
   const sorted = [...items].sort((a, b) => Number(b.picked === true) - Number(a.picked === true) || b.strength - a.strength || a.id - b.id);
   for (const it of sorted) {
     // The part of the formation that is in the view.
@@ -158,15 +221,21 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
       const clear = pass < 2;
       for (const at of pass === 0 ? tries.slice(0, byBlock) : tries) {
         const box = { x: at.x, y: at.y, w, h };
-        if (kept.some((o) => overlap(o, box)) || placed.some((p) => overlap(p, box))) continue;
-        if (clear && items.some((o) => o !== it && box.x < o.x1 && o.x0 < box.x + w && box.y < o.y1 && o.y0 < box.y + h)) continue;
-        if (pass === 0 && placed.some((p) => far(box, p.tx, p.ty) < far(p, p.tx, p.ty))) continue;
+        const bx1 = box.x + w;
+        const by1 = box.y + h;
+        if (kept.some((o) => overlap(o, box)) || tags.some(box.x, box.y, bx1, by1, (j) => overlap(placed[j]!, box))) continue;
+        if (clear && blocks.some(box.x, box.y, bx1, by1, (j) => items[j] !== it && box.x < items[j]!.x1 && items[j]!.x0 < bx1 && box.y < items[j]!.y1 && items[j]!.y0 < by1)) continue;
+        if (pass === 0 && reach.some(box.x, box.y, bx1, by1, (j) => far(box, placed[j]!.tx, placed[j]!.ty) < far(placed[j]!, placed[j]!.tx, placed[j]!.ty))) continue;
         // Nor one that a tag placed before it is nearer to this block's middle than (PLAN
         // 4.2b1): it would have a line (ADR-188) where a place by the block has none.
-        if (pass === 0 && placed.some((p) => far(p, tx, ty) < far(box, tx, ty))) continue;
+        if (pass === 0 && tagNearer(tx, ty, far(box, tx, ty))) continue;
         // How far the tag's box is from its elements' (0 when it lies on them).
         const gap = Math.max(vx0 - (box.x + w), box.x - vx1, vy0 - (box.y + h), box.y - vy1, 0);
-        placed.push({ id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, picked: it.picked === true, ...box, gap, line: gap > TAG_LINE_FROM, tx: (vx0 + vx1) / 2, ty: (vy0 + vy1) / 2, flag: false });
+        const tag: PlacedTag = { id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, picked: it.picked === true, ...box, gap, line: gap > TAG_LINE_FROM, tx, ty, flag: false };
+        const j = placed.push(tag) - 1;
+        tags.add(j, box.x, box.y, bx1, by1);
+        const d = far(tag, tx, ty);
+        if (d > 0) reach.add(j, tx - d, ty - d, tx + d, ty + d);
         done = true;
         break;
       }
@@ -177,11 +246,7 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
   // A tag by its own block is not always the one a reader takes for the block's (ADR-188):
   // by a tall block, "below" is further from its middle than a neighbour's tag over its top.
   // Such a tag has a line too.
-  for (const t of placed) {
-    if (t.line) continue;
-    const own = far(t, t.tx, t.ty);
-    if (placed.some((o) => o !== t && far(o, t.tx, t.ty) < own)) t.line = true;
-  }
+  for (const t of placed) if (!t.line && tagNearer(t.tx, t.ty, far(t, t.tx, t.ty))) t.line = true;
   return { placed, left };
 }
 

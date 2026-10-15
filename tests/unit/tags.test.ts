@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutTags, TAG_GAP, TAG_SIDES, TAG_TRIES, type TagInput } from '../../src/render/units/tags';
+import { layoutTags, TAG_FLAG_W, TAG_GAP, TAG_LINE_FROM, TAG_NAME_FONT, TAG_PAD, TAG_SIDES, TAG_STRENGTH_FONT, TAG_TRIES, type PlacedTag, type TagInput, type TagObstacle } from '../../src/render/units/tags';
 
 // PLAN 2.14a: the tags of T2 and T3. The layout alone (the drawing is in tests/e2e/tags1938.spec.ts).
 
@@ -8,6 +8,92 @@ const item = (id: number, strength: number, x0: number, y0: number, x1: number, 
 /** The places a tag tries: the rings, four sides each (PLAN 3.7g; two sides until then). */
 const PLACES = TAG_SIDES * TAG_TRIES;
 const over = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }): boolean => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+
+// PLAN 7.1l4: the layout asks its questions of the boxes in a grid, not of every box. This is
+// the layout as it was, each question asked of every box: the two must place every tag alike.
+const overlap = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }): boolean =>
+  a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+const far = (t: { x: number; y: number; w: number; h: number }, x: number, y: number): number => Math.hypot(Math.max(t.x - x, x - (t.x + t.w), 0), Math.max(t.y - y, y - (t.y + t.h), 0));
+function layoutPlain(items: readonly TagInput[], measure: (text: string, font: string) => number, vw: number, vh: number, scale = 1, avoid: readonly TagObstacle[] = []): { placed: PlacedTag[]; left: number } {
+  const placed: PlacedTag[] = [];
+  let left = 0;
+  const pad = TAG_PAD * scale;
+  const lineH = 12 * scale;
+  const h = 2 * lineH + 2 * pad;
+  const edge = 2;
+  const kept = avoid.map((o) => ({ x: o.x - TAG_GAP, y: o.y - TAG_GAP, w: o.w + 2 * TAG_GAP, h: o.h + 2 * TAG_GAP }));
+  const sorted = [...items].sort((a, b) => Number(b.picked === true) - Number(a.picked === true) || b.strength - a.strength || a.id - b.id);
+  for (const it of sorted) {
+    // The part of the formation that is in the view.
+    const vx0 = Math.max(it.x0, 0);
+    const vx1 = Math.min(it.x1, vw);
+    const vy0 = Math.max(it.y0, 0);
+    const vy1 = Math.min(it.y1, vh);
+    if (vx1 < vx0 || vy1 < vy0) continue;
+    const w = Math.ceil(Math.max(TAG_FLAG_W * scale + pad + measure(it.text, TAG_STRENGTH_FONT(scale)), measure(it.name, TAG_NAME_FONT(scale))) + 2 * pad);
+    const x = Math.round(Math.min(Math.max((vx0 + vx1) / 2 - w / 2, edge), Math.max(edge, vw - w - edge)));
+    const stepY = h + TAG_GAP;
+    const stepX = w + TAG_GAP;
+    const above = vy0 - TAG_GAP - h;
+    const below = vy1 + TAG_GAP;
+    const beside = (vy0 + vy1) / 2 - h / 2;
+    const maxX = Math.max(edge, vw - w - edge);
+    const maxY = Math.max(edge, vh - h - edge);
+    const tries: { x: number; y: number }[] = [];
+    /** How many of them are by the block: the first place on each side. */
+    let byBlock = 0;
+    // Above, then below, then left and right, then a place further out on each side: the
+    // nearest free one. (Two formations in contact stand front to front, PLAN 2.14c1: one has
+    // its tag above its block and the other below, each by its own. Blocks side by side,
+    // ADR-168: the places beside a block are the ones clear of its neighbours.)
+    for (let k = 0; k < TAG_TRIES; k++) {
+      // In the view: one that would stand above its top edge stands at it, on its own elements.
+      tries.push({ x, y: Math.round(Math.min(Math.max(above - k * stepY, edge), maxY)) }, { x, y: Math.round(Math.min(Math.max(below + k * stepY, edge), maxY)) });
+      // A place beside the block that the view has no room for is none: held in the view it would be a place above or below again.
+      const y = Math.round(Math.min(Math.max(beside, edge), maxY));
+      const lx = Math.round(vx0 - TAG_GAP - w - k * stepX);
+      const rx = Math.round(vx1 + TAG_GAP + k * stepX);
+      if (lx >= edge) tries.push({ x: lx, y });
+      if (rx <= maxX) tries.push({ x: rx, y });
+      if (k === 0) byBlock = tries.length;
+    }
+    const tx = (vx0 + vx1) / 2;
+    const ty = (vy0 + vy1) / 2;
+    let done = false;
+    // First a place by the block, clear of every other formation's elements, that is not
+    // nearer to the middle of another block than that block's own tag, placed before it (PLAN
+    // 3.11f: a reader would take it for that block's); then the nearest place clear of the
+    // elements; with none, any free place.
+    for (const pass of [0, 1, 2]) {
+      const clear = pass < 2;
+      for (const at of pass === 0 ? tries.slice(0, byBlock) : tries) {
+        const box = { x: at.x, y: at.y, w, h };
+        if (kept.some((o) => overlap(o, box)) || placed.some((p) => overlap(p, box))) continue;
+        if (clear && items.some((o) => o !== it && box.x < o.x1 && o.x0 < box.x + w && box.y < o.y1 && o.y0 < box.y + h)) continue;
+        if (pass === 0 && placed.some((p) => far(box, p.tx, p.ty) < far(p, p.tx, p.ty))) continue;
+        // Nor one that a tag placed before it is nearer to this block's middle than (PLAN
+        // 4.2b1): it would have a line (ADR-188) where a place by the block has none.
+        if (pass === 0 && placed.some((p) => far(p, tx, ty) < far(box, tx, ty))) continue;
+        // How far the tag's box is from its elements' (0 when it lies on them).
+        const gap = Math.max(vx0 - (box.x + w), box.x - vx1, vy0 - (box.y + h), box.y - vy1, 0);
+        placed.push({ id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, picked: it.picked === true, ...box, gap, line: gap > TAG_LINE_FROM, tx: (vx0 + vx1) / 2, ty: (vy0 + vy1) / 2, flag: false });
+        done = true;
+        break;
+      }
+      if (done) break;
+    }
+    if (!done) left++;
+  }
+  // A tag by its own block is not always the one a reader takes for the block's (ADR-188):
+  // by a tall block, "below" is further from its middle than a neighbour's tag over its top.
+  // Such a tag has a line too.
+  for (const t of placed) {
+    if (t.line) continue;
+    const own = far(t, t.tx, t.ty);
+    if (placed.some((o) => o !== t && far(o, t.tx, t.ty) < own)) t.line = true;
+  }
+  return { placed, left };
+}
 
 describe('formation tags: the layout (PLAN 2.14a)', () => {
   it('a tag stands above its formation, centred on it, a gap away', () => {
@@ -288,5 +374,41 @@ describe('formation tags: the layout (PLAN 2.14a)', () => {
       expect(placed).toEqual([]);
       expect(left).toBe(1);
     });
+  });
+});
+
+describe('formation tags: the layout by a grid (PLAN 7.1l4)', () => {
+  it('places every tag where the layout that asks every box does, in crowded views', () => {
+    let seed = 12345;
+    const rnd = (): number => ((seed = (seed * 1103515245 + 12345) >>> 0) / 2 ** 32);
+    let lines = 0;
+    let lefts = 0;
+    for (let scene = 0; scene < 60; scene++) {
+      const vw = 600 + Math.floor(rnd() * 1400);
+      const vh = 400 + Math.floor(rnd() * 700);
+      const n = 20 + Math.floor(rnd() * 400);
+      const items: TagInput[] = [];
+      for (let i = 0; i < n; i++) {
+        // Blocks of every size, some reaching out of the view, some strengths alike.
+        const bw = 10 + rnd() * (rnd() < 0.1 ? 900 : 120);
+        const bh = 10 + rnd() * (rnd() < 0.1 ? 600 : 80);
+        const x0 = rnd() * (vw + 200) - 100 - bw / 2;
+        const y0 = rnd() * (vh + 200) - 100 - bh / 2;
+        const it = item(1 + i, 1000 * Math.floor(rnd() * 20), x0, y0, x0 + bw, y0 + bh);
+        it.text = `${(it.strength / 1000).toFixed(1)}k`;
+        it.picked = i === 3 && scene % 2 === 0;
+        items.push(it);
+      }
+      const avoid: TagObstacle[] = scene % 3 === 0 ? [{ x: vw / 2 - 150, y: vh - 40, w: 300, h: 40 }] : [];
+      const scale = scene % 4 === 0 ? 1.5 : 1;
+      const grid = layoutTags(items, measure, vw, vh, scale, avoid);
+      const plain = layoutPlain(items, measure, vw, vh, scale, avoid);
+      expect(grid).toEqual(plain);
+      lines += plain.placed.filter((t) => t.line).length;
+      lefts += plain.left;
+    }
+    // The scenes have tags with lines and tags left out: each of the layout's questions is asked.
+    expect(lines).toBeGreaterThan(100);
+    expect(lefts).toBeGreaterThan(100);
   });
 });
