@@ -98,26 +98,43 @@ export function convoyWays(world: World): Map<number, Map<number, number[]>> {
 }
 
 /**
- * The cities on a land of the nav grid (component not 0), in ascending id: their cells and their
- * components, kept while the cities and the grid are the same (PLAN 7.1h).
+ * The cities on a land of the nav grid (component not 0), in ascending id: their cells, and the
+ * slot of their component among the cities' components (`lands`), kept while the cities and the
+ * grid are the same (PLAN 7.1h).
  */
-const cityLands = new WeakMap<World, { version: number; count: number; high: number; comp: Uint32Array; cells: Int32Array; comps: Uint32Array }>();
-function landCities(world: World, comp: Uint32Array): { cells: Int32Array; comps: Uint32Array } {
+interface LandCities {
+  version: number;
+  count: number;
+  high: number;
+  comp: Uint32Array;
+  cells: Int32Array;
+  slots: Int32Array;
+  lands: Uint32Array;
+}
+const cityLands = new WeakMap<World, LandCities>();
+function landCities(world: World, comp: Uint32Array): LandCities {
   const t = world.cities;
   const kept = cityLands.get(world);
   if (kept && kept.version === world.citiesVersion && kept.count === t.count && kept.high === t.highWater && kept.comp === comp) return kept;
   const cells: number[] = [];
-  const comps: number[] = [];
+  const slots: number[] = [];
+  const slotOf = new Map<number, number>();
   t.forEach((id) => {
     const cell = t.cols.cell[id]!;
-    if (comp[cell] === 0) return;
+    const c = comp[cell]!;
+    if (c === 0) return;
+    let slot = slotOf.get(c);
+    if (slot === undefined) slotOf.set(c, (slot = slotOf.size));
     cells.push(cell);
-    comps.push(comp[cell]!);
+    slots.push(slot);
   });
-  const out = { version: world.citiesVersion, count: t.count, high: t.highWater, comp, cells: Int32Array.from(cells), comps: Uint32Array.from(comps) };
+  const out = { version: world.citiesVersion, count: t.count, high: t.highWater, comp, cells: Int32Array.from(cells), slots: Int32Array.from(slots), lands: Uint32Array.from(slotOf.keys()) };
   cityLands.set(world, out);
   return out;
 }
+/** The count of each (land slot, bloc) pair of a call, 0 between calls, and the pairs in the order met. */
+let pairCount = new Uint32Array(0);
+let pairOrder = new Int32Array(0);
 
 function seaReach(world: World): { linked: Map<number, number[]>; ways: Map<number, Map<number, number[]>> } {
   const comp = navOf(world).grid.component;
@@ -153,23 +170,29 @@ function seaReach(world: World): { linked: Map<number, number[]>; ways: Map<numb
     list.push(zone);
   });
   // The cities' components by bloc, with their counts: counted by pair first (PLAN 4.8i3: one
-  // look-up a city, not two), then by bloc in the order the pairs were met, which is the order
-  // a bloc's components were met in.
-  const pairs = new Map<number, number>();
-  const { cells: cityCells, comps: cityComps } = landCities(world, comp);
+  // look-up a city, not two; PLAN 7.1h: in kept typed arrays), then by bloc in the order the
+  // pairs were met, which is the order a bloc's components were met in.
+  const { cells: cityCells, slots, lands } = landCities(world, comp);
+  const stride = blocOfNation.length;
+  if (pairCount.length < lands.length * stride) pairCount = new Uint32Array(lands.length * stride);
+  if (pairOrder.length < cityCells.length) pairOrder = new Int32Array(cityCells.length);
+  let met = 0;
   for (let i = 0; i < cityCells.length; i++) {
     const cell = cityCells[i]!;
     const ctl = controller[cell]!;
     if (ctl === 0 || owner[cell] !== ctl) continue;
-    const key = cityComps[i]! * 0x10000 + blocOfNation[ctl]!;
-    pairs.set(key, (pairs.get(key) ?? 0) + 1);
+    const key = slots[i]! * stride + blocOfNation[ctl]!;
+    if (pairCount[key] === 0) pairOrder[met++] = key;
+    pairCount[key] = pairCount[key]! + 1;
   }
   const cities = new Map<number, Map<number, number>>();
-  for (const [key, n] of pairs) {
-    const b = key % 0x10000;
+  for (let i = 0; i < met; i++) {
+    const key = pairOrder[i]!;
+    const b = key % stride;
     let m = cities.get(b);
     if (!m) cities.set(b, (m = new Map()));
-    m.set((key - b) / 0x10000, n);
+    m.set(lands[(key - b) / stride]!, pairCount[key]!);
+    pairCount[key] = 0;
   }
   const holder = world.seaControl?.holder;
   const { links, through } = zoneGraph(world);
