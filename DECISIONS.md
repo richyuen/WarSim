@@ -192,9 +192,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   combat 0.703 and 0.701 ms → 0.486 and 0.491 (−30.5 %); the mean tick 3.34 and 3.31 → 3.09 and
   3.16. By `node --cpu-prof` on the E-cores (as in 7.1a): combat's subtree 7,675 ms of 44.3 s →
   5,807 of 42.2 s (−24 %); its own lines 2,942 → 1,672.
-- **The third moved** (as 7.1c's figure did): 7.1a's 1.21 ms was read on a busier machine (the
-  same code read 0.83 under tsx and 0.70 bundled today), so the AT is judged by pairs on one
-  day. What is left of combat is not the fire: `deployOf` 916 ms on its own (the blocks of dense
+- **The third moved** (as 7.1c's figure did): the AT's 1.21 ms is 7.1a's baseline (`3649c23`),
+  before 7.1d took much of `findBattles`, which is inside the same measure, out of it. On the
+  commit before 7.1e (`4e36f27`) the measure read 0.83 under tsx and 0.70 bundled (the same
+  code; the bundle is faster), so the task is judged by same-day pairs of one kind of build, the
+  bundled CLI, whose 0.70 → 0.49 is the figure in the plan's tick. What is left of combat is not the fire: `deployOf` 916 ms on its own (the blocks of dense
   fronts: for each block in a stack, the lines before it and the contacts in reach), `findBattles`
   845 (7.1d's), the places of the elements that fire (`elementPlace`, `place`, `slotPose` ~740,
   real work: a deployment and a pose an element an hour) and the subtick's hash (122, an output

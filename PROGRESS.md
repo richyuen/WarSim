@@ -15916,7 +15916,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **AT** (ADR-397): pin unchanged (45df324d). Alternating pinned pairs (`--profile --affinity
   0xFFFF`, bundles of `4e36f27` and the task's code): combat 0.703, 0.701 → 0.486, 0.491 ms
   (−30.5 %). The cpu-prof subtree 7,675 → 5,807 ms (−24 %). Short of the third: 7.1a's 1.21 ms
-  was a busier machine's (the old code read 0.70 bundled today); what is left is `deployOf` (916
+  was read before 7.1d cut `findBattles`, part of the same measure (`4e36f27` read 0.83 under
+  tsx and 0.70 bundled, the same code), so judged by bundled same-day pairs; what is left is `deployOf` (916
   ms on dense fronts), `findBattles` (845, 7.1d's) and the places of the elements that fire.
 - **Tried and dropped:** `deployOf`'s contacts over typed ids with a north-south pre-check
   (855 → 803 ms, noise; as 7.1d found).

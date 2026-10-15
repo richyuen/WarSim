@@ -9,8 +9,8 @@ entries are kept and marked **RESOLVED** with the date and fix.
 `tools/gate/knownRed.json` has it for wall time on a software GPU. On this machine it fails on its
 node side, before the page: `expect(max battalion strength / size).toBeLessThan(0.5)` gets 0.672
 (`tests/e2e/zoomDemo1938.spec.ts:303`). The same figure on `4e36f27` (before 7.1e's code) and
-after it, so not 7.1e's. The battle the spec picks no longer bleeds its battalions under half in
-the hours it watches; the rules have moved since it was written. Left to PLAN 7.1k (find the
+after it, so not 7.1e's. The battle the spec picks does not bleed its battalions under half in
+the hours it watches; why is not found (red since before this task). Left to PLAN 7.1k (find the
 battle again or fix the test; not by moving the threshold). The gate of `e640c98`, which had to
 edit the spec (its reads of `out.fires`), stopped on it; the rest of the gate was green.
 
