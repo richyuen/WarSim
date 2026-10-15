@@ -15668,3 +15668,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   weapons are used (up to 3.5 bursts a year); no second strike from submarines; marching columns
   at one place drawn in one another.
 - **Next:** the critic (a phase review ticked: `npm run critic:due`).
+
+## 2026-10-15 — The critic's sixth report, on `228d083` (Phase 6, nuclear), filed
+
+- **Critic run 6** (PROMPT step 2a, after the Phase 6 review): map 6, diplomacy 6, dynamics 5,
+  God Mode 6, editor 6, stats 6, UI 6, performance 4, stability 7; semantic zoom 6, naval 6,
+  tanks 5, aircraft 5, nuclear 4. **3 blocking.**
+- **Filed:** R6-B1 (the nuclear system 69 to 79 % of the tick after the first strikes) PLAN 6.10;
+  R6-B2 (the AI's nuclear use not credible) PLAN 6.11 (where warheads fall) and 6.12 (who strikes
+  whom); R6-B3 (statelets) a line under 1.42.
+- **Deferred (ADR-58), logged once:** R6-B3, the world shatters into statelets (seed 6619: 154
+  nations alive after 30 years, 77 founded in play). Balance, waits for Phase 7; not disputed.
+- **Next:** PLAN 6.10.

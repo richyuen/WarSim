@@ -27,6 +27,41 @@ quick sweep as a smoke test.
 
 ## Phase 6 — Nuclear AI
 
+- [ ] 6.10 Critic R6-B1 (report of 2026-10-15 on `228d083`): the nuclear years make the game crawl.
+  Seed 6619, pinned and alone: from the first strikes (1949) the `nuclear` system takes 7.0 to
+  10.1 ms of a 9.7 to 12.8 ms tick in years 13 to 19 (69 to 79 %), one call a day of 170 to
+  240 ms (436 at most); still 3.4 ms (58 to 61 %) in years 20 and 21. Years 9 to 11, warheads
+  but no strike, ran 3 to 4 ms. In the browser at Max a year takes 129 to 216 s, not 20 to 25
+  (`critic/c6_perf_6619_y13_21_solo.log`, `critic/c6_perf_6619_y13_15_solo.log`). To find with
+  `--profile`: which part of the daily call costs so (state that strikes create and that decays:
+  fallout, outrage, shocks, grievance, the taboo, or the target scoring they feed).
+  AT: seed 6619 years 13 to 21 (a checkpoint), `--profile --affinity 0xFFFF`: `nuclear` under
+  10 % of the tick and no call over 20 ms; a unit test that the day's nuclear call with fallout
+  and outrage in the world does work bounded by the warheads and wars, not by the cells struck.
+- [ ] 6.11 Critic R6-B2 (report of 2026-10-15 on `228d083`), first of two: where the AI's warheads
+  fall. Seed 6619: one a day, three in a row on one spot (Pinsk and Kovel; Odense three times),
+  on distant colonies (Paramaribo, Aden, Malabo, Las Palmas) and on land no one holds
+  (`critic/c6_nuke_where.json`, `critic/c6_headless_6619.json`). The AI's targets: an enemy's
+  massed armies on a front or its core (its capital, its cores' cities), not a colony far from
+  any front; no second warhead on a place struck within a blast radius while its formations are
+  gone; no burst on land without a controller.
+  AT: unit tests of the target choice (a colony against a core city, a spot struck the day
+  before, land no one holds); a 30-year headless run of seed 6619: no burst on land no one
+  holds, none within a blast radius of the last week's, each named in the history by place.
+- [ ] 6.12 Critic R6-B2, second: who strikes whom. The first use in history is the Soviet Union
+  bombing the revolt statelet Free Van three times in two days at utility 0.01 to 0.39; struck
+  at London (1.37 million dead), the United Kingdom never strikes back at the Soviet Union, its
+  one bomb goes to Chungking; the United States holds 87 warheads in 30 years and uses none,
+  while the revolt statelet "Free Liège II" (holding Berlin) builds warheads and makes 11 strike
+  decisions in 1955 and 1956 (`critic/c6_headless_6619.json`, `critic/c6_headless_2953.json`,
+  `critic/c6_c_6619.json`). What it asks: no first use against a nation that cannot threaten
+  the striker (no warheads, small, not near its capital); retaliation at the nation that struck;
+  and to find how a statelet founded in play comes to build warheads.
+  AT: unit tests from the world (a great power at war with a revolt statelet: no strike; a
+  struck nation's next decision aims at its striker); seeds 6619 and 2953 × 30 years headless:
+  the first use by a nation desperate by SPEC §6.4's terms, each strike's utility in the
+  history, retaliation at the striker; the findings in DECISIONS.
+
 ## Phase 7 — Balance, polish, soak
 
 - [ ] 7.1 Performance pass against all budgets (T0 60 fps, T2 30 fps @10k, tick ≤ 1.5 ms).
@@ -281,6 +316,11 @@ quick sweep as a smoke test.
   the taboo after a first use were not tuned. SPEC §6.4's second strike counts "survivable assets
   (subs, dispersed bombers)": a bomber flying counts (ADR-385), submarines and SLBMs do not; the
   SLBM is in the tech chain and delivers nothing.
+  From the critic's report of 2026-10-15 (R6-B3, run 6 on `228d083`; deferred by ADR-58, not
+  disputed, logged once in PROGRESS): the break-up again. Seed 6619: 154 nations alive after 30
+  years, 77 founded in play; seed 2953: 153; "Free Liège II" holds Berlin in 1953
+  (`critic/c6_headless_6619.json`, `critic/c6_headless_2953.json`). What the critic asks is as
+  in runs 4 and 5.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.
