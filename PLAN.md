@@ -64,6 +64,8 @@ quick sweep as a smoke test.
     - [x] 7.4f4 The critic's N10: the nation panel tells one Defensive Pact (or Coalition) from
       another by its founder, as the history does ("Defensive Pact of Sweden"). AT: a unit test
       of the title; an e2e spec of two pacts in the panel.
+    - [x] 7.4f5 The critic's N12: the editor's terrain layer shows the terrain map mode, and the
+      nation layer the mode before. AT: `editor1938` reads the mode at each switch.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -221,9 +223,7 @@ quick sweep as a smoke test.
   - N8 (left of it after PLAN 3.12Rh4 and 7.4f2): at 1024 × 600, playing a nation, the bar's
     "Poland · n selected" is cut to its first letter (the one item that shrinks; its tooltip says
     it in full).
-  - N12, N13: choosing the editor's terrain layer leaves the map in the political mode (a
-    stroke changed 508 cells and nothing on screen); the flag editor has no undo, line or
-    circle.
+  - N13: the flag editor has no undo, line or circle.
   - N14: ranking rows have no flags and five metrics (AoC: nine lists, the dead marked);
     charts have no axis ticks and no value under the cursor; the economy tab is six numbers.
   - N15, N16: map names and counters show through the Ranking panel; war banners stand three

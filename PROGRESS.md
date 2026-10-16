@@ -16994,3 +16994,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `history.test.ts` 19 of 19 (1 new); e2e `allianceTitle1938` (new),
   `nationPanel1938`, `history1938`: 5 of 5.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f5: the editor's terrain layer shows the terrain (UI)
+
+- **Start:** gate green on a clean tree (`563b110`); critic not due.
+- **Done:** choosing the editor's terrain layer sets the terrain map mode (a stroke was invisible
+  in the political mode, the critic's N12); the nation layer brings back the mode before
+  (`Hud.setEditor`). N12 off the list under 7.4; N13 (the flag editor's tools) stays.
+- **Tests:** `editor1938` reads the mode at both switches; `editorDrag1938`, `mapImport1938`,
+  `scenarioEditor1938`: 6 of 6.
+- **Next:** PLAN 7.4f, the next group.

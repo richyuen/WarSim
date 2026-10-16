@@ -84,13 +84,19 @@ test('editor: paint, undo and redo restore identical rasters; line, bucket and m
   // Terrain layer: paint mountains, then three undos and one more restore the starting rasters.
   await page.getByTestId('editor-mask').selectOption('none');
   await page.getByTestId('editor-tool-brush').click();
+  const before = await page.evaluate(() => window.__warsim!.hud.mapMode.value);
   await page.getByTestId('editor-layer').selectOption('terrain');
+  // The terrain layer shows the terrain mode, the painted one (PLAN 7.4f5, the critic's N12).
+  expect(await page.evaluate(() => window.__warsim!.hud.mapMode.value)).toBe('terrain');
   await page.getByTestId('editor-terrain').selectOption(String(Terrain.Mountains));
   await page.mouse.click(700, 400);
   await expect.poll(async () => (await rasters(page)).terrain).not.toBe(h0.terrain);
   for (let i = 0; i < 4; i++) await page.keyboard.press('Control+z');
   await expect.poll(() => rasters(page)).toEqual(h0);
   expect(await edits(page)).toEqual({ undo: 0, redo: 4 });
+  // Back on the nation layer, the mode it had.
+  await page.getByTestId('editor-layer').selectOption('nation');
+  expect(await page.evaluate(() => window.__warsim!.hud.mapMode.value)).toBe(before);
 
   await page.getByTestId('editor-close').click();
   await expect(page.getByTestId('editor-panel')).toHaveCount(0);

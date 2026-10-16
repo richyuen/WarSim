@@ -228,6 +228,8 @@ export class Hud {
   readonly showEditor = signal(false);
   readonly editor = signal<EditorState>({ tool: 'brush', layer: 'nation', nation: 0, terrain: 2, r: 4, mask: 'none', maskTerrain: 2, maskNation: 0, cityName: '', citySize: 2 });
   readonly lineStart = signal<[number, number] | null>(null);
+  /** The map mode to go back to when the editor's terrain layer is left (PLAN 7.4f5). */
+  private modeBeforeTerrain: MapMode = 'political';
 
   /** Settings panel (PLAN 1.39a). */
   readonly showSettings = signal(false);
@@ -271,6 +273,14 @@ export class Hud {
   }
 
   setEditor(s: EditorState): void {
+    // The layer painted is the one shown (PLAN 7.4f5, the critic's N12): the terrain layer shows
+    // the terrain mode, and the nation layer the mode it had before, political if none.
+    if (s.layer !== this.editor.value.layer) {
+      if (s.layer === 'terrain') {
+        if (this.mapMode.value !== 'terrain') this.modeBeforeTerrain = this.mapMode.value;
+        this.setMapMode('terrain');
+      } else if (this.mapMode.value === 'terrain') this.setMapMode(this.modeBeforeTerrain);
+    }
     if (s.tool !== this.editor.value.tool) this.lineStart.value = null;
     this.editor.value = s;
   }
