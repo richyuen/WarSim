@@ -167,10 +167,13 @@ quick sweep as a smoke test.
     - [ ] 7.3e1 A formation is refilled from its nation's pool of manpower (AoC: soldiers
       reinforced from the cores, PARITY row 74). To decide in its ADR: who is refilled (not in
       contact? in supply? on its nation's land?), how fast, at what gold, and what the economic
-      AI does with a pool against new orders. SPEC §3.7 gets the rule. AT: seed 7321, the Soviet
-      Union has 20 or more land formations at the start of year 13 (HEAD 1) and its pool does
-      not end year 10 over 5 M unused (HEAD 9.1 M); land formations in contact a day in years
-      13 to 20 above HEAD's (0.2 to 3.7, `docs/evidence/7.3/contact-7321.md`); the quick sweep
+      AI does with a pool against new orders. SPEC §3.7 gets the rule. First measure the code before
+      the change on `.cache/7321/contact.ts` (the figures of `docs/evidence/7.3/contact-7321.md`
+      are 7.3b's, before ADR-430 to ADR-433: the Soviet Union 1 land formation at year 13, a
+      pool of 9.1 M, 0.2 to 3.7 in contact a day in years 13 to 20). AT: seed 7321, the Soviet
+      Union has 20 or more land formations at the start of year 13 and its pool does not end
+      year 10 over 5 M unused; land formations in contact a day in years 13 to 20 above the
+      code's before the change; the quick sweep
       (seeds 1–10 × 30 years) limits 10 of 10 and stasis and break-up 8 of 10 or more, with the
       seeds where the Soviet Union's realm ends at 0 km² reported (HEAD 5 of 10). The pin moves.
     - [ ] 7.3e2 The economic AI pays for suppression from its treasury, not only from a surplus
@@ -178,7 +181,9 @@ quick sweep as a smoke test.
       rose; the Soviet Union lost western Europe province by province). AT: seeds 1 and 3 × 10
       years, land given back by revolt (`LandCeded`) under HEAD's 396 and 582
       (`docs/evidence/7.3/ceded-7.3e.md`, ADR-434), and the states founded on a holder's own far core land
-      (7.3d3's probe, seeds 5 and 6 × 30 years) under its 85 and 30; the quick sweep as 7.3e1's.
+      (7.3d3's probe, seeds 5 and 6 × 30 years) under the code's before the change, measured
+      again first (`births-7.3d3.md`'s 85 and 30 are from before ADR-433, and after 7.3e1 the
+      code is another); the quick sweep as 7.3e1's.
   - [ ] 7.3f The deciding sweep on unseen seeds (from 501) × 50 years. AT: the report ALL
     GREEN by the criteria of 7.3a.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).
