@@ -17028,3 +17028,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `mapTooltip1938` (new: Germany at Leipzig, none on the North Sea, Paris held by
   Germany, none in a drag); `mapModes1938`, `hotkeys1938`, `editorDrag1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f8: the flag editor's line, circle and undo (UI)
+
+- **Start:** gate green on a clean tree (`86eeb43`); critic not due.
+- **Done:** `flagLine` (Bresenham, clipped) and `flagDisc` (the pixels within r + ½ of the
+  middle) in `src/shared/flagPixels.ts`; the Line and Circle tools draw from where the button goes
+  down to where it comes up; Undo takes back the last of 20 changes (a pencil stroke is one, a
+  preset, a fill, a line, a circle). N13 off the list under 7.4.
+- **Tests:** `flagPixels.test.ts` 7 of 7 (3 new); `flags1938` draws a line and a circle and
+  undoes each, the pencil pixel kept, then saves as before; `editor1938`,
+  `scenarioEditor1938` green.
+- **Gotcha:** the editor's canvas is drawn in an effect after the render: a spec reads its
+  pixels by `expect.poll`.
+- **Next:** PLAN 7.4f, the next group.

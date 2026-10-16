@@ -108,3 +108,35 @@ export function fillFlag(px: Uint32Array, x: number, y: number, rgb: number): vo
     if (i < FLAG_W * (FLAG_H - 1)) stack.push(i + FLAG_W);
   }
 }
+
+/** Draws a line of pixels from (x0, y0) to (x1, y1), both ends in (PLAN 7.4f8, the critic's N13; Bresenham). */
+export function flagLine(px: Uint32Array, x0: number, y0: number, x1: number, y1: number, rgb: number): void {
+  const dx = Math.abs(x1 - x0);
+  const dy = -Math.abs(y1 - y0);
+  const sx = x0 < x1 ? 1 : -1;
+  const sy = y0 < y1 ? 1 : -1;
+  let err = dx + dy;
+  for (;;) {
+    if (x0 >= 0 && y0 >= 0 && x0 < FLAG_W && y0 < FLAG_H) px[y0 * FLAG_W + x0] = rgb;
+    if (x0 === x1 && y0 === y1) return;
+    const e2 = 2 * err;
+    if (e2 >= dy) {
+      err += dy;
+      x0 += sx;
+    }
+    if (e2 <= dx) {
+      err += dx;
+      y0 += sy;
+    }
+  }
+}
+
+/** Fills the pixels whose middles lie within `r` + ½ of the middle of (cx, cy) (PLAN 7.4f8): a disc, as AoC's circle. */
+export function flagDisc(px: Uint32Array, cx: number, cy: number, r: number, rgb: number): void {
+  const reach = r + 0.5;
+  for (let y = Math.max(0, Math.floor(cy - reach)); y <= Math.min(FLAG_H - 1, Math.ceil(cy + reach)); y++) {
+    for (let x = Math.max(0, Math.floor(cx - reach)); x <= Math.min(FLAG_W - 1, Math.ceil(cx + reach)); x++) {
+      if ((x - cx) * (x - cx) + (y - cy) * (y - cy) <= reach * reach) px[y * FLAG_W + x] = rgb;
+    }
+  }
+}

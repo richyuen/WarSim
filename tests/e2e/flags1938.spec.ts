@@ -53,6 +53,29 @@ test('a flag edited in the editor is drawn on the map and in the panel', async (
   await page.getByTestId('flag-color').fill('#0000ff');
   const box = (await page.getByTestId('flag-canvas').boundingBox())!;
   await page.mouse.click(box.x + box.width * (18.5 / 36), box.y + box.height * (12.5 / 24)); // pixel (18, 12)
+
+  // A line and a circle (PLAN 7.4f8, the critic's N13), each taken back by the undo.
+  const cell = (x: number, y: number): [number, number] => [box.x + box.width * ((x + 0.5) / 36), box.y + box.height * ((y + 0.5) / 24)];
+  const drag = async (a: [number, number], b: [number, number]): Promise<void> => {
+    await page.mouse.move(...cell(...a));
+    await page.mouse.down();
+    await page.mouse.move(...cell(...b), { steps: 4 });
+    await page.mouse.up();
+  };
+  const editorPixel = (x: number, y: number): Promise<number[]> => page.getByTestId('flag-canvas').evaluate((c: HTMLCanvasElement, [x, y]) => Array.from(c.getContext('2d')!.getImageData(x!, y!, 1, 1).data.slice(0, 3)), [x, y]);
+  await page.getByTestId('flag-tool-line').click();
+  await drag([2, 2], [10, 2]);
+  for (const x of [2, 6, 10]) await expect.poll(() => editorPixel(x, 2), `the line at (${x}, 2)`).toEqual([0, 0, 255]);
+  await expect.poll(() => editorPixel(11, 2), 'past the end of the line').toEqual([0, 170, 0]);
+  await page.getByTestId('flag-undo').click();
+  await expect.poll(() => editorPixel(6, 2), 'the line undone').toEqual([0, 170, 0]);
+  await page.getByTestId('flag-tool-circle').click();
+  await drag([28, 12], [30, 12]);
+  for (const [x, y] of [[28, 12], [30, 12], [28, 10], [26, 12]] as const) await expect.poll(() => editorPixel(x, y), `the circle at (${x}, ${y})`).toEqual([0, 0, 255]);
+  await expect.poll(() => editorPixel(28, 16), 'outside the circle').toEqual([204, 0, 0]);
+  await page.getByTestId('flag-undo').click();
+  await expect.poll(() => editorPixel(28, 12), 'the circle undone').toEqual([204, 0, 0]);
+  await expect.poll(() => editorPixel(18, 12), 'the pencil pixel kept').toEqual([0, 0, 255]);
   await page.getByTestId('flag-save').click();
 
   // On the map at Warsaw: green hoist, red fly, the blue pixel in the middle.

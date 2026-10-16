@@ -70,6 +70,8 @@ quick sweep as a smoke test.
       1400 px and wider (6, the rest "+N"). AT: an e2e spec at 1400 and 1920 with nine wars.
     - [x] 7.4f7 The critic's "no tooltip on hover": a mouse on land names the nation by the
       cursor, and its occupier where another holds it. AT: an e2e spec.
+    - [x] 7.4f8 The critic's N13: the flag editor's line and circle (a disc), and an undo of 20
+      steps. AT: unit tests of the line and the disc; `flags1938` draws and undoes each.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -227,7 +229,6 @@ quick sweep as a smoke test.
   - N8 (left of it after PLAN 3.12Rh4 and 7.4f2): at 1024 × 600, playing a nation, the bar's
     "Poland · n selected" is cut to its first letter (the one item that shrinks; its tooltip says
     it in full).
-  - N13: the flag editor has no undo, line or circle.
   - N14: ranking rows have no flags and five metrics (AoC: nine lists, the dead marked);
     charts have no axis ticks and no value under the cursor; the economy tab is six numbers.
   - N17: a black smear under a counter near Bern in 1952 of seed 2718.
