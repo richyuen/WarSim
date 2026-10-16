@@ -16826,3 +16826,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   `territory.test.ts` (cost a tick 39 < 25) red under load, green alone. Pin unmoved.
 - **Gotcha:** Python's text mode on Windows writes CRLF; `sed -i 's/\r$//'` after a Python edit.
 - **Next:** PLAN 7.3f run 2, seeds 601–610 × 50 years.
+
+## 2026-10-16 — PLAN 7.3f run 2: ALL GREEN; 7.3f and 7.3 ticked (docs)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Deciding sweep** (seeds 601–610 × 50 years on `23725fc`, 25.1 min with 10 processes,
+  `docs/sweeps/2026-10-16-sweep-b1-601.md`): ALL GREEN. Limits 10 of 10 (land moving 2.6–52.5 %
+  in the last 5 years, largest land 11.5–17.9 %, largest income 28.7–33.4 %, alive 67–101, a war
+  in 96–100 % of the years); riser 10 of 10, faller 10 of 10; no break-up 10 of 10 (× 0.80–1.00,
+  run 1: 6 of 10); no stasis 8 of 10 (601: 25 years, 604: 22).
+- **Nuclear weapons:** stockpiles 129–174 a seed at the end (run 1: 390–511, before ADR-439);
+  used in 3 of 10 seeds (601: 7 bursts, 602: 10, 603: 1); fallout at most 0.14 %.
+- **The notes left to this run, judged:**
+  - 7.3g's collapses (a state for every restless group, one cell too): the break-up holds on 10 of
+    10 with no late rise. Kept as a note.
+  - A great land's gross falling faster than its land: the Soviet realm ends at 0 km² in 6 of 10
+    seeds and the British in 3 (as fallers); Germany is the largest riser in 7 of 10. The Soviet
+    Union is still in the last top five of 7 seeds as a nation, so a puppet of another realm, not
+    dead. A pattern for the critic (7.5) to judge, not a criterion that fails.
+  - The US hoard (7.3e): the United States is in the top five by land in 499 of 500 yearly samples
+    and in every seed's longest-held top five; stasis holds on 8 of 10, so the note stands.
+- **Next:** PLAN 7.4.

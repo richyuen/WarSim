@@ -10083,3 +10083,159 @@ Of 7.3 (open in PLAN.md):
     releases, revivals, break-ups of a realm) on those seeds' checkpoints, then fix that one
     cause. AT: the count of foundings by cause after year 30 on seeds 501 and 506, before and
     after; a quick sweep's limits 10 of 10.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.3 Final multi-decade sweep (≥ 10 seeds) — borders moving, no hegemon.
+  AT: sweep report green.
+  Moved here from PLAN 1.42 when its sweep went green (2026-10-16): the findings it was given
+  and did not decide. The critic asks more than `tools/sweep/criteria.ts` judges (a run whose top
+  five are the same for 20 years fails; one whose count of living nations rises for 20 years
+  fails), and the sweep reports neither yet: to decide here. Seeds 401–410 (`docs/sweeps/2026-10-16-sweep-b1-401.md`):
+  living nations at most 170 to 231; China's realm at 0 km² by year 50 in five of ten seeds; the
+  quick sweep before it: the Soviet Union's at 0 km² by year 20 in five of ten. Deferred critic
+  findings on balance go here.
+  From the critic's report of 2026-10-05 (R2-B5, and the rate in R2-B6; deferred by ADR-58,
+  not disputed, logged once in PROGRESS):
+  - Seed 31337, 40 years headless: the top five by cells are the Soviet Union, Canada, the
+    United States, Denmark (Greenland) and France in every year from 8 to 40. Australia has
+    25,987 cells from year 5 to year 40. The Soviet share is 26.5 to 28.3% for 33 years and
+    falls to 17.8% in the last seven. Men 4.76 M → 9.74 M. Nations 101 → 136 living, 180
+    ever founded.
+  - Seed 2718, 14 years in the browser: Europe changes; Brazil has 6.38 to 6.39% and
+    Australia 6.11% of the land in every yearly sample; the leader 15.9 to 16.8%.
+  - Land breaks away often: 396 of 1,226 events in those 14 years (32%) are "broke away".
+  - Of the same kind and not blocking: armies lose 61% and 87% of their men in 60 days of a
+    war that moves the front by a border strip (N1); a war takes in half the world ("United
+    Kingdom +33 ⚔ Angola", Poland against Xinjiang; N2).
+  - What the critic asks of the sweep: a run whose top five are the same for 20 years fails.
+  From the critic's report of 2026-10-07 (R3-B2, the long run; deferred by ADR-58, not
+  disputed, logged once in PROGRESS; the one event of seed 6021 is PLAN 3.9):
+  - Seed 4242, 40 years headless: 97 nations alive in year 1 and 170 in year 40; 430
+    founded in all. Seed 6021, 14 years in the browser: 97 → 136 alive, 207 ever founded;
+    59 of the 137 alive in 1952 are "Free <province>". The world breaks up and does not
+    come together again; AoC's long runs end in a few empires (pictures).
+  - Better than the last report: on seed 6021 France rises to first by land, the Soviet
+    Union falls from 15.6 % to about 5 %, Germany takes central Europe. The Americas do not
+    move (PLAN 4.5).
+  - Of the same kind and not blocking: Germany against Poland, 90 days of seed 4242:
+    Germany loses 304,000 of 564,000 men, Poland 373,000 of 418,000, and no cell changes
+    owner before the peace (the rule of ADR-51: land is held, then kept at the peace). AoC
+    hands land over as it is taken (text). Whether held land should go over during a war
+    is for this task to decide.
+  - Left by PLAN 3.9 (ADR-186): a rebel state grows without end by the revolts that join it
+    (`risingNeighbour`), each now at most a million km²: "Free Herat" of seed 6021 had 2.66 %
+    of the world in 48 provinces of three former holders before the revolt that made it
+    5.97 %. An area also joins rebels of another people (Soviet core land, a Korean state).
+    To decide here: rebels take in only risings against the holder they are at war with, or
+    stop at a size.
+  - What the critic asks: weak statelets annexed in one war; a sweep whose count of living
+    nations rises for 20 years fails.
+  From the Phase 3 review (PLAN 3.7c, 2026-10-07), what the rules of armour left open. None
+  is tuned before the sweeps are back (ADR-58):
+  - The retreat (ADR-150): wars kill a third of the formations they did. Whether they still
+    end was not looked at. Nothing fires on the retreating, the encircled do not surrender,
+    and a formation with no supply retreats from every contact (51 times in a year).
+  - The spearheads (ADR-153): one attack in eleven comes to contact (261 of 2,900 and 226 of
+    2,690 a year), and why the others end was not counted (a new order to another cell, a
+    sector that stops attacking, the cell taken by another). The rest are not sent after
+    the armour in the same plan; infantry on the march at the enemy's cell keeps its order
+    (a quarter of those sent to an armour's attack); no armour moves between sectors.
+  - The mix (ADR-154): Italy, the Soviet Union and Japan stay under the share they want
+    (they save and their treasuries do not grow); a nation with nothing in training buys
+    the best it can pay, the division of 1938 after 1941 too; one at war that saves raises
+    one infantry division at a time.
+  - The allotment (ADR-152): a sector allotted more of a class than stand near it takes
+    them from afar.
+  - The march home (ADR-169, ADR-222) is unfed (ADR-143) and has no longest way: to the
+    nearest cell of its nation within 80 cells, else to the spawn point on foot, and since
+    ADR-222 round the ground of its nation's enemies. Seed 77, three years: 15 of 358
+    marches home last 30 days or more and 4 last 90 or more, none of them standing: 20,661
+    men at the mark, 8,099 at the end; three Japanese formations walk 153 days and arrive
+    with 5, 49 and 48 men of 785, 2,654 and 2,585. An Italian division in Madrid with
+    France the enemy is sent by Gibraltar and the Levant, 556 cells. Whether a way home has
+    a longest length (and the formation then stands, or is disbanded into the pool), and
+    whether a march home is fed by the nation it crosses.
+  From the review pass 3.12R (PLAN 3.12Rj, 2026-10-09), left by PLAN 3.12b2 (ADR-210). Not
+  tuned before the sweeps are back (ADR-58):
+  - Land rises and goes back to its core nation month after month (`defect` called by
+    `revolt`, the one `LandCeded` whose former holder lives): about 22 history rows a year
+    (190 in the ten years of seed 1, a tenth of its rows), and the same two nations in
+    months running (the Soviet Union's land to Italy in five months of seed 3, ticks
+    29,184 to 32,136). Why Italy has cores there was not looked into. To decide here:
+    whether a holder keeps so little of what it took that it loses it an area a month
+    (the suppression spending, the unrest of land with another's core), and whether the
+    cores of the data are right where it happens. The rows are not the log's to drop.
+  From the critic's report of 2026-10-12 (R4-B3, run 4 on `5e91a56`; deferred by ADR-58, not
+  disputed, logged once in PROGRESS): the world breaks up more than in run 3. Seed 5303, 30
+  years headless: 94 nations alive in year 1, 183 in year 30, 112 founded in play and 245 in
+  all; seed 3889: 28 "Free X" alive after 8 years (`critic/c4_headless_5303.json`,
+  `critic/c4_d_3889.json`). What the critic asks: revolts return land to a core owner or a
+  neighbour first; weak statelets are absorbed; a run whose count of living nations rises
+  for 20 years fails.
+  From the critic's report of 2026-10-14 (R5-B3, run 5 on `c850346`; deferred by ADR-58, not
+  disputed, logged once in PROGRESS): still so. Seed 7321: 93 nations alive in year 1, 149 in
+  year 25, 180 founded in play; seed 5519 in the browser: 54 nations of generated names after
+  12 years, "Free Inner Mongolia III" among them (`critic/c5_headless_7321.json`,
+  `critic/c5_g_5519.json`). What the critic asks is as in run 4.
+  Found by PLAN 5.12's count (2026-10-14, ADR-376), of the same: on seed 7321 the land war
+  stops. Land formations in contact, a day's mean over the world: 29 in year 1, 5.6 in year 2,
+  11 in year 5; none at all at the start of years 13 and 20, with 60 nations at war. At year 13:
+  575 land formations in the world, the Soviet Union one (37 men) on an income of 418 a month
+  for 141,844 cells (Germany 3,297 for 4,944), at war, 2,399 gold, nothing in production;
+  France 4 formations, China 14. To find: why the income of a great land falls so (its cells
+  occupied, unrest, the econ of its cells) and why a nation at war with gold builds nothing.
+  From PLAN 6.8's sweep with nukes on (2026-10-14, ADR-391, `docs/sweeps/2026-10-14-sweep-nukes.md`),
+  for the Phase 6 review: the limits hold on 8 of 10 seeds; seeds 6 and 7 have 255 and 253
+  nations alive in some year, over 250 (the break-up above; BLOCKERS). And how often nuclear
+  weapons are used: 4 to 177 bursts in 50 years, 3.5 a year in seed 4; the world's outrage and
+  the taboo after a first use were not tuned. SPEC §6.4's second strike counts "survivable assets
+  (subs, dispersed bombers)": a bomber flying counts (ADR-385), submarines and SLBMs do not; the
+  SLBM is in the tech chain and delivers nothing.
+  From the critic's report of 2026-10-15 (R6-B3, run 6 on `228d083`; deferred by ADR-58, not
+  disputed, logged once in PROGRESS): the break-up again. Seed 6619: 154 nations alive after 30
+  years, 77 founded in play; seed 2953: 153; "Free Liège II" holds Berlin in 1953
+  (`critic/c6_headless_6619.json`, `critic/c6_headless_2953.json`). What the critic asks is as
+  in runs 4 and 5.
+  Split on 2026-10-16, one cause a part. The report of seeds 401–410 read again by a script:
+  the top five nations by land the same for 20 to 23 years running in 5 of 10 seeds, and the
+  living nations up over every 20-year span of every seed (95 → 141–156 by year 20), so its
+  "ALL GREEN" judged neither ask.
+  - [x] 7.3a The sweep judges the critic's two asks (`tools/sweep/criteria.ts`, SPEC §10): […]
+  - [x] 7.3b The land war stops (seed 7321's year 13 above: a great land with one formation, a […]
+  - [x] 7.3c Rebel states take in only the risings against a holder they are at war with, of […]
+  - [x] 7.3d Statelets come together again: revolts give land to a core owner or a neighbour […]
+  Seen in PLAN 7.3e3 (ADR-437): the United States holds 282,000 gold in year 9 of seed 7321, 50
+  months of its income, its army at its peacetime cap; no reserve rule reaches it. To judge by
+  7.3f's report (a hoard that never fights is a stasis).
+  - [x] 7.3e The other findings above decided, each kept with its reason in an ADR or made a […]
+  Judged by 7.3f's first run (seeds 501–510, `docs/sweeps/2026-10-16-sweep-b1-501.md`): the
+  United States is one of the five largest nations by land in every seed's longest-held top
+  five (Australia in five of them, France in eight); stasis passed 8 of 10 (501: 25 years,
+  502: 23). Kept as a note, not a part: the criterion holds.
+  - [x] 7.3g (before 7.3f's next run) The living nations rise again late in the run: seeds 501, […]
+  Left by PLAN 7.3g (ADR-439, `docs/evidence/7.3/collapse-7.3g.md`), not measured there: a
+  collapse founds a state for every connected restless group, of one cell too, with none of a
+  revolt's claimant or kin steps (seed 506's Soviet Union: 25 states of 1 to 49,518 cells); and a
+  great land's gross falls faster than its land (seed 506's Soviet Union: 18% of its cells and 72%
+  of its gross in years 26–30). To judge by 7.3f's next run.
+  - [x] 7.3f The deciding sweep on unseen seeds (from 501) × 50 years. AT: the report ALL
+    GREEN by the criteria of 7.3a.
+    Run 1 (2026-10-16, seeds 501–510, `docs/sweeps/2026-10-16-sweep-b1-501.md`): FAILING
+    (dynamism). Limits, riser and faller 10 of 10; no stasis 8 of 10; no break-up 6 of 10
+    (needed 8): PLAN 7.3g. Seeds 501–510 are now seen; the next run from 601, after 7.3g.
+    Run 2 (2026-10-16, seeds 601–610 on `23725fc`, `docs/sweeps/2026-10-16-sweep-b1-601.md`):
+    ALL GREEN. Limits, riser, faller and no break-up 10 of 10; no stasis 8 of 10 (601: 25
+    years, 604: 22). Seeds 601–610 are now seen.
