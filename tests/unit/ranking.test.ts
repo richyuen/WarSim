@@ -17,7 +17,7 @@ const nation = (id: number, v: number): NationStat => ({
   manpower: v * 4,
   men: v * 5,
   formations: 1,
-  aircraft: 0,
+  aircraft: v * 6,
   wings: 0,
   airLost: 0,
   bombed: 0,
@@ -27,11 +27,11 @@ const nation = (id: number, v: number): NationStat => ({
   autonomy: 0,
   loyalty: 0,
   integration: 0,
-  puppets: [],
-  enemies: [],
+  puppets: Array.from({ length: v }, (_, i) => 100 + i),
+  enemies: Array.from({ length: v }, (_, i) => 200 + i),
   aiOff: false,
   nukesAllowed: true,
-  warheads: 0,
+  warheads: v * 8,
   queue: [],
   aggression: 50,
   incomeMult: 1,
@@ -56,5 +56,8 @@ describe('statistics ranking (PLAN 1.31b)', () => {
   it('reads the matching field for each metric', () => {
     const n = nation(1, 7);
     expect([rankValue(n, 'land'), rankValue(n, 'gold'), rankValue(n, 'income'), rankValue(n, 'manpower'), rankValue(n, 'army')]).toEqual([7, 14, 21, 28, 35]);
+    // PLAN 7.4f11: the wars it is in (its enemies), its puppets, its aircraft, its warheads.
+    expect([rankValue(n, 'wars'), rankValue(n, 'puppets'), rankValue(n, 'aircraft'), rankValue(n, 'warheads')]).toEqual([7, 7, 42, 56]);
+    expect(RANK_METRICS).toHaveLength(9);
   });
 });

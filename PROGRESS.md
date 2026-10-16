@@ -17071,3 +17071,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `nationNames.test.ts` (3 new), `randomWorld.test.ts` (60 names of 60, none a bare
   direction or with its kind), `flagsByScenario`, `killLand`: 31 of 31; e2e `randomWorld` 3 of 3.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f11: nine ranking lists (UI)
+
+- **Start:** gate green on a clean tree (`c80976e`); critic not due.
+- **Done:** `RANK_METRICS` has nine lists as AoC's: land, army, income, treasury, manpower, and
+  now enemies at war, puppets, aircraft, warheads (all from the stats the page has). N14's line
+  under 7.4 keeps what is left: the dead unmarked, the charts' ticks, the economy tab.
+- **Tests:** `ranking.test.ts` (the new four read and sorted); e2e `ranking1938` (every list
+  sorted), `rankingFlags1938`, `rankingRows1938`, `charts1938`: 4 of 4.
+- **Next:** PLAN 7.4f, the next group.

@@ -79,6 +79,9 @@ quick sweep as a smoke test.
       direction ("Central") or taken; every name its own. AT: unit tests; `randomWorld.test.ts`
       asks for 60 names of 60 nations on its seeds. (The colours of the same finding: six hue
       sectors met evenly on seeds 1, 7 and 42, so no change; the hegemon: PLAN 1.42.)
+    - [x] 7.4f11 The critic's N14, the lists: nine ranking lists as AoC's (enemies at war,
+      puppets, aircraft and warheads besides land, army, income, treasury and manpower). AT:
+      `ranking.test.ts`; `ranking1938` sorts every list.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -232,8 +235,9 @@ quick sweep as a smoke test.
   - N8 (left of it after PLAN 3.12Rh4 and 7.4f2): at 1024 × 600, playing a nation, the bar's
     "Poland · n selected" is cut to its first letter (the one item that shrinks; its tooltip says
     it in full).
-  - N14: ranking rows have no flags and five metrics (AoC: nine lists, the dead marked);
-    charts have no axis ticks and no value under the cursor; the economy tab is six numbers.
+  - N14 (left of it after PLAN 7.4c and 7.4f11): the dead are not in the ranking (AoC marks
+    them); charts have no axis ticks and no value under the cursor; the economy tab is six
+    numbers.
   - N17: a black smear under a counter near Bern in 1952 of seed 2718.
   - N18: no sound; one language.
   - N21: while the game runs, half-faded counters are on screen all the time as the clusters
