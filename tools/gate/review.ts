@@ -192,6 +192,7 @@ function readJson<T>(file: string): T | null {
 /** A vitest run (`config` '' for the unit tests) of `files` (all when empty): its red ids, or null when it wrote no report. */
 function vitest(config: string, files: string[], stage: string): string[] | null {
   const out = path.join(DIR, 'vitest.json');
+  mkdirSync(DIR, { recursive: true });
   rmSync(out, { force: true });
   const ok = run(`npx vitest run ${config} --reporter=default --reporter=json --outputFile=${out} ${files.join(' ')}`);
   const r = readJson<Parameters<typeof vitestRed>[0]>(out);
@@ -208,7 +209,7 @@ function playwright(args: string, stage: string): string[] | null {
 }
 
 /** Red twice: the ids of `first` still red when each of their files is run again alone. */
-function again(first: string[], rerun: (file: string) => string[] | null): string[] {
+export function again(first: string[], rerun: (file: string) => string[] | null): string[] {
   // A run's own failure is no file's to run again: red as it stands.
   const red: string[] = first.filter((t) => t.startsWith('stage:'));
   for (const file of [...new Set(first.filter((t) => !t.startsWith('stage:')).map(fileOf))]) {
@@ -218,10 +219,20 @@ function again(first: string[], rerun: (file: string) => string[] | null): strin
   return red;
 }
 
+/**
+ * The unit tests in full, a test red in that run run again alone (its file): the ids red both
+ * times. The ordinary gate's full unit stage (ADR-423), as this run's.
+ */
+export function unitRedTwice(): string[] {
+  const first = vitest('', [], 'test');
+  return first === null ? ['stage:test'] : again(first, (f) => vitest('', [f], 'test'));
+}
+
 function step(name: string, specs: string[]): string[] {
   if (['typecheck', 'lint', 'build', 'parity'].includes(name)) return run(`npm run ${name}`) ? [] : [`stage:${name}`];
   if (name === 'test' || name === 'test:sweep') {
-    const config = name === 'test' ? '' : '--config vitest.sweep.config.ts';
+    if (name === 'test') return unitRedTwice();
+    const config = '--config vitest.sweep.config.ts';
     const first = vitest(config, [], name);
     if (first === null) return [`stage:${name}`];
     return again(first, (f) => vitest(config, [f], name));

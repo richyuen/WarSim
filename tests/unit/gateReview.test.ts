@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { codeTree, E2E_CHUNK, FILE_RED, judge, KNOWN, outOfKey, playwrightRed, reviewSteps, runRed, vitestRed, type ReviewRecord } from '../../tools/gate/review';
+import { again, codeTree, E2E_CHUNK, FILE_RED, judge, KNOWN, outOfKey, playwrightRed, reviewSteps, runRed, vitestRed, type ReviewRecord } from '../../tools/gate/review';
 
 // ADR-297 (the user's decision): the phase review's full run is recorded by `npm run check:review`
 // under a code key, and judged against a list of known reds, so that the commit that ticks the
@@ -38,6 +38,19 @@ describe('npm run check:review (ADR-297)', () => {
   it('the code key leaves out the documents, the critic and the list of known reds, and nothing else', () => {
     for (const f of ['PLAN.md', 'PROGRESS.md', 'docs/PARITY.md', 'docs/evidence/4.7/a.png', 'critic/CRITIC_REPORT.json', KNOWN]) expect(outOfKey(f), f).toBe(true);
     for (const f of ['src/sim/sim.ts', 'tests/unit/gate.test.ts', 'tools/gate/review.ts', 'data/terrain.json', 'package.json']) expect(outOfKey(f), f).toBe(false);
+  });
+
+  it('red twice: a test red in the first run is red only when its file run alone fails it again (ADR-423)', () => {
+    const first = ['tests/unit/a.test.ts › slow', 'tests/unit/a.test.ts › broken', 'tests/unit/b.test.ts › flaky', 'stage:test'];
+    const files: string[] = [];
+    const red = again(first, (f) => {
+      files.push(f);
+      return f === 'tests/unit/a.test.ts' ? ['tests/unit/a.test.ts › broken'] : [];
+    });
+    expect(files).toEqual(['tests/unit/a.test.ts', 'tests/unit/b.test.ts']);
+    expect(red).toEqual(['stage:test', 'tests/unit/a.test.ts › broken']);
+    // A file whose run alone wrote no report: its tests stay red.
+    expect(again(['tests/unit/c.test.ts › x'], () => null)).toEqual(['tests/unit/c.test.ts › x']);
   });
 
   it('the ids of red tests: a vitest report by file and full name, a Playwright one by file and titles', () => {

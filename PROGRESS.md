@@ -16521,3 +16521,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Split** 7.2 in three parts: 7.2a the soak and its twins, 7.2b the daily look for NaN and
   `undefined`, 7.2c commands out of range refused.
 - **Next:** PLAN 7.2a.
+
+## 2026-10-16 — The gate's full unit stage runs a red test again alone (gate)
+
+- **Why:** PLAN 7.2a adds `npm run soak` to `package.json`, which runs the unit tests in full; five
+  full runs were red by timing tests and timeouts, a different set each time, every one green alone
+  (ADR-423, the runs listed there).
+- **Done** (ADR-423): `unitRedTwice` (`tools/gate/review.ts`), the review's unit step, now the gate's
+  too when it runs the unit tests in full; red is what fails twice. `gateReview.test.ts`.
+- **Next:** PLAN 7.2a.

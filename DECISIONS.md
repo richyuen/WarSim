@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-423 · 2026-10-16 · accepted — The gate's full unit stage runs a red test again alone
+
+- **Context.** A change of something every unit test stands on (`UNIT_SHARED`: `package.json`
+  for `npm run soak`, PLAN 7.2a) runs the unit tests in full. Five full runs of the soak's change
+  on 2026-10-16 were red, each by one to six timing tests or 90 s timeouts, a different set each
+  run (`efficiency`, `territory`'s cost a tick at 34.0 and 25.7 ms against 25, the 1938 build at
+  3,300 and 2,203 ms against 2,000, `nukeAnswer1938`, `randomWorld`, `seaContact1938`,
+  `strategicAi`), every one green when its file was run alone. Three ran beside another session's
+  headless browser at about 13 cores; the fifth on a machine at 2 to 5 % load before it began:
+  the full run is its own load (each file builds a 1938 world, ADR-279). These are the timing
+  tests of BLOCKERS, which `npm run check:review` already judges this way (ADR-297).
+- **Decision.** When the gate runs the unit tests in full (not `vitest related`), a test red in
+  that run is run again alone (its file), and red is what fails both times: `unitRedTwice` in
+  `tools/gate/review.ts`, the same code the review's unit step runs. No budget of a test moves,
+  no list of known reds applies, and a test red alone stops the gate as before.
+- **Consequences.** A commit that touches `UNIT_SHARED` can be gated on this machine. A test that
+  fails only under load passes the gate; it is still seen in the full run's output.
+
 ### ADR-422 · 2026-10-16 · accepted — No order by a long way round; the pin moves (PLAN 1.42h)
 
 - **Context.** The user's decision of 2026-10-15 (rule b, under PLAN 1.42): the AI does not send a
