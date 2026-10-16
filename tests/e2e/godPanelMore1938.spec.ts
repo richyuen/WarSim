@@ -111,3 +111,21 @@ test('God Mode: a town founded by a click, and razed by another (PLAN 7.4f18)', 
   await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
   await expect.poll(async () => (await towns()).length).toBe(0);
 });
+
+test('God Mode: the world\'s rules set in the game (PLAN 7.4f19)', async ({ page }) => {
+  test.setTimeout(120_000);
+  await open1938(page, 1938);
+  await page.getByTestId('god-btn').click();
+  await page.evaluate((n) => window.__warsim!.view!.select(n), id('GER'));
+  await page.getByTestId('tab-god').click();
+  const rules = () => page.evaluate(() => window.__warsim!.hud.stats.value!.rules);
+  const start = await rules();
+  await page.getByTestId('god-winner-takes-all').setChecked(!start.winnerTakesAll);
+  await expect.poll(async () => (await rules()).winnerTakesAll).toBe(!start.winnerTakesAll);
+  await page.getByTestId('god-revolt-mode').selectOption(start.revoltMode === 'region' ? 'province' : 'region');
+  await expect.poll(async () => (await rules()).revoltMode).toBe(start.revoltMode === 'region' ? 'province' : 'region');
+  await page.getByTestId('god-ce-mode').selectOption('random');
+  await expect.poll(async () => (await rules()).ceMode).toBe('random');
+  // The controls show the world's state.
+  await expect(page.getByTestId('god-ce-mode')).toHaveValue('random');
+});

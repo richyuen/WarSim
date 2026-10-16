@@ -611,7 +611,7 @@ export class SimServer {
     });
     const news = this.newsFrom < 0 ? [] : tickerNews(world, this.newsFrom);
     this.newsFrom = world.history.length;
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, nukesEnabled: world.settings.nukesEnabled, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id), (v) => this.cityName(v)), news, world: this.worldNo, wings: playerWings(world) }, []);
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, nukesEnabled: world.settings.nukesEnabled, rules: { winnerTakesAll: world.settings.winnerTakesAll, revoltMode: world.settings.revoltMode, ceMode: world.settings.ceMode }, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id), (v) => this.cityName(v)), news, world: this.worldNo, wings: playerWings(world) }, []);
   }
 
   /**

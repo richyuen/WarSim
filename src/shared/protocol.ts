@@ -400,7 +400,7 @@ export type FromWorker =
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance; the ticker's rows (PLAN 3.12c), the kinds of every major event since the message before (`news`, PLAN 3.12Rh2: the ticker's rows are the last five), and the number of the worker's world, which a new game or a load changes (PLAN 3.12d). */
-  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; aiEnabled: boolean; nukesEnabled: boolean; player: number; edits: { undo: number; redo: number }; ticker: TickerRow[]; news: number[]; world: number; wings: PlayerWing[] };
+  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; aiEnabled: boolean; nukesEnabled: boolean; rules: WorldRules; player: number; edits: { undo: number; redo: number }; ticker: TickerRow[]; news: number[]; world: number; wings: PlayerWing[] };
 
 /** A buildable land template for the production UI (PLAN 1.33b). */
 export interface TemplateInfo {
@@ -601,6 +601,13 @@ export interface Inspection {
 }
 
 /** An active war (PLAN 1.31): side leaders first; score > 0 favours the attackers. */
+/** The world's rules God Mode sets in the game (PLAN 7.4f19): beside `aiEnabled` and `nukesEnabled`. */
+export interface WorldRules {
+  winnerTakesAll: boolean;
+  revoltMode: 'province' | 'region';
+  ceMode: 'dynamic' | 'progressive' | 'static' | 'locked' | 'random';
+}
+
 export interface WarStat {
   id: number;
   attackers: number[];

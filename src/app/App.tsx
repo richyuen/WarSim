@@ -297,6 +297,7 @@ export function App({
                   dead: stats.dead,
                   aiEnabled: stats.aiEnabled,
                   nukesEnabled: stats.nukesEnabled,
+                  rules: stats.rules,
                   tool: hud.godTool.value,
                   refusal: hud.refusal.value,
                   onCommand: (c) => hud.command(c),

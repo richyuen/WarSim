@@ -1,6 +1,6 @@
 import { useRef, useState } from 'preact/hooks';
 import { Refusal, type Command } from '../shared/commands';
-import type { NationStat, WarStat } from '../shared/protocol';
+import type { NationStat, WarStat, WorldRules } from '../shared/protocol';
 import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
 
@@ -49,6 +49,8 @@ export interface GodTabProps {
   aiEnabled: boolean;
   /** The world's toggle of nuclear weapons (PLAN 6.1a). */
   nukesEnabled: boolean;
+  /** The world's other rules (PLAN 7.4f19). */
+  rules: WorldRules;
   tool: GodToolId | null;
   /** Why the last command sent was not carried out (`Refusal`; 0 = it was). */
   refusal: number;
@@ -61,7 +63,7 @@ export interface GodTabProps {
  * nation, plus map tools (revolt, breakthrough, territory brush) that take the next map clicks.
  * Kill asks for a second click instead of a browser dialog.
  */
-export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, tool, refusal, onCommand, onTool }: GodTabProps) {
+export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, rules, tool, refusal, onCommand, onTool }: GodTabProps) {
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
   // The name typed and the armed Kill are this nation's (PLAN 2.17e3): each is kept with the
@@ -171,6 +173,31 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, t
       <label class="god-row">
         <input type="checkbox" data-testid="god-world-nukes" checked={nukesEnabled} onChange={(e) => onCommand({ kind: 'setSetting', key: 'nukesEnabled', value: (e.currentTarget as HTMLInputElement).checked })} />
         {t('god.worldNukes')}
+      </label>
+      {/* The world's other rules (PLAN 7.4f19, AoC's World AI settings). */}
+      <label class="god-row">
+        <input type="checkbox" data-testid="god-winner-takes-all" checked={rules.winnerTakesAll} onChange={(e) => onCommand({ kind: 'setSetting', key: 'winnerTakesAll', value: (e.currentTarget as HTMLInputElement).checked })} />
+        {t('god.winnerTakesAll')}
+      </label>
+      <label class="god-row">
+        <span>{t('god.revoltMode')}</span>
+        <select data-testid="god-revolt-mode" value={rules.revoltMode} onChange={(e) => onCommand({ kind: 'setSetting', key: 'revoltMode', value: (e.currentTarget as HTMLSelectElement).value as WorldRules['revoltMode'] })}>
+          {(['province', 'region'] as const).map((m) => (
+            <option key={m} value={m}>
+              {t(`god.revoltMode.${m}` as MessageKey)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label class="god-row">
+        <span>{t('settings.ce')}</span>
+        <select data-testid="god-ce-mode" value={rules.ceMode} onChange={(e) => onCommand({ kind: 'setSetting', key: 'ceMode', value: (e.currentTarget as HTMLSelectElement).value as WorldRules['ceMode'] })}>
+          {(['dynamic', 'progressive', 'static', 'locked', 'random'] as const).map((m) => (
+            <option key={m} value={m}>
+              {t(`settings.ce.${m}` as MessageKey)}
+            </option>
+          ))}
+        </select>
       </label>
 
       <div class="panel-sub">{t('god.diplomacy')}</div>

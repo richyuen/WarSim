@@ -17166,3 +17166,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `godPanelMore1938` 3 of 3 (a town in Hesse, Germany's, then razed); `godUi1938`,
   `editor1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f19: the world's rules in the God tab (UI)
+
+- **Start:** gate green on a clean tree (`1708fb6`); critic not due.
+- **Done:** `nationStats.rules` (winner takes all, revolt mode, CE mode); the God tab sets each
+  (`setSetting`), beside the world AI and nuclear weapons. AoC's other World AI settings have no
+  rule in the sim: the line under 7.4 says so.
+- **Tests:** `godPanelMore1938` 4 of 4 (each rule set and shown); `godUi1938` green.
+- **Next:** PLAN 7.4f, the next group.

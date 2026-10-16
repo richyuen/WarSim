@@ -103,6 +103,9 @@ quick sweep as a smoke test.
     - [x] 7.4f18 Cities made and razed in the game: two God map tools, Found city (a town at the
       click, for its holder) and Raze city (the city within two cells), by the editor's commands.
       AT: `godPanelMore1938` founds a town in Hesse and razes it.
+    - [x] 7.4f19 The world's rules in the game: the God tab sets Winner takes all, the revolt
+      mode and the CE mode (beside the AI and nuclear weapons); the stats carry them. AT:
+      `godPanelMore1938`.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -261,7 +264,8 @@ quick sweep as a smoke test.
   - N18 (sound since PLAN 3.12d): one language.
   - N21: while the game runs, half-faded counters are on screen all the time as the clusters
     regroup ("432", "29.6k" at part opacity, 60 days into a war at 2500 m/px).
-  - Against AoC's God panel: the World AI settings (one checkbox stands for about fifteen),
+  - Against AoC's God panel: the World AI settings beyond the five the sim has (AI, nuclear weapons, winner takes all,
+    revolts, CE mode: PLAN 7.4f19; AoC has about fifteen, the rest no rule here),
     a nation spawned with a size (PARITY has the rows; the treasury, colour, donations, CE,
     unity and cities made and razed in the game: PLAN 7.4f15–18).
   From the critic's report of 2026-10-07, not blocking and in no task above:
