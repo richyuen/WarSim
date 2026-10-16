@@ -14,6 +14,7 @@ import type { NationStats, SimClient } from './simClient';
 import type { FormationDetail, OrderNews, TechInfo, TemplateInfo } from '../shared/protocol';
 import type { SeaBattleView } from './MapView';
 import type { MapHover } from '../ui/mapHover';
+import { t } from '../ui/i18n';
 import type { EditorState } from '../shared/editorState';
 import { RANK_METRICS, type RankMetric } from '../shared/ranking';
 
@@ -25,7 +26,7 @@ const KEY_MAP_MODE = 'warsim.mapMode';
 /** God territory brush radius in cells. */
 const BRUSH_RADIUS = 5;
 
-export type GodTool = 'revolt' | 'battle' | 'brush' | 'nuke';
+export type GodTool = 'revolt' | 'battle' | 'brush' | 'nuke' | 'city' | 'raze';
 const KEY_SHOW_STATS = 'warsim.showStats';
 const KEY_RANK_METRIC = 'warsim.rankMetric';
 
@@ -477,10 +478,21 @@ export class Hud {
    * A map click while a God tool is active (cell x, y; its province). Returns true when the
    * tool used the click (the map then does not select).
    */
-  pick(x: number, y: number, province: number): boolean {
+  pick(x: number, y: number, province: number, city = 0): boolean {
     const tool = this.godTool.value;
     const nation = this.selected.value;
     if (!tool) return false;
+    if (tool === 'city') {
+      // A city founded in the game (PLAN 7.4f18, AoC's God panel): a town at the cell clicked,
+      // on the land of whoever holds it; the tool stays for the next one.
+      this.command({ kind: 'spawnCity', x: x + 0.5, y: y + 0.5, name: t('god.newCityName'), size: 2 });
+      return true;
+    }
+    if (tool === 'raze') {
+      // The city by the click (within two cells) is razed; the tool stays.
+      if (city !== 0) this.command({ kind: 'removeCity', city });
+      return true;
+    }
     if (tool === 'revolt') {
       if (province > 0) this.command({ kind: 'spawnRevolt', province });
       this.godTool.value = null;

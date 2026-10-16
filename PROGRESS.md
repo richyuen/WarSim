@@ -17156,3 +17156,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `godPanelMore1938` (2 of 2: Germany's CE +10 % and locked, the Anti-Comintern
   Pact's unity −10), `nationPanel1938`.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f18: cities founded and razed from the God tab (UI)
+
+- **Start:** gate green on a clean tree (`a9ca0d2`); critic not due.
+- **Done:** God map tools Found city (`spawnCity` at the click: "New Town", size 2, the holder's)
+  and Raze city (`removeCity` of the city within two cells of the click); both stay armed for the
+  next click. `Hud.pick` takes the city near the click.
+- **Tests:** `godPanelMore1938` 3 of 3 (a town in Hesse, Germany's, then razed); `godUi1938`,
+  `editor1938` green.
+- **Next:** PLAN 7.4f, the next group.

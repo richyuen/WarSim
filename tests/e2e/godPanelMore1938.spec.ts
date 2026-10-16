@@ -86,3 +86,28 @@ test('God Mode: combat efficiency up, locked; alliance unity down (PLAN 7.4f17)'
   await page.getByTestId('god-unity-down').click();
   await expect.poll(async () => (await stat()).alliance!.unity).toBeCloseTo(Math.max(0, unity - 10), 6);
 });
+
+test('God Mode: a town founded by a click, and razed by another (PLAN 7.4f18)', async ({ page }) => {
+  test.setTimeout(120_000);
+  await open1938(page, 1938);
+  const GER = id('GER');
+  await page.getByTestId('god-btn').click();
+  await page.evaluate((n) => window.__warsim!.view!.select(n), GER);
+  await page.getByTestId('tab-god').click();
+  // Land in Germany, between its cities: the middle of the view at 2 px a cell over Hesse.
+  await page.evaluate(() => window.__warsim!.view!.controller.set({ cx: 1083.5, cy: 266.5, scale: 12 }));
+  await page.waitForTimeout(500);
+  const towns = () => page.evaluate(async () => (await window.__warsim!.sim.inspect(true)).cities.filter((c) => c.name === 'New Town'));
+  expect(await towns()).toHaveLength(0);
+  await page.getByTestId('god-tool-city').click();
+  await expect(page.getByTestId('god-tool-hint')).toBeVisible();
+  const box = (await page.locator('#map').boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect.poll(async () => (await towns()).length).toBe(1);
+  // On land Germany holds.
+  expect(await page.evaluate(([x, y]) => window.__warsim!.view!.nationAt(x!, y!), [box.width / 2, box.height / 2])).toBe(GER);
+  // Raze it.
+  await page.getByTestId('god-tool-raze').click();
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect.poll(async () => (await towns()).length).toBe(0);
+});

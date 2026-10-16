@@ -4,7 +4,7 @@ import type { NationStat, WarStat } from '../shared/protocol';
 import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
 
-export type GodToolId = 'revolt' | 'battle' | 'brush' | 'nuke';
+export type GodToolId = 'revolt' | 'battle' | 'brush' | 'nuke' | 'city' | 'raze';
 const BUFFS = ['attack', 'defense', 'speed', 'income', 'manpower', 'unrest'] as const;
 /** A granted buff: +25% (unrest: +2.5 a month) for 30 days. */
 const BUFF_MAGNITUDE = 0.25;
@@ -234,6 +234,8 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, t
         {btn('god-tool-battle', t('god.tool.battle'), () => onTool('battle'), tool === 'battle')}
         {btn('god-tool-brush', t('god.tool.brush'), () => onTool('brush'), tool === 'brush')}
         {btn('god-tool-nuke', t('god.tool.nuke'), () => onTool('nuke'), tool === 'nuke')}
+        {btn('god-tool-city', t('god.tool.city'), () => onTool('city'), tool === 'city')}
+        {btn('god-tool-raze', t('god.tool.raze'), () => onTool('raze'), tool === 'raze')}
       </div>
       {tool ? <div class="panel-note" data-testid="god-tool-hint">{t(`god.hint.${tool}` as MessageKey)}</div> : null}
 

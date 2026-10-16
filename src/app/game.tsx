@@ -88,7 +88,7 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     const p = new PlayerControl(hud, view);
     player = p;
     view.onPick = (x, y, sx, sy, shift) => {
-      if (hud.editorClick(x, y, view.cityNear(x, y), view.provinceAt(x, y)) || hud.pick(x, y, view.provinceAt(x, y))) return true;
+      if (hud.editorClick(x, y, view.cityNear(x, y), view.provinceAt(x, y)) || hud.pick(x, y, view.provinceAt(x, y), view.cityNear(x, y))) return true;
       // A formation under the click opens its panel (PLAN 2.14b), the player's own too (which
       // the click also selects for orders); a click anywhere else closes the panel, and goes on
       // to the player's order or to the nation of the ground.
