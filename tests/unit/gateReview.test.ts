@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { again, codeTree, E2E_CHUNK, FILE_RED, judge, KNOWN, outOfKey, playwrightRed, reviewSteps, runRed, vitestRed, type ReviewRecord } from '../../tools/gate/review';
+import { again, codeTree, E2E_CHUNK, FILE_RED, judge, KNOWN, outOfKey, playwrightRed, reviewSteps, runRed, vitestCommand, vitestRed, type ReviewRecord } from '../../tools/gate/review';
 
 // ADR-297 (the user's decision): the phase review's full run is recorded by `npm run check:review`
 // under a code key, and judged against a list of known reds, so that the commit that ticks the
@@ -51,6 +51,11 @@ describe('npm run check:review (ADR-297)', () => {
     expect(red).toEqual(['stage:test', 'tests/unit/a.test.ts › broken']);
     // A file whose run alone wrote no report: its tests stay red.
     expect(again(['tests/unit/c.test.ts › x'], () => null)).toEqual(['tests/unit/c.test.ts › x']);
+  });
+
+  it('the related run is the related tests with a report, and a red file of it is run again alone (ADR-427)', () => {
+    expect(vitestCommand('related --run', '--passWithNoTests', 'r.json', ['src/a.ts', 'src/b.ts'])).toBe('npx vitest related --run --passWithNoTests --reporter=default --reporter=json --outputFile=r.json src/a.ts src/b.ts');
+    expect(vitestCommand('run', '', 'r.json', ['tests/unit/a.test.ts'])).toBe('npx vitest run  --reporter=default --reporter=json --outputFile=r.json tests/unit/a.test.ts');
   });
 
   it('the ids of red tests: a vitest report by file and full name, a Playwright one by file and titles', () => {

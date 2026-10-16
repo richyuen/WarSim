@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-427 · 2026-10-16 · accepted — The gate's related unit stage runs a red test again alone too
+
+- **Context.** ADR-423 gave the full unit stage a second run alone for a red test, and left out
+  `vitest related`. A change of `shared/commands.ts` (PLAN 7.2c) relates 196 of the 238 unit files:
+  a run as heavy as the full one with none of its protection. Three gates of that change were red by
+  one test, the 1938 build's time (3,181, 2,085 and 3,361 ms against 2,000), beside another
+  project's headless browser; the same file passed alone, and the build timed alone was 0.6 to
+  1.2 s on HEAD and on the change alike (three each, taken in turn).
+- **Decision.** The related stage runs as the full one does: `unitRedTwice(files)` (`tools/gate/
+  review.ts`) runs `vitest related --run --passWithNoTests` with a JSON report, and runs the file of
+  each red test again alone; red is what fails both times. As in ADR-423, no budget moves and no
+  list of known reds applies.
+- **Consequences.** A change of a file many tests import can be gated on a loaded machine. A test
+  that fails only under load is still seen in the first run's output.
+
 ### ADR-425 · 2026-10-16 · accepted — The soak looks each day for NaN, infinity and `undefined` (PLAN 7.2b)
 
 - **Context.** Nothing stops an `undefined` or a NaN out of arithmetic from being written to the

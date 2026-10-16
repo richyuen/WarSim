@@ -16562,3 +16562,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   `undefined` and a NaN in the history found, a global event's NaN place not; a NaN put in twin B
   fails the soak that day, before any hash).
 - **Next:** PLAN 7.2c.
+
+## 2026-10-16 — The gate's related unit stage runs a red test again alone (gate)
+
+- **Why:** PLAN 7.2c changes `shared/commands.ts`, which 196 of 238 unit files import; three gates
+  were red by the 1938 build's timing test alone (3,181 / 2,085 / 3,361 ms against 2,000) beside
+  another project's headless browser, green alone, the build 0.6–1.2 s alone on HEAD and the change.
+- **Done** (ADR-427): the related stage goes through `unitRedTwice(files)` as the full one does
+  (ADR-423). `gateReview.test.ts` (the related run's command).
+- **Next:** PLAN 7.2c.

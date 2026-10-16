@@ -11,10 +11,11 @@
  * Of the unit stage (ADR-280, ADR-293, the user's decisions): all of it when the change ticks a
  * phase review (not a numbered task: ADR-293), when git cannot tell what changed, under FULL, or when
  * something every test stands on changed (`UNIT_SHARED`); otherwise only the test files whose
- * imports reach a file that changed (`vitest related`), or none (`planUnit`). In full, a test red
- * in the parallel run is run again alone (its file), and red is what fails both times (ADR-423,
- * as `npm run check:review` judges, ADR-297): the full run is its own load, and the timing tests
- * of BLOCKERS fail in it one or two at a time, a different one each run, and pass alone.
+ * imports reach a file that changed (`vitest related`), or none (`planUnit`). In full and related
+ * alike, a test red in the parallel run is run again alone (its file), and red is what fails both
+ * times (ADR-423, ADR-427, as `npm run check:review` judges, ADR-297): the parallel run is its own
+ * load (a change of `shared/` relates most of the files), and the timing tests of BLOCKERS fail in
+ * it one or two at a time, a different one each run, and pass alone.
  *
  * Of the sweep stage (ADR-278, the user's decision): every 10-year test only when the change ticks
  * a phase review, git cannot tell what changed, or FULL is set; otherwise only the pinned state
@@ -280,10 +281,10 @@ function main(): void {
   if (e2e.why !== '') console.log(`gate: e2e ${e2e.mode === 'full' ? 'in full' : e2e.mode === 'changed' ? `of ${e2e.specs.length} spec file(s)` : 'left out'}: ${e2e.why}`);
   if (stages.includes('test:sweep')) console.log(`gate: sweep ${sweep === 'full' ? 'in full' : `the pin alone (${PIN_TEST}); every sweep test at a phase review`}`);
   for (const stage of stages) {
-    if (stage === 'test' && unit.mode === 'full') {
-      const red = unitRedTwice();
+    if (stage === 'test') {
+      const red = unitRedTwice(unit.mode === 'related' ? unit.files : undefined);
       if (red.length === 0) continue;
-      console.error(`gate: red in the full run and again alone:\n  ${red.join('\n  ')}`);
+      console.error(`gate: red in the ${unit.mode} run and again alone:\n  ${red.join('\n  ')}`);
       console.error('gate: FAILED at test');
       process.exitCode = 1;
       return;
@@ -291,11 +292,9 @@ function main(): void {
     const command =
       stage === 'e2e' && e2e.mode === 'changed'
         ? changedSpecsCommand(e2e.specs)
-        : stage === 'test' && unit.mode === 'related'
-          ? `npx vitest related --run --passWithNoTests ${unit.files.join(' ')}`
-          : stage === 'test:sweep' && sweep === 'pin'
-            ? `npx vitest run --config vitest.sweep.config.ts ${PIN_TEST}`
-            : `npm run ${stage}`;
+        : stage === 'test:sweep' && sweep === 'pin'
+          ? `npx vitest run --config vitest.sweep.config.ts ${PIN_TEST}`
+          : `npm run ${stage}`;
     const r = spawnSync(command, { cwd: ROOT, stdio: 'inherit', shell: true });
     if (r.status !== 0) {
       console.error(`gate: FAILED at ${stage}`);

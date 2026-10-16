@@ -190,11 +190,16 @@ function readJson<T>(file: string): T | null {
 }
 
 /** A vitest run (`config` '' for the unit tests) of `files` (all when empty): its red ids, or null when it wrote no report. */
-function vitest(config: string, files: string[], stage: string): string[] | null {
+/** The command of a vitest run with a JSON report to `out`: `verb` is `run`, or `related --run` (ADR-427). */
+export function vitestCommand(verb: string, config: string, out: string, files: string[]): string {
+  return `npx vitest ${verb} ${config} --reporter=default --reporter=json --outputFile=${out} ${files.join(' ')}`;
+}
+
+function vitest(config: string, files: string[], stage: string, verb = 'run'): string[] | null {
   const out = path.join(DIR, 'vitest.json');
   mkdirSync(DIR, { recursive: true });
   rmSync(out, { force: true });
-  const ok = run(`npx vitest run ${config} --reporter=default --reporter=json --outputFile=${out} ${files.join(' ')}`);
+  const ok = run(vitestCommand(verb, config, out, files));
   const r = readJson<Parameters<typeof vitestRed>[0]>(out);
   return r === null ? null : runRed(vitestRed(r), ok, stage);
 }
@@ -220,11 +225,12 @@ export function again(first: string[], rerun: (file: string) => string[] | null)
 }
 
 /**
- * The unit tests in full, a test red in that run run again alone (its file): the ids red both
- * times. The ordinary gate's full unit stage (ADR-423), as this run's.
+ * The unit tests in full, or with `related` those whose imports reach these files (`vitest
+ * related`), a test red in that run run again alone (its file): the ids red both times. The
+ * ordinary gate's unit stage (ADR-423, ADR-427), as this run's.
  */
-export function unitRedTwice(): string[] {
-  const first = vitest('', [], 'test');
+export function unitRedTwice(related?: string[]): string[] {
+  const first = related ? vitest('--passWithNoTests', related, 'test', 'related --run') : vitest('', [], 'test');
   return first === null ? ['stage:test'] : again(first, (f) => vitest('', [f], 'test'));
 }
 
