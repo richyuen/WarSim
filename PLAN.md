@@ -227,9 +227,9 @@ quick sweep as a smoke test.
       formation there keeps a middle on the mask's water and T2 draws no island.
     - The T1 order arrow ends at the target cell's middle; the formation will stand at the
       cell's land point, up to 0.6 cells from it on a coastal cell.
-  - **Picking.** A marker in a stack cannot be picked by a click on the map (the lead is what
-    is there). A selection ring stays on an id that a new formation has taken, and such a
-    formation takes the dead one's place in a stack for one fade.
+  - **Picking** (a stack's formations by turns: PLAN 7.4f20). A selection ring stays on an id
+    that a new formation has taken, and such a formation takes the dead one's place in a stack
+    for one fade.
   - **A worn element at T2** is a paler sprite (PLAN 2.11g). On a light nation colour over a
     light fill (Japan's on China's) a sprite at 0.55 and one at 1 are close to the eye.
   - **Flags by scenario.** Done in PLAN 2.16b (ADR-109) for the worlds without a nation

@@ -17175,3 +17175,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   rule in the sim: the line under 7.4 says so.
 - **Tests:** `godPanelMore1938` 4 of 4 (each rule set and shown); `godUi1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f20: each formation of a marker stack picked in turn (UI)
+
+- **Start:** gate green on a clean tree (`cce7613`); critic not due.
+- **Done:** `MapView.formationPick`: a click on a stack of markers whose formation is open
+  opens the next member, round to the lead; else the lead, as before.
+- **Tests:** `stackPick1938` (new: the Spanish front after two weeks, the largest stack clicked
+  through and back to its lead); `markerStacks1938`, `formationPanel1938` green.
+- **Next:** PLAN 7.4f, the next group.

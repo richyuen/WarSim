@@ -1596,7 +1596,16 @@ export class MapView {
   formationPick(sx: number, sy: number): number {
     const inside = (r: { x: number; y: number; w: number; h: number }): boolean => sx >= r.x && sx <= r.x + r.w && sy >= r.y && sy <= r.y + r.h;
     if (this.tagOpacity > 0.5) for (const g of this.tagRects) if (inside(g)) return g.id;
-    if (this.markerOpacity > 0.5) for (let i = this.markerRects.length - 1; i >= 0; i--) if (inside(this.markerRects[i]!)) return this.markerRects[i]!.id;
+    if (this.markerOpacity > 0.5) {
+      for (let i = this.markerRects.length - 1; i >= 0; i--) {
+        const r = this.markerRects[i]!;
+        if (!inside(r)) continue;
+        // A stack (PLAN 7.4f20): a click on the marker whose formation is open opens the next of
+        // the stack, round to the lead; else the lead. Each formation in it can be picked.
+        const k = r.members.indexOf(this.picked);
+        return k >= 0 && r.members.length > 1 ? r.members[(k + 1) % r.members.length]! : r.id;
+      }
+    }
     if (this.shares.elements <= 0.5) return 0;
     const cam = this.controller.cam;
     const vw = this.canvas.clientWidth;
