@@ -2065,8 +2065,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     of each template, by strength), its order is the best armoured division it knows the
     techs of (MBT, heavy, medium of 1941, the division of 1938; PLAN 3.1c), in peace as at
     war. Short of that one's price with the reserve it *saves*: with an order in training
-    it orders nothing more that month; with none it orders the best it has the gold for,
-    infantry at the least (PLAN 1.42c). Its other orders are motorised divisions at war
+    and an army that costs at least its peacetime share of its income (`peaceShare`, PLAN
+    7.3b, ADR-429) it orders nothing more that month; else it orders the best it has the gold
+    for, infantry at the least (PLAN 1.42c). Its other orders are motorised divisions at war
     against armour-heavy enemies (≥ 20% tanks) and infantry otherwise; a nation that knows
     no armoured division orders as one with armour enough.
     Measured over ten years (`tools/diag/armourMix.ts`; seed 99, seed 7), the tanks' share
