@@ -4,18 +4,21 @@
  * and .md and exits non-zero when the sweep fails.
  *
  *   npm run sweep -- [--seeds 10] [--years 50] [--parallel 10] [--first 1] [--tag name] [--scratch] [--size S|M|L]
+ *   npm run sweep -- --from docs/sweeps/<report>.json [--tag name] [--scratch]
  *
  * `--tag` names the report docs/sweeps/<date>-sweep-<tag>, so a second run on one day keeps the
  * first report. `--scratch` writes the report to .cache/sweep/reports instead (tuning runs:
  * `npm run sweep:quick` is 10 seeds × 20 years there; only the final sweep belongs in docs/).
- * Runs shorter than 50 years are judged by the five limits alone; riser and faller are reported.
+ * Runs shorter than 50 years are judged by the five limits alone; riser, faller, stasis and
+ * break-up are reported. `--from` judges the runs of a written report again by today's criteria
+ * (PLAN 7.3a) instead of running any: seeds, years and wall times are the report's.
  */
 import { spawn } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { TAGS_1938 } from '../../src/sim/scenario1938';
-import { ALIVE_MAX, ALIVE_MIN, DYNAMISM_QUORUM, FALLOUT_MAX_LAND, NUKES_USED_SEEDS, DYNAMISM_YEARS, FALLER_KEPT, judge, judgeSweep, MAX_INCOME, MAX_LAND, MOVING_MIN, ratio, RISER_GROWTH, RISER_MIN_SHARE, WAR_YEARS, type LandChange, type Verdict } from './criteria';
+import { ALIVE_MAX, ALIVE_MIN, BREAKUP_RISE, BREAKUP_YEARS, DYNAMISM_QUORUM, STASIS_YEARS, FALLOUT_MAX_LAND, NUKES_USED_SEEDS, DYNAMISM_YEARS, FALLER_KEPT, judge, judgeSweep, MAX_INCOME, MAX_LAND, MOVING_MIN, ratio, RISER_GROWTH, RISER_MIN_SHARE, WAR_YEARS, type LandChange, type Verdict } from './criteria';
 import type { SeedResult } from './seed';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
@@ -23,9 +26,12 @@ const arg = (name: string, def: number): number => {
   const i = process.argv.indexOf(`--${name}`);
   return i >= 0 ? Number(process.argv[i + 1]) : def;
 };
-const seeds = arg('seeds', 10);
-const years = arg('years', 50);
-const first = arg('first', 1);
+const fromAt = process.argv.indexOf('--from');
+const fromPath = path.resolve(fromAt >= 0 ? (process.argv[fromAt + 1] ?? '') : '');
+const from = fromAt >= 0 ? (JSON.parse(readFileSync(fromPath, 'utf8')) as { years: number; results: SeedResult[] }) : null;
+const years = from ? from.years : arg('years', 50);
+const seeds = from ? from.results.length : arg('seeds', 10);
+const first = from ? Math.min(...from.results.map((r) => r.seed)) : arg('first', 1);
 /** The map's size (PLAN 7.1b9): the scenario's own when not given. */
 const sizeAt = process.argv.indexOf('--size');
 const size = sizeAt >= 0 ? (process.argv[sizeAt + 1] ?? '') : '';
@@ -53,12 +59,14 @@ function runSeed(seed: number): Promise<SeedResult> {
 async function main(): Promise<void> {
   const t0 = Date.now();
   const queue = Array.from({ length: seeds }, (_, i) => first + i);
-  const results: SeedResult[] = [];
-  await Promise.all(
-    Array.from({ length: parallel }, async () => {
-      for (let s = queue.shift(); s !== undefined; s = queue.shift()) results.push(await runSeed(s));
-    }),
-  );
+  const results: SeedResult[] = from ? from.results.map((r) => ({ ...r, years })) : [];
+  if (!from) {
+    await Promise.all(
+      Array.from({ length: parallel }, async () => {
+        for (let s = queue.shift(); s !== undefined; s = queue.shift()) results.push(await runSeed(s));
+      }),
+    );
+  }
   results.sort((a, b) => a.seed - b.seed);
   const verdicts = results.map(judge);
   const sweep = judgeSweep(verdicts, years);
@@ -70,7 +78,7 @@ async function main(): Promise<void> {
   const dyn = (b: boolean): string => (sweep.judged ? ` ${b ? 'yes' : '**no**'}` : '');
   const mkm = (km2: number): string => (km2 / 1e6).toFixed(2);
   const change = (c: LandChange | null): string => (c ? `${TAGS_1938[c.nation - 1] ?? `#${c.nation}`} × ${ratio(c).toFixed(2)} (${mkm(c.from)} → ${mkm(c.to)})` : 'none');
-  const rows = verdicts.map((v: Verdict) => `| ${v.seed} | ${pct(v.moving)} ${mark(v.pass.moving)} | ${pct(v.topLand)} ${mark(v.pass.land)} | ${pct(v.topIncome)} ${mark(v.pass.income)} | ${v.aliveMin}–${v.aliveMax} ${mark(v.pass.alive)} | ${pct(v.warYears)} ${mark(v.pass.war)} | ${change(v.riser)}${dyn(v.pass.riser)} | ${change(v.faller)}${dyn(v.pass.faller)} | ${v.churn} | ${pct(v.swing)} |`);
+  const rows = verdicts.map((v: Verdict) => `| ${v.seed} | ${pct(v.moving)} ${mark(v.pass.moving)} | ${pct(v.topLand)} ${mark(v.pass.land)} | ${pct(v.topIncome)} ${mark(v.pass.income)} | ${v.aliveMin}–${v.aliveMax} ${mark(v.pass.alive)} | ${pct(v.warYears)} ${mark(v.pass.war)} | ${change(v.riser)}${dyn(v.pass.riser)} | ${change(v.faller)}${dyn(v.pass.faller)} | ${v.stasis} y${dyn(v.pass.stasis)} | × ${v.breakup.toFixed(2)}${dyn(v.pass.breakup)} | ${v.churn} | ${pct(v.swing)} |`);
   const n = verdicts.length;
   // The nuclear years (PLAN 6.8).
   const startYear = 1938;
@@ -95,20 +103,21 @@ async function main(): Promise<void> {
     `Nukes used in ${used} of ${n} seeds (at least ${NUKES_USED_SEEDS}: ${mark(used >= NUKES_USED_SEEDS)}); the most land under fallout on a day ${(worstFallout * 100).toFixed(2)}% (at most ${pct(FALLOUT_MAX_LAND)}: ${mark(worstFallout <= FALLOUT_MAX_LAND)}).`,
     '',
   ];
-  const status = !sweep.limits ? 'FAILING (limits)' : !sweep.judged ? `LIMITS GREEN (riser and faller not judged: runs shorter than ${DYNAMISM_YEARS} years)` : sweep.ok ? 'ALL GREEN' : 'FAILING (dynamism)';
+  const status = !sweep.limits ? 'FAILING (limits)' : !sweep.judged ? `LIMITS GREEN (dynamism not judged: runs shorter than ${DYNAMISM_YEARS} years)` : sweep.ok ? 'ALL GREEN' : 'FAILING (dynamism)';
   const md = [
     `# Sweep ${date}: seeds ${first}–${first + seeds - 1} × ${years} years${size ? `, map size ${size}` : ''} — ${status}`,
+    ...(from ? ['', `Judged again from \`${path.relative(ROOT, fromPath).split(path.sep).join('/')}\` (no run).`] : []),
     '',
-    `Criteria (SPEC §10, tools/sweep/criteria.ts, ADR-54; land by area in km², ADR-52). Limits, every seed: land changing controller in the last 5 years ≥ ${pct(MOVING_MIN)}; largest nation < ${pct(MAX_LAND)} of land and < ${pct(MAX_INCOME)} of income at the end; ${ALIVE_MIN}–${ALIVE_MAX} nations alive every year; a war active in ≥ ${pct(WAR_YEARS)} of the years. Dynamism, by realm (a nation with no overlord, with its puppets' land), each in ≥ ${pct(DYNAMISM_QUORUM)} of the seeds of runs of ≥ ${DYNAMISM_YEARS} years: a riser (a realm ending with ≥ ${pct(RISER_MIN_SHARE)} of the land and ≥ ${RISER_GROWTH} × its land after year 1) and a faller (one of the ten largest realms after year 1 ending with ≤ ${pct(FALLER_KEPT)} of its land then). The last two columns are reported, not judged.`,
+    `Criteria (SPEC §10, tools/sweep/criteria.ts, ADR-54; land by area in km², ADR-52). Limits, every seed: land changing controller in the last 5 years ≥ ${pct(MOVING_MIN)}; largest nation < ${pct(MAX_LAND)} of land and < ${pct(MAX_INCOME)} of income at the end; ${ALIVE_MIN}–${ALIVE_MAX} nations alive every year; a war active in ≥ ${pct(WAR_YEARS)} of the years. Dynamism, by realm (a nation with no overlord, with its puppets' land), each in ≥ ${pct(DYNAMISM_QUORUM)} of the seeds of runs of ≥ ${DYNAMISM_YEARS} years: a riser (a realm ending with ≥ ${pct(RISER_MIN_SHARE)} of the land and ≥ ${RISER_GROWTH} × its land after year 1) and a faller (one of the ten largest realms after year 1 ending with ≤ ${pct(FALLER_KEPT)} of its land then); no stasis (the five largest nations by land, as a set, the same in fewer than ${STASIS_YEARS} yearly samples running); no break-up (the living nations never more than ${BREAKUP_RISE} × the most they were ${BREAKUP_YEARS} years or more before; ADR-428). The last two columns are reported, not judged.`,
     '',
-    '| Seed | Land moving (last 5 y) | Largest land | Largest income | Alive (min–max) | Years with war | Largest riser (realm, M km²) | Largest faller (realm, M km²) | New in top 10 | Leader share range |',
-    '|---|---|---|---|---|---|---|---|---|---|',
+    '| Seed | Land moving (last 5 y) | Largest land | Largest income | Alive (min–max) | Years with war | Largest riser (realm, M km²) | Largest faller (realm, M km²) | One top five (longest) | Alive over the most 20 y before | New in top 10 | Leader share range |',
+    '|---|---|---|---|---|---|---|---|---|---|---|---|',
     ...rows,
     '',
-    `Limits: ${verdicts.filter((v) => v.limits).length} of ${n} seeds. Riser: ${sweep.risers} of ${n}. Faller: ${sweep.fallers} of ${n}.${sweep.judged ? ` Needed: ${sweep.needed} of ${n} each.` : ` Not judged at ${years} years.`}`,
+    `Limits: ${verdicts.filter((v) => v.limits).length} of ${n} seeds. Riser: ${sweep.risers} of ${n}. Faller: ${sweep.fallers} of ${n}. No stasis: ${sweep.changing} of ${n}. No break-up: ${sweep.together} of ${n}.${sweep.judged ? ` Needed: ${sweep.needed} of ${n} each.` : ` Not judged at ${years} years.`}`,
     '',
     ...nukeTable,
-    `Wall time ${((Date.now() - t0) / 60000).toFixed(1)} min with ${parallel} processes (per seed: ${results.map((r) => `${r.seed}: ${(r.wallS / 60).toFixed(1)} min`).join(', ')}).`,
+    `Wall time ${((from ? Math.max(...results.map((r) => r.wallS)) * 1000 : Date.now() - t0) / 60000).toFixed(1)} min${from ? ' (the report’s longest seed)' : ''} with ${parallel} processes (per seed: ${results.map((r) => `${r.seed}: ${(r.wallS / 60).toFixed(1)} min`).join(', ')}).`,
     '',
   ].join('\n');
   writeFileSync(`${base}.md`, md);

@@ -9865,3 +9865,27 @@ Of 7.2 (open in PLAN.md):
   - [x] 7.2c Commands with numbers out of range are refused (the reads named above: a strength
     of -5, a place at 1e9, a member twice, a side 5, a province 1.5, an `editPaint` line to
     1e9). AT: a unit test of each refused; the pin unmoved.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.3 (open in PLAN.md):
+
+  - [x] 7.3a The sweep judges the critic's two asks (`tools/sweep/criteria.ts`, SPEC §10):
+    stasis (the five largest nations by land, as a set, the same in 20 yearly samples running)
+    and break-up (the living nations at some year more than a tenth above the most they were 20
+    years or more before), each per seed and each needing the quorum of riser and faller, judged on runs of
+    ≥ 50 years. `npm run sweep -- --from <report.json>` judges a written report again without
+    running it. AT: unit tests of both; the report of seeds 401–410 judged again fails on both
+    (that report is not to be made green here).

@@ -6,7 +6,12 @@ import type { SeedResult, YearSample } from '../../tools/sweep/seed';
 // (2026-10-03): five limits per seed; riser and faller per seed (by realm: a nation with its
 // puppets), judged over the sweep by a quorum; churn and swing reported only.
 
-const year = (y: number, over: Partial<YearSample> = {}): YearSample => ({ year: y, alive: 80, topLand: 0.2, topIncome: 0.25, topNation: 1, top10: y < 25 ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] : [1, 2, 3, 4, 5, 6, 7, 8, 11, 12], wars: 2, warDays: 300, changedKm2: 500_000, ...over });
+/** The ten largest: the fifth and sixth trade places every ten years (so the top five changes), and two newcomers from year 25. */
+const ten = (y: number): number[] => {
+  const t = y < 25 ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] : [1, 2, 3, 4, 5, 6, 7, 8, 11, 12];
+  return Math.floor((y - 1) / 10) % 2 === 0 ? t : [...t.slice(0, 4), t[5]!, t[4]!, ...t.slice(6)];
+};
+const year = (y: number, over: Partial<YearSample> = {}): YearSample => ({ year: y, alive: 80, topLand: 0.2, topIncome: 0.25, topNation: 1, top10: ten(y), wars: 2, warDays: 300, changedKm2: 500_000, ...over });
 /** A lively run: the leader's share moves between 20% and 24%. */
 const lively = (): YearSample[] => Array.from({ length: 50 }, (_, i) => year(i + 1, { topLand: i % 2 === 0 ? 0.2 : 0.24 }));
 /** Realms after year 1, M km²: ten large ones, two middling ones and a small one (100 M km² in all). */
@@ -98,7 +103,7 @@ describe('sweep criteria (PLAN 1.40, ADR-54)', () => {
 
   it('churn and swing are reported and decide nothing', () => {
     const base = lively();
-    const sameTen = judge(run(base.map((y) => ({ ...y, top10: [1, 2, 3, 4, 5, 6, 7, 8, 9, 13] }))));
+    const sameTen = judge(run(base.map((y) => ({ ...y, top10: [...y.top10.slice(0, 8), 9, 13] }))));
     expect(sameTen.churn).toBe(0);
     expect(sameTen.ok).toBe(true);
     const fixedLeader = judge(run(base.map((y) => ({ ...y, topLand: 0.27 }))));
@@ -109,18 +114,63 @@ describe('sweep criteria (PLAN 1.40, ADR-54)', () => {
   });
 });
 
+describe('stasis and break-up (PLAN 7.3a, ADR-428)', () => {
+  it('stasis: the same five largest nations, as a set, in 20 yearly samples running fails', () => {
+    const v = judge(run(lively()));
+    expect(v.stasis).toBe(10);
+    expect(v.pass.stasis).toBe(true);
+    // Places among the five traded, the set kept: still the same five.
+    const shuffled = judge(run(lively().map((y, i) => ({ ...y, top10: i % 2 === 0 ? [1, 2, 3, 4, 5, 6] : [5, 4, 3, 2, 1, 7] }))));
+    expect(shuffled.stasis).toBe(50);
+    expect(shuffled.pass.stasis).toBe(false);
+    expect(shuffled.limits).toBe(true);
+    expect(shuffled.ok).toBe(false);
+    // 19 years of one five pass; 20 fail.
+    const five = (from: number, to: number) => lively().map((y, i) => (i >= from && i < to ? { ...y, top10: [1, 2, 3, 4, 9, 10] } : y));
+    expect(judge(run(five(10, 29))).stasis).toBe(19);
+    expect(judge(run(five(10, 29))).pass.stasis).toBe(true);
+    expect(judge(run(five(10, 30))).stasis).toBe(20);
+    expect(judge(run(five(10, 30))).pass.stasis).toBe(false);
+  });
+
+  it('break-up: the living more than a tenth above the most they were 20 years or more before fails', () => {
+    const alive = (f: (i: number) => number) => lively().map((y, i) => ({ ...y, alive: f(i) }));
+    expect(judge(run(lively())).breakup).toBe(1);
+    // 95 to 200 over 50 years, as seeds 401–410.
+    const shatter = judge(run(alive((i) => 95 + Math.round((105 * i) / 49))));
+    expect(shatter.pass.breakup).toBe(false);
+    expect(shatter.limits).toBe(true);
+    expect(shatter.ok).toBe(false);
+    // Exactly a tenth passes; one more nation fails.
+    expect(judge(run(alive((i) => (i < 20 ? 100 : 110)))).pass.breakup).toBe(true);
+    expect(judge(run(alive((i) => (i < 20 ? 100 : 111)))).pass.breakup).toBe(false);
+    // A world that comes back from a dip: 100, 70 in years 11 to 20, 100 again.
+    expect(judge(run(alive((i) => (i >= 10 && i < 20 ? 70 : 100)))).pass.breakup).toBe(true);
+    // A rise that lasts: from 100 to 150 in year 11 and staying there.
+    expect(judge(run(alive((i) => (i >= 10 ? 150 : 100)))).breakup).toBe(1.5);
+    // Falling is fine; a short run has no 20-year span.
+    expect(judge(run(alive((i) => 150 - i))).pass.breakup).toBe(true);
+    expect(judge(run(lively().slice(0, 20))).breakup).toBe(0);
+  });
+});
+
 describe('sweep verdict (ADR-54)', () => {
   const good = judge(run(lively()));
   const noRiser: Verdict = { ...good, pass: { ...good.pass, riser: false }, ok: false };
   const noFaller: Verdict = { ...good, pass: { ...good.pass, faller: false }, ok: false };
+  const stuck: Verdict = { ...good, pass: { ...good.pass, stasis: false }, ok: false };
+  const shattered: Verdict = { ...good, pass: { ...good.pass, breakup: false }, ok: false };
   const broken: Verdict = { ...good, pass: { ...good.pass, land: false }, limits: false, ok: false };
   const of = (...parts: [Verdict, number][]): Verdict[] => parts.flatMap(([v, n]) => Array.from({ length: n }, () => v));
 
   it('riser and faller each need 8 of 10 seeds', () => {
-    expect(judgeSweep(of([good, 10]), 50)).toEqual({ limits: true, judged: true, risers: 10, fallers: 10, needed: 8, ok: true });
+    expect(judgeSweep(of([good, 10]), 50)).toEqual({ limits: true, judged: true, risers: 10, fallers: 10, changing: 10, together: 10, needed: 8, ok: true });
     expect(judgeSweep(of([good, 6], [noRiser, 2], [noFaller, 2]), 50).ok).toBe(true); // 8 and 8
     expect(judgeSweep(of([good, 7], [noRiser, 3]), 50).ok).toBe(false);
     expect(judgeSweep(of([good, 7], [noFaller, 3]), 50).ok).toBe(false);
+    expect(judgeSweep(of([good, 8], [stuck, 1], [shattered, 1]), 50).ok).toBe(true);
+    expect(judgeSweep(of([good, 7], [stuck, 3]), 50).ok).toBe(false);
+    expect(judgeSweep(of([good, 7], [shattered, 3]), 50).ok).toBe(false);
     expect(judgeSweep(of([good, 3]), 50).needed).toBe(3); // 80% of 3, rounded up
     expect(judgeSweep(of([good, 5]), 50).needed).toBe(4);
   });
@@ -132,7 +182,7 @@ describe('sweep verdict (ADR-54)', () => {
   });
 
   it('runs shorter than 50 years are judged by the limits alone', () => {
-    const v = judgeSweep(of([noRiser, 5], [noFaller, 5]), 20);
+    const v = judgeSweep(of([noRiser, 3], [noFaller, 3], [stuck, 2], [shattered, 2]), 20);
     expect(v.judged).toBe(false);
     expect(v.ok).toBe(true);
     expect(judgeSweep(of([good, 9], [broken, 1]), 20).ok).toBe(false);

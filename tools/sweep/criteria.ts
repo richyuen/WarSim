@@ -19,6 +19,13 @@
  *              (a revolt, a released puppet) is not a riser: its land shows as someone's loss;
  *   faller   — some realm among the ten largest after year 1 ends with ≤ FALLER_KEPT of the
  *              land it held then (one that is dead, or a puppet by then, counts).
+ *   stasis   — the five largest nations by land, as a set, are never the same in STASIS_YEARS
+ *              yearly samples running (the critic's ask of runs 2 to 6: "a run whose top five
+ *              are the same for 20 years fails"; ADR-428);
+ *   breakup  — the living nations are never more than BREAKUP_RISE × the most they were in
+ *              any year at least BREAKUP_YEARS before ("a run whose count of living nations
+ *              rises for 20 years fails"). Against the most, not the count of that one year:
+ *              a world that comes back from a dip has not broken up, one that keeps rising has.
  * A sweep passes them when each holds in ≥ DYNAMISM_QUORUM of its seeds, and only runs of
  * ≥ DYNAMISM_YEARS are judged by them: a 20-year tuning run reports the numbers without a verdict.
  * The quorum replaces "every seed": with a pass rate of 80–90% per seed, ten of ten is an 11–35%
@@ -48,6 +55,9 @@ export const RISER_MIN_SHARE = 0.01;
 export const FALLER_KEPT = 2 / 3;
 export const DYNAMISM_QUORUM = 0.8;
 export const DYNAMISM_YEARS = 50;
+export const STASIS_YEARS = 20;
+export const BREAKUP_YEARS = 20;
+export const BREAKUP_RISE = 1.1;
 
 /** One realm's land after year 1 (`from`) and at the end (`to`), km²; `nation` is its head. */
 export interface LandChange {
@@ -67,13 +77,16 @@ export interface Verdict {
   /** The material realm that grew most, and the year-1 top-ten realm that kept least (null: none). */
   riser: LandChange | null;
   faller: LandChange | null;
+  /** The most yearly samples running with one top five; the largest rise of the living over the most of BREAKUP_YEARS or more before (0 for a run too short). */
+  stasis: number;
+  breakup: number;
   /** Reported only. */
   churn: number;
   swing: number;
-  pass: { moving: boolean; land: boolean; income: boolean; alive: boolean; war: boolean; riser: boolean; faller: boolean };
+  pass: { moving: boolean; land: boolean; income: boolean; alive: boolean; war: boolean; riser: boolean; faller: boolean; stasis: boolean; breakup: boolean };
   /** The five limits. */
   limits: boolean;
-  /** Limits, riser and faller. */
+  /** Limits, riser, faller, stasis and break-up. */
   ok: boolean;
 }
 
@@ -107,6 +120,18 @@ export function judge(r: SeedResult): Verdict {
     if (c.from <= 0) continue;
     if (!faller || ratio(c) < ratio(faller) || (ratio(c) === ratio(faller) && (c.from > faller.from || (c.from === faller.from && nation < faller.nation)))) faller = c;
   }
+  let stasis = s.length > 0 ? 1 : 0;
+  for (let i = 1, run = 1; i < s.length; i++) {
+    const before = new Set(s[i - 1]!.top10.slice(0, 5));
+    const five = s[i]!.top10.slice(0, 5);
+    run = five.length === before.size && five.every((n) => before.has(n)) ? run + 1 : 1;
+    stasis = Math.max(stasis, run);
+  }
+  let breakup = 0;
+  for (let i = BREAKUP_YEARS, most = 0; i < s.length; i++) {
+    most = Math.max(most, s[i - BREAKUP_YEARS]!.alive);
+    breakup = Math.max(breakup, s[i]!.alive / Math.max(1, most));
+  }
   const pass = {
     moving: moving >= MOVING_MIN,
     land: last.topLand < MAX_LAND,
@@ -115,9 +140,11 @@ export function judge(r: SeedResult): Verdict {
     war: warYears >= WAR_YEARS,
     riser: riser !== null && ratio(riser) >= RISER_GROWTH,
     faller: faller !== null && ratio(faller) <= FALLER_KEPT,
+    stasis: stasis < STASIS_YEARS,
+    breakup: breakup <= BREAKUP_RISE,
   };
   const limits = pass.moving && pass.land && pass.income && pass.alive && pass.war;
-  return { seed: r.seed, moving, topLand: last.topLand, topIncome: last.topIncome, aliveMin, aliveMax, warYears, riser, faller, churn, swing, pass, limits, ok: limits && pass.riser && pass.faller };
+  return { seed: r.seed, moving, topLand: last.topLand, topIncome: last.topIncome, aliveMin, aliveMax, warYears, riser, faller, stasis, breakup, churn, swing, pass, limits, ok: limits && pass.riser && pass.faller && pass.stasis && pass.breakup };
 }
 
 export interface SweepVerdict {
@@ -125,9 +152,11 @@ export interface SweepVerdict {
   limits: boolean;
   /** Whether the runs are long enough for riser and faller to be judged. */
   judged: boolean;
-  /** Seeds with a riser, with a faller, and how many of each the quorum needs. */
+  /** Seeds with a riser, with a faller, without stasis, without a break-up, and how many of each the quorum needs. */
   risers: number;
   fallers: number;
+  changing: number;
+  together: number;
   needed: number;
   ok: boolean;
 }
@@ -139,5 +168,7 @@ export function judgeSweep(verdicts: readonly Verdict[], years: number): SweepVe
   const needed = Math.ceil(DYNAMISM_QUORUM * verdicts.length - 1e-9);
   const risers = verdicts.filter((v) => v.pass.riser).length;
   const fallers = verdicts.filter((v) => v.pass.faller).length;
-  return { limits, judged, risers, fallers, needed, ok: limits && (!judged || (risers >= needed && fallers >= needed)) };
+  const changing = verdicts.filter((v) => v.pass.stasis).length;
+  const together = verdicts.filter((v) => v.pass.breakup).length;
+  return { limits, judged, risers, fallers, changing, together, needed, ok: limits && (!judged || (risers >= needed && fallers >= needed && changing >= needed && together >= needed)) };
 }

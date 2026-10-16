@@ -16584,3 +16584,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   seam that still paints. The pin is unmoved (the AI sends no command).
 - **PLAN 7.2** ticked with its last part: its AT, the soak, ran green in 7.2a and 7.2b; the soak
   sends no command.
+
+## 2026-10-16 — PLAN 7.3: split; 7.3a the sweep judges stasis and break-up (tools)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Split** 7.3 in six parts: 7.3a the critic's two asks judged, 7.3b the land war that stops
+  (seed 7321), 7.3c rebel states take in only risings against their enemy, 7.3d statelets come
+  together again, 7.3e the other findings decided, 7.3f the deciding sweep from seed 501.
+- **Done** (ADR-428): `criteria.ts` judges **stasis** (one top five by land, as a set, in 20
+  yearly samples running) and **break-up** (the living at some year over 1.1 × the most they were
+  20 or more years before), each under the quorum, on runs of ≥ 50 years; two new report columns.
+  `npm run sweep -- --from <report.json>` judges a written report again.
+- **Re-judged** seeds 401–410 (`docs/evidence/7.3/sweep-401-judged-again.md`): FAILING
+  (dynamism). No stasis 5 of 10, no break-up 0 of 10 (× 1.49–1.63); limits, riser, faller as
+  before.
+- **Test:** `sweepCriteria.test.ts` (both criteria at their edges, a dip that recovers, the
+  quorum). Its lively fixture now trades the fifth and sixth places every ten years.
+- **Next:** PLAN 7.3b.

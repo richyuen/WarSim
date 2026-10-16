@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-428 · 2026-10-16 · accepted — The sweep judges stasis and break-up (PLAN 7.3a)
+
+- **Context.** The critic asked in runs 2 to 6 that "a run whose top five are the same for 20
+  years fails" and that "a run whose count of living nations rises for 20 years fails" (R2-B5,
+  R3-B2, R4–R6-B3). `tools/sweep/criteria.ts` judged neither, and the sweep of seeds 401–410
+  (PLAN 1.42i) was "ALL GREEN" on a world that breaks up.
+- **Decision.** Two more dynamism criteria per seed, on the yearly samples the reports already
+  hold, each needing the quorum of riser and faller (8 of 10) and judged only on runs of ≥ 50
+  years: **stasis**, the five largest nations by land (as a set; places traded among them do not
+  count) the same in 20 yearly samples running; **break-up**, the living nations at some year
+  more than 1.1 × the most they were in any year 20 or more years before. Against the most, not
+  the count of the one year 20 before: a world that comes back from a dip (100, 70, 100) has not
+  broken up; one that keeps rising has. The tenth is room for a few revivals and releases, set
+  before any sweep under these rules and not to be moved after one. Nations, not realms: the
+  critic counted nations, and the reports hold nations' top ten. `npm run sweep -- --from
+  <report.json>` judges a written report again without running it.
+- **Consequences.** The report of seeds 401–410 judged again fails (`docs/evidence/7.3/
+  sweep-401-judged-again.md`): no stasis on 5 of 10 seeds (402, 404, 405, 406, 408: 20 to 23
+  years of one five), no break-up on 0 of 10 (× 1.49 to × 1.63). PLAN 7.3b–f make it green;
+  7.3f's deciding sweep is judged by these criteria.
+
 ### ADR-427 · 2026-10-16 · accepted — The gate's related unit stage runs a red test again alone too
 
 - **Context.** ADR-423 gave the full unit stage a second run alone for a red test, and left out

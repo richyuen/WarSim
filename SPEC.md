@@ -2918,8 +2918,12 @@ on screen.
     with its puppets' land, so integrating a colony is not growth): a riser (a realm that
     ends with ≥ 1% of the owned land and ≥ 1.5 × the land it held after year 1; a realm
     that did not exist then does not count) and a faller (one of the ten largest realms
-    after year 1 that ends with ≤ 2/3 of its land of then; dead or a puppet counts). Only
-    runs of ≥ 50 years are judged by these two.
+    after year 1 that ends with ≤ 2/3 of its land of then; dead or a puppet counts). Since
+    2026-10-16 [ADR-428], the critic's two asks, on nations: no stasis (the five largest by
+    land, as a set, the same in 20 yearly samples running) and no break-up (the living never
+    more than 1.1 × the most they were in any year 20 or more years before). Only runs of
+    ≥ 50 years are judged by these four. `npm run sweep -- --from <report.json>` judges a
+    written report again.
   - *Reported, not judged:* new nations in the top ten and the leader's share range (the
     two criteria of critic B1 that riser and faller replace).
   - *Suspended until phases 2–6 are complete* [ADR-58]: no sweep after a rule change, since

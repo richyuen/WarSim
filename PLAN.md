@@ -140,6 +140,24 @@ quick sweep as a smoke test.
   years, 77 founded in play; seed 2953: 153; "Free Liège II" holds Berlin in 1953
   (`critic/c6_headless_6619.json`, `critic/c6_headless_2953.json`). What the critic asks is as
   in runs 4 and 5.
+  Split on 2026-10-16, one cause a part. The report of seeds 401–410 read again by a script:
+  the top five nations by land the same for 20 to 23 years running in 5 of 10 seeds, and the
+  living nations up over every 20-year span of every seed (95 → 141–156 by year 20), so its
+  "ALL GREEN" judged neither ask.
+  - [x] 7.3a The sweep judges the critic's two asks (`tools/sweep/criteria.ts`, SPEC §10): […]
+  - [ ] 7.3b The land war stops (seed 7321's year 13 above: a great land with one formation, a
+    falling income, gold and nothing in production while at war). Find the cause from a
+    checkpoint and fix it as a defect, not by a constant. AT: a unit test of the cause; seed
+    7321's land formations in contact at the start of years 13 and 20 measured again.
+  - [ ] 7.3c Rebel states take in only the risings against a holder they are at war with, of
+    their own people's cores (ADR-186's question above). AT: a unit test; a quick sweep reported.
+  - [ ] 7.3d Statelets come together again: revolts give land to a core owner or a neighbour
+    first, and a weak statelet is annexed whole at a peace it loses. AT: unit tests; a quick
+    sweep in which the break-up of 7.3a holds on 8 of 10 seeds.
+  - [ ] 7.3e The other findings above decided, each kept with its reason in an ADR or made a
+    part of its own before 7.3f.
+  - [ ] 7.3f The deciding sweep on unseen seeds (from 501) × 50 years. AT: the report ALL
+    GREEN by the criteria of 7.3a.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).
   From PLAN 4.1c (2026-10-09, ADR-244): Switzerland holds a cell in the Po delta (1094, 323
   at M, by Ferrara). The communes of Liechtenstein are each smaller than a cell and were
