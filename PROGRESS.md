@@ -16544,3 +16544,5 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** the full unit stage of this change was red five times by timing tests, a different set
   each time, green alone: ADR-423 (its own commit) runs a red test again alone.
 - **Next:** PLAN 7.2b.
+- **Addendum:** SPEC §10's soak and the tools list brought up to ADR-424; ADR-424 no longer
+  names a start from a save the soak does not offer.

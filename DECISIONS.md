@@ -178,7 +178,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   builds its game and then loads; save → load → save must give the same bytes (I5). The hashes
   are compared after each load, every `--compare` days (30) and at the end. Not every day: a hash
   of the 1938 state is 80 ms, more than a day's ticks (50 to 150 ms); a desync is then found
-  within a month, and a run with `--compare 1` from a save finds its day. The map's assets are
+  within a month, and a run again with `--compare 1` finds its day (the soak does not start
+  from a save). The map's assets are
   read once a size (7 s of a fresh 1938 Sim's 7.5).
 - **Result.** Seed 99, 30 minutes: green, 42.8 years (375,312 ticks), 5 saves and loads (39.5 to
   41.5 MB, 1.1 to 1.6 MB gzipped, 1.4 to 1.9 s each), final hash a871a916

@@ -105,7 +105,7 @@ src/app/           main.tsx (no ?scenario → title screen; ?scenario=1938|rando
                    settings.ts, autosave.ts and saveDb.ts (IndexedDB), scenarioFiles.ts, gameUrl.ts, player.ts,
                    flagStore.ts, testApi.ts (__warsim), bench/ (bench.html pages: A B BP P R T W F)
 tools/             data/ (pipeline, scenario previews), headless/ (runner, asset loader), sweep/, diag/, gate/,
-                   parity/, bench/, dmath/, eslint/; later soak/
+                   parity/, bench/, dmath/, eslint/, soak/
 data/              terrain.json, units/, templates/, tech/, traits/, buildings/, flags/presets.json, maps/<id>/{map,straits}.json,
                    scenarios/<id>/{scenario,nations,ownership,diplomacy,cities,city-rules,flags,oob,economy}.json
                    (every file validated by tests/unit/data-schemas.test.ts; unknown paths are rejected)
@@ -2900,8 +2900,10 @@ on screen.
 - **Headless runner** (`tools/headless`): `npm run sim -- --scenario <id> --seed 7
   --years 30 --out run.json` (metrics per year: hash, per-nation controlled/owned cells,
   formations, flipped cells, events, tick ms mean/p95/max). Phase 0 scenario: `toy`.
-- **Soak** (`npm run soak`): 30 min wall-clock at max speed with save/load every
-  5 min, comparing hashes against an uninterrupted twin. Fails on any exception or desync.
+- **Soak** (`npm run soak`, `tools/soak/`): 30 min wall-clock at headless speed (uncapped, not
+  the page's top speed) with a gzip save and a load into a fresh Sim every 5 min, comparing
+  hashes against an uninterrupted twin after each load, every 30 days and at the end
+  [ADR-424]. Fails on any exception or desync.
 - **Sweep** (`npm run sweep`): ≥ 10 seeds × ≥ 50 sim-years, on seeds the tuning never saw
   (`--first <unseen> --tag <name>`). Criteria since 2026-10-03 [ADR-54]:
   - *Limits, every seed:* land changing controller in the last 5 years ≥ 1%, largest nation
