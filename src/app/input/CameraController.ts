@@ -38,6 +38,8 @@ const PAN_KEYS: Record<string, [number, number]> = {
 };
 const ZOOM_IN_KEYS = new Set(['KeyE', 'Equal', 'NumpadAdd']);
 const ZOOM_OUT_KEYS = new Set(['KeyQ', 'Minus', 'NumpadSubtract']);
+/** A double click's zoom (PLAN 7.4f1). */
+export const DOUBLE_CLICK_ZOOM = 2;
 
 export class CameraController {
   cam: Camera;
@@ -71,6 +73,11 @@ export class CameraController {
     this.listen(window, 'keyup', (e) => this.onKey(e as KeyboardEvent, false));
     this.listen(window, 'blur', () => this.keys.clear());
     this.listen(el, 'contextmenu', (e) => e.preventDefault());
+    // A double click zooms in twice over about the place clicked (PLAN 7.4f1, the critic's N7).
+    this.listen(el, 'dblclick', (e) => {
+      e.preventDefault();
+      this.zoomTo(this.targetScale * DOUBLE_CLICK_ZOOM, this.local(e as MouseEvent));
+    });
     el.style.touchAction = 'none';
   }
 

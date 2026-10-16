@@ -77,9 +77,12 @@ test('take control of Poland, select a formation, order a move: it marches', asy
   await page.evaluate((p) => window.__warsim!.view!.select(p), POL);
   await expect(page.getByTestId('release-control')).toBeVisible();
 
-  // Escape clears the selection; releasing control hands Poland back to its AI.
+  // Escape clears the selection; with none, it closes the nearest panel (PLAN 7.4f1): Poland's,
+  // opened again to release control, which hands Poland back to its AI.
   await page.keyboard.press('Escape');
   await expect(page.getByTestId('player-label')).toContainText('0 selected');
+  await expect(page.getByTestId('release-control')).toHaveCount(0);
+  await page.evaluate((p) => window.__warsim!.view!.select(p), POL);
   await page.getByTestId('release-control').click();
   await expect(page.getByTestId('player-label')).toHaveCount(0);
   await expect.poll(async () => (await page.evaluate(() => window.__warsim!.sim.inspect())).nations.find((n) => n.id === POL)!.aiOff).toBe(false);

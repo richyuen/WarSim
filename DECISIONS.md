@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-445 · 2026-10-16 · accepted — Escape, the number keys and a double click (PLAN 7.4f1)
+
+- **Context.** The critic's N7 (2026-10-05, again 2026-10-07): Escape closed neither the nation
+  panel nor the history; the map modes had no keys (eleven behind one button that cycles); a
+  double click did nothing.
+- **Decision.**
+  - Escape (`Hud.escape`, `game.tsx`): the player's selection or armed order first, as before;
+    with none, one thing a press, the nearest first: an armed God tool, a top-centre panel
+    (editor, charts, history, settings), the nuclear alert, the formation's panel, the nation's.
+  - The number keys 1–9 and 0 set the first ten map modes, in the order of the button (fallout,
+    the eleventh, by the button), not while typing in a field nor with Ctrl, Alt or Meta. F1–F6
+    are left to the browser (help, reload). **[AoC-DEVIATION]** (AoC's keys for its modes).
+  - A double click zooms in two times over about the place clicked (`DOUBLE_CLICK_ZOOM`,
+    `CameraController`), eased as the wheel's; its two clicks select as two clicks do.
+- **Tests.** `hotkeys1938.spec.ts`; `player1938.spec.ts` now reopens Poland's panel after its
+  Escape (with no selection, Escape closed it).
+- **Found on the way.** `mapModes1938.spec.ts` was red before PLAN 7.4 (the same pixels at
+  `01b9ce1`): it read Warsaw's revolt colour as that of unrest 98, and since PLAN 7.3 the monthly
+  pass takes Poland's from 100 to 90 (its suppression). The map drew 90's colour exactly; the
+  spec now takes the colour of the unrest the sim holds, by the shader's ramp, and asks it be 90
+  or more.
+
 ### ADR-444 · 2026-10-16 · accepted — Lato for the UI and the map's names; the borders kept (PLAN 7.4e)
 
 - **Fonts.** AoC's names and panels are set in Lato (its "MALI STATES", "Statistics", "PAUSE").

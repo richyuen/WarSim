@@ -85,7 +85,14 @@ test('every map mode renders with a legend; wars, diplomacy and income colour co
   await setMode(page, 'revolts');
   const hot = await pixelAt(page, 21.0, 52.23);
   const calm = await pixelAt(page, 10.5, 51.0); // central Germany (Berlin's lakes draw fine coast lines)
-  expect(dist(hot, [143, 28, 15]), `Warsaw ${hot}`).toBeLessThan(30);
+  // The colour of the unrest the sim holds, by the shader's ramp (`unrestCol`): since PLAN 7.3 a
+  // nation's suppression takes more than the decay off in the monthly pass (100 → 90 here), and
+  // 98's dark red was what this read before.
+  const u = (await page.evaluate((p) => window.__warsim!.sim.unrest![p]!, warsawProvince)) / 100;
+  const ramp = (a: number[], b: number[], t: number): number[] => a.map((v, i) => Math.round((v + (b[i]! - v) * t) * 255));
+  const want = u < 0.5 ? ramp([0.91, 0.89, 0.81], [0.94, 0.63, 0.31], u * 2) : ramp([0.94, 0.63, 0.31], [0.56, 0.11, 0.06], (u - 0.5) * 2);
+  expect(u, 'Warsaw hot').toBeGreaterThanOrEqual(0.9);
+  expect(dist(hot, want), `Warsaw ${hot} at unrest ${u}`).toBeLessThan(30);
   expect(dist(calm, [232, 227, 207]), `central Germany ${calm}`).toBeLessThan(30);
   const [px, py] = cellOf(19.5, 52, W, H);
   await page.evaluate(({ px, py }) => window.__warsim!.view!.controller.set({ cx: px, cy: py, scale: 8 }), { px, py });

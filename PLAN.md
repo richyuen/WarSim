@@ -53,6 +53,9 @@ quick sweep as a smoke test.
   - [x] 7.4d UI frames: the panels and the bottom bar beside AoC's framed panels (taste: low […]
   - [x] 7.4e Borders and fonts: the border's darkness and width at T0 and the UI's font beside […]
   - [ ] 7.4f The groups below, a part each when taken up, or a line in an ADR for what is left.
+    - [x] 7.4f1 The keys and the mouse of the critic's N7: Escape closes one panel a press (the
+      nearest first), the number keys 1–9 and 0 set the map mode, a double click zooms in about
+      the place clicked. AT: an e2e spec of each; the specs that press Escape green.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -209,9 +212,6 @@ quick sweep as a smoke test.
   - N4, N5: T1 in a war is a web of order arrows from formations off the screen; markers
     overlap round Warsaw at the start, one under the capital's flag.
   - N6: no city panel (the formation panel and the tooltips are PLAN 2.14).
-  - N7: Escape closes neither the nation panel nor the history; F1 to F6 and the number keys
-    do not change the map mode (eight modes behind one button that cycles); a double click
-    does not zoom.
   - N8: at 1024 × 600, playing a nation, the pause button and the date are off the screen;
     at a phone's width the ranking lies on the nation panel.
   - N10: seven alliances are all named "Defensive Pact"; the history shows "#24" for one.
@@ -237,8 +237,8 @@ quick sweep as a smoke test.
     of thin stripes of other nations' colours.
   - War banners are drawn over the bottom rows of the History panel. The date label wraps
     when "· Paused" does not fit, and the bar jumps.
-  - Still there from the last report: Escape closes no panel, no hotkeys for the map modes,
-    no tooltip on hover, the layout at 390 × 844 (panels on each other).
+  - Still there from the last report: no tooltip on hover, the layout at 390 × 844 (panels on
+    each other).
   - A Kill leaves successors in greys that are nearly one colour. The random world names
     nations after provinces ("Seine-Maritime") and paints half of them purple or magenta;
     after three years one of them owns western and central Europe (that part: PLAN 1.42).

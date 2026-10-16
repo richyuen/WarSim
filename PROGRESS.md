@@ -16931,3 +16931,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** e2e by hand, 16 specs (labels, city names, fades, i18n, ticker, ranking, title,
   panels, settings, editor, tags, God UI, declutter): 36 of 36. Zoom draw p95 6.1–6.2 ms.
 - **Next:** PLAN 7.4f, the groups under 7.4, a part each.
+
+## 2026-10-16 — PLAN 7.4f1: Escape, the number keys, a double click (UI); a red spec of PLAN 7.3 fixed
+
+- **Start:** gate green on a clean tree (`a6583ab`); critic not due.
+- **Done** (ADR-445): Escape closes one panel a press, the nearest first (after the player's
+  selection, as before); 1–9 and 0 set the map mode; a double click zooms in ×2 about the place
+  clicked. N7 off the list under 7.4.
+- **Tests:** `hotkeys1938` (new); `player1938` reopens Poland's panel after its Escape;
+  `airOrders1938`, `mapImport1938`, `camera`, `godUi1938`, `editor1938` green.
+- **Found red, not by this work:** `mapModes1938` (Warsaw's revolt colour, 34.7 from that of
+  unrest 98; the same at `01b9ce1`, a worktree). Since PLAN 7.3 Poland's suppression takes its
+  unrest from 100 to 90 in the monthly pass; the map drew 90's colour exactly. The spec now reads
+  the sim's unrest and its colour by the shader's ramp. The gate runs e2e in full only at a
+  phase review; 7.3's tick did not.
+- **Next:** PLAN 7.4f, the next group.

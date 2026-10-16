@@ -16,6 +16,7 @@ import { Sound } from './sound';
 import { newStrikes } from '../shared/nukeAlert';
 import type { Heard } from '../shared/sound';
 import { installTestApi } from './testApi';
+import { MAP_MODES } from '../shared/mapModes';
 
 /**
  * Boots a game of `scenarioId` (the sim worker, the map view on `canvas`, the HUD in `uiRoot`).
@@ -23,6 +24,9 @@ import { installTestApi } from './testApi';
  * paused), ?continue=1 (resume the autosave), ?load=scenario (start from the staged scenario
  * file), ?view=0 (no map view; tests that only drive the sim worker use it).
  */
+/** The keys of the map modes, in the order of the button (PLAN 7.4f1). */
+const MODE_KEYS = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0'];
+
 export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement | null, params: URLSearchParams, scenarioId: ScenarioId): Promise<void> {
   // ?load=scenario: the scenario file chosen on the title screen waits in IndexedDB (PLAN 1.43b).
   // Without it there is no game to start, and the title screen says so.
@@ -96,10 +100,21 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
       canvas.style.cursor = hud.dragTool() ? 'crosshair' : '';
     });
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') p.clearSelection();
+      const typing = (e.target as HTMLElement | null)?.closest('textarea, input:not([type=checkbox]):not([type=radio]):not([type=file])');
+      // Escape (PLAN 7.4f1): the player's selection or armed order first, else the nearest panel.
+      if (e.key === 'Escape') {
+        if (p.selectedCount.value > 0 || p.wingOrder.value !== null || p.dropArmed.value) p.clearSelection();
+        else hud.escape();
+      }
+      // The map modes on the number keys, 1 to 9 and 0 in the order of the button (PLAN 7.4f1).
+      const mode = MODE_KEYS.indexOf(e.code);
+      if (mode >= 0 && mode < MAP_MODES.length && !typing && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        hud.setMapMode(MAP_MODES[mode]!);
+        e.preventDefault();
+        return;
+      }
       // Editor undo/redo: Ctrl+Z, Ctrl+Y or Ctrl+Shift+Z, except while typing in a text field
       // (a focused dropdown or checkbox has no text to undo; review in PLAN 1.37a).
-      const typing = (e.target as HTMLElement | null)?.closest('textarea, input:not([type=checkbox]):not([type=radio]):not([type=file])');
       if (!hud.showEditor.value || !(e.ctrlKey || e.metaKey) || typing) return;
       const k = e.key.toLowerCase();
       if (k === 'z' && !e.shiftKey) hud.command({ kind: 'editUndo' });

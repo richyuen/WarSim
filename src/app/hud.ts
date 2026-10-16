@@ -235,8 +235,25 @@ export class Hud {
     this.showSettings.value = !this.showSettings.value;
   }
 
+  /**
+   * Escape (PLAN 7.4f1, the critic's N7): closes one thing a press, the nearest first: an armed God
+   * tool, a top-centre panel, the nuclear alert, the formation's panel, the nation's panel.
+   * False when nothing was open.
+   */
+  escape(): boolean {
+    if (this.godTool.value !== null) this.setGodTool(null);
+    else if (this.showEditor.value || this.showCharts.value || this.showHistory.value || this.showSettings.value) {
+      this.closeCentre('none');
+      this.lineStart.value = null;
+    } else if (this.nukeAlert.value !== null) this.nukeAlert.value = null;
+    else if (this.formation.value !== 0) this.selectFormation(0);
+    else if (this.selected.value !== 0) this.onSelectNation(0);
+    else return false;
+    return true;
+  }
+
   /** Opening one top-centre panel (editor, charts, history, settings) closes the others. */
-  private closeCentre(except: 'editor' | 'charts' | 'history' | 'settings'): void {
+  private closeCentre(except: 'editor' | 'charts' | 'history' | 'settings' | 'none'): void {
     if (except !== 'editor') this.showEditor.value = false;
     if (except !== 'charts') this.showCharts.value = false;
     if (except !== 'history') this.showHistory.value = false;
