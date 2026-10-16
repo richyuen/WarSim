@@ -106,6 +106,8 @@ quick sweep as a smoke test.
     - [x] 7.4f19 The world's rules in the game: the God tab sets Winner takes all, the revolt
       mode and the CE mode (beside the AI and nuclear weapons); the stats carry them. AT:
       `godPanelMore1938`.
+    - [x] 7.4f20 A formation in a stack of T1 markers picked by a click: a click on the stack
+      whose formation is open opens the next of it, round to the lead. AT: `stackPick1938`.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
