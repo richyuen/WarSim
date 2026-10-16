@@ -300,3 +300,38 @@ describe('a command with a number out of its range is refused (PLAN 7.2c)', () =
     expect(owner.some((o) => o === 2)).toBe(true);
   });
 });
+
+describe('Recolor and Donate of God Mode (PLAN 7.4f16)', () => {
+  it('a nation takes the colour given; a dead one is refused', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    expect(send(s, { kind: 'recolorNation', nation: 1, color: 0x12ab34 })).toEqual({ applied: 1, refused: [] });
+    expect(s.world.nations.cols.color[1]).toBe(0x12ab34);
+    const d = toyWithDead();
+    expect(send(d, { kind: 'recolorNation', nation: 2, color: 0x123456 }).refused).toEqual([Refusal.DeadNation]);
+  });
+
+  it('gold goes from one nation to the other, no more than the giver has; to itself is refused', () => {
+    // Beside a twin that gives nothing: the tick's own income and upkeep are the same in both.
+    const twin = (gold1: number, amount?: number): [number, number] => {
+      const w = new Sim({ scenario: 'toy', seed: 7 });
+      const g = w.world.nations.cols.gold;
+      g[1] = gold1;
+      g[2] = 100;
+      if (amount !== undefined) w.command({ kind: 'donateGold', from: 1, to: 2, amount });
+      w.step(1);
+      return [g[1]!, g[2]!];
+    };
+    const base = twin(500);
+    const gave = twin(500, 200);
+    expect(gave[0]).toBeCloseTo(base[0] - 200, 6);
+    expect(gave[1]).toBeCloseTo(base[1] + 200, 6);
+    // More than it has: what it has.
+    const all = twin(50, 1e9);
+    const none = twin(50);
+    expect(all[1] - none[1]).toBeCloseTo(50, 6);
+    expect(send(new Sim({ scenario: 'toy', seed: 7 }), { kind: 'donateGold', from: 1, to: 1, amount: 10 }).refused).toEqual([Refusal.SameNation]);
+    // Out of range: a negative gift, a colour that is not one.
+    expect(send(new Sim({ scenario: 'toy', seed: 7 }), { kind: 'donateGold', from: 1, to: 2, amount: -5 }).refused).toEqual([Refusal.OutOfRange]);
+    expect(send(new Sim({ scenario: 'toy', seed: 7 }), { kind: 'recolorNation', nation: 1, color: 0x1000000 }).refused).toEqual([Refusal.OutOfRange]);
+  });
+});

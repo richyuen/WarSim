@@ -341,6 +341,22 @@ function applyCommand(world: World, cmd: Command): Refusal {
       if (!why) world.nations.cols.gold[cmd.nation] = cmd.value;
       return why;
     }
+    case 'recolorNation': {
+      const why = whyNotNation(world, cmd.nation);
+      if (!why) world.nations.cols.color[cmd.nation] = Math.max(0, Math.min(0xffffff, Math.trunc(cmd.color)));
+      return why;
+    }
+    case 'donateGold': {
+      const why = whyNotNation(world, cmd.from) || whyNotNation(world, cmd.to);
+      if (why) return why;
+      if (cmd.from === cmd.to) return Refusal.SameNation;
+      const g = world.nations.cols.gold;
+      const amount = Math.min(Math.max(0, cmd.amount), Math.max(0, g[cmd.from]!));
+      if (amount <= 0) return Refusal.NoEffect;
+      g[cmd.from] = g[cmd.from]! - amount;
+      g[cmd.to] = g[cmd.to]! + amount;
+      return Refusal.None;
+    }
     case 'setCore':
       return done(setCore(world, cmd.province, cmd.nation, cmd.on));
     case 'annexNation': {

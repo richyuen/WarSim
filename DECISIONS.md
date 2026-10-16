@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-450 · 2026-10-16 · accepted — God Mode's Recolor and Donate (PLAN 7.4f16)
+
+- **Context.** AoC's God panel has Recolor and Donate (the critic of 2026-10-07; PARITY's God
+  rows). The sim had no command for either.
+- **Decision.** `recolorNation {nation, color}`: a living nation's colour, a whole 0..0xFFFFFF
+  (else `OutOfRange`). `donateGold {from, to, amount}`: both living, not the same (`SameNation`),
+  amount not negative (`OutOfRange`); the giver gives no more than it has, nothing when it has
+  none (`NoEffect`). Both are commands of the log like the others: a game's record replays them.
+  The God tab: a colour picker and Recolor; a sum and "Donate gold" to the nation chosen in its
+  list.
+- **Tests.** `refusal.test.ts` (2 new: the colour, a dead nation refused; 200 given against a
+  twin that gave nothing, all of 50 when asked 10⁹, to itself and below zero refused);
+  `godPanelMore1938` (Germany recoloured, 2,000 to Italy).
+
 ### ADR-449 · 2026-10-16 · accepted — Occupied land at T2 and T3: a lighter cast of the occupier (PLAN 7.4f14)
 
 - **Context.** The critic (2026-10-07): at the close tiers occupied land is washed in the

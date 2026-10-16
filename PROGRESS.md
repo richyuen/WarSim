@@ -17129,3 +17129,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `godPanelMore1938` (new: 12,345 gold; Luxembourg annexed; Germany's war on Poland
   to the death and back); `godMode1938`, `godUi1938`: 19 of 19.
 - **Next:** PLAN 7.4f, Recolor and Donate.
+
+## 2026-10-16 — PLAN 7.4f16: God Mode's Recolor and Donate (sim commands, UI)
+
+- **Start:** gate green on a clean tree (`e4fab0a`); critic not due.
+- **Done** (ADR-450): commands `recolorNation` and `donateGold` (living nations, in range, no
+  more than the giver has, not to itself), their range rules in `inRange`, and the God tab's
+  colour picker and donation. The God panel's lines under 7.4 are down to the World AI
+  settings, a nation spawned with a size, cities in the game, CE and unity.
+- **Tests:** `refusal.test.ts` 21 of 21 (2 new); e2e `godPanelMore1938` (twice, stable) and
+  `godUi1938`.
+- **Found in the gate's run** (red there, green alone): the God tab's buttons read the sum from
+  the component's state, and a click before the render of the last key sent nothing: they read
+  the field itself now. The spec stepped an hour in each poll, and under load the hour's upkeep
+  (some 180 gold) moved the treasury past its bound: a God command is applied at once with its
+  stats, so the spec takes no step and checks the sums exactly (3 of 3 run side by side).
+- **Next:** PLAN 7.4f, the next group.

@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useRef, useState } from 'preact/hooks';
 import { Refusal, type Command } from '../shared/commands';
 import type { NationStat, WarStat } from '../shared/protocol';
 import { t, type MessageKey } from './i18n';
@@ -77,6 +77,16 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, t
   /** The gold typed for the treasury (PLAN 7.4f15), this nation's only. */
   const [goldTyped, setGoldTyped] = useState({ nation: 0, value: '' });
   const goldText = goldTyped.nation === n ? goldTyped.value : '';
+  /** The colour picked to recolour with, and the gold to donate (PLAN 7.4f16), this nation's only. */
+  const [colorPicked, setColorPicked] = useState({ nation: 0, value: '' });
+  const colorText = colorPicked.nation === n ? colorPicked.value : `#${nation.color.toString(16).padStart(6, '0')}`;
+  const [giftTyped, setGiftTyped] = useState({ nation: 0, value: '' });
+  const giftText = giftTyped.nation === n ? giftTyped.value : '';
+  // The fields themselves, read when the button is pressed: a click that comes before the render
+  // of the last key typed sent nothing (the gate's run, under load).
+  const goldField = useRef<HTMLInputElement>(null);
+  const giftField = useRef<HTMLInputElement>(null);
+  const colorField = useRef<HTMLInputElement>(null);
   const armKill = armed === n;
   const setArmKill = (on: boolean) => setArmed(on ? n : 0);
   const tgt = target !== 0 && others.some((o) => o.id === target) ? target : (others[0]?.id ?? 0);
@@ -105,12 +115,17 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, t
       </div>
       <div class="god-row">
         <span>{t('god.gold')}</span>
-        <input data-testid="god-gold-input" inputMode="numeric" value={goldText} placeholder={String(Math.round(nation.gold))} onInput={(e) => setGoldTyped({ nation: n, value: (e.currentTarget as HTMLInputElement).value })} />
+        <input ref={goldField} data-testid="god-gold-input" inputMode="numeric" value={goldText} placeholder={String(Math.round(nation.gold))} onInput={(e) => setGoldTyped({ nation: n, value: (e.currentTarget as HTMLInputElement).value })} />
         {btn('god-gold', t('god.set'), () => {
-          const v = Number(goldText);
-          if (goldText.trim() !== '' && Number.isFinite(v)) onCommand({ kind: 'setGold', nation: n, value: v });
+          const typedNow = goldField.current?.value ?? goldText;
+          const v = Number(typedNow);
+          if (typedNow.trim() !== '' && Number.isFinite(v)) onCommand({ kind: 'setGold', nation: n, value: v });
           setGoldTyped({ nation: n, value: '' });
         })}
+      </div>
+      <div class="god-row">
+        <input ref={colorField} type="color" data-testid="god-color-input" aria-label={t('god.recolor')} value={colorText} onInput={(e) => setColorPicked({ nation: n, value: (e.currentTarget as HTMLInputElement).value })} />
+        {btn('god-recolor', t('god.recolor'), () => onCommand({ kind: 'recolorNation', nation: n, color: parseInt((colorField.current?.value ?? colorText).slice(1), 16) }))}
       </div>
       <div class="god-row">
         <span>{t('panel.incomeBonus')}</span>
@@ -158,6 +173,15 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, t
         {btn('god-puppet', t('god.puppet'), () => onCommand({ kind: 'createPuppet', overlord: n, subject: tgt, autonomy: 50 }))}
         {nation.alliance ? btn('god-leave', t('god.leave'), () => onCommand({ kind: 'leaveAlliance', nation: n })) : null}
         {btn('god-annex', t('god.annex'), () => onCommand({ kind: 'annexNation', annexer: n, target: tgt }))}
+      </div>
+      <div class="god-row">
+        <input ref={giftField} data-testid="god-donate-input" inputMode="numeric" value={giftText} placeholder={t('god.donateAmount')} onInput={(e) => setGiftTyped({ nation: n, value: (e.currentTarget as HTMLInputElement).value })} />
+        {btn('god-donate', t('god.donate'), () => {
+          const typedNow = giftField.current?.value ?? giftText;
+          const v = Number(typedNow);
+          if (typedNow.trim() !== '' && Number.isFinite(v) && v > 0) onCommand({ kind: 'donateGold', from: n, to: tgt, amount: v });
+          setGiftTyped({ nation: n, value: '' });
+        })}
       </div>
       {myWars.map((w) => (
         <div class="god-row" key={w.id}>

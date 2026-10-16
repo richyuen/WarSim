@@ -125,6 +125,10 @@ export type Command =
   | { kind: 'removeCity'; city: number }
   | { kind: 'setCapital'; nation: number; city: number }
   | { kind: 'setGold'; nation: number; value: number }
+  /** PLAN 7.4f16 (AoC's God panel, Recolor): the nation's colour, 0xRRGGBB. */
+  | { kind: 'recolorNation'; nation: number; color: number }
+  /** PLAN 7.4f16 (AoC's God panel, Donate): `amount` gold from one living nation to another, no more than the giver has. */
+  | { kind: 'donateGold'; from: number; to: number; amount: number }
   /** Core (or claim) of `nation` on `province`; a dead nation's claim presets a revolt. */
   | { kind: 'setCore'; province: number; nation: number; on: boolean }
   | { kind: 'annexNation'; annexer: number; target: number }
@@ -186,6 +190,8 @@ export const COMMAND_KINDS: Record<Command['kind'], true> = {
   removeCity: true,
   setCapital: true,
   setGold: true,
+  recolorNation: true,
+  donateGold: true,
   setCore: true,
   annexNation: true,
   setFlag: true,
@@ -309,6 +315,10 @@ export function inRange(cmd: Command, w: number, h: number): boolean {
       return cmd.r >= 0 && cmd.r <= MAX_PAINT_R && id(cmd.value) && (cmd.mask === null || id(cmd.mask.value));
     case 'setWarFightToDeath':
       return cmd.side === 0 || cmd.side === 1;
+    case 'recolorNation':
+      return Number.isInteger(cmd.color) && cmd.color >= 0 && cmd.color <= 0xffffff;
+    case 'donateGold':
+      return cmd.amount >= 0;
     case 'createAlliance':
       return Array.isArray(cmd.members) && cmd.members.every(id) && new Set([cmd.leader, ...cmd.members]).size === cmd.members.length + 1;
     default:
