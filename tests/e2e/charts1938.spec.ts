@@ -49,6 +49,22 @@ test('statistics charts: top nations plus the selected one, every metric', async
     expect(await lines.count()).toBeGreaterThanOrEqual(5);
   }
 
+  // PLAN 7.4f12 (the critic's N14): five gridlines of the value axis and five dates; under the
+  // cursor the month and each line's value then, the sim's own sample.
+  await page.getByTestId('chart-metric').selectOption('land');
+  await expect(page.getByTestId('chart-ytick')).toHaveCount(5);
+  await expect(page.getByTestId('chart-xtick')).toHaveCount(5);
+  const svg = (await page.getByTestId('chart-svg').boundingBox())!;
+  await page.mouse.move(svg.x + svg.width - 12, svg.y + svg.height / 2); // the last month
+  const hover = page.getByTestId('chart-hover');
+  await expect(hover).toBeVisible();
+  const values = await page.getByTestId('chart-hover-value').evaluateAll((els) => els.map((e) => [Number(e.getAttribute('data-nation')), Number(e.getAttribute('data-value'))] as [number, number]));
+  expect(values).toHaveLength(6);
+  const byNation = new Map(top.map(([n, v]) => [n, v]));
+  for (const [n, v] of values.slice(0, 5)) expect(v, `nation ${n} at the last month`).toBeCloseTo(byNation.get(n)!, 0);
+  await page.mouse.move(svg.x + svg.width / 2, svg.y - 40);
+  await expect(hover).toHaveCount(0);
+
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/1.34') : info.outputPath();
   mkdirSync(out, { recursive: true });
   await page.getByTestId('chart-metric').selectOption('men');

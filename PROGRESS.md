@@ -17081,3 +17081,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `ranking.test.ts` (the new four read and sorted); e2e `ranking1938` (every list
   sorted), `rankingFlags1938`, `rankingRows1938`, `charts1938`: 4 of 4.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f12: the charts' ticks and the values under the cursor (UI)
+
+- **Start:** gate green on a clean tree (`70bbcfc`); critic not due.
+- **Done:** `StatsChart` draws gridlines at the quarters of the value axis with their values,
+  five dated ticks on the time axis, and under the cursor a dashed line with the month and each
+  line's value at the nearest sample (`sampleAt`). `docs/evidence/7.4/f12-chart-hover.png`
+  (seed 99, three years, September 1939 under the cursor).
+- **Tests:** `charts1938`: 5 and 5 ticks; at the last month the five top nations' values are
+  the sim's own samples; off the chart, no readout.
+- **Next:** PLAN 7.4f, the next group.

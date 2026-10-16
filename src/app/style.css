@@ -626,6 +626,28 @@ body {
 .chart-legend {
   margin-top: 0.3rem;
 }
+/* Gridlines, the cursor and the values under it (PLAN 7.4f12). */
+.chart-grid {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+}
+.chart-cursor {
+  stroke: rgba(246, 234, 210, 0.6);
+  stroke-width: 1;
+  stroke-dasharray: 3 2;
+}
+.chart-hover {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  margin-top: 0.3rem;
+  font-variant-numeric: tabular-nums;
+}
+.chart-hover-date {
+  color: #e9c46a;
+  font-weight: 700;
+}
 
 /* Form rows and the start button (settings panel, title screen). */
 .form-row {

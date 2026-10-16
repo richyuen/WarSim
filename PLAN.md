@@ -82,6 +82,9 @@ quick sweep as a smoke test.
     - [x] 7.4f11 The critic's N14, the lists: nine ranking lists as AoC's (enemies at war,
       puppets, aircraft and warheads besides land, army, income, treasury and manpower). AT:
       `ranking.test.ts`; `ranking1938` sorts every list.
+    - [x] 7.4f12 The critic's N14, the charts: gridlines at the quarters of the value axis, five
+      dates on the time axis, and under the cursor the month and each line's value. AT:
+      `charts1938` reads the ticks and the values under the cursor against the sim's series.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -235,9 +238,8 @@ quick sweep as a smoke test.
   - N8 (left of it after PLAN 3.12Rh4 and 7.4f2): at 1024 × 600, playing a nation, the bar's
     "Poland · n selected" is cut to its first letter (the one item that shrinks; its tooltip says
     it in full).
-  - N14 (left of it after PLAN 7.4c and 7.4f11): the dead are not in the ranking (AoC marks
-    them); charts have no axis ticks and no value under the cursor; the economy tab is six
-    numbers.
+  - N14 (left of it after PLAN 7.4c, 7.4f11 and 7.4f12): the dead are not in the ranking (AoC
+    marks them); the economy tab is six numbers.
   - N17: a black smear under a counter near Bern in 1952 of seed 2718.
   - N18: no sound; one language.
   - N21: while the game runs, half-faded counters are on screen all the time as the clusters
