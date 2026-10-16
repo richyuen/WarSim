@@ -16754,3 +16754,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `economicAi.test.ts` (the levels; the German case at full with a treasury). Pin
   9ecbfefd → 12cfc6c4.
 - **Next:** PLAN 7.3e3.
+
+## 2026-10-16 — PLAN 7.3e3, part 1: the refills keep the next order's price (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Measured first** (HEAD `48eab14`, `docs/evidence/7.3/reserve-7.3e3.md`): seed 1, the Soviet
+  gold 200–500 over its reserve for six years, the refills taking each month's surplus; an order
+  wants the reserve and 1,001: no formation raised in years 1–10. Seed 7321: the pool 12.09 M at
+  year 10 with an income of 1,668; 7 M men are 28 years of that income: the pool clause is not
+  the reserve's measure (kept, ADR-437).
+- **Done** (ADR-437): with no army order in training and room for one, the refills keep the
+  price of the next order (`nextOrderPrice`). Seed 1: Soviet spawned 0 → 21, months suppressing
+  68 → 94; seed 7321 builds 7 → 22.
+- **Test:** `refill.test.ts` (no refill with no order in training and gold short of one; refilled
+  with one in training). Pin 12cfc6c4 → 86845f61.
+- **Next:** PLAN 7.3e3 part 2, a restless nation's month of suppression over the reserve.

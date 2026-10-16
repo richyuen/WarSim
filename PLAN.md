@@ -148,6 +148,9 @@ quick sweep as a smoke test.
   - [x] 7.3b The land war stops (seed 7321's year 13 above: a great land with one formation, a […]
   - [x] 7.3c Rebel states take in only the risings against a holder they are at war with, of […]
   - [x] 7.3d Statelets come together again: revolts give land to a core owner or a neighbour […]
+  Seen in PLAN 7.3e3 (ADR-437): the United States holds 282,000 gold in year 9 of seed 7321, 50
+  months of its income, its army at its peacetime cap; no reserve rule reaches it. To judge by
+  7.3f's report (a hoard that never fights is a stasis).
   - [ ] 7.3e The other findings above decided, each kept with its reason in an ADR or made a
     part of its own before 7.3f.
     Left by 7.3d3 (ADR-433, `docs/evidence/7.3/births-7.3d3.md`): the economic AI pays for
@@ -208,6 +211,11 @@ quick sweep as a smoke test.
       pays for no suppression (seed 5, the United Kingdom's seven states in year 30 at 3.1 to 3.2
       months of income, the bar 3.15); to decide with the reserve whether a restless nation's
       refills and orders keep a month of suppression over it.
+      Part 1 done 2026-10-16 (ADR-437, `docs/evidence/7.3/reserve-7.3e3.md`): with no army order in
+      training the refills keep the next order's price; seed 1, Soviet formations spawned in years
+      1–10 0 → 21 (HEAD 0: after ADR-436, not 7.3e1's 8). The pool clause is not the reserve's
+      measure (7 M men are 28 years of the Soviet income; kept, ADR-437). Left: part 2, a restless
+      nation's month of suppression over the reserve.
   - [ ] 7.3f The deciding sweep on unseen seeds (from 501) × 50 years. AT: the report ALL
     GREEN by the criteria of 7.3a.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).

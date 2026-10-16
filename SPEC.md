@@ -997,7 +997,11 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   died gets a new element of the template's unit. A rule of the economy, as the research budget:
   a nation without AI is refilled on it too (it has no orders of the AI before it). The refills
   take what the orders leave: taken first, they held every treasury at the reserve and no new
-  formation was raised (ADR-435). Fleets and wings are not refilled.
+  formation was raised (ADR-435). With no army order in training and room for one (a slot, the
+  army's upkeep under its share), they keep the price of the next one over the reserve as well:
+  the infantry division's, a poor nation's cadre one (PLAN 7.3e3, ADR-437: else they spent each
+  month's surplus to the reserve and an order was never paid for). Fleets and wings are not
+  refilled.
 
 **Techs v1: what a nation knows, and the gate (PLAN 3.1a, ADR-127; `src/sim/tech.ts`).**
 - *The tree* reaches the sim as `ScenarioRules.techs` (id, year, prerequisites), the tech files

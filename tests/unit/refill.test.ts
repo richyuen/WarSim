@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { economicAi, REFILL_MONTH } from '../../src/sim/ai/economic';
+import { budgetOf, economicAi, REFILL_MONTH, RESERVE_MONTHS } from '../../src/sim/ai/economic';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { bleedFormation, elementIndex, settleFormation } from '../../src/sim/systems/elements';
-import { refillable, refillFormation } from '../../src/sim/systems/production';
+import { monthlyAccounts } from '../../src/sim/systems/economy';
+import { queueFormation, refillable, refillFormation } from '../../src/sim/systems/production';
 import { Domain, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -146,6 +147,26 @@ describe("a formation is refilled from its nation's pool (PLAN 7.3e1)", () => {
       const before = w.formations.cols.strength[id]!;
       month(w);
       expect(w.formations.cols.strength[id]).toBe(before);
+    }
+  });
+  it('with no army order in training, the refills keep the price of the next one (PLAN 7.3e3)', () => {
+    // Before, they spent each month's surplus to the reserve, and an order wants the reserve and
+    // its price: the Soviet Union of seed 1 raised nothing in ten years.
+    for (const training of [false, true]) {
+      const { w, id } = bled();
+      const nc = w.nations.cols;
+      for (const o of w.production.ids()) if (w.production.cols.nation[o] === GER) w.production.remove(o);
+      if (training) expect(queueFormation(w, GER, BUILD_MIX_1938.infantry)).not.toBe(0);
+      const { income } = budgetOf(w, GER, monthlyAccounts(w, ECONOMY_TABLES_1938));
+      const price = w.rules!.templates[BUILD_MIX_1938.infantry]!.gold;
+      nc.gold[GER] = RESERVE_MONTHS * income + 0.9 * price;
+      const before = w.formations.cols.strength[id]!;
+      month(w);
+      const orders = w.production.ids().filter((o) => w.production.cols.nation[o] === GER).length;
+      // No new order: the treasury is short of one with its reserve.
+      expect(orders).toBe(training ? 1 : 0);
+      if (training) expect(w.formations.cols.strength[id]!).toBeGreaterThan(before + 0.95 * REFILL_MONTH * fullOf(w, id) - 1);
+      else expect(w.formations.cols.strength[id]).toBe(before);
     }
   });
 });

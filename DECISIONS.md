@@ -167,6 +167,36 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-437 · 2026-10-16 · accepted — With no army order in training, the refills keep the next order's price; the pool is not the reserve's measure; the pin moves (PLAN 7.3e3)
+
+- **Context.** PLAN 7.3e3 (left by ADR-435 and ADR-436): a new order and a refill both keep
+  RESERVE_MONTHS (3) of income in the treasury, and an order wants its price on top. Measured
+  first on HEAD `48eab14` (`docs/evidence/7.3/reserve-7.3e3.md`): on seed 1 the Soviet Union's
+  gold stood 200 to 500 over the reserve for six years, the refills taking each month's surplus,
+  never the reserve and an infantry division's 1,001 (3,686 against the most it held, 3,162); it
+  raised **no** formation in years 1–10 (7.3e1's log before ADR-436: 8).
+- **Decision.** In step 3a of the economic AI, while the nation has no army order in training
+  (none before the month, none placed in it) and room for one (a slot, the army's upkeep under
+  its cap), the refills keep the price of the next order over the reserve too
+  (`nextOrderPrice`): the infantry division's; a poor nation's (income < POOR_INCOME) or one
+  without the infantry's techs the cadre one's (the order the build step falls back on when it
+  can pay for no dearer one). The reserve itself is unchanged. A division and a refill cost the
+  same gold a man: the rule spends no more, it lets the treasury reach an order between refills,
+  and the refills take the rest while it trains.
+- **The pool clause is not the reserve's measure** (7.3e1's AT, "the Soviet pool does not end
+  year 10 over 5 M unused"): on seed 7321 HEAD's pool is 12.09 M with an income of 1,668 a month;
+  7 M men at the infantry's 0.080 gold a man are 560,000 gold, 28 years of that income, and the
+  reserve is a stock of three months. The pool stands over its cap (3% of the population) from
+  the men disbanded formations give back; the cap stops growth, it does not shrink a pool. Gold
+  binds, not men, as in AoC, where gold buys soldiers. Kept, not a part of its own.
+- **Measured** (`.cache/73e3/months.ts`, `bind.ts`): seed 1, Soviet formations spawned in years
+  1–10 0 → 21, months suppressing 68 → 94 of 119; seed 7321, Soviet builds by year 10 7 → 22,
+  pool 12.09 M → 12.40 M.
+- **Seen, not judged here:** the United States holds 282,000 gold in year 9 of seed 7321 (7.3e1's
+  checkpoint), 50 months of its income: its army is at its peacetime cap, which no reserve rule
+  reaches. A line under PLAN 7.3.
+- **Pin:** 12cfc6c4 → 86845f61.
+
 ### ADR-436 · 2026-10-16 · accepted — A treasury over its reserve pays for full suppression; the pin moves (PLAN 7.3e2)
 
 - **Context.** The economic AI suppressed at 0.5 only from a month's surplus over 15% of its

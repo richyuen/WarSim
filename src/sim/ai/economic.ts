@@ -238,9 +238,10 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
      * refilled (`refillable`), in the order of their ids, each by up to REFILL_MONTH of its
      * template's men, a man of the pool for a man and gold at the template's price a man, under
      * what bounds a new order: the treasury keeps RESERVE_MONTHS of income, the balance stays above
-     * the need with the men's upkeep, and the army's upkeep under `cap`. Returns what is left.
+     * the need with the men's upkeep, and the army's upkeep under `cap`; and `keep` gold more (the
+     * price of the next order, PLAN 7.3e3). Returns what is left.
      */
-    const refill = (n: number, income: number, need: number, balance: number, upkeep: number, cap: number): { balance: number; upkeep: number } => {
+    const refill = (n: number, income: number, need: number, balance: number, upkeep: number, cap: number, keep = 0): { balance: number; upkeep: number } => {
       for (const id of own.get(n) ?? []) {
         if (upkeep >= cap || nc.manpower[n]! < 1) break;
         if (!refillable(world, id)) continue;
@@ -249,7 +250,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
         const perMan = rule.gold / rule.manpower;
         const full = tables.templateStrength[t] ?? 0;
         const upkeepPerMan = full > 0 ? upkeepOfTemplate(t) / full : 0;
-        const byGold = perMan > 0 ? (nc.gold[n]! - RESERVE_MONTHS * income) / perMan : Infinity;
+        const byGold = perMan > 0 ? (nc.gold[n]! - RESERVE_MONTHS * income - keep) / perMan : Infinity;
         const byUpkeep = upkeepPerMan > 0 ? Math.min(balance - need, cap - upkeep) / upkeepPerMan : Infinity;
         const men = Math.min(REFILL_MONTH * rule.manpower, nc.manpower[n]!, byGold, byUpkeep);
         if (!(men >= 1)) continue;
@@ -328,6 +329,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       balance -= training.get(n) ?? 0;
       // The army's orders first; what they leave may pay for refills, and then for a fleet.
       const rules = world.rules;
+      let ordered = 0;
       const armyOrders = (): void => {
         for (let k = pending.get(n) ?? 0; k < slots; k++) {
           if (upkeep >= (atWar ? ARMY_SHARE_WAR * income : peace)) return;
@@ -354,6 +356,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income || nc.manpower[n]! < rule.manpower) return;
           if (queueFormation(world, n, t) === 0) return;
           nc.builds[n] = nc.builds[n]! + 1;
+          ordered++;
           balance -= newUpkeep;
           upkeep += newUpkeep;
           inTanks += (tables.templateArmour[t] ?? 0) * newUpkeep;
@@ -362,8 +365,12 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       armyOrders();
       // 3a. The refills, with what the orders left (PLAN 7.3e1, ADR-435: taken first, they spent
       // the treasury to the reserve every month, and a nation whose army died in contact, where
-      // none is refilled, raised nothing for years).
-      ({ balance, upkeep } = refill(n, income, need, balance, upkeep, atWar ? ARMY_SHARE_WAR * income : peace));
+      // none is refilled, raised nothing for years). With no army order in training and room for
+      // one, they keep its price (PLAN 7.3e3: else they spent each month's surplus to the reserve,
+      // and the Soviet Union of seed 1 raised nothing in ten years, 3,150 gold against 3,686).
+      const cap = atWar ? ARMY_SHARE_WAR * income : peace;
+      const keep = (pending.get(n) ?? 0) + ordered === 0 && slots > 0 && upkeep < cap ? nextOrderPrice(world, n, income, mix) : 0;
+      ({ balance, upkeep } = refill(n, income, need, balance, upkeep, cap, keep));
       // 3b. A fleet (PLAN 4.6e1), with what the army's orders left: one at a time, while the
       // navy is under its share of the income.
       const fleet = mix.fleets && (shipsPending.get(n) ?? 0) === 0 && (navy.get(n) ?? 0) < NAVY_SHARE * income ? pickFleet(world, n, income, atWar, mix.fleets, fleets.get(n) ?? []) : -1;
@@ -462,6 +469,18 @@ function pickTemplate(world: World, n: number, income: number, atWar: boolean, m
   }
   if (atWar && armourShareOfEnemies(world, n) >= ARMOUR_HEAVY) return mix.motorised;
   return mix.infantry;
+}
+
+/**
+ * The price of the order nation `n` places when it can pay for no dearer one (PLAN 7.3e3): a poor
+ * nation's cadre division, else the infantry division, or the cadre one without its techs (as the
+ * build step replaces an order).
+ */
+function nextOrderPrice(world: World, n: number, income: number, mix: BuildMix): number {
+  const templates = world.rules!.templates;
+  const plain = templates[mix.infantry];
+  const t = income >= POOR_INCOME && plain && knowsTechs(world, n, plain.techs) ? plain : templates[mix.cadre];
+  return t?.gold ?? 0;
 }
 
 /**
