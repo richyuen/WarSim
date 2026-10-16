@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { forceRevolt, REGION_KM2, REGION_MAX } from '../../src/sim/systems/revolts';
+import { eliminateNation } from '../../src/sim/systems/capitals';
+import { makePuppet } from '../../src/sim/systems/puppets';
 import { declareWar, makePeace } from '../../src/sim/systems/war';
 import { navOf, type World } from '../../src/sim/world';
 import { assets1938, earthAdmin1 } from '../helpers/earth';
@@ -147,5 +149,92 @@ describe('a rising joins only rebels of its people at war with its holder (PLAN 
     expect(w.nations.highWater, 'a nation was founded').toBe(next + 1);
     expect(provincesOf(w, rebel)).toEqual([rason]);
     expect(w.nations.cols.people[next]).toBe(SOV);
+  });
+});
+
+// PLAN 7.3d1 (ADR-431): a revolt gives its land to its living core nation whatever their bond,
+// else to a neighbour of the area's people, before it founds a state. Seeds 1 and 3 founded 106
+// and 193 states in 20 years on land whose core nation was the holder's puppet, overlord or ally.
+describe('statelets come together: a revolt goes to its core nation or its kin first (PLAN 7.3d1)', () => {
+  const GER = nationId('GER');
+  const JAP = nationId('JAP');
+
+  /** Every cell of province p is n's, owned and held. */
+  function give(w: World, p: number, n: number): void {
+    w.cells.province.forEach((q, c) => {
+      if (q !== p || w.cells.owner[c] === 0) return;
+      w.setOwner(c, n);
+      w.setController(c, n);
+    });
+  }
+
+  it("a puppet's land held by its overlord goes back to the puppet", () => {
+    const w = world1938();
+    w.settings.revoltMode = 'province';
+    expect(makePuppet(w, GER, FRA, 30)).toBe(true);
+    const aveyron = provinceOf('Aveyron', 'FRA');
+    give(w, aveyron, GER);
+    const next = w.nations.highWater;
+    expect(forceRevolt(w, aveyron)).toBe(true);
+    expect(w.nations.highWater, 'no nation was founded').toBe(next);
+    expect(provincesOf(w, FRA)).toContain(aveyron);
+    expect(w.wars.atWar(GER, FRA)).toBe(false);
+  });
+
+  it("an ally's land goes back to the ally", () => {
+    const w = world1938();
+    w.settings.revoltMode = 'province';
+    // France's ally of 1938 holds Aveyron.
+    const ally = w.alliances.allianceOf(FRA)?.members.find((m) => m !== FRA) ?? 0;
+    expect(ally).not.toBe(0);
+    const aveyron = provinceOf('Aveyron', 'FRA');
+    give(w, aveyron, ally);
+    const next = w.nations.highWater;
+    forceRevolt(w, aveyron);
+    expect(w.nations.highWater, 'no nation was founded').toBe(next);
+    expect(provincesOf(w, FRA)).toContain(aveyron);
+  });
+
+  it('the land of a dead Soviet state goes to the Soviet state next to it', () => {
+    const w = world1938();
+    w.settings.revoltMode = 'province';
+    const amur = provinceOf('Amur', 'RUS');
+    const khabarovsk = provinceOf('Khabarovsk Krai', 'RUS');
+    // Two Soviet rebel states, on Amur and on Khabarovsk next to it.
+    const dead = w.nations.highWater;
+    forceRevolt(w, amur);
+    // At peace with the Soviet Union, so Khabarovsk founds its own (PLAN 7.3c).
+    makePeace(w, w.wars.list.find((x) => x.sides[0].includes(SOV) && x.sides[1].includes(dead))!);
+    const kin = w.nations.highWater;
+    forceRevolt(w, khabarovsk);
+    expect([w.nations.cols.people[dead], w.nations.cols.people[kin]]).toEqual([SOV, SOV]);
+    // Japan takes Amur and the rest of its Soviet neighbours; the state on Amur is gone.
+    give(w, amur, JAP);
+    const g = navOf(w).graph;
+    for (const q of g.adj[amur] ?? []) if (w.cells.owner[g.centre[q]!] === SOV) give(w, q, JAP);
+    eliminateNation(w, dead);
+    expect(w.nations.cols.living[dead]).toBe(0);
+    expect(w.provinces.core[amur]).toBe(dead);
+    const next = w.nations.highWater;
+    forceRevolt(w, amur);
+    expect(w.nations.highWater, 'no nation was founded').toBe(next);
+    expect(provincesOf(w, kin)).toContain(amur);
+    expect(w.provinces.core[amur], 'and it is their core').toBe(kin);
+  });
+
+  it('with no kin next to it, the land of a dead state founds one, as before', () => {
+    const w = world1938();
+    w.settings.revoltMode = 'province';
+    const amur = provinceOf('Amur', 'RUS');
+    const dead = w.nations.highWater;
+    forceRevolt(w, amur);
+    give(w, amur, JAP);
+    const g = navOf(w).graph;
+    for (const q of g.adj[amur] ?? []) if (w.cells.owner[g.centre[q]!] === SOV) give(w, q, JAP);
+    eliminateNation(w, dead);
+    const next = w.nations.highWater;
+    forceRevolt(w, amur);
+    expect(w.nations.highWater, 'a nation was founded').toBe(next + 1);
+    expect(provincesOf(w, next)).toEqual([amur]);
   });
 });

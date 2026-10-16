@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-431 · 2026-10-16 · accepted — A revolt goes to its core nation whatever the bond, else to its kin next door; the pin stays (PLAN 7.3d1)
+
+- **Context.** The world breaks up (critic R2-B6 to R6-B3; the break-up of ADR-428 fails on
+  every seed of 401–410). A probe of seeds 1 and 3 × 20 years counted where the nations come
+  from: 283 and 441 founded, 266 and 431 of them rebel states. Of those, 106 and 193 rose on
+  land whose core nation was alive and the holder's puppet, overlord or ally (the defection of
+  ADR-47 skipped a bound core and founded a state instead; no ADR gave a reason), and 104 and
+  222 on land whose core nation was dead and could not return (a state founded in play has no
+  revivals: its land rose again as one more state), 10 and 26 of those next to a living nation
+  of the same people.
+- **Decision.** A revolt's area goes, in this order: to its living core nation, whatever their
+  bond (`LandCeded`, no war); to rebels next to it at war with the holder and of its people
+  (ADR-430); to a dead claimant that may return; to the living nation next to it (lowest id) of
+  the people of its dead core nation (`kinNeighbour`: that nation's `people`, or the nation
+  itself; a `LandCeded`, no war), which takes the area as its core (a dead nation that may still
+  return keeps a claim) — unless that people is the holder's own, whose rising stays a state of
+  its own (ADR-430's case after a peace); else a new state.
+- **Why kin, not any neighbour.** The people is the one record of whose land it is (ADR-430). A
+  hand-over to whichever neighbour is largest would make a revolt a gift of land to a third
+  nation; to kin it is statelets of one people coming together, which is what the critic asks.
+- **The pin stays** (3a944534): seed 99's first year has no revolt the rule changes.
+- **Tests.** `revoltRegion.test.ts`, four: a puppet's land held by its overlord goes back to the
+  puppet; an ally's to the ally; a dead Soviet state's land to the Soviet state next to it (the
+  three red before); with no kin next to it a state is founded, as before.
+
 ### ADR-430 · 2026-10-16 · accepted — A rising joins only rebels of its people at war with its holder; the pin moves (PLAN 7.3c)
 
 - **Context.** ADR-186 left it open: a rebel state grows by every revolt next to it

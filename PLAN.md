@@ -150,6 +150,17 @@ quick sweep as a smoke test.
   - [ ] 7.3d Statelets come together again: revolts give land to a core owner or a neighbour
     first, and a weak statelet is annexed whole at a peace it loses. AT: unit tests; a quick
     sweep in which the break-up of 7.3a holds on 8 of 10 seeds.
+    Split on 2026-10-16, one cause a part. A probe of seeds 1 and 3 × 20 years: 283 and 441
+    nations founded (266 and 431 rebel states), of them 106 and 193 on land whose living core
+    nation was the holder's puppet, overlord or ally, and 104 and 222 on land whose core nation
+    was dead (10 and 26 of them next to a living nation of that people); founded nations lost 323
+    and 445 peaces, and of those they lived through 112 and 179 left them with 8,500 to 50,000
+    km². The quick sweep runs 30 years: at 20 the break-up has no sample (`× 0.00`).
+    - [x] 7.3d1 A revolt gives its land to its living core nation whatever their bond, else to
+      a neighbour of the area's people (the core nation's own `people`, or itself) before a dead
+      claimant or a new state. AT: unit tests.
+    - [ ] 7.3d2 A nation founded in play that loses a peace with under STATELET_KM2 of land
+      after the terms is annexed whole. AT: unit tests; the quick sweep of 7.3d (30 years).
   - [ ] 7.3e The other findings above decided, each kept with its reason in an ADR or made a
     part of its own before 7.3f.
     Left by 7.3b (ADR-429, `docs/evidence/7.3/contact-7321.md`): no rule gives a formation men

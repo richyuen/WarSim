@@ -1324,11 +1324,16 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     50 gold. The holder always declares war on them (PLAN 1.40, ADR-44; it was a 50% chance),
     with its puppets and without its allies (ADR-184).
     Event `RevoltSpawned`.
-  - *Defection and spreading (ADR-47):* a revolt on land whose core nation is alive (and not
-    bound to the holder) returns the area to that nation. Otherwise, next to a rebel state it
+  - *Defection and spreading (ADR-47):* a revolt on land whose core nation is alive returns
+    the area to that nation, whatever their bond: its puppet, overlord or ally too (PLAN 7.3d1,
+    ADR-431). Otherwise, next to a rebel state it
     joins that state, if the state is at war with the holder and of the area's people: the
     state's `people`, the core of the land it rose on (a revived nation's is itself), is the
-    area's core (PLAN 7.3c, ADR-430). Only otherwise does it found a new nation.
+    area's core (PLAN 7.3c, ADR-430). Otherwise a dead claimant returns (§ revival). Otherwise
+    the area goes to the living nation next to it (lowest id) of the people of its dead core
+    nation (that nation's `people`, or the nation itself: a 1938 nation is its own people),
+    and becomes its core, unless that people is the holder's (PLAN 7.3d1, ADR-431). Only
+    otherwise does it found a new nation.
   - *Land handed over (PLAN 2.15d, ADR-102):* a defection, and each handover of a God Kill, is
     the event `LandCeded` (a = who received the land, b = who held it), as is the land of a
     dead nation that goes to its occupier (ADR-112), not a revolt. An area that joins a rebel

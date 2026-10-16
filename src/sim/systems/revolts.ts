@@ -23,9 +23,10 @@
  * on it (PLAN 1.40; not in a God Mode Kill, whose holder dies).
  * Unrest in the area resets to AFTER_REVOLT. Event `RevoltSpawned` (a = rebel, b = former holder).
  *
- * Defection (critic B1/B4, 2026-10-03): when the area's core nation is alive and is neither the
- * holder nor bound to it (ally, overlord, puppet), the area returns to that nation instead of
- * founding a new state: conquests a holder cannot keep quiet go back to their rightful owner.
+ * Defection (critic B1/B4, 2026-10-03): when the area's core nation is alive and is not the
+ * holder, the area returns to that nation instead of founding a new state, whatever their bond
+ * (ally, overlord, puppet: PLAN 7.3d1): conquests a holder cannot keep quiet go back to their
+ * rightful owner.
  * Event `LandCeded` (a = the core nation, b = the former holder), not a revolt (PLAN 2.15d: the
  * history read "France broke away from Italy").
  * Otherwise, when a province next to the area belongs to rebels (a spawned nation, no puppet)
@@ -34,6 +35,10 @@
  * uprising spreads as one state instead of founding a new one per revolt (`RevoltSpawned` again,
  * a = those rebels). A rising against a holder they are at peace or in a truce with, or on
  * another people's land, founds its own state.
+ * Kin (PLAN 7.3d1): land whose core nation is dead and cannot return (no dead claimant revives)
+ * goes to the living nation next to it of that core nation's people (`kinNeighbour`), not the
+ * holder's own people, and becomes its core: a `LandCeded`, no war. Statelets of one people come
+ * together again instead of each dead one's land founding another.
  *
  * Overextension (critic B1, 2026-10-03): a holder with share s of the world's owned land (km²,
  * not cells: ADR-57) above OVEREXT_SHARE strains to hold its far provinces (centre more than
@@ -210,7 +215,9 @@ function revolt(world: World, p: number, holder: number): number[] {
   const area = revoltArea(world, p, holder);
   const core = world.provinces.core[p]!;
   const nc = world.nations.cols;
-  if (core !== 0 && core !== holder && nc.living[core] === 1 && nc.overlord[core] !== holder && nc.overlord[holder] !== core && !world.alliances.allied(core, holder)) {
+  // To its living core nation, whatever their bond (PLAN 7.3d1): land of a puppet, an overlord or
+  // an ally founded a state of its own, 106 and 193 of them in 20 years of seeds 1 and 3.
+  if (core !== 0 && core !== holder && nc.living[core] === 1) {
     defect(world, area, holder, core);
     return area;
   }
@@ -222,8 +229,50 @@ function revolt(world: World, p: number, holder: number): number[] {
   }
   // A dead nation with a core here returns instead of new rebels (PLAN 1.20), if it may.
   const claimant = deadClaimant(world, p);
-  if (claimant === 0 || !reviveNation(world, claimant, area)) spawnRebels(world, area, holder);
+  if (claimant !== 0 && reviveNation(world, claimant, area)) return area;
+  const kin = kinNeighbour(world, area, holder);
+  if (kin !== 0) {
+    defect(world, area, holder, kin);
+    for (const q of area) {
+      const old = world.provinces.core[q]!;
+      world.provinces.core[q] = kin;
+      // A dead nation that may still return keeps its way back (`deadClaimant`).
+      if (old !== 0 && old !== kin && world.nations.has(old) && nc.revivalsLeft[old]! > 0) world.provinces.addClaim(q, old);
+    }
+    return area;
+  }
+  spawnRebels(world, area, holder);
   return area;
+}
+
+/** A nation's people (PLAN 7.3c): a nation founded in play has the core of the land it rose on, any other is its own. */
+function kinOf(world: World, n: number): number {
+  return world.nations.has(n) ? world.nations.cols.people[n]! || n : n;
+}
+
+/**
+ * The living nation (lowest id) other than `holder` that owns a province next to `area` and is
+ * of the area's people (PLAN 7.3d1): the people of the area's dead core nation, or that nation.
+ * Land whose nation is gone goes to its kin next door instead of founding one more state; the
+ * holder's own people's land (a rising against its own nation) is not handed on.
+ */
+function kinNeighbour(world: World, area: number[], holder: number): number {
+  const core = world.provinces.core[area[0]!]!;
+  if (core === 0) return 0;
+  const people = kinOf(world, core);
+  if (people === kinOf(world, holder)) return 0;
+  const g = navOf(world).graph;
+  const nc = world.nations.cols;
+  let best = 0;
+  for (const p of area) {
+    for (const q of g.adj[p] ?? []) {
+      const c = g.centre[q] ?? -1;
+      const n = c >= 0 ? world.cells.owner[c]! : 0;
+      if (n === 0 || n === holder || nc.living[n] !== 1 || kinOf(world, n) !== people) continue;
+      if (best === 0 || n < best) best = n;
+    }
+  }
+  return best;
 }
 
 /**

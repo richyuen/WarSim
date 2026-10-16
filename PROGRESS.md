@@ -16637,3 +16637,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   quick sweep: 117–175): more states of their own. 7.3d brings them together again.
 - **Pin** 45a6eb2f → 3a944534, by the new column alone (the old rule with it gives the same hash).
 - **Next:** PLAN 7.3d.
+
+## 2026-10-16 — PLAN 7.3d: split; 7.3d1 a revolt goes to its core nation or its kin first (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Found** (a probe of seeds 1 and 3 × 20 years, births and deaths by cause): 283 and 441
+  nations founded, 266 and 431 rebel states; 106 and 193 on land whose living core nation was the
+  holder's puppet, overlord or ally, 104 and 222 on land of a dead core nation (a state founded
+  in play never revives). Founded nations lost 323 and 445 peaces; 112 and 179 of those they
+  lived through left them with 8,500–50,000 km².
+- **Split** 7.3d: d1 where a revolt's land goes, d2 a statelet annexed whole at a peace it loses
+  (and the quick sweep, 30 years: at 20 the break-up has no sample).
+- **Done** (ADR-431): a revolt's area goes to its living core nation whatever their bond; else
+  to rebels of its people at war with the holder; else a dead claimant; else the living nation
+  next to it of its dead core nation's people (`kinNeighbour`), which takes it as its core; else
+  a new state.
+- **Test:** `revoltRegion.test.ts`, four (puppet, ally, a dead Soviet state's land to the Soviet
+  state next to it: red before; no kin: a state founded). The pin is unmoved.
+- **Next:** PLAN 7.3d2.
+
