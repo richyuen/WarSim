@@ -10322,3 +10322,23 @@ Of 7.4 (open in PLAN.md):
   - [x] 7.4d UI frames: the panels and the bottom bar beside AoC's framed panels (taste: low
     confidence without NOTES.md). AT: pictures beside `steam-screenshot-01` and `-03`, the
     choice in an ADR.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.4 (open in PLAN.md):
+
+  - [x] 7.4e Borders and fonts: the border's darkness and width at T0 and the UI's font beside
+    AoC's (its borders are about 3 px and near black at 2000 m/px, ours 2.8 px and lighter). AT:
+    pictures; a change, or the reason for none, in an ADR.

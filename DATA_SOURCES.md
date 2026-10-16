@@ -42,7 +42,7 @@ downloaded), **rejected** (evaluated and not used, with the reason).
 
 | Source | What | License | Status | Notes |
 |---|---|---|---|---|
-| _TBD_ (OFL font for labels/MSDF) | map labels, UI | must be SIL OFL 1.1 or similar | planned (PLAN 1.29) | |
+| Lato (Łukasz Dziedzic), `@fontsource/lato` 5.3.0 (npm, bundled into the build) | the UI, the nation names (Black, 900) and the city names (Bold, 700) | SIL OFL 1.1 | in use (PLAN 7.4e, ADR-444) | the unit counters, markers and tags keep the system's sans-serif |
 
 ## Code dependencies (runtime-shipped)
 

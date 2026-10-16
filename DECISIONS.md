@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-444 · 2026-10-16 · accepted — Lato for the UI and the map's names; the borders kept (PLAN 7.4e)
+
+- **Fonts.** AoC's names and panels are set in Lato (its "MALI STATES", "Statistics", "PAUSE").
+  Ours were the system's sans-serif (Segoe UI here). Lato is SIL OFL 1.1: `@fontsource/lato`
+  5.3.0 is bundled (latin and latin-ext, woff2), so the game works offline and on Pages
+  (DATA_SOURCES). The UI is in Lato; the nation names in Lato Black (900), AoC's heavy names;
+  the city names in Lato Bold (700). The unit counters, markers and tags (9–10 px) keep the
+  system's sans-serif, drawn for their small sizes. A canvas does not ask for a face:
+  `loadMapFonts` loads both, and the view drops the widths measured with the fallback when they
+  come.
+- **Borders: no change.** Beside `steam-screenshot-01` at a like zoom (ours
+  `docs/evidence/7.4/e-border-2000.png`): AoC's line is a row of black map pixels, about 6 px at
+  that zoom; ours 2.8 px, smooth (ADR-1), 80 % of the way to near-black, and reads black on every
+  fill. A wider line would cover small states and coasts at the world view, and its pixel look
+  is what ADR-1 left behind.
+- **Tests and perf.** Label, city-name and layout specs (`labels1938`, `labelFades1938`,
+  `cityNames1938`, `ticker1938`, `rankingRows1938`, `title`, `settings1938` and 9 more): 36 of 36.
+  The draw of a zoom from 6000 to 1500 m/px: p95 6.1–6.2 ms (6.2–6.4 before).
+- **Taste, low confidence** (`reference/NOTES.md` missing).
+
 ### ADR-443 · 2026-10-16 · accepted — The panels in one frame after AoC's (PLAN 7.4d)
 
 - **Context.** AoC's panels (`steam-screenshot-01`, `-03`) are plum-brown in a maroon band with a

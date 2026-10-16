@@ -27,6 +27,7 @@
  */
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { FADE_MS, progress, running, smooth, SwitchBank, ZOOM_HYSTERESIS, type SwitchState } from '../timing';
+import { CITY_WEIGHT, MAP_FONT } from './fonts';
 
 export interface CityPoint {
   name: string;
@@ -286,11 +287,16 @@ export class CityLabelLayer {
     return this.dots.animating(now) || this.names.animating(now) || this.ghosts.some((g) => running(now, g.start, FADE_MS));
   }
 
+  /** The font's face has come (PLAN 7.4e): the widths measured with the fallback's are dropped. */
+  fontLoaded(): void {
+    this.widths.clear();
+  }
+
   private measure = (text: string, fontPx: number): number => {
     const key = `${fontPx}|${text}`;
     let w = this.widths.get(key);
     if (w === undefined) {
-      this.ctx.font = `600 ${fontPx}px system-ui, sans-serif`;
+      this.ctx.font = `${CITY_WEIGHT} ${fontPx}px ${MAP_FONT}`;
       w = this.ctx.measureText(text).width;
       this.widths.set(key, w);
     }
@@ -365,7 +371,7 @@ export class CityLabelLayer {
       }
       if (p.box && p.nameAlpha > 0) {
         ctx.globalAlpha = p.nameAlpha;
-        ctx.font = `600 ${p.fontPx}px system-ui, sans-serif`;
+        ctx.font = `${CITY_WEIGHT} ${p.fontPx}px ${MAP_FONT}`;
         ctx.lineWidth = 3;
         ctx.strokeStyle = 'rgba(15, 15, 20, 0.85)';
         const mid = p.box.y + p.box.h / 2;

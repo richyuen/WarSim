@@ -29,6 +29,7 @@
     "verify:phase0": "bash tools/verify-phase0.sh"
   },
   "dependencies": {
+    "@fontsource/lato": "5.3.0",
     "@preact/signals": "^2.11.3",
     "preact": "^11.0.0",
     "twgl.js": "^7.0.0",

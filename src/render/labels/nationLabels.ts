@@ -18,6 +18,7 @@
 import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { bezierAt, LABEL_STRIDE, LabelField } from '../../shared/nationLabels';
 import { ZOOM_HYSTERESIS, type SwitchBank, type SwitchState } from '../timing';
+import { NAME_WEIGHT } from './fonts';
 
 export const MIN_PX = 9;
 export const MAX_PX = 64;
@@ -227,7 +228,7 @@ export function drawNationLabels(ctx: CanvasRenderingContext2D, labels: readonly
     // 50 to 60 ms from the world to T1; PLAN 7.1l5). The glyphs are where and as large as before.
     const size = ladderPx(l.fontPx);
     const k = l.fontPx / size;
-    ctx.font = `700 ${size}px ${font}`;
+    ctx.font = `${NAME_WEIGHT} ${size}px ${font}`;
     ctx.lineWidth = Math.max(1.5, l.fontPx * EDGE) / k;
     const rgb = colourOf(l.id);
     const ink = rgb === undefined ? PLAIN_INK : nameInk(rgb);

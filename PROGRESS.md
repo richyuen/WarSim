@@ -16916,3 +16916,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   `title`, `nationPanel1938`, `settings1938`, `airOrders1938`, `canvasOpaque1938`, `editor1938`,
   `flags1938`, `rankingFlags1938`, `tags1938`, `godUi1938`, `ranking1938`: 32 of 32.
 - **Next:** PLAN 7.4e, the borders' darkness and the fonts.
+
+## 2026-10-16 — PLAN 7.4e: Lato for the UI and the names; the borders kept (UI, render)
+
+- **Start:** gate green on a clean tree (`4c3d615`); critic not due.
+- **Side by side:** borders at 2000 m/px (`docs/evidence/7.4/e-border-2000.png`) beside
+  `steam-screenshot-01`: AoC's are black map pixels about 6 px wide, ours 2.8 px smooth and near
+  black; kept (ADR-1), the reason in ADR-444. Fonts: AoC's text is Lato.
+- **Done** (ADR-444): `@fontsource/lato` 5.3.0 (SIL OFL 1.1, bundled; DATA_SOURCES); the UI in
+  Lato, the nation names in Lato Black, the city names in Lato Bold
+  (`src/render/labels/fonts.ts`); the faces loaded for the canvases and the measured widths
+  dropped when they come. Counters, markers and tags keep the system font.
+- **Pictures:** `e-after-europe-2000-panel.png`, `e-names-lato.png`.
+- **Tests:** e2e by hand, 16 specs (labels, city names, fades, i18n, ticker, ranking, title,
+  panels, settings, editor, tags, God UI, declutter): 36 of 36. Zoom draw p95 6.1–6.2 ms.
+- **Next:** PLAN 7.4f, the groups under 7.4, a part each.

@@ -55,6 +55,7 @@ import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
 import type { SimClient } from './simClient';
 import { setSizeScale, sizeScale } from '../render/sizeScale';
+import { loadMapFonts, MAP_FONT, NAME_WEIGHT } from '../render/labels/fonts';
 
 /**
  * A tool that paints on a primary-button drag (PLAN 1.44). Positions are world cells, fractional,
@@ -116,7 +117,7 @@ const MAX_INDIVIDUALS = 60_000;
 const WRECK_MAX_PX = 30;
 
 /** Label typeface (system UI stack: every script renders). */
-const LABEL_FONT = 'system-ui, "Segoe UI", Roboto, sans-serif';
+const LABEL_FONT = MAP_FONT;
 /** The nation names are measured at this size and scaled (a width is linear in the size). */
 const LABEL_MEASURE_PX = 100;
 /** Widths kept at most (the names and their glyphs, in every language shown): beyond it they are measured again. */
@@ -315,6 +316,12 @@ export class MapView {
     cityCanvas.className = 'map-labels map-cities';
     canvas.insertAdjacentElement('afterend', cityCanvas);
     this.cityLabels = new CityLabelLayer(cityCanvas, geo);
+    // The names' face (PLAN 7.4e): what was measured with the fallback goes when it comes.
+    void loadMapFonts().then(() => {
+      this.labelWidths.clear();
+      this.cityLabels.fontLoaded();
+      this.dirty = true;
+    });
     sim.onLabels((m) => {
       this.labelData = { data: m.data, names: m.names.map((k) => (k.startsWith('=') ? k.slice(1) : t(k as MessageKey))) };
       this.dirty = true;
@@ -1945,7 +1952,7 @@ export class MapView {
       let w = this.labelWidths.get(text);
       if (w === undefined) {
         if (this.labelWidths.size >= LABEL_WIDTHS_MAX) this.labelWidths.clear();
-        ctx.font = `700 ${LABEL_MEASURE_PX}px ${LABEL_FONT}`;
+        ctx.font = `${NAME_WEIGHT} ${LABEL_MEASURE_PX}px ${LABEL_FONT}`;
         w = ctx.measureText(text).width;
         this.labelWidths.set(text, w);
       }
