@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-447 · 2026-10-16 · accepted — A phone's width: the panels apart, the bar scrolls (PLAN 7.4f2)
+
+- **Context.** The critic's N8 (and its report of 2026-10-07): at 390 × 844 the top bar ran under
+  the ranking, the ranking lay under the nation panel, and the bottom bar ran off the view
+  (`docs/evidence/7.4/f2-before-390x844.png`). At 1024 × 600 the bar is in the view since PLAN
+  3.12Rh4; only the player's label is cut (`f2-1024x600.png`; left under 7.4).
+- **Decision** (`src/app/style.css`, `@media (max-width: 600px)`): the top bar spans the view
+  without its tagline; the ranking stands under it, and gives way (CSS `:has`) while a nation's,
+  a formation's or a top-centre panel is open; those panels take the view's width; the bottom bar
+  keeps its one line and scrolls sideways (`overflow-x: auto`).
+- **Not done:** the legend and the war banners at that width still meet (no finding names it).
+- **Test.** `phoneLayout1938.spec.ts`; the layout specs (`title`, `ticker1938`, ranking, panels):
+  15 of 15.
+
 ### ADR-446 · 2026-10-16 · accepted — A ten-year run need not have a revolt that joins (the user's decision)
 
 - **Context.** `npm run check:full` (2026-10-16): `aiSweep2.test.ts` (seed 2, ten years) asked

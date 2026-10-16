@@ -16959,3 +16959,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   people at war with its holder); green.
 - **Lesson:** the gate's sized runs left three specs red since PLAN 7.1l7 and 7.3c; a
   `check:full` before the next phase review's tick (7.5).
+
+## 2026-10-16 — PLAN 7.4f2: a phone's width (UI)
+
+- **Start:** gate green on a clean tree (`8d30cb8`); critic not due.
+- **Seen** (`docs/evidence/7.4/f2-before-390x844.png`, playing Poland): the top bar under the
+  ranking, the ranking under the nation panel, the bottom bar off the view at "Stati…". At
+  1024 × 600 the bar is in view; only the player's label is cut to "P" (left as a line under 7.4).
+- **Done** (ADR-447): under 600 px the top bar spans the view without its tagline, the ranking
+  stands under it and gives way while a panel is open, the panels take the view's width, the
+  bottom bar scrolls sideways. `f2-after-390x844.png`.
+- **Tests:** `phoneLayout1938` (new); `title`, `ticker1938`, `rankingRows1938`,
+  `rankingFlags1938`, `nationPanel1938`, `hotkeys1938`: 15 of 15.
+- **Next:** PLAN 7.4f, the next group.

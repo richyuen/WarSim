@@ -1002,3 +1002,37 @@ body {
 .title-card {
   padding: calc(0.8rem - 4px) calc(1rem - 4px);
 }
+
+/* A phone's width (PLAN 7.4f2, the critic's N8): the panels do not lie on each other. The top bar
+   spans the view without its tagline, the ranking stands under it and gives way while a nation's,
+   a formation's or a top-centre panel is open (the Statistics button still shows it alone), those
+   panels take the view's width, and the bottom bar scrolls sideways rather than run off it. */
+@media (max-width: 600px) {
+  .topbar {
+    right: 0.5rem;
+  }
+  .topbar-tagline {
+    display: none;
+  }
+  .stats-ranking {
+    top: 3.4rem;
+  }
+  #ui:has(.nation-panel, .history-panel) .stats-ranking {
+    display: none;
+  }
+  .nation-panel {
+    width: auto;
+    right: 0.5rem;
+  }
+  .history-panel {
+    left: 0.5rem;
+    right: 0.5rem;
+    width: auto;
+    min-width: 0;
+    transform: none;
+  }
+  .bottombar {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+}
