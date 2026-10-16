@@ -610,6 +610,8 @@ export interface WarStat {
    * ADR-96; `warsWithBattle`). True where `warBattle` has an answer, as of this message's tick.
    */
   battle: boolean;
+  /** Whether each side fights to the death (PLAN 7.4f15: God Mode's toggle shows it). */
+  toDeath: [boolean, boolean];
 }
 
 /** What became of a player's order (PLAN 4.9c; `orderNews`). */

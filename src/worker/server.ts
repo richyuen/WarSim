@@ -768,7 +768,7 @@ export class SimServer {
     const wars: WarStat[] = [];
     const fighting = warsWithBattle(world);
     for (const war of world.wars.list) {
-      wars.push({ id: war.id, attackers: [...war.sides[0]], defenders: [...war.sides[1]], score: war.score, startTick: war.startTick, battle: fighting.has(war.id) });
+      wars.push({ id: war.id, attackers: [...war.sides[0]], defenders: [...war.sides[1]], score: war.score, startTick: war.startTick, battle: fighting.has(war.id), toDeath: [war.fightToDeath[0], war.fightToDeath[1]] });
       for (const [a, b] of [[war.sides[0], war.sides[1]], [war.sides[1], war.sides[0]]] as const) {
         for (const x of a) {
           const set = enemies.get(x) ?? new Set<number>();

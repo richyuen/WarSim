@@ -17117,3 +17117,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `ground.test.ts`; e2e `occupiedGround1938`, `occupation1938`, `groundColour1938`:
   3 of 3.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f15: the treasury, Annex and Fight to the Death in the God tab (UI)
+
+- **Start:** gate green on a clean tree (`0b9cb61`); critic not due.
+- **Seen:** the sim had `setGold`, `annexNation` and `setWarFightToDeath`; the God tab had none
+  of them (the editor had the first two). Recolor and Donate have no command: left on the list.
+- **Done:** the God tab sets the treasury (typed), annexes the chosen nation into this one, and
+  toggles Fight to the Death for this nation's side of each of its wars; the worker sends each
+  war's `toDeath` with its stats, so the toggle shows the war's state.
+- **Tests:** `godPanelMore1938` (new: 12,345 gold; Luxembourg annexed; Germany's war on Poland
+  to the death and back); `godMode1938`, `godUi1938`: 19 of 19.
+- **Next:** PLAN 7.4f, Recolor and Donate.

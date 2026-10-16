@@ -74,6 +74,9 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, t
   const [buff, setBuff] = useState<(typeof BUFFS)[number]>('attack');
   const [revive, setRevive] = useState(0);
   const [armed, setArmed] = useState(0);
+  /** The gold typed for the treasury (PLAN 7.4f15), this nation's only. */
+  const [goldTyped, setGoldTyped] = useState({ nation: 0, value: '' });
+  const goldText = goldTyped.nation === n ? goldTyped.value : '';
   const armKill = armed === n;
   const setArmKill = (on: boolean) => setArmed(on ? n : 0);
   const tgt = target !== 0 && others.some((o) => o.id === target) ? target : (others[0]?.id ?? 0);
@@ -99,6 +102,15 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, t
       <div class="god-row">
         <input data-testid="god-rename-input" value={name} placeholder={displayName(nation.name)} onInput={(e) => setName((e.currentTarget as HTMLInputElement).value)} />
         {btn('god-rename', t('god.rename'), () => onCommand({ kind: 'renameNation', nation: n, name }))}
+      </div>
+      <div class="god-row">
+        <span>{t('god.gold')}</span>
+        <input data-testid="god-gold-input" inputMode="numeric" value={goldText} placeholder={String(Math.round(nation.gold))} onInput={(e) => setGoldTyped({ nation: n, value: (e.currentTarget as HTMLInputElement).value })} />
+        {btn('god-gold', t('god.set'), () => {
+          const v = Number(goldText);
+          if (goldText.trim() !== '' && Number.isFinite(v)) onCommand({ kind: 'setGold', nation: n, value: v });
+          setGoldTyped({ nation: n, value: '' });
+        })}
       </div>
       <div class="god-row">
         <span>{t('panel.incomeBonus')}</span>
@@ -145,6 +157,7 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, t
         )}
         {btn('god-puppet', t('god.puppet'), () => onCommand({ kind: 'createPuppet', overlord: n, subject: tgt, autonomy: 50 }))}
         {nation.alliance ? btn('god-leave', t('god.leave'), () => onCommand({ kind: 'leaveAlliance', nation: n })) : null}
+        {btn('god-annex', t('god.annex'), () => onCommand({ kind: 'annexNation', annexer: n, target: tgt }))}
       </div>
       {myWars.map((w) => (
         <div class="god-row" key={w.id}>
@@ -152,6 +165,12 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, t
             {nameOf(w.attackers[0] ?? 0)} {'⚔'} {nameOf(w.defenders[0] ?? 0)}
           </span>
           {btn(`god-peace-${w.id}`, t('god.peace'), () => onCommand({ kind: 'forcePeace', war: w.id }))}
+          {(() => {
+            // Fight to the death (PLAN 7.4f15, AoC's "Fight to the Death"): this nation's side of the war.
+            const side: 0 | 1 = w.attackers.includes(n) ? 0 : 1;
+            const on = w.toDeath[side];
+            return btn(`god-death-${w.id}`, t('god.toDeath'), () => onCommand({ kind: 'setWarFightToDeath', war: w.id, side, value: !on }), on);
+          })()}
         </div>
       ))}
 

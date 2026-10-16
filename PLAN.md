@@ -92,6 +92,9 @@ quick sweep as a smoke test.
     - [x] 7.4f14 Occupied land at T2 and T3 read as water (the critic of 2026-10-07: French-held
       Germany a blue field like a lake): the occupier's cast on it 0.42 → 0.3, the terrain the most
       of it. AT: pictures; `occupiedGround1938`, `occupation1938`, `groundColour1938` green.
+    - [x] 7.4f15 AoC's God panel, the commands the sim had: the treasury set, Annex (the chosen
+      nation into this one), Fight to the Death (this nation's side of each of its wars, a toggle).
+      AT: an e2e spec of each.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -251,12 +254,12 @@ quick sweep as a smoke test.
   - N21: while the game runs, half-faded counters are on screen all the time as the clusters
     regroup ("432", "29.6k" at part opacity, 60 days into a war at 2500 m/px).
   - Against AoC's God panel: the World AI settings (one checkbox stands for about fifteen),
-    a nation spawned with a size, cities made and removed in the game, gold, CE, colour and
-    unity edited from the God tab, donations (PARITY has the rows).
+    a nation spawned with a size, cities made and removed in the game, CE, colour and unity
+    edited from the God tab, donations (PARITY has the rows; the treasury: PLAN 7.4f15).
   From the critic's report of 2026-10-07, not blocking and in no task above:
   - After 14 years the Soviet Union is a field of thin stripes of other nations' colours (the
     critic of 2026-10-07; the lake of the same line: PLAN 7.4f14).
-  - Against AoC's God panel: Annex, Recolor, Fight to the Death, Donate (Nuke: Phase 6).
+  - Against AoC's God panel (Annex and Fight to the Death: PLAN 7.4f15): Recolor, Donate.
   - The critic did not test a player building an armoured division (a step of its own
     script failed on a selector).
   From PLAN 7.1l11g (ADR-414 g): a zoom from the world to T1 draws at 30 frames a second (33 ms
