@@ -16709,3 +16709,28 @@ No rule changed and nothing on screen changed. One task came out of it.
   the land above). Every other finding kept with its reason in ADR-434's table. SPEC §6.4 reads
   as built (no SLBM; second strike by bombers).
 - **Next:** PLAN 7.3e1.
+
+## 2026-10-16 — PLAN 7.3e1: a formation is refilled from its nation's pool (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Measured first** (seed 7321 × 20 years, HEAD `bba24c9`, `docs/evidence/7.3/refill-7.3e1.md`):
+  the Soviet Union 1 land formation at year 13, pool 6.58 M at year 9; contact a day in years
+  13–20 mean 0.6. Gotcha: the probe held `w.nations.cols` from the start, and the table moves to
+  new arrays as nations are founded; its pool and gold columns were stale (figures from the
+  checkpoints instead). The same trap in the new code: `world.elements.create()` can move the
+  element columns, so `refillFormation` reads them again after each create.
+- **Done** (ADR-435): step 3a of the economic AI, monthly after the army's orders: a land formation
+  at rest on its nation's land (not engaged, not retreating, not going home, supply ≥ 0.5) gets
+  up to 30% of its template's men, at the price of a man raised, under a new order's bounds; dead
+  slots get new elements. Three attempts: daily before the AI (gate red: start armies refilled,
+  then disbanded), monthly before the orders (break-up 6 of 10: no Soviet formation raised in ten
+  years on seed 1), monthly after the orders (kept).
+- **AT:** seed 7321, 63 Soviet land formations at year 13 (none at year 14), contact a day years
+  13–20 mean 3.3 (median 1.6); quick sweep (seeds 1–10 × 30 years, 12 min, `quick-7.3e1.md`)
+  limits, riser, faller and stasis 10 of 10, break-up 8 of 10, the Soviet realm at 0 km² in 6
+  (HEAD 5). Not met: the Soviet pool ends year 10 at 9.25 M (asked under 5 M); its cause is the
+  treasury's reserve, which holds orders and refills alike: PLAN 7.3e3 added.
+- **Tests:** `refill.test.ts`, five. `deploy.test.ts`: two cases keep the world their figures were
+  taken on (pools emptied); its 60 days met a Manchukuo block 1.519 cells from its enemy's block
+  with refills, a case of the deploy rule, left to PLAN 7.4. Pin 207a252e → 9ecbfefd.
+- **Next:** PLAN 7.3e2.

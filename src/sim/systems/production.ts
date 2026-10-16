@@ -32,7 +32,7 @@
  */
 import { airbaseRoom } from '../data/airbases';
 import { wingAircraft } from './air';
-import { equipFormation, wrapDx } from './elements';
+import { cellX, elementIndex, equipFormation, recomputeStrength, wrapDx } from './elements';
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
@@ -219,10 +219,88 @@ export function dockPoint(world: World, nation: number): [number, number] | null
 
 export function productionSystem(world: World): void {
   if (!isDayStart(world.tick) || world.production.count === 0) return;
-  const p = world.production;
-  const nc = world.nations.cols;
   const rules = world.rules;
   if (!rules) return;
+  deliver(world, rules);
+}
+
+/** A formation is refilled only with at least this supply (PLAN 7.3e1): men reach it where its supplies do. */
+export const REFILL_SUPPLY = 0.5;
+
+/**
+ * Whether land formation `id` may be refilled (PLAN 7.3e1, ADR-435; the economic AI's step 3a
+ * pays for it): of a land template with elements, below the template's strength, of a living
+ * nation, at rest from war (not engaged, not retreating, not on a march home, not aboard), with
+ * supply of REFILL_SUPPLY or more, on a cell its nation controls. A fleet and a wing are not
+ * refilled; nor is a formation of no template or no elements (the toy world's, tests').
+ */
+export function refillable(world: World, id: number): boolean {
+  const fc = world.formations.cols;
+  const rule = world.rules?.templates[fc.template[id]!];
+  if (!world.formations.has(id)) return false;
+  if (!rule || rule.domain !== Domain.land || rule.manpower <= 0 || world.offLand(id)) return false;
+  const n = fc.nation[id]!;
+  if (world.nations.cols.living[n] !== 1 || fc.strength[id]! >= rule.manpower) return false;
+  if (fc.engaged[id] === 1 || fc.retreat[id] !== 0 || fc.home[id] !== 0 || fc.supply[id]! < REFILL_SUPPLY) return false;
+  if (!elementIndex(world).has(id)) return false;
+  const cx = cellX(world, Math.floor(fc.x[id]!));
+  const cy = Math.floor(fc.y[id]!);
+  return cx !== null && cy >= 0 && cy < world.cells.h && world.cells.controller[cy * world.cells.w + cx] === n;
+}
+
+/**
+ * Gives formation `id` up to `men` men back (PLAN 7.3e1) and returns how many it took. The men go
+ * to its elements in the order of their slots: a living element to its full size first, then a
+ * slot whose element died gets a new one of the template's unit there. The slots stop at their
+ * elements' sizes, so a formation is refilled to its template's strength and no further. Nothing
+ * is paid here: the caller takes the men from the pool and the gold from the treasury.
+ */
+export function refillFormation(world: World, id: number, men: number): number {
+  const rules = world.rules;
+  const rule = rules?.templates[world.formations.cols.template[id]!];
+  const list = elementIndex(world).get(id);
+  if (!rules || !rule || !list) return 0;
+  // A create may move the elements to new arrays: `ec` is read again after one.
+  let ec = world.elements.cols;
+  const bySlot = new Map<number, number>();
+  for (const e of list) bySlot.set(ec.slot[e]!, e);
+  let slot = 0;
+  let grown = false;
+  let added = 0;
+  for (const { unit, count } of rule.elements) {
+    const u = rules.units[unit]!;
+    for (let k = 0; k < count; k++, slot++) {
+      if (u.menPerUnit <= 0 || men < u.menPerUnit) continue;
+      const e = bySlot.get(slot);
+      const have = e === undefined ? 0 : ec.strength[e]!;
+      const take = Math.min(u.size - have, Math.floor(men / u.menPerUnit));
+      if (take <= 0) continue;
+      if (e === undefined) {
+        const ne = world.elements.create();
+        ec = world.elements.cols;
+        ec.formation[ne] = id;
+        ec.slot[ne] = slot;
+        ec.unit[ne] = unit;
+        ec.strength[ne] = take;
+        list.push(ne);
+        grown = true;
+      } else ec.strength[e] = have + take;
+      men -= take * u.menPerUnit;
+      added += take * u.menPerUnit;
+    }
+  }
+  if (added === 0) return 0;
+  // The index stays ascending (an id freed before may be given again), as a rebuilt one is.
+  if (grown) list.sort((a, b) => a - b);
+  recomputeStrength(world, id);
+  return added;
+}
+
+/** The orders whose day has come appear (module comment). */
+function deliver(world: World, rules: NonNullable<World['rules']>): void {
+  if (world.production.count === 0) return;
+  const p = world.production;
+  const nc = world.nations.cols;
   const today = world.tick / 24;
   for (const id of p.ids()) {
     const nation = p.cols.nation[id]!;

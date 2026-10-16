@@ -68,12 +68,18 @@ import { TRIBUTE } from '../systems/puppets';
 import { SUPPRESSION_COST } from '../systems/revolts';
 import { frontierOf } from '../systems/territory';
 import { neighbours4 } from '../nav/grid';
-import { airfield, queueFormation, shipyard } from '../systems/production';
+import { airfield, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
 import { DAYS_PER_MONTH, researchBudget } from '../systems/research';
 import { knowsTechs } from '../tech';
 import { Domain, navBuilt, seaRangeOf, type World } from '../world';
 
 export const DEBT_PAYBACK = 1 / 12;
+/**
+ * The most of its template's men a land formation is refilled by in a month (PLAN 7.3e1,
+ * ADR-435): a shell is whole again in a little over three months, about an infantry division's
+ * training (90 days), and one bled to half in under two.
+ */
+export const REFILL_MONTH = 0.3;
 export const MARGIN = 0.05;
 export const DISBAND_MANPOWER = 0.5;
 /**
@@ -221,14 +227,51 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     });
     const restless = restlessNations(world);
     const acc = monthlyAccounts(world, tables);
+    /**
+     * 3a. Refills (PLAN 7.3e1, ADR-435), after the army's new orders: n's land formations that may be
+     * refilled (`refillable`), in the order of their ids, each by up to REFILL_MONTH of its
+     * template's men, a man of the pool for a man and gold at the template's price a man, under
+     * what bounds a new order: the treasury keeps RESERVE_MONTHS of income, the balance stays above
+     * the need with the men's upkeep, and the army's upkeep under `cap`. Returns what is left.
+     */
+    const refill = (n: number, income: number, need: number, balance: number, upkeep: number, cap: number): { balance: number; upkeep: number } => {
+      for (const id of own.get(n) ?? []) {
+        if (upkeep >= cap || nc.manpower[n]! < 1) break;
+        if (!refillable(world, id)) continue;
+        const t = f.template[id]!;
+        const rule = world.rules!.templates[t]!;
+        const perMan = rule.gold / rule.manpower;
+        const full = tables.templateStrength[t] ?? 0;
+        const upkeepPerMan = full > 0 ? upkeepOfTemplate(t) / full : 0;
+        const byGold = perMan > 0 ? (nc.gold[n]! - RESERVE_MONTHS * income) / perMan : Infinity;
+        const byUpkeep = upkeepPerMan > 0 ? Math.min(balance - need, cap - upkeep) / upkeepPerMan : Infinity;
+        const men = Math.min(REFILL_MONTH * rule.manpower, nc.manpower[n]!, byGold, byUpkeep);
+        if (!(men >= 1)) continue;
+        const got = refillFormation(world, id, men);
+        if (got === 0) continue;
+        nc.manpower[n] = nc.manpower[n]! - got;
+        nc.gold[n] = nc.gold[n]! - got * perMan;
+        const u = got * upkeepPerMan;
+        balance -= u;
+        upkeep += u;
+      }
+      return { balance, upkeep };
+    };
     world.nations.forEach((n) => {
       if (nc.living[n] !== 1) return;
       // Projected accounts for the month about to be charged (the AI runs before the economy).
       const { income, need } = budgetOf(world, n, acc);
       let { balance } = budgetOf(world, n, acc);
       // A nation without AI: the research budget alone, which is a rule and not a choice (step 4).
+      const atWar = world.wars.list.some((w) => w.sides[0].includes(n) || w.sides[1].includes(n));
+      const peace = peaceShare(nc.aggression[n]!) * income;
+      // A nation without AI: the research budget and the refills alone, which are rules and not
+      // choices (steps 4 and 3a).
       if (!world.settings.aiEnabled || nc.aiOff[n] === 1) {
-        if (world.rules) nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
+        if (!world.rules) return;
+        nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
+        balance -= nc.research[n]! * DAYS_PER_MONTH + (training.get(n) ?? 0);
+        refill(n, income, need, balance, (army.get(n) ?? 0) + (training.get(n) ?? 0), atWar ? ARMY_SHARE_WAR * income : peace);
         return;
       }
       // 1. Disband while the books do not balance and the treasury cannot carry what is short:
@@ -270,15 +313,13 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
       balance -= nc.research[n]! * DAYS_PER_MONTH;
       // 3. Build.
-      const atWar = world.wars.list.some((w) => w.sides[0].includes(n) || w.sides[1].includes(n));
       const slots = Math.min(MAX_PARALLEL, 1 + Math.floor(income / PARALLEL_INCOME));
       // The orders in training count as army already, and against the balance.
       let upkeep = (army.get(n) ?? 0) + (training.get(n) ?? 0);
       let inTanks = tanks.get(n) ?? 0;
       balance -= training.get(n) ?? 0;
-      // The army's orders first; what they leave may pay for a fleet.
+      // The army's orders first; what they leave may pay for refills, and then for a fleet.
       const rules = world.rules;
-      const peace = peaceShare(nc.aggression[n]!) * income;
       const armyOrders = (): void => {
         for (let k = pending.get(n) ?? 0; k < slots; k++) {
           if (upkeep >= (atWar ? ARMY_SHARE_WAR * income : peace)) return;
@@ -311,6 +352,10 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
         }
       };
       armyOrders();
+      // 3a. The refills, with what the orders left (PLAN 7.3e1, ADR-435: taken first, they spent
+      // the treasury to the reserve every month, and a nation whose army died in contact, where
+      // none is refilled, raised nothing for years).
+      ({ balance, upkeep } = refill(n, income, need, balance, upkeep, atWar ? ARMY_SHARE_WAR * income : peace));
       // 3b. A fleet (PLAN 4.6e1), with what the army's orders left: one at a time, while the
       // navy is under its share of the income.
       const fleet = mix.fleets && (shipsPending.get(n) ?? 0) === 0 && (navy.get(n) ?? 0) < NAVY_SHARE * income ? pickFleet(world, n, income, atWar, mix.fleets, fleets.get(n) ?? []) : -1;

@@ -163,8 +163,8 @@ quick sweep as a smoke test.
     decide: whether a formation is refilled from its nation's pool (SPEC has no such rule; AoC's
     behaviour to be looked up), and what it costs.
     Decided 2026-10-16 (ADR-434): the two parts below, in this order; every other finding of 7.3
-    kept with its reason in ADR-434's table. 7.3e ticks with 7.3e2.
-    - [ ] 7.3e1 A formation is refilled from its nation's pool of manpower (AoC: soldiers
+    kept with its reason in ADR-434's table. 7.3e ticks with 7.3e3 (added by 7.3e1, ADR-435).
+    - [x] 7.3e1 A formation is refilled from its nation's pool of manpower (AoC: soldiers
       reinforced from the cores, PARITY row 74). To decide in its ADR: who is refilled (not in
       contact? in supply? on its nation's land?), how fast, at what gold, and what the economic
       AI does with a pool against new orders. SPEC §3.7 gets the rule. First measure the code before
@@ -176,6 +176,11 @@ quick sweep as a smoke test.
       code's before the change; the quick sweep
       (seeds 1–10 × 30 years) limits 10 of 10 and stasis and break-up 8 of 10 or more, with the
       seeds where the Soviet Union's realm ends at 0 km² reported (HEAD 5 of 10). The pin moves.
+      Done 2026-10-16 (ADR-435, `docs/evidence/7.3/refill-7.3e1.md`, `quick-7.3e1.md`): monthly,
+      after the army's orders; seed 7321 63 Soviet formations at year 13 (none at year 14),
+      contact a day in years 13–20 mean 3.3 against 0.6; the quick sweep limits, riser, faller and
+      stasis 10 of 10, break-up 8, the Soviet realm at 0 km² in 6. The pool clause is not met
+      (9.25 M at year 10): its cause is the treasury's reserve, PLAN 7.3e3.
     - [ ] 7.3e2 The economic AI pays for suppression from its treasury, not only from a surplus
       of 15% of its income (France at 5,000 gold suppressed nothing while its far core land
       rose; the Soviet Union lost western Europe province by province). AT: seeds 1 and 3 × 10
@@ -184,9 +189,26 @@ quick sweep as a smoke test.
       (7.3d3's probe, seeds 5 and 6 × 30 years) under the code's before the change, measured
       again first (`births-7.3d3.md`'s 85 and 30 are from before ADR-433, and after 7.3e1 the
       code is another); the quick sweep as 7.3e1's.
+    - [ ] 7.3e3 The treasury's reserve holds the pool unused (left by 7.3e1, ADR-435). A new
+      order and a refill both keep RESERVE_MONTHS (3) of income in the treasury, and an order
+      wants its price on top: seed 7321 at the month after year 9, the Soviet Union 13,636 gold
+      with 11,533 kept, 2,102 to spend at 0.1 gold a man, 88 formations 489k men short, the army's
+      upkeep 430 of a cap of 2,307, a pool of 9.5 M; seed 1, the refills of each month take the
+      treasury to the reserve and it raised 8 formations in years 1–10 (30 before refills). To
+      decide: what a great power keeps in reserve, and whether the refills keep the price of the
+      month's next order (`disband.ts`, `bind.ts` in `.cache/73e1/`). AT: seed 7321, the Soviet
+      pool does not end year 10 over 5 M unused (7.3e1's clause, measured again first on the code
+      before the change); seed 1, the Soviet Union raises in years 1–10 no fewer than HEAD's 8;
+      the quick sweep as 7.3e1's.
   - [ ] 7.3f The deciding sweep on unseen seeds (from 501) × 50 years. AT: the report ALL
     GREEN by the criteria of 7.3a.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).
+  From PLAN 7.3e1 (2026-10-16, ADR-435): a flank file of a block held back at DEPLOY_REACH,
+  against an enemy deployed away from it, can stand past contact reach from that enemy's block:
+  seed 99 with Germany at war with Poland, tick 1317, Manchukuo's formation 959 (1678.50, 354.40)
+  1.519 cells from the block of Chinese formation 445, 1.487 cells from it, whose block faces 964
+  (`.cache/73e1/gap.ts`). `deploy.test.ts` empties the pools to keep the world its bound of 1.5
+  was taken on. To decide whether such a file folds back.
   From PLAN 4.1c (2026-10-09, ADR-244): Switzerland holds a cell in the Po delta (1094, 323
   at M, by Ferrara). The communes of Liechtenstein are each smaller than a cell and were
   placed there, one on land and others as cells of the Adriatic with a province

@@ -984,6 +984,20 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   controlled population, capped at 3% of it. Nations start with 1%.
 - Command rules (template cost and time) reach the sim as `world.rules`, set by the Sim and not
   state. Industry as a production input arrives with tech/research.
+- Refills (PLAN 7.3e1, ADR-435; `refillable` and `refillFormation` in `systems/production.ts`,
+  step 3a of the economic AI; AoC reinforces its soldiers from the cores): monthly, after the
+  army's new orders of the month and before its fleet and wing, a nation's land formations that
+  may be refilled get men back, in the order of their ids: of a land template with elements, below its strength, not engaged, not
+  retreating, not on a march home, with supply ≥ REFILL_SUPPLY (0.5), on a cell its nation
+  controls. Each gets up to REFILL_MONTH (30%) of its template's men, a man of the pool for a man
+  and gold at the template's price a man (its gold ÷ its manpower), under the bounds of a new
+  order: the treasury keeps RESERVE_MONTHS of income, the balance stays above the need with the
+  men's upkeep, and the army's upkeep stays under its share of the income (peace or war). The men
+  go to the elements in slot order, a living one to its full size first; a slot whose element
+  died gets a new element of the template's unit. A rule of the economy, as the research budget:
+  a nation without AI is refilled on it too (it has no orders of the AI before it). The refills
+  take what the orders leave: taken first, they held every treasury at the reserve and no new
+  formation was raised (ADR-435). Fleets and wings are not refilled.
 
 **Techs v1: what a nation knows, and the gate (PLAN 3.1a, ADR-127; `src/sim/tech.ts`).**
 - *The tree* reaches the sim as `ScenarioRules.techs` (id, year, prerequisites), the tech files

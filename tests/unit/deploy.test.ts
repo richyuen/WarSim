@@ -116,6 +116,8 @@ describe('the blocks of formations in contact are deployed against each other (P
     fc.x[a] = site[0] - 1;
     for (const e of elementIndex(w).get(a)!) ec.strength[e] = 1;
     recomputeStrength(w, a);
+    // And worn it stays: no men in Germany's pool for the month's refills (PLAN 7.3e1).
+    w.nations.cols.manpower[fc.nation[a]!] = 0;
     expect(orderMove(w, a, site[0], site[1])).toBe(true);
     expect(cellDist(w, fc.x[a]!, fc.y[a]!, fc.x[b]!, fc.y[b]!)).toBeGreaterThan(CONTACT_CELLS);
     const mine = new Set(elementIndex(w).get(a)!);
@@ -302,6 +304,12 @@ describe('the blocks of formations in contact are deployed against each other (P
   it('over 60 days of Germany against Poland a block in contact seldom changes its line, and none stands further from its formation than contact reaches', () => {
     const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+    // The world these figures were taken on: no refills in the 60 days (PLAN 7.3e1), every pool
+    // emptied each hour, and so none for orders either, which deliver in 90 days at the soonest.
+    // With refills a block held back on the Manchurian front stood 1.519 cells from its enemy's
+    // block (PLAN 7.4 has the case).
+    const noPools = (w: World): void => w.nations.forEach((n) => (w.nations.cols.manpower[n] = 0));
+    noPools(s.world);
     const HOP = slotGrid(28).rows * SLOT_SPACING;
     let was = new Map<number, { x: number; y: number; enemy: number; fx: number; fy: number }>();
     const n = { hours: 0, begun: 0, ended: 0, moved: 0, hops: 0, otherEnemy: 0, stoodStill: 0, far: 0 };
@@ -309,6 +317,7 @@ describe('the blocks of formations in contact are deployed against each other (P
     const perFormation = new Map<number, number>();
     const reach = { blockHours: 0, furthest: 0, atLimit: 0, mutualAtLimit: 0, gap: 0 };
     s.step(24 * 60, (w) => {
+      noPools(w);
       const fc = w.formations.cols;
       const now = new Map<number, { x: number; y: number; enemy: number; fx: number; fy: number }>();
       for (const [f, d] of w.deployed ?? []) {

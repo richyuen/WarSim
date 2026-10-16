@@ -167,6 +167,71 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-435 · 2026-10-16 · accepted — A land formation is refilled from its nation's pool, after the month's orders; the pin moves (PLAN 7.3e1)
+
+- **Context.** No rule gave a formation men back (ADR-434, part 1): on seed 7321 the Soviet
+  formations bled to shells and died while the pool grew unused, and from year 10 the Soviet
+  Union had no army. AoC's soldiers are reinforced from the cores (PARITY row 74, TEXT+VISUAL
+  2026-10-02); SPEC §3.7 had no refill. Measured first on HEAD `bba24c9`
+  (`docs/evidence/7.3/refill-7.3e1.md`; the probe of 7.3b with the pool added, whose pool and
+  gold columns on HEAD were stale and are taken from the checkpoints instead): the Soviet Union
+  1 land formation at the start of year 13, the pool 6.58 M at year 9 with 3,201 gold; land
+  formations in contact a day in years 13–20 0.4 to 1.6, mean 0.6.
+- **Decision.** Step 3a of the economic AI (`refill` in `ai/economic.ts`; `refillable` and
+  `refillFormation` in `systems/production.ts`), monthly, after the army's new orders and before
+  the fleet and the wing:
+  - *Who:* a land formation of a template with elements, below the template's strength, of a
+    living nation, not engaged, not retreating, not on a march home, not aboard, with supply ≥
+    REFILL_SUPPLY (0.5), on a cell its nation controls. In the order of the ids. Fleets and wings
+    are not refilled; nor the toy world's formations of no elements.
+  - *How fast:* up to REFILL_MONTH (0.3) of the template's men a month: a shell is whole in a
+    little over three months, about an infantry division's training (90 days).
+  - *At what price:* a man of the pool for a man, and gold at the template's price a man (its gold
+    ÷ its manpower), the price of a man raised in a new division.
+  - *Under what bounds:* those of a new order: the treasury keeps RESERVE_MONTHS of income, the
+    balance stays above the need with the men's upkeep, the army's upkeep stays under its share
+    of the income (peace or war).
+  - *Where the men go:* to the elements in slot order, a living one to its full size first; a
+    slot whose element died gets a new element of the template's unit (slots are fixed at
+    equipping, so it stands in the gap it left). The element index stays ascending.
+  - A rule of the economy, as the research budget (ADR-144): a nation without AI is refilled too.
+- **Attempts** (seed 7321 × 20 years; the quick sweep, seeds 1–10 × 30 years):
+
+  | | Rule | SOV formations, year 13 | Contact a day, years 13–20 (mean) | Quick sweep |
+  |---|---|---|---|---|
+  | HEAD | none | 1 | 0.6 | 7.3d3: limits 10, stasis 8, break-up 8, SOV realm at 0 km² 5 |
+  | 1 | daily in the production system, 1% a day, a month of income kept | 3 | 0.1 | not run: the gate red (two nations disbanded in month 1 of 1938 after refilling their start armies) |
+  | 2 | monthly in the AI, 30%, before the orders | 62 | 0.8 | limits 10, stasis 9, break-up **6**, SOV 8 |
+  | 3 (kept) | monthly in the AI, 30%, after the army's orders | 63 | 3.3 (median 1.6) | limits 10, riser 10, faller 10, stasis 10, break-up 8, SOV 6 |
+
+  Why after the orders: before them the refills of a month took the treasury to the reserve, and
+  an order wants the reserve and its price; on seed 1 the Soviet Union raised no formation in
+  years 1–10 (HEAD 30) and its army went from 157 to 9. After them it raised 8 (the refills still
+  hold the treasury near the reserve between orders: left to PLAN 7.3e3).
+- **What the AT asked and did not get:** the Soviet pool at the end of year 10 is 9.25 M, over
+  the 5 M asked. Measured (`.cache/73e1/bind.ts` at the month after year 9): 88 Soviet formations
+  may be refilled, 489k men short, the army's upkeep 430 of a cap of 2,307, the balance 2,162 over
+  a need of 192; 13,636 gold with 11,533 kept as the reserve (3 months of 3,844), so 2,102 to
+  spend. The treasury's reserve binds, the orders' and the refills' alike, not the refill's rule:
+  a cause of its own, PLAN 7.3e3. The pool also stands above its 3% cap from the men that
+  disbanded formations give back (the cap stops growth, it does not shrink a pool).
+- **Reported, not judged here:** the Soviet Union has 63 land formations at the start of year 13
+  of seed 7321 and none at the start of year 14: four years later than HEAD's, not an army that
+  lasts. The Soviet realm ends at 0 km² in 6 of 10 seeds of the quick sweep (HEAD 5); the
+  report does not tell a dead nation from a puppet (attempt 1's year 9 had it a puppet of a
+  nation founded in play). Refilled men enter `startMen`'s stock unmeasured as a raised
+  division's do (`war.ts`): a war's share of men lost counts the men standing, not those lost;
+  checked on seed 7321's year 9 (wars fewer and younger with refills, not older), and judged by
+  the sweep.
+- **A test aimed again:** `deploy.test.ts`'s 60 days of Germany against Poland count every
+  deployment in the world; with refills a Manchukuo block held back at the reach limit stood
+  1.519 cells from its Chinese enemy's block (the bound is 1.5; HEAD's worst 1.22, Soviet against
+  Romanian). The deploy rule allows it: a flank file of a block held at DEPLOY_REACH, against an
+  enemy deployed away from it. The test empties the pools each hour (no refills, no orders,
+  which deliver in 90 days at the soonest) to keep the world its figures were taken on, and
+  PLAN 7.4 has the case. The worn division of its other case keeps no pool for the same reason.
+- **Pin:** 207a252e → 9ecbfefd (seed 99's first year has refills).
+
 ### ADR-434 · 2026-10-16 · accepted — The open findings of PLAN 7.3 decided: two parts, the rest kept (PLAN 7.3e)
 
 - **Context.** PLAN 7.3 holds the findings the critic's reports (runs 2 to 6), the Phase 3
