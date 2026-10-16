@@ -16496,3 +16496,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Addendum:** the save and load twin where the rule bites (seed 5303 from year 5, two years
   straight against one saved, loaded and one more): 45f9fe1c both. The slack's sample was seed
   99's first 20 days (480 hourly ticks), not 120: the comment and ADR-422 corrected.
+
+## 2026-10-16 — PLAN 1.42i: the sweep from seed 401; PLAN 1.42 done
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Quick sweep** (seeds 1–10 × 20 years, 16.0 min, 10 processes): LIMITS GREEN, 10 of 10 (land
+  moving 9.5–34.2 %, largest land 9.0–18.2 %, largest income 28.2–30.8 %, alive 92–175, war
+  every year); a riser and a faller on 10 of 10 (reported). The Soviet Union's realm at 0 km² by
+  year 20 in five seeds (3, 5, 8, 9, 10).
+- **Deciding sweep** (seeds 401–410 × 50 years, 53.2 min, `docs/sweeps/2026-10-16-sweep-b1-401.md`):
+  ALL GREEN. Limits 10 of 10 (land moving 6.7–25.0 %, largest land 7.6–14.1 %, largest income
+  28.2–33.1 %, alive 92–231, war every year); riser 9 of 10 (408: Prussia × 1.44), faller 10 of
+  10. Nukes used in 9 of 10 seeds, fallout at most 0.23 %. The first 50-year run judged by
+  ADR-54's criteria; seeds 401–410 are now seen (the next from 501).
+- **Not closed by it:** the critic's own asks (top five unchanged for 20 years, living nations
+  rising for 20 years) are not judged by `criteria.ts`; the break-up (alive up to 231) stands.
+  These and every finding PLAN 1.42 had and did not decide are moved under PLAN 7.3, which now
+  takes the deferred balance findings. BLOCKERS: B1 resolved; the 6.8 entry points to 7.3.
+- **Next:** PLAN 7.2.

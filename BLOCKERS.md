@@ -25,8 +25,10 @@ on every seed, riser and faller on 10 of 10. The world breaking up into revolts 
 the critic's R4-B3 and R5-B3, deferred to Phase 7 (PLAN 1.42); no constant was tuned in answer
 (PROMPT: a failing limit waits for Phase 7 unless a defect of the phase's feature is its cause,
 and nuclear weapons are not: fallout's most was 0.65 % of the land).
+2026-10-16: the sweeps since keep the limit (seeds 1–10 at L: 141–199 at most; seeds 401–410:
+170–231); seeds 6 and 7 at M are not run again. Open under PLAN 7.3, with the break-up.
 
-### PLAN 1.42 / critic B1: the leader-share and top-ten criteria do not hold on every unseen seed (2026-10-03)
+### RESOLVED 2026-10-16 (PLAN 1.42i) · PLAN 1.42 / critic B1: the leader-share and top-ten criteria do not hold on every unseen seed (2026-10-03)
 Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thresholds
 (≥ 2 newcomers in the top ten by land, leader-share range ≥ 3 points) were never moved.
 
@@ -75,6 +77,13 @@ Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thr
   and take the next issue. State when parked: 1.42d, 1.42e and 1.42f are done; the last five
   quick sweeps (20 years, seen seeds) show a riser in 6–8 of 10 seeds and a faller in 10 of
   10; no 50-year run has been judged by the criteria of ADR-54.
+**Resolved:** attempt 4, after ADR-421 and ADR-422 (the AI's refused orders and long ways):
+seeds 401–410 × 50 years ALL GREEN under ADR-54's criteria, the first 50-year run judged by
+them: limits 10 of 10, riser 9 of 10, faller 10 of 10 (`docs/sweeps/2026-10-16-sweep-b1-401.md`).
+The Soviet Union is no longer the leader that only shrinks: its realm is at 0 km² by year 20 in
+five seeds of the quick sweep before it. The critic's own asks (top five unchanged for 20
+years, living nations rising for 20 years) are not judged by the sweep; they and the findings
+PLAN 1.42 did not decide are under PLAN 7.3.
 
 ### RESOLVED 2026-10-05 (`62eb6bc`; marked at the Phase 3 review, PLAN 3.7c) · PLAN 2.12a is in the working tree and not committed: the gate was stopped for want of memory (2026-10-05, 05:29)
 

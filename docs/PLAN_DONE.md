@@ -9727,3 +9727,63 @@ Of 1.42 (open in PLAN.md):
     `DIVERTS` 2, the coarse routes kept with the provinces' parts. `longWays.test.ts`; seed 5303's
     year 5 with no way over 4 times its line (30 over 800 cells before, none after); pin 45df324d
     → 9c51edae.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 1.42 **Moved here from Phase 1 on 2026-10-03 (ADR-58, the user's decision): balance is
+  judged when the features are in. Blocked after three attempts before that (BLOCKERS.md);
+  its prerequisites 1.42d, 1.42e and 1.42f are done. Judged by area, on seeds from 401.**
+  Critic B1 (static world), continued: every seed passes the two criteria added on
+  2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
+  ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails
+  the leader-share range (2.7 points). Do not move the thresholds. (The tick time that
+  ADR-47 raised is back under budget since PLAN 1.42a.)
+  Second attempt, 2026-10-03, after 1.42b and 1.42c: seeds 201–210, **7 of 10 green**
+  (`docs/sweeps/2026-10-03-sweep-b1c.md`, FAILING): 204 and 208 have one newcomer in the top
+  ten, 208 and 209 a leader-share range of 2.4 and 2.6 points. Seeds 201–210 are now seen.
+  The leader is the Soviet Union in every year of all 24 runs to date and it only shrinks, by
+  an amount that depends on the seed's luck with revolts: the next attempt needs a mechanism
+  that acts on every seed (see PROGRESS 2026-10-03 for candidates), not more tuning. A third
+  failed attempt goes to BLOCKERS (PROMPT step 8).
+  Third attempt, 2026-10-03 (ADR-51): the winner of a peace keeps all the land it occupies.
+  Scratch sweep on the seen seeds 101–110: 10 of 10 (leader range 4.1–16.1, 2–4 newcomers).
+  Unseen seeds 301–310: **8 of 10** (`docs/sweeps/2026-10-03-sweep-b1d.md`, FAILING): 304 and
+  306 fail the leader-share range (2.6 and 1.6 points); every seed has 2–3 newcomers.
+  **Criteria changed 2026-10-03 (ADR-54, the user's decision), before any 50-year run by
+  area:** the two criteria above are reported and no longer judged. A sweep passes when every
+  seed keeps the five limits and at least 8 of 10 seeds have a riser and at least 8 of 10 a
+  faller, both measured on realms (SPEC §10). The three FAILING reports stand as they are and are not re-judged; only
+  seeds from 401 judge this task. The quick sweep (10 seeds × 20 years) comes first: run
+  the deciding sweep when it shows risers and fallers on most seeds, not to find out.
+  From PLAN 7.1l11d (ADR-414 d): the AI asks again each day for an order it was refused (seed
+  5303's year 21: 292 refused, 234 of them the same order again, 3 % of the year's tick; seed 99:
+  under 1 %). An AI that does not ask again until something it reads has changed is a rule: it
+  moves the pin and is judged with the balance. From PLAN 7.1l11f: so are orders that reach their
+  front only by a long way round (seed 5303's year 5: Belgian and Dutch formations about 10° E
+  44° N sent to the coast at 53.5° N, ways of some 880 cells for ends 50 apart, the ground between
+  closed to them; searches of 8 to 10 ms each, a dozen a day).
+  The user's decision (2026-10-15): both rules are to be taken up in this task, each judged by the
+  sweep: (a) the AI does not ask again for an order it was refused until something the refused
+  search read has changed (who holds the cells of its way, who is at war with whom); (b) the AI
+  does not send a formation to a front it reaches only by a way several times the straight line
+  (the nearest front it reaches directly, or it holds where it is). Each moves the pin.
+  Split on 2026-10-16, one cause a part (the two rules first, then the sweep on seeds from 401):
+  - [x] 1.42g The AI's refused orders not asked again (rule a): a formation's order from the […]
+  - [x] 1.42h No order by a long way round (rule b): the AI does not send a formation to a front […]
+  - [x] 1.42i The sweep: `npm run sweep:quick`, then the deciding sweep from seed 401. Done
+    2026-10-16: the quick sweep (seeds 1–10 × 20 years) limits 10 of 10, a riser and a faller
+    on 10 of 10; seeds 401–410 × 50 years ALL GREEN, limits 10 of 10, riser 9 of 10, faller 10
+    of 10 (`docs/sweeps/2026-10-16-sweep-b1-401.md`). Seeds 401–410 are seen; the next from 501.
+  AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.

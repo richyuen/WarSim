@@ -29,31 +29,25 @@ quick sweep as a smoke test.
 
 ## Phase 7 — Balance, polish, soak
 
-- [ ] 1.42 **Moved here from Phase 1 on 2026-10-03 (ADR-58, the user's decision): balance is
-  judged when the features are in. Blocked after three attempts before that (BLOCKERS.md);
-  its prerequisites 1.42d, 1.42e and 1.42f are done. Judged by area, on seeds from 401.**
-  Critic B1 (static world), continued: every seed passes the two criteria added on
-  2026-10-03 (≥ 2 new nations in the top ten by land; leader share range ≥ 3 points). State after
-  ADR-47: 9 of 10 unseen seeds green (`docs/sweeps/2026-10-03-sweep-b1.md`); seed 109 fails
-  the leader-share range (2.7 points). Do not move the thresholds. (The tick time that
-  ADR-47 raised is back under budget since PLAN 1.42a.)
-  Second attempt, 2026-10-03, after 1.42b and 1.42c: seeds 201–210, **7 of 10 green**
-  (`docs/sweeps/2026-10-03-sweep-b1c.md`, FAILING): 204 and 208 have one newcomer in the top
-  ten, 208 and 209 a leader-share range of 2.4 and 2.6 points. Seeds 201–210 are now seen.
-  The leader is the Soviet Union in every year of all 24 runs to date and it only shrinks, by
-  an amount that depends on the seed's luck with revolts: the next attempt needs a mechanism
-  that acts on every seed (see PROGRESS 2026-10-03 for candidates), not more tuning. A third
-  failed attempt goes to BLOCKERS (PROMPT step 8).
-  Third attempt, 2026-10-03 (ADR-51): the winner of a peace keeps all the land it occupies.
-  Scratch sweep on the seen seeds 101–110: 10 of 10 (leader range 4.1–16.1, 2–4 newcomers).
-  Unseen seeds 301–310: **8 of 10** (`docs/sweeps/2026-10-03-sweep-b1d.md`, FAILING): 304 and
-  306 fail the leader-share range (2.6 and 1.6 points); every seed has 2–3 newcomers.
-  **Criteria changed 2026-10-03 (ADR-54, the user's decision), before any 50-year run by
-  area:** the two criteria above are reported and no longer judged. A sweep passes when every
-  seed keeps the five limits and at least 8 of 10 seeds have a riser and at least 8 of 10 a
-  faller, both measured on realms (SPEC §10). The three FAILING reports stand as they are and are not re-judged; only
-  seeds from 401 judge this task. The quick sweep (10 seeds × 20 years) comes first: run
-  the deciding sweep when it shows risers and fallers on most seeds, not to find out.
+- [ ] 7.2 30-minute soak with save/load twin comparison.
+  AT: `npm run soak` passes with no crash and no desync.
+  From the Phase 3 review (PLAN 3.7c, 2026-10-07):
+  - Nothing stops an `undefined` or a NaN out of arithmetic from being written to the
+    history or a table (ADR-155 found one by the page's hash leaving Node's). The soak
+    looks for one in every float section of the state, each day.
+  - Commands the page never sends are applied with numbers that are finite and out of range
+    (the seventh and sixth reads: a strength of -5, a place at 1e9, a member twice, a side 5,
+    a province 1.5, a line of `editPaint` to 1e9 that takes 13 s). Only a worker message or
+    the page's test API can send them. Refuse them where a scenario file or a script could.
+- [ ] 7.3 Final multi-decade sweep (≥ 10 seeds) — borders moving, no hegemon.
+  AT: sweep report green.
+  Moved here from PLAN 1.42 when its sweep went green (2026-10-16): the findings it was given
+  and did not decide. The critic asks more than `tools/sweep/criteria.ts` judges (a run whose top
+  five are the same for 20 years fails; one whose count of living nations rises for 20 years
+  fails), and the sweep reports neither yet: to decide here. Seeds 401–410 (`docs/sweeps/2026-10-16-sweep-b1-401.md`):
+  living nations at most 170 to 231; China's realm at 0 km² by year 50 in five of ten seeds; the
+  quick sweep before it: the Soviet Union's at 0 km² by year 20 in five of ten. Deferred critic
+  findings on balance go here.
   From the critic's report of 2026-10-05 (R2-B5, and the rate in R2-B6; deferred by ADR-58,
   not disputed, logged once in PROGRESS):
   - Seed 31337, 40 years headless: the top five by cells are the Soviet Union, Canada, the
@@ -156,35 +150,6 @@ quick sweep as a smoke test.
   years, 77 founded in play; seed 2953: 153; "Free Liège II" holds Berlin in 1953
   (`critic/c6_headless_6619.json`, `critic/c6_headless_2953.json`). What the critic asks is as
   in runs 4 and 5.
-  From PLAN 7.1l11d (ADR-414 d): the AI asks again each day for an order it was refused (seed
-  5303's year 21: 292 refused, 234 of them the same order again, 3 % of the year's tick; seed 99:
-  under 1 %). An AI that does not ask again until something it reads has changed is a rule: it
-  moves the pin and is judged with the balance. From PLAN 7.1l11f: so are orders that reach their
-  front only by a long way round (seed 5303's year 5: Belgian and Dutch formations about 10° E
-  44° N sent to the coast at 53.5° N, ways of some 880 cells for ends 50 apart, the ground between
-  closed to them; searches of 8 to 10 ms each, a dozen a day).
-  The user's decision (2026-10-15): both rules are to be taken up in this task, each judged by the
-  sweep: (a) the AI does not ask again for an order it was refused until something the refused
-  search read has changed (who holds the cells of its way, who is at war with whom); (b) the AI
-  does not send a formation to a front it reaches only by a way several times the straight line
-  (the nearest front it reaches directly, or it holds where it is). Each moves the pin.
-  Split on 2026-10-16, one cause a part (the two rules first, then the sweep on seeds from 401):
-  - [x] 1.42g The AI's refused orders not asked again (rule a): a formation's order from the […]
-  - [x] 1.42h No order by a long way round (rule b): the AI does not send a formation to a front […]
-  - [ ] 1.42i The sweep: `npm run sweep:quick`, then the deciding sweep from seed 401.
-  AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
-- [ ] 7.2 30-minute soak with save/load twin comparison.
-  AT: `npm run soak` passes with no crash and no desync.
-  From the Phase 3 review (PLAN 3.7c, 2026-10-07):
-  - Nothing stops an `undefined` or a NaN out of arithmetic from being written to the
-    history or a table (ADR-155 found one by the page's hash leaving Node's). The soak
-    looks for one in every float section of the state, each day.
-  - Commands the page never sends are applied with numbers that are finite and out of range
-    (the seventh and sixth reads: a strength of -5, a place at 1e9, a member twice, a side 5,
-    a province 1.5, a line of `editPaint` to 1e9 that takes 13 s). Only a worker message or
-    the page's test API can send them. Refuse them where a scenario file or a script could.
-- [ ] 7.3 Final multi-decade sweep (≥ 10 seeds) — borders moving, no hegemon.
-  AT: sweep report green.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).
   From PLAN 4.1c (2026-10-09, ADR-244): Switzerland holds a cell in the Po delta (1094, 323
   at M, by Ferrara). The communes of Liechtenstein are each smaller than a cell and were
@@ -609,3 +574,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 6.12 Critic R6-B2, second: who strikes whom. The first use in history is the Soviet Union […]
 - [x] 7.1 Performance pass against all budgets (T0 60 fps, T2 30 fps @10k, tick ≤ 1.5 ms). […]
 - [x] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M, […]
+- [x] 1.42 **Moved here from Phase 1 on 2026-10-03 (ADR-58, the user's decision): balance is […]
