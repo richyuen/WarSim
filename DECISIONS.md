@@ -177,8 +177,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Decision.** At a peace of |score| ≥ WHITE_PEACE, a losing leader founded in play left with
   less than STATELET_KM2 = 50,000 km² after the terms is annexed whole by the winning leader, as
   one under 8,500 km² already was (its puppets go with it, ADR-181). Founded in play is
-  `isFounded`: the nation's `people` (PLAN 7.3c) is another nation's — a rebel state, a God Mode
-  spawn (it goes through `spawnRebels` too); not a nation of the scenario (people 0), nor a
+  `isFounded`: the nation's `people` (PLAN 7.3c) is another nation's — a rebel state, one of a God
+  Mode revolt or a Kill's successors (both through `spawnRebels`); not a nation of the scenario (people 0), nor a
   revived one (its own people).
 - **Why 50,000.** The probe's band of surviving rumps ends there; a region revolt is at most
   1,000,000 km² (ADR-186), and a single province rising is mostly under 50,000, so the rule takes
