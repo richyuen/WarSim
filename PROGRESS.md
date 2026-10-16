@@ -16656,3 +16656,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   state next to it: red before; no kin: a state founded). The pin is unmoved.
 - **Next:** PLAN 7.3d2.
 
+
+## 2026-10-16 — PLAN 7.3d2: a statelet founded in play is annexed whole at a peace it loses (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-432, `e00aa11`): at a peace of |score| ≥ WHITE_PEACE, a losing leader founded in
+  play (`isFounded`: its `people` is another nation's) left with under STATELET_KM2 = 50,000 km²
+  is annexed whole, as one under 8,500 km² already was. Scenario and revived nations keep the
+  old rule.
+- **Test:** `statelet.test.ts`, five (Maryland's rebels, 22,301 km², annexed: red before; a white
+  peace, a peace they win, Belgium of the scenario and revived: kept). The pin is unmoved. In the
+  gate `scenario1938.test.ts` "builds in well under a second" failed under the parallel load and
+  passed alone.
+- **Quick sweep** (seeds 1–10 × 30 years, 17.2 min, `docs/evidence/7.3/quick-7.3d2.md`): limits
+  10 of 10, riser 9, faller 10, no stasis 9; the break-up holds on 3 of 10 (× 0.92 to 1.49; the
+  most alive a seed 100–155, against 161–218 in 7.3c's 20 years). 7.3d's AT (8 of 10) is not met:
+  7.3d3 added to find the next cause.
+- **Next:** PLAN 7.3d3.
