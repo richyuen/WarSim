@@ -90,8 +90,10 @@ describe('random world (PLAN 2.16a)', () => {
       for (let c = 0; c < owner.length; c++) if (terrain[c]! >= Terrain.Plains && province[c]! > 0) pieceCells.set(piece[c]!, (pieceCells.get(piece[c]!) ?? 0) + 1);
       for (const [id, cell] of capitals) expect(pieceCells.get(piece[cell]!), `the land of ${id}'s capital`).toBeGreaterThanOrEqual(12);
       expect(colours.size).toBe(count);
-      // Two provinces of the earth may share a name (a "Central" in several countries); few do.
-      expect(names.size).toBeGreaterThanOrEqual(count - 3);
+      // Every name its own (PLAN 7.4f10; before, a "Central" of several countries could repeat),
+      // none a bare direction, none with the kind of its province.
+      expect(names.size).toBe(count);
+      for (const n of names) expect(n, n).not.toMatch(/^(Central|Northern|Southern|Eastern|Western)$|\s(State|Province|Region|Oblast|Krai)$/);
       expect(world.formations.count).toBeLessThanOrEqual(900 + count);
       expect(world.wars.list.length).toBe(0);
     });

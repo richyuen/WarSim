@@ -17057,3 +17057,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `git stash push -- <path>` before a "before" build did not take here; the before
   picture was the after. The colours above are read from the sim, not a picture.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f10: the random world's names (sim names)
+
+- **Start:** gate green on a clean tree (`4aa3bee`); critic not due.
+- **Seen** (seed 7, 60 nations): "Central", "Northern", "Eastern", "Bauchi State", "Krasnoyarsk
+  Krai", "Northwest Territories"; the colours of the same finding were stale: hue sectors
+  R/Y/G/C/B/M 10/11/9/11/9/10, 9/10/10/11/10/10, 10/10/9/10/10/11 on seeds 1, 7, 42.
+- **Done:** `randomNationName` (`src/shared/nationNames.ts`): the province's name without its
+  kind, the capital's where that is a direction or taken, else a number; the random world names
+  its nations by it, none twice. Seed 7 now: "Suva", "Al Qunaytirah", "Nkawkaw", "Bauchi",
+  "Krasnoyarsk", "Fort McPherson".
+- **Tests:** `nationNames.test.ts` (3 new), `randomWorld.test.ts` (60 names of 60, none a bare
+  direction or with its kind), `flagsByScenario`, `killLand`: 31 of 31; e2e `randomWorld` 3 of 3.
+- **Next:** PLAN 7.4f, the next group.

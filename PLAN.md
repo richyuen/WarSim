@@ -74,6 +74,11 @@ quick sweep as a smoke test.
       steps. AT: unit tests of the line and the disc; `flags1938` draws and undoes each.
     - [x] 7.4f9 A Kill's successors in greys (the critic, 2026-10-07): a spawned nation's colour
       by hue, saturation 0.5–0.8, lightness 0.40–0.62. AT: a unit test of 300 colours, none grey.
+    - [x] 7.4f10 The random world's names (the critic; the sixth read, PLAN 2.16Ra): the
+      province's name without its kind ("Bauchi State" → "Bauchi"), the capital's where it is a
+      direction ("Central") or taken; every name its own. AT: unit tests; `randomWorld.test.ts`
+      asks for 60 names of 60 nations on its seeds. (The colours of the same finding: six hue
+      sectors met evenly on seeds 1, 7 and 42, so no change; the hegemon: PLAN 1.42.)
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -208,10 +213,6 @@ quick sweep as a smoke test.
     panels are no obstacles to a tag either); figures at 20 m/px are faint on a plain
     (`to-battle-front.png`); a war banner without a battle differs from one with a battle by
     its swords and frame only (`to-battle-banners.png`).
-  - **The random world's names** (the sixth read, PLAN 2.16Ra, 2026-10-05): with 150 and 200
-    nations most seeds have several of one name (seed 7 with 200: four called "Eastern";
-    seed 1 three "Central"); none seen at 60 or fewer on ten seeds. One capital to a
-    province, but the provinces' names repeat across countries. With the line below.
   - **Two nations of one name** (PLAN 2.15b, ADR-100, 2026-10-05). A founded nation is
     "Free <province>", and 114 names are held by more than one province ("Valmiera" 21,
     "Central" 10, "Northern" 8, "Saint George" 7); a province without a name gives its
@@ -246,9 +247,6 @@ quick sweep as a smoke test.
   - Occupied land at the close tiers is washed in the occupier's colour: French-held
     Germany is a blue field that reads as a lake. After 14 years the Soviet Union is a field
     of thin stripes of other nations' colours.
-  - The random world names
-    nations after provinces ("Seine-Maritime") and paints half of them purple or magenta;
-    after three years one of them owns western and central Europe (that part: PLAN 1.42).
   - Against AoC's God panel: Annex, Recolor, Fight to the Death, Donate (Nuke: Phase 6).
   - The critic did not test a player building an armoured division (a step of its own
     script failed on a selector).

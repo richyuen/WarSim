@@ -21,7 +21,7 @@ import scenarioRandom from '../../data/scenarios/random/scenario.json' with { ty
 import { decodeAdmin1, type Admin1Meta } from '../shared/admin1';
 import { dayOfIso } from '../shared/calendar';
 import { addIslet } from '../shared/landMask';
-import { provinceLabel } from '../shared/nationNames';
+import { provinceLabel, randomNationName } from '../shared/nationNames';
 import type { ScenarioAssets } from '../shared/protocol';
 import { RANDOM_NATIONS } from '../shared/scenarios';
 import { Terrain } from '../shared/terrain';
@@ -291,7 +291,15 @@ export function createRandomWorld(seed: number, asked: number | undefined, asset
   world.portReach = world.atSizeSnap(PORTS_1938.reachCells);
   const labels = meta.map(provinceLabel);
   // The name is state, as one given in God Mode is: no table of the scenario holds it.
-  for (const p of cities) if (p.capitalOf !== 0) world.names.set(p.capitalOf, labels[province[p.cell]! - 1] || p.name);
+  // A name of its own (PLAN 7.4f10): the province's without its kind ("State", "Krai"), or the
+  // capital's where that is a direction ("Central") or taken.
+  const named = new Set<string>();
+  for (const p of cities) {
+    if (p.capitalOf === 0) continue;
+    const name = randomNationName(labels[province[p.cell]! - 1] ?? '', p.name, named);
+    named.add(name);
+    world.names.set(p.capitalOf, name);
+  }
 
   // Armies: infantry for ARMY_SHARE of the income, one division in four motorised or armoured
   // where there are eight; all of them together not above ARMY_TOTAL. They stand around the

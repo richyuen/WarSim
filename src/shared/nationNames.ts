@@ -13,6 +13,24 @@ export function provinceLabel(m: Pick<Admin1Meta, 'name' | 'admin'>): string {
   return m.name.trim() || m.admin.trim();
 }
 
+/** The words of a province's name that say what kind of province it is, not which (PLAN 7.4f10). */
+const ADMIN_SUFFIX = /\s+(state|province|region|prefecture|oblast|krai|kray|governorate|district|department|county|territory|territories|division|municipality|autonomous region|special region)$/i;
+/** A name that is only a direction or a place in the country: "Central", "Northern", "Northwest". */
+const GENERIC = /^(central|north|south|east|west|northern|southern|eastern|western|north[- ]?(east|west)(ern)?|south[- ]?(east|west)(ern)?|upper|lower|capital|coast|coastal|interior|inner|outer|middle|centre|center)$/i;
+
+/**
+ * The name of a nation of the random world (PLAN 7.4f10, the critic: "Seine-Maritime", "Central",
+ * "Bauchi State"): its province's name without the word for the kind of province, or its
+ * capital city's where that is only a direction ("Central", "Northern") or a name `taken` already.
+ */
+export function randomNationName(label: string, capital: string, taken: ReadonlySet<string> = new Set()): string {
+  const bare = label.replace(ADMIN_SUFFIX, '').trim();
+  if (bare && !GENERIC.test(bare) && !taken.has(bare)) return bare;
+  if (capital && !taken.has(capital)) return capital;
+  const base = bare && !GENERIC.test(bare) ? bare : capital || label;
+  for (let n = 2; ; n++) if (!taken.has(`${base} ${roman(n)}`)) return `${base} ${roman(n)}`;
+}
+
 /**
  * The literal name of founded nation `id` whose origin is province `origin` (1-based; 0: none).
  * `labels` are the provinces' labels by index. The number is the last resort, for a state that

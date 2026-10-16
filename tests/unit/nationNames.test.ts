@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { foundedName, foundedNth, provinceLabel } from '../../src/shared/nationNames';
+import { foundedName, foundedNth, provinceLabel, randomNationName } from '../../src/shared/nationNames';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { forceRevolt, spawnRebels } from '../../src/sim/systems/revolts';
@@ -156,4 +156,22 @@ describe('the names of founded nations (PLAN 2.15b)', () => {
     expect(elsewhere.length, 'nations with the capital outside the origin').toBe(0);
     expect(first).toBe(NATIONS_1938.length + 1);
   }, 300_000);
+});
+
+describe('a nation of the random world is named (PLAN 7.4f10)', () => {
+  it('after its province, without the kind of province', () => {
+    expect(randomNationName('Bauchi State', 'Bauchi')).toBe('Bauchi');
+    expect(randomNationName('Krasnoyarsk Krai', 'Krasnoyarsk')).toBe('Krasnoyarsk');
+    expect(randomNationName('Seine-Maritime', 'Rouen')).toBe('Seine-Maritime');
+    expect(randomNationName('South Australia', 'Adelaide')).toBe('South Australia');
+  });
+  it('after its capital where the province is only a direction', () => {
+    expect(randomNationName('Central', 'Suva')).toBe('Suva');
+    expect(randomNationName('Northwest Territories', 'Fort McPherson')).toBe('Fort McPherson');
+    expect(randomNationName('Northern', 'Gulu')).toBe('Gulu');
+  });
+  it('never a name taken: the capital\'s, else a number', () => {
+    expect(randomNationName('Georgia', 'Atlanta', new Set(['Georgia']))).toBe('Atlanta');
+    expect(randomNationName('Georgia', 'Tbilisi', new Set(['Georgia', 'Tbilisi']))).toBe('Georgia II');
+  });
 });
