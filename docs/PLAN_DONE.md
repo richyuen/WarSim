@@ -10058,3 +10058,28 @@ Of 7.3 (open in PLAN.md):
       seeds 5 and 6 × 30 years; the rule halved it; part 1 alone took the United Kingdom's births
       away (seed 5: 2, at full suppression). Quick sweep (seeds 1–10 × 30 years, 10.7 min) limits,
       riser, faller, stasis and break-up 10 of 10; the Soviet realm at 0 km² in 6 (1, 2, 3, 5, 6, 9).
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.3 (open in PLAN.md):
+
+  - [x] 7.3g (before 7.3f's next run) The living nations rise again late in the run: seeds 501,
+    504, 506 and 508 end the break-up criterion at × 1.16, 1.17, 1.27 and 1.20 of the most 20
+    years before (the bound 1.1, ADR-428); seed 501 86 alive in year 30 and 115 in year 50,
+    seed 508 84 in year 30 and 108 in year 40, while in years 1–30 every seed falls from about
+    96 to 75–96. Measure first which events found the new nations after year 30 (revolts,
+    releases, revivals, break-ups of a realm) on those seeds' checkpoints, then fix that one
+    cause. AT: the count of foundings by cause after year 30 on seeds 501 and 506, before and
+    after; a quick sweep's limits 10 of 10.

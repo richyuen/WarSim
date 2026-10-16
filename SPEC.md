@@ -1889,7 +1889,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   ballistic missiles; as built, `data/tech/nuclear.json`: atomic research → reactor → bomb →
   thermonuclear, rocketry → ballistic missiles; no SLBM, ADR-434). It is expensive in industry and gold, and gated by
   `nukesAllowed` (global and per nation).
-- **Stockpile**: warheads are built over time with upkeep. **Delivery**: bombers (can be
+- **Stockpile**: warheads are built over time with upkeep, while the stockpile's upkeep stays
+  under STOCKPILE_SHARE (0.1) of the nation's income; a nation short of money scraps the warheads
+  over that share before its fleets and its army (PLAN 7.3g, ADR-439). **Delivery**: bombers (can be
   intercepted by fighters and AA, need range) or missiles (later tech, hard to stop).
 - **Use decision** (nuclear AI, daily, at war only). Utility:
   `U = targetValue·desperation·doctrine − retaliationRisk − allianceCost −

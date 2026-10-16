@@ -156,14 +156,12 @@ quick sweep as a smoke test.
   United States is one of the five largest nations by land in every seed's longest-held top
   five (Australia in five of them, France in eight); stasis passed 8 of 10 (501: 25 years,
   502: 23). Kept as a note, not a part: the criterion holds.
-  - [ ] 7.3g (before 7.3f's next run) The living nations rise again late in the run: seeds 501,
-    504, 506 and 508 end the break-up criterion at × 1.16, 1.17, 1.27 and 1.20 of the most 20
-    years before (the bound 1.1, ADR-428); seed 501 86 alive in year 30 and 115 in year 50,
-    seed 508 84 in year 30 and 108 in year 40, while in years 1–30 every seed falls from about
-    96 to 75–96. Measure first which events found the new nations after year 30 (revolts,
-    releases, revivals, break-ups of a realm) on those seeds' checkpoints, then fix that one
-    cause. AT: the count of foundings by cause after year 30 on seeds 501 and 506, before and
-    after; a quick sweep's limits 10 of 10.
+  - [x] 7.3g (before 7.3f's next run) The living nations rise again late in the run: seeds 501, […]
+  Left by PLAN 7.3g (ADR-439, `docs/evidence/7.3/collapse-7.3g.md`), not measured there: a
+  collapse founds a state for every connected restless group, of one cell too, with none of a
+  revolt's claimant or kin steps (seed 506's Soviet Union: 25 states of 1 to 49,518 cells); and a
+  great land's gross falls faster than its land (seed 506's Soviet Union: 18% of its cells and 72%
+  of its gross in years 26–30). To judge by 7.3f's next run.
   - [ ] 7.3f The deciding sweep on unseen seeds (from 501) × 50 years. AT: the report ALL
     GREEN by the criteria of 7.3a.
     Run 1 (2026-10-16, seeds 501–510, `docs/sweeps/2026-10-16-sweep-b1-501.md`): FAILING

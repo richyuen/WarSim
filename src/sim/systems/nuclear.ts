@@ -15,7 +15,9 @@
  * Warheads (PLAN 6.1b, `nuclearSystem`, daily at 00:00): a nation that goes for the bomb and
  * knows it (`atomic_bomb`) builds one warhead at a time: WARHEAD_GOLD paid by the day over
  * WARHEAD_DAYS out of its treasury, the day's share only where the treasury holds it (never into
- * debt), up to WARHEAD_MAX in its stockpile (`world.warheads`, state). A stockpile costs
+ * debt), up to WARHEAD_MAX in its stockpile (`world.warheads`, state), and only while the
+ * stockpile's upkeep with it stays under STOCKPILE_SHARE of its income (PLAN 7.3g; the economic AI
+ * scraps the warheads over that share when short). A stockpile costs
  * WARHEAD_UPKEEP a warhead a month, with the rest of its expenses (`monthlyAccounts`). God Mode
  * grants warheads (`grantWarheads`). A nation that dies loses its stockpile.
  *
@@ -156,6 +158,15 @@ export const WARHEAD_DAYS = 90;
 export const WARHEAD_MAX = 100;
 /** Gold a warhead costs a month, kept. */
 export const WARHEAD_UPKEEP = 10;
+/**
+ * The share of its income a nation keeps its stockpile's upkeep under (PLAN 7.3g, ADR-439): it
+ * builds a warhead only while the stockpile with it stays under, and the economic AI scraps the
+ * warheads over it when its books do not balance, before the army is sent home. (Seeds 501 and
+ * 506: the Soviet Union's 66–77 warheads and France's 68 cost 660–770 a month against a gross of
+ * 155–814; each was bankrupt with no army left and collapsed, France five times in four years.)
+ * A nation of NUKE_PROGRAMME_INCOME keeps 10, twice RETALIATION_FULL.
+ */
+export const STOCKPILE_SHARE = 0.1;
 
 /** Nation `n`'s warheads (0 for none). */
 export function warheadsOf(world: World, n: number): number {
@@ -1011,7 +1022,7 @@ export function nuclearSystem(world: World): void {
   world.nations.forEach((n) => {
     if (nc.living[n] !== 1 || nc.bankrupt[n] === 1 || !goesForBomb(world, n) || !knowsTechs(world, n, mask)) return;
     const w = world.warheads.get(n) ?? { stock: 0, paid: 0 };
-    if (w.stock >= WARHEAD_MAX || nc.gold[n]! < pay) return;
+    if (w.stock >= WARHEAD_MAX || nc.gold[n]! < pay || WARHEAD_UPKEEP * (w.stock + 1) > STOCKPILE_SHARE * nc.income[n]!) return;
     nc.gold[n] = nc.gold[n]! - pay;
     w.paid += pay;
     if (w.paid >= WARHEAD_GOLD - 1e-9) {

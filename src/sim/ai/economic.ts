@@ -15,6 +15,8 @@
  *    the deficit instead (PLAN 2.13: the AI disbanded 228 of the 1,054 formations of 1938 in
  *    the first hour, the Soviet Union's with six years of its deficit in the treasury). One
  *    `FormationsDisbanded` event, and so one line of the history, per nation and month.
+ *    Before all (PLAN 7.3g, ADR-439): while its stockpile's upkeep is over STOCKPILE_SHARE of its
+ *    income, a warhead is scrapped at a time (its WARHEAD_UPKEEP saved).
  *    Before the army (PLAN 4.6e1): while its navy's upkeep is over NAVY_SHARE of its income, the
  *    fleets that stand (not under way, not in a sea battle) are laid up, the dearest first
  *    (`FleetsLaidUp`, a crew's DISBAND_MANPOWER back to the pool).
@@ -69,6 +71,7 @@ import { elementIndex, destroyFormation } from '../systems/elements';
 import { monthlyAccounts, UPKEEP_SCALE, type EconomyTables } from '../systems/economy';
 import { COST_SHARE, PEACE_CE, WAR_CE } from '../systems/efficiency';
 import { TRIBUTE } from '../systems/puppets';
+import { STOCKPILE_SHARE, WARHEAD_UPKEEP } from '../systems/nuclear';
 import { SUPPRESSION_COST } from '../systems/revolts';
 import { frontierOf } from '../systems/territory';
 import { neighbours4 } from '../nav/grid';
@@ -285,6 +288,14 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // first the fleets that stand, the dearest first, while the navy is over its share (PLAN
       // 4.6e1: laid up, their crews home), then the army.
       if (balance < need) {
+        // The warheads over the stockpile's share first (PLAN 7.3g, ADR-439): bombs nobody uses go
+        // before the ships and the men.
+        const stock = world.warheads.get(n);
+        while (stock && stock.stock > 0 && WARHEAD_UPKEEP * stock.stock > STOCKPILE_SHARE * income) {
+          if (balance >= need || nc.gold[n]! >= RUNWAY_MONTHS * (need - balance)) break;
+          stock.stock--;
+          balance += WARHEAD_UPKEEP;
+        }
         let laid = 0;
         const standing = (fleets.get(n) ?? []).filter((id) => f.moving[id] !== 1 && f.engaged[id] !== 1 && seaRangeOf(world, id) === undefined).sort((a, b) => upkeepOf(world, b) - upkeepOf(world, a) || a - b);
         for (const id of standing) {

@@ -16802,3 +16802,27 @@ No rule changed and nothing on screen changed. One task came out of it.
   five; the stasis criterion still holds on 8 of 10, so a note under 7.3, not a part.
 - BLOCKERS' PLAN 6.8 entry: the 250 limit is now far off (at most 124); left open under 7.3g.
 - **Next:** PLAN 7.3g.
+
+## 2026-10-16 — PLAN 7.3g: the late break-up is collapses of nuclear powers; stockpile held to income (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Measured first** (HEAD `9ceedc5`, `docs/evidence/7.3/collapse-7.3g.md`, `.cache/73g/probe.ts`):
+  foundings in years 31–50 by cause, seeds 501 and 506: by a collapse 47 and 34 (12 and 6
+  collapses), by a revolt on the holder's own core 6 and 9, on a dead core 9 and 4, revivals 10
+  and 2. Monthly traces (`trace.ts`): every collapse is a nuclear power whose stockpile costs more
+  than it earns, its army gone: seed 506's Soviet Union 71–77 warheads (710–770 a month) on a
+  gross 1,884 → 155, 14 and 25 states; seed 501's Soviet Union 66 on 814 → 290; seed 501's France
+  68 on 423 → 278, five collapses in four years.
+- **Done** (ADR-439): STOCKPILE_SHARE 0.1: a warhead is built only while the stockpile's upkeep
+  with it stays under that share of income; economic AI step 1 scraps the warheads over it when
+  short, before the fleets and the army.
+- **AT:** seeds 501 and 506 × 50 years: founded by a collapse after year 30 47 → 0 and 34 → 0;
+  break-up × 1.16 → × 0.94 and × 1.27 → × 0.87. Quick sweep (seeds 1–10 × 30 years, 22.7 min,
+  `quick-7.3g.md`): limits 10 of 10, riser, faller, break-up 10 of 10, stasis 9 (seed 4: 20
+  years). Stockpiles at the end 135–165 a seed (260–371), nukes used in 4 of 10 seeds (5).
+- **Tests:** `warheads1938.test.ts`: none built at the share, one under it; a France short of money
+  with 100 warheads scraps them and keeps the army it has without them (fails without the rule).
+  The gate ran 192 related files beside nothing else: `efficiency.test.ts` (timeout) and
+  `territory.test.ts` (cost a tick 39 < 25) red under load, green alone. Pin unmoved.
+- **Gotcha:** Python's text mode on Windows writes CRLF; `sed -i 's/\r$//'` after a Python edit.
+- **Next:** PLAN 7.3f run 2, seeds 601–610 × 50 years.

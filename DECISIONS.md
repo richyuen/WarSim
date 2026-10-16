@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-439 · 2026-10-16 · accepted — A stockpile is kept under a share of the income; a nation short of money scraps warheads before its army (PLAN 7.3g)
+
+- **Context.** PLAN 7.3f's run 1 (seeds 501–510 × 50 years) failed the break-up criterion on
+  seeds 501, 504, 506 and 508: the living nations rose late in the run. PLAN 7.3g was to count
+  the foundings after year 30 by cause and fix the one cause.
+- **Measured** (`docs/evidence/7.3/collapse-7.3g.md`, `.cache/73g/probe.ts` and `trace.ts`):
+  in years 31–50, 47 and 34 of the nations founded on seeds 501 and 506 were founded by a
+  collapse (12 and 6 collapses), against 6 and 9 by revolts on the holder's own core. Every
+  collapse was of a nuclear power whose stockpile cost more than it earned: seed 506's Soviet
+  Union 71–77 warheads (710–770 a month) against a gross falling from 1,884 to 155, its last six
+  formations disbanded at 28.77, collapsed at 29.93 and 30.60 (14 and 25 states); seed 501's
+  Soviet Union 66 (660) against 814 → 290; seed 501's France 68 (680) against 423 → 278,
+  collapsed five times in four years (a collapse voids the debt; the upkeep brings it back in
+  six months). The economic AI cut the army and the fleets when short, never the stockpile, and
+  a warhead was built whenever the treasury held the day's share of its price.
+- **Decision.** STOCKPILE_SHARE = 0.1 (`systems/nuclear.ts`):
+  - `nuclearSystem` builds a warhead only while WARHEAD_UPKEEP × (stock + 1) ≤
+    STOCKPILE_SHARE × income. A nation of NUKE_PROGRAMME_INCOME (1,000) keeps 10, twice
+    RETALIATION_FULL; MAD_WARHEADS is 2.
+  - Economic AI step 1, before the fleets and the army: while the books do not balance and the
+    treasury cannot carry what is short (the rule the fleets and the army are cut by), a warhead
+    at a time is scrapped while the stockpile's upkeep is over the share. No event: a stockpile
+    shrinking is no turn of the war (the log keeps wars, battles and bursts).
+- **Result.** Seeds 501 and 506 × 50 years: collapses after year 30 12 → 0 and 6 → 0; founded by
+  a collapse 47 → 0 and 34 → 0; break-up × 1.16 → × 0.94 and × 1.27 → × 0.87. Quick sweep
+  (seeds 1–10 × 30 years, `docs/evidence/7.3/quick-7.3g.md`): limits 10 of 10, break-up 10 of 10;
+  stockpiles at the end 135–165 a seed (260–371 before), nukes used in 4 of 10 seeds (5 before).
+- **Pin.** Unmoved (no nation knows the bomb in year 1).
+
 ### ADR-438 · 2026-10-16 · rejected — A restless nation keeps a month of full suppression over the reserve (PLAN 7.3e3, part 2)
 
 - **Context.** ADR-436 left seed 5's United Kingdom suppressing nothing at 3.1 to 3.2 months of
