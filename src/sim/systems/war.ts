@@ -325,6 +325,32 @@ function menOf(world: World): Map<number, number> {
   return m;
 }
 
+/**
+ * The nations on a side that a war has worn down to `from` or more (PLAN 7.3d3, ADR-433): its
+ * exhaustion without the 0.1 a day, 80·lost + 60·share(other→side) and a nuclear shock, so a
+ * phoney war wears no side down however long it lasts. Before, France with 140 formations and
+ * 5,000 gold, an ally in Portugal's war of 1,100 days that cost it nothing, counted as worn and
+ * its far core land rose in 30 states in a year (seed 5, years 22–23).
+ */
+export function wornNations(world: World, from: number): Set<number> {
+  const worn = new Set<number>();
+  if (world.wars.list.length === 0) return worn;
+  const land = world.landCounts();
+  const men = menOf(world);
+  for (const war of world.wars.list) {
+    const [A, D] = war.sides;
+    for (const s of [ATTACKERS, DEFENDERS]) {
+      const side = war.sides[s]!;
+      const m = side.reduce((t, n) => t + (men.get(n) ?? 0), 0);
+      const lost = war.startMen[s]! > 0 ? Math.max(0, 1 - m / war.startMen[s]!) : 0;
+      const occ = s === ATTACKERS ? occShare(land, D, A).share : occShare(land, A, D).share;
+      const shock = world.nukeShock.size > 0 ? Math.max(0, ...side.map((n) => world.nukeShock.get(n) ?? 0)) : 0;
+      if (80 * lost + 60 * occ + shock >= from) for (const n of side) worn.add(n);
+    }
+  }
+  return worn;
+}
+
 export function warSystem(world: World): void {
   if (!isDayStart(world.tick)) return;
   if (world.wars.truces.some((t) => t.untilTick <= world.tick)) world.wars.truces = world.wars.truces.filter((t) => t.untilTick > world.tick);

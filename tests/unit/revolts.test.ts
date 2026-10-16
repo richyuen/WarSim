@@ -4,7 +4,10 @@ import { EventKind } from '../../src/shared/events';
 import { HISTORY_STRIDE } from '../../src/sim/history';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { DECAY, NON_CORE, OVEREXT_CELLS, OVEREXT_MAX, OVEREXT_SHARE, OVEREXT_UNREST, SUPPRESSION_COST } from '../../src/sim/systems/revolts';
+import { AT_WAR, DECAY, NON_CORE, OVEREXT_CELLS, OVEREXT_MAX, OVEREXT_SHARE, OVEREXT_UNREST, SUPPRESSION_COST } from '../../src/sim/systems/revolts';
+import { forceMen } from '../../src/sim/systems/seaControl';
+import { declareWar } from '../../src/sim/systems/war';
+import type { War } from '../../src/sim/wars';
 import { navOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds as kinds, nationId, runEvents as run } from '../helpers/sim1938';
@@ -267,5 +270,50 @@ describe('revolts (PLAN 1.19)', () => {
     expect(months).toBeGreaterThanOrEqual(2);
     expect(Number.isInteger(months)).toBe(true);
     expect(most(brazil) - most(argentina)).toBeCloseTo(months * OVEREXT_UNREST * f, 3);
+  });
+
+  // PLAN 7.3d3, ADR-433: the core land of an overextended holder feels a war only when the war
+  // has worn its side down by losses of men or land, not by its days alone. Before, France as an
+  // ally in a war of 1,100 days that had cost it nothing lost its far core land in 30 states.
+  it('overextension: a long war that costs nothing does not wear the far core land; losses do', () => {
+    const MEX = nationId('MEX');
+    /** The most unrest in the Soviet far core provinces after March, with a war set up by `setUp`. */
+    const farUnrest = (setUp?: (w: Sim['world'], war: War) => void): number => {
+      const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });
+      const w = s.world;
+      w.settings.aiEnabled = false;
+      if (setUp) {
+        const war = declareWar(w, SOV, MEX, true);
+        expect(war).not.toBeNull();
+        setUp(w, war!);
+      }
+      run(s, THROUGH_MARCH);
+      const g = navOf(w).graph;
+      const nc = w.nations.cols;
+      let most = 0;
+      for (let p = 1; p < w.provinces.count; p++) {
+        const c = g.centre[p] ?? -1;
+        if (c < 0 || w.cells.owner[c] !== SOV || w.provinces.core[p] !== SOV) continue;
+        if (Math.hypot((c % W) + 0.5 - nc.capitalX[SOV]!, Math.floor(c / W) + 0.5 - nc.capitalY[SOV]!) > OVEREXT_CELLS + 1) most = Math.max(most, w.provinces.unrest[p]!);
+      }
+      return most;
+    };
+    const peace = farUnrest();
+    expect(peace).toBeGreaterThan(0); // the Soviet strain is at the cap
+    // 700 days of war without a shot: exhaustion 70 by the days, no loss.
+    const phoney = farUnrest((_, war) => {
+      war.startTick = -700 * 24;
+    });
+    expect(phoney).toBeCloseTo(peace, 9);
+    // A fresh war whose Soviet side (its puppets with it) has lost three quarters of its men: worn
+    // (80 × 0.75 = 60).
+    const bled = farUnrest((w, war) => {
+      const s = war.sides[0].includes(SOV) ? 0 : 1;
+      let men = 0;
+      w.formations.forEach((f) => void (war.sides[s].includes(w.formations.cols.nation[f]!) && (men += forceMen(w, f))));
+      war.startMen[s] = 4 * men;
+      war.startMen[1 - s] = 1;
+    });
+    expect(bled).toBeGreaterThanOrEqual(peace + AT_WAR);
   });
 });

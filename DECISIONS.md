@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-433 · 2026-10-16 · accepted — A war wears a holder's far core land only by its losses, not its days; the pin moves (PLAN 7.3d3)
+
+- **Context.** After ADR-432 the break-up of ADR-428 held on 3 of 10 seeds. A probe of seeds 1,
+  5 and 6 × 30 years (births and deaths by cause, a year a column) found the late rise in
+  living nations, years 19–30, made almost wholly of states founded on the holder's own core
+  land (`people` = the holder): seed 5 85 of them (France 30 in years 22–23, the Soviet Union 25
+  in year 19), seed 6 30 in year 28 (the United Kingdom), seed 1 9–12 a year. The holders held
+  4–13% of the land, where overextension's strain alone (1.25 × (share/4% − 1)) is under the
+  monthly decay of 2 (it outruns it only above 10.4%, ADR-57); what pushed the far core land
+  over was the AT_WAR of a "worn" holder. Worn was any side at exhaustion ≥ 60, and exhaustion
+  grows 0.1 a day: every war is worn after 600 days, whatever it cost. France, 140 formations
+  and 5,000 gold, was worn as an ally in Portugal's war with China of 1,100 days; the Soviet
+  Union as an ally in China's war with the United Kingdom of 1,700. The module comment said "a
+  phoney war does not count"; the code counted it.
+- **Decision.** Worn (`wornNations`, `war.ts`) is a side's exhaustion without its days: 80 ×
+  the share of its men lost + 60 × the share of its land occupied, plus a nuclear shock, ≥
+  OVEREXT_EXHAUSTION (60). A long war that costs a side nothing does not wear its far core
+  land; a side bled or overrun does, as before. Exhaustion itself, which ends wars, is unchanged.
+- **Not changed.** The strain and its threshold (4% of the land), the garrison and the AI's
+  suppression (it pays none without a surplus of 15% of income, whatever its treasury: France
+  had 0 at 5,000 gold); and the white peaces in which founded statelets under 8,500 km² live on
+  (seed 6 year 28: 14). Each is a cause of its own if the sweep asks for it.
+- **Tests.** `revolts.test.ts`: Soviet far core land through March with a war against Mexico of
+  700 days and no loss gains what it gains at peace (7.5 against 1.5 before); with its side's
+  men three quarters lost it gains AT_WAR a month more.
+- **Pin** 3a944534 → 207a252e.
+
 ### ADR-432 · 2026-10-16 · accepted — A statelet founded in play is annexed whole at a peace it loses (PLAN 7.3d2)
 
 - **Context.** The world breaks up (critic R2-B6 to R6-B3; ADR-428's break-up fails on every
