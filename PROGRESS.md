@@ -17145,3 +17145,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   (some 180 gold) moved the treasury past its bound: a God command is applied at once with its
   stats, so the spec takes no step and checks the sums exactly (3 of 3 run side by side).
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f17: CE and unity in the God tab (UI)
+
+- **Start:** gate green on a clean tree (`e6a8c93`); critic not due.
+- **Done:** the God tab's rows of combat efficiency (−10/+10 %, a lock) and of the alliance's
+  unity (−10/+10), by `setEfficiency`, `lockEfficiency` and `setUnity`; `NationStat.ceLocked`.
+  The God panel's lines under 7.4 are down to the World AI settings, a nation spawned with a
+  size and cities in the game.
+- **Tests:** `godPanelMore1938` (2 of 2: Germany's CE +10 % and locked, the Anti-Comintern
+  Pact's unity −10), `nationPanel1938`.
+- **Next:** PLAN 7.4f, the next group.

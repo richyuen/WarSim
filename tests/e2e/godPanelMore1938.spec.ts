@@ -66,3 +66,23 @@ test('God Mode: the treasury set, a neighbour annexed, a war fought to the death
   await toggle.click();
   await expect.poll(() => after(() => page.evaluate((war) => window.__warsim!.hud.stats.value!.wars.find((w) => w.id === war)!.toDeath, war))).toEqual([false, false]);
 });
+
+test('God Mode: combat efficiency up, locked; alliance unity down (PLAN 7.4f17)', async ({ page }) => {
+  test.setTimeout(120_000);
+  await open1938(page, 1938);
+  const GER = id('GER');
+  await page.getByTestId('god-btn').click();
+  await page.evaluate((n) => window.__warsim!.view!.select(n), GER);
+  await page.getByTestId('tab-god').click();
+  const stat = () => page.evaluate((n) => window.__warsim!.hud.stats.value!.nations.find((x) => x.id === n)!, GER);
+  const ce = (await stat()).efficiency;
+  await page.getByTestId('god-ce-up').click();
+  await expect.poll(async () => (await stat()).efficiency).toBeCloseTo(ce + 0.1, 6);
+  await expect(page.getByTestId('god-ce')).toHaveText(`${Math.round((ce + 0.1) * 100)}%`);
+  await page.getByTestId('god-ce-lock').check();
+  await expect.poll(async () => (await stat()).ceLocked).toBe(true);
+  // Germany is in the Anti-Comintern Pact at the start: its unity, 10 down.
+  const unity = (await stat()).alliance!.unity;
+  await page.getByTestId('god-unity-down').click();
+  await expect.poll(async () => (await stat()).alliance!.unity).toBeCloseTo(Math.max(0, unity - 10), 6);
+});

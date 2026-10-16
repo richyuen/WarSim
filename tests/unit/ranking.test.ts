@@ -22,6 +22,7 @@ const nation = (id: number, v: number): NationStat => ({
   airLost: 0,
   bombed: 0,
   efficiency: 1,
+  ceLocked: false,
   alliance: null,
   overlord: 0,
   autonomy: 0,

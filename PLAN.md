@@ -98,6 +98,8 @@ quick sweep as a smoke test.
     - [x] 7.4f16 AoC's God panel, Recolor and Donate: two commands (`recolorNation`,
       `donateGold`: no more than the giver has, not to itself, in range) and their controls. AT:
       unit tests of both against a twin that gives nothing; `godPanelMore1938`.
+    - [x] 7.4f17 The God tab edits combat efficiency (±10 %, a lock) and the alliance's unity
+      (±10), by the commands the sim had; the stats carry the lock. AT: `godPanelMore1938`.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -257,8 +259,8 @@ quick sweep as a smoke test.
   - N21: while the game runs, half-faded counters are on screen all the time as the clusters
     regroup ("432", "29.6k" at part opacity, 60 days into a war at 2500 m/px).
   - Against AoC's God panel: the World AI settings (one checkbox stands for about fifteen),
-    a nation spawned with a size, cities made and removed in the game, CE and unity edited
-    from the God tab (PARITY has the rows; the treasury, colour and donations: PLAN 7.4f15–16).
+    a nation spawned with a size, cities made and removed in the game (PARITY has the rows; the
+    treasury, colour, donations, CE and unity: PLAN 7.4f15–17).
   From the critic's report of 2026-10-07, not blocking and in no task above:
   - After 14 years the Soviet Union is a field of thin stripes of other nations' colours (the
     critic of 2026-10-07; the lake of the same line: PLAN 7.4f14).

@@ -133,6 +133,24 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, t
         <span data-testid="god-bonus">{nation.incomeBonus}%</span>
         {btn('god-bonus-up', '+10', () => onCommand({ kind: 'setIncomeBonus', nation: n, value: nation.incomeBonus + 10 }))}
       </div>
+      <div class="god-row">
+        <span>{t('panel.efficiency')}</span>
+        {btn('god-ce-down', '−10', () => onCommand({ kind: 'setEfficiency', nation: n, value: nation.efficiency - 0.1 }))}
+        <span data-testid="god-ce">{Math.round(nation.efficiency * 100)}%</span>
+        {btn('god-ce-up', '+10', () => onCommand({ kind: 'setEfficiency', nation: n, value: nation.efficiency + 0.1 }))}
+        <label>
+          <input type="checkbox" data-testid="god-ce-lock" checked={nation.ceLocked} onChange={(e) => onCommand({ kind: 'lockEfficiency', nation: n, locked: (e.currentTarget as HTMLInputElement).checked })} />
+          {t('god.ceLock')}
+        </label>
+      </div>
+      {nation.alliance ? (
+        <div class="god-row">
+          <span>{t('panel.unity')}</span>
+          {btn('god-unity-down', '−10', () => onCommand({ kind: 'setUnity', alliance: nation.alliance!.id, value: nation.alliance!.unity - 10 }))}
+          <span data-testid="god-unity">{Math.round(nation.alliance.unity)}</span>
+          {btn('god-unity-up', '+10', () => onCommand({ kind: 'setUnity', alliance: nation.alliance!.id, value: nation.alliance!.unity + 10 }))}
+        </div>
+      ) : null}
       <label class="god-row">
         <input type="checkbox" data-testid="god-ai" checked={!nation.aiOff} onChange={(e) => onCommand({ kind: 'setAi', nation: n, enabled: (e.currentTarget as HTMLInputElement).checked })} />
         {t('god.nationAi')}

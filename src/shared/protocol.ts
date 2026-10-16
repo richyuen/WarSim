@@ -467,6 +467,8 @@ export interface NationStat {
   airLost: number;
   bombed: number;
   efficiency: number;
+  /** Whether its combat efficiency is held where God Mode set it (PLAN 7.4f17). */
+  ceLocked: boolean;
   alliance: { id: number; name: string; leader: number; founder: number; unity: number; loyalty: number } | null;
   overlord: number;
   autonomy: number;
