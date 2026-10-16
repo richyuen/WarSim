@@ -467,7 +467,7 @@ export interface NationStat {
   airLost: number;
   bombed: number;
   efficiency: number;
-  alliance: { id: number; name: string; leader: number; unity: number; loyalty: number } | null;
+  alliance: { id: number; name: string; leader: number; founder: number; unity: number; loyalty: number } | null;
   overlord: number;
   autonomy: number;
   loyalty: number;

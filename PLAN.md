@@ -61,6 +61,9 @@ quick sweep as a smoke test.
       the layout specs green.
     - [x] 7.4f3 The legend at T2 and T3: occupied land is a tint there (PLAN 2.11f), and the
       legend says so where the ground is the most of the picture. AT: an e2e spec.
+    - [x] 7.4f4 The critic's N10: the nation panel tells one Defensive Pact (or Coalition) from
+      another by its founder, as the history does ("Defensive Pact of Sweden"). AT: a unit test
+      of the title; an e2e spec of two pacts in the panel.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -218,7 +221,6 @@ quick sweep as a smoke test.
   - N8 (left of it after PLAN 3.12Rh4 and 7.4f2): at 1024 × 600, playing a nation, the bar's
     "Poland · n selected" is cut to its first letter (the one item that shrinks; its tooltip says
     it in full).
-  - N10: seven alliances are all named "Defensive Pact"; the history shows "#24" for one.
   - N12, N13: choosing the editor's terrain layer leaves the map in the political mode (a
     stroke changed 508 cells and nothing on screen); the flag editor has no undo, line or
     circle.

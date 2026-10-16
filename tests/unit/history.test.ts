@@ -5,7 +5,7 @@ import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { HISTORY_STRIDE } from '../../src/sim/history';
 import { leaveAlliance } from '../../src/sim/systems/alliances';
-import { historyText } from '../../src/ui/historyText';
+import { allianceTitle, historyText } from '../../src/ui/historyText';
 import { historyRows, tickerRows } from '../../src/worker/historyRows';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -320,5 +320,15 @@ describe('history rows name what they are of (PLAN 3.12a)', () => {
     ]);
     // The log has every row.
     expect(historyRows(w, name, () => '').length).toBe(h.rows.length / HISTORY_STRIDE);
+  });
+});
+
+describe('an alliance\'s title (PLAN 7.4f4, the critic\'s N10)', () => {
+  it('a Defensive Pact or a Coalition by its founder; one of its own by its name', () => {
+    expect(allianceTitle('alliance.defensive', 'nation.SWE')).toBe('Defensive Pact of Sweden');
+    expect(allianceTitle('alliance.defensive', '=Free Tver')).toBe('Defensive Pact of Free Tver');
+    expect(allianceTitle('alliance.coalition', 'nation.FRA')).toBe('Coalition of France');
+    expect(allianceTitle('alliance.comintern', 'nation.SOV')).toBe('Comintern');
+    expect(allianceTitle('alliance.defensive', null)).toBe('Defensive Pact');
   });
 });

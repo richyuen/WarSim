@@ -807,7 +807,7 @@ export class SimServer {
         airLost: world.airTotals.get(id)?.lost ?? 0,
         bombed: world.airTotals.get(id)?.bombed ?? 0,
         efficiency: nc.efficiency[id]!,
-        alliance: al ? { id: al.id, name: al.nameKey, leader: al.leader, unity: al.unity, loyalty: al.loyalty[k] ?? 0 } : null,
+        alliance: al ? { id: al.id, name: al.nameKey, leader: al.leader, founder: al.founder, unity: al.unity, loyalty: al.loyalty[k] ?? 0 } : null,
         overlord: nc.overlord[id]!,
         autonomy: nc.autonomy[id]!,
         loyalty: nc.loyalty[id]!,

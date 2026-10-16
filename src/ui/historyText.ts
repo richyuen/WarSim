@@ -6,6 +6,15 @@ import en from './i18n/en.json';
 const COMMON_ALLIANCES: ReadonlySet<string> = new Set(['alliance.defensive', 'alliance.coalition']);
 
 /**
+ * An alliance's title: one that many have a copy of is told from the others by its founder ("the
+ * Defensive Pact of Sweden" in the history, "Defensive Pact of Sweden" in the nation panel: PLAN
+ * 7.4f4, the critic's N10); one of its own by its name. Without the founder's name, the name.
+ */
+export function allianceTitle(nameKey: string, founder: string | null): string {
+  return COMMON_ALLIANCES.has(nameKey) && founder ? t('history.allianceOf', { name: displayName(nameKey), founder: displayName(founder) }) : displayName(nameKey);
+}
+
+/**
  * The rendered sentence of a row (i18n `history.<Kind>` with {a} and {b}). No part is an id
  * (PLAN 3.12a): an alliance is "the Defensive Pact of Sweden" or "the Comintern", a Major
  * Battle "the major battle near Lyon". A row with nobody as its b has the sentence
@@ -22,7 +31,7 @@ export function historyText(r: HistoryRow): string {
     if (role === 'alliance') {
       if (!name) return t('history.anAlliance');
       if (r.as === 'founded' && COMMON_ALLIANCES.has(name)) return t('history.oneAlliance', { name: displayName(name) });
-      return t('history.theAlliance', { name: COMMON_ALLIANCES.has(name) && r.of ? t('history.allianceOf', { name: displayName(name), founder: displayName(r.of) }) : displayName(name) });
+      return t('history.theAlliance', { name: allianceTitle(name, r.of || null) });
     }
     return name ? displayName(name) : t('history.nobody');
   };

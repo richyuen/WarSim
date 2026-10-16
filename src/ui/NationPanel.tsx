@@ -3,6 +3,7 @@ import type { NationStat, TechInfo } from '../shared/protocol';
 import { ActionsTab, type ActionsTabProps } from './ActionsTab';
 import { GodTab, type GodTabProps } from './GodTab';
 import { displayName, t, type MessageKey } from './i18n';
+import { allianceTitle } from './historyText';
 
 export { displayName };
 
@@ -116,7 +117,7 @@ export function NationPanel({
           {row('panel.efficiency', `${Math.round(nation.efficiency * 100)}%`)}
           {nation.alliance ? (
             <div class="panel-block" data-testid="panel-alliance">
-              <div class="panel-sub">{displayName(nation.alliance.name)}</div>
+              <div class="panel-sub" data-testid="alliance-title">{allianceTitle(nation.alliance.name, (byId.get(nation.alliance.founder) ?? byId.get(nation.alliance.leader))?.name ?? null)}</div>
               {row('panel.unity', num(nation.alliance.unity))}
               {nation.alliance.leader !== nation.id ? row('panel.allianceLoyalty', num(nation.alliance.loyalty)) : null}
             </div>

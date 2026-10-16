@@ -16982,3 +16982,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `legendOccupied1938` (new: 2000 m/px hatched, 60 m/px tinted, back); `mapModes1938`,
   `i18n` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f4: an alliance's title by its founder in the nation panel (UI)
+
+- **Start:** gate green on a clean tree (`56ba4b7`); critic not due.
+- **Seen:** the history already names a common alliance by its founder (PLAN 3.12a) and shows no
+  id (`history1938`); the nation panel still said "Defensive Pact" for each of them (N10).
+- **Done:** `allianceTitle` (`src/ui/historyText.ts`), one rule for the history and the panel;
+  the worker sends an alliance's founder with the nation's stats; the panel shows "Defensive
+  Pact of Sweden" (the founder's name, else the leader's). N10 off the list under 7.4.
+- **Tests:** `history.test.ts` 19 of 19 (1 new); e2e `allianceTitle1938` (new),
+  `nationPanel1938`, `history1938`: 5 of 5.
+- **Next:** PLAN 7.4f, the next group.
