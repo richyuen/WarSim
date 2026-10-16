@@ -16514,3 +16514,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   These and every finding PLAN 1.42 had and did not decide are moved under PLAN 7.3, which now
   takes the deferred balance findings. BLOCKERS: B1 resolved; the 6.8 entry points to 7.3.
 - **Next:** PLAN 7.2.
+
+## 2026-10-16 — PLAN 7.2: split (plan)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Split** 7.2 in three parts: 7.2a the soak and its twins, 7.2b the daily look for NaN and
+  `undefined`, 7.2c commands out of range refused.
+- **Next:** PLAN 7.2a.
