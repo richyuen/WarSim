@@ -16673,3 +16673,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   most alive a seed 100–155, against 161–218 in 7.3c's 20 years). 7.3d's AT (8 of 10) is not met:
   7.3d3 added to find the next cause.
 - **Next:** PLAN 7.3d3.
+
+## 2026-10-16 — PLAN 7.3d3: a war wears a holder's far core land only by its losses (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Found** (a probe of seeds 5, 1 and 6 × 30 years, births and deaths by cause by year;
+  `docs/evidence/7.3/births-7.3d3.md`): the rise in living nations in years 19–30 is states
+  founded on the holder's own far core land: seed 5 85 (the Soviet Union 18 in year 19, France
+  29 in years 22–23), seed 6 30 in year 28 (the United Kingdom). The holders held 4–13% of the
+  land, where the strain is under the decay; the AT_WAR of a "worn" holder pushed it over, and
+  worn was any war over 600 days (exhaustion grows 0.1 a day): France, 140 formations and 5,000
+  gold, worn as an ally in Portugal's costless war of 1,100 days.
+- **Done** (ADR-433, `572a34b`): `wornNations` counts a side's losses of men and land (and a
+  nuclear shock), not its days. Exhaustion, which ends wars, is unchanged.
+- **Test:** `revolts.test.ts` (a 700-day war with no loss: far core unrest as at peace, 7.5
+  against 1.5 before; a side three quarters bled: AT_WAR a month more). Pin 3a944534 → 207a252e.
+- **Quick sweep** (seeds 1–10 × 30 years, 15.3 min, `docs/evidence/7.3/quick-7.3d3.md`): limits
+  10 of 10, riser and faller 10 of 10, no stasis 8 of 10 (9 before), the break-up holds on 8 of
+  10 (3 before; × 0.97 to 1.19). 7.3d's AT met: ticked with 7.3d3.
+- **Left to 7.3e:** the AI's suppression ignores the treasury; founded statelets under 8,500 km²
+  live on after a white peace.
+- **Next:** PLAN 7.3e.

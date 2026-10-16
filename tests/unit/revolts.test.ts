@@ -274,7 +274,7 @@ describe('revolts (PLAN 1.19)', () => {
 
   // PLAN 7.3d3, ADR-433: the core land of an overextended holder feels a war only when the war
   // has worn its side down by losses of men or land, not by its days alone. Before, France as an
-  // ally in a war of 1,100 days that had cost it nothing lost its far core land in 30 states.
+  // ally in a war of 1,100 days that had cost it nothing lost its far core land in 29 states.
   it('overextension: a long war that costs nothing does not wear the far core land; losses do', () => {
     const MEX = nationId('MEX');
     /** The most unrest in the Soviet far core provinces after March, with a war set up by `setUp`. */

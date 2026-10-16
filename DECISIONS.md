@@ -172,7 +172,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Context.** After ADR-432 the break-up of ADR-428 held on 3 of 10 seeds. A probe of seeds 1,
   5 and 6 × 30 years (births and deaths by cause, a year a column) found the late rise in
   living nations, years 19–30, made almost wholly of states founded on the holder's own core
-  land (`people` = the holder): seed 5 85 of them (France 30 in years 22–23, the Soviet Union 25
+  land (`people` = the holder): seed 5 85 of them (France 29 in years 22–23, the Soviet Union 18
   in year 19), seed 6 30 in year 28 (the United Kingdom), seed 1 9–12 a year. The holders held
   4–13% of the land, where overextension's strain alone (1.25 × (share/4% − 1)) is under the
   monthly decay of 2 (it outruns it only above 10.4%, ADR-57); what pushed the far core land

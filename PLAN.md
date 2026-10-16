@@ -147,28 +147,14 @@ quick sweep as a smoke test.
   - [x] 7.3a The sweep judges the critic's two asks (`tools/sweep/criteria.ts`, SPEC §10): […]
   - [x] 7.3b The land war stops (seed 7321's year 13 above: a great land with one formation, a […]
   - [x] 7.3c Rebel states take in only the risings against a holder they are at war with, of […]
-  - [ ] 7.3d Statelets come together again: revolts give land to a core owner or a neighbour
-    first, and a weak statelet is annexed whole at a peace it loses. AT: unit tests; a quick
-    sweep in which the break-up of 7.3a holds on 8 of 10 seeds.
-    Split on 2026-10-16, one cause a part. A probe of seeds 1 and 3 × 20 years: 283 and 441
-    nations founded (266 and 431 rebel states), of them 106 and 193 on land whose living core
-    nation was the holder's puppet, overlord or ally, and 104 and 222 on land whose core nation
-    was dead (10 and 26 of them next to a living nation of that people); founded nations lost 323
-    and 445 peaces, and of those they lived through 112 and 179 left them with 8,500 to 50,000
-    km². The quick sweep runs 30 years: at 20 the break-up has no sample (`× 0.00`).
-    - [x] 7.3d1 A revolt gives its land to its living core nation whatever their bond, else to
-      a neighbour of the area's people (the core nation's own `people`, or itself) before a dead
-      claimant or a new state. AT: unit tests.
-    - [x] 7.3d2 A nation founded in play that loses a peace with under STATELET_KM2 of land
-      after the terms is annexed whole. AT: unit tests; the quick sweep of 7.3d (30 years).
-      Done (ADR-432, `docs/evidence/7.3/quick-7.3d2.md`): limits 10 of 10; the most alive a seed
-      100–155 (161–218 in 7.3c's 20 years); the break-up holds on 3 of 10 seeds (× 0.92 to 1.49).
-    - [ ] 7.3d3 Find what still breaks the world up on the 7 seeds of 7.3d2's sweep that fail
-      (alive in years 20–30 over 1.1 × the most of years 0–10: × 1.14 to 1.49) — births and
-      deaths by cause, as the probe of 7.3d — and take its first cause. AT: unit tests; the quick
-      sweep of 7.3d (30 years) with the break-up held on 8 of 10 seeds.
+  - [x] 7.3d Statelets come together again: revolts give land to a core owner or a neighbour […]
   - [ ] 7.3e The other findings above decided, each kept with its reason in an ADR or made a
     part of its own before 7.3f.
+    Left by 7.3d3 (ADR-433, `docs/evidence/7.3/births-7.3d3.md`): the economic AI pays for
+    suppression only with a surplus of 15% of its income, whatever its treasury (France, 5,000
+    gold, suppression 0 while its far land rose); and founded statelets under 8,500 km² that
+    lose a white peace live on (seed 6, year 28: 14). To decide whether either is a cause of
+    its own.
     Left by 7.3b (ADR-429, `docs/evidence/7.3/contact-7321.md`): no rule gives a formation men
     back. Seed 7321 from 1938: the world's land men 9.8 M → 5.0 M in year 1 (combat 3.0 M, air
     1.2 M, out of supply 1.1 M); the Soviet Union's formations bleed to shells and die while its

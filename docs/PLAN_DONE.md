@@ -9929,3 +9929,44 @@ Of 7.3 (open in PLAN.md):
 
   - [x] 7.3c Rebel states take in only the risings against a holder they are at war with, of
     their own people's cores (ADR-186's question above). AT: a unit test; a quick sweep reported.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.3 (open in PLAN.md):
+
+  - [x] 7.3d Statelets come together again: revolts give land to a core owner or a neighbour
+    first, and a weak statelet is annexed whole at a peace it loses. AT: unit tests; a quick
+    sweep in which the break-up of 7.3a holds on 8 of 10 seeds.
+    Split on 2026-10-16, one cause a part. A probe of seeds 1 and 3 × 20 years: 283 and 441
+    nations founded (266 and 431 rebel states), of them 106 and 193 on land whose living core
+    nation was the holder's puppet, overlord or ally, and 104 and 222 on land whose core nation
+    was dead (10 and 26 of them next to a living nation of that people); founded nations lost 323
+    and 445 peaces, and of those they lived through 112 and 179 left them with 8,500 to 50,000
+    km². The quick sweep runs 30 years: at 20 the break-up has no sample (`× 0.00`).
+    - [x] 7.3d1 A revolt gives its land to its living core nation whatever their bond, else to
+      a neighbour of the area's people (the core nation's own `people`, or itself) before a dead
+      claimant or a new state. AT: unit tests.
+    - [x] 7.3d2 A nation founded in play that loses a peace with under STATELET_KM2 of land
+      after the terms is annexed whole. AT: unit tests; the quick sweep of 7.3d (30 years).
+      Done (ADR-432, `docs/evidence/7.3/quick-7.3d2.md`): limits 10 of 10; the most alive a seed
+      100–155 (161–218 in 7.3c's 20 years); the break-up holds on 3 of 10 seeds (× 0.92 to 1.49).
+    - [x] 7.3d3 Find what still breaks the world up on the 7 seeds of 7.3d2's sweep that fail
+      (alive in years 20–30 over 1.1 × the most of years 0–10: × 1.14 to 1.49) — births and
+      deaths by cause, as the probe of 7.3d — and take its first cause. AT: unit tests; the quick
+      sweep of 7.3d (30 years) with the break-up held on 8 of 10 seeds.
+      Done (ADR-433, `docs/evidence/7.3/births-7.3d3.md`, `quick-7.3d3.md`): the late births were
+      on the holders' own far core land, worn by the days of a war, not its cost; worn is now
+      losses of men and land alone. The break-up holds on 8 of 10 seeds (× 0.97 to 1.19), limits
+      10 of 10, riser and faller 10 of 10, no stasis 8 of 10.

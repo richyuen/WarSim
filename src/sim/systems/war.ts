@@ -330,7 +330,7 @@ function menOf(world: World): Map<number, number> {
  * exhaustion without the 0.1 a day, 80·lost + 60·share(other→side) and a nuclear shock, so a
  * phoney war wears no side down however long it lasts. Before, France with 140 formations and
  * 5,000 gold, an ally in Portugal's war of 1,100 days that cost it nothing, counted as worn and
- * its far core land rose in 30 states in a year (seed 5, years 22–23).
+ * its far core land rose in 29 states in two years (seed 5, years 22–23).
  */
 export function wornNations(world: World, from: number): Set<number> {
   const worn = new Set<number>();
