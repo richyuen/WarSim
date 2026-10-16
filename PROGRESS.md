@@ -17194,3 +17194,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `tags1938` 2 of 2 (new: the German block under Germany's panel at 150 m/px, no tag
   under any box; red on the old list: "the tag of 1468 at 109, 252 under a box at 8, 54").
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f22: city names at their bound (render); settled lines off the list
+
+- **Start:** gate green on a clean tree (`7817720`); critic not due.
+- **Done:** `cityLabels.wanted` takes its bound in (`<=`), as the tiers do: at exactly 2000 m/px
+  the names of size 4 come with the T1 markers. The 2.14 pictures' line about tags under the top
+  bar and the panels came off the list (PLAN 7.4f21).
+- **Tests:** `cities.test.ts` (the bound and the held bound in, a hair over them out: the two
+  expectations of the old bound changed with the rule); `cityNames1938`, `labelFades1938` 4 of 4.
+- **Next:** PLAN 7.4f, the next group.

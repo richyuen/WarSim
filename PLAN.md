@@ -111,6 +111,8 @@ quick sweep as a smoke test.
     - [x] 7.4f21 Tags under the page's boxes: a tag gives way to the top bar, the legend, a
       nation's or formation's panel, the ranking, a top-centre panel and the ticker's rows, as to
       the banners and the bar. AT: `tags1938` (a block under the nation panel; red before).
+    - [x] 7.4f22 A city's dot and name are wanted at their bound, as the tiers are (at exactly
+      2000 m/px the names of size 4 were off with the T1 markers on). AT: `cities.test.ts`.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -178,8 +180,6 @@ quick sweep as a smoke test.
       arrow should show at T1 has not been asked.
     - T2 → T1: names give way from the first frame to markers that show at 2%. T1 → T2: a
       name can take a place under a number that still shows.
-    - `cityLabels` `wanted` is exclusive where the tiers are inclusive: at exactly 2000 m/px
-      the names of size 4 are off while the T1 markers are on.
   - **The ground's look.**
     - No roads near cities (SPEC's tier table had them; not built in PLAN 2.8); buildings
       stand along two directions from a hash, with no streets, and know of their city's
@@ -235,9 +235,8 @@ quick sweep as a smoke test.
   - **Flags by scenario.** Done in PLAN 2.16b (ADR-109) for the worlds without a nation
     table. Left: a second table (another year) brings its own flags file; the worker and
     `ScenarioInfo.nationTags` know only that of 1938.
-  - **From the pictures of PLAN 2.14, shot again (2.14f6, 2026-10-05):** a tag at the view's
-    top edge stands under the top bar (`contact-5m.png`; the nation, formation and ranking
-    panels are no obstacles to a tag either); figures at 20 m/px are faint on a plain
+  - **From the pictures of PLAN 2.14, shot again (2.14f6, 2026-10-05)** (the tags under the
+    top bar and the panels: PLAN 7.4f21): figures at 20 m/px are faint on a plain
     (`to-battle-front.png`); a war banner without a battle differs from one with a battle by
     its swords and frame only (`to-battle-banners.png`).
   - **Two nations of one name** (PLAN 2.15b, ADR-100, 2026-10-05). A founded nation is

@@ -90,9 +90,13 @@ export function nameMaxMPerPx(c: CityPoint): number {
   return c.capital ? 5000 : [0, 450, 800, 1400, 2000, 3500][c.size]!;
 }
 
-/** Whether a dot or a name with `limit` is wanted at `mPerPx`; `held`: it is on now. */
+/**
+ * Whether a dot or a name with `limit` is wanted at `mPerPx`; `held`: it is on now. The bound is
+ * in, as the tiers' are (PLAN 7.4f22): at exactly 2000 m/px the T1 markers were on and the names
+ * of size 4, whose limit it is, off.
+ */
 export function wanted(mPerPx: number, limit: number, held: boolean): boolean {
-  return mPerPx < limit * (held ? ZOOM_HYSTERESIS : 1);
+  return mPerPx <= limit * (held ? ZOOM_HYSTERESIS : 1);
 }
 
 export function fontPxFor(c: CityPoint): number {

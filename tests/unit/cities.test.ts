@@ -90,9 +90,12 @@ describe('city label layout', () => {
 
     it('wanted: in below the limit, held through the band above it', () => {
       expect(wanted(1999, 2000, false)).toBe(true);
-      expect(wanted(2000, 2000, false)).toBe(false);
+      // The bound is in, as the tiers' are (PLAN 7.4f22).
+      expect(wanted(2000, 2000, false)).toBe(true);
+      expect(wanted(2000.001, 2000, false)).toBe(false);
       expect(wanted(2000 * ZOOM_HYSTERESIS - 1, 2000, true)).toBe(true);
-      expect(wanted(2000 * ZOOM_HYSTERESIS, 2000, true)).toBe(false);
+      expect(wanted(2000 * ZOOM_HYSTERESIS, 2000, true)).toBe(true);
+      expect(wanted(2000 * ZOOM_HYSTERESIS + 0.001, 2000, true)).toBe(false);
       expect(wanted(1e9, Infinity, false)).toBe(true); // capitals' dots: at every zoom
     });
 
