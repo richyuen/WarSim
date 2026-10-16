@@ -9787,3 +9787,29 @@ Of 1.42 (open in PLAN.md):
     on 10 of 10; seeds 401–410 × 50 years ALL GREEN, limits 10 of 10, riser 9 of 10, faller 10
     of 10 (`docs/sweeps/2026-10-16-sweep-b1-401.md`). Seeds 401–410 are seen; the next from 501.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.2 (open in PLAN.md):
+
+  - [x] 7.2a `npm run soak` (`tools/soak/`, SPEC §10): two twins of one game at max speed in
+    Node, one never touched, the other saved (gzip, as the game's autosave), checked
+    save → load → save byte-identical, and loaded into a fresh Sim of another seed every 5
+    minutes of the wall; the hashes compared every 30 days (a hash of the 1938 state is 80 ms,
+    more than a day's ticks), after every load and at the end; any exception or a hash apart
+    fails.
+    Minutes, interval, scenario and seed are arguments. AT: a unit test of a short soak of the
+    toy world (green; a twin made to part is caught at its day); the 30-minute run of 1938
+    green, its years and saves logged in `docs/evidence/7.2/`.

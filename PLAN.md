@@ -40,15 +40,7 @@ quick sweep as a smoke test.
     a province 1.5, a line of `editPaint` to 1e9 that takes 13 s). Only a worker message or
     the page's test API can send them. Refuse them where a scenario file or a script could.
   Split on 2026-10-16, one cause a part:
-  - [ ] 7.2a `npm run soak` (`tools/soak/`, SPEC §10): two twins of one game at max speed in
-    Node, one never touched, the other saved (gzip, as the game's autosave), checked
-    save → load → save byte-identical, and loaded into a fresh Sim of another seed every 5
-    minutes of the wall; the hashes compared every 30 days (a hash of the 1938 state is 80 ms,
-    more than a day's ticks), after every load and at the end; any exception or a hash apart
-    fails.
-    Minutes, interval, scenario and seed are arguments. AT: a unit test of a short soak of the
-    toy world (green; a twin made to part is caught at its day); the 30-minute run of 1938
-    green, its years and saves logged in `docs/evidence/7.2/`.
+  - [x] 7.2a `npm run soak` (`tools/soak/`, SPEC §10): two twins of one game at max speed in […]
   - [ ] 7.2b The soak looks each day for a NaN or an infinity in every float section of the
     state (from the save's own list of sections, so a section added later is in it) and for a
     NaN or an `undefined` in the history's rows, before the hashes. AT: a unit test (a NaN put

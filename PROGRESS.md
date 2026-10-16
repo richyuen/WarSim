@@ -16530,3 +16530,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Done** (ADR-423): `unitRedTwice` (`tools/gate/review.ts`), the review's unit step, now the gate's
   too when it runs the unit tests in full; red is what fails twice. `gateReview.test.ts`.
 - **Next:** PLAN 7.2a.
+
+## 2026-10-16 — PLAN 7.2a: `npm run soak` (tools)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-424): `tools/soak/` (`npm run soak`): twin A untouched, twin B saved (gzip), checked
+  save → load → save and loaded into a fresh Sim of seed + 1 every 5 minutes; hashes after each
+  load, every 30 days and at the end (a 1938 hash is 80 ms, more than a day's ticks).
+- **Run:** 1938, seed 99, 30 minutes: green, 42.8 years, 5 loads (39.5–41.5 MB, 1.1–1.6 MB
+  gzipped), final hash a871a916 (`docs/evidence/7.2/soak-1938-seed99-30min.json`).
+- **Test:** `soak.test.ts` (toy world: a clean run equals a plain Sim; a twin parted on a day, by a
+  load or before the end caught where it should be; an exception reported with its tick).
+- **Gate:** the full unit stage of this change was red five times by timing tests, a different set
+  each time, green alone: ADR-423 (its own commit) runs a red test again alone.
+- **Next:** PLAN 7.2b.

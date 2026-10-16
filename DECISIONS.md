@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-424 · 2026-10-16 · accepted — The soak: two twins in Node, a load every 5 minutes, hashes every 30 days (PLAN 7.2a)
+
+- **Context.** SPEC §10's soak: 30 minutes of the wall at max speed, a save and load every 5
+  minutes, the hashes against an uninterrupted twin; fails on any exception or desync.
+- **Decision.** `npm run soak` (`tools/soak/`): two Sims of one scenario and seed in one Node
+  process, uncapped (the headless speed, not the page's top speed, which is the tick's own,
+  ADR-413). Twin A is never touched. Twin B is saved as the autosave saves (`packSave`, gzip),
+  unpacked and loaded into a fresh Sim built with seed + 1, as a page that resumes an autosave
+  builds its game and then loads; save → load → save must give the same bytes (I5). The hashes
+  are compared after each load, every `--compare` days (30) and at the end. Not every day: a hash
+  of the 1938 state is 80 ms, more than a day's ticks (50 to 150 ms); a desync is then found
+  within a month, and a run with `--compare 1` from a save finds its day. The map's assets are
+  read once a size (7 s of a fresh 1938 Sim's 7.5).
+- **Result.** Seed 99, 30 minutes: green, 42.8 years (375,312 ticks), 5 saves and loads (39.5 to
+  41.5 MB, 1.1 to 1.6 MB gzipped, 1.4 to 1.9 s each), final hash a871a916
+  (`docs/evidence/7.2/soak-1938-seed99-30min.json`).
+- **Consequences.** PLAN 7.2b adds the look for NaN through `onDay`; PLAN 7.2's AT is run again
+  then.
+
 ### ADR-423 · 2026-10-16 · accepted — The gate's full unit stage runs a red test again alone
 
 - **Context.** A change of something every unit test stands on (`UNIT_SHARED`: `package.json`
