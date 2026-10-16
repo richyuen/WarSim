@@ -17042,3 +17042,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** the editor's canvas is drawn in an effect after the render: a spec reads its
   pixels by `expect.poll`.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f9: a spawned nation's colour by hue, not greys (sim colours)
+
+- **Start:** gate green on a clean tree (`f66c59a`); critic not due.
+- **Seen:** `rebelColor` drew red, green and blue each from 70–197: a Kill of the Soviet Union on
+  seed 99 gave successors #a89281, #8a7d7e, #9b8495 (greys) and #4691a5, #815aa3.
+- **Done:** a hue by the hash, saturation 0.5–0.8, lightness 0.40–0.62 (the random world's
+  formula, without its golden angle): the same five are #264abf, #7030c4, #58b22c, #1e18c5,
+  #caba28 (`docs/evidence/7.4/f9-collapse-soviet.png`). Pin unmoved (86845f61: a nation's colour
+  is no part of the first year's hash on seed 99).
+- **Tests:** `revolts.test.ts` (2 new: 300 colours, every one's channels 60 or more apart and its
+  brightest 120 or more, all six orders of hue met; the same for a seed and an id).
+- **Gotcha:** `git stash push -- <path>` before a "before" build did not take here; the before
+  picture was the after. The colours above are read from the sim, not a picture.
+- **Next:** PLAN 7.4f, the next group.

@@ -72,6 +72,8 @@ quick sweep as a smoke test.
       cursor, and its occupier where another holds it. AT: an e2e spec.
     - [x] 7.4f8 The critic's N13: the flag editor's line and circle (a disc), and an undo of 20
       steps. AT: unit tests of the line and the disc; `flags1938` draws and undoes each.
+    - [x] 7.4f9 A Kill's successors in greys (the critic, 2026-10-07): a spawned nation's colour
+      by hue, saturation 0.5–0.8, lightness 0.40–0.62. AT: a unit test of 300 colours, none grey.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -244,7 +246,7 @@ quick sweep as a smoke test.
   - Occupied land at the close tiers is washed in the occupier's colour: French-held
     Germany is a blue field that reads as a lake. After 14 years the Soviet Union is a field
     of thin stripes of other nations' colours.
-  - A Kill leaves successors in greys that are nearly one colour. The random world names
+  - The random world names
     nations after provinces ("Seine-Maritime") and paints half of them purple or magenta;
     after three years one of them owns western and central Europe (that part: PLAN 1.42).
   - Against AoC's God panel: Annex, Recolor, Fight to the Death, Donate (Nuke: Phase 6).

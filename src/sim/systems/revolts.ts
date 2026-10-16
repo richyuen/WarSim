@@ -115,13 +115,21 @@ export function initProvinceCores(world: World, claims: readonly { nation: numbe
   }
 }
 
-/** Deterministic, reasonably saturated colour for a spawned nation. */
-function rebelColor(world: World, id: number): number {
-  const h = hash32(world.seed, id, 0xc010);
-  const r = 70 + (h & 0x7f);
-  const g = 70 + ((h >>> 8) & 0x7f);
-  const b = 70 + ((h >>> 16) & 0x7f);
-  return (r << 16) | (g << 8) | b;
+/**
+ * A spawned nation's colour, deterministic: a hue by the hash, saturation 0.5–0.8 and lightness
+ * 0.40–0.62 (PLAN 7.4f9). Red, green and blue each drawn from 70–197 apart made greys more often
+ * than not: a Kill's successors stood side by side in nearly one colour (the critic, 2026-10-07).
+ */
+export function rebelColor(world: { seed: number }, id: number): number {
+  const hue = hashToUnit(hash32(world.seed, id, 0xc010));
+  const sat = 0.5 + 0.3 * hashToUnit(hash32(world.seed, id, 0xc011));
+  const light = 0.4 + 0.22 * hashToUnit(hash32(world.seed, id, 0xc012));
+  const a = sat * Math.min(light, 1 - light);
+  const f = (n: number): number => {
+    const k = (n + hue * 12) % 12;
+    return Math.round(255 * (light - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))));
+  };
+  return (f(0) << 16) | (f(8) << 8) | f(4);
 }
 
 function atWar(world: World, n: number): boolean {

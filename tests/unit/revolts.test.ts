@@ -4,7 +4,7 @@ import { EventKind } from '../../src/shared/events';
 import { HISTORY_STRIDE } from '../../src/sim/history';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { AT_WAR, DECAY, NON_CORE, OVEREXT_CELLS, OVEREXT_MAX, OVEREXT_SHARE, OVEREXT_UNREST, SUPPRESSION_COST } from '../../src/sim/systems/revolts';
+import { AT_WAR, DECAY, NON_CORE, OVEREXT_CELLS, OVEREXT_MAX, OVEREXT_SHARE, OVEREXT_UNREST, rebelColor, SUPPRESSION_COST } from '../../src/sim/systems/revolts';
 import { forceMen } from '../../src/sim/systems/seaControl';
 import { declareWar } from '../../src/sim/systems/war';
 import type { War } from '../../src/sim/wars';
@@ -315,5 +315,24 @@ describe('revolts (PLAN 1.19)', () => {
       war.startMen[1 - s] = 1;
     });
     expect(bled).toBeGreaterThanOrEqual(peace + AT_WAR);
+  });
+});
+
+describe('a spawned nation\'s colour (PLAN 7.4f9)', () => {
+  it('no greys: of 300 nations, every colour has its channels at least 60 apart, and the hues spread', () => {
+    const hues = new Set<number>();
+    for (let id = 1; id <= 300; id++) {
+      const c = rebelColor({ seed: 99 }, id);
+      const ch = [(c >> 16) & 255, (c >> 8) & 255, c & 255];
+      expect(Math.max(...ch) - Math.min(...ch), `nation ${id}: #${c.toString(16)}`).toBeGreaterThanOrEqual(60);
+      expect(Math.max(...ch), `nation ${id} not too dark`).toBeGreaterThanOrEqual(120);
+      hues.add(ch.indexOf(Math.max(...ch)) * 10 + ch.indexOf(Math.min(...ch)));
+    }
+    // Every ordering of the strongest and the weakest channel (six of them) is met.
+    expect(hues.size).toBe(6);
+  });
+  it('is the same for the same seed and id', () => {
+    expect(rebelColor({ seed: 7 }, 12)).toBe(rebelColor({ seed: 7 }, 12));
+    expect(rebelColor({ seed: 7 }, 12)).not.toBe(rebelColor({ seed: 8 }, 12));
   });
 });
