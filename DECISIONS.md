@@ -167,6 +167,40 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-429 · 2026-10-16 · accepted — A nation under its peacetime army does not save for armour; the pin moves (PLAN 7.3b)
+
+- **Context.** On seed 7321 the land war stops (ADR-376's count): from year 13 no land formation
+  in contact, with 60 nations at war. A month-by-month trace of the run from 1938
+  (`docs/evidence/7.3/contact-7321.md`):
+  - The Soviet Union's 162 formations of 1.49 M men are 144 of 0.74 M by year 3 and none from
+    year 9.6. The men go to combat, air strikes and attrition out of supply (in year 2: 181k,
+    130k and 107k); over the world 3.0 M, 1.2 M and 1.1 M of the 9.8 M of the start in year 1.
+    No rule gives a formation men back: the Soviet pool of manpower grows from 1.8 M to 9.1 M,
+    unused.
+  - It orders nothing for 2.75 years (its army's upkeep is over ARMY_SHARE_WAR of its income),
+    then one infantry division in training at a time for ten years, with two slots (income
+    700 to 1,700) and 4,000 to 5,000 gold. PLAN 3.5d's saving: a nation that wants armour (its
+    tanks are gone, so it does) and has an order in training orders nothing more until it has
+    the dearest armoured division it knows and the reserve (5,600 + 3 × income); with the queue
+    empty it buys the infantry division. So one order at a time, whatever the slots (ADR-47 §6).
+  - Its income falls from 1,700 to 600 by year 12 with its land: a third of its 1938 economy is
+    held by others or by the states of revolts (PLAN 7.3c, 7.3d), not a rule of the economy.
+- **Decision.** The saving holds only while the nation's army (the orders in training with it)
+  costs at least its peacetime share of its income (`peaceShare`, ADR-47 §6's 35 % × (0.3 + 0.7 ×
+  aggression/100)). Under it the nation orders what it can pay for in every slot: armour when
+  it has its price and the reserve, else the infantry or motorised division. No constant is new.
+- **Measured** (seed 7321, 20 years, land formations in contact, `.cache/7321/contact.ts`):
+  at the start of year 13: 5 (before: 0), a day's mean in year 13 3.1 (0.4); at the start of
+  year 20: 0 (0), a day's mean in year 20 2.0 (0.2). Land men at the start of year 13 5.86 M
+  (4.39 M). The Soviet Union still has no army from year 10: the war bleeds its formations
+  faster than its income raises them.
+- **Left** to PLAN 7.3e: whether a formation gets men back from its nation's pool (SPEC has no
+  such rule; what AoC does is to be looked up in its text and pictures there).
+- **The pin moves** 9c51edae → 45a6eb2f.
+- **Tests.** `economicAi.test.ts`: a nation at war with no army, one order in training and the
+  gold for two more infantry divisions orders both (red before: none). PLAN 3.5d's test of the
+  saving now gives Germany infantry to its peacetime share first: its rule, not its case.
+
 ### ADR-428 · 2026-10-16 · accepted — The sweep judges stasis and break-up (PLAN 7.3a)
 
 - **Context.** The critic asked in runs 2 to 6 that "a run whose top five are the same for 20

@@ -9889,3 +9889,24 @@ Of 7.3 (open in PLAN.md):
     ≥ 50 years. `npm run sweep -- --from <report.json>` judges a written report again without
     running it. AT: unit tests of both; the report of seeds 401–410 judged again fails on both
     (that report is not to be made green here).
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.3 (open in PLAN.md):
+
+  - [x] 7.3b The land war stops (seed 7321's year 13 above: a great land with one formation, a
+    falling income, gold and nothing in production while at war). Find the cause from a
+    checkpoint and fix it as a defect, not by a constant. AT: a unit test of the cause; seed
+    7321's land formations in contact at the start of years 13 and 20 measured again.

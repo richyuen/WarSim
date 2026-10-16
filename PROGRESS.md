@@ -16601,3 +16601,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `sweepCriteria.test.ts` (both criteria at their edges, a dip that recovers, the
   quorum). Its lively fixture now trades the fifth and sixth places every ten years.
 - **Next:** PLAN 7.3b.
+
+## 2026-10-16 — PLAN 7.3b: the land war stops; a gutted army no longer saves for armour (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Found** (seed 7321 from 1938, a trace by month and by system; `docs/evidence/7.3/contact-7321.md`):
+  the Soviet Union's 1.49 M men are 0.74 M by year 3 and none from year 9.6 (combat, air
+  strikes, attrition out of supply; the world's land men 9.8 M → 5.0 M in year 1). It orders
+  nothing for 2.75 years, then one division in training at a time for ten years with two slots
+  and 4,000–5,000 gold: PLAN 3.5d's saving for armour holds a nation whose tanks are gone to one
+  order at a time. No rule gives a formation men back; its manpower pool grows to 9.1 M unused.
+  Its income falls with its land (a third of its 1938 economy held by others): 7.3c/7.3d.
+- **Done** (ADR-429): the saving holds only while the army costs its peacetime share of the
+  income (`peaceShare`); under it every slot orders what the gold pays for.
+- **AT:** seed 7321, land formations in contact: at the start of year 13 5 (HEAD 0), year 13's
+  mean a day 3.1 (0.4); at the start of year 20 0 (0), year 20's mean 2.0 (0.2). The Soviet
+  Union still has no army from year 10. The refill of formations from the pool is left to 7.3e.
+- **Test:** `economicAi.test.ts` (no army, gold for two: two ordered; red before). PLAN 3.5d's
+  saving test gives Germany its peacetime army first. The pin moves 9c51edae → 45a6eb2f.
+- **Gotcha:** a probe that keeps `world.nations.cols` across ticks reads stale arrays once a
+  nation is founded (the table grows); read the columns each time.
+- **Next:** PLAN 7.3c.

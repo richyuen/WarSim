@@ -33,8 +33,8 @@
  *    made) orders an armoured division, in peace as at war: the best of `mix.armour` whose
  *    techs it knows (PLAN 3.1c: the division of 1938 until the medium tank of 1941 is known,
  *    and so on). Short of its price with the reserve it saves, and orders nothing more that
- *    month, while it has an order in training; with none in training it orders the best it
- *    has the gold for. Its other orders are motorised
+ *    month, while it has an order in training and an army of its peacetime share (PLAN 7.3b,
+ *    `peaceShare`); else it orders the best it has the gold for. Its other orders are motorised
  *    divisions (AT and heavy guns) at war against armour-heavy enemies (≥ ARMOUR_HEAVY of their
  *    elements are tanks), infantry divisions otherwise. (PLAN 3.5d: before, armour was every
  *    third order of a rich nation at war and none against an armour-heavy enemy, so the tanks'
@@ -120,6 +120,15 @@ export interface BuildMix {
   fleets?: { battle: number; cruiser: number; destroyer: number; transport: number };
   /** The wings the AI builds (PLAN 5.8s2); none, it builds no wing. */
   wings?: { fighter: number; tactical: number };
+}
+
+/**
+ * The share of its income a nation's army's upkeep is kept under in peace (ADR-47 §6): placid
+ * nations keep smaller standing armies. Below it a nation does not save for its armour (PLAN
+ * 7.3b): it raises what it can pay for first.
+ */
+export function peaceShare(aggression: number): number {
+  return ARMY_SHARE * (PEACE_ARMY_BASE + ((1 - PEACE_ARMY_BASE) * aggression) / 100);
 }
 
 /**
@@ -269,10 +278,12 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       balance -= training.get(n) ?? 0;
       // The army's orders first; what they leave may pay for a fleet.
       const rules = world.rules;
+      const peace = peaceShare(nc.aggression[n]!) * income;
       const armyOrders = (): void => {
         for (let k = pending.get(n) ?? 0; k < slots; k++) {
-          if (upkeep >= (atWar ? ARMY_SHARE_WAR : ARMY_SHARE * (PEACE_ARMY_BASE + ((1 - PEACE_ARMY_BASE) * nc.aggression[n]!) / 100)) * income) return;
-          let t = pickTemplate(world, n, income, atWar, mix, upkeep > 0 ? inTanks / upkeep : 0, k > 0);
+          if (upkeep >= (atWar ? ARMY_SHARE_WAR * income : peace)) return;
+          // It saves for its armour only with an army of its peacetime share (PLAN 7.3b).
+          let t = pickTemplate(world, n, income, atWar, mix, upkeep > 0 ? inTanks / upkeep : 0, k > 0 && upkeep >= peace);
           // It saves for its armour: no order more this month.
           if (t < 0) return;
           let rule = rules.templates[t]!;
@@ -361,24 +372,28 @@ function restlessNations(world: World): Set<number> {
 
 /**
  * The next order of `n`, whose army (the orders in training with it) has `armour` of its upkeep
- * in tanks; `busy`: it has an order in training. -1: none, it saves for its armour.
+ * in tanks; `saves`: it has an order in training and an army of its peacetime share
+ * (`peaceShare`). -1: none, it saves for its armour.
  *
  * A nation that wants armour orders the best armoured division of `mix.armour` (the best
- * first) that it knows the techs of. Short of that one's price with the reserve, a busy nation
- * orders nothing (PLAN 3.5d: an army's upkeep costs the same gold in armour as on foot, and a
- * treasury that buys the infantry division whenever it has its price never has the price of
- * an armoured one); one with nothing in training orders the best it has the gold for, and with
+ * first) that it knows the techs of. Short of that one's price with the reserve, a nation that
+ * saves orders nothing (PLAN 3.5d: an army's upkeep costs the same gold in armour as on foot, and
+ * a treasury that buys the infantry division whenever it has its price never has the price of
+ * an armoured one). One whose army is under its peacetime share does not save (PLAN 7.3b: the
+ * Soviet Union of seed 7321, its army gone at war, raised one division at a time for ten years
+ * with two slots and gold for both); it, and one with nothing in training, orders the best it
+ * has the gold for, and with
  * the gold for none the best it knows, which the caller replaces by infantry (PLAN 1.42c: the
  * queue does not stand empty). Knowing none, its order is what it would be with armour enough.
  */
-function pickTemplate(world: World, n: number, income: number, atWar: boolean, mix: BuildMix, armour: number, busy: boolean): number {
+function pickTemplate(world: World, n: number, income: number, atWar: boolean, mix: BuildMix, armour: number, saves: boolean): number {
   if (income < POOR_INCOME) return mix.cadre;
   if (armour < armourWanted(income)) {
     const templates = world.rules!.templates;
     const known = mix.armour.filter((t) => templates[t] !== undefined && knowsTechs(world, n, templates[t]!.techs));
     const gold = world.nations.cols.gold[n]!;
     const pays = (t: number): boolean => gold >= templates[t]!.gold + RESERVE_MONTHS * income;
-    if (known.length > 0) return busy ? (pays(known[0]!) ? known[0]! : -1) : (known.find(pays) ?? known[0]!);
+    if (known.length > 0) return saves ? (pays(known[0]!) ? known[0]! : -1) : (known.find(pays) ?? known[0]!);
   }
   if (atWar && armourShareOfEnemies(world, n) >= ARMOUR_HEAVY) return mix.motorised;
   return mix.infantry;

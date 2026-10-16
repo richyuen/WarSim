@@ -145,10 +145,7 @@ quick sweep as a smoke test.
   living nations up over every 20-year span of every seed (95 → 141–156 by year 20), so its
   "ALL GREEN" judged neither ask.
   - [x] 7.3a The sweep judges the critic's two asks (`tools/sweep/criteria.ts`, SPEC §10): […]
-  - [ ] 7.3b The land war stops (seed 7321's year 13 above: a great land with one formation, a
-    falling income, gold and nothing in production while at war). Find the cause from a
-    checkpoint and fix it as a defect, not by a constant. AT: a unit test of the cause; seed
-    7321's land formations in contact at the start of years 13 and 20 measured again.
+  - [x] 7.3b The land war stops (seed 7321's year 13 above: a great land with one formation, a […]
   - [ ] 7.3c Rebel states take in only the risings against a holder they are at war with, of
     their own people's cores (ADR-186's question above). AT: a unit test; a quick sweep reported.
   - [ ] 7.3d Statelets come together again: revolts give land to a core owner or a neighbour
@@ -156,6 +153,13 @@ quick sweep as a smoke test.
     sweep in which the break-up of 7.3a holds on 8 of 10 seeds.
   - [ ] 7.3e The other findings above decided, each kept with its reason in an ADR or made a
     part of its own before 7.3f.
+    Left by 7.3b (ADR-429, `docs/evidence/7.3/contact-7321.md`): no rule gives a formation men
+    back. Seed 7321 from 1938: the world's land men 9.8 M → 5.0 M in year 1 (combat 3.0 M, air
+    1.2 M, out of supply 1.1 M); the Soviet Union's formations bleed to shells and die while its
+    pool of manpower grows from 1.8 M to 9.1 M unused, and it has no army from year 10 with
+    ADR-429 too. Land formations in contact a day in years 13 to 20 with it: 0.2 to 3.7. To
+    decide: whether a formation is refilled from its nation's pool (SPEC has no such rule; AoC's
+    behaviour to be looked up), and what it costs.
   - [ ] 7.3f The deciding sweep on unseen seeds (from 501) × 50 years. AT: the report ALL
     GREEN by the criteria of 7.3a.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).
