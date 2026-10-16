@@ -6,7 +6,7 @@
 import { CityLabelLayer, NAME_CLEAR_PX, type NameObstacle } from '../render/labels/cityLabels';
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
-import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, strengthText, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type PlacedMarker } from '../render/units/markers';
+import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, orderShown, strengthText, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type OrderViewer, type PlacedMarker } from '../render/units/markers';
 import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle } from '../render/units/tags';
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, counterNation, type CounterSource } from '../render/units/counters';
@@ -1418,10 +1418,14 @@ export class MapView {
     const markers: MarkerInput[] = [];
     // For the stacks (PLAN 2.7s1): each marker's centre in px, as cells × scale (panning does not reshuffle them).
     const items: StackItem[] = [];
+    // Whose order lines are drawn (PLAN 7.4b): what is picked, selected or the player's, and the open nation's.
+    const viewer: OrderViewer = { picked: this.picked, selected: this.selectedFormations, player: this.selectionNation, nation: this.selected };
+    this.orderLineIds = [];
     for (let i = 0; i < this.formIds.length; i++) {
       items.push({ id: this.formIds[i]!, nation: this.formNation[i]!, x: this.formX[i]! * cam.scale, y: this.formY[i]! * cam.scale, strength: this.formStrength[i]! });
       const t = this.templates[this.formTemplate[i]!];
-      const moving = (this.formFlags[i]! & FormationFlag.moving) !== 0;
+      const moving = (this.formFlags[i]! & FormationFlag.moving) !== 0 && orderShown(this.formIds[i]!, this.formNation[i]!, viewer);
+      if (moving) this.orderLineIds.push(this.formIds[i]!);
       const target = this.formTarget[i]!;
       markers.push({
         id: this.formIds[i]!,
@@ -1440,6 +1444,9 @@ export class MapView {
     const stacks = this.markerStacks.frame(items, MARKER_W * this.unitScale, MARKER_H * this.unitScale, now, this.morph.scale < 1);
     this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph, stacks, this.picked);
   }
+
+  /** The formations whose order lines the markers of the last frame drew (PLAN 7.4b; tests). */
+  orderLineIds: number[] = [];
 
   /** The tags of the formations in the view at T2 and T3, as they were drawn last (PLAN 2.14a; tests, and the names keep clear of them). */
   tagRects: PlacedTag[] = [];
@@ -1611,6 +1618,12 @@ export class MapView {
   formationAfloat(id: number): boolean {
     const i = this.formIds.indexOf(id);
     return i >= 0 && this.templates[this.formTemplate[i]!]?.domain === 1;
+  }
+
+  /** Whether formation `id` of the last snapshot is on the march to an order's target (PLAN 7.4b; tests). */
+  formationMoving(id: number): boolean {
+    const i = this.formIds.indexOf(id);
+    return i >= 0 && (this.formFlags[i]! & FormationFlag.moving) !== 0;
   }
 
   /**

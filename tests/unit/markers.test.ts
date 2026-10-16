@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FADE_MS } from '../../src/render/timing';
-import { AT_REST, BAR_LINGER_MS, MARKER_SHRINK, markerMorph, MORPH_MS, strengthText } from '../../src/render/units/markers';
+import { AT_REST, BAR_LINGER_MS, MARKER_SHRINK, markerMorph, MORPH_MS, orderShown, strengthText } from '../../src/render/units/markers';
 
 // PLAN 2.1: the T1 markers' strength labels. The layer's opacity is the business of the two
 // handovers at its edges (PLAN 1.45a toward T0, PLAN 2.7b toward T2: tests/unit/handover.test.ts).
@@ -73,5 +73,24 @@ describe('the marker → elements morph (PLAN 2.7c)', () => {
   it('progress out of range is the nearer end', () => {
     expect(markerMorph(-0.5)).toEqual(markerMorph(0));
     expect(markerMorph(1.5)).toEqual(markerMorph(1));
+  });
+});
+
+describe('whose order lines are drawn (PLAN 7.4b, ADR-441)', () => {
+  const none = { picked: 0, selected: new Set<number>(), player: 0, nation: 0 };
+  it('an observer with nothing open sees no line', () => {
+    expect(orderShown(5, 3, none)).toBe(false);
+  });
+  it('the formation looked at, the selection, the player\'s own and the open nation\'s', () => {
+    expect(orderShown(5, 3, { ...none, picked: 5 })).toBe(true);
+    expect(orderShown(5, 3, { ...none, picked: 6 })).toBe(false);
+    expect(orderShown(5, 3, { ...none, selected: new Set([5]) })).toBe(true);
+    expect(orderShown(5, 3, { ...none, player: 3 })).toBe(true);
+    expect(orderShown(5, 3, { ...none, player: 4 })).toBe(false);
+    expect(orderShown(5, 3, { ...none, nation: 3 })).toBe(true);
+    expect(orderShown(5, 3, { ...none, nation: 4 })).toBe(false);
+  });
+  it('nation 0 (no player, no panel) is no one\'s', () => {
+    expect(orderShown(5, 0, none)).toBe(false);
   });
 });

@@ -10261,3 +10261,24 @@ Of 7.4 (open in PLAN.md):
     capitals, the spacing within the curve, a locale's casing, the ink); `labels1938`,
     `labelFades1938`, `cityNames1938`, `flagGone1938`, `morphNations1938`, `i18n` green; the
     draw of a zoom no slower; pictures beside `steam-screenshot-03`.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.4 (open in PLAN.md):
+
+  - [x] 7.4b Order lines at T1 for what is selected and the player's own only (the critic of
+    2026-10-07; N4, N5): at 2000 m/px a war is a web of dashed lines from formations off the
+    screen. AT: an e2e spec: no order line of an unselected formation of another nation drawn;
+    the selected formation's line drawn; pictures before and after.

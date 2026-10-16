@@ -64,6 +64,8 @@ test('a squadron sent from Gibraltar to Alexandria: its order line through the M
   const before = [await linePixels(page, [lx0, ly0, lx1, ly1]), await linePixels(page, [sx0, sy0, sx1, sy1])];
   const [ax, ay] = cellOf(29.9, 31.25, W, H);
   await page.evaluate(({ id, ax, ay }) => window.__warsim!.sim.command({ kind: 'moveFormation', id, x: ax, y: ay }), { id: fleet, ax, ay });
+  // Its panel open: since PLAN 7.4b an order line is drawn for what is looked at, not for all.
+  await page.evaluate((id) => void (window.__warsim!.view!.pickedFormation = id), fleet);
   await page.evaluate(() => window.__warsim!.sim.step(2));
   await page.waitForFunction(() => window.__warsim!.view!.lastTick >= 2, null, { timeout: 30_000 });
   const way = await page.evaluate((id) => window.__warsim!.view!.formationWay(id), fleet);

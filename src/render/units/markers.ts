@@ -54,6 +54,28 @@ export const AT_REST: MarkerMorph = { box: 1, scale: 1, bar: 1 };
  */
 export const PICKED_EDGE = '#6fe3ff';
 
+/** Who looks at the map, for whose order lines are drawn (PLAN 7.4b). */
+export interface OrderViewer {
+  /** The formation whose panel is open, or 0. */
+  picked: number;
+  /** The player's selection for orders. */
+  selected: ReadonlySet<number>;
+  /** The player's nation, or 0. */
+  player: number;
+  /** The nation whose panel is open, or 0. */
+  nation: number;
+}
+
+/**
+ * Whether formation `id` of `nation` has its order line drawn (PLAN 7.4b, ADR-441): the one whose
+ * panel is open, the player's selection, the player's own and those of the nation whose panel is
+ * open. Every other's goes: in a war at T1 they were a web of dashed lines from formations off
+ * the screen (the critic of 2026-10-07; N4, N5), where AoC draws none.
+ */
+export function orderShown(id: number, nation: number, v: OrderViewer): boolean {
+  return id === v.picked || v.selected.has(id) || (nation !== 0 && (nation === v.player || nation === v.nation));
+}
+
 /**
  * The T1 ↔ T2 change in two parts (PLAN 2.7c): for FADE_MS the box fades and shrinks by
  * MARKER_SHRINK into the group while the sprites fade in; the strength bar and the number stay

@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-441 · 2026-10-16 · accepted — Order lines at T1 for what is looked at only (PLAN 7.4b) **[AoC-DEVIATION]**
+
+- **Context.** Every T1 marker on the march drew a dashed line to its target. In a war at 2000
+  m/px the view was a web of them, most from formations off the screen (the critic of
+  2026-10-07: "only for what is selected"; N4, N5; `docs/evidence/7.4/a-after-europe-2000.png`).
+  AoC draws no order lines at all.
+- **Decision** (`orderShown`, `src/render/units/markers.ts`): a formation's line is drawn when its
+  panel is open, it is in the player's selection, it is the player's nation's, or its nation's
+  panel is open. The view keeps which it drew (`orderLineIds`, for tests).
+- **Why not AoC's none.** A player gives orders and needs to see them; an observer who opens a
+  nation sees where it is going. Kept the lines, took them away from the rest.
+- **Tests.** `orderLines1938.spec.ts` (an observer with nothing open: no line; a formation's panel:
+  its line alone; Poland's panel: the Polish lines and not the German; playing Germany: its own).
+  `fleetOrder1938.spec.ts` now opens the fleet's panel before it reads the fleet's line.
+
 ### ADR-440 · 2026-10-16 · accepted — Nation names in capitals, spaced, in a shade of the nation's colour (PLAN 7.4a)
 
 - **Context.** PLAN 7.4 is the look beside AoC's, split into parts when taken up. Beside

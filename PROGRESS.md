@@ -16871,3 +16871,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Perf:** a zoom from 6000 to 1500 m/px over Europe, 1,200 frames, two runs each: the draw's
   p95 6.2–6.4 ms against 6.0–6.4 at HEAD (`.cache/74/timing.ts`).
 - **Next:** PLAN 7.4b, the order lines at T1.
+
+## 2026-10-16 — PLAN 7.4b: order lines at T1 for what is looked at only (render)
+
+- **Start:** gate green on a clean tree (`de8c363`); critic not due.
+- **Done** (ADR-441, [AoC-DEVIATION]: AoC draws none): `orderShown` draws a formation's order line
+  when its panel is open, it is selected by the player, it is the player's nation's, or its
+  nation's panel is open. `MapView.orderLineIds` (tests) and `formationMoving` (tests).
+- **Side by side:** `docs/evidence/7.4/a-after-europe-2000.png` (a web of dashed lines over
+  Poland, Romania and Italy) against `b-after-europe-2000.png` (none) and
+  `b-after-europe-2000-germany.png` (Germany's panel open: its lines alone). Beside
+  `steam-screenshot-01`, where none are drawn.
+- **Tests:** `markers.test.ts` 9 of 9 (3 new); e2e `orderLines1938` (new), `fleetOrder1938` (now
+  opens the fleet's panel before it reads its line), `markers1938`: 3 of 3.
+- **Gotcha:** an order into another nation's land is refused in peace; a spec that sends a
+  formation must give it a place of its own land.
+- `.cache/74/shots.ts` now opens a nation's panel (by `NATIONS_1938`'s index).
+- **Next:** PLAN 7.4c, flags in the ranking rows.

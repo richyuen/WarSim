@@ -2203,6 +2203,8 @@ from 2000 m/px down to 300 (see the handovers below). Each
 shows a type symbol (from the template's
 elements), a flag chip, a strength bar (strength / template men), the strength number, a dashed
 order arrow to the target, and a red outline while engaged; Major Battles get crossed swords.
+Since PLAN 7.4b (ADR-441) the arrow is drawn only for what is looked at: the formation whose
+panel is open, the player's selection and own nation, and the nation whose panel is open.
 *Stacks (PLAN 2.7s1, `markerStacks.ts`, ADR-77):* a marker that is more than a quarter of its
 box under a stronger marker of its own nation goes into that one, which then shows the men of
 all it stands for and "×n". It stays in until it is under its lead by less than a tenth; a
