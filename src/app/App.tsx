@@ -238,7 +238,7 @@ export function App({
         />
       ) : null}
       {stats && hud.showStats.value && !hud.showEditor.value ? (
-        <StatsRanking nations={stats.nations} metric={hud.rankMetric.value} selected={hud.selected.value} onMetric={(m) => hud.setRankMetric(m)} onSelect={(id) => hud.onSelectNation(id)} onCharts={() => hud.toggleCharts()} />
+        <StatsRanking nations={stats.nations} metric={hud.rankMetric.value} selected={hud.selected.value} onMetric={(m) => hud.setRankMetric(m)} onSelect={(id) => hud.onSelectNation(id)} onCharts={() => hud.toggleCharts()} flagUrlOf={(id) => (view && flagVersion >= 0 ? view.flags.urlOf(id) : null)} />
       ) : null}
       {formationTitle ? (
         <FormationPanel

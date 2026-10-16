@@ -16888,3 +16888,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   formation must give it a place of its own land.
 - `.cache/74/shots.ts` now opens a nation's panel (by `NATIONS_1938`'s index).
 - **Next:** PLAN 7.4c, flags in the ranking rows.
+
+## 2026-10-16 — PLAN 7.4c: ranking rows with flags and bars in the nation's colour (UI)
+
+- **Start:** gate green on a clean tree (`ee7d203`); critic not due.
+- **Done** (ADR-442): each ranking row has the nation's flag and, behind its name and value, a
+  bar in its colour as long as its value is of the first row's, as AoC's Statistics panel.
+- **Side by side:** `docs/evidence/7.4/c-ranking.png` and `c-after-europe-2000.png` beside
+  `steam-screenshot-01` (its Statistics panel bottom right): flags, coloured bars and white text
+  read alike. AoC's panel has a framed look of its own (PLAN 7.4d).
+- **Tests:** e2e `rankingFlags1938` (new: a drawn flag in each of the 15 rows, the nation's own,
+  15 different; the bars' shares and colours), `rankingRows1938` and `ranking1938` 3 of 3.
+- **Next:** PLAN 7.4d, the UI frames.

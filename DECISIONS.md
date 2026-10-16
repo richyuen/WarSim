@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-442 · 2026-10-16 · accepted — Ranking rows with the nation's flag and a bar in its colour (PLAN 7.4c)
+
+- **Context.** AoC's Statistics panel (`steam-screenshot-01`, `-03`) lists nations as rows of a
+  flag and a bar in the nation's colour with the name and value on it. Ours had a colour swatch
+  and plain text (the critic's N14: "ranking rows have no flags").
+- **Decision** (`src/ui/StatsRanking.tsx`, `.rank-flag`, `.rank-bar`): each row shows the flag
+  (the view's `flags.urlOf`, cached data URLs; the swatch when there is no view) and a bar behind
+  its name and value, at 0.85 of the nation's colour, as long as its value is of the first row's;
+  the rest of the bar's track is a faint white. The text is white with a dark shadow, read on any
+  colour. The row stays one line (PLAN 4.11).
+- **Not done here:** AoC's nine lists and the dead marked (N14's other half; PARITY row 59).
+- **Taste, low confidence** (`reference/NOTES.md` missing).
+
 ### ADR-441 · 2026-10-16 · accepted — Order lines at T1 for what is looked at only (PLAN 7.4b) **[AoC-DEVIATION]**
 
 - **Context.** Every T1 marker on the march drew a dashed line to its target. In a war at 2000

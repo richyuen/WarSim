@@ -10282,3 +10282,23 @@ Of 7.4 (open in PLAN.md):
     2026-10-07; N4, N5): at 2000 m/px a war is a web of dashed lines from formations off the
     screen. AT: an e2e spec: no order line of an unselected formation of another nation drawn;
     the selected formation's line drawn; pictures before and after.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.4 (open in PLAN.md):
+
+  - [x] 7.4c Ranking rows with the nation's flag and a bar in its colour, as AoC's Statistics
+    panel (N14's flags). AT: an e2e spec reads a flag in every row; a picture beside
+    `steam-screenshot-01`.

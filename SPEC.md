@@ -2580,7 +2580,9 @@ on screen.
 - **Statistics ranking and war banners** (implemented PLAN 1.31b, `src/ui/StatsRanking.tsx`,
   `src/ui/WarBanners.tsx`, `src/shared/ranking.ts`): top-15 ranking (land, army, income,
   treasury, manpower) on the right, toggled by the bottom bar's Statistics button, each row
-  one line (PLAN 4.11, ADR-305: the name cut with an ellipsis, the value never wrapping); one banner
+  one line (PLAN 4.11, ADR-305: the name cut with an ellipsis, the value never wrapping), with
+  the nation's flag and a bar in its colour as long as its value is of the first row's (PLAN
+  7.4c, ADR-442, as AoC's Statistics panel); one banner
   per active war (side leaders, ally counts, score bar) above the bottom bar, at most 8 + "+N".
   A click on a banner selects the attackers' leader and, when the war has a battle (gold
   swords; ADR-96), flies the camera to it at 20 m/px (`flight` in `render/camera.ts`: pan and

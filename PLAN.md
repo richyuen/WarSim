@@ -49,9 +49,7 @@ quick sweep as a smoke test.
   the Balkans at 800, the world; seed 99 three years in), into `docs/evidence/7.4/`.
   - [x] 7.4a Nation names as AoC draws them: capitals, spaced, in a darker shade of the nation's […]
   - [x] 7.4b Order lines at T1 for what is selected and the player's own only (the critic of […]
-  - [ ] 7.4c Ranking rows with the nation's flag and a bar in its colour, as AoC's Statistics
-    panel (N14's flags). AT: an e2e spec reads a flag in every row; a picture beside
-    `steam-screenshot-01`.
+  - [x] 7.4c Ranking rows with the nation's flag and a bar in its colour, as AoC's Statistics […]
   - [ ] 7.4d UI frames: the panels and the bottom bar beside AoC's framed panels (taste: low
     confidence without NOTES.md). AT: pictures beside `steam-screenshot-01` and `-03`, the
     choice in an ADR.
