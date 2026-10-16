@@ -306,7 +306,9 @@ export function aiSweep(seed: number): void {
   expect(revoltRows.map((r) => `${r.tick} ${r.a} ${r.b} ${r.as ?? 'founded'}`), `seed ${seed}: what the revolts' rows are of`).toEqual(revoltsAs);
   for (const r of revoltRows) expect(/ broke away from /.test(historyText(r)), `seed ${seed}, tick ${r.tick}: "${historyText(r)}" (${r.as ?? 'founded'})`).toBe(r.as === undefined);
   const of = (as: string): number => revoltsAs.filter((l) => l.endsWith(as)).length;
-  for (const as of ['founded', 'joined']) expect(of(as), `seed ${seed}: revolts ${as}`).toBeGreaterThan(0);
+  // A rising may found a state on every seed; since PLAN 7.3c (ADR-430) it joins only rebels of its
+  // people at war with its holder, and a seed can have none in ten years (seed 2): joins are counted, not asked for.
+  expect(of('founded'), `seed ${seed}: revolts founded`).toBeGreaterThan(0);
   console.log(`seed ${seed}: ${revoltRows.length} revolts: ${of('founded')} founded, ${of('joined')} joined, ${of('revived')} revived`);
   console.log(`seed ${seed}: ${rows.length} history rows, ${allianceRows} of alliances (${rows.filter((r) => r.kind === EventKind.AllianceDissolved).length} dissolved), none with an id`);
   // PLAN 3.12b2: each row of land that went over is of what the state showed, an hour's rows of

@@ -16946,3 +16946,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   the sim's unrest and its colour by the shader's ramp. The gate runs e2e in full only at a
   phase review; 7.3's tick did not.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — The full suite: three red tests fixed (tests)
+
+- **Run** (`npm run check:full`, the user asked; the first try was killed for low memory): unit
+  1,544 of 1,544; ten-year tests 17 of 18 (`aiSweep2`: no revolt joined); e2e 194 passed, 4
+  failed, 1 not run. Alone: `burning1938` green (a load timeout in the parallel run),
+  `fallen1938` red (on `knownRed.json`), `tankBattle1938` and `zoomDemo1938` red.
+- **Fixed** (ADR-446): `tankBattle1938` and `zoomDemo1938` waited for `sim.landMask`, let go of
+  since PLAN 7.1l7: they wait for `view.coast`, both green. `aiSweep2`: by the user's decision a
+  seed need not have a revolt that joins (since PLAN 7.3c a rising joins only rebels of its
+  people at war with its holder); green.
+- **Lesson:** the gate's sized runs left three specs red since PLAN 7.1l7 and 7.3c; a
+  `check:full` before the next phase review's tick (7.5).

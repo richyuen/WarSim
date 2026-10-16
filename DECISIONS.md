@@ -167,6 +167,18 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-446 · 2026-10-16 · accepted — A ten-year run need not have a revolt that joins (the user's decision)
+
+- **Context.** `npm run check:full` (2026-10-16): `aiSweep2.test.ts` (seed 2, ten years) asked
+  for at least one revolt that joined a rebel state; there were none. Since PLAN 7.3c (ADR-430) a
+  rising joins only rebels of its people at war with its holder, so a seed can have none.
+- **Decision** (the user's, 2026-10-16): the sweep asks for a founded revolt on every seed and
+  counts the joins without asking for one (`tests/helpers/aiSweep.ts`). Each revolt's row is
+  still checked against what the state showed.
+- **Also found.** `tankBattle1938` and `zoomDemo1938` waited for `sim.landMask`, which the client
+  lets go of once the view has taken it (PLAN 7.1l7, ADR-410): they never opened. They wait for
+  `view.coast` now. Both green alone (2.8 and 2.9 min).
+
 ### ADR-445 · 2026-10-16 · accepted — Escape, the number keys and a double click (PLAN 7.4f1)
 
 - **Context.** The critic's N7 (2026-10-05, again 2026-10-07): Escape closed neither the nation

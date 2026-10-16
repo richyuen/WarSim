@@ -293,7 +293,7 @@ const volley = async (a: { now: number; frameMs: number }): Promise<Volley> => {
 async function open(page: Page): Promise<void> {
   await page.setViewportSize(VIEW);
   await page.goto(`/?scenario=1938&paused=1&seed=${SEED}`);
-  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null && window.__warsim!.sim.elevation !== null && window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null && window.__warsim!.sim.elevation !== null && window.__warsim!.view!.coast !== null, null, { timeout: 60_000 });
 }
 
 test('one zoom from the whole world to the men of a battle: eight stops, every tier, no layer in a jump', async ({ page }, info) => {

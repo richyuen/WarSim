@@ -160,7 +160,7 @@ test('the tank battle: one zoom from a marker to a burning hull, with turrets on
 
   await page.setViewportSize(VIEW);
   await page.goto(`/?scenario=1938&paused=1&seed=${SEED}`);
-  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null && window.__warsim!.sim.elevation !== null && window.__warsim!.sim.landMask !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null && window.__warsim!.sim.elevation !== null && window.__warsim!.view!.coast !== null, null, { timeout: 60_000 });
   expect(await page.evaluate(async (n) => {
     const sim = window.__warsim!.sim;
     await sim.step(n);
