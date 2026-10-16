@@ -16493,3 +16493,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `longWays.test.ts` (Stockholm to Turku round the Gulf of Bothnia refused to the AI and
   kept, given to a player; Luleå to Oulu given).
 - **Next:** PLAN 1.42i.
+- **Addendum:** the save and load twin where the rule bites (seed 5303 from year 5, two years
+  straight against one saved, loaded and one more): 45f9fe1c both. The slack's sample was seed
+  99's first 20 days (480 hourly ticks), not 120: the comment and ADR-422 corrected.

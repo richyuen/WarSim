@@ -456,7 +456,7 @@ export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, s
 /**
  * A coarse route over its provinces is held to be longer than the cells' way when it is longer than
  * this times the limit (`findDirectRoute`): a way by the provinces' centres zigzags where the cells
- * cut across. Seed 99's first 120 days: the coarse way over the cells' 0.90 to 2.80 times (255
+ * cut across. Seed 99's first 20 days: the coarse way over the cells' 0.90 to 2.80 times (255
  * ways; median 1.07, 2.19 at the 99th hundredth).
  */
 export const COARSE_SLACK = 3;

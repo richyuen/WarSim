@@ -184,7 +184,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     default size) where it is shorter: a way round a lake of 20 cells for ends 3 apart is not a
     long way.
   - `findDirectRoute` (nav/provinceGraph.ts): where the coarse route by the provinces' centres is
-    longer than `COARSE_SLACK` (3) times the limit, no cell is searched. Seed 99's first 120
+    longer than `COARSE_SLACK` (3) times the limit, no cell is searched. Seed 99's first 20
     days: that way over the cells' was 0.90 to 2.80 times (255 ways), so the slack refuses no way
     the cells would give. Else the cells are searched and their way measured.
   - The refusal is kept as rule a's are (ADR-421): `World.refusedOrders` now has, besides the
@@ -201,7 +201,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     year: 10,699 refusals for the length, 6.4 s); with it 0.04 ms (367 ms). It changes no answer
     (the year's hash the same with and without).
 - **Pin.** Seed 99 after one year: 45df324d → 9c51edae (the year's orders by long ways, and the
-  orders after them). `saveYear` green.
+  orders after them). `saveYear` green. The twin where the rule bites, seed 5303 from
+  `.cache/l3/s5303-y4.bin`: two years straight and one year, saved, loaded, one more both end at
+  45f9fe1c.
 - **What it did.** Seed 5303's year 5 (`.cache/l3/s5303-y4.bin`): no way over 4 times its line;
   ways over 800 cells 0 (30 before); 10,611 refusals for the length, 367 ms. Seed 99's year: 9
   refusals for the length. Tick (same-time pairs on separate P-cores against HEAD): seed 99's
