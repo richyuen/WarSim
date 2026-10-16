@@ -35,7 +35,8 @@
  *   loser's leader also becomes a puppet of the winner's leader, and leaves the wars it fights
  *   against its new realm and that realm's allies (`leaveBondedWars`, PLAN 3.8d);
  *   a losing leader left with less than SMALL_STATE_KM2 is annexed whole instead, and its puppets,
- *   now the winner's, leave their wars in the same way (PLAN 3.8d2).
+ *   now the winner's, leave their wars in the same way (PLAN 3.8d2); so is one founded in play
+ *   (`isFounded`) left with less than STATELET_KM2 (PLAN 7.3d2).
  * Capitulation: a side with share(other→side) ≥ CAPITULATE, or whose leader has lost that share
  * of its own land to occupiers of any war, has lost, fight to the death or not: peace at ±100 on
  * the spot. (An overrun fight-to-the-death nation used to stay at war for good and kept its
@@ -76,10 +77,25 @@ export const PEACE_PUPPET_AUTONOMY = 30;
  * Until ADR-57 it was 40 cells: 40 cells of the mean area of an owned cell in 1938 (212 km²).
  */
 export const SMALL_STATE_KM2 = 8500;
+/**
+ * A losing leader founded in play (a rebel state, not a nation of the scenario or a revived one)
+ * smaller than this after the terms is annexed by a decisive winner too (PLAN 7.3d2, ADR-432):
+ * statelets come together again instead of living on as rumps.
+ */
+export const STATELET_KM2 = 50_000;
 /** Player peace offers (PLAN 1.33b) are accepted when the offering side leads by this score… */
 export const PEACE_ACCEPT_SCORE = 25;
 /** …or the other side's exhaustion exceeds this (the AI's stalemate threshold). */
 export const PEACE_ACCEPT_EXHAUSTION = 40;
+
+/**
+ * Whether n was founded in play (PLAN 7.3d2): a rebel state has the people of the land it rose on
+ * (PLAN 7.3c); a nation of the scenario has none, and a revived one is its own.
+ */
+export function isFounded(world: World, n: number): boolean {
+  const p = world.nations.cols.people[n]!;
+  return p !== 0 && p !== n;
+}
 
 /** Leaders' puppets join their side. */
 function withPuppets(world: World, leader: number): number[] {
@@ -423,7 +439,10 @@ export function makePeace(world: World, war: War): void {
   world.out.emit(world.tick, EventKind.PeaceSigned, wl, ll, NaN, NaN);
   // A small losing leader is annexed outright by a decisive winner (PLAN 1.40 tuning: losing
   // rebels otherwise survived as rump states or puppets, and 50 years ended with 300–600 nations).
-  if (s >= WHITE_PEACE && nc.living[ll] === 1 && nc.living[wl] === 1 && world.landCounts().owned[ll]! < SMALL_STATE_KM2) annexNation(world, wl, ll);
+  // So is a statelet founded in play under STATELET_KM2 (PLAN 7.3d2, ADR-432): founded nations
+  // lived through a third of the peaces they lost with 8,500 to 50,000 km², and the world broke up.
+  const left = world.landCounts().owned[ll]!;
+  if (s >= WHITE_PEACE && nc.living[ll] === 1 && nc.living[wl] === 1 && (left < SMALL_STATE_KM2 || (left < STATELET_KM2 && isFounded(world, ll)))) annexNation(world, wl, ll);
   else if (s >= PUPPET_SCORE && nc.living[ll] === 1 && occupied >= PUPPET_SHARE * loserLand) makePuppet(world, wl, ll, PEACE_PUPPET_AUTONOMY);
   world.wars.truces.push({ a: wl, b: ll, untilTick: world.tick + TRUCE_TICKS });
 }

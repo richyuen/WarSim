@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-432 · 2026-10-16 · accepted — A statelet founded in play is annexed whole at a peace it loses (PLAN 7.3d2)
+
+- **Context.** The world breaks up (critic R2-B6 to R6-B3; ADR-428's break-up fails on every
+  seed of 401–410). The probe of 7.3d (seeds 1 and 3 × 20 years): founded nations lost 323 and
+  445 peaces, and of those they lived through 112 and 179 left them with 8,500 to 50,000 km² —
+  rumps that a decisive winner left standing because only a leader under SMALL_STATE_KM2 (8,500
+  km², ADR-57) was annexed whole. The critic asks that weak statelets be absorbed.
+- **Decision.** At a peace of |score| ≥ WHITE_PEACE, a losing leader founded in play left with
+  less than STATELET_KM2 = 50,000 km² after the terms is annexed whole by the winning leader, as
+  one under 8,500 km² already was (its puppets go with it, ADR-181). Founded in play is
+  `isFounded`: the nation's `people` (PLAN 7.3c) is another nation's — a rebel state, a God Mode
+  spawn (it goes through `spawnRebels` too); not a nation of the scenario (people 0), nor a
+  revived one (its own people).
+- **Why 50,000.** The probe's band of surviving rumps ends there; a region revolt is at most
+  1,000,000 km² (ADR-186), and a single province rising is mostly under 50,000, so the rule takes
+  what one or a few provinces founded and leaves a rebel state that has grown into a country. A
+  nation of the scenario of that size (Belgium, the Netherlands, Switzerland) keeps the old rule:
+  the scenario's states are the world's history, a rebel rump is the sim's.
+- **The leader only.** A founded nation on the losing side that is not its leader is not swept
+  up, as with SMALL_STATE_KM2: it loses what is occupied of it, and its own war with the winner
+  ends with its own peace.
+- **Edge.** A founded state on a reused id whose former nation still holds the core of the land
+  reads as revived (`people` = its id) and keeps the old rule; not seen.
+- **Tests.** `statelet.test.ts`, five: rebels on Maryland (22,301 km² of the grid) lose and are
+  annexed (red before); a white peace and a peace they win leave them; Belgium, of the scenario
+  and revived (30,762 km²), keeps its life.
+
 ### ADR-431 · 2026-10-16 · accepted — A revolt goes to its core nation whatever the bond, else to its kin next door; the pin stays (PLAN 7.3d1)
 
 - **Context.** The world breaks up (critic R2-B6 to R6-B3; the break-up of ADR-428 fails on

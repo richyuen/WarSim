@@ -734,7 +734,9 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     the log has its `WarEnded` (PLAN 3.12Rn, ADR-225).
     A losing leader left with less than 8,500 km² is annexed whole instead (PLAN 1.40; 40 cells
     until ADR-57). Its puppets become the winner's, and each leaves its wars in the same way
-    (ADR-181).
+    (ADR-181). So is a losing leader founded in play (a rebel state: its `people` is another
+    nation's; not a nation of the scenario, nor a revived one) left with less than 50,000 km²
+    (`STATELET_KM2`; PLAN 7.3d2, ADR-432).
   - *Capitulation (ADR-47):* a side that has lost ≥ 75% of its land to the other side, or whose
     leader has lost ≥ 75% of its own land to occupiers of any war, loses at ±100 at once, fight
     to the death or not. No war is declared when one of the two that would lead its sides is
