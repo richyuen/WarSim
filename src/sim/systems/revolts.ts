@@ -28,10 +28,12 @@
  * founding a new state: conquests a holder cannot keep quiet go back to their rightful owner.
  * Event `LandCeded` (a = the core nation, b = the former holder), not a revolt (PLAN 2.15d: the
  * history read "France broke away from Italy").
- * Otherwise, when a province next to the area belongs to rebels (a spawned nation, not bound to
- * the holder), the area joins them and becomes their core: an uprising spreads as one state
- * instead of founding a new one per revolt (`RevoltSpawned` again, a = those rebels). The holder
- * declares war on them unless already at war or in a truce.
+ * Otherwise, when a province next to the area belongs to rebels (a spawned nation, no puppet)
+ * that are at war with the holder and of the area's people (their `people`, the core of the land
+ * they rose on, is the area's core: PLAN 7.3c), the area joins them and becomes their core: an
+ * uprising spreads as one state instead of founding a new one per revolt (`RevoltSpawned` again,
+ * a = those rebels). A rising against a holder they are at peace or in a truce with, or on
+ * another people's land, founds its own state.
  *
  * Overextension (critic B1, 2026-10-03): a holder with share s of the world's owned land (km²,
  * not cells: ADR-57) above OVEREXT_SHARE strains to hold its far provinces (centre more than
@@ -43,7 +45,6 @@
  * pieces over the years.
  */
 import { isMonthStart } from '../../shared/calendar';
-import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { nearestCellWhere } from '../data/ownership';
@@ -53,7 +54,7 @@ import { relocateCapital } from './capitals';
 import { deadClaimant, reviveNation } from './revival';
 import { equipFormation } from './elements';
 import { spawnPoint } from './production';
-import { bond, declareWar } from './war';
+import { declareWar } from './war';
 
 export const NON_CORE = 4;
 export const OCCUPIED = 6;
@@ -217,7 +218,6 @@ function revolt(world: World, p: number, holder: number): number[] {
   if (rising !== 0) {
     defect(world, area, holder, rising, EventKind.RevoltSpawned);
     for (const q of area) world.provinces.core[q] = rising;
-    if (!world.wars.atWar(holder, rising) && !world.wars.inTruce(holder, rising, world.tick)) declareWar(world, holder, rising, true);
     return area;
   }
   // A dead nation with a core here returns instead of new rebels (PLAN 1.20), if it may.
@@ -226,18 +226,25 @@ function revolt(world: World, p: number, holder: number): number[] {
   return area;
 }
 
-/** The rebel nation (lowest id), not bound to `holder`, that owns a province next to `area`, or 0. */
+/**
+ * The rebel nation (lowest id) that owns a province next to `area`, is at war with `holder` and
+ * is of the area's people (its core: PLAN 7.3c, ADR-430), or 0. A rising against another holder,
+ * or on another people's land, founds a state of its own: "Free Herat" took in eight provinces of
+ * Soviet core land, and Soviet land joined a Korean state.
+ */
 function risingNeighbour(world: World, area: number[], holder: number): number {
   const g = navOf(world).graph;
   const nc = world.nations.cols;
+  const people = world.provinces.core[area[0]!]!;
+  if (people === 0) return 0;
   let best = 0;
   for (const p of area) {
     for (const q of g.adj[p] ?? []) {
       const c = g.centre[q] ?? -1;
       const n = c >= 0 ? world.cells.owner[c]! : 0;
       if (n === 0 || n === holder || nc.living[n] !== 1 || nc.origin[n] === 0) continue;
-      // Not one the holder may not fight for the land (`bond`, PLAN 3.8): the rising is a war.
-      if (nc.overlord[n] !== 0 || bond(world, n, holder) !== Refusal.None) continue;
+      // A puppet's war is its overlord's; and the rising is a war already fought, not a new one.
+      if (nc.overlord[n] !== 0 || nc.people[n] !== people || !world.wars.atWar(holder, n)) continue;
       if (best === 0 || n < best) best = n;
     }
   }
@@ -389,6 +396,9 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
     sx += (c % w) + 0.5;
     sy += Math.floor(c / w) + 0.5;
   }
+  // Its people (PLAN 7.3c): the core of the land it rises on, before the land is its own; a
+  // revived nation is its own people. Set on a reused id too, which would keep the dead one's.
+  nc.people[id] = revive !== 0 ? id : world.provinces.core[area[0]!]!;
   for (const q of area) {
     world.provinces.core[q] = id;
     world.provinces.unrest[q] = AFTER_REVOLT;

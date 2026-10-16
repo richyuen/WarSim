@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { forceRevolt, REGION_KM2, REGION_MAX } from '../../src/sim/systems/revolts';
+import { declareWar, makePeace } from '../../src/sim/systems/war';
 import { navOf, type World } from '../../src/sim/world';
 import { assets1938, earthAdmin1 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -94,5 +95,57 @@ describe('a region revolt is bounded by its land (PLAN 3.9)', () => {
     forceRevolt(w, provinceOf('Aveyron', 'FRA'));
     expect(provincesOf(w, first).length).toBe(REGION_MAX);
     expect(km2(w, first)).toBeLessThan(REGION_KM2 / 10);
+  });
+});
+
+// PLAN 7.3c (ADR-430): a rising joins the rebel state next to it only when that state is at war
+// with the holder and of the area's people (its `people`, the core of the land it rose on).
+// "Free Herat" took in eight provinces of Soviet core land, and Soviet land joined a Korean state.
+describe('a rising joins only rebels of its people at war with its holder (PLAN 7.3c)', () => {
+  /** Rebels on Primorsky alone, at war with the Soviet Union (their people). */
+  function primorskyRebels(): { w: World; rebel: number } {
+    const w = world1938();
+    w.settings.revoltMode = 'province';
+    const rebel = w.nations.highWater;
+    forceRevolt(w, provinceOf('Primorsky Krai', 'RUS'));
+    expect(w.nations.cols.people[rebel]).toBe(SOV);
+    expect(w.wars.atWar(SOV, rebel)).toBe(true);
+    return { w, rebel };
+  }
+
+  it('Soviet land next to Soviet rebels at war with it joins them', () => {
+    const { w, rebel } = primorskyRebels();
+    const next = w.nations.highWater;
+    forceRevolt(w, provinceOf('Khabarovsk Krai', 'RUS'));
+    expect(w.nations.highWater).toBe(next);
+    expect(provincesOf(w, rebel)).toContain(provinceOf('Khabarovsk Krai', 'RUS'));
+  });
+
+  it('after their peace with the holder, the next rising founds its own state', () => {
+    const { w, rebel } = primorskyRebels();
+    makePeace(w, w.wars.list.find((x) => x.sides[0].includes(SOV) && x.sides[1].includes(rebel))!);
+    expect(w.wars.atWar(SOV, rebel)).toBe(false);
+    const next = w.nations.highWater;
+    forceRevolt(w, provinceOf('Khabarovsk Krai', 'RUS'));
+    expect(w.nations.highWater, 'a nation was founded').toBe(next + 1);
+    expect(provincesOf(w, rebel)).not.toContain(provinceOf('Khabarovsk Krai', 'RUS'));
+    expect(provincesOf(w, next)).toEqual([provinceOf('Khabarovsk Krai', 'RUS')]);
+  });
+
+  it('Soviet land does not join a Korean state at war with the Soviet Union', () => {
+    const w = world1938();
+    w.settings.revoltMode = 'province';
+    const rason = provinceOf('Rason', 'PRK');
+    const korea = w.cells.owner[navOf(w).graph.centre[rason]!]!;
+    expect(w.provinces.core[rason]).toBe(korea);
+    const rebel = w.nations.highWater;
+    forceRevolt(w, rason);
+    expect(w.nations.cols.people[rebel]).toBe(korea);
+    expect(declareWar(w, SOV, rebel, true)).not.toBeNull();
+    const next = w.nations.highWater;
+    forceRevolt(w, provinceOf('Primorsky Krai', 'RUS'));
+    expect(w.nations.highWater, 'a nation was founded').toBe(next + 1);
+    expect(provincesOf(w, rebel)).toEqual([rason]);
+    expect(w.nations.cols.people[next]).toBe(SOV);
   });
 });

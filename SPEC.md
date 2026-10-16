@@ -1326,7 +1326,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     Event `RevoltSpawned`.
   - *Defection and spreading (ADR-47):* a revolt on land whose core nation is alive (and not
     bound to the holder) returns the area to that nation. Otherwise, next to a rebel state it
-    joins that state. Only otherwise does it found a new nation.
+    joins that state, if the state is at war with the holder and of the area's people: the
+    state's `people`, the core of the land it rose on (a revived nation's is itself), is the
+    area's core (PLAN 7.3c, ADR-430). Only otherwise does it found a new nation.
   - *Land handed over (PLAN 2.15d, ADR-102):* a defection, and each handover of a God Kill, is
     the event `LandCeded` (a = who received the land, b = who held it), as is the land of a
     dead nation that goes to its occupier (ADR-112), not a revolt. An area that joins a rebel

@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-430 · 2026-10-16 · accepted — A rising joins only rebels of its people at war with its holder; the pin moves (PLAN 7.3c)
+
+- **Context.** ADR-186 left it open: a rebel state grows by every revolt next to it
+  (`risingNeighbour`), whoever the holder and whatever the land. "Free Herat" of seed 6021 took
+  in eight provinces of Soviet core land; Soviet land joined a Korean state; and a rising
+  against a holder the rebels had made peace with joined them and started a new war.
+- **Decision.** A nation founded in play has a **people** (`people`, a column of the nations'
+  table): the core of the land it rose on, read before that land becomes its own core; a
+  revived nation is its own people; a nation of the scenario has none (0). A revolting area
+  joins the rebel state next to it only when that state is at war with the area's holder and
+  its people is the area's core. Otherwise the area goes on as before: to a dead claimant, else
+  a state of its own. The holder no longer declares a war for a join (it is at war already);
+  a truce counts as not at war. An area with no core joins nobody.
+- **Why the core.** It is the one record of whose land it is that a rule already reads (the
+  defection to a living core nation, revival, coring after `CORE_YEARS`); rebels who rose on
+  Soviet land are a Soviet people, and a rising on that land is theirs. A size bound, the
+  other answer PLAN 3.9 named, would stop a state that unites its whole people.
+- **Measured.** `npm run sweep:quick`, seeds 1–10 × 20 years (`docs/evidence/7.3/quick-7.3c.md`):
+  limits green on 10 of 10, riser and faller 10 of 10. The most nations alive in a year are
+  161–218 a seed (the quick sweep before 7.3b: 117–175): risings that joined a state of another
+  people or one at peace now found their own. Bringing statelets together again is PLAN 7.3d's;
+  no constant is tuned here (ADR-58).
+- **The pin moves** 45a6eb2f → 3a944534, by the column alone: the old rule with the column
+  gives the same hash; seed 99's first year has no join the rule changes.
+- **Tests.** `revoltRegion.test.ts`: Soviet land next to Soviet rebels at war with it joins
+  them; after their peace the next rising founds a state; Soviet land next to a Korean state at
+  war with the Soviet Union founds its own (the last two red before).
+
 ### ADR-429 · 2026-10-16 · accepted — A nation under its peacetime army does not save for armour; the pin moves (PLAN 7.3b)
 
 - **Context.** On seed 7321 the land war stops (ADR-376's count): from year 13 no land formation

@@ -71,6 +71,8 @@ export const NATION_SCHEMA = {
   /** Revolt suppression level 0..1 (PLAN 1.19) and, for a founded nation, its origin: the province of its capital when it was founded (PLAN 2.15b). */
   suppression: 'f64',
   origin: 'u32',
+  /** For a founded nation, its people: the core of the land it rose on, before it became its own (PLAN 7.3c); 0 for a nation of the scenario. */
+  people: 'u16',
   /** Revivals left and the earliest revival tick (PLAN 1.20); consecutive bankrupt months. */
   revivalsLeft: 'u8',
   /** Strategic AI (PLAN 1.24): aggression 0..100 (scenario; spawned nations get REBEL_AGGRESSION) and God switch-off. */

@@ -146,8 +146,7 @@ quick sweep as a smoke test.
   "ALL GREEN" judged neither ask.
   - [x] 7.3a The sweep judges the critic's two asks (`tools/sweep/criteria.ts`, SPEC §10): […]
   - [x] 7.3b The land war stops (seed 7321's year 13 above: a great land with one formation, a […]
-  - [ ] 7.3c Rebel states take in only the risings against a holder they are at war with, of
-    their own people's cores (ADR-186's question above). AT: a unit test; a quick sweep reported.
+  - [x] 7.3c Rebel states take in only the risings against a holder they are at war with, of […]
   - [ ] 7.3d Statelets come together again: revolts give land to a core owner or a neighbour
     first, and a weak statelet is annexed whole at a peace it loses. AT: unit tests; a quick
     sweep in which the break-up of 7.3a holds on 8 of 10 seeds.

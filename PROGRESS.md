@@ -16622,3 +16622,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a probe that keeps `world.nations.cols` across ticks reads stale arrays once a
   nation is founded (the table grows); read the columns each time.
 - **Next:** PLAN 7.3c.
+
+## 2026-10-16 — PLAN 7.3c: a rising joins only rebels of its people at war with its holder (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-430): a founded nation has a `people` (a column: the core of the land it rose
+  on; a revived nation is its own). `risingNeighbour` takes only rebels at war with the area's
+  holder whose people is the area's core; the war a join used to declare is gone (it is fought
+  already). Otherwise the area founds its own state (or a dead claimant returns).
+- **Test:** `revoltRegion.test.ts`, three cases (the join; none after a peace; none with a
+  Korean state at war with the Soviet Union), the last two red before. Whole unit suite green.
+- **Quick sweep** (seeds 1–10 × 20 years, 10.2 min, `docs/evidence/7.3/quick-7.3c.md`): limits
+  10 of 10, riser and faller 10 of 10. The most nations alive a seed 161–218 (before 7.3b's
+  quick sweep: 117–175): more states of their own. 7.3d brings them together again.
+- **Pin** 45a6eb2f → 3a944534, by the new column alone (the old rule with it gives the same hash).
+- **Next:** PLAN 7.3d.
