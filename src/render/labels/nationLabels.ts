@@ -22,8 +22,17 @@ import { ZOOM_HYSTERESIS, type SwitchBank, type SwitchState } from '../timing';
 export const MIN_PX = 9;
 export const MAX_PX = 64;
 
-/** Average glyph advance as a share of the font size (initial fit before measuring). */
-const ADVANCE = 0.62;
+/** Average advance of a capital as a share of the font size (initial fit before measuring). */
+const ADVANCE = 0.7;
+
+/**
+ * Space added after each letter but the last, as a share of the font size (PLAN 7.4a, ADR-440):
+ * AoC's names are capitals spaced apart, over the land as a mark of the land, not as a caption.
+ */
+export const TRACKING = 0.1;
+
+/** The width of the edge drawn round a letter, as a share of the font size. */
+export const EDGE = 0.09;
 
 export interface PlacedGlyph {
   ch: string;
@@ -60,6 +69,7 @@ export function layoutNationLabels(
   viewH: number,
   measure: Measure,
   state: NameState = AT_REST,
+  caps: (text: string) => string = (text) => text.toLocaleUpperCase(),
 ): PlacedNationLabel[] {
   const n = data.length / LABEL_STRIDE;
   const order = Array.from({ length: n }, (_, i) => i).sort((a, b) => data[b * LABEL_STRIDE + LabelField.area]! - data[a * LABEL_STRIDE + LabelField.area]! || a - b);
@@ -70,16 +80,21 @@ export function layoutNationLabels(
     const o = i * LABEL_STRIDE;
     const text = names[i] ?? '';
     if (!text) continue;
+    // Drawn in capitals, spaced: the label keeps the name (what a name is, for the view and the
+    // tests), its glyphs are the capitals.
+    const shown = caps(text);
+    const letters = [...shown].length;
+    const wide = (px: number): number => measure(shown, px) + TRACKING * px * (letters - 1);
     const id = data[o + LabelField.id]!;
     const thick = data[o + LabelField.thickness]! * cam.scale;
     const len = data[o + LabelField.length]! * cam.scale;
-    let fontPx = Math.min(MAX_PX, 2 * thick, len / (ADVANCE * text.length));
+    let fontPx = Math.min(MAX_PX, 2 * thick, len / ((ADVANCE + TRACKING) * letters));
     let width = 0;
     if (fontPx >= MIN_PX / ZOOM_HYSTERESIS) {
-      width = measure(text, fontPx);
+      width = wide(fontPx);
       if (width > len) {
         fontPx *= len / width;
-        width = measure(text, fontPx);
+        width = wide(fontPx);
       }
     }
     const fits = fontPx >= (state.held(id) ? MIN_PX / ZOOM_HYSTERESIS : MIN_PX);
@@ -96,7 +111,7 @@ export function layoutNationLabels(
       }
       // A name that only fades out is drawn at the size it has, however small.
       const px = Math.max(fontPx, 2);
-      const w = fits ? width : measure(text, px);
+      const w = fits ? width : wide(px);
       // Arc-length table along the screen curve.
       const N = 48;
       const cum = new Float64Array(N + 1);
@@ -116,11 +131,11 @@ export function layoutNationLabels(
       };
       const glyphs: PlacedGlyph[] = [];
       let s = (total - w) / 2;
-      for (const ch of text) {
+      for (const ch of shown) {
         const adv = measure(ch, px);
         const [x, y, angle] = at(s + adv / 2);
         glyphs.push({ ch, x, y, angle });
-        s += adv;
+        s += adv + TRACKING * px;
       }
       const r = px * 0.5;
       const free = !glyphs.some((g) => occupied.some((q) => (q.x - g.x) * (q.x - g.x) + (q.y - g.y) * (q.y - g.y) < (q.r + r) * (q.r + r)));
@@ -163,7 +178,6 @@ export function fadeNationLabels(bank: SwitchBank<number>, now: number, layout: 
   return labels;
 }
 
-/** Draws placed labels at their opacity: dark glyphs with a light halo. */
 /** Steps of the font sizes the names are drawn at: 8 an octave, 9 % apart. */
 const LADDER_STEPS = 8;
 
@@ -172,7 +186,36 @@ export function ladderPx(px: number): number {
   return Math.round(100 * 2 ** (Math.round(Math.log2(px) * LADDER_STEPS) / LADDER_STEPS)) / 100;
 }
 
-export function drawNationLabels(ctx: CanvasRenderingContext2D, labels: readonly PlacedNationLabel[], font: string): void {
+/** The colours a name is drawn in: its letters and their edge, as CSS colours. */
+export interface NameInk {
+  fill: string;
+  edge: string;
+}
+
+/** Neither of a nation's colour: dark letters with a light edge. */
+const PLAIN_INK: NameInk = { fill: 'rgba(20, 22, 30, 0.82)', edge: 'rgba(255, 255, 255, 0.55)' };
+
+/** Under this luminance a nation's colour is dark, and its name a lighter shade of it. */
+export const DARK_NATION = 0.16;
+
+/**
+ * A name's ink from its nation's colour (0xRRGGBB; PLAN 7.4a, ADR-440), as AoC draws its names: a
+ * shade of the land's own colour, darker than the land, with a thin edge lighter than it. Over a
+ * dark land (Germany's grey) the letters are the lighter shade and the edge the darker. The
+ * nation's own colour in every map mode, as its markers have it (PLAN 2.7i).
+ */
+export function nameInk(rgb: number): NameInk {
+  const c = [(rgb >> 16) & 255, (rgb >> 8) & 255, rgb & 255] as const;
+  const lin = (v: number): number => ((v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+  const lum = 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+  const dark = c.map((v) => Math.round(v * 0.42));
+  const light = c.map((v) => Math.round(v + (255 - v) * 0.45));
+  const css = (v: readonly number[], a: number): string => `rgba(${v[0]}, ${v[1]}, ${v[2]}, ${a})`;
+  return lum < DARK_NATION ? { fill: css(light, 0.82), edge: css(dark, 0.6) } : { fill: css(dark, 0.82), edge: css(light, 0.6) };
+}
+
+/** Draws placed labels at their opacity, each in its nation's ink (`colourOf` none: the plain ink). */
+export function drawNationLabels(ctx: CanvasRenderingContext2D, labels: readonly PlacedNationLabel[], font: string, colourOf: (id: number) => number | undefined = () => undefined): void {
   ctx.save();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -184,10 +227,12 @@ export function drawNationLabels(ctx: CanvasRenderingContext2D, labels: readonly
     // 50 to 60 ms from the world to T1; PLAN 7.1l5). The glyphs are where and as large as before.
     const size = ladderPx(l.fontPx);
     const k = l.fontPx / size;
-    ctx.font = `600 ${size}px ${font}`;
-    ctx.lineWidth = Math.max(2, l.fontPx * 0.14) / k;
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
-    ctx.fillStyle = 'rgba(20, 22, 30, 0.82)';
+    ctx.font = `700 ${size}px ${font}`;
+    ctx.lineWidth = Math.max(1.5, l.fontPx * EDGE) / k;
+    const rgb = colourOf(l.id);
+    const ink = rgb === undefined ? PLAIN_INK : nameInk(rgb);
+    ctx.strokeStyle = ink.edge;
+    ctx.fillStyle = ink.fill;
     for (const g of l.glyphs) {
       ctx.save();
       ctx.translate(g.x, g.y);

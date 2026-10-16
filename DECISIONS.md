@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-440 · 2026-10-16 · accepted — Nation names in capitals, spaced, in a shade of the nation's colour (PLAN 7.4a)
+
+- **Context.** PLAN 7.4 is the look beside AoC's, split into parts when taken up. Beside
+  `steam-screenshot-01` and `-03` (seed 99 three years in, 1920 × 1080, Europe at 2000 m/px and
+  Africa at 4000; `docs/evidence/7.4/a-before-*.png`), the names were the largest difference
+  of the map itself: AoC's "Big Nation Names" (v3.4.0) are capitals spaced apart, in a darker
+  shade of the land's own colour, with a thin lighter edge, and over a dark land (its Germany)
+  the lighter shade with a darker edge. Ours were mixed case, near black with a white halo on
+  every land. The borders are not the difference: at 2000 m/px ours are 2.8 px and dark
+  (PLAN 7.4e looks at their darkness).
+- **Decision** (`src/render/labels/nationLabels.ts`):
+  - The layout keeps a label's `text` (the name, what the view and the tests know a name by)
+    and lays out its capitals (`toLocaleUpperCase` with the document's language, given by the
+    view), each followed by TRACKING (0.1 of the size) but the last. The width the size is fitted
+    to is that of the spaced capitals, so a name still lies within its curve.
+  - `nameInk(rgb)`: letters at 0.42 of the colour and an edge 45 % of the way to white; under a
+    luminance of 0.16 (DARK_NATION) the other way round. Alpha 0.82 and 0.6, as before. The edge
+    is 0.09 of the size (was 0.14 of a halo), weight 700 (was 600).
+  - The nation's own colour in every map mode, as its markers have it (PLAN 2.7i); a label with
+    no colour known keeps the old ink.
+- **Taste, low confidence.** `reference/NOTES.md` is missing; the choice follows the reference
+  screenshots only.
+- **Result.** `docs/evidence/7.4/a-after-*.png`. The draw of a zoom from 6000 to 1500 m/px over
+  Europe (1,200 frames, `.cache/74/timing.ts`): p95 6.2–6.4 ms against 6.0–6.4 at HEAD.
+
 ### ADR-439 · 2026-10-16 · accepted — A stockpile is kept under a share of the income; a nation short of money scraps warheads before its army (PLAN 7.3g)
 
 - **Context.** PLAN 7.3f's run 1 (seeds 501–510 × 50 years) failed the break-up criterion on

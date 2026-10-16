@@ -1932,7 +1932,7 @@ export class MapView {
       let w = this.labelWidths.get(text);
       if (w === undefined) {
         if (this.labelWidths.size >= LABEL_WIDTHS_MAX) this.labelWidths.clear();
-        ctx.font = `600 ${LABEL_MEASURE_PX}px ${LABEL_FONT}`;
+        ctx.font = `700 ${LABEL_MEASURE_PX}px ${LABEL_FONT}`;
         w = ctx.measureText(text).width;
         this.labelWidths.set(text, w);
       }
@@ -1940,7 +1940,9 @@ export class MapView {
     };
     // Each name is a state (PLAN 2.7e): the layout is told what is on and what still fades out.
     const { data, names } = this.labelData;
-    const labels = fadeNationLabels(this.nameStates, now, (state) => layoutNationLabels(data, names, cam, this.geo, w, h, measure, state));
+    const lang = document.documentElement.lang || 'en';
+    const caps = (text: string): string => text.toLocaleUpperCase(lang);
+    const labels = fadeNationLabels(this.nameStates, now, (state) => layoutNationLabels(data, names, cam, this.geo, w, h, measure, state, caps));
     // Laid out here; drawn with the city layer, under its dots and names (`drawCityLayer`).
     this.nationLabels = labels;
   }
@@ -1952,7 +1954,7 @@ export class MapView {
    * way round it does not. The units and the flags, on the overlay, are above both as before.
    */
   private drawCityLayer(cam: Camera, dpr: number, now: number): void {
-    this.cityLabels.draw(cam, dpr, now, this.nameObstacles(cam), (ctx) => drawNationLabels(ctx, this.nationLabels, LABEL_FONT));
+    this.cityLabels.draw(cam, dpr, now, this.nameObstacles(cam), (ctx) => drawNationLabels(ctx, this.nationLabels, LABEL_FONT, (id) => this.ownColor.get(id)));
   }
 
   /** The nation names' widths and their glyphs', at LABEL_MEASURE_PX (`drawLabels`). */

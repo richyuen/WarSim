@@ -16847,3 +16847,27 @@ No rule changed and nothing on screen changed. One task came out of it.
   - The US hoard (7.3e): the United States is in the top five by land in 499 of 500 yearly samples
     and in every seed's longest-held top five; stasis holds on 8 of 10, so the note stands.
 - **Next:** PLAN 7.4.
+
+## 2026-10-16 — PLAN 7.4 split; 7.4a: nation names in capitals, in a shade of their land (render)
+
+- **Start:** gate green on a clean tree; critic not due. `reference/NOTES.md` (the user's taste
+  notes) is missing: every choice of taste in 7.4 is low confidence and logged as such.
+- **Split** 7.4 into 7.4a–f (the headline's five: names, order lines, ranking flags, UI frames,
+  borders and fonts; then the groups under it). Pictures: `.cache/74/shots.ts` (1920 × 1080, seed
+  99 three years in).
+- **Side by side** (ours `docs/evidence/7.4/a-before-*.png` beside `steam-screenshot-01` and
+  `-03`): the names were the largest difference of the map. AoC: capitals spaced apart, a darker
+  shade of the land with a lighter edge. Ours: near-black mixed case with a white halo. The
+  borders were not the difference (2.8 px and dark at 2000 m/px; their darkness is 7.4e). Seen
+  for later parts: a web of dashed order lines at 2000 m/px (7.4b), ranking rows without flags
+  (7.4c), AoC's framed panels (7.4d).
+- **Done** (ADR-440): capitals by the document's language, TRACKING 0.1 of the size, the fit
+  made to the spaced width; `nameInk` from the nation's colour (under luminance 0.16 lighter
+  letters and a darker edge); weight 700, edge 0.09 of the size. `a-after-*.png`: Poland, Italy,
+  Romania, Bulgaria and French West Africa read as AoC's; Germany light on its grey.
+- **Tests:** `nationLabelLayout.test.ts` 15 of 15 (5 new: capitals and the name kept, spacing,
+  the fit, a Turkish casing, the ink, the ink by nation); e2e by hand: `labels1938`,
+  `labelFades1938`, `cityNames1938`, `flagGone1938`, `morphNations1938`, `i18n` 8 of 8.
+- **Perf:** a zoom from 6000 to 1500 m/px over Europe, 1,200 frames, two runs each: the draw's
+  p95 6.2–6.4 ms against 6.0–6.4 at HEAD (`.cache/74/timing.ts`).
+- **Next:** PLAN 7.4b, the order lines at T1.

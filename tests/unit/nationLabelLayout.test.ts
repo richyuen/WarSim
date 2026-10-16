@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { drawNationLabels, fadeNationLabels, ladderPx, layoutNationLabels, MIN_PX, type NameState, type PlacedNationLabel } from '../../src/render/labels/nationLabels';
+import { DARK_NATION, drawNationLabels, EDGE, fadeNationLabels, ladderPx, layoutNationLabels, MIN_PX, nameInk, TRACKING, type NameState, type PlacedNationLabel } from '../../src/render/labels/nationLabels';
 import { FADE_MS, SwitchBank, ZOOM_HYSTERESIS } from '../../src/render/timing';
 import { LABEL_STRIDE } from '../../src/shared/nationLabels';
 
@@ -178,6 +178,59 @@ describe('nation names drawn at sizes of a ladder (PLAN 7.1l5)', () => {
     const label: PlacedNationLabel = { id: 1, text: 'Ab', fontPx: 23.7, area: 1, curved: false, alpha: 1, glyphs: [{ ch: 'A', x: 10, y: 20, angle: 0 }, { ch: 'b', x: 25, y: 21, angle: 0.1 }] };
     drawNationLabels(ctx, [label], 'sans-serif');
     expect(ladderPx(23.7)).not.toBeCloseTo(23.7, 2);
-    expect(calls).toEqual(['at 10,20', `A 23.700 line ${(23.7 * 0.14).toFixed(3)}`, 'at 25,21', `b 23.700 line ${(23.7 * 0.14).toFixed(3)}`]);
+    expect(calls).toEqual(['at 10,20', `A 23.700 line ${(23.7 * EDGE).toFixed(3)}`, 'at 25,21', `b 23.700 line ${(23.7 * EDGE).toFixed(3)}`]);
+  });
+});
+
+describe('nation names in the hand of AoC (PLAN 7.4a, ADR-440)', () => {
+  it('the glyphs are the name in capitals, spaced; the label keeps the name', () => {
+    const [l] = lay(ALONE, ['Xy'], 3);
+    expect(l!.text).toBe('Xy');
+    expect(l!.glyphs.map((g) => g.ch)).toEqual(['X', 'Y']);
+    // Two glyphs a letter's advance and the tracking apart.
+    const gap = l!.glyphs[1]!.x - l!.glyphs[0]!.x;
+    expect(gap).toBeCloseTo(l!.fontPx * (0.6 + TRACKING), 6);
+  });
+
+  it('the spaced capitals fit the curve: a long name is sized to lie within its ends', () => {
+    // 20 cells × 6 px = 120 px of curve: ten capitals and nine gaps are sized to lie within it.
+    const [l] = lay(ALONE, ['Abcdefghij'], 6);
+    const first = l!.glyphs[0]!;
+    const last = l!.glyphs.at(-1)!;
+    const half = (l!.fontPx * 0.6) / 2;
+    expect(last.x + half - (first.x - half)).toBeLessThanOrEqual(120 + 1e-6);
+  });
+
+  it('the casing is the one the caller gives: the capitals of a locale', () => {
+    const [l] = layoutNationLabels(ALONE, ['ix'], cam(3), GEO, VW, VH, measure, undefined, (s) => s.toLocaleUpperCase('tr'));
+    expect(l!.glyphs.map((g) => g.ch)).toEqual(['İ', 'X']);
+  });
+
+  it('a name is a darker shade of its land with a lighter edge; over a dark land the other way round', () => {
+    const rgb = (css: string): number[] => /rgba\((\d+), (\d+), (\d+)/.exec(css)!.slice(1, 4).map(Number);
+    const sum = (v: number[]): number => v[0]! + v[1]! + v[2]!;
+    const pink = 0xc84b64; // Poland
+    const ink = nameInk(pink);
+    expect(sum(rgb(ink.fill))).toBeLessThan(0xc8 + 0x4b + 0x64);
+    expect(sum(rgb(ink.edge))).toBeGreaterThan(0xc8 + 0x4b + 0x64);
+    // Of the land's hue: red stays the largest channel.
+    expect(rgb(ink.fill)[0]).toBe(Math.max(...rgb(ink.fill)));
+    const grey = 0x5a5a5a; // Germany: a luminance of 0.10, under DARK_NATION
+    expect(((0x5a / 255 + 0.055) / 1.055) ** 2.4).toBeLessThan(DARK_NATION);
+    const dark = nameInk(grey);
+    expect(sum(rgb(dark.fill))).toBeGreaterThan(3 * 0x5a);
+    expect(sum(rgb(dark.edge))).toBeLessThan(3 * 0x5a);
+  });
+
+  it('each name is drawn in the ink of its own nation, and without a colour in the plain one', () => {
+    const fills: string[] = [];
+    const ctx = {
+      save: () => {}, restore: () => {}, translate: () => {}, rotate: () => {}, scale: () => {},
+      strokeText: () => {}, fillText: function (this: { fillStyle: string }) { fills.push(this.fillStyle); },
+      font: '', lineWidth: 0, fillStyle: '', strokeStyle: '', globalAlpha: 1, textAlign: '', textBaseline: '',
+    } as unknown as CanvasRenderingContext2D;
+    const one = (id: number): PlacedNationLabel => ({ id, text: 'A', fontPx: 20, area: 1, curved: false, alpha: 1, glyphs: [{ ch: 'A', x: 0, y: 0, angle: 0 }] });
+    drawNationLabels(ctx, [one(1), one(2)], 'sans-serif', (id) => (id === 1 ? 0xc84b64 : undefined));
+    expect(fills).toEqual([nameInk(0xc84b64).fill, 'rgba(20, 22, 30, 0.82)']);
   });
 });

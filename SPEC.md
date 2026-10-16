@@ -2508,7 +2508,9 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
     every 2 s, when control changed.
   - *Drawing:* the app lays the glyphs out along the curve on a Canvas2D overlay
     (`src/render/labels/nationLabels.ts`). Font ≤ 2 × half-thickness and fits the curve length,
-    9–64 px; greedy glyph-circle collision runs largest first; dark text with a light halo.
+    9–64 px; greedy glyph-circle collision runs largest first. Since PLAN 7.4a (ADR-440) the
+    glyphs are the name's capitals spaced by 0.1 of the size, in a darker shade of the nation's
+    colour with a lighter edge (over a dark nation the other way round), as AoC's.
   - *Coming and going:* a name is a switch like the others (the list at the head of this
     section), one for each nation. On a looping map the copies of a name either side of the
     seam share it: it is on when any copy is wanted (PLAN 2.7k, `fadeNationLabels`).

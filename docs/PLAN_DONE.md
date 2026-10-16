@@ -10239,3 +10239,25 @@ Of 7.3 (open in PLAN.md):
     Run 2 (2026-10-16, seeds 601–610 on `23725fc`, `docs/sweeps/2026-10-16-sweep-b1-601.md`):
     ALL GREEN. Limits, riser, faller and no break-up 10 of 10; no stasis 8 of 10 (601: 25
     years, 604: 22). Seeds 601–610 are now seen.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.4 (open in PLAN.md):
+
+  - [x] 7.4a Nation names as AoC draws them: capitals, spaced, in a darker shade of the nation's
+    own colour with a lighter edge (the other way round over a dark land). AT: unit tests (the
+    capitals, the spacing within the curve, a locale's casing, the ink); `labels1938`,
+    `labelFades1938`, `cityNames1938`, `flagGone1938`, `morphNations1938`, `i18n` green; the
+    draw of a zoom no slower; pictures beside `steam-screenshot-03`.
