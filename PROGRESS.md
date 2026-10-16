@@ -16694,3 +16694,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Left to 7.3e:** the AI's suppression ignores the treasury; founded statelets under 8,500 km²
   live on after a white peace.
 - **Next:** PLAN 7.3e.
+
+## 2026-10-16 — PLAN 7.3e: the open findings of 7.3 decided; two parts (docs)
+
+- **Start:** gate green on a clean tree; critic not due (report on `228d083`, older than 10
+  commits: no step 2b).
+- **Found** (seeds 1 and 3 × 10 years, `docs/evidence/7.3/ceded-7.3e.md`): land given back by
+  revolt to its living core nation 396 and 582 times, rising year on year; on seed 3 the Soviet
+  Union's to France 100 times (11 months running), Italy 62, Yugoslavia 52. It is those nations'
+  own 1938 core, taken at peaces from year 1.3: the cores are right (3.12Rj's question), the
+  holder does not keep down what it took.
+- **Decided** (ADR-434): 7.3e1 a formation refilled from its nation's pool (AoC: reinforced from
+  the cores, PARITY row 74); 7.3e2 the AI pays suppression from its treasury (7.3d3's France and
+  the land above). Every other finding kept with its reason in ADR-434's table. SPEC §6.4 reads
+  as built (no SLBM; second strike by bombers).
+- **Next:** PLAN 7.3e1.

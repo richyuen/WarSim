@@ -167,6 +167,60 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-434 · 2026-10-16 · accepted — The open findings of PLAN 7.3 decided: two parts, the rest kept (PLAN 7.3e)
+
+- **Context.** PLAN 7.3 holds the findings the critic's reports (runs 2 to 6), the Phase 3
+  review, PLAN 3.12Rj, 5.12, 6.8, 7.3b and 7.3d3 left to Phase 7. 7.3e decides each: a part of
+  its own before the deciding sweep (7.3f), or kept with its reason. The rule: a part only for
+  what plausibly moves one of 7.3f's criteria (the five limits, riser, faller, stasis, break-up;
+  ADR-428) or a mechanism that plainly does not work; the rest kept, or 7.4's when it is a look.
+  Where 7.3f stands: the quick sweep of 7.3d3 (seeds 1–10 × 30 years) has limits, riser and
+  faller 10 of 10, no stasis and no break-up 8 of 10 each (the quorum); and the Soviet Union's
+  realm at 0 km² by year 30 in five seeds, the United Kingdom's or China's in two more.
+- **Found for this decision** (`docs/evidence/7.3/ceded-7.3e.md`, probes `.cache/73e/ceded.ts` and `where.ts`; seeds 1 and 3 × 10 years at
+  HEAD `76f8662`): land given back by revolt to its living core nation (`LandCeded`) 396 and
+  582 times, 7 to 114 a year and rising; on seed 3 the Soviet Union's to France 100 times
+  (11 months running), to Italy 62, to Yugoslavia 52. That land is the 1938 core of the nation
+  it goes back to (France's own provinces, Italy's, Yugoslavia's; a few of Luxembourg and French
+  West Africa now France's by kin, ADR-431): the Soviet Union took western Europe at peaces
+  (ADR-51) from year 1.3 and loses it province by province. The cores are right; the holder does
+  not keep down what it took.
+- **Parts** (PLAN 7.3e1, 7.3e2), in this order, each its own commit, ADR and quick sweep:
+  1. **A formation is refilled from its nation's pool** (7.3b's finding). No rule gives a
+     formation men back: on seed 7321 the Soviet formations bleed to shells and die while the
+     pool grows from 1.8 M to 9.1 M unused, and from year 10 it has no army; land formations in
+     contact a day in years 13 to 20 0.2 to 3.7. AoC's soldiers are reinforced from the cores
+     (PARITY row 74, TEXT+VISUAL 2026-10-02); SPEC §3.7 has no refill. First, because it moves
+     the pin and the balance every later part is judged on; it bears on the great powers that
+     vanish, on the land war that stops, and on N1 below.
+  2. **The AI pays for suppression from its treasury** (7.3d3's finding and 3.12Rj's). It
+     suppresses only with a surplus of 15% of its income, whatever its gold (France at 5,000
+     gold, suppression 0, while its far core land rose); the land given back above is the same
+     cause on conquered land.
+- **Kept, with the reason:**
+
+  | Finding | Source | Why kept |
+  |---|---|---|
+  | Founded statelets under 8,500 km² live through a white peace (seed 6, year 28: 14) | 7.3d3 | A white peace has no loser; ADR-432 absorbs a statelet at a peace it loses, which is the critic's ask ("weak statelets annexed in one war"). They stay targets of the next war. |
+  | Held land goes over only at the peace, not as it is taken (Germany–Poland, 90 days, no cell changes owner) | R3-B2 note, ADR-51 | The PROMPT asks for occupation and rightful-territory layers; occupation is drawn and is what the sweep's "land moving" counts (controller). ADR-51's transfer at a peace is what the 1.42 sweeps went green on. **[AoC-DEVIATION]** already logged by ADR-51's context: AoC hands land over as it is taken (TEXT). |
+  | Top five the same for 20 years (seed 31337), Brazil and Australia fixed (seed 2718) | R2-B5 | Judged now by the sweep (stasis, ADR-428): 8 of 10 at 30 years. 7.3f decides it. |
+  | A third of the events "broke away" (R2), the break-up (R3-B2, R4–R6-B3), rebels that grow without end (ADR-186) | critic, 3.9 | Done by 7.3c and 7.3d (ADR-430 to ADR-433) and judged by the sweep (break-up). |
+  | The land war stops (seed 7321, year 13) | 5.12 | 7.3b (ADR-429); what is left of it is part 1. |
+  | Armies lose 61% and 87% of their men in 60 days of a war that moves a border strip | R2 N1 | The losses are SPEC §5's combat model, tuned in Phase 3; with no refill a bled formation stayed a shell, which is what made them decisive. Measured again after part 1, not tuned before it. |
+  | A war takes in half the world ("United Kingdom +33 ⚔ Angola") | R2 N2 | Allies are called to their alliance's wars (SPEC §3.5); the harm it did, every long war wearing far core land, is gone with ADR-433. |
+  | The Americas do not move (seed 6021) | R3-B2 note | Phase 4's invasions are built (PLAN 4.5, 4.6); the sweep's riser and faller (10 of 10) judge movement. |
+  | The retreat: nothing fires on the retreating, the encircled do not surrender, one without supply retreats from every contact | 3.7c (ADR-150) | No criterion turns on it; part 1 changes what a formation is worth after a fight. A rule of its own if 7.3f or the critic asks. |
+  | One spearhead in eleven comes to contact; infantry follows no armour | 3.7c (ADR-153) | The AI's operational plan; the land war's stopping was the money (ADR-429) and the men (part 1), not the plan. |
+  | Italy, the Soviet Union and Japan under the armour share they want; one infantry division at a time at war | 3.7c (ADR-154) | ADR-429 orders the army before the armour; the share is taste, not a criterion. |
+  | A sector allotted more of a class than stand near it takes them from afar | 3.7c (ADR-152) | Not measured as harmful; no criterion. |
+  | The march home is unfed and has no longest way (153 days, 5 men of 785 arriving) | 3.7c (ADR-169, ADR-222) | Men lost on the way; with part 1 the pool refills them. A longest way is a rule of its own if the sweep shows armies dying on the road. |
+  | Nuclear use 4 to 177 bursts in 50 years; outrage and taboo untuned | 6.8 | The sweep's limits on nuclear weapons pass (7.3d3: used in 7 of 10 seeds, fallout at most 0.42% of the land); how often is taste. |
+  | SPEC §6.4's chain ends in an SLBM and its second strike counts submarines; neither is built | 6.8 | The PROMPT's delivery is bombers and missiles, both built; MAD arises without them (thousands of days of war under MAD a seed). SPEC amended to what is built. |
+  | China at 0 km² by year 50 in five of ten seeds (401–410); the Soviet Union by year 20 in five | 7.3 | A great power that vanishes is dynamism the faller criterion asks for; that it is half the seeds is measured again after part 1, which gives a bled power its men back. |
+
+- **Consequences.** 7.3e ticks with its last part. No code, no pin move in this decision; SPEC
+  §6.4 reads as built.
+
 ### ADR-433 · 2026-10-16 · accepted — A war wears a holder's far core land only by its losses, not its days; the pin moves (PLAN 7.3d3)
 
 - **Context.** After ADR-432 the break-up of ADR-428 held on 3 of 10 seeds. A probe of seeds 1,

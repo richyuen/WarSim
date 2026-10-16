@@ -162,6 +162,23 @@ quick sweep as a smoke test.
     ADR-429 too. Land formations in contact a day in years 13 to 20 with it: 0.2 to 3.7. To
     decide: whether a formation is refilled from its nation's pool (SPEC has no such rule; AoC's
     behaviour to be looked up), and what it costs.
+    Decided 2026-10-16 (ADR-434): the two parts below, in this order; every other finding of 7.3
+    kept with its reason in ADR-434's table. 7.3e ticks with 7.3e2.
+    - [ ] 7.3e1 A formation is refilled from its nation's pool of manpower (AoC: soldiers
+      reinforced from the cores, PARITY row 74). To decide in its ADR: who is refilled (not in
+      contact? in supply? on its nation's land?), how fast, at what gold, and what the economic
+      AI does with a pool against new orders. SPEC §3.7 gets the rule. AT: seed 7321, the Soviet
+      Union has 20 or more land formations at the start of year 13 (HEAD 1) and its pool does
+      not end year 10 over 5 M unused (HEAD 9.1 M); land formations in contact a day in years
+      13 to 20 above HEAD's (0.2 to 3.7, `docs/evidence/7.3/contact-7321.md`); the quick sweep
+      (seeds 1–10 × 30 years) limits 10 of 10 and stasis and break-up 8 of 10 or more, with the
+      seeds where the Soviet Union's realm ends at 0 km² reported (HEAD 5 of 10). The pin moves.
+    - [ ] 7.3e2 The economic AI pays for suppression from its treasury, not only from a surplus
+      of 15% of its income (France at 5,000 gold suppressed nothing while its far core land
+      rose; the Soviet Union lost western Europe province by province). AT: seeds 1 and 3 × 10
+      years, land given back by revolt (`LandCeded`) under HEAD's 396 and 582
+      (`docs/evidence/7.3/ceded-7.3e.md`, ADR-434), and the states founded on a holder's own far core land
+      (7.3d3's probe, seeds 5 and 6 × 30 years) under its 85 and 30; the quick sweep as 7.3e1's.
   - [ ] 7.3f The deciding sweep on unseen seeds (from 501) × 50 years. AT: the report ALL
     GREEN by the criteria of 7.3a.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).

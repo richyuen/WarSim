@@ -1868,7 +1868,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 
 ### 6.4 AI nuclear weapons
 - **Programme**: tech chain (fission research → enrichment → bomb → thermonuclear →
-  ballistic missiles → SLBM). It is expensive in industry and gold, and gated by
+  ballistic missiles; as built, `data/tech/nuclear.json`: atomic research → reactor → bomb →
+  thermonuclear, rocketry → ballistic missiles; no SLBM, ADR-434). It is expensive in industry and gold, and gated by
   `nukesAllowed` (global and per nation).
 - **Stockpile**: warheads are built over time with upkeep. **Delivery**: bombers (can be
   intercepted by fighters and AA, need range) or missiles (later tech, hard to stop).
@@ -1880,7 +1881,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - desperation: rises with losing war score, capital threatened, core loss, and
     fightToDeath.
   - retaliationRisk: the enemy's *and its allies'* deliverable second-strike capacity ×
-    their doctrine, plus survivable assets (subs, dispersed bombers).
+    their doctrine, plus survivable assets (dispersed bombers: a bomber flying counts, ADR-385;
+    submarines carry no warhead, ADR-434).
   - taboo: a global value that starts high, drops sharply after the first use worldwide,
     and recovers slowly. When both sides have assured second strike (**MAD**), the
     utility of first use is ≤ 0 unless desperation is extreme (fightToDeath or capital falling).
