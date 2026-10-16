@@ -56,6 +56,7 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     hud.onMapMode = (m) => view.setMapMode(m);
     view.onSelect = (id) => (hud.selected.value = id);
     hud.onSelectNation = (id) => view.select(id);
+    view.onGroundShown = (shown) => (hud.groundShown.value = shown);
     hud.onShowBattle = (x, y, span, fight) => view.showBattle(x, y, span, fight);
     hud.onShowSeaBattle = (x, y, span) => view.showSeaBattle(x, y, span);
     // A sea battle's view keeps its fleets clear of the panels at the view's sides (PLAN 4.12a).

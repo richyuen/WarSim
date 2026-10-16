@@ -59,6 +59,8 @@ quick sweep as a smoke test.
     - [x] 7.4f2 A phone's width (the critic's N8): the top bar, the ranking and a nation's panel
       apart and in view at 390 × 844, every button of the bottom bar in reach. AT: an e2e spec;
       the layout specs green.
+    - [x] 7.4f3 The legend at T2 and T3: occupied land is a tint there (PLAN 2.11f), and the
+      legend says so where the ground is the most of the picture. AT: an e2e spec.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -185,8 +187,6 @@ quick sweep as a smoke test.
     formation takes the dead one's place in a stack for one fade.
   - **A worn element at T2** is a paler sprite (PLAN 2.11g). On a light nation colour over a
     light fill (Japan's on China's) a sprite at 0.55 and one at 1 are close to the eye.
-  - **The legend at T2 and T3.** It says "Hatched: occupied land" at every zoom; since PLAN
-    2.11f occupied land is a tint with an eighth of the hatching there.
   - **Flags by scenario.** Done in PLAN 2.16b (ADR-109) for the worlds without a nation
     table. Left: a second table (another year) brings its own flags file; the worker and
     `ScenarioInfo.nationTags` know only that of 1938.

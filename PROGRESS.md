@@ -16972,3 +16972,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `phoneLayout1938` (new); `title`, `ticker1938`, `rankingRows1938`,
   `rankingFlags1938`, `nationPanel1938`, `hotkeys1938`: 15 of 15.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f3: the legend says occupied land is a tint at T2 and T3 (UI)
+
+- **Start:** gate green on a clean tree (`e89036d`); critic not due.
+- **Done:** the view tells the HUD when the ground of T2 and T3 is the most of the picture
+  (`groundShown`, ground share ≥ 0.5); the political legend's line is then "Tinted by the
+  occupier: occupied land" (`legend.occupiedTint`), else "Hatched: occupied land".
+- **Tests:** `legendOccupied1938` (new: 2000 m/px hatched, 60 m/px tinted, back); `mapModes1938`,
+  `i18n` green.
+- **Next:** PLAN 7.4f, the next group.

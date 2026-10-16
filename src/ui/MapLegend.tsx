@@ -13,6 +13,7 @@ const SEA_HOLDERS_SHOWN = 8;
  */
 export function MapLegend({
   mode,
+  groundShown = false,
   selected,
   seaHolders = [],
   seaHover = null,
@@ -20,6 +21,8 @@ export function MapLegend({
   airHover = null,
 }: {
   mode: MapMode;
+  /** The ground of T2 and T3 shown (PLAN 7.4f3): occupied land is a tint in the occupier's colour, not hatched. */
+  groundShown?: boolean;
   selected: string | null;
   seaHolders?: { name: string; color: number; zones: number }[];
   seaHover?: { name: string; holder: string | null } | null;
@@ -36,7 +39,7 @@ export function MapLegend({
       {legendFor(mode).map(([color, key]) => (
         <div class="legend-row" key={key}>
           {color !== null ? <span class="legend-swatch" style={{ background: hex(color) }} /> : null}
-          <span>{t(key as MessageKey)}</span>
+          <span>{t((key === 'legend.occupied' && groundShown ? 'legend.occupiedTint' : key) as MessageKey)}</span>
         </div>
       ))}
       {mode === 'seaControl' ? (

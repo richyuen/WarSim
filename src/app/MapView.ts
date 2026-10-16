@@ -195,6 +195,10 @@ export class MapView {
   private scatterOut = new Float32Array(0);
   /** The share of the ground of T2 and T3, and of what stands on it, in the frame drawn last (tests). */
   groundShare = 0;
+  /** Whether the ground of T2 and T3 is the most of the picture (PLAN 7.4f3): occupied land is a tint there, not hatched. */
+  groundShown = false;
+  /** Told when `groundShown` changes. */
+  onGroundShown: ((shown: boolean) => void) | null = null;
   /** Whether the instances are drawn (off: the ground without them; tests of the ground's texture). */
   instances = true;
   /** Whether the element sprites and figures are drawn (off: tests read the ground they stand on). */
@@ -1923,6 +1927,12 @@ export class MapView {
     // The ground of T2 and T3 comes with the sprites, by their share of the handover (PLAN
     // 2.8a); and beyond T2 it goes with the zoom, whatever the handover's clock says (PLAN 2.11l).
     this.groundShare = this.shares.elements * groundReach(this.metresPerPx, T1_MIN_M * ZOOM_HYSTERESIS);
+    // The legend says how occupied land is drawn (PLAN 7.4f3): hatched, or with the ground a tint.
+    const close = this.groundShare >= 0.5;
+    if (close !== this.groundShown) {
+      this.groundShown = close;
+      this.onGroundShown?.(close);
+    }
     this.map.draw(cam, dpr, this.groundShare);
     this.drawGroundThings(cam, dpr);
     this.drawSprites(cam, now);

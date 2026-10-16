@@ -52,6 +52,8 @@ export class Hud {
   readonly nukeAlert = signal<TickerRow | null>(null);
   /** Map mode (PLAN 1.17), persisted; `onMapMode` applies it to the map view. */
   readonly mapMode = signal<MapMode>('political');
+  /** The ground of T2 and T3 is the most of the picture (PLAN 7.4f3): the legend says occupied land is a tint. */
+  readonly groundShown = signal(false);
   onMapMode: (mode: MapMode) => void = () => {};
   /** Selected nation id (0 = none; PLAN 1.30), set by map clicks. */
   readonly selected = signal(0);
