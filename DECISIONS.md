@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-420 · 2026-10-16 · accepted — Map sizes done: S and L meet the sweep criteria (PLAN 7.1b9)
+
+- **Context.** PLAN 7.1b's AT: S and L games start from the picker; the sweep criteria hold at S
+  and L; L's tick and memory reported (XL dropped, ADR-419).
+- **Decision.** Map sizes are done at S, M and L.
+  - Picker: `gameOptions1938.spec.ts` starts S from the settings panel and L from the title
+    screen; the URL, the sim's world and the view are at the size picked.
+  - Sweeps (`npm run sweep -- --size S|L`, the size passed to each seed's run): 10 seeds × 50
+    years each, **ALL GREEN** at both (`docs/sweeps/2026-10-15-sweep-size-s.md`,
+    `docs/sweeps/2026-10-16-sweep-size-l.md`). S: 92–229 alive, riser in 8 of 10 seeds, faller in
+    10; 14.1 min. L: 92–199 alive, riser and faller in 10 of 10; 65.7 min with 8 processes.
+  - L's tick, seed 99, five years pinned (`--affinity 0xFFFF`): 1.98 ms mean (years 2.71, 2.05,
+    1.75, 1.40, 2.01), against M's 1.47; over the 1.5 ms budget, which is M's. L's memory: 521 MB
+    of typed arrays after a month (M 157 MB), process 705 MB with both built.
+  - The two lone cells near Berlin at L (one Czech, one Polish) are provinces cut by the 1938
+    border (Ústí nad Labem, Lower Silesia) rasterised finer: a cell of each left apart from the
+    rest of its nation's. Cosmetic; left.
+- **Consequences.** Max speed at L is about three quarters of M's. PARITY row 70 partial (S, M, L; AoC also has editor maps of any size). The sweep
+  tool takes `--size`.
+
 ### ADR-419 · 2026-10-15 · accepted — XL dropped; the earth map's sizes are S, M and L (PLAN 7.1b7b)
 
 - **Measured** (seed 99's first year, headless, pinned, the bundle of HEAD): M 1.78 ms a tick, the

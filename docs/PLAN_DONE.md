@@ -9643,3 +9643,38 @@ Of 7.1b (open in PLAN.md):
 
   - [x] 7.1b8 The size picker in the new-game options; a scenario file at another size than its
     scenario's own (refused by `checkScenarioFile`) starts a game at its size.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
+  hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
+  ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
+  The shares of land are km² since PLAN 1.42e (ADR-57: a war's shares, overextension, the
+  admin cost). Left in cells for this task: `OVEREXT_CELLS`,
+  `MILITIA_PER_CELLS`, the largest fragment of a collapse (`revival.ts`).
+  AT: S and L games start from the picker; the sweep criteria hold at S and L; XL meets its
+  tick and memory budgets.
+  Split on 2026-10-15 (ADR-416, the audit), one cause a part, M identical (the pin) until 7.1b9:
+  - [x] 7.1b1 The audit of what is counted in cells after Phases 2 to 6 (ADR-416).
+  - [x] 7.1b2 The distances to km: the AI's, combat's and the elements', movement's and the sea's, […]
+  - [x] 7.1b3 The areas to km²: overextension, militia, a Kill's states, a collapse's fragment.
+  - [x] 7.1b4 Territory's rates by the km: a front moves as many km a day at every size.
+  - [x] 7.1b5 The sizes drawn in metres (elements, figures, markers, fire, orbits).
+  - [x] 7.1b6 The game's own geometry where `SIZE_1938` is read; the provinces rasterised at the […]
+  - [x] 7.1b7 The assets of L and XL (terrain, elevation; ADR-13 again; the mask at 4 and 2 px a […]
+  - [x] 7.1b7b XL (ADR-418): the mask is 2.67 px to its cell at 6,144; XL at 8,192, the mask by […]
+  - [x] 7.1b8 The size picker in the new-game options; a scenario file at another size than its […]
+  - [x] 7.1b9 The AT: S and L games from the picker; the sweep criteria at S and L; L's tick and
+    memory reported (XL dropped, ADR-419).

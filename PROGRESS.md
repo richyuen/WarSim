@@ -16449,3 +16449,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The user's decisions (2026-10-15):** the top speed stays as it is (ADR-413, option 1); both AI
   rules (refused orders not asked again until something changes; no orders by a long way round)
   are to be taken up under PLAN 1.42.
+
+## 2026-10-16 — PLAN 7.1b9: the AT of map sizes; PLAN 7.1b done
+
+- **Start:** gate green; critic not due.
+- **Done** (ADR-420): `npm run sweep -- --size`; sweeps at S and L, 10 × 50 years, all green;
+  an L game from the title screen's picker (`gameOptions1938.spec.ts`); L's tick 1.98 ms over
+  five years (M 1.47), arrays 521 MB; the lone cells near Berlin at L traced (provinces cut by the
+  1938 border), left.
+- **Next:** PLAN 1.42 (balance, with the two AI rules the user decided to take up).

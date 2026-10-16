@@ -3,13 +3,13 @@
  * and yearly for the SPEC §10 dynamism metrics. Writes one JSON result. Land is measured in km²,
  * not in cells (ADR-52): the map is a Miller projection.
  *
- *   tsx tools/sweep/seed.ts <seed> <years> <out.json>
+ *   tsx tools/sweep/seed.ts <seed> <years> <out.json> [size]
  */
 import { writeFileSync } from 'node:fs';
 import { isLand } from '../../src/shared/terrain';
 import { landStandings } from '../../src/sim/landArea';
 import { cellAreaByRow } from '../../src/sim/nav/grid';
-import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { size1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { EventKind } from '../../src/shared/events';
 import { HISTORY_STRIDE } from '../../src/sim/history';
@@ -83,12 +83,13 @@ function realms(w: Sim['world'], area: Float64Array, living: readonly number[]):
 }
 
 function main(): void {
-  const [seedArg, yearsArg, out] = process.argv.slice(2);
+  const [seedArg, yearsArg, out, size] = process.argv.slice(2);
   const seed = Number(seedArg);
   const years = Number(yearsArg);
   if (!Number.isFinite(seed) || !Number.isFinite(years) || !out) throw new Error('usage: seed.ts <seed> <years> <out.json>');
   const t0 = performance.now();
-  const sim = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SIZE_1938.w) });
+  // At the map size asked (PLAN 7.1b9): the scenario's own when none is.
+  const sim = new Sim({ scenario: '1938', seed, assets: loadAssets1938(size1938(size).w), ...(size ? { options: { size } } : {}) });
   const w = sim.world;
   const land: number[] = [];
   for (let c = 0; c < w.cells.terrain.length; c++) if (isLand(w.cells.terrain[c]!)) land.push(c);

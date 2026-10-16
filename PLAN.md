@@ -29,26 +29,6 @@ quick sweep as a smoke test.
 
 ## Phase 7 — Balance, polish, soak
 
-- [ ] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M,
-  hash-checked); per-km territory hold rates and garrisons; L/XL terrain assets (revisit
-  ADR-13); per-game geometry instead of SIZE_1938; a size picker in the new-game options.
-  The shares of land are km² since PLAN 1.42e (ADR-57: a war's shares, overextension, the
-  admin cost). Left in cells for this task: `OVEREXT_CELLS`,
-  `MILITIA_PER_CELLS`, the largest fragment of a collapse (`revival.ts`).
-  AT: S and L games start from the picker; the sweep criteria hold at S and L; XL meets its
-  tick and memory budgets.
-  Split on 2026-10-15 (ADR-416, the audit), one cause a part, M identical (the pin) until 7.1b9:
-  - [x] 7.1b1 The audit of what is counted in cells after Phases 2 to 6 (ADR-416).
-  - [x] 7.1b2 The distances to km: the AI's, combat's and the elements', movement's and the sea's, […]
-  - [x] 7.1b3 The areas to km²: overextension, militia, a Kill's states, a collapse's fragment.
-  - [x] 7.1b4 Territory's rates by the km: a front moves as many km a day at every size.
-  - [x] 7.1b5 The sizes drawn in metres (elements, figures, markers, fire, orbits).
-  - [x] 7.1b6 The game's own geometry where `SIZE_1938` is read; the provinces rasterised at the […]
-  - [x] 7.1b7 The assets of L and XL (terrain, elevation; ADR-13 again; the mask at 4 and 2 px a […]
-  - [x] 7.1b7b XL (ADR-418): the mask is 2.67 px to its cell at 6,144; XL at 8,192, the mask by […]
-  - [x] 7.1b8 The size picker in the new-game options; a scenario file at another size than its […]
-  - [ ] 7.1b9 The AT: S and L games from the picker; the sweep criteria at S and L; L's tick and
-    memory reported (XL dropped, ADR-419).
 - [ ] 1.42 **Moved here from Phase 1 on 2026-10-03 (ADR-58, the user's decision): balance is
   judged when the features are in. Blocked after three attempts before that (BLOCKERS.md);
   its prerequisites 1.42d, 1.42e and 1.42f are done. Judged by area, on seeds from 401.**
@@ -624,3 +604,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 6.11 Critic R6-B2 (report of 2026-10-15 on `228d083`), first of two: where the AI's warheads […]
 - [x] 6.12 Critic R6-B2, second: who strikes whom. The first use in history is the Soviet Union […]
 - [x] 7.1 Performance pass against all budgets (T0 60 fps, T2 30 fps @10k, tick ≤ 1.5 ms). […]
+- [x] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M, […]

@@ -106,3 +106,16 @@ test('a new game at another map size: the picker, the URL, the sim and the view 
   await page.getByTestId('settings-btn').click();
   await expect(page.getByTestId('opt-size')).toHaveValue('S');
 });
+
+test('a new game at the largest map size from the title screen: the sim and the view at L', async ({ page }) => {
+  test.setTimeout(240_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/');
+  await page.getByTestId('opt-size').selectOption('L');
+  await Promise.all([page.waitForURL(/size=L/), page.getByTestId('settings-new-game').click()]);
+  await ready(page);
+  const geo = await page.evaluate(() => window.__warsim!.view!.geo);
+  expect([geo.w, geo.h, geo.scale]).toEqual([4096, 2048, 2]);
+  const s = await inspect(page);
+  expect(s.nations.filter((n) => n.living).length).toBeGreaterThan(90);
+});
