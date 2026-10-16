@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-448 · 2026-10-16 · accepted — Opaque panels; six war banners (PLAN 7.4f6)
+
+- **Context.** The critic's N15 (names and counters showed through the ranking) and N16 (war
+  banners three rows deep over the map). With PLAN 7.4d's frames the panels were 0.95 opaque; at
+  1400 px eight banners are three rows.
+- **Decision.** The frames' fill is opaque. `MAX_BANNERS` 8 → 6: two rows at 1400 × 800, one or
+  two wider; the rest is the "+N" chip, as before. SPEC's "at most 8" follows.
+- **Also seen, already right:** the banners no longer stand over the History panel (its foot is
+  above them since PLAN 3.12Rh), and the date no longer wraps at a pause (PLAN 3.12Rh1). Both
+  lines left PLAN 7.4's list.
+- **Tests.** `warBannerRows1938.spec.ts` (nine wars by command, at 1400 and 1920);
+  `toBattle1938` now expects the six banners shown; `ranking1938`, `ticker1938` green.
+
 ### ADR-447 · 2026-10-16 · accepted — A phone's width: the panels apart, the bar scrolls (PLAN 7.4f2)
 
 - **Context.** The critic's N8 (and its report of 2026-10-07): at 390 × 844 the top bar ran under

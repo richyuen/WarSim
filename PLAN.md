@@ -66,6 +66,8 @@ quick sweep as a smoke test.
       of the title; an e2e spec of two pacts in the panel.
     - [x] 7.4f5 The critic's N12: the editor's terrain layer shows the terrain map mode, and the
       nation layer the mode before. AT: `editor1938` reads the mode at each switch.
+    - [x] 7.4f6 The critic's N15, N16: the panels opaque; at most two rows of war banners at
+      1400 px and wider (6, the rest "+N"). AT: an e2e spec at 1400 and 1920 with nine wars.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -226,8 +228,6 @@ quick sweep as a smoke test.
   - N13: the flag editor has no undo, line or circle.
   - N14: ranking rows have no flags and five metrics (AoC: nine lists, the dead marked);
     charts have no axis ticks and no value under the cursor; the economy tab is six numbers.
-  - N15, N16: map names and counters show through the Ranking panel; war banners stand three
-    rows deep over the map.
   - N17: a black smear under a counter near Bern in 1952 of seed 2718.
   - N18: no sound; one language.
   - N21: while the game runs, half-faded counters are on screen all the time as the clusters
@@ -241,8 +241,6 @@ quick sweep as a smoke test.
   - Occupied land at the close tiers is washed in the occupier's colour: French-held
     Germany is a blue field that reads as a lake. After 14 years the Soviet Union is a field
     of thin stripes of other nations' colours.
-  - War banners are drawn over the bottom rows of the History panel. The date label wraps
-    when "· Paused" does not fit, and the bar jumps.
   - Still there from the last report: no tooltip on hover.
   - A Kill leaves successors in greys that are nearly one colour. The random world names
     nations after provinces ("Seine-Maritime") and paints half of them purple or magenta;

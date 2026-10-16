@@ -2584,7 +2584,7 @@ on screen.
   one line (PLAN 4.11, ADR-305: the name cut with an ellipsis, the value never wrapping), with
   the nation's flag and a bar in its colour as long as its value is of the first row's (PLAN
   7.4c, ADR-442, as AoC's Statistics panel); one banner
-  per active war (side leaders, ally counts, score bar) above the bottom bar, at most 8 + "+N".
+  per active war (side leaders, ally counts, score bar) above the bottom bar, at most 6 + "+N" (8 until PLAN 7.4f6: three rows deep at 1400 px).
   A click on a banner selects the attackers' leader and, when the war has a battle (gold
   swords; ADR-96), flies the camera to it at 20 m/px (`flight` in `render/camera.ts`: pan and
   zoom in one eased movement, ended by any camera input; ADR-91, ADR-94, ADR-95, ADR-97).

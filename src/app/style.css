@@ -922,7 +922,8 @@ body {
    near-black edge and cream caps at its corners; buttons brown with a tan rim. One rule for
    every panel, so they read as one set. Taste, low confidence (no reference/NOTES.md). */
 :root {
-  --frame-bg: rgba(70, 48, 51, 0.95);
+  /* Opaque (PLAN 7.4f6, the critic's N15: names and counters showed through the ranking). */
+  --frame-bg: rgb(70, 48, 51);
   --frame-band: #5c3a3d;
   --frame-edge: #160d0e;
   --frame-cap: #e8d4b0;

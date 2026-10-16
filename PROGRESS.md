@@ -17004,3 +17004,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `editor1938` reads the mode at both switches; `editorDrag1938`, `mapImport1938`,
   `scenarioEditor1938`: 6 of 6.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f6: opaque panels, two rows of war banners (UI)
+
+- **Start:** gate green on a clean tree (`988e380`); critic not due.
+- **Seen** (`.cache/74/hist-1400.png`, seed 99 three years in, the History open): the banners
+  stand clear of the History panel and the date does not wrap (both lines were stale); the
+  panels let the map through faintly.
+- **Done** (ADR-448): the frames' fill opaque; `MAX_BANNERS` 8 → 6 (two rows at 1400 px).
+  N15, N16 and the History line off the list under 7.4.
+- **Tests:** `warBannerRows1938` (new, 2 of 2); `toBattle1938` (expects 6 shown), `ranking1938`,
+  `ticker1938`: green.
+- **Next:** PLAN 7.4f, the next group.

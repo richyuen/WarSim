@@ -333,7 +333,7 @@ test('weeks into Germany against Poland the banner leads to two formations front
   console.log(`day ${day}, banner of war ${war}: to (${seen.battle.x.toFixed(2)}, ${seen.battle.y.toFixed(2)}) at ${seen.m.toFixed(1)} m/px; the battle has ${seen.battle.count[0]} + ${seen.battle.count[1]} formations, ${seen.battle.men[0]} + ${seen.battle.men[1]} men; formations ${seen.battle.formations.join(' and ')}: ${seen.a.on} of ${seen.a.all} and ${seen.b.on} of ${seen.b.all} elements on the screen, the blocks' middles ${apart.toFixed(0)} px apart; ${seen.formationsOnScreen} formations have elements on the screen`);
   await page.screenshot({ path: path.join(out, 'to-battle-front.png') });
 
-  // A world with a full row of banners (8, `MAX_BANNERS`): the first tenth day on from that front
+  // A world with more wars than banners (8; `MAX_BANNERS` is 6 since PLAN 7.4f6): the first tenth day on from that front
   // with eight wars (PLAN 5.8w12).
   const wars = async (): Promise<number> => page.evaluate(async () => (await window.__warsim!.sim.inspect()).wars.length);
   while ((await wars()) < 8 && day < 150) {
@@ -351,7 +351,7 @@ test('weeks into Germany against Poland the banner leads to two formations front
       if ((b.dataset['battle'] === '1') !== has) wrong.push(b.dataset['war']!);
     }
     return { wrong, banners: document.querySelectorAll('[data-testid="war-banner"]').length, some: lit > 0 };
-  }), { timeout: 20_000 }).toEqual({ wrong: [], banners: 8, some: true });
+  }), { timeout: 20_000 }).toEqual({ wrong: [], banners: 6, some: true });
   const lit = await page.locator('[data-testid="war-banner"][data-battle="1"]').count();
   console.log(`day ${day}: ${lit} of 8 banners have a battle`);
 });

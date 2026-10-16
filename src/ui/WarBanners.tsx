@@ -2,7 +2,11 @@ import type { NationStat, WarStat } from '../shared/protocol';
 import { t } from './i18n';
 import { displayName } from './NationPanel';
 
-const MAX_BANNERS = 8;
+/**
+ * Banners shown, the rest a "+N" (PLAN 7.4f6, the critic's N16): at 8 they stood three rows deep
+ * over the map at 1400 px; 6 are two rows there and one or two wider.
+ */
+export const MAX_BANNERS = 6;
 const hex = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;
 
 /**
