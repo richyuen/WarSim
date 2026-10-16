@@ -108,6 +108,9 @@ quick sweep as a smoke test.
       `godPanelMore1938`.
     - [x] 7.4f20 A formation in a stack of T1 markers picked by a click: a click on the stack
       whose formation is open opens the next of it, round to the lead. AT: `stackPick1938`.
+    - [x] 7.4f21 Tags under the page's boxes: a tag gives way to the top bar, the legend, a
+      nation's or formation's panel, the ranking, a top-centre panel and the ticker's rows, as to
+      the banners and the bar. AT: `tags1938` (a block under the nation panel; red before).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -123,11 +126,6 @@ quick sweep as a smoke test.
     infantry division 410" stands over the column of Tank brigade 395, whose own tag is
     below it with a line. The line says whose the tanks are; the other tag is still the one
     above them. A tag a gap clear of other formations' elements was not tried.
-  - **Tags under the page's boxes** (seen 2026-10-07, PLAN 3.10c1b,
-    `docs/evidence/3.10/c1b-tanks.png` and the tank battle demo's stops 5 and 6): the tag of
-    "Light infantry division 418" lies under the map mode's legend at the bottom right, and
-    at the two closest stops the brigade's tag stands at the top edge, half under the title
-    bar. The tags give way to the war banners and the bottom bar only (PLAN 2.14f2).
   - **A tag far from its block at T3** (seen 2026-10-07, PLAN 3.7f,
     `docs/evidence/2.10/stop-7-battalions.png`, after ADR-168): at 12 m/px the tag of
     "Motorised division 47" stands at the view's right edge and its line runs 480 px back

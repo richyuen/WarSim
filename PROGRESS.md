@@ -17184,3 +17184,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `stackPick1938` (new: the Spanish front after two weeks, the largest stack clicked
   through and back to its lead); `markerStacks1938`, `formationPanel1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f21: tags give way to the page's panels (UI)
+
+- **Start:** gate green on a clean tree (`3c45644`); critic not due.
+- **Done:** the tags' obstacles (`view.tagObstacles`, `game.tsx`) take the top bar, the legend,
+  the nation and formation panels, the ranking, the top-centre panels and the ticker's rows
+  besides the banners and the bar (PLAN 2.14f2).
+- **Tests:** `tags1938` 2 of 2 (new: the German block under Germany's panel at 150 m/px, no tag
+  under any box; red on the old list: "the tag of 1468 at 109, 252 under a box at 8, 54").
+- **Next:** PLAN 7.4f, the next group.

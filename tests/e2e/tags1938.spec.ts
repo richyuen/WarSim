@@ -246,3 +246,45 @@ test('at T2 and T3 every formation in the view has its flag, strength and name b
   }
   expect(under, 'tags under the war banner or the bottom bar').toEqual([]);
 });
+
+// PLAN 7.4f21 (from the Phase 2 review's list under PLAN 7.4, "Tags under the page's boxes"): a
+// tag gave way to the war banners and the bottom bar only, and stood under a nation's panel, the
+// legend or the top bar. With a block under the open nation panel, no tag is drawn under it.
+test('a tag does not stand under the page\'s panels', async ({ page }) => {
+  test.setTimeout(150_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const SITE = border();
+  await step(page, setup(SITE));
+  const german = (await page.evaluate(() => window.__warsim!.view!.formationIds())).sort((a, b) => a - b).slice(-2)[0]!;
+  await zoomTo(page, SITE[0], SITE[1], 150);
+  await page.evaluate((n) => window.__warsim!.view!.select(n), GER);
+  await expect(page.getByTestId('nation-panel')).toBeVisible();
+  const panel = (await page.getByTestId('nation-panel').boundingBox())!;
+  // The German block's middle to the middle of the panel.
+  await page.evaluate(({ id, sx, sy }) => {
+    const v = window.__warsim!.view!;
+    const cam = v.controller.cam;
+    let [x, y, n] = [0, 0, 0];
+    for (let i = 0; i < v.elementCount; i++) {
+      if (v.elementFormation[i] !== id) continue;
+      x += v.elementX[i]!;
+      y += v.elementY[i]!;
+      n++;
+    }
+    v.controller.set({ cx: x / n - (sx - window.innerWidth / 2) / cam.scale, cy: y / n - (sy - window.innerHeight / 2) / cam.scale, scale: cam.scale });
+  }, { id: german, sx: panel.x + panel.width / 2, sy: panel.y + panel.height / 2 });
+  await settle(page);
+  const boxes = await page.evaluate(() => [...document.querySelectorAll('.nation-panel, .topbar, .map-legend, .stats-ranking, .bottombar, .war-banner, .ticker-row')].map((e) => {
+    const r = e.getBoundingClientRect();
+    return { x: r.left, y: r.top, w: r.width, h: r.height };
+  }));
+  const tags = await page.evaluate(() => (window.__warsim!.view!.draw(), window.__warsim!.view!.tagRects.map((t) => ({ id: t.id, x: t.x, y: t.y, w: t.w, h: t.h }))));
+  for (const t of tags)
+    for (const b of boxes) {
+      const ox = Math.min(t.x + t.w, b.x + b.w) - Math.max(t.x, b.x);
+      const oy = Math.min(t.y + t.h, b.y + b.h) - Math.max(t.y, b.y);
+      expect(ox > 0.5 && oy > 0.5, `the tag of ${t.id} at ${t.x.toFixed(0)}, ${t.y.toFixed(0)} under a box at ${b.x.toFixed(0)}, ${b.y.toFixed(0)}`).toBe(false);
+    }
+});

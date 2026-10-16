@@ -81,7 +81,9 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     });
     // A formation's tag does not stand under the war banners or the bottom bar (PLAN 2.14f2):
     // each banner's own box, for they are a row in the middle and not a band across the view.
-    view.tagObstacles = () => [...document.querySelectorAll('.war-banner, .war-more, .bottombar')].map((e) => {
+    // Nor under the page's panels (PLAN 7.4f21): the top bar, the legend, a nation's or a
+    // formation's panel, the ranking, a top-centre panel and the ticker's rows.
+    view.tagObstacles = () => [...document.querySelectorAll('.war-banner, .war-more, .bottombar, .topbar, .map-legend, .nation-panel, .stats-ranking, .history-panel, .ticker-row')].map((e) => {
       const r = e.getBoundingClientRect();
       return { x: r.left, y: r.top, w: r.width, h: r.height };
     });
