@@ -16734,3 +16734,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   taken on (pools emptied); its 60 days met a Manchukuo block 1.519 cells from its enemy's block
   with refills, a case of the deploy rule, left to PLAN 7.4. Pin 207a252e → 9ecbfefd.
 - **Next:** PLAN 7.3e2.
+
+## 2026-10-16 — PLAN 7.3e2: suppression paid from the treasury (sim)
+
+- **Start:** the change in the tree from a session cut off; its gate red with 169 vitest workers
+  that died at start (Windows 0xC0000142, two 30-year probes beside it), green alone.
+- **Measured first** (HEAD `66ab9a5`, `docs/evidence/7.3/suppress-7.3e2.md`): given back by
+  revolt 635 and 317 on seeds 1 and 3 × 10 years, four fifths by holders at the half level;
+  states on their holder's own core 8 and 45 on seeds 5 and 6 × 30 years.
+- **Done** (ADR-436): `suppressionLevel`: full while the treasury holds a month of it over 3
+  months of income, else half from a surplus over 15%, judged before suppression. Rejected: the
+  half level from the treasury (457 and 339).
+- **AT:** given back 62 and 196 (seeds 5, 6: 286, 313); births on the holder's core seed 6 10,
+  seed 5 12 against 8, not met: seven the United Kingdom's in year 30 at 3.1 months of gold,
+  under the bar of 3.15, added to PLAN 7.3e3. Quick sweep (13.7 min, `quick-7.3e2.md`) limits,
+  riser, faller 10 of 10, stasis and break-up 9, the Soviet realm at 0 km² in 2 (seeds 9, 10).
+  Gotcha: a probe that reads the restless set after the AI's tick sees provinces the revolts'
+  system pushed over 40 in that tick; read it before the tick.
+- **Tests:** `economicAi.test.ts` (the levels; the German case at full with a treasury). Pin
+  9ecbfefd → 12cfc6c4.
+- **Next:** PLAN 7.3e3.

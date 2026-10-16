@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { ARMOUR_FULL_INCOME, ARMOUR_SHARE_MAX, ARMY_SHARE_WAR, armourWanted, economicAi, MAX_PARALLEL, PARALLEL_INCOME, peaceShare, POOR_INCOME, RESERVE_MONTHS, RICH_INCOME, SUPPRESS_LEVEL } from '../../src/sim/ai/economic';
+import { ARMOUR_FULL_INCOME, ARMOUR_SHARE_MAX, ARMY_SHARE_WAR, armourWanted, economicAi, MAX_PARALLEL, PARALLEL_INCOME, peaceShare, POOR_INCOME, RESERVE_MONTHS, RICH_INCOME, SUPPRESS_FULL, SUPPRESS_LEVEL, SUPPRESS_ROOM, suppressionLevel } from '../../src/sim/ai/economic';
+import { SUPPRESSION_COST } from '../../src/sim/systems/revolts';
 import { RULES_1938 } from '../../src/sim/scenario1938';
 import { monthlyAccounts } from '../../src/sim/systems/economy';
 import { destroyFormation } from '../../src/sim/systems/elements';
@@ -85,9 +86,23 @@ describe('economic AI (PLAN 1.26)', () => {
     for (let q = 1; q < w.provinces.count && p === 0; q++) if (w.cells.owner[g.centre[q]!] === GER) p = q;
     w.provinces.core[p] = POL!; // German-held, rightfully Polish
     w.provinces.unrest[p] = 60;
+    w.nations.cols.gold[GER!] = 1e6;
     runEvents(s, 1);
-    expect(w.nations.cols.suppression[GER!]).toBe(SUPPRESS_LEVEL);
+    expect(w.nations.cols.suppression[GER!]).toBe(SUPPRESS_FULL);
     expect(w.nations.cols.suppression[SWE!]).toBe(0);
+  });
+
+  it('a treasury over its reserve pays for full suppression, a surplus for half (PLAN 7.3e2)', () => {
+    const income = 100;
+    // France of 7.3d3: gold, no surplus. A month of the full level over the reserve pays for it.
+    const reserve = RESERVE_MONTHS * income;
+    expect(suppressionLevel(true, reserve + SUPPRESSION_COST * SUPPRESS_FULL * income, income, 0)).toBe(SUPPRESS_FULL);
+    expect(suppressionLevel(true, reserve, income, 0)).toBe(0);
+    // Under the reserve, the surplus pays for the half level as before.
+    expect(suppressionLevel(true, reserve, income, SUPPRESS_ROOM * income + 1)).toBe(SUPPRESS_LEVEL);
+    expect(suppressionLevel(true, reserve, income, SUPPRESS_ROOM * income)).toBe(0);
+    // Nothing restless, nothing paid, whatever the treasury.
+    expect(suppressionLevel(false, 1e9, income, income)).toBe(0);
   });
 
   it('with the AI off nothing is disbanded or ordered', () => {

@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-436 · 2026-10-16 · accepted — A treasury over its reserve pays for full suppression; the pin moves (PLAN 7.3e2)
+
+- **Context.** The economic AI suppressed at 0.5 only from a month's surplus over 15% of its
+  income (ADR-434: France at 5,000 gold suppressed nothing while its far core land rose; the
+  Soviet Union lost western Europe province by province). Measured first on HEAD `66ab9a5`
+  (`docs/evidence/7.3/suppress-7.3e2.md`): land given back by revolt 635 on seed 1 and 317 on
+  seed 3 in 10 years, four fifths of it by holders that suppressed at the half level (517 and
+  274); states founded on their holder's own core land 8 on seed 5 and 45 on seed 6 in 30 years.
+- **Decision.** `suppressionLevel` in `ai/economic.ts`, for a nation with a province of unrest ≥
+  40: SUPPRESS_FULL (1) while its treasury holds a month of it (SUPPRESSION_COST × income) over
+  RESERVE_MONTHS of income; else SUPPRESS_LEVEL (0.5) while the month's balance before any
+  suppression is over SUPPRESS_ROOM (15%) of income; else 0. The balance was judged with last
+  month's level in it, so a nation suppressing judged its room net of its own suppression; it is
+  now judged before it, and the month's balance then takes the level set (the research budget,
+  the orders and the refills after it see that cost).
+- **Attempts** (seeds 1 and 3 × 10 years): A, the half level from a treasury over its reserve
+  or the surplus: given back 457 and 339, about HEAD's (the half level is what failed, not who
+  paid). B (kept), the full level from the treasury: 62 and 196.
+- **AT:** given back 62 and 196 against HEAD's 635 and 317 (and the AT's 396 and 582, of
+  `76f8662`); seeds 5 and 6 × 30 years 286 and 313 against 691 and 1,154. States founded on the
+  holder's own core: seed 6 10 against 45, met; **seed 5 12 against 8, not met.** Seven of the
+  12 are the United Kingdom's in year 30, at suppression 0 with 3.1 to 3.2 months of income in
+  gold, under the bar of 3.15, and no surplus for the half: a treasury held at the reserve, the
+  finding of PLAN 7.3e3 (its refills and orders), which now also has to say whether a restless
+  nation keeps a month of suppression over the reserve. None of the 12 was at a war that wore
+  it. Quick sweep (seeds 1–10 × 30 years, `quick-7.3e2.md`): limits, riser and faller 10 of 10,
+  stasis and break-up 9 of 10; the Soviet realm at 0 km² in 2 of 10 (seeds 9, 10; 7.3e1's report
+  by the same count 7, its log 6).
+- **Checked:** at each month start, every restless nation whose treasury before the AI was over
+  the bar was at full, 2,173 nation-months of seed 6's years 1–15. A province that crosses 40 in
+  the revolts' system of the AI's tick is met a month later, as before.
+- **Pin:** 9ecbfefd → 12cfc6c4.
+
 ### ADR-435 · 2026-10-16 · accepted — A land formation is refilled from its nation's pool, after the month's orders; the pin moves (PLAN 7.3e1)
 
 - **Context.** No rule gave a formation men back (ADR-434, part 1): on seed 7321 the Soviet

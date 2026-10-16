@@ -181,7 +181,7 @@ quick sweep as a smoke test.
       contact a day in years 13–20 mean 3.3 against 0.6; the quick sweep limits, riser, faller and
       stasis 10 of 10, break-up 8, the Soviet realm at 0 km² in 6. The pool clause is not met
       (9.25 M at year 10): its cause is the treasury's reserve, PLAN 7.3e3.
-    - [ ] 7.3e2 The economic AI pays for suppression from its treasury, not only from a surplus
+    - [x] 7.3e2 The economic AI pays for suppression from its treasury, not only from a surplus
       of 15% of its income (France at 5,000 gold suppressed nothing while its far core land
       rose; the Soviet Union lost western Europe province by province). AT: seeds 1 and 3 × 10
       years, land given back by revolt (`LandCeded`) under HEAD's 396 and 582
@@ -189,6 +189,11 @@ quick sweep as a smoke test.
       (7.3d3's probe, seeds 5 and 6 × 30 years) under the code's before the change, measured
       again first (`births-7.3d3.md`'s 85 and 30 are from before ADR-433, and after 7.3e1 the
       code is another); the quick sweep as 7.3e1's.
+      Done 2026-10-16 (ADR-436, `docs/evidence/7.3/suppress-7.3e2.md`, `quick-7.3e2.md`): the full
+      level from a treasury a month of it over the reserve, else the half from the surplus; given
+      back 62 and 196 on seeds 1 and 3 (HEAD 635 and 317), births on the holder's core seed 6 10
+      (HEAD 45). Not met: seed 5 12 (HEAD 8), seven the United Kingdom's in year 30 at 3.1 months
+      of gold, under the bar: PLAN 7.3e3. Quick sweep limits, riser, faller 10, stasis, break-up 9.
     - [ ] 7.3e3 The treasury's reserve holds the pool unused (left by 7.3e1, ADR-435). A new
       order and a refill both keep RESERVE_MONTHS (3) of income in the treasury, and an order
       wants its price on top: seed 7321 at the month after year 9, the Soviet Union 13,636 gold
@@ -199,7 +204,10 @@ quick sweep as a smoke test.
       month's next order (`disband.ts`, `bind.ts` in `.cache/73e1/`). AT: seed 7321, the Soviet
       pool does not end year 10 over 5 M unused (7.3e1's clause, measured again first on the code
       before the change); seed 1, the Soviet Union raises in years 1–10 no fewer than HEAD's 8;
-      the quick sweep as 7.3e1's.
+      the quick sweep as 7.3e1's. From 7.3e2 (ADR-436): a restless treasury held at the reserve
+      pays for no suppression (seed 5, the United Kingdom's seven states in year 30 at 3.1 to 3.2
+      months of income, the bar 3.15); to decide with the reserve whether a restless nation's
+      refills and orders keep a month of suppression over it.
   - [ ] 7.3f The deciding sweep on unseen seeds (from 501) × 50 years. AT: the report ALL
     GREEN by the criteria of 7.3a.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).

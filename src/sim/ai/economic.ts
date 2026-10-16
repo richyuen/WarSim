@@ -18,8 +18,12 @@
  *    Before the army (PLAN 4.6e1): while its navy's upkeep is over NAVY_SHARE of its income, the
  *    fleets that stand (not under way, not in a sea battle) are laid up, the dearest first
  *    (`FleetsLaidUp`, a crew's DISBAND_MANPOWER back to the pool).
- * 2. Suppression: SUPPRESS_LEVEL while a province it holds has unrest ≥ SUPPRESS_FROM
- *    and the budget has room (B > SUPPRESS_ROOM × income), else 0.
+ * 2. Suppression, while a province it holds has unrest ≥ SUPPRESS_FROM (`suppressionLevel`):
+ *    SUPPRESS_FULL while the treasury holds a month of it over RESERVE_MONTHS of income, else
+ *    SUPPRESS_LEVEL while the budget has room (B before any suppression > SUPPRESS_ROOM × income),
+ *    else 0. B then takes the level set (PLAN 7.3e2, ADR-436: from the surplus alone, France with
+ *    5,000 gold suppressed nothing while its far core land rose, and four fifths of the land given
+ *    back by revolt was ceded by holders that suppressed, at the half level).
  * 3. Build: up to 1 + income/PARALLEL_INCOME orders in training at once (at most MAX_PARALLEL),
  *    while army upkeep (with the orders in training) is below ARMY_SHARE × (PEACE_ARMY_BASE +
  *    (1 − PEACE_ARMY_BASE) × aggression/100) (peace: placid nations keep smaller standing
@@ -90,6 +94,8 @@ export const RUNWAY_MONTHS = 3;
 export const SUPPRESS_LEVEL = 0.5;
 export const SUPPRESS_FROM = 40;
 export const SUPPRESS_ROOM = 0.15;
+/** The level a treasury over its reserve pays for (PLAN 7.3e2, ADR-436): the most there is. */
+export const SUPPRESS_FULL = 1;
 export const ARMY_SHARE = 0.35;
 export const ARMY_SHARE_WAR = 0.6;
 export const PEACE_ARMY_BASE = 0.3;
@@ -306,8 +312,10 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
         }
         if (cut > 0) world.out.emit(world.tick, EventKind.FormationsDisbanded, n, cut, NaN, NaN);
       }
-      // 2. Suppression.
-      nc.suppression[n] = restless.has(n) && balance > SUPPRESS_ROOM * income ? SUPPRESS_LEVEL : 0;
+      // 2. Suppression, and the month's balance with the level set (it was taken with last month's).
+      const was = nc.suppression[n]!;
+      nc.suppression[n] = suppressionLevel(restless.has(n), nc.gold[n]!, income, balance + SUPPRESSION_COST * was * income);
+      balance -= SUPPRESSION_COST * (nc.suppression[n]! - was) * income;
       if (!world.rules) return;
       // 4. Research.
       nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
@@ -396,6 +404,18 @@ export function budgetOf(world: World, n: number, acc: { gross: ArrayLike<number
     SUPPRESSION_COST * nc.suppression[n]! * income +
     (nc.overlord[n] !== 0 ? TRIBUTE * (1 - nc.autonomy[n]! / 100) * income : 0);
   return { income, balance: income - acc.expenses[n]! - extra, need: DEBT_PAYBACK * Math.max(0, -nc.gold[n]!) + MARGIN * income };
+}
+
+/**
+ * The suppression level of a nation (PLAN 7.3e2, ADR-436) with a restless province or none, `gold`,
+ * `income` and `balance`, the month's balance before any suppression: SUPPRESS_FULL while its
+ * treasury holds a month of it over RESERVE_MONTHS of income, else SUPPRESS_LEVEL while the
+ * balance has room for it (over SUPPRESS_ROOM of income), else 0.
+ */
+export function suppressionLevel(restless: boolean, gold: number, income: number, balance: number): number {
+  if (!restless) return 0;
+  if (gold - SUPPRESSION_COST * SUPPRESS_FULL * income >= RESERVE_MONTHS * income) return SUPPRESS_FULL;
+  return balance > SUPPRESS_ROOM * income ? SUPPRESS_LEVEL : 0;
 }
 
 /** Nations holding a province with unrest ≥ SUPPRESS_FROM (non-core land, or an overextended empire's periphery). */
