@@ -18,7 +18,7 @@ battalions at 0.31 to 0.43 of their men, 54 shots an hour); in seed 1944's the d
 also fires no shot in the four hours. The spec passes here (2.7 min); its expectations are
 unchanged. It stays on `knownRed.json` for a software GPU's wall time, as its siblings.
 
-### PLAN 6.8 sweep: nations alive over 250 in 2 of 10 seeds (2026-10-14)
+### RESOLVED 2026-10-16 (PLAN 7.3f, ADR-439) · PLAN 6.8 sweep: nations alive over 250 in 2 of 10 seeds (2026-10-14)
 The sweep with nukes on (`docs/sweeps/2026-10-14-sweep-nukes.md`, seeds 1–10 × 50 years): seeds
 6 and 7 had 255 and 253 nations alive in some year; the limit is 250. The other four limits hold
 on every seed, riser and faller on 10 of 10. The world breaking up into revolts and releases is
@@ -30,6 +30,9 @@ and nuclear weapons are not: fallout's most was 0.65 % of the land).
 2026-10-16 (PLAN 7.3f run 1, seeds 501–510 × 50 years at M, after 7.3b–e): at most 95 to 124
 alive, half the limit. The limit is not the question any more; the break-up criterion of 7.3a
 (the count rising late in a run) is, in 4 of 10 seeds: PLAN 7.3g.
+**Resolved:** after ADR-439 (PLAN 7.3g), PLAN 7.3f's run 2 on unseen seeds 601–610 × 50 years
+(`docs/sweeps/2026-10-16-sweep-b1-601.md`) is ALL GREEN: at most 67 to 101 alive, the break-up
+criterion held on 10 of 10 (× 0.80–1.00). PLAN 7.3 ticked.
 
 ### RESOLVED 2026-10-16 (PLAN 1.42i) · PLAN 1.42 / critic B1: the leader-share and top-ten criteria do not hold on every unseen seed (2026-10-03)
 Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thresholds
