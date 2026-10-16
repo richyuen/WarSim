@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-438 · 2026-10-16 · rejected — A restless nation keeps a month of full suppression over the reserve (PLAN 7.3e3, part 2)
+
+- **Context.** ADR-436 left seed 5's United Kingdom suppressing nothing at 3.1 to 3.2 months of
+  income in year 30, under the full level's bar of 3.15 (RESERVE_MONTHS and a month of
+  SUPPRESSION_COST), with seven states founded on its own core land; PLAN 7.3e3 was to decide
+  whether a restless nation's refills and orders keep a month of suppression over the reserve.
+- **Tried.** `reserveOf(restless, income)`: the orders, the refills, the fleet and the wing of a
+  restless nation keep (RESERVE_MONTHS + SUPPRESSION_COST × SUPPRESS_FULL) × income, the bar
+  `suppressionLevel` pays the full level from.
+- **Measured** on top of ADR-437 (`docs/evidence/7.3/reserve-7.3e3.md`, `.cache/73e3/window.ts`,
+  read before the AI's tick), seeds 5 and 6 × 30 years: restless nation-months whose treasury
+  stood in [3, 3.15) months of income and not at full, pushed there from over the bar the month
+  before, 47 and 37 of 4,657 and 5,208 with ADR-437 alone; 27 and 20 with this rule. ADR-437 alone
+  had already taken the United Kingdom's case away: states founded on the holder's own core 2
+  and 5 (none British; seed 5's two at full), against 12 and 10 before it.
+- **Why rejected.** What it closes is under 1% of the restless nation-months, and it halves that
+  rather than ending it (an income that rises in the month moves the bar). The births and the
+  land given back on four seeds moved both ways (6 and 15 births, seed 5's six at full suppression) and
+  cannot tell it from noise; a rule that pays for no measured gain is not kept.
+
 ### ADR-437 · 2026-10-16 · accepted — With no army order in training, the refills keep the next order's price; the pool is not the reserve's measure; the pin moves (PLAN 7.3e3)
 
 - **Context.** PLAN 7.3e3 (left by ADR-435 and ADR-436): a new order and a refill both keep

@@ -56,3 +56,26 @@ nation's cadre one, or the cadre one without the infantry's techs.
 (`months-head-1.log`, `months-a-1.log`.) A new division and a refill cost the same gold a man:
 the rule does not spend more, it lets the treasury reach an order once in a while, and the
 refills take the rest while that order trains (90 days).
+
+## Part 2, not made: a restless nation's month of suppression over the reserve
+
+ADR-436 left seed 5's United Kingdom at 3.1 to 3.2 months of income in year 30, under the full
+level's bar of 3.15, with seven states founded on its own core land. Tried (ADR-438): a restless
+nation's orders, refills, fleet and wing keep RESERVE_MONTHS and a month of full suppression
+(`reserveOf`). Measured against part 1 (HEAD `b95469a`), `.cache/73e3/window.ts` (`check.ts` of
+7.3e2, read before the AI's tick): restless nation-months whose treasury before the AI stood in
+[3, 3.15) months of income and were not at full, and of them those over 3.15 the month before
+(pushed under the bar by their own spending, the case asked about).
+
+| | Seed 5 × 30 y | Seed 6 × 30 y |
+|---|---|---|
+| part 1: restless nation-months; in [3, 3.15) not at full; pushed under | 4,657; 75; 47 | 5,208; 68; 37 |
+| part 1 and 2 | 4,539; 45; 27 | 5,498; 34; 20 |
+| part 1: over the bar and not at full | 1 of 4,521 | 2 of 5,045 |
+
+With part 1 the case is 1% of restless nation-months; part 2 halves it, it does not end it (an
+income that rises in the month moves the bar). States founded on the holder's own core
+(`probe.ts`): HEAD of 7.3e2 12 and 10 on seeds 5 and 6; part 1 2 and 5 (none of the United
+Kingdom's; seed 5's two at full suppression); part 1 and 2 6 and 15 (seed 5's six at full): noise of the worlds,
+not the rule, in both directions. Land given back by revolt, seeds 1, 3, 5, 6: part 1 171, 254,
+269, 488; part 1 and 2 120, 239, 400, 794.

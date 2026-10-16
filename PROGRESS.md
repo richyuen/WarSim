@@ -16769,3 +16769,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `refill.test.ts` (no refill with no order in training and gold short of one; refilled
   with one in training). Pin 12cfc6c4 → 86845f61.
 - **Next:** PLAN 7.3e3 part 2, a restless nation's month of suppression over the reserve.
+
+## 2026-10-16 — PLAN 7.3e3, part 2 rejected; 7.3e3 and 7.3e ticked (docs)
+
+- **Tried** (ADR-438): a restless nation's orders, refills, fleet and wing keep a month of full
+  suppression over the reserve (`reserveOf`). Measured on top of ADR-437 (`.cache/73e3/window.ts`,
+  read before the AI's tick), seeds 5 and 6 × 30 years: restless treasuries pushed under the full
+  level's bar by their own spending 47 and 37 of 4,657 and 5,208 nation-months; with the rule 27
+  and 20. Births on the holder's core and land given back moved both ways on four seeds (noise).
+  Part 1 alone had already taken the United Kingdom's case away. Not kept.
+- **Quick sweep** (seeds 1–10 × 30 years on `b95469a`, 10.7 min, `quick-7.3e3.md`): limits,
+  riser, faller, stasis and break-up 10 of 10; the Soviet realm at 0 km² in 6 of 10.
+- **Tests run:** `economicAi.test.ts` and `refill.test.ts` in full with part 2 (21 of 21) before
+  it was reverted; the code is part 1's, gated at `b95469a`.
+- **Next:** PLAN 7.3f, the deciding sweep on unseen seeds (from 501) × 50 years.
