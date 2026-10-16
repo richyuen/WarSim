@@ -10302,3 +10302,23 @@ Of 7.4 (open in PLAN.md):
   - [x] 7.4c Ranking rows with the nation's flag and a bar in its colour, as AoC's Statistics
     panel (N14's flags). AT: an e2e spec reads a flag in every row; a picture beside
     `steam-screenshot-01`.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.4 (open in PLAN.md):
+
+  - [x] 7.4d UI frames: the panels and the bottom bar beside AoC's framed panels (taste: low
+    confidence without NOTES.md). AT: pictures beside `steam-screenshot-01` and `-03`, the
+    choice in an ADR.

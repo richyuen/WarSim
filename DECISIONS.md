@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-443 · 2026-10-16 · accepted — The panels in one frame after AoC's (PLAN 7.4d)
+
+- **Context.** AoC's panels (`steam-screenshot-01`, `-03`) are plum-brown in a maroon band with a
+  near-black edge and cream caps at the corners; its buttons are brown with a tan rim. Ours were
+  dark blue-grey boxes with a thin gold line, and the selects dark blue.
+- **Decision** (`src/app/style.css`, the block "Panel frames"): `--frame-*` colours on `:root`; the
+  top bar, bottom bar, legend, nation and formation panels, ranking, history, charts, settings,
+  editor and the title cards share one frame: a 5 px band (a background layer under the four
+  cream triangles, since a border is drawn over the background), a 2 px near-black edge, the
+  plum-brown fill. Buttons, tabs and the selects in panels are brown with a tan rim; an armed God
+  tool keeps its orange. Each panel's padding gives back the 4 px the band added, so every
+  outer box is the room the layout reserved (PLAN 3.12Rh; `ticker1938` failed without it).
+- **Not copied:** AoC's pixel-art wood and its icons; the frame is drawn by CSS gradients.
+- **Taste, low confidence** (`reference/NOTES.md` missing).
+
 ### ADR-442 · 2026-10-16 · accepted — Ranking rows with the nation's flag and a bar in its colour (PLAN 7.4c)
 
 - **Context.** AoC's Statistics panel (`steam-screenshot-01`, `-03`) lists nations as rows of a

@@ -50,9 +50,7 @@ quick sweep as a smoke test.
   - [x] 7.4a Nation names as AoC draws them: capitals, spaced, in a darker shade of the nation's […]
   - [x] 7.4b Order lines at T1 for what is selected and the player's own only (the critic of […]
   - [x] 7.4c Ranking rows with the nation's flag and a bar in its colour, as AoC's Statistics […]
-  - [ ] 7.4d UI frames: the panels and the bottom bar beside AoC's framed panels (taste: low
-    confidence without NOTES.md). AT: pictures beside `steam-screenshot-01` and `-03`, the
-    choice in an ADR.
+  - [x] 7.4d UI frames: the panels and the bottom bar beside AoC's framed panels (taste: low […]
   - [ ] 7.4e Borders and fonts: the border's darkness and width at T0 and the UI's font beside
     AoC's (its borders are about 3 px and near black at 2000 m/px, ours 2.8 px and lighter). AT:
     pictures; a change, or the reason for none, in an ADR.

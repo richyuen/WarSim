@@ -16900,3 +16900,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** e2e `rankingFlags1938` (new: a drawn flag in each of the 15 rows, the nation's own,
   15 different; the bars' shares and colours), `rankingRows1938` and `ranking1938` 3 of 3.
 - **Next:** PLAN 7.4d, the UI frames.
+
+## 2026-10-16 — PLAN 7.4d: the panels in one frame after AoC's (UI)
+
+- **Start:** gate green on a clean tree (`d85e219`); critic not due.
+- **Done** (ADR-443): one CSS frame for every panel (plum-brown fill, a 5 px maroon band painted as
+  a background layer under four cream corner caps, a near-black edge); brown buttons, tabs and
+  selects with a tan rim; an armed God tool keeps its orange. The padding of each panel gives the
+  band's 4 px back.
+- **Side by side:** `docs/evidence/7.4/d-frame-corner.png` beside `steam-screenshot-01`'s nation
+  panel corner; `d-after-europe-2000-panel.png`, `d-after-africa-4000.png`. Two tries looked at
+  and fixed: the caps were under the border (drawn over the background), then too small.
+- **Tests:** first run of the geometry specs: `ticker1938` 3 red (each panel 8 px larger than
+  the room the layout keeps); with the padding given back, `ticker1938`, `rankingRows1938`,
+  `title`, `nationPanel1938`, `settings1938`, `airOrders1938`, `canvasOpaque1938`, `editor1938`,
+  `flags1938`, `rankingFlags1938`, `tags1938`, `godUi1938`, `ranking1938`: 32 of 32.
+- **Next:** PLAN 7.4e, the borders' darkness and the fonts.

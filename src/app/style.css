@@ -917,3 +917,88 @@ body {
   cursor: pointer;
   padding: 0 0.2rem;
 }
+
+/* Panel frames (PLAN 7.4d, ADR-443), after AoC's: a plum-brown panel in a maroon band with a
+   near-black edge and cream caps at its corners; buttons brown with a tan rim. One rule for
+   every panel, so they read as one set. Taste, low confidence (no reference/NOTES.md). */
+:root {
+  --frame-bg: rgba(70, 48, 51, 0.95);
+  --frame-band: #5c3a3d;
+  --frame-edge: #160d0e;
+  --frame-cap: #e8d4b0;
+  --frame-trim: #b8957a;
+  --frame-button: #4d3537;
+  --frame-button-hi: #6a4a4c;
+}
+.topbar,
+.bottombar,
+.map-legend,
+.nation-panel,
+.stats-ranking,
+.history-panel,
+.title-card {
+  /* The band is a layer of the background under the caps (a border is drawn over them). */
+  border: 5px solid transparent;
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px var(--frame-edge), inset 0 0 0 1px rgba(0, 0, 0, 0.45), 0 3px 10px rgba(0, 0, 0, 0.45);
+  background:
+    linear-gradient(135deg, var(--frame-cap) 0 46%, transparent 47%) left top / 14px 14px no-repeat border-box,
+    linear-gradient(225deg, var(--frame-cap) 0 46%, transparent 47%) right top / 14px 14px no-repeat border-box,
+    linear-gradient(45deg, var(--frame-cap) 0 46%, transparent 47%) left bottom / 14px 14px no-repeat border-box,
+    linear-gradient(315deg, var(--frame-cap) 0 46%, transparent 47%) right bottom / 14px 14px no-repeat border-box,
+    linear-gradient(var(--frame-bg), var(--frame-bg)) padding-box,
+    linear-gradient(var(--frame-band), var(--frame-band)) border-box;
+}
+.bar-btn,
+.god-btn,
+.panel-tabs .tab {
+  color: #f6ead2;
+  background: linear-gradient(var(--frame-button-hi), var(--frame-button));
+  border: 1px solid var(--frame-trim);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--frame-edge);
+}
+.bar-btn:hover:not(:disabled),
+.god-btn:hover,
+.panel-tabs .tab:hover {
+  border-color: var(--frame-cap);
+}
+.panel-tabs .tab.active {
+  background: linear-gradient(#8a5a4c, #6b3f35);
+  border-color: var(--frame-cap);
+}
+/* An armed tool keeps its own orange (PLAN 1.32b). */
+.god-btn.active {
+  background: linear-gradient(#e98a6e, #c9573c);
+  border-color: var(--frame-cap);
+}
+.topbar select,
+.stats-ranking select,
+.nation-panel select,
+.history-panel select {
+  color: #f6ead2;
+  background: var(--frame-button);
+  border: 1px solid var(--frame-trim);
+  border-radius: 2px;
+}
+/* The band is 4 px wider than the 1 px border it replaced (the legend had none): each panel's
+   padding gives that room back, and its outer box is what the layout reserved (PLAN 3.12Rh). */
+.topbar {
+  padding: calc(0.35rem - 4px) calc(0.75rem - 4px);
+}
+.bottombar {
+  padding: calc(0.3rem - 4px) calc(0.6rem - 4px);
+}
+.map-legend {
+  padding: 3px 5px;
+}
+.nation-panel,
+.history-panel {
+  padding: calc(0.5rem - 4px) calc(0.7rem - 4px);
+}
+.stats-ranking {
+  padding: calc(0.4rem - 4px) calc(0.6rem - 4px);
+}
+.title-card {
+  padding: calc(0.8rem - 4px) calc(1rem - 4px);
+}
