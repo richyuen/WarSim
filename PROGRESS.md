@@ -16458,3 +16458,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   five years (M 1.47), arrays 521 MB; the lone cells near Berlin at L traced (provinces cut by the
   1938 border), left.
 - **Next:** PLAN 1.42 (balance, with the two AI rules the user decided to take up).
+
+## 2026-10-16 — PLAN 1.42: split (plan)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Split** 1.42 in three parts: 1.42g the refused orders (rule a), 1.42h the long ways (rule b),
+  1.42i the sweep from seed 401.
+- **Next:** PLAN 1.42g.

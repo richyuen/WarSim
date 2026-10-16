@@ -168,6 +168,19 @@ quick sweep as a smoke test.
   search read has changed (who holds the cells of its way, who is at war with whom); (b) the AI
   does not send a formation to a front it reaches only by a way several times the straight line
   (the nearest front it reaches directly, or it holds where it is). Each moves the pin.
+  Split on 2026-10-16, one cause a part (the two rules first, then the sweep on seeds from 401):
+  - [ ] 1.42g The AI's refused orders not asked again (rule a): a formation's order from the
+    operational AI that was refused for want of a way is not given again while it stands where
+    it stood, to the same cell, on the same ground (the passage's open holders the same, and no
+    cell gone from an open holder to a closed one or back since, `World.flipLog`).
+    AT: a unit test (refused on one day, not asked again the next with nothing changed; asked
+    again after a cell of the way changes hands, and after a war or a peace); seed 99's five
+    years with the refusals counted (ADR-414 d's count) and each year's hash.
+  - [ ] 1.42h No order by a long way round (rule b): the AI does not send a formation to a front
+    whose way is several times the straight line; it takes the nearest front it reaches
+    directly, or holds. AT: a unit test of the rule; seed 5303's year 5 (ADR-414 f) without the
+    ways of some 880 cells; the pin moved and logged.
+  - [ ] 1.42i The sweep: `npm run sweep:quick`, then the deciding sweep from seed 401.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.
