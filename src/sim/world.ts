@@ -845,9 +845,11 @@ export class World {
   /**
    * Derived (not state): by formation, the operational AI's last order refused for want of a way
    * (`askMove`, PLAN 1.42g): from the cell it stood on, to the cell, of the template, on the ground
-   * open by `ok`, when `flipLog` had `flips` changes. Dropped with the land counts.
+   * open by `ok`, when `flipLog` had `flips` changes (`to` -1: none refused so but for the way's
+   * length); and on that ground, the cells it was refused for the way's length (`long`, PLAN 1.42h).
+   * Dropped with the land counts.
    */
-  refusedOrders = new Map<number, { from: number; to: number; template: number; grid: NavGrid; ok: Uint8Array; flips: number }>();
+  refusedOrders = new Map<number, { from: number; to: number; template: number; grid: NavGrid; ok: Uint8Array; flips: number; long: number[] }>();
   /** Derived: bumped when God Mode renames a nation (labels re-derive, PLAN 1.32b). */
   namesVersion = 0;
   /** Global settings (state, saved in world.meta). */

@@ -170,10 +170,7 @@ quick sweep as a smoke test.
   (the nearest front it reaches directly, or it holds where it is). Each moves the pin.
   Split on 2026-10-16, one cause a part (the two rules first, then the sweep on seeds from 401):
   - [x] 1.42g The AI's refused orders not asked again (rule a): a formation's order from the […]
-  - [ ] 1.42h No order by a long way round (rule b): the AI does not send a formation to a front
-    whose way is several times the straight line; it takes the nearest front it reaches
-    directly, or holds. AT: a unit test of the rule; seed 5303's year 5 (ADR-414 f) without the
-    ways of some 880 cells; the pin moved and logged.
+  - [x] 1.42h No order by a long way round (rule b): the AI does not send a formation to a front […]
   - [ ] 1.42i The sweep: `npm run sweep:quick`, then the deciding sweep from seed 401.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.

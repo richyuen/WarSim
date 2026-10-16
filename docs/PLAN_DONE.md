@@ -9702,3 +9702,28 @@ Of 1.42 (open in PLAN.md):
     AT: a unit test (refused on one day, not asked again the next with nothing changed; asked
     again after a cell of the way changes hands, and after a war or a peace); seed 99's five
     years with the refusals counted (ADR-414 d's count) and each year's hash.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 1.42 (open in PLAN.md):
+
+  - [x] 1.42h No order by a long way round (rule b): the AI does not send a formation to a front
+    whose way is several times the straight line; it takes the nearest front it reaches
+    directly, or holds. AT: a unit test of the rule; seed 5303's year 5 (ADR-414 f) without the
+    ways of some 880 cells; the pin moved and logged.
+    Done 2026-10-16 (ADR-422): `LONG_WAY` 4 (`LONG_WAY_FLOOR_CELLS` 16), `findDirectRoute`,
+    `DIVERTS` 2, the coarse routes kept with the provinces' parts. `longWays.test.ts`; seed 5303's
+    year 5 with no way over 4 times its line (30 over 800 cells before, none after); pin 45df324d
+    → 9c51edae.

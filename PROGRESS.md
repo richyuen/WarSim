@@ -16476,3 +16476,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   283 (229 after a mixed change somewhere). No tick cost (same-time pairs).
 - **Test:** `refusedOrders.test.ts`.
 - **Next:** PLAN 1.42h.
+
+## 2026-10-16 — PLAN 1.42h: no order by a long way round (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-422): the AI's orders refused (`RejectReason.LongWay`) where the way is over 4
+  times the straight line (64 steps under a line of 16); a coarse route 3 times over that is
+  refused with no cell searched (`findDirectRoute`); the formation goes to the nearest other
+  sector of its class within the range (2 asked), else holds; the refusal kept as rule a's. The
+  coarse routes are kept with the provinces' open and shut (`NodeParts.coarse`): the refused were
+  asked each day at 0.63 ms, now 0.04 (same hash with and without).
+- **Measured:** seed 5303's year 5, ways over 4 times the line 40 → 0, over 800 cells 30 → 0;
+  seed 99's year 9 refusals for the length. Tick, same-time pairs against HEAD: seed 99's five
+  years 1.33/1.75 ms against 1.45/1.96; seed 5303's year 5 1.63/1.23 against 1.72/1.40.
+- **Pin:** 45df324d → 9c51edae; `saveYear` green.
+- **Test:** `longWays.test.ts` (Stockholm to Turku round the Gulf of Bothnia refused to the AI and
+  kept, given to a player; Luleå to Oulu given).
+- **Next:** PLAN 1.42i.

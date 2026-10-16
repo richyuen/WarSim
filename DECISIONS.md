@@ -167,6 +167,50 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-422 · 2026-10-16 · accepted — No order by a long way round; the pin moves (PLAN 1.42h)
+
+- **Context.** The user's decision of 2026-10-15 (rule b, under PLAN 1.42): the AI does not send a
+  formation to a front whose way is several times the straight line; it takes the nearest front it
+  reaches directly, or holds. ADR-414 f found the long ways of seed 5303's year 5: Belgian and
+  Dutch formations about 10° E 44° N sent to the coast at 53.5° N, ways of 875 to 899 cells.
+- **Measured first** (every order the AI's search gave, ends 8 cells apart or more): seed 99's
+  first year, 6 of 10,789 over 4 times the straight line, 37 over 3, 146 over 2; seed 5303's
+  fifth year, 40 of 1,501 over 4, ways of 312 to 899 cells (30 over 800) for lines of 39 to 85, 377 of the
+  year's 812 ms of the AI's searches.
+- **Decision.**
+  - The AI's orders (`askMove`, by `orderMove`'s `direct`) are refused, `RejectReason.LongWay`,
+    where the way is longer than `LONG_WAY` (4) times the straight line in steps of cells (over
+    the seam where the map loops), the line taken as `LONG_WAY_FLOOR_CELLS` (16, of the map's
+    default size) where it is shorter: a way round a lake of 20 cells for ends 3 apart is not a
+    long way.
+  - `findDirectRoute` (nav/provinceGraph.ts): where the coarse route by the provinces' centres is
+    longer than `COARSE_SLACK` (3) times the limit, no cell is searched. Seed 99's first 120
+    days: that way over the cells' was 0.90 to 2.80 times (255 ways), so the slack refuses no way
+    the cells would give. Else the cells are searched and their way measured.
+  - The refusal is kept as rule a's are (ADR-421): `World.refusedOrders` now has, besides the
+    cell refused for want of a way, the cells refused for the length on the same ground.
+  - The formation refused so goes to the front cell of the nearest other sector of its class
+    (the sectors it reaches) within the range, asked up to `DIVERTS` (2) of them, nearest first;
+    else it holds. Nothing of the allotment is changed: the next day's plan allots it as before,
+    and is refused as before, so no saved state is needed (a loaded game asks the search and is
+    answered the same).
+  - A player's order and a march home (ADR-169) have no such limit.
+  - The coarse routes over open provinces are kept with the provinces' `open` and `shut`
+    (`NodeParts.coarse`, in movement.ts; at most 4,096 a set of parts): a coarse route is of
+    those alone. Without it the refused were asked again each day at 0.63 ms each (seed 5303's
+    year: 10,699 refusals for the length, 6.4 s); with it 0.04 ms (367 ms). It changes no answer
+    (the year's hash the same with and without).
+- **Pin.** Seed 99 after one year: 45df324d → 9c51edae (the year's orders by long ways, and the
+  orders after them). `saveYear` green.
+- **What it did.** Seed 5303's year 5 (`.cache/l3/s5303-y4.bin`): no way over 4 times its line;
+  ways over 800 cells 0 (30 before); 10,611 refusals for the length, 367 ms. Seed 99's year: 9
+  refusals for the length. Tick (same-time pairs on separate P-cores against HEAD): seed 99's
+  five years 1.33 and 1.75 ms against 1.45 and 1.96; seed 5303's year 5 1.63 and 1.23 against
+  1.72 and 1.40. The balance is judged by PLAN 1.42i's sweep.
+- **Not done.** The allotment does not know a sector is refused to a formation (that would read
+  the derived memo, and a loaded game would allot otherwise: a desync), so a formation far from
+  every sector it reaches directly is allotted and refused each day, cheaply.
+
 ### ADR-421 · 2026-10-16 · accepted — The AI's refused orders not asked again; the pin stays (PLAN 1.42g)
 
 - **Context.** The user's decision of 2026-10-15 (rule a, under PLAN 1.42): the AI does not ask

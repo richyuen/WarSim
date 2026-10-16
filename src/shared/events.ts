@@ -181,6 +181,8 @@ export const RejectReason = {
   NoBase: 11,
   /** A paradrop (PLAN 5.8u2): no transport wings of its nation, on the ground at an airbase it stands at, can lift it now (or it is in contact). */
   NoAirlift: 12,
+  /** The AI's order (PLAN 1.42h, ADR-422): the way there is several times the straight line (`LONG_WAY`). */
+  LongWay: 13,
 } as const;
 export type RejectReason = (typeof RejectReason)[keyof typeof RejectReason];
 

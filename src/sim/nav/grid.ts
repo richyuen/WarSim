@@ -333,7 +333,7 @@ export interface Passage {
    * Where `joined`, once worked out, is kept for the passages after this one while it holds
    * (`passageOf`, PLAN 7.1i): until the nodes' parts or a cell of a closed holder change.
    */
-  keep?: { joined?: Int32Array | undefined };
+  keep?: { joined?: Int32Array | undefined; coarse?: Map<number, number[] | null> };
   /**
    * The routes `findRoute` has answered on this passage, by mobility and ends (PLAN 7.1l3): the
    * formations of a stack sent to one cell asked for the same search each, 18 of 3 ms in one plan

@@ -2004,7 +2004,18 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     nearest-first.
   - *Orders:* a sector at ≥ 1.5× local superiority attacks the enemy cell next to its centre;
     otherwise it holds its front cell. A formation is not re-ordered if its target is within a
-    sector of the current one.
+    sector of the current one. An order refused for want of a way is not given again while
+    nothing its search read has changed (PLAN 1.42g, ADR-421: the formation stands still, the
+    same holders are open to it, no cell went from an open holder to a closed one or back).
+  - *No long way round* (PLAN 1.42h, ADR-422; the user's decision of 2026-10-15): the AI's order
+    is refused (`RejectReason.LongWay`) where its way is longer than 4 times the straight line
+    in steps of cells (`LONG_WAY`), or 64 steps where the line is under 16 cells
+    (`LONG_WAY_FLOOR_CELLS`, of the map's default size); where its coarse route by the
+    provinces' centres is 3 times that (`COARSE_SLACK`) no cell is searched. The formation then
+    goes to the front cell of the nearest other sector of its class within the range, up to two
+    of them (`DIVERTS`), and else holds. Such a refusal is kept as one for want of a way is. A
+    player's order and a march home have no such limit. The coarse routes over open provinces
+    are kept with the open and shut provinces they were read on (`NodeParts.coarse`).
   - *Spearheads* (PLAN 3.5c, ADR-153): a formation is armour when half of its upkeep or more
     is in tanks (`SPEARHEAD_ARMOUR` against `EconomyTables.templateArmour`: 0.66 to 0.93 for
     the armour formations, 0.20 at most for the others; the planner looks at no element).

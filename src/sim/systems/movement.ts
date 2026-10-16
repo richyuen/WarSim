@@ -66,7 +66,7 @@ import { EventKind, RejectReason } from '../../shared/events';
 import { atan2 } from '../core/dmath';
 import { Mobility, MOVE_COST, stepKm, type MobilityId, type NavGrid, type Passage } from '../nav/grid';
 import { nearestCellWhere } from '../data/ownership';
-import { findRoute, nodeGroups, type ProvinceGraph } from '../nav/provinceGraph';
+import { findDirectRoute, findRoute, nodeGroups, type ProvinceGraph } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
 import { Domain, navOf, type World } from '../world';
 import { transportsPort, tryLanding } from './amphibious';
@@ -159,11 +159,18 @@ interface NodeParts {
    */
   joined?: Int32Array | undefined;
   flips: number;
+  /**
+   * The coarse routes over open nodes asked on these parts (`coarseRoute`, by mobility and ends;
+   * PLAN 1.42h): a route is of `open` and `shut` alone, so it is kept while they are.
+   */
+  coarse: Map<number, number[] | null>;
 }
 /** By world, the node parts last made for each set of open holders (`Passage.ok` as a string). */
 const NODE_PARTS = new WeakMap<World, { graph: ProvinceGraph; parts: Map<string, NodeParts> }>();
 /** The most sets of open holders kept by a world; more, and all are dropped. */
 const NODE_PARTS_KEPT = 256;
+/** The most coarse routes kept by one set of parts (`NodeParts.coarse`); more, and they are dropped. */
+const COARSE_KEPT = 4096;
 /** Parts behind by more bumps of `World.heldKeys` than this are made afresh, not patched. */
 const NODE_PARTS_PATCH = 256;
 
@@ -227,6 +234,7 @@ function nodeParts(world: World, ok: Uint8Array, key: string): NodeParts {
     wide: same ? was.wide : new Int32Array(graph.nodeCount),
     joined: same && patched ? was.joined : undefined,
     flips: same && patched ? was.flips : -1,
+    coarse: same && was.coarse.size < COARSE_KEPT ? was.coarse : new Map(),
   };
   if (was === undefined && kept.parts.size >= NODE_PARTS_KEPT) kept.parts.clear();
   kept.parts.set(key, parts);
@@ -376,13 +384,28 @@ function overSea(world: World, id: number, x: number, y: number): boolean {
 }
 
 /**
+ * The AI's way to a front (PLAN 1.42h, the user's decision of 2026-10-15, ADR-422): an order of
+ * `orderMove`'s `direct` is refused (`RejectReason.LongWay`) where its way is longer than this
+ * times the straight line, in steps of cells, or than this times LONG_WAY_FLOOR_CELLS. Seed 99's
+ * first year: 6 of 10,789 orders of the AI over 8 cells or more went more than four times the
+ * straight line; seed 5303's fifth: 40 of 1,501, ways of some 890 cells for 40 to 55.
+ */
+export const LONG_WAY = 4;
+/** The straight line below which a way is held to LONG_WAY times this instead, in cells of the map's default size. */
+export const LONG_WAY_FLOOR_CELLS = 16;
+/** The last `orderMove` was refused for its way's length (`LongWay`). */
+let refusedLong = false;
+export const wasLong = (): boolean => refusedLong;
+
+/**
  * `byPort` (a player's order, PLAN 4.9b): an order over the sea from where no transports wait
  * marches to the nearest port of its land with transports that have room (`transportsPort`), and
  * the order is kept (`world.seaBound`) for the amphibious system to embark it there. Any order
  * ends an order kept so.
  */
-export function orderMove(world: World, id: number, x: number, y: number, pass?: Passage, byPort = false): boolean {
+export function orderMove(world: World, id: number, x: number, y: number, pass?: Passage, byPort = false, direct = false): boolean {
   world.seaBound.delete(id);
+  refusedLong = false;
   // A fleet sails (PLAN 4.2c): its order is its own.
   if (world.formations.has(id) && world.isFleet(id)) return orderSail(world, id, x, y);
   // Aboard transports it takes no order (PLAN 4.5a).
@@ -411,14 +434,14 @@ export function orderMove(world: World, id: number, x: number, y: number, pass?:
     // No port of its land has transports for it: that is why where its nation holds one there.
     return order(world, id, x, y, pass, 0, transportsPort(world, id, false) >= 0 ? RejectReason.NoTransports : RejectReason.NoPort);
   }
-  return order(world, id, x, y, pass, 0, sea);
+  return order(world, id, x, y, pass, 0, sea, direct);
 }
 
 /**
  * `orderMove`, or with `home` 1 the order of a march home, over any ground but an enemy's (ADR-169,
  * ADR-222; `pass` is then `homeward`'s). `why`: the reason a refusal for want of a way gives.
  */
-function order(world: World, id: number, x: number, y: number, pass: Passage | undefined, home: 0 | typeof HOME_MARCH, why: RejectReason = RejectReason.NoRoute): boolean {
+function order(world: World, id: number, x: number, y: number, pass: Passage | undefined, home: 0 | typeof HOME_MARCH, why: RejectReason = RejectReason.NoRoute, direct = false): boolean {
   const f = world.formations;
   const { w, h } = world.cells;
   const rule = f.has(id) ? world.rules?.templates[f.cols.template[id]!] : undefined;
@@ -446,7 +469,19 @@ function order(world: World, id: number, x: number, y: number, pass: Passage | u
   const beyond = mid ? was[near ? at + 1 : at]! : -1;
   const nav = navOf(world);
   const target = snapTarget(world, origin, tx, ty);
-  const route = target < 0 ? null : findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, way);
+  let route = null;
+  if (target >= 0 && direct) {
+    let dx = Math.abs((origin % w) - (target % w));
+    if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+    const straight = Math.max(dx, Math.abs(Math.floor(origin / w) - Math.floor(target / w)));
+    const found = findDirectRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, way, LONG_WAY * Math.max(straight, world.atSize(LONG_WAY_FLOOR_CELLS)));
+    if (found === 'long') {
+      refusedLong = true;
+      world.out.emit(world.tick, EventKind.MoveRejected, id, c.nation[id]!, RejectReason.LongWay, NaN);
+      return false;
+    }
+    route = found;
+  } else if (target >= 0) route = findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, origin, target, way);
   if (!route) {
     world.out.emit(world.tick, EventKind.MoveRejected, id, c.nation[id]!, why, NaN);
     return false;

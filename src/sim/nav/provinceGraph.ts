@@ -442,17 +442,53 @@ export const COARSE_ABOVE_KM = 500;
  * A route asked again on the same passage is the one found the first time (`Passage.routes`).
  */
 export function findRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass?: Passage): PathResult | null {
-  if (!pass) return searchRoute(g, pg, mobility, start, goal);
+  // With no limit no route is 'long'.
+  if (!pass) return searchRoute(g, pg, mobility, start, goal) as PathResult | null;
   const key = (mobility * g.w * g.h + start) * g.w * g.h + goal;
   const routes = (pass.routes ??= new Map());
   const known = routes.get(key);
   if (known !== undefined) return known;
-  const route = searchRoute(g, pg, mobility, start, goal, pass);
+  const route = searchRoute(g, pg, mobility, start, goal, pass) as PathResult | null;
   routes.set(key, route);
   return route;
 }
 
-function searchRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass?: Passage): PathResult | null {
+/**
+ * A coarse route over its provinces is held to be longer than the cells' way when it is longer than
+ * this times the limit (`findDirectRoute`): a way by the provinces' centres zigzags where the cells
+ * cut across. Seed 99's first 120 days: the coarse way over the cells' 0.90 to 2.80 times (255
+ * ways; median 1.07, 2.19 at the 99th hundredth).
+ */
+export const COARSE_SLACK = 3;
+
+/**
+ * `findRoute` held to a length (PLAN 1.42h, ADR-422): 'long' where the way is longer than `longest`
+ * steps of cells, or its coarse route by the provinces' centres longer than COARSE_SLACK times that
+ * (then no cell is searched: the long ways of ADR-414 f were searches of 8 to 14 ms). A route found
+ * is kept by the passage as `findRoute` keeps it; a coarse route found too long is not, and
+ * `findRoute` asked for the same then searches.
+ */
+export function findDirectRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass: Passage, longest: number): PathResult | null | 'long' {
+  const key = (mobility * g.w * g.h + start) * g.w * g.h + goal;
+  const routes = (pass.routes ??= new Map());
+  let route = routes.get(key);
+  if (route === undefined) {
+    const found = searchRoute(g, pg, mobility, start, goal, pass, longest);
+    if (found === 'long') return 'long';
+    routes.set(key, (route = found));
+  }
+  return route !== null && route.cells.length - 1 > longest ? 'long' : route;
+}
+
+/** Steps of cells from one cell to another, a step to any of eight: over the seam where the map loops. */
+function steps(g: NavGrid, a: number, b: number): number {
+  let dx = Math.abs((a % g.w) - (b % g.w));
+  if (g.wrapX && dx > g.w / 2) dx = g.w - dx;
+  return Math.max(dx, Math.abs(Math.floor(a / g.w) - Math.floor(b / g.w)));
+}
+
+/** `longest`: of `findDirectRoute`, 'long' where the coarse route is longer than COARSE_SLACK times it. */
+function searchRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass?: Passage, longest = Infinity): PathResult | null | 'long' {
   if (!mayReach(g, pg, start, goal, pass)) return null; // O(1) unreachable
   const a = pg.nodeOf[start]!;
   const b = pg.nodeOf[goal]!;
@@ -464,8 +500,22 @@ function searchRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start:
   if (a !== 0 && b !== 0 && (open !== undefined || (a !== b && boundKm(g, start, goal) > COARSE_ABOVE_KM))) {
     const was = g.barred;
     if (open !== undefined && was && was.goal === goal && was.from === a && was.mobility === mobility && was.ok === pass!.ok && g.scratch!.stamp[start] === was.closed) return null;
-    const route = a === b ? [a] : coarseRoute(g, pg, mobility, a, b, open, open !== undefined ? pass!.shut : undefined);
+    let route: number[] | null;
+    if (a === b) route = [a];
+    else if (open === undefined || pass!.keep === undefined) route = coarseRoute(g, pg, mobility, a, b, open, open !== undefined ? pass!.shut : undefined);
+    else {
+      // Of the open and shut nodes alone: kept with them (PLAN 1.42h, `Passage.keep`).
+      const coarse = (pass!.keep.coarse ??= new Map());
+      const key = (mobility * pg.nodeCount + a) * pg.nodeCount + b;
+      route = coarse.get(key) ?? null;
+      if (!coarse.has(key)) coarse.set(key, (route = coarseRoute(g, pg, mobility, a, b, open, pass!.shut)));
+    }
     if (!route) return null;
+    if (longest < Infinity && route.length > 2) {
+      let way = steps(g, start, pg.centre[route[1]!]!) + steps(g, pg.centre[route[route.length - 2]!]!, goal);
+      for (let i = 2; i < route.length - 1; i++) way += steps(g, pg.centre[route[i - 1]!]!, pg.centre[route[i]!]!);
+      if (way > COARSE_SLACK * longest) return 'long';
+    }
     const corridor = new Uint8Array(pg.nodeCount);
     for (const node of route) {
       corridor[node] = 1;
