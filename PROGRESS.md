@@ -16783,3 +16783,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests run:** `economicAi.test.ts` and `refill.test.ts` in full with part 2 (21 of 21) before
   it was reverted; the code is part 1's, gated at `b95469a`.
 - **Next:** PLAN 7.3f, the deciding sweep on unseen seeds (from 501) × 50 years.
+
+## 2026-10-16 — PLAN 7.3f, run 1: FAILING on the break-up (docs)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Deciding sweep** (seeds 501–510 × 50 years on `c7026e9`, 18.4 min with 10 processes, against
+  53.2 min for seeds 401–410: about 80–120 nations alive, not 170–231;
+  `docs/sweeps/2026-10-16-sweep-b1-501.md`): FAILING (dynamism). Limits 10 of 10 (land moving
+  6.9–31.6 %, largest land 7.3–25.8 %, largest income 28.7–33.5 %, alive 65–124, war every
+  year); riser 10 of 10, faller 10 of 10; no stasis 8 of 10 (501: 25 years, 502: 23); no
+  break-up 6 of 10 (501 × 1.16, 504 × 1.17, 506 × 1.27, 508 × 1.20; bound 1.1). Seeds 401–410
+  were stasis 5 and break-up 0. Nukes used in 6 of 10 seeds, fallout at most 0.13 %.
+- **The break-up comes late:** every seed falls from about 96 alive to 75–96 by year 30; the
+  four failing seeds then rise (501: 86 → 115 in years 30–50; 508: 84 → 108 by year 40).
+  PLAN 7.3g added before 7.3f's next run (from seed 601): measure the foundings after year 30
+  by cause, fix that one.
+- **The US hoard** (PLAN 7.3e3's note): the United States is in every seed's longest-held top
+  five; the stasis criterion still holds on 8 of 10, so a note under 7.3, not a part.
+- BLOCKERS' PLAN 6.8 entry: the 250 limit is now far off (at most 124); left open under 7.3g.
+- **Next:** PLAN 7.3g.

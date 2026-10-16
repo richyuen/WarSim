@@ -27,6 +27,9 @@ the critic's R4-B3 and R5-B3, deferred to Phase 7 (PLAN 1.42); no constant was t
 and nuclear weapons are not: fallout's most was 0.65 % of the land).
 2026-10-16: the sweeps since keep the limit (seeds 1–10 at L: 141–199 at most; seeds 401–410:
 170–231); seeds 6 and 7 at M are not run again. Open under PLAN 7.3, with the break-up.
+2026-10-16 (PLAN 7.3f run 1, seeds 501–510 × 50 years at M, after 7.3b–e): at most 95 to 124
+alive, half the limit. The limit is not the question any more; the break-up criterion of 7.3a
+(the count rising late in a run) is, in 4 of 10 seeds: PLAN 7.3g.
 
 ### RESOLVED 2026-10-16 (PLAN 1.42i) · PLAN 1.42 / critic B1: the leader-share and top-ten criteria do not hold on every unseen seed (2026-10-03)
 Three attempts, each judged by one sweep of 10 unseen seeds × 50 years. The thresholds

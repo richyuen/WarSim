@@ -152,8 +152,23 @@ quick sweep as a smoke test.
   months of its income, its army at its peacetime cap; no reserve rule reaches it. To judge by
   7.3f's report (a hoard that never fights is a stasis).
   - [x] 7.3e The other findings above decided, each kept with its reason in an ADR or made a […]
+  Judged by 7.3f's first run (seeds 501–510, `docs/sweeps/2026-10-16-sweep-b1-501.md`): the
+  United States is one of the five largest nations by land in every seed's longest-held top
+  five (Australia in five of them, France in eight); stasis passed 8 of 10 (501: 25 years,
+  502: 23). Kept as a note, not a part: the criterion holds.
+  - [ ] 7.3g (before 7.3f's next run) The living nations rise again late in the run: seeds 501,
+    504, 506 and 508 end the break-up criterion at × 1.16, 1.17, 1.27 and 1.20 of the most 20
+    years before (the bound 1.1, ADR-428); seed 501 86 alive in year 30 and 115 in year 50,
+    seed 508 84 in year 30 and 108 in year 40, while in years 1–30 every seed falls from about
+    96 to 75–96. Measure first which events found the new nations after year 30 (revolts,
+    releases, revivals, break-ups of a realm) on those seeds' checkpoints, then fix that one
+    cause. AT: the count of foundings by cause after year 30 on seeds 501 and 506, before and
+    after; a quick sweep's limits 10 of 10.
   - [ ] 7.3f The deciding sweep on unseen seeds (from 501) × 50 years. AT: the report ALL
     GREEN by the criteria of 7.3a.
+    Run 1 (2026-10-16, seeds 501–510, `docs/sweeps/2026-10-16-sweep-b1-501.md`): FAILING
+    (dynamism). Limits, riser and faller 10 of 10; no stasis 8 of 10; no break-up 6 of 10
+    (needed 8): PLAN 7.3g. Seeds 501–510 are now seen; the next run from 601, after 7.3g.
 - [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).
   From PLAN 7.3e1 (2026-10-16, ADR-435): a flank file of a block held back at DEPLOY_REACH,
   against an enemy deployed away from it, can stand past contact reach from that enemy's block:
