@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-449 · 2026-10-16 · accepted — Occupied land at T2 and T3: a lighter cast of the occupier (PLAN 7.4f14)
+
+- **Context.** The critic (2026-10-07): at the close tiers occupied land is washed in the
+  occupier's colour, and French-held Germany is a blue field that reads as a lake. Seen again
+  (`docs/evidence/7.4/f14-occupied-before-100.png`: France painted over Hesse, 100 m/px): a flat
+  blue-grey with trees in it, beside Germany's warm ground.
+- **Decision.** `OCCUPIED_CAST` 0.42 → 0.3 (`src/render/map/ground.ts`): the terrain is the most of
+  occupied land, the occupier a cool cast on it (`f14-occupied-after-100.png`). The hatching's
+  share at the ground stays an eighth (HATCH_AT_GROUND, PLAN 2.11f): what of the stripes is left
+  is still that share of the picture, the shader's mix taking the new cast.
+- **Tests.** `occupiedGround1938` (the stripes 6.0 against the ground's 4.6 and 5.4; occupied
+  land still apart from the occupier's own), `occupation1938`, `groundColour1938`: green.
+
 ### ADR-448 · 2026-10-16 · accepted — Opaque panels; six war banners (PLAN 7.4f6)
 
 - **Context.** The critic's N15 (names and counters showed through the ranking) and N16 (war

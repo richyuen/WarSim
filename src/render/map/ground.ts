@@ -76,7 +76,8 @@ export const HATCH_AT_GROUND = 0.12;
  */
 export const GROUND_CAST = 0.14;
 export const BORDER_CAST = 0.62;
-export const OCCUPIED_CAST = 0.42;
+/** 0.42 until PLAN 7.4f14 (ADR-449): French-held Germany was a blue field that read as a lake. */
+export const OCCUPIED_CAST = 0.3;
 export const BORDER_BAND = 0.6;
 
 /**

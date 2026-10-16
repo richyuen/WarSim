@@ -2161,7 +2161,7 @@ toy world) is drawn flat: the one switch is for the ground as a whole.
 *The ground's colour (PLAN 2.14d, ADR-90):* with the ground's share the fill gives way to the
 terrain's colour (the terrain mode's blend of the four cells around) and stays as a cast on
 it: 0.14 of the fill away from borders, 0.62 on a border falling over about half a cell, at
-least 0.42 on occupied land (ADR-82's tint; an eighth of the hatching is left in the picture).
+least 0.3 on occupied land (ADR-82's tint, 0.42 until PLAN 7.4f14, ADR-449; an eighth of the hatching is left in the picture).
 Only where the land is coloured by a palette (not in the terrain and unrest modes), and not
 at T0 and T1. Plains in two nations are 14 apart in RGB where the fills are 103 apart.
 

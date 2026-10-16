@@ -89,6 +89,9 @@ quick sweep as a smoke test.
       city, "capital" when it is one, and its province's unrest. Lines of the list already
       settled taken off (the order lines at 400 m/px and N4's arrows: 7.4b; N18's sound: 3.12d).
       AT: `mapTooltip1938` at Berlin.
+    - [x] 7.4f14 Occupied land at T2 and T3 read as water (the critic of 2026-10-07: French-held
+      Germany a blue field like a lake): the occupier's cast on it 0.42 → 0.3, the terrain the most
+      of it. AT: pictures; `occupiedGround1938`, `occupation1938`, `groundColour1938` green.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -251,9 +254,8 @@ quick sweep as a smoke test.
     a nation spawned with a size, cities made and removed in the game, gold, CE, colour and
     unity edited from the God tab, donations (PARITY has the rows).
   From the critic's report of 2026-10-07, not blocking and in no task above:
-  - Occupied land at the close tiers is washed in the occupier's colour: French-held
-    Germany is a blue field that reads as a lake. After 14 years the Soviet Union is a field
-    of thin stripes of other nations' colours.
+  - After 14 years the Soviet Union is a field of thin stripes of other nations' colours (the
+    critic of 2026-10-07; the lake of the same line: PLAN 7.4f14).
   - Against AoC's God panel: Annex, Recolor, Fight to the Death, Donate (Nuke: Phase 6).
   - The critic did not test a player building an armoured division (a step of its own
     script failed on a selector).

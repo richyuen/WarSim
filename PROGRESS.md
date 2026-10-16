@@ -17106,3 +17106,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `mapTooltip1938` (Berlin: its name, "capital", Germany, "Unrest n"; the nation-only
   case moved off Leipzig's dot).
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f14: occupied land at T2 and T3 no longer reads as water (render)
+
+- **Start:** gate green on a clean tree (`9e3cd4d`); critic not due.
+- **Seen** (France painted over Hesse, seed 99, `.cache/74/occ.ts`): at 100 m/px a flat blue-grey
+  field with trees, like a lake (`docs/evidence/7.4/f14-occupied-before-100.png`).
+- **Done** (ADR-449): `OCCUPIED_CAST` 0.42 → 0.3: green ground with a cool cast
+  (`f14-occupied-after-100.png`); the hatching's eighth at the ground kept.
+- **Tests:** `ground.test.ts`; e2e `occupiedGround1938`, `occupation1938`, `groundColour1938`:
+  3 of 3.
+- **Next:** PLAN 7.4f, the next group.
