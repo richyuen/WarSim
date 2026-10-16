@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-425 · 2026-10-16 · accepted — The soak looks each day for NaN, infinity and `undefined` (PLAN 7.2b)
+
+- **Context.** Nothing stops an `undefined` or a NaN out of arithmetic from being written to the
+  history or a table (PLAN 3.7c; ADR-155 found one only by the page's hash leaving Node's).
+- **Decision.** `findNotFinite` (`tools/soak/soak.ts`), run on both twins after each day, before
+  the hashes: the first NaN or infinity in an f32 or f64 section of the save's own list
+  (`collectSections(World.parts())`, so a section added later is in it), and the first `undefined`
+  in the history's array, or NaN in a row's tick, kind, a or b. Not NaN in a row's x or y: a global
+  event's place is NaN by rule (`shared/events`), and the first year of seed 99 has such rows from
+  day 1. The history is read from its array, where `undefined` is still itself (its section is a
+  Float64Array, where it is NaN). The soak fails with the twin, the section and the index.
+- **Cost.** Under 1 ms a day in 1938 (302 ms over a year of seed 99, against 19.6 s of ticks).
+- **Result.** Seed 99, 30 minutes: green, 42.6 years (373,440 ticks), 5 saves and loads, no such
+  value in either twin on any day, final hash 89e0a530 (`docs/evidence/7.2/soak-1938-seed99-30min-7.2b.json`).
+
 ### ADR-424 · 2026-10-16 · accepted — The soak: two twins in Node, a load every 5 minutes, hashes every 30 days (PLAN 7.2a)
 
 - **Context.** SPEC §10's soak: 30 minutes of the wall at max speed, a save and load every 5
@@ -184,7 +199,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Result.** Seed 99, 30 minutes: green, 42.8 years (375,312 ticks), 5 saves and loads (39.5 to
   41.5 MB, 1.1 to 1.6 MB gzipped, 1.4 to 1.9 s each), final hash a871a916
   (`docs/evidence/7.2/soak-1938-seed99-30min.json`).
-- **Consequences.** PLAN 7.2b adds the look for NaN through `onDay`; PLAN 7.2's AT is run again
+- **Consequences.** PLAN 7.2b adds `findNotFinite` to each day of the loop (ADR-425); PLAN 7.2's AT is run again
   then.
 
 ### ADR-423 · 2026-10-16 · accepted — The gate's full unit stage runs a red test again alone

@@ -16546,3 +16546,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 7.2b.
 - **Addendum:** SPEC §10's soak and the tools list brought up to ADR-424; ADR-424 no longer
   names a start from a save the soak does not offer.
+
+## 2026-10-16 — PLAN 7.2b: the soak looks each day for NaN, infinity and `undefined` (tools)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-425): `findNotFinite` (`tools/soak/soak.ts`), on both twins after each day, before
+  the hashes: NaN or infinity in any f32/f64 section of the save's own list, `undefined` anywhere
+  in the history's array and NaN in a row's tick, kind, a or b. **Not** NaN in a row's x or y,
+  which the plan's text would have flagged: a global event's place is NaN by rule
+  (`shared/events`), and seed 99 has such rows from day 1 (the first probe stopped on one).
+- **Cost:** 302 ms over a year of seed 99 against 19.6 s of ticks (under 1 ms a day).
+- **Run:** 1938, seed 99, 30 minutes: green, 42.6 years, 5 loads, nothing found, final hash
+  89e0a530 (`docs/evidence/7.2/soak-1938-seed99-30min-7.2b.json`).
+- **Test:** `soak.test.ts` (a NaN and an infinity in a column found with section and index; an
+  `undefined` and a NaN in the history found, a global event's NaN place not; a NaN put in twin B
+  fails the soak that day, before any hash).
+- **Next:** PLAN 7.2c.

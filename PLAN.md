@@ -41,10 +41,7 @@ quick sweep as a smoke test.
     the page's test API can send them. Refuse them where a scenario file or a script could.
   Split on 2026-10-16, one cause a part:
   - [x] 7.2a `npm run soak` (`tools/soak/`, SPEC §10): two twins of one game at max speed in […]
-  - [ ] 7.2b The soak looks each day for a NaN or an infinity in every float section of the
-    state (from the save's own list of sections, so a section added later is in it) and for a
-    NaN or an `undefined` in the history's rows, before the hashes. AT: a unit test (a NaN put
-    in a column is found, with its section and index); the 30-minute run green again.
+  - [x] 7.2b The soak looks each day for a NaN or an infinity in every float section of the […]
   - [ ] 7.2c Commands with numbers out of range are refused (the reads named above: a strength
     of -5, a place at 1e9, a member twice, a side 5, a province 1.5, an `editPaint` line to
     1e9). AT: a unit test of each refused; the pin unmoved.

@@ -5,10 +5,14 @@
  * seed, as a page that resumes an autosave builds its game and then loads; save → load → save must
  * give the same bytes (I5). The twins' hashes are compared every `compareDays` days, after every
  * load and at the end: one apart, or any exception, fails the soak. Not every day by default: a
- * hash of the 1938 state takes 80 ms, more than the day's ticks (50 to 150 ms in 1938).
+ * hash of the 1938 state takes 80 ms, more than the day's ticks (50 to 150 ms in 1938). Each day,
+ * before the hashes, both twins are looked at for a NaN or an infinity in a float section and a
+ * NaN or `undefined` in the history (PLAN 7.2b, `findNotFinite`; under 1 ms a day in 1938).
  */
 import type { ScenarioAssets, ScenarioId } from '../../src/shared/protocol';
 import { packSave, unpackSave } from '../../src/shared/saveCodec';
+import { collectSections } from '../../src/sim/core/state';
+import { HISTORY_STRIDE } from '../../src/sim/history';
 import { size1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { laneOf } from '../../src/sim/world';
@@ -61,6 +65,8 @@ export interface SoakResult {
   failure?: string;
   /** The tick at which the twins' hashes were first seen to differ. */
   apartAt?: number;
+  /** The first NaN, infinity or `undefined` found in a twin's state (PLAN 7.2b). */
+  notFinite?: NotFinite;
   /** Ticks run by each twin (since the scenario's first). */
   ticks: number;
   years: number;
@@ -106,6 +112,40 @@ function sameBytes(x: Uint8Array, y: Uint8Array): boolean {
 
 const hex = (h: number): string => h.toString(16).padStart(8, '0');
 
+/** A value no arithmetic of the sim should leave in its state: where it is and what it is. */
+export interface NotFinite {
+  /** The save's section, or `history.rows` for the history's own array. */
+  section: string;
+  index: number;
+  value: number | undefined;
+}
+
+/** The history's columns [tick, kind, a, b] (x and y are NaN by rule for a global event, shared/events). */
+const HISTORY_NUMBERED = 4;
+
+/**
+ * The first `undefined` in the history's rows or NaN in their tick, kind, a or b, else the first
+ * NaN or infinity in another float section of the state (PLAN 7.2b). The sections are the save's
+ * own list (`World.parts`), so a section added later is looked at too. The history is read from
+ * its array, not its section: a row written with `undefined` is NaN once in a Float64Array, and a
+ * global event's place is NaN by rule.
+ */
+export function findNotFinite(sim: Sim): NotFinite | undefined {
+  const rows = sim.world.history.rows;
+  for (let i = 0; i < rows.length; i++) {
+    const v = rows[i];
+    if (v === undefined || (i % HISTORY_STRIDE < HISTORY_NUMBERED && Number.isNaN(v))) return { section: 'history.rows', index: i, value: v };
+  }
+  for (const s of collectSections(sim.world.parts())) {
+    if ((s.dtype !== 'f32' && s.dtype !== 'f64') || s.name === 'history.rows') continue;
+    const d = s.data;
+    for (let i = 0; i < d.length; i++) if (!Number.isFinite(d[i]!)) return { section: s.name, index: i, value: d[i] };
+  }
+  return undefined;
+}
+
+const notFiniteText = (n: NotFinite): string => `${String(n.value)} in ${n.section}[${n.index}]`;
+
 export async function runSoak(opts: SoakOptions): Promise<SoakResult> {
   const now = opts.now ?? (() => performance.now());
   const start = now();
@@ -136,6 +176,10 @@ export async function runSoak(opts: SoakOptions): Promise<SoakResult> {
       day(a);
       day(b);
       opts.onDay?.(a, b);
+      for (const [name, twin] of [['A', a], ['B', b]] as const) {
+        const n = findNotFinite(twin);
+        if (n) return result(false, { failure: `tick ${twin.tick}: twin ${name} has ${notFiniteText(n)}`, notFinite: n });
+      }
       const ending = now() - start >= opts.durationMs;
       if (days % every === 0 || ending) {
         const seen = apart(`tick ${a.tick}`);

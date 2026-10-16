@@ -9813,3 +9813,24 @@ Of 7.2 (open in PLAN.md):
     Minutes, interval, scenario and seed are arguments. AT: a unit test of a short soak of the
     toy world (green; a twin made to part is caught at its day); the 30-minute run of 1938
     green, its years and saves logged in `docs/evidence/7.2/`.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.2 (open in PLAN.md):
+
+  - [x] 7.2b The soak looks each day for a NaN or an infinity in every float section of the
+    state (from the save's own list of sections, so a section added later is in it) and for a
+    NaN or an `undefined` in the history's rows, before the hashes. AT: a unit test (a NaN put
+    in a column is found, with its section and index); the 30-minute run green again.
