@@ -16465,3 +16465,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Split** 1.42 in three parts: 1.42g the refused orders (rule a), 1.42h the long ways (rule b),
   1.42i the sweep from seed 401.
 - **Next:** PLAN 1.42g.
+
+## 2026-10-16 — PLAN 1.42g: the AI's refused orders not asked again (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-421): `askMove` in `operational.ts`, `World.refusedOrders`, `atAnyPort`. The pin did
+  not move: an order asked again on the same ground is refused again and changes no state (seed 99's
+  five years, every year's hash HEAD's; `saveYear` green).
+- **Counted:** seed 99, 50/211/32/207/29 orders not asked again a year; seed 5303's year 21, 2 of
+  283 (229 after a mixed change somewhere). No tick cost (same-time pairs).
+- **Test:** `refusedOrders.test.ts`.
+- **Next:** PLAN 1.42h.

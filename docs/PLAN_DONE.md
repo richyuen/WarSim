@@ -9678,3 +9678,27 @@ Of 7.1b (open in PLAN.md):
   - [x] 7.1b8 The size picker in the new-game options; a scenario file at another size than its […]
   - [x] 7.1b9 The AT: S and L games from the picker; the sweep criteria at S and L; L's tick and
     memory reported (XL dropped, ADR-419).
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 1.42 (open in PLAN.md):
+
+  - [x] 1.42g The AI's refused orders not asked again (rule a): a formation's order from the
+    operational AI that was refused for want of a way is not given again while it stands where
+    it stood, to the same cell, on the same ground (the passage's open holders the same, and no
+    cell gone from an open holder to a closed one or back since, `World.flipLog`).
+    AT: a unit test (refused on one day, not asked again the next with nothing changed; asked
+    again after a cell of the way changes hands, and after a war or a peace); seed 99's five
+    years with the refusals counted (ADR-414 d's count) and each year's hash.

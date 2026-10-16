@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-421 · 2026-10-16 · accepted — The AI's refused orders not asked again; the pin stays (PLAN 1.42g)
+
+- **Context.** The user's decision of 2026-10-15 (rule a, under PLAN 1.42): the AI does not ask
+  again for an order it was refused until something the refused search read has changed. ADR-414 d
+  counted the orders asked again and expected the rule to move the pin.
+- **Decision.** The operational AI gives its orders through `askMove`: an order refused for want of
+  a way is kept by formation (`World.refusedOrders`, derived, dropped with the land counts) and not
+  given again while the formation stands still on the same cell, of the same template, ordered to
+  the same cell, on the same ground (the passage's `ok` the same, and no cell gone from an open
+  holder to a closed one or back since, by `World.flipLog`, as `passageOf` keeps what it knows). An
+  order over the sea is kept so only from where no port is (`atAnyPort`): there the sea is refused
+  at once and the order is a march; from a port the transports are asked, and they come and go. A
+  formation on the march is asked each time (where it stands in a step moves the route's start).
+- **Why the pin did not move.** Such an order, asked again, is refused again by the same search on
+  the same ground, and a refused order changes no state. Seed 99's five years: hashes 45df324d,
+  6fc2fcd1, 54ca36e4, 4379b64d, 700d7a84, each HEAD's. The save and load test (`saveYear`) green:
+  a loaded game asks once more and is refused once more.
+- **What it saves.** Seed 99's five years: 50, 211, 32, 207 and 29 orders not asked again; the
+  misses are orders from a port (some 670 in year 2), orders to another cell, and orders after a
+  mixed change of a cell. Seed 5303's year 21 (`.cache/l3/s5303-y20.bin`): 2 of 283 refusals; 229
+  of them follow a mixed change somewhere in the world since the day before: in a year of many
+  wars the ground open to a nation changes every day, and the rule asks again, as it says. Tick
+  cost: none (same-time pairs of seed 99's five years, 1.385/1.359 and 1.375/1.398 ms).
+- **Not done.** A rule that bites in a year of many wars would be another rule: the changes read
+  only where the refused search went (the nodes of its coarse route and corridor, the groups it
+  asked), or a count of days kept as state (it then moves the pin, and must be saved, or the save
+  and load twin parts). Neither is taken without the user.
+
 ### ADR-420 · 2026-10-16 · accepted — Map sizes done: S and L meet the sweep criteria (PLAN 7.1b9)
 
 - **Context.** PLAN 7.1b's AT: S and L games start from the picker; the sweep criteria hold at S

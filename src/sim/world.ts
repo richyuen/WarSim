@@ -842,6 +842,12 @@ export class World {
    */
   flipLog: number[] = [];
   flipLogBase = 0;
+  /**
+   * Derived (not state): by formation, the operational AI's last order refused for want of a way
+   * (`askMove`, PLAN 1.42g): from the cell it stood on, to the cell, of the template, on the ground
+   * open by `ok`, when `flipLog` had `flips` changes. Dropped with the land counts.
+   */
+  refusedOrders = new Map<number, { from: number; to: number; template: number; grid: NavGrid; ok: Uint8Array; flips: number }>();
   /** Derived: bumped when God Mode renames a nation (labels re-derive, PLAN 1.32b). */
   namesVersion = 0;
   /** Global settings (state, saved in world.meta). */
@@ -1327,6 +1333,7 @@ export class World {
     this.land = null;
     this.held = null;
     this.border = null;
+    this.refusedOrders.clear();
   }
 
   /** The border index of the current map (`border.ts`; built by a scan on first use, then kept by `setController`). */

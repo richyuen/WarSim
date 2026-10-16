@@ -169,13 +169,7 @@ quick sweep as a smoke test.
   does not send a formation to a front it reaches only by a way several times the straight line
   (the nearest front it reaches directly, or it holds where it is). Each moves the pin.
   Split on 2026-10-16, one cause a part (the two rules first, then the sweep on seeds from 401):
-  - [ ] 1.42g The AI's refused orders not asked again (rule a): a formation's order from the
-    operational AI that was refused for want of a way is not given again while it stands where
-    it stood, to the same cell, on the same ground (the passage's open holders the same, and no
-    cell gone from an open holder to a closed one or back since, `World.flipLog`).
-    AT: a unit test (refused on one day, not asked again the next with nothing changed; asked
-    again after a cell of the way changes hands, and after a war or a peace); seed 99's five
-    years with the refusals counted (ADR-414 d's count) and each year's hash.
+  - [x] 1.42g The AI's refused orders not asked again (rule a): a formation's order from the […]
   - [ ] 1.42h No order by a long way round (rule b): the AI does not send a formation to a front
     whose way is several times the straight line; it takes the nearest front it reaches
     directly, or holds. AT: a unit test of the rule; seed 5303's year 5 (ADR-414 f) without the

@@ -75,6 +75,16 @@ function aboard(world: World, fleet: number): number {
 }
 
 const cellOfPlace = (world: World, id: number): number => Math.floor(world.formations.cols.y[id]!) * world.cells.w + Math.floor(world.formations.cols.x[id]!);
+/**
+ * Whether a formation on `cell` stands at a port, anyone's, shut or not (those `tryLanding` looks
+ * for, their holders aside): where it does not, an order over the sea from there is refused the
+ * sea (`NoPort`) whoever holds what, and is a march over its land (PLAN 1.42g).
+ */
+export function atAnyPort(world: World, cell: number): boolean {
+  const water = portSeaOf(world);
+  const r = world.atSize(AT_PORT_CELLS);
+  return world.ports.some((p, i) => water[i]! >= 0 && (near(world, cell, p.cell, r) || near(world, cell, water[i]!, r)));
+}
 const near = (world: World, a: number, b: number, r: number): boolean => {
   const w = world.cells.w;
   let dx = Math.abs((a % w) - (b % w));

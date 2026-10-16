@@ -50,7 +50,10 @@
  * MARCH_DAYS, from within SPARE_RANGES
  * times the range, while the formations near the front are more than the share of them that the
  * other sectors weigh among all (the weights of the allotment).
+ * Refused orders (PLAN 1.42g): an order refused for want of a way is not given again while nothing
+ * the refused search read has changed (`askMove`).
  */
+import { atAnyPort } from '../systems/amphibious';
 import { orderMove, passageOf, snapTarget } from '../systems/movement';
 import { frontierOf } from '../systems/territory';
 import { neighbours4, pocketOf, type Passage } from '../nav/grid';
@@ -845,7 +848,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         empty[i] = 0;
         empties--;
         const to = list[i]!.hold;
-        orderMove(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, pass);
+        askMove(world, id, to, pass);
         // One to spare leaves the sector the allotment gave it: no order of that sector below.
         if (lone === 1) {
           for (const s of list) {
@@ -874,10 +877,65 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       if (f.moving[id] === 1 && cellDist(f.targetCell[id]!, to, w, loop) <= sector) continue;
       const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
       if (here === to) continue;
-      orderMove(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, pass);
+      askMove(world, id, to, pass);
     }
   }
 }
+
+/**
+ * The plan's order of formation `id` to the cell `to` (PLAN 1.42g, the user's decision of
+ * 2026-10-15): one that was refused for want of a way is not given again while nothing the refused
+ * search read has changed. That is: the formation stands still on the cell it stood on, of the
+ * same template, the order is to the same cell, of its landmass or over the sea from where no
+ * port is (`atAnyPort`: from a port the sea is asked, whose transports come and go), the holders
+ * open to it are the same (`Passage.ok`), and no cell has gone from an open holder to a closed one
+ * or back since (`World.flipLog`, as `passageOf` keeps what it knows of the cells). Asked again,
+ * such an order is refused again: the rule changes no state, and the pin did not move.
+ */
+export function askMove(world: World, id: number, to: number, pass: Passage): void {
+  const f = world.formations.cols;
+  const w = world.cells.w;
+  const nav = navOf(world);
+  const from = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
+  const comp = nav.grid.component;
+  const kept = f.moving[id] !== 1 && !world.embarked.has(id) && comp[from] !== 0 && (comp[from] === comp[to] || !atAnyPort(world, from));
+  const was = world.refusedOrders.get(id);
+  const now = world.flipLogBase + world.flipLog.length;
+  if (kept && was !== undefined && was.from === from && was.to === to && was.template === f.template[id] && was.grid === nav.grid && was.flips >= world.flipLogBase && sameOk(was.ok, pass.ok) && lastMixed(world, pass) <= was.flips) {
+    world.seaBound.delete(id);
+    return;
+  }
+  if (orderMove(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, pass) || !kept) world.refusedOrders.delete(id);
+  else world.refusedOrders.set(id, { from, to, template: f.template[id]!, grid: nav.grid, ok: pass.ok.slice(), flips: now });
+}
+
+function sameOk(a: Uint8Array, b: Uint8Array): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
+
+/**
+ * The count of `World.flipLog`'s changes up to the last that took a cell from a holder open by
+ * `pass` to a closed one or back (`flipLogBase` for none in the log). Once a passage: no cell
+ * changes hands while a plan's orders are given.
+ */
+function lastMixed(world: World, pass: Passage): number {
+  const now = world.flipLogBase + world.flipLog.length;
+  const known = MIXED.get(pass);
+  if (known !== undefined && known[0] === now) return known[1];
+  const { ok } = pass;
+  const log = world.flipLog;
+  let k = log.length - 1;
+  for (; k >= 0; k--) {
+    const fromHolder = Math.floor(log[k]! / 65536);
+    if (ok[fromHolder] !== ok[log[k]! - fromHolder * 65536]) break;
+  }
+  const last = world.flipLogBase + k + 1;
+  MIXED.set(pass, [now, last]);
+  return last;
+}
+const MIXED = new WeakMap<Passage, [number, number]>();
 
 /** Cells from one cell to another, a step to any of eight: over the seam where the map loops. */
 function cellDist(a: number, b: number, w: number, loop: boolean): number {
