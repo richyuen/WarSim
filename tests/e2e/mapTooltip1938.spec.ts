@@ -28,8 +28,8 @@ test('a tooltip names the nation under the mouse, and its occupier', async ({ pa
   await lookAt(page, cx, cy, 3000);
   const tip = page.getByTestId('map-tooltip');
 
-  // Germany at Leipzig.
-  const [gx, gy] = await at(page, 12.4, 51.3);
+  // Germany, between Leipzig and Dresden (no city's dot there).
+  const [gx, gy] = await at(page, 12.9, 51.75);
   await page.mouse.move(gx, gy);
   await expect(tip).toHaveText('Germany');
   // It stands by the cursor and takes no click.
@@ -51,6 +51,14 @@ test('a tooltip names the nation under the mouse, and its occupier', async ({ pa
   await page.mouse.move(fx, fy);
   await expect(tip).toContainText('France');
   await expect(tip).toContainText('Occupied by Germany');
+
+  // A city's dot (PLAN 7.4f13, the critic's N6): Berlin, Germany's capital, with its province's unrest.
+  const [bx, by] = await at(page, 13.4, 52.52);
+  await page.mouse.move(bx, by);
+  await expect(page.getByTestId('tooltip-city')).toContainText('Berlin');
+  await expect(page.getByTestId('tooltip-city')).toContainText('capital');
+  await expect(tip).toContainText('Germany');
+  await expect(page.getByTestId('tooltip-unrest')).toHaveText(/^Unrest \d+$/);
 
   // A button down (a drag): none.
   await page.mouse.down();

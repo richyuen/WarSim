@@ -17092,3 +17092,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `charts1938`: 5 and 5 ticks; at the last month the five top nations' values are
   the sim's own samples; off the chart, no readout.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f13: cities in the tooltip; settled lines off the list (UI)
+
+- **Start:** gate green on a clean tree (`21411f6`); critic not due.
+- **Done:** `CityLabelLayer.dotAt` (a city whose dot was drawn at more than half, within 4 px of
+  its edge); the hover carries the city and the province (`MapHover`, `src/ui/mapHover.ts`); the
+  tooltip names the city first, "capital", the nation, and the province's unrest. N6 off the
+  list; also the lines 7.4b and 3.12d had settled (the order lines at 400 m/px, N4's arrows,
+  N18's sound).
+- **Found on the way:** `displayName` reads its argument as a message key: a city's literal name
+  came out empty. The tooltip shows city names as they are.
+- **Tests:** `mapTooltip1938` (Berlin: its name, "capital", Germany, "Unrest n"; the nation-only
+  case moved off Leipzig's dot).
+- **Next:** PLAN 7.4f, the next group.

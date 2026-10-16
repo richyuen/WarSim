@@ -273,6 +273,24 @@ export class CityLabelLayer {
     return this.cities[index]!;
   }
 
+  /**
+   * The city whose dot, as last drawn, is under CSS px (`sx`, `sy`), within `slack` px of its
+   * edge, or null (PLAN 7.4f13: the tooltip names it). Only a dot drawn at more than half.
+   */
+  dotAt(sx: number, sy: number, slack = 4): CityPoint | null {
+    let best: CityPoint | null = null;
+    let bestD = Infinity;
+    for (const p of this.lastPlaced) {
+      if (p.ghost || p.dotAlpha < 0.5) continue;
+      const d = Math.hypot(p.sx - sx, p.sy - sy);
+      if (d <= p.dotR + slack && d < bestD) {
+        bestD = d;
+        best = this.cities[p.index] ?? null;
+      }
+    }
+    return best;
+  }
+
   setCities(cities: CityPoint[]): void {
     this.cities = cities;
     this.order = priorityOrder(cities);

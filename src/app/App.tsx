@@ -306,7 +306,7 @@ export function App({
           }
         />
       ) : null}
-      <MapTooltip hover={hud.hover} nameOf={(id) => byId.get(id)?.name ?? null} />
+      <MapTooltip hover={hud.hover} nameOf={(id) => byId.get(id)?.name ?? null} unrestOf={(p) => hud.sim.unrest?.[p] ?? null} />
       <MapLegend
         mode={hud.mapMode.value}
         groundShown={hud.groundShown.value}

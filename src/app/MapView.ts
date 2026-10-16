@@ -56,6 +56,7 @@ import { CameraController } from './input/CameraController';
 import type { SimClient } from './simClient';
 import { setSizeScale, sizeScale } from '../render/sizeScale';
 import { loadMapFonts, MAP_FONT, NAME_WEIGHT } from '../render/labels/fonts';
+import type { MapHover } from '../ui/mapHover';
 
 /**
  * A tool that paints on a primary-button drag (PLAN 1.44). Positions are world cells, fractional,
@@ -198,7 +199,7 @@ export class MapView {
   /** The share of the ground of T2 and T3, and of what stands on it, in the frame drawn last (tests). */
   groundShare = 0;
   /** Told of the nation under the mouse (PLAN 7.4f7): its owner, its holder and the client point; null off land. */
-  onHover: ((h: { owner: number; holder: number; x: number; y: number } | null) => void) | null = null;
+  onHover: ((h: MapHover | null) => void) | null = null;
   /** Whether the ground of T2 and T3 is the most of the picture (PLAN 7.4f3): occupied land is a tint there, not hatched. */
   groundShown = false;
   /** Told when `groundShown` changes. */
@@ -264,11 +265,16 @@ export class MapView {
       if (!this.onHover || e.pointerType !== 'mouse') return;
       if (e.buttons !== 0) return void this.onHover(null);
       const r = canvas.getBoundingClientRect();
-      const cell = this.cellAt(e.clientX - r.left, e.clientY - r.top);
+      const [sx, sy] = [e.clientX - r.left, e.clientY - r.top];
+      const cell = this.cellAt(sx, sy);
       const k = cell ? cell[1] * this.geo.w + cell[0] : -1;
       const owner = k >= 0 ? (this.ownerGrid[k] ?? 0) : 0;
       const holder = k >= 0 ? (this.controlGrid[k] ?? 0) : 0;
-      this.onHover(owner === 0 && holder === 0 ? null : { owner, holder, x: e.clientX, y: e.clientY });
+      // A city whose dot is under the mouse, and the province (PLAN 7.4f13, the critic's N6).
+      const c = this.cityLabels.dotAt(sx, sy);
+      const city = c ? { name: c.name, capital: c.capital, size: c.size } : null;
+      const province = cell ? this.provinceAt(cell[0], cell[1]) : 0;
+      this.onHover(owner === 0 && holder === 0 && !city ? null : { owner, holder, city, province, x: e.clientX, y: e.clientY });
     });
     canvas.addEventListener('pointerleave', () => this.onHover?.(null));
     // The sea zone under the cursor in the sea-control mode (PLAN 4.10c), told when it changes.

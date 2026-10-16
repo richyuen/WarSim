@@ -85,6 +85,10 @@ quick sweep as a smoke test.
     - [x] 7.4f12 The critic's N14, the charts: gridlines at the quarters of the value axis, five
       dates on the time axis, and under the cursor the month and each line's value. AT:
       `charts1938` reads the ticks and the values under the cursor against the sim's series.
+    - [x] 7.4f13 The critic's N6 ("no city panel"): over a city's dot the tooltip names the
+      city, "capital" when it is one, and its province's unrest. Lines of the list already
+      settled taken off (the order lines at 400 m/px and N4's arrows: 7.4b; N18's sound: 3.12d).
+      AT: `mapTooltip1938` at Berlin.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -232,24 +236,21 @@ quick sweep as a smoke test.
   From the critic's report of 2026-10-05, not blocking and in no task above (its numbers):
   - N3: occupied land stays hatched for years after a peace (Europe after 14 years of seed
     2718). A rule to look at, not a look: what a peace does with land that is held.
-  - N4, N5: T1 in a war is a web of order arrows from formations off the screen; markers
-    overlap round Warsaw at the start, one under the capital's flag.
-  - N6: no city panel (the formation panel and the tooltips are PLAN 2.14).
+  - N4, N5 (the arrows: PLAN 7.4b): markers overlap round Warsaw at the start, one under the
+    capital's flag.
   - N8 (left of it after PLAN 3.12Rh4 and 7.4f2): at 1024 × 600, playing a nation, the bar's
     "Poland · n selected" is cut to its first letter (the one item that shrinks; its tooltip says
     it in full).
   - N14 (left of it after PLAN 7.4c, 7.4f11 and 7.4f12): the dead are not in the ranking (AoC
     marks them); the economy tab is six numbers.
   - N17: a black smear under a counter near Bern in 1952 of seed 2718.
-  - N18: no sound; one language.
+  - N18 (sound since PLAN 3.12d): one language.
   - N21: while the game runs, half-faded counters are on screen all the time as the clusters
     regroup ("432", "29.6k" at part opacity, 60 days into a war at 2500 m/px).
   - Against AoC's God panel: the World AI settings (one checkbox stands for about fifteen),
     a nation spawned with a size, cities made and removed in the game, gold, CE, colour and
     unity edited from the God tab, donations (PARITY has the rows).
   From the critic's report of 2026-10-07, not blocking and in no task above:
-  - At 400 m/px the order line of every formation is drawn for an observer: dozens of
-    dashed yellow lines across the view. The critic: only for what is selected.
   - Occupied land at the close tiers is washed in the occupier's colour: French-held
     Germany is a blue field that reads as a lake. After 14 years the Soviet Union is a field
     of thin stripes of other nations' colours.
