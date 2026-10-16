@@ -43,7 +43,9 @@ quick sweep as a smoke test.
   - [ ] 7.2a `npm run soak` (`tools/soak/`, SPEC §10): two twins of one game at max speed in
     Node, one never touched, the other saved (gzip, as the game's autosave), checked
     save → load → save byte-identical, and loaded into a fresh Sim of another seed every 5
-    minutes of the wall; the hashes compared each day; any exception or a hash apart fails.
+    minutes of the wall; the hashes compared every 30 days (a hash of the 1938 state is 80 ms,
+    more than a day's ticks), after every load and at the end; any exception or a hash apart
+    fails.
     Minutes, interval, scenario and seed are arguments. AT: a unit test of a short soak of the
     toy world (green; a twin made to part is caught at its day); the 30-minute run of 1938
     green, its years and saves logged in `docs/evidence/7.2/`.

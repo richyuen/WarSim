@@ -22,6 +22,7 @@
     "bench": "tsx tools/bench/run.ts",
     "data": "tsx tools/data/run.ts",
     "sim": "tsx tools/headless/cli.ts",
+    "soak": "tsx tools/soak/cli.ts",
     "sweep": "tsx tools/sweep/run.ts",
     "sweep:quick": "tsx tools/sweep/run.ts --seeds 10 --years 20 --scratch",
     "diag": "tsx tools/diag/nations.ts",
