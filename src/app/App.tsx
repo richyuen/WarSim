@@ -1,6 +1,7 @@
 import { BottomBar } from '../ui/BottomBar';
 import { AIR_CONTESTED, AIR_CONTESTED_COLOR } from '../shared/mapModes';
 import { MapLegend } from '../ui/MapLegend';
+import { MapTooltip } from '../ui/MapTooltip';
 import { FormationPanel } from '../ui/FormationPanel';
 import { HistoryPanel } from '../ui/HistoryPanel';
 import { StatsChart } from '../ui/StatsChart';
@@ -305,6 +306,7 @@ export function App({
           }
         />
       ) : null}
+      <MapTooltip hover={hud.hover} nameOf={(id) => byId.get(id)?.name ?? null} />
       <MapLegend
         mode={hud.mapMode.value}
         groundShown={hud.groundShown.value}

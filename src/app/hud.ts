@@ -54,6 +54,8 @@ export class Hud {
   readonly mapMode = signal<MapMode>('political');
   /** The ground of T2 and T3 is the most of the picture (PLAN 7.4f3): the legend says occupied land is a tint. */
   readonly groundShown = signal(false);
+  /** The nation under the mouse (PLAN 7.4f7): owner, holder and the client point, or null. */
+  readonly hover = signal<{ owner: number; holder: number; x: number; y: number } | null>(null);
   onMapMode: (mode: MapMode) => void = () => {};
   /** Selected nation id (0 = none; PLAN 1.30), set by map clicks. */
   readonly selected = signal(0);

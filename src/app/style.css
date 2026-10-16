@@ -1037,3 +1037,25 @@ body {
     scrollbar-width: thin;
   }
 }
+
+/* The nation under the mouse (PLAN 7.4f7). */
+#ui > .map-tooltip,
+.map-tooltip {
+  position: fixed;
+  z-index: 5;
+  pointer-events: none;
+  padding: 2px 7px;
+  background: var(--frame-bg);
+  border: 1px solid var(--frame-trim);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--frame-edge);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.map-tooltip-name {
+  font-weight: 700;
+  color: #f6ead2;
+}
+.map-tooltip-note {
+  color: #e9c46a;
+}

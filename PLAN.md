@@ -68,6 +68,8 @@ quick sweep as a smoke test.
       nation layer the mode before. AT: `editor1938` reads the mode at each switch.
     - [x] 7.4f6 The critic's N15, N16: the panels opaque; at most two rows of war banners at
       1400 px and wider (6, the rest "+N"). AT: an e2e spec at 1400 and 1920 with nine wars.
+    - [x] 7.4f7 The critic's "no tooltip on hover": a mouse on land names the nation by the
+      cursor, and its occupier where another holds it. AT: an e2e spec.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -241,7 +243,6 @@ quick sweep as a smoke test.
   - Occupied land at the close tiers is washed in the occupier's colour: French-held
     Germany is a blue field that reads as a lake. After 14 years the Soviet Union is a field
     of thin stripes of other nations' colours.
-  - Still there from the last report: no tooltip on hover.
   - A Kill leaves successors in greys that are nearly one colour. The random world names
     nations after provinces ("Seine-Maritime") and paints half of them purple or magenta;
     after three years one of them owns western and central Europe (that part: PLAN 1.42).

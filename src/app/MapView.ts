@@ -144,6 +144,8 @@ export class MapView {
   private readonly atWar = new Set<number>();
   private readonly warPairs = new Set<number>();
   private readonly controlGrid: Uint16Array;
+  /** The owners, beside the controllers (PLAN 7.4f7: the tooltip says "occupied by"). */
+  private readonly ownerGrid: Uint16Array;
   private provinceGrid: Uint16Array | null = null;
   private terrainColors: number[] | null = null;
   /**
@@ -195,6 +197,8 @@ export class MapView {
   private scatterOut = new Float32Array(0);
   /** The share of the ground of T2 and T3, and of what stands on it, in the frame drawn last (tests). */
   groundShare = 0;
+  /** Told of the nation under the mouse (PLAN 7.4f7): its owner, its holder and the client point; null off land. */
+  onHover: ((h: { owner: number; holder: number; x: number; y: number } | null) => void) | null = null;
   /** Whether the ground of T2 and T3 is the most of the picture (PLAN 7.4f3): occupied land is a tint there, not hatched. */
   groundShown = false;
   /** Told when `groundShown` changes. */
@@ -243,6 +247,7 @@ export class MapView {
     sim.onSnapshotReceived((s) => this.apply(s));
     sim.onLoad(() => this.worldLoaded());
     this.controlGrid = new Uint16Array(geo.w * geo.h);
+    this.ownerGrid = new Uint16Array(geo.w * geo.h);
     // A paint tool takes the primary button (PLAN 1.44): the press starts a stroke that follows
     // the pointer from cell to cell until the release, and the camera leaves that button alone.
     // World x is not wrapped here, so a stroke crosses the seam of a map that loops; beyond an
@@ -253,6 +258,19 @@ export class MapView {
       return screenToWorld(this.controller.cam, e.clientX - r.left, e.clientY - r.top, canvas.clientWidth, canvas.clientHeight);
     };
     let stroke: { id: number; cx: number; cy: number } | null = null;
+    // The nation under a mouse at rest on the map (PLAN 7.4f7, the critic's "no tooltip on
+    // hover"): its owner and its holder, and where the cursor is; none while a button is down.
+    canvas.addEventListener('pointermove', (e) => {
+      if (!this.onHover || e.pointerType !== 'mouse') return;
+      if (e.buttons !== 0) return void this.onHover(null);
+      const r = canvas.getBoundingClientRect();
+      const cell = this.cellAt(e.clientX - r.left, e.clientY - r.top);
+      const k = cell ? cell[1] * this.geo.w + cell[0] : -1;
+      const owner = k >= 0 ? (this.ownerGrid[k] ?? 0) : 0;
+      const holder = k >= 0 ? (this.controlGrid[k] ?? 0) : 0;
+      this.onHover(owner === 0 && holder === 0 ? null : { owner, holder, x: e.clientX, y: e.clientY });
+    });
+    canvas.addEventListener('pointerleave', () => this.onHover?.(null));
     // The sea zone under the cursor in the sea-control mode (PLAN 4.10c), told when it changes.
     canvas.addEventListener('pointermove', (e) => {
       if (this.mapMode !== 'seaControl' && this.mapMode !== 'airControl') return;
@@ -444,6 +462,7 @@ export class MapView {
         const x0 = tx * T;
         const n = Math.min(T, this.geo.w - x0);
         this.controlGrid.set(s.tiles.controller.subarray(k * T * T + r * T, k * T * T + r * T + n), y * this.geo.w + x0);
+        this.ownerGrid.set(s.tiles.owner.subarray(k * T * T + r * T, k * T * T + r * T + n), y * this.geo.w + x0);
       }
     }
     this.atWar.clear();

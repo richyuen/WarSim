@@ -17016,3 +17016,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `warBannerRows1938` (new, 2 of 2); `toBattle1938` (expects 6 shown), `ranking1938`,
   `ticker1938`: green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f7: a tooltip names the nation under the mouse (UI)
+
+- **Start:** gate green on a clean tree (`1056061`); critic not due.
+- **Done:** the view keeps the owners beside the controllers and tells the HUD of the nation
+  under a mouse with no button down (`onHover`); `MapTooltip` names it by the cursor, with
+  "Occupied by …" where another holds the land; nothing off land or in a drag. It takes the
+  signal, not its value, so a mouse move re-renders it alone; no pointer events.
+  `docs/evidence/7.4/f7-tooltip.png`.
+- **Tests:** `mapTooltip1938` (new: Germany at Leipzig, none on the North Sea, Paris held by
+  Germany, none in a drag); `mapModes1938`, `hotkeys1938`, `editorDrag1938` green.
+- **Next:** PLAN 7.4f, the next group.
