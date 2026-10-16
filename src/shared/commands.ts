@@ -262,6 +262,8 @@ export const Refusal = {
   NoWarhead: 26,
   /** A nuclear launch with no means to the place: no strategic bomber of the nation's at its base within range, or no missile that reaches it (PLAN 6.2). */
   NoDelivery: 27,
+  /** A number out of its range (PLAN 7.2c): an id not a whole number, a place far off the map, a strength below 0, a side not 0 or 1, a member twice, a radius past the editor's. */
+  OutOfRange: 28,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 
@@ -274,6 +276,44 @@ export function finiteCommand(cmd: Command): boolean {
     return true;
   };
   return ok(cmd);
+}
+
+/** The largest brush radius in cells: the editor's (PLAN 1.35) and the God brush's. */
+export const MAX_PAINT_R = 32;
+
+/** The fields that name a nation, formation, province, war, alliance, city, buff or template: whole numbers, 0 or more. */
+const ID_FIELDS = ['nation', 'id', 'template', 'province', 'war', 'alliance', 'city', 'target', 'attacker', 'defender', 'leader', 'overlord', 'subject', 'annexer', 'from', 'to'] as const;
+
+/**
+ * Whether the numbers of `cmd`, finite already (`finiteCommand`), are in their ranges on a map
+ * of `w` × `h` cells (PLAN 7.2c). Commands the page never sends, from a worker message or the
+ * page's test API, were applied as they came: a strength of -5, a march to 1e9, an alliance
+ * with a member twice, `fightToDeath[5]`, a province 1.5, a paint line to 1e9 (13 s of a tick).
+ * A place may lie off the map by up to two widths and one height: a drag on the page is sent
+ * in raw world cells, beyond an edge and across the seam of a looping map. The values a handler
+ * clamps (unity, unrest, a city's size, ...) are clamped there as before.
+ */
+export function inRange(cmd: Command, w: number, h: number): boolean {
+  const c = cmd as unknown as Record<string, unknown>;
+  const id = (v: unknown): boolean => v === undefined || (Number.isInteger(v) && (v as number) >= 0);
+  for (const k of ID_FIELDS) if (!id(c[k])) return false;
+  const along = (v: unknown, size: number, before: number, after: number): boolean => v === undefined || ((v as number) >= -before * size && (v as number) <= (1 + after) * size);
+  for (const k of ['x', 'x2', 'toX']) if (!along(c[k], w, 2, 2)) return false;
+  for (const k of ['y', 'y2', 'toY']) if (!along(c[k], h, 1, 1)) return false;
+  switch (cmd.kind) {
+    case 'spawnFormation':
+      return cmd.strength >= 0;
+    case 'paintControl':
+      return cmd.r >= 0 && cmd.r <= MAX_PAINT_R;
+    case 'editPaint':
+      return cmd.r >= 0 && cmd.r <= MAX_PAINT_R && id(cmd.value) && (cmd.mask === null || id(cmd.mask.value));
+    case 'setWarFightToDeath':
+      return cmd.side === 0 || cmd.side === 1;
+    case 'createAlliance':
+      return Array.isArray(cmd.members) && cmd.members.every(id) && new Set([cmd.leader, ...cmd.members]).size === cmd.members.length + 1;
+    default:
+      return true;
+  }
 }
 
 export interface LoggedCommand {

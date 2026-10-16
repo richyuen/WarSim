@@ -16571,3 +16571,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Done** (ADR-427): the related stage goes through `unitRedTwice(files)` as the full one does
   (ADR-423). `gateReview.test.ts` (the related run's command).
 - **Next:** PLAN 7.2c.
+## 2026-10-16 — PLAN 7.2c: a command with a number out of its range is refused (sim)
+
+- **Start:** gate green on a clean tree; critic not due.
+- **Done** (ADR-426): `inRange` (`shared/commands`), asked by `applyCommand` after `finiteCommand`:
+  `Refusal.OutOfRange` (28) for an id not a whole number of 0 or more, a place more than two map
+  widths or one height off the map, a strength below 0, a brush radius past `MAX_PAINT_R` (32, the
+  editor's, which `EditorPanel` now reads), a war side not 0 or 1, an alliance with a member twice.
+  Clamped values stay clamped. The God tab says it in words (`refusal.outOfRange`).
+- **Test:** `refusal.test.ts`, seven tests: the six reads (red without the check; the `editPaint`
+  line to 1e9 took 14 s, now refused at once) and a stroke from above the top row and over the
+  seam that still paints. The pin is unmoved (the AI sends no command).
+- **PLAN 7.2** ticked with its last part: its AT, the soak, ran green in 7.2a and 7.2b; the soak
+  sends no command.

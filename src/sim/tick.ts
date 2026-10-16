@@ -4,7 +4,7 @@
  */
 import { orderMission, orderRebase } from './systems/air';
 import { orderParadrop } from './systems/airLift';
-import { finiteCommand, Refusal, type Command } from '../shared/commands';
+import { finiteCommand, inRange, Refusal, type Command } from '../shared/commands';
 import { EventKind } from '../shared/events';
 import { destroyFormation, equipFormation } from './systems/elements';
 import { declareWar, makePeace, offerPeace, whyNotWar } from './systems/war';
@@ -78,6 +78,7 @@ function whyNotNation(world: World, n: number): Refusal {
  */
 function applyCommand(world: World, cmd: Command): Refusal {
   if (!finiteCommand(cmd)) return Refusal.NotANumber;
+  if (!inRange(cmd, world.cells.w, world.cells.h)) return Refusal.OutOfRange;
   const done = (ok: boolean, why: Refusal = Refusal.NoEffect): Refusal => (ok ? Refusal.None : why);
   switch (cmd.kind) {
     case 'spawnFormation': {

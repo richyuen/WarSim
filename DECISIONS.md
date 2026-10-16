@@ -181,6 +181,36 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   list of known reds applies.
 - **Consequences.** A change of a file many tests import can be gated on a loaded machine. A test
   that fails only under load is still seen in the first run's output.
+### ADR-426 · 2026-10-16 · accepted — A command with a number out of its range is refused (PLAN 7.2c)
+
+- **Context.** The sixth and seventh reads (PLAN 2.16Ra, 3.4Ra): commands the page never sends,
+  from a worker message or the page's test API, were applied with numbers that are finite and out
+  of range. A spawn of strength -5; a march to x = 1e9; an alliance with a member twice;
+  `setWarFightToDeath` with side 5, which wrote `fightToDeath[5]` into the war (state); a province
+  1.5; an `editPaint` line to 1e9, which walked the segment for 13 s of one tick (14 s here).
+- **Decision.** `inRange(cmd, w, h)` (`shared/commands`), asked by `applyCommand` after
+  `finiteCommand`; a command that fails it is refused with `Refusal.OutOfRange` (28), and its line
+  stays in the command log as every refusal's does. The ranges:
+  - every id field (nation, id, template, province, war, alliance, city, target, attacker,
+    defender, leader, overlord, subject, annexer, from, to, each member; the nation or terrain of
+    a paint and of its mask): a whole number of 0 or more. An id that is a whole number and not
+    there is refused as before (`NoNation`, `NoSuch`);
+  - a place (x, x2, toX; y, y2, toY): x from -2 w to 3 w, y from -h to 2 h. Not the map itself:
+    the page sends a drag in raw world cells (`MapView`'s `worldAt`), beyond an edge, and across
+    the seam of a looping map unwrapped by a width (`unwrapped`); the camera's centre is on the
+    map (`normalize` in `render/camera`) and the view at its farthest zoom about a map's height high (by its
+    fit, not measured), so a point of the page lies within about a width of the map's edge;
+  - a strength of 0 or more (0 with a template is the e2e specs' way: the elements give it);
+  - a brush radius from 0 to `MAX_PAINT_R` = 32, the editor's own limit, which `EditorPanel` now
+    reads from it (the God brush paints with 5);
+  - a war's side 0 or 1; an alliance whose leader and members are all different.
+  What a handler clamps (unity, loyalty, autonomy, unrest, CE, suppression, income bonus, a city's
+  size, warheads) is clamped as before: a refusal of those would change what the God tab's fields
+  do with a value typed past their end, and none of them writes outside its range.
+- **The pin** is unmoved: the 1938 AI sends no command (`World.enqueue` has the page's and the
+  tests' callers only).
+- **Test.** `refusal.test.ts`, one test for each read (red without the check: six of seven, the
+  line 14 s), and one that a stroke from above the map's top and back over the seam still paints.
 
 ### ADR-425 · 2026-10-16 · accepted — The soak looks each day for NaN, infinity and `undefined` (PLAN 7.2b)
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Refusal, type Command } from '../../src/shared/commands';
+import { MAX_PAINT_R, Refusal, type Command } from '../../src/shared/commands';
 import { EventKind } from '../../src/shared/events';
 import type { FromWorker } from '../../src/shared/protocol';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
@@ -209,5 +209,94 @@ describe('a command that is not carried out says why (PLAN 2.17a)', () => {
     expect(got.filter((m) => m.type === 'refused')).toEqual([{ type: 'refused', reason: Refusal.SameNation }]);
     server.handle({ type: 'cmd', cmd: { kind: 'setIncomeBonus', nation: 1, value: 10 }, now: true }, 0);
     expect(got.filter((m) => m.type === 'refused')).toHaveLength(1);
+  });
+});
+
+// PLAN 7.2c (the sixth and seventh reads, ADR-426): commands the page never sends were applied
+// with numbers that are finite and out of range. Each is refused and changes nothing.
+describe('a command with a number out of its range is refused (PLAN 7.2c)', () => {
+  /** A land cell of nation 1 in the toy world, at its centre. */
+  function landOf1(s: Sim): [number, number, number] {
+    const { w, owner } = s.world.cells;
+    const cell = owner.findIndex((o) => o === 1);
+    return [(cell % w) + 0.5, Math.floor(cell / w) + 0.5, cell];
+  }
+
+  it('a formation of strength -5 is not spawned; one of 0 is', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    const [x, y] = landOf1(s);
+    const n = s.world.formations.count;
+    expect(send(s, { kind: 'spawnFormation', nation: 1, x, y, strength: -5 }).refused).toEqual([Refusal.OutOfRange]);
+    expect(s.world.formations.count).toBe(n);
+    expect(send(s, { kind: 'spawnFormation', nation: 1, x, y, strength: 0 }).refused).toEqual([]);
+  });
+
+  it('a march, a strike and a Major Battle to 1e9 are refused', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    let id = 0;
+    s.world.formations.forEach((f) => {
+      if (id === 0 && s.world.formations.cols.nation[f] === 1) id = f;
+    });
+    expect(id).toBeGreaterThan(0);
+    expect(send(s, { kind: 'moveFormation', id, x: 1e9, y: 3 }).refused).toEqual([Refusal.OutOfRange]);
+    expect(send(s, { kind: 'moveFormation', id, x: 3, y: -1e9 }).refused).toEqual([Refusal.OutOfRange]);
+    expect(send(s, { kind: 'godNuke', x: 1e9, y: 3, thermonuclear: false }).refused).toEqual([Refusal.OutOfRange]);
+    const battles = s.world.battles.history.length;
+    expect(send(s, { kind: 'forceBreakthrough', nation: 1, x: 3, y: 3, toX: 1e9, toY: 3 }).refused).toEqual([Refusal.OutOfRange]);
+    expect(s.world.battles.history).toHaveLength(battles);
+    const fc = s.world.formations.cols;
+    expect(fc.x[id]!).toBeLessThan(s.world.cells.w);
+  });
+
+  it('an alliance with a member twice, or its leader among its members, is not made', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    expect(send(s, { kind: 'createAlliance', leader: 1, members: [2, 2], nameKey: 'alliance.defensive' }).refused).toEqual([Refusal.OutOfRange]);
+    expect(send(s, { kind: 'createAlliance', leader: 1, members: [1, 2], nameKey: 'alliance.defensive' }).refused).toEqual([Refusal.OutOfRange]);
+    expect(s.world.alliances.list).toHaveLength(0);
+    expect(send(s, { kind: 'createAlliance', leader: 1, members: [2], nameKey: 'alliance.defensive' }).refused).toEqual([]);
+  });
+
+  it('"to death" of side 5 writes no slot of the war', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    expect(send(s, { kind: 'declareWar', attacker: 1, defender: 2 }).refused).toEqual([]);
+    const war = s.world.wars.list[0]!;
+    expect(send(s, { kind: 'setWarFightToDeath', war: war.id, side: 5, value: true } as unknown as Command).refused).toEqual([Refusal.OutOfRange]);
+    expect(war.fightToDeath).toEqual([false, false]);
+    expect(send(s, { kind: 'setWarFightToDeath', war: war.id, side: 1, value: true }).refused).toEqual([]);
+    expect(war.fightToDeath).toEqual([false, true]);
+  });
+
+  it('province 1.5, nation 1.5 and a nation of -1 are no province and no nation', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    expect(send(s, { kind: 'setUnrest', province: 1.5, value: 50 }).refused).toEqual([Refusal.OutOfRange]);
+    expect(send(s, { kind: 'spawnRevolt', province: 1.5 }).refused).toEqual([Refusal.OutOfRange]);
+    expect(send(s, { kind: 'setCore', province: 1.5, nation: 1, on: true }).refused).toEqual([Refusal.OutOfRange]);
+    const bonus = s.world.nations.cols.incomeBonus[1];
+    expect(send(s, { kind: 'setIncomeBonus', nation: 1.5, value: 10 }).refused).toEqual([Refusal.OutOfRange]);
+    expect(send(s, { kind: 'setGold', nation: -1, value: 10 }).refused).toEqual([Refusal.OutOfRange]);
+    expect(s.world.nations.cols.incomeBonus[1]).toBe(bonus);
+  });
+
+  it('a paint line to 1e9 is refused at once; a radius past the editor\'s too', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    const [x, y, cell] = landOf1(s);
+    const owners = s.world.cells.owner.slice();
+    const t0 = performance.now();
+    expect(send(s, { kind: 'editPaint', layer: 'nation', tool: 'line', x, y, x2: 1e9, y2: 1e9, r: 2, value: 2, mask: null }).refused).toEqual([Refusal.OutOfRange]);
+    expect(performance.now() - t0).toBeLessThan(1000);
+    expect(send(s, { kind: 'editPaint', layer: 'nation', tool: 'brush', x, y, x2: x, y2: y, r: MAX_PAINT_R + 1, value: 2, mask: null }).refused).toEqual([Refusal.OutOfRange]);
+    expect(send(s, { kind: 'editPaint', layer: 'nation', tool: 'brush', x, y, x2: x, y2: y, r: 2, value: 1.5, mask: null }).refused).toEqual([Refusal.OutOfRange]);
+    expect(send(s, { kind: 'paintControl', nation: 2, x, y, r: 1e6 }).refused).toEqual([Refusal.OutOfRange]);
+    expect(s.world.cells.owner).toEqual(owners);
+    expect(s.world.cells.controller[cell]).toBe(1);
+  });
+
+  it('a drag off the map\'s edge and across the seam, as the page sends it, still paints', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    const { w, owner } = s.world.cells;
+    // Raw world cells of a stroke that runs from above the top row and back over the seam.
+    expect(send(s, { kind: 'editPaint', layer: 'nation', tool: 'line', x: 10, y: -3, x2: -20, y2: 4, r: 3, value: 1, mask: null }).refused).toEqual([]);
+    expect(send(s, { kind: 'editPaint', layer: 'nation', tool: 'brush', x: w + 30, y: 2, x2: w + 30, y2: 2, r: MAX_PAINT_R, value: 2, mask: null }).refused).toEqual([]);
+    expect(owner.some((o) => o === 2)).toBe(true);
   });
 });

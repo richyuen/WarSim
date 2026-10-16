@@ -9834,3 +9834,34 @@ Of 7.2 (open in PLAN.md):
     state (from the save's own list of sections, so a section added later is in it) and for a
     NaN or an `undefined` in the history's rows, before the hashes. AT: a unit test (a NaN put
     in a column is found, with its section and index); the 30-minute run green again.
+
+<!-- moved 2026-10-16 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.2 30-minute soak with save/load twin comparison.
+  AT: `npm run soak` passes with no crash and no desync.
+  From the Phase 3 review (PLAN 3.7c, 2026-10-07):
+  - Nothing stops an `undefined` or a NaN out of arithmetic from being written to the
+    history or a table (ADR-155 found one by the page's hash leaving Node's). The soak
+    looks for one in every float section of the state, each day.
+  - Commands the page never sends are applied with numbers that are finite and out of range
+    (the seventh and sixth reads: a strength of -5, a place at 1e9, a member twice, a side 5,
+    a province 1.5, a line of `editPaint` to 1e9 that takes 13 s). Only a worker message or
+    the page's test API can send them. Refuse them where a scenario file or a script could.
+  Split on 2026-10-16, one cause a part:
+  - [x] 7.2a `npm run soak` (`tools/soak/`, SPEC §10): two twins of one game at max speed in […]
+  - [x] 7.2b The soak looks each day for a NaN or an infinity in every float section of the […]
+  - [x] 7.2c Commands with numbers out of range are refused (the reads named above: a strength
+    of -5, a place at 1e9, a member twice, a side 5, a province 1.5, an `editPaint` line to
+    1e9). AT: a unit test of each refused; the pin unmoved.

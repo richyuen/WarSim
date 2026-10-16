@@ -29,22 +29,6 @@ quick sweep as a smoke test.
 
 ## Phase 7 — Balance, polish, soak
 
-- [ ] 7.2 30-minute soak with save/load twin comparison.
-  AT: `npm run soak` passes with no crash and no desync.
-  From the Phase 3 review (PLAN 3.7c, 2026-10-07):
-  - Nothing stops an `undefined` or a NaN out of arithmetic from being written to the
-    history or a table (ADR-155 found one by the page's hash leaving Node's). The soak
-    looks for one in every float section of the state, each day.
-  - Commands the page never sends are applied with numbers that are finite and out of range
-    (the seventh and sixth reads: a strength of -5, a place at 1e9, a member twice, a side 5,
-    a province 1.5, a line of `editPaint` to 1e9 that takes 13 s). Only a worker message or
-    the page's test API can send them. Refuse them where a scenario file or a script could.
-  Split on 2026-10-16, one cause a part:
-  - [x] 7.2a `npm run soak` (`tools/soak/`, SPEC §10): two twins of one game at max speed in […]
-  - [x] 7.2b The soak looks each day for a NaN or an infinity in every float section of the […]
-  - [ ] 7.2c Commands with numbers out of range are refused (the reads named above: a strength
-    of -5, a place at 1e9, a member twice, a side 5, a province 1.5, an `editPaint` line to
-    1e9). AT: a unit test of each refused; the pin unmoved.
 - [ ] 7.3 Final multi-decade sweep (≥ 10 seeds) — borders moving, no hegemon.
   AT: sweep report green.
   Moved here from PLAN 1.42 when its sweep went green (2026-10-16): the findings it was given
@@ -581,3 +565,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.1 Performance pass against all budgets (T0 60 fps, T2 30 fps @10k, tick ≤ 1.5 ms). […]
 - [x] 7.1b Map sizes S–XL (ADR-43): convert the audited cell constants to km (identical at M, […]
 - [x] 1.42 **Moved here from Phase 1 on 2026-10-03 (ADR-58, the user's decision): balance is […]
+- [x] 7.2 30-minute soak with save/load twin comparison. […]

@@ -2591,7 +2591,10 @@ on screen.
   reason) after the command, the worker posts `{type: 'refused', reason}` to the page, and the
   God tab says it in words. Refused: a NaN or an infinity anywhere in a command; a dead nation
   where a living state is needed (a formation, control, land, an alliance, a puppet, a war); a
-  nation that is not there. Ally with a nation in an alliance is refused; "Leave alliance" is
+  nation that is not there; a number out of its range (`Refusal.OutOfRange`, `inRange`; PLAN
+  7.2c, ADR-426): an id that is not a whole number of 0 or more, a place more than two map
+  widths or one map height off the map, a strength below 0, a radius past `MAX_PAINT_R` (32,
+  the editor's), a side of a war not 0 or 1, an alliance with a member twice. Ally with a nation in an alliance is refused; "Leave alliance" is
   the button for that.
 - **Player control** (PLAN 1.33a, `src/app/player.ts`): "Take control" in the nation panel
   (`setPlayer`, saved as `settings.player`, so loads and resumed autosaves keep it) turns that

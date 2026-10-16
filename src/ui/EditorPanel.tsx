@@ -1,4 +1,5 @@
 import { useState } from 'preact/hooks';
+import { MAX_PAINT_R } from '../shared/commands';
 import type { EditorState } from '../shared/editorState';
 import type { NationStat } from '../shared/protocol';
 import { isLand, TERRAIN_IDS } from '../shared/terrain';
@@ -91,7 +92,7 @@ export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onC
         ))}
         <label class="editor-radius">
           {t('editor.radius')}
-          <input data-testid="editor-radius" type="number" min={0} max={32} value={state.r} onInput={(e) => set({ r: Math.max(0, Math.min(32, Number((e.currentTarget as HTMLInputElement).value) || 0)) })} />
+          <input data-testid="editor-radius" type="number" min={0} max={MAX_PAINT_R} value={state.r} onInput={(e) => set({ r: Math.max(0, Math.min(MAX_PAINT_R, Number((e.currentTarget as HTMLInputElement).value) || 0)) })} />
         </label>
       </div>
       <div class="god-row">
