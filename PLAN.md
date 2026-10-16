@@ -183,6 +183,11 @@ quick sweep as a smoke test.
   front only by a long way round (seed 5303's year 5: Belgian and Dutch formations about 10° E
   44° N sent to the coast at 53.5° N, ways of some 880 cells for ends 50 apart, the ground between
   closed to them; searches of 8 to 10 ms each, a dozen a day).
+  The user's decision (2026-10-15): both rules are to be taken up in this task, each judged by the
+  sweep: (a) the AI does not ask again for an order it was refused until something the refused
+  search read has changed (who holds the cells of its way, who is at war with whom); (b) the AI
+  does not send a formation to a front it reaches only by a way several times the straight line
+  (the nearest front it reaches directly, or it holds where it is). Each moves the pin.
   AT: `npm run sweep -- --first 401 --tag <name>` (seeds no tuning has seen) all green.
 - [ ] 7.2 30-minute soak with save/load twin comparison.
   AT: `npm run soak` passes with no crash and no desync.

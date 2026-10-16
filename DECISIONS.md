@@ -423,6 +423,9 @@ rules under PLAN 1.42 (d, f) and one line under 7.4 (g).
   tier watches (the critic's fix), a change of the rules and of the pin. Which of the two, if
   either, is the user's decision; until then the speed levels stay as SPEC §2.5 has them and
   the pace at Max is what the tick allows. Parity row 64 says so with these figures.
+- **The user's decision (2026-10-15):** the pace stays as it is: Max is what the tick allows,
+  some 20 to 30 days a second. Neither a coarse path for unwatched fronts nor halving the hour's
+  work by running systems less often is to be taken up.
 
 ### ADR-412 · 2026-10-15 · accepted — The fine mask on the GPU in bands of rows (PLAN 7.1l9)
 

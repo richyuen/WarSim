@@ -16446,3 +16446,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   1024×512, the picker says S in that game); `title.spec.ts` (its refused size now 1000×500).
 - **Specs:** `gameOptions1938`, `title`, `scenarioFile1938`, `settings1938` green.
 - **Next:** PLAN 7.1b9.
+- **The user's decisions (2026-10-15):** the top speed stays as it is (ADR-413, option 1); both AI
+  rules (refused orders not asked again until something changes; no orders by a long way round)
+  are to be taken up under PLAN 1.42.
