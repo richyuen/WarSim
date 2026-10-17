@@ -248,6 +248,13 @@ export function canDeliver(world: World, n: number): boolean {
   return false;
 }
 
+/** Whether `n` can put a warhead on (x, y) now (PLAN 7.6): a missile from its capital within MISSILE_KM, or a bomber within range (`nukeBomber`). */
+export function reaches(world: World, n: number, x: number, y: number): boolean {
+  const nc = world.nations.cols;
+  if (knows(world, n, 'ballistic_missiles') && seaKm(world, nc.capitalX[n]!, nc.capitalY[n]!, x, y) <= MISSILE_KM) return true;
+  return nukeBomber(world, n, x, y) !== null;
+}
+
 /** Nation `n` launches a warhead at (x, y) by bomber or missile (PLAN 6.2): see the head of the file; why not, else None. */
 export function launchNuke(world: World, n: number, x: number, y: number, missile: boolean): Refusal {
   if (!nukesAllowed(world, n)) return Refusal.NoNukes;
@@ -825,27 +832,65 @@ export function nukeTargets(world: World, n: number, war: War, side: number, aim
   return out;
 }
 
+/** How `n` weighs one of its wars on a day (PLAN 7.6: the decision's parts, read by a diagnostic too). */
+export interface WarWeighing {
+  /** The enemies it may strike (`aimOf`). */
+  aim: Aim;
+  /** The inputs shared by its places (none when `aim` is empty). */
+  shared: Omit<NukeInputs, 'targetValue'> | null;
+  /** The places weighed and each one's value. */
+  places: { x: number; y: number; value: number }[];
+}
+
+/** `n`'s weighing of `war` on `side` (PLAN 6.4b), `industry` the day's (`industryOnce`). */
+export function weighWar(world: World, n: number, war: War, side: number, industry: () => Float64Array): WarWeighing {
+  const aim = aimOf(world, n, war, side);
+  if (aim.at.size === 0) return { aim, shared: null, places: [] };
+  const shared = warInputs(world, n, war, side, retaliates(world, n, war, side));
+  const view = strikeView(world, n, war, side, industry);
+  return { aim, shared, places: nukeTargets(world, n, war, side, aim).map(([x, y]) => ({ x, y, value: valueIn(world, n, view, x, y) })) };
+}
+
+/** Whether `n` holds a grievance against an enemy in one of its wars (PLAN 6.12b): it then weighs that war alone. */
+export function avengingOf(world: World, n: number): boolean {
+  return world.wars.list.some((war) => {
+    const side = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
+    return side >= 0 && grievanceIn(world, n, war, side) !== 0;
+  });
+}
+
+/** Whether nation `n` weighs strikes today (PLAN 6.4b): a warhead, living, its AI on, no overlord, nukes allowed. */
+export function weighsStrikes(world: World, n: number): boolean {
+  const nc = world.nations.cols;
+  return warheadsOf(world, n) >= 1 && nc.living[n] === 1 && nc.aiOff[n] !== 1 && nc.overlord[n] === 0 && nukesAllowed(world, n);
+}
+
+/** Whether `n` on `side` of `war`, avenging or not, weighs it today (PLAN 6.12b). */
+export function weighsWar(world: World, n: number, war: War, side: number, avenging: boolean): boolean {
+  return side >= 0 && !(avenging && grievanceIn(world, n, war, side) === 0);
+}
+
+/** The day's industry by nation, summed when first asked for (PLAN 6.10; a diagnostic's too). */
+export function dayIndustry(world: World): () => Float64Array {
+  return industryOnce(world);
+}
+
 /** The day's decisions to strike (PLAN 6.4b): see the head of the file. */
 function nukeDecisions(world: World): void {
   if (!world.settings.aiEnabled || world.warheads.size === 0) return;
-  const nc = world.nations.cols;
   const industry = industryOnce(world);
   for (const n of [...world.warheads.keys()].sort((a, b) => a - b)) {
-    if (warheadsOf(world, n) < 1 || nc.living[n] !== 1 || nc.aiOff[n] === 1 || nc.overlord[n] !== 0 || !nukesAllowed(world, n)) continue;
+    if (!weighsStrikes(world, n)) continue;
     const options: { u: number; x: number; y: number; back: boolean }[] = [];
-    const sideIn = (war: War): number => (war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1);
     // While it holds a grievance against an enemy, it strikes no one else (PLAN 6.12b).
-    const avenging = world.wars.list.some((war) => sideIn(war) >= 0 && grievanceIn(world, n, war, sideIn(war)) !== 0);
+    const avenging = avengingOf(world, n);
     for (const war of world.wars.list) {
-      const side = sideIn(war);
-      if (side < 0 || (avenging && grievanceIn(world, n, war, side) === 0)) continue;
-      const back = retaliates(world, n, war, side);
-      const aim = aimOf(world, n, war, side);
-      if (aim.at.size === 0) continue;
-      const shared = warInputs(world, n, war, side, back);
-      const view = strikeView(world, n, war, side, industry);
-      for (const [x, y] of nukeTargets(world, n, war, side, aim)) {
-        const u = nuclearUtility({ targetValue: valueIn(world, n, view, x, y), ...shared });
+      const side = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
+      if (!weighsWar(world, n, war, side, avenging)) continue;
+      const { shared, places } = weighWar(world, n, war, side, industry);
+      if (!shared) continue;
+      for (const { x, y, value } of places) {
+        const u = nuclearUtility({ targetValue: value, ...shared });
         if (u > 0) options.push({ u, x, y, back: avenging });
       }
     }
