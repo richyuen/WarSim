@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-470 · 2026-10-17 · accepted — A grey nation's sprites are light grey (PLAN 7.9b)
+
+- **Context.** Critic run 7 (tanks 5): "all one grey". Figures and element sprites take their
+  nation's colour (`spriteTint`, PLAN 3.11e: lighter to SPRITE_LIGHT 0.42 where dark, hue and
+  saturation kept). Germany's #5d5d5d came out #6b6b6b; under a dark outline its tanks were darker
+  than the drab ground and near the dark French. Measured with `tankSides1938`'s pixel test (the
+  critic's fight, seed 7781, 10 m/px, the 3 × 3 pixels at each German tank's middle): 79 grey, 27
+  under the ground, 37 from the French figures (with 7.9c's sizes).
+- **Decision.** The least lightness rises as the saturation falls: GREY_LIGHT (0.8) for a grey, down
+  to SPRITE_LIGHT from GREY_SATURATION (0.3) up (`leastLight`); the tint in HSL. Germany's tint
+  #cccccc; Iraq, Yemen and Nepal a little lighter; every other nation as before, the 3.11e tests
+  unchanged (the Soviet red darker than Poland's).
+- **Dropped on the way.** GREY_LIGHT 0.62 on 8-px tanks (before 7.9c): 87 grey, nearer the ground
+  (PROGRESS). An outline in the nation's hue (the shader's dark × a share of the tint): 90 grey, the
+  silhouettes washed out, 16 under the ground.
+- **Effect.** At 10 m/px 150 grey, 45 over the ground, 150 from the French; at T2 the German elements
+  light grey beside the French blue (`docs/evidence/7.9/b-tank-sides-10m.png`, `-60m.png`).
+- **Tests.** `tint.test.ts` (a test more); `tankSides1938` (new; red before: 37 and 27).
+
 ### ADR-469 · 2026-10-17 · accepted — Tanks at T3 in ranks of four, twice the size (PLAN 7.9c)
 
 - **Context.** Critic run 7 (tanks 5): "at 10 m/px a tank is about 8 px ... in a loose grid with no

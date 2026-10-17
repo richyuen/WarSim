@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { NATIONS_1938 } from '../../src/sim/scenario1938';
-import { SPRITE_LIGHT, spriteTint } from '../../src/render/units/tint';
+import { GREY_LIGHT, leastLight, SPRITE_LIGHT, spriteTint } from '../../src/render/units/tint';
 
 // PLAN 3.11e (the critic's R3-B3: "Soviet tanks are tinted pink, near Poland's own pink",
 // `critic/shots/c3j_12_tank_live_006m_2.png`): a sprite's tint was its nation's colour mixed
@@ -54,5 +54,15 @@ describe('the tint of a nation\'s sprites', () => {
     expect(apart(spriteTint(own('GER')), spriteTint(own('POL')))).toBeGreaterThan(61);
     // The Soviet red stays darker than Poland's: the lightness is half of what tells the two.
     expect(hsl(spriteTint(own('SOV'))).l).toBeLessThan(hsl(spriteTint(own('POL'))).l - 0.1);
+  });
+
+  // PLAN 7.9b (critic run 7, German tanks "all one grey"): a colour near grey is lighter, to GREY_LIGHT for a grey.
+  it("a grey's tint is light: Germany's at GREY_LIGHT; a colour of full saturation as before", () => {
+    expect(leastLight(0)).toBe(GREY_LIGHT);
+    expect(leastLight(1)).toBe(SPRITE_LIGHT);
+    expect(hsl(spriteTint(own('GER'))).l).toBeGreaterThanOrEqual(GREY_LIGHT - 0.005);
+    expect(hsl(spriteTint(own('GER'))).s).toBeLessThan(0.01);
+    // Germany's from Poland's and from France's by more than before (61 and the French 47 apart).
+    expect(apart(spriteTint(own('GER')), spriteTint(own('FRA')))).toBeGreaterThan(120);
   });
 });

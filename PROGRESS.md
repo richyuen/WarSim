@@ -17807,3 +17807,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **For 7.9b:** the pixel test of the German tanks at 10 m/px now reads 79 grey (37 from the enemy's
   figures, 27 under the ground).
 - **Next:** PLAN 7.9b.
+
+## 2026-10-17 — PLAN 7.9b: a grey nation's sprites are light grey (render)
+
+- **Start:** gate green on a clean tree (`ff92741`).
+- **Done:** `spriteTint`'s least lightness rises as the saturation falls, to GREY_LIGHT 0.8 for a
+  grey (`leastLight`): Germany's #6b6b6b → #cccccc; Iraq, Yemen, Nepal a little lighter. ADR-470.
+- **Measured** (`tankSides1938`, the critic's fight at 10 m/px): German tank middles 79 → 150 grey,
+  27 under → 45 over the ground, 37 → 150 from the French. Tried and dropped: an outline in the
+  nation's hue (90 grey, washed out). Pictures `docs/evidence/7.9/b-tank-sides-10m.png`, `-60m.png`.
+- **Tests:** `tint.test.ts` (a test more, the 3.11e tests unchanged), `tankSides1938` (new).
+- **Next:** PLAN 7.9d.
