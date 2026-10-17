@@ -1,0 +1,198 @@
+{
+ "seed": 5591,
+ "steps": [
+  {
+   "label": "GER fleet North Sea",
+   "before": {
+    "all": 87,
+    "wings": 28
+   },
+   "after": {
+    "all": 88,
+    "wings": 28
+   },
+   "refusal": null
+  },
+  {
+   "label": "GER fleet 2",
+   "before": {
+    "all": 88,
+    "wings": 28
+   },
+   "after": {
+    "all": 89,
+    "wings": 28
+   },
+   "refusal": null
+  },
+  {
+   "label": "ENG fleet North Sea",
+   "before": {
+    "all": 74,
+    "wings": 26
+   },
+   "after": {
+    "all": 75,
+    "wings": 26
+   },
+   "refusal": null
+  },
+  {
+   "label": "ENG fleet 2",
+   "before": {
+    "all": 75,
+    "wings": 26
+   },
+   "after": {
+    "all": 76,
+    "wings": 26
+   },
+   "refusal": null
+  },
+  {
+   "label": "POL bomber Warsaw",
+   "before": {
+    "all": 49,
+    "wings": 4
+   },
+   "after": {
+    "all": 49,
+    "wings": 4
+   },
+   "refusal": "Not done: no airbase of its with room is near the place."
+  },
+  {
+   "label": "GER fleet Berlin (should refuse)",
+   "before": {
+    "all": 89,
+    "wings": 28
+   },
+   "after": {
+    "all": 89,
+    "wings": 28
+   },
+   "refusal": "Not done: no water of a sea is near the place."
+  }
+ ],
+ "editorText": "Map editor\n×\nBrushLineBucketRadius\nNation\nTerrain\nUnowned\nAfghanistan\nAlbania\nAnglo-Egyptian Sudan\nAngola\nArgentina\nAustralia\nAustria\nBelgian Congo\nBelgium\nBolivia\nBrazil\nBritish East Africa\nBritish India\nBritish Malaya\nBulgaria\nBurma\nCanada\nCeylon\nChile\nChina\nColombia\nCommunist China\nCosta Rica\nCuba\nCzechoslovakia\nDenmark\nDominican Republic\nDutch East Indies\nEcuador\nEgypt\nEl Salvador\nEstonia\nFinland\nFrance\nFree City of Danzig\nFrench Equatorial Africa\nFrench Indochina\nFrench Morocco\nFrench West Africa\nGermany\nGold Coast\nGreece\nGuatemala\nHaiti\nHonduras\nHungary\nIceland\nIran\nIraq\nIreland\nItaly\nJapan\nLatvia\nLebanon\nLiberia\nLithuania\nLuxembourg\nMadagascar\nManchukuo\nMengjiang\nMexico\nMongolia\nMozambique\nNationalist Spain\nNepal\nNetherlands\nNew Zealand\nNewfoundland\nNicaragua\nNigeria\nNorway\nOman\nPalestine\nPanama\nParaguay\nPeru\nPhilippines\nPoland\nPortugal\nRomania\nSarawak\nSaudi Arabia\nSiam\nSouth Africa\nSouthern Rhodesia\nSoviet Union\nSpanish Republic\nSweden\nSwitzerland\nSyria\nTannu Tuva\nTibet\nTransjordan\nTunisia\nTurkey\nUnited Kingdom\nUnited States\nUruguay\nVenezuela\nXinjiang\nYemen\nYugoslavia\nEthiopia (dead)\nOnly on\neverything\nterrain\nnation\nUndo (0)Redo (0)\nScenario\nPlace cityRemove cityMake capitalAdd coreRemove core\nForces\nFleetAir wing\nImport image\nas terrain (terrain colours)\nas nations (nation colours)\nScenario file\nExport\nLoad scenario\nClick or drag on the map to paint. The right button moves the map.",
+ "templates": [],
+ "templatesWing": [
+  "Fighter group",
+  "Tactical bomber group",
+  "Strategic bomber group",
+  "Close support group",
+  "Naval bomber group",
+  "Air transport group"
+ ],
+ "polWarheads": 10,
+ "warheadsText": "Poland has 10 warheads. Add more:",
+ "placed": {
+  "GER": {
+   "all": 89,
+   "wings": 28
+  },
+  "ENG": {
+   "all": 76,
+   "wings": 26
+  },
+  "POL": {
+   "all": 49,
+   "wings": 4
+  }
+ },
+ "pendingText": "Critic standoff 8\nWorld, 1938 · 1 January 1938\nStart this scenario\nCancel",
+ "afterCancelUrl": "http://localhost:5299/",
+ "afterCancelPending": 0,
+ "loaded": {
+  "GER": {
+   "all": 89,
+   "wings": 28
+  },
+  "ENG": {
+   "all": 76,
+   "wings": 26
+  },
+  "POL": {
+   "all": 49,
+   "wings": 4
+  },
+  "polWarheads": 10
+ },
+ "marks": [
+  {
+   "days": 3,
+   "polWarheads": 10,
+   "polForces": {
+    "all": 43,
+    "wings": 0
+   },
+   "alerts": null,
+   "sea": 1,
+   "tickerSea": [
+    "⚓ Sea battle: United Kingdom against Germany"
+   ]
+  },
+  {
+   "days": 10,
+   "polWarheads": 10,
+   "polForces": {
+    "all": 39,
+    "wings": 0
+   },
+   "alerts": null,
+   "sea": 0,
+   "tickerSea": []
+  },
+  {
+   "days": 30,
+   "polWarheads": 10,
+   "polForces": {
+    "all": 33,
+    "wings": 0
+   },
+   "alerts": null,
+   "sea": 0,
+   "tickerSea": []
+  },
+  {
+   "days": 60,
+   "polWarheads": 10,
+   "polForces": {
+    "all": 8,
+    "wings": 0
+   },
+   "alerts": null,
+   "sea": 0,
+   "tickerSea": []
+  },
+  {
+   "days": 120,
+   "polWarheads": 10,
+   "polForces": {
+    "all": 0,
+    "wings": 0
+   },
+   "alerts": null,
+   "sea": 0,
+   "tickerSea": []
+  }
+ ],
+ "history": [
+  "14 April 1938 Germany captured Poland's capital",
+  "Poland",
+  "Sea battle",
+  "Poland",
+  "14 April 1938 Germany captured Poland's capital",
+  "22 March 1938 Germany captured Poland's capital",
+  "11 March 1938 Soviet Union and Poland fought at sea: Soviet Union lost 3 ships, Poland 0",
+  "10 March 1938 Soviet Union and Poland fought at sea: Soviet Union lost 0 ships, Poland 5",
+  "9 March 1938 Soviet Union declared war on Poland",
+  "1 March 1938 Germany's air force struck Poland this month: 118,839 men, guns and vehicles lost",
+  "1 February 1938 Germany's air force struck Poland this month: 115,847 men, guns and vehicles lost",
+  "1 February 1938 Germany and Poland fought in the air this month: Germany lost 24 aircraft, Poland 100",
+  "4 January 1938 Poland joined the Little Entente",
+  "1 January 1938 Germany declared war on Poland",
+  "Warheads"
+ ],
+ "errors": []
+}

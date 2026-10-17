@@ -1,51 +1,60 @@
 {
-  "commit": "19e2341632afaba7f7241e4eebab021b39ddf0d2",
+  "commit": "fd27e854ec7e6c0c3ac0bba36152c68b540d128f",
   "scores": {
     "mapVisuals": 7,
-    "diplomacyWarDepth": 6,
-    "emergentDynamics": 6,
+    "diplomacyWarDepth": 7,
+    "emergentDynamics": 7,
     "godMode": 7,
-    "editorScenarios": 6,
+    "editorScenarios": 7,
     "statsHistory": 7,
     "uiUxPolish": 7,
-    "performance": 5,
+    "performance": 7,
     "stability": 7,
-    "semanticZoom": 6,
-    "naval": 5,
-    "tanks": 5,
-    "aircraft": 5,
-    "aiNukes": 3
+    "semanticZoom": 7,
+    "naval": 6,
+    "tanks": 7,
+    "aircraft": 6,
+    "aiNukes": 6
   },
   "blocking": [
     {
-      "id": "R7-B1",
-      "title": "AI nuclear use is too rare to be seen, and still not credible: strikes in 2 of 14 unaided 30-year worlds (4 in 420 world-years) while 4 to 6 nations hold 132 to 156 warheads and ballistic missiles; on seeds 1 to 10 the builder's PLAN 7.3g sweep had 4 of 10 seeds and 21 decisions, at HEAD 2 of 10 and 4; all 4 strikes are by the Soviet Union, on the same Dutch point a year apart (734,042 and 566,582 dead) and twice on South Africa, none answered; God-set France (overrun, fighting to the death, 6 warheads, missiles) strikes once and then holds 5 warheads for 49 days",
+      "id": "R8-B1",
+      "title": "AI nuclear use is still unseen in half the games and inert where a player sets it up: 8 of 17 unaided 30-year worlds see a burst (55 in 510 world-years), but only 3 of 17 before year 20 and 9 never, while 3 to 6 nations hold 118 to 163 warheads; France and Poland, given 10 warheads each in the editor and overrun (capitals taken), never strike in 120 to 150 days; some strikes hit near-empty or third-party places (Nepal, 1,000 dead; China on one Xinjiang point four times in 4 days, 641,568 then 18,088, 1,554 and 566 dead)",
       "evidence": [
-        "critic/c7_headless_q1.json",
-        "critic/c7_headless_q4.json",
-        "critic/c7_headless_q5.json",
-        "critic/c7_headless_q10.json",
-        "critic/c7_headless_3371.json",
-        "critic/c7_headless_8803.json",
-        "critic/c7_headless_6619.json",
-        "critic/c7_headless_1207.json",
-        "critic/c7_f_2604_m.json",
-        "critic/c7_f_2604_air.json",
-        "docs/evidence/7.3/quick-7.3g.md"
+        "critic/c8_headless_q1.json",
+        "critic/c8_headless_7919.json",
+        "critic/c8_headless_9137.json",
+        "critic/c8_headless_4093.json",
+        "critic/c8_g_5591.json",
+        "critic/c8_i_7127.json",
+        "critic/shots/c8i_7127_day150.png",
+        "critic/shots/c8f_1_11_alert.png"
       ],
-      "fix": "Find why the strike rate halved since 7.3g (the stockpile cap, the 6.12a/f threat test, desperation in real wars). A nuclear power losing a war for its life should reach for the bomb in a visible share of games. Aim at the enemy at the front or its core, not twice at one Dutch city a year apart or at South Africa. Let the struck answer, and let a nation that struck once and keeps losing strike again."
+      "fix": "nukesAllowed passes for them (src/sim/systems/nuclear.ts:150, settings only), so the utility never turns positive for an overrun holder in 1938: make a nuclear power losing a war for its life reach for the bomb in a visible share of games and earlier in the nuclear age; let warheads placed by the editor or God Mode be used by a desperate holder, or say in the editor why they will not be; do not strike a point already struck days before, nor small third parties for a thousand dead."
     },
     {
-      "id": "R7-B2",
-      "title": "Late-game stalls in the invasion AI: on seed 3371 (pinned, alone) invasionAi is 86 % of the tick in years 28 and 29, about 50 calls a year of 300 to 772 ms; in the browser at Max those years take 45 to 46 s with about 52 stops of 0.72 to 0.84 s and 20 to 30 fps, while the next year takes 8 s at 55 fps",
+      "id": "R8-B2",
+      "title": "A sea battle's ticker row does not land on the fight (contradicts PLAN 7.10b): on seed 5591, with the battle live (view.seaBattles() non-empty, clicked at hour 41 of Germany's war on Britain), the row centres the view on dry land at Groningen at 364 m/px; the battle's own pair spans 23.3 cells (fleets on either side of the Dutch coast), the British and German fleets sit at opposite edges about 1,000 px apart, and in 6 s live at Speed x1 no gunfire is drawn; at 150, 40 and 15 m/px the centre has no ship",
       "evidence": [
-        "critic/c7_perf_3371_y15_30_solo.log",
-        "critic/c7_j_3371.json",
-        "critic/shots/c7j_3371_2_year2.png",
-        "critic/c7_headless_1207.json"
+        "critic/c8_j2_5591.json",
+        "critic/c8_j_5591.json",
+        "critic/shots/c8j2_5591_01_row_live_0.png",
+        "critic/shots/c8j_5591_00_row.png",
+        "critic/shots/c8j_5591_1_0150m.png"
       ],
-      "fix": "Profile the slow invasionAi calls (src/sim/ai/invasion.ts, the landing plan of a nation at war with no land front) in a war with no land front (Poland against Denmark in 1967 here); their cost grows with the years and the formations. Cache or bound the landing search, and hold the late-game tick to budget, not only seed 99's year 1."
+      "fix": "A 'battle' between fleets 23 cells apart across land is not one a player can see: frame the point where ships actually exchange fire, with both near the centre, and never centre a sea battle on land (or make fleets close before they fight)."
+    },
+    {
+      "id": "R8-B3",
+      "title": "The Nuke tool's size is cosmetic (contradicts PLAN 7.16a): a hydrogen bomb kills 3 to 11 % more than an atomic one on the same point (Paris 554,827 against 588,117; London 751,186 / 790,283; Berlin 1,025,202 / 1,063,051; Moscow 161,530 / 179,694) and leaves a ruin that cannot be told apart at 300 m/px",
+      "evidence": [
+        "critic/c8_b_4711.json",
+        "critic/shots/c8b_berlin_A_vs_H_300m.png",
+        "critic/shots/c8a_4711_20_paris_150m_day10.png",
+        "critic/shots/c8a_4711_20_london_150m_day10.png"
+      ],
+      "fix": "Give a thermonuclear bomb a yield on the order of tens to hundreds of times a fission one (detonate gets yieldN 2 against 1, radius x1.26), so its blast, toll, fallout and ruin are visibly larger."
     }
   ],
-  "timestamp": "2026-10-17T08:40:53Z"
+  "timestamp": "2026-10-17T20:04:00Z"
 }
