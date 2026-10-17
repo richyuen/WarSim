@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { dayIndustry, nuclearUtility, RESOLVE, RESOLVE_DAYS, RESOLVE_GAP_DAYS, RESOLVE_STRIKES, resolveOf, retaliationRisk, weighWar } from '../../src/sim/systems/nuclear';
+import { aimOf, dayIndustry, industryHeld, nuclearUtility, nukeTargets, RESOLVE, RESOLVE_DAYS, RESOLVE_GAP_DAYS, RESOLVE_STRIKES, RESOLVE_WEIGHT, resolveOf, retaliationRisk, weighWar } from '../../src/sim/systems/nuclear';
 import { grantTechs, techMask } from '../../src/sim/tech';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -14,7 +14,7 @@ import { nationId } from '../helpers/sim1938';
 // month old, or a strike of Germany's in the last RESOLVE_GAP_DAYS: no resolve.
 
 const { w: W } = SIZE_1938;
-const [FRA, GER] = ['FRA', 'GER'].map(nationId) as [number, number];
+const [FRA, GER, ENG, ITA, USA] = ['FRA', 'GER', 'ENG', 'ITA', 'USA'].map(nationId) as [number, number, number, number, number];
 
 function world(): Sim {
   const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });
@@ -91,4 +91,29 @@ describe("a winner's resolve to end a long war (PLAN 7.18e)", () => {
     expect(bestUtility(s, war)).toBeLessThanOrEqual(0);
   }, 300_000);
 
+  it('a strike of the resolve falls on a nation of weight to the enemy side (PLAN 7.18h)', () => {
+    // Seed 1's Italy struck Mongolia and #114 by its resolve, of 0 and 0.4 % of the side's output.
+    // Germany on the United States, Britain, France and Italy: Italy threatens it but holds under
+    // RESOLVE_WEIGHT of that side's output.
+    const s = world();
+    const w = s.world;
+    const war = w.wars.start([GER], [USA, ENG, FRA, ITA], 0);
+    const held = industryHeld(w);
+    const all = [USA, ENG, FRA, ITA].reduce((a, m) => a + held[m]!, 0);
+    expect(held[ITA]! / all).toBeLessThan(RESOLVE_WEIGHT);
+    // Young, no resolve: Italy is aimed at.
+    war.startTick = w.tick - 30 * 24;
+    expect([...aimOf(w, GER, war, 0).at].sort()).toEqual([USA, ENG, FRA, ITA].sort());
+    // Two years in and winning: the resolve's aim is the nations of weight.
+    war.startTick = w.tick - 800 * 24;
+    war.score = 20;
+    expect(resolveOf(w, war, 0, 0, false)).toBeGreaterThan(0);
+    const aim = aimOf(w, GER, war, 0);
+    expect(aim.anywhere).toBe(true);
+    expect([...aim.at].sort()).toEqual([USA, ENG, FRA].sort());
+    for (const m of aim.at) expect(held[m]! / all).toBeGreaterThanOrEqual(RESOLVE_WEIGHT);
+    const places = nukeTargets(w, GER, war, 0, aim);
+    expect(places.length).toBeGreaterThan(0);
+    for (const [x, y] of places) expect(w.cells.owner[Math.floor(y) * w.cells.w + Math.floor(x)]).not.toBe(ITA);
+  }, 300_000);
 });

@@ -762,10 +762,11 @@ export const RESOLVE_GAP_DAYS = 90;
  */
 export const RESOLVE_STRIKES = 3;
 
-/** Whether `side` of `war` has the resolve to end it (PLAN 7.18e): `resolveOf` above 0. */
-function resolving(world: World, war: War, side: number): boolean {
-  return resolveOf(world, war, side, retaliationRisk(world, war, side), madWar(world, war)) > 0;
-}
+/**
+ * The least share of the enemy side's output a nation holds for a strike of the resolve to fall on
+ * its land (PLAN 7.18h): as a capital's weight (CAPITAL_WEIGHT).
+ */
+export const RESOLVE_WEIGHT = CAPITAL_WEIGHT;
 
 /** `side`'s resolve in `war` (PLAN 7.18e): 0 unless the war is long, it is not losing, and the enemy cannot strike back. */
 export function resolveOf(world: World, war: War, side: number, retaliation: number, mad: boolean): number {
@@ -869,15 +870,26 @@ export interface Aim {
  * China's capital 2,043 km off and the Chinese armies near it on its own land, and nothing to weigh
  * for a year at desperation 2; a nation fighting for its life strikes the enemy's heartland).
  */
-export function aimOf(world: World, n: number, war: War, side: number): Aim {
+export function aimOf(world: World, n: number, war: War, side: number, industry: () => Float64Array = industryOnce(world)): Aim {
   const by = grievanceIn(world, n, war, side);
   if (by !== 0) return { at: new Set([by]), anywhere: true };
   const nc = world.nations.cols;
   const at = new Set<number>();
   for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && threatens(world, m, n)) at.add(m);
+  const { desperation, extreme } = desperationOf(world, n, war, side);
+  const resolve = resolveOf(world, war, side, retaliationRisk(world, war, side), madWar(world, war));
+  // A strike of the resolve falls on a nation of weight to the enemy side (PLAN 7.18h): seed 1's
+  // Italy struck Mongolia and #114, of 0 and 0.4 % of the side's output; seed 2's Netherlands
+  // Manchukuo, of 0.5 %.
+  if (!extreme && resolve > desperation && at.size > 0) {
+    const held = industry();
+    let all = 0;
+    for (const m of war.sides[1 - side]!) all += held[m] ?? 0;
+    for (const m of [...at]) if ((held[m] ?? 0) < RESOLVE_WEIGHT * all) at.delete(m);
+  }
   // From any distance too with the resolve to end a long war (PLAN 7.18e: seed 4's France, Britain
   // and Switzerland a year into a war on Japan, every Japanese place beyond FRONT_KM of them).
-  return { at, anywhere: at.size > 0 && (desperationOf(world, n, war, side).extreme || resolving(world, war, side)) };
+  return { at, anywhere: at.size > 0 && (extreme || resolve > 0) };
 }
 
 /** How far from the striker's side a place may be to be weighed (PLAN 6.11a), km: from its land formations or its capitals. */
@@ -1003,7 +1015,7 @@ export interface WarWeighing {
 
 /** `n`'s weighing of `war` on `side` (PLAN 6.4b), `industry` the day's (`industryOnce`). */
 export function weighWar(world: World, n: number, war: War, side: number, industry: () => Float64Array): WarWeighing {
-  const aim = aimOf(world, n, war, side);
+  const aim = aimOf(world, n, war, side, industry);
   if (aim.at.size === 0) return { aim, shared: null, places: [] };
   const shared = warInputs(world, n, war, side, retaliates(world, n, war, side));
   const view = strikeView(world, n, war, side, industry);

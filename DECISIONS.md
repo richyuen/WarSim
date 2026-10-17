@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-490 · 2026-10-17 · accepted — A strike of the resolve falls on a nation of weight (PLAN 7.18h)
+
+- **Context.** The resolve's places are anywhere on the land of the enemies that can threaten the
+  striker (ADR-488), and `threatens` reads a puppet's income as its overlord's: seed 1's Italy struck
+  #114 (0.4 % of the enemy side's output), Mengjiang (2.1 %) and Mongolia (0 %), seed 2's Netherlands
+  Manchukuo (0.5 %), seed 10's Britain Greece (0.5 %) (`docs/evidence/7.18/measure-h.md`). A strike
+  to end a war falls on a nation whose loss would end it.
+- **Decision.** While the resolve weighs a side's strikes (not in extreme desperation, its own
+  desperation under the resolve), `aimOf` keeps only the enemies holding RESOLVE_WEIGHT (0.1, as
+  CAPITAL_WEIGHT) of the enemy side's output (`industryHeld`). In extreme desperation, and without
+  the resolve, the aim is as before.
+- **Pin.** Unmoved: no warhead in seed 99's first year.
+- **Tests.** `nukeResolve1938.test.ts`: Germany on the United States, Britain, France and Italy
+  (Italy about 8 % of that side's output): Italy aimed at in a young war, not by the resolve.
+
 ### ADR-489 · 2026-10-17 · accepted — A few strikes of the resolve a war (PLAN 7.18h)
 
 - **Context.** After ADR-488 a side's resolve to end a long war struck once each RESOLVE_GAP_DAYS
