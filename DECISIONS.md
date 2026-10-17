@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-488 · 2026-10-17 · accepted — A winner's resolve to end a long war (PLAN 7.18e)
+
+- **Context.** Critic R8-B1: AI nuclear use seen in half the games. Measured on seeds 1–10 × 30
+  years after 7.18a–d (`docs/evidence/7.18/measure-e.md`): bursts in 4 seeds. Strikes were weighed
+  only for a holder losing its war; a holder winning a long war had places worth 0.6 to 0.9, often
+  the enemy's capital, but a gain of 0.05 to 0.09 (target × desperation × doctrine, the
+  desperation of a winner) against costs of 0.7 when the enemy could not strike back; and far
+  wars (France, Britain, Switzerland on Japan) had no place within FRONT_KM.
+- **Decision.** `resolveOf`: a side not losing (score ≥ 0) of a war of RESOLVE_DAYS (365) or more,
+  whose enemies and their allies have no deliverable warhead (retaliation risk 0, no MAD), weighs
+  its strikes at a desperation of at least RESOLVE (2) × days / RESOLVE_FULL_DAYS (730), capped at
+  RESOLVE; it may then weigh places anywhere on the land of the enemies that threaten it (as in
+  extreme desperation). One such strike a side every RESOLVE_GAP_DAYS (90): `War.lastStrike` (the
+  tick of each side's last strike decided, state in the wars' JSON). Doctrine still weighs it: a
+  nation of low aggression with a poor target does not use first. A strike to end a war, as in
+  August 1945. `threatens` is unchanged: no strike on nations that cannot threaten the striker.
+- **Measured:** bursts in 8 of 10 seeds (4 before), in 6 of them before year 20 (seed 2's first in
+  year 20, seed 3's one in year 30); spread over 1 to 7 years a seed, not one day; the median decision's utility 0.4 to
+  0.6 on most seeds (some decisions at 0.001 remain, of the desperate paths: PLAN 7.25's floor). Seeds 6 and 9: none (a target of little worth; a bomber out of range).
+- **Pin.** Unmoved: no warhead in seed 99's first year, `War.lastStrike` absent.
+- **Tests.** `nukeResolve1938.test.ts` (new); `nukeOverrun1938.test.ts` green.
+
 ### ADR-487 · 2026-10-17 · accepted — The air war's fall after year 1 is fixed, not accepted (the user's decision)
 
 - **Context.** ADR-377 (2026-10-14) accepted PLAN 5.12 with the air war following the land war,

@@ -707,19 +707,52 @@ export function nukeInputs(world: World, n: number, war: War, side: number, x: n
   return { targetValue: targetValue(world, n, war, side, x, y), ...warInputs(world, n, war, side, retaliating) };
 }
 
+/**
+ * The resolve to end a long war (PLAN 7.18e, critic R8-B1: bursts in 4 of seeds 1 to 10 × 30 years,
+ * none in a war a holder was winning). A holder of warheads winning or holding its own in a war of
+ * RESOLVE_DAYS or more, against enemies none of which (nor their allies) can strike back, weighs its
+ * strikes as at a desperation of RESOLVE × the war's days / RESOLVE_FULL_DAYS (at most RESOLVE): a
+ * strike to end the war, as in August 1945. Measured (`docs/evidence/7.18/measure-e.md`): on such
+ * days the best place was worth 0.6 to 0.9, often the enemy's capital, its gain 0.05 to 0.09 at
+ * the desperation of a winner against costs of 0.7. Its doctrine still weighs it: a nation of low
+ * aggression does not use first. One such strike a side every RESOLVE_GAP_DAYS of a war
+ * (`War.lastStrike`): it waits for the answer, peace or not, before the next.
+ */
+export const RESOLVE_DAYS = 365;
+export const RESOLVE_FULL_DAYS = 730;
+export const RESOLVE = 2;
+export const RESOLVE_GAP_DAYS = 90;
+
+/** Whether `side` of `war` has the resolve to end it (PLAN 7.18e): `resolveOf` above 0. */
+function resolving(world: World, war: War, side: number): boolean {
+  return resolveOf(world, war, side, retaliationRisk(world, war, side), madWar(world, war)) > 0;
+}
+
+/** `side`'s resolve in `war` (PLAN 7.18e): 0 unless the war is long, it is not losing, and the enemy cannot strike back. */
+export function resolveOf(world: World, war: War, side: number, retaliation: number, mad: boolean): number {
+  if (retaliation > 0 || mad) return 0;
+  const days = (world.tick - war.startTick) / 24;
+  if (days < RESOLVE_DAYS || (side === 0 ? war.score : -war.score) < 0) return 0;
+  const last = war.lastStrike?.[side];
+  if (last !== undefined && world.tick - last < RESOLVE_GAP_DAYS * 24) return 0;
+  return RESOLVE * Math.min(1, days / RESOLVE_FULL_DAYS);
+}
+
 /** The inputs of `n`'s strikes in `war` on `side` but the target's value: the same at every place (PLAN 6.10). */
 function warInputs(world: World, n: number, war: War, side: number, retaliating: boolean): Omit<NukeInputs, 'targetValue'> {
   const { desperation, extreme } = desperationOf(world, n, war, side);
   const ally = world.alliances.allianceOf(n);
   const apart = (ally?.members ?? []).filter((m) => m !== n && !war.sides[side]!.includes(m)).length;
+  const retaliation = retaliationRisk(world, war, side);
+  const mad = assured(world, ownCoalition(world, war, side)) && assured(world, enemyCoalition(world, war, side));
   return {
-    desperation,
+    desperation: Math.max(desperation, resolveOf(world, war, side, retaliation, mad)),
     doctrine: doctrineOf(world, n),
-    retaliation: retaliationRisk(world, war, side),
+    retaliation,
     allianceCost: Math.min(ALLIANCE_COST_MAX, ALLIANCE_COST * apart),
     outrage: OUTRAGE_COST + OUTRAGE_WEIGHT * Math.min(1, (world.nukeOutrage.get(n) ?? 0) / 100),
     taboo: world.nukeTaboo,
-    mad: assured(world, ownCoalition(world, war, side)) && assured(world, enemyCoalition(world, war, side)),
+    mad,
     extreme,
     retaliating,
   };
@@ -802,7 +835,9 @@ export function aimOf(world: World, n: number, war: War, side: number): Aim {
   const nc = world.nations.cols;
   const at = new Set<number>();
   for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && threatens(world, m, n)) at.add(m);
-  return { at, anywhere: at.size > 0 && desperationOf(world, n, war, side).extreme };
+  // From any distance too with the resolve to end a long war (PLAN 7.18e: seed 4's France, Britain
+  // and Switzerland a year into a war on Japan, every Japanese place beyond FRONT_KM of them).
+  return { at, anywhere: at.size > 0 && (desperationOf(world, n, war, side).extreme || resolving(world, war, side)) };
 }
 
 /** How far from the striker's side a place may be to be weighed (PLAN 6.11a), km: from its land formations or its capitals. */
@@ -965,7 +1000,7 @@ function nukeDecisions(world: World): void {
   const industry = industryOnce(world);
   for (const n of [...world.warheads.keys()].sort((a, b) => a - b)) {
     if (!weighsStrikes(world, n)) continue;
-    const options: { u: number; x: number; y: number; back: boolean }[] = [];
+    const options: { u: number; x: number; y: number; back: boolean; war: War; side: number }[] = [];
     // While it holds a grievance against an enemy, it strikes no one else (PLAN 6.12b).
     const avenging = avengingOf(world, n);
     for (const war of world.wars.list) {
@@ -975,7 +1010,7 @@ function nukeDecisions(world: World): void {
       if (!shared) continue;
       for (const { x, y, value } of places) {
         const u = nuclearUtility({ targetValue: value, ...shared });
-        if (u > 0) options.push({ u, x, y, back: avenging });
+        if (u > 0) options.push({ u, x, y, back: avenging, war, side });
       }
     }
     options.sort((a, b) => b.u - a.u);
@@ -984,6 +1019,10 @@ function nukeDecisions(world: World): void {
       const ok = (missiles && launchNuke(world, n, o.x, o.y, true) === Refusal.None) || launchNuke(world, n, o.x, o.y, false) === Refusal.None;
       if (!ok) continue;
       world.out.emit(world.tick, EventKind.NukeDecided, n, Math.round(o.u * 1000), o.x, o.y);
+      // The war remembers its side's strike (PLAN 7.18e: the resolve's gap).
+      const last: [number, number] = o.war.lastStrike ? [...o.war.lastStrike] : [-1, -1];
+      last[o.side] = world.tick;
+      o.war.lastStrike = last;
       // A strike back spends the grievance: one for one (of retaliation doctrine or not, PLAN 6.12b),
       // and its burst gives none (PLAN 6.12e).
       if (o.back) {

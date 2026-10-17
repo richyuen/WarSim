@@ -31,6 +31,8 @@ export interface War {
   frontless?: number;
   /** The nations of the war whose capital an enemy of it took (PLAN 7.18a; absent: none). */
   capitalsLost?: number[];
+  /** The tick of each side's last nuclear strike decided in the war (PLAN 7.18e; absent: none). */
+  lastStrike?: [number, number];
 }
 
 export interface Truce {

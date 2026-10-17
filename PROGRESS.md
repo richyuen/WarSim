@@ -17995,3 +17995,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **PROMPT 2a:** at least one task of its own for every dimension under its bar, scoped to what the
   blocking issues' tasks leave, before PLAN 7.5.
 - **Next:** PLAN 7.18 (7.18a to d done).
+
+## 2026-10-17 — PLAN 7.18e: a winner's resolve to end a long war (rules); 7.18 open
+
+- **Start:** gate green on a clean tree (`8792e25`; four evidence pictures re-rendered by earlier spec
+  runs left unstaged).
+- **Split:** 7.18e a winner's resolve; 7.18f the critic's Poland with a bomber group; 7.18g the AT's
+  measure and the 50-year sweep.
+- **Measured first:** `tools/diag/nukeGates.ts` (extended: days of holders not losing by war length,
+  bursts, first warheads), seeds 1–10 × 30 years: bursts in 4. A winner's best place 0.6–0.9, its gain
+  0.05–0.09 against costs 0.7; far wars placeless.
+- **Done:** `resolveOf` (a long war, not losing, no enemy second strike: desperation up to RESOLVE 2,
+  places anywhere, one strike a side every 90 days, `War.lastStrike`). ADR-488. Pin unmoved.
+- **Measured after:** bursts in 8 of 10 seeds, 6 before year 20, spread over years
+  (`docs/evidence/7.18/measure-e.md`).
+- **Tests:** `nukeResolve1938.test.ts` (new), `nukeOverrun1938.test.ts`, the pin green.
+- **Next:** PLAN 7.18f.

@@ -14,7 +14,8 @@ import { Sim } from '../../src/sim/sim';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { assets1938 } from '../../tests/helpers/earth';
 import { EventKind } from '../../src/shared/events';
-import { reaches, avengingOf, dayIndustry, desperationOf, nuclearUtility, RETALIATION_WEIGHT, TABOO_WEIGHT, EXTREME_TABOO, warheadsOf, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
+import { nukeStrike } from '../../src/shared/history';
+import { reaches, avengingOf, nukeTargets, dayIndustry, desperationOf, nuclearUtility, RETALIATION_WEIGHT, TABOO_WEIGHT, EXTREME_TABOO, warheadsOf, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
 
 const seed = Number(process.argv[2]);
 const years = Number(process.argv[3] ?? 30);
@@ -25,17 +26,27 @@ type Cat = 'noAim' | 'noPlace' | 'mad' | 'low' | 'strike' | 'noReach';
 const counts: Record<'all' | 'losing' | 'extreme', Record<Cat, number>> = { all: { noAim: 0, noPlace: 0, mad: 0, low: 0, strike: 0, noReach: 0 }, losing: { noAim: 0, noPlace: 0, mad: 0, low: 0, strike: 0, noReach: 0 }, extreme: { noAim: 0, noPlace: 0, mad: 0, low: 0, strike: 0, noReach: 0 } };
 const lowParts = { n: 0, gain: 0, retal: 0, alliance: 0, outrage: 0, taboo: 0, tv: 0, desp: 0, doctrine: 0 };
 const byNation = new Map<number, Record<Cat, number> & { losingDays: number; warheads: number }>();
+const bursts: { day: number; n: number | string; struck: number | string; dead: number; x: number; y: number }[] = [];
 const decisions: { day: number; n: number | string; x: number; y: number; u: number }[] = [];
 const examples: unknown[] = [];
+type WinBand = Record<Cat, number> & { days: number; scoreUp: number; retal0: number; value: number; capitalBest: number; gain: number; costs: number; nLow: number; anywherePlaces: number; enemyIncome: number };
+const winning = new Map<string, WinBand>();
+const examplesWin: unknown[] = [];
+const firstWarhead = new Map<string, number>();
 let day = 0;
 for (let y = 0; y < years; y++) {
   for (let d = 0; d < 365; d++, day++) {
     s.step(24, (ww) => {
       const ev = ww.out.events;
+      for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.NukeCasualties) {
+        const k = nukeStrike(ev[i + 3]!);
+        bursts.push({ day, n: tag(ev[i + 2]!), struck: tag(k.nation), dead: k.dead, x: ev[i + 4]!, y: ev[i + 5]! });
+      }
       for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.NukeDecided) decisions.push({ day, n: tag(ev[i + 2]!), u: ev[i + 3]! / 1000, x: ev[i + 4]!, y: ev[i + 5]! });
       ww.out.events.length = 0;
       ww.out.fires.length = 0;
     });
+    for (const n of w.warheads.keys()) if (warheadsOf(w, n) > 0 && !firstWarhead.has(tag(n))) firstWarhead.set(tag(n), +(day / 365).toFixed(2));
     if (w.warheads.size === 0) continue;
     const industry = dayIndustry(w);
     for (const n of [...w.warheads.keys()].sort((a, b) => a - b)) {
@@ -72,6 +83,35 @@ for (let y = 0; y < years; y++) {
             lowParts.doctrine += i.doctrine;
           }
         }
+        // PLAN 7.18e: the days of a holder not losing (desperation under 0.5), by the war's length:
+        // which gate stops a winner's strike, and what its best place is worth.
+        if (desperation < 0.5) {
+          const warDays = Math.floor((w.tick - war.startTick) / 24);
+          const band = warDays < 365 ? 'under1y' : warDays < 730 ? '1to2y' : 'over2y';
+          const k = `${band}`;
+          let wb = winning.get(k);
+          if (!wb) winning.set(k, (wb = { days: 0, noAim: 0, noPlace: 0, mad: 0, low: 0, strike: 0, noReach: 0, scoreUp: 0, retal0: 0, value: 0, capitalBest: 0, gain: 0, costs: 0, nLow: 0, anywherePlaces: 0, enemyIncome: 0 }));
+          wb.days++;
+          wb[cat]++;
+          const score = side === 0 ? war.score : -war.score;
+          if (score >= 0) wb.scoreUp++;
+          const nc = w.nations.cols;
+          let ei = 0;
+          for (const m of war.sides[1 - side]!) if (nc.living[m] === 1) ei = Math.max(ei, nc.income[m]! / Math.max(1, nc.income[n]!));
+          wb.enemyIncome += ei;
+          if (r.shared && r.shared.retaliation === 0) wb.retal0++;
+          if (cat === 'noPlace' && r.shared) wb.anywherePlaces += nukeTargets(w, n, war, side, { at: r.aim.at, anywhere: true }).length > 0 ? 1 : 0;
+          if (cat === 'low' && best && r.shared) {
+            const i = r.shared;
+            wb.nLow++;
+            wb.value += best.value;
+            const bp = r.places.find((p) => p.value === best!.value)!;
+            if (war.sides[1 - side]!.some((m) => nc.capitalX[m] === bp.x && nc.capitalY[m] === bp.y)) wb.capitalBest++;
+            wb.gain += best.value * i.desperation * i.doctrine;
+            wb.costs += (i.retaliating ? 0 : RETALIATION_WEIGHT * i.retaliation) + i.allianceCost + i.outrage + TABOO_WEIGHT * i.taboo * (i.extreme ? EXTREME_TABOO : 1);
+          }
+          if (warDays >= 365 && score >= 0 && examplesWin.length < 40 && day % 60 === 0) examplesWin.push({ day, n: tag(n), enemies: war.sides[1 - side]!.map(tag), warDays, score, enemyIncome: +ei.toFixed(3), cat, best, retaliation: r.shared?.retaliation, aim: [...r.aim.at].map(tag), places: r.places.length });
+        }
         counts.all[cat]++;
         if (desperation >= 0.5) counts.losing[cat]++;
         if (extreme) counts.extreme[cat]++;
@@ -86,6 +126,6 @@ for (let y = 0; y < years; y++) {
   }
   process.stderr.write(`seed ${seed} year ${y + 1}: decisions ${decisions.length}\n`);
 }
-const out = { seed, years, counts, lowParts, byNation: Object.fromEntries([...byNation].map(([n, b]) => [tag(n), b])), decisions, examples };
+const out = { seed, years, bursts, counts, lowParts, winning: Object.fromEntries(winning), firstWarhead: Object.fromEntries(firstWarhead), examplesWin, byNation: Object.fromEntries([...byNation].map(([n, b]) => [tag(n), b])), decisions, examples };
 writeFileSync(process.argv[4] ?? `.cache/nukeGates_${seed}.json`, JSON.stringify(out, null, 1));
 console.log(`done: seed ${seed}`, JSON.stringify(counts), 'decisions', decisions.length);

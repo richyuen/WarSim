@@ -40,6 +40,20 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   by gate (`tools/diag/nukeGates.ts`); an overrun holder of warheads strikes within its war in the
   critic's set-ups; a burst in at least 8 of 10 seeds × 30 years, some before year 20; no point
   struck twice within its ruin's days, no third party for under its bound of dead; the 50-year sweep.
+  A part each:
+    - [x] 7.18a–d An overrun holder strikes; no restrike within 4 radii; no small capital's bonus
+      (ADR-485, `a97203b`).
+    - [x] 7.18e A winner's resolve: a holder winning a long war against enemies that cannot strike
+      back weighs ending it (measured first, `tools/diag/nukeGates.ts`'s days of holders not losing).
+      AT: a unit test (a long war, the enemy with no warhead: a strike; the same with the enemy
+      holding warheads: none); seeds 1–10 × 30 years, decisions and their utilities and years; the
+      pin's entry.
+    - [ ] 7.18f The critic's Poland: given 10 warheads and a strategic bomber group at an airbase of
+      its with room (the editor's placement at Warsaw is 7.24's), it strikes in Germany's war on it.
+      AT: a unit test.
+    - [ ] 7.18g The measure of 7.18's AT: 10 seeds × 30 years, a burst in 8, some before year 20, no
+      point struck twice within its ruin's days, no third party under its bound; the 50-year sweep
+      on unseen seeds, after the gate.
 - [ ] 7.19 A sea battle's ticker row lands on the fight (critic R8-B2, contradicts 7.10b): seed 5591,
   Germany on Britain, hour 41: the view on dry land at Groningen, the pair 23 cells apart either side
   of the Dutch coast (`critic/c8_j2_5591.json`). AT: the critic's case: ships of both sides on screen
