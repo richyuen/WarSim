@@ -32,32 +32,6 @@ quick sweep as a smoke test.
 Run 7's dimensions under the DONE condition's bar (report of 2026-10-17 on `19e2341`, its "Fix"
 lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split when taken up:
 
-- [ ] 7.9 Tanks read as armour at T3 (tanks 5, needs 8): at 10 m/px a tank is about 8 px, all one
-  grey, in a loose grid with no formation or facing; `wrecks` read `null` at every tier
-  (`critic/shots/c7d_7781_arm_0010m_crop.png`, `critic/c7_d_7781.json`); at T2 nothing tells armour
-  from infantry but the counter's text. AT: tanks larger, tinted by side, in a formation facing the
-  enemy; wrecks left and the test hook reads them; pictures at T2 and T3 beside run 7's.
-  Found (2026-10-17): the critic's script read `wrecks.count`, which `WreckFx` has not (so `null`
-  whatever was drawn), and a wreck goes in about 15 s of the clock; figures are tinted by nation
-  (`spriteTint`) and Germany's colour is #5d5d5d, grey on the drab ground; a tank element is a 4 × 4
-  grid of a 0.024-cell footprint. A part each:
-    - [x] 7.9a Wrecks seen: `WreckFx` gives its count to the test hook; wrecks drawn at T3 as at T2,
-      and held long enough to be seen at the speeds a player watches a fight. AT: an armour fight
-      at T3 with wrecks counted and in the picture.
-    - [x] 7.9c Tanks larger at T3, in a formation facing the enemy: a tank element's figures in
-      rows across its facing, not a loose grid. AT: a tank at least 14 px at 10 m/px; the rows'
-      facing toward the enemy in contact (a unit test of the offsets); pictures.
-    - [x] 7.9b Whose tank: a side's mark on each vehicle that reads on any ground and for a grey
-      nation (Germany's #5d5d5d). AT: the two sides' tanks of a fight told apart by a pixel test of
-      the picture; pictures at T2 and T3. After 7.9c (measured 2026-10-17, seed 7781's fight at 10
-      m/px, the pixels at the German tanks' centres: 60 grey with today's tint, 45 under the ground;
-      a grey tint raised to 158 gave 87, 48 from the enemy's figures but only 18 under the ground: at
-      about 8 px a tank's centre is its turret's outline, and no tint reads; the size first).
-    - [ ] 7.9d At T2, armour told from infantry beyond the counter's text. AT: a picture of both
-      side by side; a spec.
-    - [x] 7.9e `fallen1938` re-aimed at a fight the current world has (BLOCKERS: 5 of its 10 marks
-      in the view since the 1938 start changed); off `knownRed.json` when green alone. AT: the spec
-      green alone, three runs.
 - [ ] 7.10 Ships look like ships, and a sea battle is seen (naval 5, needs 8): at 15 m/px ships are
   flat coloured bars (`critic/shots/c7e_9043_1_0015m.png`); a sea battle's history row must land the
   view on both fleets firing. AT: ship sprites by class at T3; the row's view with both fleets and
@@ -317,3 +291,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.6 Critic R7-B1 (report of 2026-10-17 on `19e2341`): AI nuclear use too rare to be seen, […]
 - [x] 7.7 Critic R7-B2 (report of 2026-10-17 on `19e2341`): late-game stalls in the invasion AI. […]
 - [x] 7.8 The air zone's holder is someone fighting there (aircraft 5, needs 8): on day 10 of […]
+- [x] 7.9 Tanks read as armour at T3 (tanks 5, needs 8): at 10 m/px a tank is about 8 px, all one […]

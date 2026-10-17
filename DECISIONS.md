@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-471 · 2026-10-17 · accepted — At T2 an element of tanks is a larger slab (PLAN 7.9d)
+
+- **Context.** Critic run 7 (tanks 5): "at T2 nothing tells armour from infantry but the counter's
+  text" (`critic/shots/c7d_7781_arm_0080m.png`). From about 100 m/px out every element is at its
+  least size, ELEMENT_MIN_PX (5): a tank element (its small mark, a slab, since PLAN 3.6e3b) and a
+  battalion the same few pixels, a division's block one patch either way.
+- **Decision.** At T2 a tank element (a hull frame, or the small mark) is at least
+  TANK_ELEMENT_MIN_PX (8), by the renderer's least size of a frame (`frameMinPx`, as the ships'); every
+  other element as before. Above that size nothing changes.
+- **Effect.** A German panzer division beside a German infantry division at rest, 120 m/px: the
+  pixels unlike the ground per element 25.1 against 12.1, 2.07 times (1.55 without: 7.9b's lighter
+  grey); `docs/evidence/7.9/d-armour-t2-120m.png`.
+- **Tests.** `armourT21938` (new; red without at its bar of 1.8); `smallMark1938`, `elements1938` ×2,
+  `battleView1938` ×2, `coastElements1938`, `handover1938`, `stackBlocks1938` ×2 green.
+
 ### ADR-470 · 2026-10-17 · accepted — A grey nation's sprites are light grey (PLAN 7.9b)
 
 - **Context.** Critic run 7 (tanks 5): "all one grey". Figures and element sprites take their

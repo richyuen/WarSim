@@ -17818,3 +17818,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   nation's hue (90 grey, washed out). Pictures `docs/evidence/7.9/b-tank-sides-10m.png`, `-60m.png`.
 - **Tests:** `tint.test.ts` (a test more, the 3.11e tests unchanged), `tankSides1938` (new).
 - **Next:** PLAN 7.9d.
+
+## 2026-10-17 — PLAN 7.9d: at T2 an element of tanks is a larger slab; PLAN 7.9 done (render)
+
+- **Start:** gate green on a clean tree (`1492bd8`).
+- **Done:** TANK_ELEMENT_MIN_PX (8) for the hull frames and the small mark at T2 (the renderer's
+  least size by frame); other elements at 5 as before. ADR-471.
+- **Measured** (`armourT21938`, a German panzer and infantry division at rest, 120 m/px): pixels unlike
+  the ground per element 25.1 against 12.1 (2.07×; 1.55× without). Picture
+  `docs/evidence/7.9/d-armour-t2-120m.png`: a column of slabs beside a grid of dots.
+- **Tests:** `armourT21938` (new; red without); 9 T2 specs green one at a time.
+- **7.9 ticked:** 7.9a to e done; its AT (tanks larger, by side, in a formation facing the enemy,
+  wrecks left and counted; pictures at T2 and T3 in `docs/evidence/7.9/`).
+- **Next:** PLAN 7.10.

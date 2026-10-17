@@ -10622,3 +10622,44 @@ Of 7.4 (open in PLAN.md):
   legend says "Germany: 1 zones". AT: a unit test of the holder of a zone with a war over it; the
   legend's plural; the air mode spec green. (The air war fading with the land war is the user's
   decision of 2026-10-14, ADR-376: not here.)
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.9 Tanks read as armour at T3 (tanks 5, needs 8): at 10 m/px a tank is about 8 px, all one
+  grey, in a loose grid with no formation or facing; `wrecks` read `null` at every tier
+  (`critic/shots/c7d_7781_arm_0010m_crop.png`, `critic/c7_d_7781.json`); at T2 nothing tells armour
+  from infantry but the counter's text. AT: tanks larger, tinted by side, in a formation facing the
+  enemy; wrecks left and the test hook reads them; pictures at T2 and T3 beside run 7's.
+  Found (2026-10-17): the critic's script read `wrecks.count`, which `WreckFx` has not (so `null`
+  whatever was drawn), and a wreck goes in about 15 s of the clock; figures are tinted by nation
+  (`spriteTint`) and Germany's colour is #5d5d5d, grey on the drab ground; a tank element is a 4 × 4
+  grid of a 0.024-cell footprint. A part each:
+    - [x] 7.9a Wrecks seen: `WreckFx` gives its count to the test hook; wrecks drawn at T3 as at T2,
+      and held long enough to be seen at the speeds a player watches a fight. AT: an armour fight
+      at T3 with wrecks counted and in the picture.
+    - [x] 7.9c Tanks larger at T3, in a formation facing the enemy: a tank element's figures in
+      rows across its facing, not a loose grid. AT: a tank at least 14 px at 10 m/px; the rows'
+      facing toward the enemy in contact (a unit test of the offsets); pictures.
+    - [x] 7.9b Whose tank: a side's mark on each vehicle that reads on any ground and for a grey
+      nation (Germany's #5d5d5d). AT: the two sides' tanks of a fight told apart by a pixel test of
+      the picture; pictures at T2 and T3. After 7.9c (measured 2026-10-17, seed 7781's fight at 10
+      m/px, the pixels at the German tanks' centres: 60 grey with today's tint, 45 under the ground;
+      a grey tint raised to 158 gave 87, 48 from the enemy's figures but only 18 under the ground: at
+      about 8 px a tank's centre is its turret's outline, and no tint reads; the size first).
+    - [x] 7.9d At T2, armour told from infantry beyond the counter's text. AT: a picture of both
+      side by side; a spec.
+    - [x] 7.9e `fallen1938` re-aimed at a fight the current world has (BLOCKERS: 5 of its 10 marks
+      in the view since the 1938 start changed); off `knownRed.json` when green alone. AT: the spec
+      green alone, three runs.

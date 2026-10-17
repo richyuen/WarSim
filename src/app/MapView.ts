@@ -45,7 +45,7 @@ import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
 import { coastBit, coastMask, nearestSure, type CoastMask } from '../shared/landMask';
 import { cityIndex, groundCap, scatter, SCATTER_STRIDE, type Scatter, type ScatterWorld } from '../render/map/scatter';
-import { drawUnitAtlas } from '../render/units/atlas';
+import { ATLAS_FRAMES, drawUnitAtlas } from '../render/units/atlas';
 import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
 import { appendTurrets, TurretAims } from '../render/units/turrets';
 import { SHIP_FRAME_MIN_PX, shipSideCells } from '../render/units/ships';
@@ -106,6 +106,15 @@ const STAND_IN_MAX_PX = 48;
 const ELEMENT_CELLS = 0.026;
 /** And at least this many CSS px, before the size setting. */
 const ELEMENT_MIN_PX = 5;
+/**
+ * The least size of an element of tanks at T2, CSS px (PLAN 7.9d, critic run 7: "at T2 nothing tells
+ * armour from infantry but the counter's text"): where elements are at their least size (5 px, from
+ * about 100 m/px out) a tank element is the small mark, a solid slab, at this size, and the others
+ * are at ELEMENT_MIN_PX.
+ */
+export const TANK_ELEMENT_MIN_PX = 8;
+/** `TANK_ELEMENT_MIN_PX` by atlas frame, for the renderer: the hulls and the small mark. */
+const ELEMENT_FRAME_MIN_PX: readonly number[] = Array.from({ length: ATLAS_FRAMES }, (_, f) => (turretOf(f) >= 0 || f === Frame.tankSmall ? TANK_ELEMENT_MIN_PX : 0));
 /** Where the camera goes for an event of the ticker (`showPlace`, PLAN 3.12c): this many km across the view, a country and its neighbours. */
 const PLACE_VIEW_KM = 1500;
 /** T3 (PLAN 2.6): a figure is at least this many px, so that a block reads at 30 m/px. */
@@ -1324,7 +1333,7 @@ export class MapView {
     else {
       // Where a sprite is too small for a hull, a tank is its small mark (PLAN 3.6e3b).
       this.elementSmall = smallShare(this.elementPx);
-      if (figures < 0.99) this.elementProxies.draw(cam, dpr, t, ELEMENT_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * (1 - figures), undefined, this.elementSmall);
+      if (figures < 0.99) this.elementProxies.draw(cam, dpr, t, ELEMENT_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * (1 - figures), undefined, this.elementSmall, ELEMENT_FRAME_MIN_PX);
       if (figures > 0.01) this.individualProxies.draw(cam, dpr, t, FIGURE_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * figures, undefined, 0, SHIP_FRAME_MIN_PX);
     }
   }
