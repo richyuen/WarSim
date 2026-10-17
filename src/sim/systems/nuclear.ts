@@ -71,7 +71,9 @@
  *   warhead gets there (PLAN 6.7, SPEC's "expected damage": 1 by missile, 1 − the bomber's
  *   interception chance there by bomber).
  * - desperation (`desperationOf`), 0 to 2: how far its side is losing the war (−score / 100), the
- *   share of its land held by others, DESPERATION_CAPITAL with enemy land forces within
+ *   share of its land held by others, DESPERATION_MEN × the share of its side's men lost in the war
+ *   (`menLost`, the exhaustion's; PLAN 7.6a: France's army fell from 555k to 163k men in 40 days at
+ *   0.5), DESPERATION_CAPITAL with enemy land forces within
  *   CAPITAL_THREAT_KM of its capital, DESPERATION_FTD when its side fights to the death.
  *   Extreme: at least 1, fighting to the death or its capital threatened.
  * - doctrine, 0.5 to 1.5: 0.5 + aggression / 100 (no trait of its own: aggression read as one).
@@ -137,6 +139,7 @@ import { basePlace, wingRange } from './air';
 import { applyLoss, cellX, elementIndex, settleFormation, wrapDx } from './elements';
 import { airSuperiority } from './airSuperiority';
 import { seaKm } from './navalCombat';
+import { menLost } from './war';
 
 /** Monthly income, gold, from which a nation allowed nukes runs a programme. */
 export const NUKE_PROGRAMME_INCOME = 1000;
@@ -456,6 +459,8 @@ export const TARGET_SCALE = 10;
 export const TARGET_CAPITAL = 0.3;
 export const DESPERATION_CAPITAL = 0.5;
 export const DESPERATION_FTD = 0.5;
+/** The weight of the share of its side's men lost in the war (PLAN 7.6a). */
+export const DESPERATION_MEN = 1;
 export const CAPITAL_THREAT_KM = 150;
 export const RETALIATION_WEIGHT = 0.8;
 export const RETALIATION_FULL = 5;
@@ -546,7 +551,7 @@ export function desperationOf(world: World, n: number, war: War, side: number): 
     if (seaKm(world, cx, cy, c.x[id]!, c.y[id]!) <= CAPITAL_THREAT_KM) threatened = true;
   });
   const ftd = war.fightToDeath[side]!;
-  const desperation = Math.min(2, losing + lost + (threatened ? DESPERATION_CAPITAL : 0) + (ftd ? DESPERATION_FTD : 0));
+  const desperation = Math.min(2, losing + lost + DESPERATION_MEN * menLost(world, war, side) + (threatened ? DESPERATION_CAPITAL : 0) + (ftd ? DESPERATION_FTD : 0));
   return { desperation, extreme: desperation >= 1 && (ftd || threatened) };
 }
 

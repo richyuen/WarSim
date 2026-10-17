@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-461 · 2026-10-17 · accepted — Desperation counts the men lost in the war (PLAN 7.6a)
+
+- **Context.** Critic R7-B1: the AI's nuclear use too rare to be seen (4 strikes in 420
+  world-years). PLAN 7.6's measure (`docs/evidence/7.6/gates-before.md`): desperation was the war's
+  score, the land lost, a threatened capital and fighting to the death, and nothing of the men lost.
+  The critic's God-set France lost 555k → 163k men in 40 days at desperation 0.50 to 0.61 (no land
+  lost), struck once when the Germans came near Paris, and held its 5 other warheads.
+- **Decision.** Desperation adds DESPERATION_MEN (1) × the share of its side's men lost since the
+  war was first assessed (`menLost`, the exhaustion's `lost` in `warSystem`: `startMen`, the army's
+  men and the navy's weight in men), to 2 as before. A side, as the score is a side's.
+- **Effect.** The France case (headless, as `critic/scripts/c7_f_ainuke.mjs`): desperation 0.55 on
+  day 10, 0.89 on day 30, 1.57 on day 45; it strikes on days 39, 41 and 89. No state, and the pin
+  is unmoved (seed 99's first year has no warhead).
+- **Tests.** `nukeDesperationMen1938.test.ts` (new); the 24 other nuclear and war test files green.
+
 ### ADR-460 · 2026-10-17 · accepted — What PLAN 7.4's groups leave, each with its disposition (PLAN 7.4f)
 
 - **Context.** PLAN 7.4f: "the groups below, a part each when taken up, or a line in an ADR for

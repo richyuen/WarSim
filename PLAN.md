@@ -46,7 +46,7 @@ quick sweep as a smoke test.
   nothing; a losing power's best strike is about 1 short (gain 0.25 against taboo 0.6, strike back
   0.3 to 1.1, outrage 0.1); the halving since 7.3g is different worlds (7.4f31/f32 moved the start),
   not a rule. A part each, in this order; the AT's sweep in 7.6f:
-    - [ ] 7.6a Desperation counts the men a nation lost in the war: France's army 555k → 163k in
+    - [x] 7.6a Desperation counts the men a nation lost in the war: France's army 555k → 163k in
       40 days at desperation 0.50 to 0.61. A share of its land army lost since the war began (from
       what the war already tallies, if it does; else a column, its ADR and the pin). Then the
       France case again before 7.6d's costs: does a France that struck once strike again? AT:

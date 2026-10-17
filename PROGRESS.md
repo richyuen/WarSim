@@ -17626,3 +17626,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   3371, years 28 and 29) PLAN 7.7. R6-B3 (statelets) found fixed; R6-B1 not shown fixed (strikes
   too rare to reach its cost).
 - **Next:** PLAN 7.6.
+
+## 2026-10-17 — PLAN 7.6a: desperation counts the men lost in the war (sim)
+
+- **Start:** gate green on a clean tree (`0ded86c`); critic report for `19e2341`, R7-B1 in hand.
+- **Done:** `desperationOf` adds DESPERATION_MEN (1) × `menLost` (its side's share of men lost since
+  the war was first assessed, the exhaustion's; `war.ts` exports it and `menOf`). ADR-461.
+- **The France case** (the critic's, headless): desperation 0.55 on day 10, 0.89 on day 30, 1.57 on
+  day 45 (before: 0.50 to 0.61 until day 40); strikes on days 39 (Berlin), 41 and 89 (Berlin again:
+  PLAN 7.6e's case). The repeat-strike rule 7.6d was to weigh is not needed for it.
+- **Tests:** `nukeDesperationMen1938.test.ts` (new: none lost at the first assessment; half lost is
+  0.5 more; more men than at the start is none); 25 nuclear and war test files (108 tests) green;
+  pin unmoved.
+- **Next:** PLAN 7.6b.

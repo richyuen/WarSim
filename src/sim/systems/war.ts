@@ -315,7 +315,7 @@ function occShare(land: LandCounts, occupiers: number[], victims: number[]): { s
  * 4.6e2: ships lost at sea weigh in a war's exhaustion; before, a fleet's crews were not of it,
  * PLAN 4.2b).
  */
-function menOf(world: World): Map<number, number> {
+export function menOf(world: World): Map<number, number> {
   const m = new Map<number, number>();
   const f = world.formations.cols;
   world.formations.forEach((id) => {
@@ -323,6 +323,17 @@ function menOf(world: World): Map<number, number> {
     if (men > 0) m.set(f.nation[id]!, (m.get(f.nation[id]!) ?? 0) + men);
   });
   return m;
+}
+
+/**
+ * The share of its men side `s` of `war` has lost since the war was first assessed (`startMen`, the
+ * exhaustion's `lost`), 0 to 1; 0 before then. `men`: the day's `menOf`.
+ */
+export function menLost(world: World, war: War, s: number, men: Map<number, number> = menOf(world)): number {
+  const start = war.startMen[s]!;
+  if (start <= 0) return 0;
+  const m = war.sides[s]!.reduce((t, n) => t + (men.get(n) ?? 0), 0);
+  return Math.max(0, 1 - m / start);
 }
 
 /**
