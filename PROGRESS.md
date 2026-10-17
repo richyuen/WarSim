@@ -17318,3 +17318,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   occupation (`makePeace`), and a cell taken by a nation not at war with its owner is the
   owner's again since PLAN 3.4Rj (ADR-147, `territory.test.ts` counts such cells), a day after
   the report that saw it. The line came off PLAN 7.4's list.
+
+## 2026-10-17 — PLAN 7.4f30: capitals' names reach further past the markers (render)
+
+- **Start:** gate green on a clean tree (`bdd3418`); critic not due.
+- **Measured** (`.cache/74f32/caps.ts`, the start, three centres over Europe × 1800, 1500, 1000,
+  700, 400 m/px): capitals in view with no name: Prague at 1800 (twice), Warsaw at 1000.
+- **Done:** `CAPITAL_REACH` 1.6: a capital's name may stand that many times further past what is
+  in the way (places 8–10), with as many more steps. After: Prague at 1800 only, ringed by 12
+  markers within 120 px.
+- **Tests:** `cities.test.ts` 19 of 19 (new: a 100 px block on the dot, a capital's name past it
+  and a town's left out; the two tests whose wall meant "beyond reach" have a wall of 120 px
+  where it was 80, a capital being their fixture); `cityNames1938`, `labelFades1938`,
+  `labels1938`, `mapTooltip1938` green.
+- **Next:** PLAN 7.4f, the next group.

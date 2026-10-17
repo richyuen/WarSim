@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutCityLabels, NAME_CLEAR_PX, NAME_REACH_PX, nameMaxMPerPx, nameTextBox, priorityOrder, wanted, type CityPoint, type LabelState } from '../../src/render/labels/cityLabels';
+import { CAPITAL_REACH, layoutCityLabels, NAME_CLEAR_PX, NAME_REACH_PX, nameMaxMPerPx, nameTextBox, priorityOrder, wanted, type CityPoint, type LabelState } from '../../src/render/labels/cityLabels';
 import { ZOOM_HYSTERESIS, type SwitchState } from '../../src/render/timing';
 import { CITIES_1938, NATIONS_1938, politicalMap1938, TAGS_1938 } from '../helpers/earth';
 
@@ -200,12 +200,28 @@ describe('city names among obstacles (PLAN 2.7r)', () => {
   });
 
   it('counters all around, further than a name reaches: it is left out', () => {
-    // A block of counters 200 px wide and 80 high on the dot.
-    const wall = [{ x: 300, y: 260, w: 200, h: 80 }];
+    // A block of counters 200 px wide and 120 high on the dot (80 until PLAN 7.4f30: a capital,
+    // as this one is, reaches 1.6 times as far, and found room 38 px below an 80 px block).
+    const wall = [{ x: 300, y: 240, w: 200, h: 120 }];
     const p = lay(wall);
     expect(p.nameAlpha).toBe(0);
     expect(p.box).toBeUndefined();
     expect(NAME_REACH_PX.side).toBeLessThan(100);
+  });
+
+  // PLAN 7.4f30: a capital's name reaches CAPITAL_REACH times further past what is in the way (its
+  // flag marks the dot, and the garrisons stand round it: Warsaw's name was left out at 1000 m/px).
+  it('a capital reaches further past a block on its dot than a town does', () => {
+    // 100 px wide and 80 high on the dot: past it the letters stand some 47 px from the place
+    // beside the dot, beyond a town's 40 and within a capital's 64.
+    const block = [{ x: 350, y: 260, w: 100, h: 80 }];
+    const capital = lay(block);
+    expect(capital.nameAlpha).toBe(1);
+    expect([8, 9, 10]).toContain(capital.side);
+    expect(hit(letters(capital), block[0]!)).toBe(false);
+    const asTown = layoutCityLabels([{ ...town[0]!, capital: false, size: 5 }], [0], cam, geo, 800, 600, measure, { dot: OFF, name: OFF }, block)[0]!;
+    expect(asTown.nameAlpha).toBe(0);
+    expect(NAME_REACH_PX.side * CAPITAL_REACH).toBeGreaterThan(47);
   });
 
   it('a name on screen keeps its place to the pixel while that place is free, though a place it prefers is free too', () => {
@@ -221,7 +237,8 @@ describe('city names among obstacles (PLAN 2.7r)', () => {
     const counter = counterAt(412, 293);
     // (The layer cross-fades: what showed at the old place goes out there.)
     expect(lay([counter], { dot: ON, name: ON, place: () => place })).toMatchObject({ nameAlpha: 1, side: 1 });
-    const going = lay([{ x: 300, y: 260, w: 200, h: 80 }], { dot: ON, name: ON, place: () => place });
+    // A wall past a capital's reach (CAPITAL_REACH): no place is free.
+    const going = lay([{ x: 300, y: 240, w: 200, h: 120 }], { dot: ON, name: ON, place: () => place });
     expect(going.nameAlpha).toBe(0);
     expect(going.box).toEqual(alone.box);
   });

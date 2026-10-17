@@ -130,6 +130,8 @@ quick sweep as a smoke test.
     - [x] 7.4f29 The names in a zoom from the world to T1 (ADR-414 g): their glyphs drawn once
       into an atlas and then as pieces of it (ADR-453). AT: no frame over 17 ms in a zoom (11 to
       17 before); `nationLabelLayout.test.ts`; the label specs green.
+    - [x] 7.4f30 A capital's name reaches 1.6 times as far past the markers round its dot (Warsaw's
+      left out at 1000 m/px at the start). AT: `cities.test.ts`; the city name specs green.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -189,9 +191,9 @@ quick sweep as a smoke test.
       and at 1800 m/px on Spain's front some numbers are partly under a neighbour's box; the
       first frame of the zoom into T2 starts a move of a few px.
   - **Names and arrows at T1.**
-    - Capitals whose names are left out because garrisons stand on every place by the dot:
-      Prague at 1800 m/px, Warsaw at 1000, with Turin, Kiev and Kraków, at the 1938 start.
-      The places are eleven fixed ones.
+    - Capitals whose names are left out because garrisons stand on every place by the dot: of
+      Europe's at the start in 15 views from 1800 to 400 m/px (`.cache/74f32/caps.ts`), Prague
+      at 1800 m/px only since PLAN 7.4f30 (12 markers within 120 px of its dot).
     - Order arrows are not kept clear of, by decision; in a war they are many (two months
       into seed 1938 the picture over Austria is mostly arrows). Whether every marker's
       arrow should show at T1 has not been asked.

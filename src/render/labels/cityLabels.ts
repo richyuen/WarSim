@@ -76,6 +76,12 @@ export interface NamePlace {
 export const NAME_SIDES = [0, 1, 2, 3, 4, 8, 9, 10, 5, 6, 7] as const;
 /** How far from its dot a name may stand when it is past something, to the side and below: beyond that it is no longer that dot's name. */
 export const NAME_REACH_PX = { side: 40, below: 26 } as const;
+/**
+ * A capital's name may stand this many times further (PLAN 7.4f30): its flag marks the dot, and
+ * the garrisons stand round it. At the 1938 start Prague's name was left out at 1800 m/px and
+ * Warsaw's at 1000, every place within the reach under a marker.
+ */
+export const CAPITAL_REACH = 1.6;
 /** The clearance the view gives the counters and the markers (`NameObstacle.clear`): a counter's box moves by a pixel with its number and with the camera, a marker's with its army. */
 export const NAME_CLEAR_PX = 2;
 
@@ -143,7 +149,7 @@ const near = (box: Box, obstacles: readonly NameObstacle[], taking: boolean): Na
  * places past what is in the way (8–10) depend on the `obstacles`: null when there is no room
  * within reach.
  */
-function nameBox(side: number, sx: number, sy: number, dotR: number, w: number, h: number, obstacles: readonly NameObstacle[]): Box | null {
+function nameBox(side: number, sx: number, sy: number, dotR: number, w: number, h: number, obstacles: readonly NameObstacle[], reach = 1): Box | null {
   const right = sx + dotR + 3;
   const left = sx - dotR - 3 - w;
   const below = sy + dotR + 2;
@@ -158,14 +164,14 @@ function nameBox(side: number, sx: number, sy: number, dotR: number, w: number, 
   if (side === 7) return { x: sx - w / 2, y: above, w, h };
   // Past what stands on the place beside the dot: the letters begin a pixel more than its clearance after it.
   let box: Box = side === 8 ? { x: right, y: sy - h / 2, w, h } : side === 9 ? { x: left, y: sy - h / 2, w, h } : { x: sx - w / 2, y: below, w, h };
-  for (let tries = 0; tries < 4; tries++) {
+  for (let tries = 0; tries < 4 * reach; tries++) {
     const o = near(box, obstacles, true);
     if (!o) return box;
     const gap = (o.clear ?? 0) + 1;
     if (side === 8) box = { ...box, x: o.x + o.w + gap - PAD };
     else if (side === 9) box = { ...box, x: o.x - gap + PAD - w };
     else box = { ...box, y: o.y + o.h + gap - h / 6 };
-    if (side === 8 ? box.x - right > NAME_REACH_PX.side : side === 9 ? left - box.x > NAME_REACH_PX.side : box.y - below > NAME_REACH_PX.below) return null;
+    if (side === 8 ? box.x - right > NAME_REACH_PX.side * reach : side === 9 ? left - box.x > NAME_REACH_PX.side * reach : box.y - below > NAME_REACH_PX.below * reach) return null;
   }
   return null;
 }
@@ -213,7 +219,7 @@ export function layoutCityLabels(
         // A name on screen has its place, and keeps it while nothing stands on it. Otherwise it
         // takes the first place that is clear.
         const kept = state.name.visible(i) ? state.place?.(i) : undefined;
-        const at = (side: number): Box | null => nameBox(side, sx, sy, dotR, w, h, obstacles);
+        const at = (side: number): Box | null => nameBox(side, sx, sy, dotR, w, h, obstacles, c.capital ? CAPITAL_REACH : 1);
         const free = (box: Box | null, taking: boolean): box is Box => box !== null && !boxes.some((b) => touching(b, box)) && !near(box, obstacles, taking);
         const held: Box | null = kept ? { x: sx + kept.dx, y: sy + kept.dy, w, h } : null;
         let side: number | undefined;
