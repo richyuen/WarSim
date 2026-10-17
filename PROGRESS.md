@@ -17394,3 +17394,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `toBattle1938` 2 of 2 (new: the battle's field red, the quiet one's grey);
   `warBannerRows1938`, `ranking1938`, `barNarrow1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — the 2.14 pictures' last line (figures faint at 20 m/px) looked at again; off the list
+
+- `toBattle1938` shot again on HEAD (`docs/evidence/7.4/f35b-front-20m.png`, Germany against
+  Poland a month in, 20 m/px): the figures are dark grey on the olive plain, each formation's
+  block read apart, beside the 2.14 picture's pale ground. No change made; the line came off
+  PLAN 7.4's list. (Taste: low confidence.)
