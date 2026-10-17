@@ -179,7 +179,10 @@ test('a low view: the settings panel keeps its rows in its box, and "New game" c
   await page.evaluate((pairs) => {
     for (const [attacker, defender] of pairs) if (attacker > 0 && defender > 0) window.__warsim!.hud.command({ kind: 'declareWar', attacker, defender });
   }, pairs);
-  await expect.poll(() => page.getByTestId('war-banner').count(), { timeout: 30_000 }).toBe(8);
+  // Eight wars: as many banners as are shown (`MAX_BANNERS` of WarBanners.tsx, 6 since PLAN 7.4f6:
+  // this waited for 8), and the rest a "+N".
+  await expect.poll(() => page.getByTestId('war-banner').count(), { timeout: 30_000 }).toBe(6);
+  await expect(page.getByTestId('war-more')).toBeVisible();
   await page.evaluate(() => {
     if (!window.__warsim!.hud.paused.value) window.__warsim!.hud.togglePause();
     window.__warsim!.hud.setSpeedLevel(4);
@@ -202,7 +205,7 @@ test('a low view: the settings panel keeps its rows in its box, and "New game" c
   await start.scrollIntoViewIfNeeded();
   const foot = await rect('settings-panel');
   const rows = await rect('war-banners');
-  console.log(`eight banners at 1100 x 600: ${rows.top.toFixed(1)} to ${rows.bottom.toFixed(1)}, the panel's foot at ${foot.bottom.toFixed(1)}`);
+  console.log(`the banners of eight wars at 1100 x 600: ${rows.top.toFixed(1)} to ${rows.bottom.toFixed(1)}, the panel's foot at ${foot.bottom.toFixed(1)}`);
   expect(rows.top, 'the banners reach above the foot of the panel').toBeLessThan(foot.bottom);
   await start.hover({ timeout: 5_000 });
   await page.screenshot({ path: path.join(info.outputPath(), 'h5-settings-1100-banners.png') });

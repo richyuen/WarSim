@@ -17224,3 +17224,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `markerStacks.test.ts` 29 of 29 (new: out of a stack and into one, at once; red
   before: alpha 0 where 1); `markerStacks1938`, `stackPick1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — `settings1938` waited for eight war banners (test)
+
+- Found running the specs of the bottom bar (PLAN 7.4f25): "a low view" waited for 8 banners of
+  eight wars; PLAN 7.4f6 shows 6 and a "+N" (red since `1056061`, the specs run in full only at a
+  phase review). It waits for 6 and the "+N"; its other checks as they were (the rows of banners
+  still reach above the panel's foot at 1100 × 600: 449.7 against 480.4). `settings1938` 2 of 2.
