@@ -17204,3 +17204,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `cities.test.ts` (the bound and the held bound in, a hair over them out: the two
   expectations of the old bound changed with the rule); `cityNames1938`, `labelFades1938` 4 of 4.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f23: the selection tells a formation from one that took its id (UI)
+
+- **Start:** gate green on a clean tree (`6a685ee`); critic not due.
+- **Done:** `SnapshotFormations.generation` (`Table.generation`, not state); `MapView` drops a
+  selected id whose generation changed between snapshots, as it dropped one of another nation
+  (PLAN 2.16Rk). The open formation's panel already did so (PLAN 2.16Ri).
+- **Tests:** `player1938` 3 of 3 (new: Poland's selected division removed, a Polish one raised
+  with its id: nothing selected, a click on ground orders nothing; red before: "1 selected").
+- **Next:** PLAN 7.4f, the next group.

@@ -113,6 +113,9 @@ quick sweep as a smoke test.
       the banners and the bar. AT: `tags1938` (a block under the nation panel; red before).
     - [x] 7.4f22 A city's dot and name are wanted at their bound, as the tiers are (at exactly
       2000 m/px the names of size 4 were off with the T1 markers on). AT: `cities.test.ts`.
+    - [x] 7.4f23 The player's selection of a formation whose id another of the same nation has
+      taken: the snapshot carries each id's generation, and the selection drops a formation made
+      since. AT: `player1938` (a Polish division removed and one raised with its id; red before).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -227,9 +230,8 @@ quick sweep as a smoke test.
       formation there keeps a middle on the mask's water and T2 draws no island.
     - The T1 order arrow ends at the target cell's middle; the formation will stand at the
       cell's land point, up to 0.6 cells from it on a coastal cell.
-  - **Picking** (a stack's formations by turns: PLAN 7.4f20). A selection ring stays on an id
-    that a new formation has taken, and such a formation takes the dead one's place in a stack
-    for one fade.
+  - **Picking** (a stack's formations by turns: PLAN 7.4f20; the selection by generation: 7.4f23).
+    A formation that takes a dead one's id takes its place in a stack for one fade.
   - **A worn element at T2** is a paler sprite (PLAN 2.11g). On a light nation colour over a
     light fill (Japan's on China's) a sprite at 0.55 and one at 1 are close to the eye.
   - **Flags by scenario.** Done in PLAN 2.16b (ADR-109) for the worlds without a nation

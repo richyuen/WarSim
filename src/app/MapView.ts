@@ -504,7 +504,14 @@ export class MapView {
     this.applyPalette();
     const f = s.formations;
     // Copies for picking and selection rings (the snapshot buffers go back to the pool).
+    // The selected ids' generations before, to tell a formation from one that took its id.
+    const genBefore = new Map<number, number>();
+    for (const id of this.selectedFormations) {
+      const i = this.formIds.indexOf(id);
+      if (i >= 0) genBefore.set(id, this.formGen[i]!);
+    }
     this.formIds = f.id.slice(0, f.count);
+    this.formGen = f.generation.slice(0, f.count);
     this.formNation = f.nation.slice(0, f.count);
     this.formX = f.x.slice(0, f.count);
     this.formY = f.y.slice(0, f.count);
@@ -529,11 +536,13 @@ export class MapView {
       this.seaKey = seaKey;
       this.onSeaBattles(this.seaBattles());
     }
-    // A selected formation that is gone, or whose id is another nation's by now (PLAN 2.16Rk).
+    // A selected formation that is gone, or whose id is another nation's by now (PLAN 2.16Rk), or
+    // another formation's of the same nation (PLAN 7.4f23).
     let dropped = false;
     for (const id of this.selectedFormations) {
       const i = this.formIds.indexOf(id);
-      if (i >= 0 && (this.selectionNation === 0 || this.formNation[i] === this.selectionNation)) continue;
+      const same = i >= 0 && (!genBefore.has(id) || genBefore.get(id) === this.formGen[i]);
+      if (same && (this.selectionNation === 0 || this.formNation[i] === this.selectionNation)) continue;
       this.selectedFormations.delete(id);
       dropped = true;
     }
@@ -722,6 +731,8 @@ export class MapView {
   /** Called when a snapshot took formations out of the selection. */
   onSelectionDropped: (() => void) | null = null;
   private formIds = new Uint32Array(0);
+  /** Each formation's `generation` (PLAN 7.4f23): which formation of an id was selected. */
+  private formGen = new Uint32Array(0);
   private formNation = new Uint16Array(0);
   private formX = new Float64Array(0);
   private formY = new Float64Array(0);

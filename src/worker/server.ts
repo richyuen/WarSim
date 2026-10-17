@@ -1321,6 +1321,7 @@ export class SimServer {
     });
     const fc = shown.length;
     const fid = this.view(Uint32Array, fc, buffers);
+    const fgen = this.view(Uint32Array, fc, buffers);
     const fnat = this.view(Uint16Array, fc, buffers);
     const fx = this.view(Float64Array, fc, buffers);
     const fy = this.view(Float64Array, fc, buffers);
@@ -1339,6 +1340,7 @@ export class SimServer {
     let j = 0;
     for (const id of shown) {
       fid[j] = id;
+      fgen[j] = ft.generation[id]!;
       fnat[j] = ft.cols.nation[id]!;
       fx[j] = ft.cols.x[id]!;
       fy[j] = ft.cols.y[id]!;
@@ -1424,7 +1426,7 @@ export class SimServer {
       tiles: { size: TILE, tilesX: out.tilesX, tilesY: out.tilesY, count: tileCount, ids, owner, controller },
       nations: { count: n, data: nations },
       wars,
-      formations: { count: fc, id: fid, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget, wayStart: fwayStart, way: fway },
+      formations: { count: fc, id: fid, generation: fgen, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget, wayStart: fwayStart, way: fway },
       majors,
       seas,
       sorties,

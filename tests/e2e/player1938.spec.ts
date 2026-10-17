@@ -167,3 +167,63 @@ test('the selection drops a formation that is gone, though another nation\'s has
   await expect(page.getByTestId('player-label'), 'the bar after a load').toContainText('0 selected', { timeout: 10_000 });
   expect(await selected(), 'the selection after a load').toEqual([]);
 });
+
+// PLAN 7.4f23: as above, but the formation that takes the freed id is Poland's own. The nation
+// is the player's, so the check of 2.16Rk lets it be; it is another division, which the player
+// did not select (before: it stayed selected, ringed, and a click on ground ordered it to march).
+test('the selection drops a formation that is gone, though one of its own nation has taken its id', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction((p) => window.__warsim!.view!.formationsOf(p).length > 3, POL, { timeout: 60_000 });
+  const step = (cmds: Command[], ticks = 1): Promise<void> =>
+    page.evaluate(async ({ cmds, ticks }) => {
+      const sim = window.__warsim!.sim;
+      for (const c of cmds) sim.command(c);
+      const tick = (await sim.step(ticks)).tick;
+      await new Promise<void>((done) => {
+        const wait = (): void => (window.__warsim!.view!.lastTick === tick ? done() : void setTimeout(wait, 5));
+        wait();
+      });
+    }, { cmds, ticks });
+  const selected = (): Promise<number[]> => page.evaluate(() => [...window.__warsim!.view!.selectedFormations]);
+  const where = (id: number): Promise<{ nation: number; x: number; y: number } | undefined> =>
+    page.evaluate(async (id) => (await window.__warsim!.sim.inspect(true)).formations.find((f) => f.id === id), id);
+
+  await step([{ kind: 'setSetting', key: 'aiEnabled', value: false }]);
+  await page.evaluate((p) => window.__warsim!.view!.select(p), POL);
+  await page.getByTestId('take-control').click();
+  await expect(page.getByTestId('player-label')).toContainText('Poland');
+
+  const ids = await page.evaluate((p) => window.__warsim!.view!.formationsOf(p), POL);
+  const at = (await page.evaluate((id) => window.__warsim!.view!.formationPos(id), ids[0]!))!;
+  await page.evaluate(([x, y]) => window.__warsim!.view!.controller.set({ cx: x, cy: y, scale: 16 }), at);
+  await page.waitForTimeout(200);
+  const picked = await page.evaluate((p) => window.__warsim!.view!.formationAt(700, 400, p), POL);
+  expect(picked).not.toBe(0);
+  await page.mouse.click(700, 400);
+  await expect(page.getByTestId('player-label')).toContainText('1 selected');
+  expect(await selected()).toEqual([picked]);
+
+  // It goes, and a Polish division is raised in the same hour by another Polish formation: it has the id.
+  const other = ids.find((id) => id !== picked)!;
+  const home = (await page.evaluate((id) => window.__warsim!.view!.formationPos(id), other))!;
+  await step([
+    { kind: 'removeFormation', id: picked },
+    { kind: 'spawnFormation', nation: POL, x: home[0], y: home[1], strength: 0, template: infantry },
+  ]);
+  const raised = (await where(picked))!;
+  expect([raised.nation, raised.x, raised.y], 'the freed id is given to the new Polish division').toEqual([POL, home[0], home[1]]);
+  expect.soft(await selected(), 'the selection after its formation is gone').toEqual([]);
+  await expect.soft(page.getByTestId('player-label'), 'the bar after its formation is gone').toContainText('0 selected', { timeout: 5_000 });
+
+  // A click on ground clear of markers: no order. The new division stands.
+  await page.evaluate(([x, y]) => window.__warsim!.view!.controller.set({ cx: x, cy: y, scale: 16 }), at);
+  await page.waitForTimeout(200);
+  expect(await page.evaluate((p) => window.__warsim!.view!.formationAt(540, 400, p), POL)).toBe(0);
+  await page.mouse.click(540, 400);
+  await step([], 24);
+  const later = (await where(picked))!;
+  expect([later.nation, later.x, later.y], 'the new division a day after the click on ground').toEqual([POL, raised.x, raised.y]);
+});

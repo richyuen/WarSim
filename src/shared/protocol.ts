@@ -145,6 +145,11 @@ export const BLOCK_STRIDE = 4;
 export interface SnapshotFormations {
   count: number;
   id: Uint32Array;
+  /**
+   * How often each id has been given out (`Table.generation`): a formation made with a dead one's
+   * id has another (PLAN 7.4f23). Not state: an observer's means to tell the two apart.
+   */
+  generation: Uint32Array;
   nation: Uint16Array;
   /** Its place in the rules: where its T1 marker stands, and what the T0 counters count by. */
   x: Float64Array;
