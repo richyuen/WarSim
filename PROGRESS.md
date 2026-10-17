@@ -17297,3 +17297,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `nationLabelLayout.test.ts` 17 of 17 (2 new); `labels1938`, `labelFades1938`,
   `cityNames1938`, `political` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — N21 measured (counters mid-fade while the game runs); no change kept
+
+- **Start:** gate green on a clean tree (`0fd7bf4`); critic not due.
+- **Measured** (`.cache/74f30/`): seed 1938 at day 60, ×5, 2500 m/px: some counter mid-fade in
+  90 % of frames over Spain and Europe (3.7 of ~90 at a time); ~50 fold turns a second: 24 % lead
+  swaps within a nation, 28 % undone within a second, the rest centroids jumping as grid clusters
+  change members.
+- **Tried:** a shown counter kept as its nation's lead until the other is 1.5 × as strong (in the
+  same-nation pass only; across nations it left a fresh view without a fixed point, red in
+  `counters.test.ts`). Swaps −40 %, counters mid-fade −3 %: reverted. The finding is under N21
+  in PLAN 7.4's list. The "two names" line there shrunk to what PLAN 3.12Rh3 left.
+- **Next:** PLAN 7.4f, the next group.

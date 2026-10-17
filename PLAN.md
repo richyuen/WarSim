@@ -253,10 +253,10 @@ quick sweep as a smoke test.
     top bar and the panels: PLAN 7.4f21): figures at 20 m/px are faint on a plain
     (`to-battle-front.png`); a war banner without a battle differs from one with a battle by
     its swords and frame only (`to-battle-banners.png`).
-  - **Two nations of one name** (PLAN 2.15b, ADR-100, 2026-10-05). A founded nation is
-    "Free <province>", and 114 names are held by more than one province ("Valmiera" 21,
-    "Central" 10, "Northern" 8, "Saint George" 7); a province without a name gives its
-    country's, so "Free Colombia" can stand beside Colombia. Not seen in a game yet.
+  - **Two nations of one name** (PLAN 2.15b, ADR-100, 2026-10-05). Founded nations of one
+    province name are numbered since PLAN 3.12Rh3 ("Free Damascus II", `foundedNth`). Left: the
+    seven provinces without a name give their country's, so "Free Colombia" can stand beside
+    Colombia. Not seen in a game yet.
   - **Land painted on the mask's water** (PLAN 2.15e2b, ADR-105, 2026-10-05). The editor can
     paint land on a cell the fine mask has no land pixel for: the map draws sea there and a
     formation raised on it stands off sure land, as the eight atolls did. The world's build
@@ -273,7 +273,15 @@ quick sweep as a smoke test.
   - N17: a black smear under a counter near Bern in 1952 of seed 2718.
   - N18 (sound since PLAN 3.12d): one language.
   - N21: while the game runs, half-faded counters are on screen all the time as the clusters
-    regroup ("432", "29.6k" at part opacity, 60 days into a war at 2500 m/px).
+    regroup ("432", "29.6k" at part opacity, 60 days into a war at 2500 m/px). Measured
+    2026-10-17 (`.cache/74f30/n21.ts`, `why.ts`; seed 1938, day 60, ×5, 2500 m/px): in 90 % of
+    frames over Spain and Europe some counter is mid-fade, 3.7 of 84 to 101 at a time; some 50
+    folds and unfolds a second, of which a quarter are a lead swap within a nation (a formation
+    crosses into the next cluster of the grid and makes it the stronger), 28 % undo a turn of the
+    same counter within a second, the rest are centroids that jump as clusters change members. A
+    shown counter held as the lead until the other is 1.5 × as strong cut the swaps by 40 % and
+    the counters mid-fade by 3 %: not kept. What is left is the grid clusters' membership; a
+    remedy is a clustering whose members stay while the armies move.
   - Against AoC's God panel: the World AI settings beyond the five the sim has (AI, nuclear weapons, winner takes all,
     revolts, CE mode: PLAN 7.4f19; AoC has about fifteen, the rest no rule here). (The treasury,
     colour, donations, CE, unity, cities made and razed and a nation spawned with a size: PLAN
