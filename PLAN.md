@@ -71,8 +71,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   25 m/px none (`critic/c8_c_6047.json` `sorties`); the editor refuses a Polish bomber group at
   Warsaw ("no airbase of its with room is near the place", `critic/c8_g_5591.json`). AT: sorties
   drawn at T2 and T3 over the war on Poland in its first weeks, counted; the editor places a bomber
-  group at a capital or says what it needs. (The air war fading after year 1 is the user's
-  decision, ADR-376: not here.)
+  group at a capital or says what it needs. (The air war fading after year 1: 7.26.)
 - [ ] 7.25 AI nuclear use believed (AI nuclear use 6, needs 8): beyond 7.18's frequency, a world's
   whole nuclear history is often one day's spasm after 20 silent years (seed 5's 6 bursts all in
   year 30, seed 6271's 4 within 48 hours); strikes go ahead at utilities of 0.001 to 0.01; the
@@ -82,6 +81,16 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   years the first-use years and the spread of strikes measured (`tools/diag/nukeGates.ts`), no
   world's bursts all within 2 days; no strike under a floor of utility; history rows in words, no
   engine numbers; the alert expires and sits clear of the panels' headers.
+- [ ] 7.26 The air war keeps flying after year 1 (aircraft 6, needs 8; the user's decision of
+  2026-10-17, ADR-487, reopening what ADR-377 accepted): on every one of 17 seeds 28 to 39 sorties
+  aloft in year 1, then 0.5 to 14, while 1 to 14 wars run in every late year
+  (`critic/c8_headless_*.json` `meanSortiesAloft`, `wars`). Measured first: a tool beside
+  `tools/diag/` printing, per year, mean sorties aloft, wings of nations at war, how many have a
+  mission, how many are out of range of every enemy land force, and land formations in contact;
+  then the cause fixed (the air AI's tasking, the wings' bases, or the land war it follows). AT:
+  10 seeds × 30 years headless: in each year with a war, mean sorties aloft at least half of that
+  seed's year 1 on 8 of 10 seeds; the air battles of years 21 to 30 counted against years 1 to 10;
+  the pin's entry if a rule moves it.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

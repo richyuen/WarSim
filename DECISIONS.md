@@ -167,6 +167,17 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-487 · 2026-10-17 · accepted — The air war's fall after year 1 is fixed, not accepted (the user's decision)
+
+- **Context.** ADR-377 (2026-10-14) accepted PLAN 5.12 with the air war following the land war,
+  whose collapse was deferred to Phase 7. In Phase 7 the late land war came back (PLAN 7.14, 7.15:
+  1 to 14 wars running in years 21 to 30 on 15 of 17 seeds), but critic run 8 still finds 28 to 39
+  sorties aloft in year 1 and 0.5 to 14 after on every seed, and lists it under aircraft (6 of 8),
+  "user-accepted". The critic judges what a player sees; the acceptance does not stop it scoring
+  the fall, and the aircraft dimension must reach 8.
+- **Decision.** The acceptance is withdrawn: PLAN 7.26 measures why the air war falls while wars
+  run and fixes it. ADR-377's rules stand until then.
+
 ### ADR-486 · 2026-10-17 · accepted — A critic run files a task for every dimension under its bar (the user's decision)
 
 - **Context.** PROMPT step 2a filed a task only for each blocking issue. Run 7's nine dimensions

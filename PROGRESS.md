@@ -17988,7 +17988,8 @@ No rule changed and nothing on screen changed. One task came out of it.
   infantry at T3 and elements at 900 m/px, 7.22 a sea battle's fire and fleets that hold their place,
   7.23 burning hulls where armour fights, 7.24 sorties drawn at T2 and T3 and the editor's bomber
   group, 7.25 nuclear use believed (no one-day spasms, no near-zero utilities, the history in words,
-  the alert). Not filed: the air war fading (the user's decision, ADR-376); non-blocking items in
+  the alert); then, at the user's word, 7.26 the air war after year 1 (ADR-487 withdraws ADR-377's
+  acceptance). Not filed: non-blocking items in
   dimensions at their bar (the stale tooltip, the phone's tool labels, the `capitals` 75 ms call, the
   Soviet Union at the land cap).
 - **PROMPT 2a:** at least one task of its own for every dimension under its bar, scoped to what the
