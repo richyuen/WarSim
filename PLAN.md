@@ -51,6 +51,14 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
     - [ ] 7.18f The critic's Poland: given 10 warheads and a strategic bomber group at an airbase of
       its with room (the editor's placement at Warsaw is 7.24's), it strikes in Germany's war on it.
       AT: a unit test.
+    - [ ] 7.18h A strike to end a war falls on what would end it: after 7.18e, the resolve's
+      strikes (90 days apart) on seeds 1 and 4 include Britain's and Switzerland's on Japan for 935
+      to 2,305 dead, Italy's on Nepal (17,443) and Mongolia (18,705), and Italy's ten in 2.5 years
+      in one war (`.cache/nukeGates718e_r3_<seed>.json` `bursts`; 7.18c's theatre share × 7.18e's
+      anywhere makes a lone garrison 100 % of its theatre). AT: a place's men weighed only against
+      a theatre of weight (a floor, measured); a resolve strike only on a nation of weight to the
+      enemy side; a few resolve strikes a war, not one each 90 days to its end; a unit test; seeds
+      1–10 re-measured.
     - [ ] 7.18g The measure of 7.18's AT: 10 seeds × 30 years, a burst in 8, some before year 20, no
       point struck twice within its ruin's days, no third party under its bound; the 50-year sweep
       on unseen seeds, after the gate.

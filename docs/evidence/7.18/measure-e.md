@@ -46,3 +46,12 @@ places within FRONT_KM, 6 of 10 (the far wars of seeds 4 and 9 placeless); resol
 Still for 7.18g and 7.25: tolls of a few thousand at strikes on armies (seed 1's Britain on a
 statelet #114: 168 to 11,703), decisions at utilities of 0.001 on the desperate paths (seed 5).
 Intermediate runs: `.cache/nukeGates718e_{base,r1,r2,r3}_<seed>.json`.
+
+## The resolve's own strikes (after the commit, for 7.18h)
+
+The bursts 90 days apart are the resolve's. Seed 2: the Netherlands on the Soviet Union (339,120),
+Manchukuo (140,600), Japan (22,366) and China (614,183), one each 90 days in year 20, not one day's
+spasm. Seed 1: Italy ten times from day 9,744 to 10,554 (64,391 to 339,247 and down to 11,751; Nepal
+17,443, Mongolia 18,705). Seed 4: Britain on Japan 65,183, 56,071, 2,305, 935; Switzerland 939,
+31,751, 14,986. Strikes for under 20,000 dead on the older, desperate paths come days apart (seed 1,
+the Soviet Union and Britain in years 14–16), as before 7.18e. PLAN 7.18h.

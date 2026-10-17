@@ -18010,4 +18010,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Measured after:** bursts in 8 of 10 seeds, 6 before year 20, spread over years
   (`docs/evidence/7.18/measure-e.md`).
 - **Tests:** `nukeResolve1938.test.ts` (new), `nukeOverrun1938.test.ts`, the pin green.
+- **After the commit:** the resolve's strikes include tolls of 935 to 18,705 and Italy's ten in one
+  war: filed as PLAN 7.18h, before 7.18g's measure.
 - **Next:** PLAN 7.18f.
