@@ -17332,3 +17332,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   where it was 80, a capital being their fixture); `cityNames1938`, `labelFades1938`,
   `labels1938`, `mapTooltip1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f31: no land of the start nobody's but Antarctica's (data, sim input)
+
+- **Start:** gate green on a clean tree (`016187c`); critic not due.
+- **Done:** `ownership.json` `"PGA": "FRA"` (the Spratlys, annexed by France in 1933); and 11
+  islet cells no province covers and no owned land touches take the nearest owned land's owner
+  within 16 cells (`buildOwnership`, `ISLET_REACH`): each its 1938 owner's (listed in ADR-454).
+  The title screen's preview drawn again. The pin 86845f61 → 4e3e0a0e (ADR-454).
+- **Tests:** `ownership.test.ts` 7 of 7 (new: nobody's land only in Antarctica, the Spratlys
+  France's; Lemnos, Mayotte, a Faroese islet among the known places), `rebelCapitals`,
+  `coast1938`, `ports` green; the pin.
+- **Next:** PLAN 7.4f, the next group.

@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-454 · 2026-10-17 · accepted — The Spratly Islands are France's in 1938 (PLAN 7.4f31)
+
+- **Context.** PLAN 2.15e2b found the Spratly Islands (Natural Earth's `PGA`) nobody's at the 1938
+  start (`ownership.json`: `"PGA": null`). Looked at for this: 11 more land cells of the start
+  (at M) were nobody's, islets no province polygon covers with no owned land beside them, so
+  the neighbour fill left them (an islet off Taymyr, northern Norway, the Canadian Arctic, the
+  Faroes, Lemnos, the Farasan and Dahlak islands, Balabac, Riau, Mayotte, Fraser Island).
+- **Decision.** The Spratlys are France's: it annexed them in 1933 and held the claim on 1
+  January 1938; Japan occupied them in 1939 (TEXT, public historical knowledge; China also
+  claimed them). `"PGA": "FRA"`. An islet still unowned after the neighbour fill takes the owner
+  of the nearest owned land within `ISLET_REACH` = 16 cells (`buildOwnership`): each of the 11
+  is its 1938 owner's (Mayotte with Madagascar, as it was governed then; Farasan Saudi Arabia's).
+  Now no land of the start is nobody's but Antarctica's. The title screen's 1938 picture is drawn
+  again (`npm run data -- --previews`).
+- **The pin.** A start's ownership is state: seed 99's hash after a year 86845f61 → 4e3e0a0e.
+- **Tests.** `ownership.test.ts` (no land nobody's but Antarctica's; the Spratly cells France's;
+  Lemnos, Mayotte and a Faroese islet their owners').
+
 ### ADR-453 · 2026-10-17 · accepted — The nation names' glyphs from one atlas (PLAN 7.4f29)
 
 - **Context.** ADR-414 g left under PLAN 7.4: every zoom from the world to T1 drew at 30 frames a

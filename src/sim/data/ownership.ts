@@ -243,5 +243,18 @@ function fillFromNeighbours(owner: Uint16Array, terrain: Uint8Array, w: number, 
     for (let i = 0; i < todo.length; i += 2) owner[todo[i]!] = todo[i + 1]!;
     if (todo.length === 0) break;
   }
-  for (let c = 0; c < owner.length; c++) if (owner[c] === UNSET) owner[c] = 0;
+  // An islet that no province covers and no owned land touches (PLAN 7.4f31): the owner of the
+  // nearest owned land within ISLET_REACH cells (Lemnos, Mayotte, the Faroes, Fraser Island: ten
+  // cells of the 1938 start were nobody's). Further out, or near only nobody's land, nobody's.
+  const resolved = (c: number): boolean => terrain[c]! >= Terrain.Plains && owner[c] !== UNSET && owner[c] !== 0;
+  const islets: [number, number][] = [];
+  for (let c = 0; c < owner.length; c++) {
+    if (owner[c] !== UNSET) continue;
+    const near = nearestCellWhere(resolved, (c % w) + 0.5, Math.floor(c / w) + 0.5, w, h, ISLET_REACH, true);
+    islets.push([c, near < 0 ? 0 : owner[near]!]);
+  }
+  for (const [c, o] of islets) owner[c] = o;
 }
+
+/** How far, in cells, an islet no province covers looks for the owned land it belongs to. */
+export const ISLET_REACH = 16;

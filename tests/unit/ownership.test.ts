@@ -19,6 +19,10 @@ const build = (w: number) => politicalMap1938(w);
 const KNOWN: [string, number, number, string, string?][] = [
   // PLAN 1.3 AT
   ['Danzig (Free City)', 18.65, 54.35, 'DAN'],
+  // Islets no province covers and no owned land touches: the nearest owned land's (PLAN 7.4f31)
+  ['Lemnos (islet)', 25.2, 39.9, 'GRE'],
+  ['Mayotte (islet, with Madagascar)', 45.1, -12.8, 'MAD'],
+  ['Faroes (islet)', -6.8, 61.8, 'DEN'],
   ['Lwów', 24.03, 49.84, 'POL'],
   ['Königsberg', 20.5, 54.71, 'GER'],
   ['Harbin (Manchukuo)', 126.6, 45.75, 'MAN'],
@@ -138,6 +142,30 @@ describe('1938 ownership at 2048×1024 (PLAN 1.3)', () => {
     expect(idle).toEqual([]);
     const chi = tags.indexOf('CHI') + 1;
     for (let c = 0; c < r.owner.length; c++) if (r.controller[c] !== r.owner[c]) expect(r.owner[c]).toBe(chi);
+  });
+
+  // PLAN 7.4f31 (ADR-454): the Spratly Islands, France's since 1933, were the one land of the start
+  // that was nobody's but Antarctica.
+  it('no land is nobody\'s but Antarctica\'s; the Spratly Islands are France\'s', () => {
+    const nobodys: string[] = [];
+    for (let c = 0; c < r.owner.length; c++) {
+      if (r.terrain[c]! < Terrain.Plains || r.owner[c] !== 0) continue;
+      const y = Math.floor(c / W);
+      if (y < 1024 * 0.8) nobodys.push(`${c % W},${y}`);
+    }
+    expect(nobodys).toEqual([]);
+    const fra = tags.indexOf('FRA') + 1;
+    let spratly = 0;
+    const [x0, y0] = cellOf(111.5, 11.5, W, 1024);
+    const [x1, y1] = cellOf(115.5, 7.5, W, 1024); // west of Palawan
+    for (let y = Math.floor(y0); y <= Math.floor(y1); y++)
+      for (let x = Math.floor(x0); x <= Math.floor(x1); x++) {
+        const c = y * W + x;
+        if (r.terrain[c]! < Terrain.Plains) continue;
+        expect(r.owner[c], `cell ${x},${y}`).toBe(fra);
+        spratly++;
+      }
+    expect(spratly).toBeGreaterThanOrEqual(1);
   });
 
   it('island territories keep one land cell, and the build is deterministic', () => {

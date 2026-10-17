@@ -132,6 +132,9 @@ quick sweep as a smoke test.
       17 before); `nationLabelLayout.test.ts`; the label specs green.
     - [x] 7.4f30 A capital's name reaches 1.6 times as far past the markers round its dot (Warsaw's
       left out at 1000 m/px at the start). AT: `cities.test.ts`; the city name specs green.
+    - [x] 7.4f31 No land of the start nobody's but Antarctica's: the Spratly Islands France's, and
+      an islet no province covers the nearest owned land's (ADR-454; the pin moved).
+      AT: `ownership.test.ts`.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -263,8 +266,6 @@ quick sweep as a smoke test.
     paint land on a cell the fine mask has no land pixel for: the map draws sea there and a
     formation raised on it stands off sure land, as the eight atolls did. The world's build
     gives an islet to the cells of the scenario only.
-  - **The Spratly Islands are nobody's in 1938** (PLAN 2.15e2b): unowned land in the
-    scenario's data (France and Japan both claimed them). Not looked into.
   From the critic's report of 2026-10-05, not blocking and in no task above (its numbers):
   - N4, N5 (the arrows: PLAN 7.4b): markers overlap round Warsaw at the start, one under the
     capital's flag.
