@@ -23,6 +23,8 @@ export const OVERLAP = 0.75;
 
 /** Where each parted formation's block stands off its place, cells, by id (none: on its place). */
 export function fileOffsets(world: World): Map<number, [number, number]> {
+  // A world without templates (the toy world, or rules made by hand in a test) has no blocks to part.
+  if (!world.rules?.templates) return new Map();
   const c = world.formations.cols;
   const idx = elementIndex(world);
   const spacing = world.atSize(SLOT_SPACING);

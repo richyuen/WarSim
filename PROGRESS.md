@@ -17445,3 +17445,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   51 of 53 green; `fallen1938` red as on HEAD (`knownRed.json`), `seaBattleSeen1938` red once
   in the batch and green twice alone (and on HEAD): contention.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — `serverFires.test.ts` red at `79245f8`; mended
+
+- `79245f8` (PLAN 7.4f38) was committed and pushed on a red gate: the script chained the commit
+  after `npm run check` without reading its exit code. `serverFires.test.ts` (7 tests) fails
+  there: its world has rules made by hand, units only, and `fileOffsets` asked `slotCount` for
+  templates, so the snapshot was not built. `fileOffsets` returns none in a world without
+  templates. `serverFires` 7 of 7, the 25 test files related to the worker (140) green.
