@@ -17383,3 +17383,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   bombs); `nationPanel1938` 2 of 2 (new: the UK's parts add up to its income and expenses),
   `research1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f35: a war banner without a battle reads apart (UI)
+
+- **Start:** gate green on a clean tree (`30e5010`); critic not due.
+- **Done:** `.war-quiet` on a dark grey field with softer words; a battle's swords lit (a glow).
+  Before: the same red field, the swords and the frame dimmed only. Picture shot again:
+  `docs/evidence/2.14/to-battle-banners.png` (looked at; the old one beside it). Taste: low
+  confidence.
+- **Tests:** `toBattle1938` 2 of 2 (new: the battle's field red, the quiet one's grey);
+  `warBannerRows1938`, `ranking1938`, `barNarrow1938` green.
+- **Next:** PLAN 7.4f, the next group.

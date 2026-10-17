@@ -478,10 +478,19 @@ body {
 }
 .war-swords {
   color: #e9c46a;
+  /* Lit while the war has a battle to go to (PLAN 7.4f35). */
+  text-shadow: 0 0 4px rgba(233, 196, 106, 0.75);
 }
-/* A war with no battle now (PLAN 2.14f5b3): the click has nowhere to go. */
+/* A war with no battle now (PLAN 2.14f5b3): the click has nowhere to go. Its field is not the
+   red of a battle but a dark grey, its words softer (PLAN 7.4f35: by its swords and frame alone it
+   read as one with a battle). */
 .war-quiet {
-  border-color: rgba(231, 111, 81, 0.28);
+  background: rgba(36, 33, 31, 0.92);
+  border-color: rgba(214, 200, 176, 0.22);
+  color: rgba(241, 230, 210, 0.72);
+}
+.war-quiet .war-swords {
+  text-shadow: none;
 }
 .war-quiet .war-swords {
   color: #f1e6d2;

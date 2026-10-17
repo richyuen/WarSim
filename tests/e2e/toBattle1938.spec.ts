@@ -103,6 +103,12 @@ test('a click on a war\'s banner brings its largest battle into view', async ({ 
   const swords = (b: typeof banner): Promise<{ color: string; opacity: string }> => b.locator('.war-swords').evaluate((e) => ({ color: getComputedStyle(e).color, opacity: getComputedStyle(e).opacity }));
   expect(await swords(banner)).toEqual({ color: 'rgb(233, 196, 106)', opacity: '1' });
   expect(Number((await swords(quiet)).opacity)).toBeLessThan(0.5);
+  // PLAN 7.4f35: and the field: a battle's red, a quiet war's grey.
+  const field = (b: typeof banner): Promise<number[]> => b.evaluate((e) => getComputedStyle(e).backgroundColor.match(/[\d.]+/g)!.slice(0, 3).map(Number));
+  const [r, g] = await field(banner);
+  const [qr, qg, qb] = await field(quiet);
+  expect(r! - g!, "a battle's banner is red").toBeGreaterThan(25);
+  expect(Math.max(qr!, qg!, qb!) - Math.min(qr!, qg!, qb!), "a quiet war's is grey").toBeLessThan(10);
   await page.getByTestId('war-banners').screenshot({ path: path.join(out, 'to-battle-banners.png') });
   await quiet.click();
   await expect(page.getByTestId('nation-panel')).toHaveAttribute('data-nation', String(BRA));

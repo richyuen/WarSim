@@ -140,6 +140,8 @@ quick sweep as a smoke test.
       bonuses, what blockades, raids, bombs and fallout take; army, navy and air upkeep,
       administration, warheads), `economyBreakdown` to the bit of the month's tick. AT:
       `economyBreakdown.test.ts`; `nationPanel1938`.
+    - [x] 7.4f35 A war banner with no battle on a grey field, its words softer; one with a battle
+      red, its swords lit. AT: `toBattle1938` (the fields' colours); `docs/evidence/2.14/to-battle-banners.png`.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -260,9 +262,8 @@ quick sweep as a smoke test.
     table. Left: a second table (another year) brings its own flags file; the worker and
     `ScenarioInfo.nationTags` know only that of 1938.
   - **From the pictures of PLAN 2.14, shot again (2.14f6, 2026-10-05)** (the tags under the
-    top bar and the panels: PLAN 7.4f21): figures at 20 m/px are faint on a plain
-    (`to-battle-front.png`); a war banner without a battle differs from one with a battle by
-    its swords and frame only (`to-battle-banners.png`).
+    top bar and the panels: PLAN 7.4f21; the banners without a battle: 7.4f35): figures at 20 m/px
+    are faint on a plain (`to-battle-front.png`).
   - **Two nations of one name** (PLAN 2.15b, ADR-100, 2026-10-05). Founded nations of one
     province name are numbered since PLAN 3.12Rh3 ("Free Damascus II", `foundedNth`). Left: the
     seven provinces without a name give their country's, so "Free Colombia" can stand beside
