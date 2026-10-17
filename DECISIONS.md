@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-459 · 2026-10-17 · accepted — A nation name's copies have a switch each (PLAN 7.4f45)
+
+- **Context.** PLAN 2.7k kept a nation name's state by nation (it had been by nation and wrap
+  offset, and went out at the date line as the camera's x wrapped). One switch for both copies
+  of a name either side of the seam: on while either copy was wanted, and a copy alone in a
+  larger name's way was not drawn at all, out in one frame (PLAN 7.4's seam group). The layout
+  took only the copies whose map meets the view, so a name whose curve crossed the seam came
+  in once the view's edge had crossed it.
+- **Decision.** A switch a copy, keyed by the nation and the copy's place relative to the camera
+  (`nationNameKey`: map widths from the camera to the copy's middle). The camera's folding of its
+  x does not change it (PLAN 2.7k's test holds). A copy in a larger name's way fades out where it
+  stands; the other stays. The layout takes the copies within `NAME_MARGIN_PX` = 600 px of the
+  view (a copy wholly outside is dropped as before).
+- **Tests.** `nationLabelLayout.test.ts` (the test of one shared switch replaced by one of a switch
+  a copy: the copy in the way fades out, the other stays, it rests; new: a name across the seam
+  reaches into the view from the copy beyond it, red without the margin; PLAN 2.7k's crossing
+  test unchanged and green); `labels1938`, `labelFades1938`, `cityNames1938`, `political`,
+  `seamNames1938`, `flagGone1938`, `godUi1938`, `scenarioEditor1938` green.
+
 ### ADR-458 · 2026-10-17 · accepted — Capital flags keep clear of the T1 markers (PLAN 7.4f39)
 
 - **Context.** The critic's N5: at the start a marker round Warsaw stood under the capital's

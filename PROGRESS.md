@@ -17523,3 +17523,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   the camera from x 2047 to 2049 (folded to 1): the flag's state the same entry; red before:
   `104:0` then `104:-2048`); `flagsClear1938`, `flags1938`, `flagGone1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f45: a nation name's copies have a switch each (render)
+
+- **Start:** gate green on a clean tree (`01ffaf4`); critic not due.
+- **Done:** `nationNameKey` (nation and copy relative to the camera) keys the layout's state and
+  `fadeNationLabels`; the layout takes copies within `NAME_MARGIN_PX` 600 (ADR-459).
+- **Tests:** `nationLabelLayout.test.ts` 18 of 18 (the shared-switch test replaced; new: a name
+  across the seam; red without the margin); 8 label and editor spec files (16 tests) green.
+- **Next:** PLAN 7.4f, the next group.

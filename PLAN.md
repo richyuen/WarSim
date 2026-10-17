@@ -164,6 +164,8 @@ quick sweep as a smoke test.
       side of the seam one stack; red before).
     - [x] 7.4f44 The seam: a capital flag's state kept by its copy's place relative to the camera,
       not by the wrap offset that changes as the camera folds. AT: `seamItems1938` (red before).
+    - [x] 7.4f45 The seam: a nation name's copies have a switch each, and the layout takes the
+      copies within 600 px of the view (ADR-459). AT: `nationLabelLayout.test.ts`.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -172,11 +174,6 @@ quick sweep as a smoke test.
     The scatter of an element (180 m) against the room its figures leave in a slot (60 m).
   - **The seam of the looping map** (the 180° meridian in 1938). What is drawn knows the seam
     one layer at a time, and most layers do not:
-    - (the counters, markers and flags: PLAN 7.4f40; the city names: 7.4f42) a nation's name
-      within its half-width of the seam is drawn only once the view's edge has crossed the seam
-      (its copies share one state, by nation: one that has room and one that has not would
-      flicker);
-    - a nation name's copy that alone is in a larger name's way goes out in one frame;
     - a city's buildings reach to the seam and not across it;
     - figures drawn through a wrap offset are 2,047 cells from the origin of their f32
       offsets, where a step is 2.4 m.

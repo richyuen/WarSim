@@ -45,6 +45,8 @@ export interface PlacedGlyph {
 export interface PlacedNationLabel {
   /** The nation. A looping map can show two copies of a name near its seam: two labels of one id. */
   id: number;
+  /** Its name's state: the nation and the copy of the map it is on (`nationNameKey`, PLAN 7.4f45). */
+  key: number;
   text: string;
   fontPx: number;
   area: number;
@@ -57,7 +59,21 @@ export interface PlacedNationLabel {
 
 export type Measure = (text: string, fontPx: number) => number;
 
-/** What the view knows of each name, by its nation, from the frames before (none: a layout at rest). */
+/**
+ * The key of nation `id`'s name on the copy of the map whose control point stands at `x` cells
+ * (unfolded): the nation, and how many map widths that copy is from the camera (PLAN 7.4f45). Each
+ * copy has its own switch: one copy in a larger name's way went out in one frame while the other
+ * kept their one switch on. By the camera, not by the wrap offset: the camera folds its x at the
+ * seam, and a copy in view keeps its key (as a capital flag's, PLAN 7.4f44).
+ */
+export function nationNameKey(id: number, x: number, camX: number, w: number): number {
+  return id * 64 + Math.round((x - camX) / w) + 32;
+}
+
+/** How far past the view's edges the copies of a name are laid out, px: about the half of the longest name's curve. */
+export const NAME_MARGIN_PX = 600;
+
+/** What the view knows of each name, by its copy (`nationNameKey`), from the frames before (none: a layout at rest). */
 export type NameState = SwitchState<number>;
 const AT_REST: NameState = { held: () => false, visible: () => false };
 
@@ -76,7 +92,10 @@ export function layoutNationLabels(
   const order = Array.from({ length: n }, (_, i) => i).sort((a, b) => data[b * LABEL_STRIDE + LabelField.area]! - data[a * LABEL_STRIDE + LabelField.area]! || a - b);
   const placed: PlacedNationLabel[] = [];
   const occupied: { x: number; y: number; r: number }[] = [];
-  const offsets = wrapOffsets(cam, geo, viewW);
+  // The copies within NAME_MARGIN_PX of the view (PLAN 7.4f45): a name whose curve crosses the seam
+  // reaches into the view from the copy beyond it. Each copy has its switch; one wholly out of the
+  // view is left out below.
+  const offsets = wrapOffsets(cam, geo, viewW, NAME_MARGIN_PX / cam.scale);
   for (const i of order) {
     const o = i * LABEL_STRIDE;
     const text = names[i] ?? '';
@@ -98,16 +117,17 @@ export function layoutNationLabels(
         width = wide(fontPx);
       }
     }
-    const fits = fontPx >= (state.held(id) ? MIN_PX / ZOOM_HYSTERESIS : MIN_PX);
-    const lingers = state.visible(id);
     for (const off of offsets) {
+      const key = geo.wrapX ? nationNameKey(id, data[o + LabelField.cx]! + off, cam.cx, geo.w) : nationNameKey(id, 0, 0, 1);
+      const fits = fontPx >= (state.held(key) ? MIN_PX / ZOOM_HYSTERESIS : MIN_PX);
+      const lingers = state.visible(key);
       const pts: [number, number][] = [];
       for (const k of [LabelField.x0, LabelField.cx, LabelField.x2]) pts.push(worldToScreen(cam, data[o + k]! + off, data[o + k + 1]!, viewW, viewH));
       const [p0, c, p2] = pts as [[number, number], [number, number], [number, number]];
       if (!fits && !lingers) {
         // Too small to show, and nothing of it on screen. In view, the view is told: such a name
         // fades in when the zoom brings it, where one that a pan brings is there at once.
-        if (state.hidden && pts.some(([x, y]) => x >= 0 && x <= viewW && y >= 0 && y <= viewH)) state.hidden(id);
+        if (state.hidden && pts.some(([x, y]) => x >= 0 && x <= viewW && y >= 0 && y <= viewH)) state.hidden(key);
         continue;
       }
       // A name that only fades out is drawn at the size it has, however small.
@@ -142,7 +162,7 @@ export function layoutNationLabels(
       const free = !glyphs.some((g) => occupied.some((q) => (q.x - g.x) * (q.x - g.x) + (q.y - g.y) * (q.y - g.y) < (q.r + r) * (q.r + r)));
       const want = fits && free;
       if (!want && !lingers) {
-        if (state.hidden) state.hidden(id); // in view, in the way of a larger name
+        if (state.hidden) state.hidden(key); // in view, in the way of a larger name
         continue;
       }
       if (want) for (const g of glyphs) occupied.push({ x: g.x, y: g.y, r });
@@ -150,7 +170,7 @@ export function layoutNationLabels(
       const chordY = p2[1] - p0[1];
       const chord = Math.hypot(chordX, chordY);
       const off2 = Math.abs((c[0] - p0[0]) * chordY - (c[1] - p0[1]) * chordX) / Math.max(1e-9, chord);
-      placed.push({ id, text, fontPx: px, area: data[o + LabelField.area]!, glyphs, curved: off2 > 0.03 * chord, alpha: want ? 1 : 0 });
+      placed.push({ id, key, text, fontPx: px, area: data[o + LabelField.area]!, glyphs, curved: off2 > 0.03 * chord, alpha: want ? 1 : 0 });
     }
   }
   return placed;
@@ -158,23 +178,20 @@ export function layoutNationLabels(
 
 /**
  * The names of a frame at `now` with the opacity of each: the layout is told what the bank
- * holds, and the bank what the layout wants.
- * - One answer a nation: its name is on when any copy of it is wanted.
- * - A copy that alone is in a larger name's way, while the other copy is wanted, is not drawn.
- *   (With one switch for both, each asking for its own answer, the switch would turn twice a
- *   frame and never rest.)
+ * holds, and the bank what the layout wants, a switch a copy of a name (PLAN 7.4f45: one a nation
+ * left a copy in a larger name's way out in one frame, while the other was wanted).
  */
 export function fadeNationLabels(bank: SwitchBank<number>, now: number, layout: (state: NameState) => PlacedNationLabel[]): PlacedNationLabel[] {
   const held = bank.frame(now);
   const hidden = new Set<number>();
   const labels = layout({ held: held.held, visible: held.visible, hidden: (id) => void hidden.add(id) });
   const wanted = new Map<number, boolean>();
-  for (const l of labels) wanted.set(l.id, (wanted.get(l.id) ?? false) || l.alpha > 0);
-  // In view with nothing to show, in no copy: off, so that it fades in when the zoom brings it.
-  for (const id of hidden) if (!wanted.has(id)) bank.value(id, false);
+  for (const l of labels) wanted.set(l.key, (wanted.get(l.key) ?? false) || l.alpha > 0);
+  // In view with nothing to show: off, so that it fades in when the zoom brings it.
+  for (const key of hidden) if (!wanted.has(key)) bank.value(key, false);
   const opacity = new Map<number, number>();
-  for (const [id, want] of wanted) opacity.set(id, bank.value(id, want));
-  for (const l of labels) l.alpha = l.alpha > 0 || !wanted.get(l.id) ? opacity.get(l.id)! : 0;
+  for (const [key, want] of wanted) opacity.set(key, bank.value(key, want));
+  for (const l of labels) l.alpha = opacity.get(l.key)!;
   bank.end();
   return labels;
 }

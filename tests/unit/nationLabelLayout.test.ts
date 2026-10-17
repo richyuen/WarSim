@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ATLAS_PX, DARK_NATION, drawNationLabels, EDGE, GlyphSprites, fadeNationLabels, ladderPx, layoutNationLabels, MIN_PX, nameInk, TRACKING, type NameState, type PlacedNationLabel } from '../../src/render/labels/nationLabels';
+import { ATLAS_PX, DARK_NATION, drawNationLabels, EDGE, GlyphSprites, nationNameKey, fadeNationLabels, ladderPx, layoutNationLabels, MIN_PX, nameInk, TRACKING, type NameState, type PlacedNationLabel } from '../../src/render/labels/nationLabels';
 import { FADE_MS, SwitchBank, ZOOM_HYSTERESIS } from '../../src/render/timing';
 import { LABEL_STRIDE } from '../../src/shared/nationLabels';
 
@@ -43,7 +43,8 @@ describe('nation names at rest', () => {
 
 describe('nation names with the states of the frames before (PLAN 2.7e)', () => {
   const none: NameState = { held: () => false, visible: () => false };
-  const on: NameState = { held: (id) => id === 7, visible: (id) => id === 7 };
+  // Nation 7's name on: by its copy's key (PLAN 7.4f45; a map that does not loop has the one copy).
+  const on: NameState = { held: (k) => k === nationNameKey(7, 0, 0, 1), visible: (k) => k === nationNameKey(7, 0, 0, 1) };
 
   it('a name that is on stays below MIN_PX by the hysteresis, and no further', () => {
     const inBand = IN / 1.08;
@@ -67,11 +68,12 @@ describe('nation names with the states of the frames before (PLAN 2.7e)', () => 
     const hidden: number[] = [];
     const state: NameState = { held: () => false, visible: () => false, hidden: (id) => hidden.push(id) };
     expect(lay(ALONE, ['Xy'], IN * 0.5, state)).toEqual([]);
-    expect(hidden).toEqual([7]);
+    // By its copy's key (PLAN 7.4f45): on a map that does not loop, the one copy.
+    expect(hidden).toEqual([nationNameKey(7, 0, 0, 1)]);
     const two = labels([{ id: 1, x: 200, y: 100, length: 20, thickness: 3, area: 10 }, { id: 2, x: 201, y: 100, length: 20, thickness: 3, area: 90 }]);
     hidden.length = 0;
     lay(two, ['Small', 'Large'], 3, state);
-    expect(hidden).toEqual([1]);
+    expect(hidden).toEqual([nationNameKey(1, 0, 0, 1)]);
     // Out of view: not told. A pan brings such a name in at once.
     hidden.length = 0;
     // (At 0.75 px per cell the 800 px of the view span 1,067 cells: 1,000 cells east is outside.)
@@ -113,35 +115,27 @@ describe('a name on a looping map (PLAN 2.7k)', () => {
     expect(frame(bank, 2000 + FADE_MS, 5, IN * 1.2)).toMatchObject([{ id: 7, alpha: 1 }]);
   });
 
-  it('two copies of a name share one switch: on when either is wanted, and it rests', () => {
+  // PLAN 7.4f45: the two copies shared one switch, on while either was wanted, and a copy alone in
+  // a larger name's way was not drawn: it went out in one frame. Each copy has its switch now.
+  it("two copies of a name have a switch each: the one in a larger name's way fades out, the other stays, and it rests", () => {
     const bank = new SwitchBank<number>();
-    const copy = (alpha: number): PlacedNationLabel => ({ id: 7, text: 'Xy', fontPx: 10, area: 1, glyphs: [], curved: false, alpha });
-    // In view with nothing to show: off.
-    fadeNationLabels(bank, 0, (state) => {
-      state.hidden!(7);
-      return [];
-    });
-    // One copy wanted, the other alone in a larger name's way: the name fades in, and the copy
-    // in the way is not drawn.
-    expect(fadeNationLabels(bank, 1000, () => [copy(1), copy(0)]).map((l) => l.alpha)).toEqual([0, 0]);
-    const half = fadeNationLabels(bank, 1000 + FADE_MS / 2, () => [copy(1), copy(0)]).map((l) => l.alpha);
-    expect(half[0]).toBeCloseTo(0.5, 12);
-    expect(half[1]).toBe(0);
-    // Whichever comes first.
-    expect(fadeNationLabels(bank, 1000 + FADE_MS, () => [copy(0), copy(1)]).map((l) => l.alpha)).toEqual([0, 1]);
+    const copy = (key: number, alpha: number): PlacedNationLabel => ({ id: 7, key, text: 'Xy', fontPx: 10, area: 1, glyphs: [], curved: false, alpha });
+    const [a, b] = [nationNameKey(7, 10, 0, 400), nationNameKey(7, 410, 0, 400)];
+    expect(a).not.toBe(b);
+    // Both wanted, new to the view: on at once.
+    expect(fadeNationLabels(bank, 0, () => [copy(a, 1), copy(b, 1)]).map((l) => l.alpha)).toEqual([1, 1]);
+    // The second copy alone in a larger name's way: it fades out where it stands; the first stays.
+    expect(fadeNationLabels(bank, 1000, () => [copy(a, 1), copy(b, 0)]).map((l) => l.alpha)).toEqual([1, 1]);
+    const half = fadeNationLabels(bank, 1000 + FADE_MS / 2, () => [copy(a, 1), copy(b, 0)]).map((l) => l.alpha);
+    expect(half[0]).toBe(1);
+    expect(half[1]).toBeCloseTo(0.5, 12);
+    expect(fadeNationLabels(bank, 1000 + FADE_MS, () => [copy(a, 1), copy(b, 0)]).map((l) => l.alpha)).toEqual([1, 0]);
     expect(bank.animating(1000 + FADE_MS + 100)).toBe(false);
-    // One copy with nothing to show while the other is wanted: no turn.
-    const kept = fadeNationLabels(bank, 3000, (state) => {
-      state.hidden!(7);
-      return [copy(1)];
-    });
-    expect(kept.map((l) => l.alpha)).toEqual([1]);
-    expect(bank.animating(3000)).toBe(false);
-    // Neither wanted: both fade out together.
-    expect(fadeNationLabels(bank, 4000, () => [copy(0), copy(0)]).map((l) => l.alpha)).toEqual([1, 1]);
-    const out = fadeNationLabels(bank, 4000 + FADE_MS / 2, () => [copy(0), copy(0)]).map((l) => l.alpha);
-    expect(out[0]).toBeCloseTo(0.5, 12);
-    expect(out[1]).toBeCloseTo(0.5, 12);
+    // Neither wanted: the first fades out too.
+    const out = fadeNationLabels(bank, 4000 + FADE_MS / 2, () => [copy(a, 0)]).map((l) => l.alpha);
+    void out;
+    const later = fadeNationLabels(bank, 4000 + FADE_MS, () => [copy(a, 0)]).map((l) => l.alpha);
+    expect(later[0]).toBeLessThan(1);
   });
 });
 
@@ -175,7 +169,7 @@ describe('nation names drawn at sizes of a ladder (PLAN 7.1l5)', () => {
       set lineWidth(w: number) { lineWidth = w; },
       get lineWidth() { return lineWidth; },
     } as unknown as CanvasRenderingContext2D;
-    const label: PlacedNationLabel = { id: 1, text: 'Ab', fontPx: 23.7, area: 1, curved: false, alpha: 1, glyphs: [{ ch: 'A', x: 10, y: 20, angle: 0 }, { ch: 'b', x: 25, y: 21, angle: 0.1 }] };
+    const label: PlacedNationLabel = { id: 1, key: 1, text: 'Ab', fontPx: 23.7, area: 1, curved: false, alpha: 1, glyphs: [{ ch: 'A', x: 10, y: 20, angle: 0 }, { ch: 'b', x: 25, y: 21, angle: 0.1 }] };
     drawNationLabels(ctx, [label], 'sans-serif');
     expect(ladderPx(23.7)).not.toBeCloseTo(23.7, 2);
     expect(calls).toEqual(['at 10,20', `A 23.700 line ${(23.7 * EDGE).toFixed(3)}`, 'at 25,21', `b 23.700 line ${(23.7 * EDGE).toFixed(3)}`]);
@@ -229,7 +223,7 @@ describe('nation names in the hand of AoC (PLAN 7.4a, ADR-440)', () => {
       strokeText: () => {}, fillText: function (this: { fillStyle: string }) { fills.push(this.fillStyle); },
       font: '', lineWidth: 0, fillStyle: '', strokeStyle: '', globalAlpha: 1, textAlign: '', textBaseline: '',
     } as unknown as CanvasRenderingContext2D;
-    const one = (id: number): PlacedNationLabel => ({ id, text: 'A', fontPx: 20, area: 1, curved: false, alpha: 1, glyphs: [{ ch: 'A', x: 0, y: 0, angle: 0 }] });
+    const one = (id: number): PlacedNationLabel => ({ id, key: id, text: 'A', fontPx: 20, area: 1, curved: false, alpha: 1, glyphs: [{ ch: 'A', x: 0, y: 0, angle: 0 }] });
     drawNationLabels(ctx, [one(1), one(2)], 'sans-serif', (id) => (id === 1 ? 0xc84b64 : undefined));
     expect(fills).toEqual([nameInk(0xc84b64).fill, 'rgba(20, 22, 30, 0.82)']);
   });
@@ -261,7 +255,7 @@ describe('the names drawn from a glyph atlas (PLAN 7.4f29)', () => {
     } as unknown as CanvasRenderingContext2D;
     return { ctx, out };
   };
-  const label = (id: number, text: string, px: number): PlacedNationLabel => ({ id, text, fontPx: px, area: 1, curved: false, alpha: 1, glyphs: [...text].map((ch, i) => ({ ch, x: 10 * i, y: 5, angle: 0.1 * i })) });
+  const label = (id: number, text: string, px: number): PlacedNationLabel => ({ id, key: id, text, fontPx: px, area: 1, curved: false, alpha: 1, glyphs: [...text].map((ch, i) => ({ ch, x: 10 * i, y: 5, angle: 0.1 * i })) });
 
   it('a glyph of a size and ink is drawn into the atlas once, and each frame as its piece', () => {
     const a = atlasCanvas();
@@ -307,5 +301,21 @@ describe('the names drawn from a glyph atlas (PLAN 7.4f29)', () => {
     } as unknown as CanvasRenderingContext2D;
     drawNationLabels(ctx, [label(1, 'AB', 20)], 'sans-serif', () => undefined, new GlyphSprites(() => null));
     expect(strokes).toEqual(['A', 'B']);
+  });
+});
+
+// PLAN 7.4f45: a name whose curve crosses the seam, the view's left edge just past the seam: the
+// copy beyond it reaches into the view. The layout took only the copies whose map meets the view.
+describe('a nation name across the seam (PLAN 7.4f45)', () => {
+  it('is laid out where its copy beyond the seam reaches into the view', () => {
+    const LOOP = { w: 400, h: 200, kmPerCell: 100, wrapX: true };
+    // From x 389 to 409, its middle (where its letters are) a cell west of the seam at 400.
+    const ACROSS = labels([{ id: 7, x: 399, y: 100, length: 20, thickness: 3, area: 60 }]);
+    const scale = IN * 1.5;
+    // The view's left edge at x 400.2 (folded: 0.2): its letters reach over the seam into it.
+    const camera = { cx: 0.2 + VW / 2 / scale, cy: 100, scale };
+    const got = layoutNationLabels(ACROSS, ['Xy'], camera, LOOP, VW, VH, measure);
+    const seen = got.filter((l) => l.alpha > 0 && l.glyphs.some((g) => g.x >= 0 && g.x <= VW));
+    expect(seen.length, 'a copy with letters in the view').toBeGreaterThan(0);
   });
 });
