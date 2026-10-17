@@ -430,3 +430,26 @@ describe('the counters at rest after a step of the camera (PLAN 2.7l)', () => {
     expect(bShown(L, TOUCH + FOLD_HOLD_PX, 5000, false)).toBe(true);
   });
 });
+
+// PLAN 7.4f43 (a line of PLAN 7.4's "seam of the looping map"): two counters of one nation either
+// side of the seam stand side by side on the screen and a map's width apart in its cells: they
+// were never folded into each other. Each is folded at its copy nearest the camera.
+describe('counters either side of the seam (PLAN 7.4f43)', () => {
+  const boxOf = (_total: number, others: number): [number, number] => [others > 0 ? 50 : 40, 14];
+  const cl = (nation: number, x: number, strength: number) => ({ nation, gx: 0, gy: 0, x, y: 10, strength, count: 1 });
+  const W = 2048;
+  const items = [
+    { key: 'a', c: cl(1, 0.2, 900), x: 0.2, y: 10 },
+    { key: 'b', c: cl(1, W - 0.2, 500), x: W - 0.2, y: 10 },
+  ];
+  it('fold into one at 8 px a cell, the camera on the seam', () => {
+    const shown = new CounterLayer().fold(items, 8, 0, boxOf, false, { w: W, cx: 0 }).filter((d) => !d.folded);
+    expect(shown.map((d) => [d.key, d.strength])).toEqual([['a', 1400]]);
+    // The camera on the far side of the map does not change it.
+    const far = new CounterLayer().fold(items, 8, 0, boxOf, false, { w: W, cx: W - 3 }).filter((d) => !d.folded);
+    expect(far.map((d) => [d.key, d.strength])).toEqual([['a', 1400]]);
+  });
+  it('without the map\'s width they stand apart, as before', () => {
+    expect(new CounterLayer().fold(items, 8, 0, boxOf).filter((d) => !d.folded)).toHaveLength(2);
+  });
+});

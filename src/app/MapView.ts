@@ -1471,7 +1471,10 @@ export class MapView {
     const viewer: OrderViewer = { picked: this.picked, selected: this.selectedFormations, player: this.selectionNation, nation: this.selected };
     this.orderLineIds = [];
     for (let i = 0; i < this.formIds.length; i++) {
-      items.push({ id: this.formIds[i]!, nation: this.formNation[i]!, x: this.formX[i]! * cam.scale, y: this.formY[i]! * cam.scale, strength: this.formStrength[i]!, generation: this.formGen[i]! });
+      // At its copy nearest the camera (PLAN 7.4f43): markers either side of the seam stand side by
+      // side on the screen, a map's width apart in its cells.
+      const fx = this.geo.wrapX ? this.formX[i]! + w * Math.round((cam.cx - this.formX[i]!) / w) : this.formX[i]!;
+      items.push({ id: this.formIds[i]!, nation: this.formNation[i]!, x: fx * cam.scale, y: this.formY[i]! * cam.scale, strength: this.formStrength[i]!, generation: this.formGen[i]! });
       const t = this.templates[this.formTemplate[i]!];
       const moving = (this.formFlags[i]! & FormationFlag.moving) !== 0 && orderShown(this.formIds[i]!, this.formNation[i]!, viewer);
       if (moving) this.orderLineIds.push(this.formIds[i]!);

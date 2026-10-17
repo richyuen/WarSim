@@ -17501,3 +17501,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `cities.test.ts` 21 of 21 (new: a city 0.3 cells west of the seam, the view's left
   edge 5 px east of it, its name reaching in; red before); the 5 label spec files green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f43: counters and markers either side of the seam declutter (render)
+
+- **Start:** gate green on a clean tree (`3a59bbc`); critic not due.
+- **Done:** the counters' fold (`wrap` of `CounterLayer.fold`/`declutter`) and the T1 markers'
+  stacks and partings (`MapView.drawUnitMarkers`) take each at its copy nearest the camera.
+- **Tests:** `counters.test.ts` 22 of 22 (new: two of one nation 0.4 cells apart across the
+  seam fold into one, from either side; without the width, apart as before); `seamItems1938`
+  2 of 2 (new: two Soviet divisions on Chukotka either side of the seam are one marker of two;
+  red without: two markers); `counters1938`, `markers1938`, `markerStacks1938`,
+  `declutter1938`, `stackPick1938`, `flagsClear1938` green.
+- **Next:** PLAN 7.4f, the next group.

@@ -279,6 +279,8 @@ export class CounterLayer {
     now: number,
     boxOf: (total: number, others: number) => [number, number],
     flying = false,
+    /** On a looping map, its width and the camera's x: each counter is folded at its copy nearest the camera (PLAN 7.4f43). */
+    wrap?: { w: number; cx: number },
   ): { key: string; nation: number; x: number; y: number; alpha: number; strength: number; others: number; folded: boolean }[] {
     const stepped = !flying && scale !== this.holdScale;
     if (flying || stepped) this.hold.clear();
@@ -298,7 +300,10 @@ export class CounterLayer {
       if (this.hold.has(heir.key)) this.hold.add(it.key);
     }
     for (const key of this.folds.keys()) if (!at.has(key)) this.folds.delete(key);
-    const boxes = items.map((it) => ({ key: it.key, nation: it.c.nation, x: it.x * scale, y: it.y * scale, strength: it.c.strength }));
+    // At the copy nearest the camera (PLAN 7.4f43): two counters either side of the seam stand side
+    // by side on the screen and a map's width apart in its cells; they were never folded.
+    const near0 = (x: number): number => (wrap ? x + wrap.w * Math.round((wrap.cx - x) / wrap.w) : x);
+    const boxes = items.map((it) => ({ key: it.key, nation: it.c.nation, x: near0(it.x) * scale, y: it.y * scale, strength: it.c.strength }));
     let result = foldOverlaps(boxes, boxOf, (key) => this.hold.has(key));
     // The frame of a step of the zoom is folded as the frames after it would be, one by one, each
     // with the hold of the one before, until the fold stands: every counter that turns, turns now.
@@ -352,6 +357,7 @@ export class CounterLayer {
     now: number,
     visible: boolean,
     boxOf: (total: number, others: number) => [number, number],
+    wrap?: { w: number; cx: number },
   ): ReturnType<CounterLayer['fold']> {
     const items = this.layout(src, scale, now, visible);
     if (items.length === 0) {
@@ -361,7 +367,7 @@ export class CounterLayer {
       this.hold.clear();
       return [];
     }
-    return this.fold(items, scale, now, boxOf, this.trans !== null);
+    return this.fold(items, scale, now, boxOf, this.trans !== null, wrap);
   }
 
   /** The counters to show at `now`: positions in cells, after any animation. */
@@ -426,7 +432,7 @@ export class CounterLayer {
     const h = 14;
     // Flag chip, the strength, and "+n" for the other nations folded in.
     const boxWidth = (strength: number, others: number): number => widthOf(strengthText(strength)) + 18 + (others > 0 ? widthOf(`+${others}`) + BADGE_GAP : 0);
-    const shown = this.declutter(src, cam.scale, now, alpha > 0.01, (total, others) => [boxWidth(total, others) * size, h * size]);
+    const shown = this.declutter(src, cam.scale, now, alpha > 0.01, (total, others) => [boxWidth(total, others) * size, h * size], geo.wrapX ? { w: geo.w, cx: cam.cx } : undefined);
     const offs = itemOffsets(cam, geo, vw);
     // Small first, so the big stacks stay on top.
     shown.sort((a, b) => a.strength - b.strength || (a.key < b.key ? -1 : 1));

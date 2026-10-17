@@ -159,6 +159,9 @@ quick sweep as a smoke test.
       layer with a marker on one copy: rests; red before); `seamNames1938` (new).
     - [x] 7.4f42 The seam: the city names take the copies within 160 px of the view (a name
       beside a dot just past the seam reaches into it). AT: `cities.test.ts` (red before).
+    - [x] 7.4f43 The seam: counters folded and T1 markers stacked and parted at their copies
+      nearest the camera. AT: `counters.test.ts`; `seamItems1938` (markers of one nation either
+      side of the seam one stack; red before).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -171,8 +174,6 @@ quick sweep as a smoke test.
       within its half-width of the seam is drawn only once the view's edge has crossed the seam
       (its copies share one state, by nation: one that has room and one that has not would
       flicker);
-    - counters either side of the seam are not folded into each other, and T1 markers there
-      are neither stacked nor moved apart;
     - a nation name's copy that alone is in a larger name's way goes out in one frame;
     - a capital flag's rise is cut short at the seam (its state is kept by wrap offset);
     - a city's buildings reach to the seam and not across it;

@@ -59,3 +59,35 @@ test('a counter and a marker by the seam are drawn as they reach into the view',
     expect(atEdge.length, `a ${layer} over the seam at the view's right edge`).toBeGreaterThan(0);
   }
 });
+
+// PLAN 7.4f43: two Soviet divisions on Chukotka either side of the seam, a fraction of a cell
+// apart: on the screen their markers lay on each other, a map's width apart in its cells, and
+// were never stacked. They are one marker of two now.
+test('markers of one nation either side of the seam stack', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: VW, height: VH });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  const spots = [cellOf(-179.94, 65.6, W, H), cellOf(179.94, 65.6, W, H)];
+  const ids = await page.evaluate(async ({ spots, SOV, INF }) => {
+    const sim = window.__warsim!.sim;
+    const v = window.__warsim!.view!;
+    const before = new Set(v.formationsOf(SOV));
+    for (const [x, y] of spots) sim.command({ kind: 'spawnFormation', nation: SOV, x: x!, y: y!, strength: 0, template: INF });
+    const tick = (await sim.step(1)).tick;
+    await new Promise<void>((done) => {
+      const wait = (): void => (v.lastTick === tick ? done() : void setTimeout(wait, 5));
+      wait();
+    });
+    return v.formationsOf(SOV).filter((f) => !before.has(f));
+  }, { spots, SOV, INF });
+  expect(ids).toHaveLength(2);
+  const places = await page.evaluate((ids) => ids.map((f) => window.__warsim!.view!.formationPos(f)!), ids);
+  // A map's width apart in its cells, under a cell apart across the seam.
+  expect(Math.abs(places[0]![0] - places[1]![0])).toBeGreaterThan(W - 2);
+  await page.evaluate(({ cy }) => window.__warsim!.view!.controller.set({ cx: 0, cy, scale: 12 }), { cy: places[0]![1] });
+  await page.waitForTimeout(900);
+  const markers = await page.evaluate((ids) => window.__warsim!.view!.markerRects.filter((m) => m.alpha > 0.5 && m.members.some((f) => ids.includes(f))).map((m) => m.members), ids);
+  console.log(`markers of the two: ${JSON.stringify(markers)}`);
+  expect(markers.some((m) => ids.every((f) => m.includes(f))), 'one marker standing for both').toBe(true);
+});
