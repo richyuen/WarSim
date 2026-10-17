@@ -32,12 +32,6 @@ quick sweep as a smoke test.
 Run 7's dimensions under the DONE condition's bar (report of 2026-10-17 on `19e2341`, its "Fix"
 lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split when taken up:
 
-- [ ] 7.8 The air zone's holder is someone fighting there (aircraft 5, needs 8): on day 10 of
-  Germany's war on Poland the air mode hatches Poland, the Baltic states and Ukraine as "held by
-  Yugoslavia" (`critic/c7_m_8217.json` `hovers`, `critic/shots/c7k_8217_05_air_mode.png`), and the
-  legend says "Germany: 1 zones". AT: a unit test of the holder of a zone with a war over it; the
-  legend's plural; the air mode spec green. (The air war fading with the land war is the user's
-  decision of 2026-10-14, ADR-376: not here.)
 - [ ] 7.9 Tanks read as armour at T3 (tanks 5, needs 8): at 10 m/px a tank is about 8 px, all one
   grey, in a loose grid with no formation or facing; `wrecks` read `null` at every tier
   (`critic/shots/c7d_7781_arm_0010m_crop.png`, `critic/c7_d_7781.json`); at T2 nothing tells armour
@@ -301,3 +295,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts). […]
 - [x] 7.6 Critic R7-B1 (report of 2026-10-17 on `19e2341`): AI nuclear use too rare to be seen, […]
 - [x] 7.7 Critic R7-B2 (report of 2026-10-17 on `19e2341`): late-game stalls in the invasion AI. […]
+- [x] 7.8 The air zone's holder is someone fighting there (aircraft 5, needs 8): on day 10 of […]

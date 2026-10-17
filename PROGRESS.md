@@ -17739,3 +17739,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   dynamics (balance; ADR-58's deferral is over), 7.16 God Mode and the UI's small things, 7.17 a
   smaller save. Not filed: the air war fading with the land war (the user's decision, ADR-376).
 - **Next:** PLAN 7.8.
+
+## 2026-10-17 — PLAN 7.8: an air zone's holder is one fighting there (sim derived, UI)
+
+- **Start:** gate green on a clean tree (`ac0a344`).
+- **The cause** (seed 8217, Germany on Poland, day 10, headless): Yugoslavia, on Poland's side in
+  another war, based wings in Poland's air zone patrolling over Austria; their climbs out gave it
+  17,749 of the zone's power against Poland's 163, and the holder was the top flyer.
+- **Done:** `airHolders` takes the top flyer of those fighting in the zone (at war with one that flew
+  there or holds land there); the legend's "1 zone". ADR-467.
+- **Tests:** `airHolderFighting1938.test.ts`, `legendZones.test.ts` (new; the first red before);
+  `serverAirControl.test.ts`'s setup made to the rule (its two flyers at war) and `airHolders.test.ts`'s
+  expectations (a nation not fighting there holds nothing; Germany over Polish land does): the first
+  gates failed on them; a timing check of `territory.test.ts` (32.6 ms against 25) failed once
+  under the gate's load and passed twice alone; `airControl1938`, `airDemo1938`, `seaControl1938` green; pin
+  unmoved.
+- **Next:** PLAN 7.9.

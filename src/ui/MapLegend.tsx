@@ -1,5 +1,6 @@
 import { legendFor, type MapMode } from '../shared/mapModes';
 import { t, type MessageKey } from './i18n';
+import { zonesOf } from './legendText';
 
 /** The holders the sea-control legend lists at most (PLAN 4.10c), and the air superiority's (PLAN 5.10). */
 const SEA_HOLDERS_SHOWN = 8;
@@ -47,7 +48,7 @@ export function MapLegend({
           {seaHolders.slice(0, SEA_HOLDERS_SHOWN).map((h) => (
             <div class="legend-row" key={`sea-${h.name}`} data-testid="sea-holder">
               <span class="legend-swatch" style={{ background: hex(h.color) }} />
-              <span>{t('legend.seaHolder', { name: h.name, n: h.zones })}</span>
+              <span>{zonesOf(h.name, h.zones)}</span>
             </div>
           ))}
           {seaHolders.length > SEA_HOLDERS_SHOWN ? <div class="legend-row">{t('legend.seaMore', { n: seaHolders.length - SEA_HOLDERS_SHOWN })}</div> : null}
@@ -63,7 +64,7 @@ export function MapLegend({
           {airHolders.slice(0, SEA_HOLDERS_SHOWN).map((h) => (
             <div class="legend-row" key={`air-${h.name ?? 'contested'}`} data-testid="air-holder">
               <span class="legend-swatch" style={{ background: hex(h.color) }} />
-              <span>{h.name === null ? t('legend.airContestedZones', { n: h.zones }) : t('legend.seaHolder', { name: h.name, n: h.zones })}</span>
+              <span>{zonesOf(h.name, h.zones)}</span>
             </div>
           ))}
           {airHolders.length > SEA_HOLDERS_SHOWN ? <div class="legend-row">{t('legend.seaMore', { n: airHolders.length - SEA_HOLDERS_SHOWN })}</div> : null}

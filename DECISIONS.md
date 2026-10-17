@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-467 · 2026-10-17 · accepted — An air zone's holder is one fighting there (PLAN 7.8)
+
+- **Context.** Critic run 7 (aircraft 5): on day 10 of Germany's war on Poland (seed 8217) the air
+  mode had Poland, the Baltic states and Ukraine "held by Yugoslavia", and the legend said "Germany:
+  1 zones". Traced: Yugoslavia, on Poland's side in another war (against Austria, Denmark and
+  Iceland), had wings based in Poland's air zone patrolling over Austria. A sortie's power counts in
+  the zone it is in each hour, so their climbs out gave it 17,749 there against Poland's 163, and
+  `airHolders` named the zone's top flyer.
+- **Decision.** `airHolders` (the map mode's holder, derived, not state): of the nations fighting in
+  the zone, the one that flew the most. Fighting there: at war with a nation that flew in the zone
+  or holds land in it (one pass over the cells a day, in the worker). The power a sortie adds where
+  it flies is unchanged: it is the rules' (superiority, combat). The legend says "1 zone" for one.
+- **Tests.** `airHolderFighting1938.test.ts` (new: Warsaw's zone is Poland's, not Yugoslavia's;
+  every holder is at war with one there; red before); `legendZones.test.ts` (new);
+  `airHolders.test.ts` (PLAN 5.7c's) follows the rule: Germany alone over a zone with no enemy in it,
+  and Sweden, outside the war, over one Poland flew in, now hold nothing (they held it); a case more:
+  Germany alone over Warsaw's zone, Polish land, holds it; `serverAirControl.test.ts`'s setup follows the rule (its flyers in zone 3, Germany and the United
+  Kingdom, now at war, each flying a little where the other holds; every expectation as it was);
+  `airControl1938`, `airDemo1938`, `seaControl1938` green. The pin unmoved (no state).
+
 ### ADR-466 · 2026-10-17 · accepted — The invasion AI stops sending formations at the first that cannot go (PLAN 7.7)
 
 - **Context.** Critic R7-B2: on seed 3371, pinned and alone, `invasionAi` took 86 % of the tick in

@@ -94,18 +94,35 @@ export { AIR_CONTESTED };
 export const AIR_HELD = 0.6;
 
 /**
- * Per air zone (index 0 unused), who holds its air (PLAN 5.7c, the map mode): the nation that
- * flew the most there where its superiority is `AIR_HELD` or more; `AIR_CONTESTED` where it is
- * less (its enemies flew there too); 0 where no one flew. Derived from `world.airPower`.
+ * Per air zone (index 0 unused), who holds its air (PLAN 5.7c, the map mode): of the nations
+ * fighting there, the one that flew the most, where its superiority is `AIR_HELD` or more;
+ * `AIR_CONTESTED` where it is less (its enemies flew there too); 0 where no one fighting there
+ * flew. Fighting there (PLAN 7.8, critic run 7): a nation at war with one that flew in the zone or
+ * holds land in it. Seed 8217's Yugoslavia, on Poland's side in another war, had its wings based
+ * in Poland's zone and patrolling over Austria; their climbs out made it the holder of the air over
+ * Warsaw on day 10 of Germany's war on Poland. Derived from `world.airPower` and the cells' controllers.
  */
 export function airHolders(world: World, count: number): Uint16Array {
   const out = new Uint16Array(count + 1);
+  if (world.airPower.size === 0) return out;
+  // The controllers of the land of each zone flown in: one pass over the cells.
+  const zoneOf = airOf(world).zoneOf;
+  const controller = world.cells.controller;
+  const held = new Map<number, Set<number>>();
+  for (const z of world.airPower.keys()) held.set(z, new Set());
+  for (let c = 0; c < zoneOf.length; c++) {
+    const set = held.get(zoneOf[c]!);
+    if (set && controller[c] !== 0) set.add(controller[c]!);
+  }
   for (const [z, byNation] of world.airPower) {
     if (z <= 0 || z > count) continue;
+    const flown = [...byNation].sort((a, b) => a[0] - b[0]);
+    const land = held.get(z)!;
+    const fighting = (n: number): boolean => flown.some(([m]) => m !== n && world.wars.atWar(n, m)) || [...land].some((m) => world.wars.atWar(n, m));
     let top = 0;
     let most = -1;
-    for (const [n, p] of [...byNation].sort((a, b) => a[0] - b[0])) {
-      if (p > most) {
+    for (const [n, p] of flown) {
+      if (p > most && fighting(n)) {
         most = p;
         top = n;
       }

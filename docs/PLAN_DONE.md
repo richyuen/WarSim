@@ -10601,3 +10601,24 @@ Of 7.4 (open in PLAN.md):
   save of seed 3371 (or a run to year 27), `--profile` of years 28 and 29: no `invasionAi` call over
   20 ms and the mean tick within the year-1 budget; the hash of each year unchanged unless the
   cause is a rule (then the pin updated and logged in DECISIONS); a unit test of the bound.
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.8 The air zone's holder is someone fighting there (aircraft 5, needs 8): on day 10 of
+  Germany's war on Poland the air mode hatches Poland, the Baltic states and Ukraine as "held by
+  Yugoslavia" (`critic/c7_m_8217.json` `hovers`, `critic/shots/c7k_8217_05_air_mode.png`), and the
+  legend says "Germany: 1 zones". AT: a unit test of the holder of a zone with a war over it; the
+  legend's plural; the air mode spec green. (The air war fading with the land war is the user's
+  decision of 2026-10-14, ADR-376: not here.)
