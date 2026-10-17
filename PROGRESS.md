@@ -17725,3 +17725,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `invasionBound1938.test.ts` (new; red with the old loop); 8 invasion and naval test
   files green; pin unmoved.
 - **Next:** PLAN 7.5, the critic again (both of run 7's blocking issues filed are done).
+
+## 2026-10-17 — Run 7's dimensions under the bar filed: PLAN 7.8 to 7.17
+
+- **Start:** gate green on a clean tree (`377e981`). Both of run 7's blocking issues done (7.6, 7.7);
+  the critic not due (`critic:due`: no phase review since its report; ADR-59); the DONE condition not
+  met: 9 dimensions under its bar (semantic zoom 6, naval 5, tanks 5, aircraft 5, nuclear 3 of 8;
+  diplomacy 6, dynamics 6, editor 6, performance 5 of 7).
+- **Filed** from the report's "Fix" lines and evidence, a task each before 7.5: 7.8 the air zone's
+  holder, 7.9 tanks at T3, 7.10 ships and the sea battle seen, 7.11 the line between two sides at T3
+  and a struck city, 7.12 the nuclear age in the statistics, 7.13 the editor's warheads, fleets and
+  wings (and SLBMs), 7.14 long wars without a front and late causes of war, 7.15 the late world's
+  dynamics (balance; ADR-58's deferral is over), 7.16 God Mode and the UI's small things, 7.17 a
+  smaller save. Not filed: the air war fading with the land war (the user's decision, ADR-376).
+- **Next:** PLAN 7.8.

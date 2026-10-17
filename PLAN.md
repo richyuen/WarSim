@@ -29,6 +29,50 @@ quick sweep as a smoke test.
 
 ## Phase 7 — Balance, polish, soak
 
+Run 7's dimensions under the DONE condition's bar (report of 2026-10-17 on `19e2341`, its "Fix"
+lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split when taken up:
+
+- [ ] 7.8 The air zone's holder is someone fighting there (aircraft 5, needs 8): on day 10 of
+  Germany's war on Poland the air mode hatches Poland, the Baltic states and Ukraine as "held by
+  Yugoslavia" (`critic/c7_m_8217.json` `hovers`, `critic/shots/c7k_8217_05_air_mode.png`), and the
+  legend says "Germany: 1 zones". AT: a unit test of the holder of a zone with a war over it; the
+  legend's plural; the air mode spec green. (The air war fading with the land war is the user's
+  decision of 2026-10-14, ADR-376: not here.)
+- [ ] 7.9 Tanks read as armour at T3 (tanks 5, needs 8): at 10 m/px a tank is about 8 px, all one
+  grey, in a loose grid with no formation or facing; `wrecks` read `null` at every tier
+  (`critic/shots/c7d_7781_arm_0010m_crop.png`, `critic/c7_d_7781.json`); at T2 nothing tells armour
+  from infantry but the counter's text. AT: tanks larger, tinted by side, in a formation facing the
+  enemy; wrecks left and the test hook reads them; pictures at T2 and T3 beside run 7's.
+- [ ] 7.10 Ships look like ships, and a sea battle is seen (naval 5, needs 8): at 15 m/px ships are
+  flat coloured bars (`critic/shots/c7e_9043_1_0015m.png`); a sea battle's history row must land the
+  view on both fleets firing. AT: ship sprites by class at T3; the row's view with both fleets and
+  their fire in it; pictures. (SLBMs and the editor's fleets: 7.13.)
+- [ ] 7.11 A fight at T3 reads as two sides with a line between them, and a struck city shows it
+  (semantic zoom 6, needs 8): at 10 to 25 m/px the sides are clumps that run into each other
+  (`critic/shots/c7d_7781_arm_15m_live_1.png`); Berlin, a million dead, unchanged at 150 m/px ten days
+  on (`critic/shots/c7k_8217_03_berlin_150_day10.png`; map visuals: "mark struck cities"). AT: the two
+  sides apart at the line of contact at T3; a struck city's ruin at T2 and T3 and a mark on the map;
+  pictures.
+- [ ] 7.12 The nuclear age in the statistics (stats 7): warheads, the nuclear dead and fallout in the
+  panel and the charts. AT: the series in a save and a load; the charts' spec.
+- [ ] 7.13 The editor places warheads, fleets and wings, and asks before a chosen file starts
+  (editor 6; naval: "the editor cannot place fleets"); SLBMs deliver nothing (naval). AT: each
+  placed in the editor and in a shared scenario's play; the confirm; SLBMs a means of delivery or
+  out of the tech tree, with its ADR.
+- [ ] 7.14 Long wars with no land front end in a peace, and the late game has new causes of war
+  (diplomacy 6). AT: on seeds 1 to 10 × 50 years no war without a land front for more than its
+  bound (to be set from a measure); wars declared in the last 10 years; the 50-year sweep.
+- [ ] 7.15 The late world keeps moving (dynamics 6): seed 3371 moves 0.72 % of its land in years 26
+  to 30, 8803 has 0 to 3 wars from year 18, Canada and Greenland stay whole for 30 years on 3 of 4
+  seeds (`critic/c7_headless_*.json`). Balance, no longer deferred (ADR-58: phases 2 to 6 done). AT:
+  the 50-year sweep's dynamism in at least 8 of 10 seeds, its moving limit in every seed; Canada and
+  Greenland reachable (a landing on them in some seed).
+- [ ] 7.16 God Mode and the UI's small things (God Mode 7, UI 7): a nuke's size (thermonuclear) in
+  the God tool; the tools shown when God Mode is pressed; the test locale out of release builds; the
+  nuclear alert not over the panels on a phone. AT: a spec each.
+- [ ] 7.17 A smaller save (stability 7): 39.4 to 40.0 MB at year 12 to 27
+  (`critic/c7_h_1207.json` `twin.bytes`). AT: the sections by size measured; the save at least halved
+  with the same state hash after a load; the save specs green.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
