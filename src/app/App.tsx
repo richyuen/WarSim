@@ -260,6 +260,8 @@ export function App({
         <NationPanel
           nation={nation}
           byId={byId}
+          economy={hud.economy.value?.nation === nation.id ? hud.economy.value.parts : null}
+          onEconomy={(n) => hud.watchEconomy(n)}
           techs={hud.techs.value}
           flagUrl={view && flagVersion >= 0 ? view.flags.urlOf(nation.id) : null}
           onSelect={(id) => hud.onSelectNation(id)}

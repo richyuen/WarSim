@@ -25,7 +25,8 @@ import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { pow } from '../core/dmath';
 import { cellKm2ByRow } from '../landCounts';
-import { seaOf, type AirTally, type World } from '../world';
+import { Domain, seaOf, type AirTally, type World } from '../world';
+import type { EconomyBreakdown } from '../../shared/protocol';
 import { SIDE_SHIPS } from '../../shared/history';
 import { bleedFormation } from './elements';
 import { convoyLosses, convoyShare } from './convoys';
@@ -150,6 +151,83 @@ export function monthlyAccounts(
     expenses[n] = upkeep[n]! + Math.min(adminCost(held[n]!), ADMIN_CAP_SHARE * gross[n]!) + WARHEAD_UPKEEP * warheadsOf(world, n);
   });
   return { gross, expenses, upkeep, held, population };
+}
+
+/** One nation's month in parts (PLAN 7.4f34): `EconomyBreakdown` of `shared/protocol`, the steps of `monthlyAccounts` taken in the same order. */
+export function economyBreakdown(world: World, tables: EconomyTables, n: number): EconomyBreakdown {
+  const nc = world.nations.cols;
+  const { owner, controller, econ, w, h, province } = world.cells;
+  const rowKm2 = cellKm2ByRow(w, h);
+  const blockade = blockadedCells(world);
+  const convoys = convoyLosses(world);
+  const damage = world.bombDamage;
+  // In $M of output, as `monthlyAccounts` sums it; turned into gold at the end.
+  let land = 0;
+  let held = 0;
+  let own = 0;
+  let occ = 0;
+  const lost = { blockade: 0, convoys: 0, bombs: 0, fallout: 0 };
+  for (let y = 0, c = 0; y < h; y++) {
+    const km2 = rowKm2[y]!;
+    for (let x = 0; x < w; x++, c++) {
+      if (controller[c] !== n) continue;
+      held += km2;
+      let v = econ[c]!;
+      const mine = owner[c] === n;
+      const share = mine ? 1 : OCCUPIED_SHARE;
+      let was = v;
+      if (v !== 0 && blockade && (blockade.provinces.has(province[c]!) || blockade.cells.has(c))) v *= BLOCKADE_SHARE;
+      lost.blockade += (was - v) * share;
+      was = v;
+      if (v !== 0 && convoys) v *= convoyShare(world, convoys, n, c);
+      lost.convoys += (was - v) * share;
+      was = v;
+      if (v !== 0 && damage.size > 0) v *= 1 - (damage.get(c) ?? 0);
+      lost.bombs += (was - v) * share;
+      was = v;
+      if (v !== 0 && world.fallout.size > 0) v *= 1 - FALLOUT_INCOME * falloutAt(world, c);
+      lost.fallout += (was - v) * share;
+      if (v !== 0) {
+        land += mine ? v : v * OCCUPIED_SHARE;
+        if (mine) own += v;
+        else occ += v * OCCUPIED_SHARE;
+      }
+    }
+  }
+  const living = nc.living[n] === 1;
+  const gold = (m: number): number => (m / ECON_PER_BN) * INCOME_PER_BN;
+  const gross = living ? (((land / ECON_PER_BN) * INCOME_PER_BN * nc.incomeMult[n]! * (100 + nc.incomeBonus[n]!)) / 100) * (1 + world.buffs.sum('income', 'nation', n)) : 0;
+  const up = { army: 0, navy: 0, air: 0 };
+  const fc = world.formations.cols;
+  let upkeep = 0;
+  world.formations.forEach((id) => {
+    if (fc.nation[id] !== n) return;
+    const t = fc.template[id]!;
+    const full = tables.templateStrength[t] ?? 0;
+    if (full <= 0) return;
+    const u = (UPKEEP_SCALE * (tables.templateUpkeep[t] ?? 0) * fc.strength[id]!) / full;
+    upkeep += u;
+    const d = world.rules?.templates[t]?.domain ?? Domain.land;
+    if (d === Domain.sea) up.navy += u;
+    else if (d === Domain.air) up.air += u;
+    else up.army += u;
+  });
+  const admin = living ? Math.min(adminCost(held), ADMIN_CAP_SHARE * gross) : 0;
+  const warheads = living ? WARHEAD_UPKEEP * warheadsOf(world, n) : 0;
+  return {
+    ownLand: gold(own),
+    occupiedLand: gold(occ),
+    blockade: gold(lost.blockade),
+    convoys: gold(lost.convoys),
+    bombs: gold(lost.bombs),
+    fallout: gold(lost.fallout),
+    bonuses: gross - gold(land),
+    gross,
+    ...up,
+    admin,
+    warheads,
+    expenses: living ? upkeep + admin + warheads : 0,
+  };
 }
 
 /** Rows of the month's air war in the log, of each kind (PLAN 5.11a): its largest, so that the log stays a log of the war's turns. */

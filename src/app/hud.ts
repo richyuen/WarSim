@@ -16,6 +16,7 @@ import type { SeaBattleView } from './MapView';
 import type { MapHover } from '../ui/mapHover';
 import { t } from '../ui/i18n';
 import type { EditorState } from '../shared/editorState';
+import type { EconomyBreakdown } from '../shared/protocol';
 import { RANK_LISTS, type RankList } from '../shared/ranking';
 
 /** Order news kept on the screen at most (PLAN 4.9c). */
@@ -28,6 +29,8 @@ const BRUSH_RADIUS = 5;
 
 export type GodTool = 'revolt' | 'nation' | 'battle' | 'brush' | 'nuke' | 'city' | 'raze';
 const KEY_SHOW_STATS = 'warsim.showStats';
+/** The economy tab's parts are asked for at most this often while the game runs (PLAN 7.4f34). */
+const ECONOMY_MS = 500;
 const KEY_RANK_METRIC = 'warsim.rankMetric';
 
 function load(key: string): string | null {
@@ -107,6 +110,45 @@ export class Hud {
    * given to the next formation made, and the panel is not that one's.
    */
   private formationGeneration: number | undefined;
+
+  /** The open nation's month in parts (PLAN 7.4f34), while its panel's economy tab is open. */
+  readonly economy = signal<{ nation: number; tick: number; parts: EconomyBreakdown } | null>(null);
+  /** The nation whose economy tab is open (0: none), and the request in flight. */
+  private economyNation = 0;
+  private economyAsked = false;
+  private economyAt = -Infinity;
+
+  /** The economy tab of `nation` is open (0: closed): its parts are asked for, and kept up with the game. */
+  watchEconomy(nation: number): void {
+    if (nation === this.economyNation) return;
+    this.economyNation = nation;
+    this.economyAt = -Infinity;
+    if (nation === 0) this.economy.value = null;
+    this.refreshEconomy();
+  }
+
+  /** Asks for the open economy tab's parts again: one request at a time, at most every ECONOMY_MS (a scan of the map's cells in the worker). */
+  refreshEconomy(): void {
+    const n = this.economyNation;
+    if (n === 0 || this.economyAsked) return;
+    const tick = this.tick.value;
+    if (this.economy.value?.nation === n && this.economy.value.tick === tick) return;
+    const now = performance.now();
+    if (now - this.economyAt < ECONOMY_MS) return;
+    this.economyAsked = true;
+    this.economyAt = now;
+    void this.sim
+      .economy(n)
+      .then((parts) => {
+        if (this.economyNation === n) this.economy.value = parts ? { nation: n, tick, parts } : null;
+      })
+      .catch(() => {
+        /* the worker is gone or busy with a load: the tab keeps what it has */
+      })
+      .finally(() => {
+        this.economyAsked = false;
+      });
+  }
 
   /** Opens the panel of formation `id`; 0 closes it. */
   selectFormation(id: number): void {
@@ -206,6 +248,7 @@ export class Hud {
       this.tick.value = s.tick;
       // The open formation panel follows the game.
       if (this.formation.value !== 0 && this.formationInfo.value?.tick !== s.tick) this.refreshFormation();
+      this.refreshEconomy();
       this.worker.value = { speed: s.speed, paused: s.paused };
     });
   }

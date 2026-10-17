@@ -20,6 +20,7 @@ import { wayLine } from '../shared/wayLine';
 import { encodeRuns } from '../shared/mapImport';
 import { historyRows, tickerNews, tickerRows } from './historyRows';
 import { Lives } from './lives';
+import { economyBreakdown } from '../sim/systems/economy';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
@@ -264,6 +265,13 @@ export class SimServer {
       case 'formation':
         this.reply(msg.reqId, new TextEncoder().encode(JSON.stringify(this.formationInfo(msg.id, msg.generation))), false);
         break;
+      case 'economy': {
+        // A nation's month in parts (PLAN 7.4f34): read off the state now, as the month's tick would.
+        const world = this.requireSim().world;
+        const b = world.rules && world.nations.has(msg.nation) ? economyBreakdown(world, ECONOMY_TABLES_1938, msg.nation) : null;
+        this.reply(msg.reqId, new TextEncoder().encode(JSON.stringify(b)), false);
+        break;
+      }
       case 'warBattle': {
         const world = this.requireSim().world;
         const site = Number.isInteger(msg.war) ? largestBattle(world, msg.war) : null;

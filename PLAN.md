@@ -136,6 +136,10 @@ quick sweep as a smoke test.
     - [x] 7.4f33 A player builds an armoured division (the critic did not test it): Germany's
       Build, the queue and the gold, the division raised with its 34 tanks, its panel, its T1
       marker. AT: `buildArmour1938` (new).
+    - [x] 7.4f34 The critic's N14, the economy tab: the month in parts (own and occupied land,
+      bonuses, what blockades, raids, bombs and fallout take; army, navy and air upkeep,
+      administration, warheads), `economyBreakdown` to the bit of the month's tick. AT:
+      `economyBreakdown.test.ts`; `nationPanel1938`.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -270,8 +274,8 @@ quick sweep as a smoke test.
   From the critic's report of 2026-10-05, not blocking and in no task above (its numbers):
   - N4, N5 (the arrows: PLAN 7.4b): markers overlap round Warsaw at the start, one under the
     capital's flag.
-  - N14 (left of it after PLAN 7.4c, 7.4f11, 7.4f12 and 7.4f28): the economy tab is six numbers;
-    no list of kills (the log names no killer).
+  - N14 (left of it after PLAN 7.4c, 7.4f11, 7.4f12, 7.4f28 and 7.4f34): no list of kills (the
+    log names no killer).
   - N17: a black smear under a counter near Bern in 1952 of seed 2718.
   - N18 (sound since PLAN 3.12d): one language.
   - N21: while the game runs, half-faded counters are on screen all the time as the clusters

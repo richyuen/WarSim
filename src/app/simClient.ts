@@ -8,6 +8,7 @@
 import type { Command } from '../shared/commands';
 import type { HistoryRow } from '../shared/history';
 import type { LandMask } from '../shared/landMask';
+import type { EconomyBreakdown } from '../shared/protocol';
 import type {
   FromWorker,
   FormationDetail,
@@ -394,6 +395,13 @@ export class SimClient {
     const r = await this.status(generation === undefined ? { type: 'formation', id } : { type: 'formation', id, generation });
     if (!r.bytes) throw new Error('formation reply without bytes');
     return JSON.parse(new TextDecoder().decode(r.bytes)) as FormationDetail | null;
+  }
+
+  /** Nation `nation`'s month in parts as the sim has it now (PLAN 7.4f34), or null in a world without an economy. */
+  async economy(nation: number): Promise<EconomyBreakdown | null> {
+    const r = await this.status({ type: 'economy', nation });
+    if (!r.bytes) throw new Error('economy reply without bytes');
+    return JSON.parse(new TextDecoder().decode(r.bytes)) as EconomyBreakdown | null;
   }
 
   /** The largest battle of war `war` as the sim has it now (PLAN 2.14e), or null when the war has none. */

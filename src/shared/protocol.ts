@@ -74,6 +74,8 @@ export type ToWorker =
    * when another has taken its id since (PLAN 2.16Ri).
    */
   | { type: 'formation'; reqId: number; id: number; generation?: number }
+  /** PLAN 7.4f34: nation `nation`'s month in parts as JSON `EconomyBreakdown` in the reply bytes (`null` with no economy). */
+  | { type: 'economy'; reqId: number; nation: number }
   /** PLAN 2.14e: the largest battle of war `war` as JSON `WarBattle` in the reply bytes (`null` when it has none). */
   | { type: 'warBattle'; reqId: number; war: number }
   /** PLAN 1.34b: the statistics series as raw f32 bytes (SERIES_STRIDE records: `chartRows`, PLAN 5.11c). */
@@ -432,6 +434,33 @@ export interface TechInfo {
 }
 
 export type UnitSymbol = 'infantry' | 'armour' | 'motorised' | 'cavalry' | 'mountain' | 'garrison' | 'fleet';
+
+/**
+ * One nation's month in parts (PLAN 7.4f34, the critic's N14: the economy tab was six numbers),
+ * gold a month: the steps of `monthlyAccounts` for that nation, taken in the same order, so that
+ * `gross` and `expenses` are its to the bit (`economyBreakdown.test.ts`). Each loss is the gold
+ * its step takes from what the steps before left. No side effects; not state.
+ */
+export interface EconomyBreakdown {
+  /** From the land it owns and holds, and from land it occupies (at OCCUPIED_SHARE). */
+  ownLand: number;
+  occupiedLand: number;
+  /** Taken by a blockade of its ports, by raids on its convoys, by bombs, by fallout. */
+  blockade: number;
+  convoys: number;
+  bombs: number;
+  fallout: number;
+  /** × its income multiplier, bonus and buffs: what that adds (or takes). */
+  bonuses: number;
+  gross: number;
+  /** Upkeep of its formations by domain, its administration (capped), its warheads. */
+  army: number;
+  navy: number;
+  air: number;
+  admin: number;
+  warheads: number;
+  expenses: number;
+}
 
 /**
  * A nation's life, living or dead (PLAN 7.4f28, `worker/lives.ts`): the ranking's lists of a life,

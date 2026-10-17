@@ -74,3 +74,31 @@ test('nation panel: click a nation, read its overview and economy, follow a chip
   await page.getByTestId('nation-close').click();
   await expect(panel).toHaveCount(0);
 });
+
+// PLAN 7.4f34 (the critic's N14: the economy tab was six numbers): the month in parts. At the
+// paused start the stats' income and expenses are of the same accounts: the parts shown add up to
+// them. The United Kingdom pays for an army, a navy and an air force; China's tab follows the
+// selection. (That the war's losses are in the parts: `economyBreakdown.test.ts`.)
+test('the economy tab shows the month in parts, and they add up to its income and expenses', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.evaluate((n) => window.__warsim!.view!.select(n), id('ENG'));
+  await page.getByTestId('tab-economy').click();
+  await expect(page.getByTestId('panel-month')).toBeVisible();
+  const read = async (k: string): Promise<number> => ((await page.getByTestId(`econ-${k}`).count()) ? int(await page.getByTestId(`econ-${k}`).textContent()) : 0);
+  const income = int(await page.getByTestId('stat-income').textContent());
+  const expenses = int(await page.getByTestId('stat-expenses').textContent());
+  const from = (await read('ownLand')) + (await read('occupiedLand')) + (await read('bonuses'));
+  const on = (await read('army')) + (await read('navy')) + (await read('air')) + (await read('admin')) + (await read('warheads'));
+  expect(Math.abs(from - income), `income ${income}, its parts ${from}`).toBeLessThanOrEqual(3);
+  expect(Math.abs(on - expenses), `expenses ${expenses}, their parts ${on}`).toBeLessThanOrEqual(5);
+  for (const k of ['army', 'navy', 'air', 'admin']) expect(await read(k), k).toBeGreaterThan(0);
+  await page.screenshot({ path: path.resolve('docs/evidence/7.4/f34-economy-uk.png') });
+
+  // Another nation's tab follows the selection.
+  await page.evaluate((n) => window.__warsim!.view!.select(n), id('CHI'));
+  await expect(page.getByTestId('nation-name')).toContainText('China');
+  await expect.poll(async () => Math.abs((await read('ownLand')) + (await read('occupiedLand')) + (await read('bonuses')) - int(await page.getByTestId('stat-income').textContent()))).toBeLessThanOrEqual(3);
+});

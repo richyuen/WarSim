@@ -17369,3 +17369,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   template, 34 tank elements in its detail, its panel ("Armoured division", the tanks listed),
   its marker drawn at T1. Picture `docs/evidence/7.4/f33-armour-built.png`. No code changed.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f34: the economy tab shows the month in parts (sim read, worker, UI)
+
+- **Start:** gate green on a clean tree (`cb7853b`); critic not due.
+- **Done:** `economyBreakdown(world, tables, n)` (the steps of `monthlyAccounts` for one nation,
+  in its order; not state), the worker's `economy` request, `hud.economy` asked for while the tab
+  is open (at most every 500 ms: a scan of the cells), the tab's "Income a month, from" and
+  "Expenses a month, on" (a part that is nothing left out). `EconomyBreakdown` in
+  `shared/protocol` (the UI may not import the sim). Picture `docs/evidence/7.4/f34-economy-uk.png`.
+- **Tests:** `economyBreakdown.test.ts` (new: every nation's parts equal `monthlyAccounts` to
+  the bit, seed 1938 two years in; 359 gold a month lost to blockades, 1,044 to raids, 30 to
+  bombs); `nationPanel1938` 2 of 2 (new: the UK's parts add up to its income and expenses),
+  `research1938` green.
+- **Next:** PLAN 7.4f, the next group.

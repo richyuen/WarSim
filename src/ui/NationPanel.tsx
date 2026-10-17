@@ -1,4 +1,5 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
+import type { EconomyBreakdown } from '../shared/protocol';
 import type { NationStat, TechInfo } from '../shared/protocol';
 import { ActionsTab, type ActionsTabProps } from './ActionsTab';
 import { GodTab, type GodTabProps } from './GodTab';
@@ -35,6 +36,8 @@ export function NationPanel({
   control,
   actions,
   flagUrl,
+  economy,
+  onEconomy,
 }: {
   nation: NationStat;
   byId: Map<number, NationStat>;
@@ -47,11 +50,19 @@ export function NationPanel({
   actions?: Omit<ActionsTabProps, 'nation'> | null;
   /** The nation's flag as an image URL (PLAN 1.37b). */
   flagUrl?: string | null;
+  /** Its month in parts (PLAN 7.4f34), asked for by `onEconomy(nation)` while the economy tab is open (0: closed). */
+  economy?: EconomyBreakdown | null;
+  onEconomy?: (nation: number) => void;
 }) {
   const [chosen, setTab] = useState<Tab>('overview');
   // The God tab exists only in God Mode (PLAN 1.32b).
   const tab: Tab = (!god && chosen === 'god') || (!actions && chosen === 'actions') ? 'overview' : chosen;
   const tabs: Tab[] = ['overview', 'economy', ...(actions ? (['actions'] as const) : []), ...(god ? (['god'] as const) : [])];
+  // The month in parts is asked for while the economy tab is open, of this nation.
+  useEffect(() => {
+    onEconomy?.(tab === 'economy' ? nation.id : 0);
+  }, [tab, nation.id]);
+  useEffect(() => () => onEconomy?.(0), []);
   const chip = (id: number) => {
     const n = byId.get(id);
     return (
@@ -151,6 +162,26 @@ export function NationPanel({
           {row('panel.incomeBonus', `${nation.incomeBonus >= 0 ? '+' : ''}${nation.incomeBonus}%`)}
           {row('panel.manpower', num(nation.manpower), 'stat-manpower')}
           {nation.bankrupt ? <div class="panel-warn">{t('panel.bankrupt')}</div> : null}
+          {economy ? (
+            // The month in parts (PLAN 7.4f34, the critic's N14): where the income comes from and
+            // what the war takes of it; where the gold goes. A part that is nothing is left out.
+            <div class="panel-block" data-testid="panel-month">
+              <div class="panel-sub">{t('panel.incomeFrom')}</div>
+              {(
+                [
+                  ['ownLand', 1],
+                  ['occupiedLand', 1],
+                  ['bonuses', 1],
+                  ['blockade', -1],
+                  ['convoys', -1],
+                  ['bombs', -1],
+                  ['fallout', -1],
+                ] as const
+              ).map(([k, sign]) => (Math.round(economy[k]) !== 0 || k === 'ownLand' ? <div key={k}>{row(`panel.econ.${k}` as MessageKey, sign < 0 ? signed(-economy[k]) : k === 'bonuses' ? signed(economy[k]) : num(economy[k]), `econ-${k}`)}</div> : null))}
+              <div class="panel-sub">{t('panel.spentOn')}</div>
+              {(['army', 'navy', 'air', 'admin', 'warheads'] as const).map((k) => (Math.round(economy[k]) !== 0 || k === 'army' ? <div key={k}>{row(`panel.econ.${k}` as MessageKey, num(economy[k]), `econ-${k}`)}</div> : null))}
+            </div>
+          ) : null}
           <div class="panel-block" data-testid="panel-research">
             <div class="panel-sub">{t('panel.research')}</div>
             {row('panel.researchBudget', num(nation.research), 'research-budget')}
