@@ -16,7 +16,7 @@ import { MAX_CE, MIN_CE } from './systems/efficiency';
 import { addCorridor } from './systems/majorBattles';
 import { orderMove } from './systems/movement';
 import { queueFormation } from './systems/production';
-import { forceRevolt } from './systems/revolts';
+import { forceRevolt, spawnNation } from './systems/revolts';
 import { importLayer, paint, redoEdit, undoEdit } from './editor';
 import { decodeRuns, decodeRunsU32 } from '../shared/mapImport';
 import { FLAG_H, FLAG_W } from '../shared/flagPixels';
@@ -315,6 +315,8 @@ function applyCommand(world: World, cmd: Command): Refusal {
     }
     case 'spawnRevolt':
       return done(forceRevolt(world, cmd.province));
+    case 'spawnNation':
+      return done(spawnNation(world, cmd.province, cmd.size) !== 0);
     case 'setIncomeBonus': {
       const why = whyNoNation(world, cmd.nation);
       if (!why) world.nations.cols.incomeBonus[cmd.nation] = Math.round(Math.max(-100, Math.min(100, cmd.value)));

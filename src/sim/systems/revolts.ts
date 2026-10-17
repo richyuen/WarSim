@@ -359,6 +359,36 @@ export function forceRevolt(world: World, p: number): boolean {
   return true;
 }
 
+/**
+ * God Mode's Spawn nation (PLAN 7.4f26): a new nation of province `p` and the provinces nearest
+ * it that p's holder holds, `size` in all, breadth-first over the province graph (each layer in
+ * the graph's order). At peace with its holder: a nation set down, not a rising (a revolt is
+ * `forceRevolt`). Returns its id, or 0 when p has no living holder.
+ */
+export function spawnNation(world: World, p: number, size: number): number {
+  const pv = world.provinces;
+  if (p <= 0 || p >= pv.count) return 0;
+  const g = navOf(world).graph;
+  const c = g.centre[p] ?? -1;
+  if (c < 0) return 0;
+  const { owner } = world.cells;
+  const holder = owner[c]!;
+  if (holder === 0 || world.nations.cols.living[holder] !== 1) return 0;
+  const area = [p];
+  const seen = new Set([p]);
+  for (let i = 0; i < area.length && area.length < size; i++) {
+    for (const q of g.adj[area[i]!] ?? []) {
+      if (area.length >= size) break;
+      if (seen.has(q) || q >= pv.count) continue;
+      seen.add(q);
+      const qc = g.centre[q] ?? -1;
+      if (qc >= 0 && owner[qc] === holder) area.push(q);
+    }
+  }
+  pv.version++;
+  return spawnRebels(world, area, holder, 0, false);
+}
+
 /** The revolting provinces: p alone, or its restless region (setting `revoltMode`). */
 function revoltArea(world: World, p: number, holder: number): number[] {
   if (world.settings.revoltMode !== 'region') return [p];

@@ -299,6 +299,8 @@ export function App({
                   nukesEnabled: stats.nukesEnabled,
                   rules: stats.rules,
                   tool: hud.godTool.value,
+                  spawnSize: hud.spawnSize.value,
+                  onSpawnSize: (v) => (hud.spawnSize.value = v),
                   refusal: hud.refusal.value,
                   onCommand: (c) => hud.command(c),
                   onTool: (tl) => hud.setGodTool(tl),

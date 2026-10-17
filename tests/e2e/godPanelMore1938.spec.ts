@@ -112,6 +112,44 @@ test('God Mode: a town founded by a click, and razed by another (PLAN 7.4f18)', 
   await expect.poll(async () => (await towns()).length).toBe(0);
 });
 
+// PLAN 7.4f26 (AoC's Spawn Nations with its initial size): a nation set down by a click, of the
+// size chosen, on the land of the nation that held it, at peace with it.
+test('God Mode: a nation spawned by a click, of the size chosen (PLAN 7.4f26)', async ({ page }) => {
+  test.setTimeout(120_000);
+  await open1938(page, 1938);
+  const GER = id('GER');
+  await page.getByTestId('god-btn').click();
+  await page.evaluate((n) => window.__warsim!.view!.select(n), GER);
+  await page.getByTestId('tab-god').click();
+  await page.evaluate(() => window.__warsim!.view!.controller.set({ cx: 1083.5, cy: 266.5, scale: 12 }));
+  await page.waitForTimeout(500);
+  const ids = (): Promise<number[]> => page.evaluate(() => window.__warsim!.hud.stats.value!.nations.map((n) => n.id));
+  const before = await ids();
+  // Paused: no hour passes between the two reads of Germany's land.
+  const gerCells = await page.evaluate((g) => window.__warsim!.hud.stats.value!.nations.find((x) => x.id === g)!.cells, GER);
+  await page.getByTestId('god-tool-nation').click();
+  await expect(page.getByTestId('god-tool-hint')).toBeVisible();
+  await page.getByTestId('god-nation-size').fill('3');
+  await expect(page.getByTestId('god-nation-size-row')).toContainText('3 provinces');
+  expect(await page.evaluate(() => window.__warsim!.hud.spawnSize.value)).toBe(3);
+  const box = (await page.locator('#map').boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  // One nation more, and the land clicked is its own.
+  await expect.poll(async () => (await ids()).filter((n) => !before.includes(n))).toHaveLength(1);
+  const born = (await ids()).find((n) => !before.includes(n))!;
+  await expect.poll(() => page.evaluate(([x, y]) => window.__warsim!.view!.nationAt(x!, y!), [box.width / 2, box.height / 2])).toBe(born);
+  // Its land was all Germany's (three provinces of it: `godMode.test.ts` counts them); at peace with Germany.
+  const stat = (n: number) => page.evaluate((n) => window.__warsim!.hud.stats.value!.nations.find((x) => x.id === n)!, n);
+  expect((await stat(born)).cells, 'it has land').toBeGreaterThan(0);
+  expect((await stat(born)).cells + (await stat(GER)).cells, 'all of it Germany\'s').toBe(gerCells);
+  expect((await stat(born)).enemies, 'at peace').toEqual([]);
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: 'docs/evidence/7.4/f26-spawn-nation.png' });
+  // The tool stays armed for the next click.
+  await expect(page.getByTestId('god-tool-nation')).toHaveClass(/active/);
+  expect(await page.evaluate(() => window.__warsim!.hud.godTool.value)).toBe('nation');
+});
+
 test('God Mode: the world\'s rules set in the game (PLAN 7.4f19)', async ({ page }) => {
   test.setTimeout(120_000);
   await open1938(page, 1938);

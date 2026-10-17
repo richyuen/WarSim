@@ -17244,3 +17244,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   army, ...), where a dead nation is 0. AoC marks them in lists of a life (age, kills, wars):
   such lists come first. Left on the list under 7.4.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f26: God Mode's Spawn nation, with a size (sim command + UI)
+
+- **Start:** gate green on a clean tree (`f3014e9`); critic not due.
+- **Done:** `spawnNation {province, size}` (1..`SPAWN_NATION_MAX` = 24, else `OutOfRange`): the
+  province and the nearest of its holder's, breadth-first over the province graph, founded by
+  `spawnRebels` without a war. God map tool "Spawn nation" with a size slider (`hud.spawnSize`,
+  5 at first); it stays armed. The founding is logged as a revolt's (`RevoltSpawned`).
+  Picture: `docs/evidence/7.4/f26-spawn-nation.png`. PARITY row 35 appended.
+- **Tests:** `godMode.test.ts` 13 of 13 (new: five provinces round Warsaw, joined, all Polish
+  before, at peace, round trip; size 1; sizes 0, 25, 2.5 and province 0 refused);
+  `godPanelMore1938` 6 of 6 (new), `godUi1938`, `godMode1938` green.
+- **Seen:** the God tab's "Winner takes all" checkbox stands on a line of its own above its label
+  (in the picture); not looked into.
+- **Next:** PLAN 7.4f, the next group.

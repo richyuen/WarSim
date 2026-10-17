@@ -26,7 +26,7 @@ const KEY_MAP_MODE = 'warsim.mapMode';
 /** God territory brush radius in cells. */
 const BRUSH_RADIUS = 5;
 
-export type GodTool = 'revolt' | 'battle' | 'brush' | 'nuke' | 'city' | 'raze';
+export type GodTool = 'revolt' | 'nation' | 'battle' | 'brush' | 'nuke' | 'city' | 'raze';
 const KEY_SHOW_STATS = 'warsim.showStats';
 const KEY_RANK_METRIC = 'warsim.rankMetric';
 
@@ -441,6 +441,8 @@ export class Hud {
   readonly godMode = signal(false);
   /** Active God map tool and, for a breakthrough, its first point. */
   readonly godTool = signal<GodTool | null>(null);
+  /** How many provinces the Spawn nation tool's nation starts with (PLAN 7.4f26, AoC's initial size). */
+  readonly spawnSize = signal(5);
   private battleStart: [number, number] | null = null;
 
   toggleGod(): void {
@@ -491,6 +493,12 @@ export class Hud {
     if (tool === 'raze') {
       // The city by the click (within two cells) is razed; the tool stays.
       if (city !== 0) this.command({ kind: 'removeCity', city });
+      return true;
+    }
+    if (tool === 'nation') {
+      // A nation set down (PLAN 7.4f26): the province clicked and the nearest of its holder's,
+      // the size chosen in all; the tool stays for the next one, as Found city's.
+      if (province > 0) this.command({ kind: 'spawnNation', province, size: this.spawnSize.value });
       return true;
     }
     if (tool === 'revolt') {

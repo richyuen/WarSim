@@ -90,6 +90,12 @@ export type Command =
   | { kind: 'renameNation'; nation: number; name: string }
   /** PLAN 1.32 God Mode: province `province` revolts now (its area per `revoltMode`). */
   | { kind: 'spawnRevolt'; province: number }
+  /**
+   * God Mode's Spawn nation (PLAN 7.4f26, AoC's initial size): a new nation, at peace, of
+   * `province` and of the provinces nearest it (breadth-first over their borders) that its holder
+   * holds, `size` in all (1 to `SPAWN_NATION_MAX`; fewer where the holder has fewer about it).
+   */
+  | { kind: 'spawnNation'; province: number; size: number }
   /** PLAN 1.32 God Mode: AoC-style income bonus, percent −100..100. */
   | { kind: 'setIncomeBonus'; nation: number; value: number }
   /** PLAN 1.33b player diplomacy: offers that the other side may refuse. */
@@ -178,6 +184,7 @@ export const COMMAND_KINDS: Record<Command['kind'], true> = {
   setPuppetLoyalty: true,
   renameNation: true,
   spawnRevolt: true,
+  spawnNation: true,
   setIncomeBonus: true,
   offerPeace: true,
   proposeAlliance: true,
@@ -284,6 +291,9 @@ export function finiteCommand(cmd: Command): boolean {
   return ok(cmd);
 }
 
+/** The most provinces a nation spawned by God Mode starts with (PLAN 7.4f26). */
+export const SPAWN_NATION_MAX = 24;
+
 /** The largest brush radius in cells: the editor's (PLAN 1.35) and the God brush's. */
 export const MAX_PAINT_R = 32;
 
@@ -319,6 +329,8 @@ export function inRange(cmd: Command, w: number, h: number): boolean {
       return Number.isInteger(cmd.color) && cmd.color >= 0 && cmd.color <= 0xffffff;
     case 'donateGold':
       return cmd.amount >= 0;
+    case 'spawnNation':
+      return Number.isInteger(cmd.size) && cmd.size >= 1 && cmd.size <= SPAWN_NATION_MAX;
     case 'createAlliance':
       return Array.isArray(cmd.members) && cmd.members.every(id) && new Set([cmd.leader, ...cmd.members]).size === cmd.members.length + 1;
     default:

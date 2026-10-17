@@ -8,6 +8,8 @@ import { EventKind } from '../../src/shared/events';
 import { KILL_STATES } from '../../src/sim/systems/revival';
 import { eventKinds as kinds, nationId, runEvents as run } from '../helpers/sim1938';
 import { at1938 } from '../helpers/checkpoint';
+import { Refusal, SPAWN_NATION_MAX } from '../../src/shared/commands';
+import { navOf } from '../../src/sim/world';
 
 // PLAN 1.32a: the new God Mode commands (rename, spawn revolt, income bonus, forced collapse) and
 // the owned-cell counts they exposed as stale (now maintained by World.setOwner).
@@ -55,6 +57,66 @@ describe('God Mode commands (PLAN 1.32a)', () => {
     expect(s.world.cells.owner[Math.floor(y) * W + Math.floor(x)]).toBe(rebel);
     expect(s.world.nations.cols.cells[POL!]).toBe(polBefore - s.world.nations.cols.cells[rebel]!);
     expectCountsMatch(s.world);
+  });
+
+  // PLAN 7.4f26 (AoC's Spawn Nations with its initial size): a nation set down on a province and
+  // the provinces nearest it of the same holder, `size` in all, at peace with the holder.
+  it('spawn nation: a new nation of size provinces round the one clicked, its holder’s, at peace', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const [x, y] = cellOf(21.0, 52.23, W, H);
+    const cell = Math.floor(y) * W + Math.floor(x);
+    const p = s.world.cells.province[cell]!;
+    const polBefore = s.world.nations.cols.cells[POL!]!;
+    const created = s.world.nations.highWater;
+    s.command({ kind: 'spawnNation', province: p, size: 5 });
+    s.step(1);
+    const pv = s.world.provinces;
+    const nc = s.world.nations.cols;
+    expect(s.world.nations.highWater).toBe(created + 1);
+    const n = created;
+    expect(nc.living[n]).toBe(1);
+    expect(s.world.cells.owner[cell]).toBe(n);
+    // Five provinces, each Polish before (the new nation's cells are all Poland's lost ones), one of them the one clicked.
+    const mine: number[] = [];
+    for (let q = 1; q < pv.count; q++) if (pv.core[q] === n) mine.push(q);
+    expect(mine).toHaveLength(5);
+    expect(mine).toContain(p);
+    expect(nc.cells[POL!]).toBe(polBefore - nc.cells[n]!);
+    // Joined: each reached from the one clicked over the borders of the five.
+    const g = navOf(s.world).graph;
+    const reach = new Set([p]);
+    for (let grew = true; grew; ) {
+      grew = false;
+      for (const q of mine) if (!reach.has(q) && (g.adj[q] ?? []).some((r) => reach.has(r))) grew = reach.add(q) !== null;
+    }
+    expect(reach.size).toBe(5);
+    // At peace: no war between the two.
+    expect(s.world.wars.atWar(POL!, n)).toBe(false);
+    expectCountsMatch(s.world);
+    // A save and load carries it.
+    const t = new Sim({ scenario: '1938', seed: 2, assets: assets1938(W) });
+    t.load(s.save());
+    expect(t.hash()).toBe(s.hash());
+  });
+
+  it('spawn nation: a size of 1 is the province alone; one outside 1..SPAWN_NATION_MAX and water are refused', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const [x, y] = cellOf(21.0, 52.23, W, H);
+    const p = s.world.cells.province[Math.floor(y) * W + Math.floor(x)]!;
+    const created = s.world.nations.highWater;
+    for (const size of [0, SPAWN_NATION_MAX + 1, 2.5]) {
+      s.command({ kind: 'spawnNation', province: p, size });
+      expect(run(s, 1).filter((e) => e[1] === EventKind.CommandRefused).map((e) => e[3]), `size ${size}`).toEqual([Refusal.OutOfRange]);
+    }
+    s.command({ kind: 'spawnNation', province: 0, size: 3 });
+    expect(run(s, 1).filter((e) => e[1] === EventKind.CommandRefused).map((e) => e[3])).toEqual([Refusal.NoEffect]);
+    expect(s.world.nations.highWater).toBe(created);
+    s.command({ kind: 'spawnNation', province: p, size: 1 });
+    s.step(1);
+    const pv = s.world.provinces;
+    let mine = 0;
+    for (let q = 1; q < pv.count; q++) if (pv.core[q] === created) mine++;
+    expect(mine).toBe(1);
   });
 
   it('income bonus is clamped to ±100', () => {
