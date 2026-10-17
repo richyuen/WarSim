@@ -17421,3 +17421,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `tags.test.ts` 24 of 24 (new; red before); `tags1938`, `battleView1938`,
   `formationPanel1938`, `tankBattle1938`, `toBattle1938`, `seamFight1938` (12 tests) green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f37: a neighbour's tag over a block, measured; a spec of the crowd's tags
+
+- **Start:** gate green on a clean tree (`57062aa`); critic not due.
+- **Measured** (30 formations in contact, seed 1938, three weeks of Germany against Poland):
+  tags over another formation's block: 2 of 307 at 150 m/px, 0 of 156 at 60, 12 of 101 at 12,
+  12 of 75 at 6; over a block whose own tag is not by it (the line's case): 2 at 150, none at 60
+  or T3. The 3.10c1b picture predates ADR-207 (3.11f1). No rule changed.
+- **Done:** `MapView.tagInputs` (the layout's boxes, for tests); `tagsCrowd1938` (new): 15
+  formations at 60 and 12 m/px, no tag on another, none over a block whose own tag is not by
+  it, at most 3.5 % over 120 px off (1 of 49 at 12 m/px; 6 % before 7.4f36).
+- **Next:** PLAN 7.4f, the next group.

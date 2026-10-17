@@ -1499,6 +1499,8 @@ export class MapView {
 
   /** The tags of the formations in the view at T2 and T3, as they were drawn last (PLAN 2.14a; tests, and the names keep clear of them). */
   tagRects: PlacedTag[] = [];
+  /** The boxes of the formations' elements the tags were laid out by, CSS px (tests and probes). */
+  tagInputs: TagInput[] = [];
   /** Tags that found no free place in the last frame (tests). */
   tagsLeft = 0;
   /** The opacity the tags were drawn with last (tests). */
@@ -1524,6 +1526,7 @@ export class MapView {
     const alpha = this.shares.elements;
     this.tagOpacity = alpha;
     this.tagRects = [];
+    this.tagInputs = [];
     this.tagsLeft = 0;
     if (alpha <= 0.01) return;
     const vw = this.canvas.clientWidth;
@@ -1595,6 +1598,7 @@ export class MapView {
     const at = this.canvas.getBoundingClientRect();
     const avoid = this.tagObstacles().filter((o) => o.w > 0 && o.h > 0).map((o) => ({ x: o.x - at.left, y: o.y - at.top, w: o.w, h: o.h }));
     const { placed, left } = layoutTags(items, measure, vw, vh, this.unitScale, avoid);
+    this.tagInputs = items;
     this.tagsLeft = left;
     this.tagRects = placed;
     const hex = (id: number): string => `#${(this.ownColor.get(id) ?? 0x888888).toString(16).padStart(6, '0')}`;
