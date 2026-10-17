@@ -41,7 +41,8 @@
  * of its own land to occupiers of any war, has lost, fight to the death or not: peace at ±100 on
  * the spot. (An overrun fight-to-the-death nation used to stay at war for good and kept its
  * occupiers' war slots and exhaustion pinned.)
- * Deadlock: a war older than MAX_WAR_DAYS ends on its score, fight to the death or not. Other
+ * Deadlock: a war older than MAX_WAR_DAYS ends on its score, fight to the death or not, and so does
+ * one with no land front between its sides for FRONTLESS_DAYS running (PLAN 7.14). Other
  * wars end long before (exhaustion grows 0.1 a day); a fight to the death is five years of
  * total war at most (ADR-47).
  * A peace starts a TRUCE_TICKS truce between the leaders. Capital captures add ±CAPITAL_SCORE,
@@ -52,6 +53,7 @@ import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { annexNation, makePuppet } from './puppets';
 import { forceMen } from './seaControl';
+import { warsWithFront } from './warFront';
 import { ATTACKERS, DEFENDERS, type War } from '../wars';
 import type { LandCounts } from '../landCounts';
 import type { World } from '../world';
@@ -69,6 +71,14 @@ export const PUPPET_SHARE = 0.3;
 /** True share of a side's land under enemy occupation at which it capitulates. */
 export const CAPITULATE = 0.75;
 export const MAX_WAR_DAYS = 5 * 365;
+/**
+ * A war with no land front between its sides this many days running ends on its score, fight to
+ * the death or not (PLAN 7.14, ADR-480; critic run 7: "in the late game wars are few and endless").
+ * Measured before (`tools/diag/warFronts.ts`, seeds 1–10 × 50 years, 3,717 wars): 95 % never went
+ * 120 days without a front; the 89 that went a year or more were stalemates that ran to the 720 days
+ * of the stalemate peace, or fights to the death to 1,767 days, nobody fighting anybody.
+ */
+export const FRONTLESS_DAYS = 365;
 export const TRUCE_TICKS = 24 * 730;
 /** Autonomy of a puppet created by peace terms (a satellite-to-puppet border case). */
 export const PEACE_PUPPET_AUTONOMY = 30;
@@ -372,6 +382,9 @@ export function warSystem(world: World): void {
   const men = menOf(world);
   const nc = world.nations.cols;
   const sideMen = (side: number[]): number => side.reduce((s, n) => s + (men.get(n) ?? 0), 0);
+  // Who fought today (PLAN 7.14: a nation's years at peace), and which wars have a land front.
+  for (const war of world.wars.list) for (const side of war.sides) for (const n of side) world.wars.lastFought.set(n, world.tick);
+  const fronts = warsWithFront(world);
   for (const war of [...world.wars.list]) {
     // A peace earlier in the day may have ended this one: its terms annexed the last member of a
     // side (`Wars.endAllOf`). It has no leader to sue or to sign (PLAN 3.5f).
@@ -399,6 +412,12 @@ export function warSystem(world: World): void {
       continue;
     }
     if (days >= MAX_WAR_DAYS) {
+      makePeace(world, war);
+      continue;
+    }
+    // No land front for FRONTLESS_DAYS running: nothing is fought over, the war ends on its score.
+    war.frontless = fronts.has(war.id) ? 0 : (war.frontless ?? 0) + 1;
+    if (war.frontless >= FRONTLESS_DAYS) {
       makePeace(world, war);
       continue;
     }

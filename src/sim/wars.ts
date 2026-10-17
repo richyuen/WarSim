@@ -24,6 +24,11 @@ export interface War {
   fightToDeath: [boolean, boolean];
   /** Men in each side's formations when first assessed (exhaustion baseline; 0 = not yet). */
   startMen: [number, number];
+  /**
+   * Days running with no land front between the sides (PLAN 7.14, `warsWithFront`); a war of an
+   * older save has none (read as 0).
+   */
+  frontless?: number;
 }
 
 export interface Truce {
@@ -36,6 +41,12 @@ export class Wars implements Stateful {
   list: War[] = [];
   truces: Truce[] = [];
   nextId = 1;
+  /**
+   * The last day's tick each nation was at war (PLAN 7.14: how long it has been at peace, the
+   * restless nation's cause of war). Kept for every nation that has fought; one that never has has
+   * been at peace since the start (tick 0).
+   */
+  lastFought = new Map<number, number>();
   /** Bumped on every change (derived caches compare against it; not state). */
   version = 0;
   private keys = new Set<number>();
@@ -151,13 +162,14 @@ export class Wars implements Stateful {
   }
 
   serialize(): Section[] {
-    const json = JSON.stringify({ list: this.list, truces: this.truces, nextId: this.nextId });
+    const json = JSON.stringify({ list: this.list, truces: this.truces, nextId: this.nextId, ...(this.lastFought.size > 0 ? { lastFought: [...this.lastFought].sort((a, b) => a[0] - b[0]) } : {}) });
     return [{ name: 'wars.json', dtype: 'u8', data: new TextEncoder().encode(json) }];
   }
 
   deserialize(sections: readonly Section[]): void {
-    const parsed = JSON.parse(new TextDecoder().decode(takeSection(sections, 'wars.json', 'u8'))) as { list: War[]; truces: Truce[]; nextId: number };
+    const parsed = JSON.parse(new TextDecoder().decode(takeSection(sections, 'wars.json', 'u8'))) as { list: War[]; truces: Truce[]; nextId: number; lastFought?: [number, number][] };
     this.list = parsed.list;
+    this.lastFought = new Map(parsed.lastFought ?? []);
     this.truces = parsed.truces;
     this.nextId = parsed.nextId;
     this.changed();

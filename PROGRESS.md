@@ -17912,3 +17912,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `editorForces1938.test.ts`, `noSlbm1938.test.ts`, `editorForces1938.spec.ts` (new);
   `scenarioEditor1938`, `scenarioFile1938`, `refusal`, `unknownCommand` green.
 - **Next:** PLAN 7.14.
+
+## 2026-10-17 — PLAN 7.14: wars with no land front end; restless nations (rules)
+
+- **Start:** gate green on a clean tree (`f5822cd`).
+- **Measured first:** probes `tools/diag/warFronts.ts` (seeds 1–10 × 50 years) and
+  `tools/diag/warGates.ts` (seeds 1, 3, 5): wars with no front ran to 720 days (stalemate peace) or,
+  to the death, 1,767; declarations fell from 1,101 (years 1–10) to 611 (41–50), wars coming of wars.
+- **Done:** FRONTLESS_DAYS 365 (`warsWithFront`, `War.frontless`; ADR-480); RESTLESS 0.3 over
+  RESTLESS_YEARS 10 (`Wars.lastFought`; ADR-481). Pin b2dc23b4 → ea691c94.
+- **Measured after:** no war past 365 days without a front by the rule's count; declarations in years
+  41–50 809; 1 of 100 late years ending with no war (13 before). 50-year sweep seeds 1–10 ALL GREEN
+  (`docs/sweeps/2026-10-17-sweep-714.md`). `docs/evidence/7.14/measure.md`.
+- **Tests:** `frontlessPeace1938.test.ts` (new); the whole unit suite 260 files green.
+- **Next:** PLAN 7.15.

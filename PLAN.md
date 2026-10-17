@@ -32,9 +32,6 @@ quick sweep as a smoke test.
 Run 7's dimensions under the DONE condition's bar (report of 2026-10-17 on `19e2341`, its "Fix"
 lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split when taken up:
 
-- [ ] 7.14 Long wars with no land front end in a peace, and the late game has new causes of war
-  (diplomacy 6). AT: on seeds 1 to 10 × 50 years no war without a land front for more than its
-  bound (to be set from a measure); wars declared in the last 10 years; the 50-year sweep.
 - [ ] 7.15 The late world keeps moving (dynamics 6): seed 3371 moves 0.72 % of its land in years 26
   to 30, 8803 has 0 to 3 wars from year 18, Canada and Greenland stay whole for 30 years on 3 of 4
   seeds (`critic/c7_headless_*.json`). Balance, no longer deferred (ADR-58: phases 2 to 6 done). AT:
@@ -280,3 +277,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.11 A fight at T3 reads as two sides with a line between them, and a struck city shows it […]
 - [x] 7.12 The nuclear age in the statistics (stats 7): warheads, the nuclear dead and fallout in the […]
 - [x] 7.13 The editor places warheads, fleets and wings, and asks before a chosen file starts […]
+- [x] 7.14 Long wars with no land front end in a peace, and the late game has new causes of war […]

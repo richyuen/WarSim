@@ -13,6 +13,7 @@
  *   utility(t) = aggression/100 × (min(RATIO_CAP, attack(n)/defence(t)) − 1) + OPPORTUNITY (t already at war)
  *              + CLAIM (n has a core on land t holds) − exhaustion/100 − WARS_PENALTY × wars
  *              + PARIAH_WAR × relationHit(n, t)  (the world's outrage at t's nuclear strikes, PLAN 6.5b)
+ *              + RESTLESS × min(1, years n has been at peace / RESTLESS_YEARS)  (in no war; PLAN 7.14)
  * over neighbours t that are valid targets; the best t with utility > DECLARE_AT is attacked
  * with probability DECLARE_P × aggression/100.
  * Stalemate peace: a war older than STALEMATE_DAYS with |score| < STALEMATE_SCORE and both
@@ -58,6 +59,16 @@ export const ALLY_P = 0.3;
 export const HEGEMON_SHARE = 0.25;
 /** The war utility's weight of a neighbour's nuclear outrage (PLAN 6.5b). */
 export const PARIAH_WAR = 0.5;
+/**
+ * Restlessness (PLAN 7.14, ADR-481): a nation at peace grows readier for war, RESTLESS at most,
+ * reached after RESTLESS_YEARS without a war of its own (`Wars.lastFought`). Measured before
+ * (`tools/diag/warGates.ts`, seeds 1, 3, 5): the best war's utility of a turn stopped below
+ * DECLARE_AT averaged 0.01 to 0.10 in every decade, most of it OPPORTUNITY (a target at war
+ * already): wars came of wars, and a world at peace stayed so (declarations in years 41–50 about
+ * half of years 1–10's, `tools/diag/warFronts.ts`).
+ */
+export const RESTLESS = 0.3;
+export const RESTLESS_YEARS = 10;
 const SALT_WAR = 0xa101;
 const SALT_ALLY = 0xa102;
 
@@ -110,6 +121,11 @@ function exhaustionOf(world: World, n: number): number {
   return e;
 }
 
+/** How restless nation n is (PLAN 7.14): RESTLESS × its years since its last war ÷ RESTLESS_YEARS, at most RESTLESS. */
+export function restlessOf(world: World, n: number): number {
+  return RESTLESS * Math.min(1, (world.tick - (world.wars.lastFought.get(n) ?? 0)) / (24 * 365 * RESTLESS_YEARS));
+}
+
 /** Whether n holds a core (or claim) on a province whose centre t owns. */
 function claimsOn(world: World, n: number, t: number): boolean {
   const g = navOf(world).graph;
@@ -160,12 +176,13 @@ export function strategicAi(world: World): void {
     const wars = warsOf(world, n);
     if (wars < MAX_WARS && nc.aggression[n]! >= PACIFIST_BELOW && nc.gold[n]! >= 0 && nc.bankrupt[n] !== 1) {
       const attack = withAllies(n);
+      const restless = wars === 0 ? restlessOf(world, n) : 0;
       let best = 0;
       let bestU = DECLARE_AT;
       for (const t of neighbours) {
         // Whom it may declare on (PLAN 3.8: not a puppet of its ally either, which it used to pick).
         if (whyNotWar(world, n, t) !== Refusal.None) continue;
-        const u = (nc.aggression[n]! / 100) * (Math.min(RATIO_CAP, attack / defence(t)) - 1) + (warsOf(world, t) > 0 ? OPPORTUNITY : 0) + (claimsOn(world, n, t) ? CLAIM : 0) - exhaustionOf(world, n) / 100 - WARS_PENALTY * wars + PARIAH_WAR * relationHit(world, n, t);
+        const u = (nc.aggression[n]! / 100) * (Math.min(RATIO_CAP, attack / defence(t)) - 1) + (warsOf(world, t) > 0 ? OPPORTUNITY : 0) + (claimsOn(world, n, t) ? CLAIM : 0) - exhaustionOf(world, n) / 100 - WARS_PENALTY * wars + PARIAH_WAR * relationHit(world, n, t) + restless;
         if (u > bestU) {
           bestU = u;
           best = t;

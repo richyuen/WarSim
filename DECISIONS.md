@@ -167,6 +167,44 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-481 · 2026-10-17 · accepted — A nation at peace grows restless (PLAN 7.14)
+
+- **Context.** Critic run 7 (diplomacy 6): "give the late game new causes of war"; seed 3371 had 0 to
+  2 wars a year in years 26–30. Measured (`tools/diag/warGates.ts`, seeds 1, 3, 5 × 50 years): of the
+  actors' turns stopped below DECLARE_AT (half of all turns, in every decade) the best war's utility
+  averaged 0.01 to 0.10, mostly OPPORTUNITY (the target at war already). Wars came of wars: seeds 1–10
+  declared 1,101 wars in years 1–10 and 611 in years 41–50 (`tools/diag/warFronts.ts`).
+- **Decision.** A cause of war of its own: restlessness. A nation in no war adds RESTLESS (0.3) ×
+  min(1, its years since it last fought ÷ RESTLESS_YEARS (10)) to the utility of every war it weighs.
+  `Wars.lastFought` (state, in `wars.json` once not empty) is the last day each nation was at war; a
+  nation that never was has been at peace since the start. Pacifists (aggression < 15) still declare
+  none, and the draw is unchanged.
+- **Measured after** (`docs/evidence/7.14/measure.md`): declarations 1,264 / 940 / 809 in years
+  1–10 / 21–30 / 41–50 (before 1,101 / 744 / 611); years 41–50 ending with no war on the map 1 of 100
+  (before 13). The 50-year sweep of seeds 1–10 all green (`docs/sweeps/2026-10-17-sweep-714.md`).
+- **Pin.** Seed 99's year b2dc23b4 → ea691c94 with ADR-480.
+- **Tests.** `frontlessPeace1938.test.ts` (restlessness 0 for a nation that fought, half at 5 years,
+  RESTLESS at 30; `lastFought` saved and loaded).
+
+### ADR-480 · 2026-10-17 · accepted — A war with no land front for a year ends (PLAN 7.14)
+
+- **Context.** Critic run 7 (diplomacy 6): "in the late game wars are few and endless … end long wars
+  with no land front by a peace". Measured (`tools/diag/warFronts.ts`, seeds 1–10 × 50 years, 3,717
+  wars): 95 % of wars never went 120 days without a land front; 89 went a year or more, and those
+  were stalemates that ran to the 720 days of the stalemate peace with nobody fighting anybody, or
+  fights to the death to their five years (1,767 days without a front).
+- **Decision.** `warsWithFront` (`src/sim/systems/warFront.ts`): a war has a land front when a cell
+  held by a nation of one side is beside a cell held by a nation of the other (the frontier's cells,
+  4-neighbours). Daily `War.frontless` counts the days running with none (in `wars.json`; an older
+  save reads 0); at FRONTLESS_DAYS (365) the war ends on its score as at any peace, fight to the
+  death or not, after the capitulation and MAX_WAR_DAYS checks. A landing that holds ground is a front.
+- **Measured after:** by the rule's count no war of seeds 1–10 × 50 years went past 365 days; the
+  end-of-day sample of the probe agrees in nine seeds (365) and in seed 3 joins three runs of a fight
+  to the death across three days with a front at 00:00 only (423; `docs/evidence/7.14/measure.md`).
+- **Pin.** Seed 99's year b2dc23b4 → ea691c94 with ADR-481.
+- **Tests.** `frontlessPeace1938.test.ts` (Argentina on Australia, no front, at war at 362 days and at
+  peace by 366; Germany on Poland, a front, still at war with `frontless` 0; the count saved and loaded).
+
 ### ADR-479 · 2026-10-17 · accepted — No submarine-launched missile: out of the tech tree (PLAN 7.13c)
 
 - **Context.** Critic run 7 (naval): "SLBMs deliver nothing". PLAN 7.13's AT: SLBMs a means of

@@ -10753,3 +10753,21 @@ Of 7.4 (open in PLAN.md):
   (editor 6; naval: "the editor cannot place fleets"); SLBMs deliver nothing (naval). AT: each
   placed in the editor and in a shared scenario's play; the confirm; SLBMs a means of delivery or
   out of the tech tree, with its ADR.
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.14 Long wars with no land front end in a peace, and the late game has new causes of war
+  (diplomacy 6). AT: on seeds 1 to 10 × 50 years no war without a land front for more than its
+  bound (to be set from a measure); wars declared in the last 10 years; the 50-year sweep.
