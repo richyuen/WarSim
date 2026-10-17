@@ -10809,3 +10809,21 @@ Of 7.4 (open in PLAN.md):
 - [x] 7.16 God Mode and the UI's small things (God Mode 7, UI 7): a nuke's size (thermonuclear) in
   the God tool; the tools shown when God Mode is pressed; the test locale out of release builds; the
   nuclear alert not over the panels on a phone. AT: a spec each.
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.17 A smaller save (stability 7): 39.4 to 40.0 MB at year 12 to 27
+  (`critic/c7_h_1207.json` `twin.bytes`). AT: the sections by size measured; the save at least halved
+  with the same state hash after a load; the save specs green.

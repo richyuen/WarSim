@@ -17945,3 +17945,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `godTools1938`, `nukeAlertPhone1938` (new), `i18n.spec`, `title.spec` (the flag) and the
   God Mode and alert specs green (24).
 - **Next:** PLAN 7.17.
+
+## 2026-10-17 — PLAN 7.17: a smaller save (state format)
+
+- **Start:** gate green on a clean tree (`1e32136`).
+- **Measured:** the per-cell layers 96 % of a 40 MB save, their runs 4–9 % of them.
+- **Done:** section format version 2, runs where they take at most half (ADR-484). The critic's
+  year-27 save 40.0 → 4.86 MB (12.1 %), the same hash; version 1 still loads. Pin unmoved.
+- **Tests:** `saveRuns.test.ts` (new), the unit suite (261 files), the save specs (27) green.
+- **Next:** PLAN 7.5, the critic run.

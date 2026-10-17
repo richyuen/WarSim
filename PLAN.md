@@ -32,9 +32,6 @@ quick sweep as a smoke test.
 Run 7's dimensions under the DONE condition's bar (report of 2026-10-17 on `19e2341`, its "Fix"
 lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split when taken up:
 
-- [ ] 7.17 A smaller save (stability 7): 39.4 to 40.0 MB at year 12 to 27
-  (`critic/c7_h_1207.json` `twin.bytes`). AT: the sections by size measured; the save at least halved
-  with the same state hash after a load; the save specs green.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -272,3 +269,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.14 Long wars with no land front end in a peace, and the late game has new causes of war […]
 - [x] 7.15 The late world keeps moving (dynamics 6): seed 3371 moves 0.72 % of its land in years 26 […]
 - [x] 7.16 God Mode and the UI's small things (God Mode 7, UI 7): a nuke's size (thermonuclear) in […]
+- [x] 7.17 A smaller save (stability 7): 39.4 to 40.0 MB at year 12 to 27 […]

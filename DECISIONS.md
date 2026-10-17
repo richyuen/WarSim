@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-484 · 2026-10-17 · accepted — Saves as runs: format version 2 (PLAN 7.17)
+
+- **Context.** Critic run 7 (stability 7): "a save is about 40 MB" (39.4 to 40.0 MB at years 12 to
+  27). Measured (`docs/evidence/7.17/measure.md`): the eight per-cell layers are 96 % of a save, and
+  their runs of equal elements take 4 % to 9 % of their raw bytes (terrain 33 %). A deflate would
+  take it to 3 %, but the browser's is asynchronous and `Sim.save` is not.
+- **Decision.** The sections' format version 2 (`src/sim/core/sections.ts`): a section of 1-, 2- or
+  4-byte elements, 64 or more, whose runs of equal bits take at most RUNS_SHARE (0.5) of its raw bytes
+  is written as runs (values, then lengths; its dtype byte | 0x80); every other section raw, as in
+  version 1. Decoded, each section is the same array bit for bit, so the state hash (over the
+  sections) does not change; a version-1 save still loads. A damaged run is refused, not read past.
+- **Measured:** the critic's year-27 save 40,010,648 → 4,857,416 bytes (12.1 %), the same hash after a
+  load and three days on; saved in 59–64 ms, loaded in 31–38 ms. A 1938 world a month on 8.8 %.
+- **Pin.** Unmoved (no rule, the same sections).
+- **Tests.** `saveRuns.test.ts` (new: every kind of section bit for bit, NaN and −0 among them; a
+  version-1 save loads; a damaged run refused; a 1938 world a month on under half of version 1's with
+  the same hash after a load of either, a day on); the whole unit suite (261 files) and the save,
+  autosave, scenario-file and worker specs (27) green.
+
 ### ADR-483 · 2026-10-17 · accepted — God Mode's tools on the bottom bar, a nuke's size, the test locale, the phone's alert (PLAN 7.16)
 
 - **Context.** Critic run 7 (God Mode 7, UI 7): "the nuke has no size"; "the tools are hidden.
