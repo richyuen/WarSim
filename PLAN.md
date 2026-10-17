@@ -123,6 +123,8 @@ quick sweep as a smoke test.
     - [x] 7.4f26 AoC's Spawn Nations with its initial size: a God map tool and a command
       (`spawnNation`: the province clicked and the nearest of its holder's, 1 to 24, at peace). AT:
       `godMode.test.ts`; `godPanelMore1938`.
+    - [x] 7.4f27 The God tab's checkboxes: a box's words wrap beside it (Winner takes all's went
+      under its box, seen in 7.4f26's picture). AT: `godPanelMore1938` (red before).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured

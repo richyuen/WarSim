@@ -505,6 +505,14 @@ body {
   gap: 0.3rem;
   margin: 0.25rem 0;
 }
+/* A box and its words on one line, the words wrapping beside the box (PLAN 7.4f27: "Winner takes
+   all (a capital taken annexes the loser)" went under its box, which stood alone on a line). */
+.god-tab label.god-row:has(> input[type='checkbox']) {
+  flex-wrap: nowrap;
+}
+.god-tab label.god-row > input[type='checkbox'] {
+  flex-shrink: 0;
+}
 .god-tab input:not([type='checkbox']),
 .god-tab select {
   flex: 1;

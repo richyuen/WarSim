@@ -17259,3 +17259,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Seen:** the God tab's "Winner takes all" checkbox stands on a line of its own above its label
   (in the picture); not looked into.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f27: the God tab's checkboxes beside their words (UI)
+
+- **Start:** gate green on a clean tree (`1caa739`); critic not due.
+- **Done:** a label row of the God tab with a checkbox does not wrap; its words wrap beside the
+  box (`style.css`). Seen in 7.4f26's picture, shot again with the fix
+  (`docs/evidence/7.4/f26-spawn-nation.png`).
+- **Tests:** `godPanelMore1938` "the world's rules" (new: every box's words begin on its line;
+  red before: "Winner takes all ..." under its box).
+- **Next:** PLAN 7.4f, the next group.

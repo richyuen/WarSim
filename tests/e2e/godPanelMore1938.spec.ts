@@ -166,4 +166,21 @@ test('God Mode: the world\'s rules set in the game (PLAN 7.4f19)', async ({ page
   await expect.poll(async () => (await rules()).ceMode).toBe('random');
   // The controls show the world's state.
   await expect(page.getByTestId('god-ce-mode')).toHaveValue('random');
+  // PLAN 7.4f27: each box's words begin on its line, beside it (Winner takes all's went under it,
+  // the box alone on a line).
+  const apart = await page.locator('.god-tab label.god-row:has(> input[type="checkbox"])').evaluateAll((labels) =>
+    labels.map((l) => {
+      const box = l.querySelector('input')!.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(l);
+      range.setStartAfter(l.querySelector('input')!);
+      const first = range.getClientRects()[0]!;
+      return { text: l.textContent!.trim(), below: first.top - box.bottom, left: first.left - box.right };
+    }),
+  );
+  expect(apart.length).toBeGreaterThanOrEqual(5);
+  for (const a of apart) {
+    expect(a.below, `"${a.text}" begins beside its box, not under it`).toBeLessThan(0);
+    expect(a.left, `"${a.text}" right of its box`).toBeGreaterThanOrEqual(0);
+  }
 });
