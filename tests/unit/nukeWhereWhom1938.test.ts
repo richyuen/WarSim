@@ -1,25 +1,28 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
-import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { aimOf, CAPITAL_RESTRIKE_DAYS, detonate, nukeTargets, RESTRIKE_DAYS } from '../../src/sim/systems/nuclear';
+import { seaKm } from '../../src/sim/systems/navalCombat';
+import { aimOf, blastRadius, CAPITAL_RESTRIKE_DAYS, detonate, nukeTargets, RESTRIKE_DAYS } from '../../src/sim/systems/nuclear';
 import { menOf } from '../../src/sim/systems/war';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
 
 // PLAN 7.6e (critic R7-B1): the Soviet Union struck one Dutch point a year apart (seed 4 of the
 // builder's run: 400 days), and seed 5's struck one capital three times and another four in 40 days:
-// a capital was weighed again once RESTRIKE_DAYS (7) were past. Now a capital a burst fell on in
-// the last CAPITAL_RESTRIKE_DAYS is not weighed (a place of massed men there still is). And no
-// strike was answered: a nuclear power under aggression 20 (the United States 15, the Netherlands
-// 10, Switzerland 5) weighed the striker's second strike and the MAD bar as for a first use. Every
-// nuclear power struck now strikes back, one for one.
+// a capital was weighed again once RESTRIKE_DAYS (7) were past (and after this part's first cut,
+// Tokyo three times in 32 days, at formations Japan raised there). Now no place within a blast
+// radius of a burst on a capital of the last CAPITAL_RESTRIKE_DAYS is weighed, the capital nor men
+// massed there. And no strike was answered: a nuclear power under aggression 20 (the United States
+// 15, the Netherlands 10, Switzerland 5) weighed the striker's second strike and the MAD bar as for
+// a first use. Every nuclear power struck now strikes back, one for one.
 
 const { w: W } = SIZE_1938;
 const [USA, GER] = ['USA', 'GER'].map(nationId) as [number, number];
+const INF = TEMPLATES_LAND.findIndex((t) => t.id === 'infantry_div');
 
 describe('where and at whom (PLAN 7.6e)', () => {
-  it('a capital struck within the year is not weighed again; after it, it is', () => {
+  it('a capital struck within the year is not weighed again, nor men massed there; after it, it is', () => {
     const sim = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const world = sim.world;
     sim.command({ kind: 'setSetting', key: 'aiEnabled', value: false });
@@ -34,14 +37,47 @@ describe('where and at whom (PLAN 7.6e)', () => {
     const berlin: [number, number] = [nc.capitalX[GER]!, nc.capitalY[GER]!];
     const places = (): [number, number][] => nukeTargets(world, USA, war, 0, aimOf(world, USA, war, 0));
     expect(places()[0]).toEqual(berlin);
-    // A burst on Berlin past RESTRIKE_DAYS: Berlin, the capital, is not weighed.
+    // A burst on Berlin past RESTRIKE_DAYS, and twelve German divisions massed at Berlin: nothing
+    // within a blast radius of it is weighed.
     world.nukeBursts.push({ x: berlin[0], y: berlin[1], tick: world.tick - (RESTRIKE_DAYS + 1) * 24 });
+    for (let k = 0; k < 12; k++) sim.command({ kind: 'spawnFormation', nation: GER, x: berlin[0] + (k % 4) * 0.2, y: berlin[1] + Math.floor(k / 4) * 0.2, strength: 0, template: INF });
+    sim.step(1);
     const after = places();
-    process.stderr.write(`places after a burst on Berlin ${RESTRIKE_DAYS + 1} days ago: ${after.length}\n`);
-    expect(after.some(([x, y]) => x === berlin[0] && y === berlin[1])).toBe(false);
+    process.stderr.write(`places after a burst on Berlin ${RESTRIKE_DAYS + 1} days ago, 12 divisions massed there: ${after.length}\n`);
+    expect(after.length).toBeGreaterThan(0);
+    for (const [x, y] of after) expect(seaKm(world, x, y, berlin[0], berlin[1])).toBeGreaterThan(blastRadius(1));
     // A year and a day on: weighed again.
     world.nukeBursts[world.nukeBursts.length - 1]!.tick = world.tick - (CAPITAL_RESTRIKE_DAYS + 1) * 24;
     expect(places()[0]).toEqual(berlin);
+  });
+
+  it("a puppet struck: its overlord holds the grievance and answers (Egypt's land, the United Kingdom)", () => {
+    const sim = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    const world = sim.world;
+    const nc = world.nations.cols;
+    const [ENG, EGY] = ['ENG', 'EGY'].map(nationId) as [number, number];
+    expect(nc.overlord[EGY]).toBe(ENG);
+    for (const n of [ENG, GER]) {
+      sim.command({ kind: 'grantWarheads', nation: n, count: 5 });
+      sim.command({ kind: 'grantTech', nation: n, tech: 'ballistic_missiles' });
+    }
+    sim.command({ kind: 'declareWar', attacker: GER, defender: ENG });
+    sim.step(48);
+    expect(world.wars.atWar(ENG, GER)).toBe(true);
+    // Germany's warhead on Cairo, Egypt's.
+    detonate(world, GER, 1, nc.capitalX[EGY]!, nc.capitalY[EGY]!);
+    expect(world.nukeGrievance.get(ENG)?.by).toBe(GER);
+    const answers: [number, number][] = [];
+    sim.step(24 * 3, (w) => {
+      const ev = w.out.events;
+      for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.NukeDecided && ev[i + 2] === ENG) answers.push([ev[i + 4]!, ev[i + 5]!]);
+      w.out.events.length = 0;
+      w.out.fires.length = 0;
+    });
+    process.stderr.write(`the United Kingdom's answers for Egypt: ${answers.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ')}\n`);
+    expect(answers.length).toBe(1);
+    const [x, y] = answers[0]!;
+    expect(world.cells.owner[Math.floor(y) * world.cells.w + Math.floor(x)]).toBe(GER);
   });
 
   it('the United States (aggression 15), struck at home by Germany, both armed, strikes back at Germany', () => {

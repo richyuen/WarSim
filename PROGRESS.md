@@ -17691,3 +17691,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   rule (London a week on not weighed; a year on weighed, the burst forgotten); 24 nuclear test files
   (73 tests) green; pin unmoved.
 - **Next:** PLAN 7.6f, the AT's sweep.
+
+## 2026-10-17 — PLAN 7.6f: the AT's sweep; PLAN 7.6 done (critic R7-B1)
+
+- **Start:** gate green on a clean tree (`0d7af5d`).
+- **Sweep** (`npm run sweep -- --seeds 10 --years 30 --scratch --tag 7.6f`, 11.4 min;
+  `docs/evidence/7.6/sweep-7.6f.md`): limits 10 of 10, riser, faller, break-up 10 of 10, stasis 9;
+  nukes used in 4 of 10 seeds (32 decisions; at `19e2341` 2 of 10, 4), fallout at most 0.26 %.
+- **Two gaps found and closed** (ADR-465's addendum): Tokyo struck three times in 32 days at formations
+  raised there (no place within a blast radius of a burst on a capital for a year); a puppet struck
+  answered by nobody (its grievance is its overlord's).
+- **The strikes on the final code** (the four seeds with strikes re-run; the rules act only after a
+  burst, so the other six are the sweep's): 33 decisions by 5 nations; no burst near a capital struck
+  in the year before; every strike on a nuclear power's realm answered the next day
+  (`docs/evidence/7.6/report-7.6f.md`).
+- **Tests:** `nukeWhereWhom1938` (two cases more; each red without its rule); 24 nuclear test files
+  (74 tests) green; pin unmoved.
+- **On the way:** twenty 30-year runs at once (the sweep and ten `nukeGates`) left 0.7 GB of 32 free,
+  and the session's background waiter was stopped for memory; the ten `nukeGates` runs were stopped
+  by hand and strikes recorded five, then four, at a time.
+- **7.6 ticked:** its AT met (the report's list). **Next:** PLAN 7.7 (critic R7-B2).

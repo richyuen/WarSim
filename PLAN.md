@@ -29,48 +29,6 @@ quick sweep as a smoke test.
 
 ## Phase 7 — Balance, polish, soak
 
-- [ ] 7.6 Critic R7-B1 (report of 2026-10-17 on `19e2341`): AI nuclear use too rare to be seen,
-  and still not credible. Strikes in 2 of 14 unaided 30-year worlds (4 in 420 world-years) while
-  4 to 6 nations hold 132 to 156 warheads and missiles; on seeds 1 to 10 PLAN 7.3g's sweep had
-  strikes in 4 seeds (21 decisions), HEAD in 2 (4). All 4 by the Soviet Union, none answered:
-  twice on one Dutch spot a year apart, twice on South Africa. A God-set France (overrun, to the
-  death, 6 warheads, missiles) strikes once and holds 5 for 49 days (`critic/c7_headless_q*.json`,
-  `critic/c7_headless_3371.json`, `critic/c7_f_2604_m.json`, `docs/evidence/7.3/quick-7.3g.md`).
-  First find why the rate halved since 7.3g (the stockpile cap, 6.12's threat test, desperation in
-  wars as they are now), then split. AT: on seeds 1 to 10 × 30 years, unaided, strikes in at least
-  4 seeds, by more than one nation; no warhead on a place struck within a blast radius in the
-  year before unless the enemy massed there again; a nuclear power struck by a nation it is at war
-  with answers it; a nuclear power losing a war for its life that struck once strikes again while
-  it keeps losing (the France case); unit tests of each rule; the report in `docs/evidence/7.6/`.
-  Found (`docs/evidence/7.6/gates-before.md`, `tools/diag/nukeGates.ts`): the MAD cap decides
-  nothing; a losing power's best strike is about 1 short (gain 0.25 against taboo 0.6, strike back
-  0.3 to 1.1, outrage 0.1); the halving since 7.3g is different worlds (7.4f31/f32 moved the start),
-  not a rule. A part each, in this order; the AT's sweep in 7.6f:
-    - [x] 7.6a Desperation counts the men a nation lost in the war: France's army 555k → 163k in
-      40 days at desperation 0.50 to 0.61. A share of its land army lost since the war began (from
-      what the war already tallies, if it does; else a column, its ADR and the pin). Then the
-      France case again before 7.6d's costs: does a France that struck once strike again? AT:
-      unit test (a nation that lost half its men is more desperate, by the share); `nukeGates`
-      France case logged.
-    - [x] 7.6b A nuclear power keeps a means of delivery: the economic AI never orders a strategic
-      bomber (ADR-344); seed 1's Soviet Union has none from 1948, and in 1950, in extreme
-      desperation with 7 warheads, its best strike (+0.22) is out of reach for 296 days. A nation
-      with warheads and no delivery (no missiles, no strategic wing) orders one strategic wing
-      (not on `goesForBomb`: that holds for five powers from 1938 and would move the pin). AT: unit
-      test (a nation with warheads, no wing and no missiles orders one; with missiles, none).
-    - [x] 7.6c In extreme desperation, a place to strike: seed 4's Soviet Union at desperation 1.7
-      to 2 against China has it in its aim and no fair place (317 extreme days). Confirm the cause
-      (FRONT_KM's anchors, or occupied land of its own never fair), then fix it. AT: unit test of
-      the case; the seed's extreme days with no place fall to 0.
-    - [x] 7.6d The costs of a nation fighting for its life: taboo, outrage and the strike back
-      weighed against what it is losing (seed 4: the Soviet Union in extreme desperation at
-      −0.27 to −0.02 for a year, the strike back 0.8). Only what 7.6a to c leave. AT: unit tests;
-      the France case strikes again while it keeps losing.
-    - [x] 7.6e Where and at whom: a capital struck within the last year is not weighed again
-      unless enemy men mass there (seed 4: one point 400 days apart); a nuclear power struck by an
-      enemy answers it (RETALIATION_AGGRESSION's reason read first, PLAN 6.12). AT: unit tests.
-    - [ ] 7.6f The AT's sweep: seeds 1 to 10 × 30 years unaided with `nukeGates` and the quick
-      sweep's nuclear table; the report beside `gates-before.md`.
 - [ ] 7.7 Critic R7-B2 (report of 2026-10-17 on `19e2341`): late-game stalls in the invasion AI.
   Seed 3371, pinned and alone: `invasionAi` 86 % of the tick in years 28 and 29, about 50 calls a
   year of 300 to 772 ms (Poland against Denmark in 1967, no land front); in the browser at Max
@@ -305,3 +263,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.2 30-minute soak with save/load twin comparison. […]
 - [x] 7.3 Final multi-decade sweep (≥ 10 seeds) — borders moving, no hegemon. […]
 - [x] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts). […]
+- [x] 7.6 Critic R7-B1 (report of 2026-10-17 on `19e2341`): AI nuclear use too rare to be seen, […]

@@ -785,9 +785,9 @@ export const FRONT_KM = 1000;
 /** How long a burst keeps another warhead off its place (PLAN 6.11b), days. */
 export const RESTRIKE_DAYS = 7;
 /**
- * How long a burst keeps another warhead off an enemy capital it fell on (PLAN 7.6e), days, and how
- * long a burst is remembered (`world.nukeBursts`). A place of massed enemy men is weighed again
- * after RESTRIKE_DAYS: men massed there again. Seed 5's Soviet Union struck one capital three times
+ * How long a burst keeps another warhead off an enemy capital it fell on, and off every place within a
+ * blast radius of it (PLAN 7.6e), days, and how long a burst is remembered (`world.nukeBursts`).
+ * Elsewhere a place of massed enemy men is weighed again after RESTRIKE_DAYS: men massed there again. Seed 5's Soviet Union struck one capital three times
  * and another four times in 40 days, and seed 4's one point 400 days apart (critic R7-B1: one Dutch
  * point a year apart).
  */
@@ -803,8 +803,9 @@ export const CAPITAL_RESTRIKE_DAYS = 365;
  * or a capital-in-exile far from every front is not weighed (critic R6-B2: Paramaribo, Aden).
  * None within a blast radius of a burst of the last RESTRIKE_DAYS or of a warhead in flight
  * (PLAN 6.11b: the critic saw three in a row on one spot, its formations gone after the first), and
- * no capital within a blast radius of a burst of the last CAPITAL_RESTRIKE_DAYS (PLAN 7.6e); a
- * place of massed men there is weighed, men massed again.
+ * no capital within a blast radius of a burst of the last CAPITAL_RESTRIKE_DAYS, nor any place
+ * within one of a burst on a capital (PLAN 7.6e); elsewhere a place of massed men is weighed after
+ * RESTRIKE_DAYS, men massed again.
  * Only on land of the enemies `aim` names (by default `aimOf`: those that can threaten `n`, PLAN
  * 6.12a; the nation that struck it, from any distance, PLAN 6.12b); the massed men weighed are the
  * whole enemy side's.
@@ -827,26 +828,35 @@ export function nukeTargets(world: World, n: number, war: War, side: number, aim
   });
   const { w, h, owner, controller } = world.cells;
   const radius = blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1);
-  // Bursts of the last RESTRIKE_DAYS and warheads in flight keep any place off; a burst of the last
-  // CAPITAL_RESTRIKE_DAYS keeps an enemy capital off (PLAN 7.6e).
+  // Bursts of the last RESTRIKE_DAYS and warheads in flight keep any place off. A burst of the last
+  // CAPITAL_RESTRIKE_DAYS keeps off an enemy capital within a blast radius of it, and every place
+  // within a blast radius of a burst on such a capital (PLAN 7.6e: seed 5's Soviet Union struck Tokyo
+  // three times in 32 days, at the formations Japan raised there, each a place of massed men).
+  const capitals: number[] = [];
+  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1) capitals.push(nc.capitalX[m]!, nc.capitalY[m]!);
+  const within = (x: number, y: number, pts: readonly number[]): boolean => {
+    for (let k = 0; k < pts.length; k += 2) if (seaKm(world, x, y, pts[k]!, pts[k + 1]!) <= radius) return true;
+    return false;
+  };
   const struck: number[] = [];
   const struckYear: number[] = [];
+  const struckCapital: number[] = [];
   for (const b of world.nukeBursts) {
-    if (b.tick > world.tick - CAPITAL_RESTRIKE_DAYS * 24) struckYear.push(b.x, b.y);
+    if (b.tick > world.tick - CAPITAL_RESTRIKE_DAYS * 24) {
+      struckYear.push(b.x, b.y);
+      if (within(b.x, b.y, capitals)) struckCapital.push(b.x, b.y);
+    }
     if (b.tick > world.tick - RESTRIKE_DAYS * 24) struck.push(b.x, b.y);
   }
   for (const l of world.nukeLaunches) struck.push(l.tx, l.ty);
-  const struckThisYear = (x: number, y: number): boolean => {
-    for (let k = 0; k < struckYear.length; k += 2) if (seaKm(world, x, y, struckYear[k]!, struckYear[k + 1]!) <= radius) return true;
-    return false;
-  };
+  const struckThisYear = (x: number, y: number): boolean => within(x, y, struckYear);
   const fair = (x: number, y: number): boolean => {
     const xx = cellX(world, Math.floor(x));
     const yy = Math.floor(y);
     if (xx === null || yy < 0 || yy >= h) return false;
     const cell = yy * w + xx;
     if (!at.has(owner[cell]!) || !enemy.has(controller[cell]!)) return false;
-    for (let k = 0; k < struck.length; k += 2) if (seaKm(world, x, y, struck[k]!, struck[k + 1]!) <= radius) return false;
+    if (within(x, y, struck) || within(x, y, struckCapital)) return false;
     if (anywhere) return true;
     for (let k = 0; k < anchors.length; k += 2) if (seaKm(world, x, y, anchors[k]!, anchors[k + 1]!) <= FRONT_KM) return true;
     return false;
@@ -1050,14 +1060,17 @@ function tabooDay(world: World): void {
 
 /**
  * A warhead of `nation`'s (0: God Mode's, PLAN 6.6a) of `yieldN` bursts at (x, y): told,
- * remembered for RESTRIKE_DAYS (PLAN 6.11b), the taboo broken (PLAN 6.4a), the land's owner's
- * grievance (PLAN 6.4b, not against God), the blast, the fallout and the consequences.
+ * remembered for CAPITAL_RESTRIKE_DAYS (PLAN 6.11b, 7.6e), the taboo broken (PLAN 6.4a), the
+ * grievance of the land's owner's realm (PLAN 6.4b, not against God: a puppet's is its overlord's,
+ * PLAN 7.6e, which decides for it; seed 3's United Kingdom, a Soviet puppet with 21 warheads, was
+ * struck by Germany and nobody answered), the blast, the fallout and the consequences.
  */
 export function detonate(world: World, nation: number, yieldN: number, x: number, y: number, answer = false): void {
   world.out.emit(world.tick, EventKind.NukeDetonated, nation, yieldN, x, y);
   world.nukeTaboo = Math.min(world.nukeTaboo, TABOO_AFTER);
   world.nukeBursts.push({ x, y, tick: world.tick });
-  const struck = ownerAt(world, x, y);
+  const owner = ownerAt(world, x, y);
+  const struck = owner !== 0 && world.nations.cols.overlord[owner]! !== 0 ? world.nations.cols.overlord[owner]! : owner;
   // A strike back settles the score (PLAN 6.12e): its burst gives no grievance.
   if (nation !== 0 && struck !== 0 && struck !== nation && !answer) world.nukeGrievance.set(struck, { by: nation, until: world.tick + RETALIATION_DAYS * 24 });
   const toll = blast(world, yieldN, x, y);

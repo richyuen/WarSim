@@ -183,6 +183,17 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     at it as retaliation (RETALIATION_BONUS, no MAD bar, no second strike weighed), one for one
     (PLAN 6.12e). SPEC §6.4's doctrines run from none through retaliation to first use; the 20 of
     PLAN 6.4b had no reason written beside it, and the one for one stops the chain.
+- **Addendum (7.6f, 2026-10-17).** The AT's sweep found two gaps, both closed:
+  - Seed 5's Soviet Union struck Tokyo three times in 32 days, at formations Japan raised at its
+    capital, each a place of massed men. No place within a blast radius of a burst on an enemy
+    capital (one within a blast radius of a capital) of the last CAPITAL_RESTRIKE_DAYS is weighed.
+  - Seed 3's United Kingdom, a Soviet puppet with 21 warheads, was struck by Germany and nobody
+    answered: a puppet weighs no strike. A burst's grievance is now its land's owner's realm's: a
+    puppet's goes to its overlord, which decides for the realm (the Soviet Union answered on Berlin
+    the next day).
+  - Tests: `nukeWhereWhom1938` (twelve German divisions massed at Berlin a week after a burst there:
+    nothing within its blast radius weighed; Germany's warhead on Cairo, Egypt's: the United Kingdom
+    answers on German land; each red without its rule). Report: `docs/evidence/7.6/report-7.6f.md`.
 - **Tests.** `nukeWhereWhom1938.test.ts` (new: Berlin off 8 days after a burst and weighed a year and
   a day after; the United States struck at Washington by an armed Germany answers once, on German
   land; red before); `nukeTargets1938` (6.11b's test: London a week on is no longer weighed again; it
