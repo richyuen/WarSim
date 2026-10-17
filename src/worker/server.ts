@@ -153,6 +153,8 @@ export class SimServer {
   private unrestVersion = -1;
   /** The fallout last sent (PLAN 6.3c): its day and how many cells, -1 for none sent. */
   private falloutSent = { day: -1, cells: -1 };
+  /** The ruins last sent (PLAN 7.11b): their day and how many bursts, -1 for none sent. */
+  private ruinsSent = { day: -1, count: -1 };
   /** The sea control last sent (PLAN 4.7a): the zones' object and the holders, as a key. */
   private seaZonesSent: unknown = null;
   private seaHoldersSent = '';
@@ -302,6 +304,7 @@ export class SimServer {
         this.labelVersion = -1; // the controller layer was replaced wholesale
         this.unrestVersion = -1;
         this.falloutSent = { day: -1, cells: -1 };
+        this.ruinsSent = { day: -1, count: -1 };
         this.seaZonesSent = null;
         this.seaHoldersSent = '';
         // The loaded game's holders, at once (PLAN 5.8n); `airShown` outlives it, as `seaShown`.
@@ -393,6 +396,7 @@ export class SimServer {
     this.lastLabelMs = -1;
     this.unrestVersion = -1;
     this.falloutSent = { day: -1, cells: -1 };
+    this.ruinsSent = { day: -1, count: -1 };
     this.seaZonesSent = null;
     this.seaHoldersSent = '';
     this.airZonesSent = null;
@@ -667,6 +671,12 @@ export class SimServer {
       const levels = Uint8Array.from(sorted.map(([, f]) => Math.max(1, Math.round(f * 255))));
       this.falloutSent = { day: foDay, cells: world.fallout.size };
       this.post({ type: 'fallout', cells, levels }, [cells.buffer, levels.buffer]);
+    }
+    // The bursts the sim remembers, a struck city's ruin (PLAN 7.11b): when a day passed or their count changed.
+    if ((world.nukeBursts.length > 0 || this.ruinsSent.count > 0) && (foDay !== this.ruinsSent.day || world.nukeBursts.length !== this.ruinsSent.count)) {
+      const bursts = Float32Array.from(world.nukeBursts.flatMap((b) => [b.x, b.y, (world.tick - b.tick) / 24]));
+      this.ruinsSent = { day: foDay, count: world.nukeBursts.length };
+      this.post({ type: 'ruins', bursts }, [bursts.buffer]);
     }
     // Province unrest for the revolts map mode (cheap: a byte per province), when it changed.
     if (world.provinces.version !== this.unrestVersion && world.provinces.count > 0) {

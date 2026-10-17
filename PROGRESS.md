@@ -17867,3 +17867,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   `docs/evidence/7.11/a-contact-line-15m.png`.
 - **Tests:** `contactLines.test.ts`, `contactLine1938` (new); 8 fight specs green one at a time.
 - **Next:** PLAN 7.11b.
+
+## 2026-10-17 — PLAN 7.11b: a struck city shows it; PLAN 7.11 done (worker, render)
+
+- **Start:** gate green on a clean tree (`5e36a88`).
+- **Done:** the worker's `ruins` message (the bursts the sim remembers, with their age); the page's
+  `render/fx/ruins`: a scorched disc with rubble where the blast is large on the screen, a mark with
+  an ember ring where it is small, fading to 0.35 at a year. ADR-475.
+- **Measured** (`nukeRuins1938`, Berlin, seed 8217): the overlay at Berlin's middle at 150 m/px clear
+  before, 210 of 255 opaque ten days after a God Mode warhead; a mark at 3,000 m/px. Pictures in
+  `docs/evidence/7.11/`.
+- **Tests:** `ruins.test.ts`, `nukeRuins1938` (new); 16 nuclear and God Mode specs green one at a time.
+- **7.11 ticked:** 7.11a and 7.11b done. **Next:** PLAN 7.12.

@@ -20,6 +20,7 @@ import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX
 import { FireFx } from '../render/fx/fire';
 import { HullFx } from '../render/fx/hulls';
 import { WreckFx } from '../render/fx/wrecks';
+import { drawRuins, type Ruin } from '../render/fx/ruins';
 import { FADE_MS, progress, running, smooth, SwitchBank, TimedSwitch, ZOOM_HYSTERESIS } from '../render/timing';
 import { BLOCK_STRIDE, FormationFlag, marching, type SnapshotElements, type Subscription, type TemplateInfo } from '../shared/protocol';
 import { viewSubscription } from './subscription';
@@ -430,6 +431,12 @@ export class MapView {
       const count = new Map<number, number>();
       for (let z = 1; z < this.seaHolder.length; z++) if (this.seaHolder[z]! !== 0) count.set(this.seaHolder[z]!, (count.get(this.seaHolder[z]!) ?? 0) + 1);
       this.onSeaHolders([...count].sort((a, b) => b[1] - a[1] || a[0] - b[0]).map(([id, zones]) => ({ id, zones })));
+      this.dirty = true;
+    });
+    // A struck city's ruin (PLAN 7.11b).
+    sim.onRuins((bursts) => {
+      this.ruins = [];
+      for (let i = 0; i + 3 <= bursts.length; i += 3) this.ruins.push({ x: bursts[i]!, y: bursts[i + 1]!, age: bursts[i + 2]! });
       this.dirty = true;
     });
     // Fallout for its map mode (PLAN 6.3c).
@@ -1441,6 +1448,9 @@ export class MapView {
     this.dirty = true;
   }
 
+  /** The bursts the sim remembers (PLAN 7.11b), and how many the last frame drew as scorch and as marks (tests). */
+  ruins: Ruin[] = [];
+  ruinsShown = { scorched: 0, marked: 0 };
   /** The lines of contact drawn last frame (PLAN 7.11a; tests). */
   contactLinesShown: ContactLine[] = [];
 
@@ -1478,6 +1488,8 @@ export class MapView {
     const ctx = this.overlay.getContext('2d')!;
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
+    // A struck city's ruin (PLAN 7.11b), under the wrecks: at every tier.
+    this.ruinsShown = drawRuins(ctx, this.ruins, cam, this.geo, vw, vh);
     this.wrecks.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, Math.min(this.elementPx, WRECK_MAX_PX * this.unitScale));
     // The line of contact between two formations in contact facing each other (PLAN 7.11a).
     this.contactLinesShown = this.drawContact(ctx, cam, vw, vh);

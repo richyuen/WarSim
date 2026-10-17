@@ -32,18 +32,6 @@ quick sweep as a smoke test.
 Run 7's dimensions under the DONE condition's bar (report of 2026-10-17 on `19e2341`, its "Fix"
 lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split when taken up:
 
-- [ ] 7.11 A fight at T3 reads as two sides with a line between them, and a struck city shows it
-  (semantic zoom 6, needs 8): at 10 to 25 m/px the sides are clumps that run into each other
-  (`critic/shots/c7d_7781_arm_15m_live_1.png`); Berlin, a million dead, unchanged at 150 m/px ten days
-  on (`critic/shots/c7k_8217_03_berlin_150_day10.png`; map visuals: "mark struck cities"). AT: the two
-  sides apart at the line of contact at T3; a struck city's ruin at T2 and T3 and a mark on the map;
-  pictures.
-  A part each:
-    - [x] 7.11a The line between two sides: where two formations in contact face each other, a line
-      of contact between their blocks at T2 and T3, each side's half in its colour. AT: the line in
-      the picture of the critic's fight at 15 m/px; a unit test of the pairs and the line.
-    - [ ] 7.11b A struck city shows it: a nuclear burst's ruin at T2 and T3 and a mark on the map
-      while its fallout or its damage lasts. AT: Berlin before and after a burst at 150 m/px; a spec.
 - [ ] 7.12 The nuclear age in the statistics (stats 7): warheads, the nuclear dead and fallout in the
   panel and the charts. AT: the series in a save and a load; the charts' spec.
 - [ ] 7.13 The editor places warheads, fleets and wings, and asks before a chosen file starts
@@ -295,3 +283,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.8 The air zone's holder is someone fighting there (aircraft 5, needs 8): on day 10 of […]
 - [x] 7.9 Tanks read as armour at T3 (tanks 5, needs 8): at 10 m/px a tank is about 8 px, all one […]
 - [x] 7.10 Ships look like ships, and a sea battle is seen (naval 5, needs 8): at 15 m/px ships are […]
+- [x] 7.11 A fight at T3 reads as two sides with a line between them, and a struck city shows it […]

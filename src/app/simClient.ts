@@ -78,6 +78,11 @@ export class SimClient {
       for (const l of this.airControlListeners) l(msg.holder, msg.zones);
       return;
     }
+    if (msg.type === 'ruins') {
+      this.ruins = msg.bursts;
+      for (const l of this.ruinsListeners) l(msg.bursts);
+      return;
+    }
     if (msg.type === 'fallout') {
       this.fallout = { cells: msg.cells, levels: msg.levels };
       for (const l of this.falloutListeners) l(msg.cells, msg.levels);
@@ -195,6 +200,15 @@ export class SimClient {
     this.falloutListeners.add(l);
     if (this.fallout) l(this.fallout.cells, this.fallout.levels);
     return () => this.falloutListeners.delete(l);
+  }
+  /** The last ruins from the worker (PLAN 7.11b): a late listener gets them at once. */
+  private ruins: Float32Array | null = null;
+  private readonly ruinsListeners = new Set<(bursts: Float32Array) => void>();
+  /** A struck city's ruin (PLAN 7.11b): the bursts the sim remembers, [x, y, days since] each. */
+  onRuins(l: (bursts: Float32Array) => void): () => void {
+    this.ruinsListeners.add(l);
+    if (this.ruins) l(this.ruins);
+    return () => this.ruinsListeners.delete(l);
   }
   private readonly unrestListeners = new Set<(u: Uint8Array) => void>();
   onUnrest(l: (u: Uint8Array) => void): () => void {

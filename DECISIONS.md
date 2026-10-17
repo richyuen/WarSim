@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-475 · 2026-10-17 · accepted — A struck city shows it (PLAN 7.11b)
+
+- **Context.** Critic run 7 (semantic zoom 6, map visuals 7): "a city that lost 1,025,202 people
+  looks the same at 150 m/px ten days later: no scorch or ruin" (`critic/shots/c7k_8217_00_berlin_150_before.png`,
+  `c7k_8217_03_berlin_150_day10.png`); "a struck city must show it"; "mark struck cities".
+- **Decision.** The worker sends the bursts the sim remembers (`world.nukeBursts`, a year since PLAN
+  7.6e) as a `ruins` message, [x, y, days since] each, when a day passed or their count changed (and
+  again after a load, as the fallout). The page draws them on the effects overlay at every tier
+  (`render/fx/ruins`): where the blast's radius (BLAST_KM) is MARK_UNDER_PX (14) or more on the
+  screen, a scorched disc of it, darkest at its middle, with rubble over its inner 0.7 from 60 px;
+  under that, a mark of MARK_PX (7): a dark disc with an ember ring. Each fades with the burst's age
+  to RUIN_AGED (0.35) at a year. Not state; the pin unmoved.
+- **Effect.** Berlin (seed 8217), the overlay at its middle at 150 m/px: clear before, 210 of 255
+  opaque ten days after a God Mode warhead; at 3,000 m/px a mark (`docs/evidence/7.11/b-*.png`). At
+  T0 and T1 the mark sits partly under a capital's flag.
+- **Tests.** `ruins.test.ts`, `nukeRuins1938` (new); `fallout1938`, `godMode1938` ×11,
+  `loadedEffects1938`, `nukeAlert1938`, `nukeDemo1938`, `nukeFx1938` green.
+
 ### ADR-474 · 2026-10-17 · accepted — A line of contact between two blocks facing each other (PLAN 7.11a)
 
 - **Context.** Critic run 7 (semantic zoom 6): "at 10 to 25 m/px the two sides are clumps of tiny

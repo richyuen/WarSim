@@ -10690,3 +10690,30 @@ Of 7.4 (open in PLAN.md):
       ship's details against its hull at 15 m/px; pictures by class beside run 7's.
     - [x] 7.10b A sea battle seen from its row: the history row of a sea battle lands the view on
       both fleets firing. AT: a spec from the row: both fleets and their fire in the view.
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.11 A fight at T3 reads as two sides with a line between them, and a struck city shows it
+  (semantic zoom 6, needs 8): at 10 to 25 m/px the sides are clumps that run into each other
+  (`critic/shots/c7d_7781_arm_15m_live_1.png`); Berlin, a million dead, unchanged at 150 m/px ten days
+  on (`critic/shots/c7k_8217_03_berlin_150_day10.png`; map visuals: "mark struck cities"). AT: the two
+  sides apart at the line of contact at T3; a struck city's ruin at T2 and T3 and a mark on the map;
+  pictures.
+  A part each:
+    - [x] 7.11a The line between two sides: where two formations in contact face each other, a line
+      of contact between their blocks at T2 and T3, each side's half in its colour. AT: the line in
+      the picture of the critic's fight at 15 m/px; a unit test of the pairs and the line.
+    - [x] 7.11b A struck city shows it: a nuclear burst's ruin at T2 and T3 and a mark on the map
+      while its fallout or its damage lasts. AT: Berlin before and after a burst at 150 m/px; a spec.
