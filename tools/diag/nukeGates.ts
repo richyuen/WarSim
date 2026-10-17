@@ -7,6 +7,10 @@
  * (desperation at least 0.5) and extreme. The day is weighed after its decisions (at 00:00): the
  * decisions themselves are counted from `NukeDecided`.
  *
+ * PLAN 7.18i: `held`, the war-days whose best place is at most 0 (no MAD cap) while a place's
+ * utility if its warhead got there (its value ÷ the chance through, the costs whole) is above 0:
+ * the chance through is what keeps it under 0, the costs weighed whole and the gain × the chance.
+ *
  * Usage: npx tsx tools/diag/nukeGates.ts <seed> [years = 30] [out = .cache/nukeGates_<seed>.json]
  */
 import { writeFileSync } from 'node:fs';
@@ -29,6 +33,7 @@ const byNation = new Map<number, Record<Cat, number> & { losingDays: number; war
 const bursts: { day: number; n: number | string; struck: number | string; dead: number; x: number; y: number }[] = [];
 const decisions: { day: number; n: number | string; x: number; y: number; u: number }[] = [];
 const examples: unknown[] = [];
+const held = { days: 0, low: 0, held: 0, losing: 0, extreme: 0, throughMin: 1, byNation: {} as Record<string, number>, examples: [] as unknown[] };
 type WinBand = Record<Cat, number> & { days: number; scoreUp: number; retal0: number; value: number; capitalBest: number; gain: number; costs: number; nLow: number; anywherePlaces: number; enemyIncome: number };
 const winning = new Map<string, WinBand>();
 const examplesWin: unknown[] = [];
@@ -63,13 +68,30 @@ for (let y = 0; y < years; y++) {
         else if (r.places.length === 0) cat = 'noPlace';
         else {
           let anyReach = false;
+          let burst: { u: number; through: number; value: number } | null = null;
           for (const p of r.places) {
-            const u = nuclearUtility({ targetValue: p.value, ...r.shared });
+            const u = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared });
             if (u > 0 && reaches(w, n, p.x, p.y)) anyReach = true;
-            const raw = nuclearUtility({ targetValue: p.value, ...r.shared, mad: false });
+            const raw = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared, mad: false });
             if (!best || raw > best.raw) best = { u, raw, value: p.value };
+            // PLAN 7.18i: the place's utility if its warhead got there.
+            const through = p.through;
+            const ub = through > 0 ? nuclearUtility({ targetValue: Math.min(1, p.value / through), through: 1, ...r.shared, mad: false }) : -Infinity;
+            if (!burst || ub > burst.u) burst = { u: ub, through, value: p.value };
           }
           cat = best!.u > 0 ? (anyReach ? 'strike' : 'noReach') : best!.raw > 0 ? 'mad' : 'low';
+          held.days++;
+          if (cat === 'low') {
+            held.low++;
+            if (burst && burst.u > 0) {
+              held.held++;
+              if (desperation >= 0.5) held.losing++;
+              if (extreme) held.extreme++;
+              held.throughMin = Math.min(held.throughMin, burst.through);
+              held.byNation[tag(n)] = (held.byNation[tag(n)] ?? 0) + 1;
+              if (held.examples.length < 40 && (held.held % 25 === 1)) held.examples.push({ day, n: tag(n), enemies: war.sides[1 - side]!.map(tag), desperation: +desperation.toFixed(2), extreme, best: +best!.raw.toFixed(3), burstU: +burst.u.toFixed(3), through: +burst.through.toFixed(2), value: +burst.value.toFixed(3) });
+            }
+          }
           if (cat === 'low' && desperation >= 0.5) {
             const i = r.shared;
             lowParts.n++;
@@ -126,6 +148,6 @@ for (let y = 0; y < years; y++) {
   }
   process.stderr.write(`seed ${seed} year ${y + 1}: decisions ${decisions.length}\n`);
 }
-const out = { seed, years, bursts, counts, lowParts, winning: Object.fromEntries(winning), firstWarhead: Object.fromEntries(firstWarhead), examplesWin, byNation: Object.fromEntries([...byNation].map(([n, b]) => [tag(n), b])), decisions, examples };
+const out = { seed, years, bursts, counts, held, lowParts, winning: Object.fromEntries(winning), firstWarhead: Object.fromEntries(firstWarhead), examplesWin, byNation: Object.fromEntries([...byNation].map(([n, b]) => [tag(n), b])), decisions, examples };
 writeFileSync(process.argv[4] ?? `.cache/nukeGates_${seed}.json`, JSON.stringify(out, null, 1));
-console.log(`done: seed ${seed}`, JSON.stringify(counts), 'decisions', decisions.length);
+console.log(`done: seed ${seed}`, JSON.stringify(counts), 'decisions', decisions.length, 'held', JSON.stringify({ days: held.days, low: held.low, held: held.held, losing: held.losing, extreme: held.extreme }));

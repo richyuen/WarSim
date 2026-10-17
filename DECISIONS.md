@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-491 · 2026-10-17 · accepted — A strike's costs weighed by the chance it lands (PLAN 7.18i)
+
+- **Context.** A place's value was × the chance the warhead gets there (`through`: 1 by missile,
+  1 − the bomber's interception chance, 0.2 under full enemy air superiority), but the costs
+  (retaliation risk, alliance cost, outrage, taboo) were weighed whole. Every one of them falls only
+  on a burst: the taboo, the grievance and so the enemy's answer in `detonate`, outrage and alliance
+  unity in `aftermath`; a launch stopped short (`arrivals`) spends its warhead and nothing more. So
+  the critic's Poland (10 warheads, a strategic group at Warsaw, Germany's war) struck on 4 of 6
+  seeds and on 7127 and 3929 never: its best utility −0.12 at extreme desperation, every place under
+  German air cover. Measured first (`tools/diag/nukeGates.ts`'s `held`, seeds 1–10 × 30 years): 835
+  war-days, on 6 of 10 seeds, whose best place was at most 0 while its utility if the warhead got
+  there was above 0, 441 of them on a losing side.
+- **Decision.** `nuclearUtility`: U = targetValue × desperation × doctrine + through × (the strike
+  back's bonus − the costs), that is through × the utility of a burst. `NukeInputs.through` is
+  required; `weighWar`'s places carry it. The MAD cap is as before. The chance through now decides
+  which place is struck first and how often a warhead is spent short of it, not whether a strike
+  worth its burst is made: a holder under enemy air launches again the next day after an
+  interception (seeds 7127 and 3929: two stopped short, the third bursts).
+- **With it.** `aimOf` returns at once when no enemy can threaten the striker (PLAN 7.18h's note:
+  its desperation and resolve were read for every holder's war each day for nothing).
+- **Pin.** Unmoved: no warhead in seed 99's first year.
+- **Tests.** `nukePoland1938.test.ts` over seeds 5591, 7127 and 3929: a burst on the enemy side's
+  land on each, before the bomber is lost (days 40, 88, 65). `nukeOverrun1938.test.ts`: the critic's
+  France now strikes Berlin on day 63 and Germany sues for peace on day 66, before Paris falls; the
+  check of its desperation after the fall (PLAN 7.18a) runs on the same war without warheads.
+
 ### ADR-490 · 2026-10-17 · accepted — A strike of the resolve falls on a nation of weight (PLAN 7.18h)
 
 - **Context.** The resolve's places are anywhere on the land of the enemies that can threaten the

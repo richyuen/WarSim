@@ -44,8 +44,24 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
     expect(decided.length, 'France struck').toBeGreaterThan(0);
     expect(decided[0]!.day).toBeLessThan(75);
     expect(near).toBe(0);
+  }, 600_000);
+
+  // PLAN 7.18a's fall, apart since 7.18i (ADR-491): with its costs × the chance through, France's
+  // warhead bursts on Berlin on day 63 and Germany sues for peace before Paris falls. Without
+  // warheads the same war takes Paris (about day 79) and goes on.
+  it("the critic's France without warheads: after the fall of Paris it stays in extreme desperation", () => {
+    const s = new Sim({ scenario: '1938', seed: 7127, assets: assets1938(W) });
+    const w = s.world;
+    s.command({ kind: 'declareWar', attacker: GER, defender: FRA });
+    for (let d = 0; d < 100; d++) {
+      s.step(24, (ww) => {
+        ww.out.events.length = 0;
+        ww.out.fires.length = 0;
+      });
+    }
     // Paris fell: France is in the war's capitals lost and, desperate, still extreme with no German near its new capital.
     const war = w.wars.list.find((x) => x.sides[1].includes(FRA))!;
+    expect(war, 'the war goes on').toBeDefined();
     expect(war.capitalsLost).toContain(FRA);
     const { desperation, extreme } = desperationOf(w, FRA, war, 1);
     expect(desperation).toBeGreaterThanOrEqual(1);

@@ -58,9 +58,14 @@
  *   a march across it takes 1 ÷ (1 − FALLOUT_SLOW × f) as long (`movementSystem`).
  *
  * The use decision's utility (PLAN 6.4a, SPEC §6.4; `nuclearUtility`, its inputs `nukeInputs`):
- *   U = targetValue × desperation × doctrine − RETALIATION_WEIGHT × retaliationRisk
- *       − allianceCost − outrage − TABOO_WEIGHT × taboo  (+ RETALIATION_BONUS, and no retaliationRisk,
- *       when striking back)
+ *   U = targetValue × desperation × doctrine + through × (− RETALIATION_WEIGHT × retaliationRisk
+ *       − allianceCost − outrage − TABOO_WEIGHT × taboo)  (+ through × RETALIATION_BONUS, and no
+ *       retaliationRisk, when striking back)
+ * that is, through × the strike's utility if the warhead gets there: the costs fall only on a burst
+ * (the taboo, the grievance and the enemy's answer in `detonate`, outrage and unity in `aftermath`),
+ * and a launch stopped short spends its warhead and nothing more (PLAN 7.18i, ADR-491: weighed whole
+ * against a gain × the chance through, the costs kept the critic's Poland, 10 warheads, from every
+ * place under German air cover, through 0.2);
  * and, when both sides have an assured second strike (MAD), first use is at most 0 unless the
  * striker's desperation is extreme. A strike back at who struck it is not first use. The taboo
  * weighs EXTREME_TABOO of itself for a nation in extreme desperation (PLAN 6.7: France fighting to
@@ -483,7 +488,10 @@ export const TABOO_RECOVERY = 0.0005;
 
 /** What a strike's utility is made of (PLAN 6.4a). */
 export interface NukeInputs {
+  /** The place's value, × the chance the warhead gets there (`through`). */
   targetValue: number;
+  /** The chance the warhead gets there (PLAN 7.18i): the costs and the strike back's bonus are × it. */
+  through: number;
   desperation: number;
   doctrine: number;
   retaliation: number;
@@ -501,7 +509,9 @@ export interface NukeInputs {
 /** A strike's utility (PLAN 6.4a): see the head of the file. */
 export function nuclearUtility(i: NukeInputs): number {
   // A strike back does not weigh the enemy's second strike (PLAN 6.12d): deterrence failed when it was struck.
-  const u = i.targetValue * i.desperation * i.doctrine + (i.retaliating ? RETALIATION_BONUS : 0) - (i.retaliating ? 0 : RETALIATION_WEIGHT * i.retaliation) - i.allianceCost - i.outrage - TABOO_WEIGHT * i.taboo * (i.extreme ? EXTREME_TABOO : 1);
+  // The costs and the bonus fall only on a burst (PLAN 7.18i): × the chance the warhead gets there.
+  const onBurst = (i.retaliating ? RETALIATION_BONUS : 0) - (i.retaliating ? 0 : RETALIATION_WEIGHT * i.retaliation) - i.allianceCost - i.outrage - TABOO_WEIGHT * i.taboo * (i.extreme ? EXTREME_TABOO : 1);
+  const u = i.targetValue * i.desperation * i.doctrine + i.through * onBurst;
   return i.mad && !i.extreme && !i.retaliating ? Math.min(0, u) : u;
 }
 
@@ -737,7 +747,8 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): 
  * target's side struck it (PLAN 6.4b).
  */
 export function nukeInputs(world: World, n: number, war: War, side: number, x: number, y: number, retaliating = false): NukeInputs {
-  return { targetValue: targetValue(world, n, war, side, x, y), ...warInputs(world, n, war, side, retaliating) };
+  const p = placeParts(world, n, war, side, x, y);
+  return { targetValue: p.value, through: p.through, ...warInputs(world, n, war, side, retaliating) };
 }
 
 /**
@@ -780,7 +791,7 @@ export function resolveOf(world: World, war: War, side: number, retaliation: num
 }
 
 /** The inputs of `n`'s strikes in `war` on `side` but the target's value: the same at every place (PLAN 6.10). */
-function warInputs(world: World, n: number, war: War, side: number, retaliating: boolean): Omit<NukeInputs, 'targetValue'> {
+function warInputs(world: World, n: number, war: War, side: number, retaliating: boolean): Omit<NukeInputs, 'targetValue' | 'through'> {
   const { desperation, extreme } = desperationOf(world, n, war, side);
   const ally = world.alliances.allianceOf(n);
   const apart = (ally?.members ?? []).filter((m) => m !== n && !war.sides[side]!.includes(m)).length;
@@ -876,6 +887,7 @@ export function aimOf(world: World, n: number, war: War, side: number, industry:
   const nc = world.nations.cols;
   const at = new Set<number>();
   for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && threatens(world, m, n)) at.add(m);
+  if (at.size === 0) return { at, anywhere: false };
   const { desperation, extreme } = desperationOf(world, n, war, side);
   const resolve = resolveOf(world, war, side, retaliationRisk(world, war, side), madWar(world, war));
   // A strike of the resolve falls on a nation of weight to the enemy side (PLAN 7.18h): seed 1's
@@ -1008,9 +1020,9 @@ export interface WarWeighing {
   /** The enemies it may strike (`aimOf`). */
   aim: Aim;
   /** The inputs shared by its places (none when `aim` is empty). */
-  shared: Omit<NukeInputs, 'targetValue'> | null;
-  /** The places weighed and each one's value. */
-  places: { x: number; y: number; value: number }[];
+  shared: Omit<NukeInputs, 'targetValue' | 'through'> | null;
+  /** The places weighed, each one's value and the chance a warhead gets there (PLAN 7.18i). */
+  places: { x: number; y: number; value: number; through: number }[];
 }
 
 /** `n`'s weighing of `war` on `side` (PLAN 6.4b), `industry` the day's (`industryOnce`). */
@@ -1019,7 +1031,14 @@ export function weighWar(world: World, n: number, war: War, side: number, indust
   if (aim.at.size === 0) return { aim, shared: null, places: [] };
   const shared = warInputs(world, n, war, side, retaliates(world, n, war, side));
   const view = strikeView(world, n, war, side, industry);
-  return { aim, shared, places: nukeTargets(world, n, war, side, aim).map(([x, y]) => ({ x, y, value: valueIn(world, n, view, x, y) })) };
+  return {
+    aim,
+    shared,
+    places: nukeTargets(world, n, war, side, aim).map(([x, y]) => {
+      const p = partsIn(world, n, view, x, y);
+      return { x, y, value: p.value, through: p.through };
+    }),
+  };
 }
 
 /** Whether `n` holds a grievance against an enemy in one of its wars (PLAN 6.12b): it then weighs that war alone. */
@@ -1062,8 +1081,8 @@ function nukeDecisions(world: World): void {
       if (!shared) continue;
       // Whether the resolve, not the side's own desperation, weighs this war's strikes (PLAN 7.18h).
       let resolved: boolean | null = null;
-      for (const { x, y, value } of places) {
-        const u = nuclearUtility({ targetValue: value, ...shared });
+      for (const { x, y, value, through } of places) {
+        const u = nuclearUtility({ targetValue: value, through, ...shared });
         if (u <= 0) continue;
         if (resolved === null) {
           const own = desperationOf(world, n, war, side);

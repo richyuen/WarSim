@@ -1894,8 +1894,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   over that share before its fleets and its army (PLAN 7.3g, ADR-439). **Delivery**: bombers (can be
   intercepted by fighters and AA, need range) or missiles (later tech, hard to stop).
 - **Use decision** (nuclear AI, daily, at war only). Utility:
-  `U = targetValue·desperation·doctrine − retaliationRisk − allianceCost −
-  globalOutrage − tabooBarrier`.
+  `U = targetValue·desperation·doctrine − through·(retaliationRisk + allianceCost +
+  globalOutrage + tabooBarrier)`, with targetValue already × through, the chance the warhead gets
+  there: U is through × the utility of a burst, whose costs fall only on a burst; a launch stopped
+  short spends its warhead and nothing more (PLAN 7.18i, ADR-491).
   - targetValue: enemy capital, industry, fleets in port, massed formations, Major-Battle
     fronts. Uses expected damage from blast radius × local value.
   - desperation: rises with losing war score, capital threatened, core loss, and

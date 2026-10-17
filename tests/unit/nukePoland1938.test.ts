@@ -29,9 +29,13 @@ function strategicWings(world: World): number {
   return k;
 }
 
-describe("the critic's Poland strikes (PLAN 7.18f)", () => {
-  it('given 10 warheads and a strategic bomber group at Warsaw, it strikes in Germany\'s war on it before its bomber is gone', () => {
-    const s = new Sim({ scenario: '1938', seed: 5591, assets: assets1938(W) });
+// PLAN 7.18i: on seeds 7127 and 3929 it struck nothing before its bomber was lost (day 80 to 95):
+// every place within reach under German air cover (the chance through 0.2), the costs weighed whole
+// against a gain × that chance. With the costs × the chance as well (they fall only on a burst), it
+// strikes there too.
+describe("the critic's Poland strikes (PLAN 7.18f, 7.18i)", () => {
+  it.each([5591, 7127, 3929])("seed %i: given 10 warheads and a strategic bomber group at Warsaw, it strikes in Germany's war on it before its bomber is gone", (seed) => {
+    const s = new Sim({ scenario: '1938', seed, assets: assets1938(W) });
     const w = s.world;
     const warsaw = w.airbases.find((b) => b.name === 'Warsaw' && w.cells.controller[b.cell] === POL);
     expect(warsaw, 'Warsaw is a Polish airbase').toBeDefined();
@@ -68,7 +72,7 @@ describe("the critic's Poland strikes (PLAN 7.18f)", () => {
       if (canDeliver(w, POL)) deliverUntil = d;
       if (bursts.length > 0) break;
     }
-    process.stderr.write(`Poland decided on days ${JSON.stringify(decided)}; bursts ${JSON.stringify(bursts)}; could deliver to day ${deliverUntil}\n`);
+    process.stderr.write(`seed ${seed}: Poland decided on days ${JSON.stringify(decided)}; bursts ${JSON.stringify(bursts)}; could deliver to day ${deliverUntil}\n`);
     expect(decided.length, 'Poland decided a strike').toBeGreaterThan(0);
     expect(decided[0]!, 'while it could still deliver').toBeLessThanOrEqual(deliverUntil + 1);
     expect(bursts.length, 'a warhead of Poland burst').toBeGreaterThan(0);
