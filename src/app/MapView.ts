@@ -50,6 +50,7 @@ import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/Prox
 import { appendTurrets, TurretAims } from '../render/units/turrets';
 import { SHIP_FRAME_MIN_PX, shipSideCells } from '../render/units/ships';
 import { appendWakes } from '../render/units/wakes';
+import { contactLines, drawContactLines, type ContactForm, type ContactLine } from '../render/units/contactLines';
 import { spriteTint } from '../render/units/tint';
 import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
@@ -549,6 +550,7 @@ export class MapView {
     this.formStrength = f.strength.slice(0, f.count);
     this.formTemplate = f.template.slice(0, f.count);
     this.formFlags = f.flags.slice(0, f.count);
+    this.formFacing = f.facing.slice(0, f.count);
     this.formTarget = f.target.slice(0, f.count);
     this.formWayStart = f.wayStart.slice(0, f.count + 1);
     this.formWay = f.way.slice(0, f.wayStart[f.count] ?? 0);
@@ -770,6 +772,8 @@ export class MapView {
   private formStrength = new Uint32Array(0);
   private formTemplate = new Uint16Array(0);
   private formFlags = new Uint8Array(0);
+  /** What each formation's block faces, radians (PLAN 7.11a: the line of contact). */
+  private formFacing = new Float32Array(0);
   private formTarget = new Uint32Array(0);
   /** The ways left of the fleets under way (PLAN 4.7d; `Snapshot.formations.way`). */
   private formWayStart = new Uint32Array(1);
@@ -1437,6 +1441,30 @@ export class MapView {
     this.dirty = true;
   }
 
+  /** The lines of contact drawn last frame (PLAN 7.11a; tests). */
+  contactLinesShown: ContactLine[] = [];
+
+  /** The lines of contact at T2 and T3 (PLAN 7.11a): of the formations in contact facing each other, at the element layer's opacity. */
+  private drawContact(ctx: CanvasRenderingContext2D, cam: Camera, vw: number, vh: number): ContactLine[] {
+    const alpha = this.elementOpacity;
+    if (alpha <= 0.01) return [];
+    const forms: ContactForm[] = [];
+    for (let i = 0; i < this.formIds.length; i++) {
+      const engaged = (this.formFlags[i]! & FormationFlag.engaged) !== 0;
+      if (engaged) forms.push({ id: this.formIds[i]!, nation: this.formNation[i]!, x: this.blockX[i]!, y: this.blockY[i]!, facing: this.formFacing[i]!, engaged });
+    }
+    if (forms.length < 2) return [];
+    const els: { formation: number; x: number; y: number }[] = [];
+    for (let i = 0; i < this.elementCount; i++) els.push({ formation: this.elementFormation[i]!, x: this.elementX[i]!, y: this.elementY[i]! });
+    const lines = contactLines(forms, els);
+    const offs = wrapOffsets(cam, this.geo, vw, SEAM_MARGIN);
+    const shown: ContactLine[] = [];
+    for (const off of offs) {
+      shown.push(...drawContactLines(ctx, lines, (x, y) => worldToScreen(cam, x + off, y, vw, vh), cam.scale, vw, vh, alpha, (n) => `#${spriteTint(this.ownColor.get(n) ?? 0x888888).toString(16).padStart(6, '0')}`, this.unitScale));
+    }
+    return shown;
+  }
+
   /** Side of an element sprite in CSS px (the shader's rule: ELEMENT_CELLS, at least ELEMENT_MIN_PX, × the size setting). */
   get elementPx(): number {
     return Math.max(ELEMENT_CELLS * sizeScale * this.controller.cam.scale, ELEMENT_MIN_PX) * this.unitScale;
@@ -1451,6 +1479,8 @@ export class MapView {
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
     this.wrecks.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, Math.min(this.elementPx, WRECK_MAX_PX * this.unitScale));
+    // The line of contact between two formations in contact facing each other (PLAN 7.11a).
+    this.contactLinesShown = this.drawContact(ctx, cam, vw, vh);
     // At T3 a shot leaves the muzzle of a figure, where the turret of this frame has it (PLAN 3.6c).
     const figures = this.individualCount > 0 ? this.shares.individuals : 0;
     // A burning hull and a mark of the fallen are a figure's: they are there with the figures.

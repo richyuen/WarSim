@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-474 · 2026-10-17 · accepted — A line of contact between two blocks facing each other (PLAN 7.11a)
+
+- **Context.** Critic run 7 (semantic zoom 6): "at 10 to 25 m/px the two sides are clumps of tiny
+  sprites that run into one another. The front line between them cannot be read"
+  (`critic/shots/c7d_7781_arm_15m_live_1.png`).
+- **Decision.** `contactLines` (render, pure): two engaged formations of two nations, each facing the
+  other within FACE_TOLERANCE (35°) and each the other's nearest such, within PAIR_MAX_CELLS (0.5),
+  have a line across the way between their blocks, halfway between their fronts (each block's
+  element furthest toward the other), as long as the narrower block reaches across, 0.03 to 0.15
+  cells either way. Drawn on the effects overlay at T2 and T3 (the element layer's opacity), each
+  side's half LINE_PX (3) wide on its side in its nation's sprite tint, the rims first.
+- **Tried on the way.** A line at the middle of the blocks: inside the deeper block. A line for each
+  block's nearest enemy, not each other's: a French division behind another had a line through the
+  ranks of the one in front.
+- **Tests.** `contactLines.test.ts` (new); `contactLine1938` (new: the critic's fight at 15 m/px, one
+  line Germany–France, its halves 186 grey and blue, opaque); `battleView1938` ×2, `fire1938` ×2,
+  `formationFight1938`, `stackBlocks1938` ×2, `tankBattle1938` green.
+
 ### ADR-473 · 2026-10-17 · accepted — A sea battle's row lands on the pair that fights (PLAN 7.10b)
 
 - **Context.** Critic run 7 (naval 5): "a sea battle's row must land on both fleets firing". The

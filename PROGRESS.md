@@ -17856,3 +17856,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   `seaBattle1938` green one at a time. A square span was tried first and dropped (880 m/px on seed
   6131, no ship drawn).
 - **7.10 ticked:** 7.10a and 7.10b done. **Next:** PLAN 7.11.
+
+## 2026-10-17 — PLAN 7.11 split; 7.11a: a line of contact between two blocks (render)
+
+- **Start:** gate green on a clean tree (`a7f0663`).
+- **Split:** 7.11a the line between two sides; 7.11b a struck city's ruin.
+- **Done (7.11a):** `contactLines` (render, pure) pairs engaged blocks that face each other and are
+  each other's nearest enemy; a line halfway between their fronts, as long as their shared front,
+  each half in its side's tint, drawn at T2 and T3. ADR-474. Picture
+  `docs/evidence/7.11/a-contact-line-15m.png`.
+- **Tests:** `contactLines.test.ts`, `contactLine1938` (new); 8 fight specs green one at a time.
+- **Next:** PLAN 7.11b.
