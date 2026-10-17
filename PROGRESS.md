@@ -17602,3 +17602,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   marker has the badge, 1 of 88 in view); `markers1938`, `markerStacks1938`, `stackPick1938`,
   `flagsClear1938`, `formationPanel1938` green.
 - **Next:** PLAN 7.4g3.
+
+## 2026-10-17 — PLAN 7.4g3: the T1 arrow ends where the formation will stand; PLAN 7.4 done
+
+- **Start:** gate green on a clean tree (`57a11ed`); critic not due.
+- **Done:** the snapshot's `way` of a march on land: its place and the target cell's `cellPoint`
+  (its land point where the middle is water), x next to the formation's on a looping map; the
+  T1 marker draws its arrow along it (no new buffer).
+- **Tests:** `orderEnd.test.ts` (new: a German division sent to a Baltic coastal cell whose
+  middle is water: its way ends at the land point, and it stands there on arrival; red before:
+  no way); `camera`, `fleetOrder1938`, `orderLines1938`, `markers1938`, `player1938` green.
+- **7.4 ticked:** 7.4a–g done; its AT (pictures beside AoC's) by 7.4a–e; what its groups left
+  in ADR-460.
+- **Next:** PLAN 7.5, the critic.

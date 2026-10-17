@@ -179,7 +179,8 @@ export interface SnapshotFormations {
   /**
    * The way left of a fleet under way (PLAN 4.7d, `wayLine`): the points its order line turns
    * at, `x, y` in cells by twos, formation i's from `wayStart[i]` to `wayStart[i + 1]` (in
-   * numbers; none for a formation on land or at rest). `wayStart` has count + 1 entries.
+   * numbers; none for one at rest). Of a march on land, its place and where it will stand (the
+   * target cell's `cellPoint`, PLAN 7.4g3). `wayStart` has count + 1 entries.
    */
   wayStart: Uint32Array;
   way: Float32Array;

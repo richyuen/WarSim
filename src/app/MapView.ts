@@ -1722,7 +1722,7 @@ export class MapView {
     return i < 0 ? null : [this.blockX[i]!, this.blockY[i]!];
   }
 
-  /** The points of formation `id`'s order line along its way, `x, y` in cells (PLAN 4.7d; a fleet under way), or null (tests). */
+  /** The points of formation `id`'s order line along its way, `x, y` in cells (PLAN 4.7d: a fleet under way; 7.4g3: a march on land, to where it will stand), or null (tests). */
   formationWay(id: number): number[] | null {
     const i = this.formIds.indexOf(id);
     if (i < 0 || this.formWayStart[i + 1]! - this.formWayStart[i]! < 4) return null;

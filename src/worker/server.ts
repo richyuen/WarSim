@@ -1389,7 +1389,16 @@ export class SimServer {
       fflags[j] = (moving ? FormationFlag.moving : 0) | (ft.cols.engaged[id] === 1 ? FormationFlag.engaged : 0) | (ft.cols.retreat[id]! > 0 ? FormationFlag.retreating : 0);
       ftarget[j] = moving ? ft.cols.targetCell[id]! : 0;
       const path = moving && world.afloat(id) ? world.paths.get(id) : undefined;
-      const way = path ? wayLine(fx[j]!, fy[j]!, path, ft.cols.pathStep[id]!, world.cells.w, world.settings.loopingMap) : [];
+      let way: number[] = path ? wayLine(fx[j]!, fy[j]!, path, ft.cols.pathStep[id]!, world.cells.w, world.settings.loopingMap) : [];
+      // A march on land (PLAN 7.4g3): from its place to where it will stand, the target cell's
+      // point (`cellPoint`: its middle on land, else its land point, up to 0.6 cells off on a
+      // coast). The T1 arrow ended at the cell's middle. Its x next to the formation's on a
+      // looping map.
+      if (moving && !path && !world.offLand(id)) {
+        const [tx, ty] = world.cellPoint(ft.cols.targetCell[id]!);
+        const w = world.cells.w;
+        way = [fx[j]!, fy[j]!, world.settings.loopingMap ? tx + w * Math.round((fx[j]! - tx) / w) : tx, ty];
+      }
       ways.push(way);
       fwayStart[j + 1] = fwayStart[j]! + way.length;
       j++;

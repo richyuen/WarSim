@@ -29,29 +29,6 @@ quick sweep as a smoke test.
 
 ## Phase 7 — Balance, polish, soak
 
-- [ ] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts).
-  AT: side-by-side screenshots vs reference frames logged in PROGRESS.
-  Split when taken up (2026-10-16): the headline's five, each a part with its pictures beside
-  AoC's; the groups below it, a part each when taken up. `reference/NOTES.md` (the user's taste
-  notes) is missing: every choice of taste is low confidence, logged in DECISIONS.
-  Pictures: `.cache/74/shots.ts <tag> [save]` (1920 × 1080: Europe at 2000 m/px, Africa at 4000,
-  the Balkans at 800, the world; seed 99 three years in), into `docs/evidence/7.4/`.
-  - [x] 7.4a Nation names as AoC draws them: capitals, spaced, in a darker shade of the nation's […]
-  - [x] 7.4b Order lines at T1 for what is selected and the player's own only (the critic of […]
-  - [x] 7.4c Ranking rows with the nation's flag and a bar in its colour, as AoC's Statistics […]
-  - [x] 7.4d UI frames: the panels and the bottom bar beside AoC's framed panels (taste: low […]
-  - [x] 7.4e Borders and fonts: the border's darkness and width at T0 and the UI's font beside […]
-  - [x] 7.4f The groups below, a part each when taken up, or a line in an ADR for what is left. […]
-  - [ ] 7.4g The defects 7.4's groups leave (ADR-460), a part each:
-    - [x] 7.4g1 City dots on sure land: 140 of 5,757 cities on a water pixel of the fine mask and
-      387 not on sure land (one capital in water) draw their dots in the sea at T2 and T3. AT:
-      no city's dot on a water pixel of the mask at the 1938 start; the city specs green.
-    - [x] 7.4g2 A retreat on the page: `FormationRetreated` neither drawn nor in the history. AT:
-      a formation in retreat told apart at T1 (its marker) and a row in the history; specs.
-      Done 2026-10-17: a badge on the marker (its own or its stack's); no row in the history: seed
-      99 has ~2,800 retreats a year against 292 rows of all else (ADR-460's addendum).
-    - [ ] 7.4g3 The T1 order arrow ends where the formation will stand (the target cell's land
-      point, up to 0.6 cells from its middle on a coastal cell). AT: a unit test of the end.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -277,3 +254,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 1.42 **Moved here from Phase 1 on 2026-10-03 (ADR-58, the user's decision): balance is […]
 - [x] 7.2 30-minute soak with save/load twin comparison. […]
 - [x] 7.3 Final multi-decade sweep (≥ 10 seeds) — borders moving, no hegemon. […]
+- [x] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts). […]
