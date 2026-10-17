@@ -1,14 +1,21 @@
 import { useState } from 'preact/hooks';
 import { MAX_PAINT_R } from '../shared/commands';
 import type { EditorState } from '../shared/editorState';
-import type { NationStat } from '../shared/protocol';
+import type { Refusal } from '../shared/commands';
+import type { NationStat, TemplateInfo } from '../shared/protocol';
 import { isLand, TERRAIN_IDS } from '../shared/terrain';
 import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
 import { FlagEditor } from './FlagEditor';
+import { REFUSAL_KEY } from './GodTab';
 
 
 const SCENARIO_TOOLS = ['city', 'removeCity', 'capital', 'core', 'uncore'] as const;
+/** The editor's forces (PLAN 7.13a) and the domain of their templates (`TemplateInfo.domain`). */
+const FORCE_TOOLS = [
+  ['fleet', 1],
+  ['wing', 2],
+] as const;
 
 export interface EditorPanelProps {
   state: EditorState;
@@ -35,6 +42,12 @@ export interface EditorPanelProps {
   onExportScenario: (name: string) => void;
   onImportScenario: (file: File) => void;
   scenarioStatus: string;
+  /** The scenario's templates (a command's template id is the index; PLAN 7.13a: the fleet's and the wing's). */
+  templates: TemplateInfo[];
+  /** Warheads to the editor's nation (PLAN 7.13a). */
+  onWarheads: (nation: number, count: number) => void;
+  /** Why the last command from here was refused (`Refusal`, 0 none): a fleet or a wing with no place. */
+  refusal: number;
 }
 
 const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLand(i));
@@ -44,7 +57,8 @@ const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLa
  * paint, brush radius, an optional target mask, and undo/redo (also Ctrl+Z / Ctrl+Y). While it is
  * open, map clicks paint.
  */
-export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose, onGold, onAnnex, onImport, flagOf, onFlag, onExportScenario, onImportScenario, scenarioStatus }: EditorPanelProps) {
+export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose, onGold, onAnnex, onImport, flagOf, onFlag, onExportScenario, onImportScenario, scenarioStatus, templates, onWarheads, refusal }: EditorPanelProps) {
+  const [warheads, setWarheads] = useState('1');
   const [scenarioName, setScenarioName] = useState('');
   const [flagOpen, setFlagOpen] = useState(false);
   const [importLayer, setImportLayer] = useState<'terrain' | 'nation'>('terrain');
@@ -150,6 +164,48 @@ export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onC
             {t('editor.citySize')}
             <input data-testid="editor-city-size" type="number" min={1} max={5} value={state.citySize} onInput={(e) => set({ citySize: Math.max(1, Math.min(5, Number((e.currentTarget as HTMLInputElement).value) || 1)) })} />
           </label>
+        </div>
+      ) : null}
+      <div class="panel-sub">{t('editor.forces')}</div>
+      <div class="god-row">
+        {FORCE_TOOLS.map(([tool, domain]) => (
+          <button
+            key={tool}
+            type="button"
+            class={state.tool === tool ? 'god-btn active' : 'god-btn'}
+            data-testid={`editor-tool-${tool}`}
+            onClick={() => set({ tool, template: templates[state.template]?.domain === domain ? state.template : templates.findIndex((x) => x.domain === domain) })}
+          >
+            {t(`editor.tool.${tool}` as MessageKey)}
+          </button>
+        ))}
+      </div>
+      {state.tool === 'fleet' || state.tool === 'wing' ? (
+        <div class="god-row">
+          <select data-testid="editor-template" value={state.template} onChange={(e) => set({ template: num(e) })}>
+            {templates.map((x, i) =>
+              x.domain === (state.tool === 'fleet' ? 1 : 2) ? (
+                <option key={i} value={i}>
+                  {t(x.nameKey as MessageKey)}
+                </option>
+              ) : null,
+            )}
+          </select>
+          {state.nation === 0 ? <span class="panel-note">{t('editor.forcesNation')}</span> : null}
+        </div>
+      ) : null}
+      {refusal !== 0 && (state.tool === 'fleet' || state.tool === 'wing') ? (
+        <div class="panel-warn" data-testid="editor-refusal" role="status">
+          {t('refusal.lead')} {t(REFUSAL_KEY[refusal as Exclude<Refusal, 0>] ?? 'refusal.noEffect')}
+        </div>
+      ) : null}
+      {me ? (
+        <div class="god-row">
+          <span data-testid="editor-warheads-of">{t('editor.warheadsOf', { name: displayName(me.name), count: me.warheads })}</span>
+          <input data-testid="editor-warheads" type="number" min={1} max={100} value={warheads} onInput={(e) => setWarheads((e.currentTarget as HTMLInputElement).value)} />
+          <button type="button" class="god-btn" data-testid="editor-warheads-add" disabled={!(Number(warheads) >= 1)} onClick={() => onWarheads(me.id, Math.floor(Number(warheads)))}>
+            {t('editor.add')}
+          </button>
         </div>
       ) : null}
       {me ? (

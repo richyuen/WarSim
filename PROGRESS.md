@@ -17901,3 +17901,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   with Start and Cancel; only Start opens its game. ADR-477.
 - **Tests:** `title.spec`, `randomWorld.spec` updated (start from the card) and green, 10 of 10.
 - **Next:** 7.13a (the editor places warheads, fleets and wings), 7.13c (SLBMs).
+
+## 2026-10-17 — PLAN 7.13a, 7.13c: the editor's forces; no SLBM (sim commands, UI); 7.13 done
+
+- **Start:** gate green on a clean tree (`ab6bb61`).
+- **Done:** commands `spawnFleet` and `spawnWing` (`src/sim/placeForces.ts`; refusals `NotAtSea`,
+  `NoAirbase`); the editor's Forces (Fleet, Air wing, a template, the warheads of its nation; the
+  reason when refused). ADR-478. SLBMs decided out of the tech tree (ADR-479, after ADR-434), held by
+  a test. The pin unmoved (a command no run sends).
+- **Tests:** `editorForces1938.test.ts`, `noSlbm1938.test.ts`, `editorForces1938.spec.ts` (new);
+  `scenarioEditor1938`, `scenarioFile1938`, `refusal`, `unknownCommand` green.
+- **Next:** PLAN 7.14.

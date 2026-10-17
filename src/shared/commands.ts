@@ -12,6 +12,9 @@ export type Command =
    * `strength` men that has no elements and does not fight.
    */
   | { kind: 'spawnFormation'; nation: number; x: number; y: number; strength: number; template?: number }
+  /** The editor's fleet and air wing (PLAN 7.13a): of a sea or air template, at the water or the airbase by the place. */
+  | { kind: 'spawnFleet'; nation: number; x: number; y: number; template: number }
+  | { kind: 'spawnWing'; nation: number; x: number; y: number; template: number }
   | { kind: 'removeFormation'; id: number }
   /** Queue a formation of scenario template `template` (index) for `nation` (PLAN 1.10). */
   | { kind: 'queueFormation'; nation: number; template: number }
@@ -147,6 +150,8 @@ export type Command =
  */
 export const COMMAND_KINDS: Record<Command['kind'], true> = {
   spawnFormation: true,
+  spawnFleet: true,
+  spawnWing: true,
   removeFormation: true,
   queueFormation: true,
   moveFormation: true,
@@ -277,6 +282,10 @@ export const Refusal = {
   NoDelivery: 27,
   /** A number out of its range (PLAN 7.2c): an id not a whole number, a place far off the map, a strength below 0, a side not 0 or 1, a member twice, a radius past the editor's. */
   OutOfRange: 28,
+  /** A fleet set down where no water of a sea is near (PLAN 7.13a). */
+  NotAtSea: 29,
+  /** An air wing set down where no airbase of the nation's with room is near (PLAN 7.13a). */
+  NoAirbase: 30,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 

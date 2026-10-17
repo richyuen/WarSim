@@ -1,7 +1,7 @@
 /** Editor panel settings (PLAN 1.35), shared by the HUD and the panel. */
 export interface EditorState {
   /** Paint tools (PLAN 1.35) and scenario tools (PLAN 1.36). */
-  tool: 'brush' | 'line' | 'bucket' | 'city' | 'removeCity' | 'capital' | 'core' | 'uncore';
+  tool: 'brush' | 'line' | 'bucket' | 'city' | 'removeCity' | 'capital' | 'core' | 'uncore' | 'fleet' | 'wing';
   layer: 'nation' | 'terrain';
   /** Nation id (0 = unowned) or land terrain class. */
   nation: number;
@@ -14,4 +14,6 @@ export interface EditorState {
   /** New city name and size (city tool). */
   cityName: string;
   citySize: number;
+  /** The fleet's or the wing's template (PLAN 7.13a; a command template id, -1 none). */
+  template: number;
 }

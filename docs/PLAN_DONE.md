@@ -10734,3 +10734,22 @@ Of 7.4 (open in PLAN.md):
 
 - [x] 7.12 The nuclear age in the statistics (stats 7): warheads, the nuclear dead and fallout in the
   panel and the charts. AT: the series in a save and a load; the charts' spec.
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.13 The editor places warheads, fleets and wings, and asks before a chosen file starts
+  (editor 6; naval: "the editor cannot place fleets"); SLBMs deliver nothing (naval). AT: each
+  placed in the editor and in a shared scenario's play; the confirm; SLBMs a means of delivery or
+  out of the tech tree, with its ADR.

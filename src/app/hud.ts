@@ -273,7 +273,7 @@ export class Hud {
 
   /** Map editor (PLAN 1.35): open, its settings and a started line's first point. */
   readonly showEditor = signal(false);
-  readonly editor = signal<EditorState>({ tool: 'brush', layer: 'nation', nation: 0, terrain: 2, r: 4, mask: 'none', maskTerrain: 2, maskNation: 0, cityName: '', citySize: 2 });
+  readonly editor = signal<EditorState>({ tool: 'brush', layer: 'nation', nation: 0, terrain: 2, r: 4, mask: 'none', maskTerrain: 2, maskNation: 0, cityName: '', citySize: 2, template: -1 });
   readonly lineStart = signal<[number, number] | null>(null);
   /** The map mode to go back to when the editor's terrain layer is left (PLAN 7.4f5). */
   private modeBeforeTerrain: MapMode = 'political';
@@ -352,6 +352,11 @@ export class Hud {
       case 'core':
       case 'uncore':
         if (province !== 0 && s.nation !== 0) this.command({ kind: 'setCore', province, nation: s.nation, on: s.tool === 'core' });
+        return true;
+      case 'fleet':
+      case 'wing':
+        // The editor's forces (PLAN 7.13a): of its nation, at the water or the airbase by the click.
+        if (s.nation !== 0 && s.template >= 0) this.command({ kind: s.tool === 'fleet' ? 'spawnFleet' : 'spawnWing', nation: s.nation, x: x + 0.5, y: y + 0.5, template: s.template });
         return true;
       default:
         break;

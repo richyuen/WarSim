@@ -185,6 +185,9 @@ export function App({
           onClose={() => hud.toggleEditor()}
           onGold={(nation, value) => hud.command({ kind: 'setGold', nation, value })}
           onAnnex={(annexer, target) => hud.command({ kind: 'annexNation', annexer, target })}
+          templates={hud.templates.value}
+          onWarheads={(nation, count) => hud.command({ kind: 'grantWarheads', nation, count })}
+          refusal={hud.refusal.value}
           flagOf={(n) => view?.flags.pixelsOf(n) ?? new Uint32Array(36 * 24)}
           onFlag={(nation, px) => hud.command({ kind: 'setFlag', nation, runs: px ? encodeRuns(px) : [] })}
           scenarioStatus={scenarioStatus}

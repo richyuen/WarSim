@@ -23,6 +23,7 @@ import { FLAG_H, FLAG_W } from '../shared/flagPixels';
 import { Domain, navOf, type World } from './world';
 import { launchNuke, WARHEAD_MAX, detonate } from './systems/nuclear';
 import { grantTechs, techClosure } from './tech';
+import { placeFleet, placeWing } from './placeForces';
 
 export type System = (world: World) => void;
 
@@ -106,6 +107,9 @@ function applyCommand(world: World, cmd: Command): Refusal {
       }
       return Refusal.None;
     }
+    case 'spawnFleet':
+    case 'spawnWing':
+      return whyNotNation(world, cmd.nation) || (cmd.kind === 'spawnFleet' ? placeFleet : placeWing)(world, cmd.nation, cmd.template, cmd.x, cmd.y);
     case 'removeFormation':
       if (!world.formations.has(cmd.id)) return Refusal.NoSuch;
       destroyFormation(world, cmd.id); // with its elements and cached path

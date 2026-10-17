@@ -32,10 +32,6 @@ quick sweep as a smoke test.
 Run 7's dimensions under the DONE condition's bar (report of 2026-10-17 on `19e2341`, its "Fix"
 lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split when taken up:
 
-- [ ] 7.13 The editor places warheads, fleets and wings, and asks before a chosen file starts
-  (editor 6; naval: "the editor cannot place fleets"); SLBMs deliver nothing (naval). AT: each
-  placed in the editor and in a shared scenario's play; the confirm; SLBMs a means of delivery or
-  out of the tech tree, with its ADR.
 - [ ] 7.14 Long wars with no land front end in a peace, and the late game has new causes of war
   (diplomacy 6). AT: on seeds 1 to 10 × 50 years no war without a land front for more than its
   bound (to be set from a measure); wars declared in the last 10 years; the 50-year sweep.
@@ -283,3 +279,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.10 Ships look like ships, and a sea battle is seen (naval 5, needs 8): at 15 m/px ships are […]
 - [x] 7.11 A fight at T3 reads as two sides with a line between them, and a struck city shows it […]
 - [x] 7.12 The nuclear age in the statistics (stats 7): warheads, the nuclear dead and fallout in the […]
+- [x] 7.13 The editor places warheads, fleets and wings, and asks before a chosen file starts […]

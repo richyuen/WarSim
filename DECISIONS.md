@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-479 · 2026-10-17 · accepted — No submarine-launched missile: out of the tech tree (PLAN 7.13c)
+
+- **Context.** Critic run 7 (naval): "SLBMs deliver nothing". PLAN 7.13's AT: SLBMs a means of
+  delivery or out of the tech tree, with its ADR. ADR-434 already amended SPEC §6.4 to what is
+  built (no SLBM; the PROMPT's delivery is bombers and missiles; MAD arises without them). Nothing
+  of the game names one: no tech, unit, template or word of the interface.
+- **Decision.** Out of the tech tree, kept out. A warhead goes by a strategic bomber from its base
+  or by a ballistic missile from the land; a submarine carries none and its flotilla is no means of
+  delivery. A sea leg of deterrence would be a rule of its own (a second strike that survives a
+  first), and the late sweep shows MAD's restraint without it (ADR-434).
+- **Tests.** `noSlbm1938.test.ts`: the only `nuke_missile` unit is the ballistic missile, of the air;
+  no tech, unit or template is named for a launch from the sea; Germany with 3 warheads and four
+  submarine flotillas by London is refused (`NoDelivery`) by bomber and by missile, its warheads kept.
+
+### ADR-478 · 2026-10-17 · accepted — The editor places fleets, air wings and warheads (PLAN 7.13a)
+
+- **Context.** Critic run 7 (editor 6): "warheads, fleets, airbases and wings still cannot be
+  placed, so a scenario cannot set up a nuclear standoff or a navy".
+- **Decision.**
+  - Commands `spawnFleet` and `spawnWing` {nation, x, y, template} (`src/sim/placeForces.ts`), whole
+    and in supply as the start's and production's. A fleet goes on the water of a sea zone nearest
+    the place within BASE_PICK_CELLS (at the map's size), at its water point: a click on the coast
+    finds the sea beside it. A wing goes to the airbase the nation controls nearest the place within
+    that reach, with room for its aircraft beside the wings based there, and is based on it.
+  - Refusals `NotAtSea` (29) and `NoAirbase` (30); a template of another domain is `NoSuch`.
+  - The editor's "Forces": Fleet and Air wing tools with a template of the sea's or the air's, for
+    the editor's nation; its reason when refused; the editor's nation's warheads and "Add" (the
+    existing `grantWarheads`). Airbases are the map's (`data/`); placing new ones is not part of this.
+  - A scenario exported carries them (state), so a shared scenario plays them.
+- **Tests.** `editorForces1938.test.ts` (a battle squadron off Portsmouth on the water, a bomber group
+  at a British base by London, 5 warheads; a fleet in Berlin `NotAtSea`, a German wing in Britain
+  `NoAirbase`, the wrong domain `NoSuch`, a base full; exported and loaded with the same hash, a week
+  played); `editorForces1938.spec.ts` (the same through the editor, the refusal's words, exported,
+  started from the title screen with them). Pictures `docs/evidence/7.13/a-*.png`.
+
 ### ADR-477 · 2026-10-17 · accepted — A chosen scenario file asks before it starts (PLAN 7.13b)
 
 - **Context.** Critic run 7 (editor 6): "a file starts the game at once, with no confirmation".

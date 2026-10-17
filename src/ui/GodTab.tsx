@@ -10,7 +10,7 @@ const BUFFS = ['attack', 'defense', 'speed', 'income', 'manpower', 'unrest'] as 
 const BUFF_MAGNITUDE = 0.25;
 const BUFF_HOURS = 24 * 30;
 /** Why the sim did not carry out a command, in words (PLAN 2.17a). */
-const REFUSAL_KEY: Record<Exclude<Refusal, 0>, MessageKey> = {
+export const REFUSAL_KEY: Record<Exclude<Refusal, 0>, MessageKey> = {
   [Refusal.NotANumber]: 'refusal.notANumber',
   [Refusal.NoNation]: 'refusal.noNation',
   [Refusal.DeadNation]: 'refusal.deadNation',
@@ -35,6 +35,8 @@ const REFUSAL_KEY: Record<Exclude<Refusal, 0>, MessageKey> = {
   [Refusal.AtSea]: 'refusal.atSea',
   [Refusal.Overrun]: 'refusal.overrun',
   [Refusal.NotOfLand]: 'refusal.notOfLand',
+  [Refusal.NotAtSea]: 'refusal.notAtSea',
+  [Refusal.NoAirbase]: 'refusal.noAirbase',
   [Refusal.NoNukes]: 'refusal.noNukes',
   [Refusal.NoWarhead]: 'refusal.noWarhead',
   [Refusal.NoDelivery]: 'refusal.noDelivery',
