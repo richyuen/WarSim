@@ -17269,3 +17269,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `godPanelMore1938` "the world's rules" (new: every box's words begin on its line;
   red before: "Winner takes all ..." under its box).
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f28: the dead in the ranking's lists of a life (UI, worker)
+
+- **Start:** gate green on a clean tree (`bd3a9a5`); critic not due.
+- **Done:** `worker/lives.ts` reads each nation's life from the history log (incrementally; a new
+  world starts again); `nationStats.lives`. Three lists under "Lifetime" in the ranking's menu:
+  Age, Wars fought, Revolts suffered (ADR-452); a dead row dimmed, †, no flag, no panel. The
+  long label first tried pushed Charts out of the panel: short names under two headings
+  instead. Picture: `docs/evidence/7.4/f28-ranking-dead.png`. PARITY row 59 appended.
+- **Tests:** `lives.test.ts` (new, 2), `ranking.test.ts` 3 of 3; `ranking1938` 2 of 2 (every list
+  sorted; Yugoslavia killed leads Revolts suffered, marked); `charts1938`, `phoneLayout1938`,
+  `rankingFlags1938`, `rankingRows1938`, `settings1938`, `tags1938`, `warBannerRows1938` green.
+- **Next:** PLAN 7.4f, the next group.

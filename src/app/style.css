@@ -368,6 +368,14 @@ body {
   color: #e9c46a;
   font-weight: 700;
 }
+/* A dead nation in a list of a life (PLAN 7.4f28): dimmed, with a dagger, and no flag. */
+.rank-row.rank-dead {
+  cursor: default;
+  opacity: 0.6;
+}
+.rank-dagger {
+  color: #d8c9a8;
+}
 .rank-pos {
   flex: none;
 }

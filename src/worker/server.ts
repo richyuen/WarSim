@@ -19,6 +19,7 @@ import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { wayLine } from '../shared/wayLine';
 import { encodeRuns } from '../shared/mapImport';
 import { historyRows, tickerNews, tickerRows } from './historyRows';
+import { Lives } from './lives';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
@@ -175,6 +176,8 @@ export class SimServer {
   private statsTick = -1;
   /** Counts the worlds this worker has had (a new game, a load): the view tells a loaded world's past from news by it (PLAN 3.12d). */
   private worldNo = 0;
+  /** Each nation's life from the history (PLAN 7.4f28): the ranking's lists of a life. */
+  private readonly lives = new Lives();
   private lastStatsMs = -1;
   /** The log's length at the last statistics message: the next one's news begins there (PLAN 3.12Rh2). Below 0: a world's first message, whose log is its past. */
   private newsFrom = -1;
@@ -611,7 +614,7 @@ export class SimServer {
     });
     const news = this.newsFrom < 0 ? [] : tickerNews(world, this.newsFrom);
     this.newsFrom = world.history.length;
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, aiEnabled: world.settings.aiEnabled, nukesEnabled: world.settings.nukesEnabled, rules: { winnerTakesAll: world.settings.winnerTakesAll, revoltMode: world.settings.revoltMode, ceMode: world.settings.ceMode }, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id), (v) => this.cityName(v)), news, world: this.worldNo, wings: playerWings(world) }, []);
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, lives: this.lives.of(world), aiEnabled: world.settings.aiEnabled, nukesEnabled: world.settings.nukesEnabled, rules: { winnerTakesAll: world.settings.winnerTakesAll, revoltMode: world.settings.revoltMode, ceMode: world.settings.ceMode }, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id), (v) => this.cityName(v)), news, world: this.worldNo, wings: playerWings(world) }, []);
   }
 
   /**

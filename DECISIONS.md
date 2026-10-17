@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-452 · 2026-10-16 · accepted — The ranking's lists of a life, the dead in them (PLAN 7.4f28)
+
+- **Context.** The critic's N14: AoC's Statistics marks the dead in its lists (TEXT+VISUAL, PARITY
+  row 59: size, age, alliances, income, city revolts, flags, kills, total wars, cities). Ours had
+  nine lists of the present, where a dead nation is 0.
+- **Decision.** Three lists of a life, under "Lifetime" in the list's menu: Age (years alive,
+  a revived nation's lives summed), Wars fought (the wars it declared or had declared on it; an
+  ally that joins a war has no event of it and is not counted), Revolts suffered (the nations
+  that rose on its land; a Kill's split and God Mode's Spawn nation are counted, the log does
+  not tell them apart). Derived in the worker from the history log (`worker/lives.ts`), which
+  is state: no column, the pin unchanged, and a load gives the same lists. A life begins at tick
+  0 for a nation of the scenario, else at its `RevoltSpawned` or `NationRevived`, and ends at
+  `NationEliminated`, the one way a nation dies; nation rows are never removed, so an id is one
+  nation. A dead row is dimmed, marked †, has its colour and no flag, and a click on it opens
+  nothing. Kills are not listed: `NationEliminated` names no killer. Taste: low confidence.
+- **Tests.** `lives.test.ts` (a war, a revolt and a Kill, read in steps, at once and after a
+  load; a revival's age), `ranking.test.ts`, `ranking1938` (every list sorted; Yugoslavia
+  killed leads "Revolts suffered", marked).
+
 ### ADR-451 · 2026-10-16 · accepted — The bottom bar wraps; the played nation's label last (PLAN 7.4f25)
 
 - **Context.** The critic's N8, what PLAN 3.12Rh4 and 7.4f2 left: at 1024 × 600, playing a

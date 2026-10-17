@@ -16,7 +16,7 @@ import type { SeaBattleView } from './MapView';
 import type { MapHover } from '../ui/mapHover';
 import { t } from '../ui/i18n';
 import type { EditorState } from '../shared/editorState';
-import { RANK_METRICS, type RankMetric } from '../shared/ranking';
+import { RANK_LISTS, type RankList } from '../shared/ranking';
 
 /** Order news kept on the screen at most (PLAN 4.9c). */
 const ORDER_NEWS_KEPT = 4;
@@ -146,7 +146,7 @@ export class Hud {
   }
   /** Statistics ranking (PLAN 1.31b): shown and metric, both persisted. */
   readonly showStats = signal(true);
-  readonly rankMetric = signal<RankMetric>('land');
+  readonly rankMetric = signal<RankList>('land');
   /** Buildable templates of the scenario (PLAN 1.33b), from the worker's map layers. */
   readonly templates = signal<TemplateInfo[]>([]);
   /** The scenario's techs (PLAN 3.1e), from the worker's map layers. */
@@ -196,7 +196,7 @@ export class Hud {
     });
     this.showStats.value = load(KEY_SHOW_STATS) !== '0';
     const metric = load(KEY_RANK_METRIC);
-    if ((RANK_METRICS as readonly string[]).includes(metric ?? '')) this.rankMetric.value = metric as RankMetric;
+    if ((RANK_LISTS as readonly string[]).includes(metric ?? '')) this.rankMetric.value = metric as RankList;
     // A loaded world's formations are others, whatever their ids and counts (a load does not raise the counts).
     sim.onLoad(() => {
       this.selectFormation(0);
@@ -420,7 +420,7 @@ export class Hud {
     store(KEY_SHOW_STATS, this.showStats.value ? '1' : '0');
   }
 
-  setRankMetric(m: RankMetric): void {
+  setRankMetric(m: RankList): void {
     this.rankMetric.value = m;
     store(KEY_RANK_METRIC, m);
   }

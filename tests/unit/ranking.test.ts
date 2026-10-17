@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { NationStat } from '../../src/shared/protocol';
-import { RANK_METRICS, rankNations, rankValue } from '../../src/shared/ranking';
+import { LIFE_METRICS, lifeValue, RANK_LISTS, RANK_METRICS, rankLives, rankNations, rankValue } from '../../src/shared/ranking';
 
 const nation = (id: number, v: number): NationStat => ({
   id,
@@ -60,5 +60,20 @@ describe('statistics ranking (PLAN 1.31b)', () => {
     // PLAN 7.4f11: the wars it is in (its enemies), its puppets, its aircraft, its warheads.
     expect([rankValue(n, 'wars'), rankValue(n, 'puppets'), rankValue(n, 'aircraft'), rankValue(n, 'warheads')]).toEqual([7, 7, 42, 56]);
     expect(RANK_METRICS).toHaveLength(9);
+  });
+
+  // PLAN 7.4f28: the lists of a life, which have the dead in them.
+  it('lists of a life: the dead ranked with the living, highest first, ties by id', () => {
+    const lives = [
+      { id: 3, living: false, age: 2, wars: 5, revolts: 1 },
+      { id: 1, living: true, age: 9, wars: 1, revolts: 1 },
+      { id: 2, living: true, age: 2, wars: 3, revolts: 4 },
+    ];
+    expect(rankLives(lives, 'age').map((l) => l.id)).toEqual([1, 2, 3]);
+    expect(rankLives(lives, 'warsTotal').map((l) => l.id)).toEqual([3, 2, 1]);
+    expect(rankLives(lives, 'revolts').map((l) => l.id)).toEqual([2, 1, 3]);
+    expect(LIFE_METRICS.map((m) => lifeValue(lives[0]!, m))).toEqual([2, 5, 1]);
+    expect(RANK_LISTS).toEqual([...RANK_METRICS, 'age', 'warsTotal', 'revolts']);
+    expect(lives.map((l) => l.id)).toEqual([3, 1, 2]); // input untouched
   });
 });

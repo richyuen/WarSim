@@ -405,7 +405,7 @@ export type FromWorker =
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance; the ticker's rows (PLAN 3.12c), the kinds of every major event since the message before (`news`, PLAN 3.12Rh2: the ticker's rows are the last five), and the number of the worker's world, which a new game or a load changes (PLAN 3.12d). */
-  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; aiEnabled: boolean; nukesEnabled: boolean; rules: WorldRules; player: number; edits: { undo: number; redo: number }; ticker: TickerRow[]; news: number[]; world: number; wings: PlayerWing[] };
+  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; lives: NationLife[]; aiEnabled: boolean; nukesEnabled: boolean; rules: WorldRules; player: number; edits: { undo: number; redo: number }; ticker: TickerRow[]; news: number[]; world: number; wings: PlayerWing[] };
 
 /** A buildable land template for the production UI (PLAN 1.33b). */
 export interface TemplateInfo {
@@ -432,6 +432,21 @@ export interface TechInfo {
 }
 
 export type UnitSymbol = 'infantry' | 'armour' | 'motorised' | 'cavalry' | 'mountain' | 'garrison' | 'fleet';
+
+/**
+ * A nation's life, living or dead (PLAN 7.4f28, `worker/lives.ts`): the ranking's lists of a life,
+ * which name the dead too, as AoC's do.
+ */
+export interface NationLife {
+  id: number;
+  living: boolean;
+  /** Years alive, every life summed. */
+  age: number;
+  /** Wars it declared or had declared on it. */
+  wars: number;
+  /** Nations that rose on its land. */
+  revolts: number;
+}
 
 /** One living nation for the UI panels (PLAN 1.31). Names are i18n keys or '=' + literal. */
 /** An air wing of the nation the player controls (PLAN 5.8v1): what its Actions tab lists and orders. */

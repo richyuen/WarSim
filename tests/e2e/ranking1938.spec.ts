@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
-import { RANK_METRICS } from '../../src/shared/ranking';
+import { RANK_LISTS } from '../../src/shared/ranking';
 import { NATIONS_1938 } from '../../src/sim/scenario1938';
 
 // PLAN 1.31b AT: the Statistics ranking sorts by each metric and its rows select nations; the
@@ -19,8 +19,8 @@ test('statistics ranking and war banners', async ({ page }, info) => {
   if ((await ranking.count()) === 0) await page.getByTestId('stats-btn').click(); // persisted hidden by another test
   await expect(ranking).toBeVisible();
 
-  // Each metric: rows sorted by value, highest first.
-  for (const m of RANK_METRICS) {
+  // Each list: rows sorted by value, highest first (the lists of a life too, PLAN 7.4f28).
+  for (const m of RANK_LISTS) {
     await page.getByTestId('rank-metric').selectOption(m);
     await expect(ranking).toHaveAttribute('data-metric', m);
     const values = (await ranking.getByTestId('rank-row').evaluateAll((rows) => rows.map((r) => Number(r.getAttribute('data-value'))))) as number[];
@@ -63,4 +63,44 @@ test('statistics ranking and war banners', async ({ page }, info) => {
   await expect(ranking).toHaveCount(0);
   await page.getByTestId('stats-btn').click();
   await expect(ranking).toBeVisible();
+});
+
+// PLAN 7.4f28 (the critic's N14: AoC marks the dead in its lists): Yugoslavia killed, its land
+// split into nations. In "Revolts suffered" it leads, marked dead, without a flag, and a click on
+// it opens nothing; in the lists of the present it is not there.
+test('a dead nation in the lists of a life, marked', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  const ranking = page.getByTestId('stats-ranking');
+  if ((await ranking.count()) === 0) await page.getByTestId('stats-btn').click();
+  const YUG = id('YUG');
+  await page.evaluate(async (n) => {
+    const sim = window.__warsim!.sim;
+    sim.command({ kind: 'collapseNation', nation: n });
+    await sim.step(24);
+  }, YUG);
+  await expect.poll(() => page.evaluate((n) => window.__warsim!.hud.stats.value!.dead.some((d) => d.id === n), YUG)).toBe(true);
+  await page.getByTestId('rank-metric').selectOption('revolts');
+  const first = ranking.getByTestId('rank-row').first();
+  await expect(first).toHaveAttribute('data-nation', String(YUG));
+  await expect(first).toHaveAttribute('data-dead', '1');
+  await expect(first.getByTestId('rank-dead')).toBeVisible();
+  await expect(first).toContainText('Yugoslavia');
+  await expect(first.getByTestId('rank-flag')).toHaveCount(0);
+  expect(Number(await first.getAttribute('data-value'))).toBeGreaterThanOrEqual(2);
+  // The living below it are not marked.
+  expect(await ranking.locator('[data-dead="1"]').count()).toBe(1);
+  await page.screenshot({ path: path.join(path.resolve('docs/evidence/7.4'), 'f28-ranking-dead.png') });
+  // A click on the dead opens no panel.
+  await first.click();
+  await expect(page.getByTestId('nation-panel')).toHaveCount(0);
+  // Age: the dead among the living, at the years it lived.
+  await page.getByTestId('rank-metric').selectOption('age');
+  await expect(ranking.getByTestId('rank-row').first()).not.toHaveAttribute('data-dead', '1');
+  // A list of the present has no dead.
+  await page.getByTestId('rank-metric').selectOption('land');
+  await expect(ranking.locator('[data-dead="1"]')).toHaveCount(0);
+  await expect(ranking.locator(`[data-nation="${YUG}"]`)).toHaveCount(0);
 });

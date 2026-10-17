@@ -125,6 +125,8 @@ quick sweep as a smoke test.
       `godMode.test.ts`; `godPanelMore1938`.
     - [x] 7.4f27 The God tab's checkboxes: a box's words wrap beside it (Winner takes all's went
       under its box, seen in 7.4f26's picture). AT: `godPanelMore1938` (red before).
+    - [x] 7.4f28 The critic's N14, the dead: three lists of a life (age, wars fought, revolts
+      suffered) with the dead in them, marked (ADR-452). AT: `lives.test.ts`; `ranking1938`.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -263,8 +265,8 @@ quick sweep as a smoke test.
     2718). A rule to look at, not a look: what a peace does with land that is held.
   - N4, N5 (the arrows: PLAN 7.4b): markers overlap round Warsaw at the start, one under the
     capital's flag.
-  - N14 (left of it after PLAN 7.4c, 7.4f11 and 7.4f12): the dead are not in the ranking (AoC
-    marks them); the economy tab is six numbers.
+  - N14 (left of it after PLAN 7.4c, 7.4f11, 7.4f12 and 7.4f28): the economy tab is six numbers;
+    no list of kills (the log names no killer).
   - N17: a black smear under a counter near Bern in 1952 of seed 2718.
   - N18 (sound since PLAN 3.12d): one language.
   - N21: while the game runs, half-faded counters are on screen all the time as the clusters
