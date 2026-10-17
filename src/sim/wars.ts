@@ -29,6 +29,8 @@ export interface War {
    * older save has none (read as 0).
    */
   frontless?: number;
+  /** The nations of the war whose capital an enemy of it took (PLAN 7.18a; absent: none). */
+  capitalsLost?: number[];
 }
 
 export interface Truce {

@@ -72,7 +72,7 @@ import { airOf, Domain, laneOf, seaOf, TILE, type World } from '../sim/world';
 import { airHolders } from '../sim/systems/airSuperiority';
 import type { AirZones } from '../sim/nav/airZones';
 import { BufferPool } from './pool';
-import { warheadsOf } from '../sim/systems/nuclear';
+import { canDeliver, warheadsOf } from '../sim/systems/nuclear';
 
 export type Post = (msg: FromWorker, transfer: Transferable[]) => void;
 
@@ -849,6 +849,7 @@ export class SimServer {
         aiOff: nc.aiOff[id] === 1,
         nukesAllowed: !world.nukesBanned.has(id),
         warheads: warheadsOf(world, id),
+        canDeliver: canDeliver(world, id),
         aggression: nc.aggression[id]!,
         incomeMult: nc.incomeMult[id]!,
         living: nc.living[id] === 1,

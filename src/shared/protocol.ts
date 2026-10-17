@@ -540,6 +540,11 @@ export interface NationStat {
   nukesAllowed: boolean;
   /** Its warheads (PLAN 6.1b). */
   warheads: number;
+  /**
+   * Whether it can deliver them (PLAN 7.18b, `canDeliver`): nuclear weapons allowed it, a warhead,
+   * and a strategic bomber group at an airbase or ballistic missiles.
+   */
+  canDeliver: boolean;
   /** AI aggression 0..100 and income multiplier from traits (PLAN 1.39b1 options). */
   aggression: number;
   incomeMult: number;

@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-485 · 2026-10-17 · accepted — An overrun holder of warheads strikes; no restrike nearby, no small capital's bonus (PLAN 7.18a–d)
+
+- **Context.** Critic R8-B1 (run 8): AI nuclear use unseen in half the games and inert where set up;
+  France and Poland given 10 warheads in the editor and overrun never strike; China struck one
+  Xinjiang town four times in 4 days, the Soviet Union Nepal's capital for 1,000 dead. Measured
+  (`docs/evidence/7.18/measure-a-d.md`): France's utility could not go positive (gain 0.25 against
+  costs 0.55 at its most desperate), its targets worth 0.02 to 0.05.
+- **Decision.**
+  - a. A nation whose capital an enemy took in the war (`War.capitalsLost`, kept by
+    `noteCapitalCaptured`, state) is in extreme desperation at desperation 1 or more, as one fighting
+    to the death or with enemies near its capital: the capital moves after the fall, and none is near
+    the new one.
+  - b. The editor says when a nation's warheads cannot be used (`NationStat.canDeliver`): no strategic
+    bomber group at an airbase and no missiles, or nuclear weapons not allowed it. An overrun nation
+    with no airbase can order no bomber; it is told, not changed.
+  - c. A target's men, the enemy's and the striker's own, each as a share of that side's men within
+    FRONT_KM of the place (its theatre), not of the whole side across the world.
+  - d. No place within RESTRIKE_RADII (4) blast radii of a burst of the last RESTRIKE_DAYS (was one
+    radius); TARGET_CAPITAL only for the capital of a nation holding CAPITAL_WEIGHT (0.1) of the enemy
+    side's output.
+- **Measured:** France strikes on day 68 with its last bomber; seeds 1–5 × 30 years 42 decisions in
+  2 seeds (19 before, the same 2). Not yet the critic's visible share of games: where none strike, the
+  holders lose far wars to nations that cannot threaten them or are deterred. 7.18 stays open for a
+  cause of use beyond a war for one's life.
+- **Pin.** Seed 99's year ea691c94 → 9fe2a568: `War.capitalsLost` in the wars' state; no warhead in
+  that year, no decision changed.
+- **Tests.** `nukeOverrun1938.test.ts` (new: the critic's France strikes before day 75, stays extreme
+  after the fall, no place weighed near a recent burst; Paris worth 0.99 to Germany with missiles,
+  Luxembourg 0.07 against TARGET_CAPITAL 0.3); `editorForces1938.spec` (Poland's warheads: the note;
+  Britain's: none); the unit suite (262 files) green.
+
 ### ADR-484 · 2026-10-17 · accepted — Saves as runs: format version 2 (PLAN 7.17)
 
 - **Context.** Critic run 7 (stability 7): "a save is about 40 MB" (39.4 to 40.0 MB at years 12 to

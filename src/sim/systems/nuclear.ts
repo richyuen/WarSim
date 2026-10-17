@@ -67,7 +67,9 @@
  * the death, the Germans before Paris, was at most 0 against its best target with the taboo whole).
  * - targetValue (`targetValue`), 0 to 1: TARGET_SCALE × the share of the enemy side's output
  *   (the cells it holds, as bombs and fallout leave them) and of its men within the blast, less
- *   the striker's side's men there; + TARGET_CAPITAL with an enemy capital in it; × the chance the
+ *   the striker's side's men there (the men each as a share of the side's within FRONT_KM of the
+ *   place, its theatre; PLAN 7.18c); + TARGET_CAPITAL with an enemy capital in it, of a nation that
+ *   holds CAPITAL_WEIGHT of the side's output (PLAN 7.18d); × the chance the
  *   warhead gets there (PLAN 6.7, SPEC's "expected damage": 1 by missile, 1 − the bomber's
  *   interception chance there by bomber).
  * - desperation (`desperationOf`), 0 to 2: how far its side is losing the war (−score / 100), the
@@ -75,7 +77,8 @@
  *   (`menLost`, the exhaustion's; PLAN 7.6a: France's army fell from 555k to 163k men in 40 days at
  *   0.5), DESPERATION_CAPITAL with enemy land forces within
  *   CAPITAL_THREAT_KM of its capital, DESPERATION_FTD when its side fights to the death.
- *   Extreme: at least 1, fighting to the death or its capital threatened.
+ *   Extreme: at least 1, fighting to the death, its capital threatened, or its capital taken in
+ *   this war (PLAN 7.18a: the capital moves after the fall, and no enemy is near the new one).
  * - doctrine, 0.5 to 1.5: 0.5 + aggression / 100 (no trait of its own: aggression read as one).
  * - retaliationRisk (`retaliationRisk`): the most of any enemy and any ally of an enemy that can
  *   deliver a warhead (`canDeliver`): its warheads / RETALIATION_FULL, to 1, × its doctrine.
@@ -459,6 +462,8 @@ function falloutDay(world: World): void {
 /** The use decision's weights (PLAN 6.4a): see the head of the file. */
 export const TARGET_SCALE = 10;
 export const TARGET_CAPITAL = 0.3;
+/** The share of its side's output a nation holds for its capital to be worth TARGET_CAPITAL (PLAN 7.18d). */
+export const CAPITAL_WEIGHT = 0.1;
 export const DESPERATION_CAPITAL = 0.5;
 export const DESPERATION_FTD = 0.5;
 /** The weight of the share of its side's men lost in the war (PLAN 7.6a). */
@@ -554,7 +559,11 @@ export function desperationOf(world: World, n: number, war: War, side: number): 
   });
   const ftd = war.fightToDeath[side]!;
   const desperation = Math.min(2, losing + lost + DESPERATION_MEN * menLost(world, war, side) + (threatened ? DESPERATION_CAPITAL : 0) + (ftd ? DESPERATION_FTD : 0));
-  return { desperation, extreme: desperation >= 1 && (ftd || threatened) };
+  // Extreme with its capital taken in this war too (PLAN 7.18a, critic R8-B1): a capital that has
+  // moved after the fall has no enemy near it, and France overrun counted as less desperate than
+  // with the Germans before Paris.
+  const fallen = war.capitalsLost?.includes(n) ?? false;
+  return { desperation, extreme: desperation >= 1 && (ftd || threatened || fallen) };
 }
 
 /** The industry (`cells.econ`) each nation controls, by nation id: one pass over the cells. */
@@ -586,16 +595,16 @@ interface StrikeView {
   fy: number[];
   fs: number[];
   fEnemy: boolean[];
-  menAll: number;
-  ownAll: number;
   econAll: () => number;
+  /** The day's industry by nation (`industryHeld`). */
+  held: () => Float64Array;
 }
 
 function strikeView(world: World, n: number, war: War, side: number, industry: () => Float64Array): StrikeView {
   const enemy = new Set(war.sides[1 - side]!);
   const own = new Set(ownCoalition(world, war, side));
   const c = world.formations.cols;
-  const v: StrikeView = { enemy, radius: blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1), fx: [], fy: [], fs: [], fEnemy: [], menAll: 0, ownAll: 0, econAll: () => 0 };
+  const v: StrikeView = { enemy, radius: blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1), fx: [], fy: [], fs: [], fEnemy: [], econAll: () => 0, held: industry };
   world.formations.forEach((id) => {
     const m = c.nation[id]!;
     const isEnemy = enemy.has(m);
@@ -605,8 +614,6 @@ function strikeView(world: World, n: number, war: War, side: number, industry: (
     v.fy.push(c.y[id]!);
     v.fs.push(s);
     v.fEnemy.push(isEnemy);
-    if (isEnemy) v.menAll += s;
-    else v.ownAll += s;
   });
   let all: number | null = null;
   v.econAll = () => {
@@ -654,21 +661,39 @@ function valueIn(world: World, n: number, v: StrikeView, x: number, y: number): 
       if (f > 0) hit += econ[cell]! * (1 - (world.bombDamage.get(cell) ?? 0)) * (1 - FALLOUT_INCOME * falloutAt(world, cell)) * f;
     }
   }
-  // Men: the enemy side's within it, the striker's side's there taken off.
-  const { menAll, ownAll } = v;
+  // Men: the enemy side's within it, the striker's side's there taken off; each a share of that
+  // side's men in the theatre, within FRONT_KM of the place (PLAN 7.18c, critic R8-B1: of the whole
+  // side, Japan's and Manchukuo's armies counted against a German army before Paris, 18,000 men
+  // in a blast 1 % of 1.55 million).
+  let menAll = 0;
+  let ownAll = 0;
   let menHit = 0;
   let ownHit = 0;
   for (let k = 0; k < v.fs.length; k++) {
-    const f = blastShare(seaKm(world, x, y, v.fx[k]!, v.fy[k]!), radius) * v.fs[k]!;
-    if (v.fEnemy[k]) menHit += f;
-    else ownHit += f;
+    const km = seaKm(world, x, y, v.fx[k]!, v.fy[k]!);
+    if (km > FRONT_KM) continue;
+    const s = v.fs[k]!;
+    const f = blastShare(km, radius) * s;
+    if (v.fEnemy[k]) {
+      menAll += s;
+      menHit += f;
+    } else {
+      ownAll += s;
+      ownHit += f;
+    }
   }
   // As a share of all the enemy side's output (summed only when the blast reaches some).
   const econAll = hit > 0 ? v.econAll() : 0;
   const share = (econAll > 0 ? hit / econAll : 0) + (menAll > 0 ? menHit / menAll : 0) - (ownAll > 0 ? ownHit / ownAll : 0);
   const nc = world.nations.cols;
   let capital = 0;
-  for (const m of enemy) if (nc.living[m] === 1 && blastShare(seaKm(world, x, y, nc.capitalX[m]!, nc.capitalY[m]!), radius) > 0) capital = TARGET_CAPITAL;
+  // A capital of weight to the enemy side (PLAN 7.18d, critic R8-B1: the Soviet Union struck Nepal's,
+  // 1,000 dead, at war with China): its nation holds CAPITAL_WEIGHT of the side's output.
+  for (const m of enemy) {
+    if (nc.living[m] !== 1 || blastShare(seaKm(world, x, y, nc.capitalX[m]!, nc.capitalY[m]!), radius) === 0) continue;
+    const all = v.econAll();
+    if (all > 0 && (v.held()[m] ?? 0) >= CAPITAL_WEIGHT * all) capital = TARGET_CAPITAL;
+  }
   // Expected damage (SPEC): as likely as the warhead gets there, by missile when `n` knows them.
   const through = knows(world, n, 'ballistic_missiles') ? 1 : 1 - bomberIntercept(world, n, x, y);
   return Math.max(0, Math.min(1, TARGET_SCALE * share + capital)) * through;
@@ -785,6 +810,12 @@ export const FRONT_KM = 1000;
 /** How long a burst keeps another warhead off its place (PLAN 6.11b), days. */
 export const RESTRIKE_DAYS = 7;
 /**
+ * How far a burst of the last RESTRIKE_DAYS keeps other warheads off, in blast radii (PLAN 7.18d,
+ * critic R8-B1: seed 7919's China struck four points of one Xinjiang town 40 to 100 km apart in
+ * 4 days, each just past the radius of the one before: 641,568, then 18,088, 1,554 and 566 dead).
+ */
+export const RESTRIKE_RADII = 4;
+/**
  * How long a burst keeps another warhead off an enemy capital it fell on, and off every place within a
  * blast radius of it (PLAN 7.6e), days, and how long a burst is remembered (`world.nukeBursts`).
  * Elsewhere a place of massed enemy men is weighed again after RESTRIKE_DAYS: men massed there again. Seed 5's Soviet Union struck one capital three times
@@ -801,8 +832,9 @@ export const CAPITAL_RESTRIKE_DAYS = 365;
  * Each on land the enemy side owns and controls (PLAN 6.11a: not the striker's own land, a
  * neutral's nor the sea), within FRONT_KM of a land formation or a capital of `side`: a colony
  * or a capital-in-exile far from every front is not weighed (critic R6-B2: Paramaribo, Aden).
- * None within a blast radius of a burst of the last RESTRIKE_DAYS or of a warhead in flight
- * (PLAN 6.11b: the critic saw three in a row on one spot, its formations gone after the first), and
+ * None within RESTRIKE_RADII blast radii of a burst of the last RESTRIKE_DAYS or of a warhead in
+ * flight (PLAN 6.11b: the critic saw three in a row on one spot, its formations gone after the
+ * first; PLAN 7.18d: four radii, not one), and
  * no capital within a blast radius of a burst of the last CAPITAL_RESTRIKE_DAYS, nor any place
  * within one of a burst on a capital (PLAN 7.6e); elsewhere a place of massed men is weighed after
  * RESTRIKE_DAYS, men massed again.
@@ -849,6 +881,10 @@ export function nukeTargets(world: World, n: number, war: War, side: number, aim
     if (b.tick > world.tick - RESTRIKE_DAYS * 24) struck.push(b.x, b.y);
   }
   for (const l of world.nukeLaunches) struck.push(l.tx, l.ty);
+  const nearStruck = (x: number, y: number): boolean => {
+    for (let k = 0; k < struck.length; k += 2) if (seaKm(world, x, y, struck[k]!, struck[k + 1]!) <= RESTRIKE_RADII * radius) return true;
+    return false;
+  };
   const struckThisYear = (x: number, y: number): boolean => within(x, y, struckYear);
   const fair = (x: number, y: number): boolean => {
     const xx = cellX(world, Math.floor(x));
@@ -856,7 +892,7 @@ export function nukeTargets(world: World, n: number, war: War, side: number, aim
     if (xx === null || yy < 0 || yy >= h) return false;
     const cell = yy * w + xx;
     if (!at.has(owner[cell]!) || !enemy.has(controller[cell]!)) return false;
-    if (within(x, y, struck) || within(x, y, struckCapital)) return false;
+    if (nearStruck(x, y) || within(x, y, struckCapital)) return false;
     if (anywhere) return true;
     for (let k = 0; k < anchors.length; k += 2) if (seaKm(world, x, y, anchors[k]!, anchors[k + 1]!) <= FRONT_KM) return true;
     return false;

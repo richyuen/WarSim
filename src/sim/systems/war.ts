@@ -302,7 +302,10 @@ export function declareWar(world: World, attacker: number, target: number, alone
 /** Records a capital capture in the war between capturer and loser (score swing). */
 export function noteCapitalCaptured(world: World, capturer: number, loser: number): void {
   const w = world.wars.between(capturer, loser);
-  if (w) w.war.capitalBonus = Math.max(-CAPITAL_BONUS_MAX, Math.min(CAPITAL_BONUS_MAX, w.war.capitalBonus + (w.side === ATTACKERS ? CAPITAL_SCORE : -CAPITAL_SCORE)));
+  if (!w) return;
+  w.war.capitalBonus = Math.max(-CAPITAL_BONUS_MAX, Math.min(CAPITAL_BONUS_MAX, w.war.capitalBonus + (w.side === ATTACKERS ? CAPITAL_SCORE : -CAPITAL_SCORE)));
+  // Who lost it (PLAN 7.18a: a nation that lost its capital in a war is in its extreme desperation).
+  if (!(w.war.capitalsLost ?? []).includes(loser)) w.war.capitalsLost = [...(w.war.capitalsLost ?? []), loser];
 }
 
 function landOf(land: LandCounts, side: number[]): number {

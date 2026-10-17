@@ -17963,3 +17963,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   on dry land (7.19); R8-B3 the hydrogen bomb's size cosmetic (7.20). Run 7's blockers: the stall
   (R7-B2) fixed; AI nuclear use (R7-B1) better (55 bursts in 510 world-years, from 4 in 420), not fixed.
 - **Next:** PLAN 7.18.
+
+## 2026-10-17 — PLAN 7.18a–d: an overrun holder strikes; restrike and small capitals (rules, UI); 7.18 open
+
+- **Start:** gate green on a clean tree (`1c9ff9e`).
+- **Measured first:** the critic's France case (`tools/diag/nukeCase.ts`, new) and the gates of
+  seeds 1–5 × 30 years (19 decisions in 2 seeds).
+- **Done:** a capital taken is extreme desperation (`War.capitalsLost`); men against the theatre's;
+  restrike zone 4 radii; capital bonus for nations of weight; the editor's note when warheads cannot
+  be used. ADR-485. Pin ea691c94 → 9fe2a568.
+- **Measured after:** France strikes on day 68; 42 decisions in 2 of 5 seeds. `docs/evidence/7.18/`.
+- **Open:** bursts in most seeds: where none strike, nuclear powers lose far wars to nations that cannot
+  threaten them, or are deterred. Next: a cause of use beyond a war for one's life (a winning power
+  ending a long war against a foe that cannot answer), then the critic's other set-ups and the sweep.
+- **Loop stopped here at the user's request.**

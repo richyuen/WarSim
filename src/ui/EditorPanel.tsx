@@ -208,6 +208,11 @@ export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onC
           </button>
         </div>
       ) : null}
+      {me && me.warheads > 0 && !me.canDeliver ? (
+        <div class="panel-note" data-testid="editor-no-delivery">
+          {t(me.nukesAllowed ? 'editor.noDelivery' : 'editor.nukesBanned', { name: displayName(me.name) })}
+        </div>
+      ) : null}
       {me ? (
         <>
           <div class="god-row">

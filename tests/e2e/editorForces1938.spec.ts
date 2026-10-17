@@ -63,6 +63,17 @@ test('the editor places a fleet, an air wing and warheads; a shared scenario has
   await expect.poll(() => warheadsOf(page, ENG)).toBe(5);
   await expect(page.getByTestId('editor-warheads-of')).toContainText('5');
   await page.screenshot({ path: path.resolve('docs/evidence/7.13/a-editor-forces.png') });
+  // Britain has strategic bombers: no word that it cannot use them.
+  await expect(page.getByTestId('editor-no-delivery')).toHaveCount(0);
+
+  // PLAN 7.18b (critic R8-B1: "let warheads placed by the editor … be used by a desperate holder, or
+  // say in the editor why they will not be"): Poland has no strategic bomber and no missiles in 1938.
+  await page.getByTestId('editor-nation').selectOption(String(id('POL')));
+  await page.getByTestId('editor-warheads').fill('3');
+  await page.getByTestId('editor-warheads-add').click();
+  await expect(page.getByTestId('editor-no-delivery')).toContainText('Poland cannot use them: it has no strategic bomber group at an airbase and no ballistic missiles');
+  await page.getByTestId('editor-panel').screenshot({ path: path.resolve('docs/evidence/7.18/b-editor-no-delivery.png') });
+  await page.getByTestId('editor-nation').selectOption(String(ENG));
 
   // A German fleet in Berlin is refused, and says why.
   await page.getByTestId('editor-nation').selectOption(String(GER));
