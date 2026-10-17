@@ -5,6 +5,14 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### `seaBattleSeen1938` red in parallel runs under load (2026-10-17, PLAN 7.4f38, 7.4f40)
+Red twice this day in large parallel e2e runs (53 spec files with PLAN 7.4f38's change, 7 with
+7.4f40's, two unrelated changes), green alone five times (both changes and HEAD before them) and
+in a run of 4 files. The failure's message was not kept (the run's output had its summary only).
+Not on `tools/gate/knownRed.json`: if `npm run check:review` sees it red twice (in the run and
+alone), it goes there with this entry; until then a red of it in a crowded run is load. Not
+tried: its error under load, to see which of its waits is short.
+
 ### RESOLVED 2026-10-15 (PLAN 7.1k, ADR-403) · `zoomDemo1938` is red for the sim, not for the GPU (2026-10-15, PLAN 7.1e)
 `tools/gate/knownRed.json` has it for wall time on a software GPU. On this machine it fails on its
 node side, before the page: `expect(max battalion strength / size).toBeLessThan(0.5)` gets 0.672

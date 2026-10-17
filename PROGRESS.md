@@ -17560,3 +17560,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Names giving way from a handover's first frame to markers at 2 % (and the reverse at T1 → T2):
   the rule of PLAN 2.7u, chosen so that names do not change places in the middle of a handover
   and are at rest when it ends (`nameObstacles`). Kept; the line came off.
+
+## 2026-10-17 — PLAN 7.4f closed (ADR-460); 7.4g the defects it leaves
+
+- **7.4f** done with 7.4f1–f47. What is left of 7.4's groups is in ADR-460, each line in one of:
+  defects (open tasks, 7.4g1–g3: city dots in the sea, a retreat on the page, the T1 arrow's
+  end), cause found with a remedy named (N21, tanks in one another, Prague at 1800 m/px, land
+  painted on the mask's water, the declutter's corner cases), the game's look (taste, low
+  confidence), not built (World AI settings, kills, flags of a second table, nameless provinces,
+  sound's language), and questions left to the critic (the Soviet stripes, N17) or as the rule
+  stands (7.3e1's flank file).
+- **7.4's AT** (pictures beside AoC's): 7.4a–e logged them (`docs/evidence/7.4/a-*` to `e-*`
+  beside `steam-screenshot-01`/`-03`); every picture they name exists. 7.4 ticks after 7.4g.
+- **BLOCKERS:** `seaBattleSeen1938` red under load twice this day, green alone (an entry, not on
+  `knownRed.json`).
+- **Next:** PLAN 7.4g1.

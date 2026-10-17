@@ -10342,3 +10342,144 @@ Of 7.4 (open in PLAN.md):
   - [x] 7.4e Borders and fonts: the border's darkness and width at T0 and the UI's font beside
     AoC's (its borders are about 3 px and near black at 2000 m/px, ours 2.8 px and lighter). AT:
     pictures; a change, or the reason for none, in an ADR.
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.4 (open in PLAN.md):
+
+  - [x] 7.4f The groups below, a part each when taken up, or a line in an ADR for what is left.
+    Done 2026-10-17 with 7.4f1–f47; what is left is in ADR-460, each line with its disposition.
+    - [x] 7.4f1 The keys and the mouse of the critic's N7: Escape closes one panel a press (the
+      nearest first), the number keys 1–9 and 0 set the map mode, a double click zooms in about
+      the place clicked. AT: an e2e spec of each; the specs that press Escape green.
+    - [x] 7.4f2 A phone's width (the critic's N8): the top bar, the ranking and a nation's panel
+      apart and in view at 390 × 844, every button of the bottom bar in reach. AT: an e2e spec;
+      the layout specs green.
+    - [x] 7.4f3 The legend at T2 and T3: occupied land is a tint there (PLAN 2.11f), and the
+      legend says so where the ground is the most of the picture. AT: an e2e spec.
+    - [x] 7.4f4 The critic's N10: the nation panel tells one Defensive Pact (or Coalition) from
+      another by its founder, as the history does ("Defensive Pact of Sweden"). AT: a unit test
+      of the title; an e2e spec of two pacts in the panel.
+    - [x] 7.4f5 The critic's N12: the editor's terrain layer shows the terrain map mode, and the
+      nation layer the mode before. AT: `editor1938` reads the mode at each switch.
+    - [x] 7.4f6 The critic's N15, N16: the panels opaque; at most two rows of war banners at
+      1400 px and wider (6, the rest "+N"). AT: an e2e spec at 1400 and 1920 with nine wars.
+    - [x] 7.4f7 The critic's "no tooltip on hover": a mouse on land names the nation by the
+      cursor, and its occupier where another holds it. AT: an e2e spec.
+    - [x] 7.4f8 The critic's N13: the flag editor's line and circle (a disc), and an undo of 20
+      steps. AT: unit tests of the line and the disc; `flags1938` draws and undoes each.
+    - [x] 7.4f9 A Kill's successors in greys (the critic, 2026-10-07): a spawned nation's colour
+      by hue, saturation 0.5–0.8, lightness 0.40–0.62. AT: a unit test of 300 colours, none grey.
+    - [x] 7.4f10 The random world's names (the critic; the sixth read, PLAN 2.16Ra): the
+      province's name without its kind ("Bauchi State" → "Bauchi"), the capital's where it is a
+      direction ("Central") or taken; every name its own. AT: unit tests; `randomWorld.test.ts`
+      asks for 60 names of 60 nations on its seeds. (The colours of the same finding: six hue
+      sectors met evenly on seeds 1, 7 and 42, so no change; the hegemon: PLAN 1.42.)
+    - [x] 7.4f11 The critic's N14, the lists: nine ranking lists as AoC's (enemies at war,
+      puppets, aircraft and warheads besides land, army, income, treasury and manpower). AT:
+      `ranking.test.ts`; `ranking1938` sorts every list.
+    - [x] 7.4f12 The critic's N14, the charts: gridlines at the quarters of the value axis, five
+      dates on the time axis, and under the cursor the month and each line's value. AT:
+      `charts1938` reads the ticks and the values under the cursor against the sim's series.
+    - [x] 7.4f13 The critic's N6 ("no city panel"): over a city's dot the tooltip names the
+      city, "capital" when it is one, and its province's unrest. Lines of the list already
+      settled taken off (the order lines at 400 m/px and N4's arrows: 7.4b; N18's sound: 3.12d).
+      AT: `mapTooltip1938` at Berlin.
+    - [x] 7.4f14 Occupied land at T2 and T3 read as water (the critic of 2026-10-07: French-held
+      Germany a blue field like a lake): the occupier's cast on it 0.42 → 0.3, the terrain the most
+      of it. AT: pictures; `occupiedGround1938`, `occupation1938`, `groundColour1938` green.
+    - [x] 7.4f15 AoC's God panel, the commands the sim had: the treasury set, Annex (the chosen
+      nation into this one), Fight to the Death (this nation's side of each of its wars, a toggle).
+      AT: an e2e spec of each.
+    - [x] 7.4f16 AoC's God panel, Recolor and Donate: two commands (`recolorNation`,
+      `donateGold`: no more than the giver has, not to itself, in range) and their controls. AT:
+      unit tests of both against a twin that gives nothing; `godPanelMore1938`.
+    - [x] 7.4f17 The God tab edits combat efficiency (±10 %, a lock) and the alliance's unity
+      (±10), by the commands the sim had; the stats carry the lock. AT: `godPanelMore1938`.
+    - [x] 7.4f18 Cities made and razed in the game: two God map tools, Found city (a town at the
+      click, for its holder) and Raze city (the city within two cells), by the editor's commands.
+      AT: `godPanelMore1938` founds a town in Hesse and razes it.
+    - [x] 7.4f19 The world's rules in the game: the God tab sets Winner takes all, the revolt
+      mode and the CE mode (beside the AI and nuclear weapons); the stats carry them. AT:
+      `godPanelMore1938`.
+    - [x] 7.4f20 A formation in a stack of T1 markers picked by a click: a click on the stack
+      whose formation is open opens the next of it, round to the lead. AT: `stackPick1938`.
+    - [x] 7.4f21 Tags under the page's boxes: a tag gives way to the top bar, the legend, a
+      nation's or formation's panel, the ranking, a top-centre panel and the ticker's rows, as to
+      the banners and the bar. AT: `tags1938` (a block under the nation panel; red before).
+    - [x] 7.4f22 A city's dot and name are wanted at their bound, as the tiers are (at exactly
+      2000 m/px the names of size 4 were off with the T1 markers on). AT: `cities.test.ts`.
+    - [x] 7.4f23 The player's selection of a formation whose id another of the same nation has
+      taken: the snapshot carries each id's generation, and the selection drops a formation made
+      since. AT: `player1938` (a Polish division removed and one raised with its id; red before).
+    - [x] 7.4f24 A formation with a dead one's id is a T1 marker new to the view: no fade, stack
+      or box move of the dead one's. AT: `markerStacks.test.ts` (both ways; red before).
+    - [x] 7.4f25 The critic's N8 at 1024 × 600: the played nation's label onto a line of its own
+      in the bar, whole, and what stands above the bar on its top (ADR-451). AT: `barNarrow1938`.
+    - [x] 7.4f26 AoC's Spawn Nations with its initial size: a God map tool and a command
+      (`spawnNation`: the province clicked and the nearest of its holder's, 1 to 24, at peace). AT:
+      `godMode.test.ts`; `godPanelMore1938`.
+    - [x] 7.4f27 The God tab's checkboxes: a box's words wrap beside it (Winner takes all's went
+      under its box, seen in 7.4f26's picture). AT: `godPanelMore1938` (red before).
+    - [x] 7.4f28 The critic's N14, the dead: three lists of a life (age, wars fought, revolts
+      suffered) with the dead in them, marked (ADR-452). AT: `lives.test.ts`; `ranking1938`.
+    - [x] 7.4f29 The names in a zoom from the world to T1 (ADR-414 g): their glyphs drawn once
+      into an atlas and then as pieces of it (ADR-453). AT: no frame over 17 ms in a zoom (11 to
+      17 before); `nationLabelLayout.test.ts`; the label specs green.
+    - [x] 7.4f30 A capital's name reaches 1.6 times as far past the markers round its dot (Warsaw's
+      left out at 1000 m/px at the start). AT: `cities.test.ts`; the city name specs green.
+    - [x] 7.4f31 No land of the start nobody's but Antarctica's: the Spratly Islands France's, and
+      an islet no province covers the nearest owned land's (ADR-454; the pin moved).
+      AT: `ownership.test.ts`.
+    - [x] 7.4f32 Switzerland's cell in the Po delta: a one-cell province placed among other
+      countries' land is that land's (ADR-455; the pin moved). AT: `ownership.test.ts`,
+      `ports.test.ts`.
+    - [x] 7.4f33 A player builds an armoured division (the critic did not test it): Germany's
+      Build, the queue and the gold, the division raised with its 34 tanks, its panel, its T1
+      marker. AT: `buildArmour1938` (new).
+    - [x] 7.4f34 The critic's N14, the economy tab: the month in parts (own and occupied land,
+      bonuses, what blockades, raids, bombs and fallout take; army, navy and air upkeep,
+      administration, warheads), `economyBreakdown` to the bit of the month's tick. AT:
+      `economyBreakdown.test.ts`; `nationPanel1938`.
+    - [x] 7.4f35 A war banner with no battle on a grey field, its words softer; one with a battle
+      red, its swords lit. AT: `toBattle1938` (the fields' colours); `docs/evidence/2.14/to-battle-banners.png`.
+    - [x] 7.4f36 A tag far from its block at T3: a clear place counts only within 120 px of it
+      (ADR-456). AT: `tags.test.ts` (red before); the tag specs green.
+    - [x] 7.4f37 A neighbour's tag over a block: measured in a running war's battles, none at
+      60 m/px or T3 over a block whose own tag is not by it; a spec holds it, with 7.4f36's.
+      AT: `tagsCrowd1938` (new).
+    - [x] 7.4f38 Formations of one nation at one place, not in contact, drawn as a file abreast
+      (ADR-457). AT: `files.test.ts`; `stackBlocks1938` (red before).
+    - [x] 7.4f39 The critic's N5: capital flags keep clear of the T1 markers, left out past
+      40 px (ADR-458). AT: `flagsClear1938` (red before).
+    - [x] 7.4f40 The seam: the item layers (counters, markers, flags, sea battles, sorties, dots,
+      the air's and the bombs' marks) take the copies within 160 px of the view. AT:
+      `camera.test.ts`; `seamItems1938` (new; red with no margin).
+    - [x] 7.4f41 The seam: each copy of a city has its name's place (the switch stays the city's);
+      one place for both made the layer restart a name each frame. AT: `cities.test.ts` (the
+      layer with a marker on one copy: rests; red before); `seamNames1938` (new).
+    - [x] 7.4f42 The seam: the city names take the copies within 160 px of the view (a name
+      beside a dot just past the seam reaches into it). AT: `cities.test.ts` (red before).
+    - [x] 7.4f43 The seam: counters folded and T1 markers stacked and parted at their copies
+      nearest the camera. AT: `counters.test.ts`; `seamItems1938` (markers of one nation either
+      side of the seam one stack; red before).
+    - [x] 7.4f44 The seam: a capital flag's state kept by its copy's place relative to the camera,
+      not by the wrap offset that changes as the camera folds. AT: `seamItems1938` (red before).
+    - [x] 7.4f45 The seam: a nation name's copies have a switch each, and the layout takes the
+      copies within 600 px of the view (ADR-459). AT: `nationLabelLayout.test.ts`.
+    - [x] 7.4f46 The seam: a city's buildings reach over it (the city index wraps, the distance
+      the short way round). AT: `scatter.test.ts` (red before).
+    - [x] 7.4f47 The seam: the figures of T3 uploaded at their copy nearest their f32 origin (by
+      the camera). AT: `seamItems1938` (2,047.9 cells before, 0.23 after).

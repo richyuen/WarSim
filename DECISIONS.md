@@ -167,6 +167,85 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-460 · 2026-10-17 · accepted — What PLAN 7.4's groups leave, each with its disposition (PLAN 7.4f)
+
+- **Context.** PLAN 7.4f: "the groups below, a part each when taken up, or a line in an ADR for
+  what is left". 7.4f1 to 7.4f47 took 47 parts. This records every line left, so that it stands
+  alone when the plan's text of 7.4 goes to `docs/PLAN_DONE.md`. `reference/NOTES.md` (the
+  user's taste notes) is missing: every choice of taste here is low confidence.
+- **Defects: open tasks (PLAN 7.4g, before 7.4's tick).**
+  1. Cities by the fine mask: 140 of 5,757 on a water pixel of it, 387 not on sure land (one
+     capital in water; Gibraltar, Kalemie, Geneva, Amoy, Buffalo, Cochin): at T2 and T3 their dots
+     stand in the drawn sea.
+  2. A retreat is a march like any other on the page: `FormationRetreated` is neither drawn nor
+     in the history.
+  3. The T1 order arrow ends at the target cell's middle; the formation will stand at the cell's
+     land point, up to 0.6 cells from it on a coastal cell.
+- **Cause found, remedy named, not done.**
+  - Counters mid-fade while the game runs (the critic's N21): 90 % of frames over Spain and
+    Europe at 2500 m/px, ~4 counters of ~90; a quarter lead swaps, 28 % undone within a second,
+    the rest grid clusters changing members (`.cache/74f30/`). A sticky lead cut the swaps by
+    40 % and the counters mid-fade by 3 % (not kept). Remedy: clusters whose members stay while
+    the armies move (a clustering of its own, not the grid's).
+  - Tanks of two elements of a deployed block drawn in one another: one tank in fifteen at T3
+    (seed 5381, day 21). The deployment's scatter (0.009 cells, 0.3 rad) against footprints of
+    0.024 in slots of 0.03. Remedies: figures scaled by the room to the nearest element in
+    contact (a size that changes as a block engages), or less scatter (a sim rule: the pin).
+  - Prague's name at 1800 m/px at the start: 12 markers within 120 px of its dot, past a
+    capital's reach of 1.6 × (7.4f30). Remedy: places past two obstacles, or a capital's name
+    over a marker's edge.
+  - Land painted in the editor on a cell with no land pixel in the fine mask draws as sea, and a
+    formation raised there stands off sure land (the build gives islets to the scenario's cells
+    only). Remedy: an islet for such a cell in the sim's mask at the paint and after a load (it
+    must agree in both, or a loaded run parts from a straight one), and in the page's texture.
+  - Within one cluster level a larger scale can fold a counter into another neighbour than a
+    smaller one did (a year into seed 1938, 6 to 8 px a cell); an eased zoom can end with other
+    counters than a stepped one (62 of 192 made-up spacings); some counters turn twice in a
+    wheel notch (56 of 7,394); the second frame of a counter layer newly shown turns 1.3 %. T1
+    markers: one pair's parting can leave a box on a neighbour (44 of 5,249 made-up clusters of
+    four); in 1.2 to 1.6 % of clusters of 3 to 5 the 8 rounds do not part every pair; "a quarter
+    under" is of area, so at 1800 m/px some numbers lie partly under a neighbour's box. Remedy:
+    a declutter judged on the numbers' boxes, with the hold kept through an eased zoom.
+- **Accepted as the game's look (taste, low confidence).**
+  - The ground: no roads near cities, buildings along two directions from a hash with no streets;
+    one cell size for shading and texture over the whole map (a cell is narrower than high away
+    from the equator); grounds that differ at T3 by roughness and a few hundredths of brightness.
+  - What T3 shows of a battle: shots fly 30 to 60 km and a T3 view is 4 to 17 km wide, so few
+    tracers cross it; a battalion at a third of its men is a scatter over its footprint, not a
+    smaller block (ADR-69's order of losses); a stack's lead at T1 shows the strongest kind only.
+  - Armour at T2 and T3: an element's tanks turn their turrets by one angle (up to ~20° from a
+    near target's bearing, ADR-161); figures drive over a hull, and a tank can stand against its
+    own burning hull; an element's end at T3 is the T2 wreck mark, and a lost tank leaves nothing
+    at T2; the small mark of a pale nation on pale ground; no small frame for guns, half-tracks
+    and rifles; the handover band ends at 8 px for the turrets.
+  - A worn element at T2 is a paler sprite: on a light nation over a light fill (Japan's on
+    China's) 0.55 and 1 are close.
+  - Back from T2 with the camera still zooming, the T1 boxes take the first frame's rest places
+    and ease 150 ms to the final ones (up to 6 px).
+  - The blocks of formations in contact can stand elsewhere for the hour after a load or a
+    command than in the game that ran on (a picture only; the hashes are equal).
+- **Not built (no rule or no data for it).**
+  - AoC's God panel's World AI settings beyond the five the sim has (AI, nuclear weapons, winner
+    takes all, revolts, CE mode): AoC has about fifteen, the rest have no rule here.
+  - No list of kills in the ranking: the history names no killer (7.4f28, ADR-452).
+  - Flags by scenario: a second nation table (another year) would bring its own flags file; the
+    worker and `ScenarioInfo.nationTags` know only 1938's. No second table exists.
+  - The seven provinces with no name give their country's ("Free Colombia" beside Colombia).
+  - Sound in one language (the critic's N18).
+- **Questions, left as the rule stands.**
+  - PLAN 7.3e1: a flank file of a block held back at DEPLOY_REACH, against an enemy deployed away
+    from it, can stand past contact reach from that enemy's block (seed 99, tick 1317: 1.519
+    cells). Left: such a file is in reserve and fights when the enemy comes within reach;
+    `deploy.test.ts` holds the bound of 1.5 on its world.
+  - After 14 years of seed 2718 the critic saw the Soviet Union as a field of thin stripes of
+    other nations' colours (2026-10-07). Not looked at since 7.3's changes to the break-up (ADR-430
+    to ADR-439); left to the critic's next read (7.5), not pre-empted.
+  - The critic's N17, a black smear under a counter near Bern in 1952 of seed 2718: not seen
+    again; left to the critic's next read.
+- **Settled on the way (for the record):** the seam group (7.4f40–47), the tags (7.4f21,
+  f36, f37), picking (7.4f20, f23, f24), the names (7.4f29, f30, f42, f45), N3 (ADR-147), the
+  2.14 pictures, the order arrows (7.4b), the nine atolls (ADR-105).
+
 ### ADR-459 · 2026-10-17 · accepted — A nation name's copies have a switch each (PLAN 7.4f45)
 
 - **Context.** PLAN 2.7k kept a nation name's state by nation (it had been by nation and wrap
