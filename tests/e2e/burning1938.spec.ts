@@ -174,16 +174,20 @@ async function watch(page: Page, info: TestInfo, underFire: boolean): Promise<vo
     inView += visible.length;
     burning += got.fresh.filter((f) => f.burns).length;
     burningInView += seen.filter((f) => f.burns).length;
-    // Drawn: burning at once, smoking when the flame is out, nothing after its life.
+    // Drawn: burning at once, smoking when the flame is out, and after its time on the clock still
+    // there, the flame out (PLAN 7.9a, ADR-468: held until the game is WRECK_HOLD_HOURS past it; the
+    // hours stepped here are fewer; before, nothing after its life).
     for (const k of visible) {
       expect(got.burning!.shown, `hull ${k}, burning`).toContain(k);
       expect(got.smoking!.shown, `hull ${k}, smoking`).toContain(k);
+      expect(got.gone!.shown, `hull ${k}, held after its time on the clock`).toContain(k);
     }
     // A flame for each hull lost under fire, and for no other.
     expect(got.burning!.flames).toBe(got.burning!.alight);
     expect(got.burning!.flames).toBeGreaterThanOrEqual(seen.filter((f) => f.burns).length);
     expect(got.smoking!.flames).toBe(0);
-    expect(got.gone).toEqual({ shown: [], flames: 0, alight: 0 });
+    expect(got.gone!.flames).toBe(0);
+    expect(got.gone!.alight).toBe(0);
     // No tank of the element stands on the hull, and the element has a figure for each tank left.
     for (const f of got.fresh) {
       const own = got.figures.filter((g) => g.id === f.element);

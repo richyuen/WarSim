@@ -564,6 +564,14 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 - Specs that measure time and fail on a slow machine (2026-10-04, gate runs with another project's
   dev server busy on the machine, the e2e stage at 2 to 2.4 times its usual 4.1 min). None was
   changed. If one fails on an idle machine it is a finding.
+  - `fallen1938` (2026-10-17, PLAN 7.9a; on `knownRed.json`): fails alone on the budget machine on
+    `71c8e01`, before 7.9a: "marks drawn at the day's end" 2 of 3 (a mark faded in 17.5 s of the
+    clock; an hour of the test takes 2 to 3 s). With 7.9a (held by the game: 6 drawn) it fails on
+    "marks in the view in a day", 5 of 10, with 33 of the fallen marked: the fight about Polish
+    division 550 on day 21 of seed 4242 is not the one the spec was written on since the 1938 start
+    changed (PLAN 7.4f31, 7.4f32). **Closed** (PLAN 7.9e, the same day): re-aimed at division 544
+    (426 men lost on day 22, in contact all day): 73 marks in the view, 74 drawn at the day's end;
+    green alone three of three; off `knownRed.json`.
   - `individuals1938`: a frame under 25 ms (170 ms).
     2026-10-06 (the gate of PLAN 3.1d, two runs of the suite, 9.8 and 10.1 min): in the first its
     wait of 60 s for the first frame and the map layers of a paused 1938 page ran out; alone

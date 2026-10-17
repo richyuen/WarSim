@@ -19,6 +19,12 @@ export const WRECK_IN_MS = 250;
 export const WRECK_HOLD_MS = 12_000;
 export const WRECK_OUT_MS = 3_000;
 export const WRECK_LIFE_MS = WRECK_IN_MS + WRECK_HOLD_MS + WRECK_OUT_MS;
+/**
+ * Game hours a wreck stays before it may fade (PLAN 7.9a, critic run 7: "I saw no wreck"): its
+ * fade starts when both WRECK_HOLD_MS of the clock and these hours of the game have passed since
+ * it was made, so it is there while the game is paused and for the days after a fight at any speed.
+ */
+export const WRECK_HOLD_HOURS = 72;
 /** Wrecks held at once; beyond it the oldest go. */
 export const MAX_WRECKS = 1500;
 /** One turn of a wreck's smoke, ms, and its puffs. */
@@ -50,14 +56,24 @@ export interface WreckMark {
   angle: number;
   /** ms on the render clock. */
   born: number;
+  /** The sim tick it was made at (PLAN 7.9a); none: no game-time hold. */
+  tick?: number;
+  /** When the game passed WRECK_HOLD_HOURS after it, on the render clock; Infinity until then; none: no game-time hold. */
+  out?: number;
 }
 
-/** Opacity of a wreck at `now`: in under the burst, held, then out. 0 = gone. */
+/** When a mark made at `born` (render clock) with game-time hold `out` starts to fade, after `holdMs` of the clock (PLAN 7.9a). */
+export function fadeStart(born: number, out: number | undefined, holdMs: number): number {
+  return Math.max(born + holdMs, out ?? -Infinity);
+}
+
+/** Opacity of a wreck at `now`: in under the burst, held (by the clock, and by the game, PLAN 7.9a), then out. 0 = gone. */
 export function wreckOpacity(w: WreckMark, now: number): number {
   const age = Math.max(0, now - w.born);
-  if (age >= WRECK_LIFE_MS) return 0;
-  const out = age - WRECK_IN_MS - WRECK_HOLD_MS;
-  return out > 0 ? 1 - smooth(out / WRECK_OUT_MS) : smooth(Math.min(1, age / WRECK_IN_MS));
+  const from = fadeStart(w.born, w.out, WRECK_IN_MS + WRECK_HOLD_MS);
+  if (now >= from + WRECK_OUT_MS) return 0;
+  if (now > from) return 1 - smooth((now - from) / WRECK_OUT_MS);
+  return smooth(Math.min(1, age / WRECK_IN_MS));
 }
 
 /** Progress of a wreck's burst at `now`, 0–1; 1 = over. */
@@ -112,19 +128,36 @@ export class WreckFx {
   last = -Infinity;
   until = -Infinity;
 
-  /** Takes the ElementDestroyed events of a snapshot that arrived at `now` (they are copied). */
-  add(count: number, data: ArrayLike<number>, now: number): void {
-    // Wrecks that have faded leave here, and only here.
+  /** How many wrecks it holds (the test hook, PLAN 7.9a: the critic read `wrecks.count`). */
+  get count(): number {
+    return this.wrecks.length;
+  }
+
+  /**
+   * Takes the ElementDestroyed events of a snapshot that arrived at `now` (they are copied). With
+   * `tick`, the snapshot's sim tick, a wreck is held until the game is WRECK_HOLD_HOURS past it
+   * (PLAN 7.9a); without, it fades on the clock alone.
+   */
+  add(count: number, data: ArrayLike<number>, now: number, tick?: number): void {
+    // Wrecks that have faded leave here, and only here; those the game has passed may fade.
     let kept = 0;
-    for (const w of this.wrecks) if (now < w.born + WRECK_LIFE_MS) this.wrecks[kept++] = w;
+    for (const w of this.wrecks) {
+      if (w.out === Infinity && tick !== undefined && tick - w.tick! >= WRECK_HOLD_HOURS) {
+        w.out = now;
+        this.until = Math.max(this.until, fadeStart(w.born, w.out, WRECK_IN_MS + WRECK_HOLD_MS) + WRECK_OUT_MS);
+      }
+      if (now < fadeStart(w.born, w.out, WRECK_IN_MS + WRECK_HOLD_MS) + WRECK_OUT_MS) this.wrecks[kept++] = w;
+    }
     this.wrecks.length = kept;
     for (let i = 0; i < count; i++) {
       const o = i * EVENT_STRIDE;
       if (data[o + 2] !== EventKind.ElementDestroyed) continue;
       const id = data[o + 3]!;
-      this.wrecks.push({ id, kind: data[o + 4]! as Wreck, x: data[o + 5]!, y: data[o + 6]!, angle: lie(id), born: now });
+      const w: WreckMark = { id, kind: data[o + 4]! as Wreck, x: data[o + 5]!, y: data[o + 6]!, angle: lie(id), born: now };
+      if (tick !== undefined) [w.tick, w.out] = [data[o + 1]!, Infinity];
+      this.wrecks.push(w);
       this.last = now;
-      this.until = now + WRECK_LIFE_MS;
+      this.until = Math.max(this.until, now + WRECK_LIFE_MS);
     }
     if (this.wrecks.length > MAX_WRECKS) this.wrecks.splice(0, this.wrecks.length - MAX_WRECKS);
   }
@@ -142,6 +175,7 @@ export class WreckFx {
    * the snapshot it draws.
    */
   animating(now: number): boolean {
+    // A wreck held by the game (PLAN 7.9a) is drawn still: its smoke is of the clock's hold.
     return this.wrecks.length > 0 && now < this.until + ANIM_TAIL_MS;
   }
 
@@ -158,7 +192,7 @@ export class WreckFx {
   draw(ctx: CanvasRenderingContext2D, cam: Camera, geo: MapGeometry, vw: number, vh: number, now: number, alpha: number, size: number): void {
     this.shown.length = 0;
     this.bursts = 0;
-    if (alpha <= 0.01 || this.wrecks.length === 0 || now >= this.until) return;
+    if (alpha <= 0.01 || this.wrecks.length === 0) return;
     const offs = wrapOffsets(cam, geo, vw, SEAM_MARGIN);
     const margin = 3 * size;
     const solid = KINDS.map(() => new Path2D());
@@ -195,7 +229,7 @@ export class WreckFx {
           }
         }
         // What burns goes on smoking (a ship while it is still above the water); the smoke thins as the wreck fades.
-        if (w.kind !== Wreck.men && opacity > 0.5 && sunk < 0.9) {
+        if (w.kind !== Wreck.men && opacity > 0.5 && sunk < 0.9 && now < w.born + WRECK_LIFE_MS) {
           for (let k = 0; k < PUFFS; k++) {
             const t = ((now - w.born) / SMOKE_MS + k / PUFFS) % 1;
             const rise = t < 0 ? t + 1 : t;

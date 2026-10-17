@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-468 · 2026-10-17 · accepted — Wrecks and hulls held by the game, and counted (PLAN 7.9a)
+
+- **Context.** Critic run 7 (tanks 5): "`wrecks` read `null` at every tier, so I saw no wreck". Its
+  hook read `view.wrecks.count`, which `WreckFx` had not. A wreck lasted WRECK_LIFE_MS (15.25 s) of
+  the render clock and a hull or a mark of the fallen HULL_LIFE_MS (17.5 s), paused or not: at the
+  speeds a fight is watched it was gone, and a paused game lost its wrecks.
+- **Decision.** A wreck, a hull and a mark keep the sim tick they were made at; each starts to fade
+  only when both its time on the clock (as before) and WRECK_HOLD_HOURS (72) of the game have
+  passed, checked as snapshots arrive (a paused game sends none: held). Smoke stays of the clock's
+  time, so a held wreck is drawn still (no endless redraws). `WreckFx.count` and `HullFx.count` for
+  the hook. Without a tick (the effects' own tests) as before.
+- **Tests.** `wreckHold.test.ts` (new); `wrecksHeld1938` (new: an armour fight at T3, its hulls still
+  counted and drawn 20 s after, paused; red with no tick passed: 0 drawn); `burning1938` and
+  `fallen1938` assert a hull and a mark are still there after their time on the clock, the flame
+  out (they asserted gone; the hours they step are fewer than 72); `wreckFx`, `hullFx`, `fallenFx`
+  unit tests unchanged and green; `burning1938`, `fightSeen1938` ×2, `loadedEffects1938`,
+  `tankBattle1938` green one at a time (all six red side by side, by timeouts); `fallen1938` red
+  before and after on other counts, then re-aimed at division 544 (PLAN 7.9e) and green.
+
 ### ADR-467 · 2026-10-17 · accepted — An air zone's holder is one fighting there (PLAN 7.8)
 
 - **Context.** Critic run 7 (aircraft 5): on day 10 of Germany's war on Poland (seed 8217) the air

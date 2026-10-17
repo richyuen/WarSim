@@ -9,15 +9,16 @@ import { NATIONS_1938 } from '../../src/sim/scenario1938';
 
 // PLAN 3.11d (the critic's R3-B3: "No wreck was ever drawn. In 230 sim hours of the largest
 // fight `wrecks` and `shown` stayed 0", `critic/c3_m.json`): the critic's game (seed 4242,
-// Germany against Poland by God Mode) from day 21, a day of it at T3 on Polish division 550,
-// which stands front to front with German division 3. A battalion there loses a figure or two
-// in a day and dies whole in none. What an element that is not of tanks loses now lies where
-// its figure stood: the fallen, a broken gun.
+// Germany against Poland by God Mode) from day 21, a day of it at T3 on a Polish division in
+// contact. A battalion there loses a figure or two in a day and dies whole in none. What an
+// element that is not of tanks loses now lies where its figure stood: the fallen, a broken gun.
+// Division 544 since PLAN 7.9e (550 before: since the 1938 start changed, PLAN 7.4f31 and f32, it
+// lost 31 men on day 22 and 5 of its marks were in the view; 544 loses 426, in contact all day).
 
 const nation = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
 const GER = nation('GER');
 const POL = nation('POL');
-const POLE = 550;
+const POLE = 544;
 const VIEW = { width: 1600, height: 900 };
 const HOURS = 24;
 const key = (h: { element: number; figure: number }): string => `${h.element}:${h.figure}`;
@@ -159,9 +160,10 @@ test('T3: within a day of a fight that costs strength, what a battalion and a ba
     const [vw, vh] = got.size;
     const seen = got.fresh.filter((m) => Math.abs(m.x - got.cam.cx) * got.cam.scale < vw / 2 && Math.abs(m.y - got.cam.cy) * got.cam.scale < vh / 2);
     inView += seen.length;
-    // Drawn while it lies, those in the view at least; gone when its time is over.
+    // Drawn while it lies, those in the view at least; after its time on the clock still there
+    // (PLAN 7.9a, ADR-468: held until the game is WRECK_HOLD_HOURS past it; before, gone then).
     for (const m of seen) expect(got.lying, `mark ${key(m)} drawn`).toContain(key(m));
-    expect(got.gone).toEqual([]);
+    for (const m of seen) expect(got.gone, `mark ${key(m)} held after its time on the clock`).toContain(key(m));
     if (!shot && seen.length >= 3) {
       shot = true;
       await page.screenshot({ path: path.join(out, 'd-the-fallen-6m.png') });

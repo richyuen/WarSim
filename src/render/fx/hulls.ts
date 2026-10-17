@@ -24,6 +24,7 @@ import { SEAM_MARGIN, worldToScreen, wrapOffsets, type Camera, type MapGeometry 
 import { hash2, pair } from '../hash';
 import { ANIM_TAIL_MS, smooth } from '../timing';
 import { figureCells, figureCount, figureOffsets, gridSide } from '../units/individuals';
+import { fadeStart, WRECK_HOLD_HOURS } from './wrecks';
 
 /** ms: a hull burns, then smokes, then fades. */
 export const FLAME_MS = 6_000;
@@ -82,6 +83,9 @@ export interface BurningHull {
   burns: boolean;
   /** ms on the render clock. */
   born: number;
+  /** The sim tick it was made at, and when the game passed WRECK_HOLD_HOURS after it (render clock; Infinity until then); none: no game-time hold (PLAN 7.9a). */
+  tick?: number;
+  out?: number;
 }
 
 /** What a figure that is not a tank leaves where it stood (PLAN 3.11d). */
@@ -101,6 +105,9 @@ export interface FallenMark {
   burns: boolean;
   /** ms on the render clock. */
   born: number;
+  /** The sim tick it was made at, and when the game passed WRECK_HOLD_HOURS after it (render clock; Infinity until then); none: no game-time hold (PLAN 7.9a). */
+  tick?: number;
+  out?: number;
 }
 
 /** What a figure of `frame` leaves, or -1: a tank leaves its hull, a ship and an aircraft nothing here. */
@@ -192,12 +199,16 @@ export function flameOf(h: BurningHull, now: number): number {
   return age < FLAME_MS - FLAME_END_MS ? 1 : 1 - smooth((age - (FLAME_MS - FLAME_END_MS)) / FLAME_END_MS);
 }
 
-/** Opacity of a hull or a mark at `now`: there at once (its tank stood there the frame before), out at the end. 0 = gone. */
-export function hullOpacity(h: { born: number }, now: number): number {
-  const age = Math.max(0, now - h.born);
-  if (age >= HULL_LIFE_MS) return 0;
-  const out = age - FLAME_MS - SMOKE_MS;
-  return out > 0 ? 1 - smooth(out / HULL_OUT_MS) : 1;
+/** Opacity of a hull or a mark at `now`: there at once (its tank stood there the frame before), held (by the clock, and by the game, PLAN 7.9a), out at the end. 0 = gone. */
+export function hullOpacity(h: { born: number; out?: number }, now: number): number {
+  const from = fadeStart(h.born, h.out, FLAME_MS + SMOKE_MS);
+  if (now >= from + HULL_OUT_MS) return 0;
+  return now > from ? 1 - smooth((now - from) / HULL_OUT_MS) : 1;
+}
+
+/** Whether a hull or a mark is gone at `now`. */
+function gone(h: { born: number; out?: number }, now: number): boolean {
+  return now >= fadeStart(h.born, h.out, FLAME_MS + SMOKE_MS) + HULL_OUT_MS;
 }
 
 export class HullFx {
@@ -215,27 +226,51 @@ export class HullFx {
    * Takes the elements of a snapshot that arrived at `now` and those of the snapshot before it
    * (null: there was none, or the camera was too far out to keep it). Returns the hulls it made.
    */
-  add(before: HullElements | null, after: HullElements, now: number): number {
-    // Hulls that have faded leave here, and only here.
+  add(before: HullElements | null, after: HullElements, now: number, tick?: number): number {
+    // Hulls that have faded leave here, and only here; those the game has passed may fade (PLAN 7.9a).
+    const release = (h: { born: number; tick?: number; out?: number }): void => {
+      if (h.out === Infinity && tick !== undefined && tick - h.tick! >= WRECK_HOLD_HOURS) {
+        h.out = now;
+        this.until = Math.max(this.until, fadeStart(h.born, h.out, FLAME_MS + SMOKE_MS) + HULL_OUT_MS);
+      }
+    };
     let kept = 0;
-    for (const h of this.hulls) if (now < h.born + HULL_LIFE_MS) this.hulls[kept++] = h;
+    for (const h of this.hulls) {
+      release(h);
+      if (!gone(h, now)) this.hulls[kept++] = h;
+    }
     this.hulls.length = kept;
     kept = 0;
-    for (const m of this.fallen) if (now < m.born + HULL_LIFE_MS) this.fallen[kept++] = m;
+    for (const m of this.fallen) {
+      release(m);
+      if (!gone(m, now)) this.fallen[kept++] = m;
+    }
     this.fallen.length = kept;
     if (!before) return 0;
+    const held = (h: { tick?: number; out?: number }): void => {
+      if (tick !== undefined) [h.tick, h.out] = [tick, Infinity];
+    };
     const marks = fallenLost(before, after, now);
     if (marks.length > 0) {
-      for (const m of marks) this.fallen.push(m);
-      this.until = now + HULL_LIFE_MS;
+      for (const m of marks) {
+        held(m);
+        this.fallen.push(m);
+      }
+      this.until = Math.max(this.until, now + HULL_LIFE_MS);
       if (this.fallen.length > MAX_FALLEN) this.fallen.splice(0, this.fallen.length - MAX_FALLEN);
     }
     const lost = tanksLost(before, after, now);
     if (lost.length === 0) return 0;
+    for (const h of lost) held(h);
     this.hulls.push(...lost);
-    this.until = now + HULL_LIFE_MS;
+    this.until = Math.max(this.until, now + HULL_LIFE_MS);
     if (this.hulls.length > MAX_HULLS) this.hulls.splice(0, this.hulls.length - MAX_HULLS);
     return lost.length;
+  }
+
+  /** How many hulls and marks it holds (the test hook, PLAN 7.9a). */
+  get count(): number {
+    return this.hulls.length + this.fallen.length;
   }
 
   /** Another game is shown from here on (a load): the hulls and the marks of the one before are not its own. */
@@ -259,7 +294,7 @@ export class HullFx {
     this.shown.length = 0;
     this.flames = 0;
     this.fallenShown.length = 0;
-    if (alpha <= 0.01 || (this.hulls.length === 0 && this.fallen.length === 0) || now >= this.until) return;
+    if (alpha <= 0.01 || (this.hulls.length === 0 && this.fallen.length === 0)) return;
     const offs = wrapOffsets(cam, geo, vw, SEAM_MARGIN);
     this.drawFallen(ctx, cam, offs, vw, vh, now, alpha, minPx, size);
     if (this.hulls.length === 0) return;
@@ -288,7 +323,7 @@ export class HullFx {
         seen = true;
         placed.push({ h, x, y, s, opacity });
         // Smoke for as long as a burnt hull is whole: thick over the flame, thinner after.
-        if (h.burns && opacity > 0.5) {
+        if (h.burns && opacity > 0.5 && age < HULL_LIFE_MS) {
           for (let k = 0; k < PUFFS; k++) {
             const t = (age / PUFF_MS + k / PUFFS + (hash2(h.element, h.figure) & 255) / 256) % 1;
             const rise = t < 0 ? t + 1 : t;

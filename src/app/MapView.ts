@@ -610,13 +610,13 @@ export class MapView {
     const shots = this.fire.add(s.fires.count, s.fires.data, arrived, s.tickMs, this.geo, this.figureOfShooter());
     if (shots > 0) this.turretAims.add(this.fire.shots.slice(-shots), arrived, s.tickMs);
     this.firesDropped = s.fires.dropped;
-    this.wrecks.add(s.events.count, s.events.data, arrived);
+    this.wrecks.add(s.events.count, s.events.data, arrived, s.tick);
     this.airFx.add(s.events.count, s.events.data, arrived);
     this.nukeFx.add(s.events.count, s.events.data, arrived);
     // A tank lost under fire burns: the snapshot says which elements were fired at, the fire
     // records only of the shots with an end in the box (PLAN 3.6e5). What a battalion, a battery
     // and a half-track company lose lies there too (PLAN 3.11d).
-    this.hulls.add(elementsBefore, s.elements, arrived);
+    this.hulls.add(elementsBefore, s.elements, arrived, s.tick);
     this.lastTick = s.tick;
     this.snapshots++;
   }

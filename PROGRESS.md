@@ -17767,3 +17767,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   #5d5d5d (grey on the drab ground); a tank element is a 4 × 4 grid of a 0.024-cell footprint.
 - **Split:** 7.9a wrecks seen, 7.9b whose tank, 7.9c tanks larger and in rows facing the enemy,
   7.9d armour at T2. **Next:** PLAN 7.9a.
+
+## 2026-10-17 — PLAN 7.9a: wrecks and hulls held by the game, and counted (render)
+
+- **Start:** gate green on a clean tree (`71c8e01`).
+- **Done:** `WreckFx` and `HullFx` take the snapshot's tick: a wreck, hull or mark fades only when its
+  clock time and WRECK_HOLD_HOURS (72) of the game have passed; paused, held; smoke of the clock's
+  time; `count` on both. ADR-468. Picture `docs/evidence/7.9/a-hulls-held-t3.png`.
+- **Tests:** `wreckHold.test.ts`, `wrecksHeld1938` (new; the spec red with no tick passed);
+  `burning1938` and `fallen1938` follow the rule (held after their clock time, the flame out); the
+  effects' unit tests unchanged. Six specs side by side all red by timeouts; one at a time 7 of 8
+  green. `fallen1938` (known red) red alone before and after on other counts (BLOCKERS).
+- **PLAN 7.9e, with it:** `fallen1938` re-aimed from division 550 (31 men lost on day 22 in today's
+  world) at 544 (426, in contact all day): 79 figures lost, 73 marks in the view, 74 drawn at the
+  day's end; green alone three of three; off `knownRed.json`, its BLOCKERS line closed.
+- **Next:** PLAN 7.9b.
