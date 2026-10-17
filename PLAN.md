@@ -199,11 +199,6 @@ quick sweep as a smoke test.
     - Capitals whose names are left out because garrisons stand on every place by the dot: of
       Europe's at the start in 15 views from 1800 to 400 m/px (`.cache/74f32/caps.ts`), Prague
       at 1800 m/px only since PLAN 7.4f30 (12 markers within 120 px of its dot).
-    - Order arrows are not kept clear of, by decision; in a war they are many (two months
-      into seed 1938 the picture over Austria is mostly arrows). Whether every marker's
-      arrow should show at T1 has not been asked.
-    - T2 → T1: names give way from the first frame to markers that show at 2%. T1 → T2: a
-      name can take a place under a number that still shows.
   - **The ground's look.**
     - No roads near cities (SPEC's tier table had them; not built in PLAN 2.8); buildings
       stand along two directions from a hash, with no streets, and know of their city's

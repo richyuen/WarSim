@@ -17552,3 +17552,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   just east: 1,584 figures within 0.23 cells of the origin; 2,047.9 before); `individuals1938`,
   `seamFight1938`, `closeZoom1938`, `muzzles1938`, `tankBattle1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — two lines of "Names and arrows at T1" settled; off the list
+
+- The order arrows at T1: shown for what is picked, selected or the player's only since PLAN 7.4b
+  (ADR-441); the picture "mostly arrows" is of before.
+- Names giving way from a handover's first frame to markers at 2 % (and the reverse at T1 → T2):
+  the rule of PLAN 2.7u, chosen so that names do not change places in the middle of a handover
+  and are at rest when it ends (`nameObstacles`). Kept; the line came off.
