@@ -17954,3 +17954,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   year-27 save 40.0 → 4.86 MB (12.1 %), the same hash; version 1 still loads. Pin unmoved.
 - **Tests:** `saveRuns.test.ts` (new), the unit suite (261 files), the save specs (27) green.
 - **Next:** PLAN 7.5, the critic run.
+
+## 2026-10-17 — Critic run 8 (PROMPT step 2a, PLAN 7.5) on `fd27e85`: 3 blocking, filed as PLAN 7.18 to 7.20
+
+- **Critic run 8** (57 min): map 7, diplomacy 7, dynamics 7, God Mode 7, editor 7, stats 7, UI 7,
+  performance 7, stability 7; semantic zoom 7, naval 6, tanks 7, aircraft 6, AI nukes 6. Blocking 3:
+  R8-B1 AI nuclear use unseen in half the games and inert where set up (7.18); R8-B2 a sea battle's row
+  on dry land (7.19); R8-B3 the hydrogen bomb's size cosmetic (7.20). Run 7's blockers: the stall
+  (R7-B2) fixed; AI nuclear use (R7-B1) better (55 bursts in 510 world-years, from 4 in 420), not fixed.
+- **Next:** PLAN 7.18.

@@ -32,6 +32,22 @@ quick sweep as a smoke test.
 Run 7's dimensions under the DONE condition's bar (report of 2026-10-17 on `19e2341`, its "Fix"
 lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split when taken up:
 
+- [ ] 7.18 AI nuclear use seen and credible (critic R8-B1, run 8 on `fd27e85`): 8 of 17 unaided 30-year
+  worlds see a burst, 3 of 17 before year 20; France and Poland given 10 warheads in the editor and
+  overrun never strike in 120 to 150 days; a point struck again days after, a small third party for a
+  thousand dead (`critic/c8_headless_*.json`, `c8_g_5591.json`, `c8_i_7127.json`). AT: measured first
+  by gate (`tools/diag/nukeGates.ts`); an overrun holder of warheads strikes within its war in the
+  critic's set-ups; a burst in at least 8 of 10 seeds × 30 years, some before year 20; no point
+  struck twice within its ruin's days, no third party for under its bound of dead; the 50-year sweep.
+- [ ] 7.19 A sea battle's ticker row lands on the fight (critic R8-B2, contradicts 7.10b): seed 5591,
+  Germany on Britain, hour 41: the view on dry land at Groningen, the pair 23 cells apart either side
+  of the Dutch coast (`critic/c8_j2_5591.json`). AT: the critic's case: ships of both sides on screen
+  at the row's centre and scale, the centre on water; a battle is one between ships within reach of
+  each other's guns, or its pair is.
+- [ ] 7.20 A hydrogen bomb is a hydrogen bomb (critic R8-B3, contradicts 7.16a): it kills 3 to 11 % more
+  than an atomic one on the same point and its ruin looks the same at 300 m/px (`critic/c8_b_4711.json`).
+  AT: a thermonuclear yield tens of times a fission one in blast, toll, fallout and ruin; the critic's
+  four cities compared; the ruins told apart in a picture; the pin's entry if the rule moves it.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
