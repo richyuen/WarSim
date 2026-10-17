@@ -43,7 +43,7 @@ quick sweep as a smoke test.
   - [x] 7.4e Borders and fonts: the border's darkness and width at T0 and the UI's font beside […]
   - [x] 7.4f The groups below, a part each when taken up, or a line in an ADR for what is left. […]
   - [ ] 7.4g The defects 7.4's groups leave (ADR-460), a part each:
-    - [ ] 7.4g1 City dots on sure land: 140 of 5,757 cities on a water pixel of the fine mask and
+    - [x] 7.4g1 City dots on sure land: 140 of 5,757 cities on a water pixel of the fine mask and
       387 not on sure land (one capital in water) draw their dots in the sea at T2 and T3. AT:
       no city's dot on a water pixel of the mask at the 1938 start; the city specs green.
     - [ ] 7.4g2 A retreat on the page: `FormationRetreated` neither drawn nor in the history. AT:

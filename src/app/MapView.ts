@@ -43,7 +43,7 @@ import { SEAM_MARGIN, cellOfPoint, itemOffsets, screenToWorld, worldToScreen, wr
 import { groundReach } from '../render/map/ground';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
-import { coastBit, coastMask, type CoastMask } from '../shared/landMask';
+import { coastBit, coastMask, nearestSure, type CoastMask } from '../shared/landMask';
 import { cityIndex, groundCap, scatter, SCATTER_STRIDE, type Scatter, type ScatterWorld } from '../render/map/scatter';
 import { drawUnitAtlas } from '../render/units/atlas';
 import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
@@ -53,7 +53,7 @@ import { appendWakes } from '../render/units/wakes';
 import { spriteTint } from '../render/units/tint';
 import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
-import type { SimClient } from './simClient';
+import type { MapLayers, SimClient } from './simClient';
 import { setSizeScale, sizeScale } from '../render/sizeScale';
 import { loadMapFonts, MAP_FONT, NAME_WEIGHT } from '../render/labels/fonts';
 import type { MapHover } from '../ui/mapHover';
@@ -164,7 +164,24 @@ export class MapView {
   maskBit(px: number, py: number): boolean {
     return this.coast !== null && coastBit(this.coast, px, py);
   }
-  private cities: { id: number; x: number; y: number }[] = [];
+  private cities: MapLayers['cities'] = [];
+
+  /**
+   * The cities to the layer of names and dots and to the buildings, each at the nearest point of
+   * sure land of the coast within two cells (PLAN 7.4g1): 387 of the 1938 start's 5,757 were not on
+   * sure land, 140 on a water pixel, their dots in the drawn sea at T2 and T3. The editor's picks
+   * (`cityNear`) and the sim keep the cities' own places. Before the coast came: as they are.
+   */
+  private placeCities(): void {
+    const c = this.coast;
+    const placed = c ? this.cities.map((city) => {
+      const [x, y] = nearestSure(c, this.geo.w, this.geo.h, city.x, city.y, this.geo.wrapX);
+      return x === city.x && y === city.y ? city : { ...city, x, y };
+    }) : this.cities;
+    this.cityLabels.setCities(placed);
+    if (this.scatterWorld) this.scatterWorld.cities = cityIndex(placed, this.geo.w, this.geo.h, this.geo.kmPerCell, this.geo.wrapX);
+    this.scatterKey = '';
+  }
 
   /** The city row nearest cell (x, y) within `reach` cells, or 0 (editor tools, PLAN 1.36). */
   cityNear(x: number, y: number, reach = 2): number {
@@ -359,10 +376,8 @@ export class MapView {
       this.dirty = true;
     });
     sim.onCities((cities) => {
-      this.cityLabels.setCities(cities);
       this.cities = cities;
-      if (this.scatterWorld) this.scatterWorld.cities = cityIndex(cities, this.geo.w, this.geo.h, this.geo.kmPerCell, this.geo.wrapX);
-      this.scatterKey = '';
+      this.placeCities();
       this.dirty = true;
     });
     sim.onTerrain((data, landChanged) => {
@@ -429,6 +444,8 @@ export class MapView {
       this.coast = coastMask(mask, this.geo.w);
       this.map.setLandMask(mask);
       if (this.scatterWorld) this.scatterWorld.mask = this.coast;
+      // The cities' dots on sure land of this coast (PLAN 7.4g1), whichever came first.
+      if (this.cities.length > 0) this.placeCities();
       this.scatterKey = '';
       this.dirty = true;
     });
@@ -436,14 +453,13 @@ export class MapView {
       this.map.setLand(m.land.w, m.land.h, m.land.data);
       this.map.setTerrain(m.terrain.w, m.terrain.h, m.terrain.data, m.terrainColors);
       this.terrainColors = m.terrainColors;
-      this.cityLabels.setCities(m.cities);
       this.cities = m.cities;
       this.templates = m.templates;
       this.map.setProvinces(this.geo.w, this.geo.h, m.province);
       this.provinceGrid = m.province;
       this.hasFineCoast = true;
-      this.scatterWorld = { w: this.geo.w, h: this.geo.h, wrapX: this.geo.wrapX, kmPerCell: this.geo.kmPerCell, terrain: m.terrain.data, mask: this.coast, cities: cityIndex(m.cities, this.geo.w, this.geo.h, this.geo.kmPerCell, this.geo.wrapX) };
-      this.scatterKey = '';
+      this.scatterWorld = { w: this.geo.w, h: this.geo.h, wrapX: this.geo.wrapX, kmPerCell: this.geo.kmPerCell, terrain: m.terrain.data, mask: this.coast, cities: cityIndex([], this.geo.w, this.geo.h, this.geo.kmPerCell, this.geo.wrapX) };
+      this.placeCities();
       this.dirty = true;
     });
     this.raf = requestAnimationFrame((t) => this.frame(t));

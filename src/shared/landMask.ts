@@ -177,6 +177,35 @@ export function coastSure(c: CoastMask, mapW: number, mapH: number, x: number, y
 }
 
 /**
+ * (`x`, `y`) if it is surely land in the coast (`coastSure`), else the nearest point that is,
+ * within `reach` cells (two: Greenland's coast towns, where a cell is narrow, need more than one),
+ * searched on the coast's pixels (PLAN 7.4g1: 387 of the 1938 start's 5,757
+ * cities were not on sure land, 140 on a water pixel, their dots in the drawn sea at T2 and T3);
+ * none within reach: (`x`, `y`) as it is. Nearest by distance; ties to the first in row order.
+ */
+export function nearestSure(c: CoastMask, mapW: number, mapH: number, x: number, y: number, wrapX: boolean, reach = 2): [number, number] {
+  if (coastSure(c, mapW, mapH, x, y, wrapX)) return [x, y];
+  const k = c.w / mapW;
+  const steps = Math.ceil(reach * k);
+  let best: [number, number] | null = null;
+  let bestD = Infinity;
+  for (let j = -steps; j <= steps; j++) {
+    for (let i = -steps; i <= steps; i++) {
+      // The middles of the pixels round the point.
+      const px = (Math.floor(x * k) + i + 0.5) / k;
+      const py = (Math.floor(y * k) + j + 0.5) / k;
+      if (py < 0 || py >= mapH || (!wrapX && (px < 0 || px >= mapW))) continue;
+      const d = (px - x) * (px - x) + (py - y) * (py - y);
+      if (d >= bestD || d > reach * reach) continue;
+      if (!coastSure(c, mapW, mapH, px, py, wrapX)) continue;
+      best = [px, py];
+      bestD = d;
+    }
+  }
+  return best ?? [x, y];
+}
+
+/**
  * Whether cell (`cx`, `cy`) is inland: its mask pixels and the ring of pixels round them are
  * all land. Every place in such a cell is surely land (the four pixels round any of them are
  * among those), so who asks often can ask this once for a cell and remember it.

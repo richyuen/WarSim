@@ -17575,3 +17575,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **BLOCKERS:** `seaBattleSeen1938` red under load twice this day, green alone (an entry, not on
   `knownRed.json`).
 - **Next:** PLAN 7.4g1.
+
+## 2026-10-17 — PLAN 7.4g1: city dots on sure land (render)
+
+- **Start:** gate green on a clean tree (`f529442`); critic not due.
+- **Done:** `nearestSure` (`shared/landMask`): a point not surely land in the coast takes the
+  nearest sure point within two cells (searched on the coast's pixels). `MapView.placeCities`
+  gives the city layer and the buildings those points, again when the coast arrives; the
+  editor's picks and the sim keep the cities' own places. Two cells for Greenland's coast towns
+  (Qaanaaq, Upernavik), where a cell is narrow and one did not reach sure land.
+- **Tests:** `cityLand.test.ts` (new: of 5,758 cities 387 not on sure land and 140 on a water
+  pixel; all 387 moved, the furthest 1.83 cells, none left off sure land); `cityLand1938` (new:
+  none of the layer's cities on a water pixel in the page; red without: 140, Rabat, Geneva,
+  Buffalo, Amoy among them); 9 spec files of cities, names and the editor (18 tests) green.
+- **Next:** PLAN 7.4g2.
