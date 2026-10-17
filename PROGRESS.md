@@ -17654,3 +17654,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   the wing; with missiles or a strategic wing or no warhead, none; the month's AI orders one with
   warheads and none without); 55 nuclear, economy and air test files (181 tests) green; pin unmoved.
 - **Next:** PLAN 7.6c.
+
+## 2026-10-17 — PLAN 7.6c: in extreme desperation, the enemy's places from any distance (sim)
+
+- **Start:** gate green on a clean tree (`1cc88b7`).
+- **The cause** (seed 4 saved at year 14 from `0ded86c`, the run measured; `noplace` diagnostic):
+  the Soviet Union's own army gone (0 to 2 land formations), its capital moved east, China's
+  capital 2,043 km off (FRONT_KM 1,000), and the Chinese armies near it on Soviet land it does not
+  control (never fair: not its own land).
+- **Done:** `aimOf` gives `anywhere` in extreme desperation, as to a nation striking back. ADR-463.
+  From the checkpoint, every sampled extreme day against China has 1 to 7 places (before: none).
+- **Tests:** `nukeAimExtreme1938.test.ts` (new; red before); 22 nuclear test files (70 tests)
+  green; pin unmoved.
+- **Next:** PLAN 7.6d.

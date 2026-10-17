@@ -58,7 +58,7 @@ quick sweep as a smoke test.
       with warheads and no delivery (no missiles, no strategic wing) orders one strategic wing
       (not on `goesForBomb`: that holds for five powers from 1938 and would move the pin). AT: unit
       test (a nation with warheads, no wing and no missiles orders one; with missiles, none).
-    - [ ] 7.6c In extreme desperation, a place to strike: seed 4's Soviet Union at desperation 1.7
+    - [x] 7.6c In extreme desperation, a place to strike: seed 4's Soviet Union at desperation 1.7
       to 2 against China has it in its aim and no fair place (317 extreme days). Confirm the cause
       (FRONT_KM's anchors, or occupied land of its own never fair), then fix it. AT: unit test of
       the case; the seed's extreme days with no place fall to 0.

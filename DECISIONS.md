@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-463 · 2026-10-17 · accepted — In extreme desperation, the enemy's places from any distance (PLAN 7.6c)
+
+- **Context.** Critic R7-B1, PLAN 7.6's measure: seed 4's Soviet Union in extreme desperation
+  against China had China in its aim and no fair place for 317 days. Traced from a checkpoint of
+  the run (year 14, on `0ded86c`): its own army gone (0 to 2 land formations), its capital moved
+  east; China's capital 2,043 km off, beyond FRONT_KM (1,000 km) of its side; the Chinese armies near
+  it on Soviet land it no longer controls, never a fair place (PLAN 6.11a: not its own land).
+- **Decision.** `aimOf`: a nation in extreme desperation (`desperationOf`) weighs the places of the
+  enemies in its aim from any distance, as one striking back already does (PLAN 6.12b). Still on
+  land the enemy owns and controls, and only where a missile or a bomber reaches (`launchNuke`).
+  Its own occupied land stays out.
+- **Effect.** From the checkpoint, each sampled extreme day against China has 1 to 7 places. The
+  pin is unmoved.
+- **Tests.** `nukeAimExtreme1938.test.ts` (new: the United States at war with Germany in 1938 has
+  no place within FRONT_KM; fighting to the death with half its men lost, Berlin first of 7, all on
+  German land; red before); 22 nuclear test files green.
+
 ### ADR-462 · 2026-10-17 · accepted — A nuclear power keeps a means of delivery (PLAN 7.6b)
 
 - **Context.** Critic R7-B1, PLAN 7.6's measure: the economic AI ordered fighters and tactical

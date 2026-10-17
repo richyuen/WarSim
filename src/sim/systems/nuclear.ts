@@ -89,7 +89,8 @@
  * The decision (PLAN 6.4b; `nukeDecisions`), daily, with the AI on: each nation with a warhead,
  * living, not switched off nor a puppet, nukes allowed, in each of its wars weighs each enemy
  * capital and the NUKE_TARGETS places where enemy land formations are most massed (`nukeTargets`;
- * PLAN 6.11a: on land the enemy side holds, within FRONT_KM of its own side; PLAN 6.12a: of an
+ * PLAN 6.11a: on land the enemy side holds, within FRONT_KM of its own side, from any distance in
+ * its extreme desperation (PLAN 7.6c); PLAN 6.12a: of an
  * enemy that can threaten it, `threatens`: a warhead, THREAT_SHARE of its income (PLAN 6.12f), or
  * land forces near its capital),
  * and strikes the one of most utility above 0 (by missile when it knows them and one reaches, else
@@ -748,7 +749,7 @@ export function threatens(world: World, m: number, n: number): boolean {
 /** Whose land a nation may strike in a war (PLAN 6.12): the nations, and whether from any distance. */
 export interface Aim {
   at: ReadonlySet<number>;
-  /** Not only within FRONT_KM of the striker's side: a strike back at who struck it. */
+  /** Not only within FRONT_KM of the striker's side: a strike back at who struck it, or in extreme desperation (PLAN 7.6c). */
   anywhere: boolean;
 }
 
@@ -756,7 +757,10 @@ export interface Aim {
  * Whose land `n`, on `side` of `war`, may strike: while it holds a grievance against a nation of
  * the other side, that nation's alone, from any distance (PLAN 6.12b, critic R6-B2: struck at
  * London, the United Kingdom's one bomb went to Chungking, and no Soviet place was within FRONT_KM
- * of it); else the enemies that can threaten it (PLAN 6.12a).
+ * of it); else the enemies that can threaten it (PLAN 6.12a), from any distance in its extreme
+ * desperation (PLAN 7.6c: seed 4's Soviet Union, its army gone and its capital moved east, had
+ * China's capital 2,043 km off and the Chinese armies near it on its own land, and nothing to weigh
+ * for a year at desperation 2; a nation fighting for its life strikes the enemy's heartland).
  */
 export function aimOf(world: World, n: number, war: War, side: number): Aim {
   const by = grievanceIn(world, n, war, side);
@@ -764,7 +768,7 @@ export function aimOf(world: World, n: number, war: War, side: number): Aim {
   const nc = world.nations.cols;
   const at = new Set<number>();
   for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && threatens(world, m, n)) at.add(m);
-  return { at, anywhere: false };
+  return { at, anywhere: at.size > 0 && desperationOf(world, n, war, side).extreme };
 }
 
 /** How far from the striker's side a place may be to be weighed (PLAN 6.11a), km: from its land formations or its capitals. */
