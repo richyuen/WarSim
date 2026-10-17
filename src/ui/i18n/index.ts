@@ -8,6 +8,9 @@
  * - `qps` is a generated pseudo-locale (accented and bracketed): it reveals hard-coded strings
  *   and truncation in the UI without needing a translator.
  * - The choice persists in localStorage; the first visit follows navigator.language.
+ * - The pseudo-locale is offered in a dev build only, or where localStorage has
+ *   `warsim.testLocale` = 1 (the e2e specs; PLAN 7.16c, critic run 7: "'Pseudo-locale (i18n test)'
+ *   is still in the player's language list"). A release build that finds it saved speaks English.
  */
 import { signal } from '@preact/signals';
 import en from './en.json';
@@ -17,6 +20,20 @@ export const LOCALES = ['en', 'qps'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 const STORAGE_KEY = 'warsim.locale';
+const TEST_LOCALE_KEY = 'warsim.testLocale';
+
+/** Whether the pseudo-locale is offered (module comment). */
+function testLocaleOn(): boolean {
+  if ((import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV) return true;
+  try {
+    return localStorage.getItem(TEST_LOCALE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+/** The locales the language picker offers: `qps` only where `testLocaleOn`. */
+export const OFFERED_LOCALES: readonly Locale[] = LOCALES.filter((l) => l !== 'qps' || testLocaleOn());
 
 const ACCENTS: Record<string, string> = {
   a: 'å', b: 'ƀ', c: 'ç', d: 'ð', e: 'é', f: 'ƒ', g: 'ĝ', h: 'ĥ', i: 'î', j: 'ĵ', k: 'ķ', l: 'ļ', m: 'ɱ',
@@ -45,7 +62,7 @@ const catalogs: Record<Locale, Record<string, string>> = {
 };
 
 function isLocale(v: unknown): v is Locale {
-  return typeof v === 'string' && (LOCALES as readonly string[]).includes(v);
+  return typeof v === 'string' && (OFFERED_LOCALES as readonly string[]).includes(v);
 }
 
 function initialLocale(): Locale {

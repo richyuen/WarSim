@@ -8,6 +8,11 @@ const en = JSON.parse(readFileSync(path.resolve(import.meta.dirname, '../../src/
 // the choice persists across reloads.
 
 test('UI renders en.json strings and the locale picker switches and persists', async ({ page }) => {
+  // The release build offers the player English alone (PLAN 7.16c): the pseudo-locale is not in the list.
+  await page.goto('/?scenario=toy&paused=1&view=0');
+  await expect(page.getByTestId('locale-select').locator('option')).toHaveText(['English']);
+  // The specs turn it on (`warsim.testLocale`), as a tester would.
+  await page.evaluate(() => localStorage.setItem('warsim.testLocale', '1'));
   await page.goto('/?scenario=toy&paused=1&view=0');
   await expect(page.getByTestId('app-title')).toHaveText(en['app.title']!);
   await expect(page.getByTestId('locale-label')).toHaveText(en['settings.language']!);

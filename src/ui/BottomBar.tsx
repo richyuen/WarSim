@@ -1,3 +1,4 @@
+import type { ComponentChildren } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import type { SimDate } from '../shared/calendar';
 import type { MapMode } from '../shared/mapModes';
@@ -29,6 +30,8 @@ export interface BottomBarProps {
   onToggleHistory?: (() => void) | undefined;
   /** The nation the player controls and its selected formations (PLAN 1.33a). */
   playing?: { name: string; selected: number } | null;
+  /** God Mode's map tools, a row of the bar's own while God Mode is on (PLAN 7.16b). */
+  godTools?: ComponentChildren;
 }
 
 /**
@@ -42,7 +45,7 @@ function widestDates(year: number): string {
 }
 
 /** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
-export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory, showEditor, onToggleEditor, showSettings, onToggleSettings }: BottomBarProps) {
+export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory, showEditor, onToggleEditor, showSettings, onToggleSettings, godTools }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
   // How far the bar's top is from the view's bottom, for what stands above it (PLAN 7.4f25): a
   // played nation's label that does not fit goes onto a second line.
@@ -63,7 +66,8 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
     };
   }, []);
   return (
-    <footer class="bottombar" data-testid="bottombar" ref={bar}>
+    <footer class={godTools ? 'bottombar with-god' : 'bottombar'} data-testid="bottombar" ref={bar}>
+      {godTools}
       <button type="button" class="bar-btn bar-reserve" data-testid="pause-btn" data-reserve={paused ? t('bar.pause') : t('bar.resume')} aria-pressed={paused} onClick={onTogglePause}>
         {paused ? t('bar.resume') : t('bar.pause')}
       </button>

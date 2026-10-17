@@ -13,6 +13,7 @@ import { StatsRanking } from '../ui/StatsRanking';
 import { WarBanners } from '../ui/WarBanners';
 import { Ticker } from '../ui/Ticker';
 import { NukeAlert } from '../ui/NukeAlert';
+import { GodToolbar } from '../ui/GodToolbar';
 import { orderNewsText } from '../ui/orderNewsText';
 import { TopBar } from '../ui/TopBar';
 import type { Hud } from './hud';
@@ -99,6 +100,19 @@ export function App({
         onToggleStats={stats ? () => hud.toggleStats() : undefined}
         godMode={hud.godMode.value}
         onToggleGod={stats ? () => hud.toggleGod() : undefined}
+        godTools={
+          stats && hud.godMode.value ? (
+            <GodToolbar
+              tool={hud.godTool.value}
+              onTool={(tl) => hud.setGodTool(tl)}
+              spawnSize={hud.spawnSize.value}
+              onSpawnSize={(v) => (hud.spawnSize.value = v)}
+              thermonuclear={hud.nukeThermonuclear.value}
+              onThermonuclear={(on) => (hud.nukeThermonuclear.value = on)}
+              nationSelected={hud.selected.value !== 0}
+            />
+          ) : null
+        }
         showHistory={hud.showHistory.value}
         onToggleHistory={stats ? () => hud.toggleHistory() : undefined}
         showSettings={hud.showSettings.value}
@@ -308,12 +322,8 @@ export function App({
                   aiEnabled: stats.aiEnabled,
                   nukesEnabled: stats.nukesEnabled,
                   rules: stats.rules,
-                  tool: hud.godTool.value,
-                  spawnSize: hud.spawnSize.value,
-                  onSpawnSize: (v) => (hud.spawnSize.value = v),
                   refusal: hud.refusal.value,
                   onCommand: (c) => hud.command(c),
-                  onTool: (tl) => hud.setGodTool(tl),
                 }
               : null
           }

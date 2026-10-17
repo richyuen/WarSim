@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-483 · 2026-10-17 · accepted — God Mode's tools on the bottom bar, a nuke's size, the test locale, the phone's alert (PLAN 7.16)
+
+- **Context.** Critic run 7 (God Mode 7, UI 7): "the nuke has no size"; "the tools are hidden.
+  Pressing God Mode changes nothing on screen … at 1600 × 900 the map tools are below the fold";
+  "'Pseudo-locale (i18n test)' is still in the player's language list"; "on the phone the nuke alert
+  covers the nation panel".
+- **Decision.**
+  - a. The Nuke tool has a size, "Atomic bomb" or "Hydrogen bomb" (`godNuke`'s `thermonuclear`).
+  - b. God Mode's map tools (Revolt, Spawn nation, Breakthrough, Territory, Nuke, Found city, Raze
+    city; the size of a spawned nation, of a bomb; the hint) are a row of the bottom bar while God
+    Mode is on, a nation selected or not; what stands above the bar stands on its top as before
+    (`--bar-top`). Breakthrough and Territory, which act for the selected nation, say to select one
+    first. The nation's God tab keeps its own powers and no longer has the tools.
+  - c. The pseudo-locale is offered in a dev build, or where localStorage has `warsim.testLocale` =
+    1 (the specs set it); a release build that finds it saved speaks English.
+  - d. On a phone (≤ 600 px) the nuclear alert stands on the bottom bar across the view, not at the
+    top over the panels.
+- **Tests.** `godTools1938` (new: at 1600 × 900 with no nation selected, the seven tools inside the
+  view on pressing God Mode; Territory asks for a nation; a hydrogen bomb on Warsaw and an atomic one
+  on Prague, by the alert's words); `nukeAlertPhone1938` (new: 390 × 844, Germany's panel open, the
+  alert on the bar with no pixel over the panel); `i18n.spec` (the release build lists English alone;
+  with the flag the pseudo-locale as before); `title.spec`, `godUi1938`, `godPanelMore1938`,
+  `nukeAlert1938`, `nukeDemo1938`, `editorDrag1938` green. Pictures `docs/evidence/7.16/`.
+
 ### ADR-482 · 2026-10-17 · accepted — The late world moves with PLAN 7.14's rules: no rule of 7.15's own (PLAN 7.15)
 
 - **Context.** Critic run 7 (dynamics 6): seed 3371 moved 0.72 % of its land in years 26–30, 8803 had

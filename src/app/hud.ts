@@ -491,6 +491,8 @@ export class Hud {
   readonly godTool = signal<GodTool | null>(null);
   /** How many provinces the Spawn nation tool's nation starts with (PLAN 7.4f26, AoC's initial size). */
   readonly spawnSize = signal(5);
+  /** The Nuke tool's size (PLAN 7.16a): a thermonuclear bomb, or a fission one. */
+  readonly nukeThermonuclear = signal(false);
   private battleStart: [number, number] | null = null;
 
   toggleGod(): void {
@@ -554,7 +556,7 @@ export class Hud {
       this.godTool.value = null;
     } else if (tool === 'nuke') {
       // God Mode's strike (PLAN 6.6a): a bomb at the cell clicked, at once.
-      this.command({ kind: 'godNuke', x: x + 0.5, y: y + 0.5, thermonuclear: false });
+      this.command({ kind: 'godNuke', x: x + 0.5, y: y + 0.5, thermonuclear: this.nukeThermonuclear.peek() });
       this.godTool.value = null;
     } else if (tool === 'battle') {
       if (!this.battleStart) {

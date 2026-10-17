@@ -1,4 +1,4 @@
-import { LOCALES, locale, setLocale, t, type Locale, type MessageKey } from './i18n';
+import { OFFERED_LOCALES, locale, setLocale, t, type Locale, type MessageKey } from './i18n';
 
 /** The language picker (PLAN 0.21), in the top bar and on the title screen. */
 export function LocalePicker() {
@@ -11,7 +11,7 @@ export function LocalePicker() {
         value={locale.value}
         onChange={(e) => setLocale((e.currentTarget as HTMLSelectElement).value as Locale)}
       >
-        {LOCALES.map((l) => (
+        {OFFERED_LOCALES.map((l) => (
           <option key={l} value={l}>
             {t(`locale.${l}` as MessageKey)}
           </option>

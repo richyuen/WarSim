@@ -17935,3 +17935,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   in 4 (`tools/diag/northAmerica.ts`, new); the 50-year sweep of 7.14 meets the dynamism and the
   moving limit. ADR-482: no rule of its own. `docs/evidence/7.15/`.
 - **Next:** PLAN 7.16.
+
+## 2026-10-17 — PLAN 7.16: God Mode's tools, a nuke's size, the test locale, the phone's alert (UI)
+
+- **Start:** gate green on a clean tree (`d3f62e0`).
+- **Done:** God Mode's map tools a row of the bottom bar while it is on (`GodToolbar`), with the
+  Nuke tool's size (atomic, hydrogen); the pseudo-locale only in a dev build or with
+  `warsim.testLocale`; the phone's nuclear alert on the bottom bar. ADR-483.
+- **Tests:** `godTools1938`, `nukeAlertPhone1938` (new), `i18n.spec`, `title.spec` (the flag) and the
+  God Mode and alert specs green (24).
+- **Next:** PLAN 7.17.

@@ -92,6 +92,39 @@ body {
   user-select: none;
 }
 
+/* God Mode's map tools (PLAN 7.16b): a row of the bar's own, above its controls, while God Mode is
+   on; on a phone it scrolls sideways as the bar does. */
+.god-tools {
+  order: -1;
+  flex: 1 0 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.2rem 0.4rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(214, 178, 94, 0.35);
+}
+.god-tools-name {
+  color: #f2c230;
+  font-weight: 600;
+}
+.god-tools .bar-btn.active {
+  background: #7a2c22;
+  border-color: #f2c230;
+}
+.god-tools-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.god-tools-hint {
+  flex-basis: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #e8d4b0;
+}
+
 /* A button's `min-width` would let it shrink under its text. */
 .bottombar > * {
   flex-shrink: 0;
@@ -1103,6 +1136,25 @@ body {
     justify-content: flex-start;
     overflow-x: auto;
     scrollbar-width: thin;
+  }
+  /* God Mode's tools take a row of their own above the controls (PLAN 7.16b). */
+  .bottombar.with-god {
+    flex-wrap: wrap;
+  }
+  .bottombar.with-god .god-tools {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+  /* The nuclear alert stands on the bottom bar, not over the panels at the top (PLAN 7.16d;
+     critic run 7: "on the phone the nuke alert covers the nation panel"). */
+  .nuke-alert {
+    top: auto;
+    bottom: calc(var(--bar-top, 2.8rem) + 0.4rem);
+    left: 0.5rem;
+    right: 0.5rem;
+    transform: none;
+    max-width: none;
   }
 }
 

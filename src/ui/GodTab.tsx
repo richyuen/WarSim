@@ -1,5 +1,5 @@
 import { useRef, useState } from 'preact/hooks';
-import { Refusal, SPAWN_NATION_MAX, type Command } from '../shared/commands';
+import { Refusal, type Command } from '../shared/commands';
 import type { NationStat, WarStat, WorldRules } from '../shared/protocol';
 import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
@@ -53,14 +53,9 @@ export interface GodTabProps {
   nukesEnabled: boolean;
   /** The world's other rules (PLAN 7.4f19). */
   rules: WorldRules;
-  tool: GodToolId | null;
-  /** The provinces a nation of the Spawn nation tool starts with (PLAN 7.4f26), and its setter. */
-  spawnSize: number;
-  onSpawnSize: (size: number) => void;
   /** Why the last command sent was not carried out (`Refusal`; 0 = it was). */
   refusal: number;
   onCommand: (cmd: Command) => void;
-  onTool: (tool: GodToolId) => void;
 }
 
 /**
@@ -68,7 +63,7 @@ export interface GodTabProps {
  * nation, plus map tools (revolt, breakthrough, territory brush) that take the next map clicks.
  * Kill asks for a second click instead of a browser dialog.
  */
-export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, rules, tool, spawnSize, onSpawnSize, refusal, onCommand, onTool }: GodTabProps) {
+export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, rules, refusal, onCommand }: GodTabProps) {
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
   // The name typed and the armed Kill are this nation's (PLAN 2.17e3): each is kept with the
@@ -259,24 +254,6 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, r
         </select>
         {btn('god-buff', t('god.grant'), () => onCommand({ kind: 'grantBuff', targetKind: 'nation', target: n, buff, magnitude: BUFF_MAGNITUDE, hours: BUFF_HOURS, nameKey: 'buff.god' }))}
       </div>
-
-      <div class="panel-sub">{t('god.tools')}</div>
-      <div class="god-row">
-        {btn('god-tool-revolt', t('god.tool.revolt'), () => onTool('revolt'), tool === 'revolt')}
-        {btn('god-tool-nation', t('god.tool.nation'), () => onTool('nation'), tool === 'nation')}
-        {btn('god-tool-battle', t('god.tool.battle'), () => onTool('battle'), tool === 'battle')}
-        {btn('god-tool-brush', t('god.tool.brush'), () => onTool('brush'), tool === 'brush')}
-        {btn('god-tool-nuke', t('god.tool.nuke'), () => onTool('nuke'), tool === 'nuke')}
-        {btn('god-tool-city', t('god.tool.city'), () => onTool('city'), tool === 'city')}
-        {btn('god-tool-raze', t('god.tool.raze'), () => onTool('raze'), tool === 'raze')}
-      </div>
-      {tool ? <div class="panel-note" data-testid="god-tool-hint">{t(`god.hint.${tool}` as MessageKey)}</div> : null}
-      {tool === 'nation' ? (
-        <label class="god-row" data-testid="god-nation-size-row">
-          <span>{t('god.nationSize', { n: spawnSize })}</span>
-          <input type="range" data-testid="god-nation-size" min={1} max={SPAWN_NATION_MAX} step={1} value={spawnSize} onInput={(e) => onSpawnSize(Number((e.currentTarget as HTMLInputElement).value))} />
-        </label>
-      ) : null}
 
       {dead.length > 0 ? (
         <div class="god-row">

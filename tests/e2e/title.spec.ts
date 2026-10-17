@@ -38,6 +38,8 @@ test('/ opens the title screen and no world', async ({ page }, info) => {
     if (m.type() === 'error') errors.push(m.text());
   });
   await page.setViewportSize({ width: 1400, height: 800 });
+  // The pseudo-locale is the tester's (PLAN 7.16c): offered where `warsim.testLocale` is set.
+  await page.addInitScript(() => localStorage.setItem('warsim.testLocale', '1'));
   await page.goto('/');
   await expect(page).toHaveTitle('WarSim');
   await expect(page.getByTestId('title-screen')).toBeVisible();

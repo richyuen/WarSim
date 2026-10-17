@@ -10791,3 +10791,21 @@ Of 7.4 (open in PLAN.md):
   seeds (`critic/c7_headless_*.json`). Balance, no longer deferred (ADR-58: phases 2 to 6 done). AT:
   the 50-year sweep's dynamism in at least 8 of 10 seeds, its moving limit in every seed; Canada and
   Greenland reachable (a landing on them in some seed).
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.16 God Mode and the UI's small things (God Mode 7, UI 7): a nuke's size (thermonuclear) in
+  the God tool; the tools shown when God Mode is pressed; the test locale out of release builds; the
+  nuclear alert not over the panels on a phone. AT: a spec each.
