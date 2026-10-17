@@ -1811,7 +1811,10 @@ export class MapView {
           const up: number = y0 - (Math.floor(Math.min(...hit.map((b) => b.y))) - FLAG_PX_H - FLAG_CLEAR_PX);
           rise = up <= FLAG_MAX_RISE ? up : null;
         }
-        const key = `${id}:${off}`;
+        // By the copy's place relative to the camera, not by its wrap offset (PLAN 7.4f44): the
+        // camera folds its x at the seam, and the offset of the copy in view changes with it; the
+        // flag's rise then began again from nothing.
+        const key = `${id}:${Math.round((cx + off - cam.cx) / this.geo.w)}`;
         seen.add(key);
         let st = this.flagPlace.get(key);
         const ease = (s: { start: number }, v: [number, number]): number => v[0] + (v[1] - v[0]) * smooth(progress(now, s.start, FLAG_MOVE_MS));

@@ -162,6 +162,8 @@ quick sweep as a smoke test.
     - [x] 7.4f43 The seam: counters folded and T1 markers stacked and parted at their copies
       nearest the camera. AT: `counters.test.ts`; `seamItems1938` (markers of one nation either
       side of the seam one stack; red before).
+    - [x] 7.4f44 The seam: a capital flag's state kept by its copy's place relative to the camera,
+      not by the wrap offset that changes as the camera folds. AT: `seamItems1938` (red before).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -175,7 +177,6 @@ quick sweep as a smoke test.
       (its copies share one state, by nation: one that has room and one that has not would
       flicker);
     - a nation name's copy that alone is in a larger name's way goes out in one frame;
-    - a capital flag's rise is cut short at the seam (its state is kept by wrap offset);
     - a city's buildings reach to the seam and not across it;
     - figures drawn through a wrap offset are 2,047 cells from the origin of their f32
       offsets, where a step is 2.4 m.

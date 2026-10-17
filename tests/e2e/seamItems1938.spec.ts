@@ -91,3 +91,44 @@ test('markers of one nation either side of the seam stack', async ({ page }) => 
   console.log(`markers of the two: ${JSON.stringify(markers)}`);
   expect(markers.some((m) => ids.every((f) => m.includes(f))), 'one marker standing for both').toBe(true);
 });
+
+// PLAN 7.4f44: a capital flag's state (its rise above what is in its way, and the fade of it) was
+// kept by the wrap offset of its copy. The camera folds its x at the seam, and the copy in view
+// then had another offset: its state began again from nothing. A nation set down on Chukotka has
+// its capital by the seam; the camera crosses the seam with the flag in view, and its state is
+// the same entry before and after.
+test('a capital flag keeps its state as the camera crosses the seam', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: VW, height: VH });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const [x, y] = cellOf(-179.9, 65.6, W, H);
+  // A nation of one province set down there (God Mode's Spawn nation): its capital by the seam.
+  const nation = await page.evaluate(async ({ x, y }) => {
+    const { sim, view } = window.__warsim!;
+    const province = view!.provinceAt(Math.floor(x), Math.floor(y));
+    const before = new Set(window.__warsim!.hud.stats.value!.nations.map((n) => n.id));
+    sim.command({ kind: 'spawnNation', province, size: 1 });
+    await sim.step(1);
+    const t0 = performance.now();
+    while (performance.now() - t0 < 5000) {
+      const now = window.__warsim!.hud.stats.value!.nations.find((n) => !before.has(n.id));
+      if (now) return now.id;
+      await new Promise((d) => setTimeout(d, 50));
+    }
+    return 0;
+  }, { x, y });
+  expect(nation, 'a nation set down on Chukotka').toBeGreaterThan(0);
+  const keys = (): Promise<string[]> =>
+    page.evaluate((n) => [...(window.__warsim!.view! as unknown as { flagPlace: Map<string, unknown> }).flagPlace.keys()].filter((k) => k.startsWith(`${n}:`)), nation);
+  // The camera just west of the seam, then just east of it (folded to x 1), at 6 px a cell.
+  const views: string[][] = [];
+  for (const cx of [W - 1, W + 1]) {
+    await page.evaluate(({ cx, cy }) => window.__warsim!.view!.controller.set({ cx, cy, scale: 6 }), { cx, cy: y });
+    await page.waitForTimeout(500);
+    views.push(await keys());
+  }
+  console.log(`the flag's state keys: west of the seam ${JSON.stringify(views[0])}, east ${JSON.stringify(views[1])}`);
+  expect(views[0]!.length, 'its flag in view').toBeGreaterThan(0);
+  expect(views[1], 'the same state across the seam').toEqual(views[0]);
+});

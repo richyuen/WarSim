@@ -17513,3 +17513,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   red without: two markers); `counters1938`, `markers1938`, `markerStacks1938`,
   `declutter1938`, `stackPick1938`, `flagsClear1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f44: a capital flag's state across the seam (render)
+
+- **Start:** gate green on a clean tree (`98d9938`); critic not due.
+- **Done:** `drawFlags` keys a flag's rise and fade by its copy's place relative to the camera
+  (`id:k`, k the copy's map widths from the camera) instead of its wrap offset.
+- **Tests:** `seamItems1938` 3 of 3 (new: a nation set down on Chukotka, its capital by the seam;
+  the camera from x 2047 to 2049 (folded to 1): the flag's state the same entry; red before:
+  `104:0` then `104:-2048`); `flagsClear1938`, `flags1938`, `flagGone1938` green.
+- **Next:** PLAN 7.4f, the next group.
