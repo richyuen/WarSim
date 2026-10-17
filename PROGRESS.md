@@ -17401,3 +17401,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   Poland a month in, 20 m/px): the figures are dark grey on the olive plain, each formation's
   block read apart, beside the 2.14 picture's pale ground. No change made; the line came off
   PLAN 7.4's list. (Taste: low confidence.)
+
+## 2026-10-17 — the tags of formations in contact at T2 looked at; off the list
+
+- A probe (seed 1938, Germany at war with Poland three weeks, 40 formations in contact, each at
+  150, 60 and 30 m/px): 120 views, 872 tags, no two on each other. Tags give way since PLAN
+  2.14a and keep off others' elements since 3.7g, 3.10c1b and 3.11f1 (`tags.test.ts`), after the
+  2.10 picture of the line. No change; the line came off PLAN 7.4's list.

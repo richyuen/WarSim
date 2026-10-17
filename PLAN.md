@@ -148,10 +148,6 @@ quick sweep as a smoke test.
     2026-10-08, PLAN 3.11f2, ADR-204's addition): about one tank in fifteen at T3 (45 pairs
     under 0.7 of a figure's side among 1,346 tanks, seed 5381, Germany on Poland, day 21).
     The scatter of an element (180 m) against the room its figures leave in a slot (60 m).
-  - **The tags of formations in contact at T2** (seen 2026-10-07, PLAN 3.5g,
-    `docs/evidence/2.10/stop-5-battle.png`): at 150 m/px the tags of three divisions in one
-    battle lie on each other and on the sprites, one name half covered. Whether the tags
-    are parted at all at T2 was not looked at.
   - **A neighbour's tag over a block** (seen 2026-10-07, PLAN 3.10c1b,
     `docs/evidence/3.10/c1b-turrets.png`, after ADR-188): at 60 m/px the tag of "Light
     infantry division 410" stands over the column of Tank brigade 395, whose own tag is
