@@ -1152,14 +1152,19 @@ export class MapView {
       // In contact the men of a battalion lie in a loose line at the front of its ground (PLAN 2.14c2).
       const inContact = (e.flags[i]! & FormationFlag.engaged) !== 0;
       const off = figureOffsets(e.id[i]!, side, n, e.facing[i]!, inContact && frame === Frame.infantry);
-      const x = this.unwrapped(e.x[i]!, e.prevX[i]!);
+      // At its copy nearest the origin (PLAN 7.4f47): a figure just west of the seam, the camera just
+      // east of it, was 2,047 cells from the origin of its f32 offsets, where a step is some 2.4 m
+      // (2 px at T3), and drawn through the copy a map's width over.
+      const near = this.geo.wrapX ? this.geo.w * Math.round((p.originX - e.x[i]!) / this.geo.w) : 0;
+      const x = this.unwrapped(e.x[i]!, e.prevX[i]!) + near;
+      const px0 = e.prevX[i]! + near;
       const moving = marching(e.flags[i]!);
       const rgba = this.spriteRgba(e.nation[i]!);
       for (let k = 0; k < n; k++, j++) {
         const o = j * PROXY_STRIDE;
         const dx = off[k * 2]!;
         const dy = off[k * 2 + 1]!;
-        p.data[o] = e.prevX[i]! + dx - p.originX;
+        p.data[o] = px0 + dx - p.originX;
         p.data[o + 1] = e.prevY[i]! + dy - p.originY;
         p.data[o + 2] = x + dx - p.originX;
         p.data[o + 3] = e.y[i]! + dy - p.originY;

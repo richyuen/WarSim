@@ -17542,3 +17542,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   has the same density either side; on a map with edges none beyond, as before; red before);
   31 e2e spec files of the ground and what stands on it (60 tests) green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f47: the figures by the seam near their f32 origin (render); the seam group done
+
+- **Start:** gate green on a clean tree (`4c2d08a`); critic not due.
+- **Done:** `MapView`'s T3 upload puts each figure at its copy nearest the origin (the camera's
+  cell). With 7.4f40 to 7.4f46 the seam group under 7.4 is done and its heading came off.
+- **Tests:** `seamItems1938` 4 of 4 (new: a Soviet division just west of the seam, the camera
+  just east: 1,584 figures within 0.23 cells of the origin; 2,047.9 before); `individuals1938`,
+  `seamFight1938`, `closeZoom1938`, `muzzles1938`, `tankBattle1938` green.
+- **Next:** PLAN 7.4f, the next group.

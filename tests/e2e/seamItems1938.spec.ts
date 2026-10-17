@@ -132,3 +132,45 @@ test('a capital flag keeps its state as the camera crosses the seam', async ({ p
   expect(views[0]!.length, 'its flag in view').toBeGreaterThan(0);
   expect(views[1], 'the same state across the seam').toEqual(views[0]);
 });
+
+// PLAN 7.4f47: the figures of T3 are uploaded as f32 offsets from an origin by the camera. A
+// division just west of the seam, the camera just east of it (origin 0): its figures were 2,047
+// cells from the origin, where an f32 step is some 2.4 m (2 px at T3), and drawn through the copy
+// a map's width over. They are uploaded at their copy nearest the origin.
+test('the figures of a division by the seam are uploaded near their origin', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: VW, height: VH });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  const [x, y] = cellOf(179.97, 65.6, W, H);
+  const id = await page.evaluate(async ({ x, y, SOV, INF }) => {
+    const sim = window.__warsim!.sim;
+    const v = window.__warsim!.view!;
+    const before = new Set(v.formationsOf(SOV));
+    sim.command({ kind: 'spawnFormation', nation: SOV, x, y, strength: 0, template: INF });
+    const tick = (await sim.step(1)).tick;
+    await new Promise<void>((done) => {
+      const wait = (): void => (v.lastTick === tick ? done() : void setTimeout(wait, 5));
+      wait();
+    });
+    return v.formationsOf(SOV).find((f) => !before.has(f)) ?? 0;
+  }, { x, y, SOV, INF });
+  expect(id).toBeGreaterThan(0);
+  const [fx, fy] = (await page.evaluate((f) => window.__warsim!.view!.formationPos(f), id))!;
+  expect(fx, 'just west of the seam').toBeGreaterThan(W - 1);
+  // The camera at 5 m/px, just east of the seam: the division at the view's left.
+  const km = await page.evaluate(() => window.__warsim!.view!.geo.kmPerCell);
+  const scale = (km * 1000) / 5;
+  await page.evaluate(({ cx, cy, s }) => window.__warsim!.view!.controller.set({ cx, cy, scale: s }), { cx: 0.02, cy: fy, s: scale });
+  await page.waitForFunction(() => (window.__warsim!.view! as unknown as { individualCount: number }).individualCount > 0, null, { timeout: 30_000 });
+  const r = await page.evaluate(() => {
+    const v = window.__warsim!.view! as unknown as { individualCount: number; individualProxies: { data: Float32Array; originX: number } };
+    const p = v.individualProxies;
+    let far = 0;
+    for (let j = 0; j < v.individualCount; j++) far = Math.max(far, Math.abs(p.data[j * 8 + 2]!));
+    return { n: v.individualCount, far, origin: p.originX };
+  });
+  console.log(`figures ${r.n}, origin ${r.origin}, the furthest uploaded ${r.far.toFixed(3)} cells from it`);
+  expect(r.origin).toBe(0);
+  expect(r.far, 'cells from the origin').toBeLessThan(1);
+});

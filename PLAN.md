@@ -168,16 +168,14 @@ quick sweep as a smoke test.
       copies within 600 px of the view (ADR-459). AT: `nationLabelLayout.test.ts`.
     - [x] 7.4f46 The seam: a city's buildings reach over it (the city index wraps, the distance
       the short way round). AT: `scatter.test.ts` (red before).
+    - [x] 7.4f47 The seam: the figures of T3 uploaded at their copy nearest their f32 origin (by
+      the camera). AT: `seamItems1938` (2,047.9 cells before, 0.23 after).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
     2026-10-08, PLAN 3.11f2, ADR-204's addition): about one tank in fifteen at T3 (45 pairs
     under 0.7 of a figure's side among 1,346 tanks, seed 5381, Germany on Poland, day 21).
     The scatter of an element (180 m) against the room its figures leave in a slot (60 m).
-  - **The seam of the looping map** (the 180° meridian in 1938). What is drawn knows the seam
-    one layer at a time, and most layers do not:
-    - figures drawn through a wrap offset are 2,047 cells from the origin of their f32
-      offsets, where a step is 2.4 m.
   - **The declutter in a crowd and in flight.**
     - From the Phase 3 review (PLAN 3.7c): the markers' second way of parting (ADR-157) was
       found on one scene, and how many scenes the two ways still leave that 6 px could part
