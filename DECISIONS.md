@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-472 · 2026-10-17 · accepted — Ships' marks dark and large enough to read (PLAN 7.10a)
+
+- **Context.** Critic run 7 (naval 5): "ships at 15 m/px are flat coloured bars"
+  (`critic/shots/c7e_9043_1_0015m.png`). A ship's frame drew its marks light grey (#b4b4b4,
+  #c8c8c8), which the shader's tint (it multiplies) made a paler shade of the hull, and a turret
+  4.5 px of a 64-px frame was under 2 px at a battleship's least size (26 px). A ship cannot be much
+  longer there: a fleet's files are 29 px apart at 20 m/px (`shipMinLength.test.ts`).
+- **Decision.** The ship frames' marks dark (SHIP_DETAIL #3a3a3a, which no tint lightens) and
+  larger: turrets 3.5 to 6 px of the frame with their guns (fore toward the bow, aft toward the
+  stern), the superstructure with a funnel, a carrier's deck edges, centre line and island, a
+  transport's holds and bridge, a submarine's tower. The hulls, their sizes and the frames' order as
+  before.
+- **Effect.** The critic's game at 15 m/px, along each ship's centre line inside its outline,
+  (brightest − darkest) / brightest: median 0.51 → 0.67, the least 0.17 → 0.29. Pictures
+  `docs/evidence/7.10/a-ships-15m.png`, `a-ships-6m.png`.
+- **Tests.** `shipMarks1938` (new; red with the old frames); `ships1938`, `navalDemo1938`,
+  `seaBattle1938`, `fleetOrder1938`, `navalCounter1938`, `buildFleet1938` green.
+
 ### ADR-471 · 2026-10-17 · accepted — At T2 an element of tanks is a larger slab (PLAN 7.9d)
 
 - **Context.** Critic run 7 (tanks 5): "at T2 nothing tells armour from infantry but the counter's

@@ -69,22 +69,11 @@ export function drawUnitAtlas(): HTMLCanvasElement {
   });
   // Light tank hull (PLAN 3.6a): facing +x, the turret ring at the middle.
   frame(Frame.tank, (g) => hull(g, 40, 26, 6));
-  // Ship: pointed hull facing +x with a superstructure.
-  frame(Frame.ship, (g) => {
-    g.beginPath();
-    g.moveTo(30, 0);
-    g.lineTo(12, -11);
-    g.lineTo(-28, -10);
-    g.lineTo(-28, 10);
-    g.lineTo(12, 11);
-    g.closePath();
-    g.stroke();
-    g.fill();
-    g.fillStyle = '#c8c8c8';
-    g.fillRect(-12, -5, 14, 10);
-  });
   // The ships of each class (PLAN 4.7b), facing +x, the longest the battleship's: its length and
-  // beam tell them apart at T2's sizes, the deck's marks closer.
+  // beam tell them apart at T2's sizes, the deck's marks closer. Since PLAN 7.10a the marks are dark
+  // (SHIP_DETAIL, which no tint lightens) and large enough to read at a ship's least size (26 px for
+  // a battleship): turrets with their guns, the superstructure, a carrier's deck and island. They
+  // were light grey, which the tint made a paler shade of the hull: at 15 m/px a red bar.
   const pointed = (g: CanvasRenderingContext2D, bow: number, stern: number, beam: number): void => {
     g.beginPath();
     g.moveTo(bow, 0);
@@ -96,38 +85,69 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.stroke();
     g.fill();
   };
-  frame(Frame.battleship, (g) => {
-    pointed(g, 31, -30, 12);
-    g.fillStyle = '#b4b4b4';
-    for (const x of [16, 6, -20]) {
+  /** A gun turret at (x, 0), radius `r`, its guns `gun` long toward `dir` (1: the bow, −1: the stern). */
+  const gunTurret = (g: CanvasRenderingContext2D, x: number, r: number, gun: number, dir: number): void => {
+    g.fillStyle = SHIP_DETAIL;
+    g.strokeStyle = SHIP_DETAIL;
+    g.beginPath();
+    g.arc(x, 0, r, 0, Math.PI * 2);
+    g.fill();
+    g.lineWidth = Math.max(2, r * 0.45);
+    g.beginPath();
+    g.moveTo(x, 0);
+    g.lineTo(x + dir * (r + gun), 0);
+    g.stroke();
+  };
+  /** The superstructure: a dark block from `x0` to `x1`, `half` to either side, with a funnel. */
+  const bridge = (g: CanvasRenderingContext2D, x0: number, x1: number, half: number, funnel: boolean): void => {
+    g.fillStyle = SHIP_DETAIL;
+    g.fillRect(x0, -half, x1 - x0, 2 * half);
+    if (funnel) {
+      g.fillStyle = '#111111';
       g.beginPath();
-      g.arc(x, 0, 4.5, 0, Math.PI * 2);
+      g.ellipse((x0 + x1) / 2 - 2, 0, half * 0.55, half * 0.75, 0, 0, Math.PI * 2);
       g.fill();
     }
-    g.fillRect(-12, -5, 10, 10);
+  };
+  // A ship of no class of its own (a cruiser's frame): a pointed hull, two turrets and a bridge.
+  frame(Frame.ship, (g) => {
+    pointed(g, 30, -28, 11);
+    gunTurret(g, 15, 5, 7, 1);
+    bridge(g, -10, 4, 5, true);
+    gunTurret(g, -19, 5, 7, -1);
+  });
+  frame(Frame.battleship, (g) => {
+    pointed(g, 31, -30, 12);
+    gunTurret(g, 18, 6, 8, 1);
+    gunTurret(g, 7, 6, 6, 1);
+    bridge(g, -12, 0, 6, true);
+    gunTurret(g, -21, 6, 8, -1);
   });
   frame(Frame.carrier, (g) => {
     g.beginPath();
     g.rect(-30, -11, 60, 22);
     g.stroke();
     g.fill();
-    g.fillStyle = '#b4b4b4';
-    g.fillRect(-4, 8, 14, 3); // the island, to starboard
-    g.strokeStyle = 'rgba(120,120,120,0.9)';
+    // The flight deck's edges and its centre line, dark; the island to starboard.
+    g.strokeStyle = SHIP_DETAIL;
     g.lineWidth = 2;
-    g.setLineDash([5, 4]);
+    g.strokeRect(-27, -8, 54, 16);
+    g.setLineDash([6, 4]);
     g.beginPath();
-    g.moveTo(-26, 0);
-    g.lineTo(26, 0);
+    g.moveTo(-24, 0);
+    g.lineTo(24, 0);
     g.stroke();
+    g.setLineDash([]);
+    g.fillStyle = SHIP_DETAIL;
+    g.fillRect(-6, 6, 16, 6);
   });
   frame(Frame.submarine, (g) => {
     g.beginPath();
     g.ellipse(0, 0, 26, 5.5, 0, 0, Math.PI * 2);
     g.stroke();
     g.fill();
-    g.fillStyle = '#b4b4b4';
-    g.fillRect(0, -3, 7, 6);
+    g.fillStyle = SHIP_DETAIL;
+    g.fillRect(-2, -3.5, 10, 7);
   });
   frame(Frame.transport, (g) => {
     g.beginPath();
@@ -139,15 +159,18 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.closePath();
     g.stroke();
     g.fill();
-    g.fillStyle = '#c8c8c8';
-    g.fillRect(-18, -6, 10, 12);
-    g.fillRect(-4, -6, 10, 12);
-    g.fillRect(-21, -4, 4, 8);
+    // Its holds forward, the superstructure and funnel aft.
+    g.strokeStyle = SHIP_DETAIL;
+    g.lineWidth = 2;
+    g.strokeRect(2, -6, 9, 12);
+    g.strokeRect(-9, -6, 9, 12);
+    bridge(g, -21, -12, 6, true);
   });
   frame(Frame.destroyer, (g) => {
     pointed(g, 24, -22, 6.5);
-    g.fillStyle = '#c8c8c8';
-    g.fillRect(-6, -3, 9, 6);
+    gunTurret(g, 12, 3.5, 5, 1);
+    bridge(g, -4, 4, 3.5, true);
+    gunTurret(g, -14, 3.5, 5, -1);
   });
   // The wake (PLAN 4.7b): two lines of foam that open astern, the ship's stern at +x. Drawn white,
   // not tinted, behind a ship under way.
@@ -288,6 +311,8 @@ export function drawUnitAtlas(): HTMLCanvasElement {
   return c;
 }
 
+/** The dark of a ship's marks (PLAN 7.10a): no tint lightens it. */
+const SHIP_DETAIL = '#3a3a3a';
 /** Greys of the atlas: what the nation's tint makes darker. */
 const TRACK = '#7d7d7d';
 const DECK = '#b4b4b4';

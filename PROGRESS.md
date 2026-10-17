@@ -17831,3 +17831,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **7.9 ticked:** 7.9a to e done; its AT (tanks larger, by side, in a formation facing the enemy,
   wrecks left and counted; pictures at T2 and T3 in `docs/evidence/7.9/`).
 - **Next:** PLAN 7.10.
+
+## 2026-10-17 — PLAN 7.10 split; 7.10a: ships' marks dark and large enough to read (render)
+
+- **Start:** gate green on a clean tree (`0df9a73`).
+- **Found:** a ship's marks were light grey, made a paler shade of its hull by the tint; a turret
+  under 2 px at a battleship's least size (26 px), which a fleet's spacing (29 px at 20 m/px) bounds.
+  Split: 7.10a the ships, 7.10b the sea battle seen from its row.
+- **Done (7.10a):** the ship frames' marks dark (SHIP_DETAIL) and larger: turrets with guns,
+  superstructure and funnel, a carrier's deck and island. ADR-472.
+- **Measured** (`shipMarks1938`, the critic's game at 15 m/px): the marks against the hull along a
+  ship's centre line, median 0.51 → 0.67, the least 0.17 → 0.29. Pictures in `docs/evidence/7.10/`.
+- **Tests:** `shipMarks1938` (new; red with the old frames); 6 ship specs green one at a time.
+- **Next:** PLAN 7.10b.
