@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CAPITAL_REACH, layoutCityLabels, NAME_CLEAR_PX, NAME_REACH_PX, nameMaxMPerPx, nameTextBox, priorityOrder, wanted, type CityPoint, type LabelState } from '../../src/render/labels/cityLabels';
+import { CAPITAL_REACH, CityLabelLayer, layoutCityLabels, NAME_CLEAR_PX, NAME_REACH_PX, nameMaxMPerPx, nameTextBox, priorityOrder, wanted, type CityPoint, type LabelState } from '../../src/render/labels/cityLabels';
 import { ZOOM_HYSTERESIS, type SwitchState } from '../../src/render/timing';
 import { CITIES_1938, NATIONS_1938, politicalMap1938, TAGS_1938 } from '../helpers/earth';
 
@@ -260,5 +260,38 @@ describe('city names among obstacles (PLAN 2.7r)', () => {
     const flag = { x: 400 - 12 - 1, y: 300 - 24 - 1, w: 26, h: 18 };
     expect(hit(alone.box!, flag)).toBe(true);
     expect(lay([flag])).toMatchObject({ nameAlpha: 1, side: 0 });
+  });
+});
+
+// PLAN 7.4f41 (a line of PLAN 7.4's "seam of the looping map"): the two copies of a city either
+// side of the seam had one place. With something on one copy's place beside the dot and not on
+// the other's, each frame each copy wrote its own place there and the other took it for a move:
+// the name went out and came in again, and the layer never came to rest. Each copy has its place.
+describe('the copies of a city either side of the seam (PLAN 7.4f41)', () => {
+  /** A canvas that draws nothing and measures a letter as 7 px. */
+  const stubCanvas = (w: number, h: number): HTMLCanvasElement => {
+    const ctx = new Proxy({}, { get: (_, k) => (k === 'measureText' ? (t: string) => ({ width: t.length * 7 }) : () => {}), set: () => true });
+    return { clientWidth: w, clientHeight: h, width: 0, height: 0, getContext: () => ctx } as unknown as HTMLCanvasElement;
+  };
+  it('one copy with a marker on its place beside the dot, the other free: each keeps its place, and the layer rests', () => {
+    // A map 100 cells wide that loops, at 10 px a cell: the world is 1,000 px, the view 1,600.
+    const geo = { w: 100, h: 50, kmPerCell: 1, wrapX: true };
+    const layer = new CityLabelLayer(stubCanvas(1600, 400), geo);
+    layer.setCities([{ name: 'Seamton', x: 20, y: 25, size: 5, capital: true }]);
+    const cam = { cx: 70, cy: 25, scale: 10 }; // the city at x 300 and 1,300 px
+    const [a, b] = [300, 1300];
+    // A marker on the copy at 300's place to the right of its dot.
+    const marker = { x: a + 6, y: 190, w: 26, h: 29, clear: 2 };
+    let busy = 0;
+    let sides = '';
+    for (let k = 0; k < 40; k++) {
+      const now = 1000 + k * 50;
+      layer.draw(cam, 1, now, [marker]);
+      if (k > 10 && layer.animating(now)) busy++;
+      sides = layer.lastPlaced.filter((p) => !p.ghost).map((p) => `${Math.round(p.sx)}:${p.side}`).sort().join(' ');
+    }
+    // Both copies drawn, at their own places: the one with the marker beside it on its left (1).
+    expect(sides).toBe(`${b}:0 ${a}:1`);
+    expect(busy, 'frames after the first half second with the layer still animating').toBe(0);
   });
 });

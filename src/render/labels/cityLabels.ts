@@ -41,6 +41,8 @@ export interface CityPoint {
 
 export interface PlacedLabel {
   index: number;
+  /** Its name's state: the city and the copy of the map it is on (`nameKey`). */
+  key: number;
   /** Dot centre, CSS px. */
   sx: number;
   sy: number;
@@ -55,6 +57,17 @@ export interface PlacedLabel {
   side?: number;
   /** From the layer: this is what still shows of a name at the place it has left (no dot; `nameAlpha` on its way to 0). */
   ghost?: boolean;
+}
+
+/**
+ * The key of city `index`'s name on the copy of the map `off` cells over (PLAN 7.4f41): each copy's
+ * name has its own place. The two copies either side of the seam of a looping map had one: each
+ * frame each copy wrote its own there, and the other took it for a move, so with both laid out
+ * the layer never rested. The switch, on or off, stays the city's. A map that does not loop has
+ * the one copy, k = 0.
+ */
+export function nameKey(index: number, off: number, w: number): number {
+  return index * 64 + Math.round(off / w) + 32;
 }
 
 /** Where a name stands: which of the places, and its box's corner as an offset from the dot, px. */
@@ -212,13 +225,14 @@ export function layoutCityLabels(
       const [sx, sy] = worldToScreen(cam, c.x + off, c.y, viewW, viewH);
       if (!inView(sx, sy)) continue;
       const fontPx = fontPxFor(c);
-      const placed: PlacedLabel = { index: i, sx, sy, dotR, dotAlpha: dot ? 1 : 0, nameAlpha: 0, fontPx };
+      const key = nameKey(i, off, geo.w);
+      const placed: PlacedLabel = { index: i, key, sx, sy, dotR, dotAlpha: dot ? 1 : 0, nameAlpha: 0, fontPx };
       if (name || lingers) {
         const w = measure(c.name, fontPx) + PAD * 2;
         const h = fontPx * 1.2;
         // A name on screen has its place, and keeps it while nothing stands on it. Otherwise it
         // takes the first place that is clear.
-        const kept = state.name.visible(i) ? state.place?.(i) : undefined;
+        const kept = state.name.visible(i) ? state.place?.(key) : undefined;
         const at = (side: number): Box | null => nameBox(side, sx, sy, dotR, w, h, obstacles, c.capital ? CAPITAL_REACH : 1);
         const free = (box: Box | null, taking: boolean): box is Box => box !== null && !boxes.some((b) => touching(b, box)) && !near(box, obstacles, taking);
         const held: Box | null = kept ? { x: sx + kept.dx, y: sy + kept.dy, w, h } : null;
@@ -264,10 +278,10 @@ export class CityLabelLayer {
   /** Each city's dot and name: on or off, and the fade of a change. */
   private readonly dots = new SwitchBank<number>();
   private readonly names = new SwitchBank<number>();
-  /** Where each city's name was last placed. */
+  /** Where each city's name was last placed, by `nameKey`. */
   private readonly places = new Map<number, NamePlace>();
   /** What still shows of names at places they have left: going out there, from the opacity they had. */
-  private ghosts: { index: number; dx: number; dy: number; w: number; h: number; from: number; start: number }[] = [];
+  private ghosts: { index: number; key: number; dx: number; dy: number; w: number; h: number; from: number; start: number }[] = [];
   /** Labels placed by the last draw, with the opacities drawn (tests and stats). */
   lastPlaced: PlacedLabel[] = [];
 
@@ -353,35 +367,35 @@ export class CityLabelLayer {
     }
     const { dots, names } = this;
     const nameState = names.frame(now);
-    const placed = layoutCityLabels(this.cities, this.order, cam, this.geo, viewW, viewH, this.measure, { dot: dots.frame(now), name: nameState, place: (i) => this.places.get(i) }, obstacles);
+    const placed = layoutCityLabels(this.cities, this.order, cam, this.geo, viewW, viewH, this.measure, { dot: dots.frame(now), name: nameState, place: (k) => this.places.get(k) }, obstacles);
     const moved = new Set<number>();
     const at = new Map<number, PlacedLabel>();
     for (const p of placed) {
-      at.set(p.index, p);
+      at.set(p.key, p);
       p.dotAlpha = dots.value(p.index, p.dotAlpha > 0);
       const want = p.nameAlpha > 0;
       if (want && p.box && p.side !== undefined) {
         const place = { side: p.side, dx: p.box.x - p.sx, dy: p.box.y - p.sy };
-        const was = this.places.get(p.index);
+        const was = this.places.get(p.key);
         // The name has taken another place while it showed: it goes out where it stood and comes
-        // in where it stands now. (Once a frame for a city: its copies either side of the seam of
-        // a looping map share its switch.)
-        if (was && nameState.visible(p.index) && !moved.has(p.index) && (Math.abs(was.dx - place.dx) > 0.01 || Math.abs(was.dy - place.dy) > 0.01)) {
+        // in where it stands now. Each copy of the map has its place (PLAN 7.4f41); the switch is
+        // the city's, restarted once a frame.
+        if (was && nameState.visible(p.index) && (Math.abs(was.dx - place.dx) > 0.01 || Math.abs(was.dy - place.dy) > 0.01)) {
+          this.ghosts.push({ index: p.index, key: p.key, dx: was.dx, dy: was.dy, w: p.box.w, h: p.box.h, from: names.value(p.index, true), start: now });
+          if (!moved.has(p.index)) names.restart(p.index);
           moved.add(p.index);
-          this.ghosts.push({ index: p.index, dx: was.dx, dy: was.dy, w: p.box.w, h: p.box.h, from: names.value(p.index, true), start: now });
-          names.restart(p.index);
         }
-        this.places.set(p.index, place);
+        this.places.set(p.key, place);
       }
       p.nameAlpha = names.value(p.index, want);
     }
     dots.end();
     names.end();
     // What still shows at the places names have left, as labels of their own: a name only.
-    this.ghosts = this.ghosts.filter((g) => progress(now, g.start, FADE_MS) < 1 && at.has(g.index));
+    this.ghosts = this.ghosts.filter((g) => progress(now, g.start, FADE_MS) < 1 && at.has(g.key));
     for (const g of this.ghosts) {
-      const p = at.get(g.index)!;
-      placed.push({ index: g.index, sx: p.sx, sy: p.sy, dotR: 0, dotAlpha: 0, nameAlpha: g.from * (1 - smooth(progress(now, g.start, FADE_MS))), fontPx: p.fontPx, box: { x: p.sx + g.dx, y: p.sy + g.dy, w: g.w, h: g.h }, ghost: true });
+      const p = at.get(g.key)!;
+      placed.push({ index: g.index, key: g.key, sx: p.sx, sy: p.sy, dotR: 0, dotAlpha: 0, nameAlpha: g.from * (1 - smooth(progress(now, g.start, FADE_MS))), fontPx: p.fontPx, box: { x: p.sx + g.dx, y: p.sy + g.dy, w: g.w, h: g.h }, ghost: true });
     }
     ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round';

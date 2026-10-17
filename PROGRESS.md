@@ -17477,3 +17477,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Seen:** `seaBattleSeen1938` red in two parallel runs of 7 and 53 specs (this round and
   7.4f38's), green alone 4 times and in a run of 4: load, not a rule. Not on `knownRed.json`.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f41: each copy of a city has its name's place (render)
+
+- **Start:** gate green on a clean tree (`2c49d91`); critic not due.
+- **Done:** the city layer keeps a name's place and its fading ghost by `nameKey` (the city and
+  the copy of the map); the switch stays the city's. Tried first: a switch a copy too. A copy
+  that came into view past the name's limit then had no held switch and no name (0 of the
+  capitals named on both copies at 5,700 m/px, 26 after): not kept.
+- **Tests:** `cities.test.ts` 20 of 20 (new: the layer, driven with a stub canvas, one city on
+  both copies, a marker on one copy's place: each copy at its own side, the layer at rest; red
+  before: animating in 29 of 29 frames); `seamNames1938` (new: an 8,000 px view at 5,700 m/px,
+  26 cities named on both copies, 30 frames at rest; green on the old code too, it guards the
+  names of both copies); `cityNames1938`, `labelFades1938`, `labels1938`, `mapTooltip1938` green.
+- **Next:** PLAN 7.4f, the next group.
