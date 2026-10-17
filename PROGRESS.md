@@ -17711,3 +17711,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   and the session's background waiter was stopped for memory; the ten `nukeGates` runs were stopped
   by hand and strikes recorded five, then four, at a time.
 - **7.6 ticked:** its AT met (the report's list). **Next:** PLAN 7.7 (critic R7-B2).
+
+## 2026-10-17 — PLAN 7.7: the invasion AI's late-game stalls (critic R7-B2)
+
+- **Start:** gate green on a clean tree (`2ac590d`).
+- **The cause** (CPU profile of year 28 from `critic/c7_seed3371_y27.bin`): 58.7 of 59 s in
+  `planLanding` → `orderMove` → `findPath`; Italy, its transports' port out of its army's reach by
+  land, ordered all 109 formations there each week, each a failed search of about 10 ms.
+- **Done:** `sendToPort`, the first that cannot go ends the call. ADR-466.
+- **AT:** years 28 and 29 from the save: mean tick 4.91 / 4.61 → 0.75 / 0.60 ms, `invasionAi` max
+  738 → 14 ms, hashes unchanged; years 15 to 30 from the year-14 save at most 1.73 ms, longest call
+  14.8 ms (`docs/evidence/7.7/profile.md`).
+- **Tests:** `invasionBound1938.test.ts` (new; red with the old loop); 8 invasion and naval test
+  files green; pin unmoved.
+- **Next:** PLAN 7.5, the critic again (both of run 7's blocking issues filed are done).

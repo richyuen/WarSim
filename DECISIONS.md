@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-466 · 2026-10-17 · accepted — The invasion AI stops sending formations at the first that cannot go (PLAN 7.7)
+
+- **Context.** Critic R7-B2: on seed 3371, pinned and alone, `invasionAi` took 86 % of the tick in
+  years 28 and 29, about 50 calls a year of 300 to 772 ms; at Max in the browser those years took
+  45 s at 20 to 30 fps. A CPU profile of year 28 from the critic's save: 58.7 of 59 s under
+  `planLanding` → `orderMove` → `findPath`. With no formation at its transports' port, Italy sent its
+  free formations there, the nearest first, until the room was full; its port was out of its army's
+  reach by land, and each week all 109 orders failed, each a search of about 10 ms (0.7 to 1.1 s).
+- **Decision.** `sendToPort`: the first formation that cannot be ordered to the port ends the call.
+  All go to the one port, the nearest first; one that cannot reach it says the port is out of reach.
+- **Effect** (`docs/evidence/7.7/profile.md`): years 28 and 29 from the year-27 save, mean tick 4.91
+  and 4.61 ms → 0.75 and 0.60 ms, `invasionAi` at most 738 → 14 ms, the same hashes (every order of
+  those calls had failed); years 15 to 30 from the year-14 save at most 1.73 ms a year (the first
+  year's budget 2.4 ms) and 14.8 ms a call. The pin unmoved.
+- **Tests.** `invasionBound1938.test.ts` (new: five German divisions sent to London: one refused, the
+  others not tried, red with the old loop; sent to Munich: all, or as many as the room holds).
+
 ### ADR-465 · 2026-10-17 · accepted — A capital struck is spared a year; every nuclear power strikes back (PLAN 7.6e)
 
 - **Context.** Critic R7-B1: the Soviet Union struck one Dutch point twice a year apart, and no

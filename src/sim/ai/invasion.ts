@@ -16,7 +16,9 @@
  *   way, in no fight, not retreating or going home) are ordered there by `orderLanding`, one by
  *   one, until the transports have no room for the next;
  * - with none there, its free land formations on the port's land, nearest the port first, are
- *   sent to it (`orderMove`) until their men fill the room; they go aboard on a later day.
+ *   sent to it (`orderMove`) until their men fill the room, or until one cannot be sent (PLAN 7.7:
+ *   the port out of its army's reach by land; each failed order is a search of the map); they go
+ *   aboard on a later day.
  *
  * Not here: an escort or a fleet sent to hold the landing's sea (PLAN 4.6c), a landing for a
  * nation with a front elsewhere.
@@ -126,9 +128,23 @@ function planLanding(world: World, n: number): void {
   });
   by.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   const [px, py] = world.cellPoint(home);
+  sendToPort(world, by.map(([, id]) => id), px, py, room);
+}
+
+/**
+ * Orders formations `ids`, the nearest first, to (px, py), a port's point, until their men fill
+ * `room`; the first that cannot be ordered there ends it (PLAN 7.7, critic R7-B2): all go to the one
+ * port, and one that cannot reach it says the port is out of its army's reach by land. Seed 3371's
+ * Italy tried its 109 formations each week from year 27, each a failed search of about 10 ms: calls
+ * of 0.7 to 1.1 s, 86 % of the tick. The men ordered.
+ */
+export function sendToPort(world: World, ids: readonly number[], px: number, py: number, room: number): number {
+  const c = world.formations.cols;
   let men = 0;
-  for (const [, id] of by) {
+  for (const id of ids) {
     if (men + c.strength[id]! > room) break;
-    if (orderMove(world, id, px, py)) men += c.strength[id]!;
+    if (!orderMove(world, id, px, py)) break;
+    men += c.strength[id]!;
   }
+  return men;
 }

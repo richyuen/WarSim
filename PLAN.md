@@ -29,14 +29,6 @@ quick sweep as a smoke test.
 
 ## Phase 7 — Balance, polish, soak
 
-- [ ] 7.7 Critic R7-B2 (report of 2026-10-17 on `19e2341`): late-game stalls in the invasion AI.
-  Seed 3371, pinned and alone: `invasionAi` 86 % of the tick in years 28 and 29, about 50 calls a
-  year of 300 to 772 ms (Poland against Denmark in 1967, no land front); in the browser at Max
-  those years take 45 to 46 s at 20 to 30 fps, year 30 8 s at 55 fps
-  (`critic/c7_perf_3371_y15_30_solo.log`, `critic/c7_j_3371.json`). AT: from the critic's year-14
-  save of seed 3371 (or a run to year 27), `--profile` of years 28 and 29: no `invasionAi` call over
-  20 ms and the mean tick within the year-1 budget; the hash of each year unchanged unless the
-  cause is a rule (then the pin updated and logged in DECISIONS); a unit test of the bound.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -264,3 +256,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.3 Final multi-decade sweep (≥ 10 seeds) — borders moving, no hegemon. […]
 - [x] 7.4 Visual polish vs reference (borders, labels, UI frames, flags, fonts). […]
 - [x] 7.6 Critic R7-B1 (report of 2026-10-17 on `19e2341`): AI nuclear use too rare to be seen, […]
+- [x] 7.7 Critic R7-B2 (report of 2026-10-17 on `19e2341`): late-game stalls in the invasion AI. […]

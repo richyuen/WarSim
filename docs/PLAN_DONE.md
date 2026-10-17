@@ -10578,3 +10578,26 @@ Of 7.4 (open in PLAN.md):
       enemy answers it (RETALIATION_AGGRESSION's reason read first, PLAN 6.12). AT: unit tests.
     - [x] 7.6f The AT's sweep: seeds 1 to 10 × 30 years unaided with `nukeGates` and the quick
       sweep's nuclear table; the report beside `gates-before.md`.
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.7 Critic R7-B2 (report of 2026-10-17 on `19e2341`): late-game stalls in the invasion AI.
+  Seed 3371, pinned and alone: `invasionAi` 86 % of the tick in years 28 and 29, about 50 calls a
+  year of 300 to 772 ms (Poland against Denmark in 1967, no land front); in the browser at Max
+  those years take 45 to 46 s at 20 to 30 fps, year 30 8 s at 55 fps
+  (`critic/c7_perf_3371_y15_30_solo.log`, `critic/c7_j_3371.json`). AT: from the critic's year-14
+  save of seed 3371 (or a run to year 27), `--profile` of years 28 and 29: no `invasionAi` call over
+  20 ms and the mean tick within the year-1 budget; the hash of each year unchanged unless the
+  cause is a rule (then the pin updated and logged in DECISIONS); a unit test of the bound.
