@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { dayIndustry, nuclearUtility, RESOLVE, RESOLVE_DAYS, RESOLVE_GAP_DAYS, resolveOf, retaliationRisk, weighWar } from '../../src/sim/systems/nuclear';
+import { dayIndustry, nuclearUtility, RESOLVE, RESOLVE_DAYS, RESOLVE_GAP_DAYS, RESOLVE_STRIKES, resolveOf, retaliationRisk, weighWar } from '../../src/sim/systems/nuclear';
 import { grantTechs, techMask } from '../../src/sim/tech';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -55,9 +55,17 @@ describe("a winner's resolve to end a long war (PLAN 7.18e)", () => {
     // The war remembers it: no resolve for RESOLVE_GAP_DAYS.
     expect(war.lastStrike?.[0]).toBeGreaterThan(0);
     expect(resolveOf(w, war, 0, 0, false)).toBe(0);
+    // A strike of its resolve, counted (PLAN 7.18h).
+    expect(war.resolveStrikes).toEqual([1, 0]);
     w.tick += RESOLVE_GAP_DAYS * 24;
     war.score = 20;
     expect(resolveOf(w, war, 0, 0, false)).toBeGreaterThan(0);
+    // A few a war: after RESOLVE_STRIKES, none (PLAN 7.18h: seed 1's Italy struck ten times in one war).
+    war.resolveStrikes = [RESOLVE_STRIKES, 0];
+    expect(resolveOf(w, war, 0, 0, false)).toBe(0);
+    expect(resolveOf(w, war, 1, 0, false)).toBe(0);
+    war.score = -20;
+    expect(resolveOf(w, war, 1, 0, false)).toBeGreaterThan(0);
   }, 300_000);
 
   it('no resolve when France can strike back, when the war is young, or when Germany is losing', () => {
@@ -82,4 +90,5 @@ describe("a winner's resolve to end a long war (PLAN 7.18e)", () => {
     expect(resolveOf(w, war, 0, r, false)).toBe(0);
     expect(bestUtility(s, war)).toBeLessThanOrEqual(0);
   }, 300_000);
+
 });

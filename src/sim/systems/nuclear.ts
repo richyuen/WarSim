@@ -595,6 +595,8 @@ interface StrikeView {
   fy: number[];
   fs: number[];
   fEnemy: boolean[];
+  /** The enemy side's men, everywhere. */
+  enemyMen: number;
   econAll: () => number;
   /** The day's industry by nation (`industryHeld`). */
   held: () => Float64Array;
@@ -604,7 +606,7 @@ function strikeView(world: World, n: number, war: War, side: number, industry: (
   const enemy = new Set(war.sides[1 - side]!);
   const own = new Set(ownCoalition(world, war, side));
   const c = world.formations.cols;
-  const v: StrikeView = { enemy, radius: blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1), fx: [], fy: [], fs: [], fEnemy: [], econAll: () => 0, held: industry };
+  const v: StrikeView = { enemy, radius: blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1), fx: [], fy: [], fs: [], fEnemy: [], enemyMen: 0, econAll: () => 0, held: industry };
   world.formations.forEach((id) => {
     const m = c.nation[id]!;
     const isEnemy = enemy.has(m);
@@ -614,6 +616,7 @@ function strikeView(world: World, n: number, war: War, side: number, industry: (
     v.fy.push(c.y[id]!);
     v.fs.push(s);
     v.fEnemy.push(isEnemy);
+    if (isEnemy) v.enemyMen += s;
   });
   let all: number | null = null;
   v.econAll = () => {
@@ -645,6 +648,33 @@ export function targetValue(world: World, n: number, war: War, side: number, x: 
 }
 
 function valueIn(world: World, n: number, v: StrikeView, x: number, y: number): number {
+  return partsIn(world, n, v, x, y).value;
+}
+
+/** What a place's value is made of (`valueIn`; a diagnostic's too). */
+export interface PlaceParts {
+  /** The enemy side's output in the blast, as a share of its whole. */
+  econShare: number;
+  /** The enemy side's men in the blast, as a share of its men in the theatre. */
+  menShare: number;
+  /** The striker's side's men in the blast, as a share of its men in the theatre. */
+  ownShare: number;
+  /** The enemy side's men in the theatre (within FRONT_KM of the place). */
+  menAll: number;
+  /** The enemy side's men, everywhere (PLAN 7.18h's measure of a theatre's weight). */
+  sideMen: number;
+  capital: number;
+  /** The chance the warhead gets there. */
+  through: number;
+  value: number;
+}
+
+/** The parts of a burst's value at (x, y) for `n` in `war` on `side` (a diagnostic's). */
+export function placeParts(world: World, n: number, war: War, side: number, x: number, y: number): PlaceParts {
+  return partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y);
+}
+
+function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): PlaceParts {
   const { radius, enemy } = v;
   const { w, h, econ, controller } = world.cells;
   // The enemy side's output within the blast.
@@ -684,7 +714,10 @@ function valueIn(world: World, n: number, v: StrikeView, x: number, y: number): 
   }
   // As a share of all the enemy side's output (summed only when the blast reaches some).
   const econAll = hit > 0 ? v.econAll() : 0;
-  const share = (econAll > 0 ? hit / econAll : 0) + (menAll > 0 ? menHit / menAll : 0) - (ownAll > 0 ? ownHit / ownAll : 0);
+  const econShare = econAll > 0 ? hit / econAll : 0;
+  const menShare = menAll > 0 ? menHit / menAll : 0;
+  const ownShare = ownAll > 0 ? ownHit / ownAll : 0;
+  const share = econShare + menShare - ownShare;
   const nc = world.nations.cols;
   let capital = 0;
   // A capital of weight to the enemy side (PLAN 7.18d, critic R8-B1: the Soviet Union struck Nepal's,
@@ -696,7 +729,7 @@ function valueIn(world: World, n: number, v: StrikeView, x: number, y: number): 
   }
   // Expected damage (SPEC): as likely as the warhead gets there, by missile when `n` knows them.
   const through = knows(world, n, 'ballistic_missiles') ? 1 : 1 - bomberIntercept(world, n, x, y);
-  return Math.max(0, Math.min(1, TARGET_SCALE * share + capital)) * through;
+  return { econShare, menShare, ownShare, menAll, sideMen: v.enemyMen, capital, through, value: Math.max(0, Math.min(1, TARGET_SCALE * share + capital)) * through };
 }
 
 /**
@@ -722,6 +755,12 @@ export const RESOLVE_DAYS = 365;
 export const RESOLVE_FULL_DAYS = 730;
 export const RESOLVE = 2;
 export const RESOLVE_GAP_DAYS = 90;
+/**
+ * How many strikes a side decides by its resolve in one war (PLAN 7.18h): a few to end it, not one
+ * each RESOLVE_GAP_DAYS to its end (seed 1's Italy struck ten times in 2.5 years in one war,
+ * 11,751 to 339,247 dead). After them the war is weighed as before 7.18e: by desperation alone.
+ */
+export const RESOLVE_STRIKES = 3;
 
 /** Whether `side` of `war` has the resolve to end it (PLAN 7.18e): `resolveOf` above 0. */
 function resolving(world: World, war: War, side: number): boolean {
@@ -735,6 +774,7 @@ export function resolveOf(world: World, war: War, side: number, retaliation: num
   if (days < RESOLVE_DAYS || (side === 0 ? war.score : -war.score) < 0) return 0;
   const last = war.lastStrike?.[side];
   if (last !== undefined && world.tick - last < RESOLVE_GAP_DAYS * 24) return 0;
+  if ((war.resolveStrikes?.[side] ?? 0) >= RESOLVE_STRIKES) return 0;
   return RESOLVE * Math.min(1, days / RESOLVE_FULL_DAYS);
 }
 
@@ -1000,7 +1040,7 @@ function nukeDecisions(world: World): void {
   const industry = industryOnce(world);
   for (const n of [...world.warheads.keys()].sort((a, b) => a - b)) {
     if (!weighsStrikes(world, n)) continue;
-    const options: { u: number; x: number; y: number; back: boolean; war: War; side: number }[] = [];
+    const options: { u: number; x: number; y: number; back: boolean; war: War; side: number; resolved: boolean }[] = [];
     // While it holds a grievance against an enemy, it strikes no one else (PLAN 6.12b).
     const avenging = avengingOf(world, n);
     for (const war of world.wars.list) {
@@ -1008,9 +1048,16 @@ function nukeDecisions(world: World): void {
       if (!weighsWar(world, n, war, side, avenging)) continue;
       const { shared, places } = weighWar(world, n, war, side, industry);
       if (!shared) continue;
+      // Whether the resolve, not the side's own desperation, weighs this war's strikes (PLAN 7.18h).
+      let resolved: boolean | null = null;
       for (const { x, y, value } of places) {
         const u = nuclearUtility({ targetValue: value, ...shared });
-        if (u > 0) options.push({ u, x, y, back: avenging, war, side });
+        if (u <= 0) continue;
+        if (resolved === null) {
+          const own = desperationOf(world, n, war, side);
+          resolved = !own.extreme && shared.desperation > own.desperation;
+        }
+        options.push({ u, x, y, back: avenging, war, side, resolved });
       }
     }
     options.sort((a, b) => b.u - a.u);
@@ -1023,6 +1070,12 @@ function nukeDecisions(world: World): void {
       const last: [number, number] = o.war.lastStrike ? [...o.war.lastStrike] : [-1, -1];
       last[o.side] = world.tick;
       o.war.lastStrike = last;
+      // And counts the strikes of its resolve (PLAN 7.18h: a few a war).
+      if (o.resolved) {
+        const count: [number, number] = o.war.resolveStrikes ? [...o.war.resolveStrikes] : [0, 0];
+        count[o.side] = count[o.side]! + 1;
+        o.war.resolveStrikes = count;
+      }
       // A strike back spends the grievance: one for one (of retaliation doctrine or not, PLAN 6.12b),
       // and its burst gives none (PLAN 6.12e).
       if (o.back) {

@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-489 · 2026-10-17 · accepted — A few strikes of the resolve a war (PLAN 7.18h)
+
+- **Context.** After ADR-488 a side's resolve to end a long war struck once each RESOLVE_GAP_DAYS
+  to the war's end: seed 1's Italy ten times in 2.5 years in one war, on the Soviet Union, China,
+  Mengjiang, Mongolia, Nepal and #114 (`docs/evidence/7.18/measure-h.md`). A strike to end a war
+  that has not ended it after a few is not ended by a tenth.
+- **Decision.** `War.resolveStrikes` counts each side's strikes decided by its resolve (the side not
+  in extreme desperation and its own desperation under the resolve, `nukeDecisions`); at
+  RESOLVE_STRIKES (3) the side has no resolve in that war (`resolveOf` 0) and weighs its strikes by
+  its own desperation alone, as before ADR-488. Absent in older saves (none counted).
+- **Pin.** Unmoved: no warhead in seed 99's first year.
+- **Tests.** `nukeResolve1938.test.ts`: a decision of the resolve counted; none after RESOLVE_STRIKES.
+
 ### ADR-488 · 2026-10-17 · accepted — A winner's resolve to end a long war (PLAN 7.18e)
 
 - **Context.** Critic R8-B1: AI nuclear use seen in half the games. Measured on seeds 1–10 × 30

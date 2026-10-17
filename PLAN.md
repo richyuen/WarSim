@@ -55,12 +55,13 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
     - [ ] 7.18h A strike to end a war falls on what would end it: after 7.18e, the resolve's
       strikes (90 days apart) on seeds 1 and 4 include Britain's and Switzerland's on Japan for 935
       to 2,305 dead, Italy's on Nepal (17,443) and Mongolia (18,705), and Italy's ten in 2.5 years
-      in one war (`.cache/nukeGates718e_r3_<seed>.json` `bursts`; 7.18c's theatre share × 7.18e's
-      anywhere makes a lone garrison 100 % of its theatre). AT: a place's men weighed only against
-      a theatre of weight (a floor, measured); a resolve strike only on a nation of weight to the
-      enemy side; a few resolve strikes a war, not one each 90 days to its end; a unit test; seeds
-      1–10 re-measured. Also seen in 7.18f's probe: Poland, Germans at Warsaw, put its first warhead
-      on Rome (Italy, 8,145 to 8,372 dead) on seeds 2, 5591 and 6047.
+      in one war (`.cache/nukeGates718e_r3_<seed>.json` `bursts`). Measured first
+      (`tools/diag/nukeResolve.ts`, `docs/evidence/7.18/measure-h.md`): the resolve's strikes on
+      nations of 0 to 2 % of the enemy side's output (#114, Mongolia, Mengjiang, Manchukuo, Greece),
+      up to 10 a war; tolls under 5,000 at places in theatres of 74 to 5,229 men (the theatre's
+      floor: 7.18j). AT: a few resolve strikes a war, not one each 90 days to its end
+      (RESOLVE_STRIKES); a resolve strike only on a nation of weight to the enemy side; unit tests;
+      seeds 1–10 re-measured.
     - [ ] 7.18i A warhead's costs weighed as its gain is: a place's value is × the chance the bomber
       gets through (`valueIn`'s `through`, 0.2 under full enemy air superiority), but the costs
       (taboo, outrage, alliance unity, the grievance) fall only on a burst (`detonate`, `aftermath`)
@@ -72,6 +73,16 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       intercepted launch spends the warhead and may lose the bomber, nothing more); Poland strikes
       on seeds 7127 and 3929; a unit test; seeds 1–10 re-measured (with 7.18h's: not more strikes
       on poor places).
+    - [ ] 7.18j A place's men weighed against a theatre of weight (7.18h's floor, after 7.18i): 7.18c's
+      theatre share makes a lone garrison 100 % of its theatre (seed 4's Britain on Japanese garrisons
+      of 2,267 to 5,229 men in theatres of no more, 935 to 2,305 dead; seed 1's Britain on #114's of
+      456 to 1,380, 168 to 2,875 dead). Tried in 7.18h: a floor of 0.25 of the enemy side's men stops
+      the critic's Poland (5591) and France (7127), whose strikes at HEAD fell on an Italian army
+      near Rome (theatres of 92,322 and 106,230 men, 6 % of a side of 1.6 to 1.7 million, the chance
+      through 0.6 against 0.2 over the Germans); with it every place left to them is held under 0.2
+      by German air cover, 7.18i's cause. AT: after 7.18i; a floor measured from `sideMen` (land
+      formations alone, or not); `nukePoland1938` and `nukeOverrun1938` green with their strikes on
+      the Germans; seeds 1–10 re-measured, no toll under 5,000 at a place of a lone garrison.
     - [ ] 7.18g The measure of 7.18's AT: 10 seeds × 30 years, a burst in 8, some before year 20, no
       point struck twice within its ruin's days, no third party under its bound; the 50-year sweep
       on unseen seeds, after the gate.
