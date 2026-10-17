@@ -18032,3 +18032,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   reach, not the base's room.
 - **Tests:** `nukePoland1938.test.ts` (new). Pin unmoved (no sim change).
 - **Next:** PLAN 7.18h.
+
+## 2026-10-17 — PLAN 7.18h: a few strikes of the resolve a war, on nations of weight; the floor to 7.18j
+
+- **Start:** gate green on a clean tree (`790100e`; four evidence pictures left unstaged as before).
+- **Measured first:** `tools/diag/nukeResolve.ts` (new: each decision's war, whether the resolve drove
+  it, the place's parts by `placeParts`, its owner's share of the enemy side's output, the toll),
+  seeds 1–10 × 30 years (`docs/evidence/7.18/measure-h.md`): the resolve struck up to 10 times in a
+  war (seed 1's Italy), 7 times on nations of 0 to 2 % of the side's output; 16 tolls under 5,000,
+  at places of lone garrisons (theatres of 74 to 5,229 men).
+- **Done:** `War.resolveStrikes`, RESOLVE_STRIKES 3 (ADR-489, `d5bed3e`); the resolve's aim only at
+  nations of RESOLVE_WEIGHT 0.1 of the side's output (ADR-490, `b03f62d`). Pin unmoved both times.
+- **Measured after:** at most 3 a war; 2 light nations left (the same decisions as before, the rule
+  not applying at their tick); bursts in 8 of 10 seeds, 7 before year 20, as before.
+- **Not done, filed as 7.18j (after 7.18i):** the theatre's floor. At 0.25 of the side's men it
+  stopped the critic's Poland and France (`nukePoland1938`, `nukeOverrun1938` red), whose strikes
+  at HEAD fell on an Italian army near Rome (theatres of 92k and 106k men, through 0.6); every place
+  left to them is held under 0.2 by German air cover, 7.18i's cause.
+- **Tests:** `nukeResolve1938.test.ts` (the cap, the weight); the related unit tests (1,118) and the pin
+  in each gate.
+- **Next:** PLAN 7.18i.

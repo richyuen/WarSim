@@ -52,7 +52,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       its with room (the editor's placement at Warsaw is 7.24's), it strikes in Germany's war on it.
       AT: a unit test. Done by 7.18a–e: `nukePoland1938.test.ts` (seed 5591: decided day 64,
       burst day 65).
-    - [ ] 7.18h A strike to end a war falls on what would end it: after 7.18e, the resolve's
+    - [x] 7.18h A strike to end a war falls on what would end it: after 7.18e, the resolve's
       strikes (90 days apart) on seeds 1 and 4 include Britain's and Switzerland's on Japan for 935
       to 2,305 dead, Italy's on Nepal (17,443) and Mongolia (18,705), and Italy's ten in 2.5 years
       in one war (`.cache/nukeGates718e_r3_<seed>.json` `bursts`). Measured first
@@ -61,7 +61,8 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       up to 10 a war; tolls under 5,000 at places in theatres of 74 to 5,229 men (the theatre's
       floor: 7.18j). AT: a few resolve strikes a war, not one each 90 days to its end
       (RESOLVE_STRIKES); a resolve strike only on a nation of weight to the enemy side; unit tests;
-      seeds 1–10 re-measured.
+      seeds 1–10 re-measured. Done: ADR-489, ADR-490 (`d5bed3e`, `b03f62d`); at most 3 a war (10
+      before), 2 light nations left of 7, bursts in 8 of 10 seeds as before (`measure-h.md`).
     - [ ] 7.18i A warhead's costs weighed as its gain is: a place's value is × the chance the bomber
       gets through (`valueIn`'s `through`, 0.2 under full enemy air superiority), but the costs
       (taboo, outrage, alliance unity, the grievance) fall only on a burst (`detonate`, `aftermath`)

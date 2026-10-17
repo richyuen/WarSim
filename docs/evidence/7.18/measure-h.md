@@ -57,3 +57,31 @@ Mengjiang's far off). The German masses at Warsaw (450,000 to 820,000 men in the
 0.03 to 0.10 under German air superiority (the chance through 0.2): any floor that takes Rome away
 leaves Poland nothing above 0, which is 7.18i's cause (the costs weighed whole, the gain × the
 chance through). PLAN 7.18j: the floor, after 7.18i.
+
+## After (`b03f62d`: RESOLVE_STRIKES 3, ADR-489; RESOLVE_WEIGHT 0.1, ADR-490)
+
+| Seed | Decisions | By the resolve | Tolls under 5,000 | Resolve strikes on nations under 10 % | Most resolve strikes in one war |
+|---|---|---|---|---|---|
+| 1 | 34 | 7 | 12 | 1 | 3 |
+| 2 | 3 | 3 | 1 | 0 | 3 |
+| 3 | 1 | 1 | 0 | 0 | 1 |
+| 4 | 4 | 4 | 2 | 0 | 3 |
+| 5 | 4 | 4 | 0 | 0 | 1 |
+| 6 | 0 | 0 | 0 | 0 | 0 |
+| 7 | 7 | 6 | 0 | 0 | 2 |
+| 8 | 7 | 4 | 0 | 0 | 1 |
+| 9 | 0 | 0 | 0 | 0 | 0 |
+| 10 | 9 | 5 | 1 | 1 | 2 |
+| all | 69 | 34 | 16 | 2 | |
+
+Seeds with a burst: 8 of 10; with one before year 20: 7 (as before). In one war: by the war's id.
+
+- **Many in one war:** at most 3 (10 before). Seed 1's Italy: China, Nepal, the Soviet Union
+  (339,412 dead at its capital), then no more by its resolve.
+- **Light nations:** the two left, Britain's on #114 (seed 1, day 4,937) and on Greece (seed 10, day
+  4,688), are the same decisions as before the rules, in worlds the same up to them: at their
+  decision the rule did not apply (the side in extreme desperation, or without the resolve, at that
+  tick; the diagnostic reads at the day's end, at desperations 0.90 and 1.22).
+- **Tolls under 5,000:** 16, as before: the lone garrisons, PLAN 7.18j (after 7.18i). Seed 1's
+  Britain on Chinese garrisons of 126 men and fewer is at desperation 1.2, the desperate path.
+- Intermediate files: `.cache/r718h/{base,after}_<seed>.json`.
