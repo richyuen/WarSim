@@ -37,6 +37,21 @@ lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split wh
   (`critic/shots/c7d_7781_arm_0010m_crop.png`, `critic/c7_d_7781.json`); at T2 nothing tells armour
   from infantry but the counter's text. AT: tanks larger, tinted by side, in a formation facing the
   enemy; wrecks left and the test hook reads them; pictures at T2 and T3 beside run 7's.
+  Found (2026-10-17): the critic's script read `wrecks.count`, which `WreckFx` has not (so `null`
+  whatever was drawn), and a wreck goes in about 15 s of the clock; figures are tinted by nation
+  (`spriteTint`) and Germany's colour is #5d5d5d, grey on the drab ground; a tank element is a 4 × 4
+  grid of a 0.024-cell footprint. A part each:
+    - [ ] 7.9a Wrecks seen: `WreckFx` gives its count to the test hook; wrecks drawn at T3 as at T2,
+      and held long enough to be seen at the speeds a player watches a fight. AT: an armour fight
+      at T3 with wrecks counted and in the picture.
+    - [ ] 7.9b Whose tank: a side's mark on each vehicle that reads on any ground and for a grey
+      nation (Germany's #5d5d5d). AT: the two sides' tanks of a fight told apart by a pixel test of
+      the picture; pictures at T2 and T3.
+    - [ ] 7.9c Tanks larger at T3, in a formation facing the enemy: a tank element's figures in
+      rows across its facing, not a loose grid. AT: a tank at least 14 px at 10 m/px; the rows'
+      facing toward the enemy in contact (a unit test of the offsets); pictures.
+    - [ ] 7.9d At T2, armour told from infantry beyond the counter's text. AT: a picture of both
+      side by side; a spec.
 - [ ] 7.10 Ships look like ships, and a sea battle is seen (naval 5, needs 8): at 15 m/px ships are
   flat coloured bars (`critic/shots/c7e_9043_1_0015m.png`); a sea battle's history row must land the
   view on both fleets firing. AT: ship sprites by class at T3; the row's view with both fleets and

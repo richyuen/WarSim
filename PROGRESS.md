@@ -17758,3 +17758,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Note:** the commit of PLAN 7.8 is `5e87fa6`, under the subject of `ac0a344` ("PLAN 7.8 to 7.17:
   run 7's dimensions under the bar, a task each"): its message file was not rewritten after the
   first gates failed. Not amended (pushed to `main`, which deploys).
+
+## 2026-10-17 — PLAN 7.9 split (tanks at T3)
+
+- **Start:** gate green on a clean tree (`461d0e5`).
+- **Found:** the critic's `wrecks: null` is its script reading `wrecks.count`, which `WreckFx` has
+  not; a wreck lasts about 15 s of the clock; figures are tinted by nation and Germany's colour is
+  #5d5d5d (grey on the drab ground); a tank element is a 4 × 4 grid of a 0.024-cell footprint.
+- **Split:** 7.9a wrecks seen, 7.9b whose tank, 7.9c tanks larger and in rows facing the enemy,
+  7.9d armour at T2. **Next:** PLAN 7.9a.
