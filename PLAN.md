@@ -62,7 +62,7 @@ quick sweep as a smoke test.
       to 2 against China has it in its aim and no fair place (317 extreme days). Confirm the cause
       (FRONT_KM's anchors, or occupied land of its own never fair), then fix it. AT: unit test of
       the case; the seed's extreme days with no place fall to 0.
-    - [ ] 7.6d The costs of a nation fighting for its life: taboo, outrage and the strike back
+    - [x] 7.6d The costs of a nation fighting for its life: taboo, outrage and the strike back
       weighed against what it is losing (seed 4: the Soviet Union in extreme desperation at
       −0.27 to −0.02 for a year, the strike back 0.8). Only what 7.6a to c leave. AT: unit tests;
       the France case strikes again while it keeps losing.

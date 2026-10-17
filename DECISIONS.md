@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-464 · 2026-10-17 · accepted — The costs of a nation fighting for its life stay as they are (PLAN 7.6d)
+
+- **Context.** PLAN 7.6d: "the costs of a nation fighting for its life: taboo, outrage and the
+  strike back weighed against what it is losing … Only what 7.6a to c leave." Before 7.6a to c, a
+  losing power's best strike was about 1 short, and seed 4's Soviet Union in extreme desperation
+  was at −0.27 to −0.02 for a year, its strike back weighed 0.8.
+- **Measured after 7.6a to c** (`docs/evidence/7.6/gates-after-7.6c.md`): 30 decisions in 4 seeds by 5
+  nations (4 in 2 seeds, all Soviet, before); strikes answered the next day in three seeds; the
+  critic's France strikes on days 39, 41 and 90 (before: 41, then held). The losing days left without
+  a strike are mostly not extreme, where the enemy's second strike and the taboo deter: the
+  restraint SPEC §6.4's MAD asks for. An extreme day ends without a strike 17 to 205 times a seed.
+- **Decision.** No cost changed: taboo, outrage, alliance cost and the strike back's weight as they
+  were (PLAN 6.4a, 6.7, 6.12d). A cut would make nuclear use the answer to any lost war, where the
+  critic asked for it in a war for a nation's life.
+- **Tests.** `nukeStrikeAgain1938.test.ts` (new: the critic's France strikes twice within 60 days,
+  the war still on; red with DESPERATION_MEN at 0).
+
 ### ADR-463 · 2026-10-17 · accepted — In extreme desperation, the enemy's places from any distance (PLAN 7.6c)
 
 - **Context.** Critic R7-B1, PLAN 7.6's measure: seed 4's Soviet Union in extreme desperation

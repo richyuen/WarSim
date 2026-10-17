@@ -17667,3 +17667,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `nukeAimExtreme1938.test.ts` (new; red before); 22 nuclear test files (70 tests)
   green; pin unmoved.
 - **Next:** PLAN 7.6d.
+
+## 2026-10-17 — PLAN 7.6d: the costs stay; the France case pinned (sim tests, evidence)
+
+- **Start:** gate green on a clean tree (`77b98b2`).
+- **Measured** (`nukeGates`, seeds 1 to 10 × 30 years; `docs/evidence/7.6/gates-after-7.6c.md`): 30
+  decisions in 4 seeds by 5 nations (before 7.6a: 4 in 2, all Soviet); strikes answered the next
+  day in seeds 3, 5 and 6; what is left on losing days is mostly not extreme: deterrence.
+- **Decided:** no cost changed (ADR-464).
+- **Tests:** `nukeStrikeAgain1938.test.ts` (new, 10 s: the critic's God-set France strikes on days
+  39, 41 and 90, two within 60 days; red with DESPERATION_MEN at 0: days 41 and 90).
+- **Left:** seed 5's Soviet Union, 15 decisions in 40 days on 9 points, capitals again after 7 days
+  (7.6e); seed 5's China out of reach 267 days (7.6f's report).
+- **Next:** PLAN 7.6e.
