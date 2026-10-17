@@ -17360,3 +17360,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Also:** 7.4f31's gate had `scenario1938.test.ts`'s build at 3.3 s against 2 in the full run;
   alone it passed, and the build is 610–660 ms after the change, 660–690 before (contention).
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f33: a player builds an armoured division (test)
+
+- **Start:** gate green on a clean tree (`0beafbe`); critic not due.
+- **Done:** `buildArmour1938` (new): as Germany with the AI off, the armoured division's Build in
+  the Actions tab; one queue row, its gold paid; after its days one new German formation of that
+  template, 34 tank elements in its detail, its panel ("Armoured division", the tanks listed),
+  its marker drawn at T1. Picture `docs/evidence/7.4/f33-armour-built.png`. No code changed.
+- **Next:** PLAN 7.4f, the next group.

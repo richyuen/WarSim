@@ -133,6 +133,9 @@ quick sweep as a smoke test.
     - [x] 7.4f32 Switzerland's cell in the Po delta: a one-cell province placed among other
       countries' land is that land's (ADR-455; the pin moved). AT: `ownership.test.ts`,
       `ports.test.ts`.
+    - [x] 7.4f33 A player builds an armoured division (the critic did not test it): Germany's
+      Build, the queue and the gold, the division raised with its 34 tanks, its panel, its T1
+      marker. AT: `buildArmour1938` (new).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -288,8 +291,6 @@ quick sweep as a smoke test.
   From the critic's report of 2026-10-07, not blocking and in no task above:
   - After 14 years the Soviet Union is a field of thin stripes of other nations' colours (the
     critic of 2026-10-07; the lake of the same line: PLAN 7.4f14).
-  - The critic did not test a player building an armoured division (a step of its own
-    script failed on a selector).
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
