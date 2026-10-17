@@ -18013,3 +18013,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **After the commit:** the resolve's strikes include tolls of 935 to 18,705 and Italy's ten in one
   war: filed as PLAN 7.18h, before 7.18g's measure.
 - **Next:** PLAN 7.18f.
+
+## 2026-10-17 — PLAN 7.18f: the critic's Poland strikes (a test; done by 7.18a–e); 7.18i filed
+
+- **Start:** gate green on a clean tree (`ddcb1a8`; four evidence pictures left unstaged as before).
+- **Measured first:** the critic's set-up at HEAD (seed 5591, a strategic bomber group placed at
+  Warsaw, 10 warheads, Germany's war): Poland decides on day 64, the warhead bursts on day 65. No
+  rule changed: 7.18a–e (a capital threatened or taken is extreme desperation, the theatre's men)
+  did it. On six seeds a strike on 4 (5591, 6047, 1, 2); on 7127 and 3929 none: at desperation 2,
+  extreme, every place is worth 0.20 or less (× 0.2, the bomber's chance through German air
+  superiority) and the best utility stays at −0.12 until the bomber is lost (day 80 to 95).
+- **Filed:** 7.18i, the costs of a strike (taboo, outrage, alliance unity, grievance) fall only on a
+  burst but are weighed whole while the gain is × the chance through; before 7.18g's measure. Under
+  7.18h: Poland's first warhead fell on Rome (Italy, about 8,300 dead) on seeds 2, 5591 and 6047
+  while the Germans were at Warsaw.
+- **For 7.24:** `placeWing` (and the `spawnWing` command) at Warsaw's own cell succeeds at the 1938
+  start (Warsaw L4 has room); the editor's refusal is where the click lands or `BASE_PICK_CELLS`'s
+  reach, not the base's room.
+- **Tests:** `nukePoland1938.test.ts` (new). Pin unmoved (no sim change).
+- **Next:** PLAN 7.18h.

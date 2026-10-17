@@ -1,0 +1,78 @@
+import { describe, expect, it } from 'vitest';
+import { EventKind } from '../../src/shared/events';
+import { nukeStrike } from '../../src/shared/history';
+import { BUILD_MIX_1938, SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { canDeliver } from '../../src/sim/systems/nuclear';
+import type { World } from '../../src/sim/world';
+import { assets1938 } from '../helpers/earth';
+import { nationId } from '../helpers/sim1938';
+
+// PLAN 7.18f (critic R8-B1, `critic/c8_g_5591.json`: "Poland held its 10 warheads while its forces
+// fell from 49 to 0 in 120 days"). The critic's Poland, seed 5591: 10 warheads and a strategic
+// bomber group placed at Warsaw by the player's command (`spawnWing`), then Germany's war on it.
+// Since 7.18a–e (a capital taken or threatened is extreme desperation, the men of the theatre) it
+// strikes within the critic's 120 days while it still has a bomber, and the warhead bursts on the
+// land of a nation of the enemy side.
+
+const { w: W } = SIZE_1938;
+const [POL, GER] = ['POL', 'GER'].map(nationId) as [number, number];
+
+/** Poland's strategic bomber groups with a base. */
+function strategicWings(world: World): number {
+  const rules = world.rules!;
+  let k = 0;
+  for (const [id, base] of world.wingBase) {
+    if (base <= 0 || world.formations.cols.nation[id] !== POL || !world.formations.has(id)) continue;
+    if (rules.units[rules.templates[world.formations.cols.template[id]!]!.elements[0]!.unit]!.cls === 'bomber_str') k++;
+  }
+  return k;
+}
+
+describe("the critic's Poland strikes (PLAN 7.18f)", () => {
+  it('given 10 warheads and a strategic bomber group at Warsaw, it strikes in Germany\'s war on it before its bomber is gone', () => {
+    const s = new Sim({ scenario: '1938', seed: 5591, assets: assets1938(W) });
+    const w = s.world;
+    const warsaw = w.airbases.find((b) => b.name === 'Warsaw' && w.cells.controller[b.cell] === POL);
+    expect(warsaw, 'Warsaw is a Polish airbase').toBeDefined();
+    const before = strategicWings(w);
+    const [x, y] = w.cellPoint(warsaw!.cell);
+    s.command({ kind: 'spawnWing', nation: POL, x, y, template: BUILD_MIX_1938.wings.strategic });
+    s.command({ kind: 'grantWarheads', nation: POL, count: 10 });
+    s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+    s.step(1);
+    expect(strategicWings(w), 'the bomber group is placed').toBe(before + 1);
+    expect(canDeliver(w, POL)).toBe(true);
+
+    const decided: number[] = [];
+    const bursts: { day: number; on: number; dead: number }[] = [];
+    let deliverUntil = -1;
+    let enemies = new Set<number>();
+    for (let d = 0; d < 120; d++) {
+      s.step(24, (ww) => {
+        const ev = ww.out.events;
+        for (let i = 0; i < ev.length; i += 6) {
+          if (ev[i + 2] !== POL) continue;
+          if (ev[i + 1] === EventKind.NukeDecided) decided.push(d);
+          if (ev[i + 1] === EventKind.NukeCasualties) {
+            const st = nukeStrike(ev[i + 3]!);
+            bursts.push({ day: d, on: st.nation, dead: st.dead });
+          }
+        }
+        ww.out.events.length = 0;
+        ww.out.fires.length = 0;
+      });
+      const war = w.wars.list.find((x) => x.sides[1].includes(POL) && x.sides[0].includes(GER));
+      if (!war) break;
+      enemies = new Set(war.sides[0]);
+      if (canDeliver(w, POL)) deliverUntil = d;
+      if (bursts.length > 0) break;
+    }
+    process.stderr.write(`Poland decided on days ${JSON.stringify(decided)}; bursts ${JSON.stringify(bursts)}; could deliver to day ${deliverUntil}\n`);
+    expect(decided.length, 'Poland decided a strike').toBeGreaterThan(0);
+    expect(decided[0]!, 'while it could still deliver').toBeLessThanOrEqual(deliverUntil + 1);
+    expect(bursts.length, 'a warhead of Poland burst').toBeGreaterThan(0);
+    expect(enemies.has(bursts[0]!.on), 'on the land of a nation of the enemy side').toBe(true);
+    expect(bursts[0]!.dead).toBeGreaterThan(0);
+  }, 600_000);
+});

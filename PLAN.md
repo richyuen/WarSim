@@ -48,9 +48,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       AT: a unit test (a long war, the enemy with no warhead: a strike; the same with the enemy
       holding warheads: none); seeds 1–10 × 30 years, decisions and their utilities and years; the
       pin's entry.
-    - [ ] 7.18f The critic's Poland: given 10 warheads and a strategic bomber group at an airbase of
+    - [x] 7.18f The critic's Poland: given 10 warheads and a strategic bomber group at an airbase of
       its with room (the editor's placement at Warsaw is 7.24's), it strikes in Germany's war on it.
-      AT: a unit test.
+      AT: a unit test. Done by 7.18a–e: `nukePoland1938.test.ts` (seed 5591: decided day 64,
+      burst day 65).
     - [ ] 7.18h A strike to end a war falls on what would end it: after 7.18e, the resolve's
       strikes (90 days apart) on seeds 1 and 4 include Britain's and Switzerland's on Japan for 935
       to 2,305 dead, Italy's on Nepal (17,443) and Mongolia (18,705), and Italy's ten in 2.5 years
@@ -58,7 +59,19 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       anywhere makes a lone garrison 100 % of its theatre). AT: a place's men weighed only against
       a theatre of weight (a floor, measured); a resolve strike only on a nation of weight to the
       enemy side; a few resolve strikes a war, not one each 90 days to its end; a unit test; seeds
-      1–10 re-measured.
+      1–10 re-measured. Also seen in 7.18f's probe: Poland, Germans at Warsaw, put its first warhead
+      on Rome (Italy, 8,145 to 8,372 dead) on seeds 2, 5591 and 6047.
+    - [ ] 7.18i A warhead's costs weighed as its gain is: a place's value is × the chance the bomber
+      gets through (`valueIn`'s `through`, 0.2 under full enemy air superiority), but the costs
+      (taboo, outrage, alliance unity, the grievance) fall only on a burst (`detonate`, `aftermath`)
+      and are weighed whole. 7.18f's probe (Poland, 10 warheads, a strategic group at Warsaw,
+      Germany's war): no strike on seeds 7127 and 3929, its best utility −0.12 at desperation 2,
+      extreme, 11 to 12 places all at 0.20 or less, until its bomber was lost (day 80 to 95); a
+      strike on 4 of 6 seeds (5591, 6047, 1, 2). AT: measured first (how often `through` < 1 is
+      what keeps a utility under 0, seeds 1–10 × 30 years); the costs weighed as they fall (an
+      intercepted launch spends the warhead and may lose the bomber, nothing more); Poland strikes
+      on seeds 7127 and 3929; a unit test; seeds 1–10 re-measured (with 7.18h's: not more strikes
+      on poor places).
     - [ ] 7.18g The measure of 7.18's AT: 10 seeds × 30 years, a burst in 8, some before year 20, no
       point struck twice within its ruin's days, no third party under its bound; the 50-year sweep
       on unseen seeds, after the gate.
