@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-453 · 2026-10-17 · accepted — The nation names' glyphs from one atlas (PLAN 7.4f29)
+
+- **Context.** ADR-414 g left under PLAN 7.4: every zoom from the world to T1 drew at 30 frames a
+  second at p95, 16.8 ms with the names off. Measured again (`.cache/l5/hitch.ts zoom`, the
+  production build, 1920 × 1080, a GPU, vsync on, three zooms a page, old and new in turn):
+  11 to 17 frames of some 220 over 17 ms in each zoom; with the names laid out and not drawn,
+  none. The cost is the drawing, and native: each glyph stroked and filled as text at its
+  angle, which no cache of the browser's holds, so each glyph's outline was made anew each frame.
+- **Tried first.** A small canvas a glyph: as many frames missed (12 to 16 a zoom). A small
+  canvas is kept off the GPU and sent to it at each draw.
+- **Decision.** `GlyphSprites`: one canvas of 2048 px a side (16 MB) into which each glyph is
+  drawn once per letter, ladder size, ink and device scale, on shelves; the names are drawn as
+  pieces of it, rotated, at the label's size (the ladder's size × k, within 4.5 %, ADR-408). A
+  full atlas starts again. Where no canvas can be made, the names are drawn as text, as before.
+- **Result.** Six zooms of the new build, alternating with six of the old: none of the new's 240
+  frames over 17 ms in any (the old: 11 to 12 a zoom), as with the names off. The names drawn
+  the same: 2 % of the pixels of the world, Europe and close views differ, 0.1 to 0.2 % by more
+  than 32 of 255 (the edges of the letters' antialiasing), and they read the same side by side.
+- **Tests.** `nationLabelLayout.test.ts` (a glyph made once and drawn as its piece at its size;
+  the atlas full and begun again; the text path without a canvas); `labels1938`,
+  `labelFades1938`, `cityNames1938`, `political` green.
+
 ### ADR-452 · 2026-10-16 · accepted — The ranking's lists of a life, the dead in them (PLAN 7.4f28)
 
 - **Context.** The critic's N14: AoC's Statistics marks the dead in its lists (TEXT+VISUAL, PARITY

@@ -34,7 +34,7 @@ const FLAG_CLEAR_PX = 3;
 const FLAG_MOVE_MS = 150;
 /** Further than this above its usual place a flag no longer reads as its capital's: it is left out. */
 const FLAG_MAX_RISE = 40;
-import { drawNationLabels, fadeNationLabels, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
+import { drawNationLabels, fadeNationLabels, GlyphSprites, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
 import { Frame, isShipFrame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
@@ -842,6 +842,8 @@ export class MapView {
     return out;
   }
   private templates: TemplateInfo[] = [];
+  /** The nation names' glyphs, each drawn once at a size of the ladder (PLAN 7.4f29). */
+  readonly glyphSprites = new GlyphSprites();
   /** T1 markers drawn last frame, CSS px (tests), and the layer's opacity (PLAN 2.1). */
   markerRects: PlacedMarker[] = [];
   /** The stacks of the T1 markers: which are in one, and the fade of a change (PLAN 2.7s1). */
@@ -2029,7 +2031,7 @@ export class MapView {
    * way round it does not. The units and the flags, on the overlay, are above both as before.
    */
   private drawCityLayer(cam: Camera, dpr: number, now: number): void {
-    this.cityLabels.draw(cam, dpr, now, this.nameObstacles(cam), (ctx) => drawNationLabels(ctx, this.nationLabels, LABEL_FONT, (id) => this.ownColor.get(id)));
+    this.cityLabels.draw(cam, dpr, now, this.nameObstacles(cam), (ctx) => drawNationLabels(ctx, this.nationLabels, LABEL_FONT, (id) => this.ownColor.get(id), this.glyphSprites));
   }
 
   /** The nation names' widths and their glyphs', at LABEL_MEASURE_PX (`drawLabels`). */

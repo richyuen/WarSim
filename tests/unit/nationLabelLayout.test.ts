@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DARK_NATION, drawNationLabels, EDGE, fadeNationLabels, ladderPx, layoutNationLabels, MIN_PX, nameInk, TRACKING, type NameState, type PlacedNationLabel } from '../../src/render/labels/nationLabels';
+import { ATLAS_PX, DARK_NATION, drawNationLabels, EDGE, GlyphSprites, fadeNationLabels, ladderPx, layoutNationLabels, MIN_PX, nameInk, TRACKING, type NameState, type PlacedNationLabel } from '../../src/render/labels/nationLabels';
 import { FADE_MS, SwitchBank, ZOOM_HYSTERESIS } from '../../src/render/timing';
 import { LABEL_STRIDE } from '../../src/shared/nationLabels';
 
@@ -232,5 +232,80 @@ describe('nation names in the hand of AoC (PLAN 7.4a, ADR-440)', () => {
     const one = (id: number): PlacedNationLabel => ({ id, text: 'A', fontPx: 20, area: 1, curved: false, alpha: 1, glyphs: [{ ch: 'A', x: 0, y: 0, angle: 0 }] });
     drawNationLabels(ctx, [one(1), one(2)], 'sans-serif', (id) => (id === 1 ? 0xc84b64 : undefined));
     expect(fills).toEqual([nameInk(0xc84b64).fill, 'rgba(20, 22, 30, 0.82)']);
+  });
+});
+
+// PLAN 7.4f29: the glyphs drawn once into one atlas and then as pieces of it. Stroked and filled
+// as text at their angles, each frame of a zoom from the world to T1 outlined them anew: 11 to 17
+// frames of some 230 missed 60 Hz; with the atlas none (as with the names laid out and not drawn).
+describe('the names drawn from a glyph atlas (PLAN 7.4f29)', () => {
+  /** An atlas canvas that counts what is drawn into it. */
+  const atlasCanvas = () => {
+    const drawn: string[] = [];
+    const ctx = {
+      setTransform: () => {}, clearRect: () => {}, strokeText: (ch: string) => drawn.push(ch), fillText: () => {},
+      font: '', textAlign: '', textBaseline: '', lineJoin: '', lineWidth: 0, strokeStyle: '', fillStyle: '',
+    } as unknown as CanvasRenderingContext2D;
+    return { canvas: { atlas: true } as unknown as CanvasImageSource, ctx, drawn };
+  };
+  /** The page's canvas at `dpr`: each piece drawn, its source and the size it is drawn at. */
+  const target = (dpr: number) => {
+    const out: { sx: number; sy: number; sw: number; sh: number; scale: number; at: string }[] = [];
+    let scale = 1;
+    let at = '';
+    const ctx = {
+      getTransform: () => ({ a: dpr, b: 0 }), save: () => {}, restore: () => { scale = 1; },
+      translate: (x: number, y: number) => { at = `${x},${y}`; }, rotate: () => {}, scale: (k: number) => { scale = k; },
+      drawImage: (_s: unknown, sx: number, sy: number, sw: number, sh: number) => out.push({ sx, sy, sw, sh, scale, at }),
+      strokeText: () => { throw new Error('drawn as text'); }, fillText: () => {}, globalAlpha: 1,
+    } as unknown as CanvasRenderingContext2D;
+    return { ctx, out };
+  };
+  const label = (id: number, text: string, px: number): PlacedNationLabel => ({ id, text, fontPx: px, area: 1, curved: false, alpha: 1, glyphs: [...text].map((ch, i) => ({ ch, x: 10 * i, y: 5, angle: 0.1 * i })) });
+
+  it('a glyph of a size and ink is drawn into the atlas once, and each frame as its piece', () => {
+    const a = atlasCanvas();
+    const sprites = new GlyphSprites(() => a);
+    const t = target(2);
+    drawNationLabels(t.ctx, [label(1, 'ABA', 23.7)], 'sans-serif', () => 0xc84b64, sprites);
+    drawNationLabels(t.ctx, [label(1, 'ABA', 23.7)], 'sans-serif', () => 0xc84b64, sprites);
+    // A and B once each, in the atlas; six pieces drawn, A's twice from one place.
+    expect(a.drawn).toEqual(['A', 'B']);
+    expect(sprites.made).toBe(2);
+    expect(t.out).toHaveLength(6);
+    expect(t.out[0]!.sx).toBe(t.out[2]!.sx);
+    expect(t.out[1]!.sx).toBeGreaterThan(t.out[0]!.sx);
+    // Drawn where the glyph is, at the label's size: the ladder's size × k, in device px ÷ the DPR.
+    const k = 23.7 / ladderPx(23.7);
+    expect(t.out[1]!.at).toBe('10,5');
+    for (const p of t.out) expect(p.scale).toBeCloseTo(k / 2, 12);
+    // Another ink, another glyph.
+    drawNationLabels(t.ctx, [label(2, 'A', 23.7)], 'sans-serif', () => undefined, sprites);
+    expect(a.drawn).toEqual(['A', 'B', 'A']);
+  });
+
+  it('a full atlas starts again; where no canvas can be made the names are drawn as text', () => {
+    const a = atlasCanvas();
+    const sprites = new GlyphSprites(() => a);
+    // Glyphs of 64 px at a DPR of 2 are some 190 px a side: a 2048 px atlas holds about 100.
+    const many = Array.from({ length: 300 }, (_, i) => String.fromCharCode(0x4e00 + i)).join('');
+    const t = target(2);
+    drawNationLabels(t.ctx, [label(1, many, 64)], 'sans-serif', () => 0x336699, sprites);
+    expect(sprites.restarts).toBeGreaterThanOrEqual(2);
+    expect(sprites.size).toBeLessThan(300);
+    // Every glyph drawn, each from inside the atlas.
+    expect(t.out).toHaveLength(300);
+    for (const p of t.out) {
+      expect(p.sx + p.sw).toBeLessThanOrEqual(ATLAS_PX);
+      expect(p.sy + p.sh).toBeLessThanOrEqual(ATLAS_PX);
+    }
+    // No canvas: the text path, as before.
+    const strokes: string[] = [];
+    const ctx = {
+      getTransform: () => ({ a: 1, b: 0 }), save: () => {}, restore: () => {}, translate: () => {}, rotate: () => {}, scale: () => {},
+      strokeText: (ch: string) => strokes.push(ch), fillText: () => {}, font: '', lineWidth: 0, globalAlpha: 1,
+    } as unknown as CanvasRenderingContext2D;
+    drawNationLabels(ctx, [label(1, 'AB', 20)], 'sans-serif', () => undefined, new GlyphSprites(() => null));
+    expect(strokes).toEqual(['A', 'B']);
   });
 });

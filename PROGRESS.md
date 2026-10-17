@@ -17282,3 +17282,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   sorted; Yugoslavia killed leads Revolts suffered, marked); `charts1938`, `phoneLayout1938`,
   `rankingFlags1938`, `rankingRows1938`, `settings1938`, `tags1938`, `warBannerRows1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f29: the nation names from a glyph atlas (render, performance)
+
+- **Start:** gate green on a clean tree (`24f3b98`); critic not due.
+- **Measured** (`.cache/l5/hitch.ts zoom`, production build, GPU, vsync, 3 zooms a page; frames
+  over 17 ms of ~220 a zoom): old 11–17; names laid out and not drawn 0 (so the drawing, not the
+  layout); a canvas a glyph 12–16 (no gain: small canvases stay off the GPU); one atlas 0 in six
+  zooms (old 11–12 alternating with it). p95 at vsync reads only 16.7 or 33.3, so it was not used.
+- **Done:** `GlyphSprites` (one 2048² canvas, shelves, starts again when full), used by
+  `drawNationLabels` (text where no canvas can be made); ADR-453. Old and new pictures of the
+  world, Europe and a close view: 2 % of pixels differ, 0.1–0.2 % by more than 32; the same to
+  the eye (`.cache/74f29/`).
+- **Tests:** `nationLabelLayout.test.ts` 17 of 17 (2 new); `labels1938`, `labelFades1938`,
+  `cityNames1938`, `political` green.
+- **Next:** PLAN 7.4f, the next group.

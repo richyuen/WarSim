@@ -127,6 +127,9 @@ quick sweep as a smoke test.
       under its box, seen in 7.4f26's picture). AT: `godPanelMore1938` (red before).
     - [x] 7.4f28 The critic's N14, the dead: three lists of a life (age, wars fought, revolts
       suffered) with the dead in them, marked (ADR-452). AT: `lives.test.ts`; `ranking1938`.
+    - [x] 7.4f29 The names in a zoom from the world to T1 (ADR-414 g): their glyphs drawn once
+      into an atlas and then as pieces of it (ADR-453). AT: no frame over 17 ms in a zoom (11 to
+      17 before); `nationLabelLayout.test.ts`; the label specs green.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -280,9 +283,6 @@ quick sweep as a smoke test.
     critic of 2026-10-07; the lake of the same line: PLAN 7.4f14).
   - The critic did not test a player building an armoured division (a step of its own
     script failed on a selector).
-  From PLAN 7.1l11g (ADR-414 g): a zoom from the world to T1 draws at 30 frames a second (33 ms
-  at p95, 50 at most, at 60 Hz): the nation names, drawn each frame of it (16.8 ms at p95 with
-  them off).
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

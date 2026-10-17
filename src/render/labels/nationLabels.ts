@@ -215,8 +215,124 @@ export function nameInk(rgb: number): NameInk {
   return lum < DARK_NATION ? { fill: css(light, 0.82), edge: css(dark, 0.6) } : { fill: css(dark, 0.82), edge: css(light, 0.6) };
 }
 
-/** Draws placed labels at their opacity, each in its nation's ink (`colourOf` none: the plain ink). */
-export function drawNationLabels(ctx: CanvasRenderingContext2D, labels: readonly PlacedNationLabel[], font: string, colourOf: (id: number) => number | undefined = () => undefined): void {
+/** The canvas the glyphs are drawn into once, and its 2D context. */
+export interface SpriteCanvas {
+  canvas: CanvasImageSource;
+  ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+}
+
+/** A glyph drawn once: where it is in the atlas (device px); its middle is the box's. */
+export interface Sprite {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/** The atlas's side, device px: a few ladder steps of the names of a view at a DPR of 2. */
+export const ATLAS_PX = 2048;
+
+/**
+ * Each glyph of the names drawn once per letter, ladder size, ink and device scale into one
+ * atlas, and then as a piece of it (PLAN 7.4f29). A glyph stroked and filled as text at its angle
+ * each frame was outlined anew by the browser each frame (no cache holds a glyph at an angle):
+ * in a zoom from the world to T1, 12 to 17 frames of some 215 missed the display's 60 Hz, none
+ * with the names laid out and not drawn (PLAN 7.1l5, ADR-414 g). A canvas a glyph, tried first,
+ * did as badly: a small canvas is kept off the GPU and sent to it at each draw. One canvas is
+ * one texture, sent when a glyph is added. Shelves of glyphs, filled left to right; a glyph
+ * that does not fit starts the atlas again.
+ */
+export class GlyphSprites {
+  private readonly sprites = new Map<string, Sprite>();
+  private atlas: SpriteCanvas | null | undefined;
+  private shelfX = 0;
+  private shelfY = 0;
+  private shelfH = 0;
+  /** Glyphs drawn into the atlas, and times it started again (tests). */
+  made = 0;
+  restarts = 0;
+
+  constructor(private readonly make: (w: number, h: number) => SpriteCanvas | null = defaultSpriteCanvas) {}
+
+  get size(): number {
+    return this.sprites.size;
+  }
+
+  /** The atlas the sprites are in (none: no canvas here). */
+  get canvas(): CanvasImageSource | null {
+    return this.atlas?.canvas ?? null;
+  }
+
+  /** The glyph `ch` at `size` px (a ladder size) in `ink`, at `scale` device px a CSS px; null: no canvas here. */
+  get(ch: string, size: number, font: string, ink: NameInk, scale: number): Sprite | null {
+    const key = `${ch}|${size}|${ink.fill}|${ink.edge}|${scale}|${font}`;
+    const had = this.sprites.get(key);
+    if (had) return had;
+    if (this.atlas === undefined) this.atlas = this.make(ATLAS_PX, ATLAS_PX);
+    const a = this.atlas;
+    if (!a) return null;
+    const line = Math.max(1.5, size * EDGE);
+    // A capital's box and the edge round it, with room: letters are about 0.6 to 1 em wide.
+    const w = Math.ceil((size * 1.3 + line * 2) * scale) + 2;
+    const h = Math.ceil((size * 1.5 + line * 2) * scale) + 2;
+    if (w > ATLAS_PX || h > ATLAS_PX) return null;
+    if (this.shelfX + w > ATLAS_PX) {
+      this.shelfY += this.shelfH;
+      this.shelfX = 0;
+      this.shelfH = 0;
+    }
+    if (this.shelfY + h > ATLAS_PX) {
+      // Full: everything goes, and the glyphs of this frame are drawn again as they come.
+      this.sprites.clear();
+      this.shelfX = this.shelfY = this.shelfH = 0;
+      this.restarts++;
+    }
+    const sp = { x: this.shelfX, y: this.shelfY, w, h };
+    this.shelfX += w;
+    this.shelfH = Math.max(this.shelfH, h);
+    const g = a.ctx;
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    g.clearRect(sp.x, sp.y, w, h);
+    g.setTransform(scale, 0, 0, scale, sp.x + w / 2, sp.y + h / 2);
+    g.font = `${NAME_WEIGHT} ${size}px ${font}`;
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.lineJoin = 'round';
+    g.lineWidth = line;
+    g.strokeStyle = ink.edge;
+    g.fillStyle = ink.fill;
+    g.strokeText(ch, 0, 0);
+    g.fillText(ch, 0, 0);
+    this.sprites.set(key, sp);
+    this.made++;
+    return sp;
+  }
+}
+
+/** A canvas element (on the GPU at this size), else an OffscreenCanvas, else none (node). */
+function defaultSpriteCanvas(w: number, h: number): SpriteCanvas | null {
+  if (typeof document !== 'undefined') {
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    return ctx ? { canvas, ctx } : null;
+  }
+  if (typeof OffscreenCanvas !== 'undefined') {
+    const canvas = new OffscreenCanvas(w, h);
+    const ctx = canvas.getContext('2d');
+    return ctx ? { canvas, ctx } : null;
+  }
+  return null;
+}
+
+/**
+ * Draws placed labels at their opacity, each in its nation's ink (`colourOf` none: the plain ink).
+ * With `sprites`, each glyph as its bitmap of the ladder size (PLAN 7.4f29); without, or where no
+ * canvas can be made, as text.
+ */
+export function drawNationLabels(ctx: CanvasRenderingContext2D, labels: readonly PlacedNationLabel[], font: string, colourOf: (id: number) => number | undefined = () => undefined, sprites?: GlyphSprites): void {
+  if (sprites && drawAsSprites(ctx, labels, font, colourOf, sprites)) return;
   ctx.save();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -245,4 +361,35 @@ export function drawNationLabels(ctx: CanvasRenderingContext2D, labels: readonly
     }
   }
   ctx.restore();
+}
+
+/** The labels drawn as glyph bitmaps; false (nothing drawn) where no bitmap can be made. */
+function drawAsSprites(ctx: CanvasRenderingContext2D, labels: readonly PlacedNationLabel[], font: string, colourOf: (id: number) => number | undefined, sprites: GlyphSprites): boolean {
+  const t = ctx.getTransform();
+  // Device px a CSS px, to a hundredth: the bitmaps are drawn 1 : 1 at the ladder size.
+  const scale = Math.round(Math.hypot(t.a, t.b) * 100) / 100 || 1;
+  ctx.save();
+  for (const l of labels) {
+    if (l.alpha <= 0) continue;
+    ctx.globalAlpha = l.alpha;
+    const size = ladderPx(l.fontPx);
+    const k = l.fontPx / size;
+    const rgb = colourOf(l.id);
+    const ink = rgb === undefined ? PLAIN_INK : nameInk(rgb);
+    for (const g of l.glyphs) {
+      const s = sprites.get(g.ch, size, font, ink, scale);
+      if (!s) {
+        ctx.restore();
+        return false;
+      }
+      ctx.save();
+      ctx.translate(g.x, g.y);
+      ctx.rotate(g.angle);
+      ctx.scale(k / scale, k / scale);
+      ctx.drawImage(sprites.canvas!, s.x, s.y, s.w, s.h, -s.w / 2, -s.h / 2, s.w, s.h);
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+  return true;
 }
