@@ -1,0 +1,302 @@
+{
+ "seed": 2604,
+ "log": [
+  {
+   "d": 2,
+   "nukeRows": 0,
+   "fra": {
+    "area": 2995681.449468228,
+    "men": 582290,
+    "warheads": 0
+   }
+  },
+  {
+   "d": 10,
+   "nukeRows": 0,
+   "fra": {
+    "area": 2995681.449468228,
+    "men": 555375,
+    "warheads": 6
+   }
+  },
+  {
+   "d": 20,
+   "nukeRows": 0,
+   "fra": {
+    "area": 2995681.449468228,
+    "men": 453912,
+    "warheads": 6
+   }
+  },
+  {
+   "d": 30,
+   "nukeRows": 0,
+   "fra": {
+    "area": 2995681.449468228,
+    "men": 287458,
+    "warheads": 6
+   }
+  },
+  {
+   "d": 40,
+   "nukeRows": 0,
+   "fra": {
+    "area": 2995681.449468228,
+    "men": 163022,
+    "warheads": 6
+   }
+  },
+  {
+   "d": 50,
+   "nukeRows": 0,
+   "fra": {
+    "area": 2995681.449468228,
+    "men": 114314,
+    "warheads": 5
+   }
+  },
+  {
+   "d": 60,
+   "nukeRows": 0,
+   "fra": {
+    "area": 2995681.449468228,
+    "men": 114314,
+    "warheads": 5
+   }
+  },
+  {
+   "d": 70,
+   "nukeRows": 0,
+   "fra": {
+    "area": 2995681.449468228,
+    "men": 102278,
+    "warheads": 5
+   }
+  },
+  {
+   "d": 80,
+   "nukeRows": 0,
+   "fra": {
+    "area": 2995681.449468228,
+    "men": 95909,
+    "warheads": 5
+   }
+  },
+  {
+   "d": 90,
+   "nukeRows": 0,
+   "fra": {
+    "area": 2995681.449468228,
+    "men": 88308,
+    "warheads": 5
+   }
+  }
+ ],
+ "alerts": [
+  {
+   "t": 1202,
+   "a": {
+    "i": 103,
+    "tick": 985,
+    "kind": 56,
+    "a": 19,
+    "b": 262947799041,
+    "x": 1100.2288355555554,
+    "y": 267.3981779047986,
+    "an": "nation.FRA",
+    "bn": "nation.GER",
+    "of": "",
+    "near": "=Berlin"
+   }
+  }
+ ],
+ "inspectKeys": [
+  "tick",
+  "seed",
+  "settings",
+  "nations",
+  "wars",
+  "alliances",
+  "buffs",
+  "majors",
+  "corridors",
+  "unrest",
+  "terrainCounts",
+  "rasters",
+  "edits",
+  "cities",
+  "formations",
+  "cores"
+ ],
+ "warId": 3,
+ "nukeRowsEnd": [],
+ "histTail": [
+  {
+   "tick": 2159,
+   "kind": 9,
+   "a": 11,
+   "b": 12,
+   "x": 1172.4686222222224,
+   "y": 326.49983979259787,
+   "an": "nation.ROM",
+   "bn": "nation.BUL",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 57,
+   "a": 19,
+   "b": 75,
+   "x": 1100.2288355555554,
+   "y": 267.3981779047986,
+   "an": "nation.FRA",
+   "bn": "",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 42,
+   "a": 75,
+   "b": 19,
+   "x": 1680.5,
+   "y": 489.5,
+   "an": "nation.JAP",
+   "bn": "nation.FRA",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 42,
+   "a": 75,
+   "b": 19,
+   "x": 1748.5,
+   "y": 485.5,
+   "an": "nation.JAP",
+   "bn": "nation.FRA",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 42,
+   "a": 75,
+   "b": 19,
+   "x": 1819.5,
+   "y": 501.5,
+   "an": "nation.JAP",
+   "bn": "nation.FRA",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 42,
+   "a": 15,
+   "b": 20,
+   "x": 1199.5,
+   "y": 397.5,
+   "an": "nation.ITA",
+   "bn": "nation.ENG",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 42,
+   "a": 1,
+   "b": 20,
+   "x": 1040.5,
+   "y": 234.5,
+   "an": "nation.GER",
+   "bn": "nation.ENG",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 42,
+   "a": 20,
+   "b": 75,
+   "x": 1741.5,
+   "y": 424.5,
+   "an": "nation.ENG",
+   "bn": "nation.JAP",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 51,
+   "a": 4325380,
+   "b": 3211274,
+   "x": 1179.8410309930387,
+   "y": 267.4525887033394,
+   "an": "nation.POL",
+   "bn": "nation.SOV",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 52,
+   "a": 15,
+   "b": 1005191171,
+   "x": 1100.5,
+   "y": 291.5,
+   "an": "nation.ITA",
+   "bn": "nation.CZS",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 52,
+   "a": 75,
+   "b": 1443823685,
+   "x": 1687.5,
+   "y": 357.239582668665,
+   "an": "nation.JAP",
+   "bn": "nation.CHI",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 52,
+   "a": 10,
+   "b": 1525612548,
+   "x": 1172.874525855196,
+   "y": 247.125474144804,
+   "an": "nation.SOV",
+   "bn": "nation.POL",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 14,
+   "a": 13,
+   "b": 2,
+   "x": null,
+   "y": null,
+   "an": "nation.HUN",
+   "bn": "nation.AUT",
+   "of": ""
+  },
+  {
+   "tick": 2160,
+   "kind": 17,
+   "a": 6,
+   "b": 10,
+   "x": null,
+   "y": null,
+   "an": "alliance.comintern",
+   "bn": "nation.SOV",
+   "of": "nation.SOV"
+  },
+  {
+   "tick": 2161,
+   "kind": 56,
+   "a": 19,
+   "b": 238022098945,
+   "x": 1100.2288355555554,
+   "y": 267.3981779047986,
+   "an": "nation.FRA",
+   "bn": "nation.GER",
+   "of": "",
+   "near": "=Berlin"
+  }
+ ],
+ "errors": []
+}

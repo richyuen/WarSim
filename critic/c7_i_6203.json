@@ -1,0 +1,24 @@
+{
+ "seed": 6203,
+ "editorText": "Map editor\n×\nBrushLineBucketRadius\nNation\nTerrain\nUnowned\nAfghanistan\nAlbania\nAnglo-Egyptian Sudan\nAngola\nArgentina\nAustralia\nAustria\nBelgian Congo\nBelgium\nBolivia\nBrazil\nBritish East Africa\nBritish India\nBritish Malaya\nBulgaria\nBurma\nCanada\nCeylon\nChile\nChina\nColombia\nCommunist China\nCosta Rica\nCuba\nCzechoslovakia\nDenmark\nDominican Republic\nDutch East Indies\nEcuador\nEgypt\nEl Salvador\nEstonia\nFinland\nFrance\nFree City of Danzig\nFrench Equatorial Africa\nFrench Indochina\nFrench Morocco\nFrench West Africa\nGermany\nGold Coast\nGreece\nGuatemala\nHaiti\nHonduras\nHungary\nIceland\nIran\nIraq\nIreland\nItaly\nJapan\nLatvia\nLebanon\nLiberia\nLithuania\nLuxembourg\nMadagascar\nManchukuo\nMengjiang\nMexico\nMongolia\nMozambique\nNationalist Spain\nNepal\nNetherlands\nNew Zealand\nNewfoundland\nNicaragua\nNigeria\nNorway\nOman\nPalestine\nPanama\nParaguay\nPeru\nPhilippines\nPoland\nPortugal\nRomania\nSarawak\nSaudi Arabia\nSiam\nSouth Africa\nSouthern Rhodesia\nSoviet Union\nSpanish Republic\nSweden\nSwitzerland\nSyria\nTannu Tuva\nTibet\nTransjordan\nTunisia\nTurkey\nUnited Kingdom\nUnited States\nUruguay\nVenezuela\nXinjiang\nYemen\nYugoslavia\nEthiopia (dead)\nOnly on\neverything\nterrain\nnation\nUndo (0)Redo (0)\nScenario\nPlace cityRemove cityMake capitalAdd coreRemove core\nImport image\nas terrain (terrain colours)\nas nations (nation colours)\nScenario file\nExport\nLoad scenario\nClick or drag on the map to paint. The right button moves the map.",
+ "ownerAfterBrush": {
+  "owner": 452345419,
+  "controller": 2622025874,
+  "terrain": 1630561570
+ },
+ "hasCity": 1,
+ "cityAdded": 1,
+ "critique": {
+  "id": 5759,
+  "name": "Critiqueville",
+  "x": 1098.5,
+  "y": 435.5,
+  "size": 2,
+  "capitalOf": 0
+ },
+ "exported": "C:\\Git\\WarSim\\critic\\c7_critic.warsim-scenario",
+ "titleDetail": null,
+ "fileError": null,
+ "fatal": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Start' })\u001b[22m\n\n    at C:\\Git\\WarSim\\critic\\scripts\\c7_i_editor.mjs:60:53",
+ "errors": []
+}

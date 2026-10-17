@@ -1,57 +1,51 @@
 {
-  "commit": "228d08356ceec2b3f0d728769e2be18785f7a32e",
+  "commit": "19e2341632afaba7f7241e4eebab021b39ddf0d2",
   "scores": {
-    "mapVisuals": 6,
+    "mapVisuals": 7,
     "diplomacyWarDepth": 6,
-    "emergentDynamics": 5,
-    "godMode": 6,
+    "emergentDynamics": 6,
+    "godMode": 7,
     "editorScenarios": 6,
-    "statsHistory": 6,
-    "uiUxPolish": 6,
-    "performance": 4,
+    "statsHistory": 7,
+    "uiUxPolish": 7,
+    "performance": 5,
     "stability": 7,
     "semanticZoom": 6,
-    "naval": 6,
+    "naval": 5,
     "tanks": 5,
     "aircraft": 5,
-    "aiNukes": 4
+    "aiNukes": 3
   },
   "blocking": [
     {
-      "id": "R6-B1",
-      "title": "The nuclear age makes the game crawl: from the first strikes (1949) the nuclear system takes 7.0 to 10.1 ms of a 9.7 to 12.8 ms tick in years 13 to 19 (69 to 79 %), one call a day of about 170 to 240 ms (max 436 ms), and still 3.4 ms (58 to 61 %) in years 20 and 21, pinned and alone; years 9 to 11, with warheads but no strike, ran 3 to 4 ms; in the browser at Max a year goes from 20 to 25 s to 129 to 216 s",
+      "id": "R7-B1",
+      "title": "AI nuclear use is too rare to be seen, and still not credible: strikes in 2 of 14 unaided 30-year worlds (4 in 420 world-years) while 4 to 6 nations hold 132 to 156 warheads and ballistic missiles; on seeds 1 to 10 the builder's PLAN 7.3g sweep had 4 of 10 seeds and 21 decisions, at HEAD 2 of 10 and 4; all 4 strikes are by the Soviet Union, on the same Dutch point a year apart (734,042 and 566,582 dead) and twice on South Africa, none answered; God-set France (overrun, fighting to the death, 6 warheads, missiles) strikes once and then holds 5 warheads for 49 days",
       "evidence": [
-        "critic/c6_perf_6619_y13_21_solo.log",
-        "critic/c6_perf_6619_y13_15_solo.log",
-        "critic/c6_c_6619.json",
-        "critic/c6_perf_seed99_5y_solo.log"
+        "critic/c7_headless_q1.json",
+        "critic/c7_headless_q4.json",
+        "critic/c7_headless_q5.json",
+        "critic/c7_headless_q10.json",
+        "critic/c7_headless_3371.json",
+        "critic/c7_headless_8803.json",
+        "critic/c7_headless_6619.json",
+        "critic/c7_headless_1207.json",
+        "critic/c7_f_2604_m.json",
+        "critic/c7_f_2604_air.json",
+        "docs/evidence/7.3/quick-7.3g.md"
       ],
-      "fix": "Profile which part of the daily `nuclear` call costs 170 to 240 ms once strikes have happened (it is cheap in years 9 to 11 with warheads but no strike, and falls by half by year 20, so look at state that strikes create and that decays: fallout, outrage, shock, grievance, taboo, or the target scoring they feed); hold the tick to its budget in the late game, not only in year 1."
+      "fix": "Find why the strike rate halved since 7.3g (the stockpile cap, the 6.12a/f threat test, desperation in real wars). A nuclear power losing a war for its life should reach for the bomb in a visible share of games. Aim at the enemy at the front or its core, not twice at one Dutch city a year apart or at South Africa. Let the struck answer, and let a nation that struck once and keeps losing strike again."
     },
     {
-      "id": "R6-B2",
-      "title": "The AI's nuclear use is not credible: its first use in history is the Soviet Union, the largest nation on earth, bombing the revolt statelet Free Van three times in two days at utility 0.01 to 0.39; warheads then fall one a day, three in a row on one spot (Pinsk and Kovel; Odense three times), on Paramaribo, Aden, Malabo and Las Palmas, and on land no one holds; struck at London for 1.37 million dead, the United Kingdom never hits back at the Soviet Union and its one bomb goes to Chungking; the United States builds 87 warheads over 30 years and never uses one, while the revolt statelet 'Free Liège II' (founded #138, holding Berlin) builds warheads and makes 11 strike decisions on Germany, France, the Netherlands and British India in 1955 and 1956",
+      "id": "R7-B2",
+      "title": "Late-game stalls in the invasion AI: on seed 3371 (pinned, alone) invasionAi is 86 % of the tick in years 28 and 29, about 50 calls a year of 300 to 772 ms; in the browser at Max those years take 45 to 46 s with about 52 stops of 0.72 to 0.84 s and 20 to 30 fps, while the next year takes 8 s at 55 fps",
       "evidence": [
-        "critic/c6_headless_6619.json",
-        "critic/c6_headless_2953.json",
-        "critic/c6_nuke_where.json",
-        "critic/c6_c_6619.json",
-        "critic/shots/c6c_6619_a1_1_goto_1200.png",
-        "critic/shots/c6f_6619_pause_08.png"
+        "critic/c7_perf_3371_y15_30_solo.log",
+        "critic/c7_j_3371.json",
+        "critic/shots/c7j_3371_2_year2.png",
+        "critic/c7_headless_1207.json"
       ],
-      "fix": "No first use against a nation that cannot threaten the striker (no warheads, tiny, not near the capital); no second warhead on a spot already struck; targets on the front or the enemy's core, not distant colonies; retaliation at the nation that struck; a bar on bursts on land no one holds."
-    },
-    {
-      "id": "R6-B3",
-      "title": "The world still shatters into statelets: 154 nations alive after 30 years on seed 6619 (77 founded in play), 153 on seed 2953; 'Free Liège II' holds Berlin in 1953; the builder's own sweep fails its nations-alive limit on 2 of 10 seeds (255, 253)",
-      "evidence": [
-        "critic/c6_headless_6619.json",
-        "critic/c6_headless_2953.json",
-        "critic/shots/c6c_6619_92_europe_end.png",
-        "docs/sweeps/2026-10-14-sweep-nukes.md"
-      ],
-      "fix": "As runs 4 and 5: revolts return land to a core owner or neighbour first; weak statelets are absorbed; the living count must not rise for 30 years."
+      "fix": "Profile the slow invasionAi calls (src/sim/ai/invasion.ts, the landing plan of a nation at war with no land front) in a war with no land front (Poland against Denmark in 1967 here); their cost grows with the years and the formations. Cache or bound the landing search, and hold the late-game tick to budget, not only seed 99's year 1."
     }
   ],
-  "timestamp": "2026-10-15T01:36:58Z"
+  "timestamp": "2026-10-17T08:40:53Z"
 }

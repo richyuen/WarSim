@@ -1,0 +1,123 @@
+{
+ "seed": 4419,
+ "steps": [
+  {
+   "name": "panelScroll",
+   "ok": true,
+   "r": {
+    "scrollable": true,
+    "cls": "nation-panel",
+    "killTop": 864.640625,
+    "innerH": 900,
+    "sh": 836,
+    "ch": 708
+   }
+  },
+  {
+   "name": "declareWarPoland",
+   "ok": true,
+   "r": "WarSim\nWorld war simulator\nLanguage\nEnglish\nPseudo-locale (i18n test)\nResume\n−\nSpeed ×5\n+\nMap: Political\nStatistics\nHistory\nSettings\nEditor\nGod Mode\n1 January 1938 · Paused\n1 January 1938 Germany declared war on Poland\nNationalist Spain\n⚔\nSpanish Republic\nJapan\n+2\n⚔\nChina\n+1\nGermany\n+5\n⚔\nPoland\n+9\nRanking\nLand\nArmy\nIncome\nTreasury\nManpower\nEnemies at war\nPuppets\nAircraft\nWarheads\nAge, years\nWars fought\nRevolts suffered\nCharts\n1.\nSoviet Union\n21,193,759\n2.\nUnited States\n9,282,129\n3.\nCanada\n9,118,704\n4.\nBrazil\n8,505,607\n5.\nAustralia\n8,139,148\n6.\nChina\n4,937,220\n7.\nFrench West Africa\n4,691,721\n8."
+  },
+  {
+   "name": "fightToDeathVisible",
+   "ok": true,
+   "r": [
+    "Peace",
+    "Fight to the death"
+   ]
+  },
+  {
+   "name": "grantBuff",
+   "ok": true,
+   "r": "clicked"
+  },
+  {
+   "name": "tiers",
+   "ok": true,
+   "r": [
+    "critic/shots/c7c2_4419_03_polfront_2500m.png",
+    "critic/shots/c7c2_4419_03_polfront_800m.png",
+    "critic/shots/c7c2_4419_03_polfront_250m.png",
+    "critic/shots/c7c2_4419_03_polfront_60m.png",
+    "critic/shots/c7c2_4419_03_polfront_20m.png"
+   ]
+  },
+  {
+   "name": "warBannerClick",
+   "ok": true,
+   "r": {
+    "mpp": 937.5
+   }
+  },
+  {
+   "name": "battleLive20m",
+   "ok": true,
+   "r": "ok"
+  },
+  {
+   "name": "annex",
+   "ok": true,
+   "r": "ok"
+  },
+  {
+   "name": "donate",
+   "ok": true,
+   "r": "Treasury"
+  },
+  {
+   "name": "recolor",
+   "ok": true,
+   "r": "ok"
+  },
+  {
+   "name": "spawnNation",
+   "ok": true,
+   "r": "WarSim\nWorld war simulator\nLanguage\nEnglish\nPseudo-locale (i18n test)\nResume\n−\nSpeed ×2\n+\nMap: Political\nStatistics\nHistory\nSettings\nEditor\nGod Mode\n17 January 1938 · Paused\n14 January 1938 Italy declared war on Austria\n16 January 1938 Czechoslovakia was annexed by Germany\nNationalist Spain\n⚔\nSpanish Republic\nJapan\n+2\n⚔\nChina\n+1\nGermany\n+5\n⚔\nPoland\n+9\nItaly\n+5\n⚔\nAustria\n+2\nRanking\nLand\nArmy\nIncome\nTreasury\nManpower\nEnemies at war\nPuppets\nAircraft\nWarheads\nAge, years\nWars fought\nRevolts suffered\n"
+  },
+  {
+   "name": "nuke",
+   "ok": true,
+   "r": {
+    "opts": [
+     "on",
+     "+1",
+     "on",
+     "on",
+     "By province\nBy region",
+     "Dynamic\nProgressive\nStatic\nLocked\nRandom",
+     "Afghanistan\nAlbania\nAnglo-Egyptian Sudan",
+     "Declare war",
+     "Ally",
+     "Make puppet",
+     "Leave alliance",
+     "Annex",
+     "INPUT",
+     "Donate gold",
+     "Peace",
+     "Fight to the death",
+     "Peace",
+     "Fight to the death",
+     "Attack\nDefence\nSpeed\nIncome\nManpower\nUnr",
+     "Grant (+25%, 30 days)",
+     "Revolt",
+     "Spawn nation",
+     "Breakthrough",
+     "Territory",
+     "Nuke",
+     "Found city",
+     "Raze city",
+     "Czechoslovakia\nEthiopia",
+     "Revive",
+     "Kill"
+    ],
+    "text": "WarSim\nWorld war simulator\nLanguage\nEnglish\nPseudo-locale (i18n test)\nResume\n−\nSpeed ×2\n+\nMap: Political\nStatistics\nHistory\nSettings\nEditor\nGod Mode\n17 January 1938 · Paused\n16 January 1938 Czechoslovakia was annexed by Germany\n17 January 1938 A bomb fell from the heavens on Poland near Warsaw: an atomic bomb, 556,000 dead\n☢\nA bomb fell from the heavens on Poland near Warsaw: an atomic bomb, 556,000 dead\nGo to\n×\nNationalist Spain\n⚔\nSpanish Republic\nJapan\n+2\n⚔\nChina\n+1\nGermany\n+5\n⚔\nPoland\n+9\nItaly\n+5\n⚔\nAustria\n+2\nRanking\nLand\nArmy\nIncome\nTreasury\nManpower\nEnemies at war\nPuppets\nAircraft\nWarheads\nAge, years\nWars fought\nRevolts suffered\nCharts\n1.\nSoviet Union\n21,193,759\n2.\nUnited States\n9,282,129\n3.\nCanada\n9,118,704\n4.\nBrazil\n8,505,607\n5.\nAustralia\n8,139,148\n6.\nChina\n4,937,220\n7.\nFrench West "
+   }
+  },
+  {
+   "name": "breakthrough",
+   "ok": true,
+   "r": "WarSim\nWorld war simulator\nLanguage\nEnglish\nPseudo-locale (i18n test)\nResume\n−\nSpeed ×2\n+\nMap: Political\nStatistics\nHistory\nSettings\nEditor\nGod Mode\n17 January 1938 · Paused\n16 January 1938 Czechoslovakia was annexed by Germany\n17 January 1938 A bomb fell from the heavens on Poland near Warsaw: an a"
+  }
+ ],
+ "errors": []
+}

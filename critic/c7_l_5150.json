@@ -1,0 +1,59 @@
+{
+ "seed": 5150,
+ "before": 102,
+ "after": 103,
+ "newest": [
+  {
+   "id": 101,
+   "name": "nation.ARG",
+   "area": 2778728.083968366
+  },
+  {
+   "id": 102,
+   "name": "nation.URU",
+   "area": 175942.19979208606
+  },
+  {
+   "id": 104,
+   "name": "=Free Loiret",
+   "area": 33911.82675299635
+  }
+ ],
+ "histTail": [
+  {
+   "tick": 0,
+   "kind": 23,
+   "a": 104,
+   "b": 19,
+   "x": 1034.808888888889,
+   "y": 301.833203279003,
+   "an": "=Free Loiret",
+   "bn": "nation.FRA",
+   "of": ""
+  },
+  {
+   "tick": 0,
+   "kind": 18,
+   "a": 83,
+   "b": 8,
+   "x": null,
+   "y": null,
+   "an": "nation.MEX",
+   "bn": "alliance.coalition",
+   "of": "nation.MEX",
+   "as": "founded"
+  },
+  {
+   "tick": 0,
+   "kind": 18,
+   "a": 90,
+   "b": 8,
+   "x": null,
+   "y": null,
+   "an": "nation.CUB",
+   "bn": "alliance.coalition",
+   "of": "nation.MEX"
+  }
+ ],
+ "errors": []
+}
