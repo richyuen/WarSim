@@ -1421,7 +1421,23 @@ export class SimServer {
           [x0, x1, y0, y1] = [Math.min(x0, dx), Math.max(x1, dx), Math.min(y0, dy), Math.max(y1, dy)];
         }
         const w = world.cells.w;
-        return [b.x, b.y, r, b.a, b.b, (((b.x + (x0 + x1) / 2) % w) + w) % w, b.y + (y0 + y1) / 2, x1 - x0, y1 - y0];
+        const mx = (((b.x + (x0 + x1) / 2) % w) + w) % w;
+        const my = b.y + (y0 + y1) / 2;
+        // Its nearest two fleets at war with each other (PLAN 7.10b): the pair that fights.
+        let pair: [number, number, number, number] = [mx, my, x1 - x0, y1 - y0];
+        let best = Infinity;
+        const live = b.fleets.filter((f) => world.formations.has(f));
+        for (let i = 0; i < live.length; i++) {
+          for (let j = i + 1; j < live.length; j++) {
+            const [f, g] = [live[i]!, live[j]!];
+            if (!world.wars.atWar(fc0.nation[f]!, fc0.nation[g]!)) continue;
+            const dx = wrapDx(world, fc0.x[f]!, fc0.x[g]!);
+            const dy = fc0.y[g]! - fc0.y[f]!;
+            const d = Math.hypot(dx, dy);
+            if (d < best) [best, pair] = [d, [(((fc0.x[f]! + dx / 2) % w) + w) % w, fc0.y[f]! + dy / 2, Math.abs(dx), Math.abs(dy)]];
+          }
+        }
+        return [b.x, b.y, r, b.a, b.b, mx, my, x1 - x0, y1 - y0, ...pair];
       }),
     );
     // The sorties in the air (PLAN 5.7a): what `sortieAt` needs, the launch from this tick.

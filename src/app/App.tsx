@@ -30,6 +30,9 @@ import type { ReadonlySignal } from '@preact/signals';
 import { encodeRuns } from '../shared/mapImport';
 import { imageToRuns, NATION_MAX_DIST, TERRAIN_MAX_DIST } from './importImage';
 
+/** Cells about the pair of fleets a sea battle's row shows (PLAN 7.10b): their blocks and their fire. */
+export const SEA_PAIR_MARGIN = 0.6;
+
 export function App({
   hud,
   player,
@@ -115,9 +118,11 @@ export function App({
           seas={seas}
           onSea={(key) => {
             const b = seaBattles.find((s) => seaKey(s) === key);
-            // A view of both sides' fleets (PLAN 4.12a): their box and a cell around it, clear of
-            // the panels; out to T1 for a battle at a carrier's reach.
-            if (b) hud.onShowSeaBattle(b.cx, b.cy, [b.span[0] + 2, b.span[1] + 2]);
+            // The pair that fights (PLAN 7.10b): its nearest two fleets at war with each other and
+            // SEA_PAIR_MARGIN cells about them, clear of the panels, near enough for their fire to
+            // show. The box of all its fleets (PLAN 4.12a) was 24 cells across for seed 9043's
+            // first battle: counters at 668 m/px, and no fire.
+            if (b) hud.onShowSeaBattle(b.pair.x, b.pair.y, [b.pair.w + 2 * SEA_PAIR_MARGIN, b.pair.h + 2 * SEA_PAIR_MARGIN]);
           }}
           onOrder={(seq) => {
             const n = orderNews.find((o) => o.seq === seq);

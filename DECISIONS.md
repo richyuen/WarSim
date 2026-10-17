@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-473 · 2026-10-17 · accepted — A sea battle's row lands on the pair that fights (PLAN 7.10b)
+
+- **Context.** Critic run 7 (naval 5): "a sea battle's row must land on both fleets firing". The
+  row framed the box of all the battle's fleets (PLAN 4.12a): in the critic's game (seed 9043,
+  Germany on the United Kingdom, its battle a day in) 24.2 × 19.2 cells, 752 m/px, fleets as
+  counters and no fire; the battle's place had one side's fleet alone.
+- **Decision.** Each snapshot's sea battle row (SEA_STRIDE 9 → 13) carries the middle of its nearest
+  two fleets at war with each other and the cells between them, east-west and north-south; the
+  ticker's row frames them with SEA_PAIR_MARGIN (0.6 cells) about them, clear of the panels. A battle
+  whose only pair is far apart (a carrier's reach) is framed as wide as before.
+- **Effect.** The critic's battle from its row: 59 m/px, a German fleet and four British with their
+  ships on the screen, 53 shots in its hours (`docs/evidence/7.10/b-sea-row.png`). Seed 6131's
+  first battle (its pair the whole box, 23.3 × 4.4 cells): 429 m/px as before.
+- **Tests.** `seaRow1938` (new; red with the box: 752 m/px, no ship on the screen, no fire);
+  `seaBattleSeen1938`, `navalDemo1938`, `seaBattle1938` green. A square span of the pair's distance
+  was tried first: seed 6131's battle at 880 m/px, no ship drawn (`seaBattleSeen1938` red).
+
 ### ADR-472 · 2026-10-17 · accepted — Ships' marks dark and large enough to read (PLAN 7.10a)
 
 - **Context.** Critic run 7 (naval 5): "ships at 15 m/px are flat coloured bars"

@@ -10663,3 +10663,30 @@ Of 7.4 (open in PLAN.md):
     - [x] 7.9e `fallen1938` re-aimed at a fight the current world has (BLOCKERS: 5 of its 10 marks
       in the view since the 1938 start changed); off `knownRed.json` when green alone. AT: the spec
       green alone, three runs.
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.10 Ships look like ships, and a sea battle is seen (naval 5, needs 8): at 15 m/px ships are
+  flat coloured bars (`critic/shots/c7e_9043_1_0015m.png`); a sea battle's history row must land the
+  view on both fleets firing. AT: ship sprites by class at T3; the row's view with both fleets and
+  their fire in it; pictures. (SLBMs and the editor's fleets: 7.13.)
+  Found (2026-10-17): a ship is at least SHIP_MIN_PX (26) long, under the 29 px between two slots
+  of a fleet's block at 20 m/px (`shipMinLength.test.ts`); its details are light grey, which the
+  tint makes a paler shade of the hull: a red bar. A part each:
+    - [x] 7.10a Ships by class at T3: details dark and large enough to read at a ship's least size
+      (turrets with their guns, superstructure, a carrier's deck and island). AT: a pixel test of a
+      ship's details against its hull at 15 m/px; pictures by class beside run 7's.
+    - [x] 7.10b A sea battle seen from its row: the history row of a sea battle lands the view on
+      both fleets firing. AT: a spec from the row: both fleets and their fire in the view.

@@ -275,10 +275,13 @@ export interface Snapshot {
   /** Active Major Battles as flat [x, y, …] (battle markers, PLAN 2.1). */
   majors: Float32Array;
   /**
-   * The sea battles going on (PLAN 4.10b), SEA_STRIDE each: [x, y, r, a, b, cx, cy, sx, sy]: its
-   * place, the cells from it to its furthest fleet, and its two sides' leaders; the middle of the
-   * box of its fleets and the box's cells across, east-west and north-south (PLAN 4.12a: a
-   * battle at a carrier's reach has its sides hundreds of km apart, its place by one of them).
+   * The sea battles going on (PLAN 4.10b), SEA_STRIDE each: [x, y, r, a, b, cx, cy, sx, sy, px,
+   * py, pw, ph]: its place, the cells from it to its furthest fleet, and its two sides' leaders; the
+   * middle of the box of its fleets and the box's cells across, east-west and north-south (PLAN
+   * 4.12a: a battle at a carrier's reach has its sides hundreds of km apart, its place by one of
+   * them); the middle of its nearest two fleets at war with each other and the cells between them,
+   * east-west and north-south (PLAN 7.10b: the pair that fights; the box of seed 9043's first
+   * battle was 24 cells across).
    */
   seas: Float32Array;
   /**
@@ -687,7 +690,7 @@ export interface OrderNews {
 }
 
 /** Numbers per sea battle in a snapshot's `seas` (PLAN 4.10b). */
-export const SEA_STRIDE = 9;
+export const SEA_STRIDE = 13;
 /** A sortie in a snapshot (PLAN 5.7a): [bx, by, tx, ty, launch, kmh, km, over, nation, aircraft, role]. */
 export const SORTIE_STRIDE = 11;
 /** A sortie's role, by its aircraft's class (PLAN 5.7a): what the page draws. */

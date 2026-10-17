@@ -17844,3 +17844,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   ship's centre line, median 0.51 → 0.67, the least 0.17 → 0.29. Pictures in `docs/evidence/7.10/`.
 - **Tests:** `shipMarks1938` (new; red with the old frames); 6 ship specs green one at a time.
 - **Next:** PLAN 7.10b.
+
+## 2026-10-17 — PLAN 7.10b: a sea battle's row lands on the pair that fights; PLAN 7.10 done
+
+- **Start:** gate green on a clean tree (`d24ac3f`).
+- **Done:** the snapshot's sea battle rows carry the nearest pair of fleets at war with each other
+  (SEA_STRIDE 13: their middle and their extents); the ticker's row frames that pair. ADR-473.
+- **Measured** (the critic's game, seed 9043, a day in): the box 24.2 × 19.2 cells at 752 m/px with no
+  ship drawn → the pair at 59 m/px, both sides' fleets on the screen, 53 shots in its hours.
+- **Tests:** `seaRow1938` (new; red with the box framing); `seaBattleSeen1938`, `navalDemo1938`,
+  `seaBattle1938` green one at a time. A square span was tried first and dropped (880 m/px on seed
+  6131, no ship drawn).
+- **7.10 ticked:** 7.10a and 7.10b done. **Next:** PLAN 7.11.
