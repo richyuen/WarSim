@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-458 · 2026-10-17 · accepted — Capital flags keep clear of the T1 markers (PLAN 7.4f39)
+
+- **Context.** The critic's N5: at the start a marker round Warsaw stood under the capital's
+  flag. The flags are drawn above the unit layers and kept clear of the T0 counters only (PLAN
+  1.45c). Over five views of Europe at the start, 1800 to 350 m/px, 46 of 74 flags at T1 stood
+  on a marker, over a garrison's strength.
+- **Decision.** A flag keeps clear of the T1 markers shown (opacity ½ and over) as of the
+  counters: it rises above them, and is left out further than 40 px from its capital, where it
+  would no longer read as that capital's (FLAG_MAX_RISE, PLAN 1.45c). Of the 74: 59 shown, none
+  on a marker. The cost: a capital ringed by its garrisons has no flag at that zoom (Berlin at
+  1200 m/px); it keeps its gold dot and name, and each marker carries its nation's flag. Not
+  chosen: a flag under the markers (half of it showing between boxes), or rising further (no
+  longer the capital's). Taste: low confidence.
+- **Tests.** `flagsClear1938` (new: no flag on a marker in the 25 views, over 50 shown; red
+  before); `flags1938`, `flagGone1938`, `cityNames1938`, `labelFades1938`, `markers1938`,
+  `markerStacks1938` green.
+
 ### ADR-457 · 2026-10-17 · accepted — Formations of one nation at one place drawn as a file abreast (PLAN 7.4f38)
 
 - **Context.** The elements of a block not in contact stand on its formation's place. Two of one

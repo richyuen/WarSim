@@ -1782,8 +1782,10 @@ export class MapView {
     const ctx = this.overlay.getContext('2d')!;
     const w = this.canvas.clientWidth;
     const h = this.canvas.clientHeight;
-    // Counters at least half visible are in the way: one fading in is, one fading out is not.
-    const boxes = this.counters.boxes.filter((b) => b.alpha >= 0.5);
+    // Counters at least half visible are in the way: one fading in is, one fading out is not. And
+    // the T1 markers so (PLAN 7.4f39, the critic's N5: at the start 46 of 74 flags over Europe at
+    // T1 stood on a garrison's marker, over its number).
+    const boxes = [...this.counters.boxes.filter((b) => b.alpha >= 0.5), ...this.markerRects.filter((b) => b.alpha >= 0.5)];
     /** The counter boxes that a flag at (x, y), with its 1 px frame, would touch. */
     const under = (x: number, y: number): typeof boxes => boxes.filter((b) => x - 1 < b.x + b.w && b.x < x + FLAG_PX_W + 1 && y - 1 < b.y + b.h && b.y < y + FLAG_PX_H + 1);
     const seen = new Set<string>();

@@ -149,6 +149,8 @@ quick sweep as a smoke test.
       AT: `tagsCrowd1938` (new).
     - [x] 7.4f38 Formations of one nation at one place, not in contact, drawn as a file abreast
       (ADR-457). AT: `files.test.ts`; `stackBlocks1938` (red before).
+    - [x] 7.4f39 The critic's N5: capital flags keep clear of the T1 markers, left out past
+      40 px (ADR-458). AT: `flagsClear1938` (red before).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -258,8 +260,6 @@ quick sweep as a smoke test.
     formation raised on it stands off sure land, as the eight atolls did. The world's build
     gives an islet to the cells of the scenario only.
   From the critic's report of 2026-10-05, not blocking and in no task above (its numbers):
-  - N4, N5 (the arrows: PLAN 7.4b): markers overlap round Warsaw at the start, one under the
-    capital's flag.
   - N14 (left of it after PLAN 7.4c, 7.4f11, 7.4f12, 7.4f28 and 7.4f34): no list of kills (the
     log names no killer).
   - N17: a black smear under a counter near Bern in 1952 of seed 2718.

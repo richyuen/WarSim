@@ -17453,3 +17453,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   there: its world has rules made by hand, units only, and `fileOffsets` asked `slotCount` for
   templates, so the snapshot was not built. `fileOffsets` returns none in a world without
   templates. `serverFires` 7 of 7, the 25 test files related to the worker (140) green.
+
+## 2026-10-17 — PLAN 7.4f39: capital flags keep clear of the T1 markers (render)
+
+- **Start:** gate green on a clean tree (`ffdd331`); critic not due.
+- **Measured** (the start, five views of Europe × 1800, 1200, 800, 500, 350 m/px): 46 of 74
+  flags at T1 on a marker. After: 0 of 59 (15 left out, ringed by garrisons: Berlin at 1200).
+- **Done:** `drawFlags` keeps clear of `markerRects` as of the counters (ADR-458). The markers
+  overlapping round Warsaw (N4) are the stacks and partings of PLAN 2.7s1/s2; the line came off.
+- **Tests:** `flagsClear1938` 2 of 2 (new; red before), the flag and marker specs (13) green.
+- **Next:** PLAN 7.4f, the next group.

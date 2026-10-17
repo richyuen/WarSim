@@ -129,3 +129,36 @@ test('capital flags keep clear of the T0 counters', async ({ page }, info) => {
   expect(move.animating).toBe(false);
   await page.waitForFunction(() => !window.__warsim!.view!.unitsAnimating());
 });
+
+// PLAN 7.4f39 (the critic's N5: "one under the capital's flag", Warsaw at the start): at T1 the
+// flags kept clear of the counters only, and were drawn over the garrisons' markers. At the start,
+// over five views of Europe from 1800 to 350 m/px, 46 of 74 flags stood on a marker. A flag keeps
+// clear of the markers as of the counters: it rises above them, and is left out further than
+// 40 px from its capital (59 of the 74 shown).
+test('capital flags keep clear of the T1 markers', async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: VW, height: VH });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.evaluate(() => {
+    const h = window.__warsim!.hud;
+    if (h.showStats.value) h.toggleStats();
+  });
+  const km = await page.evaluate(() => window.__warsim!.view!.geo.kmPerCell);
+  let shown = 0;
+  for (const [cx, cy] of [[1080, 265], [1150, 250], [1010, 300], [1180, 330], [1120, 230]] as const)
+    for (const m of [1800, 1200, 800, 500, 350]) {
+      await page.evaluate(({ cx, cy, s }) => window.__warsim!.view!.controller.set({ cx, cy, scale: s }), { cx, cy, s: (km * 1000) / m });
+      await settle(page);
+      const r = await page.evaluate(() => {
+        const v = window.__warsim!.view!;
+        const markers = v.markerRects.filter((b) => b.alpha >= 0.5);
+        const flags = v.flagRects.filter((f) => f.alpha > 0.5);
+        return { markers: markers.length, flags: flags.map((f) => ({ id: f.id, x: f.x - 1, y: f.y - 1, w: f.w + 2, h: f.h + 2 })), boxes: markers.map((b) => ({ x: b.x, y: b.y, w: b.w, h: b.h })) };
+      });
+      for (const f of r.flags) expect(r.boxes.some((b) => touches(f, b)), `the flag of nation ${f.id} on a marker, ${m} m/px by ${cx}, ${cy}`).toBe(false);
+      shown += r.flags.length;
+    }
+  // Most flags still shown: those left out are of capitals ringed by their garrisons.
+  expect(shown).toBeGreaterThan(50);
+});
