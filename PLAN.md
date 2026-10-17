@@ -44,7 +44,7 @@ lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split wh
     - [x] 7.9a Wrecks seen: `WreckFx` gives its count to the test hook; wrecks drawn at T3 as at T2,
       and held long enough to be seen at the speeds a player watches a fight. AT: an armour fight
       at T3 with wrecks counted and in the picture.
-    - [ ] 7.9c Tanks larger at T3, in a formation facing the enemy: a tank element's figures in
+    - [x] 7.9c Tanks larger at T3, in a formation facing the enemy: a tank element's figures in
       rows across its facing, not a loose grid. AT: a tank at least 14 px at 10 m/px; the rows'
       facing toward the enemy in contact (a unit test of the offsets); pictures.
     - [ ] 7.9b Whose tank: a side's mark on each vehicle that reads on any ground and for a grey

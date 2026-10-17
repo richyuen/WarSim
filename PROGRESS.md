@@ -17793,3 +17793,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   the ground. At about 8 px a tank's centre is its turret's outline and the lighter grey only came
   nearer the ground. Reverted; the spec kept aside for 7.9b.
 - **Next:** PLAN 7.9c (moved before 7.9b): the tanks' size and rows first.
+
+## 2026-10-17 — PLAN 7.9c: tanks at T3 in ranks of four, twice the size (render)
+
+- **Start:** gate green on a clean tree (`cb81002`).
+- **Done:** a tank element is ranks of four across its facing, the front rank first, each tank
+  0.0115 cells (a light hull 14.1 px at 10 m/px, was 6.8), on the slot's ground. Five abreast tried
+  first and dropped: a turret turned across the rank put its muzzle over the next tank. ADR-469.
+  Pictures `docs/evidence/7.9/c-tank-ranks-10m.png` (and `-full`) beside the critic's
+  `critic/shots/c7d_7781_arm_0010m_crop.png`.
+- **Tests:** `tankRanks.test.ts` (new); `individuals.test.ts`, `individuals1938` and the firing
+  figure's test follow the layout; ten tank specs green one at a time.
+- **For 7.9b:** the pixel test of the German tanks at 10 m/px now reads 79 grey (37 from the enemy's
+  figures, 27 under the ground).
+- **Next:** PLAN 7.9b.

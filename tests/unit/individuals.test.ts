@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { hash2, pair } from '../../src/render/hash';
 import { Frame, shownFrame } from '../../src/shared/unitLooks';
-import { figureCells, figureCount, figureOffsets, firingFigure, FOOTPRINT_CELLS, gridSide, LINE_DEPTH, MAX_FIGURES, subSlotOrder } from '../../src/render/units/individuals';
+import { figureCells, figureCount, figureOffsets, firingFigure, FOOTPRINT_CELLS, gridSide, LINE_DEPTH, MAX_FIGURES, subSlotOrder, TANK_CELLS, TANK_ROWS } from '../../src/render/units/individuals';
 
 // PLAN 2.6 and 2.10b: an element as its individuals at T3 (ADR-69, ADR-80). How many, and where
 // each stands. The drawing and the sim's strengths are checked in the browser
@@ -60,7 +60,14 @@ describe('how many figures', () => {
 
   it('the grid is the whole element\'s: men 8 × 8; vehicles and guns 4 × 4, larger; more than 16 of them 8 × 8', () => {
     for (const whole of [1, 12, 40, 64]) expect(gridSide(Frame.infantry, whole)).toBe(8);
-    for (const f of [Frame.tank, Frame.gun, Frame.ship, Frame.aircraft]) {
+    // Since PLAN 7.9c (ADR-469) an element of up to 12 tanks is ranks of four, each tank TANK_CELLS
+    // (it was a 4 × 4 grid); more is a grid.
+    expect(gridSide(Frame.tank, 10)).toBe(TANK_ROWS + 4);
+    expect(gridSide(Frame.tankMedium, 10)).toBe(TANK_ROWS + 4);
+    expect(gridSide(Frame.tankHeavy, 12)).toBe(TANK_ROWS + 4);
+    expect(gridSide(Frame.tank, 17)).toBe(8);
+    expect(figureCells(gridSide(Frame.tank, 10))).toBe(TANK_CELLS);
+    for (const f of [Frame.gun, Frame.ship, Frame.aircraft]) {
       expect(gridSide(f, 10)).toBe(4);
       expect(gridSide(f, 16)).toBe(4);
       expect(gridSide(f, 17)).toBe(8);
@@ -85,7 +92,9 @@ describe('where they stand', () => {
 
   it('inside the footprint, apart from each other, the same every time', () => {
     // [frame, the figures of the whole element, the figures it has]: the last a mechanised battalion that has lost most of its men.
-    for (const [frame, whole, n] of [[Frame.infantry, 64, 64], [Frame.infantry, 64, 23], [Frame.tank, 10, 10], [Frame.gun, 12, 12], [Frame.tank, 64, 64], [Frame.tank, 64, 10]] as const) {
+    // (An element of up to 12 tanks is ranks since PLAN 7.9c, ADR-469, on the ground of its slot:
+    // `tankRanks.test.ts`. Of more, a grid, as here.)
+    for (const [frame, whole, n] of [[Frame.infantry, 64, 64], [Frame.infantry, 64, 23], [Frame.gun, 12, 12], [Frame.tank, 64, 64], [Frame.tank, 64, 10]] as const) {
       const side = gridSide(frame, whole);
       for (const element of [1, 77, 19_353]) {
         const off = figureOffsets(element, side, n, 0.7);
@@ -180,12 +189,13 @@ describe('where they stand', () => {
 // PLAN 3.6c: the figure a volley leaves.
 describe('the figure that fires', () => {
   it('is one of the figures the element has, where that figure stands', () => {
-    // Ten tanks, seven left: a 4 x 4 grid of the whole element.
-    const places = points(figureOffsets(42, 4, 7, 0.8));
+    // Ten tanks, seven left: the ranks of the whole element (PLAN 7.9c; a 4 x 4 grid before).
+    const side = gridSide(Frame.tankMedium, 10);
+    const places = points(figureOffsets(42, side, 7, 0.8));
     for (let tick = 0; tick < 200; tick++) {
       const f = firingFigure(42, tick, Frame.tankMedium, 7, 10, 0.8, true)!;
       expect(places.some(([x, y]) => x === f.dx && y === f.dy), `tick ${tick}`).toBe(true);
-      expect(f).toMatchObject({ frame: Frame.tankMedium, side: 4, facing: 0.8 });
+      expect(f).toMatchObject({ frame: Frame.tankMedium, side, facing: 0.8 });
     }
   });
 

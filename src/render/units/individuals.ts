@@ -62,11 +62,38 @@ export function figureCount(strength: number, size: number): number {
  * places when it is down to 16 of them.
  */
 export function gridSide(frame: number, whole: number): number {
+  if (whole <= TANK_ABREAST * TANK_RANKS && (frame === Frame.tank || frame === Frame.tankMedium || frame === Frame.tankHeavy)) return TANK_ROWS + TANK_ABREAST;
   return frame === Frame.infantry || whole > 16 ? 8 : 4;
+}
+
+/**
+ * Tanks at T3 (PLAN 7.9c, critic run 7: "at 10 m/px a tank is about 8 px ... in a loose grid with
+ * no formation or facing"): an element of tanks is ranks across its facing, the front rank first,
+ * TANK_ABREAST in a rank, each tank TANK_CELLS: a light hull 14 px at 10 m/px (a figure of the 4 × 4
+ * grid was 6.8). Its grid side is TANK_ROWS + TANK_ABREAST (`gridSide`), which `figureCells` and
+ * `figureOffsets` read. Four, not five: a turret turned across the rank reaches 0.41 to 0.44 of a
+ * figure (`muzzleOf`), and its muzzle must stay clear of the next tank's middle (more than 0.3 of a
+ * figure: ABREAST_PITCH less its jitter, 0.75, less 0.44), four ranks of that pitch fill a slot (0.03).
+ */
+export const TANK_ROWS = 100;
+/** A tank figure's side, cells (the size setting × this). */
+export const TANK_CELLS = 0.0115;
+/** Tanks in a rank, and ranks: an element of up to 12 (ten of light or medium tanks, twelve heavy). */
+const TANK_ABREAST = 4;
+const TANK_RANKS = 3;
+/** How far apart two tanks of a rank are, and two ranks, of TANK_CELLS; how far a tank stands off its place, of the pitch. */
+const ABREAST_PITCH = 0.82;
+const RANK_PITCH = 0.95;
+const TANK_JITTER = 0.04;
+
+/** Whether a grid side is a tank element's ranks (`gridSide`), and how many abreast. */
+export function abreastOf(side: number): number {
+  return side > TANK_ROWS ? side - TANK_ROWS : 0;
 }
 
 /** Side of one figure in a grid of `side`, cells. */
 export function figureCells(side: number): number {
+  if (abreastOf(side) > 0) return TANK_CELLS * sizeScale;
   return ((FOOTPRINT_CELLS * sizeScale) / side) * FILL;
 }
 
@@ -83,6 +110,8 @@ export function subSlotOrder(element: number, side: number): number[] {
  * toward `facing` (radians).
  */
 export function figureOffsets(element: number, side: number, count: number, facing: number, firingLine = false): number[] {
+  const abreast = abreastOf(side);
+  if (abreast > 0) return rankOffsets(element, abreast, count, facing);
   const pitch = (FOOTPRINT_CELLS * sizeScale) / side;
   const order = subSlotOrder(element, side);
   const fx = Math.cos(facing);
@@ -104,6 +133,30 @@ export function figureOffsets(element: number, side: number, count: number, faci
     const along = ((side - 1) / 2 - row + jy * jitterAlong) * pitch * depth + forward; // front row ahead of the centre
     // Forward (fx, fy); right-hand side (−fy, fx): as the slots of the formation's block.
     out.push(fx * along - fy * across, fy * along + fx * across);
+  }
+  return out;
+}
+
+/**
+ * The ranks of an element of tanks (PLAN 7.9c): `abreast` in a rank across `facing`, the front
+ * rank first, each tank a little off its place (TANK_JITTER of the pitch). The ranks are the
+ * layout's (TANK_RANKS), not the tanks left's, about the slot pose as the grid is; a loss takes the
+ * last tank, the others stand where they stood.
+ */
+function rankOffsets(element: number, abreast: number, count: number, facing: number): number[] {
+  const across = TANK_CELLS * sizeScale * ABREAST_PITCH;
+  const along = TANK_CELLS * sizeScale * RANK_PITCH;
+  const fx = Math.cos(facing);
+  const fy = Math.sin(facing);
+  const ranks = TANK_RANKS;
+  const out: number[] = [];
+  for (let k = 0; k < count; k++) {
+    const rank = Math.floor(k / abreast);
+    const col = k - rank * abreast;
+    const [jx, jy] = pair(hash2(element, 8192 + k));
+    const a = (col - (abreast - 1) / 2 + jx * TANK_JITTER) * across;
+    const l = ((ranks - 1) / 2 - rank + jy * TANK_JITTER) * along;
+    out.push(fx * l - fy * a, fy * l + fx * a);
   }
   return out;
 }

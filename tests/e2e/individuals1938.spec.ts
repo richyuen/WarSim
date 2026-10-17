@@ -29,6 +29,8 @@ const MAX_FIGURES = 64;
 const figuresOf = (units: number, size: number): number => (size <= MAX_FIGURES ? units : Math.min(MAX_FIGURES, Math.ceil((units * MAX_FIGURES) / size)));
 /** How far from its element's middle a figure can stand: the corner of the footprint (0.024 cells square), and a hair. */
 const FOOTPRINT_REACH = 0.012 * Math.SQRT2 + 1e-9;
+/** A tank element's ranks (PLAN 7.9c): within the slot's half, 0.015, along and across its facing. */
+const TANK_REACH = 0.015 * Math.SQRT2 + 1e-9;
 
 // The ground about the site is occupied by Japan (since PLAN 3.5a): a division with ground of
 // its side within reach breaks off when its org is gone, and the Chinese one did, before three
@@ -189,7 +191,9 @@ test('T3: an element is its individuals, a figure a unit for guns and tanks and 
       // Since PLAN 2.14c1 a block in contact faces its enemy, at any angle: the footprint (a
       // square of 0.024 cells, turned with the block) is inside the circle through its corners.
       // (Until then every block of this test faced east, and the bound was the slot's half, 0.015, along each axis.)
-      for (const p of own) expect(Math.hypot(p.x - e.x, p.y - e.y), `a figure of ${e.id}`).toBeLessThan(FOOTPRINT_REACH);
+      // Tanks since PLAN 7.9c (ADR-469) stand in ranks on the ground of the slot: the circle through its corners.
+      const reach = cls.startsWith('armor_') ? TANK_REACH : FOOTPRINT_REACH;
+      for (const p of own) expect(Math.hypot(p.x - e.x, p.y - e.y), `a figure of ${e.id}`).toBeLessThan(reach);
       expect(new Set(own.map((p) => `${p.x},${p.y}`)).size).toBe(own.length);
       rows.push({ id: e.id, cls, units, size, figures: own.length });
     }

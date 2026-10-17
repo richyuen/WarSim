@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-469 · 2026-10-17 · accepted — Tanks at T3 in ranks of four, twice the size (PLAN 7.9c)
+
+- **Context.** Critic run 7 (tanks 5): "at 10 m/px a tank is about 8 px ... in a loose grid with no
+  formation or facing" (`critic/shots/c7d_7781_arm_0010m_crop.png`). A tank element's figures were a
+  shuffled 4 × 4 grid of the 0.024-cell footprint, each 0.0055 cells: a light hull 6.8 px at 10 m/px.
+- **Decision.** An element of up to 12 tanks (`gridSide` of a tank frame: TANK_ROWS + TANK_ABREAST)
+  is ranks of four across its facing, the front rank first (10: 4, 4, 2; 12 heavy: 4, 4, 4), each
+  tank TANK_CELLS (0.0115 cells: a light hull 14.1 px at 10 m/px), 0.82 of a tank apart in a rank
+  and 0.95 between ranks, 4 % jitter, on the ground of the element's slot (0.03 apart). Fixed by the
+  layout: a loss takes the last tank, the others stand where they stood. Four, not five: tried first,
+  five abreast at half a tank put a turret turned across the rank over its neighbour's middle
+  (`tankBattle1938`, `muzzles1938`: a flash 0.15 of a figure from the next tank); a muzzle reaches 0.41
+  to 0.44 of a figure. An element of more than 12, or of anything else, keeps its grid.
+- **Tests.** `tankRanks.test.ts` (new: 14 px; ranks across the facing, the front first; a muzzle
+  clear of every other tank at any turn; on the slot's ground; losses keep places; heavy in three
+  ranks). Changed to the layout: `individuals.test.ts` (a tank element of 10 is ranks, not 4 × 4; its
+  footprint case moved to `tankRanks`), the firing-figure test's grid side, `individuals1938` (a tank
+  figure within the slot's half, not the 0.024 footprint's). Green one at a time: `burning1938` ×2,
+  `formationFight1938`, `individuals1938`, `muzzles1938`, `stackBlocks1938` ×2, `tankBattle1938`,
+  `turrets1938`, `wrecksHeld1938`. Pictures `docs/evidence/7.9/c-tank-ranks-10m*.png` beside run 7's.
+
 ### ADR-468 · 2026-10-17 · accepted — Wrecks and hulls held by the game, and counted (PLAN 7.9a)
 
 - **Context.** Critic run 7 (tanks 5): "`wrecks` read `null` at every tier, so I saw no wreck". Its
