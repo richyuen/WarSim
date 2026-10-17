@@ -226,7 +226,8 @@ export function tierOf(mPerPx: number): Tier {
 }
 
 /** Formation flags in `SnapshotFormations.flags`. */
-export const FormationFlag = { moving: 1, engaged: 2 } as const;
+/** Bit 2 (PLAN 7.4g2): on the retreat (`retreat` hours left), drawn on its T1 marker. */
+export const FormationFlag = { moving: 1, engaged: 2, retreating: 4 } as const;
 
 /**
  * Whether a formation with these flags is on the march: it has a march (`moving`) and is not

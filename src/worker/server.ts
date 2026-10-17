@@ -1386,7 +1386,7 @@ export class SimServer {
       fstr[j] = ft.cols.strength[id]!;
       ftpl[j] = ft.cols.template[id]!;
       const moving = ft.cols.moving[id] === 1;
-      fflags[j] = (moving ? FormationFlag.moving : 0) | (ft.cols.engaged[id] === 1 ? FormationFlag.engaged : 0);
+      fflags[j] = (moving ? FormationFlag.moving : 0) | (ft.cols.engaged[id] === 1 ? FormationFlag.engaged : 0) | (ft.cols.retreat[id]! > 0 ? FormationFlag.retreating : 0);
       ftarget[j] = moving ? ft.cols.targetCell[id]! : 0;
       const path = moving && world.afloat(id) ? world.paths.get(id) : undefined;
       const way = path ? wayLine(fx[j]!, fy[j]!, path, ft.cols.pathStep[id]!, world.cells.w, world.settings.loopingMap) : [];

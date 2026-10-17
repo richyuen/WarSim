@@ -17589,3 +17589,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   none of the layer's cities on a water pixel in the page; red without: 140, Rabat, Geneva,
   Buffalo, Amoy among them); 9 spec files of cities, names and the editor (18 tests) green.
 - **Next:** PLAN 7.4g2.
+
+## 2026-10-17 — PLAN 7.4g2: a retreat on the page (worker, render)
+
+- **Start:** gate green on a clean tree (`a26411d`); critic not due.
+- **Done:** `FormationFlag.retreating` (bit 2, a formation's `retreat` hours over 0) in the
+  snapshot; the T1 marker that stands for such a formation (its own, or its stack's: a retreat
+  begins where its stack stands) has a badge on its top-left corner. No history row: ~2,800
+  retreats a year on seed 99 against 292 rows (ADR-460's addendum). Picture
+  `docs/evidence/7.4/g2-retreat-badge.png`.
+- **Tests:** `retreatMarker1938` (new: Germany against Poland until a formation retreats; its
+  marker has the badge, 1 of 88 in view); `markers1938`, `markerStacks1938`, `stackPick1938`,
+  `flagsClear1938`, `formationPanel1938` green.
+- **Next:** PLAN 7.4g3.

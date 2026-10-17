@@ -46,8 +46,10 @@ quick sweep as a smoke test.
     - [x] 7.4g1 City dots on sure land: 140 of 5,757 cities on a water pixel of the fine mask and
       387 not on sure land (one capital in water) draw their dots in the sea at T2 and T3. AT:
       no city's dot on a water pixel of the mask at the 1938 start; the city specs green.
-    - [ ] 7.4g2 A retreat on the page: `FormationRetreated` neither drawn nor in the history. AT:
+    - [x] 7.4g2 A retreat on the page: `FormationRetreated` neither drawn nor in the history. AT:
       a formation in retreat told apart at T1 (its marker) and a row in the history; specs.
+      Done 2026-10-17: a badge on the marker (its own or its stack's); no row in the history: seed
+      99 has ~2,800 retreats a year against 292 rows of all else (ADR-460's addendum).
     - [ ] 7.4g3 The T1 order arrow ends where the formation will stand (the target cell's land
       point, up to 0.6 cells from its middle on a coastal cell). AT: a unit test of the end.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.

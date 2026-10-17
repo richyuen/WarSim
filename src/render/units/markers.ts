@@ -15,6 +15,9 @@ import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../ca
 import { FADE_MS, smooth } from '../timing';
 import type { StackedMarker } from './markerStacks';
 
+/** The ink of a retreat's badge on a T1 marker (PLAN 7.4g2). */
+export const RETREAT_INK = '#f4a261';
+
 export interface MarkerInput {
   id: number;
   nation: number;
@@ -24,6 +27,8 @@ export interface MarkerInput {
   full: number;
   symbol: UnitSymbol;
   engaged: boolean;
+  /** On the retreat (PLAN 7.4g2): a badge on its box's corner, or on its stack's. */
+  retreating?: boolean;
   /** Order target in cells, or null. */
   target: [number, number] | null;
   /**
@@ -106,6 +111,8 @@ export function markerMorph(p: number): { elements: number; morph: MarkerMorph }
 export interface PlacedMarker {
   id: number;
   nation: number;
+  /** Drawn with a retreat's badge (PLAN 7.4g2): it, or a formation of its stack, is on the retreat. */
+  retreating: boolean;
   /** World position in cells. */
   wx: number;
   wy: number;
@@ -320,6 +327,14 @@ export function drawMarkers(
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
   const tags: { px: number; py: number; x: number; y: number; text: string; alpha: number; of: number }[] = [];
+  /**
+   * The boxes that stand for a formation on the retreat (PLAN 7.4g2): a badge on the corner, drawn
+   * with the tags. Of a stack, when any of its formations is (a retreat begins where its stack
+   * stands); a click through the stack shows which.
+   */
+  const retreats: { px: number; py: number; x: number; y: number; alpha: number }[] = [];
+  const retreating = new Set<number>();
+  for (const m of markers) if (m.retreating) retreating.add(m.id);
   const frames: { px: number; py: number; x: number; y: number; alpha: number }[] = [];
   for (const m of order) {
     for (const off of offs) {
@@ -394,10 +409,34 @@ export function drawMarkers(
         }
       }
       ctx.restore();
+      // On the retreat (PLAN 7.4g2): a march like any other on the page until now.
+      const back = members.some((f) => retreating.has(f));
+      if (back && boxAlpha * part > 0.01) retreats.push({ px, py, x, y, alpha: boxAlpha * part });
       const marked = picked !== 0 && members.includes(picked);
       if (marked && boxAlpha * part > 0.01) frames.push({ px, py, x, y, alpha: boxAlpha * part });
-      placed.push({ id: m.id, nation: m.nation, wx: m.x, wy: m.y, alpha: boxAlpha * part, bar, own: part, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text, members, picked: marked });
+      placed.push({ id: m.id, nation: m.nation, retreating: back && boxAlpha * part > 0.01, wx: m.x, wy: m.y, alpha: boxAlpha * part, bar, own: part, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: (BOX_H + 12) * size, text, members, picked: marked });
     }
+  }
+  // A retreat's badge on the box's top-left corner, above every box (the stack's tag is on the
+  // right): a dark square with an orange « (PLAN 7.4g2).
+  for (const r of retreats) {
+    ctx.save();
+    if (size !== 1) {
+      ctx.translate(r.px, r.py);
+      ctx.scale(size, size);
+      ctx.translate(-r.px, -r.py);
+    }
+    ctx.globalAlpha = r.alpha;
+    ctx.fillStyle = 'rgba(16, 18, 24, 0.92)';
+    ctx.fillRect(r.x - 4, r.y - 6, 11, 11);
+    ctx.strokeStyle = RETREAT_INK;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(r.x - 3.5, r.y - 5.5, 10, 10);
+    ctx.fillStyle = RETREAT_INK;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('«', r.x + 1.5, r.y - 0.5);
+    ctx.restore();
   }
   // The tags of the stacks, above every box: a neighbour's box must not hide how many a marker
   // stands for. On the corner of the box and not in its picture, which the morph into T2 keeps

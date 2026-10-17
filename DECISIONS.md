@@ -242,6 +242,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     to ADR-439); left to the critic's next read (7.5), not pre-empted.
   - The critic's N17, a black smear under a counter near Bern in 1952 of seed 2718: not seen
     again; left to the critic's next read.
+- **Addendum (7.4g2, 2026-10-17).** A retreat is not a row of the history: seed 99 has about
+  2,800 retreats in its first year against 292 rows of everything else; the log would be
+  retreats. It is a badge on the T1 marker that stands for the formation (an orange « on a dark
+  square, its own or its stack's, `FormationFlag.retreating`), and the panel's "On the retreat".
 - **Settled on the way (for the record):** the seam group (7.4f40–47), the tags (7.4f21,
   f36, f37), picking (7.4f20, f23, f24), the names (7.4f29, f30, f42, f45), N3 (ADR-147), the
   2.14 pictures, the order arrows (7.4b), the nine atolls (ADR-105).

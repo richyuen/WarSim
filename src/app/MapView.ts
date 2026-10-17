@@ -1509,6 +1509,7 @@ export class MapView {
         full: t?.men ?? 0,
         symbol: t?.symbol ?? 'infantry',
         engaged: (this.formFlags[i]! & FormationFlag.engaged) !== 0,
+        retreating: (this.formFlags[i]! & FormationFlag.retreating) !== 0,
         target: moving ? [(target % w) + 0.5, Math.floor(target / w) + 0.5] : null,
         way: moving && this.formWayStart[i + 1]! - this.formWayStart[i]! >= 4 ? this.formWay.subarray(this.formWayStart[i]!, this.formWayStart[i + 1]!) : null,
       });
