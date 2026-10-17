@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutTags, TAG_FLAG_W, TAG_GAP, TAG_LINE_FROM, TAG_NAME_FONT, TAG_PAD, TAG_SIDES, TAG_STRENGTH_FONT, TAG_TRIES, type PlacedTag, type TagInput, type TagObstacle } from '../../src/render/units/tags';
+import { layoutTags, TAG_FAR, TAG_FLAG_W, TAG_GAP, TAG_LINE_FROM, TAG_NAME_FONT, TAG_PAD, TAG_SIDES, TAG_STRENGTH_FONT, TAG_TRIES, type PlacedTag, type TagInput, type TagObstacle } from '../../src/render/units/tags';
 
 // PLAN 2.14a: the tags of T2 and T3. The layout alone (the drawing is in tests/e2e/tags1938.spec.ts).
 
@@ -69,6 +69,8 @@ function layoutPlain(items: readonly TagInput[], measure: (text: string, font: s
       for (const at of pass === 0 ? tries.slice(0, byBlock) : tries) {
         const box = { x: at.x, y: at.y, w, h };
         if (kept.some((o) => overlap(o, box)) || placed.some((p) => overlap(p, box))) continue;
+        // A clear place only within TAG_FAR of its elements (PLAN 7.4f36).
+        if (clear && Math.max(vx0 - (box.x + w), box.x - vx1, vy0 - (box.y + h), box.y - vy1, 0) > TAG_FAR * scale) continue;
         if (clear && items.some((o) => o !== it && box.x < o.x1 && o.x0 < box.x + w && box.y < o.y1 && o.y0 < box.y + h)) continue;
         if (pass === 0 && placed.some((p) => far(box, p.tx, p.ty) < far(p, p.tx, p.ty))) continue;
         // Nor one that a tag placed before it is nearer to this block's middle than (PLAN
@@ -207,6 +209,21 @@ describe('formation tags: the layout (PLAN 2.14a)', () => {
       const far = item(9, 9000, 900, 300, 960, 340);
       const { placed } = layoutTags([item(7, 5000, 400, 300, 460, 340), far], measure, 1400, 800);
       for (const t of placed) expect([t.y + t.h, t.gap, t.line]).toEqual([300 - TAG_GAP, TAG_GAP, false]);
+    });
+
+    // PLAN 7.4f36: at T3 a block with neighbours' elements on every side had its tag at the first
+    // clear place, out past them (140 to 380 px at 6 m/px), its line across the fight.
+    it('no place clear of the neighbours within TAG_FAR: the tag stands by its own block, not out in the open', () => {
+      // A small block in a ring of a stronger one's elements 600 px wide; open ground beyond.
+      const ring = [item(10, 9000, 400, 200, 1000, 370), item(11, 9000, 400, 430, 1000, 600), item(12, 9000, 400, 370, 660, 430), item(13, 9000, 740, 370, 1000, 430)];
+      const small = item(2, 500, 670, 380, 730, 420);
+      const { placed, left } = layoutTags([...ring, small], measure, 1400, 800);
+      expect(left).toBe(0);
+      const t = tagOf(placed, 2);
+      expect(t.gap, 'by its block').toBeLessThanOrEqual(TAG_FAR);
+      expect(t.gap).toBe(TAG_GAP);
+      // The places clear of the ring are past it, over 120 px out.
+      expect(Math.min(670 - 400, 1000 - 730, 380 - 200, 600 - 420)).toBeGreaterThan(TAG_FAR);
     });
 
     it('every place on a neighbour\'s elements: it still has a tag, at the first free place', () => {

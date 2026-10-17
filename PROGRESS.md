@@ -17408,3 +17408,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   150, 60 and 30 m/px): 120 views, 872 tags, no two on each other. Tags give way since PLAN
   2.14a and keep off others' elements since 3.7g, 3.10c1b and 3.11f1 (`tags.test.ts`), after the
   2.10 picture of the line. No change; the line came off PLAN 7.4's list.
+
+## 2026-10-17 — PLAN 7.4f36: a tag far from its block at T3 (render)
+
+- **Start:** gate green on a clean tree (`16c3361`); critic not due.
+- **Measured** (a probe, seed 1938, Germany against Poland three weeks, 30 formations in contact,
+  panels shut): tags over 120 px off their blocks: 6 of 101 at 12 m/px, 7 of 75 at 6 m/px
+  (up to 380 px, the line across another block). At 60 m/px the far ones were the blocks under
+  the ranking (7.4f21's rule), right as they are.
+- **Done:** `TAG_FAR` 120 px for a clear place (ADR-456). After: 1 of 101 at 12 m/px, 0 at 6;
+  none on another at 150, 60, 12, 6 m/px.
+- **Tests:** `tags.test.ts` 24 of 24 (new; red before); `tags1938`, `battleView1938`,
+  `formationPanel1938`, `tankBattle1938`, `toBattle1938`, `seamFight1938` (12 tests) green.
+- **Next:** PLAN 7.4f, the next group.

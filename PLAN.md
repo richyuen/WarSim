@@ -142,6 +142,8 @@ quick sweep as a smoke test.
       `economyBreakdown.test.ts`; `nationPanel1938`.
     - [x] 7.4f35 A war banner with no battle on a grey field, its words softer; one with a battle
       red, its swords lit. AT: `toBattle1938` (the fields' colours); `docs/evidence/2.14/to-battle-banners.png`.
+    - [x] 7.4f36 A tag far from its block at T3: a clear place counts only within 120 px of it
+      (ADR-456). AT: `tags.test.ts` (red before); the tag specs green.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -153,12 +155,6 @@ quick sweep as a smoke test.
     infantry division 410" stands over the column of Tank brigade 395, whose own tag is
     below it with a line. The line says whose the tanks are; the other tag is still the one
     above them. A tag a gap clear of other formations' elements was not tried.
-  - **A tag far from its block at T3** (seen 2026-10-07, PLAN 3.7f,
-    `docs/evidence/2.10/stop-7-battalions.png`, after ADR-168): at 12 m/px the tag of
-    "Motorised division 47" stands at the view's right edge and its line runs 480 px back
-    across the fight to the middle of its elements, with open ground much nearer its block.
-    Which of the blocks in the picture are that division's was not read; a division whose
-    elements span the view has its box's side far from their middle.
   - **Two marching formations at one place drawn in one another** (seen 2026-10-14, PLAN 6.9,
     `stackBlocks1938.spec.ts` on seed 1212, day 6): Soviet formations 52 and 57, one template,
     both on the march from the same point, have their columns' elements at the same places.

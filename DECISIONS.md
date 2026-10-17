@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-456 · 2026-10-17 · accepted — A tag's clear place counts only within 120 px of its block (PLAN 7.4f36)
+
+- **Context.** ADR-168: a tag does not stand on another formation's elements while a place clear
+  of them is free. At T3, in a battle, every place by a block can lie on its neighbours'
+  elements, and the first clear place in the rings stood out past them: of the tags of 30
+  formations in contact (seed 1938, three weeks into Germany against Poland, the panels shut),
+  6 of 101 at 12 m/px and 7 of 75 at 6 m/px stood 120 to 380 px off their blocks, the line
+  across another block (the 2.10 picture's "Motorised division 47", 480 px off at 12 m/px).
+- **Decision.** A place clear of others' elements counts only within `TAG_FAR` = 120 px (× the
+  unit size) of the tag's own elements; with none, the tag takes the nearest free place, which
+  is by its own block, on a neighbour's elements (the third pass, as before). Its line follows
+  the rules it had: a gap over TAG_LINE_FROM, or another tag nearer to its block's middle
+  (ADR-188).
+- **Result.** Over 120 px: 1 of 101 at 12 m/px, 0 of 75 at 6 m/px; tags on each other: none at
+  150, 60, 12 and 6 m/px.
+- **Tests.** `tags.test.ts` (new: a block in a ring of a stronger one's elements has its tag by
+  its block; red before; the grid layout's reference copy takes the rule); `tags1938`,
+  `battleView1938`, `formationPanel1938`, `tankBattle1938`, `toBattle1938`, `seamFight1938`.
+
 ### ADR-455 · 2026-10-17 · accepted — A one-cell province placed in another country's land is that land's (PLAN 7.4f32)
 
 - **Context.** PLAN 4.1c: Switzerland held a cell in the Po delta. A province smaller than a cell

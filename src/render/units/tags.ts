@@ -80,6 +80,14 @@ export const TAG_TRIES = 5;
 export const TAG_SIDES = 4;
 /** A tag further than this from its elements has a line to them: the gap, and a px for the rounding of its place. */
 export const TAG_LINE_FROM = TAG_GAP + 1;
+/**
+ * A place clear of the other formations' elements counts only this near its own, px (PLAN
+ * 7.4f36): further out it is not taken for the block's. At T3, with every place by a block on
+ * a neighbour's, the next clear one stood 140 to 380 px off (one tag in ten at 6 m/px), its line
+ * across the fight. Past it the nearest free place is taken (by its block: a line only where
+ * another tag is nearer to the block's middle, ADR-188).
+ */
+export const TAG_FAR = 120;
 export const TAG_STRENGTH_FONT = (s: number): string => `700 ${Math.round(10 * s)}px system-ui, sans-serif`;
 export const TAG_NAME_FONT = (s: number): string => `500 ${Math.round(9 * s)}px system-ui, sans-serif`;
 
@@ -224,13 +232,14 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
         const bx1 = box.x + w;
         const by1 = box.y + h;
         if (kept.some((o) => overlap(o, box)) || tags.some(box.x, box.y, bx1, by1, (j) => overlap(placed[j]!, box))) continue;
+        // How far the tag's box is from its elements' (0 when it lies on them).
+        const gap = Math.max(vx0 - (box.x + w), box.x - vx1, vy0 - (box.y + h), box.y - vy1, 0);
+        if (clear && gap > TAG_FAR * scale) continue;
         if (clear && blocks.some(box.x, box.y, bx1, by1, (j) => items[j] !== it && box.x < items[j]!.x1 && items[j]!.x0 < bx1 && box.y < items[j]!.y1 && items[j]!.y0 < by1)) continue;
         if (pass === 0 && reach.some(box.x, box.y, bx1, by1, (j) => far(box, placed[j]!.tx, placed[j]!.ty) < far(placed[j]!, placed[j]!.tx, placed[j]!.ty))) continue;
         // Nor one that a tag placed before it is nearer to this block's middle than (PLAN
         // 4.2b1): it would have a line (ADR-188) where a place by the block has none.
         if (pass === 0 && tagNearer(tx, ty, far(box, tx, ty))) continue;
-        // How far the tag's box is from its elements' (0 when it lies on them).
-        const gap = Math.max(vx0 - (box.x + w), box.x - vx1, vy0 - (box.y + h), box.y - vy1, 0);
         const tag: PlacedTag = { id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, picked: it.picked === true, ...box, gap, line: gap > TAG_LINE_FROM, tx, ty, flag: false };
         const j = placed.push(tag) - 1;
         tags.add(j, box.x, box.y, bx1, by1);
