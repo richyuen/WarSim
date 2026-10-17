@@ -17879,3 +17879,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   `docs/evidence/7.11/`.
 - **Tests:** `ruins.test.ts`, `nukeRuins1938` (new); 16 nuclear and God Mode specs green one at a time.
 - **7.11 ticked:** 7.11a and 7.11b done. **Next:** PLAN 7.12.
+
+## 2026-10-17 — PLAN 7.12: the nuclear age in the statistics (sim state, stats, UI)
+
+- **Start:** gate green on a clean tree (`b8a4687`).
+- **Done:** `world.nukeDead` (the dead of bursts on a nation's land, state); the monthly statistics'
+  nuclear block [warheads, nuclear dead, land under fallout] (`stats.nuke`, saved once not all 0),
+  joined into the charts (SERIES_STRIDE 12, three metrics); the nation panel's "Nuclear strikes on its
+  land". ADR-476. The pin unmoved.
+- **Measured** (`nukeStats1938`, a God Mode warhead on Warsaw, a month on): the chart of the nuclear
+  dead with Poland first; Poland's panel 518,692 dead, 112 cells under fallout
+  (`docs/evidence/7.12/`).
+- **Tests:** `stats.test.ts` (updated to 12 numbers a record; a test more), `ranking.test.ts`'s
+  literal, `nukeStats1938` (new); `charts1938`, `nationPanel1938`, `formationPanel1938` green.
+- **Next:** PLAN 7.13.

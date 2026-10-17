@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-476 · 2026-10-17 · accepted — The nuclear age in the statistics (PLAN 7.12)
+
+- **Context.** Critic run 7 (stats 7): "add warheads, nuclear dead and fallout to the panel and the
+  charts". The panel had the warheads; nothing kept a nation's nuclear dead (each strike's dead was
+  only in its history row), and the charts had no nuclear series.
+- **Decision.**
+  - State: `world.nukeDead`, the dead of bursts on each nation's land (men and people, whoever
+    struck), added in `aftermath`; a section saved while not empty (`world.nukeDead`).
+  - Statistics: beside each monthly record NUKE_STRIDE (3) f32 [warheads, nukeDead, fallout cells
+    of its land] (`stats.nuke`), saved once one of its numbers is not 0, so a world with no warhead
+    yet saves and hashes as before it (the pin holds: tried with the section always saved, seed 99's
+    year moved to bc933c9f with no rule changed). The charts' records SERIES_STRIDE 9 → 12, with
+    the metrics `warheads`, `nukeDead`, `fallout`.
+  - The nation panel: "Nuclear strikes on its land", its dead and its cells under fallout, when not 0.
+- **Tests.** `stats.test.ts` (the chart helpers' records of 12; a test more: a God Mode warhead on
+  Warsaw sampled in the month after, saved and loaded, the same hash; an old save's records read 0);
+  `nukeStats1938` (new: the chart of the nuclear dead has Poland first; Poland's panel 518,692 dead,
+  112 cells); `charts1938` (every metric, the three new among them), `nationPanel1938`,
+  `formationPanel1938` green; the pin unmoved.
+
 ### ADR-475 · 2026-10-17 · accepted — A struck city shows it (PLAN 7.11b)
 
 - **Context.** Critic run 7 (semantic zoom 6, map visuals 7): "a city that lost 1,025,202 people

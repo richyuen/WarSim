@@ -1,12 +1,13 @@
 /**
  * Statistics series helpers for charts (PLAN 1.34b), over the worker's flat f32 records
- * [tick, nation, land, income, gold, men, casualties, aircraft, airLost] (SERIES_STRIDE 9: the
- * sim's STAT_STRIDE 7 and its air's 2, joined by `chartRows`, PLAN 5.11c).
+ * [tick, nation, land, income, gold, men, casualties, aircraft, airLost, warheads, nukeDead,
+ * fallout] (SERIES_STRIDE 12: the sim's STAT_STRIDE 7, its air's 2 and its nuclear age's 3, joined
+ * by `chartRows`, PLAN 5.11c, 7.12).
  */
-export const SERIES_STRIDE = 9;
-export const CHART_METRICS = ['land', 'income', 'gold', 'men', 'casualties', 'aircraft', 'airLost'] as const;
+export const SERIES_STRIDE = 12;
+export const CHART_METRICS = ['land', 'income', 'gold', 'men', 'casualties', 'aircraft', 'airLost', 'warheads', 'nukeDead', 'fallout'] as const;
 export type ChartMetric = (typeof CHART_METRICS)[number];
-const COLUMN: Record<ChartMetric, number> = { land: 2, income: 3, gold: 4, men: 5, casualties: 6, aircraft: 7, airLost: 8 };
+const COLUMN: Record<ChartMetric, number> = { land: 2, income: 3, gold: 4, men: 5, casualties: 6, aircraft: 7, airLost: 8, warheads: 9, nukeDead: 10, fallout: 11 };
 
 /** [tick, value] points of `nation` for `metric`, in tick order. */
 export function seriesOf(rows: ArrayLike<number>, nation: number, metric: ChartMetric): [number, number][] {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { isMonthStart } from '../../src/shared/calendar';
-import { seriesOf, topNations } from '../../src/shared/statSeries';
+import { SERIES_STRIDE, seriesOf, topNations } from '../../src/shared/statSeries';
+import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { ownedAreas } from '../../src/sim/landArea';
 import { Sim } from '../../src/sim/sim';
@@ -70,6 +71,7 @@ describe('statistics series (PLAN 1.34b)', () => {
     t.load(s.save());
     expect(t.world.stats.rows).toEqual(s.world.stats.rows);
     expect(t.world.stats.air).toEqual(s.world.stats.air);
+    expect(t.world.stats.nuke).toEqual(s.world.stats.nuke);
     // A save from before PLAN 1.42d2 (land in cells, section `stats.rows`) starts an empty series.
     const old = new StatSeries();
     old.deserialize([{ name: 'stats.rows', dtype: 'f32', data: Float32Array.from([0, 1, 5, 0, 0, 0, 0]) }]);
@@ -80,8 +82,16 @@ describe('statistics series (PLAN 1.34b)', () => {
   }, 180_000);
 
   it('chart helpers: series per nation and top nations at the latest sample', () => {
-    // [tick, nation, land, income, gold, men, casualties, aircraft, airLost] (PLAN 5.11c: the air's two joined)
-    const rows = [10, 1, 5, 0, 0, 0, 0, 40, 0, 10, 2, 9, 0, 0, 0, 0, 0, 0, 20, 1, 12, 0, 0, 0, 0, 35, 9, 20, 2, 7, 0, 0, 0, 0, 0, 0, 20, 3, 12, 0, 0, 0, 0, 0, 0];
+    // [tick, nation, land, income, gold, men, casualties, aircraft, airLost, warheads, nukeDead,
+    // fallout] (PLAN 5.11c: the air's two joined; PLAN 7.12: the nuclear age's three, SERIES_STRIDE 12)
+    const rows = [
+      10, 1, 5, 0, 0, 0, 0, 40, 0, 2, 0, 0,
+      10, 2, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      20, 1, 12, 0, 0, 0, 0, 35, 9, 1, 650000, 14,
+      20, 2, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      20, 3, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ];
+    expect(rows.length % SERIES_STRIDE).toBe(0);
     expect(seriesOf(rows, 1, 'land')).toEqual([
       [10, 5],
       [20, 12],
@@ -95,5 +105,51 @@ describe('statistics series (PLAN 1.34b)', () => {
       [10, 0],
       [20, 9],
     ]);
+    expect(seriesOf(rows, 1, 'warheads')).toEqual([
+      [10, 2],
+      [20, 1],
+    ]);
+    expect(seriesOf(rows, 1, 'nukeDead')).toEqual([
+      [10, 0],
+      [20, 650000],
+    ]);
+    expect(seriesOf(rows, 1, 'fallout')).toEqual([
+      [10, 0],
+      [20, 14],
+    ]);
+    expect(topNations(rows, 'nukeDead', 1)).toEqual([1]);
   });
+
+  // PLAN 7.12 (critic run 7: "add warheads, nuclear dead and fallout to the panel and the charts").
+  it("the nuclear age's numbers: a nation's warheads, its dead and its land under fallout, sampled, saved and loaded", () => {
+    const s = new Sim({ scenario: '1938', seed: 5, assets: assets1938(W) });
+    s.command({ kind: 'setSetting', key: 'aiEnabled', value: false });
+    s.command({ kind: 'grantWarheads', nation: GER!, count: 4 });
+    s.step(1);
+    // A warhead of God's on Warsaw: the dead on Poland's land, and fallout over some of it.
+    const [wx, wy] = cellOf(21.01, 52.23, W, SIZE_1938.h);
+    s.command({ kind: 'godNuke', x: wx, y: wy, thermonuclear: false });
+    for (let h = 0; h < 48 && !s.world.nukeDead.has(POL!); h++) s.step(1);
+    expect(s.world.nukeDead.get(POL!) ?? 0, 'the dead of the burst on Polish land').toBeGreaterThan(1000);
+    const burst = s.world.tick;
+    // To the next month's sample after it.
+    for (let h = 0; h < 24 * 40 && !(s.world.stats.rows.length > 0 && s.world.stats.rows[s.world.stats.rows.length - STAT_STRIDE]! > burst); h++) s.step(1);
+    const rows = chartRows(s.world.stats);
+    const last = (n: number, m: 'warheads' | 'nukeDead' | 'fallout'): number => seriesOf(rows, n, m).at(-1)![1];
+    expect(last(GER!, 'warheads')).toBe(4);
+    expect(last(POL!, 'nukeDead')).toBeGreaterThan(1000);
+    expect(last(POL!, 'nukeDead')).toBeCloseTo(Math.fround(s.world.nukeDead.get(POL!)!), 0);
+    expect(last(POL!, 'fallout')).toBeGreaterThan(0);
+    expect(last(GER!, 'nukeDead')).toBe(0);
+    // Saved and loaded: the dead, and the series.
+    const u = new Sim({ scenario: '1938', seed: 5, assets: assets1938(W) });
+    u.load(s.save());
+    expect(u.world.nukeDead).toEqual(s.world.nukeDead);
+    expect(u.world.stats.nuke).toEqual(s.world.stats.nuke);
+    expect(u.hash()).toBe(s.hash());
+    // A save from before it (no section): 0 beside every record.
+    const old = new StatSeries();
+    old.deserialize([{ name: 'stats.km2', dtype: 'f32', data: Float32Array.from([0, 1, 5, 0, 0, 0, 0]) }]);
+    expect(old.nuke).toEqual([0, 0, 0]);
+  }, 180_000);
 });

@@ -10717,3 +10717,20 @@ Of 7.4 (open in PLAN.md):
       the picture of the critic's fight at 15 m/px; a unit test of the pairs and the line.
     - [x] 7.11b A struck city shows it: a nuclear burst's ruin at T2 and T3 and a mark on the map
       while its fallout or its damage lasts. AT: Berlin before and after a burst at 150 m/px; a spec.
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.12 The nuclear age in the statistics (stats 7): warheads, the nuclear dead and fallout in the
+  panel and the charts. AT: the series in a save and a load; the charts' spec.

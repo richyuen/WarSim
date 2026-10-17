@@ -11,6 +11,12 @@
  * its wings and those it has lost (`world.airTotals`). A section of its own (`stats.air`): a
  * save from before it has none, and its records read 0 there; the charts take the two joined
  * (`chartRows`).
+ *
+ * The nuclear age (PLAN 7.12, critic run 7: "add warheads, nuclear dead and fallout to the panel and
+ * the charts"): beside each record NUKE_STRIDE f32 [warheads, nukeDead, fallout]: its stockpile, the
+ * dead of bursts on its land all told (`world.nukeDead`), and the cells of its land under fallout.
+ * A section of its own (`stats.nuke`), as the air's, saved once one of its numbers is not 0 (a
+ * world with no warhead yet saves as before it; its records read 0 there).
  */
 import { isMonthStart } from '../shared/calendar';
 import type { Section } from './core/sections';
@@ -24,11 +30,16 @@ export const STAT_FIELDS = ['tick', 'nation', 'land', 'income', 'gold', 'men', '
 /** The air's numbers beside each record (PLAN 5.11c): aircraft, aircraft lost. */
 export const AIR_STRIDE = 2;
 const AIR_SECTION = 'stats.air';
+/** The nuclear age's numbers beside each record (PLAN 7.12): warheads, the nuclear dead, cells under fallout. */
+export const NUKE_STRIDE = 3;
+const NUKE_SECTION = 'stats.nuke';
 
 export class StatSeries implements Stateful {
   rows: number[] = [];
   /** AIR_STRIDE numbers for each record of `rows`, in its order (PLAN 5.11c). */
   air: number[] = [];
+  /** NUKE_STRIDE numbers for each record of `rows`, in its order (PLAN 7.12). */
+  nuke: number[] = [];
 
   get length(): number {
     return this.rows.length / STAT_STRIDE;
@@ -38,6 +49,8 @@ export class StatSeries implements Stateful {
     return [
       { name: SECTION, dtype: 'f32', data: Float32Array.from(this.rows) },
       { name: AIR_SECTION, dtype: 'f32', data: Float32Array.from(this.air) },
+      // Only once it holds a number (PLAN 7.12): a world with no warhead yet saves as before it.
+      ...(this.nuke.some((v) => v !== 0) ? [{ name: NUKE_SECTION, dtype: 'f32' as const, data: Float32Array.from(this.nuke) }] : []),
     ];
   }
 
@@ -48,16 +61,22 @@ export class StatSeries implements Stateful {
     const a = sections.find((x) => x.name === AIR_SECTION)?.data as Float32Array | undefined;
     const want = this.length * AIR_STRIDE;
     this.air = a && a.length === want ? Array.from(a) : new Array<number>(want).fill(0);
+    // And before the nuclear age's (PLAN 7.12).
+    const k = sections.find((x) => x.name === NUKE_SECTION)?.data as Float32Array | undefined;
+    const wantK = this.length * NUKE_STRIDE;
+    this.nuke = k && k.length === wantK ? Array.from(k) : new Array<number>(wantK).fill(0);
   }
 }
 
-/** The records with the air's numbers joined (PLAN 5.11c): CHART_STRIDE (9) f32 each, as the charts read them (`shared/statSeries`). */
+/** The records with the air's and the nuclear age's numbers joined (PLAN 5.11c, 7.12): SERIES_STRIDE (12) f32 each, as the charts read them (`shared/statSeries`). */
 export function chartRows(s: StatSeries): Float32Array {
   const n = s.length;
-  const out = new Float32Array(n * (STAT_STRIDE + AIR_STRIDE));
+  const stride = STAT_STRIDE + AIR_STRIDE + NUKE_STRIDE;
+  const out = new Float32Array(n * stride);
   for (let i = 0; i < n; i++) {
-    out.set(s.rows.slice(i * STAT_STRIDE, (i + 1) * STAT_STRIDE), i * (STAT_STRIDE + AIR_STRIDE));
-    out.set(s.air.slice(i * AIR_STRIDE, (i + 1) * AIR_STRIDE), i * (STAT_STRIDE + AIR_STRIDE) + STAT_STRIDE);
+    out.set(s.rows.slice(i * STAT_STRIDE, (i + 1) * STAT_STRIDE), i * stride);
+    out.set(s.air.slice(i * AIR_STRIDE, (i + 1) * AIR_STRIDE), i * stride + STAT_STRIDE);
+    out.set(s.nuke.slice(i * NUKE_STRIDE, (i + 1) * NUKE_STRIDE), i * stride + STAT_STRIDE + AIR_STRIDE);
   }
   return out;
 }
@@ -78,9 +97,13 @@ export function statsSystem(world: World): void {
   const f = Math.fround;
   const rows = world.stats.rows;
   const area = ownedAreas(world.cells.owner, world.cells.w, world.cells.h, world.nations.highWater);
+  // The cells of each nation's land under fallout (PLAN 7.12).
+  const fallout = new Float64Array(world.nations.highWater);
+  for (const c of world.fallout.keys()) fallout[world.cells.owner[c]!]! += 1;
   world.nations.forEach((n) => {
     if (nc.living[n] !== 1) return;
     rows.push(world.tick, n, f(area[n]!), f(nc.income[n]!), f(nc.gold[n]!), men[n]!, f(nc.casualties[n]!));
     world.stats.air.push(f(aircraft[n]!), f(world.airTotals.get(n)?.lost ?? 0));
+    world.stats.nuke.push(world.warheads.get(n)?.stock ?? 0, f(world.nukeDead.get(n) ?? 0), fallout[n]!);
   });
 }

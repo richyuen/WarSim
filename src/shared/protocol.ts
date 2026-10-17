@@ -522,6 +522,9 @@ export interface NationStat {
   wings: number;
   airLost: number;
   bombed: number;
+  /** The nuclear age on its land (PLAN 7.12): the dead of bursts all told, and the cells under fallout. */
+  nukeDead: number;
+  fallout: number;
   efficiency: number;
   /** Whether its combat efficiency is held where God Mode set it (PLAN 7.4f17). */
   ceLocked: boolean;

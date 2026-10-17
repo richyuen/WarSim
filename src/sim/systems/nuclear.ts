@@ -983,6 +983,8 @@ export function aftermath(world: World, striker: number, yieldN: number, x: numb
     ally.unity = Math.max(0, ally.unity - NUKE_UNITY);
     world.alliances.changed();
   }
+  // The dead on its land, all told (PLAN 7.12: the statistics' nuclear dead), whoever struck.
+  if (struck !== 0 && dead > 0) world.nukeDead.set(struck, (world.nukeDead.get(struck) ?? 0) + dead);
   if (struck === 0 || struck === striker) return;
   // No outrage at God (striker 0, PLAN 6.6a).
   if (striker !== 0) world.nukeOutrage.set(striker, Math.min(100, (world.nukeOutrage.get(striker) ?? 0) + OUTRAGE_STRIKE));

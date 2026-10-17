@@ -32,8 +32,6 @@ quick sweep as a smoke test.
 Run 7's dimensions under the DONE condition's bar (report of 2026-10-17 on `19e2341`, its "Fix"
 lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split when taken up:
 
-- [ ] 7.12 The nuclear age in the statistics (stats 7): warheads, the nuclear dead and fallout in the
-  panel and the charts. AT: the series in a save and a load; the charts' spec.
 - [ ] 7.13 The editor places warheads, fleets and wings, and asks before a chosen file starts
   (editor 6; naval: "the editor cannot place fleets"); SLBMs deliver nothing (naval). AT: each
   placed in the editor and in a shared scenario's play; the confirm; SLBMs a means of delivery or
@@ -284,3 +282,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.9 Tanks read as armour at T3 (tanks 5, needs 8): at 10 m/px a tank is about 8 px, all one […]
 - [x] 7.10 Ships look like ships, and a sea battle is seen (naval 5, needs 8): at 15 m/px ships are […]
 - [x] 7.11 A fight at T3 reads as two sides with a line between them, and a struck city shows it […]
+- [x] 7.12 The nuclear age in the statistics (stats 7): warheads, the nuclear dead and fallout in the […]

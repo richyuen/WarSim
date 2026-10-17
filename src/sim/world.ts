@@ -424,6 +424,7 @@ class WorldCore implements Stateful {
       ...(w.nukeLaunches.length === 0 && w.nextLaunchId === 1 ? [] : [{ name: 'world.nukeLaunches', dtype: 'f64' as const, data: Float64Array.from([w.nextLaunchId, ...w.nukeLaunches.flatMap((l) => [l.id, l.nation, l.missile, l.wing, l.bx, l.by, l.tx, l.ty, l.launch, l.arrive])]) }]),
       // Outrage (PLAN 6.5b): [nation, outrage] each, by nation, only while there is some.
       ...(w.nukeOutrage.size === 0 ? [] : [{ name: 'world.nukeOutrage', dtype: 'f64' as const, data: Float64Array.from([...w.nukeOutrage].sort((a, b) => a[0] - b[0]).flat()) }]),
+      ...(w.nukeDead.size === 0 ? [] : [{ name: 'world.nukeDead', dtype: 'f64' as const, data: Float64Array.from([...w.nukeDead].sort((a, b) => a[0] - b[0]).flat()) }]),
       // The shock of a strike (PLAN 6.5a): [nation, exhaustion] each, by nation, only while there is one.
       ...(w.nukeShock.size === 0 ? [] : [{ name: 'world.nukeShock', dtype: 'f64' as const, data: Float64Array.from([...w.nukeShock].sort((a, b) => a[0] - b[0]).flat()) }]),
       // The last days' bursts (PLAN 6.11b): [x, y, tick] each, in the order they burst, only while there is one.
@@ -530,6 +531,9 @@ class WorldCore implements Stateful {
     w.nukeOutrage = new Map();
     const ou = sections.find((s) => s.name === 'world.nukeOutrage')?.data as Float64Array | undefined;
     for (let at = 0; ou && at + 2 <= ou.length; at += 2) w.nukeOutrage.set(ou[at]!, ou[at + 1]!);
+    w.nukeDead = new Map();
+    const nd = sections.find((s) => s.name === 'world.nukeDead')?.data as Float64Array | undefined;
+    for (let at = 0; nd && at + 2 <= nd.length; at += 2) w.nukeDead.set(nd[at]!, nd[at + 1]!);
     w.nukeShock = new Map();
     const sh = sections.find((s) => s.name === 'world.nukeShock')?.data as Float64Array | undefined;
     for (let at = 0; sh && at + 2 <= sh.length; at += 2) w.nukeShock.set(sh[at]!, sh[at + 1]!);
@@ -1134,6 +1138,8 @@ export class World {
   nukeShock = new Map<number, number>();
   /** The world's outrage at each nation that struck another's land, 0 to 100, decaying (PLAN 6.5b): state, saved while not empty. */
   nukeOutrage = new Map<number, number>();
+  /** The dead of nuclear bursts on each nation's land, men and people, all told (PLAN 7.12: its statistics); state, saved while not empty. */
+  nukeDead = new Map<number, number>();
   nextLaunchId = 1;
   /** The land formations aboard transports (PLAN 4.5a, `amphibiousSystem`), by id: state, saved while not empty. */
   embarked = new Map<number, Embarked>();

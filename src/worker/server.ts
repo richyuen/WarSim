@@ -110,6 +110,13 @@ const EMPTY_ELEMENTS: SnapshotElements = {
   truncated: false,
 };
 
+/** The cells of nation `n`'s land under fallout (PLAN 7.12: its panel). */
+function falloutOf(world: World, n: number): number {
+  let k = 0;
+  for (const c of world.fallout.keys()) if (world.cells.owner[c] === n) k++;
+  return k;
+}
+
 export class SimServer {
   sim: Sim | null = null;
   readonly pool = new BufferPool();
@@ -828,6 +835,8 @@ export class SimServer {
         wings: wings.get(id) ?? 0,
         airLost: world.airTotals.get(id)?.lost ?? 0,
         bombed: world.airTotals.get(id)?.bombed ?? 0,
+        nukeDead: world.nukeDead.get(id) ?? 0,
+        fallout: falloutOf(world, id),
         efficiency: nc.efficiency[id]!,
         ceLocked: nc.ceLocked[id] === 1,
         alliance: al ? { id: al.id, name: al.nameKey, leader: al.leader, founder: al.founder, unity: al.unity, loyalty: al.loyalty[k] ?? 0 } : null,

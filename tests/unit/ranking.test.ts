@@ -21,6 +21,8 @@ const nation = (id: number, v: number): NationStat => ({
   wings: 0,
   airLost: 0,
   bombed: 0,
+  nukeDead: 0,
+  fallout: 0,
   efficiency: 1,
   ceLocked: false,
   alliance: null,

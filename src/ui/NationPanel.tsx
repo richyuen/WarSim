@@ -117,6 +117,13 @@ export function NationPanel({
           {row('panel.landShare', `${(nation.landShare * 100).toFixed(1)}%`, 'stat-land-share')}
           {row('panel.army', `${num(nation.men)} (${nation.formations})`, 'stat-army')}
           {nation.warheads > 0 ? row('panel.warheads', num(nation.warheads), 'stat-warheads') : null}
+          {nation.nukeDead > 0 || nation.fallout > 0 ? (
+            <div class="panel-block" data-testid="panel-nuclear">
+              <div class="panel-sub">{t('panel.nuclearAge')}</div>
+              {row('panel.nukeDead', num(nation.nukeDead), 'stat-nuke-dead')}
+              {row('panel.falloutCells', num(nation.fallout), 'stat-fallout')}
+            </div>
+          ) : null}
           {nation.aircraft > 0 || nation.airLost > 0 || nation.bombed > 0 ? (
             <div class="panel-block" data-testid="panel-air">
               <div class="panel-sub">{t('panel.airWar')}</div>
