@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-486 · 2026-10-17 · accepted — A critic run files a task for every dimension under its bar (the user's decision)
+
+- **Context.** PROMPT step 2a filed a task only for each blocking issue. Run 7's nine dimensions
+  under the DONE condition's bar were filed by hand afterwards (PLAN 7.8 to 7.17, `ac0a344`); run 8
+  (`fd27e85`) filed its three blocking issues (7.18 to 7.20) and nothing for the five differentiators
+  under 8 (semantic zoom 7, naval 6, tanks 7, aircraft 6, AI nuclear use 6). The loop could reach
+  PLAN 7.5 and run the critic again with no work aimed at the scores that keep it from done.
+- **Decision.** Step 2a: after the blocking issues' tasks, at least one task of its own for every
+  dimension scored under its bar (parity under 7, differentiator under 8), even where a blocking
+  issue's task is on the same dimension, scoped to what that task leaves; from the report's "Fix"
+  and "Still short" lines and evidence, the dimension and score in its first line, before PLAN 7.5.
+  Run 8's five filed now: PLAN 7.21 to 7.25.
+- **Consequence.** PLAN 7.5 is reached only after work aimed at every low score of the last report.
+
 ### ADR-485 · 2026-10-17 · accepted — An overrun holder of warheads strikes; no restrike nearby, no small capital's bonus (PLAN 7.18a–d)
 
 - **Context.** Critic R8-B1 (run 8): AI nuclear use unseen in half the games and inert where set up;

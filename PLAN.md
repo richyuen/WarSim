@@ -29,8 +29,9 @@ quick sweep as a smoke test.
 
 ## Phase 7 — Balance, polish, soak
 
-Run 7's dimensions under the DONE condition's bar (report of 2026-10-17 on `19e2341`, its "Fix"
-lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split when taken up:
+Run 8's blocking issues and its dimensions under the DONE condition's bar (report of 2026-10-17 on
+`fd27e85`, its "Fix" lines and evidence; R8-B1 to R8-B3 are PLAN 7.18 to 7.20, the dimensions 7.21
+to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
 
 - [ ] 7.18 AI nuclear use seen and credible (critic R8-B1, run 8 on `fd27e85`): 8 of 17 unaided 30-year
   worlds see a burst, 3 of 17 before year 20; France and Poland given 10 warheads in the editor and
@@ -48,6 +49,39 @@ lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split wh
   than an atomic one on the same point and its ruin looks the same at 300 m/px (`critic/c8_b_4711.json`).
   AT: a thermonuclear yield tens of times a fission one in blast, toll, fallout and ruin; the critic's
   four cities compared; the ruins told apart in a picture; the pin's entry if the rule moves it.
+- [ ] 7.21 Infantry and the middle tier read at zoom (semantic zoom 7, needs 8): at 10 m/px infantry
+  are shapeless clumps of figures, the two sides near one colour on the grass
+  (`critic/shots/c8c_6047_inf_0010m.png`); at 900 m/px nothing of the units shows but counters
+  (element count 0, `critic/c8_c_6047.json`). AT: the critic's case (seed 6047, Germany on Poland
+  and France, day 3): infantry at T3 in ranks facing the enemy, the sides told apart by a measured
+  colour difference; elements drawn at 900 m/px; pictures at 3,000 to 10 m/px. (Wrecks: 7.23.)
+- [ ] 7.22 A sea battle seen firing, and fleets that hold their place (naval 6, needs 8): beyond
+  7.19's framing, no gunfire drawn in 6 s at Speed x1; a ship about 20 to 30 px long at 15 m/px;
+  fleets placed by the editor gone from the North Sea on day 3 (`critic/c8_j_5591.json`,
+  `critic/c8_k_ships.json`, `critic/shots/c8g_5591_21_northsea_day3_30m.png`). AT: from the row of
+  the critic's battle (seed 5591, hour 41), fire drawn between both fleets within seconds at x1;
+  ships larger at T3, measured; a placed fleet holds its sea until ordered away or driven off (a
+  unit test and the editor's spec). (SLBMs: out, ADR-479.)
+- [ ] 7.23 A watched armour fight leaves burning hulls (tanks 7, needs 8): in 45 s at Speed x1 at
+  25 m/px on a live armour fight `hulls.shown` stayed 0 and `wrecks.count` 0, at x2 0 to 6 hulls;
+  `hulls.count` counts the fallen infantry's marks too (`src/render/fx/hulls.ts:272`)
+  (`critic/c8_e_3929.json`, `critic/c8_c_6047.json`). AT: the critic's case: burning tank wrecks
+  on screen within 45 s at x1, counted apart from the infantry's; a picture.
+- [ ] 7.24 Aircraft seen at every tier (aircraft 6, needs 8): at 900 m/px 0 to 1 sorties drawn, at
+  25 m/px none (`critic/c8_c_6047.json` `sorties`); the editor refuses a Polish bomber group at
+  Warsaw ("no airbase of its with room is near the place", `critic/c8_g_5591.json`). AT: sorties
+  drawn at T2 and T3 over the war on Poland in its first weeks, counted; the editor places a bomber
+  group at a capital or says what it needs. (The air war fading after year 1 is the user's
+  decision, ADR-376: not here.)
+- [ ] 7.25 AI nuclear use believed (AI nuclear use 6, needs 8): beyond 7.18's frequency, a world's
+  whole nuclear history is often one day's spasm after 20 silent years (seed 5's 6 bursts all in
+  year 30, seed 6271's 4 within 48 hours); strikes go ahead at utilities of 0.001 to 0.01; the
+  history tells the player "its utility 33 in a thousand"; the alert stays up 10 days and covers
+  the History and Charts headers (`critic/c8_headless_*.json` `nukeLog`,
+  `critic/shots/c8f_1_83_history.png`, `c8a_4711_20_paris_150m_day10.png`). AT: over 10 seeds × 30
+  years the first-use years and the spread of strikes measured (`tools/diag/nukeGates.ts`), no
+  world's bursts all within 2 days; no strike under a floor of utility; history rows in words, no
+  engine numbers; the alert expires and sits clear of the panels' headers.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

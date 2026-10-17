@@ -179,7 +179,14 @@ added without code changes.
     line to PROGRESS.md with the scores and blocking count. Then add a
     PLAN.md task for every blocking issue that has none, placed before the
     next feature task unless a later phase already covers it (a finding that
-    step 2b defers gets a line under PLAN 1.42 instead): no finding may
+    step 2b defers gets a line under PLAN 1.42 instead). Then add at least
+    one PLAN.md task of its own for every dimension the report scores under
+    its bar in the DONE CONDITION (a parity dimension under 7, a
+    differentiator under 8), whether or not a blocking issue's task touches
+    it, scoped to what the blocking issues' tasks leave uncovered: from its
+    "Fix" and "Still short" lines and evidence, the dimension and its score
+    in the task's first line, placed with the blocking issues' tasks before
+    PLAN 7.5 (added 2026-10-17, ADR-486, the user's decision). No finding may
     depend on the report staying recent. Then end the iteration. Never act
     as the critic yourself.
     One run per phase (changed 2026-10-03, ADR-59, the user's decision). The

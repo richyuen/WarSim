@@ -17977,3 +17977,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   threaten them, or are deterred. Next: a cause of use beyond a war for one's life (a winning power
   ending a long war against a foe that cannot answer), then the critic's other set-ups and the sweep.
 - **Loop stopped here at the user's request.**
+
+## 2026-10-17 — Run 8's dimensions under the bar filed: PLAN 7.21 to 7.25; PROMPT 2a files them
+
+- **Asked by the user:** a task for every dimension of run 8 (`fd27e85`) under its bar, before 7.5,
+  and step 2a changed so every critic run files them. ADR-486.
+- **Under the bar:** semantic zoom 7, naval 6, tanks 7, aircraft 6, AI nuclear use 6 (of 8); every
+  parity dimension at 7.
+- **Filed** from the report's "Fix" and "Still short" lines and evidence, beside 7.18 to 7.20: 7.21
+  infantry at T3 and elements at 900 m/px, 7.22 a sea battle's fire and fleets that hold their place,
+  7.23 burning hulls where armour fights, 7.24 sorties drawn at T2 and T3 and the editor's bomber
+  group, 7.25 nuclear use believed (no one-day spasms, no near-zero utilities, the history in words,
+  the alert). Not filed: the air war fading (the user's decision, ADR-376); non-blocking items in
+  dimensions at their bar (the stale tooltip, the phone's tool labels, the `capitals` 75 ms call, the
+  Soviet Union at the land cap).
+- **PROMPT 2a:** at least one task of its own for every dimension under its bar, scoped to what the
+  blocking issues' tasks leave, before PLAN 7.5.
+- **Next:** PLAN 7.18 (7.18a to d done).
