@@ -158,7 +158,9 @@ test('a scenario file exported from a random world loads again from the title sc
   // From the title screen: the game of the random world starts with the file's state, its
   // names and its made flags, and its new-game form has the number of nations the world has.
   await page.goto('/');
-  await Promise.all([page.waitForURL(/load=scenario/), page.getByTestId('title-scenario-file').setInputFiles(file)]);
+  await page.getByTestId('title-scenario-file').setInputFiles(file);
+  // Started from its card (PLAN 7.13b: a chosen file asks before it starts).
+  await Promise.all([page.waitForURL(/load=scenario/), page.getByTestId('title-file-start').click()]);
   expect(page.url()).toContain('scenario=random');
   await ready(page);
   await page.waitForFunction((tick) => window.__warsim!.hud.tick.value === tick, header.tick, { timeout: 30_000 });

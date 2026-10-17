@@ -271,15 +271,31 @@ test('a scenario file chosen on the title screen starts its game; a file that do
   expect(page.workers()).toHaveLength(0);
   await page.screenshot({ path: path.join(evidence(info), 'title-file-refused.png') });
 
+  // A file that fits is not started when it is chosen (PLAN 7.13b, critic run 7: "a file starts the
+  // game at once, with no confirmation"): its name and date, Start and Cancel. Cancel puts it away.
+  await pick('title-test.warsim-scenario', file);
+  await expect(page.getByTestId('title-file-pending')).toBeVisible();
+  await expect(page.getByTestId('title-file-name')).toHaveText('Title test');
+  await expect(page.getByTestId('title-file-pending')).toContainText('11 January 1938');
+  await page.waitForTimeout(500);
+  expect(new URL(page.url()).search).toBe('');
+  expect(page.workers()).toHaveLength(0);
+  await page.screenshot({ path: path.join(evidence(info), 'title-file-confirm.png') });
+  await page.getByTestId('title-file-cancel').click();
+  await expect(page.getByTestId('title-file-pending')).toHaveCount(0);
+  expect(new URL(page.url()).search).toBe('');
+
   // A file whose state is not the one its header names passes the title screen and is refused
   // by the game, which returns to the title screen.
-  await Promise.all([page.waitForURL(/failed=scenario/, { timeout: 60_000 }), pick('forged.warsim-scenario', Buffer.from(await encodeScenarioFile({ ...header, hash: (hash ^ 1) >>> 0 }, bytes)))]);
+  await pick('forged.warsim-scenario', Buffer.from(await encodeScenarioFile({ ...header, hash: (hash ^ 1) >>> 0 }, bytes)));
+  await Promise.all([page.waitForURL(/failed=scenario/, { timeout: 60_000 }), page.getByTestId('title-file-start').click()]);
   await expect(page.getByTestId('title-screen')).toBeVisible();
   await expect(error).toHaveText('The scenario file could not be loaded. Choose it again.');
 
   // The file itself: the game of its base scenario starts with the file's state. That world has
   // no looping map, so the game corrects its URL and draws the map without wrap copies.
-  await Promise.all([page.waitForURL(/load=scenario/), pick('title-test.warsim-scenario', file)]);
+  await pick('title-test.warsim-scenario', file);
+  await Promise.all([page.waitForURL(/load=scenario/), page.getByTestId('title-file-start').click()]);
   await page.waitForURL(/looping=0/, { timeout: 60_000 });
   await ready(page);
   await page.waitForFunction((tick) => window.__warsim!.hud.tick.value === tick, sim.tick, { timeout: 30_000 });

@@ -167,6 +167,17 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-477 · 2026-10-17 · accepted — A chosen scenario file asks before it starts (PLAN 7.13b)
+
+- **Context.** Critic run 7 (editor 6): "a file starts the game at once, with no confirmation".
+- **Decision.** Choosing a `.warsim-scenario` on the title screen reads and checks its header only
+  (`checkScenarioFile`: a damaged file, another kind, another map size or an unknown scenario is
+  refused there as before). A file that fits shows a card: its name, its scenario and its date,
+  "Start this scenario" and "Cancel". Only Start stages the file and opens its game.
+- **Tests.** `title.spec` (the card shows "Title test" and 11 January 1938, no game and no worker
+  until Start; Cancel puts it away; the forged file and the file itself start from Start);
+  `randomWorld.spec` (its file started from the card). Picture `docs/evidence/7.13/b-title-file-confirm.png`.
+
 ### ADR-476 · 2026-10-17 · accepted — The nuclear age in the statistics (PLAN 7.12)
 
 - **Context.** Critic run 7 (stats 7): "add warheads, nuclear dead and fallout to the panel and the

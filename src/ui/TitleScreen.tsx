@@ -26,7 +26,12 @@ export interface TitleScreenProps {
   /** The saved game to offer as Continue, if there is one (PLAN 1.43b). */
   readSave: () => Promise<SavedGame | null>;
   onContinue: () => void;
-  /** Starts the game of a scenario file; rejects with a readable error when the file does not fit. */
+  /**
+   * Reads a scenario file's header (PLAN 7.13b): its name, its scenario and its date; rejects with a
+   * readable error when the file does not fit. Nothing starts.
+   */
+  checkScenarioFile: (file: File) => Promise<{ name: string; scenario: ScenarioId; startDay: number; tick: number }>;
+  /** Starts the game of a scenario file (checked); rejects with a readable error when the file does not fit. */
   onScenarioFile: (file: File) => Promise<void>;
   /** A scenario file could not be loaded after this screen was left for its game. */
   loadFailed: boolean;
@@ -37,7 +42,7 @@ export interface TitleScreenProps {
  * the scenario file loader; on the right the chosen scenario (a map of its start, its facts) with
  * its new-game form. No world runs behind it.
  */
-export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContinue, onScenarioFile, loadFailed }: TitleScreenProps) {
+export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContinue, checkScenarioFile, onScenarioFile, loadFailed }: TitleScreenProps) {
   const [chosen, setChosen] = useState<ScenarioId>(scenarios[0]!.id);
   // A new seed per visit, so two games started without touching the field differ.
   const [seed] = useState(randomSeed);
@@ -46,6 +51,9 @@ export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContin
   // The error of the last file chosen here, or of the one a game could not load (`loadFailed`).
   const [fileError, setFileError] = useState<string | null>(null);
   const [failed, setFailed] = useState(loadFailed);
+  // A file chosen and read, waiting for Start (PLAN 7.13b, critic run 7: "a file starts the game at
+  // once, with no confirmation").
+  const [pending, setPending] = useState<{ file: File; name: string; scenario: ScenarioId; startDay: number; tick: number } | null>(null);
   useEffect(() => {
     void readSave()
       .then(setSave)
@@ -109,9 +117,39 @@ export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContin
                 if (!file) return;
                 setFileError(null);
                 setFailed(false);
-                void onScenarioFile(file).catch((err: unknown) => setFileError(t('scenario.failed', { error: err instanceof Error ? err.message : String(err) })));
+                setPending(null);
+                void checkScenarioFile(file)
+                  .then((h) => setPending({ file, ...h }))
+                  .catch((err: unknown) => setFileError(t('scenario.failed', { error: err instanceof Error ? err.message : String(err) })));
               }}
             />
+            {pending ? (
+              <div class="title-file-pending" data-testid="title-file-pending">
+                <div class="title-scenario-name" data-testid="title-file-name">
+                  {pending.name}
+                </div>
+                <div class="title-scenario-date">
+                  {t(scenarios.find((s) => s.id === pending.scenario)?.info.nameKey as MessageKey ?? 'scenario.file')} · {dateAt(pending.startDay, pending.tick)}
+                </div>
+                <div class="title-file-actions">
+                  <button
+                    type="button"
+                    class="start-btn"
+                    data-testid="title-file-start"
+                    onClick={() => {
+                      const f = pending.file;
+                      setPending(null);
+                      void onScenarioFile(f).catch((err: unknown) => setFileError(t('scenario.failed', { error: err instanceof Error ? err.message : String(err) })));
+                    }}
+                  >
+                    {t('title.fileStart')}
+                  </button>
+                  <button type="button" data-testid="title-file-cancel" onClick={() => setPending(null)}>
+                    {t('title.fileCancel')}
+                  </button>
+                </div>
+              </div>
+            ) : null}
             {fileError !== null || failed ? (
               <div class="panel-warn" data-testid="title-file-error">
                 {fileError ?? t('title.loadFailed')}

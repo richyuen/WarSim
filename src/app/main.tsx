@@ -4,7 +4,7 @@ import { TitleScreen } from '../ui/TitleScreen';
 import { readAutosave, type SaveRecord } from './autosave';
 import { startGame } from './game';
 import { continueUrl, newGameUrl, stagedScenarioUrl } from './gameUrl';
-import { stageScenarioFile } from './scenarioFiles';
+import { checkScenarioFile, stageScenarioFile } from './scenarioFiles';
 import { applyUiScale } from './settings';
 import '@fontsource/lato/400.css';
 import '@fontsource/lato/700.css';
@@ -44,6 +44,10 @@ if (scenarioId !== null) {
         readSave={readSave}
         onContinue={() => {
           if (save) location.assign(continueUrl(save));
+        }}
+        checkScenarioFile={async (file) => {
+          const { header, scenario } = await checkScenarioFile(new Uint8Array(await file.arrayBuffer()));
+          return { name: header.name, scenario, startDay: SCENARIO_INFO[scenario].startDay, tick: header.tick };
         }}
         onScenarioFile={async (file) => location.assign(stagedScenarioUrl(await stageScenarioFile(new Uint8Array(await file.arrayBuffer()))))}
         loadFailed={params.get('failed') === 'scenario'}

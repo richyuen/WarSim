@@ -17893,3 +17893,11 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `stats.test.ts` (updated to 12 numbers a record; a test more), `ranking.test.ts`'s
   literal, `nukeStats1938` (new); `charts1938`, `nationPanel1938`, `formationPanel1938` green.
 - **Next:** PLAN 7.13.
+
+## 2026-10-17 — PLAN 7.13b: a chosen scenario file asks before it starts (UI)
+
+- **Start:** gate green on a clean tree (`a5b5418`).
+- **Done:** the title screen checks a chosen file's header and shows its name, scenario and date
+  with Start and Cancel; only Start opens its game. ADR-477.
+- **Tests:** `title.spec`, `randomWorld.spec` updated (start from the card) and green, 10 of 10.
+- **Next:** 7.13a (the editor places warheads, fleets and wings), 7.13c (SLBMs).
