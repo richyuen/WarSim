@@ -118,6 +118,8 @@ quick sweep as a smoke test.
       since. AT: `player1938` (a Polish division removed and one raised with its id; red before).
     - [x] 7.4f24 A formation with a dead one's id is a T1 marker new to the view: no fade, stack
       or box move of the dead one's. AT: `markerStacks.test.ts` (both ways; red before).
+    - [x] 7.4f25 The critic's N8 at 1024 × 600: the played nation's label onto a line of its own
+      in the bar, whole, and what stands above the bar on its top (ADR-451). AT: `barNarrow1938`.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -256,9 +258,6 @@ quick sweep as a smoke test.
     2718). A rule to look at, not a look: what a peace does with land that is held.
   - N4, N5 (the arrows: PLAN 7.4b): markers overlap round Warsaw at the start, one under the
     capital's flag.
-  - N8 (left of it after PLAN 3.12Rh4 and 7.4f2): at 1024 × 600, playing a nation, the bar's
-    "Poland · n selected" is cut to its first letter (the one item that shrinks; its tooltip says
-    it in full).
   - N14 (left of it after PLAN 7.4c, 7.4f11 and 7.4f12): the dead are not in the ranking (AoC
     marks them); the economy tab is six numbers.
   - N17: a black smear under a counter near Bern in 1952 of seed 2718.

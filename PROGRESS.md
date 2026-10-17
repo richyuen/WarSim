@@ -17231,3 +17231,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   eight wars; PLAN 7.4f6 shows 6 and a "+N" (red since `1056061`, the specs run in full only at a
   phase review). It waits for 6 and the "+N"; its other checks as they were (the rows of banners
   still reach above the panel's foot at 1100 × 600: 449.7 against 480.4). `settings1938` 2 of 2.
+
+## 2026-10-16 — PLAN 7.4f25: the played nation's label on a line of its own (UI)
+
+- **Start:** gate green on a clean tree (`73ae8ba`); critic not due.
+- **Done:** the bottom bar wraps with the label last (ADR-451): at 1024 × 600 "Playing Poland · 0
+  selected" was 4 px of 166. `--bar-top` from the bar (a ResizeObserver) under the war banners,
+  the ticker and the legend. Picture: `docs/evidence/7.4/f25-bar-1024-playing.png`.
+- **Tests:** `barNarrow1938` (new); the 20 spec files of the bar, banners, ticker, legend and the
+  player's label, 35 tests, green with `settings1938` once its count was fixed (the commit before).
+- **Dead nations in the ranking (N14):** not taken; the nine lists are of the present (land,
+  army, ...), where a dead nation is 0. AoC marks them in lists of a life (age, kills, wars):
+  such lists come first. Left on the list under 7.4.
+- **Next:** PLAN 7.4f, the next group.

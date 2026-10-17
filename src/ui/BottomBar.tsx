@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'preact/hooks';
 import type { SimDate } from '../shared/calendar';
 import type { MapMode } from '../shared/mapModes';
 import { SPEED_LEVELS } from '../shared/speed';
@@ -43,8 +44,26 @@ function widestDates(year: number): string {
 /** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
 export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory, showEditor, onToggleEditor, showSettings, onToggleSettings }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
+  // How far the bar's top is from the view's bottom, for what stands above it (PLAN 7.4f25): a
+  // played nation's label that does not fit goes onto a second line.
+  const bar = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = bar.current;
+    if (!el) return;
+    const root = document.documentElement;
+    const put = (): void => root.style.setProperty('--bar-top', `${Math.ceil(window.innerHeight - el.getBoundingClientRect().top)}px`);
+    put();
+    const ro = new ResizeObserver(put);
+    ro.observe(el);
+    window.addEventListener('resize', put);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', put);
+      root.style.removeProperty('--bar-top');
+    };
+  }, []);
   return (
-    <footer class="bottombar" data-testid="bottombar">
+    <footer class="bottombar" data-testid="bottombar" ref={bar}>
       <button type="button" class="bar-btn bar-reserve" data-testid="pause-btn" data-reserve={paused ? t('bar.pause') : t('bar.resume')} aria-pressed={paused} onClick={onTogglePause}>
         {paused ? t('bar.resume') : t('bar.pause')}
       </button>

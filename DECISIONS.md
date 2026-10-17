@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-451 · 2026-10-16 · accepted — The bottom bar wraps; the played nation's label last (PLAN 7.4f25)
+
+- **Context.** The critic's N8, what PLAN 3.12Rh4 and 7.4f2 left: at 1024 × 600, playing a
+  nation, the bar's buttons and date took 1008 px and "Playing Poland · 0 selected" had 4 of its
+  166 (one letter; the tooltip had it whole).
+- **Decision.** The bar wraps, centred; the label is last in its order, so that what goes onto a
+  second line is the label, whole. The bar keeps its place at the bottom and grows upwards; it
+  writes its top (from the view's bottom, px) to `--bar-top` on the root, and the war banners,
+  the ticker and the legend stand on it (the banners and the ticker were at a fixed 3.2rem). In
+  one line, wide views, the label stands after the date (it stood before it). At 600 px and
+  below the bar still scrolls sideways (PLAN 7.4f2). Taste: low confidence (no `reference/`
+  notes).
+- **Tests.** `barNarrow1938` (the label whole on its own line at 1024, the banners and the
+  legend above the bar, every button in view; one line at 1400); the specs of the bar, the
+  banners, the ticker and the legend green.
+
 ### ADR-450 · 2026-10-16 · accepted — God Mode's Recolor and Donate (PLAN 7.4f16)
 
 - **Context.** AoC's God panel has Recolor and Donate (the critic of 2026-10-07; PARITY's God
