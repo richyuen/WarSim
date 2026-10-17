@@ -17680,3 +17680,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Left:** seed 5's Soviet Union, 15 decisions in 40 days on 9 points, capitals again after 7 days
   (7.6e); seed 5's China out of reach 267 days (7.6f's report).
 - **Next:** PLAN 7.6e.
+
+## 2026-10-17 — PLAN 7.6e: a capital struck is spared a year; every nuclear power strikes back (sim)
+
+- **Start:** gate green on a clean tree (`f52a555`).
+- **Done:** bursts remembered CAPITAL_RESTRIKE_DAYS (365); an enemy capital within a blast radius of
+  one is not weighed (other places as before, RESTRIKE_DAYS); RETALIATION_AGGRESSION 0, so the United
+  States, the Netherlands and Switzerland strike back as retaliation too (one for one). ADR-465.
+- **Tests:** `nukeWhereWhom1938.test.ts` (new; red before); `nukeTargets1938`'s 6.11b test follows the
+  rule (London a week on not weighed; a year on weighed, the burst forgotten); 24 nuclear test files
+  (73 tests) green; pin unmoved.
+- **Next:** PLAN 7.6f, the AT's sweep.

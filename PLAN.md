@@ -66,7 +66,7 @@ quick sweep as a smoke test.
       weighed against what it is losing (seed 4: the Soviet Union in extreme desperation at
       −0.27 to −0.02 for a year, the strike back 0.8). Only what 7.6a to c leave. AT: unit tests;
       the France case strikes again while it keeps losing.
-    - [ ] 7.6e Where and at whom: a capital struck within the last year is not weighed again
+    - [x] 7.6e Where and at whom: a capital struck within the last year is not weighed again
       unless enemy men mass there (seed 4: one point 400 days apart); a nuclear power struck by an
       enemy answers it (RETALIATION_AGGRESSION's reason read first, PLAN 6.12). AT: unit tests.
     - [ ] 7.6f The AT's sweep: seeds 1 to 10 × 30 years unaided with `nukeGates` and the quick

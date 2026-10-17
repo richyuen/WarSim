@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { blastRadius, detonate, FRONT_KM, nukeTargets, RESTRIKE_DAYS } from '../../src/sim/systems/nuclear';
+import { blastRadius, CAPITAL_RESTRIKE_DAYS, detonate, FRONT_KM, nukeTargets, RESTRIKE_DAYS } from '../../src/sim/systems/nuclear';
 import { seaKm } from '../../src/sim/systems/navalCombat';
 import { declareWar } from '../../src/sim/systems/war';
 import { assets1938 } from '../helpers/earth';
@@ -82,7 +82,7 @@ describe('where the AI\'s warheads may fall (PLAN 6.11a)', () => {
     expect(near(nukeTargets(w, GER, war, 0), london)).toBe(true);
   });
 
-  it('a spot struck the day before, or one a warhead is flying to, is not weighed again; a week on it is; the bursts are saved', () => {
+  it('a spot struck the day before, or one a warhead is flying to, is not weighed again; a capital not for a year (PLAN 7.6e); the bursts are saved', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const w = s.world;
     w.settings.nukesEnabled = true;
@@ -108,9 +108,16 @@ describe('where the AI\'s warheads may fall (PLAN 6.11a)', () => {
     w.nukeLaunches.push({ id: w.nextLaunchId++, nation: GER, missile: 1, wing: 0, bx: 0, by: 0, tx: kent[0], ty: kent[1], launch: w.tick, arrive: w.tick + 1000 });
     expect(near(nukeTargets(w, GER, war, 0), kent), 'Kent, a warhead on its way').toBe(false);
     w.nukeLaunches.length = 0;
-    // A week on, London is weighed again, and the burst forgotten.
+    // A week on, London is a capital struck within the year (PLAN 7.6e, ADR-465; before, weighed
+    // again a week on): not weighed, and the burst remembered.
     s.step(RESTRIKE_DAYS * 24);
+    expect(w.nukeBursts.length).toBe(1);
+    expect(near(nukeTargets(w, GER, war, 0), london), 'London a week on').toBe(false);
+    // A year on (the burst's time moved back, and a day for the nuclear system to forget it):
+    // London weighed again, and the burst forgotten.
+    w.nukeBursts[0]!.tick -= CAPITAL_RESTRIKE_DAYS * 24;
+    s.step(24);
     expect(w.nukeBursts.length).toBe(0);
-    expect(near(nukeTargets(w, GER, war, 0), london), 'London a week on').toBe(true);
+    expect(near(nukeTargets(w, GER, war, 0), london), 'London a year on').toBe(true);
   });
 });

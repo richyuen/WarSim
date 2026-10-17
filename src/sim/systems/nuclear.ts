@@ -99,7 +99,8 @@
  * Retaliation: a burst on a nation's land (its owner's, not the striker's) gives it a grievance
  * against the striker for RETALIATION_DAYS (`world.nukeGrievance`). While it holds one against an
  * enemy, it weighs that nation's land alone, from any distance, and strikes no one else (PLAN
- * 6.12b). Of retaliation doctrine (aggression at least RETALIATION_AGGRESSION) it is retaliating:
+ * 6.12b). Of retaliation doctrine (aggression at least RETALIATION_AGGRESSION: 0, every nuclear
+ * power, since PLAN 7.6e) it is retaliating:
  * RETALIATION_BONUS, no MAD bar, and no retaliation risk weighed (PLAN 6.12d: struck at London, a
  * winning United Kingdom weighed 1 − 0.96 for the Soviet second strike and never struck back). Its
  * strike back spends the grievance (one for one), and its burst gives the nation it falls on none
@@ -702,7 +703,15 @@ function warInputs(world: World, n: number, war: War, side: number, retaliating:
 /** The decision's targets (PLAN 6.4b): the strongest enemy land formations weighed, and the grievance's days and doctrine. */
 export const NUKE_TARGETS = 6;
 export const RETALIATION_DAYS = 90;
-export const RETALIATION_AGGRESSION = 20;
+/**
+ * The least aggression of a nation whose strike back is retaliation (RETALIATION_BONUS, no MAD bar,
+ * no strike back weighed): 0 since PLAN 7.6e, every nuclear power. At 20 (PLAN 6.4b) the United
+ * States (15), the Netherlands (10) and Switzerland (5), struck, weighed the striker's second strike
+ * and the MAD bar as for a first use, and the critic saw no strike answered (R7-B1). SPEC §6.4's
+ * doctrines run from none through retaliation to first use: striking back is the least of them.
+ * The grievance's one for one (PLAN 6.12e) keeps the answers from going on.
+ */
+export const RETALIATION_AGGRESSION = 0;
 
 /** The nation that struck `n`, when `n` holds a grievance against it and it is on `war`'s other side from `side` (PLAN 6.12b); else 0. */
 function grievanceIn(world: World, n: number, war: War, side: number): number {
@@ -775,6 +784,14 @@ export function aimOf(world: World, n: number, war: War, side: number): Aim {
 export const FRONT_KM = 1000;
 /** How long a burst keeps another warhead off its place (PLAN 6.11b), days. */
 export const RESTRIKE_DAYS = 7;
+/**
+ * How long a burst keeps another warhead off an enemy capital it fell on (PLAN 7.6e), days, and how
+ * long a burst is remembered (`world.nukeBursts`). A place of massed enemy men is weighed again
+ * after RESTRIKE_DAYS: men massed there again. Seed 5's Soviet Union struck one capital three times
+ * and another four times in 40 days, and seed 4's one point 400 days apart (critic R7-B1: one Dutch
+ * point a year apart).
+ */
+export const CAPITAL_RESTRIKE_DAYS = 365;
 
 /**
  * The places `n` weighs in `war` on `side` (PLAN 6.4b): enemy capitals, then the NUKE_TARGETS
@@ -785,7 +802,9 @@ export const RESTRIKE_DAYS = 7;
  * neutral's nor the sea), within FRONT_KM of a land formation or a capital of `side`: a colony
  * or a capital-in-exile far from every front is not weighed (critic R6-B2: Paramaribo, Aden).
  * None within a blast radius of a burst of the last RESTRIKE_DAYS or of a warhead in flight
- * (PLAN 6.11b: the critic saw three in a row on one spot, its formations gone after the first).
+ * (PLAN 6.11b: the critic saw three in a row on one spot, its formations gone after the first), and
+ * no capital within a blast radius of a burst of the last CAPITAL_RESTRIKE_DAYS (PLAN 7.6e); a
+ * place of massed men there is weighed, men massed again.
  * Only on land of the enemies `aim` names (by default `aimOf`: those that can threaten `n`, PLAN
  * 6.12a; the nation that struck it, from any distance, PLAN 6.12b); the massed men weighed are the
  * whole enemy side's.
@@ -808,9 +827,19 @@ export function nukeTargets(world: World, n: number, war: War, side: number, aim
   });
   const { w, h, owner, controller } = world.cells;
   const radius = blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1);
+  // Bursts of the last RESTRIKE_DAYS and warheads in flight keep any place off; a burst of the last
+  // CAPITAL_RESTRIKE_DAYS keeps an enemy capital off (PLAN 7.6e).
   const struck: number[] = [];
-  for (const b of world.nukeBursts) struck.push(b.x, b.y);
+  const struckYear: number[] = [];
+  for (const b of world.nukeBursts) {
+    if (b.tick > world.tick - CAPITAL_RESTRIKE_DAYS * 24) struckYear.push(b.x, b.y);
+    if (b.tick > world.tick - RESTRIKE_DAYS * 24) struck.push(b.x, b.y);
+  }
   for (const l of world.nukeLaunches) struck.push(l.tx, l.ty);
+  const struckThisYear = (x: number, y: number): boolean => {
+    for (let k = 0; k < struckYear.length; k += 2) if (seaKm(world, x, y, struckYear[k]!, struckYear[k + 1]!) <= radius) return true;
+    return false;
+  };
   const fair = (x: number, y: number): boolean => {
     const xx = cellX(world, Math.floor(x));
     const yy = Math.floor(y);
@@ -822,7 +851,7 @@ export function nukeTargets(world: World, n: number, war: War, side: number, aim
     for (let k = 0; k < anchors.length; k += 2) if (seaKm(world, x, y, anchors[k]!, anchors[k + 1]!) <= FRONT_KM) return true;
     return false;
   };
-  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && at.has(m) && fair(nc.capitalX[m]!, nc.capitalY[m]!)) out.push([nc.capitalX[m]!, nc.capitalY[m]!]);
+  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && at.has(m) && fair(nc.capitalX[m]!, nc.capitalY[m]!) && !struckThisYear(nc.capitalX[m]!, nc.capitalY[m]!)) out.push([nc.capitalX[m]!, nc.capitalY[m]!]);
   const near = (a: number, b: number): boolean => Math.abs(c.y[a]! - c.y[b]!) <= radius / 10 && seaKm(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) <= radius;
   const mass = new Map<number, number>();
   for (const a of land) {
@@ -1061,8 +1090,8 @@ export function nuclearSystem(world: World): void {
   arrivals(world);
   if (!isDayStart(world.tick)) return;
   falloutDay(world);
-  // The bursts older than RESTRIKE_DAYS forgotten (PLAN 6.11b).
-  if (world.nukeBursts.length > 0) world.nukeBursts = world.nukeBursts.filter((b) => b.tick > world.tick - RESTRIKE_DAYS * 24);
+  // The bursts older than CAPITAL_RESTRIKE_DAYS forgotten (PLAN 6.11b, 7.6e).
+  if (world.nukeBursts.length > 0) world.nukeBursts = world.nukeBursts.filter((b) => b.tick > world.tick - CAPITAL_RESTRIKE_DAYS * 24);
   tabooDay(world);
   shockDay(world);
   nukeDecisions(world);

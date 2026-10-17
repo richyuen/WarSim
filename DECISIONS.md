@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-465 · 2026-10-17 · accepted — A capital struck is spared a year; every nuclear power strikes back (PLAN 7.6e)
+
+- **Context.** Critic R7-B1: the Soviet Union struck one Dutch point twice a year apart, and no
+  strike was answered. After 7.6a to c (`docs/evidence/7.6/gates-after-7.6c.md`) seed 5's Soviet Union
+  made 15 decisions in 40 days on 9 points, one capital three times and another four: a burst kept a
+  place off for RESTRIKE_DAYS (7) and was then forgotten. A nation under RETALIATION_AGGRESSION (20)
+  struck at home weighed the striker's second strike and the MAD bar as for a first use: the United
+  States (15), the Netherlands (10) and Switzerland (5) hold warheads in the sweeps.
+- **Decision.**
+  - Bursts are remembered CAPITAL_RESTRIKE_DAYS (365). An enemy capital within a blast radius of a
+    burst of that year is not weighed; any place within one of the last RESTRIKE_DAYS, as before. A
+    place of massed enemy men is weighed after RESTRIKE_DAYS (they massed there again).
+  - RETALIATION_AGGRESSION is 0: every nuclear power whose land was struck by an enemy strikes back
+    at it as retaliation (RETALIATION_BONUS, no MAD bar, no second strike weighed), one for one
+    (PLAN 6.12e). SPEC §6.4's doctrines run from none through retaliation to first use; the 20 of
+    PLAN 6.4b had no reason written beside it, and the one for one stops the chain.
+- **Tests.** `nukeWhereWhom1938.test.ts` (new: Berlin off 8 days after a burst and weighed a year and
+  a day after; the United States struck at Washington by an armed Germany answers once, on German
+  land; red before); `nukeTargets1938` (6.11b's test: London a week on is no longer weighed again; it
+  is not until a year on, and the burst is remembered; the expectation follows this rule); 24 nuclear
+  test files green; pin unmoved.
+
 ### ADR-464 · 2026-10-17 · accepted — The costs of a nation fighting for its life stay as they are (PLAN 7.6d)
 
 - **Context.** PLAN 7.6d: "the costs of a nation fighting for its life: taboo, outrage and the
