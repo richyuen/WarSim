@@ -18051,4 +18051,5 @@ No rule changed and nothing on screen changed. One task came out of it.
   left to them is held under 0.2 by German air cover, 7.18i's cause.
 - **Tests:** `nukeResolve1938.test.ts` (the cap, the weight); the related unit tests (1,118) and the pin
   in each gate.
-- **Next:** PLAN 7.18i.
+- **Next:** PLAN 7.18i. With its first commit: `aimOf` returns early on an empty aim again (its
+  `desperationOf` and `resolveOf` now run for every holder's war each day; same behaviour, the pin).

@@ -1902,8 +1902,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     fightToDeath.
     A holder winning or holding its own in a war of a year or more, against enemies that
     cannot strike back, weighs as at a desperation rising to 2 at two years (resolve to end
-    the war; one such strike a side every 90 days; places anywhere on the enemy's land; PLAN
-    7.18e, ADR-488).
+    the war; one such strike a side every 90 days, three in a war at most; places anywhere on
+    the land of enemies holding a tenth of their side's output; PLAN 7.18e, 7.18h, ADR-488 to
+    ADR-490).
   - retaliationRisk: the enemy's *and its allies'* deliverable second-strike capacity ×
     their doctrine, plus survivable assets (dispersed bombers: a bomber flying counts, ADR-385;
     submarines carry no warhead, ADR-434).

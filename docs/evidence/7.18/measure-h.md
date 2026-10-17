@@ -79,7 +79,8 @@ Seeds with a burst: 8 of 10; with one before year 20: 7 (as before). In one war:
 - **Many in one war:** at most 3 (10 before). Seed 1's Italy: China, Nepal, the Soviet Union
   (339,412 dead at its capital), then no more by its resolve.
 - **Light nations:** the two left, Britain's on #114 (seed 1, day 4,937) and on Greece (seed 10, day
-  4,688), are the same decisions as before the rules, in worlds the same up to them: at their
+  4,688), are the same decisions as before the rules, in worlds the same up to them (the decision
+  lists of `base_<seed>` and `after_<seed>` match to the day, place and utility up to them): at their
   decision the rule did not apply (the side in extreme desperation, or without the resolve, at that
   tick; the diagnostic reads at the day's end, at desperations 0.90 and 1.22).
 - **Tolls under 5,000:** 16, as before: the lone garrisons, PLAN 7.18j (after 7.18i). Seed 1's
