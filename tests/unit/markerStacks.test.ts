@@ -117,6 +117,31 @@ describe('marker stacks (PLAN 2.7s1)', () => {
       expect(S.animating(16)).toBe(false);
     });
 
+    // PLAN 7.4f24: a formation made with a dead one's id (the table gives freed ids out again)
+    // is a marker new to the view. It took the dead one's place in the fade: one that came out
+    // where the dead one had been in a stack faded in, and one under a lead faded out.
+    it("a marker whose id is another formation's now takes its place at once, as a new one", () => {
+      const g = (it: StackItem, generation: number): StackItem => ({ ...it, generation });
+      const S = new MarkerStacks();
+      S.frame([g(close[0]!, 1), g(close[1]!, 1)], W, H, 0);
+      expect(S.frame([g(close[0]!, 1), g(close[1]!, 1)], W, H, 16).get(2)!.alpha).toBe(0);
+      // Formation 2 is gone; the next one made has its id and stands far off: shown at once.
+      const out = S.frame([g(far[0]!, 1), g(far[1]!, 2)], W, H, 1000);
+      expect(out.get(2)).toEqual({ alpha: 1, strength: 300, members: [2], dx: 0, dy: 0 });
+      expect(S.animating(1000)).toBe(false);
+      // And the other way: a shown one gone, the new one with its id under the lead: in at once.
+      const T = new MarkerStacks();
+      T.frame([g(far[0]!, 1), g(far[1]!, 1)], W, H, 0);
+      const into = T.frame([g(close[0]!, 1), g(close[1]!, 2)], W, H, 16);
+      expect(into.get(2)!.alpha).toBe(0);
+      expect(into.get(1)).toMatchObject({ strength: 800, members: [1, 2] });
+      expect(T.animating(16)).toBe(false);
+      // The same generation is the same formation: it fades as before.
+      const U = new MarkerStacks();
+      U.frame([g(far[0]!, 1), g(far[1]!, 1)], W, H, 0);
+      expect(U.frame([g(close[0]!, 1), g(close[1]!, 1)], W, H, 16).get(2)!.alpha).toBeGreaterThan(0.9);
+    });
+
     it('after clear() the markers take their places at once again', () => {
       const S = new MarkerStacks();
       S.frame(far, W, H, 0);

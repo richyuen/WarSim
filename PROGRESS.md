@@ -17214,3 +17214,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `player1938` 3 of 3 (new: Poland's selected division removed, a Polish one raised
   with its id: nothing selected, a click on ground orders nothing; red before: "1 selected").
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-16 — PLAN 7.4f24: a reused id is a marker new to the view (render)
+
+- **Start:** gate green on a clean tree (`83f4dad`); critic not due.
+- **Done:** `StackItem.generation`; `MarkerStacks` forgets an id's fade, stack hold and box move
+  when its generation changes (`SwitchBank.forget`). The "Picking" group under 7.4 is done (the
+  ring on the open formation follows the HUD's check of its generation, PLAN 2.16Ri).
+- **Tests:** `markerStacks.test.ts` 29 of 29 (new: out of a stack and into one, at once; red
+  before: alpha 0 where 1); `markerStacks1938`, `stackPick1938` green.
+- **Next:** PLAN 7.4f, the next group.

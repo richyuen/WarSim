@@ -134,6 +134,11 @@ export class SwitchBank<K> {
     this.changed = this.now;
   }
 
+  /** `key` is a new thing (PLAN 7.4f23): what it was is forgotten, and it takes its state at once when next asked. */
+  forget(key: K): void {
+    this.switches.delete(key);
+  }
+
   end(): void {
     for (const [key, e] of this.switches) if (e.frame !== this.frames) this.switches.delete(key);
   }

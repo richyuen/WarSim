@@ -28,6 +28,11 @@ export interface StackItem {
   x: number;
   y: number;
   strength: number;
+  /**
+   * How often its id has been given out (`SnapshotFormations.generation`; PLAN 7.4f24): a
+   * formation made with a dead one's id is a marker new to the view, not the dead one's.
+   */
+  generation?: number;
 }
 
 /** A marker after stacking. */
@@ -283,6 +288,8 @@ export class MarkerStacks {
    */
   private moves = new Map<number, { from: [number, number]; to: [number, number]; start: number }>();
   private moved = -Infinity;
+  /** The generation of each id in the last frame. */
+  private generations = new Map<number, number>();
 
   /**
    * The markers of a frame at `now`. `still`: the boxes keep the moves they have (the morph into
@@ -291,6 +298,20 @@ export class MarkerStacks {
    */
   frame(items: readonly StackItem[], w: number, h: number, now: number, still = false): Map<number, StackedMarker> {
     this.shown.frame(now);
+    // An id that is another formation's now: what the dead one had (its fade, its stack, its box's
+    // move) is not the new one's. It is new to the view and takes its place at once (PLAN 7.4f24).
+    const generations = new Map<number, number>();
+    for (const it of items) {
+      if (it.generation === undefined) continue;
+      generations.set(it.id, it.generation);
+      const was = this.generations.get(it.id);
+      if (was !== undefined && was !== it.generation) {
+        this.shown.forget(it.id);
+        this.inStack.delete(it.id);
+        this.moves.delete(it.id);
+      }
+    }
+    this.generations = generations;
     const stacks = stackMarkers(items, w, h, (id) => this.inStack.has(id));
     const leads = items.filter((it) => stacks.get(it.id)!.into === null);
     let to: Map<number, [number, number]>;
@@ -356,5 +377,6 @@ export class MarkerStacks {
     this.shown.clear();
     this.inStack.clear();
     this.moves.clear();
+    this.generations.clear();
   }
 }
