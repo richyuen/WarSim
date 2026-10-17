@@ -17310,3 +17310,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   `counters.test.ts`). Swaps −40 %, counters mid-fade −3 %: reverted. The finding is under N21
   in PLAN 7.4's list. The "two names" line there shrunk to what PLAN 3.12Rh3 left.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — N3 (occupied land hatched after a peace) settled; off the list
+
+- `.cache/74f31/orphans.ts`: seed 2718, years 1 to 6, the cells occupied (1,089 to 17,004 a year)
+  whose owner and occupier are not at war: none in any year. A peace returns the two sides'
+  occupation (`makePeace`), and a cell taken by a nation not at war with its owner is the
+  owner's again since PLAN 3.4Rj (ADR-147, `territory.test.ts` counts such cells), a day after
+  the report that saw it. The line came off PLAN 7.4's list.

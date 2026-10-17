@@ -264,8 +264,6 @@ quick sweep as a smoke test.
   - **The Spratly Islands are nobody's in 1938** (PLAN 2.15e2b): unowned land in the
     scenario's data (France and Japan both claimed them). Not looked into.
   From the critic's report of 2026-10-05, not blocking and in no task above (its numbers):
-  - N3: occupied land stays hatched for years after a peace (Europe after 14 years of seed
-    2718). A rule to look at, not a look: what a peace does with land that is held.
   - N4, N5 (the arrows: PLAN 7.4b): markers overlap round Warsaw at the start, one under the
     capital's flag.
   - N14 (left of it after PLAN 7.4c, 7.4f11, 7.4f12 and 7.4f28): the economy tab is six numbers;
