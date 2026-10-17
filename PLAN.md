@@ -151,6 +151,9 @@ quick sweep as a smoke test.
       (ADR-457). AT: `files.test.ts`; `stackBlocks1938` (red before).
     - [x] 7.4f39 The critic's N5: capital flags keep clear of the T1 markers, left out past
       40 px (ADR-458). AT: `flagsClear1938` (red before).
+    - [x] 7.4f40 The seam: the item layers (counters, markers, flags, sea battles, sorties, dots,
+      the air's and the bombs' marks) take the copies within 160 px of the view. AT:
+      `camera.test.ts`; `seamItems1938` (new; red with no margin).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -159,9 +162,9 @@ quick sweep as a smoke test.
     The scatter of an element (180 m) against the room its figures leave in a slot (60 m).
   - **The seam of the looping map** (the 180° meridian in 1938). What is drawn knows the seam
     one layer at a time, and most layers do not:
-    - `wrapOffsets` has no margin: a counter, marker, flag or name within its own half-width
-      of the seam is drawn only once the view's edge has crossed the seam, and half of it
-      (about 24 px of a counter) then appears at once;
+    - (the counters, markers and flags: PLAN 7.4f40) a city's or a nation's name within its
+      half-width of the seam is drawn only once the view's edge has crossed the seam (their
+      two copies share one state: the line below);
     - counters either side of the seam are not folded into each other, and T1 markers there
       are neither stacked nor moved apart;
     - the two copies of a city share one name switch and one place (what is in the way of one

@@ -2,7 +2,7 @@
  * Formation dots (PLAN 1.7): one small nation-coloured square per formation, drawn on a Canvas2D
  * overlay. A stand-in for the T0/T1 counters of Phase 2 (SPEC §8), which aggregate and label them.
  */
-import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 
 export interface FormationDot {
   x: number;
@@ -38,7 +38,7 @@ export class FormationDotLayer {
     ctx.lineWidth = 1;
     ctx.strokeStyle = '#111';
     let drawn = 0;
-    for (const off of wrapOffsets(cam, this.geo, vw)) {
+    for (const off of itemOffsets(cam, this.geo, vw)) {
       for (const d of this.dots) {
         const [sx, sy] = worldToScreen(cam, d.x + off, d.y, vw, vh);
         if (sx < -size || sx > vw + size || sy < -size || sy > vh + size) continue;

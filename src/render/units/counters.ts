@@ -13,7 +13,7 @@
  */
 import { progress, running } from '../timing';
 import { strengthText } from './markers';
-import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 
 export interface CounterSource {
   x: number;
@@ -427,7 +427,7 @@ export class CounterLayer {
     // Flag chip, the strength, and "+n" for the other nations folded in.
     const boxWidth = (strength: number, others: number): number => widthOf(strengthText(strength)) + 18 + (others > 0 ? widthOf(`+${others}`) + BADGE_GAP : 0);
     const shown = this.declutter(src, cam.scale, now, alpha > 0.01, (total, others) => [boxWidth(total, others) * size, h * size]);
-    const offs = wrapOffsets(cam, geo, vw);
+    const offs = itemOffsets(cam, geo, vw);
     // Small first, so the big stacks stay on top.
     shown.sort((a, b) => a.strength - b.strength || (a.key < b.key ? -1 : 1));
     for (const it of shown) {

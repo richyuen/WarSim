@@ -5,7 +5,7 @@
  * water its fleets are on (at least the disc).
  */
 import { SEA_STRIDE } from '../../shared/protocol';
-import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 
 /** The disc's radius, CSS px (before the unit size). */
 export const SEA_MARK_PX = 11;
@@ -14,7 +14,7 @@ export const SEA_MARK_PX = 11;
 export function drawSeaBattles(ctx: CanvasRenderingContext2D, seas: ArrayLike<number>, cam: Camera, geo: MapGeometry, vw: number, vh: number, alpha: number, size = 1): { x: number; y: number }[] {
   const out: { x: number; y: number }[] = [];
   if (alpha <= 0.01 || seas.length === 0) return out;
-  const offs = wrapOffsets(cam, geo, vw);
+  const offs = itemOffsets(cam, geo, vw);
   const rad = SEA_MARK_PX * size;
   ctx.save();
   ctx.globalAlpha = alpha;

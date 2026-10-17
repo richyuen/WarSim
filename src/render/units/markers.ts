@@ -11,7 +11,7 @@
  * sum over its elements.
  */
 import type { UnitSymbol } from '../../shared/protocol';
-import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 import { FADE_MS, smooth } from '../timing';
 import type { StackedMarker } from './markerStacks';
 
@@ -266,7 +266,7 @@ export function drawMarkers(
   ctx.save();
   ctx.globalAlpha = boxAlpha;
   ctx.imageSmoothingEnabled = false;
-  const offs = wrapOffsets(cam, geo, vw);
+  const offs = itemOffsets(cam, geo, vw);
   // Order arrows below the boxes.
   ctx.lineWidth = 1.5;
   ctx.setLineDash([4, 3]);

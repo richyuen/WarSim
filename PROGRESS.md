@@ -17463,3 +17463,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   overlapping round Warsaw (N4) are the stacks and partings of PLAN 2.7s1/s2; the line came off.
 - **Tests:** `flagsClear1938` 2 of 2 (new; red before), the flag and marker specs (13) green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f40: the item layers draw the copies near the seam (render)
+
+- **Start:** gate green on a clean tree (`f1b4084`); critic not due.
+- **Done:** `itemOffsets` (`wrapOffsets` with `ITEM_MARGIN_PX` = 160 of the view) for the
+  counters, markers, capital flags, sea battles, sorties, formation dots, air and nuclear marks.
+  The names are left as they were: their two copies share one state (a line of the seam group).
+- **Tests:** `camera.test.ts` (new: the copy past the seam within the margin at 0.7, 3 and 12 px
+  a cell); `seamItems1938` (new: a Soviet division on Chukotka 0.5 and 5.5 px past the seam,
+  its counter and its marker reaching into the view; red with no margin); `seamFight1938`,
+  `counters1938`, `markers1938`, `markerStacks1938`, `flagsClear1938`, `declutter1938` green.
+- **Seen:** `seaBattleSeen1938` red in two parallel runs of 7 and 53 specs (this round and
+  7.4f38's), green alone 4 times and in a run of 4: load, not a rule. Not on `knownRed.json`.
+- **Next:** PLAN 7.4f, the next group.

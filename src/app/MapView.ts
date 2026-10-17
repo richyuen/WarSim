@@ -39,7 +39,7 @@ import { t, type MessageKey } from '../ui/i18n';
 import { Frame, isShipFrame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, SEA_STRIDE, type Snapshot } from '../shared/protocol';
-import { SEAM_MARGIN, cellOfPoint, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
+import { SEAM_MARGIN, cellOfPoint, itemOffsets, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
 import { groundReach } from '../render/map/ground';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
@@ -1794,7 +1794,7 @@ export class MapView {
     ctx.imageSmoothingEnabled = false;
     for (const [id, [cx, cy]] of this.capitals) {
       if (!this.ownColor.has(id)) continue;
-      for (const off of wrapOffsets(cam, this.geo, w)) {
+      for (const off of itemOffsets(cam, this.geo, w)) {
         const [px, py] = worldToScreen(cam, cx + off, cy, w, h);
         const x = Math.round(px - FLAG_PX_W / 2);
         const y0 = Math.round(py - FLAG_PX_H - 8);

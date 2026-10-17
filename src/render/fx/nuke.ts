@@ -15,7 +15,7 @@
  */
 import { EVENT_STRIDE, EventKind } from '../../shared/events';
 import { BLAST_KM } from '../../shared/nuclear';
-import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 
 export const FLASH_MS = 700;
 export const SHOCK_MS = 2600;
@@ -73,7 +73,7 @@ export class NukeFx {
   draw(ctx: CanvasRenderingContext2D, cam: Camera, geo: MapGeometry, vw: number, vh: number, now: number): void {
     this.shown = [0, 0, 0];
     if (this.bursts.length === 0) return;
-    const offs = wrapOffsets(cam, geo, vw);
+    const offs = itemOffsets(cam, geo, vw);
     ctx.save();
     for (const b of this.bursts) {
       const age = this.hold ?? now - b.born;

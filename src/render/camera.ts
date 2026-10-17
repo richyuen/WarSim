@@ -126,6 +126,19 @@ export function wrapOffsets(cam: Camera, geo: MapGeometry, viewW: number, margin
   return out;
 }
 
+/**
+ * The margin of the copies of the things drawn at a place (PLAN 7.4f40): counters, markers,
+ * flags, sea battles, sorties, formation dots, the air's and the bombs' marks. Without one a
+ * thing within its half-width of the seam was drawn only once the view's edge had crossed the
+ * seam, and then half of it at once (about 24 px of a counter).
+ */
+export const ITEM_MARGIN_PX = 160;
+
+/** `wrapOffsets` with ITEM_MARGIN_PX of the view either side. */
+export function itemOffsets(cam: Camera, geo: MapGeometry, viewW: number): number[] {
+  return wrapOffsets(cam, geo, viewW, ITEM_MARGIN_PX / cam.scale);
+}
+
 /** How strongly a flight zooms out to cross a distance (van Wijk and Nuij's ρ). */
 const FLIGHT_RHO = Math.SQRT2;
 /** Milliseconds per unit of a flight's path (a zoom by e^√2, about 4.1 times, is one unit of √2), and the limits of the whole. */

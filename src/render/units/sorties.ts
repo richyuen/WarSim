@@ -7,7 +7,7 @@
  */
 import { SORTIE_STRIDE, SortieRole } from '../../shared/protocol';
 import { Leg, sortieAt, type Sortie } from '../../shared/sorties';
-import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 import { sizeScale } from '../sizeScale';
 
 /** A plane's span, CSS px (before the unit size), by role: a fighter's, a bomber's. */
@@ -105,7 +105,7 @@ export function drawSorties(
 ): PlacedSortie[] {
   const out: PlacedSortie[] = [];
   if (alpha <= 0.01 || rows.length === 0) return out;
-  const offs = wrapOffsets(cam, geo, vw);
+  const offs = itemOffsets(cam, geo, vw);
   // Smaller the further out: at T0 (a cell a px or two) a plane is half its T1 size.
   size *= planeZoom(cam.scale);
   ctx.save();

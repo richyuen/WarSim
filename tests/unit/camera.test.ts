@@ -8,6 +8,8 @@ import {
   screenToWorld,
   worldToScreen,
   wrapOffsets,
+  itemOffsets,
+  ITEM_MARGIN_PX,
   zoomAt,
   zoomLevel,
   flight,
@@ -70,6 +72,20 @@ describe('camera math', () => {
     // 0.2 px/cell: a 6400-cell-wide view spans [-2176, 4224] → five copies.
     expect(wrapOffsets({ cx: 1024, cy: 0, scale: 0.2 }, GEO, VW)).toEqual([-4096, -2048, 0, 2048, 4096]);
     expect(wrapOffsets({ cx: 10, cy: 0, scale: 10 }, { ...GEO, wrapX: false }, VW)).toEqual([0]);
+  });
+
+  // PLAN 7.4f40: a counter or marker within its half-width of the seam was drawn only once the
+  // view's edge had crossed it. The item layers take the copies within ITEM_MARGIN_PX of the view.
+  it('itemOffsets lists the copies within ITEM_MARGIN_PX of the view, at every zoom', () => {
+    for (const scale of [0.7, 3, 12]) {
+      // The view's right edge 10 px short of the seam.
+      const cx = 2048 - (VW / 2 + 10) / scale;
+      expect(wrapOffsets({ cx, cy: 0, scale }, GEO, VW), `${scale} px a cell, no margin`).not.toContain(2048);
+      expect(itemOffsets({ cx, cy: 0, scale }, GEO, VW), `${scale} px a cell`).toContain(2048);
+      // ITEM_MARGIN_PX + 10 short: not.
+      const far = 2048 - (VW / 2 + ITEM_MARGIN_PX + 10) / scale;
+      expect(itemOffsets({ cx: far, cy: 0, scale }, GEO, VW)).not.toContain(2048);
+    }
   });
 
   it('wrapOffsets with a margin lists the copies within it of the view (PLAN 3.12Rt)', () => {

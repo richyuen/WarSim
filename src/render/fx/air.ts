@@ -15,7 +15,7 @@
  * Every tier, as the sorties (PLAN 5.9: none at T3 before); sized as they are (smaller further out).
  */
 import { EVENT_STRIDE, EventKind } from '../../shared/events';
-import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 import { hash2 } from '../hash';
 
 export const DOGFIGHT_MS = 3500;
@@ -92,7 +92,7 @@ export class AirFx {
   draw(ctx: CanvasRenderingContext2D, cam: Camera, geo: MapGeometry, vw: number, vh: number, now: number, size: number, close = 0, placesOf: (formation: number) => readonly (readonly [number, number])[] = () => []): void {
     this.shown = [0, 0, 0, 0];
     if (this.marks.length === 0) return;
-    const offs = wrapOffsets(cam, geo, vw);
+    const offs = itemOffsets(cam, geo, vw);
     ctx.save();
     for (const m of this.marks) {
       const t = (now - m.born) / lifeOf(m.kind);
