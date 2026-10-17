@@ -17755,3 +17755,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   under the gate's load and passed twice alone; `airControl1938`, `airDemo1938`, `seaControl1938` green; pin
   unmoved.
 - **Next:** PLAN 7.9.
+- **Note:** the commit of PLAN 7.8 is `5e87fa6`, under the subject of `ac0a344` ("PLAN 7.8 to 7.17:
+  run 7's dimensions under the bar, a task each"): its message file was not rewritten after the
+  first gates failed. Not amended (pushed to `main`, which deploys).
