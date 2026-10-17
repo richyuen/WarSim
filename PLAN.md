@@ -29,6 +29,27 @@ quick sweep as a smoke test.
 
 ## Phase 7 — Balance, polish, soak
 
+- [ ] 7.6 Critic R7-B1 (report of 2026-10-17 on `19e2341`): AI nuclear use too rare to be seen,
+  and still not credible. Strikes in 2 of 14 unaided 30-year worlds (4 in 420 world-years) while
+  4 to 6 nations hold 132 to 156 warheads and missiles; on seeds 1 to 10 PLAN 7.3g's sweep had
+  strikes in 4 seeds (21 decisions), HEAD in 2 (4). All 4 by the Soviet Union, none answered:
+  twice on one Dutch spot a year apart, twice on South Africa. A God-set France (overrun, to the
+  death, 6 warheads, missiles) strikes once and holds 5 for 49 days (`critic/c7_headless_q*.json`,
+  `critic/c7_headless_3371.json`, `critic/c7_f_2604_m.json`, `docs/evidence/7.3/quick-7.3g.md`).
+  First find why the rate halved since 7.3g (the stockpile cap, 6.12's threat test, desperation in
+  wars as they are now), then split. AT: on seeds 1 to 10 × 30 years, unaided, strikes in at least
+  4 seeds, by more than one nation; no warhead on a place struck within a blast radius in the
+  year before unless the enemy massed there again; a nuclear power struck by a nation it is at war
+  with answers it; a nuclear power losing a war for its life that struck once strikes again while
+  it keeps losing (the France case); unit tests of each rule; the report in `docs/evidence/7.6/`.
+- [ ] 7.7 Critic R7-B2 (report of 2026-10-17 on `19e2341`): late-game stalls in the invasion AI.
+  Seed 3371, pinned and alone: `invasionAi` 86 % of the tick in years 28 and 29, about 50 calls a
+  year of 300 to 772 ms (Poland against Denmark in 1967, no land front); in the browser at Max
+  those years take 45 to 46 s at 20 to 30 fps, year 30 8 s at 55 fps
+  (`critic/c7_perf_3371_y15_30_solo.log`, `critic/c7_j_3371.json`). AT: from the critic's year-14
+  save of seed 3371 (or a run to year 27), `--profile` of years 28 and 29: no `invasionAi` call over
+  20 ms and the mean tick within the year-1 budget; the hash of each year unchanged unless the
+  cause is a rule (then the pin updated and logged in DECISIONS); a unit test of the bound.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

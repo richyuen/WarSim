@@ -17615,3 +17615,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **7.4 ticked:** 7.4a–g done; its AT (pictures beside AoC's) by 7.4a–e; what its groups left
   in ADR-460.
 - **Next:** PLAN 7.5, the critic.
+
+## 2026-10-17 — The critic's seventh report, on `19e2341` (after 7.4), filed
+
+- **Critic run 7** (PROMPT step 2a, PLAN 7.5): map 7, diplomacy 6, dynamics 6, God Mode 7,
+  editor 6, stats 7, UI 7, performance 5, stability 7; semantic zoom 6, naval 5, tanks 5,
+  aircraft 5, nuclear 3. **2 blocking.**
+- **Filed:** R7-B1 (AI nuclear use too rare and not credible: 4 strikes in 420 world-years, all
+  Soviet, none answered) PLAN 7.6; R7-B2 (late-game `invasionAi` stalls of 300 to 772 ms on seed
+  3371, years 28 and 29) PLAN 7.7. R6-B3 (statelets) found fixed; R6-B1 not shown fixed (strikes
+  too rare to reach its cost).
+- **Next:** PLAN 7.6.
