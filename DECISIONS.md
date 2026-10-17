@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-457 · 2026-10-17 · accepted — Formations of one nation at one place drawn as a file abreast (PLAN 7.4f38)
+
+- **Context.** The elements of a block not in contact stand on its formation's place. Two of one
+  template at one point drew their elements in the same places (seed 1212, day 6: Soviet
+  formations 52 and 57, marching). Counted (`.cache/74f32/cols.ts`): pairs of one nation's land
+  formations not in contact whose blocks lie half or more in each other: 29 on seed 1212 at day
+  6, 93 on seed 1938 at day 21 of Germany against Poland (91 of them marching, 36 at one point).
+- **Decision.** In the worker, not the sim (`worker/files.ts`, `fileOffsets`): such formations
+  (centres nearer than 0.75 × the sum of their blocks' reaches, joined through each other) are a
+  file: the lowest id keeps its place; the others stand across its facing, right and left by
+  turns, the widest block's width and `DEPLOY_GAP` apart. `blockPose` takes the offset, so the
+  elements, the click and the camera agree; the snapshot before's offsets are where the block
+  stood an hour ago, so a change slides over the hour. Not state: the pin does not move.
+- **Result.** The pairs counted: 0 and 1.
+- **Tests.** `files.test.ts` (three of one nation at one point: right and left of the first, their
+  elements a slot apart and more; one of another nation stays); `stackBlocks1938` (the columns of
+  the critic's game: nearest elements 0.080 cells apart; 0.000 without the offsets).
+
 ### ADR-456 · 2026-10-17 · accepted — A tag's clear place counts only within 120 px of its block (PLAN 7.4f36)
 
 - **Context.** ADR-168: a tag does not stand on another formation's elements while a place clear

@@ -147,16 +147,14 @@ quick sweep as a smoke test.
     - [x] 7.4f37 A neighbour's tag over a block: measured in a running war's battles, none at
       60 m/px or T3 over a block whose own tag is not by it; a spec holds it, with 7.4f36's.
       AT: `tagsCrowd1938` (new).
+    - [x] 7.4f38 Formations of one nation at one place, not in contact, drawn as a file abreast
+      (ADR-457). AT: `files.test.ts`; `stackBlocks1938` (red before).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
     2026-10-08, PLAN 3.11f2, ADR-204's addition): about one tank in fifteen at T3 (45 pairs
     under 0.7 of a figure's side among 1,346 tanks, seed 5381, Germany on Poland, day 21).
     The scatter of an element (180 m) against the room its figures leave in a slot (60 m).
-  - **Two marching formations at one place drawn in one another** (seen 2026-10-14, PLAN 6.9,
-    `stackBlocks1938.spec.ts` on seed 1212, day 6): Soviet formations 52 and 57, one template,
-    both on the march from the same point, have their columns' elements at the same places.
-    The blocks of a stack in contact stand clear of each other (PLAN 3.11c1); columns do not.
   - **The seam of the looping map** (the 180° meridian in 1938). What is drawn knows the seam
     one layer at a time, and most layers do not:
     - `wrapOffsets` has no margin: a counter, marker, flag or name within its own half-width

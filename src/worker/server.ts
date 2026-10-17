@@ -20,6 +20,7 @@ import { wayLine } from '../shared/wayLine';
 import { encodeRuns } from '../shared/mapImport';
 import { historyRows, tickerNews, tickerRows } from './historyRows';
 import { Lives } from './lives';
+import { fileOffsets } from './files';
 import { economyBreakdown } from '../sim/systems/economy';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
@@ -1037,14 +1038,29 @@ export class SimServer {
     const born = this.born(world, f);
     const at = c.engaged[f] === 1 ? deployOf(world, f, slotCount(world, f, elementIndex(world).get(f)?.length ?? 0)) : null;
     const before = world.deployedBefore ? (world.deployedBefore.get(f) ?? null) : at;
-    const x = at ? at.x : fx;
-    const y = at ? at.y : fy;
+    // Not in contact: on its place, or a block's width to the side of one of its nation that
+    // stands there (PLAN 7.4f38, `fileOffsets`); as it stood at the snapshot before, an hour ago.
+    const { now: files, before: filesBefore } = this.filesOf(world);
+    const off = at ? undefined : files.get(f);
+    const offBefore = filesBefore.get(f) ?? off;
+    const x = at ? at.x : fx + (off?.[0] ?? 0);
+    const y = at ? at.y : fy + (off?.[1] ?? 0);
     const facing = at ? at.facing : c.facing[f]!;
     // Whether the block is deployed, now and an hour ago: its elements then stand off their slots (PLAN 3.11c4).
     const deployed = at !== null;
     if (before && !born) return { x, y, facing, prevX: before.x, prevY: before.y, prevFacing: before.facing, deployed, prevDeployed: true };
     // A formation created during the last tick has no place of a tick ago: the one of now.
-    return { x, y, facing, prevX: born ? x : this.prevX[f]!, prevY: born ? y : this.prevY[f]!, prevFacing: facing, deployed, prevDeployed: born && deployed };
+    return { x, y, facing, prevX: born ? x : this.prevX[f]! + (offBefore?.[0] ?? 0), prevY: born ? y : this.prevY[f]! + (offBefore?.[1] ?? 0), prevFacing: facing, deployed, prevDeployed: born && deployed };
+  }
+
+  /** The file offsets of the world's tick (`fileOffsets`), computed once a tick, and those of the tick before that had them. */
+  private files: { world: World; tick: number; now: Map<number, [number, number]>; before: Map<number, [number, number]> } | null = null;
+  private filesOf(world: World): { now: Map<number, [number, number]>; before: Map<number, [number, number]> } {
+    const f = this.files;
+    if (f && f.world === world && f.tick === world.tick) return f;
+    const before = f && f.world === world && f.tick === world.tick - 1 ? f.now : new Map<number, [number, number]>();
+    this.files = { world, tick: world.tick, now: fileOffsets(world), before };
+    return this.files;
   }
 
   private drainEvents(world: World): void {

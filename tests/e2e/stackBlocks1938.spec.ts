@@ -76,7 +76,12 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
     const { sim } = window.__warsim!;
     const v = window.__warsim!.view!;
     const soviet = new Set<number>();
-    for (const id of v.formationsOf(SOV)) if ((await sim.formation(id))?.engaged) soviet.add(id);
+    const free = new Set<number>();
+    for (const id of v.formationsOf(SOV)) {
+      const d = await sim.formation(id);
+      if (d?.engaged) soviet.add(id);
+      else if (d) free.add(id);
+    }
     const by = new Map<number, [number, number][]>();
     for (let i = 0; i < v.elementCount; i++) {
       const f = v.elementFormation[i]!;
@@ -85,12 +90,12 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
       list.push([v.elementX[i]!, v.elementY[i]!]);
     }
     const ids = [...by.keys()].sort((a, b) => a - b);
-    const out: { a: number; b: number; soviet: boolean; least: number }[] = [];
+    const out: { a: number; b: number; soviet: boolean; free: boolean; least: number }[] = [];
     for (let i = 0; i < ids.length; i++) {
       for (let j = i + 1; j < ids.length; j++) {
         let least = Infinity;
         for (const p of by.get(ids[i]!)!) for (const q of by.get(ids[j]!)!) least = Math.min(least, Math.hypot(p[0] - q[0], p[1] - q[1]));
-        out.push({ a: ids[i]!, b: ids[j]!, soviet: soviet.has(ids[i]!) && soviet.has(ids[j]!), least });
+        out.push({ a: ids[i]!, b: ids[j]!, soviet: soviet.has(ids[i]!) && soviet.has(ids[j]!), free: free.has(ids[i]!) && free.has(ids[j]!), least });
       }
     }
     return { formations: ids.length, elements: v.elementCount, out };
@@ -107,6 +112,13 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
   // degree or two and a corner comes a little nearer: the gap is asked, not the slot more.
   for (const p of own) expect(p.least, `formations ${p.a} and ${p.b}`).toBeGreaterThan(GAP);
   expect(nearest.least).toBeLessThan(GAP + 2 * SPACING);
+  // PLAN 7.4f38: the Soviet formations in the view not in contact, columns of one place among
+  // them (formations 52 and 57, one template, marched from one point with their elements in the
+  // same places): no two with elements nearer than a slot. They stand as a file abreast.
+  const columns = pairs.out.filter((p) => p.free);
+  console.log(`Soviet formations not in contact, pairs in the view: ${columns.length}; nearest ${Math.min(...columns.map((p) => p.least)).toFixed(3)} cells`);
+  expect(columns.length, 'pairs of Soviet formations not in contact in the view').toBeGreaterThan(0);
+  for (const p of columns) expect(p.least, `formations ${p.a} and ${p.b}, not in contact`).toBeGreaterThan(SPACING);
 
   await page.screenshot({ path: path.join(out, 'c1-stack-of-armour-40m.png') });
   await goTo(12);

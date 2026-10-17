@@ -17433,3 +17433,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   formations at 60 and 12 m/px, no tag on another, none over a block whose own tag is not by
   it, at most 3.5 % over 120 px off (1 of 49 at 12 m/px; 6 % before 7.4f36).
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f38: formations at one place drawn as a file abreast (worker)
+
+- **Start:** gate green on a clean tree (`3367fc9`); critic not due.
+- **Measured:** one nation's land formations not in contact with blocks half or more in each
+  other: 29 pairs (seed 1212, day 6), 93 (seed 1938, day 21 of Germany against Poland).
+- **Done:** `worker/files.ts` (`fileOffsets`), taken by `blockPose` (ADR-457). After: 0 and 1.
+- **Tests:** `files.test.ts` (new, 3); `stackBlocks1938` (the columns not in contact, nearest
+  0.080 cells; 0.000 without); the 35 e2e spec files that read element places, blocks or tags:
+  51 of 53 green; `fallen1938` red as on HEAD (`knownRed.json`), `seaBattleSeen1938` red once
+  in the batch and green twice alone (and on HEAD): contention.
+- **Next:** PLAN 7.4f, the next group.
