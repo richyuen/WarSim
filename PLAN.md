@@ -32,11 +32,6 @@ quick sweep as a smoke test.
 Run 7's dimensions under the DONE condition's bar (report of 2026-10-17 on `19e2341`, its "Fix"
 lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split when taken up:
 
-- [ ] 7.15 The late world keeps moving (dynamics 6): seed 3371 moves 0.72 % of its land in years 26
-  to 30, 8803 has 0 to 3 wars from year 18, Canada and Greenland stay whole for 30 years on 3 of 4
-  seeds (`critic/c7_headless_*.json`). Balance, no longer deferred (ADR-58: phases 2 to 6 done). AT:
-  the 50-year sweep's dynamism in at least 8 of 10 seeds, its moving limit in every seed; Canada and
-  Greenland reachable (a landing on them in some seed).
 - [ ] 7.16 God Mode and the UI's small things (God Mode 7, UI 7): a nuke's size (thermonuclear) in
   the God tool; the tools shown when God Mode is pressed; the test locale out of release builds; the
   nuclear alert not over the panels on a phone. AT: a spec each.
@@ -278,3 +273,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.12 The nuclear age in the statistics (stats 7): warheads, the nuclear dead and fallout in the […]
 - [x] 7.13 The editor places warheads, fleets and wings, and asks before a chosen file starts […]
 - [x] 7.14 Long wars with no land front end in a peace, and the late game has new causes of war […]
+- [x] 7.15 The late world keeps moving (dynamics 6): seed 3371 moves 0.72 % of its land in years 26 […]

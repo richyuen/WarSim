@@ -17926,3 +17926,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   (`docs/sweeps/2026-10-17-sweep-714.md`). `docs/evidence/7.14/measure.md`.
 - **Tests:** `frontlessPeace1938.test.ts` (new); the whole unit suite 260 files green.
 - **Next:** PLAN 7.15.
+
+## 2026-10-17 — PLAN 7.15: the late world keeps moving (measured; no rule of its own)
+
+- **Start:** gate green on a clean tree (`2a57f75`).
+- **Measured** with PLAN 7.14's rules: seed 3371 17.6 % of its land moving in years 26–30 (critic
+  0.72 %), seed 8803 0 to 7 wars a year from year 18; Canada landed on in 5 of seeds 1–10, Greenland
+  in 4 (`tools/diag/northAmerica.ts`, new); the 50-year sweep of 7.14 meets the dynamism and the
+  moving limit. ADR-482: no rule of its own. `docs/evidence/7.15/`.
+- **Next:** PLAN 7.16.

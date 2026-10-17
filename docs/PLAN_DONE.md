@@ -10771,3 +10771,23 @@ Of 7.4 (open in PLAN.md):
 - [x] 7.14 Long wars with no land front end in a peace, and the late game has new causes of war
   (diplomacy 6). AT: on seeds 1 to 10 × 50 years no war without a land front for more than its
   bound (to be set from a measure); wars declared in the last 10 years; the 50-year sweep.
+
+<!-- moved 2026-10-17 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.15 The late world keeps moving (dynamics 6): seed 3371 moves 0.72 % of its land in years 26
+  to 30, 8803 has 0 to 3 wars from year 18, Canada and Greenland stay whole for 30 years on 3 of 4
+  seeds (`critic/c7_headless_*.json`). Balance, no longer deferred (ADR-58: phases 2 to 6 done). AT:
+  the 50-year sweep's dynamism in at least 8 of 10 seeds, its moving limit in every seed; Canada and
+  Greenland reachable (a landing on them in some seed).

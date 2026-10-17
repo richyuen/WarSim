@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-482 · 2026-10-17 · accepted — The late world moves with PLAN 7.14's rules: no rule of 7.15's own (PLAN 7.15)
+
+- **Context.** Critic run 7 (dynamics 6): seed 3371 moved 0.72 % of its land in years 26–30, 8803 had
+  0 to 3 wars a year from year 18, Canada and Greenland stayed whole for 30 years on 3 of 4 seeds.
+  PLAN 7.15's AT: the 50-year sweep's dynamism in at least 8 of 10 seeds and its moving limit in every
+  seed; Canada and Greenland reachable (a landing on them in some seed).
+- **Measured** at `2a57f75`, after ADR-480 and ADR-481 (`docs/evidence/7.15/measure.md`):
+  - Seed 3371: 17.6 % of the land changed controller in years 26–30, 3 to 8 wars at each year's end
+    from year 18; seed 8803: 12.3 %, 0 to 7 wars.
+  - Canada and Greenland (`tools/diag/northAmerica.ts`, seeds 1–10 × 30 years): Canada loses land in
+    every seed, most to the United States, and is landed on in 5; Greenland is landed on in 4 and
+    changes hands in 2. Both have ports (Canada 18, Greenland Nuuk) as the start builds them.
+  - The 50-year sweep of seeds 1–10 (`docs/sweeps/2026-10-17-sweep-714.md`): the moving limit in
+    every seed (2.7 % to 30.8 %), riser and faller 10 of 10, no stasis 9 of 10, no break-up 10 of 10.
+- **Decision.** No rule of its own: the late stasis was the wars that ran on with nobody fighting
+  and the world at peace staying so, which ADR-480 and ADR-481 end. The probe stays for the next
+  critic run.
+
 ### ADR-481 · 2026-10-17 · accepted — A nation at peace grows restless (PLAN 7.14)
 
 - **Context.** Critic run 7 (diplomacy 6): "give the late game new causes of war"; seed 3371 had 0 to
