@@ -17491,3 +17491,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   26 cities named on both copies, 30 frames at rest; green on the old code too, it guards the
   names of both copies); `cityNames1938`, `labelFades1938`, `labels1938`, `mapTooltip1938` green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f42: city names by the seam (render)
+
+- **Start:** gate green on a clean tree (`ef55e44`); critic not due.
+- **Done:** `layoutCityLabels` takes `itemOffsets` (each copy has its place since 7.4f41). The
+  nation names do not: their state is the nation's, and copies with and without room would
+  flicker (the line stays under 7.4).
+- **Tests:** `cities.test.ts` 21 of 21 (new: a city 0.3 cells west of the seam, the view's left
+  edge 5 px east of it, its name reaching in; red before); the 5 label spec files green.
+- **Next:** PLAN 7.4f, the next group.

@@ -295,3 +295,24 @@ describe('the copies of a city either side of the seam (PLAN 7.4f41)', () => {
     expect(busy, 'frames after the first half second with the layer still animating').toBe(0);
   });
 });
+
+// PLAN 7.4f42: a city just west of the seam, the view's left edge just east of it: its name, to
+// the right of its dot, reaches over the seam into the view. The layout took the copies whose map
+// meets the view only, and the name came in once the view's edge had crossed the seam.
+describe('a name by the seam (PLAN 7.4f42)', () => {
+  it('is laid out where it reaches over the seam into the view', () => {
+    const geo = { w: 100, h: 50, kmPerCell: 1, wrapX: true };
+    const scale = 40; // 25 m/px: every name is wanted
+    const city: CityPoint = { name: 'Seamton', x: 99.7, y: 25, size: 5, capital: false };
+    // The view's left edge 5 px east of the seam (x 100, as 0 of the next copy).
+    const cam = { cx: 5 / scale + 800 / scale, cy: 25, scale };
+    const OFF: SwitchState<number> = { held: () => false, visible: () => false };
+    const placed = layoutCityLabels([city], [0], cam, geo, 1600, 900, (t, px) => t.length * px * 0.55, { dot: OFF, name: OFF });
+    const named = placed.filter((p) => p.nameAlpha > 0 && p.box);
+    expect(named.length).toBe(1);
+    const box = named[0]!.box!;
+    // Its dot 17 px west of the view, its name over the edge into it.
+    expect(named[0]!.sx).toBeLessThan(0);
+    expect(box.x + box.w).toBeGreaterThan(0);
+  });
+});

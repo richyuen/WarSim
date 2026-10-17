@@ -157,6 +157,8 @@ quick sweep as a smoke test.
     - [x] 7.4f41 The seam: each copy of a city has its name's place (the switch stays the city's);
       one place for both made the layer restart a name each frame. AT: `cities.test.ts` (the
       layer with a marker on one copy: rests; red before); `seamNames1938` (new).
+    - [x] 7.4f42 The seam: the city names take the copies within 160 px of the view (a name
+      beside a dot just past the seam reaches into it). AT: `cities.test.ts` (red before).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -165,9 +167,10 @@ quick sweep as a smoke test.
     The scatter of an element (180 m) against the room its figures leave in a slot (60 m).
   - **The seam of the looping map** (the 180° meridian in 1938). What is drawn knows the seam
     one layer at a time, and most layers do not:
-    - (the counters, markers and flags: PLAN 7.4f40) a city's or a nation's name within its
-      half-width of the seam is drawn only once the view's edge has crossed the seam (their
-      two copies share one state: the line below);
+    - (the counters, markers and flags: PLAN 7.4f40; the city names: 7.4f42) a nation's name
+      within its half-width of the seam is drawn only once the view's edge has crossed the seam
+      (its copies share one state, by nation: one that has room and one that has not would
+      flicker);
     - counters either side of the seam are not folded into each other, and T1 markers there
       are neither stacked nor moved apart;
     - a nation name's copy that alone is in a larger name's way goes out in one frame;

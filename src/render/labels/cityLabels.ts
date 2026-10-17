@@ -25,7 +25,7 @@
  * FADE_MS of real time, the same when a name appears because its neighbour made room. At rest
  * every dot and name is in full or absent. The layer holds the states.
  */
-import { worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
+import { itemOffsets, worldToScreen, type Camera, type MapGeometry } from '../camera';
 import { FADE_MS, progress, running, smooth, SwitchBank, ZOOM_HYSTERESIS, type SwitchState } from '../timing';
 import { CITY_WEIGHT, MAP_FONT } from './fonts';
 
@@ -206,7 +206,9 @@ export function layoutCityLabels(
   const mPerPx = (geo.kmPerCell * 1000) / cam.scale;
   const out: PlacedLabel[] = [];
   const boxes: { x: number; y: number; w: number; h: number }[] = [];
-  const offsets = wrapOffsets(cam, geo, viewW);
+  // The copies within ITEM_MARGIN_PX of the view (PLAN 7.4f42): a name beside a dot just past the
+  // seam reaches over it into the view. Each copy has its place (`nameKey`).
+  const offsets = itemOffsets(cam, geo, viewW);
   const inView = (sx: number, sy: number): boolean => sx >= -200 && sx <= viewW + 200 && sy >= -40 && sy <= viewH + 40;
   for (const i of order) {
     const c = cities[i]!;
