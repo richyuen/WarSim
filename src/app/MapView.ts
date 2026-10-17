@@ -361,7 +361,7 @@ export class MapView {
     sim.onCities((cities) => {
       this.cityLabels.setCities(cities);
       this.cities = cities;
-      if (this.scatterWorld) this.scatterWorld.cities = cityIndex(cities, this.geo.w, this.geo.h, this.geo.kmPerCell);
+      if (this.scatterWorld) this.scatterWorld.cities = cityIndex(cities, this.geo.w, this.geo.h, this.geo.kmPerCell, this.geo.wrapX);
       this.scatterKey = '';
       this.dirty = true;
     });
@@ -442,7 +442,7 @@ export class MapView {
       this.map.setProvinces(this.geo.w, this.geo.h, m.province);
       this.provinceGrid = m.province;
       this.hasFineCoast = true;
-      this.scatterWorld = { w: this.geo.w, h: this.geo.h, wrapX: this.geo.wrapX, kmPerCell: this.geo.kmPerCell, terrain: m.terrain.data, mask: this.coast, cities: cityIndex(m.cities, this.geo.w, this.geo.h, this.geo.kmPerCell) };
+      this.scatterWorld = { w: this.geo.w, h: this.geo.h, wrapX: this.geo.wrapX, kmPerCell: this.geo.kmPerCell, terrain: m.terrain.data, mask: this.coast, cities: cityIndex(m.cities, this.geo.w, this.geo.h, this.geo.kmPerCell, this.geo.wrapX) };
       this.scatterKey = '';
       this.dirty = true;
     });

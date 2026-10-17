@@ -62,6 +62,8 @@ const CITY_DENSITY = 0.85;
 /** The cities, by the cells their buildings reach. */
 export interface CityIndex {
   w: number;
+  /** A looping map (PLAN 7.4f46): a city's reach goes over the seam, and its distance the short way round. */
+  wrapX: boolean;
   x: Float64Array;
   y: Float64Array;
   /** Reach in cells. */
@@ -69,16 +71,17 @@ export interface CityIndex {
   byCell: Map<number, number[]>;
 }
 
-export function cityIndex(cities: readonly { x: number; y: number; size: number }[], w: number, h: number, kmPerCell: number): CityIndex {
-  const idx: CityIndex = { w, x: new Float64Array(cities.length), y: new Float64Array(cities.length), reach: new Float64Array(cities.length), byCell: new Map() };
+export function cityIndex(cities: readonly { x: number; y: number; size: number }[], w: number, h: number, kmPerCell: number, wrapX = false): CityIndex {
+  const idx: CityIndex = { w, wrapX, x: new Float64Array(cities.length), y: new Float64Array(cities.length), reach: new Float64Array(cities.length), byCell: new Map() };
   cities.forEach((c, k) => {
     const reach = CITY_REACH_KM[Math.max(0, Math.min(5, Math.round(c.size)))]! / kmPerCell;
     idx.x[k] = c.x;
     idx.y[k] = c.y;
     idx.reach[k] = reach;
     for (let cy = Math.max(0, Math.floor(c.y - reach)); cy <= Math.min(h - 1, Math.floor(c.y + reach)); cy++) {
-      for (let cx = Math.max(0, Math.floor(c.x - reach)); cx <= Math.min(w - 1, Math.floor(c.x + reach)); cx++) {
-        const key = cy * w + cx;
+      // On a looping map across the seam: a city by it had buildings to the seam and none beyond.
+      for (let cx = wrapX ? Math.floor(c.x - reach) : Math.max(0, Math.floor(c.x - reach)); cx <= (wrapX ? Math.floor(c.x + reach) : Math.min(w - 1, Math.floor(c.x + reach))); cx++) {
+        const key = cy * w + (((cx % w) + w) % w);
         const list = idx.byCell.get(key);
         if (list) list.push(k);
         else idx.byCell.set(key, [k]);
@@ -94,7 +97,9 @@ export function cityDensity(idx: CityIndex, x: number, y: number): number {
   if (!list) return 0;
   let best = 0;
   for (const k of list) {
-    const d = Math.hypot(x - idx.x[k]!, y - idx.y[k]!) / idx.reach[k]!;
+    let dx = x - idx.x[k]!;
+    if (idx.wrapX) dx -= idx.w * Math.round(dx / idx.w);
+    const d = Math.hypot(dx, y - idx.y[k]!) / idx.reach[k]!;
     if (d < 1) best = Math.max(best, CITY_DENSITY * (1 - d) ** 1.3);
   }
   return best;

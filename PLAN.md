@@ -166,6 +166,8 @@ quick sweep as a smoke test.
       not by the wrap offset that changes as the camera folds. AT: `seamItems1938` (red before).
     - [x] 7.4f45 The seam: a nation name's copies have a switch each, and the layout takes the
       copies within 600 px of the view (ADR-459). AT: `nationLabelLayout.test.ts`.
+    - [x] 7.4f46 The seam: a city's buildings reach over it (the city index wraps, the distance
+      the short way round). AT: `scatter.test.ts` (red before).
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured
@@ -174,7 +176,6 @@ quick sweep as a smoke test.
     The scatter of an element (180 m) against the room its figures leave in a slot (60 m).
   - **The seam of the looping map** (the 180° meridian in 1938). What is drawn knows the seam
     one layer at a time, and most layers do not:
-    - a city's buildings reach to the seam and not across it;
     - figures drawn through a wrap offset are 2,047 cells from the origin of their f32
       offsets, where a step is 2.4 m.
   - **The declutter in a crowd and in flight.**

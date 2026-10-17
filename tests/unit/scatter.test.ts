@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cityIndex, groundCap, scatter, ScatterKind, SCATTER_STRIDE, type ScatterView, type ScatterWorld } from '../../src/render/map/scatter';
+import { cityDensity, cityIndex, groundCap, scatter, ScatterKind, SCATTER_STRIDE, type ScatterView, type ScatterWorld } from '../../src/render/map/scatter';
 import { coastMask } from '../../src/shared/landMask';
 import { Terrain } from '../../src/shared/terrain';
 
@@ -320,5 +320,22 @@ describe('the ground by the size of the view, and thinned evenly past what a fra
     const a = scatter(forest, sized(3840, 2160, 19.8), groundCap(3840, 2160), undefined, 24_000);
     const b = scatter(forest, sized(3840, 2160, 19.8), groundCap(3840, 2160), undefined, 24_000);
     expect(Array.from(a.data.subarray(0, a.count * SCATTER_STRIDE))).toEqual(Array.from(b.data.subarray(0, b.count * SCATTER_STRIDE)));
+  });
+});
+
+// PLAN 7.4f46 (a line of PLAN 7.4's "seam of the looping map"): a city by the seam had its
+// buildings to the seam and none beyond it: its reach stopped at the map's edge, and its distance
+// was taken the long way round. On a looping map it reaches over the seam as anywhere.
+describe('a city by the seam (PLAN 7.4f46)', () => {
+  it('has buildings either side of the seam alike, on a looping map', () => {
+    // A metropolis (18 km, 0.9 cells) a twentieth of a cell west of the seam.
+    const city = [{ x: W - 0.05, y: 10.5, size: 5 }];
+    const loop = cityIndex(city, W, H, KM, true);
+    const west = cityDensity(loop, W - 0.35, 10.5);
+    const east = cityDensity(loop, 0.25, 10.5);
+    expect(west).toBeGreaterThan(0.3);
+    expect(east).toBeCloseTo(west, 9);
+    // On a map with edges, nothing beyond it, as before.
+    expect(cityDensity(cityIndex(city, W, H, KM), 0.25, 10.5)).toBe(0);
   });
 });

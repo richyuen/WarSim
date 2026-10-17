@@ -17532,3 +17532,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `nationLabelLayout.test.ts` 18 of 18 (the shared-switch test replaced; new: a name
   across the seam; red without the margin); 8 label and editor spec files (16 tests) green.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f46: a city's buildings over the seam (render)
+
+- **Start:** gate green on a clean tree (`ca0e7d1`); critic not due.
+- **Done:** `cityIndex(…, wrapX)` files a city's reach over the seam, and `cityDensity` takes the
+  distance the short way round on a looping map.
+- **Tests:** `scatter.test.ts` 15 of 15 (new: a metropolis a twentieth of a cell west of the seam
+  has the same density either side; on a map with edges none beyond, as before; red before);
+  31 e2e spec files of the ground and what stands on it (60 tests) green.
+- **Next:** PLAN 7.4f, the next group.
