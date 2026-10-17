@@ -30,7 +30,8 @@ export interface OwnershipInput {
   h: number;
   /** Province id per cell (0 = none); id = index into `provinces` + 1. */
   provinceIds: Uint16Array;
-  provinces: readonly { adm0: string; adm1: string }[];
+  /** With its label point (normalised Miller u, v), where a province smaller than a cell belongs. */
+  provinces: readonly { adm0: string; adm1: string; u?: number; v?: number }[];
   terrain: Uint8Array;
   /** Nation tags; nation id = index + 1. */
   tags: readonly string[];
@@ -120,11 +121,41 @@ export function buildOwnership(inp: OwnershipInput): OwnershipResult {
     }
   });
 
+  // A province of one cell placed further than DISPLACED_CELLS from its label point, among land
+  // of other countries' provinces only (PLAN 7.4f32): a province smaller than a cell with no room
+  // by its label point takes a cell away from it (`buildProvinceRaster`), and a land cell so taken
+  // in another country was its province's owner's (Liechtenstein's Balzers by the Po delta,
+  // Switzerland's; Slovenia's Preddvor in Italy). Such a cell's owner is its neighbours', as a
+  // cell no province covers. One of its own country's provinces beside it (Puducherry's cell
+  // among India's), or no land beside it (an atoll of the Marquesas): its province's owner.
+  const cellsOf = new Uint32Array(provinces.length + 1);
+  for (let c = 0; c < n; c++) cellsOf[provinceIds[c]!]!++;
+  const displaced = (c: number, pid: number): boolean => {
+    const p = provinces[pid - 1]!;
+    if (cellsOf[pid] !== 1 || p.u === undefined || p.v === undefined) return false;
+    const dx = Math.abs((c % w) - Math.min(w - 1, Math.floor(p.u * w)));
+    const dy = Math.abs(Math.floor(c / w) - Math.min(h - 1, Math.floor(p.v * h)));
+    if (Math.max(Math.min(dx, w - dx), dy) <= DISPLACED_CELLS) return false;
+    let land = false;
+    for (let oy = -1; oy <= 1; oy++) {
+      const y = Math.floor(c / w) + oy;
+      if (y < 0 || y >= h) continue;
+      for (let ox = -1; ox <= 1; ox++) {
+        if (!ox && !oy) continue;
+        const nc = y * w + (((c % w) + ox + w) % w);
+        if (terrain[nc]! < Terrain.Plains) continue;
+        land = true;
+        const q = provinceIds[nc]!;
+        if (q !== 0 && provinces[q - 1]!.adm0 === p.adm0) return false;
+      }
+    }
+    return land;
+  };
   const owner = new Uint16Array(n);
   for (let c = 0; c < n; c++) {
     if (terrain[c]! < Terrain.Plains) continue;
     const pid = provinceIds[c]!;
-    owner[c] = pid === 0 ? UNSET : provOwner[pid]!;
+    owner[c] = pid === 0 || displaced(c, pid) ? UNSET : provOwner[pid]!;
   }
   fillFromNeighbours(owner, terrain, w, h);
 
@@ -255,6 +286,9 @@ function fillFromNeighbours(owner: Uint16Array, terrain: Uint8Array, w: number, 
   }
   for (const [c, o] of islets) owner[c] = o;
 }
+
+/** A province of one cell further than this from its label point is not where it belongs (PLAN 7.4f32). */
+export const DISPLACED_CELLS = 2;
 
 /** How far, in cells, an islet no province covers looks for the owned land it belongs to. */
 export const ISLET_REACH = 16;

@@ -189,9 +189,9 @@ describe('ports of the 1938 world (PLAN 4.1c)', () => {
       if (o === 0 || has.has(o)) continue;
       if (nb.some((d) => z.zoneOf[c + d] !== 0 && seas[z.zoneOf[c + d]! - 1] === 1)) without.add(TAGS_1938[o - 1]!);
     }
-    // Switzerland has no coast: a commune of Liechtenstein smaller than a cell was placed in
-    // the Po delta (found 2026-10-09, a line under PLAN 7.4). With that mended this is [].
-    expect([...without]).toEqual(['SWI']);
+    // None (PLAN 7.4f32): Switzerland was the one, by a commune of Liechtenstein smaller than a
+    // cell placed in the Po delta (found 2026-10-09); that cell is Italy's now.
+    expect([...without]).toEqual([]);
   });
 
   it('the random world has the same ports, whoever holds them; the toy world has none', () => {

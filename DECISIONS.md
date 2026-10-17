@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-455 · 2026-10-17 · accepted — A one-cell province placed in another country's land is that land's (PLAN 7.4f32)
+
+- **Context.** PLAN 4.1c: Switzerland held a cell in the Po delta. A province smaller than a cell
+  with no room by its label point takes a cell away from it (`buildProvinceRaster`: free cells,
+  then any donor, out to 24 cells). Liechtenstein's eleven communes went 16 to 18 cells away,
+  ten into the Adriatic (water, nobody's) and Balzers onto a coastal cell no province covered,
+  which became Switzerland's (`"LIE": "SWI"`). At M, 154 of the 724 one-cell provinces stand more
+  than 2 cells from their label points, mostly Slovenia's municipalities among Slovenia's; one
+  other is in a foreign land: Preddvor, Yugoslavia's, in Friuli.
+- **Decision.** In `buildOwnership`, a one-cell province more than `DISPLACED_CELLS` = 2 from
+  its label point whose land neighbours are all of other countries' provinces has the owner its
+  neighbours give it, as a cell no province covers. Its province stays (every province exists).
+  One with a province of its own country beside it (Puducherry among India's) or no land beside
+  it (the Marquesas' atoll) keeps its province's owner. Balzers' and Preddvor's cells are Italy's.
+  A one-cell land province owned unlike every land beside it is now one of five enclaves:
+  Gibraltar, Macau, Guantánamo, Puducherry, Anguilla's East End.
+- **The pin.** 4e3e0a0e → b2dc23b4. The title screen's 1938 picture drawn again.
+- **Tests.** `ownership.test.ts` (the five enclaves and no other); `ports.test.ts` (no nation with
+  a coast and no port: Switzerland was the one).
+
 ### ADR-454 · 2026-10-17 · accepted — The Spratly Islands are France's in 1938 (PLAN 7.4f31)
 
 - **Context.** PLAN 2.15e2b found the Spratly Islands (Natural Earth's `PGA`) nobody's at the 1938

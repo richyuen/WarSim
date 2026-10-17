@@ -4,7 +4,7 @@ import { xxhash32View } from '../../src/sim/core/hash';
 import { buildPoliticalMap } from '../../src/sim/data/politicalMap';
 import { cellOf } from '../../src/sim/data/terrain';
 import { politicalMapInput1938 } from '../../src/sim/scenario1938';
-import { assets1938, NATIONS_1938, politicalMap1938, TAGS_1938 } from '../helpers/earth';
+import { assets1938, earthAdmin1, NATIONS_1938, politicalMap1938, TAGS_1938 } from '../helpers/earth';
 
 // PLAN 1.3: 1 January 1938 ownership from admin-1 provinces + interwar border regions +
 // occupation. Known places are checked against the historical record (atlas facts as of
@@ -166,6 +166,31 @@ describe('1938 ownership at 2048×1024 (PLAN 1.3)', () => {
         spratly++;
       }
     expect(spratly).toBeGreaterThanOrEqual(1);
+  });
+
+  // PLAN 7.4f32: a province smaller than a cell with no room by its label point takes a cell away
+  // from it; in another country's land that cell was its owner's (Liechtenstein's Balzers by the
+  // Po delta, Switzerland's; Slovenia's Preddvor in Friuli, Yugoslavia's). Its owner is now its
+  // neighbours'. A one-cell land province owned unlike every land cell beside it is an enclave.
+  it('a one-cell province owned unlike all the land beside it is a real enclave', () => {
+    const count = new Map<number, number>();
+    for (const id of r.provinceIds) if (id) count.set(id, (count.get(id) ?? 0) + 1);
+    const meta = earthAdmin1().meta;
+    const lone: string[] = [];
+    for (let c = 0; c < r.provinceIds.length; c++) {
+      const id = r.provinceIds[c]!;
+      if (!id || count.get(id) !== 1 || r.terrain[c]! < Terrain.Plains) continue;
+      const beside = new Set<number>();
+      for (let dy = -1; dy <= 1; dy++)
+        for (let dx = -1; dx <= 1; dx++) {
+          const y = Math.floor(c / W) + dy;
+          if ((!dx && !dy) || y < 0 || y >= 1024) continue;
+          const n = y * W + (((c % W) + dx + W) % W);
+          if (r.terrain[n]! >= Terrain.Plains) beside.add(r.owner[n]!);
+        }
+      if (beside.size > 0 && !beside.has(r.owner[c]!)) lone.push(`${meta[id - 1]!.adm0} ${meta[id - 1]!.name} ${tagAt(r.owner, c)}`);
+    }
+    expect(lone.sort()).toEqual(['AIA East End ENG', 'GIB Gibraltar ENG', 'IND Puducherry FRA', 'MAC Macau POR', 'USG USNB, Guantanamo Bay USA']);
   });
 
   it('island territories keep one land cell, and the build is deterministic', () => {

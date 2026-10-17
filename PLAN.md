@@ -36,11 +36,6 @@ quick sweep as a smoke test.
   1.519 cells from the block of Chinese formation 445, 1.487 cells from it, whose block faces 964
   (`.cache/73e1/gap.ts`). `deploy.test.ts` empties the pools to keep the world its bound of 1.5
   was taken on. To decide whether such a file folds back.
-  From PLAN 4.1c (2026-10-09, ADR-244): Switzerland holds a cell in the Po delta (1094, 323
-  at M, by Ferrara). The communes of Liechtenstein are each smaller than a cell and were
-  placed there, one on land and others as cells of the Adriatic with a province
-  (`src/sim/data/provinces.ts`, the placing of a province under a cell).
-  `tests/unit/ports.test.ts` names SWI as the one nation with a coast and no port.
   AT: side-by-side screenshots vs reference frames logged in PROGRESS.
   Split when taken up (2026-10-16): the headline's five, each a part with its pictures beside
   AoC's; the groups below it, a part each when taken up. `reference/NOTES.md` (the user's taste
@@ -135,6 +130,9 @@ quick sweep as a smoke test.
     - [x] 7.4f31 No land of the start nobody's but Antarctica's: the Spratly Islands France's, and
       an islet no province covers the nearest owned land's (ADR-454; the pin moved).
       AT: `ownership.test.ts`.
+    - [x] 7.4f32 Switzerland's cell in the Po delta: a one-cell province placed among other
+      countries' land is that land's (ADR-455; the pin moved). AT: `ownership.test.ts`,
+      `ports.test.ts`.
   From the Phase 2 review (PLAN 2.11c, 2026-10-05). Each group is one look at one thing; split
   when taken up.
   - **Tanks of two elements of a deployed block drawn in one another** (measured

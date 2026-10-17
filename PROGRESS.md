@@ -17344,3 +17344,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   France's; Lemnos, Mayotte, a Faroese islet among the known places), `rebelCapitals`,
   `coast1938`, `ports` green; the pin.
 - **Next:** PLAN 7.4f, the next group.
+
+## 2026-10-17 — PLAN 7.4f32: Switzerland's cell in the Po delta (data build, sim input)
+
+- **Start:** gate green on a clean tree (`99be87f`); critic not due.
+- **Measured** (`.cache/74f32/forced.ts`, `odd.ts`, `moved.ts`): 724 one-cell provinces at M, 154
+  over 2 cells from their label points; land cells owned unlike all their land neighbours:
+  Balzers (Liechtenstein's, Switzerland's, by the Po delta), Preddvor (Yugoslavia's, in Friuli),
+  and five real enclaves.
+- **Done:** ADR-455 in `buildOwnership`. A first rule (displaced alone) made Puducherry Indian and
+  the Marquesas' atoll nobody's: the rule asks for land beside it of other countries' provinces
+  only. The pin 4e3e0a0e → b2dc23b4; the preview drawn again.
+- **Tests:** `ownership.test.ts` 8 of 8 (new: the five enclaves and no other), `ports.test.ts`
+  (no nation with a coast and no port; was SWI), `rebelCapitals`, `coast1938` green; the pin.
+- **Also:** 7.4f31's gate had `scenario1938.test.ts`'s build at 3.3 s against 2 in the full run;
+  alone it passed, and the build is 610–660 ms after the change, 660–690 before (contention).
+- **Next:** PLAN 7.4f, the next group.
