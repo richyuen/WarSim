@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-462 · 2026-10-17 · accepted — A nuclear power keeps a means of delivery (PLAN 7.6b)
+
+- **Context.** Critic R7-B1, PLAN 7.6's measure: the economic AI ordered fighters and tactical
+  bombers (ADR-344), never a strategic bomber; a warhead went only by the 1938 start's strategic
+  wings or by missiles (1950 at the earliest). Seed 1's Soviet Union lost its last strategic wing in
+  1948 and in 1950, in extreme desperation with 7 warheads, could carry none for 296 days.
+- **Decision.** The economic AI's step 2b (`deliveryWing`), before research takes the month's
+  surplus: a nation with warheads, no means of delivery (`canDeliver`: no missiles, no strategic
+  bomber with a base) and no wing in training orders a strategic bomber group (the 1938 build mix's
+  `wings.strategic`), whatever its air force's share. It is paid from the treasury as a deficit is:
+  the price and DELIVERY_RESERVE_MONTHS (1) of income in gold, and the rest carries the month's
+  shortfall with its upkeep for RUNWAY_MONTHS. While it wants one it orders no other wing.
+- **Why not the balance's test of the other orders.** A great power runs a deficit on its treasury
+  (seed 1's Soviet Union: −179 a month on 7,000 gold in 1938), and none passed it. **Why one month
+  of reserve and not RESERVE_MONTHS (3).** Its treasury, 3,100 to 4,200 on 950 a month, never held a
+  group's 980 and three months more; with the fighters bought instead, its first order came in the
+  36th month after the need.
+- **Effect.** Seed 1: the Soviet Union orders a group in the month its last wing is gone and it holds
+  warheads (day 3652); the group is ready a year later (day 4012, 360 days to build) and can
+  deliver. The pin is unmoved (seed 99's first year has no warhead).
+- **Tests.** `nukeDeliveryWing1938.test.ts` (new); 55 nuclear, economy and air test files green.
+
 ### ADR-461 · 2026-10-17 · accepted — Desperation counts the men lost in the war (PLAN 7.6a)
 
 - **Context.** Critic R7-B1: the AI's nuclear use too rare to be seen (4 strikes in 420

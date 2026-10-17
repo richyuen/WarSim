@@ -148,6 +148,7 @@ export const BUILD_MIX_1938 = {
   wings: {
     fighter: TEMPLATES_1938.findIndex((t) => t.id === 'fighter_group'),
     tactical: TEMPLATES_1938.findIndex((t) => t.id === 'tactical_bomber_group'),
+    strategic: TEMPLATES_1938.findIndex((t) => t.id === 'strategic_bomber_group'),
   },
 };
 /**

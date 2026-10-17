@@ -55,6 +55,13 @@
  *    Then a wing (PLAN 5.8s2, `pickWing`), as a fleet: a nation not poor with an airfield and no
  *    wing in training orders one while its air force's upkeep is under AIR_SHARE of its army's,
  *    a fighter group while fighters are under half its wings, else a tactical bomber group.
+ * 2b. A means of delivery (PLAN 7.6b, `deliveryWing`), before research takes the month's surplus:
+ *    a nation with warheads and no means of delivery (`canDeliver`: no missiles, no strategic
+ *    bomber with a base) and no wing in training orders a strategic bomber group, whatever its air
+ *    force's share, for its price and its airfield, paid from the treasury as a deficit is (the
+ *    price and DELIVERY_RESERVE_MONTHS of income, and the rest carries the shortfall with its upkeep for
+ *    RUNWAY_MONTHS); while it wants one it orders no other wing (it saves for it). It held only the 1938 start's strategic wings: seed 1's Soviet Union had none from
+ *    1948 and 7 warheads in 1950 that nothing could carry.
  * 4. Research (PLAN 3.1b, `systems/research.ts`), set between 2 and 3: the budget of the days
  *    to come is RESEARCH_SHARE of income, at most what the lines can take (`researchCap`), and
  *    nothing for a nation in debt or one that step 1 would have disband (short, and the
@@ -71,7 +78,7 @@ import { elementIndex, destroyFormation } from '../systems/elements';
 import { monthlyAccounts, UPKEEP_SCALE, type EconomyTables } from '../systems/economy';
 import { COST_SHARE, PEACE_CE, WAR_CE } from '../systems/efficiency';
 import { TRIBUTE } from '../systems/puppets';
-import { STOCKPILE_SHARE, WARHEAD_UPKEEP } from '../systems/nuclear';
+import { canDeliver, STOCKPILE_SHARE, WARHEAD_UPKEEP, warheadsOf } from '../systems/nuclear';
 import { SUPPRESSION_COST } from '../systems/revolts';
 import { frontierOf } from '../systems/territory';
 import { neighbours4 } from '../nav/grid';
@@ -103,6 +110,12 @@ export const ARMY_SHARE = 0.35;
 export const ARMY_SHARE_WAR = 0.6;
 export const PEACE_ARMY_BASE = 0.3;
 export const RESERVE_MONTHS = 3;
+/**
+ * The months of income a nation keeps in its treasury after a delivery wing's price (PLAN 7.6b):
+ * less than the other orders' RESERVE_MONTHS, its warheads' means of use first. Seed 1's Soviet
+ * Union, 3,100 to 4,200 gold on 950 a month, never held a group's 980 and three months more.
+ */
+export const DELIVERY_RESERVE_MONTHS = 1;
 export const PARALLEL_INCOME = 400;
 export const MAX_PARALLEL = 6;
 export const POOR_INCOME = 20;
@@ -134,7 +147,7 @@ export interface BuildMix {
   /** The fleets the AI builds (PLAN 4.6e1); none, it builds no fleet. */
   fleets?: { battle: number; cruiser: number; destroyer: number; transport: number };
   /** The wings the AI builds (PLAN 5.8s2); none, it builds no wing. */
-  wings?: { fighter: number; tactical: number };
+  wings?: { fighter: number; tactical: number; strategic?: number };
 }
 
 /**
@@ -329,6 +342,27 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       nc.suppression[n] = suppressionLevel(restless.has(n), nc.gold[n]!, income, balance + SUPPRESSION_COST * was * income);
       balance -= SUPPRESSION_COST * (nc.suppression[n]! - was) * income;
       if (!world.rules) return;
+      // 2b. A means of delivery for its warheads (PLAN 7.6b), before research takes the month's
+      // surplus: a strategic bomber group, for its price and its airfield, with no other wing in
+      // training; then no other wing this month.
+      const carrier = mix.wings && (wingsPending.get(n) ?? 0) === 0 ? deliveryWing(world, n, mix.wings) : -1;
+      // It saves for it: no other wing while it wants one (seed 1's Soviet Union, 3,850 gold for a
+      // group of 980 and a reserve of 3,040, bought fighters month after month and the group in
+      // the 36th month).
+      const carried = carrier >= 0;
+      if (carrier >= 0 && airfield(world, n, carrier) >= 0) {
+        const rule = world.rules.templates[carrier]!;
+        const u = upkeepOfTemplate(carrier);
+        // Paid from the treasury as a deficit is (step 1): the price and DELIVERY_RESERVE_MONTHS of
+        // income in gold, and what is left carries the month's shortfall with its upkeep for
+        // RUNWAY_MONTHS. A great power runs a deficit (seed 1's Soviet Union, −179 a month on 7,000
+        // gold in 1938), and no wing passed the balance's test of the others.
+        const left = nc.gold[n]! - rule.gold;
+        if (left >= DELIVERY_RESERVE_MONTHS * income && left >= RUNWAY_MONTHS * Math.max(0, need - (balance - u)) && nc.manpower[n]! >= rule.manpower && queueFormation(world, n, carrier) !== 0) {
+          nc.builds[n] = nc.builds[n]! + 1;
+          balance -= u;
+        }
+      }
       // 4. Research.
       nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
       balance -= nc.research[n]! * DAYS_PER_MONTH;
@@ -395,7 +429,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       }
       // 3c. A wing (PLAN 5.8s2), with what is left: one at a time, while the air force is under
       // its share of the army's upkeep (the orders in training with it).
-      const wing = mix.wings && income >= POOR_INCOME && (wingsPending.get(n) ?? 0) === 0 && (air.get(n) ?? 0) < AIR_SHARE * upkeep ? pickWing(world, n, mix.wings, wings.get(n) ?? []) : -1;
+      const wing = mix.wings && !carried && income >= POOR_INCOME && (wingsPending.get(n) ?? 0) === 0 && (air.get(n) ?? 0) < AIR_SHARE * upkeep ? pickWing(world, n, mix.wings, wings.get(n) ?? []) : -1;
       if (wing >= 0 && airfield(world, n, wing) >= 0) {
         const rule = rules.templates[wing]!;
         const u = upkeepOfTemplate(wing);
@@ -517,6 +551,17 @@ function pickFleet(world: World, n: number, income: number, atWar: boolean, kind
  * while fighters are under half its wings `own`, else a tactical bomber group; the other when it
  * lacks the techs of that one; -1 when it lacks both.
  */
+/**
+ * The strategic bomber group nation `n` orders to deliver its warheads (PLAN 7.6b): it has a
+ * warhead and no means of delivery (`canDeliver`), and knows the template's techs; else -1.
+ */
+export function deliveryWing(world: World, n: number, kinds: NonNullable<BuildMix['wings']>): number {
+  const t = kinds.strategic;
+  if (t === undefined || t < 0 || warheadsOf(world, n) < 1 || canDeliver(world, n)) return -1;
+  const rule = world.rules!.templates[t];
+  return rule && knowsTechs(world, n, rule.techs) ? t : -1;
+}
+
 function pickWing(world: World, n: number, kinds: NonNullable<BuildMix['wings']>, own: number[]): number {
   const f = world.formations.cols;
   const fighters = own.filter((id) => f.template[id] === kinds.fighter).length;

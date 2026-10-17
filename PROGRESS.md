@@ -17639,3 +17639,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   0.5 more; more men than at the start is none); 25 nuclear and war test files (108 tests) green;
   pin unmoved.
 - **Next:** PLAN 7.6b.
+
+## 2026-10-17 — PLAN 7.6b: a nuclear power keeps a means of delivery (sim, economic AI)
+
+- **Start:** gate green on a clean tree (`f2a59db`).
+- **Done:** the economic AI's step 2b (`deliveryWing`, before research): with warheads, no means of
+  delivery and no wing in training, a strategic bomber group (`BUILD_MIX_1938.wings.strategic`),
+  paid from the treasury (price + DELIVERY_RESERVE_MONTHS of income, the runway carrying the
+  shortfall); no other wing while it wants one. ADR-462.
+- **On the way:** three reasons it ordered nothing, each traced on seed 1's Soviet Union: the month's
+  balance test (it runs a deficit on its treasury), fighters bought with the gold it was saving, and
+  RESERVE_MONTHS of income it never held over a group's 980. Now: ordered day 3652, ready day 4012.
+- **Tests:** `nukeDeliveryWing1938.test.ts` (new: the mix has it; with warheads and no delivery it is
+  the wing; with missiles or a strategic wing or no warhead, none; the month's AI orders one with
+  warheads and none without); 55 nuclear, economy and air test files (181 tests) green; pin unmoved.
+- **Next:** PLAN 7.6c.

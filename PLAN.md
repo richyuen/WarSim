@@ -52,7 +52,7 @@ quick sweep as a smoke test.
       France case again before 7.6d's costs: does a France that struck once strike again? AT:
       unit test (a nation that lost half its men is more desperate, by the share); `nukeGates`
       France case logged.
-    - [ ] 7.6b A nuclear power keeps a means of delivery: the economic AI never orders a strategic
+    - [x] 7.6b A nuclear power keeps a means of delivery: the economic AI never orders a strategic
       bomber (ADR-344); seed 1's Soviet Union has none from 1948, and in 1950, in extreme
       desperation with 7 warheads, its best strike (+0.22) is out of reach for 296 days. A nation
       with warheads and no delivery (no missiles, no strategic wing) orders one strategic wing
