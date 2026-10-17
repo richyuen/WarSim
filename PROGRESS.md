@@ -17782,3 +17782,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   world) at 544 (426, in contact all day): 79 figures lost, 73 marks in the view, 74 drawn at the
   day's end; green alone three of three; off `knownRed.json`, its BLOCKERS line closed.
 - **Next:** PLAN 7.9b.
+
+## 2026-10-17 — PLAN 7.9b measured and put after 7.9c (no code)
+
+- **Start:** gate green on a clean tree (`0ad7a83`).
+- **Tried:** a least lightness for colours near grey (Germany's #5d5d5d to #9e9e9e). Measured with a
+  pixel test (seed 7781, Germany on Poland, the first German armoured division in contact, 10 m/px;
+  the 3 × 3 pixels at each German tank's centre against the enemy's figures and the ground): today
+  60 grey, 30 from the enemy, 45 under the ground; with the change 87, 48 from the enemy, 18 under
+  the ground. At about 8 px a tank's centre is its turret's outline and the lighter grey only came
+  nearer the ground. Reverted; the spec kept aside for 7.9b.
+- **Next:** PLAN 7.9c (moved before 7.9b): the tanks' size and rows first.

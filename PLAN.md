@@ -44,12 +44,15 @@ lines and evidence; R7-B1 and R7-B2 are PLAN 7.6 and 7.7). A task each, split wh
     - [x] 7.9a Wrecks seen: `WreckFx` gives its count to the test hook; wrecks drawn at T3 as at T2,
       and held long enough to be seen at the speeds a player watches a fight. AT: an armour fight
       at T3 with wrecks counted and in the picture.
-    - [ ] 7.9b Whose tank: a side's mark on each vehicle that reads on any ground and for a grey
-      nation (Germany's #5d5d5d). AT: the two sides' tanks of a fight told apart by a pixel test of
-      the picture; pictures at T2 and T3.
     - [ ] 7.9c Tanks larger at T3, in a formation facing the enemy: a tank element's figures in
       rows across its facing, not a loose grid. AT: a tank at least 14 px at 10 m/px; the rows'
       facing toward the enemy in contact (a unit test of the offsets); pictures.
+    - [ ] 7.9b Whose tank: a side's mark on each vehicle that reads on any ground and for a grey
+      nation (Germany's #5d5d5d). AT: the two sides' tanks of a fight told apart by a pixel test of
+      the picture; pictures at T2 and T3. After 7.9c (measured 2026-10-17, seed 7781's fight at 10
+      m/px, the pixels at the German tanks' centres: 60 grey with today's tint, 45 under the ground;
+      a grey tint raised to 158 gave 87, 48 from the enemy's figures but only 18 under the ground: at
+      about 8 px a tank's centre is its turret's outline, and no tint reads; the size first).
     - [ ] 7.9d At T2, armour told from infantry beyond the counter's text. AT: a picture of both
       side by side; a spec.
     - [x] 7.9e `fallen1938` re-aimed at a fight the current world has (BLOCKERS: 5 of its 10 marks
