@@ -72,6 +72,9 @@ function strikeNear(world: World, x: number, y: number, cityName: (row: number) 
   return n ? `=${n}` : '';
 }
 
+/** The kinds whose row names the city nearest its place: a strike (PLAN 6.11c) and a decision to strike (PLAN 7.25c). */
+const NEAR_KINDS: ReadonlySet<number> = new Set([EventKind.NukeCasualties, EventKind.NukeDecided]);
+
 /**
  * `nationName` gives a nation's name (an i18n key or '=' + literal), `cityName` a city row's
  * plain name ('' when it has none).
@@ -136,7 +139,7 @@ export function historyRows(world: World, nationName: (id: number) => string, ci
     if (as) row.as = as;
     const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
     if (over) [row.as, row.cn] = ['puppet', over];
-    const near = kind === EventKind.NukeCasualties ? strikeNear(world, x, y, cityName) : '';
+    const near = NEAR_KINDS.has(kind) ? strikeNear(world, x, y, cityName) : '';
     if (near) row.near = near;
     out.push(row);
   }
@@ -192,7 +195,7 @@ export function tickerRows(world: World, nationName: (id: number) => string, cit
     const row: TickerRow = { i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: ra === 'side' ? who(ra, a) : nation(a), bn: who(rb, b), of: '' };
     const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
     if (over) [row.as, row.cn] = ['puppet', over];
-    const near = kind === EventKind.NukeCasualties ? strikeNear(world, x, y, cityName) : '';
+    const near = NEAR_KINDS.has(kind) ? strikeNear(world, x, y, cityName) : '';
     if (near) row.near = near;
     out.push(row);
   }

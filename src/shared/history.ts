@@ -54,7 +54,7 @@ export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, Histo
   [EventKind.AirWar]: ['side', 'side'],
   [EventKind.AirRaids]: ['nation', 'side'],
   [EventKind.NukeCasualties]: ['nation', 'strike'],
-  // An AI's decision to strike (PLAN 6.7): its utility × 1000.
+  // An AI's decision to strike (PLAN 6.7): its utility × 1000, told in words (PLAN 7.25c).
   [EventKind.NukeDecided]: ['nation', 'number'],
 };
 
@@ -89,7 +89,7 @@ export interface HistoryRow {
   as?: HistoryAs;
   /** A third nation's name, where the row's sentence has one ({c}): the new overlord of a `WarEnded` that is 'puppet'. */
   cn?: string;
-  /** The city nearest a nuclear strike, as a name ('=' + literal; PLAN 6.11c), where the log knows one. */
+  /** The city nearest a nuclear strike or a decision to strike, as a name ('=' + literal; PLAN 6.11c, 7.25c), where the log knows one. */
   near?: string;
 }
 

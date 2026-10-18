@@ -1,3 +1,4 @@
+import { EventKind } from '../shared/events';
 import { HISTORY_ROLES, kindName, nukeStrike, seaSide, type HistoryRow } from '../shared/history';
 import { displayName, t, type MessageKey } from './i18n';
 import en from './i18n/en.json';
@@ -12,6 +13,16 @@ const COMMON_ALLIANCES: ReadonlySet<string> = new Set(['alliance.defensive', 'al
  */
 export function allianceTitle(nameKey: string, founder: string | null): string {
   return COMMON_ALLIANCES.has(nameKey) && founder ? t('history.allianceOf', { name: displayName(nameKey), founder: displayName(founder) }) : displayName(nameKey);
+}
+
+/** A decision's utility under this was a near thing, */
+export const NUKE_WEIGHED_LONG = 0.1;
+/** and from this a plain one. */
+export const NUKE_WEIGHED_NONE = 0.5;
+
+/** How readily a nation decided on a strike of utility `u` (PLAN 7.25c): the history tells it in words. */
+export function nukeWeighed(u: number): MessageKey {
+  return u < NUKE_WEIGHED_LONG ? 'history.nukeWeighed.long' : u < NUKE_WEIGHED_NONE ? 'history.nukeWeighed.some' : 'history.nukeWeighed.none';
 }
 
 /**
@@ -45,6 +56,8 @@ export function historyText(r: HistoryRow): string {
   const ships = ra === 'side' || rb === 'side' ? { na: count(ra === 'side' ? seaSide(r.a).ships : 0), nb: count(rb === 'side' ? seaSide(r.b).ships : 0) } : {};
   // A nuclear strike's bomb and its dead (PLAN 6.5a): {bomb} and {nb}; the city nearest it, {near} (PLAN 6.11c).
   const strike = rb === 'strike' ? { bomb: t(nukeStrike(r.b).yieldN >= 2 ? 'history.hBomb' : 'history.aBomb'), nb: count(nukeStrike(r.b).dead), near: r.near ? t('history.strikeNear', { city: displayName(r.near) }) : '' } : {};
-  const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships, ...strike });
+  // A decision to strike (PLAN 7.25c): its place, and its utility told in words, not as a number.
+  const decided = r.kind === EventKind.NukeDecided ? { near: r.near ? t('history.strikeNear', { city: displayName(r.near) }) : '', weighed: t(nukeWeighed(r.b / 1000)) } : {};
+  const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships, ...strike, ...decided });
   return s.charAt(0).toLocaleUpperCase() + s.slice(1);
 }

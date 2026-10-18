@@ -5,7 +5,7 @@ import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { HISTORY_STRIDE } from '../../src/sim/history';
 import { leaveAlliance } from '../../src/sim/systems/alliances';
-import { allianceTitle, historyText } from '../../src/ui/historyText';
+import { allianceTitle, historyText, NUKE_WEIGHED_LONG, NUKE_WEIGHED_NONE } from '../../src/ui/historyText';
 import { historyRows, tickerRows } from '../../src/worker/historyRows';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -330,5 +330,19 @@ describe('an alliance\'s title (PLAN 7.4f4, the critic\'s N10)', () => {
     expect(allianceTitle('alliance.coalition', 'nation.FRA')).toBe('Coalition of France');
     expect(allianceTitle('alliance.comintern', 'nation.SOV')).toBe('Comintern');
     expect(allianceTitle('alliance.defensive', null)).toBe('Defensive Pact');
+  });
+});
+
+// PLAN 7.25c (the critic's run 8): a decision's row read "its utility 33 in a thousand", an engine
+// number. It tells how readily the nation decided, in words, and where.
+describe('a decision to strike is told in words (PLAN 7.25c)', () => {
+  const row = (u: number, near?: string): HistoryRow => ({ tick: 1, kind: EventKind.NukeDecided, a: 9, b: Math.round(u * 1000), x: 1, y: 1, an: 'nation.GER', bn: '', of: '', ...(near ? { near } : {}) });
+
+  it('the utility in three bands of words; the nearest city where the row has one; no number', () => {
+    expect(historyText(row(0.033, '=Warsaw'))).toBe('Germany decided on a nuclear strike near Warsaw, after long hesitation');
+    expect(historyText(row(NUKE_WEIGHED_LONG))).toBe('Germany decided on a nuclear strike, after weighing it');
+    expect(historyText(row(NUKE_WEIGHED_NONE - 0.001))).toBe('Germany decided on a nuclear strike, after weighing it');
+    expect(historyText(row(NUKE_WEIGHED_NONE, '=Paris'))).toBe('Germany decided on a nuclear strike near Paris, without hesitation');
+    for (const u of [0, 0.001, 0.2, 0.9, 1.9]) expect(historyText(row(u, '=Lyon'))).not.toMatch(/\d/);
   });
 });

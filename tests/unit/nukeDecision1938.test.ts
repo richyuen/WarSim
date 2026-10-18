@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
+import cities1938 from '../../data/scenarios/1938/cities.json' with { type: 'json' };
 import { EventKind } from '../../src/shared/events';
 import { cellOf } from '../../src/sim/data/terrain';
-import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { declareWar } from '../../src/sim/systems/war';
 import { RETALIATION_DAYS, warheadsOf } from '../../src/sim/systems/nuclear';
 import { DEFENDERS, type War } from '../../src/sim/wars';
 import type { World } from '../../src/sim/world';
+import { historyText } from '../../src/ui/historyText';
+import { historyRows } from '../../src/worker/historyRows';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
 
@@ -58,6 +61,15 @@ describe('the nuclear decision (PLAN 6.4b)', () => {
     expect(u).toBeGreaterThan(0);
     expect(warheadsOf(s.world, FRA)).toBe(0);
     process.stderr.write(`France decided: utility ${u! / 1000} at (${decided[0]![2]!.toFixed(1)}, ${decided[0]![3]!.toFixed(1)})\n`);
+    // PLAN 7.25c: the history tells the decision by its place and in words, no engine number in it.
+    const w = s.world;
+    const nation = (v: number): string => `nation.${NATIONS_1938[v - 1]!.tag}`;
+    const city = (v: number): string => cities1938.cities[w.cities.cols.def[v]!]?.name ?? '';
+    const rows = historyRows(w, nation, city).filter((r) => r.kind === EventKind.NukeDecided);
+    expect(rows.length).toBe(1);
+    const text = historyText(rows[0]!);
+    process.stderr.write(`${text}\n`);
+    expect(text).toMatch(/^France decided on a nuclear strike near [^,\d]+, (after long hesitation|after weighing it|without hesitation)$/);
   });
 
   it('France neither losing nor fighting to the death, or its AI off: no strike in ten days', () => {

@@ -1951,7 +1951,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   outrage persists, and economic shocks follow.
 - **Presentation**: flash, shockwave ring and mushroom cloud at every tier (scaled), an
   alert banner, an auto-pause option, a camera "go to" button, a history-log entry and a
-  fallout map mode.
+  fallout map mode. An AI's decision to strike is a history row of its own, told by the city
+  nearest its place and its utility in words, never as a number: "after long hesitation" under
+  0.1, "after weighing it" under 0.5, "without hesitation" from there (PLAN 7.25c).
 - **God Mode**: toggle nukes globally and per nation, grant warheads, force a strike.
 
 ---

@@ -18591,3 +18591,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Left unstaged, as before:** the evidence pictures the editor spec's other two tests rewrite
   (7.13, 7.18b, 7.22c) and the four of 7.4: eight now. Their specs to write them only with
   `EVIDENCE` set, or the lot committed, at the next phase review.
+
+## 2026-10-18 — PLAN 7.25 split; 7.25c: a decision to strike told in words
+
+- **Start:** gate green on `c206a05` (7.24b). Critic not due.
+- **Split** 7.25 in four (PLAN): a, a floor of utility; b, the spread of a world's bursts; c, the
+  history in words; d, the alert. Seen in the critic's logs (`critic/c8_headless_*.json`): many
+  spasms open with a strike at u 0.001 to 0.06 (q5's Germany 0.009, 7919's China 0.01, 9137's France
+  0.002, 3371's Italy 0.034), and 6271's opened at 0.365 and went on daily: `nukeDecisions` lets a
+  nation launch each day. The critic's set-ups decide at u 0.035 to 0.12 (Poland on seeds 5591,
+  7127, 3929; France on 7127, whose third is at about 0): a floor goes under 0.035
+  (`.cache/r725a/probe.ts`).
+- **Done (c):** the row of `NukeDecided` names the city nearest its place (`historyRows`, as a
+  strike's) and tells the utility in words (`nukeWeighed`: "after long hesitation" under 0.1, "after
+  weighing it" under 0.5, "without hesitation"). The event and its b are unchanged; no sim change.
+- **Tests:** `history.test.ts` (the bands, no digit in any row), `nukeDecision1938.test.ts` (France's
+  row: "France decided on a nuclear strike near Berlin, after weighing it"). Both green.

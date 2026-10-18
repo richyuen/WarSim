@@ -48,6 +48,21 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   panel at its full height and the war banners, at every UI size") red alone on `f9560d7`, before
   7.21c, as after it: "ticker below the panel at 1", 485.7 px where at least 511.9 is wanted. Not
   caused by 7.21c; the panels' and the alert's layout is this task's, to be found and fixed here.
+  A part each (2026-10-18):
+    - [ ] 7.25a A floor of utility: no decision at or under `NUKE_FLOOR` (the diag's "low" by the
+      same constant). Measured first at HEAD, seeds 1–10 × 30 years (`nukeGates.ts`): per world the
+      first-use year, bursts, span first to last burst, longest gap, each decision's utility; how
+      many worlds lose every burst at floors of 0.02, 0.05, 0.1. The floor under the utilities of
+      the critic's set-ups' strikes (`nukePoland1938`, `nukeOverrun1938`, `nukeTheatre1938`). AT: a
+      unit test; seeds 1–10 re-measured (`docs/evidence/7.25/measure-a.md`); the pin's entry.
+    - [ ] 7.25b The spread: a world's bursts not all within 2 days. Measured after 7.25a (which
+      worlds still have every burst within 2 days; the critic's seed 6271 opened at 0.365 and struck
+      daily: `nukeDecisions` lets a nation launch each day). AT: seeds 1–10 × 30 years, no world's
+      bursts all within 2 days; a unit test; the pin's entry if it moves.
+    - [x] 7.25c History rows in words: no engine number ("its utility 33 in a thousand"). AT: a unit
+      test of the rows; the i18n tests.
+    - [ ] 7.25d The alert expires and sits clear of the History and Charts headers; `ticker1938`
+      green. AT: specs; pictures looked at.
 - [ ] 7.26 The air war keeps flying after year 1 (aircraft 6, needs 8; the user's decision of
   2026-10-17, ADR-487, reopening what ADR-377 accepted): on every one of 17 seeds 28 to 39 sorties
   aloft in year 1, then 0.5 to 14, while 1 to 14 wars run in every late year
