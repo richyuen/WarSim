@@ -434,6 +434,11 @@ export interface TemplateInfo {
   aircraft: number;
   /** The techs a nation must know to raise it, as bits (PLAN 3.1a; `NationStat.techs`). */
   techs: readonly [number, number];
+  /**
+   * Its elements by the atlas frame of their unit's class (`frameOf`), in its order: what a T1
+   * marker's pips are laid out by (PLAN 7.21c2).
+   */
+  parts: readonly { frame: number; count: number }[];
 }
 
 /** A tech for the nation panel (PLAN 3.1e): its name and what its research costs. */

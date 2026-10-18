@@ -20,6 +20,7 @@
  * stand and of nothing else (PLAN 2.7v); a box eases to a new place over NUDGE_MS.
  */
 import { FADE_MS, progress, running, smooth, SwitchBank } from '../timing';
+import { MARKER_H } from './markers';
 
 /** A marker for stacking: its centre in px (cells × scale: the camera's place does not matter) and what it holds. */
 export interface StackItem {
@@ -102,11 +103,12 @@ export function stackMarkers(items: readonly StackItem[], w: number, h: number, 
 }
 
 /**
- * No shown box is moved further than this from its formation, px. 7 since PLAN 6.9 (6 before): on
- * Spain's front, day 14 of seed 1938, two pairs of markers stayed a hair over a quarter under each
- * other with their boxes 6 px out.
+ * No shown box is moved further than this from its formation, px. 7 of a marker 29 px high since
+ * PLAN 6.9 (6 before): on Spain's front, day 14 of seed 1938, two pairs of markers stayed a hair
+ * over a quarter under each other with their boxes 6 px out. Since PLAN 7.21c2 the same share of
+ * the marker's height (41 px with its pips: 10; ADR-498).
  */
-export const NUDGE_MAX_PX = 7;
+export const NUDGE_MAX_PX = Math.round((MARKER_H * 7) / 29);
 /** A box eases to a new place over this long. */
 export const NUDGE_MS = 150;
 /** Boxes are moved until neither is under the other by more than this (a little under the quarter, for room). */

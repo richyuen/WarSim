@@ -182,9 +182,36 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   that draws the sprites, from tier 1.5 (`drawsElements`): over a continent at war they are most of
   the volume and T1 draws none of them. The view keeps an element section only near T3
   (`T3_KEEP_M`), so the hulls and fallen marks are not fed from T1.
-- **Decision (7.21c2).** What T1 shows of the elements is the marker's: a pip for each element of
-  its formation, from the element list (PLAN 7.21c2 sets the layout), so a loss seen at T3 is a
-  pip less at T1.
+- **Decision (7.21c2).** What T1 shows of the elements is the marker's: a panel under the box with
+  a pip for each element of its formation, from the snapshot's element section, so a loss seen at
+  T3 is a pip less at T1 (`render/units/pips.ts`).
+  - The pips go by the template's parts in its order (sent with the templates: `TemplateInfo.parts`,
+    the frame of each part's unit class and its count), each part's sockets filled by the living
+    elements of its class, the strongest first. A lost element is an empty socket at the end of
+    its part (the snapshot has no slot index; the template has the counts). One that has lost men
+    is fainter, from 0.4 of the panel's opacity at none to all of it at full. Elements the template
+    has no room for follow its parts.
+  - Colours by class: men pale, guns gold, armour steel blue, half-tracks green, ships blue
+    (carriers lilac, submarines grey-blue, transports grey).
+  - Rows of 8 on a pitch of 3 (2-px pips) up to 32, rows of 13 on a pitch of 2 (1 px wide) up to
+    52, five or six rows 1 px high up to 78, more squeezed into the panel's 12 px. Every
+    formation's panel is the same height: a marker is 41 px high (29 before), `MARKER_H`, by
+    which the stacks judge overlap.
+  - A formation whose elements are not in hand (a wing's are never sent; a formation's come a
+    snapshot after the tier) shows the old strength bar in the panel's middle; the pips fade in
+    over it by a switch of its own (`SwitchBank`, 250 ms).
+  - A stack shows its lead's pips; its tag says how many formations it stands for.
+  - The panel goes with the strength number in the T1 → T2 morph (the bar's opacity, with ADR-92's
+    exception for a formation in contact).
+  - The nudge that parts two nations' markers (`NUDGE_MAX_PX`, PLAN 2.7s2) is the share of the
+    marker's height it had: 7 of 29 px, now `round(MARKER_H × 7 / 29)` = 10 of 41. Measured on
+    Spain's front (`markerStacks1938`, seed 1938, day 14, 1,900 m/px): with 7 px, 4 pairs more than
+    a quarter on each other (25 to 28 %); with 8, 2; with 10, 0 in three runs, the furthest box 10
+    px (19 km) from its formation. Not a tune to the fixture: the rule of PLAN 6.9 at the new
+    size. `markerStacks.test.ts`'s case of two boxes the limit cannot part took boxes 26 px wide,
+    which 10 px now parts: it takes boxes 40 × 41 px, and asserts that premise.
+  - Measured: a frame at 1,900 m/px over the Polish front on day 3 (`p4.mjs`, `draw` and
+    `gl.finish`, median of 60): 6.6 ms with the pips, 5.9 without; at 900 m/px 5.0 both.
 - **Measured.** Elements in the box of a view at 2,000 / 1,500 / 1,200 / 900 / 450 m/px: over
   Poland 9,998 / 6,601 / 4,226 / 2,267 / 824; over Paris 8,674 / 5,649 / 4,409 / 3,159 / 740; in a
   checkpoint of tick 17,520 at most 3,242; never truncated (cap 40,000). The worker's snapshot

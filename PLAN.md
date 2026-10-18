@@ -33,37 +33,6 @@ Run 8's blocking issues and its dimensions under the DONE condition's bar (repor
 `fd27e85`, its "Fix" lines and evidence; R8-B1 to R8-B3 are PLAN 7.18 to 7.20, the dimensions 7.21
 to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
 
-- [ ] 7.21 Infantry and the middle tier read at zoom (semantic zoom 7, needs 8): at 10 m/px infantry
-  are shapeless clumps of figures, the two sides near one colour on the grass
-  (`critic/shots/c8c_6047_inf_0010m.png`); at 900 m/px nothing of the units shows but counters
-  (element count 0, `critic/c8_c_6047.json`). AT: the critic's case (seed 6047, Germany on Poland
-  and France, day 3): infantry at T3 in ranks facing the enemy, the sides told apart by a measured
-  colour difference; elements drawn at 900 m/px; pictures at 3,000 to 10 m/px. (Wrecks: 7.23.)
-  Found (2026-10-18, `.cache/p721/p3.mjs`, the critic's case reproduced: 0 elements at 900 m/px, 100
-  and 3,121 figures at 10): the engaged elements face the nearest enemy (median 9 to 12° off, at
-  most 34°); a figure at 10 m/px is about 5 px of a 64-px frame with a 5-px dark outline; in contact
-  the men lie a third to half a place off their ranks, in a shuffled order (PLAN 2.14c2); elements
-  are sent only from 450 m/px (`tierOf`). A part each:
-    - [x] 7.21a Infantry in contact in ranks facing the enemy, figures that are more fill than outline.
-      AT: unit tests of the ranks (front rank first, across the facing); the critic's case at 25 and
-      10 m/px; the pixels of the two sides' figures measured against each other and the ground.
-    - [x] 7.21b The two sides told apart by colour, if 7.21a's measure leaves them near one colour.
-      AT: the measure of 7.21a over a set difference, in a spec.
-    - [ ] 7.21c Elements drawn at 900 m/px (T1): what of a formation's elements shows under its
-      marker, and from what zoom they are sent. AT: elements counted at 900 m/px in the critic's
-      case; snapshot size over Europe at war; `fades1938` and the T1 specs green; pictures at 3,000
-      to 10 m/px.
-      Found (2026-10-18, `.cache/p721/measureT1.ts`): a division's block at 900 m/px is about 2 px
-      (elements 0.03 cells = 590 m apart) under a marker of 26 × 29 px, so what shows is the
-      marker's, from the element list; a view of 1,600 × 900 px over Poland or France on day 3
-      gets 2,267 to 3,159 elements at 900 m/px and 8,674 to 9,998 at 2,000 (cap 40,000), 0.4 to
-      0.5 MB and 2 to 5 ms a snapshot. A part each:
-        - [x] 7.21c1 Elements sent at T1 (all of it, from 2,000 m/px), their fire and ends still
-          from tier 1.5. AT: elements counted at 900 m/px in the critic's case; snapshot size over
-          Europe at war; the hash unchanged by the subscription (`snapshots`, `elements1938`).
-        - [ ] 7.21c2 A T1 marker shows its formation's elements: a pip each, by class, its loss
-          seen. AT: unit tests of the layout; `fades1938`, `markers1938`, `markerStacks1938` and
-          the T1 specs green; pictures at 3,000 to 10 m/px.
 - [ ] 7.22 A sea battle seen firing, and fleets that hold their place (naval 6, needs 8): beyond
   7.19's framing, no gunfire drawn in 6 s at Speed x1; a ship about 20 to 30 px long at 15 m/px;
   fleets placed by the editor gone from the North Sea on day 3 (`critic/c8_j_5591.json`,
@@ -96,6 +65,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   engine numbers; the alert expires and sits clear of the panels' headers.
   (From 7.18j: seed 1's Soviet Union on China at u 0.053, 3,842 dead, and seed 4's Britain on Japan
   at u near 0, 5,003 dead, `.cache/r718j/after_<seed>.json`, `docs/evidence/7.18/measure-j.md`.)
+  Found (2026-10-18, running 7.21c2's specs): `ticker1938` ("the ticker keeps its room beside a
+  panel at its full height and the war banners, at every UI size") red alone on `f9560d7`, before
+  7.21c, as after it: "ticker below the panel at 1", 485.7 px where at least 511.9 is wanted. Not
+  caused by 7.21c; the panels' and the alert's layout is this task's, to be found and fixed here.
 - [ ] 7.26 The air war keeps flying after year 1 (aircraft 6, needs 8; the user's decision of
   2026-10-17, ADR-487, reopening what ADR-377 accepted): on every one of 17 seeds 28 to 39 sorties
   aloft in year 1, then 0.5 to 14, while 1 to 14 wars run in every late year
@@ -353,3 +326,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.18 AI nuclear use seen and credible (critic R8-B1, run 8 on `fd27e85`): 8 of 17 unaided 30-year […]
 - [x] 7.19 A sea battle's ticker row lands on the fight (critic R8-B2, contradicts 7.10b): seed 5591, […]
 - [x] 7.20 A hydrogen bomb is a hydrogen bomb (critic R8-B3, contradicts 7.16a): it kills 3 to 11 % more […]
+- [x] 7.21 Infantry and the middle tier read at zoom (semantic zoom 7, needs 8): at 10 m/px infantry […]

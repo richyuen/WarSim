@@ -41,6 +41,34 @@ function oneTruth(rects: readonly { id: number; text: string; members: number[] 
   }
 }
 
+/**
+ * The pips agree with the sim (PLAN 7.21c2): every marker on screen whose formation has elements
+ * shows pips, a living one for each of its elements; the rest of its sockets are empty. Returns
+ * the empty sockets counted, and the pips fainter for the men their elements lost.
+ */
+async function pipTruth(page: Page, rects: readonly { id: number }[], world: Inspection): Promise<{ sockets: number; faint: number }> {
+  const pips = await page.evaluate((ids) => {
+    const v = window.__warsim!.view!;
+    return ids.map((id) => {
+      const p = v.pipsOf.get(id);
+      const share = p ? Array.from(p.share) : [];
+      return { id, count: p ? p.count : -1, living: p ? share.filter((x) => x > 0).length : -1, faint: share.filter((x) => x > 0 && x < 1).length };
+    });
+  }, rects.map((r) => r.id));
+  const byId = new Map(world.formations.map((f) => [f.id, f]));
+  let sockets = 0;
+  let faint = 0;
+  for (const p of pips) {
+    const f = byId.get(p.id)!;
+    if (f.wing || f.elements === 0) continue;
+    expect(p.count, `formation ${p.id}: pips`).toBeGreaterThan(0);
+    expect(p.living, `formation ${p.id}: living pips`).toBe(f.elements);
+    sockets += p.count - p.living;
+    faint += p.faint;
+  }
+  return { sockets, faint };
+}
+
 async function look(page: Page, lon: number, lat: number, mPerPx: number): Promise<void> {
   const [x, y] = cellOf(lon, lat, W, H);
   await page.evaluate(({ x, y, m }) => {
@@ -69,6 +97,7 @@ test('T1 markers: numbers equal Σ element strength; arrows and battle markers',
   // One truth: each drawn number is the element sum (and the formation strength equals it).
   const s = await full(page);
   oneTruth(rects, s);
+  await pipTruth(page, rects, s);
 
   // Order arrow: a Polish formation ordered west gets a target in the snapshot and an arrow.
   const pol = s.formations.find((f) => f.nation === POL)!;
@@ -95,6 +124,10 @@ test('T1 markers: numbers equal Σ element strength; arrows and battle markers',
   const spain = await page.evaluate(() => window.__warsim!.view!.markerRects);
   expect(spain.length).toBeGreaterThan(5);
   oneTruth(spain, after);
+  const lost = await pipTruth(page, spain, after);
+  console.log(`Spain, day 14, 1200 m/px: ${spain.length} markers, ${lost.sockets} empty sockets (elements lost), ${lost.faint} pips fainter (men lost)`);
+  // Two weeks of war show on the pips.
+  expect(lost.sockets + lost.faint).toBeGreaterThan(0);
 
   // T2 (close): markers fade out again.
   await look(page, -3.7, 40.4, 120);

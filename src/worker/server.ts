@@ -466,7 +466,7 @@ export class SimServer {
       const province = world.cells.province.slice();
       const rules = world.rules?.templates ?? [];
       // Every template of the rules, by its index, the fleets' with the land's (PLAN 4.2b): a formation is named and drawn by it.
-      const templates = TEMPLATES_1938.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: rules[i]!.domain === Domain.sea ? ('fleet' as const) : symbolOf(t), domain: rules[i]!.domain, aircraft: rules[i]!.domain === Domain.air ? wingAircraft(world, i) : 0, techs: rules[i]!.techs }));
+      const templates = TEMPLATES_1938.slice(0, rules.length).map((t, i) => ({ nameKey: `template.${t.id}`, gold: rules[i]!.gold, manpower: rules[i]!.manpower, days: rules[i]!.days, men: ECONOMY_TABLES_1938.templateStrength[i] ?? 0, symbol: rules[i]!.domain === Domain.sea ? ('fleet' as const) : symbolOf(t), domain: rules[i]!.domain, aircraft: rules[i]!.domain === Domain.air ? wingAircraft(world, i) : 0, techs: rules[i]!.techs, parts: rules[i]!.elements.map((e) => ({ frame: frameOf(world.rules?.units[e.unit]?.cls ?? 'inf'), count: e.count })) }));
       const techs = (world.rules?.techs ?? []).map((t) => ({ nameKey: `tech.${t.id}`, gold: t.gold, days: t.days }));
       this.post({ type: 'mapLayers', land, terrain, terrainColors, cities, province, templates, techs }, [land.data.buffer, terrain.data.buffer, province.buffer]);
     } catch {

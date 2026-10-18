@@ -6,6 +6,7 @@
 import { CityLabelLayer, NAME_CLEAR_PX, type NameObstacle } from '../render/labels/cityLabels';
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
+import { formationPips, type Pips } from '../render/units/pips';
 import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, orderShown, strengthText, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type OrderViewer, type PlacedMarker } from '../render/units/markers';
 import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle } from '../render/units/tags';
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
@@ -610,6 +611,7 @@ export class MapView {
     const elementsBefore = this.loaded ? null : this.elementSection;
     this.loaded = false;
     this.uploadElements(s.elements);
+    this.formationPips(s.elements);
     this.dirty = true;
     const arrived = performance.now();
     // The sprites' clock starts with a new tick. A snapshot of the tick in hand (a new
@@ -884,6 +886,10 @@ export class MapView {
   markerRects: PlacedMarker[] = [];
   /** The stacks of the T1 markers: which are in one, and the fade of a change (PLAN 2.7s1). */
   readonly markerStacks = new MarkerStacks();
+  /** The pips of each formation whose elements the last snapshot brought, by formation id (PLAN 7.21c2). */
+  pipsOf = new Map<number, Pips>();
+  /** The pips' fade by formation: in when its elements come, out when they go (PLAN 7.21c2). */
+  private readonly pipStates = new SwitchBank<number>();
   markerOpacity = 0;
   /** T0 counters (PLAN 2.2). */
   readonly counters = new CounterLayer();
@@ -917,7 +923,7 @@ export class MapView {
    */
   unitsAnimating(now = performance.now()): boolean {
     const handing = this.handover.animating(now) || this.tactical.animating(now) || this.close.animating(now) || this.flagsIn.animating(now) || this.cityLabels.animating(now) || this.nameStates.animating(now);
-    return this.counters.animating(now) || this.markerStacks.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.turretAims.animating(now) || this.wrecks.bursting(now) || this.airFx.animating(now) || this.nukeFx.animating(now);
+    return this.counters.animating(now) || this.markerStacks.animating(now) || this.pipStates.animating(now) || handing || running(now, this.flagMoveStart, FLAG_MOVE_MS) || this.fire.animating(now) || this.turretAims.animating(now) || this.wrecks.bursting(now) || this.airFx.animating(now) || this.nukeFx.animating(now);
   }
 
   /** Opacity of the element sprites, their figures and their fire in the frame being drawn: in as the T1 markers go out. */
@@ -1001,6 +1007,29 @@ export class MapView {
   subscription: Subscription | null = null;
   private lastSub = '';
   private lastSubAt = -1;
+
+  /**
+   * The pips of the T1 markers (PLAN 7.21c2): each formation's living elements laid out by its
+   * template's parts. From the snapshot's element section, sent from T1 (PLAN 7.21c1).
+   */
+  private formationPips(e: SnapshotElements): void {
+    this.pipsOf = new Map();
+    if (e.count === 0) return;
+    const at = new Map<number, number[]>();
+    for (let i = 0; i < e.count; i++) {
+      const list = at.get(e.formation[i]!);
+      if (list) list.push(i);
+      else at.set(e.formation[i]!, [i]);
+    }
+    for (let k = 0; k < this.formIds.length; k++) {
+      const list = at.get(this.formIds[k]!);
+      if (!list) continue;
+      const parts = this.templates[this.formTemplate[k]!]?.parts ?? [];
+      const frames = list.map((i) => e.frame[i]!);
+      const shares = list.map((i) => (e.size[i]! > 0 ? e.strength[i]! / e.size[i]! : 1));
+      this.pipsOf.set(this.formIds[k]!, formationPips(parts, frames, shares));
+    }
+  }
 
   private uploadElements(e: SnapshotElements): void {
     const p = this.elementProxies;
@@ -1533,6 +1562,7 @@ export class MapView {
     if (share * Math.max(this.morph.box, this.morph.bar) <= 0.01) {
       // No markers: the next ones take their places in their stacks at once.
       this.markerStacks.clear();
+      this.pipStates.clear();
       return;
     }
     const w = this.geo.w;
@@ -1542,6 +1572,7 @@ export class MapView {
     // Whose order lines are drawn (PLAN 7.4b): what is picked, selected or the player's, and the open nation's.
     const viewer: OrderViewer = { picked: this.picked, selected: this.selectedFormations, player: this.selectionNation, nation: this.selected };
     this.orderLineIds = [];
+    this.pipStates.frame(now);
     for (let i = 0; i < this.formIds.length; i++) {
       // At its copy nearest the camera (PLAN 7.4f43): markers either side of the seam stand side by
       // side on the screen, a map's width apart in its cells.
@@ -1563,8 +1594,11 @@ export class MapView {
         retreating: (this.formFlags[i]! & FormationFlag.retreating) !== 0,
         target: moving ? [(target % w) + 0.5, Math.floor(target / w) + 0.5] : null,
         way: moving && this.formWayStart[i + 1]! - this.formWayStart[i]! >= 4 ? this.formWay.subarray(this.formWayStart[i]!, this.formWayStart[i + 1]!) : null,
+        pips: this.pipsOf.get(this.formIds[i]!) ?? null,
+        pipsIn: this.pipStates.value(this.formIds[i]!, this.pipsOf.has(this.formIds[i]!)),
       });
     }
+    this.pipStates.end();
     // (The boxes do not move while they shrink into the T2 sprites: ADR-72.)
     const stacks = this.markerStacks.frame(items, MARKER_W * this.unitScale, MARKER_H * this.unitScale, now, this.morph.scale < 1);
     this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph, stacks, this.picked);

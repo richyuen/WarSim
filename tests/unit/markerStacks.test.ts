@@ -157,8 +157,8 @@ describe('marker stacks (PLAN 2.7s1)', () => {
 // Spain's front after two weeks 9 pairs at 1800 m/px after the stacks of 2.7s1. They move apart
 // by a few px.
 describe('markers of two nations move apart (PLAN 2.7s2)', () => {
-  const under = (r: Map<number, [number, number]>, a: StackItem, b: StackItem): number =>
-    shareUnder({ x: a.x + r.get(a.id)![0], y: a.y + r.get(a.id)![1] }, { x: b.x + r.get(b.id)![0], y: b.y + r.get(b.id)![1] }, W, H);
+  const under = (r: Map<number, [number, number]>, a: StackItem, b: StackItem, w = W, h = H): number =>
+    shareUnder({ x: a.x + r.get(a.id)![0], y: a.y + r.get(a.id)![1] }, { x: b.x + r.get(b.id)![0], y: b.y + r.get(b.id)![1] }, w, h);
   const far = (r: Map<number, [number, number]>): number => Math.max(...[...r.values()].map(([dx, dy]) => Math.hypot(dx, dy)));
 
   it('two boxes too much on each other move apart by half each, along the shorter way, to a quarter', () => {
@@ -185,11 +185,14 @@ describe('markers of two nations move apart (PLAN 2.7s2)', () => {
   });
 
   it('no box is moved further than the limit from its formation, whatever is left', () => {
-    // Two on one spot: a quarter would take 9.75 px each along x.
+    // Two on one spot, boxes so wide that a quarter would take more than the limit each way: 40 ×
+    // 41 px, 15 px each along x (since PLAN 7.21c2 the limit, 10, parts boxes 26 px wide).
+    const [bw, bh] = [40, 41];
+    expect((bw * (1 - STACK_UNDER)) / 2).toBeGreaterThan(NUDGE_MAX_PX);
     const [a, b] = [m(1, 7, 0, 0, 500), m(2, 8, 0, 0, 300)];
-    const r = nudgeApart([a, b], W, H);
+    const r = nudgeApart([a, b], bw, bh);
     expect(far(r)).toBeLessThanOrEqual(NUDGE_MAX_PX + 1e-9);
-    expect(under(r, a, b)).toBeGreaterThan(STACK_UNDER);
+    expect(under(r, a, b, bw, bh)).toBeGreaterThan(STACK_UNDER);
   });
 
   it('three in a row come to rest', () => {

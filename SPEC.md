@@ -2161,7 +2161,7 @@ It was dropped: a camera resting on a curve showed two layers half there.
 | Tier | m/px | Map | Forces |
 |---|---|---|---|
 | **T0 Strategic** | > 2000 | fills, smooth borders, occupation tint/hatch, fronts glow, curved names, cities as dots | aggregated counters per nation per screen cluster (stable multi-level grid clustering), strength numbers |
-| **T1 Operational** | 300–2000 | + province borders, city names, sea-zone and air-zone overlays, supply/convoy lanes; the coast from the fine land mask from where a mask pixel is a device pixel (about 1,200 m/px on the 1938 map, all of it from there, none above 2,400: PLAN 4.7g, ADR-284), so a lake the coarse coverage averages away is drawn as at T2 | formation/fleet/wing markers: type symbol, flag chip, strength bar + number, order arrows (a fleet's along its way by the points it turns at: PLAN 4.7d, ADR-281), battle markers |
+| **T1 Operational** | 300–2000 | + province borders, city names, sea-zone and air-zone overlays, supply/convoy lanes; the coast from the fine land mask from where a mask pixel is a device pixel (about 1,200 m/px on the 1938 map, all of it from there, none above 2,400: PLAN 4.7g, ADR-284), so a lake the coarse coverage averages away is drawn as at T2 | formation/fleet/wing markers: type symbol, flag chip, a pip for each element by class, a lost one an empty socket (PLAN 7.21c2, ADR-498; the strength bar while its elements are not in hand) + number, order arrows (a fleet's along its way by the points it turns at: PLAN 4.7d, ADR-281), battle markers |
 | **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, the coast from the fine land mask, the sea shaded by its depth (the elevation's sea floor, lighter over shallows: PLAN 4.7f, ADR-283) (roads near cities: not built, a line under PLAN 7.4) | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight (and at T0 and T1, smaller: PLAN 5.7a), ships by class with wakes under way (PLAN 4.7b, ADR-276), a sea battle's gunfire on a long arc, torpedo tracks and a ship going down into its slick (PLAN 4.7c, ADR-277) |
 | **T3 Close** | < 30 | the same ground, worked out for each pixel with finer octaves down to 1 m/px, and the things on it at their own size (not tiles kept in textures: ADR-78) | element → individuals: where an element holds up to 64 units (vehicles, guns, ships and planes: 1 to 12), one figure for each unit it has; a battalion of 500 has 64 figures when whole and its share of them while it loses men, rounded up [ADR-80, in place of ADR-69's cap]; a battalion in contact lies in 4 ranks of 16 across the front of its ground, facing the enemy, the front rank first, a loss a man of the rear rank (PLAN 7.21a, ADR-496) |
 
@@ -2222,7 +2222,10 @@ T2, the thing's own (a crown of 9 m, a house of 14 m) once the zoom shows it lar
 *T1 implemented (PLAN 2.1, `src/render/units/markers.ts`):* Canvas2D markers, the unit layer
 from 2000 m/px down to 300 (see the handovers below). Each
 shows a type symbol (from the template's
-elements), a flag chip, a strength bar (strength / template men), the strength number, a dashed
+elements), a flag chip, under the box a pip for each of its elements (PLAN 7.21c2, ADR-498,
+`pips.ts`: by the template's parts, coloured by class, fainter by the men lost, a lost element an
+empty socket; the elements are sent from T1; a strength bar, strength / template men, where they
+are not in hand), the strength number, a dashed
 order arrow to the target, and a red outline while engaged; Major Battles get crossed swords.
 Since PLAN 7.4b (ADR-441) the arrow is drawn only for what is looked at: the formation whose
 panel is open, the player's selection and own nation, and the nation whose panel is open.

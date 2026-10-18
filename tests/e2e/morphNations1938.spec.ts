@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
-import { T1_MIN_M } from '../../src/render/units/markers';
+import { MARKER_H, T1_MIN_M } from '../../src/render/units/markers';
 import type { Command } from '../../src/shared/commands';
 import { NATIONS_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { settle } from './settle';
@@ -29,8 +29,8 @@ const SETUP: Command[] = [
   { kind: 'spawnFormation', nation: JAP, x: SITE[0] - 1, y: SITE[1], strength: 0, template: infantry },
   { kind: 'spawnFormation', nation: MAN, x: SITE[0] + 1, y: SITE[1], strength: 0, template: infantry },
 ];
-/** The box's share of a marker's height; under it are the strength bar and the number (17 and 12 px). */
-const BOX_SHARE = 17 / 29;
+/** The box's share of a marker's height; under it are the pips and the number (17 of 41 px; of 29 until PLAN 7.21c2). */
+const BOX_SHARE = 17 / MARKER_H;
 
 interface Box {
   nation: number;

@@ -18261,3 +18261,37 @@ No rule changed and nothing on screen changed. One task came out of it.
   `handover1938`, `markers1938`, `markerStacks1938`, `morphRatio1938`, `countersRest1938`,
   `retreatMarker1938`: green (`elements1938` after its change).
 - **Next:** PLAN 7.21c2 (a T1 marker shows its formation's elements).
+
+## 2026-10-18 — PLAN 7.21c2: a T1 marker shows its formation's elements; 7.21 ticked
+
+- **Start:** gate green on `8e89902` (7.21c1).
+- **Done** (ADR-498, SPEC §8 T1): under each T1 box a panel with a pip for each element of its
+  formation (`render/units/pips.ts`): by the template's parts (sent with the templates,
+  `TemplateInfo.parts`), coloured by class (men pale, guns gold, armour steel, half-tracks green,
+  ships blue), fainter by the men lost, a lost element an empty socket at the end of its part. Rows
+  of 8 (2-px pips) to 32, of 13 to 52, 1 px high to 78, then squeezed; the panel the same for
+  every formation, so a marker is 41 px high (29 before). The strength bar stays where no elements
+  are in hand (wings), and the pips fade in over it (`SwitchBank`). A stack shows its lead's pips.
+  The nudge that parts two nations' markers keeps its share of the marker's height: 10 px (7).
+- **Measured:** the critic's case (seed 6047, day 3) at 900 m/px: 2,760 elements, every marker with
+  its pips (`docs/evidence/7.21/c-infantry-0900m.png`, a crop at 4× looked at: 24 pale battalion
+  pips and gold guns per division, the cavalry brigade 7 + 1); 3,000, 250, 25 and 10 m/px
+  unchanged (`c-infantry-*.png`). A frame at 1,900 m/px: 6.6 ms median (5.9 without pips); at 900
+  m/px 5.0 both. `markerStacks1938` at 1,900 m/px: 4 pairs over a quarter with the 7-px nudge and
+  the taller marker, 2 with 8, 0 with 10 (three runs).
+- **Tests:** `pips.test.ts` (new: parts in order, sockets, faint pips, extras; the panel for 6 to
+  120 pips, on whole px to 78); `markers1938` (new: every marker on screen whose formation has
+  elements has pips, a living one for each element in the sim; Spain on day 14: 0 sockets, 548
+  pips fainter); `markerStacks.test.ts` (its unpartable pair now 40 × 41 px boxes, the premise
+  asserted); `morphNations1938` (the box's share of the marker from `MARKER_H`).
+- **Specs by hand** (chromium): `battleView1938`, `buildArmour1938`, `cityNames1938`,
+  `counters1938`, `fades1938`, `fire1938`, `flagsClear1938`, `formationPanel1938`,
+  `handover1938`, `markerStacks1938`, `markers1938`, `morphNations1938`, `morphRatio1938`,
+  `navalDemo1938`, `retreatMarker1938`, `seamItems1938`, `stackPick1938`, `tankBattle1938`,
+  `tiers1938`, `countersRest1938`, `labelFades1938`, `lakeT1`, `phoneLayout1938`, `elements1938`,
+  `snapshots`: 42 green after the nudge (one run, 3 workers). `ticker1938` red, and red alone on `f9560d7` before 7.21c (485.7
+  px where 511.9 is wanted): not 7.21c's, noted under PLAN 7.25.
+- **Whole unit suite by hand** (`npm test`): 1,661 of 1,662; `scenario1938` "builds in well under a
+  second" at 2,013 ms of 2,000 under the suite's load, green alone (no sim input changed).
+- **7.21 ticked:** ranks (7.21a), the sides' colours (7.21b), elements at 900 m/px (7.21c),
+  pictures at 3,000 to 10 m/px.
