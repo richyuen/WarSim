@@ -38,6 +38,8 @@
  * of the AI's wings at war sat out of range, the median front 2 ranges off) rebases toward it, a
  * hop a day (`toward`): to the airbase of its side with room for it, within a ferry flight
  * (FERRY_RANGE ranges), nearest the front's formation nearest it, where that is nearer than its base.
+ * Of the front, the formations an airbase of its side has in range; with none such, the enemy's
+ * land forces that one has; with none of those either, the whole front (PLAN 7.26b).
  */
 import { isDayStart } from '../../shared/calendar';
 import { basePlace, FERRY_RANGE, kmFromBase, ofSide, orderMission, orderRebase, wingAircraft, wingRange } from '../systems/air';
@@ -108,6 +110,21 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly 
   let rich: readonly number[] | null = null;
   const richest = (): readonly number[] => (rich ??= byIndustry(world));
   const atWar = world.wars.nations();
+  // The formations of a front within a range of an airbase of a nation's side (PLAN 7.26b), for the day.
+  const reach = new Map<readonly number[], Map<string, ReadonlySet<number>>>();
+  const sideBases = new Map<number, Float64Array>();
+  const reachable = (front: readonly number[], nation: number, range: number): ReadonlySet<number> => {
+    let byKey = reach.get(front);
+    if (!byKey) reach.set(front, (byKey = new Map()));
+    const key = `${nation}:${range}`;
+    let set = byKey.get(key);
+    if (!set) {
+      let bases = sideBases.get(nation);
+      if (!bases) sideBases.set(nation, (bases = sideBasePoints(world, nation)));
+      byKey.set(key, (set = inReachOf(world, front, bases, range)));
+    }
+    return set;
+  };
   // The aircraft at each airbase, for a rebase's room (PLAN 5.12a): made when one is looked for.
   let used: Map<number, number> | null = null;
   const usedAt = (): Map<number, number> => {
@@ -149,10 +166,12 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly 
       }
       if (!target) {
         world.wingMission.delete(id);
-        // A front out of its range: a hop toward it (PLAN 5.12a); with no front, the enemy's land forces (PLAN 5.12b).
-        let front = role === 'patrol' ? own : role === 'front' ? enemy : role === 'naval' ? (enemyFleets.length > 0 ? enemyFleets : enemy) : [];
-        if (front.length === 0 && (role === 'patrol' || role === 'front' || role === 'naval')) front = enemyForces();
-        if (front.length > 0) toward(world, id, front, usedAt());
+        // A front out of its range: a hop toward it (PLAN 5.12a); with no front, or none of it in
+        // reach of a base of the side, the enemy's land forces (PLAN 5.12b, 7.26b).
+        if (role === 'patrol' || role === 'front' || role === 'naval') {
+          const front = role === 'patrol' ? own : role === 'front' ? enemy : enemyFleets.length > 0 ? enemyFleets : enemy;
+          toward(world, id, [front, enemyForces()], usedAt(), reachable);
+        }
         continue;
       }
       const m = world.wingMission.get(id);
@@ -223,26 +242,46 @@ function roleOf(world: World, id: number): 'patrol' | 'front' | 'naval' | 'bomb'
 }
 
 /**
- * Rebases wing `id` a hop toward `front` (PLAN 5.12a): of the airbases its side holds with room
+ * Rebases wing `id` a hop toward the front (PLAN 5.12a): of the airbases its side holds with room
  * for it (`used`: the aircraft at each, kept up to date) within its range, the one nearest the
- * formation of `front` nearest its base, where that is nearer than its base, within a ferry's
- * reach (FERRY_RANGE ranges) of it; none, it stays.
- * Of equals, the lowest index.
+ * goal, where that is nearer than its base, within a ferry's reach (FERRY_RANGE ranges) of it;
+ * none, it stays. Of equals, the lowest index.
+ *
+ * The goal (PLAN 7.26b): of the first of `fronts` (its role's front, then the enemy's land forces)
+ * with a formation within its range of an airbase its side holds (`reachable`; room not weighed),
+ * the nearest its base of those; with none such, the formation of the first front nearest its base. The nearest of
+ * all was most often across the sea or beyond every base of the side: the hops stopped at the
+ * coast or the last base, while bases in range of another of the enemy's formations stood free
+ * (on seeds 2843 and 7919, from year 2, 32 to 79 wings at war out of range, the goal out of every
+ * base's range for 64 to 93 % of them, `docs/evidence/7.26/measure-a.md`).
  */
-function toward(world: World, id: number, front: readonly number[], used: Map<number, number>): void {
+function toward(world: World, id: number, fronts: readonly (readonly number[])[], used: Map<number, number>, reachable: (front: readonly number[], nation: number, range: number) => ReadonlySet<number>): void {
   const base = world.wingBase.get(id)!;
   const at = basePlace(world, base);
   if (!at) return;
   const c = world.formations.cols;
+  const nation = c.nation[id]!;
+  const live = fronts.filter((f) => f.length > 0);
+  if (live.length === 0) return;
+  // The first front with a formation in reach of a base of the side; none, the first.
+  let front = live[0]!;
+  let ok: ReadonlySet<number> = new Set();
+  for (const f of live) {
+    const r = reachable(f, nation, wingRange(world, id));
+    if (r.size > 0) {
+      [front, ok] = [f, r];
+      break;
+    }
+  }
   let goal = -1;
   let gd = Infinity;
   for (const f of front) {
+    if (ok.size > 0 && !ok.has(f)) continue;
     const d = seaKm(world, at[0], at[1], c.x[f]!, c.y[f]!);
     if (d < gd) [goal, gd] = [f, d];
   }
   if (goal < 0) return;
   const [gx, gy] = [c.x[goal]!, c.y[goal]!];
-  const nation = c.nation[id]!;
   const need = wingAircraft(world, c.template[id]!);
   const range = FERRY_RANGE * wingRange(world, id);
   let best = 0;
@@ -259,6 +298,47 @@ function toward(world: World, id: number, front: readonly number[], used: Map<nu
   if (orderRebase(world, id, px, py) !== 0 || world.wingBase.get(id) !== best) return;
   if (base > 0) used.set(base, (used.get(base) ?? 0) - need);
   used.set(best, (used.get(best) ?? 0) + need);
+}
+
+/** The places of the airbases nation `nation`'s side holds (`ofSide`), [x, y] pairs by ascending y (PLAN 7.26b). */
+function sideBasePoints(world: World, nation: number): Float64Array {
+  const pts: [number, number][] = [];
+  for (const b of world.airbases) if (ofSide(world, nation, world.cells.controller[b.cell]!)) pts.push(world.cellPoint(b.cell));
+  pts.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+  return Float64Array.from(pts.flat());
+}
+
+/**
+ * The formations of `front` within `range` km of a place of `bases` (`sideBasePoints`) (PLAN
+ * 7.26b). Only the bases within `range` of the formation's row by the least km a row step is are
+ * looked at: `seaKm` takes a row step at its middle row's scale, never under the least.
+ */
+function inReachOf(world: World, front: readonly number[], bases: Float64Array, range: number): ReadonlySet<number> {
+  const out = new Set<number>();
+  const n = bases.length / 2;
+  if (n === 0) return out;
+  let kyMin = Infinity;
+  for (const k of navOf(world).grid.ky) kyMin = Math.min(kyMin, k);
+  const rows = range / kyMin;
+  const c = world.formations.cols;
+  for (const f of front) {
+    const [fx, fy] = [c.x[f]!, c.y[f]!];
+    // The first base at or past fy - rows.
+    let lo = 0;
+    let hi = n;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (bases[2 * mid + 1]! < fy - rows) lo = mid + 1;
+      else hi = mid;
+    }
+    for (let k = lo; k < n && bases[2 * k + 1]! <= fy + rows; k++) {
+      if (seaKm(world, bases[2 * k]!, bases[2 * k + 1]!, fx, fy) <= range) {
+        out.add(f);
+        break;
+      }
+    }
+  }
+  return out;
 }
 
 /**

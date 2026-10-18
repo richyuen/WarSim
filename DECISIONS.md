@@ -167,6 +167,36 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-508 · 2026-10-18 · accepted — A wing out of range rebases toward an enemy its side can reach (PLAN 7.26b)
+
+- **Context.** PLAN 7.26a (`docs/evidence/7.26/measure-a.md`, seeds 2843 and 7919): from year 2,
+  32 to 79 wings at war have every enemy land formation out of range. `toward` (PLAN 5.12a) hopped
+  toward the formation of the role's front nearest the base; for 64 to 93 % of those wings no
+  airbase of their side had that one in range (an enemy across the sea, or beyond the last base), so
+  the hops stopped short and the wing sat out the war, while for 40 to 76 % a base with room stood
+  in range of another enemy formation. The role's front gave way to the enemy's land forces only
+  when it was empty.
+- **Decision.** The goal is the formation nearest the base of the first of: the role's front, the
+  enemy's land forces, that has formations an airbase of the side holds in range (`inReachOf`, room
+  not weighed); with none such, as before, the role's front's nearest. The hop itself is unchanged
+  (nearest the goal, nearer than the base, within a ferry flight).
+- **Measured.** From one state (day 900, saved at HEAD), 60 days with each rule: seed 2843 missions
+  a day 25.5 → 30.9, sorties aloft 25.6 → 31.0, rebases 335 → 467; seed 7919 15.3 → 15.1 (its stuck
+  wings have no base near any enemy). The air AI 0.13 to 0.22 ms a tick in years 2 and 3 of seed 99,
+  0.15 to 0.23 before. A probe at day 900 of seed 2843: most wings still out of range have no base
+  of their side in range of any enemy at all (Germany and Italy at war with France's African
+  remnants, Japan with Indochina): the land war's, PLAN 7.26c.
+- **Pin.** 92bde67c → a6eb3fdb.
+- **Tests.** `airToward1938.test.ts`: a fighter with an engaged formation of its own nearer its base
+  than the front, in range of no Soviet airbase, rebases toward the front and is tasked (red before).
+  `nukeOverrun1938.test.ts` re-based, its rule kept: the critic's France now launches once (day 71,
+  before on 59), German fighters now over France shoot the warhead down, the gap after a launch
+  (ADR-507) holds its next attempt, and its one strategic wing is lost on day 73 on a strike. The
+  test asserted the first burst falls on Germany (ADR-492's aim: not an Italian army near Rome); it
+  now asserts a launch, the first decision's place German (its cell, or a German formation within a
+  blast's radius), and the first burst on Germany where one comes. Green before and after the
+  change. The gap counting a launch shot down: PLAN 7.28.
+
 ### ADR-507 · 2026-10-18 · accepted — A side waits STRIKE_GAP_DAYS after its launch before a first use (PLAN 7.25b)
 
 - **Context.** Critic run 8, AI nuclear use 6: "a world's whole nuclear history is often one day's

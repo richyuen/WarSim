@@ -18676,3 +18676,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   side with room is in range of some enemy, but `toward` aims at the enemy nearest the base, which
   no base of their side reaches for 64–93 %. 24–86 % have no base near any enemy (wars across the sea).
 - **Next:** PLAN 7.26b.
+
+## 2026-10-18 — PLAN 7.26b: the rebase aims at an enemy its side can reach
+
+- **Done** (ADR-508): `toward`'s goal, of the role's front and then the enemy's land forces, the
+  formations an airbase of the side has in range (`inReachOf`, a latitude band of the side's bases,
+  per front, nation and range for the day); with none, the old goal.
+- **Measured** from one state (`.cache/tmp/ab.ts`: day 900 saved at HEAD, 60 days with each rule):
+  seed 2843 missions a day 25.5 → 30.9, aloft 25.6 → 31.0; seed 7919 15.3 → 15.1. Six-year reruns
+  (2843, 7919) moved within the runs' chaos, no verdict from them. Air AI 0.13–0.22 ms a tick in
+  years 2–3 of seed 99, 0.15–0.23 before. Pin 92bde67c → a6eb3fdb.
+- **Found** (a probe at day 900 of seed 2843): of 143 wings, 81 at war with no mission, most with
+  no base of their side in range of any enemy (Germany and Italy at war with France's African
+  remnants; Japan with Indochina); 10 rebased in 10 days. The land war's: PLAN 7.26c (amended).
+- **Tests:** `airToward1938.test.ts` 2 of 2 (the new one red on the old code). `nukeOverrun1938`
+  red in the gate: France's one launch (day 71) shot down by German fighters now over France, the
+  launch gap (ADR-507) held its retry, its bomber lost on day 73. Re-based, rule kept (ADR-508's
+  Tests): a launch, the first decision on Germany, the first burst on Germany where one comes;
+  green before and after. The gap after a launch shot down filed: PLAN 7.28.
+- **e2e by hand (chromium):** airControl1938, airDemo1938, airT3_1938, patrolsSeen1938, sortiesSeen1938: 5 of 5.
+- **Gotcha:** a heredoc in the Bash tool failed on a Python patch with quotes (memory note): Write it.

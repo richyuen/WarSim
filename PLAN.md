@@ -56,12 +56,26 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       (`docs/evidence/7.26/measure-a.md`): from year 2, 32 to 79 wings at war out of range; for 40
       to 76 % of them a base of their side with room is in range of some enemy, but `toward` aims at
       the enemy formation nearest the base, out of every such base's range for 64 to 93 %.
-    - [ ] 7.26b The rebase aims at an enemy it can reach: `toward`'s goal, the enemy formation
+    - [x] 7.26b The rebase aims at an enemy it can reach: `toward`'s goal, the enemy formation
       nearest the base among those within range of an airbase of the side with room for the wing.
       AT: a unit test (a wing whose nearest enemy is beyond every base of its side rebases toward
       one it can reach and is tasked); `airToward1938` green; seeds 2843 and 7919 re-measured; the
-      pin's entry if it moves.
-    - [ ] 7.26c The AT of 7.26 on 10 seeds × 30 years, after 7.26b; what is short split again.
+      pin's entry if it moves. Done (ADR-508): from one state of day 900, seed 2843's missions a day
+      25.5 → 30.9, seed 7919's unchanged.
+    - [ ] 7.26c The land war that leaves the wings no enemy in reach. A probe at day 900 of seed
+      2843 (after 7.26b's measure): of 143 wings, 81 at war with no mission, most with no airbase of
+      their side in range of any enemy at all (Germany and Italy at war with France's African
+      remnants after France fell; Japan with Indochina; Australia, South Africa, India with Germany);
+      10 rebased in 10 days. Formations in contact fall 30 → 1–6 after year 1 while 4–8 wars run.
+      Measured first, no code: from `critic/c8_headless_*.json`, land fire (`StrikeHit`,
+      `FormationDestroyed`, `MajorBattleStarted`) by year beside `wars`; for each late war of seed
+      2843 (`npm run diag`, `tools/diag/warFronts.ts`, `warGates.ts`): a land front between its
+      sides or not, days since contact, its score, what keeps its peace unsigned (a war with no front
+      ends after 365 days, ADR-480: whether that holds), and why the invasion AI lands no army on
+      the remnants. Then one cause a commit, each measured with `airWar.ts` (a column of wings that
+      rebased added). AT: the 7.26 AT's measure after the last; defensive patrols over home only if
+      the years with a front still fall short.
+    - [ ] 7.26d The AT of 7.26 on 10 seeds × 30 years, after 7.26c; what is short split again.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five
@@ -72,6 +86,15 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   no stasis on 10 of 10 (the longest one top five 7 to 19 years), every other criterion held. The
   air's calibration and spread (ADR-502, ADR-503) came between; whether they or luck did it is this
   task's to find (a second sweep on other unseen seeds, then the measure above if it fails).
+- [ ] 7.28 A launch shot down and the gap after it (found 2026-10-18 by PLAN 7.26b, ADR-508): the
+  critic's France (`nukeOverrun1938`, seed 7127) launches once on day 71, the warhead is shot down
+  by German fighters, STRIKE_GAP_DAYS (ADR-507, keyed on the launch) holds its next attempt, and
+  its one strategic wing is lost on day 73 on a strike: 9 warheads never used. ADR-491 promised a
+  holder under enemy air launches again the next day. Measured first: `nukeGates.ts`'s `paused`
+  split by whether the launch that began the gap burst or was stopped short, seeds 1–10 × 30
+  years. Then the rule decided (a launch stopped short starts no gap, or a shorter one) and
+  recorded. AT: the measure in `docs/evidence/7.28/`; a unit test of the rule chosen; the pin's
+  entry if it moves.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
