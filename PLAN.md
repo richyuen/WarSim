@@ -39,6 +39,20 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   (element count 0, `critic/c8_c_6047.json`). AT: the critic's case (seed 6047, Germany on Poland
   and France, day 3): infantry at T3 in ranks facing the enemy, the sides told apart by a measured
   colour difference; elements drawn at 900 m/px; pictures at 3,000 to 10 m/px. (Wrecks: 7.23.)
+  Found (2026-10-18, `.cache/p721/p3.mjs`, the critic's case reproduced: 0 elements at 900 m/px, 100
+  and 3,121 figures at 10): the engaged elements face the nearest enemy (median 9 to 12° off, at
+  most 34°); a figure at 10 m/px is about 5 px of a 64-px frame with a 5-px dark outline; in contact
+  the men lie a third to half a place off their ranks, in a shuffled order (PLAN 2.14c2); elements
+  are sent only from 450 m/px (`tierOf`). A part each:
+    - [x] 7.21a Infantry in contact in ranks facing the enemy, figures that are more fill than outline.
+      AT: unit tests of the ranks (front rank first, across the facing); the critic's case at 25 and
+      10 m/px; the pixels of the two sides' figures measured against each other and the ground.
+    - [ ] 7.21b The two sides told apart by colour, if 7.21a's measure leaves them near one colour.
+      AT: the measure of 7.21a over a set difference, in a spec.
+    - [ ] 7.21c Elements drawn at 900 m/px (T1): what of a formation's elements shows under its
+      marker, and from what zoom they are sent. AT: elements counted at 900 m/px in the critic's
+      case; snapshot size over Europe at war; `fades1938` and the T1 specs green; pictures at 3,000
+      to 10 m/px.
 - [ ] 7.22 A sea battle seen firing, and fleets that hold their place (naval 6, needs 8): beyond
   7.19's framing, no gunfire drawn in 6 s at Speed x1; a ship about 20 to 30 px long at 15 m/px;
   fleets placed by the editor gone from the North Sea on day 3 (`critic/c8_j_5591.json`,

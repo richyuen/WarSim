@@ -21,7 +21,7 @@ import { Sim } from '../../src/sim/sim';
 import { size1938 } from '../../src/sim/scenario1938';
 import { assets1938 } from '../helpers/earth';
 import { setSizeScale } from '../../src/render/sizeScale';
-import { figureCells, figureOffsets } from '../../src/render/units/individuals';
+import { figureCells, figureOffsets, LINE_ROWS } from '../../src/render/units/individuals';
 
 // PLAN 7.1b2 (ADR-416): the reaches the sim counted in cells are cells of the map's default size,
 // `World.atSize` in a game's own. So a reach is the same km at S, M, L and XL, and at M (the
@@ -105,7 +105,7 @@ describe('what the view draws by the map size (PLAN 7.1b5)', () => {
     const at = (scale: number): { side: number; off: number[] } => {
       setSizeScale(scale);
       try {
-        return { side: figureCells(8), off: figureOffsets(77, 8, 12, 0.4, true) };
+        return { side: figureCells(8), off: figureOffsets(77, 8, 12, 0.4).concat(figureOffsets(77, LINE_ROWS + 16, 12, 0.4)) };
       } finally {
         setSizeScale(1);
       }

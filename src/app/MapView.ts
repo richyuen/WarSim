@@ -16,7 +16,7 @@ import { AirFx } from '../render/fx/air';
 import { NukeFx } from '../render/fx/nuke';
 import { TierHandover } from '../render/units/handover';
 import { smallShare, spriteAlpha } from '../render/units/elementSprite';
-import { figureCells, figureCount, figureOffsets, firingFigure, gridSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
+import { figureCells, figureCount, figureOffsets, firingFigure, shownSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
 import { FireFx } from '../render/fx/fire';
 import { HullFx } from '../render/fx/hulls';
 import { WreckFx } from '../render/fx/wrecks';
@@ -1182,12 +1182,12 @@ export class MapView {
       if (n === 0) continue;
       const frame = e.frame[i]!;
       // The grid of the whole element: what is left of it stands where it stood (PLAN 2.10b).
-      const side = gridSide(frame, figureCount(e.size[i]!, e.size[i]!));
+      // In contact the men of a battalion lie in ranks at the front of its ground (PLAN 7.21a).
+      const inContact = (e.flags[i]! & FormationFlag.engaged) !== 0;
+      const side = shownSide(frame, figureCount(e.size[i]!, e.size[i]!), inContact);
       // A ship is drawn its own length (PLAN 4.7b).
       const size = isShipFrame(frame) ? shipSideCells(frame, this.geo.kmPerCell) : figureCells(side);
-      // In contact the men of a battalion lie in a loose line at the front of its ground (PLAN 2.14c2).
-      const inContact = (e.flags[i]! & FormationFlag.engaged) !== 0;
-      const off = figureOffsets(e.id[i]!, side, n, e.facing[i]!, inContact && frame === Frame.infantry);
+      const off = figureOffsets(e.id[i]!, side, n, e.facing[i]!);
       // At its copy nearest the origin (PLAN 7.4f47): a figure just west of the seam, the camera just
       // east of it, was 2,047 cells from the origin of its f32 offsets, where a step is some 2.4 m
       // (2 px at T3), and drawn through the copy a map's width over.

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { hash2, pair } from '../../src/render/hash';
 import { Frame, shownFrame } from '../../src/shared/unitLooks';
-import { figureCells, figureCount, figureOffsets, firingFigure, FOOTPRINT_CELLS, gridSide, LINE_DEPTH, MAX_FIGURES, subSlotOrder, TANK_CELLS, TANK_ROWS } from '../../src/render/units/individuals';
+import { figureCells, figureCount, figureOffsets, firingFigure, FOOTPRINT_CELLS, gridSide, isLine, LINE_ABREAST, LINE_CELLS, LINE_RANKS, MAX_FIGURES, shownSide, subSlotOrder, TANK_CELLS, TANK_ROWS } from '../../src/render/units/individuals';
 
 // PLAN 2.6 and 2.10b: an element as its individuals at T3 (ADR-69, ADR-80). How many, and where
 // each stands. The drawing and the sim's strengths are checked in the browser
@@ -116,34 +116,51 @@ describe('where they stand', () => {
     }
   });
 
-  // PLAN 2.14c2: a battalion in contact does not stand in its parade grid.
-  it('in contact the men lie in a loose line at the front of the footprint: half as deep, inside it, a loss still the last figure', () => {
-    const along = (off: number[]): number[] => points(off).map(([dx]) => dx); // facing east: along is x
+  // PLAN 7.21a (critic run 8: "shapeless clumps"; PLAN 2.14c2 scattered them off a closed-up grid).
+  it('in contact the men lie in ranks across the front, the front rank first, inside the footprint', () => {
+    const line = shownSide(Frame.infantry, 64, true);
+    expect(isLine(line)).toBe(true);
+    expect(figureCells(line)).toBe(LINE_CELLS);
+    // Not in contact, and anything but infantry, keeps its grid.
+    expect(shownSide(Frame.infantry, 64, false)).toBe(gridSide(Frame.infantry, 64));
+    for (const f of [Frame.gun, Frame.tank, Frame.halftrack]) expect(shownSide(f, 12, true)).toBe(gridSide(f, 12));
+    // A prone man (19 of his 60 atlas px across) is narrower than his place in the rank.
+    const across = FOOTPRINT_CELLS / LINE_ABREAST;
+    expect((LINE_CELLS * 19) / 64).toBeLessThan(across);
     for (const element of [1, 77, 19_353]) {
-      const rest = figureOffsets(element, 8, 64, 0);
-      const line = figureOffsets(element, 8, 64, 0, true);
-      expect(line).not.toEqual(rest);
-      const depth = (a: number[]): number => Math.max(...a) - Math.min(...a);
-      // The ranks closed up: at most 0.6 of the depth at rest, and forward of the middle on the whole.
-      expect(depth(along(line)) / depth(along(rest))).toBeLessThan(0.6);
-      expect(depth(along(line)) / depth(along(rest))).toBeGreaterThan(LINE_DEPTH * 0.8);
+      const p = points(figureOffsets(element, line, 64, 0)); // facing east: along is x, across is y
+      const ranks = Array.from({ length: LINE_RANKS }, (_, r) => p.slice(r * LINE_ABREAST, (r + 1) * LINE_ABREAST));
       const mean = (a: number[]): number => a.reduce((s, v) => s + v, 0) / a.length;
-      expect(mean(along(line))).toBeGreaterThan(FOOTPRINT_CELLS * 0.15);
-      expect(Math.abs(mean(along(rest)))).toBeLessThan(FOOTPRINT_CELLS * 0.03);
-      // Inside the footprint, front edge included.
-      for (const [dx, dy] of points(line)) {
+      const depths = ranks.map((r) => mean(r.map(([x]) => x)));
+      // The front rank at the front of the footprint, each rank behind the one before by a man's length.
+      expect(depths[0]! + LINE_CELLS / 2).toBeGreaterThan(FOOTPRINT_CELLS / 2 - LINE_CELLS * 0.2);
+      for (let r = 1; r < LINE_RANKS; r++) expect(depths[r - 1]! - depths[r]!).toBeCloseTo(LINE_CELLS * 1.05, 3);
+      for (const [r, rank] of ranks.entries()) {
+        // A rank is a line: its men within a fifth of a man's length of its depth...
+        for (const [x] of rank) expect(Math.abs(x - depths[r]!)).toBeLessThan(LINE_CELLS * 0.1);
+        // ... and along the front a place apart, less a little.
+        const ys = rank.map(([, y]) => y).sort((a, b) => a - b);
+        for (let k = 1; k < ys.length; k++) expect(ys[k]! - ys[k - 1]!).toBeGreaterThan(across * 0.75);
+        expect(ys[ys.length - 1]! - ys[0]!).toBeGreaterThan(across * (LINE_ABREAST - 1.5));
+      }
+      // The ranks are a quarter of a place off each other, either way.
+      const lateral = ranks.map((r) => mean(r.map(([, y]) => y)));
+      expect(lateral[1]! - lateral[0]!).toBeGreaterThan(across * 0.3);
+      expect(lateral[2]! - lateral[1]!).toBeLessThan(-across * 0.3);
+      for (const [dx, dy] of p) {
         expect(Math.abs(dx)).toBeLessThan(FOOTPRINT_CELLS / 2);
         expect(Math.abs(dy)).toBeLessThan(FOOTPRINT_CELLS / 2);
       }
-      // Less regular than the grid: across the front the men are further off their files.
-      const across = (off: number[]): number[] => points(off).map(([, dy]) => dy);
-      const offFile = (a: number[]): number => mean(a.map((v) => Math.abs(v / (FOOTPRINT_CELLS / 8) - Math.round(v / (FOOTPRINT_CELLS / 8) - 0.5) - 0.5)));
-      expect(offFile(across(line))).toBeGreaterThan(offFile(across(rest)) * 1.4);
-      // The same man in the same file: a loss takes the last figure of the order away.
-      for (const n of [63, 40, 1]) expect(figureOffsets(element, 8, n, 0, true)).toEqual(line.slice(0, n * 2));
-      // And it turns with the block as the grid does.
-      const turned = points(figureOffsets(element, 8, 64, Math.PI / 2, true));
-      points(line).forEach(([dx, dy], i) => {
+      // A loss takes the last figure, a man of the rear rank; the others lie where they lay.
+      const off = figureOffsets(element, line, 64, 0);
+      for (const n of [63, 40, 1]) expect(figureOffsets(element, line, n, 0)).toEqual(off.slice(0, n * 2));
+      // Gaps here and there: the rear rank's first eight are not its eight leftmost places.
+      const firstEight = ranks[3]!.slice(0, 8).map(([, y]) => y).sort((a, b) => a - b);
+      const leftEight = ranks[3]!.map(([, y]) => y).sort((a, b) => a - b).slice(0, 8);
+      expect(firstEight).not.toEqual(leftEight);
+      // It turns with the block.
+      const turned = points(figureOffsets(element, line, 64, Math.PI / 2));
+      p.forEach(([dx, dy], i) => {
         expect(turned[i]![0]).toBeCloseTo(-dy, 12);
         expect(turned[i]![1]).toBeCloseTo(dx, 12);
       });
@@ -213,7 +230,7 @@ describe('the figure that fires', () => {
   });
 
   it('infantry in contact fires from its line, lying down', () => {
-    const line = points(figureOffsets(7, 8, figureCount(300, 500), 0, true));
+    const line = points(figureOffsets(7, shownSide(Frame.infantry, 64, true), figureCount(300, 500), 0));
     const f = firingFigure(7, 55, Frame.infantry, 300, 500, 0, true)!;
     expect(f.frame).toBe(Frame.prone);
     expect(line.some(([x, y]) => x === f.dx && y === f.dy)).toBe(true);

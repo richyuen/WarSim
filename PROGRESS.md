@@ -18176,3 +18176,29 @@ No rule changed and nothing on screen changed. One task came out of it.
   (new), `nukeRuins1938`, `nukeFx1938` (red once beside four others in parallel, its frame ages; 4 of
   4 alone), `godTools1938`, `nukeStats1938`, `nukeAlertPhone1938`.
 - **Next:** PLAN 7.21 (infantry and the middle tier read at zoom).
+
+## 2026-10-18 — PLAN 7.21a: infantry in contact in ranks facing the enemy
+
+- **Start:** gate green on a clean tree (`75f3f6f`; four evidence pictures left unstaged as before).
+- **Found** (the critic's case reproduced with its own script, `.cache/p721/probe.mjs`, `p3.mjs`:
+  seed 6047, Germany on Poland, day 3): 0 elements at 900 m/px, 3,121 figures at 10; the engaged
+  elements face the nearest enemy element (median 9 to 12° off, at most 34°), so the facing was
+  right. The look was the layout of PLAN 2.14c2 (men a third to half a place off a closed-up grid,
+  in a shuffled order) and the size: a man 5 px at 10 m/px, half of him a 5-px outline. 7.21 split
+  in three (a ranks; b colour at 25 m/px; c elements at 900 m/px).
+- **Done** (ADR-496, SPEC §8 T3): in contact a battalion lies in 4 ranks of 16 across the front of
+  its footprint, the front rank first, each rank a quarter place off the one before, a loss a man
+  of the rear rank (`shownSide`, `LINE_ROWS`, `lineOffsets`); a prone man LINE_CELLS 0.0045 (9 px at
+  10 m/px) and narrower in the atlas; the infantry frames' outline 2.5 atlas px (5). Shots and
+  fallen marks stand on the same places. No sim rule changed (pin unmoved).
+- **Measured** (`infantryRanks1938`, new, at 10 m/px): German men (168,165,161), Polish (144,68,74),
+  132 apart (52 before); from the ground 64 and 80. Pictures `docs/evidence/7.21/a-infantry-*.png`.
+- **Tests:** `individuals.test.ts` (the 2.14c2 test replaced by the ranks' rule), `fallenFx`,
+  `mapSizes` to the new signature; specs by hand, all green: `infantryRanks1938` (new),
+  `battleView1938` (its 2.14c2 check, depth in contact < 0.65 of at rest, now the rule's: depth
+  < 0.9, width over depth > 1.3 in contact (1.38) and < 1.15 at rest (1.00); red before the change
+  of check at 0.81), `burning1938`, `closeZoom1938`, `contactLine1938`, `fades1938`, `fallen1938`,
+  `fightSeen1938`, `figuresFadeOut1938`, `formationFight1938`, `formationPlace1938`,
+  `individuals1938`, `muzzles1938`, `seamItems1938`, `smallMark1938`, `tags1938`, `tankBattle1938`,
+  `tankSides1938`, `turrets1938`, `canvasOpaque1938`.
+- **Next:** PLAN 7.21b (the two sides' colour at 25 m/px).

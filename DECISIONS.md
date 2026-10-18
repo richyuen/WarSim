@@ -167,6 +167,36 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-496 · 2026-10-18 · accepted — Infantry in contact lies in ranks facing the enemy (PLAN 7.21a)
+
+- **Context.** Critic run 8, semantic zoom 7 (needs 8): "infantry at 10 m/px are shapeless clumps of
+  figures, the two sides near one colour on the grass" (`critic/shots/c8c_6047_inf_0010m.png`). In the
+  critic's case reproduced (seed 6047, Germany on Poland, day 3, `.cache/p721/p3.mjs`) the engaged
+  elements face the nearest enemy element (median 9 to 12° off, at most 34°): the facing was right.
+  The look was the layout PLAN 2.14c2 chose: a battalion in contact closed its 8 × 8 parade grid into
+  the front half of its footprint, each man a third to half a place off his place, in a shuffled
+  order; each figure 0.0028 cells (5 px at 10 m/px) of a 64-px frame with a 5-px dark outline, so
+  half of a man was outline. At 10 m/px the pixels at the men's middles: German (115,107,97), Polish
+  (106,71,61), 52 apart in RGB.
+- **Decision.**
+  - A battalion of infantry in contact lies in LINE_RANKS 4 ranks of LINE_ABREAST 16 across the
+    front of its footprint (`shownSide`: grid side LINE_ROWS + 16, read by `figureCells` and
+    `figureOffsets` as the tanks' ranks are, PLAN 7.9c). The front rank at the footprint's front;
+    each rank LINE_CELLS × 1.05 behind the one before and a quarter of a place off it, the two ways
+    in turn; a man within a tenth of a place of his across, 0.08 of the rank's pitch along. Rank r
+    is figures 16r to 16r + 15, at places of a shuffle of its own by the element: a loss takes a man
+    of the rear rank, a gap here and there.
+  - A prone man is LINE_CELLS 0.0045 (9 px at 10 m/px; 0.0028 before), and narrower in the atlas
+    (19 of 64 px across): 16 abreast fill the footprint's 0.024 without touching.
+  - The outline of the infantry's two frames is 2.5 atlas px (5 before; every other frame keeps 5).
+  - The shot of a man and the mark of a man fallen stand on the same places (`firingFigure`,
+    `fallenLost` take `shownSide`). The `firingLine` argument of `figureOffsets` is gone.
+- **Measured** (`tests/e2e/infantryRanks1938.spec.ts`, the critic's case at 10 m/px): German men
+  (168,165,161), Polish (144,68,74), 132 apart (52 before); from the ground (169,137,103) 64 and
+  80. Pictures `docs/evidence/7.21/a-infantry-10m.png`, `a-infantry-25m.png`.
+- **Left.** At 25 m/px a man is 1 px across and the two sides read darker than their colours
+  (PLAN 7.21b).
+
 ### ADR-495 · 2026-10-18 · accepted — A hydrogen bomb is fifty atomic ones, and an atomic bomb kills as Hiroshima's did (PLAN 7.20)
 
 - **Context.** Critic R8-B3 (`critic/c8_b_4711.json`): God Mode's hydrogen bomb on the same point as

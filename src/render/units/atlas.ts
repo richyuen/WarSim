@@ -54,8 +54,12 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     draw(g);
     g.restore();
   };
-  // Infantry: a soldier seen from above facing +x (head, shoulders, rifle).
+  // Infantry: a soldier seen from above facing +x (head, shoulders, rifle). The outline of the two
+  // infantry frames is INFANTRY_LINE, not 5 (PLAN 7.21a): a man is 5 to 9 px at T3, where the 5-px
+  // outline was half of him and his nation's colour the other half (critic run 8: the two sides
+  // "near one colour on the grass").
   frame(Frame.infantry, (g) => {
+    g.lineWidth = INFANTRY_LINE;
     g.beginPath();
     g.ellipse(0, 0, 12, 18, 0, 0, Math.PI * 2);
     g.stroke();
@@ -244,16 +248,18 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.strokeRect(6, -3, 24, 6);
   });
   // Infantry in contact (PLAN 2.14c2): a soldier lying prone, seen from above, facing +x: legs
-  // back, body, head, the rifle out in front. Long and narrow, where the standing one is broad.
+  // back, body, head, the rifle out in front. Long and narrow, where the standing one is broad: 19
+  // px across of his 60 (PLAN 7.21a: 16 abreast in a rank, `individuals`).
   frame(Frame.prone, (g) => {
-    for (const y of [-5, 5]) {
+    g.lineWidth = INFANTRY_LINE;
+    for (const y of [-4, 4]) {
       g.beginPath();
       g.roundRect(-30, y - 3, 20, 6, 3);
       g.stroke();
       g.fill();
     }
     g.beginPath();
-    g.ellipse(-4, 0, 14, 9, 0, 0, Math.PI * 2);
+    g.ellipse(-4, 0, 14, 8, 0, 0, Math.PI * 2);
     g.stroke();
     g.fill();
     g.beginPath();
@@ -311,6 +317,8 @@ export function drawUnitAtlas(): HTMLCanvasElement {
   return c;
 }
 
+/** The outline of the infantry's two frames, atlas px (the others' is 5): PLAN 7.21a. */
+const INFANTRY_LINE = 2.5;
 /** The dark of a ship's marks (PLAN 7.10a): no tint lightens it. */
 const SHIP_DETAIL = '#3a3a3a';
 /** Greys of the atlas: what the nation's tint makes darker. */

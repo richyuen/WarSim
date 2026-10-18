@@ -32,14 +32,6 @@ export const MAX_FIGURES = 64;
 export const FOOTPRINT_CELLS = 0.024;
 /** How far a figure stands from the centre of its sub-slot, as a share of the sub-slot's side. */
 const JITTER = 0.18;
-/**
- * Infantry in contact (PLAN 2.14c2): the share of the footprint's depth its ranks take, at the
- * front of it, and how far a man lies from his place in them (shares of the sub-slot's side;
- * along the facing it is of the closed-up rank's depth).
- */
-export const LINE_DEPTH = 0.5;
-const LINE_JITTER_ACROSS = 0.34;
-const LINE_JITTER_ALONG = 0.45;
 /** A figure fills this share of its sub-slot. */
 const FILL = 0.92;
 
@@ -67,6 +59,38 @@ export function gridSide(frame: number, whole: number): number {
 }
 
 /**
+ * The grid an element's figures are drawn in: `gridSide`, and for infantry in contact its firing
+ * line (`LINE_ROWS`, PLAN 7.21a). What the figures, their shots and their fallen stand on.
+ */
+export function shownSide(frame: number, whole: number, inContact: boolean): number {
+  if (inContact && frame === Frame.infantry) return LINE_ROWS + LINE_ABREAST;
+  return gridSide(frame, whole);
+}
+
+/**
+ * Infantry in contact (PLAN 7.21a, critic run 8: "at 10 m/px infantry are shapeless clumps of
+ * figures"): the men lie in LINE_RANKS ranks across the front of the footprint, LINE_ABREAST in a
+ * rank, the front rank first, each rank a quarter of a place off the one before (so the men of the
+ * rank behind show between those in front), each man a little off his place. A figure is
+ * LINE_CELLS: a prone soldier is long and narrow (`atlas`: 0.3 of his length across), and 16 of
+ * them abreast fill the footprint's width. A loss takes a man of the rear rank. Its grid side is
+ * LINE_ROWS + LINE_ABREAST (`shownSide`), which `figureCells` and `figureOffsets` read.
+ *
+ * Until PLAN 7.21a (PLAN 2.14c2) the men lay in the parade grid's 8 × 8 places, closed up into the
+ * front half of the footprint, a third to half a place off them in a shuffled order, each 0.0028
+ * cells (5 px at 10 m/px).
+ */
+export const LINE_ROWS = 200;
+/** A prone man's side, cells (the size setting × this): 9 px at 10 m/px. */
+export const LINE_CELLS = 0.0045;
+export const LINE_ABREAST = 16;
+export const LINE_RANKS = 4;
+/** How far apart two ranks are, of LINE_CELLS; how far a man lies off his place across and along, of the pitch. */
+const LINE_RANK_PITCH = 1.05;
+const LINE_JITTER_ACROSS = 0.1;
+const LINE_JITTER_ALONG = 0.08;
+
+/**
  * Tanks at T3 (PLAN 7.9c, critic run 7: "at 10 m/px a tank is about 8 px ... in a loose grid with
  * no formation or facing"): an element of tanks is ranks across its facing, the front rank first,
  * TANK_ABREAST in a rank, each tank TANK_CELLS: a light hull 14 px at 10 m/px (a figure of the 4 × 4
@@ -88,11 +112,17 @@ const TANK_JITTER = 0.04;
 
 /** Whether a grid side is a tank element's ranks (`gridSide`), and how many abreast. */
 export function abreastOf(side: number): number {
-  return side > TANK_ROWS ? side - TANK_ROWS : 0;
+  return side > TANK_ROWS && side < LINE_ROWS ? side - TANK_ROWS : 0;
+}
+
+/** Whether a grid side is a firing line of infantry (`shownSide`). */
+export function isLine(side: number): boolean {
+  return side > LINE_ROWS;
 }
 
 /** Side of one figure in a grid of `side`, cells. */
 export function figureCells(side: number): number {
+  if (isLine(side)) return LINE_CELLS * sizeScale;
   if (abreastOf(side) > 0) return TANK_CELLS * sizeScale;
   return ((FOOTPRINT_CELLS * sizeScale) / side) * FILL;
 }
@@ -105,11 +135,12 @@ export function subSlotOrder(element: number, side: number): number[] {
 }
 
 /**
- * Where the `count` figures of `element` stand in its grid of `side` (`gridSide`), as offsets in
+ * Where the `count` figures of `element` stand in its grid of `side` (`shownSide`), as offsets in
  * cells from its slot pose: [dx0, dy0, dx1, dy1, …], x east and y south, the block's front
  * toward `facing` (radians).
  */
-export function figureOffsets(element: number, side: number, count: number, facing: number, firingLine = false): number[] {
+export function figureOffsets(element: number, side: number, count: number, facing: number): number[] {
+  if (isLine(side)) return lineOffsets(element, count, facing);
   const abreast = abreastOf(side);
   if (abreast > 0) return rankOffsets(element, abreast, count, facing);
   const pitch = (FOOTPRINT_CELLS * sizeScale) / side;
@@ -117,22 +148,46 @@ export function figureOffsets(element: number, side: number, count: number, faci
   const fx = Math.cos(facing);
   const fy = Math.sin(facing);
   const out: number[] = [];
-  // In contact (PLAN 2.14c2) the men are not in their ranks: the ranks close up towards the
-  // front of the footprint, LINE_DEPTH of its depth, and each man lies a good way off his
-  // place in them. The same man in the same file: a loss takes the same figure away.
-  const jitterAcross = firingLine ? LINE_JITTER_ACROSS : JITTER;
-  const jitterAlong = firingLine ? LINE_JITTER_ALONG : JITTER;
-  const depth = firingLine ? LINE_DEPTH : 1;
-  const forward = firingLine ? ((1 - LINE_DEPTH) * FOOTPRINT_CELLS * sizeScale) / 2 : 0;
   for (let k = 0; k < count; k++) {
     const slot = order[k]!;
     const row = Math.floor(slot / side);
     const col = slot - row * side;
     const [jx, jy] = pair(hash2(element, 4096 + slot));
-    const across = (col - (side - 1) / 2 + jx * jitterAcross) * pitch;
-    const along = ((side - 1) / 2 - row + jy * jitterAlong) * pitch * depth + forward; // front row ahead of the centre
+    const across = (col - (side - 1) / 2 + jx * JITTER) * pitch;
+    const along = ((side - 1) / 2 - row + jy * JITTER) * pitch; // front row ahead of the centre
     // Forward (fx, fy); right-hand side (−fy, fx): as the slots of the formation's block.
     out.push(fx * along - fy * across, fy * along + fx * across);
+  }
+  return out;
+}
+
+/**
+ * The firing line of an element of infantry in contact (PLAN 7.21a): its ranks across `facing`,
+ * the front rank's men at the front of the footprint. Rank r is filled by the figures 16r to
+ * 16r + 15, at the places of a shuffle of its own by the element's id, so the losses of the rear
+ * rank are gaps here and there along it.
+ */
+function lineOffsets(element: number, count: number, facing: number): number[] {
+  const foot = FOOTPRINT_CELLS * sizeScale;
+  const man = LINE_CELLS * sizeScale;
+  const across = foot / LINE_ABREAST;
+  const along = man * LINE_RANK_PITCH;
+  const front = foot / 2 - man / 2;
+  const fx = Math.cos(facing);
+  const fy = Math.sin(facing);
+  const out: number[] = [];
+  let order: number[] = [];
+  for (let k = 0; k < Math.min(count, LINE_ABREAST * LINE_RANKS); k++) {
+    const rank = Math.floor(k / LINE_ABREAST);
+    if (k % LINE_ABREAST === 0) {
+      const keys = Array.from({ length: LINE_ABREAST }, (_, c) => hash2(element, 16384 + rank * LINE_ABREAST + c));
+      order = Array.from({ length: LINE_ABREAST }, (_, c) => c).sort((a, b) => keys[a]! - keys[b]! || a - b);
+    }
+    const col = order[k % LINE_ABREAST]!;
+    const [jx, jy] = pair(hash2(element, 12288 + k));
+    const a = (col - (LINE_ABREAST - 1) / 2 + (rank % 2 === 0 ? -0.25 : 0.25) + jx * LINE_JITTER_ACROSS) * across;
+    const l = front - rank * along + jy * LINE_JITTER_ALONG * along;
+    out.push(fx * l - fy * a, fy * l + fx * a);
   }
   return out;
 }
@@ -180,8 +235,8 @@ export interface FiringFigure {
 export function firingFigure(element: number, tick: number, frame: number, strength: number, size: number, facing: number, inContact: boolean): FiringFigure | null {
   const n = figureCount(strength, size);
   if (n === 0) return null;
-  const side = gridSide(frame, figureCount(size, size));
-  const off = figureOffsets(element, side, n, facing, inContact && frame === Frame.infantry);
+  const side = shownSide(frame, figureCount(size, size), inContact);
+  const off = figureOffsets(element, side, n, facing);
   const k = hash2(hash2(element, tick), 0x6d7a) % n;
   return { dx: off[k * 2]!, dy: off[k * 2 + 1]!, frame: shownFrame(frame, inContact), side, facing };
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { FormationFlag } from '../../src/shared/protocol';
 import { Frame, Wreck } from '../../src/shared/unitLooks';
-import { figureCells, figureOffsets, gridSide } from '../../src/render/units/individuals';
+import { figureCells, figureOffsets, gridSide, shownSide } from '../../src/render/units/individuals';
 import { fallenLost, HULL_LIFE_MS, HullFx, hullOpacity, MAX_FALLEN, tanksLost, type HullElements } from '../../src/render/fx/hulls';
 
 // PLAN 3.11d: what an element that is not of tanks loses between two snapshots lies where it
@@ -43,8 +43,8 @@ describe('fallenLost', () => {
     const after = section([{ id: 7, strength: 480, x: 121, y: 41, facing: 2 }]);
     const lost = fallenLost(before, after, 5000);
     expect(lost.map((m) => m.figure)).toEqual([62, 63]);
-    const side = gridSide(Frame.infantry, 64);
-    const line = figureOffsets(7, side, 64, 1.1, true);
+    const side = shownSide(Frame.infantry, 64, true);
+    const line = figureOffsets(7, side, 64, 1.1);
     for (const m of lost) {
       expect(m).toMatchObject({ element: 7, kind: Wreck.men, cells: figureCells(side), burns: true, born: 5000 });
       expect(m.x).toBe(120.5 + line[m.figure * 2]!);
@@ -58,7 +58,7 @@ describe('fallenLost', () => {
   it('a battalion fired at on the march: where its figure stood in its ranks', () => {
     const before = section([{ id: 7, strength: 500, facing: 0.4, engaged: false }]);
     const [m] = fallenLost(before, section([{ id: 7, strength: 490, engaged: false }]), 0);
-    const ranks = figureOffsets(7, 8, 64, 0.4, false);
+    const ranks = figureOffsets(7, 8, 64, 0.4);
     expect(m!.figure).toBe(63);
     expect(m!.x).toBe(100 + ranks[126]!);
     expect(m!.y).toBe(50 + ranks[127]!);
