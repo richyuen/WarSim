@@ -38,6 +38,30 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   Warsaw ("no airbase of its with room is near the place", `critic/c8_g_5591.json`). AT: sorties
   drawn at T2 and T3 over the war on Poland in its first weeks, counted; the editor places a bomber
   group at a capital or says what it needs. (The air war fading after year 1: 7.26.)
+  Found (2026-10-18, seed 6047, Germany on Poland and France, `.cache/p724/`): the page draws what
+  the sim has at every tier (nested views on formation 11 at hour 72: 4, 4, 0, 0, 0 drawn from
+  3,000 to 25 m/px, as the rows' targets lie). The air AI sends each wing to the formation in
+  contact nearest its base, so a nation's wings pile on a few places (about 8 targets a day for 20
+  to 50 formations in contact): over days 1 to 21, 6.4 % of the formations in contact have a sortie
+  in a T2 view about them (80 m/px), 1.6 % in a T3 view (25 m/px); after day 10 almost none.
+  And the air forces are gone in three weeks: Germany 840 aircraft to 131 (air fights 273, flak
+  436), France 444 to 20, none refilled (a wing is not, by design: `refillable`). A part each:
+    - [x] 7.24a0 The air's fire calibrated: `AIR_FIRE` 0.25 → 0.05, `AA_FIRE` 2 → 0.2 (an even
+      fighter fight 13 % an hour each side → 2.6 %; an infantry division's flak 1 % an hour of a
+      bomber group → 0.12 %). AT: the losses by nation, in fights and to flak, over the first three
+      weeks of the war on Poland (seeds 6047 and 4111), before and after; the coverage of 7.24a's
+      measure; the tests of the old rate re-based by the constant; `sweep:quick`; the pin's entry.
+    - [ ] 7.24a The air AI's wings spread over the front: a nation's wings, by id, each to the
+      formation in range with the fewest of its wings sent there that day, the nearest of equals
+      (fighters over their own, bombers at the enemy's). AT: the share of formations in contact
+      with a sortie in a T2 and a T3 view, days 1 to 21, on seed 6047 and a seed not used, before
+      and after; a unit test of the day's assignment; the losses with and without it; the pin's
+      entry; the full sweep on unseen seeds after a0 and a.
+    - [ ] 7.24c A spec: on days 3 and 10 of the war on Poland, formations in contact with a sortie
+      of the page's rows over them, the camera on each at 80 and 25 m/px, the sorties drawn; a
+      picture.
+    - [ ] 7.24b The editor's bomber group at a capital: the critic's case (Poland at Warsaw) placed,
+      or refused with what it needs (the nearest airbase of its with room). AT: the editor's spec.
 - [ ] 7.25 AI nuclear use believed (AI nuclear use 6, needs 8): beyond 7.18's frequency, a world's
   whole nuclear history is often one day's spasm after 20 silent years (seed 5's 6 bursts all in
   year 30, seed 6271's 4 within 48 hours); strikes go ahead at utilities of 0.001 to 0.01; the
@@ -59,7 +83,13 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   (`critic/c8_headless_*.json` `meanSortiesAloft`, `wars`). Measured first: a tool beside
   `tools/diag/` printing, per year, mean sorties aloft, wings of nations at war, how many have a
   mission, how many are out of range of every enemy land force, and land formations in contact;
-  then the cause fixed (the air AI's tasking, the wings' bases, or the land war it follows). AT:
+  then the cause fixed (the air AI's tasking, the wings' bases, or the land war it follows).
+  From 7.24a0 (2026-10-18): the loser's losses are bounded by its hours in combat, not by the fire
+  (France 444 → 58 to 116 in three weeks at any `AIR_FIRE` from 0.03 to 0.25): a sortie that does
+  not lose a quarter in an hour fights its whole patrol, a wing flies about 4.5 sorties a day
+  (`TURNAROUND_HOURS` 2), every sortie within `INTERCEPT_KM` of the enemy's fights, and no wing is
+  refilled. The levers left: those four. Year 1's sorties aloft rose with 7.24a0 (seed 6047's
+  first three weeks: 25.7 → 34.6), and so does this AT's bar; measure on that rule. AT:
   10 seeds × 30 years headless: in each year with a war, mean sorties aloft at least half of that
   seed's year 1 on 8 of 10 seeds; the air battles of years 21 to 30 counted against years 1 to 10;
   the pin's entry if a rule moves it.

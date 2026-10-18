@@ -167,6 +167,42 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-502 · 2026-10-18 · accepted — The air's fire calibrated to the losses of 1939–40 (PLAN 7.24a0)
+
+- **Context.** Critic run 8, aircraft 6: few sorties seen at T1 to T3 over the war on Poland. Measured
+  (seed 6047, Germany at war with Poland and France from the start, days 1 to 21): Germany's 840
+  aircraft came down to 131 (273 lost in air fights, 436 to flak), France's 444 to 20, Poland's 120
+  to 0; no wing is refilled (`refillable`, by design), so the air war was over by day 10 to 14. An
+  even fighter fight cost each side about 13 % an hour (25 × `AIR_FIRE` 0.25 ÷ 12 defence ÷ 4 hp),
+  and an infantry division's flak about 1 % an hour of a bomber group overhead (`AA_FIRE` 2). The
+  record of the war it plays: the Luftwaffe lost on the order of a seventh of its aircraft over
+  Poland in five weeks, and about a quarter in the six of France 1940; Fighter Command's losses in
+  the Battle of Britain were a few in a hundred sorties. SPEC §6.3 gave the rule, not a
+  calibration (PLAN 5.3a, 5.3b set the figures by the shape of fights: fighters beat bombers).
+- **Decision.** `AIR_FIRE` 0.25 → 0.05 (an even fighter fight about 2.6 % an hour each side; a fighter
+  group on a tactical bomber group takes a fortieth of it an hour), `AA_FIRE` 2 → 0.2 (a division's
+  flak about 0.12 % an hour of a bomber group). The rules are unchanged.
+- **Measured** (days 1 to 21; aircraft at the end, of 840 / 444 / 120; seeds 6047, 4111). Before:
+  Germany about 434 (406 lost: 321 outside flak hours, 33 in them, 52 with wings gone; by a coarser
+  count). After: Germany 612 and 587 (air fights 201 and 229, flak 27 and 24), France 271 and 297,
+  Poland 36 and 42. With 0.05 and the old flak, Germany 222: flak was most of its losses. A cut of
+  `AIR_FIRE` alone to 0.03 bought nothing more. The share of formations in contact with a sortie in a
+  T2 view about them (80 m/px) 6.4 % → 16.7 % and 18.3 %; in a T3 view (25 m/px) 1.6 % → 4.6 % and
+  4.9 %. Sorties aloft, mean of the three weeks, 25.7 → 34.6. Seed 99's year: land casualties 6.35 M
+  (5.89 M before). The air system 0.22 ms a tick (0.27 before).
+- **What it does not change.** The loser's losses are bounded by its hours in combat, not by the fire:
+  France ends with 58 to 116 of 444 at any `AIR_FIRE` from 0.03 to 0.25 when Germany's wings spread
+  (PLAN 7.24a), since a sortie that does not lose a quarter in an hour (`BREAK_OFF`) fights its whole
+  patrol, a wing flies about 4.5 sorties a day (`TURNAROUND_HOURS` 2), and every sortie within
+  `INTERCEPT_KM` of the enemy's fights. Those and the refill of wings are PLAN 7.26's.
+- **Tests re-based by the constant** (their rules kept): `airCombat1938` (the hours of its fights ×
+  0.25 ÷ `AIR_FIRE`; fighters against fighters alike counting carried fractions; the break-off's
+  bomber group cut to 6, so four fighter groups take a quarter in an hour as before);
+  `antiAir1938` (the division's flak about one in a hundred over 8 hours, a new baseline; the
+  shot-down wing's last aircraft one billionth short); `wreckPlace1938` (its window looked for from
+  day 14, not written: 2 ends in its 16 hours since).
+- **Pin.** Seed 99 after one year: `4ac7bea4` → `f26443f6`.
+
 ### ADR-501 · 2026-10-18 · accepted — A tank element under fire loses whole tanks (PLAN 7.23a)
 
 - **Context.** Critic run 8, tanks 7: in 45 s at Speed x1 at 25 m/px on a live armour fight no

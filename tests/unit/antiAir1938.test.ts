@@ -54,7 +54,7 @@ function fireOf(w: World, g: number): number {
 }
 
 describe('AA (PLAN 5.3b)', () => {
-  it('the AT: a French bomber group over a German infantry division loses its fire ÷ defence ÷ hp an hour; over 8 hours a few in a hundred', () => {
+  it('the AT: a French bomber group over a German infantry division loses its fire ÷ defence ÷ hp an hour; over 8 hours about one in a hundred', () => {
     const w = world();
     const div = addDivision(w, GER, cx, cy, template('infantry_div'));
     const b = wingOf(w, FRA, 'tactical_bomber_group');
@@ -75,9 +75,11 @@ describe('AA (PLAN 5.3b)', () => {
       antiAir(w);
     }
     const rate = (b0 - left(w, b)) / b0 / 8;
-    // An infantry division's battalions (0.5 each a full element): about 1% an hour.
-    expect(rate).toBeGreaterThan(0.002);
-    expect(rate).toBeLessThan(0.03);
+    // An infantry division's battalions (0.5 each a full element): about 0.12 % an hour since PLAN
+    // 7.24a0 (ADR-502: AA_FIRE 2 → 0.2, flak took most of an air force in three weeks of war);
+    // about 1 % at PLAN 5.3b. A new baseline, as the pin is: one in a hundred over 8 hours.
+    expect(rate).toBeGreaterThan(0.0006);
+    expect(rate).toBeLessThan(0.003);
     console.log(`AA: an infantry division's fire ${fire.toFixed(1)} an hour; a tactical bomber group loses ${(100 * rate).toFixed(2)}% an hour`);
   });
 
@@ -138,7 +140,9 @@ describe('AA (PLAN 5.3b)', () => {
     });
     const first = [...w.elements.ids()].find((e) => ec.formation[e] === b1)!;
     ec.strength[first] = 1;
-    ec.wound[first] = 0.99;
+    // Its last aircraft all but lost: what an hour's fire takes ends it (PLAN 7.24a0: 0.99 was
+    // a hundredth short, more than the fire an hour since).
+    ec.wound[first] = 1 - 1e-9;
     antiAir(w);
     expect(w.formations.has(b1!)).toBe(false);
     expect(w.sorties.has(b1!)).toBe(false);

@@ -1814,13 +1814,15 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   its base); home, it turns round 2 hours. `airborne` gives the sorties in the air at a time by
   air zone, from `sortieAt`: where interception is reckoned (PLAN 5.3).
 - *As built (PLAN 5.3a, ADR-313; `airCombat`):* each hour the sorties in one air zone of nations
-  at war fire on each other (since 5.7d those within 150 km of each other): a squadron's aircraft × its air attack × 0.25 over the target's
-  defence, in hit points, the losses in aircraft carried as on the land. A wing with none left is
+  at war fire on each other (since 5.7d those within 150 km of each other): a squadron's aircraft × its air attack × 0.05 over the target's
+  defence, in hit points, the losses in aircraft carried as on the land (× 0.25 until PLAN 7.24a0,
+  ADR-502: an even fighter fight 2.6 % an hour each side, 13 % before; the air forces of 1938
+  were gone in three weeks of war). A wing with none left is
   lost; a sortie that lost a quarter in the hour turns home. Fighters beat bombers by the data.
 - *As built (PLAN 5.3b, ADR-314; `antiAir`):* a sortie in the air is fired on by the formations of
   its enemies within a cell of its place, land and fleets: each element's `aa` per full element
-  × 2, over the aircraft's defence; a tactical bomber group over an infantry division loses
-  1.25% an hour.
+  × 0.2, over the aircraft's defence; a tactical bomber group over an infantry division loses
+  0.13 % an hour (× 2 and 1.25 % until PLAN 7.24a0, ADR-502).
 - *As built (PLAN 5.3c, ADR-315; `airSuperiority`):* per air zone per nation the air power flown
   there (a sortie's aircraft × air attack an hour, half-life a day; `world.airPower`, saved); a
   nation's superiority there is its side's share of its side's and its enemies' power, a half

@@ -27,7 +27,7 @@ function places(w: World): Map<number, [number, number]> {
 }
 
 describe('an element ends where it was last drawn (PLAN 5.8w13)', () => {
-  it('struck from the air or in battle: day 14 of seed 1938, 16 hours', () => {
+  it('struck from the air or in battle: from day 14 of seed 1938, until more than 10 ends', () => {
     const sim = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
     sim.step(24 * 14 - 1);
     let drawn = new Map<number, [number, number]>();
@@ -39,7 +39,9 @@ describe('an element ends where it was last drawn (PLAN 5.8w13)', () => {
     const off: string[] = [];
     let ends = 0;
     let struck = 0;
-    for (let h = 1; h <= 16; h++) {
+    // Since PLAN 7.24a0 (ADR-502: the air's fire calibrated down) day 14's first 16 hours have 2
+    // ends: the hours are looked for, not written. Every end on the way is checked.
+    for (let h = 1; h <= 24 * 30 && !(h > 16 && ends > 10 && struck > 0); h++) {
       sim.step(1, (w) => {
         const ev = w.out.events;
         const hit = new Set<number>();

@@ -17,7 +17,7 @@ import { Leg, legHours, sortieAt, type Sortie } from './sorties';
 import { strikeFactor } from './airSuperiority';
 
 /** The share of an aircraft's air attack that is hit points on a target of defence 1 in an hour. */
-export const AIR_FIRE = 0.25;
+export const AIR_FIRE = 0.05;
 /** The share of its aircraft a sortie loses in an hour's fight that turns it home. */
 export const BREAK_OFF = 0.25;
 /**
@@ -177,7 +177,7 @@ function turnHome(world: World, id: number): void {
  * target of defence 1. Its fire is `aa` × its strength ÷ its size × this, as a land element's
  * fire is (combat.ts): per full element, where an aircraft's is per aircraft.
  */
-export const AA_FIRE = 2;
+export const AA_FIRE = 0.2;
 /** How far, cells, the AA of a formation reaches a sortie overhead (each way, a square). */
 export const AA_CELLS = 1;
 

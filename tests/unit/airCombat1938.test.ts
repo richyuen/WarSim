@@ -47,8 +47,11 @@ const events = (w: World, kind: number): number[][] => {
   return out;
 };
 
+/** Hours at today's AIR_FIRE that take what `hours` took at PLAN 5.3a's 0.25 (PLAN 7.24a0, ADR-502). */
+const HOURS_OF = (hours: number): number => Math.ceil((hours * 0.25) / AIR_FIRE);
+
 describe('air combat (PLAN 5.3a)', () => {
-  it('fighters beat bombers: an hour, a fighter group takes an eighth of a tactical bomber group and loses a fiftieth of itself', () => {
+  it('fighters beat bombers: an hour, a fighter group takes a fortieth of a tactical bomber group and loses a three-hundred-and-sixtieth of itself', () => {
     const w = sim().world;
     w.wars.start([GER], [FRA], 0);
     const f = wingOf(w, GER, 'fighter_group');
@@ -60,15 +63,17 @@ describe('air combat (PLAN 5.3a)', () => {
     w.out.events.length = 0;
     airCombat(w, new Map([[7, [f, b]]]));
     const [f1, b1] = [aircraftOf(w, f), aircraftOf(w, b)];
-    // 36 fighters × 25 × AIR_FIRE ÷ 10 defence ÷ 8 hp a bomber: 2.8 bombers; 24 × 4 × AIR_FIRE ÷
-    // 12 ÷ 4: 0.5 fighters. Each squadron carries its share as on the land (none whole yet).
+    // 36 fighters × 25 × AIR_FIRE ÷ 10 defence ÷ 8 hp a bomber: 0.56 bombers (2.8 at PLAN 5.3a's
+    // 0.25); 24 × 4 × AIR_FIRE ÷ 12 ÷ 4: 0.1 fighters (0.5). Each squadron carries its share as on
+    // the land (none whole yet).
     expect(b0 - left(w, b)).toBeCloseTo((36 * 25 * AIR_FIRE) / 10 / 8, 9);
     expect(f0 - left(w, f)).toBeCloseTo((24 * 4 * AIR_FIRE) / 12 / 4, 9);
     const battle = events(w, EventKind.AirBattle);
     expect(battle).toHaveLength(1);
     expect(battle[0]!.slice(2, 4)).toEqual([7, f0 - f1 + b0 - b1]);
-    // Hour on hour the bombers go down, the fighters hardly: over 8 hours.
-    for (let h = 0; h < 8 && w.formations.has(b); h++) {
+    // Hour on hour the bombers go down, the fighters hardly: over 8 hours of the fire of PLAN 5.3a
+    // (AIR_FIRE 0.25), as many more as the fire is less since PLAN 7.24a0 (ADR-502: 40 at 0.05).
+    for (let h = 0; h < HOURS_OF(8) && w.formations.has(b); h++) {
       over(w, f, STRASBOURG);
       if (w.sorties.has(b)) over(w, b, STRASBOURG);
       airCombat(w, new Map([[7, [f, b]]]));
@@ -140,8 +145,9 @@ describe('air combat (PLAN 5.3a)', () => {
     airCombat(w, new Map([[7, [g, g2]]]));
     expect([aircraftOf(w, g), aircraftOf(w, g2)]).toEqual([36, 36]);
     airCombat(w, new Map([[7, [g, f]]]));
-    expect(aircraftOf(w, g)).toBe(aircraftOf(w, f));
-    expect(aircraftOf(w, g)).toBeLessThan(36);
+    // Alike, counting what each carries: an hour takes less than a whole aircraft since PLAN 7.24a0.
+    expect(left(w, g)).toBeCloseTo(left(w, f), 9);
+    expect(left(w, g)).toBeLessThan(36);
   });
 
   it('a sortie that lost a quarter of its aircraft in the hour turns home from where it is; a wing with none left is lost', () => {
@@ -151,7 +157,18 @@ describe('air combat (PLAN 5.3a)', () => {
     const b = wingOf(w, FRA, 'tactical_bomber_group');
     for (const id of fighters) over(w, id, STRASBOURG);
     over(w, b, STRASBOURG);
+    // Four fighter groups take 4 × 36 × 25 × AIR_FIRE ÷ 80 bombers in an hour: a quarter of the
+    // group's 24 at the fire of PLAN 5.3a, 9 % since PLAN 7.24a0. The group cut to 6, it is a quarter again.
+    const ec = w.elements.cols;
+    let keep = 6;
+    w.elements.forEach((e) => {
+      if (ec.formation[e] !== b) return;
+      ec.strength[e] = Math.min(ec.strength[e]!, keep);
+      keep -= ec.strength[e]!;
+    });
     const b0 = aircraftOf(w, b);
+    expect(b0).toBe(6);
+    expect((4 * 36 * 25 * AIR_FIRE) / 80).toBeGreaterThanOrEqual(BREAK_OFF * b0);
     airCombat(w, new Map([[7, [...fighters, b]]]));
     expect(b0 - aircraftOf(w, b)).toBeGreaterThanOrEqual(BREAK_OFF * b0);
     const s = w.sorties.get(b)!;
@@ -184,7 +201,8 @@ describe('air combat (PLAN 5.3a)', () => {
     expect(orderMission(w, b, 'patrol', ...STRASBOURG)).toBe(0);
     const [f0, b0] = [aircraftOf(w, f), aircraftOf(w, b)];
     let battles = 0;
-    s.step(48, (ww) => {
+    // 48 hours at the fire of PLAN 5.3a; as many more as it is less since PLAN 7.24a0 (240 at 0.05).
+    s.step(HOURS_OF(48), (ww) => {
       battles += events(ww, EventKind.AirBattle).length;
       ww.out.events.length = 0;
     });

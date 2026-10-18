@@ -18458,3 +18458,31 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 7.24 (aircraft seen at every tier).
 - **After 7.23c:** `tankHulls1938` writes its picture to `docs/evidence/7.23/` only with `EVIDENCE`
   set, as `fallen1938` does (it dirtied a tracked file on every run).
+
+## 2026-10-18 — PLAN 7.24a0: the air's fire calibrated
+
+- **Start:** gate green on `76665b1` (7.23 done).
+- **Found** (`.cache/p724/`, seed 6047, Germany at war with Poland and France): the page draws what
+  the sim has at every tier (nested views on formation 11, hour 72: 4, 4, 0, 0, 0 sorties drawn from
+  3,000 to 25 m/px, as the rows' targets lie): the critic's 0 to 1 at 900 m/px was the hour, not a
+  cut. Of the formations in contact, 6.4 % had a sortie in a T2 view about them, 1.6 % in a T3 view,
+  for two causes: the air AI sends each wing to the formation nearest its base (7.24a), and the air
+  forces are gone in three weeks (Germany 840 aircraft → 131: 273 in air fights, 436 to flak, by
+  counters put in `airCombat` for the probe; France 444 → 20; no wing refilled). Split 7.24 into a0,
+  a (spread), c (a spec), b (the editor).
+- **Done** (ADR-502, SPEC §6.3): `AIR_FIRE` 0.25 → 0.05, `AA_FIRE` 2 → 0.2.
+- **Measured** (days 1 to 21, seeds 6047 / 4111): Germany ends with 612 / 587 of 840, France 271 /
+  297 of 444, Poland 36 / 42 of 120. The share in contact with a sortie in a T2 view 16.7 % / 18.3 %,
+  T3 4.6 % / 4.9 %. Sorties aloft 25.7 → 34.6. The loser's losses do not follow the fire (France 58 to
+  116 of 444 at any `AIR_FIRE` from 0.03 to 0.25 with the spread): its hours in combat bound them,
+  noted under PLAN 7.26 with the levers. Seed 99's year: land casualties 6.35 M (5.89 M); the air
+  system 0.22 ms a tick (0.27). Pin `4ac7bea4` → `f26443f6`.
+- **Tests re-based by the constant**, rules kept (ADR-502): `airCombat1938` (4), `antiAir1938` (2),
+  `wreckPlace1938` (its window looked for). Whole unit suite by hand: 1,674 of 1,675, the one red
+  `airSpread` of 7.24a, set aside to `.cache/` until its commit. The sweep-config tests by hand: 17
+  of 18, the pin, then moved.
+- **`sweep:quick`** (10 × 20, smoke): limits 10 of 10 (land moving 12.0 to 47.9 %, the largest 10.8
+  to 15.2 % of the land, 29.0 to 39.7 % of income, 67 to 99 alive, a war every year); riser, faller,
+  no stasis, no break-up 10 of 10; nukes on 8 of 10. Germany the largest riser on 8 of 10 seeds
+  (× 14 to 75): watched in 7.24a's full sweep.
+- **Next:** PLAN 7.24a (the wings spread over the front).
