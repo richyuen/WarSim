@@ -412,9 +412,11 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // the treasury to the reserve every month, and a nation whose army died in contact, where
       // none is refilled, raised nothing for years). With no army order in training and room for
       // one, they keep its price (PLAN 7.3e3: else they spent each month's surplus to the reserve,
-      // and the Soviet Union of seed 1 raised nothing in ten years, 3,150 gold against 3,686).
+      // and the Soviet Union of seed 1 raised nothing in ten years, 3,150 gold against 3,686). Not
+      // at war (PLAN 7.26c2b, ADR-514): a nation of an income near 100 saved for most of a year
+      // and refilled nothing while its army stood at a fraction of its strength through the war.
       const cap = atWar ? ARMY_SHARE_WAR * income : peace;
-      const keep = (pending.get(n) ?? 0) + ordered === 0 && slots > 0 && upkeep < cap ? nextOrderPrice(world, n, income, mix) : 0;
+      const keep = !atWar && (pending.get(n) ?? 0) + ordered === 0 && slots > 0 && upkeep < cap ? nextOrderPrice(world, n, income, mix) : 0;
       ({ balance, upkeep } = refill(n, income, need, balance, upkeep, cap, keep));
       // 3b. A fleet (PLAN 4.6e1), with what the army's orders left: one at a time, while the
       // navy is under its share of the income.

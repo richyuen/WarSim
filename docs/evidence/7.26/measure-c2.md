@@ -159,3 +159,51 @@ rule is as ADR-437 decided it (no defect). Whether to change it (refills at war 
 order, or the keep only while the order is within a few months' saving) waits on the 7.26 AT
 (7.26d): the c-parts are fixed only if it is still short. The encircled division is a pocket, as it
 should be: Brazil's loss was a war it chose against Britain.
+
+## 8. PLAN 7.26c2b's fix: at war the refills do not keep the next order's price (ADR-514)
+
+Code: the working tree of 7.26c2b on `87a2205` (pin bc1316df → e1856b1b). A/B on the same code,
+the old rule behind a switch for the runs only (removed before the commit).
+
+**Brazil v Bolivia** (`.cache/tmp/c2b.ts 2843 BRA BOL 1655 200 30`, the state of day 1655 saved on
+`1abddbc`; logs `.cache/c2b/ab-{old,new}-bra.log`):
+
+| day | old: refilled, gold, score | new: refilled, gold, score |
+|---|---|---|
+| 1673 | none, 1,094 → 1,124, 0 | +3,608 +1,872 +1,872 +1,627 (the march on British Guiana), 1,094 → 387, 0 |
+| 1704 | none, 1,151, 0 | +381 (the 612), 379, 0 |
+| 1734 | none, 1,179, 0 | +307, 382, 0 |
+| 1765 | none, 1,206, 0 | +436, 370, 3 |
+| 1795 | none, 1,234, 0 | +356, 364, 7 |
+| 1826 | none, 1,260, 0 | +308, 362, 17 |
+
+The first month's refills went mostly to the formations marching on British Guiana, and fed the
+pocket there too (−458 and −107 the next month). What stayed home was refilled each month and
+took Bolivian cells. The treasury now stands at the reserve; no division was ordered in either arm.
+
+**Six states** (`.cache/tmp/abc2b.ts`: `abc.ts` with the land men and formations of nations at war a
+day and the formations spawned; the states of ADR-513, 180 days; logs `.cache/tmp/c2bab_*`):
+
+| state | contact days old → new | front days | men at war a day (M) | spawned | sorties aloft |
+|---|---|---|---|---|---|
+| 2843 d760 | 28 → 36 | 699 → 701 | 2.224 → 2.275 | 40 → 39 | 22.8 → 23.6 |
+| 2843 d1100 | 92 → 66 | 522 → 523 | 2.170 → 2.194 | 43 → 43 | 28.1 → 29.0 |
+| 2843 d2450 | 139 → 120 | 641 → 630 | 2.971 → 2.970 | 29 → 28 | 16.3 → 15.9 |
+| 7919 d560 | 25 → 37 | 389 → 286 | 2.242 → 1.964 | 39 → 40 | 12.2 → 8.7 |
+| 7919 d1100 | 10 → 10 | 152 → 141 | 2.241 → 2.249 | 51 → 51 | 9.7 → 10.1 |
+| 7919 d2450 | 23 → 22 | 390 → 396 | 3.821 → 3.849 | 48 → 48 | 15.4 → 19.9 |
+| all | 317 → 291 (11.4 → 10.9 %) | 2,793 → 2,677 | | 250 → 249 | 17.4 → 17.9 |
+
+The old arm's hashes are those of ADR-513's new arm (`fcfe7461` on 2843 d760): the old rule is HEAD's.
+
+**Long runs** (one each, diverging from the first month the rule touches a nation at war):
+ADR-437's Soviet Union, `.cache/73e3/months.ts` × 10 years, formations spawned 18 → 26 (seed 1)
+and 21 → 9 (seed 7321; its treasury 2,000 to 2,300 under a reserve of about 3,700 from month 18
+to 57, the refilled men's upkeep taking the surplus, where before it climbed to 5,500).
+`landWar.ts` 8 years, the big wars' contact share years 2–8: 2843
+0.147/0.043/0.078/0.181/0.036/0.105/0.08 → 0.132/0.033/0.081/0.078/0.022/0.026/0.01 (mean 0.096 →
+0.055), 7919 0.252/0.078/0.03/0.059/0.119/0.117/0.218 → 0.098/0.13/0.063/0.166/0.034/0.034/0.033
+(0.125 → 0.080). `airWar.ts` years 2–8 sorties aloft 17.5 → 16.6 and 16.6 → 16.3.
+
+**Read.** The rule does its job on the case (0 → 17 in 170 days) and is neutral from the six
+states; both 8-year runs' contact fell, as c3a's did. 7.26e reads it (the line under 7.26e).

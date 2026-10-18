@@ -167,6 +167,42 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-514 · 2026-10-18 · accepted — At war the refills do not keep the next order's price (PLAN 7.26c2b; amends ADR-437)
+
+- **Context.** PLAN 7.26c2b (`docs/evidence/7.26/measure-c2.md` §7): seed 2843's Brazil, at war
+  with Bolivia for six months, refilled no man and ordered no division. ADR-437's keep held the
+  refills to the price of the next order (an infantry division's 1,001 gold) over the reserve, and
+  a treasury of 1,094 to 1,262 against 1,343 to 1,361 that gained about 28 a month (the research
+  budget takes the rest of a balance of +30 to +54) would have reached it in about nine months.
+  Its army stood at 38 and 612 men of a template of 12,460, with 1.21 M men in the pool.
+- **Decision.** In step 3a of the economic AI the keep applies only to a nation at peace: at war
+  the refills take what is over the reserve, under the bounds of ADR-435. In peace, ADR-437 as it
+  was. A refill and a division cost the same gold a man; at war the men go to the formations in
+  the field first, and an order waits for a month the refills leave room.
+- **Not taken.** The keep held only while the order is within a few months' saving: a count of
+  months from the balance keeps Brazil's keep (its gold grew 28 a month on a balance of +30 to
+  +54), and one from the treasury's growth is a second forecast for a rule the measure below finds
+  neutral where it is not wanted.
+- **Measured** (`measure-c2.md` §8). Brazil v Bolivia from the state of day 1655 (saved on
+  `1abddbc`), both rules on this code, 170 days: old, no man refilled, score 0 all through; new,
+  8,979 men refilled in the first month (most to the four formations then marching on British
+  Guiana, which bled 565 the next), then 300 to 440 a month to the 612-man formation, score 3, 7,
+  17. From the six states of ADR-513, 180 days, old → new on this code: big wars' contact days 317
+  → 291 of 2,793 → 2,677 front days (11.4 → 10.9 %; by state 28 → 36, 92 → 66, 139 → 120, 25 →
+  37, 10 → 10, 23 → 22), land men of nations at war a day up on four states of six (one state's
+  war ended sooner: 2.24 → 1.96 M), formations spawned 250 → 249, sorties aloft 17.4 → 17.9:
+  neutral. ADR-437's case, seeds 1 and 7321 × 10 years (`.cache/73e3/months.ts`, the Soviet
+  Union): formations spawned 18 → 26 and 21 → 9, one run each, diverging from the first month at
+  war; on 7321 the treasury stands under the reserve from month 18 to 57 with the refilled men's
+  upkeep (2,000 to 2,300 against 3,700) where it climbed to 5,500 before: men in the formations of
+  the field instead of new divisions. `landWar.ts` 8 years, the big wars' contact share by years
+  2–8, mean 0.096 → 0.055 (2843) and 0.125 → 0.080 (7919); `airWar.ts` years 2–8 sorties aloft
+  17.5 → 16.6 and 16.6 → 16.3; one run each, diverging from year 1, against the states' neutral.
+- **Pin.** bc1316df → e1856b1b.
+- **Tests.** `refill.test.ts` "at war the refills do not keep the next order its price": Germany
+  at war with Poland, no order in training, gold of the reserve and 0.9 of a division: its bled
+  division gets REFILL_MONTH of its men back and no order is placed (red before: nothing refilled).
+
 ### ADR-513 · 2026-10-18 · accepted — A planner with a front of its own sends a far formation to its partners' front too (PLAN 7.26c1b)
 
 - **Context.** PLAN 7.26c1b named the own front's far marches, "one a sector a week", for the 16 %

@@ -18897,3 +18897,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a test that checks an order's target against the front must check it in the hour of
   the order: with no army of its own Germany's front cells passed to France within the 16 days.
 - **Next:** PLAN 7.26c2b's fix (refills at war not held for the next order), then 7.26e.
+
+## 2026-10-18 — PLAN 7.26c2b: at war the refills do not keep the next order's price
+
+- **Start:** gate green on `87a2205`; critic not due.
+- **Done** (ADR-514, amends ADR-437): step 3a of the economic AI keeps the next order's price over
+  the reserve only in peace; at war the refills take what is over the reserve.
+- **Measured** (`docs/evidence/7.26/measure-c2.md` §8; both rules on this code, the old behind a
+  switch for the runs only): Brazil v Bolivia from day 1655, score 0 → 17 in 170 days (no man
+  refilled before). From the six states of ADR-513, 180 days: contact days 317 → 291 (11.4 →
+  10.9 %, two states up, two down, two flat), men at war up on four of six, spawned 250 → 249,
+  sorties aloft 17.4 → 17.9: neutral. Long runs, one each, diverging: `landWar.ts` 8 years contact
+  0.096 → 0.055 and 0.125 → 0.080; `airWar.ts` 17.5 → 16.6 and 16.6 → 16.3; ADR-437's Soviet
+  Union spawned 18 → 26 (seed 1) and 21 → 9 (seed 7321, the surplus in the refilled men's
+  upkeep). A line under 7.26e says what to test first if the ten seeds fall. Pin bc1316df →
+  e1856b1b.
+- **Tests:** `refill.test.ts` "at war the refills do not keep the next order its price" (red
+  before).
+- **Gotcha:** the first month's refills at war go to whatever formation is on home land, a
+  march into a pocket among them (most of Brazil's 8,979 men to the formations bound for British
+  Guiana).
+- **Next:** PLAN 7.26e (the AT of 7.26 re-measured on seeds 1–10 × 30 years).

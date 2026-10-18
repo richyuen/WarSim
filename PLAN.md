@@ -145,7 +145,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           days, `.cache/tmp/abOne.ts`), the one-sided wars' scores; `landWar.ts` 8 years; the pin's
           entry. Done (ADR-510): from seed 7919's day 1312, Brazil v Paraguay 0 → 35, no other war
           worse from four states; pin 59fea6f5.
-        - [ ] 7.26c2b A nation whose whole army is under `takeMen` takes nothing (seed 2843's Brazil
+        - [x] 7.26c2b A nation whose whole army is under `takeMen` takes nothing (seed 2843's Brazil
           v Bolivia after c2a, 177 days at 0: formations of 38 to 2,617 men, one of 612 resting on
           its own land 170 days and not refilled). Measured first: in `landWar.ts`'s one-sided wars
           at a score under 15, the armed side's largest formation and its refills (ADR-435: why a
@@ -160,6 +160,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           rule is as decided; the change (refills at war not held for the next order) waits on
           7.26d. Taken next: 7.26d.
           After 7.26d (2026-10-18): the fix is last, after c3, c4 and c1b.
+          Done (ADR-514, `measure-c2.md` §8): at war the refills take what is over the reserve,
+          the next order's price not kept. Brazil v Bolivia from day 1655, both rules on this code:
+          score 0 → 17 in 170 days; from six states contact 11.4 → 10.9 %, spawned 250 → 249,
+          sorties 17.4 → 17.9; 8-year runs' contact 0.096 → 0.055 and 0.125 → 0.080; pin e1856b1b.
       - [ ] 7.26c3 The landing per war, not per nation: a nation with a land front in one war plans
         no landing in its others (30–50 % of nation-days), and colonies have no transports. Only if
         c1 and c2 leave the 7.26 AT short. AT: `landWar.ts`'s gate counts; the pin's entry.
@@ -223,6 +227,11 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       0.078 → 0.096 and 0.153 → 0.125, sorties aloft 16.2 → 17.5 and 12.8 → 16.6). If the AT is
       still short, c1b is not the first question: c3b's lift by sea to the own front is the larger
       share of the standing men.
+      To read against c2b (ADR-514): neutral from six states (contact 11.4 → 10.9 %), but both
+      8-year runs' contact fell (0.096 → 0.055, 0.125 → 0.080), and seed 7321's Soviet Union raised
+      9 divisions in 10 years against 21, its surplus in refilled men's upkeep. If the ten seeds'
+      contact falls below 7.26d's, test first the keep at war only while the order is within a few
+      months of the treasury's growth (not the balance's: Brazil's gold grew 28 on +30 to +54).
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five
