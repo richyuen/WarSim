@@ -348,6 +348,14 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       measure finds enough wings with an enemy in reach; recorded in DECISIONS (AoC has no air war;
       the patrol must meet enemies the sim has, not fly for the count). AT: a unit test; from six
       states, sorties aloft and air battles; the pin's entry.
+      For ADR-519's share (2026-10-18): today it is `mission ÷ (mission + inRange)` of `airWar.ts`'s
+      columns, which holds while every mission is at a wing with an enemy land formation in range
+      (ADR-377). A patrol over home breaks that, so 7.26i's first commit adds to `airWar.ts` a
+      column of the wings at war with an enemy land formation in range, mission or not, and the
+      patrols over home as their own count; `airAt.ts` reads the share from them, and from the old
+      columns on 7.26g's files. The ten war-years under 3 aloft on `6d1f727` (seeds 1, 3, 4, 6, 10)
+      each have 59–200 wings of 10–21 nations at war, nearly all out of range: 7.26i's case, not
+      years without an air force.
     - [ ] 7.26j The AT of 7.26 re-measured (as 7.26g, seeds 1–10 × 30 years) after 7.26h1, 7.26h2
       and 7.26i, against ADR-519's AT. First commit: `tools/diag/airAt.ts` judges that AT (the
       share with a mission of the wings at war with an enemy in range, half or more in every

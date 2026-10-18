@@ -221,7 +221,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   own; the stop rule, not a lower bar, is what ends the task if 3 is not met either.
 - **Consequences.** `airAt.ts` changed at 7.26j (its first commit), run on 7.26g's files for the
   before. The 7.26 parts' status lines in PLAN.md record the closure. No sim rule changes; the
-  pin stands at c3bd280a.
+  pin stands at c3bd280a. The share's denominator: today `mission + inRange` (every mission is at
+  a wing with an enemy in range, ADR-377); 7.26i's patrols over home break that, so 7.26i adds a
+  column of the wings at war with an enemy land formation in range, mission or not, and counts
+  its patrols apart (the line under 7.26i). The ten war-years under the floor on `6d1f727` each
+  have 59 to 200 wings of 10 to 21 nations at war, nearly all out of range: the floor asks of
+  7.26i, not of years with no air force.
 
 ### ADR-518 · 2026-10-18 · accepted — The landing's transport group, bought as the warhead's bomber (PLAN 7.26h2)
 
