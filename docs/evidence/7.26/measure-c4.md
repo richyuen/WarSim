@@ -42,8 +42,10 @@ out-of-range wings that have a free base but not within a hop.
 
 Where a chain of ferry hops over the side's airbases (room not weighed) leads from the wing's base
 to one with a formation of its front within range, the hop is to the base with room within a hop
-that lowers (hops left, km to the goal): fewer hops left, or as many and nearer the goal. A base off
-the chain is not taken. With no chain from its base, the old step.
+that lowers (hops left, km to the goal): fewer hops left, or as many and nearer the goal. Every
+base within a hop of the wing's is on the chain too (the field and the hop use the same reach), so
+what the rule no longer takes is a base nearer the goal in km with more hops left. With no chain
+from its base, the old step.
 
 A first form took only fewer hops left (no lateral hop). From seed 2843's day 1100 it rebased less
 than the old rule, 327 rebases (180 followed by a mission within 30 days) against 431 (261): two

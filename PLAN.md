@@ -206,8 +206,9 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       still short and the contact down on more seeds, question the `send` path for a nation with
       a front first, not the per-war gate.
       To read against c4 (ADR-512): from six states neutral (sorties aloft 17.19 → 17.33), but both
-      8-year runs fell (18.2 → 16.2, 15.0 → 12.8). If the ten seeds fall below 7.26d's, question
-      the chain rule (the lateral hops, the wings sent to far fronts) with c3a.
+      8-year runs fell (18.2 → 16.2, 15.0 → 12.8). If the ten seeds fall below 7.26d's, test first
+      whether a wing on a chain should still take a base within a hop nearer its goal in km with more
+      hops left (the old step took it; ADR-512 does not), then c3a.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five
