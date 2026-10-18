@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-512 · 2026-10-18 · accepted — The rebase along a chain of airbases (PLAN 7.26c4)
+
+- **Context.** PLAN 7.26d: of the wings at war out of range of every enemy, a third have a base of
+  their side with room in range of an enemy, a tenth of those within one ferry hop. The rebase
+  (ADR-376, ADR-508) hopped only to a base nearer the goal than the wing's own. Measured on six
+  states of seeds 2843 and 7919 (`docs/evidence/7.26/measure-c4.md` §1): of 114 such wings, 91 have
+  no chain of the side's bases within ferry hops to such a base (a sea or a neutral land between);
+  23 have one of 2 to 5 hops, and for 17 of them no base within a hop was nearer the goal: they sat.
+  Room was not a cause.
+- **Decision.** For the front `toward` aims at, the ferry hops over the side's airbases (room not
+  weighed) from each to one with a formation of that front in range, for the day (`hopField`). A
+  wing whose base is on such a chain hops to the base with room within a hop that lowers (hops
+  left, km to the goal): fewer hops left, or as many and nearer the goal; a base off the chain is not
+  taken. A wing whose base is on none hops as before.
+- **Why the pair.** Fewer hops alone (the first form) cut the useful lateral hops: from seed 2843's
+  day 1100, 431 rebases (261 followed by a mission within 30 days) → 327 (180). With the pair, 555
+  (319). The pair falls with each hop while the goal holds: no hop back.
+- **Deliberately narrower.** A wing on a chain no longer hops to a base off it that is nearer its
+  goal: such a base leads nowhere the wing can serve from.
+- **Measured.** From the six states, 180 days, old → new: sorties aloft 17.19 → 17.33 mean (8.76 →
+  9.38 the most, 28.88 → 28.43 the least). `airWar.ts` 8 years, years 2–8 mean sorties aloft 18.2 →
+  16.2 (2843) and 15.0 → 12.8 (7919), one run each, diverging from the first year; PLAN 7.26e
+  questions this rule if its ten seeds fall too. Seed 99: `airAi` about +0.03 ms a tick (1.5 %).
+- **Not done.** The 80 % with no chain: across the sea, the landings' (PLAN 7.26c3b) and the land
+  war's.
+- **Pin.** 5274b933 → 63d9b3b5.
+- **Tests.** `airToward1938.test.ts` "follows a chain of bases to the front though the first hop is
+  no nearer it": a British fighter whose every base within a hop is farther from its front, two hops
+  from a base in range, goes 1,072 → 1,078 → 753 km and is tasked (red before: it stayed). The two
+  earlier cases unchanged.
+
 ### ADR-511 · 2026-10-18 · accepted — A landing per war, with the far army (PLAN 7.26c3a)
 
 - **Context.** PLAN 7.26c (`docs/evidence/7.26/measure-c.md` §3): a nation with a land front in any

@@ -176,12 +176,17 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           their own: 60–90 % of the unfronted nation-days). Measured first: whether a partner's
           transports could carry them. Only if c3a leaves the AT short.
           After c3a (2026-10-18): waits on 7.26e; c4 is next (7.26d's order).
-      - [ ] 7.26c4 The rebase over more than one hop: in 7.26d's short war-years 36 % of the wings
+      - [x] 7.26c4 The rebase over more than one hop: in 7.26d's short war-years 36 % of the wings
         out of range have a base of their side with room within range of an enemy, a tenth of
         them within one ferry hop (`freeInFerry`, 3 % of all out of range); 1.6 wings rebase a day of 54. Measured first: whether
         a wing whose goal base lies beyond `FERRY_RANGE` moves toward it day by day or stays, from a
         checkpoint. AT: a unit test (a wing two hops from a base in range of the enemy reaches it
         and is tasked); `airWar.ts` on seeds 2843 and 7919; the pin's entry if it moves.
+        Done (ADR-512, `docs/evidence/7.26/measure-c4.md`): of 114 such wings on six states, 91 have
+        no chain of the side's bases within ferry hops (the sea), 23 a chain of 2–5 hops, and 17 of
+        those sat (no base within a hop nearer the goal). Now a wing on a chain hops to fewer hops
+        left, or as many and nearer the goal. From the six states sorties aloft 17.19 → 17.33;
+        `airWar.ts` 8 years 18.2 → 16.2 and 15.0 → 12.8 (one run each, diverging); pin 63d9b3b5.
     - [x] 7.26d The AT of 7.26 on 10 seeds × 30 years, after 7.26c; what is short split again.
       (2026-10-18: taken before the open c-parts, c1b, c2b's fix and c3, which wait on it.)
       Done (2026-10-18, `docs/evidence/7.26/measure-d.md`, `tools/diag/airAt.ts`): seeds 1–10 on
@@ -200,6 +205,9 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       way after 30 days, and the big wars' land contact fell on both 8-year runs. If the AT is
       still short and the contact down on more seeds, question the `send` path for a nation with
       a front first, not the per-war gate.
+      To read against c4 (ADR-512): from six states neutral (sorties aloft 17.19 → 17.33), but both
+      8-year runs fell (18.2 → 16.2, 15.0 → 12.8). If the ten seeds fall below 7.26d's, question
+      the chain rule (the lateral hops, the wings sent to far fronts) with c3a.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five

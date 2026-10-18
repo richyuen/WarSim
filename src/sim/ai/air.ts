@@ -39,7 +39,9 @@
  * hop a day (`toward`): to the airbase of its side with room for it, within a ferry flight
  * (FERRY_RANGE ranges), nearest the front's formation nearest it, where that is nearer than its base.
  * Of the front, the formations an airbase of its side has in range; with none such, the enemy's
- * land forces that one has; with none of those either, the whole front (PLAN 7.26b).
+ * land forces that one has; with none of those either, the whole front (PLAN 7.26b). Where a chain
+ * of ferry hops over the side's airbases leads from its base to one with that front in range, the
+ * hop is along it, the fewest hops left, though no nearer in km (PLAN 7.26c4).
  */
 import { isDayStart } from '../../shared/calendar';
 import { basePlace, FERRY_RANGE, kmFromBase, ofSide, orderMission, orderRebase, wingAircraft, wingRange } from '../systems/air';
@@ -125,6 +127,16 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly 
     }
     return set;
   };
+  // The ferry hops from each airbase of a side to one with a formation of a front in range (PLAN 7.26c4), for the day.
+  const hopFields = new Map<readonly number[], Map<string, ReadonlyMap<number, number>>>();
+  const hopsTo = (front: readonly number[], nation: number, range: number): ReadonlyMap<number, number> => {
+    let byKey = hopFields.get(front);
+    if (!byKey) hopFields.set(front, (byKey = new Map()));
+    const key = `${nation}:${range}`;
+    let field = byKey.get(key);
+    if (!field) byKey.set(key, (field = hopField(world, nation, range, front, reachable(front, nation, range))));
+    return field;
+  };
   // The aircraft at each airbase, for a rebase's room (PLAN 5.12a): made when one is looked for.
   let used: Map<number, number> | null = null;
   const usedAt = (): Map<number, number> => {
@@ -170,7 +182,7 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly 
         // reach of a base of the side, the enemy's land forces (PLAN 5.12b, 7.26b).
         if (role === 'patrol' || role === 'front' || role === 'naval') {
           const front = role === 'patrol' ? own : role === 'front' ? enemy : enemyFleets.length > 0 ? enemyFleets : enemy;
-          toward(world, id, [front, enemyForces()], usedAt(), reachable);
+          toward(world, id, [front, enemyForces()], usedAt(), reachable, hopsTo);
         }
         continue;
       }
@@ -254,8 +266,25 @@ function roleOf(world: World, id: number): 'patrol' | 'front' | 'naval' | 'bomb'
  * coast or the last base, while bases in range of another of the enemy's formations stood free
  * (on seeds 2843 and 7919, from year 2, 32 to 79 wings at war out of range, the goal out of every
  * base's range for 64 to 93 % of them, `docs/evidence/7.26/measure-a.md`).
+ *
+ * Over more than one hop (PLAN 7.26c4): where its base is a chain of ferry hops over the side's
+ * airbases (`hopsTo`, room not weighed) from one with a formation of that front in range, the hop
+ * is to the base with room within a ferry's reach with the fewest hops left, fewer than its own,
+ * or as many and nearer the goal than it; of equals the nearest the goal, then the lowest index.
+ * A base off the chain is not taken. Only where its base has no such chain, the base nearest the
+ * goal as above. The nearest the goal was often no nearer than the base (the chain bends round a
+ * sea), and the wing sat: of the wings with such a chain on six states of seeds 2843 and 7919, 17
+ * of 23 (`docs/evidence/7.26/measure-c4.md`). Each hop lowers (hops left, km to the goal): no going
+ * back while the goal holds.
  */
-function toward(world: World, id: number, fronts: readonly (readonly number[])[], used: Map<number, number>, reachable: (front: readonly number[], nation: number, range: number) => ReadonlySet<number>): void {
+function toward(
+  world: World,
+  id: number,
+  fronts: readonly (readonly number[])[],
+  used: Map<number, number>,
+  reachable: (front: readonly number[], nation: number, range: number) => ReadonlySet<number>,
+  hopsTo: (front: readonly number[], nation: number, range: number) => ReadonlyMap<number, number>,
+): void {
   const base = world.wingBase.get(id)!;
   const at = basePlace(world, base);
   if (!at) return;
@@ -284,20 +313,77 @@ function toward(world: World, id: number, fronts: readonly (readonly number[])[]
   const [gx, gy] = [c.x[goal]!, c.y[goal]!];
   const need = wingAircraft(world, c.template[id]!);
   const range = FERRY_RANGE * wingRange(world, id);
+  // The hops left from each base (PLAN 7.26c4), where the front has a formation in reach.
+  const field = ok.size > 0 ? hopsTo(front, nation, wingRange(world, id)) : null;
+  const left = base > 0 ? field?.get(base) : undefined;
   let best = 0;
+  let bh = left ?? Infinity;
   let bd = gd;
   world.airbases.forEach((b, i) => {
     if (i + 1 === base || !ofSide(world, nation, world.cells.controller[b.cell]!) || (used.get(i + 1) ?? 0) + need > airbaseRoom(b)) return;
     const [px, py] = world.cellPoint(b.cell);
     if (seaKm(world, at[0], at[1], px, py) > range) return;
     const d = seaKm(world, px, py, gx, gy);
-    if (d < bd) [best, bd] = [i + 1, d];
+    // Off a chain, nearer the goal; on one, fewer hops left, or as many and nearer the goal.
+    const h = left === undefined ? Infinity : field!.get(i + 1);
+    if (h === undefined) return;
+    if (h < bh || (h === bh && d < bd)) [best, bh, bd] = [i + 1, h, d];
   });
   if (best === 0) return;
   const [px, py] = world.cellPoint(world.airbases[best - 1]!.cell);
   if (orderRebase(world, id, px, py) !== 0 || world.wingBase.get(id) !== best) return;
   if (base > 0) used.set(base, (used.get(base) ?? 0) - need);
   used.set(best, (used.get(best) ?? 0) + need);
+}
+
+/**
+ * The ferry hops (FERRY_RANGE × `range` km each) over the airbases nation `nation`'s side holds,
+ * room not weighed, from each to one with a formation of `front` in `ok` within `range`: 0 there,
+ * absent where no chain leads (PLAN 7.26c4). By airbase index, as `world.wingBase` holds them.
+ */
+function hopField(world: World, nation: number, range: number, front: readonly number[], ok: ReadonlySet<number>): ReadonlyMap<number, number> {
+  const c = world.formations.cols;
+  // By ascending y: only the bases within a km reach's rows of a place are looked at (as `inReachOf`).
+  const bases: { i: number; x: number; y: number }[] = [];
+  world.airbases.forEach((b, i) => {
+    if (!ofSide(world, nation, world.cells.controller[b.cell]!)) return;
+    const [x, y] = world.cellPoint(b.cell);
+    bases.push({ i: i + 1, x, y });
+  });
+  bases.sort((a, b) => a.y - b.y || a.i - b.i);
+  let kyMin = Infinity;
+  for (const k of navOf(world).grid.ky) kyMin = Math.min(kyMin, k);
+  /** Each base within `km` of (x, y), by `visit`. */
+  const near = (x: number, y: number, km: number, visit: (b: { i: number; x: number; y: number }) => void): void => {
+    const rows = km / kyMin;
+    let lo = 0;
+    let hi = bases.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (bases[mid]!.y < y - rows) lo = mid + 1;
+      else hi = mid;
+    }
+    for (let k = lo; k < bases.length && bases[k]!.y <= y + rows; k++) if (seaKm(world, x, y, bases[k]!.x, bases[k]!.y) <= km) visit(bases[k]!);
+  };
+  const hops = new Map<number, number>();
+  const queue: { i: number; x: number; y: number }[] = [];
+  const seed = (b: { i: number; x: number; y: number }): void => {
+    if (hops.has(b.i)) return;
+    hops.set(b.i, 0);
+    queue.push(b);
+  };
+  for (const f of front) if (ok.has(f)) near(c.x[f]!, c.y[f]!, range, seed);
+  const ferry = FERRY_RANGE * range;
+  for (let k = 0; k < queue.length; k++) {
+    const b = queue[k]!;
+    const h = hops.get(b.i)! + 1;
+    near(b.x, b.y, ferry, (o) => {
+      if (hops.has(o.i)) return;
+      hops.set(o.i, h);
+      queue.push(o);
+    });
+  }
+  return hops;
 }
 
 /** The places of the airbases nation `nation`'s side holds (`ofSide`), [x, y] pairs by ascending y (PLAN 7.26b). */

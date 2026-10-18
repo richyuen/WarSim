@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { airAi } from '../../src/sim/ai/air';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { basePlace, FERRY_RANGE, wingRange } from '../../src/sim/systems/air';
+import { basePlace, FERRY_RANGE, ofSide, wingRange } from '../../src/sim/systems/air';
 import { seaKm } from '../../src/sim/systems/navalCombat';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -13,7 +13,7 @@ import { nationId } from '../helpers/sim1938';
 // front to serve and none of it in range now rebases toward it, a hop a day, until it is in range
 // and is tasked.
 
-const [SOV, POL] = ['SOV', 'POL'].map(nationId) as [number, number];
+const [SOV, POL, ENG, BRA] = ['SOV', 'POL', 'ENG', 'BRA'].map(nationId) as [number, number, number, number];
 
 describe('a wing out of range of its front (PLAN 5.12a)', () => {
   it('rebases toward it a hop a day, each hop within its range and nearer, and is tasked there', () => {
@@ -137,5 +137,85 @@ describe('a wing out of range of its front (PLAN 5.12a)', () => {
     expect(w.wingMission.get(fighter)?.kind, 'tasked once in range of the front it can reach').toBe('patrol');
     expect(fromFront(w.wingBase.get(fighter)!)).toBeLessThanOrEqual(range);
     process.stderr.write(`fighter ${fighter}: the unreachable formation ${ud.toFixed(0)} km from its base; from the front ${hops.map((d) => d.toFixed(0)).join(' → ')} km\n`);
+  });
+
+  // PLAN 7.26c4: a hop went only to a base nearer the goal than the wing's own. Where the chain of
+  // bases bends (round a sea, along a coast), every base within a ferry's reach was further, and
+  // the wing sat (17 of 23 such wings on six states of seeds 2843 and 7919, measure-c4.md).
+  it('follows a chain of bases to the front though the first hop is no nearer it', () => {
+    const w: World = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) }).world;
+    const c = w.formations.cols;
+    w.wars.start([ENG], [BRA], 0);
+    const fighter = [...w.wingBase].find(([id, b]) => b > 0 && c.nation[id] === ENG && w.rules!.units[w.rules!.templates[c.template[id]!]!.elements[0]!.unit]!.cls === 'fighter')![0];
+    const range = wingRange(w, fighter);
+    const ferry = FERRY_RANGE * range;
+    const bases = w.airbases.map((_, i) => i + 1).filter((b) => ofSide(w, ENG, w.cells.controller[w.airbases[b - 1]!.cell]!));
+    const km = (b: number, x: number, y: number): number => {
+      const p = basePlace(w, b)!;
+      return seaKm(w, p[0], p[1], x, y);
+    };
+    const hop = (a: number, b: number): number => km(a, ...basePlace(w, b)!);
+    const enemy: number[] = [];
+    w.formations.forEach((id) => {
+      if (!w.isFleet(id) && !w.offLand(id) && c.nation[id] === BRA) enemy.push(id);
+    });
+    const outOfEnemy = (b: number): boolean => enemy.every((p) => km(b, c.x[p]!, c.y[p]!) > range);
+    // The hops left from each base to one within range of (x, y), over the bases of Britain's side.
+    const left = (x: number, y: number): Map<number, number> => {
+      const h = new Map<number, number>();
+      const q = bases.filter((b) => km(b, x, y) <= range);
+      for (const b of q) h.set(b, 0);
+      for (let k = 0; k < q.length; k++)
+        for (const o of bases) {
+          if (h.has(o) || hop(q[k]!, o) > ferry) continue;
+          h.set(o, h.get(q[k]!)! + 1);
+          q.push(o);
+        }
+      return h;
+    };
+    // The place of the front and the wing's base: the base two hops or more from a base in range
+    // of the place, out of range of every Brazilian formation, whose every base within a ferry's reach
+    // is further from the place than it.
+    let found: { x: number; y: number; base: number } | null = null;
+    for (let y = 2; y < w.cells.h - 2 && !found; y += 6)
+      for (let x = 2; x < w.cells.w - 2 && !found; x += 6) {
+        if (!bases.some((b) => km(b, x, y) <= range)) continue;
+        const h = left(x, y);
+        for (const b of bases) {
+          if ((h.get(b) ?? 0) < 2 || !outOfEnemy(b)) continue;
+          if (bases.some((o) => o !== b && hop(b, o) <= ferry && km(o, x, y) < km(b, x, y))) continue;
+          found = { x, y, base: b };
+          break;
+        }
+      }
+    expect(found, 'a British base whose chain to a place bends away from it first').not.toBeNull();
+    const { x, y, base } = found!;
+    // The British front: one British formation, engaged, at that place.
+    let own = -1;
+    w.formations.forEach((id) => {
+      if (own < 0 && !w.isFleet(id) && !w.offLand(id) && c.nation[id] === ENG) own = id;
+    });
+    [c.x[own], c.y[own]] = [x, y];
+    c.engaged[own] = 1;
+    w.wingBase.set(fighter, base);
+    w.wingMission.delete(fighter);
+    [c.x[fighter], c.y[fighter]] = basePlace(w, base)!;
+    const h = left(x, y);
+
+    const path: number[] = [base];
+    for (let day = 0; day < 30 && !w.wingMission.has(fighter); day++) {
+      const was = w.wingBase.get(fighter)!;
+      airAi(w);
+      const now = w.wingBase.get(fighter)!;
+      if (now === was) continue;
+      // Each hop within a ferry's reach and fewer hops from the front.
+      expect(hop(was, now)).toBeLessThanOrEqual(ferry);
+      expect(h.get(now)!).toBeLessThan(h.get(was)!);
+      path.push(now);
+    }
+    expect(km(path[1] ?? base, x, y), 'the first hop no nearer the front').toBeGreaterThan(km(base, x, y));
+    expect(w.wingMission.get(fighter)?.kind, 'tasked once in range of the front').toBe('patrol');
+    expect(km(w.wingBase.get(fighter)!, x, y)).toBeLessThanOrEqual(range);
+    process.stderr.write(`fighter ${fighter}: from the front ${path.map((b) => `${km(b, x, y).toFixed(0)} (${h.get(b)})`).join(' → ')} km\n`);
   });
 });

@@ -18849,3 +18849,28 @@ No rule changed and nothing on screen changed. One task came out of it.
   rule never biting on seed 7919: the situations the measure found were not in them. Save states
   from the current code in the windows where the measure says the rule bites.
 - **Next:** PLAN 7.26c4 (the rebase over more than one hop); c3b, c1b, c2b's fix after it.
+
+## 2026-10-18 — PLAN 7.26c4: the rebase along a chain of airbases
+
+- **Start:** gate green on `45eb4c3`; critic not due.
+- **Measured** (`docs/evidence/7.26/measure-c4.md`, probe `.cache/tmp/c4probe.ts` on six states of
+  seeds 2843 and 7919 saved from `45eb4c3`): of 114 wings at war out of range whose side has a free
+  base in range of an enemy beyond one hop, 91 have no chain of the side's bases within ferry hops
+  (Japan to Britain's front, French Africa, Britain to China); 23 have one of 2–5 hops, and 17 of
+  those had no base within a hop nearer the goal: they sat. Room not a cause (room-blind chains =
+  free chains).
+- **Done** (ADR-512): `hopField` (the ferry hops over the side's bases to one with the front in
+  range, per front, nation and range, for the day, row-windowed as `inReachOf`); a wing on a chain
+  hops to fewer hops left, or as many and nearer the goal; off a chain, as before.
+- **Tried, changed:** fewer hops alone. From 2843's day 1100 it cut the useful lateral hops (431
+  rebases, 261 followed by a mission → 327, 180); the pair restores them (555, 319).
+- **Measured after:** from the six states, 180 days, sorties aloft 17.19 → 17.33 (neutral, as the
+  small share predicted). `airWar.ts` 8 years, years 2–8 mean 18.2 → 16.2 (2843) and 15.0 → 12.8
+  (7919), one run each, diverging from year 1; PLAN 7.26e now says to question this rule if its ten
+  seeds fall. Seed 99, old and new at once on separate cores, swapped: `airAi` +0.03 ms a tick
+  (about 1.5 %), year 1's tick within the spread. Pin 5274b933 → 63d9b3b5.
+- **Tests:** `airToward1938.test.ts` "follows a chain of bases to the front though the first hop is
+  no nearer it" (a British fighter, 1,072 → 1,078 → 753 km, tasked; red before).
+- **Gotcha:** the Soviet Union, Germany, Japan and Italy have no base in 1938 whose chain bends away
+  from a front first (`.cache/tmp/c4shape.ts`); Britain's bloc has 48 such places.
+- **Next:** PLAN 7.26c1b (the own front's far marches), then c2b's fix; then 7.26e.
