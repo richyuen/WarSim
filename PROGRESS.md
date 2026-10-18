@@ -18662,3 +18662,5 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `scenario1938.test.ts`'s build-time test (under 2,000 ms) red in each of today's three
   gates' parallel runs (2,821 ms under the 10 sims' load; again with none running), green alone each
   time: the gate's rerun covers it. A wall-time limit under a full parallel run.
+- **After the commit:** the sweep-config tests by hand (the gap reads `War.lastStrike` on the decision
+  path, saved and loaded): 18 of 18, save and load among them.
