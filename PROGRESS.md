@@ -18053,3 +18053,27 @@ No rule changed and nothing on screen changed. One task came out of it.
   in each gate.
 - **Next:** PLAN 7.18i. With its first commit: `aimOf` returns early on an empty aim again (its
   `desperationOf` and `resolveOf` now run for every holder's war each day; same behaviour, the pin).
+
+## 2026-10-17 — PLAN 7.18i: a strike's costs weighed by the chance it lands
+
+- **Start:** gate green on a clean tree (`41e8788`; four evidence pictures left unstaged as before).
+  An earlier session was cut off by the usage limit after the measure's runs began.
+- **Measured first:** `tools/diag/nukeGates.ts` (extended: `held`, war-days whose best place is at
+  most 0 while a place's utility if its warhead got there is above 0), seeds 1–10 × 30 years: 835 of
+  96,085 war-days on 6 of 10 seeds, 441 on a losing side.
+- **Done:** U = through × the utility of a burst (the costs fall only on a burst; a launch stopped
+  short spends its warhead only). ADR-491, SPEC §6.4, `7d9fa18`. `aimOf` returns early on an empty
+  aim (7.18h's note). Pin unmoved.
+- **Measured after** (`docs/evidence/7.18/measure-i.md`): the held war-days are all out of the
+  holder's reach (`noReach`), so unaided worlds hardly change: seeds 1–9 decide the same, day for
+  day; seed 10 parts at day 3,361 (6 decisions, not 9). Bursts on 8 of 10 seeds, 7 before year 20;
+  tolls under 5,000 16 → 15, resolve strikes on light nations 2 → 1; no interception in any.
+  `nukeResolve.ts` counts `NukeIntercepted` now.
+- **The critic's set-ups:** Poland strikes Germany on seeds 5591 (day 40), 7127 (day 88, two
+  stopped short first) and 3929 (day 65). France (7127) strikes Berlin on day 63 and Germany sues
+  for peace on day 66, before Paris falls: `nukeOverrun1938`'s check of desperation after the fall
+  (7.18a) now runs on the same war without warheads (Paris falls about day 79), its assertions
+  unchanged.
+- **Tests:** `nukePoland1938` (three seeds), `nukeOverrun1938` (split), `nukeUtility1938`,
+  `nukeResolve1938` (the new input); the related unit tests and the pin in the gate.
+- **Next:** PLAN 7.18j (the theatre's floor; Poland's and France's strikes now fall on the Germans).

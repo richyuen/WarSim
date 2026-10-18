@@ -3,7 +3,8 @@
  * side remembers it (`War.lastStrike`), whether the resolve to end a long war drove it (the side's
  * own desperation under its resolve, PLAN 7.18e), the place's parts (`placeParts`: the enemy side's
  * output and men there, the men of the theatre, the capital, the chance through), the nation whose
- * land it is and that nation's share of the enemy side's output; and the burst's toll.
+ * land it is and that nation's share of the enemy side's output; and the burst's toll. PLAN 7.18i:
+ * the launches stopped short (`NukeIntercepted`) too.
  *
  * Usage: npx tsx tools/diag/nukeResolve.ts <seed> [years = 30] [out = .cache/nukeResolve_<seed>.json]
  */
@@ -24,6 +25,7 @@ const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
 const r3 = (v: number): number => +v.toFixed(3);
 const bursts: { day: number; n: string; struck: string; dead: number; x: number; y: number }[] = [];
 const decisions: Record<string, unknown>[] = [];
+const intercepted: { day: number; n: string; x: number; y: number }[] = [];
 // Each war side's last strike decided, and how many of its strikes its resolve drove.
 const lastBySide = new Map<string, number>();
 const resolveCount = new Map<string, number>();
@@ -38,6 +40,7 @@ for (let y = 0; y < years; y++) {
           const k = nukeStrike(ev[i + 3]!);
           bursts.push({ day, n: tag(ev[i + 2]!), struck: tag(k.nation), dead: k.dead, x: ev[i + 4]!, y: ev[i + 5]! });
         }
+        if (ev[i + 1] === EventKind.NukeIntercepted) intercepted.push({ day, n: tag(ev[i + 2]!), x: ev[i + 4]!, y: ev[i + 5]! });
         if (ev[i + 1] === EventKind.NukeDecided) decided.push({ tick: ev[i]!, n: ev[i + 2]!, u: ev[i + 3]! / 1000, x: ev[i + 4]!, y: ev[i + 5]! });
       }
       ww.out.events.length = 0;
@@ -107,5 +110,5 @@ for (const dcs of decisions) {
   const b = bursts.find((b) => b.x === dcs.x && b.y === dcs.y && b.day >= (dcs.day as number));
   dcs.dead = b ? b.dead : null;
 }
-writeFileSync(process.argv[4] ?? `.cache/nukeResolve_${seed}.json`, JSON.stringify({ seed, years, decisions, bursts }, null, 1));
-console.log(`done: seed ${seed} decisions ${decisions.length} bursts ${bursts.length}`);
+writeFileSync(process.argv[4] ?? `.cache/nukeResolve_${seed}.json`, JSON.stringify({ seed, years, decisions, bursts, intercepted }, null, 1));
+console.log(`done: seed ${seed} decisions ${decisions.length} bursts ${bursts.length} intercepted ${intercepted.length}`);

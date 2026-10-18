@@ -63,7 +63,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       (RESOLVE_STRIKES); a resolve strike only on a nation of weight to the enemy side; unit tests;
       seeds 1–10 re-measured. Done: ADR-489, ADR-490 (`d5bed3e`, `b03f62d`); at most 3 a war (10
       before), 2 light nations left of 7, bursts in 8 of 10 seeds as before (`measure-h.md`).
-    - [ ] 7.18i A warhead's costs weighed as its gain is: a place's value is × the chance the bomber
+    - [x] 7.18i A warhead's costs weighed as its gain is: a place's value is × the chance the bomber
       gets through (`valueIn`'s `through`, 0.2 under full enemy air superiority), but the costs
       (taboo, outrage, alliance unity, the grievance) fall only on a burst (`detonate`, `aftermath`)
       and are weighed whole. 7.18f's probe (Poland, 10 warheads, a strategic group at Warsaw,
@@ -73,7 +73,9 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       what keeps a utility under 0, seeds 1–10 × 30 years); the costs weighed as they fall (an
       intercepted launch spends the warhead and may lose the bomber, nothing more); Poland strikes
       on seeds 7127 and 3929; a unit test; seeds 1–10 re-measured (with 7.18h's: not more strikes
-      on poor places).
+      on poor places). Done: ADR-491 (`7d9fa18`); 835 held war-days on 6 of 10 seeds before, each
+      out of reach; Poland strikes Germany on 5591, 7127 and 3929; seeds 1–9 the same, seed 10
+      another world, tolls under 5,000 16 → 15 (`docs/evidence/7.18/measure-i.md`).
     - [ ] 7.18j A place's men weighed against a theatre of weight (7.18h's floor, after 7.18i): 7.18c's
       theatre share makes a lone garrison 100 % of its theatre (seed 4's Britain on Japanese garrisons
       of 2,267 to 5,229 men in theatres of no more, 935 to 2,305 dead; seed 1's Britain on #114's of
