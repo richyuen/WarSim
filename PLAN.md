@@ -203,12 +203,15 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           42–347 cells (Africa and Eurasia are one land), of the kind §2 found seldom ends aboard.
           The rule not built; taken up again only if 7.26g is short, with the partner's transports
           sent to the nation's port rather than its men to the partner's.
+          After 7.26g (2026-10-18): short; taken on 7.26h's evidence, under 7.26j.
       - [ ] 7.26c3c The lift by sea to a nation's own front (from 7.26c1b, `measure-c1.md` §6: 16 %
         of own-front planners' far men across the sea, Japan, Britain, France; 24 % behind closed
         ground or the sea on their landmass): not measured by c3b's columns. Measured first: from
         a checkpoint, for each such formation, a port of its nation's on its land with transports,
         and a port of its nation's on the front's land. AT: the measure; the rule only if the
         7.26 AT is short. Taken after 7.26g, and only if its AT is short (2026-10-18, ADR-516).
+        After 7.26g (2026-10-18): short; taken on 7.26h's evidence, under 7.26j, not before 7.26h
+        and 7.26i.
       - [x] 7.26c4 The rebase over more than one hop: in 7.26d's short war-years 36 % of the wings
         out of range have a base of their side with room within range of an enemy, a tenth of
         them within one ferry hop (`freeInFerry`, 3 % of all out of range); 1.6 wings rebase a day of 54. Measured first: whether
