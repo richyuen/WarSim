@@ -1650,24 +1650,31 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - *Contact:* two fleets of nations at war of which either sees the other and one has a
     weapon a ship of the other can be hit by: a gun or torpedoes for a surface ship, depth
     charges for a submarine (`canHit`, PLAN 4.8k, ADR-290); joined, a sea battle. A fleet in one is
-    `engaged` and holds.
-  - *Its range* (`world.seaRange`, state, saved while not empty): the nearest pair's
-    distance at its first hour, then by the sides' reach (longest gun) and pace (slowest
-    ship's top speed): beyond both both close at the two paces; between them the shorter
-    closes at what its pace has over the other's; within both it stays.
-  - *Fire:* each ship whose gun reaches the range fires at an enemy ship weighed by hit
-    points (kept 4 hours): `hard` × (0.5 where the target's armour beats its piercing) ×
+    `engaged`: the movement system leaves it; it moves only to close.
+  - *The closing* (PLAN 7.19a, ADR-493): from a battle's second hour a fleet with no enemy
+    fleet of the battle within its reach (against a surface ship its longest gun, torpedo or
+    carrier wings' quarter range; against a submarine its depth charges', its guns' reach)
+    closes on the nearest it can hit, on the water (the straight line where it is water, else
+    its sea way), by `closeBy` (its template's top speed): beyond both reaches the two close
+    together to the longer reach, each its share by its pace; between the two the fleet of the
+    shorter reach closes by what its pace has over the other's, to its reach, and the other
+    holds it off; a fleet of submarines closes at its pace whatever the other's (under water).
+    The record's range is the distance of its nearest two fleets at war with each other.
+    Until 7.19a one range for the whole battle closed so while every fleet stood still, and
+    ships fired at fleets up to 292 km off (seed 5591).
+  - *Fire:* each ship fires at an enemy ship weighed by hit points (kept 4 hours, while
+    within its reach) in the fleets its weapon reaches, by the distance of the two fleets: `hard` × (0.5 where the target's armour beats its piercing) ×
     `SEA_FIRE_SCALE` 2 × the buffs ÷ the target's hit points, in ships; simultaneous;
     FireEvents. Four battleships sink four light cruisers from 24 km in 5 hours, losing
     140 of 8,000 hit points and none in the first hour.
   - *Torpedoes and the screen* (PLAN 4.3b, ADR-255; `torpedo`, `torpedo_km`, `asw` of
     the units' data: destroyer 40 at 10 km and depth charges 10, light cruiser 20 at 8,
     submarine 70 at 6, its gun a deck gun of 3 at 4 km): a ship fires its torpedoes at its
-    target where their reach covers the range, a submarine whatever the range (it closes
-    submerged); no armour against a torpedo; × the screen of a target that is no
+    target where their reach covers the two fleets' distance, a submarine too (PLAN 7.19a:
+    before, whatever the range); no armour against a torpedo; × the screen of a target that is no
     destroyer: 1 − `SCREEN` 0.6 × min(1, its side's destroyers ÷ its side's other surface
-    ships). A submarine is no target of a gun or a torpedo: only of depth charges, at any
-    range. A submarine flotilla on a battle squadron for 3 hours: its larger ships lose
+    ships). A submarine is no target of a gun or a torpedo: only of depth charges, within the
+    reach of the hunter's guns (PLAN 7.19a: before, at any range). A submarine flotilla on a battle squadron for 3 hours: its larger ships lose
     1,323 hit points with its 8 destroyers, 3,200 with none.
   - *The battle's record and its end* (PLAN 4.3c, ADR-256; `world.seaBattles`, state,
     saved while there is one): its fleets with the ships each came in with, its range,

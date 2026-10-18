@@ -7,17 +7,23 @@
  * 5.8t2) × (1 − the enemy's least stealthy ship's `stealth` / 100). Two fleets of
  * nations at war in which either sees the other, and of which one has a weapon (a gun: `rangeKm`
  * and `hard` above 0; torpedoes: `torpedoKm` and `torpedo`), are in contact; fleets in contact, joined, are one sea battle. A fleet in a battle
- * is `engaged`: it holds (the movement system leaves it), as a land formation in contact does.
+ * is `engaged`: the movement system leaves it, as a land formation in contact; it moves only to close.
  *
- * The range of a battle (km, its record's in `world.seaBattles`, state): at its first hour the distance of its
- * nearest pair in contact, then each hour by the two sides' reach (their longest gun) and pace
- * (their slowest ship's top speed; a reach is a side's longest gun or torpedo). Beyond both reaches both close; between the two the side of
- * the shorter reach closes at what its pace has over the other's, and the other holds it off;
- * within the shorter reach it stays. A side's fleets are the battle's that are not at war with
- * its first fleet's nation; the other side, those that are.
+ * The closing (PLAN 7.19a, ADR-493; until then one range for the whole battle closed by the two
+ * sides' reach and pace while every fleet stood still, and a fleet fired at fleets hundreds of km
+ * off): from a battle's second hour a fleet that has no enemy fleet of the battle within its reach
+ * (against a surface ship its longest gun or torpedo, or its carriers' wings; against a submarine
+ * its depth charges', its guns' reach) closes on the nearest one it can hit, on the water, by
+ * `closeBy`: beyond both reaches the two close together, by their paces (the template's top
+ * speed), to the longer reach at most; between the two the fleet of the shorter reach closes by
+ * what its pace has over the other's, to its reach, and the other holds it off. The range of a
+ * battle (km, its record's in `world.seaBattles`, state) is the distance of its nearest two fleets
+ * at war with each other. A side's fleets are the battle's that are not at war with its first
+ * fleet's nation; the other side, those that are.
  *
- * Fire (per battle, per hour): every ship with a gun that reaches the range fires at a ship of an
- * enemy fleet in its battle, chosen by weight (its hit points: a battleship draws more fire than a
+ * Fire (per battle, per hour): every ship with a weapon fires at a ship of an enemy fleet of its
+ * battle within its reach (its gun's where its gun reaches that fleet, its torpedoes' where they
+ * do), chosen by weight (its hit points: a battleship draws more fire than a
  * destroyer) with hash32(seed, tick, element) and kept for `COOLDOWN` hours. Damage in ships:
  *   hard × (ARMOR_PEN where its armour beats the shell's piercing) × SEA_FIRE_SCALE
  *       × the attack buffs of the shooter ÷ the defence buffs of the target ÷ target hpPerUnit.
@@ -31,7 +37,10 @@
  * the target: a ship that is no destroyer, of a side with destroyers in the battle, takes
  * × (1 − SCREEN × min(1, its side's destroyers ÷ its side's other surface ships)). A
  * submarine is no target of a gun or a torpedo (it is under water): only of depth charges
- * (`asw`, a destroyer's), whatever the range, chosen among the enemy's submarines.
+ * (`asw`, a destroyer's), within the reach of its guns, chosen among the enemy's submarines. A
+ * submarine closes to its torpedoes' reach as any other ship, at its pace whatever the other's: a
+ * fleet of submarines closes under water, and no faster fleet holds it off (before PLAN 7.19a it
+ * fired them at any range).
  *
  * A battle's record (PLAN 4.3c, `world.seaBattles`): its fleets with the ships each came in
  * with, its range, its two sides' first nations and the ships each side lost, where it began.
@@ -43,19 +52,20 @@
  *
  * Carrier air groups (PLAN 5.4d): a fleet's carriers' wings (on board, not in the air on a sortie
  * of their own) see for it and are its weapon as far as `CARRIER_SPOT_SHARE` of their range:
- * its detection and its reach; once in `CARRIER_CYCLE` hours each that reaches the range strikes
- * the enemy's surface ships of the battle, as a naval strike does.
+ * its detection and its reach; once in `CARRIER_CYCLE` hours each strikes the enemy's surface
+ * ships of the battle in the fleets within that reach, as a naval strike does.
  *
  * Not here: sea control (PLAN 4.4); the AI's orders (PLAN 4.6).
  */
 import { hash32, hashToUnit } from '../core/hash';
-import { hypot } from '../core/dmath';
+import { atan2, hypot } from '../core/dmath';
 import { EventKind } from '../../shared/events';
 import { SIDE_SHIPS } from '../../shared/history';
+import { isLand } from '../../shared/terrain';
 import { nearestCellWhere } from '../data/ownership';
 import { airOf, basinOf, navOf, portSeaOf, seaOf, type SeaBattle, type World } from '../world';
-import { orderSail } from './sail';
-import { applyLoss, elementIndex, elementPlace, loopW, settleFormation, slotCount } from './elements';
+import { orderSail, sailStep } from './sail';
+import { applyLoss, elementIndex, elementPlace, loopW, noteMove, settleFormation, slotCount } from './elements';
 import { ARMOR_PEN, COOLDOWN } from './combat';
 import { wingRange } from './air';
 import { NAVAL_STRIKE_FIRE, shipEffectiveness } from './airCombat';
@@ -104,8 +114,9 @@ interface FleetFacts {
   stealth: number;
   reach: number;
   kmh: number;
-  /** Its depth charges (`asw`), the only weapon a submarine is a target of; and what of it can be hit: a surface ship, a submarine. */
+  /** Its depth charges (`asw`), the only weapon a submarine is a target of, and their reach (km, the gun's of a ship that has them); and what of it can be hit: a surface ship, a submarine. */
   asw: number;
+  aswReach: number;
   surface: boolean;
   submerged: boolean;
 }
@@ -120,17 +131,61 @@ export function seaKm(world: World, x0: number, y0: number, x1: number, y1: numb
   return hypot(dx * g.kx[row]!, (y1 - y0) * g.ky[row]!);
 }
 
-/** The range of a battle after an hour, from `r`: by the reach and the pace of its two sides (see the head of the file). */
-export function nextRange(r: number, reachA: number, kmhA: number, reachB: number, kmhB: number): number {
-  const long = Math.max(reachA, reachB);
-  const short = Math.min(reachA, reachB);
-  if (r > long) return Math.max(long, r - (kmhA + kmhB));
-  if (r > short) {
-    const closer = reachA < reachB ? kmhA : kmhB;
-    const keeper = reachA < reachB ? kmhB : kmhA;
-    return Math.max(short, r - Math.max(0, closer - keeper));
+/**
+ * The km a fleet closes in an hour on the enemy fleet it closes on, `d` km off (PLAN 7.19a; see the
+ * head of the file): by its reach and pace against that fleet, and that fleet's against it. Beyond
+ * both reaches both close, together by their two paces and to the longer reach at most, each its
+ * share of it by its pace; between the two the fleet of the shorter reach closes by what its pace
+ * has over the other's, to its reach at most, and the other holds it off; within its reach, or
+ * with no weapon against that fleet, it closes none.
+ */
+export function closeBy(d: number, reach: number, kmh: number, theirReach: number, theirKmh: number): number {
+  if (reach <= 0 || d <= reach) return 0;
+  if (d <= theirReach) return Math.min(Math.max(0, kmh - theirKmh), d - reach);
+  // They close too where they have a weapon against it: the two together to the longer reach.
+  if (theirReach <= 0 || kmh + theirKmh <= 0) return Math.min(kmh, d - reach);
+  return (Math.min(kmh + theirKmh, d - Math.max(reach, theirReach)) * kmh) / (kmh + theirKmh);
+}
+
+/**
+ * Fleet `id` closes `km` on the point (`tx`, `ty`) (PLAN 7.19a): on the straight line where it is
+ * water all the way, else along its sea way (`orderSail`, at that pace for the hour). A closing
+ * is the battle's, not an order: the fleet is under no way after it (an order it had is dropped).
+ */
+function closeOn(world: World, id: number, tx: number, ty: number, km: number): void {
+  const c = world.formations.cols;
+  const { w, h, terrain } = world.cells;
+  const x0 = c.x[id]!;
+  const y0 = c.y[id]!;
+  let dx = tx - x0;
+  if (world.settings.loopingMap && Math.abs(dx) > w / 2) dx -= Math.sign(dx) * w;
+  const dy = ty - y0;
+  const d = seaKm(world, x0, y0, tx, ty);
+  if (d <= 0 || km <= 0) return;
+  const t = Math.min(1, km / d);
+  const steps = Math.max(1, Math.ceil(4 * hypot(dx, dy) * t));
+  let clear = true;
+  for (let i = 1; i <= steps && clear; i++) {
+    const x = x0 + (dx * t * i) / steps;
+    const y = y0 + (dy * t * i) / steps;
+    const cx = ((Math.floor(x) % w) + w) % w;
+    const cy = Math.floor(y);
+    if (cy < 0 || cy >= h || isLand(terrain[cy * w + cx]!)) clear = false;
   }
-  return r;
+  c.moving[id] = 0;
+  world.paths.delete(id);
+  if (clear) {
+    noteMove(world, id);
+    const x = x0 + dx * t;
+    c.x[id] = x < 0 ? x + w : x >= w ? x - w : x;
+    c.y[id] = y0 + dy * t;
+    c.facing[id] = atan2(dy, dx);
+    return;
+  }
+  if (!orderSail(world, id, tx, ty)) return;
+  sailStep(world, id, km);
+  c.moving[id] = 0;
+  world.paths.delete(id);
 }
 
 function factsOf(world: World, id: number, els: readonly number[], air: Map<number, number[]>): FleetFacts | null {
@@ -140,6 +195,7 @@ function factsOf(world: World, id: number, els: readonly number[], air: Map<numb
   let stealth = Infinity;
   let reach = 0;
   let asw = 0;
+  let aswReach = 0;
   let surface = false;
   let submerged = false;
   for (const e of els) {
@@ -150,6 +206,7 @@ function factsOf(world: World, id: number, els: readonly number[], air: Map<numb
     if (u.hard > 0) reach = Math.max(reach, u.rangeKm);
     if (u.torpedo > 0) reach = Math.max(reach, u.torpedoKm);
     asw = Math.max(asw, u.asw);
+    if (u.asw > 0) aswReach = Math.max(aswReach, u.rangeKm);
     if (u.cls === 'ss') submerged = true;
     else surface = true;
   }
@@ -167,7 +224,7 @@ function factsOf(world: World, id: number, els: readonly number[], air: Map<numb
     detection *= 1 + AIR_DETECTION * (2 * s - 1);
   }
   const rule = world.rules!.templates[c.template[id]!];
-  return { id, nation: c.nation[id]!, detection, stealth, reach, kmh: rule?.speedKmh ?? 0, asw, surface, submerged };
+  return { id, nation: c.nation[id]!, detection, stealth, reach, kmh: rule?.speedKmh ?? 0, asw, aswReach, surface, submerged };
 }
 
 /** Fleet `id`'s detection this hour, km (PLAN 4.3a; its carriers' wings and the air over it with it): 0 for one with no ship. */
@@ -399,22 +456,51 @@ export function navalCombatSystem(world: World): void {
     rec.ships = rec.fleets.map((id) => entry.get(id) ?? shipsOf(world, id));
     seen.add(rec);
     const first = rec.a;
-    // The two sides: the reach and pace of each, and the range of the hour.
+    // The two sides' reach (for who breaks off), and each fleet's facts at the hour's start.
     let reachA = 0;
     let reachB = 0;
-    let kmhA = Infinity;
-    let kmhB = Infinity;
+    const facts = new Map<number, FleetFacts>();
     for (const id of battle.fleets) {
       const ff = factsOf(world, id, idx.get(id)!, air)!;
-      if (world.wars.atWar(first, ff.nation)) {
-        reachB = Math.max(reachB, ff.reach);
-        kmhB = Math.min(kmhB, ff.kmh);
-      } else {
-        reachA = Math.max(reachA, ff.reach);
-        kmhA = Math.min(kmhA, ff.kmh);
-      }
+      facts.set(id, ff);
+      if (world.wars.atWar(first, ff.nation)) reachB = Math.max(reachB, ff.reach);
+      else reachA = Math.max(reachA, ff.reach);
     }
-    const r = fresh ? battle.km : nextRange(rec.range, reachA, kmhA, reachB, kmhB);
+    // The closing (PLAN 7.19a): from its second hour each fleet out of reach of every enemy fleet
+    // of the battle it can hit closes on the nearest of them (`closeBy`), all from where they
+    // stood at the hour's start.
+    if (!fresh) {
+      const reachOn = (a: FleetFacts, b: FleetFacts): number => Math.max(b.surface ? a.reach : 0, b.submerged ? a.aswReach : 0);
+      const moves: [number, number, number, number][] = [];
+      for (const id of battle.fleets) {
+        const a = facts.get(id)!;
+        let near: FleetFacts | null = null;
+        let nd = Infinity;
+        let within = false;
+        for (const o of battle.fleets) {
+          const b = facts.get(o)!;
+          if (!world.wars.atWar(a.nation, b.nation) || reachOn(a, b) <= 0) continue;
+          const d = seaKm(world, f.x[id]!, f.y[id]!, f.x[o]!, f.y[o]!);
+          if (d <= reachOn(a, b)) within = true;
+          if (d < nd) [near, nd] = [b, d];
+        }
+        if (within || !near) continue;
+        // A fleet of submarines closes under water: the other does not see it coming to hold it off.
+        const km = closeBy(nd, reachOn(a, near), a.kmh, reachOn(near, a), a.surface ? near.kmh : 0);
+        if (km > 0) moves.push([id, f.x[near.id]!, f.y[near.id]!, km]);
+      }
+      for (const [id, tx, ty, km] of moves) closeOn(world, id, tx, ty, km);
+    }
+    // The range of the hour: its nearest two fleets at war with each other.
+    const kmTo = new Map<number, number>();
+    const km = (p: number, q: number): number => {
+      const key = p < q ? p * 67108864 + q : q * 67108864 + p;
+      let v = kmTo.get(key);
+      if (v === undefined) kmTo.set(key, (v = seaKm(world, f.x[p]!, f.y[p]!, f.x[q]!, f.y[q]!)));
+      return v;
+    };
+    let r = Infinity;
+    for (const p of battle.fleets) for (const q of battle.fleets) if (p < q && world.wars.atWar(f.nation[p]!, f.nation[q]!)) r = Math.min(r, km(p, q));
     rec.range = r;
     const before = new Map(battle.fleets.map((id) => [id, shipsOf(world, id)]));
 
@@ -443,15 +529,18 @@ export function navalCombatSystem(world: World): void {
       const n = f.nation[sf]!;
       const enemies = battle.fleets.filter((o) => world.wars.atWar(n, f.nation[o]!));
       const buffAtk = Math.max(0, 1 + bf.sum('attack', 'nation', n) + bf.sum('attack', 'formation', sf));
-      // The enemy's ships by weight (hit points): on the surface, and under water.
-      const tables: ({ cand: number[]; cum: number[]; total: number } | null)[] = [null, null];
-      const tableOf = (sub: boolean): { cand: number[]; cum: number[]; total: number } => {
-        let table = tables[sub ? 1 : 0];
+      // The enemy's ships by weight (hit points), on the surface or under water, in the fleets
+      // within `reach` km of this one (PLAN 7.19a: a weapon reaches the fleet it fires at).
+      const tables = new Map<number, { cand: number[]; cum: number[]; total: number }>();
+      const tableOf = (sub: boolean, reach: number): { cand: number[]; cum: number[]; total: number } => {
+        const key = sub ? -1 - reach : reach;
+        let table = tables.get(key);
         if (!table) {
           const cand: number[] = [];
           const cum: number[] = [];
           let total = 0;
           for (const tf of enemies) {
+            if (km(sf, tf) > reach) continue;
             for (const tid of idx.get(tf) ?? []) {
               if (ec.strength[tid]! <= 0 || (units[ec.unit[tid]!]!.cls === 'ss') !== sub) continue;
               total += units[ec.unit[tid]!]!.hpPerUnit * ec.strength[tid]!;
@@ -459,7 +548,7 @@ export function navalCombatSystem(world: World): void {
               cum.push(total);
             }
           }
-          tables[sub ? 1 : 0] = table = { cand, cum, total };
+          tables.set(key, (table = { cand, cum, total }));
         }
         return table;
       };
@@ -492,28 +581,31 @@ export function navalCombatSystem(world: World): void {
         if (ec.strength[s]! <= 0) continue;
         const us = units[ec.unit[s]!]!;
         const full = (ec.strength[s]! / us.size) * SEA_FIRE_SCALE * buffAtk;
-        const gun = us.hard > 0 && us.rangeKm >= r;
-        const torpedo = us.torpedo > 0 && (us.cls === 'ss' || us.torpedoKm >= r);
-        if (gun || torpedo) {
-          // A target on the surface, kept while it lives and is the enemy's.
+        const gunKm = us.hard > 0 ? us.rangeKm : 0;
+        const torpedoKm = us.torpedo > 0 ? us.torpedoKm : 0;
+        const reach = Math.max(gunKm, torpedoKm);
+        if (reach > 0) {
+          // A target on the surface in a fleet within its reach, kept while it lives, is the
+          // enemy's and is within its reach.
           let t = ec.target[s]!;
-          const valid = t !== 0 && e.has(t) && ec.strength[t]! > 0 && enemies.includes(ec.formation[t]!) && units[ec.unit[t]!]!.cls !== 'ss';
+          const valid = t !== 0 && e.has(t) && ec.strength[t]! > 0 && enemies.includes(ec.formation[t]!) && units[ec.unit[t]!]!.cls !== 'ss' && km(sf, ec.formation[t]!) <= reach;
           if (valid && ec.cooldown[s]! > 0) {
             ec.cooldown[s] = ec.cooldown[s]! - 1;
           } else {
-            t = pick(tableOf(false), s, SALT_TARGET);
+            t = pick(tableOf(false, reach), s, SALT_TARGET);
             ec.target[s] = t;
             ec.cooldown[s] = COOLDOWN;
           }
           if (t !== 0) {
             const ut = units[ec.unit[t]!]!;
-            if (gun) volley(s, t, (us.hard * (ut.armor > us.piercing ? ARMOR_PEN : 1) * full) / defOf(t) / ut.hpPerUnit);
-            if (torpedo) volley(s, t, (us.torpedo * full * (ut.cls === 'dd' ? 1 : screen(f.nation[ec.formation[t]!]!))) / defOf(t) / ut.hpPerUnit, true);
+            const d = km(sf, ec.formation[t]!);
+            if (d <= gunKm) volley(s, t, (us.hard * (ut.armor > us.piercing ? ARMOR_PEN : 1) * full) / defOf(t) / ut.hpPerUnit);
+            if (d <= torpedoKm) volley(s, t, (us.torpedo * full * (ut.cls === 'dd' ? 1 : screen(f.nation[ec.formation[t]!]!))) / defOf(t) / ut.hpPerUnit, true);
           }
         }
         if (us.asw > 0) {
-          // Depth charges at a submarine of the enemy, whatever the range.
-          const t = pick(tableOf(true), s, SALT_HUNT);
+          // Depth charges at a submarine of the enemy within its guns' reach.
+          const t = pick(tableOf(true, us.rangeKm), s, SALT_HUNT);
           if (t !== 0) volley(s, t, (us.asw * full) / defOf(t) / units[ec.unit[t]!]!.hpPerUnit);
         }
       }
@@ -521,9 +613,9 @@ export function navalCombatSystem(world: World): void {
       // range strikes the enemy's surface ships of the battle, as a naval strike does (`strikes`):
       // its aircraft × `shipEffectiveness` × NAVAL_STRIKE_FIRE, spread by the ships' hit points.
       if (world.tick % CARRIER_CYCLE === 0) {
-        const table = tableOf(false);
         for (const wing of air.get(sf) ?? []) {
-          if (table.total <= 0 || CARRIER_SPOT_SHARE * wingRange(world, wing) < r) continue;
+          const table = tableOf(false, CARRIER_SPOT_SHARE * wingRange(world, wing));
+          if (table.total <= 0) continue;
           for (const s of idx.get(wing) ?? []) {
             if (ec.strength[s]! <= 0) continue;
             const us = units[ec.unit[s]!]!;
@@ -604,7 +696,7 @@ export function carrierStrikes(world: World): { wing: number; nation: number; so
       if (target < 0) continue;
       for (const wing of wings) {
         const kmh = rules.templates[c.template[wing]!]?.speedKmh ?? 0;
-        if (kmh <= 0 || CARRIER_SPOT_SHARE * wingRange(world, wing) < rec.range) continue;
+        if (kmh <= 0 || CARRIER_SPOT_SHARE * wingRange(world, wing) < km) continue;
         const hours = km / kmh;
         for (const strike of [last, last + CARRIER_CYCLE]) {
           if (strike - hours > world.tick || strike + hours < world.tick - 1) continue;

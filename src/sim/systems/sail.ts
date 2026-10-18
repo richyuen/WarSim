@@ -130,11 +130,13 @@ export function orderSail(world: World, id: number, x: number, y: number): boole
   return true;
 }
 
-/** The hour of a fleet under way (`movementSystem` calls it for a formation that is afloat and `moving`). */
-export function sailStep(world: World, id: number): void {
+/**
+ * The hour of a fleet under way (`movementSystem` calls it for a formation that is afloat and
+ * `moving`); `kmh` its pace this hour (a fleet closing in a sea battle, PLAN 7.19a: the km it closes).
+ */
+export function sailStep(world: World, id: number, kmh = sailKmh(world, id)): void {
   const c = world.formations.cols;
   const path = world.paths.get(id);
-  const kmh = sailKmh(world, id);
   if (!path || kmh <= 0) {
     c.moving[id] = 0;
     world.paths.delete(id);

@@ -18110,3 +18110,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   76 and 118 times in 50 years.
 - **Tests:** none changed (a measure; documents alone, the gate's parity).
 - **Next:** PLAN 7.19 (a sea battle's ticker row lands on the fight).
+
+## 2026-10-18 — PLAN 7.19a: a sea battle fought at the distance of its fleets
+
+- **Start:** gate green on a clean tree (`41c278a`; four evidence pictures left unstaged as before).
+- **Found** (`.cache/p719/probe.ts`, seed 5591, Germany on Britain): the critic's hour-41 battle is a
+  British carrier group and a German battle squadron 279 km apart, joined by the carrier's wings; the
+  battle's one range closed while every fleet stood still, so its destroyers 2 km apart fired nothing
+  (hours 46 to 60) and volleys flew up to 292 km. 7.19 split in three (a: the sim; b: when a row
+  shows; c: the row's pair and the spec).
+- **Done:** each fleet out of reach of every enemy fleet of its battle closes on the nearest it can
+  hit (`closeBy`: PLAN 4.3a's rule a fleet at a time; on the water, straight or by its sea way); a
+  ship fires only at fleets its weapon reaches by their distance; submarines close to 6 km under water
+  (ADR-493, SPEC §6.2). Pin 9fe2a568 → 14c6b2e8. Seed 99's year: 51 sea battles, 237 ships lost (69,
+  178 before); no naval volley over 22 km (345 over 40 km before). navalCombat 0.065 ms a tick.
+- **Tests:** `navalBattle1938` (the closing rule; the submarine fires the hour after closing); the
+  related unit tests (1,122) and the pin in the gate; the naval unit tests (18 files) by hand.
+- **Red by hand, left to 7.19b/c:** `seaRow1938`, `seaBattle1938`, `navalDemo1938` sample the first
+  battle, now a carrier pair 250–300 km apart that fires no gun; `shipMarks1938` looks at a battle's
+  first place, where its fleets no longer stand. `seaBattleSeen1938` green.

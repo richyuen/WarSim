@@ -167,6 +167,40 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-493 · 2026-10-18 · accepted — A sea battle fought at the distance of its fleets (PLAN 7.19a)
+
+- **Context.** Critic run 8, R8-B2: a sea battle's ticker row (seed 5591, Germany on Britain, hour
+  41) landed on dry Groningen, its pair of fleets 23 cells apart either side of the Dutch coast,
+  no fire in view. The cause is in the sim, not the view: a battle (fleets joined by detection,
+  a carrier's wings seeing 250 km) had one range, which closed by the two sides' reach and pace
+  while every fleet stood still (PLAN 4.3a). So a battle's destroyers 2 km apart fired nothing
+  while its range stood at a carrier's 250 km (seed 5591, hours 46 to 60), and ships fired at
+  fleets far beyond their guns: volleys of up to 292 km on seed 5591, 345 of seed 99's first
+  year's naval volleys over 40 km (longest 148), submarines' torpedoes at any range.
+- **Decision.** The range is the distance of the fleets. From a battle's second hour a fleet with
+  no enemy fleet of the battle within its reach (against a surface ship its longest gun, torpedo
+  or carrier wings' quarter range; against a submarine its depth charges', its guns' reach)
+  closes on the nearest it can hit (`closeBy`, PLAN 4.3a's rule for each fleet: beyond both
+  reaches the two close together to the longer reach, each its share by its pace; between the
+  two the shorter reach closes by what its pace has over the other's and the other holds it
+  off). It moves on the straight line where that is water, else along its sea way
+  (`orderSail`, the hour's step at that pace); a closing is the battle's, not an order, so an
+  order the fleet had is dropped (the AIs order idle fleets again). Each ship fires only at
+  fleets its weapon reaches by their distance: its gun's, its torpedoes', its depth charges'
+  (its guns' reach; before, any range), its carriers' wings'. A submarine closes to its
+  torpedoes' 6 km at its pace whatever the other's: under water, no faster fleet holds it off
+  (before, it fired at any range, "closing submerged"). The record's range is the distance of
+  its nearest two fleets at war.
+- **Not done.** The fleet of the longer reach does not step back to hold the range; it stands,
+  and the gap closes by the difference of the paces as before. A battle still begins at
+  detection (a carrier's wings): PLAN 7.19b. The row's pair: PLAN 7.19c.
+- **Pin.** `9fe2a568` → `14c6b2e8`. Seed 99's year: 51 sea battles and 237 ships lost (69 and
+  178 before); naval volleys none over 22 km.
+- **Tests.** `navalBattle1938`: the closing rule's cases (PLAN 4.3a's ranges as each fleet's
+  closing); the battleships against the cruisers from 24 km unchanged (the range 18 after the
+  hour, to 1e-9); a submarine 12 km off fires the hour after, not the first (the old rule's
+  "whatever the range" assertion turned to the new rule).
+
 ### ADR-492 · 2026-10-17 · accepted — A place's men weighed against a theatre of weight (PLAN 7.18j)
 
 - **Context.** A place's enemy men are weighed as a share of the enemy side's men within FRONT_KM

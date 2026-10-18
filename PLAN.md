@@ -38,6 +38,19 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   of the Dutch coast (`critic/c8_j2_5591.json`). AT: the critic's case: ships of both sides on screen
   at the row's centre and scale, the centre on water; a battle is one between ships within reach of
   each other's guns, or its pair is.
+  Found (2026-10-18, `.cache/p719/probe.ts`): at hour 41 the battle is a British carrier group and a
+  German battle squadron 279 km apart, joined by the carrier's wings (250 km); its one range closed
+  while every fleet stood still, so destroyers 2 km apart in it fired nothing (hours 46 to 60) and
+  ships fired at fleets up to 292 km off. A part each:
+    - [x] 7.19a The range is the distance of the fleets: a fleet out of reach of every enemy fleet of
+      its battle closes on the nearest it can hit; a ship fires only at fleets its weapon reaches.
+      AT: a unit test of the closing; no naval volley beyond its weapon's reach on seeds 5591 and 99;
+      the pin.
+    - [ ] 7.19b When a sea battle begins: a pair within reach of a weapon, or the carriers' strikes
+      beyond guns go by the strike path. AT: no battle (no ticker row) of fleets out of each other's
+      reach; carriers still strike (PLAN 5.4d's tests).
+    - [ ] 7.19c The row's pair: the nearest two fleets within reach of each other, the centre on
+      water. AT: the critic's case in a spec; `seaRow1938` still green.
 - [ ] 7.20 A hydrogen bomb is a hydrogen bomb (critic R8-B3, contradicts 7.16a): it kills 3 to 11 % more
   than an atomic one on the same point and its ruin looks the same at 300 m/px (`critic/c8_b_4711.json`).
   AT: a thermonuclear yield tens of times a fission one in blast, toll, fallout and ruin; the critic's

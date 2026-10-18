@@ -4,7 +4,7 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, RULES_1938, SIZE_1938, TEMPLATES_1938, UNIT_IDS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { elementIndex, equipFormation, settleFormation } from '../../src/sim/systems/elements';
-import { BREAK_HOURS, findSeaBattles, nextRange, seaKm } from '../../src/sim/systems/navalCombat';
+import { BREAK_HOURS, closeBy, findSeaBattles, seaKm } from '../../src/sim/systems/navalCombat';
 import { seaSide } from '../../src/shared/history';
 import { historyRows } from '../../src/worker/historyRows';
 import { historyText } from '../../src/ui/historyText';
@@ -66,22 +66,28 @@ const hp = (world: World, fid: number): number => {
   return (elementIndex(world).get(fid) ?? []).reduce((s, e) => s + (ec.strength[e]! - ec.wound[e]!) * RULES_1938.units[ec.unit[e]!]!.hpPerUnit, 0);
 };
 
-describe('the range of a sea battle (PLAN 4.3a)', () => {
+describe('the range of a sea battle (PLAN 4.3a; each fleet closes, PLAN 7.19a)', () => {
   it('beyond both reaches both close; between them the shorter closes by what its pace has over the other\'s; within both it stays', () => {
-    // BB line reach 32, 50 km/h; CL line reach 18, 59 km/h.
-    expect(nextRange(200, 32, 50, 18, 59)).toBe(91);
-    expect(nextRange(60, 32, 50, 18, 59)).toBe(32);
-    expect(nextRange(28, 32, 50, 18, 59)).toBe(19);
-    expect(nextRange(19, 32, 50, 18, 59)).toBe(18);
-    expect(nextRange(18, 32, 50, 18, 59)).toBe(18);
-    expect(nextRange(10, 32, 50, 18, 59)).toBe(10);
-    // The sides the other way round: the same.
-    expect(nextRange(28, 18, 59, 32, 50)).toBe(19);
+    // BB line reach 32, 50 km/h; CL line reach 18, 59 km/h. The range after the hour is d less
+    // what each fleet closes (PLAN 4.3a's ranges, now as each fleet's closing, PLAN 7.19a).
+    const after = (d: number): number => d - closeBy(d, 32, 50, 18, 59) - closeBy(d, 18, 59, 32, 50);
+    expect(after(200)).toBeCloseTo(91, 9);
+    expect(after(60)).toBeCloseTo(32, 9);
+    expect(after(28)).toBe(19);
+    expect(after(19)).toBe(18);
+    expect(after(18)).toBe(18);
+    expect(after(10)).toBe(10);
+    // Beyond both, each its share by its pace: the cruisers 59 of the 109 km.
+    expect(closeBy(200, 18, 59, 32, 50)).toBeCloseTo(59, 9);
+    expect(closeBy(60, 18, 59, 32, 50)).toBeCloseTo((28 * 59) / 109, 9);
+    // Between the two the battleships hold: they close none.
+    expect(closeBy(28, 32, 50, 18, 59)).toBe(0);
     // A shorter reach that is slower cannot close: the longer holds the range.
-    expect(nextRange(28, 32, 60, 18, 50)).toBe(28);
-    // A side with no gun is closed on by the other to its reach, and no further.
-    expect(nextRange(28, 0, 30, 18, 59)).toBe(18);
-    expect(nextRange(12, 0, 30, 18, 59)).toBe(12);
+    expect(closeBy(28, 18, 50, 32, 60)).toBe(0);
+    // A side with no gun is closed on by the other to its reach, and no further; it closes none.
+    expect(closeBy(28, 18, 59, 0, 30)).toBe(10);
+    expect(closeBy(28, 0, 30, 18, 59)).toBe(0);
+    expect(closeBy(12, 18, 59, 0, 30)).toBe(0);
   });
 });
 
@@ -149,7 +155,7 @@ describe('gunnery by range: the AT (PLAN 4.3a)', () => {
     expect(r.ranges[0]).toBeCloseTo(24, 6);
     expect(r.bbHit[0]).toBe(0);
     // Then they close by 9 km an hour (59 against 50) to their 18 km, and both fire.
-    expect(r.ranges[1]).toBe(18);
+    expect(r.ranges[1]).toBeCloseTo(18, 9);
     expect(r.bbHit[r.bbHit.length - 1]).toBeGreaterThan(0);
   });
 
@@ -279,7 +285,7 @@ describe('torpedoes and the screen (PLAN 4.3b)', () => {
     }
   });
 
-  it('no gun or torpedo is aimed at a submarine; destroyers\' depth charges are, whatever the range', () => {
+  it('no gun or torpedo is aimed at a submarine; destroyers\' depth charges are, within their guns\' reach', () => {
     const s = atWar();
     const w = s.world;
     const sea = openSea(w, 12);
@@ -293,8 +299,11 @@ describe('torpedoes and the screen (PLAN 4.3b)', () => {
       expect(from).toBe('destroyer');
       expect(d).toBeCloseTo(0.2, 9);
     }
-    // The submarines' torpedoes reach at 12 km, beyond their 6: they close submerged.
-    expect(v.some(([from, , d]) => from === 'submarine' && d > 0.01)).toBe(true);
+    // The submarines' torpedoes do not reach at 12 km, beyond their 6 (PLAN 7.19a; until then they
+    // fired at any range): the next hour they close to 6 km under water, held off by no faster
+    // ship, and fire.
+    expect(v.some(([from]) => from === 'submarine')).toBe(false);
+    expect(volleys(s).some(([from, , d]) => from === 'submarine' && d > 0.01)).toBe(true);
   });
 
   it('the AT: a submarine flotilla\'s hits on a battle squadron\'s larger ships fall with its destroyers', () => {
