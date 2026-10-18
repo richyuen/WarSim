@@ -18558,4 +18558,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   Pictures looked at (`docs/evidence/7.24/d-patrol-day10-*.png`): the fight of formation 11 and
   Poland's 549 in the middle of the view, the fighters circling beside it (7.24c's: the fight at the
   top edge, the patrol's middle on empty ground).
+- **After the commit:** the sweep-config tests by hand (the first rule to read a block, on the path
+  where a running and a loaded game hold different caches): 18 of 18, save and load among them.
 - **Next:** PLAN 7.24b (the editor's bomber group at a capital).
