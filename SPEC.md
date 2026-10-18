@@ -2409,7 +2409,8 @@ moment before its first elements arrive.
   the tank was left behind: a grey hull with its gun in line, for as long, without flame or
   smoke. None for an element first seen, and none for one that is gone: the last tank of an
   element ends with it and leaves the element's wreck (PLAN 2.4b). Drawn with the figures'
-  share, at a figure's size; at T2 a loss is the sprite's opacity, as for every element. At
+  share, at a figure's size, also where the view holds no element any more (the fight moved
+  off: PLAN 7.23a0); at T2 a loss is the sprite's opacity, as for every element. At
   most 2,000 are held. View state on the render clock: a reload starts with none.
   *What else is lost lies there too* (PLAN 3.11d, ADR-205, `fallenLost` in the same file): a
   figure that an element of infantry, of guns or of half-tracks had and has no more leaves a

@@ -18380,3 +18380,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   phase review under more workers, the fix is a longer window or a least count of frames, not a
   lower bar.
 - **Next:** PLAN 7.23 (burning hulls of a watched armour fight).
+
+## 2026-10-18 — PLAN 7.23a0: hulls and marks drawn where the view holds no element
+
+- **Start:** gate green on a clean tree (`1ae3688`; the six evidence pictures left unstaged as before).
+- **Found** (the critic's case run again, `.cache/p723/watch.mjs`, seed 3929, Germany on Poland and
+  France): armoured division 41 in contact with France's 220 from hour 72; 40 hours at x1 at 25 m/px
+  brought 353 marks of the fallen and no tank lost. In Node (`.cache/p723/fire.ts`): fire on its tanks
+  came to 3.5 tanks in 48 hours, in fractions over 34 elements, none whole. Split 7.23 into a0, a
+  (whole tanks), b (the count), c (`wrecks1938`).
+- **Found, running `fallen1938` with 7.23a's rule:** at the day's end 274 marks were held on the
+  screen and none drawn: the view had no element (the fight had moved off), and `drawFx` drew the
+  hulls and marks at the figures' share only while the view held figures. A render defect of its own,
+  committed first.
+- **Done:** `drawFx` draws them at `shares.individuals` (the zoom's share when the view has no
+  element; 0 as before where figures cannot be built). SPEC §8 effects. Render only, pin unmoved.
+- **Tests:** `fallen1938` (new step: the view's formations removed, an hour on, no element in the
+  view, the marks still drawn: red on HEAD's renderer, 0 of at least 3; green with the fix).
+- **Specs by hand** (chromium): `fallen1938`, `burning1938` (2), `wrecksHeld1938`: 4 green.
+- **Next:** PLAN 7.23a (tanks lost whole under fire).

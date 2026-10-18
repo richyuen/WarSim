@@ -1536,8 +1536,10 @@ export class MapView {
     this.contactLinesShown = this.drawContact(ctx, cam, vw, vh);
     // At T3 a shot leaves the muzzle of a figure, where the turret of this frame has it (PLAN 3.6c).
     const figures = this.individualCount > 0 ? this.shares.individuals : 0;
-    // A burning hull and a mark of the fallen are a figure's: they are there with the figures.
-    this.hulls.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity * figures, FIGURE_MIN_PX, this.unitScale);
+    // A burning hull and a mark of the fallen are a figure's: they are there at the zoom of the
+    // figures. Not only while the view holds figures: they lie where the fight was after it has
+    // moved off the screen (PLAN 7.23a0; the share is the zoom's when the view has no element).
+    this.hulls.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity * this.shares.individuals, FIGURE_MIN_PX, this.unitScale);
     const close = { share: figures, minPx: FIGURE_MIN_PX, turret: (id: number, hull: number, t: number) => this.turretAims.angleAt(id, hull, t) };
     this.fire.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, this.unitScale, close);
   }

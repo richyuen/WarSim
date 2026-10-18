@@ -184,6 +184,23 @@ test('T3: within a day of a fight that costs strength, what a battalion and a ba
   });
   await page.screenshot({ path: path.join(out, 'd-the-fallen-after-a-day-6m.png') });
   expect(lying, 'marks drawn at the day\'s end').toBeGreaterThanOrEqual(3);
+  // PLAN 7.23a0: the fight gone from the view, its marks lie on. The formations the view holds
+  // are taken off the map; an hour on the view has no element, and the marks are drawn as before
+  // (they went with the last element: 274 held on the screen, none drawn).
+  const after = await page.evaluate(async (tick) => {
+    const { sim, view } = window.__warsim!;
+    const v = view!;
+    for (const id of new Set(v.elementFormation)) sim.command({ kind: 'removeFormation', id });
+    await sim.step(1);
+    await new Promise<void>((done) => {
+      const wait = (): void => (v.lastTick === tick && v.elementCount === 0 ? done() : void setTimeout(wait, 5));
+      wait();
+    });
+    v.drawUnitLayers(performance.now());
+    return { elements: v.elementCount, lying: v.hulls.fallenShown.length };
+  }, start + HOURS + 1);
+  expect(after.elements).toBe(0);
+  expect(after.lying, 'marks drawn with no element in the view').toBeGreaterThanOrEqual(3);
   info.annotations.push({ type: 'fallen', description: `day 22 on formation ${POLE} at 6 m/px: ${lostFigures} figures lost by elements the view held; ${men} of the fallen and ${guns} guns or half-tracks marked, ${inView} of the marks in the view, the first in hour ${firstAt}, ${lying} drawn at the day's end; ${unfired} figures of men lost in hours with no fire on their battalion left none` });
   console.log(info.annotations.at(-1)!.description);
   // The critic's bar: within a day of a fight that costs strength.
