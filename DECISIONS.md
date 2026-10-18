@@ -178,8 +178,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   within range of their base on 4.6 % of their days (an upper bound: a patrol sees 150 km about
   one point), an enemy airbase with wings in range 3.3 %, an enemy fleet 7.1 %. In the war-years
   under 3 aloft, 0.4 %, 0.4 % and 0.7 %.
-- **Decision.** No patrol over home. In the years ADR-519's second bar finds short it would put
-  about 30 sorties a day in the air that meet nothing: the bar met by flying for it. What is short
+- **Decision.** No patrol over home. The rule as PLAN 7.26i wrote it patrols only with an enemy
+  airbase or fleet within reach: in the war-years under 3 aloft that is 0.12 + 0.22 = at most 0.34
+  idle fighters a day, so it cannot move ADR-519's bar of 3 aloft, whatever they meet. A patrol by
+  every idle fighter would put about 30 sorties a day in the air that meet nothing (an enemy sortie
+  in range on 0.4 % of their days): the bar met by flying for it, which PLAN rules out. What is short
   there is reach: 1.3 wings a day of 67 at war have an enemy land formation in range, and the
   enemy's air, bases and fleets are as far; that is PLAN 7.29's (the land and naval war's reach).
 - **Pin.** Unchanged (c3bd280a): no sim change.

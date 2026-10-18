@@ -37,9 +37,13 @@ By seed (years 2–30, a day): idle fighters 19–44; an enemy sortie in range 0
 
 Of the idle fighters, one in twenty-two at most has an enemy sortie anywhere in its range on a
 day, and in the years the AT finds short (under 3 aloft) one in 240. The bound counts any point of
-the range; a patrol sees 150 km about one point, so it would meet less. A patrol over home in
-the short years would add some 30 sorties aloft a day that meet nothing: the count of ADR-519's
-second bar met by flying for it, which PLAN 7.26i rules out. Not built (ADR-520).
+the range; a patrol sees 150 km about one point, so it would meet less.
+
+The rule as PLAN 7.26i wrote it patrols only within reach of an enemy airbase or fleet: in the
+short years at most 0.12 + 0.22 = 0.34 idle fighters a day, so it cannot lift those years to 3
+aloft, whatever they meet. A patrol by every idle fighter would add some 30 sorties a day that
+meet nothing: ADR-519's second bar met by flying for it, which PLAN 7.26i rules out. Neither is
+built (ADR-520).
 
 The short years are short because nothing of the enemy is near: in them 1.3 wings a day of 67 at
 war have an enemy land formation in range, and the enemy's air, bases and fleets are as far
