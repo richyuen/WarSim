@@ -7,7 +7,8 @@
  *   every enemy land formation out of range of its base, or one in range (a role with no target
  *   there: strategic bombers, transports); the wings' aircraft (`aircraftOf`) against their
  *   templates' (`wingAircraft`), and the wings under a quarter of theirs; land formations in
- *   contact; wars; nations at war, and of them with wings;
+ *   contact; wars; nations at war, and of them with wings; wings whose base changed since the
+ *   day before (`rebased`, PLAN 7.26c);
  * - `holders`: the eight nations with the most wings on the year's last day, with the share of
  *   the year's days each was at war.
  *
@@ -29,9 +30,11 @@ const s = new Sim({ scenario: '1938', seed, assets: assets1938(SIZE_1938.w) });
 const w = s.world;
 const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
 
-const DAY_KEYS = ['wings', 'atWar', 'mission', 'patrol', 'strike', 'supply', 'noEnemy', 'outOfRange', 'inRange', 'aircraft', 'template', 'atWarAircraft', 'hollow', 'engaged', 'wars', 'nationsAtWar', 'atWarWithWings'] as const;
+const DAY_KEYS = ['wings', 'atWar', 'mission', 'patrol', 'strike', 'supply', 'noEnemy', 'outOfRange', 'inRange', 'aircraft', 'template', 'atWarAircraft', 'hollow', 'engaged', 'wars', 'nationsAtWar', 'atWarWithWings', 'rebased'] as const;
 type Day = Record<(typeof DAY_KEYS)[number], number>;
 const rows: unknown[] = [];
+/** Each wing's base at the end of the day before (PLAN 7.26c: the wings that rebased). */
+const lastBase = new Map<number, number>();
 for (let y = 0; y < years; y++) {
   let size = 0;
   let flying = 0;
@@ -105,6 +108,9 @@ for (let y = 0; y < years; y++) {
     const withWings = new Set<number>();
     for (const [id, base] of w.wingBase) {
       if (base === 0 || !w.formations.has(id)) continue;
+      const was = lastBase.get(id);
+      if (was !== undefined && was !== base) day.rebased++;
+      lastBase.set(id, base);
       const n = c.nation[id]!;
       const have = aircraftOf(w, id);
       const full = wingAircraft(w, c.template[id]!);

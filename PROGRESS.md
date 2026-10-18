@@ -18696,3 +18696,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   green before and after. The gap after a launch shot down filed: PLAN 7.28.
 - **e2e by hand (chromium):** airControl1938, airDemo1938, airT3_1938, patrolsSeen1938, sortiesSeen1938: 5 of 5.
 - **Gotcha:** a heredoc in the Bash tool failed on a Python patch with quotes (memory note): Write it.
+
+## 2026-10-18 — PLAN 7.26c0: the land war after year 1 measured
+
+- **Start:** gate green on `7b34062`; critic not due.
+- **Done:** `tools/diag/landWar.ts` (per war, daily: frontless / a front and contact / a front and
+  none; weekly the nearest pair of the sides' land formations, how many move; how it ended; the
+  invasion AI's gate per nation at war), `tools/diag/armies.ts` (land formations, men, pools; the
+  economic AI's gate for an army order, monthly), `airWar.ts`'s `rebased` column. PLAN 7.26c split
+  (c0 the measure, c1 land nobody holds, c2 the blocs' armies far apart, c3 the landing per war).
+- **Measured** (`docs/evidence/7.26/measure-c.md`, seeds 2843 and 7919 × 8 years, and the critic's
+  30-year files): land fire falls 10–20 × from year 1 to 4, major battles to none, while marches
+  still end and land changes hands. Frontless war-days 0–31 % (ADR-480 holds). From year 2, 85–97 %
+  of the days of wars with a front have no contact. Small wars: one side with no land formation in
+  39–45 % of samples, its land hardly taken (Yemen v Saudi Arabia 720 days at score 0, to the
+  stalemate peace). Big wars: the nearest pair over 1,000 km apart in 20–41 % of samples, 47–84 % of
+  the formations moving (Italy's bloc v France's: a 2,222-cell front, 40 days of contact in 686).
+  The land army halves in year 1 (1,054 formations, 9.78 M men → about 500, 4–6 M) and holds while
+  the pools double unused; gold is the economic AI's usual gate. Under 5 % of nation-days could land.
+- **Next:** PLAN 7.26c1.
+- **Gotcha:** a `.js` scratch script in `.cache/tmp/` runs as an ES module (`"type": "module"`):
+  name it `.cjs` to use `require`. Python's text mode writes CRLF on Windows: `newline=''`, or
+  `sed -i 's/\r$//'` after.
