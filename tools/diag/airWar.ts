@@ -13,6 +13,23 @@
  *   the year's days each was at war;
  * - `warDays`: days that ended with a war running (PLAN 7.26d: "a year with a war"); `hash`: the
  *   state hash at the year's end.
+ * - PLAN 7.26i, the share of ADR-519 and the idle wings:
+ *   - `enemyNear`: wings at war with an enemy land formation in range of their base, mission or
+ *     not; `enemyNearTasked`: of those, with a mission. ADR-519's share is
+ *     `enemyNearTasked ÷ enemyNear` (`airAt.ts`). The old `mission ÷ (mission + inRange)` counted
+ *     too the missions of bombers and transports whose targets need no enemy land formation in
+ *     range: both are printed by `airAt.ts` on these files.
+ *   - `homePatrol`: patrol missions at wings with no enemy land formation in range (a patrol over
+ *     home, PLAN 7.26i). Never in the share: those wings are outside its denominator. Not 0 without
+ *     such a rule (0.1–0.3 a day on seed 10's first years): the missions are given at 00:00 and
+ *     counted at the day's end, when a formation tasked on may have moved out of range.
+ *   - The idle wings (at war, no mission, no enemy land formation in range: `noEnemy` +
+ *     `outOfRange`): `idleFighter`, the fighters among them; of those, `fighterBaseNear` with an
+ *     airbase holding wings of a nation at war with theirs within range, `fighterFleetNear` with
+ *     an enemy fleet within range, `fighterAirNear` the fighter-days that saw an hour with an
+ *     enemy sortie aloft (not on its way home) within range of their base, `fighterAirOwn` those
+ *     where such a sortie was over a cell of their side (`ofSide`): what a patrol over home could
+ *     meet at most. `fighterAirHours`: such hours summed. Hourly, against the day before's idle set.
  *
  * Usage: npx tsx tools/diag/airWar.ts <seed> [years = 30] [out = .cache/airWar_<seed>.json]
  */
@@ -25,6 +42,8 @@ import { airborne, basePlace, FERRY_RANGE, kmFromBase, ofSide, wingAircraft, win
 import { aircraftOf } from '../../src/sim/systems/airCombat';
 import { airbaseRoom } from '../../src/sim/data/airbases';
 import { seaKm } from '../../src/sim/systems/navalCombat';
+import { Leg, sortieAt } from '../../src/sim/systems/sorties';
+import { loopW } from '../../src/sim/systems/elements';
 
 const seed = Number(process.argv[2]);
 const years = Number(process.argv[3] ?? 30);
@@ -32,11 +51,20 @@ const s = new Sim({ scenario: '1938', seed, assets: assets1938(SIZE_1938.w) });
 const w = s.world;
 const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
 
-const DAY_KEYS = ['wings', 'atWar', 'mission', 'patrol', 'strike', 'supply', 'noEnemy', 'outOfRange', 'inRange', 'aircraft', 'template', 'atWarAircraft', 'hollow', 'engaged', 'wars', 'nationsAtWar', 'atWarWithWings', 'rebased'] as const;
+const DAY_KEYS = ['wings', 'atWar', 'mission', 'patrol', 'strike', 'supply', 'noEnemy', 'outOfRange', 'inRange', 'aircraft', 'template', 'atWarAircraft', 'hollow', 'engaged', 'wars', 'nationsAtWar', 'atWarWithWings', 'rebased', 'enemyNear', 'enemyNearTasked', 'homePatrol', 'idleFighter', 'fighterBaseNear', 'fighterFleetNear', 'fighterAirNear', 'fighterAirOwn', 'fighterAirHours'] as const;
 type Day = Record<(typeof DAY_KEYS)[number], number>;
 const rows: unknown[] = [];
 /** Each wing's base at the end of the day before (PLAN 7.26c: the wings that rebased). */
 const lastBase = new Map<number, number>();
+const isFighter = (id: number): boolean => {
+  const r = w.rules!;
+  const first = r.templates[w.formations.cols.template[id]!]?.elements[0];
+  return first !== undefined && r.units[first.unit]!.cls === 'fighter';
+};
+/** The idle fighters of the day before (PLAN 7.26i): id, nation, base place, range; and what each saw this day. */
+let idle: { id: number; n: number; x: number; y: number; range: number }[] = [];
+const sawAir = new Set<number>();
+const sawOwn = new Set<number>();
 for (let y = 0; y < years; y++) {
   let size = 0;
   let flying = 0;
@@ -94,6 +122,29 @@ for (let y = 0; y < years; y++) {
       hours++;
       size += ww.sorties.size;
       if (ww.sorties.size > 0) for (const list of airborne(ww, ww.tick).values()) flying += list.length;
+      if (ww.sorties.size > 0 && idle.length > 0) {
+        const fc = ww.formations.cols;
+        const aloft: { n: number; x: number; y: number }[] = [];
+        for (const [sid, so] of ww.sorties) {
+          const p = sortieAt(so, ww.tick, loopW(ww));
+          if (p.leg !== Leg.Home && ww.formations.has(sid)) aloft.push({ n: fc.nation[sid]!, x: p.x, y: p.y });
+        }
+        for (const f of idle) {
+          let near = false;
+          let own = false;
+          for (const a of aloft) {
+            if (!ww.wars.atWar(f.n, a.n) || seaKm(ww, f.x, f.y, a.x, a.y) > f.range) continue;
+            near = true;
+            const cell = Math.min(ww.cells.h - 1, Math.floor(a.y)) * ww.cells.w + Math.min(ww.cells.w - 1, Math.floor(a.x));
+            if (ofSide(ww, f.n, ww.cells.controller[cell]!)) own = true;
+          }
+          if (near) {
+            sum.fighterAirHours++;
+            sawAir.add(f.id);
+          }
+          if (own) sawOwn.add(f.id);
+        }
+      }
       const ev = ww.out.events;
       for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.AirBattle) airBattles++;
       ev.length = 0;
@@ -109,6 +160,24 @@ for (let y = 0; y < years; y++) {
       if (c.engaged[id] === 1) day.engaged++;
     });
     const withWings = new Set<number>();
+    // What the day before's idle fighters saw this day (PLAN 7.26i).
+    day.fighterAirNear = sawAir.size;
+    day.fighterAirOwn = sawOwn.size;
+    sawAir.clear();
+    sawOwn.clear();
+    idle = [];
+    // The airbases holding wings, with their nations; the fleets afloat (PLAN 7.26i).
+    const baseNations = new Map<number, Set<number>>();
+    for (const [o, b] of w.wingBase) {
+      if (b <= 0 || !w.formations.has(o)) continue;
+      let s = baseNations.get(b);
+      if (!s) baseNations.set(b, (s = new Set()));
+      s.add(c.nation[o]!);
+    }
+    const fleets: number[] = [];
+    w.formations.forEach((id) => {
+      if (w.isFleet(id) && !w.embarked.has(id)) fleets.push(id);
+    });
     for (const [id, base] of w.wingBase) {
       if (base === 0 || !w.formations.has(id)) continue;
       const was = lastBase.get(id);
@@ -126,11 +195,6 @@ for (let y = 0; y < years; y++) {
       day.atWar++;
       day.atWarAircraft += have;
       const m = w.wingMission.get(id);
-      if (m) {
-        day.mission++;
-        day[m.kind]++;
-        continue;
-      }
       const range = wingRange(w, id);
       let enemy = 0;
       let reach = false;
@@ -142,12 +206,40 @@ for (let y = 0; y < years; y++) {
           break;
         }
       }
+      if (reach) {
+        day.enemyNear++;
+        if (m) day.enemyNearTasked++;
+      } else if (m?.kind === 'patrol') day.homePatrol++;
+      if (m) {
+        day.mission++;
+        day[m.kind]++;
+        continue;
+      }
       if (enemy === 0) day.noEnemy++;
-      else if (reach) day.inRange++;
-      else {
+      else if (reach) {
+        day.inRange++;
+        continue;
+      } else {
         day.outOfRange++;
         if (d % 7 === 0) outWhy(n, id, range, land);
       }
+      // An idle wing (PLAN 7.26i): what a fighter of them could meet over home.
+      if (!isFighter(id)) continue;
+      day.idleFighter++;
+      const at = basePlace(w, base);
+      if (!at) continue;
+      idle.push({ id, n, x: at[0], y: at[1], range });
+      let baseNear = false;
+      for (const [b, ns] of baseNations) {
+        if (![...ns].some((o) => w.wars.atWar(n, o))) continue;
+        const [px, py] = w.cellPoint(w.airbases[b - 1]!.cell);
+        if (seaKm(w, at[0], at[1], px, py) <= range) {
+          baseNear = true;
+          break;
+        }
+      }
+      if (baseNear) day.fighterBaseNear++;
+      if (fleets.some((g) => w.wars.atWar(n, c.nation[g]!) && kmFromBase(w, id, c.x[g]!, c.y[g]!) <= range)) day.fighterFleetNear++;
     }
     day.wars = w.wars.list.length;
     if (day.wars > 0) warDays++;
