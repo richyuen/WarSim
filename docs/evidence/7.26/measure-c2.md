@@ -94,3 +94,66 @@ The operational AI from the same states, 60 days: no change where the rule sends
 900: 937 → 902 ms, the same 1,063 orders); +36 % from 7919 day 900 (643 → 875 ms), with 61 more
 orders, each a long march to search (675 → 736). Seed 99 five years, both rules run at once on
 separate cores and swapped: 2.0910 / 2.1639 ms a tick (old) and 1.9834 / 2.0084 (new).
+
+## 7. PLAN 7.26c2b: a whole army under `takeMen`, measured (2026-10-18)
+
+Code: `1abddbc` (after 7.26c2a, pin 59fea6f5). Probes in `.cache/tmp/`: `c2b.ts` (from a state of a
+given day: monthly, just before the month's AI, the armed side's gold, reserve, income, balance,
+pool, army upkeep and cap, orders in training, and each land formation's refill gate, `refillable`'s
+first failing test or `ok`; after the month's step what each was refilled by; every 10 days each
+land formation's place and state) and `c2bstuck.ts` (one formation's path and the ground round it).
+
+The one-sided wars at a score under 15 in `landWar.ts` after 7.26c2a (§5): seed 2843's Brazil v
+Bolivia (war 87) and Bulgaria v Romania (war 90). Seed 7919's are not probed: Saudi Arabia v Yemen
+(one Saudi formation, 32 days), and wars of blocs of 28 to 124 land formations (Germany's v
+Luxembourg, Portugal, Angola and Mozambique; v Denmark; Japan's v Saudi Arabia, 50 days frontless;
+the United States v Cuba, Siam and Burma, a front of 3 cells): fronts across the sea or a strait
+(c3's), not an army too small.
+
+### Brazil v Bolivia (seed 2843, day 1660 to 1837, score 0 throughout)
+
+| day | Brazil's land formations (men) | gold / reserve + a division (1,001) | pool | refilled |
+|---|---|---|---|---|
+| 1655 | 2,617, 1,346, 263, 243, 38, 612 | — | 1.21 M | — |
+| 1673 | the same; 2,617 marches on British Guiana | 1,094 / 1,361 | 1.21 M | none |
+| 1704 | 324 (supply 0), 110, 38, 612 | 1,118 / 1,350 | 1.21 M | none |
+| 1765 | 47, 38, 612 | 1,173 / 1,344 | 1.21 M | none |
+| 1826 | 38, 612 | 1,230 / 1,343 | 1.21 M | none |
+
+- **The army went to the other war.** Brazil is at war with Britain too: on day 1665 four of its six
+  formations march on British Guiana, and in 30 days 2,617 + 1,346 + 263 + 243 men are down to
+  324 + 110. The 2,617-man division is encircled by day 1690 (every cell in two round it British or Venezuelan),
+  at supply 0. Its march may not enter an enemy's cell before it flips (PLAN 1.14), and it cannot
+  flip one, so it stands on cell 661,561 with `moving` 1 and path step 0 for 130 days, re-ordered
+  to targets beyond the ring, until it is gone (by day 1825). A pocket, not a mover that fails.
+- **What is left takes nothing.** 38 men walk to Bolivia's border and stand at a Bolivian cell from
+  day 1745 to the war's end (pressure far under `GARRISON`); 612 men rest on Brazil's land for the
+  whole war, never ordered (under `takeMen`, they man nothing and are sent nowhere, as 7.26c2a
+  meant). Bolivia's land falls 1,844 → 1,360 cells to Argentina's war (91, from day 1733), not Brazil's.
+- **No man is refilled in six months, and no division ordered.** The 612 and the 38 pass every test
+  of `refillable` (on their own land, supply 1, not engaged) each month. Brazil's books: income 114
+  to 120, balance +30 to +54 a month, army upkeep 0.3 to 2.1 against a war cap of 68 to 72, no
+  order in training, one slot. So ADR-437 applies: the refills keep the next order's price, an
+  infantry division's 1,001 gold, over the reserve of three months' income (343 to 360). Gold
+  1,094 to 1,262 against 1,343 to 1,361: the refills' room by gold is negative every month, and the
+  division's order fails the same gate (`gold < price + reserve`). The treasury gains about 28 a
+  month (research takes the rest of the balance), so the division comes about nine months after
+  the war began; the war ends exhausted at day 1837 before it. The pool, 1.21 M men, is untouched.
+
+### Bulgaria v Romania (seed 2843, day 1703 to 1756, score 12, ended exhausted)
+
+Six formations of 348 to 4,147 men (four over `takeMen`), all at supply 1 on Bulgaria's land when
+the war begins; they march on Romania's border and take cells (Romania 788 → 721, score 0 → 12 in
+46 days). The same gate: gold 957 to 1,048 against 1,001 + 226, no order in training: no man
+refilled, no division ordered, while the formations stand at 3 to 33 % of their template's 12,460.
+Not an army under `takeMen`: slow, short of men, and ended by exhaustion in 53 days.
+
+### What it says
+
+The task's case, a nation whose whole army is under `takeMen` and not refilled, is one of ADR-437's
+`keep`: a nation of an income near 100 saves for a division for most of a year, refills nothing in
+that time, and its army stands at a fraction of its strength through a war of six months. The
+rule is as ADR-437 decided it (no defect). Whether to change it (refills at war not held for the next
+order, or the keep only while the order is within a few months' saving) waits on the 7.26 AT
+(7.26d): the c-parts are fixed only if it is still short. The encircled division is a pocket, as it
+should be: Brazil's loss was a war it chose against Britain.

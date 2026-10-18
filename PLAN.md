@@ -145,6 +145,13 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           formation at rest is not refilled, the pool, the gold). Then the cause fixed, only if the
           7.26 AT is still short. AT: the measure in `measure-c2.md`; a unit test of the rule; the
           pin's entry.
+          Measured (2026-10-18, `measure-c2.md` §7): Brazil spent its army on British Guiana (the
+          2,617-man division encircled, starved at supply 0); of what was left, 612 men at rest and
+          38 at Bolivia's border were refilled by no man in six months, and no division ordered:
+          ADR-437's keep (a division's 1,001 gold over a reserve of 343 to 360, against 1,094 to
+          1,262, about 28 a month saved). Bulgaria v Romania the same gate, but it takes cells. The
+          rule is as decided; the change (refills at war not held for the next order) waits on
+          7.26d. Taken next: 7.26d.
       - [ ] 7.26c3 The landing per war, not per nation: a nation with a land front in one war plans
         no landing in its others (30–50 % of nation-days), and colonies have no transports. Only if
         c1 and c2 leave the 7.26 AT short. AT: `landWar.ts`'s gate counts; the pin's entry.

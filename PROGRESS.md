@@ -18784,3 +18784,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a Bash function that calls `set --` loses its own arguments (`$1` of the caller):
   two A/B runs wrote to the same logs. Write the runner as a script with its label in a variable
   first.
+
+## 2026-10-18 — PLAN 7.26c2b: a whole army under `takeMen`, measured (no code)
+
+- **Start:** gate green on `1abddbc`; critic not due.
+- **Measured** (`docs/evidence/7.26/measure-c2.md` §7, probes `.cache/tmp/c2b.ts`, `c2bstuck.ts`):
+  seed 2843's Brazil v Bolivia. Brazil sent four of six formations on British Guiana in its other
+  war; its 2,617-man division was encircled by day 1690 and starved at supply 0 (a pocket: a march
+  enters an enemy's cell only once it flips). The 612 at rest and the 38 at Bolivia's border pass
+  `refillable` every month and get no man in six months; no division is ordered either: ADR-437's
+  keep (1,001 gold over a reserve of about 350, against 1,094 → 1,262, about 28 a month saved).
+  Pool 1.21 M untouched. Bulgaria v Romania: the same gate, but its army takes cells (score 12 in
+  46 days, ended exhausted). Seed 7919's wars under 15 are fronts across the sea (c3's).
+- **Not changed:** the rule is as ADR-437 decided; c2b's fix, as c1b's and c3's, waits on the 7.26
+  AT, which has not been measured since 7.24a0. Not ticked.
+- **Next:** PLAN 7.26d (the 7.26 AT, 10 seeds × 30 years headless); then whichever of c1b, c2b, c3
+  it leaves short.
