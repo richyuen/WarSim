@@ -175,6 +175,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
         - [ ] 7.26c3b The colonies' and small members' landings (no transport group at a port of
           their own: 60–90 % of the unfronted nation-days). Measured first: whether a partner's
           transports could carry them. Only if c3a leaves the AT short.
+          After c3a (2026-10-18): waits on 7.26e; c4 is next (7.26d's order).
       - [ ] 7.26c4 The rebase over more than one hop: in 7.26d's short war-years 36 % of the wings
         out of range have a base of their side with room within range of an enemy, a tenth of
         them within one ferry hop (`freeInFerry`, 3 % of all out of range); 1.6 wings rebase a day of 54. Measured first: whether
@@ -194,6 +195,11 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       fix last; then 7.26e.
     - [ ] 7.26e The AT of 7.26 re-measured (`airWar.ts` seeds 1–10 × 30 years, judged by
       `tools/diag/airAt.ts`) after the parts 7.26d ordered; what is short split again.
+      To read against c3a (ADR-511): from the probes, every landing it added went through the
+      `atPort` gate (Japan); its far marches to a port (`send`) were re-ordered or still on the
+      way after 30 days, and the big wars' land contact fell on both 8-year runs. If the AT is
+      still short and the contact down on more seeds, question the `send` path for a nation with
+      a front first, not the per-war gate.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five

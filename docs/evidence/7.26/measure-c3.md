@@ -14,7 +14,9 @@ still on the way), `saveAt.ts` (states saved by the old rule at given days).
 For each nation-day stopped by `fronted` (a front in some war), the gate it would meet if the
 front were judged per war (its wars in which it has no front; targets: their other side) and per
 enemy (its enemies it has no front with). "load/send": the gates `atPort` and `send`, where the AI
-puts formations aboard or sends them to a port.
+puts formations aboard or sends them to a port. Measured with the tool's first form, `perWar` with
+any free formation, before the far-army restriction; the committed tool counts `gates` and
+`perWar` under the adopted rule (§2, variant 3), so a re-run on `9eb329b` gives other figures.
 
 | seed | year | load/send, old rule | fronted | per war: load/send | per enemy: load/send | per war: who |
 |---|---|---|---|---|---|---|
