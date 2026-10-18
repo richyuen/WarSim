@@ -18981,3 +18981,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   rule not built (ADR-516); c3b1 dropped, taken up again only if 7.26g is short (the partner's
   transports sent to the nation's port). c3c taken after 7.26g, and only if its AT is short.
 - **Next:** PLAN 7.26g (the AT of 7.26 on seeds 1–10 × 30 years, against `.cache/726f/c4_*.json`).
+- **Noted under 7.26g:** in the same files Germany, Britain and the Netherlands stop at
+  `noTransport` for whole years (Germany 334–365 days in years 3, 7, 8 of seed 2843): their own
+  transports away or lost, a cause apart from the colonies'.

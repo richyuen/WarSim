@@ -274,6 +274,13 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       7.26d's hashes, all on 7.26e's. ADR-512 taken back (the old step); pin c9f5962b.
     - [ ] 7.26g The AT of 7.26 re-measured (as 7.26e, seeds 1–10 × 30 years) after 7.26f and
       c3b; what is short split again.
+      To read against c3b (ADR-516, `.cache/c3b/landWar2_*.json` `gateNations`, the top ten only):
+      great powers stopped at `noTransport` for whole years (no group of their own standing at a
+      port they hold): Germany 334–365 days in years 3, 7 and 8 of seed 2843, Britain in years 2
+      and 5 of 7919, the Netherlands in year 6 of both. If 7.26g is short on their wings, measure
+      first where their transports are (under way, on patrol, sunk, at a port lost), not a
+      partner's ships. ADR-516's "seldom end aboard" stands on §2's fronted nations; an unfronted
+      nation's own `send` orders were not measured.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five
