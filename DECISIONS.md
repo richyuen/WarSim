@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-515 · 2026-10-18 · accepted — The rebase along a chain of airbases taken back (PLAN 7.26f; supersedes ADR-512)
+
+- **Context.** PLAN 7.26e: on seeds 1–10 × 30 years the late air war fell after four rules (ADR-511
+  to ADR-514: years 21–30 sorties aloft 9.8 → 7.3 on 8 of 10 seeds) while land contact held, and
+  three of the four had read neutral from saved states. PLAN 7.26f: which of them.
+- **Measured** (`docs/evidence/7.26/measure-f.md`). Each rule's old behaviour behind a switch for
+  the runs only (never committed); with all four off the runs gave 7.26d's state hashes and with
+  all on 7.26e's (seed 1, years 1 and 2), so each switch restores its old rule exactly. 30-year
+  runs from 1938, one rule off at a time, against 7.26e's runs (all on), years 21–30 sorties aloft:
+  - ADR-512 off: seeds 1–10, up on 8, level on 2 (4: 9.9 → 9.7; 6: 8.6 → 8.6), down on none; mean
+    7.24 → 9.52 (7.26d's 9.8). On the seven seeds not picked for their fall 5 up, 2 level. Air
+    battles of years 21–30 up on 8 of 10. Years 2–10 alike (14.88 → 14.82); the gap opens in years
+    11–20 (9.95 → 10.80). With it off more wings of nations at war (years 11–20 68 → 78) and late
+    land contact 0.49 → 0.89 a day: the rule changed the course of the wars, not only the air AI's
+    day.
+  - ADR-513 off, the same ten seeds: up on 6, down on 4 (on the seven, 3 up and 4 down): noise.
+  - ADR-511 and ADR-514 off, and ADR-512 kept with the old step where its chain gives no hop, on
+    seeds 1, 5 and 7 (picked for their fall, so any change reads up): 5.9, 6.8 and 5.9 against all
+    on 4.8 and ADR-512 off 8.8. Not taken further.
+  From the states of year 21 of seeds 1 and 7, 120 days, ADR-512 on and off: seed 7 bit for bit
+  alike, seed 1 within a few hops (5.17 against 5.10 a day). Its loss is no late mechanism to be
+  mended; it builds over the decades, through the wars' course.
+- **Decision.** ADR-512 taken back: a wing out of range rebases, a hop a day, only to a base of its
+  side with room within a ferry's reach nearer its goal than its own (ADR-376, ADR-508), chain or
+  none. `hopField` and the hops per base go with it.
+- **Accepted.** The wings whose chain of bases bends away from the front first sit again (17 of 23
+  such wings on six states, 3 % of the wings out of range; ADR-512). ADR-512's own measure was
+  neutral from saved states (17.19 → 17.33) and both its 8-year runs fell.
+- **To watch** (PLAN 7.26g): seeds 4 and 6 were level; 7.26g reads the ten seeds again after c3b.
+  The runs with ADR-512 off (`.cache/726f/c4_*.json`) are this code's 30-year runs.
+- **Pin.** e1856b1b → c9f5962b.
+- **Tests.** `airToward1938.test.ts` "takes no hop that is no nearer the front, though a chain of
+  bases leads there" (ADR-512's case, a British fighter 1,072 km from the front and two hops by the
+  chain: it stays 30 days; under ADR-512 it hopped). 7.26b's test unchanged and green.
+
 ### ADR-514 · 2026-10-18 · accepted — At war the refills do not keep the next order's price (PLAN 7.26c2b; amends ADR-437)
 
 - **Context.** PLAN 7.26c2b (`docs/evidence/7.26/measure-c2.md` §7): seed 2843's Brazil, at war
@@ -242,7 +277,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   a sector of its own of Germany's front within `2 × MARCH_DAYS` days (red before: none sent); with
   a German division on every sector of Germany's front, none moves.
 
-### ADR-512 · 2026-10-18 · accepted — The rebase along a chain of airbases (PLAN 7.26c4)
+### ADR-512 · 2026-10-18 · superseded by ADR-515 — The rebase along a chain of airbases (PLAN 7.26c4)
 
 - **Context.** PLAN 7.26d: of the wings at war out of range of every enemy, a third have a base of
   their side with room in range of an enemy, a tenth of those within one ferry hop. The rebase

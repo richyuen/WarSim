@@ -139,10 +139,12 @@ describe('a wing out of range of its front (PLAN 5.12a)', () => {
     process.stderr.write(`fighter ${fighter}: the unreachable formation ${ud.toFixed(0)} km from its base; from the front ${hops.map((d) => d.toFixed(0)).join(' → ')} km\n`);
   });
 
-  // PLAN 7.26c4: a hop went only to a base nearer the goal than the wing's own. Where the chain of
-  // bases bends (round a sea, along a coast), every base within a ferry's reach was further, and
-  // the wing sat (17 of 23 such wings on six states of seeds 2843 and 7919, measure-c4.md).
-  it('follows a chain of bases to the front though the first hop is no nearer it', () => {
+  // PLAN 7.26f (ADR-515, which reverses ADR-512 of PLAN 7.26c4): a hop goes only to a base nearer
+  // the goal than the wing's own. ADR-512 let a wing on a chain of bases take a hop no nearer it
+  // (17 of 23 such wings sat, measure-c4.md); on 30-year runs of ten seeds that rule lowered the
+  // late air war (years 21–30 sorties aloft 9.5 → 7.2, measure-f.md), and it was taken back. Where
+  // the chain bends away from the front first, the wing stays.
+  it('takes no hop that is no nearer the front, though a chain of bases leads there', () => {
     const w: World = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) }).world;
     const c = w.formations.cols;
     w.wars.start([ENG], [BRA], 0);
@@ -202,20 +204,14 @@ describe('a wing out of range of its front (PLAN 5.12a)', () => {
     [c.x[fighter], c.y[fighter]] = basePlace(w, base)!;
     const h = left(x, y);
 
-    const path: number[] = [base];
-    for (let day = 0; day < 30 && !w.wingMission.has(fighter); day++) {
-      const was = w.wingBase.get(fighter)!;
+    expect(h.get(base)!, 'the chain from its base: two hops or more').toBeGreaterThanOrEqual(2);
+
+    for (let day = 0; day < 30; day++) {
       airAi(w);
-      const now = w.wingBase.get(fighter)!;
-      if (now === was) continue;
-      // Each hop within a ferry's reach and fewer hops from the front.
-      expect(hop(was, now)).toBeLessThanOrEqual(ferry);
-      expect(h.get(now)!).toBeLessThan(h.get(was)!);
-      path.push(now);
+      // No hop: every base within a ferry's reach is further from the front than its own.
+      expect(w.wingBase.get(fighter), `day ${day}`).toBe(base);
     }
-    expect(km(path[1] ?? base, x, y), 'the first hop no nearer the front').toBeGreaterThan(km(base, x, y));
-    expect(w.wingMission.get(fighter)?.kind, 'tasked once in range of the front').toBe('patrol');
-    expect(km(w.wingBase.get(fighter)!, x, y)).toBeLessThanOrEqual(range);
-    process.stderr.write(`fighter ${fighter}: from the front ${path.map((b) => `${km(b, x, y).toFixed(0)} (${h.get(b)})`).join(' → ')} km\n`);
+    expect(w.wingMission.has(fighter), 'out of range, no mission').toBe(false);
+    process.stderr.write(`fighter ${fighter}: ${km(base, x, y).toFixed(0)} km from the front, ${h.get(base)} hops by the chain; stayed\n`);
   });
 });

@@ -241,7 +241,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       1.36 a day, 5 seeds up, 5 down). So c4's question is first; c2b's and c3a's are not taken
       (the contact did not fall). Of the short years' out-of-range wings 63 % have no base of their
       side near any enemy (59 % at 7.26d): c3b before anything of c1b's. Next: 7.26f, c3b, 7.26g.
-    - [ ] 7.26f Which of c3a, c4, c1b and c2b lowered the late air war (7.26e: years 21–30 sorties
+    - [x] 7.26f Which of c3a, c4, c1b and c2b lowered the late air war (7.26e: years 21–30 sorties
       aloft 9.8 → 7.3 on 8 of 10 seeds while land contact held): each rule's old behaviour behind a
       switch for the runs only, and 30-year runs from 1938 with one switch off each (4 × seeds 1, 5
       and 7, the largest falls: 12 runs side by side, about 15 minutes), judged by `airAt.ts` and
@@ -251,6 +251,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       a hop nearer its goal in km with more hops left). Sorties aloft, missions, rebases. AT: the rule found restored or changed in its own commit, with a unit test; the
       A/B's figures in `docs/evidence/7.26/measure-f.md`; the pin's entry if it moves. If no rule
       of the four accounts for it, the late years' cause measured again and split.
+      Done (ADR-515, `docs/evidence/7.26/measure-f.md`): c4 (ADR-512). With it off, years 21–30
+      sorties aloft up on 8 of 10 seeds, level on 2, down on none (7.24 → 9.52; 7.26d 9.8), air
+      battles 7,524 → 10,207; c1b off up 6, down 4. The switches checked first: all off gave
+      7.26d's hashes, all on 7.26e's. ADR-512 taken back (the old step); pin c9f5962b.
     - [ ] 7.26g The AT of 7.26 re-measured (as 7.26e, seeds 1–10 × 30 years) after 7.26f and
       c3b; what is short split again.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):

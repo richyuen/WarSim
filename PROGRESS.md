@@ -18935,3 +18935,23 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Corrected:** 7.26f leads with 30-year runs from 1938, one rule switched off each (4 × seeds 1,
   5, 7), not with saved states: c4, c1b and c2b each read neutral from six saved states while the
   long runs fell.
+
+## 2026-10-18 — PLAN 7.26f: ADR-512 (the chain rebase) lowered the late air war; taken back
+
+- **Start:** gate green on `4e95f84`; critic not due.
+- **Switches** (runs only, never committed: `globalThis.__RULE_OFF` read by the four AI files,
+  through `.cache/tmp/ab726f.ts`): checked first, seed 1 × 2 years: all off gave 7.26d's hashes,
+  all on 7.26e's. The four rules are the only `src/` changes between those codes.
+- **Measured** (`docs/evidence/7.26/measure-f.md`): 15 runs (c3a, c4, c4 + old step, c1b, c2b off
+  × seeds 1, 5, 7), then c4 and c1b off on seeds 2–4, 6, 8–10 (14 runs), 30 years, about 20 minutes
+  a batch side by side. c4 off: years 21–30 sorties aloft up on 8 of 10, level on 2, down on none,
+  mean 7.24 → 9.52 (7.26d 9.8); air battles of years 21–30 7,524 → 10,207. c1b off: up 6, down 4.
+  The gap opens in years 11–20; with c4 off more wings at war and late land contact 0.49 → 0.89.
+  From year-21 states, 120 days, c4 on and off alike: the cost builds through the wars' course.
+- **Done** (ADR-515, supersedes ADR-512): `air.ts` as before `5ae5b37` (a hop only nearer the
+  goal; `hopField` removed). Pin e1856b1b → c9f5962b.
+- **Tests:** `airToward1938.test.ts` ADR-512's case now asserts the restored rule ("takes no hop
+  that is no nearer the front, though a chain of bases leads there"); 7.26b's test unchanged.
+- **Gotcha:** a set of seeds picked for their fall reads "up" under any change (regression to the
+  mean): judge a switch on seeds not picked, and against a competitor switch.
+- **Next:** PLAN 7.26c3b, then 7.26g (reads against `.cache/726f/c4_*.json`).
