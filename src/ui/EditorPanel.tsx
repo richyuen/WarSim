@@ -2,7 +2,7 @@ import { useState } from 'preact/hooks';
 import { MAX_PAINT_R } from '../shared/commands';
 import type { EditorState } from '../shared/editorState';
 import type { Refusal } from '../shared/commands';
-import type { NationStat, TemplateInfo } from '../shared/protocol';
+import type { NationStat, RefusedBase, TemplateInfo } from '../shared/protocol';
 import { isLand, TERRAIN_IDS } from '../shared/terrain';
 import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
@@ -48,6 +48,8 @@ export interface EditorPanelProps {
   onWarheads: (nation: number, count: number) => void;
   /** Why the last command from here was refused (`Refusal`, 0 none): a fleet or a wing with no place. */
   refusal: number;
+  /** With a wing refused for want of an airbase (PLAN 7.24b): the nearest of its nation's with room, null for none. */
+  refusalBase?: RefusedBase | null | undefined;
 }
 
 const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLand(i));
@@ -57,7 +59,7 @@ const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLa
  * paint, brush radius, an optional target mask, and undo/redo (also Ctrl+Z / Ctrl+Y). While it is
  * open, map clicks paint.
  */
-export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose, onGold, onAnnex, onImport, flagOf, onFlag, onExportScenario, onImportScenario, scenarioStatus, templates, onWarheads, refusal }: EditorPanelProps) {
+export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onChange, onUndo, onRedo, onClose, onGold, onAnnex, onImport, flagOf, onFlag, onExportScenario, onImportScenario, scenarioStatus, templates, onWarheads, refusal, refusalBase }: EditorPanelProps) {
   const [warheads, setWarheads] = useState('1');
   const [scenarioName, setScenarioName] = useState('');
   const [flagOpen, setFlagOpen] = useState(false);
@@ -197,6 +199,13 @@ export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onC
       {refusal !== 0 && (state.tool === 'fleet' || state.tool === 'wing') ? (
         <div class="panel-warn" data-testid="editor-refusal" role="status">
           {t('refusal.lead')} {t(REFUSAL_KEY[refusal as Exclude<Refusal, 0>] ?? 'refusal.noEffect')}
+          {me && refusalBase !== undefined ? (
+            <div data-testid="editor-refusal-base">
+              {refusalBase
+                ? t('editor.nearestBase', { name: displayName(me.name), base: refusalBase.name, km: refusalBase.km.toLocaleString('en-US') })
+                : t('editor.noBaseRoom', { name: displayName(me.name) })}
+            </div>
+          ) : null}
         </div>
       ) : null}
       {me ? (

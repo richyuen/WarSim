@@ -8,7 +8,7 @@
 import type { Command } from '../shared/commands';
 import type { HistoryRow } from '../shared/history';
 import type { LandMask } from '../shared/landMask';
-import type { EconomyBreakdown } from '../shared/protocol';
+import type { EconomyBreakdown, RefusedBase } from '../shared/protocol';
 import type {
   FromWorker,
   FormationDetail,
@@ -134,7 +134,7 @@ export class SimClient {
       return;
     }
     if (msg.type === 'refused') {
-      for (const l of this.refusedListeners) l(msg.reason);
+      for (const l of this.refusedListeners) l(msg.reason, msg.base);
       return;
     }
     if (msg.type === 'orderNews') {
@@ -352,9 +352,9 @@ export class SimClient {
     return () => this.orderNewsListeners.delete(l);
   }
 
-  private readonly refusedListeners = new Set<(reason: number) => void>();
+  private readonly refusedListeners = new Set<(reason: number, base?: RefusedBase | null) => void>();
   /** A command the sim did not carry out, and why (`Refusal`, shared/commands; PLAN 2.17a). */
-  onRefused(l: (reason: number) => void): () => void {
+  onRefused(l: (reason: number, base?: RefusedBase | null) => void): () => void {
     this.refusedListeners.add(l);
     return () => this.refusedListeners.delete(l);
   }

@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-505 · 2026-10-18 · accepted — The editor's wing goes to its nation's nearest base with room (PLAN 7.24b)
+
+- **Context.** Critic run 8, aircraft 6: "the editor refuses a Polish bomber group at Warsaw"
+  (`critic/c8_g_5591.json`). Warsaw's airbase had room (120 of 200 aircraft, a strategic bomber
+  group 24). The critic's script centred the camera on Warsaw at 2,000 m/px and clicked at (700,
+  450) in a 1600 × 900 view: 100 px west of the middle, about 200 km, in western Poland. The
+  editor looked for a base within `BASE_PICK_CELLS` (2 cells) of the click, and said only "no
+  airbase of its with room is near the place".
+- **Decision.**
+  - A click on the editor nation's own land places the wing at its nearest airbase with room,
+    however far. The nation and its land are what the click chose; the base is where a wing of it
+    can stand.
+  - A click elsewhere looks within `EDITOR_WING_CELLS`, 4 cells at M (scaled by the map's size).
+    `BASE_PICK_CELLS` stays the air AI's and the orders' (rebase, air lift), so no rule of play
+    moves. Fleets keep their reach: a wider one would put a German fleet clicked in Berlin on the
+    Baltic.
+  - A refusal names what it needs: the worker reads the refused command from the command log by
+    its `seq` and adds the nearest base of the nation's with room and its km (`nearestWingBase`),
+    or null where it holds none. Nothing of it is state, or in the hash.
+- **Tests.** `editorForces1938.test.ts` (the critic's click west of Warsaw placed at Warsaw, red on
+  the old rule; a Polish group in Berlin refused, Warsaw named 450 to 600 km off; none named once
+  Warsaw is full); `editorForces1938.spec.ts` (the critic's clicks; the editor says "The nearest
+  airbase of Poland with room for it: Warsaw, 514 km away"). Pin unmoved: only commands reach it.
+
 ### ADR-504 · 2026-10-18 · accepted — A patrol over its formation's men (PLAN 7.24d)
 
 - **Context.** Critic run 8, aircraft 6. The air AI set a fighter's patrol on its formation's place

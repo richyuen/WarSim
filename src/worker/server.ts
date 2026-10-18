@@ -31,6 +31,8 @@ import { chartRows } from '../sim/stats';
 import { aircraftOf } from '../sim/systems/airCombat';
 import { isTransport, wingAircraft } from '../sim/systems/air';
 import { airbaseRoom } from '../sim/data/airbases';
+import { nearestWingBase } from '../sim/placeForces';
+import { Refusal } from '../shared/commands';
 import { sortieEnd } from '../shared/sorties';
 import {
   BLOCK_STRIDE,
@@ -1084,13 +1086,31 @@ export class SimServer {
     return this.files;
   }
 
+  /**
+   * For an editor's wing refused for want of an airbase (PLAN 7.24b): the nearest of its nation's
+   * with room for it, by name, and its km from the click; null where it holds none, undefined for
+   * any other refusal. Read from the command log by the command's `seq`; it changes nothing.
+   */
+  private baseFor(world: World, seq: number, why: number): { name: string; km: number } | null | undefined {
+    if (why !== Refusal.NoAirbase) return undefined;
+    const log = world.commandLog;
+    for (let k = log.length - 1; k >= 0; k--) {
+      const cmd = log[k]!.cmd;
+      if (log[k]!.seq !== seq) continue;
+      if (cmd.kind !== 'spawnWing') return undefined;
+      const near = nearestWingBase(world, cmd.nation, cmd.template, cmd.x, cmd.y);
+      return near ? { name: world.airbases[near.base]!.name, km: Math.round(near.km) } : null;
+    }
+    return undefined;
+  }
+
   private drainEvents(world: World): void {
     const ev = world.out.events;
     for (let i = 0; i < ev.length; i += 6) {
       let b = ev[i + 3]!;
       // A refusal goes to the page at once and whatever it looks at: the panel that sent the
       // command says why (PLAN 2.17a).
-      if (ev[i + 1] === EventKind.CommandRefused) this.post({ type: 'refused', reason: b }, []);
+      if (ev[i + 1] === EventKind.CommandRefused) this.post({ type: 'refused', reason: b, base: this.baseFor(world, ev[i + 2]!, b) }, []);
       if (this.ordered.size > 0) this.orderNews(world, ev, i);
       if (ev[i + 1] === EventKind.ElementDestroyed) {
         // The end of an element is for a view that draws elements (PLAN 2.4b); it gets what the

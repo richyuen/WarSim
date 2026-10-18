@@ -3,6 +3,7 @@ import { Refusal, type Command } from '../../src/shared/commands';
 import { EventKind } from '../../src/shared/events';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
+import { nearestWingBase } from '../../src/sim/placeForces';
 import { Sim } from '../../src/sim/sim';
 import { assets1938 } from '../helpers/earth';
 import { nationId, runEvents } from '../helpers/sim1938';
@@ -13,7 +14,7 @@ import { nationId, runEvents } from '../helpers/sim1938';
 // nation; a shared scenario has them.
 
 const { w: W, h: H } = SIZE_1938;
-const [GBR, GER] = ['ENG', 'GER'].map(nationId) as [number, number];
+const [GBR, GER, POL] = ['ENG', 'GER', 'POL'].map(nationId) as [number, number, number];
 const tpl = (id: string): number => TEMPLATES_1938.findIndex((t) => t.id === id);
 const SQUADRON = tpl('battle_squadron');
 const BOMBERS = tpl('strategic_bomber_group');
@@ -100,5 +101,43 @@ describe('the editor places fleets, wings and warheads (PLAN 7.13a)', () => {
     t.step(24 * 3);
     expect(t.world.formations.has(fleet) && t.world.isFleet(fleet)).toBe(true);
     expect(t.world.formations.has(wing) && t.world.isWing(wing)).toBe(true);
+  }, 300_000);
+
+  // PLAN 7.24b (critic run 8, aircraft 6: "the editor refuses a Polish bomber group at Warsaw", its
+  // click 100 px off the middle of a view at 2,000 m/px, about 200 km west of Warsaw, in Poland): a
+  // click on the nation's own land places the wing at its nearest airbase with room; one elsewhere
+  // is refused, and the refusal can name that base.
+  it("the critic's Polish bomber group: a click on Poland's land goes to Warsaw; one in Germany is refused, Warsaw named", () => {
+    const s = new Sim({ scenario: '1938', seed: 5591, assets: assets1938(W) });
+    s.command({ kind: 'setSetting', key: 'aiEnabled', value: false });
+    runEvents(s, 1);
+    const [wx] = cellOf(21.0, 52.25, W, H);
+    const warsaw = s.world.airbases.findIndex((b) => b.name === 'Warsaw');
+    expect(warsaw).toBeGreaterThanOrEqual(0);
+    // The critic's click: west of Warsaw, on Poland's land, beyond the old reach of 2 cells.
+    const [cx, cy] = cellOf(18.2, 52.25, W, H);
+    expect(s.world.cells.controller[Math.floor(cy) * W + Math.floor(cx)]).toBe(POL);
+    expect(wx - cx).toBeGreaterThan(5);
+    const wings = ofTemplate(s, POL, BOMBERS).length;
+    expect(send(s, { kind: 'spawnWing', nation: POL, x: cx + 0.5, y: cy + 0.5, template: BOMBERS })).toEqual({ applied: 1, refused: [] });
+    const wing = ofTemplate(s, POL, BOMBERS).sort((a, b) => a - b).at(-1)!;
+    expect(ofTemplate(s, POL, BOMBERS)).toHaveLength(wings + 1);
+    expect(s.world.wingBase.get(wing)).toBe(warsaw + 1);
+
+    // In Berlin, on Germany's land, far from any base of Poland's: refused; the nearest with room is Warsaw.
+    const [bx, by] = cellOf(13.4, 52.52, W, H);
+    expect(send(s, { kind: 'spawnWing', nation: POL, x: bx + 0.5, y: by + 0.5, template: BOMBERS }).refused).toEqual([Refusal.NoAirbase]);
+    const near = nearestWingBase(s.world, POL, BOMBERS, bx + 0.5, by + 0.5)!;
+    expect(near.base).toBe(warsaw);
+    expect(near.km).toBeGreaterThan(450); // Berlin to Warsaw: about 520 km
+    expect(near.km).toBeLessThan(600);
+
+    // Warsaw filled: then no base of Poland's has room, and nothing is named.
+    for (let k = 0; k < 20 && nearestWingBase(s.world, POL, BOMBERS, cx + 0.5, cy + 0.5) !== null; k++) {
+      expect(send(s, { kind: 'spawnWing', nation: POL, x: cx + 0.5, y: cy + 0.5, template: BOMBERS }).applied).toBe(1);
+    }
+    expect(nearestWingBase(s.world, POL, BOMBERS, cx + 0.5, cy + 0.5)).toBeNull();
+    expect(send(s, { kind: 'spawnWing', nation: POL, x: cx + 0.5, y: cy + 0.5, template: BOMBERS }).refused).toEqual([Refusal.NoAirbase]);
+    expect(nearestWingBase(s.world, POL, INFANTRY, cx + 0.5, cy + 0.5)).toBeNull();
   }, 300_000);
 });

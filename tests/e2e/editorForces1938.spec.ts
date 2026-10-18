@@ -193,3 +193,46 @@ test("the critic's North Sea standoff: fleets placed in the editor hold their pl
   await page.waitForTimeout(1500);
   await page.screenshot({ path: path.resolve('docs/evidence/7.22/c-northsea-day3-30m.png') });
 });
+
+// PLAN 7.24b (critic run 8, aircraft 6: "the editor refuses a Polish bomber group at Warsaw",
+// `critic/c8_g_5591.json`): the critic's clicks. The camera on Warsaw at 2,000 m/px in a 1600 × 900
+// view, the click at (700, 450), 100 px west of the middle: on Poland's land, the group goes to the
+// airbase of Warsaw. A Polish group clicked in Berlin is refused, and the editor names the nearest
+// airbase of Poland's with room and how far it is.
+test("the critic's Polish bomber group at Warsaw is placed; one clicked in Berlin is refused with the base it needs (PLAN 7.24b)", async ({ page }, info) => {
+  test.setTimeout(240_000);
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.goto('/?scenario=1938&paused=1&seed=5591');
+  await ready(page);
+  const POL = id('POL');
+  const before = await forces(page, POL);
+  await page.getByTestId('editor-btn').click();
+  await page.getByTestId('editor-nation').selectOption(String(POL));
+  await page.getByTestId('editor-tool-wing').click();
+  await page.getByTestId('editor-template').selectOption({ label: 'Strategic bomber group' });
+  const lookAt = async (lon: number, lat: number, m: number): Promise<void> => {
+    const [x, y] = cellOf(lon, lat, W, H);
+    await page.evaluate(({ x, y, m }) => {
+      const v = window.__warsim!.view!;
+      v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / m });
+    }, { x, y, m });
+    await page.waitForTimeout(400);
+  };
+  await lookAt(20.9981, 52.2519, 2000);
+  await page.mouse.click(700, 450);
+  await expect.poll(async () => (await forces(page, POL)).wings).toBe(before.wings + 1);
+  await expect(page.getByTestId('editor-refusal')).toHaveCount(0);
+  const out = process.env['EVIDENCE'] !== undefined ? path.resolve('docs/evidence/7.24') : info.outputPath();
+  await page.screenshot({ path: path.join(out, 'b-editor-warsaw-placed.png') });
+
+  // In Berlin: refused, Warsaw named.
+  await lookAt(13.4, 52.52, 2000);
+  await page.mouse.click(800, 450);
+  await expect(page.getByTestId('editor-refusal')).toContainText('no airbase of its with room is near the place');
+  await expect(page.getByTestId('editor-refusal-base')).toHaveText(/^The nearest airbase of Poland with room for it: Warsaw, (4[5-9]\d|5\d\d) km away\. Click there\.$/);
+  expect((await forces(page, POL)).wings).toBe(before.wings + 1);
+  await page.getByTestId('editor-panel').screenshot({ path: path.join(out, 'b-editor-refusal-base.png') });
+  // Another nation chosen: the words were Poland's, and go.
+  await page.getByTestId('editor-nation').selectOption(String(GER));
+  await expect(page.getByTestId('editor-refusal')).toHaveCount(0);
+});

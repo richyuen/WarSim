@@ -18561,3 +18561,28 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **After the commit:** the sweep-config tests by hand (the first rule to read a block, on the path
   where a running and a loaded game hold different caches): 18 of 18, save and load among them.
 - **Next:** PLAN 7.24b (the editor's bomber group at a capital).
+
+## 2026-10-18 — PLAN 7.24b: the editor's bomber group at a capital
+
+- **Start:** gate green on `3332147` (7.24d).
+- **Found:** Warsaw's airbase had room (120 of 200 aircraft; a strategic bomber group is 24). The
+  critic's script (`critic/scripts/c8_g_editor.mjs`) centres the camera on Warsaw at 2,000 m/px and
+  clicks at (700, 450) in a 1600 × 900 view: 100 px west of the middle, about 200 km, in western
+  Poland. The editor looked 2 cells about the click (`BASE_PICK_CELLS`) and said only "no airbase
+  of its with room is near the place".
+- **Done** (ADR-505, SPEC §9 "Editor forces"): a wing clicked on its nation's land goes to that
+  nation's nearest airbase with room; elsewhere the editor looks within `EDITOR_WING_CELLS` (4 at
+  M). A refusal names the nearest base with room and its km ("The nearest airbase of Poland with
+  room for it: Warsaw, 514 km away. Click there."), or says the nation holds none: the worker reads
+  the refused command from the log (`nearestWingBase`), nothing of it in the state. The editor's
+  hint line says the new rule; a change of the editor's nation clears a refusal. `BASE_PICK_CELLS`
+  (the AI's and the orders') and the fleet's reach unchanged. Pin unmoved.
+- **Tests:** `editorForces1938.test.ts` (new case: the critic's click west of Warsaw placed at
+  Warsaw, red on the old rule with `NoAirbase`; a Polish group in Berlin refused, Warsaw 450 to 600
+  km off; none named once Warsaw is full). `editorForces1938.spec.ts` (new: the critic's clicks,
+  placed; Berlin refused with Warsaw named). Pictures looked at
+  (`docs/evidence/7.24/b-editor-warsaw-placed.png`, `b-editor-refusal-base.png`).
+- **Specs by hand** (chromium): `editorForces1938` (all three) green.
+- **7.24 ticked:** the air's fire (a0), the wings spread (a), patrols drawn over fights at T2 and T3
+  in a spec (c), a patrol over its men (d), the editor's group at a capital (b).
+- **Next:** PLAN 7.25 (AI nuclear use believed).

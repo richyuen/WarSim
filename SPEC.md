@@ -2791,6 +2791,15 @@ on screen.
   - Editor city names are saved with the nation names. The worker resends the city layer
     (`cityLayer`) when cities change. Alliances and puppets use the God tab's commands.
   - The core-cost rule waits for a core economy.
+- **Editor forces** (PLAN 7.13a, 7.22c, 7.24b; `src/sim/placeForces.ts`):
+  - `spawnFleet` puts a fleet on the sea water nearest the click within `BASE_PICK_CELLS`; it
+    holds that place (`world.station`). Refused `NotAtSea` where no such water is near.
+  - `spawnWing` puts a wing at the airbase of its nation's with room for its aircraft nearest
+    the click: anywhere when the click is on the nation's own land, else within
+    `EDITOR_WING_CELLS` (4 at M) [ADR-505]. Refused `NoAirbase` otherwise; the worker then adds
+    to the `refused` message the nearest base of the nation's with room and its km from the click
+    (`nearestWingBase`, read from the command log; null where it holds none), and the editor says
+    so under the refusal. A change of the editor's nation clears the refusal.
 - **Editor**: brush, bucket, line; undo/redo (command-pattern diff stack); target
   mask (paint only over a selected terrain or nation); cities; gold and core costs; alliances;
   puppets; annex; preset revolts; map import (image → terrain/owner via palette

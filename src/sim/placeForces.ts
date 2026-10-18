@@ -2,6 +2,7 @@ import { Refusal } from '../shared/commands';
 import { airbaseRoom } from './data/airbases';
 import { nearestCellWhere } from './data/ownership';
 import { BASE_PICK_CELLS, wingAircraft } from './systems/air';
+import { seaKm } from './systems/navalCombat';
 import { equipFormation } from './systems/elements';
 import { Domain, seaOf, type World } from './world';
 
@@ -49,34 +50,61 @@ export function placeFleet(world: World, nation: number, t: number, x: number, y
 }
 
 /**
- * An air wing of `nation`, air template `t`, at the airbase nearest (x, y) within BASE_PICK_CELLS
- * (at the map's size) that `nation` controls and that has room for its aircraft beside the wings
- * based there (`airbaseRoom`). Refused for a template not of the air and where no base takes it.
+ * How far from a click off its nation's land the editor looks for a wing's airbase, cells at M
+ * (PLAN 7.24b; critic run 8: a Polish bomber group clicked "at Warsaw" at 2,000 m/px landed about
+ * 200 km off and was refused). Beyond `BASE_PICK_CELLS`, which is the AI's and the orders' and
+ * stays theirs.
  */
-export function placeWing(world: World, nation: number, t: number, x: number, y: number): Refusal {
-  if (!ofDomain(world, t, Domain.air)) return Refusal.NoSuch;
+export const EDITOR_WING_CELLS = 4;
+
+/**
+ * The airbases `nation` holds with room for a wing of air template `t` beside the wings based
+ * there (`airbaseRoom`), each with its km from (x, y), nearest first (ties: the lower base).
+ */
+function basesWithRoom(world: World, nation: number, t: number, x: number, y: number): { base: number; km: number }[] {
   const need = wingAircraft(world, t);
   const used = new Map<number, number>();
   for (const [o, b] of world.wingBase) if (b > 0) used.set(b, (used.get(b) ?? 0) + wingAircraft(world, world.formations.cols.template[o]!));
-  const reach = world.atSize(BASE_PICK_CELLS);
-  const { w } = world.cells;
-  let best = -1;
-  let bd = Infinity;
+  const out: { base: number; km: number }[] = [];
   world.airbases.forEach((b, i) => {
     if (world.cells.controller[b.cell] !== nation || (used.get(i + 1) ?? 0) + need > airbaseRoom(b)) return;
     const [bx, by] = world.cellPoint(b.cell);
+    out.push({ base: i, km: seaKm(world, x, y, bx, by) });
+  });
+  return out.sort((a, b) => a.km - b.km || a.base - b.base);
+}
+
+/**
+ * The airbase of `nation`'s with room for a wing of air template `t` nearest (x, y), anywhere, and
+ * its km; null where it holds none with room. What a refused wing of the editor needs (PLAN 7.24b).
+ */
+export function nearestWingBase(world: World, nation: number, t: number, x: number, y: number): { base: number; km: number } | null {
+  if (!ofDomain(world, t, Domain.air)) return null;
+  return basesWithRoom(world, nation, t, x, y)[0] ?? null;
+}
+
+/**
+ * An air wing of `nation`, air template `t`, at the airbase of `nation`'s with room for its
+ * aircraft beside the wings based there (`airbaseRoom`) nearest (x, y): anywhere where the click is
+ * on its own land (PLAN 7.24b), else within EDITOR_WING_CELLS (at the map's size). Refused for a
+ * template not of the air and where no base takes it.
+ */
+export function placeWing(world: World, nation: number, t: number, x: number, y: number): Refusal {
+  if (!ofDomain(world, t, Domain.air)) return Refusal.NoSuch;
+  const { w, h } = world.cells;
+  const cx = Math.floor(x);
+  const cy = Math.floor(y);
+  const own = cx >= 0 && cx < w && cy >= 0 && cy < h && world.cells.controller[cy * w + cx] === nation;
+  const reach = world.atSize(EDITOR_WING_CELLS);
+  const best = basesWithRoom(world, nation, t, x, y).find(({ base }) => {
+    if (own) return true;
+    const [bx, by] = world.cellPoint(world.airbases[base]!.cell);
     let dx = Math.abs(bx - x);
     if (world.settings.loopingMap) dx = Math.min(dx, w - dx);
-    const dy = Math.abs(by - y);
-    if (dx > reach + 0.5 || dy > reach + 0.5) return;
-    const d = dx * dx + dy * dy;
-    if (d < bd) {
-      bd = d;
-      best = i;
-    }
+    return dx <= reach + 0.5 && Math.abs(by - y) <= reach + 0.5;
   });
-  if (best < 0) return Refusal.NoAirbase;
-  const id = make(world, nation, t, ...world.cellPoint(world.airbases[best]!.cell));
-  world.wingBase.set(id, best + 1);
+  if (!best) return Refusal.NoAirbase;
+  const id = make(world, nation, t, ...world.cellPoint(world.airbases[best.base]!.cell));
+  world.wingBase.set(id, best.base + 1);
   return Refusal.None;
 }

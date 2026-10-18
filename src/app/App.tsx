@@ -203,6 +203,7 @@ export function App({
           templates={hud.templates.value}
           onWarheads={(nation, count) => hud.command({ kind: 'grantWarheads', nation, count })}
           refusal={hud.refusal.value}
+          refusalBase={hud.refusalBase.value}
           flagOf={(n) => view?.flags.pixelsOf(n) ?? new Uint32Array(36 * 24)}
           onFlag={(nation, px) => hud.command({ kind: 'setFlag', nation, runs: px ? encodeRuns(px) : [] })}
           scenarioStatus={scenarioStatus}

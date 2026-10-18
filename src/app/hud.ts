@@ -16,7 +16,7 @@ import type { SeaBattleView } from './MapView';
 import type { MapHover } from '../ui/mapHover';
 import { t } from '../ui/i18n';
 import type { EditorState } from '../shared/editorState';
-import type { EconomyBreakdown } from '../shared/protocol';
+import type { EconomyBreakdown, RefusedBase } from '../shared/protocol';
 import { RANK_LISTS, type RankList } from '../shared/ranking';
 
 /** Order news kept on the screen at most (PLAN 4.9c). */
@@ -218,8 +218,10 @@ export class Hud {
     // The words are for the nation whose panel sent the command: a refusal that arrives after
     // the selection has moved on is not shown, and none stays through a change of the selection
     // (PLAN 2.17e2).
-    sim.onRefused((reason) => {
-      if (this.selected.peek() === this.commandFor) this.refusal.value = reason;
+    sim.onRefused((reason, base) => {
+      if (this.selected.peek() !== this.commandFor) return;
+      this.refusal.value = reason;
+      this.refusalBase.value = base;
     });
     // What became of the player's orders (PLAN 4.9c): the newest last, ORDER_NEWS_KEPT at most.
     sim.onOrderNews((news) => {
@@ -329,6 +331,8 @@ export class Hud {
       } else if (this.mapMode.value === 'terrain') this.setMapMode(this.modeBeforeTerrain);
     }
     if (s.tool !== this.editor.value.tool) this.lineStart.value = null;
+    // A refusal's words are of the nation it was for (PLAN 7.24b: the nearest base of its).
+    if (s.nation !== this.editor.value.nation) this.refusal.value = 0;
     this.editor.value = s;
   }
 
@@ -504,6 +508,8 @@ export class Hud {
 
   /** Why the sim did not carry out the last command sent from here (`Refusal`; 0 = it did; PLAN 2.17a). */
   readonly refusal = signal(0);
+  /** With a wing of the editor refused for want of an airbase (PLAN 7.24b): the nearest of its nation's with room, null for none. */
+  readonly refusalBase = signal<RefusedBase | null | undefined>(undefined);
   /** What became of the player's orders of formations, the newest last (PLAN 4.9c; `seq` numbers them). */
   readonly orderNews = signal<(OrderNews & { seq: number })[]>([]);
   private orderSeq = 0;

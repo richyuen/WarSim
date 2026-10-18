@@ -359,8 +359,12 @@ export type FromWorker =
   | { type: 'reply'; reqId: number; status: SimStatus; bytes?: Uint8Array; scenarioHash?: number }
   | { type: 'error'; reqId: number; message: string; stack: string }
   | { type: 'snapshot'; snap: Snapshot }
-  /** A command was not carried out; `reason` is a `Refusal` (shared/commands; PLAN 2.17a). */
-  | { type: 'refused'; reason: number }
+  /**
+   * A command was not carried out; `reason` is a `Refusal` (shared/commands; PLAN 2.17a). `base`,
+   * for an editor's wing with no airbase near (PLAN 7.24b): the nearest of its nation's with room
+   * for it and its km from the click, null where it holds none.
+   */
+  | { type: 'refused'; reason: number; base?: RefusedBase | null | undefined }
   /**
    * What became of a player's order of a formation (PLAN 4.9c), at once: `refused` (`reason`, a
    * `RejectReason`), a landing thrown back (`repulsed`), or troops ashore away from the order's
@@ -506,6 +510,12 @@ export interface PlayerWing {
   mission: 'patrol' | 'strike' | 'supply' | null;
   /** In the air on a sortie now. */
   flying: boolean;
+}
+
+/** The airbase a refused wing of the editor could go to (PLAN 7.24b): its name and km from the click. */
+export interface RefusedBase {
+  name: string;
+  km: number;
 }
 
 export interface NationStat {

@@ -11087,3 +11087,52 @@ Of 7.4 (open in PLAN.md):
       critic's hook. AT: a unit test; the hooks that read `count` unchanged.
     - [x] 7.23c `wrecks1938`: an element that dies leaves its wreck and its sprite goes. AT:
       `wrecks1938` green.
+
+<!-- moved 2026-10-18 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.24 Aircraft seen at every tier (aircraft 6, needs 8): at 900 m/px 0 to 1 sorties drawn, at
+  25 m/px none (`critic/c8_c_6047.json` `sorties`); the editor refuses a Polish bomber group at
+  Warsaw ("no airbase of its with room is near the place", `critic/c8_g_5591.json`). AT: sorties
+  drawn at T2 and T3 over the war on Poland in its first weeks, counted; the editor places a bomber
+  group at a capital or says what it needs. (The air war fading after year 1: 7.26.)
+  Found (2026-10-18, seed 6047, Germany on Poland and France, `.cache/p724/`): the page draws what
+  the sim has at every tier (nested views on formation 11 at hour 72: 4, 4, 0, 0, 0 drawn from
+  3,000 to 25 m/px, as the rows' targets lie). The air AI sends each wing to the formation in
+  contact nearest its base, so a nation's wings pile on a few places (about 8 targets a day for 20
+  to 50 formations in contact): over days 1 to 21, 6.4 % of the formations in contact have a sortie
+  in a T2 view about them (80 m/px), 1.6 % in a T3 view (25 m/px); after day 10 almost none.
+  And the air forces are gone in three weeks: Germany 840 aircraft to 131 (air fights 273, flak
+  436), France 444 to 20, none refilled (a wing is not, by design: `refillable`). A part each:
+    - [x] 7.24a0 The air's fire calibrated: `AIR_FIRE` 0.25 → 0.05, `AA_FIRE` 2 → 0.2 (an even
+      fighter fight 13 % an hour each side → 2.6 %; an infantry division's flak 1 % an hour of a
+      bomber group → 0.12 %). AT: the losses by nation, in fights and to flak, over the first three
+      weeks of the war on Poland (seeds 6047 and 4111), before and after; the coverage of 7.24a's
+      measure; the tests of the old rate re-based by the constant; `sweep:quick`; the pin's entry.
+    - [x] 7.24a The air AI's wings spread over the front: a nation's wings, by id, each to the
+      formation in range with the fewest of its wings sent there that day, the nearest of equals
+      (fighters over their own, bombers at the enemy's). AT: the share of formations in contact
+      with a sortie in a T2 and a T3 view, days 1 to 21, on seed 6047 and a seed not used, before
+      and after; a unit test of the day's assignment; the losses with and without it; the pin's
+      entry; the full sweep on unseen seeds after a0 and a.
+    - [x] 7.24c A spec: on days 3 and 10 of the war on Poland, formations in contact with a sortie
+      of the page's rows over them, the camera on each at 80 and 25 m/px, the sorties drawn; a
+      picture.
+    - [x] 7.24d A patrol over its formation's men: the AI's patrol is set on its formation's
+      point, which at T3 is some kilometres from the block deployed toward the contact (seed 6047
+      day 10: about 6 km, `docs/evidence/7.24/c-patrol-day10-025m.png`): on the block's middle or
+      the line of contact instead. AT: the patrol's middle within a block's depth of its men; the
+      pin's entry.
+    - [x] 7.24b The editor's bomber group at a capital: the critic's case (Poland at Warsaw) placed,
+      or refused with what it needs (the nearest airbase of its with room). AT: the editor's spec.
