@@ -11,7 +11,10 @@ import { armourFires, busiest } from '../helpers/armourFire';
 //
 // What the instance data says is one half. The other is read from the canvas: the sprites are
 // drawn once as they are and once with the small share held at 0, and the pixel in the middle of
-// each tank is compared with its tint. A mark is its nation's colour there; a hull of 5 px is not.
+// each tank is compared with its tint. A mark is its nation's colour there; a hull of 5 px is
+// darker. Since the atlas is premultiplied (PLAN 7.21b, ADR-497) a 5-px hull is no longer darkened
+// by the clear texels' black in the atlas's small levels: median 0.672 of its tint before, 0.828
+// after, the mark 1 both times. The gap is held over 0.1, and the mark at 0.95 (0.2 and 0.6 before).
 
 /** From the first week's end: the first hour of armour fire after it (`armourFires`). */
 const FROM = 24 * 7;
@@ -105,8 +108,8 @@ test('T2: a tank is its small mark where a sprite is at its least size, and a hu
     return { mark, hull, elementOpacity: v.elementOpacity };
   }, HULLS);
   expect(seen.elementOpacity).toBe(1);
-  expect(seen.mark).toBeGreaterThan(0.6);
-  expect(seen.mark - seen.hull).toBeGreaterThan(0.2);
+  expect(seen.mark).toBeGreaterThan(0.95);
+  expect(seen.mark - seen.hull).toBeGreaterThan(0.1);
 
   // Through the band, a metre a pixel at a time: the share falls from 1 to 0 without a step.
   const walk = await page.evaluate(() => {

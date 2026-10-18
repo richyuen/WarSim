@@ -8,7 +8,8 @@ import { Frame } from '../../src/shared/unitLooks';
 // the two sides near one colour on the grass", `critic/shots/c8c_6047_inf_0010m.png`). The critic's
 // case: seed 6047, Germany on Poland, day 3, the first German infantry division in contact. At 10
 // m/px the pixels at the middles of the two sides' infantry figures are measured against each other
-// and against the ground, as PLAN 7.9b measured the tanks (`tankSides1938`). Pictures at 25 and 10.
+// and against the ground, as PLAN 7.9b measured the tanks (`tankSides1938`); since PLAN 7.21b at 25
+// m/px as well, where a man is about 4 px. Pictures at 25 and 10.
 
 const id = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
 type Rgb = [number, number, number];
@@ -41,74 +42,87 @@ test("T3: the critic's infantry fight, the two sides' men told apart and from th
       v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / m });
     }, { x: pick!.at[0], y: pick!.at[1], m });
   };
-  await look(25);
-  await page.waitForFunction(() => {
-    const v = window.__warsim!.view!;
-    return v.subscription?.tier === 3 && v.individualsShown && v.shares.individuals === 1 && v.individualCount > 0;
-  }, null, { timeout: 15_000 });
-  await page.waitForTimeout(1500);
-  await page.screenshot({ path: path.resolve('docs/evidence/7.21/a-infantry-25m.png') });
-  await look(10);
-  await page.waitForFunction(() => {
-    const v = window.__warsim!.view!;
-    return v.subscription?.tier === 3 && v.individualsShown && v.shares.individuals === 1 && v.individualCount > 0 && v.metresPerPx < 11;
-  }, null, { timeout: 15_000 });
-  await page.waitForTimeout(1500);
-
-  const got = await page.evaluate(({ GER, infantry, prone }) => {
-    const v = window.__warsim!.view!;
-    const canvas = document.querySelector('canvas')!;
-    const gl = canvas.getContext('webgl2')!;
-    v.draw(performance.now());
-    const dpr = canvas.width / canvas.clientWidth;
-    const cam = v.controller.cam;
-    const read = (sx: number, sy: number): [number, number, number] => {
-      const px = new Uint8Array(4);
-      gl.readPixels(Math.round(sx * dpr), canvas.height - Math.round(sy * dpr) - 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
-      return [px[0]!, px[1]!, px[2]!];
-    };
-    const index = new Map<number, number>();
-    for (let i = 0; i < v.elementCount; i++) index.set(v.elementId[i]!, i);
-    const nationOf = new Map<number, number>();
-    const ours: [number, number, number][] = [];
-    const theirs: [number, number, number][] = [];
-    const placed: [number, number][] = [];
-    const [vw, vh] = [canvas.clientWidth, canvas.clientHeight];
-    for (let j = 0; j < v.individualCount; j++) {
-      const e = index.get(v.individualOwner[j]!);
-      if (e === undefined) continue;
-      const f = v.elementFormation[e]!;
-      if (!nationOf.has(f)) nationOf.set(f, v.formationTitle(f)?.nation ?? 0);
-      const sx = (v.individualX[j]! - cam.cx) * cam.scale + vw / 2;
-      const sy = (v.individualY[j]! - cam.cy) * cam.scale + vh / 2;
-      placed.push([sx, sy]);
-      if (sx < 20 || sy < 60 || sx > vw - 20 || sy > vh - 120 || (v.individualFrame(j) !== infantry && v.individualFrame(j) !== prone)) continue;
-      const n = nationOf.get(f)!;
-      if (n === GER) ours.push(read(sx, sy));
-      else if (n !== 0) theirs.push(read(sx, sy));
-    }
-    // The ground: points of a grid 12 px or more from every figure.
-    const ground: [number, number, number][] = [];
-    for (let sy = 80; sy < vh - 140; sy += 23) {
-      for (let sx = 30; sx < vw - 30; sx += 23) {
-        if (placed.some(([x, y]) => Math.abs(x - sx) < 12 && Math.abs(y - sy) < 12)) continue;
-        ground.push(read(sx, sy));
+  const show = async (m: number): Promise<void> => {
+    await look(m);
+    await page.waitForFunction((m) => {
+      const v = window.__warsim!.view!;
+      return v.subscription?.tier === 3 && v.individualsShown && v.shares.individuals === 1 && v.individualCount > 0 && Math.abs(v.metresPerPx - m) < m * 0.1;
+    }, m, { timeout: 15_000 });
+    await page.waitForTimeout(1500);
+  };
+  const measure = async () => {
+    return page.evaluate(({ GER, infantry, prone }) => {
+      const v = window.__warsim!.view!;
+      const canvas = document.querySelector('canvas')!;
+      const gl = canvas.getContext('webgl2')!;
+      v.draw(performance.now());
+      const dpr = canvas.width / canvas.clientWidth;
+      const cam = v.controller.cam;
+      const read = (sx: number, sy: number): [number, number, number] => {
+        const px = new Uint8Array(4);
+        gl.readPixels(Math.round(sx * dpr), canvas.height - Math.round(sy * dpr) - 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        return [px[0]!, px[1]!, px[2]!];
+      };
+      const index = new Map<number, number>();
+      for (let i = 0; i < v.elementCount; i++) index.set(v.elementId[i]!, i);
+      const nationOf = new Map<number, number>();
+      const ours: [number, number, number][] = [];
+      const theirs: [number, number, number][] = [];
+      const placed: [number, number][] = [];
+      const [vw, vh] = [canvas.clientWidth, canvas.clientHeight];
+      for (let j = 0; j < v.individualCount; j++) {
+        const e = index.get(v.individualOwner[j]!);
+        if (e === undefined) continue;
+        const f = v.elementFormation[e]!;
+        if (!nationOf.has(f)) nationOf.set(f, v.formationTitle(f)?.nation ?? 0);
+        const sx = (v.individualX[j]! - cam.cx) * cam.scale + vw / 2;
+        const sy = (v.individualY[j]! - cam.cy) * cam.scale + vh / 2;
+        placed.push([sx, sy]);
+        if (sx < 20 || sy < 60 || sx > vw - 20 || sy > vh - 120 || (v.individualFrame(j) !== infantry && v.individualFrame(j) !== prone)) continue;
+        const n = nationOf.get(f)!;
+        if (n === GER) ours.push(read(sx, sy));
+        else if (n !== 0) theirs.push(read(sx, sy));
       }
-    }
-    const mean = (l: [number, number, number][]): [number, number, number] => {
-      const m: [number, number, number] = [0, 0, 0];
-      for (const c of l) for (let k = 0; k < 3; k++) m[k] = m[k]! + c[k]! / l.length;
-      return m;
-    };
-    return { ours: ours.length, theirs: theirs.length, ground: ground.length, ger: mean(ours), pol: mean(theirs), soil: mean(ground) };
-  }, { GER, infantry: Frame.infantry, prone: Frame.prone });
+      // The ground: points of a grid 12 px or more from every figure.
+      const ground: [number, number, number][] = [];
+      for (let sy = 80; sy < vh - 140; sy += 23) {
+        for (let sx = 30; sx < vw - 30; sx += 23) {
+          if (placed.some(([x, y]) => Math.abs(x - sx) < 12 && Math.abs(y - sy) < 12)) continue;
+          ground.push(read(sx, sy));
+        }
+      }
+      const mean = (l: [number, number, number][]): [number, number, number] => {
+        const m: [number, number, number] = [0, 0, 0];
+        for (const c of l) for (let k = 0; k < 3; k++) m[k] = m[k]! + c[k]! / l.length;
+        return m;
+      };
+      return { ours: ours.length, theirs: theirs.length, ground: ground.length, ger: mean(ours), pol: mean(theirs), soil: mean(ground) };
+    }, { GER, infantry: Frame.infantry, prone: Frame.prone });
+  };
   const f = (c: Rgb): string => c.map((x) => Math.round(x)).join(',');
-  console.log(
-    `German men ${got.ours} (${f(got.ger)}), Polish men ${got.theirs} (${f(got.pol)}), ground ${got.ground} (${f(got.soil)}); ` +
-      `apart ${apart(got.ger, got.pol).toFixed(0)}; from the ground: German ${apart(got.ger, got.soil).toFixed(0)} (lightness ${(lum(got.ger) - lum(got.soil)).toFixed(0)}), ` +
-      `Polish ${apart(got.pol, got.soil).toFixed(0)} (lightness ${(lum(got.pol) - lum(got.soil)).toFixed(0)})`,
-  );
+  const report = (m: number, got: Awaited<ReturnType<typeof measure>>): void => {
+    console.log(
+      `${m} m/px: German men ${got.ours} (${f(got.ger)}), Polish men ${got.theirs} (${f(got.pol)}), ground ${got.ground} (${f(got.soil)}); ` +
+        `apart ${apart(got.ger, got.pol).toFixed(0)}; from the ground: German ${apart(got.ger, got.soil).toFixed(0)} (lightness ${(lum(got.ger) - lum(got.soil)).toFixed(0)}), ` +
+        `Polish ${apart(got.pol, got.soil).toFixed(0)} (lightness ${(lum(got.pol) - lum(got.soil)).toFixed(0)})`,
+    );
+  };
+  await show(25);
+  const at25 = await measure();
+  report(25, at25);
+  await page.screenshot({ path: path.resolve('docs/evidence/7.21/b-infantry-25m.png') });
+  await show(10);
+  const got = await measure();
+  report(10, got);
   await page.screenshot({ path: path.resolve('docs/evidence/7.21/a-infantry-10m.png') });
+  // PLAN 7.21b: at 25 m/px a man is about 4 px, drawn from the atlas's smaller levels. Before the
+  // atlas was premultiplied (ADR-497) they averaged in the clear texels' black: German (105,94,79),
+  // Polish (99,79,60), 25 apart; after, (164,153,138) and (151,99,85), 77 apart.
+  expect(at25.ours).toBeGreaterThan(200);
+  expect(at25.theirs).toBeGreaterThan(200);
+  expect(apart(at25.ger, at25.pol), 'the two sides at 25 m/px, RGB').toBeGreaterThan(60);
+  expect(apart(at25.ger, at25.soil), 'German men from the ground at 25 m/px, RGB').toBeGreaterThan(30);
+  expect(apart(at25.pol, at25.soil), 'Polish men from the ground at 25 m/px, RGB').toBeGreaterThan(30);
   expect(got.ours).toBeGreaterThan(200);
   expect(got.theirs).toBeGreaterThan(200);
   expect(apart(got.ger, got.pol), 'the two sides, RGB').toBeGreaterThan(60);

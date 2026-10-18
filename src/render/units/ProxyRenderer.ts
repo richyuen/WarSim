@@ -87,8 +87,9 @@ out vec4 outColor;
 void main() {
   vec4 t = texture(uAtlas, vUv);
   if (vSmall > 0.0) t = mix(t, texture(uAtlas, vUvSmall), vSmall);
-  // White silhouette → tint; dark outline stays dark.
-  outColor = vec4(t.rgb * vColor.rgb, t.a * vColor.a);
+  // White silhouette → tint; dark outline stays dark. The atlas is premultiplied (PLAN 7.21b), so
+  // is what is drawn: the tint's alpha scales the colour as well.
+  outColor = vec4(t.rgb * vColor.rgb * vColor.a, t.a * vColor.a);
   if (outColor.a < 0.02) discard;
 }
 `;
@@ -124,7 +125,10 @@ export class ProxyRenderer {
   constructor(gl: WebGL2RenderingContext, atlasCanvas: HTMLCanvasElement) {
     this.gl = gl;
     this.program = twgl.createProgramInfo(gl, [VS, FS]);
-    this.atlas = twgl.createTexture(gl, { src: atlasCanvas, min: gl.LINEAR_MIPMAP_LINEAR, mag: gl.LINEAR, wrap: gl.CLAMP_TO_EDGE });
+    // Premultiplied (PLAN 7.21b, ADR-497): the mipmaps are averages of colour by its alpha. Straight,
+    // the clear texels' black went into every smaller level, and a sprite of a few px was drawn
+    // near black, whatever its nation: at 25 m/px German and Polish men 25 apart in RGB (132 at 10).
+    this.atlas = twgl.createTexture(gl, { src: atlasCanvas, min: gl.LINEAR_MIPMAP_LINEAR, mag: gl.LINEAR, wrap: gl.CLAMP_TO_EDGE, premultiplyAlpha: 1 });
     this.vao = gl.createVertexArray()!;
     gl.bindVertexArray(this.vao);
     const corner = gl.createBuffer()!;
@@ -200,8 +204,8 @@ export class ProxyRenderer {
     if (this.count === 0) return;
     const gl = this.gl;
     gl.enable(gl.BLEND);
-    // Colour over what is there, by the source's alpha; the canvas itself stays opaque (PLAN 2.11m).
-    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    // Premultiplied colour over what is there; the canvas itself stays opaque (PLAN 2.11m).
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.useProgram(this.program.program);
     twgl.setUniforms(this.program, {
       uAtlas: this.atlas,

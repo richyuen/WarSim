@@ -47,7 +47,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
     - [x] 7.21a Infantry in contact in ranks facing the enemy, figures that are more fill than outline.
       AT: unit tests of the ranks (front rank first, across the facing); the critic's case at 25 and
       10 m/px; the pixels of the two sides' figures measured against each other and the ground.
-    - [ ] 7.21b The two sides told apart by colour, if 7.21a's measure leaves them near one colour.
+    - [x] 7.21b The two sides told apart by colour, if 7.21a's measure leaves them near one colour.
       AT: the measure of 7.21a over a set difference, in a spec.
     - [ ] 7.21c Elements drawn at 900 m/px (T1): what of a formation's elements shows under its
       marker, and from what zoom they are sent. AT: elements counted at 900 m/px in the critic's
@@ -65,6 +65,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   `hulls.count` counts the fallen infantry's marks too (`src/render/fx/hulls.ts:272`)
   (`critic/c8_e_3929.json`, `critic/c8_c_6047.json`). AT: the critic's case: burning tank wrecks
   on screen within 45 s at x1, counted apart from the infantry's; a picture.
+  Found (2026-10-18, running 7.21b's specs): `wrecks1938` ("every element that dies leaves a wreck
+  where its sprite stood, and its sprite is gone") red on `ccac258` before 7.21b and alone: 15
+  element ids (10984 to 10998) still in `shown` after their death. Not caused by 7.21b; to be found
+  and fixed here.
 - [ ] 7.24 Aircraft seen at every tier (aircraft 6, needs 8): at 900 m/px 0 to 1 sorties drawn, at
   25 m/px none (`critic/c8_c_6047.json` `sorties`); the editor refuses a Polish bomber group at
   Warsaw ("no airbase of its with room is near the place", `critic/c8_g_5591.json`). AT: sorties

@@ -2543,6 +2543,10 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   and cross-faded on change.
 - Units: one instanced draw per sprite atlas. Instance attributes are prev/cur pos,
   facing, frame, tint and alpha. The interpolation alpha is a uniform.
+  *The atlas is premultiplied (PLAN 7.21b, ADR-497):* uploaded with its colour multiplied by its
+  alpha, so that its mipmaps average colour by coverage, and blended `ONE, ONE_MINUS_SRC_ALPHA`;
+  the shader scales the tinted colour by the instance's alpha. A sprite of a few px keeps its
+  nation's colour (straight, the clear texels' black darkened every small sprite alike).
   *As built (PLAN 2.7h):* it is the time since the tick in hand arrived over the tick length,
   0–1 (`MapView.tickProgress`). Its clock starts with a new tick only: a snapshot that repeats
   the tick (a new subscription, a pause, another speed) goes on from the progress reached.

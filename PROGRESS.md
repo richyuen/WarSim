@@ -18208,3 +18208,29 @@ No rule changed and nothing on screen changed. One task came out of it.
   measurable here). The critic's own script run again (`probe.mjs`, live, ground occupied): at 10
   m/px the German ranks light grey on the grey-green ground; at 25 m/px both sides' blocks dark
   grey and dark brown, as the measure of 7.21b is to take (on occupied ground, or live).
+
+## 2026-10-18 — PLAN 7.21b: the unit atlas premultiplied; the two sides told apart at 25 m/px
+
+- **Start:** gate green on a clean tree (`ccac258`; four evidence pictures left unstaged as before).
+- **Found** (`infantryRanks1938`, now measured at 25 m/px too, the critic's case, seed 6047, day 3):
+  at 25 m/px (a man about 4 px) German men (105,94,79), Polish (99,79,60), 25 apart in RGB; at 10
+  m/px 132. The cause: the atlas was uploaded straight, its clear texels black, and its mipmaps
+  averaged that black into every small sprite alike.
+- **Done** (ADR-497, SPEC §8 "Units"): `ProxyRenderer` uploads the atlas premultiplied, blends
+  `ONE, ONE_MINUS_SRC_ALPHA`, and scales the tinted colour by the instance's alpha. No constant, no
+  sim input (pin unmoved).
+- **Measured:** at 25 m/px German (164,153,138), Polish (151,99,85), 77 apart, from the ground 37
+  and 48; at 10 m/px 143 apart. The spec asserts at 25 m/px over 60 apart and over 30 from the
+  ground. Picture `docs/evidence/7.21/b-infantry-25m.png` (red ranks against pale grey).
+- **Checks moved:** `smallMark1938`, red at 0.172 after the change (`mark - hull > 0.2`): a 5-px hull
+  0.672 of its tint before, 0.828 after; now mark > 0.95 (0.6) and gap > 0.1 (ADR-497).
+- **Specs by hand** (47 tests, chromium, 3 workers): `infantryRanks1938`, `battleView1938`,
+  `burning1938`, `closeZoom1938`, `contactLine1938`, `fades1938`, `fallen1938`, `fightSeen1938`,
+  `figuresFadeOut1938`, `formationFight1938`, `formationPlace1938`, `individuals1938`,
+  `muzzles1938`, `seamItems1938`, `smallMark1938`, `tags1938`, `tankBattle1938`, `tankSides1938`,
+  `turrets1938`, `canvasOpaque1938`, `shipMarks1938`, `ships1938`, `sortiesSeen1938`, `airT3_1938`,
+  `airFx1938`, `airRead1938`, `seaBattleSeen1938`, `seaRow1938`, `navalDemo1938`, `wrecks1938`,
+  `wrecksHeld1938`, `elements1938`, `markers1938`, `coastElements1938`, `seamFight1938`: 45 green;
+  `smallMark1938` green after its check moved; `wrecks1938` red, red too on `ccac258` and alone (15
+  dead elements still shown): not 7.21b's, noted under PLAN 7.23.
+- **Next:** PLAN 7.21c (elements drawn at 900 m/px).

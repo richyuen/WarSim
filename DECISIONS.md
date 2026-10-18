@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-497 · 2026-10-18 · accepted — The unit atlas is premultiplied: small sprites keep their colour (PLAN 7.21b)
+
+- **Context.** Critic run 8, semantic zoom 7: the two sides' infantry "near one colour". PLAN 7.21a
+  told them apart at 10 m/px (132 apart in RGB) but left 25 m/px, where a prone man is about 4 px,
+  with both sides dark grey and dark brown. Measured (`infantryRanks1938`, the critic's case, seed
+  6047, day 3, at 25 m/px): German men (105,94,79), Polish (99,79,60), 25 apart; the ground
+  (156,143,103). The cause: the atlas canvas was uploaded straight (not premultiplied), so its clear
+  texels were (0,0,0,0) and `generateMipmap` averaged that black into every smaller level. A sprite
+  drawn from them was darker the smaller it was, whatever its tint, and every nation went toward
+  the same brown.
+- **Decision.** `ProxyRenderer` uploads the atlas with `premultiplyAlpha`, blends
+  `ONE, ONE_MINUS_SRC_ALPHA` (alpha as before: the canvas stays opaque, PLAN 2.11m), and its shader
+  multiplies the tinted colour by the instance's alpha (tier fades, small-frame handovers). Every
+  sprite of the atlas is drawn by it: men, guns, tanks and turrets, ships, aircraft, wakes. No
+  constant changed; no sim input (pin unmoved).
+- **Measured** (the same case, after): at 25 m/px German (164,153,138), Polish (151,99,85), 77
+  apart; from the ground 37 and 48. At 10 m/px 143 apart (132 before). The spec asserts at 25 m/px
+  more than 60 apart and more than 30 from the ground. Picture
+  `docs/evidence/7.21/b-infantry-25m.png`.
+- **Checks moved.** `smallMark1938` (PLAN 3.6e3b, ADR-165) compares the middle of a tank at 150
+  m/px, drawn as its small mark and as its 5-px hull, with its tint: median mark 1 and hull 0.672
+  before, 1 and 0.828 after. Its `mark - hull > 0.2` held the hull's darkness, partly the darkening
+  this ADR removes; red after the change at 0.172. Now `mark > 0.95` (0.6 before) and
+  `mark - hull > 0.1`: the small share honoured by the shader, the mark exactly its colour.
+- **Left.** The dark outline is still about a quarter of a small man, so a small sprite is somewhat
+  darker than its tint; GREY_LIGHT (PLAN 7.9b) was set while small sprites were darkened too and is
+  kept. The 5-px hull now reads at 83 % of its tint: the small mark's band (ADR-165) answered the
+  same darkening in part and could be narrowed; not done here.
+
 ### ADR-496 · 2026-10-18 · accepted — Infantry in contact lies in ranks facing the enemy (PLAN 7.21a)
 
 - **Context.** Critic run 8, semantic zoom 7 (needs 8): "infantry at 10 m/px are shapeless clumps of
