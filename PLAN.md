@@ -114,6 +114,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           35.1 → 37.6, 19.6 → 21.4, 12.2 → 11.9 %; sorties aloft 16.9 → 19.7 and 14.1 → 14.0.
         - [ ] 7.26c1b The own front's far marches, one a sector a week (9–21 % of the men standing
           beyond the range): only if c1a leaves the share short.
+          After c1a (2026-10-18, `measure-c1.md` §5): partners' standing garrisons beyond the range
+          31 → 9 % and 22 → 8 % of the big side's men, the own front's 16 %; the contact share rose
+          less, the enemy seldom being on the front. Taken next: c2 (the empty land); c1b after it,
+          and only if the 7.26 AT is still short.
       - [ ] 7.26c2 Land that nobody holds is taken: a side at war whose enemy has no land formation
         on their front takes its cells. Measured first, from a checkpoint of seed 2843 with Yemen and
         Saudi Arabia at war (day 2136 on) and seed 7919's Iraq and Saudi Arabia (day 647 on): the

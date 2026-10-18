@@ -193,7 +193,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   (mean 0.12 → 0.19), seed 7919 0.16/0.10/0.05/0.14/0.17/0.06/0.06 → 0.22/0.23/0.12/0.13/0.15/0.35/0.10
   (0.11 → 0.19). `airWar.ts`, sorties aloft years 2–8: seed 2843 mean 16.9 → 19.7, seed 7919 14.1 →
   14.0 (multi-year runs, within their chaos). The operational AI 0.31 and 0.36 ms a tick in years 1
-  and 2 of seed 99 (0.35 and 0.50 before).
+  and 2 of seed 99 (0.35 and 0.50 before). The mechanism (`marches.ts`, years 2–5): the big side's
+  men of partners standing beyond the range 31.3 → 9.3 % (2843) and 22.1 → 8.2 % (7919), its men
+  within the range 31.8 → 43.3 % and 21.9 → 27.0 %. Not seen: a partner's test of "nobody" reads
+  formations standing, not another partner's marchers into the sector, so two allies may each send
+  one to the same sector (harmless).
 - **Pin.** a6eb3fdb → 00121505.
 - **Tests.** `operationalAi.test.ts` "a partner's front": Germany and Poland against France, no
   German formation, four Polish divisions at Pinsk beyond the range of Germany's front with France;

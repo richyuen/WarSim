@@ -18758,3 +18758,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** Austria is its own nation at the start: Italy has no way overland to Germany's front
   (the first draft of the test, Italians in Calabria, reached no sector, rightly).
 - **Next:** PLAN 7.26c1b (the own front's far marches), then c2.
+- **After the commit** (`marches.ts` years 2–5 on `0d3409c`, `measure-c1.md` §5): partners'
+  garrisons standing beyond the range 31.3 → 9.3 % (2843) and 22.1 → 8.2 % (7919) of the big side's
+  men; within the range 31.8 → 43.3 % and 21.9 → 27.0 %. The rule works; contact moves less because
+  the enemy is seldom on that front. PLAN: c2 before c1b.

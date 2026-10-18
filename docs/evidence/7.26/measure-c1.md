@@ -73,3 +73,18 @@ marches from afar and to spare go only to sectors of the planner's own front (`o
 ADR-190 and 191). That is 17 to 32 % of each side's men, standing. A nation with a front of its own
 sends one formation a sector on its day in `MARCH_DAYS` (9 to 21 % standing). Taken first: the
 partner's gate.
+
+## 5. After PLAN 7.26c1a (ADR-509, at `0d3409c`): the same split, years 2–5
+
+| seed | rule | big side: no own front, standing | no own front, moving | own front, standing | big side's men within the range | enemy: no own front, standing |
+|---|---|---|---|---|---|---|
+| 2843 | before | 31.3 % | 10.9 % | 12.7 % | 31.8 % | 31.6 % |
+| 2843 | after | 9.3 % | 15.0 % | 16.0 % | 43.3 % | 8.5 % |
+| 7919 | before | 22.1 % | 6.8 % | 8.9 % | 21.9 % | 16.8 % |
+| 7919 | after | 8.2 % | 1.5 % | 16.3 % | 27.0 % | 25.8 % |
+
+(Shares of all weekly samples' men; the wars themselves differ between the runs.) The partners'
+garrisons now go: their men standing beyond the range fall to a third or less, and more of the big
+side stands within the range of its front. The contact share moves less (ADR-509's Measured) because
+the enemy is seldom on that front (section 3): what is left is the empty land (c2) and the own
+front's far marches (c1b, 16 % of the men standing beyond the range).
