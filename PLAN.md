@@ -33,36 +33,6 @@ Run 8's blocking issues and its dimensions under the DONE condition's bar (repor
 `fd27e85`, its "Fix" lines and evidence; R8-B1 to R8-B3 are PLAN 7.18 to 7.20, the dimensions 7.21
 to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
 
-- [ ] 7.25 AI nuclear use believed (AI nuclear use 6, needs 8): beyond 7.18's frequency, a world's
-  whole nuclear history is often one day's spasm after 20 silent years (seed 5's 6 bursts all in
-  year 30, seed 6271's 4 within 48 hours); strikes go ahead at utilities of 0.001 to 0.01; the
-  history tells the player "its utility 33 in a thousand"; the alert stays up 10 days and covers
-  the History and Charts headers (`critic/c8_headless_*.json` `nukeLog`,
-  `critic/shots/c8f_1_83_history.png`, `c8a_4711_20_paris_150m_day10.png`). AT: over 10 seeds × 30
-  years the first-use years and the spread of strikes measured (`tools/diag/nukeGates.ts`), no
-  world's bursts all within 2 days; no strike under a floor of utility; history rows in words, no
-  engine numbers; the alert expires and sits clear of the panels' headers.
-  (From 7.18j: seed 1's Soviet Union on China at u 0.053, 3,842 dead, and seed 4's Britain on Japan
-  at u near 0, 5,003 dead, `.cache/r718j/after_<seed>.json`, `docs/evidence/7.18/measure-j.md`.)
-  Found (2026-10-18, running 7.21c2's specs): `ticker1938` ("the ticker keeps its room beside a
-  panel at its full height and the war banners, at every UI size") red alone on `f9560d7`, before
-  7.21c, as after it: "ticker below the panel at 1", 485.7 px where at least 511.9 is wanted. Not
-  caused by 7.21c; the panels' and the alert's layout is this task's, to be found and fixed here.
-  A part each (2026-10-18):
-    - [x] 7.25a A floor of utility: no decision at or under `NUKE_FLOOR` (the diag's "low" by the
-      same constant). Measured first at HEAD, seeds 1–10 × 30 years (`nukeGates.ts`): per world the
-      first-use year, bursts, span first to last burst, longest gap, each decision's utility; how
-      many worlds lose every burst at floors of 0.02, 0.05, 0.1. The floor under the utilities of
-      the critic's set-ups' strikes (`nukePoland1938`, `nukeOverrun1938`, `nukeTheatre1938`). AT: a
-      unit test; seeds 1–10 re-measured (`docs/evidence/7.25/measure-a.md`); the pin's entry.
-    - [ ] 7.25b The spread: a world's bursts not all within 2 days. Measured after 7.25a (which
-      worlds still have every burst within 2 days; the critic's seed 6271 opened at 0.365 and struck
-      daily: `nukeDecisions` lets a nation launch each day). AT: seeds 1–10 × 30 years, no world's
-      bursts all within 2 days; a unit test; the pin's entry if it moves.
-    - [x] 7.25c History rows in words: no engine number ("its utility 33 in a thousand"). AT: a unit
-      test of the rows; the i18n tests.
-    - [x] 7.25d The alert expires and sits clear of the History and Charts headers; `ticker1938`
-      green. AT: specs; pictures looked at.
 - [ ] 7.26 The air war keeps flying after year 1 (aircraft 6, needs 8; the user's decision of
   2026-10-17, ADR-487, reopening what ADR-377 accepted): on every one of 17 seeds 28 to 39 sorties
   aloft in year 1, then 0.5 to 14, while 1 to 14 wars run in every late year
@@ -334,3 +304,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.22 A sea battle seen firing, and fleets that hold their place (naval 6, needs 8): beyond […]
 - [x] 7.23 A watched armour fight leaves burning hulls (tanks 7, needs 8): in 45 s at Speed x1 at […]
 - [x] 7.24 Aircraft seen at every tier (aircraft 6, needs 8): at 900 m/px 0 to 1 sorties drawn, at […]
+- [x] 7.25 AI nuclear use believed (AI nuclear use 6, needs 8): beyond 7.18's frequency, a world's […]

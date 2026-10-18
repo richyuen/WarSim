@@ -1098,6 +1098,21 @@ export function dayIndustry(world: World): () => Float64Array {
   return industryOnce(world);
 }
 
+/**
+ * The days a side waits after its launch in a war before a first use again (PLAN 7.25b, the critic's
+ * run 8: a world's whole nuclear history one side's strikes day after day, seed 7's Germany four on
+ * four days running, 6271's Soviet Union three on three): it waits for the answer, the shock of the
+ * burst (NUKE_SHOCK) on the enemy's exhaustion, a peace. Of the launch, not the burst: a warhead shot
+ * down is a launch seen. A strike back is not held (one for one, its burst gives none: PLAN 6.12b, e).
+ */
+export const STRIKE_GAP_DAYS = 7;
+
+/** Whether `side` of `war` launched within STRIKE_GAP_DAYS (PLAN 7.25b): no first use of it today. */
+export function strikePaused(world: World, war: War, side: number): boolean {
+  const last = war.lastStrike?.[side];
+  return last !== undefined && last >= 0 && world.tick - last < STRIKE_GAP_DAYS * 24;
+}
+
 /** The day's decisions to strike (PLAN 6.4b): see the head of the file. */
 function nukeDecisions(world: World): void {
   if (!world.settings.aiEnabled || world.warheads.size === 0) return;
@@ -1110,6 +1125,8 @@ function nukeDecisions(world: World): void {
     for (const war of world.wars.list) {
       const side = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
       if (!weighsWar(world, n, war, side, avenging)) continue;
+      // A first use waits for the answer to its side's last launch (PLAN 7.25b); a strike back does not.
+      if (!avenging && strikePaused(world, war, side)) continue;
       const { shared, places } = weighWar(world, n, war, side, industry);
       if (!shared) continue;
       // Whether the resolve, not the side's own desperation, weighs this war's strikes (PLAN 7.18h).

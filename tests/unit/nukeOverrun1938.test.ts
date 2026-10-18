@@ -4,7 +4,7 @@ import { nukeStrike } from '../../src/shared/history';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { blastRadius, desperationOf, NUKE_FLOOR, nukeTargets, RESTRIKE_DAYS, RESTRIKE_RADII, TARGET_CAPITAL, targetValue } from '../../src/sim/systems/nuclear';
+import { blastRadius, desperationOf, NUKE_FLOOR, nukeTargets, RESTRIKE_DAYS, RESTRIKE_RADII, STRIKE_GAP_DAYS, TARGET_CAPITAL, targetValue } from '../../src/sim/systems/nuclear';
 import { seaKm } from '../../src/sim/systems/navalCombat';
 import { grantTechs, techMask } from '../../src/sim/tech';
 import { assets1938 } from '../helpers/earth';
@@ -53,6 +53,9 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
     // No decision at or under the floor of utility (PLAN 7.25a): before it, France's third was at
     // about 0 (day 61; its first two at 0.117 and 0.118).
     for (const o of decided) expect(o.u, `France's decision of day ${o.day}`).toBeGreaterThan(NUKE_FLOOR);
+    // Its first uses STRIKE_GAP_DAYS apart at least (PLAN 7.25b): before, days 59 and 60 (Germany
+    // holds no warhead, so none of them is a strike back).
+    for (let i = 1; i < decided.length; i++) expect(decided[i]!.day - decided[i - 1]!.day, `France's decisions of days ${decided[i - 1]!.day} and ${decided[i]!.day}`).toBeGreaterThanOrEqual(STRIKE_GAP_DAYS);
     // On the Germans overrunning it (PLAN 7.18j's AT).
     expect(burstOn[0], 'its first burst on Germany').toBe(GER);
   }, 600_000);

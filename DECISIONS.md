@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-507 · 2026-10-18 · accepted — A side waits STRIKE_GAP_DAYS after its launch before a first use (PLAN 7.25b)
+
+- **Context.** Critic run 8, AI nuclear use 6: "a world's whole nuclear history is often one day's
+  spasm after 20 silent years" (seed 6271: the Soviet Union three strikes on three days). After
+  7.25a's floor, seed 7 of seeds 1–10 × 30 years still had all four bursts within 2 days: Germany's
+  first uses on four days running. `nukeDecisions` let a nation launch each day; only the resolve's
+  strikes had a gap (RESOLVE_GAP_DAYS 90).
+- **Decision.** A side that launched in a war (`War.lastStrike`, set at the decision, saved) weighs no
+  first use in it for STRIKE_GAP_DAYS 7 (`strikePaused`); a strike back is not held (it spends its
+  grievance one for one, and its burst gives none: PLAN 6.12b, e). Keyed on the launch, not the
+  burst: a warhead shot down is a launch the enemy saw. The side, not the nation: allies wait on
+  each other's launch. The diagnostics count the held war-days (`paused`).
+- **The AT read.** The spasm is one side's first use day after day; a strike and its answer a day
+  apart are not one (PLAN 7.25b's text, amended before the code).
+- **Why 7 days.** Time for the burst's shock (NUKE_SHOCK on the enemy's exhaustion) and an answer
+  or a peace; shorter, and a week's stockpile still goes in days; the resolve's 90 is for a winner.
+- **Consequences.** Seeds 1–10 × 30 years (`docs/evidence/7.25/measure-a.md`): no world's bursts all
+  within 2 days (seed 7: 12 bursts over 19 years); bursts on 10 of 10, first years as before. A
+  losing holder with many warheads now strikes once a week until they are gone (seed 4's Germany, 14
+  in 13 weeks). The critic's Poland and France strike Germany as before, their second decisions a
+  week after the first. Pin unmoved.
+
 ### ADR-506 · 2026-10-18 · accepted — A floor of utility for a strike (PLAN 7.25a)
 
 - **Context.** Critic run 8, AI nuclear use 6: "strikes go ahead at utilities of 0.001 to 0.01"; many

@@ -18641,3 +18641,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   Seed 7 still has all four bursts within 2 days (Germany one a day): 7.25b. Pin unmoved.
 - **Tests:** `nukeOverrun1938.test.ts` (France's decisions all above the floor; its third, about 0,
   gone). All 25 `tests/unit/nuke*` files by hand: 71 of 71.
+
+## 2026-10-18 — PLAN 7.25b: a side waits a week after its launch; 7.25 ticked
+
+- **Start:** gate green on `2fcd17b` (7.25a).
+- **The AT read** (PLAN 7.25b amended first): the spasm is one side's first use day after day; a
+  strike and its answer a day apart are not one.
+- **Done** (ADR-507): a side that launched in a war weighs no first use in it for STRIKE_GAP_DAYS 7
+  (`strikePaused`, on `War.lastStrike`, saved already); a strike back is not held. `nukeGates.ts`
+  counts the held war-days (`paused`), `nukeCase.ts` names the gate.
+- **Measured** (`docs/evidence/7.25/measure-a.md`, seeds 1–10 × 30 years): no world's bursts all within
+  2 days (seed 7: 4 bursts in 2 days → 12 over 19 years); bursts on 10 of 10, first years 8.7 to 18.8
+  as before. Found: seed 4's Germany, losing, strikes once a week for 13 weeks (14 bursts) until its
+  warheads are gone: a drip, left to the critic's judgement (PLAN 7.5). Pin unmoved.
+- **Tests:** `nukeOverrun1938.test.ts` (France's decisions 7 days apart at least: 59, 66, 73, 85; before,
+  59 and 60). All 25 `tests/unit/nuke*` files by hand: 71 of 71 (Poland strikes Germany on 5591, 7127,
+  3929; `nukeStrikeAgain1938`: France on days 35, 42, 76, 85).
+- **7.25 ticked:** a (floor), b (gap), c (history in words), d (alert).
+- **Next:** PLAN 7.26 (the air war after year 1).
+- **Gotcha:** `scenario1938.test.ts`'s build-time test (under 2,000 ms) red in each of today's three
+  gates' parallel runs (2,821 ms under the 10 sims' load; again with none running), green alone each
+  time: the gate's rerun covers it. A wall-time limit under a full parallel run.

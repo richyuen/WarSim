@@ -57,3 +57,40 @@ floor 0.1: decisions at or under it 36, worlds left with none 0
   third decision (day 61, about 0) is gone (`nukeOverrun1938.test.ts`).
 - Seed 7's four bursts all fall within 2 days, before and after (Germany on days 3555 to 3558, one a
   day, at 0.185 to 0.265; England's answer): PLAN 7.25b.
+
+# PLAN 7.25b: the gap after a launch (measure)
+
+The rule (ADR-507): a side that launched in a war weighs no first use in it for STRIKE_GAP_DAYS 7; a
+strike back is not held. Same tool and seeds (`.cache/r725a/b_<seed>.json`, after 7.25a):
+
+| Seed | First warhead, year | Decisions | Bursts | First burst, year | Span, days | Longest gap, days | All within 2 days | Utilities |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 8.73 | 8 | 4 | 9.4 | 1048 | 924 |  | 0.029 0.036 0.095 0.131 0.335 0.158 0.474 2.051 |
+| 2 | 8.73 | 42 | 23 | 8.8 | 5786 | 1824 |  | 0.050 0.027 0.042 0.060 0.069 0.081 0.094 0.107 0.116 0.123 0.128 0.129 0.133 0.129 0.129 0.170 0.148 0.201 0.125 0.124 0.124 0.254 0.257 2.931 0.721 2.858 0.872 1.218 0.904 1.027 0.594 0.782 0.701 0.577 0.698 0.575 0.035 0.202 0.824 0.921 1.000 0.040 |
+| 3 | 8.73 | 30 | 30 | 14.5 | 5639 | 1780 |  | 0.030 0.028 1.510 0.671 0.468 0.569 0.599 0.612 0.609 0.339 0.307 0.281 0.127 0.936 0.923 0.134 0.275 0.164 0.365 0.093 0.119 0.059 0.166 0.807 0.378 0.043 0.247 0.613 0.126 0.246 |
+| 4 | 8.73 | 49 | 47 | 8.7 | 7135 | 1331 |  | 0.429 0.741 0.158 0.026 0.260 0.235 0.642 0.053 0.405 0.132 0.173 0.551 0.317 0.691 0.865 0.897 0.941 0.300 0.318 0.235 0.266 0.786 0.524 0.587 0.722 0.151 0.181 0.228 0.945 0.979 1.285 1.324 1.359 0.469 0.192 0.202 0.202 0.208 0.214 0.214 0.214 0.214 0.214 0.214 0.214 0.214 0.214 0.214 1.107 |
+| 5 | 8.73 | 6 | 6 | 14.4 | 2749 | 1288 |  | 0.200 0.210 0.189 0.309 0.453 0.065 |
+| 6 | 8.73 | 5 | 5 | 13.3 | 3191 | 1567 |  | 0.633 0.553 1.075 0.439 0.229 |
+| 7 | 8.73 | 15 | 12 | 9.8 | 7034 | 1886 |  | 0.185 0.346 0.213 0.939 0.071 0.094 0.046 0.203 0.085 0.244 0.496 0.288 0.194 0.099 0.424 |
+| 8 | 8.73 | 4 | 4 | 18.2 | 3482 | 1669 |  | 0.578 0.040 0.561 0.779 |
+| 9 | 8.73 | 1 | 1 | 13.3 | 0 |  | (one) | 0.410 |
+| 10 | 8.73 | 15 | 15 | 18.8 | 2868 | 984 |  | 1.110 1.047 0.166 0.033 0.211 0.181 0.203 0.265 0.258 0.349 0.570 0.396 0.571 0.735 0.785 |
+
+Decision utilities (175): 0–0.01: 0, 0.01–0.02: 0, 0.02–0.05: 13, 0.05–0.1: 14, 0.1–0.25: 60, 0.25–0.5: 31, 0.5–1: 43, 1–99: 14
+floor 0.02: decisions at or under it 0, worlds left with none 0
+floor 0.05: decisions at or under it 14, worlds left with none 0
+floor 0.1: decisions at or under it 27, worlds left with none 0
+
+## Reading
+
+- No world's bursts all within 2 days (seed 7: 4 bursts in 2 days → 12 over 19 years, its first,
+  Germany on France, day 3562, the next 7 days on and England's answer the day after). Bursts on 10
+  of 10 worlds, the first in years 8.7 to 18.8 (seed 1's 9.7 → 9.4; the others as before).
+- Bursts a day apart (a strike and an answer, or two sides' strikes): 19 pairs over the ten worlds.
+  War-days held by the gap: 1 to 438 a world.
+- Seed 4's Germany, losing a war against Iran, Syria, England and #110, struck every 7 days for 13
+  weeks (days 8932 to 9023, 14 bursts, 20,573 to 204,764 dead, utility 0.19 to 0.21), until its
+  warheads ran out: a drip, not a spasm. Bursts on seed 4: 18 → 47.
+  Whether a desperate holder's weekly strikes read as credible is the critic's to judge (PLAN 7.5).
+- The critic's set-ups: Poland strikes Germany on seeds 5591 (day 43), 7127 (78 and 85, burst day
+  86), 3929 (63 and 70, burst day 71); France on 7127 on days 59, 66, 73, 85.

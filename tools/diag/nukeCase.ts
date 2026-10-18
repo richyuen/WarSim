@@ -12,7 +12,7 @@ import { Sim } from '../../src/sim/sim';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { assets1938 } from '../../tests/helpers/earth';
 import { EventKind } from '../../src/shared/events';
-import { avengingOf, dayIndustry, desperationOf, nuclearUtility, NUKE_FLOOR, reaches, warheadsOf, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
+import { avengingOf, dayIndustry, desperationOf, nuclearUtility, NUKE_FLOOR, reaches, strikePaused, warheadsOf, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
 
 const [seedArg, holderTag, attackerTag] = process.argv.slice(2);
 const warheads = Number(process.argv[5] ?? 10);
@@ -56,7 +56,8 @@ for (let d = 0; d < days; d++) {
       row.extreme = extreme;
       row.exhaustion = war.exhaustion[side]!.toFixed(0);
       row.score = war.score;
-      if (!r.shared) row.gate = 'noAim';
+      if (!avengingOf(w, H) && strikePaused(w, war, side)) row.gate = 'paused';
+      else if (!r.shared) row.gate = 'noAim';
       else if (r.places.length === 0) row.gate = 'noPlace';
       else {
         let best: { u: number; raw: number; value: number; x: number; y: number; reach: boolean } | null = null;

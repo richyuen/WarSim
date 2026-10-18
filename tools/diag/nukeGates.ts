@@ -19,7 +19,7 @@ import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { assets1938 } from '../../tests/helpers/earth';
 import { EventKind } from '../../src/shared/events';
 import { nukeStrike } from '../../src/shared/history';
-import { reaches, avengingOf, nukeTargets, dayIndustry, desperationOf, nuclearUtility, RETALIATION_WEIGHT, NUKE_FLOOR, TABOO_WEIGHT, EXTREME_TABOO, warheadsOf, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
+import { reaches, avengingOf, nukeTargets, dayIndustry, desperationOf, nuclearUtility, RETALIATION_WEIGHT, NUKE_FLOOR, TABOO_WEIGHT, EXTREME_TABOO, warheadsOf, strikePaused, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
 
 const seed = Number(process.argv[2]);
 const years = Number(process.argv[3] ?? 30);
@@ -39,6 +39,8 @@ const winning = new Map<string, WinBand>();
 const examplesWin: unknown[] = [];
 const firstWarhead = new Map<string, number>();
 let day = 0;
+/** War-days of nations held by the gap after their side's launch (PLAN 7.25b). */
+let paused = 0;
 for (let y = 0; y < years; y++) {
   for (let d = 0; d < 365; d++, day++) {
     s.step(24, (ww) => {
@@ -60,6 +62,11 @@ for (let y = 0; y < years; y++) {
       for (const war of w.wars.list) {
         const side = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
         if (!weighsWar(w, n, war, side, avenging)) continue;
+        // PLAN 7.25b: a side that launched within STRIKE_GAP_DAYS weighs no first use.
+        if (!avenging && strikePaused(w, war, side)) {
+          paused++;
+          continue;
+        }
         const { desperation, extreme } = desperationOf(w, n, war, side);
         const r = weighWar(w, n, war, side, industry);
         let cat: Cat;
@@ -148,6 +155,6 @@ for (let y = 0; y < years; y++) {
   }
   process.stderr.write(`seed ${seed} year ${y + 1}: decisions ${decisions.length}\n`);
 }
-const out = { seed, years, bursts, counts, held, lowParts, winning: Object.fromEntries(winning), firstWarhead: Object.fromEntries(firstWarhead), examplesWin, byNation: Object.fromEntries([...byNation].map(([n, b]) => [tag(n), b])), decisions, examples };
+const out = { seed, years, bursts, counts, paused, held, lowParts, winning: Object.fromEntries(winning), firstWarhead: Object.fromEntries(firstWarhead), examplesWin, byNation: Object.fromEntries([...byNation].map(([n, b]) => [tag(n), b])), decisions, examples };
 writeFileSync(process.argv[4] ?? `.cache/nukeGates_${seed}.json`, JSON.stringify(out, null, 1));
 console.log(`done: seed ${seed}`, JSON.stringify(counts), 'decisions', decisions.length, 'held', JSON.stringify({ days: held.days, low: held.low, held: held.held, losing: held.losing, extreme: held.extreme }));

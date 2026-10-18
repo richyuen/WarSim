@@ -11136,3 +11136,53 @@ Of 7.4 (open in PLAN.md):
       pin's entry.
     - [x] 7.24b The editor's bomber group at a capital: the critic's case (Poland at Warsaw) placed,
       or refused with what it needs (the nearest airbase of its with room). AT: the editor's spec.
+
+<!-- moved 2026-10-18 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.25 AI nuclear use believed (AI nuclear use 6, needs 8): beyond 7.18's frequency, a world's
+  whole nuclear history is often one day's spasm after 20 silent years (seed 5's 6 bursts all in
+  year 30, seed 6271's 4 within 48 hours); strikes go ahead at utilities of 0.001 to 0.01; the
+  history tells the player "its utility 33 in a thousand"; the alert stays up 10 days and covers
+  the History and Charts headers (`critic/c8_headless_*.json` `nukeLog`,
+  `critic/shots/c8f_1_83_history.png`, `c8a_4711_20_paris_150m_day10.png`). AT: over 10 seeds × 30
+  years the first-use years and the spread of strikes measured (`tools/diag/nukeGates.ts`), no
+  world's bursts all within 2 days; no strike under a floor of utility; history rows in words, no
+  engine numbers; the alert expires and sits clear of the panels' headers.
+  (From 7.18j: seed 1's Soviet Union on China at u 0.053, 3,842 dead, and seed 4's Britain on Japan
+  at u near 0, 5,003 dead, `.cache/r718j/after_<seed>.json`, `docs/evidence/7.18/measure-j.md`.)
+  Found (2026-10-18, running 7.21c2's specs): `ticker1938` ("the ticker keeps its room beside a
+  panel at its full height and the war banners, at every UI size") red alone on `f9560d7`, before
+  7.21c, as after it: "ticker below the panel at 1", 485.7 px where at least 511.9 is wanted. Not
+  caused by 7.21c; the panels' and the alert's layout is this task's, to be found and fixed here.
+  A part each (2026-10-18):
+    - [x] 7.25a A floor of utility: no decision at or under `NUKE_FLOOR` (the diag's "low" by the
+      same constant). Measured first at HEAD, seeds 1–10 × 30 years (`nukeGates.ts`): per world the
+      first-use year, bursts, span first to last burst, longest gap, each decision's utility; how
+      many worlds lose every burst at floors of 0.02, 0.05, 0.1. The floor under the utilities of
+      the critic's set-ups' strikes (`nukePoland1938`, `nukeOverrun1938`, `nukeTheatre1938`). AT: a
+      unit test; seeds 1–10 re-measured (`docs/evidence/7.25/measure-a.md`); the pin's entry.
+    - [x] 7.25b The spread: a world's bursts not all within 2 days. Measured after 7.25a (which
+      worlds still have every burst within 2 days; the critic's seed 6271 opened at 0.365 and struck
+      daily: `nukeDecisions` lets a nation launch each day). Measured after 7.25a
+      (`docs/evidence/7.25/measure-a.md`): seed 7 alone, Germany's four first-use strikes on four
+      days running and England's answer. The spasm is one side's first use day after day: a strike
+      and its answer a day apart, all of a world's history, is not one (the AT read so, 2026-10-18).
+      AT: no two first-use decisions of a side in a war within STRIKE_GAP_DAYS (a strike back not
+      held); seeds 1–10 × 30 years, no world's bursts all within 2 days but one strike and its
+      answers; bursts on 8 of 10 or more; a unit test; the pin's entry if it moves.
+    - [x] 7.25c History rows in words: no engine number ("its utility 33 in a thousand"). AT: a unit
+      test of the rows; the i18n tests.
+    - [x] 7.25d The alert expires and sits clear of the History and Charts headers; `ticker1938`
+      green. AT: specs; pictures looked at.
