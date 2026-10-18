@@ -104,7 +104,7 @@
  * its extreme desperation (PLAN 7.6c); PLAN 6.12a: of an
  * enemy that can threaten it, `threatens`: a warhead, THREAT_SHARE of its income (PLAN 6.12f), or
  * land forces near its capital),
- * and strikes the one of most utility above 0 (by missile when it knows them and one reaches, else
+ * and strikes the one of most utility above NUKE_FLOOR (PLAN 7.25a; above 0 before) (by missile when it knows them and one reaches, else
  * by bomber, a free one or one retasked from a sortie; one out of reach, the next), once a day at
  * most. The decision is told (`NukeDecided`).
  * Retaliation: a burst on a nation's land (its owner's, not the striker's) gives it a grievance
@@ -489,6 +489,12 @@ export const DESPERATION_FTD = 0.5;
 /** The weight of the share of its side's men lost in the war (PLAN 7.6a). */
 export const DESPERATION_MEN = 1;
 export const CAPITAL_THREAT_KM = 150;
+/**
+ * A strike is decided only above this utility (PLAN 7.25a, the critic's run 8: strikes went ahead at
+ * utilities of 0.001 to 0.01, a close call taken as a case). Under the critic's set-ups' (Poland's
+ * and France's, 0.035 to 0.12); 9 of 172 decisions of seeds 1 to 10 x 30 years at or under it.
+ */
+export const NUKE_FLOOR = 0.025;
 export const RETALIATION_WEIGHT = 0.8;
 export const RETALIATION_FULL = 5;
 export const RETALIATION_BONUS = 1;
@@ -1110,7 +1116,7 @@ function nukeDecisions(world: World): void {
       let resolved: boolean | null = null;
       for (const { x, y, value, through } of places) {
         const u = nuclearUtility({ targetValue: value, through, ...shared });
-        if (u <= 0) continue;
+        if (u <= NUKE_FLOOR) continue;
         if (resolved === null) {
           const own = desperationOf(world, n, war, side);
           resolved = !own.extreme && shared.desperation > own.desperation;

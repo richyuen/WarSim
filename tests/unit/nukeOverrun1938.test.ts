@@ -4,7 +4,7 @@ import { nukeStrike } from '../../src/shared/history';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { blastRadius, desperationOf, nukeTargets, RESTRIKE_DAYS, RESTRIKE_RADII, TARGET_CAPITAL, targetValue } from '../../src/sim/systems/nuclear';
+import { blastRadius, desperationOf, NUKE_FLOOR, nukeTargets, RESTRIKE_DAYS, RESTRIKE_RADII, TARGET_CAPITAL, targetValue } from '../../src/sim/systems/nuclear';
 import { seaKm } from '../../src/sim/systems/navalCombat';
 import { grantTechs, techMask } from '../../src/sim/tech';
 import { assets1938 } from '../helpers/earth';
@@ -26,7 +26,7 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
     const w = s.world;
     s.command({ kind: 'grantWarheads', nation: FRA, count: 10 });
     s.command({ kind: 'declareWar', attacker: GER, defender: FRA });
-    const decided: { day: number; x: number; y: number }[] = [];
+    const decided: { day: number; x: number; y: number; u: number }[] = [];
     const burstOn: number[] = [];
     let near = 0;
     for (let d = 0; d < 100; d++) {
@@ -34,7 +34,7 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
         const ev = ww.out.events;
         for (let i = 0; i < ev.length; i += 6) {
           if (ev[i + 2] !== FRA) continue;
-          if (ev[i + 1] === EventKind.NukeDecided) decided.push({ day: d, x: ev[i + 4]!, y: ev[i + 5]! });
+          if (ev[i + 1] === EventKind.NukeDecided) decided.push({ day: d, x: ev[i + 4]!, y: ev[i + 5]!, u: ev[i + 3]! / 1000 });
           if (ev[i + 1] === EventKind.NukeCasualties) burstOn.push(nukeStrike(ev[i + 3]!).nation);
         }
         ww.out.events.length = 0;
@@ -50,6 +50,9 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
     expect(decided.length, 'France struck').toBeGreaterThan(0);
     expect(decided[0]!.day).toBeLessThan(75);
     expect(near).toBe(0);
+    // No decision at or under the floor of utility (PLAN 7.25a): before it, France's third was at
+    // about 0 (day 61; its first two at 0.117 and 0.118).
+    for (const o of decided) expect(o.u, `France's decision of day ${o.day}`).toBeGreaterThan(NUKE_FLOOR);
     // On the Germans overrunning it (PLAN 7.18j's AT).
     expect(burstOn[0], 'its first burst on Germany').toBe(GER);
   }, 600_000);

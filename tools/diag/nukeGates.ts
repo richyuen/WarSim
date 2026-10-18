@@ -19,7 +19,7 @@ import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { assets1938 } from '../../tests/helpers/earth';
 import { EventKind } from '../../src/shared/events';
 import { nukeStrike } from '../../src/shared/history';
-import { reaches, avengingOf, nukeTargets, dayIndustry, desperationOf, nuclearUtility, RETALIATION_WEIGHT, TABOO_WEIGHT, EXTREME_TABOO, warheadsOf, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
+import { reaches, avengingOf, nukeTargets, dayIndustry, desperationOf, nuclearUtility, RETALIATION_WEIGHT, NUKE_FLOOR, TABOO_WEIGHT, EXTREME_TABOO, warheadsOf, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
 
 const seed = Number(process.argv[2]);
 const years = Number(process.argv[3] ?? 30);
@@ -71,7 +71,7 @@ for (let y = 0; y < years; y++) {
           let burst: { u: number; through: number; value: number } | null = null;
           for (const p of r.places) {
             const u = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared });
-            if (u > 0 && reaches(w, n, p.x, p.y)) anyReach = true;
+            if (u > NUKE_FLOOR && reaches(w, n, p.x, p.y)) anyReach = true;
             const raw = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared, mad: false });
             if (!best || raw > best.raw) best = { u, raw, value: p.value };
             // PLAN 7.18i: the place's utility if its warhead got there.
@@ -79,11 +79,11 @@ for (let y = 0; y < years; y++) {
             const ub = through > 0 ? nuclearUtility({ targetValue: Math.min(1, p.value / through), through: 1, ...r.shared, mad: false }) : -Infinity;
             if (!burst || ub > burst.u) burst = { u: ub, through, value: p.value };
           }
-          cat = best!.u > 0 ? (anyReach ? 'strike' : 'noReach') : best!.raw > 0 ? 'mad' : 'low';
+          cat = best!.u > NUKE_FLOOR ? (anyReach ? 'strike' : 'noReach') : best!.raw > NUKE_FLOOR ? 'mad' : 'low';
           held.days++;
           if (cat === 'low') {
             held.low++;
-            if (burst && burst.u > 0) {
+            if (burst && burst.u > NUKE_FLOOR) {
               held.held++;
               if (desperation >= 0.5) held.losing++;
               if (extreme) held.extreme++;

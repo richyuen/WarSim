@@ -18629,3 +18629,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   10: "Revive after a Kill" red on France's name on the map, red at `7302970` too (stashed): BLOCKERS.
   Pictures looked at (`docs/evidence/7.25/d-alert-history.png`, `d-alert-charts.png`).
 - **Left unstaged, as before:** the evidence pictures specs rewrite; nine now (`7.16/d-phone-alert.png`).
+
+## 2026-10-18 — PLAN 7.25a: a floor of utility
+
+- **Start:** gate green on `ff269e0` (7.25d).
+- **Done** (ADR-506, SPEC §6 via the file head of `nuclear.ts`): a strike is decided only above
+  `NUKE_FLOOR` 0.025; `nukeGates.ts` and `nukeCase.ts` call a day "low" by it.
+- **Measured** (`docs/evidence/7.25/measure-a.md`, seeds 1–10 × 30 years, before at `7302970`):
+  decisions 172 → 128, bursts 146 → 103, none at or under the floor (9 before); bursts on 10 of 10
+  worlds, the first in years 8.7 to 18.8, as before. The critic's set-ups decide at 0.035 to 0.12.
+  Seed 7 still has all four bursts within 2 days (Germany one a day): 7.25b. Pin unmoved.
+- **Tests:** `nukeOverrun1938.test.ts` (France's decisions all above the floor; its third, about 0,
+  gone). All 25 `tests/unit/nuke*` files by hand: 71 of 71.

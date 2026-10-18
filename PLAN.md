@@ -49,7 +49,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   7.21c, as after it: "ticker below the panel at 1", 485.7 px where at least 511.9 is wanted. Not
   caused by 7.21c; the panels' and the alert's layout is this task's, to be found and fixed here.
   A part each (2026-10-18):
-    - [ ] 7.25a A floor of utility: no decision at or under `NUKE_FLOOR` (the diag's "low" by the
+    - [x] 7.25a A floor of utility: no decision at or under `NUKE_FLOOR` (the diag's "low" by the
       same constant). Measured first at HEAD, seeds 1–10 × 30 years (`nukeGates.ts`): per world the
       first-use year, bursts, span first to last burst, longest gap, each decision's utility; how
       many worlds lose every burst at floors of 0.02, 0.05, 0.1. The floor under the utilities of

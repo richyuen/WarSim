@@ -12,7 +12,7 @@ import { Sim } from '../../src/sim/sim';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { assets1938 } from '../../tests/helpers/earth';
 import { EventKind } from '../../src/shared/events';
-import { avengingOf, dayIndustry, desperationOf, nuclearUtility, reaches, warheadsOf, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
+import { avengingOf, dayIndustry, desperationOf, nuclearUtility, NUKE_FLOOR, reaches, warheadsOf, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
 
 const [seedArg, holderTag, attackerTag] = process.argv.slice(2);
 const warheads = Number(process.argv[5] ?? 10);
@@ -65,7 +65,7 @@ for (let d = 0; d < days; d++) {
           const raw = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared, mad: false });
           if (!best || raw > best.raw) best = { u, raw, value: p.value, x: p.x, y: p.y, reach: reaches(w, H, p.x, p.y) };
         }
-        row.gate = best!.u > 0 ? (best!.reach ? 'strike' : 'noReach') : best!.raw > 0 ? 'mad' : 'low';
+        row.gate = best!.u > NUKE_FLOOR ? (best!.reach ? 'strike' : 'noReach') : best!.raw > NUKE_FLOOR ? 'mad' : 'low';
         row.best = { u: +best!.u.toFixed(3), raw: +best!.raw.toFixed(3), value: +best!.value.toFixed(3), reach: best!.reach };
         row.parts = Object.fromEntries(Object.entries(r.shared).map(([k, v]) => [k, typeof v === 'number' ? +v.toFixed(3) : v]));
         row.aim = [...r.aim.at].map(tag);

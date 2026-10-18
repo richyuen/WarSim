@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-506 · 2026-10-18 · accepted — A floor of utility for a strike (PLAN 7.25a)
+
+- **Context.** Critic run 8, AI nuclear use 6: "strikes go ahead at utilities of 0.001 to 0.01"; many
+  of its worlds' exchanges opened with such a strike (q5's Germany at 0.009, 7919's China at 0.01,
+  9137's France at 0.002, 3371's Italy at 0.034). A utility near 0 is a nation indifferent between
+  striking and not, and `nukeDecisions` struck at any utility above 0.
+- **Decision.** A strike is decided only above `NUKE_FLOOR` 0.025. The diagnostics (`nukeGates.ts`,
+  `nukeCase.ts`) call a day "low" by the same constant.
+- **Why 0.025.** Measured at HEAD (`7302970`'s sim), seeds 1–10 × 30 years: 172 decisions, 5 at or
+  under 0.01, 9 at or under 0.02, 25 under 0.05 (`docs/evidence/7.25/measure-a.md`). The critic's
+  set-ups (Poland given 10 warheads and a strategic group at Warsaw, seeds 5591, 7127, 3929; France
+  on 7127) decide at 0.035 to 0.12: a floor of 0.05 would stop some of the strikes the critic asked
+  for. Under 0.025 the near-indifferent ones go; no world lost every decision at 0.02, 0.05 or 0.1.
+- **Consequences.** Seeds 1–10 re-measured: decisions 172 → 128, none at or under the floor; bursts
+  on 10 of 10 worlds, the first between years 8.7 and 18.8, as before. Seed 7's bursts still all within
+  2 days (PLAN 7.25b). Pin unmoved (`92bde67c`: no decision in seed 99's first year).
+
 ### ADR-505 · 2026-10-18 · accepted — The editor's wing goes to its nation's nearest base with room (PLAN 7.24b)
 
 - **Context.** Critic run 8, aircraft 6: "the editor refuses a Polish bomber group at Warsaw"
