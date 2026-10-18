@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-509 · 2026-10-18 · accepted — A partner with no front of its own sends its far army to its partners' front (PLAN 7.26c1a)
+
+- **Context.** PLAN 7.26c1 (`docs/evidence/7.26/measure-c1.md`, seeds 2843 and 7919, years 2–5):
+  in the big wars (a side of 50 or more land formations) both sides keep 58 to 84 % of their men
+  beyond `DEPLOY_RANGE_CELLS` of the war's front, and 17 to 32 % of each side's men are of nations
+  with no front cell of their own in the war, standing still: Germany and Japan beside Italy against
+  France's colonies, Australia, the Indies and Canada on France's side. The marches from afar
+  (ADR-190) and to spare (ADR-191) went only to sectors of the planner's own front; a partner's far
+  formations were never sent. The allotment within the range was not the cause: a weight on the
+  enemy's men within 30 cells moved the big wars' contact share 2.6 → 2.4 % and 19.6 → 19.3 % from
+  the day-900 states, and was dropped.
+- **Decision.** A planner with no front cell of its own in its wars sends its far formations by the
+  rule of the marches from afar to the sectors of its partners' front that have nobody of the side:
+  no formation of the planner or of a nation on its side stands on land in the sector or next to it,
+  the allotment gave it none of the planner's, none of the planner's marches into it. One a sector
+  and plan, on the formation's day in MARCH_DAYS, nearest first, on its landmass, as before. A
+  planner with a front of its own is unchanged (its own sectors only; its far marches, one a sector
+  a week, are PLAN 7.26c1b). To spare stays with the own front.
+- **Measured.** From the day-900 and day-400 states, 180 days (`.cache/tmp/abc.ts`), the big wars'
+  contact share: seed 2843 2.7 → 3.3 % and 35.1 → 37.6 %, seed 7919 19.6 → 21.4 % and 12.2 →
+  11.9 %. In 90 days from seed 2843's day 900 partners gave 51 such marches (median 2,330 km) and
+  222 were refused (median 4,370 km: over the sea, or a way too long). `landWar.ts`, 8 years, the
+  share by year 2–8: seed 2843 0.27/0.07/0.01/0.04/0.28/0.06/0.11 → 0.29/0.12/0.27/0.14/0.23/0.10/0.16
+  (mean 0.12 → 0.19), seed 7919 0.16/0.10/0.05/0.14/0.17/0.06/0.06 → 0.22/0.23/0.12/0.13/0.15/0.35/0.10
+  (0.11 → 0.19). `airWar.ts`, sorties aloft years 2–8: seed 2843 mean 16.9 → 19.7, seed 7919 14.1 →
+  14.0 (multi-year runs, within their chaos). The operational AI 0.31 and 0.36 ms a tick in years 1
+  and 2 of seed 99 (0.35 and 0.50 before).
+- **Pin.** a6eb3fdb → 00121505.
+- **Tests.** `operationalAi.test.ts` "a partner's front": Germany and Poland against France, no
+  German formation, four Polish divisions at Pinsk beyond the range of Germany's front with France;
+  in 20 days each is sent to a cell of that front, each to a sector of its own, nearer, and given no
+  other order before it is within the range (red before: no order).
+
 ### ADR-508 · 2026-10-18 · accepted — A wing out of range rebases toward an enemy its side can reach (PLAN 7.26b)
 
 - **Context.** PLAN 7.26a (`docs/evidence/7.26/measure-a.md`, seeds 2843 and 7919): from year 2,

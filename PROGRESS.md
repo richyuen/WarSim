@@ -18741,3 +18741,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   contact share from day-900 states 2.6 → 2.4 % and 19.6 → 19.3 %. Reverted.
 - **Gotcha:** Afro-Eurasia is one landmass on this map: "on the front's landmass" says nothing
   (68–93 % of the enemy's men); km to the front within the range does.
+
+## 2026-10-18 — PLAN 7.26c1a: a partner's far army goes to its partners' front
+
+- **Done** (ADR-509): a planner with no front cell of its own sends its far formations, by the
+  marches-from-afar rule, to its partners' sectors with nobody of the side (`sideStood`). The own
+  front's planners unchanged.
+- **Measured** (180 days from day-900 and day-400 states, `.cache/tmp/abc.ts`): big wars' contact
+  share 2.7 → 3.3, 35.1 → 37.6 (2843), 19.6 → 21.4, 12.2 → 11.9 % (7919). `landWar.ts` 8 years,
+  years 2–8 mean 0.12 → 0.19 and 0.11 → 0.19. `airWar.ts` sorties aloft years 2–8 16.9 → 19.7 and
+  14.1 → 14.0. 222 of 273 partner marches refused in 90 days (over the sea mostly): c3's. A modest
+  gain; the share is still far from year 1's 0.40–0.48. Operational AI no slower (seed 99 profile).
+  Pin a6eb3fdb → 00121505.
+- **Tests:** `operationalAi.test.ts` "a partner's front" (red before); `vitest related` on
+  `operational.ts`: 204 files, 1,042 tests green.
+- **Gotcha:** Austria is its own nation at the start: Italy has no way overland to Germany's front
+  (the first draft of the test, Italians in Calabria, reached no sector, rightly).
+- **Next:** PLAN 7.26c1b (the own front's far marches), then c2.

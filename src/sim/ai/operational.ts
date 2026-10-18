@@ -43,6 +43,9 @@
  * the march into it) takes the nearest formation on its landmass that is far from every sector it
  * reaches and stands still: one a sector, to the sector's front cell, on the formation's day in
  * MARCH_DAYS. The march is not planned again before it ends or comes within the range.
+ * A partner's front (PLAN 7.26c1a, ADR-509): a planner with no front cell of its own in its wars
+ * sends its far formations so to the sectors of its partners' front that have nobody of the side
+ * (no formation of the planner or of a nation on its side stands in the sector or next to it).
  * To spare (PLAN 3.10c1d, ADR-191): such a sector that no formation of the planner is within the
  * range of also takes one of the formations near the front that are not on an errand (PLAN
  * 3.10c1d2: on the march to a cell beyond the range, or into a sector that would have nobody
@@ -446,7 +449,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     let d = Infinity;
     for (let i = rowStart(Math.floor((y - range) / sector)); i < last; i++) d = Math.min(d, dist2(id, list[i]!));
     if (d > range2) {
-      if (ownFront && idle(id)) out.push(id);
+      if (idle(id)) out.push(id);
       continue;
     }
     near.push(id);
@@ -578,7 +581,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const ranked = [...nearest.keys()].sort((a, b) => nearest.get(a)! - nearest.get(b)! || a - b);
   const active = ranked.slice(0, ranked.length - Math.floor(ranked.length * RESERVE));
   // Far from every sector they reach, standing still, and theirs the day (ascending).
-  const far = ownFront ? [...near.filter((id) => !nearest.has(id) && idle(id)), ...out].sort((a, b) => a - b) : [];
+  // A planner with no front of its own sends them to its partners' (PLAN 7.26c1a, ADR-509).
+  const far = [...near.filter((id) => !nearest.has(id) && idle(id)), ...out].sort((a, b) => a - b);
   if (active.length === 0 && far.length === 0) return;
   // Threat: enemy formations by sector bucket, summed over each sector's 3 × 3 neighbourhood. The
   // same for the plans that share the sectors (the enemies are the same) while nobody embarked
@@ -785,16 +789,35 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   // Marches from afar (PLAN 3.10c1a, ADR-190): a front sector of n's own that has nobody takes
   // the nearest formation on its landmass that is far from every sector it reaches and stands still. Nobody: no
   // formation of n stands in the sector or next to it, the allotment above gave it none, and
-  // none is on the march into it. One formation a sector and one order a sector and plan, also
+  // none is on the march into it. For a planner with no front of its own, its partners' sectors
+  // with nobody of the side (PLAN 7.26c1a, ADR-509). One formation a sector and one order a sector and plan, also
   // when the order is refused. The march is not planned again while it lasts: a formation on
   // the march is not in `far`, and within the range of the sector it is kept as any march is.
   if (far.length > 0 || spare.length > 0) {
     const empty = new Uint8Array(sn);
     let empties = 0;
+    /** Of a nation: 1 on n's side, 2 not (0: not asked yet). */
+    const ofSide = new Uint8Array(world.nations.highWater);
+    const onSide = (m: number): boolean => {
+      if (ofSide[m] === 0) ofSide[m] = m === n || wars.sameSide(m, n) ? 1 : 2;
+      return ofSide[m] === 1;
+    };
+    /** Whether a formation of n's side stands on land in the sector or next to it. */
+    const sideStood = (s: Sector): boolean => {
+      const sy = Math.floor(s.key / bw);
+      const sx = s.key - sy * bw;
+      for (let dx = -1; dx <= 1; dx++) {
+        const x = bucketX(sx, dx);
+        if (x < 0) continue;
+        for (let dy = -1; dy <= 1; dy++) for (const id of stand.byBucket.get((sy + dy) * bw + x) ?? []) if (onSide(f.nation[id]!) && !world.offLand(id)) return true;
+      }
+      return false;
+    };
     for (let i = 0; i < sn; i++) {
       const s = list[i]!;
-      if (!s.own || s.formations.length > 0) continue;
+      if ((!s.own && ownFront) || s.formations.length > 0) continue;
       if (marchers[i]! > 0 || stoodAt(s) > 0) continue;
+      if (!s.own && sideStood(s)) continue;
       empty[i] = 1;
       empties++;
     }

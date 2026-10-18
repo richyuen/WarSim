@@ -103,13 +103,15 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
         men within 30 cells moved nothing (2.6 → 2.4 %, 19.6 → 19.3 %; dropped). Beyond the range,
         17–32 % of each side's men are of nations with no front cell of their own in the war,
         standing: the marches from afar and to spare serve only the planner's own front.
-        - [ ] 7.26c1a A partner's garrisons go to its partners' front: a nation at war with no
+        - [x] 7.26c1a A partner's garrisons go to its partners' front: a nation at war with no
           front cell of its own against an enemy sends formations that stand beyond the range to the
           empty sectors of its partners' front (the marches from afar, ADR-190, for a partner's
           sectors). AT: a unit test (a nation with no front of its own, its army idle beyond range
           of its ally's front, sets out; the ally's own marches unchanged); from the day-900 states
           (180 days, `.cache/tmp/abc.ts`) and one of day 400: the big wars' contact share, sorties
-          aloft; `landWar.ts` 8 years; the pin's entry.
+          aloft; `landWar.ts` 8 years; the pin's entry. Done (ADR-509): the share, years 2–8 of
+          `landWar.ts`, mean 0.12 → 0.19 (2843) and 0.11 → 0.19 (7919); from the states 2.7 → 3.3,
+          35.1 → 37.6, 19.6 → 21.4, 12.2 → 11.9 %; sorties aloft 16.9 → 19.7 and 14.1 → 14.0.
         - [ ] 7.26c1b The own front's far marches, one a sector a week (9–21 % of the men standing
           beyond the range): only if c1a leaves the share short.
       - [ ] 7.26c2 Land that nobody holds is taken: a side at war whose enemy has no land formation

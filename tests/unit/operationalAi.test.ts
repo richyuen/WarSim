@@ -399,6 +399,75 @@ describe('marches from afar (PLAN 3.10c1a, ADR-190)', () => {
   }, 180_000);
 });
 
+describe("a partner's front (PLAN 7.26c1a, ADR-509)", () => {
+  it('a nation with no front of its own sends its army from beyond the range to the sectors of its ally that have nobody', () => {
+    // Germany against France, Poland on Germany's side: Poland borders neither France nor its
+    // colonies, and its ground joins Germany's.
+    const FRA = nationId('FRA');
+    const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+    const w = s.world;
+    const f = w.formations.cols;
+    for (const n of [GER, POL, FRA]) {
+      w.alliances.leave(n);
+      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    w.nations.forEach((n) => {
+      if (n !== GER && n !== POL && n !== FRA) w.nations.cols.aiOff[n] = 1;
+      else w.nations.cols.aggression[n] = 0;
+    });
+    runEvents(s, 1);
+    w.wars.start([GER, POL], [FRA], w.tick).fightToDeath = [true, true];
+    w.wars.changed();
+    // Nobody of the side on the front: no German or Polish formation but four Polish divisions at
+    // Pinsk, farther than the range from every cell of Germany's front with France.
+    for (const id of w.formations.ids()) if (f.nation[id] === POL || f.nation[id] === GER) destroyFormation(w, id);
+    const [px, py] = cellOf(26.1, 52.1, W, H).map(Math.floor) as [number, number];
+    const ids = Array.from({ length: 4 }, (_, k) => addDivision(w, POL, px + (k % 2) + 0.5, py + Math.floor(k / 2) + 0.5));
+    const nb: number[] = [];
+    const front = [...frontierOf(w)].filter((c) => w.cells.controller[c] === GER && neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === FRA));
+    expect(front.length).toBeGreaterThan(0);
+    expect([...frontierOf(w)].some((c) => w.cells.controller[c] === POL && neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === FRA))).toBe(false);
+    const toFront = (id: number): number => Math.min(...front.map((c) => Math.hypot(f.x[id]! - ((c % W) + 0.5), f.y[id]! - (Math.floor(c / W) + 0.5))));
+    const d0 = ids.map(toFront);
+    expect(Math.min(...d0)).toBeGreaterThan(w.atSize(DEPLOY_RANGE_CELLS));
+    const orders = new Map<number, number[]>(ids.map((id) => [id, []]));
+    const onFront = new Map<number, boolean>();
+    /** By division, how far from the front of the hour it stood at each order after its first. */
+    const later = new Map<number, number[]>(ids.map((id) => [id, []]));
+    const last = new Map<number, number>();
+    const isFront = (c: number): boolean => w.cells.controller[c] === GER && neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === FRA);
+    s.step(24 * 20, (ww) => {
+      ww.out.events.length = 0;
+      ww.out.fires.length = 0;
+      for (const id of ids) {
+        const target = f.moving[id] === 1 ? f.targetCell[id]! : -1;
+        if (target >= 0 && target !== last.get(id)) {
+          if (orders.get(id)!.length > 0) {
+            const now = [...frontierOf(w)].filter(isFront);
+            later.get(id)!.push(Math.min(...now.map((c) => Math.hypot(f.x[id]! - ((c % W) + 0.5), f.y[id]! - (Math.floor(c / W) + 0.5)))));
+          }
+          orders.get(id)!.push(target);
+          onFront.set(target, isFront(target));
+        }
+        last.set(id, target);
+      }
+    });
+    // Each was sent to a cell of Germany's front in the hour of the order, each to a sector of its
+    // own, and is nearer the front; no second order before it came within the range (the
+    // allotment's from there, as for any march from afar).
+    const sector = w.atSize(SECTOR_CELLS);
+    const bw = Math.ceil(W / sector);
+    const sectorOf = (c: number): number => Math.floor(Math.floor(c / W) / sector) * bw + Math.floor((c % W) / sector);
+    for (const id of ids) {
+      expect(orders.get(id)!.length, `division ${id}`).toBeGreaterThan(0);
+      for (const d of later.get(id)!) expect(d, `division ${id}`).toBeLessThanOrEqual(w.atSize(DEPLOY_RANGE_CELLS) + 1);
+      expect(onFront.get(orders.get(id)![0]!), `division ${id}`).toBe(true);
+      expect(toFront(id), `division ${id}`).toBeLessThan(d0[ids.indexOf(id)]! - 10);
+    }
+    expect(new Set(ids.map((id) => sectorOf(orders.get(id)![0]!))).size).toBe(ids.length);
+  }, 180_000);
+});
+
 describe('to spare (PLAN 3.10c1d, ADR-191)', () => {
   /**
    * Twelve American divisions at the Pacific end of the front against Mexico, `behind` cells
