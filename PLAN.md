@@ -112,13 +112,19 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           aloft; `landWar.ts` 8 years; the pin's entry. Done (ADR-509): the share, years 2–8 of
           `landWar.ts`, mean 0.12 → 0.19 (2843) and 0.11 → 0.19 (7919); from the states 2.7 → 3.3,
           35.1 → 37.6, 19.6 → 21.4, 12.2 → 11.9 %; sorties aloft 16.9 → 19.7 and 14.1 → 14.0.
-        - [ ] 7.26c1b The own front's far marches, one a sector a week (9–21 % of the men standing
+        - [x] 7.26c1b The own front's far marches, one a sector a week (9–21 % of the men standing
           beyond the range): only if c1a leaves the share short.
           After c1a (2026-10-18, `measure-c1.md` §5): partners' standing garrisons beyond the range
           31 → 9 % and 22 → 8 % of the big side's men, the own front's 16 %; the contact share rose
           less, the enemy seldom being on the front. Taken next: c2 (the empty land); c1b after it,
           and only if the 7.26 AT is still short.
           After 7.26d (2026-10-18): the AT is short; c1b is taken after c3 and c4.
+          Done (ADR-513, `measure-c1.md` §6): the probe found "one a sector" was not the cause. Of an
+          own-front planner's far men, 40 % cannot reach their empty sectors (the sea, closed
+          ground), 33 % have none (front manned and strong where the enemy is not), 11 % have a
+          partner's: now sent there when no own one is reached. From six states contact neutral
+          (within a point), 130 partner marches in 180 days; 8-year runs 0.078 → 0.096 and 0.153 →
+          0.125; pin bc1316df.
       - [ ] 7.26c2 Land that nobody holds is taken: a side at war whose enemy has no land formation
         on their front takes its cells. Measured first, from a checkpoint of seed 2843 with Yemen and
         Saudi Arabia at war (day 2136 on) and seed 7919's Iraq and Saudi Arabia (day 647 on): the
@@ -176,6 +182,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           their own: 60–90 % of the unfronted nation-days). Measured first: whether a partner's
           transports could carry them. Only if c3a leaves the AT short.
           After c3a (2026-10-18): waits on 7.26e; c4 is next (7.26d's order).
+          From c1b (2026-10-18, `measure-c1.md` §6): 40 % of the far men of planners with a front of
+          their own stand for want of a way to it (16 % across the sea: Japan, Britain, France; 24 %
+          on their landmass behind closed ground or the sea: Italy to Africa, the Soviet Union, the
+          Raj). A lift by sea to the own front, not only a landing on the enemy, would serve them.
       - [x] 7.26c4 The rebase over more than one hop: in 7.26d's short war-years 36 % of the wings
         out of range have a base of their side with room within range of an enemy, a tenth of
         them within one ferry hop (`freeInFerry`, 3 % of all out of range); 1.6 wings rebase a day of 54. Measured first: whether
@@ -209,6 +219,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       8-year runs fell (18.2 → 16.2, 15.0 → 12.8). If the ten seeds fall below 7.26d's, test first
       whether a wing on a chain should still take a base within a hop nearer its goal in km with more
       hops left (the old step took it; ADR-512 does not), then c3a.
+      To read against c1b (ADR-513): neutral from six states; the 8-year runs went both ways (contact
+      0.078 → 0.096 and 0.153 → 0.125, sorties aloft 16.2 → 17.5 and 12.8 → 16.6). If the AT is
+      still short, c1b is not the first question: c3b's lift by sea to the own front is the larger
+      share of the standing men.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five

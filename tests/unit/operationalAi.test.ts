@@ -540,6 +540,104 @@ describe("a partner's front (PLAN 7.26c1a, ADR-509)", () => {
   }, 180_000);
 });
 
+describe("a partner's front for a planner with a front of its own (PLAN 7.26c1b, ADR-513)", () => {
+  /**
+   * Germany and Poland against France, every other AI off and Germany's and France's too: Poland
+   * holds a few cells of Libya on Algeria's border (a front of its own, far from the rest, its
+   * ground joined to no other of Poland's), with a Polish division standing on them; four Polish
+   * divisions at Pinsk, beyond the range of every sector of either front. With `manGermany`, a
+   * German division stands on each sector of Germany's front with France.
+   */
+  function setUp(manGermany: boolean): { s: Sim; ids: number[]; isFront: (c: number) => boolean; own: number[] } {
+    const FRA = nationId('FRA');
+    const ITA = nationId('ITA');
+    const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+    const w = s.world;
+    const f = w.formations.cols;
+    for (const n of [GER, POL, FRA]) {
+      w.alliances.leave(n);
+      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    w.nations.forEach((n) => {
+      if (n !== POL) w.nations.cols.aiOff[n] = 1;
+      w.nations.cols.aggression[n] = 0;
+    });
+    runEvents(s, 1);
+    w.wars.start([GER, POL], [FRA], w.tick).fightToDeath = [true, true];
+    w.wars.changed();
+    for (const id of w.formations.ids()) if (f.nation[id] === POL || f.nation[id] === GER) destroyFormation(w, id);
+    const nb: number[] = [];
+    // Poland's own front: the Italian cells of Libya's border with Algeria nearest Ghadames.
+    const [gx, gy] = cellOf(10, 30.1, W, H).map(Math.floor) as [number, number];
+    const near: number[] = [];
+    for (let y = gy - 20; y <= gy + 20; y++) for (let x = gx - 20; x <= gx + 20; x++) near.push(y * W + x);
+    const border = near
+      .filter((c) => w.cells.controller[c] === ITA && neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === FRA))
+      .sort((a, b) => Math.hypot((a % W) - gx, Math.floor(a / W) - gy) - Math.hypot((b % W) - gx, Math.floor(b / W) - gy) || a - b)
+      .slice(0, 6);
+    expect(border.length).toBe(6);
+    for (const c of border) w.setController(c, POL);
+    addDivision(w, POL, (border[0]! % W) + 0.5, Math.floor(border[0]! / W) + 0.5);
+    const [px, py] = cellOf(26.1, 52.1, W, H).map(Math.floor) as [number, number];
+    const ids = Array.from({ length: 4 }, (_, k) => addDivision(w, POL, px + (k % 2) + 0.5, py + Math.floor(k / 2) + 0.5));
+    const isFront = (c: number): boolean => w.cells.controller[c] === GER && neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === FRA);
+    const front = [...frontierOf(w)].filter(isFront);
+    expect(front.length).toBeGreaterThan(0);
+    if (manGermany) {
+      const sector = w.atSize(SECTOR_CELLS);
+      const bw = Math.ceil(W / sector);
+      const byBucket = new Map<number, number>();
+      for (const c of front) byBucket.set(Math.floor(Math.floor(c / W) / sector) * bw + Math.floor((c % W) / sector), c);
+      for (const c of byBucket.values()) addDivision(w, GER, (c % W) + 0.5, Math.floor(c / W) + 0.5);
+    }
+    const range = w.atSize(DEPLOY_RANGE_CELLS);
+    const dist = (id: number, cells: number[]): number => Math.min(...cells.map((c) => Math.hypot(f.x[id]! - ((c % W) + 0.5), f.y[id]! - (Math.floor(c / W) + 0.5))));
+    for (const id of ids) {
+      expect(dist(id, front)).toBeGreaterThan(range);
+      expect(dist(id, border)).toBeGreaterThan(range);
+    }
+    return { s, ids, isFront, own: border };
+  }
+
+  it("a far army whose own front is manned is sent to the sectors of its ally's front that have nobody", () => {
+    const { s, ids, isFront, own } = setUp(false);
+    const w = s.world;
+    const f = w.formations.cols;
+    /** By division, its first order's cell and whether it was of Germany's front in that hour. */
+    const sent = new Map<number, [number, boolean]>();
+    s.step(24 * 2 * MARCH_DAYS, (ww) => {
+      ww.out.events.length = 0;
+      ww.out.fires.length = 0;
+      for (const id of ids) if (!sent.has(id) && f.moving[id] === 1) sent.set(id, [f.targetCell[id]!, isFront(f.targetCell[id]!)]);
+    });
+    // Poland kept its own front the whole time: the rule of a planner with a front of its own.
+    expect(own.some((c) => w.cells.controller[c] === POL)).toBe(true);
+    for (const id of ids) {
+      expect(sent.has(id), `division ${id}`).toBe(true);
+      expect(sent.get(id)![1], `division ${id}`).toBe(true);
+    }
+    // Each to a sector of its own.
+    const sector = w.atSize(SECTOR_CELLS);
+    const bw = Math.ceil(W / sector);
+    const sectorOf = (c: number): number => Math.floor(Math.floor(c / W) / sector) * bw + Math.floor((c % W) / sector);
+    expect(new Set(ids.map((id) => sectorOf(sent.get(id)![0]))).size).toBe(ids.length);
+  }, 180_000);
+
+  it('with every sector of the ally manned, it stands', () => {
+    const { s, ids, own } = setUp(true);
+    const w = s.world;
+    const f = w.formations.cols;
+    let moved = 0;
+    s.step(24 * 2 * MARCH_DAYS, (ww) => {
+      ww.out.events.length = 0;
+      ww.out.fires.length = 0;
+      for (const id of ids) if (f.moving[id] === 1) moved++;
+    });
+    expect(own.some((c) => w.cells.controller[c] === POL)).toBe(true);
+    expect(moved).toBe(0);
+  }, 180_000);
+});
+
 describe('to spare (PLAN 3.10c1d, ADR-191)', () => {
   /**
    * Twelve American divisions at the Pacific end of the front against Mexico, `behind` cells

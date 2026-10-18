@@ -46,6 +46,8 @@
  * A partner's front (PLAN 7.26c1a, ADR-509): a planner with no front cell of its own in its wars
  * sends its far formations so to the sectors of its partners' front that have nobody of the side
  * (no formation of the planner or of a nation on its side stands in the sector or next to it).
+ * A planner with a front of its own sends a far formation so too where the formation reaches no
+ * sector of its own front that has nobody (PLAN 7.26c1b, ADR-513): its own sectors first.
  * To spare (PLAN 3.10c1d, ADR-191): such a sector that no formation of the planner is within the
  * range of also takes one of the formations near the front that are not on an errand (PLAN
  * 3.10c1d2: on the march to a cell beyond the range, or into a sector that would have nobody
@@ -812,7 +814,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   // the nearest formation on its landmass that is far from every sector it reaches and stands still. Nobody: no
   // formation of n stands in the sector or next to it, the allotment above gave it none, and
   // none is on the march into it. For a planner with no front of its own, its partners' sectors
-  // with nobody of the side (PLAN 7.26c1a, ADR-509). One formation a sector and one order a sector and plan, also
+  // with nobody of the side (PLAN 7.26c1a, ADR-509); for one with a front of its own, those too for
+  // a formation that reaches no sector of its own with nobody (PLAN 7.26c1b, ADR-513). One formation a sector and one order a sector and plan, also
   // when the order is refused. The march is not planned again while it lasts: a formation on
   // the march is not in `far`, and within the range of the sector it is kept as any march is.
   if (far.length > 0 || spare.length > 0) {
@@ -835,12 +838,15 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       }
       return false;
     };
+    // 1: a sector that has nobody, of n's own front or (for a planner with no front of its own)
+    // of its partners'; 2: a partner's sector with nobody of the side, for a planner with a front
+    // of its own, taken only by a formation that reaches no sector of the first kind (PLAN 7.26c1b).
     for (let i = 0; i < sn; i++) {
       const s = list[i]!;
-      if ((!s.own && ownFront) || s.formations.some((id) => f.strength[id]! > take)) continue;
+      if (s.formations.some((id) => f.strength[id]! > take)) continue;
       if (takers[i]! > 0 || stoodAt(s, holds) > 0) continue;
       if (!s.own && sideStood(s)) continue;
-      empty[i] = 1;
+      empty[i] = !s.own && ownFront ? 2 : 1;
       empties++;
     }
     /** Of a sector: 1 = no formation of n is within the range of it, 2 = one is (0: not asked yet). */
@@ -850,23 +856,27 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       return alone[i] === 1;
     };
     /**
-     * The nearest empty sector the formation's class reaches, and its distance (squared). For one
-     * to spare (`lone`): of those that nobody is within the range of, within the spare's range.
+     * The nearest empty sector the formation's class reaches, and its distance (squared): of the
+     * first kind, else (one from afar) of the second. For one to spare (`lone`): of the first kind
+     * that nobody is within the range of, within the spare's range.
      */
     const emptyFor = (id: number, lone: boolean): [number, number] => {
-      let best = -1;
-      let bd = lone ? spare2 : Infinity;
       const ci = classOf[id]!;
-      for (const i of reached[ci]!) {
-        // Not to the shore across the water from it (where an order to another landmass ends).
-        if (empty[i] === 0 || land[list[i]!.hold] !== land[classCell[ci]!]) continue;
-        const d = dist2(id, list[i]!);
-        if (d < bd && (!lone || isAlone(i)) && reaches(ci, i)) {
-          bd = d;
-          best = i;
+      for (let kind = 1; kind <= (lone ? 1 : 2); kind++) {
+        let best = -1;
+        let bd = lone ? spare2 : Infinity;
+        for (const i of reached[ci]!) {
+          // Not to the shore across the water from it (where an order to another landmass ends).
+          if (empty[i] !== kind || land[list[i]!.hold] !== land[classCell[ci]!]) continue;
+          const d = dist2(id, list[i]!);
+          if (d < bd && (!lone || isAlone(i)) && reaches(ci, i)) {
+            bd = d;
+            best = i;
+          }
         }
+        if (best >= 0) return [best, bd];
       }
-      return [best, bd];
+      return [-1, Infinity];
     };
     if (empties > 0) {
       const wants = far.map((id) => [id, ...emptyFor(id, false), 0] as [number, number, number, number]).filter((q) => q[1] >= 0);
@@ -893,7 +903,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       for (const [id, first, , lone] of wants) {
         if (empties === 0) break;
         // Its sector was taken by a nearer formation: the nearest that is still empty.
-        const i = empty[first] === 1 ? first : emptyFor(id, lone === 1)[0];
+        const i = empty[first] !== 0 ? first : emptyFor(id, lone === 1)[0];
         if (i < 0) continue;
         empty[i] = 0;
         empties--;

@@ -167,6 +167,45 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-513 · 2026-10-18 · accepted — A planner with a front of its own sends a far formation to its partners' front too (PLAN 7.26c1b)
+
+- **Context.** PLAN 7.26c1b named the own front's far marches, "one a sector a week", for the 16 %
+  of the big sides' men standing beyond the range after ADR-509. Measured first
+  (`docs/evidence/7.26/measure-c1.md` §6, a probe in the marches from afar on six states of seeds
+  2843 and 7919, 90 days): of the far formations of a planner with a front of its own, by men, 14 %
+  find an own sector with nobody they reach (sent, or another took the sector); 40 % find own
+  sectors with nobody they cannot reach (across the sea 16 %; on their landmass but another group of
+  provinces or a pocket 24 %: Soviet troops in Greece with the front in Libya, Italy to Ethiopia,
+  the Raj); 33 % find no sector with nobody at all, and 80 % of those reach only sectors strong
+  enough to attack (the enemy is not there: the Soviet Union, the United States); 11 % find no own
+  sector with nobody but a partner's with nobody of the side on their landmass, which ADR-509 left
+  to a planner with no front of its own (Germany 46 % of its far men at seed 2843's day 1100). The
+  "one a sector" competition is the first row only.
+- **Decision.** In the marches from afar, a planner with a front of its own marks its partners'
+  sectors with nobody of the side (ADR-509's test) as a second kind. A far formation takes the
+  nearest sector of the first kind it reaches on its landmass, as before, and only when there is
+  none, the nearest of the second kind. One a sector and plan, nearest pair first, in one list, as
+  before. To spare (ADR-191) stays with the own front: it reads the first kind only.
+- **Not done.** Reinforcing manned sectors from afar (the 33 %): the sectors are strong where the
+  enemy is not, so the men would stand at a quiet front. The sea and the closed ground (40 %): a
+  lift by sea to the own front is the invasion AI's (PLAN 7.26c3b, 7.26e).
+- **Measured.** From the six states, 180 days, old → new: 130 far marches to partners' sectors
+  (115 given, the rest refused), 882 to own ones; the big wars' contact share 3.9 → 4.0, 17.8 →
+  17.6, 21.0 → 21.7, 6.4 → 6.4 (the same hash), 6.5 → 6.6, 5.9 → 5.9 %; sorties aloft within 0.6.
+  `landWar.ts` 8 years, the share by years 2–8: seed 2843 0.13/0.06/0.04/0.03/0.08/0.01/0.21 →
+  0.15/0.04/0.08/0.18/0.04/0.11/0.08 (mean 0.078 → 0.096), seed 7919
+  0.15/0.16/0.15/0.21/0.15/0.09/0.16 → 0.25/0.08/0.03/0.06/0.12/0.12/0.22 (0.153 → 0.125).
+  `airWar.ts` 8 years, years 2–8 sorties aloft 16.2 → 17.5 (2843) and 12.8 → 16.6 (7919). One run
+  each, diverging from year 1: neutral, as the states show. Seed 99, old and new at once on separate
+  cores, swapped, four rounds: `operationalAi` 0.334 → 0.346 ms a tick (+3.6 %), the tick within
+  its spread (2.05 → 2.03 ms).
+- **Pin.** 63d9b3b5 → bc1316df.
+- **Tests.** `operationalAi.test.ts` "a partner's front for a planner with a front of its own":
+  Germany and Poland against France, Poland holding six cells of Libya on Algeria's border with a
+  division on them, four Polish divisions at Pinsk beyond the range of both fronts; each is sent to
+  a sector of its own of Germany's front within `2 × MARCH_DAYS` days (red before: none sent); with
+  a German division on every sector of Germany's front, none moves.
+
 ### ADR-512 · 2026-10-18 · accepted — The rebase along a chain of airbases (PLAN 7.26c4)
 
 - **Context.** PLAN 7.26d: of the wings at war out of range of every enemy, a third have a base of

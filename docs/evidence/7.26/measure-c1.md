@@ -88,3 +88,44 @@ garrisons now go: their men standing beyond the range fall to a third or less, a
 side stands within the range of its front. The contact share moves less (ADR-509's Measured) because
 the enemy is seldom on that front (section 3): what is left is the empty land (c2) and the own
 front's far marches (c1b, 16 % of the men standing beyond the range).
+
+## 6. PLAN 7.26c1b: why the own front's far formations stand (at `e92c622`, before ADR-513)
+
+Probe (uncommitted, in `planNation`'s marches from afar; `.cache/tmp/c1bprobe.ts`) on the six states
+of `measure-c4.md` (seeds 2843 days 760, 1100, 2450; 7919 days 560, 1100, 2450), 90 days each: of a
+planner with a front cell of its own, each formation in `far` (beyond the range of every sector it
+reaches, standing, its day in `MARCH_DAYS`) on each plan, weighed by its men, by what the rule finds
+for it. 44.9 M man-plans in all.
+
+| what the formation finds | share of the men | who |
+|---|---|---|
+| an own sector with nobody it reaches on its landmass (sent, or a nearer one took the sector) | 14 % | the Soviet Union, Germany |
+| own sectors with nobody, none it reaches: across the sea (another landmass) | 16 % | Japan, Britain, France, the Indies |
+| the same, on its landmass but not reached: another group of provinces (closed ground or the sea between: Soviet troops in Greece, the front in Libya; Italy to Ethiopia; the Raj) 20 %, a pocket of open ground 1.5 %, not split on two states 2.5 % | 24 % | Italy, the Soviet Union, the Raj, Britain |
+| no own sector with nobody; a partner's with nobody of the side, on its landmass, that it reaches | 11 % | Germany (46 % of its at day 1100), the Soviet Union (24 % at 7919's day 1100) |
+| no own sector with nobody; a partner's elsewhere | 1.5 % | |
+| no sector with nobody at all | 33 % | the Soviet Union, the United States |
+
+Of the last row, the sectors it reaches are nearly all strong enough to attack (allotted strength at
+least `OFFENSIVE_RATIO` × threat in every one: 11.9 M of the row's 14.9 M man-plans, 80 %; one or
+more too weak 11 %; none reached on its landmass 9 %): the front is held where the enemy is not, and men sent there would
+stand at a quiet front. The plan's "one a sector a week" is the first row's competition only (and
+refused ways: 7919's day 2450 had 82 of 131 far orders refused).
+
+The rule with a mechanism the operational AI has is the partners' row (ADR-509 left a planner with
+a front of its own out). The sea and the closed ground (40 %) want a lift by sea to the own front:
+the invasion AI's (PLAN 7.26c3b, 7.26e).
+
+### After ADR-513 (the same six states, 180 days, old → new)
+
+| state | big-war contact share | sorties aloft | far marches to own / partners' sectors (new) |
+|---|---|---|---|
+| 2843 d760 | 3.9 → 4.0 % | 22.9 → 22.8 | 98 / 11 |
+| 2843 d1100 | 17.8 → 17.6 % | 28.4 → 28.1 | 186 / 54 |
+| 2843 d2450 | 21.0 → 21.7 % | 15.7 → 16.3 | 84 / 48 |
+| 7919 d560 | 6.4 → 6.4 % (the same hash) | 12.2 → 12.2 | 256 / 0 |
+| 7919 d1100 | 6.5 → 6.6 % | 9.4 → 9.7 | 66 / 9 |
+| 7919 d2450 | 5.9 → 5.9 % | 15.4 → 15.4 | 192 / 8 |
+
+The rule fires (130 marches to partners' sectors, 115 of them given) and moves the contact share by
+less than a point: as section 3 found, the enemy is seldom on that front either.

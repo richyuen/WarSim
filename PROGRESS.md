@@ -18874,3 +18874,26 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** the Soviet Union, Germany, Japan and Italy have no base in 1938 whose chain bends away
   from a front first (`.cache/tmp/c4shape.ts`); Britain's bloc has 48 such places.
 - **Next:** PLAN 7.26c1b (the own front's far marches), then c2b's fix; then 7.26e.
+
+## 2026-10-18 — PLAN 7.26c1b: a partner's front for a planner with a front of its own
+
+- **Start:** gate green on `e92c622`; critic not due. The AT is c1's (the big wars' contact share
+  from year 2, `airWar.ts` sorties, the pin); measured before on HEAD (`landWar.ts` 8 years).
+- **Measured first** (`docs/evidence/7.26/measure-c1.md` §6; probe `.cache/tmp/c1bprobe.ts` with an
+  uncommitted hook in `planNation`, six states of `measure-c4.md`): "one a sector a week" was not the
+  cause. Of an own-front planner's far men: 40 % cannot reach their empty sectors (16 % the sea,
+  24 % closed ground or the sea on their landmass), 33 % have no sector with nobody (80 % of those
+  reach only sectors strong enough to attack: the enemy is not there), 14 % reach an own one, 11 %
+  have only a partner's on their landmass (Germany, the Soviet Union).
+- **Done** (ADR-513): such a formation goes to the partner's sector with nobody of the side when it
+  reaches no own sector with nobody. Reinforcing manned sectors not done (the front is quiet there);
+  the sea lift noted under c3b.
+- **Measured after:** from the six states, 180 days: 130 partner marches, contact share within a
+  point on each state. `landWar.ts` 8 years, years 2–8: 0.078 → 0.096 (2843), 0.153 → 0.125 (7919);
+  `airWar.ts` 16.2 → 17.5 and 12.8 → 16.6. Seed 99 `operationalAi` 0.334 → 0.346 ms (+3.6 %, pairs at
+  once, swapped). Pin 63d9b3b5 → bc1316df.
+- **Tests:** `operationalAi.test.ts` "a partner's front for a planner with a front of its own" (two
+  cases; the first red before).
+- **Gotcha:** a test that checks an order's target against the front must check it in the hour of
+  the order: with no army of its own Germany's front cells passed to France within the 16 days.
+- **Next:** PLAN 7.26c2b's fix (refills at war not held for the next order), then 7.26e.
