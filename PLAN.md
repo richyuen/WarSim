@@ -76,7 +76,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       on poor places). Done: ADR-491 (`7d9fa18`); 835 held war-days on 6 of 10 seeds before, each
       out of reach; Poland strikes Germany on 5591, 7127 and 3929; seeds 1–9 the same, seed 10
       another world, tolls under 5,000 16 → 15 (`docs/evidence/7.18/measure-i.md`).
-    - [ ] 7.18j A place's men weighed against a theatre of weight (7.18h's floor, after 7.18i): 7.18c's
+    - [x] 7.18j A place's men weighed against a theatre of weight (7.18h's floor, after 7.18i): 7.18c's
       theatre share makes a lone garrison 100 % of its theatre (seed 4's Britain on Japanese garrisons
       of 2,267 to 5,229 men in theatres of no more, 935 to 2,305 dead; seed 1's Britain on #114's of
       456 to 1,380, 168 to 2,875 dead). Tried in 7.18h: a floor of 0.25 of the enemy side's men stops
@@ -85,7 +85,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       through 0.6 against 0.2 over the Germans); with it every place left to them is held under 0.2
       by German air cover, 7.18i's cause. AT: after 7.18i; a floor measured from `sideMen` (land
       formations alone, or not); `nukePoland1938` and `nukeOverrun1938` green with their strikes on
-      the Germans; seeds 1–10 re-measured, no toll under 5,000 at a place of a lone garrison.
+      the Germans; seeds 1–10 re-measured, no toll under 5,000 at a place of a lone garrison. Done:
+      ADR-492 (`d923d43`), THEATRE_FLOOR 0.25 of all the side's men; tolls under 5,000 15 → 1 (seed
+      1's Soviet Union on China, a theatre of 4,666 men, at u 0.053: 7.25's floor of utility); Poland
+      and France strike Germany, now asserted; bursts in 8 of 10 seeds (`measure-j.md`).
     - [ ] 7.18g The measure of 7.18's AT: 10 seeds × 30 years, a burst in 8, some before year 20, no
       point struck twice within its ruin's days, no third party under its bound; the 50-year sweep
       on unseen seeds, after the gate.
@@ -130,6 +133,8 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   years the first-use years and the spread of strikes measured (`tools/diag/nukeGates.ts`), no
   world's bursts all within 2 days; no strike under a floor of utility; history rows in words, no
   engine numbers; the alert expires and sits clear of the panels' headers.
+  (From 7.18j: seed 1's Soviet Union on China at u 0.053, 3,842 dead, and seed 4's Britain on Japan
+  at u near 0, 5,003 dead, `.cache/r718j/after_<seed>.json`, `docs/evidence/7.18/measure-j.md`.)
 - [ ] 7.26 The air war keeps flying after year 1 (aircraft 6, needs 8; the user's decision of
   2026-10-17, ADR-487, reopening what ADR-377 accepted): on every one of 17 seeds 28 to 39 sorties
   aloft in year 1, then 0.5 to 14, while 1 to 14 wars run in every late year

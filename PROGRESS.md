@@ -18077,3 +18077,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `nukePoland1938` (three seeds), `nukeOverrun1938` (split), `nukeUtility1938`,
   `nukeResolve1938` (the new input); the related unit tests and the pin in the gate.
 - **Next:** PLAN 7.18j (the theatre's floor; Poland's and France's strikes now fall on the Germans).
+
+## 2026-10-17 — PLAN 7.18j: a place's men weighed against a theatre of weight
+
+- **Start:** gate green on a clean tree (`07c7e49`; four evidence pictures left unstaged as before).
+- **Measured first:** 7.18i's after (`.cache/r718i/after_*.json`): 15 tolls under 5,000, each a
+  garrison of 74 to 5,229 men weighed as the whole of its theatre.
+- **Done:** THEATRE_FLOOR 0.25: a place's men a share of max(its theatre's men, a quarter of all the
+  enemy side's men) (ADR-492, SPEC §6.4, `d923d43`). Same count of men above and below the line
+  (fleets and wings are tens against armies). Pin unmoved.
+- **Measured after** (`docs/evidence/7.18/measure-j.md`): tolls under 5,000 15 → 1; bursts in 8 of 10
+  seeds, 7 before year 20, as before; seeds 3, 5, 7, 8 unchanged; seed 2's and 4's garrison strikes
+  now a capital and a 21,763-man force. Left: seed 1's Soviet Union on China at u 0.053 (3,842 dead),
+  noted under 7.25 (a floor of utility).
+- **Tests:** `nukeTheatre1938.test.ts` (new); `nukePoland1938`, `nukeOverrun1938` now assert the
+  burst falls on Germany; the related unit tests (1,122) and the pin in the gate
+  (`scenario1938`'s build time red once under load, green on the gate's re-run).
+- **Next:** PLAN 7.18g (the measure of 7.18's AT and the 50-year sweep on unseen seeds).
