@@ -6,8 +6,11 @@
  * scorched disc of that radius, darkest at its middle, with rubble strewn over its inner part; where
  * it is small (T0, T1) a mark of MARK_PX: a dark disc with an ember ring. Both fade with the
  * burst's age, to RUIN_AGED of themselves at a year. Pure functions of the bursts and the camera.
+ * A burst's size is its bomb's (PLAN 7.20, critic R8-B3: a hydrogen bomb's ruin was an atomic
+ * one's): the scorch its blast radius (BLAST_KM × the yield's cube root, as the sim's), its rubble
+ * as many bits more, and its mark MARK_PX × the square root of that.
  */
-import { BLAST_KM } from '../../shared/nuclear';
+import { BLAST_KM, yieldOf } from '../../shared/nuclear';
 import { worldToScreen, wrapOffsets, SEAM_MARGIN, type Camera, type MapGeometry } from '../camera';
 import { hash2 } from '../hash';
 
@@ -29,6 +32,13 @@ export interface Ruin {
   y: number;
   /** Days since the burst. */
   age: number;
+  /** Its class (PLAN 7.20): 1 fission, 2 thermonuclear. */
+  yieldN: number;
+}
+
+/** How much larger than a fission bomb's a ruin of class `yieldN` is across (PLAN 7.20): the yield's cube root. */
+export function ruinScale(yieldN: number): number {
+  return Math.cbrt(yieldOf(yieldN));
 }
 
 /** A ruin's darkness at `age` days, 0–1 of itself: 1 fresh, RUIN_AGED at a year. */
@@ -40,13 +50,16 @@ export function ruinShare(age: number): number {
 export function drawRuins(ctx: CanvasRenderingContext2D, ruins: readonly Ruin[], cam: Camera, geo: MapGeometry, vw: number, vh: number): { scorched: number; marked: number } {
   const out = { scorched: 0, marked: 0 };
   if (ruins.length === 0) return out;
-  const r = (BLAST_KM / geo.kmPerCell) * cam.scale;
+  const r1 = (BLAST_KM / geo.kmPerCell) * cam.scale;
   ctx.save();
   for (const off of wrapOffsets(cam, geo, vw, SEAM_MARGIN)) {
     for (let k = 0; k < ruins.length; k++) {
       const ruin = ruins[k]!;
+      const scale = ruinScale(ruin.yieldN);
+      const r = r1 * scale;
+      const mark = MARK_PX * Math.sqrt(scale);
       const [x, y] = worldToScreen(cam, ruin.x + off, ruin.y, vw, vh);
-      const reach = Math.max(r, MARK_PX + 2);
+      const reach = Math.max(r, mark + 2);
       if (x < -reach || y < -reach || x > vw + reach || y > vh + reach) continue;
       const share = ruinShare(ruin.age);
       if (r < MARK_UNDER_PX) {
@@ -54,7 +67,7 @@ export function drawRuins(ctx: CanvasRenderingContext2D, ruins: readonly Ruin[],
         ctx.globalAlpha = share;
         ctx.fillStyle = 'rgba(28, 20, 14, 0.85)';
         ctx.beginPath();
-        ctx.arc(x, y, MARK_PX, 0, TAU);
+        ctx.arc(x, y, mark, 0, TAU);
         ctx.fill();
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(240, 120, 40, 0.95)';
@@ -76,7 +89,8 @@ export function drawRuins(ctx: CanvasRenderingContext2D, ruins: readonly Ruin[],
       if (r >= RUBBLE_FROM_PX) {
         const bit = Math.max(1.5, r / 70);
         ctx.globalAlpha = 0.8 * share;
-        for (let i = 0; i < RUBBLE; i++) {
+        const bits = Math.round(RUBBLE * scale);
+        for (let i = 0; i < bits; i++) {
           const h = hash2(hash2(Math.round(ruin.x * 1000), Math.round(ruin.y * 1000)), i);
           const a = ((h & 0xffff) / 0x10000) * TAU;
           const d = Math.sqrt(((h >>> 16) & 0xffff) / 0x10000) * RUBBLE_INNER * r;

@@ -30,7 +30,7 @@ export const MOBILITIES = ['foot', 'motor', 'tracked', 'ship', 'air'] as const;
 export const MODIFIER_KEYS = [
   'income', 'industry', 'manpower', 'research', 'buildSpeed', 'supply', 'org', 'stability',
   'warExhaustion', 'revoltSuppression', 'landAttack', 'landDefense', 'armorAttack', 'navalAttack',
-  'airAttack', 'airDefense', 'fortStrength', 'aaStrength', 'nukeYield',
+  'airAttack', 'airDefense', 'fortStrength', 'aaStrength',
 ] as const;
 
 export const BUILDING_IDS = ['industry', 'fort', 'airbase', 'port', 'navalBase', 'aa'] as const;

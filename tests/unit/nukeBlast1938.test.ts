@@ -6,14 +6,16 @@ import { Sim } from '../../src/sim/sim';
 import { elementIndex } from '../../src/sim/systems/elements';
 import { seaKm } from '../../src/sim/systems/navalCombat';
 import { packNukeStrike, nukeStrike } from '../../src/shared/history';
+import { THERMO_YIELD } from '../../src/shared/nuclear';
 import { aftermath, BLAST_KILL, BLAST_KM, BLAST_PEOPLE, blast, blastRadius, blastShare } from '../../src/sim/systems/nuclear';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
 
 // PLAN 6.3 AT (6.3a): the casualty falloff. A warhead's blast destroys BLAST_KILL × (1 − d / radius)
 // of what is at d km from it within its radius (BLAST_KM × the yield's cube root): of each element
-// of the formations there, BLAST_PEOPLE of it of each cell's people, and of its industry (as bombs
-// put it out of work).
+// of the formations there, BLAST_PEOPLE of it of each cell's people (a fission bomb's), and of its
+// industry (as bombs put it out of work). A thermonuclear warhead (class 2) is THERMO_YIELD fission
+// ones (PLAN 7.20; its tolls: nukeYield1938.test.ts).
 
 const { w: W, h: H } = SIZE_1938;
 const [ENG, GER] = ['ENG', 'GER'].map(nationId) as [number, number];
@@ -27,7 +29,7 @@ describe('a warhead\'s blast (PLAN 6.3a)', () => {
     expect(blastShare(r / 2, r)).toBeCloseTo(BLAST_KILL / 2, 12);
     expect(blastShare(r, r)).toBe(0);
     expect(blastShare(2 * r, r)).toBe(0);
-    expect(blastRadius(2) / r).toBeCloseTo(Math.cbrt(2), 9);
+    expect(blastRadius(2) / r).toBeCloseTo(Math.cbrt(THERMO_YIELD), 9);
   });
 
   it('at Berlin: each formation loses its distance\'s share, each cell its people\'s; industry put out of work; the toll told', () => {

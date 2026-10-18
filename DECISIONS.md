@@ -167,6 +167,51 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-495 · 2026-10-18 · accepted — A hydrogen bomb is fifty atomic ones, and an atomic bomb kills as Hiroshima's did (PLAN 7.20)
+
+- **Context.** Critic R8-B3 (`critic/c8_b_4711.json`): God Mode's hydrogen bomb on the same point as
+  an atomic one killed 3 to 11 % more (Paris 554,827 against 588,117, Berlin 1,025,202 against
+  1,063,051) and left a ruin that could not be told apart at 300 m/px. A thermonuclear warhead was
+  yield 2: a blast 1.26 times as wide. And the toll was the burst cell's people × 13.5 %: a wider
+  blast reached a few thinner cells and nothing more. The `nukeYield: 2` of the tech was read by
+  nothing. The ruin was drawn at BLAST_KM whatever the bomb.
+- **Decision.**
+  - A warhead's class (1 fission, 2 thermonuclear) stays what events, the history and the bursts
+    the sim remembers carry; `yieldOf` (`src/shared/nuclear.ts`, read by the sim and the page) maps
+    it to a yield in fission ones: THERMO_YIELD 50 (about 750 kt against 15). The tech's
+    `nukeYield: 2`, read by nothing, is gone with its modifier key (a modifier is a fraction,
+    −1 to 5, by the data schema): THERMO_YIELD is the one source.
+  - The blast's radius stays BLAST_KM × the yield's cube root: 25 km, 92 km.
+  - The people killed of the blast's share (`peopleShare`): BLAST_PEOPLE × the yield's ⅔ power
+    (the area where people die grows so), to 1. BLAST_PEOPLE 0.15 → 0.05: a fission bomb's 554,827
+    dead at Paris was four Hiroshimas (about 140,000 of 350,000), and no thermonuclear toll ten
+    times it could be had (6.0 M people live within 92 km of Paris). At 0.05 the thermonuclear
+    share is 0.68 (61 % at the centre).
+  - The fallout plume's half-width FALLOUT_WIDTH_KM × the yield's cube root too (its length was):
+    a plume 737 km long and 20 km wide is a needle.
+  - `world.nukeBursts` keeps each burst's class (a save section of its own,
+    `world.nukeBurstYields`: a save without it is of fission bursts); the `ruins` message carries
+    it; a ruin's scorch is its blast's radius, its rubble as many bits more, its mark at T0 and T1
+    MARK_PX × the square root of that. The flash's size reads the yield by `yieldOf`.
+- **The critic's case** (seed 4711, God Mode's bomb on each city on the first day; atomic →
+  hydrogen, dead; cells under fallout; cells of industry put out of work):
+  Paris 192,827 → 3,203,070 (16.6×), fallout 102 → 1,374, ruined 8 → 121;
+  London 234,186 → 4,852,482 (20.7×), 113 → 1,505, 10 → 125;
+  Berlin 350,202 → 5,300,524 (15.1×), 115 → 1,556, 10 → 136;
+  Moscow 60,026 → 1,001,104 (16.7×), 130 → 1,747, 10 → 154.
+  Before: Paris 554,827 / 588,117, London 701,186 / 751,256, Berlin 1,025,202 / 1,063,051,
+  Moscow 154,026 / 173,394. At Berlin, 300 m/px, ten days after: the atomic ruin dark at 50 px from
+  the burst and clear at 160 px, the hydrogen one dark at both
+  (`docs/evidence/7.20/berlin-A-300m-day10.png`, `berlin-H-300m-day10.png`).
+- **Not chosen.** Fission's share kept at 0.15 and the hydrogen bomb's toll ten times it: it would
+  kill more than nine in ten within 92 km of Paris. A yield of 100 or more: a radius of 116 km and
+  more, a blast over three Paris basins; 50 is enough for a ruin four times as wide.
+- **What moves.** The AI weighs a thermonuclear strike over its wider radius (`targetValue`, the
+  RESTRIKE_RADII exclusion now 368 km about a hydrogen burst, the unrest of `aftermath` within 184
+  km); the hydrogen bomb is researched from 1952. Fission tolls are a third of what they were in the
+  measures of PLAN 7.18 and the critic's run 8 (their men unchanged).
+- **Pin.** Unmoved: no burst in seed 99's first year.
+
 ### ADR-494 · 2026-10-18 · accepted — A sea battle's row frames two fleets within reach of a ship's weapon (PLAN 7.19b, 7.19c)
 
 - **Context.** After ADR-493 the critic's battle (seed 5591, hour 41) is still a British carrier

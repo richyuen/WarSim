@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { EVENT_STRIDE, EventKind } from '../../src/shared/events';
 import { CLOUD_MS, MIN_PX, NukeFx } from '../../src/render/fx/nuke';
+import { THERMO_YIELD } from '../../src/shared/nuclear';
 
 // PLAN 6.6b: a burst's effects take the snapshot's `NukeDetonated` alone, are sized by the yield's
 // blast radius at the camera's scale (at least MIN_PX), live CLOUD_MS, and can be held at an age.
@@ -30,6 +31,7 @@ describe('a nuclear burst\'s effects (PLAN 6.6b)', () => {
     expect(at(1, 1)).toBe(MIN_PX);
     const near = at(100, 1);
     expect(near).toBeCloseTo((25 / (40075 / 2048)) * 100, 9);
-    expect(at(100, 2) / near).toBeCloseTo(Math.cbrt(2), 9);
+    // Class 2, a thermonuclear warhead: THERMO_YIELD fission ones (PLAN 7.20).
+    expect(at(100, 2) / near).toBeCloseTo(Math.cbrt(THERMO_YIELD), 9);
   });
 });

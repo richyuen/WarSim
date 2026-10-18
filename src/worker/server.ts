@@ -682,7 +682,7 @@ export class SimServer {
     }
     // The bursts the sim remembers, a struck city's ruin (PLAN 7.11b): when a day passed or their count changed.
     if ((world.nukeBursts.length > 0 || this.ruinsSent.count > 0) && (foDay !== this.ruinsSent.day || world.nukeBursts.length !== this.ruinsSent.count)) {
-      const bursts = Float32Array.from(world.nukeBursts.flatMap((b) => [b.x, b.y, (world.tick - b.tick) / 24]));
+      const bursts = Float32Array.from(world.nukeBursts.flatMap((b) => [b.x, b.y, (world.tick - b.tick) / 24, b.yieldN]));
       this.ruinsSent = { day: foDay, count: world.nukeBursts.length };
       this.post({ type: 'ruins', bursts }, [bursts.buffer]);
     }

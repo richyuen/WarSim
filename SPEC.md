@@ -1926,7 +1926,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - doctrine and aggression come from traits. Retaliation-doctrine nations strike back after
     being hit.
 - **Effects**: blast radius (by yield) kills elements by distance falloff and
-  destroys city industry and population. Cells get FALLOUT (attrition, income loss,
+  destroys city industry and population. A thermonuclear warhead is THERMO_YIELD (50) fission
+  ones (PLAN 7.20, ADR-495): its blast and its fallout plume the yield's cube root wider and
+  longer, the people killed of the blast's share the yield's ⅔ power more (a fission bomb's
+  BLAST_PEOPLE 0.05: about 190,000 dead at Paris, 350,000 at Berlin; a hydrogen bomb's 15 to 21
+  times that), and its ruin on the map its blast's size. Cells get FALLOUT (attrition, income loss,
   movement penalty) that drifts with a deterministic seasonal wind field and decays over
   years. Plus a stability shock and a war-exhaustion jump.
 - **Consequences**: relations hit with every nation (scaled by distance and alliance),

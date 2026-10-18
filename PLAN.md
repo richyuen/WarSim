@@ -33,10 +33,6 @@ Run 8's blocking issues and its dimensions under the DONE condition's bar (repor
 `fd27e85`, its "Fix" lines and evidence; R8-B1 to R8-B3 are PLAN 7.18 to 7.20, the dimensions 7.21
 to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
 
-- [ ] 7.20 A hydrogen bomb is a hydrogen bomb (critic R8-B3, contradicts 7.16a): it kills 3 to 11 % more
-  than an atomic one on the same point and its ruin looks the same at 300 m/px (`critic/c8_b_4711.json`).
-  AT: a thermonuclear yield tens of times a fission one in blast, toll, fallout and ruin; the critic's
-  four cities compared; the ruins told apart in a picture; the pin's entry if the rule moves it.
 - [ ] 7.21 Infantry and the middle tier read at zoom (semantic zoom 7, needs 8): at 10 m/px infantry
   are shapeless clumps of figures, the two sides near one colour on the grass
   (`critic/shots/c8c_6047_inf_0010m.png`); at 900 m/px nothing of the units shows but counters
@@ -327,3 +323,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.17 A smaller save (stability 7): 39.4 to 40.0 MB at year 12 to 27 […]
 - [x] 7.18 AI nuclear use seen and credible (critic R8-B1, run 8 on `fd27e85`): 8 of 17 unaided 30-year […]
 - [x] 7.19 A sea battle's ticker row lands on the fight (critic R8-B2, contradicts 7.10b): seed 5591, […]
+- [x] 7.20 A hydrogen bomb is a hydrogen bomb (critic R8-B3, contradicts 7.16a): it kills 3 to 11 % more […]

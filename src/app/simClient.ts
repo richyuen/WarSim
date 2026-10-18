@@ -204,7 +204,7 @@ export class SimClient {
   /** The last ruins from the worker (PLAN 7.11b): a late listener gets them at once. */
   private ruins: Float32Array | null = null;
   private readonly ruinsListeners = new Set<(bursts: Float32Array) => void>();
-  /** A struck city's ruin (PLAN 7.11b): the bursts the sim remembers, [x, y, days since] each. */
+  /** A struck city's ruin (PLAN 7.11b): the bursts the sim remembers, [x, y, days since, class] each. */
   onRuins(l: (bursts: Float32Array) => void): () => void {
     this.ruinsListeners.add(l);
     if (this.ruins) l(this.ruins);

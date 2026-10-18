@@ -436,7 +436,7 @@ export class MapView {
     // A struck city's ruin (PLAN 7.11b).
     sim.onRuins((bursts) => {
       this.ruins = [];
-      for (let i = 0; i + 3 <= bursts.length; i += 3) this.ruins.push({ x: bursts[i]!, y: bursts[i + 1]!, age: bursts[i + 2]! });
+      for (let i = 0; i + 4 <= bursts.length; i += 4) this.ruins.push({ x: bursts[i]!, y: bursts[i + 1]!, age: bursts[i + 2]!, yieldN: bursts[i + 3]! });
       this.dirty = true;
     });
     // Fallout for its map mode (PLAN 6.3c).

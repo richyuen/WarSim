@@ -18149,3 +18149,30 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Left:** the fleet of the longer reach stands rather than stepping back (ADR-493); 7.22 (a sea
   battle seen firing, fleets that hold) is next in its line.
 - **Next:** PLAN 7.20 (a hydrogen bomb is a hydrogen bomb).
+
+## 2026-10-18 — PLAN 7.20: a hydrogen bomb is a hydrogen bomb (7.20 ticked)
+
+- **Start:** gate green on a clean tree (`85887e0`; four evidence pictures left unstaged as before).
+- **Found** (`.cache/p720/probe.ts`, the critic's seed 4711): a thermonuclear warhead was yield 2 (a
+  blast 1.26 times as wide), and a toll was the burst cell's people × 13.5 %, so a wider blast added
+  3 to 11 %; the tech's `nukeYield` was read by nothing; the ruin was drawn at BLAST_KM for any bomb.
+  6.0 M people live within 92 km of Paris: no hydrogen toll ten times the old fission one was possible.
+- **Done** (ADR-495, SPEC §6.4): `yieldOf` (shared): class 2 is THERMO_YIELD 50 fission ones; blast
+  radius 25 → 92 km; people killed BLAST_PEOPLE × the yield's ⅔ power, BLAST_PEOPLE 0.15 → 0.05
+  (an atomic bomb about Hiroshima's toll); the plume's half-width by the cube root too; each burst
+  remembered with its class (save section `world.nukeBurstYields`), the ruin and its mark sized by it;
+  the tech's unused `nukeYield` modifier (2, over the schema's fractions at 50) removed.
+  Pin unmoved.
+- **The critic's four cities** (atomic → hydrogen): Paris 192,827 → 3,203,070, London 234,186 →
+  4,852,482, Berlin 350,202 → 5,300,524, Moscow 60,026 → 1,001,104 (15 to 21 times); fallout cells
+  and ruined cells about 13 times. At Berlin 300 m/px the ruins told apart
+  (`docs/evidence/7.20/berlin-A-300m-day10.png`, `berlin-H-300m-day10.png`).
+- **Seeds 1–10 × 30 years, HEAD against 7.20** (`docs/evidence/7.20/measure.md`): first bursts the
+  same; bursts 124 → 122 on 8 → 9 seeds; the dead of all tolls 22.0 M → 70.2 M. Tolls quoted under
+  PLAN 7.25 (3,842, 5,003) and in the critic's run 8 are of the old fission share.
+- **Tests:** `nukeYield1938.test.ts` (new: the four cities, the yield, a save keeps the
+  class), `ruins.test.ts` (a ruin's size), `nukeBlast1938` and `nukeFx` to the new rule (class 2's
+  radius the cube root of 50), the nuke unit tests (29 files) by hand; specs by hand: `nukeYield1938`
+  (new), `nukeRuins1938`, `nukeFx1938` (red once beside four others in parallel, its frame ages; 4 of
+  4 alone), `godTools1938`, `nukeStats1938`, `nukeAlertPhone1938`.
+- **Next:** PLAN 7.21 (infantry and the middle tier read at zoom).

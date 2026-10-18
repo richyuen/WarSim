@@ -10940,3 +10940,22 @@ Of 7.4 (open in PLAN.md):
     - [x] 7.19c The critic's case in a spec, and the naval specs that sampled the first engaged
       fleet or a battle's first place take a battle with a row. AT: `seaRow1938` (seeds 9043 and
       5591), `seaBattle1938`, `seaBattleSeen1938`, `navalDemo1938`, `shipMarks1938` green; pictures.
+
+<!-- moved 2026-10-18 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.20 A hydrogen bomb is a hydrogen bomb (critic R8-B3, contradicts 7.16a): it kills 3 to 11 % more
+  than an atomic one on the same point and its ruin looks the same at 300 m/px (`critic/c8_b_4711.json`).
+  AT: a thermonuclear yield tens of times a fission one in blast, toll, fallout and ruin; the critic's
+  four cities compared; the ruins told apart in a picture; the pin's entry if the rule moves it.

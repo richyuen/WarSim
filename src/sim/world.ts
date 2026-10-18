@@ -429,6 +429,8 @@ class WorldCore implements Stateful {
       ...(w.nukeShock.size === 0 ? [] : [{ name: 'world.nukeShock', dtype: 'f64' as const, data: Float64Array.from([...w.nukeShock].sort((a, b) => a[0] - b[0]).flat()) }]),
       // The last days' bursts (PLAN 6.11b): [x, y, tick] each, in the order they burst, only while there is one.
       ...(w.nukeBursts.length === 0 ? [] : [{ name: 'world.nukeBursts', dtype: 'f64' as const, data: Float64Array.from(w.nukeBursts.flatMap((b) => [b.x, b.y, b.tick])) }]),
+      // Their classes (PLAN 7.20: 1 fission, 2 thermonuclear), a section of their own: a save without it is of fission bursts.
+      ...(w.nukeBursts.length === 0 ? [] : [{ name: 'world.nukeBurstYields', dtype: 'u8' as const, data: Uint8Array.from(w.nukeBursts.map((b) => b.yieldN)) }]),
       // The launches that are strikes back (PLAN 6.12e): their ids, in order, only while there is one.
       ...(w.nukeAnswers.size === 0 ? [] : [{ name: 'world.nukeAnswers', dtype: 'f64' as const, data: Float64Array.from([...w.nukeAnswers].sort((a, b) => a - b)) }]),
       // Grievances (PLAN 6.4b): [nation, by, until] each, by nation, only while there is one.
@@ -539,7 +541,8 @@ class WorldCore implements Stateful {
     for (let at = 0; sh && at + 2 <= sh.length; at += 2) w.nukeShock.set(sh[at]!, sh[at + 1]!);
     w.nukeBursts = [];
     const nb = sections.find((s) => s.name === 'world.nukeBursts')?.data as Float64Array | undefined;
-    for (let at = 0; nb && at + 3 <= nb.length; at += 3) w.nukeBursts.push({ x: nb[at]!, y: nb[at + 1]!, tick: nb[at + 2]! });
+    const ny = sections.find((s) => s.name === 'world.nukeBurstYields')?.data as Uint8Array | undefined;
+    for (let at = 0; nb && at + 3 <= nb.length; at += 3) w.nukeBursts.push({ x: nb[at]!, y: nb[at + 1]!, tick: nb[at + 2]!, yieldN: ny?.[at / 3] ?? 1 });
     w.nukeAnswers = new Set((sections.find((s) => s.name === 'world.nukeAnswers')?.data as Float64Array | undefined) ?? []);
     w.nukeGrievance = new Map();
     const gr = sections.find((s) => s.name === 'world.nukeGrievance')?.data as Float64Array | undefined;
@@ -1129,7 +1132,7 @@ export class World {
   /** The nuclear taboo, 0 to 1 (PLAN 6.4a, `nuclear.ts`): 1 until the first burst; state, saved while under 1. */
   nukeTaboo = 1;
   /** The bursts of the last RESTRIKE_DAYS, oldest first (PLAN 6.11b, `nuclear.ts`): state, saved while not empty. */
-  nukeBursts: { x: number; y: number; tick: number }[] = [];
+  nukeBursts: { x: number; y: number; tick: number; yieldN: number }[] = [];
   /** Who struck each nation last and until when it may strike back (PLAN 6.4b): state, saved while not empty. */
   nukeGrievance = new Map<number, { by: number; until: number }>();
   /** The launches in flight that are strikes back (PLAN 6.12e): their bursts give no grievance. */

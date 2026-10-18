@@ -39,7 +39,7 @@ describe('where and at whom (PLAN 7.6e)', () => {
     expect(places()[0]).toEqual(berlin);
     // A burst on Berlin past RESTRIKE_DAYS, and twelve German divisions massed at Berlin: nothing
     // within a blast radius of it is weighed.
-    world.nukeBursts.push({ x: berlin[0], y: berlin[1], tick: world.tick - (RESTRIKE_DAYS + 1) * 24 });
+    world.nukeBursts.push({ x: berlin[0], y: berlin[1], tick: world.tick - (RESTRIKE_DAYS + 1) * 24, yieldN: 1 });
     for (let k = 0; k < 12; k++) sim.command({ kind: 'spawnFormation', nation: GER, x: berlin[0] + (k % 4) * 0.2, y: berlin[1] + Math.floor(k / 4) * 0.2, strength: 0, template: INF });
     sim.step(1);
     const after = places();

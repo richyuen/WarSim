@@ -35,13 +35,15 @@
  * burst's effects: PLAN 6.3). A wing carrying a warhead is left alone by the air AI.
  *
  * The blast (PLAN 6.3a, SPEC §6.4 "blast radius by yield, kills elements by distance falloff and
- * destroys city industry and population"; `blast`): a radius of BLAST_KM × the yield's cube root;
- * at distance d within it the share BLAST_KILL × (1 − d / radius) is destroyed (`blastShare`):
- * of each element of every formation there (land, fleets in port, wings at their base: by its
- * formation's place), BLAST_PEOPLE of it of each cell's population (`cells.pop`, its people: they
- * do not come back; a cell is 20 km across, and its whole share would have killed more than
- * Berlin's people at Berlin), and of its industry, as bombs put it out of work (`world.bombDamage`, at least that share,
- * repaired as bombing's is). Its toll is told with its consequences (`aftermath`, PLAN 6.5a).
+ * destroys city industry and population"; `blast`): a radius of BLAST_KM × the yield's cube root
+ * (the yield `yieldOf` the warhead's class: THERMO_YIELD fission ones a thermonuclear warhead's,
+ * PLAN 7.20); at distance d within it the share BLAST_KILL × (1 − d / radius) is destroyed
+ * (`blastShare`): of each element of every formation there (land, fleets in port, wings at their
+ * base: by its formation's place), `peopleShare` of it of each cell's population (`cells.pop`, its
+ * people: they do not come back): BLAST_PEOPLE of it for a fission bomb, × the yield's ⅔ power (the
+ * area where people die, PLAN 7.20), to all of it; and of its industry, as bombs put it out of work
+ * (`world.bombDamage`, at least that share, repaired as bombing's is). Its toll is told with its
+ * consequences (`aftermath`, PLAN 6.5a).
  *
  * Fallout (PLAN 6.3b, SPEC §6.4 "FALLOUT (attrition, income loss, movement penalty) that drifts
  * with a deterministic seasonal wind field and decays over years"): `world.fallout`, by cell, 0 to 1.
@@ -49,9 +51,9 @@
  *   easterlies under 30° and over 60° of latitude, westerlies between; swinging WIND_SWING to
  *   the pole in its summer and to the equator in its winter.
  * - A burst lays a plume downwind (`layFallout`): FALLOUT_KM × the yield's cube root long, its
- *   half-width FALLOUT_WIDTH_KM and FALLOUT_SPREAD of the way along more; at a cell the level
- *   (1 − along / length) × (1 − across / half-width), added to what lies there, to 1; and
- *   FALLOUT_WIDTH_KM about the burst upwind. The plume is laid where it falls and stays there.
+ *   half-width FALLOUT_WIDTH_KM × the yield's cube root (PLAN 7.20) and FALLOUT_SPREAD of the way
+ *   along more; at a cell the level (1 − along / length) × (1 − across / half-width), added to what
+ *   lies there, to 1; and that half-width about the burst upwind. The plume is laid where it falls and stays there.
  * - It decays by half in FALLOUT_HALF_LIFE days, daily; a cell under FALLOUT_FLOOR is clean.
  * - Where it lies, at level f: a formation on the cell loses FALLOUT_ATTRITION × f of each
  *   element a day; the cell's output is (1 − FALLOUT_INCOME × f) of itself (`monthlyAccounts`);
@@ -138,7 +140,7 @@
 import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
 import { packNukeStrike } from '../../shared/history';
-import { BLAST_KM } from '../../shared/nuclear';
+import { BLAST_KM, yieldOf } from '../../shared/nuclear';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { pow, sin, cos } from '../core/dmath';
@@ -301,14 +303,23 @@ export function launchNuke(world: World, n: number, x: number, y: number, missil
 /** A yield's blast radius at yield 1, km (shared with the page's effects), and the share destroyed at its centre (PLAN 6.3a). */
 export { BLAST_KM };
 export const BLAST_KILL = 0.9;
-/** The share of a cell's people a blast kills, of its share (PLAN 6.3a): 13.5 % at the centre. */
-export const BLAST_PEOPLE = 0.15;
+/**
+ * The share of a cell's people a fission blast kills, of its share (PLAN 6.3a): 4.5 % at the centre.
+ * PLAN 7.20: 0.15 until then, 554,827 dead at Paris and 1,025,202 at Berlin (Hiroshima's bomb killed
+ * about 140,000); now 192,827 and 350,202, and a thermonuclear one's 13.6 times its share.
+ */
+export const BLAST_PEOPLE = 0.05;
 /** The most of a cell's industry a blast puts out of work. */
 const BLAST_DAMAGE_MAX = 0.95;
 
-/** The blast radius, km, of a warhead of `yieldN`. */
+/** The blast radius, km, of a warhead of class `yieldN` (1 fission, 2 thermonuclear; `yieldOf`). */
 export function blastRadius(yieldN: number): number {
-  return BLAST_KM * pow(Math.max(1, yieldN), 1 / 3);
+  return BLAST_KM * pow(yieldOf(yieldN), 1 / 3);
+}
+
+/** The share of a cell's people a blast of class `yieldN` kills, of its share (PLAN 7.20): BLAST_PEOPLE × the yield's ⅔ power, to 1. */
+export function peopleShare(yieldN: number): number {
+  return Math.min(1, BLAST_PEOPLE * pow(yieldOf(yieldN), 2 / 3));
 }
 
 /** The share a blast destroys at `km` from its centre, of radius `radius` (PLAN 6.3a): BLAST_KILL × (1 − km / radius), 0 beyond. */
@@ -322,13 +333,14 @@ export function blastShare(km: number, radius: number): number {
  */
 export function blast(world: World, yieldN: number, x: number, y: number): { men: number; people: number } {
   const radius = blastRadius(yieldN);
+  const people = peopleShare(yieldN);
   const { w, h, pop, econ } = world.cells;
   // The cells within reach: a cell is 20 km down and at least about 5 km across (far north).
   const ry = Math.ceil(radius / 10) + 1;
   const rx = Math.ceil(radius / 4) + 1;
   const cy = Math.floor(y);
   const cx = Math.floor(x);
-  let people = 0;
+  let dead = 0;
   for (let dy = -ry; dy <= ry; dy++) {
     const yy = cy + dy;
     if (yy < 0 || yy >= h) continue;
@@ -338,9 +350,9 @@ export function blast(world: World, yieldN: number, x: number, y: number): { men
       const f = blastShare(seaKm(world, x, y, xx + 0.5, yy + 0.5), radius);
       if (f <= 0) continue;
       const c = yy * w + xx;
-      const killed = Math.round(pop[c]! * f * BLAST_PEOPLE);
+      const killed = Math.round(pop[c]! * f * people);
       pop[c] = pop[c]! - killed;
-      people += killed * 1000;
+      dead += killed * 1000;
       if (econ[c]! > 0) world.bombDamage.set(c, Math.max(world.bombDamage.get(c) ?? 0, Math.min(BLAST_DAMAGE_MAX, f)));
     }
   }
@@ -362,7 +374,7 @@ export function blast(world: World, yieldN: number, x: number, y: number): { men
     settleFormation(world, id);
     men += before - (world.formations.has(id) ? c.strength[id]! : 0);
   }
-  return { men, people };
+  return { men, people: dead };
 }
 
 /** A plume's length at yield 1, km; its half-width at the burst, and how much more it widens per km along (PLAN 6.3b). */
@@ -401,14 +413,16 @@ function dayOfYear(world: World): number {
   return Math.floor((world.startDay + world.tick / 24) % 365);
 }
 
-/** Lays a burst's fallout at (x, y) of `yieldN`, downwind (PLAN 6.3b): see the head of the file. */
+/** Lays a burst's fallout at (x, y) of class `yieldN`, downwind (PLAN 6.3b): see the head of the file. */
 export function layFallout(world: World, yieldN: number, x: number, y: number): void {
-  const length = FALLOUT_KM * pow(Math.max(1, yieldN), 1 / 3);
+  const scale = pow(yieldOf(yieldN), 1 / 3);
+  const length = FALLOUT_KM * scale;
+  const width = FALLOUT_WIDTH_KM * scale;
   const a = windAt(world, y, dayOfYear(world));
   const [ux, uy] = [cos(a), sin(a)];
   const { w, h } = world.cells;
   const g = navOf(world).grid;
-  const reach = length + FALLOUT_WIDTH_KM + FALLOUT_SPREAD * length;
+  const reach = length + width + FALLOUT_SPREAD * length;
   const ry = Math.ceil(reach / 15) + 1;
   const cy = Math.floor(y);
   const cx = Math.floor(x);
@@ -426,8 +440,8 @@ export function layFallout(world: World, yieldN: number, x: number, y: number): 
       const ey = (yy + 0.5 - y) * ky;
       const along = ex * ux + ey * uy;
       const across = Math.abs(-ex * uy + ey * ux);
-      const half = FALLOUT_WIDTH_KM + FALLOUT_SPREAD * Math.max(0, along);
-      if (along < -FALLOUT_WIDTH_KM || along >= length || across >= half) continue;
+      const half = width + FALLOUT_SPREAD * Math.max(0, along);
+      if (along < -width || along >= length || across >= half) continue;
       const f = (1 - Math.max(0, along) / length) * (1 - across / half);
       if (f <= 0) continue;
       const c = yy * w + xx;
@@ -1242,7 +1256,7 @@ function tabooDay(world: World): void {
 export function detonate(world: World, nation: number, yieldN: number, x: number, y: number, answer = false): void {
   world.out.emit(world.tick, EventKind.NukeDetonated, nation, yieldN, x, y);
   world.nukeTaboo = Math.min(world.nukeTaboo, TABOO_AFTER);
-  world.nukeBursts.push({ x, y, tick: world.tick });
+  world.nukeBursts.push({ x, y, tick: world.tick, yieldN });
   const owner = ownerAt(world, x, y);
   const struck = owner !== 0 && world.nations.cols.overlord[owner]! !== 0 ? world.nations.cols.overlord[owner]! : owner;
   // A strike back settles the score (PLAN 6.12e): its burst gives no grievance.

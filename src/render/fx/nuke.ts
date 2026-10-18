@@ -14,7 +14,7 @@
  * least MIN_PX: at T0 a burst is still a mark one sees. Every tier: the same picture, scaled.
  */
 import { EVENT_STRIDE, EventKind } from '../../shared/events';
-import { BLAST_KM } from '../../shared/nuclear';
+import { BLAST_KM, yieldOf } from '../../shared/nuclear';
 import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 
 export const FLASH_MS = 700;
@@ -31,6 +31,7 @@ export interface Burst {
   /** Cells. */
   x: number;
   y: number;
+  /** Its class (PLAN 7.20): 1 fission, 2 thermonuclear; drawn by its yield (`yieldOf`). */
   yieldN: number;
   born: number;
 }
@@ -67,7 +68,7 @@ export class NukeFx {
   /** The blast radius of `b` on screen, CSS px. */
   static radiusPx(b: Burst, cam: Camera, geo: MapGeometry): number {
     const kmPerCell = 40075 / geo.w;
-    return Math.max(MIN_PX, ((BLAST_KM * Math.cbrt(b.yieldN)) / kmPerCell) * cam.scale);
+    return Math.max(MIN_PX, ((BLAST_KM * Math.cbrt(yieldOf(b.yieldN))) / kmPerCell) * cam.scale);
   }
 
   draw(ctx: CanvasRenderingContext2D, cam: Camera, geo: MapGeometry, vw: number, vh: number, now: number): void {
