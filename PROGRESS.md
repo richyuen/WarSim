@@ -18999,3 +18999,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   measure), 7.26i (patrols over home, measured first), 7.26j (the AT again). c3b1 and c3c wait on
   7.26h.
 - **Next:** PLAN 7.26h.
+
+## 2026-10-18 — PLAN 7.26h: where the great powers' own transports are (measure)
+
+- **Start:** gate green on `d722512`; critic not due.
+- **Done:** `tools/diag/transports.ts`: for GER, ENG, NED, USA, JAP on each `noTransport` day in a
+  frontless war, each transport group's state (aboard, under way and to whose port, in battle, no
+  room, at an own port's land not its water, at a bloc port, at a lost base, standing away with an
+  own port reachable or not), groups built and sunk, and on days with none whether a front elsewhere
+  bars a build. No rule changed.
+- **Measured** (`docs/evidence/7.26/measure-h.md`, seeds 2843 and 7919 × 8 years, 2.5 minutes each):
+  a group that has landed its men stands at the landing's water until peace (the naval AI moves only
+  fleets with power and submarines): 7919's Britain, its four 1938 groups at one cell up to 1,878
+  days, all 1,314 of its days; Germany up to 752. No group at all on 93 % (2843) and 59 % (7919) of
+  the days: the Netherlands never has one, Germany's and Britain's are built and sunk; a front in
+  another war bars the build on 31 % / 4 % of those, the rest have no front and 14,000–19,000 gold
+  (Germany). Bloc-port, lost-base, no-home states: none. US and Japan almost never stopped.
+- **Split:** 7.26h1 (transports home after a landing), 7.26h2 (which fleet-slot condition stops the
+  build, measured first).
+- **Next:** PLAN 7.26h1.

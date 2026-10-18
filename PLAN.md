@@ -291,12 +291,31 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       no late year has two-thirds of year 1's 29.9), so 7.26c's condition for patrols over home is
       met. Of the short years' out-of-range wings 58 % no base of their side near any enemy (the
       US, Japan, Britain, Germany, the Netherlands). Next: 7.26h, 7.26i, then 7.26j.
-    - [ ] 7.26h Where the great powers' own transports are (7.26g's reading of c3b): on the
+    - [x] 7.26h Where the great powers' own transports are (7.26g's reading of c3b): on the
       nation-days Germany, Britain, the Netherlands, the US and Japan stop at `noTransport` in a war
       with no front of theirs, each of their transport groups' state (at a port of theirs, under
       way and where to, on patrol, sunk, at a port lost) and their free formations by land.
       Measured, no rule: seeds 2843 and 7919 × 8 years (`landWar.ts` or a tool beside it). AT: the
       measure in `docs/evidence/7.26/measure-h.md`; the cause split into a part if one is found.
+      Done (2026-10-18, `tools/diag/transports.ts`): two causes. A group that has landed its men
+      stands at the landing's water until peace (the naval AI moves only fleets with power and
+      submarines): seed 7919's Britain, its four 1938 groups at one cell for up to 1,878 days, all
+      1,314 of its days; Germany's up to 752. No group at all on 93 % (2843) and 59 % (7919) of the
+      days: the Netherlands never has one; Germany's and Britain's are built and sunk; a front in
+      another war bars the build on 31 % and 4 % of them, the rest have no front and a full
+      treasury. Free formations stand on a land with an own port. Split: 7.26h1, 7.26h2.
+    - [ ] 7.26h1 Transports home after a landing (7.26h's cause 1): at war, a transport group with no
+      men aboard, standing (not under way, in no battle) away from every port of its bloc, sails home
+      (`sailHome`), in the naval AI's daily plan beside the warfleets'. AT: a unit test (a group left
+      at a landing's water in a war sails for an own port within a day of its nation's turn; one with
+      men aboard stays); `transports.ts` re-run on seeds 2843 and 7919: `awayHome` days down; the pin's
+      entry.
+    - [ ] 7.26h2 The transport group that is never built (7.26h's cause 2): on the days a nation in a
+      frontless war has no group, which of `economic.ts`'s fleet-slot conditions stops the order (a
+      ship in the yards, the navy's upkeep at `NAVY_SHARE` of income or more, no `mix.fleets`, the
+      price and reserve, `hasFront` of any war while the landing is per war since ADR-511). Measured
+      first (`transports.ts`, the same seeds), then the rule chosen and recorded. AT: the measure in
+      `docs/evidence/7.26/measure-h2.md`; a unit test of the rule; the pin's entry.
     - [ ] 7.26i Patrols over home (7.26c's condition met by 7.26g): a wing of a nation at war with
       no enemy land formation in range patrols over its own land within reach of an enemy airbase
       or fleet. Measured first: of the short years' idle wings, how many stand within reach of an
@@ -304,8 +323,9 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       measure finds enough wings with an enemy in reach; recorded in DECISIONS (AoC has no air war;
       the patrol must meet enemies the sim has, not fly for the count). AT: a unit test; from six
       states, sorties aloft and air battles; the pin's entry.
-    - [ ] 7.26j The AT of 7.26 re-measured (as 7.26g) after 7.26h and 7.26i; c3b1 and c3c taken
-      up only on 7.26h's evidence.
+    - [ ] 7.26j The AT of 7.26 re-measured (as 7.26g) after 7.26h1, 7.26h2 and 7.26i; c3b1 and c3c
+      taken up only on 7.26h's evidence (7.26h: the great powers' free formations stand on a land
+      with a port of their own; their transports are what is missing, not a partner's).
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five
