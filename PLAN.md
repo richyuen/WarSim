@@ -33,65 +33,6 @@ Run 8's blocking issues and its dimensions under the DONE condition's bar (repor
 `fd27e85`, its "Fix" lines and evidence; R8-B1 to R8-B3 are PLAN 7.18 to 7.20, the dimensions 7.21
 to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
 
-- [ ] 7.18 AI nuclear use seen and credible (critic R8-B1, run 8 on `fd27e85`): 8 of 17 unaided 30-year
-  worlds see a burst, 3 of 17 before year 20; France and Poland given 10 warheads in the editor and
-  overrun never strike in 120 to 150 days; a point struck again days after, a small third party for a
-  thousand dead (`critic/c8_headless_*.json`, `c8_g_5591.json`, `c8_i_7127.json`). AT: measured first
-  by gate (`tools/diag/nukeGates.ts`); an overrun holder of warheads strikes within its war in the
-  critic's set-ups; a burst in at least 8 of 10 seeds × 30 years, some before year 20; no point
-  struck twice within its ruin's days, no third party for under its bound of dead; the 50-year sweep.
-  A part each:
-    - [x] 7.18a–d An overrun holder strikes; no restrike within 4 radii; no small capital's bonus
-      (ADR-485, `a97203b`).
-    - [x] 7.18e A winner's resolve: a holder winning a long war against enemies that cannot strike
-      back weighs ending it (measured first, `tools/diag/nukeGates.ts`'s days of holders not losing).
-      AT: a unit test (a long war, the enemy with no warhead: a strike; the same with the enemy
-      holding warheads: none); seeds 1–10 × 30 years, decisions and their utilities and years; the
-      pin's entry.
-    - [x] 7.18f The critic's Poland: given 10 warheads and a strategic bomber group at an airbase of
-      its with room (the editor's placement at Warsaw is 7.24's), it strikes in Germany's war on it.
-      AT: a unit test. Done by 7.18a–e: `nukePoland1938.test.ts` (seed 5591: decided day 64,
-      burst day 65).
-    - [x] 7.18h A strike to end a war falls on what would end it: after 7.18e, the resolve's
-      strikes (90 days apart) on seeds 1 and 4 include Britain's and Switzerland's on Japan for 935
-      to 2,305 dead, Italy's on Nepal (17,443) and Mongolia (18,705), and Italy's ten in 2.5 years
-      in one war (`.cache/nukeGates718e_r3_<seed>.json` `bursts`). Measured first
-      (`tools/diag/nukeResolve.ts`, `docs/evidence/7.18/measure-h.md`): the resolve's strikes on
-      nations of 0 to 2 % of the enemy side's output (#114, Mongolia, Mengjiang, Manchukuo, Greece),
-      up to 10 a war; tolls under 5,000 at places in theatres of 74 to 5,229 men (the theatre's
-      floor: 7.18j). AT: a few resolve strikes a war, not one each 90 days to its end
-      (RESOLVE_STRIKES); a resolve strike only on a nation of weight to the enemy side; unit tests;
-      seeds 1–10 re-measured. Done: ADR-489, ADR-490 (`d5bed3e`, `b03f62d`); at most 3 a war (10
-      before), 2 light nations left of 7, bursts in 8 of 10 seeds as before (`measure-h.md`).
-    - [x] 7.18i A warhead's costs weighed as its gain is: a place's value is × the chance the bomber
-      gets through (`valueIn`'s `through`, 0.2 under full enemy air superiority), but the costs
-      (taboo, outrage, alliance unity, the grievance) fall only on a burst (`detonate`, `aftermath`)
-      and are weighed whole. 7.18f's probe (Poland, 10 warheads, a strategic group at Warsaw,
-      Germany's war): no strike on seeds 7127 and 3929, its best utility −0.12 at desperation 2,
-      extreme, 11 to 12 places all at 0.20 or less, until its bomber was lost (day 80 to 95); a
-      strike on 4 of 6 seeds (5591, 6047, 1, 2). AT: measured first (how often `through` < 1 is
-      what keeps a utility under 0, seeds 1–10 × 30 years); the costs weighed as they fall (an
-      intercepted launch spends the warhead and may lose the bomber, nothing more); Poland strikes
-      on seeds 7127 and 3929; a unit test; seeds 1–10 re-measured (with 7.18h's: not more strikes
-      on poor places). Done: ADR-491 (`7d9fa18`); 835 held war-days on 6 of 10 seeds before, each
-      out of reach; Poland strikes Germany on 5591, 7127 and 3929; seeds 1–9 the same, seed 10
-      another world, tolls under 5,000 16 → 15 (`docs/evidence/7.18/measure-i.md`).
-    - [x] 7.18j A place's men weighed against a theatre of weight (7.18h's floor, after 7.18i): 7.18c's
-      theatre share makes a lone garrison 100 % of its theatre (seed 4's Britain on Japanese garrisons
-      of 2,267 to 5,229 men in theatres of no more, 935 to 2,305 dead; seed 1's Britain on #114's of
-      456 to 1,380, 168 to 2,875 dead). Tried in 7.18h: a floor of 0.25 of the enemy side's men stops
-      the critic's Poland (5591) and France (7127), whose strikes at HEAD fell on an Italian army
-      near Rome (theatres of 92,322 and 106,230 men, 6 % of a side of 1.6 to 1.7 million, the chance
-      through 0.6 against 0.2 over the Germans); with it every place left to them is held under 0.2
-      by German air cover, 7.18i's cause. AT: after 7.18i; a floor measured from `sideMen` (land
-      formations alone, or not); `nukePoland1938` and `nukeOverrun1938` green with their strikes on
-      the Germans; seeds 1–10 re-measured, no toll under 5,000 at a place of a lone garrison. Done:
-      ADR-492 (`d923d43`), THEATRE_FLOOR 0.25 of all the side's men; tolls under 5,000 15 → 1 (seed
-      1's Soviet Union on China, a theatre of 4,666 men, at u 0.053: 7.25's floor of utility); Poland
-      and France strike Germany, now asserted; bursts in 8 of 10 seeds (`measure-j.md`).
-    - [ ] 7.18g The measure of 7.18's AT: 10 seeds × 30 years, a burst in 8, some before year 20, no
-      point struck twice within its ruin's days, no third party under its bound; the 50-year sweep
-      on unseen seeds, after the gate.
 - [ ] 7.19 A sea battle's ticker row lands on the fight (critic R8-B2, contradicts 7.10b): seed 5591,
   Germany on Britain, hour 41: the view on dry land at Groningen, the pair 23 cells apart either side
   of the Dutch coast (`critic/c8_j2_5591.json`). AT: the critic's case: ships of both sides on screen
@@ -145,6 +86,12 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   10 seeds × 30 years headless: in each year with a war, mean sorties aloft at least half of that
   seed's year 1 on 8 of 10 seeds; the air battles of years 21 to 30 counted against years 1 to 10;
   the pin's entry if a rule moves it.
+- [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
+  on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
+  704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five
+  hold, from which year, and what wars they are in (`npm run diag -- --load` from a checkpoint of
+  the year the run begins); then the cause fixed. AT: no stasis on 8 of 10 seeds of a sweep on
+  unseen seeds, the other criteria held; the pin's entry if a rule moves it.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -383,3 +330,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.15 The late world keeps moving (dynamics 6): seed 3371 moves 0.72 % of its land in years 26 […]
 - [x] 7.16 God Mode and the UI's small things (God Mode 7, UI 7): a nuke's size (thermonuclear) in […]
 - [x] 7.17 A smaller save (stability 7): 39.4 to 40.0 MB at year 12 to 27 […]
+- [x] 7.18 AI nuclear use seen and credible (critic R8-B1, run 8 on `fd27e85`): 8 of 17 unaided 30-year […]

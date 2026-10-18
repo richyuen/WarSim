@@ -5,6 +5,11 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### Sweep on seeds 701–710: no stasis on 7 of 10 (2026-10-18, PLAN 7.18g)
+`docs/sweeps/2026-10-18-sweep-718g.md`: the same five largest nations 22, 20 and 20 years running on
+seeds 702, 704 and 706, the limit under 20; every other criterion on 10 of 10. Not tuned in answer
+(one cause per commit; the measure first): PLAN 7.27.
+
 ### `seaBattleSeen1938` red in parallel runs under load (2026-10-17, PLAN 7.4f38, 7.4f40)
 Red twice this day in large parallel e2e runs (53 spec files with PLAN 7.4f38's change, 7 with
 7.4f40's, two unrelated changes), green alone five times (both changes and HEAD before them) and

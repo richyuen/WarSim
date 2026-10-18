@@ -18094,3 +18094,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   burst falls on Germany; the related unit tests (1,122) and the pin in the gate
   (`scenario1938`'s build time red once under load, green on the gate's re-run).
 - **Next:** PLAN 7.18g (the measure of 7.18's AT and the 50-year sweep on unseen seeds).
+
+## 2026-10-18 — PLAN 7.18g: the measure of 7.18's AT (7.18 ticked)
+
+- **Start:** gate green on a clean tree (`856849a`; four evidence pictures left unstaged as before).
+- **Seeds 1–10 × 30 years:** 7.18j's runs (`.cache/r718j/after_<seed>.json`, at `d923d43`; no sim
+  input changed since), checked by `.cache/r718j/measure_g.ts` with the sim's `seaKm`: bursts on 8
+  of 10, 7 before year 20; no two bursts within 4 radii and 7 days (seed 1's Soviet pairs on China,
+  1951, fission: 105 to 117 km, past 100); the one toll under 5,000 on China, its side's principal
+  (0.64); no interception (`docs/evidence/7.18/measure-g.md`).
+- **The 50-year sweep on unseen seeds 701–710** (`docs/sweeps/2026-10-18-sweep-718g.md`, 16.8 min):
+  bursts on 10 of 10 (1 to 118 a seed), fallout at most 0.97 %; limits, riser, faller, no break-up
+  10 of 10; **no stasis 7 of 10** (702, 704, 706: one top five 20 to 22 years): BLOCKERS, PLAN 7.27.
+- **Left to 7.25:** seed 1's Soviet Union strikes China 11 times in 10 days; seeds 705 and 709 burst
+  76 and 118 times in 50 years.
+- **Tests:** none changed (a measure; documents alone, the gate's parity).
+- **Next:** PLAN 7.19 (a sea battle's ticker row lands on the fight).
