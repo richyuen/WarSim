@@ -33,36 +33,6 @@ Run 8's blocking issues and its dimensions under the DONE condition's bar (repor
 `fd27e85`, its "Fix" lines and evidence; R8-B1 to R8-B3 are PLAN 7.18 to 7.20, the dimensions 7.21
 to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
 
-- [ ] 7.23 A watched armour fight leaves burning hulls (tanks 7, needs 8): in 45 s at Speed x1 at
-  25 m/px on a live armour fight `hulls.shown` stayed 0 and `wrecks.count` 0, at x2 0 to 6 hulls;
-  `hulls.count` counts the fallen infantry's marks too (`src/render/fx/hulls.ts:272`)
-  (`critic/c8_e_3929.json`, `critic/c8_c_6047.json`). AT: the critic's case: burning tank wrecks
-  on screen within 45 s at x1, counted apart from the infantry's; a picture.
-  Found (2026-10-18, running 7.21b's specs): `wrecks1938` ("every element that dies leaves a wreck
-  where its sprite stood, and its sprite is gone") red on `ccac258` before 7.21b and alone: 15
-  element ids (10984 to 10998) still in `shown` after their death. Not caused by 7.21b; to be found
-  and fixed here.
-  Found (2026-10-18, the critic's case run again on `1ae3688`, `.cache/p723/watch.mjs` and
-  `fire.ts`): armoured division 41 in contact with France's 220 from hour 72; in 40 hours at x1 at
-  25 m/px 353 marks of the fallen and not one tank lost (34 elements, 340 tanks). In Node over 48
-  hours of it, fire on its tanks came to 3.5 tanks (AT guns 2.8 of it), spread over 34 elements in
-  fractions that `applyLoss` carries: no element came to a whole tank. `hullsShown` is of the tanks
-  alone; `count` holds the marks too. A part each:
-    - [x] 7.23a0 Hulls and marks drawn where the view holds no element: `drawFx` draws them at the
-      figures' share only while the view has figures, so all of them went when the last element
-      left the view (found running `fallen1938` with 7.23a: 274 marks held on the screen, none
-      drawn, `elementCount` 0). AT: a unit or e2e test of a view with marks and no element;
-      `fallen1938` green.
-    - [x] 7.23a A tank element's hour of fire lost in whole tanks: in land combat, an element of
-      armour fired at loses the whole tanks of its hour's damage and one more with the chance of
-      the rest (a seeded draw), no fraction carried; ships, aircraft, bombardment and attrition as
-      before. AT: a unit test (the draw's mean over many elements and hours, and the same by seed);
-      the land losses of seed 99's first year beside the old rule; the critic's case at x1: tank
-      hulls burning on the screen within 45 s, a picture; the pin's entry.
-    - [x] 7.23b The tank hulls counted apart from the marks of the fallen (`HullFx`), for the
-      critic's hook. AT: a unit test; the hooks that read `count` unchanged.
-    - [ ] 7.23c `wrecks1938`: an element that dies leaves its wreck and its sprite goes. AT:
-      `wrecks1938` green.
 - [ ] 7.24 Aircraft seen at every tier (aircraft 6, needs 8): at 900 m/px 0 to 1 sorties drawn, at
   25 m/px none (`critic/c8_c_6047.json` `sorties`); the editor refuses a Polish bomber group at
   Warsaw ("no airbase of its with room is near the place", `critic/c8_g_5591.json`). AT: sorties
@@ -342,3 +312,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.20 A hydrogen bomb is a hydrogen bomb (critic R8-B3, contradicts 7.16a): it kills 3 to 11 % more […]
 - [x] 7.21 Infantry and the middle tier read at zoom (semantic zoom 7, needs 8): at 10 m/px infantry […]
 - [x] 7.22 A sea battle seen firing, and fleets that hold their place (naval 6, needs 8): beyond […]
+- [x] 7.23 A watched armour fight leaves burning hulls (tanks 7, needs 8): in 45 s at Speed x1 at […]

@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
+import { WRECK_HOLD_HOURS, WRECK_LIFE_MS } from '../../src/render/fx/wrecks';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -141,7 +142,7 @@ test('T2: every element that dies leaves a wreck where its sprite stood, and its
         sprites: Array.from(v.elementId),
         burst: fresh.length > 0 ? draw(born + 100) : null,
         rest: fresh.length > 0 ? draw(born + 1000) : null,
-        gone: fresh.length > 0 ? draw(born + 15_250) : null,
+        held: fresh.length > 0 ? draw(born + 15_250) : null,
       };
     }, START + h + 1);
 
@@ -161,17 +162,19 @@ test('T2: every element that dies leaves a wreck where its sprite stood, and its
     }
     seen += got.fresh.length;
     if (got.fresh.length === 0) continue;
-    // Drawn: a burst at once (the visible end), the wreck at rest a second on, nothing after
-    // its 15 s. The wrecks in the viewport are all there.
+    // Drawn: a burst at once (the visible end), the wreck at rest a second on, and still after
+    // its 15 s of the clock: held until the game is WRECK_HOLD_HOURS past it (PLAN 7.9a, ADR-468;
+    // before, nothing then). The wrecks in the viewport are all there.
     const visible = ids(got.fresh.filter((w) => inBox(w, viewport)));
     inView += visible.length;
     for (const id of visible) {
       expect(got.burst!.shown, `burst of ${id}`).toContain(id);
       expect(got.rest!.shown, `wreck of ${id}`).toContain(id);
+      expect(got.held!.shown, `wreck of ${id} after its time on the clock`).toContain(id);
     }
     expect(got.burst!.bursts).toBeGreaterThanOrEqual(visible.length);
     expect(got.rest!.bursts).toBe(0);
-    expect(got.gone).toEqual({ shown: [], bursts: 0 });
+    expect(got.held!.bursts).toBe(0);
   }
   const wantedAll = all.filter((d) => inBox(d, frame.sub));
   expect(seen).toBe(wantedAll.length);
@@ -180,6 +183,24 @@ test('T2: every element that dies leaves a wreck where its sprite stood, and its
   expect(await page.evaluate(() => window.__warsim!.sim.hash())).toEqual({ tick: START + HOURS, hash: node.after });
   const left = await page.evaluate(() => Array.from(window.__warsim!.view!.elementId));
   for (const d of wantedAll) expect(left).not.toContain(d.id);
+  // The game WRECK_HOLD_HOURS past the last of them, and their time on the clock over: they are gone.
+  const gone = await page.evaluate(async ({ tick, lifeMs }) => {
+    const v = window.__warsim!.view!;
+    await window.__warsim!.sim.step(tick - v.lastTick);
+    await new Promise<void>((done) => {
+      const wait = (): void => (v.lastTick === tick ? done() : void setTimeout(wait, 5));
+      wait();
+    });
+    const now = performance.now();
+    // Past its time on the clock too: the fade starts at the later of the two.
+    v.drawUnitLayers(now + lifeMs + 100);
+    const shown = v.wrecks.shown.map((w) => ({ id: w.id, x: w.x, y: w.y }));
+    // The frame the page goes on with is of now.
+    v.drawUnitLayers(now);
+    return shown;
+  }, { tick: START + HOURS + WRECK_HOLD_HOURS, lifeMs: WRECK_LIFE_MS });
+  for (const d of wantedAll) expect(gone.filter((w) => w.id === d.id && w.x === d.x && w.y === d.y), `wreck of ${d.id} after the game passed its hold`).toEqual([]);
+  console.log(`wrecks: ${gone.length} drawn ${WRECK_HOLD_HOURS} hours on, none of the window's`);
 
   // Evidence: the frame loop is stopped; the moment of the last ends, then the wrecks at rest.
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/2.4') : info.outputPath();

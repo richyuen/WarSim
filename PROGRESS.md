@@ -18436,3 +18436,23 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `fallenFx.test.ts` (new: a tank element and a battalion losing in one hour: 2 hulls, 3
   marks, 5 in all; none after a load).
 - **Next:** PLAN 7.23c (`wrecks1938`).
+
+## 2026-10-18 — PLAN 7.23c: `wrecks1938` held to the game's hold; 7.23 ticked
+
+- **Start:** gate green on `8554499` (7.23b).
+- **Found:** the red was the spec's, not the view's. Its last check of each hour wanted every wreck
+  gone 15.25 s of the clock after the death, which PLAN 7.9a (`0ad7a83`, ADR-468) changed: a wreck
+  is held until the game is `WRECK_HOLD_HOURS` (72) past it. The 15 ids of 7.23's note were the
+  hour's wrecks still drawn, not sprites of dead elements (those checks were green). The spec was
+  last touched in PLAN 3.5a1, before 7.9a; it is red since then.
+- **Done:** the hour's wrecks in the viewport are checked drawn after their clock time too (no
+  burst), and at the end the game is stepped 72 hours on and none of the window's wrecks is drawn
+  once their clock time is also over (the fade starts at the later of the two: a first try drew
+  3.1 s on and found one still held by its 12 s clock hold).
+- **Specs by hand** (chromium): `wrecks1938` green, twice (15 deaths in the viewport, 0 of them
+  drawn 72 hours on). No source changed.
+- **7.23 ticked:** hulls and marks drawn after the fight leaves the view (a0), tanks lost whole under
+  fire, a hull burning 6 s in at x1 on the critic's case with pictures (a), tank hulls counted
+  apart (b), `wrecks1938` (c).
+- **Left unstaged, as before:** the six evidence pictures of PLAN 7.4 and 7.13.
+- **Next:** PLAN 7.24 (aircraft seen at every tier).
