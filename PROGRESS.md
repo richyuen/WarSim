@@ -18426,3 +18426,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   `wrecksHeld1938`, `fightSeen1938` (2), `turrets1938` green; `wrecks1938` red as before 7.23
   (PLAN 7.23c).
 - **Next:** PLAN 7.23b (the tank hulls counted apart from the marks).
+
+## 2026-10-18 — PLAN 7.23b: the tank hulls counted apart from the marks
+
+- **Start:** gate green on `ffc0a2d` (7.23a).
+- **Done:** `HullFx.tankCount` (the hulls of tanks) and `markCount` (the marks of the fallen, guns
+  and half-tracks) beside `count`, which stays both (read by `wrecksHeld1938`, PLAN 7.9a). The critic
+  read `count` as tank hulls; `shown` was already of the tanks alone.
+- **Tests:** `fallenFx.test.ts` (new: a tank element and a battalion losing in one hour: 2 hulls, 3
+  marks, 5 in all; none after a load).
+- **Next:** PLAN 7.23c (`wrecks1938`).

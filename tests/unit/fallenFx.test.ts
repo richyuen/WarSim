@@ -118,6 +118,18 @@ describe('HullFx with the fallen', () => {
     expect(fx.fallen).toHaveLength(0);
   });
 
+  it('counts the tanks\' hulls apart from the marks of the rest; `count` is both (PLAN 7.23b)', () => {
+    const fx = new HullFx();
+    const before = section([{ id: 1, strength: 500 }, { id: 4, strength: 10, size: 10, frame: Frame.tankMedium }]);
+    const after = section([{ id: 1, strength: 470 }, { id: 4, strength: 8, size: 10, frame: Frame.tankMedium }]);
+    expect(fx.add(before, after, 100)).toBe(2);
+    expect([fx.tankCount, fx.markCount, fx.count]).toEqual([2, 3, 5]);
+    expect(fx.hulls.every((h) => h.element === 4)).toBe(true);
+    expect(fx.fallen.every((m) => m.element === 1)).toBe(true);
+    fx.clear();
+    expect([fx.tankCount, fx.markCount, fx.count]).toEqual([0, 0, 0]);
+  });
+
   it('a load takes them away, and no more than MAX_FALLEN are held: the oldest go', () => {
     const fx = new HullFx();
     fx.add(whole, thinned, 100);

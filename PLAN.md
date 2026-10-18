@@ -59,7 +59,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       before. AT: a unit test (the draw's mean over many elements and hours, and the same by seed);
       the land losses of seed 99's first year beside the old rule; the critic's case at x1: tank
       hulls burning on the screen within 45 s, a picture; the pin's entry.
-    - [ ] 7.23b The tank hulls counted apart from the marks of the fallen (`HullFx`), for the
+    - [x] 7.23b The tank hulls counted apart from the marks of the fallen (`HullFx`), for the
       critic's hook. AT: a unit test; the hooks that read `count` unchanged.
     - [ ] 7.23c `wrecks1938`: an element that dies leaves its wreck and its sprite goes. AT:
       `wrecks1938` green.

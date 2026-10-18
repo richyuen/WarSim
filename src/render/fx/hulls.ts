@@ -268,9 +268,18 @@ export class HullFx {
     return lost.length;
   }
 
-  /** How many hulls and marks it holds (the test hook, PLAN 7.9a). */
+  /** How many hulls and marks it holds (the test hook, PLAN 7.9a): the tanks' and the fallen's together. */
   get count(): number {
     return this.hulls.length + this.fallen.length;
+  }
+
+  /** The hulls of tanks it holds, and the marks of the rest (PLAN 7.23b: `count` is both). */
+  get tankCount(): number {
+    return this.hulls.length;
+  }
+
+  get markCount(): number {
+    return this.fallen.length;
   }
 
   /** Another game is shown from here on (a load): the hulls and the marks of the one before are not its own. */
