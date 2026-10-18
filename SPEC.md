@@ -1000,8 +1000,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   formation was raised (ADR-435). With no army order in training and room for one (a slot, the
   army's upkeep under its share), they keep the price of the next one over the reserve as well:
   the infantry division's, a poor nation's cadre one (PLAN 7.3e3, ADR-437: else they spent each
-  month's surplus to the reserve and an order was never paid for). Fleets and wings are not
-  refilled.
+  month's surplus to the reserve and an order was never paid for). Only in peace: at war the
+  refills take what is over the reserve (PLAN 7.26c2b, ADR-514: a nation saving for a division
+  refilled nothing through a war of six months). Fleets and wings are not refilled.
 
 **Techs v1: what a nation knows, and the gate (PLAN 3.1a, ADR-127; `src/sim/tech.ts`).**
 - *The tree* reaches the sim as `ScenarioRules.techs` (id, year, prerequisites), the tech files
