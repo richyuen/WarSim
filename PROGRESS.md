@@ -18918,3 +18918,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   march into a pocket among them (most of Brazil's 8,979 men to the formations bound for British
   Guiana).
 - **Next:** PLAN 7.26e (the AT of 7.26 re-measured on seeds 1–10 × 30 years).
+
+## 2026-10-18 — PLAN 7.26e: the 7.26 AT re-measured on 10 seeds × 30 years
+
+- **Start:** gate green on `80bcc74`; critic not due.
+- **Done:** seeds 1–10 × 30 years on `80bcc74` (`airWar.ts`, ten side by side, 15 minutes; files in
+  `.cache/726e/`), judged by `airAt.ts` against 7.26d's run (`docs/evidence/7.26/measure-e.md`).
+- **Measured:** 0 of 10 pass, as at 7.26d. Year 1 held (48.7 → 47.4); the late air war fell
+  (years 21–30 mean aloft 9.8 → 7.3 on 8 of 10 seeds, their air battles 14,664 → 7,524), rebases
+  up and missions down, while land contact held (1.42 → 1.36 a day, 5 seeds each way). Short years'
+  out-of-range wings: 63 % with no base of their side near any enemy (59 %).
+- **Split:** 7.26f (new, which of c3a, c4, c1b, c2b lowered the late air war: A/B from saved
+  states, c4's km step first), then c3b, then 7.26g (new, the AT again). c2b's and c3a's "test
+  first" lines not taken: the contact did not fall.
+- **Next:** PLAN 7.26f.

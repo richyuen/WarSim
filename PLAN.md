@@ -186,6 +186,8 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           their own: 60–90 % of the unfronted nation-days). Measured first: whether a partner's
           transports could carry them. Only if c3a leaves the AT short.
           After c3a (2026-10-18): waits on 7.26e; c4 is next (7.26d's order).
+          After 7.26e (2026-10-18): taken after 7.26f; 63 % of the short years' out-of-range wings
+          have no base of their side near any enemy (the US, Japan, Germany, the Netherlands).
           From c1b (2026-10-18, `measure-c1.md` §6): 40 % of the far men of planners with a front of
           their own stand for want of a way to it (16 % across the sea: Japan, Britain, France; 24 %
           on their landmass behind closed ground or the sea: Italy to Africa, the Soviet Union, the
@@ -212,7 +214,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       in range of any enemy (the US, Japan, Germany, Italy, Britain first), 36 % such a base free,
       a tenth of them within one hop (3 % of all out of range). The order of what waits: c3, then c4 (new), then c1b, c2b's
       fix last; then 7.26e.
-    - [ ] 7.26e The AT of 7.26 re-measured (`airWar.ts` seeds 1–10 × 30 years, judged by
+    - [x] 7.26e The AT of 7.26 re-measured (`airWar.ts` seeds 1–10 × 30 years, judged by
       `tools/diag/airAt.ts`) after the parts 7.26d ordered; what is short split again.
       To read against c3a (ADR-511): from the probes, every landing it added went through the
       `atPort` gate (Japan); its far marches to a port (`send`) were re-ordered or still on the
@@ -232,6 +234,23 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       9 divisions in 10 years against 21, its surplus in refilled men's upkeep. If the ten seeds'
       contact falls below 7.26d's, test first the keep at war only while the order is within a few
       months of the treasury's growth (not the balance's: Brazil's gold grew 28 on +30 to +54).
+      Done (2026-10-18, `docs/evidence/7.26/measure-e.md`): seeds 1–10 on `80bcc74`: 0 of 10 pass,
+      as at 7.26d. Year 1 held (mean 48.7 → 47.4); the late air war fell (years 2–10 mean aloft
+      15.8 → 14.9, years 21–30 9.8 → 7.3 on 8 of 10, their air battles 14,664 → 7,524), rebases up
+      (1.6 → 2.0 a day) and missions down (11.8 → 10.5), while land contact held (years 2–30 1.42 →
+      1.36 a day, 5 seeds up, 5 down). So c4's question is first; c2b's and c3a's are not taken
+      (the contact did not fall). Of the short years' out-of-range wings 63 % have no base of their
+      side near any enemy (59 % at 7.26d): c3b before anything of c1b's. Next: 7.26f, c3b, 7.26g.
+    - [ ] 7.26f Which of c3a, c4, c1b and c2b lowered the late air war (7.26e: years 21–30 sorties
+      aloft 9.8 → 7.3 on 8 of 10 seeds while land contact held): A/B from saved states of this code
+      (seeds 1, 5 and 7, the largest falls, at years 15 and 22), each rule's old behaviour behind a
+      switch for the runs only, c4's first (a wing on a chain also takes a base within a hop nearer
+      its goal in km with more hops left, the old step), 180 days each: sorties aloft, missions,
+      rebases. AT: the rule found restored or changed in its own commit, with a unit test; the
+      A/B's figures in `docs/evidence/7.26/measure-f.md`; the pin's entry if it moves. If no rule
+      of the four accounts for it, the late years' cause measured again and split.
+    - [ ] 7.26g The AT of 7.26 re-measured (as 7.26e, seeds 1–10 × 30 years) after 7.26f and
+      c3b; what is short split again.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five
