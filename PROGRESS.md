@@ -18486,3 +18486,28 @@ No rule changed and nothing on screen changed. One task came out of it.
   no stasis, no break-up 10 of 10; nukes on 8 of 10. Germany the largest riser on 8 of 10 seeds
   (× 14 to 75): watched in 7.24a's full sweep.
 - **Next:** PLAN 7.24a (the wings spread over the front).
+
+## 2026-10-18 — PLAN 7.24a: a nation's wings spread over its front
+
+- **Start:** gate green on `d9abfdb` (7.24a0).
+- **Done** (ADR-503, SPEC §7 air AI): the air AI's `nearest` takes the day's counts: of a nation's
+  wings, by id, each goes to the formation in range with the fewest of its wings of its kind
+  (patrol, strike, supply) sent there that day, the nearest of equals.
+- **Measured** (days 1 to 21, seeds 6047 / 4111): formations in contact with a sortie in a T2 view
+  26.2 % / 25.9 % (16.7 / 18.3 with 7.24a0 alone; 6.4 % at the start of 7.24), in a T3 view
+  10.5 % / 10.0 % (4.6 / 4.9; 1.6). Germany's aircraft at the end 579 / 561 of 840, France's 67 /
+  82 of 444. At T3 the planes over a fight are patrols (a strike does not loiter). Seed 99's year:
+  land casualties 5.72 M. Pin `f26443f6` → `58594a40`.
+- **Tests:** `airSpread.test.ts` (new, red on the old rule); `airNoContact1938` checks the new rule;
+  `navalAi1938` counts its battle from day 0 (the first British–Italian battle on day 5 in both
+  worlds; a first try of the loop skipped the week's sailing check, caught by its own line and
+  fixed). Whole unit suite by hand: 1,672 of 1,675 before those two, then green; `scenario1938`'s
+  build time 2,049 ms of 2,000 under the suite's load, as before. Sweep-config tests 17 of 18, the
+  pin, moved.
+- **Full sweep** (`npm run sweep -- --first 721 --tag 724a`, seeds 721–730 × 50 years, code of
+  7.24a0 + 7.24a, 19.5 min): ALL GREEN. Limits 10 of 10 (land moving 7.5 to 27.9 %, the largest
+  11.6 to 21.5 % of the land, 28.3 to 31.5 % of income); riser, faller, no stasis (longest one top
+  five 7 to 19 years) and no break-up 10 of 10; nukes on 7 of 10, fallout at most 1.10 %.
+  `docs/sweeps/2026-10-18-sweep-724a.md`. PLAN 7.27's bar (no stasis on 8 of 10 unseen seeds) is met
+  on this sweep, noted there; 7.27 stays open for its own measure.
+- **Next:** PLAN 7.24c (the spec of sorties drawn over fights), then 7.24b (the editor).

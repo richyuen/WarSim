@@ -1873,7 +1873,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - *As built (PLAN 5.6, ADR-322; `airAi`):* daily, a nation at war sends its fighters to patrol
   over its front, its close support and tactical bombers to strike the enemy's, its naval bombers
   at the enemy's fleets, and its strategic bombers at the enemy's richest industry in range where
-  its side holds the air (superiority 0.6 or more); at peace, no missions.
+  its side holds the air (superiority 0.6 or more); at peace, no missions. Spread (PLAN 7.24a,
+  ADR-503): of a nation's wings, by id, each takes of the formations its role and range allow the
+  one with the fewest of its wings of its kind sent there that day, the nearest of equals.
 - *As built (PLAN 5.7a, ADR-323; `render/units/sorties.ts`):* the snapshot carries the sorties in
   the air; the page draws each as planes of its nation's colour where `sortieAt` (in `shared/`)
   has it at the frame's time (in the hour the snapshot ends, as the formations are played: 5.7d),

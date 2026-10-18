@@ -5,6 +5,10 @@
  *
  * - Fighters patrol over the front: the place of its own engaged formation nearest their base
  *   within their range; none in range, no mission.
+ * - Spread over the front (PLAN 7.24a): of a nation's wings, by id, each takes of the formations
+ *   its role picks from and its range reaches the one with the fewest of the nation's wings of its
+ *   kind (patrol, strike, supply) sent there that day, the nearest of equals. "Nearest" below is
+ *   that.
  * - Close support and tactical bombers strike the front: the enemy's engaged formation nearest
  *   their base within range.
  * - Naval bombers strike the enemy's fleet nearest their base within range; with none, the front.
@@ -113,18 +117,22 @@ export function airAi(world: World): void {
     let enemyLand: number[] | null = null;
     const enemyForces = (): number[] => (enemyLand ??= land.filter((g) => world.wars.atWar(n, c.nation[g]!)));
     const enemyFleets = fleets.filter((g) => world.wars.atWar(n, c.nation[g]!) && !world.embarked.has(g));
+    // The nation's wings sent to each formation this day, by what they fly (PLAN 7.24a): the next goes where fewest are.
+    const patrols = new Map<number, number>();
+    const strikes = new Map<number, number>();
+    const lifts = new Map<number, number>();
     for (const id of list) {
       const role = roleOf(world, id);
       let target: [number, number] | null = null;
       let kind: 'patrol' | 'strike' | 'supply' = 'strike';
       if (role === 'patrol') {
-        target = nearest(world, id, own) ?? nearest(world, id, enemyForces());
+        target = nearest(world, id, own, patrols) ?? nearest(world, id, enemyForces(), patrols);
         kind = 'patrol';
-      } else if (role === 'front') target = nearest(world, id, enemy) ?? nearest(world, id, enemyForces());
-      else if (role === 'naval') target = nearest(world, id, enemyFleets) ?? nearest(world, id, enemy) ?? nearest(world, id, enemyForces());
+      } else if (role === 'front') target = nearest(world, id, enemy, strikes) ?? nearest(world, id, enemyForces(), strikes);
+      else if (role === 'naval') target = nearest(world, id, enemyFleets, strikes) ?? nearest(world, id, enemy, strikes) ?? nearest(world, id, enemyForces(), strikes);
       else if (role === 'bomb') target = industry(world, id, n, richest);
       else if (role === 'lift') {
-        target = nearest(world, id, short.filter((g) => c.nation[g] === n));
+        target = nearest(world, id, short.filter((g) => c.nation[g] === n), lifts);
         kind = 'supply';
       }
       if (!target) {
@@ -224,8 +232,13 @@ function toward(world: World, id: number, front: readonly number[], used: Map<nu
   used.set(best, (used.get(best) ?? 0) + need);
 }
 
-/** The place of the formation of `among` nearest wing `id`'s base within its range; null for none. */
-function nearest(world: World, id: number, among: readonly number[]): [number, number] | null {
+/**
+ * The place of the formation of `among` nearest wing `id`'s base within its range; null for none.
+ * With `sent` (the wings of its nation sent to each formation this day, PLAN 7.24a), the one with
+ * the fewest sent there, the nearest of equals; it counts this wing's. The wings of a base went
+ * all to the one formation nearest it: a few places of a front of fifty had all the air.
+ */
+function nearest(world: World, id: number, among: readonly number[], sent?: Map<number, number>): [number, number] | null {
   const at = basePlace(world, world.wingBase.get(id)!);
   if (!at || among.length === 0) return null;
   const c = world.formations.cols;
@@ -233,19 +246,21 @@ function nearest(world: World, id: number, among: readonly number[]): [number, n
   // `seaKm` from the base, with the grid's scales taken once (the same figures).
   const g = navOf(world).grid;
   const w = world.cells.w;
-  let best: [number, number] | null = null;
+  let best = -1;
   let bd = Infinity;
+  let bn = Infinity;
   for (const f of among) {
     let dx = Math.abs(c.x[f]! - at[0]);
     if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
     const row = Math.min(g.h - 1, Math.max(0, Math.floor((at[1] + c.y[f]!) / 2)));
     const km = hypot(dx * g.kx[row]!, (c.y[f]! - at[1]) * g.ky[row]!);
-    if (km <= range && km < bd) {
-      bd = km;
-      best = [c.x[f]!, c.y[f]!];
-    }
+    if (km > range) continue;
+    const n = sent?.get(f) ?? 0;
+    if (n < bn || (n === bn && km < bd)) [best, bd, bn] = [f, km, n];
   }
-  return best;
+  if (best < 0) return null;
+  sent?.set(best, bn + 1);
+  return [c.x[best]!, c.y[best]!];
 }
 
 /**

@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-503 · 2026-10-18 · accepted — A nation's wings spread over its front (PLAN 7.24a)
+
+- **Context.** Critic run 8, aircraft 6: no sortie at 25 m/px over live fights. The air AI (PLAN 5.6)
+  sent each wing to the formation nearest its base: a nation's wings piled on a few places (seed
+  6047, the war on Poland and France: about 8 targets a day for 20 to 50 formations in contact).
+- **Decision.** Of a nation's wings, in id order, each takes of the formations its role picks from
+  and its range reaches the one with the fewest of the nation's wings of its kind (patrol, strike,
+  supply) sent there that day, the nearest of equals (`nearest` with the day's counts). Daily
+  tasking, the roles, the order of choices (own front, then the enemy's forces; a naval bomber's
+  fleets first), turnaround and rebasing as before. Strategic bombers bomb industry as before.
+- **Measured** (days 1 to 21, seeds 6047 / 4111, with ADR-502): formations in contact with a
+  sortie in a T2 view about them 16.7 % / 18.3 % → 26.2 % / 25.9 %; in a T3 view 4.6 % / 4.9 % →
+  10.5 % / 10.0 %. Germany's aircraft at the end 612 / 587 → 579 / 561 of 840; France's 271 / 297
+  → 67 / 82 of 444 (more of Germany's fighters meet France's): spread, the stronger air force
+  finds the weaker's. At the old fire the spread raised Germany's losses 406 → 709, the reason
+  ADR-502 came first. Seed 99's year: land casualties 5.72 M (6.35 M).
+- **At T3 the planes over a fight are patrols.** A strike turns over its target (`over` 0), so at
+  25 m/px a sortie seen over a fight is a fighter on its patrol circle (0.6 cells out) when that
+  fight is its target; no bomber loiters (not added here).
+- **Tests.** `airSpread.test.ts` (new: day 4's fighters replayed by id, each the least covered of
+  its own formations in contact in range, the nearest of equals; as many places as wings; red on
+  the old rule). `airNoContact1938` checks the new rule (its strikers and fighters replayed so).
+  `navalAi1938`'s battle counted from day 0 (seed 4604's first British–Italian sea battle is on day
+  5 in both worlds; the test stepped the first week unwatched, and the next came after day 60).
+- **Pin.** Seed 99 after one year: `f26443f6` → `58594a40`.
+
 ### ADR-502 · 2026-10-18 · accepted — The air's fire calibrated to the losses of 1939–40 (PLAN 7.24a0)
 
 - **Context.** Critic run 8, aircraft 6: few sorties seen at T1 to T3 over the war on Poland. Measured

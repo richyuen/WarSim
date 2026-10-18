@@ -51,11 +51,15 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     expect(declareWar(w, ENG, ITA, true)).not.toBeNull();
     const ships = own(s, ENG);
     const at = new Map(ships.map((f) => [f, [w.formations.cols.x[f], w.formations.cols.y[f]]]));
-    s.step(7 * 24);
-    const sailed = ships.filter((f) => w.formations.has(f) && (w.formations.cols.x[f] !== at.get(f)![0] || w.formations.cols.y[f] !== at.get(f)![1]));
-    expect(sailed.length).toBeGreaterThan(0);
     let battle = -1;
-    for (let d = 7; d < 60 && battle < 0; d++) {
+    let sailed: number[] = [];
+    // From day 0: the first week's battles count (PLAN 7.24a: seed 4604's first is on day 5, and
+    // since the air spread the next after day 60; the week was stepped unwatched before).
+    for (let d = 0; d < 60 && (battle < 0 || d <= 7); d++) {
+      if (d === 7) {
+        sailed = ships.filter((f) => w.formations.has(f) && (w.formations.cols.x[f] !== at.get(f)![0] || w.formations.cols.y[f] !== at.get(f)![1]));
+        expect(sailed.length).toBeGreaterThan(0);
+      }
       s.step(24, (world) => {
         const ev = world.out.events;
         for (let i = 0; i < ev.length; i += 6) {

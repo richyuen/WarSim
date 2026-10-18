@@ -51,7 +51,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       bomber group → 0.12 %). AT: the losses by nation, in fights and to flak, over the first three
       weeks of the war on Poland (seeds 6047 and 4111), before and after; the coverage of 7.24a's
       measure; the tests of the old rate re-based by the constant; `sweep:quick`; the pin's entry.
-    - [ ] 7.24a The air AI's wings spread over the front: a nation's wings, by id, each to the
+    - [x] 7.24a The air AI's wings spread over the front: a nation's wings, by id, each to the
       formation in range with the fewest of its wings sent there that day, the nearest of equals
       (fighters over their own, bombers at the enemy's). AT: the share of formations in contact
       with a sortie in a T2 and a T3 view, days 1 to 21, on seed 6047 and a seed not used, before
@@ -99,6 +99,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   hold, from which year, and what wars they are in (`npm run diag -- --load` from a checkpoint of
   the year the run begins); then the cause fixed. AT: no stasis on 8 of 10 seeds of a sweep on
   unseen seeds, the other criteria held; the pin's entry if a rule moves it.
+  Measured (2026-10-18, the sweep of 7.24a on seeds 721–730 × 50 years, `docs/sweeps/2026-10-18-sweep-724a.md`):
+  no stasis on 10 of 10 (the longest one top five 7 to 19 years), every other criterion held. The
+  air's calibration and spread (ADR-502, ADR-503) came between; whether they or luck did it is this
+  task's to find (a second sweep on other unseen seeds, then the measure above if it fails).
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
