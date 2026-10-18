@@ -156,6 +156,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
         no landing in its others (30–50 % of nation-days), and colonies have no transports. Only if
         c1 and c2 leave the 7.26 AT short. AT: `landWar.ts`'s gate counts; the pin's entry.
     - [ ] 7.26d The AT of 7.26 on 10 seeds × 30 years, after 7.26c; what is short split again.
+      (2026-10-18: taken before the open c-parts, c1b, c2b's fix and c3, which wait on it.)
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five

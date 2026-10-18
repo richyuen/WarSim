@@ -18795,7 +18795,8 @@ No rule changed and nothing on screen changed. One task came out of it.
   `refillable` every month and get no man in six months; no division is ordered either: ADR-437's
   keep (1,001 gold over a reserve of about 350, against 1,094 → 1,262, about 28 a month saved).
   Pool 1.21 M untouched. Bulgaria v Romania: the same gate, but its army takes cells (score 12 in
-  46 days, ended exhausted). Seed 7919's wars under 15 are fronts across the sea (c3's).
+  46 days, ended exhausted). Seed 7919's wars under 15: most across the sea (c3's); Germany's bloc v Denmark and v
+  Luxembourg are land fronts its full divisions did not take, not probed.
 - **Not changed:** the rule is as ADR-437 decided; c2b's fix, as c1b's and c3's, waits on the 7.26
   AT, which has not been measured since 7.24a0. Not ticked.
 - **Next:** PLAN 7.26d (the 7.26 AT, 10 seeds × 30 years headless); then whichever of c1b, c2b, c3

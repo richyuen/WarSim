@@ -105,10 +105,12 @@ land formation's place and state) and `c2bstuck.ts` (one formation's path and th
 
 The one-sided wars at a score under 15 in `landWar.ts` after 7.26c2a (§5): seed 2843's Brazil v
 Bolivia (war 87) and Bulgaria v Romania (war 90). Seed 7919's are not probed: Saudi Arabia v Yemen
-(one Saudi formation, 32 days), and wars of blocs of 28 to 124 land formations (Germany's v
-Luxembourg, Portugal, Angola and Mozambique; v Denmark; Japan's v Saudi Arabia, 50 days frontless;
-the United States v Cuba, Siam and Burma, a front of 3 cells): fronts across the sea or a strait
-(c3's), not an army too small.
+(one Saudi formation, 32 days); across the sea (c3's), Portugal, Angola and Mozambique (with
+Luxembourg, Germany's bloc of 28 formations), Japan's bloc v Saudi Arabia (50 days frontless) and
+the United States v Cuba, Siam and Burma (124 formations, a front of 3 cells). Germany's bloc v
+Denmark (29 formations, a front of 12 cells, 61 days, score 2) and v Luxembourg (49 days, score 0)
+are land fronts that a bloc of full divisions did not take, both ended exhausted while its war on
+Romania ran: not an army too small, and their cause is not probed.
 
 ### Brazil v Bolivia (seed 2843, day 1660 to 1837, score 0 throughout)
 
@@ -128,8 +130,8 @@ the United States v Cuba, Siam and Burma, a front of 3 cells): fronts across the
   to targets beyond the ring, until it is gone (by day 1825). A pocket, not a mover that fails.
 - **What is left takes nothing.** 38 men walk to Bolivia's border and stand at a Bolivian cell from
   day 1745 to the war's end (pressure far under `GARRISON`); 612 men rest on Brazil's land for the
-  whole war, never ordered (under `takeMen`, they man nothing and are sent nowhere, as 7.26c2a
-  meant). Bolivia's land falls 1,844 → 1,360 cells to Argentina's war (91, from day 1733), not Brazil's.
+  whole war, never ordered; why is not probed (at 612 men it could flip no cell, as the 38 at
+  the border show). Bolivia's land falls 1,844 → 1,360 cells to Argentina's war (91, from day 1733), not Brazil's.
 - **No man is refilled in six months, and no division ordered.** The 612 and the 38 pass every test
   of `refillable` (on their own land, supply 1, not engaged) each month. Brazil's books: income 114
   to 120, balance +30 to +54 a month, army upkeep 0.3 to 2.1 against a war cap of 68 to 72, no
