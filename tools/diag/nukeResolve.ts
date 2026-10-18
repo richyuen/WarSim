@@ -96,6 +96,7 @@ for (let y = 0; y < years; y++) {
         menShare: r3(p.menShare),
         ownShare: r3(p.ownShare),
         menAll: Math.round(p.menAll),
+        theatreMen: Math.round(p.theatreMen),
         sideMen: Math.round(p.sideMen),
         capital: p.capital,
         through: r3(p.through),

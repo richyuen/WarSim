@@ -1899,7 +1899,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   there: U is through × the utility of a burst, whose costs fall only on a burst; a launch stopped
   short spends its warhead and nothing more (PLAN 7.18i, ADR-491).
   - targetValue: enemy capital, industry, fleets in port, massed formations, Major-Battle
-    fronts. Uses expected damage from blast radius × local value.
+    fronts. Uses expected damage from blast radius × local value. Men are weighed as a share
+    of the enemy side's men in the place's theatre (within 1,000 km), and that theatre counts
+    for at least a quarter of all the side's men: a lone garrison is not the whole of its
+    theatre (PLAN 7.18c, 7.18j, ADR-492).
   - desperation: rises with losing war score, capital threatened, core loss, and
     fightToDeath.
     A holder winning or holding its own in a war of a year or more, against enemies that

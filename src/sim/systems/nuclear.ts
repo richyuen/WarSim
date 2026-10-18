@@ -73,7 +73,8 @@
  * - targetValue (`targetValue`), 0 to 1: TARGET_SCALE × the share of the enemy side's output
  *   (the cells it holds, as bombs and fallout leave them) and of its men within the blast, less
  *   the striker's side's men there (the men each as a share of the side's within FRONT_KM of the
- *   place, its theatre; PLAN 7.18c); + TARGET_CAPITAL with an enemy capital in it, of a nation that
+ *   place, its theatre; PLAN 7.18c; the enemy's theatre at least THEATRE_FLOOR of all the side's
+ *   men, PLAN 7.18j); + TARGET_CAPITAL with an enemy capital in it, of a nation that
  *   holds CAPITAL_WEIGHT of the side's output (PLAN 7.18d); × the chance the
  *   warhead gets there (PLAN 6.7, SPEC's "expected damage": 1 by missile, 1 − the bomber's
  *   interception chance there by bomber).
@@ -665,12 +666,14 @@ function valueIn(world: World, n: number, v: StrikeView, x: number, y: number): 
 export interface PlaceParts {
   /** The enemy side's output in the blast, as a share of its whole. */
   econShare: number;
-  /** The enemy side's men in the blast, as a share of its men in the theatre. */
+  /** The enemy side's men in the blast, as a share of `theatreMen`. */
   menShare: number;
   /** The striker's side's men in the blast, as a share of its men in the theatre. */
   ownShare: number;
   /** The enemy side's men in the theatre (within FRONT_KM of the place). */
   menAll: number;
+  /** What the place's men are weighed against: `menAll`, at least THEATRE_FLOOR × `sideMen` (PLAN 7.18j). */
+  theatreMen: number;
   /** The enemy side's men, everywhere (PLAN 7.18h's measure of a theatre's weight). */
   sideMen: number;
   capital: number;
@@ -725,7 +728,10 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): 
   // As a share of all the enemy side's output (summed only when the blast reaches some).
   const econAll = hit > 0 ? v.econAll() : 0;
   const econShare = econAll > 0 ? hit / econAll : 0;
-  const menShare = menAll > 0 ? menHit / menAll : 0;
+  // The theatre counts for at least THEATRE_FLOOR of the enemy side's men (PLAN 7.18j, ADR-492). The
+  // striker's own men are left a share of its theatre alone: what keeps it off them stays whole.
+  const theatreMen = Math.max(menAll, THEATRE_FLOOR * v.enemyMen);
+  const menShare = theatreMen > 0 ? menHit / theatreMen : 0;
   const ownShare = ownAll > 0 ? ownHit / ownAll : 0;
   const share = econShare + menShare - ownShare;
   const nc = world.nations.cols;
@@ -739,7 +745,7 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): 
   }
   // Expected damage (SPEC): as likely as the warhead gets there, by missile when `n` knows them.
   const through = knows(world, n, 'ballistic_missiles') ? 1 : 1 - bomberIntercept(world, n, x, y);
-  return { econShare, menShare, ownShare, menAll, sideMen: v.enemyMen, capital, through, value: Math.max(0, Math.min(1, TARGET_SCALE * share + capital)) * through };
+  return { econShare, menShare, ownShare, menAll, theatreMen, sideMen: v.enemyMen, capital, through, value: Math.max(0, Math.min(1, TARGET_SCALE * share + capital)) * through };
 }
 
 /**
@@ -906,6 +912,13 @@ export function aimOf(world: World, n: number, war: War, side: number, industry:
 
 /** How far from the striker's side a place may be to be weighed (PLAN 6.11a), km: from its land formations or its capitals. */
 export const FRONT_KM = 1000;
+/**
+ * The least a theatre's enemy men count for, as a share of all the enemy side's men (PLAN 7.18j,
+ * ADR-492): a place's men are weighed against at least THEATRE_FLOOR of the side, so a lone garrison
+ * is not the whole of its theatre (seed 4's Britain on Japanese garrisons of 2,267 to 5,229 men, 935
+ * to 2,305 dead; seed 1's on #114's of 456 to 1,380, 168 to 2,875 dead).
+ */
+export const THEATRE_FLOOR = 0.25;
 /** How long a burst keeps another warhead off its place (PLAN 6.11b), days. */
 export const RESTRIKE_DAYS = 7;
 /**

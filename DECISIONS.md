@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-492 · 2026-10-17 · accepted — A place's men weighed against a theatre of weight (PLAN 7.18j)
+
+- **Context.** A place's enemy men are weighed as a share of the enemy side's men within FRONT_KM
+  of it, its theatre (PLAN 7.18c: of the whole side, Japan's armies counted against a German army
+  before Paris). So a lone garrison was the whole of its theatre, worth the chance through: seeds
+  1–10 × 30 years at `07c7e49` (`.cache/r718i/after_*.json`), 15 tolls under 5,000, at places of
+  theatres of 74 to 5,229 men (seed 4's Britain on Japanese garrisons, 935 to 2,305 dead; seed 1's
+  on #114's and China's, 8 to 2,875). Tried in 7.18h, a floor of a quarter of the side stopped the
+  critic's Poland and France, whose strikes fell then on an Italian army near Rome; since 7.18i
+  (ADR-491) they fall on the Germans, in theatres of 450,000 men and more of a side of 1.7 million.
+- **Decision.** THEATRE_FLOOR 0.25: the place's men are a share of max(its theatre's men,
+  THEATRE_FLOOR × all the enemy side's men) (`PlaceParts.theatreMen`). The side's men are every
+  formation's strength, fleets (ships) and air wings (aircraft) with the armies, as the theatre's
+  are: the same count above and below the line, and the ships and aircraft are tens against the
+  armies' hundreds of thousands. The striker's own men stay a share of its own theatre alone: what
+  keeps a strike off them stays whole. With TARGET_SCALE 10, a place's men lose value only where
+  its blast holds under 2.5 % of the side's men: a 5,000-man garrison of a 550,000-man side is
+  worth 0.36 of the chance through at most (1 before); a massed army is weighed as before.
+- **Pin.** Unmoved: no warhead in seed 99's first year.
+- **Tests.** `nukeTheatre1938.test.ts` (a lone Japanese garrison set a theatre away from the rest:
+  weighed against the floor; the most massed place: against its theatre, as before);
+  `nukePoland1938` (three seeds) and `nukeOverrun1938` now assert the burst falls on Germany.
+
 ### ADR-491 · 2026-10-17 · accepted — A strike's costs weighed by the chance it lands (PLAN 7.18i)
 
 - **Context.** A place's value was × the chance the warhead gets there (`through`: 1 by missile,

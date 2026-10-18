@@ -77,6 +77,8 @@ describe("the critic's Poland strikes (PLAN 7.18f, 7.18i)", () => {
     expect(decided[0]!, 'while it could still deliver').toBeLessThanOrEqual(deliverUntil + 1);
     expect(bursts.length, 'a warhead of Poland burst').toBeGreaterThan(0);
     expect(enemies.has(bursts[0]!.on), 'on the land of a nation of the enemy side').toBe(true);
+    // On the Germans overrunning it, not a lighter theatre of their side (PLAN 7.18j's AT).
+    expect(bursts[0]!.on, 'on Germany').toBe(GER);
     expect(bursts[0]!.dead).toBeGreaterThan(0);
   }, 600_000);
 });
