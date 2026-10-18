@@ -16,6 +16,9 @@
  *   and go together): a battle it would lose is not sought.
  * - At war, a warfleet away from its ports in a zone where the enemy's power is over
  *   `AVOID_RATIO` times its own sails home (`sailHome`).
+ * - At war, a transport group (no power, no submarine, transports) with no formation aboard, away
+ *   from its bloc's ports, sails home (`sailHome`, PLAN 7.26h1): after a landing it stood at the
+ *   landing's water until peace, and a nation's landings load only at a port of its own.
  * - At war, its submarine flotillas raid (`raid`, PLAN 4.6d): each that stands off an enemy
  *   bloc's convoy way sails for the zone of one nearest it within `RAID_KM`.
  * - At peace: a fleet away from its nation's ports sails home.
@@ -24,6 +27,7 @@
  *   it sails back. It fights where it is seen, as any fleet.
  */
 import { isDayStart } from '../../shared/calendar';
+import { transportRoom } from '../systems/amphibious';
 import { elementIndex } from '../systems/elements';
 import { convoyWays } from '../systems/seaSupply';
 import { AT_PORT_CELLS, sailHome, seaKm } from '../systems/navalCombat';
@@ -42,6 +46,12 @@ export const RAID_KM = 4000;
 /** A warfleet away from its ports turns home where the enemy's power in its zone is over this many times its own. */
 export const AVOID_RATIO = 1.5;
 
+
+/** Whether fleet `id` has a formation aboard. */
+function carries(world: World, id: number): boolean {
+  for (const e of world.embarked.values()) if (e.fleet === id) return true;
+  return false;
+}
 
 /** Whether fleet `id` has a live submarine. */
 function hasBoats(world: World, id: number): boolean {
@@ -144,6 +154,8 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
     if (p <= 0) {
       // Submarines raid (PLAN 4.6d).
       if (hasBoats(world, id)) raiders.push(id);
+      // Transports that have landed their men come home, where the next landing loads (PLAN 7.26h1).
+      else if (transportRoom(world, id) > 0 && !atOwnPort(id) && !carries(world, id)) sailHome(world, id);
       continue;
     }
     if (!atOwnPort(id)) {

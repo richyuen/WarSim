@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-517 · 2026-10-18 · accepted — Transports home after a landing (PLAN 7.26h1)
+
+- **Context.** PLAN 7.26h (`docs/evidence/7.26/measure-h.md`): at war the naval AI moved only
+  fleets with power and submarines; a transport group has neither, so after a landing it stood at
+  the landing's water until peace or until sunk (seed 7919: Britain's four 1938 groups at one cell
+  for up to 1,878 days). A nation's landings load only at a port of its own, and while such a group
+  lives `pickFleet` builds no other: the nation had neither.
+- **Decision.** In the naval AI's daily plan (`src/sim/ai/naval.ts`), at war, a fleet with no power
+  and no submarine that has transports (`transportRoom` > 0), no formation aboard, standing away
+  from every port of its bloc, sails for its nation's nearest port (`sailHome`), as a fleet does at
+  peace. One with men aboard stays (its landing or its stray landing takes them off).
+- **Measured** (`docs/evidence/7.26/measure-h1.md`, `transports.ts`, seeds 2843 and 7919 × 8
+  years): groups standing away with a port to go to, 6,227 group-days → 10. The rest of the runs
+  diverge from the first landing (one run each), so their `noTransport` days are no verdict.
+- **Accepted / to watch.** `sailHome` weighs no enemy sea on the way: on seed 7919 Britain's four
+  groups, sent home in year 2, are sunk in year 3, and Japan loses two; before they stood unharmed
+  and unused. A group sunk is one the economic AI must build again, which is 7.26h2's question; a
+  way home that keeps off the enemy's sea is not taken here (one cause per commit). 7.26j reads it.
+- **Pin.** c9f5962b → c451b4aa.
+- **Tests.** `navalAi1938.test.ts` "at war a transport group left away from its ports with no one
+  aboard sails home within its nation's turn; one with men aboard stays": two British groups put
+  in the mid-Atlantic at war with Italy, a division embarked on one; after 8 days the empty one has
+  left, the loaded one stands with the division aboard. Red without the rule.
+
 ### ADR-516 · 2026-10-18 · accepted — No landing on a partner's transports for now (PLAN 7.26c3b)
 
 - **Context.** PLAN 7.26c3b: 60–90 % of the frontless nation-days at war stop at `noTransport` (no

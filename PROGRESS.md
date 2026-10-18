@@ -19018,3 +19018,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Split:** 7.26h1 (transports home after a landing), 7.26h2 (which fleet-slot condition stops the
   build, measured first).
 - **Next:** PLAN 7.26h1.
+
+## 2026-10-18 — PLAN 7.26h1: transports home after a landing
+
+- **Start:** gate green on `19aeb17`; critic not due.
+- **Done** (ADR-517): `src/sim/ai/naval.ts` `plan`: at war, a fleet with no power and no submarine
+  that has transports, no one aboard, standing away from its bloc's ports, sails for its nation's
+  nearest port (`sailHome`). Pin c9f5962b → c451b4aa.
+- **Tests:** `navalAi1938.test.ts` new case (two British groups in the mid-Atlantic at war with
+  Italy, a division aboard one: the empty one leaves within 8 days, the loaded one stays); red
+  without the rule.
+- **Measured** (`docs/evidence/7.26/measure-h1.md`, `transports.ts` seeds 2843 and 7919 × 8 years,
+  `.cache/726h1/`): `awayHome` group-days 6,227 → 10. The rest diverges (one run each). The way
+  home weighs no enemy sea: seed 7919's Britain's four groups, sent home in year 2, sunk in year 3;
+  none built after (7.26h2's cause).
+- **Next:** PLAN 7.26h2.

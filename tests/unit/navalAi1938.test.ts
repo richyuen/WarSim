@@ -175,6 +175,44 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     process.stderr.write(`GER–ENG: ${sent.length} of ${boats.length} U-boat flotillas sent to British convoy ways in a week; the first raid logged on day ${raided}\n`);
   });
 
+  it('at war a transport group left away from its ports with no one aboard sails home within its nation\'s turn; one with men aboard stays (PLAN 7.26h1)', () => {
+    const s = new Sim({ scenario: '1938', seed: 4607, assets: assets1938(W) });
+    const w = s.world;
+    const c = w.formations.cols;
+    expect(declareWar(w, ENG, ITA, true)).not.toBeNull();
+    w.nations.cols.aiOff[ITA] = 1;
+    const groups: number[] = [];
+    w.formations.forEach((f) => void (w.isFleet(f) && c.nation[f] === ENG && TEMPLATES_1938[c.template[f]!]!.id === 'transport_group' && groups.push(f)));
+    expect(groups.length).toBeGreaterThanOrEqual(2);
+    const [empty, full] = groups as [number, number];
+    // The open sea cell farthest from every port's water (the mid-ocean: no land, no port, no fleet near).
+    const z = seaOf(w);
+    const waters = portSeaOf(w).filter((x) => x >= 0);
+    let far = -1;
+    let gap = 0;
+    for (let k = 0; k < z.zoneOf.length; k += 7) {
+      if (z.zoneOf[k] === 0 || z.closed[z.zoneOf[k]!] === 1) continue;
+      let d = Infinity;
+      for (const x of waters) d = Math.min(d, Math.hypot((x % W) - (k % W), Math.floor(x / W) - Math.floor(k / W)));
+      if (d > gap) [gap, far] = [d, k];
+    }
+    expect(gap).toBeGreaterThan(20);
+    const [fx, fy] = [(far % W) + 0.5, Math.floor(far / W) + 0.5];
+    for (const g of [empty, full]) [c.x[g], c.y[g], c.moving[g]] = [fx, fy, 0];
+    // A British division aboard `full`, its landing elsewhere (so it neither lands nor strays here: no land near).
+    let div = -1;
+    w.formations.forEach((f) => void (div < 0 && !w.isFleet(f) && !w.isWing(f) && c.nation[f] === ENG && (div = f)));
+    expect(div).toBeGreaterThan(0);
+    w.embarked.set(div, { fleet: full, land: -1, water: waters[0]!, target: -1 });
+    [c.x[div], c.y[div]] = [fx, fy];
+    // Within a turn of its nation's (`STAGGER` days) and a day.
+    s.step(8 * 24);
+    const left = (g: number): boolean => c.moving[g] === 1 || c.x[g] !== fx || c.y[g] !== fy;
+    expect(left(empty)).toBe(true);
+    expect(w.embarked.get(div)?.fleet).toBe(full);
+    expect(left(full)).toBe(false);
+  });
+
   it('at peace a fleet away from its ports sails home', () => {
     const s = new Sim({ scenario: '1938', seed: 4604, assets: assets1938(W) });
     const w = s.world;

@@ -304,12 +304,15 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       days: the Netherlands never has one; Germany's and Britain's are built and sunk; a front in
       another war bars the build on 31 % and 4 % of them, the rest have no front and a full
       treasury. Free formations stand on a land with an own port. Split: 7.26h1, 7.26h2.
-    - [ ] 7.26h1 Transports home after a landing (7.26h's cause 1): at war, a transport group with no
+    - [x] 7.26h1 Transports home after a landing (7.26h's cause 1): at war, a transport group with no
       men aboard, standing (not under way, in no battle) away from every port of its bloc, sails home
       (`sailHome`), in the naval AI's daily plan beside the warfleets'. AT: a unit test (a group left
       at a landing's water in a war sails for an own port within a day of its nation's turn; one with
       men aboard stays); `transports.ts` re-run on seeds 2843 and 7919: `awayHome` days down; the pin's
       entry.
+      Done (2026-10-18, ADR-517, `docs/evidence/7.26/measure-h1.md`): `awayHome` group-days 6,227 →
+      10 on the two seeds; pin c451b4aa. The way home weighs no enemy sea: seed 7919's Britain's four
+      groups sent home in year 2 are sunk in year 3 (Japan two), and none is built after (7.26h2).
     - [ ] 7.26h2 The transport group that is never built (7.26h's cause 2): on the days a nation in a
       frontless war has no group, which of `economic.ts`'s fleet-slot conditions stops the order (a
       ship in the yards, the navy's upkeep at `NAVY_SHARE` of income or more, no `mix.fleets`, the
@@ -326,6 +329,9 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
     - [ ] 7.26j The AT of 7.26 re-measured (as 7.26g) after 7.26h1, 7.26h2 and 7.26i; c3b1 and c3c
       taken up only on 7.26h's evidence (7.26h: the great powers' free formations stand on a land
       with a port of their own; their transports are what is missing, not a partner's).
+      To read against 7.26h1 (ADR-517): transport groups sent home are sunk on the way (seed 7919's
+      Britain, all four in year 3); if the ten seeds' landings fall, a way home that keeps off the
+      enemy's sea is the first question.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five
