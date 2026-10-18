@@ -341,7 +341,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       a free formation on a land with an own port and an enemy port. Britain's `noTransport` days
       1,383 → 513 and 551 → 208; the world's transport orders 20 → 21 and 20 → 15. Pin c3bd280a.
       Britain's new groups are sunk too (the way home, 7.26j's first question).
-    - [ ] 7.26i Patrols over home (7.26c's condition met by 7.26g): a wing of a nation at war with
+    - [x] 7.26i Patrols over home (7.26c's condition met by 7.26g): a wing of a nation at war with
       no enemy land formation in range patrols over its own land within reach of an enemy airbase
       or fleet. Measured first: of the short years' idle wings, how many stand within reach of an
       enemy base or fleet, and how often an enemy sortie comes there. Then the rule only if the
@@ -356,6 +356,11 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       columns on 7.26g's files. The ten war-years under 3 aloft on `6d1f727` (seeds 1, 3, 4, 6, 10)
       each have 59–200 wings of 10–21 nations at war, nearly all out of range: 7.26i's case, not
       years without an air force.
+      Done (2026-10-18, ADR-520, `docs/evidence/7.26/measure-i.md`): no rule. `airWar.ts` counts
+      `enemyNear`, `enemyNearTasked`, `homePatrol` and the idle fighters' reach (`a75e6c6`); on
+      seeds 1, 3, 4, 6, 10 × 30 years an enemy sortie anywhere in an idle fighter's range on 4.6 %
+      of its days (0.4 % in the years under 3 aloft), an enemy base 3.3 %, a fleet 7.1 %: a patrol
+      over home would fly for the count. Pin unchanged.
     - [ ] 7.26j The AT of 7.26 re-measured (as 7.26g, seeds 1–10 × 30 years) after 7.26h1, 7.26h2
       and 7.26i, against ADR-519's AT. First commit: `tools/diag/airAt.ts` judges that AT (the
       share with a mission of the wings at war with an enemy in range, half or more in every
@@ -371,6 +376,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       To read against 7.26h2 (ADR-518): the transport's want counts free formations near the
       nation's own front, which the invasion AI does not board; if the landings do not rise with
       the `noTransport` days falling, that is the next question.
+      To read against 7.26i (ADR-520, `measure-i.md`): on HEAD the share dips under half in a
+      war-year on 4 of 5 seeds (lowest 0.35–0.48; 8–23 wings in range a day, about half untasked);
+      if the ten seeds' share is short, which roles stand untasked with an enemy in range is the
+      first question.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five

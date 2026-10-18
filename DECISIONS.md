@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-520 · 2026-10-18 · accepted — No patrol over home (PLAN 7.26i)
+
+- **Context.** ADR-519 left one air rule open: a wing of a nation at war with no enemy land
+  formation in range flies nothing (ADR-377), so a patrol over its own land within reach of an
+  enemy airbase or fleet was to be measured first and built only if such wings would meet enemies
+  the sim has (AoC has no air war; not to fly for the count).
+- **Measured** (`docs/evidence/7.26/measure-i.md`, `airWar.ts`'s new columns, seeds 1, 3, 4, 6, 10
+  × 30 years on `a75e6c6`): of some 30 idle fighters a day at war, an enemy sortie aloft anywhere
+  within range of their base on 4.6 % of their days (an upper bound: a patrol sees 150 km about
+  one point), an enemy airbase with wings in range 3.3 %, an enemy fleet 7.1 %. In the war-years
+  under 3 aloft, 0.4 %, 0.4 % and 0.7 %.
+- **Decision.** No patrol over home. In the years ADR-519's second bar finds short it would put
+  about 30 sorties a day in the air that meet nothing: the bar met by flying for it. What is short
+  there is reach: 1.3 wings a day of 67 at war have an enemy land formation in range, and the
+  enemy's air, bases and fleets are as far; that is PLAN 7.29's (the land and naval war's reach).
+- **Pin.** Unchanged (c3bd280a): no sim change.
+- **To watch.** On HEAD the share of ADR-519 dips under half in some war-year on 4 of the 5 seeds
+  (lowest 0.35–0.48), with 8–23 wings in range a day: 7.26j reads it on ten seeds.
+
 ### ADR-519 · 2026-10-18 · accepted — PLAN 7.26's acceptance test re-scoped to what the air AI owns (the user's decision; its task from ADR-487)
 
 - **Context.** ADR-487 asked that PLAN 7.26 measure why the air war falls while wars run, and fix

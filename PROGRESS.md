@@ -19073,3 +19073,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   rules in; c3b1 and c3c moved to PLAN 7.29 (the late land war's reach), after 7.27 and 7.28.
 - **Docs only:** DECISIONS, PLAN, PROGRESS. No sim change; pin c3bd280a.
 - **Next:** PLAN 7.26i (patrols over home), then 7.26j with `airAt.ts` changed to the new AT.
+
+## 2026-10-18 — PLAN 7.26i: patrols over home, measured; no rule
+
+- **Start:** gate green on `a03ddee`; critic not due.
+- **Tooling** (`a75e6c6`): `airWar.ts` counts ADR-519's share (`enemyNear`, `enemyNearTasked`),
+  `homePatrol`, and what the idle fighters could meet (enemy airbases, fleets and sorties aloft in
+  range, hourly); `airAt.ts` prints the share, the old one on 7.26g's files (8 of 10, 5 of 10
+  under 3 aloft, as PLAN says).
+- **Measured** (`docs/evidence/7.26/measure-i.md`, seeds 1, 3, 4, 6, 10 × 30 years): of ~30 idle
+  fighters a day, an enemy sortie in range on 4.6 % of their days, 0.4 % in the years under 3
+  aloft; an enemy base 3.3 %, a fleet 7.1 %.
+- **Decided** (ADR-520): no patrol over home; it would fly for the count. Pin unchanged c3bd280a.
+- **For 7.26j:** the share on HEAD dips under half on 4 of 5 seeds (lowest 0.35–0.48).
+- **Next:** PLAN 7.26j.
