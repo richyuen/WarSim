@@ -18349,3 +18349,28 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Specs by hand** (chromium): `ships1938`, `shipMarks1938`, `seaBattle1938`, `navalDemo1938`,
   `seaBattleSeen1938`, `closeZoom1938`, `individuals1938`: 10 green.
 - **Next:** PLAN 7.22c (a placed fleet holds its sea).
+
+## 2026-10-18 — PLAN 7.22c: a fleet placed by the editor holds its place; 7.22 ticked
+
+- **Start:** gate green on `c58889a` (7.22b).
+- **Found** (`.cache/p722/explore_c.test.ts`, seed 5591, the critic's four battle squadrons placed
+  about its North Sea point): the naval AI sends a fleet away from its ports home at peace, so
+  Britain's pair sailed 28 and 30 cells on the day it was placed, before the war; Germany's pair was
+  engaged by the Home Fleet on day 2, broke off on day 4 and was sunk on days 5 and 6.
+- **Done** (ADR-500, SPEC §7 fleets at sea): `World.station` (id → its place), set by `placeFleet`;
+  the naval AI moves a stationed fleet only back to its place when more than 3 cells off, and the
+  peace rule, the sortie, the avoiding rule and `rebaseFleets` pass it by; a player's order that
+  sails it (`moveFormation`), breaking off (`breakOff`) and the formation's end let go of it. Saved
+  as the section `world.station` only while there is one: the pin unmoved (checked by hand).
+- **Tests:** `fleetStation1938.test.ts` (new, all 4 red on the old code): the critic's case for 10
+  days (every placed fleet at its place, in battle there or on its way back, or let go of it only
+  on breaking off; Britain's pair at its places on day 10); without the station they sail home (the
+  critic's case); a player's order lets go, a refused one (to Berlin) does not; saved on hour 30
+  and loaded, the same stations and hashes for three days. `editorForces1938` (new test): the
+  critic's procedure by clicks, the scenario exported and started from the title, the war, day 3:
+  Britain's pair 0.0 cells off its places (Germany's 3.1 and 0.9, in battle); pictures at 300 and
+  30 m/px (`docs/evidence/7.22/c-northsea-day3-*.png`, looked at).
+- **Whole unit suite by hand:** 1,670 of 1,670; the pin (`baselineHash`) green by hand.
+- **Specs by hand** (chromium): `editorForces1938` (2 tests) green.
+- **7.22 ticked:** fire from the row at x1 (a), ships larger at T3 (b), placed fleets hold (c).
+- **Next:** PLAN 7.23 (burning hulls of a watched armour fight).

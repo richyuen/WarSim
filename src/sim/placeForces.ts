@@ -43,7 +43,8 @@ export function placeFleet(world: World, nation: number, t: number, x: number, y
   const cell = nearestCellWhere((c) => zone[c] !== 0 && world.seaPoint(c) !== null, x, y, w, h, Math.ceil(world.atSize(BASE_PICK_CELLS)), world.settings.loopingMap);
   if (cell < 0) return Refusal.NotAtSea;
   const [px, py] = world.seaPoint(cell)!;
-  make(world, nation, t, px, py);
+  // It holds its place (PLAN 7.22c; critic run 8: "placed fleets wander away at once").
+  world.station.set(make(world, nation, t, px, py), [px, py]);
   return Refusal.None;
 }
 

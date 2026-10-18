@@ -33,28 +33,6 @@ Run 8's blocking issues and its dimensions under the DONE condition's bar (repor
 `fd27e85`, its "Fix" lines and evidence; R8-B1 to R8-B3 are PLAN 7.18 to 7.20, the dimensions 7.21
 to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
 
-- [ ] 7.22 A sea battle seen firing, and fleets that hold their place (naval 6, needs 8): beyond
-  7.19's framing, no gunfire drawn in 6 s at Speed x1; a ship about 20 to 30 px long at 15 m/px;
-  fleets placed by the editor gone from the North Sea on day 3 (`critic/c8_j_5591.json`,
-  `critic/c8_k_ships.json`, `critic/shots/c8g_5591_21_northsea_day3_30m.png`). AT: from the row of
-  the critic's battle (seed 5591, hour 41), fire drawn between both fleets within seconds at x1;
-  ships larger at T3, measured; a placed fleet holds its sea until ordered away or driven off (a
-  unit test and the editor's spec). (SLBMs: out, ADR-479.)
-  Found (2026-10-18, the critic's script run again on `fad3786`, `.cache/p722/a.mjs`): since 7.19
-  Germany's and Britain's first battle with a row comes at hour 60 (the first "Sea battle:" row at
-  hour 42 is now Britain's cruisers on a Japanese submarine flotilla off Takao, firing); from the
-  row at 57 m/px, at Speed x1, both sides' ships fire within 2 s. Ships there are specks. A part each:
-    - [x] 7.22a Fire from the row at Speed x1: the critic's procedure (six-hour steps, the row,
-      6 s at x1) in a spec, counting the tracers a frame draws by the shooter's side. AT:
-      `seaRow1938` (new test) green, a picture of the frame with both sides' fire.
-    - [x] 7.22b Ships larger at T3: a ship's length on the screen at 15 m/px from about 20 to 30 px
-      to one where its class and turrets read at 1× (from `render/units/ships.ts`, `shipSize`), the
-      deviation from true scale in DECISIONS. AT: measured lengths by class at 57, 30 and 15 m/px;
-      `ships1938`, `shipMarks1938` green; pictures.
-    - [ ] 7.22c A placed fleet holds its sea: a fleet placed by the editor (and God Mode's spawn)
-      stays at its place until ordered away, engaged or driven off; saved and loaded. AT: a unit
-      test of the naval AI and the stance; the editor's spec (the critic's four North Sea fleets on
-      day 3); the pin unmoved, or moved with its entry.
 - [ ] 7.23 A watched armour fight leaves burning hulls (tanks 7, needs 8): in 45 s at Speed x1 at
   25 m/px on a live armour fight `hulls.shown` stayed 0 and `wrecks.count` 0, at x2 0 to 6 hulls;
   `hulls.count` counts the fallen infantry's marks too (`src/render/fx/hulls.ts:272`)
@@ -342,3 +320,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.19 A sea battle's ticker row lands on the fight (critic R8-B2, contradicts 7.10b): seed 5591, […]
 - [x] 7.20 A hydrogen bomb is a hydrogen bomb (critic R8-B3, contradicts 7.16a): it kills 3 to 11 % more […]
 - [x] 7.21 Infantry and the middle tier read at zoom (semantic zoom 7, needs 8): at 10 m/px infantry […]
+- [x] 7.22 A sea battle seen firing, and fleets that hold their place (naval 6, needs 8): beyond […]

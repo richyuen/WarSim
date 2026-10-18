@@ -354,6 +354,8 @@ function breakOff(world: World, id: number): void {
   c.retreat[id] = BREAK_HOURS;
   c.engaged[id] = 0;
   world.out.emit(world.tick, EventKind.FormationRetreated, id, n, c.x[id]!, c.y[id]!);
+  // Driven off: a placed fleet holds its place no more (PLAN 7.22c).
+  world.station.delete(id);
   sailHome(world, id);
 }
 
@@ -404,7 +406,8 @@ export function rebaseFleets(world: World): void {
   const f = world.formations;
   const c = f.cols;
   f.forEach((id) => {
-    if (!world.isFleet(id) || c.moving[id] === 1 || c.engaged[id] === 1) return;
+    // A fleet the editor placed holds its place (PLAN 7.22c).
+    if (!world.isFleet(id) || c.moving[id] === 1 || c.engaged[id] === 1 || world.station.has(id)) return;
     if (atLostBase(world, id)) sailHome(world, id);
   });
 }

@@ -412,6 +412,8 @@ class WorldCore implements Stateful {
       ...(w.wingBase.size === 0 ? [] : [{ name: 'world.wingBase', dtype: 'f64' as const, data: Float64Array.from([...w.wingBase].sort((a, b) => a[0] - b[0]).flat()) }]),
       // A player's order over the sea marching to its port (PLAN 4.9b): [id, target] each, only while there is one.
       ...(w.seaBound.size === 0 ? [] : [{ name: 'world.seaBound', dtype: 'f64' as const, data: Float64Array.from([...w.seaBound].sort((a, b) => a[0] - b[0]).flat()) }]),
+      // The fleets placed by the editor that hold their place (PLAN 7.22c): [id, x, y] each, only while there is one.
+      ...(w.station.size === 0 ? [] : [{ name: 'world.station', dtype: 'f64' as const, data: Float64Array.from([...w.station].sort((a, b) => a[0] - b[0]).flatMap(([id, [x, y]]) => [id, x, y])) }]),
       ...(w.embarked.size === 0 ? [] : [{ name: 'world.embarked', dtype: 'f64' as const, data: Float64Array.from([...w.embarked].sort((a, b) => a[0] - b[0]).flatMap(([id, e]) => [id, e.fleet, e.land, e.water, e.target])) }]),
       // Sea control (PLAN 4.4a): [zones + 1, holders..., days...], only while a zone is held.
       ...(w.seaControl === null || !w.seaControl.holder.some((h) => h !== 0) ? [] : [{ name: 'world.seaControl', dtype: 'f64' as const, data: Float64Array.from([w.seaControl.holder.length, ...w.seaControl.holder, ...w.seaControl.days]) }]),
@@ -507,6 +509,9 @@ class WorldCore implements Stateful {
     for (let at = 0; wings && at < wings.length; at += 2) w.wingBase.set(wings[at]!, wings[at + 1]!);
     const bound = sections.find((s) => s.name === 'world.seaBound')?.data as Float64Array | undefined;
     for (let at = 0; bound && at < bound.length; at += 2) w.seaBound.set(bound[at]!, bound[at + 1]!);
+    w.station = new Map();
+    const stations = sections.find((s) => s.name === 'world.station')?.data as Float64Array | undefined;
+    for (let at = 0; stations && at < stations.length; at += 3) w.station.set(stations[at]!, [stations[at + 1]!, stations[at + 2]!]);
     w.embarked = new Map();
     const emb = sections.find((s) => s.name === 'world.embarked')?.data as Float64Array | undefined;
     for (let at = 0; emb && at < emb.length; at += 5) w.embarked.set(emb[at]!, { fleet: emb[at + 1]!, land: emb[at + 2]!, water: emb[at + 3]!, target: emb[at + 4]! });
@@ -1152,6 +1157,12 @@ export class World {
    * of the march.
    */
   seaBound = new Map<number, number>();
+  /**
+   * Fleets placed by the editor (PLAN 7.22c), by id: the place (cells) each holds. The naval AI
+   * keeps such a fleet there, and brings it back after a battle, until a player orders it away or
+   * it breaks off beaten (`breakOff`). State, saved while not empty.
+   */
+  station = new Map<number, [number, number]>();
   /**
    * The air wings' bases (PLAN 5.1d), by wing: an airbase's index + 1, or a carrier's fleet as its
    * id negated; 0 for a wing whose carrier is gone (`airSystem` loses it). State, saved while not empty.

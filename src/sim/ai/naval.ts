@@ -19,6 +19,9 @@
  * - At war, its submarine flotillas raid (`raid`, PLAN 4.6d): each that stands off an enemy
  *   bloc's convoy way sails for the zone of one nearest it within `RAID_KM`.
  * - At peace: a fleet away from its nation's ports sails home.
+ * - A fleet the editor placed (`World.station`, PLAN 7.22c) holds its place, at peace and at war:
+ *   none of the above moves it; away from it by more than `AT_PORT_CELLS` (a battle drew it off)
+ *   it sails back. It fights where it is seen, as any fleet.
  */
 import { isDayStart } from '../../shared/calendar';
 import { elementIndex } from '../systems/elements';
@@ -91,6 +94,12 @@ export function navalAi(world: World): void {
     if (!world.isFleet(id) || c.moving[id] === 1 || c.engaged[id] === 1 || seaRangeOf(world, id) !== undefined) return;
     const n = c.nation[id]!;
     if (nc.living[n] !== 1 || nc.aiOff[n] === 1 || (day + n) % STAGGER !== 0) return;
+    const at = world.station.get(id);
+    if (at) {
+      // Placed by the editor: back to its place when a battle drew it off.
+      if (Math.abs(c.x[id]! - at[0]) > world.atSize(AT_PORT_CELLS) || Math.abs(c.y[id]! - at[1]) > world.atSize(AT_PORT_CELLS)) orderSail(world, id, at[0], at[1]);
+      return;
+    }
     let list = fleets.get(n);
     if (!list) fleets.set(n, (list = []));
     list.push(id);

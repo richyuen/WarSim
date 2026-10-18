@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-500 · 2026-10-18 · accepted — A fleet placed by the editor holds its place (PLAN 7.22c)
+
+- **Context.** Critic run 8, naval 6 and editor: two German and two British battle squadrons placed
+  face to face in the North Sea, the scenario exported and started, Germany at war with Britain:
+  "the North Sea point was empty on day 3". The naval AI (PLAN 4.6c) sends a fleet away from its
+  nation's ports home at peace, and at war home from a zone where the enemy is over 1.5 times
+  stronger; `rebaseFleets` sends one at a lost base home. A placed fleet is away from its ports by
+  design. Measured (seed 5591, the critic's four places): Britain's pair sailed 28 and 30 cells
+  home on the first day, before the war; Germany's pair was engaged by the Home Fleet on day 2,
+  broke off on day 4 and was sunk on days 5 and 6.
+- **Decision.** `placeFleet` gives the fleet a station, its place (`World.station`, by id: x, y in
+  cells). The naval AI moves a stationed fleet only back to it, when it is more than
+  `AT_PORT_CELLS` off (a battle drew it away: fleets close on each other, PLAN 7.19a); the peace
+  rule, the sortie, the avoiding rule and `rebaseFleets` pass it by. It fights where it is seen,
+  as any fleet. Its place is let go by a player's order that sails it (`moveFormation`; a refused
+  order lets go of nothing), by breaking off beaten (`breakOff`: driven off), and with the
+  formation. Saved as `world.station` only while there is one, so the start and seed 99's pin are
+  as before (the section is absent); a scenario file carries it, being the world's state.
+- **Why a station and not "AI off for the fleet".** An editor's fleet is set up for a fight or a
+  blockade where it is put; with no AI at all it would not come back after a battle, and an
+  outgunned one would not be told apart from a placed one. Breaking off is the one way the sim
+  already says a fleet is beaten.
+- **Not done.** God Mode has no fleet spawn (its forces are land formations); a placed wing or a
+  placed land formation is unchanged.
+
 ### ADR-499 · 2026-10-18 · accepted — A ship's least length grows with the room between ships (PLAN 7.22b)
 
 - **Context.** Critic run 8, naval 6: "at 1× a ship is about 20 to 30 px long at 15 m/px". Since

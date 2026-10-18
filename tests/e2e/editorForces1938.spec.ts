@@ -102,3 +102,94 @@ test('the editor places a fleet, an air wing and warheads; a shared scenario has
   const after = await forces(page, ENG);
   expect(after).toEqual(placed);
 });
+
+// PLAN 7.22c (critic run 8, naval 6: "placed fleets wander away at once: the North Sea point was
+// empty on day 3", `critic/shots/c8g_5591_21_northsea_day3_30m.png`): the critic's standoff. Two
+// German and two British battle squadrons placed by clicks in the North Sea, the scenario exported
+// and started from the title, Germany at war with Britain, the AI on: on day 3 Britain's pair is at
+// its places (Germany's met the Home Fleet; a fleet beaten lets go of its place, `fleetStation1938`).
+test("the critic's North Sea standoff: fleets placed in the editor hold their places into the war (PLAN 7.22c)", async ({ page }, info) => {
+  test.setTimeout(300_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=5591');
+  await ready(page);
+  const ids = async (): Promise<number[]> => (await page.evaluate(() => window.__warsim!.sim.inspect(true))).formations.map((f) => f.id);
+  const before = new Set(await ids());
+  await page.getByTestId('editor-btn').click();
+  await page.getByTestId('editor-tool-fleet').click();
+  await page.getByTestId('editor-template').selectOption({ label: 'Battle squadron' });
+  // The critic's North Sea point (`critic/c6_cells.json`) and its four places about it.
+  const [nx, ny] = [1046.76, 248.13];
+  const places = [
+    [GER, nx + 8, ny + 2],
+    [GER, nx + 6, ny + 4],
+    [ENG, nx - 2, ny],
+    [ENG, nx, ny - 3],
+  ] as const;
+  for (const [n, x, y] of places) {
+    await page.getByTestId('editor-nation').selectOption(String(n));
+    await page.evaluate(({ x, y }) => window.__warsim!.view!.controller.set({ cx: x, cy: y, scale: 3 }), { x, y });
+    await page.waitForTimeout(200);
+    const had = (await ids()).length;
+    await page.mouse.click(700, 400);
+    await expect.poll(async () => (await ids()).length).toBe(had + 1);
+  }
+  const placed = (await ids()).filter((f) => !before.has(f));
+  expect(placed).toHaveLength(4);
+  const at = await page.evaluate(async (placed) => {
+    const s = await window.__warsim!.sim.inspect(true);
+    return placed.map((id) => {
+      const f = s.formations.find((f) => f.id === id)!;
+      return { id, nation: f.nation, x: f.x, y: f.y };
+    });
+  }, placed);
+
+  // Shared: exported, then started from the title screen.
+  await page.getByTestId('scenario-name').fill('North Sea standoff');
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.getByTestId('scenario-export').click()]);
+  const file = path.join(info.outputPath(), dl.suggestedFilename());
+  await dl.saveAs(file);
+  await page.goto('/');
+  await page.getByTestId('title-scenario-file').setInputFiles(file);
+  await Promise.all([page.waitForURL(/load=scenario/), page.getByTestId('title-file-start').click()]);
+  await ready(page);
+
+  // Germany declares war on Britain; three days of the AI's war.
+  await page.evaluate(([g, e]) => window.__warsim!.sim.command({ kind: 'declareWar', attacker: g!, defender: e! }), [GER, ENG]);
+  await page.evaluate(async () => {
+    const { sim, view } = window.__warsim!;
+    const t = (await sim.step(3 * 24)).tick;
+    await new Promise<void>((done) => {
+      const wait = (): void => (view!.lastTick >= t ? done() : void setTimeout(wait, 10));
+      wait();
+    });
+  });
+  const now = await page.evaluate(async (placed) => {
+    const s = await window.__warsim!.sim.inspect(true);
+    return placed.map((id) => {
+      const f = s.formations.find((f) => f.id === id);
+      return f ? { id, x: f.x, y: f.y } : null;
+    });
+  }, placed);
+  const offBy = at.map((a, i) => (now[i] ? Math.max(Math.abs(now[i]!.x - a.x), Math.abs(now[i]!.y - a.y)) : Infinity));
+  console.log(`day 3 of the war: the placed fleets ${at.map((a, i) => `${a.id} (${a.nation === GER ? 'German' : 'British'}) ${Number.isFinite(offBy[i]!) ? `${offBy[i]!.toFixed(1)} cells off` : 'gone'}`).join(', ')}`);
+  for (const [i, a] of at.entries()) {
+    if (a.nation !== ENG) continue;
+    expect(offBy[i], `British fleet ${a.id} at its place on day 3`).toBeLessThanOrEqual(3);
+  }
+  // The critic's view of the day: the British pair's point at 30 m/px.
+  const [bx, by] = [(at[2]!.x + at[3]!.x) / 2, (at[2]!.y + at[3]!.y) / 2];
+  await page.evaluate(({ x, y }) => {
+    const v = window.__warsim!.view!;
+    v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / 300 });
+  }, { x: bx, y: by });
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: path.resolve('docs/evidence/7.22/c-northsea-day3-300m.png') });
+  await page.evaluate(({ x, y }) => {
+    const v = window.__warsim!.view!;
+    v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / 30 });
+  }, { x: at[2]!.x, y: at[2]!.y });
+  await page.waitForFunction(() => window.__warsim!.view!.individualCount > 0, null, { timeout: 15_000 });
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: path.resolve('docs/evidence/7.22/c-northsea-day3-30m.png') });
+});

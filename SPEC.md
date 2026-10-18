@@ -1983,6 +1983,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   else to the nearest enemy port whose zone's enemy power is no more than that of its nation's
   warfleets in port within 2,500 km of it together; one away from its ports where the enemy is
   over 1.5 times its power turns home. At peace a fleet away from its ports turns home.
+  A fleet the editor placed holds its place instead, at peace and at war (`World.station`, saved
+  while there is one; PLAN 7.22c, ADR-500): the AI sends it nowhere and sails it back when a
+  battle drew it more than 3 cells off; a player's order that sails it, or its breaking off
+  beaten, lets go of the place.
   At war, a submarine flotilla that stands off an enemy bloc's convoy way sails for the
   nearest zone of one within 4,000 km (PLAN 4.6d, ADR-271).
   *The navy's cost (PLAN 4.6e1, ADR-273; `src/sim/ai/economic.ts`):* a nation keeps its navy's
