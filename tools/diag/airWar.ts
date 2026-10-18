@@ -10,7 +10,9 @@
  *   contact; wars; nations at war, and of them with wings; wings whose base changed since the
  *   day before (`rebased`, PLAN 7.26c);
  * - `holders`: the eight nations with the most wings on the year's last day, with the share of
- *   the year's days each was at war.
+ *   the year's days each was at war;
+ * - `warDays`: days that ended with a war running (PLAN 7.26d: "a year with a war"); `hash`: the
+ *   state hash at the year's end.
  *
  * Usage: npx tsx tools/diag/airWar.ts <seed> [years = 30] [out = .cache/airWar_<seed>.json]
  */
@@ -40,6 +42,7 @@ for (let y = 0; y < years; y++) {
   let flying = 0;
   let airBattles = 0;
   let hours = 0;
+  let warDays = 0;
   const sum = Object.fromEntries(DAY_KEYS.map((k) => [k, 0])) as Day;
   const daysAtWar = new Map<number, number>();
   /** Out-of-range wings, sampled weekly: why they do not rebase toward the enemy. */
@@ -147,6 +150,7 @@ for (let y = 0; y < years; y++) {
       }
     }
     day.wars = w.wars.list.length;
+    if (day.wars > 0) warDays++;
     day.nationsAtWar = atWar.size;
     day.atWarWithWings = withWings.size;
     for (const n of atWar) daysAtWar.set(n, (daysAtWar.get(n) ?? 0) + 1);
@@ -158,7 +162,7 @@ for (let y = 0; y < years; y++) {
   const off = why.rangesOff.sort((a, b) => a - b);
   const top = (o: Record<string, number>): string[] => Object.entries(o).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, v]) => `${k} ${v}`);
   const out = { sampled: why.n, noBaseNear: why.noBaseNear, baseFull: why.baseFull, baseFree: why.baseFree, freeInFerry: why.freeInFerry, goalReach: why.goalReach, rangesOffMedian: off.length ? +off[off.length >> 1]!.toFixed(1) : null, byNation: top(why.byNation), enemies: top(why.enemies) };
-  const row = { year: y + 1, aloft: +(size / hours).toFixed(1), flying: +(flying / hours).toFixed(1), airBattles, ...Object.fromEntries(DAY_KEYS.map((k) => [k, +(sum[k] / 365).toFixed(1)])), holders, out };
+  const row = { year: y + 1, aloft: +(size / hours).toFixed(1), flying: +(flying / hours).toFixed(1), airBattles, warDays, ...Object.fromEntries(DAY_KEYS.map((k) => [k, +(sum[k] / 365).toFixed(1)])), holders, out, hash: s.hash().toString(16) };
   rows.push(row);
   console.log(JSON.stringify(row));
 }

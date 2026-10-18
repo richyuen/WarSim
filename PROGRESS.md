@@ -18801,3 +18801,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   AT, which has not been measured since 7.24a0. Not ticked.
 - **Next:** PLAN 7.26d (the 7.26 AT, 10 seeds × 30 years headless); then whichever of c1b, c2b, c3
   it leaves short.
+
+## 2026-10-18 — PLAN 7.26d: the 7.26 AT on 10 seeds × 30 years, measured
+
+- **Start:** gate green on `edd105e`; critic not due.
+- **Done:** `tools/diag/airAt.ts` (the 7.26 AT judged from per-year rows, `airWar.ts`'s or the
+  critic's headless files alike); `airWar.ts`'s `warDays` and the year's end hash. Seeds 1–10 ×
+  30 years, ten side by side (`docs/evidence/7.26/measure-d.md`).
+- **Measured:** 0 of 10 seeds pass, as on the critic's run 8 code (0 of 10, the same seeds). The
+  late air war about doubled (years 2–10 mean aloft 5–11 → 13–20, air battles about 7 ×), but
+  year 1 rose alike (29–39 → 39–52) and the bar with it; the late years hold 0.2–0.4 of year 1.
+  In the 273 short war-years: 54 of 73 wings at war out of range of every enemy land formation,
+  land formations in contact 1.2 a day (32 in year 1). Of those out of range, 59 % have no base of
+  their side in range of any enemy (the US, Japan, Germany, Italy, Britain), 36 % have one free
+  but beyond one ferry hop for all but 3 %.
+- **Next:** PLAN 7.26c3 (the landing per war), then 7.26c4 (new: the rebase over more than one
+  hop), c1b, c2b's fix; then 7.26e, the AT re-measured.
+- **Note:** the AT's bar is year 1, the start's general war (32 formations in contact a day);
+  not changed here.

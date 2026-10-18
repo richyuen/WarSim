@@ -155,8 +155,27 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       - [ ] 7.26c3 The landing per war, not per nation: a nation with a land front in one war plans
         no landing in its others (30–50 % of nation-days), and colonies have no transports. Only if
         c1 and c2 leave the 7.26 AT short. AT: `landWar.ts`'s gate counts; the pin's entry.
-    - [ ] 7.26d The AT of 7.26 on 10 seeds × 30 years, after 7.26c; what is short split again.
+        Taken next (7.26d, 2026-10-18): 59 % of the short years' out-of-range wings have no base
+        of their side in range of any enemy, the overseas powers' first.
+      - [ ] 7.26c4 The rebase over more than one hop: in 7.26d's short war-years 36 % of the wings
+        out of range have a base of their side with room within range of an enemy, 3 % of them
+        within one ferry hop (`freeInFerry`); 1.6 wings rebase a day of 54. Measured first: whether
+        a wing whose goal base lies beyond `FERRY_RANGE` moves toward it day by day or stays, from a
+        checkpoint. AT: a unit test (a wing two hops from a base in range of the enemy reaches it
+        and is tasked); `airWar.ts` on seeds 2843 and 7919; the pin's entry if it moves.
+    - [x] 7.26d The AT of 7.26 on 10 seeds × 30 years, after 7.26c; what is short split again.
       (2026-10-18: taken before the open c-parts, c1b, c2b's fix and c3, which wait on it.)
+      Done (2026-10-18, `docs/evidence/7.26/measure-d.md`, `tools/diag/airAt.ts`): seeds 1–10 on
+      `edd105e`: 0 of 10 pass, as before (the critic's run 8, 0 of 10). The late air war about
+      doubled (years 2–10 mean aloft 5–11 → 13–20; air battles about 7 ×), but year 1 rose alike
+      (29–39 → 39–52) and with it the bar; the late years hold 0.2–0.4 of year 1. In the 273 short
+      war-years, 54 of 73 wings at war have no enemy land formation in range, and land formations in
+      contact are 1.2 a day against 32 in year 1. Of those out of range: 59 % no base of their side
+      in range of any enemy (the US, Japan, Germany, Italy, Britain first), 36 % such a base free
+      but beyond one hop for all but 3 %. The order of what waits: c3, then c4 (new), then c1b, c2b's
+      fix last; then 7.26e.
+    - [ ] 7.26e The AT of 7.26 re-measured (`airWar.ts` seeds 1–10 × 30 years, judged by
+      `tools/diag/airAt.ts`) after the parts 7.26d ordered; what is short split again.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five
