@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-510 · 2026-10-18 · accepted — A formation too small to take a cell does not man a sector (PLAN 7.26c2a)
+
+- **Context.** PLAN 7.26c2 (`docs/evidence/7.26/measure-c2.md`): seed 7919's Brazil against
+  Paraguay, which had no land formation, 720 days at score 0. Four Brazilian formations of 130 to
+  707 men stood on Brazil's cells beside Paraguay's, marching on a Paraguayan cell they never took:
+  the hold progress of the cell stayed 0 (their pressure from the cell beside it, 0.36 over marsh,
+  is under `GARRISON`). They manned the three sectors that Brazil's one full division (12,460 men,
+  69 cells away, beyond `DEPLOY_RANGE_CELLS`) could reach, so the marches from afar (ADR-190) never
+  sent it.
+- **Decision.** `takeMen(world)`: the men a formation needs to take a cell, from the cell beside it
+  at full supply, on plains: 1000 × `GARRISON` × (R + 1) / R, R the pressure radius at the map's
+  size (1,500 men at the default size). A formation of no more does not count, for the marches from
+  afar, as standing in a sector or beside it, as marching into it, or as allotted to it; nor, for a
+  partner's sector (ADR-509), as one of the side standing there. Everything else is unchanged: such
+  formations are allotted, ordered and fight as before, and count for "on an errand" (ADR-191).
+- **Measured.** From one saved state each, 365 days, old rule against new (`abOne.ts`): seed 7919's
+  day 1312, Brazil v Paraguay 0 → 35 (its division sets out on day 1432 and takes the first cell on
+  day 1515), the other eight one-sided wars the same; seed 7919's day 900 the same four wars, mean
+  48.5 → 48.8; seed 2843's day 900 and 400 no war worse. `landWar.ts` over 8 years diverges from the
+  first year and is within its chaos (§4 of the evidence). The operational AI from the same states:
+  nothing more where the rule sends nothing, +36 % from one state where it gives 61 more orders;
+  seed 99 over five years, both rules at once on separate cores and swapped: 2.09 / 2.16 ms a tick
+  old, 1.98 / 2.01 new.
+- **Not done.** A nation whose whole army is under `takeMen` takes nothing yet (seed 2843's Brazil
+  against Bolivia, 177 days at 0, its formations of 38 to 2,617 men, one of 612 not refilled on its
+  own land for 170 days): PLAN 7.26c2b, measured first. Iraq against Saudi Arabia (seed 2843) lost
+  its front to a third party's conquest, and #112 against Saudi Arabia (seed 7919) never had one:
+  not land that nobody holds.
+- **Pin.** 00121505 → 59fea6f5.
+- **Tests.** `operationalAi.test.ts` "a front manned by those who cannot take it": the Soviet Union
+  against Poland with no army, a formation of 5 % of a division on a front cell of every Soviet
+  sector, a full division 1.3 ranges east; it is sent to a front cell on its day in `MARCH_DAYS`
+  and a Polish cell is taken, while in the first `2 × MARCH_DAYS` days the small ones take none
+  (red before: never sent).
+
 ### ADR-509 · 2026-10-18 · accepted — A partner with no front of its own sends its far army to its partners' front (PLAN 7.26c1a)
 
 - **Context.** PLAN 7.26c1 (`docs/evidence/7.26/measure-c1.md`, seeds 2843 and 7919, years 2–5):

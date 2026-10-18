@@ -125,6 +125,26 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
         formations do not walk in. AT: a unit test (a nation at war with an enemy with no army
         beside it takes cells within N days); `landWar.ts` re-run: those wars end on a score, not
         the stalemate; the pin's entry if it moves.
+        Measured (2026-10-18, `docs/evidence/7.26/measure-c2.md`): the plan's two wars are gone
+        since c1a; seed 7919's Brazil v Paraguay (720 days at 0) stands in. Brazil's formations of
+        130 to 707 men stand at Paraguay's cells and never take one (pressure under `GARRISON`),
+        and they man the sectors its 12,460-man division beyond the range could reach, so the
+        marches from afar never send it. Iraq v Saudi Arabia (2843) lost its front to a third
+        party's conquest; #112 v Saudi Arabia (7919) never had one (c3's).
+        A part each:
+        - [x] 7.26c2a A formation too small to take a cell (`takeMen`) does not man a sector for the
+          marches from afar. AT: a unit test (a full division beyond the range is sent past sectors
+          held by formations of a few hundred men, and takes a cell); from one state each (365
+          days, `.cache/tmp/abOne.ts`), the one-sided wars' scores; `landWar.ts` 8 years; the pin's
+          entry. Done (ADR-510): from seed 7919's day 1312, Brazil v Paraguay 0 → 35, no other war
+          worse from four states; pin 59fea6f5.
+        - [ ] 7.26c2b A nation whose whole army is under `takeMen` takes nothing (seed 2843's Brazil
+          v Bolivia after c2a, 177 days at 0: formations of 38 to 2,617 men, one of 612 resting on
+          its own land 170 days and not refilled). Measured first: in `landWar.ts`'s one-sided wars
+          at a score under 15, the armed side's largest formation and its refills (ADR-435: why a
+          formation at rest is not refilled, the pool, the gold). Then the cause fixed, only if the
+          7.26 AT is still short. AT: the measure in `measure-c2.md`; a unit test of the rule; the
+          pin's entry.
       - [ ] 7.26c3 The landing per war, not per nation: a nation with a land front in one war plans
         no landing in its others (30–50 % of nation-days), and colonies have no transports. Only if
         c1 and c2 leave the 7.26 AT short. AT: `landWar.ts`'s gate counts; the pin's entry.

@@ -1,6 +1,6 @@
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { DEPLOY_RANGE_CELLS, MARCH_DAYS, SECTOR_CELLS, STAGGER } from '../../src/sim/ai/operational';
+import { DEPLOY_RANGE_CELLS, MARCH_DAYS, SECTOR_CELLS, STAGGER, takeMen } from '../../src/sim/ai/operational';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { frontierOf } from '../../src/sim/systems/territory';
@@ -12,7 +12,7 @@ import { assets1938 } from '../helpers/earth';
 import { addDivision, eventKinds, nationId, runEvents } from '../helpers/sim1938';
 import { EventKind } from '../../src/shared/events';
 import { cellOf } from '../../src/sim/data/terrain';
-import { destroyFormation } from '../../src/sim/systems/elements';
+import { bleedFormation, destroyFormation } from '../../src/sim/systems/elements';
 
 // PLAN 1.25 operational AI v1. AT: in a scripted 2-nation war the larger nation advances;
 // formations are spread along the front (coverage metric).
@@ -397,6 +397,78 @@ describe('marches from afar (PLAN 3.10c1a, ADR-190)', () => {
     const sectorOf = (c: number): number => Math.floor(Math.floor(c / W) / SECTOR_CELLS) * bw + Math.floor((c % W) / SECTOR_CELLS);
     expect(new Set(ids.map((id) => sectorOf(orders.get(id)![0]!))).size).toBe(ids.length);
   }, 180_000);
+});
+
+describe('a front manned by those who cannot take it (PLAN 7.26c2a, ADR-510)', () => {
+  it('formations too small to take a cell do not keep a division from afar off the front, and it takes ground', () => {
+    const SOV = nationId('SOV');
+    const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
+    const w = s.world;
+    const f = w.formations.cols;
+    for (const n of [SOV, POL]) {
+      w.alliances.leave(n);
+      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+    }
+    w.nations.forEach((n) => {
+      if (n !== SOV) w.nations.cols.aiOff[n] = 1;
+    });
+    w.nations.cols.aggression[SOV] = 0;
+    runEvents(s, 1);
+    w.wars.start([SOV], [POL], w.tick).fightToDeath = [true, true];
+    w.wars.changed();
+    for (const id of w.formations.ids()) destroyFormation(w, id);
+    // Poland with no army; in every sector of the Soviet front a formation of a few hundred men,
+    // standing on a front cell (seed 7919's Brazil before Paraguay).
+    const nb: number[] = [];
+    const isFront = (c: number): boolean => w.cells.controller[c] === SOV && neighbours4(c, W, H, true, nb).some((k) => w.cells.controller[k] === POL);
+    const front = [...frontierOf(w)].filter(isFront);
+    expect(front.length).toBeGreaterThan(0);
+    const sector = w.atSize(SECTOR_CELLS);
+    const bw = Math.ceil(W / sector);
+    const sectorOf = (c: number): number => Math.floor(Math.floor(c / W) / sector) * bw + Math.floor((c % W) / sector);
+    const first = new Map<number, number>();
+    for (const c of front) if (!first.has(sectorOf(c))) first.set(sectorOf(c), c);
+    const take = takeMen(w);
+    const hollow = [...first.values()].map((c) => {
+      const id = addDivision(w, SOV, (c % W) + 0.5, Math.floor(c / W) + 0.5);
+      bleedFormation(w, id, 0.95);
+      return id;
+    });
+    for (const id of hollow) expect(f.strength[id]!, `formation ${id}`).toBeLessThanOrEqual(take);
+    // One division at full strength east of the front, beyond the range of every sector of it.
+    const mid = front[Math.floor(front.length / 2)]!;
+    const range = w.atSize(DEPLOY_RANGE_CELLS);
+    const [dx, dy] = [(mid % W) + Math.round(range * 1.3), Math.floor(mid / W)];
+    expect(w.cells.controller[dy * W + dx]).toBe(SOV);
+    const div = addDivision(w, SOV, dx + 0.5, dy + 0.5);
+    expect(f.strength[div]!).toBeGreaterThan(take);
+    const toFront = (): number => Math.min(...front.map((c) => Math.hypot(f.x[div]! - ((c % W) + 0.5), f.y[div]! - (Math.floor(c / W) + 0.5))));
+    const d0 = toFront();
+    expect(d0).toBeGreaterThan(range);
+    const owner0 = w.cells.owner.slice();
+    let order = -1;
+    let ordered = -1;
+    let tookAt = -1;
+    const quiet = (ww: World): void => {
+      ww.out.events.length = 0;
+      ww.out.fires.length = 0;
+    };
+    for (let day = 0; day < 90 && tookAt < 0; day++) {
+      s.step(24, quiet);
+      if (order < 0 && f.moving[div] === 1) {
+        order = f.targetCell[div]!;
+        ordered = day;
+      }
+      if (day === 2 * MARCH_DAYS) expect(taken(w, owner0, POL, SOV), 'the small ones alone take nothing').toBe(0);
+      if (taken(w, owner0, POL, SOV) > 0) tookAt = day;
+    }
+    // Sent, on its day in MARCH_DAYS, to a cell of the front; and Polish ground is taken once it is there.
+    expect(ordered, 'the division is sent').toBeGreaterThanOrEqual(0);
+    expect(ordered).toBeLessThan(MARCH_DAYS);
+    expect(front).toContain(order);
+    expect(tookAt, 'a Polish cell taken').toBeGreaterThan(ordered);
+    expect(toFront()).toBeLessThan(d0);
+  }, 240_000);
 });
 
 describe("a partner's front (PLAN 7.26c1a, ADR-509)", () => {

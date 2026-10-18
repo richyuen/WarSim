@@ -18762,3 +18762,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   garrisons standing beyond the range 31.3 → 9.3 % (2843) and 22.1 → 8.2 % (7919) of the big side's
   men; within the range 31.8 → 43.3 % and 21.9 → 27.0 %. The rule works; contact moves less because
   the enemy is seldom on that front. PLAN: c2 before c1b.
+
+## 2026-10-18 — PLAN 7.26c2a: a formation too small to take a cell does not man a sector
+
+- **Start:** gate green on `8399bd9`; critic not due.
+- **Measured** (`docs/evidence/7.26/measure-c2.md`): the plan's specimens are gone since c1a; seed
+  7919's Brazil v Paraguay (no Paraguayan army, 720 days at 0) stands in. Four Brazilian formations
+  of 130–707 men stand at Paraguayan cells whose hold progress stays 0 (pressure 0.36 over marsh,
+  under `GARRISON` 1), and they man the three sectors that Brazil's 12,460-man division, 69 cells
+  away, could reach: the marches from afar never send it. Iraq v Saudi Arabia (2843) lost its
+  front to Britain's conquest of the land between; #112 v Saudi Arabia (7919) has no border.
+- **Done** (ADR-510): `takeMen(world)` (1,500 men at M); a formation of no more counts for nothing
+  in the marches from afar's "nobody" (standing, marching in, allotted; a partner's sector too).
+- **Measured after:** from the day-1312 state, 365 days: Brazil v Paraguay 0 → 35, the other
+  eight one-sided wars unchanged; from three other states no war worse. `landWar.ts` 8 years:
+  within the chaos. Seed 99 5 years, old and new at once on separate cores, swapped: 2.09/2.16 →
+  1.98/2.01 ms a tick. Pin 00121505 → 59fea6f5.
+- **Tests:** `operationalAi.test.ts` "a front manned by those who cannot take it" (red before).
+- **Next:** c2b (a whole army under `takeMen`, not refilled: seed 2843's Brazil v Bolivia) is
+  measured first; c1b and c3 wait on the 7.26 AT.
+- **Gotcha:** a Bash function that calls `set --` loses its own arguments (`$1` of the caller):
+  two A/B runs wrote to the same logs. Write the runner as a script with its label in a variable
+  first.

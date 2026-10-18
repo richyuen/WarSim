@@ -61,7 +61,7 @@
  */
 import { atAnyPort } from '../systems/amphibious';
 import { orderMove, passageOf, snapTarget, wasLong } from '../systems/movement';
-import { frontierOf } from '../systems/territory';
+import { frontierOf, GARRISON, PRESSURE_RADIUS } from '../systems/territory';
 import { neighbours4, pocketOf, type Passage } from '../nav/grid';
 import { wideJoined, wideNode } from '../nav/provinceGraph';
 import { navOf, type World } from '../world';
@@ -98,6 +98,20 @@ export const MARCH_DAYS = 8;
  */
 export const SPARE_RANGES = 3;
 let spare2 = SPARE_RANGES * SPARE_RANGES * range2;
+/** This world's `takeMen`: set by `operationalAi` for the world it plans. */
+let take = 1500;
+
+/**
+ * The men a formation needs to take a cell (PLAN 7.26c2, ADR-510): from the cell beside it, at
+ * full supply, its pressure (`territory.ts`: men / 1000 × (1 − 1 / (R + 1))) beats GARRISON on
+ * plains. A formation of no more does not man a sector for the marches from afar: it stands at
+ * the enemy's cell, and the cell never flips (seed 7919's Brazil: four of 130 to 707 men held
+ * Paraguay's front for 600 days while a division of 12,460 stood 70 cells away).
+ */
+export function takeMen(world: World): number {
+  const r = world.atSizeWhole(PRESSURE_RADIUS);
+  return (1000 * GARRISON * (r + 1)) / r;
+}
 /**
  * A formation with this share of its upkeep in tanks is armour (`EconomyTables.templateArmour`:
  * the armour formations of 1938 have 0.66 to 0.93, the others 0.20 at most).
@@ -134,6 +148,7 @@ export function operationalAi(world: World, armour: readonly number[] = []): voi
   range = world.atSize(DEPLOY_RANGE_CELLS);
   range2 = range * range;
   spare2 = SPARE_RANGES * SPARE_RANGES * range2;
+  take = takeMen(world);
   if (!world.settings.aiEnabled || world.tick % 6 !== 0 || world.wars.list.length === 0) return;
   const step = world.tick / 6;
   const nc = world.nations.cols;
@@ -402,6 +417,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   };
   /** By sector bucket, how many formations of n stand in it, free or not. */
   const stands = new Map<number, number>();
+  /** The same, of those that can take a cell (`takeMen`). */
+  const holds = new Map<number, number>();
   const mine: number[] = [];
   /** n's formations, free or not. */
   const all: number[] = [];
@@ -410,6 +427,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     all.push(id);
     const k = Math.floor(f.y[id]! / sector) * bw + Math.floor(f.x[id]! / sector);
     stands.set(k, (stands.get(k) ?? 0) + 1);
+    if (f.strength[id]! > take) holds.set(k, (holds.get(k) ?? 0) + 1);
     if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0) mine.push(id);
   }
   if (mine.length === 0) return;
@@ -605,20 +623,24 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const indexOf = (key: number): number | undefined => (slotStamp[key] === gen ? slotAt[key] : undefined);
   /** By sector, how many free formations of n march into it. */
   const marchers = new Int32Array(sn);
+  /** The same, of those that can take a cell (`takeMen`). */
+  const takers = new Int32Array(sn);
   for (const id of mine) {
     if (f.moving[id] !== 1) continue;
     const i = indexOf(sectorOfCell(f.targetCell[id]!));
-    if (i !== undefined) marchers[i]!++;
+    if (i === undefined) continue;
+    marchers[i]!++;
+    if (f.strength[id]! > take) takers[i]!++;
   }
-  /** How many formations of n stand in the sector or next to it. */
-  const stoodAt = (s: Sector): number => {
+  /** How many formations of n stand in the sector or next to it (of `by`: all, or those that can take a cell). */
+  const stoodAt = (s: Sector, by = stands): number => {
     const sy = Math.floor(s.key / bw);
     const sx = s.key - sy * bw;
     let c = 0;
     for (let dx = -1; dx <= 1; dx++) {
       const x = bucketX(sx, dx);
       if (x < 0) continue;
-      for (let dy = -1; dy <= 1; dy++) c += stands.get((sy + dy) * bw + x) ?? 0;
+      for (let dy = -1; dy <= 1; dy++) c += by.get((sy + dy) * bw + x) ?? 0;
     }
     return c;
   };
@@ -802,21 +824,21 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       if (ofSide[m] === 0) ofSide[m] = m === n || wars.sameSide(m, n) ? 1 : 2;
       return ofSide[m] === 1;
     };
-    /** Whether a formation of n's side stands on land in the sector or next to it. */
+    /** Whether a formation of n's side that can take a cell (`takeMen`) stands on land in the sector or next to it. */
     const sideStood = (s: Sector): boolean => {
       const sy = Math.floor(s.key / bw);
       const sx = s.key - sy * bw;
       for (let dx = -1; dx <= 1; dx++) {
         const x = bucketX(sx, dx);
         if (x < 0) continue;
-        for (let dy = -1; dy <= 1; dy++) for (const id of stand.byBucket.get((sy + dy) * bw + x) ?? []) if (onSide(f.nation[id]!) && !world.offLand(id)) return true;
+        for (let dy = -1; dy <= 1; dy++) for (const id of stand.byBucket.get((sy + dy) * bw + x) ?? []) if (f.strength[id]! > take && onSide(f.nation[id]!) && !world.offLand(id)) return true;
       }
       return false;
     };
     for (let i = 0; i < sn; i++) {
       const s = list[i]!;
-      if ((!s.own && ownFront) || s.formations.length > 0) continue;
-      if (marchers[i]! > 0 || stoodAt(s) > 0) continue;
+      if ((!s.own && ownFront) || s.formations.some((id) => f.strength[id]! > take)) continue;
+      if (takers[i]! > 0 || stoodAt(s, holds) > 0) continue;
       if (!s.own && sideStood(s)) continue;
       empty[i] = 1;
       empties++;
