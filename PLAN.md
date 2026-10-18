@@ -57,9 +57,14 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       with a sortie in a T2 and a T3 view, days 1 to 21, on seed 6047 and a seed not used, before
       and after; a unit test of the day's assignment; the losses with and without it; the pin's
       entry; the full sweep on unseen seeds after a0 and a.
-    - [ ] 7.24c A spec: on days 3 and 10 of the war on Poland, formations in contact with a sortie
+    - [x] 7.24c A spec: on days 3 and 10 of the war on Poland, formations in contact with a sortie
       of the page's rows over them, the camera on each at 80 and 25 m/px, the sorties drawn; a
       picture.
+    - [ ] 7.24d A patrol over its formation's men: the AI's patrol is set on its formation's
+      point, which at T3 is some kilometres from the block deployed toward the contact (seed 6047
+      day 10: about 6 km, `docs/evidence/7.24/c-patrol-day10-025m.png`): on the block's middle or
+      the line of contact instead. AT: the patrol's middle within a block's depth of its men; the
+      pin's entry.
     - [ ] 7.24b The editor's bomber group at a capital: the critic's case (Poland at Warsaw) placed,
       or refused with what it needs (the nearest airbase of its with room). AT: the editor's spec.
 - [ ] 7.25 AI nuclear use believed (AI nuclear use 6, needs 8): beyond 7.18's frequency, a world's

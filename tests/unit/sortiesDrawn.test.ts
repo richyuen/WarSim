@@ -6,7 +6,7 @@ import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { orderMission } from '../../src/sim/systems/air';
 import { aircraftOf } from '../../src/sim/systems/airCombat';
-import { ORBIT_CELLS, planesOf, sortiePlace } from '../../src/render/units/sorties';
+import { drawSorties, ORBIT_CELLS, ORBIT_VIEW, planesOf, sortiePlace } from '../../src/render/units/sorties';
 import { sortieSection } from '../../src/worker/server';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -16,6 +16,37 @@ import { nationId } from '../helpers/sim1938';
 
 const GER = nationId('GER');
 const W = SIZE_1938.w;
+
+/** A 2D context that draws nothing: what `drawSorties` places is all a test reads. */
+const blank = (): CanvasRenderingContext2D => new Proxy({}, { get: (_, k) => (k === 'canvas' ? {} : () => undefined), set: () => true }) as unknown as CanvasRenderingContext2D;
+
+describe("a patrol's circle at T3 (PLAN 7.24c)", () => {
+  it('a patrol over the middle of the view is drawn on the screen all round its circle, at 25 m/px as at 80', () => {
+    const [vw, vh] = [1600, 900];
+    const geo = { w: 2048, h: 1024, kmPerCell: 19.57, wrapX: true };
+    // The widest circle a sortie has (1.3 of ORBIT_CELLS): its own phase by base and launch.
+    const rows: number[] = [];
+    for (let k = 0; k < 40; k++) rows.push(10 + k * 0.137, 12, 20, 10, 0, 100, 1000, 3, 1, 36, SortieRole.fighter);
+    for (const m of [80, 25]) {
+      const cam = { cx: 20, cy: 10, scale: (19.57 * 1000) / m };
+      let drawn = 0;
+      // Round the circle: 24 times in its half hour.
+      for (let t = 10; t < 10.5; t += 0.5 / 24) {
+        const placed = drawSorties(blank(), rows, t, cam, geo, vw, vh, 1, () => '#fff');
+        drawn += placed.length;
+        for (const p of placed) {
+          expect(p.leg).toBe(Leg.Over);
+          expect(Math.abs(p.x - vw / 2), `at ${m} m/px, hour ${t.toFixed(3)}`).toBeLessThan(vw / 2);
+          expect(Math.abs(p.y - vh / 2), `at ${m} m/px, hour ${t.toFixed(3)}`).toBeLessThan(vh / 2);
+        }
+      }
+      // Every sortie at every moment: none off the screen.
+      expect(drawn, `at ${m} m/px`).toBe(40 * 24);
+    }
+    // At T3 the circle is the view's, at most ORBIT_VIEW × 1.3 of its smaller half side.
+    expect(ORBIT_VIEW * 1.3).toBeLessThan(1);
+  });
+});
 
 describe('sorties drawn (PLAN 5.7a)', () => {
   it('the snapshot\'s rows: a sortie in the air, its launch from the tick, nation, aircraft, role; none at home', () => {

@@ -17,6 +17,8 @@ export const ORBIT_CELLS = 0.6;
 export const ORBIT_HOURS = 0.5;
 /** The least mean radius of that circle on screen, CSS px (before the unit size): at T0 and T1 a cell is a few px. */
 export const ORBIT_MIN_PX = 26;
+/** The greatest mean radius of that circle on screen, a share of the view's smaller half side (PLAN 7.24c). */
+export const ORBIT_VIEW = 0.6;
 /** Planes are their full size from this zoom (px a cell, T1) in, and no less than `ZOOM_LEAST` of it further out. */
 export const ZOOM_FULL = 6;
 export const ZOOM_LEAST = 0.55;
@@ -125,9 +127,11 @@ export function drawSorties(
     for (const off of offs) {
       let [x, y] = worldToScreen(cam, at.x + off, at.y, vw, vh);
       if (at.orbit) {
-        // Its circle no smaller on screen than ORBIT_MIN_PX × its share.
+        // Its circle no smaller on screen than ORBIT_MIN_PX × its share, and no larger than
+        // ORBIT_VIEW of the view's half side (PLAN 7.24c): at T3 its 12 km went off the screen
+        // over the fight it watches. The circle is the page's; the sim's place is its middle.
         const [ox, oy] = worldToScreen(cam, at.orbit.cx + off, at.orbit.cy, vw, vh);
-        const r = Math.max(ORBIT_CELLS * sizeScale * at.orbit.share * cam.scale, ORBIT_MIN_PX * at.orbit.share * size);
+        const r = Math.min(Math.max(ORBIT_CELLS * sizeScale * at.orbit.share * cam.scale, ORBIT_MIN_PX * at.orbit.share * size), (ORBIT_VIEW * at.orbit.share * Math.min(vw, vh)) / 2);
         [x, y] = [ox + r * Math.cos(at.orbit.angle), oy + r * Math.sin(at.orbit.angle)];
       }
       if (x < -3 * span || y < -3 * span || x > vw + 3 * span || y > vh + 3 * span) continue;

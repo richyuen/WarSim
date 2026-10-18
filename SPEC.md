@@ -1879,7 +1879,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - *As built (PLAN 5.7a, ADR-323; `render/units/sorties.ts`):* the snapshot carries the sorties in
   the air; the page draws each as planes of its nation's colour where `sortieAt` (in `shared/`)
   has it at the frame's time (in the hour the snapshot ends, as the formations are played: 5.7d),
-  a patrol circling over its target, T0 to T2.
+  a patrol circling over its target, T0 to T2 (every tier since PLAN 5.9; its circle at most 0.6 × its
+  share of the view's smaller half side on the screen since PLAN 7.24c, so at T3 it stays over the
+  fight the camera is on; the circle is the page's, the sim's place its middle).
 - *As built (PLAN 5.7b, ADR-324; `render/fx/air.ts`):* an hour's air fight is tracers and flak with
   smoke trails for the aircraft lost; a strike, bombs bursting about its target; a sortie under
   AA (`FlakFired`), flak puffs about it; on the render clock, T0 to T2.

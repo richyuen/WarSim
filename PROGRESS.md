@@ -18511,3 +18511,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   `docs/sweeps/2026-10-18-sweep-724a.md`. PLAN 7.27's bar (no stasis on 8 of 10 unseen seeds) is met
   on this sweep, noted there; 7.27 stays open for its own measure.
 - **Next:** PLAN 7.24c (the spec of sorties drawn over fights), then 7.24b (the editor).
+
+## 2026-10-18 — PLAN 7.24c: patrols over fights drawn at T2 and T3, in a spec
+
+- **Start:** gate green on `42b92fa` (7.24a).
+- **Found:** a patrol's circle on the screen at M is 0.42 to 0.78 cells round its target, 330 to 610
+  px at 25 m/px, while a 1600 × 900 view is 450 px from its middle to its top: over the fight the
+  camera is on, a patrol was off the screen a good part of its circle at T3.
+- **Done:** `ORBIT_VIEW` (0.6): the circle's radius on the screen at most 0.6 × the sortie's share of
+  the view's smaller half side (SPEC §8). Render only; the sim's place is the circle's middle, as
+  before. Pin unmoved.
+- **Tests:** `sortiesDrawn.test.ts` (new test: 40 sorties of the widest circle swept round it at 80
+  and 25 m/px, every one on the screen every time; red without the cap, 467 px from the middle at 25
+  m/px); `patrolsSeen1938` (new: the critic's war, the first hour of days 3 and 10 with a fighter
+  patrol within 0.3 cells of a formation in contact, found in Node, the page stepped to it and the
+  hashes compared; planes over their target drawn at 80 and 25 m/px: day 3 8 and 5, day 10 2 and 1;
+  green also without the cap at these two hours, which the unit test covers). Pictures looked at
+  (`docs/evidence/7.24/c-patrol-day10-*.png`): German fighters circling in view with the contact of
+  formation 11 and Poland's 549; at 25 m/px their circle is about 6 km from 11's men, centred on the
+  formation's point, not its block: PLAN 7.24d.
+- **Specs by hand** (chromium): `patrolsSeen1938` (three runs), `sortiesSeen1938`, `airT3_1938`,
+  `airDemo1938`: green.
+- **Next:** PLAN 7.24d (the patrol on its formation's men), then 7.24b (the editor).
