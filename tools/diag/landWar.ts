@@ -8,6 +8,8 @@
  * - weekly, for a war with a front: the nearest pair of its sides' land formations (km), and how
  *   many of each side's land formations stand within NEAR_KM of an enemy one, and how many are
  *   moving;
+ * - per year, of the big wars (a weekly sample with a side of BIG or more land formations), the
+ *   share of their front days with contact (PLAN 7.26c1's AT);
  * - how it ended, read from its last day (capitulation at ±100, MAX_WAR_DAYS, FRONTLESS_DAYS,
  *   exhaustion, crushed, or a peace of another war's terms).
  * Per nation at war, daily: the gate of the invasion AI (`ai/invasion.ts`'s `planLanding`) that
@@ -35,6 +37,8 @@ const seed = Number(process.argv[2]);
 const years = Number(process.argv[3] ?? 8);
 const out = process.argv[4] ?? `.cache/landWar_${seed}.json`;
 const NEAR_KM = 150;
+/** A war is big in a year when a weekly sample has a side of this many land formations or more (PLAN 7.26c1). */
+const BIG = 50;
 const s = new Sim({ scenario: '1938', seed, assets: assets1938(SIZE_1938.w) });
 const w = s.world;
 const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
@@ -107,7 +111,7 @@ const years_: unknown[] = [];
 let day = 0;
 const t0 = Date.now();
 for (let y = 0; y < years; y++) {
-  const yr = { year: y + 1, warDays: 0, frontless: 0, contact: 0, noContact: 0, engaged: 0, gates: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, gateNations: {} as Record<string, Record<string, number>>, nearestKmNoContact: [] as number[], nearestKmContact: [] as number[] };
+  const yr = { year: y + 1, warDays: 0, frontless: 0, contact: 0, noContact: 0, engaged: 0, gates: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, gateNations: {} as Record<string, Record<string, number>>, nearestKmNoContact: [] as number[], nearestKmContact: [] as number[], byWar: new Map<number, { contact: number; noContact: number; big: boolean }>() };
   for (let d = 0; d < 365; d++, day++) {
     s.step(24, (ww) => {
       ww.out.events.length = 0;
@@ -168,6 +172,10 @@ for (let y = 0; y < years; y++) {
         }
         if (contact) break;
       }
+      let bw = yr.byWar.get(war.id);
+      if (!bw) yr.byWar.set(war.id, (bw = { contact: 0, noContact: 0, big: false }));
+      if (contact) bw.contact++;
+      else bw.noContact++;
       if (contact) {
         r.contact++;
         yr.contact++;
@@ -198,6 +206,7 @@ for (let y = 0; y < years; y++) {
         r.nearA.push(nearOf(la, ld));
         r.nearD.push(nearOf(ld, la));
         r.nearestKm.push(Number.isFinite(best) ? Math.round(best) : -1);
+        if (la.length >= BIG || ld.length >= BIG) bw.big = true;
         r.landA.push(la.length);
         r.landD.push(ld.length);
         r.movingA.push(la.filter((g) => c.moving[g] === 1).length);
@@ -229,7 +238,10 @@ for (let y = 0; y < years; y++) {
     }
   }
   const med = (a: number[]): number | null => (a.length ? [...a].sort((x, z) => x - z)[a.length >> 1]! : null);
-  const row = { year: yr.year, warDays: yr.warDays, frontless: yr.frontless, contact: yr.contact, noContact: yr.noContact, engagedPerDay: +(yr.engaged / 365).toFixed(1), medianNearestKmNoContact: med(yr.nearestKmNoContact), medianNearestKmContact: med(yr.nearestKmContact), gates: yr.gates, gateNations: Object.fromEntries(Object.entries(yr.gateNations).sort((a, b) => Object.values(b[1]).reduce((x, z) => x + z, 0) - Object.values(a[1]).reduce((x, z) => x + z, 0)).slice(0, 10)) };
+  let bigC = 0;
+  let bigN = 0;
+  for (const v of yr.byWar.values()) if (v.big) [bigC, bigN] = [bigC + v.contact, bigN + v.noContact];
+  const row = { year: yr.year, bigWarContactShare: bigC + bigN > 0 ? +(bigC / (bigC + bigN)).toFixed(3) : null, bigWarFrontDays: bigC + bigN, warDays: yr.warDays, frontless: yr.frontless, contact: yr.contact, noContact: yr.noContact, engagedPerDay: +(yr.engaged / 365).toFixed(1), medianNearestKmNoContact: med(yr.nearestKmNoContact), medianNearestKmContact: med(yr.nearestKmContact), gates: yr.gates, gateNations: Object.fromEntries(Object.entries(yr.gateNations).sort((a, b) => Object.values(b[1]).reduce((x, z) => x + z, 0) - Object.values(a[1]).reduce((x, z) => x + z, 0)).slice(0, 10)) };
   years_.push(row);
   process.stderr.write(`${JSON.stringify(row)}\n${((Date.now() - t0) / 60000).toFixed(1)} min\n`);
 }

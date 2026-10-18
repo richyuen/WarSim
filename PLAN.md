@@ -95,6 +95,23 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
         contact share of front days (wars with a weekly sample of a side of 50 or more land
         formations: their `contact` ÷ (`contact` + `noContact`), added to the tool's yearly row,
         measured before on the same code) up from year 2; `airWar.ts`'s sorties; the pin's entry.
+        Measured (2026-10-18, `tools/diag/marches.ts`, `docs/evidence/7.26/measure-c1.md`): the
+        share before, years 1–8, 0.40/0.27/0.07/0.01/0.04/0.28/0.06/0.11 (2843) and
+        0.48/0.16/0.10/0.05/0.14/0.17/0.06/0.06 (7919). In years 2–5 both sides keep 58–84 % of
+        their men beyond `DEPLOY_RANGE_CELLS` of the war's front; 1–10 % of the enemy's stand within
+        1.5 sectors of it; 95 % of the marches go to sectors with no enemy. A weight on the enemy's
+        men within 30 cells moved nothing (2.6 → 2.4 %, 19.6 → 19.3 %; dropped). Beyond the range,
+        17–32 % of each side's men are of nations with no front cell of their own in the war,
+        standing: the marches from afar and to spare serve only the planner's own front.
+        - [ ] 7.26c1a A partner's garrisons go to its partners' front: a nation at war with no
+          front cell of its own against an enemy sends formations that stand beyond the range to the
+          empty sectors of its partners' front (the marches from afar, ADR-190, for a partner's
+          sectors). AT: a unit test (a nation with no front of its own, its army idle beyond range
+          of its ally's front, sets out; the ally's own marches unchanged); from the day-900 states
+          (180 days, `.cache/tmp/abc.ts`) and one of day 400: the big wars' contact share, sorties
+          aloft; `landWar.ts` 8 years; the pin's entry.
+        - [ ] 7.26c1b The own front's far marches, one a sector a week (9–21 % of the men standing
+          beyond the range): only if c1a leaves the share short.
       - [ ] 7.26c2 Land that nobody holds is taken: a side at war whose enemy has no land formation
         on their front takes its cells. Measured first, from a checkpoint of seed 2843 with Yemen and
         Saudi Arabia at war (day 2136 on) and seed 7919's Iraq and Saudi Arabia (day 647 on): the

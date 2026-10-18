@@ -18722,3 +18722,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   idle wings of 7.26a's runs are mostly the great powers' (Germany, Italy, Japan, the Soviet Union)
   in the blocs' wars, so the blocs' armies go first: PLAN 7.26c1 and c2 swapped. Corrected: the days
   of wars with a front with no contact are 76–97 % from year 2 (seed 2843's year 6: 76 %), not 85–97 %.
+
+## 2026-10-18 — PLAN 7.26c1: where the big wars' armies march, measured
+
+- **Start:** gate green on `b46cde0`; critic not due.
+- **Done:** `tools/diag/marches.ts` (from a state or a day: the big sides' formations moving or not,
+  their orders' targets, threat, km to go, days on the march, re-plans; weekly how far each side's
+  men stand from the war's front, within the range or not, by own front and state); `landWar.ts`'s
+  `bigWarContactShare` (the c1 AT's measure). PLAN 7.26c1 split (c1a the partner's gate, c1b the
+  own front's far marches).
+- **Measured** (`docs/evidence/7.26/measure-c1.md`): the share before, years 1–8, 0.40 to 0.01 on
+  2843 and 0.48 to 0.05 on 7919. In years 2–5 both sides keep 58–84 % of their men beyond
+  `DEPLOY_RANGE_CELLS` of the war's front, and 1–10 % of the enemy's stand within 1.5 sectors of it;
+  95 % of the marches go to empty sectors (Italy's army across conquered Africa, 1,550 km to go).
+  Beyond the range, 17–32 % of each side's men are partners' with no front cell of their own,
+  standing: the far marches serve only the planner's own front.
+- **Tried, dropped:** the allotment weighted by enemy men within 30 cells, and its floor kept: the
+  contact share from day-900 states 2.6 → 2.4 % and 19.6 → 19.3 %. Reverted.
+- **Gotcha:** Afro-Eurasia is one landmass on this map: "on the front's landmass" says nothing
+  (68–93 % of the enemy's men); km to the front within the range does.
