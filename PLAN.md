@@ -53,6 +53,17 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       marker, and from what zoom they are sent. AT: elements counted at 900 m/px in the critic's
       case; snapshot size over Europe at war; `fades1938` and the T1 specs green; pictures at 3,000
       to 10 m/px.
+      Found (2026-10-18, `.cache/p721/measureT1.ts`): a division's block at 900 m/px is about 2 px
+      (elements 0.03 cells = 590 m apart) under a marker of 26 × 29 px, so what shows is the
+      marker's, from the element list; a view of 1,600 × 900 px over Poland or France on day 3
+      gets 2,267 to 3,159 elements at 900 m/px and 8,674 to 9,998 at 2,000 (cap 40,000), 0.4 to
+      0.5 MB and 2 to 5 ms a snapshot. A part each:
+        - [x] 7.21c1 Elements sent at T1 (all of it, from 2,000 m/px), their fire and ends still
+          from tier 1.5. AT: elements counted at 900 m/px in the critic's case; snapshot size over
+          Europe at war; the hash unchanged by the subscription (`snapshots`, `elements1938`).
+        - [ ] 7.21c2 A T1 marker shows its formation's elements: a pip each, by class, its loss
+          seen. AT: unit tests of the layout; `fades1938`, `markers1938`, `markerStacks1938` and
+          the T1 specs green; pictures at 3,000 to 10 m/px.
 - [ ] 7.22 A sea battle seen firing, and fleets that hold their place (naval 6, needs 8): beyond
   7.19's framing, no gunfire drawn in 6 s at Speed x1; a ship about 20 to 30 px long at 15 m/px;
   fleets placed by the editor gone from the North Sea on day 3 (`critic/c8_j_5591.json`,

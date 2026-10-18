@@ -188,8 +188,8 @@ export interface SnapshotFormations {
 
 /**
  * Elements of the formations inside the subscribed bbox (PLAN 2.3), only when the subscription
- * `wantsElements` at tier ≥ 1.5. Positions are slot poses (`sim/core/pose`), the same the sim
- * uses, so every tier agrees.
+ * `wantsElements` at tier ≥ 1 (PLAN 7.21c1: a T1 marker shows its elements; ≥ 1.5 before).
+ * Positions are slot poses (`sim/core/pose`), the same the sim uses, so every tier agrees.
  */
 export interface SnapshotElements {
   count: number;
@@ -210,8 +210,9 @@ export interface SnapshotElements {
   flags: Uint8Array;
   /**
    * 1 where the element was fired at since the snapshot before, by anything and from anywhere
-   * (PLAN 3.6e5). The fires of a snapshot are those with an end in the box; an element is sent
-   * with its formation, in the box or not.
+   * (PLAN 3.6e5); all 0 below tier 1.5, where no fire is kept (PLAN 7.21c1). The fires of a
+   * snapshot are those with an end in the box; an element is sent with its formation, in the box
+   * or not.
    */
   hit: Uint8Array;
   /** True when the cap cut the list short. */
@@ -249,7 +250,8 @@ export interface SnapshotEvents {
 
 /**
  * Fire events since the last snapshot with an end inside the subscribed bbox (PLAN 2.4): only
- * for a subscription with `wantsElements` at tier ≥ 1.5, as the elements are.
+ * for a subscription with `wantsElements` at tier ≥ 1.5, where the elements are drawn (they are
+ * sent from tier 1: PLAN 7.21c1).
  */
 export interface SnapshotFires {
   count: number;

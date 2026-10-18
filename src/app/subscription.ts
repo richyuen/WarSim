@@ -6,8 +6,8 @@ export const SUBSCRIPTION_PAD = 1.25;
 
 /**
  * Interest management (SPEC §8): what a view of `viewW` × `viewH` CSS px asks the worker for (its
- * box padded by 25%, its tier, whether it draws elements), and a key that says when to ask again:
- * the view asks when the key has changed.
+ * box padded by 25%, its tier, whether it is sent elements: from T1, PLAN 7.21c1), and a key that
+ * says when to ask again: the view asks when the key has changed.
  *
  * The key is the box rounded to a step that is a part of the box: a power of two of cells
  * between a 32nd and a 16th of the box's smaller half-size (about 14 to 28 px on a view 720 px
@@ -23,7 +23,7 @@ export function viewSubscription(cam: Camera, viewW: number, viewH: number, kmPe
   const hw = (viewW / 2 / cam.scale) * SUBSCRIPTION_PAD;
   const hh = (viewH / 2 / cam.scale) * SUBSCRIPTION_PAD;
   const tier = tierOf((kmPerCell * 1000) / cam.scale);
-  const sub: Subscription = { bbox: [cam.cx - hw, cam.cy - hh, cam.cx + hw, cam.cy + hh], z: Math.log2(cam.scale), tier, wantsElements: tier >= 1.5 };
+  const sub: Subscription = { bbox: [cam.cx - hw, cam.cy - hh, cam.cx + hw, cam.cy + hh], z: Math.log2(cam.scale), tier, wantsElements: tier >= 1 };
   const exp = Math.floor(Math.log2(Math.min(hw, hh) / 16));
   const step = 2 ** exp;
   return { sub, key: `${tier}|${exp}|${sub.bbox.map((v) => Math.round(v / step)).join(',')}` };

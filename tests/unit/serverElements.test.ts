@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Command } from '../../src/shared/commands';
+import { EVENT_STRIDE, EventKind } from '../../src/shared/events';
 import { SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
 import { tierOf, type FromWorker, type Snapshot, type Subscription } from '../../src/shared/protocol';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
@@ -22,7 +23,7 @@ function boxOf(cx: number, cy: number, scale: number, vw: number, vh: number): S
   const hw = (vw / 2 / scale) * 1.25;
   const hh = (vh / 2 / scale) * 1.25;
   const tier = tierOf((GEO.kmPerCell * 1000) / scale);
-  return { bbox: [cx - hw, cy - hh, cx + hw, cy + hh], z: Math.log2(scale), tier, wantsElements: tier >= 1.5 };
+  return { bbox: [cx - hw, cy - hh, cx + hw, cy + hh], z: Math.log2(scale), tier, wantsElements: tier >= 1 };
 }
 
 function setup(): { sim: Sim; snapshot: (sub: Subscription) => Snapshot; step: (cmds: Command[]) => void; server: SimServer } {
@@ -183,6 +184,49 @@ describe('the elements fired at in snapshots (PLAN 3.6e5)', () => {
     snapshot(far);
     fire(outside[0]!);
     expect(hit(snapshot(sub))).toEqual([]);
+  });
+});
+
+// PLAN 7.21c1 (ADR-498): a T1 view is sent the elements of its formations, as their markers show
+// them, but not their fire: no shot, no element fired at, no element's end (those are drawn with
+// the sprites, from tier 1.5).
+describe('elements at T1 (PLAN 7.21c1)', () => {
+  it('a view at 900 m/px gets every element of each formation in it, and no fire', () => {
+    const { sim, snapshot, server } = setup();
+    const w = sim.world;
+    const idx = elementIndex(w);
+    let f = 0;
+    w.formations.forEach((g) => {
+      if (f === 0 && !w.isWing(g) && (idx.get(g)?.length ?? 0) === 28) f = g;
+    });
+    const scale = (GEO.kmPerCell * 1000) / 900;
+    const sub = boxOf(w.formations.cols.x[f]!, w.formations.cols.y[f]!, scale, 1600, 900);
+    expect(sub.tier).toBe(1);
+    expect(sub.wantsElements).toBe(true);
+    snapshot(sub);
+    // A shot at one of its elements and the end of another, in the box.
+    const [e0, e1] = idx.get(f)!;
+    const [x, y] = [w.formations.cols.x[f]!, w.formations.cols.y[f]!];
+    w.out.fires.push(w.tick, 7, 1, e0!, 0, 0.25, x - 0.5, y, x, y);
+    w.out.emit(w.tick, EventKind.ElementDestroyed, e1!, 0, x, y);
+    server['drainEvents'](w);
+    const s = snapshot(sub);
+    const own = Array.from(s.elements.formation.subarray(0, s.elements.count)).filter((g) => g === f).length;
+    expect(own).toBe(28);
+    expect(s.elements.truncated).toBe(false);
+    expect(Array.from(s.elements.hit.subarray(0, s.elements.count)).every((h) => h === 0)).toBe(true);
+    expect(s.fires.count).toBe(0);
+    const ends: number[] = [];
+    for (let i = 0; i < s.events.count; i++) if (s.events.data[i * EVENT_STRIDE + 2] === EventKind.ElementDestroyed) ends.push(i);
+    expect(ends).toEqual([]);
+  });
+
+  it('a strategic view (T0) is sent none', () => {
+    const { sim, snapshot } = setup();
+    const w = sim.world;
+    const sub = boxOf(w.formations.cols.x[1]!, w.formations.cols.y[1]!, (GEO.kmPerCell * 1000) / 2500, 1600, 900);
+    expect(sub.tier).toBe(0);
+    expect(snapshot(sub).elements.count).toBe(0);
   });
 });
 

@@ -34,6 +34,9 @@ describe('the view subscription (PLAN 2.7n2)', () => {
     expect(sub.tier).toBe(2); // 196 m/px
     expect(sub.wantsElements).toBe(true);
     expect(viewSubscription({ cx: 1000, cy: 400, scale: 1 }, 1280, 720, KM).sub).toMatchObject({ tier: 0, wantsElements: false });
+    // From T1 the view is sent elements, which its markers show (PLAN 7.21c1): 900 and 2,000 m/px.
+    expect(viewSubscription({ cx: 1000, cy: 400, scale: (KM * 1000) / 900 }, 1280, 720, KM).sub).toMatchObject({ tier: 1, wantsElements: true });
+    expect(viewSubscription({ cx: 1000, cy: 400, scale: (KM * 1000) / 2000 }, 1280, 720, KM).sub).toMatchObject({ tier: 1, wantsElements: true });
   });
 
   it('two cameras with one key: the view of each is inside the box of the other, at every zoom', () => {

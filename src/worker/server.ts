@@ -1095,7 +1095,7 @@ export class SimServer {
       if (ev[i + 1] === EventKind.ElementDestroyed) {
         // The end of an element is for a view that draws elements (PLAN 2.4b); it gets what the
         // unit leaves behind in place of the unit.
-        if (!this.wantsElements()) continue;
+        if (!this.drawsElements()) continue;
         b = wreckOf(world.rules?.units[b]?.cls ?? 'inf');
       }
       this.eventQueue.push(this.nextEventSeq++, ev[i]!, ev[i + 1]!, ev[i + 2]!, b, ev[i + 4]!, ev[i + 5]!);
@@ -1151,9 +1151,20 @@ export class SimServer {
     }
   }
 
-  /** Whether the subscription draws elements, and with them their fire (PLAN 2.3, 2.4). */
-  private wantsElements(): boolean {
+  /**
+   * Whether the subscription draws elements, and with them their fire and their ends (PLAN 2.3,
+   * 2.4): from tier 1.5, where the sprites come in.
+   */
+  private drawsElements(): boolean {
     return this.sub.wantsElements && this.sub.tier >= 1.5;
+  }
+
+  /**
+   * Whether the subscription is sent elements (PLAN 7.21c1): from T1, where a formation's marker
+   * shows its elements (ADR-498). Their fire is for a view that draws them (`drawsElements`).
+   */
+  private sendsElements(): boolean {
+    return this.sub.wantsElements && this.sub.tier >= 1;
   }
 
   /**
@@ -1167,7 +1178,7 @@ export class SimServer {
   private drainFires(world: World): void {
     const fires = world.out.fires.data;
     const units = world.rules?.units;
-    if (units && this.wantsElements()) {
+    if (units && this.drawsElements()) {
       const q = this.fireQueue;
       for (let i = 0; i < world.out.fires.length; i += FIRE_STRIDE) {
         this.firedAt.add(fires[i + FireField.target]!);
@@ -1187,7 +1198,8 @@ export class SimServer {
 
   /**
    * Elements of the formations whose block reaches into the subscribed bbox (PLAN 2.3): only
-   * when the subscription wants them at tier ≥ 1.5. Read-only: never touches sim state (I4).
+   * when the subscription wants them at tier ≥ 1 (PLAN 7.21c1; ≥ 1.5 before). Read-only: never
+   * touches sim state (I4).
    *
    * By the block and not by the formation's centre (PLAN 2.7n1): at the closest zooms the box
    * is smaller than a division, and a view on a division's flank got nothing of it. A formation
@@ -1198,7 +1210,7 @@ export class SimServer {
     const picked: number[] = [];
     let total = 0;
     let truncated = false;
-    const idx = this.wantsElements() && world.rules ? elementIndex(world) : null;
+    const idx = this.sendsElements() && world.rules ? elementIndex(world) : null;
     if (idx) {
       ft.forEach((f) => {
         if (truncated || world.isWing(f)) return; // an air wing is not drawn yet (PLAN 5.1d)
@@ -1216,7 +1228,7 @@ export class SimServer {
         total += list.length;
       });
     }
-    // Nothing to send (T0/T1, or no formations in view): empty arrays, no pooled buffers.
+    // Nothing to send (T0, or no formations in view): empty arrays, no pooled buffers.
     if (total === 0) return { ...EMPTY_ELEMENTS, truncated };
     const id = this.view(Uint32Array, total, buffers);
     const formation = this.view(Uint32Array, total, buffers);
@@ -1498,7 +1510,7 @@ export class SimServer {
     this.eventQueue = [];
 
     // Fires: what was queued while the view drew elements; a view that left that tier gets none.
-    const fq = this.wantsElements() ? this.fireQueue : [];
+    const fq = this.drawsElements() ? this.fireQueue : [];
     const fires = fq.length > 0 ? this.view(Float64Array, fq.length, buffers) : NO_FIRES;
     fires.set(fq);
     this.fireQueue = [];

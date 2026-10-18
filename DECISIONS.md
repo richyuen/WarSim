@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-498 · 2026-10-18 · accepted — Elements are sent at T1; a marker shows its formation's elements (PLAN 7.21c)
+
+- **Context.** Critic run 8, semantic zoom 7: "at 900 m/px nothing of the units shows but counters
+  (element count 0)". Elements were sent from tier 1.5 (450 m/px, `tierOf`) and drawn from the
+  T1 → T2 handover at 300. Measured (`.cache/p721/measureT1.ts`, seed 6047, Germany at war with
+  Poland, day 3; a view of 1,600 × 900 px and its padded box): elements stand 0.03 cells (590 m)
+  apart, so a division's block of 28 is about 2 px across at 900 m/px, under a marker of 26 × 29
+  px. Sprites at their slot poses would be a speck under the box, and slot poses spread out for
+  the zoom would disagree with the sim (SPEC §8: every tier from the same poses).
+- **Decision (7.21c1).** The view asks for elements from T1 (`wantsElements` at tier ≥ 1, all of
+  T1 from 2,000 m/px), and the worker sends them there (`sendsElements`). Their fire, which
+  elements were fired at (`hit`) and their ends (`ElementDestroyed` with the wreck) stay for a view
+  that draws the sprites, from tier 1.5 (`drawsElements`): over a continent at war they are most of
+  the volume and T1 draws none of them. The view keeps an element section only near T3
+  (`T3_KEEP_M`), so the hulls and fallen marks are not fed from T1.
+- **Decision (7.21c2).** What T1 shows of the elements is the marker's: a pip for each element of
+  its formation, from the element list (PLAN 7.21c2 sets the layout), so a loss seen at T3 is a
+  pip less at T1.
+- **Measured.** Elements in the box of a view at 2,000 / 1,500 / 1,200 / 900 / 450 m/px: over
+  Poland 9,998 / 6,601 / 4,226 / 2,267 / 824; over Paris 8,674 / 5,649 / 4,409 / 3,159 / 740; in a
+  checkpoint of tick 17,520 at most 3,242; never truncated (cap 40,000). The worker's snapshot
+  alone (`.cache/p721/measureT1b.ts`, median of 24): 3.4 ms at 2,000 m/px over Poland (0.2 before),
+  0.9 at 900 (0.2), against a tick of about 21 ms: a view of the top of T1 at Speed max costs up
+  to about 15 % of the tick, at 900 m/px 3 %. No sim input (pin unmoved).
+
 ### ADR-497 · 2026-10-18 · accepted — The unit atlas is premultiplied: small sprites keep their colour (PLAN 7.21b)
 
 - **Context.** Critic run 8, semantic zoom 7: the two sides' infantry "near one colour". PLAN 7.21a

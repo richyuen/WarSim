@@ -18234,3 +18234,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   `smallMark1938` green after its check moved; `wrecks1938` red, red too on `ccac258` and alone (15
   dead elements still shown): not 7.21b's, noted under PLAN 7.23.
 - **Next:** PLAN 7.21c (elements drawn at 900 m/px).
+
+## 2026-10-18 — PLAN 7.21c1: elements sent at T1, their fire from tier 1.5 as before
+
+- **Start:** gate green on a clean tree (`f9560d7`; four evidence pictures left unstaged as before).
+- **Found** (`.cache/p721/measureT1.ts`, seed 6047, Germany at war with Poland, day 3, a view of
+  1,600 × 900 px): elements stand 0.03 cells (590 m) apart, so a division's block of 28 is about 2
+  px at 900 m/px under a 26 × 29 px marker: what T1 shows of them is the marker's (7.21c2). Split
+  7.21c into c1 (send) and c2 (show).
+- **Done** (ADR-498, SPEC §2 snapshot table): the view asks for elements from T1
+  (`viewSubscription`: `wantsElements` at tier ≥ 1), the worker sends them (`sendsElements`); fire,
+  `hit` and element ends stay from tier 1.5 (`drawsElements`). No sim input (pin unmoved).
+- **Measured:** elements in the box at 2,000 / 900 m/px: 9,998 / 2,267 over Poland, 8,674 / 3,159
+  over Paris, never truncated (cap 40,000); in the checkpoint of tick 17,520 at most 3,242. The
+  worker's snapshot alone (`measureT1b.ts`, median of 24): 3.4 ms at 2,000 m/px (0.2 before), 0.9
+  at 900 (0.2), against a tick of about 21 ms. The critic's case live (`p3.mjs`, `TAG=c1`): 0
+  elements at 3,000 m/px, 2,760 at 900 (0 before), 516 at 250.
+- **Tests:** `serverElements` (new: a T1 view at 900 m/px gets all 28 of a division, no fire, no
+  `hit`, no element end; a T0 view none; red on the old worker), `subscription` (T1 asks for
+  elements). `elements1938` encoded the old rule ("none at T1"): now T0 none, T1 and T2 each the
+  formations of the box with all their elements; its "exactly" check allowed only formations
+  centred in the box, while the worker sends by the block (PLAN 2.7n1), and at T1's larger box two
+  blocks reached in from just outside: such a formation is now allowed within a block's reach of
+  the edge, every one of them still whole.
+- **Specs by hand** (chromium): `elements1938`, `snapshots`, `tiers1938`, `fades1938`,
+  `handover1938`, `markers1938`, `markerStacks1938`, `morphRatio1938`, `countersRest1938`,
+  `retreatMarker1938`: green (`elements1938` after its change).
+- **Next:** PLAN 7.21c2 (a T1 marker shows its formation's elements).
