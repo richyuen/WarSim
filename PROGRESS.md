@@ -18322,3 +18322,30 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Specs by hand** (chromium): `seaRow1938`, its three tests green with 3 workers; the gate ran it
   again. No source changed.
 - **Next:** PLAN 7.22b (ships larger at T3).
+
+## 2026-10-18 — PLAN 7.22b: ships drawn larger at T3, by the room between them
+
+- **Start:** gate green on `f419404` (7.22a).
+- **Found:** a ship at T3 was at least 26 px for a battleship (PLAN 4.12c, under the 29 px between
+  slots at 20 m/px), and that floor still ruled at 15 m/px, where the slots are 39 px apart: a
+  destroyer 15.6 px. The slots are the sim's (0.03 cells); the atlas frames are 64 px, so a larger
+  sprite does not blur. At T2 (57 m/px, where 7.22a's row lands) a ship is its element's sprite,
+  which already fills its slot: left as it is.
+- **Done** (ADR-499, SPEC §8 T3): `shipFrameMinPx(slotPx)`: a battleship at least 0.9 of a slot's gap
+  on the screen, between 26 and 40 px, the other classes in proportion; MapView passes the gap of
+  the frame (`SLOT_GAP_CELLS`, held equal to `SLOT_SPACING` by a unit test; the render does not
+  import the sim). At 15 m/px a battleship 35 px, a cruiser 28, a destroyer 21; nothing changes
+  from 30 to 20.4 m/px. Render only, pin unmoved.
+- **Measured** (`.cache/p722/b.mjs`, seed 5591 hour 42, six British fleets, the lengths of the blobs
+  a frame draws, with outline and wake; HEAD built beside): at 15 m/px cruisers 30 → 33 to 34 px,
+  destroyers 20 to 21 → 23; 30 and 57 m/px as before. 1× crops looked at: the battleships' three
+  turrets and the cruisers' two read (`docs/evidence/7.22/b-battle-squadron-15m-before.png`,
+  `-after.png`, `b-destroyers-15m-*.png`, `b-battle-squadron-30m-after.png`, `-57m-after.png`).
+- **Tests:** `shipMinLength.test.ts` (new: the gap is the sim's; 30 to 20.4 m/px unchanged, 26.4 at
+  20, 35.2 at 15, 40 from 13; every class under the gap from 20 m/px in, in proportion; its own
+  length from 6.25 m/px); `shipMarks1938` (new test: hulls measured on the screen at 15 m/px along
+  their heading; the critic's game of seed 9043 has destroyers there: 20 px, 15 on HEAD's code,
+  red there).
+- **Specs by hand** (chromium): `ships1938`, `shipMarks1938`, `seaBattle1938`, `navalDemo1938`,
+  `seaBattleSeen1938`, `closeZoom1938`, `individuals1938`: 10 green.
+- **Next:** PLAN 7.22c (a placed fleet holds its sea).

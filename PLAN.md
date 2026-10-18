@@ -47,7 +47,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
     - [x] 7.22a Fire from the row at Speed x1: the critic's procedure (six-hour steps, the row,
       6 s at x1) in a spec, counting the tracers a frame draws by the shooter's side. AT:
       `seaRow1938` (new test) green, a picture of the frame with both sides' fire.
-    - [ ] 7.22b Ships larger at T3: a ship's length on the screen at 15 m/px from about 20 to 30 px
+    - [x] 7.22b Ships larger at T3: a ship's length on the screen at 15 m/px from about 20 to 30 px
       to one where its class and turrets read at 1× (from `render/units/ships.ts`, `shipSize`), the
       deviation from true scale in DECISIONS. AT: measured lengths by class at 57, 30 and 15 m/px;
       `ships1938`, `shipMarks1938` green; pictures.

@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-499 · 2026-10-18 · accepted — A ship's least length grows with the room between ships (PLAN 7.22b)
+
+- **Context.** Critic run 8, naval 6: "at 1× a ship is about 20 to 30 px long at 15 m/px". Since
+  PLAN 4.12c a ship at T3 is drawn at least 26 px long for a battleship and in proportion for the
+  others (`SHIP_MIN_PX`), under the 29 px between two slots at 20 m/px; at 15 m/px that floor
+  still ruled (a battleship's own length is 16.7 px there), so a destroyer was 15.6 px and its
+  class did not read at 1×. The slots are the sim's (`SLOT_SPACING`, 0.03 cells, about 590 m) and
+  grow on the screen as the camera comes in: 39 px at 15 m/px, 59 at 10.
+- **Decision.** The floor follows the room: a battleship at least 0.9 of a slot's gap on the
+  screen, never under the 26 px of before and never over 40 px (`battleshipMinPx`,
+  `shipFrameMinPx`), the other classes in proportion. At 15 m/px a battleship is 35 px, a cruiser
+  28, a destroyer 21; 40 px from 13 m/px in; its own length from 6.25 m/px in. From 30 to 20.4 m/px
+  nothing changes. The ships of a fleet still stand apart from 20 m/px in (a unit test over every
+  quarter m/px). Render only: the pin is unmoved.
+- **A deviation from scale, on purpose.** A ship so drawn is about twice its length from 20 to 13
+  m/px (it was 1.6 times at 15 m/px). A rifleman is drawn tens of times his size at T3
+  (`FIGURE_MIN_PX`), so a ship at its own length was the smallest thing on the map for its worth.
+- **Not done.** T2 (30 to 300 m/px) is unchanged: there a ship is its element's sprite, 0.026
+  cells, which already fills its slot (8.8 px at 57 m/px, the row of 7.22a). Longer ships at 15
+  m/px than 35 px would need a fleet's ships farther apart in the sim (a fleet's own slot gap),
+  which moves the pin and every naval position; not taken while 35 px reads (the turrets of a
+  battleship and a cruiser in the 1× crops, `docs/evidence/7.22/b-*`).
+- **Measured** (`.cache/p722/b.mjs`, seed 5591, hour 42 of Germany's war on Britain, paused; the
+  lengths of the blobs a frame draws, with outline and wake): at 15 m/px cruisers 30 → 33 to 34
+  px, destroyers 20 to 21 → 23; at 30 and 57 m/px the same as before. `shipMarks1938`'s new test:
+  destroyers' hulls 15 px before, 20 after.
+
 ### ADR-498 · 2026-10-18 · accepted — Elements are sent at T1; a marker shows its formation's elements (PLAN 7.21c)
 
 - **Context.** Critic run 8, semantic zoom 7: "at 900 m/px nothing of the units shows but counters

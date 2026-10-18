@@ -6,8 +6,14 @@
  *
  * Further out than its length reads (PLAN 4.12c, the critic's R5-B4: at 20 m/px a carrier group
  * was seven small pills, a destroyer 7.5 px), a ship is drawn at least SHIP_MIN_PX long for a
- * battleship and in proportion for the others: about twice its length at 20 m/px, its own from
- * 9.6 m/px in.
+ * battleship and in proportion for the others: about twice its length at 20 m/px.
+ *
+ * Closer in, that least length grows with the room between two ships (PLAN 7.22b, the critic's
+ * run 8: "at 1× a ship is about 20 to 30 px long at 15 m/px"): SHIP_SLOT_SHARE of a slot's gap on
+ * the screen, up to SHIP_ROOM_MAX_PX for a battleship (35 px at 15 m/px, 40 from 13 m/px in), so
+ * that its class and turrets read at 1× while the ships of a fleet still stand apart. A ship is its
+ * own length from 6.25 m/px in: about twice it from 20 to 13 m/px, as at 20 m/px before. A
+ * rifleman is drawn tens of times his size at T3 (`FIGURE_MIN_PX`) (ADR-499).
  */
 import { ATLAS_FRAMES } from './atlas';
 import { Frame } from '../../shared/unitLooks';
@@ -35,5 +41,24 @@ export function shipSideCells(frame: number, kmPerCell: number): number {
  */
 export const SHIP_MIN_PX = 26;
 
-/** The least size of each frame's sprite, CSS px: a ship's, in proportion to its length; 0 for the rest (`ProxyRenderer.draw`). */
-export const SHIP_FRAME_MIN_PX: readonly number[] = Array.from({ length: ATLAS_FRAMES }, (_, f) => (SIDE_M[f] === undefined ? 0 : (SHIP_MIN_PX * SIDE_M[f]!) / SIDE_M[Frame.battleship]!));
+/** The gap between two slots of a block, cells of the default map size: `SLOT_SPACING` of `sim/core/pose` (held equal by a unit test; the render does not import the sim). */
+export const SLOT_GAP_CELLS = 0.03;
+
+/** A battleship's least length grows to this share of the gap between two slots on the screen… */
+export const SHIP_SLOT_SHARE = 0.9;
+/** …up to this many CSS px. */
+export const SHIP_ROOM_MAX_PX = 40;
+
+/** A battleship's least length on the screen, CSS px, where two slots are `slotPx` CSS px apart. */
+export function battleshipMinPx(slotPx: number): number {
+  return Math.max(SHIP_MIN_PX, Math.min(SHIP_ROOM_MAX_PX, SHIP_SLOT_SHARE * slotPx));
+}
+
+/** The least size of each frame's sprite, CSS px, where two slots are `slotPx` CSS px apart: a ship's, in proportion to its length; 0 for the rest (`ProxyRenderer.draw`). */
+export function shipFrameMinPx(slotPx: number): number[] {
+  const bb = battleshipMinPx(slotPx);
+  return Array.from({ length: ATLAS_FRAMES }, (_, f) => (SIDE_M[f] === undefined ? 0 : (bb * SIDE_M[f]!) / SIDE_M[Frame.battleship]!));
+}
+
+/** The same where there is no room to spare: SHIP_MIN_PX for a battleship. */
+export const SHIP_FRAME_MIN_PX: readonly number[] = shipFrameMinPx(0);

@@ -50,7 +50,7 @@ import { cityIndex, groundCap, scatter, SCATTER_STRIDE, type Scatter, type Scatt
 import { ATLAS_FRAMES, drawUnitAtlas } from '../render/units/atlas';
 import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
 import { appendTurrets, TurretAims } from '../render/units/turrets';
-import { SHIP_FRAME_MIN_PX, shipSideCells } from '../render/units/ships';
+import { SLOT_GAP_CELLS, shipFrameMinPx, shipSideCells } from '../render/units/ships';
 import { appendWakes } from '../render/units/wakes';
 import { contactLines, drawContactLines, type ContactForm, type ContactLine } from '../render/units/contactLines';
 import { spriteTint } from '../render/units/tint';
@@ -1361,6 +1361,17 @@ export class MapView {
    * handover; formation sprites stand in where no elements arrived (element-less formations,
    * or before the first subscribed snapshot).
    */
+  private shipMinAt = NaN;
+  private shipMin: readonly number[] = [];
+  /** `shipFrameMinPx` for a slot gap of `slotPx` CSS px, made again only when the zoom moved. */
+  private shipMinPx(slotPx: number): readonly number[] {
+    if (slotPx !== this.shipMinAt) {
+      this.shipMinAt = slotPx;
+      this.shipMin = shipFrameMinPx(slotPx);
+    }
+    return this.shipMin;
+  }
+
   private drawSprites(cam: Camera, now: number): void {
     const unitsIn = this.shares.elements;
     if (unitsIn <= 0.01 || !this.sprites) return;
@@ -1374,7 +1385,8 @@ export class MapView {
       // Where a sprite is too small for a hull, a tank is its small mark (PLAN 3.6e3b).
       this.elementSmall = smallShare(this.elementPx);
       if (figures < 0.99) this.elementProxies.draw(cam, dpr, t, ELEMENT_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * (1 - figures), undefined, this.elementSmall, ELEMENT_FRAME_MIN_PX);
-      if (figures > 0.01) this.individualProxies.draw(cam, dpr, t, FIGURE_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * figures, undefined, 0, SHIP_FRAME_MIN_PX);
+      // A ship's least length by the room between two ships on the screen (PLAN 7.22b).
+      if (figures > 0.01) this.individualProxies.draw(cam, dpr, t, FIGURE_MIN_PX, offs, this.unitScale, now / 1000, unitsIn * figures, undefined, 0, this.shipMinPx(SLOT_GAP_CELLS * sizeScale * cam.scale));
     }
   }
 
