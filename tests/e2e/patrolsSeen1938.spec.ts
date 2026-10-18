@@ -5,7 +5,7 @@ import type {} from '../../src/app/testApi';
 import { Leg, sortieAt } from '../../src/shared/sorties';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { loopW } from '../../src/sim/systems/elements';
+import { deployOf, elementIndex, loopW, slotCount } from '../../src/sim/systems/elements';
 import { assets1938 } from '../helpers/earth';
 
 // PLAN 7.24c (critic run 8, aircraft 6: "at 25 m/px no sortie drawn" over the war on Poland). The
@@ -14,11 +14,12 @@ import { assets1938 } from '../helpers/earth';
 // in Node (the worker runs the same sim: I4; the hashes are compared): the camera on its circle's
 // middle at 80 m/px (T2) and at 25 m/px (T3), the page paused, its planes drawn there. Since PLAN
 // 7.24a the wings spread over the front, and since 7.24c the circle at T3 stays on the screen
-// (`ORBIT_VIEW`: it was 12 km round, more than half the view).
+// (`ORBIT_VIEW`: it was 12 km round, more than half the view). Since PLAN 7.24d a patrol is set on
+// its formation's block, not its place: "over a fight" is near the block of the hour, as drawn.
 
 const id = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
 const DAYS = [3, 10] as const;
-/** Cells: a patrol's target this near a formation in contact is over its fight. */
+/** Cells: a patrol's target this near the block of a formation in contact is over its fight. */
 const OVER_FIGHT = 0.3;
 
 interface Patrol {
@@ -42,13 +43,16 @@ function patrols(): (Patrol | null)[] {
     if (w.tick < 24 * day) sim.step(24 * day - w.tick);
     for (let h = 0; h < 24; h++) {
       sim.step(1);
-      const fights: number[] = [];
+      // Each formation in contact with where its block stands this hour, as the view draws it.
+      const fights: [number, number, number][] = [];
       w.formations.forEach((f) => {
-        if (c.engaged[f] === 1 && war.includes(c.nation[f]!) && !w.offLand(f) && !w.isFleet(f)) fights.push(f);
+        if (c.engaged[f] !== 1 || !war.includes(c.nation[f]!) || w.offLand(f) || w.isFleet(f)) return;
+        const d = deployOf(w, f, slotCount(w, f, elementIndex(w).get(f)?.length ?? 0));
+        fights.push([f, d?.x ?? c.x[f]!, d?.y ?? c.y[f]!]);
       });
       for (const [wing, s] of [...w.sorties].sort((a, b) => a[0] - b[0])) {
         if (s.over <= 0 || !war.includes(c.nation[wing]!) || sortieAt(s, w.tick, loopW(w)).leg !== Leg.Over) continue;
-        const under = fights.find((f) => Math.hypot(c.x[f]! - s.tx, c.y[f]! - s.ty) < OVER_FIGHT);
+        const under = fights.find(([, x, y]) => Math.hypot(x - s.tx, y - s.ty) < OVER_FIGHT)?.[0];
         if (under !== undefined) return { tick: w.tick, hash: sim.hash(), nation: c.nation[wing]!, x: s.tx, y: s.ty, formation: under };
       }
     }

@@ -18533,3 +18533,29 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Specs by hand** (chromium): `patrolsSeen1938` (three runs), `sortiesSeen1938`, `airT3_1938`,
   `airDemo1938`: green.
 - **Next:** PLAN 7.24d (the patrol on its formation's men), then 7.24b (the editor).
+
+## 2026-10-18 — PLAN 7.24d: a patrol over its formation's men
+
+- **Start:** gate green on `dfa6cbb` (7.24c).
+- **Done** (ADR-504, SPEC §7 air AI and §5 deployment): a fighter's patrol over its own formation in
+  contact is set on the middle of that formation's deployed block (`deployOf`), where in range; else
+  its place. Which formation each wing takes is 7.24a's rule, unchanged. The first rule to read a
+  block: `withFreshDeployments` (`systems/elements.ts`) works the contacts and blocks out from the
+  state as it stands and puts the held ones back (before `combatSystem` the world holds the hour
+  before's, which later systems can leave stale, and a loaded game holds none).
+- **Gotcha:** wrapping x on a looping map as `((x % w) + w) % w` changes an x already on the map in
+  its last bits (`x + w` rounds); the patrol missed its block's middle by 1e-13. Wrapped only off the map.
+- **Measured** (seed 6047, days 3 and 10): 24 of 24 German patrols over a formation in contact on its
+  block; patrol to nearest element 0.22 km mean, 0.33 max (from the place: 8.47 km, 20.07 max).
+  Pin `58594a40` → `92bde67c`.
+- **Tests:** `patrolOverMen.test.ts` (new: within a block's depth of the men; a game saved at day 9
+  23:00 and loaded sets the same missions and hash on day 10). Re-aimed to the block, checks kept:
+  `airSpread`, `airAi1938` (its patrol now 0.415 cells toward the Polish division), the finder of
+  `patrolsSeen1938` (a patrol "over a fight" near the block the view draws, not the place). Whole
+  unit suite by hand: 1,677 of 1,678, then `airAi1938` re-aimed, green.
+- **Specs by hand** (chromium): `patrolsSeen1938` (red on the place finder, then green: day 3 8 and 4
+  drawn at 80 and 25 m/px, day 10 2 and 1), `airT3_1938`, `sortiesSeen1938`, `airDemo1938` green.
+  Pictures looked at (`docs/evidence/7.24/d-patrol-day10-*.png`): the fight of formation 11 and
+  Poland's 549 in the middle of the view, the fighters circling beside it (7.24c's: the fight at the
+  top edge, the patrol's middle on empty ground).
+- **Next:** PLAN 7.24b (the editor's bomber group at a capital).

@@ -1216,8 +1216,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   side, and is turned off its block's facing by 0.3 rad at most (`DEPLOY_TURN`), the same
   every hour: a block in contact is not a lattice of elements at one facing; a block at rest
   stands on its slots and faces one way (PLAN 3.11c4, ADR-204). Derived from the formations' places
-  and `engaged` flags, not state: the snapshot, the fire events and the wrecks read it, no
-  rule does. So a view at 20 m/px holds both sides of a fight (96%, 110 of 114, of the formations in
+  and `engaged` flags, not state: the snapshot, the fire events and the wrecks read it, and one
+  rule, the air AI's patrols (PLAN 7.24d), which works it out afresh from the state
+  (`withFreshDeployments`: the hour before's held blocks may be stale, and a loaded game has none). So a view at 20 m/px holds both sides of a fight (96%, 110 of 114, of the formations in
   contact after 60 days of a war, with their nearest enemy), and the T1 marker stays at the
   formation's place.
   *Two places in the snapshot (PLAN 3.11a, ADR-198):* a formation's `x`, `y` is its place in
@@ -1875,7 +1876,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   at the enemy's fleets, and its strategic bombers at the enemy's richest industry in range where
   its side holds the air (superiority 0.6 or more); at peace, no missions. Spread (PLAN 7.24a,
   ADR-503): of a nation's wings, by id, each takes of the formations its role and range allow the
-  one with the fewest of its wings of its kind sent there that day, the nearest of equals.
+  one with the fewest of its wings of its kind sent there that day, the nearest of equals. Over
+  the men (PLAN 7.24d, ADR-504): a fighter's patrol over its formation in contact is set on the
+  middle of that formation's deployed block (`deployOf`, worked out afresh from the state,
+  `withFreshDeployments`), where that is in its range; else on the formation's place.
 - *As built (PLAN 5.7a, ADR-323; `render/units/sorties.ts`):* the snapshot carries the sorties in
   the air; the page draws each as planes of its nation's colour where `sortieAt` (in `shared/`)
   has it at the frame's time (in the hour the snapshot ends, as the formations are played: 5.7d),

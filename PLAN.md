@@ -60,7 +60,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
     - [x] 7.24c A spec: on days 3 and 10 of the war on Poland, formations in contact with a sortie
       of the page's rows over them, the camera on each at 80 and 25 m/px, the sorties drawn; a
       picture.
-    - [ ] 7.24d A patrol over its formation's men: the AI's patrol is set on its formation's
+    - [x] 7.24d A patrol over its formation's men: the AI's patrol is set on its formation's
       point, which at T3 is some kilometres from the block deployed toward the contact (seed 6047
       day 10: about 6 km, `docs/evidence/7.24/c-patrol-day10-025m.png`): on the block's middle or
       the line of contact instead. AT: the patrol's middle within a block's depth of its men; the

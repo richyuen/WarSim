@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { basePlace, wingRange } from '../../src/sim/systems/air';
+import { deployOf, elementIndex, slotCount, withFreshDeployments } from '../../src/sim/systems/elements';
 import { seaKm } from '../../src/sim/systems/navalCombat';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -24,10 +25,15 @@ describe("the air AI's patrols over the front (seed 6047, Germany on Poland and 
     // The AI decides first in a tick, on the state the hour before left; the systems of a step see
     // its tick before it is counted, so day 4's missions are given in the step from hour 96.
     sim.step(96);
-    const own: { id: number; x: number; y: number }[] = [];
-    w.formations.forEach((f) => {
-      if (c.nation[f] === GER && c.engaged[f] === 1 && !w.offLand(f) && !w.isFleet(f) && !w.embarked.has(f)) own.push({ id: f, x: c.x[f]!, y: c.y[f]! });
-    });
+    // Each with where its patrol is set (PLAN 7.24d): its block's middle, as the state stands.
+    const own: { id: number; x: number; y: number; px: number; py: number }[] = [];
+    withFreshDeployments(w, () =>
+      w.formations.forEach((f) => {
+        if (c.nation[f] !== GER || c.engaged[f] !== 1 || w.offLand(f) || w.isFleet(f) || w.embarked.has(f)) return;
+        const d = deployOf(w, f, slotCount(w, f, elementIndex(w).get(f)?.length ?? 0));
+        own.push({ id: f, x: c.x[f]!, y: c.y[f]!, px: d?.x ?? c.x[f]!, py: d?.y ?? c.y[f]! });
+      }),
+    );
     const fighters = [...w.wingBase]
       .filter(([id, base]) => base > 0 && c.nation[id] === GER && rules.units[rules.templates[c.template[id]!]!.elements[0]!.unit]!.cls === 'fighter')
       .map(([id]) => id)
@@ -43,7 +49,7 @@ describe("the air AI's patrols over the front (seed 6047, Germany on Poland and 
       const at = basePlace(w, w.wingBase.get(id)!)!;
       const range = wingRange(w, id);
       const reach = own.filter((f) => seaKm(w, at[0], at[1], f.x, f.y) <= range);
-      const to = reach.find((f) => f.x === m!.x && f.y === m!.y);
+      const to = reach.find((f) => f.px === m!.x && f.py === m!.y);
       expect(to, `wing ${id}'s patrol is over a formation of its own in contact in its range`).toBeDefined();
       const least = Math.min(...reach.map((f) => sent.get(f.id) ?? 0));
       expect(sent.get(to!.id) ?? 0, `wing ${id} takes the least covered`).toBe(least);

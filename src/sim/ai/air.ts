@@ -3,8 +3,12 @@
  * gives its land-based wings their missions (a carrier's stay with its fleet, PLAN 5.4d). The
  * front is where its land formations and the enemy's are in contact (`engaged`).
  *
- * - Fighters patrol over the front: the place of its own engaged formation nearest their base
- *   within their range; none in range, no mission.
+ * - Fighters patrol over the front: over its own engaged formation nearest their base within
+ *   their range; none in range, no mission. Over the formation's men (PLAN 7.24d): the middle of
+ *   its block as deployed against the enemy (`deployOf`, worked out from the state as it stands,
+ *   `withFreshDeployments`), which stands up to `DEPLOY_REACH` from its place (a patrol about the
+ *   place circled some 6 km off the fight at 25 m/px); where that is out of the wing's range, or
+ *   the formation is not in contact, its place.
  * - Spread over the front (PLAN 7.24a): of a nation's wings, by id, each takes of the formations
  *   its role picks from and its range reaches the one with the fewest of the nation's wings of its
  *   kind (patrol, strike, supply) sent there that day, the nearest of equals. "Nearest" below is
@@ -40,7 +44,7 @@ import { basePlace, FERRY_RANGE, kmFromBase, ofSide, orderMission, orderRebase, 
 import { airbaseRoom } from '../data/airbases';
 import { seaKm } from '../systems/navalCombat';
 import { canParadrop, orderParadrop } from '../systems/airLift';
-import { wrapDx } from '../systems/elements';
+import { deployOf, elementIndex, slotCount, withFreshDeployments, wrapDx } from '../systems/elements';
 import { hypot } from '../core/dmath';
 import { AIR_HELD, airSuperiority } from '../systems/airSuperiority';
 import { airOf, navOf, type World } from '../world';
@@ -93,6 +97,13 @@ export function airAi(world: World): void {
     }
   });
   paradrops(world, wings, engaged);
+  // Where the blocks stand, from the state as it stands (PLAN 7.24d): the same after a load.
+  withFreshDeployments(world, () => missions(world, wings, engaged, land, fleets, short));
+}
+
+/** The day's missions of the AI nations' wings (`airAi`), with the hour's blocks worked out afresh. */
+function missions(world: World, wings: Map<number, number[]>, engaged: readonly number[], land: readonly number[], fleets: readonly number[], short: readonly number[]): void {
+  const c = world.formations.cols;
   // The cells of industry, richest first, for a strategic bomber: made when one is tasked.
   let rich: readonly number[] | null = null;
   const richest = (): readonly number[] => (rich ??= byIndustry(world));
@@ -126,7 +137,8 @@ export function airAi(world: World): void {
       let target: [number, number] | null = null;
       let kind: 'patrol' | 'strike' | 'supply' = 'strike';
       if (role === 'patrol') {
-        target = nearest(world, id, own, patrols) ?? nearest(world, id, enemyForces(), patrols);
+        const f = nearestOf(world, id, own, patrols);
+        target = f >= 0 ? overMen(world, id, f) : nearest(world, id, enemyForces(), patrols);
         kind = 'patrol';
       } else if (role === 'front') target = nearest(world, id, enemy, strikes) ?? nearest(world, id, enemyForces(), strikes);
       else if (role === 'naval') target = nearest(world, id, enemyFleets, strikes) ?? nearest(world, id, enemy, strikes) ?? nearest(world, id, enemyForces(), strikes);
@@ -148,6 +160,23 @@ export function airAi(world: World): void {
       orderMission(world, id, kind, target[0], target[1]);
     }
   }
+}
+
+/**
+ * Where wing `id` patrols over formation `f` (PLAN 7.24d): the middle of its block deployed
+ * against the enemy, where `f` is in contact and that is within the wing's range; else its place.
+ * Over the seam of a map that loops the block's x is unfolded (`slotPlace`): brought back onto it.
+ */
+function overMen(world: World, id: number, f: number): [number, number] {
+  const c = world.formations.cols;
+  const d = deployOf(world, f, slotCount(world, f, elementIndex(world).get(f)?.length ?? 0));
+  if (d) {
+    const w = world.cells.w;
+    // Only off the map: (x + w) % w rounds an x on it.
+    const x = world.settings.loopingMap && (d.x < 0 || d.x >= w) ? ((d.x % w) + w) % w : d.x;
+    if (kmFromBase(world, id, x, d.y) <= wingRange(world, id)) return [x, d.y];
+  }
+  return [c.x[f]!, c.y[f]!];
 }
 
 /**
@@ -239,8 +268,14 @@ function toward(world: World, id: number, front: readonly number[], used: Map<nu
  * all to the one formation nearest it: a few places of a front of fifty had all the air.
  */
 function nearest(world: World, id: number, among: readonly number[], sent?: Map<number, number>): [number, number] | null {
+  const f = nearestOf(world, id, among, sent);
+  return f < 0 ? null : [world.formations.cols.x[f]!, world.formations.cols.y[f]!];
+}
+
+/** The formation `nearest` takes the place of; -1 for none. */
+function nearestOf(world: World, id: number, among: readonly number[], sent?: Map<number, number>): number {
   const at = basePlace(world, world.wingBase.get(id)!);
-  if (!at || among.length === 0) return null;
+  if (!at || among.length === 0) return -1;
   const c = world.formations.cols;
   const range = wingRange(world, id);
   // `seaKm` from the base, with the grid's scales taken once (the same figures).
@@ -258,9 +293,9 @@ function nearest(world: World, id: number, among: readonly number[], sent?: Map<
     const n = sent?.get(f) ?? 0;
     if (n < bn || (n === bn && km < bd)) [best, bd, bn] = [f, km, n];
   }
-  if (best < 0) return null;
+  if (best < 0) return -1;
   sent?.set(best, bn + 1);
-  return [c.x[best]!, c.y[best]!];
+  return best;
 }
 
 /**

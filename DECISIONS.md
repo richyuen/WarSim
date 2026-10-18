@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-504 · 2026-10-18 · accepted — A patrol over its formation's men (PLAN 7.24d)
+
+- **Context.** Critic run 8, aircraft 6. The air AI set a fighter's patrol on its formation's place
+  in the rules, which at T3 is kilometres from the block of its elements deployed toward the
+  contact (up to `DEPLOY_REACH`, 1.5 cells): on seed 6047's day 10 the circle was about 6 km off
+  the fight at 25 m/px (`docs/evidence/7.24/c-patrol-day10-025m.png`).
+- **Decision.** A patrol over a formation of its own in contact is set on the middle of that
+  formation's deployed block (`deployOf`, the place the view draws the block at), where that is
+  within the wing's range (else the formation's place, so the AI is never refused). Which
+  formation each wing takes is ADR-503's rule, unchanged, judged by the formations' places.
+  Strikes and the fallback over the enemy's forces are as before.
+- **Read afresh.** The first rule to read where a block stands. Before `combatSystem` the world
+  holds the hour before's contacts and blocks, which later systems of that tick can leave stale (a
+  formation that dies of a collapse), and a loaded game holds none and works them out from the
+  state. So `airAi` works them out from the state as it stands (`withFreshDeployments` in
+  `systems/elements.ts`) and puts the held ones back for the snapshot and this hour's wrecks.
+- **Measured** (seed 6047, Germany on Poland and France, days 3 and 10): of 24 German patrols over
+  a formation in contact, 24 on its block; from the patrol's middle to the formation's nearest
+  element 0.22 km on average, 0.33 at most; from the formation's place, as before, 8.47 km, 20.07
+  at most.
+- **Tests.** `patrolOverMen.test.ts` (new: the patrols of days 3 and 10 within a block's depth of
+  their formation's men; a game saved on day 9 at 23:00 and loaded sets the same missions and hash
+  on day 10). `airSpread.test.ts` matches a wing's patrol to its formation by the block's middle.
+- **Pin.** Seed 99 after one year: `58594a40` → `92bde67c`.
+
 ### ADR-503 · 2026-10-18 · accepted — A nation's wings spread over its front (PLAN 7.24a)
 
 - **Context.** Critic run 8, aircraft 6: no sortie at 25 m/px over live fights. The air AI (PLAN 5.6)

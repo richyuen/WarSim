@@ -6,6 +6,7 @@ import { Sim } from '../../src/sim/sim';
 import { airAi, BOMB_SUPERIORITY, byIndustry, LIFT_BELOW } from '../../src/sim/ai/air';
 import { kmFromBase, wingRange } from '../../src/sim/systems/air';
 import { airSuperiority } from '../../src/sim/systems/airSuperiority';
+import { deployOf, elementIndex, slotCount, withFreshDeployments } from '../../src/sim/systems/elements';
 import { airOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -34,12 +35,21 @@ describe('the air AI (PLAN 5.6)', () => {
   it('fighters patrol over its own formation in contact, close support strikes the enemy\'s; out of range, none', () => {
     const { w, ger, pol } = front();
     const c = w.formations.cols;
+    // Over its men (PLAN 7.24d): the middle of its block deployed against the Polish division, a step toward it.
+    const block = withFreshDeployments(w, () => deployOf(w, ger, slotCount(w, ger, elementIndex(w).get(ger)?.length ?? 0)))!;
+    expect(block.x).toBeGreaterThan(c.x[ger]!);
+    expect(block.x).toBeLessThan(c.x[pol]!);
     airAi(w);
+    let over = 0;
     for (const id of wingsOf(w, GER, 'fighter_group')) {
       const m = w.wingMission.get(id);
-      if (kmFromBase(w, id, c.x[ger]!, c.y[ger]!) <= wingRange(w, id)) expect(m).toEqual({ kind: 'patrol', x: c.x[ger], y: c.y[ger] });
-      else expect(m).toBeUndefined();
+      if (kmFromBase(w, id, c.x[ger]!, c.y[ger]!) > wingRange(w, id)) expect(m).toBeUndefined();
+      else if (kmFromBase(w, id, block.x, block.y) <= wingRange(w, id)) {
+        expect(m).toEqual({ kind: 'patrol', x: block.x, y: block.y });
+        over++;
+      } else expect(m).toEqual({ kind: 'patrol', x: c.x[ger], y: c.y[ger] });
     }
+    expect(over).toBeGreaterThan(0);
     const cas = wingsOf(w, GER, 'close_support_group');
     expect(cas.some((id) => w.wingMission.has(id))).toBe(true);
     for (const id of cas) if (w.wingMission.has(id)) expect(w.wingMission.get(id)).toEqual({ kind: 'strike', x: c.x[pol], y: c.y[pol] });

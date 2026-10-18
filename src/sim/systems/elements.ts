@@ -501,6 +501,28 @@ export function deployAll(world: World, contacts: Map<number, number>): void {
   for (const f of [...contacts.keys()].sort((a, b) => a - b)) deployOf(world, f, slotCount(world, f, idx.get(f)?.length ?? 0));
 }
 
+/**
+ * Runs `fn` with the hour's contacts and blocks worked out from the state as it stands
+ * (`contactsOf`, `deployOf`), and puts back after it those the world held: for a rule that reads
+ * where a block stands (the air AI's patrols, PLAN 7.24d). Before `combatSystem` in a tick the
+ * world holds the hour before's, which the systems after it may have left stale (a formation
+ * that dies of a collapse), and a loaded game holds none and works them out from the state: a
+ * rule that read the held ones would come out otherwise after a load. Those put back are still
+ * what the snapshot and the wrecks of this hour read (`elementPlaceBefore`).
+ */
+export function withFreshDeployments<T>(world: World, fn: () => T): T {
+  const contacts = world.contacts;
+  const deployed = world.deployed;
+  world.contacts = null;
+  world.deployed = null;
+  try {
+    return fn();
+  } finally {
+    world.contacts = contacts;
+    world.deployed = deployed;
+  }
+}
+
 /** Live element ids per formation, ascending (derived; rebuilt after creates/removes or a load). */
 export function elementIndex(world: World): Map<number, number[]> {
   if (world.elementIndex) return world.elementIndex;
