@@ -18373,4 +18373,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Whole unit suite by hand:** 1,670 of 1,670; the pin (`baselineHash`) green by hand.
 - **Specs by hand** (chromium): `editorForces1938` (2 tests) green.
 - **7.22 ticked:** fire from the row at x1 (a), ships larger at T3 (b), placed fleets hold (c).
+- **Left unstaged, as in the iterations before:** six evidence pictures of PLAN 7.4 and 7.13
+  (`docs/evidence/7.4/f26-*.png`, `f33-*`, `f34-*`, `g2-*`, `docs/evidence/7.13/a-editor-*.png`),
+  shot again by spec runs with no change to what they show; `editorForces1938` shot the two of 7.13.
+- **Note:** the 7.22a test saw 16 frames in its 6 s beside two other tests; if it goes red at the
+  phase review under more workers, the fix is a longer window or a least count of frames, not a
+  lower bar.
 - **Next:** PLAN 7.23 (burning hulls of a watched armour fight).
