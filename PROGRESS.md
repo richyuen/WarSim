@@ -18932,3 +18932,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   states, c4's km step first), then c3b, then 7.26g (new, the AT again). c2b's and c3a's "test
   first" lines not taken: the contact did not fall.
 - **Next:** PLAN 7.26f.
+- **Corrected:** 7.26f leads with 30-year runs from 1938, one rule switched off each (4 × seeds 1,
+  5, 7), not with saved states: c4, c1b and c2b each read neutral from six saved states while the
+  long runs fell.

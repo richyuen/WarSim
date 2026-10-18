@@ -73,9 +73,9 @@ The late air war fell while land contact held: what lowered it is in the air, no
 Four rules came between (c3a, c4, c1b, c2b), one run each, diverging from year 1, so which of them
 is not known from these runs.
 
-1. **7.26f (new): which of the four lowered the late air war**, A/B from saved states (seeds 1, 5
-   and 7, the largest falls, at years 15 and 22 of this code), each rule's old behaviour behind a
-   switch for the runs only, c4's step first (the km step with more hops left), 180 days each:
-   sorties aloft, missions, rebases. The rule found restored or changed, its own commit.
+1. **7.26f (new): which of the four lowered the late air war**, by 30-year runs from 1938 with
+   each rule's old behaviour behind a switch, one off at a time (seeds 1, 5 and 7, the largest
+   falls: 12 runs). Not from saved states: c4, c1b and c2b each read neutral from six saved states
+   while the long runs fell. The rule found restored or changed, its own commit.
 2. **7.26c3b, the colonies' and small members' landings**: the 63 % share, after 7.26f.
 3. **7.26g (new): the AT re-measured** after 7.26f and c3b.

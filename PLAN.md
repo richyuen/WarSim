@@ -242,11 +242,13 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       (the contact did not fall). Of the short years' out-of-range wings 63 % have no base of their
       side near any enemy (59 % at 7.26d): c3b before anything of c1b's. Next: 7.26f, c3b, 7.26g.
     - [ ] 7.26f Which of c3a, c4, c1b and c2b lowered the late air war (7.26e: years 21–30 sorties
-      aloft 9.8 → 7.3 on 8 of 10 seeds while land contact held): A/B from saved states of this code
-      (seeds 1, 5 and 7, the largest falls, at years 15 and 22), each rule's old behaviour behind a
-      switch for the runs only, c4's first (a wing on a chain also takes a base within a hop nearer
-      its goal in km with more hops left, the old step), 180 days each: sorties aloft, missions,
-      rebases. AT: the rule found restored or changed in its own commit, with a unit test; the
+      aloft 9.8 → 7.3 on 8 of 10 seeds while land contact held): each rule's old behaviour behind a
+      switch for the runs only, and 30-year runs from 1938 with one switch off each (4 × seeds 1, 5
+      and 7, the largest falls: 12 runs side by side, about 15 minutes), judged by `airAt.ts` and
+      `.cache/tmp/cmp726e.ts` against `.cache/726e/`. Not from saved states first: c4, c1b and
+      c2b each read neutral from six saved states while the long runs fell (the effect builds from
+      year 1). c4's switch also tries the old step's variant (a wing on a chain takes a base within
+      a hop nearer its goal in km with more hops left). Sorties aloft, missions, rebases. AT: the rule found restored or changed in its own commit, with a unit test; the
       A/B's figures in `docs/evidence/7.26/measure-f.md`; the pin's entry if it moves. If no rule
       of the four accounts for it, the late years' cause measured again and split.
     - [ ] 7.26g The AT of 7.26 re-measured (as 7.26e, seeds 1–10 × 30 years) after 7.26f and
