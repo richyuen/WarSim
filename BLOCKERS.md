@@ -5,6 +5,13 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### `godUi1938` "Revive after a Kill": France's name not on the map after its revival (2026-10-18, PLAN 7.25d)
+Red at `7302970` (before 7.25d's change, stashed) and after it: `expect.poll(... nationLabels ...
+l.id === FRA ...).toEqual(['France'])` gets `[]` after 15 s (`tests/e2e/godUi1938.spec.ts:474`);
+France revived on 8,659 cells (10,474 before the Kill). The other nine tests of the file green. Not
+tried: when it was last green (the e2e suite runs in full at a phase review), whether the label is
+placed and dropped or never placed. Left to the next phase review's run (`npm run check:review`).
+
 ### Sweep on seeds 701–710: no stasis on 7 of 10 (2026-10-18, PLAN 7.18g)
 `docs/sweeps/2026-10-18-sweep-718g.md`: the same five largest nations 22, 20 and 20 years running on
 seeds 702, 704 and 706, the limit under 20; every other criterion on 10 of 10. Not tuned in answer

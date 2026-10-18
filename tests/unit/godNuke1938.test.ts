@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import type { TickerRow } from '../../src/shared/history';
 import { nukeStrike } from '../../src/shared/history';
-import { newStrikes } from '../../src/shared/nukeAlert';
+import { alertExpired, newStrikes, NUKE_ALERT_HOURS, NUKE_ALERT_MIN_MS } from '../../src/shared/nukeAlert';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -64,5 +64,18 @@ describe('the strikes a statistics message brings (PLAN 6.6a)', () => {
     expect(r.rows.map((x) => x.i)).toEqual(fresh);
     expect(r.struck).toBe(struck);
     expect(r.seen).toEqual({ world: 7, i: Math.max(seen && seen.world === 7 ? seen.i : -1, ...rows.map((x) => x.i)) });
+  });
+});
+
+// PLAN 7.25d (the critic's run 8: the alert stood 10 days): it goes once its strike is its hours of
+// the game old and it has been shown its seconds; neither alone.
+describe('the alert goes after its days (PLAN 7.25d)', () => {
+  it('its hours and its seconds both, not one alone; a paused game\'s stands', () => {
+    const at = 1000;
+    expect(alertExpired(at, at + NUKE_ALERT_HOURS, NUKE_ALERT_MIN_MS)).toBe(true);
+    expect(alertExpired(at, at + NUKE_ALERT_HOURS - 1, 60_000)).toBe(false);
+    expect(alertExpired(at, at + 10 * 24, NUKE_ALERT_MIN_MS - 1)).toBe(false);
+    expect(alertExpired(at, at, 3_600_000)).toBe(false);
+    expect(NUKE_ALERT_HOURS).toBeLessThan(10 * 24);
   });
 });

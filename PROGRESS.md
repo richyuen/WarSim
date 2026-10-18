@@ -18607,3 +18607,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   weighing it" under 0.5, "without hesitation"). The event and its b are unchanged; no sim change.
 - **Tests:** `history.test.ts` (the bands, no digit in any row), `nukeDecision1938.test.ts` (France's
   row: "France decided on a nuclear strike near Berlin, after weighing it"). Both green.
+
+## 2026-10-18 — PLAN 7.25d: the alert expires and stands clear of the panels; the ticker's room
+
+- **Start:** gate green on `7302970` (7.25c).
+- **Found:** `ticker1938` ("keeps its room") red since God Mode's tools took a row of the bottom bar
+  of their own (PLAN 7.16b): the bar 45 → 80 px high, the ticker's rows rose into the nation panel,
+  whose height left 12.5 rem for one row of bar (probe: the panel 54 to 512 px, the ticker's rows from
+  485). The critic's picture (`critic/shots/c8f_1_83_history.png`): the alert over History's filters.
+- **Done:** the nation panel's height is the view's less 9.7 rem and the bar's top (`--bar-top`;
+  the same 12.5 rem with one row). The alert publishes its bottom (`--alert-bottom`) and the panels of
+  the centre (History, Charts, Statistics, Settings, the editor: `.history-panel`) stand below it, on a
+  phone's width as before (it is on the bar there). It goes once its strike is 72 hours of the game old
+  and it has been shown 8 seconds (`alertExpired`; a paused game's stands). "Go to" no longer wraps.
+- **Tests:** `godNuke1938.test.ts` (the rule: hours and seconds both). `nukeAlert1938.spec.ts` (new: a
+  bomb on Paris, paused; History's and Charts' tops below the alert; paused past its seconds it stands;
+  running, it goes, its strike 72 hours old or more). `ticker1938.spec.ts`: the panel's full height
+  is stated with the bar's measured top (the old figure assumed a bar of one row; equal for one).
+  Specs by hand (chromium): `ticker1938` 4 of 4, `nukeAlert1938` 2 of 2, `nukeAlertPhone1938`,
+  `godTools1938`, `phoneLayout1938`, `nationPanel1938`, `formationPanel1938` green; `godUi1938` 9 of
+  10: "Revive after a Kill" red on France's name on the map, red at `7302970` too (stashed): BLOCKERS.
+  Pictures looked at (`docs/evidence/7.25/d-alert-history.png`, `d-alert-charts.png`).
+- **Left unstaged, as before:** the evidence pictures specs rewrite; nine now (`7.16/d-phone-alert.png`).

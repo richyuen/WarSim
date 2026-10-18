@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
+import { NUKE_ALERT_HOURS, NUKE_ALERT_MIN_MS } from '../../src/shared/nukeAlert';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 
@@ -74,4 +75,54 @@ test('God Mode\'s strike: the alert banner, its go-to and the auto-pause option'
   expect(await paused(page)).toBe(false);
   await expect(page.getByTestId('settings-nuke-pause')).toHaveCount(0);
   expect(await page.evaluate(() => localStorage.getItem('warsim.nukePause'))).toBe('0');
+});
+
+// PLAN 7.25d (the critic's run 8): the alert stood 10 days and over the headers of History and
+// Charts. The panels of the centre stand below it; it goes once its strike is NUKE_ALERT_HOURS old
+// and it has been shown NUKE_ALERT_MIN_MS; while the game is paused it stays.
+test('the alert: the panels of the centre below it; it goes after its days, not while paused', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction(() => window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/7.25') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  const box = (testid: string): Promise<{ top: number; bottom: number }> =>
+    page.evaluate((testid) => {
+      const r = document.querySelector(`[data-testid="${testid}"]`)!.getBoundingClientRect();
+      return { top: r.top, bottom: r.bottom };
+    }, testid);
+
+  // A bomb on Paris, the game paused: the alert, and it stands.
+  await page.getByTestId('god-btn').click();
+  await page.getByTestId('god-tool-nuke').click();
+  await lookAt(page, 2.35, 48.86);
+  await page.mouse.click(700, 400);
+  await page.evaluate(() => window.__warsim!.sim.step(1));
+  await expect(page.getByTestId('nuke-alert')).toBeVisible({ timeout: 15_000 });
+  expect(await paused(page)).toBe(true);
+
+  // History, then Charts: each panel's top below the alert's bottom.
+  await page.getByTestId('history-btn').click();
+  await expect(page.getByTestId('history-panel')).toBeVisible();
+  const alert = await box('nuke-alert');
+  expect((await box('history-panel')).top, 'History below the alert').toBeGreaterThanOrEqual(alert.bottom);
+  await page.screenshot({ path: path.join(out, 'd-alert-history.png') });
+  await page.getByTestId('history-btn').click();
+  await page.getByTestId('ranking-charts').click();
+  await expect(page.getByTestId('stats-chart')).toBeVisible();
+  expect((await box('stats-chart')).top, 'Charts below the alert').toBeGreaterThanOrEqual(alert.bottom);
+  await page.screenshot({ path: path.join(out, 'd-alert-charts.png') });
+  await page.getByTestId('chart-close').click();
+
+  // Paused for more than its seconds: it stays.
+  await page.waitForTimeout(NUKE_ALERT_MIN_MS + 500);
+  await expect(page.getByTestId('nuke-alert')).toBeVisible();
+  // Run: it goes, with the strike at least its hours old.
+  const struck = await page.evaluate(() => window.__warsim!.hud.nukeAlert.value!.tick);
+  await running(page);
+  await expect(page.getByTestId('nuke-alert')).toHaveCount(0, { timeout: 120_000 });
+  const tick = await page.evaluate(() => window.__warsim!.hud.stats.value!.tick);
+  expect(tick - struck, 'gone after its hours').toBeGreaterThanOrEqual(NUKE_ALERT_HOURS);
 });

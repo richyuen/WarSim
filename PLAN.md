@@ -61,7 +61,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       bursts all within 2 days; a unit test; the pin's entry if it moves.
     - [x] 7.25c History rows in words: no engine number ("its utility 33 in a thousand"). AT: a unit
       test of the rows; the i18n tests.
-    - [ ] 7.25d The alert expires and sits clear of the History and Charts headers; `ticker1938`
+    - [x] 7.25d The alert expires and sits clear of the History and Charts headers; `ticker1938`
       green. AT: specs; pictures looked at.
 - [ ] 7.26 The air war keeps flying after year 1 (aircraft 6, needs 8; the user's decision of
   2026-10-17, ADR-487, reopening what ADR-377 accepted): on every one of 17 seeds 28 to 39 sorties

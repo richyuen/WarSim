@@ -145,9 +145,13 @@ test('the ticker keeps its room beside a panel at its full height and the war ba
     await expect(row).toHaveCount(2);
     await expect(row.nth(0)).toHaveText(/The United Provinces of Central Europe declared war on The Commonwealth of Vistula and Baltic$/);
     await expect(row.nth(1)).toHaveText(/The Kingdoms of the Northern Mountains declared war on The Free Towns of the Western Fjords$/);
-    // The panel is at its full height, and the ticker below it.
+    // The panel is at its full height, and the ticker below it. Its room is the view's less the
+    // bar's (PLAN 7.25d): 12.5 rem with the bar of one row it had when this was written, and God
+    // Mode's tools give the bar a second (PLAN 7.16b; the panel ran into the ticker's rows).
     const panel = await box('nation-panel');
-    expect(panel.bottom - panel.top, `panel at ${scale}`).toBeGreaterThan(640 - 12.5 * rem);
+    const barTop = await page.evaluate(() => parseFloat(document.documentElement.style.getPropertyValue('--bar-top')));
+    expect(barTop, `the bar's top is known at ${scale}`).toBeGreaterThan(2.8 * rem);
+    expect(panel.bottom - panel.top, `panel at ${scale}`).toBeGreaterThan(640 - 9.7 * rem - barTop);
     const short = await box('ticker');
     expect(short.top, `ticker below the panel at ${scale}`).toBeGreaterThanOrEqual(panel.bottom - 0.5);
     // The banners fill their width and begin right of the ticker.

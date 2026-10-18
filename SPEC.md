@@ -1954,6 +1954,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   fallout map mode. An AI's decision to strike is a history row of its own, told by the city
   nearest its place and its utility in words, never as a number: "after long hesitation" under
   0.1, "after weighing it" under 0.5, "without hesitation" from there (PLAN 7.25c).
+  The alert goes once its strike is 72 hours of the game old and it has been shown 8 seconds (a
+  paused game's stands), and the panels of the centre stand below it (PLAN 7.25d).
 - **God Mode**: toggle nukes globally and per nation, grant warheads, force a strike.
 
 ---

@@ -15,3 +15,13 @@ export function newStrikes(rows: readonly TickerRow[], world: number, seen: Hear
   const fresh = rows.filter((r) => r.i > seen.i && r.kind === EventKind.NukeCasualties);
   return { rows: fresh, struck: fresh.length > 0 || news.includes(EventKind.NukeCasualties), seen: { world, i: Math.max(seen.i, last) } };
 }
+
+/** The alert goes once its strike is this many hours of the game old (PLAN 7.25d: it stayed 10 days, the critic's run 8), */
+export const NUKE_ALERT_HOURS = 72;
+/** and it has been shown this many milliseconds, so that it can be read at Max speed. */
+export const NUKE_ALERT_MIN_MS = 8000;
+
+/** Whether the alert of a strike at `strikeTick`, shown `shownMs` ago, has had its time at `tick` (PLAN 7.25d). A paused game's stands. */
+export function alertExpired(strikeTick: number, tick: number, shownMs: number): boolean {
+  return tick - strikeTick >= NUKE_ALERT_HOURS && shownMs >= NUKE_ALERT_MIN_MS;
+}
