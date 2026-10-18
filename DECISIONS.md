@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-516 · 2026-10-18 · accepted — No landing on a partner's transports for now (PLAN 7.26c3b)
+
+- **Context.** PLAN 7.26c3b: 60–90 % of the frontless nation-days at war stop at `noTransport` (no
+  transport group of the nation's own at a port of its own), the colonies and small members first.
+  Whether a partner's transports could carry them was to be measured before any rule.
+- **Measured** (`docs/evidence/7.26/measure-c3.md` §5, seeds 2843 and 7919 × 8 years,
+  `landWar.ts`'s `partner` columns). A partner's group with net room for one of the nation's free
+  formations at a port on that formation's land, an enemy port open: 475–2,657 nation-days a year in
+  years 2–8. But a formation of the nation stood at that port on 2 days of the 16 seed-years; every
+  other day needs a march there first, a median 42–347 cells (Malaya to a port of French Equatorial Africa, Germany to
+  Durrës: Africa and Eurasia are one land). §2 found such marches to a port seldom end aboard (of
+  30 sent, one boarded; the operational AI re-ordered the rest). Of those days 0–91 % had a target
+  port with an airbase near it, and 1–85 % were of the nations whose idle wings 7.26d/e count.
+- **Decision.** The rule (`planLanding`, `tryLanding` and `transportsPort` taking a partner's
+  group) not built: it would add continent-wide marches to a port, not landings. Taken up again only
+  if 7.26g is short and with the partner's transports sent to the nation's port, not its men to the
+  partner's (PLAN 7.26c3b1, conditional).
+- **Pin.** Unchanged (no rule changed).
+
 ### ADR-515 · 2026-10-18 · accepted — The rebase along a chain of airbases taken back (PLAN 7.26f; supersedes ADR-512)
 
 - **Context.** PLAN 7.26e: on seeds 1–10 × 30 years the late air war fell after four rules (ADR-511

@@ -18973,3 +18973,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   `transportsPort`), 7.26c3c (the lift by sea to the own front, c1b's note, not covered by this
   measure; its rule only if the AT is short after 7.26g).
 - **Next:** PLAN 7.26c3b1.
+- **Corrected (same day):** `here` matched any free formation on the port's land, and Africa and
+  Eurasia are one land. Split (`measure-c3.md` §5a): a formation of the nation stood at the
+  partner's port on 2 days in 16 seed-years; every other day needs a march there first, a median
+  42–347 cells, of the kind §2 found seldom ends aboard. 1–85 % of those days are the idle-wing
+  nations'; near an airbase 0–91 % of `here` days (0–46 % above was wrong). c3b ticked with the
+  rule not built (ADR-516); c3b1 dropped, taken up again only if 7.26g is short (the partner's
+  transports sent to the nation's port). c3c taken after 7.26g, and only if its AT is short.
+- **Next:** PLAN 7.26g (the AT of 7.26 on seeds 1–10 × 30 years, against `.cache/726f/c4_*.json`).

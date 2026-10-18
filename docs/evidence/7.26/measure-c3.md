@@ -111,6 +111,28 @@ has an airbase within 2 × `AT_PORT_CELLS`. Seeds 2843 and 7919 × 8 years
   Equatorial Africa, the Raj, South Africa, Egypt (the British and French blocs' colonies); Germany
   by Albania and by Japan (264 and 371 days); Yugoslavia, Nepal and Manchukuo by Japan. Germany is
   among the nations whose idle wings are short in 7.26d/e; the colonies are not.
-- Target ports with an airbase near them: 0–46 % of `here` days (a landing that takes no base
+- Target ports with an airbase near them: 0–91 % of `here` days (a landing that takes no base
   moves the side's wings no nearer).
 - Not measured here: the lift by sea to a nation's own front (c1b's note): PLAN 7.26c3c.
+
+### 5a. Correction: at the port, or a march there (2026-10-18)
+
+The `here` count above matched any free formation on the port's land (`grid.component`), and
+Africa and Eurasia are one land. Split (the same seeds and years, `.cache/c3b/landWar2_*.json`;
+the group chosen: one with a formation of the nation at the port first, then the shortest march):
+`hereAtPort`, a free formation of the nation within `AT_PORT_CELLS` of the port's water (it
+could board today); `hereSend`, on its land only (cells: the straight cells from the nearest one to
+the port).
+
+| seed | year | own load + send | hereAtPort | hereSend | median cells to the port | airbase near target | of the idle-wing nations |
+|---|---|---|---|---|---|---|---|
+| 2843 | 1 | 313 | 0 | 2,536 | 313 | 173 | 17 |
+| 2843 | 2–8 | 15–193 | 0 | 475–1,457 | 42–347 | 0–673 | 48–595 |
+| 7919 | 1 | 429 | 2 | 2,854 | 169 | 484 | 39 |
+| 7919 | 2–8 | 4–426 | 0 | 601–2,657 | 82–288 | 67–690 | 7–358 |
+
+A formation of the nation stood at the partner's port on 2 days in 16 seed-years. Every `here`
+day is a march to a port first, a median 42 to 347 cells, of the kind §2 found seldom ends aboard
+(of 30 sent to a port of their own, one boarded). The idle-wing nations (the US, Japan, Germany, the
+Netherlands, Britain, Italy) are 1–85 % of those days (Germany by Albania, Yugoslavia, Japan). The
+rule is not built (ADR-516).
