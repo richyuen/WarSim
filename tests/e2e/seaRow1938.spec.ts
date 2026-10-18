@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { Terrain } from '../../src/shared/terrain';
@@ -130,4 +131,107 @@ test("a sea battle's row lands on the fight, on the water (the critic's game of 
   expect(r.a, 'a fleet of the one side, its ships on the screen').toBeGreaterThan(0);
   expect(r.b, 'a fleet of the other, its ships on the screen').toBeGreaterThan(0);
   expect(r.shots, "their fire drawn in the battle's hours").toBeGreaterThan(0);
+});
+
+test("from the row of the critic's battle, both fleets' fire on the screen within seconds at Speed x1 (PLAN 7.22a)", async ({ page }) => {
+  test.setTimeout(300_000);
+  // The critic (run 8, naval 6) stepped six hours at a time, clicked the row and watched 6 s at
+  // Speed x1: no gunfire. The tests above step an hour at a time while paused, when a tick's shots
+  // are spread over STEP_SPREAD_MS; here the game runs, so they are spread over the tick's wall time.
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.goto('/?scenario=1938&paused=1&seed=5591');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  const [g, e] = [id('GER'), id('ENG')];
+  const hour = await page.evaluate(
+    async ([g, e]) => {
+      const { sim, view } = window.__warsim!;
+      sim.command({ kind: 'declareWar', attacker: g!, defender: e! });
+      for (let h = 6; h <= 20 * 24; h += 6) {
+        const t = (await sim.step(6)).tick;
+        await new Promise<void>((done) => {
+          const wait = (): void => (view!.lastTick === t ? done() : void setTimeout(wait, 5));
+          wait();
+        });
+        if (view!.seaBattles().some((b) => b.pair !== null && [b.a, b.b].includes(g!) && [b.a, b.b].includes(e!))) return h;
+      }
+      return -1;
+    },
+    [g, e],
+  );
+  expect(hour, 'a sea battle of the two with a row within 20 days').toBeGreaterThan(0);
+  const k = await page.evaluate(
+    ([g, e]) => window.__warsim!.view!.seaBattles().filter((b) => b.pair !== null).findIndex((b) => [b.a, b.b].includes(g!) && [b.a, b.b].includes(e!)),
+    [g, e],
+  );
+  await page.getByTestId('sea-battle-row').nth(k).click();
+  await landed(page);
+  // Each formation's nation, from the sim (the fleets of the battle are all there at the row).
+  await page.evaluate(async () => {
+    const w = window as unknown as { __nationOf: Record<number, number> };
+    w.__nationOf = {};
+    for (const f of (await window.__warsim!.sim.inspect(true)).formations) w.__nationOf[f.id] = f.nation;
+  });
+  // Every frame the page draws for 6 s at Speed x1: the ships' tracers it holds, by the shooter's
+  // and the target's side (`FireFx.tracers`: in flight and on the screen, `CULL_PX`). Counted in
+  // the frame itself: a tracer lives about a second, and a sampler under load comes by less often.
+  await page.evaluate(
+    ([g, e]) => {
+      const v = window.__warsim!.view!;
+      const nationOf = (window as unknown as { __nationOf: Record<number, number> }).__nationOf;
+      const sideOf = (el: number): number => {
+        const i = v.elementId.indexOf(el);
+        return i < 0 ? 0 : (nationOf[v.elementFormation[i]!] ?? 0);
+      };
+      const rec = { ab: 0, ba: 0, firstMs: -1, best: 0, picture: '', frames: 0, t0: performance.now(), tick0: v.lastTick, ticks: 0 };
+      (window as unknown as { __seaFire: typeof rec }).__seaFire = rec;
+      const fire = (v as unknown as { fire: { tracers: { shooter: number; target: number; weapon: number }[]; draw: (...a: unknown[]) => void } }).fire;
+      const draw = fire.draw.bind(fire);
+      fire.draw = (...a: unknown[]): void => {
+        draw(...a);
+        rec.frames++;
+        rec.ticks = v.lastTick - rec.tick0;
+        let ab = 0;
+        let ba = 0;
+        for (const s of fire.tracers) {
+          // Ships' guns and torpedoes (`Weapon.naval`, `Weapon.torpedo`).
+          if (s.weapon < 3) continue;
+          const [from, to] = [sideOf(s.shooter), sideOf(s.target)];
+          if (from === g && to === e) ab++;
+          if (from === e && to === g) ba++;
+        }
+        rec.ab = Math.max(rec.ab, ab);
+        rec.ba = Math.max(rec.ba, ba);
+        if (ab > 0 && ba > 0 && rec.firstMs < 0) rec.firstMs = performance.now() - rec.t0;
+        // The picture of the frame with the most of both sides' fire, once the frame is whole.
+        if (ab > 0 && ba > 0 && ab + ba > rec.best) {
+          rec.best = ab + ba;
+          queueMicrotask(() => {
+            const map = document.createElement('canvas');
+            const first = document.querySelector('canvas')!;
+            map.width = first.width;
+            map.height = first.height;
+            const c2 = map.getContext('2d')!;
+            for (const layer of document.querySelectorAll('canvas')) c2.drawImage(layer, 0, 0, map.width, map.height);
+            rec.picture = map.toDataURL('image/png');
+          });
+        }
+      };
+      const hud = window.__warsim!.hud;
+      hud.setSpeedLevel(0);
+      if (hud.paused.value) hud.togglePause();
+    },
+    [g, e],
+  );
+  await page.waitForTimeout(6000);
+  const seen = await page.evaluate(() => {
+    const hud = window.__warsim!.hud;
+    if (!hud.paused.value) hud.togglePause();
+    return (window as unknown as { __seaFire: { ab: number; ba: number; firstMs: number; picture: string; frames: number; ticks: number } }).__seaFire;
+  });
+  if (seen.picture) writeFileSync(path.resolve('docs/evidence/7.22/a-sea-row-x1.png'), Buffer.from(seen.picture.split(',')[1]!, 'base64'));
+  console.log(`(6 s: ${seen.frames} frames, ${seen.ticks} ticks)`);
+  console.log(`seed 5591: the row of Germany's and Britain's battle at hour ${hour}; at Speed x1, shots on the screen at once: at most ${seen.ab} German and ${seen.ba} British; both sides' within ${seen.firstMs.toFixed(0)} ms`);
+  expect(seen.ab, "Germany's ships' fire at Britain's on the screen").toBeGreaterThan(0);
+  expect(seen.ba, "Britain's ships' fire at Germany's on the screen").toBeGreaterThan(0);
+  expect(seen.firstMs, 'both within 6 s at Speed x1').toBeGreaterThanOrEqual(0);
 });

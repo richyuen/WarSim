@@ -18295,3 +18295,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   second" at 2,013 ms of 2,000 under the suite's load, green alone (no sim input changed).
 - **7.21 ticked:** ranks (7.21a), the sides' colours (7.21b), elements at 900 m/px (7.21c),
   pictures at 3,000 to 10 m/px.
+
+## 2026-10-18 — PLAN 7.22a: fire from a sea battle's row at Speed x1
+
+- **Start:** gate green on a clean tree (`fad3786`; the six evidence pictures left unstaged as before).
+- **Found** (the critic's `c8_j_seabattle.mjs` copied to `.cache/p722/`, its output there, with the
+  shots sampled every 100 ms): since 7.19 the first "Sea battle:" row at hour 42 is Britain's
+  cruisers (1085, 1086) on a Japanese submarine flotilla (1157) off Takao, both sides firing from
+  the first second at x1 at 59 m/px. Germany's and Britain's first battle with a row comes at hour
+  60 (six-hour steps): from it at 57 m/px, Speed x1, German ships (1055, 1062, 1070 by the side's
+  count) and British (1199) fire at each other within 2 s, for about two hours of game time, then
+  the battle ends. What the critic saw no longer holds; its other two points stand (ships specks,
+  placed fleets gone). Split 7.22 into a (fire, a spec), b (ship size), c (placed fleets hold).
+- **Done:** `seaRow1938` "from the row of the critic's battle, both fleets' fire on the screen
+  within seconds at Speed x1": the critic's procedure, then 6 s live at x1, counting in every frame
+  the page draws (`FireFx.draw` wrapped in the page) the tracers it holds (`FireFx.tracers`) by the
+  shooter's and the target's nation. Three ways that did not hold: `fire.shots` with an end on the
+  screen counted shots already over (they leave the list only at the next snapshot);
+  `page.screenshot` came after the tracers were gone; a sampler every 100 ms came by about once a
+  second under the gate's three workers and saw 0 (a tracer lives about a second). The picture is
+  composited from the canvases right after the frame with the most of both sides' fire.
+- **Measured:** at most 2 to 4 German and 5 to 7 British tracers in one frame; both sides within
+  1.7 to 2.5 s (four runs; one beside the spec's two other tests: 16 frames and 6 ticks in the 6 s).
+  Picture: `docs/evidence/7.22/a-sea-row-x1.png` (the British battle squadron's tracers on the
+  German ships at Heligoland, looked at).
+- **Specs by hand** (chromium): `seaRow1938`, its three tests green with 3 workers; the gate ran it
+  again. No source changed.
+- **Next:** PLAN 7.22b (ships larger at T3).
