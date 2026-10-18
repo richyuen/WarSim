@@ -1988,12 +1988,13 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   spearheads), sets defensive postures, tasks fleets (sea control around coasts, convoy
   escort, raiding, invasion), tasks air wings (superiority over active fronts, CAS on
   Major Battles, strategic bombing when superiority is high).
-  *Invasions (PLAN 4.6b, ADR-268; `src/sim/ai/invasion.ts`):* daily, staggered weekly by id, a
-  nation in a war with no land front today and no formation aboard takes its transport group
-  with the most room at a port it holds, and aims at the enemy's port nearest them whose sea is
-  open to it (not closed by ice, not held by its enemy). Its free formations at that port go
-  aboard there; with none there, the nearest on the port's land are sent to it to fill the
-  room. A landing takes a cell a nation owns where the target is owned.
+  *Invasions (PLAN 4.6b, ADR-268, ADR-511; `src/sim/ai/invasion.ts`):* daily, staggered weekly
+  by id, a nation with no formation aboard and a war in which it has no land front today takes
+  its transport group with the most room at a port it holds, and aims at the port nearest them,
+  of an enemy of such a war, whose sea is open to it (not closed by ice, not held by its enemy).
+  Its free formations at that port go aboard there; with none there, the nearest on the port's
+  land are sent to it to fill the room. A nation with a front in another war uses only
+  formations beyond the deploy range of its own front on their land. A landing takes a cell a nation owns where the target is owned.
   *Fleets at sea (PLAN 4.6c, ADR-270; `src/sim/ai/naval.ts`):* daily, staggered weekly by id. At
   war, each warfleet (power: its armed ships' hit points, submarines left out) standing at a
   port of its nation sails, within 2,500 km, to a landing of its nation's under way (escort),

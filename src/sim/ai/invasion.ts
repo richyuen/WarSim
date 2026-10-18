@@ -3,13 +3,18 @@
  * enemy's coast.
  *
  * Daily at 00:00, each nation in a war (living, its AI on; staggered by `STAGGER` days as the
- * strategic AI) that has no land front today (no cell it holds beside a cell held by a nation at
- * war with it: ADR-267 counted the long wars with a rare front, the British bloc against Ireland
- * for 800 days in every seed) and no formation aboard plans one landing:
+ * strategic AI) with no formation aboard plans one landing, in its wars in which it has no land
+ * front today (no cell it holds beside a cell held by a nation of the war's other side: ADR-267
+ * counted the long wars with a rare front, the British bloc against Ireland for 800 days in every
+ * seed). The front is judged per war (PLAN 7.26c3a, ADR-511): before, a front in any of its wars
+ * barred a landing in all (30–50 % of nation-days). One landing a day, on the enemies of all such
+ * wars together; a nation with a front in another war lands only formations beyond
+ * `DEPLOY_RANGE_CELLS` of each cell of its own front on their land (from five states, of 30 sent to a port, 24
+ * stood within it, and all but one were marched elsewhere before they boarded):
  *
  * - its transports: the transport group of its own that stands (not under way, not in a sea
  *   battle) at a port it holds with the most room (`transportRoom`, the lower id on a tie);
- * - the target: the port held by a nation at war with it nearest those transports (`seaKm`)
+ * - the target: the port held by one of those enemies nearest those transports (`seaKm`)
  *   whose water's zone is not closed by ice nor held by a nation at war with it (a landing there
  *   would be thrown back, PLAN 4.5b): the landing takes a port, a cell with water by it;
  * - its formations at that port (land formations within `AT_PORT_CELLS` of its water, not under
@@ -20,8 +25,8 @@
  *   the port out of its army's reach by land; each failed order is a search of the map); they go
  *   aboard on a later day.
  *
- * Not here: an escort or a fleet sent to hold the landing's sea (PLAN 4.6c), a landing for a
- * nation with a front elsewhere.
+ * Not here: an escort or a fleet sent to hold the landing's sea (PLAN 4.6c), a landing in a war
+ * in which the nation has a front.
  */
 import { isDayStart } from '../../shared/calendar';
 import { neighbours4 } from '../nav/grid';
@@ -31,6 +36,7 @@ import { orderMove } from '../systems/movement';
 import { AT_PORT_CELLS, seaKm } from '../systems/navalCombat';
 import { seaHolder } from '../systems/seaControl';
 import { navOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
+import { DEPLOY_RANGE_CELLS } from './operational';
 import { STAGGER } from './strategic';
 
 const near = (world: World, a: number, b: number, r: number): boolean => {
@@ -46,24 +52,46 @@ export function invasionAi(world: World): void {
   const day = world.tick / 24;
   const actors = [...world.wars.nations()].filter((n) => nc.living[n] === 1 && nc.aiOff[n] !== 1 && (day + n) % STAGGER === 0).sort((a, b) => a - b);
   if (actors.length === 0) return;
-  // The nations with a land front today, and those with a formation aboard.
+  // The enemies each actor has a land front with today, and the nations with a formation aboard.
   const { w, h, controller } = world.cells;
-  const fronted = new Set<number>();
+  const acting = new Set(actors);
+  const faced = new Map<number, Set<number>>();
+  const frontCells = new Map<number, number[]>();
   const nb: number[] = [];
   for (const c of frontierOf(world)) {
     const a = controller[c]!;
-    if (fronted.has(a)) continue;
+    if (!acting.has(a)) continue;
+    let onFront = false;
     for (const q of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
       const b = controller[q]!;
-      if (b !== 0 && b !== a && world.wars.atWar(a, b)) fronted.add(a);
+      if (b !== 0 && b !== a && world.wars.atWar(a, b)) {
+        let s = faced.get(a);
+        if (!s) faced.set(a, (s = new Set()));
+        s.add(b);
+        onFront = true;
+      }
     }
+    if (onFront) (frontCells.get(a) ?? frontCells.set(a, []).get(a)!).push(c);
   }
   const aboard = new Set<number>();
   for (const id of world.embarked.keys()) aboard.add(world.formations.cols.nation[id]!);
-  for (const n of actors) if (!fronted.has(n) && !aboard.has(n)) planLanding(world, n);
+  for (const n of actors) {
+    if (aboard.has(n)) continue;
+    // The enemies of its wars in which it has no front (PLAN 7.26c3a).
+    const mine = faced.get(n);
+    const foes = new Set<number>();
+    for (const war of world.wars.list) {
+      const i = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
+      if (i < 0) continue;
+      const other = war.sides[1 - i]!;
+      if (mine && other.some((e) => mine.has(e))) continue;
+      for (const e of other) if (e !== n) foes.add(e);
+    }
+    if (foes.size > 0) planLanding(world, n, foes, frontCells.get(n) ?? []);
+  }
 }
 
-function planLanding(world: World, n: number): void {
+function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: readonly number[]): void {
   const f = world.formations;
   const c = f.cols;
   const w = world.cells.w;
@@ -91,7 +119,7 @@ function planLanding(world: World, n: number): void {
   world.ports.forEach((p, i) => {
     const holder = ctl[p.cell]!;
     const at = water[i]!;
-    if (holder === 0 || at < 0 || !world.wars.atWar(n, holder)) return;
+    if (holder === 0 || at < 0 || !foes.has(holder)) return;
     const zone = z.zoneOf[at]!;
     if (zone === 0 || z.closed[zone] === 1) return;
     const sea = seaHolder(world, zone);
@@ -102,7 +130,24 @@ function planLanding(world: World, n: number): void {
   if (target < 0) return;
   const goal = world.ports[target]!.cell;
   const [tx, ty] = world.cellPoint(goal);
-  const free = (id: number): boolean => !world.offLand(id) && c.nation[id] === n && c.moving[id] !== 1 && c.engaged[id] !== 1 && c.retreat[id] === 0 && c.home[id] === 0;
+  // A nation with a front in another war lands with its far army only (PLAN 7.26c3a): those within
+  // the deploy range of its own front, on that front's land, are the operational AI's, which
+  // marched them back.
+  const r = world.atSize(DEPLOY_RANGE_CELLS);
+  const range2 = r * r;
+  const onLand = navOf(world).grid.component;
+  const nearFront = (id: number): boolean => {
+    const mine = onLand[cellOf(id)];
+    for (const k of front) {
+      if (onLand[k] !== mine) continue;
+      let dx = Math.abs(c.x[id]! - ((k % w) + 0.5));
+      if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+      const dy = c.y[id]! - (Math.floor(k / w) + 0.5);
+      if (dx * dx + dy * dy <= range2) return true;
+    }
+    return false;
+  };
+  const free = (id: number): boolean => !world.offLand(id) && c.nation[id] === n && c.moving[id] !== 1 && c.engaged[id] !== 1 && c.retreat[id] === 0 && c.home[id] === 0 && (front.length === 0 || !nearFront(id));
   // Its formations at the port go aboard.
   let sent = 0;
   const atPort: number[] = [];

@@ -13,9 +13,12 @@
  * - how it ended, read from its last day (capitulation at ±100, MAX_WAR_DAYS, FRONTLESS_DAYS,
  *   exhaustion, crushed, or a peace of another war's terms).
  * Per nation at war, daily: the gate of the invasion AI (`ai/invasion.ts`'s `planLanding`) that
- * stops it, whether or not it is an actor of the day: a land front in any of its wars, a formation
+ * stops it, whether or not it is an actor of the day: a land front in each of its wars, a formation
  * aboard, no transport group at a port of its own, no enemy port it may land at, formations at the
- * port (it would load), free formations on the port's land (it would send them), none.
+ * port (it would load), free formations on the port's land (it would send them), none. Of the
+ * nations with a front in some war (PLAN 7.26c3a, which made the front per war): their gate
+ * (`perWar`) and the one they would meet were it per enemy (`perEnemy`: the enemies it has no
+ * front with), and the nations that load or send.
  *
  * Usage: npx tsx tools/diag/landWar.ts <seed> [years = 8] [out = .cache/landWar_<seed>.json]
  */
@@ -28,6 +31,7 @@ import { frontierOf } from '../../src/sim/systems/territory';
 import { warsWithFront } from '../../src/sim/systems/warFront';
 import { CONTACT_CELLS } from '../../src/sim/systems/elements';
 import { AT_PORT_CELLS, seaKm } from '../../src/sim/systems/navalCombat';
+import { DEPLOY_RANGE_CELLS } from '../../src/sim/ai/operational';
 import { transportRoom } from '../../src/sim/systems/amphibious';
 import { seaHolder } from '../../src/sim/systems/seaControl';
 import { CRUSHED, EXHAUSTED, FRONTLESS_DAYS, MAX_WAR_DAYS } from '../../src/sim/systems/war';
@@ -63,7 +67,7 @@ const near = (world: World, a: number, b: number, r: number): boolean => {
 };
 
 /** `planLanding`'s gates, read only, for a nation without a front or a formation aboard. */
-function landingGate(n: number): Gate {
+function landingGate(n: number, foe: (holder: number) => boolean = (h) => w.wars.atWar(n, h), front: readonly number[] = []): Gate {
   const f = w.formations;
   const c = f.cols;
   const water = portSeaOf(w);
@@ -86,7 +90,7 @@ function landingGate(n: number): Gate {
   w.ports.forEach((p, i) => {
     const holder = ctl[p.cell]!;
     const at = water[i]!;
-    if (holder === 0 || at < 0 || !w.wars.atWar(n, holder)) return;
+    if (holder === 0 || at < 0 || !foe(holder)) return;
     const zone = z.zoneOf[at]!;
     if (zone === 0 || z.closed[zone] === 1) return;
     const sea = seaHolder(w, zone);
@@ -94,7 +98,17 @@ function landingGate(n: number): Gate {
     target = i;
   });
   if (target < 0) return 'noTarget';
-  const free = (id: number): boolean => !w.offLand(id) && c.nation[id] === n && c.moving[id] !== 1 && c.engaged[id] !== 1 && c.retreat[id] === 0 && c.home[id] === 0;
+  const rr = w.atSize(DEPLOY_RANGE_CELLS);
+  const cw = w.cells.w;
+  const comp0 = navOf(w).grid.component;
+  const nearFront = (id: number): boolean => front.some((k) => {
+    if (comp0[k] !== comp0[cellOf(id)]) return false;
+    let dx = Math.abs(c.x[id]! - ((k % cw) + 0.5));
+    if (w.settings.loopingMap && dx > cw / 2) dx = cw - dx;
+    const dy = c.y[id]! - (Math.floor(k / cw) + 0.5);
+    return dx * dx + dy * dy <= rr * rr;
+  });
+  const free = (id: number): boolean => !w.offLand(id) && c.nation[id] === n && c.moving[id] !== 1 && c.engaged[id] !== 1 && c.retreat[id] === 0 && c.home[id] === 0 && (front.length === 0 || !nearFront(id));
   let atPort = false;
   let onLand = false;
   const comp = navOf(w).grid.component;
@@ -111,7 +125,7 @@ const years_: unknown[] = [];
 let day = 0;
 const t0 = Date.now();
 for (let y = 0; y < years; y++) {
-  const yr = { year: y + 1, warDays: 0, frontless: 0, contact: 0, noContact: 0, engaged: 0, gates: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, gateNations: {} as Record<string, Record<string, number>>, nearestKmNoContact: [] as number[], nearestKmContact: [] as number[], byWar: new Map<number, { contact: number; noContact: number; big: boolean }>() };
+  const yr = { year: y + 1, warDays: 0, frontless: 0, contact: 0, noContact: 0, engaged: 0, gates: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, gateNations: {} as Record<string, Record<string, number>>, perWar: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, perEnemy: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, perWarNations: {} as Record<string, Record<string, number>>, perEnemyNations: {} as Record<string, Record<string, number>>, nearestKmNoContact: [] as number[], nearestKmContact: [] as number[], byWar: new Map<number, { contact: number; noContact: number; big: boolean }>() };
   for (let d = 0; d < 365; d++, day++) {
     s.step(24, (ww) => {
       ww.out.events.length = 0;
@@ -121,17 +135,21 @@ for (let y = 0; y < years; y++) {
     const fronts = warsWithFront(w);
     // Front cells by pair of nations.
     const pairCells = new Map<number, number>();
+    const frontBy = new Map<number, number[]>();
     const { w: cw, h: ch, controller } = w.cells;
     const nb: number[] = [];
     for (const cell of frontierOf(w)) {
       const a = controller[cell]!;
       const seen = new Set<number>();
+      let onFront = false;
       for (const k of neighbours4(cell, cw, ch, w.settings.loopingMap, nb)) {
         const b = controller[k]!;
         if (b === 0 || b === a || seen.has(b)) continue;
         seen.add(b);
         pairCells.set(a * 65536 + b, (pairCells.get(a * 65536 + b) ?? 0) + 1);
+        if (w.wars.atWar(a, b)) onFront = true;
       }
+      if (onFront) (frontBy.get(a) ?? frontBy.set(a, []).get(a)!).push(cell);
     }
     const land: number[] = [];
     const engaged: number[] = [];
@@ -221,27 +239,42 @@ for (let y = 0; y < years; y++) {
       const l = r.last;
       r.how = Math.abs(l.score) >= 100 ? 'capitulation' : l.days >= MAX_WAR_DAYS - 1 ? 'maxDays' : l.frontless >= FRONTLESS_DAYS - 1 ? 'frontless' : l.ftd ? 'otherTerms' : l.exA >= EXHAUSTED - 1 || l.exD >= EXHAUSTED - 1 ? 'exhausted' : Math.abs(l.score) >= CRUSHED - 2 ? 'crushed' : 'brokeOrOther';
     }
-    // The invasion AI's gates, for every nation at war.
-    const fronted = new Set<number>();
-    for (const war of w.wars.list) {
-      if (!fronts.has(war.id)) continue;
-      const [A, D] = war.sides;
-      for (const a of A) for (const b of D) if (pairCells.has(a * 65536 + b) || pairCells.has(b * 65536 + a)) fronted.add(a).add(b);
-    }
+    // The invasion AI's gates, for every nation at war, per war since PLAN 7.26c3a: `fronted`, a
+    // front in each of its wars.
     const aboard = new Set<number>();
     for (const id of w.embarked.keys()) aboard.add(c.nation[id]!);
     for (const n of w.wars.nations()) {
       if (w.nations.cols.living[n] !== 1) continue;
-      const g: Gate = fronted.has(n) ? 'fronted' : aboard.has(n) ? 'aboard' : landingGate(n);
+      const fw = (e: number): boolean => w.wars.atWar(n, e) && (pairCells.has(n * 65536 + e) || pairCells.has(e * 65536 + n));
+      const free: number[] = [];
+      let some = false;
+      for (const war of w.wars.list) {
+        const i = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
+        if (i < 0) continue;
+        const other = war.sides[1 - i]!;
+        if (other.some(fw)) some = true;
+        else free.push(...other);
+      }
+      const g: Gate = free.length === 0 ? 'fronted' : aboard.has(n) ? 'aboard' : landingGate(n, (h) => free.includes(h), frontBy.get(n) ?? []);
       yr.gates[g]++;
       if (g !== 'fronted') (yr.gateNations[tag(n)] ??= {})[g] = ((yr.gateNations[tag(n)] ?? {})[g] ?? 0) + 1;
+      if (!some || aboard.has(n)) continue;
+      // Of the nations with a front in some war (barred from every landing before 7.26c3a): the gate
+      // per war (counted in `gates` too), and per enemy (the enemies it has no front with).
+      const unfaced = [...w.wars.nations()].filter((e) => w.wars.atWar(n, e) && !fw(e));
+      const pe: Gate = unfaced.length > 0 ? landingGate(n, (h) => unfaced.includes(h), frontBy.get(n) ?? []) : 'fronted';
+      yr.perWar[g]++;
+      yr.perEnemy[pe]++;
+      if (g === 'atPort' || g === 'send') (yr.perWarNations[tag(n)] ??= {})[g] = ((yr.perWarNations[tag(n)] ?? {})[g] ?? 0) + 1;
+      if (pe === 'atPort' || pe === 'send') (yr.perEnemyNations[tag(n)] ??= {})[pe] = ((yr.perEnemyNations[tag(n)] ?? {})[pe] ?? 0) + 1;
     }
   }
   const med = (a: number[]): number | null => (a.length ? [...a].sort((x, z) => x - z)[a.length >> 1]! : null);
   let bigC = 0;
   let bigN = 0;
   for (const v of yr.byWar.values()) if (v.big) [bigC, bigN] = [bigC + v.contact, bigN + v.noContact];
-  const row = { year: yr.year, bigWarContactShare: bigC + bigN > 0 ? +(bigC / (bigC + bigN)).toFixed(3) : null, bigWarFrontDays: bigC + bigN, warDays: yr.warDays, frontless: yr.frontless, contact: yr.contact, noContact: yr.noContact, engagedPerDay: +(yr.engaged / 365).toFixed(1), medianNearestKmNoContact: med(yr.nearestKmNoContact), medianNearestKmContact: med(yr.nearestKmContact), gates: yr.gates, gateNations: Object.fromEntries(Object.entries(yr.gateNations).sort((a, b) => Object.values(b[1]).reduce((x, z) => x + z, 0) - Object.values(a[1]).reduce((x, z) => x + z, 0)).slice(0, 10)) };
+  const top = (o: Record<string, Record<string, number>>): Record<string, Record<string, number>> => Object.fromEntries(Object.entries(o).sort((a, b) => Object.values(b[1]).reduce((x, z) => x + z, 0) - Object.values(a[1]).reduce((x, z) => x + z, 0)).slice(0, 10));
+  const row = { year: yr.year, bigWarContactShare: bigC + bigN > 0 ? +(bigC / (bigC + bigN)).toFixed(3) : null, bigWarFrontDays: bigC + bigN, warDays: yr.warDays, frontless: yr.frontless, contact: yr.contact, noContact: yr.noContact, engagedPerDay: +(yr.engaged / 365).toFixed(1), medianNearestKmNoContact: med(yr.nearestKmNoContact), medianNearestKmContact: med(yr.nearestKmContact), gates: yr.gates, perWar: yr.perWar, perEnemy: yr.perEnemy, perWarNations: top(yr.perWarNations), perEnemyNations: top(yr.perEnemyNations), gateNations: Object.fromEntries(Object.entries(yr.gateNations).sort((a, b) => Object.values(b[1]).reduce((x, z) => x + z, 0) - Object.values(a[1]).reduce((x, z) => x + z, 0)).slice(0, 10)) };
   years_.push(row);
   process.stderr.write(`${JSON.stringify(row)}\n${((Date.now() - t0) / 60000).toFixed(1)} min\n`);
 }

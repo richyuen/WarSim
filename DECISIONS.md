@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-511 · 2026-10-18 · accepted — A landing per war, with the far army (PLAN 7.26c3a)
+
+- **Context.** PLAN 7.26c (`docs/evidence/7.26/measure-c.md` §3): a nation with a land front in any
+  of its wars planned no landing in any (ADR-268's gate, per nation): 30 to 50 % of nation-days.
+  Judged per war (`landWar.ts`'s `perWar`, `measure-c3.md` §1), the nation-days on which a landing
+  could be planned about double to treble, most of them the great powers' (Japan, Italy, Britain,
+  Germany, the Soviet Union), whose wings 7.26d found with no enemy in range.
+- **Decision.** The invasion AI judges the front per war: a nation plans a landing in its wars in
+  which no cell it holds is beside a cell of the war's other side, on the enemies of all such wars
+  together, one landing a day as before. A nation with a front in another war lands only formations
+  beyond `DEPLOY_RANGE_CELLS` of each cell of its own front on their land (`grid.component`).
+  A nation with no front at all is as before.
+- **Why the far army.** With every free formation (variant 1, `measure-c3.md` §2), of 30 formations
+  of fronted nations sent to a port from five states, 24 stood within the range of their own front,
+  one boarded, and the operational AI ordered the rest elsewhere: garrisons pulled off the front and
+  sent back. Counted across water (variant 2), the range shut out Japan's home army, within 60 cells
+  of its China front as the crow flies.
+- **Measured.** From nine states saved by the old rule, 180 days each: embarks 25 → 29, landings
+  25 → 29; from seed 7919's day 1100 Japan lands, sorties aloft 12.2 → 15.9, contact share 20.4 →
+  16.0 %; the other states' contact share holds or rises. `airWar.ts` 8 years, years 2–8 mean
+  sorties aloft 16.7 → 18.2 (2843) and 13.2 → 15.0 (7919); the big wars' contact share of
+  `landWar.ts` 0.164 → 0.131 and 0.158 → 0.084 (one run each, diverging from the first year).
+  Seed 99 over three years: `invasionAi` 0.5–1.1 % of the tick.
+- **Not done.** Per enemy (a landing on an enemy one has no front with, in a war with a front
+  elsewhere): measured (`perEnemy`), not tried. The colonies with no transports: PLAN 7.26c3b.
+- **Pin.** 59fea6f5 → 5274b933.
+- **Tests.** `invasionAi1938.test.ts` "the landing per war": Japan, at war with China across a land
+  front, at war with Siam besides, boards from beyond the range of that front (99 cells) and lands
+  on Siam (red before: no embark in 90 days); "a nation with a land front plans no landing"
+  (Germany and Poland) unchanged.
+
 ### ADR-510 · 2026-10-18 · accepted — A formation too small to take a cell does not man a sector (PLAN 7.26c2a)
 
 - **Context.** PLAN 7.26c2 (`docs/evidence/7.26/measure-c2.md`): seed 7919's Brazil against

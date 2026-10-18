@@ -18822,3 +18822,30 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Corrected:** of the out-of-range wings with a free base in range of an enemy (36 %), a tenth
   have it within one ferry hop (3 % of all out of range), not "all but 3 %". The first unchecked
   parts c1b and c2b now say they wait on c3 and c4.
+
+## 2026-10-18 — PLAN 7.26c3a: the landing per war, with the far army
+
+- **Start:** gate green on `9eb329b`; critic not due. PLAN 7.26c3 split: c3a (per war), c3b (the
+  colonies' transports).
+- **Measured first** (`docs/evidence/7.26/measure-c3.md`; `landWar.ts`'s new `perWar` and
+  `perEnemy` columns): per war, the nation-days on which a landing could be planned about double
+  to treble (Japan, Italy, Britain, Germany, the Soviet Union); per enemy twice that again.
+- **Done** (ADR-511): the invasion AI's front per war; a nation with a front in another war lands
+  only formations beyond `DEPLOY_RANGE_CELLS` of its own front on their land. Two variants dropped
+  on the way: any free formation (24 of 30 sent stood within range of their front, 1 boarded, the
+  operational AI marched the rest back), and the range across water (it shut out Japan's home army).
+- **Measured after:** from nine states saved by the old rule (`.cache/tmp/saveAt.ts`, `abc3.ts`,
+  `c3send.ts`), 180 days: embarks 25 → 29; `airWar.ts` 8 years, years 2–8 sorties aloft 16.7 →
+  18.2 (2843) and 13.2 → 15.0 (7919); the big wars' contact share fell on both 8-year runs (0.164
+  → 0.131, 0.158 → 0.084) and on one state of nine. Seed 99: `invasionAi` 0.5–1.1 % of the tick.
+  Pin 59fea6f5 → 5274b933.
+- **Tests:** `invasionAi1938.test.ts` "the landing per war" (Japan at war with China and Siam;
+  red before).
+  `stats.test.ts`: its helper counted a nation's men with `offLand`, which since PLAN 4.5a leaves
+  out an army aboard transports, while the statistics count it (army men, PLAN 4.5a); seed 4's
+  first month start with men aboard came with this rule (20,580 men of nation 75). The helper now
+  counts what the statistics define: every land formation, aboard or not.
+- **Gotcha:** states saved before the last two rule changes (`h*_d400`, `h*_d900`) showed the new
+  rule never biting on seed 7919: the situations the measure found were not in them. Save states
+  from the current code in the windows where the measure says the rule bites.
+- **Next:** PLAN 7.26c4 (the rebase over more than one hop); c3b, c1b, c2b's fix after it.

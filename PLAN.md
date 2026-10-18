@@ -159,6 +159,22 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
         c1 and c2 leave the 7.26 AT short. AT: `landWar.ts`'s gate counts; the pin's entry.
         Taken next (7.26d, 2026-10-18): 59 % of the short years' out-of-range wings have no base
         of their side in range of any enemy, the overseas powers' first.
+        A part each (2026-10-18):
+        - [x] 7.26c3a The landing per war: a nation with a front in one war may land in a war in
+          which it has none. Measured first, no rule changed: `landWar.ts`, for each fronted
+          nation-day, the gate it would meet per war (`perWar`) and per enemy (`perEnemy`), and the
+          nations that would load or send. Then the rule, only if `perWar` reaches `atPort` or
+          `send` on enough nation-days to matter. AT: the measure in
+          `docs/evidence/7.26/measure-c3.md`; a unit test (a nation fronted in one war lands in its
+          other; with the one war only, none); `landWar.ts`'s gates and `airWar.ts` re-run; the
+          pin's entry. Done (ADR-511): per war, with the formations beyond the range of the own
+          front on their land; from nine states embarks 25 → 29; `airWar.ts` 8 years, years 2–8
+          sorties aloft 16.7 → 18.2 and 13.2 → 15.0; the big wars' contact share fell on both
+          seeds' 8-year runs (0.164 → 0.131, 0.158 → 0.084), not on the states but one; pin
+          5274b933.
+        - [ ] 7.26c3b The colonies' and small members' landings (no transport group at a port of
+          their own: 60–90 % of the unfronted nation-days). Measured first: whether a partner's
+          transports could carry them. Only if c3a leaves the AT short.
       - [ ] 7.26c4 The rebase over more than one hop: in 7.26d's short war-years 36 % of the wings
         out of range have a base of their side with room within range of an enemy, a tenth of
         them within one ferry hop (`freeInFerry`, 3 % of all out of range); 1.6 wings rebase a day of 54. Measured first: whether
