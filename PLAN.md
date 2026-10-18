@@ -272,7 +272,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       sorties aloft up on 8 of 10 seeds, level on 2, down on none (7.24 → 9.52; 7.26d 9.8), air
       battles 7,524 → 10,207; c1b off up 6, down 4. The switches checked first: all off gave
       7.26d's hashes, all on 7.26e's. ADR-512 taken back (the old step); pin c9f5962b.
-    - [ ] 7.26g The AT of 7.26 re-measured (as 7.26e, seeds 1–10 × 30 years) after 7.26f and
+    - [x] 7.26g The AT of 7.26 re-measured (as 7.26e, seeds 1–10 × 30 years) after 7.26f and
       c3b; what is short split again.
       To read against c3b (ADR-516, `.cache/c3b/landWar2_*.json` `gateNations`, the top ten only):
       great powers stopped at `noTransport` for whole years (no group of their own standing at a
@@ -281,6 +281,28 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       first where their transports are (under way, on patrol, sunk, at a port lost), not a
       partner's ships. ADR-516's "seldom end aboard" stands on §2's fronted nations; an unfronted
       nation's own `send` orders were not measured.
+      Done (2026-10-18, `docs/evidence/7.26/measure-g.md`): seeds 1–10 on `6d1f727`, every year's
+      hash equal to 7.26f's c4-off runs. 0 of 10 pass, as at 7.26e. Year 1 46.6 (47.4); years 2–10
+      14.8 (14.9), years 21–30 9.5 (7.2), their air battles 7,524 → 10,207. The years with land
+      contact fall short too (mean contact 5 or more: 14 of 19 under the bar, median 0.40 of year 1;
+      no late year has two-thirds of year 1's 29.9), so 7.26c's condition for patrols over home is
+      met. Of the short years' out-of-range wings 58 % no base of their side near any enemy (the
+      US, Japan, Britain, Germany, the Netherlands). Next: 7.26h, 7.26i, then 7.26j.
+    - [ ] 7.26h Where the great powers' own transports are (7.26g's reading of c3b): on the
+      nation-days Germany, Britain, the Netherlands, the US and Japan stop at `noTransport` in a war
+      with no front of theirs, each of their transport groups' state (at a port of theirs, under
+      way and where to, on patrol, sunk, at a port lost) and their free formations by land.
+      Measured, no rule: seeds 2843 and 7919 × 8 years (`landWar.ts` or a tool beside it). AT: the
+      measure in `docs/evidence/7.26/measure-h.md`; the cause split into a part if one is found.
+    - [ ] 7.26i Patrols over home (7.26c's condition met by 7.26g): a wing of a nation at war with
+      no enemy land formation in range patrols over its own land within reach of an enemy airbase
+      or fleet. Measured first: of the short years' idle wings, how many stand within reach of an
+      enemy base or fleet, and how often an enemy sortie comes there. Then the rule only if the
+      measure finds enough wings with an enemy in reach; recorded in DECISIONS (AoC has no air war;
+      the patrol must meet enemies the sim has, not fly for the count). AT: a unit test; from six
+      states, sorties aloft and air battles; the pin's entry.
+    - [ ] 7.26j The AT of 7.26 re-measured (as 7.26g) after 7.26h and 7.26i; c3b1 and c3c taken
+      up only on 7.26h's evidence.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five

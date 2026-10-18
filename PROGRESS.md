@@ -18984,3 +18984,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Noted under 7.26g:** in the same files Germany, Britain and the Netherlands stop at
   `noTransport` for whole years (Germany 334–365 days in years 3, 7, 8 of seed 2843): their own
   transports away or lost, a cause apart from the colonies'.
+
+## 2026-10-18 — PLAN 7.26g: the 7.26 AT re-measured on 10 seeds × 30 years
+
+- **Start:** gate green on `6d1f727`; critic not due.
+- **Done:** seeds 1–10 × 30 years on `6d1f727` (`airWar.ts`, ten side by side, 15 minutes; files in
+  `.cache/726g/`), judged by `airAt.ts` against 7.26e (`docs/evidence/7.26/measure-g.md`). Every
+  year's hash equals 7.26f's c4-off run: the switch was the old code.
+- **Measured:** 0 of 10 pass. Year 1 46.6 (47.4), years 2–10 14.8 (14.9), years 21–30 9.5 (7.2),
+  their air battles 7,524 → 10,207. War-years with mean land contact 5 or more: 19 of 290, 14 of
+  them under the bar (median 0.40 of year 1): 7.26c's condition for patrols over home is met. Short
+  years' out-of-range wings: 58 % no base of their side near any enemy.
+- **Split:** 7.26h (where the great powers' own transports are on their `noTransport` days,
+  measure), 7.26i (patrols over home, measured first), 7.26j (the AT again). c3b1 and c3c wait on
+  7.26h.
+- **Next:** PLAN 7.26h.
