@@ -121,11 +121,82 @@ function landingGate(n: number, foe: (holder: number) => boolean = (h) => w.wars
   return atPort ? 'atPort' : onLand ? 'send' : 'noneFree';
 }
 
+/**
+ * PLAN 7.26c3b: for a nation stopped at `noTransport`, whether a partner's transports could carry
+ * it. Partners: the nations of its side in the wars in which it has no front. `here`: a partner's
+ * transport group standing at a port held by the partner or by n, with net room (its room less the
+ * men aboard, as `transportsPort` counts it) for the smallest of n's free formations on that port's
+ * land, and an enemy port open to n (`busy` when the partner has a formation aboard); `elsewhere`:
+ * such a group with room, but on no land with a free formation of n; `none`: no partner group with
+ * room at a port; `noneFree`: n has no free formation; `noTarget`: a group here, no port to land at.
+ */
+const PGATES = ['here', 'hereBusy', 'elsewhere', 'none', 'noneFree', 'noTarget'] as const;
+type PGate = (typeof PGATES)[number];
+function partnerGate(n: number, foes: ReadonlySet<number>, partners: ReadonlySet<number>, front: readonly number[], held: ReadonlyMap<number, number>, aboardBy: ReadonlySet<number>): { g: PGate; partner?: number; airbase?: boolean } {
+  const f = w.formations;
+  const c = f.cols;
+  const water = portSeaOf(w);
+  const ctl = w.cells.controller;
+  const comp = navOf(w).grid.component;
+  const cw = w.cells.w;
+  const rr = w.atSize(DEPLOY_RANGE_CELLS);
+  const nearFront = (id: number): boolean => front.some((k) => {
+    if (comp[k] !== comp[cellOf(id)]) return false;
+    let dx = Math.abs(c.x[id]! - ((k % cw) + 0.5));
+    if (w.settings.loopingMap && dx > cw / 2) dx = cw - dx;
+    const dy = c.y[id]! - (Math.floor(k / cw) + 0.5);
+    return dx * dx + dy * dy <= rr * rr;
+  });
+  // n's free formations: the smallest on each land.
+  const smallest = new Map<number, number>();
+  f.forEach((id) => {
+    if (w.isFleet(id) || w.isWing(id) || w.offLand(id) || c.nation[id] !== n || c.moving[id] === 1 || c.engaged[id] === 1 || c.retreat[id] !== 0 || c.home[id] !== 0 || (front.length > 0 && nearFront(id))) return;
+    const k = comp[cellOf(id)]!;
+    smallest.set(k, Math.min(smallest.get(k) ?? Infinity, c.strength[id]!));
+  });
+  if (smallest.size === 0) return { g: 'noneFree' };
+  let any = false;
+  let hit: { fleet: number; partner: number } | undefined;
+  f.forEach((id) => {
+    if (hit || !w.isFleet(id) || !partners.has(c.nation[id]!) || c.moving[id] === 1 || c.engaged[id] === 1 || seaRangeOf(w, id) !== undefined) return;
+    const net = transportRoom(w, id) - (held.get(id) ?? 0);
+    if (net <= 0) return;
+    const at = cellOf(id);
+    const p = c.nation[id]!;
+    const i = w.ports.findIndex((q, k) => water[k]! >= 0 && (ctl[q.cell] === p || ctl[q.cell] === n) && near(w, at, water[k]!, w.atSize(AT_PORT_CELLS)));
+    if (i < 0) return;
+    any = true;
+    const m = smallest.get(comp[w.ports[i]!.cell]!);
+    if (m !== undefined && m <= net) hit = { fleet: id, partner: p };
+  });
+  if (!hit) return { g: any ? 'elsewhere' : 'none' };
+  const { fleet, partner } = hit;
+  const z = seaOf(w);
+  let target = -1;
+  let best = Infinity;
+  w.ports.forEach((q, i) => {
+    const holder = ctl[q.cell]!;
+    const at = water[i]!;
+    if (holder === 0 || at < 0 || !foes.has(holder)) return;
+    const zone = z.zoneOf[at]!;
+    if (zone === 0 || z.closed[zone] === 1) return;
+    const sea = seaHolder(w, zone);
+    if (sea !== 0 && w.wars.atWar(sea, n)) return;
+    const d = seaKm(w, c.x[fleet]!, c.y[fleet]!, (at % cw) + 0.5, Math.floor(at / cw) + 0.5);
+    if (d < best) [best, target] = [d, i];
+  });
+  if (target < 0) return { g: 'noTarget', partner };
+  const goal = w.ports[target]!.cell;
+  const r = 2 * w.atSize(AT_PORT_CELLS);
+  const airbase = w.airbases.some((b) => near(w, b.cell, goal, r));
+  return { g: aboardBy.has(partner) ? 'hereBusy' : 'here', partner, airbase };
+}
+
 const years_: unknown[] = [];
 let day = 0;
 const t0 = Date.now();
 for (let y = 0; y < years; y++) {
-  const yr = { year: y + 1, warDays: 0, frontless: 0, contact: 0, noContact: 0, engaged: 0, gates: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, gateNations: {} as Record<string, Record<string, number>>, perWar: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, perEnemy: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, perWarNations: {} as Record<string, Record<string, number>>, perEnemyNations: {} as Record<string, Record<string, number>>, nearestKmNoContact: [] as number[], nearestKmContact: [] as number[], byWar: new Map<number, { contact: number; noContact: number; big: boolean }>() };
+  const yr = { year: y + 1, warDays: 0, frontless: 0, contact: 0, noContact: 0, engaged: 0, gates: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, gateNations: {} as Record<string, Record<string, number>>, perWar: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, perEnemy: Object.fromEntries(GATES.map((g) => [g, 0])) as Record<Gate, number>, perWarNations: {} as Record<string, Record<string, number>>, perEnemyNations: {} as Record<string, Record<string, number>>, partner: Object.fromEntries(PGATES.map((g) => [g, 0])) as Record<PGate, number>, partnerHere: {} as Record<string, number>, partnerHereAirbase: 0, nearestKmNoContact: [] as number[], nearestKmContact: [] as number[], byWar: new Map<number, { contact: number; noContact: number; big: boolean }>() };
   for (let d = 0; d < 365; d++, day++) {
     s.step(24, (ww) => {
       ww.out.events.length = 0;
@@ -242,7 +313,11 @@ for (let y = 0; y < years; y++) {
     // The invasion AI's gates, for every nation at war, per war since PLAN 7.26c3a: `fronted`, a
     // front in each of its wars.
     const aboard = new Set<number>();
-    for (const id of w.embarked.keys()) aboard.add(c.nation[id]!);
+    const held = new Map<number, number>();
+    for (const [id, e] of w.embarked) {
+      aboard.add(c.nation[id]!);
+      held.set(e.fleet, (held.get(e.fleet) ?? 0) + c.strength[id]!);
+    }
     for (const n of w.wars.nations()) {
       if (w.nations.cols.living[n] !== 1) continue;
       const fw = (e: number): boolean => w.wars.atWar(n, e) && (pairCells.has(n * 65536 + e) || pairCells.has(e * 65536 + n));
@@ -258,6 +333,23 @@ for (let y = 0; y < years; y++) {
       const g: Gate = free.length === 0 ? 'fronted' : aboard.has(n) ? 'aboard' : landingGate(n, (h) => free.includes(h), frontBy.get(n) ?? []);
       yr.gates[g]++;
       if (g !== 'fronted') (yr.gateNations[tag(n)] ??= {})[g] = ((yr.gateNations[tag(n)] ?? {})[g] ?? 0) + 1;
+      if (g === 'noTransport') {
+        // PLAN 7.26c3b: a partner's transports.
+        const partners = new Set<number>();
+        for (const war of w.wars.list) {
+          const i: 0 | 1 | -1 = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
+          if (i < 0) continue;
+          if ((i === 0 ? war.sides[1] : war.sides[0]).some(fw)) continue;
+          for (const p of i === 0 ? war.sides[0] : war.sides[1]) if (p !== n) partners.add(p);
+        }
+        const pg = partnerGate(n, new Set(free), partners, frontBy.get(n) ?? [], held, aboard);
+        yr.partner[pg.g]++;
+        if (pg.g === 'here' || pg.g === 'hereBusy') {
+          const k = `${tag(n)} by ${tag(pg.partner!)}`;
+          yr.partnerHere[k] = (yr.partnerHere[k] ?? 0) + 1;
+          if (pg.airbase) yr.partnerHereAirbase++;
+        }
+      }
       if (!some || aboard.has(n)) continue;
       // Of the nations with a front in some war (barred from every landing before 7.26c3a): the gate
       // per war (counted in `gates` too), and per enemy (the enemies it has no front with).
@@ -274,7 +366,7 @@ for (let y = 0; y < years; y++) {
   let bigN = 0;
   for (const v of yr.byWar.values()) if (v.big) [bigC, bigN] = [bigC + v.contact, bigN + v.noContact];
   const top = (o: Record<string, Record<string, number>>): Record<string, Record<string, number>> => Object.fromEntries(Object.entries(o).sort((a, b) => Object.values(b[1]).reduce((x, z) => x + z, 0) - Object.values(a[1]).reduce((x, z) => x + z, 0)).slice(0, 10));
-  const row = { year: yr.year, bigWarContactShare: bigC + bigN > 0 ? +(bigC / (bigC + bigN)).toFixed(3) : null, bigWarFrontDays: bigC + bigN, warDays: yr.warDays, frontless: yr.frontless, contact: yr.contact, noContact: yr.noContact, engagedPerDay: +(yr.engaged / 365).toFixed(1), medianNearestKmNoContact: med(yr.nearestKmNoContact), medianNearestKmContact: med(yr.nearestKmContact), gates: yr.gates, perWar: yr.perWar, perEnemy: yr.perEnemy, perWarNations: top(yr.perWarNations), perEnemyNations: top(yr.perEnemyNations), gateNations: Object.fromEntries(Object.entries(yr.gateNations).sort((a, b) => Object.values(b[1]).reduce((x, z) => x + z, 0) - Object.values(a[1]).reduce((x, z) => x + z, 0)).slice(0, 10)) };
+  const row = { year: yr.year, bigWarContactShare: bigC + bigN > 0 ? +(bigC / (bigC + bigN)).toFixed(3) : null, bigWarFrontDays: bigC + bigN, warDays: yr.warDays, frontless: yr.frontless, contact: yr.contact, noContact: yr.noContact, engagedPerDay: +(yr.engaged / 365).toFixed(1), medianNearestKmNoContact: med(yr.nearestKmNoContact), medianNearestKmContact: med(yr.nearestKmContact), gates: yr.gates, partner: yr.partner, partnerHereAirbase: yr.partnerHereAirbase, partnerHere: Object.fromEntries(Object.entries(yr.partnerHere).sort((a, b) => b[1] - a[1]).slice(0, 12)), perWar: yr.perWar, perEnemy: yr.perEnemy, perWarNations: top(yr.perWarNations), perEnemyNations: top(yr.perEnemyNations), gateNations: Object.fromEntries(Object.entries(yr.gateNations).sort((a, b) => Object.values(b[1]).reduce((x, z) => x + z, 0) - Object.values(a[1]).reduce((x, z) => x + z, 0)).slice(0, 10)) };
   years_.push(row);
   process.stderr.write(`${JSON.stringify(row)}\n${((Date.now() - t0) / 60000).toFixed(1)} min\n`);
 }

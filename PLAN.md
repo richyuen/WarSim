@@ -192,6 +192,28 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           their own stand for want of a way to it (16 % across the sea: Japan, Britain, France; 24 %
           on their landmass behind closed ground or the sea: Italy to Africa, the Soviet Union, the
           Raj). A lift by sea to the own front, not only a landing on the enemy, would serve them.
+          Measured (2026-10-18, `measure-c3.md` §5, `landWar.ts`'s `partner` columns): in years 2–8
+          a partner's transports, standing at a port of the partner's or the nation's with net room
+          for its smallest free formation on that port's land and an enemy port open, on 475–2,657
+          nation-days a year (2.5 to 150 times the days any nation loads or sends its own); 50–86 %
+          of the `noTransport` days have no free formation at all. Who: the British and French
+          blocs' colonies; Germany by Albania and Japan. Of `here`, 0–46 % land near an airbase.
+          A part each:
+          - [ ] 7.26c3b1 A partner's transports carry a nation with none: `planLanding`, with no
+            transport group of its own at a port, takes a partner's (its side in the war of the
+            landing) standing at a port of the partner's or its own, by net room; `tryLanding` and
+            `transportsPort` accept a partner's group where the AI's order names it (a player's
+            order unchanged). AT: a unit test (a colony with no ships lands by its overlord's
+            transports; with no partner group there, none); `landWar.ts` 8 years on seeds 2843 and
+            7919 (embarks by partner's transports, the `here` days) and `airWar.ts`'s sorties
+            aloft; the pin's entry. Save states from the current code where `here` bites before
+            any A/B (PROGRESS, 7.26c3a's gotcha).
+      - [ ] 7.26c3c The lift by sea to a nation's own front (from 7.26c1b, `measure-c1.md` §6: 16 %
+        of own-front planners' far men across the sea, Japan, Britain, France; 24 % behind closed
+        ground or the sea on their landmass): not measured by c3b's columns. Measured first: from
+        a checkpoint, for each such formation, a port of its nation's on its land with transports,
+        and a port of its nation's on the front's land. AT: the measure; the rule only if the
+        7.26 AT is short after 7.26g.
       - [x] 7.26c4 The rebase over more than one hop: in 7.26d's short war-years 36 % of the wings
         out of range have a base of their side with room within range of an enemy, a tenth of
         them within one ferry hop (`freeInFerry`, 3 % of all out of range); 1.6 wings rebase a day of 54. Measured first: whether

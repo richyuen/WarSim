@@ -18955,3 +18955,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a set of seeds picked for their fall reads "up" under any change (regression to the
   mean): judge a switch on seeds not picked, and against a competitor switch.
 - **Next:** PLAN 7.26c3b, then 7.26g (reads against `.cache/726f/c4_*.json`).
+
+## 2026-10-18 — PLAN 7.26c3b: whether a partner's transports could carry the nations with none (measure)
+
+- **Start:** gate green on `7b8bcf1`; critic not due.
+- **Done:** `tools/diag/landWar.ts` counts, for each nation-day stopped at `noTransport`, whether a
+  partner's transport group (its side in its frontless wars) stands at a port of the partner's or
+  its own with net room for its smallest free formation on that land, an enemy port open
+  (`partner`: here, hereBusy, elsewhere, none, noneFree, noTarget), who, and whether the target has
+  an airbase near it. No rule changed.
+- **Measured** (`docs/evidence/7.26/measure-c3.md` §5, seeds 2843 and 7919 × 8 years, two minutes
+  each): `here` on 475–2,657 nation-days a year in years 2–8, 2.5 to 150 times the days any nation
+  loads or sends its own; never with the partner's own men aboard; 50–86 % of the `noTransport`
+  days have no free formation at all. Mostly the British and French blocs' colonies; Germany by
+  Albania and Japan. 0–46 % of the targets near an airbase.
+- **Split:** 7.26c3b1 (the rule: a partner's transports in `planLanding`, `tryLanding`,
+  `transportsPort`), 7.26c3c (the lift by sea to the own front, c1b's note, not covered by this
+  measure; its rule only if the AT is short after 7.26g).
+- **Next:** PLAN 7.26c3b1.

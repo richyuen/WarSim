@@ -83,3 +83,34 @@ noted, not taken as the rule's effect. 7.26e re-measures the AT on 10 seeds.
   `systems/air.ts`), so a landing that takes one gives the side a base nearer the enemy.
 - Seed 99 over three years (`--profile`): `invasionAi` 0.5 to 1.1 % of the tick, its longest call
   21.6 ms once.
+
+## 5. PLAN 7.26c3b: a partner's transports for the nations with none (2026-10-18)
+
+Code: `7b8bcf1` (no rule changed). Tool: `tools/diag/landWar.ts`, its new `partner` columns: for
+each nation-day stopped at `noTransport` (no transport group of its own at a port of its own), the
+partners (the nations of its side in its wars with no front), and whether one of them has a
+transport group standing at a port held by the partner or by the nation, with net room (room less
+the men aboard, as `transportsPort` counts it) for the nation's smallest free formation on that
+port's land, and an enemy port open to the nation (`here`; `hereBusy` when the partner has a
+formation aboard); a partner group with room, but on no land with a free formation (`elsewhere`);
+none (`none`); no free formation at all (`noneFree`). `airb`: of `here`, those whose target port
+has an airbase within 2 × `AT_PORT_CELLS`. Seeds 2843 and 7919 × 8 years
+(`.cache/c3b/landWar_*.json`, two minutes each).
+
+| seed | year | noTransport | own load + send | here | elsewhere | none | noneFree | airb |
+|---|---|---|---|---|---|---|---|---|
+| 2843 | 1 | 10,695 | 313 | 2,536 | 2,490 | 309 | 5,360 | 162 |
+| 2843 | 2–8 | 5,827–14,273 | 16–193 | 475–1,457 | 1–1,996 | 183–1,279 | 4,305–11,100 | 0–673 |
+| 7919 | 1 | 13,511 | 429 | 2,856 | 1,977 | 551 | 8,127 | 971 |
+| 7919 | 2–8 | 10,404–14,656 | 4–426 | 601–2,657 | 419–2,190 | 185–1,730 | 7,824–11,346 | 123–502 |
+
+- `here` is 2.5 to 150 times the days on which any nation loads or sends troops of its own: the
+  rule could serve. `hereBusy` was 0 on every day: the partners with room had nothing aboard.
+- Most `noTransport` days (50–86 %) are `noneFree`: no free formation to carry, whoever's ships.
+- Who, years 2–8: Malaya, Ceylon, Oman, the Raj, Sudan by France, French Indochina, French
+  Equatorial Africa, the Raj, South Africa, Egypt (the British and French blocs' colonies); Germany
+  by Albania and by Japan (264 and 371 days); Yugoslavia, Nepal and Manchukuo by Japan. Germany is
+  among the nations whose idle wings are short in 7.26d/e; the colonies are not.
+- Target ports with an airbase near them: 0–46 % of `here` days (a landing that takes no base
+  moves the side's wings no nearer).
+- Not measured here: the lift by sea to a nation's own front (c1b's note): PLAN 7.26c3c.
