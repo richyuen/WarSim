@@ -18418,7 +18418,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `wholeTanks.test.ts` (new: the draw's rule and its mean over 20,000 sim draws; the
   critic's division loses whole tanks under fire, the same by seed; red on the old rule, 0 lost);
   `tankHulls1938` (new: the critic's case at x1, a tank hull alight within 45 s, marks counted
-  apart; first flame at 6.1 s, twice); `warBattle` sharpened, not loosened (ADR-501): its bound on
+  apart; first flame at 6.1 s, twice); `warBattle` re-aimed (ADR-501): its bound on
   battles of neither leader counts the hours a leader was in contact, 8 of 744, under 2 % as
   before; 15 of 744 counted all, 7 of them with no leader in contact; before 0 and 4 of 737.
 - **Whole unit suite by hand:** 1,672 of 1,673 before the sharpening (`warBattle`), then it green.
@@ -18456,3 +18456,5 @@ No rule changed and nothing on screen changed. One task came out of it.
   apart (b), `wrecks1938` (c).
 - **Left unstaged, as before:** the six evidence pictures of PLAN 7.4 and 7.13.
 - **Next:** PLAN 7.24 (aircraft seen at every tier).
+- **After 7.23c:** `tankHulls1938` writes its picture to `docs/evidence/7.23/` only with `EVIDENCE`
+  set, as `fallen1938` does (it dirtied a tracked file on every run).

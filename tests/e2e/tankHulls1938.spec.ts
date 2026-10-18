@@ -16,7 +16,7 @@ const id = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag)
 const WATCH_MS = 45_000;
 const M_PER_PX = 25;
 
-test("the critic's armour fight at Speed x1: a tank hull burns on the screen within 45 s", async ({ page }) => {
+test("the critic's armour fight at Speed x1: a tank hull burns on the screen within 45 s", async ({ page }, info) => {
   test.setTimeout(240_000);
   await page.setViewportSize({ width: 1600, height: 900 });
   await page.goto('/?scenario=1938&paused=1&seed=3929');
@@ -88,7 +88,7 @@ test("the critic's armour fight at Speed x1: a tank hull burns on the screen wit
   });
   await page.waitForTimeout(500);
   const seen = await page.evaluate(() => ({ ...(window as unknown as { __hulls: { frames: number; tanks: number; burning: number; flames: number; marks: number; firstFlame: number } }).__hulls }));
-  const out = path.join('docs', 'evidence', '7.23');
+  const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/7.23') : info.outputPath();
   mkdirSync(out, { recursive: true });
   await page.screenshot({ path: path.join(out, 'a-burning-hull-x1-spec.png') });
   console.log(`armoured division 41 at ${M_PER_PX} m/px, Speed x1: first flame at ${Math.round(seen.firstFlame)} ms, at most ${seen.tanks} tank hulls on the screen (${seen.burning} burning, ${seen.flames} alight in a frame), ${seen.marks} marks of the fallen apart, in ${seen.frames} frames; the camera at ${framed.cam.cx.toFixed(2)}, ${framed.cam.cy.toFixed(2)} (the division at ${division.x.toFixed(2)}, ${division.y.toFixed(2)}), the hull at ${framed.hull?.map((c) => c.toFixed(2)).join(', ')}`);
