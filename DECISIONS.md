@@ -188,6 +188,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   fleet, `shipMarks1938` a battle's first place, `seaBattleSeen1938` and `seaRow1938` the first
   battle: each now takes the first battle of the war with a row (by hour, not by day: at the days'
   turns the battles were the carrier's alone), the fleet nearest its pair, or its pair's place.
+  The fixed waits after a row's click (2.5 s) are now a wait until the camera's flight is over
+  (`controller.animating`): in the gate's parallel run the camera was still at 19,337 m/px when
+  measured.
   `seaBattleSeen1938` checks the pair's fleets on the screen from the row (the box of all a
   battle's fleets is 23 × 19 cells), and looks for the carrier's strike with the camera on that box,
   as PLAN 4.12b's view had it. No assertion is dropped or loosened.
@@ -218,7 +221,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   (before, it fired at any range, "closing submerged"). The record's range is the distance of
   its nearest two fleets at war.
 - **Not done.** The fleet of the longer reach does not step back to hold the range; it stands,
-  and the gap closes by the difference of the paces as before. A battle still begins at
+  and the gap closes by the difference of the paces as before. Where land blocks the straight
+  line, `orderSail` first sets a standing fleet on its cell's water point: a jump of under a cell
+  the first time. A battle still begins at
   detection (a carrier's wings): PLAN 7.19b. The row's pair: PLAN 7.19c.
 - **Pin.** `9fe2a568` → `14c6b2e8`. Seed 99's year: 51 sea battles and 237 ships lost (69 and
   178 before); naval volleys none over 22 km.
