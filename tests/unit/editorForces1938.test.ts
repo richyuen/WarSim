@@ -78,7 +78,8 @@ describe('the editor places fleets, wings and warheads (PLAN 7.13a)', () => {
     expect(send(s, { kind: 'spawnFleet', nation: GBR, x: px + 0.5, y: py + 0.5, template: BOMBERS }).refused).toEqual([Refusal.NoSuch]);
     expect(send(s, { kind: 'spawnWing', nation: GBR, x: lx + 0.5, y: ly + 0.5, template: INFANTRY }).refused).toEqual([Refusal.NoSuch]);
 
-    // A full base takes no more: wings until refused, each at a base of Britain's.
+    // Full bases take no more: wings until refused, each at a base of Britain's (a click on its land
+    // fills the nearest with room, then the next: PLAN 7.24b).
     let placed = 0;
     for (let k = 0; k < 200; k++) {
       const r = send(s, { kind: 'spawnWing', nation: GBR, x: lx + 0.5, y: ly + 0.5, template: BOMBERS });

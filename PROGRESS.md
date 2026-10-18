@@ -18586,3 +18586,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **7.24 ticked:** the air's fire (a0), the wings spread (a), patrols drawn over fights at T2 and T3
   in a spec (c), a patrol over its men (d), the editor's group at a capital (b).
 - **Next:** PLAN 7.25 (AI nuclear use believed).
+- **After the commit:** the 7.24b pictures taken again with the new hint line; the i18n tests by
+  hand (11 files, green); the unit test's comment on full bases says the new rule.
+- **Left unstaged, as before:** the evidence pictures the editor spec's other two tests rewrite
+  (7.13, 7.18b, 7.22c) and the four of 7.4: eight now. Their specs to write them only with
+  `EVIDENCE` set, or the lot committed, at the next phase review.
