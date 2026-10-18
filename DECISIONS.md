@@ -167,6 +167,62 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-519 · 2026-10-18 · accepted — PLAN 7.26's acceptance test re-scoped to what the air AI owns (the user's decision; its task from ADR-487)
+
+- **Context.** ADR-487 asked that PLAN 7.26 measure why the air war falls while wars run, and fix
+  it. The acceptance test written for the task under PROMPT 2a (not the user's words): in each
+  war-year mean sorties aloft at least half of that seed's year 1, on 8 of 10 seeds. Three full
+  measures (7.26d, e, g: seeds 1–10 × 30 years) read 0 of 10, with 0 to 3 war-years of 29 at the
+  bar on any seed, after 32 commits, thirteen measurement notes and ADR-508 to ADR-518, of which
+  only ADR-508 is an air rule (ADR-512 was the other and was taken back, ADR-515); the rest fix the
+  land and naval AI (marches, landings, transports, refills). The user asked on 2026-10-18 whether
+  the task had become a rabbit hole and whether its criterion was reasonable.
+  Why the bar is out of reach (`docs/evidence/7.26/measure-g.md`): year 1 is the world war's
+  opening, about 30 land formations in contact a day; the late years have 1.4, so the late land
+  war stands at 5 % of year 1's. By design the air war follows the land war (ADR-377), and it
+  stands at 0.2 to 0.4 of year 1: four to eight times better than what it follows. Even the late
+  years with a real front (contact 5 or more) sit at a median 0.40. The bar moved against itself:
+  7.24a0 raised year 1 from 29–39 to 39–52 aloft. So the half was a demand on the late land war,
+  which is PLAN 7.27's matter, not the air's.
+  What the air AI itself does (`.cache/726g/airWar_*.json`): of the wings of nations at war with
+  an enemy land formation in range, those with a mission are 0.80 to 0.86 in year 1 and a median
+  0.83 in the late war-years, the lowest war-year 0.42 to 0.70 by seed. The tasking does not fade.
+  What fades is the number of wings with anything in reach (of 81 idle wings at war in a short
+  year, 62 have no enemy land formation in range of their base), which the land and naval war set,
+  and a rule the sim lacks: a wing with nothing in range flies nothing (PLAN 7.26i).
+  The critic's finding was "28 to 39 aloft in year 1, then 0.5 to 14", with no bar of its own; it
+  scores what a player sees, and AoC has no air war. Since run 8 the years 2–10 mean rose from
+  5–11 to 13–20 (7.26d), years 21–30 read 5.5 to 12.7 by seed with about seven times the air
+  battles, and the drawing of sorties at 900 and 25 m/px was PLAN 7.24's. The lowest war-year
+  aloft is now 0.9 to 6.7 by seed.
+- **Decision.**
+  1. 7.26's AT, judged at 7.26j on 10 seeds × 30 years headless by `tools/diag/airAt.ts` changed
+     to it: (a) in every war-year, of the wings of nations at war with an enemy land formation in
+     range, half or more hold a mission, on 8 of 10 seeds (a hold: 8 of 10 now); (b) in every
+     war-year, mean sorties aloft at least 3, on 8 of 10 seeds (5 of 10 now: no dead sky in a war;
+     six times the critic's floor, about 6 % of year 1). The ratio to year 1 and the air battles of
+     years 21–30 against 1–10 are reported, not a bar, so the critic's comparison is kept.
+  2. 7.26 closes at 7.26j whatever it reads. What the floor leaves short is recorded in
+     `measure-j.md` for the critic's next run (PROMPT 2a files a task if aircraft stays under 8),
+     not split again under 7.26.
+  3. PLAN 7.26i (patrols over home, with its guard: the patrol must meet enemies the sim has) is
+     the one air rule left and goes ahead before 7.26j.
+  4. The late land war's reach moves out from under 7.26 to PLAN 7.29, beside 7.27: a partner's
+     transports sent to a nation's port (c3b1, ADR-516) and the lift by sea to a nation's own
+     front (c3c). 7.26c, c1, c2 and c3 close as measured, their rules in (ADR-509 to ADR-511,
+     ADR-513, ADR-514, ADR-516).
+- **Why.** A differentiator is scored for what the feature shows a player, not against AoC, which
+  has none. The air AI is answerable for what it does with the wings that have an enemy in reach,
+  and for whether a nation at war ever has a dead sky; it is not answerable for how much land war
+  there is to follow. Fixing the late land war under an air-war heading hid the headline metric's
+  non-convergence for a day of work.
+- **Rejected.** A quarter of year 1 as the floor: 0 of 10 now, and still the land war's number. A
+  floor of 5 (2 of 10 now) or 8 (0 of 10): more than 7.26i's patrols can plausibly carry on their
+  own; the stop rule, not a lower bar, is what ends the task if 3 is not met either.
+- **Consequences.** `airAt.ts` changed at 7.26j (its first commit), run on 7.26g's files for the
+  before. The 7.26 parts' status lines in PLAN.md record the closure. No sim rule changes; the
+  pin stands at c3bd280a.
+
 ### ADR-518 · 2026-10-18 · accepted — The landing's transport group, bought as the warhead's bomber (PLAN 7.26h2)
 
 - **Context.** PLAN 7.26h: on most of the days the great powers stop at `noTransport` they have no

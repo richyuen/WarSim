@@ -45,10 +45,18 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   not lose a quarter in an hour fights its whole patrol, a wing flies about 4.5 sorties a day
   (`TURNAROUND_HOURS` 2), every sortie within `INTERCEPT_KM` of the enemy's fights, and no wing is
   refilled. The levers left: those four. Year 1's sorties aloft rose with 7.24a0 (seed 6047's
-  first three weeks: 25.7 → 34.6), and so does this AT's bar; measure on that rule. AT:
-  10 seeds × 30 years headless: in each year with a war, mean sorties aloft at least half of that
-  seed's year 1 on 8 of 10 seeds; the air battles of years 21 to 30 counted against years 1 to 10;
-  the pin's entry if a rule moves it.
+  first three weeks: 25.7 → 34.6), and so does this AT's bar; measure on that rule. AT (until
+  ADR-519): 10 seeds × 30 years headless: in each year with a war, mean sorties aloft at least
+  half of that seed's year 1 on 8 of 10 seeds; the air battles of years 21 to 30 counted against
+  years 1 to 10; the pin's entry if a rule moves it.
+  AT re-scoped (ADR-519, 2026-10-18, the user's decision; 7.26d, e and g read 0 of 10 against the
+  half, the air at 0.2–0.4 of year 1 while land contact stands at 0.05 of it, and the air AI tasks
+  0.83 of the wings with an enemy in range late as in year 1): 10 seeds × 30 years headless,
+  judged by `airAt.ts`: in every war-year, of the wings of nations at war with an enemy land
+  formation in range, half or more hold a mission (8 of 10 seeds now: a hold), and mean sorties
+  aloft at least 3 (5 of 10 now), each on 8 of 10 seeds; the ratio to year 1 and the air battles
+  of years 21–30 against 1–10 reported, not a bar; the pin's entry if a rule moves it. 7.26 closes
+  at 7.26j whatever it reads; the late land war's reach is 7.29's.
   A part each (2026-10-18):
     - [x] 7.26a The measure: `tools/diag/airWar.ts` (per year: sorties aloft as the critic counts
       them, wings, of nations at war, with a mission, out of range of every enemy land formation and
@@ -62,7 +70,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       one it can reach and is tasked); `airToward1938` green; seeds 2843 and 7919 re-measured; the
       pin's entry if it moves. Done (ADR-508): from one state of day 900, seed 2843's missions a day
       25.5 → 30.9, seed 7919's unchanged.
-    - [ ] 7.26c The land war that leaves the wings no enemy in reach. A probe at day 900 of seed
+    - [x] 7.26c The land war that leaves the wings no enemy in reach. A probe at day 900 of seed
       2843 (after 7.26b's measure): of 143 wings, 81 at war with no mission, most with no airbase of
       their side in range of any enemy at all (Germany and Italy at war with France's African
       remnants after France fell; Japan with Indochina; Australia, South Africa, India with Germany);
@@ -75,6 +83,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       the remnants. Then one cause a commit, each measured with `airWar.ts` (a column of wings that
       rebased added). AT: the 7.26 AT's measure after the last; defensive patrols over home only if
       the years with a front still fall short.
+      Closed (ADR-519, 2026-10-18): measured (c0), its rules in (ADR-509 to ADR-511, ADR-513,
+      ADR-514, ADR-516); the condition for patrols met (7.26g, taken as 7.26i). The late land war
+      fell no further and came no nearer year 1's (contact 1.42 → 1.5 a day): what is left of its
+      reach (c3b1, c3c) is PLAN 7.29's, not the air war's.
       A part each (2026-10-18, from c0):
       - [x] 7.26c0 The measure: `tools/diag/landWar.ts` (per war, daily: frontless, a front and
         contact, a front and none; weekly the nearest pair of its sides' land formations; how it
@@ -86,7 +98,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
         formation and its land is hardly taken (Yemen and Saudi Arabia 720 days at 0); the blocs'
         armies stand a median 1,000 km and more apart, 47–84 % of them moving; the army halves in
         year 1 and holds; under 5 % of nation-days could land at all.
-      - [ ] 7.26c1 The blocs' armies go where the enemy's are: in the big wars (a side of 50 or more
+      - [x] 7.26c1 The blocs' armies go where the enemy's are: in the big wars (a side of 50 or more
         land formations) the nearest pair stands over 1,000 km apart in 20–41 % of samples and
         47–61 % of the formations are moving. Measured first: where the moving formations of the
         big sides march to (the sector, its threat, km to go, days on the march, re-plans), from a
@@ -103,6 +115,8 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
         men within 30 cells moved nothing (2.6 → 2.4 %, 19.6 → 19.3 %; dropped). Beyond the range,
         17–32 % of each side's men are of nations with no front cell of their own in the war,
         standing: the marches from afar and to spare serve only the planner's own front.
+        Closed (ADR-519, 2026-10-18): c1a and c1b in; the contact share rose at c1a (0.12 → 0.19)
+        and drifted after; the AT's "up from year 2" holds against c0's measure, not year 1's.
         - [x] 7.26c1a A partner's garrisons go to its partners' front: a nation at war with no
           front cell of its own against an enemy sends formations that stand beyond the range to the
           empty sectors of its partners' front (the marches from afar, ADR-190, for a partner's
@@ -125,7 +139,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           partner's: now sent there when no own one is reached. From six states contact neutral
           (within a point), 130 partner marches in 180 days; 8-year runs 0.078 → 0.096 and 0.153 →
           0.125; pin bc1316df.
-      - [ ] 7.26c2 Land that nobody holds is taken: a side at war whose enemy has no land formation
+      - [x] 7.26c2 Land that nobody holds is taken: a side at war whose enemy has no land formation
         on their front takes its cells. Measured first, from a checkpoint of seed 2843 with Yemen and
         Saudi Arabia at war (day 2136 on) and seed 7919's Iraq and Saudi Arabia (day 647 on): the
         operational AI's sectors of the side with the army there, their threat and orders, why its
@@ -138,6 +152,8 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
         and they man the sectors its 12,460-man division beyond the range could reach, so the
         marches from afar never send it. Iraq v Saudi Arabia (2843) lost its front to a third
         party's conquest; #112 v Saudi Arabia (7919) never had one (c3's).
+        Closed (ADR-519, 2026-10-18): c2a and c2b in; the one-sided wars end on a score (Brazil v
+        Paraguay 0 → 35, Brazil v Bolivia 0 → 17).
         A part each:
         - [x] 7.26c2a A formation too small to take a cell (`takeMen`) does not man a sector for the
           marches from afar. AT: a unit test (a full division beyond the range is sent past sectors
@@ -164,11 +180,13 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           the next order's price not kept. Brazil v Bolivia from day 1655, both rules on this code:
           score 0 → 17 in 170 days; from six states contact 11.4 → 10.9 %, spawned 250 → 249,
           sorties 17.4 → 17.9; 8-year runs' contact 0.096 → 0.055 and 0.125 → 0.080; pin e1856b1b.
-      - [ ] 7.26c3 The landing per war, not per nation: a nation with a land front in one war plans
+      - [x] 7.26c3 The landing per war, not per nation: a nation with a land front in one war plans
         no landing in its others (30–50 % of nation-days), and colonies have no transports. Only if
         c1 and c2 leave the 7.26 AT short. AT: `landWar.ts`'s gate counts; the pin's entry.
         Taken next (7.26d, 2026-10-18): 59 % of the short years' out-of-range wings have no base
         of their side in range of any enemy, the overseas powers' first.
+        Closed (ADR-519, 2026-10-18): c3a in (ADR-511), c3b measured and not built (ADR-516); the
+        great powers' own transports were the cause (7.26h, h1, h2). c3b1 and c3c moved to 7.29.
         A part each (2026-10-18):
         - [x] 7.26c3a The landing per war: a nation with a front in one war may land in a war in
           which it has none. Measured first, no rule changed: `landWar.ts`, for each fronted
@@ -204,14 +222,11 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           The rule not built; taken up again only if 7.26g is short, with the partner's transports
           sent to the nation's port rather than its men to the partner's.
           After 7.26g (2026-10-18): short; taken on 7.26h's evidence, under 7.26j.
-      - [ ] 7.26c3c The lift by sea to a nation's own front (from 7.26c1b, `measure-c1.md` §6: 16 %
+          Moved to PLAN 7.29a (ADR-519, 2026-10-18).
+      - [x] 7.26c3c The lift by sea to a nation's own front (from 7.26c1b, `measure-c1.md` §6: 16 %
         of own-front planners' far men across the sea, Japan, Britain, France; 24 % behind closed
-        ground or the sea on their landmass): not measured by c3b's columns. Measured first: from
-        a checkpoint, for each such formation, a port of its nation's on its land with transports,
-        and a port of its nation's on the front's land. AT: the measure; the rule only if the
-        7.26 AT is short. Taken after 7.26g, and only if its AT is short (2026-10-18, ADR-516).
-        After 7.26g (2026-10-18): short; taken on 7.26h's evidence, under 7.26j, not before 7.26h
-        and 7.26i.
+        ground or the sea on their landmass): not measured by c3b's columns. Moved to PLAN 7.29b
+        (ADR-519, 2026-10-18), its text there; nothing done under 7.26.
       - [x] 7.26c4 The rebase over more than one hop: in 7.26d's short war-years 36 % of the wings
         out of range have a base of their side with room within range of an enemy, a tenth of
         them within one ferry hop (`freeInFerry`, 3 % of all out of range); 1.6 wings rebase a day of 54. Measured first: whether
@@ -333,9 +348,15 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       measure finds enough wings with an enemy in reach; recorded in DECISIONS (AoC has no air war;
       the patrol must meet enemies the sim has, not fly for the count). AT: a unit test; from six
       states, sorties aloft and air battles; the pin's entry.
-    - [ ] 7.26j The AT of 7.26 re-measured (as 7.26g) after 7.26h1, 7.26h2 and 7.26i; c3b1 and c3c
-      taken up only on 7.26h's evidence (7.26h: the great powers' free formations stand on a land
-      with a port of their own; their transports are what is missing, not a partner's).
+    - [ ] 7.26j The AT of 7.26 re-measured (as 7.26g, seeds 1–10 × 30 years) after 7.26h1, 7.26h2
+      and 7.26i, against ADR-519's AT. First commit: `tools/diag/airAt.ts` judges that AT (the
+      share with a mission of the wings at war with an enemy in range, half or more in every
+      war-year; mean sorties aloft 3 or more in every war-year; each on 8 of 10 seeds; the ratio to
+      year 1 and the air battles of years 21–30 against 1–10 printed, not judged), run on 7.26g's
+      files (`.cache/726g/`) for the before: 8 of 10 and 5 of 10. Then the runs. AT:
+      `docs/evidence/7.26/measure-j.md`; the pin's entry if 7.26i's rule moved it. 7.26 closes
+      here whatever it reads (ADR-519): what is short is recorded in `measure-j.md` for the
+      critic's run (PROMPT 2a), not split under 7.26. c3b1 and c3c are 7.29's.
       To read against 7.26h1 (ADR-517): transport groups sent home are sunk on the way (seed 7919's
       Britain, all four in year 3); if the ten seeds' landings fall, a way home that keeps off the
       enemy's sea is the first question.
@@ -361,6 +382,31 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   years. Then the rule decided (a launch stopped short starts no gap, or a shorter one) and
   recorded. AT: the measure in `docs/evidence/7.28/`; a unit test of the rule chosen; the pin's
   entry if it moves.
+- [ ] 7.29 The late land war's reach (from PLAN 7.26c3, ADR-519, 2026-10-18): after year 1 the land
+  war runs at 1.4 formations in contact a day against year 1's 30 while 1 to 14 wars run
+  (`docs/evidence/7.26/measure-g.md`), and the measures under 7.26c found the men who cannot get
+  to the war: a partner's transports stand at a port with room while a colony or small member has
+  none (`measure-c3.md` §5, ADR-516), and 40 % of an own-front planner's far men stand for want of
+  a way (`measure-c1.md` §6: 16 % across the sea, Japan, Britain, France; 24 % behind closed
+  ground or the sea on their landmass). Not an air-war task: the air AI tasks 0.83 of the wings
+  with an enemy in range, late as in year 1. Taken after 7.27 and 7.28, and only if 7.27's
+  measure or the critic's next run finds the late land war short; its AT is the land war's
+  (`landWar.ts`'s contact share of the big wars' front days, `armies.ts`), not the air's. A part
+  each:
+    - [ ] 7.29a A partner's transports sent to the nation's port (7.26c3b1): a transport group of
+      a partner standing idle at a port, with net room for a nation's smallest free formation,
+      sails to that nation's port and loads it, rather than the men marching to the partner's
+      (ADR-516: a formation of the nation stood at the partner's port on 2 days in 16 seed-years;
+      every other case is a march of a median 42–347 cells). Measured first from a checkpoint:
+      the groups that would sail, the distance, the enemy sea on the way (ADR-517's groups sent
+      home were sunk). AT: a unit test; `landWar.ts`'s `partner` columns and embarks on seeds 2843
+      and 7919 × 8 years; the pin's entry.
+    - [ ] 7.29b The lift by sea to a nation's own front (7.26c3c): a formation of an own-front
+      planner that cannot reach its front by land is carried from a port of its nation's on its
+      land to a port of its nation's on the front's land. Measured first: from a checkpoint, for
+      each such formation, such a port with transports and such a port on the front's land. AT:
+      the measure; the rule only if the share of far men standing for want of a way falls with
+      it; a unit test; the pin's entry.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

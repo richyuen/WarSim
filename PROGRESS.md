@@ -19054,3 +19054,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Measured after:** Britain's `noTransport` days 1,383 → 513 and 551 → 208, two more groups built
   on each seed, all sunk later; world transport orders 20 → 21 and 20 → 15.
 - **Next:** PLAN 7.26i.
+
+## 2026-10-18 — PLAN 7.26: the acceptance test re-scoped (ADR-519, the user's decision)
+
+- **Start:** gate green on `999d09f`; critic not due. The user asked whether 7.26 had become a
+  rabbit hole and whether its criterion was reasonable.
+- **Found:** three measures (7.26d, e, g) 0 of 10 against "half of year 1 in every war-year", 0–3
+  war-years of 29 at the bar; 32 commits and ADR-508 to 518, one air rule among them (ADR-508;
+  ADR-512 taken back). The late land war stands at 0.05 of year 1's contact, the air at 0.2–0.4 of
+  year 1's aloft: the air follows the land (ADR-377) and holds up better than it. From
+  `.cache/726g/`: of the wings at war with an enemy land formation in range, 0.83 hold a mission
+  in the late war-years as in year 1 (lowest war-year 0.42–0.70 by seed); the lowest war-year's
+  mean aloft 0.9–6.7 by seed (the critic's floor was 0.5). The drawing at 900 and 25 m/px was 7.24's.
+- **Decided** (ADR-519): the AT is the air AI's own: half or more of the wings with an enemy in
+  range tasked in every war-year (8 of 10 now) and mean aloft 3 or more in every war-year (5 of
+  10 now), each on 8 of 10 seeds; the ratio to year 1 and the late air battles reported, not
+  judged. 7.26 closes at 7.26j whatever it reads. 7.26c, c1, c2, c3 closed as measured, their
+  rules in; c3b1 and c3c moved to PLAN 7.29 (the late land war's reach), after 7.27 and 7.28.
+- **Docs only:** DECISIONS, PLAN, PROGRESS. No sim change; pin c3bd280a.
+- **Next:** PLAN 7.26i (patrols over home), then 7.26j with `airAt.ts` changed to the new AT.
