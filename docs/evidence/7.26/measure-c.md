@@ -48,7 +48,7 @@ engaged land formation of each side within 1.5 × `CONTACT_CELLS`), a front and 
 
 - **Frontless wars are few**: 0 to 31 % of war-days (ADR-480 holds: 2 and 5 wars of 110 and 113
   ended on FRONTLESS_DAYS, none ran past it).
-- **The gap is the wars with a front**: from year 2, 85 to 97 % of their days have no contact.
+- **The gap is the wars with a front**: from year 2, 76 to 97 % of their days have no contact (76 % in seed 2843's year 6, 85 to 97 % in the others).
 
 The weekly samples of those wars (`nearestKm`: the nearest pair of their sides' land formations):
 
@@ -114,11 +114,14 @@ fronts: the big wars' sides hold 50 to 200 formations each and stand 1,000 km ap
 
 ## Causes, in the order taken (PLAN 7.26c1 to c3)
 
-1. **Land that nobody holds is not taken** (c1): a side whose enemy has no land formation on the
-   front takes its cells slowly or not at all (Yemen and Saudi Arabia 720 days at 0). Measured first:
-   the operational AI's sectors and orders of the side with the army in those wars.
-2. **The blocs' armies are not where the enemy is** (c2): a front of thousands of cells over the
+The wings idle out of range are mostly the great powers' (`airWar.ts` `out.byNation`, 7.26a's runs, years
+2–6: Germany, Italy, Japan, the Soviet Union, Britain), in the blocs' wars: the blocs' armies first.
+
+1. **The blocs' armies are not where the enemy is** (c1): a front of thousands of cells over the
    world, the formations allotted by sectors and a march of 1,000 km; 47 to 84 % of them moving.
    Measured first: where the moving formations of the big sides march to, and how long.
+2. **Land that nobody holds is not taken** (c2): a side whose enemy has no land formation on the
+   front takes its cells slowly or not at all (Yemen and Saudi Arabia 720 days at 0). Measured first:
+   the operational AI's sectors and orders of the side with the army in those wars.
 3. **The landing's gate per nation** (c3, the least): a nation with a front in one war lands in no
    other; colonies without transports.

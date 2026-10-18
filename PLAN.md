@@ -81,24 +81,27 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
         ended; the invasion AI's gate per nation at war), `tools/diag/armies.ts` (land formations,
         men, pools; the economic AI's gate for an army order each month), `airWar.ts`'s `rebased`.
         AT: seeds 2843 and 7919 × 8 years and the critic's files (`docs/evidence/7.26/measure-c.md`):
-        frontless 0–31 % of war-days (ADR-480 holds); from year 2, 85–97 % of the days of wars with
+        frontless 0–31 % of war-days (ADR-480 holds); from year 2, 76–97 % of the days of wars with
         a front have no contact; in 39–45 % of the small wars' samples one side has no land
         formation and its land is hardly taken (Yemen and Saudi Arabia 720 days at 0); the blocs'
         armies stand a median 1,000 km and more apart, 47–84 % of them moving; the army halves in
         year 1 and holds; under 5 % of nation-days could land at all.
-      - [ ] 7.26c1 Land that nobody holds is taken: a side at war whose enemy has no land formation
+      - [ ] 7.26c1 The blocs' armies go where the enemy's are: in the big wars (a side of 50 or more
+        land formations) the nearest pair stands over 1,000 km apart in 20–41 % of samples and
+        47–61 % of the formations are moving. Measured first: where the moving formations of the
+        big sides march to (the sector, its threat, km to go, days on the march, re-plans), from a
+        checkpoint. Taken first: the idle wings are the great powers' of these wars (`airWar.ts`
+        `out.byNation`: Germany, Italy, Japan, the Soviet Union). AT: `landWar.ts`: the big wars'
+        contact share of front days (wars with a weekly sample of a side of 50 or more land
+        formations: their `contact` ÷ (`contact` + `noContact`), added to the tool's yearly row,
+        measured before on the same code) up from year 2; `airWar.ts`'s sorties; the pin's entry.
+      - [ ] 7.26c2 Land that nobody holds is taken: a side at war whose enemy has no land formation
         on their front takes its cells. Measured first, from a checkpoint of seed 2843 with Yemen and
         Saudi Arabia at war (day 2136 on) and seed 7919's Iraq and Saudi Arabia (day 647 on): the
         operational AI's sectors of the side with the army there, their threat and orders, why its
         formations do not walk in. AT: a unit test (a nation at war with an enemy with no army
         beside it takes cells within N days); `landWar.ts` re-run: those wars end on a score, not
         the stalemate; the pin's entry if it moves.
-      - [ ] 7.26c2 The blocs' armies go where the enemy's are: in the big wars (a side of 50 or more
-        land formations) the nearest pair stands over 1,000 km apart in 20–41 % of samples and
-        47–61 % of the formations are moving. Measured first: where the moving formations of the
-        big sides march to (the sector, its threat, km to go, days on the march, re-plans), from a
-        checkpoint. AT: `landWar.ts`: the big wars' contact share of front days from year 2 up from
-        3–15 %, by the measure's numbers; `airWar.ts`'s sorties; the pin's entry.
       - [ ] 7.26c3 The landing per war, not per nation: a nation with a land front in one war plans
         no landing in its others (30–50 % of nation-days), and colonies have no transports. Only if
         c1 and c2 leave the 7.26 AT short. AT: `landWar.ts`'s gate counts; the pin's entry.

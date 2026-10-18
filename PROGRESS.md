@@ -18718,3 +18718,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a `.js` scratch script in `.cache/tmp/` runs as an ES module (`"type": "module"`):
   name it `.cjs` to use `require`. Python's text mode writes CRLF on Windows: `newline=''`, or
   `sed -i 's/\r$//'` after.
+- **After the commit:** `airWar.ts 2843 1` run: `rebased` 2 a day in year 1, the column works. The
+  idle wings of 7.26a's runs are mostly the great powers' (Germany, Italy, Japan, the Soviet Union)
+  in the blocs' wars, so the blocs' armies go first: PLAN 7.26c1 and c2 swapped. Corrected: the days
+  of wars with a front with no contact are 76–97 % from year 2 (seed 2843's year 6: 76 %), not 85–97 %.
