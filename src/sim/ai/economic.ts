@@ -51,7 +51,7 @@
  *    Then a fleet (PLAN 4.6e1, `pickFleet`), with what the army's orders left: a nation with a
  *    shipyard and no fleet in training orders one while its navy's upkeep is under NAVY_SHARE
  *    of its income, if its balance stays above the need with the fleet's upkeep and its gold
- *    covers the price and RESERVE_MONTHS of income.
+ *    covers the price and RESERVE_MONTHS of income; none while it wants a transport group (2c).
  *    Then a wing (PLAN 5.8s2, `pickWing`), as a fleet: a nation not poor with an airfield and no
  *    wing in training orders one while its air force's upkeep is under AIR_SHARE of its army's,
  *    a fighter group while fighters are under half its wings, else a tactical bomber group.
@@ -62,6 +62,15 @@
  *    price and DELIVERY_RESERVE_MONTHS of income, and the rest carries the shortfall with its upkeep for
  *    RUNWAY_MONTHS); while it wants one it orders no other wing (it saves for it). It held only the 1938 start's strategic wings: seed 1's Soviet Union had none from
  *    1948 and 7 warheads in 1950 that nothing could carry.
+ * 2c. A transport group for a landing (PLAN 7.26h2, ADR-518, `wantsTransport`), after 2b: a
+ *    nation in a war in which it has no land front (per war, as the invasion AI's landing since
+ *    ADR-511), against an enemy that holds a port, with a free land formation on a land with a
+ *    port of its own, and no transport group of its own afloat or in training, orders one, paid as
+ *    2b's group (the price and DELIVERY_RESERVE_MONTHS of income, the shortfall carried for
+ *    RUNWAY_MONTHS), outside the navy's share; while it wants one it orders no other fleet. It was
+ *    3b's first fleet, behind the navy's share, a front in any war and three months of reserve:
+ *    Britain, its four groups of 1938 sunk, ordered none in the five years after on two seeds,
+ *    every month over its share (0.13 to 0.31 of income), on 62 of 64 with a front in another war.
  * 4. Research (PLAN 3.1b, `systems/research.ts`), set between 2 and 3: the budget of the days
  *    to come is RESEARCH_SHARE of income, at most what the lines can take (`researchCap`), and
  *    nothing for a nation in debt or one that step 1 would have disband (short, and the
@@ -85,7 +94,7 @@ import { neighbours4 } from '../nav/grid';
 import { airfield, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
 import { DAYS_PER_MONTH, researchBudget } from '../systems/research';
 import { knowsTechs } from '../tech';
-import { Domain, navBuilt, seaRangeOf, type World } from '../world';
+import { Domain, navBuilt, navOf, portSeaOf, seaRangeOf, type World } from '../world';
 
 export const DEBT_PAYBACK = 1 / 12;
 /**
@@ -232,11 +241,14 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     /** Per nation: the fleets in training, and the wings (PLAN 5.8s2). */
     const shipsPending = new Map<number, number>();
     const wingsPending = new Map<number, number>();
+    /** The nations with a transport group in training (PLAN 7.26h2). */
+    const transportsPending = new Set<number>();
     world.production.forEach((id) => {
       const n = world.production.cols.nation[id]!;
       const t = world.production.cols.template[id]!;
       if (world.rules?.templates[t]?.domain === Domain.sea) {
         shipsPending.set(n, (shipsPending.get(n) ?? 0) + 1);
+        if (t === mix.fleets?.transport) transportsPending.add(n);
         return;
       }
       if (world.rules?.templates[t]?.domain === Domain.air) {
@@ -363,6 +375,20 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           balance -= u;
         }
       }
+      // 2c. A transport group for a landing (PLAN 7.26h2, ADR-518), as 2b's group: before research
+      // and the army's orders, outside the navy's share; while it wants one, no other fleet.
+      const wants = mix.fleets !== undefined && atWar && income >= POOR_INCOME && !transportsPending.has(n) && wantsTransport(world, n, mix.fleets.transport, fleets.get(n) ?? []);
+      if (wants && shipyard(world, n) >= 0) {
+        const t = mix.fleets!.transport;
+        const rule = world.rules.templates[t]!;
+        const u = upkeepOfTemplate(t);
+        const left = nc.gold[n]! - rule.gold;
+        if (left >= DELIVERY_RESERVE_MONTHS * income && left >= RUNWAY_MONTHS * Math.max(0, need - (balance - u)) && nc.manpower[n]! >= rule.manpower && queueFormation(world, n, t) !== 0) {
+          nc.builds[n] = nc.builds[n]! + 1;
+          balance -= u;
+          shipsPending.set(n, (shipsPending.get(n) ?? 0) + 1);
+        }
+      }
       // 4. Research.
       nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
       balance -= nc.research[n]! * DAYS_PER_MONTH;
@@ -420,7 +446,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       ({ balance, upkeep } = refill(n, income, need, balance, upkeep, cap, keep));
       // 3b. A fleet (PLAN 4.6e1), with what the army's orders left: one at a time, while the
       // navy is under its share of the income.
-      const fleet = mix.fleets && (shipsPending.get(n) ?? 0) === 0 && (navy.get(n) ?? 0) < NAVY_SHARE * income ? pickFleet(world, n, income, atWar, mix.fleets, fleets.get(n) ?? []) : -1;
+      const fleet = mix.fleets && !wants && (shipsPending.get(n) ?? 0) === 0 && (navy.get(n) ?? 0) < NAVY_SHARE * income ? pickFleet(world, n, income, mix.fleets) : -1;
       if (fleet >= 0 && shipyard(world, n) >= 0) {
         const rule = rules.templates[fleet]!;
         const u = upkeepOfTemplate(fleet);
@@ -531,19 +557,16 @@ function nextOrderPrice(world: World, n: number, income: number, mix: BuildMix):
 }
 
 /**
- * The fleet nation `n` orders next (PLAN 4.6e1), its navy under its share: a transport group
- * when it is at war with no land front and has none (the invasion AI's want, PLAN 4.6b); else
- * by its income, the best it can pay for with the reserve it keeps: a battle squadron from
- * BATTLE_FLEET_INCOME, a cruiser squadron from RICH_INCOME, a destroyer flotilla. -1 for a
- * poor nation, or one that can pay for none of them.
+ * The fleet nation `n` orders next (PLAN 4.6e1), its navy under its share, by its income: the
+ * best it can pay for with the reserve it keeps: a battle squadron from BATTLE_FLEET_INCOME, a
+ * cruiser squadron from RICH_INCOME, a destroyer flotilla. -1 for a poor nation, or one that can
+ * pay for none of them. (Its transport group is step 2c's, PLAN 7.26h2.)
  */
-function pickFleet(world: World, n: number, income: number, atWar: boolean, kinds: NonNullable<BuildMix['fleets']>, own: number[]): number {
+function pickFleet(world: World, n: number, income: number, kinds: NonNullable<BuildMix['fleets']>): number {
   if (income < POOR_INCOME) return -1;
   const templates = world.rules!.templates;
   const gold = world.nations.cols.gold[n]!;
   const pays = (t: number): boolean => templates[t] !== undefined && gold >= templates[t]!.gold + RESERVE_MONTHS * income;
-  const f = world.formations.cols;
-  if (atWar && !own.some((id) => f.template[id] === kinds.transport) && !hasFront(world, n)) return pays(kinds.transport) ? kinds.transport : -1;
   const wanted = income >= BATTLE_FLEET_INCOME ? [kinds.battle, kinds.cruiser, kinds.destroyer] : income >= RICH_INCOME ? [kinds.cruiser, kinds.destroyer] : [kinds.destroyer];
   return wanted.find(pays) ?? -1;
 }
@@ -571,18 +594,54 @@ function pickWing(world: World, n: number, kinds: NonNullable<BuildMix['wings']>
   return order.find((t) => world.rules!.templates[t] !== undefined && knowsTechs(world, n, world.rules!.templates[t]!.techs)) ?? -1;
 }
 
-/** Whether nation `n` holds a cell beside one held by a nation at war with it. */
-function hasFront(world: World, n: number): boolean {
+/**
+ * Whether nation `n`, at war, wants a transport group for a landing (PLAN 7.26h2, ADR-518): it has
+ * none of template `transport` among its fleets `own`, it is in a war in which it holds no cell
+ * beside one of the other side's (the invasion AI's per-war front, ADR-511) and a nation of that
+ * side holds a port with water, and a free land formation of its own (not under way, in no fight,
+ * not retreating or going home) stands on a land with a port it holds: men to carry, from where
+ * they go aboard, to a coast to land on.
+ */
+export function wantsTransport(world: World, n: number, transport: number, own: readonly number[]): boolean {
+  const f = world.formations.cols;
+  if (own.some((id) => f.template[id] === transport)) return false;
   const { w, h, controller } = world.cells;
   const nb: number[] = [];
+  const fronted = new Set<number>();
   for (const c of frontierOf(world)) {
     if (controller[c] !== n) continue;
     for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
       const m = controller[k]!;
-      if (m !== 0 && m !== n && world.wars.atWar(n, m)) return true;
+      if (m !== 0 && m !== n && world.wars.atWar(n, m)) fronted.add(m);
     }
   }
-  return false;
+  const foes = new Set<number>();
+  for (const war of world.wars.list) {
+    const i = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
+    if (i < 0) continue;
+    const other = war.sides[1 - i]!;
+    if (other.some((e) => fronted.has(e))) continue;
+    for (const e of other) if (world.wars.atWar(n, e)) foes.add(e);
+  }
+  if (foes.size === 0) return false;
+  const water = portSeaOf(world);
+  const comp = navOf(world).grid.component;
+  const lands = new Set<number>();
+  let target = false;
+  world.ports.forEach((p, i) => {
+    if (water[i]! < 0) return;
+    const holder = controller[p.cell]!;
+    if (holder === n) lands.add(comp[p.cell]!);
+    else if (foes.has(holder)) target = true;
+  });
+  if (!target || lands.size === 0) return false;
+  let free = false;
+  world.formations.forEach((id) => {
+    if (free || f.nation[id] !== n || world.isFleet(id) || world.isWing(id) || world.offLand(id)) return;
+    if (f.moving[id] === 1 || f.engaged[id] === 1 || f.retreat[id] !== 0 || f.home[id] !== 0) return;
+    if (lands.has(comp[Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!)]!)) free = true;
+  });
+  return free;
 }
 
 /** Share of tank elements among the elements of n's enemies' formations. */

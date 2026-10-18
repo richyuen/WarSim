@@ -313,12 +313,19 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       Done (2026-10-18, ADR-517, `docs/evidence/7.26/measure-h1.md`): `awayHome` group-days 6,227 →
       10 on the two seeds; pin c451b4aa. The way home weighs no enemy sea: seed 7919's Britain's four
       groups sent home in year 2 are sunk in year 3 (Japan two), and none is built after (7.26h2).
-    - [ ] 7.26h2 The transport group that is never built (7.26h's cause 2): on the days a nation in a
+    - [x] 7.26h2 The transport group that is never built (7.26h's cause 2): on the days a nation in a
       frontless war has no group, which of `economic.ts`'s fleet-slot conditions stops the order (a
       ship in the yards, the navy's upkeep at `NAVY_SHARE` of income or more, no `mix.fleets`, the
       price and reserve, `hasFront` of any war while the landing is per war since ADR-511). Measured
       first (`transports.ts`, the same seeds), then the rule chosen and recorded. AT: the measure in
       `docs/evidence/7.26/measure-h2.md`; a unit test of the rule; the pin's entry.
+      Done (2026-10-18, ADR-518, `docs/evidence/7.26/measure-h2.md`): the conditions stack (Britain:
+      the navy's share on 64 of 64 months, a front in another war on 62, the price on 41); the
+      Netherlands a poor remnant (by design). A/B: only a transport bought as 2b's bomber orders
+      Britain's. Step 2c (`wantsTransport`): per war, outside the navy's share, a month of reserve,
+      a free formation on a land with an own port and an enemy port. Britain's `noTransport` days
+      1,383 → 513 and 551 → 208; the world's transport orders 20 → 21 and 20 → 15. Pin c3bd280a.
+      Britain's new groups are sunk too (the way home, 7.26j's first question).
     - [ ] 7.26i Patrols over home (7.26c's condition met by 7.26g): a wing of a nation at war with
       no enemy land formation in range patrols over its own land within reach of an enemy airbase
       or fleet. Measured first: of the short years' idle wings, how many stand within reach of an

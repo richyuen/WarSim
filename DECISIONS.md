@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-518 · 2026-10-18 · accepted — The landing's transport group, bought as the warhead's bomber (PLAN 7.26h2)
+
+- **Context.** PLAN 7.26h: on most of the days the great powers stop at `noTransport` they have no
+  transport group at all. 7.26h2 measured the fleet slot's conditions (`economic.ts` 3b) on each
+  month's start for Germany, Britain, the Netherlands, the US and Japan in a war with no front of
+  their own and no group (`docs/evidence/7.26/measure-h2.md`, seeds 2843 and 7919 × 8 years, on
+  `2894ccd`). They stack: Britain, its four groups of 1938 sunk, failed on all 64 such months the
+  navy's share (0.13 to 0.31 of income against 0.12), on 62 a land front in another war (`hasFront`
+  was any war's; the landing has been per war since ADR-511), on 41 the price with three months of
+  reserve, and on 8 a cruiser squadron in the yards. The Netherlands is a remnant from year 2 (income 9.6, under
+  `POOR_INCOME`): by design. Germany's one group lives on both seeds. An A/B from saved states
+  (180 days from year 4 of 2843 and year 5 of 7919): the front per war alone, and with the
+  navy's share lifted, ordered nothing anywhere (the same hash as before); only the order as 2b's
+  bomber (its own step, a month of reserve) ordered Britain's, and without a want-gate it bought
+  for Albania, Egypt, Singapore and Yugoslavia too.
+- **Decision.** Step 2c of the economic AI (`src/sim/ai/economic.ts`, `wantsTransport`), after 2b
+  and before research and the army's orders: a nation at war, not poor, with no transport group
+  afloat or in training, in a war in which it holds no cell beside one of the other side's, whose
+  other side holds a port with water, and with a free land formation (not under way, in no fight,
+  not retreating or going home) on a land with a port it holds, orders a transport group, paid as
+  2b's (the price and DELIVERY_RESERVE_MONTHS of income in gold, the shortfall with its upkeep
+  carried for RUNWAY_MONTHS), outside the navy's share. While it wants one it orders no other fleet
+  (3b), as before it ordered no warship while saving for transports. `pickFleet` no longer picks
+  transports.
+- **Why.** A transport group is a landing's means, not a part of the battle line the navy's share
+  bounds: 630 gold and 2.1 a month, against Britain's income of 1,000 to 2,400. AoC has no fleets;
+  the sim's landings are its answer to a war with no front, and they need the group.
+- **Measured** (`measure-h2.md`, seeds 2843 and 7919 × 8 years, one run each, so the runs diverge):
+  Britain's `noTransport` days 1,383 → 513 and 551 → 208, two groups more built on each seed, all
+  of them sunk later (ADR-517's way home). Transport orders of the whole world 20 → 21 and 20 → 15.
+- **Pin.** c451b4aa → c3bd280a.
+- **Tests.** `navyBudget1938.test.ts` "a nation that wants a landing orders a transport group over
+  its navy's share, with a front in another war, on a month of reserve": Britain at war with Saudi
+  Arabia (a land front) and Iceland, two battle squadrons added to put its navy over its share, its
+  gold the price and two months of income: a transport group ordered; with Saudi Arabia alone, or
+  with no army, none. Red without the rule.
+
 ### ADR-517 · 2026-10-18 · accepted — Transports home after a landing (PLAN 7.26h1)
 
 - **Context.** PLAN 7.26h (`docs/evidence/7.26/measure-h.md`): at war the naval AI moved only

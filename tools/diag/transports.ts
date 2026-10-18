@@ -22,6 +22,17 @@
  * groups gone (sunk), days with no group at all, and its free land formations (the gate's
  * `free`) by land: on a land with a port it holds, or not.
  *
+ * PLAN 7.26h2: on each month's start (the economic AI's day; read at the end of the tick before
+ * it, so the systems that run before the AI in that tick are not seen), for each of them in a war
+ * with no front of its own and with no transport group: the fleet slot's conditions as they were
+ * before ADR-518 (`economic.ts` 3b, `pickFleet`; the transport is step 2c's since) in their order, the first that fails (`slotFirst`) and each that
+ * fails (`slotEach`): `shipInYards` (a fleet in training, its template counted in `yards`),
+ * `navyShare` (the navy's upkeep at NAVY_SHARE of income or more; the ratio in `navyRatio`),
+ * `poor`, `frontAny` (a land front in any war: `hasFront`), `price` (gold under the price and
+ * RESERVE_MONTHS of income), `noShipyard`; when none fails, `ordered` if a transport order of its
+ * own is in the yards the next day, else `balanceOrMen` (the army's orders, the refills and
+ * research left the balance at the need, or no manpower).
+ *
  * Usage: npx tsx tools/diag/transports.ts <seed> [years = 8] [out = .cache/transports_<seed>.json]
  */
 import { writeFileSync } from 'node:fs';
@@ -34,6 +45,12 @@ import { AT_PORT_CELLS, atLostBase, nearestOwnPort } from '../../src/sim/systems
 import { transportRoom } from '../../src/sim/systems/amphibious';
 import { blocOf } from '../../src/sim/systems/supply';
 import { navOf, portSeaOf, seaRangeOf } from '../../src/sim/world';
+import { isMonthStart } from '../../src/shared/calendar';
+import { BUILD_MIX_1938, ECONOMY_TABLES_1938 } from '../../src/sim/scenario1938';
+import { budgetOf, NAVY_SHARE, POOR_INCOME, RESERVE_MONTHS } from '../../src/sim/ai/economic';
+import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
+import { shipyard } from '../../src/sim/systems/production';
+import { Domain } from '../../src/sim/world';
 
 const seed = Number(process.argv[2]);
 const years = Number(process.argv[3] ?? 8);
@@ -60,8 +77,37 @@ type NationYear = {
   days: number; noneDays: number; noneFrontElsewhere: number; noneGold: number[]; groupDays: Record<State, number>; built: number; sunk: number;
   awayHomeDaysStood: number[]; awayCells: Record<string, number>; toCells: Record<string, number>;
   freeOnPortLand: number[]; freeElsewhere: number[]; menOnPortLand: number[]; groupsAlive: number[];
+  slotMonths: number; slotFirst: Record<string, number>; slotEach: Record<string, number>; yards: Record<string, number>; navyRatio: number[]; slotGold: number[];
 };
-const newYear = (): NationYear => ({ days: 0, noneDays: 0, noneFrontElsewhere: 0, noneGold: [], groupDays: Object.fromEntries(STATES.map((k) => [k, 0])) as Record<State, number>, built: 0, sunk: 0, awayHomeDaysStood: [], awayCells: {}, toCells: {}, freeOnPortLand: [], freeElsewhere: [], menOnPortLand: [], groupsAlive: [] });
+const newYear = (): NationYear => ({ days: 0, noneDays: 0, noneFrontElsewhere: 0, noneGold: [], groupDays: Object.fromEntries(STATES.map((k) => [k, 0])) as Record<State, number>, built: 0, sunk: 0, awayHomeDaysStood: [], awayCells: {}, toCells: {}, freeOnPortLand: [], freeElsewhere: [], menOnPortLand: [], groupsAlive: [], slotMonths: 0, slotFirst: {}, slotEach: {}, yards: {}, navyRatio: [], slotGold: [] });
+
+const T = ECONOMY_TABLES_1938;
+const upkeepOf = (id: number): number => {
+  const t = w.formations.cols.template[id]!;
+  const full = T.templateStrength[t] ?? 0;
+  return full > 0 ? (UPKEEP_SCALE * (T.templateUpkeep[t] ?? 0) * w.formations.cols.strength[id]!) / full : 0;
+};
+const hasFrontAny = (n: number): boolean => {
+  const { w: cw, h: ch, controller } = w.cells;
+  const nb: number[] = [];
+  for (const cell of frontierOf(w)) {
+    if (controller[cell] !== n) continue;
+    for (const k of neighbours4(cell, cw, ch, w.settings.loopingMap, nb)) {
+      const m = controller[k]!;
+      if (m !== 0 && m !== n && w.wars.atWar(n, m)) return true;
+    }
+  }
+  return false;
+};
+const transportOrders = (n: number): Set<number> => {
+  const ids = new Set<number>();
+  w.production.forEach((id) => {
+    if (w.production.cols.nation[id] === n && w.production.cols.template[id] === TRANSPORT) ids.add(id);
+  });
+  return ids;
+};
+/** The month's slot reads waiting for the next day's look at the yards: nation → its transport orders then. */
+let slotPending = new Map<number, { t: string; before: Set<number> }>();
 
 /** Each transport group ever seen, its nation, and the last day it was under way. */
 const seen = new Map<number, { n: number; lastMoved: number; gone: boolean }>();
@@ -97,6 +143,13 @@ for (let y = 0; y < years; y++) {
       const t = watched.get(r.n);
       if (t) yr.get(t)!.sunk++;
     }
+    // PLAN 7.26h2: last month-start's reads that passed every condition: ordered or not.
+    for (const [n, p] of slotPending) {
+      const r = yr.get(p.t)!;
+      const k = [...transportOrders(n)].some((id) => !p.before.has(id)) ? 'ordered' : 'balanceOrMen';
+      r.slotFirst[k] = (r.slotFirst[k] ?? 0) + 1;
+    }
+    slotPending = new Map();
     // The pairs of nations beside each other (a land front where they are at war).
     const pair = new Set<number>();
     const { w: cw, h: ch } = w.cells;
@@ -115,6 +168,56 @@ for (let y = 0; y < years; y++) {
       carrying.add(e.fleet);
     }
     const comp = navOf(w).grid.component;
+    // PLAN 7.26h2: the fleet slot's conditions, read before the month's economic AI.
+    if (isMonthStart(w.startDay, w.tick)) {
+      const acc = monthlyAccounts(w, T);
+      const navy = new Map<number, number>();
+      const yards = new Map<number, number[]>();
+      f.forEach((id) => {
+        if (w.isFleet(id)) navy.set(c.nation[id]!, (navy.get(c.nation[id]!) ?? 0) + upkeepOf(id));
+      });
+      w.production.forEach((id) => {
+        const tt = w.production.cols.template[id]!;
+        if (w.rules?.templates[tt]?.domain !== Domain.sea) return;
+        const n = w.production.cols.nation[id]!;
+        yards.set(n, [...(yards.get(n) ?? []), tt]);
+      });
+      for (const [n, t] of watched) {
+        if (w.nations.cols.living[n] !== 1) continue;
+        let frontless = false;
+        for (const war of w.wars.list) {
+          const i = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
+          if (i < 0) continue;
+          if (!war.sides[1 - i]!.some((e) => w.wars.atWar(n, e) && (pair.has(n * 65536 + e) || pair.has(e * 65536 + n)))) frontless = true;
+        }
+        let has = false;
+        f.forEach((id) => {
+          if (w.isFleet(id) && c.template[id] === TRANSPORT && c.nation[id] === n) has = true;
+        });
+        if (!frontless || has) continue;
+        const r = yr.get(t)!;
+        r.slotMonths++;
+        const { income } = budgetOf(w, n, acc);
+        const gold = w.nations.cols.gold[n]!;
+        const price = w.rules!.templates[BUILD_MIX_1938.fleets.transport]!.gold;
+        r.navyRatio.push(+((navy.get(n) ?? 0) / Math.max(1e-9, income)).toFixed(3));
+        r.slotGold.push(Math.round(gold));
+        for (const tt of yards.get(n) ?? []) {
+          const id = TEMPLATES_1938[tt]?.id ?? `#${tt}`;
+          r.yards[id] = (r.yards[id] ?? 0) + 1;
+        }
+        const fails: string[] = [];
+        if ((yards.get(n)?.length ?? 0) > 0) fails.push('shipInYards');
+        if ((navy.get(n) ?? 0) >= NAVY_SHARE * income) fails.push('navyShare');
+        if (income < POOR_INCOME) fails.push('poor');
+        if (hasFrontAny(n)) fails.push('frontAny');
+        if (gold < price + RESERVE_MONTHS * income) fails.push('price');
+        if (shipyard(w, n) < 0) fails.push('noShipyard');
+        for (const k of fails) r.slotEach[k] = (r.slotEach[k] ?? 0) + 1;
+        if (fails.length > 0) r.slotFirst[fails[0]!] = (r.slotFirst[fails[0]!] ?? 0) + 1;
+        else slotPending.set(n, { t, before: transportOrders(n) });
+      }
+    }
     for (const [n, t] of watched) {
       if (w.nations.cols.living[n] !== 1 || aboardBy.has(n)) continue;
       // In a war with no front of its own.
@@ -208,6 +311,7 @@ for (let y = 0; y < years; y++) {
       noTransportDays: r.days, noneDays: r.noneDays, noneFrontElsewhere: r.noneFrontElsewhere, noneMedianGold: med(r.noneGold), groupDays: Object.fromEntries(Object.entries(r.groupDays).filter(([, v]) => v > 0)), built: r.built, sunk: r.sunk,
       medianGroups: med(r.groupsAlive), awayHomeMedianDaysStood: med(r.awayHomeDaysStood), awayHomeMaxDaysStood: r.awayHomeDaysStood.length ? Math.max(...r.awayHomeDaysStood) : null,
       awayCells: top(r.awayCells), toCells: top(r.toCells), medianFreeOnPortLand: med(r.freeOnPortLand), medianFreeElsewhere: med(r.freeElsewhere), medianMenOnPortLand: med(r.menOnPortLand),
+      slotMonths: r.slotMonths, slotFirst: r.slotFirst, slotEach: r.slotEach, yards: r.yards, medianNavyRatio: med(r.navyRatio), maxNavyRatio: r.navyRatio.length ? Math.max(...r.navyRatio) : null, slotMedianGold: med(r.slotGold),
     }])),
   };
   years_.push(row);

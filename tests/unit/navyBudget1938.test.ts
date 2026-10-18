@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
-import { BATTLE_FLEET_INCOME, NAVY_SHARE } from '../../src/sim/ai/economic';
+import { BATTLE_FLEET_INCOME, budgetOf, NAVY_SHARE, RESERVE_MONTHS } from '../../src/sim/ai/economic';
+import { destroyFormation } from '../../src/sim/systems/elements';
+import { placeFleet } from '../../src/sim/placeForces';
+import { Refusal } from '../../src/shared/commands';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
@@ -63,6 +66,42 @@ describe('the navy\'s cost (PLAN 4.6e1)', () => {
     expect(declareWar(w, SWE, ICE, true)).not.toBeNull();
     runEvents(s, 1);
     expect(ships(w, SWE)).toEqual([fleets.transport]);
+  });
+
+  // PLAN 7.26h2 (ADR-518): measured on two seeds, Britain, its four groups of 1938 sunk, ordered
+  // none for five years: every month over its navy's share, with a front in another war, its gold
+  // under three months of income. The transport is a landing's means, as 2b's bomber is a warhead's.
+  it('a nation that wants a landing orders a transport group over its navy\'s share, with a front in another war, on a month of reserve', () => {
+    const setUp = (wars: string[], army = true): { w: World; ENG: number } => {
+      const s = peaceful();
+      const w = s.world;
+      const ENG = id('ENG');
+      w.formations.forEach((f) => {
+        const c = w.formations.cols;
+        if (c.nation[f] !== ENG) return;
+        if ((w.isFleet(f) && c.template[f] === fleets.transport) || (!army && !w.isFleet(f) && !w.isWing(f))) destroyFormation(w, f);
+      });
+      for (const t of wars) expect(declareWar(w, ENG, id(t), true)).not.toBeNull();
+      // Its navy of 1938 is just under its share (250 against 289): two battle squadrons more.
+      const port = w.ports.find((p) => w.cells.controller[p.cell] === ENG)!;
+      for (let k = 0; k < 2; k++) expect(placeFleet(w, ENG, fleets.battle, port.x, port.y)).toBe(Refusal.None);
+      const { income } = budgetOf(w, ENG, monthlyAccounts(w, T));
+      const price = w.rules!.templates[fleets.transport]!.gold;
+      w.nations.cols.gold[ENG] = price + 2 * income;
+      expect(w.nations.cols.gold[ENG]).toBeLessThan(price + RESERVE_MONTHS * income);
+      expect(navyUpkeep(w, ENG)).toBeGreaterThan(NAVY_SHARE * income);
+      runEvents(s, 1);
+      return { w, ENG };
+    };
+    // At war with Saudi Arabia, a land front by Aden and Iraq, and with Iceland across the sea.
+    const both = setUp(['SAU', 'ICE']);
+    expect(ships(both.w, both.ENG)).toEqual([fleets.transport]);
+    // With Saudi Arabia alone every war has its front: none.
+    const fronted = setUp(['SAU']);
+    expect(ships(fronted.w, fronted.ENG)).toEqual([]);
+    // No army to carry: none.
+    const empty = setUp(['SAU', 'ICE'], false);
+    expect(ships(empty.w, empty.ENG)).toEqual([]);
   });
 
   it('short of money, a nation over its share lays up its fleets in port, the dearest first, before its army goes home', () => {

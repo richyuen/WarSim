@@ -19033,3 +19033,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   home weighs no enemy sea: seed 7919's Britain's four groups, sent home in year 2, sunk in year 3;
   none built after (7.26h2's cause).
 - **Next:** PLAN 7.26h2.
+
+## 2026-10-18 — PLAN 7.26h2: the transport group that is never built
+
+- **Start:** gate green on `2894ccd`; critic not due.
+- **Measured** (`tools/diag/transports.ts`'s `slot*` columns, seeds 2843 and 7919 × 8 years,
+  `docs/evidence/7.26/measure-h2.md`): on the month starts a great power is in a frontless war with
+  no group, the fleet slot's conditions stack. Britain: navy over its share on 64 of 64 months
+  (0.13–0.31 of income), a front in another war on 62, gold under price + 3 months on 41. The
+  Netherlands is a remnant from year 2 (income 9.6, poor): by design. Germany's one group lives.
+- **A/B** from saved states (180 days): the front per war alone, and with the navy's share lifted,
+  leave the hash unchanged; only the order as 2b's bomber (own step, a month of reserve) buys
+  Britain's, and without a want-gate it bought for Albania, Egypt, Singapore, Yugoslavia too.
+- **Done** (ADR-518): `economic.ts` step 2c, `wantsTransport` (per-war front, an enemy port, a free
+  formation on a land with an own port); no other fleet while it wants one; `pickFleet` no longer
+  picks transports. Pin c451b4aa → c3bd280a.
+- **Tests:** `navyBudget1938.test.ts` new case (Britain at war with Saudi Arabia and Iceland, navy
+  over share, gold under 3 months: a transport ordered; Saudi Arabia alone or no army: none); red
+  without the rule.
+- **Measured after:** Britain's `noTransport` days 1,383 → 513 and 551 → 208, two more groups built
+  on each seed, all sunk later; world transport orders 20 → 21 and 20 → 15.
+- **Next:** PLAN 7.26i.
