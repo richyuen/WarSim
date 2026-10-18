@@ -339,6 +339,9 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       To read against 7.26h1 (ADR-517): transport groups sent home are sunk on the way (seed 7919's
       Britain, all four in year 3); if the ten seeds' landings fall, a way home that keeps off the
       enemy's sea is the first question.
+      To read against 7.26h2 (ADR-518): the transport's want counts free formations near the
+      nation's own front, which the invasion AI does not board; if the landings do not rise with
+      the `noTransport` days falling, that is the next question.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five

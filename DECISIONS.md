@@ -190,7 +190,13 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   2b's (the price and DELIVERY_RESERVE_MONTHS of income in gold, the shortfall with its upkeep
   carried for RUNWAY_MONTHS), outside the navy's share. While it wants one it orders no other fleet
   (3b), as before it ordered no warship while saving for transports. `pickFleet` no longer picks
-  transports.
+  transports. A consequence: a frontless belligerent whose want-gate fails (no free formation on a
+  land with a port of its own, or an enemy with no port) now orders warships under its share in
+  3b; before, it saved for a transport group it would not have used.
+- **To watch.** The want's free formation has no near-front exclusion, while the invasion AI's
+  `free` skips formations within `DEPLOY_RANGE_CELLS` of an own front: a nation whose only free men
+  stand by its front buys a group nobody boards. If 7.26j's landings do not rise with the
+  `noTransport` days falling, this is the first place to look.
 - **Why.** A transport group is a landing's means, not a part of the battle line the navy's share
   bounds: 630 gold and 2.1 a month, against Britain's income of 1,000 to 2,400. AoC has no fleets;
   the sim's landings are its answer to a war with no front, and they need the group.

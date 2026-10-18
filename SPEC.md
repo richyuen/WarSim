@@ -2011,8 +2011,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   *The navy's cost (PLAN 4.6e1, ADR-273; `src/sim/ai/economic.ts`):* a nation keeps its navy's
   upkeep near 12 % of its income. Monthly, after its army's orders, a nation with a shipyard
   and no fleet in training orders one while under it, if the books and the reserve allow: a
-  transport group at war with no front and none of them, else a battle squadron from an
-  income of 1,000, a cruiser squadron from 200, a destroyer flotilla. Short of money and over
+  battle squadron from an income of 1,000, a cruiser squadron from 200, a destroyer flotilla.
+  Its transport group is bought apart (PLAN 7.26h2, ADR-518), before research and the army's
+  orders, outside the navy's share, on a month of reserve: at war, in a war in which it has no
+  land front and whose enemy holds a port, with a free formation on a land with a port of its
+  own and no group; while it wants one it orders no other fleet. Short of money and over
   it, it lays up its fleets in port, the dearest first, before its army is sent home.
   *A navy's weight (PLAN 4.6e2, ADR-274):* a fleet weighs half its armed ships' hit points in
   men (a transport's or a submarine's nothing): in a nation's strength for the strategic AI (a

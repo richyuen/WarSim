@@ -34,8 +34,8 @@ seeds: 7.26h1's way home works there).
 
 ## A/B from saved states
 
-180 days from day 1,095 of seed 2843 and day 1,460 of 7919 (`.cache/726h2/ab.ts`, the rule behind a
-switch, since removed), transport orders of the world:
+180 days from day 1,095 of seed 2843 and day 1,460 of 7919 (`.cache/726h2/ab.ts` with the switch in
+`.cache/726h2/ab.diff`, since removed from the code), transport orders of the world:
 
 | variant | 2843 | 7919 |
 |---|---|---|
