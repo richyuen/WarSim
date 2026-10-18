@@ -53,7 +53,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       left the view (found running `fallen1938` with 7.23a: 274 marks held on the screen, none
       drawn, `elementCount` 0). AT: a unit or e2e test of a view with marks and no element;
       `fallen1938` green.
-    - [ ] 7.23a A tank element's hour of fire lost in whole tanks: in land combat, an element of
+    - [x] 7.23a A tank element's hour of fire lost in whole tanks: in land combat, an element of
       armour fired at loses the whole tanks of its hour's damage and one more with the chance of
       the rest (a seeded draw), no fraction carried; ships, aircraft, bombardment and attrition as
       before. AT: a unit test (the draw's mean over many elements and hours, and the same by seed);

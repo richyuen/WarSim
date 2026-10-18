@@ -18399,3 +18399,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   view, the marks still drawn: red on HEAD's renderer, 0 of at least 3; green with the fix).
 - **Specs by hand** (chromium): `fallen1938`, `burning1938` (2), `wrecksHeld1938`: 4 green.
 - **Next:** PLAN 7.23a (tanks lost whole under fire).
+
+## 2026-10-18 — PLAN 7.23a: an element of tanks under fire loses whole tanks
+
+- **Start:** gate green on `80c1438` (7.23a0).
+- **Done** (ADR-501, SPEC §5 damage): in land combat an element of armour fired at in an hour loses
+  the whole tanks of its damage and one more if a seeded draw (`hash32(seed, tick, element,
+  0x6b17)`) is under the rest, and carries nothing (`applyWholeLoss`); men, guns, lorries, ships,
+  aircraft, bombardment, breakdowns and attrition carry as before. Its mean is the carried rule's.
+- **Measured:** the critic's case in Node: 8 tanks of division 41 lost in its 48 hours, each in an
+  hour of fire on its element (0 before). Live at x1 at 25 m/px (`watch.mjs`, the camera on the
+  division): 2 burning hulls on the screen after 10 s, 7 after 35 s. Seeds 99, 1, 2, year 1, new /
+  old: tanks at the end 11,398 / 12,595, 12,397 / 13,131, 15,227 / 12,946; land casualties 5.89 /
+  5.49 M, 4.65 / 4.82 M, 4.72 / 5.48 M: the direction turns with the seed. Pin `14c6b2e8` →
+  `4ac7bea4`. Pictures looked at: `docs/evidence/7.23/a-burning-hull-25m.png` (the flame and smoke
+  among the German ranks, small at 1×), `a-burning-hull-8m.png` (zoomed onto it while alight: reads
+  clearly), `a-burning-hull-x1-spec.png` (the spec's, framed on the fight).
+- **Tests:** `wholeTanks.test.ts` (new: the draw's rule and its mean over 20,000 sim draws; the
+  critic's division loses whole tanks under fire, the same by seed; red on the old rule, 0 lost);
+  `tankHulls1938` (new: the critic's case at x1, a tank hull alight within 45 s, marks counted
+  apart; first flame at 6.1 s, twice); `warBattle` sharpened, not loosened (ADR-501): its bound on
+  battles of neither leader counts the hours a leader was in contact, 8 of 744, under 2 % as
+  before; 15 of 744 counted all, 7 of them with no leader in contact; before 0 and 4 of 737.
+- **Whole unit suite by hand:** 1,672 of 1,673 before the sharpening (`warBattle`), then it green.
+- **Specs by hand** (chromium): `tankHulls1938`, `burning1938` (2), `fallen1938`, `tankBattle1938`,
+  `wrecksHeld1938`, `fightSeen1938` (2), `turrets1938` green; `wrecks1938` red as before 7.23
+  (PLAN 7.23c).
+- **Next:** PLAN 7.23b (the tank hulls counted apart from the marks).

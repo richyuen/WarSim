@@ -36,7 +36,7 @@ import { hash32, hashToUnit } from '../core/hash';
 import { TERRAIN_IDS } from '../../shared/terrain';
 import { airOf, ARM_ALL, ARM_ARMOUR, ARM_ARTILLERY, ARM_AT, ARM_INFANTRY, type UnitRule, type World } from '../world';
 import { airSuperiority } from './airSuperiority';
-import { applyLoss, cellDist as dist, CONTACT_CELLS, deployAll, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
+import { applyLoss, applyWholeLoss, cellDist as dist, CONTACT_CELLS, deployAll, elementIndex, elementPlace, settleFormation, slotCount } from './elements';
 import { MAJOR_LOSS_MULT, updateMajorBattles } from './majorBattles';
 
 export { CONTACT_CELLS };
@@ -46,6 +46,8 @@ export const FIRE_SCALE = 0.1;
 export const ARMOR_PEN = 0.5;
 export const COOLDOWN = 4;
 const SALT_TARGET = 0x7a46;
+/** The draw of a whole tank from the rest of an hour's damage (PLAN 7.23a). */
+const SALT_WHOLE = 0x6b17;
 
 /**
  * The fire of a side of a battle that has infantry, artillery and armour alive in it (PLAN
@@ -474,10 +476,12 @@ export function combatSystem(world: World): void {
         fires.push(world.tick, subtick, s, t, ec.unit[s]!, dmg, px[s]!, py[s]!, px[t]!, py[t]!);
       }
     }
-    // Simultaneous volleys: apply every loss after all fire is computed, in id order.
+    // Simultaneous volleys: apply every loss after all fire is computed, in id order. A tank is
+    // knocked out or it is not: armour loses whole tanks, by a draw on the rest (PLAN 7.23a).
     const struck = hit.subarray(0, hits).sort();
     for (const t of struck) {
-      applyLoss(world, t, hurt[t]!);
+      if ((units[ec.unit[t]!]!.arm & ARM_ARMOUR) !== 0) applyWholeLoss(world, t, hurt[t]!, hashToUnit(hash32(world.seed, world.tick, t, SALT_WHOLE)));
+      else applyLoss(world, t, hurt[t]!);
       hurt[t] = 0;
     }
     for (const fid of battle) {

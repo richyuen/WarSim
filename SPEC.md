@@ -1407,7 +1407,10 @@ bombardment) participants join through their missions.
   - Weights are tabled per (formation, unit type), and the draw is a binary search.
 - *Damage* (target units) = eff × fullness × 0.1 × terrain attack × (0.5 + 0.5 supply) ×
   (0.25 + 0.75 org) (PLAN 3.2c, ADR-135; §4, Supply v1) ÷ terrain defence (when the target
-  holds) ÷ hpPerUnit. Losses apply after all of the hour's volleys. Besides: × the shooter's
+  holds) ÷ hpPerUnit. Losses apply after all of the hour's volleys, in id order: an element
+  carries the fraction of a unit to the next loss, except an element of armour, which loses the
+  whole tanks of its hour's damage and one more by a seeded draw on the rest, and carries none
+  (PLAN 7.23a, ADR-501: carried, a division's tanks took weeks to lose one). Besides: × the shooter's
   nation's combat efficiency (§5.3) and its attack buffs, ÷ the target's defence buffs, × 1.5
   in a Major Battle (§5.4).
   The terrain is the target's cell. Attack is the shooter's class figure of `terrain.json` ×

@@ -573,6 +573,22 @@ export function applyLoss(world: World, id: number, units: number): number {
 }
 
 /**
+ * Removes `units` (fractional) from an element in whole units, none carried (PLAN 7.23a): the
+ * whole units of `units` and what it carried, and one more if `roll` (0–1, a seeded draw) is under
+ * the rest. Its mean is `applyLoss`'s. For tanks under an hour's fire: carried, a division's few
+ * tanks of damage spread in fractions over its elements, and none came to a whole tank for weeks.
+ * Returns units lost.
+ */
+export function applyWholeLoss(world: World, id: number, units: number, roll: number): number {
+  const ec = world.elements.cols;
+  const w = ec.wound[id]! + units;
+  const whole = Math.min(Math.floor(w) + (roll < w - Math.floor(w) ? 1 : 0), ec.strength[id]!);
+  ec.strength[id] = ec.strength[id]! - whole;
+  ec.wound[id] = 0;
+  return whole;
+}
+
+/**
  * Removes the share `fraction` of a formation's strength: from every element (with carried
  * fractions) when it has elements, else from its bare strength. Used by attrition and desertion,
  * so strength stays the sum of the elements.

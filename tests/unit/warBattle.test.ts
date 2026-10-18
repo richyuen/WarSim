@@ -317,7 +317,7 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
   it('names two formations whose blocks are whole in the view the camera takes', () => {
     const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });
-    const n = { asked: 0, known: 0, byNearest: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, wide: 0, germanPolish: 0, widest: 0, uneven: 0, leaders: [0, 0, 0], passedOver: 0 };
+    const n = { asked: 0, known: 0, byNearest: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, wide: 0, germanPolish: 0, widest: 0, uneven: 0, leaders: [0, 0, 0], passedOver: 0, leaderBy: 0 };
     const outside: string[] = [];
     let lastDay = 0;
     s.step(24 * 60, (w) => {
@@ -348,6 +348,10 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
         // its enemy's nearest, each the other's (ADR-95: how a battle's leaders are counted).
         const leader = (f: number): boolean => fc.nation[f] === war.sides[0][0] || fc.nation[f] === war.sides[1][0];
         if (led === 0 && [...contacts].some(([f, e]) => across(f, e) && contacts.get(e) === f && fc.engaged[f] === 1 && fc.engaged[e] === 1 && (leader(f) || leader(e)))) n.passedOver++;
+        // A battle of neither named while a leader's formation was in contact across the war, if
+        // not as each other's nearest (PLAN 7.23a): the hours the rule chose; in the others there
+        // was no battle of a leader to name.
+        if (led === 0 && [...contacts].some(([f, e]) => across(f, e) && (leader(f) || leader(e)))) n.leaderBy++;
         const rank = (contacts.get(a) === d ? 1 : 0) + (contacts.get(d) === a ? 1 : 0);
         if (rank === 2) n.mutual++;
         else if (rank === 1) n.oneWay++;
@@ -368,7 +372,7 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
         `the two named are each other's nearest enemy in ${n.mutual}, one the other's in ${n.oneWay}, neither in ${n.neither}; ` +
         `their blocks at most ${(n.widest * 19.57).toFixed(1)} km apart; not whole in the view ${n.outside} times, the view further out than 20 m/px ${n.wide} times; ` +
         `one side under a tenth of the other in ${n.uneven}; ` +
-        `of the two, the war's leaders have neither in ${n.leaders[0]} (a leader in contact passed over ${n.passedOver}), one in ${n.leaders[1]}, both in ${n.leaders[2]}; ` +
+        `of the two, the war's leaders have neither in ${n.leaders[0]} (with a leader in contact ${n.leaderBy}; a leader in contact passed over ${n.passedOver}), one in ${n.leaders[1]}, both in ${n.leaders[2]}; ` +
         `the wars said to have a battle are those with an answer in ${n.known} of ${n.asked} (${n.byNearest} wars found by a formation's nearest enemy)`,
     );
     expect(outside).toEqual([]);
@@ -381,8 +385,12 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
     // battle of neither leader is named then, and only then.
     expect(n.passedOver).toBe(0);
     // Since PLAN 5.8m (ADR-336) 7 of 687 (1.0 %): such hours are this game's, and the rule is the
-    // line above; under 2 %, the rare case it was (6 of 687 before).
-    expect(n.leaders[0]).toBeLessThan(n.battles / 50);
+    // line above; under 2 %, the rare case it was (6 of 687 before). Since PLAN 7.23a (ADR-501) of
+    // the hours of neither only those with a leader's formation in contact across the war count:
+    // in the others no leader fought and neither is the only answer. 8 of 744 then, of 15 of
+    // neither (Italy on France on days 48 to 60, Germany's formations in contact with France's,
+    // none each other's nearest); before it 0 of 737, of 4.
+    expect(n.leaderBy).toBeLessThan(n.battles / 50);
     // The front is there on the last day: the banner of this war leads somewhere. Since PLAN 5.6
     // (ADR-322) its contact comes and goes from hour to hour (none at hour 1440 itself, the last
     // look, and at 1386, 1422, 1446 before it): a battle at a look of the last day.

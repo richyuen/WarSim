@@ -167,6 +167,42 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-501 · 2026-10-18 · accepted — A tank element under fire loses whole tanks (PLAN 7.23a)
+
+- **Context.** Critic run 8, tanks 7: in 45 s at Speed x1 at 25 m/px on a live armour fight no
+  tank hull was drawn. Measured (seed 3929, Germany on Poland and France, armoured division 41 in
+  contact with France's 220 from hour 72): in 48 hours fire on its tanks came to 3.5 tanks (AT
+  guns 2.8 of it), and it lost none. Land fire is in fractions of a unit, and `applyLoss` carries
+  the fraction (`wound`) until it sums to one. The fire is spread by the target draw over the
+  division's 34 tank elements, so each carried about 0.1 in two days: the first whole tank of such
+  a fight came weeks in, and then many elements came to one together. The view showed what the sim
+  did, which was nothing for weeks.
+- **Decision.** In land combat (`combatSystem`) an element of armour (the classes of
+  `combat.json` `arms.armour`) fired at in an hour loses the whole tanks of its damage and what it
+  carried, and one more if a seeded draw (`hash32(seed, tick, element, SALT_WHOLE)`) is under the
+  rest; it carries nothing (`applyWholeLoss`). Its mean is the carried rule's. Everything else is
+  as before: men, guns and lorries carry (an element of hundreds of men loses men every hour);
+  ships (a battleship does not sink on a 5 % roll), aircraft, bombardment, breakdowns and attrition
+  carry. A tank lost so is lost in an hour its element was fired at, so its hull burns
+  (`HullFx`, PLAN 3.6d).
+- **Measured.** The critic's case in Node: 8 tanks of the division lost in its 48 hours, each
+  in an hour of fire on its element (0 before; `tests/unit/wholeTanks.test.ts`). Seed 99, 1, 2,
+  year 1, new and old: tanks at the year's end 11,398 / 12,595, 12,397 / 13,131, 15,227 / 12,946;
+  land casualties 5.89 / 5.49 M, 4.65 / 4.82 M, 4.72 / 5.48 M. The direction turns with the
+  seed: the world's noise, not a bias of the rule (the carried rule also held back up to one tank
+  per element, never lost).
+- **A test's count sharpened.** `warBattle` (PLAN 2.14f5a, 60 days of seed 99): a battle of
+  neither war leader named in 15 of 744 looks, against under 2 % (4 of 737 before), all in the
+  war on Poland on days 48 to 60, Italy on France named. Poland is still fighting (18 formations
+  at hour 1146, 23 before). In 7 of the 15 no leader's formation was in contact across the war,
+  so no leader's battle could be named; in 8 Germany's were in contact with France's, none each
+  other's nearest (ADR-95's rule, which holds: none passed over). The bound now counts those 8
+  (under 2 %, unchanged), the hours in which the rule chose; the others are reported.
+- **Pin.** Seed 99 after one year: `14c6b2e8` → `4ac7bea4`.
+- **Not done.** Fire on land from the air and from ships (`airCombat`, `bombardment`) still carries
+  on tanks: a bombed tank is lost when its damage sums to one, and it burns only if that hour had
+  land fire on it.
+
 ### ADR-500 · 2026-10-18 · accepted — A fleet placed by the editor holds its place (PLAN 7.22c)
 
 - **Context.** Critic run 8, naval 6 and editor: two German and two British battle squadrons placed
