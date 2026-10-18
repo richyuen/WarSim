@@ -10905,3 +10905,38 @@ Of 7.4 (open in PLAN.md):
       to 117 km); the one toll under 5,000 on China, its side's principal; the sweep on seeds
       701–710 (`docs/sweeps/2026-10-18-sweep-718g.md`): bursts on 10 of 10, limits 10 of 10, no
       stasis 7 of 10 (PLAN 7.27).
+
+<!-- moved 2026-10-18 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.19 A sea battle's ticker row lands on the fight (critic R8-B2, contradicts 7.10b): seed 5591,
+  Germany on Britain, hour 41: the view on dry land at Groningen, the pair 23 cells apart either side
+  of the Dutch coast (`critic/c8_j2_5591.json`). AT: the critic's case: ships of both sides on screen
+  at the row's centre and scale, the centre on water; a battle is one between ships within reach of
+  each other's guns, or its pair is.
+  Found (2026-10-18, `.cache/p719/probe.ts`): at hour 41 the battle is a British carrier group and a
+  German battle squadron 279 km apart, joined by the carrier's wings (250 km); its one range closed
+  while every fleet stood still, so destroyers 2 km apart in it fired nothing (hours 46 to 60) and
+  ships fired at fleets up to 292 km off. A part each:
+    - [x] 7.19a The range is the distance of the fleets: a fleet out of reach of every enemy fleet of
+      its battle closes on the nearest it can hit; a ship fires only at fleets its weapon reaches.
+      AT: a unit test of the closing; no naval volley beyond its weapon's reach on seeds 5591 and 99;
+      the pin.
+    - [x] 7.19b The row's pair within ships' reach: the nearest two fleets of a battle within reach
+      of a ship's weapon of either (not the carriers' wings), its centre on the water; a battle with
+      none has no ticker row (PLAN 5.4d's carrier battles stand). AT: a unit test of the reach and
+      of the worker's pair; carriers still strike (PLAN 5.4d's tests).
+    - [x] 7.19c The critic's case in a spec, and the naval specs that sampled the first engaged
+      fleet or a battle's first place take a battle with a row. AT: `seaRow1938` (seeds 9043 and
+      5591), `seaBattle1938`, `seaBattleSeen1938`, `navalDemo1938`, `shipMarks1938` green; pictures.

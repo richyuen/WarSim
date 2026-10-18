@@ -21,14 +21,26 @@ test('T3: a ship at 15 m/px has dark marks on its hull, not a flat bar', async (
   const at = await page.evaluate(async ([g, e]) => {
     const { sim, view, hud } = window.__warsim!;
     sim.command({ kind: 'declareWar', attacker: g!, defender: e! });
-    for (let d = 0; d < 20; d++) {
-      const tick = (await sim.step(24)).tick;
+    // An hour at a time (PLAN 7.19b: the battles at the days' turns are a carrier's wings alone).
+    for (let d = 0; d < 20 * 24; d++) {
+      const tick = (await sim.step(1)).tick;
       await new Promise<void>((done) => {
         const wait = (): void => (view!.lastTick === tick ? done() : void setTimeout(wait, 5));
         wait();
       });
-      const sb = hud.seaBattles.value;
-      if (sb.length > 0) return [sb[0]!.x, sb[0]!.y] as [number, number];
+      // A battle with a row, at its pair (PLAN 7.19b: its fleets close, and a battle's first place
+      // may have none of them now; one of a carrier's wings alone has no pair).
+      const sb = hud.seaBattles.value.find((b) => b.pair !== null && [b.a, b.b].includes(g!) && [b.a, b.b].includes(e!));
+      if (!sb) continue;
+      // Its fleet nearest the pair's middle: at 15 m/px the pair's middle is open sea.
+      let at: [number, number] | null = null;
+      let bd = Infinity;
+      for (const f of view!.formationIds()) {
+        const p = view!.formationAfloat(f) && view!.formationEngaged(f) ? view!.formationPos(f) : null;
+        const d = p ? Math.hypot(p[0] - sb.pair!.x, p[1] - sb.pair!.y) : Infinity;
+        if (d < bd) [at, bd] = [p, d];
+      }
+      if (at) return [at[0], at[1]] as [number, number];
     }
     return null;
   }, [id('GER'), id('ENG')]);

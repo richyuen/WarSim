@@ -18129,3 +18129,23 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Red by hand, left to 7.19b/c:** `seaRow1938`, `seaBattle1938`, `navalDemo1938` sample the first
   battle, now a carrier pair 250–300 km apart that fires no gun; `shipMarks1938` looks at a battle's
   first place, where its fleets no longer stand. `seaBattleSeen1938` green.
+
+## 2026-10-18 — PLAN 7.19b, 7.19c: the row frames two fleets within reach (7.19 ticked)
+
+- **Done:** a sea battle's row frames the nearest two fleets within reach of a ship's weapon of
+  either (`inShipReach`; not the carriers' wings), centred on water; a battle with none (a carrier's
+  wings alone) has no ticker row and stays marked on the map (ADR-494, SPEC ticker). No sim rule
+  changed (pin unmoved).
+- **The critic's case** (seed 5591, Germany on Britain): the Germany–Britain battle's row comes at
+  hour 44, destroyers of the two within 12 km: both sides' fleets on the screen at 104 m/px, 48 shots
+  drawn, the centre on water (`docs/evidence/7.19/c-sea-row-5591.png`). Seed 9043 the same game in
+  its first days.
+- **Specs** (by hand, all green): `seaRow1938` (two tests, seeds 9043 and 5591), `seaBattle1938`,
+  `seaBattleSeen1938`, `navalDemo1938`, `shipMarks1938`: those that took the first engaged fleet, a
+  battle's first place or the first battle now take the war's first battle with a row (by hour);
+  `seaBattleSeen1938` looks for the carrier's strike with the camera on the battle's box. Unit:
+  `seaPair1938.test.ts` (new: the reach, and the worker's pair: none for a carrier's battle, the
+  pair on water with destroyers 20 km off).
+- **Left:** the fleet of the longer reach stands rather than stepping back (ADR-493); 7.22 (a sea
+  battle seen firing, fleets that hold) is next in its line.
+- **Next:** PLAN 7.20 (a hydrogen bomb is a hydrogen bomb).

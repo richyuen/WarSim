@@ -80,8 +80,9 @@ export function App({
   };
   const orderName = (id: number): string => (view ? view.formationTitle(id)?.name : undefined) ?? wingName(id) ?? t('order.aFormation');
   const orders = orderNews.map((n) => ({ seq: n.seq, kind: n.kind, text: orderNewsText(n, orderName(n.id)) }));
-  // The sea battles going on (PLAN 4.10b), each by its two sides' names.
-  const seaBattles = hud.seaBattles.value;
+  // The sea battles going on (PLAN 4.10b), each by its two sides' names: those with two fleets
+  // within reach of a ship's weapon (PLAN 7.19b; a carrier's strikes alone are on the map).
+  const seaBattles = hud.seaBattles.value.filter((b) => b.pair !== null);
   const seaKey = (b: { x: number; y: number; a: number; b: number }): string => `${b.a}-${b.b}-${Math.round(b.x)}-${Math.round(b.y)}`;
   const seas = seaBattles.map((b) => ({ key: seaKey(b), text: t('ticker.seaBattle', { a: displayName(byId.get(b.a)?.name ?? '?'), b: displayName(byId.get(b.b)?.name ?? '?') }) }));
   const lastOrder = formationTitle ? orderNews.filter((n) => n.id === hud.formation.value).at(-1) : undefined;
@@ -136,7 +137,7 @@ export function App({
             // SEA_PAIR_MARGIN cells about them, clear of the panels, near enough for their fire to
             // show. The box of all its fleets (PLAN 4.12a) was 24 cells across for seed 9043's
             // first battle: counters at 668 m/px, and no fire.
-            if (b) hud.onShowSeaBattle(b.pair.x, b.pair.y, [b.pair.w + 2 * SEA_PAIR_MARGIN, b.pair.h + 2 * SEA_PAIR_MARGIN]);
+            if (b?.pair) hud.onShowSeaBattle(b.pair.x, b.pair.y, [b.pair.w + 2 * SEA_PAIR_MARGIN, b.pair.h + 2 * SEA_PAIR_MARGIN]);
           }}
           onOrder={(seq) => {
             const n = orderNews.find((o) => o.seq === seq);

@@ -63,8 +63,17 @@ test('the naval battle demo: the first sea battle of a war at T1, T2 and T3', as
     await hour(page);
     fleet = await page.evaluate(() => {
       const v = window.__warsim!.view!;
-      for (const f of v.formationIds()) if (v.formationAfloat(f) && v.formationEngaged(f)) return f;
-      return -1;
+      // The fleet of a battle with a row (PLAN 7.19b: two fleets within reach of a ship's weapon;
+      // the first engaged fleet was a carrier's, whose wings alone reached): the one nearest its pair.
+      const b = v.seaBattles().find((s) => s.pair !== null);
+      let best = -1;
+      let bd = Infinity;
+      for (const f of b ? v.formationIds() : []) {
+        const p = v.formationAfloat(f) && v.formationEngaged(f) ? v.formationPos(f) : null;
+        const d = p ? Math.hypot(p[0] - b!.pair!.x, p[1] - b!.pair!.y) : Infinity;
+        if (d < bd) [best, bd] = [f, d];
+      }
+      return best;
     });
   }
   expect(fleet, 'a sea battle in the first 40 days').toBeGreaterThan(0);

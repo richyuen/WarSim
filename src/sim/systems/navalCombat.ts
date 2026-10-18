@@ -227,6 +227,21 @@ function factsOf(world: World, id: number, els: readonly number[], air: Map<numb
   return { id, nation: c.nation[id]!, detection, stealth, reach, kmh: rule?.speedKmh ?? 0, asw, aswReach, surface, submerged };
 }
 
+/**
+ * Whether fleets `a` and `b` (of nations at war) are within reach of a ship's weapon of either
+ * against the other (PLAN 7.19b): a gun or torpedoes on a surface ship, depth charges on a
+ * submarine; not the carriers' wings. The pair a sea battle's row shows is such a pair.
+ */
+export function inShipReach(world: World, a: number, b: number): boolean {
+  const idx = elementIndex(world);
+  const none = new Map<number, number[]>();
+  const fa = factsOf(world, a, idx.get(a) ?? [], none);
+  const fb = factsOf(world, b, idx.get(b) ?? [], none);
+  if (!fa || !fb) return false;
+  const c = world.formations.cols;
+  return seaKm(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) <= Math.max(reachOn(fa, fb), reachOn(fb, fa));
+}
+
 /** Fleet `id`'s detection this hour, km (PLAN 4.3a; its carriers' wings and the air over it with it): 0 for one with no ship. */
 export function fleetDetection(world: World, id: number): number {
   const els = elementIndex(world).get(id);
@@ -234,6 +249,11 @@ export function fleetDetection(world: World, id: number): number {
 }
 
 /** Whether a fleet of `a`'s facts has a weapon a ship of `b`'s can be hit by. */
+/** The reach of fleet `a`'s weapons against fleet `b`, km: on its surface ships, and on its submarines (PLAN 7.19a). */
+function reachOn(a: FleetFacts, b: FleetFacts): number {
+  return Math.max(b.surface ? a.reach : 0, b.submerged ? a.aswReach : 0);
+}
+
 function canHit(a: FleetFacts, b: FleetFacts): boolean {
   return (a.reach > 0 && b.surface) || (a.asw > 0 && b.submerged);
 }
@@ -470,7 +490,6 @@ export function navalCombatSystem(world: World): void {
     // of the battle it can hit closes on the nearest of them (`closeBy`), all from where they
     // stood at the hour's start.
     if (!fresh) {
-      const reachOn = (a: FleetFacts, b: FleetFacts): number => Math.max(b.surface ? a.reach : 0, b.submerged ? a.aswReach : 0);
       const moves: [number, number, number, number][] = [];
       for (const id of battle.fleets) {
         const a = facts.get(id)!;

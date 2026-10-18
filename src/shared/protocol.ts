@@ -281,7 +281,8 @@ export interface Snapshot {
    * 4.12a: a battle at a carrier's reach has its sides hundreds of km apart, its place by one of
    * them); the middle of its nearest two fleets at war with each other and the cells between them,
    * east-west and north-south (PLAN 7.10b: the pair that fights; the box of seed 9043's first
-   * battle was 24 cells across).
+   * battle was 24 cells across), two within reach of a ship's weapon of either, its middle on the
+   * water (PLAN 7.19b); pw −1 where no two are (a carrier's wings alone reach): no ticker row.
    */
   seas: Float32Array;
   /**

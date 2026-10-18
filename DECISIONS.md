@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-494 · 2026-10-18 · accepted — A sea battle's row frames two fleets within reach of a ship's weapon (PLAN 7.19b, 7.19c)
+
+- **Context.** After ADR-493 the critic's battle (seed 5591, hour 41) is still a British carrier
+  group and a German battle squadron 279 km apart, joined by the carrier's wings (PLAN 5.4d): no
+  view at which a ship is seen holds both, and the middle of the two was Groningen. The row framed
+  the nearest two fleets at war (PLAN 7.10b), whatever their distance.
+- **Decision.** The row's pair is the nearest two fleets of the battle within reach of a ship's
+  weapon of either (`inShipReach`: a gun or torpedoes on a surface ship, depth charges on a
+  submarine; not the carriers' wings), centred on the point of the line between them nearest its
+  middle whose cell is water. A battle with no such pair has none (`pw` −1 in the snapshot's
+  `seas`; `SeaBattleView.pair` null) and no ticker row; it is still in `view.seaBattles()` and
+  marked on the map, and its carriers still strike. On seed 5591 the Germany–Britain battle gets a
+  row at hour 44, when destroyers of the two are within 12 km: from it both sides' fleets on the
+  screen at 104 m/px, 48 shots drawn, the centre on water.
+- **Not chosen.** A battle beginning only within a ship's reach, the carriers' strikes going by the
+  strike path: it would undo PLAN 5.4d's carrier battle (a carrier sees and strikes 250 km off, its
+  tests), and the AT asks that a battle's pair be within reach, not each fleet of it.
+- **Specs that sampled the old meaning.** `seaBattle1938` and `navalDemo1938` took the first engaged
+  fleet, `shipMarks1938` a battle's first place, `seaBattleSeen1938` and `seaRow1938` the first
+  battle: each now takes the first battle of the war with a row (by hour, not by day: at the days'
+  turns the battles were the carrier's alone), the fleet nearest its pair, or its pair's place.
+  `seaBattleSeen1938` checks the pair's fleets on the screen from the row (the box of all a
+  battle's fleets is 23 × 19 cells), and looks for the carrier's strike with the camera on that box,
+  as PLAN 4.12b's view had it. No assertion is dropped or loosened.
+- **Pin.** Unmoved: no rule of the sim changed.
+
 ### ADR-493 · 2026-10-18 · accepted — A sea battle fought at the distance of its fleets (PLAN 7.19a)
 
 - **Context.** Critic run 8, R8-B2: a sea battle's ticker row (seed 5591, Germany on Britain, hour

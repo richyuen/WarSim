@@ -25,7 +25,8 @@ import { economyBreakdown } from '../sim/systems/economy';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
-import { AT_PORT_CELLS, carrierStrikes } from '../sim/systems/navalCombat';
+import { AT_PORT_CELLS, carrierStrikes, inShipReach } from '../sim/systems/navalCombat';
+import { isLand } from '../shared/terrain';
 import { chartRows } from '../sim/stats';
 import { aircraftOf } from '../sim/systems/airCombat';
 import { isTransport, wingAircraft } from '../sim/systems/air';
@@ -1443,18 +1444,32 @@ export class SimServer {
         const w = world.cells.w;
         const mx = (((b.x + (x0 + x1) / 2) % w) + w) % w;
         const my = b.y + (y0 + y1) / 2;
-        // Its nearest two fleets at war with each other (PLAN 7.10b): the pair that fights.
-        let pair: [number, number, number, number] = [mx, my, x1 - x0, y1 - y0];
+        // Its nearest two fleets at war with each other (PLAN 7.10b) within reach of a ship's weapon
+        // of either (PLAN 7.19b): the pair that fights. None (a carrier's wings alone reach): a
+        // width of -1, and the ticker lists no row for it. Its middle on the water: the point of
+        // the line between the two nearest the middle whose cell is no land (PLAN 7.19b).
+        let pair: [number, number, number, number] = [mx, my, -1, -1];
         let best = Infinity;
         const live = b.fleets.filter((f) => world.formations.has(f));
         for (let i = 0; i < live.length; i++) {
           for (let j = i + 1; j < live.length; j++) {
             const [f, g] = [live[i]!, live[j]!];
-            if (!world.wars.atWar(fc0.nation[f]!, fc0.nation[g]!)) continue;
+            if (!world.wars.atWar(fc0.nation[f]!, fc0.nation[g]!) || !inShipReach(world, f, g)) continue;
             const dx = wrapDx(world, fc0.x[f]!, fc0.x[g]!);
             const dy = fc0.y[g]! - fc0.y[f]!;
             const d = Math.hypot(dx, dy);
-            if (d < best) [best, pair] = [d, [(((fc0.x[f]! + dx / 2) % w) + w) % w, fc0.y[f]! + dy / 2, Math.abs(dx), Math.abs(dy)]];
+            if (d >= best) continue;
+            best = d;
+            let at = 0.5;
+            for (const t of [0.5, 0.4, 0.6, 0.3, 0.7, 0.2, 0.8, 0.1, 0.9, 0, 1]) {
+              const cx = ((Math.floor(fc0.x[f]! + dx * t) % w) + w) % w;
+              const cy = Math.min(world.cells.h - 1, Math.max(0, Math.floor(fc0.y[f]! + dy * t)));
+              if (!isLand(world.cells.terrain[cy * w + cx]!)) {
+                at = t;
+                break;
+              }
+            }
+            pair = [(((fc0.x[f]! + dx * at) % w) + w) % w, fc0.y[f]! + dy * at, Math.abs(dx), Math.abs(dy)];
           }
         }
         return [b.x, b.y, r, b.a, b.b, mx, my, x1 - x0, y1 - y0, ...pair];

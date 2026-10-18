@@ -873,7 +873,7 @@ export class MapView {
     const out: SeaBattleView[] = [];
     for (let i = 0; i + SEA_STRIDE <= this.seas.length; i += SEA_STRIDE) {
       const s = this.seas;
-      out.push({ x: s[i]!, y: s[i + 1]!, r: s[i + 2]!, a: s[i + 3]!, b: s[i + 4]!, cx: s[i + 5]!, cy: s[i + 6]!, span: [s[i + 7]!, s[i + 8]!], pair: { x: s[i + 9]!, y: s[i + 10]!, w: s[i + 11]!, h: s[i + 12]! } });
+      out.push({ x: s[i]!, y: s[i + 1]!, r: s[i + 2]!, a: s[i + 3]!, b: s[i + 4]!, cx: s[i + 5]!, cy: s[i + 6]!, span: [s[i + 7]!, s[i + 8]!], pair: s[i + 11]! < 0 ? null : { x: s[i + 9]!, y: s[i + 10]!, w: s[i + 11]!, h: s[i + 12]! } });
     }
     return out;
   }
@@ -2146,6 +2146,10 @@ export interface SeaBattleView {
   cx: number;
   cy: number;
   span: readonly [number, number];
-  /** The middle of its nearest two fleets at war with each other, and the cells between them east-west and north-south (PLAN 7.10b). */
-  pair: { x: number; y: number; w: number; h: number };
+  /**
+   * The middle of its nearest two fleets at war with each other within reach of a ship's weapon
+   * of either, on the water, and the cells between them east-west and north-south (PLAN 7.10b,
+   * 7.19b); null where no two are (a carrier's wings alone reach): the ticker lists no row for it.
+   */
+  pair: { x: number; y: number; w: number; h: number } | null;
 }

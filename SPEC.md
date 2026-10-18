@@ -2818,7 +2818,12 @@ on screen.
     its last (`formation-notice`).
   - Before the orders, the sea battles going on (PLAN 4.10b, ADR-303): "Sea battle: <side>
     against <side>" from each snapshot's `seas`; a click flies to a T2 view of both fleets
-    (`showBattle`, the span the cells across them).
+    (`showBattle`, the span the cells across them). Since PLAN 7.10b the view is of its nearest
+    two fleets at war; since 7.19b (ADR-494) of the nearest two within reach of a ship's weapon
+    of either (a gun or torpedoes on a surface ship, depth charges on a submarine; not the
+    carriers' wings, `inShipReach`), centred on the point of the line between them nearest its
+    middle that is water; a battle with no such pair (a carrier's wings alone reach) is marked
+    on the map and has no row.
   - The rows are the worker's (`tickerRows`, `src/worker/historyRows.ts`), read from the end
     of the history log and sent with every `nationStats`: the last `TICKER_ROWS` (5) of the
     last `TICKER_HOURS` (30 days). Not from the view's event queue, which drops records at
