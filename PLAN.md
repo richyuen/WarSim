@@ -118,6 +118,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           31 → 9 % and 22 → 8 % of the big side's men, the own front's 16 %; the contact share rose
           less, the enemy seldom being on the front. Taken next: c2 (the empty land); c1b after it,
           and only if the 7.26 AT is still short.
+          After 7.26d (2026-10-18): the AT is short; c1b is taken after c3 and c4.
       - [ ] 7.26c2 Land that nobody holds is taken: a side at war whose enemy has no land formation
         on their front takes its cells. Measured first, from a checkpoint of seed 2843 with Yemen and
         Saudi Arabia at war (day 2136 on) and seed 7919's Iraq and Saudi Arabia (day 647 on): the
@@ -152,14 +153,15 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           1,262, about 28 a month saved). Bulgaria v Romania the same gate, but it takes cells. The
           rule is as decided; the change (refills at war not held for the next order) waits on
           7.26d. Taken next: 7.26d.
+          After 7.26d (2026-10-18): the fix is last, after c3, c4 and c1b.
       - [ ] 7.26c3 The landing per war, not per nation: a nation with a land front in one war plans
         no landing in its others (30–50 % of nation-days), and colonies have no transports. Only if
         c1 and c2 leave the 7.26 AT short. AT: `landWar.ts`'s gate counts; the pin's entry.
         Taken next (7.26d, 2026-10-18): 59 % of the short years' out-of-range wings have no base
         of their side in range of any enemy, the overseas powers' first.
       - [ ] 7.26c4 The rebase over more than one hop: in 7.26d's short war-years 36 % of the wings
-        out of range have a base of their side with room within range of an enemy, 3 % of them
-        within one ferry hop (`freeInFerry`); 1.6 wings rebase a day of 54. Measured first: whether
+        out of range have a base of their side with room within range of an enemy, a tenth of
+        them within one ferry hop (`freeInFerry`, 3 % of all out of range); 1.6 wings rebase a day of 54. Measured first: whether
         a wing whose goal base lies beyond `FERRY_RANGE` moves toward it day by day or stays, from a
         checkpoint. AT: a unit test (a wing two hops from a base in range of the enemy reaches it
         and is tasked); `airWar.ts` on seeds 2843 and 7919; the pin's entry if it moves.
@@ -171,8 +173,8 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       (29–39 → 39–52) and with it the bar; the late years hold 0.2–0.4 of year 1. In the 273 short
       war-years, 54 of 73 wings at war have no enemy land formation in range, and land formations in
       contact are 1.2 a day against 32 in year 1. Of those out of range: 59 % no base of their side
-      in range of any enemy (the US, Japan, Germany, Italy, Britain first), 36 % such a base free
-      but beyond one hop for all but 3 %. The order of what waits: c3, then c4 (new), then c1b, c2b's
+      in range of any enemy (the US, Japan, Germany, Italy, Britain first), 36 % such a base free,
+      a tenth of them within one hop (3 % of all out of range). The order of what waits: c3, then c4 (new), then c1b, c2b's
       fix last; then 7.26e.
     - [ ] 7.26e The AT of 7.26 re-measured (`airWar.ts` seeds 1–10 × 30 years, judged by
       `tools/diag/airAt.ts`) after the parts 7.26d ordered; what is short split again.

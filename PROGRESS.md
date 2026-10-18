@@ -18819,3 +18819,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   hop), c1b, c2b's fix; then 7.26e, the AT re-measured.
 - **Note:** the AT's bar is year 1, the start's general war (32 formations in contact a day);
   not changed here.
+- **Corrected:** of the out-of-range wings with a free base in range of an enemy (36 %), a tenth
+  have it within one ferry hop (3 % of all out of range), not "all but 3 %". The first unchecked
+  parts c1b and c2b now say they wait on c3 and c4.
