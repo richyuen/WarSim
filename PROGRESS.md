@@ -18664,3 +18664,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   time: the gate's rerun covers it. A wall-time limit under a full parallel run.
 - **After the commit:** the sweep-config tests by hand (the gap reads `War.lastStrike` on the decision
   path, saved and loaded): 18 of 18, save and load among them.
+
+## 2026-10-18 — PLAN 7.26a: the air war's fall measured
+
+- **Start:** gate green on `514341f`; critic not due.
+- **Done:** `tools/diag/airWar.ts`; PLAN 7.26 split (a measure, b the rebase's goal, c the AT).
+- **Measured** (`docs/evidence/7.26/measure-a.md`, seeds 2843 and 7919 × 6 years): the wings hold
+  (130–170, under 10 % hollow), 63–104 of nations at war each year; sorties follow the wings with a
+  mission one for one. From year 2, 32–79 wings at war have every enemy land formation out of range
+  (33–41 in year 1) while formations in contact fall 30 → 1–6. For 40–76 % of them a base of their
+  side with room is in range of some enemy, but `toward` aims at the enemy nearest the base, which
+  no base of their side reaches for 64–93 %. 24–86 % have no base near any enemy (wars across the sea).
+- **Next:** PLAN 7.26b.

@@ -49,6 +49,19 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   10 seeds × 30 years headless: in each year with a war, mean sorties aloft at least half of that
   seed's year 1 on 8 of 10 seeds; the air battles of years 21 to 30 counted against years 1 to 10;
   the pin's entry if a rule moves it.
+  A part each (2026-10-18):
+    - [x] 7.26a The measure: `tools/diag/airWar.ts` (per year: sorties aloft as the critic counts
+      them, wings, of nations at war, with a mission, out of range of every enemy land formation and
+      why, hollow wings, formations in contact). AT: seeds 2843 and 7919 × 6 years measured
+      (`docs/evidence/7.26/measure-a.md`): from year 2, 32 to 79 wings at war out of range; for 40
+      to 76 % of them a base of their side with room is in range of some enemy, but `toward` aims at
+      the enemy formation nearest the base, out of every such base's range for 64 to 93 %.
+    - [ ] 7.26b The rebase aims at an enemy it can reach: `toward`'s goal, the enemy formation
+      nearest the base among those within range of an airbase of the side with room for the wing.
+      AT: a unit test (a wing whose nearest enemy is beyond every base of its side rebases toward
+      one it can reach and is tasked); `airToward1938` green; seeds 2843 and 7919 re-measured; the
+      pin's entry if it moves.
+    - [ ] 7.26c The AT of 7.26 on 10 seeds × 30 years, after 7.26b; what is short split again.
 - [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
   on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
   704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five
