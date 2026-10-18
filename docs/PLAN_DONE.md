@@ -11186,3 +11186,371 @@ Of 7.4 (open in PLAN.md):
       test of the rows; the i18n tests.
     - [x] 7.25d The alert expires and sits clear of the History and Charts headers; `ticker1938`
       green. AT: specs; pictures looked at.
+
+<!-- moved 2026-10-18 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.26 The air war keeps flying after year 1 (aircraft 6, needs 8; the user's decision of
+  2026-10-17, ADR-487, reopening what ADR-377 accepted): on every one of 17 seeds 28 to 39 sorties
+  aloft in year 1, then 0.5 to 14, while 1 to 14 wars run in every late year
+  (`critic/c8_headless_*.json` `meanSortiesAloft`, `wars`). Measured first: a tool beside
+  `tools/diag/` printing, per year, mean sorties aloft, wings of nations at war, how many have a
+  mission, how many are out of range of every enemy land force, and land formations in contact;
+  then the cause fixed (the air AI's tasking, the wings' bases, or the land war it follows).
+  From 7.24a0 (2026-10-18): the loser's losses are bounded by its hours in combat, not by the fire
+  (France 444 → 58 to 116 in three weeks at any `AIR_FIRE` from 0.03 to 0.25): a sortie that does
+  not lose a quarter in an hour fights its whole patrol, a wing flies about 4.5 sorties a day
+  (`TURNAROUND_HOURS` 2), every sortie within `INTERCEPT_KM` of the enemy's fights, and no wing is
+  refilled. The levers left: those four. Year 1's sorties aloft rose with 7.24a0 (seed 6047's
+  first three weeks: 25.7 → 34.6), and so does this AT's bar; measure on that rule. AT (until
+  ADR-519): 10 seeds × 30 years headless: in each year with a war, mean sorties aloft at least
+  half of that seed's year 1 on 8 of 10 seeds; the air battles of years 21 to 30 counted against
+  years 1 to 10; the pin's entry if a rule moves it.
+  AT re-scoped (ADR-519, 2026-10-18, the user's decision; 7.26d, e and g read 0 of 10 against the
+  half, the air at 0.2–0.4 of year 1 while land contact stands at 0.05 of it, and the air AI tasks
+  0.83 of the wings with an enemy in range late as in year 1): 10 seeds × 30 years headless,
+  judged by `airAt.ts`: in every war-year, of the wings of nations at war with an enemy land
+  formation in range, half or more hold a mission (8 of 10 seeds now: a hold), and mean sorties
+  aloft at least 3 (5 of 10 now), each on 8 of 10 seeds; the ratio to year 1 and the air battles
+  of years 21–30 against 1–10 reported, not a bar; the pin's entry if a rule moves it. 7.26 closes
+  at 7.26j whatever it reads; the late land war's reach is 7.29's.
+  A part each (2026-10-18):
+    - [x] 7.26a The measure: `tools/diag/airWar.ts` (per year: sorties aloft as the critic counts
+      them, wings, of nations at war, with a mission, out of range of every enemy land formation and
+      why, hollow wings, formations in contact). AT: seeds 2843 and 7919 × 6 years measured
+      (`docs/evidence/7.26/measure-a.md`): from year 2, 32 to 79 wings at war out of range; for 40
+      to 76 % of them a base of their side with room is in range of some enemy, but `toward` aims at
+      the enemy formation nearest the base, out of every such base's range for 64 to 93 %.
+    - [x] 7.26b The rebase aims at an enemy it can reach: `toward`'s goal, the enemy formation
+      nearest the base among those within range of an airbase of the side with room for the wing.
+      AT: a unit test (a wing whose nearest enemy is beyond every base of its side rebases toward
+      one it can reach and is tasked); `airToward1938` green; seeds 2843 and 7919 re-measured; the
+      pin's entry if it moves. Done (ADR-508): from one state of day 900, seed 2843's missions a day
+      25.5 → 30.9, seed 7919's unchanged.
+    - [x] 7.26c The land war that leaves the wings no enemy in reach. A probe at day 900 of seed
+      2843 (after 7.26b's measure): of 143 wings, 81 at war with no mission, most with no airbase of
+      their side in range of any enemy at all (Germany and Italy at war with France's African
+      remnants after France fell; Japan with Indochina; Australia, South Africa, India with Germany);
+      10 rebased in 10 days. Formations in contact fall 30 → 1–6 after year 1 while 4–8 wars run.
+      Measured first, no code: from `critic/c8_headless_*.json`, land fire (`StrikeHit`,
+      `FormationDestroyed`, `MajorBattleStarted`) by year beside `wars`; for each late war of seed
+      2843 (`npm run diag`, `tools/diag/warFronts.ts`, `warGates.ts`): a land front between its
+      sides or not, days since contact, its score, what keeps its peace unsigned (a war with no front
+      ends after 365 days, ADR-480: whether that holds), and why the invasion AI lands no army on
+      the remnants. Then one cause a commit, each measured with `airWar.ts` (a column of wings that
+      rebased added). AT: the 7.26 AT's measure after the last; defensive patrols over home only if
+      the years with a front still fall short.
+      Closed (ADR-519, 2026-10-18): measured (c0), its rules in (ADR-509 to ADR-511, ADR-513,
+      ADR-514, ADR-516); the condition for patrols met (7.26g, taken as 7.26i). The late land war
+      fell no further and came no nearer year 1's (contact 1.42 → 1.5 a day): what is left of its
+      reach (c3b1, c3c) is PLAN 7.29's, not the air war's.
+      A part each (2026-10-18, from c0):
+      - [x] 7.26c0 The measure: `tools/diag/landWar.ts` (per war, daily: frontless, a front and
+        contact, a front and none; weekly the nearest pair of its sides' land formations; how it
+        ended; the invasion AI's gate per nation at war), `tools/diag/armies.ts` (land formations,
+        men, pools; the economic AI's gate for an army order each month), `airWar.ts`'s `rebased`.
+        AT: seeds 2843 and 7919 × 8 years and the critic's files (`docs/evidence/7.26/measure-c.md`):
+        frontless 0–31 % of war-days (ADR-480 holds); from year 2, 76–97 % of the days of wars with
+        a front have no contact; in 39–45 % of the small wars' samples one side has no land
+        formation and its land is hardly taken (Yemen and Saudi Arabia 720 days at 0); the blocs'
+        armies stand a median 1,000 km and more apart, 47–84 % of them moving; the army halves in
+        year 1 and holds; under 5 % of nation-days could land at all.
+      - [x] 7.26c1 The blocs' armies go where the enemy's are: in the big wars (a side of 50 or more
+        land formations) the nearest pair stands over 1,000 km apart in 20–41 % of samples and
+        47–61 % of the formations are moving. Measured first: where the moving formations of the
+        big sides march to (the sector, its threat, km to go, days on the march, re-plans), from a
+        checkpoint. Taken first: the idle wings are the great powers' of these wars (`airWar.ts`
+        `out.byNation`: Germany, Italy, Japan, the Soviet Union). AT: `landWar.ts`: the big wars'
+        contact share of front days (wars with a weekly sample of a side of 50 or more land
+        formations: their `contact` ÷ (`contact` + `noContact`), added to the tool's yearly row,
+        measured before on the same code) up from year 2; `airWar.ts`'s sorties; the pin's entry.
+        Measured (2026-10-18, `tools/diag/marches.ts`, `docs/evidence/7.26/measure-c1.md`): the
+        share before, years 1–8, 0.40/0.27/0.07/0.01/0.04/0.28/0.06/0.11 (2843) and
+        0.48/0.16/0.10/0.05/0.14/0.17/0.06/0.06 (7919). In years 2–5 both sides keep 58–84 % of
+        their men beyond `DEPLOY_RANGE_CELLS` of the war's front; 1–10 % of the enemy's stand within
+        1.5 sectors of it; 95 % of the marches go to sectors with no enemy. A weight on the enemy's
+        men within 30 cells moved nothing (2.6 → 2.4 %, 19.6 → 19.3 %; dropped). Beyond the range,
+        17–32 % of each side's men are of nations with no front cell of their own in the war,
+        standing: the marches from afar and to spare serve only the planner's own front.
+        Closed (ADR-519, 2026-10-18): c1a and c1b in; the contact share rose at c1a (0.12 → 0.19)
+        and drifted after; the AT's "up from year 2" holds against c0's measure, not year 1's.
+        - [x] 7.26c1a A partner's garrisons go to its partners' front: a nation at war with no
+          front cell of its own against an enemy sends formations that stand beyond the range to the
+          empty sectors of its partners' front (the marches from afar, ADR-190, for a partner's
+          sectors). AT: a unit test (a nation with no front of its own, its army idle beyond range
+          of its ally's front, sets out; the ally's own marches unchanged); from the day-900 states
+          (180 days, `.cache/tmp/abc.ts`) and one of day 400: the big wars' contact share, sorties
+          aloft; `landWar.ts` 8 years; the pin's entry. Done (ADR-509): the share, years 2–8 of
+          `landWar.ts`, mean 0.12 → 0.19 (2843) and 0.11 → 0.19 (7919); from the states 2.7 → 3.3,
+          35.1 → 37.6, 19.6 → 21.4, 12.2 → 11.9 %; sorties aloft 16.9 → 19.7 and 14.1 → 14.0.
+        - [x] 7.26c1b The own front's far marches, one a sector a week (9–21 % of the men standing
+          beyond the range): only if c1a leaves the share short.
+          After c1a (2026-10-18, `measure-c1.md` §5): partners' standing garrisons beyond the range
+          31 → 9 % and 22 → 8 % of the big side's men, the own front's 16 %; the contact share rose
+          less, the enemy seldom being on the front. Taken next: c2 (the empty land); c1b after it,
+          and only if the 7.26 AT is still short.
+          After 7.26d (2026-10-18): the AT is short; c1b is taken after c3 and c4.
+          Done (ADR-513, `measure-c1.md` §6): the probe found "one a sector" was not the cause. Of an
+          own-front planner's far men, 40 % cannot reach their empty sectors (the sea, closed
+          ground), 33 % have none (front manned and strong where the enemy is not), 11 % have a
+          partner's: now sent there when no own one is reached. From six states contact neutral
+          (within a point), 130 partner marches in 180 days; 8-year runs 0.078 → 0.096 and 0.153 →
+          0.125; pin bc1316df.
+      - [x] 7.26c2 Land that nobody holds is taken: a side at war whose enemy has no land formation
+        on their front takes its cells. Measured first, from a checkpoint of seed 2843 with Yemen and
+        Saudi Arabia at war (day 2136 on) and seed 7919's Iraq and Saudi Arabia (day 647 on): the
+        operational AI's sectors of the side with the army there, their threat and orders, why its
+        formations do not walk in. AT: a unit test (a nation at war with an enemy with no army
+        beside it takes cells within N days); `landWar.ts` re-run: those wars end on a score, not
+        the stalemate; the pin's entry if it moves.
+        Measured (2026-10-18, `docs/evidence/7.26/measure-c2.md`): the plan's two wars are gone
+        since c1a; seed 7919's Brazil v Paraguay (720 days at 0) stands in. Brazil's formations of
+        130 to 707 men stand at Paraguay's cells and never take one (pressure under `GARRISON`),
+        and they man the sectors its 12,460-man division beyond the range could reach, so the
+        marches from afar never send it. Iraq v Saudi Arabia (2843) lost its front to a third
+        party's conquest; #112 v Saudi Arabia (7919) never had one (c3's).
+        Closed (ADR-519, 2026-10-18): c2a and c2b in; the one-sided wars end on a score (Brazil v
+        Paraguay 0 → 35, Brazil v Bolivia 0 → 17).
+        A part each:
+        - [x] 7.26c2a A formation too small to take a cell (`takeMen`) does not man a sector for the
+          marches from afar. AT: a unit test (a full division beyond the range is sent past sectors
+          held by formations of a few hundred men, and takes a cell); from one state each (365
+          days, `.cache/tmp/abOne.ts`), the one-sided wars' scores; `landWar.ts` 8 years; the pin's
+          entry. Done (ADR-510): from seed 7919's day 1312, Brazil v Paraguay 0 → 35, no other war
+          worse from four states; pin 59fea6f5.
+        - [x] 7.26c2b A nation whose whole army is under `takeMen` takes nothing (seed 2843's Brazil
+          v Bolivia after c2a, 177 days at 0: formations of 38 to 2,617 men, one of 612 resting on
+          its own land 170 days and not refilled). Measured first: in `landWar.ts`'s one-sided wars
+          at a score under 15, the armed side's largest formation and its refills (ADR-435: why a
+          formation at rest is not refilled, the pool, the gold). Then the cause fixed, only if the
+          7.26 AT is still short. AT: the measure in `measure-c2.md`; a unit test of the rule; the
+          pin's entry.
+          Measured (2026-10-18, `measure-c2.md` §7): Brazil spent its army on British Guiana (the
+          2,617-man division encircled, starved at supply 0); of what was left, 612 men at rest and
+          38 at Bolivia's border were refilled by no man in six months, and no division ordered:
+          ADR-437's keep (a division's 1,001 gold over a reserve of 343 to 360, against 1,094 to
+          1,262, about 28 a month saved). Bulgaria v Romania the same gate, but it takes cells. The
+          rule is as decided; the change (refills at war not held for the next order) waits on
+          7.26d. Taken next: 7.26d.
+          After 7.26d (2026-10-18): the fix is last, after c3, c4 and c1b.
+          Done (ADR-514, `measure-c2.md` §8): at war the refills take what is over the reserve,
+          the next order's price not kept. Brazil v Bolivia from day 1655, both rules on this code:
+          score 0 → 17 in 170 days; from six states contact 11.4 → 10.9 %, spawned 250 → 249,
+          sorties 17.4 → 17.9; 8-year runs' contact 0.096 → 0.055 and 0.125 → 0.080; pin e1856b1b.
+      - [x] 7.26c3 The landing per war, not per nation: a nation with a land front in one war plans
+        no landing in its others (30–50 % of nation-days), and colonies have no transports. Only if
+        c1 and c2 leave the 7.26 AT short. AT: `landWar.ts`'s gate counts; the pin's entry.
+        Taken next (7.26d, 2026-10-18): 59 % of the short years' out-of-range wings have no base
+        of their side in range of any enemy, the overseas powers' first.
+        Closed (ADR-519, 2026-10-18): c3a in (ADR-511), c3b measured and not built (ADR-516); the
+        great powers' own transports were the cause (7.26h, h1, h2). c3b1 and c3c moved to 7.29.
+        A part each (2026-10-18):
+        - [x] 7.26c3a The landing per war: a nation with a front in one war may land in a war in
+          which it has none. Measured first, no rule changed: `landWar.ts`, for each fronted
+          nation-day, the gate it would meet per war (`perWar`) and per enemy (`perEnemy`), and the
+          nations that would load or send. Then the rule, only if `perWar` reaches `atPort` or
+          `send` on enough nation-days to matter. AT: the measure in
+          `docs/evidence/7.26/measure-c3.md`; a unit test (a nation fronted in one war lands in its
+          other; with the one war only, none); `landWar.ts`'s gates and `airWar.ts` re-run; the
+          pin's entry. Done (ADR-511): per war, with the formations beyond the range of the own
+          front on their land; from nine states embarks 25 → 29; `airWar.ts` 8 years, years 2–8
+          sorties aloft 16.7 → 18.2 and 13.2 → 15.0; the big wars' contact share fell on both
+          seeds' 8-year runs (0.164 → 0.131, 0.158 → 0.084), not on the states but one; pin
+          5274b933.
+        - [x] 7.26c3b The colonies' and small members' landings (no transport group at a port of
+          their own: 60–90 % of the unfronted nation-days). Measured first: whether a partner's
+          transports could carry them. Only if c3a leaves the AT short.
+          After c3a (2026-10-18): waits on 7.26e; c4 is next (7.26d's order).
+          After 7.26e (2026-10-18): taken after 7.26f; 63 % of the short years' out-of-range wings
+          have no base of their side near any enemy (the US, Japan, Germany, the Netherlands).
+          From c1b (2026-10-18, `measure-c1.md` §6): 40 % of the far men of planners with a front of
+          their own stand for want of a way to it (16 % across the sea: Japan, Britain, France; 24 %
+          on their landmass behind closed ground or the sea: Italy to Africa, the Soviet Union, the
+          Raj). A lift by sea to the own front, not only a landing on the enemy, would serve them.
+          Measured (2026-10-18, `measure-c3.md` §5, `landWar.ts`'s `partner` columns): in years 2–8
+          a partner's transports, standing at a port of the partner's or the nation's with net room
+          for its smallest free formation on that port's land and an enemy port open, on 475–2,657
+          nation-days a year (2.5 to 150 times the days any nation loads or sends its own); 50–86 %
+          of the `noTransport` days have no free formation at all. Who: the British and French
+          blocs' colonies; Germany by Albania and Japan. Of `here`, 0–91 % land near an airbase.
+          Done (ADR-516, `measure-c3.md` §5a): a formation of the nation stood at the partner's
+          port on 2 of those days in 16 seed-years; every other is a march to a port first, a median
+          42–347 cells (Africa and Eurasia are one land), of the kind §2 found seldom ends aboard.
+          The rule not built; taken up again only if 7.26g is short, with the partner's transports
+          sent to the nation's port rather than its men to the partner's.
+          After 7.26g (2026-10-18): short; taken on 7.26h's evidence, under 7.26j.
+          Moved to PLAN 7.29a (ADR-519, 2026-10-18).
+      - [x] 7.26c3c The lift by sea to a nation's own front (from 7.26c1b, `measure-c1.md` §6: 16 %
+        of own-front planners' far men across the sea, Japan, Britain, France; 24 % behind closed
+        ground or the sea on their landmass): not measured by c3b's columns. Moved to PLAN 7.29b
+        (ADR-519, 2026-10-18), its text there; nothing done under 7.26.
+      - [x] 7.26c4 The rebase over more than one hop: in 7.26d's short war-years 36 % of the wings
+        out of range have a base of their side with room within range of an enemy, a tenth of
+        them within one ferry hop (`freeInFerry`, 3 % of all out of range); 1.6 wings rebase a day of 54. Measured first: whether
+        a wing whose goal base lies beyond `FERRY_RANGE` moves toward it day by day or stays, from a
+        checkpoint. AT: a unit test (a wing two hops from a base in range of the enemy reaches it
+        and is tasked); `airWar.ts` on seeds 2843 and 7919; the pin's entry if it moves.
+        Done (ADR-512, `docs/evidence/7.26/measure-c4.md`): of 114 such wings on six states, 91 have
+        no chain of the side's bases within ferry hops (the sea), 23 a chain of 2–5 hops, and 17 of
+        those sat (no base within a hop nearer the goal). Now a wing on a chain hops to fewer hops
+        left, or as many and nearer the goal. From the six states sorties aloft 17.19 → 17.33;
+        `airWar.ts` 8 years 18.2 → 16.2 and 15.0 → 12.8 (one run each, diverging); pin 63d9b3b5.
+    - [x] 7.26d The AT of 7.26 on 10 seeds × 30 years, after 7.26c; what is short split again.
+      (2026-10-18: taken before the open c-parts, c1b, c2b's fix and c3, which wait on it.)
+      Done (2026-10-18, `docs/evidence/7.26/measure-d.md`, `tools/diag/airAt.ts`): seeds 1–10 on
+      `edd105e`: 0 of 10 pass, as before (the critic's run 8, 0 of 10). The late air war about
+      doubled (years 2–10 mean aloft 5–11 → 13–20; air battles about 7 ×), but year 1 rose alike
+      (29–39 → 39–52) and with it the bar; the late years hold 0.2–0.4 of year 1. In the 273 short
+      war-years, 54 of 73 wings at war have no enemy land formation in range, and land formations in
+      contact are 1.2 a day against 32 in year 1. Of those out of range: 59 % no base of their side
+      in range of any enemy (the US, Japan, Germany, Italy, Britain first), 36 % such a base free,
+      a tenth of them within one hop (3 % of all out of range). The order of what waits: c3, then c4 (new), then c1b, c2b's
+      fix last; then 7.26e.
+    - [x] 7.26e The AT of 7.26 re-measured (`airWar.ts` seeds 1–10 × 30 years, judged by
+      `tools/diag/airAt.ts`) after the parts 7.26d ordered; what is short split again.
+      To read against c3a (ADR-511): from the probes, every landing it added went through the
+      `atPort` gate (Japan); its far marches to a port (`send`) were re-ordered or still on the
+      way after 30 days, and the big wars' land contact fell on both 8-year runs. If the AT is
+      still short and the contact down on more seeds, question the `send` path for a nation with
+      a front first, not the per-war gate.
+      To read against c4 (ADR-512): from six states neutral (sorties aloft 17.19 → 17.33), but both
+      8-year runs fell (18.2 → 16.2, 15.0 → 12.8). If the ten seeds fall below 7.26d's, test first
+      whether a wing on a chain should still take a base within a hop nearer its goal in km with more
+      hops left (the old step took it; ADR-512 does not), then c3a.
+      To read against c1b (ADR-513): neutral from six states; the 8-year runs went both ways (contact
+      0.078 → 0.096 and 0.153 → 0.125, sorties aloft 16.2 → 17.5 and 12.8 → 16.6). If the AT is
+      still short, c1b is not the first question: c3b's lift by sea to the own front is the larger
+      share of the standing men.
+      To read against c2b (ADR-514): neutral from six states (contact 11.4 → 10.9 %), but both
+      8-year runs' contact fell (0.096 → 0.055, 0.125 → 0.080), and seed 7321's Soviet Union raised
+      9 divisions in 10 years against 21, its surplus in refilled men's upkeep. If the ten seeds'
+      contact falls below 7.26d's, test first the keep at war only while the order is within a few
+      months of the treasury's growth (not the balance's: Brazil's gold grew 28 on +30 to +54).
+      Done (2026-10-18, `docs/evidence/7.26/measure-e.md`): seeds 1–10 on `80bcc74`: 0 of 10 pass,
+      as at 7.26d. Year 1 held (mean 48.7 → 47.4); the late air war fell (years 2–10 mean aloft
+      15.8 → 14.9, years 21–30 9.8 → 7.3 on 8 of 10, their air battles 14,664 → 7,524), rebases up
+      (1.6 → 2.0 a day) and missions down (11.8 → 10.5), while land contact held (years 2–30 1.42 →
+      1.36 a day, 5 seeds up, 5 down). So c4's question is first; c2b's and c3a's are not taken
+      (the contact did not fall). Of the short years' out-of-range wings 63 % have no base of their
+      side near any enemy (59 % at 7.26d): c3b before anything of c1b's. Next: 7.26f, c3b, 7.26g.
+    - [x] 7.26f Which of c3a, c4, c1b and c2b lowered the late air war (7.26e: years 21–30 sorties
+      aloft 9.8 → 7.3 on 8 of 10 seeds while land contact held): each rule's old behaviour behind a
+      switch for the runs only, and 30-year runs from 1938 with one switch off each (4 × seeds 1, 5
+      and 7, the largest falls: 12 runs side by side, about 15 minutes), judged by `airAt.ts` and
+      `.cache/tmp/cmp726e.ts` against `.cache/726e/`. Not from saved states first: c4, c1b and
+      c2b each read neutral from six saved states while the long runs fell (the effect builds from
+      year 1). c4's switch also tries the old step's variant (a wing on a chain takes a base within
+      a hop nearer its goal in km with more hops left). Sorties aloft, missions, rebases. AT: the rule found restored or changed in its own commit, with a unit test; the
+      A/B's figures in `docs/evidence/7.26/measure-f.md`; the pin's entry if it moves. If no rule
+      of the four accounts for it, the late years' cause measured again and split.
+      Done (ADR-515, `docs/evidence/7.26/measure-f.md`): c4 (ADR-512). With it off, years 21–30
+      sorties aloft up on 8 of 10 seeds, level on 2, down on none (7.24 → 9.52; 7.26d 9.8), air
+      battles 7,524 → 10,207; c1b off up 6, down 4. The switches checked first: all off gave
+      7.26d's hashes, all on 7.26e's. ADR-512 taken back (the old step); pin c9f5962b.
+    - [x] 7.26g The AT of 7.26 re-measured (as 7.26e, seeds 1–10 × 30 years) after 7.26f and
+      c3b; what is short split again.
+      To read against c3b (ADR-516, `.cache/c3b/landWar2_*.json` `gateNations`, the top ten only):
+      great powers stopped at `noTransport` for whole years (no group of their own standing at a
+      port they hold): Germany 334–365 days in years 3, 7 and 8 of seed 2843, Britain in years 2
+      and 5 of 7919, the Netherlands in year 6 of both. If 7.26g is short on their wings, measure
+      first where their transports are (under way, on patrol, sunk, at a port lost), not a
+      partner's ships. ADR-516's "seldom end aboard" stands on §2's fronted nations; an unfronted
+      nation's own `send` orders were not measured.
+      Done (2026-10-18, `docs/evidence/7.26/measure-g.md`): seeds 1–10 on `6d1f727`, every year's
+      hash equal to 7.26f's c4-off runs. 0 of 10 pass, as at 7.26e. Year 1 46.6 (47.4); years 2–10
+      14.8 (14.9), years 21–30 9.5 (7.2), their air battles 7,524 → 10,207. The years with land
+      contact fall short too (mean contact 5 or more: 14 of 19 under the bar, median 0.40 of year 1;
+      no late year has two-thirds of year 1's 29.9), so 7.26c's condition for patrols over home is
+      met. Of the short years' out-of-range wings 58 % no base of their side near any enemy (the
+      US, Japan, Britain, Germany, the Netherlands). Next: 7.26h, 7.26i, then 7.26j.
+    - [x] 7.26h Where the great powers' own transports are (7.26g's reading of c3b): on the
+      nation-days Germany, Britain, the Netherlands, the US and Japan stop at `noTransport` in a war
+      with no front of theirs, each of their transport groups' state (at a port of theirs, under
+      way and where to, on patrol, sunk, at a port lost) and their free formations by land.
+      Measured, no rule: seeds 2843 and 7919 × 8 years (`landWar.ts` or a tool beside it). AT: the
+      measure in `docs/evidence/7.26/measure-h.md`; the cause split into a part if one is found.
+      Done (2026-10-18, `tools/diag/transports.ts`): two causes. A group that has landed its men
+      stands at the landing's water until peace (the naval AI moves only fleets with power and
+      submarines): seed 7919's Britain, its four 1938 groups at one cell for up to 1,878 days, all
+      1,314 of its days; Germany's up to 752. No group at all on 93 % (2843) and 59 % (7919) of the
+      days: the Netherlands never has one; Germany's and Britain's are built and sunk; a front in
+      another war bars the build on 31 % and 4 % of them, the rest have no front and a full
+      treasury. Free formations stand on a land with an own port. Split: 7.26h1, 7.26h2.
+    - [x] 7.26h1 Transports home after a landing (7.26h's cause 1): at war, a transport group with no
+      men aboard, standing (not under way, in no battle) away from every port of its bloc, sails home
+      (`sailHome`), in the naval AI's daily plan beside the warfleets'. AT: a unit test (a group left
+      at a landing's water in a war sails for an own port within a day of its nation's turn; one with
+      men aboard stays); `transports.ts` re-run on seeds 2843 and 7919: `awayHome` days down; the pin's
+      entry.
+      Done (2026-10-18, ADR-517, `docs/evidence/7.26/measure-h1.md`): `awayHome` group-days 6,227 →
+      10 on the two seeds; pin c451b4aa. The way home weighs no enemy sea: seed 7919's Britain's four
+      groups sent home in year 2 are sunk in year 3 (Japan two), and none is built after (7.26h2).
+    - [x] 7.26h2 The transport group that is never built (7.26h's cause 2): on the days a nation in a
+      frontless war has no group, which of `economic.ts`'s fleet-slot conditions stops the order (a
+      ship in the yards, the navy's upkeep at `NAVY_SHARE` of income or more, no `mix.fleets`, the
+      price and reserve, `hasFront` of any war while the landing is per war since ADR-511). Measured
+      first (`transports.ts`, the same seeds), then the rule chosen and recorded. AT: the measure in
+      `docs/evidence/7.26/measure-h2.md`; a unit test of the rule; the pin's entry.
+      Done (2026-10-18, ADR-518, `docs/evidence/7.26/measure-h2.md`): the conditions stack (Britain:
+      the navy's share on 64 of 64 months, a front in another war on 62, the price on 41); the
+      Netherlands a poor remnant (by design). A/B: only a transport bought as 2b's bomber orders
+      Britain's. Step 2c (`wantsTransport`): per war, outside the navy's share, a month of reserve,
+      a free formation on a land with an own port and an enemy port. Britain's `noTransport` days
+      1,383 → 513 and 551 → 208; the world's transport orders 20 → 21 and 20 → 15. Pin c3bd280a.
+      Britain's new groups are sunk too (the way home, 7.26j's first question).
+    - [x] 7.26i Patrols over home (7.26c's condition met by 7.26g): a wing of a nation at war with
+      no enemy land formation in range patrols over its own land within reach of an enemy airbase
+      or fleet. Measured first: of the short years' idle wings, how many stand within reach of an
+      enemy base or fleet, and how often an enemy sortie comes there. Then the rule only if the
+      measure finds enough wings with an enemy in reach; recorded in DECISIONS (AoC has no air war;
+      the patrol must meet enemies the sim has, not fly for the count). AT: a unit test; from six
+      states, sorties aloft and air battles; the pin's entry.
+      For ADR-519's share (2026-10-18): today it is `mission ÷ (mission + inRange)` of `airWar.ts`'s
+      columns, which holds while every mission is at a wing with an enemy land formation in range
+      (ADR-377). A patrol over home breaks that, so 7.26i's first commit adds to `airWar.ts` a
+      column of the wings at war with an enemy land formation in range, mission or not, and the
+      patrols over home as their own count; `airAt.ts` reads the share from them, and from the old
+      columns on 7.26g's files. The ten war-years under 3 aloft on `6d1f727` (seeds 1, 3, 4, 6, 10)
+      each have 59–200 wings of 10–21 nations at war, nearly all out of range: 7.26i's case, not
+      years without an air force.
+      Done (2026-10-18, ADR-520, `docs/evidence/7.26/measure-i.md`): no rule. `airWar.ts` counts
+      `enemyNear`, `enemyNearTasked`, `homePatrol` and the idle fighters' reach (`a75e6c6`); on
+      seeds 1, 3, 4, 6, 10 × 30 years an enemy sortie anywhere in an idle fighter's range on 4.6 %
+      of its days (0.4 % in the years under 3 aloft), an enemy base 3.3 %, a fleet 7.1 %: a patrol
+      over home would fly for the count. Pin unchanged.
+    - [x] 7.26j The AT of 7.26 re-measured (as 7.26g, seeds 1–10 × 30 years) after 7.26h1, 7.26h2
+      and 7.26i, against ADR-519's AT. First commit: `tools/diag/airAt.ts` judges that AT (the
+      share with a mission of the wings at war with an enemy in range, half or more in every
+      war-year; mean sorties aloft 3 or more in every war-year; each on 8 of 10 seeds; the ratio to
+      year 1 and the air battles of years 21–30 against 1–10 printed, not judged), run on 7.26g's
+      files (`.cache/726g/`) for the before: 8 of 10 and 5 of 10. Then the runs. AT:
+      `docs/evidence/7.26/measure-j.md`; the pin's entry if 7.26i's rule moved it. 7.26 closes
+      here whatever it reads (ADR-519): what is short is recorded in `measure-j.md` for the
+      critic's run (PROMPT 2a), not split under 7.26. c3b1 and c3c are 7.29's.
+      To read against 7.26h1 (ADR-517): transport groups sent home are sunk on the way (seed 7919's
+      Britain, all four in year 3); if the ten seeds' landings fall, a way home that keeps off the
+      enemy's sea is the first question.
+      To read against 7.26h2 (ADR-518): the transport's want counts free formations near the
+      nation's own front, which the invasion AI does not board; if the landings do not rise with
+      the `noTransport` days falling, that is the next question.
+      To read against 7.26i (ADR-520, `measure-i.md`): on HEAD the share dips under half in a
+      war-year on 4 of 5 seeds (lowest 0.35–0.48; 8–23 wings in range a day, about half untasked);
+      if the ten seeds' share is short, which roles stand untasked with an enemy in range is the
+      first question.
+      Done (2026-10-18, `docs/evidence/7.26/measure-j.md`, `e53cb1b`): seeds 1–10 on `1f6aa2d`,
+      short. (a) the share 4 of 10 on ADR-519's columns (6 of 10 on the old share, 8 at 7.26g:
+      two seeds the ruler, two the code or the run); (b) the floor 7 of 10 (5 at 7.26g). 7.26
+      closes (ADR-519 §2). Left for the critic: which roles stand untasked in the share's 12 short
+      war-years (not measured); the floor's 11 short war-years, 8 of them seed 10's, have 0.2–2.3
+      wings in range a day (reach, 7.29). Pin unchanged c3bd280a.

@@ -19087,3 +19087,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Decided** (ADR-520): no patrol over home; it would fly for the count. Pin unchanged c3bd280a.
 - **For 7.26j:** the share on HEAD dips under half on 4 of 5 seeds (lowest 0.35–0.48).
 - **Next:** PLAN 7.26j.
+
+## 2026-10-18 — PLAN 7.26j: the 7.26 AT of ADR-519 re-measured; 7.26 closed
+
+- **Start:** gate green on `1f6aa2d`; critic not due.
+- **Tooling** (`e53cb1b`): `tools/diag/airAt.ts` judges ADR-519's AT ((a) the share of wings at
+  war with an enemy land formation in range holding a mission, half or more in every war-year;
+  (b) mean aloft 3 or more in every war-year; each on 8 of 10 seeds), the old share printed beside
+  it. On 7.26g's files: 8 of 10 (old share) and 5 of 10, as PLAN said.
+- **Measured** (`docs/evidence/7.26/measure-j.md`, seeds 1–10 × 30 years on `1f6aa2d`,
+  `.cache/726j/`, ten side by side, about 17 minutes): short. (a) 4 of 10 on ADR-519's columns,
+  6 of 10 on the old share (8 at 7.26g); (b) 7 of 10 (5 at 7.26g). Year 1 46.6 → 48.6 aloft,
+  years 21–30 9.5 → 8.5, land contact years 2–30 1.49 → 1.45 a day.
+- **Closed** (ADR-519 §2): 7.26 ticks whatever it reads. Left for the critic: which roles stand
+  untasked in the share's 12 short war-years (no role split in `airWar.ts`; not measured); the
+  floor's 11 short war-years (8 of seed 10) have 0.2–2.3 wings a day with an enemy in range
+  (reach: PLAN 7.29).
+- **Docs and tools only:** no sim change; pin c3bd280a.
+- **Next:** PLAN 7.27.
