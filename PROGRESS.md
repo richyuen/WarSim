@@ -18202,3 +18202,9 @@ No rule changed and nothing on screen changed. One task came out of it.
   `individuals1938`, `muzzles1938`, `seamItems1938`, `smallMark1938`, `tags1938`, `tankBattle1938`,
   `tankSides1938`, `turrets1938`, `canvasOpaque1938`.
 - **Next:** PLAN 7.21b (the two sides' colour at 25 m/px).
+- **7.21a, after the commit:** the frame's cost in the critic's case, live at x1 (`.cache/p721/p4.mjs`:
+  `draw` and `gl.finish`, median and 90th of 60): 25 m/px, 4,022 figures, 0.8 and 1.1 ms; 10 m/px,
+  2,540 figures, 0.8 and 1.0 ms; the same on the code before 7.21a (the larger men cost nothing
+  measurable here). The critic's own script run again (`probe.mjs`, live, ground occupied): at 10
+  m/px the German ranks light grey on the grey-green ground; at 25 m/px both sides' blocks dark
+  grey and dark brown, as the measure of 7.21b is to take (on occupied ground, or live).
