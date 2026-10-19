@@ -139,7 +139,9 @@ added without code changes.
   Never write a task's text back from there, never
   delete a first line (the gate and `npm run critic:due` read the ticks),
   and never edit that section or `docs/PLAN_DONE.md` by hand. What a done task leaves to be
-  done goes under the open task that will do it, not into the done one.
+  done goes under the open task that will do it, not into the done one: as a numbered task of
+  its own or a part within the depth cap (KEEPING ITERATIONS SHORT, ADR-554), never a deeper
+  part of the task that found it.
 - `PROGRESS.md`: append-only log: what you did, learned, gotchas.
 - `BLOCKERS.md`: what you're stuck on and what you tried.
 - `DECISIONS.md`: key technical and design decisions and why, including every
@@ -173,7 +175,13 @@ added without code changes.
     has been ticked in PLAN.md since the report (`npm run critic:due` checks
     these two), or you believe the DONE CONDITION is otherwise met, then
     running the critic is this iteration's only task: commit any pending
-    work first, spawn the `critic` subagent (Agent tool, subagent_type
+    work first; run `npm run check:review` (the unit and e2e suites in
+    full, resumable after a cut-off; a test red twice is fixed first, step
+    2's way, or goes on `tools/gate/knownRed.json` with a BLOCKERS entry
+    when the machine and not the code is its cause; added 2026-10-19,
+    ADR-554, the user's decision: Phase 7 has no phase review, so this is
+    the run those entries wait for); then spawn the `critic` subagent
+    (Agent tool, subagent_type
     `critic`) with no hints about what to look at, wait for it to finish,
     and check that `critic/CRITIC_REPORT.json` now names HEAD. Append one
     line to PROGRESS.md with the scores and blocking count. Then add a
@@ -206,7 +214,8 @@ added without code changes.
     do not dispute it, do not fix it, and take the next blocking issue. A
     crash, a desync or a mechanism that plainly does not work is not balance:
     fix it.
-3. Pick the first unchecked PLAN.md task (or split it if too large).
+3. Pick the first unchecked PLAN.md task (or split it if too large, within
+   the depth cap of KEEPING ITERATIONS SHORT).
 4. Implement it fully. No stubs, no TODO placeholders, no faked features.
 5. Verify for real: run tests; start the dev server; use Playwright to load
    the game, exercise the feature, take screenshots at multiple zoom levels,
@@ -220,14 +229,21 @@ added without code changes.
    section, in the same commit. Push every commit
    (`git push`; added 2026-10-05, ADR-107, the user's decision): a push to
    `main` builds the game and puts it on GitHub Pages.
-8. If a task fails 3 attempts, write it to BLOCKERS.md with details and move
-   on.
+8. If a task fails 3 attempts, or its run misses its AT's bar (KEEPING
+   ITERATIONS SHORT, ADR-554), write it to BLOCKERS.md with details (the
+   bar, what moved, what is left) and move on.
 9. One review pass a phase, at its end: the phase review (4.8, 5.8, 6.9, ...)
    is a comprehensive pass over the whole phase: refactor debt, delete dead
    code, re-read SPEC.md for drift, add missing tests, besides its own items.
    No review pass between (changed 2026-10-11, ADR-266, the user's decision:
    before, one came every ~5 numbered tasks, ADR-74's count). A task that
    comes out of the review belongs to the phase it reviews.
+10. The iteration's last message to the user starts with every decision
+    that waits on the user (an open BLOCKERS entry that waits on one, an ADR
+    marked proposed as the user's decision), one line each with the ADR's
+    number and the options, before the iteration's report; or says in one
+    line that none waits (added 2026-10-19, ADR-554, the user's decision:
+    ADR-525 waited a day, told in BLOCKERS alone).
 
 # KEEPING ITERATIONS SHORT
 
@@ -252,6 +268,28 @@ on simulation runs (DECISIONS ADR-48).
   (the sweep with nukes on) and in Phase 7.
 - One cause per commit. When a task or a critic finding has several causes,
   split it in PLAN.md and fix, gate and commit them one at a time.
+- An acceptance test names a number and a stop (added 2026-10-19, ADR-554,
+  the user's decision). "Measured, before and after" is a measure, not a
+  test: the AT says the figure, the bar it must reach (or the case that
+  must hold) and the run that reads it. A task whose run misses its bar is
+  not split again for the cause the run found: it gets a BLOCKERS entry
+  (the bar, what moved, what is left; step 8) and the loop takes the next
+  task. The cause found goes to PLAN.md as a numbered task with an AT of
+  its own, where the user sees it. A task that only measures ("measured
+  first") is a part whose parent holds the number, never a task of its own.
+- A task is split at most twice (ADR-554): a numbered task has parts
+  (7.35a), a part has parts (7.35a1), and no deeper. A third split means
+  the numbered task was mis-scoped: close it under the bullet above and
+  file what is left as a numbered task. The parts deeper than that on
+  2026-10-19 (PLAN 7.35d3b, 7.35d3c) are finished as they stand or closed
+  so; none of them is split again.
+- A dimension task (one step 2a files for a score under its bar, ADR-486)
+  has a budget of 20 commits, counted by the task's number in the commit
+  subjects, the critic's named cases taken first (ADR-554). At the budget
+  the loop writes in PROGRESS.md what moved against the critic's evidence,
+  case by case, closes the task (ticked if its AT holds, else step 8) and
+  takes the next; what is left waits for the next report, which judges it.
+  PLAN 7.35 is at 36 on this date: 7.35d3b and 7.35d3c are its last parts.
 - Tune on small runs. `npm run sweep:quick` (10 seeds × 20 years, report in
   `.cache/`; seeds run side by side, and three seeds cannot tell a rule from
   noise) while changing rules or constants. It is judged by the limits only

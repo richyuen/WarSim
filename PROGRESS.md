@@ -20148,3 +20148,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - No rule, no test: the pin unchanged.
 - **Next:** PLAN 7.35d3b (the gold, traced: the army's orders take the same reserve test at a lower
   price, first).
+
+## 2026-10-19 — The loop's rules (ADR-554, the user's decision): an AT with a bar, a depth cap, a budget per dimension task, the user's decisions first, `check:review` before the critic
+
+- **Asked:** "Analyze the loop for changes or improvements. Also, are we making progress on open
+  tasks, or do we just keep going down rabbit holes?" Read: the critic's scores over runs 4 to 9,
+  the commits a cycle (697, 507, 420, 391, 198, 168), PLAN 7.35's 36 commits in seven hours (9
+  with a rule; the late sea battles 1.9 → 2.5 a world-year against year 1's 35), Phase 7's
+  nesting (139 of 339 lines three or more letters deep), stats 7 → 6 unseen between runs, the
+  entries left "to the next phase review" Phase 7 has not, ADR-525 waiting a day in BLOCKERS.
+- **Changed** (PROMPT.md, PLAN.md's rules line, CLAUDE.md): an AT names a number and a stop, a
+  miss is a BLOCKERS entry and the next task, the cause found a numbered task; a task is split at
+  most twice; a dimension task has 20 commits; the iteration's last message starts with what
+  waits on the user; `npm run check:review` before each critic run. PLAN 7.35 ends after 7.35d3c.
+- **Waits on the user:** ADR-525 (PLAN 7.30's bar: a. re-scope to 0.75, recommended; b. a
+  `pocketOf` rule). Whether the critic runs now on HEAD, before 7.35d3b.
+- **Next:** PLAN 7.35d3b, under the new rules; or the critic, if the user asks.

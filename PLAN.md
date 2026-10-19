@@ -1,7 +1,9 @@
 # WarSim — Phased Plan
 
 Rules: each task is small and verifiable. `AT:` is the acceptance test that must
-pass before ticking. Work top-down, and split a task if it grows past one iteration.
+pass before ticking; it names a number and a stop (a figure, its bar, the run that reads it;
+ADR-554). Work top-down, and split a task if it grows past one iteration, at most twice (7.35a,
+7.35a1, no deeper); a dimension task has 20 commits (PROMPT "KEEPING ITERATIONS SHORT").
 "Gate" = the full suite (tsc, eslint, vitest, build, parity) passes.
 Balance sweeps are suspended until phases 2–6 are complete (ADR-58, PROMPT "KEEPING ITERATIONS
 SHORT"): no sweep after a rule change. Each of those phases ends with a review that runs one

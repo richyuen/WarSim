@@ -167,6 +167,52 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-554 · 2026-10-19 · accepted (the user's decision) — A task ends at its number: an AT with a bar, a depth cap, a budget per dimension task, the user's decisions first, `check:review` before the critic
+
+- **Context.** The user's question, "are we making progress on open tasks, or do we just keep
+  going down rabbit holes?", read against the critic's scores and the log. Runs 4 to 8 took every
+  parity dimension to 7 and AI nuclear use 0 → 6 (697, 507, 420, 391 and 198 commits a cycle);
+  run 8 → 9 (168 commits) moved the net score one point (tanks +1, nukes +1, stats −1). Naval has
+  read 4, 5, 6, 5, 6, 6 over six runs and aircraft 5 or 6 over four; both need 8. PLAN 7.35 took
+  36 commits in seven hours, 9 of them with a rule: its three named findings (a carrier's battle's
+  row, the Pacific fleets meeting, the ships' size at 20 m/px) were done by the fifteenth, and the
+  rest is 7.35d, "the late sea battles measured, before and after", an AT with no number to reach
+  and no stop, so each after-run filed the cause it found one letter deeper (to 7.35d2d3c, five
+  deep) while the late battles moved 1.9 → 2.5 a world-year against year 1's 35. 139 of Phase 7's
+  339 task lines are three or more letters deep. Stats fell 7 → 6 between runs 8 and 9 with
+  nothing between them to catch it; the red `godUi1938` test and the e2e suite in full are "left
+  to the next phase review", which Phase 7 has not. ADR-525 waited on the user for a day, told in
+  BLOCKERS alone.
+- **Decision.** PROMPT.md from this date (its KEEPING ITERATIONS SHORT bullets and steps 2a, 3,
+  8 and 10; PLAN.md's rules line; CLAUDE.md's `check:review` line):
+  - a. An acceptance test names a number and a stop: the figure, the bar it must reach (or the
+    case that must hold) and the run that reads it. A task whose run misses its bar is not split
+    again for the cause the run found: a BLOCKERS entry (the bar, what moved, what is left) and
+    the next task; the cause goes to PLAN.md as a numbered task with an AT of its own. A task that
+    only measures is a part whose parent holds the number.
+  - b. A task is split at most twice (7.35a, 7.35a1). A third split means the numbered task was
+    mis-scoped: close it under (a) and file what is left as a numbered task. PLAN 7.35d3b and
+    7.35d3c, already deeper, are finished as they stand or closed under (a); neither is split.
+  - c. A dimension task (ADR-486's) has 20 commits, counted by its number in the subjects, the
+    critic's named cases first. At the budget: PROGRESS says what moved against the critic's
+    evidence, case by case; the task closes (ticked if its AT holds, else (a)); the next report
+    judges the rest. PLAN 7.35 is at 36: d3b and d3c are its last parts.
+  - d. The iteration's last message starts with every decision that waits on the user (an open
+    BLOCKERS entry that does, an ADR proposed as the user's decision), the ADR and its options in
+    a line each, or says none does.
+  - e. Before each critic run, `npm run check:review`: a test red twice is fixed first (step 2's
+    way) or goes on `knownRed.json` with its BLOCKERS entry when the machine is its cause.
+- **Why.** The loop's returns fell from about thirteen score points a cycle (run 7 → 8) to one
+  (8 → 9) as its work went into open-ended measures under one task. A number and a stop make a
+  miss visible to the user as a decision rather than a deeper letter; the cap and the budget bound
+  a task by its scope, not by what its runs find; (d) puts the loop's open decisions where the
+  user reads; (e) gives the full suites a date in a phase with no review.
+- **Consequences.** PLAN 7.35 ends after d3c, whatever `seaYears` then reads; the next critic run
+  judges naval. The next critic run is preceded by `check:review` (hours), which gives the open
+  BLOCKERS entries that wait on "the next phase review" their run. Open tasks keep their ATs as
+  written; new ones are written under (a). The critic's run itself, as the user's ask at any time,
+  is unchanged (ADR-59).
+
 ### ADR-553 · 2026-10-19 · accepted — A fleet's home port is one its nation's ships reach: none behind a passage shut to it (PLAN 7.35d2d3a; amends ADR-552, ADR-545, ADR-261)
 
 - **Context.** Critic run 9, naval 6. ADR-552 left `nearestOwnPort` (`sailHome`, and through it

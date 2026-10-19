@@ -48,7 +48,8 @@ There is no memory between sessions. Read these files:
 - `npm run check:review`: a phase review's full run, before its tick (ADR-297): every stage on
   its own, a failed test again alone, resumable (run it again after a cut-off); green when every
   test red twice is on `tools/gate/knownRed.json`. The tick's commit then runs parity alone. A
-  test goes on that list only with a BLOCKERS entry for it.
+  test goes on that list only with a BLOCKERS entry for it. Also run before each critic run
+  (PROMPT step 2a, ADR-554): Phase 7 has no phase review.
 - `npm run typecheck`: `src/`, `tools/` and `tests/` (a bare `tsc --noEmit -p .` skips `tests/`; a
   type error in a spec then shows only as Playwright's "webServer was not able to start").
 - `npm run plan:archive`: after a tick, moves the done tasks and parts of `PLAN.md` to
