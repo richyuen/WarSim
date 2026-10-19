@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-551 · 2026-10-19 · accepted — A sortie's target, an away fleet's new order and a forward base's targets are of the fleet's basin (PLAN 7.35d2d1; amends ADR-270, ADR-543, ADR-549)
+
+- **Context.** Critic run 9, naval 6. PLAN 7.35d2a (`docs/evidence/7.35/measure-d.md` §3): a
+  sortie's target had no basin test (ADR-546 gave one to the stage only). By the straight line a
+  port on a lake or across land may be the nearest enemy port: the US Atlantic fleets at war with
+  Canada are sent for Hamilton and Toronto on Lake Ontario. `orderSail` refuses the way (`NoSeaWay`),
+  and the fleet stands, sent again on its next AI day. At `70391c4`, 2,613 of the 3,299 refused
+  orders of the late sea pairs (14 seeds × 6 years, years 2–6) had their target in another basin.
+- **Decision.** Each enemy port's target carries its basin (`basinOf`, `|| ocean` as a hunt's). In
+  `plan`'s sortie from port and in `awayOrder` a target of another basin than the fleet's
+  (`basinAt`) is passed over: not taken, not in reach (so a fleet with only such ports in reach
+  stages, ADR-543), no station. `forwardBases` counts only targets of the base's basin, or a fleet
+  would stage to a base with nothing to sortie for and stand there.
+- **Measured** (`tools/diag/seaHold.ts`, `measure-d.md` §6): the refusals across land 2,613 → 0;
+  the refused orders 3,299 → 2,977, the rest all through a passage shut to the fleet (686 → 2,977;
+  the worlds part, and seed 1471 carries 2,304 of them: British fleets in the Aegean sent for Bursa
+  behind the Dardanelles, PLAN 7.35d2d2). No refusal found no way at all.
+- **Pin** unchanged (babcd48d): on seed 99's first year no fleet's target lies across land. navalAi
+  0.0457 ms a tick (0.0434 before; seed 99, one year, `--profile`, a run 5 % slower throughout).
+
 ### ADR-550 · 2026-10-19 · accepted — A standing enemy warfleet in reach is a target, not only an enemy port (PLAN 7.35d2c; amends ADR-270, ADR-549)
 
 - **Context.** Critic run 9, naval 6. PLAN 7.35d2a (`docs/evidence/7.35/measure-d.md` §3): of the

@@ -304,6 +304,42 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     process.stderr.write(`CAN–CUB: ${fleets.length} fleets staged for ${[...new Set(to)].join(', ')}\n`);
   });
 
+  it('the United States at war with Canada: its fleets whose nearest Canadian port is on the Great Lakes sail for one of their own basin (PLAN 7.35d2d)', () => {
+    const s = new Sim({ scenario: '1938', seed: 4611, assets: assets1938(W) });
+    const w = s.world;
+    const c = w.formations.cols;
+    const USA = id('USA');
+    const CAN = id('CAN');
+    expect(declareWar(w, USA, CAN, true)).not.toBeNull();
+    w.nations.cols.aiOff[CAN] = 1;
+    const { basin } = basinOf(w);
+    const z = seaOf(w);
+    const water = portSeaOf(w);
+    const enemy = enemyWaters(w, USA);
+    // The fleets whose nearest enemy port within SORTIE_KM, by the line, is of another basin (Hamilton, Toronto).
+    const across = own(s, USA).filter((f) => {
+      const near = enemy.filter((e) => kmTo(w, c.x[f]!, c.y[f]!, e) <= SORTIE_KM).sort((a, b) => kmTo(w, c.x[f]!, c.y[f]!, a) - kmTo(w, c.x[f]!, c.y[f]!, b))[0];
+      return near !== undefined && basin[z.zoneOf[near]!] !== basinAt(w, c.x[f]!, c.y[f]!);
+    });
+    expect(across.length).toBeGreaterThan(0);
+    // Each one's first goal within a turn of the United States', and its basin where it stood when given it.
+    const goal = new Map<number, [number, number]>();
+    for (let d = 0; d < 8; d++) {
+      const from = new Map(across.map((f) => [f, basinAt(w, c.x[f]!, c.y[f]!)]));
+      s.step(24);
+      for (const f of across) if (!goal.has(f) && w.formations.has(f) && c.moving[f] === 1) goal.set(f, [c.targetCell[f]!, from.get(f)!]);
+    }
+    const to: string[] = [];
+    for (const f of across) {
+      expect(goal.has(f), `fleet ${f} under way`).toBe(true);
+      const [t, b] = goal.get(f)!;
+      expect(basin[z.zoneOf[t]!], `fleet ${f}'s goal in its basin`).toBe(b);
+      const i = water.indexOf(t);
+      to.push(i >= 0 ? w.ports[i]!.name : `cell ${t}`);
+    }
+    process.stderr.write(`USA–CAN: ${across.length} fleets sailed for ${[...new Set(to)].join(', ')}\n`);
+  });
+
   it('Greece at war with Italy, Italian ports within SORTIE_KM: no Greek fleet stages, each sails for an Italian port or stands (PLAN 7.35b2)', () => {
     const s = new Sim({ scenario: '1938', seed: 4605, assets: assets1938(W) });
     const w = s.world;

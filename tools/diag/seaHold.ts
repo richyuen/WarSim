@@ -31,7 +31,8 @@
  *   with open water at all).
  * The three holes PLAN 7.35b4 left are counted on the orders: a sortie's or a stage's target in
  * another basin than the fleet's (`otherBasin`; `orderSail` refuses it, `MoveRejected`), and a way
- * whose sea route is over 1.5 times the straight line and longer than `SORTIE_KM` (`farWay`).
+ * whose sea route is over 1.5 times the straight line and longer than `SORTIE_KM` (`farWay`); the
+ * refused orders split by basin and, in the fleet's basin, by why (PLAN 7.35d2d; `Year.holes`).
  * Each fleet is tagged `sea` when its nation is at war with a nation that has an armed fleet in the
  * fleet's basin (7.35d1's "sea pairs").
  * Checked against the tick: of the fleets read as ordered, how many are under way or refused after it
@@ -42,7 +43,7 @@
 import { writeFileSync } from 'node:fs';
 import { EventKind, RejectReason } from '../../src/shared/events';
 import { isDayStart } from '../../src/shared/calendar';
-import { size1938 } from '../../src/sim/scenario1938';
+import { size1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from '../headless/assets';
 import { AT_PORT_CELLS, basinAt, seaKm } from '../../src/sim/systems/navalCombat';
@@ -50,7 +51,9 @@ import { fleetPower, navalPower } from '../../src/sim/systems/seaControl';
 import { blocOf } from '../../src/sim/systems/supply';
 import { AVOID_RATIO, forwardBases, navalBombers, SORTIE_KM, stageTo, standingWarfleets } from '../../src/sim/ai/naval';
 import { STAGGER } from '../../src/sim/ai/strategic';
-import { basinOf, portSeaOf, seaOf, seaRangeOf, type World } from '../../src/sim/world';
+import { basinOf, laneOf, navOf, portSeaOf, seaOf, seaRangeOf, type World } from '../../src/sim/world';
+import { sailTarget } from '../../src/sim/systems/sail';
+import { sailRoute } from '../../src/sim/nav/sailRoute';
 
 const seed = Number(process.argv[2]);
 const years = Number(process.argv[3] ?? 6);
@@ -70,7 +73,14 @@ type Year = {
   year: number;
   sea: Tally;
   other: Tally;
-  holes: { otherBasin: number; farWay: number; rejected: number };
+  /**
+   * The holes PLAN 7.35b4 left: `otherBasin` (a sortie's target from port in another basin),
+   * `otherBasinAway` (an away order's, PLAN 7.35d2d); `farWay`; `rejected` (refused by `orderSail`,
+   * `NoSeaWay`), split (PLAN 7.35d2d) into `rejectedOther` (the target in another basin than the
+   * fleet's), `rejectedShut` (same basin, a way found with no passage shut: a passage an enemy
+   * holds shuts it, PLAN 4.4e) and `rejectedNoRoute` (same basin, no way even so).
+   */
+  holes: { otherBasin: number; otherBasinAway: number; farWay: number; rejected: number; rejectedOther: number; rejectedShut: number; rejectedNoRoute: number };
   /** Away fleets not sent home, of `sea`, by bucket: a sortie from where they stand (their own power the test's) would find a winnable target with enemy ships (`battle`), only empty ones (`empty`), or none (`none`). */
   away: Record<string, { battle: number; empty: number; none: number }>;
   /** `sortieEmpty` orders of `sea`: a winnable target with enemy ships was in reach too, farther (`defended`), or not (`none`). */
@@ -84,10 +94,12 @@ type Year = {
   neutralOrder: { battle: number; station: number; home: number };
   /** For `heldStronger` fleet-days of `sea`: the enemy's power at the nearest target over its fleets' together (median). */
   strongerRatio: number[];
+  /** The `rejectedShut` orders by the fleet's nation, the order's kind and its port (PLAN 7.35d2d). */
+  shutWho: Tally;
 };
 
 /** The pending reads of the day: fleet → (why, ordered, target). */
-let pending: { id: number; why: Why; ordered: boolean; sea: boolean; target: number }[] = [];
+let pending: { id: number; why: Why; ordered: boolean; sea: boolean; target: number; otherB: boolean }[] = [];
 /** The pairs of nations at war on some day read so far (`a * 65536 + b`, both orders). */
 const everWar = new Set<number>();
 /** Per fleet, the targets of its last two away orders (`awayBattle`, `awayStation`). */
@@ -158,7 +170,10 @@ function read(w: World, y: Year): void {
       const sea = seaOfFleet(id);
       const t = sea ? y.sea : y.other;
       t[why] = (t[why] ?? 0) + 1;
-      pending.push({ id, why, ordered, sea, target });
+      // The target's basin against the fleet's (PLAN 7.35d2d): a target's water is on an open zone.
+      const otherB = target >= 0 && (basin[z.zoneOf[target]!] || ocean) !== basinAt(w, c.x[id]!, c.y[id]!);
+      if (otherB && why.startsWith('away')) y.holes.otherBasinAway++;
+      pending.push({ id, why, ordered, sea, target, otherB });
     };
     for (const id of byNation.get(n)!) {
       if (c.moving[id] === 1) { note(id, 'moving'); continue; }
@@ -196,13 +211,13 @@ function read(w: World, y: Year): void {
     for (const [fid, e] of [...w.embarked].sort((a, b) => a[0] - b[0])) if (c.nation[fid] === n && e.water >= 0) { escort = e.water; break; }
     // In port and away together (PLAN 7.35d2b).
     const together = (cell: number): number => war.reduce((s, x) => s + (km(x.id, cell) <= SORTIE_KM ? x.p : 0), 0) + awayStanding.reduce((s, x) => s + (km(x.id, cell) <= SORTIE_KM ? x.p : 0), 0);
-    const targets: { at: number; enemy: number }[] = [];
+    const targets: { at: number; enemy: number; basin: number }[] = [];
     w.ports.forEach((p, i) => {
       const holder = ctl[p.cell]!;
       const at = water[i]!;
       if (holder === 0 || at < 0 || !w.wars.atWar(n, holder)) return;
       const zone = z.zoneOf[at]!;
-      if (zone !== 0 && z.closed[zone] !== 1) targets.push({ at, enemy: enemyIn(zone) });
+      if (zone !== 0 && z.closed[zone] !== 1) targets.push({ at, enemy: enemyIn(zone), basin: basin[zone] || ocean });
     });
     const hunts = prey.filter((q) => w.wars.atWar(n, q.nation)).map((q) => ({ at: q.at, enemy: enemyIn(q.zone), basin: basin[q.zone] || ocean }));
     const empty = (t: { at: number; enemy: number }): boolean => t.enemy === 0 && bombed((t.at % W) + 0.5, Math.floor(t.at / W) + 0.5);
@@ -227,6 +242,7 @@ function read(w: World, y: Year): void {
       }
       if (beside) { note(a.id, 'awayBeside'); continue; }
       for (const t of targets) {
+        if (t.basin !== mineB) continue;
         if (near(cellOf(a.id), t.at)) { onStation = true; continue; }
         const d = km(a.id, t.at);
         if (d > SORTIE_KM || t.enemy > together(t.at) || empty(t)) continue;
@@ -247,7 +263,7 @@ function read(w: World, y: Year): void {
       const mineB = basinAt(w, c.x[a.id]!, c.y[a.id]!);
       for (const t of hunts) if (t.basin === mineB && km(a.id, t.at) <= SORTIE_KM && !near(cellOf(a.id), t.at) && t.enemy <= a.p) battle = anyT = true;
       for (const t of targets) {
-        if (km(a.id, t.at) > SORTIE_KM || near(cellOf(a.id), t.at) || t.enemy > a.p || empty(t)) continue;
+        if (t.basin !== mineB || km(a.id, t.at) > SORTIE_KM || near(cellOf(a.id), t.at) || t.enemy > a.p || empty(t)) continue;
         anyT = true;
         if (t.enemy > 0) battle = true;
       }
@@ -291,6 +307,8 @@ function read(w: World, y: Year): void {
       let nearest: { at: number; enemy: number } | undefined;
       let nearestD = Infinity;
       for (const t of targets) {
+        // Of its basin only, as `plan` (PLAN 7.35d2d).
+        if (t.basin !== mine) continue;
         const d = km(id, t.at);
         if (d > SORTIE_KM) continue;
         inReach++;
@@ -352,7 +370,23 @@ function check(w: World, y: Year, rejected: Set<number>): void {
         if (was[0] === r.target) y.check.pingPong++;
         lastTargets.set(r.id, [was[1]!, r.target]);
       }
-      if (rejected.has(r.id)) y.holes.rejected++;
+      if (rejected.has(r.id)) {
+        y.holes.rejected++;
+        if (r.otherB) y.holes.rejectedOther++;
+        else {
+          // Same basin: a way with no passage shut (PLAN 4.4e), else none even so.
+          const to = r.target >= 0 ? sailTarget(w, r.target % W, Math.floor(r.target / W)) : -1;
+          const from = Math.floor(c.y[r.id]!) * W + Math.floor(c.x[r.id]!);
+          if (to >= 0 && sailRoute(navOf(w).grid, seaOf(w), laneOf(w), from, to)) {
+            y.holes.rejectedShut++;
+            // Who, by which order, for which port (PLAN 7.35d2d: the same-basin rest named).
+            const i = portSeaOf(w).indexOf(r.target);
+            const k = `${TAGS_1938[c.nation[r.id]! - 1]} ${r.why} → ${i >= 0 ? w.ports[i]!.name : `cell ${r.target}`}`;
+            y.shutWho[k] = (y.shutWho[k] ?? 0) + 1;
+          }
+          else y.holes.rejectedNoRoute++;
+        }
+      }
       const path = w.paths.get(r.id);
       if (moving && path && r.target >= 0 && (r.why === 'sortie' || r.why === 'sortieEmpty' || r.why === 'stage')) {
         let way = 0;
@@ -371,7 +405,7 @@ function check(w: World, y: Year, rejected: Set<number>): void {
 const rows: Year[] = [];
 const t0 = Date.now();
 for (let year = 1; year <= years; year++) {
-  const y: Year = { year, sea: {}, other: {}, holes: { otherBasin: 0, farWay: 0, rejected: 0 }, away: {}, emptyPick: { defended: 0, none: 0 }, neutralWas: { wasEnemy: 0, never: 0 }, neutralOrder: { battle: 0, station: 0, home: 0 }, enemyAt: { moving: 0, far: 0, targetStronger: 0, notTarget: 0, none: 0 }, check: { ordered: 0, agree: 0, held: 0, stray: 0, miss: {}, pingPong: 0 }, strongerRatio: [] };
+  const y: Year = { year, sea: {}, other: {}, holes: { otherBasin: 0, otherBasinAway: 0, farWay: 0, rejected: 0, rejectedOther: 0, rejectedShut: 0, rejectedNoRoute: 0 }, away: {}, emptyPick: { defended: 0, none: 0 }, neutralWas: { wasEnemy: 0, never: 0 }, neutralOrder: { battle: 0, station: 0, home: 0 }, enemyAt: { moving: 0, far: 0, targetStronger: 0, notTarget: 0, none: 0 }, check: { ordered: 0, agree: 0, held: 0, stray: 0, miss: {}, pingPong: 0 }, strongerRatio: [], shutWho: {} };
   const rejected = new Set<number>();
   sim.step(24 * 365, (w) => {
     const ev = w.out.events;
@@ -389,7 +423,7 @@ for (let year = 1; year <= years; year++) {
   const r = y.strongerRatio;
   const med = r.length > 0 ? Math.round(r[Math.floor(r.length / 2)]! * 100) / 100 : 0;
   rows.push({ ...y, strongerRatio: [med, r.length] });
-  console.log(JSON.stringify({ year, sea: y.sea, away: y.away, emptyPick: y.emptyPick, neutralWas: y.neutralWas, neutralOrder: y.neutralOrder, enemyAt: y.enemyAt, holes: y.holes, check: y.check, stronger: [med, r.length] }));
+  console.log(JSON.stringify({ year, sea: y.sea, away: y.away, emptyPick: y.emptyPick, neutralWas: y.neutralWas, neutralOrder: y.neutralOrder, enemyAt: y.enemyAt, holes: y.holes, check: y.check, stronger: [med, r.length], shutWho: y.shutWho }));
 }
 writeFileSync(out, JSON.stringify({ seed, years, wallS: Math.round((Date.now() - t0) / 1000), rows }, null, 1));
 console.log(`done: ${out}`);

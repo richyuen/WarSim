@@ -20018,3 +20018,28 @@ No rule changed and nothing on screen changed. One task came out of it.
   rerun alone: load. By hand: `seaBattle1938`, `navalDemo1938`, `seaRow1938` (3),
   `carrierStrikeRow1938`, `seaControl1938`, `fleetOrder1938` green (8), `seaBattleSeen1938` alone
   green; `seaRow1938`'s screenshot viewed (a sea battle framed by its row, the fire drawn).
+
+## 2026-10-19 — PLAN 7.35d2d1: a sortie's target of the fleet's own basin (critic R9 naval 6)
+
+- **Start:** gate green on `70391c4`; critic not due. PLAN 7.35d2d split (d1 the basin, d2 a
+  passage shut to the fleet, d3 the "after" run of `seaYears` and the causes left).
+- **Tool first:** `seaHold`'s refused orders split by basin and, in the fleet's basin, by why
+  (`rejectedOther`, `rejectedShut`, `rejectedNoRoute`; `otherBasinAway`; `shutWho` names the shut
+  ones). Before (at `70391c4`, 14 seeds × 6 years, years 2–6): 3,299 refused, 2,613 across basins,
+  686 a passage shut, 0 with no way at all. Its reads are d2c's after-run's (15,987 of 16,018).
+- **Rule** (ADR-551, `src/sim/ai/naval.ts`): each enemy port's target carries its basin; `plan`'s
+  sortie and `awayOrder` pass over one of another basin (not in reach, so the fleet may stage), and
+  `forwardBases` counts only targets of the base's basin.
+- **Measured** (`measure-d.md` §6, JSON in `docs/evidence/7.35/d2d/`): across basins 2,613 → 0;
+  refused 3,299 → 2,977, all of them through a passage shut to the fleet; seed 1471 carries 2,304
+  (British fleets in the Aegean sent for Bursa behind the Dardanelles every AI day). Orders back to
+  an earlier target 243 → 2,471, the same repeats. New stations from away 1,290 → 3,762. Tool
+  against the tick 19,627 of 19,658 orders. Not the AT's "falls by `otherBasin`'s count": the shut
+  passage is the next cause, PLAN 7.35d2d2.
+- **Test:** `navalAi1938.test.ts` + 1 (USA at war with Canada: the fleets whose nearest Canadian
+  port is on Lake Ontario sail within a turn for one of their basin, Halifax or Bermuda; red
+  without the rule).
+- **Pin** unchanged (babcd48d): no fleet of seed 99's first year has its target across land.
+- **Perf:** navalAi 0.0457 ms a tick (0.0434 at d2c), tick mean 2.25 ms (seed 99, one year,
+  `--profile`, pinned; territory 0.1561 against 0.1485, a run 5 % slower throughout).
+- **Next:** PLAN 7.35d2d2 (a target behind a passage shut to the fleet).

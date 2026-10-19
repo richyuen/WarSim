@@ -254,3 +254,51 @@ power late (273k against 244k by year 6), and the pairs at war with a navy each 
 still fall below 1.5 a day by years 4–6. Four seeds, and the worlds part after the first weeks,
 so this is a read, not a verdict: the verdict is 7.35d2d's 14 × 30 run against d1's.
 On seed 99's first year the `SeaBattle` events are 34 against 20, the first on day 13.4 against 45.2.
+
+## 6. A sortie's target in its own basin (7.35d2d1, ADR-551)
+
+**The rule** (`plan`, `awayOrder` and `forwardBases` in `src/sim/ai/naval.ts`). Each enemy port's
+target carries its basin (`basinOf`, as a hunt's). A sortie from port and an away fleet's new order
+take only a target of the fleet's basin (`basinAt`); a target in another basin is not in reach, so
+a fleet whose enemy ports in reach are all across land stages. A forward base counts only the
+targets of its own basin.
+
+`seaHold` now splits `rejected` (orders refused by `orderSail`, `NoSeaWay`): `rejectedOther` (the
+target in another basin than the fleet's), `rejectedShut` (same basin, a way found once no passage
+is shut: a passage whose bank an enemy holds, PLAN 4.4e), `rejectedNoRoute` (same basin, no way even
+so); `otherBasinAway` counts an away order's target in another basin; `shutWho` names the shut
+refusals (the fleet's nation, the order, the port). The tool mirrors the rule. JSON in
+`d2d/before_<seed>.json` (at `70391c4`, the tool split, the rule not yet in; its reads are d2c's
+after-run's, 15,987 of 16,018 orders agreeing) and `d2d/after_<seed>.json`. The 14 seeds × 6 years,
+years 2–6, `sea` fleet-days:
+
+| | before | after |
+| --- | --- | --- |
+| all | 113,639 | 118,867 |
+| a sortie's target from port in another basin (`otherBasin`) | 2,497 | 0 |
+| an away order's target in another basin (`otherBasinAway`) | 120 | 0 |
+| **orders refused (`rejected`)** | **3,299** | **2,977** |
+| of them the target in another basin (`rejectedOther`) | 2,613 | 0 |
+| of them same basin, a passage shut (`rejectedShut`) | 686 | 2,977 |
+| of them same basin, no way at all (`rejectedNoRoute`) | 0 | 0 |
+| the way over 1.5 × the line and over `SORTIE_KM` (`farWay`) | 609 | 567 |
+| ordered from away: a battle / an enemy fleet / a new station / home | 606 / 660 / 1,290 / 221 | 968 / 769 / 3,762 / 294 |
+| ordered from port: a port with enemy ships / an empty port / an enemy fleet / a stage | 210 / 4,942 / 64 / 394 | 123 / 5,529 / 44 / 421 |
+| held in port, every target too strong (`heldStronger`) | 261 | 95 |
+| tool against the tick (orders) | 15,987 of 16,018 | 19,627 of 19,658 |
+| an order back to the target of two orders before | 243 | 2,471 |
+
+- The refusals across land are gone (2,613 → 0), but `rejected` falls by 322, not by 2,613: the
+  shut ones rise by 2,291. The same-basin rest is all a passage shut to the fleet (no refusal
+  found no way at all). The worlds part after the rule's first order, so the rise is not the same
+  fleets turned elsewhere: seed 1471 carries 2,304 of the 2,977 (it had none before, and 49
+  across land). `shutWho` on that seed (`d2d/who_1471.json`): every one is a British fleet on
+  station in the Aegean given a new station at Bursa, on the Sea of Marmara behind the
+  Dardanelles, whose bank its enemy holds. Refused, it stands, and is sent again on its next AI
+  day; those repeats are the rise of the orders back to an earlier target (2,257 of seed 1471's
+  2,471). The others: seed 4957 312, 6653 248, 6113 52, 8821 54, 3407 7.
+- A passage shut to the fleet is the next cause (PLAN 7.35d2d2): a target behind one is as out
+  of reach as one across land.
+- Pin unchanged (babcd48d): no fleet of seed 99's first year has its target across land. navalAi
+  0.0457 ms a tick, 2.0 % (0.0434 at d2c; seed 99, one year, `--profile`, pinned; territory 0.1561
+  against 0.1485, the run 5 % slower throughout).

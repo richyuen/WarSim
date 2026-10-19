@@ -16,6 +16,9 @@
  *   and go together): a battle it would lose is not sought. Or, nearer, to a standing enemy
  *   warfleet within `SORTIE_KM` in its basin, whose zone's enemy power passes the same test
  *   (PLAN 7.35d2c, ADR-550): fleets on station at a partner's port or a neutral's were no target.
+ *   Every target, port or fleet, is of the fleet's basin (`basinAt`, PLAN 7.35d2d1, ADR-551): a
+ *   port across land on a lake is not in reach, and `orderSail` would refuse its way. So too an away
+ *   fleet's new order and a forward base's targets.
  * - At war, such a warfleet with no enemy port within `SORTIE_KM` at all stages (PLAN 7.35b2):
  *   it sails to the nearest port of its bloc's that has one (`forwardBases`; not empty water under
  *   the enemy's naval bombers, PLAN 7.35b4c2), in its basin (`stageTo`, PLAN 7.35b4c1), and
@@ -141,6 +144,13 @@ export function navalAi(world: World): void {
   for (const n of [...fleets.keys()].sort((a, b) => a - b)) plan(world, n, fleets.get(n)!, power, prey);
 }
 
+/** An enemy port as a target: its water's cell, its zone's enemy power, its basin (`basinAt`'s reading; PLAN 7.35d2d). */
+interface Target {
+  at: number;
+  enemy: number;
+  basin: number;
+}
+
 /** An enemy warfleet as a target (PLAN 7.35d2c): its cell, its zone's enemy power, its basin (`basinAt`'s reading). */
 interface Hunt {
   at: number;
@@ -263,20 +273,21 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
     }
     return t;
   };
-  // The enemy's ports with water a fleet reaches, and their zones' enemy power.
-  const targets: { at: number; enemy: number }[] = [];
+  // The enemy's ports with water a fleet reaches, their zones' enemy power and their basin (PLAN
+  // 7.35d2d, ADR-551: a port across land on a lake is no target, `orderSail` refuses its way).
+  const { basin, ocean } = basinOf(world);
+  const targets: Target[] = [];
   world.ports.forEach((p, i) => {
     const holder = ctl[p.cell]!;
     const at = water[i]!;
     if (holder === 0 || at < 0 || !world.wars.atWar(n, holder)) return;
     const zone = z.zoneOf[at]!;
-    if (zone !== 0 && z.closed[zone] !== 1) targets.push({ at, enemy: enemyIn(zone) });
+    if (zone !== 0 && z.closed[zone] !== 1) targets.push({ at, enemy: enemyIn(zone), basin: basin[zone] || ocean });
   });
   /** Whether target `t`'s water has no enemy ship and is under the enemy's naval bombers (no sortie's target, PLAN 7.35b3b). */
-  const emptyBombed = (t: { at: number; enemy: number }): boolean => t.enemy === 0 && bombed((t.at % w) + 0.5, Math.floor(t.at / w) + 0.5);
+  const emptyBombed = (t: Target): boolean => t.enemy === 0 && bombed((t.at % w) + 0.5, Math.floor(t.at / w) + 0.5);
   // The enemy's standing warfleets (PLAN 7.35d2c, ADR-550), wherever they stand, and their zones'
   // enemy power: a battle to seek, as a port with enemy ships is; no station, no forward base.
-  const { basin, ocean } = basinOf(world);
   const hunts: Hunt[] = [];
   for (const q of prey()) if (world.wars.atWar(n, q.nation)) hunts.push({ at: q.at, enemy: enemyIn(q.zone), basin: basin[q.zone] || ocean });
   // Away (PLAN 7.35d2b): a new order from where it stands; one escorting a landing stays.
@@ -284,14 +295,17 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
   if (war.length === 0) return;
   let bases: number[] | undefined;
   /** The targets a sortie may take (PLAN 7.35b4c2): not empty water under the enemy's naval bombers; a base with none of them in reach is no forward base. */
-  const fightable = (): { at: number }[] => targets.filter((t) => !emptyBombed(t));
+  const fightable = (): Target[] => targets.filter((t) => !emptyBombed(t));
   for (const { id } of war) {
     // Its landing's water within reach, else the nearest enemy port within reach whose sea the fleets there together can win.
     let target = escort >= 0 && km(id, escort) <= SORTIE_KM ? escort : -1;
     let inReach = false;
     if (target < 0) {
       let best = Infinity;
+      const mine = basinAt(world, c.x[id]!, c.y[id]!);
       for (const t of targets) {
+        // Of its basin only (PLAN 7.35d2d): one across land is not in reach, so the fleet may stage.
+        if (t.basin !== mine) continue;
         const d = km(id, t.at);
         if (d > SORTIE_KM) continue;
         inReach = true;
@@ -301,7 +315,6 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
       }
       // An enemy warfleet in reach, of its basin, whose zone the fleets together can win (PLAN 7.35d2c).
       // It does not count as in reach for the stage: a fleet stands at sea for days, a port for good.
-      const mine = hunts.length > 0 ? basinAt(world, c.x[id]!, c.y[id]!) : 0;
       for (const t of hunts) {
         if (t.basin !== mine) continue;
         const d = km(id, t.at);
@@ -338,10 +351,10 @@ function awayOrder(
   world: World,
   id: number,
   here: number,
-  targets: readonly { at: number; enemy: number }[],
+  targets: readonly Target[],
   hunts: readonly Hunt[],
   together: (cell: number) => number,
-  emptyBombed: (t: { at: number; enemy: number }) => boolean,
+  emptyBombed: (t: Target) => boolean,
   by: (cell: number) => boolean,
 ): void {
   const c = world.formations.cols;
@@ -354,7 +367,7 @@ function awayOrder(
   // An enemy warfleet in reach, of its basin, whose zone the fleets together can win (PLAN 7.35d2c):
   // a battle from any zone, as its ships are sought, not their zone's ports. By one already: it stays.
   let beside = false;
-  const mine = hunts.length > 0 ? basinAt(world, c.x[id]!, c.y[id]!) : 0;
+  const mine = basinAt(world, c.x[id]!, c.y[id]!);
   for (const t of hunts) {
     if (t.basin !== mine || t.enemy > together(t.at)) continue;
     if (by(t.at)) {
@@ -366,6 +379,8 @@ function awayOrder(
   }
   if (beside) return;
   for (const t of targets) {
+    // Of its basin only (PLAN 7.35d2d).
+    if (t.basin !== mine) continue;
     if (by(t.at)) {
       onStation = true;
       continue;
@@ -428,9 +443,10 @@ export function navalBombers(world: World, n: number): { x: number; y: number; r
  * through a war with Japan (`docs/evidence/7.35/measure-b.md`). The way there is a transit, not a
  * sortie: no bound on its length. From the base the sortie test runs as from any port of its own.
  */
-export function forwardBases(world: World, bloc: number, targets: readonly { at: number }[], war: readonly { p: number }[], enemyIn: (zone: number) => number): number[] {
+export function forwardBases(world: World, bloc: number, targets: readonly { at: number; basin: number }[], war: readonly { p: number }[], enemyIn: (zone: number) => number): number[] {
   const w = world.cells.w;
   const z = seaOf(world);
+  const { basin } = basinOf(world);
   const water = portSeaOf(world);
   const ctl = world.cells.controller;
   const all = war.reduce((s, x) => s + x.p, 0);
@@ -443,7 +459,9 @@ export function forwardBases(world: World, bloc: number, targets: readonly { at:
     if (zone === 0 || z.closed[zone] === 1 || enemyIn(zone) > all) return;
     const ax = (at % w) + 0.5;
     const ay = Math.floor(at / w) + 0.5;
-    if (targets.some((t) => seaKm(world, ax, ay, (t.at % w) + 0.5, Math.floor(t.at / w) + 0.5) <= SORTIE_KM)) out.push(at);
+    // A target of the base's basin (PLAN 7.35d2d): one across land on a lake is none.
+    const mine = basin[zone]!;
+    if (targets.some((t) => t.basin === mine && seaKm(world, ax, ay, (t.at % w) + 0.5, Math.floor(t.at / w) + 0.5) <= SORTIE_KM)) out.push(at);
   });
   return out;
 }

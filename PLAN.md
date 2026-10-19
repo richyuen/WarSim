@@ -195,7 +195,21 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           run of `seaYears` on the 14 seeds × 30 years against d1's, and re-measured with
           `seaHold`: the way across land (435 late orders, 6 %), a partner's port the enemy holds
           (0.4 % of the fleet-days), the enemy beyond `SORTIE_KM` (70 % of those with no battle):
-          a rule each, or the reason in the doc.
+          a rule each, or the reason in the doc. In parts (one cause each):
+          - [x] 7.35d2d1 The basin (ADR-551): `plan`'s sortie, `awayOrder` and `forwardBases` take
+            only targets of the fleet's (the base's) basin; `seaHold`'s `rejected` split
+            (`rejectedOther`, `rejectedShut`, `rejectedNoRoute`, `shutWho`). AT: USA at war with
+            Canada, its fleets whose nearest Canadian port is on the Great Lakes sail for one of
+            their basin (red without); `rejectedOther` 2,613 → 0, `rejected` 3,299 → 2,977, the rest
+            all a passage shut (`measure-d.md` §6); the pin unchanged.
+          - [ ] 7.35d2d2 A target behind a passage shut to the fleet (PLAN 4.4e: a bank the enemy
+            holds) is out of reach as one across land: 2,977 late refusals after d2d1, 2,304 of them
+            seed 1471's British fleets in the Aegean sent for Bursa behind the Dardanelles each AI
+            day (`shutWho`), and the orders back to an earlier target with them (243 → 2,471). AT:
+            a unit test (red without); `seaHold`'s `rejectedShut` near 0; the pin; an ADR; `--profile`.
+          - [ ] 7.35d2d3 The "after" run of `seaYears` on the 14 seeds × 30 years against d1's, and
+            the three causes left re-measured with `seaHold` (the way across land, a partner's port
+            the enemy holds, the enemy beyond `SORTIE_KM`): a rule each, or the reason in the doc.
 - [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
   and 10 m/px in every probe (`c9_c_4483.json` `sorties`); the air map on day 10 of Germany–Poland
   hatches one German zone over all of Europe, every hover "held by Germany" from London to Kiev
