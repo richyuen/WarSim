@@ -44,4 +44,6 @@ base is one with an enemy port in reach that is not empty water under the enemy'
 - **Rows.** `seaRows 3407 JAP USA 40`: the ten Japan–US battles, 138 hours, 22 ships sunk; 0 hours
   with no row and 0 ships sunk with no row (every hour a carrier strike's row: no pair in a ship's
   reach in any of them).
-
+- **A partner's lost base.** Davao is Japan's by day 30; on day 39 the 9 US fleets there stand at
+  it. `atLostBase` reads a lost port as one the fleet's nation owns (ADR-264), and Davao is the
+  Philippines': no rebase. A line under PLAN 7.35d.

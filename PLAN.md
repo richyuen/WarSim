@@ -140,8 +140,11 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
       year 1's 36, `c9_headless_*.json`), measured, before and after.
       From 7.35b4 (ADR-546, ADR-547): `seaKm` is the straight line, so a forward base or a sortie's
       target may lie across land (Dublin and Kuwait City stage against Italy's Mediterranean ports);
-      and a sortie's target has no basin test (a lake's enemy port may be the nearest). Measure how
-      often either decides an order before a rule.
+      and a sortie's target has no basin test (a lake's enemy port may be the nearest). And from
+      ADR-545: `atLostBase`'s lost port is one the fleet's nation owns, so a partner's port taken by
+      the enemy is no lost base (on seed 3407 Davao, the Philippines', is Japan's by day 30, and 9 US
+      fleets stand at it on day 39, `measure-b4.md` §2); "owned by the bloc" would keep ADR-264's
+      reason. Measure how often each decides an order before a rule.
 - [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
   and 10 m/px in every probe (`c9_c_4483.json` `sorties`); the air map on day 10 of Germany–Poland
   hatches one German zone over all of Europe, every hover "held by Germany" from London to Kiev

@@ -19885,3 +19885,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **By hand** (the gate skips e2e; for 7.35b4c1 and c2): `carrierStrikeRow1938`, `seaRow1938` (3),
   `navalDemo1938`, `seaBattle1938`, `seaBattleSeen1938` (alone) green.
 - **Next:** PLAN 7.35c (ships at 20 m/px drawn at a size their class reads).
+- **Checked after the commit:** Davao (the Philippines') is Japan's by day 30 and 9 US fleets stand
+  at it on day 39: `atLostBase` reads only the nation's own ports as lost (ADR-264). A line under
+  PLAN 7.35d with the other two holes.
