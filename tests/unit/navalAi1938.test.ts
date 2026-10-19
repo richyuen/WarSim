@@ -310,6 +310,7 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     const c = w.formations.cols;
     const USA = id('USA');
     const CAN = id('CAN');
+    // Canada is Britain's puppet: the war is on the British bloc, so Bermuda and Halifax are enemy ports too.
     expect(declareWar(w, USA, CAN, true)).not.toBeNull();
     w.nations.cols.aiOff[CAN] = 1;
     const { basin } = basinOf(w);
