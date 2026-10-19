@@ -471,8 +471,15 @@ Navies by year (means of the 14 seeds, before → after):
   16.3 → 10–12. Their power comes back (227k by year 5, 259k by year 30) in fewer hands. Sea pairs
   (two navies at war in one basin) fall 7.7 → 1.3 a day; 195 of the 406 late seed-years have one on an
   average day (362 before), 54 of those see no battle that sinks a ship (123).
-- **So battles per world-year late 1.9 → 2.5**, short of year 1's 35. The navies the first year sinks
-  are not built again in number: the next cause, measured first (PLAN 7.35d3).
+- **So battles per world-year late 1.9 → 2.5**, short of year 1's 35, and the mean is carried by busy
+  years: the median late year is 1 before and after, the busiest 17 → 28, and the late years with no
+  battle that sinks a ship are not fewer (141 → 146 of 406; seeds 3407 6 → 12, 4483 5 → 10, 5527
+  10 → 15). The sea war late is not recovered. The navies the first year sinks are not built again in
+  number: the next cause, measured first (PLAN 7.35d3).
+- **Sea pairs fell more than the navies.** Year 2: nations with a navy 16.9 → 11.8 (× 0.7, so pairs
+  of them about × 0.5), sea pairs 13.3 → 3.7 (× 0.28). Either the navies lost were those that made
+  most pairs (small navies at war with each other), or the navies left stand in basins their enemies'
+  do not: PLAN 7.35d3 measures both.
 
 **The three causes 7.35d2a left, re-measured** (`seaHold` 14 seeds × 6 years at `5acc4ca`: JSON in
 `d2d3c/hold_<seed>.json`, the same to the order as §9's `d2d3b/after_<seed>.json`, with the `far`
@@ -484,8 +491,9 @@ fleet-days split, below; years 2–6, the `sea` fleet-days, 115,277):
 - **A partner's port the enemy holds** (`awayLostPartner`): 3,128 fleet-days (2.7 %); `other` 1,820.
   Since 7.35d2b (ADR-549) such a port is an enemy-held port to `awayOrder`: a fleet by it keeps its
   station (it blockades the holder), and seeks a battle first; 97 of the 3,128 had one in reach. It is
-  no longer a fleet that stands for nothing (ADR-545's hole: `atLostBase` still reads the fleet's own
-  nation's ports, but a fleet away by such a port gets `awayOrder`'s order, not `sailHome`'s).
+  no longer a fleet that stands for nothing (ADR-545's hole: `atLostBase`, `navalCombat.ts`, which
+  `rebaseFleets` reads daily, still counts only ports the fleet's own nation owns, so it does not send
+  such a fleet home; on the nation's AI day `awayOrder` gives it its order).
   **The reason, no rule.**
 - **The enemy beyond `SORTIE_KM`** (of the away fleet-days with no battle to seek, the nearest enemy
   warfleet of the basin): 103,704 of 106,381 (97.5 %). Split by its way off (`farBy`) and where it

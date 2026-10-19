@@ -244,7 +244,11 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
         Measured first, per nation that had a navy and lost it (14 seeds × 30 years): whether it still
         has a shipyard (`shipyard`), its income against `POOR_INCOME` and `BATTLE_FLEET_INCOME`, what
         the economic AI's fleet step decides on its days (`pickFleet`, `NAVY_SHARE`, the reserve, a
-        fleet in training, the army's orders first), and whether it is at war or dead. Then a rule per
+        fleet in training, the army's orders first), and whether it is at war or dead. And per late
+        day's pair at war with a navy each, whether their fleets share a basin (sea pairs fell × 0.28
+        in year 2 against the navies' × 0.7: the navies lost made most pairs, or those left stand in
+        other basins than their enemies'; if the second, the cause is placement, not building, and
+        this line is to be rewritten). Then a rule per
         cause (a part each, an ADR) or the reason in the doc; the "after" run of `seaYears` on the
         14 × 30 against d2d3c's (7.35d's "before and after") on the last. In parts (one cause each).
 - [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
