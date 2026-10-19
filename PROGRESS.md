@@ -19807,3 +19807,5 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin** unchanged, 8c59c203, run fresh: seed 99's year has no decision the rule changes (as seed
   1129's two years, the same in every figure).
 - **Next:** PLAN 7.35b4 (a fleet at a lost base sails for its nation's nearest port, not its bloc's).
+- **After 7.35b3b, by hand** (the gate skips e2e): `carrierStrikeRow1938`, `seaRow1938` (3),
+  `navalDemo1938`, `seaBattle1938`, `seaBattleSeen1938` (alone) green at `fe084c4`.
