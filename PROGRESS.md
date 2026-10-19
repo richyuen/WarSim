@@ -19888,3 +19888,31 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Checked after the commit:** Davao (the Philippines') is Japan's by day 30 and 9 US fleets stand
   at it on day 39: `atLostBase` reads only the nation's own ports as lost (ADR-264). A line under
   PLAN 7.35d with the other two holes.
+
+## 2026-10-19 — PLAN 7.35c: the smaller classes of ship drawn at a share of a battleship's least size (critic R9 naval 6; ADR-548)
+
+- **Start:** gate green on `0985076`; critic not due. `shipMarks1938`'s 7.22b test red by hand (a
+  destroyer's hull 17 px at 15 m/px, its bar 18.5): the old rule's size (sprite 21 px, the hull 46
+  of the frame's 64); 7.22b's 20 px was its run's scene. One cause with the critic's finding.
+- **Rule** (ADR-548, `src/render/units/ships.ts`, render only): a ship's least size at T3 is a
+  battleship's times the larger of its length's share and its class's (`shipMinShare`: cruiser
+  0.88, transport 0.85, destroyer 0.8, submarine 0.65); classes in their order, all under the slot
+  gap from 20 m/px in; own length, in true proportion, once more than that (every class by 3.5 m/px).
+- **Measured** (`shipMarks1938`'s new 20 m/px test, the critic's seed 2251, Italy on Britain, every
+  fleet within 8 cells of the first battle with a row; median hull, CSS px): destroyer 14.5 × 4.5 →
+  19 × 5.5 (171 ships), submarine 9 × 2 → 15.5 × 3 (38), cruiser 21.5 → 23.5, battleship 28.5
+  unchanged. At 15 m/px a destroyer's hull 17 → 23 (its bar now 21). Pictures viewed:
+  `docs/evidence/7.35/c-ships-20m-{before-,}crop4x.png` (turrets and bridge read at 1×),
+  `c-subs-20m{-before,}.png`.
+- **Tests:** `shipMinLength.test.ts`: the proportions' test replaced by the shares' (the ADR names
+  the rule change), + the classes' order and sizes at 20 m/px, + true proportion from 3.5 m/px in.
+- **Left by 7.35a, done:** a carrier strike's row's tooltip "Show the struck fleet"
+  (`ticker.toCarrierStrike`; asserted in `carrierStrikeRow1938`); the headers of `seaRow1938` and
+  `seaBattleSeen1938` say a carrier's battle has a strike row. 7.35a's Perf, measured now
+  (`.cache/p735c/strikePerf.ts`, seed 2251, 12 days hourly): `strikeTarget` 11 µs a call, 0.4
+  calls a snapshot, about 4 µs a snapshot.
+- **Pin** unchanged (render only).
+- **By hand** (the gate runs the changed specs): `shipMarks1938` (3), `ships1938`,
+  `carrierStrikeRow1938`, `seaRow1938` (3), `seaBattleSeen1938` (alone), `navalDemo1938`,
+  `seaBattle1938` green.
+- **Next:** PLAN 7.35d (the late sea battles per world-year; the three holes noted under it).

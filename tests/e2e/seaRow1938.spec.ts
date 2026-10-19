@@ -15,8 +15,10 @@ import { NATIONS_1938 } from '../../src/sim/scenario1938';
 // on dry land at Groningen, the pair a British carrier group and a German battle squadron 279 km
 // apart, joined by the carrier's wings. Since 7.19a a battle is fought at the distance of its fleets
 // (they close; a ship fires at fleets its weapon reaches), and since 7.19b a battle's row frames two
-// fleets within reach of a ship's weapon, its middle on the water; a battle with no such pair (a
-// carrier's wings alone reach) has no row. So each test takes the first battle that has a row.
+// fleets within reach of a ship's weapon, its middle on the water. A battle with no such pair (a
+// carrier's wings alone reach) had no row; since 7.35a it has one of its own kind, a carrier strike
+// framing the struck fleet (`carrierStrikeRow1938`). So each test takes the first battle with a
+// ship's-reach row, a "Sea battle:" one.
 
 const id = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
 

@@ -90,6 +90,7 @@ export function App({
   const nameOfSide = (n: number): string => displayName(byId.get(n)?.name ?? '?');
   const seas = seaBattles.map((b) => ({
     key: seaKey(b),
+    strike: !b.pair && b.strike !== null,
     text: b.pair || !b.strike ? t('ticker.seaBattle', { a: nameOfSide(b.a), b: nameOfSide(b.b) }) : t('ticker.carrierStrike', { a: nameOfSide(b.strike.by), b: nameOfSide(b.strike.by === b.a ? b.b : b.a) }),
   }));
   const lastOrder = formationTitle ? orderNews.filter((n) => n.id === hud.formation.value).at(-1) : undefined;

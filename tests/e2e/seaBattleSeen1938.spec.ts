@@ -35,8 +35,9 @@ test('the first sea battle of the critic\'s war: marked through its hours, liste
   await page.evaluate(() => window.__warsim!.sim.step(40));
   await page.waitForFunction(() => window.__warsim!.view!.lastTick >= 40);
   let hour = 40;
-  // The first battle of Germany and the United Kingdom with a row (PLAN 7.19b: two fleets within
-  // reach of a ship's weapon; the one of hour 41 is a carrier's wings alone, 279 km, and has none).
+  // The first battle of Germany and the United Kingdom with a pair (PLAN 7.19b: two fleets within
+  // reach of a ship's weapon; the one of hour 41 is a carrier's wings alone, 279 km: since 7.35a its
+  // row is a carrier strike's, `carrierStrikeRow1938`).
   const ofWar = { g: id('GER'), e: id('ENG') };
   const pick = ({ g, e }: { g: number; e: number }): number => window.__warsim!.view!.seaBattles().filter((b) => b.pair !== null).findIndex((b) => [b.a, b.b].includes(g) && [b.a, b.b].includes(e));
   while (hour < 72 && (await page.evaluate(pick, ofWar)) < 0) {

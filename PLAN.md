@@ -128,7 +128,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           - [x] 7.35b4c2 The bombed targets: `forwardBases` reads only targets that are not empty
             water under the enemy's naval bombers. AT: a unit test (red without); the pin; the
             "after" run of `seaMeet 3407 JAP USA 40` against b4a's (`measure-b4.md` §2).
-    - [ ] 7.35c Ships at 20 m/px drawn at a size their class reads (destroyers about 10 × 3 px,
+    - [x] 7.35c Ships at 20 m/px drawn at a size their class reads (destroyers about 10 × 3 px,
       submarines 5 px in `c9n_2251_ships_20m_crop4x.png`), counted in px. `shipMarks1938`'s T3
       test is red at `951b1c6` (a destroyer's median 17 px at 15 m/px, its bar 18.5; PLAN 7.22b):
       found in 7.35a's runs, the same with 7.35a's change stashed.

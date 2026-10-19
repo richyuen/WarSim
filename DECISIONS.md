@@ -167,6 +167,36 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-548 · 2026-10-19 · accepted — The smaller classes of ship drawn at a share of a battleship's least size (PLAN 7.35c; amends ADR-499)
+
+- **Context.** Critic run 9, naval 6: "at 20 m/px at 1×, destroyers are about 10 × 3 px and
+  submarines about 5 px" (`critic/shots/c9n_2251_ships_20m_crop4x.png`). At T3 a ship is drawn at
+  least a battleship's least size (26.4 px at 20 m/px, ADR-499) times its length's share of a
+  battleship's (`SIDE_M`): a destroyer's sprite 0.6 of it (15.8 px), a submarine's 0.38 (10). The
+  atlas then draws a destroyer's hull on 46 of the frame's 64 px and 13 wide, a submarine's on 52
+  and 11: two shrinks in a row. Measured on the critic's game (seed 2251, Italy on Britain, its
+  first sea battle with a row, every fleet within 8 cells at 20 m/px; `shipMarks1938`'s new test):
+  a destroyer's hull 14.5 × 4.5 px, a submarine's 9 × 2.
+- **Decision.** A ship's least size is a battleship's times the larger of its length's share and
+  its class's (`MIN_SHARE`, `shipMinShare`): a cruiser 0.88 (0.8 by its length), a transport 0.85
+  (0.68), a destroyer 0.8 (0.6), a submarine 0.65 (0.38); the battleship 1 and the carrier 1.04 as
+  before. The classes keep their order (a submarine's sprite under a destroyer's, under a
+  transport's, a cruiser's, a battleship's, a carrier's), and every ship stays under the gap
+  between two slots from 20 m/px in (a carrier's 27.5 px at 20 m/px, the gap 29.4). Render only:
+  the pin is unmoved.
+- **Measured after** (the same test): a destroyer's hull 19 × 5.5 px, a submarine's 15.5 × 3, a
+  cruiser's 23.5 (21.5 before), a battleship's 28.5 (unchanged); at 15 m/px `shipMarks1938`'s 7.22b
+  test, red at `951b1c6` (a destroyer's hull 17 px, its bar 18.5), reads 23. Pictures:
+  `docs/evidence/7.35/c-ships-20m-{before-,}crop4x.png`, `c-subs-20m{-before,}.png`.
+- **A further deviation from scale.** ADR-499 drew every ship about twice its length from 20 to 13
+  m/px, in proportion; a destroyer is now about 2.8 times its length at 20 m/px and a submarine 3.6. A
+  ship is its own length, in true proportion, once that is more than its least size: a battleship
+  from 6.25 m/px in, a submarine from 3.65 (a unit test: every class at 3.5).
+- **Not done.** T2 (30 to 300 m/px) is unchanged: a ship is its element's sprite there, every class
+  one size (about 17 px at 30 m/px), so the T2 → T3 hand-over still changes a battleship's size more
+  than a destroyer's. Fleets in port pile on each other at 20 m/px (several fleets at one place;
+  the slot gap is a fleet's own), and larger small ships pile the more.
+
 ### ADR-547 · 2026-10-19 · accepted — A forward base needs an enemy port in reach that a sortie may take (PLAN 7.35b4c2; amends ADR-543)
 
 - **Context.** ADR-544 made empty water under the enemy's naval bombers no sortie's target, but
