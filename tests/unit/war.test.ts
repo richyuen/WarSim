@@ -273,6 +273,22 @@ describe('wars and peace (PLAN 1.16)', () => {
     expect(war.exhaustion[0]).toBeGreaterThan(PEACE_ACCEPT_EXHAUSTION);
   });
 
+  it('a suit by exhaustion under a nuclear shock is not refused: the strike\'s peace response (PLAN 6.5a, 7.27c)', () => {
+    const s = atWar();
+    s.step(24);
+    const w = s.world;
+    occupyWest(w, 0.2);
+    events(s, 1);
+    const ids: number[] = [];
+    w.formations.forEach((id) => {
+      if (w.formations.cols.nation[id] === POL) ids.push(id);
+    });
+    for (const id of ids) destroyFormation(w, id);
+    expect(ofKind(events(s, 24), EventKind.PeaceSigned)).toEqual([]); // refused, as above
+    w.nukeShock.set(POL, 10); // a burst on Poland
+    expect(ofKind(events(s, 24), EventKind.PeaceSigned)).toEqual([[GER, POL]]);
+  });
+
   it('refusesSuit: only a leader not worn that held new ground within GAIN_DAYS refuses (PLAN 7.27c)', () => {
     const tick = 1000 * 24;
     const war = (score: number, exhaustion: number, daysSincePeak: number, held = 5e4): War => ({ id: 1, sides: [[GER], [POL]], startTick: 0, score, capitalBonus: 0, exhaustion: [exhaustion, 90], fightToDeath: [false, false], startMen: [1, 1], peakHeld: [held, 0], peakTick: [tick - daysSincePeak * 24, 0] });

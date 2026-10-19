@@ -19174,3 +19174,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   seed 8's largest income 39.5 % (limit 40), nuclear bursts 122 (28).
 - **Pin** c3bd280a → 94235073. Tests: `tests/unit/war.test.ts` (two new).
 - **Next:** PLAN 7.27e.
+- **Follow-up (same day, ADR-521 amended):** a suit by exhaustion from a side under a nuclear shock
+  is not refused (the shock's peace response, PLAN 6.5a); unit test. `sweep:quick` again: bursts
+  113 (122 with the plain rule, 28 before it), seed 5 unchanged at 75, so the exception is not why
+  bursts rose; open for 7.27d (its PLAN line now asks for them). Pin unchanged 94235073.

@@ -94,7 +94,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       measure in `docs/evidence/7.27/`; a unit test and the pin's entry if a rule moves it.
     - [ ] 7.27d The full sweep on unseen seeds (741–750). First the late years' tick, from a late
       checkpoint pinned with `--profile` (7.27a's sweep took 34 min against 7.24a's 19.5, every seed
-      30–34; seed 99's years 1–5 are not slower). AT: 7.27's.
+      30–34; seed 99's years 1–5 are not slower). Read beside it the nuclear bursts and the
+      largest income (ADR-521: on `sweep:quick` 113 bursts against 28 before the rule, 75 on seed
+      5, not from refused nuclear suits; seed 8's income 39.6 % against the limit of 40): if the
+      bursts stay several times the old count, measured before the tick. AT: 7.27's.
 - [ ] 7.28 A launch shot down and the gap after it (found 2026-10-18 by PLAN 7.26b, ADR-508): the
   critic's France (`nukeOverrun1938`, seed 7127) launches once on day 71, the warhead is shot down
   by German fighters, STRIKE_GAP_DAYS (ADR-507, keyed on the launch) holds its next attempt, and

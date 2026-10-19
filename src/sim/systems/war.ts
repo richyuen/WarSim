@@ -27,7 +27,8 @@
  * ≥ EXHAUSTED, or its score is ≤ −CRUSHED, unless either side fights to the death. A suit by
  * exhaustion alone is refused by a winner not itself worn (exhaustion ≤ PEACE_ACCEPT_EXHAUSTION)
  * that still gains ground (a new most of the other's land held within GAIN_DAYS; `refusesSuit`,
- * PLAN 7.27c, ADR-521): until then a defender that lost a token army sued at once, and a winner
+ * PLAN 7.27c, ADR-521), unless a nuclear shock is on the suing side (the strike's peace response,
+ * PLAN 6.5a): until then a defender that lost a token army sued at once, and a winner
  * gaining ground at its fastest kept a fifth of the land (seed 732, Germany v the Soviet Union). The side
  * with the higher score (the attackers on a tie) wins and the terms follow |score|:
  *   < WHITE_PEACE: white peace, every occupation between the sides reverts;
@@ -434,6 +435,7 @@ export function warSystem(world: World): void {
     notePeak(war, ATTACKERS, oAD.km2, world.tick);
     notePeak(war, DEFENDERS, oDA.km2, world.tick);
     const days = (world.tick - war.startTick) / 24;
+    const shocked = [false, false];
     for (const s of [ATTACKERS, DEFENDERS]) {
       const m = sideMen(war.sides[s]!);
       if (war.startMen[s] === 0) war.startMen[s] = m;
@@ -441,7 +443,11 @@ export function warSystem(world: World): void {
       const occ = s === ATTACKERS ? oDA.share : oAD.share;
       war.exhaustion[s] = Math.min(100, 0.1 * days + 80 * lost + 60 * occ);
       // A nuclear strike's shock on a nation of the side (PLAN 6.5a), the most of them.
-      if (world.nukeShock.size > 0) war.exhaustion[s] = Math.min(100, war.exhaustion[s]! + Math.max(0, ...war.sides[s]!.map((m) => world.nukeShock.get(m) ?? 0)));
+      const shock = world.nukeShock.size > 0 ? Math.max(0, ...war.sides[s]!.map((m) => world.nukeShock.get(m) ?? 0)) : 0;
+      if (shock > 0) {
+        war.exhaustion[s] = Math.min(100, war.exhaustion[s]! + shock);
+        shocked[s] = true;
+      }
     }
     // Capitulation: an overrun side has lost, whatever its stance.
     const dDown = oAD.share >= CAPITULATE || overrun(land, D[0]!);
@@ -467,8 +473,10 @@ export function warSystem(world: World): void {
       const broke = nc.gold[leader]! < 0 || nc.bankrupt[leader] === 1;
       const own = s === ATTACKERS ? war.score : -war.score;
       if (broke || own <= -CRUSHED) return true;
-      // Exhausted, it sues; the other side, winning, not worn and still gaining, fights on (PLAN 7.27c).
-      return war.exhaustion[s]! >= EXHAUSTED && !refusesSuit(war, 1 - s, world.tick);
+      // Exhausted, it sues; the other side, winning, not worn and still gaining, fights on (PLAN
+      // 7.27c), unless a nuclear shock is on the suing side: the peace response is the shock's
+      // purpose (PLAN 6.5a).
+      return war.exhaustion[s]! >= EXHAUSTED && (shocked[s]! || !refusesSuit(war, 1 - s, world.tick));
     });
     if (sues[0] || sues[1]) makePeace(world, war);
   }

@@ -206,6 +206,14 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   nuclear bursts (122 in all on 7 seeds, 75 of them on seed 5; 28 on 7 seeds before): wars that
   go on may reach more holders' strike gates (not measured). 7.27d's full sweep is the verdict.
 - **Pin.** c3bd280a → 94235073: the war records carry `peakHeld` and `peakTick`, and wars run on.
+- **Amended (same day): a nuclear shock's suit is not refused.** A burst's exhaustion jump exists
+  to make the struck side sue (PLAN 6.5a, `nuclear.ts`: "the peace response"); under the rule the
+  striker, leading and gaining, refused it. Now a suit by exhaustion from a side with a nuclear
+  shock on it is granted as before (unit test). `sweep:quick` again (`.cache/727/quick-nuke.log`):
+  seeds 1, 2, 4–7 the same runs; bursts 113 (122), seed 5 still 75: the exception is not what
+  raised the bursts from 28, which stays open for 7.27d. Seed 8's longest top five 14 years
+  (10), its largest income 39.6 %. Pin unchanged (94235073). Not changed: `leaveBondedWars` scales
+  `startMen` for a member that leaves but not `peakHeld`, which errs toward granting the peace.
 
 ### ADR-520 · 2026-10-18 · accepted — No patrol over home (PLAN 7.26i)
 
