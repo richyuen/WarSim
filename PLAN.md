@@ -33,6 +33,83 @@ Run 8's blocking issues and its dimensions under the DONE condition's bar (repor
 `fd27e85`, its "Fix" lines and evidence; R8-B1 to R8-B3 are PLAN 7.18 to 7.20, the dimensions 7.21
 to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
 
+Run 9's (report of 2026-10-19 on `f0be88c`, `critic/CRITIC_REPORT.md`; run 8's three blockers
+fixed): R9-B1 and R9-B2 are PLAN 7.31 and 7.32, the dimensions under the bar 7.33 to 7.37 (stats 6,
+semantic zoom 7, naval 6, aircraft 6, AI nuclear use 7; tanks reached 8). The late air war's fall
+is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up:
+
+- [ ] 7.31 Phantom sea battles (critic R9-B1, contradicts 7.19a): a battle in which no weapon can
+  reach writes "X and Y fought at sea: X lost 0 ships, Y 0" to the history every day for months.
+  Seed 2609 year 21: 288 of 294 sea battles sink nothing, 145 of them Norway or Sweden against the
+  United Kingdom at one point over 144 days; in the page one 720-man Norwegian transport group in
+  Oslofjord and 22 British fleets stacked on one Skagerrak cell 17 cells off, `pair` null, the
+  British never closing (`critic/c9_o_2609.json`, `c9_sea_2609_y21.json`). Seed 6113 years 21–30:
+  687 of 722 sink nothing, Mongolia against Japan 524 of them at one point, Germany against Britain
+  148 (`critic/c9_sea_6113_y21_30.json`). Measured first from a checkpoint of each (the critic's
+  `c9_seed2609_y20.bin` and `c9_seed6113_y20.bin` are in `critic/`, uncommitted, or made again
+  headless): why the battle forms, why the fleets do not close, why it re-forms daily. AT: the
+  critic's cases: the fleets close and fight or no battle exists; no battle logged in which no
+  weapon could reach; no battle re-formed daily at one point with no loss; the zero-loss share of
+  late sea battles on both seeds, before and after; a unit test; the pin's entry if it moves.
+- [ ] 7.32 AI nuclear strikes on empty ground, in weekly chains, told by civilian dead alone (critic
+  R9-B2): seed 2609 year 15, the Soviet Union strikes China every 7 days along one line, each burst
+  about 7 cells west of the last: 10,847 → 1,373 → 168 → 24 dead, then 10,862 → 1,334 → 120 →
+  1,749 → 204 → 22; Tibet 10,838 → 18,190 → 120 → 24; seed 9901's Soviet Union strikes China 18
+  times in 2 years for about 10,000 each; utilities 0.22 to 0.98, above the floor
+  (`critic/c9_headless_2609.json`, `_9901`, `_4483` `nukeLog`, `critic/scripts/c9_nukes.py`). The
+  player reads "…: 24 dead"; no string tells soldiers lost (`src/ui/i18n/en.json:593`). Measured
+  first: what each burst of the chain destroyed (men, guns, vehicles, industry) against what the
+  target's weighing expected. AT: the critic's chain: a target weighed by what a burst there
+  destroys; no strike near a place where the last strike found almost nothing; the alert and the
+  history name the men, guns and vehicles destroyed beside the civilian dead; bursts per world and
+  their tolls on the critic's 14 seeds × 30 years before and after (fewer chains, not no use: R8-B1
+  stays fixed); a unit test; the pin's entry.
+- [ ] 7.33 The history reads as events (stats and history 6, needs 7): beyond 7.31's phantom rows,
+  seed 7741's late history is 41 % "X's submarines raided the convoys of Y" (1,937 of 4,681 rows),
+  with no figure in them (`critic/c9_l_7741.json` `historyTypes`, `c9l_7741_4_history.png`); God
+  Mode's Spawn nation, Found city and Raze city leave no ticker or history row (`c9_q_6653.json`).
+  AT: seed 7741's late history by type before and after: convoy raids told with what they sank or
+  took, and a raid campaign one row (or a row a period) rather than a row a raid; the three God
+  actions each a history row (a unit test each); the history's filter shows them.
+- [ ] 7.34 Semantic zoom's seams (semantic zoom 7, needs 8): one wheel notch between 412 and 264 m/px
+  cuts from flat political fill with counters to terrain with soft border bands and labels, a hard
+  switch (`c9z_6113_06_07_pair.png`); at 900 m/px only counters on screen while `elementCount` is
+  3,536 (`c9_c_4483.json`); at 10 m/px on German infantry division 11 tanks overlap in piles and
+  the enemy is off screen (`c9c_4483_inf_0010m_top_crop2x.png`). AT: the critic's continuous wheel
+  zoom (seed 6113) as a sheet: the T1–T2 change a blend over at least two notches, no frame a hard
+  switch; elements drawn at 900 m/px on the critic's 4483 front; at 10 m/px no two vehicles drawn
+  overlapping (counted); a viewed formation in contact has its enemy reachable from the view (the
+  view's frame or a marker toward it).
+- [ ] 7.35 The war at sea seen and fought (naval 6, needs 8): beyond 7.31, the war at sea mostly
+  invisible: Italy–UK (seed 2251) 25 six-hour samples with a live battle on days 6 to 12, none with
+  a ticker row (`c9_n_2251_ITA_ENG.json`); Japan–USA (seed 3407) no sea battle in 12 days
+  (`c9_n_3407_JAP_USA.json`); after year 1 13 sea battles a world-year against year 1's 36
+  (`c9_headless_*.json`); at 20 m/px destroyers about 10 × 3 px and submarines 5 px
+  (`c9n_2251_ships_20m_crop4x.png`). Measured first: why a live battle gets no row, and why the
+  Pacific's two fleets do not meet. AT: every live sea battle that sinks a ship has its row;
+  Japan–USA on seed 3407 meets at sea within its first weeks, or the reason is a measured one;
+  ships at 20 m/px drawn at a size their class reads (counted in px); the late battles per
+  world-year on the critic's seeds, before and after.
+- [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
+  and 10 m/px in every probe (`c9_c_4483.json` `sorties`); the air map on day 10 of Germany–Poland
+  hatches one German zone over all of Europe, every hover "held by Germany" from London to Kiev
+  (`c9h_8217_air_hover.png`, seed 8217). The air war's fall after year 1 (air battles 925–4,302 in
+  year 1, 47–147 later; sorties aloft 36–63, then 6–15; seed 8821 under 5 aloft in 18 of 29 years)
+  follows the land war (ADR-519): PLAN 7.29, whose condition this run meets. AT: sorties drawn at 25
+  and 10 m/px over a front in contact with wings tasked on it (counted, the critic's 4483 case);
+  the air map's zones where each side's fighters hold the air, not one zone a continent (the
+  critic's 8217 hover read at London, Paris, Warsaw, Kiev).
+- [ ] 7.37 AI nuclear use believed, beyond the chains (AI nuclear use 7, needs 8): single bombs on
+  small states (Nepal 1,656,090 dead and Afghanistan 3,328,000 on seed 2609, Sweden 1,050,000 on
+  1129); Germany strikes one Canadian point twice 90 days apart for 5,620 then 439 (seed 4483,
+  utility 0.98; `RESTRIKE_DAYS` = 7 off capitals, `src/sim/systems/nuclear.ts:943`); 3 of 14 worlds
+  never see a burst while 4 to 6 nations hold 145 to 160 warheads (2251, 5527, 8821); Czechoslovakia
+  armed in the editor with a bomber group at Prague and 10 warheads loses its 6 wings by day 10 and
+  dies holding all 10, the editor saying only "10 warheads", no word in play when its means are lost
+  (`c9_g2_*_CZS.json`; what destroyed the wings untraced). Measured first: each case's decision
+  (who, why, the utility's parts). AT: per case, the decision explained or changed by a rule with an
+  ADR; the editor says a holder's means and the game says when the last is lost; the critic's
+  14 seeds' bursts before and after; a unit test for each rule; the pin's entry.
 - [ ] 7.29 The late land war's reach (from PLAN 7.26c3, ADR-519, 2026-10-18): after year 1 the land
   war runs at 1.4 formations in contact a day against year 1's 30 while 1 to 14 wars run
   (`docs/evidence/7.26/measure-g.md`), and the measures under 7.26c found the men who cannot get
@@ -41,7 +118,9 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   a way (`measure-c1.md` §6: 16 % across the sea, Japan, Britain, France; 24 % behind closed
   ground or the sea on their landmass). Not an air-war task: the air AI tasks 0.83 of the wings
   with an enemy in range, late as in year 1. Taken after 7.27 and 7.28, and only if 7.27's
-  measure or the critic's next run finds the late land war short; its AT is the land war's
+  measure or the critic's next run finds the late land war short (met 2026-10-19: run 9 finds the
+  late air war still fallen, 95 % fewer air battles, which ADR-519 traces to the land war's contact;
+  taken after 7.31 to 7.37, as 7.36's late part); its AT is the land war's
   (`landWar.ts`'s contact share of the big wars' front days, `armies.ts`), not the air's. A part
   each:
     - [ ] 7.29a A partner's transports sent to the nation's port (7.26c3b1): a transport group of

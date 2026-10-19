@@ -19349,3 +19349,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   updated: under option (a) 7.30 is done as it stands.
 - **Tools and docs only:** pin 94235073.
 - **Next:** PLAN 7.30 waits on ADR-525; 7.29 not taken (condition unmet); then PLAN 7.5 (the critic).
+
+## 2026-10-19 — Critic run 9 (PROMPT step 2a, PLAN 7.5) on `f0be88c`: 2 blocking, filed as PLAN 7.31 and 7.32
+
+- **Critic run 9** (70 min): map 7, diplomacy 7, dynamics 7, God Mode 7, editor 7, stats 6, UI 7,
+  performance 7, stability 7; semantic zoom 7, naval 6, tanks 8, aircraft 6, AI nukes 7. Blocking 2:
+  R9-B1 phantom sea battles flood the history (7.31); R9-B2 AI strikes in weekly chains on empty
+  ground, told by civilian dead alone (7.32). Run 8's three blockers fixed (R8-B1 mostly: bursts in 11
+  of 14 unseen worlds; editor-armed Czechoslovakia never strikes, filed under 7.37).
+- **Under the bar, filed** (ADR-486): 7.33 stats 6, 7.34 semantic zoom 7, 7.35 naval 6, 7.36
+  aircraft 6, 7.37 AI nukes 7. 7.29's condition met (the late air war still fallen, ADR-519's land
+  war), taken after 7.37 as 7.36's late part.
+- **Also noted, non-blocking:** the stale map tooltip (third run running); seed 99's 5-year mean tick
+  1.55 ms against the 1.5 budget (critic's solo run, run 8 1.35); the title's unstyled Cancel button.
+- **Still waits on the user:** ADR-525 (PLAN 7.30's bar).
+- **Report committed** as `0b1d284` (save binaries and screenshots left out, as in run 8).
+- **Next:** PLAN 7.31.
