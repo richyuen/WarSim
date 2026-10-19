@@ -49,7 +49,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       of 190,000–770,000 gold), two or three members of one alliance (GER ITA POL JAP), and a
       Soviet Union of 10–21 M km² and 5,000–105,000 men that Germany and Japan, at the ratio cap,
       do not take for 20 years. Checkpoints `.cache/727/s732-y25.bin`, `s735-y26.bin`, `s740-y18.bin`.
-    - [ ] 7.27b One great power's war with the Soviet Union traced from a checkpoint to its end
+    - [x] 7.27b One great power's war with the Soviet Union traced from a checkpoint to its end
       (732 from year 25: GER v SOV, 181 days old in year 26, score 35): who offered peace, at what
       score and exhaustion, the land taken, the truce's length, and through the war the share of
       the attacker's men in contact with the Soviet front and why the rest stand. The fork, for
@@ -57,8 +57,16 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       strategic AI's and stays 7.27's; the front stalled for want of men in contact is the late
       land war short on a land front, a new part of PLAN 7.29 (7.29a and b are the sea's). AT: the
       trace in `docs/evidence/7.27/`; `tools/sweep/stasis.ts` (the five of each seed's longest span).
-    - [ ] 7.27c The rule the trace names, one cause, tuned on `sweep:quick`. AT: a unit test; the
-      pin's entry.
+      Done (`docs/evidence/7.27/trace-b.md`, `tools/diag/warTrace.ts`): the war's end. 732's two
+      wars and 735's ended by the defender's suit at exhaustion 80–100, from `80·lost` on a token
+      army (12,000 men on 15.7 M km²), at score 16–53 with 9–22 % of its land taken, the attacker
+      at exhaustion 16–22 and gaining ground daily (732: half its men pressing); truce 729 days, then
+      `MAX_WARS` held by allied wars for three years. The front did not stall: no new 7.29 part.
+    - [ ] 7.27c The rule the trace names, one cause, tuned on `sweep:quick`: a suit by exhaustion
+      not granted while the winner gains ground and is not itself worn (7.27b's first choice; the
+      other two, `lost` weighed by the army a side could keep and terms beyond the land held, are
+      in `trace-b.md`). Measured first from `s732-y25.bin`: the war's end and the land taken under
+      the rule. AT: a unit test; the pin's entry.
     - [ ] 7.27d The full sweep on unseen seeds (741–750). First the late years' tick, from a late
       checkpoint pinned with `--profile` (7.27a's sweep took 34 min against 7.24a's 19.5, every seed
       30–34; seed 99's years 1–5 are not slower). AT: 7.27's.

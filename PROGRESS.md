@@ -19135,3 +19135,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   ran on pin `58594a40`, this one on `c3bd280a`, with ADR-508, 510, 517 and 518 between. What holds:
   the fixed top is in every sweep's longest spans, 7.18g's too. 7.27d's PLAN line now asks for the
   late years' tick first.
+
+## 2026-10-19 — PLAN 7.27b: Germany's wars with the Soviet Union traced
+
+- **Start:** gate green on `f29a94a`; critic not due.
+- **Tooling:** `tools/diag/warTrace.ts` (one war from a checkpoint: daily score, exhaustion split
+  into its three terms, land held; weekly the attacker's land men by where they stand, pressing
+  within PRESSURE_RADIUS + 1 of the war's front or not and why; the branch of `makePeace` that
+  ended it; then monthly `whyNotWar` and the wars of the attacker and watched nations);
+  `tools/sweep/stasis.ts` (the five of each seed's longest span; gives 7.27a's hand table line
+  for line; of 30 seeds USA 30, SOV 27).
+- **Measured** (`docs/evidence/7.27/trace-b.md`; `.cache/727/trace732.json`, `trace732b.json`,
+  `trace735.json`): three wars, one end. The defender sues at exhaustion 80–100 from `80·lost` on
+  a token army (732: one 12,000-man formation on 15.7 M km², its last lost on day 215: 34 → 100 in
+  a day), at score 16–53 with 9–22 % of its land taken, while the attacker is at exhaustion 16–22
+  and taking 10,000–20,000 km² a day. The front did not stall (732's first war: 49 % of Germany's
+  men pressing). Truce 729 days; then Germany in 3–4 wars (allied ones count) under `MAX_WARS` 2
+  until year 31.
+- **Fork:** the war's end, 7.27's; no new 7.29 part. 7.27c: a suit by exhaustion not granted
+  while the winner gains and is not worn (two other choices in the evidence).
+- **Docs and tools only:** no sim change; pin c3bd280a.
+- **Next:** PLAN 7.27c.
