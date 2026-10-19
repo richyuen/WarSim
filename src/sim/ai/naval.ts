@@ -15,9 +15,9 @@
  *   nation's warfleets in port within `SORTIE_KM` of that water together (they choose alike,
  *   and go together): a battle it would lose is not sought.
  * - At war, such a warfleet with no enemy port within `SORTIE_KM` at all stages (PLAN 7.35b2):
- *   it sails to the nearest port of its bloc's that has one (`forwardBases`), in its basin
- *   (`stageTo`, PLAN 7.35b4c), and sorties from there. The US Pacific Fleet at San Diego goes
- *   west against Japan.
+ *   it sails to the nearest port of its bloc's that has one (`forwardBases`; not empty water under
+ *   the enemy's naval bombers, PLAN 7.35b4c2), in its basin (`stageTo`, PLAN 7.35b4c1), and
+ *   sorties from there. The US Pacific Fleet at San Diego goes west against Japan.
  * - At war, a warfleet away from its ports in a zone where the enemy's power is over
  *   `AVOID_RATIO` times its own sails home (`sailHome`).
  * - At war, under the enemy's naval bombers (PLAN 7.35b3b, ADR-544: a wing of the naval role at an
@@ -217,6 +217,8 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
     if (zone !== 0 && z.closed[zone] !== 1) targets.push({ at, enemy: enemyIn(zone) });
   });
   let bases: number[] | undefined;
+  /** The targets a sortie may take (PLAN 7.35b4c2): not empty water under the enemy's naval bombers; a base with none of them in reach is no forward base. */
+  const fightable = (): { at: number }[] => targets.filter((t) => !(t.enemy === 0 && bombed((t.at % w) + 0.5, Math.floor(t.at / w) + 0.5)));
   for (const { id } of war) {
     // Its landing's water within reach, else the nearest enemy port within reach whose sea the fleets there together can win.
     let target = escort >= 0 && km(id, escort) <= SORTIE_KM ? escort : -1;
@@ -233,7 +235,7 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
       }
     }
     // No enemy port within reach at all: it stages, to its bloc's nearest port that has one (PLAN 7.35b2).
-    if (target < 0 && !inReach && targets.length > 0) target = stageTo(world, id, (bases ??= forwardBases(world, bloc, targets, war, enemyIn)));
+    if (target < 0 && !inReach && targets.length > 0) target = stageTo(world, id, (bases ??= forwardBases(world, bloc, fightable(), war, enemyIn)));
     if (target < 0 || near(cellOf(id), target)) continue;
     orderSail(world, id, (target % w) + 0.5, Math.floor(target / w) + 0.5);
   }

@@ -59,7 +59,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
       with none counted, and why); the strike row clicked in the page,
       the struck ships and the strike seen (a screenshot, viewed); the specs that take a battle's
       row take a ship's-reach one; render only, the pin unchanged.
-    - [ ] 7.35b Japan–USA on seed 3407 meets at sea within its first weeks, or the reason is a
+    - [x] 7.35b Japan–USA on seed 3407 meets at sea within its first weeks, or the reason is a
       measured one (where each side's fleets go, and why). In three parts:
       - [x] 7.35b1 Measured (`tools/diag/seaMeet.ts`, `docs/evidence/7.35/measure-b.md`): the US
         Pacific Fleet (51,000 power at San Diego and Pearl Harbor) has no Japanese port within
@@ -97,7 +97,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           `AT_PORT_CELLS` of an `embarked` water) is exempt, and test it. In the same commit, the
           doc's §2 medians (33 days, 26 strikes) recomputed on the 14 seeds: they came from the
           16 cases' first pass (n = 125).
-      - [ ] 7.35b4 A fleet at a lost base sails for its nation's nearest port, not its bloc's
+      - [x] 7.35b4 A fleet at a lost base sails for its nation's nearest port, not its bloc's
         (`atLostBase`, `sailHome`, ADR-261): on seed 3407 with 7.35b2 the US fleets stage to
         Guam, Japan takes it on day 6, and they turn for Pago Pago (4,300 km) rather than the
         Philippines (2,000 km); the first Japan–US battle comes on day 39.5. Also in its code:
@@ -117,7 +117,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           home, a repulsed landing, `rebaseFleets`, the break-off's `atOwnPort`) read in the ADR
           (amends ADR-261, ADR-264). AT: a unit test (the US fleet at a lost Guam sails for a bloc
           port nearer than its nation's; red without the rule); the naval specs by hand; the pin.
-        - [ ] 7.35b4c `forwardBases`' two holes: a base in another basin than the fleet's (`basinOf`,
+        - [x] 7.35b4c `forwardBases`' two holes: a base in another basin than the fleet's (`basinOf`,
           in `stage`, per fleet) and targets that are empty water under the enemy's naval bombers
           (the sortie's `bombed` test). AT: a unit test each; the pin; `seaMeet 3407 JAP USA 40`
           after, against b4a's. In two parts (each moves the pin):
@@ -125,7 +125,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
             start, 142 of 2,726 fleet-and-war pairs had a lake's port nearest (Toronto, Detroit,
             Milwaukee, Baku, Kampala). AT: Canada on Cuba stages to Bermuda, not Toronto (red
             without); the pin.
-          - [ ] 7.35b4c2 The bombed targets: `forwardBases` reads only targets that are not empty
+          - [x] 7.35b4c2 The bombed targets: `forwardBases` reads only targets that are not empty
             water under the enemy's naval bombers. AT: a unit test (red without); the pin; the
             "after" run of `seaMeet 3407 JAP USA 40` against b4a's (`measure-b4.md` §2).
     - [ ] 7.35c Ships at 20 m/px drawn at a size their class reads (destroyers about 10 × 3 px,
@@ -138,6 +138,10 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
       (`strikeTarget` sorts `wingBase` once per battle with no pair, per snapshot).
     - [ ] 7.35d The late sea battles per world-year on the critic's seeds (13 after year 1 against
       year 1's 36, `c9_headless_*.json`), measured, before and after.
+      From 7.35b4 (ADR-546, ADR-547): `seaKm` is the straight line, so a forward base or a sortie's
+      target may lie across land (Dublin and Kuwait City stage against Italy's Mediterranean ports);
+      and a sortie's target has no basin test (a lake's enemy port may be the nearest). Measure how
+      often either decides an order before a rule.
 - [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
   and 10 m/px in every probe (`c9_c_4483.json` `sorties`); the air map on day 10 of Germany–Poland
   hatches one German zone over all of Europe, every hover "held by Germany" from London to Kiev

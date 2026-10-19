@@ -135,7 +135,8 @@ for (let day = 0; day < days; day++) {
         if (holder === 0 || at < 0 || !w.wars.atWar(n, holder)) return;
         const zone = z.zoneOf[at]!;
         if (zone === 0 || z.closed[zone] === 1) return;
-        targets.push({ at });
+        // A forward base's targets, as `plan`'s (PLAN 7.35b4c2): not empty water under the bombers.
+        if (!(enemyIn(zone) === 0 && bombed((at % ww) + 0.5, Math.floor(at / ww) + 0.5))) targets.push({ at });
         const d = km(at);
         if (d < anyBest.km) anyBest = { name: `${p.name}(${tag(holder)})`, km: Math.round(d) };
         if (d > SORTIE_KM) return;

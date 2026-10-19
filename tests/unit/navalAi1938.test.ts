@@ -422,6 +422,54 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     });
   });
 
+  // PLAN 7.35b4c2: a forward base is one with an enemy port in reach that is not empty water under
+  // the enemy's naval bombers (no sortie goes there, ADR-544: a fleet staged there would stand).
+  it('the United Kingdom at war with Italy: its far fleets do not stage to a base whose Italian ports in reach are all empty under Italy\'s naval bombers', () => {
+    /** The goals of the British fleets with no Italian port within SORTIE_KM at the UK's turn, Italy's naval bombers over `cover`'s ports or none; and the Italian ports in reach of the first goal. */
+    const run = (cover: number[]): { goals: number[]; inReach: number[]; w: World } => {
+      const s = new Sim({ scenario: '1938', seed: 4611, assets: assets1938(W) });
+      const w = s.world;
+      const c = w.formations.cols;
+      expect(declareWar(w, ENG, ITA, true)).not.toBeNull();
+      w.nations.cols.aiOff[ITA] = 1;
+      // Italy's ships off East Africa sent to Taranto: its ports there are empty water.
+      const taranto = w.ports.find((p) => p.name === 'Taranto')!;
+      for (const f of own(s, ITA)) if (c.y[f]! > taranto.y + 40) [c.x[f], c.y[f]] = [taranto.x, taranto.y];
+      // A naval bomber group of Italy's at the airbase nearest each port's water of `cover`.
+      for (const t of cover) {
+        let best = Infinity;
+        let base = -1;
+        w.airbases.forEach((a, i) => {
+          const d = seaKm(w, ...w.cellPoint(a.cell), (t % W) + 0.5, Math.floor(t / W) + 0.5);
+          if (d < best) [best, base] = [d, i];
+        });
+        const wing = addFleet(w, ITA, 'naval_bomber_group', ...w.cellPoint(w.airbases[base]!.cell));
+        w.wingBase.set(wing, base + 1);
+        expect(navalBombers(w, ENG).some((b) => seaKm(w, b.x, b.y, (t % W) + 0.5, Math.floor(t / W) + 0.5) <= b.r), `bombers over ${t}`).toBe(true);
+      }
+      const enemy = enemyWaters(w, ENG);
+      const far = own(s, ENG).filter((f) => Math.min(...enemy.map((e) => kmTo(w, c.x[f]!, c.y[f]!, e))) > SORTIE_KM);
+      expect(far.length).toBeGreaterThan(0);
+      let d = w.tick / 24;
+      while ((d + ENG) % STAGGER !== 0) d++;
+      w.tick = d * 24;
+      navalAi(w);
+      const goals = far.filter((f) => c.moving[f] === 1).map((f) => c.targetCell[f]!);
+      expect(goals.length).toBeGreaterThan(0);
+      const g = goals[0]!;
+      const inReach = enemy.filter((e) => kmTo(w, (g % W) + 0.5, Math.floor(g / W) + 0.5, e) <= SORTIE_KM);
+      return { goals, inReach, w };
+    };
+    const name = (w: World, cell: number): string => w.ports[portSeaOf(w).indexOf(cell)]?.name ?? `cell ${cell}`;
+    const before = run([]);
+    // The first base's Italian ports in reach, all empty.
+    expect(before.inReach.length).toBeGreaterThan(0);
+    for (const t of before.inReach) expect(navalPower(before.w).get(seaOf(before.w).zoneOf[t]!)?.get(ITA) ?? 0, name(before.w, t)).toBe(0);
+    const after = run(before.inReach);
+    process.stderr.write(`ENG–ITA far fleets: without bombers to ${[...new Set(before.goals.map((g) => name(before.w, g)))].join(', ')} (in reach ${before.inReach.map((t) => name(before.w, t)).join(', ')}); with them to ${[...new Set(after.goals.map((g) => name(after.w, g)))].join(', ')}\n`);
+    expect(after.goals).not.toContain(before.goals[0]);
+  });
+
   it('at peace a fleet away from its ports sails home', () => {
     const s = new Sim({ scenario: '1938', seed: 4604, assets: assets1938(W) });
     const w = s.world;

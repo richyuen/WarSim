@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-547 · 2026-10-19 · accepted — A forward base needs an enemy port in reach that a sortie may take (PLAN 7.35b4c2; amends ADR-543)
+
+- **Context.** ADR-544 made empty water under the enemy's naval bombers no sortie's target, but
+  `forwardBases` (ADR-543) still read every enemy port: a fleet could stage to a base whose every
+  port in reach is such water, and stand there. The UK at war with Italy, Italy's ships off East
+  Africa gone: its far fleets stage to Muscat, whose Italian ports in reach are Assab and Massawa;
+  with Italy's naval bombers over the two, they still did.
+- **Decision.** `plan` passes `forwardBases` the targets a sortie may take (`fightable`: not empty
+  water under the enemy's naval bombers, the sortie's own test). With none, no base; the fleet
+  stands. `seaMeet` mirrors it.
+- **Consequences.** The test above (`navalAi1938.test.ts`; red without the rule): with the bombers
+  the far fleets stage to Kuwait City and Victoria, not Muscat. The pin stays 06e19c19 (seed 99's
+  year has no decision the rule changes; run fresh). PLAN 7.35b's "after" (`seaMeet 3407 JAP USA
+  40`, with ADR-545 and ADR-546; `docs/evidence/7.35/measure-b4.md` §2): ten Japan–US sea battles
+  in 40 days, the first on day 13.6 at Davao (before one, on day 39.5), every ship sunk in an hour
+  with a row (`seaRows`).
+- **Not done:** `seaKm` is the straight line, so a forward base may be across land from its targets
+  (Dublin and Kuwait City against Italy's Mediterranean ports in the same test), as a sortie's
+  target may; and a sortie's target has no basin test (ADR-546). A line under PLAN 7.35d.
+
 ### ADR-546 · 2026-10-19 · accepted — A fleet stages only to a forward base in its own sea basin (PLAN 7.35b4c1; amends ADR-543)
 
 - **Context.** ADR-543's staging takes the forward base nearest the fleet by the line (`seaKm`),

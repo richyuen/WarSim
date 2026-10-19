@@ -25,3 +25,23 @@ target (`plan`'s test since 7.35b3b), with its reason in `why`.
   the sail home (`sailHome`) is the nation's.
 - **Battles.** One Japan–US sea battle in 40 days, day 39.5 at General Santos. Least gap between a
   Japanese and an American fleet: 279 km on day 5 (the Asiatic squadron off Takao).
+
+## 2. After (7.35b4b, 7.35b4c1, 7.35b4c2)
+
+The three rules: a fleet sent home sails for its bloc's nearest port, a transport group for its
+nation's (ADR-545); a fleet stages only to a forward base in its own basin (ADR-546); a forward
+base is one with an enemy port in reach that is not empty water under the enemy's naval bombers
+(ADR-547). Same run, `seaMeet 3407 JAP USA 40`.
+
+- **Day 1 to 10** as before: every US warfleet stages to Guam; Japan stands at Guam on day 6.
+- **Guam lost.** The fleets arriving there sail for Davao (the Philippines', of the US bloc), not
+  Pago Pago: US fleets' destinations by day: day 15, 15 to Guam and 5 to or at Davao; day 20, 7 to
+  Guam and 7 to or at Davao, none to Pago Pago; day 39, 9 at Davao and 3 at Cagayan de Oro (12 US
+  fleets with power left on day 39 of 24 on day 1, before 22; Japan's side 25 of 30).
+- **Battles.** Ten Japan–US sea battles in 40 days (before one), the first on day 13.6 at Davao
+  (before day 39.5), the rest on days 14.8 to 23.5, all off Davao. Least gap between the two
+  sides' fleets 65 km (day 23; before 279 km).
+- **Rows.** `seaRows 3407 JAP USA 40`: the ten Japan–US battles, 138 hours, 22 ships sunk; 0 hours
+  with no row and 0 ships sunk with no row (every hour a carrier strike's row: no pair in a ship's
+  reach in any of them).
+

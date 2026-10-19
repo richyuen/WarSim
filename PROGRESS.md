@@ -19864,3 +19864,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin** dd69fc40 → 06e19c19 (seed 99's year: 6 sea battles, first on day 45.2, both as before).
 - **Not done** (ADR-546): a sortie's target has no basin test either.
 - **Next:** PLAN 7.35b4c2 (`forwardBases`' bombed targets; the "after" run).
+
+## 2026-10-19 — PLAN 7.35b4c2: a forward base needs a port in reach a sortie may take (critic R9 naval 6; ADR-547); PLAN 7.35b4 and 7.35b done
+
+- **Start:** gate green on `5ed8942`; critic not due.
+- **Rule** (ADR-547, `naval.ts`): `plan` passes `forwardBases` only the targets a sortie may take
+  (`fightable`: not empty water under the enemy's naval bombers); `seaMeet` mirrors it.
+- **Tests:** `navalAi1938.test.ts` + 1: the UK on Italy, Italy's East-African ships sent home; with
+  no bombers the far British fleets stage to Muscat (Assab and Massawa in reach); with Italy's
+  naval bombers over both, to Kuwait City and Victoria (red without the rule: Muscat).
+- **Pin** unchanged, 06e19c19, run fresh.
+- **After** (`seaMeet 3407 JAP USA 40`, `measure-b4.md` §2, with 7.35b4b and c1): ten Japan–US sea
+  battles in 40 days, the first on day 13.6 at Davao (before one, day 39.5); the fleets that lost
+  Guam sail for Davao, not Pago Pago; least gap 65 km (before 279). `seaRows 3407 JAP USA 40`: 22
+  ships sunk in those battles, 0 in an hour with no row. PLAN 7.35b's AT met (a meeting within the
+  first weeks).
+- **Not done** (a line under PLAN 7.35d): `seaKm` is the straight line, so a forward base or a
+  target may be across land (Dublin, Kuwait City against Italy's Mediterranean ports); a sortie's
+  target has no basin test.
+- **By hand** (the gate skips e2e; for 7.35b4c1 and c2): `carrierStrikeRow1938`, `seaRow1938` (3),
+  `navalDemo1938`, `seaBattle1938`, `seaBattleSeen1938` (alone) green.
+- **Next:** PLAN 7.35c (ships at 20 m/px drawn at a size their class reads).
