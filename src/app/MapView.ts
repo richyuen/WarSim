@@ -53,6 +53,7 @@ import { appendTurrets, TurretAims } from '../render/units/turrets';
 import { SLOT_GAP_CELLS, shipFrameMinPx, shipSideCells } from '../render/units/ships';
 import { appendWakes } from '../render/units/wakes';
 import { contactLines, drawContactLines, type ContactForm, type ContactLine } from '../render/units/contactLines';
+import { drawEnemyPointers, enemyPointers, POINTER_FONT, type EnemyPointer, type PointerSource } from '../render/units/enemyPointers';
 import { spriteTint } from '../render/units/tint';
 import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
@@ -356,6 +357,14 @@ export class MapView {
         const r = canvas.getBoundingClientRect();
         const sx = e.clientX - r.left;
         const sy = e.clientY - r.top;
+        // A pointer toward an enemy off the frame (PLAN 7.34d): the camera goes to that enemy's block, at the same zoom.
+        const enemy = this.enemyPointerAt(sx, sy);
+        const pos = enemy === 0 ? null : this.formationPos(enemy);
+        if (pos) {
+          this.controller.set({ ...this.controller.cam, cx: this.unwrapped(pos[0], this.controller.cam.cx), cy: pos[1] });
+          down = null;
+          return;
+        }
         const cell = this.cellAt(sx, sy);
         // A God Mode map tool or a player order consumes the click (PLAN 1.32b/1.33a); otherwise
         // it selects the nation.
@@ -560,6 +569,7 @@ export class MapView {
     this.formFlags = f.flags.slice(0, f.count);
     this.formFacing = f.facing.slice(0, f.count);
     this.formTarget = f.target.slice(0, f.count);
+    this.formEnemy = f.enemy.slice(0, f.count);
     this.formWayStart = f.wayStart.slice(0, f.count + 1);
     this.formWay = f.way.slice(0, f.wayStart[f.count] ?? 0);
     this.majors = s.majors.slice();
@@ -784,6 +794,8 @@ export class MapView {
   /** What each formation's block faces, radians (PLAN 7.11a: the line of contact). */
   private formFacing = new Float32Array(0);
   private formTarget = new Uint32Array(0);
+  /** Each formation's enemy in contact (PLAN 7.34d), 0 for none. */
+  private formEnemy = new Uint32Array(0);
   /** The ways left of the fleets under way (PLAN 4.7d; `Snapshot.formations.way`). */
   private formWayStart = new Uint32Array(1);
   private formWay = new Float32Array(0);
@@ -1544,6 +1556,67 @@ export class MapView {
     return shown;
   }
 
+  /** The pointers toward an enemy off the frame drawn last frame, and each one's box, CSS px (PLAN 7.34d; the click, tests). */
+  enemyPointersShown: EnemyPointer[] = [];
+  private enemyPointerBoxes: { x: number; y: number; w: number; h: number }[] = [];
+
+  /**
+   * At T2 and T3, with the element layer: for each enemy in contact with a formation of the view
+   * whose block is off the frame, a pointer at the frame's edge toward it (PLAN 7.34d,
+   * `enemyPointers`): its name and how far it is from the frame's middle.
+   */
+  private drawPointers(ctx: CanvasRenderingContext2D, cam: Camera, vw: number, vh: number): void {
+    this.enemyPointersShown = [];
+    this.enemyPointerBoxes = [];
+    const alpha = this.elementOpacity;
+    if (alpha <= 0.01) return;
+    const index = new Map<number, number>();
+    for (let i = 0; i < this.formIds.length; i++) index.set(this.formIds[i]!, i);
+    const sources: PointerSource[] = [];
+    for (let i = 0; i < this.formIds.length; i++) {
+      const enemy = this.formEnemy[i]!;
+      const j = enemy === 0 ? undefined : index.get(enemy);
+      if (j === undefined) continue;
+      // Each block at its copy nearest the camera, on a map that loops.
+      const [x, y] = worldToScreen(cam, this.unwrapped(this.blockX[i]!, cam.cx), this.blockY[i]!, vw, vh);
+      if (x < 0 || x > vw || y < 0 || y > vh) continue;
+      const [ex, ey] = worldToScreen(cam, this.unwrapped(this.blockX[j]!, cam.cx), this.blockY[j]!, vw, vh);
+      sources.push({ id: this.formIds[i]!, x, y, enemy, enemyNation: this.formNation[j]!, ex, ey });
+    }
+    if (sources.length === 0) return;
+    const at = this.canvas.getBoundingClientRect();
+    // Clear of the page's boxes and of the formations' tags of this frame.
+    const avoid = this.tagObstacles().filter((o) => o.w > 0 && o.h > 0).map((o) => ({ x: o.x - at.left, y: o.y - at.top, w: o.w, h: o.h }));
+    for (const r of this.tagRects) avoid.push({ x: r.x, y: r.y, w: r.w, h: r.h });
+    const [cx, cy] = [vw / 2, vh / 2];
+    const text = new Map<number, string>();
+    for (const s of sources) {
+      if (text.has(s.enemy)) continue;
+      const km = (Math.hypot(s.ex - cx, s.ey - cy) / cam.scale) * this.geo.kmPerCell;
+      text.set(s.enemy, t('formation.enemyAway', { name: this.formationName(s.enemy, this.formTemplate[index.get(s.enemy)!]!), km: Math.round(km) }));
+    }
+    ctx.font = POINTER_FONT(this.unitScale);
+    const pointers = enemyPointers(sources, vw, vh, avoid, this.unitScale, (e) => ctx.measureText(text.get(e) ?? '').width);
+    const colour = (n: number): string => `#${spriteTint(this.ownColor.get(n) ?? 0x888888).toString(16).padStart(6, '0')}`;
+    this.enemyPointerBoxes = drawEnemyPointers(ctx, pointers, alpha, colour, (p) => text.get(p.enemy) ?? '', vw, vh, this.unitScale);
+    this.enemyPointersShown = pointers;
+  }
+
+  /** The enemy whose pointer is under a CSS-px point (PLAN 7.34d), or 0. */
+  enemyPointerAt(sx: number, sy: number): number {
+    for (let k = this.enemyPointerBoxes.length - 1; k >= 0; k--) {
+      const b = this.enemyPointerBoxes[k]!;
+      if (sx >= b.x && sx <= b.x + b.w && sy >= b.y && sy <= b.y + b.h) return this.enemyPointersShown[k]!.enemy;
+    }
+    return 0;
+  }
+
+  /** The enemy formation `id` is in contact with, from the last snapshot (PLAN 7.34d), or 0 (tests). */
+  formationEnemy(id: number): number {
+    const i = this.formIds.indexOf(id);
+    return i < 0 ? 0 : this.formEnemy[i]!;
+  }
+
   /** Side of an element sprite in CSS px (the shader's rule: ELEMENT_CELLS, at least ELEMENT_MIN_PX, × the size setting). */
   get elementPx(): number {
     return Math.max(ELEMENT_CELLS * sizeScale * this.controller.cam.scale, ELEMENT_MIN_PX) * this.unitScale;
@@ -1562,6 +1635,8 @@ export class MapView {
     this.wrecks.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, Math.min(this.elementPx, WRECK_MAX_PX * this.unitScale));
     // The line of contact between two formations in contact facing each other (PLAN 7.11a).
     this.contactLinesShown = this.drawContact(ctx, cam, vw, vh);
+    // Toward the enemy of a formation in contact whose enemy is off the frame (PLAN 7.34d).
+    this.drawPointers(ctx, cam, vw, vh);
     // At T3 a shot leaves the muzzle of a figure, where the turret of this frame has it (PLAN 3.6c).
     const figures = this.individualCount > 0 ? this.shares.individuals : 0;
     // A burning hull and a mark of the fallen are a figure's: they are there at the zoom of the

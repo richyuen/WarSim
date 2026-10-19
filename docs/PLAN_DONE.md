@@ -11794,3 +11794,63 @@ Of 7.33 (open in PLAN.md):
   - [x] 7.33b God's acts told: Spawn nation its own kind (not a revolt; `lives` counts it a birth,
     not a revolt), Found city and Raze city rows with the town's name kept, each in the ticker and
     the history's type filter. AT: a unit test each; the filter lists the three kinds.
+
+<!-- moved 2026-10-19 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.34 Semantic zoom's seams (semantic zoom 7, needs 8): one wheel notch between 412 and 264 m/px
+  cuts from flat political fill with counters to terrain with soft border bands and labels, a hard
+  switch (`c9z_6113_06_07_pair.png`); at 900 m/px only counters on screen while `elementCount` is
+  3,536 (`c9_c_4483.json`); at 10 m/px on German infantry division 11 tanks overlap in piles and
+  the enemy is off screen (`c9c_4483_inf_0010m_top_crop2x.png`). AT: the critic's continuous wheel
+  zoom (seed 6113) as a sheet: the T1–T2 change a blend over at least two notches, no frame a hard
+  switch; elements drawn at 900 m/px on the critic's 4483 front; at 10 m/px no two vehicles drawn
+  overlapping (counted); a viewed formation in contact has its enemy reachable from the view (the
+  view's frame or a marker toward it). A part each:
+    - [x] 7.34a The map's T1 → T2 change a blend by the zoom: the ground of T2 (the terrain's
+      colour under the fill's cast, hillshade, texture, trees and buildings) comes in with the
+      zoom alone, none at 750 m/px and all of it at 300, linear in the zoom's log (1.32 octaves),
+      in both directions, in place of the sprites' share of the handover × `groundReach`. The
+      unit layers' change (markers to sprites and tags) stays the designed morph by time (SPEC
+      §8, PLAN 2.7c). AT: the critic's sheet re-taken (seed 6113, 6,000 to 3 m/px, a step of
+      1.5625×): the ground's share changes by at most 0.5 from one frame to the next, the frames
+      viewed; `groundThings1938` and `legendOccupied1938` rewritten to the rule and green; a
+      frame's time at 500 m/px before and after; render only, the pin unchanged.
+    - [x] 7.34b Elements drawn at 900 m/px on the critic's 4483 front (`elementCount` 3,536 and only
+      counters on screen). Measured first: what the view holds at 900 m/px there and why no
+      element shows. AT: elements drawn there (counted).
+    - [x] 7.34c No two vehicles drawn overlapping at 10 m/px (`c9c_4483_inf_0010m_top_crop2x.png`,
+      German infantry division 11 on seed 4483). Measured first: where the piles come from (the
+      slots of a formation, two formations' elements on one cell). AT: on the critic's case, no
+      two vehicle figures overlapping (counted). Measured (a probe, seed 4483, every German
+      armoured and mechanised formation at 10 m/px, days 3 to 7; a vehicle's hull box with its
+      outline): every overlapping pair is two neighbouring elements of one formation, none of
+      one element, none of two formations. Two causes, a part each:
+        - [x] 7.34c1 A block at rest (Armoured division 42, never in contact: 149 of 340
+          vehicles overlapped, its elements 0.030 cells apart): an element's ranks of four are
+          0.0337 cells across, wider than its slot (0.03). The ranks laid out so each class's
+          hulls fit its slot (the across pitch the turret's reach clear of the next hull, no
+          jitter; medium and heavy figures by a scale of their class), the light hull 14 px
+          kept. AT: a unit test, every class's hull boxes inside the slot's square at every
+          facing, none of an element on another, a turret turned any way off the next hull; the
+          probe on division 42 reads 0; render only, the pin unchanged.
+        - [x] 7.34c2 A block in contact (`DEPLOY_SCATTER`, the elements 0.012 to 0.015 cells
+          apart, Armoured divisions 40 and 41): no rigid layout of full size fits. Each element's
+          figures fitted to the room its neighbours leave (a scale per element, the least over
+          its neighbours of a bound both keep), the same for what is drawn on a figure (shots,
+          wrecks). AT: on the critic's 4483 case, the engaged armoured division at 10 m/px, no
+          two vehicle figures overlapping (counted); the least figure drawn said in px.
+    - [x] 7.34d The enemy of a viewed formation in contact reachable from the view at 10 m/px (the
+      view's frame or a marker toward it). AT: on the critic's 4483 case, the enemy in the frame
+      or a marker toward it, seen.

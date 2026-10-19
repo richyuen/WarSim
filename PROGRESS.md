@@ -19672,3 +19672,32 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Perf:** `fitScales` once per T3 build (a grid of the vehicles, pairs within reach).
 - **No rule change:** pin 45c20987.
 - **Next:** PLAN 7.34d (the enemy reachable from a view at 10 m/px).
+
+## 2026-10-19 — PLAN 7.34d: a pointer toward the enemy off the frame (critic R9 semantic zoom 7; ADR-541); PLAN 7.34 done
+
+- **Start:** gate green on `3a032ee`; critic not due.
+- **Measured** (a probe spec, removed; seed 4483 at HEAD, the camera on the block of each German
+  formation in contact, 1600 × 900 at 10 m/px, days 1 to 5): 12 of 15 views have the enemy's
+  block 274 to 362 px from the middle and its elements in the frame; 3 have it 619 to 981 px off
+  (division 11 on day 4: 738 px, 0 of its elements; Armoured division 40 on day 5: 981 px). The
+  second line of a file stands 6.7 km from its enemy's block (`DEPLOY_LINES`, sized for 20 m/px).
+  The critic's `pos` for division 11 equals its day-3 block at HEAD; the critic's frame is day 4's.
+- **Rule** (view only, ADR-541): the snapshot carries each formation's enemy in contact
+  (`contactsOf`); at T2 and T3 an enemy off the frame of a formation in the frame gets a pointer
+  at the edge (`render/units/enemyPointers.ts`): an arrow in its tint, its name and km, clear of
+  the page's boxes and the tags; a click takes the camera there at the same zoom.
+- **Tests:** `enemyPointers.test.ts` (7). AT `enemyPointer1938`: 4 views with the enemy in the
+  frame and no pointer; division 11 on day 4 one pointer at the top edge toward Polish infantry
+  division 549, 7 km, its arrow the tint's pixel; the click shows 28 of its elements. Seen:
+  `docs/evidence/7.34/d-4483-11-day4-10m.png` (first take: the label lay under Armoured division
+  40's tag; now placed clear of the tags), `d-4483-11-day4-10m-clicked.png`.
+- **By hand** (the gate skips e2e): `contactLine`, `battleView`, `tankBattle`, `vehicleFit`, `tiers`, `markers`,
+  `closeZoom`, `fightSeen`, `individuals`, `muzzles`, `burning` green; `handover` red once in that
+  batch of 12 (T0 ↔ T1 timed out after 120 s, a tier without pointers), green alone: load.
+- **Perf:** a pass over the formations per frame at T2/T3 (those with an enemy), a few pointers.
+- **`server.test.ts`:** the snapshot's buffers 21 (the `enemy` column), the bound moved as at
+  PLAN 3.11a, 4.7d and 7.4f23.
+- **No rule change:** pin 45c20987.
+- **PLAN 7.34** ticked: its four parts done (a blend over the zoom, elements at 900 m/px, no
+  vehicle on another at 10 m/px, the enemy reachable).
+- **Next:** PLAN 7.35.

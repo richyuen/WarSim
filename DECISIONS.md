@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-541 · 2026-10-19 · accepted — A pointer toward the enemy off the frame of a formation in contact (PLAN 7.34d)
+
+- **Context.** Critic run 9, semantic zoom 7: "at 10 m/px on German infantry division 11 the
+  enemy is off screen; the screen is all grey German figures" (`c9c_4483_inf_0010m.png`). Measured
+  (a probe, removed; seed 4483 at HEAD, the camera on the block of each German formation in
+  contact, 1600 × 900 at 10 m/px, days 1 to 5): of 15 views, 12 have the enemy's block 274 to 362
+  px from the middle and 8 to 47 of its elements in the frame; 3 have it 619 to 981 px off and
+  0 to 12 elements in (division 11 on day 4: 738 px, none). Those are formations in the second
+  line of a file (`DEPLOY_LINES`), whose middle is 6.7 km from the enemy's block by design, sized
+  for the battle view's 20 m/px (ADR-89, PLAN 3.11c3a); a 10 m/px frame is 4.5 km from its middle
+  to its top. The critic's camera stood on division 11's block of day 3 (its `pos` equals it at
+  HEAD); the critic's frame is the one this repo's day 4 gives.
+- **Decision** (view only). The snapshot carries each formation's enemy in contact (`enemy`: the
+  sim's `contactsOf`, as the panel's fight has it; 0 for none). At T2 and T3, at the element
+  layer's opacity, for each enemy whose block is off the frame of a formation whose block is in
+  it: one pointer (`render/units/enemyPointers.ts`), an arrow in the enemy's sprite tint with a
+  dark rim at the frame's edge (10 px in), where the line from the frame's middle to that block
+  meets it, and behind it the enemy's name and its distance from the frame's middle in km. It
+  slides along its edge clear of the page's boxes and the formations' tags of the frame; of two
+  within 40 px the farther enemy's is left out. A click on it takes the camera to that enemy's
+  block at the same zoom.
+- **Why not a frame that holds both.** The panel's "to the fight" (PLAN 3.11b) frames a formation
+  and its enemy, at the zoom that takes. A view at 10 m/px is one the player chose; moving or
+  zooming it for them takes away the close look they asked for. Nor a third line pulled in: the
+  lines' depth is the battle's rule (the pin's).
+- **Consequences.** The protocol has one more formation column (4 bytes a formation). The AT
+  (`tests/e2e/enemyPointer1938.spec.ts`): on the critic's case every view with the enemy in the
+  frame has no pointer for it (4), and division 11 on day 4 has one, at the top edge, pointing
+  at the block of Polish infantry division 549 7 km off, in its tint; a click shows 28 of its
+  elements. Render only: the pin unchanged (45c20987).
+
 ### ADR-540 · 2026-10-19 · accepted — Vehicles fitted to the room their neighbours leave: no vehicle on another in a block in contact (PLAN 7.34c2)
 
 - **Context.** Critic run 9, semantic zoom 7: "at 10 m/px ... tanks overlapping in piles"

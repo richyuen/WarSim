@@ -176,6 +176,8 @@ export interface SnapshotFormations {
   flags: Uint8Array;
   /** Order target cell while moving (row-major index), else 0. */
   target: Uint32Array;
+  /** The formation it is in contact with, its nearest enemy in contact (`contactsOf`, PLAN 7.34d), else 0. */
+  enemy: Uint32Array;
   /**
    * The way left of a fleet under way (PLAN 4.7d, `wayLine`): the points its order line turns
    * at, `x, y` in cells by twos, formation i's from `wayStart[i]` to `wayStart[i + 1]` (in

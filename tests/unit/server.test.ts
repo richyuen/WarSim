@@ -146,8 +146,9 @@ describe('SimServer', () => {
     expect(pool.allocated).toBeLessThan(64);
     // The buffers of the one snapshot in flight: 17 since PLAN 3.11a (16 and the formations' block
     // places), 19 since PLAN 4.7d (and a fleet's way: its points and where each formation's begin),
-    // 20 since PLAN 7.4f23 (each formation's generation).
-    expect(main.server.pool.outstanding).toBeLessThanOrEqual(20);
+    // 20 since PLAN 7.4f23 (each formation's generation), 21 since PLAN 7.34d (each formation's
+    // enemy in contact).
+    expect(main.server.pool.outstanding).toBeLessThanOrEqual(21);
   });
 
   // PLAN 1.36: a paused God/editor command applied while a snapshot is in flight owes the UI a
