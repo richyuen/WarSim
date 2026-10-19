@@ -144,7 +144,23 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
       ADR-545: `atLostBase`'s lost port is one the fleet's nation owns, so a partner's port taken by
       the enemy is no lost base (on seed 3407 Davao, the Philippines', is Japan's by day 30, and 9 US
       fleets stand at it on day 39, `measure-b4.md` §2); "owned by the bloc" would keep ADR-264's
-      reason. Measure how often each decides an order before a rule.
+      reason. Measure how often each decides an order before a rule. In parts (one cause each; the
+      "after" run once, on the last):
+      - [x] 7.35d1 Measured (`tools/diag/seaYears.ts`, `docs/evidence/7.35/measure-d.md`): the 14
+        seeds × 30 years at HEAD, per year the sea battles (all, those that sank a ship, by pair),
+        the armed fleets and their power, the pairs at war with a navy each in one basin, their
+        fleets under way; against the critic's (36 and 13, its runs at `f0be88c`). Which of the
+        three (navies gone, no two navies at war, navies at war in port) the fall is. No rule: the
+        pin unchanged.
+      - [ ] 7.35d2 Why navies at war stand in port (d1, `measure-d.md` §2: after year 1 the navies
+        keep 91 % of their power and the pairs at war with a navy each in one basin hold, 9.1 → 7.7
+        a day, but their fleets under way fall 4.6 % → 1.2 % and battles that sink a ship 20 → 1.9
+        a world-year). Measured per fleet-day of those pairs (14 seeds, years 2 to 6): which test of
+        `plan` holds it (no enemy port within `SORTIE_KM`, no forward base, the enemy's power in the
+        target's zone, naval bombers over it, its own state), and the three holes (a stage's or a
+        sortie's line across land, a sortie's target in another basin, fleet-days at a partner's
+        port the enemy holds). A rule per cause that decides orders (a part each, an ADR), or the
+        reason in the doc; the "after" run of `seaYears` on the last.
 - [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
   and 10 m/px in every probe (`c9_c_4483.json` `sorties`); the air map on day 10 of Germany–Poland
   hatches one German zone over all of Europe, every hover "held by Germany" from London to Kiev

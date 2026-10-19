@@ -19916,3 +19916,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   `carrierStrikeRow1938`, `seaRow1938` (3), `seaBattleSeen1938` (alone), `navalDemo1938`,
   `seaBattle1938` green.
 - **Next:** PLAN 7.35d (the late sea battles per world-year; the three holes noted under it).
+
+## 2026-10-19 — PLAN 7.35d1: why the sea battles fall after year 1, measured (critic R9 naval 6)
+
+- **Start:** gate green on `10aecbe`; critic not due. PLAN 7.35d split (d1 the measure, d2 the
+  cause in `plan` and the three holes 7.35b4 left).
+- **Tool:** `tools/diag/seaYears.ts` (per year: sea battles, those that sank a ship, by pair; each
+  day the armed fleets and power, the pairs at war with a navy each in one basin, their fleets
+  under way). Run on the critic's 14 seeds × 30 years at `10aecbe`; JSON in
+  `docs/evidence/7.35/d1/`, doc `docs/evidence/7.35/measure-d.md`.
+- **Found:** sea battles 20 in year 1 against 1.9 a world-year after (the critic's 36 and 13 were
+  carried by phantom years, gone since 7.31: now 97 % and 89 % sink a ship). Not the navies gone
+  (91 % of year 1's power after), not the wars (pairs at war with a navy each in one basin 9.1 →
+  7.7 a day): their fleets under way fall 4.6 % → 1.2 %. The navies at war stand in port.
+- **Runs:** the 14 runs side by side ran the machine short of memory; Claude Code stopped the
+  shell, the runs went on and finished (the user's call). Next time 4 to 7 at once.
+- **No rule:** pin unchanged (a tool and documents).
+- **Next:** PLAN 7.35d2 (which test of the naval AI's `plan` holds those fleets in port).

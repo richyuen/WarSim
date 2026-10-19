@@ -1,0 +1,746 @@
+{
+ "seed": 4483,
+ "years": 30,
+ "wallS": 817,
+ "rows": [
+  {
+   "year": 1,
+   "battles": 26,
+   "sinking": 26,
+   "shipsSunk": 376,
+   "pairs": {
+    "ENG-ITA": {
+     "battles": 6,
+     "ships": 119
+    },
+    "FRA-ITA": {
+     "battles": 6,
+     "ships": 94
+    },
+    "FRA-REP": {
+     "battles": 2,
+     "ships": 16
+    },
+    "DEN-GER": {
+     "battles": 2,
+     "ships": 12
+    },
+    "GER-NED": {
+     "battles": 2,
+     "ships": 26
+    }
+   },
+   "fleets": 106.1,
+   "power": 319389.3,
+   "navies": 18,
+   "warPairs": 156.1,
+   "seaPairs": 7.2,
+   "seaPairFleets": 34.8,
+   "seaPairPower": 101805.1,
+   "underWay": 0.9
+  },
+  {
+   "year": 2,
+   "battles": 17,
+   "sinking": 16,
+   "shipsSunk": 194,
+   "pairs": {
+    "SOV-SWE": {
+     "battles": 4,
+     "ships": 28
+    },
+    "FRA-ITA": {
+     "battles": 4,
+     "ships": 42
+    },
+    "ENG-SOV": {
+     "battles": 4,
+     "ships": 40
+    },
+    "ENG-GER": {
+     "battles": 2,
+     "ships": 36
+    },
+    "ITA-NSP": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 99.9,
+   "power": 290641,
+   "navies": 16.8,
+   "warPairs": 290.2,
+   "seaPairs": 16.9,
+   "seaPairFleets": 66,
+   "seaPairPower": 189718.4,
+   "underWay": 0.3
+  },
+  {
+   "year": 3,
+   "battles": 1,
+   "sinking": 1,
+   "shipsSunk": 8,
+   "pairs": {
+    "ENG-GER": {
+     "battles": 1,
+     "ships": 8
+    }
+   },
+   "fleets": 95.5,
+   "power": 291701.6,
+   "navies": 16.9,
+   "warPairs": 247.9,
+   "seaPairs": 9.4,
+   "seaPairFleets": 58.7,
+   "seaPairPower": 178767.4,
+   "underWay": 0.1
+  },
+  {
+   "year": 4,
+   "battles": 2,
+   "sinking": 2,
+   "shipsSunk": 24,
+   "pairs": {
+    "ENG-ITA": {
+     "battles": 1,
+     "ships": 12
+    },
+    "ENG-GRE": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 96.4,
+   "power": 297639.2,
+   "navies": 16.3,
+   "warPairs": 416.2,
+   "seaPairs": 12.8,
+   "seaPairFleets": 72.3,
+   "seaPairPower": 222446,
+   "underWay": 0.6
+  },
+  {
+   "year": 5,
+   "battles": 8,
+   "sinking": 3,
+   "shipsSunk": 12,
+   "pairs": {
+    "GER-GRE": {
+     "battles": 3,
+     "ships": 2
+    },
+    "GRE-SWE": {
+     "battles": 3,
+     "ships": 0
+    },
+    "ENG-GER": {
+     "battles": 2,
+     "ships": 10
+    }
+   },
+   "fleets": 97.3,
+   "power": 299038.1,
+   "navies": 16.3,
+   "warPairs": 375.1,
+   "seaPairs": 15.6,
+   "seaPairFleets": 63.2,
+   "seaPairPower": 191246.4,
+   "underWay": 0.2
+  },
+  {
+   "year": 6,
+   "battles": 8,
+   "sinking": 8,
+   "shipsSunk": 69,
+   "pairs": {
+    "ENG-GER": {
+     "battles": 4,
+     "ships": 24
+    },
+    "ENG-IRE": {
+     "battles": 1,
+     "ships": 8
+    },
+    "ENG-SOV": {
+     "battles": 1,
+     "ships": 16
+    },
+    "NED-USA": {
+     "battles": 1,
+     "ships": 9
+    },
+    "FRA-TUR": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 99.8,
+   "power": 311830,
+   "navies": 17.8,
+   "warPairs": 349.8,
+   "seaPairs": 19,
+   "seaPairFleets": 84.6,
+   "seaPairPower": 273747,
+   "underWay": 3.1
+  },
+  {
+   "year": 7,
+   "battles": 10,
+   "sinking": 6,
+   "shipsSunk": 49,
+   "pairs": {
+    "ENG-GER": {
+     "battles": 6,
+     "ships": 6
+    },
+    "JAP-SIN": {
+     "battles": 2,
+     "ships": 24
+    },
+    "ENG-POR": {
+     "battles": 1,
+     "ships": 7
+    },
+    "AOF-USA": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 93.4,
+   "power": 264157.1,
+   "navies": 18,
+   "warPairs": 329.5,
+   "seaPairs": 18.8,
+   "seaPairFleets": 70.7,
+   "seaPairPower": 202533.7,
+   "underWay": 0.2
+  },
+  {
+   "year": 8,
+   "battles": 2,
+   "sinking": 2,
+   "shipsSunk": 24,
+   "pairs": {
+    "JAP-SIN": {
+     "battles": 1,
+     "ships": 12
+    },
+    "ENG-GER": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 89.4,
+   "power": 249734.8,
+   "navies": 18,
+   "warPairs": 334.7,
+   "seaPairs": 23.4,
+   "seaPairFleets": 76.2,
+   "seaPairPower": 228843.7,
+   "underWay": 0.1
+  },
+  {
+   "year": 9,
+   "battles": 3,
+   "sinking": 2,
+   "shipsSunk": 21,
+   "pairs": {
+    "ENG-GER": {
+     "battles": 2,
+     "ships": 9
+    },
+    "JAP-SIN": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 93.4,
+   "power": 258570.8,
+   "navies": 17,
+   "warPairs": 183.2,
+   "seaPairs": 15.6,
+   "seaPairFleets": 75.5,
+   "seaPairPower": 226670,
+   "underWay": 0.4
+  },
+  {
+   "year": 10,
+   "battles": 1,
+   "sinking": 1,
+   "shipsSunk": 1,
+   "pairs": {
+    "NED-POR": {
+     "battles": 1,
+     "ships": 1
+    }
+   },
+   "fleets": 95.6,
+   "power": 262245.6,
+   "navies": 17.2,
+   "warPairs": 229.7,
+   "seaPairs": 14.6,
+   "seaPairFleets": 76.4,
+   "seaPairPower": 233217.9,
+   "underWay": 0.2
+  },
+  {
+   "year": 11,
+   "battles": 7,
+   "sinking": 5,
+   "shipsSunk": 49,
+   "pairs": {
+    "ENG-GER": {
+     "battles": 5,
+     "ships": 25
+    },
+    "CHL-VEN": {
+     "battles": 1,
+     "ships": 12
+    },
+    "GER-GRE": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 97.9,
+   "power": 275377,
+   "navies": 17.6,
+   "warPairs": 281.9,
+   "seaPairs": 15.5,
+   "seaPairFleets": 77.9,
+   "seaPairPower": 242374.4,
+   "underWay": 0.6
+  },
+  {
+   "year": 12,
+   "battles": 6,
+   "sinking": 2,
+   "shipsSunk": 24,
+   "pairs": {
+    "ENG-GER": {
+     "battles": 5,
+     "ships": 12
+    },
+    "GER-GRE": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 98.4,
+   "power": 275896.4,
+   "navies": 17,
+   "warPairs": 230.1,
+   "seaPairs": 13.9,
+   "seaPairFleets": 77.1,
+   "seaPairPower": 245554.5,
+   "underWay": 0
+  },
+  {
+   "year": 13,
+   "battles": 0,
+   "sinking": 0,
+   "shipsSunk": 0,
+   "pairs": {},
+   "fleets": 101.6,
+   "power": 285136.4,
+   "navies": 17.9,
+   "warPairs": 213.5,
+   "seaPairs": 19.9,
+   "seaPairFleets": 77.6,
+   "seaPairPower": 248104,
+   "underWay": 0.2
+  },
+  {
+   "year": 14,
+   "battles": 5,
+   "sinking": 3,
+   "shipsSunk": 63,
+   "pairs": {
+    "ENG-GER": {
+     "battles": 4,
+     "ships": 20
+    },
+    "FRA-USA": {
+     "battles": 1,
+     "ships": 43
+    }
+   },
+   "fleets": 103.3,
+   "power": 288708.5,
+   "navies": 18,
+   "warPairs": 198.8,
+   "seaPairs": 19.2,
+   "seaPairFleets": 76.9,
+   "seaPairPower": 227695.3,
+   "underWay": 1
+  },
+  {
+   "year": 15,
+   "battles": 6,
+   "sinking": 2,
+   "shipsSunk": 24,
+   "pairs": {
+    "ENG-GER": {
+     "battles": 6,
+     "ships": 24
+    }
+   },
+   "fleets": 103.1,
+   "power": 287720,
+   "navies": 18,
+   "warPairs": 202.7,
+   "seaPairs": 20.1,
+   "seaPairFleets": 78.4,
+   "seaPairPower": 253162.9,
+   "underWay": 0.1
+  },
+  {
+   "year": 16,
+   "battles": 16,
+   "sinking": 7,
+   "shipsSunk": 41,
+   "pairs": {
+    "ENG-GER": {
+     "battles": 6,
+     "ships": 24
+    },
+    "AFG-TUR": {
+     "battles": 6,
+     "ships": 5
+    },
+    "ENG-YUG": {
+     "battles": 3,
+     "ships": 12
+    },
+    "ENG-NSP": {
+     "battles": 1,
+     "ships": 0
+    }
+   },
+   "fleets": 105.5,
+   "power": 301995.1,
+   "navies": 18.5,
+   "warPairs": 244.6,
+   "seaPairs": 18.7,
+   "seaPairFleets": 75.9,
+   "seaPairPower": 221109.2,
+   "underWay": 0.4
+  },
+  {
+   "year": 17,
+   "battles": 6,
+   "sinking": 5,
+   "shipsSunk": 41,
+   "pairs": {
+    "AFG-TUR": {
+     "battles": 2,
+     "ships": 1
+    },
+    "ENG-GER": {
+     "battles": 2,
+     "ships": 16
+    },
+    "NOR-USA": {
+     "battles": 1,
+     "ships": 12
+    },
+    "SWE-USA": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 106.8,
+   "power": 303455.5,
+   "navies": 18.3,
+   "warPairs": 239.1,
+   "seaPairs": 15,
+   "seaPairFleets": 74.3,
+   "seaPairPower": 213397.4,
+   "underWay": 1
+  },
+  {
+   "year": 18,
+   "battles": 0,
+   "sinking": 0,
+   "shipsSunk": 0,
+   "pairs": {},
+   "fleets": 107.8,
+   "power": 308297,
+   "navies": 18.3,
+   "warPairs": 221.9,
+   "seaPairs": 10.7,
+   "seaPairFleets": 59.1,
+   "seaPairPower": 190578.8,
+   "underWay": 0.5
+  },
+  {
+   "year": 19,
+   "battles": 3,
+   "sinking": 2,
+   "shipsSunk": 23,
+   "pairs": {
+    "ENG-ITA": {
+     "battles": 2,
+     "ships": 12
+    },
+    "GER-USA": {
+     "battles": 1,
+     "ships": 11
+    }
+   },
+   "fleets": 109.5,
+   "power": 317484.5,
+   "navies": 19,
+   "warPairs": 190,
+   "seaPairs": 10.7,
+   "seaPairFleets": 53.2,
+   "seaPairPower": 170601,
+   "underWay": 0.2
+  },
+  {
+   "year": 20,
+   "battles": 0,
+   "sinking": 0,
+   "shipsSunk": 0,
+   "pairs": {},
+   "fleets": 111.6,
+   "power": 319443.7,
+   "navies": 19,
+   "warPairs": 154.5,
+   "seaPairs": 13.6,
+   "seaPairFleets": 69.2,
+   "seaPairPower": 261102.7,
+   "underWay": 0.1
+  },
+  {
+   "year": 21,
+   "battles": 0,
+   "sinking": 0,
+   "shipsSunk": 0,
+   "pairs": {},
+   "fleets": 114.3,
+   "power": 324265.6,
+   "navies": 19.4,
+   "warPairs": 113.6,
+   "seaPairs": 8.5,
+   "seaPairFleets": 51.8,
+   "seaPairPower": 170148.8,
+   "underWay": 0.6
+  },
+  {
+   "year": 22,
+   "battles": 3,
+   "sinking": 3,
+   "shipsSunk": 36,
+   "pairs": {
+    "FRA-SOV": {
+     "battles": 1,
+     "ships": 12
+    },
+    "ARG-CHL": {
+     "battles": 1,
+     "ships": 18
+    },
+    "PRU-VEN": {
+     "battles": 1,
+     "ships": 6
+    }
+   },
+   "fleets": 116.4,
+   "power": 333421.2,
+   "navies": 20,
+   "warPairs": 178.1,
+   "seaPairs": 8.9,
+   "seaPairFleets": 60.2,
+   "seaPairPower": 213143,
+   "underWay": 3
+  },
+  {
+   "year": 23,
+   "battles": 3,
+   "sinking": 3,
+   "shipsSunk": 36,
+   "pairs": {
+    "JAP-SIN": {
+     "battles": 2,
+     "ships": 24
+    },
+    "SWE-USA": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 117,
+   "power": 335736.8,
+   "navies": 19.7,
+   "warPairs": 136.5,
+   "seaPairs": 6.9,
+   "seaPairFleets": 52.8,
+   "seaPairPower": 192869.6,
+   "underWay": 1
+  },
+  {
+   "year": 24,
+   "battles": 3,
+   "sinking": 3,
+   "shipsSunk": 50,
+   "pairs": {
+    "AFG-FRA": {
+     "battles": 1,
+     "ships": 3
+    },
+    "FRA-SOV": {
+     "battles": 1,
+     "ships": 35
+    },
+    "CHL-COL": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 114.3,
+   "power": 324582.2,
+   "navies": 19.4,
+   "warPairs": 125.9,
+   "seaPairs": 6.1,
+   "seaPairFleets": 61.1,
+   "seaPairPower": 235517,
+   "underWay": 0.3
+  },
+  {
+   "year": 25,
+   "battles": 0,
+   "sinking": 0,
+   "shipsSunk": 0,
+   "pairs": {},
+   "fleets": 115.5,
+   "power": 321938.5,
+   "navies": 20,
+   "warPairs": 146.6,
+   "seaPairs": 14.2,
+   "seaPairFleets": 78.3,
+   "seaPairPower": 280499.6,
+   "underWay": 0.4
+  },
+  {
+   "year": 26,
+   "battles": 4,
+   "sinking": 4,
+   "shipsSunk": 24,
+   "pairs": {
+    "NED-TUR": {
+     "battles": 1,
+     "ships": 5
+    },
+    "ARG-VEN": {
+     "battles": 1,
+     "ships": 2
+    },
+    "NSP-TUR": {
+     "battles": 1,
+     "ships": 12
+    },
+    "SOV-TUR": {
+     "battles": 1,
+     "ships": 5
+    }
+   },
+   "fleets": 115,
+   "power": 320806.6,
+   "navies": 18.9,
+   "warPairs": 195.2,
+   "seaPairs": 17.6,
+   "seaPairFleets": 70.5,
+   "seaPairPower": 207892.9,
+   "underWay": 0.4
+  },
+  {
+   "year": 27,
+   "battles": 1,
+   "sinking": 1,
+   "shipsSunk": 1,
+   "pairs": {
+    "TUR-USA": {
+     "battles": 1,
+     "ships": 1
+    }
+   },
+   "fleets": 112.8,
+   "power": 319124.1,
+   "navies": 17.8,
+   "warPairs": 134.6,
+   "seaPairs": 10.2,
+   "seaPairFleets": 54.2,
+   "seaPairPower": 164632.1,
+   "underWay": 1.7
+  },
+  {
+   "year": 28,
+   "battles": 1,
+   "sinking": 1,
+   "shipsSunk": 8,
+   "pairs": {
+    "JAP-SIA": {
+     "battles": 1,
+     "ships": 8
+    }
+   },
+   "fleets": 112.8,
+   "power": 321247.7,
+   "navies": 17,
+   "warPairs": 170.7,
+   "seaPairs": 6.7,
+   "seaPairFleets": 77.8,
+   "seaPairPower": 244144,
+   "underWay": 0.2
+  },
+  {
+   "year": 29,
+   "battles": 2,
+   "sinking": 2,
+   "shipsSunk": 24,
+   "pairs": {
+    "JAP-NED": {
+     "battles": 1,
+     "ships": 12
+    },
+    "CHI-USA": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 114,
+   "power": 323059.2,
+   "navies": 17,
+   "warPairs": 110.5,
+   "seaPairs": 4.7,
+   "seaPairFleets": 39.7,
+   "seaPairPower": 77339.2,
+   "underWay": 0.4
+  },
+  {
+   "year": 30,
+   "battles": 2,
+   "sinking": 2,
+   "shipsSunk": 24,
+   "pairs": {
+    "BRA-VEN": {
+     "battles": 1,
+     "ships": 12
+    },
+    "CAN-GER": {
+     "battles": 1,
+     "ships": 12
+    }
+   },
+   "fleets": 118,
+   "power": 327754,
+   "navies": 17,
+   "warPairs": 87.9,
+   "seaPairs": 4.5,
+   "seaPairFleets": 31.3,
+   "seaPairPower": 84244.5,
+   "underWay": 0
+  }
+ ]
+}
