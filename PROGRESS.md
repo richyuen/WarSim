@@ -19491,3 +19491,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **By hand** (the gate skips e2e): `history1938`, `ticker1938` green (7 tests).
 - **Pin** 81db11b6 → 45c20987.
 - **Next:** PLAN 7.33b.
+
+## 2026-10-19 — PLAN 7.33a's check: the convoy rows seen in the history panel
+
+- **By hand** (a scratch spec, removed): seed 1938, Germany at war with the United Kingdom, 100
+  days: on 1 April 1938 three rows, "United Kingdom's submarines raided the convoys of Japan over
+  three months: 14 gold of cargo taken", Italy's 6.6 on the United Kingdom, the Spanish Republic's
+  3.3 on Nationalist Spain; the type filter shows them (`docs/evidence/7.33/a-convoy-rows.png`,
+  viewed).
+- `ConvoyRaid` loses a sum no one read. No rule change: pin 45c20987.

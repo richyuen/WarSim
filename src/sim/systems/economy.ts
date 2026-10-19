@@ -240,11 +240,10 @@ export const AIR_ROWS = 3;
  */
 export const CONVOY_ROWS = 3;
 
-/** A nation's raids on a bloc's convoys: the gold they took, and in each zone. */
+/** A nation's raids on a bloc's convoys: the gold they took in each zone. */
 export interface ConvoyRaid {
   raider: number;
   bloc: number;
-  gold: number;
   zones: Map<number, number>;
 }
 
@@ -275,8 +274,7 @@ export function convoyRaids(world: World, losses: ConvoyLosses | null): ConvoyRa
     for (const t of taken) {
       const key = t.raider * SIDE_SHIPS + b;
       let r = sum.get(key);
-      if (!r) sum.set(key, (r = { raider: t.raider, bloc: b, gold: 0, zones: new Map() }));
-      r.gold += v * t.share;
+      if (!r) sum.set(key, (r = { raider: t.raider, bloc: b, zones: new Map() }));
       r.zones.set(t.zone, (r.zones.get(t.zone) ?? 0) + v * t.share);
     }
   }
