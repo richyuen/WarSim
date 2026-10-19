@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { seaKm } from '../../src/sim/systems/navalCombat';
-import { FRONT_KM, placeParts, TARGET_SCALE, THEATRE_FLOOR } from '../../src/sim/systems/nuclear';
+import { FRONT_KM, placeParts, TARGET_SCALE, THEATRE_FLOOR, THEATRE_MEN_MIN } from '../../src/sim/systems/nuclear';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
 
@@ -10,7 +10,7 @@ import { nationId } from '../helpers/sim1938';
 // men were weighed as a share of the enemy side's men within FRONT_KM of it, its theatre (7.18c),
 // so a lone garrison was the whole of its theatre: seed 4's Britain struck Japanese garrisons of
 // 2,267 to 5,229 men for 935 to 2,305 dead. The theatre counts for at least THEATRE_FLOOR of all
-// the side's men.
+// the side's men, and at least THEATRE_MEN_MIN men (PLAN 7.32, ADR-528).
 
 const { w: W, h: H } = SIZE_1938;
 const [ENG, JAP] = ['ENG', 'JAP'].map(nationId) as [number, number];
@@ -47,7 +47,7 @@ describe("a place's men weighed against a theatre of weight (PLAN 7.18j)", () =>
     process.stderr.write(`lone garrison of ${strength} men: theatre ${Math.round(g.menAll)}, weighed against ${Math.round(g.theatreMen)} (side ${Math.round(g.sideMen)}), men share ${g.menShare.toFixed(4)}, value ${g.value.toFixed(3)}\n`);
     expect(g.menAll).toBe(strength);
     expect(strength).toBeLessThan(0.01 * g.sideMen);
-    expect(g.theatreMen).toBeCloseTo(THEATRE_FLOOR * g.sideMen);
+    expect(g.theatreMen).toBeCloseTo(Math.max(THEATRE_FLOOR * g.sideMen, THEATRE_MEN_MIN));
     // Before 7.18j: menHit / menAll, near 1 (a value of 1). Now at most its men / the floor.
     expect(g.menShare).toBeLessThanOrEqual(strength / (THEATRE_FLOOR * g.sideMen) + 1e-9);
     expect(g.capital).toBe(0);

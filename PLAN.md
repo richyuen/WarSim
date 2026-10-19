@@ -50,7 +50,20 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
   destroys; no strike near a place where the last strike found almost nothing; the alert and the
   history name the men, guns and vehicles destroyed beside the civilian dead; bursts per world and
   their tolls on the critic's 14 seeds × 30 years before and after (fewer chains, not no use: R8-B1
-  stays fixed); a unit test; the pin's entry.
+  stays fixed); a unit test; the pin's entry. A part each:
+    - [x] 7.32a A burst weighed by what it destroys (ADR-528): measured on the critic's code
+      (`tools/diag/nukeChain.ts`, `docs/evidence/7.32/measure.md`): each burst found the men its
+      weighing expected, all soldiers; the chain's men were weighed as a share of a side of a few
+      thousand. A theatre's men count for at least THEATRE_MEN_MIN. AT: the critic's two chains
+      on its code with the rule; `tools/diag/nukeChainCount.ts` on the 14 seeds × 30 years, before
+      and after (bursts, tolls under 5,000, chain links, bursts near an earlier one that found
+      almost nothing); `nukeRemnant1938.test.ts`; the pin's entry.
+    - [ ] 7.32b The toll told (R9-B2's "no string tells soldiers lost"): `blast` counts the men,
+      guns (artillery, anti-tank, anti-air) and tanks it destroys; the alert and the history row
+      name them beside the people killed (a second field or a companion event, not a wider `b`:
+      `packNukeStrike` is near 2^53 with the dead; saved games' rows still read). AT: a unit test
+      of the toll's parts; the row's text for a strike on an army and on a city; the alert seen in
+      the page (a screenshot, viewed).
 - [ ] 7.33 The history reads as events (stats and history 6, needs 7): beyond 7.31's phantom rows,
   seed 7741's late history is 41 % "X's submarines raided the convoys of Y" (1,937 of 4,681 rows),
   with no figure in them (`critic/c9_l_7741.json` `historyTypes`, `c9l_7741_4_history.png`); God

@@ -76,7 +76,7 @@
  *   (the cells it holds, as bombs and fallout leave them) and of its men within the blast, less
  *   the striker's side's men there (the men each as a share of the side's within FRONT_KM of the
  *   place, its theatre; PLAN 7.18c; the enemy's theatre at least THEATRE_FLOOR of all the side's
- *   men, PLAN 7.18j); + TARGET_CAPITAL with an enemy capital in it, of a nation that
+ *   men, PLAN 7.18j, and at least THEATRE_MEN_MIN men, PLAN 7.32); + TARGET_CAPITAL with an enemy capital in it, of a nation that
  *   holds CAPITAL_WEIGHT of the side's output (PLAN 7.18d); × the chance the
  *   warhead gets there (PLAN 6.7, SPEC's "expected damage": 1 by missile, 1 − the bomber's
  *   interception chance there by bomber).
@@ -692,7 +692,7 @@ export interface PlaceParts {
   ownShare: number;
   /** The enemy side's men in the theatre (within FRONT_KM of the place). */
   menAll: number;
-  /** What the place's men are weighed against: `menAll`, at least THEATRE_FLOOR × `sideMen` (PLAN 7.18j). */
+  /** What the place's men are weighed against: `menAll`, at least THEATRE_FLOOR × `sideMen` (PLAN 7.18j) and THEATRE_MEN_MIN (PLAN 7.32). */
   theatreMen: number;
   /** The enemy side's men, everywhere (PLAN 7.18h's measure of a theatre's weight). */
   sideMen: number;
@@ -750,7 +750,9 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): 
   const econShare = econAll > 0 ? hit / econAll : 0;
   // The theatre counts for at least THEATRE_FLOOR of the enemy side's men (PLAN 7.18j, ADR-492). The
   // striker's own men are left a share of its theatre alone: what keeps it off them stays whole.
-  const theatreMen = Math.max(menAll, THEATRE_FLOOR * v.enemyMen);
+  // And for at least THEATRE_MEN_MIN men (PLAN 7.32, ADR-528): a warhead is weighed by what it
+  // destroys, not by its share of a beaten side's last men.
+  const theatreMen = Math.max(menAll, THEATRE_FLOOR * v.enemyMen, THEATRE_MEN_MIN);
   const menShare = theatreMen > 0 ? menHit / theatreMen : 0;
   const ownShare = ownAll > 0 ? ownHit / ownAll : 0;
   const share = econShare + menShare - ownShare;
@@ -939,6 +941,17 @@ export const FRONT_KM = 1000;
  * to 2,305 dead; seed 1's on #114's of 456 to 1,380, 168 to 2,875 dead).
  */
 export const THEATRE_FLOOR = 0.25;
+/**
+ * The least a theatre's enemy men count for, in men (PLAN 7.32, ADR-528, critic R9-B2): a burst is
+ * worth TARGET_SCALE ÷ this, full value at 25,000 men in its blast (two divisions massed). Measured
+ * (`docs/evidence/7.32/measure.md`, the critic's code): the weighing found what it expected, but
+ * against a side of a few thousand men. Seed 2609's China held 12,829 men; a burst killed 10,847,
+ * and the next three 1,373, 168 and 24, each 87 % of the side's men left, each of value 1. Seed
+ * 9901's China held 60,000 to 260,000: a lone division of 10,655 men cleared TARGET_SCALE's tenth
+ * of its theatre and was struck at value 1 nine times in 185 days. Now such a division is worth
+ * 0.43 and is struck in extreme desperation only. Set for the 1938 world's armies.
+ */
+export const THEATRE_MEN_MIN = 250_000;
 /** How long a burst keeps another warhead off its place (PLAN 6.11b), days. */
 export const RESTRIKE_DAYS = 7;
 /**

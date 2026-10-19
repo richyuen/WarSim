@@ -19420,3 +19420,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   that before reading it as a defect.
 - **No rule change:** pin 81db11b6.
 - **Next:** PLAN 7.32.
+
+## 2026-10-19 — PLAN 7.32a: a burst weighed by what it destroys (critic R9-B2; ADR-528)
+
+- **Start:** gate green on `456984c`; critic not due. ADR-525 still waits on the user.
+- **Measured** (`tools/diag/nukeChain.ts`, run on the critic's code `f0be88c` in a worktree: HEAD's
+  worlds no longer make its chains; `docs/evidence/7.32/measure.md`): every burst found the men its
+  weighing expected (10,855 / 10,847, 1,363 / 1,373, 167 / 168, 21 / 24), and every "dead" of the
+  chains was a soldier, none a civilian. The men were weighed as a share of a beaten side: China's
+  12,829, then 1,934, 561, 393 men, each remnant 87 % of it, value 1 week after week. Seed 9901: a
+  lone 10,655-man division a fifth of a 50,000-man theatre, value 1, nine times in 185 days.
+- **Rule** (ADR-528): a theatre's men count for at least THEATRE_MEN_MIN = 250,000 (whole value
+  at 25,000 men in the blast). On the critic's code: 2609's 20 strikes on China and Tibet → 0;
+  9901's 18 → 14, each finding 10,655 to 17,269 men, eight in extreme desperation.
+- **14 seeds × 30 years on HEAD** (the critic's runner, `tools/diag/nukeChainCount.ts`): bursts 92
+  in 12 worlds → 64 in 10; under 5,000 dead 2 → 0; chain links 6 → 2; near an earlier burst that
+  found almost nothing 0 → 0 (no rule of its own for that: a burst finds what it was weighed at).
+- **Pin** unchanged (81db11b6). Tests: `nukeRemnant1938.test.ts` (new, red before);
+  `nukeTheatre1938.test.ts`'s lone garrison against the larger floor.
+- **Gotcha:** the history's "N dead" is soldiers and people together; the critic read it as
+  civilians. 7.32b tells them apart. A worktree at the critic's commit (`mklink /J` node_modules)
+  replays its exact worlds when HEAD's have moved.
+- **Next:** PLAN 7.32b (the toll told).

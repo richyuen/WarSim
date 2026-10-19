@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-528 · 2026-10-19 · accepted — A burst is weighed by what it destroys: a theatre counts for at least 250,000 men (PLAN 7.32a)
+
+- **Context.** Critic R9-B2: AI strikes in weekly chains on near-empty ground (seed 2609's Soviet
+  Union on China, 10,847 → 1,373 → 168 → 24 dead along one line; seed 9901's on China 18 times in
+  2 years). Measured on the critic's code (`tools/diag/nukeChain.ts`, `docs/evidence/7.32/measure.md`):
+  each burst found the men its weighing expected, and every one of the chains' dead was a soldier.
+  The men in a blast were weighed as a share of the enemy's theatre (at least THEATRE_FLOOR of its
+  side, ADR-492), and TARGET_SCALE made a tenth of it full value. Against a beaten side of 12,829
+  men, then 1,934, 561 and 393, each remnant was 87 % of it: value 1 each week, once the strike gap
+  (STRIKE_GAP_DAYS) and the restrike memory (RESTRIKE_DAYS) ran out. On 9901 a lone division of
+  10,655 men was 14 to 25 % of a theatre of 44,000 to 77,000: value 1.
+- **Decision.** A theatre's men count for at least THEATRE_MEN_MIN = 250,000 men. A burst is then
+  worth TARGET_SCALE × its men ÷ 250,000, whole at 25,000 men in the blast (two divisions massed).
+  A lone division is worth 0.43 and is struck in extreme desperation only (desperation 2,
+  doctrine 1.2: 1.03 against costs of about 0.5). A remnant of 1,363 men is worth 0.05. The output
+  and capital parts are unchanged (single bombs on small states are PLAN 7.37's).
+- **Not done.** No rule of its own for "no strike near a place where the last strike found almost
+  nothing". A burst finds what it was weighed at (men expected against men lost, within 1 % to
+  10 %), so a place of almost nothing is now worth almost nothing. Counted on 14 seeds × 30 years:
+  0 such bursts before and after.
+- **Measured.** On the critic's code with the rule, seed 2609 has no strike on China or Tibet in 16
+  years (20 before, 12 of them under 5,000 dead). Seed 9901 has 14 (18 before), each finding its
+  weighing: eight in extreme desperation, three on 15,782 to 17,269 men massed, three on a lone
+  division at utilities 0.025 to 0.055 (PLAN 7.37's question). On HEAD, the critic's 14 seeds × 30
+  years (its own runner): 92 bursts in 12 worlds → 64 in 10; tolls under 5,000 dead 2 → 0; chain
+  links (same striker and nation, within 14 days, smaller toll) 6 → 2.
+- **Scale.** The floor is in men, set for the 1938 world's armies (a division of 10,000 to 15,000
+  men; the measured strikes of weight held 22,000 to 112,000 men). A scenario of other armies may
+  want its own; it is a constant, not data.
+- **Pin.** Unchanged (81db11b6): no strike in seed 99's first year.
+- **Tests.** `tests/unit/nukeRemnant1938.test.ts`: a side of one division, its theatre 250,000 and
+  value under half its chance through (1 before); its remnant under a fifth of that; three massed,
+  value whole. `nukeTheatre1938.test.ts`'s lone garrison is weighed against the larger of the two
+  floors.
+
 ### ADR-527 · 2026-10-19 · accepted — A fleet sunk whole is counted to its own side (PLAN 7.31's check)
 
 - **Context.** A sea battle's row counts each fleet's ships lost in the hour to its side by the
