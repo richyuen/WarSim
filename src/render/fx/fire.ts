@@ -133,7 +133,7 @@ export function originOf(s: Shot, now: number, scale: number, size: number, clos
   const angle = turretOf(f.frame) >= 0 ? close.turret(s.shooter, f.facing, now) : f.facing;
   const [mx, my] = muzzleOf(f.frame);
   // The side of the figure's sprite in cells: the shader's rule.
-  const side = (Math.max(figureCells(f.side) * scale, close.minPx) * size) / scale;
+  const side = (Math.max(figureCells(f.side) * (f.fit ?? 1) * scale, close.minPx) * size) / scale;
   const c = Math.cos(angle);
   const sn = Math.sin(angle);
   return { x: s.x0 + close.share * (f.dx + (c * mx - sn * my) * side), y: s.y0 + close.share * (f.dy + (sn * mx + c * my) * side), angle, atBarrel: close.share, side };

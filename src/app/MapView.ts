@@ -17,7 +17,7 @@ import { AirFx } from '../render/fx/air';
 import { NukeFx } from '../render/fx/nuke';
 import { TierHandover } from '../render/units/handover';
 import { smallShare, spriteAlpha } from '../render/units/elementSprite';
-import { figureCells, figureCount, figureOffsets, firingFigure, shownSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
+import { figureCells, figureCount, figureOffsets, firingFigure, fitScales, shownSide, T3_MAX_M, type FiringFigure } from '../render/units/individuals';
 import { FireFx } from '../render/fx/fire';
 import { HullFx } from '../render/fx/hulls';
 import { WreckFx } from '../render/fx/wrecks';
@@ -1161,6 +1161,7 @@ export class MapView {
     const e = this.elementSection;
     if (!e) return undefined;
     let index: Map<number, number> | null = null;
+    let fit: Float32Array | null = null;
     return (shooter, tick) => {
       if (!index) {
         index = new Map();
@@ -1168,7 +1169,9 @@ export class MapView {
       }
       const i = index.get(shooter);
       if (i === undefined) return null;
-      return firingFigure(shooter, tick, e.frame[i]!, e.strength[i]!, e.size[i]!, e.facing[i]!, (e.flags[i]! & FormationFlag.engaged) !== 0);
+      // Its figures as drawn: fitted to their neighbours (PLAN 7.34c2).
+      fit ??= fitScales(e);
+      return firingFigure(shooter, tick, e.frame[i]!, e.strength[i]!, e.size[i]!, e.facing[i]!, (e.flags[i]! & FormationFlag.engaged) !== 0, fit[i]!);
     };
   }
   /** m/px of the camera when the last element section arrived (tests). */
@@ -1184,6 +1187,8 @@ export class MapView {
   individualTurrets = 0;
   individualTurretOwner = new Uint32Array(0);
   individualOwner = new Uint32Array(0);
+  /** Each figure's side as built, cells (PLAN 7.34c2; tests): its class's, by its element's fit. */
+  individualCells = new Float64Array(0);
   individualX = new Float64Array(0);
   individualY = new Float64Array(0);
   /** ms the last build took, and whether the close tier is the one shown or fading in (tests). */
@@ -1220,6 +1225,9 @@ export class MapView {
     p.originX = Math.floor(this.controller.cam.cx);
     p.originY = Math.floor(this.controller.cam.cy);
     const owner = new Uint32Array(total);
+    const cellsOf = new Float64Array(total);
+    // Vehicles fitted to the room their neighbours leave (PLAN 7.34c2).
+    const fit = fitScales(e);
     const xs = new Float64Array(total);
     const ys = new Float64Array(total);
     let j = 0;
@@ -1232,7 +1240,8 @@ export class MapView {
       const inContact = (e.flags[i]! & FormationFlag.engaged) !== 0;
       const side = shownSide(frame, figureCount(e.size[i]!, e.size[i]!), inContact);
       // A ship is drawn its own length (PLAN 4.7b).
-      const size = isShipFrame(frame) ? shipSideCells(frame, this.geo.kmPerCell) : figureCells(side);
+      const s = fit[i]!;
+      const size = isShipFrame(frame) ? shipSideCells(frame, this.geo.kmPerCell) : figureCells(side) * s;
       const off = figureOffsets(e.id[i]!, side, n, e.facing[i]!);
       // At its copy nearest the origin (PLAN 7.4f47): a figure just west of the seam, the camera just
       // east of it, was 2,047 cells from the origin of its f32 offsets, where a step is some 2.4 m
@@ -1244,8 +1253,8 @@ export class MapView {
       const rgba = this.spriteRgba(e.nation[i]!);
       for (let k = 0; k < n; k++, j++) {
         const o = j * PROXY_STRIDE;
-        const dx = off[k * 2]!;
-        const dy = off[k * 2 + 1]!;
+        const dx = off[k * 2]! * s;
+        const dy = off[k * 2 + 1]! * s;
         p.data[o] = px0 + dx - p.originX;
         p.data[o + 1] = e.prevY[i]! + dy - p.originY;
         p.data[o + 2] = x + dx - p.originX;
@@ -1256,6 +1265,7 @@ export class MapView {
         p.data[o + 7] = 1;
         p.colors.set(rgba, j * 4);
         owner[j] = e.id[i]!;
+        cellsOf[j] = size;
         xs[j] = e.x[i]! + dx;
         ys[j] = e.y[i]! + dy;
       }
@@ -1267,6 +1277,7 @@ export class MapView {
     p.upload(appendWakes(p.data, p.colors, total, appendTurrets(p.data, p.colors, total, this.individualTurretOwner)));
     this.individualCount = total;
     this.individualOwner = owner;
+    this.individualCells = cellsOf;
     this.individualX = xs;
     this.individualY = ys;
     this.individualsBuilt = true;

@@ -19648,3 +19648,27 @@ No rule changed and nothing on screen changed. One task came out of it.
   2.8 s). `docs/evidence/3.6/turrets-*.png` made, the 4 m/px one viewed.
 - **No rule change:** pin 45c20987.
 - **Next:** PLAN 7.34c2.
+
+## 2026-10-19 — PLAN 7.34c2: vehicles in a block in contact fitted to their room (critic R9 semantic zoom 7; ADR-540)
+
+- **Start:** gate green on `dcdd1ac`; critic not due.
+- **Rule** (view only, ADR-540): an element of vehicles (tanks, half-tracks) is drawn at its fit
+  (`fitScales`): the least, over the vehicle elements near it, of the scale at which an axis (the
+  line between them, a side of either box) parts their drawn boxes with 0.97 of the room; of the
+  place before and now; in 32nds. A block at rest keeps fit 1. Turrets, muzzles (`FiringFigure.fit`)
+  and wrecks (`tanksLost`, `fallenLost`) take it. The 4 × 4 grid's jitter 0.1 of a sub-slot (was
+  0.18): two half-tracks of one element met.
+- **Tests:** `vehicleFit.test.ts` (12 blocks in contact: 913 vehicles on another unfitted, 0
+  fitted, least 5.7 px; at rest fit 1; two formations face to face 0). AT `vehicleFit1938` (seed
+  4483, day 4, Armoured division 41 in contact, 10 m/px): 116 of 339 on another at full figure, 0
+  as drawn, least 12.0 px. Seen: `docs/evidence/7.34/c2-4483-arm41-contact-10m.png`.
+- **Rewritten to the rule:** `burning1938` (a hull as large as its tank was drawn the frame
+  before, via the new `individualCells`, in place of the class's figure), `muzzles1938` and
+  `tankBattle1938` (a figure's side by the shot's fit).
+- **By hand** (the gate skips e2e): `tankHulls`, `tankBattle`, `muzzles`, `turrets`, `burning`,
+  `wrecks`, `fire`, `individuals`, `battleView`, `smallMark`, `closeZoom`, `fightSeen`, `tiers`,
+  `handover`, `fallen`, `tankSides`, `armourT2`, `infantryRanks`, `markers`, `vehicleFit` green
+  (the three rewritten red before their rewrite).
+- **Perf:** `fitScales` once per T3 build (a grid of the vehicles, pairs within reach).
+- **No rule change:** pin 45c20987.
+- **Next:** PLAN 7.34d (the enemy reachable from a view at 10 m/px).

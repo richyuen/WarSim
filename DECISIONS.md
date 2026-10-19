@@ -167,6 +167,51 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-540 · 2026-10-19 · accepted — Vehicles fitted to the room their neighbours leave: no vehicle on another in a block in contact (PLAN 7.34c2)
+
+- **Context.** Critic run 9, semantic zoom 7: "at 10 m/px ... tanks overlapping in piles"
+  (`c9c_4483_inf_0010m_top_crop2x.png`). ADR-536 laid an element's tanks out to fit its slot (0.03
+  cells), which holds for a block at rest. A block in contact stands off its slots
+  (`DEPLOY_SCATTER`, up to 0.3 of a slot): two elements 0.012 to 0.015 cells apart, where each
+  element's tanks reach 0.0146 from its middle. No rigid layout of full size fits that.
+- **Decision** (view only). An element of vehicles (tanks of the three weights, half-tracks:
+  `isVehicleFrame`; not guns, infantry, ships or aircraft) is drawn at a scale of its layout, its
+  figures and their places alike: its fit (`fitScales`, `render/units/individuals.ts`).
+  - Each element's reach: the box about every figure of the whole element at full figure, each
+    figure as its drawn box with its outline (`vehicleBox`: a tank's `hullBox`, a half-track's
+    27/26/17 atlas px behind, ahead and across), half its length (the larger of before and behind)
+    and half its width, about the slot pose.
+  - Two vehicle elements keep together a bound: the largest, over five axes (the line between
+    their middles, the two sides of each one's box), of FIT (0.97) × their distance along the axis
+    over the sum of their reaches along it, at most 1. An axis along which the two reaches
+    together are shorter than the distance parts the two boxes (separating axes), so both scaled
+    by no more than the bound never meet. Of the place before and the place now, the smaller (a
+    figure glides between them).
+  - An element's fit is the least bound over the vehicle elements near it (a grid of twice the
+    largest reach), rounded down to a 32nd, so a figure does not change its size by a hair from
+    one snapshot to the next.
+  - What is drawn on a figure takes its fit: the turrets (copies of the hull's instance), the
+    shot's muzzle (`FiringFigure.fit`, `originOf`), the wrecks and the half-tracks left behind
+    (`tanksLost`, `fallenLost` fit the snapshot before).
+  - The 4 × 4 grid of vehicles and guns has its figures 0.1 of a sub-slot off their places (was
+    0.18, as the grid of men): two half-tracks of one element met (a half-track is 0.76 of its
+    sub-slot long), found by the unit test of this task.
+- **Why not a smaller figure for all, or the slot's layout pulled in.** A block at rest has room
+  for full figures, and has them (fit 1: the bound of two neighbours on slots one slot apart is
+  1.0); a fixed smaller figure would shrink every tank for the sake of the blocks in contact. A
+  bound per element keeps each tank as large as its room allows.
+- **Checked.** Unit (`vehicleFit.test.ts`, 12 blocks of 24 elements in contact, four classes):
+  913 vehicles on another at full figure, 0 fitted; the least figure 5.7 px at 10 m/px; a block
+  at rest keeps fit 1 at four facings; two formations face to face, turned their own ways: 0.
+  e2e (`vehicleFit1938.spec.ts`, the critic's case: seed 4483, Germany at war with Poland, day
+  4, Armoured division 41 in contact, 10 m/px): 339 vehicle figures, 116 on another at full
+  figure, 0 as drawn; the least vehicle drawn 12.0 px (a light hull is 14). Seen:
+  `docs/evidence/7.34/c2-4483-arm41-contact-10m.png`.
+- **Consequences.** A vehicle in contact is drawn smaller than at rest where its neighbours stand
+  near. The unit-size setting above 1 (`unitScale`, applied by the shader after the fit) makes
+  the figures larger than their room again, by design: the setting is the player's. Render
+  only: the pin unchanged (45c20987).
+
 ### ADR-539 · 2026-10-19 · accepted — The turret scene is found from day 16 (PLAN 7.34c1's check)
 
 - **Context.** `turrets1938`, run by hand for PLAN 7.34c1, fails its precondition "some tanks in

@@ -107,7 +107,7 @@ test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ p
         // muzzle (`originOf`) the shot is off the screen from end to end, as the layer has it
         // (`FireFx.draw`).
         const f = s.from;
-        const side = figureCells(f.side);
+        const side = figureCells(f.side) * (f.fit ?? 1);
         const [mx, my] = muzzleOf(f.frame);
         if (turretOf(f.frame) >= 0) expect(s.turrets.length, `turrets of ${s.shooter} in the view`).toBeGreaterThan(0);
         const angle = turretOf(f.frame) >= 0 ? s.turrets[0]! : f.facing;
@@ -131,8 +131,9 @@ test('T3: a shot leaves the muzzle of one of its shooter\'s figures', async ({ p
     }
     expect(s.from, `figure of ${s.shooter}`).not.toBeNull();
     const from = s.from!;
-    // At this zoom a figure is drawn at its size in cells, not at its least size.
-    const side = figureCells(from.side);
+    // At this zoom a figure is drawn at its size in cells, not at its least size: its class's, by
+    // its element's fit (PLAN 7.34c2).
+    const side = figureCells(from.side) * (from.fit ?? 1);
     expect(side * got.scale).toBeGreaterThan(2.5);
     const [mx, my] = muzzleOf(from.frame);
     const tank = turretOf(from.frame) >= 0;

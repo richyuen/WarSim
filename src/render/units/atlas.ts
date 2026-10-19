@@ -50,6 +50,17 @@ export function hullBox(frame: number): { back: number; front: number; half: num
   return { back: (length / 2 + 2 + HULL_LINE) / ATLAS_FRAME, front: (length / 2 - 2 + HULL_LINE) / ATLAS_FRAME, half: (width / 2 + HULL_LINE) / ATLAS_FRAME };
 }
 
+/**
+ * The box a vehicle is drawn in, its outline with it, as shares of the sprite's side from the
+ * sprite's middle (PLAN 7.34c2): a tank's hull (`hullBox`), a half-track's body and tracks.
+ */
+export function vehicleBox(frame: number): { back: number; front: number; half: number } {
+  if (frame === Frame.halftrack) return { back: HALFTRACK_BOX[0] / ATLAS_FRAME, front: HALFTRACK_BOX[1] / ATLAS_FRAME, half: HALFTRACK_BOX[2] / ATLAS_FRAME };
+  return hullBox(frame);
+}
+/** A half-track's drawn box, atlas px: behind its middle, ahead of it, and half its width, each with its 2-px outline. */
+const HALFTRACK_BOX = [27, 26, 17] as const;
+
 /** The muzzle of `frame` as shares of the sprite's side: along its facing (a hull: its turret's), and to the right. */
 export function muzzleOf(frame: number): readonly [number, number] {
   const [x, y] = MUZZLE[frame as Frame] ?? NO_MUZZLE;

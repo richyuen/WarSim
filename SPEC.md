@@ -2434,6 +2434,11 @@ moment before its first elements arrive.
   hull. The element's hulls fit its slot's square, so no hull of a block at rest is on another:
   a light tank at its full figure (`TANK_CELLS`, a 14 px hull at 10 m/px), a medium and a heavy
   by a scale of their class, the heavy hull still the longest.
+  *Vehicles fitted to their room* (PLAN 7.34c2, ADR-540): in a block in contact the elements
+  stand off their slots (`DEPLOY_SCATTER`), nearer than a slot. An element of vehicles (tanks,
+  half-tracks) is drawn at its fit (`fitScales`), figures and places alike: the least, over the
+  vehicles near it, of the scale two keep so that an axis parts their drawn boxes, of the place
+  before and now, in 32nds. A block at rest has fit 1. Turrets, muzzles and wrecks take it too.
   *The small mark* (PLAN 3.6e3b, ADR-165): where an element sprite is drawn 5.5 px wide or
   less (from about 92 m/px outward at the default size setting; the least size is 5 px, from
   102), a hull of any weight is one frame made for that size, a solid slab along the facing

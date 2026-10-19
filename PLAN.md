@@ -59,7 +59,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
     - [x] 7.34b Elements drawn at 900 m/px on the critic's 4483 front (`elementCount` 3,536 and only
       counters on screen). Measured first: what the view holds at 900 m/px there and why no
       element shows. AT: elements drawn there (counted).
-    - [ ] 7.34c No two vehicles drawn overlapping at 10 m/px (`c9c_4483_inf_0010m_top_crop2x.png`,
+    - [x] 7.34c No two vehicles drawn overlapping at 10 m/px (`c9c_4483_inf_0010m_top_crop2x.png`,
       German infantry division 11 on seed 4483). Measured first: where the piles come from (the
       slots of a formation, two formations' elements on one cell). AT: on the critic's case, no
       two vehicle figures overlapping (counted). Measured (a probe, seed 4483, every German
@@ -74,7 +74,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           kept. AT: a unit test, every class's hull boxes inside the slot's square at every
           facing, none of an element on another, a turret turned any way off the next hull; the
           probe on division 42 reads 0; render only, the pin unchanged.
-        - [ ] 7.34c2 A block in contact (`DEPLOY_SCATTER`, the elements 0.012 to 0.015 cells
+        - [x] 7.34c2 A block in contact (`DEPLOY_SCATTER`, the elements 0.012 to 0.015 cells
           apart, Armoured divisions 40 and 41): no rigid layout of full size fits. Each element's
           figures fitted to the room its neighbours leave (a scale per element, the least over
           its neighbours of a bound both keep), the same for what is drawn on a figure (shots,

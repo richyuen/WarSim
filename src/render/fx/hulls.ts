@@ -23,7 +23,7 @@ import { Frame, turretOf, Wreck } from '../../shared/unitLooks';
 import { SEAM_MARGIN, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../camera';
 import { hash2, pair } from '../hash';
 import { ANIM_TAIL_MS, smooth } from '../timing';
-import { figureCells, figureCount, figureOffsets, gridSide, shownSide } from '../units/individuals';
+import { figureCells, figureCount, figureOffsets, fitScales, gridSide, shownSide } from '../units/individuals';
 import { fadeStart, WRECK_HOLD_HOURS } from './wrecks';
 
 /** ms: a hull burns, then smokes, then fades. */
@@ -136,6 +136,8 @@ export function fallenLost(before: HullElements, after: HullElements, now: numbe
   const index = new Map<number, number>();
   for (let i = 0; i < before.count; i++) if (markOf(before.frame[i]!) >= 0) index.set(before.id[i]!, i);
   if (index.size === 0) return out;
+  // Where the figures were drawn: a vehicle fitted to its neighbours (PLAN 7.34c2).
+  let fit: Float32Array | null = null;
   for (let j = 0; j < after.count; j++) {
     const id = after.id[j]!;
     const i = index.get(id);
@@ -144,6 +146,8 @@ export function fallenLost(before: HullElements, after: HullElements, now: numbe
     const had = figureCount(before.strength[i]!, size);
     const has = figureCount(after.strength[j]!, size);
     if (has >= had) continue;
+    fit ??= fitScales(before);
+    const s = fit[i]!;
     const frame = before.frame[i]!;
     const kind = markOf(frame) as Wreck;
     const burns = after.hit[j] === 1;
@@ -153,7 +157,7 @@ export function fallenLost(before: HullElements, after: HullElements, now: numbe
     const off = figureOffsets(id, side, had, facing);
     for (let k = has; k < had; k++) {
       const [turn] = pair(hash2(hash2(id, k), 0x66616c));
-      out.push({ element: id, figure: k, kind, x: before.x[i]! + off[k * 2]!, y: before.y[i]! + off[k * 2 + 1]!, angle: kind === Wreck.men ? turn * Math.PI : facing + turn * 0.5, cells: figureCells(side), burns, born: now });
+      out.push({ element: id, figure: k, kind, x: before.x[i]! + off[k * 2]! * s, y: before.y[i]! + off[k * 2 + 1]! * s, angle: kind === Wreck.men ? turn * Math.PI : facing + turn * 0.5, cells: figureCells(side) * s, burns, born: now });
     }
   }
   return out;
@@ -170,6 +174,8 @@ export function tanksLost(before: HullElements, after: HullElements, now: number
   const index = new Map<number, number>();
   for (let i = 0; i < before.count; i++) if (turretOf(before.frame[i]!) >= 0) index.set(before.id[i]!, i);
   if (index.size === 0) return out;
+  // Where the tanks were drawn: fitted to their neighbours (PLAN 7.34c2).
+  let fit: Float32Array | null = null;
   for (let j = 0; j < after.count; j++) {
     const id = after.id[j]!;
     const i = index.get(id);
@@ -178,6 +184,8 @@ export function tanksLost(before: HullElements, after: HullElements, now: number
     const had = figureCount(before.strength[i]!, size);
     const has = figureCount(after.strength[j]!, size);
     if (has >= had) continue;
+    fit ??= fitScales(before);
+    const s = fit[i]!;
     const frame = before.frame[i]!;
     const side = gridSide(frame, figureCount(size, size));
     const facing = before.facing[i]!;
@@ -186,7 +194,7 @@ export function tanksLost(before: HullElements, after: HullElements, now: number
     for (let k = has; k < had; k++) {
       // A turret is thrown round by what set its tank on fire; a tank left behind has its own in line.
       const [turn] = pair(hash2(hash2(id, k), 0x68756c));
-      out.push({ element: id, figure: k, x: before.x[i]! + off[k * 2]!, y: before.y[i]! + off[k * 2 + 1]!, facing, askew: burns ? turn * 1.2 : 0, frame, cells: figureCells(side), burns, born: now });
+      out.push({ element: id, figure: k, x: before.x[i]! + off[k * 2]! * s, y: before.y[i]! + off[k * 2 + 1]! * s, facing, askew: burns ? turn * 1.2 : 0, frame, cells: figureCells(side) * s, burns, born: now });
     }
   }
   return out;

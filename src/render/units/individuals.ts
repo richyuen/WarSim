@@ -18,9 +18,9 @@
  * every frame and after a reload. Nothing here is sim state.
  */
 import { hash2, pair } from '../hash';
-import { Frame, shownFrame } from '../../shared/unitLooks';
+import { Frame, shownFrame, turretOf } from '../../shared/unitLooks';
 import { sizeScale } from '../sizeScale';
-import { hullBox, muzzleOf } from './atlas';
+import { hullBox, muzzleOf, vehicleBox } from './atlas';
 import { SLOT_GAP_CELLS } from './ships';
 
 /** m/px up to which T3 is the unit layer (`tierOf`); the handover from the T2 sprites is at this zoom. */
@@ -34,6 +34,12 @@ export const MAX_FIGURES = 64;
 export const FOOTPRINT_CELLS = 0.024;
 /** How far a figure stands from the centre of its sub-slot, as a share of the sub-slot's side. */
 const JITTER = 0.18;
+/**
+ * The same in the 4 × 4 grid of vehicles and guns (PLAN 7.34c2): a half-track is 0.76 of its
+ * sub-slot long, and two a sub-slot apart, each 0.18 of it off toward the other, met. At 0.1 two
+ * stand 0.8 of a sub-slot apart at the least.
+ */
+const GRID4_JITTER = 0.1;
 /** A figure fills this share of its sub-slot. */
 const FILL = 0.92;
 
@@ -194,8 +200,9 @@ export function figureOffsets(element: number, side: number, count: number, faci
     const row = Math.floor(slot / side);
     const col = slot - row * side;
     const [jx, jy] = pair(hash2(element, 4096 + slot));
-    const across = (col - (side - 1) / 2 + jx * JITTER) * pitch;
-    const along = ((side - 1) / 2 - row + jy * JITTER) * pitch; // front row ahead of the centre
+    const jitter = side === 4 ? GRID4_JITTER : JITTER;
+    const across = (col - (side - 1) / 2 + jx * jitter) * pitch;
+    const along = ((side - 1) / 2 - row + jy * jitter) * pitch; // front row ahead of the centre
     // Forward (fx, fy); right-hand side (−fy, fx): as the slots of the formation's block.
     out.push(fx * along - fy * across, fy * along + fx * across);
   }
@@ -255,6 +262,124 @@ function rankOffsets(layout: TankLayout, cells: number, abreast: number, count: 
   return out;
 }
 
+/**
+ * Vehicles fitted to the room their neighbours leave (PLAN 7.34c2, ADR-540; critic run 9: "at
+ * 10 m/px ... tanks overlapping in piles"). A block in contact stands off its slots
+ * (`DEPLOY_SCATTER`): two elements 0.012 to 0.015 cells apart, where an element's tanks fill a
+ * slot's 0.03 (PLAN 7.34c1). An element of vehicles (tanks, half-tracks: `isVehicleFrame`) is drawn
+ * at a scale of its layout, figures and places alike: the least, over the vehicles near it, of
+ * the bound the two keep together. Their drawn boxes (`vehicleBox`, about every figure of the
+ * whole element) are kept apart along an axis that parts them: the centre line, or a side of
+ * either's box; the bound is FIT of the room along the best of these. The bound of the place
+ * before and of the place now, the least of the two (the figures glide between them), stepped
+ * down to FIT_STEPS so a figure does not change its size by a hair from one snapshot to the
+ * next. A block at rest keeps its full figures: there the bound is 1 or more.
+ */
+export interface FitElements {
+  count: number;
+  id: ArrayLike<number>;
+  frame: ArrayLike<number>;
+  size: ArrayLike<number>;
+  x: ArrayLike<number>;
+  y: ArrayLike<number>;
+  facing: ArrayLike<number>;
+  prevX?: ArrayLike<number>;
+  prevY?: ArrayLike<number>;
+}
+
+/** Steps of a vehicle's fit (`fitScales`): its scale is a whole number of 1/FIT_STEPS, rounded down. */
+const FIT_STEPS = 32;
+
+/** Whether a figure of `frame` is a vehicle that T3 fits to its neighbours (`fitScales`): a tank, a half-track. */
+export function isVehicleFrame(frame: number): boolean {
+  return turretOf(frame) >= 0 || frame === Frame.halftrack;
+}
+
+/**
+ * The drawn box about the whole element at full figure and facing 0: half its reach along the
+ * facing (the larger of before and behind) and across it, cells.
+ */
+export function vehicleReach(element: number, frame: number, size: number): [along: number, across: number] {
+  const side = gridSide(frame, figureCount(size, size));
+  const cells = figureCells(side);
+  const box = vehicleBox(frame);
+  const off = figureOffsets(element, side, figureCount(size, size), 0);
+  let along = 0;
+  let across = 0;
+  for (let k = 0; k < off.length; k += 2) {
+    along = Math.max(along, off[k]! + box.front * cells, -(off[k]! - box.back * cells));
+    across = Math.max(across, Math.abs(off[k + 1]!) + box.half * cells);
+  }
+  return [along, across];
+}
+
+/** How far the box of half-reaches (`along`, `across`) at `facing` reaches along the unit (ux, uy). */
+function supportOf(along: number, across: number, facing: number, ux: number, uy: number): number {
+  const c = Math.cos(facing);
+  const s = Math.sin(facing);
+  return along * Math.abs(ux * c + uy * s) + across * Math.abs(-ux * s + uy * c);
+}
+
+/** The scale two boxes keep together at (dx, dy) apart so that one axis parts them with FIT of the room on it (at most 1). */
+function pairBound(dx: number, dy: number, a: readonly number[], fa: number, b: readonly number[], fb: number): number {
+  const d = Math.hypot(dx, dy);
+  if (d === 0) return 0;
+  let best = 0;
+  const axes = [dx / d, dy / d, Math.cos(fa), Math.sin(fa), -Math.sin(fa), Math.cos(fa), Math.cos(fb), Math.sin(fb), -Math.sin(fb), Math.cos(fb)];
+  for (let k = 0; k < axes.length; k += 2) {
+    const ux = axes[k]!;
+    const uy = axes[k + 1]!;
+    const reach = supportOf(a[0]!, a[1]!, fa, ux, uy) + supportOf(b[0]!, b[1]!, fb, ux, uy);
+    best = Math.max(best, (FIT * Math.abs(dx * ux + dy * uy)) / reach);
+    if (best >= 1) return 1;
+  }
+  return best;
+}
+
+/**
+ * Each element's fit (PLAN 7.34c2): 1 for what is not a vehicle and for a vehicle with room, less
+ * for one whose neighbours stand nearer than its layout reaches. Pure in the elements given.
+ */
+export function fitScales(e: FitElements): Float32Array {
+  const out = new Float32Array(e.count).fill(1);
+  const reach: number[][] = [];
+  const vehicles: number[] = [];
+  let far = 0;
+  for (let i = 0; i < e.count; i++) {
+    if (!isVehicleFrame(e.frame[i]!)) continue;
+    const r = vehicleReach(e.id[i]!, e.frame[i]!, e.size[i]!);
+    reach[i] = r;
+    vehicles.push(i);
+    far = Math.max(far, Math.hypot(r[0], r[1]));
+  }
+  if (vehicles.length < 2) return out;
+  // Two boxes further apart than both reaches in any direction have room: a grid of that cell.
+  const cell = 2 * far;
+  const grid = new Map<string, number[]>();
+  const key = (gx: number, gy: number): string => `${gx},${gy}`;
+  for (const i of vehicles) {
+    const k = key(Math.floor(e.x[i]! / cell), Math.floor(e.y[i]! / cell));
+    const list = grid.get(k);
+    if (list) list.push(i);
+    else grid.set(k, [i]);
+  }
+  for (const i of vehicles) {
+    const gx = Math.floor(e.x[i]! / cell);
+    const gy = Math.floor(e.y[i]! / cell);
+    for (let ox = -1; ox <= 1; ox++)
+      for (let oy = -1; oy <= 1; oy++)
+        for (const j of grid.get(key(gx + ox, gy + oy)) ?? []) {
+          if (j <= i) continue;
+          let b = pairBound(e.x[j]! - e.x[i]!, e.y[j]! - e.y[i]!, reach[i]!, e.facing[i]!, reach[j]!, e.facing[j]!);
+          if (e.prevX && e.prevY) b = Math.min(b, pairBound(e.prevX[j]! - e.prevX[i]!, e.prevY[j]! - e.prevY[i]!, reach[i]!, e.facing[i]!, reach[j]!, e.facing[j]!));
+          out[i] = Math.min(out[i]!, b);
+          out[j] = Math.min(out[j]!, b);
+        }
+  }
+  for (const i of vehicles) if (out[i]! < 1) out[i] = Math.floor(out[i]! * FIT_STEPS) / FIT_STEPS;
+  return out;
+}
+
 /** The figure of an element that a shot leaves (PLAN 3.6c). */
 export interface FiringFigure {
   /** Where it stands, cells from the element's slot pose. */
@@ -264,18 +389,23 @@ export interface FiringFigure {
   frame: number;
   side: number;
   facing: number;
+  /** Its element's fit (`fitScales`): its figure is `figureCells(side)` × this. None: 1. */
+  fit?: number;
 }
 
 /**
  * Which figure of `element` fires its volley of `tick`, and where it stands: one of those the
  * element has now, by the element and the tick, so the same in every frame and after a reload,
- * and another for the next volley. Null for an element without a figure.
+ * and another for the next volley. Null for an element without a figure. `fit` is the element's
+ * (`fitScales`): its figures' places and sizes are scaled by it.
  */
-export function firingFigure(element: number, tick: number, frame: number, strength: number, size: number, facing: number, inContact: boolean): FiringFigure | null {
+export function firingFigure(element: number, tick: number, frame: number, strength: number, size: number, facing: number, inContact: boolean, fit = 1): FiringFigure | null {
   const n = figureCount(strength, size);
   if (n === 0) return null;
   const side = shownSide(frame, figureCount(size, size), inContact);
   const off = figureOffsets(element, side, n, facing);
   const k = hash2(hash2(element, tick), 0x6d7a) % n;
-  return { dx: off[k * 2]!, dy: off[k * 2 + 1]!, frame: shownFrame(frame, inContact), side, facing };
+  const f: FiringFigure = { dx: off[k * 2]! * fit, dy: off[k * 2 + 1]! * fit, frame: shownFrame(frame, inContact), side, facing };
+  if (fit !== 1) f.fit = fit;
+  return f;
 }

@@ -29,6 +29,8 @@ interface Hull {
   x: number;
   y: number;
   born: number;
+  /** The side its tank was drawn with, cells: its class's, by its element's fit (PLAN 7.34c2). */
+  cells: number;
 }
 const key = (h: { element: number; figure: number }): string => `${h.element}:${h.figure}`;
 
@@ -79,7 +81,7 @@ async function watch(page: Page, info: TestInfo, underFire: boolean): Promise<vo
     // The frame before the step: the figures of the snapshot in hand, an element's in their order.
     // They are built in a frame, and an hour without a loss has drawn none here.
     v.drawUnitLayers(performance.now());
-    const stood = Array.from({ length: v.individualCount }, (_, j) => ({ id: v.individualOwner[j]!, x: v.individualX[j]!, y: v.individualY[j]! }));
+    const stood = Array.from({ length: v.individualCount }, (_, j) => ({ id: v.individualOwner[j]!, x: v.individualX[j]!, y: v.individualY[j]!, cells: v.individualCells[j]! }));
     const had = new Set(v.hulls.hulls);
     await window.__warsim!.sim.step(1);
     await new Promise<void>((done) => {
@@ -126,7 +128,7 @@ async function watch(page: Page, info: TestInfo, underFire: boolean): Promise<vo
       if (!a || turretOf(e.frame) < 0) continue;
       const own = got.stood.filter((g) => g.id === e.id);
       expect(own.length, `figures of ${e.id} in the frame before the step`).toBe(e.strength);
-      for (let k = a.strength; k < own.length; k++) out.push({ element: e.id, figure: k, x: own[k]!.x, y: own[k]!.y, born: 0 });
+      for (let k = a.strength; k < own.length; k++) out.push({ element: e.id, figure: k, x: own[k]!.x, y: own[k]!.y, born: 0, cells: own[k]!.cells });
     }
     return out;
   };
@@ -147,6 +149,9 @@ async function watch(page: Page, info: TestInfo, underFire: boolean): Promise<vo
       const f = byKey.get(key(w))!;
       expect(f.x, `hull ${key(w)}, x`).toBeCloseTo(w.x, 9);
       expect(f.y, `hull ${key(w)}, y`).toBeCloseTo(w.y, 9);
+      // As large as its tank was drawn: its class's figure, by its element's fit (PLAN 7.34c2).
+      expect(f.cells, `hull ${key(w)}, side`).toBe(w.cells);
+      expect(f.cells).toBeLessThanOrEqual(figureCells(gridSide(f.frame, 10)));
       // It burns if the sim had its element fired at in this hour, and only then.
       expect(f.burns, `hull ${key(w)} burns`).toBe(node.hours[h]!.get(w.element)![2]);
     }
@@ -192,7 +197,6 @@ async function watch(page: Page, info: TestInfo, underFire: boolean): Promise<vo
     for (const f of got.fresh) {
       const own = got.figures.filter((g) => g.id === f.element);
       expect(own.length, `figures of ${f.element}`).toBe(now.get(f.element));
-      expect(f.cells).toBe(figureCells(gridSide(f.frame, 10)));
       for (const g of own) expect(Math.hypot(g.x - f.x, g.y - f.y), `a tank of ${f.element} on hull ${key(f)}`).toBeGreaterThan(f.cells / 2);
     }
   }
