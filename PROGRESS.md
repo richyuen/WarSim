@@ -19234,3 +19234,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   before), `nukePoland1938.test.ts` green. Pin unmoved (gate).
 - **Next:** PLAN 7.29 is conditional (only if 7.27's measure or the critic finds the late land war
   short); then 7.30.
+
+## 2026-10-19 — PLAN 7.30a: the operational AI's late calls taken apart
+
+- **Start:** gate green on `836d4ac`; critic not due. **PLAN 7.29 not taken:** its condition (7.27's
+  measure or the critic's next run finds the late land war short) is not met: 7.27d's sweep was all
+  green and no critic has run since. It waits for the critic (7.5).
+- **Tooling:** `OP_PROBE` in `operational.ts` (unset: nothing timed; the pin proves it) and
+  `tools/diag/opCalls.ts` (a plan by its parts and sizes, the asks by answer and by why the kept
+  refusal did not answer them). Checkpoints `.cache/730/s732-y{8,20,30,31,43}.bin`; their hashes
+  equal 7.27d's every year 1–43, so 7.27d's numbers stay the baseline.
+- **Measured** (`docs/evidence/7.30/measure-a.md`): the late mean (1.072 ms) is mostly eight years
+  (16.4 of 26.8 ms; the other 17 average 0.61). Year 31: 81 % of the AI is far marches ~660 cells
+  refused for want of a way and searched again (9.3 ms each) because a cell somewhere flipped
+  between an open and a closed holder since (nation 106 and France). Year 44: the same in the USA's
+  orders and marches (16 of 35 s). Year 9: `joinWide` walked by each plan of the coalition (884
+  walks, 31 % of the AI's CPU). Year 51: `pocketOf`, order-dependent, so not cacheable as it is.
+- **Split:** 7.30b (the refusal kept by its corridor, exact), 7.30c (`joinWide`, measured first),
+  7.30d (the AT's 50-year run; `pocketOf` as a rule only with an ADR, or the bar to the user).
+- **Gotcha:** Python's `open(..., 'w')` on Windows writes CRLF; pass `newline=''`.
+- **Docs and tools only:** no rule change; pin 94235073.
+- **Next:** PLAN 7.30b.

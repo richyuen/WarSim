@@ -122,6 +122,59 @@ export const SPEARHEAD_ARMOUR = 0.5;
 /** How many other sectors a formation refused a long way is asked for (PLAN 1.42h), nearest first. */
 export const DIVERTS = 2;
 
+/**
+ * A measure of the plans (PLAN 7.30, `tools/diag/opCalls.ts`): with a clock set, each plan is
+ * timed by its parts and handed to `plan`. None set (the game, the tests), nothing is timed. Not
+ * state: in no save and no hash, and a timed plan gives the orders an untimed one gives.
+ */
+export const OP_PROBE: { now?: () => number; plan?: (p: PlanTimes) => void; ask?: (a: AskTimes) => void } = {};
+
+/** One `askMove` of a timed plan (`OP_PROBE`): the formation, the cell it stood on, the cell asked, the answer, ms, and the refusal kept for it before the call. */
+export interface AskTimes {
+  id: number;
+  from: number;
+  to: number;
+  answer: 'ok' | 'refused' | 'long';
+  ms: number;
+  was: World['refusedOrders'] extends Map<number, infer V> ? V | undefined : never;
+  /** Whether the ask came from the marches from afar (else from the orders). */
+  afar: boolean;
+  /** The ground it was asked on. */
+  pass: Passage;
+}
+
+/** One plan's parts, ms, and its sizes (`OP_PROBE`). */
+export interface PlanTimes {
+  nation: number;
+  tick: number;
+  /** ms: the sectors (`sectorShape`, the planner's copy); the formations near and far; `passageOf`; the classes and `reached`; the reserve and threat; the allotment; the marches from afar; the orders. */
+  parts: number[];
+  sectors: number;
+  mine: number;
+  near: number;
+  far: number;
+  classes: number;
+  /** `askMove` calls and their ms (in the marches from afar and the orders). */
+  asks: number;
+  askMs: number;
+  /** `reaches` calls that asked `wideJoined`, and their ms. */
+  joins: number;
+  joinMs: number;
+  /** `groundOf` calls and their ms. */
+  grounds: number;
+  groundMs: number;
+}
+/** The plan being timed, and the clock's reading at its last mark (`OP_PROBE`). */
+let timing: PlanTimes | undefined;
+let lastMark = 0;
+/** Ends a part of the plan being timed. */
+function mark(): void {
+  if (!timing) return;
+  const t = OP_PROBE.now!();
+  timing.parts.push(t - lastMark);
+  lastMark = t;
+}
+
 interface Sector {
   key: number;
   /** Its front cells, by the parts they came from (`FrontPart.cells`, shared: never written). */
@@ -184,7 +237,19 @@ export function operationalAi(world: World, armour: readonly number[] = []): voi
   // Planners with the same ground open to them (the members of a coalition) share one `Passage`.
   const passages = new Map<string, Passage>();
   const stand = standings(world, w);
-  for (const n of actors) planNation(world, n, fighting, frontier, w, nb, f, passages, armour, stand);
+  for (const n of actors) {
+    const clock = OP_PROBE.now;
+    if (clock) {
+      timing = { nation: n, tick: world.tick, parts: [], sectors: 0, mine: 0, near: 0, far: 0, classes: 0, asks: 0, askMs: 0, joins: 0, joinMs: 0, grounds: 0, groundMs: 0 };
+      lastMark = clock();
+    }
+    planNation(world, n, fighting, frontier, w, nb, f, passages, armour, stand);
+    if (timing) {
+      mark();
+      OP_PROBE.plan?.(timing);
+      timing = undefined;
+    }
+  }
 }
 
 /**
@@ -404,6 +469,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     slotStamp[list[i]!.key] = gen;
     slotAt[list[i]!.key] = i;
   }
+  if (timing) timing.sectors = list.length;
+  mark();
 
   /** The strength of n's enemies in a sector bucket (read where no order is given in between). */
   const enemyAt = (k: number): number => {
@@ -475,6 +542,12 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     near.push(id);
     nearD.push(d);
   }
+  if (timing) {
+    timing.mine = mine.length;
+    timing.near = near.length;
+    timing.far = out.length;
+  }
+  mark();
   if (near.length === 0 && out.length === 0) return;
   // Reach (PLAN 3.5b): formations that stand on one landmass and in one group of provinces
   // with open ground (or on closed ground, which they walk out of) reach the same places.
@@ -488,6 +561,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   // in one wide ground does not reach the cells of another that no open cells join it to (PLAN
   // 3.10c2b3a, ADR-193). `mayReach` asks neither, and the order's search would find both.
   const pass = passageOf(world, n, passages);
+  mark();
   const nav = navOf(world);
   const land = nav.grid.component;
   const nodeOf = nav.graph.nodeOf;
@@ -503,9 +577,18 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
    * whose cells come to one (minus the wide ground's number), or 0 for ground too wide to walk
    * that came to none.
    */
-  const groundOf = (c: number): number => {
+  const groundAt = (c: number): number => {
     const wide = wideCell(c);
     return wide !== 0 ? -wide : pocketOf(nav.grid, pass, c, wideCell);
+  };
+  /** `groundAt`, timed when a plan is (`OP_PROBE`). */
+  const groundOf = (c: number): number => {
+    if (!timing) return groundAt(c);
+    const t = OP_PROBE.now!();
+    const r = groundAt(c);
+    timing.grounds++;
+    timing.groundMs += OP_PROBE.now!() - t;
+    return r;
   };
   const classIndex = new Map<number, number>();
   const classCell: number[] = [];
@@ -540,7 +623,13 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const unasked: (Map<number, number> | undefined)[] = classCell.map(() => undefined);
   const reaches = (ci: number, i: number): boolean => {
     const ground = unasked[ci]?.get(i);
-    return ground === undefined || wideJoined(nav.grid, nav.graph, pass, -classGround[ci]!, -ground);
+    if (ground === undefined) return true;
+    if (!timing) return wideJoined(nav.grid, nav.graph, pass, -classGround[ci]!, -ground);
+    const t = OP_PROBE.now!();
+    const r = wideJoined(nav.grid, nav.graph, pass, -classGround[ci]!, -ground);
+    timing.joins++;
+    timing.joinMs += OP_PROBE.now!() - t;
+    return r;
   };
   for (let i = 0; i < sn; i++) {
     const s = list[i]!;
@@ -581,6 +670,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       reached[ci]!.push(i);
     }
   }
+  if (timing) timing.classes = classCell.length;
+  mark();
   // Reserve: the farthest RESERVE share of free formations within range of a sector they reach
   // stays put.
   const nearest = new Map<number, number>();
@@ -620,6 +711,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     shape.threat = list.map((s) => s.threat);
     shape.threatAt = world.embarked.size;
   } else for (let i = 0; i < list.length; i++) list[i]!.threat = shape.threat[i]!;
+  mark();
   const sectorOfCell = (c: number): number => Math.floor(Math.floor(c / w) / sector) * bw + Math.floor((c % w) / sector);
   /** The number in `list` of the sector of a bucket, if it has one. */
   const indexOf = (key: number): number | undefined => (slotStamp[key] === gen ? slotAt[key] : undefined);
@@ -810,6 +902,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       list[best]!.strength += f.strength[id]!;
     }
   }
+  mark();
   // Marches from afar (PLAN 3.10c1a, ADR-190): a front sector of n's own that has nobody takes
   // the nearest formation on its landmass that is far from every sector it reaches and stands still. Nobody: no
   // formation of n stands in the sector or next to it, the allotment above gave it none, and
@@ -922,6 +1015,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       }
     }
   }
+  mark();
   // Orders.
   const isArmour = (id: number): boolean => (armour[f.template[id]!] ?? 0) >= SPEARHEAD_ARMOUR;
   for (const s of list) {
@@ -963,6 +1057,21 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
  * such an order is refused again, as it was: the rule changes no state, and the pin did not move.
  */
 export function askMove(world: World, id: number, to: number, pass: Passage): 'ok' | 'refused' | 'long' {
+  if (!timing) return asked(world, id, to, pass);
+  const was = world.refusedOrders.get(id);
+  const before = was ? { ...was, long: was.long.slice() } : undefined;
+  const f = world.formations.cols;
+  const from = Math.floor(f.y[id]!) * world.cells.w + Math.floor(f.x[id]!);
+  const t = OP_PROBE.now!();
+  const r = asked(world, id, to, pass);
+  const ms = OP_PROBE.now!() - t;
+  timing.asks++;
+  timing.askMs += ms;
+  OP_PROBE.ask?.({ id, from, to, answer: r, ms, was: before, afar: timing.parts.length === 6, pass });
+  return r;
+}
+
+function asked(world: World, id: number, to: number, pass: Passage): 'ok' | 'refused' | 'long' {
   const f = world.formations.cols;
   const w = world.cells.w;
   const nav = navOf(world);

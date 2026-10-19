@@ -72,7 +72,22 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   the marches from afar) grows with what (the front's length, the formations, the wars). Then the
   cause fixed if it is one, behaviour unchanged where the rule is not the cause. AT: the measure;
   the late years' operational AI per tick at most half of 7.27d's on seed 732, pinned; the pin
-  unchanged, or its entry if a rule moves it.
+  unchanged, or its entry if a rule moves it. A part each:
+    - [x] 7.30a The measure (`docs/evidence/7.30/measure-a.md`, `tools/diag/opCalls.ts`, `OP_PROBE`):
+      the heavy years (31, 44) are refusals searched again after a flip anywhere; year 9's is
+      `joinWide` walked by each plan of a coalition; the late years' broad cost is `pocketOf`.
+    - [ ] 7.30b A refusal kept by its corridor: `askMove`'s refusal of a search in a corridor of
+      provinces holds while no cell of the corridor's provinces has gone from an open holder to
+      a closed one or back and the provinces' `open` and `shut` are the same; other refusals as
+      now. AT: a unit test (a flip outside the corridor keeps it, one inside undoes it); the pin
+      unchanged; `opCalls.ts` from `.cache/730/s732-y30.bin` and `s732-y43.bin`: the asks refused
+      again after a flip down by most.
+    - [ ] 7.30c `joinWide` walked again by each plan of a coalition (years 9, 44): measured first
+      (which flips undo it, and whether a flip's cell outside the provinces it walks can change
+      it); the fix only if exact. AT: the measure; the pin unchanged.
+    - [ ] 7.30d The AT: seed 732 × 50 years alone, pinned, `--profile`, against 7.27d's; if short
+      of half, what is left by year and part (`opCalls.ts`), and `pocketOf` (§3.3 of measure-a)
+      weighed as a rule with an ADR or the bar put to the user (ADR-486's way).
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
