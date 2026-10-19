@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-545 · 2026-10-19 · accepted — A fleet sent home sails for its bloc's nearest port; a transport group for its nation's (PLAN 7.35b4b; amends ADR-261, ADR-264)
+
+- **Context.** Critic run 9, naval 6 (Japan–USA on seed 3407). Measured (`seaMeet 3407 JAP USA 40`,
+  `docs/evidence/7.35/measure-b4.md` §1): after ADR-543 the US fleets stage to Guam; Japan takes
+  it on day 6; at the lost base `rebaseFleets` sends each to `nearestOwnPort`, which read ports of
+  the fleet's nation only: Pago Pago, 4,300 km, by the Philippines' (of the US bloc) about 2,000.
+  The naval AI's home was already the bloc's (`plan`'s `atOwnPort`, ADR-543), its send home
+  (`sailHome`) the nation's: two homes.
+- **Decision.** `homeOf`: the ports home to a fleet are its bloc's (`blocOf`: its nation, its
+  overlord and their puppets); a transport group's (a fleet with a live transport, `cls` `tp`)
+  its nation's alone, where its nation's landings load (`invasion`: a transport group at a port
+  its nation holds). `nearestOwnPort` (its basin filter kept) takes the nearest home port, and
+  `atLostBase` reads a home port beside the lost one as a port of its own (else a fleet would be
+  sent, each day, to the partner's port it stands at).
+- **Every caller read.** `breakOff` (out of a sea battle: the nearest port of the side, a
+  partner's included); `plan`'s sends home (outgunned, under naval bombers, at peace; its home test
+  was the bloc's already, so a fleet sent to its nation's far port no longer passes a partner's it
+  counts as home); a landing thrown back (`amphibious`: the transports go home, the men land
+  where they stand next, `strayLanding`, any land of their side; transports keep their nation's
+  port); empty transports (`plan`, PLAN 7.26h1: their nation's port, where the next landing
+  loads); `rebaseFleets` (ADR-261); the break-off's `atOwnPort` (PLAN 7.31: a fleet at its home
+  port has nowhere to break off to, a partner's now too). No ship's repair or supply reads the
+  port a fleet stands at.
+- **Consequences.** The test: a US destroyer flotilla at Guam taken by Japan sails for Davao
+  (the Philippines', 2,198 km), the nearest US port 5,847 km; a US transport group there for Pago
+  Pago (`fleetEnds1938.test.ts`; red without the rule, and red with the transport exemption taken
+  out). `navalBattle1938`'s break-off test read a port of the United Kingdom's own: the flotilla
+  now sails for St. John's (Newfoundland's), and the test reads the bloc's. Seed 99's year: 6 sea battles, the first on day 45.2, both as before (counted as new
+  records). Pin 8c59c203 → dd69fc40. navalAi 0.041 ms a tick, tick mean 2.14 ms (seed 99, 1 year,
+  `--profile`).
+
 ### ADR-544 · 2026-10-19 · accepted — Under the enemy's naval bombers an empty zone holds nothing to fight: a fleet away there sails home, and no sortie goes there (PLAN 7.35b3b)
 
 - **Context.** Critic run 9, naval 6: the US Asiatic squadron sails into Takao, finds no ship and is

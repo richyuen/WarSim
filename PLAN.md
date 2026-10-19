@@ -112,7 +112,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
         - [x] 7.35b4a `seaMeet`'s `why` tells a staging order: the tool calls `forwardBases` (exported
           from `naval.ts`, not mirrored). The "before" run, `seaMeet 3407 JAP USA 40`; whether the
           Philippines' port is of the US bloc (`blocOf`). No rule change: the pin unchanged.
-        - [ ] 7.35b4b A fleet sent home sails for its bloc's nearest port (`nearestOwnPort`, its
+        - [x] 7.35b4b A fleet sent home sails for its bloc's nearest port (`nearestOwnPort`, its
           basin filter kept), as `plan`'s home already is: every caller (`breakOff`, `plan`'s sends
           home, a repulsed landing, `rebaseFleets`, the break-off's `atOwnPort`) read in the ADR
           (amends ADR-261, ADR-264). AT: a unit test (the US fleet at a lost Guam sails for a bloc

@@ -19829,3 +19829,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   US bloc (Cavite, Cebu, about 2,000 km from Guam). One Japan–US sea battle in 40 days, day 39.5.
 - **No rule change:** pin 8c59c203 (a tool, an export and documents).
 - **Next:** PLAN 7.35b4b (a fleet sent home sails for its bloc's nearest port).
+
+## 2026-10-19 — PLAN 7.35b4b: a fleet sent home sails for its bloc's nearest port (critic R9 naval 6; ADR-545)
+
+- **Start:** gate green on `e587d72`; critic not due.
+- **Rule** (ADR-545, `src/sim/systems/navalCombat.ts`): `homeOf`, the ports home to a fleet: its
+  bloc's; a transport group's its nation's (where its nation's landings load). `nearestOwnPort`
+  (basin filter kept) and `atLostBase` read it; every caller of `sailHome` read in the ADR.
+- **Tests:** `fleetEnds1938.test.ts` + 1: a US destroyer flotilla at Guam taken by Japan sails for
+  Davao (the Philippines', 2,198 km; the nearest US port 5,847 km), a US transport group there for
+  Pago Pago. Red without the rule; red with the transport exemption taken out. The Gibraltar AT
+  (a British port) unchanged and green. `navalBattle1938`'s break-off test read "a British port":
+  the flotilla now sails for St. John's (Newfoundland's, of the bloc); it reads the bloc's now.
+  Whole unit suite by hand: green but `scenario1938`'s build time under the full run's load (3.8 s
+  against 2 s), green alone.
+- **Perf:** navalAi 0.040 → 0.041 ms a tick, tick mean 2.14 ms (seed 99, 1 year, `--profile`).
+- **Pin** 8c59c203 → dd69fc40 (seed 99's year: 6 sea battles, first on day 45.2, both as before).
+- **By hand** (the gate skips e2e): `carrierStrikeRow1938`, `seaRow1938` (3), `navalDemo1938`,
+  `seaBattle1938`, `seaBattleSeen1938` (alone) green.
+- **Next:** PLAN 7.35b4c (`forwardBases`' basin filter and bombed targets; the "after" run).

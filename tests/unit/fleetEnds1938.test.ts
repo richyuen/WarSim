@@ -2,11 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { encodeRuns } from '../../src/shared/mapImport';
 import { isLand, Terrain } from '../../src/shared/terrain';
 import { cellOf } from '../../src/sim/data/terrain';
-import { NATIONS_1938, PORTS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
+import { NATIONS_1938, PORTS_1938, SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { sailStepKm, seaNeighbours } from '../../src/sim/nav/sailRoute';
 import { passageBank, passageShut, seaLinked } from '../../src/sim/systems/seaSupply';
 import { declareWar } from '../../src/sim/systems/war';
+import { equipFormation } from '../../src/sim/systems/elements';
+import { seaKm } from '../../src/sim/systems/navalCombat';
+import { blocOf } from '../../src/sim/systems/supply';
 import { laneOf, navOf, portSeaOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 
@@ -83,6 +86,50 @@ describe('a fleet\'s loose ends (PLAN 4.4e)', () => {
     w.setController(w.ports[gib]!.cell, GER);
     s.step(25);
     for (const f of fleets) expect(w.formations.cols.moving[f]).toBe(0);
+  });
+
+  // PLAN 7.35b4b (ADR-545): a fleet sent home sails for its bloc's nearest port; a transport
+  // group for its nation's, where its nation's landings load. Seed 3407: the US fleets that lost
+  // Guam sailed for Pago Pago (4,300 km) by the Philippines' ports (2,000 km).
+  it('a US warfleet at Guam, taken by Japan at war, sails for a port of its bloc nearer than any American one; a US transport group there for an American port', () => {
+    const s = sim();
+    const w = s.world;
+    const c = w.formations.cols;
+    const USA = id('USA');
+    const JAP = id('JAP');
+    expect(declareWar(w, JAP, USA, true)).not.toBeNull();
+    const guam = portIndex(w, 'Guam');
+    expect(guam).toBeGreaterThanOrEqual(0);
+    const water = portSeaOf(w);
+    const at = water[guam]!;
+    const [gx, gy] = [(at % W) + 0.5, Math.floor(at / W) + 0.5];
+    const add = (tpl: string): number => {
+      const fid = w.formations.create();
+      const t = TEMPLATES_1938.findIndex((x) => x.id === tpl);
+      [c.nation[fid], c.x[fid], c.y[fid], c.template[fid], c.supply[fid], c.org[fid]] = [USA, gx, gy, t, 1, 1];
+      equipFormation(w, fid, t);
+      return fid;
+    };
+    const fleet = add('destroyer_flotilla');
+    const tp = add('transport_group');
+    w.setController(w.ports[guam]!.cell, JAP);
+    s.step(25);
+    const km = (cell: number): number => seaKm(w, gx, gy, (cell % W) + 0.5, Math.floor(cell / W) + 0.5);
+    const holderOf = (cell: number): number => w.cells.controller[w.ports[water.indexOf(cell)]!.cell]!;
+    // The nearest port the United States itself holds, by sea from Guam.
+    let usKm = Infinity;
+    w.ports.forEach((p, i) => {
+      if (w.cells.controller[p.cell] === USA && water[i]! >= 0 && i !== guam) usKm = Math.min(usKm, km(water[i]!));
+    });
+    expect(c.moving[fleet]).toBe(1);
+    const ft = c.targetCell[fleet]!;
+    expect(water.includes(ft), 'a port\'s water').toBe(true);
+    expect(blocOf(w, holderOf(ft))).toBe(blocOf(w, USA));
+    expect(holderOf(ft)).not.toBe(USA);
+    expect(km(ft)).toBeLessThan(usKm);
+    expect(c.moving[tp]).toBe(1);
+    expect(holderOf(c.targetCell[tp]!)).toBe(USA);
+    process.stderr.write(`Guam lost: warfleet to ${w.ports[water.indexOf(ft)]!.name} ${Math.round(km(ft))} km, transports to ${w.ports[water.indexOf(c.targetCell[tp]!)]!.name}; nearest US port ${Math.round(usKm)} km\n`);
   });
 
   it('the AT: the Suez canal is shut to a British fleet when Germany, at war with it, holds its bank: the way to the Gulf of Suez goes round Africa', () => {

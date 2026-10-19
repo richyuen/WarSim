@@ -9,6 +9,7 @@ import { seaSide } from '../../src/shared/history';
 import { historyRows } from '../../src/worker/historyRows';
 import { historyText } from '../../src/ui/historyText';
 import { declareWar } from '../../src/sim/systems/war';
+import { blocOf } from '../../src/sim/systems/supply';
 import { navOf, portSeaOf, seaRangeOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 
@@ -190,7 +191,8 @@ describe('gunnery by range: the AT (PLAN 4.3a)', () => {
       });
       hours++;
     }
-    // Under 4 of its 8 destroyers: it broke off, alive, and sails for a British port.
+    // Under 4 of its 8 destroyers: it broke off, alive, and sails for a port of the British bloc
+    // (its nearest home port, ADR-545: before, the United Kingdom's own).
     expect(w.formations.has(dd)).toBe(true);
     expect(broke).toEqual([dd]);
     const left = ships(w, dd, 'destroyer');
@@ -200,7 +202,11 @@ describe('gunnery by range: the AT (PLAN 4.3a)', () => {
     expect(ends.length).toBe(8 - left);
     expect(w.formations.cols.moving[dd]).toBe(1);
     const port = w.formations.cols.targetCell[dd]!;
-    expect(w.ports.some((p, i) => w.cells.controller[p.cell] === ENG && portSeaOf(w)[i] === port)).toBe(true);
+    const home = w.ports.findIndex((_p, i) => portSeaOf(w)[i] === port);
+    expect(home).toBeGreaterThanOrEqual(0);
+    expect(blocOf(w, w.cells.controller[w.ports[home]!.cell]!)).toBe(blocOf(w, ENG));
+    process.stderr.write(`it sails for ${w.ports[home]!.name} (${w.cells.controller[w.ports[home]!.cell]})
+`);
     // The battle is over at once, and logged once: Germany lost nothing, the United Kingdom 8 − left.
     expect(w.seaBattles).toEqual([]);
     expect(seaRangeOf(w, dd)).toBeUndefined();

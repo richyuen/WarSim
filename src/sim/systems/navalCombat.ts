@@ -49,7 +49,7 @@
  * is under fire (a volley or a carrier strike on it that hour, PLAN 7.31; until then it stands in
  * the battle, engaged, and the enemy closes on it), breaks off unless it is at its port
  * (`atOwnPort`, PLAN 7.31: it has nowhere to go, and fights there) (`breakOff`: `BREAK_HOURS` out of
- * every sea battle, sailing for its nation's nearest port).
+ * every sea battle, sailing for its nearest home port, `nearestOwnPort`).
  * A battle with no fleet of one side left, or with no contact in an hour, is over: one row in the
  * history log (`SeaBattle`: each side with the ships it lost; where it began).
  *
@@ -74,6 +74,7 @@ import { wingRange } from './air';
 import { NAVAL_STRIKE_FIRE, shipEffectiveness } from './airCombat';
 import { AIR_DETECTION, airSuperiority } from './airSuperiority';
 import { Leg, sortieAt, type Sortie } from './sorties';
+import { blocOf } from './supply';
 
 /** Ships removed per hour by one ship per point of `hard` against a target of 1 hit point. */
 export const SEA_FIRE_SCALE = 2;
@@ -404,13 +405,29 @@ function breakOff(world: World, id: number): void {
 }
 
 /**
- * The water of the port nearest to fleet `id` that its nation holds and a ship reaches, or -1:
- * one in the basin of the fleet's water (`basinOf`, PLAN 4.8o; the world's seas where the fleet
+ * Which holders' ports are home to fleet `id` (PLAN 7.35b4b, ADR-545): its bloc's (`blocOf`: its
+ * nation, its overlord and their puppets), as the naval AI's home is (`plan`'s `atOwnPort`); a
+ * transport group's (a live transport, `cls` `tp`) its nation's alone, where its nation's landings
+ * load (`invasion`). The US fleets that lost Guam sailed for Pago Pago, 4,300 km, by the
+ * Philippines' ports, 2,000 km (`docs/evidence/7.35/measure-b4.md`).
+ */
+export function homeOf(world: World, id: number): (holder: number) => boolean {
+  const n = world.formations.cols.nation[id]!;
+  const units = world.rules!.units;
+  const ec = world.elements.cols;
+  if ((elementIndex(world).get(id) ?? []).some((e) => ec.strength[e]! > 0 && units[ec.unit[e]!]!.cls === 'tp')) return (holder) => holder === n;
+  const bloc = blocOf(world, n);
+  return (holder) => holder !== 0 && blocOf(world, holder) === bloc;
+}
+
+/**
+ * The water of the port nearest to fleet `id` that is home to it (`homeOf`) and a ship reaches, or
+ * -1: one in the basin of the fleet's water (`basinOf`, PLAN 4.8o; the world's seas where the fleet
  * stands on no zone), not a port across land on a lake.
  */
 export function nearestOwnPort(world: World, id: number): number {
   const c = world.formations.cols;
-  const n = c.nation[id]!;
+  const home = homeOf(world, id);
   const water = portSeaOf(world);
   const sea = seaOf(world);
   const { w, h } = world.cells;
@@ -421,7 +438,7 @@ export function nearestOwnPort(world: World, id: number): number {
   let bd = Infinity;
   world.ports.forEach((p, i) => {
     const at = water[i]!;
-    if (world.cells.controller[p.cell] !== n || at < 0 || basin[sea.zoneOf[at]!] !== mine) return;
+    if (!home(world.cells.controller[p.cell]!) || at < 0 || basin[sea.zoneOf[at]!] !== mine) return;
     const d = seaKm(world, c.x[id]!, c.y[id]!, (at % w) + 0.5, Math.floor(at / w) + 0.5);
     if (d < bd) {
       bd = d;
@@ -458,7 +475,8 @@ export const AT_PORT_CELLS = 3;
 /**
  * A fleet at a base its nation has lost (PLAN 4.4e): daily, a fleet that stands (not under way,
  * not in a sea battle) with a port held by a nation at war with it within `AT_PORT_CELLS` of it,
- * and no port its nation holds there, sails for its nation's nearest port (`sailHome`).
+ * and no port home to it there (`homeOf`), sails for its nearest home port (`sailHome`; its bloc's,
+ * a transport group's its nation's: PLAN 7.35b4b).
  */
 export function rebaseFleets(world: World): void {
   const f = world.formations;
@@ -472,7 +490,7 @@ export function rebaseFleets(world: World): void {
 
 /**
  * Whether fleet `id` is at a base its nation has lost: a port its nation owns, held by a nation
- * at war with it, within `AT_PORT_CELLS`, and none its nation holds. An enemy's own port is no
+ * at war with it, within `AT_PORT_CELLS`, and none that is home to it there (`homeOf`). An enemy's own port is no
  * lost base: a fleet sent to an enemy's coast stays there (PLAN 4.5c).
  */
 export function atLostBase(world: World, id: number): boolean {
@@ -481,6 +499,7 @@ export function atLostBase(world: World, id: number): boolean {
   const { w } = world.cells;
   const ctl = world.cells.controller;
   const n = c.nation[id]!;
+  const home = homeOf(world, id);
   const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
   let lost = false;
   let own = false;
@@ -491,7 +510,7 @@ export function atLostBase(world: World, id: number): boolean {
     if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
     if (dx > world.atSize(AT_PORT_CELLS) || Math.abs(Math.floor(at / w) - Math.floor(cell / w)) > world.atSize(AT_PORT_CELLS)) return;
     const holder = ctl[p.cell]!;
-    if (holder === n) own = true;
+    if (home(holder)) own = true;
     else if (holder !== 0 && world.cells.owner[p.cell] === n && world.wars.atWar(holder, n)) lost = true;
   });
   return lost && !own;

@@ -30,7 +30,8 @@
  *   landing's water until peace, and a nation's landings load only at a port of its own.
  * - At war, its submarine flotillas raid (`raid`, PLAN 4.6d): each that stands off an enemy
  *   bloc's convoy way sails for the zone of one nearest it within `RAID_KM`.
- * - At peace: a fleet away from its nation's ports sails home.
+ * - At peace: a fleet away from its bloc's ports sails home (`sailHome`: its bloc's nearest port, a
+ *   transport group's its nation's, PLAN 7.35b4b).
  * - A fleet the editor placed (`World.station`, PLAN 7.22c) holds its place, at peace and at war:
  *   none of the above moves it; away from it by more than `AT_PORT_CELLS` (a battle drew it off)
  *   it sails back. It fights where it is seen, as any fleet.
