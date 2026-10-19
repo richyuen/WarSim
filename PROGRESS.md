@@ -19544,3 +19544,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   `zoomDemo1938` red on its Node-side precondition (a battalion of seed 1941's battle at 0.518 of
   its men, needs < 0.5): sim only, untouched here, so from an earlier commit; next commit.
 - **No rule change:** pin 45c20987.
+
+## 2026-10-19 — PLAN 7.34a's check: the zoom demo's battle is seed 1943's (ADR-533)
+
+- `zoomDemo1938` red on its Node side (seed 1941's battalions at up to 0.518 of their men; < 0.5
+  asked): a sim change after PLAN 7.1k, not bisected. Seeds tried nearest first: 1940, 1942, 1939
+  fail; 1943 passes the whole spec unchanged (Japanese division 389, 40 battalions at 192–249 of
+  500 men). `docs/evidence/2.10/` made again; stops 4 and 8 viewed.
+- **No rule change:** pin 45c20987.
+- **Next:** PLAN 7.34b (elements at 900 m/px).

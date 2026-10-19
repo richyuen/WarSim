@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-533 · 2026-10-19 · accepted — The zoom demo's battle is seed 1943's (PLAN 7.34a's check)
+
+- **Context.** `zoomDemo1938` (run by hand for PLAN 7.34a; the gate runs it only at a phase
+  review) fails on its Node side: seed 1941's division has battalions at up to 0.518 of their
+  men, the spec asks under half. Sim only, so not 7.34a's; a rule change after PLAN 7.1k moved
+  the game (not bisected: the pin has moved many times since).
+- **Decision.** `SEED = 1943`, as ADR-156, ADR-197 and ADR-403 did: the nearest seed that passes
+  the whole spec, nothing else of it changed. Tried, nearest first: 1940 (0.81), 1942 (0.52),
+  1939 (0.58) fail; 1943 passes in 3.2 min: Japanese square infantry division 389 in China, 40
+  battalions of 192 to 249 of 500 men, five batteries of 4 to 6 of 12 guns, 135 shots by or at
+  it an hour. The eight pictures of `docs/evidence/2.10/` made again; stops 4 and 8 looked at.
+- **Open still** (ADR-185): whether the spec should build its battle by hand rather than find
+  one in a game that every rule change moves.
+
 ### ADR-532 · 2026-10-19 · accepted — The ground of T2 comes in with the zoom: the map's T1 → T2 change a blend (PLAN 7.34a)
 
 - **Context.** Critic R9 (semantic zoom 7, map 7): "one wheel notch between 412 and 264 m/px

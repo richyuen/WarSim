@@ -60,6 +60,11 @@ import { leg, steps, type LegResult } from './flight';
 // hours. The seeds tried, nearest first: 1943 and 1945 have battalions at 0.52 and 0.54 of their
 // men, 1942 at 0.81, 1946 has no division that fires, stands and fits; 1941 passes all of this
 // spec (a Nationalist Spanish division: 20 battalions of 156 to 217 men of 500, four batteries).
+// And seed 1943's since PLAN 7.34a's check (ADR-533): a rule change after PLAN 7.1k (not
+// bisected) moved seed 1941's game, its division's battalions at up to 0.518 of their men. The
+// seeds tried, nearest first: 1940, 1942 and 1939 have battalions at 0.81, 0.52 and 0.58 of their
+// men; 1943 passes all of this spec (a Japanese division: 40 battalions of 192 to 249 men of 500,
+// five batteries, 135 shots by or at it an hour).
 //
 // The clock is the test's. The game is paused and stepped; the view's own loop is stopped and
 // its turns (`frameAt`: the camera eases, the view subscribes, the frame is drawn) are given
@@ -74,7 +79,7 @@ import { leg, steps, type LegResult } from './flight';
 
 const { w: W } = SIZE_1938;
 const START = 24 * 30;
-const SEED = 1941;
+const SEED = 1943;
 const VIEW = { width: 1400, height: 800 };
 /** Screen px to a cell at the stop that asks for the whole division. */
 const PX_PER_CELL_AT_12 = (SCENARIO_GEOMETRY['1938'].kmPerCell * 1000) / 12;
