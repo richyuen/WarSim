@@ -81,7 +81,11 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
       - [ ] 7.35b4 A fleet at a lost base sails for its nation's nearest port, not its bloc's
         (`atLostBase`, `sailHome`, ADR-261): on seed 3407 with 7.35b2 the US fleets stage to
         Guam, Japan takes it on day 6, and they turn for Pago Pago (4,300 km) rather than the
-        Philippines (2,000 km); the first Japan–US battle comes on day 39.5. AT: measured on
+        Philippines (2,000 km); the first Japan–US battle comes on day 39.5. Also in its code:
+        `forwardBases` (7.35b2) has no basin filter as `nearestOwnPort` has (`basinOf`): a bloc
+        port on a lake or another basin may be the nearest, `orderSail` refuses it every turn and
+        the next nearest is never tried; and `seaMeet`'s `why` column does not tell a staging
+        order (mirror `forwardBases` before the "before" run). AT: measured on
         `seaMeet 3407 JAP USA 40`, before and after; a unit test; the pin's entry.
     - [ ] 7.35c Ships at 20 m/px drawn at a size their class reads (destroyers about 10 × 3 px,
       submarines 5 px in `c9n_2251_ships_20m_crop4x.png`), counted in px. `shipMarks1938`'s T3

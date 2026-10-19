@@ -19762,3 +19762,8 @@ No rule changed and nothing on screen changed. One task came out of it.
   both.
 - **Pin** 45c20987 → 8c59c203 (seed 99's year: 8 sea battles, before 9; first on day 45 both).
 - **Next:** PLAN 7.35b3 (a sortie's target zone blind to land-based air).
+- **After 7.35b2, by hand** (the gate skips e2e; the rule changes seed 2251's war from day 1):
+  `carrierStrikeRow1938`, `seaRow1938` (3), `seaBattleSeen1938`, `navalDemo1938`, `seaBattle1938`
+  green at `8cad927`. PLAN 7.35b4 takes two more items of `forwardBases`' code: no basin filter
+  (a lake port refused by `orderSail` every turn, the next never tried) and `seaMeet`'s `why`
+  column, which does not tell a staging order.
