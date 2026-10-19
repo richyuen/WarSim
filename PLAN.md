@@ -81,7 +81,8 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       a closed one or back and the provinces' `open` and `shut` are the same; other refusals as
       now. AT: a unit test (a flip outside the corridor keeps it, one inside undoes it); the pin
       unchanged; `opCalls.ts` from `.cache/730/s732-y30.bin` and `s732-y43.bin`: the asks refused
-      again after a flip down by most.
+      again after a flip down by most. Done as ADR-523's rule: only a cell of the corridor gone
+      from a closed holder to an open one undoes it (a cell lost to a closed one gives no way).
     - [ ] 7.30c `joinWide` walked again by each plan of a coalition (years 9, 44): measured first
       (which flips undo it, and whether a flip's cell outside the provinces it walks can change
       it); the fix only if exact. AT: the measure; the pin unchanged.
