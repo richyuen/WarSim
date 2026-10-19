@@ -1,0 +1,115 @@
+{
+ "seed": 5591,
+ "views": [
+  {
+   "m": 150,
+   "mpp": 150,
+   "fires": null,
+   "ships": [
+    {
+     "id": 1085,
+     "nation": 20,
+     "t": "Cruiser squadron 1085"
+    },
+    {
+     "id": 1157,
+     "nation": 75,
+     "t": "Submarine flotilla 1157"
+    }
+   ]
+  },
+  {
+   "m": 40,
+   "mpp": 40,
+   "fires": null,
+   "ships": [
+    {
+     "id": 1085,
+     "nation": 20,
+     "t": "Cruiser squadron 1085"
+    }
+   ]
+  },
+  {
+   "m": 15,
+   "mpp": 15,
+   "fires": null,
+   "ships": []
+  }
+ ],
+ "hour": 42,
+ "live": [
+  {
+   "x": 1047.29052734375,
+   "y": 263.5,
+   "r": 24.00542640686035,
+   "a": 20,
+   "b": 1,
+   "cx": 1058.8968505859375,
+   "cy": 260.43487548828125,
+   "span": [
+    23.212749481201172,
+    6.130263805389404
+   ],
+   "pair": null
+  },
+  {
+   "x": 1707.5,
+   "y": 466.5,
+   "r": 0.6458280086517334,
+   "a": 20,
+   "b": 75,
+   "cx": 1707.5,
+   "cy": 466.1770935058594,
+   "span": [
+    0,
+    0.6458280086517334
+   ],
+   "pair": {
+    "x": 1707.5,
+    "y": 466.055908203125,
+    "w": 0,
+    "h": 0.4034997522830963
+   }
+  }
+ ],
+ "row": {
+  "mpp": 59.32869278021538,
+  "fires": null,
+  "ships": [
+   {
+    "id": 1085,
+    "nation": 20,
+    "t": "Cruiser squadron 1085"
+   },
+   {
+    "id": 1086,
+    "nation": 20,
+    "t": "Destroyer flotilla 1086"
+   },
+   {
+    "id": 1157,
+    "nation": 75,
+    "t": "Submarine flotilla 1157"
+   }
+  ]
+ },
+ "liveAtClick": 2,
+ "rowAfter": {
+  "mpp": 59.32869278021538,
+  "fires": null,
+  "ships": [
+   {
+    "id": 1085,
+    "nation": 20,
+    "t": "Cruiser squadron 1085"
+   },
+   {
+    "id": 1157,
+    "nation": 75,
+    "t": "Submarine flotilla 1157"
+   }
+  ]
+ },
+ "errors": []
+}

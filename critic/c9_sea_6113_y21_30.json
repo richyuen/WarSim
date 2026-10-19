@@ -1,0 +1,3633 @@
+{
+ "seed": 6113,
+ "bin": "critic/c9_seed6113_y20.bin",
+ "years": 10,
+ "n": 722,
+ "zero": 687,
+ "pairs": {
+  "United Kingdom/Italy": 2,
+  "United Kingdom/Turkey": 1,
+  "United Kingdom/Germany (0 lost)": 2,
+  "Norway/Soviet Union": 4,
+  "United Kingdom/Spanish Republic": 1,
+  "Soviet Union/Austria (0 lost)": 1,
+  "Soviet Union/Austria": 2,
+  "Mongolia/Japan (0 lost)": 524,
+  "Mongolia/Japan": 1,
+  "Soviet Union/United Kingdom": 2,
+  "Soviet Union/Finland (0 lost)": 1,
+  "Soviet Union/Finland": 5,
+  "Bulgaria/United Kingdom (0 lost)": 1,
+  "Norway/Bulgaria (0 lost)": 1,
+  "Norway/Bulgaria": 2,
+  "United Kingdom/Germany": 1,
+  "Sweden/United Kingdom": 7,
+  "United Kingdom/Sweden": 2,
+  "Sweden/United Kingdom (0 lost)": 9,
+  "Xinjiang/United Kingdom": 1,
+  "Argentina/Brazil": 4,
+  "Germany/United Kingdom (0 lost)": 148
+ },
+ "rows": [
+  {
+   "tick": 179456,
+   "a": "United Kingdom",
+   "lostA": 9,
+   "b": "Italy",
+   "lostB": 7,
+   "x": 1098.9164607062105,
+   "y": 383.5
+  },
+  {
+   "tick": 179505,
+   "a": "United Kingdom",
+   "lostA": 8,
+   "b": "Turkey",
+   "lostB": 0,
+   "x": 1097.6021704058744,
+   "y": 378.82873155197154
+  },
+  {
+   "tick": 179593,
+   "a": "United Kingdom",
+   "lostA": 2,
+   "b": "Italy",
+   "lostB": 0,
+   "x": 1097.6021704058744,
+   "y": 378.82873155197154
+  },
+  {
+   "tick": 188814,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Germany",
+   "lostB": 0,
+   "x": 1095.3696429359857,
+   "y": 373.82569086021215
+  },
+  {
+   "tick": 198896,
+   "a": "Norway",
+   "lostA": 2,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "x": 1084.5,
+   "y": 215.5
+  },
+  {
+   "tick": 198920,
+   "a": "Norway",
+   "lostA": 4,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "x": 1084.5,
+   "y": 215.5
+  },
+  {
+   "tick": 198944,
+   "a": "Norway",
+   "lostA": 3,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "x": 1084.5,
+   "y": 215.5
+  },
+  {
+   "tick": 198968,
+   "a": "Norway",
+   "lostA": 3,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "x": 1084.5,
+   "y": 215.5
+  },
+  {
+   "tick": 201461,
+   "a": "United Kingdom",
+   "lostA": 16,
+   "b": "Spanish Republic",
+   "lostB": 0,
+   "x": 1100.0569576322173,
+   "y": 381.0569576322173
+  },
+  {
+   "tick": 203713,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Austria",
+   "lostB": 0,
+   "x": 1036.5,
+   "y": 348.5
+  },
+  {
+   "tick": 203737,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Austria",
+   "lostB": 6,
+   "x": 1036.5,
+   "y": 348.5
+  },
+  {
+   "tick": 203761,
+   "a": "Soviet Union",
+   "lostA": 6,
+   "b": "Austria",
+   "lostB": 0,
+   "x": 1036.5,
+   "y": 348.5
+  },
+  {
+   "tick": 213640,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1767.0625,
+   "y": 396.0625
+  },
+  {
+   "tick": 213842,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1767.0625,
+   "y": 396.0625
+  },
+  {
+   "tick": 213871,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1767.0625,
+   "y": 396.0625
+  },
+  {
+   "tick": 213895,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1767.0625,
+   "y": 396.0625
+  },
+  {
+   "tick": 213934,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1767.0625,
+   "y": 396.0625
+  },
+  {
+   "tick": 213958,
+   "a": "Mongolia",
+   "lostA": 12,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1767.0625,
+   "y": 396.0625
+  },
+  {
+   "tick": 214971,
+   "a": "Soviet Union",
+   "lostA": 23,
+   "b": "United Kingdom",
+   "lostB": 3,
+   "x": 1038.4578141961304,
+   "y": 347.54218580386964
+  },
+  {
+   "tick": 221014,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Finland",
+   "lostB": 0,
+   "x": 1165.5,
+   "y": 206.5
+  },
+  {
+   "tick": 221038,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Finland",
+   "lostB": 3,
+   "x": 1165.5,
+   "y": 206.5
+  },
+  {
+   "tick": 221062,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Finland",
+   "lostB": 2,
+   "x": 1165.5,
+   "y": 206.5
+  },
+  {
+   "tick": 221086,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Finland",
+   "lostB": 3,
+   "x": 1165.5,
+   "y": 206.5
+  },
+  {
+   "tick": 221110,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Finland",
+   "lostB": 3,
+   "x": 1165.5,
+   "y": 206.5
+  },
+  {
+   "tick": 221134,
+   "a": "Soviet Union",
+   "lostA": 1,
+   "b": "Finland",
+   "lostB": 0,
+   "x": 1165.5,
+   "y": 206.5
+  },
+  {
+   "tick": 228531,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228555,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228579,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228603,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228627,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228651,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228675,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228699,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228723,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228747,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228771,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228795,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228819,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228843,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228867,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228891,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228915,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228939,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228963,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 228987,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229011,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229035,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229059,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229083,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229107,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229131,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229155,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229179,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229203,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229227,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229251,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229275,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229299,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229323,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229347,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229371,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229395,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229419,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229443,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229467,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229491,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229515,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229539,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229563,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229587,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229611,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229635,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229659,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229683,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229707,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229731,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229755,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229779,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229803,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229827,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229851,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229875,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229899,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229923,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229947,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229971,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 229995,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230019,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230043,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230067,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230091,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230115,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230139,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230163,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230187,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230211,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230235,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230259,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230283,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230307,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230331,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230355,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230379,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230380,
+   "a": "Bulgaria",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1025.763434356546,
+   "y": 281.5
+  },
+  {
+   "tick": 230403,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230427,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230451,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230475,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230499,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230523,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230547,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230571,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230595,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230619,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230643,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230667,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230691,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230715,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230739,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230763,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230787,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230811,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230835,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230859,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230883,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230907,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230931,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230955,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 230979,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 231003,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 231027,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 231051,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 231075,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 231099,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 231123,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 231147,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 231171,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 231315,
+   "a": "Norway",
+   "lostA": 0,
+   "b": "Bulgaria",
+   "lostB": 0,
+   "x": 996.5,
+   "y": 298.36514831528615
+  },
+  {
+   "tick": 231339,
+   "a": "Norway",
+   "lostA": 0,
+   "b": "Bulgaria",
+   "lostB": 6,
+   "x": 998.5,
+   "y": 298.5
+  },
+  {
+   "tick": 231363,
+   "a": "Norway",
+   "lostA": 6,
+   "b": "Bulgaria",
+   "lostB": 0,
+   "x": 998.5,
+   "y": 298.5
+  },
+  {
+   "tick": 233882,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Germany",
+   "lostB": 0,
+   "x": 1020.6916827257893,
+   "y": 281.5
+  },
+  {
+   "tick": 233906,
+   "a": "United Kingdom",
+   "lostA": 12,
+   "b": "Germany",
+   "lostB": 0,
+   "x": 1042.5,
+   "y": 274.5
+  },
+  {
+   "tick": 235419,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235443,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235467,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235491,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235515,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235539,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235563,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235587,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235611,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235635,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235659,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235683,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235707,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235731,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235755,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235779,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235803,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235827,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235851,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235875,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235899,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235923,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235947,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235971,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 235995,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236019,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236043,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236067,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236091,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236115,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236139,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236163,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236187,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236211,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236235,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236259,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236283,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236305,
+   "a": "Soviet Union",
+   "lostA": 17,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1040.1266403494874,
+   "y": 275.5
+  },
+  {
+   "tick": 236307,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236331,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236355,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236379,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236403,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236427,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236451,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236475,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236493,
+   "a": "Sweden",
+   "lostA": 16,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1034.5,
+   "y": 261.84184138898024
+  },
+  {
+   "tick": 236497,
+   "a": "United Kingdom",
+   "lostA": 8,
+   "b": "Sweden",
+   "lostB": 0,
+   "x": 1042.5,
+   "y": 274.5
+  },
+  {
+   "tick": 236499,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236523,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236547,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236571,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236595,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236619,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236643,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236667,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236691,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236715,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236739,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236763,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 236787,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 240408,
+   "a": "Sweden",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1034.5,
+   "y": 260.1178044789455
+  },
+  {
+   "tick": 240739,
+   "a": "Sweden",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1034.5,
+   "y": 259.4680792784868
+  },
+  {
+   "tick": 241197,
+   "a": "Sweden",
+   "lostA": 8,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1034.5,
+   "y": 261.84184138898024
+  },
+  {
+   "tick": 241549,
+   "a": "Xinjiang",
+   "lostA": 12,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1025.8205444540465,
+   "y": 281.5
+  },
+  {
+   "tick": 246237,
+   "a": "Sweden",
+   "lostA": 8,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1034.5,
+   "y": 261.84184138898024
+  },
+  {
+   "tick": 246787,
+   "a": "Sweden",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1034.5,
+   "y": 259.4680792784868
+  },
+  {
+   "tick": 249338,
+   "a": "Argentina",
+   "lostA": 6,
+   "b": "Brazil",
+   "lostB": 0,
+   "x": 749.409494363047,
+   "y": 759.409494363047
+  },
+  {
+   "tick": 249363,
+   "a": "Argentina",
+   "lostA": 3,
+   "b": "Brazil",
+   "lostB": 5,
+   "x": 749.93227830227,
+   "y": 759.93227830227
+  },
+  {
+   "tick": 249388,
+   "a": "Argentina",
+   "lostA": 1,
+   "b": "Brazil",
+   "lostB": 2,
+   "x": 748.9375,
+   "y": 758.9375
+  },
+  {
+   "tick": 249412,
+   "a": "Argentina",
+   "lostA": 2,
+   "b": "Brazil",
+   "lostB": 0,
+   "x": 748.9375,
+   "y": 758.9375
+  },
+  {
+   "tick": 254067,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254091,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254115,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254139,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254163,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254187,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254211,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254235,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254259,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254283,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254307,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254331,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254355,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254379,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254403,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254427,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254451,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254475,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254499,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254523,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254547,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254571,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254595,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254619,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254643,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254667,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254691,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254715,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254739,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254763,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254787,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254811,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254835,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254859,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254883,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254907,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254931,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254955,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 254979,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255003,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255027,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255051,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255075,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255099,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255123,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255147,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255171,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255195,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255219,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255243,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255267,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255291,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255315,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255339,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255363,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255387,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255411,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255435,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255459,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255483,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255507,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255531,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255555,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255579,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255603,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255627,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255651,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255675,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255699,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255723,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255747,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255771,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255795,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255819,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255843,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255867,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255891,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255915,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255939,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255963,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 255987,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256011,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256035,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256059,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256083,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256107,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256131,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256155,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256179,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256203,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256227,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256251,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256275,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256299,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256323,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256347,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256371,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256395,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256419,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256443,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256467,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256491,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256515,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256539,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256563,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256587,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256611,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256635,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256659,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256683,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256707,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256731,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256755,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256779,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256803,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256827,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256851,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256875,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256899,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256923,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256947,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256971,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 256995,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257019,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257043,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257067,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257091,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257115,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257139,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257163,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257187,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257211,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257235,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257259,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257264,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1034.5,
+   "y": 264.4962669414674
+  },
+  {
+   "tick": 257283,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257288,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257307,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257312,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257331,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257336,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257355,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257360,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1038.2639244827565,
+   "y": 273.5
+  },
+  {
+   "tick": 257379,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257384,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257403,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257408,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257427,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257432,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257451,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257456,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257475,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257480,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257499,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257504,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257523,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257528,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1038.2639244827565,
+   "y": 273.5
+  },
+  {
+   "tick": 257547,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257552,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257571,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257576,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257595,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257600,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257619,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257624,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257643,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257648,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257667,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257672,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257691,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257696,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1038.2639244827565,
+   "y": 273.5
+  },
+  {
+   "tick": 257715,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257720,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257739,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257744,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257763,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257768,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257787,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257792,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257811,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257816,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257835,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257840,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  },
+  {
+   "tick": 257859,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257864,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1038.2639244827565,
+   "y": 273.5
+  },
+  {
+   "tick": 257883,
+   "a": "Mongolia",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "x": 1761.5,
+   "y": 401.5
+  },
+  {
+   "tick": 257888,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "x": 1047.5,
+   "y": 270.5
+  }
+ ]
+}

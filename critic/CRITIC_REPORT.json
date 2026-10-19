@@ -1,60 +1,45 @@
 {
-  "commit": "fd27e854ec7e6c0c3ac0bba36152c68b540d128f",
+  "commit": "f0be88cf49ef5d75802abfb5cb8bf8941a7f029a",
   "scores": {
     "mapVisuals": 7,
     "diplomacyWarDepth": 7,
     "emergentDynamics": 7,
     "godMode": 7,
     "editorScenarios": 7,
-    "statsHistory": 7,
+    "statsHistory": 6,
     "uiUxPolish": 7,
     "performance": 7,
     "stability": 7,
     "semanticZoom": 7,
     "naval": 6,
-    "tanks": 7,
+    "tanks": 8,
     "aircraft": 6,
-    "aiNukes": 6
+    "aiNukes": 7
   },
   "blocking": [
     {
-      "id": "R8-B1",
-      "title": "AI nuclear use is still unseen in half the games and inert where a player sets it up: 8 of 17 unaided 30-year worlds see a burst (55 in 510 world-years), but only 3 of 17 before year 20 and 9 never, while 3 to 6 nations hold 118 to 163 warheads; France and Poland, given 10 warheads each in the editor and overrun (capitals taken), never strike in 120 to 150 days; some strikes hit near-empty or third-party places (Nepal, 1,000 dead; China on one Xinjiang point four times in 4 days, 641,568 then 18,088, 1,554 and 566 dead)",
+      "id": "R9-B1",
+      "title": "Phantom sea battles flood the history: a battle with no row and no fire logs 'fought at sea: lost 0 ships, 0' daily for months (seed 2609 year 21: 288 of 294 battles lose no ship, 145 Norway/Sweden vs UK at one point in 144 days; seed 6113 years 21-30: 687 of 722, Mongolia vs Japan 524 at one point); in the page the 'battle' is a 720-man Norwegian transport in Oslofjord against 22 British fleets stacked 17 cells away that never close (contradicts PLAN 7.19a)",
       "evidence": [
-        "critic/c8_headless_q1.json",
-        "critic/c8_headless_7919.json",
-        "critic/c8_headless_9137.json",
-        "critic/c8_headless_4093.json",
-        "critic/c8_g_5591.json",
-        "critic/c8_i_7127.json",
-        "critic/shots/c8i_7127_day150.png",
-        "critic/shots/c8f_1_11_alert.png"
+        "critic/c9_sea_2609_y21.json",
+        "critic/c9_sea_6113_y21_30.json",
+        "critic/c9_o_2609.json",
+        "critic/shots/c9o_2609_00b_battle_area_1500m.png",
+        "critic/shots/c9f_2609_83_history.png"
       ],
-      "fix": "nukesAllowed passes for them (src/sim/systems/nuclear.ts:150, settings only), so the utility never turns positive for an overrun holder in 1938: make a nuclear power losing a war for its life reach for the bomb in a visible share of games and earlier in the nuclear age; let warheads placed by the editor or God Mode be used by a desperate holder, or say in the editor why they will not be; do not strike a point already struck days before, nor small third parties for a thousand dead."
+      "fix": "Make out-of-reach fleets close and fight, or have no battle: do not start or log a sea battle no weapon can reach, nor re-form one daily at the same point with zero losses."
     },
     {
-      "id": "R8-B2",
-      "title": "A sea battle's ticker row does not land on the fight (contradicts PLAN 7.10b): on seed 5591, with the battle live (view.seaBattles() non-empty, clicked at hour 41 of Germany's war on Britain), the row centres the view on dry land at Groningen at 364 m/px; the battle's own pair spans 23.3 cells (fleets on either side of the Dutch coast), the British and German fleets sit at opposite edges about 1,000 px apart, and in 6 s live at Speed x1 no gunfire is drawn; at 150, 40 and 15 m/px the centre has no ship",
+      "id": "R9-B2",
+      "title": "AI nuclear strikes chase retreating armies across empty ground in weekly chains, told only by civilian dead: seed 2609's Soviet Union strikes China every 7 days along one line, 10,847 -> 1,373 -> 168 -> 24 dead and 10,862 -> ... -> 22 (utilities 0.22-0.83); Tibet 10,838 -> 18,190 -> 120 -> 24; seed 9901 18 strikes on China in 2 years; seed 4483 Germany hits one Canadian point twice 90 days apart (5,620 then 439 dead, utility 0.98); the player reads 'struck China with an atomic bomb: 24 dead'",
       "evidence": [
-        "critic/c8_j2_5591.json",
-        "critic/c8_j_5591.json",
-        "critic/shots/c8j2_5591_01_row_live_0.png",
-        "critic/shots/c8j_5591_00_row.png",
-        "critic/shots/c8j_5591_1_0150m.png"
+        "critic/c9_headless_2609.json",
+        "critic/c9_headless_9901.json",
+        "critic/c9_headless_4483.json",
+        "critic/scripts/c9_nukes.py"
       ],
-      "fix": "A 'battle' between fleets 23 cells apart across land is not one a player can see: frame the point where ships actually exchange fire, with both near the centre, and never centre a sea battle on land (or make fleets close before they fight)."
-    },
-    {
-      "id": "R8-B3",
-      "title": "The Nuke tool's size is cosmetic (contradicts PLAN 7.16a): a hydrogen bomb kills 3 to 11 % more than an atomic one on the same point (Paris 554,827 against 588,117; London 751,186 / 790,283; Berlin 1,025,202 / 1,063,051; Moscow 161,530 / 179,694) and leaves a ruin that cannot be told apart at 300 m/px",
-      "evidence": [
-        "critic/c8_b_4711.json",
-        "critic/shots/c8b_berlin_A_vs_H_300m.png",
-        "critic/shots/c8a_4711_20_paris_150m_day10.png",
-        "critic/shots/c8a_4711_20_london_150m_day10.png"
-      ],
-      "fix": "Give a thermonuclear bomb a yield on the order of tens to hundreds of times a fission one (detonate gets yieldN 2 against 1, radius x1.26), so its blast, toll, fallout and ruin are visibly larger."
+      "fix": "Weigh a target by what a burst there destroys and refuse places where the previous nearby strike found almost nothing; do not re-strike a fleeing army weekly; tell the player the men and equipment a strike destroyed, not only civilian dead."
     }
   ],
-  "timestamp": "2026-10-17T20:04:00Z"
+  "timestamp": "2026-10-19T04:30:00Z"
 }

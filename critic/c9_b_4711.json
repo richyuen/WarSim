@@ -1,0 +1,54 @@
+{
+ "seed": 4711,
+ "runs": [
+  {
+   "city": "paris",
+   "thermo": false,
+   "line": "1 January 1938 A bomb fell from the heavens on France near Paris: an atomic bomb, 192,827 dead",
+   "shot": "critic/shots/c9b_paris_A_300m.png"
+  },
+  {
+   "city": "paris",
+   "thermo": true,
+   "line": "1 January 1938 A bomb fell from the heavens on France near Paris: a hydrogen bomb, 3,203,070 dead",
+   "shot": "critic/shots/c9b_paris_H_300m.png"
+  },
+  {
+   "city": "london",
+   "thermo": false,
+   "line": "1 January 1938 A bomb fell from the heavens on United Kingdom near London: an atomic bomb, 250,186 dead",
+   "shot": "critic/shots/c9b_london_A_300m.png"
+  },
+  {
+   "city": "london",
+   "thermo": true,
+   "line": "1 January 1938 A bomb fell from the heavens on United Kingdom near London: a hydrogen bomb, 4,913,410 dead",
+   "shot": "critic/shots/c9b_london_H_300m.png"
+  },
+  {
+   "city": "berlin",
+   "thermo": false,
+   "line": "1 January 1938 A bomb fell from the heavens on Germany near Berlin: an atomic bomb, 350,202 dead",
+   "shot": "critic/shots/c9b_berlin_A_300m.png"
+  },
+  {
+   "city": "berlin",
+   "thermo": true,
+   "line": "1 January 1938 A bomb fell from the heavens on Germany near Berlin: a hydrogen bomb, 5,300,524 dead",
+   "shot": "critic/shots/c9b_berlin_H_300m.png"
+  },
+  {
+   "city": "moscow",
+   "thermo": false,
+   "line": "1 January 1938 A bomb fell from the heavens on Soviet Union near Moscow: an atomic bomb, 62,530 dead",
+   "shot": "critic/shots/c9b_moscow_A_300m.png"
+  },
+  {
+   "city": "moscow",
+   "thermo": true,
+   "line": "1 January 1938 A bomb fell from the heavens on Soviet Union near Moscow: a hydrogen bomb, 1,009,562 dead",
+   "shot": "critic/shots/c9b_moscow_H_300m.png"
+  }
+ ],
+ "errors": []
+}
