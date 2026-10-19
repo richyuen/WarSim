@@ -204,7 +204,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   comparing partitions by the least node of each class; one year from `.cache/730/s732-y8.bin` and
   `s732-y43.bin`): year 9, 884 walks → 156 (after flips 812 → 84; the 4 that changed the partition
   among them), 1,073 answers kept across judged flips, none wrong; year 44, 392 → 48 (383 → 39), 946
-  kept, none wrong. The live runs held at most 6.2 MB (year 9, 10 sets) and 2.4 MB (year 44).
+  kept, none wrong. The live runs held at most 6.2 MB (year 9, 10 sets) and 2.4 MB (year 44), at a
+  walk (between walks, unmeasured). The check ran with the cap at 32; at most 10 sets walked, so
+  none was dropped at 32 or 16.
 - **Pin.** Unmoved; seed 732's hashes after years 9 and 44 equal 7.27d's (e8fee30d, d481b109).
 - **Tests.** `tests/unit/operationalAi.test.ts` (PLAN 7.30c2): `walled`'s wall; kept across a
   closing in a run that met the north alone, the first row of a gap opened (one class), and a cell

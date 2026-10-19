@@ -88,3 +88,6 @@ partitions compared by the least node of each class. Output `.cache/730/joinWalk
 - Of the 812 walks after flips in year 9, 84 are left; 80 of them changed nothing (the bound was
   811). Which flip undid each is not taken apart here (7.30d weighs what is left by part).
 - Seed 732's hashes after years 9 and 44 equal 7.27d's (e8fee30d, d481b109); pin unchanged.
+- The check ran with JOIN_RUNS_KEPT at 32; the commit has 16. No more than 10 sets walked in either
+  year, so no runs were dropped at either cap. The bytes are at a walk: what `since` and the
+  union-find gather between walks is not measured.

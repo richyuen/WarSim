@@ -111,7 +111,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           by root as the openings join the sets (by the walk's run alone, 884 -> 833 walks).
     - [ ] 7.30d The AT: seed 732 × 50 years alone, pinned, `--profile`, against 7.27d's; if short
       of half, what is left by year and part (`opCalls.ts`), and `pocketOf` (§3.3 of measure-a)
-      weighed as a rule with an ADR or the bar put to the user (ADR-486's way).
+      weighed as a rule with an ADR or the bar put to the user (ADR-486's way). Every year's hash
+      against `p732.json`'s `yearly`, not the last alone (7.30b and 7.30c2 are exact by argument and
+      by one-year checks; a year that differs is bisected from `.cache/730/`); and the process's
+      memory by year, or said to be unmeasured (ADR-524's runs grow between walks).
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
