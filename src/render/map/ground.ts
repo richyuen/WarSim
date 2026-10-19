@@ -45,18 +45,26 @@ export function groundUniform(): Float32Array {
   return out;
 }
 
+/** The ground of T2 and T3 is all there from this zoom in (T2's edge, `T1_MIN_M`), m/px. */
+export const GROUND_FULL_M = 300;
+/** And none of it from this zoom out (PLAN 7.34a, ADR-532): 1.32 octaves beyond `GROUND_FULL_M`. */
+export const GROUND_NONE_M = 750;
+
 /**
- * How much of the ground of T2 and T3, and of what stands on it, a zoom still shows: all of it
- * up to `outM` m/px, the zoom at which T2 is left; none an octave beyond; smoothly between.
+ * How much of the ground of T2 and T3, and of what stands on it, a zoom shows: none at
+ * `GROUND_NONE_M` m/px and beyond, all of it at `GROUND_FULL_M` and nearer, linear in the
+ * zoom's log between; the same on the way in and out (PLAN 7.34a, ADR-532).
  *
- * Leaving T2 the layers go by the clock (the handover: 220 ms in full, then a fade), and the
- * camera can be far out long before that. The ground's pass and the scatter are made for the
- * zooms of T2: at 5000 m/px a pixel of the fine mask is half a screen pixel, and a tree symbol
- * stands on every fourth pixel (PLAN 2.11l). So beyond T2 they go with the zoom as well.
+ * The map's T1 → T2 change is a blend by the zoom, not a state: a step of the wheel of 1.5625×
+ * (the critic's sheet) changes it by 0.49 at most, and the ground is all there before the
+ * element sprites come in at 300 m/px. Until PLAN 7.34a it came in with the sprites' share of
+ * the handover, by the clock, so a step from 412 to 264 m/px went from none to all of it; and
+ * beyond T2 it went with the zoom too, 345 to 690 m/px (PLAN 2.11l: the ground's pass and the
+ * scatter are made for the zooms of T2, and at 5000 m/px a tree would stand on every fourth
+ * pixel). The unit layers' change stays the handover's.
  */
-export function groundReach(mPerPx: number, outM: number): number {
-  const t = Math.min(1, Math.max(0, Math.log2(mPerPx / outM)));
-  return 1 - t * t * (3 - 2 * t);
+export function groundShareAt(mPerPx: number): number {
+  return Math.min(1, Math.max(0, Math.log2(GROUND_NONE_M / mPerPx) / Math.log2(GROUND_NONE_M / GROUND_FULL_M)));
 }
 
 /**

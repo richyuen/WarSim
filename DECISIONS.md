@@ -167,6 +167,44 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-532 · 2026-10-19 · accepted — The ground of T2 comes in with the zoom: the map's T1 → T2 change a blend (PLAN 7.34a)
+
+- **Context.** Critic R9 (semantic zoom 7, map 7): "one wheel notch between 412 and 264 m/px
+  cuts from flat political fill with counters to terrain with soft border bands and name labels
+  … a hard switch, not a blend" (`critic/shots/c9z_6113_06_07_pair.png`). The critic's sheet
+  steps 1.5625× a frame (two of the wheel's 1.25× notches), about 0.6 s apart. The ground of T2
+  (the fill a cast on the terrain's colour, hillshade, texture, trees, rocks, buildings) came in
+  with the element sprites' share of the T1 → T2 handover, a state at 300 m/px with a fade of
+  250 ms by the clock (ADR-64's rule: what shows is a state, not a function of the zoom), and
+  went out with the zoom from 345 to 690 m/px (PLAN 2.11l). Re-taken on seed 6113: the share 0
+  at 412 m/px, 1 at 264.
+- **Decision.** The ground's share is a function of the zoom alone (`groundShareAt`), the same in
+  and out: 0 from 750 m/px, 1 from 300 (`T1_MIN_M`), linear in log2 of the zoom between. The
+  width (1.32 octaves) follows from the bar: a step of 1.5625× (0.64 octave) changes it by 0.49
+  at most wherever it falls (a smoothstep would need 1.9 octaves for the same bound). It is all
+  there when the sprites come in at 300 m/px. No state and no clock: a camera jump in shows the
+  ground of its zoom in its first frame, as the rest of the view changes in that frame too.
+- **ADR-64 kept for the rest.** The fill's cast, the relief and the grain are matters of degree,
+  like the cast on occupied land; the trees, rocks and buildings fade in with them as part of
+  the ground's picture (the scatter already brings each level in by its opacity over half an
+  octave). The unit layers (markers to sprites and tags, PLAN 2.7c), the labels, the flags and
+  the cities stay states with their fades. So a camera at rest at 500 m/px shows the T1 markers
+  on ground about half come in: one layer under them half there, the picture of a zoom between
+  the two maps.
+- **Measured** (a probe spec, seed 6113, the critic's camera and steps): the share at 644, 412,
+  264 m/px 0.17, 0.65, 1 (was 0, 0, 1); the largest change between the sheet's frames 0.49
+  (was 1). The GPU's time of the frame's WebGL passes at 500 m/px (Bench G's way, the median of
+  7 queries of 40) 0.53 ms, 0.26 before: the ground's program now runs through 300–750 m/px,
+  within SPEC's 1.0 ms of a T0 frame.
+- **Tests changed to the rule.** `ground.test.ts` (the band, and a step of 1.5625× ≤ 0.5);
+  `groundThings1938.spec.ts`: the test of the instances coming in by the handover's clock at
+  320 → 280 m/px is now one of the band (none at 760 m/px, part at 500, all at 300, and a wheel
+  in frame by frame at the zoom's share), and 2.11l's way out asserts the zoom's share in each
+  frame in place of the sprites'; `occupiedGround1938` and `coastPicture1938` take T1 without
+  ground at 800 m/px (400 is in the band now); `occupiedGround1938` compares the hatching with
+  T1's at 400 m/px drawn without the ground (the stripes are finer at 800).
+- **Pin** unchanged: the view alone.
+
 ### ADR-531 · 2026-10-19 · accepted — God Mode's acts told: a nation set up, a town founded or razed (PLAN 7.33b)
 
 - **Context.** Critic R9 (God Mode 7; stats and history 6): "Spawn nation, Found city and Raze

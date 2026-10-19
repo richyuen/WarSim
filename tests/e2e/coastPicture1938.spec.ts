@@ -241,7 +241,9 @@ test('at T0 and T1 the coast is as it was: with the ground of T2 and without it 
   const [x, y] = cellOf(1.4, 51.0, W, H); // the Strait of Dover
   // The ground does not change the coast: at T0 the coverage's, at T1 from 1,200 m/px the mask's
   // with the ground or without it (PLAN 4.7g, ADR-284; until then the mask's came with the ground).
-  for (const mPerPx of [4000, 1000, 400]) {
+  // T1 beyond the ground's band: 800 m/px (400 until PLAN 7.34a, ADR-532, where the ground now
+  // comes in with the zoom).
+  for (const mPerPx of [4000, 1000, 800]) {
     await lookAt(page, x, y, mPerPx);
     const m = await measureGround(page);
     console.log(`the Strait of Dover, ${mPerPx} m/px: the picture ${m.hash}; the same without the ground: ${m.same}`);

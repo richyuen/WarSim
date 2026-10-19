@@ -76,11 +76,16 @@ test('occupied land at T2 and T3: the hatching gives way to the ground, and an e
   mkdirSync(out, { recursive: true });
   expect(await page.evaluate(() => window.devicePixelRatio)).toBe(1);
 
-  // T1: the hatching as it is, and the picture the same with the ground and without it.
-  await lookAt(page, POCKET[0], POCKET[1], 400);
-  const t1 = await stripes(page);
+  // T1 beyond the ground's band (750 m/px out; 400 until PLAN 7.34a, ADR-532, where the ground
+  // now comes in): the hatching as it is, and the picture the same with the ground and without it.
+  await lookAt(page, POCKET[0], POCKET[1], 800);
   expect((await measureGround(page)).same, 'at T1 the map with the ground and without it').toBe(true);
-  console.log(`occupied land, 400 m/px (T1): the stripes' contrast ${t1.contrast.toFixed(1)} of 255, the brightness within them varies by ${t1.spread.toFixed(1)}`);
+  expect((await stripes(page)).contrast, 'the hatching at 800 m/px').toBeGreaterThan(8);
+  // The hatching of T1 to compare with: at 400 m/px without the ground (the stripes are finer
+  // at 800, 3.3 of 255 less contrast), as the test had it before the band.
+  await lookAt(page, POCKET[0], POCKET[1], 400);
+  const t1 = await stripes(page, false);
+  console.log(`occupied land, 400 m/px without the ground (T1): the stripes' contrast ${t1.contrast.toFixed(1)} of 255, the brightness within them varies by ${t1.spread.toFixed(1)}`);
   expect(t1.contrast, 'the hatching at T1').toBeGreaterThan(8);
 
   for (const mPerPx of [150, 20]) {

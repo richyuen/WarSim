@@ -46,7 +46,26 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
   zoom (seed 6113) as a sheet: the T1–T2 change a blend over at least two notches, no frame a hard
   switch; elements drawn at 900 m/px on the critic's 4483 front; at 10 m/px no two vehicles drawn
   overlapping (counted); a viewed formation in contact has its enemy reachable from the view (the
-  view's frame or a marker toward it).
+  view's frame or a marker toward it). A part each:
+    - [x] 7.34a The map's T1 → T2 change a blend by the zoom: the ground of T2 (the terrain's
+      colour under the fill's cast, hillshade, texture, trees and buildings) comes in with the
+      zoom alone, none at 750 m/px and all of it at 300, linear in the zoom's log (1.32 octaves),
+      in both directions, in place of the sprites' share of the handover × `groundReach`. The
+      unit layers' change (markers to sprites and tags) stays the designed morph by time (SPEC
+      §8, PLAN 2.7c). AT: the critic's sheet re-taken (seed 6113, 6,000 to 3 m/px, a step of
+      1.5625×): the ground's share changes by at most 0.5 from one frame to the next, the frames
+      viewed; `groundThings1938` and `legendOccupied1938` rewritten to the rule and green; a
+      frame's time at 500 m/px before and after; render only, the pin unchanged.
+    - [ ] 7.34b Elements drawn at 900 m/px on the critic's 4483 front (`elementCount` 3,536 and only
+      counters on screen). Measured first: what the view holds at 900 m/px there and why no
+      element shows. AT: elements drawn there (counted).
+    - [ ] 7.34c No two vehicles drawn overlapping at 10 m/px (`c9c_4483_inf_0010m_top_crop2x.png`,
+      German infantry division 11 on seed 4483). Measured first: where the piles come from (the
+      slots of a formation, two formations' elements on one cell). AT: on the critic's case, no
+      two vehicle figures overlapping (counted).
+    - [ ] 7.34d The enemy of a viewed formation in contact reachable from the view at 10 m/px (the
+      view's frame or a marker toward it). AT: on the critic's 4483 case, the enemy in the frame
+      or a marker toward it, seen.
 - [ ] 7.35 The war at sea seen and fought (naval 6, needs 8): beyond 7.31, the war at sea mostly
   invisible: Italy–UK (seed 2251) 25 six-hour samples with a live battle on days 6 to 12, none with
   a ticker row (`c9_n_2251_ITA_ENG.json`); Japan–USA (seed 3407) no sea battle in 12 days

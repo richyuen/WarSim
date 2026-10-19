@@ -42,7 +42,7 @@ import { Frame, isShipFrame, shownFrame, smallFrameOf, turretOf } from '../share
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, SEA_STRIDE, type Snapshot } from '../shared/protocol';
 import { SEAM_MARGIN, cellOfPoint, itemOffsets, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
-import { groundReach } from '../render/map/ground';
+import { groundShareAt } from '../render/map/ground';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
 import { coastBit, coastMask, nearestSure, type CoastMask } from '../shared/landMask';
@@ -2104,9 +2104,9 @@ export class MapView {
   drawWebGl(now: number): void {
     const dpr = window.devicePixelRatio || 1;
     const cam = this.controller.cam;
-    // The ground of T2 and T3 comes with the sprites, by their share of the handover (PLAN
-    // 2.8a); and beyond T2 it goes with the zoom, whatever the handover's clock says (PLAN 2.11l).
-    this.groundShare = this.shares.elements * groundReach(this.metresPerPx, T1_MIN_M * ZOOM_HYSTERESIS);
+    // The ground of T2 and T3 comes and goes with the zoom, a blend through the end of T1 (PLAN
+    // 7.34a, ADR-532; until then with the sprites' share of the handover, PLAN 2.8a and 2.11l).
+    this.groundShare = groundShareAt(this.metresPerPx);
     // The legend says how occupied land is drawn (PLAN 7.4f3): hatched, or with the ground a tint.
     const close = this.groundShare >= 0.5;
     if (close !== this.groundShown) {

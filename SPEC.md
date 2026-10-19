@@ -2203,30 +2203,36 @@ It was dropped: a camera resting on a curve showed two layers half there.
 | Tier | m/px | Map | Forces |
 |---|---|---|---|
 | **T0 Strategic** | > 2000 | fills, smooth borders, occupation tint/hatch, fronts glow, curved names, cities as dots | aggregated counters per nation per screen cluster (stable multi-level grid clustering), strength numbers |
-| **T1 Operational** | 300–2000 | + province borders, city names, sea-zone and air-zone overlays, supply/convoy lanes; the coast from the fine land mask from where a mask pixel is a device pixel (about 1,200 m/px on the 1938 map, all of it from there, none above 2,400: PLAN 4.7g, ADR-284), so a lake the coarse coverage averages away is drawn as at T2 | formation/fleet/wing markers: type symbol, flag chip, a pip for each element by class, a lost one an empty socket (PLAN 7.21c2, ADR-498; the strength bar while its elements are not in hand) + number, order arrows (a fleet's along its way by the points it turns at: PLAN 4.7d, ADR-281), battle markers |
+| **T1 Operational** | 300–2000 | + province borders, from 750 m/px in the ground of T2 coming in with the zoom (PLAN 7.34a), city names, sea-zone and air-zone overlays, supply/convoy lanes; the coast from the fine land mask from where a mask pixel is a device pixel (about 1,200 m/px on the 1938 map, all of it from there, none above 2,400: PLAN 4.7g, ADR-284), so a lake the coarse coverage averages away is drawn as at T2 | formation/fleet/wing markers: type symbol, flag chip, a pip for each element by class, a lost one an empty socket (PLAN 7.21c2, ADR-498; the strength bar while its elements are not in hand) + number, order arrows (a fleet's along its way by the points it turns at: PLAN 4.7d, ADR-281), battle markers |
 | **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, the coast from the fine land mask, the sea shaded by its depth (the elevation's sea floor, lighter over shallows: PLAN 4.7f, ADR-283) (roads near cities: not built, a line under PLAN 7.4) | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight (and at T0 and T1, smaller: PLAN 5.7a), ships by class with wakes under way (PLAN 4.7b, ADR-276), a sea battle's gunfire on a long arc, torpedo tracks and a ship going down into its slick (PLAN 4.7c, ADR-277) |
 | **T3 Close** | < 30 | the same ground, worked out for each pixel with finer octaves down to 1 m/px, and the things on it at their own size (not tiles kept in textures: ADR-78) | element → individuals: where an element holds up to 64 units (vehicles, guns, ships and planes: 1 to 12), one figure for each unit it has; a battalion of 500 has 64 figures when whole and its share of them while it loses men, rounded up [ADR-80, in place of ADR-69's cap]; a battalion in contact lies in 4 ranks of 16 across the front of its ground, facing the enemy, the front rank first, a loss a man of the rear rank (PLAN 7.21a, ADR-496); a ship its own length, at least 26 px for a battleship and up to 0.9 of the gap between two slots on the screen (40 px at most), the other classes in proportion (PLAN 4.12c, 7.22b, ADR-499) |
 
-*How far out the ground reaches (PLAN 2.11l):* the ground and what stands on it come and go
-with the element sprites' share of the T1 ↔ T2 handover, which is a matter of time. Beyond
-the zoom at which T2 is left (345 m/px) they also go with the zoom: all of the share up to
-there, none of it from 690 m/px, smoothly between (`groundReach`). A camera that is far out
-before the handover's clock has run shows no ground made for T2.
+*How far the ground reaches (PLAN 7.34a, ADR-532):* the ground and what stands on it come and
+go with the zoom alone, the same in and out: none from 750 m/px, all of it from 300 (T2's
+edge), linear in the zoom's log between (`groundShareAt`, 1.32 octaves). It is the one change
+of T1 → T2 that is a blend by the zoom and not a state: the fill giving way to the terrain's
+colour, the relief and the trees are a matter of degree, and a camera resting at 500 m/px shows
+the T1 markers on ground half come in. A step of the wheel of 1.5625× changes the share by
+0.49 at most; the unit layers' change at 300 m/px stays the handover's morph by time. Until
+PLAN 7.34a the ground came with the element sprites' share of the handover, so that one step
+of the critic's wheel went from none of it to all of it (412 to 264 m/px); and beyond T2 it
+went with the zoom too (PLAN 2.11l, `groundReach`: to none at 690 m/px). A camera far out has
+no ground made for T2 from its first frame.
 
 *The ground of T2 and T3, as built so far (PLAN 2.8a, ADR-78):* hillshade in the map pass
 (`mapShader.ts`). The worker sends the elevation level of the map's size after the map layers
 (`elevation`: int16 metres, one value a cell); the pass smooths it over the 4×4 cells around by
 the borders' cubic B-spline, takes the slope from the spline's derivative, steepens it 12
 times, and lights it from the north-west, 41° up: level ground is unchanged, a slope is from
-0.58 to 1.28 of its fill, by a soft limit. The sea is level. It comes in by the sprites' share
-of the T1 → T2 handover and shows in every map mode. A map without elevation of its size (the
+0.58 to 1.28 of its fill, by a soft limit. The sea is level. It comes in by the ground's share
+(the zoom's, above) and shows in every map mode. A map without elevation of its size (the
 toy world) is drawn flat: the one switch is for the ground as a whole.
 *The ground's colour (PLAN 2.14d, ADR-90):* with the ground's share the fill gives way to the
 terrain's colour (the terrain mode's blend of the four cells around) and stays as a cast on
 it: 0.14 of the fill away from borders, 0.62 on a border falling over about half a cell, at
 least 0.3 on occupied land (ADR-82's tint, 0.42 until PLAN 7.4f14, ADR-449; an eighth of the hatching is left in the picture).
 Only where the land is coloured by a palette (not in the terrain and unrest modes), and not
-at T0 and T1. Plains in two nations are 14 apart in RGB where the fills are 103 apart.
+at T0 and T1 beyond the ground's band. Plains in two nations are 14 apart in RGB where the fills are 103 apart.
 
 *Ground texture (PLAN 2.8b):* the same pass adds small relief and grain from noise seeded by
 the place. Gradient noise in octaves, 2^k lattice points to a cell, the lattice points named
@@ -2242,8 +2248,8 @@ colour.
 ground is used while any of it shows (PLAN 2.8b: a branch in one program made T0 half as dear
 again).
 *Trees, rocks and buildings, drawn (PLAN 2.8c2, `GroundInstances.ts`):* one instanced draw
-between the map and the unit sprites, of at most 12,000 instances, by the same share of the
-handover as the ground and under its one switch. The fragment shader draws each in its square:
+between the map and the unit sprites, of at most 12,000 instances, by the ground's share
+(the zoom's: they fade in with it through the band) and under its one switch. The fragment shader draws each in its square:
 a crown with a lobed edge, a block of rock with cut corners, a roof of two slopes (tile or
 slate, along one of two directions that cross), each lit from the north-west with its shadow to
 the south-east. In natural colours on the nation's fill. The view scatters again only when the

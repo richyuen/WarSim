@@ -19524,3 +19524,23 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** the tooltip still reading "Prague · capital" after a raze (critic R9 non-blocking).
 - **Next:** PLAN 7.34.
 
+
+## 2026-10-19 — PLAN 7.34a: the ground of T2 comes in with the zoom (critic R9 semantic zoom 7; ADR-532)
+
+- **Start:** gate green on `c2bd66d`; critic not due. PLAN 7.34 split: a the map's blend, b elements
+  at 900 m/px, c vehicles overlapping at 10 m/px, d the enemy reachable from the view.
+- **Measured** (a probe spec, removed; seed 6113, the critic's camera and steps of 1.5625×): the
+  ground's share 0 at 412 m/px and 1 at 264, the critic's hard cut.
+- **Rule** (ADR-532, view only): `groundShareAt`, none from 750 m/px, all from 300, linear in the
+  zoom's log, in and out, in place of the sprites' handover share × `groundReach`. After: 0.17,
+  0.65, 1 at 644, 412, 264 m/px; the largest change between the sheet's frames 0.49
+  (`docs/evidence/7.34/a-sheet-before.png`, `a-sheet-after.png`, viewed: at 412 the markers on
+  ground half come in). GPU time of the WebGL passes at 500 m/px 0.53 ms (0.26 before).
+- **Tests rewritten to the rule:** `ground.test.ts`; `groundThings1938` (the band; the share in
+  every frame of a wheel in and out); `occupiedGround1938`, `coastPicture1938` (T1 without ground
+  at 800 m/px).
+- **By hand** (the gate skips e2e): `groundThings1938`, `legendOccupied1938`, `occupiedGround1938`,
+  `coastPicture1938`, `hillshade1938`, `ground1938`, `groundColour1938`, `tiers1938` green;
+  `zoomDemo1938` red on its Node-side precondition (a battalion of seed 1941's battle at 0.518 of
+  its men, needs < 0.5): sim only, untouched here, so from an earlier commit; next commit.
+- **No rule change:** pin 45c20987.

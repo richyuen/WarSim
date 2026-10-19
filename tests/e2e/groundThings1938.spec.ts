@@ -6,7 +6,7 @@ import { lookAt, open1938 } from './mapView';
 
 // PLAN 2.8c2 (ADR-78): the trees, rocks and buildings of T2 and T3. The scatter (2.8c1, unit
 // tested) says where they stand; here they are drawn: over a forest, a mountain range and a
-// metropolis, where the scatter put them, the same after a reload, and in with the handover.
+// metropolis, where the scatter put them, the same after a reload, and in with the zoom (PLAN 7.34a).
 //
 // The map canvas is read with the instances and without them (`view.instances`).
 
@@ -43,6 +43,8 @@ interface Things {
   changed: number;
   hash: string;
   elements: number;
+  /** Of the instances looked at, the mean of the largest change at the middle (the sum over R, G and B): how strongly they are drawn. */
+  strength: number;
 }
 
 /** The scatter of the view at rest and the two pictures, with the instances and without. */
@@ -62,7 +64,7 @@ function things(page: Page): Promise<Things> {
     const off = read(false);
     const on = read(true);
     const s = v.groundScatter;
-    const out = { count: s?.count ?? 0, truncated: s?.truncated ?? false, trees: 0, rocks: 0, buildings: 0, sampled: 0, drawn: 0, changed: 0, hash: '', elements: v.elementCount };
+    const out = { count: s?.count ?? 0, truncated: s?.truncated ?? false, trees: 0, rocks: 0, buildings: 0, sampled: 0, drawn: 0, changed: 0, hash: '', elements: v.elementCount, strength: 0 };
     let h = 0x811c9dc5;
     let changed = 0;
     for (let i = 0; i < on.length; i += 4) {
@@ -94,7 +96,9 @@ function things(page: Page): Promise<Things> {
           most = Math.max(most, Math.abs(on[i]! - off[i]!) + Math.abs(on[i + 1]! - off[i + 1]!) + Math.abs(on[i + 2]! - off[i + 2]!));
         }
       if (most > 24) out.drawn++;
+      out.strength += most;
     }
+    if (out.sampled > 0) out.strength /= out.sampled;
     return out;
   });
 }
@@ -158,58 +162,74 @@ test('the instances of a place are the same after a reload', async ({ page }) =>
   expect(hashes[1]).toEqual(hashes[0]);
 });
 
-test('the instances come in with the T1 → T2 handover, not at once; at T1 there are none', async ({ page }) => {
+// PLAN 7.34a (critic R9, ADR-532): the ground and what stands on it came in with the T1 → T2
+// handover, by the clock, so that one step of the critic's wheel went from none of it to all of
+// it. They come in with the zoom now, through the end of T1: none from 750 m/px, all from 300.
+test('the instances come in with the zoom through the end of T1: none at 760 m/px, part of them at 500, all at 300; a wheel in, frame by frame', async ({ page }) => {
   test.setTimeout(180_000);
   await open1938(page);
   const at = await spots(page);
-  // T1: nothing is scattered, and the picture is the same with the switch on and off.
-  await lookAt(page, at.forest[0], at.forest[1], 320);
-  const t1 = await things(page);
-  expect(t1.count, 'instances at T1').toBe(0);
-  expect(t1.changed, 'at T1 the switch changes nothing').toBe(0);
+  // Beyond the band nothing is scattered, and the picture is the same with the switch on and off.
+  await lookAt(page, at.forest[0], at.forest[1], 760);
+  const far = await things(page);
+  expect(far.count, 'instances at 760 m/px').toBe(0);
+  expect(far.changed, 'at 760 m/px the switch changes nothing').toBe(0);
+  // In the band, with the T1 markers still up: the trees are there, drawn at the ground's share.
+  await lookAt(page, at.forest[0], at.forest[1], 500);
+  const mid = await things(page);
+  const midShare = await page.evaluate(() => ({ ground: window.__warsim!.view!.groundShare, sprites: window.__warsim!.view!.shares.elements }));
+  await lookAt(page, at.forest[0], at.forest[1], 300);
+  const full = await things(page);
+  console.log(`a forest: 760 m/px ${far.count} instances; 500 m/px ${mid.count} (ground ${midShare.ground.toFixed(3)}, sprites ${midShare.sprites}), strength ${mid.strength.toFixed(1)}; 300 m/px ${full.count}, strength ${full.strength.toFixed(1)}`);
+  expect(midShare.sprites, 'the sprites at 500 m/px').toBe(0);
+  expect(midShare.ground).toBeCloseTo(Math.log2(750 / 500) / Math.log2(750 / 300), 6);
+  expect(mid.trees, 'trees at 500 m/px').toBeGreaterThan(300);
+  expect(mid.sampled).toBeGreaterThan(20);
+  expect(mid.drawn / mid.sampled, 'drawn where the scatter put them, at 500 m/px').toBeGreaterThan(0.9);
+  expect(mid.truncated).toBe(false);
+  expect(full.trees, 'trees at 300 m/px').toBeGreaterThan(1000);
+  // Drawn at part of their strength in the band, all of it at its end.
+  const ratio = mid.strength / full.strength;
+  expect(ratio, 'how strongly the instances are drawn at 500 m/px, of 300').toBeGreaterThan(0.25);
+  expect(ratio, 'how strongly the instances are drawn at 500 m/px, of 300').toBeLessThan(0.75);
 
-  // The step into T2, and the view's frames 16 ms apart at times the test gives.
+  // A wheel in from 1000 to 250 m/px by the camera's own eased zoom, frame by frame at times the
+  // test gives: the ground's share is the zoom's in every frame, and never jumps.
+  interface Frame { m: number; ground: number; scattered: number; cut: boolean }
   const rec = await page.evaluate(({ cx, cy }) => {
     const v = window.__warsim!.view!;
-    const c = document.getElementById('map') as HTMLCanvasElement;
-    const gl = c.getContext('webgl2')!;
-    const lum = (now: number): Float32Array => {
-      v.draw(now);
-      const px = new Uint8Array(c.width * c.height * 4);
-      gl.readPixels(0, 0, c.width, c.height, gl.RGBA, gl.UNSIGNED_BYTE, px);
-      const out = new Float32Array(c.width * c.height);
-      for (let i = 0; i < out.length; i++) out[i] = 0.2126 * px[i * 4]! + 0.7152 * px[i * 4 + 1]! + 0.0722 * px[i * 4 + 2]!;
-      return out;
-    };
-    const jump = (a: Float32Array, b: Float32Array): number => {
-      let max = 0;
-      for (let i = 0; i < a.length; i++) max = Math.max(max, Math.abs(a[i]! - b[i]!));
-      return max;
-    };
+    v.dispose();
+    const scaleOf = (m: number): number => (v.metresPerPx * v.controller.cam.scale) / m;
     let now = performance.now() + 60_000;
-    const first = lum(now);
-    v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / 280 });
-    let last = lum(now); // the frame of the step: the handover has begun and nothing of T2 shows yet
-    const atStep = { jump: jump(first, last), scattered: v.groundScatter?.count ?? 0 };
-    const jumps: number[] = [];
-    const counts: number[] = [];
-    let frames = 0;
-    for (let quiet = 0; quiet < 3 && frames < 200; frames++) {
+    v.controller.set({ cx, cy, scale: scaleOf(1000) });
+    v.draw(now);
+    v.frameAt(now);
+    v.controller.zoomTo(scaleOf(250));
+    const out: Frame[] = [];
+    for (let k = 0; k < 90; k++) {
       now += 16;
-      const cur = lum(now);
-      jumps.push(jump(last, cur));
-      counts.push(v.groundScatter?.count ?? 0);
-      last = cur;
-      quiet = v.unitsAnimating(now) ? 0 : quiet + 1;
+      v.frameAt(now);
+      out.push({ m: v.metresPerPx, ground: v.groundShare, scattered: v.groundScatter?.count ?? 0, cut: v.groundScatter?.truncated ?? false });
     }
-    return { atStep, largest: Math.max(...jumps), whole: jump(first, last), frames, growing: jumps.filter((j) => j > 0.5).length, counts: [...new Set(counts)] };
+    return out;
   }, { cx: at.forest[0], cy: at.forest[1] });
-  console.log(`a forest, 320 → 280 m/px: the frame of the step changes a pixel by ${rec.atStep.jump.toFixed(1)} of 255 at most; then ${rec.growing} frames of change, the largest ${rec.largest.toFixed(1)}; the whole change ${rec.whole.toFixed(0)}; instances scattered: ${rec.counts.join(', ')}`);
-  // (The step itself is a small zoom: the borders and the names move by a little.)
-  expect(rec.frames, 'the view comes to rest').toBeLessThan(200);
-  expect(rec.growing, 'frames in which the ground and what stands on it come in').toBeGreaterThanOrEqual(12);
-  expect(rec.largest, 'the largest change of a pixel from one frame to the next').toBeLessThanOrEqual(48);
-  expect(rec.whole, 'the whole change').toBeGreaterThan(rec.largest * 2);
+  let before = 0;
+  let largest = 0;
+  for (const f of rec) {
+    const want = Math.min(1, Math.max(0, Math.log2(750 / f.m) / Math.log2(750 / 300)));
+    expect(f.ground, `${f.m.toFixed(0)} m/px`).toBeCloseTo(want, 6);
+    expect(f.ground, `${f.m.toFixed(0)} m/px`).toBeGreaterThanOrEqual(before);
+    expect(f.cut, `${f.m.toFixed(0)} m/px`).toBe(false);
+    if (f.ground === 0) expect(f.scattered, `${f.m.toFixed(0)} m/px`).toBe(0);
+    largest = Math.max(largest, f.ground - before);
+    before = f.ground;
+  }
+  const between = rec.filter((f) => f.ground > 0 && f.ground < 1).length;
+  console.log(`a wheel in, 1000 → 250 m/px: ${between} frames with part of the ground, the largest change of its share from one frame to the next ${largest.toFixed(3)}`);
+  expect(between, 'frames with part of the ground').toBeGreaterThanOrEqual(5);
+  // (The camera's eased zoom is fastest in its first frames: 0.28 of the share in one there.)
+  expect(largest, 'the largest change of the share from one frame to the next').toBeLessThan(0.5);
+  expect(rec.at(-1)!.ground).toBe(1);
   const t2 = await things(page);
   expect(t2.trees, 'instances at T2, at rest').toBeGreaterThan(2000);
 });
@@ -270,24 +290,24 @@ test('beyond T2 the ground and what stands on it go with the zoom: far out there
   expect(Math.max(...rec.jump.map((f) => f.ground)), 'the ground far out').toBe(0);
   expect(Math.max(...rec.jump.map((f) => f.scattered)), 'instances far out').toBe(0);
   expect(rec.jump.at(-1)!.sprites, 'the sprites when the handover is over').toBe(0);
-  // The wheel: back in T2 all is there again; on the way out the ground is the sprites' share up
-  // to 345 m/px, less beyond, nothing from 690 m/px on, never more than the frame before, and
-  // the scatter is never cut short.
+  // The wheel: back in T2 all is there again; on the way out the ground is the zoom's share (all
+  // of it to 300 m/px, less beyond, nothing from 750 m/px on: PLAN 7.34a, ADR-532), never more
+  // than the frame before, and the scatter is never cut short.
   expect(rec.back).toMatchObject({ sprites: 1, ground: 1 });
   let before = 1;
   let between = 0;
   for (const f of rec.wheel) {
     expect(f.cut, `${f.m.toFixed(0)} m/px`).toBe(false);
     expect(f.scattered, `${f.m.toFixed(0)} m/px`).toBeLessThan(12_000);
-    expect(f.ground, `${f.m.toFixed(0)} m/px`).toBeLessThanOrEqual(f.sprites);
+    expect(f.ground, `${f.m.toFixed(0)} m/px`).toBeCloseTo(Math.min(1, Math.max(0, Math.log2(750 / f.m) / Math.log2(750 / 300))), 6);
     expect(f.ground, `${f.m.toFixed(0)} m/px`).toBeLessThanOrEqual(before);
-    if (f.m <= 345) expect(f.ground, `${f.m.toFixed(0)} m/px`).toBe(f.sprites);
-    if (f.m >= 690) expect(f.ground, `${f.m.toFixed(0)} m/px`).toBe(0);
+    if (f.m <= 300) expect(f.ground, `${f.m.toFixed(0)} m/px`).toBe(1);
+    if (f.m >= 750) expect(f.ground, `${f.m.toFixed(0)} m/px`).toBe(0);
     if (f.ground === 0) expect(f.scattered, `${f.m.toFixed(0)} m/px`).toBe(0);
-    if (f.m > 345 && f.m < 690 && f.sprites === 1) between++;
+    if (f.m > 300 && f.m < 750 && f.sprites === 1) between++;
     before = f.ground;
   }
-  console.log(`out of T2 by the wheel, 250 → 1500 m/px: ${rec.wheel.filter((f) => f.ground > 0).length} frames with ground, ${between} of them beyond 345 m/px with the sprites still in full; the most instances in a frame ${Math.max(...rec.wheel.map((f) => f.scattered))}; at rest far out: ground ${rec.wheel.at(-1)!.ground}, sprites ${rec.wheel.at(-1)!.sprites}`);
+  console.log(`out of T2 by the wheel, 250 → 1500 m/px: ${rec.wheel.filter((f) => f.ground > 0).length} frames with ground, ${between} of them beyond 300 m/px with the sprites still in full; the most instances in a frame ${Math.max(...rec.wheel.map((f) => f.scattered))}; at rest far out: ground ${rec.wheel.at(-1)!.ground}, sprites ${rec.wheel.at(-1)!.sprites}`);
   // (The way out has frames between the two zooms: the ground is seen going, not gone.)
   expect(rec.wheel.filter((f) => f.ground > 0 && f.ground < 1).length, 'frames with the ground going').toBeGreaterThanOrEqual(1);
   expect(rec.wheel.at(-1)!).toMatchObject({ sprites: 0, ground: 0, scattered: 0 });

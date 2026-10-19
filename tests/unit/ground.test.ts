@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { BORDER_BAND, BORDER_CAST, GROUND, GROUND_CAST, GROUND_CLASSES, groundReach, groundUniform, HATCH_AT_GROUND, OCCUPIED_CAST } from '../../src/render/map/ground';
+import { BORDER_BAND, BORDER_CAST, GROUND, GROUND_CAST, GROUND_CLASSES, GROUND_FULL_M, GROUND_NONE_M, groundShareAt, groundUniform, HATCH_AT_GROUND, OCCUPIED_CAST } from '../../src/render/map/ground';
 import { Terrain } from '../../src/shared/terrain';
+import { T1_MIN_M } from '../../src/render/units/markers';
 
 // PLAN 2.8b: the ground of each terrain class at T2 and T3 (how the map pass's noise is laid on
 // a fill).
@@ -35,23 +36,36 @@ describe('the ground by terrain class (PLAN 2.8b)', () => {
   });
 });
 
-// PLAN 2.11l: leaving T2 the ground's share is a matter of time (220 ms in full, then a fade of
-// 250 ms), while the camera can be far out within a tenth of a second. The ground and what
-// stands on it are made for T2 and T3: beyond the zoom at which T2 is left they go with the zoom.
-describe('how far out the ground reaches (PLAN 2.11l)', () => {
-  it('all of it up to the zoom at which T2 is left, none an octave beyond, and smoothly between', () => {
-    const OUT = 345;
-    for (const m of [1, 30, 300, 344.9, 345]) expect(groundReach(m, OUT), `${m} m/px`).toBe(1);
-    for (const m of [690, 691, 2000, 5000, 28_000]) expect(groundReach(m, OUT), `${m} m/px`).toBe(0);
+// PLAN 7.34a (critic R9, ADR-532): the map's T1 → T2 change was a hard cut, one step of the
+// critic's wheel (412 to 264 m/px) going from the flat fill to the ground in full, for the ground
+// came in with the sprites' share of the handover. It is a blend by the zoom now, the same in
+// and out; beyond T2 it still goes with the zoom (PLAN 2.11l), from 750 m/px on none of it.
+describe('the ground of T2 comes and goes with the zoom (PLAN 7.34a)', () => {
+  it("none from 750 m/px out, all of it from 300 in (T2's edge), and between less the further out", () => {
+    expect(GROUND_FULL_M).toBe(T1_MIN_M);
+    for (const m of [1, 30, 264, 299.9, 300]) expect(groundShareAt(m), `${m} m/px`).toBe(1);
+    for (const m of [750, 751, 2000, 5000, 28_000]) expect(groundShareAt(m), `${m} m/px`).toBe(0);
     let before = 1;
-    for (let m = 345; m <= 690; m += 1) {
-      const r = groundReach(m, OUT);
+    for (let m = 300; m <= 750; m += 1) {
+      const r = groundShareAt(m);
       expect(r, `${m} m/px`).toBeLessThanOrEqual(before);
-      // A percent of zoom never takes more than a twentieth of the ground away.
-      expect(before - r, `${m} m/px`).toBeLessThan(0.05);
+      // A percent of zoom never takes more than a fortieth of the ground away.
+      expect(before - r, `${m} m/px`).toBeLessThan(0.025);
       before = r;
     }
-    expect(groundReach(488, OUT)).toBeCloseTo(0.5, 1); // half an octave out
+    expect(groundShareAt(Math.sqrt(GROUND_FULL_M * GROUND_NONE_M))).toBeCloseTo(0.5, 6); // the middle of the band, in the log
+  });
+
+  it("a step of the critic's wheel (1.5625×) changes it by at most a half, wherever the step falls", () => {
+    let largest = 0;
+    for (let m = 100; m < 2000; m *= 1.001) largest = Math.max(largest, Math.abs(groundShareAt(m) - groundShareAt(m * 1.5625)));
+    expect(largest).toBeLessThanOrEqual(0.5);
+    // The critic's own steps (6,000 m/px over 1.5625^i): 644, 412 and 264 m/px.
+    const sheet = [5, 6, 7].map((i) => groundShareAt(6000 / Math.pow(1.5625, i)));
+    expect(sheet[0]).toBeGreaterThan(0);
+    expect(sheet[1]).toBeGreaterThan(sheet[0]!);
+    expect(sheet[1]).toBeLessThan(1);
+    expect(sheet[2]).toBe(1);
   });
 });
 
