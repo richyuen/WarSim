@@ -120,7 +120,14 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
         - [ ] 7.35b4c `forwardBases`' two holes: a base in another basin than the fleet's (`basinOf`,
           in `stage`, per fleet) and targets that are empty water under the enemy's naval bombers
           (the sortie's `bombed` test). AT: a unit test each; the pin; `seaMeet 3407 JAP USA 40`
-          after, against b4a's.
+          after, against b4a's. In two parts (each moves the pin):
+          - [x] 7.35b4c1 The basin (`stageTo`, exported; `seaMeet` calls it): measured on the 1938
+            start, 142 of 2,726 fleet-and-war pairs had a lake's port nearest (Toronto, Detroit,
+            Milwaukee, Baku, Kampala). AT: Canada on Cuba stages to Bermuda, not Toronto (red
+            without); the pin.
+          - [ ] 7.35b4c2 The bombed targets: `forwardBases` reads only targets that are not empty
+            water under the enemy's naval bombers. AT: a unit test (red without); the pin; the
+            "after" run of `seaMeet 3407 JAP USA 40` against b4a's (`measure-b4.md` §2).
     - [ ] 7.35c Ships at 20 m/px drawn at a size their class reads (destroyers about 10 × 3 px,
       submarines 5 px in `c9n_2251_ships_20m_crop4x.png`), counted in px. `shipMarks1938`'s T3
       test is red at `951b1c6` (a destroyer's median 17 px at 15 m/px, its bar 18.5; PLAN 7.22b):

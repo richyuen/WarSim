@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-546 · 2026-10-19 · accepted — A fleet stages only to a forward base in its own sea basin (PLAN 7.35b4c1; amends ADR-543)
+
+- **Context.** ADR-543's staging takes the forward base nearest the fleet by the line (`seaKm`),
+  with no basin test as `nearestOwnPort` has (`basinOf`, PLAN 4.8o). A lake's port may be the
+  nearest: `orderSail` refuses it every turn and the next is never tried. Measured on the 1938
+  start (each nation's warfleets as if at war with each port-holding nation of another bloc, the
+  enemy's power taken as 0): of 2,726 fleet-and-war pairs that stage, 142 had a lake's port nearest
+  (Toronto, Detroit, Milwaukee and Chicago on the Great Lakes; Baku, Atyrau, Makhachkala on the
+  Caspian; Kampala and Mwanza on Lake Victoria).
+- **Decision.** `stageTo` (exported, `seaMeet` calls it): the nearest forward base whose zone's
+  basin is the fleet's (`basinAt`, exported from `navalCombat.ts`, `nearestOwnPort`'s own test).
+  `forwardBases` stays one list a call; the basin is a fleet's.
+- **Consequences.** Canada at war with Cuba: the flotilla at Halifax stages to Bermuda, not Toronto
+  (`navalAi1938.test.ts`; red without the test). Seed 99's year: 6 sea battles, the first on day
+  45.2, both as before. Pin dd69fc40 → 06e19c19. navalAi 0.054 ms a tick against navalCombat's 0.111
+  on a slower run of the machine (before 0.041 against 0.076: the same ratio or less).
+- **Not done:** a sortie's own target (an enemy port within `SORTIE_KM` by the line) has no basin
+  test either: a lake's enemy port may be the nearest target.
+
 ### ADR-545 · 2026-10-19 · accepted — A fleet sent home sails for its bloc's nearest port; a transport group for its nation's (PLAN 7.35b4b; amends ADR-261, ADR-264)
 
 - **Context.** Critic run 9, naval 6 (Japan–USA on seed 3407). Measured (`seaMeet 3407 JAP USA 40`,

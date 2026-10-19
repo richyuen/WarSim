@@ -6,11 +6,11 @@ import { Sim } from '../../src/sim/sim';
 import { AVOID_RATIO, fleetPower, navalAi, navalBombers, SORTIE_KM } from '../../src/sim/ai/naval';
 import { STAGGER } from '../../src/sim/ai/strategic';
 import { equipFormation } from '../../src/sim/systems/elements';
-import { seaKm } from '../../src/sim/systems/navalCombat';
+import { basinAt, seaKm } from '../../src/sim/systems/navalCombat';
 import { navalPower } from '../../src/sim/systems/seaControl';
 import { convoyWays } from '../../src/sim/systems/seaSupply';
 import { blocOf } from '../../src/sim/systems/supply';
-import { portSeaOf, seaOf, type World } from '../../src/sim/world';
+import { basinOf, portSeaOf, seaOf, type World } from '../../src/sim/world';
 import { declareWar, makePeace } from '../../src/sim/systems/war';
 import { assets1938 } from '../helpers/earth';
 
@@ -267,6 +267,41 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     s.step(8 * 24);
     const moved = fleets.filter((f) => c.moving[f] === 1 || c.x[f] !== at.get(f)![0] || c.y[f] !== at.get(f)![1]);
     expect(moved).toEqual([]);
+  });
+
+  it('Canada at war with Cuba: its fleets stage to a port of their own basin, not to Toronto on the Great Lakes, the nearest by the line (PLAN 7.35b4c)', () => {
+    const s = new Sim({ scenario: '1938', seed: 4610, assets: assets1938(W) });
+    const w = s.world;
+    const c = w.formations.cols;
+    const CAN = id('CAN');
+    const CUB = id('CUB');
+    expect(declareWar(w, CAN, CUB, true)).not.toBeNull();
+    w.nations.cols.aiOff[CUB] = 1;
+    const enemy = enemyWaters(w, CAN);
+    const fleets = own(s, CAN).filter((f) => Math.min(...enemy.map((e) => kmTo(w, c.x[f]!, c.y[f]!, e))) > SORTIE_KM);
+    expect(fleets.length).toBeGreaterThan(0);
+    const { basin } = basinOf(w);
+    const z = seaOf(w);
+    const water = portSeaOf(w);
+    // The lake ports the line puts nearest are of another basin than the fleets'.
+    const lakes = w.ports.flatMap((p, i) => (water[i]! >= 0 && blocOf(w, w.cells.controller[p.cell]!) === blocOf(w, CAN) && basin[z.zoneOf[water[i]!]!] !== basinAt(w, c.x[fleets[0]!]!, c.y[fleets[0]!]!) ? [p.name] : []));
+    expect(lakes).toContain('Toronto');
+    // Each fleet's first goal, and its basin where it stood when given it, within a turn of Canada's.
+    const goal = new Map<number, [number, number]>();
+    for (let d = 0; d < 8; d++) {
+      const from = new Map(fleets.map((f) => [f, basinAt(w, c.x[f]!, c.y[f]!)]));
+      s.step(24);
+      for (const f of fleets) if (!goal.has(f) && c.moving[f] === 1) goal.set(f, [c.targetCell[f]!, from.get(f)!]);
+    }
+    const to: string[] = [];
+    for (const f of fleets) {
+      expect(goal.has(f), `fleet ${f} under way`).toBe(true);
+      const [t, b] = goal.get(f)!;
+      expect(basin[z.zoneOf[t]!], `fleet ${f}'s goal in its basin`).toBe(b);
+      const i = water.indexOf(t);
+      to.push(i >= 0 ? w.ports[i]!.name : `cell ${t}`);
+    }
+    process.stderr.write(`CAN–CUB: ${fleets.length} fleets staged for ${[...new Set(to)].join(', ')}\n`);
   });
 
   it('Greece at war with Italy, Italian ports within SORTIE_KM: no Greek fleet stages, each sails for an Italian port or stands (PLAN 7.35b2)', () => {

@@ -6,7 +6,7 @@
  * (its nearest port, km), under way to where, and what the naval AI's sortie test sees from there
  * (`plan` in `src/sim/ai/naval.ts`): the nearest enemy port of all and its km; the nearest within
  * `SORTIE_KM`, its zone's enemy power against the power that would sail there together; why none
- * is taken (with none in reach at all, the forward base it stages to, `forwardBases`; empty water
+ * is taken (with none in reach at all, the forward base it stages to, `forwardBases` and `stageTo`; empty water
  * under the enemy's naval bombers is no target, PLAN 7.35b3b). At the end, per side: its fleets'
  * power by the sea they stand in, the least km between a fleet of each side over the days, and
  * every sea battle between the two sides.
@@ -20,7 +20,7 @@ import { loadAssets1938 } from '../headless/assets';
 import { AT_PORT_CELLS, seaKm } from '../../src/sim/systems/navalCombat';
 import { fleetPower, navalPower } from '../../src/sim/systems/seaControl';
 import { blocOf } from '../../src/sim/systems/supply';
-import { AVOID_RATIO, forwardBases, navalBombers, SORTIE_KM } from '../../src/sim/ai/naval';
+import { AVOID_RATIO, forwardBases, navalBombers, SORTIE_KM, stageTo } from '../../src/sim/ai/naval';
 import { portSeaOf, seaOf, seaRangeOf, type World } from '../../src/sim/world';
 
 const seed = Number(process.argv[2]);
@@ -153,9 +153,8 @@ for (let day = 0; day < days; day++) {
         why = `no enemy port within ${SORTIE_KM} km`;
         if (targets.length > 0) {
           const war = mineAtPort.map((g) => ({ p: fleetPower(w, g) }));
-          let sk = Infinity;
-          let base = -1;
-          for (const b of forwardBases(w, bloc, targets, war, enemyIn)) if (km(b) < sk) [sk, base] = [km(b), b];
+          const base = stageTo(w, f, forwardBases(w, bloc, targets, war, enemyIn));
+          const sk = base >= 0 ? km(base) : Infinity;
           if (base < 0) why += '; no forward base';
           else {
             const i = water.indexOf(base);

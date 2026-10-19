@@ -19848,3 +19848,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **By hand** (the gate skips e2e): `carrierStrikeRow1938`, `seaRow1938` (3), `navalDemo1938`,
   `seaBattle1938`, `seaBattleSeen1938` (alone) green.
 - **Next:** PLAN 7.35b4c (`forwardBases`' basin filter and bombed targets; the "after" run).
+
+## 2026-10-19 — PLAN 7.35b4c1: a fleet stages only to a forward base in its own basin (critic R9 naval 6; ADR-546)
+
+- **Start:** gate green on `a6d2803`; critic not due. PLAN 7.35b4c split in two (each moves the pin).
+- **Measured** (a scratch probe on the 1938 start, every nation's warfleets as if at war with each
+  port-holding nation of another bloc): 142 of 2,726 staging pairs had a lake's port nearest by
+  the line (the Great Lakes, the Caspian, Lake Victoria).
+- **Rule** (ADR-546): `stageTo` in `naval.ts` (exported; `seaMeet` calls it), the nearest forward
+  base in the fleet's basin (`basinAt`, exported from `navalCombat.ts`, `nearestOwnPort`'s test).
+- **Tests:** `navalAi1938.test.ts` + 1: Canada on Cuba, the Halifax flotilla's first goal is
+  Bermuda, in its basin (red without the filter: it stood, refused Toronto).
+- **Perf:** navalAi 0.054 ms a tick and navalCombat 0.111 on a slower run of the machine (tick mean
+  3.3 ms; before 0.041 and 0.076): the same ratio or less.
+- **Pin** dd69fc40 → 06e19c19 (seed 99's year: 6 sea battles, first on day 45.2, both as before).
+- **Not done** (ADR-546): a sortie's target has no basin test either.
+- **Next:** PLAN 7.35b4c2 (`forwardBases`' bombed targets; the "after" run).

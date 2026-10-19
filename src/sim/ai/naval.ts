@@ -15,8 +15,9 @@
  *   nation's warfleets in port within `SORTIE_KM` of that water together (they choose alike,
  *   and go together): a battle it would lose is not sought.
  * - At war, such a warfleet with no enemy port within `SORTIE_KM` at all stages (PLAN 7.35b2):
- *   it sails to the nearest port of its bloc's that has one (`forwardBases`), and sorties from
- *   there. The US Pacific Fleet at San Diego goes west against Japan.
+ *   it sails to the nearest port of its bloc's that has one (`forwardBases`), in its basin
+ *   (`stageTo`, PLAN 7.35b4c), and sorties from there. The US Pacific Fleet at San Diego goes
+ *   west against Japan.
  * - At war, a warfleet away from its ports in a zone where the enemy's power is over
  *   `AVOID_RATIO` times its own sails home (`sailHome`).
  * - At war, under the enemy's naval bombers (PLAN 7.35b3b, ADR-544: a wing of the naval role at an
@@ -40,13 +41,13 @@ import { isDayStart } from '../../shared/calendar';
 import { transportRoom } from '../systems/amphibious';
 import { elementIndex } from '../systems/elements';
 import { convoyWays } from '../systems/seaSupply';
-import { AT_PORT_CELLS, sailHome, seaKm } from '../systems/navalCombat';
+import { AT_PORT_CELLS, basinAt, sailHome, seaKm } from '../systems/navalCombat';
 import { fleetPower, navalPower } from '../systems/seaControl';
 
 export { fleetPower };
 import { orderSail } from '../systems/sail';
 import { blocOf } from '../systems/supply';
-import { portSeaOf, seaOf, seaRangeOf, type World } from '../world';
+import { basinOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
 import { STAGGER } from './strategic';
 import { roleOf } from './air';
 import { basePlace, wingRange } from '../systems/air';
@@ -232,21 +233,31 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
       }
     }
     // No enemy port within reach at all: it stages, to its bloc's nearest port that has one (PLAN 7.35b2).
-    if (target < 0 && !inReach && targets.length > 0) target = stage(id, (bases ??= forwardBases(world, bloc, targets, war, enemyIn)));
+    if (target < 0 && !inReach && targets.length > 0) target = stageTo(world, id, (bases ??= forwardBases(world, bloc, targets, war, enemyIn)));
     if (target < 0 || near(cellOf(id), target)) continue;
     orderSail(world, id, (target % w) + 0.5, Math.floor(target / w) + 0.5);
   }
+}
 
-  /** The water of `bases` nearest fleet `id`, or −1 with none. */
-  function stage(id: number, list: number[]): number {
-    let best = Infinity;
-    let at = -1;
-    for (const b of list) {
-      const d = km(id, b);
-      if (d < best) [best, at] = [d, b];
-    }
-    return at;
+/**
+ * The forward base fleet `id` stages to (PLAN 7.35b2): the water of `bases` nearest it (`seaKm`), of
+ * those in its basin (`basinAt`, PLAN 7.35b4c: by the line a lake's port may be the nearest, the
+ * Great Lakes' Toronto for a fleet at Halifax, and `orderSail` refuses it every turn); −1 with none.
+ */
+export function stageTo(world: World, id: number, bases: readonly number[]): number {
+  const c = world.formations.cols;
+  const w = world.cells.w;
+  const z = seaOf(world);
+  const { basin } = basinOf(world);
+  const mine = basinAt(world, c.x[id]!, c.y[id]!);
+  let best = Infinity;
+  let at = -1;
+  for (const b of bases) {
+    if (basin[z.zoneOf[b]!] !== mine) continue;
+    const d = seaKm(world, c.x[id]!, c.y[id]!, (b % w) + 0.5, Math.floor(b / w) + 0.5);
+    if (d < best) [best, at] = [d, b];
   }
+  return at;
 }
 
 /**

@@ -421,6 +421,19 @@ export function homeOf(world: World, id: number): (holder: number) => boolean {
 }
 
 /**
+ * The sea basin of a fleet at (x, y) (`basinOf`, PLAN 4.8o): that of the zone of the water nearest
+ * it within `AT_PORT_CELLS`, or the world's seas (`ocean`) where it stands on no zone or none is
+ * near. A port in another basin is one a ship there does not reach (a lake's).
+ */
+export function basinAt(world: World, x: number, y: number): number {
+  const sea = seaOf(world);
+  const { w, h } = world.cells;
+  const { basin, ocean } = basinOf(world);
+  const here = nearestCellWhere((k) => sea.zoneOf[k] !== 0, x, y, w, h, world.atSize(AT_PORT_CELLS), world.settings.loopingMap);
+  return here >= 0 && basin[sea.zoneOf[here]!] !== 0 ? basin[sea.zoneOf[here]!]! : ocean;
+}
+
+/**
  * The water of the port nearest to fleet `id` that is home to it (`homeOf`) and a ship reaches, or
  * -1: one in the basin of the fleet's water (`basinOf`, PLAN 4.8o; the world's seas where the fleet
  * stands on no zone), not a port across land on a lake.
@@ -430,10 +443,9 @@ export function nearestOwnPort(world: World, id: number): number {
   const home = homeOf(world, id);
   const water = portSeaOf(world);
   const sea = seaOf(world);
-  const { w, h } = world.cells;
-  const { basin, ocean } = basinOf(world);
-  const here = nearestCellWhere((k) => sea.zoneOf[k] !== 0, c.x[id]!, c.y[id]!, w, h, world.atSize(AT_PORT_CELLS), world.settings.loopingMap);
-  const mine = here >= 0 && basin[sea.zoneOf[here]!] !== 0 ? basin[sea.zoneOf[here]!]! : ocean;
+  const { w } = world.cells;
+  const { basin } = basinOf(world);
+  const mine = basinAt(world, c.x[id]!, c.y[id]!);
   let best = -1;
   let bd = Infinity;
   world.ports.forEach((p, i) => {
