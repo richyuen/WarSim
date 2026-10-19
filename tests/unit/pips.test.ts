@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formationPips, pipGrid, PIP_PANEL_H, type PipPart } from '../../src/render/units/pips';
+import { drawPips, formationPips, pipGrid, PIP_PANEL_H, type PipPart } from '../../src/render/units/pips';
 import { MARKER_H } from '../../src/render/units/markers';
 import { Frame } from '../../src/shared/unitLooks';
 
@@ -92,5 +92,15 @@ describe('the pip panel (PLAN 7.21c2)', () => {
 
   it('the marker\'s footprint holds the box, the panel and the number', () => {
     expect(MARKER_H).toBe(17 + PIP_PANEL_H + 11);
+  });
+
+  it('drawing returns the elements drawn: the living pips, not the empty sockets (PLAN 7.34b)', () => {
+    const rects: number[] = [];
+    const ctx = { fillStyle: '', globalAlpha: 1, fillRect: () => rects.push(1) } as unknown as CanvasRenderingContext2D;
+    const parts: PipPart[] = [{ frame: Frame.infantry, count: 4 }, { frame: Frame.gun, count: 2 }];
+    const pips = formationPips(parts, [Frame.infantry, Frame.infantry, Frame.infantry, Frame.gun], [1, 0.5, 1, 1]);
+    expect(drawPips(ctx, pips, 0, 0, W, 1)).toBe(4);
+    expect(rects.length).toBe(6);
+    expect(drawPips(ctx, pips, 0, 0, W, 0)).toBe(0);
   });
 });

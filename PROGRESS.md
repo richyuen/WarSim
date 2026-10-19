@@ -19569,3 +19569,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   passes unchanged but the seed. `docs/evidence/3.6/tank-battle-*.png` made again, the fourth viewed.
 - **No rule change:** pin 45c20987.
 - **Next:** PLAN 7.34b (elements at 900 m/px).
+
+## 2026-10-19 — PLAN 7.34b: at 900 m/px the elements are drawn as pips, counted (critic R9 semantic zoom 7; ADR-535)
+
+- **Start:** gate green on `87d52e6`; critic not due.
+- **Measured** (a probe spec, removed): the critic's case reproduced, the same ids (seed 4483,
+  Germany at war with Poland, day 3, armour 41, infantry 11). At the armour's camera at 900 m/px:
+  3,726 elements in hand; 2,193 drawn as pips under 85 markers, 288 of 12 formations in stacks,
+  1,245 of formations off the screen (padded box). A division's elements stand 0.65 px apart there
+  and its block is 4.6 px, under a 26 × 41 px marker: none can be drawn where it stands. The
+  critic read `elementCount` (the subscription's) and nothing counted what T1 drew.
+- **Decision** (ADR-535, disputed in part): an element at T1 is its pip (ADR-498); a stack keeps its
+  lead's pips. What T1 draws is counted: `drawPips` returns the living pips, `PlacedMarker.pips`,
+  the view's `elementsAtT1` (pips drawn, elements stood for by stacks). SPEC §8's "sent from 450
+  m/px" corrected (ADR-498 moved it to T1).
+- **Tests:** `markers1938` a test of the critic's case at 900 m/px (pips 2,193 > 1,000, each lead's
+  elements all drawn, pips + stood for + off screen = in hand, `pipTruth`); `pips.test.ts` the count
+  `drawPips` returns. Seen: `docs/evidence/7.34/b-4483-arm-900m.png`.
+- **By hand** (the gate skips e2e): `markers1938` green (2 tests).
+- **Perf:** nothing drawn changes (a counter added to the pip loop).
+- **No rule change:** pin 45c20987.
+- **Next:** PLAN 7.34c (vehicles overlapping at 10 m/px).

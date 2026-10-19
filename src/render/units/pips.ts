@@ -110,10 +110,12 @@ const SOCKET = 'rgba(255, 255, 255, 0.16)';
 /**
  * Draws `pips` in the panel whose top-left is (`x`, `y`), `w` CSS px wide, at the opacity
  * `alpha` (in the CSS-px transform of `ctx`). A pip of an element that has lost men is fainter:
- * from 0.4 of the panel's opacity, at none of its men, to all of it.
+ * from 0.4 of the panel's opacity, at none of its men, to all of it. Returns the elements drawn:
+ * the living pips, not the empty sockets (PLAN 7.34b).
  */
-export function drawPips(ctx: CanvasRenderingContext2D, pips: Pips, x: number, y: number, w: number, alpha: number): void {
-  if (pips.count === 0 || alpha <= 0.01) return;
+export function drawPips(ctx: CanvasRenderingContext2D, pips: Pips, x: number, y: number, w: number, alpha: number): number {
+  if (pips.count === 0 || alpha <= 0.01) return 0;
+  let drawn = 0;
   const g = pipGrid(pips.count, w);
   let fill = '';
   let a = -1;
@@ -121,10 +123,12 @@ export function drawPips(ctx: CanvasRenderingContext2D, pips: Pips, x: number, y
     const s = pips.share[i]!;
     const want = s > 0 ? pipColour(pips.frame[i]!) : SOCKET;
     const wa = s > 0 ? alpha * (0.4 + 0.6 * s) : alpha;
+    if (s > 0) drawn++;
     if (want !== fill) ctx.fillStyle = fill = want;
     if (wa !== a) ctx.globalAlpha = a = wa;
     const col = i % g.cols;
     const row = Math.floor(i / g.cols);
     ctx.fillRect(x + g.x0 + col * g.px, y + g.y0 + row * g.py, g.pw, g.ph);
   }
+  return drawn;
 }

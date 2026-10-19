@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-535 · 2026-10-19 · accepted — At 900 m/px the elements are drawn as pips, and counted (PLAN 7.34b; critic R9 disputed in part)
+
+- **Context.** Critic run 9, semantic zoom 7: "at 900 m/px the screen still shows only counters,
+  although `elementCount` is 3,536" (`c9_c_4483.json`, `c9c_4483_arm_0900m.png`). Run 8 said the
+  same and ADR-498 answered it with the pips; run 9 did not see them as elements. What the screen
+  shows at 900 m/px is T1's markers (flag chip, type symbol, a pip for each element, "×n" for a
+  stack), not T0's counters (a nation's sum over a grid cell, "+n").
+- **Measured** (a probe spec, removed; the critic's case reproduced at `87d52e6`: seed 4483,
+  1,600 × 900, Germany at war with Poland, day 3, armoured formation 41 and infantry division 11,
+  the critic's ids): at the armour's camera at 900 m/px the snapshot holds 3,726 elements; 2,193
+  are drawn as pips under 85 markers, 288 belong to 12 formations that stacks stand for, 1,245 to
+  formations off the screen (the subscription's padded box). Within a formation the elements stand
+  0.65 px apart (median nearest neighbour; 0.98 at 600, 1.30 at 450, 1.96 at 300 m/px), and a
+  division's block is 4.6 px across, under its marker of 26 × 41 px. The critic's `elementCount`
+  is the subscription's, and nothing read what T1 drew of it.
+- **Decision.** No element is drawn where it stands at 900 m/px: at 0.65 px apart they would be
+  one speck under the box (ADR-498). At T1 an element is its pip, as SPEC §8 has it, and the
+  operational tier is the brief's own "army/fleet/air-wing markers with strength". A stack keeps
+  its lead's pips (ADR-498): 140 pips of a "×5" in the panel's 12 px would be below a pixel each.
+  What T1 draws is now counted: `drawPips` returns the living pips drawn, each placed marker
+  carries them (`PlacedMarker.pips`), and the view's `elementsAtT1` gives the pips drawn and the
+  elements a stack stands for. View only: nothing drawn changes; the pin unchanged.
+- **Checked** (`markers1938.spec.ts`, a test of the critic's case): at 900 m/px more than 1,000
+  pips drawn (2,193), each lead's elements all drawn, pips + stood for + off screen = the
+  elements in hand, and each marker's living pips its formation's elements in the sim
+  (`docs/evidence/7.34/b-4483-arm-900m.png`, viewed).
+
 ### ADR-534 · 2026-10-19 · accepted — The tank demo's battle is seed 1's (PLAN 7.34a's check)
 
 - **Context.** `tankBattle1938`, run by hand for PLAN 7.34a's boundary, fails on its Node side:

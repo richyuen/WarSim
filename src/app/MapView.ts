@@ -884,6 +884,23 @@ export class MapView {
   readonly glyphSprites = new GlyphSprites();
   /** T1 markers drawn last frame, CSS px (tests), and the layer's opacity (PLAN 2.1). */
   markerRects: PlacedMarker[] = [];
+  /**
+   * What T1 drew of the elements in hand last frame (PLAN 7.34b, ADR-535; tests and probes):
+   * `pips`, the elements drawn as pips under the markers; `stoodFor`, those of the formations a
+   * stack stands for besides its lead (its "×n" tag; ADR-498). The rest of `elementCount` belong
+   * to formations off the screen, in the subscription's padded box.
+   */
+  get elementsAtT1(): { pips: number; stoodFor: number } {
+    let pips = 0;
+    const folded = new Set<number>();
+    for (const r of this.markerRects) {
+      pips += r.pips;
+      if (r.bar > 0.01) for (let k = 1; k < r.members.length; k++) folded.add(r.members[k]!);
+    }
+    let stoodFor = 0;
+    for (let i = 0; i < this.elementCount; i++) if (folded.has(this.elementFormation[i]!)) stoodFor++;
+    return { pips, stoodFor };
+  }
   /** The stacks of the T1 markers: which are in one, and the fade of a change (PLAN 2.7s1). */
   readonly markerStacks = new MarkerStacks();
   /** The pips of each formation whose elements the last snapshot brought, by formation id (PLAN 7.21c2). */

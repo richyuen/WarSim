@@ -56,7 +56,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
       1.5625×): the ground's share changes by at most 0.5 from one frame to the next, the frames
       viewed; `groundThings1938` and `legendOccupied1938` rewritten to the rule and green; a
       frame's time at 500 m/px before and after; render only, the pin unchanged.
-    - [ ] 7.34b Elements drawn at 900 m/px on the critic's 4483 front (`elementCount` 3,536 and only
+    - [x] 7.34b Elements drawn at 900 m/px on the critic's 4483 front (`elementCount` 3,536 and only
       counters on screen). Measured first: what the view holds at 900 m/px there and why no
       element shows. AT: elements drawn there (counted).
     - [ ] 7.34c No two vehicles drawn overlapping at 10 m/px (`c9c_4483_inf_0010m_top_crop2x.png`,

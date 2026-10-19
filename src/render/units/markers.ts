@@ -135,6 +135,8 @@ export interface PlacedMarker {
   text: string;
   /** The formations it stands for, itself first: more than one for a stack (PLAN 2.7s1). */
   members: number[];
+  /** Its lead's elements drawn as pips in this frame (the living pips; PLAN 7.34b): 0 while its strength bar shows. */
+  pips: number;
   /** Whether it has the frame of the formation whose panel is open: it is that formation, or its stack holds it (PLAN 2.14f3). */
   picked: boolean;
   /** A stack's tag, on the box's corner and reaching out of it (CSS px): what a city name keeps clear of besides the box (PLAN 2.7u). */
@@ -376,6 +378,7 @@ export function drawMarkers(
       // block deployed against the enemy, up to 43 px from here at the boundary, and the bar
       // would linger beside the group and not on it. They go with the box.
       const bar = (m.engaged ? boxAlpha : barAlpha) * part;
+      let pipsDrawn = 0;
       if (bar > 0.01) {
         ctx.globalAlpha = bar;
         ctx.fillStyle = 'rgba(16, 18, 24, 0.82)';
@@ -394,7 +397,7 @@ export function drawMarkers(
           ctx.fillStyle = f > 0.5 ? '#8bd17c' : f > 0.25 ? '#f1c40f' : '#e74c3c';
           ctx.fillRect(x, by, Math.round(BOX_W * f), 2);
         }
-        if (pipsIn > 0.01) drawPips(ctx, m.pips!, x, y + BOX_H, BOX_W, bar * pipsIn);
+        if (pipsIn > 0.01) pipsDrawn = drawPips(ctx, m.pips!, x, y + BOX_H, BOX_W, bar * pipsIn);
         ctx.globalAlpha = bar;
         ctx.fillStyle = '#ffe28a';
         ctx.fillText(text, x + BOX_W / 2, y + BOX_H + PIP_PANEL_H + 1);
@@ -435,7 +438,7 @@ export function drawMarkers(
       if (back && boxAlpha * part > 0.01) retreats.push({ px, py, x, y, alpha: boxAlpha * part });
       const marked = picked !== 0 && members.includes(picked);
       if (marked && boxAlpha * part > 0.01) frames.push({ px, py, x, y, alpha: boxAlpha * part });
-      placed.push({ id: m.id, nation: m.nation, retreating: back && boxAlpha * part > 0.01, wx: m.x, wy: m.y, alpha: boxAlpha * part, bar, own: part, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: MARKER_H * size, text, members, picked: marked });
+      placed.push({ id: m.id, nation: m.nation, retreating: back && boxAlpha * part > 0.01, wx: m.x, wy: m.y, alpha: boxAlpha * part, bar, own: part, scale: morph.scale, x: px - (BOX_W / 2) * size, y: py - (BOX_H / 2) * size, w: BOX_W * size, h: MARKER_H * size, text, members, pips: pipsDrawn, picked: marked });
     }
   }
   // A retreat's badge on the box's top-left corner, above every box (the stack's tag is on the

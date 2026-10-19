@@ -133,3 +133,70 @@ test('T1 markers: numbers equal Σ element strength; arrows and battle markers',
   await look(page, -3.7, 40.4, 120);
   expect(await page.evaluate(() => window.__warsim!.view!.markerRects.length)).toBe(0);
 });
+
+// PLAN 7.34b AT (critic run 9, ADR-535): at 900 m/px on the critic's case (seed 4483, Germany at
+// war with Poland, the first German armoured formation in contact, day 3) the elements in hand are
+// drawn, counted. At T1 an element is a pip under its formation's marker: they stand about 0.65 px
+// apart there, a division's block under 5 px, under a marker 41 px high, so none is drawn where
+// it stands. Of the elements the snapshot brought, each is a pip drawn, or of a formation a stack
+// stands for ("×n"), or of a formation off the screen (the subscription's padded box).
+test('T1 at 900 m/px: the elements in hand drawn as pips, counted (critic 4483)', async ({ page }, info) => {
+  test.setTimeout(240_000);
+  const GER = NATIONS_1938.findIndex((n) => n.tag === 'GER') + 1;
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.goto('/?scenario=1938&paused=1&seed=4483');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
+  await page.evaluate(({ a, d }) => window.__warsim!.sim.command({ kind: 'declareWar', attacker: a, defender: d }), { a: GER, d: POL });
+  let armour: number | undefined;
+  for (let day = 0; day < 12 && armour === undefined; day++) {
+    await page.evaluate(async () => {
+      const w = window.__warsim!;
+      const target = w.view!.lastTick + 24;
+      await w.sim.step(24);
+      await new Promise<void>((done) => {
+        const wait = (): void => void (w.view!.lastTick >= target ? done() : setTimeout(wait, 10));
+        wait();
+      });
+    });
+    armour = await page.evaluate((n) => {
+      const v = window.__warsim!.view!;
+      return v.formationsOf(n).find((f) => v.formationEngaged(f) && /Armoured/i.test(JSON.stringify(v.formationTitle(f))));
+    }, GER);
+  }
+  expect(armour, 'a German armoured formation in contact').toBeDefined();
+  const pos = await page.evaluate((f) => window.__warsim!.view!.formationPos(f)!, armour!);
+  await page.evaluate(({ x, y }) => {
+    const v = window.__warsim!.view!;
+    v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / 900 });
+  }, { x: pos[0], y: pos[1] });
+  // The elements come a snapshot after the subscription; their pips fade in (250 ms).
+  await expect.poll(() => page.evaluate(() => window.__warsim!.view!.elementCount), { timeout: 10_000 }).toBeGreaterThan(0);
+  await settle(page);
+  const r = await page.evaluate(() => {
+    const v = window.__warsim!.view!;
+    const leads = new Set<number>();
+    const members = new Set<number>();
+    for (const m of v.markerRects) {
+      leads.add(m.members[0]!);
+      for (const id of m.members) members.add(id);
+    }
+    let ofLeads = 0;
+    let offScreen = 0;
+    for (let i = 0; i < v.elementCount; i++) {
+      const f = v.elementFormation[i]!;
+      if (leads.has(f)) ofLeads++;
+      else if (!members.has(f)) offScreen++;
+    }
+    return { mpp: v.metresPerPx, count: v.elementCount, ...v.elementsAtT1, ofLeads, offScreen, markers: v.markerRects.length, rects: v.markerRects };
+  });
+  console.log(`seed 4483, ${r.mpp.toFixed(0)} m/px: ${r.count} elements in hand; ${r.pips} drawn as pips of ${r.markers} markers, ${r.stoodFor} of formations in stacks, ${r.offScreen} off the screen`);
+  expect(r.mpp).toBeCloseTo(900, 0);
+  expect(r.pips).toBeGreaterThan(1000);
+  // Every element of a marker's lead is a pip drawn, and every element in hand is accounted for.
+  expect(r.pips).toBe(r.ofLeads);
+  expect(r.pips + r.stoodFor + r.offScreen).toBe(r.count);
+  await pipTruth(page, r.rects, await full(page));
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/7.34') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.screenshot({ path: path.join(out, 'b-4483-arm-900m.png') });
+});

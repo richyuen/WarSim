@@ -2336,7 +2336,11 @@ the other not at all, wherever the camera stops.
 | T1 markers ↔ T2 element sprites (470 ms: see the morph below) | 300 | 345 |
 | T2 sprites ↔ T3 individuals | 30 | 34.5 |
 
-- The elements are in the view before the sprites come in: they are sent from 450 m/px.
+- The elements are in the view before the sprites come in: they are sent from T1 (2,000 m/px,
+  ADR-498; from 450 m/px before), where a marker's pips are drawn from them; their fire and ends
+  are sent from 450 m/px. At 900 m/px an element is its pip: the elements of a division stand
+  0.65 px apart there (PLAN 7.34b, ADR-535), and the view counts the pips drawn
+  (`elementsAtT1`).
 - The figures of T3 are built in the frame the close tier comes in, from a copy of the last
   element section that the view keeps below 60 m/px. A snapshot subscribed at T3 is a frame or
   two away, and the cross-fade needs both layers. They are built from each snapshot for as long
