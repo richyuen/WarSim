@@ -90,3 +90,8 @@ The rule for 7.27c, one cause, to choose among (measured on `sweep:quick`):
   near), which leaves the war's length alone.
 The first is closest to the trace (the war ends while the winner gains); the truce and
 `MAX_WARS` stay as they are unless the sweep shows them next.
+
+**Correction (2026-10-19, PLAN 7.27c, `measure-c.md` §1):** in the second war the loss was of land
+men on land. The Soviet side was the Soviet Union alone, with no men at sea, aboard or in fleets,
+and its one division (12,460 men, the war's `startMen`) died on days 153–158, between two of this
+trace's weekly rows. "Men the trace's land tally does not hold" above is wrong.

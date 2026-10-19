@@ -19156,3 +19156,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   while the winner gains and is not worn (two other choices in the evidence).
 - **Docs and tools only:** no sim change; pin c3bd280a.
 - **Next:** PLAN 7.27c.
+
+## 2026-10-19 — PLAN 7.27c: a winner that gains ground refuses a suit by exhaustion
+
+- **Start:** gate green on `4117a2d`; critic not due. Restored line-ending noise and screenshots an
+  earlier e2e run had rewritten.
+- **Measured** (`docs/evidence/7.27/measure-c.md`, `tools/diag/warLost.ts`, from `s732-y25.bin`):
+  (1) war 389's Soviet side was the Soviet Union alone, its loss one division dying on land; `lost`
+  reads nobody who left (7.27b's line on it corrected in `trace-b.md`). (2) The Soviet army orders
+  stop at the gold gate on 59 of 79 months; the rate is a surplus of 190–350 a month against 1,001
+  a division, on an income of 478 to Germany's 4,126: PLAN 7.27e, before 7.27d's sweep.
+- **Rule** (ADR-521): `refusesSuit`: a suit by exhaustion alone is refused by a side that leads,
+  is at exhaustion 40 or less, and held new ground within 30 days (`War.peakHeld`, `peakTick`).
+  Seed 732 from year 25: war 324 runs 256 days (215), ends crushed, 4.17 M km² taken (3.38 M).
+- **sweep:quick** (1–10 × 20, rule against `4117a2d`): limits 10 of 10 both; longest one top five
+  mean 6.7 years (9.8); land moving 22.7 % (18.8); largest land at most 26.9 % (25.7). To watch:
+  seed 8's largest income 39.5 % (limit 40), nuclear bursts 122 (28).
+- **Pin** c3bd280a → 94235073. Tests: `tests/unit/war.test.ts` (two new).
+- **Next:** PLAN 7.27e.

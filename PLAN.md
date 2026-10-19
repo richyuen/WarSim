@@ -62,7 +62,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       army (12,000 men on 15.7 M km²), at score 16–53 with 9–22 % of its land taken, the attacker
       at exhaustion 16–22 and gaining ground daily (732: half its men pressing); truce 729 days, then
       `MAX_WARS` held by allied wars for three years. The front did not stall: no new 7.29 part.
-    - [ ] 7.27c The rule the trace names, one cause, tuned on `sweep:quick`: a suit by exhaustion
+    - [x] 7.27c The rule the trace names, one cause, tuned on `sweep:quick`: a suit by exhaustion
       not granted while the winner gains ground and is not itself worn (7.27b's first choice; the
       other two, `lost` weighed by the army a side could keep and terms beyond the land held, are
       in `trace-b.md`). Measured first from `s732-y25.bin`: (1) the second war's `lost` (war 389,
@@ -74,6 +74,24 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       rule. The rule changes PROMPT's "broke or exhausted nations sue for peace" in its effect: an
       ADR, and the PARITY peace row. Watch `alive` and break-up on `sweep:quick` as well as
       stasis. AT: a unit test; the pin's entry.
+      Measured (`docs/evidence/7.27/measure-c.md`, `tools/diag/warLost.ts`): (1) the second war's
+      side was the Soviet Union alone, its loss land men on land (one division of 12,460, the
+      war's `startMen`): `lost`'s measure is not the cause; (2) the army orders' first gate is
+      gold on 59 of 79 months, the upkeep 1–30 against a cap of 96–336, 6 M manpower unused: the
+      rate is a surplus of 190–350 gold a month against 1,001 a division (7.27e); (3) under the
+      first choice war 324 runs 256 days (215), Germany refusing at exhaustion 21 while gaining,
+      and ends crushed at a second capital: 4.17 M km² taken (3.38 M). Done (ADR-521, pin
+      94235073): `refusesSuit` in `war.ts`, two unit tests; `sweep:quick` limits 10 of 10, the
+      longest top five 6.7 years on average (9.8 before); seed 8's largest income 39.5 % (limit 40)
+      and the nuclear bursts (122 against 28) to watch in 7.27d.
+    - [ ] 7.27e The Soviet Union's token army (from 7.27c's measure (2)): from `s732-y25.bin` its
+      income is 478 a month to Germany's 4,126 on 15.7 M km², its balance 266 with a land army's
+      upkeep of 7, so it raises three or four divisions a year. Measured first: where its income
+      went from 1938 (the industry of the cells held, `economy.ts`, against the land), and what
+      takes the other half before the army (fleets and wings, admin by km², suppression). Then
+      the cause decided, a rule only if it is one (a nation of that land at war with no army is
+      also how the long spans begin). Before 7.27d: the sweep runs on the final code. AT: the
+      measure in `docs/evidence/7.27/`; a unit test and the pin's entry if a rule moves it.
     - [ ] 7.27d The full sweep on unseen seeds (741–750). First the late years' tick, from a late
       checkpoint pinned with `--profile` (7.27a's sweep took 34 min against 7.24a's 19.5, every seed
       30–34; seed 99's years 1–5 are not slower). AT: 7.27's.

@@ -24,7 +24,11 @@
  * an equal's. With the true share alone, no war against a large nation scored above a white
  * peace, so the largest nations never lost land.
  * A side sues for peace when its leader is broke (gold < 0 or bankrupt), its exhaustion is
- * ≥ EXHAUSTED, or its score is ≤ −CRUSHED, unless either side fights to the death. The side
+ * ≥ EXHAUSTED, or its score is ≤ −CRUSHED, unless either side fights to the death. A suit by
+ * exhaustion alone is refused by a winner not itself worn (exhaustion ≤ PEACE_ACCEPT_EXHAUSTION)
+ * that still gains ground (a new most of the other's land held within GAIN_DAYS; `refusesSuit`,
+ * PLAN 7.27c, ADR-521): until then a defender that lost a token army sued at once, and a winner
+ * gaining ground at its fastest kept a fifth of the land (seed 732, Germany v the Soviet Union). The side
  * with the higher score (the attackers on a tie) wins and the terms follow |score|:
  *   < WHITE_PEACE: white peace, every occupation between the sides reverts;
  *   otherwise the winner annexes every cell of the losers that it occupies (critic B1, ADR-51:
@@ -97,6 +101,11 @@ export const STATELET_KM2 = 50_000;
 export const PEACE_ACCEPT_SCORE = 25;
 /** …or the other side's exhaustion exceeds this (the AI's stalemate threshold). */
 export const PEACE_ACCEPT_EXHAUSTION = 40;
+/**
+ * A side gains ground while it has held more of the other's land than ever before within this many
+ * days (PLAN 7.27c): a winner that gains, not worn, refuses a suit by exhaustion.
+ */
+export const GAIN_DAYS = 30;
 
 /**
  * Whether n was founded in play (PLAN 7.3d2): a rebel state has the people of the land it rose on
@@ -314,13 +323,39 @@ function landOf(land: LandCounts, side: number[]): number {
   return own;
 }
 
-/** `victims`' land held by `occupiers`: the true share, and the share relative to the smaller party. */
-function occShare(land: LandCounts, occupiers: number[], victims: number[]): { share: number; rel: number } {
+/** `victims`' land held by `occupiers`: km², the true share, and the share relative to the smaller party. */
+function occShare(land: LandCounts, occupiers: number[], victims: number[]): { km2: number; share: number; rel: number } {
   const own = landOf(land, victims);
   let occ = 0;
   for (const v of victims) for (const o of occupiers) occ += land.occupied.get(v * 65536 + o) ?? 0;
-  if (own <= 0) return { share: 0, rel: 0 };
-  return { share: occ / own, rel: Math.min(1, occ / Math.max(1, Math.min(own, REL_CAP * landOf(land, occupiers)))) };
+  if (own <= 0) return { km2: occ, share: 0, rel: 0 };
+  return { km2: occ, share: occ / own, rel: Math.min(1, occ / Math.max(1, Math.min(own, REL_CAP * landOf(land, occupiers)))) };
+}
+
+/**
+ * Notes the km² side `s` of `war` holds of the other's land today (PLAN 7.27c): a new most is
+ * kept with its tick.
+ */
+function notePeak(war: War, s: number, km2: number, tick: number): void {
+  const peak = (war.peakHeld ??= [0, 0]);
+  const at = (war.peakTick ??= [0, 0]);
+  if (km2 > peak[s]!) {
+    peak[s] = km2;
+    at[s] = tick;
+  }
+}
+
+/**
+ * Whether side `s` of `war` would refuse the other side's suit by exhaustion today (PLAN 7.27c,
+ * ADR-521): it leads the score, is itself not worn (exhaustion at most PEACE_ACCEPT_EXHAUSTION,
+ * the bar at which it would take a player's offer) and still gains ground (held more of the
+ * other's land than ever before within the last GAIN_DAYS).
+ */
+export function refusesSuit(war: War, s: number, tick: number): boolean {
+  const lead = s === ATTACKERS ? war.score : -war.score;
+  if (lead <= 0 || war.exhaustion[s]! > PEACE_ACCEPT_EXHAUSTION) return false;
+  const held = war.peakHeld?.[s] ?? 0;
+  return held > 0 && tick - war.peakTick![s]! <= GAIN_DAYS * 24;
 }
 
 /**
@@ -396,6 +431,8 @@ export function warSystem(world: World): void {
     const oAD = occShare(land, A, D);
     const oDA = occShare(land, D, A);
     war.score = Math.max(-100, Math.min(100, Math.round(200 * (oAD.rel - oDA.rel) + war.capitalBonus)));
+    notePeak(war, ATTACKERS, oAD.km2, world.tick);
+    notePeak(war, DEFENDERS, oDA.km2, world.tick);
     const days = (world.tick - war.startTick) / 24;
     for (const s of [ATTACKERS, DEFENDERS]) {
       const m = sideMen(war.sides[s]!);
@@ -429,7 +466,9 @@ export function warSystem(world: World): void {
       const leader = war.sides[s]![0]!;
       const broke = nc.gold[leader]! < 0 || nc.bankrupt[leader] === 1;
       const own = s === ATTACKERS ? war.score : -war.score;
-      return broke || war.exhaustion[s]! >= EXHAUSTED || own <= -CRUSHED;
+      if (broke || own <= -CRUSHED) return true;
+      // Exhausted, it sues; the other side, winning, not worn and still gaining, fights on (PLAN 7.27c).
+      return war.exhaustion[s]! >= EXHAUSTED && !refusesSuit(war, 1 - s, world.tick);
     });
     if (sues[0] || sues[1]) makePeace(world, war);
   }

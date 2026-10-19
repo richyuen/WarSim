@@ -167,6 +167,46 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-521 · 2026-10-19 · accepted — A winner that gains ground refuses a suit by exhaustion (PLAN 7.27c)
+
+- **Context.** PLAN 7.27's stasis: on the failing seeds the same five largest hold for 20 years and
+  more, the Soviet Union among them on 27 of 30 seeds. 7.27b (`docs/evidence/7.27/trace-b.md`)
+  traced Germany's wars with it: each ended by the defender's suit at exhaustion 80–100, mostly
+  `80·lost` on a token army (one division of 12,460 men on 15.7 M km², its loss counted against
+  the war's first day), at score 16–53 with 9–22 % of its land taken, while Germany stood at
+  exhaustion 16–22 and gained 10,000–20,000 km² a day. A war cut short while the winner gains at
+  its fastest, then a 729-day truce.
+- **Measured first** (`measure-c.md`): `lost` reads no men who left the side (the second war's
+  side was the Soviet Union alone, its loss land men on land), so the measure is not broken; the
+  token army is the Soviet economy's (income 478 to Germany's 4,126, the order gate gold on 59 of
+  79 months), a part of its own (PLAN 7.27e), and not what moves the top five.
+- **Decision.** `warSystem`: a side whose suit is by exhaustion alone (not broke, not crushed) is
+  refused by the other side when that side leads the score, is itself not worn (exhaustion ≤
+  PEACE_ACCEPT_EXHAUSTION, 40, the bar at which it takes a player's offer, `offerPeace`) and
+  still gains ground: it has held more of the loser's land than ever before within GAIN_DAYS (30;
+  `War.peakHeld`, `War.peakTick`, `refusesSuit`). The war then goes on to the loser's capitulation
+  or crushing, the winner's own wear (40: about day 400 of a war that costs it nothing, 0.1 a day),
+  a month without new ground, or the deadlocks (five years, a year frontless), as before. Broke and
+  crushed suits, capitulation, the stalemate peace of `ai/strategic.ts` (|score| < 15, which no
+  leader of the score refuses) and fights to the death are unchanged.
+- **Why this of the three in `trace-b.md`.** It is the war's end the trace found, and it acts on
+  the land a won war takes, which is what moves the top five. `lost` weighed by the army a side
+  could keep would read a token army as lost from day one; terms beyond the land held leave the
+  war's length and the winner's gains on the ground apart.
+- **AoC.** "Broke or exhausted nations sue for peace" (PROMPT): they still sue, and a broke one
+  still gets its peace; an exhausted one gets it only from a winner that is worn or no longer
+  gaining. A deviation in effect, recorded in PARITY row 4.
+- **Effect** (`measure-c.md` §3): from `s732-y25.bin`, war 324 runs 256 days (215), Germany
+  refusing at exhaustion 21, and ends crushed at a second capital: 4.17 M km² taken (3.38 M).
+- **`sweep:quick`** (seeds 1–10 × 20 years, the rule and `4117a2d` side by side, `.cache/727/quick-rule.log`,
+  `quick-base.log`): limits 10 of 10 for both. The longest run of one top five 4–10 years, mean 6.7
+  (7–13, mean 9.8, before); land moving in the last five years 10–32 %, mean 22.7 (8–35, mean 18.8);
+  the largest nation's land 10–27 % (11–26 %); alive at least 67–82 (69–86). To watch: the
+  largest income on seed 8 at 39.5 % against the limit of 40 (at most 34.7 % before), and the
+  nuclear bursts (122 in all on 7 seeds, 75 of them on seed 5; 28 on 7 seeds before): wars that
+  go on may reach more holders' strike gates (not measured). 7.27d's full sweep is the verdict.
+- **Pin.** c3bd280a → 94235073: the war records carry `peakHeld` and `peakTick`, and wars run on.
+
 ### ADR-520 · 2026-10-18 · accepted — No patrol over home (PLAN 7.26i)
 
 - **Context.** ADR-519 left one air rule open: a wing of a nation at war with no enemy land

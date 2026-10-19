@@ -3,7 +3,10 @@ import { Refusal } from '../../src/shared/commands';
 import { EventKind } from '../../src/shared/events';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { CAPITAL_BONUS_MAX, CAPITAL_SCORE, CAPITULATE, MAX_WAR_DAYS, noteCapitalCaptured, PUPPET_SCORE, PUPPET_SHARE, REL_CAP, SMALL_STATE_KM2, TRUCE_TICKS, whyNotWar } from '../../src/sim/systems/war';
+import { CAPITAL_BONUS_MAX, CAPITAL_SCORE, CAPITULATE, EXHAUSTED, GAIN_DAYS, MAX_WAR_DAYS, menOf, noteCapitalCaptured, PEACE_ACCEPT_EXHAUSTION, PUPPET_SCORE, PUPPET_SHARE, REL_CAP, refusesSuit, SMALL_STATE_KM2, TRUCE_TICKS, whyNotWar } from '../../src/sim/systems/war';
+import { destroyFormation } from '../../src/sim/systems/elements';
+import { forceMen } from '../../src/sim/systems/seaControl';
+import { ATTACKERS, DEFENDERS, type War } from '../../src/sim/wars';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { eventKinds as ofKind, nationId, runEvents as events } from '../helpers/sim1938';
@@ -235,6 +238,54 @@ describe('wars and peace (PLAN 1.16)', () => {
     expect(war.score).toBeGreaterThanOrEqual(CAPITAL_SCORE);
     s.command({ kind: 'forcePeace', war: war.id });
     expect(ofKind(events(s, 1), EventKind.PeaceSigned)).toEqual([[GER, POL]]);
+  });
+
+  it('a suit by exhaustion is refused by a winner that gains ground and is not worn; a worn winner takes it (PLAN 7.27c)', () => {
+    const s = atWar();
+    s.step(24);
+    const w = s.world;
+    occupyWest(w, 0.2); // score 40: Germany wins, and has held a fifth of Poland since day 1
+    events(s, 1); // the first assessment: each side's men at the start
+    const war = w.wars.list.find((x) => x.sides[0]![0] === GER && x.sides[1]![0] === POL)!;
+    expect(war.peakHeld![0]).toBeGreaterThan(0);
+    // Poland loses its whole army: exhausted, it sues.
+    const of = (n: number): number[] => {
+      const ids: number[] = [];
+      w.formations.forEach((id) => {
+        if (w.formations.cols.nation[id] === n) ids.push(id);
+      });
+      return ids;
+    };
+    for (const id of of(POL)) destroyFormation(w, id);
+    expect(ofKind(events(s, 24), EventKind.PeaceSigned)).toEqual([]);
+    expect(war.exhaustion[1]).toBeGreaterThanOrEqual(EXHAUSTED);
+    expect(war.exhaustion[0]).toBeLessThanOrEqual(PEACE_ACCEPT_EXHAUSTION);
+    expect(w.wars.atWar(GER, POL)).toBe(true);
+    // Germany worn (more than half its men lost): it takes the suit, on the day's score.
+    let left = menOf(w).get(GER) ?? 0;
+    for (const id of of(GER)) {
+      if (left < 0.45 * war.startMen[0]) break;
+      left -= forceMen(w, id);
+      destroyFormation(w, id);
+    }
+    const ev = events(s, 24);
+    expect(ofKind(ev, EventKind.PeaceSigned)).toEqual([[GER, POL]]);
+    expect(war.exhaustion[0]).toBeGreaterThan(PEACE_ACCEPT_EXHAUSTION);
+  });
+
+  it('refusesSuit: only a leader not worn that held new ground within GAIN_DAYS refuses (PLAN 7.27c)', () => {
+    const tick = 1000 * 24;
+    const war = (score: number, exhaustion: number, daysSincePeak: number, held = 5e4): War => ({ id: 1, sides: [[GER], [POL]], startTick: 0, score, capitalBonus: 0, exhaustion: [exhaustion, 90], fightToDeath: [false, false], startMen: [1, 1], peakHeld: [held, 0], peakTick: [tick - daysSincePeak * 24, 0] });
+    expect(refusesSuit(war(40, 20, 3), ATTACKERS, tick)).toBe(true);
+    expect(refusesSuit(war(40, 20, GAIN_DAYS), ATTACKERS, tick)).toBe(true);
+    expect(refusesSuit(war(40, 20, GAIN_DAYS + 1), ATTACKERS, tick)).toBe(false); // no new ground for a month
+    expect(refusesSuit(war(40, PEACE_ACCEPT_EXHAUSTION + 1, 3), ATTACKERS, tick)).toBe(false); // worn
+    expect(refusesSuit(war(0, 20, 3), ATTACKERS, tick)).toBe(false); // not leading
+    expect(refusesSuit(war(-40, 20, 3), ATTACKERS, tick)).toBe(false);
+    expect(refusesSuit(war(40, 20, 3, 0), ATTACKERS, tick)).toBe(false); // holds nothing
+    // The defenders' view: a defender leading (score < 0) that gains refuses the attackers' suit.
+    const d: War = { ...war(-40, 90, 0), exhaustion: [90, 10], peakHeld: [0, 5e4], peakTick: [0, tick - 24] };
+    expect(refusesSuit(d, DEFENDERS, tick)).toBe(true);
   });
 
   it('war records survive save/load into a live sim', () => {

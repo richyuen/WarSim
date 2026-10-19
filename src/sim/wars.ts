@@ -35,6 +35,12 @@ export interface War {
   lastStrike?: [number, number];
   /** How many strikes each side decided in the war by its resolve to end it (PLAN 7.18h; absent: none). */
   resolveStrikes?: [number, number];
+  /**
+   * The most km² each side has held of the other's land in the war, and the tick it was first
+   * reached (PLAN 7.27c: whether a side still gains ground; absent: none held yet).
+   */
+  peakHeld?: [number, number];
+  peakTick?: [number, number];
 }
 
 export interface Truce {
