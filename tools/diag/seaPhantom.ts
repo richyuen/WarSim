@@ -9,7 +9,8 @@
  * - `zeroOther`: nothing sunk, no weaponless fleet broke off (contact lost, or a side broke off by
  *   its losses);
  * - `sank`: a ship lost.
- * Also the battles that stood more than a day (`long`: hours, ships lost), to see one that cannot
+ * Also the ships lost on the rows (`shipsLost`), the fleets that broke off with no port of their
+ * nation to sail for (`brokeNoPort`), and the battles that stood more than a day (`long`: hours, ships lost), to see one that cannot
  * close (no sea way) and stands, engaged, with nothing sunk.
  *
  * Usage: npx tsx tools/diag/seaPhantom.ts <seed> <save.bin | new> [days = 120] [out = .cache/seaPhantom_<seed>.json]
@@ -21,7 +22,7 @@ import { size1938, TAGS_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938'
 import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from '../headless/assets';
 import { elementIndex } from '../../src/sim/systems/elements';
-import { seaKm } from '../../src/sim/systems/navalCombat';
+import { nearestOwnPort, seaKm } from '../../src/sim/systems/navalCombat';
 import { basinOf, seaOf } from '../../src/sim/world';
 
 const seed = Number(process.argv[2]);
@@ -50,7 +51,7 @@ const basinAt = (id: number): number => {
   return basinOf(w).basin[seaOf(w).zoneOf[cell]!] ?? -1;
 };
 
-type Row = { tick: number; a: string; b: string; lostA: number; lostB: number; x: number; y: number; cause: string; broke: { id: number; nation: string; template: string; armed: boolean; nearestKm: number; nearestArmed: boolean; sameBasin: boolean }[] };
+type Row = { tick: number; a: string; b: string; lostA: number; lostB: number; x: number; y: number; cause: string; broke: { id: number; nation: string; template: string; armed: boolean; nearestKm: number; nearestArmed: boolean; sameBasin: boolean; noPort: boolean }[] };
 const rows: Row[] = [];
 const age = new Map<object, number>();
 const long: { tick: number; a: string; b: string; hours: number; lost: number; x: number; y: number }[] = [];
@@ -71,7 +72,7 @@ for (let t = 0; t < days * 24; t++) {
         const d = seaKm(world, c.x[id]!, c.y[id]!, c.x[o]!, c.y[o]!);
         if (d < nd) [nd, nid] = [d, o];
       });
-      broke.push({ id, nation: tag(c.nation[id]!), template: TEMPLATES_1938[c.template[id]!]?.id ?? `#${c.template[id]!}`, armed: armed(id), nearestKm: Math.round(nd), nearestArmed: nid > 0 && armed(nid), sameBasin: nid > 0 && basinAt(id) === basinAt(nid) });
+      broke.push({ id, nation: tag(c.nation[id]!), template: TEMPLATES_1938[c.template[id]!]?.id ?? `#${c.template[id]!}`, armed: armed(id), nearestKm: Math.round(nd), nearestArmed: nid > 0 && armed(nid), sameBasin: nid > 0 && basinAt(id) === basinAt(nid), noPort: nearestOwnPort(world, id) < 0 });
     }
     for (let i = 0; i < e.length; i += 6) {
       if (e[i + 1] !== EventKind.SeaBattle) continue;
@@ -109,6 +110,8 @@ for (const r of rows) {
   for (const f of r.broke) p.templates[`${f.nation}:${f.template}${f.armed ? '' : '(unarmed)'}`] = (p.templates[`${f.nation}:${f.template}${f.armed ? '' : '(unarmed)'}`] ?? 0) + 1;
 }
 const zero = rows.filter((r) => r.lostA + r.lostB === 0).length;
-const summary = { seed, bin, days, n: rows.length, zero, causes, long: long.length, longNoLoss: long.filter((l) => l.lost === 0).length, longest: long.sort((p, q) => q.hours - p.hours).slice(0, 8), places: Object.fromEntries(Object.entries(places).sort((p, q) => q[1].n - p[1].n).slice(0, 25)) };
+const shipsLost = rows.reduce((t, r) => t + r.lostA + r.lostB, 0);
+const brokeNoPort = rows.reduce((t, r) => t + r.broke.filter((b) => b.noPort).length, 0);
+const summary = { seed, bin, days, n: rows.length, zero, shipsLost, brokeNoPort, causes, long: long.length, longNoLoss: long.filter((l) => l.lost === 0).length, longest: long.sort((p, q) => q.hours - p.hours).slice(0, 8), places: Object.fromEntries(Object.entries(places).sort((p, q) => q[1].n - p[1].n).slice(0, 25)) };
 writeFileSync(out, JSON.stringify({ ...summary, rows: rows.slice(0, 300) }, null, 1));
 console.log(JSON.stringify(summary, null, 1));

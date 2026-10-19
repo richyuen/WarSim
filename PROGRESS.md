@@ -19385,3 +19385,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** the start's British ports hold fleets: a test at a port clears them first. A ship's
   wound from another system is settled in the battle's hour and counted as its loss.
 - **Next:** PLAN 7.32.
+
+## 2026-10-19 — PLAN 7.31's check: a fleet sunk whole counted to its own side (ADR-527)
+
+- **Review of 7.31** (advisor): the port test's "the port's air fights too" was wrong. Traced: the
+  German cruisers lost nothing; the transport group's last 4 ships sank in the hour it was gone, its
+  nation column cleared, and the row gave them to Germany ("Germany 4, United Kingdom 8"). Now read
+  from each fleet's nation at the hour's start; the test asserts 0 and 12 (red before).
+- **Measured** (`seaPhantom.ts` with `shipsLost`, `brokeNoPort`): ADR-526's port rule on both clauses
+  against the clause with no weapon alone, ships lost: seed 99's year 74 / 76, 2609 38 / 38, 6113's
+  ten years 282 / 282; no fleet broke off with no port to sail for. Lines in ADR-526.
+- **Pin** c900e399 → 81db11b6.
+- **Gotcha:** three rules went into one commit in 7.31; split them next time. A formation's columns
+  are cleared when it is destroyed: read a nation before the losses.

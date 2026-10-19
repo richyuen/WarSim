@@ -553,6 +553,9 @@ export function navalCombatSystem(world: World): void {
     for (const p of battle.fleets) for (const q of battle.fleets) if (p < q && world.wars.atWar(f.nation[p]!, f.nation[q]!)) r = Math.min(r, km(p, q));
     rec.range = r;
     const before = new Map(battle.fleets.map((id) => [id, shipsOf(world, id)]));
+    // Each fleet's nation at the hour's start: a fleet sunk whole in it is gone, its column cleared,
+    // and its last ships were counted to the other side (PLAN 7.31's check, ADR-527).
+    const nationOf = new Map(battle.fleets.map((id) => [id, f.nation[id]!]));
 
     const pending = new Map<number, number>();
     // Each side's screen: its destroyers and its other surface ships alive at the hour's start.
@@ -686,7 +689,7 @@ export function navalCombatSystem(world: World): void {
     for (const id of battle.fleets) {
       settleFormation(world, id);
       const lost = before.get(id)! - shipsOf(world, id);
-      if (world.wars.atWar(first, f.nation[id]!)) rec.lostB += lost;
+      if (world.wars.atWar(first, nationOf.get(id)!)) rec.lostB += lost;
       else rec.lostA += lost;
     }
     // Who breaks off, away from its port (PLAN 7.31, ADR-526): a fleet under half the ships it came

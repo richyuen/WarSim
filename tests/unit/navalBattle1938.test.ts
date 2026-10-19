@@ -300,12 +300,12 @@ describe('gunnery by range: the AT (PLAN 4.3a)', () => {
     expect(w.formations.has(tp)).toBe(false);
     expect(first).toBe(1);
     expect(run.broke.filter((b) => b.id === tp)).toEqual([]);
-    // One battle, one row, with the transports the United Kingdom lost in it (the port's air fights too).
+    // One battle, one row: the United Kingdom lost its 12 transports, Germany nothing (ADR-527: the
+    // last 4, sunk in the hour the group was gone, were Germany's on the row).
     expect(run.rows).toHaveLength(1);
     const [ger, eng] = [seaSide(run.rows[0]!.row[2]!), seaSide(run.rows[0]!.row[3]!)];
-    expect([ger.nation, eng.nation]).toEqual([GER, ENG]);
-    expect(eng.ships).toBeGreaterThan(0);
-    process.stderr.write(`the transports at their port gone in ${run.h} h, ${eng.ships} of 12 sunk in the battle; the cruisers lost ${ger.ships}
+    expect([ger, eng]).toEqual([{ nation: GER, ships: 0 }, { nation: ENG, ships: 12 }]);
+    process.stderr.write(`the transports at their port sunk in ${run.h} h
 `);
   });
 

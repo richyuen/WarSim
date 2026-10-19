@@ -167,6 +167,18 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-527 · 2026-10-19 · accepted — A fleet sunk whole is counted to its own side (PLAN 7.31's check)
+
+- **Context.** A sea battle's row counts each fleet's ships lost in the hour to its side by the
+  fleet's nation read after the hour's losses. A fleet sunk whole in the hour is destroyed, its
+  nation column cleared, and `atWar(first, 0)` is false: its last ships went to the other side.
+  Found by PLAN 7.31's port test: 12 British transports sunk, the row "Germany lost 4 ships,
+  United Kingdom 8"; the German cruisers lost none.
+- **Decision.** The side is read from each fleet's nation at the hour's start (`nationOf`).
+- **Pin.** c900e399 → 81db11b6 (the rows of the year's sea battles in which a fleet was sunk whole; no rule of play reads a row's losses).
+- **Tests.** `tests/unit/navalBattle1938.test.ts`: the port test's row is Germany 0, the United
+  Kingdom 12 (red before: 4 and 8).
+
 ### ADR-526 · 2026-10-19 · accepted — A fleet with no weapon breaks off once hit; at its port, no fleet breaks off (PLAN 7.31)
 
 - **Context.** Critic R9-B1: sea battles in which no weapon could reach flooded the history, a row
@@ -201,6 +213,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   and none.
 - **Consequence.** A transport seen on its way stops (engaged) until the enemy reaches it, then
   runs home hit; before, it turned home unhit in the first hour. Either way the voyage ends.
+- **Checked after the commit** (the advisor's review; `seaPhantom.ts` with `shipsLost` and
+  `brokeNoPort`, ADR-527's count in both): the port rule on both clauses against the clause with
+  no weapon alone, ships lost on the rows: seed 99's year 74 against 76, seed 2609's 38 and 38,
+  seed 6113's ten years 282 and 282; the rows 9 / 13, 4 / 5, 30 / 38 (battles that re-formed at a
+  port, merged). A fleet with no port of its nation to sail for that broke off: none on the three.
+  Three rules in one commit: the next task splits them.
 - **Pin.** 94235073 → c900e399.
 - **Tests.** `tests/unit/navalBattle1938.test.ts` (PLAN 7.31): a transport seen beyond the
   destroyers' reach stays, is closed on and hit in the second hour, then breaks off, one row; a
