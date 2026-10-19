@@ -167,6 +167,18 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-534 · 2026-10-19 · accepted — The tank demo's battle is seed 1's (PLAN 7.34a's check)
+
+- **Context.** `tankBattle1938`, run by hand for PLAN 7.34a's boundary, fails on its Node side:
+  no four hours from day 14 to 120 of seed 2 in which tanks fire and lose tanks under fire and
+  without on one ground. Sim only; a rule change since the spec last passed moved the game (not
+  bisected), as ADR-533's zoom demo.
+- **Decision.** `SEED = 1`, the search's rule and the rest of the spec unchanged: seed 3 has no
+  such hours either; seed 1 has them on day 35.4 (Japanese tank brigade 395 against Chinese
+  light infantry division 455; armour's shots 81, 61, 79, 79 in the four hours), the whole spec
+  green in 4.1 min. The six pictures of `docs/evidence/3.6/tank-battle-*.png` made again; the
+  fourth looked at.
+
 ### ADR-533 · 2026-10-19 · accepted — The zoom demo's battle is seed 1943's (PLAN 7.34a's check)
 
 - **Context.** `zoomDemo1938` (run by hand for PLAN 7.34a; the gate runs it only at a phase

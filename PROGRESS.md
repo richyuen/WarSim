@@ -19561,3 +19561,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   `morphNations1938`, `markerStacks1938`, `lateFrame1938`, `canvasOpaque1938` green;
   `tankBattle1938` red on its Node side (no tank battle in seed 2's days 14–120): sim, next commit.
 - ADR-532's GPU figure was taken at 1280 × 720: about 1.2 ms at Bench G's size, against T2's bar.
+
+## 2026-10-19 — PLAN 7.34a's check: the tank demo's battle is seed 1's (ADR-534)
+
+- `tankBattle1938` red on its Node side: no tank battle in seed 2's days 14–120 (nor seed 3's).
+  Seed 1 has one on day 35 (Japanese tank brigade 395 against a Chinese division); the spec
+  passes unchanged but the seed. `docs/evidence/3.6/tank-battle-*.png` made again, the fourth viewed.
+- **No rule change:** pin 45c20987.
+- **Next:** PLAN 7.34b (elements at 900 m/px).
