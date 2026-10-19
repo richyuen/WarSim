@@ -25,7 +25,7 @@ import { economyBreakdown } from '../sim/systems/economy';
 import { largestBattle, warsWithBattle } from '../sim/systems/warBattle';
 import { DAYS_PER_MONTH } from '../sim/systems/research';
 import { shipyard } from '../sim/systems/production';
-import { AT_PORT_CELLS, carrierStrikes, inShipReach } from '../sim/systems/navalCombat';
+import { AT_PORT_CELLS, carrierStrikes, inShipReach, strikeTarget } from '../sim/systems/navalCombat';
 import { isLand } from '../shared/terrain';
 import { chartRows } from '../sim/stats';
 import { aircraftOf } from '../sim/systems/airCombat';
@@ -1508,7 +1508,10 @@ export class SimServer {
             pair = [(((fc0.x[f]! + dx * at) % w) + w) % w, fc0.y[f]! + dy * at, Math.abs(dx), Math.abs(dy)];
           }
         }
-        return [b.x, b.y, r, b.a, b.b, mx, my, x1 - x0, y1 - y0, ...pair];
+        // With no such pair, the fleet its carriers' wings strike (PLAN 7.35a): a row of its own.
+        const hit = pair[2] < 0 ? strikeTarget(world, live) : null;
+        const strike = hit ? [fc0.x[hit.target]!, fc0.y[hit.target]!, fc0.nation[hit.carrier]!] : [0, 0, 0];
+        return [b.x, b.y, r, b.a, b.b, mx, my, x1 - x0, y1 - y0, ...pair, ...strike];
       }),
     );
     // The sorties in the air (PLAN 5.7a): what `sortieAt` needs, the launch from this tick.

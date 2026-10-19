@@ -33,6 +33,8 @@ import { imageToRuns, NATION_MAX_DIST, TERRAIN_MAX_DIST } from './importImage';
 
 /** Cells about the pair of fleets a sea battle's row shows (PLAN 7.10b): their blocks and their fire. */
 export const SEA_PAIR_MARGIN = 0.6;
+/** Cells across the view of the fleet a carrier strike's row shows (PLAN 7.35a): its ships and the bombs on them. */
+export const STRIKE_VIEW_CELLS = 2.4;
 
 export function App({
   hud,
@@ -81,10 +83,15 @@ export function App({
   const orderName = (id: number): string => (view ? view.formationTitle(id)?.name : undefined) ?? wingName(id) ?? t('order.aFormation');
   const orders = orderNews.map((n) => ({ seq: n.seq, kind: n.kind, text: orderNewsText(n, orderName(n.id)) }));
   // The sea battles going on (PLAN 4.10b), each by its two sides' names: those with two fleets
-  // within reach of a ship's weapon (PLAN 7.19b; a carrier's strikes alone are on the map).
-  const seaBattles = hud.seaBattles.value.filter((b) => b.pair !== null);
+  // within reach of a ship's weapon (PLAN 7.19b), then those a carrier's wings fight alone, by
+  // the striker and the struck (PLAN 7.35a: they sank ships with no row).
+  const seaBattles = [...hud.seaBattles.value.filter((b) => b.pair !== null), ...hud.seaBattles.value.filter((b) => b.pair === null && b.strike !== null)];
   const seaKey = (b: { x: number; y: number; a: number; b: number }): string => `${b.a}-${b.b}-${Math.round(b.x)}-${Math.round(b.y)}`;
-  const seas = seaBattles.map((b) => ({ key: seaKey(b), text: t('ticker.seaBattle', { a: displayName(byId.get(b.a)?.name ?? '?'), b: displayName(byId.get(b.b)?.name ?? '?') }) }));
+  const nameOfSide = (n: number): string => displayName(byId.get(n)?.name ?? '?');
+  const seas = seaBattles.map((b) => ({
+    key: seaKey(b),
+    text: b.pair || !b.strike ? t('ticker.seaBattle', { a: nameOfSide(b.a), b: nameOfSide(b.b) }) : t('ticker.carrierStrike', { a: nameOfSide(b.strike.by), b: nameOfSide(b.strike.by === b.a ? b.b : b.a) }),
+  }));
   const lastOrder = formationTitle ? orderNews.filter((n) => n.id === hud.formation.value).at(-1) : undefined;
   return (
     <>
@@ -138,6 +145,8 @@ export function App({
             // show. The box of all its fleets (PLAN 4.12a) was 24 cells across for seed 9043's
             // first battle: counters at 668 m/px, and no fire.
             if (b?.pair) hud.onShowSeaBattle(b.pair.x, b.pair.y, [b.pair.w + 2 * SEA_PAIR_MARGIN, b.pair.h + 2 * SEA_PAIR_MARGIN]);
+            // A carrier's strike (PLAN 7.35a): the fleet it strikes, its ships and the bombs on them.
+            else if (b?.strike) hud.onShowSeaBattle(b.strike.x, b.strike.y, [STRIKE_VIEW_CELLS, STRIKE_VIEW_CELLS]);
           }}
           onOrder={(seq) => {
             const n = orderNews.find((o) => o.seq === seq);

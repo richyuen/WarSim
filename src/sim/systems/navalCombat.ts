@@ -247,6 +247,36 @@ export function inShipReach(world: World, a: number, b: number): boolean {
   return inReach(seaKm(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!), Math.max(reachOn(fa, fb), reachOn(fb, fa)));
 }
 
+/**
+ * The carrier strike of a battle of `fleets` (PLAN 7.35a): the nearest pair of a fleet whose
+ * carriers' wings are aboard and an enemy fleet with a ship on the surface within their reach
+ * (`CARRIER_SPOT_SHARE` of the farthest wing's range), as `navalCombatSystem` strikes; null for
+ * none. Its battle fights by the wings alone where no ship's weapon reaches (`inShipReach`).
+ */
+export function strikeTarget(world: World, fleets: readonly number[]): { carrier: number; target: number } | null {
+  const air = carrierWings(world);
+  if (air.size === 0) return null;
+  const c = world.formations.cols;
+  const units = world.rules!.units;
+  const ec = world.elements.cols;
+  const idx = elementIndex(world);
+  const surface = (g: number): boolean => (idx.get(g) ?? []).some((e) => ec.strength[e]! > 0 && units[ec.unit[e]!]!.cls !== 'ss');
+  let best: { carrier: number; target: number } | null = null;
+  let bd = Infinity;
+  for (const f of fleets) {
+    const wings = air.get(f);
+    if (!wings || !world.formations.has(f)) continue;
+    let reach = 0;
+    for (const wing of wings) reach = Math.max(reach, CARRIER_SPOT_SHARE * wingRange(world, wing));
+    for (const g of fleets) {
+      if (!world.formations.has(g) || !world.wars.atWar(c.nation[f]!, c.nation[g]!) || !surface(g)) continue;
+      const d = seaKm(world, c.x[f]!, c.y[f]!, c.x[g]!, c.y[g]!);
+      if (inReach(d, reach) && d < bd) [best, bd] = [{ carrier: f, target: g }, d];
+    }
+  }
+  return best;
+}
+
 /** Fleet `id`'s detection this hour, km (PLAN 4.3a; its carriers' wings and the air over it with it): 0 for one with no ship. */
 export function fleetDetection(world: World, id: number): number {
   const els = elementIndex(world).get(id);
@@ -669,6 +699,12 @@ export function navalCombatSystem(world: World): void {
         for (const wing of air.get(sf) ?? []) {
           const table = tableOf(false, CARRIER_SPOT_SHARE * wingRange(world, wing));
           if (table.total <= 0) continue;
+          // Its bombs on the fleets it strikes, for the page (PLAN 7.35a; as a strike's, PLAN 5.9):
+          // about each fleet at T0 to T2, on its ships as drawn at T3. Events, not state.
+          for (const g of new Set(table.cand.map((t) => ec.formation[t]!))) {
+            world.out.emit(world.tick, EventKind.StrikeHit, g, wing, f.x[g]!, f.y[g]!);
+            world.out.emit(world.tick, EventKind.AirStrike, wing, 0, f.x[g]!, f.y[g]!);
+          }
           for (const s of idx.get(wing) ?? []) {
             if (ec.strength[s]! <= 0) continue;
             const us = units[ec.unit[s]!]!;

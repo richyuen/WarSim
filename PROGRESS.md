@@ -19701,3 +19701,26 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **PLAN 7.34** ticked: its four parts done (a blend over the zoom, elements at 900 m/px, no
   vehicle on another at 10 m/px, the enemy reachable).
 - **Next:** PLAN 7.35.
+
+## 2026-10-19 — PLAN 7.35a: a carrier's battle has its row (critic R9 naval 6; ADR-542)
+
+- **Start:** gate green on `951b1c6`; critic not due. PLAN 7.35 split in four (a: rows, b: the
+  Pacific on seed 3407, c: ships at 20 m/px, d: late battles per world-year).
+- **Measured** (`tools/diag/seaRows.ts`, `docs/evidence/7.35/measure.md`; seed 2251, Italy on
+  Britain, 12 days): 114 of 159 battle-hours with no row, 74 of 207 ships sunk in them, all by
+  British carrier groups' wings 217 to 279 km off (ADR-494: no row without a ship's reach).
+- **Rule** (view only, ADR-542): a battle with no pair and a carrier strike (`strikeTarget`) has a
+  row after the gun battles, "Carrier strike: {a} on {b}'s ships", flying to the struck fleet; the
+  snapshot's `seas` 13 → 16 floats; a strike emits `StrikeHit` and `AirStrike` per fleet struck
+  (bombs drawn on it, events not state).
+- **After:** ships sunk with no row at either end of their hour 74 → 0; 11 hours with no row, none
+  with a weapon in reach.
+- **Tests:** `seaPair1938.test.ts` (the strike frame, its events, none without wings, none beside a
+  pair). AT `carrierStrikeRow1938`: hour 55, the row lands at 95 m/px on the German battle squadron,
+  16 ships on the screen, bombs drawn. Seen: `docs/evidence/7.35/a-strike-row-2251.png`,
+  `a-strike-bombs-2251.png`.
+- **By hand** (the gate skips e2e): `carrierStrikeRow`, `seaRow`, `seaBattle`, `navalDemo`,
+  `seaBattleSeen` (alone), `i18n`, `shipMarks` green but one: `shipMarks1938` "T3: at 15 m/px" red
+  (destroyer 17 px, bar 18.5), red the same with this change stashed: left to PLAN 7.35c.
+- **No rule change:** pin 45c20987 (events are not state).
+- **Next:** PLAN 7.35b (Japan–USA on seed 3407).

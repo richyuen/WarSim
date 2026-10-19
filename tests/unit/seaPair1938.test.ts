@@ -6,7 +6,8 @@ import { isLand } from '../../src/shared/terrain';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_1938, UNIT_IDS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { elementIndex, equipFormation, settleFormation } from '../../src/sim/systems/elements';
-import { inShipReach, seaKm } from '../../src/sim/systems/navalCombat';
+import { inShipReach, seaKm, strikeTarget } from '../../src/sim/systems/navalCombat';
+import { EventKind } from '../../src/shared/events';
 import { declareWar } from '../../src/sim/systems/war';
 import { navOf, type World } from '../../src/sim/world';
 import { SimServer } from '../../src/worker/server';
@@ -127,6 +128,21 @@ describe("a sea battle's pair within reach of a ship's weapon (PLAN 7.19b)", () 
     };
     let got = seas();
     expect(got[11], "no pair: the carrier's wings alone reach").toBe(-1);
+    // PLAN 7.35a: its carrier's strike instead, a row of its own: the struck fleet's place and the striker.
+    expect(strikeTarget(w, [cv, bb])).toEqual({ carrier: cv, target: bb });
+    expect([got[13], got[14], got[15]]).toEqual([Math.fround(c.x[bb]!), Math.fround(c.y[bb]!), JAP]);
+    // The strike's bombs for the page, in its hours (events, not state): on the squadron, by a wing of the carrier.
+    const wings = [...w.wingBase].filter(([, base]) => base === -cv).map(([wing]) => wing);
+    let hits = 0;
+    for (let t = 0; t < 4; t++) {
+      sim.step(1, (ww) => {
+        const ev = ww.out.events;
+        for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.StrikeHit && ev[i + 2] === bb && wings.includes(ev[i + 3]!)) hits++;
+      });
+    }
+    expect(hits, "the carrier's strike on the squadron told to the page once in CARRIER_CYCLE hours").toBeGreaterThan(0);
+    // With no wing aboard, no strike: neither the battle's nor its row.
+    expect(strikeTarget(w, [bb])).toBeNull();
     // An American destroyer flotilla 20 km off the carrier group: the pair is the two, on the water.
     const dd = of(USA, 'destroyer_flotilla');
     [c.x[dd], c.y[dd]] = [sx + 20 / kx, sy];
@@ -134,6 +150,7 @@ describe("a sea battle's pair within reach of a ship's weapon (PLAN 7.19b)", () 
     expect(w.seaBattles.flatMap((b) => b.fleets)).toContain(dd);
     got = seas();
     expect(got[11]).toBeGreaterThan(0);
+    expect(got[15], "a pair within a ship's reach: no strike row beside it").toBe(0);
     expect(got[9]!).toBeGreaterThan(c.x[cv]! - 1e-6);
     expect(got[9]!).toBeLessThan(c.x[dd]! + 1e-6);
     const cell = Math.floor(got[10]!) * W + Math.floor(got[9]!);

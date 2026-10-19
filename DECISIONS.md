@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-542 · 2026-10-19 · accepted — A carrier's battle has a row of its own: the struck fleet, and the bombs on it (PLAN 7.35a; supersedes ADR-494's "no row")
+
+- **Context.** Critic run 9, naval 6: "Italy–UK: 25 six-hour samples with a live Italy–UK battle on
+  days 6 to 12, none with a row". Measured (`docs/evidence/7.35/measure.md`, `tools/diag/seaRows.ts`,
+  seed 2251 at `951b1c6`, 12 days): 114 of the 159 hours of its 6 battles have no row, and 74 of
+  the 207 ships sunk were sunk in them, all by British carrier groups' wings 217 to 279 km off.
+  ADR-494 gave a battle with no two fleets within a ship's reach no row (its pair 250 km across
+  showed nothing), so the war at sea's longest fights were not listed. A carrier's strike wrote
+  no event: the page drew its flight and nothing where it struck.
+- **Decision** (view only). Where a battle has no pair, its strike: the nearest carrier fleet
+  whose wings are aboard and enemy fleet with a ship on the surface within their reach
+  (`strikeTarget`, the reach `navalCombatSystem` strikes by). The snapshot's `seas` carries the
+  struck fleet's place and the striker's nation (SEA_STRIDE 13 → 16; `SeaBattleView.strike`).
+  The ticker lists such a battle after those with a pair, "Carrier strike: {a} on {b}'s ships",
+  and its click frames the struck fleet (`STRIKE_VIEW_CELLS`, floored by the battle view's zoom:
+  95 m/px on seed 2251). A strike emits, per fleet it strikes, `StrikeHit` and `AirStrike`: the
+  bombs burst about the fleet at T0 to T2 and on its ships at T3, as a land strike's (PLAN 5.9).
+- **Kept from ADR-494.** `pair` is still the two fleets within a ship's reach, and a battle of
+  them is still framed by them; the specs that take "a battle with a row" by `pair !== null` take
+  the same battles, and the rows they index come first. A battle no weapon reaches still has no
+  row: 11 hours of 159 on seed 2251 (wings away on sorties of their own, fleets closing).
+- **Consequences.** Seed 2251: ships sunk in an hour with no row at its start or end 74 → 0 (30
+  more sunk in an hour whose row ended in it: the near fleet sunk whole or broken off).
+  `seaPair1938.test.ts`: the carrier battle's strike frame and its strike events. Events are not
+  state: the pin unchanged (45c20987).
+
 ### ADR-541 · 2026-10-19 · accepted — A pointer toward the enemy off the frame of a formation in contact (PLAN 7.34d)
 
 - **Context.** Critic run 9, semantic zoom 7: "at 10 m/px on German infantry division 11 the

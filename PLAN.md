@@ -47,7 +47,26 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
   Pacific's two fleets do not meet. AT: every live sea battle that sinks a ship has its row;
   Japan–USA on seed 3407 meets at sea within its first weeks, or the reason is a measured one;
   ships at 20 m/px drawn at a size their class reads (counted in px); the late battles per
-  world-year on the critic's seeds, before and after.
+  world-year on the critic's seeds, before and after. A part each:
+    - [x] 7.35a A carrier's battle has its row. Measured (`tools/diag/seaRows.ts`, seed 2251 at
+      `951b1c6`, Italy on Britain at once, 12 days; `docs/evidence/7.35/measure.md`): 6 battles,
+      each with a row some hours; 114 of their 159 hours with none, and 74 of the 207 ships sunk
+      in those hours, all by British carrier groups' wings from 220 to 280 km (no ship's weapon
+      reaches then: ADR-494 gave such a battle no row). A battle whose carriers' wings reach an
+      enemy surface fleet has a row of its own kind (a carrier strike), framing the struck fleet
+      at a zoom where the strike is drawn. AT: `seaRows` on 2251, ships sunk in hours with no row
+      0 (was 74); every hour with a live battle in which a weapon reaches has a row (the hours
+      with none counted, and why); the strike row clicked in the page,
+      the struck ships and the strike seen (a screenshot, viewed); the specs that take a battle's
+      row take a ship's-reach one; render only, the pin unchanged.
+    - [ ] 7.35b Japan–USA on seed 3407 meets at sea within its first weeks, or the reason is a
+      measured one (where each side's fleets go, and why).
+    - [ ] 7.35c Ships at 20 m/px drawn at a size their class reads (destroyers about 10 × 3 px,
+      submarines 5 px in `c9n_2251_ships_20m_crop4x.png`), counted in px. `shipMarks1938`'s T3
+      test is red at `951b1c6` (a destroyer's median 17 px at 15 m/px, its bar 18.5; PLAN 7.22b):
+      found in 7.35a's runs, the same with 7.35a's change stashed.
+    - [ ] 7.35d The late sea battles per world-year on the critic's seeds (13 after year 1 against
+      year 1's 36, `c9_headless_*.json`), measured, before and after.
 - [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
   and 10 m/px in every probe (`c9_c_4483.json` `sorties`); the air map on day 10 of Germany–Poland
   hatches one German zone over all of Europe, every hover "held by Germany" from London to Kiev
