@@ -19814,3 +19814,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   7-day turn), 3 had enemy ships in the zone, 1 sank before its first stand-day. ADR-544 and §5
   corrected; 7.35b4 takes `forwardBases`' unfiltered `targets` (a stage to a base with only bombed
   empty ports in reach).
+
+## 2026-10-19 — PLAN 7.35b4a: `seaMeet` tells a staging order; the "before" run (critic R9 naval 6)
+
+- **Start:** gate green on `d602508`; critic not due. PLAN 7.35b4 split in three (a the tool and
+  the "before" run, b the sail home to the bloc's nearest port, c `forwardBases`' two holes).
+- **Tool:** `tools/diag/seaMeet.ts` calls `forwardBases` (now exported from `naval.ts`) for a fleet
+  with no enemy port in reach (`take`: `stage <port> <km>`), and reads the enemy's naval bombers as
+  `plan` does since 7.35b3b (an empty port under them is no target; away, empty water under them
+  sends home). Doc: `docs/evidence/7.35/measure-b4.md` §1.
+- **Found** (`seaMeet 3407 JAP USA 40`): every US warfleet stages to Guam on day 1 (the Atlantic
+  Fleet by Panama, 14,210 km); Japan stands at Guam on day 6; the fleets arriving there turn for
+  Pago Pago (`atLostBase` → `nearestOwnPort`, the nation's ports only); the Philippines are of the
+  US bloc (Cavite, Cebu, about 2,000 km from Guam). One Japan–US sea battle in 40 days, day 39.5.
+- **No rule change:** pin 8c59c203 (a tool, an export and documents).
+- **Next:** PLAN 7.35b4b (a fleet sent home sails for its bloc's nearest port).

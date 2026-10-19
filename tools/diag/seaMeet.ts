@@ -6,8 +6,10 @@
  * (its nearest port, km), under way to where, and what the naval AI's sortie test sees from there
  * (`plan` in `src/sim/ai/naval.ts`): the nearest enemy port of all and its km; the nearest within
  * `SORTIE_KM`, its zone's enemy power against the power that would sail there together; why none
- * is taken. At the end, per side: its fleets' power by the sea they stand in, the least km between
- * a fleet of each side over the days, and every sea battle between the two sides.
+ * is taken (with none in reach at all, the forward base it stages to, `forwardBases`; empty water
+ * under the enemy's naval bombers is no target, PLAN 7.35b3b). At the end, per side: its fleets'
+ * power by the sea they stand in, the least km between a fleet of each side over the days, and
+ * every sea battle between the two sides.
  *
  * Usage: npx tsx tools/diag/seaMeet.ts <seed> <A> <D> [days = 12] [save.bin | new] [out = .cache/seaMeet_<seed>_<A>_<D>.json]
  */
@@ -18,7 +20,7 @@ import { loadAssets1938 } from '../headless/assets';
 import { AT_PORT_CELLS, seaKm } from '../../src/sim/systems/navalCombat';
 import { fleetPower, navalPower } from '../../src/sim/systems/seaControl';
 import { blocOf } from '../../src/sim/systems/supply';
-import { AVOID_RATIO, SORTIE_KM } from '../../src/sim/ai/naval';
+import { AVOID_RATIO, forwardBases, navalBombers, SORTIE_KM } from '../../src/sim/ai/naval';
 import { portSeaOf, seaOf, seaRangeOf, type World } from '../../src/sim/world';
 
 const seed = Number(process.argv[2]);
@@ -123,29 +125,54 @@ for (let day = 0; day < days; day++) {
       const home = atOwnPort(f);
       let inReach = 0;
       let bestKm = Infinity;
+      // The enemy's naval bombers on land, as `plan` reads them (PLAN 7.35b3b): empty water under them is no target.
+      const bombers = navalBombers(w, n);
+      const bombed = (x: number, y: number): boolean => bombers.some((b) => seaKm(w, b.x, b.y, x, y) <= b.r);
+      const targets: { at: number }[] = [];
       w.ports.forEach((p, i) => {
         const holder = w.cells.controller[p.cell]!;
         const at = water[i]!;
         if (holder === 0 || at < 0 || !w.wars.atWar(n, holder)) return;
         const zone = z.zoneOf[at]!;
         if (zone === 0 || z.closed[zone] === 1) return;
+        targets.push({ at });
         const d = km(at);
         if (d < anyBest.km) anyBest = { name: `${p.name}(${tag(holder)})`, km: Math.round(d) };
         if (d > SORTIE_KM) return;
         inReach++;
         const together = mineAtPort.reduce((s, g) => s + (seaKm(w, c.x[g]!, c.y[g]!, (at % ww) + 0.5, Math.floor(at / ww) + 0.5) <= SORTIE_KM ? fleetPower(w, g) : 0), 0);
         const e = enemyIn(zone);
-        if (e <= together) {
+        if (e === 0 && bombed((at % ww) + 0.5, Math.floor(at / ww) + 0.5)) {
+          if (!why) why = `${p.name}(${tag(holder)}) ${Math.round(d)} km: empty, under naval bombers`;
+        } else if (e <= together) {
           if (d < bestKm) [bestKm, take] = [d, `${p.name}(${tag(holder)}) ${Math.round(d)} km, enemy ${Math.round(e)} ≤ ${Math.round(together)}`];
         } else if (!why) why = `${p.name}(${tag(holder)}) ${Math.round(d)} km: enemy ${Math.round(e)} > together ${Math.round(together)}`;
       });
-      if (!take && inReach === 0) why = `no enemy port within ${SORTIE_KM} km`;
+      if (!take && inReach === 0) {
+        // No enemy port in reach at all: `plan` stages to the nearest forward base (PLAN 7.35b2, `forwardBases` itself).
+        why = `no enemy port within ${SORTIE_KM} km`;
+        if (targets.length > 0) {
+          const war = mineAtPort.map((g) => ({ p: fleetPower(w, g) }));
+          let sk = Infinity;
+          let base = -1;
+          for (const b of forwardBases(w, bloc, targets, war, enemyIn)) if (km(b) < sk) [sk, base] = [km(b), b];
+          if (base < 0) why += '; no forward base';
+          else {
+            const i = water.indexOf(base);
+            const p = w.ports[i]!;
+            take = `stage ${p.name}(${tag(w.cells.controller[p.cell]!)}) ${Math.round(sk)} km${near(cellOf(f), base) ? ' (there)' : ''}`;
+          }
+        }
+      }
       if (!home) {
-        // Away from its bloc's ports, `plan` sorties nothing: it stays, or turns home where the enemy is AVOID_RATIO times the stronger.
+        // Away from its bloc's ports, `plan` sorties nothing: it stays, or turns home where the enemy is
+        // AVOID_RATIO times the stronger, or from empty water under the enemy's naval bombers (PLAN 7.35b3b).
         const e = enemyIn(z.zoneOf[cellOf(f)]!);
         const p = fleetPower(w, f);
+        const escort = [...w.embarked].some(([g, x]) => c.nation[g] === n && x.water >= 0 && near(cellOf(f), x.water));
+        const air = e === 0 && bombed(c.x[f]!, c.y[f]!) && !escort;
         take = '';
-        why = `away: zone's enemy ${Math.round(e)} ${e > AVOID_RATIO * p ? '>' : '≤'} ${AVOID_RATIO} × ${Math.round(p)} → ${e > AVOID_RATIO * p ? 'home' : 'stays'}`;
+        why = `away: zone's enemy ${Math.round(e)} ${e > AVOID_RATIO * p ? '>' : '≤'} ${AVOID_RATIO} × ${Math.round(p)}${air ? ', empty under naval bombers' : ''} → ${e > AVOID_RATIO * p || air ? 'home' : 'stays'}`;
       }
       const np = nearestPort(w, c.x[f]!, c.y[f]!);
       const t = c.targetCell[f]!;

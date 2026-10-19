@@ -275,7 +275,7 @@ export function navalBombers(world: World, n: number): { x: number; y: number; r
  * through a war with Japan (`docs/evidence/7.35/measure-b.md`). The way there is a transit, not a
  * sortie: no bound on its length. From the base the sortie test runs as from any port of its own.
  */
-function forwardBases(world: World, bloc: number, targets: readonly { at: number }[], war: readonly { p: number }[], enemyIn: (zone: number) => number): number[] {
+export function forwardBases(world: World, bloc: number, targets: readonly { at: number }[], war: readonly { p: number }[], enemyIn: (zone: number) => number): number[] {
   const w = world.cells.w;
   const z = seaOf(world);
   const water = portSeaOf(world);

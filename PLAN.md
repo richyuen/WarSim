@@ -107,7 +107,20 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
         order (mirror `forwardBases` before the "before" run). And from 7.35b3b (ADR-544):
         `forwardBases` reads the unfiltered `targets`, so a fleet may stage to a base whose every
         port in reach is empty water under the enemy's naval bombers, and stand there. AT: measured on
-        `seaMeet 3407 JAP USA 40`, before and after; a unit test; the pin's entry.
+        `seaMeet 3407 JAP USA 40`, before and after; a unit test; the pin's entry. In three parts
+        (one cause each), the "after" run once on the last:
+        - [x] 7.35b4a `seaMeet`'s `why` tells a staging order: the tool calls `forwardBases` (exported
+          from `naval.ts`, not mirrored). The "before" run, `seaMeet 3407 JAP USA 40`; whether the
+          Philippines' port is of the US bloc (`blocOf`). No rule change: the pin unchanged.
+        - [ ] 7.35b4b A fleet sent home sails for its bloc's nearest port (`nearestOwnPort`, its
+          basin filter kept), as `plan`'s home already is: every caller (`breakOff`, `plan`'s sends
+          home, a repulsed landing, `rebaseFleets`, the break-off's `atOwnPort`) read in the ADR
+          (amends ADR-261, ADR-264). AT: a unit test (the US fleet at a lost Guam sails for a bloc
+          port nearer than its nation's; red without the rule); the naval specs by hand; the pin.
+        - [ ] 7.35b4c `forwardBases`' two holes: a base in another basin than the fleet's (`basinOf`,
+          in `stage`, per fleet) and targets that are empty water under the enemy's naval bombers
+          (the sortie's `bombed` test). AT: a unit test each; the pin; `seaMeet 3407 JAP USA 40`
+          after, against b4a's.
     - [ ] 7.35c Ships at 20 m/px drawn at a size their class reads (destroyers about 10 × 3 px,
       submarines 5 px in `c9n_2251_ships_20m_crop4x.png`), counted in px. `shipMarks1938`'s T3
       test is red at `951b1c6` (a destroyer's median 17 px at 15 m/px, its bar 18.5; PLAN 7.22b):
