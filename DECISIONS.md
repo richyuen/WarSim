@@ -186,7 +186,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   the decisions are daily, so a gap of one day is no gap, and a longer one keeps the cost measured.
   The resolve's gap (RESOLVE_GAP_DAYS 90, `resolveOf`) is unchanged: it still reads the decision's
   tick, and a resolve strike shot down still counts among RESOLVE_STRIKES (a winner is not pressed).
-- **Effect.** Seeds 1, 3–10 the same worlds; seed 2's Spain launches on five days running, each
+- **Effect.** Seeds 1, 3–10: no launch stopped short, so the rule never fires (the same decisions, bursts and held days); seed 2's Spain launches on five days running, each
   shot down (one a week before), and the world parts from there (18 bursts, 6 before). No world's
   bursts all within 2 days. The critic's France bursts on Germany on day 47 (53); Poland a burst
   sooner on each seed and a second on 7127 and 3929.

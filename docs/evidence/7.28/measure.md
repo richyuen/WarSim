@@ -87,7 +87,7 @@ only while one is left. The resolve's gap (RESOLVE_GAP_DAYS, `resolveOf`) still 
 | 9 | 2 | 2 | 0 | 2 | 13.6 | 3402 |  | 3 | 3 (0) | 0 (0) | 0 (0) | 0 | 0 | 0 |
 | 10 | 5 | 5 | 0 | 5 | 10.2 | 4200 |  | 20 | 20 (0) | 0 (0) | 0 (0) | 0 | 0 | 0 |
 
-- Seeds 1 and 3–10: the same worlds (no launch stopped short in them). Seed 2: Spain's first uses
+- Seeds 1 and 3–10: no launch stopped short, so the rule never fires: the same decisions, bursts and held days. Seed 2: Spain's first uses
   on days 3606 to 3610, one a day, each shot down (before: one a week, 3606 to 3634); Britain's
   answer comes on day 3611 (3635 before), and from there the world parts: 18 bursts (6), all
   Britain's but one of Sweden's, over 16.7 years.

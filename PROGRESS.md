@@ -19226,7 +19226,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   them would have been strikes; critic's France and Poland: 43 of 54.
 - **Rule** (ADR-522): `War.strikesLive`; a launch stopped short takes one off (`strikeStopped` in
   `arrivals`), and `strikePaused` holds only while one is left. Resolve's gap unchanged.
-- **Effect:** seeds 1, 3–10 the same worlds; seed 2's Spain launches five days running, all shot
+- **Effect:** seeds 1, 3–10 the rule never fires (same counts); seed 2's Spain launches five days running, all shot
   down, and the world parts (18 bursts, 6). No world's bursts within 2 days. France bursts on
   Germany day 47 (53); Poland a burst sooner on 5591, 7127, 3929.
 - **Tests:** `nukeGapShort1938.test.ts` (new, red before), `nukeOverrun1938.test.ts` (its gap
