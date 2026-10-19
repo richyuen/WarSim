@@ -19619,3 +19619,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   commit, each its own commit next.
 - **No rule change:** pin 45c20987.
 - **Next:** the three specs above, then PLAN 7.34c2.
+
+## 2026-10-19 — PLAN 7.34c1's check: the fallen's division is 568 (ADR-537)
+
+- **Start:** gate green on `58d300b`; critic not due.
+- `fallen1938` red on its Node side: Polish division 544 not in contact on day 21 (seed 4242).
+  The ids moved by ten (554 now loses 544's 426 men). A Node probe of day 21: 568 loses 904 on
+  day 22, in contact all of it; the spec passes unchanged but the id. `docs/evidence/3.11/`
+  made again, the 2 m/px picture viewed.
+- **No rule change:** pin 45c20987.
+- **Next:** `smallMark1938`, `turrets1938`, then PLAN 7.34c2.

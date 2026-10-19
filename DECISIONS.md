@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-537 · 2026-10-19 · accepted — The fallen's division is Polish infantry division 568 (PLAN 7.34c1's check)
+
+- **Context.** `fallen1938`, run by hand for PLAN 7.34c1, fails on its Node side: Polish
+  division 544 is not in contact on day 21 of seed 4242's war. Sim only, from an earlier commit:
+  the formations' ids moved by ten (division 554 now loses on day 22 the 426 men the spec's
+  comment gave 544), as PLAN 7.9e's 550 → 544 did.
+- **Decision.** `POLE = 568`, the rest of the spec unchanged. A probe of day 21 on Node: eight
+  Polish formations in contact; 568 loses 904 men on day 22 and is the only one of the four
+  largest losers in contact all 24 hours. The spec passes in 2.2 min: 157 figures lost by the
+  view's elements, 119 of the fallen and 6 guns or half-tracks marked, 111 in the view, 114
+  drawn at the day's end. The three pictures of `docs/evidence/3.11/d-the-fallen-*.png` made
+  again; the 2 m/px one looked at.
+
 ### ADR-536 · 2026-10-19 · accepted — A tank element's ranks fit its slot: no hull on another in a block at rest (PLAN 7.34c1)
 
 - **Context.** Critic run 9, semantic zoom 7: "at 10 m/px on German infantry division 11 ... tanks
