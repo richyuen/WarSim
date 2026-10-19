@@ -118,7 +118,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       Done (`docs/evidence/7.30/measure-d.md`): every year's hash equal to 7.27d's; years 26–50
       0.753 ms (0.785 by load) against the bar 0.536; what is left is every year's cost, and the
       bar put to the user (ADR-525, BLOCKERS): 7.30 is not ticked until the user decides.
-    - [ ] 7.30e Year 47's 'long' orders and year 44's refusals for another cell (measure-d §3):
+    - [x] 7.30e Year 47's 'long' orders and year 44's refusals for another cell (measure-d §3):
       France's orders ~32 cells off answered 'long' and searched in full, 9.4 ms each (2,537 asks,
       86 % of year 47's plan time), none kept; year 44's refusals kept for one cell alone (503 asks
       for another). Measured first from `.cache/730/s732-y43.bin` and `.cache/730d/s732-y46.bin`:
@@ -127,6 +127,10 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       turn 'long' into 'refused', which changes the divert). The fix only if exact. Does not reach
       7.30's bar alone (about 0.65 on the band at most). AT: the measure; a unit test if a rule is
       made; `opCalls.ts` from those checkpoints: the asks down by most; the pin unchanged.
+      Done as a measure, no rule (`docs/evidence/7.30/measure-e.md`): 63 % of year 47's 'long'
+      asks are of formations on the move (no start to keep an answer by), the standing ones are
+      first asks of new cells, and every repeat had flips near its ends; year 44's refusals the
+      same (23 of 317 repeats keepable). Less of it is a rule (ADR-525 b's kind).
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

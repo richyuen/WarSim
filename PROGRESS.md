@@ -19333,3 +19333,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   pair by the untouched systems year by year, not by the band.
 - **Docs only:** no sim change; pin 94235073.
 - **Next:** PLAN 7.30e.
+
+## 2026-10-19 — PLAN 7.30e: the 'long' orders and refusals for another cell (measure, no rule)
+
+- **Start:** gate green on `8140c87`; critic not due; ADR-525 still waits on the user.
+- **Tooling:** `opCalls.ts` gives each ask the formation's state as asked (an order refused leaves
+  it as it was) and, for a standing formation's 'long' or refusal asked again from one cell for one
+  cell, the flips in the nodes of its two ends and their neighbours since (cells every corridor holds).
+- **Measured** (`docs/evidence/7.30/measure-e.md`): year 47's 'long' asks searched, 2,552: 1,497
+  (63 %) of formations on the move, for which no answer is kept (the start changes as they walk;
+  asked daily while the march's goal is over a sector from the order's cell); of the standing ones
+  979 are first asks of a new cell, and all 61 repeats had flips near their ends (a corridor hold
+  keeps none). Year 44's refusals: 679 first asks, 23 of 317 repeats keepable (95 ms).
+- **No rule:** nothing exact is left; less asking is a rule (ADR-525 b's kind). BLOCKERS entry
+  updated: under option (a) 7.30 is done as it stands.
+- **Tools and docs only:** pin 94235073.
+- **Next:** PLAN 7.30 waits on ADR-525; 7.29 not taken (condition unmet); then PLAN 7.5 (the critic).

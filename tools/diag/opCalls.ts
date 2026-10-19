@@ -35,8 +35,20 @@ const plans: PlanTimes[] = [];
 OP_PROBE.now = () => performance.now();
 OP_PROBE.plan = (p) => plans.push(p);
 const mixedFlips: number[] = [];
-const asks: (AskTimes & { nation: number; tick: number; same: string })[] = [];
+const asks: (AskTimes & { nation: number; tick: number; same: string; state: string; flipAt: number })[] = [];
+// Every flip, kept past the log's roll-over (PLAN 7.30e): its cell and holders, by its number.
+const flipCell: number[] = [];
+const flipHolders: number[] = [];
+const syncFlips = (): void => {
+  const end = w.flipLogBase + w.flipLog.length;
+  for (let k = Math.max(flipCell.length, w.flipLogBase); k < end; k++) {
+    flipCell[k] = w.flipCells[k - w.flipLogBase]!;
+    flipHolders[k] = w.flipLog[k - w.flipLogBase]!;
+  }
+  flipCell.length = end;
+};
 OP_PROBE.ask = (a) => {
+  syncFlips();
   // Why the refusal kept for it (`askMove`) did not answer: none kept, another cell stood on or
   // asked, or the ground (holders open, a flip between open and closed, a march or a port).
   const was = a.was;
@@ -54,7 +66,11 @@ OP_PROBE.ask = (a) => {
     same = !kept ? 'not kept (port, other land)' : was.template !== w.formations.cols.template[a.id] ? 'template' : was.grid !== navOf(w).grid ? 'grid' : was.flips < w.flipLogBase ? 'log rolled over' : !okSame ? 'holders open' : mixed > 0 ? 'mixed flips' : '?';
     if (same === 'mixed flips') mixedFlips.push(mixed);
   }
-  asks.push({ ...a, nation: w.formations.cols.nation[a.id]!, tick: w.tick, same });
+  // The formation as it was asked (an order refused leaves it as it was; PLAN 7.30e): on the move,
+  // embarked, or standing.
+  const fc = w.formations.cols;
+  const state = a.answer === 'ok' ? '' : w.embarked.has(a.id) ? 'embarked' : fc.moving[a.id] === 1 ? 'moving' : 'standing';
+  asks.push({ ...a, nation: fc.nation[a.id]!, tick: w.tick, same, state, flipAt: flipCell.length });
 };
 const quiet = (ww: typeof w): void => {
   ww.out.events.length = 0;
@@ -156,5 +172,69 @@ for (const a of asks) {
 }
 if (mixedFlips.length > 0) console.log(`  mixed flips since the refusal, where they undid it: median ${mixedFlips.sort((a, b) => a - b)[mixedFlips.length >> 1]}, least ${mixedFlips[0]}`);
 console.log(`  asked again from the same cell for the same cell with the same answer: ${repeats} calls, ${fmt(repeatMs)} ms`);
+// The asks not answered 'ok' and searched, by the formation's state as asked (PLAN 7.30e).
+const byState = new Map<string, { n: number; ms: number }>();
+for (const a of asks) {
+  if (a.answer === 'ok' || !a.searched) continue;
+  const k = `${a.afar ? 'afar' : 'orders'} ${a.answer.padEnd(8)} ${a.state.padEnd(9)} ${a.same}`;
+  const e = byState.get(k) ?? { n: 0, ms: 0 };
+  e.n++;
+  e.ms += a.ms;
+  byState.set(k, e);
+}
+// A standing formation's 'long' or refusal asked again from the same cell for the same cell (PLAN 7.30e): the
+// flips between the two asks in the nodes of its two ends and their neighbours, which every
+// corridor holds (so a corridor rule keeps at most those with none).
+for (const answer of ['long', 'refused']) {
+  const pg = navOf(w).graph;
+  const last = new Map<string, number>();
+  let n = 0;
+  let ms = 0;
+  let first = 0;
+  let firstMs = 0;
+  let noneAny = 0;
+  let noneMixed = 0;
+  let msNone = 0;
+  const counts: number[] = [];
+  for (let i = 0; i < asks.length; i++) {
+    const a = asks[i]!;
+    if (a.answer !== answer || a.state !== 'standing') continue;
+    const k = `${a.id}:${a.from}:${a.to}`;
+    const j = last.get(k);
+    last.set(k, i);
+    if (!a.searched) continue;
+    if (j === undefined) {
+      first++;
+      firstMs += a.ms;
+      continue;
+    }
+    const ends = new Set<number>();
+    for (const c of [a.from, a.to]) {
+      const node = pg.nodeOf[c]!;
+      ends.add(node);
+      for (const nb of pg.adj[node]!) ends.add(nb);
+    }
+    let any = 0;
+    let mixed = 0;
+    for (let f = asks[j]!.flipAt; f < a.flipAt; f++) {
+      if (!ends.has(pg.nodeOf[flipCell[f]!]!)) continue;
+      any++;
+      const from = Math.floor(flipHolders[f]! / 65536);
+      if (a.pass.ok[from] !== a.pass.ok[flipHolders[f]! - from * 65536]) mixed++;
+    }
+    n++;
+    ms += a.ms;
+    counts.push(any);
+    if (any === 0) {
+      noneAny++;
+      msNone += a.ms;
+    }
+    if (mixed === 0) noneMixed++;
+  }
+  counts.sort((x, y) => x - y);
+  console.log(`\n== standing '${answer}', searched: first asked from that cell for that cell ${first} (${fmt(firstMs)} ms); asked again ${n} (${fmt(ms)} ms), flips in the ends' nodes since the last: median ${counts[counts.length >> 1] ?? 0}, none ${noneAny} (${fmt(msNone)} ms), no open/closed flip ${noneMixed}`);
+}
+console.log('\n== the asks searched and not answered ok, by the formation as asked (calls, ms):');
+for (const [k, e] of [...byState].sort((a, b) => b[1].ms - a[1].ms)) console.log(`  ${k.padEnd(56)} ${String(e.n).padStart(6)} ${fmt(e.ms).padStart(9)}`);
 writeFileSync(out, JSON.stringify({ seed, from, startDay, days, sysMs, longestCall: prof.max[opIndex], walks, all, long, asks: [...askTable].map(([k, e]) => ({ k, ...e })), repeats, repeatMs, slowPlans: slow.map((p) => ({ ...p, nation: tag(p.nation), ms: total(p) })) }, null, 1));
 console.log(`\n→ ${out}`);

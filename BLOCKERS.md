@@ -12,6 +12,8 @@ What is left is spread over every year; the one named broad part, `pocketOf`, ca
 ticks only as a new rule. Options in ADR-525: (a) re-scope the bar to 0.75 of 7.27d's after PLAN
 7.30e (recommended), or (b) a `pocketOf` rule with the pin moved. PLAN 7.30e (exact) goes on
 meanwhile; 7.30 is not ticked until the user decides.
+7.30e (2026-10-19, `docs/evidence/7.30/measure-e.md`) found nothing exact left to keep: the band
+stays at 0.753; under option (a) 7.30 is done as it stands.
 
 ### `godUi1938` "Revive after a Kill": France's name not on the map after its revival (2026-10-18, PLAN 7.25d)
 Red at `7302970` (before 7.25d's change, stashed) and after it: `expect.poll(... nationLabels ...
