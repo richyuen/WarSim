@@ -521,3 +521,71 @@ days each, sail for a landing's water). A probe of seed 1471's year 3 (every `Fo
 landings, one formation at a time on one transport group, island by island down the Antilles (days
 1,010 to 1,095; 0.5 to 4 days at sea each), none thrown back. The same landing water is taken up as
 the next island's; the landings sail. No rule.
+
+## 11. Why the navies sunk are not built again (7.35d3a, at `86fae1f`)
+
+`npx tsx tools/diag/navyLoss.ts <seed> 30` on the 14 seeds (7 at a time; JSON in
+`d3a/loss_<seed>.json`). Its runs are §10's to the day (ships sunk year 1 350.1, years 2–5 77.1, 6–10
+46.6, 11–30 19.6; nations with a navy 16.3, 10.8, 11.8, 11.5). Per seed-year (means of the 14):
+
+| | year 1 | 2–5 | 6–10 | 11–30 |
+| --- | --- | --- | --- | --- |
+| nations with a navy (a day) | 16.3 | 10.8 | 11.8 | 11.5 |
+| nations that had one and have none, living (a day) | 6.6 | 12.0 | 14.2 | 16.3 |
+| pairs at war with a navy each (a day) | 5.0 | 2.4 | 1.5 | 1.1 |
+| of them, with one each in one basin | 5.0 | 2.4 | 1.5 | 1.1 |
+| armed fleets gone: sunk | 21.4 | 5.0 | 3.5 | 1.4 |
+| laid up | 0 | 0.1 | 0.3 | 0 |
+| otherwise (bombs, a port taken, sunk in the hour) | 3.9 | 1.0 | 0.4 | 0.3 |
+| the nation dead, handed over, disarmed | 0.2 | 0 | 0 | 0 |
+| armed fleets built | 0.5 | 2.7 | 3.9 | 1.8 |
+
+Of the 337 navies lost on the 14 seeds, 111 are built again (the first armed fleet a median of 2,236
+days after, 830 to 3,886 the quartiles), 226 never; 55 of the nations die.
+
+**Per nation-month of a lost navy**, the first test of the fleet step (`economic.ts` 3b) that stops a
+warship's order (years 2–30, 86,031 nation-months; year 1, 1,055):
+
+| first test | years 2–30 | of them at war | year 1 |
+| --- | --- | --- | --- |
+| gold: under a warship of its income's kinds + RESERVE_MONTHS of income | 45,664 (53.1 %) | 30,122 | 626 (59.3 %) |
+| dead | 11,458 (13.3 %) | | 21 |
+| no shipyard (`shipyard` −1) | 10,188 (11.8 %) | 5,043 | 65 |
+| poor (income < POOR_INCOME) | 7,218 (8.4 %) | 5,265 | 99 |
+| all passed, the month spent by the army's orders first | 4,987 (5.8 %) | 4,366 | 32 |
+| the navy's share (transports, submarines) | 2,332 (2.7 %) | 1,942 | 27 |
+| a transport wanted (2c) | 2,176 (2.5 %) | 2,176 | 105 |
+| a warship in training | 1,035 (1.2 %) | 580 | 13 |
+| a transport in training | 608 (0.7 %) | 579 | 60 |
+| a warship ordered | 157 (0.2 %) | 59 | 4 |
+| the balance; spent otherwise | 80; 128 | | 2; 1 |
+
+`check`: of the 87,086 nation-months, 161 orders seen in the tick after, none in a month the reading
+had stopped (`disagree` 0). The gold months by the treasury's share of what the test asks (in tenths,
+years 2–30): 0–0.1 439, 0.1–0.2 2,574, then 4,461 to 5,260 a tenth up to 0.7, 0.8–0.9 7,400, 0.9–1
+5,765. By income (living lost navies, years 2–30): destroyers only 35,994 nation-months, cruisers
+12,702, battle squadrons 9,299, poor 16,447.
+
+The 1938 prices (`TEMPLATES_1938`): a destroyer flotilla 1,120 gold, a cruiser squadron 1,960, a
+battle squadron 6,720; an infantry division 1,001. The army's order asks gold ≥ its price + 3 months of
+income too, and comes first each month (3, then 3a's refills, then 3b).
+
+**What it says.**
+- **The navies are sunk, not laid up nor stranded.** 21.4 armed fleets sunk a seed in year 1, 0.1 laid
+  up in years 2–5. And every pair at war with a navy each has one each in one basin, every year: §10's
+  "sea pairs fell more than the navies" is the navies lost (of year 1's sea pair-days, 35 % are of two
+  nations that both still have a navy for half of year 4, 39 % of one, 26 % of neither). Placement is
+  not the cause: PLAN 7.35d3's second branch is answered no.
+- **The rebuild stops at the gold test.** Over half of a lost navy's months, living, have under the
+  price of the cheapest warship of its income's kinds and three months of income, most of them at
+  war; the treasury holds 0.2 to 1 of it, spread. One reading (to be traced, d3b): the army's order
+  takes the same test with a lower price (an infantry division 1,001 against a destroyer flotilla's
+  1,120 and a cruiser squadron's 1,960) and comes first each month, so a nation whose army is under
+  its share spends down below the warship's line every month; the fleet buys only when the army is
+  full. A further 5.8 % passed every test and the army's orders spent the month first.
+- **No shipyard** 11.8 % (Greece 2,468 of its 4,596 months, Norway 1,443, Sweden 1,408, Yugoslavia
+  1,360, Romania 1,164): living nations without a port that `shipyard` takes (all held by the enemy,
+  bombed shut, or none on the world's seas). And **poor** 8.4 %, **dead** 13.3 %: no rule builds those.
+- **So the next parts:** the gold (d3b, traced first: the month's gold before and after the army's
+  orders, and whether a warship would have been paid for without them); no shipyard (d3c, traced:
+  which ports, why none passes). No rule here: the pin unchanged (`pickFleet` exported, as it was).

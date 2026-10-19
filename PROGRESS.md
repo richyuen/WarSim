@@ -20131,3 +20131,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   9, island by island down the Antilles; §9's repeated landing water is the next island's.
 - No rule, no test: the pin unchanged.
 - **Next:** PLAN 7.35d3 (why the navies sunk in year 1 are not rebuilt).
+
+## 2026-10-19 — PLAN 7.35d3a: why the navies sunk are not built again, measured (critic R9 naval 6)
+
+- **Start:** gate green on `86fae1f`; critic not due. PLAN 7.35d3 split (a measured, b the gold, c no
+  shipyard).
+- **Tool:** `tools/diag/navyLoss.ts` (how armed fleets go and come; per lost navy's month the first
+  test of the fleet step that stops a warship, read against the orders of the tick after, `check`;
+  pairs at war with a navy each against those in one basin). 14 seeds × 30 years at `86fae1f`, JSON in
+  `docs/evidence/7.35/d3a/`, `measure-d.md` §11. `pickFleet` exported for it.
+- **Found:** the navies are sunk (21.4 armed fleets a seed in year 1), not laid up (0.1 in years
+  2–5); every pair at war with a navy each shares a basin, so placement is not the cause. 111 of 337
+  lost navies are built again, a median of 6 years after. A lost navy's months (years 2–30): the gold
+  test (a warship + 3 months of income) 53.1 %, dead 13.3 %, no shipyard 11.8 %, poor 8.4 %, spent by
+  the army's orders first 5.8 %; a warship ordered 0.2 %. `check`: 161 orders, `disagree` 0.
+- No rule, no test: the pin unchanged.
+- **Next:** PLAN 7.35d3b (the gold, traced: the army's orders take the same reserve test at a lower
+  price, first).

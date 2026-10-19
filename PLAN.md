@@ -250,7 +250,31 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
         other basins than their enemies'; if the second, the cause is placement, not building, and
         this line is to be rewritten). Then a rule per
         cause (a part each, an ADR) or the reason in the doc; the "after" run of `seaYears` on the
-        14 × 30 against d2d3c's (7.35d's "before and after") on the last. In parts (one cause each).
+        14 × 30 against d2d3c's (7.35d's "before and after") on the last. In parts (one cause each):
+        - [x] 7.35d3a Measured (`tools/diag/navyLoss.ts`, `measure-d.md` §11; 14 seeds × 30 years):
+          how the armed fleets go (laid up, sunk, the nation dead, handed over, otherwise) and come
+          (built); per nation-month of a lost navy, the first test of the fleet step (3b) that stops
+          a warship's order, in the code's order (dead, AI off, no shipyard, poor, a warship or a
+          transport in training, a transport wanted, the navy's share, gold with the reserve, men,
+          the balance; else the month spent first by the army or research), read against the orders
+          placed in the tick after (`check`); and per day the pairs at war with a navy each against
+          those sharing a basin. Which cause the fall is; the parts after named from it. No rule:
+          the pin unchanged (`pickFleet` exported).
+        - [ ] 7.35d3b The gold (d3a, `measure-d.md` §11: of a lost navy's 86,031 nation-months in
+          years 2–30, 53.1 % stopped by the gold test, a warship of its income's kinds + RESERVE_MONTHS
+          of income, the treasury at 0.2 to 1 of it; 5.8 % more passed every test and the army's
+          orders spent the month first; 111 of 337 lost navies built again, a median of 2,236 days
+          after). Traced first (`navyLoss`): per gold month, the treasury before and after the
+          army's orders and 3a's refills, and whether a warship would have been paid for without
+          them (the army's order asks the same reserve at a lower price and comes first, so the
+          fleet buys only with the army full). Then a rule (an ADR: how a nation without a navy
+          and with an enemy at sea saves for a warship, as for its armour, PLAN 3.5d), or the
+          reason. AT: a unit test (red without); `navyLoss`'s gold months and lost navies built
+          again, before and after; the pin; `--profile`.
+        - [ ] 7.35d3c No shipyard (d3a, §11: 11.8 % of the lost navies' months; Greece 2,468 of
+          4,596, Norway 1,443, Sweden 1,408, Yugoslavia 1,360, Romania 1,164): traced per nation
+          (its ports: held by the enemy, bombed shut, water `shipyard` does not take), then a rule
+          or the reason. Then the "after" run of `seaYears` (7.35d3's last).
 - [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
   and 10 m/px in every probe (`c9_c_4483.json` `sorties`); the air map on day 10 of Germany–Poland
   hatches one German zone over all of Europe, every hover "held by Germany" from London to Kiev

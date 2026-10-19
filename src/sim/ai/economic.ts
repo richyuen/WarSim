@@ -562,7 +562,7 @@ function nextOrderPrice(world: World, n: number, income: number, mix: BuildMix):
  * cruiser squadron from RICH_INCOME, a destroyer flotilla. -1 for a poor nation, or one that can
  * pay for none of them. (Its transport group is step 2c's, PLAN 7.26h2.)
  */
-function pickFleet(world: World, n: number, income: number, kinds: NonNullable<BuildMix['fleets']>): number {
+export function pickFleet(world: World, n: number, income: number, kinds: NonNullable<BuildMix['fleets']>): number {
   if (income < POOR_INCOME) return -1;
   const templates = world.rules!.templates;
   const gold = world.nations.cols.gold[n]!;
