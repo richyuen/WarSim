@@ -13,7 +13,9 @@
  *   of the nearest port held by a nation at war with it, its zone not closed by ice, whose
  *   zone's enemy power (`navalPower`, the blocs at war with it) is no more than that of its
  *   nation's warfleets in port within `SORTIE_KM` of that water together (they choose alike,
- *   and go together): a battle it would lose is not sought.
+ *   and go together): a battle it would lose is not sought. Or, nearer, to a standing enemy
+ *   warfleet within `SORTIE_KM` in its basin, whose zone's enemy power passes the same test
+ *   (PLAN 7.35d2c, ADR-550): fleets on station at a partner's port or a neutral's were no target.
  * - At war, such a warfleet with no enemy port within `SORTIE_KM` at all stages (PLAN 7.35b2):
  *   it sails to the nearest port of its bloc's that has one (`forwardBases`; not empty water under
  *   the enemy's naval bombers, PLAN 7.35b4c2), in its basin (`stageTo`, PLAN 7.35b4c1), and
@@ -21,7 +23,8 @@
  * - At war, a warfleet away from its ports in a zone where the enemy's power is over
  *   `AVOID_RATIO` times its own sails home (`sailHome`).
  * - At war, any other warfleet away from its ports gets a new order on its AI day (`awayOrder`,
- *   PLAN 7.35d2b): a winnable battle in reach first; else it keeps its station by an enemy port
+ *   PLAN 7.35d2b): a winnable battle in reach first (a standing enemy warfleet too, PLAN 7.35d2c);
+ *   else it keeps its station by an enemy port
  *   (the blockade); else a new station at an enemy port in reach; else home. Before, it stood
  *   where its sortie ended until peace, at ports whose holders had made their peace.
  * - At war, under the enemy's naval bombers (PLAN 7.35b3b, ADR-544: a wing of the naval role at an
@@ -133,10 +136,47 @@ export function navalAi(world: World): void {
   });
   if (fleets.size === 0) return;
   const power = world.wars.list.length > 0 ? navalPower(world) : new Map<number, Map<number, number>>();
-  for (const n of [...fleets.keys()].sort((a, b) => a - b)) plan(world, n, fleets.get(n)!, power);
+  let standing: Prey[] | undefined;
+  const prey = (): Prey[] => (standing ??= standingWarfleets(world));
+  for (const n of [...fleets.keys()].sort((a, b) => a - b)) plan(world, n, fleets.get(n)!, power, prey);
 }
 
-function plan(world: World, n: number, mine: number[], power: Map<number, Map<number, number>>): void {
+/** An enemy warfleet as a target (PLAN 7.35d2c): its cell, its zone's enemy power, its basin (`basinAt`'s reading). */
+interface Hunt {
+  at: number;
+  enemy: number;
+  basin: number;
+}
+
+/** A standing warfleet, as another nation's naval AI hunts it (PLAN 7.35d2c). */
+interface Prey {
+  /** Its cell, the hunter's target. */
+  at: number;
+  nation: number;
+  zone: number;
+}
+
+/**
+ * Every warfleet that stands (PLAN 7.35d2c, ADR-550): power over 0 (`fleetPower`; a submarine
+ * flotilla has none and is not hunted), not under way, not in a sea battle, on an open zone; by id.
+ * Any nation's, not only those whose AI acts today: they are the prey.
+ */
+export function standingWarfleets(world: World): Prey[] {
+  const c = world.formations.cols;
+  const w = world.cells.w;
+  const z = seaOf(world);
+  const out: Prey[] = [];
+  world.formations.forEach((id) => {
+    if (!world.isFleet(id) || c.moving[id] === 1 || c.engaged[id] === 1 || seaRangeOf(world, id) !== undefined) return;
+    const at = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+    const zone = z.zoneOf[at]!;
+    if (zone === 0 || z.closed[zone] === 1 || fleetPower(world, id) <= 0) return;
+    out.push({ at, nation: c.nation[id]!, zone });
+  });
+  return out;
+}
+
+function plan(world: World, n: number, mine: number[], power: Map<number, Map<number, number>>, prey: () => Prey[]): void {
   const c = world.formations.cols;
   const w = world.cells.w;
   const water = portSeaOf(world);
@@ -234,8 +274,13 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
   });
   /** Whether target `t`'s water has no enemy ship and is under the enemy's naval bombers (no sortie's target, PLAN 7.35b3b). */
   const emptyBombed = (t: { at: number; enemy: number }): boolean => t.enemy === 0 && bombed((t.at % w) + 0.5, Math.floor(t.at / w) + 0.5);
+  // The enemy's standing warfleets (PLAN 7.35d2c, ADR-550), wherever they stand, and their zones'
+  // enemy power: a battle to seek, as a port with enemy ships is; no station, no forward base.
+  const { basin, ocean } = basinOf(world);
+  const hunts: Hunt[] = [];
+  for (const q of prey()) if (world.wars.atWar(n, q.nation)) hunts.push({ at: q.at, enemy: enemyIn(q.zone), basin: basin[q.zone] || ocean });
   // Away (PLAN 7.35d2b): a new order from where it stands; one escorting a landing stays.
-  for (const { id, e } of away) if (!escorting(id)) awayOrder(world, id, e, targets, together, emptyBombed, (cell) => near(cellOf(id), cell));
+  for (const { id, e } of away) if (!escorting(id)) awayOrder(world, id, e, targets, hunts, together, emptyBombed, (cell) => near(cellOf(id), cell));
   if (war.length === 0) return;
   let bases: number[] | undefined;
   /** The targets a sortie may take (PLAN 7.35b4c2): not empty water under the enemy's naval bombers; a base with none of them in reach is no forward base. */
@@ -254,6 +299,14 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
         // still in reach, so the fleet stands rather than stages.
         if (d < best && t.enemy <= together(t.at) && !emptyBombed(t)) [best, target] = [d, t.at];
       }
+      // An enemy warfleet in reach, of its basin, whose zone the fleets together can win (PLAN 7.35d2c).
+      // It does not count as in reach for the stage: a fleet stands at sea for days, a port for good.
+      const mine = hunts.length > 0 ? basinAt(world, c.x[id]!, c.y[id]!) : 0;
+      for (const t of hunts) {
+        if (t.basin !== mine) continue;
+        const d = km(id, t.at);
+        if (d <= SORTIE_KM && d < best && t.enemy <= together(t.at)) [best, target] = [d, t.at];
+      }
     }
     // No enemy port within reach at all: it stages, to its bloc's nearest port that has one (PLAN 7.35b2).
     if (target < 0 && !inReach && targets.length > 0) target = stageTo(world, id, (bases ??= forwardBases(world, bloc, fightable(), war, enemyIn)));
@@ -267,11 +320,14 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
  * at the target's water, and before this the fleet stood there until peace, at a port whose holder
  * had made its peace since (90 % of the late fleet-days at a port of a nation at war with neither
  * side, `docs/evidence/7.35/measure-d.md` §4). On its AI day, from where it stands, in order:
- * - from a zone with no enemy ship (`here`), the nearest enemy port within `SORTIE_KM` with enemy
- *   ships in its zone that its warfleets there together (`together`) can win: it sails there (a
- *   battle first). A battle begins by sight (`navalCombat`), not by a zone shared: from a zone that
- *   has the enemy's ships already, the fleets hopped every week between its ports a few cells
- *   apart, never meeting them (seed 1129, year 3, five British fleets); seeking the fleets is PLAN 7.35d2c;
+ * - by a standing enemy warfleet of its basin whose zone its warfleets together can win: it stays
+ *   (PLAN 7.35d2c);
+ * - the nearest battle in reach, its zone's enemy no more than its warfleets there together
+ *   (`together`) can win: a standing enemy warfleet's cell, from any zone (PLAN 7.35d2c, ADR-550: it
+ *   sails to the ships, and a battle begins by sight); or, from a zone with no enemy ship (`here`),
+ *   an enemy port with enemy ships in its zone. Sought by its ports, from a zone that has the
+ *   enemy's ships already, the fleets hopped every week between them a few cells apart, never
+ *   meeting the ships (seed 1129, year 3, five British fleets);
  * - by an enemy-held port's water: it stays, on station (the blockade, PLAN 4.4b: the zone held
  *   against the port's holder halves its province's income);
  * - else the nearest enemy port within `SORTIE_KM` that a sortie may take (its zone's enemy no more
@@ -283,6 +339,7 @@ function awayOrder(
   id: number,
   here: number,
   targets: readonly { at: number; enemy: number }[],
+  hunts: readonly Hunt[],
   together: (cell: number) => number,
   emptyBombed: (t: { at: number; enemy: number }) => boolean,
   by: (cell: number) => boolean,
@@ -294,6 +351,20 @@ function awayOrder(
   let bestB = Infinity;
   let bestS = Infinity;
   let onStation = false;
+  // An enemy warfleet in reach, of its basin, whose zone the fleets together can win (PLAN 7.35d2c):
+  // a battle from any zone, as its ships are sought, not their zone's ports. By one already: it stays.
+  let beside = false;
+  const mine = hunts.length > 0 ? basinAt(world, c.x[id]!, c.y[id]!) : 0;
+  for (const t of hunts) {
+    if (t.basin !== mine || t.enemy > together(t.at)) continue;
+    if (by(t.at)) {
+      beside = true;
+      continue;
+    }
+    const d = seaKm(world, c.x[id]!, c.y[id]!, (t.at % w) + 0.5, Math.floor(t.at / w) + 0.5);
+    if (d <= SORTIE_KM && d < bestB) [bestB, battle] = [d, t.at];
+  }
+  if (beside) return;
   for (const t of targets) {
     if (by(t.at)) {
       onStation = true;

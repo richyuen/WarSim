@@ -180,7 +180,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           seeks a winnable enemy fleet's port in reach; by an empty enemy port, what the ADR
           decides); `seaHold` on the 14 seeds, away fleet-days at a port at war with neither side
           29.7 % → near 0; the pin's entry; `--profile`.
-        - [ ] 7.35d2c The sortie seeks enemy warfleets, not only enemy ports: of the away
+        - [x] 7.35d2c The sortie seeks enemy warfleets, not only enemy ports: of the away
           fleet-days with no battle to seek, the nearest enemy warfleet stood within `SORTIE_KM`
           at no port of the fleet's enemies (so no target) in 25 % (46,480). A standing enemy
           warfleet in reach whose zone the fleets together can win is a target. AT: a unit test

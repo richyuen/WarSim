@@ -167,6 +167,40 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-550 · 2026-10-19 · accepted — A standing enemy warfleet in reach is a target, not only an enemy port (PLAN 7.35d2c; amends ADR-270, ADR-549)
+
+- **Context.** Critic run 9, naval 6. PLAN 7.35d2a (`docs/evidence/7.35/measure-d.md` §3): of the
+  late away fleet-days of the navies at war with no battle to seek, the nearest enemy warfleet of the
+  basin stood within `SORTIE_KM` at no port of the fleet's enemies in 25 % (46,480); after 7.35d2b
+  (§4's runs) 9,306 of 103,275 (9 %). The sortie's targets were enemy ports only, so an enemy fleet
+  on station at its partner's port, a neutral's or in open water was never sought.
+- **Decision.** Each standing warfleet (`standingWarfleets`: power over 0, so no submarine
+  flotilla; not under way, not in a sea battle; on an open zone) of a nation at war with n is a
+  target, at its cell, with its zone's enemy power (`enemyIn`, as a port's). A fleet takes it when it
+  is within `SORTIE_KM`, in the fleet's basin (`basinAt`), and its zone's enemy power is no more than
+  the fleet's warfleets there together (`together`, ADR-549):
+  - from its bloc's port: the nearest of the ports and these;
+  - from away (`awayOrder`): by one already, it stays; else these are battles from any zone, the
+    nearest battle taken (an enemy port with enemy ships still only from a zone with none).
+- **From any zone.** ADR-549 sought a port with enemy ships only from a zone with none: by the
+  ports of a zone, fleets hopped a few cells between them every week (seed 1129) and never met the
+  ships, since a battle begins by sight. A fleet sought by its own cell is met there, or it has
+  moved, and the next order follows it.
+- **The basin.** The 9,306 were counted in the fleet's basin. A fleet in another is not taken:
+  `orderSail` would refuse it (`NoSeaWay`), as PLAN 7.35d2d finds of the ports.
+- **No station, no stage.** An enemy fleet is no station: the blockade is a port's (ADR-549). It
+  is no reason to stand either: `inReach` (stand, not stage, ADR-543) and `forwardBases` read the
+  ports only. A fleet arrived where an enemy fleet stood, the enemy gone, takes on its next day a
+  station or home as any fleet away. `emptyBombed` never applies: such a target's zone has power.
+- **Measured** (`tools/diag/seaHold.ts`, 14 seeds × 6 years, years 2–6, the fleets of the sea
+  pairs; `measure-d.md` §5): `enemyAt.notTarget` 9,306 → 491; the orders to an enemy fleet 660 from
+  away and 64 from port; the tool agrees with the tick on 15,987 of 16,018 orders. `seaYears` on
+  4 seeds × 6 years: year 1's sea battles 99 → 119, years 2–6 109 → 92, ships sunk 1,352 → 1,015;
+  by year 6 the armed power 244k → 273k. More are fought early; the late fall is not undone.
+- **Pin** 2201535d → babcd48d. Seed 99's year: 34 `SeaBattle` events against 20, the first on day
+  13.4 against 45.2. navalAi 0.0434 ms a tick, 2.0 % (0.043 before; seed 99, one year, `--profile`,
+  a quiet run: territory 0.1485 against 0.148).
+
 ### ADR-549 · 2026-10-19 · accepted — A warfleet at war away from its ports gets a new order on its day: a battle, its station, a new station, or home (PLAN 7.35d2b; amends ADR-270)
 
 - **Context.** Critic run 9, naval 6: the late sea battles fall after year 1. PLAN 7.35d2a

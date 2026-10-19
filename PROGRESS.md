@@ -19986,3 +19986,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   on 4 seeds × 6 years against d1's (`measure-d.md` §4): the navies are sunk in the new battles
   (years 2–6: 109 battles against 58, 1,352 ships against 613), and the sea pairs fall to 0.5 a day
   by year 6 against 6.3. The late war at sea burns out by years 5–6, which bears on 7.35d2c.
+
+## 2026-10-19 — PLAN 7.35d2c: the sortie seeks enemy warfleets, not only enemy ports (critic R9 naval 6)
+
+- **Start:** gate green on `f6c9454`; critic not due. No sim change since `5f3d6be`, so d2b's
+  `seaHold` "after" runs are this task's "before": `enemyAt.notTarget` 9,306 of 103,275 late away
+  fleet-days (the plan's 46,480 was at d2a, before d2b).
+- **Rule** (ADR-550, `standingWarfleets` and `plan`/`awayOrder` in `src/sim/ai/naval.ts`): a
+  standing enemy warfleet within `SORTIE_KM`, in the fleet's basin, whose zone its warfleets
+  together can win, is a target at its cell: from port the nearest target of ports and fleets; from
+  away a battle from any zone (sought by its cell, it is met by sight, not hopped past as by its
+  zone's ports, ADR-549), and a fleet by one stays. No station, no reason to stand rather than stage.
+- **Measured** (`seaHold`, 14 seeds × 6 years, years 2–6, `measure-d.md` §5, JSON in `d2c/`):
+  `notTarget` 9,306 → 491; 660 orders from away and 64 from port to an enemy fleet; the nearest enemy
+  fleet now beyond `SORTIE_KM` in 97.7 % of the fleet-days with no battle (88.1 %). Tool against the
+  tick: 15,987 of 16,018 orders. Returns to a target of two orders before 243 (249): no chase.
+- **Battles** (`seaYears`, 4 seeds × 6 years, against d2b's): year 1 99 → 119, years 2–6 109 → 92,
+  ships sunk late 1,352 → 1,015; armed power by year 6 244k → 273k. The late fall is not undone;
+  7.35d2d's 14 × 30 run is the verdict.
+- **Tests:** `navalAi1938.test.ts` + 3 (an Italian flotilla in open water nearer than every Italian
+  port: the flotilla on station at Tobruk sails for it, and Greece's fleet at Athens sorties for it,
+  both red without the rule; a battle squadron there too strong is no target). `noBombers` moved up
+  to the describe the tests share.
+- **Pin** 2201535d → babcd48d; seed 99's year 34 `SeaBattle` events against 20, the first on day 13.4
+  against 45.2.
+- **Perf:** navalAi 0.0434 ms a tick (2.0 %; 0.043 at d2b), tick mean 2.14 ms (seed 99, one year,
+  `--profile`, pinned; territory 0.1485 against 0.148, a quiet run).
+- **Next:** PLAN 7.35d2d (a sortie's target in another basin; then the "after" run of `seaYears`).

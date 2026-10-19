@@ -6,7 +6,7 @@ import { Sim } from '../../src/sim/sim';
 import { AVOID_RATIO, fleetPower, navalAi, navalBombers, SORTIE_KM } from '../../src/sim/ai/naval';
 import { STAGGER } from '../../src/sim/ai/strategic';
 import { equipFormation } from '../../src/sim/systems/elements';
-import { basinAt, seaKm } from '../../src/sim/systems/navalCombat';
+import { AT_PORT_CELLS, basinAt, seaKm } from '../../src/sim/systems/navalCombat';
 import { navalPower } from '../../src/sim/systems/seaControl';
 import { convoyWays } from '../../src/sim/systems/seaSupply';
 import { blocOf } from '../../src/sim/systems/supply';
@@ -368,6 +368,11 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
       });
       return fleetPower(w, dd);
     };
+    /** Italy's naval bomber wing `wing` out of the fight (so no flotilla is sent home by ADR-544's test). */
+    const noBombers = (w: World, wing: number): void => {
+      const ec = w.elements.cols;
+      w.elements.forEach((e) => void (ec.formation[e] === wing && (ec.strength[e] = 0)));
+    };
     const homeWater = (w: World, cell: number): boolean => w.ports.some((p, i) => portSeaOf(w)[i] === cell && blocOf(w, w.cells.controller[p.cell]!) === blocOf(w, GRE));
 
     it('a Greek destroyer flotilla at Bari, no Italian ship in its zone, Italy\'s naval bombers in range: it sails home at its turn', () => {
@@ -439,10 +444,6 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     // fight in each (so no flotilla is sent home by ADR-544's test). Greece's one fleet (1,200) at
     // Athens; Italy's power by zone: Naples' 1,200, Genoa's 4,000, Taranto's 16,600, Tobruk's none.
     describe('away from its ports, a new order (PLAN 7.35d2b)', () => {
-      const noBombers = (w: World, wing: number): void => {
-        const ec = w.elements.cols;
-        w.elements.forEach((e) => void (ec.formation[e] === wing && (ec.strength[e] = 0)));
-      };
       const italianHeld = (w: World, cell: number): boolean => w.ports.some((p, i) => portSeaOf(w)[i] === cell && w.cells.controller[p.cell] === ITA);
 
       it('a Greek flotilla on station at a Yugoslav port sails on once Greece has made its peace with Yugoslavia (a station whose war ended)', () => {
@@ -500,6 +501,78 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
         // Not sent home either: it stands where it is.
         expect(w.formations.cols.moving[dd]).toBe(0);
         expect(w.formations.cols.x[dd]).toBe(at(tobruk)[0]);
+      });
+    });
+
+    // PLAN 7.35d2c, ADR-550: a standing enemy warfleet in reach, of the fleet's basin, whose zone the
+    // fleets together can win, is a target, wherever it stands; before, only enemy ports were, and a
+    // fleet at no enemy port (on station at a partner's or a neutral's) was never sought. An Italian
+    // fleet is put in open water nearer the Greek fleet than every Italian port: the open sea's
+    // nearest zone to it with no Italian ship, its seed cell not by an Italian port's water.
+    describe('seeks the enemy\'s warfleets, not only its ports (PLAN 7.35d2c)', () => {
+      const ports = (w: World): number[] => w.ports.flatMap((p, i) => (portSeaOf(w)[i]! >= 0 && w.cells.controller[p.cell] === ITA ? [portSeaOf(w)[i]!] : []));
+      /** A water cell nearer (x, y) than every Italian port's water but those (x, y) stands by, by none of them, in a zone with no Italian ship, of (x, y)'s basin, more than `AT_PORT_CELLS` from it. */
+      const openWater = (w: World, x: number, y: number): number => {
+        const z = seaOf(w);
+        const { basin, ocean } = basinOf(w);
+        const mine = basinAt(w, x, y);
+        const italian = ports(w);
+        const room = w.atSize(AT_PORT_CELLS);
+        // The ports it stands by aside (Tobruk's own water): the sortie test passes over them.
+        const by = (p: number): boolean => Math.abs((p % W) + 0.5 - x) <= room && Math.abs(Math.floor(p / W) + 0.5 - y) <= room;
+        const nearestPort = Math.min(...italian.filter((p) => !by(p)).map((p) => seaKm(w, x, y, ...at(p))));
+        let best = Infinity;
+        let cell = -1;
+        for (let zone = 1; zone < z.seedCell.length; zone++) {
+          const s = z.seedCell[zone]!;
+          if (s < 0 || z.closed[zone] === 1 || (basin[zone] || ocean) !== mine || zoneEnemy(w, s) > 0) continue;
+          if (Math.abs((s % W) + 0.5 - x) <= room && Math.abs(Math.floor(s / W) + 0.5 - y) <= room) continue;
+          if (italian.some((p) => Math.abs((p % W) - (s % W)) <= room && Math.abs(Math.floor(p / W) - Math.floor(s / W)) <= room)) continue;
+          const d = seaKm(w, x, y, ...at(s));
+          if (d < nearestPort && d < best) [best, cell] = [d, s];
+        }
+        expect(cell, 'open water nearer than every Italian port').toBeGreaterThanOrEqual(0);
+        return cell;
+      };
+
+      it('a Greek flotilla on station at Tobruk sails for an Italian destroyer flotilla in open water nearer than every Italian port, not for an Italian port', () => {
+        const { w, wing, water } = setup();
+        noBombers(w, wing);
+        const tobruk = water('Tobruk');
+        const dd = addFleet(w, GRE, 'destroyer_flotilla', ...at(tobruk));
+        const sea = openWater(w, ...at(tobruk));
+        const ita = addFleet(w, ITA, 'destroyer_flotilla', ...at(sea));
+        expect(zoneEnemy(w, sea)).toBe(fleetPower(w, ita));
+        greekTurn(w);
+        expect(w.formations.cols.moving[dd], 'under way from Tobruk').toBe(1);
+        expect(w.formations.cols.targetCell[dd], 'for the Italian flotilla').toBe(sea);
+      });
+
+      it('Greece\'s fleet at Athens sorties for an Italian destroyer flotilla in open water nearer than every Italian port', () => {
+        const { w, wing } = setup();
+        noBombers(w, wing);
+        const c = w.formations.cols;
+        const athens = own({ world: w } as Sim, GRE).filter((f) => c.moving[f] === 0);
+        expect(athens.length, 'a Greek warfleet in port').toBeGreaterThan(0);
+        const g = athens[0]!;
+        const sea = openWater(w, c.x[g]!, c.y[g]!);
+        addFleet(w, ITA, 'destroyer_flotilla', ...at(sea));
+        greekTurn(w);
+        expect(c.moving[g], 'under way from its port').toBe(1);
+        expect(c.targetCell[g], 'for the Italian flotilla').toBe(sea);
+      });
+
+      it('an Italian battle squadron there, stronger than Greece\'s fleets together, is no target: the flotilla at Tobruk does not sail for it', () => {
+        const { w, wing, water } = setup();
+        noBombers(w, wing);
+        const tobruk = water('Tobruk');
+        const dd = addFleet(w, GRE, 'destroyer_flotilla', ...at(tobruk));
+        const sea = openWater(w, ...at(tobruk));
+        addFleet(w, ITA, 'battle_squadron', ...at(sea));
+        const together = own({ world: w } as Sim, GRE).reduce((s, f) => s + (seaKm(w, w.formations.cols.x[f]!, w.formations.cols.y[f]!, ...at(sea)) <= SORTIE_KM ? fleetPower(w, f) : 0), 0);
+        expect(zoneEnemy(w, sea)).toBeGreaterThan(together);
+        greekTurn(w);
+        expect(w.formations.cols.targetCell[dd] === sea && w.formations.cols.moving[dd] === 1, 'not for the squadron').toBe(false);
       });
     });
   });

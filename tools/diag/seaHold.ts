@@ -18,9 +18,12 @@
  *   enemy ships, only empty ones, none), its own power the test's. Since PLAN 7.35d2b `plan` gives
  *   such a fleet a new order (`awayOrder`): it is noted under its place only when it stands
  *   (escorting a landing, or on station by an enemy port with no battle to seek), else under
- *   `awayBattle`, `awayStation` or `awayBack`;
+ *   `awayBattle`, `awayStation` or `awayBack`. Since PLAN 7.35d2c a standing enemy warfleet in reach
+ *   (`standingWarfleets`), of its basin, whose zone its fleets together can win, is a battle too:
+ *   `awayHunt` (sails for it), `awayBeside` (stands by one);
  * - at a port of its bloc's: `escort`; `sortie` (a target with enemy ships), `sortieEmpty` (a target
- *   with none), `atTarget` (stands within `AT_PORT_CELLS` of its target already); with ports in reach
+ *   with none), `hunt` (a standing enemy warfleet, PLAN 7.35d2c), `atTarget` (stands within
+ *   `AT_PORT_CELLS` of its target already); with ports in reach
  *   and none taken, `heldStronger` (every one the enemy's power there over its fleets' together),
  *   `heldBombed` (every one empty water under naval bombers), `heldBoth`; with none in reach,
  *   `stage`, `atBase`, `noBaseInBasin` (forward bases, none in its basin), `noBase` (no forward base:
@@ -45,7 +48,7 @@ import { loadAssets1938 } from '../headless/assets';
 import { AT_PORT_CELLS, basinAt, seaKm } from '../../src/sim/systems/navalCombat';
 import { fleetPower, navalPower } from '../../src/sim/systems/seaControl';
 import { blocOf } from '../../src/sim/systems/supply';
-import { AVOID_RATIO, forwardBases, navalBombers, SORTIE_KM, stageTo } from '../../src/sim/ai/naval';
+import { AVOID_RATIO, forwardBases, navalBombers, SORTIE_KM, stageTo, standingWarfleets } from '../../src/sim/ai/naval';
 import { STAGGER } from '../../src/sim/ai/strategic';
 import { basinOf, portSeaOf, seaOf, seaRangeOf, type World } from '../../src/sim/world';
 
@@ -58,8 +61,8 @@ const sim = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SZ.w) });
 type Why =
   | 'moving' | 'engaged' | 'station'
   | 'awayHome' | 'awayEnemyPort' | 'awayLostPartner' | 'awayPartnerPort' | 'awayNeutralPort' | 'awayOpen'
-  | 'awayBattle' | 'awayStation' | 'awayBack'
-  | 'escort' | 'sortie' | 'sortieEmpty' | 'atTarget'
+  | 'awayBattle' | 'awayHunt' | 'awayBeside' | 'awayStation' | 'awayBack'
+  | 'escort' | 'sortie' | 'sortieEmpty' | 'hunt' | 'atTarget'
   | 'heldStronger' | 'heldBombed' | 'heldBoth'
   | 'stage' | 'atBase' | 'noBaseInBasin' | 'noBase' | 'noEnemyPort';
 type Tally = Record<string, number>;
@@ -98,8 +101,10 @@ function read(w: World, y: Year): void {
   const z = seaOf(w);
   const water = portSeaOf(w);
   const ctl = w.cells.controller;
-  const { basin } = basinOf(w);
+  const { basin, ocean } = basinOf(w);
   const power = navalPower(w);
+  // The standing warfleets the naval AI hunts (PLAN 7.35d2c), read as `navalAi` reads them.
+  const prey = standingWarfleets(w);
   for (const war of w.wars.list) for (const a of war.sides[0]) for (const b of war.sides[1]) everWar.add(a * 65536 + b).add(b * 65536 + a);
   // Armed fleets' basins by nation, for the `sea` tag.
   const armed = new Map<number, Set<number>>();
@@ -199,6 +204,7 @@ function read(w: World, y: Year): void {
       const zone = z.zoneOf[at]!;
       if (zone !== 0 && z.closed[zone] !== 1) targets.push({ at, enemy: enemyIn(zone) });
     });
+    const hunts = prey.filter((q) => w.wars.atWar(n, q.nation)).map((q) => ({ at: q.at, enemy: enemyIn(q.zone), basin: basin[q.zone] || ocean }));
     const empty = (t: { at: number; enemy: number }): boolean => t.enemy === 0 && bombed((t.at % W) + 0.5, Math.floor(t.at / W) + 0.5);
     // Away and not sent home: `awayOrder`'s test (PLAN 7.35d2b). Noted under its place (`why`) when
     // it stands (escorting, or on station by an enemy port); else `awayBattle` (a winnable target with
@@ -210,14 +216,24 @@ function read(w: World, y: Year): void {
       let bestB = Infinity;
       let bestS = Infinity;
       let onStation = false;
+      let hunt = false;
+      let beside = false;
+      const mineB = basinAt(w, c.x[a.id]!, c.y[a.id]!);
+      for (const t of hunts) {
+        if (t.basin !== mineB || t.enemy > together(t.at)) continue;
+        if (near(cellOf(a.id), t.at)) { beside = true; continue; }
+        const d = km(a.id, t.at);
+        if (d <= SORTIE_KM && d < bestB) [bestB, battle, hunt] = [d, t.at, true];
+      }
+      if (beside) { note(a.id, 'awayBeside'); continue; }
       for (const t of targets) {
         if (near(cellOf(a.id), t.at)) { onStation = true; continue; }
         const d = km(a.id, t.at);
         if (d > SORTIE_KM || t.enemy > together(t.at) || empty(t)) continue;
-        if (a.e === 0 && t.enemy > 0 && d < bestB) [bestB, battle] = [d, t.at];
+        if (a.e === 0 && t.enemy > 0 && d < bestB) [bestB, battle, hunt] = [d, t.at, false];
         if (d < bestS) [bestS, station] = [d, t.at];
       }
-      if (battle >= 0) note(a.id, 'awayBattle', true, battle);
+      if (battle >= 0) note(a.id, hunt ? 'awayHunt' : 'awayBattle', true, battle);
       else if (onStation) note(a.id, a.why);
       else if (station >= 0) note(a.id, 'awayStation', true, station);
       else note(a.id, 'awayBack', true);
@@ -228,6 +244,8 @@ function read(w: World, y: Year): void {
       if (!seaOfFleet(a.id)) continue;
       let battle = false;
       let anyT = false;
+      const mineB = basinAt(w, c.x[a.id]!, c.y[a.id]!);
+      for (const t of hunts) if (t.basin === mineB && km(a.id, t.at) <= SORTIE_KM && !near(cellOf(a.id), t.at) && t.enemy <= a.p) battle = anyT = true;
       for (const t of targets) {
         if (km(a.id, t.at) > SORTIE_KM || near(cellOf(a.id), t.at) || t.enemy > a.p || empty(t)) continue;
         anyT = true;
@@ -266,6 +284,7 @@ function read(w: World, y: Year): void {
       let best = Infinity;
       let target = -1;
       let enemyAt = 0;
+      let isHunt = false;
       let stronger = 0;
       let bombedN = 0;
       let inReach = 0;
@@ -282,10 +301,15 @@ function read(w: World, y: Year): void {
         if (isEmpty) bombedN++;
         if (d < best && !tooStrong && !isEmpty) [best, target, enemyAt] = [d, t.at, t.enemy];
       }
+      for (const t of hunts) {
+        if (t.basin !== mine) continue;
+        const d = km(id, t.at);
+        if (d <= SORTIE_KM && d < best && t.enemy <= together(t.at)) [best, target, enemyAt, isHunt] = [d, t.at, t.enemy, true];
+      }
       if (target >= 0) {
-        if (basin[z.zoneOf[target]!] !== mine) y.holes.otherBasin++;
+        if (!isHunt && basin[z.zoneOf[target]!] !== mine) y.holes.otherBasin++;
         if (near(cellOf(id), target)) note(id, 'atTarget');
-        else note(id, enemyAt > 0 ? 'sortie' : 'sortieEmpty', true, target);
+        else note(id, isHunt ? 'hunt' : enemyAt > 0 ? 'sortie' : 'sortieEmpty', true, target);
         if (enemyAt === 0 && seaOfFleet(id)) {
           if (targets.some((t) => t.enemy > 0 && km(id, t.at) <= SORTIE_KM && t.enemy <= together(t.at))) y.emptyPick.defended++;
           else y.emptyPick.none++;
@@ -322,7 +346,7 @@ function check(w: World, y: Year, rejected: Set<number>): void {
       y.check.ordered++;
       if (moving || rejected.has(r.id)) y.check.agree++;
       else y.check.miss[r.why] = (y.check.miss[r.why] ?? 0) + 1;
-      if (r.target >= 0 && (r.why === 'awayBattle' || r.why === 'awayStation')) {
+      if (r.target >= 0 && (r.why === 'awayBattle' || r.why === 'awayHunt' || r.why === 'awayStation')) {
         // A fleet sent back to where it was ordered two orders before (PLAN 7.35d2b: the hop between ports).
         const was = lastTargets.get(r.id) ?? [-1, -1];
         if (was[0] === r.target) y.check.pingPong++;

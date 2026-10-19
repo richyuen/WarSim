@@ -197,3 +197,60 @@ noted under its place). JSON in `d2b/after_<seed>.json`. The same 14 seeds × 6 
   On seed 99's first year the `SeaBattle` rows are 20 against 8.
 - A partner's port the enemy holds rose from 0.4 % to 4.9 %. The fleets keep station there as at
   any enemy port (the third hole, re-measured after d).
+
+## 5. The sortie seeks enemy warfleets (7.35d2c, ADR-550)
+
+**The rule** (`standingWarfleets`, `plan` and `awayOrder` in `src/sim/ai/naval.ts`). Each standing
+enemy warfleet (power over 0, not under way, not in a battle, on an open zone) within `SORTIE_KM`, in
+the fleet's basin, whose zone's enemy power the fleet's warfleets there together can win, is a target
+at its cell. From port it is taken when it is the nearest target. From away it is a battle from any
+zone, and a fleet by one stays. It is no station and no reason to stand rather than stage.
+
+`seaHold` reads it as `plan` does (`hunt` from port, `awayHunt` from away, `awayBeside` by one).
+`enemyAt` still asks whether the nearest enemy fleet stands by an enemy port, so `notTarget` is
+the enemy fleets in reach at no enemy port that the fleet still did not seek. JSON in
+`d2c/after_<seed>.json`. Before: §4's `d2b/after_<seed>.json` (no sim change between `5f3d6be` and
+the rule). The same 14 seeds × 6 years, years 2–6, `sea` fleet-days:
+
+| | before | after |
+| --- | --- | --- |
+| all | 115,987 | 113,639 |
+| away, no battle to seek (entering `enemyAt`) | 103,275 | 104,075 |
+| **the nearest enemy fleet in reach at no enemy port (`notTarget`)** | **9,306** | **491** |
+| the nearest enemy fleet beyond `SORTIE_KM` (`far`) | 90,942 | 101,708 |
+| the nearest at an enemy port, too strong (`targetStronger`) | 752 | 299 |
+| the nearest under way | 2,275 | 1,577 |
+| ordered from away: an enemy fleet / a port with enemy ships | — / 1,749 | 660 / 606 |
+| ordered from away: a new station / home | 798 / 324 | 1,290 / 221 |
+| ordered from port: an enemy fleet / a port with enemy ships / an empty port | — / 190 / 5,749 | 64 / 210 / 4,942 |
+| tool against the tick (orders) | 16,346 of 16,372 | 15,987 of 16,018 |
+| an order back to the target of two orders before | 249 | 243 |
+
+- The 491 left are not traced one by one. What the tool's reads allow: the `away` test weighs the
+  fleet's own power, not its fleets' together, so a zone too strong for it alone counts there; an
+  enemy fleet in a sea battle is no prey (`engaged`) but is the nearest in `enemyAt`; and one within
+  `AT_PORT_CELLS` of the fleet is passed over by the `away` test.
+- The nearest enemy fleet is now beyond `SORTIE_KM` in 97.7 % of those fleet-days (88.1 %
+  before): the enemy fleets in reach are fought or sunk, and the rest are far. That is §3's third
+  cause left without a rule, re-measured after 7.35d2d.
+- No chase between two fleets hunting each other shows: the returns to a target of two orders
+  before are 243 against 249.
+
+**What it did to the battles** (`seaYears` on 4 seeds × 6 years, `d2c/years/after_<seed>.json`,
+against §4's `d2b/years/after_<seed>.json`; the four seeds summed, fleets and power a day's mean
+averaged over them):
+
+| year | battles | that sank a ship | ships sunk | armed fleets | power | sea pairs a day |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 99 → 119 | 96 → 113 | 1,025 → 1,189 | 104 → 101 | 316k → 305k | 4.9 → 3.9 |
+| 2 | 38 → 33 | 37 → 33 | 393 → 311 | 93 → 92 | 285k → 279k | 4.2 → 3.5 |
+| 3 | 35 → 17 | 35 → 17 | 485 → 340 | 84 → 87 | 259k → 267k | 3.6 → 2.4 |
+| 4 | 11 → 12 | 10 → 12 | 86 → 111 | 82 → 86 | 253k → 265k | 2.4 → 0.7 |
+| 5 | 12 → 19 | 12 → 17 | 296 → 167 | 82 → 84 | 249k → 260k | 1.2 → 1.0 |
+| 6 | 13 → 11 | 13 → 11 | 92 → 86 | 79 → 88 | 244k → 273k | 0.5 → 1.3 |
+
+More battles in year 1 (119 against 99), fewer in years 2–6 (92 against 109). The navies keep more
+power late (273k against 244k by year 6), and the pairs at war with a navy each in one basin
+still fall below 1.5 a day by years 4–6. Four seeds, and the worlds part after the first weeks,
+so this is a read, not a verdict: the verdict is 7.35d2d's 14 × 30 run against d1's.
+On seed 99's first year the `SeaBattle` events are 34 against 20, the first on day 13.4 against 45.2.
