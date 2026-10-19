@@ -67,7 +67,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
         between Hawaii and Guam in the data (hops 4,230, 6,152, 2,567 km); Japan's fleets go to
         China's ports and take Guam and Davao unopposed; the Asiatic squadron sails to Takao, finds
         no ship and is sunk by Formosa's wings (hours 100 to 124). Least gap 279 km, no battle.
-      - [ ] 7.35b2 A warfleet at war with no enemy port within `SORTIE_KM` stages: it sails to
+      - [x] 7.35b2 A warfleet at war with no enemy port within `SORTIE_KM` stages: it sails to
         the port of its bloc nearest an enemy port, when that port has one within `SORTIE_KM`
         and is nearer one than the fleet is (a transit, not bounded by `SORTIE_KM`); the sortie
         test then runs from there. AT: a unit test (stages; stays with no nearer base; a fleet
@@ -78,6 +78,11 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
         squadron sails into Takao and is sunk by wings on Formosa with no sea battle. Measured
         (how often a fleet is sunk at a sortie's target by air alone, on the critic's seeds),
         then a rule with an ADR, or the reason.
+      - [ ] 7.35b4 A fleet at a lost base sails for its nation's nearest port, not its bloc's
+        (`atLostBase`, `sailHome`, ADR-261): on seed 3407 with 7.35b2 the US fleets stage to
+        Guam, Japan takes it on day 6, and they turn for Pago Pago (4,300 km) rather than the
+        Philippines (2,000 km); the first Japan–US battle comes on day 39.5. AT: measured on
+        `seaMeet 3407 JAP USA 40`, before and after; a unit test; the pin's entry.
     - [ ] 7.35c Ships at 20 m/px drawn at a size their class reads (destroyers about 10 × 3 px,
       submarines 5 px in `c9n_2251_ships_20m_crop4x.png`), counted in px. `shipMarks1938`'s T3
       test is red at `951b1c6` (a destroyer's median 17 px at 15 m/px, its bar 18.5; PLAN 7.22b):

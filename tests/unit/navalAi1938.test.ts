@@ -8,6 +8,7 @@ import { equipFormation } from '../../src/sim/systems/elements';
 import { seaKm } from '../../src/sim/systems/navalCombat';
 import { navalPower } from '../../src/sim/systems/seaControl';
 import { convoyWays } from '../../src/sim/systems/seaSupply';
+import { blocOf } from '../../src/sim/systems/supply';
 import { portSeaOf, seaOf, type World } from '../../src/sim/world';
 import { declareWar, makePeace } from '../../src/sim/systems/war';
 import { assets1938 } from '../helpers/earth';
@@ -215,6 +216,87 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     expect(left(full)).toBe(false);
   });
 
+  // PLAN 7.35b2 (ADR-543): a warfleet with no enemy port within SORTIE_KM stages to its bloc's
+  // nearest port that has one; one with an enemy port in reach does not, nor one with no such base.
+  const enemyWaters = (w: World, n: number): number[] => w.ports.flatMap((p, i) => {
+    const holder = w.cells.controller[p.cell]!;
+    const at = portSeaOf(w)[i]!;
+    return holder !== 0 && at >= 0 && w.wars.atWar(n, holder) && seaOf(w).zoneOf[at] !== 0 ? [at] : [];
+  });
+  const kmTo = (w: World, x: number, y: number, cell: number): number => seaKm(w, x, y, (cell % W) + 0.5, Math.floor(cell / W) + 0.5);
+
+  it('the United States at war with Japan: its fleets at San Diego, no Japanese port within SORTIE_KM, stage within a turn to a port of its bloc that has one (PLAN 7.35b2)', () => {
+    const s = new Sim({ scenario: '1938', seed: 4608, assets: assets1938(W) });
+    const w = s.world;
+    const c = w.formations.cols;
+    const USA = id('USA');
+    const JAP = id('JAP');
+    expect(declareWar(w, JAP, USA, true)).not.toBeNull();
+    // Japan's AI off: its fleets stand and its ports stay its own (Guam stays American).
+    w.nations.cols.aiOff[JAP] = 1;
+    const sd = w.ports.find((p) => p.name === 'San Diego' && p.navalBase > 0)!;
+    const fleets = own(s, USA).filter((f) => seaKm(w, c.x[f]!, c.y[f]!, sd.x, sd.y) < 100);
+    expect(fleets.length).toBeGreaterThan(0);
+    const enemy = enemyWaters(w, USA);
+    for (const f of fleets) expect(Math.min(...enemy.map((e) => kmTo(w, c.x[f]!, c.y[f]!, e)))).toBeGreaterThan(SORTIE_KM);
+    s.step(8 * 24);
+    const water = portSeaOf(w);
+    for (const f of fleets) {
+      expect(c.moving[f], `fleet ${f} under way`).toBe(1);
+      const t = c.targetCell[f]!;
+      // A port's water of the United States' bloc, with a Japanese port within SORTIE_KM of it.
+      const base = w.ports.findIndex((_p, i) => water[i] === t);
+      expect(base, `fleet ${f} sails for a port`).toBeGreaterThanOrEqual(0);
+      const holder = w.cells.controller[w.ports[base]!.cell]!;
+      expect(blocOf(w, holder), `held by ${holder}`).toBe(blocOf(w, USA));
+      expect(Math.min(...enemyWaters(w, USA).map((e) => kmTo(w, (t % W) + 0.5, Math.floor(t / W) + 0.5, e)))).toBeLessThanOrEqual(SORTIE_KM);
+    }
+    process.stderr.write(`USA–JAP: ${fleets.length} fleets at San Diego staged for ${[...new Set(fleets.map((f) => w.ports.find((_p, i) => water[i] === c.targetCell[f])!.name))].join(', ')}\n`);
+  });
+
+  it('Italy at war with the United States: no port of Italy\'s has an American one within SORTIE_KM, and its fleets stand (PLAN 7.35b2)', () => {
+    const s = new Sim({ scenario: '1938', seed: 4609, assets: assets1938(W) });
+    const w = s.world;
+    const c = w.formations.cols;
+    const USA = id('USA');
+    expect(declareWar(w, ITA, USA, true)).not.toBeNull();
+    w.nations.cols.aiOff[USA] = 1;
+    const fleets = own(s, ITA);
+    const at = new Map(fleets.map((f) => [f, [c.x[f]!, c.y[f]!]]));
+    s.step(8 * 24);
+    const moved = fleets.filter((f) => c.moving[f] === 1 || c.x[f] !== at.get(f)![0] || c.y[f] !== at.get(f)![1]);
+    expect(moved).toEqual([]);
+  });
+
+  it('Greece at war with Italy, Italian ports within SORTIE_KM: no Greek fleet stages, each sails for an Italian port or stands (PLAN 7.35b2)', () => {
+    const s = new Sim({ scenario: '1938', seed: 4605, assets: assets1938(W) });
+    const w = s.world;
+    const c = w.formations.cols;
+    const GRE = id('GRE');
+    expect(declareWar(w, GRE, ITA, true)).not.toBeNull();
+    w.nations.cols.aiOff[ITA] = 1;
+    const fleets = own(s, GRE);
+    // At a Greek port's water (AT_PORT_CELLS, 3): one away sails home by the rules of PLAN 4.6c.
+    const atHome = (f: number): boolean => w.ports.some((p, i) => {
+      const at = portSeaOf(w)[i]!;
+      return at >= 0 && w.cells.controller[p.cell] === GRE && Math.abs((at % W) - Math.floor(c.x[f]!)) <= 3 && Math.abs(Math.floor(at / W) - Math.floor(c.y[f]!)) <= 3;
+    });
+    let sailed = 0;
+    for (let h = 0; h < 8 * 24; h++) {
+      const standing = fleets.filter((f) => w.formations.has(f) && c.moving[f] === 0 && atHome(f));
+      s.step(1);
+      for (const f of standing) {
+        if (!w.formations.has(f) || c.moving[f] !== 1) continue;
+        const t = c.targetCell[f]!;
+        const port = w.ports.findIndex((_p, i) => portSeaOf(w)[i] === t);
+        expect(port, `fleet ${f} sails for a port's water`).toBeGreaterThanOrEqual(0);
+        expect(w.cells.controller[w.ports[port]!.cell], `fleet ${f} sails for ${w.ports[port]!.name}`).toBe(ITA);
+        sailed++;
+      }
+    }
+    expect(sailed).toBeGreaterThan(0);
+  });
+
   it('at peace a fleet away from its ports sails home', () => {
     const s = new Sim({ scenario: '1938', seed: 4604, assets: assets1938(W) });
     const w = s.world;
@@ -225,8 +307,9 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     const war = w.wars.list.find((x) => x.sides.flat().includes(ENG))!;
     makePeace(w, war);
     s.step(30 * 24);
-    // Home, or on the way.
-    const homeOrSailing = away.filter((f) => !w.formations.has(f) || w.formations.cols.moving[f] === 1 || w.ports.some((p) => w.cells.controller[p.cell] === ENG && Math.abs(Math.floor(w.formations.cols.x[f]!) - (p.cell % W)) <= 4 && Math.abs(Math.floor(w.formations.cols.y[f]!) - Math.floor(p.cell / W)) <= 4));
+    // Home, or on the way: a port of its bloc's is home (`plan`; since PLAN 7.35b2 the Far East
+    // fleets stage to Muscat, Oman's, within reach of Italy's East Africa).
+    const homeOrSailing = away.filter((f) => !w.formations.has(f) || w.formations.cols.moving[f] === 1 || w.ports.some((p) => w.cells.controller[p.cell] !== 0 && blocOf(w, w.cells.controller[p.cell]!) === blocOf(w, ENG) &&Math.abs(Math.floor(w.formations.cols.x[f]!) - (p.cell % W)) <= 4 && Math.abs(Math.floor(w.formations.cols.y[f]!) - Math.floor(p.cell / W)) <= 4));
     expect(homeOrSailing.length).toBe(away.length);
   });
 });

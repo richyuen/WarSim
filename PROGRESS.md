@@ -19740,3 +19740,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   100 to 124). Least gap between the sides' fleets 279 km; no Japan–US sea battle in 60 days.
 - **No rule change:** pin 45c20987 (a tool and documents).
 - **Next:** PLAN 7.35b2 (a fleet with no enemy port in reach stages forward).
+
+## 2026-10-19 — PLAN 7.35b2: a warfleet with no enemy port in reach stages forward (critic R9 naval 6; ADR-543)
+
+- **Start:** gate green on `3b0fd58`; critic not due.
+- **Rule** (ADR-543): at war, a warfleet at its bloc's port with no enemy port at all within
+  `SORTIE_KM` sails for the nearest of its forward bases (`forwardBases`: its bloc's ports with an
+  enemy port within `SORTIE_KM`, the enemy in the zone no stronger than its fleets in port). A
+  transit, no bound. A fleet with an enemy port in reach it cannot win does not stage.
+- **Measured** (`seaMeet 3407 JAP USA 60`): the whole US Navy sails west in the first turn; first
+  Japan–US sea battle day 39.5 (General Santos), five by day 46, 16 ships sunk, every hour with a
+  row (`seaRows` 50 days: 0 sunk with no row). None in 30 days: the measured reason is the lost
+  base (Guam falls on day 6; `atLostBase` sends the fleets to Pago Pago, 4,300 km, not the
+  Philippines): PLAN 7.35b4. Italy and Germany against the US stand as before until Germany's
+  landing takes Boston.
+- **Tests:** `navalAi1938.test.ts` + 3 (US at San Diego stages to a US-bloc port with a Japanese
+  port in reach: red without the rule; Italy against the US stands; Greece against Italy never
+  stages). The peace test's home check reads a bloc port as home, as `plan` does (Britain's Far
+  East fleets now stage to Muscat, Oman's, and stay there at peace).
+- **Perf:** navalAi 0.032 → 0.039 ms a tick (seed 99, 1 year, `--profile`); tick mean 2.14 ms
+  both.
+- **Pin** 45c20987 → 8c59c203 (seed 99's year: 8 sea battles, before 9; first on day 45 both).
+- **Next:** PLAN 7.35b3 (a sortie's target zone blind to land-based air).

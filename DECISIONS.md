@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-543 · 2026-10-19 · accepted — A warfleet with no enemy port in reach stages to its bloc's nearest port that has one (PLAN 7.35b2)
+
+- **Context.** Critic run 9, naval 6: "Japan–USA: no battle at all in 12 days" (seed 3407).
+  Measured (`docs/evidence/7.35/measure-b.md`, `tools/diag/seaMeet.ts`, at `7405df0`, 60 days):
+  the naval AI sorties a warfleet only to an enemy port within `SORTIE_KM` (2,500 km, ADR-270). The
+  US Pacific Fleet (51,000 power at San Diego and Pearl Harbor) has no Japanese port nearer than
+  5,926 km, and the data has no US port between Hawaii and Guam (hops 4,230, 6,152, 2,567 km): it
+  stood in port for all 60 days while Japan took Guam and Davao. No Japan–US sea battle in 60 days.
+- **Decision.** At war, a warfleet standing at its bloc's port with no landing to escort in reach
+  and no enemy port at all within `SORTIE_KM` stages: it sails for the nearest (to it) of its
+  forward bases (`forwardBases`), the water of each port its bloc holds, its zone open, with an
+  enemy port within `SORTIE_KM` of it, and in whose zone the enemy's power is no more than its
+  nation's warfleets in port together. The way there is a transit, not a sortie, and has no bound.
+  From the base the sortie test runs as before. A fleet with an enemy port within reach that it
+  cannot win does not stage: a battle it would lose is still not sought (ADR-270).
+- **Consequences.** Seed 3407, Japan on the US: the whole US Navy sails west within the first
+  turn; the first Japan–US sea battle is on day 39.5 at General Santos, five by day 46, Japan's
+  Davao fleet sunk (16 ships), every hour of them with a row (`seaRows`: 0 sunk with no row).
+  None in the first 30 days: the fleets stage to Guam, Japan takes it on day 6, and at the lost
+  base the fleets sail for their nation's nearest port (`atLostBase`, ADR-261: Pago Pago, 4,300
+  km), not their bloc's (the Philippines, 2,000 km): PLAN 7.35b4. Italy and Germany at war with
+  the US stand as before (no port of theirs has an American one in reach) until Germany's landing
+  takes Boston, its forward base then. Britain at war with Italy stages its Far East fleets to
+  Muscat (Oman's, in reach of Italy's East Africa); `navalAi1938`'s peace test reads a port of the
+  bloc as home, as `plan` does. Seed 99's year: 8 sea battles, before 9, the first on day 45 both.
+  navalAi 0.032 → 0.039 ms a tick. Pin 45c20987 → 8c59c203.
+
 ### ADR-542 · 2026-10-19 · accepted — A carrier's battle has a row of its own: the struck fleet, and the bombs on it (PLAN 7.35a; supersedes ADR-494's "no row")
 
 - **Context.** Critic run 9, naval 6: "Italy–UK: 25 six-hour samples with a live Italy–UK battle on

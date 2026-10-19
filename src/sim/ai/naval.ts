@@ -14,6 +14,9 @@
  *   zone's enemy power (`navalPower`, the blocs at war with it) is no more than that of its
  *   nation's warfleets in port within `SORTIE_KM` of that water together (they choose alike,
  *   and go together): a battle it would lose is not sought.
+ * - At war, such a warfleet with no enemy port within `SORTIE_KM` at all stages (PLAN 7.35b2):
+ *   it sails to the nearest port of its bloc's that has one (`forwardBases`), and sorties from
+ *   there. The US Pacific Fleet at San Diego goes west against Japan.
  * - At war, a warfleet away from its ports in a zone where the enemy's power is over
  *   `AVOID_RATIO` times its own sails home (`sailHome`).
  * - At war, a transport group (no power, no submarine, transports) with no formation aboard, away
@@ -187,17 +190,63 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
     const zone = z.zoneOf[at]!;
     if (zone !== 0 && z.closed[zone] !== 1) targets.push({ at, enemy: enemyIn(zone) });
   });
+  let bases: number[] | undefined;
   for (const { id } of war) {
     // Its landing's water within reach, else the nearest enemy port within reach whose sea the fleets there together can win.
     let target = escort >= 0 && km(id, escort) <= SORTIE_KM ? escort : -1;
+    let inReach = false;
     if (target < 0) {
       let best = Infinity;
       for (const t of targets) {
         const d = km(id, t.at);
-        if (d <= SORTIE_KM && d < best && t.enemy <= together(t.at)) [best, target] = [d, t.at];
+        if (d > SORTIE_KM) continue;
+        inReach = true;
+        if (d < best && t.enemy <= together(t.at)) [best, target] = [d, t.at];
       }
     }
+    // No enemy port within reach at all: it stages, to its bloc's nearest port that has one (PLAN 7.35b2).
+    if (target < 0 && !inReach && targets.length > 0) target = stage(id, (bases ??= forwardBases(world, bloc, targets, war, enemyIn)));
     if (target < 0 || near(cellOf(id), target)) continue;
     orderSail(world, id, (target % w) + 0.5, Math.floor(target / w) + 0.5);
   }
+
+  /** The water of `bases` nearest fleet `id`, or −1 with none. */
+  function stage(id: number, list: number[]): number {
+    let best = Infinity;
+    let at = -1;
+    for (const b of list) {
+      const d = km(id, b);
+      if (d < best) [best, at] = [d, b];
+    }
+    return at;
+  }
+}
+
+/**
+ * The forward bases of a nation at war (PLAN 7.35b2, ADR-543): the water of each port its bloc `bloc`
+ * holds, its zone open, with an enemy port (`targets`) within `SORTIE_KM` of it, and in whose zone
+ * the enemy's power is no more than its warfleets' in port together (`war`). A warfleet with no
+ * enemy port within `SORTIE_KM` sails to the nearest (`plan`): the US Pacific Fleet at San Diego,
+ * 5,900 km from Japan's nearest port with no American port between Hawaii and Guam, stood in port
+ * through a war with Japan (`docs/evidence/7.35/measure-b.md`). The way there is a transit, not a
+ * sortie: no bound on its length. From the base the sortie test runs as from any port of its own.
+ */
+function forwardBases(world: World, bloc: number, targets: readonly { at: number }[], war: readonly { p: number }[], enemyIn: (zone: number) => number): number[] {
+  const w = world.cells.w;
+  const z = seaOf(world);
+  const water = portSeaOf(world);
+  const ctl = world.cells.controller;
+  const all = war.reduce((s, x) => s + x.p, 0);
+  const out: number[] = [];
+  world.ports.forEach((p, i) => {
+    const at = water[i]!;
+    const holder = ctl[p.cell]!;
+    if (at < 0 || holder === 0 || blocOf(world, holder) !== bloc) return;
+    const zone = z.zoneOf[at]!;
+    if (zone === 0 || z.closed[zone] === 1 || enemyIn(zone) > all) return;
+    const ax = (at % w) + 0.5;
+    const ay = Math.floor(at / w) + 0.5;
+    if (targets.some((t) => seaKm(world, ax, ay, (t.at % w) + 0.5, Math.floor(t.at / w) + 0.5) <= SORTIE_KM)) out.push(at);
+  });
+  return out;
 }
