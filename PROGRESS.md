@@ -19105,3 +19105,29 @@ No rule changed and nothing on screen changed. One task came out of it.
   (reach: PLAN 7.29).
 - **Docs and tools only:** no sim change; pin c3bd280a.
 - **Next:** PLAN 7.27.
+
+## 2026-10-19 — PLAN 7.27a: the second sweep on unseen seeds, and which five hold
+
+- **Start:** gate green on `6a877ca`; critic not due.
+- **Sweep** (`npm run sweep -- --first 731 --tag 727a`, seeds 731–740 × 50 years, 34.1 min):
+  FAILING (dynamism). Limits, riser, faller, no break-up 10 of 10; **no stasis 7 of 10** (732: 24
+  years, 735: 21, 740: 21). `docs/sweeps/2026-10-19-sweep-727a.md`. With 7.18g (7 of 10) and 7.24a
+  (10 of 10), the 10 of 10 was luck, not the air.
+- **Measured** (`docs/evidence/7.27/measure-a.md`; `npm run diag` at the spans' years,
+  `.cache/727/diag*.txt`): the world moves (3–10 wars, up to 8.7 % of the land a year), the top
+  does not. The USA is in the longest five on 30 of 30 seeds of the three sweeps, the Soviet Union
+  on 27. On the failing seeds: the USA unreached (aggression 15, 190,000–770,000 gold); GER ITA
+  POL JAP in one alliance the whole span; the Soviet Union holding 10–21 M km² with 5,000–105,000
+  men while Germany (up to 1.6 M men) and Japan see it at the ratio cap; its wars end within the
+  year with most of its land and a truce after (732: GER v SOV, Soviet land 15.7 → 11.9 M km², then
+  truces; years 36–46 it regains 11.6 → 12.7 M).
+- **Split:** 7.27b (one great power's war with the Soviet Union traced from a checkpoint: the
+  peace, the truce, the share of the attacker's men in contact; the fork between a strategic-AI
+  cause, 7.27's, and a land-front reach cause, a new 7.29 part), 7.27c (the rule), 7.27d (the
+  full sweep on 741–750). Checkpoints `.cache/727/s732-y25.bin`, `s735-y26.bin`, `s740-y18.bin`.
+- **Tick:** the sweep took 34 min against 7.24a's 19.5, every seed 30–34 min. Seed 99 × 5 years
+  pinned (`--affinity 0xFFFF`, machine idle): 1.55 ms a tick (1.98–2.01 at the last measure,
+  ADR-510's). The early years are not slower; the late years' cost is not measured (yearly wall
+  of a lone unpinned 732 run beside two others: 11–31 s). To be measured before 7.27d's sweep.
+- **Docs only:** no sim change; pin c3bd280a.
+- **Next:** PLAN 7.27b.

@@ -43,6 +43,23 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
   no stasis on 10 of 10 (the longest one top five 7 to 19 years), every other criterion held. The
   air's calibration and spread (ADR-502, ADR-503) came between; whether they or luck did it is this
   task's to find (a second sweep on other unseen seeds, then the measure above if it fails).
+    - [x] 7.27a The second sweep and the measure (`docs/evidence/7.27/measure-a.md`): seeds 731–740
+      no stasis 7 of 10 (732, 735, 740: 21–24 years; every other criterion held). The world moves
+      (3–10 wars, up to 8.7 % of the land a year); the top does not: the USA (unreached, a hoard
+      of 190,000–770,000 gold), two or three members of one alliance (GER ITA POL JAP), and a
+      Soviet Union of 10–21 M km² and 5,000–105,000 men that Germany and Japan, at the ratio cap,
+      do not take for 20 years. Checkpoints `.cache/727/s732-y25.bin`, `s735-y26.bin`, `s740-y18.bin`.
+    - [ ] 7.27b One great power's war with the Soviet Union traced from a checkpoint to its end
+      (732 from year 25: GER v SOV, 181 days old in year 26, score 35): who offered peace, at what
+      score and exhaustion, the land taken, the truce's length, and through the war the share of
+      the attacker's men in contact with the Soviet front and why the rest stand. The fork, for
+      7.27c: the war ended by a decision while winning (peace taken, the truce after) is the
+      strategic AI's and stays 7.27's; the front stalled for want of men in contact is the late
+      land war short on a land front, a new part of PLAN 7.29 (7.29a and b are the sea's). AT: the
+      trace in `docs/evidence/7.27/`; `tools/sweep/stasis.ts` (the five of each seed's longest span).
+    - [ ] 7.27c The rule the trace names, one cause, tuned on `sweep:quick`. AT: a unit test; the
+      pin's entry.
+    - [ ] 7.27d The full sweep on unseen seeds (741–750). AT: 7.27's.
 - [ ] 7.28 A launch shot down and the gap after it (found 2026-10-18 by PLAN 7.26b, ADR-508): the
   critic's France (`nukeOverrun1938`, seed 7127) launches once on day 71, the warhead is shot down
   by German fighters, STRIKE_GAP_DAYS (ADR-507, keyed on the launch) holds its next attempt, and
