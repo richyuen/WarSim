@@ -180,8 +180,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   10,655 men was 14 to 25 % of a theatre of 44,000 to 77,000: value 1.
 - **Decision.** A theatre's men count for at least THEATRE_MEN_MIN = 250,000 men. A burst is then
   worth TARGET_SCALE × its men ÷ 250,000, whole at 25,000 men in the blast (two divisions massed).
-  A lone division is worth 0.43 and is struck in extreme desperation only (desperation 2,
-  doctrine 1.2: 1.03 against costs of about 0.5). A remnant of 1,363 men is worth 0.05. The output
+  A lone division is worth 0.43: struck with room in extreme desperation (desperation 2, doctrine
+  1.2: 1.03 against costs of about 0.5), and just over NUKE_FLOOR at a desperation about 1 (seed
+  9901 on the critic's code: three strikes at 0.99 to 1.18, utilities 0.025 to 0.055; left to PLAN
+  7.37). A remnant of 1,363 men is worth 0.05. The output
   and capital parts are unchanged (single bombs on small states are PLAN 7.37's).
 - **Not done.** No rule of its own for "no strike near a place where the last strike found almost
   nothing". A burst finds what it was weighed at (men expected against men lost, within 1 % to

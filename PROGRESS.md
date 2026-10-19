@@ -19442,3 +19442,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   civilians. 7.32b tells them apart. A worktree at the critic's commit (`mklink /J` node_modules)
   replays its exact worlds when HEAD's have moved.
 - **Next:** PLAN 7.32b (the toll told).
+
+## 2026-10-19 — PLAN 7.32a's check: what a lone division is worth, said as measured
+
+- **Review** (advisor): ADR-528 and the constant's comment said a lone division is struck "in
+  extreme desperation only"; the critic's 9901 with the rule has three such strikes at desperation
+  0.99 to 1.18 (utilities 0.025 to 0.055). Both now say so; the case is under PLAN 7.37. SPEC §6.4's
+  targetValue has the men floor beside the quarter.
+- **By hand** (the gate skips e2e): `nukeDemo1938` green (France decides on Berlin, tick 24).
+- **No rule change:** pin 81db11b6.

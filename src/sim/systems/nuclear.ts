@@ -949,7 +949,9 @@ export const THEATRE_FLOOR = 0.25;
  * and the next three 1,373, 168 and 24, each 87 % of the side's men left, each of value 1. Seed
  * 9901's China held 60,000 to 260,000: a lone division of 10,655 men cleared TARGET_SCALE's tenth
  * of its theatre and was struck at value 1 nine times in 185 days. Now such a division is worth
- * 0.43 and is struck in extreme desperation only. Set for the 1938 world's armies.
+ * 0.43: struck with room in extreme desperation, near NUKE_FLOOR at a desperation about 1 (seed
+ * 9901, the critic's code: three such strikes at 0.99 to 1.18, utilities 0.025 to 0.055; PLAN
+ * 7.37). Set for the 1938 world's armies.
  */
 export const THEATRE_MEN_MIN = 250_000;
 /** How long a burst keeps another warhead off its place (PLAN 6.11b), days. */

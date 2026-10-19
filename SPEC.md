@@ -1926,7 +1926,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     fronts. Uses expected damage from blast radius × local value. Men are weighed as a share
     of the enemy side's men in the place's theatre (within 1,000 km), and that theatre counts
     for at least a quarter of all the side's men: a lone garrison is not the whole of its
-    theatre (PLAN 7.18c, 7.18j, ADR-492).
+    theatre (PLAN 7.18c, 7.18j, ADR-492). It counts for at least 250,000 men too: a burst is
+    weighed by what it destroys, whole at 25,000 men, not by its share of a beaten side's last
+    men (PLAN 7.32a, ADR-528).
   - desperation: rises with losing war score, capital threatened, core loss, and
     fightToDeath.
     A holder winning or holding its own in a war of a year or more, against enemies that

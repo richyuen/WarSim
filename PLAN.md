@@ -106,7 +106,10 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
   never see a burst while 4 to 6 nations hold 145 to 160 warheads (2251, 5527, 8821); Czechoslovakia
   armed in the editor with a bomber group at Prague and 10 warheads loses its 6 wings by day 10 and
   dies holding all 10, the editor saying only "10 warheads", no word in play when its means are lost
-  (`c9_g2_*_CZS.json`; what destroyed the wings untraced). Measured first: each case's decision
+  (`c9_g2_*_CZS.json`; what destroyed the wings untraced). Left by 7.32a (ADR-528): seed 9901 on the
+  critic's code, the Soviet Union strikes a lone Chinese division of 10,655 to 10,751 men three times
+  at desperation 0.99 to 1.18, utilities 0.025 to 0.055, just over NUKE_FLOOR
+  (`docs/evidence/7.32/chain-f0be88c-9901_rule.json`). Measured first: each case's decision
   (who, why, the utility's parts). AT: per case, the decision explained or changed by a rule with an
   ADR; the editor says a holder's means and the game says when the last is lost; the critic's
   14 seeds' bursts before and after; a unit test for each rule; the pin's entry.
