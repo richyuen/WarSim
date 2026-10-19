@@ -37,8 +37,8 @@ keeps 42–75 % for the army, as Germany 38 % and Japan 33 %.
 
 ## Where its 1938 industry went
 
-The Soviet Union of 1938 has 1,156 gold a month of industry on 21.2 M km² (Germany 2,213 on
-0.64 M km²; industry is the cities', `cellWeight`: CITY_WEIGHT over LAND_WEIGHT). At the
+The Soviet Union of 1938 has 1,156 gold a month of industry on 21.2 M km² (Germany 1,980 on
+0.47 M km² at the start, 2,213 on 0.64 M once Austria is in; industry is the cities', `cellWeight`: CITY_WEIGHT over LAND_WEIGHT). At the
 checkpoints:
 
 | | 732 y25 | 735 y26 | 740 y18 |
@@ -51,7 +51,7 @@ checkpoints:
 The land it keeps is three quarters of its land; the industry it keeps is half, because what it
 lost is the west, where the cities are (Ukraine, Belarus, the Baltic and Moscow's or Leningrad's
 size-5 city). Germany on the same seed holds 3,865 of industry of its own, from 173 228 132 64 19
-cities (19 22 10 6 1 in 1938). The income gap of 8 to 1 is the 1938 gap of 2 to 1 times the
+cities (19 22 10 6 1 in 1938). The income gap of 8 to 1 is the 1938 gap of 1.7 to 1 times the
 cities taken from one and given to the other.
 
 ## How the army went (seed 732 from 1938, this code)
@@ -76,8 +76,8 @@ orders, refills and warheads added back.
 | 9.09 | 604 | 296 | −629 | 1,001 | 0 | 76 | 12,460 |
 
 Years 0–10 summed: `left` 75,004; orders 55,055 (55 infantry divisions) and 756 (air); refills
-34,263; the treasury −4,082; unexplained 10,988 (92 a month; the refill day's combat and the CE
-charge's timing). Germany: `left` 49,158, orders 43,883, refills 15,229, unexplained 1,154.
+34,263; the treasury −4,082; unexplained 10,988 (92 a month, the treasury gaining more than
+`left` says; not split here). Germany: `left` 49,158, orders 43,883, refills 15,229, unexplained 1,154.
 
 1. **The 1938 army costs 94 % of the income.** The scenario's 1.52 M men cost 1,085 a month on an
    income of 1,156 (Germany's 14 %, Japan's 24 %, the USA's 1 %): the balance is −232 before any
@@ -110,7 +110,7 @@ top five more firmly: against 7.27's AT. No ADR, no pin change.
 
 Left as observations, none Soviet-specific, none taken up here:
 
-- **A division a month fed to a front and lost within weeks** (years 7.8–9.3): where a lone new
+- **A division bought a month and lost within weeks** (years 7.8–9.3): where a lone new
   division goes, and whether it should stand back until there are enough to hold, is the land
   war's (`ai/operational.ts`), PLAN 7.29's ground if its measure or the critic finds the late land
   war short.
