@@ -19292,3 +19292,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   at each answer kept first).
 - **No rule change:** pin 94235073.
 - **Next:** PLAN 7.30c2.
+
+## 2026-10-19 — PLAN 7.30c2: `joined` judged by each flip (ADR-524)
+
+- **Start:** gate green on `4de5965`; critic not due.
+- **Rule** (ADR-524, exact): `joinWide` keeps its runs with `joined` (`JoinRuns`); `passageWith`
+  judges each open/closed flip since by `joinedKept` instead of undoing at the first: a closing holds
+  if its set met one group or none, or if the cell touches no clear ground and its open neighbours
+  are joined round it; an opening holds unless it joins two classes; a flip in a node that is not
+  mixed undoes, as before. Cap JOIN_RUNS_KEPT = 16 live sets a grid.
+- **First form too narrow:** measure-c §2.3's rule alone (any closing in a run that met two groups
+  undoes) kept 884 → 833 and 392 → 283 walks; the "joined round it" case is what keeps most.
+- **Check** (`joinWalks.ts`, walks afresh at each kept answer): year 9 884 → 156 walks, year 44
+  392 → 48; 1,073 and 946 answers kept, none wrong; live runs at most 6.2 MB (10 sets). Seed 732's
+  hashes after years 9 and 44 equal 7.27d's; pin unchanged (94235073). `docs/evidence/7.30/measure-c.md` §3.
+- **Tests:** `operationalAi.test.ts` (new case, red before). No timing claimed (both years ran side by
+  side on different cores); 7.30d is the AT.
+- **Next:** PLAN 7.30d.

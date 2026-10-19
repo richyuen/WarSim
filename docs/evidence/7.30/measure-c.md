@@ -62,3 +62,29 @@ After flips, by the classes of the flips since the last walk:
 4. Bound: with every needless walk kept, year 9's `wideJoined` (7.9 s of 16.3 under the probe after
    7.30b, measure-a §4) falls by up to ~90 %, year 44's (4.4 s of 12.7) by up to ~98 %, less the
    checks of the flips (~10 a walk in year 9, ~28 in year 44, each a look at 8 neighbours).
+
+## 3. After 7.30c2 (ADR-524: each flip judged by the walk's runs)
+
+`joinWalks.ts` again, one year from the same checkpoints, with its check: at each passage whose
+`joined` was kept across judged flips (`JOIN_PROBE.kept`), the cells walked afresh and the
+partitions compared by the least node of each class. Output `.cache/730/joinWalksC2_732_y9.*` and
+`joinWalksC2_732_y44.*`.
+
+| | year 9 | year 44 |
+|---|---|---|
+| walks, before → after | 884 → 156 | 392 → 48 |
+| of them after flips | 812 → 84 (4 changed the partition) | 383 → 39 (none) |
+| `open` or `shut` changed; log rolled; first | 59; 3; 10 (as before) | 3; 2; 4 (as before) |
+| answers kept across judged flips | 1,073 | 946 |
+| of them wrong against a walk afresh | **0** | **0** |
+| most bytes held by the live runs at a walk | 6.2 MB (10 sets) | 2.4 MB (4 sets) |
+
+- The rule of §2.3 as written (a closing undone in any run that met two groups) kept too little:
+  884 → 833 and 392 → 283 walks, none wrong. The runs that meet two groups are the long ones along
+  the fronts, where the flips are. The rule kept is §2.3's with one more case: a closing in such a
+  set holds when the cell touches no clear ground and its open neighbours are joined by steps among
+  themselves (every way through it goes round it); and the sets' "met two groups" is kept by root
+  as the openings join them, not by the walk's run, so that it stays true of a set that grew.
+- Of the 812 walks after flips in year 9, 84 are left; 80 of them changed nothing (the bound was
+  811). Which flip undid each is not taken apart here (7.30d weighs what is left by part).
+- Seed 732's hashes after years 9 and 44 equal 7.27d's (e8fee30d, d481b109); pin unchanged.

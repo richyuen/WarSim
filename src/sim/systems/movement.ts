@@ -64,9 +64,9 @@
  */
 import { EventKind, RejectReason } from '../../shared/events';
 import { atan2 } from '../core/dmath';
-import { Mobility, MOVE_COST, stepKm, type MobilityId, type NavGrid, type Passage } from '../nav/grid';
+import { Mobility, MOVE_COST, stepKm, type JoinRuns, type MobilityId, type NavGrid, type Passage } from '../nav/grid';
 import { nearestCellWhere } from '../data/ownership';
-import { findDirectRoute, findRoute, nodeGroups, type ProvinceGraph } from '../nav/provinceGraph';
+import { dropRuns, findDirectRoute, findRoute, JOIN_PROBE, joinedKept, nodeGroups, type ProvinceGraph } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
 import { Domain, navOf, type World } from '../world';
 import { transportsPort, tryLanding } from './amphibious';
@@ -122,27 +122,42 @@ export function passageOf(world: World, nation: number, shared?: Map<string, Pas
 
 /**
  * A passage on its nodes' parts, with `joined` where it is known and holds (PLAN 7.1i): it is
- * of the parts' `open` and `shut` and of which cells are open, so it holds while no cell has
- * gone from an open holder to a closed one or back (`World.flipLog`; a cell between two open
- * holders, or two closed ones, is as open before as after).
+ * of the parts' `open` and `shut` and of which cells are open, so it is judged by each cell that
+ * has gone from an open holder to a closed one or back since (`World.flipLog`; a cell between two
+ * open holders, or two closed ones, is as open before as after): by the runs the walk kept
+ * (`joinedKept`, PLAN 7.30c2, ADR-524), and undone by any such flip where none are kept.
  */
 function passageWith(world: World, ok: Uint8Array, parts: NodeParts): Passage {
   const now = world.flipLogBase + world.flipLog.length;
+  let judged = false;
   if (parts.joined !== undefined) {
-    if (parts.flips < world.flipLogBase) parts.joined = undefined;
+    if (parts.flips < world.flipLogBase) dropJoined(parts);
     else {
-      const log = world.flipLog;
+      const { flipLog: log, flipCells: cells } = world;
+      const runs = parts.runs !== undefined && !parts.runs.dropped ? parts.runs : undefined;
+      const nav = runs !== undefined ? navOf(world) : undefined;
       for (let k = parts.flips - world.flipLogBase; k < log.length; k++) {
         const from = Math.floor(log[k]! / 65536);
         if (ok[from] === ok[log[k]! - from * 65536]) continue;
-        parts.joined = undefined;
-        break;
+        if (runs === undefined || !joinedKept(nav!.grid, nav!.graph, parts.open, parts.shut, parts.joined, runs, cells[k]!, ok[from] !== 1)) {
+          dropJoined(parts);
+          break;
+        }
+        judged = true;
       }
     }
   }
   parts.flips = now;
   const { open, shut, group, wide, joined } = parts;
-  return { ok, holder: world.cells.controller, open, group, shut, wide, keep: parts, ...(joined ? { joined } : {}) };
+  const pass: Passage = { ok, holder: world.cells.controller, open, group, shut, wide, keep: parts, ...(joined ? { joined } : {}) };
+  if (judged && joined !== undefined) JOIN_PROBE.kept?.(pass);
+  return pass;
+}
+
+function dropJoined(parts: NodeParts): void {
+  parts.joined = undefined;
+  if (parts.runs !== undefined) dropRuns(parts.runs);
+  parts.runs = undefined;
 }
 
 /** What a passage has by node: of the graph and the keys of `heldByNode` alone (`nodeParts`). */
@@ -159,6 +174,8 @@ interface NodeParts {
    */
   joined?: Int32Array | undefined;
   flips: number;
+  /** What the walk of `joined` saw of the runs, and the flips judged since (PLAN 7.30c2). */
+  runs?: JoinRuns | undefined;
   /**
    * The coarse routes over open nodes asked on these parts (`coarseRoute`, by mobility and ends;
    * PLAN 1.42h): a route is of `open` and `shut` alone, so it is kept while they are.
@@ -234,8 +251,11 @@ function nodeParts(world: World, ok: Uint8Array, key: string): NodeParts {
     wide: same ? was.wide : new Int32Array(graph.nodeCount),
     joined: same && patched ? was.joined : undefined,
     flips: same && patched ? was.flips : -1,
+    runs: same && patched ? was.runs : undefined,
     coarse: same && was.coarse.size < COARSE_KEPT ? was.coarse : new Map(),
   };
+  // Runs not carried over judge nothing more: their place among the kept is freed.
+  if (was?.runs !== undefined && parts.runs === undefined) dropRuns(was.runs);
   if (was === undefined && kept.parts.size >= NODE_PARTS_KEPT) kept.parts.clear();
   kept.parts.set(key, parts);
   return parts;

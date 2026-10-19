@@ -83,14 +83,14 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       unchanged; `opCalls.ts` from `.cache/730/s732-y30.bin` and `s732-y43.bin`: the asks refused
       again after a flip down by most. Done as ADR-523's rule: only a cell of the corridor gone
       from a closed holder to an open one undoes it (a cell lost to a closed one gives no way).
-    - [ ] 7.30c `joinWide` walked again by each plan of a coalition (years 9, 44): measured first
+    - [x] 7.30c `joinWide` walked again by each plan of a coalition (years 9, 44): measured first
       (which flips undo it, and whether a flip's cell outside the provinces it walks can change
       it); the fix only if exact. AT: the measure; the pin unchanged. A part each:
         - [x] 7.30c1 The measure (`docs/evidence/7.30/measure-c.md`, `tools/diag/joinWalks.ts`,
           `JOIN_PROBE`): 808 of year 9's 884 walks and 383 of year 44's 392 are the same set's walk
           again after flips in mixed nodes that left the partition as it was; no walk repeats
           another plan's in its tick; a rule by the flipped cell's node class keeps nothing.
-        - [ ] 7.30c2 `joined` kept across a flip that cannot change it (measure-c §2.3): kept with
+        - [x] 7.30c2 `joined` kept across a flip that cannot change it (measure-c §2.3): kept with
           the parts, each open cell of a mixed node at the walk with its class and whether its run
           met two groups; a flip in a node that is not mixed, the closing of a cell of a run that
           met two groups or of a cell opened since, or an opening whose open neighbours are of two
@@ -106,6 +106,9 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           unit test (a closing in a run that met one group keeps it, in one that met two undoes
           it; an opening between two classes undoes it); `joinWalks.ts`'s walks down by most;
           seed 732's hashes after years 9 and 44 equal 7.27d's; the pin unchanged.
+          Done as ADR-524's rule: a closing in a set that met two groups also holds when the cell
+          touches no clear ground and its open neighbours are joined round it, and 'met two' is kept
+          by root as the openings join the sets (by the walk's run alone, 884 -> 833 walks).
     - [ ] 7.30d The AT: seed 732 × 50 years alone, pinned, `--profile`, against 7.27d's; if short
       of half, what is left by year and part (`opCalls.ts`), and `pocketOf` (§3.3 of measure-a)
       weighed as a rule with an ADR or the bar put to the user (ADR-486's way).

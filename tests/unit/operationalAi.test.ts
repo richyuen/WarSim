@@ -1034,4 +1034,62 @@ describe('two wide grounds (PLAN 3.10c2b3a, ADR-193)', () => {
     expect(joined()).toBe(true);
     expect(joinWalks(nav.grid) - walks).toBe(2);
   });
+
+  it('it is kept across a flip in the wall that cannot change it, and walked again after one that can (PLAN 7.30c2)', () => {
+    const { w, USA, wall, ax, foe } = walled(0);
+    const CAN = nationId('CAN');
+    const nav = navOf(w);
+    const node = (c: number): number => nav.graph.nodeOf[c]!;
+    const north = (wall - 30) * W + ax;
+    const joined = (): boolean => {
+      const pass = passageOf(w, USA);
+      return wideJoined(nav.grid, nav.graph, pass, wideNode(nav.graph, pass, node(north)), wideNode(nav.graph, pass, node(foe)));
+    };
+    const keys = w.heldKeys;
+    const walks = joinWalks(nav.grid);
+    expect(joined()).toBe(false);
+    expect(joinWalks(nav.grid) - walks).toBe(1);
+    // An American cell north of the wall, in a province the wall runs through (open and closed
+    // ground): its run of open cells meets the north alone. Lost to Canada: kept.
+    const pass = passageOf(w, USA);
+    let lone = -1;
+    for (let x = ax + 10; x < ax + 80 && lone < 0; x++) {
+      const c = (wall - 1) * W + x;
+      if (w.cells.controller[c] === USA && pass.open![node(c)] === 1 && pass.shut![node(c)] === 1) lone = c;
+    }
+    expect(lone).toBeGreaterThanOrEqual(0);
+    w.setController(lone, CAN);
+    expect(joined()).toBe(false);
+    expect(joinWalks(nav.grid) - walks).toBe(1);
+    // A gap's first row: its open neighbours are of the north alone. Kept.
+    for (let x = ax; x < ax + 4; x++) w.setController(wall * W + x, USA);
+    expect(joined()).toBe(false);
+    expect(joinWalks(nav.grid) - walks).toBe(1);
+    // Its second row touches the south too: an opening between two classes. Walked again, and joined.
+    for (let x = ax; x < ax + 4; x++) w.setController((wall + 1) * W + x, USA);
+    expect(joined()).toBe(true);
+    expect(joinWalks(nav.grid) - walks).toBe(2);
+    // A cell of the gap, whose run met the north and the south, lost again, with no clear ground
+    // about it and its open neighbours joined round it: no way is lost, kept.
+    const gap: number[] = [];
+    for (let y = wall; y <= wall + 1; y++) for (let x = ax; x < ax + 4; x++) gap.push(y * W + x);
+    const now = passageOf(w, USA);
+    const mixed = (c: number): boolean => now.open![node(c)] === 1 && now.shut![node(c)] === 1;
+    const about = (c: number): number[] => {
+      const out: number[] = [];
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (dx !== 0 || dy !== 0) out.push((Math.floor(c / W) + dy) * W + (((c % W) + dx + W) % W));
+      return out;
+    };
+    const inner = gap.find((c) => about(c).every(mixed));
+    expect(inner).toBeDefined();
+    w.setController(inner!, CAN);
+    expect(joined()).toBe(true);
+    expect(joinWalks(nav.grid) - walks).toBe(2);
+    // The rest of the gap lost: one of them is the last way through. Walked again, and apart.
+    for (const c of gap) if (w.cells.controller[c] === USA) w.setController(c, CAN);
+    expect(joined()).toBe(false);
+    expect(joinWalks(nav.grid) - walks).toBe(3);
+    // Not one of these changed the provinces' holders (`open`, `shut`): the flips judged it.
+    expect(w.heldKeys).toBe(keys);
+  });
 });

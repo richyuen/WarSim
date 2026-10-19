@@ -167,6 +167,50 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-524 · 2026-10-19 · accepted — `joined` judged by each flip, not undone by any (PLAN 7.30c2)
+
+- **Context.** PLAN 7.1i keeps `wideJoined`'s answer (`joinWide`: which wide grounds the open cells
+  of the nodes with open and closed ground join) on a set of open holders' node parts, and drops it
+  at any cell gone from an open holder to a closed one or back. PLAN 7.30c1
+  (`docs/evidence/7.30/measure-c.md`) found 808 of seed 732's 884 walks in year 9 and 383 of 392 in
+  year 44 to be the same set walked again after such flips that left its partition as it was, all
+  of them in mixed nodes.
+- **Decision.** The walk keeps, with `joined`, its runs (`JoinRuns`: each open cell of a mixed node
+  with its run, ascending; by run, a group it met and whether it met two or more; the walk's groups
+  by node). `passageWith` judges each such flip since, in the log's order, by `joinedKept`, against
+  the cells' states as the walk and the flips judged before leave them (not the holders now):
+  - a cell of no land: kept (the walk reads none); of no node, or of a node that is not mixed:
+    undone;
+  - a closing: kept if the cell's set met one group or none, or if the cell touches no clear
+    ground and its open neighbours are joined by steps among themselves (`aroundJoined`: every way
+    through it goes round it); else undone. A cell opened since is judged so too;
+  - an opening: undone if its open neighbours are of two classes that hold groups; else their sets
+    are joined through it (a union-find over the runs and the cells opened since, each root with
+    its class, a group it met and whether it met two).
+  The runs go with `joined` wherever it goes (node parts patched with `open` and `shut` the same),
+  and are dropped with it, when the flip log rolls over, and past JOIN_RUNS_KEPT = 16 live sets of
+  a grid (decided up front: year 9 has 10 sets that walk; the oldest past the cap is dropped, and
+  its answer is undone by the next flip, as before).
+- **Why exact.** The partition is of the clear nodes' groups (fixed while `open` and `shut` are)
+  and of the runs that meet them. A set only grows (closings never split it), so it holds every
+  cell its cells are joined to: a set that met one group or none has no cell on a way between two
+  groups, and an opening that would join two classes is seen. A closing that keeps its neighbours
+  joined round it loses no way between other cells, and touching no clear ground, no meeting. The
+  walk's unions stand while no closing cuts a way, so the partition is the walk's.
+- **The first form was too narrow.** By the walk's runs alone (a closing undone in any run that
+  met two groups, as measure-c §2.3 put it), the walks fell 884 → 833 and 392 → 283: the runs that
+  meet two groups are those along the fronts, where the flips are.
+- **Measured** (`tools/diag/joinWalks.ts`, its check mode walking afresh at each answer kept and
+  comparing partitions by the least node of each class; one year from `.cache/730/s732-y8.bin` and
+  `s732-y43.bin`): year 9, 884 walks → 156 (after flips 812 → 84; the 4 that changed the partition
+  among them), 1,073 answers kept across judged flips, none wrong; year 44, 392 → 48 (383 → 39), 946
+  kept, none wrong. The live runs held at most 6.2 MB (year 9, 10 sets) and 2.4 MB (year 44).
+- **Pin.** Unmoved; seed 732's hashes after years 9 and 44 equal 7.27d's (e8fee30d, d481b109).
+- **Tests.** `tests/unit/operationalAi.test.ts` (PLAN 7.30c2): `walled`'s wall; kept across a
+  closing in a run that met the north alone, the first row of a gap opened (one class), and a cell
+  of the gap with open ground round it lost; walked again when the gap's second row opens (two
+  classes) and when the gap is closed (red before: walked again at the first flip).
+
 ### ADR-523 · 2026-10-19 · accepted — A refusal kept by its corridor (PLAN 7.30b)
 
 - **Context.** PLAN 1.42g (ADR-421) keeps an order refused for want of a way while nothing the

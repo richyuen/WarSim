@@ -331,9 +331,10 @@ export interface Passage {
   joined?: Int32Array;
   /**
    * Where `joined`, once worked out, is kept for the passages after this one while it holds
-   * (`passageOf`, PLAN 7.1i): until the nodes' parts or a cell of a closed holder change.
+   * (`passageOf`, PLAN 7.1i): until the nodes' parts change, or a cell's flip between an open and
+   * a closed holder that the runs of its walk (`runs`) cannot rule out changing it (PLAN 7.30c2).
    */
-  keep?: { joined?: Int32Array | undefined; coarse?: Map<number, number[] | null> };
+  keep?: { joined?: Int32Array | undefined; runs?: JoinRuns | undefined; coarse?: Map<number, number[] | null> };
   /**
    * The routes `findRoute` has answered on this passage, by mobility and ends (PLAN 7.1l3): the
    * formations of a stack sent to one cell asked for the same search each, 18 of 3 ms in one plan
@@ -341,6 +342,34 @@ export interface Passage {
    * are given; the answer is not written to (its callers copy the cells).
    */
   routes?: Map<number, PathResult | null>;
+}
+
+/**
+ * What `joinWide` (nav/provinceGraph.ts) saw of the open cells of the nodes with open and closed
+ * ground, kept with its answer (`Passage.keep`) to judge the flips after it (`joinedKept`; PLAN
+ * 7.30c2, ADR-524): such a cell is in a run of open cells, and a run joins the groups it meets.
+ */
+export interface JoinRuns {
+  /** The open cells of those nodes at the walk, ascending. */
+  cells: Int32Array;
+  /** By index in `cells`: its run. */
+  run: Int32Array;
+  /** By node: its group of clear nodes (`nodeGroups` of the walk), 0 for a node that is not clear. */
+  group: Int32Array;
+  /** By cell, what is known of it since the walk: -1 closed, else its element of `parent`. */
+  since: Map<number, number>;
+  /**
+   * The runs and, after them, the cells opened since the walk, joined as the openings join them.
+   * By root: `cls`, the class (`joined`'s number) of the groups the set has met, 0 none; `met`,
+   * one group it has met, 0 none; `two`, 1 if it has met two groups or more (its cells may then
+   * be what joins them).
+   */
+  parent: number[];
+  cls: number[];
+  met: number[];
+  two: number[];
+  /** Past the most kept by a grid (`JOIN_RUNS_KEPT`), or undone: no longer judges a flip. */
+  dropped: boolean;
 }
 
 /** The most cells of open ground that are a pocket (`pocketOf`). */

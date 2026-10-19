@@ -7,6 +7,9 @@
  * none) and way, and whether the groups the walk joined (its partition of the nodes, the numbers
  * aside) are those of the last. Also the walks of one tick and how many of them repeat another's
  * partition, and the land cells of no node.
+ * PLAN 7.30c2's check: at each passage whose `joined` was kept across flips judged by `joinedKept`
+ * (`JOIN_PROBE.kept`), the cells are walked again afresh and the partitions compared; a difference
+ * is the rule keeping a wrong answer. Also the bytes held by the kept runs (`Passage.keep.runs`).
  *
  * Usage: npx tsx tools/diag/joinWalks.ts <seed> <state file> [days = 60] [out = .cache/730/joinWalks_<seed>.json]
  */
@@ -14,7 +17,8 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { Sim } from '../../src/sim/sim';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { assets1938 } from '../../tests/helpers/earth';
-import { JOIN_PROBE } from '../../src/sim/nav/provinceGraph';
+import { JOIN_PROBE, joinWideAfresh } from '../../src/sim/nav/provinceGraph';
+import type { JoinRuns } from '../../src/sim/nav/grid';
 import { navOf } from '../../src/sim/world';
 
 const seed = Number(process.argv[2]);
@@ -97,6 +101,34 @@ JOIN_PROBE.walk = (pass, joined) => {
   t.push(hashOf(c));
   byTick.set(w.tick, t);
 };
+// The check (PLAN 7.30c2): each answer kept across judged flips against a walk afresh. The
+// walk afresh is not told to JOIN_PROBE.walk (it is not the game's).
+let keptChecked = 0;
+let keptWrong = 0;
+const wrong: { tick: number; key: number }[] = [];
+const runsSeen = new Set<JoinRuns>();
+let runsBytesMost = 0;
+const runsBytes = (r: JoinRuns): number => r.cells.byteLength + r.run.byteLength + r.group.byteLength + r.since.size * 16 + (r.parent.length + r.cls.length + r.met.length + r.two.length) * 8;
+JOIN_PROBE.kept = (pass) => {
+  keptChecked++;
+  const afresh = canon(joinWideAfresh(grid, graph, pass));
+  if (!same(afresh, canon(pass.joined!))) {
+    keptWrong++;
+    const key = pass.ok.join('');
+    if (!keyIds.has(key)) keyIds.set(key, keyIds.size);
+    wrong.push({ tick: w.tick, key: keyIds.get(key)! });
+  }
+};
+const walkTold = JOIN_PROBE.walk;
+JOIN_PROBE.walk = (pass, joined) => {
+  walkTold?.(pass, joined);
+  const r = pass.keep?.runs;
+  if (r) runsSeen.add(r);
+  let live = 0;
+  for (const x of runsSeen) if (!x.dropped) live += runsBytes(x);
+  for (const x of [...runsSeen]) if (x.dropped) runsSeen.delete(x);
+  runsBytesMost = Math.max(runsBytesMost, live);
+};
 const quiet = (ww: typeof w): void => {
   ww.out.events.length = 0;
   ww.out.fires.length = 0;
@@ -104,6 +136,7 @@ const quiet = (ww: typeof w): void => {
 const startDay = Math.floor(w.tick / 24);
 for (let d = 0; d < days; d++) s.step(24, quiet);
 delete JOIN_PROBE.walk;
+delete JOIN_PROBE.kept;
 
 const tally = new Map<string, { walks: number; changed: number; same: number }>();
 const flipTally = new Map<string, { walks: number; changed: number; flips: number }>();
@@ -137,4 +170,5 @@ for (const [why, t] of tally) console.log(`${why} | ${t.walks} | ${t.changed} | 
 console.log('after flips, by the classes of the flips | walks | changed | flips');
 for (const [k, f] of [...flipTally].sort((a, b) => b[1].walks - a[1].walks)) console.log(`${k} | ${f.walks} | ${f.changed} | ${f.flips}`);
 console.log(`ticks with 2+ walks: ${multi} (${multiWalks} walks), of them repeating another walk's partition in the tick: ${repeats}`);
-writeFileSync(out, JSON.stringify({ seed, startDay, days, noNode, noNodeFlips, tally: Object.fromEntries(tally), flipTally: Object.fromEntries(flipTally), multi, multiWalks, repeats, walks }, null, 1));
+console.log(`answers kept across judged flips: ${keptChecked}, wrong against a walk afresh: ${keptWrong}; most bytes held by live runs at a walk: ${runsBytesMost}`);
+writeFileSync(out, JSON.stringify({ seed, startDay, days, noNode, noNodeFlips, tally: Object.fromEntries(tally), flipTally: Object.fromEntries(flipTally), multi, multiWalks, repeats, keptChecked, keptWrong, wrong, runsBytesMost, walks }, null, 1));

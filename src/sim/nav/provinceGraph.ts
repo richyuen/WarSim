@@ -6,7 +6,7 @@
  * province), so it is rebuilt identically after a load and never saved.
  */
 import { Terrain } from '../../shared/terrain';
-import { boundKm, findPath, neighbours4, MIN_COST, MOVE_COST, POCKET_CELLS, type MobilityId, type NavGrid, type Passage, type PathResult } from './grid';
+import { boundKm, findPath, neighbours4, MIN_COST, MOVE_COST, POCKET_CELLS, type JoinRuns, type MobilityId, type NavGrid, type Passage, type PathResult } from './grid';
 
 export interface ProvinceGraph {
   /** Node per cell (0 = none: water). Every walkable cell has one. */
@@ -314,15 +314,210 @@ export function wideJoined(g: NavGrid, pg: ProvinceGraph, pass: Passage, a: numb
   if (a === b) return true;
   let joined = pass.joined;
   if (!joined) {
-    pass.joined = joined = joinWide(g, pg, pass);
-    if (pass.keep) pass.keep.joined = joined;
+    const keep = pass.keep;
+    const walked = joinWide(g, pg, pass, keep !== undefined);
+    pass.joined = joined = walked.joined;
+    if (keep) {
+      keep.joined = joined;
+      keep.runs = walked.runs;
+    }
     JOIN_PROBE.walk?.(pass, joined);
   }
   return joined[a] === joined[b];
 }
 
-/** PLAN 7.30c's measure (`tools/diag/joinWalks.ts`): told of each walk of `joinWide`. Unset, nothing is told. */
-export const JOIN_PROBE: { walk?: (pass: Passage, joined: Int32Array) => void } = {};
+/**
+ * PLAN 7.30c's measure (`tools/diag/joinWalks.ts`): told of each walk of `joinWide`, and of each
+ * passage whose `joined` was kept across flips judged by `joinedKept` (`passageWith`, PLAN
+ * 7.30c2). Unset, nothing is told.
+ */
+export const JOIN_PROBE: { walk?: (pass: Passage, joined: Int32Array) => void; kept?: (pass: Passage) => void } = {};
+
+/** `joinWide`'s answer walked afresh, nothing kept (the check of PLAN 7.30c2's rule, `joinWalks.ts`). */
+export function joinWideAfresh(g: NavGrid, pg: ProvinceGraph, pass: Passage): Int32Array {
+  return joinWide(g, pg, pass, false).joined;
+}
+
+/**
+ * The most `JoinRuns` a grid keeps live (PLAN 7.30c2, ADR-524): past it, the oldest is dropped,
+ * and its answer is undone by the next flip between an open and a closed holder, as before.
+ */
+export const JOIN_RUNS_KEPT = 16;
+const RUNS_HELD = new WeakMap<NavGrid, JoinRuns[]>();
+
+/** Drops what a `JoinRuns` holds: it judges no flip after this. */
+export function dropRuns(runs: JoinRuns): void {
+  runs.dropped = true;
+  runs.cells = runs.run = runs.group = new Int32Array(0);
+  runs.since.clear();
+  runs.parent = [];
+  runs.cls = [];
+  runs.met = [];
+  runs.two = [];
+}
+
+function holdRuns(g: NavGrid, runs: JoinRuns): void {
+  let held = RUNS_HELD.get(g);
+  if (!held) RUNS_HELD.set(g, (held = []));
+  let n = 0;
+  for (const r of held) if (!r.dropped) held[n++] = r;
+  held.length = n;
+  if (n >= JOIN_RUNS_KEPT) dropRuns(held.shift()!);
+  held.push(runs);
+}
+
+/** The element of `parent` that is the root of `x`'s set. */
+function rootOf(parent: number[], x: number): number {
+  while (parent[x] !== x) x = parent[x] = parent[parent[x]!]!;
+  return x;
+}
+
+/** The index of `cell` in the ascending `cells`, or -1. */
+function indexOf(cells: Int32Array, cell: number): number {
+  let lo = 0;
+  let hi = cells.length - 1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    const c = cells[mid]!;
+    if (c === cell) return mid;
+    if (c < cell) lo = mid + 1;
+    else hi = mid - 1;
+  }
+  return -1;
+}
+
+/**
+ * Whether `joinWide`'s answer `joined` holds after a cell's flip between an open and a closed
+ * holder (`opens`: from closed to open), given the flips since the walk judged before it in their
+ * order (PLAN 7.30c2, ADR-524; `docs/evidence/7.30/measure-c.md` §2.3). `open` and `shut` are
+ * those of the walk (`passageWith` keeps `joined` only while they are). The answer is of the clear
+ * nodes' groups and of the runs of open cells of the mixed nodes that meet them; the runs, and
+ * the cells opened since, are sets that the openings join (`JoinRuns.parent`), each with the
+ * groups it has met. So:
+ * - a cell of no land, which the walk never reads: holds;
+ * - a cell of no node, or of a node that is not mixed: undone (the walk's own cells then);
+ * - a closing: holds if the cell's set met one group or none (split, it joins nothing it did
+ *   not), or if the cell touches no clear ground and its open neighbours are joined by steps
+ *   among themselves (no way through it is lost: `aroundJoined`); else undone;
+ * - an opening: undone if its open neighbours (`findPath`'s steps, as the walk takes them) are of
+ *   two classes that hold groups; else their sets are joined through it, and it holds.
+ * The state of a neighbour is the walk's and the flips judged before (`since`), not the cell's
+ * holder now. A set only grows, so it holds every cell its cells are joined to, and more. False
+ * also leaves `runs` part-written: the caller drops it.
+ */
+export function joinedKept(g: NavGrid, pg: ProvinceGraph, open: Uint8Array, shut: Uint8Array, joined: Int32Array, runs: JoinRuns, cell: number, opens: boolean): boolean {
+  if (g.component[cell] === 0) return true;
+  const node = pg.nodeOf[cell]!;
+  if (node === 0 || open[node] !== 1 || shut[node] !== 1) return false;
+  const { since, parent, cls, met, two, group } = runs;
+  const at = elementOf(runs, cell);
+  if (!opens) {
+    if (at < 0) return false;
+    if (two[rootOf(parent, at)] === 1 && !aroundJoined(g, pg, open, shut, runs, cell)) return false;
+    since.set(cell, -1);
+    return true;
+  }
+  if (at >= 0) return false;
+  const e = parent.length;
+  parent.push(e);
+  cls.push(0);
+  met.push(0);
+  two.push(0);
+  for (let k = 0; k < 8; k++) {
+    const n = stepOf(g, cell, k);
+    if (n < 0) continue;
+    const nn = pg.nodeOf[n]!;
+    if (nn === 0) return false;
+    if (open[nn] !== 1) continue;
+    const r = rootOf(parent, e);
+    if (shut[nn] !== 1) {
+      // A cell of a clear node: open, of its group and its group's class.
+      const v = joined[nn]!;
+      if (cls[r] === 0) cls[r] = v;
+      else if (cls[r] !== v) return false;
+      const m = group[nn]!;
+      if (met[r] === 0) met[r] = m;
+      else if (met[r] !== m) two[r] = 1;
+      continue;
+    }
+    const el = elementOf(runs, n);
+    if (el < 0) continue;
+    const q = rootOf(parent, el);
+    if (q === r) continue;
+    const ca = cls[r]!;
+    const cb = cls[q]!;
+    if (ca !== 0 && cb !== 0 && ca !== cb) return false;
+    parent[r] = q;
+    if (cb === 0) cls[q] = ca;
+    const ma = met[r]!;
+    const mb = met[q]!;
+    if (two[r] === 1 || (ma !== 0 && mb !== 0 && ma !== mb)) two[q] = 1;
+    if (mb === 0) met[q] = ma;
+  }
+  since.set(cell, e);
+  return true;
+}
+
+/** A cell's element of `JoinRuns.parent` as the walk and the flips judged since leave it, or -1: closed. */
+function elementOf(runs: JoinRuns, cell: number): number {
+  const s = runs.since.get(cell);
+  if (s !== undefined) return s;
+  const i = indexOf(runs.cells, cell);
+  return i < 0 ? -1 : runs.run[i]!;
+}
+
+/** The neighbour of `cell` by `findPath`'s step k (as `joinWide` takes it: on land, no corner cut), or -1. */
+function stepOf(g: NavGrid, cell: number, k: number): number {
+  const { w, h, wrapX, component } = g;
+  const dx = STEP_X[k]!;
+  const dy = STEP_Y[k]!;
+  const cx = cell % w;
+  const cy = (cell - cx) / w;
+  const ny = cy + dy;
+  if (ny < 0 || ny >= h) return -1;
+  let nx = cx + dx;
+  if (nx < 0 || nx >= w) {
+    if (!wrapX) return -1;
+    nx = (nx + w) % w;
+  }
+  const n = ny * w + nx;
+  if (component[n] === 0) return -1;
+  if (dx !== 0 && dy !== 0 && (component[cy * w + nx] === 0 || component[ny * w + cx] === 0)) return -1;
+  return n;
+}
+
+/**
+ * Whether a cell's closing loses no way between other cells (PLAN 7.30c2): it touches no cell of
+ * a clear node (whose group it may be all that meets), and its open neighbours are joined by
+ * steps among themselves, so a way through it goes round it. By the state of `elementOf`.
+ */
+function aroundJoined(g: NavGrid, pg: ProvinceGraph, open: Uint8Array, shut: Uint8Array, runs: JoinRuns, cell: number): boolean {
+  const ring: number[] = [];
+  for (let k = 0; k < 8; k++) {
+    const n = stepOf(g, cell, k);
+    if (n < 0) continue;
+    const nn = pg.nodeOf[n]!;
+    if (nn === 0) return false;
+    if (open[nn] !== 1) continue;
+    if (shut[nn] !== 1) return false;
+    if (elementOf(runs, n) >= 0) ring.push(n);
+  }
+  if (ring.length <= 1) return true;
+  let seen = 1;
+  const stack = [0];
+  while (stack.length > 0) {
+    const p = ring[stack.pop()!]!;
+    for (let k = 0; k < 8; k++) {
+      const q = stepOf(g, p, k);
+      if (q < 0) continue;
+      const j = ring.indexOf(q);
+      if (j < 0 || (seen & (1 << j)) !== 0) continue;
+      seen |= 1 << j;
+      stack.push(j);
+    }
+  }
+  return seen === (1 << ring.length) - 1;
+}
 
 /** How many times the cells of a grid were walked for `wideJoined` (the tests count them). */
 export function joinWalks(g: NavGrid): number {
@@ -338,7 +533,7 @@ export function joinWalks(g: NavGrid): number {
  * them open. What it reads: `open` and `shut`, and of the cells which are open (`ok` of their
  * holder); the rest is of the map. `passageOf` keeps the answer on that (PLAN 7.1i).
  */
-function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage): Int32Array {
+function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage, keepRuns: boolean): { joined: Int32Array; runs?: JoinRuns } {
   const open = pass.open!;
   const shut = pass.shut!;
   const { nodeOf, nodeCount } = pg;
@@ -362,6 +557,12 @@ function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage): Int32Array {
   }
   const { stamp, gen, stack } = sc;
   const { start, list } = cellsByNode(pg);
+  // The runs (PLAN 7.30c2), when kept: each cell walked with its run, the first group each run
+  // met, and whether it met another.
+  const runCells: number[] = [];
+  const firstMet: number[] = [];
+  const metTwo: number[] = [];
+  const groups = parent.length;
   for (let a = 1; a < nodeCount; a++) {
     if (open[a] !== 1 || shut[a] !== 1) continue;
     for (let i = start[a]!; i < start[a + 1]!; i++) {
@@ -369,10 +570,15 @@ function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage): Int32Array {
       if (stamp[first] === gen || component[first] === 0 || ok[holder[first]!] !== 1) continue;
       const run = parent.length;
       parent.push(run);
+      if (keepRuns) {
+        firstMet.push(0);
+        metTwo.push(0);
+      }
       stamp[first] = gen;
       stack.push(first);
       while (stack.length > 0) {
         const c = stack.pop()!;
+        if (keepRuns) runCells.push(c * RUN_SPAN + (run - groups));
         const cx = c % w;
         const cy = (c - cx) / w;
         for (let k = 0; k < 8; k++) {
@@ -392,6 +598,11 @@ function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage): Int32Array {
           const met = group[nodeOf[n]!]!;
           if (met !== 0) {
             parent[find(run)] = find(met);
+            if (keepRuns) {
+              const r = run - groups;
+              if (firstMet[r] === 0) firstMet[r] = met;
+              else if (firstMet[r] !== met) metTwo[r] = 1;
+            }
             continue;
           }
           if (stamp[n] === gen) continue;
@@ -403,8 +614,31 @@ function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage): Int32Array {
   }
   const joined = new Int32Array(nodeCount);
   for (let a = 1; a < nodeCount; a++) if (group[a] !== 0) joined[a] = find(group[a]!);
-  return joined;
+  if (!keepRuns) return { joined };
+  const packed = Float64Array.from(runCells).sort();
+  const cells = new Int32Array(packed.length);
+  const run = new Int32Array(packed.length);
+  for (let i = 0; i < packed.length; i++) {
+    const r = packed[i]! % RUN_SPAN;
+    cells[i] = (packed[i]! - r) / RUN_SPAN;
+    run[i] = r;
+  }
+  const runs: JoinRuns = {
+    cells,
+    run,
+    group,
+    since: new Map(),
+    parent: Array.from({ length: firstMet.length }, (_, r) => r),
+    cls: firstMet.map((m) => (m === 0 ? 0 : find(m))),
+    met: firstMet,
+    two: metTwo,
+    dropped: false,
+  };
+  holdRuns(g, runs);
+  return { joined, runs };
 }
+/** A walked cell and its run packed in one number (cell · RUN_SPAN + run, RUN_SPAN = 2^24), sorted by cell. */
+const RUN_SPAN = 16777216;
 
 /**
  * What `findRoute` asks before any search: the two cells are of one landmass, and, from a start
