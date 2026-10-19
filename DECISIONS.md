@@ -190,7 +190,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Only from a zone with no enemy ship.** A battle begins by sight (`navalCombat`), not by sharing a
   zone. In the first version the fleet sought a battle from any zone, and on seed 1129 five British
   fleets hopped every week, from year 3, between ports of one zone 3 to 5 cells apart (777190 ↔
-  783330, 787422; a probe of the rule), never meeting the enemy ships the zone held. Seeking the
+  783330, 787422; a probe of the rule, its log not kept), never meeting the enemy ships the zone held. Seeking the
   enemy's fleets themselves is PLAN 7.35d2c. From an empty zone a move goes to a zone with enemy
   ships, and there the fleet stays.
 - **"Together" counts the fleets away.** Before, it counted the warfleets in port only. Now it

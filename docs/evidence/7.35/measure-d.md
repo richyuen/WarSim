@@ -168,15 +168,32 @@ noted under its place). JSON in `d2b/after_<seed>.json`. The same 14 seeds × 6 
 - The first version sought a battle from any zone. On seed 1129 five British fleets then hopped
   every week, from year 3, between ports of one zone 3 to 5 cells apart. Each port's zone had enemy
   ships, but a battle begins by sight, and they never met them. That version had 26,558 late orders,
-  4.7 % of the fleet-days a "battle"; the rule as built has 16,372 orders in all. Of these, 249 send
+  4.7 % of the fleet-days a "battle" (its JSON and the probe's log not kept; the figures as printed
+  then); the rule as built has 16,372 orders in all. Of these, 249 send
   a fleet back to the target it had two orders before, counted over the whole run with no time
   window, so returns after the war has moved on are among them.
 - The tool's reads agree with the tick on 16,346 of 16,372 orders (16 `awayBattle`, 8 `sortie`, 2
   others missed: the state moved within the tick before the AI read it), and 130 of 179,734 held
   fleets are under way after it.
 - The `sea` fleet-days fell by 45 %, from 209,736 to 115,987: fewer fleets of the sea pairs on their
-  days. Whether those navies were sunk in the new battles, or the wars went otherwise, is for
-  7.35d2d's "after" run of `seaYears` (battles and armed fleets per year). On seed 99's first year
-  the `SeaBattle` rows are 20 against 8.
+  days. A first read with `seaYears` on 4 of the seeds (1129, 2251, 3407, 6113) × 6 years, after
+  the rule (`d2b/years/after_<seed>.json`), against §1's runs (`d1/before_<seed>.json`, years 1–6;
+  no rule changed between them and `a08927f`). The four seeds summed, the fleets and power a day's
+  mean averaged over them:
+
+  | year | battles d1 → after | ships sunk | armed fleets | power | sea pairs a day |
+  | --- | --- | --- | --- | --- | --- |
+  | 1 | 73 → 99 | 712 → 1,025 | 109 → 104 | 328k → 316k | 6.6 → 4.9 |
+  | 2 | 14 → 38 | 104 → 393 | 105 → 93 | 316k → 285k | 12.6 → 4.2 |
+  | 3 | 16 → 35 | 209 → 485 | 104 → 84 | 315k → 259k | 9.3 → 3.6 |
+  | 4 | 9 → 11 | 129 → 86 | 102 → 82 | 308k → 253k | 5.7 → 2.4 |
+  | 5 | 4 → 12 | 28 → 296 | 98 → 82 | 294k → 249k | 5.6 → 1.2 |
+  | 6 | 15 → 13 | 143 → 92 | 100 → 79 | 305k → 244k | 6.3 → 0.5 |
+
+  The navies are sunk in the new battles: years 2–6 have 109 battles against 58 and 1,352 ships sunk
+  against 613. By year 6 the four seeds keep 80 % of d1's armed power, but the pairs at war with a
+  navy each in one basin fall to 0.5 a day against 6.3. The late war at sea burns out by years 5–6.
+  That bears on 7.35d2c (fewer enemy fleets to seek late) and on 7.35d2d's 14 × 30 "after" run.
+  On seed 99's first year the `SeaBattle` rows are 20 against 8.
 - A partner's port the enemy holds rose from 0.4 % to 4.9 %. The fleets keep station there as at
   any enemy port (the third hole, re-measured after d).

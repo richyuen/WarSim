@@ -19981,3 +19981,8 @@ No rule changed and nothing on screen changed. One task came out of it.
   `--profile`; the world differs after day 45). A first after-run read slow throughout (territory
   +50 %) and was dropped.
 - **Next:** PLAN 7.35d2c (the sortie seeks enemy warfleets, not only enemy ports).
+- **After the commit** (`5f3d6be`): by hand, `seaBattle1938`, `navalDemo1938`, `seaRow1938` (3),
+  `carrierStrikeRow1938` green, `seaBattleSeen1938` alone green. The 45 % fall read with `seaYears`
+  on 4 seeds × 6 years against d1's (`measure-d.md` §4): the navies are sunk in the new battles
+  (years 2–6: 109 battles against 58, 1,352 ships against 613), and the sea pairs fall to 0.5 a day
+  by year 6 against 6.3. The late war at sea burns out by years 5–6, which bears on 7.35d2c.
