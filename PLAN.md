@@ -65,6 +65,10 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
       submarines 5 px in `c9n_2251_ships_20m_crop4x.png`), counted in px. `shipMarks1938`'s T3
       test is red at `951b1c6` (a destroyer's median 17 px at 15 m/px, its bar 18.5; PLAN 7.22b):
       found in 7.35a's runs, the same with 7.35a's change stashed.
+      Left by 7.35a, in the same commit: a strike row's tooltip says "Show both fleets" (a
+      `ticker.toCarrierStrike` string); the headers of `seaRow1938` and `seaBattleSeen1938` (line
+      39) say a carrier's battle has no row; 7.35a's PROGRESS entry has no `Perf:` line
+      (`strikeTarget` sorts `wingBase` once per battle with no pair, per snapshot).
     - [ ] 7.35d The late sea battles per world-year on the critic's seeds (13 after year 1 against
       year 1's 36, `c9_headless_*.json`), measured, before and after.
 - [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
