@@ -77,7 +77,23 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
       - [ ] 7.35b3 A sortie's test of its target zone counts no land-based air: the Asiatic
         squadron sails into Takao and is sunk by wings on Formosa with no sea battle. Measured
         (how often a fleet is sunk at a sortie's target by air alone, on the critic's seeds),
-        then a rule with an ADR, or the reason.
+        then a rule with an ADR, or the reason. In two parts:
+        - [x] 7.35b3a Measured (`tools/diag/seaAir.ts`, `docs/evidence/7.35/measure-b3.md`; the
+          critic's 14 headless seeds × 2 years): 121 sortied fleets sunk by land-based air alone
+          against 30 in sea battles (287 sea battles); land air took 420,000 hp of sortied fleets,
+          the sea battles 180,250. All 121 had arrived, 114 at a port with no enemy ship; median
+          33 days and 26 strikes from the order to the loss. The order-time air separates them
+          poorly (13 of 59 lost groups, 22 of 203 that fought); a naval-role wing in range of the
+          fleet where it stands with no enemy ship names 115 of the 121 and 182 of 3,146 others.
+        - [ ] 7.35b3b The rule at both seams (`plan`): a warfleet away from its ports, no enemy ship
+          in its zone, with an enemy naval-role wing (`naval_bomber`) based within its range of
+          the fleet sails home; the sortie test passes over an enemy port's water such air covers
+          while its zone has no enemy ship to fight (else the fleet sent home is sent back). One
+          list of the enemy's naval wings per `plan` call (navalAi 0.039 ms a tick). AT: a unit
+          test each (home from an empty port under naval bombers, red without the rule; stays
+          with none; the sortie takes another port); `seaAir` on the 14 seeds × 2 years, sunk by
+          air alone 121 → fewer and sea battles 287 not fewer (else the reason); `--profile`; the
+          pin's entry and an ADR.
       - [ ] 7.35b4 A fleet at a lost base sails for its nation's nearest port, not its bloc's
         (`atLostBase`, `sailHome`, ADR-261): on seed 3407 with 7.35b2 the US fleets stage to
         Guam, Japan takes it on day 6, and they turn for Pago Pago (4,300 km) rather than the

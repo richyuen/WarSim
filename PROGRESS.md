@@ -19767,3 +19767,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   green at `8cad927`. PLAN 7.35b4 takes two more items of `forwardBases`' code: no basin filter
   (a lake port refused by `orderSail` every turn, the next never tried) and `seaMeet`'s `why`
   column, which does not tell a staging order.
+
+## 2026-10-19 — PLAN 7.35b3a: fleets sunk from the air alone at a sortie's target, measured (critic R9 naval 6)
+
+- **Start:** gate green on `9cb3702`; critic not due. PLAN 7.35b3 split in two (a measured, b the
+  rule).
+- **Tool:** `tools/diag/seaAir.ts` (each fleet's order by kind, the land-based anti-ship air over
+  its target at the order and over it each day it stands there, its losses by cause; 2 s per 14
+  days). Doc: `docs/evidence/7.35/measure-b3.md`.
+- **Found** (the critic's 14 headless seeds × 2 years): 121 sortied fleets sunk by land-based air
+  alone, 30 in sea battles (287 sea battles); land air took 420,000 hp of sortied fleets, the sea
+  battles 180,250. All 121 had arrived; 114 stood at a port with no enemy ship; median 33 days and
+  26 strikes to the loss. The air at the order tells them apart poorly; a naval-role wing in range
+  of the fleet where it stands, its zone empty of enemy ships, names 115 of 121 and 182 of 3,146
+  others. So the larger seam is the stand (`plan`'s away test reads ships only), not the sortie's
+  choice; the rule must sit at both (PLAN 7.35b3b).
+- **No rule change:** pin 8c59c203 (a tool and documents).
+- **Next:** PLAN 7.35b3b (the rule).
