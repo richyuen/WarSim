@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-539 · 2026-10-19 · accepted — The turret scene is found from day 16 (PLAN 7.34c1's check)
+
+- **Context.** `turrets1938`, run by hand for PLAN 7.34c1, fails its precondition "some tanks in
+  the view do not fire": all 54 tanks in the 60 m/px view fire in the hour `armourFires` finds
+  from day 7. Sim only: the scene is `smallMark1938`'s, which moved at `f7cd656` (ADR-538's
+  bisect; this spec not bisected on its own).
+- **Decision.** `FROM = 24 * 16`, the rest of the spec unchanged. Tried: every start from day 6
+  to 14 finds the same hour or one where every tank in view fires (day 14: 54 of 54; day 21: 190
+  of 190); day 15 has 20 firing (more than 20 asked); 16 passes: 80 tanks in view, 40 fired, 39
+  turned more than 0.02 rad off the hull, back after 2,773 ms; at 4 m/px 10 tanks of the element
+  looked at on its turret, 187 others (Soviet tanks against Romania). The three pictures of
+  `docs/evidence/3.6/turrets-*.png` made (not committed before); the 4 m/px one looked at.
+- **Open still** (as ADR-185): a spec that finds its fight in a game every rule change moves.
+
 ### ADR-538 · 2026-10-19 · accepted — The small mark's colour read where no later sprite covers it (PLAN 7.34c1's check)
 
 - **Context.** `smallMark1938`, run by hand for PLAN 7.34c1, reads the median middle of the tanks

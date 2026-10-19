@@ -19640,3 +19640,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   viewed.
 - **No rule change:** pin 45c20987.
 - **Next:** `turrets1938` (the same scene: all 54 tanks in view fire), then PLAN 7.34c2.
+
+## 2026-10-19 — PLAN 7.34c1's check: the turret scene from day 16 (ADR-539)
+
+- `turrets1938` red: all 54 tanks in view fire (some silent asked). Starts from day 6 to 14 tried:
+  the same or an all-firing hour; day 16 passes (80 in view, 40 fired, 39 turned, back after
+  2.8 s). `docs/evidence/3.6/turrets-*.png` made, the 4 m/px one viewed.
+- **No rule change:** pin 45c20987.
+- **Next:** PLAN 7.34c2.

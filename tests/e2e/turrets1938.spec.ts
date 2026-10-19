@@ -4,13 +4,17 @@ import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { armourFires, busiest } from '../helpers/armourFire';
 
-// PLAN 3.6b AT: the turrets of tanks in contact are not all at their hulls' facing. Two weeks
+// PLAN 3.6b AT: the turrets of tanks in contact are not all at their hulls' facing. Some weeks
 // into 1938 the square with the most armour firing is found in Node, the camera is put on it at
 // T2, one hour is stepped, and the turrets are read from the instance data of frames drawn at
 // chosen times: before the shots, as the last has left, and after the silence.
 
-/** From the first week's end: the first hour of armour fire after it (`armourFires`). */
-const FROM = 24 * 7;
+/**
+ * From day 16: the first hour of armour fire after it (`armourFires`). From the first week's end
+ * before ADR-539: since PLAN 7.27c's peace rule every start from day 6 to 14 finds an hour in
+ * which every tank in the view fires, and none is left to keep its turret on its hull.
+ */
+const FROM = 24 * 16;
 const M_PER_PX = 60;
 const CLOSE_M_PER_PX = 4;
 const NEAR_M_PER_PX = 1.5;
