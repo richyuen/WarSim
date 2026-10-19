@@ -332,74 +332,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
       divisions in 18 months while its land army stood at one. Measured first, if 7.29 is taken
       up: where such a division goes from where it is raised and how long it stands before contact.
       AT: the measure; a rule only if it is one; a unit test and the pin's entry if it moves.
-- [ ] 7.30 The operational AI's late calls (from PLAN 7.27d, `docs/evidence/7.27/measure-d.md` §1):
-  seed 732 alone, pinned, × 50 years: the tick 1.43 ms in years 1–5 and 2.40 in years 26–50, of the
-  rise 0.82 ms the operational AI's; its calls of 1 ms or more stay 600–1,460 a year but grow from
-  about 2 ms a call in year 1 to 10–35 ms from year 8 (the longest 203 ms), and a 50-year sweep
-  seed takes 15 min alone. Measured first from `.cache/727d/` checkpoints of this code: which
-  planner and nation the long calls are, and which part of a call (A* to the front, the sectors,
-  the marches from afar) grows with what (the front's length, the formations, the wars). Then the
-  cause fixed if it is one, behaviour unchanged where the rule is not the cause. AT: the measure;
-  the late years' operational AI per tick at most half of 7.27d's on seed 732, pinned; the pin
-  unchanged, or its entry if a rule moves it. A part each:
-    - [x] 7.30a The measure (`docs/evidence/7.30/measure-a.md`, `tools/diag/opCalls.ts`, `OP_PROBE`):
-      the heavy years (31, 44) are refusals searched again after a flip anywhere; year 9's is
-      `joinWide` walked by each plan of a coalition; the late years' broad cost is `pocketOf`.
-    - [x] 7.30b A refusal kept by its corridor: `askMove`'s refusal of a search in a corridor of
-      provinces holds while no cell of the corridor's provinces has gone from an open holder to
-      a closed one or back and the provinces' `open` and `shut` are the same; other refusals as
-      now. AT: a unit test (a flip outside the corridor keeps it, one inside undoes it); the pin
-      unchanged; `opCalls.ts` from `.cache/730/s732-y30.bin` and `s732-y43.bin`: the asks refused
-      again after a flip down by most. Done as ADR-523's rule: only a cell of the corridor gone
-      from a closed holder to an open one undoes it (a cell lost to a closed one gives no way).
-    - [x] 7.30c `joinWide` walked again by each plan of a coalition (years 9, 44): measured first
-      (which flips undo it, and whether a flip's cell outside the provinces it walks can change
-      it); the fix only if exact. AT: the measure; the pin unchanged. A part each:
-        - [x] 7.30c1 The measure (`docs/evidence/7.30/measure-c.md`, `tools/diag/joinWalks.ts`,
-          `JOIN_PROBE`): 808 of year 9's 884 walks and 383 of year 44's 392 are the same set's walk
-          again after flips in mixed nodes that left the partition as it was; no walk repeats
-          another plan's in its tick; a rule by the flipped cell's node class keeps nothing.
-        - [x] 7.30c2 `joined` kept across a flip that cannot change it (measure-c §2.3): kept with
-          the parts, each open cell of a mixed node at the walk with its class and whether its run
-          met two groups; a flip in a node that is not mixed, the closing of a cell of a run that
-          met two groups or of a cell opened since, or an opening whose open neighbours are of two
-          classes with groups, undoes it; an opening merges its neighbours' classes. The cells
-          opened or closed since the walk and the classes merged are kept on the parts with
-          `flips` (`passageWith` judges only the flips after it), and dropped with `joined` when
-          the log rolls over. The run data only on the parts that have asked `wideJoined`, the cap
-          decided up front in the ADR. The bound is 811 of year 9's walks (the 3 after the log
-          rolled changed nothing too), not measure-c's 808. Measured first
-          by a check mode that walks again at each answer kept and compares partitions (the least
-          node by class), one year from `.cache/730/s732-y8.bin` and `s732-y43.bin`: no difference,
-          at every answer kept, not only the first after a walk, and the walks kept; the memory kept by the parts weighed (NODE_PARTS_KEPT sets). AT: a
-          unit test (a closing in a run that met one group keeps it, in one that met two undoes
-          it; an opening between two classes undoes it); `joinWalks.ts`'s walks down by most;
-          seed 732's hashes after years 9 and 44 equal 7.27d's; the pin unchanged.
-          Done as ADR-524's rule: a closing in a set that met two groups also holds when the cell
-          touches no clear ground and its open neighbours are joined round it, and 'met two' is kept
-          by root as the openings join the sets (by the walk's run alone, 884 -> 833 walks).
-    - [x] 7.30d The AT: seed 732 × 50 years alone, pinned, `--profile`, against 7.27d's; if short
-      of half, what is left by year and part (`opCalls.ts`), and `pocketOf` (§3.3 of measure-a)
-      weighed as a rule with an ADR or the bar put to the user (ADR-486's way). Every year's hash
-      against `p732.json`'s `yearly`, not the last alone (7.30b and 7.30c2 are exact by argument and
-      by one-year checks; a year that differs is bisected from `.cache/730/`); and the process's
-      memory by year, or said to be unmeasured (ADR-524's runs grow between walks).
-      Done (`docs/evidence/7.30/measure-d.md`): every year's hash equal to 7.27d's; years 26–50
-      0.753 ms (0.785 by load) against the bar 0.536; what is left is every year's cost, and the
-      bar put to the user (ADR-525, BLOCKERS): 7.30 is not ticked until the user decides.
-    - [x] 7.30e Year 47's 'long' orders and year 44's refusals for another cell (measure-d §3):
-      France's orders ~32 cells off answered 'long' and searched in full, 9.4 ms each (2,537 asks,
-      86 % of year 47's plan time), none kept; year 44's refusals kept for one cell alone (503 asks
-      for another). Measured first from `.cache/730/s732-y43.bin` and `.cache/730d/s732-y46.bin`:
-      whether the formations asked are on the move (no answer is kept for them), and whether a
-      'long' can be held by its corridor as ADR-523 holds a refusal (a closing in the corridor can
-      turn 'long' into 'refused', which changes the divert). The fix only if exact. Does not reach
-      7.30's bar alone (about 0.65 on the band at most). AT: the measure; a unit test if a rule is
-      made; `opCalls.ts` from those checkpoints: the asks down by most; the pin unchanged.
-      Done as a measure, no rule (`docs/evidence/7.30/measure-e.md`): 63 % of year 47's 'long'
-      asks are of formations on the move (no start to keep an answer by), the standing ones are
-      first asks of new cells, and every repeat had flips near its ends; year 44's refusals the
-      same (23 of 317 repeats keepable). Less of it is a rule (ADR-525 b's kind).
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -653,3 +586,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.32 AI nuclear strikes on empty ground, in weekly chains, told by civilian dead alone (critic […]
 - [x] 7.33 The history reads as events (stats and history 6, needs 7): beyond 7.31's phantom rows, […]
 - [x] 7.34 Semantic zoom's seams (semantic zoom 7, needs 8): one wheel notch between 412 and 264 m/px […]
+- [x] 7.30 The operational AI's late calls (from PLAN 7.27d, `docs/evidence/7.27/measure-d.md` §1): […]

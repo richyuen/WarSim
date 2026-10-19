@@ -1018,7 +1018,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   transport at its own port under fire never breaks off and is sunk in one battle; `inReach` at the
   critic's 12.00000000000062 km. Red before.
 
-### ADR-525 · 2026-10-19 · proposed (the user's decision) — PLAN 7.30's bar of half, and `pocketOf` as a rule
+### ADR-525 · 2026-10-19 · accepted (the user's decision, option a) — PLAN 7.30's bar of half, and `pocketOf` as a rule
+
+- **Decided** 2026-10-19, after PLAN 7.30e: option a. PLAN 7.30's bar is 0.75 of 7.27d's late
+  band, every year's hash unchanged; 7.30 done at 0.753 (0.785 by load). No `pocketOf` rule. The
+  stop rule stands: no rule change for the late years' tick unless a sweep's wall time doubles
+  again.
 
 - **Context.** PLAN 7.30's AT (written under PROMPT 2a, not the user's words): the operational
   AI in years 26–50 of seed 732, pinned, at most half of 7.27d's (1.072 → 0.536 ms a tick). After

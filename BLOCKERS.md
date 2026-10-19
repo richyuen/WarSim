@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.30's AT (late operational AI at half of 7.27d's) waits on the user's decision (2026-10-19, PLAN 7.30d, ADR-525)
+### RESOLVED 2026-10-19 (ADR-525, option a, the user's decision: the bar re-scoped to 0.75; 7.30 ticked) · PLAN 7.30's AT (late operational AI at half of 7.27d's) waits on the user's decision (2026-10-19, PLAN 7.30d, ADR-525)
 Seed 732 × 50 years, pinned, after 7.30b and 7.30c2: years 26–50 0.753 ms a tick (0.785 by load)
 against the bar 0.536; every year's hash equal to 7.27d's (`docs/evidence/7.30/measure-d.md`).
 What is left is spread over every year; the one named broad part, `pocketOf`, can be kept across

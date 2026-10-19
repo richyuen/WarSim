@@ -20164,3 +20164,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Waits on the user:** ADR-525 (PLAN 7.30's bar: a. re-scope to 0.75, recommended; b. a
   `pocketOf` rule). Whether the critic runs now on HEAD, before 7.35d3b.
 - **Next:** PLAN 7.35d3b, under the new rules; or the critic, if the user asks.
+
+## 2026-10-19 — PLAN 7.30 done: the bar re-scoped to 0.75 of 7.27d's (ADR-525, option a, the user's decision)
+
+- **Decided:** the user chose option a. PLAN 7.30's late band on seed 732 (years 26–50, pinned) is
+  0.753 ms a tick (0.785 by load) against 7.27d's 1.072, every year's hash equal; no `pocketOf`
+  rule. 7.30 ticked, its BLOCKERS entry resolved, `npm run plan:archive` run.
+- **Waits on the user:** none. (Whether the critic runs now on HEAD, before 7.35d3b, is the
+  user's to ask; the loop takes 7.35d3b otherwise.)
+- **Next:** PLAN 7.35d3b.
