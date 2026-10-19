@@ -63,3 +63,45 @@ a peace (ADR-507's "Why 7 days"). A launch stopped short brings none of them, an
 long as a burst. In the ordinary worlds it is rare; in the critic's set-ups, a holder under the
 enemy's air, it is the common case, and the week it costs is the bomber's life. The rule (§3): a
 launch stopped short starts no gap.
+
+## 3. The rule: a launch stopped short starts no gap (ADR-522)
+
+`War.strikesLive` counts a side's launches of its last strike's tick (an ally's of the same hour add
+to them); a launch stopped short (`arrivals`: shot down, or its bomber lost on the way) takes one
+off in each war whose side's last strike it was (`strikeStopped`). `strikePaused` holds the side
+only while one is left. The resolve's gap (RESOLVE_GAP_DAYS, `resolveOf`) still reads
+`War.lastStrike` alone.
+
+### Seeds 1–10 × 30 years with the rule (`.cache/r728/after_<seed>.json`)
+
+| Seed | Decisions | Launches | Stopped short | Bursts | First burst, year | Span of bursts, days | All within 2 days | Held war-days | after a burst (a strike otherwise) | after a launch stopped short (a strike otherwise) | in flight (a strike otherwise) | Gaps after a launch stopped short | of them with a day that would strike | of them never followed by a launch in the war |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 19 | 19 | 0 | 19 | 25.9 | 1182 |  | 80 | 80 (26) | 0 (0) | 0 (0) | 0 | 0 | 0 |
+| 2 | 24 | 24 | 6 | 18 | 9.9 | 6086 |  | 87 | 87 (6) | 0 (0) | 0 (0) | 0 | 0 | 0 |
+| 3 | 13 | 13 | 0 | 13 | 8.7 | 7324 |  | 39 | 39 (7) | 0 (0) | 0 (0) | 0 | 0 | 0 |
+| 4 | 1 | 1 | 0 | 1 | 21.3 | 0 |  | 2 | 2 (0) | 0 (0) | 0 (0) | 0 | 0 | 0 |
+| 5 | 76 | 76 | 0 | 76 | 12.7 | 2982 |  | 492 | 492 (94) | 0 (0) | 0 (0) | 0 | 0 | 0 |
+| 6 | 0 | 0 | 0 | 0 |  |  |  | 0 | 0 (0) | 0 (0) | 0 (0) | 0 | 0 | 0 |
+| 7 | 9 | 9 | 0 | 9 | 13.3 | 6085 |  | 56 | 56 (0) | 0 (0) | 0 (0) | 0 | 0 | 0 |
+| 8 | 31 | 31 | 0 | 31 | 13.4 | 5222 |  | 109 | 109 (64) | 0 (0) | 0 (0) | 0 | 0 | 0 |
+| 9 | 2 | 2 | 0 | 2 | 13.6 | 3402 |  | 3 | 3 (0) | 0 (0) | 0 (0) | 0 | 0 | 0 |
+| 10 | 5 | 5 | 0 | 5 | 10.2 | 4200 |  | 20 | 20 (0) | 0 (0) | 0 (0) | 0 | 0 | 0 |
+
+- Seeds 1 and 3–10: the same worlds (no launch stopped short in them). Seed 2: Spain's first uses
+  on days 3606 to 3610, one a day, each shot down (before: one a week, 3606 to 3634); Britain's
+  answer comes on day 3611 (3635 before), and from there the world parts: 18 bursts (6), all
+  Britain's but one of Sweden's, over 16.7 years.
+- Held war-days after a launch stopped short: 0 (24). No world's bursts all within 2 days: a run
+  of launches shot down day after day is not a spasm of bursts (PLAN 7.25b's AT).
+
+### The critic's set-ups with the rule (`.cache/r728/after_probe_<nation>_<seed>.log`)
+
+| Set-up | Launches | Stopped short | Bursts | Burst days (before) | Warheads left (before) |
+|---|---|---|---|---|---|
+| France 7127 | 2 | 1 | 1 | 47 (53) | 8 (8) |
+| Poland 5591 | 4 | 2 | 2 | 54, 66 (54, 78) | 6 (6) |
+| Poland 7127 | 6 | 4 | 2 | 56, 66 (62) | 4 (5) |
+| Poland 3929 | 5 | 3 | 2 | 68, 77 (72) | 5 (7) |
+
+- France: shot down on day 46, it launches the next day and bursts on Germany on day 47.
+- Poland: a burst sooner on each seed, a second where there was none on 7127 and 3929.

@@ -1102,15 +1102,31 @@ export function dayIndustry(world: World): () => Float64Array {
  * The days a side waits after its launch in a war before a first use again (PLAN 7.25b, the critic's
  * run 8: a world's whole nuclear history one side's strikes day after day, seed 7's Germany four on
  * four days running, 6271's Soviet Union three on three): it waits for the answer, the shock of the
- * burst (NUKE_SHOCK) on the enemy's exhaustion, a peace. Of the launch, not the burst: a warhead shot
- * down is a launch seen. A strike back is not held (one for one, its burst gives none: PLAN 6.12b, e).
+ * burst (NUKE_SHOCK) on the enemy's exhaustion, a peace. A strike back is not held (one for one, its
+ * burst gives none: PLAN 6.12b, e). A launch stopped short (shot down, or its bomber lost on the way)
+ * starts no gap (PLAN 7.28, ADR-491's promise): none of what the gap waits for follows it, and under
+ * the enemy's air the side launches again the next day (`War.strikesLive`).
  */
 export const STRIKE_GAP_DAYS = 7;
 
-/** Whether `side` of `war` launched within STRIKE_GAP_DAYS (PLAN 7.25b): no first use of it today. */
+/**
+ * Whether `side` of `war` launched within STRIKE_GAP_DAYS (PLAN 7.25b) a warhead not stopped short
+ * (PLAN 7.28): no first use of it today.
+ */
 export function strikePaused(world: World, war: War, side: number): boolean {
   const last = war.lastStrike?.[side];
-  return last !== undefined && last >= 0 && world.tick - last < STRIKE_GAP_DAYS * 24;
+  return last !== undefined && last >= 0 && world.tick - last < STRIKE_GAP_DAYS * 24 && (war.strikesLive?.[side] ?? 1) > 0;
+}
+
+/** A launch stopped short (PLAN 7.28): in each war whose side's last strike it was, one live launch fewer. */
+function strikeStopped(world: World, l: NukeLaunch): void {
+  for (const war of world.wars.list) {
+    const side: number = war.sides[0].includes(l.nation) ? 0 : war.sides[1].includes(l.nation) ? 1 : -1;
+    if (side < 0 || war.lastStrike?.[side] !== l.launch || !war.strikesLive) continue;
+    const live: [number, number] = [...war.strikesLive];
+    live[side] = Math.max(0, live[side]! - 1);
+    war.strikesLive = live;
+  }
 }
 
 /** The day's decisions to strike (PLAN 6.4b): see the head of the file. */
@@ -1149,8 +1165,12 @@ function nukeDecisions(world: World): void {
       world.out.emit(world.tick, EventKind.NukeDecided, n, Math.round(o.u * 1000), o.x, o.y);
       // The war remembers its side's strike (PLAN 7.18e: the resolve's gap).
       const last: [number, number] = o.war.lastStrike ? [...o.war.lastStrike] : [-1, -1];
+      const live: [number, number] = o.war.strikesLive ? [...o.war.strikesLive] : [0, 0];
+      // Its launches of the day not stopped short (PLAN 7.28): an ally's of the same hour add to them.
+      live[o.side] = last[o.side] === world.tick ? live[o.side]! + 1 : 1;
       last[o.side] = world.tick;
       o.war.lastStrike = last;
+      o.war.strikesLive = live;
       // And counts the strikes of its resolve (PLAN 7.18h: a few a war).
       if (o.resolved) {
         const count: [number, number] = o.war.resolveStrikes ? [...o.war.resolveStrikes] : [0, 0];
@@ -1301,8 +1321,10 @@ function arrivals(world: World): void {
     // A bomber lost on the way, or stopped short by the air over its target.
     const lost = l.missile === 0 && (!world.formations.has(l.wing) || world.formations.cols.nation[l.wing] !== l.nation);
     const answer = world.nukeAnswers.delete(l.id);
-    if (lost || hashToUnit(hash32(world.seed, l.id, SALT_INTERCEPT)) < interceptChance(world, l)) world.out.emit(world.tick, EventKind.NukeIntercepted, l.nation, l.id, l.tx, l.ty);
-    else detonate(world, l.nation, knows(world, l.nation, 'thermonuclear') ? 2 : 1, l.tx, l.ty, answer);
+    if (lost || hashToUnit(hash32(world.seed, l.id, SALT_INTERCEPT)) < interceptChance(world, l)) {
+      world.out.emit(world.tick, EventKind.NukeIntercepted, l.nation, l.id, l.tx, l.ty);
+      strikeStopped(world, l);
+    } else detonate(world, l.nation, knows(world, l.nation, 'thermonuclear') ? 2 : 1, l.tx, l.ty, answer);
   }
   world.nukeLaunches = left;
 }

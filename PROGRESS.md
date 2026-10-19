@@ -19216,3 +19216,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   measure needed. Wall 21.6 min (7.27a's 34: the machine's load, not the code).
 - **Docs only:** no sim change; pin 94235073. PARITY row 31 appended.
 - **Next:** PLAN 7.28.
+
+## 2026-10-19 — PLAN 7.28: a launch shot down starts no gap (7.28 done)
+
+- **Start:** gate green on `2ea87fe`; critic not due.
+- **Measure** (`cde8a09`, `docs/evidence/7.28/measure.md`): `nukeGates.ts`'s held war-days split by
+  what became of the launch that began the gap; `nukeGap.ts` for the critic's set-ups. Seeds 1–10 ×
+  30 years: 6 of 168 launches stopped short (seed 2's Nationalist Spain), all 24 war-days held after
+  them would have been strikes; critic's France and Poland: 43 of 54.
+- **Rule** (ADR-522): `War.strikesLive`; a launch stopped short takes one off (`strikeStopped` in
+  `arrivals`), and `strikePaused` holds only while one is left. Resolve's gap unchanged.
+- **Effect:** seeds 1, 3–10 the same worlds; seed 2's Spain launches five days running, all shot
+  down, and the world parts (18 bursts, 6). No world's bursts within 2 days. France bursts on
+  Germany day 47 (53); Poland a burst sooner on 5591, 7127, 3929.
+- **Tests:** `nukeGapShort1938.test.ts` (new, red before), `nukeOverrun1938.test.ts` (its gap
+  assertion: unless the earlier launch was stopped short; France relaunches within the gap, red
+  before), `nukePoland1938.test.ts` green. Pin unmoved (gate).
+- **Next:** PLAN 7.29 is conditional (only if 7.27's measure or the critic finds the late land war
+  short); then 7.30.

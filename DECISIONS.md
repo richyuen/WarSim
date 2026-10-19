@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-522 · 2026-10-19 · accepted — A launch stopped short starts no gap (PLAN 7.28)
+
+- **Context.** ADR-507 (PLAN 7.25b) holds a side that launched in a war from a first use for
+  STRIKE_GAP_DAYS 7, keyed on the launch: "a warhead shot down is a launch seen". Its own reason for
+  7 days is time for the burst's shock (NUKE_SHOCK), an answer or a peace, and a launch stopped short
+  brings none of them; ADR-491 had promised that a holder under the enemy's air launches again the
+  next day after an interception. PLAN 7.26b (ADR-508) found the critic's France shot down once and
+  its bomber lost within the week, 9 warheads unused.
+- **Measured** (`docs/evidence/7.28/measure.md`, `nukeGates.ts`'s `pausedBy`, `nukeGap.ts`). Seeds
+  1–10 × 30 years: 6 of 168 launches stopped short, all seed 2's Nationalist Spain; all 24 war-days
+  held after them would have been strikes. The critic's France and Poland set-ups: 43 of 54 such
+  days; each bomber lost at last with 4 to 8 warheads unused.
+- **Decision.** `War.strikesLive` counts a side's launches of its last strike's tick; `arrivals`
+  takes one off for a launch stopped short (shot down, or its bomber lost on the way) in each war
+  whose side's last strike it was (`strikeStopped`); `strikePaused` holds the side only while one is
+  left (an older save's war, with no count, holds as before). A shorter gap instead was not taken:
+  the decisions are daily, so a gap of one day is no gap, and a longer one keeps the cost measured.
+  The resolve's gap (RESOLVE_GAP_DAYS 90, `resolveOf`) is unchanged: it still reads the decision's
+  tick, and a resolve strike shot down still counts among RESOLVE_STRIKES (a winner is not pressed).
+- **Effect.** Seeds 1, 3–10 the same worlds; seed 2's Spain launches on five days running, each
+  shot down (one a week before), and the world parts from there (18 bursts, 6 before). No world's
+  bursts all within 2 days. The critic's France bursts on Germany on day 47 (53); Poland a burst
+  sooner on each seed and a second on 7127 and 3929.
+- **Pin.** Unmoved (no warhead in seed 99's first year; the war records gain `strikesLive` only at a
+  decision).
+- **Tests.** `nukeGapShort1938.test.ts`: a launch stopped short leaves the side free, one that
+  bursts holds it STRIKE_GAP_DAYS, as does one of two of an hour of which one bursts; a war with no
+  count holds as before (the first two red before). `nukeOverrun1938.test.ts`: the decisions are a gap apart
+  unless the first was stopped short, and France launches again within the gap after its launch
+  shot down (red before: days 46 and 53).
+
 ### ADR-521 · 2026-10-19 · accepted — A winner that gains ground refuses a suit by exhaustion (PLAN 7.27c)
 
 - **Context.** PLAN 7.27's stasis: on the failing seeds the same five largest hold for 20 years and

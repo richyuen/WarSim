@@ -33,15 +33,6 @@ Run 8's blocking issues and its dimensions under the DONE condition's bar (repor
 `fd27e85`, its "Fix" lines and evidence; R8-B1 to R8-B3 are PLAN 7.18 to 7.20, the dimensions 7.21
 to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
 
-- [ ] 7.28 A launch shot down and the gap after it (found 2026-10-18 by PLAN 7.26b, ADR-508): the
-  critic's France (`nukeOverrun1938`, seed 7127) launches once on day 71, the warhead is shot down
-  by German fighters, STRIKE_GAP_DAYS (ADR-507, keyed on the launch) holds its next attempt, and
-  its one strategic wing is lost on day 73 on a strike: 9 warheads never used. ADR-491 promised a
-  holder under enemy air launches again the next day. Measured first: `nukeGates.ts`'s `paused`
-  split by whether the launch that began the gap burst or was stopped short, seeds 1–10 × 30
-  years. Then the rule decided (a launch stopped short starts no gap, or a shorter one) and
-  recorded. AT: the measure in `docs/evidence/7.28/`; a unit test of the rule chosen; the pin's
-  entry if it moves.
 - [ ] 7.29 The late land war's reach (from PLAN 7.26c3, ADR-519, 2026-10-18): after year 1 the land
   war runs at 1.4 formations in contact a day against year 1's 30 while 1 to 14 wars run
   (`docs/evidence/7.26/measure-g.md`), and the measures under 7.26c found the men who cannot get
@@ -330,3 +321,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.25 AI nuclear use believed (AI nuclear use 6, needs 8): beyond 7.18's frequency, a world's […]
 - [x] 7.26 The air war keeps flying after year 1 (aircraft 6, needs 8; the user's decision of […]
 - [x] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`): […]
+- [x] 7.28 A launch shot down and the gap after it (found 2026-10-18 by PLAN 7.26b, ADR-508): the […]

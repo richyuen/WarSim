@@ -11650,3 +11650,27 @@ Of 7.4 (open in PLAN.md):
       2–27 a seed (117; the sweeps before the rule 66–307). The tick: seed 732 alone 15.4 min,
       2.10 ms (years 1–5 1.43, 26–50 2.40), the rise the operational AI's (PLAN 7.30); the sweep
       21.6 min, so 7.27a's 34 was the machine's load.
+
+<!-- moved 2026-10-19 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.28 A launch shot down and the gap after it (found 2026-10-18 by PLAN 7.26b, ADR-508): the
+  critic's France (`nukeOverrun1938`, seed 7127) launches once on day 71, the warhead is shot down
+  by German fighters, STRIKE_GAP_DAYS (ADR-507, keyed on the launch) holds its next attempt, and
+  its one strategic wing is lost on day 73 on a strike: 9 warheads never used. ADR-491 promised a
+  holder under enemy air launches again the next day. Measured first: `nukeGates.ts`'s `paused`
+  split by whether the launch that began the gap burst or was stopped short, seeds 1–10 × 30
+  years. Then the rule decided (a launch stopped short starts no gap, or a shorter one) and
+  recorded. AT: the measure in `docs/evidence/7.28/`; a unit test of the rule chosen; the pin's
+  entry if it moves.

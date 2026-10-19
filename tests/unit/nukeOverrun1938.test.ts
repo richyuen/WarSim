@@ -26,7 +26,7 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
     const w = s.world;
     s.command({ kind: 'grantWarheads', nation: FRA, count: 10 });
     s.command({ kind: 'declareWar', attacker: GER, defender: FRA });
-    const decided: { day: number; x: number; y: number; u: number }[] = [];
+    const decided: { day: number; x: number; y: number; u: number; id: number; short: boolean }[] = [];
     const burstOn: number[] = [];
     let launched = 0;
     /** Whether the first decision's place was Germany's: its cell German, or a German formation within a blast's radius. */
@@ -47,7 +47,9 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
             });
             firstOnGermany = german;
           }
-          if (ev[i + 1] === EventKind.NukeDecided) decided.push({ day: d, x: ev[i + 4]!, y: ev[i + 5]!, u: ev[i + 3]! / 1000 });
+          // Its launch the last of the hour (Germany holds no warhead): stopped short or not (PLAN 7.28).
+          if (ev[i + 1] === EventKind.NukeDecided) decided.push({ day: d, x: ev[i + 4]!, y: ev[i + 5]!, u: ev[i + 3]! / 1000, id: ww.nextLaunchId - 1, short: false });
+          if (ev[i + 1] === EventKind.NukeIntercepted) for (const o of decided) if (o.id === ev[i + 3]) o.short = true;
           if (ev[i + 1] === EventKind.NukeCasualties) burstOn.push(nukeStrike(ev[i + 3]!).nation);
         }
         ww.out.events.length = 0;
@@ -67,13 +69,16 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
     // about 0 (day 61; its first two at 0.117 and 0.118).
     for (const o of decided) expect(o.u, `France's decision of day ${o.day}`).toBeGreaterThan(NUKE_FLOOR);
     // Its first uses STRIKE_GAP_DAYS apart at least (PLAN 7.25b): before, days 59 and 60 (Germany
-    // holds no warhead, so none of them is a strike back).
-    for (let i = 1; i < decided.length; i++) expect(decided[i]!.day - decided[i - 1]!.day, `France's decisions of days ${decided[i - 1]!.day} and ${decided[i]!.day}`).toBeGreaterThanOrEqual(STRIKE_GAP_DAYS);
-    // On the Germans overrunning it (PLAN 7.18j's AT): the aim, and the burst where one comes. Since
-    // PLAN 7.26b (ADR-508) German fighters stand over France: its one launch (day 71) is shot down,
-    // its bomber is lost on day 73 on a strike over the Germans, and the gap after a launch
-    // (STRIKE_GAP_DAYS, PLAN 7.25b) held its second attempt until then. Before, its first got
-    // through on day 59. Whether a launch shot down should start the gap: PLAN 7.28.
+    // holds no warhead, so none of them is a strike back); but a launch stopped short starts no gap
+    // (PLAN 7.28): its first, on day 46, is shot down by German fighters over France, and its next
+    // launch comes the next day and bursts. Before 7.28 the gap held it to day 53, and on an earlier
+    // build (PLAN 7.26b, ADR-508) its bomber was lost within that week with 9 warheads unused.
+    for (let i = 1; i < decided.length; i++) if (!decided[i - 1]!.short) expect(decided[i]!.day - decided[i - 1]!.day, `France's decisions of days ${decided[i - 1]!.day} and ${decided[i]!.day}`).toBeGreaterThanOrEqual(STRIKE_GAP_DAYS);
+    const shot = decided.findIndex((o) => o.short);
+    expect(shot, 'a launch of France shot down').toBeGreaterThanOrEqual(0);
+    expect(decided[shot + 1], 'France launches again after it').toBeDefined();
+    expect(decided[shot + 1]!.day - decided[shot]!.day, 'within the gap of a launch that bursts').toBeLessThan(STRIKE_GAP_DAYS);
+    // On the Germans overrunning it (PLAN 7.18j's AT): the aim, and the burst where one comes.
     expect(launched, 'France launched').toBeGreaterThan(0);
     expect(firstOnGermany, "its first decision's place is Germany's").toBe(true);
     if (burstOn.length > 0) expect(burstOn[0], 'its first burst on Germany').toBe(GER);

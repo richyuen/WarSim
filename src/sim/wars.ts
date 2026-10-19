@@ -33,6 +33,11 @@ export interface War {
   capitalsLost?: number[];
   /** The tick of each side's last nuclear strike decided in the war (PLAN 7.18e; absent: none). */
   lastStrike?: [number, number];
+  /**
+   * How many of each side's launches of its last strike's tick are not stopped short (PLAN 7.28:
+   * with none, the gap after it holds nothing; absent: as one, an older save's).
+   */
+  strikesLive?: [number, number];
   /** How many strikes each side decided in the war by its resolve to end it (PLAN 7.18h; absent: none). */
   resolveStrikes?: [number, number];
   /**
