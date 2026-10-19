@@ -20072,3 +20072,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   among them).
 - **After the commit** (`d19f18d`): by hand, `seaBattle1938`, `navalDemo1938`, `seaRow1938` (3),
   `carrierStrikeRow1938`, `seaControl1938`, `fleetOrder1938` green (8).
+
+## 2026-10-19 — PLAN 7.35d2d3a: a home port behind a passage shut to the fleet (critic R9 naval 6)
+
+- **Start:** gate green on `18986c9` (an evidence screenshot `seaRow1938` rewrites by hand restored);
+  critic not due. PLAN 7.35d2d3 split (a the home port, b the tool, c the "after" run and the causes left).
+- **Rule** (ADR-553, `src/sim/systems/navalCombat.ts`): `nearestOwnPort` compares `waterKeys(world,
+  nation)` keys, not basins; `waterKeys` and `keyAt` moved beside `basinAt` (re-exported from
+  `naval.ts`). A fleet with no home port it reaches gets no order home and stands.
+- **Measured** (`seaHold`, 14 seeds × 6 years, years 2–6, `measure-d.md` §8, JSON in
+  `docs/evidence/7.35/d2d3a/`): refused orders 29 → 0; `targetMiss` 419 → 473 (untraced, d2d3b).
+- **Test:** `navalAi1938.test.ts` + 1 (France at war with Turkey: a French squadron at Constanța has
+  Latakia for home at peace, none at war; no order refused in 8 days; red without the rule).
+- **Pin** 11594612 → 25c38def; seed 99's year 34 `SeaBattle` rows, the first on day 13.4, as before.
+- **Perf:** a loaded machine (every system ~1.5 × §7's), so HEAD's code timed after it: navalCombat
+  0.107–0.111 ms a tick against 0.106, navalAi 0.066 against 0.063, territory 0.229–0.235 against
+  0.225 (seed 99, one year, `--profile`, pinned): within the spread.
+- **Next:** PLAN 7.35d2d3b (`seaMeet` on `waterKeys`; `targetMiss` traced).

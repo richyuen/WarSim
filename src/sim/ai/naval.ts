@@ -51,14 +51,17 @@
 import { isDayStart } from '../../shared/calendar';
 import { transportRoom } from '../systems/amphibious';
 import { elementIndex } from '../systems/elements';
-import { convoyWays, passageShut } from '../systems/seaSupply';
-import { AT_PORT_CELLS, sailHome, seaKm, zoneAt } from '../systems/navalCombat';
+import { convoyWays } from '../systems/seaSupply';
+import { AT_PORT_CELLS, keyAt, sailHome, seaKm, waterKeys } from '../systems/navalCombat';
 import { fleetPower, navalPower } from '../systems/seaControl';
 
 export { fleetPower };
 import { orderSail } from '../systems/sail';
 import { blocOf } from '../systems/supply';
-import { basinOf, laneOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
+import { portSeaOf, seaOf, seaRangeOf, type World } from '../world';
+
+// The waters a nation's ships sail between (PLAN 7.35d2d2) live with `basinAt`, read by `nearestOwnPort` too (PLAN 7.35d2d3a).
+export { keyAt, waterKeys };
 import { STAGGER } from './strategic';
 import { roleOf } from './air';
 import { basePlace, wingRange } from '../systems/air';
@@ -143,47 +146,6 @@ export function navalAi(world: World): void {
   let standing: Prey[] | undefined;
   const prey = (): Prey[] => (standing ??= standingWarfleets(world));
   for (const n of [...fleets.keys()].sort((a, b) => a - b)) plan(world, n, fleets.get(n)!, power, prey);
-}
-
-/**
- * The waters nation `n`'s ships sail between (PLAN 7.35d2d2, ADR-552): per sea zone (index 0, no
- * zone), a key, the same for two zones a ship of `n` sails between. The basins (`basinOf`) while
- * no passage is shut to `n`; else the parts of the lane graph with every passage shut to `n` left
- * out (`passageShut`, PLAN 4.4e: its bank held by an enemy), as `orderSail` routes. A zone ice
- * closes, and index 0, take the key of the world's seas (`ocean`), as `basinAt` reads a fleet on no
- * zone. With `n` 0, the basins.
- */
-export function waterKeys(world: World, n: number): Int32Array {
-  const z = seaOf(world);
-  const { basin, ocean } = basinOf(world);
-  const keys = new Int32Array(z.count + 1);
-  const shut = new Set<number>();
-  if (n > 0) for (let i = 0; i < world.seaPassages.length; i++) if (passageShut(world, i, n)) shut.add(i);
-  if (shut.size === 0) {
-    for (let a = 0; a <= z.count; a++) keys[a] = basin[a] || ocean;
-    return keys;
-  }
-  const lanes = laneOf(world);
-  const parent = Int32Array.from({ length: lanes.kind.length }, (_, i) => i);
-  const find = (a: number): number => {
-    while (parent[a] !== a) a = parent[a] = parent[parent[a]!]!;
-    return a;
-  };
-  for (const e of lanes.edges) {
-    if (e.passage >= 0 && shut.has(e.passage)) continue;
-    const ra = find(e.a);
-    const rb = find(e.b);
-    if (ra !== rb) parent[Math.max(ra, rb)] = Math.min(ra, rb);
-  }
-  for (let a = 1; a <= z.count; a++) keys[a] = z.closed[a] === 1 ? 0 : find(a - 1) + 1;
-  const sea = keys[ocean]!;
-  for (let a = 0; a <= z.count; a++) if (keys[a] === 0) keys[a] = sea;
-  return keys;
-}
-
-/** The key (`waterKeys`) of a fleet at (x, y): its zone's (`zoneAt`, as `basinAt` reads it). */
-export function keyAt(world: World, keys: Int32Array, x: number, y: number): number {
-  return keys[zoneAt(world, x, y)]!;
 }
 
 /** An enemy port as a target: its water's cell, its zone's enemy power, its waters' key (`waterKeys`, PLAN 7.35d2d; named for the basin it was). */

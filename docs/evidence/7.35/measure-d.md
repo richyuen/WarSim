@@ -347,3 +347,28 @@ task's start). The 14 seeds × 6 years, years 2–6, `sea` fleet-days:
 - Pin babcd48d → 11594612; seed 99's year 34 `SeaBattle` rows, the first on day 13.4, both as before.
   navalAi 0.0429 ms a tick, 2.0 % (0.0457 at d2d1; seed 99, one year, `--profile`, pinned; tick
   mean 2.13 ms).
+
+## 8. A home port behind a passage shut to the fleet (7.35d2d3a, ADR-553)
+
+**The rule** (`nearestOwnPort`, `src/sim/systems/navalCombat.ts`): a fleet's home port is one in its
+waters' key (`waterKeys(world, nation)`, now in `navalCombat.ts` beside `basinAt`), not its basin.
+A fleet with no home port it reaches gets no order home and stands, as it did when the order was
+refused. `seaHold` reads the home goal through `nearestOwnPort`, so it follows unchanged. JSON in
+`d2d3a/after_<seed>.json`; before is §7's after-run (`d2d2/after_<seed>.json`). The 14 seeds × 6
+years, years 2–6, `sea` fleet-days:
+
+| | before | after |
+| --- | --- | --- |
+| all | 112,739 | 115,277 |
+| **orders refused (`rejected`)** | **29** (seed 8821) | **0** |
+| tool against the tick (orders; `agree`) | 13,110 of 13,160 | 14,013 of 14,063 |
+| of those under way, for another cell than the read (`targetMiss`) | 419 | 473 |
+| an order back to the target of two orders before | 180 | 196 |
+
+- No order of the sea pairs' fleets is refused now. The worlds part after seed 8821's first changed
+  order (and seed 99's, the pin), so the other rows are not the rule's.
+- `targetMiss` stays untraced (PLAN 7.35d2d3b).
+- Pin 11594612 → 25c38def; seed 99's year 34 `SeaBattle` rows, the first on day 13.4, both as before.
+  Seed 99, one year, `--profile`, pinned, HEAD's code timed after it on the same machine (a load
+  that ran every system about 1.5 × slower than §7's): navalCombat 0.107–0.111 ms a tick against
+  0.106, navalAi 0.066 against 0.063, territory (untouched) 0.229–0.235 against 0.225.

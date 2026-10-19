@@ -219,7 +219,19 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
             calls `forwardBases` and `stageTo` with the basins, not `waterKeys(world, n)` as `plan`
             now does. And `check.targetMiss` (ordered fleets under way for another cell than the
             tool's read) measured in d2d2's after-run: traced, or named, before the tool's figures
-            lean on it.
+            lean on it. In parts (one cause each; the "after" run on the last):
+            - [x] 7.35d2d3a The home port behind a passage shut to the fleet: `nearestOwnPort`
+              reads `waterKeys(world, nation)` as `plan` does, not the basins (`waterKeys` and
+              `keyAt` move to `navalCombat.ts`). AT: a unit test (a French fleet in the Black Sea at
+              war with Turkey, the Bosporus shut: no home port there, so it is not sent for one
+              through the strait; red without); `seaHold`'s 29 refusals → 0; the pin; an ADR (what a
+              fleet with no home port it reaches does); `--profile`.
+            - [ ] 7.35d2d3b The tool: `seaMeet` passes `waterKeys(world, n)` to `forwardBases` and
+              `stageTo`; `check.targetMiss` (419 of 13,160) traced or named. No rule: the pin
+              unchanged.
+            - [ ] 7.35d2d3c The "after" run of `seaYears` on the 14 seeds × 30 years against d1's,
+              and the three causes re-measured with `seaHold` (across land, a partner's port the
+              enemy holds, the enemy beyond `SORTIE_KM`): a rule each (split then), or the reason.
 - [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
   and 10 m/px in every probe (`c9_c_4483.json` `sorties`); the air map on day 10 of Germany–Poland
   hatches one German zone over all of Europe, every hover "held by Germany" from London to Kiev

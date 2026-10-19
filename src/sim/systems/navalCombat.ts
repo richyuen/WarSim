@@ -66,7 +66,7 @@ import { EventKind } from '../../shared/events';
 import { SIDE_SHIPS } from '../../shared/history';
 import { isLand } from '../../shared/terrain';
 import { nearestCellWhere } from '../data/ownership';
-import { airOf, basinOf, navOf, portSeaOf, seaOf, type SeaBattle, type World } from '../world';
+import { airOf, basinOf, laneOf, navOf, portSeaOf, seaOf, type SeaBattle, type World } from '../world';
 import { orderSail, sailStep } from './sail';
 import { applyLoss, elementIndex, elementPlace, loopW, noteMove, settleFormation, slotCount } from './elements';
 import { ARMOR_PEN, COOLDOWN } from './combat';
@@ -74,6 +74,7 @@ import { wingRange } from './air';
 import { NAVAL_STRIKE_FIRE, shipEffectiveness } from './airCombat';
 import { AIR_DETECTION, airSuperiority } from './airSuperiority';
 import { Leg, sortieAt, type Sortie } from './sorties';
+import { passageShut } from './seaSupply';
 import { blocOf } from './supply';
 
 /** Ships removed per hour by one ship per point of `hard` against a target of 1 hit point. */
@@ -440,9 +441,52 @@ export function zoneAt(world: World, x: number, y: number): number {
 }
 
 /**
+ * The waters nation `n`'s ships sail between (PLAN 7.35d2d2, ADR-552): per sea zone (index 0, no
+ * zone), a key, the same for two zones a ship of `n` sails between. The basins (`basinOf`) while
+ * no passage is shut to `n`; else the parts of the lane graph with every passage shut to `n` left
+ * out (`passageShut`, PLAN 4.4e: its bank held by an enemy), as `orderSail` routes. A zone ice
+ * closes, and index 0, take the key of the world's seas (`ocean`), as `basinAt` reads a fleet on no
+ * zone. With `n` 0, the basins.
+ */
+export function waterKeys(world: World, n: number): Int32Array {
+  const z = seaOf(world);
+  const { basin, ocean } = basinOf(world);
+  const keys = new Int32Array(z.count + 1);
+  const shut = new Set<number>();
+  if (n > 0) for (let i = 0; i < world.seaPassages.length; i++) if (passageShut(world, i, n)) shut.add(i);
+  if (shut.size === 0) {
+    for (let a = 0; a <= z.count; a++) keys[a] = basin[a] || ocean;
+    return keys;
+  }
+  const lanes = laneOf(world);
+  const parent = Int32Array.from({ length: lanes.kind.length }, (_, i) => i);
+  const find = (a: number): number => {
+    while (parent[a] !== a) a = parent[a] = parent[parent[a]!]!;
+    return a;
+  };
+  for (const e of lanes.edges) {
+    if (e.passage >= 0 && shut.has(e.passage)) continue;
+    const ra = find(e.a);
+    const rb = find(e.b);
+    if (ra !== rb) parent[Math.max(ra, rb)] = Math.min(ra, rb);
+  }
+  for (let a = 1; a <= z.count; a++) keys[a] = z.closed[a] === 1 ? 0 : find(a - 1) + 1;
+  const sea = keys[ocean]!;
+  for (let a = 0; a <= z.count; a++) if (keys[a] === 0) keys[a] = sea;
+  return keys;
+}
+
+/** The key (`waterKeys`) of a fleet at (x, y): its zone's (`zoneAt`, as `basinAt` reads it). */
+export function keyAt(world: World, keys: Int32Array, x: number, y: number): number {
+  return keys[zoneAt(world, x, y)]!;
+}
+
+/**
  * The water of the port nearest to fleet `id` that is home to it (`homeOf`) and a ship reaches, or
  * -1: one in the basin of the fleet's water (`basinOf`, PLAN 4.8o; the world's seas where the fleet
- * stands on no zone), not a port across land on a lake.
+ * stands on no zone), not a port across land on a lake; nor one behind a passage shut to the
+ * fleet's nation (`waterKeys`, PLAN 7.35d2d3a, ADR-553), whose way `orderSail` refuses. With none,
+ * the fleet has no home it reaches, and `sailHome` leaves it where it is.
  */
 export function nearestOwnPort(world: World, id: number): number {
   const c = world.formations.cols;
@@ -451,12 +495,14 @@ export function nearestOwnPort(world: World, id: number): number {
   const sea = seaOf(world);
   const { w } = world.cells;
   const { basin } = basinOf(world);
-  const mine = basinAt(world, c.x[id]!, c.y[id]!);
+  const keys = waterKeys(world, c.nation[id]!);
+  const mine = keyAt(world, keys, c.x[id]!, c.y[id]!);
   let best = -1;
   let bd = Infinity;
   world.ports.forEach((p, i) => {
     const at = water[i]!;
-    if (!home(world.cells.controller[p.cell]!) || at < 0 || basin[sea.zoneOf[at]!] !== mine) return;
+    // A zone of no basin (`basin` 0) is no port's water a ship reaches, as before the keys.
+    if (!home(world.cells.controller[p.cell]!) || at < 0 || basin[sea.zoneOf[at]!] === 0 || keys[sea.zoneOf[at]!] !== mine) return;
     const d = seaKm(world, c.x[id]!, c.y[id]!, (at % w) + 0.5, Math.floor(at / w) + 0.5);
     if (d < bd) {
       bd = d;

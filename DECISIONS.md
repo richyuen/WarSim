@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-553 · 2026-10-19 · accepted — A fleet's home port is one its nation's ships reach: none behind a passage shut to it (PLAN 7.35d2d3a; amends ADR-552, ADR-545, ADR-261)
+
+- **Context.** Critic run 9, naval 6. ADR-552 left `nearestOwnPort` (`sailHome`, and through it
+  `atOwnPort`, a sea battle's break-off, `rebaseFleets`, a repulsed landing, `plan`'s sends home)
+  filtering by basin alone. In its after-run every refused order left (29 of the 14 seeds × 6
+  years' late sea orders) was one cause: seed 8821, a French fleet in the Black Sea sent home for
+  Latakia through the Bosporus, shut to France by Turkey's bank; refused, it stood and was sent
+  again each AI day.
+- **Decision.** `nearestOwnPort` compares the fleet's waters' key (`waterKeys(world, nation)`,
+  `keyAt`) with each home port's, as `plan` does since ADR-552; a port in a zone of no basin is
+  still none. `waterKeys` and `keyAt` move to `navalCombat.ts`, beside `basinAt` (`naval.ts`
+  re-exports them).
+- **A fleet with no home port it reaches** (the decision the change forces): `nearestOwnPort` is
+  -1, `sailHome` gives no order, and the fleet stands where it is, as it did when the order was
+  refused, without the refusal. `plan` still reads it each AI day as a fleet away: it is sent for a
+  winnable battle or an enemy station in its waters when one is in reach (the Black Sea's Turkish
+  ports), else it stands; `atOwnPort` is false, so a sea battle's break-off still takes it out of
+  the battle for `BREAK_HOURS`. When the passage opens (the bank's holder at peace with it, or
+  taken), its keys are the basins again and home is beyond the strait.
+- **At peace nothing changes:** a passage is shut only to a nation at war with its bank's holder
+  (`passageShut`), so a nation at peace has the basins for keys, as before (the Dutch East Indies'
+  squadrons' Surabaya, ADR-545).
+- **Measured** (`tools/diag/seaHold.ts`, `docs/evidence/7.35/measure-d.md` §8): refused orders
+  29 → 0 on the 14 seeds × 6 years (years 2–6). A unit test: France at war with Turkey, a French
+  cruiser squadron at Constanța has a home port at peace (Latakia) and none at war, `sailHome` gives
+  no order, and over 8 days no order of it is refused (red without: Latakia through the strait).
+- **Cost.** `waterKeys` per call (an array of the zones; with a passage shut, a union over the lane
+  graph). Seed 99, one year, `--profile`, pinned, HEAD's code timed beside it: navalCombat 0.107 to
+  0.111 ms a tick against 0.106, navalAi 0.066 against 0.063, territory (untouched) 0.229 to 0.235
+  against 0.225: within the run's spread. No cache.
+- **Pin** 11594612 → 25c38def: in seed 99's first year a fleet's home lay behind a shut passage;
+  34 `SeaBattle` rows, the first on day 13.4, both as before.
+
 ### ADR-552 · 2026-10-19 · accepted — A target behind a passage shut to the fleet is out of reach, as one across land (PLAN 7.35d2d2; amends ADR-551, ADR-270, ADR-543, ADR-549)
 
 - **Context.** Critic run 9, naval 6. After ADR-551 the orders `orderSail` refused (`NoSeaWay`) were

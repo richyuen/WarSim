@@ -6,7 +6,7 @@ import { Sim } from '../../src/sim/sim';
 import { AVOID_RATIO, fleetPower, navalAi, navalBombers, SORTIE_KM, waterKeys } from '../../src/sim/ai/naval';
 import { STAGGER } from '../../src/sim/ai/strategic';
 import { equipFormation } from '../../src/sim/systems/elements';
-import { AT_PORT_CELLS, basinAt, seaKm } from '../../src/sim/systems/navalCombat';
+import { AT_PORT_CELLS, basinAt, nearestOwnPort, sailHome, seaKm } from '../../src/sim/systems/navalCombat';
 import { navalPower } from '../../src/sim/systems/seaControl';
 import { convoyWays, passageShut } from '../../src/sim/systems/seaSupply';
 import { blocOf } from '../../src/sim/systems/supply';
@@ -399,6 +399,45 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     expect(goal, 'sailed').toBeGreaterThanOrEqual(0);
     expect(keys[z.zoneOf[goal]!], `its goal ${named(goal)} in its waters`).toBe(aegean);
     process.stderr.write(`ENG–TUR: the fleet nearest ${named(behind)} by the line sailed for ${named(goal)}\n`);
+  });
+
+  it('France at war with Turkey: a French fleet in the Black Sea has no home port it reaches, and is not sent for one through the Bosporus (PLAN 7.35d2d3a)', () => {
+    const s = new Sim({ scenario: '1938', seed: 4613, assets: assets1938(W) });
+    const w = s.world;
+    const FRA = id('FRA');
+    const TUR = id('TUR');
+    const water = portSeaOf(w);
+    const named = (cell: number): string => {
+      const i = water.indexOf(cell);
+      return i >= 0 ? w.ports[i]!.name : `cell ${cell}`;
+    };
+    // At Constanța's water, Romania's: at peace with everyone there, so on no enemy station.
+    const at = water[w.ports.findIndex((p) => p.name === 'Constanța')]!;
+    expect(at).toBeGreaterThanOrEqual(0);
+    const fleet = addFleet(w, FRA, 'cruiser_squadron', (at % W) + 0.5, Math.floor(at / W) + 0.5);
+    // At peace the strait is open: home is a French port beyond it.
+    const bosporus = w.seaPassages.findIndex((p) => p.id === 'bosporus');
+    expect(passageShut(w, bosporus, FRA)).toBe(false);
+    const before = nearestOwnPort(w, fleet);
+    expect(before, 'a home port at peace').toBeGreaterThanOrEqual(0);
+    // At war with Turkey, which holds the Bosporus' bank: no French port is in the fleet's waters.
+    expect(declareWar(w, FRA, TUR, true)).not.toBeNull();
+    w.nations.cols.aiOff[TUR] = 1;
+    expect(passageShut(w, bosporus, FRA)).toBe(true);
+    expect(nearestOwnPort(w, fleet), `no home port through the strait (was ${named(before)})`).toBe(-1);
+    expect(sailHome(w, fleet)).toBe(false);
+    // Over France's turns: its order never refused.
+    let rejected = 0;
+    for (let d = 0; d < 8; d++) {
+      s.step(24, (world) => {
+        const ev = world.out.events;
+        for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.MoveRejected && ev[i + 2] === fleet) rejected++;
+        world.out.events.length = 0;
+        world.out.fires.length = 0;
+      });
+    }
+    expect(rejected, 'orders refused').toBe(0);
+    process.stderr.write(`FRA–TUR: home at peace ${named(before)}; at war none in the Black Sea, no order refused in 8 days\n`);
   });
 
   it('Greece at war with Italy, Italian ports within SORTIE_KM: no Greek fleet stages, each sails for an Italian port or stands (PLAN 7.35b2)', () => {
