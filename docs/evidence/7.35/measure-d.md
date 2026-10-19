@@ -302,3 +302,48 @@ years 2–6, `sea` fleet-days:
 - Pin unchanged (babcd48d): no fleet of seed 99's first year has its target across land. navalAi
   0.0457 ms a tick, 2.0 % (0.0434 at d2c; seed 99, one year, `--profile`, pinned; territory 0.1561
   against 0.1485, the run 5 % slower throughout).
+
+## 7. A target behind a passage shut to the fleet (7.35d2d2, ADR-552)
+
+**The rule** (`waterKeys`, `keyAt` in `src/sim/ai/naval.ts`). Each sea zone has a key per nation:
+the same for two zones a ship of that nation sails between. While no passage is shut to the nation
+the keys are the basins; with one shut (its bank held by an enemy, PLAN 4.4e) they are the parts of
+the lane graph with the shut passages left out, as `orderSail` routes. `plan`'s sortie, `awayOrder`,
+`forwardBases` and `stageTo` compare keys where §6's rule compared basins. With Turkey at war with
+Britain, the Aegean, the Sea of Marmara and the Black Sea are three keys for Britain's ships and one
+basin for the others' (the unit test's probe).
+
+`seaHold` mirrors the rule, and gains `noRouteWho` (the refusals with no way even with nothing shut:
+who, which order, the port, the zones), `otherBasinWho`, and `check.targetMiss` (an ordered fleet
+under way for another cell than the tool's read: `agree` counts any fleet under way). JSON in
+`d2d2/after_<seed>.json`; before is §6's after-run (`d2d/after_<seed>.json`, the same code as this
+task's start). The 14 seeds × 6 years, years 2–6, `sea` fleet-days:
+
+| | before | after |
+| --- | --- | --- |
+| all | 118,867 | 112,739 |
+| **orders refused (`rejected`)** | **2,977** | **29** |
+| of them a passage shut (`rejectedShut`) | 2,977 | 0 |
+| of them no way at all (`rejectedNoRoute`) | 0 | 29 |
+| seed 1471's refusals | 2,304 | 0 |
+| an order back to the target of two orders before | 2,471 | 180 |
+| ordered from away: a battle / an enemy fleet / a new station / home | 968 / 769 / 3,762 / 294 | 881 / 633 / 1,183 / 289 |
+| ordered from port: a port with enemy ships / an empty port / an enemy fleet / a stage | 123 / 5,529 / 44 / 421 | 60 / 3,300 / 25 / 381 |
+| tool against the tick (orders; `agree`) | 19,627 of 19,658 | 13,110 of 13,160 |
+| of those under way, for another cell than the read (`targetMiss`) | not measured | 419 (405 `sortieEmpty`) |
+
+- The refusals through a shut passage are gone (2,977 → 0), and with them the repeats: orders back
+  to an earlier target 2,471 → 180, new stations from away 3,762 → 1,183 (the Aegean fleets' daily
+  Bursa). The worlds part after the first changed order, so the other rows are not the rule's.
+- The 29 left are one cause, not this rule's: seed 8821 year 3, a French fleet in the Black Sea
+  (zone 39) sent home (`sailHome`, `nearestOwnPort`) for Latakia (zone 193), through the Bosporus,
+  shut to it. `nearestOwnPort` filters by basin alone (PLAN 7.35d2d3).
+- The 4 orders across basins that d2d1's before-run counted and `orderSail` did not refuse (seed
+  6113, year 3): replayed at `70391c4`, four Soviet fleets in the Aegean read by the tool as sent for
+  Rasht on the Caspian were under way that tick for Valletta. Not a seam of `sailTarget`, nor a
+  basin-0 zone: the tool's read and the tick's order differ, and `check` counted the fleet under way
+  as agreeing. Hence `targetMiss`, which finds 419 such of the after-run's 13,160 orders: its cause is
+  not traced (PLAN 7.35d2d3).
+- Pin babcd48d → 11594612; seed 99's year 34 `SeaBattle` rows, the first on day 13.4, both as before.
+  navalAi 0.0429 ms a tick, 2.0 % (0.0457 at d2d1; seed 99, one year, `--profile`, pinned; tick
+  mean 2.13 ms).

@@ -3,12 +3,12 @@ import { EventKind } from '../../src/shared/events';
 import { seaSide } from '../../src/shared/history';
 import { NATIONS_1938, PORTS_1938, SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { AVOID_RATIO, fleetPower, navalAi, navalBombers, SORTIE_KM } from '../../src/sim/ai/naval';
+import { AVOID_RATIO, fleetPower, navalAi, navalBombers, SORTIE_KM, waterKeys } from '../../src/sim/ai/naval';
 import { STAGGER } from '../../src/sim/ai/strategic';
 import { equipFormation } from '../../src/sim/systems/elements';
 import { AT_PORT_CELLS, basinAt, seaKm } from '../../src/sim/systems/navalCombat';
 import { navalPower } from '../../src/sim/systems/seaControl';
-import { convoyWays } from '../../src/sim/systems/seaSupply';
+import { convoyWays, passageShut } from '../../src/sim/systems/seaSupply';
 import { blocOf } from '../../src/sim/systems/supply';
 import { basinOf, portSeaOf, seaOf, type World } from '../../src/sim/world';
 import { declareWar, makePeace } from '../../src/sim/systems/war';
@@ -339,6 +339,66 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
       to.push(i >= 0 ? w.ports[i]!.name : `cell ${t}`);
     }
     process.stderr.write(`USA–CAN: ${across.length} fleets sailed for ${[...new Set(to)].join(', ')}\n`);
+  });
+
+  it('the United Kingdom at war with Turkey: a fleet in the Aegean whose nearest Turkish port is behind the Dardanelles, which Turkey holds, sails for one it reaches (PLAN 7.35d2d2)', () => {
+    const s = new Sim({ scenario: '1938', seed: 4612, assets: assets1938(W) });
+    const w = s.world;
+    const c = w.formations.cols;
+    const TUR = id('TUR');
+    expect(declareWar(w, ENG, TUR, true)).not.toBeNull();
+    w.nations.cols.aiOff[TUR] = 1;
+    // The Dardanelles' bank is Turkey's: the passage is shut to British ships (PLAN 4.4e).
+    const dardanelles = w.seaPassages.findIndex((p) => p.id === 'dardanelles');
+    expect(passageShut(w, dardanelles, ENG)).toBe(true);
+    const keys = waterKeys(w, ENG);
+    const z = seaOf(w);
+    const water = portSeaOf(w);
+    const enemy = enemyWaters(w, ENG);
+    const named = (cell: number): string => {
+      const i = water.indexOf(cell);
+      return i >= 0 ? w.ports[i]!.name : `cell ${cell}`;
+    };
+    // An open-water cell of the Aegean (İzmir's waters) whose nearest Turkish port by the line is
+    // behind the strait (Bursa, Gölcük or Istanbul), not by an enemy port: the first such, scanning out from İzmir's water.
+    const izmir = water[w.ports.findIndex((p) => p.name === 'İzmir')]!;
+    const aegean = keys[z.zoneOf[izmir]!]!;
+    const nearest = (cell: number): number => enemy.reduce((b, e) => (kmTo(w, (cell % W) + 0.5, Math.floor(cell / W) + 0.5, e) < kmTo(w, (cell % W) + 0.5, Math.floor(cell / W) + 0.5, b) ? e : b));
+    let start = -1;
+    for (let r = 1; r < 20 && start < 0; r++) {
+      for (let dy = -r; dy <= r && start < 0; dy++) {
+        for (let dx = -r; dx <= r && start < 0; dx++) {
+          const cell = izmir + dy * W + dx;
+          const zone = z.zoneOf[cell]!;
+          if (zone === 0 || keys[zone] !== aegean || (Math.abs(dx) !== r && Math.abs(dy) !== r)) continue;
+          // Not by an enemy port already (on station there, it would stay).
+          if (enemy.some((e) => Math.abs((e % W) - (cell % W)) <= w.atSize(AT_PORT_CELLS) && Math.abs(Math.floor(e / W) - Math.floor(cell / W)) <= w.atSize(AT_PORT_CELLS))) continue;
+          if (keys[z.zoneOf[nearest(cell)]!] !== aegean) start = cell;
+        }
+      }
+    }
+    expect(start, 'an Aegean cell nearest a port behind the strait').toBeGreaterThanOrEqual(0);
+    const behind = nearest(start);
+    const fleet = addFleet(w, ENG, 'battle_squadron', (start % W) + 0.5, Math.floor(start / W) + 0.5);
+    expect(keys[z.zoneOf[behind]!]).not.toBe(aegean);
+    expect(kmTo(w, c.x[fleet]!, c.y[fleet]!, behind)).toBeLessThanOrEqual(SORTIE_KM);
+    // Within a turn of Britain's: it sails for a port of its waters, its order never refused.
+    let rejected = 0;
+    let goal = -1;
+    for (let d = 0; d < 8 && goal < 0; d++) {
+      s.step(24, (world) => {
+        const ev = world.out.events;
+        for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.MoveRejected && ev[i + 2] === fleet) rejected++;
+        world.out.events.length = 0;
+        world.out.fires.length = 0;
+      });
+      // Under way, or there already (a day's sail).
+      if (c.moving[fleet] === 1 || Math.floor(c.y[fleet]!) * W + Math.floor(c.x[fleet]!) !== start) goal = c.targetCell[fleet]!;
+    }
+    expect(rejected, 'orders refused').toBe(0);
+    expect(goal, 'sailed').toBeGreaterThanOrEqual(0);
+    expect(keys[z.zoneOf[goal]!], `its goal ${named(goal)} in its waters`).toBe(aegean);
+    process.stderr.write(`ENG–TUR: the fleet nearest ${named(behind)} by the line sailed for ${named(goal)}\n`);
   });
 
   it('Greece at war with Italy, Italian ports within SORTIE_KM: no Greek fleet stages, each sails for an Italian port or stands (PLAN 7.35b2)', () => {

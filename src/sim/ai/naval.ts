@@ -18,7 +18,8 @@
  *   (PLAN 7.35d2c, ADR-550): fleets on station at a partner's port or a neutral's were no target.
  *   Every target, port or fleet, is of the fleet's basin (`basinAt`, PLAN 7.35d2d1, ADR-551): a
  *   port across land on a lake is not in reach, and `orderSail` would refuse its way. So too an away
- *   fleet's new order and a forward base's targets.
+ *   fleet's new order and a forward base's targets. Nor is one behind a passage shut to the fleet
+ *   (`waterKeys`, PLAN 7.35d2d2, ADR-552: its bank an enemy's, PLAN 4.4e), as `orderSail` routes.
  * - At war, such a warfleet with no enemy port within `SORTIE_KM` at all stages (PLAN 7.35b2):
  *   it sails to the nearest port of its bloc's that has one (`forwardBases`; not empty water under
  *   the enemy's naval bombers, PLAN 7.35b4c2), in its basin (`stageTo`, PLAN 7.35b4c1), and
@@ -50,14 +51,14 @@
 import { isDayStart } from '../../shared/calendar';
 import { transportRoom } from '../systems/amphibious';
 import { elementIndex } from '../systems/elements';
-import { convoyWays } from '../systems/seaSupply';
-import { AT_PORT_CELLS, basinAt, sailHome, seaKm } from '../systems/navalCombat';
+import { convoyWays, passageShut } from '../systems/seaSupply';
+import { AT_PORT_CELLS, sailHome, seaKm, zoneAt } from '../systems/navalCombat';
 import { fleetPower, navalPower } from '../systems/seaControl';
 
 export { fleetPower };
 import { orderSail } from '../systems/sail';
 import { blocOf } from '../systems/supply';
-import { basinOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
+import { basinOf, laneOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
 import { STAGGER } from './strategic';
 import { roleOf } from './air';
 import { basePlace, wingRange } from '../systems/air';
@@ -144,14 +145,55 @@ export function navalAi(world: World): void {
   for (const n of [...fleets.keys()].sort((a, b) => a - b)) plan(world, n, fleets.get(n)!, power, prey);
 }
 
-/** An enemy port as a target: its water's cell, its zone's enemy power, its basin (`basinAt`'s reading; PLAN 7.35d2d). */
+/**
+ * The waters nation `n`'s ships sail between (PLAN 7.35d2d2, ADR-552): per sea zone (index 0, no
+ * zone), a key, the same for two zones a ship of `n` sails between. The basins (`basinOf`) while
+ * no passage is shut to `n`; else the parts of the lane graph with every passage shut to `n` left
+ * out (`passageShut`, PLAN 4.4e: its bank held by an enemy), as `orderSail` routes. A zone ice
+ * closes, and index 0, take the key of the world's seas (`ocean`), as `basinAt` reads a fleet on no
+ * zone. With `n` 0, the basins.
+ */
+export function waterKeys(world: World, n: number): Int32Array {
+  const z = seaOf(world);
+  const { basin, ocean } = basinOf(world);
+  const keys = new Int32Array(z.count + 1);
+  const shut = new Set<number>();
+  if (n > 0) for (let i = 0; i < world.seaPassages.length; i++) if (passageShut(world, i, n)) shut.add(i);
+  if (shut.size === 0) {
+    for (let a = 0; a <= z.count; a++) keys[a] = basin[a] || ocean;
+    return keys;
+  }
+  const lanes = laneOf(world);
+  const parent = Int32Array.from({ length: lanes.kind.length }, (_, i) => i);
+  const find = (a: number): number => {
+    while (parent[a] !== a) a = parent[a] = parent[parent[a]!]!;
+    return a;
+  };
+  for (const e of lanes.edges) {
+    if (e.passage >= 0 && shut.has(e.passage)) continue;
+    const ra = find(e.a);
+    const rb = find(e.b);
+    if (ra !== rb) parent[Math.max(ra, rb)] = Math.min(ra, rb);
+  }
+  for (let a = 1; a <= z.count; a++) keys[a] = z.closed[a] === 1 ? 0 : find(a - 1) + 1;
+  const sea = keys[ocean]!;
+  for (let a = 0; a <= z.count; a++) if (keys[a] === 0) keys[a] = sea;
+  return keys;
+}
+
+/** The key (`waterKeys`) of a fleet at (x, y): its zone's (`zoneAt`, as `basinAt` reads it). */
+export function keyAt(world: World, keys: Int32Array, x: number, y: number): number {
+  return keys[zoneAt(world, x, y)]!;
+}
+
+/** An enemy port as a target: its water's cell, its zone's enemy power, its waters' key (`waterKeys`, PLAN 7.35d2d; named for the basin it was). */
 interface Target {
   at: number;
   enemy: number;
   basin: number;
 }
 
-/** An enemy warfleet as a target (PLAN 7.35d2c): its cell, its zone's enemy power, its basin (`basinAt`'s reading). */
+/** An enemy warfleet as a target (PLAN 7.35d2c): its cell, its zone's enemy power, its waters' key (`waterKeys`). */
 interface Hunt {
   at: number;
   enemy: number;
@@ -273,25 +315,26 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
     }
     return t;
   };
-  // The enemy's ports with water a fleet reaches, their zones' enemy power and their basin (PLAN
-  // 7.35d2d, ADR-551: a port across land on a lake is no target, `orderSail` refuses its way).
-  const { basin, ocean } = basinOf(world);
+  // The enemy's ports with water a fleet reaches, their zones' enemy power and their waters' key
+  // (PLAN 7.35d2d, ADR-551, ADR-552: a port across land on a lake, or behind a passage shut to n, is
+  // no target: `orderSail` refuses its way).
+  const keys = waterKeys(world, n);
   const targets: Target[] = [];
   world.ports.forEach((p, i) => {
     const holder = ctl[p.cell]!;
     const at = water[i]!;
     if (holder === 0 || at < 0 || !world.wars.atWar(n, holder)) return;
     const zone = z.zoneOf[at]!;
-    if (zone !== 0 && z.closed[zone] !== 1) targets.push({ at, enemy: enemyIn(zone), basin: basin[zone] || ocean });
+    if (zone !== 0 && z.closed[zone] !== 1) targets.push({ at, enemy: enemyIn(zone), basin: keys[zone]! });
   });
   /** Whether target `t`'s water has no enemy ship and is under the enemy's naval bombers (no sortie's target, PLAN 7.35b3b). */
   const emptyBombed = (t: Target): boolean => t.enemy === 0 && bombed((t.at % w) + 0.5, Math.floor(t.at / w) + 0.5);
   // The enemy's standing warfleets (PLAN 7.35d2c, ADR-550), wherever they stand, and their zones'
   // enemy power: a battle to seek, as a port with enemy ships is; no station, no forward base.
   const hunts: Hunt[] = [];
-  for (const q of prey()) if (world.wars.atWar(n, q.nation)) hunts.push({ at: q.at, enemy: enemyIn(q.zone), basin: basin[q.zone] || ocean });
+  for (const q of prey()) if (world.wars.atWar(n, q.nation)) hunts.push({ at: q.at, enemy: enemyIn(q.zone), basin: keys[q.zone]! });
   // Away (PLAN 7.35d2b): a new order from where it stands; one escorting a landing stays.
-  for (const { id, e } of away) if (!escorting(id)) awayOrder(world, id, e, targets, hunts, together, emptyBombed, (cell) => near(cellOf(id), cell));
+  for (const { id, e } of away) if (!escorting(id)) awayOrder(world, id, e, keyAt(world, keys, c.x[id]!, c.y[id]!), targets, hunts, together, emptyBombed, (cell) => near(cellOf(id), cell));
   if (war.length === 0) return;
   let bases: number[] | undefined;
   /** The targets a sortie may take (PLAN 7.35b4c2): not empty water under the enemy's naval bombers; a base with none of them in reach is no forward base. */
@@ -302,9 +345,9 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
     let inReach = false;
     if (target < 0) {
       let best = Infinity;
-      const mine = basinAt(world, c.x[id]!, c.y[id]!);
+      const mine = keyAt(world, keys, c.x[id]!, c.y[id]!);
       for (const t of targets) {
-        // Of its basin only (PLAN 7.35d2d): one across land is not in reach, so the fleet may stage.
+        // Of its waters only (PLAN 7.35d2d): one across land, or behind a passage shut, is not in reach, so the fleet may stage.
         if (t.basin !== mine) continue;
         const d = km(id, t.at);
         if (d > SORTIE_KM) continue;
@@ -322,7 +365,7 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
       }
     }
     // No enemy port within reach at all: it stages, to its bloc's nearest port that has one (PLAN 7.35b2).
-    if (target < 0 && !inReach && targets.length > 0) target = stageTo(world, id, (bases ??= forwardBases(world, bloc, fightable(), war, enemyIn)));
+    if (target < 0 && !inReach && targets.length > 0) target = stageTo(world, id, (bases ??= forwardBases(world, bloc, fightable(), war, enemyIn, keys)), keys);
     if (target < 0 || near(cellOf(id), target)) continue;
     orderSail(world, id, (target % w) + 0.5, Math.floor(target / w) + 0.5);
   }
@@ -351,6 +394,7 @@ function awayOrder(
   world: World,
   id: number,
   here: number,
+  mine: number,
   targets: readonly Target[],
   hunts: readonly Hunt[],
   together: (cell: number) => number,
@@ -367,7 +411,6 @@ function awayOrder(
   // An enemy warfleet in reach, of its basin, whose zone the fleets together can win (PLAN 7.35d2c):
   // a battle from any zone, as its ships are sought, not their zone's ports. By one already: it stays.
   let beside = false;
-  const mine = basinAt(world, c.x[id]!, c.y[id]!);
   for (const t of hunts) {
     if (t.basin !== mine || t.enemy > together(t.at)) continue;
     if (by(t.at)) {
@@ -379,7 +422,7 @@ function awayOrder(
   }
   if (beside) return;
   for (const t of targets) {
-    // Of its basin only (PLAN 7.35d2d).
+    // Of its waters only (PLAN 7.35d2d).
     if (t.basin !== mine) continue;
     if (by(t.at)) {
       onStation = true;
@@ -400,16 +443,15 @@ function awayOrder(
  * those in its basin (`basinAt`, PLAN 7.35b4c: by the line a lake's port may be the nearest, the
  * Great Lakes' Toronto for a fleet at Halifax, and `orderSail` refuses it every turn); −1 with none.
  */
-export function stageTo(world: World, id: number, bases: readonly number[]): number {
+export function stageTo(world: World, id: number, bases: readonly number[], keys: Int32Array = waterKeys(world, 0)): number {
   const c = world.formations.cols;
   const w = world.cells.w;
   const z = seaOf(world);
-  const { basin } = basinOf(world);
-  const mine = basinAt(world, c.x[id]!, c.y[id]!);
+  const mine = keyAt(world, keys, c.x[id]!, c.y[id]!);
   let best = Infinity;
   let at = -1;
   for (const b of bases) {
-    if (basin[z.zoneOf[b]!] !== mine) continue;
+    if (keys[z.zoneOf[b]!] !== mine) continue;
     const d = seaKm(world, c.x[id]!, c.y[id]!, (b % w) + 0.5, Math.floor(b / w) + 0.5);
     if (d < best) [best, at] = [d, b];
   }
@@ -443,10 +485,9 @@ export function navalBombers(world: World, n: number): { x: number; y: number; r
  * through a war with Japan (`docs/evidence/7.35/measure-b.md`). The way there is a transit, not a
  * sortie: no bound on its length. From the base the sortie test runs as from any port of its own.
  */
-export function forwardBases(world: World, bloc: number, targets: readonly { at: number; basin: number }[], war: readonly { p: number }[], enemyIn: (zone: number) => number): number[] {
+export function forwardBases(world: World, bloc: number, targets: readonly { at: number; basin: number }[], war: readonly { p: number }[], enemyIn: (zone: number) => number, keys: Int32Array = waterKeys(world, 0)): number[] {
   const w = world.cells.w;
   const z = seaOf(world);
-  const { basin } = basinOf(world);
   const water = portSeaOf(world);
   const ctl = world.cells.controller;
   const all = war.reduce((s, x) => s + x.p, 0);
@@ -459,8 +500,8 @@ export function forwardBases(world: World, bloc: number, targets: readonly { at:
     if (zone === 0 || z.closed[zone] === 1 || enemyIn(zone) > all) return;
     const ax = (at % w) + 0.5;
     const ay = Math.floor(at / w) + 0.5;
-    // A target of the base's basin (PLAN 7.35d2d): one across land on a lake is none.
-    const mine = basin[zone]!;
+    // A target of the base's waters (PLAN 7.35d2d): one across land on a lake, or behind a passage shut, is none.
+    const mine = keys[zone]!;
     if (targets.some((t) => t.basin === mine && seaKm(world, ax, ay, (t.at % w) + 0.5, Math.floor(t.at / w) + 0.5) <= SORTIE_KM)) out.push(at);
   });
   return out;

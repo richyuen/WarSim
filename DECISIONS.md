@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-552 · 2026-10-19 · accepted — A target behind a passage shut to the fleet is out of reach, as one across land (PLAN 7.35d2d2; amends ADR-551, ADR-270, ADR-543, ADR-549)
+
+- **Context.** Critic run 9, naval 6. After ADR-551 the orders `orderSail` refused (`NoSeaWay`) were
+  all through a passage shut to the fleet (PLAN 4.4e, ADR-261: its bank held by an enemy): 2,977 of
+  the late sea pairs' orders on the 14 seeds × 6 years (years 2–6), 2,304 of them seed 1471's
+  British fleets in the Aegean sent for Bursa, behind the Dardanelles, every AI day. Refused, a fleet
+  stands and is sent again; those repeats were most of the orders back to an earlier target (2,471).
+- **Decision.** `waterKeys(world, n)` gives each sea zone a key, the same for two zones a ship of
+  `n` sails between: the basins while no passage is shut to `n`; else the parts of the lane graph
+  with the passages shut to `n` left out, as `orderSail`'s route has them. A zone ice closes and a
+  fleet on no zone take the key of the world's seas' root zone (with the ocean split by a shut
+  passage, that zone's side: a fleet with no zoned water within `AT_PORT_CELLS` is rare). `plan`'s
+  sortie, `awayOrder`, `forwardBases` and `stageTo` compare keys where they compared basins
+  (ADR-551). So a fleet whose enemy ports in reach are all behind a shut passage stages or stands
+  as one whose are across land. The key array costs nothing while nothing is shut (7 passages
+  tested a call); with one shut, a union over the lane graph's edges.
+- **Not changed.** `nearestOwnPort` (`sailHome`) still filters by basin alone: a home port behind a
+  shut passage is refused. Seen once in the after-run: a French fleet in the Black Sea sent home
+  through the Bosporus, 29 refusals on seed 8821 (PLAN 7.35d2d3).
+- **Measured** (`tools/diag/seaHold.ts`, `docs/evidence/7.35/measure-d.md` §7): refused orders
+  2,977 → 29, through a passage shut 2,977 → 0; seed 1471 2,304 → 0; orders back to an earlier
+  target 2,471 → 180. A unit test: the United Kingdom at war with Turkey, a battle squadron in the
+  Aegean whose nearest Turkish port by the line is Bursa sails for İzmir (red without: its order
+  refused).
+- **Pin** babcd48d → 11594612: in seed 99's first year a passage is shut to some fleet's nation and
+  an order changes; 34 `SeaBattle` rows, the first on day 13.4, both as before.
+
 ### ADR-551 · 2026-10-19 · accepted — A sortie's target, an away fleet's new order and a forward base's targets are of the fleet's basin (PLAN 7.35d2d1; amends ADR-270, ADR-543, ADR-549)
 
 - **Context.** Critic run 9, naval 6. PLAN 7.35d2a (`docs/evidence/7.35/measure-d.md` §3): a

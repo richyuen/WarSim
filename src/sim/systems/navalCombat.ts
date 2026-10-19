@@ -426,11 +426,17 @@ export function homeOf(world: World, id: number): (holder: number) => boolean {
  * near. A port in another basin is one a ship there does not reach (a lake's).
  */
 export function basinAt(world: World, x: number, y: number): number {
+  const { basin, ocean } = basinOf(world);
+  const zone = zoneAt(world, x, y);
+  return basin[zone] || ocean;
+}
+
+/** The sea zone of the water nearest (x, y) within `AT_PORT_CELLS`, or 0 with none: the zone `basinAt` reads a fleet's basin by. */
+export function zoneAt(world: World, x: number, y: number): number {
   const sea = seaOf(world);
   const { w, h } = world.cells;
-  const { basin, ocean } = basinOf(world);
   const here = nearestCellWhere((k) => sea.zoneOf[k] !== 0, x, y, w, h, world.atSize(AT_PORT_CELLS), world.settings.loopingMap);
-  return here >= 0 && basin[sea.zoneOf[here]!] !== 0 ? basin[sea.zoneOf[here]!]! : ocean;
+  return here >= 0 ? sea.zoneOf[here]! : 0;
 }
 
 /**

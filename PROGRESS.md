@@ -20045,3 +20045,28 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 7.35d2d2 (a target behind a passage shut to the fleet).
 - **After the commit** (`23af83e`): by hand, `seaBattle1938`, `navalDemo1938`, `seaRow1938` (3),
   `carrierStrikeRow1938`, `seaControl1938`, `fleetOrder1938` green (8).
+
+## 2026-10-19 — PLAN 7.35d2d2: a target behind a passage shut to the fleet (critic R9 naval 6)
+
+- **Start:** gate green on `e2e4e26`; critic not due.
+- **Rule** (ADR-552, `src/sim/ai/naval.ts`): `waterKeys(world, n)`, per sea zone a key, the same
+  for zones a ship of `n` sails between: the basins while no passage is shut to `n`, else the lane
+  graph's parts with the shut passages left out. `plan`'s sortie, `awayOrder`, `forwardBases` and
+  `stageTo` compare keys, not basins. `zoneAt` split out of `basinAt` (`navalCombat.ts`).
+- **Measured** (`seaHold`, 14 seeds × 6 years, years 2–6, `measure-d.md` §7, JSON in
+  `docs/evidence/7.35/d2d2/`): refused orders 2,977 → 29, through a shut passage 2,977 → 0 (seed 1471
+  2,304 → 0); orders back to an earlier target 2,471 → 180. The 29 left: a French fleet in the Black
+  Sea sent home for Latakia through the Bosporus (`nearestOwnPort` filters by basin alone; PLAN
+  7.35d2d3).
+- **Tool:** `noRouteWho`, `otherBasinWho`, `check.targetMiss` (419 of 13,160 orders under way for
+  another cell than the read, not traced; d2d3). The 4 across-basin orders of d2d1's before-run that
+  went through: replayed at `70391c4` in a worktree, four Soviet fleets read as sent for Rasht sailed
+  for Valletta that tick: a read that differed from the tick, counted as agreeing.
+- **Test:** `navalAi1938.test.ts` + 1 (Britain at war with Turkey: a battle squadron in the Aegean
+  whose nearest Turkish port by the line is Bursa sails for İzmir, its order never refused; red
+  without the rule, with `plan` reading the basins).
+- **Pin** babcd48d → 11594612; seed 99's year 34 `SeaBattle` rows, the first on day 13.4, as before.
+- **Perf:** navalAi 0.0429 ms a tick (0.0457 at d2d1), tick mean 2.13 ms (seed 99, one year,
+  `--profile`, pinned; territory 0.1472).
+- **Next:** PLAN 7.35d2d3 (the "after" run of `seaYears`; the causes left, `sailHome`'s shut passage
+  among them).
