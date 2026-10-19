@@ -20070,3 +20070,5 @@ No rule changed and nothing on screen changed. One task came out of it.
   `--profile`, pinned; territory 0.1472).
 - **Next:** PLAN 7.35d2d3 (the "after" run of `seaYears`; the causes left, `sailHome`'s shut passage
   among them).
+- **After the commit** (`d19f18d`): by hand, `seaBattle1938`, `navalDemo1938`, `seaRow1938` (3),
+  `carrierStrikeRow1938`, `seaControl1938`, `fleetOrder1938` green (8).
