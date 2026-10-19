@@ -1960,6 +1960,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   fallout map mode. An AI's decision to strike is a history row of its own, told by the city
   nearest its place and its utility in words, never as a number: "after long hesitation" under
   0.1, "after weighing it" under 0.5, "without hesitation" from there (PLAN 7.25c).
+  A strike's row and its alert tell the civilians killed and the men, guns (artillery,
+  anti-tank, anti-air) and tanks lost, or that no troops were in the blast: the forces lost are
+  a companion history row (`NukeToll`) read into the strike's row, and a game saved before it
+  tells the dead alone (PLAN 7.32b, ADR-529).
   The alert goes once its strike is 72 hours of the game old and it has been shown 8 seconds (a
   paused game's stands), and the panels of the centre stand below it (PLAN 7.25d).
 - **God Mode**: toggle nukes globally and per nation, grant warheads, force a strike.
