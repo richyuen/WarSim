@@ -11,6 +11,11 @@
  * utility if its warhead got there (its value ÷ the chance through, the costs whole) is above 0:
  * the chance through is what keeps it under 0, the costs weighed whole and the gain × the chance.
  *
+ * PLAN 7.28: `paused` split by what became of the launch that began the gap (`pausedBy`: burst,
+ * short — shot down or its wing lost —, flight — still in the air), each held day weighed as if it
+ * were not (its category); and of the gaps begun by a launch stopped short, how many the side
+ * followed with another launch in that war (`shortGaps`).
+ *
  * Usage: npx tsx tools/diag/nukeGates.ts <seed> [years = 30] [out = .cache/nukeGates_<seed>.json]
  */
 import { writeFileSync } from 'node:fs';
@@ -41,6 +46,42 @@ const firstWarhead = new Map<string, number>();
 let day = 0;
 /** War-days of nations held by the gap after their side's launch (PLAN 7.25b). */
 let paused = 0;
+type Outcome = 'burst' | 'short' | 'flight';
+const pausedBy: Record<Outcome, Record<Cat, number>> = { burst: { noAim: 0, noPlace: 0, mad: 0, low: 0, strike: 0, noReach: 0 }, short: { noAim: 0, noPlace: 0, mad: 0, low: 0, strike: 0, noReach: 0 }, flight: { noAim: 0, noPlace: 0, mad: 0, low: 0, strike: 0, noReach: 0 } };
+/** Every launch by its id (ids are given in order: `world.nextLaunchId`), and those stopped short. */
+const launches = new Map<number, { nation: number; tick: number; missile: number }>();
+const shortIds = new Set<number>();
+let nextId = w.nextLaunchId;
+/** The gaps begun by a launch stopped short: war, side, the launch's tick; and whether the side launched again in the war. */
+const shortGaps = new Map<string, { war: number; side: number; tick: number; day: number; n: string; warheads: number; strikeDays: number; relaunched: boolean; relaunchDay: number | null }>();
+const outcomeOf = (war: { id: number; sides: [number[], number[]]; lastStrike?: [number, number] }, side: number): Outcome => {
+  const t = war.lastStrike![side]!;
+  for (const [id, l] of launches) {
+    if (l.tick !== t || !war.sides[side]!.includes(l.nation)) continue;
+    if (shortIds.has(id)) return 'short';
+    return w.nukeLaunches.some((x) => x.id === id) ? 'flight' : 'burst';
+  }
+  // The launching nation has left the side (a peace of its own): judge by any launch of the tick.
+  for (const [id, l] of launches) if (l.tick === t) return shortIds.has(id) ? 'short' : w.nukeLaunches.some((x) => x.id === id) ? 'flight' : 'burst';
+  return 'burst';
+};
+const catOf = (r: ReturnType<typeof weighWar>, n: number): Cat => {
+  if (!r.shared) return 'noAim';
+  if (r.places.length === 0) return 'noPlace';
+  let anyReach = false;
+  let bu = -Infinity;
+  let braw = -Infinity;
+  for (const p of r.places) {
+    const u = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared });
+    if (u > NUKE_FLOOR && reaches(w, n, p.x, p.y)) anyReach = true;
+    const raw = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared, mad: false });
+    if (raw > braw) {
+      braw = raw;
+      bu = u;
+    }
+  }
+  return bu > NUKE_FLOOR ? (anyReach ? 'strike' : 'noReach') : braw > NUKE_FLOOR ? 'mad' : 'low';
+};
 for (let y = 0; y < years; y++) {
   for (let d = 0; d < 365; d++, day++) {
     s.step(24, (ww) => {
@@ -49,11 +90,20 @@ for (let y = 0; y < years; y++) {
         const k = nukeStrike(ev[i + 3]!);
         bursts.push({ day, n: tag(ev[i + 2]!), struck: tag(k.nation), dead: k.dead, x: ev[i + 4]!, y: ev[i + 5]! });
       }
+      for (let i = 0; i < ev.length; i += 6) {
+        if (ev[i + 1] === EventKind.NukeLaunched) launches.set(nextId++, { nation: ev[i + 2]!, tick: ev[i]!, missile: ev[i + 3]! });
+        if (ev[i + 1] === EventKind.NukeIntercepted) shortIds.add(ev[i + 3]!);
+      }
       for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.NukeDecided) decisions.push({ day, n: tag(ev[i + 2]!), u: ev[i + 3]! / 1000, x: ev[i + 4]!, y: ev[i + 5]! });
       ww.out.events.length = 0;
       ww.out.fires.length = 0;
     });
     for (const n of w.warheads.keys()) if (warheadsOf(w, n) > 0 && !firstWarhead.has(tag(n))) firstWarhead.set(tag(n), +(day / 365).toFixed(2));
+    for (const war of w.wars.list)
+      for (const g of shortGaps.values()) if (g.war === war.id && !g.relaunched && (war.lastStrike?.[g.side] ?? -1) > g.tick) {
+        g.relaunched = true;
+        g.relaunchDay = day;
+      }
     if (w.warheads.size === 0) continue;
     const industry = dayIndustry(w);
     for (const n of [...w.warheads.keys()].sort((a, b) => a - b)) {
@@ -65,6 +115,16 @@ for (let y = 0; y < years; y++) {
         // PLAN 7.25b: a side that launched within STRIKE_GAP_DAYS weighs no first use.
         if (!avenging && strikePaused(w, war, side)) {
           paused++;
+          // PLAN 7.28: what became of the launch that began the gap, and what the day would have been.
+          const o = outcomeOf(war, side);
+          const c = catOf(weighWar(w, n, war, side, industry), n);
+          pausedBy[o][c]++;
+          if (o === 'short') {
+            const k = `${war.id}:${side}:${war.lastStrike![side as number]}`;
+            let g = shortGaps.get(k);
+            if (!g) shortGaps.set(k, (g = { war: war.id, side, tick: war.lastStrike![side as number]!, day, n: tag(n), warheads: warheadsOf(w, n), strikeDays: 0, relaunched: false, relaunchDay: null }));
+            if (c === 'strike') g.strikeDays++;
+          }
           continue;
         }
         const { desperation, extreme } = desperationOf(w, n, war, side);
@@ -155,6 +215,7 @@ for (let y = 0; y < years; y++) {
   }
   process.stderr.write(`seed ${seed} year ${y + 1}: decisions ${decisions.length}\n`);
 }
-const out = { seed, years, bursts, counts, paused, held, lowParts, winning: Object.fromEntries(winning), firstWarhead: Object.fromEntries(firstWarhead), examplesWin, byNation: Object.fromEntries([...byNation].map(([n, b]) => [tag(n), b])), decisions, examples };
+const launchesShort = [...launches.keys()].filter((id) => shortIds.has(id)).length;
+const out = { seed, years, bursts, counts, paused, pausedBy, launchCount: launches.size, launchesShort, shortGaps: [...shortGaps.values()], held, lowParts, winning: Object.fromEntries(winning), firstWarhead: Object.fromEntries(firstWarhead), examplesWin, byNation: Object.fromEntries([...byNation].map(([n, b]) => [tag(n), b])), decisions, examples };
 writeFileSync(process.argv[4] ?? `.cache/nukeGates_${seed}.json`, JSON.stringify(out, null, 1));
-console.log(`done: seed ${seed}`, JSON.stringify(counts), 'decisions', decisions.length, 'held', JSON.stringify({ days: held.days, low: held.low, held: held.held, losing: held.losing, extreme: held.extreme }));
+console.log(`done: seed ${seed}`, JSON.stringify(counts), 'decisions', decisions.length, 'paused', JSON.stringify(pausedBy), 'launches', launches.size, 'short', launchesShort, 'held', JSON.stringify({ days: held.days, low: held.low, held: held.held, losing: held.losing, extreme: held.extreme }));
