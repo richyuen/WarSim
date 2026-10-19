@@ -173,10 +173,13 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           station at a port whose holder is no longer an enemy). Decide in the ADR whether an
           empty enemy port is still a station worth keeping (blockade, ADR on 4.6c's "hold the sea
           by its enemies' ports"): a re-target from where it stands finds a battle in 8.6 % of
-          those fleet-days, only empty ports in 72 %. AT: a unit test each (sails on from a
-          station at a port at peace; seeks a winnable enemy fleet's port in reach; stays on
-          station by an enemy port with none); `seaHold` on the 14 seeds, away fleet-days at a
-          port at war with neither side 29.7 % → near 0; the pin's entry; `--profile`.
+          those fleet-days, only empty ports in 72 %. First traced (the rule rests on it): of the
+          fleet-days at a port of a nation at war with neither side, how many at a port whose
+          holder was at war with the fleet's nation earlier (a station whose war ended), not a
+          refuge chosen as such. AT: a unit test each (sails on from a station whose war ended;
+          seeks a winnable enemy fleet's port in reach; by an empty enemy port, what the ADR
+          decides); `seaHold` on the 14 seeds, away fleet-days at a port at war with neither side
+          29.7 % → near 0; the pin's entry; `--profile`.
         - [ ] 7.35d2c The sortie seeks enemy warfleets, not only enemy ports: of the away
           fleet-days with no battle to seek, the nearest enemy warfleet stood within `SORTIE_KM`
           at no port of the fleet's enemies (so no target) in 25 % (46,480). A standing enemy
@@ -184,8 +187,11 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           (red without); `seaHold`'s `enemyAt.notTarget` before and after; the pin; an ADR.
         - [ ] 7.35d2d A sortie's target in another basin than the fleet's (`basinAt`, as `stageTo`
           has since 7.35b4c1): 1,811 late orders, and 2,124 of the 7,269 late orders refused by
-          `orderSail` (`NoSeaWay`; the fleet stands in port and is sent again each week). AT: a
-          unit test (red without); `seaHold`'s `holes.rejected` near 0; the pin. Then the "after"
+          `orderSail` (`NoSeaWay`; the fleet stands in port and is sent again each week). The
+          other 313 refusals have a target in the fleet's basin (a shut passage, ice, no lane):
+          first split `rejected` in the tool by basin. AT: a unit test (red without);
+          `seaHold`'s `holes.rejected` falls by `otherBasin`'s count, the same-basin rest
+          measured and named; the pin. Then the "after"
           run of `seaYears` on the 14 seeds × 30 years against d1's, and re-measured with
           `seaHold`: the way across land (435 late orders, 6 %), a partner's port the enemy holds
           (0.4 % of the fleet-days), the enemy beyond `SORTIE_KM` (70 % of those with no battle):
