@@ -19612,7 +19612,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **After:** at rest divisions 40, 42 and 43 read 0 overlapped (149, 152, 60 before); engaged
   about 105 of 340 (c2). Seen: `docs/evidence/7.34/c1-4483-arm42-rest-10m.png`.
 - **By hand** (the gate skips e2e): `battleView1938`, `burning1938`, `closeZoom1938`,
-  `fightSeen1938`, `tankBattle1938`, `tiers1938` green; `fallen1938` (a Polish formation not
+  `fightSeen1938`, `tankBattle1938`, `tiers1938`, and after the commit `wrecks1938`, `fire1938`,
+  `individuals1938`, `handover1938` green; `fallen1938` (a Polish formation not
   engaged), `smallMark1938` (mark share 0.81 at 150 m/px) and `turrets1938` (54 tanks in view, all
   firing) red, and red alike on `0194b3a` with this change stashed: sim drift from an earlier
   commit, each its own commit next.
