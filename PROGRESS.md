@@ -19131,3 +19131,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   of a lone unpinned 732 run beside two others: 11–31 s). To be measured before 7.27d's sweep.
 - **Docs only:** no sim change; pin c3bd280a.
 - **Next:** PLAN 7.27b.
+- **Correction (same day):** "the 10 of 10 was luck, not the air" above is not shown: 7.24a's sweep
+  ran on pin `58594a40`, this one on `c3bd280a`, with ADR-508, 510, 517 and 518 between. What holds:
+  the fixed top is in every sweep's longest spans, 7.18g's too. 7.27d's PLAN line now asks for the
+  late years' tick first.

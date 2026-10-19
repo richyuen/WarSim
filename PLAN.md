@@ -59,7 +59,9 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       trace in `docs/evidence/7.27/`; `tools/sweep/stasis.ts` (the five of each seed's longest span).
     - [ ] 7.27c The rule the trace names, one cause, tuned on `sweep:quick`. AT: a unit test; the
       pin's entry.
-    - [ ] 7.27d The full sweep on unseen seeds (741–750). AT: 7.27's.
+    - [ ] 7.27d The full sweep on unseen seeds (741–750). First the late years' tick, from a late
+      checkpoint pinned with `--profile` (7.27a's sweep took 34 min against 7.24a's 19.5, every seed
+      30–34; seed 99's years 1–5 are not slower). AT: 7.27's.
 - [ ] 7.28 A launch shot down and the gap after it (found 2026-10-18 by PLAN 7.26b, ADR-508): the
   critic's France (`nukeOverrun1938`, seed 7127) launches once on day 71, the warhead is shot down
   by German fighters, STRIKE_GAP_DAYS (ADR-507, keyed on the launch) holds its next attempt, and

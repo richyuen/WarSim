@@ -8,7 +8,10 @@ seeds, then, if it failed, the measure: which five hold, from which year, and wh
 `npm run sweep -- --first 731 --tag 727a`, seeds 731–740 × 50 years
 (`docs/sweeps/2026-10-19-sweep-727a.md`): limits 10 of 10, riser 10, faller 10, no break-up 10,
 **no stasis 7 of 10** (732: 24 years, 735: 21, 740: 21). Three unseen sweeps since 7.18g: 7 of 10
-(701–710), 10 of 10 (721–730), 7 of 10 (731–740). The 10 of 10 of 7.24a was luck, not the air.
+(701–710), 10 of 10 (721–730), 7 of 10 (731–740). Three sweeps on three codes (pins `58594a40` at
+7.24a, `c3bd280a` here, with ADR-508, 510, 517 and 518 between), so luck and the 7.26 rules are not
+separated; what the sweeps share is the fixed top below, in 7.18g's longest spans as in these, so
+the air's calibration is not what decides stasis.
 
 ## The longest top five of each seed
 
