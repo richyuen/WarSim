@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-525 · 2026-10-19 · proposed (the user's decision) — PLAN 7.30's bar of half, and `pocketOf` as a rule
+
+- **Context.** PLAN 7.30's AT (written under PROMPT 2a, not the user's words): the operational
+  AI in years 26–50 of seed 732, pinned, at most half of 7.27d's (1.072 → 0.536 ms a tick). After
+  7.30b (ADR-523) and 7.30c2 (ADR-524), both exact (every year's hash of the 50 equal to 7.27d's),
+  7.30d reads 0.753 (0.785 with the machine's load taken out; `docs/evidence/7.30/measure-d.md`):
+  0.70–0.73 of 7.27d's. The heavy years fell (year 31 4.38 → 1.16 ms, 41 1.79 → 0.60) and years
+  1–5 did not rise. What is left is the cost of every year: the median late year is 0.75, and the
+  heavy years brought to it would leave the band at about 0.65.
+- **Weighed.** The broad cost's largest named part is `pocketOf` (38 % of the operational AI's
+  self time in year 51, measure-a §2). Its answers depend on the order of a passage's walks
+  (ADR-192), so keeping them across ticks is a change of rule, a pin moved and an A/B owed; and
+  with all of its cost gone the band would read about 0.49, under the bar only just. The late
+  years have no budget: their cost is a 50-year run's (7.27d §1), not the game's pace at its
+  budgeted size (seed 99's first five years).
+- **Options, for the user:**
+  - a. **(Recommended)** Re-scope the AT to what exact changes own: the late band at most 0.75 of
+    7.27d's (now 0.70 raw, 0.73 by load), every year's hash unchanged; 7.30 done after PLAN 7.30e
+    (year 47's 'long' orders and year 44's refusals for another cell, exact, measured first). Stop
+    rule: no rule change for the late years' tick unless a sweep's wall time doubles again.
+  - b. Keep the bar: a `pocketOf` rule whose answer does not depend on the walks' order, kept
+    across ticks; pin moved, A/B of the war's measures (`landWar.ts`) from one saved state on seeds
+    of 7.27d's sweep, and 7.30d's run again.
+- **Until the user decides:** PLAN 7.30 stays open with a BLOCKERS entry; PLAN 7.30e (exact) is
+  taken, as it is part of both options.
+
 ### ADR-524 · 2026-10-19 · accepted — `joined` judged by each flip, not undone by any (PLAN 7.30c2)
 
 - **Context.** PLAN 7.1i keeps `wideJoined`'s answer (`joinWide`: which wide grounds the open cells

@@ -19309,3 +19309,27 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `operationalAi.test.ts` (new case, red before). No timing claimed (both years ran side by
   side on different cores); 7.30d is the AT.
 - **Next:** PLAN 7.30d.
+
+## 2026-10-19 — PLAN 7.30d: the AT run (short of the bar; put to the user, ADR-525)
+
+- **Start:** gate green on `bf69569`; critic not due. PLAN 7.29 still not taken (its condition unmet).
+- **Run** (`docs/evidence/7.30/measure-d.md`): seed 732 × 50 years, pinned, `--profile`, alone but for
+  a memory sampler every 15 s. Every year's hash and the final equal 7.27d's: 7.30b and 7.30c2
+  changed no answer. Wall 851 s (921.7). Operational AI by band 1–5 / 6–25 / 26–50: 0.263 / 0.807 /
+  0.753 ms a tick (7.27d 0.255 / 0.837 / 1.072); by the load of five untouched systems 0.97 / 0.89 /
+  0.73 of 7.27d's. **AT not met** (bar 0.536). Years 18–25 and 45 ran 1.35–1.6 × slow in every
+  untouched system: the machine's load.
+- **Left** (`opCalls.ts`, years 31, 44, 47 side by side, shares only): year 47 (now the top) 86 % in
+  orders answered 'long' and searched in full, France ~25 asks a plan at 9.4 ms, none kept; year
+  44 the classes 28 % and refusals for another cell; year 31 far refusals still searched. The heavy
+  years at the median would leave ~0.65: the bar needs every year's cost, whose named part is
+  `pocketOf` (order-dependent: a rule).
+- **Decision:** ADR-525 (proposed, the user's decision): (a) re-scope the bar to 0.75 of 7.27d's
+  after 7.30e, recommended, or (b) a `pocketOf` rule with the pin moved. BLOCKERS entry; 7.30 not
+  ticked. New PLAN 7.30e (the 'long' orders and refusals for another cell, exact, measured first).
+- **Memory** (working set): 567 MB at start, ~750 in years 18–31, a step to ~910 at year 32, ~970
+  by year 49; 7.27d's unsampled, so not put on ADR-524's runs.
+- **Gotcha:** in years where every system slows alike the pair was the machine; judge a sequential
+  pair by the untouched systems year by year, not by the band.
+- **Docs only:** no sim change; pin 94235073.
+- **Next:** PLAN 7.30e.

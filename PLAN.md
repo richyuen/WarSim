@@ -109,12 +109,24 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           Done as ADR-524's rule: a closing in a set that met two groups also holds when the cell
           touches no clear ground and its open neighbours are joined round it, and 'met two' is kept
           by root as the openings join the sets (by the walk's run alone, 884 -> 833 walks).
-    - [ ] 7.30d The AT: seed 732 × 50 years alone, pinned, `--profile`, against 7.27d's; if short
+    - [x] 7.30d The AT: seed 732 × 50 years alone, pinned, `--profile`, against 7.27d's; if short
       of half, what is left by year and part (`opCalls.ts`), and `pocketOf` (§3.3 of measure-a)
       weighed as a rule with an ADR or the bar put to the user (ADR-486's way). Every year's hash
       against `p732.json`'s `yearly`, not the last alone (7.30b and 7.30c2 are exact by argument and
       by one-year checks; a year that differs is bisected from `.cache/730/`); and the process's
       memory by year, or said to be unmeasured (ADR-524's runs grow between walks).
+      Done (`docs/evidence/7.30/measure-d.md`): every year's hash equal to 7.27d's; years 26–50
+      0.753 ms (0.785 by load) against the bar 0.536; what is left is every year's cost, and the
+      bar put to the user (ADR-525, BLOCKERS): 7.30 is not ticked until the user decides.
+    - [ ] 7.30e Year 47's 'long' orders and year 44's refusals for another cell (measure-d §3):
+      France's orders ~32 cells off answered 'long' and searched in full, 9.4 ms each (2,537 asks,
+      86 % of year 47's plan time), none kept; year 44's refusals kept for one cell alone (503 asks
+      for another). Measured first from `.cache/730/s732-y43.bin` and `.cache/730d/s732-y46.bin`:
+      whether the formations asked are on the move (no answer is kept for them), and whether a
+      'long' can be held by its corridor as ADR-523 holds a refusal (a closing in the corridor can
+      turn 'long' into 'refused', which changes the divert). The fix only if exact. Does not reach
+      7.30's bar alone (about 0.65 on the band at most). AT: the measure; a unit test if a rule is
+      made; `opCalls.ts` from those checkpoints: the asks down by most; the pin unchanged.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
