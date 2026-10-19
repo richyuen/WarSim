@@ -84,7 +84,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       94235073): `refusesSuit` in `war.ts`, two unit tests; `sweep:quick` limits 10 of 10, the
       longest top five 6.7 years on average (9.8 before); seed 8's largest income 39.5 % (limit 40)
       and the nuclear bursts (122 against 28) to watch in 7.27d.
-    - [ ] 7.27e The Soviet Union's token army (from 7.27c's measure (2)): from `s732-y25.bin` its
+    - [x] 7.27e The Soviet Union's token army (from 7.27c's measure (2)): from `s732-y25.bin` its
       income is 478 a month to Germany's 4,126 on 15.7 M km², its balance 266 with a land army's
       upkeep of 7, so it raises three or four divisions a year. Measured first: where its income
       went from 1938 (the industry of the cells held, `economy.ts`, against the land), and what
@@ -92,6 +92,14 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       the cause decided, a rule only if it is one (a nation of that land at war with no army is
       also how the long spans begin). Before 7.27d: the sweep runs on the final code. AT: the
       measure in `docs/evidence/7.27/`; a unit test and the pin's entry if a rule moves it.
+      Done (`docs/evidence/7.27/measure-e.md`, `tools/diag/economySplit.ts`): no rule. Its income
+      is half its 1938 industry (1,156; the western cities taken, POL 454, GER 352 or ROM 221);
+      before the army it pays what every nation at war pays (CE 18–20 %, suppression 15 %, research
+      5 %, admin 14 % under its cap), and the rest goes to the army, all of it (years 0–10 of seed
+      732: 55 divisions and 34,000 of refills from a surplus of 75,000; the treasury's change
+      closed to 92 a month). The army was lost in wars (1.5 M men in year 1, 0.9 M in years 3–5),
+      and from year 8 a division a month is bought and lost within weeks. Cheaper or richer would
+      strengthen the Soviet Union's hold on its place, against 7.27's AT.
     - [ ] 7.27d The full sweep on unseen seeds (741–750). First the late years' tick, from a late
       checkpoint pinned with `--profile` (7.27a's sweep took 34 min against 7.24a's 19.5, every seed
       30–34; seed 99's years 1–5 are not slower). Read beside it the nuclear bursts and the
@@ -132,6 +140,11 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       each such formation, such a port with transports and such a port on the front's land. AT:
       the measure; the rule only if the share of far men standing for want of a way falls with
       it; a unit test; the pin's entry.
+    - [ ] 7.29c A lone new division fed to a front and lost within weeks (from PLAN 7.27e,
+      `docs/evidence/7.27/measure-e.md`): seed 732's Soviet Union, years 7.8–9.3, bought 11
+      divisions in 18 months while its land army stood at one. Measured first, if 7.29 is taken
+      up: where such a division goes from where it is raised and how long it stands before contact.
+      AT: the measure; a rule only if it is one; a unit test and the pin's entry if it moves.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

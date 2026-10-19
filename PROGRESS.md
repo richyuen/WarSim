@@ -19178,3 +19178,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   is not refused (the shock's peace response, PLAN 6.5a); unit test. `sweep:quick` again: bursts
   113 (122 with the plain rule, 28 before it), seed 5 unchanged at 75, so the exception is not why
   bursts rose; open for 7.27d (its PLAN line now asks for them). Pin unchanged 94235073.
+## 2026-10-19 — PLAN 7.27e: the Soviet Union's token army is not the economy's
+
+- **Start:** gate green on `a5732f3`; critic not due.
+- **Tool:** `tools/diag/economySplit.ts` (a nation's month term by term as `economyBreakdown` and
+  `budgetOf` take it, research, what is left; a daily ledger of orders, refills and the warhead
+  programme; its 1938 industry by who holds it now, and its cities by size).
+- **Measured** (`docs/evidence/7.27/measure-e.md`): at the three stasis checkpoints the Soviet
+  Union keeps 42–75 % of its income for the army (Germany 38 %, Japan 33 %); what goes before is
+  what every nation at war pays (CE 18–20 %, suppression 15 %, research 5 %; admin 14 %, under its
+  cap; fallout and bombs 0–2 %). Its income is half its 1938 industry of 1,156: the western cities
+  taken (POL 454 on 732, GER 352 on 735, POL 228 and ROM 221 on 740). Seed 732 from 1938 on this
+  code, ten years with the ledger: of a surplus of 75,004, 55 divisions (55,055) and refills
+  (34,263); the treasury's change closed to 92 a month. The 1938 army (1.5 M men, 94 % of its
+  income in upkeep) was lost in wars in years 1 and 3–5; from year 8 a division a month is bought
+  and lost within weeks.
+- **Decision:** no rule (a cheaper or richer Soviet army holds its place, against 7.27's AT). The
+  lone division lost within weeks is a line under 7.29 (7.29c). Two observations in the evidence:
+  the 1938 Soviet army's upkeep is 94 % of its income (start data), and full suppression and the
+  next order want the same reserve.
+- **Docs and tools only:** no sim change; pin 94235073.
+- **Next:** PLAN 7.27d.
