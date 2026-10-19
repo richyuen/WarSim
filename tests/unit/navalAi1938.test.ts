@@ -166,7 +166,9 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     for (let d = 7; d < 60 && raided < 0; d++) {
       s.step(24, (world) => {
         const ev = world.out.events;
+        // A month's raid goes into the quarter's tally; the log tells it at the quarter's start (PLAN 7.33a).
         for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.ConvoyRaided && ev[i + 2] === GER && raided < 0) raided = d;
+        if (raided < 0 && world.convoyQuarter.some((t) => t.raider === GER && [...t.zones.values()].some((g) => g > 0))) raided = d;
         world.out.events.length = 0;
         world.out.fires.length = 0;
       });

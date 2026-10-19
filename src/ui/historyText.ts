@@ -1,5 +1,5 @@
 import { EventKind } from '../shared/events';
-import { HISTORY_ROLES, kindName, nukeStrike, nukeToll, seaSide, type HistoryRow, type NukeToll } from '../shared/history';
+import { convoyTake, HISTORY_ROLES, kindName, nukeStrike, nukeToll, seaSide, type HistoryRow, type NukeToll } from '../shared/history';
 import { displayName, t, type MessageKey } from './i18n';
 import en from './i18n/en.json';
 
@@ -27,6 +27,8 @@ export function nukeWeighed(u: number): MessageKey {
 
 /** A count as the history writes it: "10,855". */
 const count = (v: number): string => v.toLocaleString('en-US');
+/** Gold as the history writes it: "1,204", "38", "4.5" (tenths under 10). */
+const gold = (v: number): string => (v < 10 ? v.toLocaleString('en-US', { maximumFractionDigits: 1 }) : count(Math.round(v)));
 
 /**
  * A nuclear strike's toll in words (PLAN 7.32b, the critic's R9-B2: "24 dead" did not say who):
@@ -78,7 +80,9 @@ export function historyText(r: HistoryRow): string {
   };
   const kind = `history.${kindName(r.kind)}`;
   // A strike of God Mode's (PLAN 6.6a): no nation struck.
-  const key = r.as && `${kind}.${r.as}` in en ? `${kind}.${r.as}` : rb === 'strike' && r.a === 0 ? `${kind}.god` : kind;
+  // A month's raids on convoys (PLAN 7.33a): the gold taken, {gold}; a row of a game saved before has none.
+  const took = r.kind === EventKind.ConvoyRaided ? convoyTake(r.b).gold : 0;
+  const key = r.as && `${kind}.${r.as}` in en ? `${kind}.${r.as}` : rb === 'strike' && r.a === 0 ? `${kind}.god` : took > 0 ? `${kind}.took` : kind;
   const none = `${key}.none`;
   // A sea battle's sides carry the ships each lost (PLAN 4.3c), the air's rows their aircraft or
   // what their bombs took (PLAN 5.11a): {na} and {nb}.
@@ -89,6 +93,6 @@ export function historyText(r: HistoryRow): string {
   // A burst's toll found without its strike's row (PLAN 7.32b; the log has it right after the strike).
   const lost = r.kind === EventKind.NukeToll ? { near: r.near ? t('history.strikeNear', { city: displayName(r.near) }) : '', forces: lostOrNone(nukeToll(r.b)) } : {};
   const decided = r.kind === EventKind.NukeDecided ?{ near: r.near ? t('history.strikeNear', { city: displayName(r.near) }) : '', weighed: t(nukeWeighed(r.b / 1000)) } : {};
-  const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships, ...strike, ...lost, ...decided });
+  const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships, ...strike, ...lost, ...decided, gold: gold(took) });
   return s.charAt(0).toLocaleUpperCase() + s.slice(1);
 }

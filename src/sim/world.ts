@@ -420,6 +420,8 @@ class WorldCore implements Stateful {
       ...(w.seaBattles.length === 0 ? [] : [{ name: 'world.seaBattles', dtype: 'f64' as const, data: Float64Array.from(w.seaBattles.flatMap((b) => [b.fleets.length, ...b.fleets, ...b.ships, b.range, b.a, b.b, b.lostA, b.lostB, b.x, b.y])) }]),
       // The month's air war (PLAN 5.11a): [fight, a, b, va, vb, x, y] each, only while there is one.
       ...(w.airMonth.length === 0 ? [] : [{ name: 'world.airMonth', dtype: 'f64' as const, data: Float64Array.from(w.airMonth.flatMap((t) => [t.fight, t.a, t.b, t.va, t.vb, t.x, t.y])) }]),
+      // The quarter's raids on convoys (PLAN 7.33a): [raider, bloc, zone, gold] each, only while there is one.
+      ...(w.convoyQuarter.length === 0 ? [] : [{ name: 'world.convoyQuarter', dtype: 'f64' as const, data: Float64Array.from(w.convoyQuarter.flatMap((t) => [...t.zones].flatMap(([z, g]) => [t.raider, t.bloc, z, g]))) }]),
       // The nations barred from nuclear weapons (PLAN 6.1a), only while there is one.
       ...(w.nukesBanned.size === 0 ? [] : [{ name: 'world.nukesBanned', dtype: 'f64' as const, data: Float64Array.from([...w.nukesBanned].sort((a, b) => a - b)) }]),
       // The warheads in flight (PLAN 6.2): [next id, then id, nation, missile, wing, bx, by, tx, ty, launch, arrive each], only while there is one.
@@ -529,6 +531,9 @@ class WorldCore implements Stateful {
     w.airMonth = [];
     const air = sections.find((s) => s.name === 'world.airMonth')?.data as Float64Array | undefined;
     for (let at = 0; air && at + 7 <= air.length; at += 7) w.airMonth.push({ fight: air[at]!, a: air[at + 1]!, b: air[at + 2]!, va: air[at + 3]!, vb: air[at + 4]!, x: air[at + 5]!, y: air[at + 6]! });
+    w.convoyQuarter = [];
+    const cq = sections.find((s) => s.name === 'world.convoyQuarter')?.data as Float64Array | undefined;
+    for (let at = 0; cq && at + 4 <= cq.length; at += 4) addConvoyTake(w, cq[at]!, cq[at + 1]!, cq[at + 2]!, cq[at + 3]!);
     w.nukesBanned = new Set(Array.from((sections.find((s) => s.name === 'world.nukesBanned')?.data as Float64Array | undefined) ?? []));
     w.nukeLaunches = [];
     const nl = sections.find((s) => s.name === 'world.nukeLaunches')?.data as Float64Array | undefined;
@@ -714,6 +719,13 @@ export interface AirTally {
   y: number;
 }
 
+/** A nation's raids on a bloc's convoys this quarter so far (PLAN 7.33a): the gold taken, per zone. */
+export interface ConvoyTally {
+  raider: number;
+  bloc: number;
+  zones: Map<number, number>;
+}
+
 /**
  * A warhead in flight (PLAN 6.2): its nation, by missile (1) or bomber (0, `wing` its strategic
  * bomber wing), from (bx, by) to (tx, ty), launched at tick `launch`, there at `arrive` (hours).
@@ -748,6 +760,13 @@ export function tallyAir(world: World, fight: number, a: number, b: number, va: 
     t.va += va;
     t.vb += vb;
   } else world.airMonth.push({ fight, a, b, va, vb, x, y });
+}
+
+/** Adds `gold` taken by `raider` of `bloc`'s convoys in `zone` to the quarter's tally (PLAN 7.33a), in the order first seen. */
+export function addConvoyTake(world: World, raider: number, bloc: number, zone: number, gold: number): void {
+  let t = world.convoyQuarter.find((r) => r.raider === raider && r.bloc === bloc);
+  if (!t) world.convoyQuarter.push((t = { raider, bloc, zones: new Map() }));
+  t.zones.set(zone, (t.zones.get(zone) ?? 0) + gold);
 }
 
 export interface SeaBattle {
@@ -1124,6 +1143,12 @@ export class World {
    * (`runEconomyMonth`) and cleared. State, saved while not empty.
    */
   airMonth: AirTally[] = [];
+  /**
+   * The quarter's raids on convoys so far (PLAN 7.33a): by raider and bloc, the gold taken in each
+   * zone, added at each month's start and told in the log at the quarter's (`runEconomyMonth`),
+   * then cleared. State, saved while not empty.
+   */
+  convoyQuarter: ConvoyTally[] = [];
   /**
    * Each nation's air war so far (PLAN 5.11b): the aircraft it lost, in the air and to flak, and
    * the men, guns and vehicles strikes took of it. State, a section of its own saved while not

@@ -21,15 +21,16 @@
  * loses DESERTION of its strength. Recovery when gold ≥ 0. Changes emit `Bankruptcy` events.
  */
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
-import { isMonthStart } from '../../shared/calendar';
+import { dateOfTick, isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
 import { pow } from '../core/dmath';
 import { cellKm2ByRow } from '../landCounts';
-import { Domain, seaOf, type AirTally, type World } from '../world';
+import { addConvoyTake, Domain, navOf, seaOf, type AirTally, type World } from '../world';
 import type { EconomyBreakdown } from '../../shared/protocol';
-import { SIDE_SHIPS } from '../../shared/history';
+import { packConvoyTake, SIDE_SHIPS } from '../../shared/history';
 import { bleedFormation } from './elements';
-import { convoyLosses, convoyShare } from './convoys';
+import { convoyLosses, convoyShare, type ConvoyLosses } from './convoys';
+import { blocOf } from './supply';
 import { BLOCKADE_SHARE, blockadedCells } from './seaControl';
 import { FALLOUT_INCOME, falloutAt, WARHEAD_UPKEEP, warheadsOf } from './nuclear';
 
@@ -233,17 +234,92 @@ export function economyBreakdown(world: World, tables: EconomyTables, n: number)
 /** Rows of the month's air war in the log, of each kind (PLAN 5.11a): its largest, so that the log stays a log of the war's turns. */
 export const AIR_ROWS = 3;
 
+/**
+ * Rows of a quarter's raids on convoys in the log (PLAN 7.33a, the critic's R9 stats: a row a
+ * zone a month was 41 % of a late history, with no figure in it): this many, the largest.
+ */
+export const CONVOY_ROWS = 3;
+
+/** A nation's raids on a bloc's convoys: the gold they took, and in each zone. */
+export interface ConvoyRaid {
+  raider: number;
+  bloc: number;
+  gold: number;
+  zones: Map<number, number>;
+}
+
+/**
+ * What each nation's submarines take of each bloc's convoys this month (PLAN 7.33a), in gold as
+ * `economyBreakdown` counts the convoys' line (a cell's $M after the blockade, at the occupied
+ * share where it is occupied): each land's cells' loss split among the raiders by `takes`. In the
+ * order first met.
+ */
+export function convoyRaids(world: World, losses: ConvoyLosses | null): ConvoyRaid[] {
+  if (!losses) return [];
+  const { owner, controller, econ, province } = world.cells;
+  const component = navOf(world).grid.component;
+  const blockade = blockadedCells(world);
+  const sum = new Map<number, ConvoyRaid>();
+  const blocs = new Map<number, number>();
+  const toGold = INCOME_PER_BN / ECON_PER_BN;
+  for (let c = 0; c < econ.length; c++) {
+    const n = controller[c]!;
+    if (n === 0 || econ[c] === 0) continue;
+    let b = blocs.get(n);
+    if (b === undefined) blocs.set(n, (b = blocOf(world, n)));
+    const taken = losses.takes.get(b)?.get(component[c]!);
+    if (!taken) continue;
+    let v = econ[c]! * toGold;
+    if (blockade && (blockade.provinces.has(province[c]!) || blockade.cells.has(c))) v *= BLOCKADE_SHARE;
+    if (owner[c] !== n) v *= OCCUPIED_SHARE;
+    for (const t of taken) {
+      const key = t.raider * SIDE_SHIPS + b;
+      let r = sum.get(key);
+      if (!r) sum.set(key, (r = { raider: t.raider, bloc: b, gold: 0, zones: new Map() }));
+      r.gold += v * t.share;
+      r.zones.set(t.zone, (r.zones.get(t.zone) ?? 0) + v * t.share);
+    }
+  }
+  return [...sum.values()];
+}
+
+/**
+ * The quarter's raids on convoys in the log (PLAN 7.33a): of each nation on each bloc, the gold
+ * taken, at the zone it took most in (the lowest on a tie); those under half a gold left out, the
+ * CONVOY_ROWS largest, the least first. Then anew.
+ */
+export function tellConvoyQuarter(world: World): void {
+  const z = seaOf(world);
+  const rows = world.convoyQuarter
+    .map((t) => {
+      let gold = 0;
+      let zone = 0;
+      let most = -1;
+      for (const [zn, g] of t.zones) {
+        gold += g;
+        if (g > most || (g === most && zn < zone)) [zone, most] = [zn, g];
+      }
+      return { raider: t.raider, bloc: t.bloc, gold, zone };
+    })
+    .filter((r) => r.gold >= 0.5)
+    .sort((p, q) => p.gold - q.gold || p.raider - q.raider || p.bloc - q.bloc)
+    .slice(-CONVOY_ROWS);
+  for (const r of rows) {
+    const seed = z.seedCell[r.zone]!;
+    world.out.emit(world.tick, EventKind.ConvoyRaided, r.raider, packConvoyTake(r.bloc, r.gold), (seed % world.cells.w) + 0.5, Math.floor(seed / world.cells.w) + 0.5);
+  }
+  world.convoyQuarter = [];
+}
+
 /** One economic month (exported for tests and God Mode). */
 export function runEconomyMonth(world: World, tables: EconomyTables): void {
   const nc = world.nations.cols;
   const fc = world.formations.cols;
   const { gross, expenses, population } = monthlyAccounts(world, tables);
-  // The month's raids on convoys, in the log (PLAN 4.4d).
-  const z = seaOf(world);
-  for (const r of convoyLosses(world)?.raids ?? []) {
-    const seed = z.seedCell[r.zone]!;
-    world.out.emit(world.tick, EventKind.ConvoyRaided, r.raider, r.bloc, (seed % world.cells.w) + 0.5, Math.floor(seed / world.cells.w) + 0.5);
-  }
+  // The raids on convoys (PLAN 4.4d), in the log a quarter at a time (PLAN 7.33a): at a quarter's
+  // start the last quarter's are told, then the month's are added to the new one's.
+  if ((dateOfTick(world.startDay, world.tick).month - 1) % 3 === 0 && world.convoyQuarter.length > 0) tellConvoyQuarter(world);
+  for (const r of convoyRaids(world, convoyLosses(world))) for (const [zone, g] of r.zones) addConvoyTake(world, r.raider, r.bloc, zone, g);
   // The month's air war (PLAN 5.11a): rows of the AIR_ROWS largest fights of two nations, by the
   // aircraft lost, then of the AIR_ROWS largest strikes of a nation on another, by what they took;
   // the least first of each (the ticker takes an hour's last). Then anew.

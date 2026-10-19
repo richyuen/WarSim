@@ -45,6 +45,11 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
   AT: seed 7741's late history by type before and after: convoy raids told with what they sank or
   took, and a raid campaign one row (or a row a period) rather than a row a raid; the three God
   actions each a history row (a unit test each); the history's filter shows them.
+  Split (2026-10-19):
+  - [x] 7.33a Convoy raids told (pin moves): a nation's raids on a bloc's convoys added up over a […]
+  - [ ] 7.33b God's acts told: Spawn nation its own kind (not a revolt; `lives` counts it a birth,
+    not a revolt), Found city and Raze city rows with the town's name kept, each in the ticker and
+    the history's type filter. AT: a unit test each; the filter lists the three kinds.
 - [ ] 7.34 Semantic zoom's seams (semantic zoom 7, needs 8): one wheel notch between 412 and 264 m/px
   cuts from flat political fill with counters to terrain with soft border bands and labels, a hard
   switch (`c9z_6113_06_07_pair.png`); at 900 m/px only counters on screen while `elementCount` is

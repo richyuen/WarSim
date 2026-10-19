@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-530 · 2026-10-19 · accepted — Convoy raids told a quarter at a time, with the gold taken (PLAN 7.33a)
+
+- **Context.** Critic R9 (stats and history 6): on seed 7741, 1,937 of 4,681 history rows (41 %)
+  were "X's submarines raided the convoys of Y", a row for each zone, raider and bloc a month, with
+  no figure in them. On HEAD, from the critic's year-20 save, years 21–23 add 488 rows, 254 of
+  them raids (52 %).
+- **Decision.** `convoyLosses` keeps, for each land's convoy, the share of its cargo each raider
+  took in each zone of its way (`takes`: a zone's take split among its raiders by their boats; a
+  land's shares sum to 1 − what it keeps). `convoyRaids` turns them into gold, as
+  `economyBreakdown` counts its convoys' line (a cell's $M after the blockade, at the occupied
+  share where occupied), by raider and bloc and zone. Each month's are added to the quarter's tally
+  (`World.convoyQuarter`, state: section `world.convoyQuarter`, [raider, bloc, zone, gold] each,
+  saved while not empty); at a quarter's start (January, April, July, October) the last quarter's
+  are told: by raider and bloc, those of half a gold or more, the `CONVOY_ROWS` = 3 largest, the
+  least first (as the air month's rows, ADR-373), each at the zone its raiders took most in. The
+  row's b is the bloc + 65536 × the gold in tenths (`packConvoyTake`, role `side`); a row of a game
+  saved before has the bloc alone and reads as it did. The sentence: "Soviet Union's submarines
+  raided the convoys of United Kingdom over three months: 21.4 gold of cargo taken". The history's
+  nation filter finds the nation of a `side` (a sea battle's, an air row's, a raid's), which it did
+  not.
+- **Tried first.** A row a month by raider and bloc, the three largest: 101 of 335 rows (30 %),
+  the cap reached nearly every month, the same pairs month after month.
+- **Measured** (`tools/diag/historyKinds.ts`, seed 7741's years 21–23 from `critic/c9_seed7741_y20.bin`):
+  rows 488 → 267, convoy raids 254 → 33 (12 %); every other kind the same count (air raids 83,
+  declarations 30, peaces 26, …): no rule reads the log.
+- **Pin** 81db11b6 → 45c20987: the log and its tally are state; no rule changed.
+- **Not done.** Convoys are no ships in this model: a raid takes cargo, it sinks nothing, so the row
+  tells gold. The air raids (83 of the 267) keep their month (ADR-373).
+
 ### ADR-529 · 2026-10-19 · accepted — A burst's toll told: civilians, men, guns and tanks (PLAN 7.32b)
 
 - **Context.** Critic R9-B2: the player read "…: 24 dead", and no string told soldiers lost; the

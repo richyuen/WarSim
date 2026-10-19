@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { EventKind } from '../../src/shared/events';
-import { filterHistory, HISTORY_ROLES, isoDate, kindName, NO_FILTER, type HistoryRow } from '../../src/shared/history';
+import { filterHistory, HISTORY_ROLES, isoDate, kindName, NO_FILTER, roleNation, type HistoryRow } from '../../src/shared/history';
 import { NATIONS_1938 } from '../../src/sim/scenario1938';
 
 // PLAN 1.34a AT: export file contents validated in e2e; filters reduce rows correctly.
@@ -76,7 +76,8 @@ test('history log: filters reduce rows, CSV and JSON exports match the filtered 
     const r: HistoryRow = gerAll[i]!;
     expect(rec).toMatchObject({ tick: r.tick, type: kindName(r.kind), a: r.a, b: r.b, date: isoDate(startDay, r.tick) });
     const [ra, rb] = HISTORY_ROLES[r.kind]!;
-    expect((ra === 'nation' && r.a === GER) || (rb === 'nation' && r.b === GER)).toBe(true);
+    // Germany is in the row: as a nation, a side's or a strike's (PLAN 7.33a).
+    expect(roleNation(ra, r.a) === GER || roleNation(rb, r.b) === GER).toBe(true);
     expect(rec.text.length).toBeGreaterThan(0);
   });
   expect(json.some((rec) => rec.text === 'Germany declared war on Poland' && rec.aName === 'Germany' && rec.bName === 'Poland')).toBe(true);

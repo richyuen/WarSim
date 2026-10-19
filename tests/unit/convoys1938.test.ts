@@ -1,13 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
+import { convoyTake, filterHistory, NO_FILTER } from '../../src/shared/history';
 import { ECONOMY_TABLES_1938, NATIONS_1938, SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { RAID_PER_BOAT, convoyLosses } from '../../src/sim/systems/convoys';
-import { monthlyAccounts, runEconomyMonth } from '../../src/sim/systems/economy';
+import { CONVOY_ROWS, economyBreakdown, monthlyAccounts, runEconomyMonth, tellConvoyQuarter } from '../../src/sim/systems/economy';
 import { equipFormation } from '../../src/sim/systems/elements';
 import { SCREEN } from '../../src/sim/systems/navalCombat';
 import { seaHolder } from '../../src/sim/systems/seaControl';
 import { convoyWays } from '../../src/sim/systems/seaSupply';
+import { blocOf } from '../../src/sim/systems/supply';
 import { declareWar } from '../../src/sim/systems/war';
 import { navOf, seaOf, type World } from '../../src/sim/world';
 import { historyRows } from '../../src/worker/historyRows';
@@ -117,21 +119,55 @@ describe('convoys and submarine raiding (PLAN 4.4d)', () => {
     process.stderr.write(`convoys: land ${land} (${(100 * share).toFixed(2)} % of the United Kingdom's land income), a way of ${way.length} zones, ${convoyLosses(w)!.kept.get(ENG)!.size} British lands' convoys through the zone; ${free.toFixed(1)} a month free, ${gross(w, ENG).toFixed(1)} raided and screened\n`);
   });
 
-  it('a raid is in the log once a month per zone and nation, and reads as a sentence; a submarine holds no sea', () => {
+  it("a quarter's raids of a nation on a bloc are one row in the log, with the gold they took, and read as a sentence; the tally is saved; a submarine holds no sea (PLAN 7.33a)", () => {
     const s = sim();
     const w = s.world;
     expect(declareWar(w, GER, ENG, true)).not.toBeNull();
     s.step(1);
-    const { zone } = britishLand(w);
+    const { zone, way } = britishLand(w);
     fleet(w, GER, 'submarine_flotilla', zone);
     fleet(w, GER, 'submarine_flotilla', zone);
+    // A second zone of the way raided: still one row of Germany on the British bloc.
+    const other = way.find((z) => z !== zone && !fleetZones(w, ENG).has(z));
+    if (other !== undefined) fleet(w, GER, 'submarine_flotilla', other);
+    // What the economy counts as lost to the raids in a month, of every nation of the bloc.
+    let lost = 0;
+    w.nations.forEach((n) => void (w.nations.cols.living[n] === 1 && blocOf(w, n) === ENG && (lost += economyBreakdown(w, ECONOMY_TABLES_1938, n).convoys)));
+    expect(lost).toBeGreaterThan(0.5);
+    const raidRows = (): number[][] => {
+      const out: number[][] = [];
+      for (let i = 0; i < w.out.events.length; i += 6) if (w.out.events[i + 1] === EventKind.ConvoyRaided) out.push(w.out.events.slice(i, i + 6));
+      return out;
+    };
+    // A month of January, a quarter's first: added to the quarter, nothing told yet.
     w.out.events.length = 0;
     runEconomyMonth(w, ECONOMY_TABLES_1938);
-    const raids: number[][] = [];
-    for (let i = 0; i < w.out.events.length; i += 6) if (w.out.events[i + 1] === EventKind.ConvoyRaided) raids.push(w.out.events.slice(i, i + 6));
-    expect(raids.filter((r) => r[2] === GER && r[3] === ENG)).toHaveLength(1);
+    expect(raidRows()).toHaveLength(0);
+    expect(w.convoyQuarter.length).toBeGreaterThan(0);
+    // The tally is state: saved and loaded with the game.
+    const s2 = sim();
+    s2.load(s.save());
+    expect(s2.world.convoyQuarter.map((t) => [t.raider, t.bloc, [...t.zones]])).toEqual(w.convoyQuarter.map((t) => [t.raider, t.bloc, [...t.zones]]));
+    // At the next quarter's start the quarter is told: one row of Germany on the British bloc.
+    tellConvoyQuarter(w);
+    expect(w.convoyQuarter).toHaveLength(0);
+    const raids = raidRows();
+    const ours = raids.filter((r) => r[2] === GER && convoyTake(r[3]!).nation === ENG);
+    expect(ours).toHaveLength(1);
+    expect(raids.length).toBeLessThanOrEqual(CONVOY_ROWS);
+    // The gold in the row is what the bloc's accounts lost to them, in tenths.
+    expect(convoyTake(ours[0]![3]!).gold).toBeCloseTo(lost, 1);
     const row = historyRows(w, (n) => `nation.${NATIONS_1938[n - 1]!.tag}`, () => '').find((r) => r.kind === EventKind.ConvoyRaided)!;
-    expect(historyText(row)).toBe("Germany's submarines raided the convoys of United Kingdom");
+    expect(row.bn).toBe('nation.ENG');
+    const g = convoyTake(ours[0]![3]!).gold;
+    const told = g < 10 ? g.toLocaleString('en-US', { maximumFractionDigits: 1 }) : Math.round(g).toLocaleString('en-US');
+    expect(historyText(row)).toBe(`Germany's submarines raided the convoys of United Kingdom over three months: ${told} gold of cargo taken`);
+    // A row of a game saved before (the bloc alone in b) reads as it did.
+    expect(historyText({ ...row, b: ENG })).toBe("Germany's submarines raided the convoys of United Kingdom");
+    // The filter finds the row by the bloc raided, and by the raider.
+    expect(filterHistory([row], { ...NO_FILTER, nation: ENG }, w.startDay)).toHaveLength(1);
+    expect(filterHistory([row], { ...NO_FILTER, nation: GER }, w.startDay)).toHaveLength(1);
+    process.stderr.write(`convoy raids: ${ours.length} row, ${told} gold of ${lost.toFixed(2)} lost a month; ${other !== undefined ? 'two zones' : 'one zone'} of the way raided\n`);
     // The day's sea control: the boats hold nothing.
     const before = seaHolder(w, zone);
     s.step(24);

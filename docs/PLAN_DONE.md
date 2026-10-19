@@ -11743,3 +11743,27 @@ Of 7.4 (open in PLAN.md):
       `packNukeStrike` is near 2^53 with the dead; saved games' rows still read). AT: a unit test
       of the toll's parts; the row's text for a strike on an army and on a city; the alert seen in
       the page (a screenshot, viewed).
+
+<!-- moved 2026-10-19 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.33 (open in PLAN.md):
+
+  - [x] 7.33a Convoy raids told (pin moves): a nation's raids on a bloc's convoys added up over a
+    quarter (state, saved) and told at the next quarter's start, with the gold they took (a zone's
+    take split among its raiders by their boats); the CONVOY_ROWS = 3 largest, as the air month's
+    rows; the nation filter finds a side's nation. AT: seed 7741's years 21–23 from the critic's
+    year-20 save (`tools/diag/historyKinds.ts`), rows by type before and after; a unit test: one
+    row of two zones raided, its gold the bloc's loss in `economyBreakdown`, its sentence, an old
+    save's row, the tally saved.

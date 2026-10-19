@@ -15,6 +15,19 @@ export function seaSide(v: number): { nation: number; ships: number } {
   return { nation: v % SIDE_SHIPS, ships: Math.floor(v / SIDE_SHIPS) };
 }
 
+/**
+ * A month's raids on a bloc's convoys in a row (PLAN 7.33a, `ConvoyRaided`'s b): the bloc and the
+ * gold taken in tenths, as bloc + SIDE_SHIPS × tenths. A row of a game saved before has the bloc
+ * alone: gold 0.
+ */
+export function packConvoyTake(bloc: number, gold: number): number {
+  return bloc + SIDE_SHIPS * Math.max(0, Math.round(10 * gold));
+}
+export function convoyTake(v: number): { nation: number; gold: number } {
+  const s = seaSide(v);
+  return { nation: s.nation, gold: s.ships / 10 };
+}
+
 /** A nuclear strike in a row (PLAN 6.5a): the nation struck (0 none), the yield (1 or 2) and the dead, as nation + SIDE_SHIPS × (yield + NUKE_YIELDS × dead). */
 export const NUKE_YIELDS = 4;
 export function packNukeStrike(nation: number, yieldN: number, dead: number): number {
@@ -71,7 +84,8 @@ export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, Histo
   [EventKind.LandCeded]: ['nation', 'nation'],
   [EventKind.WarEnded]: ['nation', 'nation'],
   [EventKind.SeaBattle]: ['side', 'side'],
-  [EventKind.ConvoyRaided]: ['nation', 'nation'],
+  // The bloc raided and the gold taken (PLAN 7.33a).
+  [EventKind.ConvoyRaided]: ['nation', 'side'],
   [EventKind.AirWar]: ['side', 'side'],
   [EventKind.AirRaids]: ['nation', 'side'],
   [EventKind.NukeCasualties]: ['nation', 'strike'],
@@ -166,13 +180,18 @@ export interface HistoryFilter {
 
 export const NO_FILTER: HistoryFilter = { kind: null, nation: null, fromYear: null, toYear: null };
 
+/** The nation a row's a or b names in its role (a side's or a strike's too: PLAN 7.33a), 0 when it names none. */
+export function roleNation(role: HistoryRole, v: number): number {
+  return role === 'nation' ? v : role === 'side' ? seaSide(v).nation : role === 'strike' ? nukeStrike(v).nation : 0;
+}
+
 /** Rows matching `f`; `startDay` dates the ticks. Order is kept. */
 export function filterHistory(rows: readonly HistoryRow[], f: HistoryFilter, startDay: number): HistoryRow[] {
   return rows.filter((r) => {
     if (f.kind !== null && r.kind !== f.kind) return false;
     if (f.nation !== null) {
       const [ra, rb] = HISTORY_ROLES[r.kind] ?? ['number', 'number'];
-      if (!((ra === 'nation' && r.a === f.nation) || (rb === 'nation' && r.b === f.nation) || (rb === 'strike' && nukeStrike(r.b).nation === f.nation))) return false;
+      if (roleNation(ra, r.a) !== f.nation && roleNation(rb, r.b) !== f.nation) return false;
     }
     if (f.fromYear !== null || f.toYear !== null) {
       const y = dateOfTick(startDay, r.tick).year;

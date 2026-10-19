@@ -19469,3 +19469,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gate:** `scenario1938`'s build-time test (under 2 s) red in the parallel run, green alone: load.
 - **No rule change:** pin 81db11b6.
 - **Next:** PLAN 7.33.
+
+## 2026-10-19 — PLAN 7.33a: convoy raids told a quarter at a time, with the gold taken (critic R9 stats; ADR-530)
+
+- **Start:** gate green on `dd8a030`; critic not due. PLAN 7.33 split: 7.33a the convoy rows, 7.33b
+  God's acts (Spawn nation, Found city, Raze city).
+- **Measured** (`tools/diag/historyKinds.ts`, new: rows by kind from a save; seed 7741's years 21–23
+  from the critic's year-20 save): on HEAD 488 rows, 254 raids (52 %). A row a month by raider and
+  bloc, the three largest: 101 of 335 (the cap reached nearly every month; dropped). A quarter's
+  tally, the three largest: 33 of 267 (12 %); every other kind the same count.
+- **Rule** (ADR-530): a zone's take split among its raiders by their boats, turned into gold as the
+  economy panel's convoys line; added up over the quarter (`World.convoyQuarter`, saved) and told
+  at the next quarter's start. "Soviet Union's submarines raided the convoys of United Kingdom over
+  three months: 21.4 gold of cargo taken". An old save's row reads as before. The nation filter
+  now finds a side's nation (sea battles, air rows, raids).
+- **Tests:** `convoys1938.test.ts`'s raid test rewritten (red before): one row for two zones raided,
+  its gold the bloc's loss in `economyBreakdown` (5.3 gold), the sentence, an old save's row, the
+  filter, the tally saved and loaded.
+  `navalAi1938`'s U-boat test reads the raid from the quarter's tally (day 31, as the month's row
+  was). `history1938.spec.ts`'s export check names a side's nation as the filter now does.
+- **By hand** (the gate skips e2e): `history1938`, `ticker1938` green (7 tests).
+- **Pin** 81db11b6 → 45c20987.
+- **Next:** PLAN 7.33b.

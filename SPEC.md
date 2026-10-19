@@ -1724,7 +1724,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   port's to the land's port). In each zone of it the boats (S) of the nations at war with
   the bloc take min(1, `RAID_PER_BOAT` 0.05 × S) of what passes, × (1 − 0.6 × min(1, D / S))
   for the bloc's destroyers there (D); the land's cells pay the product of what each zone
-  leaves (`monthlyAccounts`). Each raid is a history row a month (`ConvoyRaided`). A
+  leaves (`monthlyAccounts`). The raids are told a quarter at a time (PLAN 7.33a, ADR-530): a
+  zone's take is split among its raiders by their boats, each nation's gold taken of each bloc
+  is added up over the quarter (`World.convoyQuarter`, state), and at the next quarter's start
+  the `CONVOY_ROWS` = 3 largest are history rows (`ConvoyRaided`, b = the bloc and the gold in
+  tenths), at the zone the raiders took most in. A
   submarine holds no sea (it counts for no zone's control). On seed 99 Italy raids British
   convoys in 5 months of the first year.
   *A fleet's loose ends (PLAN 4.4e, ADR-261):* a passage's bank is the land cell nearest the

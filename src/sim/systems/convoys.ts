@@ -8,8 +8,9 @@
  * min(1, RAID_PER_BOAT × S) of what passes, less the screen of the bloc's destroyers there
  * (D): × (1 − SCREEN × min(1, D / S)), as in a sea battle (PLAN 4.3b). What reaches home is the
  * product of what each zone leaves. The economy's month reads it (`monthlyAccounts`: a land's
- * cells pay that share of their income) and logs each raid (`ConvoyRaided`: the raiders'
- * nation, the bloc, the zone's middle), once a month per zone and nation.
+ * cells pay that share of their income) and logs the month's raids (`convoyRaids` in
+ * economy.ts, PLAN 7.33a): what each raiding nation took of a bloc's convoys, from the share
+ * each zone's boats take of what passes (`takes`).
  */
 import { navOf, seaOf, type World } from '../world';
 import { elementIndex } from './elements';
@@ -23,8 +24,18 @@ export const RAID_PER_BOAT = 0.05;
 export interface ConvoyLosses {
   /** Per bloc, per land (component): the share of its income that reaches home. */
   kept: Map<number, Map<number, number>>;
-  /** Each raid: the raiders' nation, the bloc raided, the zone. */
-  raids: { raider: number; bloc: number; zone: number }[];
+  /**
+   * Per bloc, per land: who took its cargo, where, and the share of it each took (PLAN 7.33a); a
+   * zone's take is split among its raiders by their boats. A land's shares sum to 1 − its kept.
+   */
+  takes: Map<number, Map<number, ConvoyTake[]>>;
+}
+
+/** A raider's share of a land's cargo, taken in a zone of its way. */
+export interface ConvoyTake {
+  raider: number;
+  zone: number;
+  share: number;
 }
 
 /** What the enemy's submarines take of each bloc's convoys now; null where no submarine is at sea in a war. */
@@ -67,11 +78,11 @@ export function convoyLosses(world: World): ConvoyLosses | null {
   });
   if (boats.size === 0) return null;
   const kept = new Map<number, Map<number, number>>();
-  const raids: ConvoyLosses['raids'] = [];
-  const seenRaid = new Set<string>();
+  const takes: ConvoyLosses['takes'] = new Map();
   for (const [b, lands] of convoyWays(world)) {
     for (const [land, way] of lands) {
       let share = 1;
+      const taken: ConvoyTake[] = [];
       for (const zone of way) {
         const m = boats.get(zone);
         if (!m) continue;
@@ -84,22 +95,21 @@ export function convoyLosses(world: World): ConvoyLosses | null {
         }
         if (s === 0) continue;
         const d = screens.get(zone)?.get(b) ?? 0;
-        share *= 1 - Math.min(1, RAID_PER_BOAT * s) * (1 - SCREEN * Math.min(1, d / s));
-        for (const n of raiders.sort((p, q) => p - q)) {
-          const key = `${n},${b},${zone}`;
-          if (seenRaid.has(key)) continue;
-          seenRaid.add(key);
-          raids.push({ raider: n, bloc: b, zone });
-        }
+        const t = Math.min(1, RAID_PER_BOAT * s) * (1 - SCREEN * Math.min(1, d / s));
+        for (const n of raiders.sort((p, q) => p - q)) taken.push({ raider: n, zone, share: (share * t * m.get(n)!) / s });
+        share *= 1 - t;
       }
       if (share < 1) {
         let m = kept.get(b);
         if (!m) kept.set(b, (m = new Map()));
         m.set(land, share);
+        let tm = takes.get(b);
+        if (!tm) takes.set(b, (tm = new Map()));
+        tm.set(land, taken);
       }
     }
   }
-  return kept.size === 0 ? null : { kept, raids };
+  return kept.size === 0 ? null : { kept, takes };
 }
 
 /** The share of cell `cell`'s income, held by `nation`, that reaches home past the raiders (`convoyLosses`). */
