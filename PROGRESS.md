@@ -19519,6 +19519,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **By hand** (the gate skips e2e): `godPanelMore1938`'s town and spawn tests, extended with the
   ticker and history rows, green; seen (`docs/evidence/7.33/b-town-rows.png`, `b-spawn-row.png`,
   viewed).
+- **Checked:** the editor's undo and redo (`sim/editor.ts`) touch neither the cities nor the history
+  log, so `History.towns`, keyed by row number, cannot drift from its rows.
 - **Not done:** the tooltip still reading "Prague · capital" after a raze (critic R9 non-blocking).
 - **Next:** PLAN 7.34.
 
