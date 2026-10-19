@@ -19535,7 +19535,8 @@ No rule changed and nothing on screen changed. One task came out of it.
   zoom's log, in and out, in place of the sprites' handover share × `groundReach`. After: 0.17,
   0.65, 1 at 644, 412, 264 m/px; the largest change between the sheet's frames 0.49
   (`docs/evidence/7.34/a-sheet-before.png`, `a-sheet-after.png`, viewed: at 412 the markers on
-  ground half come in). GPU time of the WebGL passes at 500 m/px 0.53 ms (0.26 before).
+  ground half come in). GPU time of the WebGL passes at 500 m/px 0.53 ms at 1280 × 720 (0.26 before; about 1.2 ms at
+  Bench G's 1920 × 1080 by the pixels, within T2's bar of 2.0 ms, the program's).
 - **Tests rewritten to the rule:** `ground.test.ts`; `groundThings1938` (the band; the share in
   every frame of a wheel in and out); `occupiedGround1938`, `coastPicture1938` (T1 without ground
   at 800 m/px).
@@ -19553,3 +19554,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   500 men). `docs/evidence/2.10/` made again; stops 4 and 8 viewed.
 - **No rule change:** pin 45c20987.
 - **Next:** PLAN 7.34b (elements at 900 m/px).
+
+## 2026-10-19 — PLAN 7.34a's check: the boundary specs, and ADR-532's budget said at its size
+
+- **By hand** (review, advisor): the specs of the T1 ↔ T2 boundary, `fades1938`, `handover1938`,
+  `morphNations1938`, `markerStacks1938`, `lateFrame1938`, `canvasOpaque1938` green;
+  `tankBattle1938` red on its Node side (no tank battle in seed 2's days 14–120): sim, next commit.
+- ADR-532's GPU figure was taken at 1280 × 720: about 1.2 ms at Bench G's size, against T2's bar.

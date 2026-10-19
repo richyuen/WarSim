@@ -208,8 +208,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Measured** (a probe spec, seed 6113, the critic's camera and steps): the share at 644, 412,
   264 m/px 0.17, 0.65, 1 (was 0, 0, 1); the largest change between the sheet's frames 0.49
   (was 1). The GPU's time of the frame's WebGL passes at 500 m/px (Bench G's way, the median of
-  7 queries of 40) 0.53 ms, 0.26 before: the ground's program now runs through 300–750 m/px,
-  within SPEC's 1.0 ms of a T0 frame.
+  7 queries of 40, at 1280 × 720) 0.53 ms, 0.26 before: the ground's program, T2's, now runs
+  through 300–750 m/px. Its pass is bound by the pixels filled, so at Bench G's 1920 × 1080
+  about 1.2 ms: over T0's bar of 1.0 ms, which this band is not in, and within T2's of 2.0 ms,
+  whose program it is.
 - **Tests changed to the rule.** `ground.test.ts` (the band, and a step of 1.5625× ≤ 0.5);
   `groundThings1938.spec.ts`: the test of the instances coming in by the handover's clock at
   320 → 280 m/px is now one of the band (none at 760 m/px, part at 500, all at 300, and a wheel
