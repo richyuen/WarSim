@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-529 · 2026-10-19 · accepted — A burst's toll told: civilians, men, guns and tanks (PLAN 7.32b)
+
+- **Context.** Critic R9-B2: the player read "…: 24 dead", and no string told soldiers lost; the
+  critic took the chains' dead for civilians, while every one was a soldier (ADR-528). The strike's
+  row packs the struck nation, the yield and the dead (men and people) into its `b`
+  (`packNukeStrike`), near 2^53 already; the history is six f64 a row, saved and hashed.
+- **Decision.** `blast` counts the guns (artillery, anti-tank, anti-air: the artillery and AT arms
+  of `data/combat.json`, and class `aa`) and the tanks (the armour arm) it destroys, element by
+  element, beside the men and the people. `aftermath` logs a companion event right after
+  `NukeCasualties`: `NukeToll` (a = the striker, b = tanks + 16384 × (guns + 16384 × men), guns and
+  tanks held under 16384; same tick and place). The strike's `dead` keeps its meaning (men and
+  people: the statistics' nuclear dead). The history and the ticker read the toll into the strike's
+  row (`HistoryRow.toll`); a toll row with no strike before it is told alone. The sentence:
+  "France struck Germany with an atomic bomb near Berlin: 334,000 civilians killed; 12,356 men and
+  40 guns lost", "…; no troops in the blast" when it found none. A row of a game saved before has no
+  toll and reads "N dead" as it did.
+- **Not done.** Ships and aircraft destroyed in port or at their base are counted in men (their
+  crews), not by hull or airframe: the AT names men, guns and tanks.
+- **Pin** unchanged (81db11b6): no burst in seed 99's first year.
+
 ### ADR-528 · 2026-10-19 · accepted — A burst is weighed by what it destroys: a theatre counts for at least 250,000 men (PLAN 7.32a)
 
 - **Context.** Critic R9-B2: AI strikes in weekly chains on near-empty ground (seed 2609's Soviet

@@ -11702,3 +11702,44 @@ Of 7.4 (open in PLAN.md):
   critic's cases: the fleets close and fight or no battle exists; no battle logged in which no
   weapon could reach; no battle re-formed daily at one point with no loss; the zero-loss share of
   late sea battles on both seeds, before and after; a unit test; the pin's entry if it moves.
+
+<!-- moved 2026-10-19 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.32 AI nuclear strikes on empty ground, in weekly chains, told by civilian dead alone (critic
+  R9-B2): seed 2609 year 15, the Soviet Union strikes China every 7 days along one line, each burst
+  about 7 cells west of the last: 10,847 → 1,373 → 168 → 24 dead, then 10,862 → 1,334 → 120 →
+  1,749 → 204 → 22; Tibet 10,838 → 18,190 → 120 → 24; seed 9901's Soviet Union strikes China 18
+  times in 2 years for about 10,000 each; utilities 0.22 to 0.98, above the floor
+  (`critic/c9_headless_2609.json`, `_9901`, `_4483` `nukeLog`, `critic/scripts/c9_nukes.py`). The
+  player reads "…: 24 dead"; no string tells soldiers lost (`src/ui/i18n/en.json:593`). Measured
+  first: what each burst of the chain destroyed (men, guns, vehicles, industry) against what the
+  target's weighing expected. AT: the critic's chain: a target weighed by what a burst there
+  destroys; no strike near a place where the last strike found almost nothing; the alert and the
+  history name the men, guns and vehicles destroyed beside the civilian dead; bursts per world and
+  their tolls on the critic's 14 seeds × 30 years before and after (fewer chains, not no use: R8-B1
+  stays fixed); a unit test; the pin's entry. A part each:
+    - [x] 7.32a A burst weighed by what it destroys (ADR-528): measured on the critic's code
+      (`tools/diag/nukeChain.ts`, `docs/evidence/7.32/measure.md`): each burst found the men its
+      weighing expected, all soldiers; the chain's men were weighed as a share of a side of a few
+      thousand. A theatre's men count for at least THEATRE_MEN_MIN. AT: the critic's two chains
+      on its code with the rule; `tools/diag/nukeChainCount.ts` on the 14 seeds × 30 years, before
+      and after (bursts, tolls under 5,000, chain links, bursts near an earlier one that found
+      almost nothing); `nukeRemnant1938.test.ts`; the pin's entry.
+    - [x] 7.32b The toll told (R9-B2's "no string tells soldiers lost"): `blast` counts the men,
+      guns (artillery, anti-tank, anti-air) and tanks it destroys; the alert and the history row
+      name them beside the people killed (a second field or a companion event, not a wider `b`:
+      `packNukeStrike` is near 2^53 with the dead; saved games' rows still read). AT: a unit test
+      of the toll's parts; the row's text for a strike on an army and on a city; the alert seen in
+      the page (a screenshot, viewed).

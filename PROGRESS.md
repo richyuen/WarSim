@@ -19451,3 +19451,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   targetValue has the men floor beside the quarter.
 - **By hand** (the gate skips e2e): `nukeDemo1938` green (France decides on Berlin, tick 24).
 - **No rule change:** pin 81db11b6.
+
+## 2026-10-19 — PLAN 7.32b: the toll told (critic R9-B2; ADR-529). PLAN 7.32 done
+
+- **Start:** gate green on `ea499ce`; critic not due.
+- **Rule** (ADR-529): `blast` counts the guns (artillery, anti-tank, anti-air) and tanks it destroys
+  beside the men and people; `aftermath` logs `NukeToll` (men, guns, tanks packed) right after
+  `NukeCasualties`, whose dead keep their meaning. The history and the ticker read it into the
+  strike's row: "…: 334,000 civilians killed; 12,356 men and 40 guns lost", or "no troops in the
+  blast". A game saved before reads "N dead" as it did.
+- **Tests:** `nukeToll1938.test.ts` (new: packing, the guns and tanks counted from the elements, the
+  sentence for an army, a city, God's and an old save, the rows folded in history, ticker and a
+  save); the sentence asserted in `nukeAftermath1938`, `godNuke1938`; the `aftermath` callers pass
+  a toll.
+- **By hand** (the gate skips e2e): `nukeAlert1938` (2 tests), `nukeDemo1938` green; the alert seen
+  (`docs/evidence/7.32/b-alert-ai-strike.png`, `b-alert-god.png`), viewed.
+- **Gate:** `scenario1938`'s build-time test (under 2 s) red in the parallel run, green alone: load.
+- **No rule change:** pin 81db11b6.
+- **Next:** PLAN 7.33.

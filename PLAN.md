@@ -38,32 +38,6 @@ fixed): R9-B1 and R9-B2 are PLAN 7.31 and 7.32, the dimensions under the bar 7.3
 semantic zoom 7, naval 6, aircraft 6, AI nuclear use 7; tanks reached 8). The late air war's fall
 is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up:
 
-- [ ] 7.32 AI nuclear strikes on empty ground, in weekly chains, told by civilian dead alone (critic
-  R9-B2): seed 2609 year 15, the Soviet Union strikes China every 7 days along one line, each burst
-  about 7 cells west of the last: 10,847 → 1,373 → 168 → 24 dead, then 10,862 → 1,334 → 120 →
-  1,749 → 204 → 22; Tibet 10,838 → 18,190 → 120 → 24; seed 9901's Soviet Union strikes China 18
-  times in 2 years for about 10,000 each; utilities 0.22 to 0.98, above the floor
-  (`critic/c9_headless_2609.json`, `_9901`, `_4483` `nukeLog`, `critic/scripts/c9_nukes.py`). The
-  player reads "…: 24 dead"; no string tells soldiers lost (`src/ui/i18n/en.json:593`). Measured
-  first: what each burst of the chain destroyed (men, guns, vehicles, industry) against what the
-  target's weighing expected. AT: the critic's chain: a target weighed by what a burst there
-  destroys; no strike near a place where the last strike found almost nothing; the alert and the
-  history name the men, guns and vehicles destroyed beside the civilian dead; bursts per world and
-  their tolls on the critic's 14 seeds × 30 years before and after (fewer chains, not no use: R8-B1
-  stays fixed); a unit test; the pin's entry. A part each:
-    - [x] 7.32a A burst weighed by what it destroys (ADR-528): measured on the critic's code
-      (`tools/diag/nukeChain.ts`, `docs/evidence/7.32/measure.md`): each burst found the men its
-      weighing expected, all soldiers; the chain's men were weighed as a share of a side of a few
-      thousand. A theatre's men count for at least THEATRE_MEN_MIN. AT: the critic's two chains
-      on its code with the rule; `tools/diag/nukeChainCount.ts` on the 14 seeds × 30 years, before
-      and after (bursts, tolls under 5,000, chain links, bursts near an earlier one that found
-      almost nothing); `nukeRemnant1938.test.ts`; the pin's entry.
-    - [ ] 7.32b The toll told (R9-B2's "no string tells soldiers lost"): `blast` counts the men,
-      guns (artillery, anti-tank, anti-air) and tanks it destroys; the alert and the history row
-      name them beside the people killed (a second field or a companion event, not a wider `b`:
-      `packNukeStrike` is near 2^53 with the dead; saved games' rows still read). AT: a unit test
-      of the toll's parts; the row's text for a strike on an army and on a city; the alert seen in
-      the page (a screenshot, viewed).
 - [ ] 7.33 The history reads as events (stats and history 6, needs 7): beyond 7.31's phantom rows,
   seed 7741's late history is 41 % "X's submarines raided the convoys of Y" (1,937 of 4,681 rows),
   with no figure in them (`critic/c9_l_7741.json` `historyTypes`, `c9l_7741_4_history.png`); God
@@ -463,3 +437,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`): […]
 - [x] 7.28 A launch shot down and the gap after it (found 2026-10-18 by PLAN 7.26b, ADR-508): the […]
 - [x] 7.31 Phantom sea battles (critic R9-B1, contradicts 7.19a): a battle in which no weapon can […]
+- [x] 7.32 AI nuclear strikes on empty ground, in weekly chains, told by civilian dead alone (critic […]

@@ -26,11 +26,11 @@ describe('outrage at a nuclear strike (PLAN 6.5b)', () => {
   it('rises by OUTRAGE_STRIKE a strike on another\'s land, to 100, none on its own; decays by OUTRAGE_DECAY a day', () => {
     const s = sim();
     const w = s.world;
-    aftermath(w, GER, 1, ...berlin, 0);
+    aftermath(w, GER, 1, ...berlin, { men: 0, people: 0, guns: 0, tanks: 0 });
     expect(w.nukeOutrage.size).toBe(0);
-    aftermath(w, FRA, 1, ...berlin, 0);
+    aftermath(w, FRA, 1, ...berlin, { men: 0, people: 0, guns: 0, tanks: 0 });
     expect(w.nukeOutrage.get(FRA)).toBe(OUTRAGE_STRIKE);
-    for (let k = 0; k < 3; k++) aftermath(w, FRA, 1, ...berlin, 0);
+    for (let k = 0; k < 3; k++) aftermath(w, FRA, 1, ...berlin, { men: 0, people: 0, guns: 0, tanks: 0 });
     expect(w.nukeOutrage.get(FRA)).toBe(100);
     s.step(1);
     while (w.tick % 24 !== 1) s.step(1);
@@ -41,7 +41,7 @@ describe('outrage at a nuclear strike (PLAN 6.5b)', () => {
 
   it('relations hit by distance and alliance: Poland, near, the most; the United States less; Japan, far, less; England, France\'s ally, a quarter', () => {
     const w = sim().world;
-    aftermath(w, FRA, 1, ...berlin, 0);
+    aftermath(w, FRA, 1, ...berlin, { men: 0, people: 0, guns: 0, tanks: 0 });
     const nc = w.nations.cols;
     const want = (n: number, allied: boolean): number => {
       const km = seaKm(w, nc.capitalX[n]!, nc.capitalY[n]!, nc.capitalX[FRA]!, nc.capitalY[FRA]!);
@@ -68,7 +68,7 @@ describe('outrage at a nuclear strike (PLAN 6.5b)', () => {
     s.step(1);
     const war = declareWar(w, GER, FRA, true)!;
     expect(nukeInputs(w, FRA, war, DEFENDERS, ...berlin).outrage).toBe(OUTRAGE_COST);
-    aftermath(w, FRA, 1, ...berlin, 0);
+    aftermath(w, FRA, 1, ...berlin, { men: 0, people: 0, guns: 0, tanks: 0 });
     expect(nukeInputs(w, FRA, war, DEFENDERS, ...berlin).outrage).toBeCloseTo(OUTRAGE_COST + OUTRAGE_WEIGHT * (OUTRAGE_STRIKE / 100), 12);
   });
 

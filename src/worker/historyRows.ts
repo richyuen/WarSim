@@ -29,7 +29,7 @@
  * Albania ended: Albania is now a puppet of Italy").
  */
 import { EventKind } from '../shared/events';
-import { HISTORY_ROLES, nukeStrike, seaSide, TICKER_HOURS, TICKER_KINDS, TICKER_ONE_AN_HOUR, TICKER_ROWS, type HistoryAs, type HistoryRole, type HistoryRow, type TickerRow } from '../shared/history';
+import { HISTORY_ROLES, nukeStrike, nukeToll, seaSide, TICKER_HOURS, TICKER_KINDS, TICKER_ONE_AN_HOUR, TICKER_ROWS, type HistoryAs, type HistoryRole, type HistoryRow, type TickerRow } from '../shared/history';
 import { HISTORY_STRIDE } from '../sim/history';
 import type { World } from '../sim/world';
 
@@ -72,8 +72,19 @@ function strikeNear(world: World, x: number, y: number, cityName: (row: number) 
   return n ? `=${n}` : '';
 }
 
-/** The kinds whose row names the city nearest its place: a strike (PLAN 6.11c) and a decision to strike (PLAN 7.25c). */
-const NEAR_KINDS: ReadonlySet<number> = new Set([EventKind.NukeCasualties, EventKind.NukeDecided]);
+/**
+ * The toll of the strike at row `i` (PLAN 7.32b): the `NukeToll` logged right after it, of its
+ * hour, striker and place; undefined in a game saved before.
+ */
+function tollAfter(rows: readonly number[], i: number): HistoryRow['toll'] {
+  const j = i + HISTORY_STRIDE;
+  if (j >= rows.length || rows[j + 1] !== EventKind.NukeToll || rows[j] !== rows[i] || rows[j + 2] !== rows[i + 2]) return undefined;
+  if (!Object.is(rows[j + 4], rows[i + 4]) || !Object.is(rows[j + 5], rows[i + 5])) return undefined;
+  return nukeToll(rows[j + 3]!);
+}
+
+/** The kinds whose row names the city nearest its place: a strike (PLAN 6.11c), a decision to strike (PLAN 7.25c), a toll without its strike (PLAN 7.32b). */
+const NEAR_KINDS: ReadonlySet<number> = new Set([EventKind.NukeCasualties, EventKind.NukeDecided, EventKind.NukeToll]);
 
 /**
  * `nationName` gives a nation's name (an i18n key or '=' + literal), `cityName` a city row's
@@ -121,6 +132,8 @@ export function historyRows(world: World, nationName: (id: number) => string, ci
   const out: HistoryRow[] = [];
   for (let i = 0; i < rows.length; i += HISTORY_STRIDE) {
     const [tick, kind, a, b, x, y] = [rows[i]!, rows[i + 1]!, rows[i + 2]!, rows[i + 3]!, rows[i + 4]!, rows[i + 5]!];
+    // A burst's forces destroyed are its strike's row (PLAN 7.32b), not a row of their own.
+    if (kind === EventKind.NukeToll && i > 0 && tollAfter(rows, i - HISTORY_STRIDE)) continue;
     if (kind === EventKind.LandCeded) {
       if (tick !== cededAt) ceded.clear();
       cededAt = tick;
@@ -141,6 +154,8 @@ export function historyRows(world: World, nationName: (id: number) => string, ci
     if (over) [row.as, row.cn] = ['puppet', over];
     const near = NEAR_KINDS.has(kind) ? strikeNear(world, x, y, cityName) : '';
     if (near) row.near = near;
+    const toll = kind === EventKind.NukeCasualties ? tollAfter(rows, i) : undefined;
+    if (toll) row.toll = toll;
     out.push(row);
   }
   return out;
@@ -197,6 +212,8 @@ export function tickerRows(world: World, nationName: (id: number) => string, cit
     if (over) [row.as, row.cn] = ['puppet', over];
     const near = NEAR_KINDS.has(kind) ? strikeNear(world, x, y, cityName) : '';
     if (near) row.near = near;
+    const toll = kind === EventKind.NukeCasualties ? tollAfter(rows, i) : undefined;
+    if (toll) row.toll = toll;
     out.push(row);
   }
   return out.reverse();

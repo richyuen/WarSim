@@ -40,17 +40,17 @@ describe('a burst\'s consequences (PLAN 6.5a)', () => {
     const ally = w.alliances.allianceOf(FRA);
     expect(ally, 'France in an alliance in 1938').toBeTruthy();
     const unity = ally!.unity;
-    aftermath(w, FRA, 1, ...berlin, 1000);
+    aftermath(w, FRA, 1, ...berlin, { men: 0, people: 1000, guns: 0, tanks: 0 });
     expect(nc.gold[GER]).toBeCloseTo(gold - Math.max(0, gold) * NUKE_GOLD, 6);
     expect(w.nukeShock.get(GER)).toBe(NUKE_SHOCK);
     expect(w.provinces.unrest[p]).toBeCloseTo(Math.min(100, unrest + NUKE_UNREST), 9);
     expect(ally!.unity).toBeCloseTo(Math.max(0, unity - NUKE_UNITY), 9);
     expect(w.nukeShock.has(FRA)).toBe(false);
-    aftermath(w, FRA, 1, ...berlin, 1000);
-    aftermath(w, FRA, 1, ...berlin, 1000);
+    aftermath(w, FRA, 1, ...berlin, { men: 0, people: 1000, guns: 0, tanks: 0 });
+    aftermath(w, FRA, 1, ...berlin, { men: 0, people: 1000, guns: 0, tanks: 0 });
     expect(w.nukeShock.get(GER)).toBe(NUKE_SHOCK_MAX);
     // A burst on the striker's own land: no shock to it.
-    aftermath(w, GER, 1, ...berlin, 1000);
+    aftermath(w, GER, 1, ...berlin, { men: 0, people: 1000, guns: 0, tanks: 0 });
     expect(w.nukeShock.get(GER)).toBe(NUKE_SHOCK_MAX);
   });
 
@@ -63,7 +63,7 @@ describe('a burst\'s consequences (PLAN 6.5a)', () => {
     const a = make();
     const b = make();
     expect(a.war && b.war).toBeTruthy();
-    aftermath(a.s.world, FRA, 1, ...berlin, 1000);
+    aftermath(a.s.world, FRA, 1, ...berlin, { men: 0, people: 1000, guns: 0, tanks: 0 });
     toDay(a.s);
     toDay(b.s);
     expect(a.war!.exhaustion[0] - b.war!.exhaustion[0]).toBeCloseTo(NUKE_SHOCK - NUKE_SHOCK_DECAY, 9);
@@ -84,7 +84,7 @@ describe('a burst\'s consequences (PLAN 6.5a)', () => {
     };
     const a = make();
     const b = make();
-    aftermath(a.w, FRA, 1, ...berlin, 1000);
+    aftermath(a.w, FRA, 1, ...berlin, { men: 0, people: 1000, guns: 0, tanks: 0 });
     toDay(a.s);
     toDay(b.s);
     expect(EXHAUSTED).toBeLessThanOrEqual(52 + NUKE_SHOCK - NUKE_SHOCK_DECAY);
@@ -110,12 +110,16 @@ describe('a burst\'s consequences (PLAN 6.5a)', () => {
     expect(strike.dead).toBeGreaterThan(100_000);
     const text = historyText(rows[0]!);
     process.stderr.write(`${text}\n`);
-    expect(text).toMatch(/^France struck Germany with an atomic bomb: [\d,]+ dead$/);
+    // PLAN 7.32b: the civilians killed and the forces lost, as the toll logged after the strike has them.
+    const toll = rows[0]!.toll!;
+    expect(toll).toBeDefined();
+    expect(text).toMatch(new RegExp(`^France struck Germany with an atomic bomb: ${(strike.dead - toll.men).toLocaleString('en-US')} civilians killed; `));
+    expect(text).toMatch(/^France struck Germany with an atomic bomb: [\d,]+ civilians killed; (?:no troops in the blast|[\d,]+ m[ae]n(?:, [\d,]+ guns?)?(?: and [\d,]+ (?:guns?|tanks?))? lost)$/);
     // PLAN 6.11c: named by place, the city nearest the burst, in the history and in the ticker (the alert's row).
     const nation = (n: number): string => `nation.${NATIONS_1938[n - 1]!.tag}`;
     const city = (v: number): string => cities1938.cities[w.cities.cols.def[v]!]?.name ?? '';
     const named = historyRows(w, nation, city).filter((r) => r.kind === EventKind.NukeCasualties);
-    expect(historyText(named[0]!)).toMatch(/^France struck Germany with an atomic bomb near Berlin: [\d,]+ dead$/);
+    expect(historyText(named[0]!)).toMatch(/^France struck Germany with an atomic bomb near Berlin: [\d,]+ civilians killed; (?:no troops in the blast|[\d,]+ m[ae]n(?:, [\d,]+ guns?)?(?: and [\d,]+ (?:guns?|tanks?))? lost)$/);
     const ticked = tickerRows(w, nation, city).filter((r) => r.kind === EventKind.NukeCasualties);
     expect(ticked.map(historyText)).toEqual([historyText(named[0]!)]);
     const c = sim();

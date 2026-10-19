@@ -72,7 +72,7 @@ describe('a warhead\'s blast (PLAN 6.3a)', () => {
     expect(toll.men).toBeGreaterThan(0);
     expect(toll.people).toBeGreaterThan(0);
     // The toll told, with the strike's consequences (PLAN 6.5a): England struck Germany, yield 1.
-    aftermath(w, ENG, 1, ...berlin, toll.men + toll.people);
+    aftermath(w, ENG, 1, ...berlin, toll);
     const told: number[][] = [];
     for (let i = 0; i < w.out.events.length; i += 6) if (w.out.events[i + 1] === EventKind.NukeCasualties) told.push(Array.from(w.out.events.slice(i + 2, i + 6)));
     expect(told).toEqual([[ENG, packNukeStrike(GER, 1, toll.men + toll.people), ...berlin]]);

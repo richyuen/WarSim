@@ -25,6 +25,27 @@ export function nukeStrike(v: number): { nation: number; yieldN: number; dead: n
   return { nation: v % SIDE_SHIPS, yieldN: rest % NUKE_YIELDS, dead: Math.floor(rest / NUKE_YIELDS) };
 }
 
+/**
+ * What a burst destroyed of the forces there (PLAN 7.32b, `NukeToll`'s b): men (crews among them),
+ * guns (artillery, anti-tank, anti-air) and tanks, as tanks + NUKE_PART × (guns + NUKE_PART × men).
+ * Guns and tanks are held under NUKE_PART (a burst on a stacked theatre takes a few thousand);
+ * men under 2^25, so the whole is under 2^53.
+ */
+export const NUKE_PART = 16384;
+export interface NukeToll {
+  men: number;
+  guns: number;
+  tanks: number;
+}
+export function packNukeToll(t: NukeToll): number {
+  const part = (v: number): number => Math.min(NUKE_PART - 1, Math.max(0, Math.round(v)));
+  return part(t.tanks) + NUKE_PART * (part(t.guns) + NUKE_PART * Math.max(0, Math.round(t.men)));
+}
+export function nukeToll(v: number): NukeToll {
+  const rest = Math.floor(v / NUKE_PART);
+  return { men: Math.floor(rest / NUKE_PART), guns: rest % NUKE_PART, tanks: v % NUKE_PART };
+}
+
 /** Roles of a and b per historic kind. */
 export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, HistoryRole]>> = {
   [EventKind.Bankruptcy]: ['nation', 'number'],
@@ -56,6 +77,8 @@ export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, Histo
   [EventKind.NukeCasualties]: ['nation', 'strike'],
   // An AI's decision to strike (PLAN 6.7): its utility × 1000, told in words (PLAN 7.25c).
   [EventKind.NukeDecided]: ['nation', 'number'],
+  // A burst's forces destroyed (PLAN 7.32b): read into its strike's row, not a row of its own.
+  [EventKind.NukeToll]: ['nation', 'number'],
 };
 
 /** Stable English type name of a kind (filters, CSV/JSON `type`). */
@@ -91,6 +114,11 @@ export interface HistoryRow {
   cn?: string;
   /** The city nearest a nuclear strike or a decision to strike, as a name ('=' + literal; PLAN 6.11c, 7.25c), where the log knows one. */
   near?: string;
+  /**
+   * What a nuclear strike destroyed of the forces there (PLAN 7.32b): its `NukeToll`, the row after
+   * it in the log. Absent in a game saved before: its sentence then has the dead alone.
+   */
+  toll?: NukeToll;
 }
 
 export type HistoryAs = 'revived' | 'joined' | 'left' | 'founded' | 'puppet';

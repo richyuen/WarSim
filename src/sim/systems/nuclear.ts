@@ -43,7 +43,7 @@
  * people: they do not come back): BLAST_PEOPLE of it for a fission bomb, × the yield's ⅔ power (the
  * area where people die, PLAN 7.20), to all of it; and of its industry, as bombs put it out of work
  * (`world.bombDamage`, at least that share, repaired as bombing's is). Its toll is told with its
- * consequences (`aftermath`, PLAN 6.5a).
+ * consequences (`aftermath`, PLAN 6.5a): the dead, then the men, guns and tanks lost (PLAN 7.32b).
  *
  * Fallout (PLAN 6.3b, SPEC §6.4 "FALLOUT (attrition, income loss, movement penalty) that drifts
  * with a deterministic seasonal wind field and decays over years"): `world.fallout`, by cell, 0 to 1.
@@ -139,7 +139,7 @@
  */
 import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
-import { packNukeStrike } from '../../shared/history';
+import { packNukeStrike, packNukeToll } from '../../shared/history';
 import { BLAST_KM, yieldOf } from '../../shared/nuclear';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
@@ -147,7 +147,7 @@ import { pow, sin, cos } from '../core/dmath';
 import { unproject } from '../data/projection';
 import { knowsTechs, techMask } from '../tech';
 import type { War } from '../wars';
-import { airOf, navOf, type NukeLaunch, type World } from '../world';
+import { airOf, ARM_ARMOUR, ARM_ARTILLERY, ARM_AT, navOf, type NukeLaunch, type World } from '../world';
 import { basePlace, wingRange } from './air';
 import { applyLoss, cellX, elementIndex, settleFormation, wrapDx } from './elements';
 import { airSuperiority } from './airSuperiority';
@@ -328,10 +328,27 @@ export function blastShare(km: number, radius: number): number {
 }
 
 /**
- * A warhead of `yieldN` bursts at (x, y) (PLAN 6.3a): see the head of the file. Returns its toll:
- * men of formations lost, people killed (told by `aftermath`, PLAN 6.5a).
+ * A burst's toll (PLAN 6.3a, 7.32b): the men of formations lost (crews among them), the people
+ * killed, and the guns (artillery, anti-tank, anti-air) and tanks destroyed.
  */
-export function blast(world: World, yieldN: number, x: number, y: number): { men: number; people: number } {
+export interface BlastToll {
+  men: number;
+  people: number;
+  guns: number;
+  tanks: number;
+}
+
+/** Whether a unit type is a gun (artillery, anti-tank, anti-air) or a tank, for a burst's toll (PLAN 7.32b). */
+function tollPart(u: { arm: number; cls: string }): 'guns' | 'tanks' | null {
+  if ((u.arm & ARM_ARMOUR) !== 0) return 'tanks';
+  return (u.arm & (ARM_ARTILLERY | ARM_AT)) !== 0 || u.cls === 'aa' ? 'guns' : null;
+}
+
+/**
+ * A warhead of `yieldN` bursts at (x, y) (PLAN 6.3a): see the head of the file. Returns its toll
+ * (told by `aftermath`, PLAN 6.5a, 7.32b).
+ */
+export function blast(world: World, yieldN: number, x: number, y: number): BlastToll {
   const radius = blastRadius(yieldN);
   const people = peopleShare(yieldN);
   const { w, h, pop, econ } = world.cells;
@@ -366,15 +383,21 @@ export function blast(world: World, yieldN: number, x: number, y: number): { men
     const f = blastShare(seaKm(world, x, y, c.x[id]!, c.y[id]!), radius);
     if (f > 0) hit.push(id);
   });
-  let men = 0;
+  const units = world.rules?.units;
+  const toll: BlastToll = { men: 0, people: dead, guns: 0, tanks: 0 };
   for (const id of hit.sort((a, b) => a - b)) {
     const f = blastShare(seaKm(world, x, y, c.x[id]!, c.y[id]!), radius);
     const before = c.strength[id]!;
-    for (const e of idx.get(id) ?? []) applyLoss(world, e, ec.strength[e]! * f);
+    for (const e of idx.get(id) ?? []) {
+      const lost = applyLoss(world, e, ec.strength[e]! * f);
+      // Its guns and tanks, read before the formation is settled (a destroyed one's columns are cleared).
+      const part = units ? tollPart(units[ec.unit[e]!]!) : null;
+      if (part) toll[part] += lost;
+    }
     settleFormation(world, id);
-    men += before - (world.formations.has(id) ? c.strength[id]! : 0);
+    toll.men += before - (world.formations.has(id) ? c.strength[id]! : 0);
   }
-  return { men, people: dead };
+  return toll;
 }
 
 /** A plume's length at yield 1, km; its half-width at the burst, and how much more it widens per km along (PLAN 6.3b). */
@@ -1218,10 +1241,15 @@ function ownerAt(world: World, x: number, y: number): number {
   return xx === null ? 0 : (world.cells.owner[Math.min(world.cells.h - 1, Math.max(0, Math.floor(y))) * world.cells.w + xx] ?? 0);
 }
 
-/** `striker`'s burst of `yieldN` at (x, y), `dead` killed: its consequences and its history entry (PLAN 6.5a). */
-export function aftermath(world: World, striker: number, yieldN: number, x: number, y: number, dead: number): void {
+/**
+ * `striker`'s burst of `yieldN` at (x, y), of toll `toll`: its consequences and its history entry
+ * (PLAN 6.5a): the dead (men and people), then what it destroyed of the forces there (PLAN 7.32b).
+ */
+export function aftermath(world: World, striker: number, yieldN: number, x: number, y: number, toll: BlastToll): void {
   const struck = ownerAt(world, x, y);
+  const dead = toll.men + toll.people;
   world.out.emit(world.tick, EventKind.NukeCasualties, striker, packNukeStrike(struck === striker ? 0 : struck, yieldN, dead), x, y);
+  world.out.emit(world.tick, EventKind.NukeToll, striker, packNukeToll(toll), x, y);
   const ally = striker === 0 ? undefined : world.alliances.allianceOf(striker);
   if (ally) {
     ally.unity = Math.max(0, ally.unity - NUKE_UNITY);
@@ -1321,7 +1349,7 @@ export function detonate(world: World, nation: number, yieldN: number, x: number
   if (nation !== 0 && struck !== 0 && struck !== nation && !answer) world.nukeGrievance.set(struck, { by: nation, until: world.tick + RETALIATION_DAYS * 24 });
   const toll = blast(world, yieldN, x, y);
   layFallout(world, yieldN, x, y);
-  aftermath(world, nation, yieldN, x, y, toll.men + toll.people);
+  aftermath(world, nation, yieldN, x, y, toll);
 }
 
 /** The hour's arrivals (PLAN 6.2): each launch there by now bursts or is stopped short. */

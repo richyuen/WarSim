@@ -44,7 +44,8 @@ describe('God Mode\'s strike (PLAN 6.6a)', () => {
     expect(rows.length).toBe(1);
     expect(rows[0]!.a).toBe(0);
     expect(nukeStrike(rows[0]!.b)).toMatchObject({ nation: GER, yieldN: 2 });
-    expect(historyText(rows[0]!)).toMatch(/^A bomb fell from the heavens on Germany: a hydrogen bomb, [\d,]+ dead$/);
+    expect(rows[0]!.toll).toBeDefined();
+    expect(historyText(rows[0]!)).toMatch(/^A bomb fell from the heavens on Germany: a hydrogen bomb, [\d,]+ civilians killed; (?:no troops in the blast|[\d,]+ m[ae]n(?:, [\d,]+ guns?)?(?: and [\d,]+ (?:guns?|tanks?))? lost)$/);
   });
 });
 

@@ -152,6 +152,12 @@ export const EventKind = {
   NukeCasualties: 56,
   /** An AI's decision to strike (PLAN 6.4b), in the history (PLAN 6.7): a = the nation, b = round(its utility × 1000); (x, y) = the target. */
   NukeDecided: 57,
+  /**
+   * What a burst destroyed of the forces there (PLAN 7.32b), logged right after its
+   * `NukeCasualties`: a = the striker, b = the men, guns and tanks, packed (`nukeToll` in
+   * shared/history.ts); (x, y) = where it burst. The history reads it into the strike's row.
+   */
+  NukeToll: 58,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

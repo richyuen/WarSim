@@ -41,8 +41,8 @@ describe('the day\'s nuclear call: its work by the warheads and wars, not the ma
     declareWar(w, JAP, ITA, true);
     // What strikes leave: fallout over several places, outrage at the strikers, the taboo broken.
     for (const [x, y] of [at(13.4, 52.52), at(2.35, 48.86), at(37.62, 55.75), at(-0.13, 51.5)]) layFallout(w, 2, x, y);
-    aftermath(w, FRA, 1, ...at(13.4, 52.52), 0);
-    aftermath(w, SOV, 1, ...at(-0.13, 51.5), 0);
+    aftermath(w, FRA, 1, ...at(13.4, 52.52), { men: 0, people: 0, guns: 0, tanks: 0 });
+    aftermath(w, SOV, 1, ...at(-0.13, 51.5), { men: 0, people: 0, guns: 0, tanks: 0 });
     w.nukeTaboo = 0.3;
     expect(w.fallout.size).toBeGreaterThan(0);
     while (w.tick % 24 !== 0) s.step(1);
