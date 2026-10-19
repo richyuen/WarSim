@@ -65,8 +65,15 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
     - [ ] 7.27c The rule the trace names, one cause, tuned on `sweep:quick`: a suit by exhaustion
       not granted while the winner gains ground and is not itself worn (7.27b's first choice; the
       other two, `lost` weighed by the army a side could keep and terms beyond the land held, are
-      in `trace-b.md`). Measured first from `s732-y25.bin`: the war's end and the land taken under
-      the rule. AT: a unit test; the pin's entry.
+      in `trace-b.md`). Measured first from `s732-y25.bin`: (1) the second war's `lost` (war 389,
+      days ~130 and ~158): `menOf` per nation of the Soviet side, land against fleets and aboard,
+      and who left the side; if `startMen` read men that left without being killed, the cause is
+      `lost`'s measure and the second choice is the rule; (2) the Soviet Union's army orders: the
+      first gate of `ai/economic.ts` step 3 that stops them (as `armies.ts` reads it), a part of
+      its own if it is the cause of the token army; (3) the war's end and the land taken under the
+      rule. The rule changes PROMPT's "broke or exhausted nations sue for peace" in its effect: an
+      ADR, and the PARITY peace row. Watch `alive` and break-up on `sweep:quick` as well as
+      stasis. AT: a unit test; the pin's entry.
     - [ ] 7.27d The full sweep on unseen seeds (741–750). First the late years' tick, from a late
       checkpoint pinned with `--profile` (7.27a's sweep took 34 min against 7.24a's 19.5, every seed
       30–34; seed 99's years 1–5 are not slower). AT: 7.27's.
