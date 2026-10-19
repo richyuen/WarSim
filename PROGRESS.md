@@ -20013,3 +20013,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Perf:** navalAi 0.0434 ms a tick (2.0 %; 0.043 at d2b), tick mean 2.14 ms (seed 99, one year,
   `--profile`, pinned; territory 0.1485 against 0.148, a quiet run).
 - **Next:** PLAN 7.35d2d (a sortie's target in another basin; then the "after" run of `seaYears`).
+- **After the commit** (`3b6ec09`): the gate's crowded unit run had two wall-time bars red
+  (`scenario1938` build 3.0 s against 2 s, `territory` frontier 29 against 25 µs), both green on its
+  rerun alone: load. By hand: `seaBattle1938`, `navalDemo1938`, `seaRow1938` (3),
+  `carrierStrikeRow1938`, `seaControl1938`, `fleetOrder1938` green (8), `seaBattleSeen1938` alone
+  green; `seaRow1938`'s screenshot viewed (a sea battle framed by its row, the fire drawn).
