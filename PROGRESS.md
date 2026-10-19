@@ -20089,3 +20089,5 @@ No rule changed and nothing on screen changed. One task came out of it.
   0.107–0.111 ms a tick against 0.106, navalAi 0.066 against 0.063, territory 0.229–0.235 against
   0.225 (seed 99, one year, `--profile`, pinned): within the spread.
 - **Next:** PLAN 7.35d2d3b (`seaMeet` on `waterKeys`; `targetMiss` traced).
+- **After the commit** (`54fefad`): by hand, `seaBattle1938`, `navalDemo1938`, `seaRow1938` (3),
+  `carrierStrikeRow1938`, `seaControl1938`, `fleetOrder1938` green (8).
