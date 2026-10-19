@@ -316,9 +316,13 @@ export function wideJoined(g: NavGrid, pg: ProvinceGraph, pass: Passage, a: numb
   if (!joined) {
     pass.joined = joined = joinWide(g, pg, pass);
     if (pass.keep) pass.keep.joined = joined;
+    JOIN_PROBE.walk?.(pass, joined);
   }
   return joined[a] === joined[b];
 }
+
+/** PLAN 7.30c's measure (`tools/diag/joinWalks.ts`): told of each walk of `joinWide`. Unset, nothing is told. */
+export const JOIN_PROBE: { walk?: (pass: Passage, joined: Int32Array) => void } = {};
 
 /** How many times the cells of a grid were walked for `wideJoined` (the tests count them). */
 export function joinWalks(g: NavGrid): number {

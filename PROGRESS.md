@@ -19271,3 +19271,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `refusedOrders.test.ts` (new case, red before).
 - **Probe:** `AskTimes.searched` tells a search from a kept answer.
 - **Next:** PLAN 7.30c.
+
+## 2026-10-19 — PLAN 7.30c1: why `joinWide` is walked again (measure)
+
+- **Start:** gate green on `0787b97`; critic not due.
+- **Tooling:** `JOIN_PROBE` in `provinceGraph.ts` (told of each walk of `joinWide`; unset, nothing
+  told; the pin proves it) and `tools/diag/joinWalks.ts` (each walk against the last of the same
+  set of open holders: why, the flips since by node class and way, and whether the partition,
+  compared by the least node of each class, changed).
+- **Measured** (`docs/evidence/7.30/measure-c.md`, one year from `.cache/730/s732-y8.bin` and
+  `s732-y43.bin`): of year 9's 884 walks, 812 follow flips between an open and a closed holder and
+  808 of them give the same partition; year 44: 383 of 392, none changed. Every such flip is in a
+  mixed node (open and closed ground). No land cell is of no node. No walk repeats another's
+  partition in its tick: the waste is not each plan of a coalition walking one answer, but one set
+  walked again after flips that changed nothing.
+- **Finding:** a rule by the flipped cell's node class keeps nothing (a flip in a clear or shut
+  node changes `open`/`shut`, which makes the parts again). The exact rule is by the flip: a
+  closing matters only in a run that met two groups, an opening only between two classes with
+  groups. Split as 7.30c2 (needs the walk's run data kept with the parts; checked against a walk
+  at each answer kept first).
+- **No rule change:** pin 94235073.
+- **Next:** PLAN 7.30c2.
