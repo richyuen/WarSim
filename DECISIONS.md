@@ -167,6 +167,53 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-549 · 2026-10-19 · accepted — A warfleet at war away from its ports gets a new order on its day: a battle, its station, a new station, or home (PLAN 7.35d2b; amends ADR-270)
+
+- **Context.** Critic run 9, naval 6: the late sea battles fall after year 1. PLAN 7.35d2a
+  (`docs/evidence/7.35/measure-d.md` §3): 96 % of the late fleet-days of the navies at war stand away
+  from their bloc's ports where a sortie ended, because `plan` gave such a fleet no order but home
+  (outgunned, or empty water under naval bombers). 29.7 % stood at a port of a nation at war with
+  neither side, 10.3 % at a partner's. Traced (§4): 89.8 % of those neutral-port fleet-days
+  (55,981 of 62,362) are at a port whose holder was at war with the fleet's nation earlier in the
+  run. They are stations whose war ended, not refuges.
+- **Decision.** On its AI day such a fleet (`awayOrder`; not one escorting a landing of its
+  nation's) takes, in order:
+  1. from a zone with no enemy ship, the nearest enemy port within `SORTIE_KM` with enemy ships in
+     its zone that its warfleets there together (in port and away, within `SORTIE_KM` of it) can win;
+  2. else, by an enemy-held port's water, it keeps its station;
+  3. else the nearest enemy port within `SORTIE_KM` that a sortie may take (ADR-270's test, not empty
+     water under naval bombers, ADR-544): a new station;
+  4. else home (`sailHome`). No stage: it is past its base.
+- **An empty enemy port is a station worth keeping.** A zone held against a port's holder blockades
+  it (PLAN 4.4b, ADR-258: half its province's income, `BLOCKADE_SHARE`). So a fleet on station
+  leaves only for a battle it can win, and does not drift to another empty port.
+- **Only from a zone with no enemy ship.** A battle begins by sight (`navalCombat`), not by sharing a
+  zone. In the first version the fleet sought a battle from any zone, and on seed 1129 five British
+  fleets hopped every week, from year 3, between ports of one zone 3 to 5 cells apart (777190 ↔
+  783330, 787422; a probe of the rule), never meeting the enemy ships the zone held. Seeking the
+  enemy's fleets themselves is PLAN 7.35d2c. From an empty zone a move goes to a zone with enemy
+  ships, and there the fleet stays.
+- **"Together" counts the fleets away.** Before, it counted the warfleets in port only. Now it
+  counts every standing warfleet of the nation within `SORTIE_KM` of the target, in port or away,
+  for the sorties from port too: they choose alike and go together. It is kept per target cell,
+  once a call. `forwardBases` still weighs the fleets in port only.
+- **Tests changed.** `navalAi1938.test.ts`'s "the same flotilla with Italy's naval bombers out of
+  the fight stays at Bari" now first sinks Greece's other fleet and halves the flotilla. Without
+  that, the flotilla on station at Bari sails, by this rule, for Naples' zone (Italy's 1,200 against
+  the flotilla's 1,200 and Athens' fleet's together). The assertion is unchanged: it stays. Three
+  tests are new: a station whose war ended (Greece at peace with Yugoslavia), a winnable Italian
+  fleet's port from Tobruk, and the blockade kept at Tobruk with no battle it can win. The first
+  two are red without the rule.
+- **Measured** (`tools/diag/seaHold.ts`, 14 seeds × 6 years, years 2–6, the fleets of the sea
+  pairs; §4): away at a port of a nation at war with neither side 29.7 % → 0.0 % of the fleet-days,
+  at a partner's 10.3 % → 0; on station at an enemy port 53.9 % → 84.9 %; new orders from away 1.5 %
+  (a battle) and 0.7 % (a new station) of the fleet-days. The sea pairs' fleet-days fell from
+  209,736 to 115,987. The tool's reads agree with the tick on 16,346 of 16,372 orders.
+- **Pin** 06e19c19 → 2201535d. Seed 99's year: 20 `SeaBattle` rows against 8 by the same count (the
+  pin's entry for 06e19c19 says 6, counted otherwise), the first on day 45.2 as
+  before. navalAi 0.035 → 0.043 ms a tick, 1.9 % of it (seed 99, one year, `--profile`, a quiet run:
+  territory 0.154 against 0.148).
+
 ### ADR-548 · 2026-10-19 · accepted — The smaller classes of ship drawn at a share of a battleship's least size (PLAN 7.35c; amends ADR-499)
 
 - **Context.** Critic run 9, naval 6: "at 20 m/px at 1×, destroyers are about 10 × 3 px and

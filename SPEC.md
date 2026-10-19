@@ -2014,7 +2014,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   port of its nation sails, within 2,500 km, to a landing of its nation's under way (escort),
   else to the nearest enemy port whose zone's enemy power is no more than that of its nation's
   warfleets in port within 2,500 km of it together; one away from its ports where the enemy is
-  over 1.5 times its power turns home. At peace a fleet away from its ports turns home.
+  over 1.5 times its power turns home. Any other warfleet away from its ports at war gets a new
+  order on its day (PLAN 7.35d2b, ADR-549): from a zone with no enemy ship, the nearest enemy
+  port within 2,500 km with enemy ships it and its fleets there together can win; else, by an
+  enemy port's water, it keeps its station (the blockade); else the nearest enemy port a sortie
+  may take; else home. At peace a fleet away from its ports turns home.
   A fleet the editor placed holds its place instead, at peace and at war (`World.station`, saved
   while there is one; PLAN 7.22c, ADR-500): the AI sends it nowhere and sails it back when a
   battle drew it more than 3 cells off; a player's order that sails it, or its breaking off

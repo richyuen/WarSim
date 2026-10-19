@@ -358,6 +358,16 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     const at = (cell: number): [number, number] => [(cell % W) + 0.5, Math.floor(cell / W) + 0.5];
     const zoneEnemy = (w: World, cell: number): number => navalPower(w).get(seaOf(w).zoneOf[cell]!)?.get(ITA) ?? 0;
     const bombedAt = (w: World, cell: number): boolean => navalBombers(w, GRE).some((b) => seaKm(w, b.x, b.y, ...at(cell)) <= b.r);
+    /** Greece's other fleets sunk and flotilla `dd` at half strength (600, under Italy's least fleet in a zone of the Mediterranean, 1,200): no battle it can win in reach. Its power. */
+    const weakenAll = (w: World, dd: number): number => {
+      const ec = w.elements.cols;
+      const fleet = own({ world: w } as Sim, GRE).filter((f) => f !== dd);
+      w.elements.forEach((e) => {
+        if (fleet.includes(ec.formation[e]!)) ec.strength[e] = 0;
+        else if (ec.formation[e] === dd) ec.strength[e] = Math.floor(ec.strength[e]! / 2);
+      });
+      return fleetPower(w, dd);
+    };
     const homeWater = (w: World, cell: number): boolean => w.ports.some((p, i) => portSeaOf(w)[i] === cell && blocOf(w, w.cells.controller[p.cell]!) === blocOf(w, GRE));
 
     it('a Greek destroyer flotilla at Bari, no Italian ship in its zone, Italy\'s naval bombers in range: it sails home at its turn', () => {
@@ -378,6 +388,9 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
       w.elements.forEach((e) => void (ec.formation[e] === wing && (ec.strength[e] = 0)));
       expect(bombedAt(w, bari)).toBe(false);
       const dd = addFleet(w, GRE, 'destroyer_flotilla', ...at(bari));
+      // No battle it can win in reach: since PLAN 7.35d2b (ADR-549) a flotilla on station sails for
+      // one (Naples' zone: Italy's 1,200 against the flotilla's and Athens' fleet's together).
+      weakenAll(w, dd);
       greekTurn(w);
       expect(w.formations.cols.moving[dd]).toBe(0);
     });
@@ -419,6 +432,75 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
       };
       expect(tobruk(false).length).toBeGreaterThan(0);
       expect(tobruk(true).length).toBe(0);
+    });
+
+    // PLAN 7.35d2b, ADR-549: a warfleet at war away from its bloc's ports gets a new order on its
+    // AI day; before, it stood where its sortie ended until peace. Italy's naval bombers out of the
+    // fight in each (so no flotilla is sent home by ADR-544's test). Greece's one fleet (1,200) at
+    // Athens; Italy's power by zone: Naples' 1,200, Genoa's 4,000, Taranto's 16,600, Tobruk's none.
+    describe('away from its ports, a new order (PLAN 7.35d2b)', () => {
+      const noBombers = (w: World, wing: number): void => {
+        const ec = w.elements.cols;
+        w.elements.forEach((e) => void (ec.formation[e] === wing && (ec.strength[e] = 0)));
+      };
+      const italianHeld = (w: World, cell: number): boolean => w.ports.some((p, i) => portSeaOf(w)[i] === cell && w.cells.controller[p.cell] === ITA);
+
+      it('a Greek flotilla on station at a Yugoslav port sails on once Greece has made its peace with Yugoslavia (a station whose war ended)', () => {
+        const { w, wing } = setup();
+        noBombers(w, wing);
+        const YUG = id('YUG');
+        const war = declareWar(w, GRE, YUG, true);
+        expect(war).not.toBeNull();
+        // A Yugoslav port whose zone has no Italian ship (ADR-264's test would send it home from one that has).
+        const i = w.ports.findIndex((p, k) => w.cells.controller[p.cell] === YUG && portSeaOf(w)[k]! >= 0 && zoneEnemy(w, portSeaOf(w)[k]!) === 0);
+        expect(i, 'a Yugoslav port').toBeGreaterThanOrEqual(0);
+        const station = portSeaOf(w)[i]!;
+        const dd = addFleet(w, GRE, 'destroyer_flotilla', ...at(station));
+        makePeace(w, war!);
+        expect(w.wars.atWar(GRE, YUG)).toBe(false);
+        expect(w.wars.atWar(GRE, ITA)).toBe(true);
+        greekTurn(w);
+        expect(w.formations.cols.moving[dd], `under way from ${w.ports[i]!.name}`).toBe(1);
+        const t = w.formations.cols.targetCell[dd]!;
+        expect(italianHeld(w, t) || homeWater(w, t), 'for an Italian port or home').toBe(true);
+      });
+
+      it('a Greek flotilla on station at Tobruk\'s empty water sails for a winnable Italian fleet\'s port in reach (Naples\' zone)', () => {
+        const { w, wing, water } = setup();
+        noBombers(w, wing);
+        const tobruk = water('Tobruk');
+        expect(zoneEnemy(w, tobruk)).toBe(0);
+        const dd = addFleet(w, GRE, 'destroyer_flotilla', ...at(tobruk));
+        greekTurn(w);
+        expect(w.formations.cols.moving[dd], 'under way from Tobruk').toBe(1);
+        const t = w.formations.cols.targetCell[dd]!;
+        expect(italianHeld(w, t), 'for an Italian port').toBe(true);
+        const enemy = zoneEnemy(w, t);
+        // Italian ships there, no more than Greece's warfleets within SORTIE_KM of it together.
+        const together = own({ world: w } as Sim, GRE).reduce((s, f) => s + (seaKm(w, w.formations.cols.x[f]!, w.formations.cols.y[f]!, ...at(t)) <= SORTIE_KM ? fleetPower(w, f) : 0), 0);
+        expect(enemy, 'a battle').toBeGreaterThan(0);
+        expect(enemy).toBeLessThanOrEqual(together);
+        expect(seaKm(w, ...at(tobruk), ...at(t))).toBeLessThanOrEqual(SORTIE_KM);
+      });
+
+      it('the same flotilla at Tobruk, at half strength, Greece\'s fleet at Athens sunk, no battle it can win in reach: it keeps its station (the blockade)', () => {
+        const { w, wing, water } = setup();
+        noBombers(w, wing);
+        const tobruk = water('Tobruk');
+        const dd = addFleet(w, GRE, 'destroyer_flotilla', ...at(tobruk));
+        const p = weakenAll(w, dd);
+        // Every Italian port in reach with Italian ships has more of them than the flotilla.
+        w.ports.forEach((port, i) => {
+          const cell = portSeaOf(w)[i]!;
+          if (cell < 0 || w.cells.controller[port.cell] !== ITA || seaKm(w, ...at(tobruk), ...at(cell)) > SORTIE_KM) return;
+          const e = zoneEnemy(w, cell);
+          if (e > 0) expect(e, port.name).toBeGreaterThan(p);
+        });
+        greekTurn(w);
+        // Not sent home either: it stands where it is.
+        expect(w.formations.cols.moving[dd]).toBe(0);
+        expect(w.formations.cols.x[dd]).toBe(at(tobruk)[0]);
+      });
     });
   });
 

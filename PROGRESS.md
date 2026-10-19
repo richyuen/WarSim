@@ -19952,3 +19952,32 @@ No rule changed and nothing on screen changed. One task came out of it.
   another basin: 2,124 of 7,269 late orders refused.
 - **No rule:** pin unchanged (a tool and documents).
 - **Next:** PLAN 7.35d2b (an away warfleet's new order).
+
+## 2026-10-19 — PLAN 7.35d2b: a warfleet at war away from its ports gets a new order (critic R9 naval 6)
+
+- **Start:** gate green on `a08927f`; critic not due.
+- **Traced first** (`seaHold`'s `neutralWas`): 89.8 % of the late fleet-days at a port of a nation
+  at war with neither side (55,981 of 62,362, 14 seeds × 6 years) stand at a port whose holder was
+  at war with the fleet's nation earlier. These are stations whose war ended, not refuges.
+- **Rule** (ADR-549, `awayOrder` in `src/sim/ai/naval.ts`): on its AI day an away warfleet not sent
+  home or escorting takes, in order: from a zone with no enemy ship, a winnable battle in reach;
+  else its station by an enemy port (the blockade, so an empty enemy port is kept); else a new
+  station at an enemy port; else home. `together` now counts the fleets away too, kept per cell.
+- **Caught on the way:** the first version sought a battle from any zone. On seed 1129 five British
+  fleets then hopped every week between ports of one zone 3 to 5 cells apart, never meeting the
+  enemy (a battle begins by sight). Hence "from a zone with no enemy ship"; seeking the fleets
+  themselves is 7.35d2c.
+- **Measured** (`seaHold`, 14 seeds × 6 years, `docs/evidence/7.35/measure-d.md` §4, JSON in
+  `d2b/`): away at a port at war with neither side 29.7 % → 0 of the late fleet-days, at a partner's
+  10.3 % → 0, on station at an enemy port 53.9 % → 84.9 %. The sea pairs' fleet-days fell 45 %
+  (unexplained here: 7.35d2d's `seaYears` run reads it). Tool against the tick: 16,346 of 16,372
+  orders.
+- **Tests:** `navalAi1938.test.ts` + 3 (a station whose war ended; a winnable Italian fleet's port
+  from Tobruk; the blockade kept with no battle it can win). The first two are red without the
+  rule. The Bari test (bombers out, stays) now sinks Greece's other fleet and halves the flotilla
+  first, or the rule sails it for Naples' zone; its assertion is unchanged (ADR-549).
+- **Pin** 06e19c19 → 2201535d; seed 99's year 20 `SeaBattle` rows against 8.
+- **Perf:** navalAi 0.035 → 0.043 ms a tick (1.9 %), tick mean 2.13 → 2.22 ms (seed 99, one year,
+  `--profile`; the world differs after day 45). A first after-run read slow throughout (territory
+  +50 %) and was dropped.
+- **Next:** PLAN 7.35d2c (the sortie seeks enemy warfleets, not only enemy ports).

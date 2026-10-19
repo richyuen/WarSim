@@ -128,3 +128,55 @@ sortie's target in another basin, refused by `orderSail` (29 % of the late order
 rule (re-measured after d): the way across land (6 % of the orders), a partner's port held by the
 enemy (0.4 % of the fleet-days), and the enemy beyond `SORTIE_KM` (70 %: the basin is the world's
 ocean, the fleets far apart).
+
+## 4. A new order for a warfleet away (7.35d2b, ADR-549)
+
+**The trace first.** `seaHold`'s `neutralWas`, at `a08927f` (the rule not yet in; JSON in
+`d2b/before_<seed>.json`, its other figures bit for bit §3's): of the late `awayNeutralPort`
+fleet-days, 55,981 of 62,362 (89.8 %) stand at a port whose holder was at war with the fleet's
+nation on some day read earlier in the run. These are stations whose war ended, not refuges chosen as such.
+
+**The rule** (`awayOrder` in `src/sim/ai/naval.ts`). On its AI day a warfleet away from its bloc's
+ports, not sent home and not escorting, takes, in order:
+1. from a zone with no enemy ship, a winnable battle in reach;
+2. else its station by an enemy port (the blockade);
+3. else a new station at an enemy port a sortie may take;
+4. else home.
+
+`seaHold` reads it as `plan` does (`awayBattle`, `awayStation`, `awayBack`; a fleet that stands is
+noted under its place). JSON in `d2b/after_<seed>.json`. The same 14 seeds × 6 years, years 2–6,
+`sea` fleet-days:
+
+| | before | after |
+| --- | --- | --- |
+| all | 209,736 | 115,987 |
+| away from its bloc's ports | 201,664 (96.2 %) | 107,532 (92.7 %) |
+| at an enemy-held port's water (on station) | 113,130 (53.9 %) | 98,429 (84.9 %) |
+| at a partner's port the enemy holds | 742 (0.4 %) | 5,692 (4.9 %) |
+| **at a port of a nation at war with neither side** | **62,362 (29.7 %)** | **0** |
+| at a partner's port | 21,570 (10.3 %) | 0 |
+| in open water | 3,583 (1.7 %) | 0 |
+| ordered from away: a battle | — | 1,749 (1.5 %) |
+| ordered from away: a new station | — | 798 (0.7 %) |
+| ordered from away: home | — | 324 (0.3 %) |
+| sent home (outgunned, bombed) | 277 | 540 |
+| at its bloc's port: sortie (enemy ships / empty) | 170 / 5,106 | 190 / 5,749 |
+
+- A fleet no longer stands where its war ended. Each fleet-day that stood at a neutral's or a
+  partner's port, or in open water, is now ordered. Those fleets go on to an enemy port and stand
+  there on station.
+- The first version sought a battle from any zone. On seed 1129 five British fleets then hopped
+  every week, from year 3, between ports of one zone 3 to 5 cells apart. Each port's zone had enemy
+  ships, but a battle begins by sight, and they never met them. That version had 26,558 late orders,
+  4.7 % of the fleet-days a "battle"; the rule as built has 16,372 orders in all. Of these, 249 send
+  a fleet back to the target it had two orders before, counted over the whole run with no time
+  window, so returns after the war has moved on are among them.
+- The tool's reads agree with the tick on 16,346 of 16,372 orders (16 `awayBattle`, 8 `sortie`, 2
+  others missed: the state moved within the tick before the AI read it), and 130 of 179,734 held
+  fleets are under way after it.
+- The `sea` fleet-days fell by 45 %, from 209,736 to 115,987: fewer fleets of the sea pairs on their
+  days. Whether those navies were sunk in the new battles, or the wars went otherwise, is for
+  7.35d2d's "after" run of `seaYears` (battles and armed fleets per year). On seed 99's first year
+  the `SeaBattle` rows are 20 against 8.
+- A partner's port the enemy holds rose from 0.4 % to 4.9 %. The fleets keep station there as at
+  any enemy port (the third hole, re-measured after d).

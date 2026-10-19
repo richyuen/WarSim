@@ -167,7 +167,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           bloc's ports, on station where a sortie ended (53.9 % at an enemy port, 29.7 % at a port
           of a nation at war with neither side, 10.3 % at a partner's); `plan`'s tests in port hold
           0.4 %. No rule: the pin unchanged.
-        - [ ] 7.35d2b A warfleet at war away from its bloc's ports gets a new order on its AI day
+        - [x] 7.35d2b A warfleet at war away from its bloc's ports gets a new order on its AI day
           (`plan` now only sends it home when outmatched or bombed): from where it stands, the
           sortie test (a target with enemy ships it can win, else home rather than a stale
           station at a port whose holder is no longer an enemy). Decide in the ADR whether an
