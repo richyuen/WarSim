@@ -45,8 +45,11 @@
  * A battle's record (PLAN 4.3c, `world.seaBattles`): its fleets with the ships each came in
  * with, its range, its two sides' first nations and the ships each side lost, where it began.
  * An hour's battle takes the record that has one of its fleets (two such are merged). A fleet
- * under half the ships it came in with, or with no weapon against an enemy that has one, breaks
- * off (`breakOff`: `BREAK_HOURS` out of every sea battle, sailing for its nation's nearest port).
+ * under half the ships it came in with, or with no weapon against an enemy that has one once it
+ * is under fire (a volley or a carrier strike on it that hour, PLAN 7.31; until then it stands in
+ * the battle, engaged, and the enemy closes on it), breaks off unless it is at its port
+ * (`atOwnPort`, PLAN 7.31: it has nowhere to go, and fights there) (`breakOff`: `BREAK_HOURS` out of
+ * every sea battle, sailing for its nation's nearest port).
  * A battle with no fleet of one side left, or with no contact in an hour, is over: one row in the
  * history log (`SeaBattle`: each side with the ships it lost; where it began).
  *
@@ -80,6 +83,8 @@ const SALT_TARGET = 0x5e47;
 const SALT_HUNT = 0x5e49;
 /** Hours a fleet that broke off is out of every sea battle (PLAN 4.3c). */
 export const BREAK_HOURS = 24;
+/** The slack of a reach (km, `inReach`): a micrometre. */
+export const REACH_EPS_KM = 1e-9;
 const SALT_SUBTICK = 0x5e48;
 /**
  * How far a carrier's wings see and strike for its fleet (PLAN 5.4d): this share of the wing's
@@ -239,7 +244,7 @@ export function inShipReach(world: World, a: number, b: number): boolean {
   const fb = factsOf(world, b, idx.get(b) ?? [], none);
   if (!fa || !fb) return false;
   const c = world.formations.cols;
-  return seaKm(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) <= Math.max(reachOn(fa, fb), reachOn(fb, fa));
+  return inReach(seaKm(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!), Math.max(reachOn(fa, fb), reachOn(fb, fa)));
 }
 
 /** Fleet `id`'s detection this hour, km (PLAN 4.3a; its carriers' wings and the air over it with it): 0 for one with no ship. */
@@ -248,12 +253,21 @@ export function fleetDetection(world: World, id: number): number {
   return (els && factsOf(world, id, els, carrierWings(world))?.detection) || 0;
 }
 
-/** Whether a fleet of `a`'s facts has a weapon a ship of `b`'s can be hit by. */
+/**
+ * Whether `d` km is within `reach` km (PLAN 7.31, ADR-526): with REACH_EPS_KM over it, as a fleet
+ * that closes to its reach (`closeBy`) stands there by a sum of floats; it stood a hair beyond it
+ * (12.00000000000062 km off at a reach of 12) and closed and held its fire for 7,164 hours.
+ */
+export function inReach(d: number, reach: number): boolean {
+  return d <= reach + REACH_EPS_KM;
+}
+
 /** The reach of fleet `a`'s weapons against fleet `b`, km: on its surface ships, and on its submarines (PLAN 7.19a). */
 function reachOn(a: FleetFacts, b: FleetFacts): number {
   return Math.max(b.surface ? a.reach : 0, b.submerged ? a.aswReach : 0);
 }
 
+/** Whether a fleet of `a`'s facts has a weapon a ship of `b`'s can be hit by. */
 function canHit(a: FleetFacts, b: FleetFacts): boolean {
   return (a.reach > 0 && b.surface) || (a.asw > 0 && b.submerged);
 }
@@ -387,6 +401,20 @@ export function nearestOwnPort(world: World, id: number): number {
   return best;
 }
 
+/**
+ * Whether fleet `id` stands at the port it would sail for (`nearestOwnPort`, within
+ * `AT_PORT_CELLS`; PLAN 7.31): a fleet has nowhere to break off to there.
+ */
+export function atOwnPort(world: World, id: number): boolean {
+  const at = nearestOwnPort(world, id);
+  if (at < 0) return false;
+  const c = world.formations.cols;
+  const w = world.cells.w;
+  let dx = Math.abs((at % w) - Math.floor(c.x[id]!));
+  if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+  return dx <= world.atSize(AT_PORT_CELLS) && Math.abs(Math.floor(at / w) - Math.floor(c.y[id]!)) <= world.atSize(AT_PORT_CELLS);
+}
+
 /** Fleet `id` sails for `nearestOwnPort`; it stands where it is with none, or with no way to it. */
 export function sailHome(world: World, id: number): boolean {
   const at = nearestOwnPort(world, id);
@@ -503,7 +531,7 @@ export function navalCombatSystem(world: World): void {
           const b = facts.get(o)!;
           if (!world.wars.atWar(a.nation, b.nation) || reachOn(a, b) <= 0) continue;
           const d = seaKm(world, f.x[id]!, f.y[id]!, f.x[o]!, f.y[o]!);
-          if (d <= reachOn(a, b)) within = true;
+          if (inReach(d, reachOn(a, b))) within = true;
           if (d < nd) [near, nd] = [b, d];
         }
         if (within || !near) continue;
@@ -562,7 +590,7 @@ export function navalCombatSystem(world: World): void {
           const cum: number[] = [];
           let total = 0;
           for (const tf of enemies) {
-            if (km(sf, tf) > reach) continue;
+            if (!inReach(km(sf, tf), reach)) continue;
             for (const tid of idx.get(tf) ?? []) {
               if (ec.strength[tid]! <= 0 || (units[ec.unit[tid]!]!.cls === 'ss') !== sub) continue;
               total += units[ec.unit[tid]!]!.hpPerUnit * ec.strength[tid]!;
@@ -610,7 +638,7 @@ export function navalCombatSystem(world: World): void {
           // A target on the surface in a fleet within its reach, kept while it lives, is the
           // enemy's and is within its reach.
           let t = ec.target[s]!;
-          const valid = t !== 0 && e.has(t) && ec.strength[t]! > 0 && enemies.includes(ec.formation[t]!) && units[ec.unit[t]!]!.cls !== 'ss' && km(sf, ec.formation[t]!) <= reach;
+          const valid = t !== 0 && e.has(t) && ec.strength[t]! > 0 && enemies.includes(ec.formation[t]!) && units[ec.unit[t]!]!.cls !== 'ss' && inReach(km(sf, ec.formation[t]!), reach);
           if (valid && ec.cooldown[s]! > 0) {
             ec.cooldown[s] = ec.cooldown[s]! - 1;
           } else {
@@ -621,8 +649,8 @@ export function navalCombatSystem(world: World): void {
           if (t !== 0) {
             const ut = units[ec.unit[t]!]!;
             const d = km(sf, ec.formation[t]!);
-            if (d <= gunKm) volley(s, t, (us.hard * (ut.armor > us.piercing ? ARMOR_PEN : 1) * full) / defOf(t) / ut.hpPerUnit);
-            if (d <= torpedoKm) volley(s, t, (us.torpedo * full * (ut.cls === 'dd' ? 1 : screen(f.nation[ec.formation[t]!]!))) / defOf(t) / ut.hpPerUnit, true);
+            if (gunKm > 0 && inReach(d, gunKm)) volley(s, t, (us.hard * (ut.armor > us.piercing ? ARMOR_PEN : 1) * full) / defOf(t) / ut.hpPerUnit);
+            if (torpedoKm > 0 && inReach(d, torpedoKm)) volley(s, t, (us.torpedo * full * (ut.cls === 'dd' ? 1 : screen(f.nation[ec.formation[t]!]!))) / defOf(t) / ut.hpPerUnit, true);
           }
         }
         if (us.asw > 0) {
@@ -651,6 +679,9 @@ export function navalCombatSystem(world: World): void {
         }
       }
     }
+    // The fleets under fire this hour (PLAN 7.31): one with no weapon breaks off only once hit.
+    const hit = new Set<number>();
+    for (const t of pending.keys()) hit.add(ec.formation[t]!);
     for (const t of [...pending.keys()].sort((p, q) => p - q)) applyLoss(world, t, pending.get(t)!);
     for (const id of battle.fleets) {
       settleFormation(world, id);
@@ -658,14 +689,17 @@ export function navalCombatSystem(world: World): void {
       if (world.wars.atWar(first, f.nation[id]!)) rec.lostB += lost;
       else rec.lostA += lost;
     }
-    // Who breaks off: a fleet under half the ships it came in with, or with no weapon against an
-    // enemy that has one.
+    // Who breaks off, away from its port (PLAN 7.31, ADR-526): a fleet under half the ships it came
+    // in with, or with no weapon against an enemy that has one once it is under fire. Until then
+    // one with no weapon broke off at once, in the battle's first hour, before any enemy could
+    // close, and either at its port: it sailed for the port it stood at, sat out its BREAK_HOURS
+    // there and was found again, a battle a day that sank nothing.
     const reachOf = (id: number): number => (world.formations.has(id) ? (factsOf(world, id, idx.get(id) ?? [], air)?.reach ?? 0) : 0);
     const out = new Set<number>();
     rec.fleets.forEach((id, k) => {
       if (!world.formations.has(id)) return void out.add(id);
       const theirs = world.wars.atWar(first, f.nation[id]!) ? reachA : reachB;
-      if (2 * shipsOf(world, id) < rec.ships[k]! || (reachOf(id) === 0 && theirs > 0)) {
+      if ((2 * shipsOf(world, id) < rec.ships[k]! || (reachOf(id) === 0 && theirs > 0 && hit.has(id))) && !atOwnPort(world, id)) {
         breakOff(world, id);
         out.add(id);
       }

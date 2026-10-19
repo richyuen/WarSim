@@ -11674,3 +11674,31 @@ Of 7.4 (open in PLAN.md):
   years. Then the rule decided (a launch stopped short starts no gap, or a shorter one) and
   recorded. AT: the measure in `docs/evidence/7.28/`; a unit test of the rule chosen; the pin's
   entry if it moves.
+
+<!-- moved 2026-10-19 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.31 Phantom sea battles (critic R9-B1, contradicts 7.19a): a battle in which no weapon can
+  reach writes "X and Y fought at sea: X lost 0 ships, Y 0" to the history every day for months.
+  Seed 2609 year 21: 288 of 294 sea battles sink nothing, 145 of them Norway or Sweden against the
+  United Kingdom at one point over 144 days; in the page one 720-man Norwegian transport group in
+  Oslofjord and 22 British fleets stacked on one Skagerrak cell 17 cells off, `pair` null, the
+  British never closing (`critic/c9_o_2609.json`, `c9_sea_2609_y21.json`). Seed 6113 years 21–30:
+  687 of 722 sink nothing, Mongolia against Japan 524 of them at one point, Germany against Britain
+  148 (`critic/c9_sea_6113_y21_30.json`). Measured first from a checkpoint of each (the critic's
+  `c9_seed2609_y20.bin` and `c9_seed6113_y20.bin` are in `critic/`, uncommitted, or made again
+  headless): why the battle forms, why the fleets do not close, why it re-forms daily. AT: the
+  critic's cases: the fleets close and fight or no battle exists; no battle logged in which no
+  weapon could reach; no battle re-formed daily at one point with no loss; the zero-loss share of
+  late sea battles on both seeds, before and after; a unit test; the pin's entry if it moves.

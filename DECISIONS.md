@@ -167,6 +167,46 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-526 · 2026-10-19 · accepted — A fleet with no weapon breaks off once hit; at its port, no fleet breaks off (PLAN 7.31)
+
+- **Context.** Critic R9-B1: sea battles in which no weapon could reach flooded the history, a row
+  a day at one point that sank nothing (seed 2609 year 21: 288 of 294 rows; seed 6113 years 21–30:
+  687 of 722). Measured (`tools/diag/seaPhantom.ts`, from the critic's year-20 checkpoints;
+  `docs/evidence/7.31/measure.md`): every such row on both seeds was a fleet with no weapon (a
+  transport group: Norway's and Sweden's against Britain, Mongolia's against Japan) seen by an
+  armed enemy beyond its reach. The battle formed, and at the end of its first hour the transport
+  broke off by the rule "no weapon against an enemy that has one" (PLAN 4.3c). The closing begins
+  in a battle's second hour (PLAN 7.19a), so no enemy ever closed. The transport, at its port
+  already, "sailed" for it, sat out BREAK_HOURS (24) and was found again. A second fault came out
+  once the battle lasted: a fleet that closes to its reach stands there by a sum of floats, and
+  stood a hair beyond it (seed 6113: South African destroyers 12.00000000000062 km from a
+  Portuguese transport at a reach of 12, 7,164 hours, no shot).
+- **Decision.**
+  - A fleet with no weapon against an enemy that has one breaks off once it is under fire (a
+    volley or a carrier strike on one of its ships that hour), not before. Until then it stands in
+    the battle, engaged, and the enemy closes on it.
+  - A fleet does not break off at the port it would sail for (`atOwnPort`: `nearestOwnPort`
+    within AT_PORT_CELLS), by either clause (under half its ships, or no weapon): it has nowhere
+    to go, and breaking off there only took it out of every battle for a day where it stood.
+  - A distance is within a reach with REACH_EPS_KM (1e-9 km) over it (`inReach`), in the closing,
+    the targets and the volleys.
+- **Why not the alternatives.** A battle only within reach where one side has no weapon would end
+  the phantom rows and also any hunt of a transport seen (7.19a's closing): rejected. Dropping a
+  row with nothing sunk would hide the battle, not end it.
+- **Measured** (same windows as the critic's): seed 2609, one year from year 20: 294 rows, 288
+  with nothing sunk (98 %) → 4, none; at most one row a place. Seed 6113, ten years from year 20:
+  722, 687 (95 %) → 30, 2 (7 %: transports hit at sea that lost no whole ship and escaped, once
+  each); at most two rows a place. Battles standing longer than a day: 0 on both after. Seed 99's
+  first year: 10 rows (1 with nothing sunk, a Polish transport) and 1 battle over a day → 9, none
+  and none.
+- **Consequence.** A transport seen on its way stops (engaged) until the enemy reaches it, then
+  runs home hit; before, it turned home unhit in the first hour. Either way the voyage ends.
+- **Pin.** 94235073 → c900e399.
+- **Tests.** `tests/unit/navalBattle1938.test.ts` (PLAN 7.31): a transport seen beyond the
+  destroyers' reach stays, is closed on and hit in the second hour, then breaks off, one row; a
+  transport at its own port under fire never breaks off and is sunk in one battle; `inReach` at the
+  critic's 12.00000000000062 km. Red before.
+
 ### ADR-525 · 2026-10-19 · proposed (the user's decision) — PLAN 7.30's bar of half, and `pocketOf` as a rule
 
 - **Context.** PLAN 7.30's AT (written under PROMPT 2a, not the user's words): the operational

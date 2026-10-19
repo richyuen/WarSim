@@ -1685,7 +1685,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     saved while there is one): its fleets with the ships each came in with, its range,
     its sides' first nations and the ships each lost, where it began. An hour's battle
     takes the record with one of its fleets (two such merge). A fleet under half the ships
-    it came in with, or with no weapon against an armed enemy, breaks off: `BREAK_HOURS`
+    it came in with, or with no weapon against an armed enemy once under fire (a volley or a
+    carrier strike on it that hour; until then it stands and the enemy closes, PLAN 7.31,
+    ADR-526), breaks off unless it stands at the port it would sail for (`atOwnPort`: it
+    fights there). A distance is within a reach with 1e-9 km over it (`inReach`). It breaks off: `BREAK_HOURS`
     24 out of every sea battle (its `retreat`: the contact search leaves it out, PLAN 4.8l), `FormationRetreated`, and sails for its
     nation's nearest port a ship reaches (in the basin of the water it stands on: zones that
     touch, a passage's ends, a strait's zones, PLAN 4.8o). With no fleet of one side left, or no contact in

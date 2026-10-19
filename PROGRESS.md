@@ -19365,3 +19365,23 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Still waits on the user:** ADR-525 (PLAN 7.30's bar).
 - **Report committed** as `0b1d284` (save binaries and screenshots left out, as in run 8).
 - **Next:** PLAN 7.31.
+
+## 2026-10-19 — PLAN 7.31: phantom sea battles (critic R9-B1; ADR-526)
+
+- **Start:** gate green on `cea6bf8`; critic not due. ADR-525 still waits on the user.
+- **Measured** (`tools/diag/seaPhantom.ts`, from the critic's year-20 checkpoints;
+  `docs/evidence/7.31/measure.md`): every row with nothing sunk on both seeds was a transport group
+  (no weapon) seen beyond an armed enemy's reach that broke off at the end of the battle's first
+  hour, before the closing (from the second hour) could start; at its port already, it sat out
+  BREAK_HOURS and was found again: a row every 24 ticks (Norway, Sweden / UK; Mongolia / Japan).
+- **Rule** (ADR-526): a fleet with no weapon breaks off once under fire, not before; no fleet breaks
+  off at the port it would sail for (`atOwnPort`); a distance is within a reach with 1e-9 km over it
+  (`inReach`: four South African flotillas stood 12.00000000000062 km from a transport at a reach of
+  12 for 7,164 hours, no shot, once the battle lasted).
+- **After**, the critic's windows: seed 2609's year 294 rows, 288 with nothing sunk → 4, 0; seed
+  6113's ten years 722, 687 → 30, 2 (transports hit at sea, escaped once each); no battle over a day;
+  at most two rows a place. Seed 99's year 10, 1 → 9, 0.
+- **Pin** 94235073 → c900e399. Tests: `navalBattle1938.test.ts` (three new, red before).
+- **Gotcha:** the start's British ports hold fleets: a test at a port clears them first. A ship's
+  wound from another system is settled in the battle's hour and counted as its loss.
+- **Next:** PLAN 7.32.

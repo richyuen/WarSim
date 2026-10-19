@@ -3,8 +3,8 @@ import { EventKind, FIRE_STRIDE, FireField } from '../../src/shared/events';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, RULES_1938, SIZE_1938, TEMPLATES_1938, UNIT_IDS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { elementIndex, equipFormation, settleFormation } from '../../src/sim/systems/elements';
-import { BREAK_HOURS, closeBy, findSeaBattles, seaKm } from '../../src/sim/systems/navalCombat';
+import { destroyFormation, elementIndex, equipFormation, settleFormation } from '../../src/sim/systems/elements';
+import { atOwnPort, BREAK_HOURS, closeBy, findSeaBattles, inReach, seaKm } from '../../src/sim/systems/navalCombat';
 import { seaSide } from '../../src/shared/history';
 import { historyRows } from '../../src/worker/historyRows';
 import { historyText } from '../../src/ui/historyText';
@@ -234,6 +234,85 @@ describe('gunnery by range: the AT (PLAN 4.3a)', () => {
     const lost = seaSide(row.b).ships;
     process.stderr.write(`${historyText(row)}\n`);
     expect(historyText(row)).toBe(`Germany and United Kingdom fought at sea: Germany lost 0 ships, United Kingdom ${lost}`);
+  });
+
+  /** Steps `s` an hour at a time while `go` holds (at most `max` hours), with each hour's sea battle rows and the fleets that broke off. */
+  function hours(s: Sim, max: number, go: () => boolean, each?: (h: number) => void): { rows: { h: number; row: number[] }[]; broke: { h: number; id: number }[]; h: number } {
+    const rows: { h: number; row: number[] }[] = [];
+    const broke: { h: number; id: number }[] = [];
+    let h = 0;
+    while (h < max && go()) {
+      h++;
+      s.step(1, (world) => {
+        const ev = world.out.events;
+        for (let i = 0; i < ev.length; i += 6) {
+          if (ev[i + 1] === EventKind.SeaBattle) rows.push({ h, row: ev.slice(i, i + 6) });
+          if (ev[i + 1] === EventKind.FormationRetreated) broke.push({ h, id: ev[i + 2]! });
+        }
+        ev.length = 0;
+      });
+      each?.(h);
+    }
+    return { rows, broke, h };
+  }
+
+  it('PLAN 7.31: a fleet with no weapon, seen beyond the enemy\'s reach, stays in the battle; the enemy closes and hits it before it breaks off', () => {
+    // Critic R9-B1: it broke off in the battle's first hour, before any enemy could close, sat out
+    // BREAK_HOURS and was found again: a row a day that sank nothing.
+    const s = atWar();
+    const w = s.world;
+    // Destroyers see a transport at 30 × (1 − 0.04) = 28.8 km and reach 12 km with their guns.
+    const sea = openSea(w, 25);
+    const dd = fleet(w, GER, 'destroyer_flotilla', sea.x, sea.y);
+    const tp = fleet(w, ENG, 'transport_group', sea.x2, sea.y);
+    const c = w.formations.cols;
+    const life = [hp(w, tp)];
+    const run = hours(s, 12, () => c.retreat[tp] === 0 && w.formations.has(tp), () => life.push(hp(w, tp)));
+    // The first hour: a battle, beyond the destroyers' reach: no shot, no break-off, no row.
+    expect(run.broke.filter((b) => b.h === 1)).toEqual([]);
+    expect(run.rows.filter((r) => r.h === 1)).toEqual([]);
+    expect(life[1]).toBe(life[0]);
+    expect(c.engaged[dd]).toBe(0);
+    // The second: the destroyers closed (13 km at 65 km/h) and hit it; then it broke off, and the battle is one row.
+    expect(run.h).toBe(2);
+    expect(life[2]).toBeLessThan(life[0]!);
+    expect(run.broke).toEqual([{ h: 2, id: tp }]);
+    expect(run.rows.map((r) => r.h)).toEqual([2]);
+    expect(w.seaBattles).toEqual([]);
+  });
+
+  it('PLAN 7.31: a fleet with no weapon under fire at its own port does not break off: it has nowhere to go, and the battle goes on until it is sunk', () => {
+    const s = atWar();
+    const w = s.world;
+    // The start's fleets out of the way (a British port has its own): the transport and the cruisers alone.
+    const start: number[] = [];
+    w.formations.forEach((f) => void (w.isFleet(f) && start.push(f)));
+    for (const f of start) destroyFormation(w, f);
+    const water = portSeaOf(w);
+    const i = w.ports.findIndex((p, k) => w.cells.controller[p.cell] === ENG && water[k]! >= 0);
+    const at = water[i]!;
+    const tp = fleet(w, ENG, 'transport_group', (at % W) + 0.5, Math.floor(at / W) + 0.5);
+    expect(atOwnPort(w, tp)).toBe(true);
+    fleet(w, GER, 'cruiser_squadron', (at % W) + 0.5, Math.floor(at / W) + 0.5);
+    const full = hp(w, tp);
+    let first = 0;
+    const run = hours(s, 72, () => w.formations.has(tp), (h) => void (first === 0 && hp(w, tp) < full && (first = h)));
+    expect(w.formations.has(tp)).toBe(false);
+    expect(first).toBe(1);
+    expect(run.broke.filter((b) => b.id === tp)).toEqual([]);
+    // One battle, one row, with the transports the United Kingdom lost in it (the port's air fights too).
+    expect(run.rows).toHaveLength(1);
+    const [ger, eng] = [seaSide(run.rows[0]!.row[2]!), seaSide(run.rows[0]!.row[3]!)];
+    expect([ger.nation, eng.nation]).toEqual([GER, ENG]);
+    expect(eng.ships).toBeGreaterThan(0);
+    process.stderr.write(`the transports at their port gone in ${run.h} h, ${eng.ships} of 12 sunk in the battle; the cruisers lost ${ger.ships}
+`);
+  });
+
+  it('PLAN 7.31: a fleet closed to its reach is within it, by a sum of floats or not (the critic\'s 7,164 hours at 12.00000000000062 km)', () => {
+    expect(inReach(12.00000000000062, 12)).toBe(true);
+    expect(inReach(12, 12)).toBe(true);
+    expect(inReach(12.001, 12)).toBe(false);
   });
 
   it('a save in the middle of a sea battle loads to the same state and goes on the same', () => {
