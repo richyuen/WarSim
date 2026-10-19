@@ -20108,3 +20108,26 @@ No rule changed and nothing on screen changed. One task came out of it.
   each: under 7.35d2d3c (whether those landings sail).
 - No rule, no test: the pin unchanged.
 - **Next:** PLAN 7.35d2d3c (the "after" run of `seaYears`; the three causes re-measured).
+
+## 2026-10-19 — PLAN 7.35d2d3c: the 30-year run against 7.35d1's, the causes left (critic R9 naval 6)
+
+- **Start:** gate green on `5acc4ca`; critic not due.
+- **Run** (`seaYears`, 14 seeds × 30 years at `5acc4ca`, 7 at a time, ~20 min; `measure-d.md` §10,
+  JSON in `docs/evidence/7.35/d2d3c/years_*.json`) against d1's: sea battles year 1 20 → 34.9, years
+  2–30 1.9 → 2.5 a world-year (sinking a ship 1.7 → 2.4; ships sunk 24.8 → 32.2). Battles that sink a
+  ship per sea pair-year 0.23 → 1.8; fleets of the sea pairs under way late 1.2 % → 3.3 %. The navies
+  at war now fight.
+- **Found:** the late fall has a new cause. Year 1 sinks 350 ships (193); armed fleets 99 → 77 by
+  year 4, 73–77 to year 30; nations with a navy 16.3 → 10–12; sea pairs 7.7 → 1.3 a day. The navies
+  are not built again in number: PLAN 7.35d3 (added), measured first.
+- **The three causes left** (`seaHold` 14 × 6 at `5acc4ca`, the same to the order as d2d3b's run,
+  with the `far` fleet-days split, `farBy` and `farWhere`, JSON `d2d3c/hold_*.json`): the way across
+  land 493 of 14,063 orders, none refused (a route search per target for no failure: the reason); a
+  partner's port the enemy holds 2.7 % of the fleet-days, a kept station under `awayOrder` since
+  ADR-549 (the reason); the enemy beyond `SORTIE_KM` 97.5 %, 68 % of it over 3 × `SORTIE_KM` off and
+  82 % of those enemies on station at a third nation's port (oceans apart; a rule reaching 1.5 ×
+  would touch 7 % and pull fleets off their blockade: the reason). No rule.
+- **Landings** (`tools/diag/seaLandings.ts`, seed 1471, year 3): the US landings sail and land, 9 of
+  9, island by island down the Antilles; §9's repeated landing water is the next island's.
+- No rule, no test: the pin unchanged.
+- **Next:** PLAN 7.35d3 (why the navies sunk in year 1 are not rebuilt).

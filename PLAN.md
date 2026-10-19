@@ -152,7 +152,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
         fleets under way; against the critic's (36 and 13, its runs at `f0be88c`). Which of the
         three (navies gone, no two navies at war, navies at war in port) the fall is. No rule: the
         pin unchanged.
-      - [ ] 7.35d2 Why navies at war stand in port (d1, `measure-d.md` §2: after year 1 the navies
+      - [x] 7.35d2 Why navies at war stand in port (d1, `measure-d.md` §2: after year 1 the navies
         keep 91 % of their power and the pairs at war with a navy each in one basin hold, 9.1 → 7.7
         a day, but their fleets under way fall 4.6 % → 1.2 % and battles that sink a ship 20 → 1.9
         a world-year). Measured per fleet-day of those pairs (14 seeds, years 2 to 6): which test of
@@ -185,7 +185,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           at no port of the fleet's enemies (so no target) in 25 % (46,480). A standing enemy
           warfleet in reach whose zone the fleets together can win is a target. AT: a unit test
           (red without); `seaHold`'s `enemyAt.notTarget` before and after; the pin; an ADR.
-        - [ ] 7.35d2d A sortie's target in another basin than the fleet's (`basinAt`, as `stageTo`
+        - [x] 7.35d2d A sortie's target in another basin than the fleet's (`basinAt`, as `stageTo`
           has since 7.35b4c1): 1,811 late orders, and 2,124 of the 7,269 late orders refused by
           `orderSail` (`NoSeaWay`; the fleet stands in port and is sent again each week). The
           other 313 refusals have a target in the fleet's basin (a shut passage, ice, no lane):
@@ -210,7 +210,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
             Also in the tool: d2d1's before run aimed 2,617 orders across basins (`otherBasin` +
             `otherBasinAway`) and 2,613 were refused; find the 4 that went through (`sailTarget` at a
             seam, or a zone of basin 0 read as `ocean`).
-          - [ ] 7.35d2d3 The "after" run of `seaYears` on the 14 seeds × 30 years against d1's, and
+          - [x] 7.35d2d3 The "after" run of `seaYears` on the 14 seeds × 30 years against d1's, and
             the three causes left re-measured with `seaHold` (the way across land, a partner's port
             the enemy holds, the enemy beyond `SORTIE_KM`): a rule each, or the reason in the doc.
             From d2d2 (ADR-552): `nearestOwnPort` (`sailHome`) filters by basin alone, so a home
@@ -229,13 +229,24 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
             - [x] 7.35d2d3b The tool: `seaMeet` passes `waterKeys(world, n)` to `forwardBases` and
               `stageTo`; `check.targetMiss` (419 of 13,160) traced or named. No rule: the pin
               unchanged.
-            - [ ] 7.35d2d3c The "after" run of `seaYears` on the 14 seeds × 30 years against d1's,
+            - [x] 7.35d2d3c The "after" run of `seaYears` on the 14 seeds × 30 years against d1's,
               and the three causes re-measured with `seaHold` (across land, a partner's port the
               enemy holds, the enemy beyond `SORTIE_KM`): a rule each (split then), or the reason.
               From d2d3b (`measure-d.md` §9): `targetMiss` is the tick's own changes before `navalAi`
               (a landing `invasionAi` loads, 459 of 473; a war `strategicAi` declares, 14), so `agree`
               may be leaned on; and the same landing water is taken up AI day after AI day (seed 1471,
               year 3, 25 for each of four Caribbean ports): whether those landings sail, measured.
+      - [ ] 7.35d3 Why the navies the first year sinks are not built again in number (d2d3c,
+        `measure-d.md` §10, at `5acc4ca`: year 1 sinks 350 ships, 193 at d1; the armed fleets fall 99
+        → 77 by year 4 and stay at 73–77 to year 30, the nations with a navy 16.3 → 10–12, their power
+        back to 259k in fewer hands; sea pairs 7.7 → 1.3 a day, so battles per world-year late 1.9 →
+        2.5 against year 1's 35, while battles that sink a ship per sea pair-year rose 0.23 → 1.8).
+        Measured first, per nation that had a navy and lost it (14 seeds × 30 years): whether it still
+        has a shipyard (`shipyard`), its income against `POOR_INCOME` and `BATTLE_FLEET_INCOME`, what
+        the economic AI's fleet step decides on its days (`pickFleet`, `NAVY_SHARE`, the reserve, a
+        fleet in training, the army's orders first), and whether it is at war or dead. Then a rule per
+        cause (a part each, an ADR) or the reason in the doc; the "after" run of `seaYears` on the
+        14 × 30 against d2d3c's (7.35d's "before and after") on the last. In parts (one cause each).
 - [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
   and 10 m/px in every probe (`c9_c_4483.json` `sorties`); the air map on day 10 of Germany–Poland
   hatches one German zone over all of Europe, every hover "held by Germany" from London to Kiev

@@ -35,6 +35,8 @@
  * refused orders split by basin and, in the fleet's basin, by why (PLAN 7.35d2d; `Year.holes`).
  * Each fleet is tagged `sea` when its nation is at war with a nation that has an armed fleet in the
  * fleet's basin (7.35d1's "sea pairs").
+ * The away fleet-days whose nearest enemy warfleet stands beyond `SORTIE_KM` are split by its way off
+ * and where it stands (`farBy`, `farWhere`; PLAN 7.35d2d3c).
  * Checked against the tick: of the fleets read as ordered, how many are under way or refused after it
  * (`agree`), and of those read as held, how many are under way after it (`stray`).
  *
@@ -87,6 +89,13 @@ type Year = {
   emptyPick: { defended: number; none: number };
   /** Of those `away` with no battle to seek: where the nearest enemy warfleet of their basin stands (under way; beyond `SORTIE_KM`; within it at an enemy port, too strong for the fleet alone; within it at no port of n's enemies, so no target; none). */
   enemyAt: { moving: number; far: number; targetStronger: number; notTarget: number; none: number };
+  /**
+   * The `far` ones split (PLAN 7.35d2d3c): by the nearest enemy fleet's way off in `SORTIE_KM`s
+   * (`1-1.5`, `1.5-2`, `2-3`, `3+`), and by where it stands (`home`: a port of its own bloc;
+   * `ours`: a port of the fleet's bloc, a blockade of n's side; `other`: elsewhere).
+   */
+  farBy: Tally;
+  farWhere: Tally;
   check: { ordered: number; agree: number; held: number; stray: number; miss: Tally; targetMiss: Tally; pingPong: number };
   /**
    * The `targetMiss` orders named (PLAN 7.35d2d3b): the fleet's nation, the read's order, the port
@@ -308,7 +317,17 @@ function read(w: World, y: Year): void {
         if (e >= 0) {
           const atTarget = targets.some((t) => near(cellOf(e), t.at));
           if (c.moving[e] === 1) where = 'moving';
-          else if (d > SORTIE_KM) where = 'far';
+          else if (d > SORTIE_KM) {
+            where = 'far';
+            const r = d / SORTIE_KM;
+            const by = r <= 1.5 ? '1-1.5' : r <= 2 ? '1.5-2' : r <= 3 ? '2-3' : '3+';
+            y.farBy[by] = (y.farBy[by] ?? 0) + 1;
+            const eb = blocOf(w, c.nation[e]!);
+            const i = w.ports.findIndex((_, k) => water[k]! >= 0 && ctl[w.ports[k]!.cell] !== 0 && near(cellOf(e), water[k]!));
+            const pb = i >= 0 ? blocOf(w, ctl[w.ports[i]!.cell]!) : -1;
+            const at = pb === eb ? 'home' : pb === bloc ? 'ours' : 'other';
+            y.farWhere[at] = (y.farWhere[at] ?? 0) + 1;
+          }
           else if (atTarget) where = 'targetStronger';
           else where = 'notTarget';
         }
@@ -456,7 +475,7 @@ function check(w: World, y: Year, rejected: Set<number>): void {
 const rows: Year[] = [];
 const t0 = Date.now();
 for (let year = 1; year <= years; year++) {
-  const y: Year = { year, sea: {}, other: {}, holes: { otherBasin: 0, otherBasinAway: 0, farWay: 0, rejected: 0, rejectedOther: 0, rejectedShut: 0, rejectedNoRoute: 0 }, away: {}, emptyPick: { defended: 0, none: 0 }, neutralWas: { wasEnemy: 0, never: 0 }, neutralOrder: { battle: 0, station: 0, home: 0 }, enemyAt: { moving: 0, far: 0, targetStronger: 0, notTarget: 0, none: 0 }, check: { ordered: 0, agree: 0, held: 0, stray: 0, miss: {}, targetMiss: {}, pingPong: 0 }, strongerRatio: [], shutWho: {}, noRouteWho: {}, otherBasinWho: {}, targetMissWho: {} };
+  const y: Year = { year, sea: {}, other: {}, holes: { otherBasin: 0, otherBasinAway: 0, farWay: 0, rejected: 0, rejectedOther: 0, rejectedShut: 0, rejectedNoRoute: 0 }, away: {}, emptyPick: { defended: 0, none: 0 }, neutralWas: { wasEnemy: 0, never: 0 }, neutralOrder: { battle: 0, station: 0, home: 0 }, enemyAt: { moving: 0, far: 0, targetStronger: 0, notTarget: 0, none: 0 }, farBy: {}, farWhere: {}, check: { ordered: 0, agree: 0, held: 0, stray: 0, miss: {}, targetMiss: {}, pingPong: 0 }, strongerRatio: [], shutWho: {}, noRouteWho: {}, otherBasinWho: {}, targetMissWho: {} };
   const rejected = new Set<number>();
   sim.step(24 * 365, (w) => {
     const ev = w.out.events;
@@ -474,7 +493,7 @@ for (let year = 1; year <= years; year++) {
   const r = y.strongerRatio;
   const med = r.length > 0 ? Math.round(r[Math.floor(r.length / 2)]! * 100) / 100 : 0;
   rows.push({ ...y, strongerRatio: [med, r.length] });
-  console.log(JSON.stringify({ year, sea: y.sea, away: y.away, emptyPick: y.emptyPick, neutralWas: y.neutralWas, neutralOrder: y.neutralOrder, enemyAt: y.enemyAt, holes: y.holes, check: y.check, stronger: [med, r.length], shutWho: y.shutWho, noRouteWho: y.noRouteWho, otherBasinWho: y.otherBasinWho, targetMissWho: y.targetMissWho }));
+  console.log(JSON.stringify({ year, sea: y.sea, away: y.away, emptyPick: y.emptyPick, neutralWas: y.neutralWas, neutralOrder: y.neutralOrder, enemyAt: y.enemyAt, farBy: y.farBy, farWhere: y.farWhere, holes: y.holes, check: y.check, stronger: [med, r.length], shutWho: y.shutWho, noRouteWho: y.noRouteWho, otherBasinWho: y.otherBasinWho, targetMissWho: y.targetMissWho }));
 }
 writeFileSync(out, JSON.stringify({ seed, years, wallS: Math.round((Date.now() - t0) / 1000), rows }, null, 1));
 console.log(`done: ${out}`);

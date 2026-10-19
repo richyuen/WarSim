@@ -412,3 +412,104 @@ an earlier target, 0 refused), so the run is §8's after-run read again.
   138/0, 2251 2/0, 2609 12/3, 3407 55/0, 3793 56/0, 4957 0/11, 6653 80/0, 7741 56/0.
 - Left for 7.35d2d3c: the same landing water taken up on AI day after AI day (seed 1471's 25 a port)
   says the landings there are loaded again and again; whether they sail is not measured here.
+
+## 10. The run at `5acc4ca` against 7.35d1's, and the causes left (7.35d2d3c)
+
+The rules of 7.35d2b to 7.35d2d3a (ADR-549 to ADR-553) against §1's. `npx tsx tools/diag/seaYears.ts
+<seed> 30` on the same 14 seeds at `5acc4ca` (7 at a time); JSON in `d2d3c/years_<seed>.json`, before
+is `d1/before_<seed>.json`. §1's figures, before → after:
+
+| all 14 seeds, mean (median) | year 1 | years 2–30 | 2–5 | 6–10 | 11–30 |
+| --- | --- | --- | --- | --- | --- |
+| sea battles | 20 → 34.9 (37) | 1.9 → 2.5 (1) | 3.3 → 5.9 | 2.4 → 3.1 | 1.4 → 1.7 |
+| that sank a ship | 19.4 → 33.6 (36) | 1.7 → 2.4 (1) | 3.1 → 5.5 | 2.3 → 3.0 | 1.3 → 1.7 |
+| ships sunk | 193 → 350 (387) | 24.8 → 32.2 (12) | 42.1 → 77.1 | 28.6 → 46.6 | 20.3 → 19.6 |
+| armed fleets | 106.8 → 99.3 | 99.6 → 74.6 | 96.5 → 79.9 | 97.2 → 75.0 | 100.8 → 73.5 |
+| their power (hp) | 325,000 → 302,100 | 296,800 → 232,200 | 294,100 → 243,300 | 283,300 → 219,400 | 300,800 → 233,200 |
+| nations with a navy | 19.3 → 16.3 | 17.3 → 11.4 | 16.3 → 10.8 | 17.5 → 11.9 | 17.5 → 11.5 |
+| pairs at war | 172 → 172 | 214 → 214 | 306 → 315 | 284 → 256 | 178 → 183 |
+| sea pairs | 9.1 → 5.0 | 7.7 → 1.3 | 9.9 → 2.4 | 9.4 → 1.5 | 6.8 → 1.1 |
+| their fleets | 45.3 → 36.3 | 43.0 → 14.9 | 56.4 → 32.6 | 52.7 → 22.0 | 37.9 → 9.6 |
+| their fleets' power (hp) | 139,100 → 109,700 | 129,600 → 42,800 | 173,800 → 100,700 | 160,700 → 64,400 | 113,000 → 25,900 |
+| their fleets under way | 2.1 → 2.7 | 0.5 → 0.5 | 0.7 → 1.1 | 0.7 → 0.75 | 0.4 → 0.3 |
+
+Per seed (sea battles), before → after:
+
+| seed | year 1 | sank a ship | years 2–30, mean | sank a ship | late years with none sinking (of 29) |
+| --- | --- | --- | --- | --- | --- |
+| 1129 | 23 → 49 | 22 → 48 | 1.6 → 2.7 | 1.6 → 2.7 | 11 → 13 |
+| 1471 | 17 → 24 | 17 → 24 | 1.8 → 2.8 | 1.7 → 2.8 | 11 → 11 |
+| 2251 | 31 → 39 | 28 → 34 | 1.5 → 2.1 | 1.4 → 2.1 | 11 → 8 |
+| 2609 | 22 → 43 | 22 → 41 | 1.7 → 1.6 | 1.6 → 1.6 | 10 → 13 |
+| 3407 | 6 → 10 | 6 → 10 | 2.2 → 2.9 | 2.2 → 2.8 | 6 → 12 |
+| 3793 | 19 → 37 | 19 → 36 | 1.2 → 2.4 | 1.2 → 2.3 | 12 → 9 |
+| 4483 | 26 → 38 | 26 → 37 | 4.1 → 2.4 | 3.0 → 2.4 | 5 → 10 |
+| 4957 | 24 → 36 | 24 → 36 | 1.8 → 2.1 | 1.8 → 2.0 | 9 → 12 |
+| 5527 | 16 → 34 | 14 → 34 | 2.0 → 2.5 | 1.9 → 2.3 | 10 → 15 |
+| 6113 | 13 → 28 | 11 → 28 | 1.0 → 2.7 | 1.0 → 2.6 | 14 → 8 |
+| 6653 | 29 → 69 | 29 → 61 | 2.1 → 3.4 | 2.1 → 2.6 | 9 → 7 |
+| 7741 | 19 → 29 | 19 → 29 | 1.6 → 2.6 | 1.5 → 2.5 | 13 → 9 |
+| 8821 | 6 → 14 | 6 → 14 | 1.9 → 2.3 | 1.9 → 2.2 | 9 → 10 |
+| 9901 | 29 → 39 | 29 → 39 | 1.6 → 3.0 | 1.6 → 2.9 | 11 → 9 |
+
+Navies by year (means of the 14 seeds, before → after):
+
+| year | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 15 | 20 | 25 | 30 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| armed fleets | 107 → 99 | 101 → 85 | 97 → 81 | 95 → 77 | 93 → 76 | 94 → 77 | 97 → 75 | 100 → 73 | 99 → 73 | 98 → 73 | 101 → 73 | 102 → 74 |
+| power (k hp) | 325 → 302 | 307 → 261 | 301 → 248 | 291 → 237 | 277 → 227 | 284 → 229 | 283 → 221 | 283 → 209 | 285 → 213 | 289 → 233 | 303 → 240 | 321 → 259 |
+| nations with a navy | 19.3 → 16.3 | 16.9 → 11.8 | 16.5 → 10.7 | 15.6 → 10.0 | 16.1 → 10.7 | 17.0 → 11.7 | 17.9 → 11.6 | 17.5 → 12.0 | 16.9 → 12.2 | 17.3 → 11.2 | 18.1 → 11.3 | 17.3 → 11.0 |
+| sea pairs | 9.1 → 5.0 | 13.3 → 3.7 | 9.1 → 2.2 | 7.7 → 1.8 | 9.6 → 2.0 | 11.5 → 1.8 | 8.9 → 1.3 | 8.3 → 1.4 | 7.1 → 1.3 | 4.8 → 1.2 | 7.6 → 1.0 | 5.7 → 1.0 |
+| battles that sank a ship | 19.4 → 33.6 | 5.3 → 11.9 | 3.4 → 4.4 | 1.9 → 2.9 | 1.9 → 2.8 | 3.0 → 3.1 | 2.6 → 2.9 | 1.1 → 1.6 | 1.5 → 1.9 | 1.0 → 0.8 | 0.7 → 1.8 | 1.7 → 1.9 |
+
+**What it says.**
+- **The navies at war now fight.** Battles that sink a ship per sea pair-year: year 1 2.1 → 6.7,
+  years 2–30 0.23 → 1.8 (eight times). The sea pairs' fleets under way: year 1 4.6 % → 7.5 %, late
+  1.2 % → 3.3 %. §2's cause (navies at war that do not sail) is answered by 7.35d2b–d2d3a.
+- **The late fall has a new cause: few navies left to fight.** Year 1 sinks 350 ships (193 before);
+  the armed fleets fall 99 → 77 by year 4 and stay at 73–77 for 26 years, the nations with a navy
+  16.3 → 10–12. Their power comes back (227k by year 5, 259k by year 30) in fewer hands. Sea pairs
+  (two navies at war in one basin) fall 7.7 → 1.3 a day; 195 of the 406 late seed-years have one on an
+  average day (362 before), 54 of those see no battle that sinks a ship (123).
+- **So battles per world-year late 1.9 → 2.5**, short of year 1's 35. The navies the first year sinks
+  are not built again in number: the next cause, measured first (PLAN 7.35d3).
+
+**The three causes 7.35d2a left, re-measured** (`seaHold` 14 seeds × 6 years at `5acc4ca`: JSON in
+`d2d3c/hold_<seed>.json`, the same to the order as §9's `d2d3b/after_<seed>.json`, with the `far`
+fleet-days split, below; years 2–6, the `sea` fleet-days, 115,277):
+- **The way across land** (a route over 1.5 times the line and over `SORTIE_KM`, `farWay`): 493 of
+  14,063 late orders (3.5 %; 435 of 7,269, 6 %, at `ac245c4`). None is refused (`rejected` 0, §8): the
+  fleet sails and gets there later than the line says. A rule would cost a route search per target in
+  `plan` (`seaKm` is the line) for 3.5 % of the orders, none of which fails. **The reason, no rule.**
+- **A partner's port the enemy holds** (`awayLostPartner`): 3,128 fleet-days (2.7 %); `other` 1,820.
+  Since 7.35d2b (ADR-549) such a port is an enemy-held port to `awayOrder`: a fleet by it keeps its
+  station (it blockades the holder), and seeks a battle first; 97 of the 3,128 had one in reach. It is
+  no longer a fleet that stands for nothing (ADR-545's hole: `atLostBase` still reads the fleet's own
+  nation's ports, but a fleet away by such a port gets `awayOrder`'s order, not `sailHome`'s).
+  **The reason, no rule.**
+- **The enemy beyond `SORTIE_KM`** (of the away fleet-days with no battle to seek, the nearest enemy
+  warfleet of the basin): 103,704 of 106,381 (97.5 %). Split by its way off (`farBy`) and where it
+  stands (`farWhere`), years 2–6 (year 1):
+
+  | way off, in `SORTIE_KM` | 1–1.5 | 1.5–2 | 2–3 | over 3 |
+  | --- | --- | --- | --- | --- |
+  | fleet-days | 7,521 (7.3 %) | 10,877 (10.5 %) | 15,014 (14.5 %) | 70,292 (67.8 %) |
+  | year 1 | 2,532 | 461 | 4,880 | 12,033 |
+
+  | where it stands | a port of its own bloc | a port of the fleet's bloc (it blockades n's side) | elsewhere (a port of neither, or open water) |
+  | --- | --- | --- | --- |
+  | fleet-days | 3,210 (3.1 %) | 15,862 (15.3 %) | 84,632 (81.6 %) |
+
+  Two-thirds stand over three times `SORTIE_KM` off, oceans apart; and 82 % are on station of their
+  own at a third nation's port, not at home nor off the fleet's side. A rule that sent a fleet on
+  station after an enemy fleet up to 1.5 × `SORTIE_KM` off would reach 7 % of these fleet-days, and
+  would draw it off its blockade (ADR-549: an empty enemy port is a station worth keeping). With the
+  sea pairs at 1.3 a day the cause that holds the late battles down is the navies' number, not this
+  one. **The reason, no rule.**
+
+**The landings `targetMiss` named** (§9: seed 1471's US fleets read for four Caribbean ports, 25 AI
+days each, sail for a landing's water). A probe of seed 1471's year 3 (every `FormationEmbarked`,
+`FormationLanded`, `LandingRepulsed` of the USA and each day what it has aboard): 9 embarkings and 9
+landings, one formation at a time on one transport group, island by island down the Antilles (days
+1,010 to 1,095; 0.5 to 4 days at sea each), none thrown back. The same landing water is taken up as
+the next island's; the landings sail. No rule.
