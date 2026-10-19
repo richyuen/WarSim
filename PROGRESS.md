@@ -19199,3 +19199,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   next order want the same reserve.
 - **Docs and tools only:** no sim change; pin 94235073.
 - **Next:** PLAN 7.27d.
+
+## 2026-10-19 — PLAN 7.27d: the full sweep on seeds 741–750 (7.27 done)
+
+- **Start:** gate green on `30dfd3c`; critic not due.
+- **Tick** (`docs/evidence/7.27/measure-d.md` §1): seed 732 × 50 years alone, pinned, `--profile`:
+  921.7 s, 2.10 ms a tick (years 1–5 1.43, 6–25 1.88, 26–50 2.40; years 31, 40, 44 at 4.2–5.1). Of
+  the late rise ~1.0 ms, the operational AI 0.82 (its calls of 1 ms or more: 600–1,460 a year
+  throughout, about 2 ms each in year 1, 10–35 ms from year 8, longest 203 ms), the air AI 0.15,
+  nuclear 0.16. New PLAN 7.30 for the operational AI's late calls. Checkpoint
+  `.cache/727d/s732-y50.bin`.
+- **Sweep** (`docs/sweeps/2026-10-19-sweep-727d.md`, alone): ALL GREEN. Limits 10 of 10 (land moving
+  4.6–25.9 % in the last 5 years; largest land 10.5–16.0 %; largest income 28.6–37.5 %; alive
+  65–103; war every year); riser, faller, no break-up 10 of 10; no stasis 10 of 10, longest one top
+  five 6–19 years (744: 19, 748: 18). Bursts 2–27 a seed, 117 (sweeps before ADR-521: 66–307): no
+  measure needed. Wall 21.6 min (7.27a's 34: the machine's load, not the code).
+- **Docs only:** no sim change; pin 94235073. PARITY row 31 appended.
+- **Next:** PLAN 7.28.

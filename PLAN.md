@@ -33,79 +33,6 @@ Run 8's blocking issues and its dimensions under the DONE condition's bar (repor
 `fd27e85`, its "Fix" lines and evidence; R8-B1 to R8-B3 are PLAN 7.18 to 7.20, the dimensions 7.21
 to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
 
-- [ ] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`):
-  on seeds 701–710 × 50 years the same five largest nations for 22, 20 and 20 years running on 702,
-  704 and 706 (7 of 10; seeds 1–10 at `714`: 9 of 10). Measured first: in those runs, which five
-  hold, from which year, and what wars they are in (`npm run diag -- --load` from a checkpoint of
-  the year the run begins); then the cause fixed. AT: no stasis on 8 of 10 seeds of a sweep on
-  unseen seeds, the other criteria held; the pin's entry if a rule moves it.
-  Measured (2026-10-18, the sweep of 7.24a on seeds 721–730 × 50 years, `docs/sweeps/2026-10-18-sweep-724a.md`):
-  no stasis on 10 of 10 (the longest one top five 7 to 19 years), every other criterion held. The
-  air's calibration and spread (ADR-502, ADR-503) came between; whether they or luck did it is this
-  task's to find (a second sweep on other unseen seeds, then the measure above if it fails).
-    - [x] 7.27a The second sweep and the measure (`docs/evidence/7.27/measure-a.md`): seeds 731–740
-      no stasis 7 of 10 (732, 735, 740: 21–24 years; every other criterion held). The world moves
-      (3–10 wars, up to 8.7 % of the land a year); the top does not: the USA (unreached, a hoard
-      of 190,000–770,000 gold), two or three members of one alliance (GER ITA POL JAP), and a
-      Soviet Union of 10–21 M km² and 5,000–105,000 men that Germany and Japan, at the ratio cap,
-      do not take for 20 years. Checkpoints `.cache/727/s732-y25.bin`, `s735-y26.bin`, `s740-y18.bin`.
-    - [x] 7.27b One great power's war with the Soviet Union traced from a checkpoint to its end
-      (732 from year 25: GER v SOV, 181 days old in year 26, score 35): who offered peace, at what
-      score and exhaustion, the land taken, the truce's length, and through the war the share of
-      the attacker's men in contact with the Soviet front and why the rest stand. The fork, for
-      7.27c: the war ended by a decision while winning (peace taken, the truce after) is the
-      strategic AI's and stays 7.27's; the front stalled for want of men in contact is the late
-      land war short on a land front, a new part of PLAN 7.29 (7.29a and b are the sea's). AT: the
-      trace in `docs/evidence/7.27/`; `tools/sweep/stasis.ts` (the five of each seed's longest span).
-      Done (`docs/evidence/7.27/trace-b.md`, `tools/diag/warTrace.ts`): the war's end. 732's two
-      wars and 735's ended by the defender's suit at exhaustion 80–100, from `80·lost` on a token
-      army (12,000 men on 15.7 M km²), at score 16–53 with 9–22 % of its land taken, the attacker
-      at exhaustion 16–22 and gaining ground daily (732: half its men pressing); truce 729 days, then
-      `MAX_WARS` held by allied wars for three years. The front did not stall: no new 7.29 part.
-    - [x] 7.27c The rule the trace names, one cause, tuned on `sweep:quick`: a suit by exhaustion
-      not granted while the winner gains ground and is not itself worn (7.27b's first choice; the
-      other two, `lost` weighed by the army a side could keep and terms beyond the land held, are
-      in `trace-b.md`). Measured first from `s732-y25.bin`: (1) the second war's `lost` (war 389,
-      days ~130 and ~158): `menOf` per nation of the Soviet side, land against fleets and aboard,
-      and who left the side; if `startMen` read men that left without being killed, the cause is
-      `lost`'s measure and the second choice is the rule; (2) the Soviet Union's army orders: the
-      first gate of `ai/economic.ts` step 3 that stops them (as `armies.ts` reads it), a part of
-      its own if it is the cause of the token army; (3) the war's end and the land taken under the
-      rule. The rule changes PROMPT's "broke or exhausted nations sue for peace" in its effect: an
-      ADR, and the PARITY peace row. Watch `alive` and break-up on `sweep:quick` as well as
-      stasis. AT: a unit test; the pin's entry.
-      Measured (`docs/evidence/7.27/measure-c.md`, `tools/diag/warLost.ts`): (1) the second war's
-      side was the Soviet Union alone, its loss land men on land (one division of 12,460, the
-      war's `startMen`): `lost`'s measure is not the cause; (2) the army orders' first gate is
-      gold on 59 of 79 months, the upkeep 1–30 against a cap of 96–336, 6 M manpower unused: the
-      rate is a surplus of 190–350 gold a month against 1,001 a division (7.27e); (3) under the
-      first choice war 324 runs 256 days (215), Germany refusing at exhaustion 21 while gaining,
-      and ends crushed at a second capital: 4.17 M km² taken (3.38 M). Done (ADR-521, pin
-      94235073): `refusesSuit` in `war.ts`, two unit tests; `sweep:quick` limits 10 of 10, the
-      longest top five 6.7 years on average (9.8 before); seed 8's largest income 39.5 % (limit 40)
-      and the nuclear bursts (122 against 28) to watch in 7.27d.
-    - [x] 7.27e The Soviet Union's token army (from 7.27c's measure (2)): from `s732-y25.bin` its
-      income is 478 a month to Germany's 4,126 on 15.7 M km², its balance 266 with a land army's
-      upkeep of 7, so it raises three or four divisions a year. Measured first: where its income
-      went from 1938 (the industry of the cells held, `economy.ts`, against the land), and what
-      takes the other half before the army (fleets and wings, admin by km², suppression). Then
-      the cause decided, a rule only if it is one (a nation of that land at war with no army is
-      also how the long spans begin). Before 7.27d: the sweep runs on the final code. AT: the
-      measure in `docs/evidence/7.27/`; a unit test and the pin's entry if a rule moves it.
-      Done (`docs/evidence/7.27/measure-e.md`, `tools/diag/economySplit.ts`): no rule. Its income
-      is half its 1938 industry (1,156; the western cities taken, POL 454, GER 352 or ROM 221);
-      before the army it pays what every nation at war pays (CE 18–20 %, suppression 15 %, research
-      5 %, admin 14 % under its cap), and the rest goes to the army, all of it (years 0–10 of seed
-      732: 55 divisions and 34,000 of refills from a surplus of 75,000; the treasury's change
-      closed to 92 a month). The army was lost in wars (1.5 M men in year 1, 0.9 M in years 3–5),
-      and from year 8 a division a month is bought and lost within weeks. Cheaper or richer would
-      strengthen the Soviet Union's hold on its place, against 7.27's AT.
-    - [ ] 7.27d The full sweep on unseen seeds (741–750). First the late years' tick, from a late
-      checkpoint pinned with `--profile` (7.27a's sweep took 34 min against 7.24a's 19.5, every seed
-      30–34; seed 99's years 1–5 are not slower). Read beside it the nuclear bursts and the
-      largest income (ADR-521: on `sweep:quick` 113 bursts against 28 before the rule, 75 on seed
-      5, not from refused nuclear suits; seed 8's income 39.6 % against the limit of 40): if the
-      bursts stay several times the old count, measured before the tick. AT: 7.27's.
 - [ ] 7.28 A launch shot down and the gap after it (found 2026-10-18 by PLAN 7.26b, ADR-508): the
   critic's France (`nukeOverrun1938`, seed 7127) launches once on day 71, the warhead is shot down
   by German fighters, STRIKE_GAP_DAYS (ADR-507, keyed on the launch) holds its next attempt, and
@@ -145,6 +72,16 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
       divisions in 18 months while its land army stood at one. Measured first, if 7.29 is taken
       up: where such a division goes from where it is raised and how long it stands before contact.
       AT: the measure; a rule only if it is one; a unit test and the pin's entry if it moves.
+- [ ] 7.30 The operational AI's late calls (from PLAN 7.27d, `docs/evidence/7.27/measure-d.md` §1):
+  seed 732 alone, pinned, × 50 years: the tick 1.43 ms in years 1–5 and 2.40 in years 26–50, of the
+  rise 0.82 ms the operational AI's; its calls of 1 ms or more stay 600–1,460 a year but grow from
+  about 2 ms a call in year 1 to 10–35 ms from year 8 (the longest 203 ms), and a 50-year sweep
+  seed takes 15 min alone. Measured first from `.cache/727d/` checkpoints of this code: which
+  planner and nation the long calls are, and which part of a call (A* to the front, the sectors,
+  the marches from afar) grows with what (the front's length, the formations, the wars). Then the
+  cause fixed if it is one, behaviour unchanged where the rule is not the cause. AT: the measure;
+  the late years' operational AI per tick at most half of 7.27d's on seed 732, pinned; the pin
+  unchanged, or its entry if a rule moves it.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -392,3 +329,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.24 Aircraft seen at every tier (aircraft 6, needs 8): at 900 m/px 0 to 1 sorties drawn, at […]
 - [x] 7.25 AI nuclear use believed (AI nuclear use 6, needs 8): beyond 7.18's frequency, a world's […]
 - [x] 7.26 The air war keeps flying after year 1 (aircraft 6, needs 8; the user's decision of […]
+- [x] 7.27 No stasis on 8 of 10 unseen seeds (the sweep of 7.18g, `docs/sweeps/2026-10-18-sweep-718g.md`): […]
