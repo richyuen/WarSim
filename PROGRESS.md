@@ -19629,3 +19629,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   made again, the 2 m/px picture viewed.
 - **No rule change:** pin 45c20987.
 - **Next:** `smallMark1938`, `turrets1938`, then PLAN 7.34c2.
+
+## 2026-10-19 — PLAN 7.34c1's check: the small mark read where it is not covered (ADR-538)
+
+- `smallMark1938` red (mark 0.81 of its tint at 150 m/px, > 0.95 asked). Bisected to `f7cd656`
+  (PLAN 7.27c, a peace rule): the scene `armourFires` finds moved to two German blocks at rest
+  near Salzburg. A probe: tanks whole, but their 8-px sprites (ADR-471) stand 2.3 to 3.9 px apart,
+  a later sprite's edge on the middle before. The spec now reads the tanks no later sprite covers
+  (7 of 54): mark 1.00, hull 0.84; bars unchanged. `docs/evidence/3.6/t2-*` made again, 100 m/px
+  viewed.
+- **No rule change:** pin 45c20987.
+- **Next:** `turrets1938` (the same scene: all 54 tanks in view fire), then PLAN 7.34c2.

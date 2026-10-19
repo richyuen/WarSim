@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-538 · 2026-10-19 · accepted — The small mark's colour read where no later sprite covers it (PLAN 7.34c1's check)
+
+- **Context.** `smallMark1938`, run by hand for PLAN 7.34c1, reads the median middle of the tanks
+  at 150 m/px at 0.81 of their tint (bar 0.95). Bisected (the spec, `f9560d7`..HEAD): first red
+  on `f7cd656` (PLAN 7.27c, a peace rule): the game's course moved, and `armourFires` now finds
+  Armoured division 41 and Tank brigade 50 near Salzburg on day 14, in blocks at rest. A probe:
+  every tank whole (alpha 1); a tank's sprite is 8 px at T2 (`TANK_ELEMENT_MIN_PX`, PLAN 7.9d,
+  ADR-471) while its block's elements stand 2.3 to 3.9 px apart, so the edge of a sprite drawn
+  later lies on the middle of the one before (brigade 50: its first two rows 0.58, its last 1.0).
+  The tint, the alpha and the mark are as before; the measure's sample is not.
+- **Decision.** The spec reads only the tanks whose middle no later sprite's square (its side, 8
+  px for a tank, turned by its facing, and a pixel) covers, the same tanks in both passes, at
+  least 5 of them. The bars unchanged (mark > 0.95, gap > 0.1). Not a render change: the slab's
+  size is ADR-471's, and a block of them reads as its nation's grey with dark seams
+  (`docs/evidence/3.6/t2-100m-mark-dpr1.png`, looked at).
+- **Effect.** 7 of 54 tanks in view uncovered: mark 1.00, hull 0.84 (ADR-497: 0.828). The four
+  pictures of `docs/evidence/3.6/t2-*-dpr1.png` made again.
+
 ### ADR-537 · 2026-10-19 · accepted — The fallen's division is Polish infantry division 568 (PLAN 7.34c1's check)
 
 - **Context.** `fallen1938`, run by hand for PLAN 7.34c1, fails on its Node side: Polish

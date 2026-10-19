@@ -15,10 +15,15 @@ import { armourFires, busiest } from '../helpers/armourFire';
 // darker. Since the atlas is premultiplied (PLAN 7.21b, ADR-497) a 5-px hull is no longer darkened
 // by the clear texels' black in the atlas's small levels: median 0.672 of its tint before, 0.828
 // after, the mark 1 both times. The gap is held over 0.1, and the mark at 0.95 (0.2 and 0.6 before).
+// A tank's sprite is 8 px here (PLAN 7.9d), its block's elements about 4 px apart: only the tanks
+// whose middle no later sprite covers are read (ADR-538; the median of all 54 was 0.81, under a
+// neighbour's edge, since the scene moved to a block at rest).
 
 /** From the first week's end: the first hour of armour fire after it (`armourFires`). */
 const FROM = 24 * 7;
 const HULLS: readonly number[] = [Frame.tank, Frame.tankMedium, Frame.tankHeavy];
+/** A tank element's least size at T2, CSS px: `TANK_ELEMENT_MIN_PX` (PLAN 7.9d, ADR-471), over `elementPx`. */
+const TANK_PX = 8;
 
 test('T2: a tank is its small mark where a sprite is at its least size, and a hull with its turret from 60 m/px in', async ({ page }, info) => {
   test.setTimeout(240_000);
@@ -71,7 +76,7 @@ test('T2: a tank is its small mark where a sprite is at its least size, and a hu
   for (const f of HULLS) expect(turretOf(f)).toBeGreaterThanOrEqual(0);
 
   // The canvas: the middle of each tank, of its tint's brightness, as drawn and with the share held at 0.
-  const seen = await page.evaluate((hulls) => {
+  const seen = await page.evaluate(({ hulls, tankPx }) => {
     const v = window.__warsim!.view!;
     const inner = v as unknown as { elementProxies: { draw: (...a: unknown[]) => void } };
     const gl = v.gl;
@@ -80,20 +85,37 @@ test('T2: a tank is its small mark where a sprite is at its least size, and a hu
     const vh = gl.canvas.height;
     const now = performance.now();
     const median = (a: number[]): number => a.sort((x, y) => x - y)[Math.floor(a.length / 2)]!;
-    const middles = (): number => {
+    const middles = (): { median: number; n: number; hidden: number } => {
       v.drawUnitLayers(now, true);
       const px = new Uint8Array(4);
       const shares: number[] = [];
+      let hidden = 0;
       for (let i = 0; i < v.elementCount; i++) {
         if (!hulls.includes(v.elementFrame(i))) continue;
-        const sx = Math.floor((v.elementX[i]! - cam.cx) * cam.scale + vw / 2);
-        const sy = Math.floor((v.elementY[i]! - cam.cy) * cam.scale + vh / 2);
+        const fx = (v.elementX[i]! - cam.cx) * cam.scale + vw / 2;
+        const fy = (v.elementY[i]! - cam.cy) * cam.scale + vh / 2;
+        const sx = Math.floor(fx);
+        const sy = Math.floor(fy);
         if (sx < 0 || sy < 0 || sx >= vw || sy >= vh) continue;
+        // A sprite drawn after this one whose square (its side, turned by its facing, and a pixel of
+        // edge) holds this middle: the pixel is that sprite's, not this mark's.
+        let covered = false;
+        for (let k = i + 1; k < v.elementCount && !covered; k++) {
+          const side = (hulls.includes(v.elementFrame(k)) ? Math.max(tankPx, v.elementPx) : v.elementPx) + 1;
+          const dx = fx - ((v.elementX[k]! - cam.cx) * cam.scale + vw / 2);
+          const dy = fy - ((v.elementY[k]! - cam.cy) * cam.scale + vh / 2);
+          const a = v.elementFacing(k);
+          covered = Math.abs(dx * Math.cos(a) + dy * Math.sin(a)) <= side / 2 && Math.abs(-dx * Math.sin(a) + dy * Math.cos(a)) <= side / 2;
+        }
+        if (covered) {
+          hidden++;
+          continue;
+        }
         gl.readPixels(sx, gl.drawingBufferHeight - 1 - sy, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
         const [r, g, b] = v.elementTint(i);
         shares.push((px[0]! + px[1]! + px[2]!) / (r + g + b));
       }
-      return median(shares);
+      return { median: median(shares), n: shares.length, hidden };
     };
     const mark = middles();
     const p = inner.elementProxies;
@@ -105,9 +127,11 @@ test('T2: a tank is its small mark where a sprite is at its least size, and a hu
     const hull = middles();
     p.draw = draw;
     v.draw(now);
-    return { mark, hull, elementOpacity: v.elementOpacity };
-  }, HULLS);
+    return { mark: mark.median, hull: hull.median, n: mark.n, hidden: mark.hidden, hullN: hull.n, elementOpacity: v.elementOpacity };
+  }, { hulls: HULLS, tankPx: TANK_PX });
   expect(seen.elementOpacity).toBe(1);
+  expect(seen.n, 'tanks whose middle no later sprite covers').toBeGreaterThanOrEqual(5);
+  expect(seen.hullN).toBe(seen.n);
   expect(seen.mark).toBeGreaterThan(0.95);
   expect(seen.mark - seen.hull).toBeGreaterThan(0.1);
 
@@ -152,5 +176,5 @@ test('T2: a tank is its small mark where a sprite is at its least size, and a hu
   expect(hulls.length).toBeGreaterThan(10);
   expect(near.turrets).toBe(hulls.length);
   await page.screenshot({ path: path.join(out, 't2-60m-dpr1.png') });
-  console.log(`150 m/px: ${tanks.length} tanks, all the small mark, of ${far.elements.length} elements (${rifles.length} rifles, none); the middle of a tank ${seen.mark.toFixed(2)} of its tint as the mark, ${seen.hull.toFixed(2)} as a hull. The band: ${band[0]!.m} to ${band.at(-1)!.m} m/px (${band[0]!.px.toFixed(2)} to ${band.at(-1)!.px.toFixed(2)} px), the largest step ${step.toFixed(3)} in half a metre a pixel. 60 m/px: ${hulls.length} hulls, ${near.turrets} turrets, share ${near.small}`);
+  console.log(`150 m/px: ${tanks.length} tanks, all the small mark, of ${far.elements.length} elements (${rifles.length} rifles, none); the middle of a tank (${seen.n} not under a later sprite, ${seen.hidden} under one) ${seen.mark.toFixed(2)} of its tint as the mark, ${seen.hull.toFixed(2)} as a hull. The band: ${band[0]!.m} to ${band.at(-1)!.m} m/px (${band[0]!.px.toFixed(2)} to ${band.at(-1)!.px.toFixed(2)} px), the largest step ${step.toFixed(3)} in half a metre a pixel. 60 m/px: ${hulls.length} hulls, ${near.turrets} turrets, share ${near.small}`);
 });
