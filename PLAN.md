@@ -94,10 +94,15 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
           the parts, each open cell of a mixed node at the walk with its class and whether its run
           met two groups; a flip in a node that is not mixed, the closing of a cell of a run that
           met two groups or of a cell opened since, or an opening whose open neighbours are of two
-          classes with groups, undoes it; an opening merges its neighbours' classes. Measured first
+          classes with groups, undoes it; an opening merges its neighbours' classes. The cells
+          opened or closed since the walk and the classes merged are kept on the parts with
+          `flips` (`passageWith` judges only the flips after it), and dropped with `joined` when
+          the log rolls over. The run data only on the parts that have asked `wideJoined`, the cap
+          decided up front in the ADR. The bound is 811 of year 9's walks (the 3 after the log
+          rolled changed nothing too), not measure-c's 808. Measured first
           by a check mode that walks again at each answer kept and compares partitions (the least
           node by class), one year from `.cache/730/s732-y8.bin` and `s732-y43.bin`: no difference,
-          and the walks kept; the memory kept by the parts weighed (NODE_PARTS_KEPT sets). AT: a
+          at every answer kept, not only the first after a walk, and the walks kept; the memory kept by the parts weighed (NODE_PARTS_KEPT sets). AT: a
           unit test (a closing in a run that met one group keeps it, in one that met two undoes
           it; an opening between two classes undoes it); `joinWalks.ts`'s walks down by most;
           seed 732's hashes after years 9 and 44 equal 7.27d's; the pin unchanged.
