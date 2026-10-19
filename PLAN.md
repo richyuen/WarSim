@@ -93,7 +93,10 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           test each (home from an empty port under naval bombers, red without the rule; stays
           with none; the sortie takes another port); `seaAir` on the 14 seeds × 2 years, sunk by
           air alone 121 → fewer and sea battles 287 not fewer (else the reason); `--profile`; the
-          pin's entry and an ADR.
+          pin's entry and an ADR. Decide in the ADR whether a fleet escorting a landing (within
+          `AT_PORT_CELLS` of an `embarked` water) is exempt, and test it. In the same commit, the
+          doc's §2 medians (33 days, 26 strikes) recomputed on the 14 seeds: they came from the
+          16 cases' first pass (n = 125).
       - [ ] 7.35b4 A fleet at a lost base sails for its nation's nearest port, not its bloc's
         (`atLostBase`, `sailHome`, ADR-261): on seed 3407 with 7.35b2 the US fleets stage to
         Guam, Japan takes it on day 6, and they turn for Pago Pago (4,300 km) rather than the
