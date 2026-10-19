@@ -133,7 +133,11 @@ enemy's naval bombers sails home; no sortie to such water; a landing's escort ex
   (−80 %). Sea battles 287 → 318, fleets sunk in them 34 → 52: the fleets kept from empty water fight
   elsewhere.
 - The 27 left: a median 16 days and 5 strikes from the order (10th percentile 3.2 days and 2, 90th
-  249 and 25). Seed 8821 keeps its 7 (as before): no naval-role wing over them; the other anti-ship
-  air (close support, tactical bombers) is not the rule's measure (§3).
+  249 and 25). 23 had naval-role air over an empty zone at some stand-day and were sunk 0.3 to 6.0
+  days after the first such day (median 1.9): inside a nation's turn of the naval AI (`STAGGER`, 7
+  days), before it could read the air. 3 had enemy ships in the zone whenever such air was over it;
+  1 was sunk before its first stand-day. Seed 8821's 7 are five Soviet fleets at Venice (naval air
+  over them from day 674 or 683, sunk 4 to 6 days later) and a Republican Spanish and a Turkish
+  fleet that stood 148 and 146 days unbombed, the naval air coming 0.3 and 2.8 days before the loss.
 - The `other` column rose 138,150 → 156,650 hp with the more sorties (submarines, anti-air,
   attrition), not this task's.

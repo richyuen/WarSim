@@ -104,7 +104,9 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
         `forwardBases` (7.35b2) has no basin filter as `nearestOwnPort` has (`basinOf`): a bloc
         port on a lake or another basin may be the nearest, `orderSail` refuses it every turn and
         the next nearest is never tried; and `seaMeet`'s `why` column does not tell a staging
-        order (mirror `forwardBases` before the "before" run). AT: measured on
+        order (mirror `forwardBases` before the "before" run). And from 7.35b3b (ADR-544):
+        `forwardBases` reads the unfiltered `targets`, so a fleet may stage to a base whose every
+        port in reach is empty water under the enemy's naval bombers, and stand there. AT: measured on
         `seaMeet 3407 JAP USA 40`, before and after; a unit test; the pin's entry.
     - [ ] 7.35c Ships at 20 m/px drawn at a size their class reads (destroyers about 10 × 3 px,
       submarines 5 px in `c9n_2251_ships_20m_crop4x.png`), counted in px. `shipMarks1938`'s T3

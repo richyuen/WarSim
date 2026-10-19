@@ -195,8 +195,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   and a landing's transports have only that escort against the enemy's ships that come.
 - **Consequences.** The 14 seeds × 2 years (`.cache/seaAir_after/`): sortied fleets sunk by land air
   alone 121 → 27, in sea battles 34 → 52; sea battles 287 → 318; land air's hp from sortied fleets
-  420,000 → 85,300, the sea battles' 180,250 → 189,200; sorties 3,441 → 3,728. Seed 8821 keeps 7 (no
-  change: none of them under naval-role air). Japan on the US (seed 3407, 60 days): land air's take
+  420,000 → 85,300, the sea battles' 180,250 → 189,200; sorties 3,441 → 3,728. Of the 27 left, 23 had naval-role air
+  over an empty zone and were sunk within 0.3 to 6 days of its first stand-day so, inside the naval
+  AI's turn of a nation (`STAGGER`, 7 days); 3 had enemy ships in the zone whenever such air was over
+  it; 1 was sunk before its first stand-day. Japan on the US (seed 3407, 60 days): land air's take
   16,250 → 4,850 hp, sea battles 7 both; Italy on Britain (2251): 7 → 9 sea battles. The pin stays
   8c59c203: seed 99's year has no decision the rule changes (its hash is the same, run fresh), as
   seeds 1129's two years are the same in every figure. navalAi 0.039 → 0.040 ms a tick (seed 99, 1

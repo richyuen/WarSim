@@ -19809,3 +19809,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 7.35b4 (a fleet at a lost base sails for its nation's nearest port, not its bloc's).
 - **After 7.35b3b, by hand** (the gate skips e2e): `carrierStrikeRow1938`, `seaRow1938` (3),
   `navalDemo1938`, `seaBattle1938`, `seaBattleSeen1938` (alone) green at `fe084c4`.
+- **Checked after the commit:** the ADR said seed 8821's 7 had no naval-role air over them; wrong.
+  Of the 27 left, 23 had it over an empty zone and were sunk 0.3 to 6 days after (inside a nation's
+  7-day turn), 3 had enemy ships in the zone, 1 sank before its first stand-day. ADR-544 and §5
+  corrected; 7.35b4 takes `forwardBases`' unfiltered `targets` (a stage to a base with only bombed
+  empty ports in reach).
