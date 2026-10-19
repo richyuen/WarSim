@@ -138,6 +138,10 @@ test("from the row of the critic's battle, both fleets' fire on the screen withi
   // The critic (run 8, naval 6) stepped six hours at a time, clicked the row and watched 6 s at
   // Speed x1: no gunfire. The tests above step an hour at a time while paused, when a tick's shots
   // are spread over STEP_SPREAD_MS; here the game runs, so they are spread over the tick's wall time.
+  // Since PLAN 7.31 (ADR-526) the war's sea battles of this seed have their rows between the six-hour
+  // marks (hours 44–45, 49–50, 56, 58–60): the row is looked for hour by hour, and taken once it has
+  // been there two hours running (a fight under way, not its first contact: from hour 44 the British
+  // fire came in one tick of the six watched, and a slow frame rate missed it); the watch is the critic's.
   await page.setViewportSize({ width: 1600, height: 900 });
   await page.goto('/?scenario=1938&paused=1&seed=5591');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
@@ -146,13 +150,16 @@ test("from the row of the critic's battle, both fleets' fire on the screen withi
     async ([g, e]) => {
       const { sim, view } = window.__warsim!;
       sim.command({ kind: 'declareWar', attacker: g!, defender: e! });
-      for (let h = 6; h <= 20 * 24; h += 6) {
-        const t = (await sim.step(6)).tick;
+      let was = false;
+      for (let h = 1; h <= 20 * 24; h += 1) {
+        const t = (await sim.step(1)).tick;
         await new Promise<void>((done) => {
           const wait = (): void => (view!.lastTick === t ? done() : void setTimeout(wait, 5));
           wait();
         });
-        if (view!.seaBattles().some((b) => b.pair !== null && [b.a, b.b].includes(g!) && [b.a, b.b].includes(e!))) return h;
+        const row = view!.seaBattles().some((b) => b.pair !== null && [b.a, b.b].includes(g!) && [b.a, b.b].includes(e!));
+        if (row && was) return h;
+        was = row;
       }
       return -1;
     },

@@ -219,6 +219,22 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   seed 6113's ten years 282 and 282; the rows 9 / 13, 4 / 5, 30 / 38 (battles that re-formed at a
   port, merged). A fleet with no port of its nation to sail for that broke off: none on the three.
   Three rules in one commit: the next task splits them.
+- **Kept on both clauses, after a trial of the narrow form** (2026-10-19, after `c0ed133`): on
+  seed 5591 (Germany on Britain) the German fleets beaten off their own coast fight to their end at
+  hour 61, where they broke off before; `tests/e2e/seaRow1938.spec.ts`'s Speed x1 test, stepping
+  six hours at a time, then met its first row at hour 60, after the last shot, and saw no fire. The
+  port rule narrowed to the clause with no weapon met the AT as well (rows 13 / 5 / 38, none / none
+  / 2 with nothing sunk; at most three a place), but it moved seed 7127's land war by about five
+  days, and the critic's France (`tests/unit/nukeOverrun1938.test.ts`, PLAN 7.18) no longer struck
+  before losing its bomber: at extreme desperation its best place at −0.015 to −0.03, against 0.033
+  on day 48 with the rule on both clauses (`tools/diag/nukeCase.ts 7127 FRA GER`). That decision
+  sits on the margin of its utility (PLAN 7.37's matter), not on the sea. The spec's fault was its
+  sampling: since this rule the war's rows fall between the six-hour marks (hours 44–45, 49–50, 56,
+  58–60), and it now looks for its row hour by hour and takes it once it has stood two hours
+  running (hour 45: both sides' fire on the screen within 4.6 s at Speed x1 with the spec file's
+  three tests side by side, 13 frames; the spec's bound 6 s; 1.3 s at hour 60 before). From the
+  row's first hour (44) the British fire fell in one tick of the six, and the gate's run, at a
+  lower frame rate, missed it.
 - **Pin.** 94235073 → c900e399.
 - **Tests.** `tests/unit/navalBattle1938.test.ts` (PLAN 7.31): a transport seen beyond the
   destroyers' reach stays, is closed on and hit in the second hour, then breaks off, one row; a

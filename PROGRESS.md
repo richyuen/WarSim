@@ -19398,3 +19398,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin** c900e399 → 81db11b6.
 - **Gotcha:** three rules went into one commit in 7.31; split them next time. A formation's columns
   are cleared when it is destroyed: read a nation before the losses.
+
+## 2026-10-19 — PLAN 7.31's specs: the sea row's Speed x1 test looks for its row hour by hour
+
+- **By hand** (the gate skips e2e): `seaRow1938`, `seaBattle1938`, `seaBattleSeen1938`,
+  `navalDemo1938`. One red on `c0ed133`: `seaRow1938`'s Speed x1 test (seed 5591, six-hour steps)
+  met its first row at hour 60, after the last shot (green on `cea6bf8`: 3 and 5 shots, 1.3 s).
+- **Tried and dropped:** ADR-526's port rule narrowed to the clause with no weapon (the beaten German
+  fleets off their coast fought to their end). It met 7.31's AT as well, but moved seed 7127's land
+  war ~5 days and the critic's France (`nukeOverrun1938`, PLAN 7.18) no longer struck (best place
+  −0.015 to −0.03 at extreme desperation, 0.033 on day 48 before): a decision on its utility's margin,
+  PLAN 7.37's. The rule stays on both clauses; ADR-526 says why.
+- **The spec:** the war's rows now fall between the six-hour marks (hours 44–45, 49–50, 56, 58–60);
+  it looks hour by hour and takes the row once it has stood two hours running (a fight under way):
+  hour 45, both sides' fire within 4.6 s at Speed x1 (bound 6 s). From hour 44 (the row's first
+  hour) the British fire fell in one tick and the gate's parallel run missed it: thin margins on
+  this machine, for PLAN 7.35. All six tests of the four specs green; their three pictures rewritten
+  (`docs/evidence/7.10/b-sea-row.png`, `7.19/c-sea-row-5591.png`, `7.22/a-sea-row-x1.png`), viewed.
+- **Gotcha:** a scenario test of the AI's nuclear use (seed 7127's France) sits on a utility margin of
+  ±0.03 that any rule moving the land war can cross; treat a red one after a non-nuclear rule as
+  that before reading it as a defect.
+- **No rule change:** pin 81db11b6.
+- **Next:** PLAN 7.32.
