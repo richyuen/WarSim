@@ -20043,3 +20043,5 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Perf:** navalAi 0.0457 ms a tick (0.0434 at d2c), tick mean 2.25 ms (seed 99, one year,
   `--profile`, pinned; territory 0.1561 against 0.1485, a run 5 % slower throughout).
 - **Next:** PLAN 7.35d2d2 (a target behind a passage shut to the fleet).
+- **After the commit** (`23af83e`): by hand, `seaBattle1938`, `navalDemo1938`, `seaRow1938` (3),
+  `carrierStrikeRow1938`, `seaControl1938`, `fleetOrder1938` green (8).
