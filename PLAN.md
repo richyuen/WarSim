@@ -74,7 +74,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
         with a port in reach it cannot win does not stage); `seaMeet 3407 JAP USA` 30 days: the
         Pacific Fleet leaves San Diego and a Japan–USA sea battle, with its row (`seaRows`), or
         the measured reason; Italy and Germany against the US stand as before; the pin's entry.
-      - [ ] 7.35b3 A sortie's test of its target zone counts no land-based air: the Asiatic
+      - [x] 7.35b3 A sortie's test of its target zone counts no land-based air: the Asiatic
         squadron sails into Takao and is sunk by wings on Formosa with no sea battle. Measured
         (how often a fleet is sunk at a sortie's target by air alone, on the critic's seeds),
         then a rule with an ADR, or the reason. In two parts:
@@ -85,7 +85,7 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
           33 days and 26 strikes from the order to the loss. The order-time air separates them
           poorly (13 of 59 lost groups, 22 of 203 that fought); a naval-role wing in range of the
           fleet where it stands with no enemy ship names 115 of the 121 and 182 of 3,146 others.
-        - [ ] 7.35b3b The rule at both seams (`plan`): a warfleet away from its ports, no enemy ship
+        - [x] 7.35b3b The rule at both seams (`plan`): a warfleet away from its ports, no enemy ship
           in its zone, with an enemy naval-role wing (`naval_bomber`) based within its range of
           the fleet sails home; the sortie test passes over an enemy port's water such air covers
           while its zone has no enemy ship to fight (else the fleet sent home is sent back). One

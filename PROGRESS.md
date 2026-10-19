@@ -19784,3 +19784,26 @@ No rule changed and nothing on screen changed. One task came out of it.
   choice; the rule must sit at both (PLAN 7.35b3b).
 - **No rule change:** pin 8c59c203 (a tool and documents).
 - **Next:** PLAN 7.35b3b (the rule).
+
+## 2026-10-19 — PLAN 7.35b3b: under the enemy's naval bombers an empty zone holds nothing to fight (critic R9 naval 6; ADR-544); PLAN 7.35b3 done
+
+- **Start:** gate green on `11f5d74`; critic not due.
+- **Rule** (ADR-544, `src/sim/ai/naval.ts`): `plan` lists the enemy's live naval-role wings at
+  airbases once a call (`navalBombers`; `roleOf` exported from `ai/air.ts`). A warfleet away from its
+  ports, no enemy ship in its zone, on water such a wing has in range sails home; such an enemy
+  port's water is no sortie's target (still in reach: the fleet stands, it does not stage). A
+  landing's escort (within `AT_PORT_CELLS` of its nation's `embarked` water) is exempt.
+- **Tests:** `navalAi1938.test.ts` + 4 (Greece on Italy, the naval AI called at Greece's turn): a
+  flotilla at Bari under Italy's naval bombers sails home (red without the rule); stays with the
+  wing out of the fight; stays escorting a landing (red without the exemption); with the bombers
+  based by Tobruk no fleet sorties to Tobruk, without them some do (red without the rule).
+- **Measured** (`seaAir`, the critic's 14 seeds × 2 years, `docs/evidence/7.35/measure-b3.md` §5):
+  sortied fleets sunk by land air alone 121 → 27, in sea battles 34 → 52; sea battles 287 → 318;
+  land air's take 420,000 → 85,300 hp. Seed 3407 Japan on the US: 16,250 → 4,850 hp. The doc's §2
+  medians recomputed on the 14 seeds (n = 121): 35.9 days and 28 strikes (were 33 and 26, n = 125);
+  its §1 total of fleets sunk in sea battles read 30, its rows sum to 34 (the entry of 7.35b3a above
+  says 30 too).
+- **Perf:** navalAi 0.039 → 0.040 ms a tick (seed 99, 1 year, `--profile`); tick mean 2.11 ms.
+- **Pin** unchanged, 8c59c203, run fresh: seed 99's year has no decision the rule changes (as seed
+  1129's two years, the same in every figure).
+- **Next:** PLAN 7.35b4 (a fleet at a lost base sails for its nation's nearest port, not its bloc's).

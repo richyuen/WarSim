@@ -3,7 +3,8 @@ import { EventKind } from '../../src/shared/events';
 import { seaSide } from '../../src/shared/history';
 import { NATIONS_1938, PORTS_1938, SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { AVOID_RATIO, fleetPower, SORTIE_KM } from '../../src/sim/ai/naval';
+import { AVOID_RATIO, fleetPower, navalAi, navalBombers, SORTIE_KM } from '../../src/sim/ai/naval';
+import { STAGGER } from '../../src/sim/ai/strategic';
 import { equipFormation } from '../../src/sim/systems/elements';
 import { seaKm } from '../../src/sim/systems/navalCombat';
 import { navalPower } from '../../src/sim/systems/seaControl';
@@ -295,6 +296,95 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
       }
     }
     expect(sailed).toBeGreaterThan(0);
+  });
+
+  // PLAN 7.35b3b, ADR-544: under the enemy's naval bombers a zone with no enemy ship holds nothing
+  // to fight. Greece at war with Italy, Italy's AI off (its fleets and wings stand); the naval AI
+  // called at Greece's turn. Bari's zone (the Adriatic) has no Italian ship and Italy's naval
+  // bomber group at its start base has Bari within its range; Tobruk's zone has no Italian ship.
+  describe('under the enemy\'s naval bombers (PLAN 7.35b3b)', () => {
+    const GRE = id('GRE');
+    const setup = (): { s: Sim; w: World; wing: number; water: (name: string) => number } => {
+      const s = new Sim({ scenario: '1938', seed: 4605, assets: assets1938(W) });
+      const w = s.world;
+      expect(declareWar(w, GRE, ITA, true)).not.toBeNull();
+      w.nations.cols.aiOff[ITA] = 1;
+      const wing = [...w.wingBase].find(([f, b]) => b > 0 && w.formations.cols.nation[f] === ITA && TEMPLATES_1938[w.formations.cols.template[f]!]!.id === 'naval_bomber_group')![0];
+      const water = (name: string): number => portSeaOf(w)[w.ports.findIndex((p) => p.name === name && w.cells.controller[p.cell] === ITA)]!;
+      return { s, w, wing, water };
+    };
+    /** Greece's next turn of the naval AI (its `STAGGER` day), called alone. */
+    const greekTurn = (w: World): void => {
+      let d = w.tick / 24;
+      while ((d + GRE) % STAGGER !== 0) d++;
+      w.tick = d * 24;
+      navalAi(w);
+    };
+    const at = (cell: number): [number, number] => [(cell % W) + 0.5, Math.floor(cell / W) + 0.5];
+    const zoneEnemy = (w: World, cell: number): number => navalPower(w).get(seaOf(w).zoneOf[cell]!)?.get(ITA) ?? 0;
+    const bombedAt = (w: World, cell: number): boolean => navalBombers(w, GRE).some((b) => seaKm(w, b.x, b.y, ...at(cell)) <= b.r);
+    const homeWater = (w: World, cell: number): boolean => w.ports.some((p, i) => portSeaOf(w)[i] === cell && blocOf(w, w.cells.controller[p.cell]!) === blocOf(w, GRE));
+
+    it('a Greek destroyer flotilla at Bari, no Italian ship in its zone, Italy\'s naval bombers in range: it sails home at its turn', () => {
+      const { w, water } = setup();
+      const bari = water('Bari');
+      expect(zoneEnemy(w, bari)).toBe(0);
+      expect(bombedAt(w, bari)).toBe(true);
+      const dd = addFleet(w, GRE, 'destroyer_flotilla', ...at(bari));
+      greekTurn(w);
+      expect(w.formations.cols.moving[dd], 'under way').toBe(1);
+      expect(homeWater(w, w.formations.cols.targetCell[dd]!), 'for a port of Greece\'s bloc').toBe(true);
+    });
+
+    it('the same flotilla with Italy\'s naval bombers out of the fight stays at Bari', () => {
+      const { w, wing, water } = setup();
+      const bari = water('Bari');
+      const ec = w.elements.cols;
+      w.elements.forEach((e) => void (ec.formation[e] === wing && (ec.strength[e] = 0)));
+      expect(bombedAt(w, bari)).toBe(false);
+      const dd = addFleet(w, GRE, 'destroyer_flotilla', ...at(bari));
+      greekTurn(w);
+      expect(w.formations.cols.moving[dd]).toBe(0);
+    });
+
+    it('the same flotilla escorting a Greek landing at Bari\'s water stays (the escort is exempt)', () => {
+      const { w, water } = setup();
+      const bari = water('Bari');
+      const dd = addFleet(w, GRE, 'destroyer_flotilla', ...at(bari));
+      const tp = addFleet(w, GRE, 'transport_group', ...at(bari));
+      const army = addFleet(w, GRE, 'infantry_div', ...at(bari));
+      w.embarked.set(army, { fleet: tp, land: -1, water: bari, target: -1 });
+      greekTurn(w);
+      expect(w.formations.cols.moving[dd]).toBe(0);
+    });
+
+    it('Greece\'s fleets in port: with Italy\'s naval bombers based in range of Tobruk, none sails for Tobruk\'s empty water; without them they do', () => {
+      const tobruk = (bombers: boolean): number[] => {
+        const { w, wing, water } = setup();
+        const t = water('Tobruk');
+        expect(zoneEnemy(w, t)).toBe(0);
+        if (bombers) {
+          // Italy's group based at the airbase nearest Tobruk's water.
+          let best = Infinity;
+          let base = -1;
+          w.airbases.forEach((a, i) => {
+            const d = seaKm(w, ...w.cellPoint(a.cell), ...at(t));
+            if (d < best) [best, base] = [d, i];
+          });
+          w.wingBase.set(wing, base + 1);
+          expect(bombedAt(w, t)).toBe(true);
+        } else expect(bombedAt(w, t)).toBe(false);
+        greekTurn(w);
+        const c = w.formations.cols;
+        const sent = own({ world: w } as Sim, GRE).filter((f) => c.moving[f] === 1);
+        expect(sent.length).toBeGreaterThan(0);
+        // No sortie for empty water the bombers cover.
+        if (bombers) for (const f of sent) expect(zoneEnemy(w, c.targetCell[f]!) > 0 || !bombedAt(w, c.targetCell[f]!), `fleet ${f}`).toBe(true);
+        return sent.filter((f) => c.targetCell[f] === t);
+      };
+      expect(tobruk(false).length).toBeGreaterThan(0);
+      expect(tobruk(true).length).toBe(0);
+    });
   });
 
   it('at peace a fleet away from its ports sails home', () => {

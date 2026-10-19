@@ -35,12 +35,12 @@ the world runs; and the critic's two declared wars, 60 days (`npx tsx tools/diag
 | 7741 | 730 | 20 | 231 | 7 | 1 | 7,100 | 7,650 | 0 | 6,150 |
 | 8821 | 730 | 11 | 216 | 8 | 0 | 3,750 | 25,800 | 0 | 1,250 |
 | 9901 | 730 | 25 | 215 | 8 | 1 | 16,600 | 52,050 | 7,350 | 7,150 |
-| **14 seeds** | | **287** | **3,441** | **121** | **30** | **180,250** | **420,000** | **45,650** | **138,150** |
+| **14 seeds** | | **287** | **3,441** | **121** | **34** | **180,250** | **420,000** | **45,650** | **138,150** |
 | 3407 JAP→USA | 60 | 7 | 87 | 3 | 0 | 3,350 | 16,250 | 19,800 | 700 |
 | 2251 ITA→ENG | 60 | 7 | 85 | 1 | 1 | 9,650 | 3,100 | 9,200 | 7,650 |
 
-A fleet on a sortie is four times as likely to be sunk by land-based air alone as in a sea battle
-(121 against 30), and land-based air takes 2.3 times the hit points from sortied fleets that the
+A fleet on a sortie is 3.6 times as likely to be sunk by land-based air alone as in a sea battle
+(121 against 34; the total of this column read 30 until PLAN 7.35b3b, its rows sum to 34), and land-based air takes 2.3 times the hit points from sortied fleets that the
 sea battles do. Of the 121: 71 destroyer flotillas, 33 cruiser squadrons, 10 battle squadrons, 7
 carrier groups; 286,650 hit points. France's whole battle line at Genoa on seed 2251 (day 121, four
 fleets, 16,600 hp, no Italian ship in the zone, Italy's air 2,501 per strike over the water).
@@ -49,8 +49,9 @@ fleets, 16,600 hp, no Italian ship in the zone, Italy's air 2,501 per strike ove
 
 - All 121 had **arrived** at the target's water; 114 of them at a port whose zone held no enemy
   ship when ordered.
-- From the order to the loss: median 33 days (10th percentile 2.8, 90th 165); land-based strikes
-  taken: median 26 (10th 2, 90th 75).
+- From the order to the loss (the 14 seeds, n = 121; recomputed in PLAN 7.35b3b, the first figures,
+  33 days and 26 strikes, came from the 16 cases' first pass, n = 125): median 35.9 days (10th
+  percentile 2.8, 90th 165); land-based strikes taken: median 28 (10th 2, 90th 76).
 - Away from its ports, `plan` reads only the enemy's ships in the fleet's zone (`AVOID_RATIO`), and
   at the target the sortie test sees the same empty zone each turn: the fleet stands there,
   struck every few hours, until it is gone. The US Asiatic squadron at Takao (seed 3407, 4,000 hp,
@@ -100,3 +101,39 @@ fleet fighting a sea battle nine times in ten: it is not the measure.
   quantity and the 14 seeds' figures (121 sunk by air alone, 287 sea battles) before and after.
 - Left: the `other` column (138,150 hp lost by sortied fleets in hours with no sea battle and no
   strike seen: submarines, the anti-air, attrition) is not this task's.
+
+## 5. After the rule (PLAN 7.35b3b, ADR-544)
+
+The same 14 seeds × 2 years and the two wars, with the rule (a fleet away on empty water under the
+enemy's naval bombers sails home; no sortie to such water; a landing's escort exempt). Output in
+`.cache/seaAir_after/`.
+
+| case | sea battles | sorties | sunk by air alone | sunk in a sea battle | hp lost: sea | land air | carrier | other |
+|---|---|---|---|---|---|---|---|---|
+| 1129 | 34 | 310 | 0 | 3 | 29,150 | 1,200 | 0 | 20,950 |
+| 1471 | 21 | 201 | 0 | 1 | 11,100 | 1,000 | 0 | 8,650 |
+| 2251 | 34 | 268 | 2 | 10 | 35,700 | 3,050 | 0 | 30,450 |
+| 2609 | 23 | 244 | 2 | 7 | 11,350 | 5,050 | 2,800 | 24,850 |
+| 3407 | 16 | 260 | 2 | 4 | 6,300 | 4,200 | 0 | 6,350 |
+| 3793 | 20 | 277 | 3 | 0 | 7,700 | 14,200 | 6,700 | 3,100 |
+| 4483 | 36 | 236 | 0 | 7 | 19,250 | 1,100 | 2,800 | 13,750 |
+| 4957 | 19 | 247 | 2 | 2 | 4,200 | 2,350 | 150 | 5,650 |
+| 5527 | 19 | 316 | 3 | 0 | 11,750 | 6,600 | 2,800 | 8,400 |
+| 6113 | 12 | 349 | 2 | 7 | 15,950 | 3,550 | 2,800 | 3,900 |
+| 6653 | 35 | 271 | 3 | 2 | 18,500 | 11,600 | 16,000 | 16,500 |
+| 7741 | 18 | 232 | 0 | 2 | 5,550 | 300 | 0 | 4,700 |
+| 8821 | 7 | 241 | 7 | 0 | 3,750 | 23,000 | 0 | 1,250 |
+| 9901 | 24 | 276 | 1 | 7 | 8,950 | 8,100 | 2,800 | 8,150 |
+| **14 seeds, after** | **318** | **3,728** | **27** | **52** | **189,200** | **85,300** | **36,850** | **156,650** |
+| 14 seeds, before (§1) | 287 | 3,441 | 121 | 34 | 180,250 | 420,000 | 45,650 | 138,150 |
+| 3407 JAP→USA, 60 days | 7 (7) | 86 (87) | 2 (3) | | 3,350 | 4,850 (16,250) | 19,800 | 700 |
+| 2251 ITA→ENG, 60 days | 9 (7) | 93 (85) | 1 (1) | | 9,650 | 700 (3,100) | 9,200 | 7,650 |
+
+- Sunk by land-based air alone 121 → 27; land air's take of sortied fleets 420,000 → 85,300 hp
+  (−80 %). Sea battles 287 → 318, fleets sunk in them 34 → 52: the fleets kept from empty water fight
+  elsewhere.
+- The 27 left: a median 16 days and 5 strikes from the order (10th percentile 3.2 days and 2, 90th
+  249 and 25). Seed 8821 keeps its 7 (as before): no naval-role wing over them; the other anti-ship
+  air (close support, tactical bombers) is not the rule's measure (§3).
+- The `other` column rose 138,150 → 156,650 hp with the more sorties (submarines, anti-air,
+  attrition), not this task's.

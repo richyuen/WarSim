@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-544 · 2026-10-19 · accepted — Under the enemy's naval bombers an empty zone holds nothing to fight: a fleet away there sails home, and no sortie goes there (PLAN 7.35b3b)
+
+- **Context.** Critic run 9, naval 6: the US Asiatic squadron sails into Takao, finds no ship and is
+  sunk by Formosa's wings (seed 3407). Measured (`docs/evidence/7.35/measure-b3.md`,
+  `tools/diag/seaAir.ts`, the critic's 14 headless seeds × 2 years at `9cb3702`): 121 sortied fleets
+  sunk by land-based air alone against 34 in sea battles; land air took 420,000 hp of sortied fleets,
+  the sea battles 180,250. All 121 had arrived; 114 stood at a port with no enemy ship, a median 36
+  days and 28 strikes until sunk. Neither `plan`'s away test (enemy ships over `AVOID_RATIO` × its
+  power) nor the sortie test (enemy ships ≤ the fleets together) reads air. A naval-role wing in range
+  of the fleet where it stands, its zone empty of enemy ships, names 115 of the 121 and 182 of 3,146
+  others; any anti-ship air names a fleet fighting a sea battle nine times in ten, so it is not the
+  measure.
+- **Decision.** `plan` builds, once a call and on the first ask, the enemy's naval bombers on land
+  (`navalBombers`): each wing with a live squadron, of the naval role (`roleOf` in `ai/air.ts`, now
+  exported: the wings the air AI sends at the nearest enemy fleet), at an airbase (not a carrier's),
+  of a nation at war with the planner; its base's place and range. Water is *bombed* when one of them
+  has it within its range (`seaKm`), as `seaAir` measured. At both seams:
+  - a warfleet away from its ports, no enemy ship in its zone (`navalPower` 0), on bombed water
+    sails home (`sailHome`);
+  - an enemy port's water with no enemy ship in its zone and bombed is no sortie's target. It still
+    counts as in reach, so a fleet whose only ports in reach are such stands in port; it does not
+    stage (ADR-543) toward them.
+  The escort is exempt: a warfleet within `AT_PORT_CELLS` of the water of a landing of its nation's
+  under way stays. Without it the rule would take the escort from every landing on a coast in the
+  enemy's naval bombers' range, the escort test (which reads no air) would send it back each turn,
+  and a landing's transports have only that escort against the enemy's ships that come.
+- **Consequences.** The 14 seeds × 2 years (`.cache/seaAir_after/`): sortied fleets sunk by land air
+  alone 121 → 27, in sea battles 34 → 52; sea battles 287 → 318; land air's hp from sortied fleets
+  420,000 → 85,300, the sea battles' 180,250 → 189,200; sorties 3,441 → 3,728. Seed 8821 keeps 7 (no
+  change: none of them under naval-role air). Japan on the US (seed 3407, 60 days): land air's take
+  16,250 → 4,850 hp, sea battles 7 both; Italy on Britain (2251): 7 → 9 sea battles. The pin stays
+  8c59c203: seed 99's year has no decision the rule changes (its hash is the same, run fresh), as
+  seeds 1129's two years are the same in every figure. navalAi 0.039 → 0.040 ms a tick (seed 99, 1
+  year, `--profile`); tick mean 2.11 ms.
+
 ### ADR-543 · 2026-10-19 · accepted — A warfleet with no enemy port in reach stages to its bloc's nearest port that has one (PLAN 7.35b2)
 
 - **Context.** Critic run 9, naval 6: "Japan–USA: no battle at all in 12 days" (seed 3407).

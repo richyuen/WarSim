@@ -235,7 +235,7 @@ function paradrops(world: World, wings: Map<number, number[]>, engaged: readonly
 }
 
 /** Wing `id`'s role (`ROLE`), by its first squadron's class. */
-function roleOf(world: World, id: number): 'patrol' | 'front' | 'naval' | 'bomb' | 'lift' | undefined {
+export function roleOf(world: World, id: number): 'patrol' | 'front' | 'naval' | 'bomb' | 'lift' | undefined {
   const rules = world.rules!;
   const first = rules.templates[world.formations.cols.template[id]!]?.elements[0];
   return first ? ROLE[rules.units[first.unit]!.cls] : undefined;

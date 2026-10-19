@@ -19,6 +19,12 @@
  *   there. The US Pacific Fleet at San Diego goes west against Japan.
  * - At war, a warfleet away from its ports in a zone where the enemy's power is over
  *   `AVOID_RATIO` times its own sails home (`sailHome`).
+ * - At war, under the enemy's naval bombers (PLAN 7.35b3b, ADR-544: a wing of the naval role at an
+ *   airbase within its range of the water), a zone with no enemy ship holds nothing to fight: a
+ *   warfleet away from its ports there sails home, unless it escorts a landing; and an enemy port
+ *   whose water is such is no sortie's target (it still counts as in reach: the fleet stands, it
+ *   does not stage). Fleets sat at an empty enemy port for weeks, struck until sunk
+ *   (`docs/evidence/7.35/measure-b3.md`).
  * - At war, a transport group (no power, no submarine, transports) with no formation aboard, away
  *   from its bloc's ports, sails home (`sailHome`, PLAN 7.26h1): after a landing it stood at the
  *   landing's water until peace, and a nation's landings load only at a port of its own.
@@ -41,6 +47,8 @@ import { orderSail } from '../systems/sail';
 import { blocOf } from '../systems/supply';
 import { portSeaOf, seaOf, seaRangeOf, type World } from '../world';
 import { STAGGER } from './strategic';
+import { roleOf } from './air';
+import { basePlace, wingRange } from '../systems/air';
 
 /** How far, in km, a warfleet sails from its port to an enemy's (a little over the Mediterranean's length from Malta to Gibraltar or to Haifa). */
 export const SORTIE_KM = 2500;
@@ -150,6 +158,20 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
     for (const [b, p] of power.get(zone) ?? []) if (b !== bloc && world.wars.atWar(b, n)) e += p;
     return e;
   };
+  // The enemy's naval bombers on land (PLAN 7.35b3b, ADR-544): each live wing of the naval role
+  // (`roleOf`, the wings the air AI sends at the nearest enemy fleet) at an airbase, of a nation at
+  // war with n, its base's place and range. Built once a call, on the first ask.
+  let bombers: { x: number; y: number; r: number }[] | undefined;
+  /** Whether an enemy naval bomber wing on land has (x, y) within its range of its base. */
+  const bombed = (x: number, y: number): boolean => {
+    bombers ??= navalBombers(world, n);
+    return bombers.some((b) => seaKm(world, b.x, b.y, x, y) <= b.r);
+  };
+  /** Whether fleet `id` stands by the water of a landing of its nation's under way (the escort, exempt from the bombers' test). */
+  const escorting = (id: number): boolean => {
+    for (const [fid, e] of world.embarked) if (c.nation[fid] === n && e.water >= 0 && near(cellOf(id), e.water)) return true;
+    return false;
+  };
   const war: { id: number; p: number }[] = [];
   const raiders: number[] = [];
   for (const id of mine) {
@@ -162,8 +184,10 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
       continue;
     }
     if (!atOwnPort(id)) {
-      // Away: out of a zone where the enemy is far the stronger.
-      if (enemyIn(z.zoneOf[cellOf(id)]!) > AVOID_RATIO * p) sailHome(world, id);
+      // Away: out of a zone where the enemy is far the stronger; and from one with no enemy ship
+      // to fight under the enemy's naval bombers (PLAN 7.35b3b), unless it escorts a landing.
+      const e = enemyIn(z.zoneOf[cellOf(id)]!);
+      if (e > AVOID_RATIO * p || (e === 0 && bombed(c.x[id]!, c.y[id]!) && !escorting(id))) sailHome(world, id);
       continue;
     }
     war.push({ id, p });
@@ -201,7 +225,9 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
         const d = km(id, t.at);
         if (d > SORTIE_KM) continue;
         inReach = true;
-        if (d < best && t.enemy <= together(t.at)) [best, target] = [d, t.at];
+        // No enemy ship to fight under the enemy's naval bombers: not a target (PLAN 7.35b3b);
+        // still in reach, so the fleet stands rather than stages.
+        if (d < best && t.enemy <= together(t.at) && !(t.enemy === 0 && bombed((t.at % w) + 0.5, Math.floor(t.at / w) + 0.5))) [best, target] = [d, t.at];
       }
     }
     // No enemy port within reach at all: it stages, to its bloc's nearest port that has one (PLAN 7.35b2).
@@ -220,6 +246,24 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
     }
     return at;
   }
+}
+
+/**
+ * The enemy's naval bombers on land, as nation `n`'s naval AI reads them (PLAN 7.35b3b, ADR-544):
+ * each wing with a live squadron, of the naval role (`roleOf`), at an airbase (not a carrier's),
+ * of a nation at war with `n`; its base's place and its range (`wingRange`), by wing id.
+ */
+export function navalBombers(world: World, n: number): { x: number; y: number; r: number }[] {
+  const c = world.formations.cols;
+  const ec = world.elements.cols;
+  const out: { x: number; y: number; r: number }[] = [];
+  for (const [wing, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
+    if (base <= 0 || !world.formations.has(wing) || !world.wars.atWar(n, c.nation[wing]!) || roleOf(world, wing) !== 'naval') continue;
+    if (!(elementIndex(world).get(wing) ?? []).some((e) => ec.strength[e]! > 0)) continue;
+    const at = basePlace(world, base);
+    if (at) out.push({ x: at[0], y: at[1], r: wingRange(world, wing) });
+  }
+  return out;
 }
 
 /**
