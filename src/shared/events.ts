@@ -68,7 +68,7 @@ export const EventKind = {
   AllianceRejected: 31,
   /** a = annexed nation, b = annexer (global; PLAN 1.36 editor / God). */
   NationAnnexed: 32,
-  /** a = city row, b = nation holding it, (x, y) = city (PLAN 1.36 editor). */
+  /** a = city row, b = nation holding it, (x, y) = city (PLAN 1.36 editor, God Mode's Found city); in the history since PLAN 7.33b, its name kept (`History.towns`). */
   CitySpawned: 33,
   /**
    * An element's strength reached 0 (combat, attrition, desertion; PLAN 2.4b): a = element id,
@@ -158,6 +158,17 @@ export const EventKind = {
    * shared/history.ts); (x, y) = where it burst. The history reads it into the strike's row.
    */
   NukeToll: 58,
+  /**
+   * God Mode's Spawn nation (PLAN 7.33b): a nation set down, not a rising. a = the new nation, b =
+   * the nation whose land it took, (x, y) = its capital. A birth in the lives, not a revolt.
+   */
+  NationSpawned: 59,
+  /**
+   * A city removed, by God Mode's Raze city or the editor (PLAN 7.33b): a = its definition in the
+   * scenario's city list (NO_DEF, sim/scenarioEdit, for a city placed in the game, whose name the
+   * history keeps: `History.towns`), b = the nation holding it, (x, y) = where it stood.
+   */
+  CityRazed: 60,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

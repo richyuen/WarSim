@@ -11767,3 +11767,30 @@ Of 7.33 (open in PLAN.md):
     year-20 save (`tools/diag/historyKinds.ts`), rows by type before and after; a unit test: one
     row of two zones raided, its gold the bloc's loss in `economyBreakdown`, its sentence, an old
     save's row, the tally saved.
+
+<!-- moved 2026-10-19 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.33 The history reads as events (stats and history 6, needs 7): beyond 7.31's phantom rows,
+  seed 7741's late history is 41 % "X's submarines raided the convoys of Y" (1,937 of 4,681 rows),
+  with no figure in them (`critic/c9_l_7741.json` `historyTypes`, `c9l_7741_4_history.png`); God
+  Mode's Spawn nation, Found city and Raze city leave no ticker or history row (`c9_q_6653.json`).
+  AT: seed 7741's late history by type before and after: convoy raids told with what they sank or
+  took, and a raid campaign one row (or a row a period) rather than a row a raid; the three God
+  actions each a history row (a unit test each); the history's filter shows them.
+  Split (2026-10-19):
+  - [x] 7.33a Convoy raids told (pin moves): a nation's raids on a bloc's convoys added up over a […]
+  - [x] 7.33b God's acts told: Spawn nation its own kind (not a revolt; `lives` counts it a birth,
+    not a revolt), Found city and Raze city rows with the town's name kept, each in the ticker and
+    the history's type filter. AT: a unit test each; the filter lists the three kinds.

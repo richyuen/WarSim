@@ -106,10 +106,25 @@ test('God Mode: a town founded by a click, and razed by another (PLAN 7.4f18)', 
   await expect.poll(async () => (await towns()).length).toBe(1);
   // On land Germany holds.
   expect(await page.evaluate(([x, y]) => window.__warsim!.view!.nationAt(x!, y!), [box.width / 2, box.height / 2])).toBe(GER);
+  // Told in the ticker (PLAN 7.33b, critic run 9: "Found city and Raze city leave no ticker or history row").
+  await expect(page.locator('[data-testid="ticker-row"][data-kind-name="CitySpawned"]')).toContainText('New Town was founded in Germany');
   // Raze it.
   await page.getByTestId('god-tool-raze').click();
   await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
   await expect.poll(async () => (await towns()).length).toBe(0);
+  // The raze told by the town's name, though the town is gone.
+  await expect(page.locator('[data-testid="ticker-row"][data-kind-name="CityRazed"]')).toContainText('New Town in Germany was razed');
+  // The history has both, and its type filter lists each.
+  await page.getByTestId('history-btn').click();
+  for (const [label, text] of [
+    ['City founded', 'New Town was founded in Germany'],
+    ['City razed', 'New Town in Germany was razed'],
+  ] as const) {
+    await page.getByTestId('history-kind').selectOption({ label });
+    await expect(page.getByTestId('history-row')).toHaveCount(1);
+    await expect(page.getByTestId('history-row')).toContainText(text);
+  }
+  await page.screenshot({ path: 'docs/evidence/7.33/b-town-rows.png' });
 });
 
 // PLAN 7.4f26 (AoC's Spawn Nations with its initial size): a nation set down by a click, of the
@@ -145,6 +160,15 @@ test('God Mode: a nation spawned by a click, of the size chosen (PLAN 7.4f26)', 
   expect((await stat(born)).enemies, 'at peace').toEqual([]);
   await page.waitForTimeout(300);
   await page.screenshot({ path: 'docs/evidence/7.4/f26-spawn-nation.png' });
+  // Told as a nation set up, not a revolt, in the ticker and the history (PLAN 7.33b).
+  await expect(page.locator('[data-testid="ticker-row"][data-kind-name="NationSpawned"]')).toContainText('was set up on land of Germany');
+  await expect(page.locator('[data-testid="ticker-row"][data-kind-name="RevoltSpawned"]')).toHaveCount(0);
+  await page.getByTestId('history-btn').click();
+  await page.getByTestId('history-kind').selectOption({ label: 'Nation set up' });
+  await expect(page.getByTestId('history-row')).toHaveCount(1);
+  await expect(page.getByTestId('history-row')).toContainText('was set up on land of Germany');
+  await page.screenshot({ path: 'docs/evidence/7.33/b-spawn-row.png' });
+  await page.getByTestId('history-close').click();
   // The tool stays armed for the next click.
   await expect(page.getByTestId('god-tool-nation')).toHaveClass(/active/);
   expect(await page.evaluate(() => window.__warsim!.hud.godTool.value)).toBe('nation');

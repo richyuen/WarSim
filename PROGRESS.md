@@ -19500,3 +19500,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   3.3 on Nationalist Spain; the type filter shows them (`docs/evidence/7.33/a-convoy-rows.png`,
   viewed).
 - `ConvoyRaid` loses a sum no one read. No rule change: pin 45c20987.
+
+## 2026-10-19 — PLAN 7.33b: God's acts told, a nation set up, a town founded or razed (critic R9; ADR-531). PLAN 7.33 done
+
+- **Start:** gate green on `c2021e3`; critic not due.
+- **Rule** (ADR-531): Spawn nation logs `NationSpawned` (new, 59), "Free North Rhine-Westphalia was
+  set up on land of Germany", a birth in the lives and no revolt of its holder; `CitySpawned` is
+  kept in the log, "New Town was founded in Germany"; `removeCity` logs `CityRazed` (new, 60),
+  "Prague in Czechoslovakia was razed". A town is named as the log keeps it (`History.towns`,
+  section `history.towns` saved only when not empty): a razed city's row is reused. Each is a
+  ticker kind with a cue (a nation set up the return's; a new soft `town` cue), and the type
+  filter lists "Nation set up", "City founded", "City razed". The editor's city tools log too
+  (the same commands); an exported scenario drops the history and its names.
+- **Tests:** `godActsHistory1938.test.ts` (new): a test each (the row, its sentence, the ticker;
+  the lives; a founded town's name kept after its raze and its row's reuse, through a save and an
+  exported scenario; Prague by its definition) and one of the filter. `sound.test.ts` asserts the
+  new cues (its rule: every ticker kind has one).
+- **By hand** (the gate skips e2e): `godPanelMore1938`'s town and spawn tests, extended with the
+  ticker and history rows, green; seen (`docs/evidence/7.33/b-town-rows.png`, `b-spawn-row.png`,
+  viewed).
+- **Not done:** the tooltip still reading "Prague · capital" after a raze (critic R9 non-blocking).
+- **Next:** PLAN 7.34.
+

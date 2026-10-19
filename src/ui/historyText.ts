@@ -76,6 +76,8 @@ export function historyText(r: HistoryRow): string {
       if (r.as === 'founded' && COMMON_ALLIANCES.has(name)) return t('history.oneAlliance', { name: displayName(name) });
       return t('history.theAlliance', { name: allianceTitle(name, r.of || null) });
     }
+    // A town of a row of a game saved before it was named (PLAN 7.33b).
+    if (role === 'town' && !name) return t('history.aTown');
     return name ? displayName(name) : t('history.nobody');
   };
   const kind = `history.${kindName(r.kind)}`;

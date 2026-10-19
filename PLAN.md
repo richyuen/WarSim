@@ -38,18 +38,6 @@ fixed): R9-B1 and R9-B2 are PLAN 7.31 and 7.32, the dimensions under the bar 7.3
 semantic zoom 7, naval 6, aircraft 6, AI nuclear use 7; tanks reached 8). The late air war's fall
 is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up:
 
-- [ ] 7.33 The history reads as events (stats and history 6, needs 7): beyond 7.31's phantom rows,
-  seed 7741's late history is 41 % "X's submarines raided the convoys of Y" (1,937 of 4,681 rows),
-  with no figure in them (`critic/c9_l_7741.json` `historyTypes`, `c9l_7741_4_history.png`); God
-  Mode's Spawn nation, Found city and Raze city leave no ticker or history row (`c9_q_6653.json`).
-  AT: seed 7741's late history by type before and after: convoy raids told with what they sank or
-  took, and a raid campaign one row (or a row a period) rather than a row a raid; the three God
-  actions each a history row (a unit test each); the history's filter shows them.
-  Split (2026-10-19):
-  - [x] 7.33a Convoy raids told (pin moves): a nation's raids on a bloc's convoys added up over a […]
-  - [ ] 7.33b God's acts told: Spawn nation its own kind (not a revolt; `lives` counts it a birth,
-    not a revolt), Found city and Raze city rows with the town's name kept, each in the ticker and
-    the history's type filter. AT: a unit test each; the filter lists the three kinds.
 - [ ] 7.34 Semantic zoom's seams (semantic zoom 7, needs 8): one wheel notch between 412 and 264 m/px
   cuts from flat political fill with counters to terrain with soft border bands and labels, a hard
   switch (`c9z_6113_06_07_pair.png`); at 900 m/px only counters on screen while `elementCount` is
@@ -443,3 +431,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.28 A launch shot down and the gap after it (found 2026-10-18 by PLAN 7.26b, ADR-508): the […]
 - [x] 7.31 Phantom sea battles (critic R9-B1, contradicts 7.19a): a battle in which no weapon can […]
 - [x] 7.32 AI nuclear strikes on empty ground, in weekly chains, told by civilian dead alone (critic […]
+- [x] 7.33 The history reads as events (stats and history 6, needs 7): beyond 7.31's phantom rows, […]

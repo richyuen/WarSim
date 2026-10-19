@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-531 · 2026-10-19 · accepted — God Mode's acts told: a nation set up, a town founded or razed (PLAN 7.33b)
+
+- **Context.** Critic R9 (God Mode 7; stats and history 6): "Spawn nation, Found city and Raze
+  city leave no ticker or history row" (`critic/c9_q_6653.json`). Spawn nation logged a
+  `RevoltSpawned` ("{a} broke away from {b}", counted a revolt of its holder in the lives);
+  `spawnCity` emitted `CitySpawned`, which the log did not keep; `removeCity` emitted nothing.
+- **Decision.**
+  - `NationSpawned` (59): `spawnRebels` takes the event's kind; `spawnNation` passes it. "{a} was
+    set up on land of {b}". The lives count it a birth and no revolt of b; a Kill's split stays
+    a `RevoltSpawned`. Land that rises to the new nation later reads "joined", as for rebels.
+  - `CitySpawned` (33) is kept in the log: "{a} was founded in {b}" ("… was founded" on no
+    one's land). `CityRazed` (60), emitted by `removeCity` before the row goes: a = the city's
+    definition in the scenario's list (`NO_DEF` for a city placed in the game), b = its holder;
+    "{a} in {b} was razed".
+  - A town by the name it had then: `History.towns`, row number → name, for a founding and for
+    the raze of a placed city (`nameLast` names the last row when it is of the kind). A city's
+    row is reused after a raze, so its row cannot name it later. Saved as `history.towns` only
+    when it has a name, so a game without one saves and hashes as before. A scenario exported
+    from the game drops it with the history.
+  - The three are ticker kinds, so each has a cue (every ticker kind has one): a nation set up
+    the return's; a town a new soft cue, `town`, two knocks, below peace and above the air war.
+  - The history's type filter lists them as "Nation set up", "City founded", "City razed".
+- **The editor too.** Its city tools send the same commands, so a city placed or removed in the
+  editor during a game is a row as well. Kept: it is a true event of that game, and a scenario
+  exported from it starts with no history.
+- **Pin** unchanged: no rule changed, and seed 99's year has none of these acts.
+- **Not done.** The tooltip that still reads "Prague · capital" after the raze (critic R9, a
+  non-blocking issue) is a stale tooltip, not a history row.
+
 ### ADR-530 · 2026-10-19 · accepted — Convoy raids told a quarter at a time, with the gold taken (PLAN 7.33a)
 
 - **Context.** Critic R9 (stats and history 6): on seed 7741, 1,937 of 4,681 history rows (41 %)

@@ -386,7 +386,7 @@ export function spawnNation(world: World, p: number, size: number): number {
     }
   }
   pv.version++;
-  return spawnRebels(world, area, holder, 0, false);
+  return spawnRebels(world, area, holder, 0, false, EventKind.NationSpawned);
 }
 
 /** The revolting provinces: p alone, or its restless region (setting `revoltMode`). */
@@ -441,9 +441,10 @@ function nuclearMask(world: World): TechMask {
 /**
  * Creates the rebel nation on `area` (province ids) and returns its id; with `revive`, that dead
  * nation returns instead (PLAN 1.20, called by `reviveNation`). Without `war` the holder does not
- * declare war on it (a God Mode Kill, whose holder dies in the same tick: ADR-99).
+ * declare war on it (a God Mode Kill, whose holder dies in the same tick: ADR-99). Its event is
+ * `kind`: a revolt, or God Mode's Spawn nation (`NationSpawned`, PLAN 7.33b).
  */
-export function spawnRebels(world: World, area: number[], holder: number, revive = 0, war = true): number {
+export function spawnRebels(world: World, area: number[], holder: number, revive = 0, war = true, kind: EventKind = EventKind.RevoltSpawned): number {
   const nt = world.nations;
   let id = revive;
   if (id === 0) id = nt.create();
@@ -543,7 +544,7 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
       equipFormation(world, f, 0); // template 0 = infantry_div (militia)
     }
   }
-  world.out.emit(world.tick, EventKind.RevoltSpawned, id, holder, nc.capitalX[id]!, nc.capitalY[id]!);
+  world.out.emit(world.tick, kind, id, holder, nc.capitalX[id]!, nc.capitalY[id]!);
   // A revolt is a war of independence (AoC; PLAN 1.40 tuning): rebels keep their land only by
   // winning it. (Half of the revolts used to start in peace and stayed independent for good: the
   // 50-year sweep counted 300–600 nations.)

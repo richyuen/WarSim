@@ -22,6 +22,12 @@
  *
  * A nuclear strike (`NukeCasualties`) has the city nearest its burst (PLAN 6.11c, `near`).
  *
+ * A town founded or razed (PLAN 7.33b) has the name the log keeps (`History.towns`), or, razed,
+ * its definition's: the city's row is gone, or another city's by now.
+ *
+ * `NationSpawned` (God Mode's Spawn nation, PLAN 7.33b) is a nation set down, not a rising; land
+ * that rises to it later "joined" it as land rises to rebels.
+ *
  * `WarEnded` is of a war that a bond ended (PLAN 3.12Rn): its b, the last of its side, got an
  * overlord tied to the other side. The row before it in its hour tells whose puppet it became:
  * its own `PuppetCreated` (a peace's term), or the `NationAnnexed` of its overlord, whose annexer
@@ -83,14 +89,25 @@ function tollAfter(rows: readonly number[], i: number): HistoryRow['toll'] {
   return nukeToll(rows[j + 3]!);
 }
 
+/**
+ * The name ('=' + literal) of the town of the row at `i` of kind `kind` (PLAN 7.33b): the one the
+ * log keeps, else that of a razed city's definition (`a`), else '' (a row of a game saved before
+ * the town was named).
+ */
+function townName(world: World, i: number, kind: number, a: number, defName: (def: number) => string): string {
+  const kept = world.history.towns.get(i / HISTORY_STRIDE);
+  const n = kept ?? (kind === EventKind.CityRazed ? defName(a) : '');
+  return n ? `=${n}` : '';
+}
+
 /** The kinds whose row names the city nearest its place: a strike (PLAN 6.11c), a decision to strike (PLAN 7.25c), a toll without its strike (PLAN 7.32b). */
 const NEAR_KINDS: ReadonlySet<number> = new Set([EventKind.NukeCasualties, EventKind.NukeDecided, EventKind.NukeToll]);
 
 /**
  * `nationName` gives a nation's name (an i18n key or '=' + literal), `cityName` a city row's
- * plain name ('' when it has none).
+ * plain name ('' when it has none), `defName` that of a city of the scenario's list.
  */
-export function historyRows(world: World, nationName: (id: number) => string, cityName: (row: number) => string): HistoryRow[] {
+export function historyRows(world: World, nationName: (id: number) => string, cityName: (row: number) => string, defName: (def: number) => string = () => ''): HistoryRow[] {
   const rows = world.history.rows;
   const alliances = new Map<number, { nameKey: string; founder: number }>();
   for (const a of world.alliances.past) alliances.set(a.id, a);
@@ -146,8 +163,9 @@ export function historyRows(world: World, nationName: (id: number) => string, ci
     const al = alliances.get(alId);
     const founding = kind === EventKind.AllianceJoined && !named.has(alId) && a === al?.founder;
     if (alId !== 0) named.add(alId);
-    const row: HistoryRow = { tick, kind, a, b, x: Number.isNaN(x) ? null : x, y: Number.isNaN(y) ? null : y, an: name(ra, a), bn: name(rb, b), of: al ? nation(al.founder) : '' };
+    const row: HistoryRow = { tick, kind, a, b, x: Number.isNaN(x) ? null : x, y: Number.isNaN(y) ? null : y, an: ra === 'town' ? townName(world, i, kind, a, defName) : name(ra, a), bn: name(rb, b), of: al ? nation(al.founder) : '' };
     if (kind === EventKind.NationEliminated) risen.delete(a);
+    if (kind === EventKind.NationSpawned) risen.add(a);
     const as = kind === EventKind.RevoltSpawned ? revoltAs(tick, a) : kind === EventKind.LandCeded && died.has(tick * NATION_KEY + b) ? 'left' : founding ? 'founded' : undefined;
     if (as) row.as = as;
     const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
@@ -174,7 +192,7 @@ const PLACE_OF_B: ReadonlySet<number> = new Set([EventKind.WarDeclared, EventKin
  * has the peace last. A war that a bond ended is told as the history tells it (PLAN 3.12Rn).
  * A strike has the city nearest it when `cityName` names one (PLAN 6.11c).
  */
-export function tickerRows(world: World, nationName: (id: number) => string, cityName: (row: number) => string = () => ''): TickerRow[] {
+export function tickerRows(world: World, nationName: (id: number) => string, cityName: (row: number) => string = () => '', defName: (def: number) => string = () => ''): TickerRow[] {
   const rows = world.history.rows;
   const nc = world.nations.cols;
   const nation = (v: number): string => (v !== 0 && world.nations.has(v) ? nationName(v) : '');
@@ -207,7 +225,7 @@ export function tickerRows(world: World, nationName: (id: number) => string, cit
     const [ra, rb] = HISTORY_ROLES[kind] ?? ['number', 'number'];
     // A side is its nation and a count (PLAN 5.11a: the air's rows); a strike the nation struck (PLAN 6.6a).
     const who = (role: HistoryRole, v: number): string => (role === 'nation' ? nation(v) : role === 'side' ? nation(seaSide(v).nation) : role === 'strike' ? nation(nukeStrike(v).nation) : '');
-    const row: TickerRow = { i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: ra === 'side' ? who(ra, a) : nation(a), bn: who(rb, b), of: '' };
+    const row: TickerRow = { i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: ra === 'side' ? who(ra, a) : ra === 'town' ? townName(world, i, kind, a, defName) : nation(a), bn: who(rb, b), of: '' };
     const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
     if (over) [row.as, row.cn] = ['puppet', over];
     const near = NEAR_KINDS.has(kind) ? strikeNear(world, x, y, cityName) : '';

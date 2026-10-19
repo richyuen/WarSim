@@ -5,13 +5,13 @@
  *
  * - A nation lives from tick 0 if the log has no birth of it before its first death (a nation of
  *   the scenario), else from its birth: `RevoltSpawned` (a = the new nation; a revolt, a Kill's
- *   split, God Mode's Spawn nation) or `NationRevived`. `NationEliminated` ends a life: every
+ *   split), `NationSpawned` (God Mode's Spawn nation, PLAN 7.33b) or `NationRevived`. `NationEliminated` ends a life: every
  *   death goes through it (`capitals.ts`). A revived nation's age is the sum of its lives.
  *   Nation rows are never removed, so an id is one nation.
  * - Wars: the wars it declared or had declared on it (`WarDeclared`). Allies that join a war
  *   have no event of it, so a war joined is not counted.
- * - Revolts: the nations that rose on its land (`RevoltSpawned` b): a God Mode spawn and a Kill's
- *   split are counted as revolts, which the log does not tell apart.
+ * - Revolts: the nations that rose on its land (`RevoltSpawned` b): a Kill's split is counted as
+ *   a revolt, which the log does not tell apart. A nation God set down is not (PLAN 7.33b).
  */
 import { EventKind } from '../shared/events';
 import { HISTORY_STRIDE } from '../sim/history';
@@ -69,7 +69,7 @@ export class Lives {
       if (kind === EventKind.RevoltSpawned) {
         this.born(a, tick);
         this.tally(b).revolts++;
-      } else if (kind === EventKind.NationRevived) this.born(a, tick);
+      } else if (kind === EventKind.NationRevived || kind === EventKind.NationSpawned) this.born(a, tick);
       else if (kind === EventKind.NationEliminated) this.died(a, tick);
       else if (kind === EventKind.WarDeclared) {
         this.tally(a).wars++;

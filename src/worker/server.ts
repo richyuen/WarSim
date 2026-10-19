@@ -637,7 +637,7 @@ export class SimServer {
     });
     const news = this.newsFrom < 0 ? [] : tickerNews(world, this.newsFrom);
     this.newsFrom = world.history.length;
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, lives: this.lives.of(world), aiEnabled: world.settings.aiEnabled, nukesEnabled: world.settings.nukesEnabled, rules: { winnerTakesAll: world.settings.winnerTakesAll, revoltMode: world.settings.revoltMode, ceMode: world.settings.ceMode }, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id), (v) => this.cityName(v)), news, world: this.worldNo, wings: playerWings(world) }, []);
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, lives: this.lives.of(world), aiEnabled: world.settings.aiEnabled, nukesEnabled: world.settings.nukesEnabled, rules: { winnerTakesAll: world.settings.winnerTakesAll, revoltMode: world.settings.revoltMode, ceMode: world.settings.ceMode }, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id), (v) => this.cityName(v), (d) => cities1938.cities[d]?.name ?? ''), news, world: this.worldNo, wings: playerWings(world) }, []);
   }
 
   /**
@@ -902,7 +902,7 @@ export class SimServer {
   /** The history log with a/b names resolved (PLAN 1.34a), as JSON `HistoryRow[]`. */
   private historyRows(): Uint8Array {
     const world = this.requireSim().world;
-    return new TextEncoder().encode(JSON.stringify(historyRows(world, (id) => this.nameOf(id), (v) => this.cityName(v))));
+    return new TextEncoder().encode(JSON.stringify(historyRows(world, (id) => this.nameOf(id), (v) => this.cityName(v), (d) => cities1938.cities[d]?.name ?? '')));
   }
 
   /** A city row's plain name, '' when it has none. */

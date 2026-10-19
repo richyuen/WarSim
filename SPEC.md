@@ -2864,12 +2864,21 @@ on screen.
     `PuppetCreated` or a `NationAnnexed` (the nearest of them: the overlord, or the annexer
     that has b now, is the row's `cn`); else "… ended with no peace signed". A war whose
     last nation of a side died has no row of its own: the death's row is its end.
+  - God Mode's acts (PLAN 7.33b, ADR-531): Spawn nation is `NationSpawned`, "{a} was set up on
+    land of {b}" (a birth in the lives, not a revolt of b; land that rises to it later "joined"
+    it); Found city `CitySpawned`, "{a} was founded in {b}"; Raze city `CityRazed`, "{a} in {b}
+    was razed" (a = the city's definition, b its holder; `removeCity` emits it, the editor's
+    too). A town is named as the log keeps it (`History.towns`, row number → name, section
+    `history.towns` saved while not empty): the name a city was placed with, or a razed city's
+    definition's. A city's row and name go when it is razed and the row is reused. A scenario
+    exported from the game has no history and no names.
   - `src/ui/HistoryPanel.tsx`: newest first, filters by type, nation and years; CSV
     (RFC 4180) and JSON export of the filtered rows. The sentence of a row is
     `src/ui/historyText.ts`.
 - **Ticker** (implemented PLAN 3.12c, ADR-211; `src/ui/Ticker.tsx`): the major events
   (`TICKER_KINDS`: a war declared, a peace, a war ended by a bond, a capital taken, a nation
-  destroyed, collapsed, annexed or returned) as they happen, bottom left above the bar, the newest last, a live
+  destroyed, collapsed, annexed or returned; God Mode's nation set up, town founded or razed,
+  PLAN 7.33b) as they happen, bottom left above the bar, the newest last, a live
   region (`role="log"`).
   - Below the events, what became of the player's orders of formations (PLAN 4.9c, ADR-300):
     the worker remembers each formation a player's `moveFormation` names and tells the page at

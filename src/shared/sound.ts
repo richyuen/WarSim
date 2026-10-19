@@ -7,7 +7,7 @@ import { EventKind } from './events';
 import type { TickerRow } from './history';
 
 /** The cues, the loudest news first: of several events in one message the first of these is heard. */
-export const CUES = ['nuke', 'war', 'death', 'capital', 'return', 'peace', 'air'] as const;
+export const CUES = ['nuke', 'war', 'death', 'capital', 'return', 'peace', 'town', 'air'] as const;
 export type Cue = (typeof CUES)[number];
 
 const CUE_OF_KIND: Readonly<Record<number, Cue>> = {
@@ -24,6 +24,11 @@ const CUE_OF_KIND: Readonly<Record<number, Cue>> = {
   // The month's air war (PLAN 5.11a): the quietest, heard only with no other news.
   [EventKind.AirWar]: 'air',
   [EventKind.AirRaids]: 'air',
+  // God Mode's acts (PLAN 7.33b): a nation set down is a nation that comes, as a return; a town
+  // founded or razed its own, soft.
+  [EventKind.NationSpawned]: 'return',
+  [EventKind.CitySpawned]: 'town',
+  [EventKind.CityRazed]: 'town',
 };
 
 /** The cue of an event kind (null: the event is silent). Every kind of the ticker has one. */
@@ -72,7 +77,8 @@ export interface Note {
  * The cues' notes, made in code (no sound file is loaded). War is a three-note call rising a
  * fourth and a fifth, as of a trumpet; a death two low falling tones; a capital taken two drum
  * strokes; a return a rising arpeggio; peace two soft bells; the month's air war an engine's
- * drone passing over, low and soft (PLAN 5.11a); a nuclear strike a deep boom falling away and a
+ * drone passing over, low and soft (PLAN 5.11a); a town founded or razed a mallet's two knocks on wood
+ * (PLAN 7.33b); a nuclear strike a deep boom falling away and a
  * long rumble under it (PLAN 6.6b).
  */
 export const CUE_NOTES: Readonly<Record<Cue, readonly Note[]>> = {
@@ -105,6 +111,10 @@ export const CUE_NOTES: Readonly<Record<Cue, readonly Note[]>> = {
   peace: [
     { wave: 'sine', hz: 659.25, at: 0, dur: 0.6, gain: 0.45 },
     { wave: 'sine', hz: 880, at: 0.18, dur: 0.8, gain: 0.4 },
+  ],
+  town: [
+    { wave: 'triangle', hz: 440, to: 392, at: 0, dur: 0.12, gain: 0.35 },
+    { wave: 'triangle', hz: 349.23, to: 311.13, at: 0.2, dur: 0.25, gain: 0.35 },
   ],
   air: [
     { wave: 'sawtooth', hz: 98, to: 130.81, at: 0, dur: 0.7, gain: 0.22 },

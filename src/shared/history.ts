@@ -7,7 +7,8 @@
 import { dateOfTick } from './calendar';
 import { EventKind } from './events';
 
-export type HistoryRole = 'nation' | 'alliance' | 'battle' | 'city' | 'number' | 'side' | 'strike';
+/** 'town': a city founded or razed (PLAN 7.33b), named as the log keeps it, not as the city table has it now. */
+export type HistoryRole = 'nation' | 'alliance' | 'battle' | 'city' | 'number' | 'side' | 'strike' | 'town';
 
 /** A side of a sea battle in a row (PLAN 4.3c): its nation and the ships it lost, as nation + SIDE_SHIPS × ships. */
 export const SIDE_SHIPS = 65536;
@@ -93,6 +94,10 @@ export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, Histo
   [EventKind.NukeDecided]: ['nation', 'number'],
   // A burst's forces destroyed (PLAN 7.32b): read into its strike's row, not a row of its own.
   [EventKind.NukeToll]: ['nation', 'number'],
+  // God Mode's acts (PLAN 7.33b): a nation set down on another's land, a town founded or razed in it.
+  [EventKind.NationSpawned]: ['nation', 'nation'],
+  [EventKind.CitySpawned]: ['town', 'nation'],
+  [EventKind.CityRazed]: ['town', 'nation'],
 };
 
 /** Stable English type name of a kind (filters, CSV/JSON `type`). */
@@ -152,6 +157,10 @@ export const TICKER_KINDS: ReadonlySet<number> = new Set<number>([
   // The month's air war (PLAN 5.11a): its largest row of each kind (`tickerRows`).
   EventKind.AirWar,
   EventKind.AirRaids,
+  // God Mode's acts (PLAN 7.33b).
+  EventKind.NationSpawned,
+  EventKind.CitySpawned,
+  EventKind.CityRazed,
 ]);
 /** Kinds of which the ticker takes one row an hour, the last logged: a month's air rows, logged the largest last. */
 export const TICKER_ONE_AN_HOUR: ReadonlySet<number> = new Set<number>([EventKind.AirWar, EventKind.AirRaids]);

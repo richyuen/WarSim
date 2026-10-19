@@ -63,14 +63,21 @@ export function spawnCity(world: World, x: number, y: number, name: string, size
   world.supplyDirty = true;
   world.citiesVersion++;
   world.out.emit(world.tick, EventKind.CitySpawned, id, owner[cell]!, cc.x[id]!, cc.y[id]!);
+  world.history.nameLast(EventKind.CitySpawned, label); // the row's town by name: the row may be razed and reused (PLAN 7.33b)
   return id;
 }
 
-/** Removes city row `id`; a capital moves to the nation's next city (or the field). */
+/**
+ * Removes city row `id`; a capital moves to the nation's next city (or the field). Told in the
+ * history (`CityRazed`, PLAN 7.33b) with its name: its definition's, or the one it was placed with.
+ */
 export function removeCity(world: World, id: number): boolean {
   if (!world.cities.has(id)) return false;
   const cc = world.cities.cols;
   const capitalOf = cc.capitalOf[id]!;
+  const placed = world.cityNames.get(id);
+  world.out.emit(world.tick, EventKind.CityRazed, cc.def[id]!, world.cells.owner[cc.cell[id]!]!, cc.x[id]!, cc.y[id]!);
+  if (cc.def[id] === NO_DEF && placed !== undefined) world.history.nameLast(EventKind.CityRazed, placed);
   const econ = world.cells.econ;
   econ[cc.cell[id]!] = Math.max(0, econ[cc.cell[id]!]! - cc.econ[id]!);
   world.cityNames.delete(id);
