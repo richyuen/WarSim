@@ -17,11 +17,11 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { size1938, TAGS_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from '../headless/assets';
-import { AT_PORT_CELLS, basinAt, seaKm } from '../../src/sim/systems/navalCombat';
+import { AT_PORT_CELLS, seaKm } from '../../src/sim/systems/navalCombat';
 import { fleetPower, navalPower } from '../../src/sim/systems/seaControl';
 import { blocOf } from '../../src/sim/systems/supply';
-import { AVOID_RATIO, forwardBases, navalBombers, SORTIE_KM, stageTo } from '../../src/sim/ai/naval';
-import { basinOf, portSeaOf, seaOf, seaRangeOf, type World } from '../../src/sim/world';
+import { AVOID_RATIO, forwardBases, keyAt, navalBombers, SORTIE_KM, stageTo, waterKeys } from '../../src/sim/ai/naval';
+import { portSeaOf, seaOf, seaRangeOf, type World } from '../../src/sim/world';
 
 const seed = Number(process.argv[2]);
 const A = process.argv[3] ?? 'JAP';
@@ -129,8 +129,9 @@ for (let day = 0; day < days; day++) {
       const bombers = navalBombers(w, n);
       const bombed = (x: number, y: number): boolean => bombers.some((b) => seaKm(w, b.x, b.y, x, y) <= b.r);
       const targets: { at: number; basin: number }[] = [];
-      const { basin, ocean } = basinOf(w);
-      const mineB = basinAt(w, c.x[f]!, c.y[f]!);
+      // The waters n's ships sail between, as `plan` reads them (PLAN 7.35d2d2: a passage shut to n parts them).
+      const keys = waterKeys(w, n);
+      const mineB = keyAt(w, keys, c.x[f]!, c.y[f]!);
       w.ports.forEach((p, i) => {
         const holder = w.cells.controller[p.cell]!;
         const at = water[i]!;
@@ -138,9 +139,9 @@ for (let day = 0; day < days; day++) {
         const zone = z.zoneOf[at]!;
         if (zone === 0 || z.closed[zone] === 1) return;
         // A forward base's targets, as `plan`'s (PLAN 7.35b4c2): not empty water under the bombers.
-        if (!(enemyIn(zone) === 0 && bombed((at % ww) + 0.5, Math.floor(at / ww) + 0.5))) targets.push({ at, basin: basin[zone] || ocean });
-        // Of the fleet's basin only, as `plan`'s sortie (PLAN 7.35d2d).
-        if ((basin[zone] || ocean) !== mineB) return;
+        if (!(enemyIn(zone) === 0 && bombed((at % ww) + 0.5, Math.floor(at / ww) + 0.5))) targets.push({ at, basin: keys[zone]! });
+        // Of the fleet's waters only, as `plan`'s sortie (PLAN 7.35d2d, 7.35d2d2).
+        if (keys[zone] !== mineB) return;
         const d = km(at);
         if (d < anyBest.km) anyBest = { name: `${p.name}(${tag(holder)})`, km: Math.round(d) };
         if (d > SORTIE_KM) return;
@@ -158,7 +159,7 @@ for (let day = 0; day < days; day++) {
         why = `no enemy port within ${SORTIE_KM} km`;
         if (targets.length > 0) {
           const war = mineAtPort.map((g) => ({ p: fleetPower(w, g) }));
-          const base = stageTo(w, f, forwardBases(w, bloc, targets, war, enemyIn));
+          const base = stageTo(w, f, forwardBases(w, bloc, targets, war, enemyIn, keys), keys);
           const sk = base >= 0 ? km(base) : Infinity;
           if (base < 0) why += '; no forward base';
           else {

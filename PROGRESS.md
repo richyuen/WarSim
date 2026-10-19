@@ -20091,3 +20091,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 7.35d2d3b (`seaMeet` on `waterKeys`; `targetMiss` traced).
 - **After the commit** (`54fefad`): by hand, `seaBattle1938`, `navalDemo1938`, `seaRow1938` (3),
   `carrierStrikeRow1938`, `seaControl1938`, `fleetOrder1938` green (8).
+
+## 2026-10-19 — PLAN 7.35d2d3b: the tool, `seaMeet` on the fleet's waters and `targetMiss` named (critic R9 naval 6)
+
+- **Start:** gate green on `b9a507a`; critic not due.
+- **`seaMeet`** passes `waterKeys(w, n)` to `forwardBases` and `stageTo` and filters the sortie by the
+  fleet's key, as `plan` (7.35d2d2). Old tool against new: `seaMeet 3407 JAP USA 40` the same in all
+  1,763 rows and 15 battles; `seaMeet 1471 ENG TUR 12` 2 rows differ (a British fleet at Dubai read
+  for Trabzon behind the shut straits, now Adana; it sails for Tarsus, Adana's water).
+- **`targetMiss`** named per order (`seaHold`'s `targetMissWho`; 14 seeds × 6 years, JSON in
+  `docs/evidence/7.35/d2d3b/`, `measure-d.md` §9; the run gives §8's figures to the order): years
+  2–6, 459 of 473 a landing `invasionAi` loads in the tick (it runs before `navalAi`, so `plan`'s
+  escort takes it), 14 a war `strategicAi` declares in the tick; year 1 also 10 home, 1 untraced. The
+  tool's reads agree with `plan`; `agree` may be leaned on.
+- **Seen:** seed 1471's US fleet takes up the same landing water at four Caribbean ports 25 AI days
+  each: under 7.35d2d3c (whether those landings sail).
+- No rule, no test: the pin unchanged.
+- **Next:** PLAN 7.35d2d3c (the "after" run of `seaYears`; the three causes re-measured).

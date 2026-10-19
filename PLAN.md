@@ -226,12 +226,16 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
               war with Turkey, the Bosporus shut: no home port there, so it is not sent for one
               through the strait; red without); `seaHold`'s 29 refusals → 0; the pin; an ADR (what a
               fleet with no home port it reaches does); `--profile`.
-            - [ ] 7.35d2d3b The tool: `seaMeet` passes `waterKeys(world, n)` to `forwardBases` and
+            - [x] 7.35d2d3b The tool: `seaMeet` passes `waterKeys(world, n)` to `forwardBases` and
               `stageTo`; `check.targetMiss` (419 of 13,160) traced or named. No rule: the pin
               unchanged.
             - [ ] 7.35d2d3c The "after" run of `seaYears` on the 14 seeds × 30 years against d1's,
               and the three causes re-measured with `seaHold` (across land, a partner's port the
               enemy holds, the enemy beyond `SORTIE_KM`): a rule each (split then), or the reason.
+              From d2d3b (`measure-d.md` §9): `targetMiss` is the tick's own changes before `navalAi`
+              (a landing `invasionAi` loads, 459 of 473; a war `strategicAi` declares, 14), so `agree`
+              may be leaned on; and the same landing water is taken up AI day after AI day (seed 1471,
+              year 3, 25 for each of four Caribbean ports): whether those landings sail, measured.
 - [ ] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
   and 10 m/px in every probe (`c9_c_4483.json` `sorties`); the air map on day 10 of Germany–Poland
   hatches one German zone over all of Europe, every hover "held by Germany" from London to Kiev

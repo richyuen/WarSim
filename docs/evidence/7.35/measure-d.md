@@ -372,3 +372,43 @@ years, years 2–6, `sea` fleet-days:
   Seed 99, one year, `--profile`, pinned, HEAD's code timed after it on the same machine (a load
   that ran every system about 1.5 × slower than §7's): navalCombat 0.107–0.111 ms a tick against
   0.106, navalAi 0.066 against 0.063, territory (untouched) 0.229–0.235 against 0.225.
+
+## 9. The tool: `seaMeet` on the fleet's waters, `targetMiss` named (7.35d2d3b, at `b9a507a`)
+
+No rule: the pin unchanged. Two changes to the tools.
+
+**`seaMeet`** passes `waterKeys(world, n)` to `forwardBases` and `stageTo`, and filters the sortie's
+targets by the fleet's key (`keyAt`), as `plan` has since 7.35d2d2; before, it filtered by basin.
+- `seaMeet 3407 JAP USA 40 new` with the old tool and the new: all 1,763 rows and the 15 battles the
+  same (no passage is shut to Japan or the USA in those waters).
+- `seaMeet 1471 ENG TUR 12 new` (Turkey holds both banks of the straits, so they are shut to
+  Britain): 2 of 463 rows differ. A British fleet at Dubai on days 7 and 8: the old tool read its
+  sortie as Trabzon (Black Sea, behind the straits: `orderSail` refuses it), the new one Adana; the
+  fleet sails for Tarsus, Adana's water, on day 8.
+
+**`targetMiss`** (fleets read as ordered that sail for another cell than the read) named per order
+(`targetMissWho`: the read's port, the one sailed for, and what that one is). JSON in
+`d2d3b/after_<seed>.json`; the 14 seeds × 6 years at `b9a507a` give §8's figures to the order
+(115,277 `sea` fleet-days; 14,013 of 14,063 orders agree; 473 `targetMiss` in years 2–6, 196 back to
+an earlier target, 0 refused), so the run is §8's after-run read again.
+
+| sailed for | years 2–6 | year 1 |
+| --- | --- | --- |
+| a landing's water of the fleet's nation (`embarked`) | 459 | 11 |
+| a port of a nation it was not at war with at the read (`newWar`) | 14 | 51 |
+| its home port (`nearestOwnPort`) | 0 | 10 |
+| none of these | 0 | 1 |
+
+- The read comes before the tick; `strategicAi` and `invasionAi` run before `navalAi` in it
+  (`sim.ts`). A landing `invasionAi` loads that tick becomes `plan`'s escort, which comes first
+  (seed 1471 year 3: a US fleet read as sent for an empty British port in the Caribbean, Roseau,
+  Castries, Kingstown, Saint George's, 25 AI days each, sails for a landing's water each time). A war
+  `strategicAi` declares that tick adds targets (seed 4957 year 3: a French fleet read as staging to Djibouti
+  sails for Barcelona, Germany's, 11 times; seed 2609 year 2: a Soviet fleet read as sent for
+  Chatham sails for Oslo, 3). The year-1 orders home: by the same
+  reading a peace made that tick (not checked); one order of year 1 (seed 9901) is not traced.
+- So `targetMiss` is the tick's own changes before `navalAi`, not a read that differs from `plan`:
+  the tool's figures may lean on `agree`. By seed (years 2–6, landing / new war): 1129 60/0, 1471
+  138/0, 2251 2/0, 2609 12/3, 3407 55/0, 3793 56/0, 4957 0/11, 6653 80/0, 7741 56/0.
+- Left for 7.35d2d3c: the same landing water taken up on AI day after AI day (seed 1471's 25 a port)
+  says the landings there are loaded again and again; whether they sail is not measured here.

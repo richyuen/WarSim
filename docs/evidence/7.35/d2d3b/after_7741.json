@@ -1,0 +1,549 @@
+{
+ "seed": 7741,
+ "years": 6,
+ "wallS": 222,
+ "rows": [
+  {
+   "year": 1,
+   "sea": {
+    "awayBattle": 22,
+    "awayEnemyPort": 2723,
+    "sortie": 9,
+    "moving": 77,
+    "awayStation": 42,
+    "sortieEmpty": 94,
+    "awayBack": 29,
+    "stage": 35,
+    "awayHome": 3,
+    "awayHunt": 13,
+    "noBase": 280
+   },
+   "other": {
+    "sortieEmpty": 48,
+    "stage": 6,
+    "awayStation": 18,
+    "awayEnemyPort": 385,
+    "moving": 16,
+    "noEnemyPort": 1,
+    "escort": 2
+   },
+   "holes": {
+    "otherBasin": 0,
+    "otherBasinAway": 0,
+    "farWay": 29,
+    "rejected": 0,
+    "rejectedOther": 0,
+    "rejectedShut": 0,
+    "rejectedNoRoute": 0
+   },
+   "away": {
+    "awayPartnerPort": {
+     "battle": 1,
+     "empty": 39,
+     "none": 9
+    },
+    "awayEnemyPort": {
+     "battle": 17,
+     "empty": 2621,
+     "none": 118
+    },
+    "awayOpen": {
+     "battle": 0,
+     "empty": 1,
+     "none": 0
+    },
+    "awayNeutralPort": {
+     "battle": 1,
+     "empty": 2,
+     "none": 20
+    }
+   },
+   "emptyPick": {
+    "defended": 8,
+    "none": 86
+   },
+   "neutralWas": {
+    "wasEnemy": 22,
+    "never": 1
+   },
+   "neutralOrder": {
+    "battle": 1,
+    "station": 2,
+    "home": 20
+   },
+   "enemyAt": {
+    "moving": 121,
+    "far": 2646,
+    "targetStronger": 13,
+    "notTarget": 30,
+    "none": 0
+   },
+   "check": {
+    "ordered": 321,
+    "agree": 312,
+    "held": 3363,
+    "stray": 8,
+    "miss": {
+     "awayStation": 1,
+     "awayBack": 8
+    },
+    "targetMiss": {
+     "awayStation": 12
+    },
+    "pingPong": 0
+   },
+   "strongerRatio": [
+    0,
+    0
+   ],
+   "shutWho": {},
+   "noRouteWho": {},
+   "otherBasinWho": {},
+   "targetMissWho": {
+    "GER awayStation: Memel(LIT) → Amsterdam(NED) (newWar)": 4,
+    "ITA awayStation: Memel(LIT) → Amsterdam(NED) (newWar)": 8
+   }
+  },
+  {
+   "year": 2,
+   "sea": {
+    "awayEnemyPort": 1452,
+    "noBase": 232,
+    "stage": 19,
+    "moving": 13,
+    "sortieEmpty": 308,
+    "awayBack": 12,
+    "awayLostPartner": 77,
+    "awayHunt": 9,
+    "awayHome": 3,
+    "sortie": 4,
+    "awayBattle": 1,
+    "awayStation": 15
+   },
+   "other": {
+    "awayEnemyPort": 714,
+    "stage": 33,
+    "moving": 7,
+    "sortieEmpty": 401,
+    "noEnemyPort": 59,
+    "awayBack": 28,
+    "awayLostPartner": 25,
+    "awayStation": 12,
+    "escort": 4
+   },
+   "holes": {
+    "otherBasin": 0,
+    "otherBasinAway": 0,
+    "farWay": 47,
+    "rejected": 0,
+    "rejectedOther": 0,
+    "rejectedShut": 0,
+    "rejectedNoRoute": 0
+   },
+   "away": {
+    "awayEnemyPort": {
+     "battle": 2,
+     "empty": 1415,
+     "none": 44
+    },
+    "awayPartnerPort": {
+     "battle": 1,
+     "empty": 7,
+     "none": 12
+    },
+    "awayLostPartner": {
+     "battle": 0,
+     "empty": 69,
+     "none": 8
+    },
+    "awayNeutralPort": {
+     "battle": 0,
+     "empty": 8,
+     "none": 0
+    }
+   },
+   "emptyPick": {
+    "defended": 51,
+    "none": 257
+   },
+   "neutralWas": {
+    "wasEnemy": 8,
+    "never": 0
+   },
+   "neutralOrder": {
+    "battle": 0,
+    "station": 8,
+    "home": 0
+   },
+   "enemyAt": {
+    "moving": 38,
+    "far": 1512,
+    "targetStronger": 1,
+    "notTarget": 12,
+    "none": 0
+   },
+   "check": {
+    "ordered": 848,
+    "agree": 848,
+    "held": 2556,
+    "stray": 1,
+    "miss": {},
+    "targetMiss": {},
+    "pingPong": 0
+   },
+   "strongerRatio": [
+    0,
+    0
+   ],
+   "shutWho": {},
+   "noRouteWho": {},
+   "otherBasinWho": {},
+   "targetMissWho": {}
+  },
+  {
+   "year": 3,
+   "sea": {
+    "awayLostPartner": 408,
+    "sortieEmpty": 168,
+    "awayEnemyPort": 2527,
+    "awayBattle": 29,
+    "awayHome": 3,
+    "awayStation": 31,
+    "awayHunt": 11,
+    "moving": 25,
+    "atTarget": 1
+   },
+   "other": {
+    "awayEnemyPort": 695,
+    "noEnemyPort": 4,
+    "moving": 5,
+    "sortieEmpty": 11,
+    "awayLostPartner": 8
+   },
+   "holes": {
+    "otherBasin": 0,
+    "otherBasinAway": 0,
+    "farWay": 0,
+    "rejected": 0,
+    "rejectedOther": 0,
+    "rejectedShut": 0,
+    "rejectedNoRoute": 0
+   },
+   "away": {
+    "awayLostPartner": {
+     "battle": 0,
+     "empty": 408,
+     "none": 0
+    },
+    "awayEnemyPort": {
+     "battle": 24,
+     "empty": 2543,
+     "none": 0
+    },
+    "awayPartnerPort": {
+     "battle": 0,
+     "empty": 23,
+     "none": 0
+    },
+    "awayNeutralPort": {
+     "battle": 0,
+     "empty": 5,
+     "none": 0
+    },
+    "awayOpen": {
+     "battle": 0,
+     "empty": 3,
+     "none": 0
+    }
+   },
+   "emptyPick": {
+    "defended": 0,
+    "none": 169
+   },
+   "neutralWas": {
+    "wasEnemy": 5,
+    "never": 0
+   },
+   "neutralOrder": {
+    "battle": 0,
+    "station": 5,
+    "home": 0
+   },
+   "enemyAt": {
+    "moving": 13,
+    "far": 2952,
+    "targetStronger": 0,
+    "notTarget": 17,
+    "none": 0
+   },
+   "check": {
+    "ordered": 254,
+    "agree": 254,
+    "held": 3671,
+    "stray": 0,
+    "miss": {},
+    "targetMiss": {
+     "sortieEmpty": 1
+    },
+    "pingPong": 0
+   },
+   "strongerRatio": [
+    0,
+    0
+   ],
+   "shutWho": {},
+   "noRouteWho": {},
+   "otherBasinWho": {},
+   "targetMissWho": {
+    "FRA sortieEmpty: Barcelona(GER) → cell 697449 (landing)": 1
+   }
+  },
+  {
+   "year": 4,
+   "sea": {
+    "awayLostPartner": 290,
+    "awayEnemyPort": 1851,
+    "sortieEmpty": 177,
+    "awayStation": 65,
+    "awayHome": 3,
+    "moving": 4,
+    "awayHunt": 69,
+    "stage": 15,
+    "awayBattle": 91
+   },
+   "other": {
+    "awayEnemyPort": 709,
+    "awayStation": 24,
+    "awayBack": 8,
+    "sortieEmpty": 80,
+    "stage": 8,
+    "moving": 1,
+    "awayLostPartner": 284,
+    "noBase": 72
+   },
+   "holes": {
+    "otherBasin": 0,
+    "otherBasinAway": 0,
+    "farWay": 4,
+    "rejected": 0,
+    "rejectedOther": 0,
+    "rejectedShut": 0,
+    "rejectedNoRoute": 0
+   },
+   "away": {
+    "awayLostPartner": {
+     "battle": 47,
+     "empty": 290,
+     "none": 0
+    },
+    "awayEnemyPort": {
+     "battle": 57,
+     "empty": 1611,
+     "none": 274
+    },
+    "awayPartnerPort": {
+     "battle": 22,
+     "empty": 8,
+     "none": 0
+    },
+    "awayNeutralPort": {
+     "battle": 0,
+     "empty": 57,
+     "none": 0
+    }
+   },
+   "emptyPick": {
+    "defended": 7,
+    "none": 170
+   },
+   "neutralWas": {
+    "wasEnemy": 57,
+    "never": 0
+   },
+   "neutralOrder": {
+    "battle": 0,
+    "station": 57,
+    "home": 0
+   },
+   "enemyAt": {
+    "moving": 123,
+    "far": 2081,
+    "targetStronger": 0,
+    "notTarget": 36,
+    "none": 0
+   },
+   "check": {
+    "ordered": 540,
+    "agree": 540,
+    "held": 3207,
+    "stray": 26,
+    "miss": {},
+    "targetMiss": {
+     "sortieEmpty": 55
+    },
+    "pingPong": 1
+   },
+   "strongerRatio": [
+    0,
+    0
+   ],
+   "shutWho": {},
+   "noRouteWho": {},
+   "otherBasinWho": {},
+   "targetMissWho": {
+    "USA sortieEmpty: Roseau(ENG) → cell 1039010 (landing)": 11,
+    "USA sortieEmpty: Castries(ENG) → cell 1057445 (landing)": 11,
+    "USA sortieEmpty: Kingstown(ENG) → cell 1065635 (landing)": 11,
+    "USA sortieEmpty: Saint George's(ENG) → cell 1079968 (landing)": 11,
+    "USA sortieEmpty: Port-of-Spain(ENG) → cell 1096354 (landing)": 11
+   }
+  },
+  {
+   "year": 5,
+   "sea": {
+    "awayEnemyPort": 988
+   },
+   "other": {
+    "awayEnemyPort": 1188,
+    "awayLostPartner": 242,
+    "sortieEmpty": 55,
+    "awayStation": 57,
+    "noEnemyPort": 7,
+    "stage": 1
+   },
+   "holes": {
+    "otherBasin": 0,
+    "otherBasinAway": 0,
+    "farWay": 0,
+    "rejected": 0,
+    "rejectedOther": 0,
+    "rejectedShut": 0,
+    "rejectedNoRoute": 0
+   },
+   "away": {
+    "awayEnemyPort": {
+     "battle": 0,
+     "empty": 988,
+     "none": 0
+    }
+   },
+   "emptyPick": {
+    "defended": 0,
+    "none": 0
+   },
+   "neutralWas": {
+    "wasEnemy": 0,
+    "never": 0
+   },
+   "neutralOrder": {
+    "battle": 0,
+    "station": 0,
+    "home": 0
+   },
+   "enemyAt": {
+    "moving": 0,
+    "far": 988,
+    "targetStronger": 0,
+    "notTarget": 0,
+    "none": 0
+   },
+   "check": {
+    "ordered": 113,
+    "agree": 113,
+    "held": 2425,
+    "stray": 0,
+    "miss": {},
+    "targetMiss": {},
+    "pingPong": 11
+   },
+   "strongerRatio": [
+    0,
+    0
+   ],
+   "shutWho": {},
+   "noRouteWho": {},
+   "otherBasinWho": {},
+   "targetMissWho": {}
+  },
+  {
+   "year": 6,
+   "sea": {
+    "awayEnemyPort": 1693,
+    "sortieEmpty": 389,
+    "awayHome": 18,
+    "awayStation": 20,
+    "moving": 4,
+    "stage": 2,
+    "awayBattle": 18
+   },
+   "other": {
+    "awayEnemyPort": 36,
+    "awayStation": 1,
+    "awayBack": 1,
+    "stage": 1,
+    "moving": 3,
+    "noEnemyPort": 308,
+    "noBase": 66,
+    "sortieEmpty": 1
+   },
+   "holes": {
+    "otherBasin": 0,
+    "otherBasinAway": 0,
+    "farWay": 3,
+    "rejected": 0,
+    "rejectedOther": 0,
+    "rejectedShut": 0,
+    "rejectedNoRoute": 0
+   },
+   "away": {
+    "awayEnemyPort": {
+     "battle": 15,
+     "empty": 1696,
+     "none": 0
+    },
+    "awayNeutralPort": {
+     "battle": 0,
+     "empty": 20,
+     "none": 0
+    }
+   },
+   "emptyPick": {
+    "defended": 0,
+    "none": 389
+   },
+   "neutralWas": {
+    "wasEnemy": 20,
+    "never": 0
+   },
+   "neutralOrder": {
+    "battle": 0,
+    "station": 20,
+    "home": 0
+   },
+   "enemyAt": {
+    "moving": 73,
+    "far": 1640,
+    "targetStronger": 3,
+    "notTarget": 0,
+    "none": 0
+   },
+   "check": {
+    "ordered": 451,
+    "agree": 451,
+    "held": 2103,
+    "stray": 0,
+    "miss": {},
+    "targetMiss": {},
+    "pingPong": 0
+   },
+   "strongerRatio": [
+    0,
+    0
+   ],
+   "shutWho": {},
+   "noRouteWho": {},
+   "otherBasinWho": {},
+   "targetMissWho": {}
+  }
+ ]
+}
