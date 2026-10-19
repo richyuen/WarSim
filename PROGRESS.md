@@ -19724,3 +19724,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   (destroyer 17 px, bar 18.5), red the same with this change stashed: left to PLAN 7.35c.
 - **No rule change:** pin 45c20987 (events are not state).
 - **Next:** PLAN 7.35b (Japan–USA on seed 3407).
+
+## 2026-10-19 — PLAN 7.35b1: why Japan's and the US fleets do not meet, measured (critic R9 naval 6)
+
+- **Start:** gate green on `7405df0`; critic not due. PLAN 7.35b split in three (b1 measured, b2
+  staging, b3 a sortie's test blind to land-based air).
+- **Tool:** `tools/diag/seaMeet.ts` (A declares on D at once; daily, each armed fleet of the two
+  sides, where it stands and what the naval AI's `plan` sees from there). Doc:
+  `docs/evidence/7.35/measure-b.md`.
+- **Found** (seed 3407, Japan on the US, 60 days): the US Pacific Fleet (51,000 power, San Diego
+  and Pearl Harbor) has no Japanese port within `SORTIE_KM` (nearest 5,926 km) and never sails;
+  the data has no US port between Hawaii and Guam (hops 4,230, 6,152, 2,567 km). Japan's fleets go
+  to China's ports and take Guam (day 6) and Davao unopposed. The Asiatic squadron (Cavite) sorties
+  to Takao, finds no ship (Japan's cruiser left for Quanzhou), and Formosa's wings sink it (hours
+  100 to 124). Least gap between the sides' fleets 279 km; no Japan–US sea battle in 60 days.
+- **No rule change:** pin 45c20987 (a tool and documents).
+- **Next:** PLAN 7.35b2 (a fleet with no enemy port in reach stages forward).

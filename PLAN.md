@@ -60,7 +60,24 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
       the struck ships and the strike seen (a screenshot, viewed); the specs that take a battle's
       row take a ship's-reach one; render only, the pin unchanged.
     - [ ] 7.35b Japan–USA on seed 3407 meets at sea within its first weeks, or the reason is a
-      measured one (where each side's fleets go, and why).
+      measured one (where each side's fleets go, and why). In three parts:
+      - [x] 7.35b1 Measured (`tools/diag/seaMeet.ts`, `docs/evidence/7.35/measure-b.md`): the US
+        Pacific Fleet (51,000 power at San Diego and Pearl Harbor) has no Japanese port within
+        `SORTIE_KM` (nearest 5,926 km) and stands in port all 60 days measured; no US port
+        between Hawaii and Guam in the data (hops 4,230, 6,152, 2,567 km); Japan's fleets go to
+        China's ports and take Guam and Davao unopposed; the Asiatic squadron sails to Takao, finds
+        no ship and is sunk by Formosa's wings (hours 100 to 124). Least gap 279 km, no battle.
+      - [ ] 7.35b2 A warfleet at war with no enemy port within `SORTIE_KM` stages: it sails to
+        the port of its bloc nearest an enemy port, when that port has one within `SORTIE_KM`
+        and is nearer one than the fleet is (a transit, not bounded by `SORTIE_KM`); the sortie
+        test then runs from there. AT: a unit test (stages; stays with no nearer base; a fleet
+        with a port in reach it cannot win does not stage); `seaMeet 3407 JAP USA` 30 days: the
+        Pacific Fleet leaves San Diego and a Japan–USA sea battle, with its row (`seaRows`), or
+        the measured reason; Italy and Germany against the US stand as before; the pin's entry.
+      - [ ] 7.35b3 A sortie's test of its target zone counts no land-based air: the Asiatic
+        squadron sails into Takao and is sunk by wings on Formosa with no sea battle. Measured
+        (how often a fleet is sunk at a sortie's target by air alone, on the critic's seeds),
+        then a rule with an ADR, or the reason.
     - [ ] 7.35c Ships at 20 m/px drawn at a size their class reads (destroyers about 10 × 3 px,
       submarines 5 px in `c9n_2251_ships_20m_crop4x.png`), counted in px. `shipMarks1938`'s T3
       test is red at `951b1c6` (a destroyer's median 17 px at 15 m/px, its bar 18.5; PLAN 7.22b):
