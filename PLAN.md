@@ -207,6 +207,9 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
             seed 1471's British fleets in the Aegean sent for Bursa behind the Dardanelles each AI
             day (`shutWho`), and the orders back to an earlier target with them (243 → 2,471). AT:
             a unit test (red without); `seaHold`'s `rejectedShut` near 0; the pin; an ADR; `--profile`.
+            Also in the tool: d2d1's before run aimed 2,617 orders across basins (`otherBasin` +
+            `otherBasinAway`) and 2,613 were refused; find the 4 that went through (`sailTarget` at a
+            seam, or a zone of basin 0 read as `ocean`).
           - [ ] 7.35d2d3 The "after" run of `seaYears` on the 14 seeds × 30 years against d1's, and
             the three causes left re-measured with `seaHold` (the way across land, a partner's port
             the enemy holds, the enemy beyond `SORTIE_KM`): a rule each, or the reason in the doc.
