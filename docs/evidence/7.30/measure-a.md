@@ -94,3 +94,20 @@ CPU profiles under `operationalAi` (self time): year 9 `findPath` 32 %, `joinWid
    on this evidence. Left for after 7.30b and c are measured.
 4. **Long ways searched to the end** (year 9's orders): `findDirectRoute` returns 'long' only after
    a search that found a way, when the coarse route was within COARSE_SLACK of the limit.
+
+## 4. After 7.30b (ADR-523: the refusal kept by its corridor)
+
+`opCalls.ts` again, one year from the same checkpoints, the probe now telling a search from an
+answer of the kept refusal (`AskTimes.searched`); pin and seed 732's hashes after years 9, 31, 44
+unchanged.
+
+| year | asks searched again after a flip, before → after | operational AI under the probe, s |
+|---|---|---|
+| 9 | orders 2,930 at 0.26 ms each → 2,931 at 0.02 ms each (nearly all kept) | 27.1 → 16.3 |
+| 31 | far marches 5,088 → 441 (4,748 kept, 0.01 ms each) | 58.6 → 10.5 (another run 14.5) |
+| 44 | orders 3,338 → 213; far marches 1,038 → 11 | 34.7 → 12.7 |
+
+Left in year 31: refusals searched because other holders are open since (325, 2.9 s), first asks
+(262, 2.4 s) and asks for another cell (181, 1.4 s), all of nation 106 and France's far army. In
+year 44: orders refused for another cell (503, 1.9 s), first asks, `wideJoined` 4.4 s and
+`groundOf` 3.6 s.

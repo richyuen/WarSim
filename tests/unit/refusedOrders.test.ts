@@ -25,15 +25,15 @@ function refusals(w: World, id: number): number {
   return n;
 }
 
-/** A cell of `nation` with its eight neighbours its own, nearest (lon, lat). */
-function inner(w: World, nation: number, lon: number, lat: number): number {
+/** A cell of `nation` with the cells within `reach` of it its own (eight neighbours: 1), nearest (lon, lat). */
+function inner(w: World, nation: number, lon: number, lat: number, reach = 1): number {
   const [x0, y0] = cellOf(lon, lat, W, H).map(Math.floor) as [number, number];
   const own = (x: number, y: number): boolean => w.cells.controller[y * W + x] === nation;
   for (let r = 0; r < 20; r++) {
     for (let y = y0 - r; y <= y0 + r; y++) {
       for (let x = x0 - r; x <= x0 + r; x++) {
         let all = true;
-        for (let dy = -1; dy <= 1 && all; dy++) for (let dx = -1; dx <= 1 && all; dx++) all = own(x + dx, y + dy);
+        for (let dy = -reach; dy <= reach && all; dy++) for (let dx = -reach; dx <= reach && all; dx++) all = own(x + dx, y + dy);
         if (all) return y * W + x;
       }
     }
@@ -85,6 +85,46 @@ describe('refused orders (PLAN 1.42g)', () => {
     w.wars.changed();
     askMove(w, id, other, passageOf(w, GER));
     expect(refusals(w, id)).toBe(0);
+    expect(f.moving[id]).toBe(1);
+    expect(w.refusedOrders.has(id)).toBe(false);
+  }, 120_000);
+
+  // PLAN 7.30b: a refusal by the cells of a corridor of provinces is read again only when a cell of
+  // the corridor goes from a closed holder to an open one (or the provinces' open and shut change).
+  it('a refusal in a corridor holds through flips elsewhere and losses in it, not a cell opened in it', () => {
+    const s = new Sim({ scenario: '1938', seed: 1942, assets: assets1938(W) });
+    const w = s.world;
+    const f = w.formations.cols;
+    const home = inner(w, GER, 11.5, 48.5);
+    const id = addDivision(w, GER, (home % W) + 0.5, Math.floor(home / W) + 0.5);
+    // A German cell walled in by Swiss cells two cells out: no way to it over ground open to Germany.
+    const goal = inner(w, GER, 12.5, 50.0, 3);
+    const ring: number[] = [];
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === 2) ring.push(goal + dy * W + dx);
+    for (const c of ring) w.setController(c, SWI);
+    // Two Swiss cells far away, by Hamburg (their province stays mixed when one goes back).
+    const far = inner(w, GER, 10.0, 53.5);
+    w.setController(far, SWI);
+    w.setController(far + 1, SWI);
+    refusals(w, id);
+    expect(askMove(w, id, goal, passageOf(w, GER))).toBe('refused');
+    expect(refusals(w, id)).toBe(1);
+    expect(w.refusedOrders.get(id)?.corridor).toBeDefined();
+    const shut = passageOf(w, GER).shut!.slice();
+    // A cell from a closed holder to an open one far from the corridor: not asked again.
+    w.setController(far, GER);
+    expect(passageOf(w, GER).shut).toEqual(shut);
+    expect(askMove(w, id, goal, passageOf(w, GER))).toBe('refused');
+    expect(refusals(w, id)).toBe(0);
+    // A cell of the corridor lost to a closed holder (inside the wall): not asked again.
+    w.setController(goal + 1, SWI);
+    expect(passageOf(w, GER).shut).toEqual(shut);
+    expect(askMove(w, id, goal, passageOf(w, GER))).toBe('refused');
+    expect(refusals(w, id)).toBe(0);
+    // A cell of the wall opened: asked again, and the way through it is found.
+    w.setController(ring[0]!, GER);
+    expect(passageOf(w, GER).shut).toEqual(shut);
+    expect(askMove(w, id, goal, passageOf(w, GER))).toBe('ok');
     expect(f.moving[id]).toBe(1);
     expect(w.refusedOrders.has(id)).toBe(false);
   }, 120_000);

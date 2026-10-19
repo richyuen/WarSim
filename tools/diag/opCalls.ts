@@ -132,15 +132,15 @@ const cellGap = (a: number, b: number): number => {
 };
 const askTable = new Map<string, { n: number; ms: number; gap: number }>();
 for (const a of asks) {
-  const k = `${a.afar ? 'afar' : 'orders'} ${a.answer.padEnd(7)} ${a.same}`;
+  const k = `${a.afar ? 'afar' : 'orders'} ${a.answer.padEnd(7)} ${a.searched ? 'searched' : 'kept    '} ${a.same}`;
   const e = askTable.get(k) ?? { n: 0, ms: 0, gap: 0 };
   e.n++;
   e.ms += a.ms;
   e.gap += cellGap(a.from, a.to);
   askTable.set(k, e);
 }
-console.log('\n== the asks (from, answer, why no kept refusal answered: calls, ms, ms each, mean cells apart):');
-for (const [k, e] of [...askTable].sort((a, b) => b[1].ms - a[1].ms)) console.log(`  ${k.padEnd(46)} ${String(e.n).padStart(6)} ${fmt(e.ms).padStart(9)} ${fmt(e.ms / e.n, 2).padStart(7)} ${fmt(e.gap / e.n).padStart(6)}`);
+console.log('\n== the asks (from, answer, searched or answered by a kept refusal, the old rule reading of the kept refusal: calls, ms, ms each, mean cells apart):');
+for (const [k, e] of [...askTable].sort((a, b) => b[1].ms - a[1].ms)) console.log(`  ${k.padEnd(56)} ${String(e.n).padStart(6)} ${fmt(e.ms).padStart(9)} ${fmt(e.ms / e.n, 2).padStart(7)} ${fmt(e.gap / e.n).padStart(6)}`);
 // The same formation asked for the same cell again: how many times, and the ms of the repeats.
 const seen = new Map<string, number>();
 let repeats = 0;

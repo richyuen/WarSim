@@ -2086,7 +2086,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     otherwise it holds its front cell. A formation is not re-ordered if its target is within a
     sector of the current one. An order refused for want of a way is not given again while
     nothing its search read has changed (PLAN 1.42g, ADR-421: the formation stands still, the
-    same holders are open to it, no cell went from an open holder to a closed one or back).
+    same holders are open to it, no cell went from an open holder to a closed one or back). One
+    refused by the cells of a corridor of provinces holds while the provinces' open and shut
+    ground is the same, its start is open and no cell of the corridor went from a closed holder
+    to an open one (PLAN 7.30b, ADR-523).
   - *No long way round* (PLAN 1.42h, ADR-422; the user's decision of 2026-10-15): the AI's order
     is refused (`RejectReason.LongWay`) where its way is longer than 4 times the straight line
     in steps of cells (`LONG_WAY`), or 64 steps where the line is under 16 cells

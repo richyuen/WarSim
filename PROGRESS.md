@@ -19255,3 +19255,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** Python's `open(..., 'w')` on Windows writes CRLF; pass `newline=''`.
 - **Docs and tools only:** no rule change; pin 94235073.
 - **Next:** PLAN 7.30b.
+
+## 2026-10-19 — PLAN 7.30b: a refusal kept by its corridor
+
+- **Start:** gate green on `e46a2f1`; critic not due.
+- **Rule** (ADR-523, exact): a refusal by the cells of a corridor of provinces keeps the corridor and
+  the passage's `open`/`shut`, and holds while those are the same, the start is open, and no cell of
+  the corridor went from a closed holder to an open one (`World.flipCells`, `corridorHolds`). The
+  first form (any flip in the corridor undoes it) kept none of year 31's: the corridors cross the
+  front (median 160 flips in one between asks), but in year 31 none of those opened a cell.
+- **Effect** (`docs/evidence/7.30/measure-a.md` §4, `opCalls.ts` from `.cache/730/`): year 31's
+  far marches searched again 5,088 → 441, the AI 58.6 → 10.5 s under the probe; year 44's orders
+  3,338 → 213, 34.7 → 12.7 s; year 9 27.1 → 16.3 s. Seed 732's hashes after years 9, 31, 44 equal
+  7.27d's; pin unchanged (94235073).
+- **Tests:** `refusedOrders.test.ts` (new case, red before).
+- **Probe:** `AskTimes.searched` tells a search from a kept answer.
+- **Next:** PLAN 7.30c.

@@ -65,7 +65,7 @@ import { atAnyPort } from '../systems/amphibious';
 import { orderMove, passageOf, snapTarget, wasLong } from '../systems/movement';
 import { frontierOf, GARRISON, PRESSURE_RADIUS } from '../systems/territory';
 import { neighbours4, pocketOf, type Passage } from '../nav/grid';
-import { wideJoined, wideNode } from '../nav/provinceGraph';
+import { CORRIDOR_REFUSAL, wideJoined, wideNode, type CorridorRefusal } from '../nav/provinceGraph';
 import { navOf, type World } from '../world';
 
 export const STAGGER = 4;
@@ -141,6 +141,8 @@ export interface AskTimes {
   afar: boolean;
   /** The ground it was asked on. */
   pass: Passage;
+  /** Whether a route was searched for it (`CORRIDOR_REFUSAL.searches`; not: a kept refusal answered). */
+  searched: boolean;
 }
 
 /** One plan's parts, ms, and its sizes (`OP_PROBE`). */
@@ -1055,6 +1057,10 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
  * open to it are the same (`Passage.ok`), and no cell has gone from an open holder to a closed one
  * or back since (`World.flipLog`, as `passageOf` keeps what it knows of the cells). Asked again,
  * such an order is refused again, as it was: the rule changes no state, and the pin did not move.
+ * A refusal for want of a way by the cells of a corridor of provinces (PLAN 7.30b) holds longer:
+ * while the provinces' `open` and `shut` are the same, the cell stood on is open, and no cell of
+ * the corridor's provinces has gone from a closed holder to an open one (`corridorHolds`); a cell
+ * lost to a closed holder, or a flip elsewhere on the map, does not undo it.
  */
 export function askMove(world: World, id: number, to: number, pass: Passage): 'ok' | 'refused' | 'long' {
   if (!timing) return asked(world, id, to, pass);
@@ -1062,12 +1068,13 @@ export function askMove(world: World, id: number, to: number, pass: Passage): 'o
   const before = was ? { ...was, long: was.long.slice() } : undefined;
   const f = world.formations.cols;
   const from = Math.floor(f.y[id]!) * world.cells.w + Math.floor(f.x[id]!);
+  const searches = CORRIDOR_REFUSAL.searches;
   const t = OP_PROBE.now!();
   const r = asked(world, id, to, pass);
   const ms = OP_PROBE.now!() - t;
   timing.asks++;
   timing.askMs += ms;
-  OP_PROBE.ask?.({ id, from, to, answer: r, ms, was: before, afar: timing.parts.length === 6, pass });
+  OP_PROBE.ask?.({ id, from, to, answer: r, ms, was: before, afar: timing.parts.length === 6, pass, searched: CORRIDOR_REFUSAL.searches !== searches });
   return r;
 }
 
@@ -1080,22 +1087,60 @@ function asked(world: World, id: number, to: number, pass: Passage): 'ok' | 'ref
   const kept = f.moving[id] !== 1 && !world.embarked.has(id) && comp[from] !== 0 && (comp[from] === comp[to] || !atAnyPort(world, from));
   const was = world.refusedOrders.get(id);
   const now = world.flipLogBase + world.flipLog.length;
-  // The ground is the one the refusals of `was` were read on.
-  const same = kept && was !== undefined && was.from === from && was.template === f.template[id] && was.grid === nav.grid && was.flips >= world.flipLogBase && sameOk(was.ok, pass.ok) && lastMixed(world, pass) <= was.flips;
-  if (same && (was.to === to || was.long.includes(to))) {
+  // The formation and the holders open to it are those the refusals of `was` were read on, and
+  // (`same`) no cell has gone from an open holder to a closed one or back since.
+  const base = kept && was !== undefined && was.from === from && was.template === f.template[id] && was.grid === nav.grid && was.flips >= world.flipLogBase && sameOk(was.ok, pass.ok);
+  const same = base && lastMixed(world, pass) <= was!.flips;
+  // A refusal by the cells of a corridor holds while what it read does (PLAN 7.30b).
+  if ((same && (was!.to === to || was!.long.includes(to))) || (base && was!.to === to && corridorHolds(world, was!, from, pass))) {
     world.seaBound.delete(id);
-    return was.to === to ? 'refused' : 'long';
+    return was!.to === to ? 'refused' : 'long';
   }
+  const searches = CORRIDOR_REFUSAL.searches;
   if (orderMove(world, id, (to % w) + 0.5, Math.floor(to / w) + 0.5, pass, false, true)) {
     world.refusedOrders.delete(id);
     return 'ok';
   }
   const long = wasLong();
+  // The order's one search, refused by the cells of its corridor: what it read.
+  const read = !long && CORRIDOR_REFUSAL.searches === searches + 1 && CORRIDOR_REFUSAL.at === searches + 1 ? CORRIDOR_REFUSAL.read : undefined;
   if (!kept) world.refusedOrders.delete(id);
-  else if (!same) world.refusedOrders.set(id, { from, to: long ? -1 : to, template: f.template[id]!, grid: nav.grid, ok: pass.ok.slice(), flips: now, long: long ? [to] : [] });
-  else if (long) was.long.push(to);
-  else was.to = to;
+  else if (!same) world.refusedOrders.set(id, { from, to: long ? -1 : to, template: f.template[id]!, grid: nav.grid, ok: pass.ok.slice(), flips: now, long: long ? [to] : [], corridor: read, since: now });
+  else if (long) was!.long.push(to);
+  else {
+    was!.to = to;
+    was!.corridor = read;
+    was!.since = now;
+  }
   return long ? 'long' : 'refused';
+}
+
+/**
+ * Whether a refusal by the cells of a corridor (`CorridorRefusal`, PLAN 7.30b) still holds on the
+ * passage: the nodes' `open` and `shut` are the same (so are the route and its corridor), the
+ * cell stood on is open (a search from closed ground is another search), and no cell of the
+ * corridor's nodes has gone from a closed holder to an open one since it (`World.flipCells`;
+ * `since`: the flips up to which that is known).
+ * The search enters open cells only and is refused when none of the corridor's leads to the goal:
+ * a cell that has gone from open to closed takes a way from it and gives none, and a flip outside
+ * the corridor is not read by it. Asked again, it would be refused again.
+ */
+function corridorHolds(world: World, was: { since: number; corridor?: CorridorRefusal | undefined }, from: number, pass: Passage): boolean {
+  const read = was.corridor;
+  if (!read || !pass.open || !pass.shut || pass.ok[pass.holder[from]!] !== 1) return false;
+  if (read.open !== pass.open && !sameOk(read.open, pass.open)) return false;
+  if (read.shut !== pass.shut && !sameOk(read.shut, pass.shut)) return false;
+  const nodeOf = navOf(world).graph.nodeOf;
+  const { flipLog: log, flipCells: cells } = world;
+  const { ok } = pass;
+  if (was.since < world.flipLogBase) return false;
+  for (let k = was.since - world.flipLogBase; k < log.length; k++) {
+    const fromHolder = Math.floor(log[k]! / 65536);
+    if (ok[fromHolder] !== 1 && ok[log[k]! - fromHolder * 65536] === 1 && read.on[nodeOf[cells[k]!]!] === 1) return false;
+  }
+  // None up to now: the next ask reads the flips after.
+  was.since = world.flipLogBase + log.length;
+  return true;
 }
 
 function sameOk(a: Uint8Array, b: Uint8Array): boolean {

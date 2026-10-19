@@ -4,7 +4,7 @@
  */
 import { makeNavGrid, type NavGrid } from './nav/grid';
 import { buildLaneGraph, portWaters, seaBasins, type LaneGraph, type SeaBasins, type SeaPassage } from './nav/lanes';
-import { buildProvinceGraph, type ProvinceGraph } from './nav/provinceGraph';
+import { buildProvinceGraph, type CorridorRefusal, type ProvinceGraph } from './nav/provinceGraph';
 import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
 import { buildAirZones, type AirZones } from './nav/airZones';
 import type { Port } from './data/ports';
@@ -856,14 +856,18 @@ export class World {
    */
   flipLog: number[] = [];
   flipLogBase = 0;
+  /** Derived (not state): the cell of each change of `flipLog`, at the same index (PLAN 7.30b). */
+  flipCells: number[] = [];
   /**
    * Derived (not state): by formation, the operational AI's last order refused for want of a way
    * (`askMove`, PLAN 1.42g): from the cell it stood on, to the cell, of the template, on the ground
    * open by `ok`, when `flipLog` had `flips` changes (`to` -1: none refused so but for the way's
-   * length); and on that ground, the cells it was refused for the way's length (`long`, PLAN 1.42h).
+   * length); and on that ground, the cells it was refused for the way's length (`long`, PLAN 1.42h);
+   * of a refusal of `to` by the cells of a corridor, what it read (`corridor`, PLAN 7.30b) and the
+   * count of `flipLog` up to which it is known to hold (`since`).
    * Dropped with the land counts.
    */
-  refusedOrders = new Map<number, { from: number; to: number; template: number; grid: NavGrid; ok: Uint8Array; flips: number; long: number[] }>();
+  refusedOrders = new Map<number, { from: number; to: number; template: number; grid: NavGrid; ok: Uint8Array; flips: number; long: number[]; corridor?: CorridorRefusal | undefined; since: number }>();
   /** Derived: bumped when God Mode renames a nation (labels re-derive, PLAN 1.32b). */
   namesVersion = 0;
   /** Global settings (state, saved in world.meta). */
@@ -1308,8 +1312,10 @@ export class World {
     if (this.flipLog.length >= FLIP_LOG_KEPT) {
       this.flipLogBase += this.flipLog.length;
       this.flipLog = [];
+      this.flipCells = [];
     }
     this.flipLog.push(c.controller[i]! * 65536 + nation);
+    this.flipCells.push(i);
     this.supplyDirtyNations.add(c.controller[i]!);
     this.supplyDirtyNations.add(nation);
     if (c.supply[i] !== 0) this.supplyDirtyBlocs.add(c.supply[i]!);

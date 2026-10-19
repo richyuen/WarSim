@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-523 · 2026-10-19 · accepted — A refusal kept by its corridor (PLAN 7.30b)
+
+- **Context.** PLAN 1.42g (ADR-421) keeps an order refused for want of a way while nothing the
+  refused search read has changed, and reads that as: no cell anywhere has gone from an open holder
+  to a closed one or back. PLAN 7.30a (`docs/evidence/7.30/measure-a.md`) found the heavy late years
+  of seed 732 to be such refusals searched again: year 31, far marches ~660 cells refused and asked
+  again on their day in MARCH_DAYS after a median 42 such flips (81 % of the operational AI); year
+  44, the USA's orders ~43 cells off (16 of 35 s).
+- **Decision.** A refusal by the cells of a corridor of provinces (`searchRoute` from open ground:
+  the route over the provinces, then the cell search held to their corridor) keeps what it read
+  (`CorridorRefusal`: the corridor's nodes and the passage's `open` and `shut`), and holds while
+  those `open` and `shut` are the same, the cell stood on is open, and no cell of the corridor's
+  nodes has gone from a closed holder to an open one since (`World.flipCells` beside `flipLog`;
+  `corridorHolds`, resumed from where it last read). Every other refusal, and every refusal for
+  the way's length, as before.
+- **Why exact.** With `open` and `shut` the same, the route over the provinces is the same, and so
+  is its corridor and `mayReach`'s group. From open ground the search enters open cells only (a
+  closed cell is entered from its own holder's cells, and the start's holder is open), reads the
+  holders of the corridor's cells alone, and is complete: it is refused when no open cell of the
+  corridor leads to the goal. A cell gone from open to closed takes ways away and gives none; a
+  flip outside the corridor is not read. A start gone closed would be another search (the walk on
+  closed ground), so it undoes the refusal.
+- **Measured.** One year each from `.cache/730/` checkpoints (`tools/diag/opCalls.ts`, the probe
+  telling a search from a kept answer): year 31, of 5,189 asks searched again before, 4,748 are
+  answered by the kept refusal (0.01 ms each) and 441 searched; the operational AI 58.6 → 10.5 s
+  (both under the probe, not alone; the second's run again read 14.5). Year 44: the orders asked
+  again 3,338 → 213 searched, the far marches 1,038 → 11; 34.7 → 12.7 s. Year 9: 16.3 s (27.1).
+- **Pin.** Unmoved; seed 732's hashes after years 9, 31 and 44 equal 7.27d's.
+- **Tests.** `tests/unit/refusedOrders.test.ts`: a German cell walled in by Swiss cells; the
+  refusal holds through a flip by Hamburg and a cell inside the wall lost, and is searched again
+  when a cell of the wall is opened, which finds the way (red before: no corridor kept).
+
 ### ADR-522 · 2026-10-19 · accepted — A launch stopped short starts no gap (PLAN 7.28)
 
 - **Context.** ADR-507 (PLAN 7.25b) holds a side that launched in a war from a first use for

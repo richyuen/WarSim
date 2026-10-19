@@ -487,8 +487,30 @@ function steps(g: NavGrid, a: number, b: number): number {
   return Math.max(dx, Math.abs(Math.floor(a / g.w) - Math.floor(b / g.w)));
 }
 
+/**
+ * What a refusal by the cells of a corridor read (PLAN 7.30b): the corridor's nodes (`on`), and the
+ * passage's `open` and `shut` that the route over the nodes was planned on. A search from open
+ * ground in a corridor enters open cells only, and reads the holders of the corridor's cells
+ * alone; the route is of `open` and `shut` alone. So it is refused again while those are the
+ * same, its start is open, and no cell of the corridor's nodes has gone from a closed holder to an
+ * open one (`corridorHolds`, ai/operational.ts).
+ */
+export interface CorridorRefusal {
+  on: Uint8Array;
+  open: Uint8Array;
+  shut: Uint8Array;
+}
+
+/**
+ * The searches (`searchRoute`) made, and the last that was refused by the cells of a corridor
+ * over open ground: its number among them (`at`) and what it read (`CorridorRefusal`). Read by
+ * `askMove` (ai/operational.ts) right after one order. Not state.
+ */
+export const CORRIDOR_REFUSAL: { searches: number; at: number; read: CorridorRefusal | undefined } = { searches: 0, at: -1, read: undefined };
+
 /** `longest`: of `findDirectRoute`, 'long' where the coarse route is longer than COARSE_SLACK times it. */
 function searchRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass?: Passage, longest = Infinity): PathResult | null | 'long' {
+  const search = ++CORRIDOR_REFUSAL.searches;
   if (!mayReach(g, pg, start, goal, pass)) return null; // O(1) unreachable
   const a = pg.nodeOf[start]!;
   const b = pg.nodeOf[goal]!;
@@ -525,6 +547,10 @@ function searchRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start:
     const inCorridor = findPath(g, mobility, start, goal, { nodeOf: pg.nodeOf, on: corridor }, pass);
     // (A search that was refused at once has no stamps of its own.)
     if (!inCorridor && open !== undefined && g.scratch && g.scratch.gen !== before) g.barred = { closed: 2 * g.scratch.gen + 1, from: a, goal, mobility, ok: pass!.ok };
+    if (!inCorridor && open !== undefined) {
+      CORRIDOR_REFUSAL.at = search;
+      CORRIDOR_REFUSAL.read = { on: corridor, open, shut: pass!.shut! };
+    }
     if (inCorridor || open !== undefined) return inCorridor;
   }
   return findPath(g, mobility, start, goal, undefined, pass);

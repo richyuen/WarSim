@@ -76,7 +76,7 @@ to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
     - [x] 7.30a The measure (`docs/evidence/7.30/measure-a.md`, `tools/diag/opCalls.ts`, `OP_PROBE`):
       the heavy years (31, 44) are refusals searched again after a flip anywhere; year 9's is
       `joinWide` walked by each plan of a coalition; the late years' broad cost is `pocketOf`.
-    - [ ] 7.30b A refusal kept by its corridor: `askMove`'s refusal of a search in a corridor of
+    - [x] 7.30b A refusal kept by its corridor: `askMove`'s refusal of a search in a corridor of
       provinces holds while no cell of the corridor's provinces has gone from an open holder to
       a closed one or back and the provinces' `open` and `shut` are the same; other refusals as
       now. AT: a unit test (a flip outside the corridor keeps it, one inside undoes it); the pin
