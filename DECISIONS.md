@@ -167,6 +167,57 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-536 · 2026-10-19 · accepted — A tank element's ranks fit its slot: no hull on another in a block at rest (PLAN 7.34c1)
+
+- **Context.** Critic run 9, semantic zoom 7: "at 10 m/px on German infantry division 11 ... tanks
+  overlapping in piles" (`c9c_4483_inf_0010m_top_crop2x.png`; the tanks are German Armoured
+  division 40's, which stands on division 11's ground from about day 3½).
+- **Measured** (a probe spec, removed; seed 4483 at HEAD, Germany at war with Poland, the camera on
+  each German armoured and mechanised formation at 10 m/px, days 3 to 7; a vehicle's hull as the
+  box it is drawn in with its outline, two boxes overlapping when no axis parts them): every
+  overlapping pair is two neighbouring elements of one formation; none within an element, none
+  of two formations. Two causes:
+  1. at rest (Armoured division 42, never in contact, its elements on their slots 0.030 cells
+     apart): 149 of 340 vehicles overlapped. A rank of four light tanks at the pitch of PLAN 7.9c
+     (0.82 of a figure, each tank up to 0.04 of the pitch off its place) is 0.0337 cells across
+     with its outlines, wider than the slot; the medium's and heavy's wider still. ADR-469's
+     arithmetic ("four ranks of that pitch fill a slot") was done along, not across.
+  2. in contact (divisions 40 and 41): the elements stand up to 0.3 of a slot off it
+     (`DEPLOY_SCATTER`), 0.012 to 0.015 cells from the nearest: PLAN 7.34c2.
+- **The conflict.** Three bars of PLAN 7.9c (ADR-469) and a slot of 0.03 cannot all hold with
+  hulls apart: a light hull 14 px long at 10 m/px (`TANK_CELLS` ≥ 0.01145), tanks of an element
+  no nearer than 0.75 of a figure, and a turret turned across with its muzzle more than 0.3 of a
+  figure from the next tank's middle. With both of the last at their least (pitch 0.815), a rank
+  of four light tanks fits its slot only at 0.87 of the figure (12.2 px). Twelve heavy hulls with
+  their outlines take more than a slot's area at full size even touching.
+- **Decision.** The critic-facing bar stays, the two proxies give way to what they stood for:
+  - the light hull 14 px (`TANK_CELLS` 0.0115, unchanged);
+  - two tanks of a rank stand the turret's reach + half the hull's width with its outline +
+    TURRET_CLEAR (0.04 of a figure) apart, so a turret turned any way keeps its muzzle off the next
+    hull; two ranks the reach + the hull's front half (and no less than a hull's length) + 0.04;
+    no jitter, a rank is a straight line. Light 0.681 and 0.759 of a figure (were 0.82 and 0.95);
+    medium 0.774 and 0.884; heavy 0.821 and 0.978;
+  - an element's hulls fit 0.97 of its slot's square: the light at its full figure, the medium at
+    0.877 of it, the heavy at 0.803, their hulls 43.8 and 45.0 atlas px against the light's 40,
+    so the heavy is still the longest (`TankLayout.scale`);
+  - the class is in the grid side (`gridSide`: TANK_ROWS + 10 × class + 4), which `figureCells`
+    and `figureOffsets` read, and with them the shots and the wrecks drawn on a figure;
+  - the hull sizes are the atlas's (`hullBox`), the slot the render's `SLOT_GAP_CELLS`.
+- **Tests, old and new side by side** (`tankRanks.test.ts`): "muzzle more than 0.3 of a figure
+  from the next tank's middle" → "a turret turned any way (32 steps) keeps its muzzle off every
+  other hull of the element" (for a light tank the next hull's edge is 0.23 of a figure from its
+  middle: looser as a number, exact as a property); "no two tanks nearer than 0.75 of a figure" →
+  "no two hull boxes of an element meet, and every corner of every hull within half a slot, at
+  five facings"; new, "two elements one slot apart across or along, any two classes: no hull on
+  another"; and the heavy hull longer than the medium, longer than the light.
+- **Consequences.** A turret turned fully across at the edge of an element still reaches over the
+  next element's outer hull at rest (by up to 0.14 of a figure): its gun, not a hull on a hull.
+  A unit size above 1 (the setting) makes the figures larger than the slot again, by design; the
+  fit to the room in hand is PLAN 7.34c2's. Render only: the pin unchanged (45c20987).
+- **Checked** (the probe, after): at rest Armoured divisions 40 and 42 and Light mechanised
+  division 43 read 0 overlapped (149, 152 and 60 before); engaged divisions about 105 of 340
+  (c2's).
+
 ### ADR-535 · 2026-10-19 · accepted — At 900 m/px the elements are drawn as pips, and counted (PLAN 7.34b; critic R9 disputed in part)
 
 - **Context.** Critic run 9, semantic zoom 7: "at 900 m/px the screen still shows only counters,

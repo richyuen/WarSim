@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { hash2, pair } from '../../src/render/hash';
 import { Frame, shownFrame } from '../../src/shared/unitLooks';
-import { figureCells, figureCount, figureOffsets, firingFigure, FOOTPRINT_CELLS, gridSide, isLine, LINE_ABREAST, LINE_CELLS, LINE_RANKS, MAX_FIGURES, shownSide, subSlotOrder, TANK_CELLS, TANK_ROWS } from '../../src/render/units/individuals';
+import { abreastOf, figureCells, figureCount, figureOffsets, firingFigure, FOOTPRINT_CELLS, gridSide, isLine, LINE_ABREAST, LINE_CELLS, LINE_RANKS, MAX_FIGURES, shownSide, subSlotOrder, TANK_CELLS, TANK_ROWS } from '../../src/render/units/individuals';
 
 // PLAN 2.6 and 2.10b: an element as its individuals at T3 (ADR-69, ADR-80). How many, and where
 // each stands. The drawing and the sim's strengths are checked in the browser
@@ -60,11 +60,13 @@ describe('how many figures', () => {
 
   it('the grid is the whole element\'s: men 8 × 8; vehicles and guns 4 × 4, larger; more than 16 of them 8 × 8', () => {
     for (const whole of [1, 12, 40, 64]) expect(gridSide(Frame.infantry, whole)).toBe(8);
-    // Since PLAN 7.9c (ADR-469) an element of up to 12 tanks is ranks of four, each tank TANK_CELLS
-    // (it was a 4 × 4 grid); more is a grid.
+    // Since PLAN 7.9c (ADR-469) an element of up to 12 tanks is ranks of four, a light tank
+    // TANK_CELLS (it was a 4 × 4 grid); more is a grid. Since PLAN 7.34c1 (ADR-536) the side says
+    // the class too, ten apart, whose ranks and scale are its own (`tankLayoutOf`).
     expect(gridSide(Frame.tank, 10)).toBe(TANK_ROWS + 4);
-    expect(gridSide(Frame.tankMedium, 10)).toBe(TANK_ROWS + 4);
-    expect(gridSide(Frame.tankHeavy, 12)).toBe(TANK_ROWS + 4);
+    expect(gridSide(Frame.tankMedium, 10)).toBe(TANK_ROWS + 14);
+    expect(gridSide(Frame.tankHeavy, 12)).toBe(TANK_ROWS + 24);
+    for (const f of [Frame.tank, Frame.tankMedium, Frame.tankHeavy]) expect(abreastOf(gridSide(f, 10))).toBe(4);
     expect(gridSide(Frame.tank, 17)).toBe(8);
     expect(figureCells(gridSide(Frame.tank, 10))).toBe(TANK_CELLS);
     for (const f of [Frame.gun, Frame.ship, Frame.aircraft]) {

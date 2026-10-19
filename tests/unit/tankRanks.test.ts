@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { muzzleOf } from '../../src/render/units/atlas';
+import { hullBox, muzzleOf } from '../../src/render/units/atlas';
+import { SLOT_GAP_CELLS } from '../../src/render/units/ships';
 import { figureCells, figureOffsets, gridSide, TANK_CELLS } from '../../src/render/units/individuals';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Frame } from '../../src/shared/unitLooks';
@@ -12,6 +13,50 @@ import { Frame } from '../../src/shared/unitLooks';
 const KM_PER_CELL = 40075 / SIZE_1938.w;
 /** A light hull is 40 px of a 64-px frame. */
 const HULL = 40 / 64;
+
+const CLASSES = [[Frame.tank, 10], [Frame.tankMedium, 10], [Frame.tankHeavy, 12]] as const;
+const FACINGS = [0, 0.7, Math.PI / 2, 2.5, -1.2];
+
+/** A hull as drawn, its outline with it (`hullBox`): its middle, its facing, half its length and width, cells. */
+interface Hull {
+  x: number;
+  y: number;
+  f: number;
+  hl: number;
+  hw: number;
+}
+
+function hullsOf(frame: number, off: readonly number[], cells: number, facing: number): Hull[] {
+  const box = hullBox(frame);
+  // The box's middle is (front − back) / 2 of a figure along the facing from the turret ring.
+  const shift = ((box.front - box.back) / 2) * cells;
+  return Array.from({ length: off.length / 2 }, (_, k) => ({ x: off[k * 2]! + Math.cos(facing) * shift, y: off[k * 2 + 1]! + Math.sin(facing) * shift, f: facing, hl: ((box.front + box.back) / 2) * cells, hw: box.half * cells }));
+}
+
+function corners(h: Hull): [number, number][] {
+  const [c, s] = [Math.cos(h.f), Math.sin(h.f)];
+  return [[1, 1], [1, -1], [-1, -1], [-1, 1]].map(([a, b]) => [h.x + c * a! * h.hl - s * b! * h.hw, h.y + s * a! * h.hl + c * b! * h.hw]);
+}
+
+function inside(h: Hull, x: number, y: number): boolean {
+  const [c, s] = [Math.cos(h.f), Math.sin(h.f)];
+  const [dx, dy] = [x - h.x, y - h.y];
+  return Math.abs(dx * c + dy * s) < h.hl && Math.abs(-dx * s + dy * c) < h.hw;
+}
+
+/** Two boxes meet: no axis of either parts them. */
+function meet(a: Hull, b: Hull): boolean {
+  for (const f of [a.f, a.f + Math.PI / 2, b.f, b.f + Math.PI / 2]) {
+    const [c, s] = [Math.cos(f), Math.sin(f)];
+    const span = (h: Hull): [number, number] => {
+      const p = corners(h).map(([x, y]) => x * c + y * s);
+      return [Math.min(...p), Math.max(...p)];
+    };
+    const [p, q] = [span(a), span(b)];
+    if (p[1] <= q[0] + 1e-12 || q[1] <= p[0] + 1e-12) return false;
+  }
+  return true;
+}
 
 describe('tanks at T3 in ranks (PLAN 7.9c)', () => {
   it('a light tank is at least 14 px long at 10 m/px', () => {
@@ -41,39 +86,71 @@ describe('tanks at T3 in ranks (PLAN 7.9c)', () => {
     }
   });
 
-  it("a turret turned across the rank keeps its muzzle clear of the next tank's middle (more than 0.3 of a figure)", () => {
-    for (const frame of [Frame.tank, Frame.tankMedium, Frame.tankHeavy]) {
-      const whole = frame === Frame.tankHeavy ? 12 : 10;
+  // Since PLAN 7.34c1 (ADR-536; critic run 9: "tanks overlapping in piles") the two tests below
+  // hold the hulls themselves, each the box it is drawn in with its outline (`hullBox`): no muzzle
+  // on another hull, no hull on another, of the element or of its neighbours in a block at rest.
+  // Until then they held proxies of that: a muzzle more than 0.3 of a figure from the next tank's
+  // middle (a light hull's half-width with its outline is 0.23), and no two tanks nearer than 0.75
+  // of a figure (a light tank's pitch is now 0.68: its hull with its outline is 0.47 wide).
+
+  it("a turret turned any way keeps its muzzle off every other hull of the element", () => {
+    for (const [frame, whole] of CLASSES) {
       const side = gridSide(frame, whole);
       const cells = figureCells(side);
       const [mx] = muzzleOf(frame);
-      for (const element of [1, 2, 3, 99, 1234]) {
-        const off = figureOffsets(element, side, whole, 0);
+      for (const facing of FACINGS) {
+        const hulls = hullsOf(frame, figureOffsets(1, side, whole, facing), cells, facing);
         for (let k = 0; k < whole; k++) {
-          for (const turn of [Math.PI / 2, -Math.PI / 2, Math.PI / 4, 0]) {
-            const [x, y] = [off[k * 2]! + Math.cos(turn) * mx * cells, off[k * 2 + 1]! + Math.sin(turn) * mx * cells];
-            for (let j = 0; j < whole; j++) if (j !== k) expect(Math.hypot(x - off[j * 2]!, y - off[j * 2 + 1]!) / cells, `frame ${frame} element ${element} tank ${k} → ${j}`).toBeGreaterThan(0.3);
+          for (let t = 0; t < 32; t++) {
+            const turn = facing + (t * Math.PI) / 16;
+            const x = hulls[k]!.x + Math.cos(turn) * mx * cells;
+            const y = hulls[k]!.y + Math.sin(turn) * mx * cells;
+            for (let j = 0; j < whole; j++) if (j !== k) expect(inside(hulls[j]!, x, y), `frame ${frame} facing ${facing} tank ${k} turned ${t}/32 on tank ${j}`).toBe(false);
           }
         }
       }
     }
   });
 
-  it("on the ground of the element's slot (0.03 cells apart), apart from each other, the same every time", () => {
-    for (const [frame, whole] of [[Frame.tank, 10], [Frame.tankMedium, 10], [Frame.tankHeavy, 12]] as const) {
+  it("an element's hulls on its slot's square (0.03 cells), none on another, the heavy hull the longest, the same every time", () => {
+    const lengths: number[] = [];
+    for (const [frame, whole] of CLASSES) {
       const side = gridSide(frame, whole);
-      for (const element of [1, 77, 19_353]) {
-        // Facing east, square to the axes: every tank's middle within half a slot on each.
-        const off = figureOffsets(element, side, whole, 0);
-        for (let k = 0; k < whole; k++) {
-          expect(Math.abs(off[k * 2]!)).toBeLessThan(0.015);
-          expect(Math.abs(off[k * 2 + 1]!)).toBeLessThan(0.015);
+      const cells = figureCells(side);
+      for (const facing of FACINGS) {
+        const off = figureOffsets(77, side, whole, facing);
+        const hulls = hullsOf(frame, off, cells, facing);
+        // In the block's frame (its front toward the facing), every corner of every hull within half a slot.
+        for (const h of hulls) {
+          for (const [cx, cy] of corners(h)) {
+            const along = cx * Math.cos(facing) + cy * Math.sin(facing);
+            const across = -cx * Math.sin(facing) + cy * Math.cos(facing);
+            expect(Math.abs(along), `frame ${frame} facing ${facing}`).toBeLessThan(SLOT_GAP_CELLS / 2);
+            expect(Math.abs(across), `frame ${frame} facing ${facing}`).toBeLessThan(SLOT_GAP_CELLS / 2);
+          }
         }
-        let nearest = Infinity;
-        for (let i = 0; i < whole; i++) for (let j = i + 1; j < whole; j++) nearest = Math.min(nearest, Math.hypot(off[i * 2]! - off[j * 2]!, off[i * 2 + 1]! - off[j * 2 + 1]!));
-        // Never nearer than three quarters of a figure: no two hulls on one another.
-        expect(nearest / figureCells(side)).toBeGreaterThan(0.75);
-        expect(figureOffsets(element, side, whole, 0)).toEqual(off);
+        for (let i = 0; i < whole; i++) for (let j = i + 1; j < whole; j++) expect(meet(hulls[i]!, hulls[j]!), `frame ${frame} facing ${facing} tanks ${i}, ${j}`).toBe(false);
+        expect(figureOffsets(77, side, whole, facing)).toEqual(off);
+      }
+      lengths.push((hullBox(frame).back + hullBox(frame).front) * cells);
+    }
+    expect(lengths[1]!).toBeGreaterThan(lengths[0]!);
+    expect(lengths[2]!).toBeGreaterThan(lengths[1]!);
+  });
+
+  it('two elements of a block at rest, one slot apart across or along, any two classes: no hull on another', () => {
+    for (const facing of FACINGS) {
+      const [fx, fy] = [Math.cos(facing), Math.sin(facing)];
+      for (const [a, wa] of CLASSES) {
+        for (const [b, wb] of CLASSES) {
+          const one = hullsOf(a, figureOffsets(5, gridSide(a, wa), wa, facing), figureCells(gridSide(a, wa)), facing);
+          // The next slot to the right (−fy, fx) and the one ahead (fx, fy).
+          for (const [dx, dy] of [[-fy * SLOT_GAP_CELLS, fx * SLOT_GAP_CELLS], [fx * SLOT_GAP_CELLS, fy * SLOT_GAP_CELLS]] as const) {
+            const off = figureOffsets(6, gridSide(b, wb), wb, facing).map((v, k) => v + (k % 2 === 0 ? dx : dy));
+            const two = hullsOf(b, off, figureCells(gridSide(b, wb)), facing);
+            for (const h of one) for (const g of two) expect(meet(h, g), `frames ${a}, ${b} facing ${facing}`).toBe(false);
+          }
+        }
       }
     }
   });

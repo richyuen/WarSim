@@ -33,6 +33,23 @@ const MUZZLE: Readonly<Partial<Record<Frame, readonly [number, number]>>> = {
 };
 const NO_MUZZLE: readonly [number, number] = [0, 0];
 
+/** A tank's hull, atlas px: length, width and track (`hull`). */
+const HULL_LIGHT = [40, 26, 6] as const;
+const HULL_MEDIUM = [50, 32, 7] as const;
+const HULL_HEAVY = [56, 40, 9] as const;
+/** Half the width of the outline drawn about a hull's tracks and body, atlas px (`hull`'s line). */
+const HULL_LINE = 2;
+
+/**
+ * The box a tank's hull is drawn in, its outline with it, as shares of the sprite's side from the
+ * turret ring (the frame's middle): how far it reaches back and forward along its facing, and to
+ * either side (PLAN 7.34c1). The hull reaches 2 px further back than forward (`hull`).
+ */
+export function hullBox(frame: number): { back: number; front: number; half: number } {
+  const [length, width] = frame === Frame.tankHeavy ? HULL_HEAVY : frame === Frame.tankMedium ? HULL_MEDIUM : HULL_LIGHT;
+  return { back: (length / 2 + 2 + HULL_LINE) / ATLAS_FRAME, front: (length / 2 - 2 + HULL_LINE) / ATLAS_FRAME, half: (width / 2 + HULL_LINE) / ATLAS_FRAME };
+}
+
 /** The muzzle of `frame` as shares of the sprite's side: along its facing (a hull: its turret's), and to the right. */
 export function muzzleOf(frame: number): readonly [number, number] {
   const [x, y] = MUZZLE[frame as Frame] ?? NO_MUZZLE;
@@ -72,7 +89,7 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.strokeRect(6, 8, 22, 4);
   });
   // Light tank hull (PLAN 3.6a): facing +x, the turret ring at the middle.
-  frame(Frame.tank, (g) => hull(g, 40, 26, 6));
+  frame(Frame.tank, (g) => hull(g, ...HULL_LIGHT));
   // The ships of each class (PLAN 4.7b), facing +x, the longest the battleship's: its length and
   // beam tell them apart at T2's sizes, the deck's marks closer. Since PLAN 7.10a the marks are dark
   // (SHIP_DETAIL, which no tint lightens) and large enough to read at a ship's least size (26 px for
@@ -269,8 +286,8 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.fillRect(12, 3, 18, 3);
     g.strokeRect(12, 3, 18, 3);
   });
-  frame(Frame.tankMedium, (g) => hull(g, 50, 32, 7));
-  frame(Frame.tankHeavy, (g) => hull(g, 56, 40, 9));
+  frame(Frame.tankMedium, (g) => hull(g, ...HULL_MEDIUM));
+  frame(Frame.tankHeavy, (g) => hull(g, ...HULL_HEAVY));
   // Half-track (PLAN 3.6a): mechanised infantry's carrier, facing +x: bonnet and front wheels,
   // tracks under the rear, an open bay for the men.
   frame(Frame.halftrack, (g) => {

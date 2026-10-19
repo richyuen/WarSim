@@ -2428,6 +2428,12 @@ moment before its first elements arrive.
   place written after all the others of the layer (`render/units/turrets.ts`), at T2 and T3.
   The turret's ring is the middle of both frames. Mechanised infantry is a half-track, with no
   turret. The snapshot carries the hull's frame alone.
+  *At T3 an element of tanks is ranks* (PLAN 7.9c, 7.34c1; ADR-469, ADR-536): four abreast
+  across its facing, the front rank first, straight; two tanks of a rank the turret's reach and
+  half a hull apart (and 0.04 of a figure more), so a turned turret's muzzle is off the next
+  hull. The element's hulls fit its slot's square, so no hull of a block at rest is on another:
+  a light tank at its full figure (`TANK_CELLS`, a 14 px hull at 10 m/px), a medium and a heavy
+  by a scale of their class, the heavy hull still the longest.
   *The small mark* (PLAN 3.6e3b, ADR-165): where an element sprite is drawn 5.5 px wide or
   less (from about 92 m/px outward at the default size setting; the least size is 5 px, from
   102), a hull of any weight is one frame made for that size, a solid slab along the facing

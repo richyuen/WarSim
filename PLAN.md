@@ -62,7 +62,24 @@ is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up
     - [ ] 7.34c No two vehicles drawn overlapping at 10 m/px (`c9c_4483_inf_0010m_top_crop2x.png`,
       German infantry division 11 on seed 4483). Measured first: where the piles come from (the
       slots of a formation, two formations' elements on one cell). AT: on the critic's case, no
-      two vehicle figures overlapping (counted).
+      two vehicle figures overlapping (counted). Measured (a probe, seed 4483, every German
+      armoured and mechanised formation at 10 m/px, days 3 to 7; a vehicle's hull box with its
+      outline): every overlapping pair is two neighbouring elements of one formation, none of
+      one element, none of two formations. Two causes, a part each:
+        - [x] 7.34c1 A block at rest (Armoured division 42, never in contact: 149 of 340
+          vehicles overlapped, its elements 0.030 cells apart): an element's ranks of four are
+          0.0337 cells across, wider than its slot (0.03). The ranks laid out so each class's
+          hulls fit its slot (the across pitch the turret's reach clear of the next hull, no
+          jitter; medium and heavy figures by a scale of their class), the light hull 14 px
+          kept. AT: a unit test, every class's hull boxes inside the slot's square at every
+          facing, none of an element on another, a turret turned any way off the next hull; the
+          probe on division 42 reads 0; render only, the pin unchanged.
+        - [ ] 7.34c2 A block in contact (`DEPLOY_SCATTER`, the elements 0.012 to 0.015 cells
+          apart, Armoured divisions 40 and 41): no rigid layout of full size fits. Each element's
+          figures fitted to the room its neighbours leave (a scale per element, the least over
+          its neighbours of a bound both keep), the same for what is drawn on a figure (shots,
+          wrecks). AT: on the critic's 4483 case, the engaged armoured division at 10 m/px, no
+          two vehicle figures overlapping (counted); the least figure drawn said in px.
     - [ ] 7.34d The enemy of a viewed formation in contact reachable from the view at 10 m/px (the
       view's frame or a marker toward it). AT: on the critic's 4483 case, the enemy in the frame
       or a marker toward it, seen.

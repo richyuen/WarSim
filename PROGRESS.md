@@ -19590,3 +19590,31 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Perf:** nothing drawn changes (a counter added to the pip loop).
 - **No rule change:** pin 45c20987.
 - **Next:** PLAN 7.34c (vehicles overlapping at 10 m/px).
+
+## 2026-10-19 — PLAN 7.34c1: a tank element's ranks fit its slot, no hull on another at rest (critic R9 semantic zoom 7; ADR-536)
+
+- **Start:** gate green on `0194b3a`; critic not due. PLAN 7.34c split after measuring: c1 at rest,
+  c2 in contact.
+- **Measured** (a probe spec, removed; seed 4483 at HEAD, the camera on each German armoured and
+  mechanised formation at 10 m/px, days 3 to 7; a hull's box with its outline): every overlapping
+  pair is two neighbouring elements of one formation, none of one element, none of two
+  formations. At rest (Armoured division 42) 149 of 340 vehicles overlapped: a rank of four was
+  0.0337 cells across, wider than its 0.03 slot. In contact (`DEPLOY_SCATTER`) elements stand
+  0.012 to 0.015 apart: c2. The critic's tanks on division 11's ground are Armoured division 40's.
+- **Rule** (ADR-536, view only): the ranks' pitch from the turret's reach and the hull's box (the
+  atlas's `hullBox`), no jitter; each class's hulls fit 0.97 of its slot; light at its full figure
+  (14 px kept), medium × 0.877, heavy × 0.803 (the heavy hull still the longest). The class in
+  the grid side, read by figures, shots and wrecks alike.
+- **Moved bars (7.9c's proxies, ADR-469):** "muzzle > 0.3 of a figure from the next middle" and
+  "tanks ≥ 0.75 of a figure apart" rewritten to the exact properties (no muzzle on another hull,
+  no hull on another, every hull within half a slot); a new test of two neighbouring elements.
+  The numbers old and new are in ADR-536.
+- **After:** at rest divisions 40, 42 and 43 read 0 overlapped (149, 152, 60 before); engaged
+  about 105 of 340 (c2). Seen: `docs/evidence/7.34/c1-4483-arm42-rest-10m.png`.
+- **By hand** (the gate skips e2e): `battleView1938`, `burning1938`, `closeZoom1938`,
+  `fightSeen1938`, `tankBattle1938`, `tiers1938` green; `fallen1938` (a Polish formation not
+  engaged), `smallMark1938` (mark share 0.81 at 150 m/px) and `turrets1938` (54 tanks in view, all
+  firing) red, and red alike on `0194b3a` with this change stashed: sim drift from an earlier
+  commit, each its own commit next.
+- **No rule change:** pin 45c20987.
+- **Next:** the three specs above, then PLAN 7.34c2.
