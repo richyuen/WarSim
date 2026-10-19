@@ -11,7 +11,7 @@ import { armourFires, busiest } from '../helpers/armourFire';
 
 /**
  * From day 16: the first hour of armour fire after it (`armourFires`). From the first week's end
- * before ADR-539: since PLAN 7.27c's peace rule every start from day 6 to 14 finds an hour in
+ * before ADR-539: since the scene moved (ADR-538's bisect) every start from day 6 to 14 finds an hour in
  * which every tank in the view fires, and none is left to keep its turret on its hull.
  */
 const FROM = 24 * 16;
