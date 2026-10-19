@@ -68,3 +68,63 @@ AI's `plan` holds them (no enemy port within `SORTIE_KM`, no forward base, the e
 target's zone, the enemy's naval bombers over it, a fleet's own state) is PLAN 7.35d2's measure,
 with the three holes 7.35b4 left (a line across land, a sortie's target in another basin, a
 partner's port held by the enemy).
+
+## 3. Which test holds them (7.35d2a, at `ac245c4`)
+
+`npx tsx tools/diag/seaHold.ts <seed> 6` on the same 14 seeds, 6 years each; JSON in
+`d2/hold_<seed>.json`. On each nation's naval AI day, read just before its tick, each of its warfleets
+is put under the one test of `plan` that decides it (the tests read through `plan`'s exported parts).
+Counted in fleet-days of nations at war; `sea` is a fleet whose nation is at war with a nation that
+has an armed fleet in its basin (§1's sea pairs). The reads are checked against the tick: of the
+fleets read as ordered, 3,275 of 3,284 in year 1 and 7,268 of 7,269 after are under way or refused
+after it; of those read as held, 100 of 41,968 and 57 of 235,275 are under way.
+
+| `sea` fleet-days | year 1 | years 2–6 |
+| --- | --- | --- |
+| all | 32,778 | 209,736 |
+| **away from its bloc's ports, not sent home** | **90.3 %** | **96.0 %** |
+| at an enemy-held port's water (on station) | 71.6 % | 53.9 % |
+| at a port of a nation at war with neither side (`awayNeutralPort`) | 6.9 % | 29.7 % |
+| at a partner's port (on its side of a war, not its bloc) | 9.5 % | 10.3 % |
+| in open water | 1.8 % | 1.7 % |
+| at a partner's port the enemy holds (the third hole) | 0.3 % | 0.4 % |
+| at its bloc's port: sortie to a port with enemy ships | 0.6 % | 0.1 % |
+| at its bloc's port: sortie to an empty port | 5.6 % | 2.4 % |
+| at its bloc's port: stage | 0.6 % | 0.2 % |
+| at its bloc's port: held (enemy too strong, bombed, no base, no enemy port) | 0.1 % | 0.4 % |
+| under way, in a battle, sent home, at its target | 2.9 % | 0.8 % |
+
+- **`plan` gives a fleet away no new order.** A warfleet away from its bloc's ports is only sent home
+  (the enemy over `AVOID_RATIO` times its power, or empty water under naval bombers); else it
+  stands. A sortie ends at the target port's water, and the fleet stands there until peace: 96 % of
+  the late fleet-days. The tests the plan line named (the enemy's power, the bombers, no forward
+  base, no enemy port) hold 0.4 %. 7.35d1's "stand in port" was "not moving": they stand on station.
+- **Stale stations.** 29.7 % of the late fleet-days stand at a port of a nation now at war with
+  neither side: by the rule, a port it sailed to as an enemy's whose holder has made its peace
+  since, the fleet's nation still at war with another (not traced fleet by fleet). 10.3 % at a
+  partner's port.
+- **What a sortie from where they stand would find** (the sortie test from the fleet's place, its
+  own power alone; years 2–6, 201,387 away fleet-days): a winnable target with enemy ships 17,236
+  (8.6 %), only empty enemy ports 145,431 (72.2 %), none in reach 38,720 (19.2 %). A re-target alone
+  sends most fleets to empty ports.
+- **Where the enemy's fleets are** (those away fleet-days with no battle to seek, the nearest enemy
+  warfleet of the basin): beyond `SORTIE_KM` 129,949 (70 %); within it but at no port of an enemy of
+  the fleet's, so no target of the sortie test, 46,480 (25 %); at an enemy port, too strong for the
+  fleet alone, 6,656 (4 %); under way 1,066. The sortie seeks ports, not fleets: an enemy fleet on
+  station at its partner's port or a neutral's is no target.
+- **Empty over defended.** Of the late sorties to an empty port, 793 of 5,508 had a winnable port
+  with enemy ships in reach too, farther (the nearest that passes is taken; year 1: 639 of 1,966).
+- **The holes 7.35b4 left.** A sortie's or a stage's target in another basin than the fleet's: 1,811
+  late orders, and 2,124 of the 7,269 late orders refused (`MoveRejected`, `NoSeaWay`): the fleet
+  stands in port and is sent again each week (29 %; year 1: 100 of 3,284). A way over 1.5 times the
+  straight line and over `SORTIE_KM` (the line across land): 435 of the late orders (6 %), year 1
+  445. A partner's port the enemy holds: 0.4 % of the fleet-days.
+
+Causes, by the orders they decide, each a part of 7.35d2: (b) a warfleet away from its ports at war
+gets no new order: it stands on station for good, at a port whose holder made peace among them
+(96 % of the fleet-days; a re-target from where it stands finds a battle in 8.6 %); (c) the sortie's targets are
+enemy ports only, so the 25 % of enemy fleets standing in reach elsewhere are never sought; (d) a
+sortie's target in another basin, refused by `orderSail` (29 % of the late orders). Left without a
+rule (re-measured after d): the way across land (6 % of the orders), a partner's port held by the
+enemy (0.4 % of the fleet-days), and the enemy beyond `SORTIE_KM` (70 %: the basin is the world's
+ocean, the fleets far apart).

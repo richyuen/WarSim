@@ -19933,3 +19933,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   shell, the runs went on and finished (the user's call). Next time 4 to 7 at once.
 - **No rule:** pin unchanged (a tool and documents).
 - **Next:** PLAN 7.35d2 (which test of the naval AI's `plan` holds those fleets in port).
+
+## 2026-10-19 — PLAN 7.35d2a: which test of the naval AI holds the navies at war (critic R9 naval 6)
+
+- **Start:** gate green on `ac245c4`; critic not due. PLAN 7.35d2 split (a the measure; b, c, d a
+  cause each).
+- **Tool:** `tools/diag/seaHold.ts`: on each nation's naval AI day, read just before its tick, each
+  warfleet under the one test of `plan` that decides it (through `plan`'s exported parts), with what
+  a sortie from where an away fleet stands would find and where the nearest enemy warfleet is; the
+  holes 7.35b4 left counted on the orders. Checked against the tick: 7,268 of 7,269 late orders
+  under way or refused after it, 57 of 235,275 held fleets under way. 14 seeds × 6 years, 7 at a
+  time (no memory trouble); JSON in `docs/evidence/7.35/d2/`, doc `measure-d.md` §3.
+- **Found:** d1's "in port" was "not moving". 96 % of the late fleet-days of the sea pairs stand
+  away from their bloc's ports where a sortie ended, and `plan` gives an away fleet no order but
+  home: 53.9 % at an enemy port, 29.7 % at a port of a nation at war with neither side, 10.3 % at
+  a partner's. `plan`'s tests in port hold 0.4 %. The sortie seeks ports only: 25 % of the enemy's
+  nearest fleets stand in reach at no enemy port; 70 % are beyond `SORTIE_KM`. A sortie's target in
+  another basin: 2,124 of 7,269 late orders refused.
+- **No rule:** pin unchanged (a tool and documents).
+- **Next:** PLAN 7.35d2b (an away warfleet's new order).
