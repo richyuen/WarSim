@@ -1,0 +1,27 @@
+{"start":[{"wing":1393,"cls":"fighter","base":3},{"wing":1394,"cls":"fighter","base":3},{"wing":1395,"cls":"fighter","base":3},{"wing":1396,"cls":"bomber_tac","base":3},{"wing":1397,"cls":"bomber_tac","base":3}],"canDeliver":false}
+{"day":1,"wings":5,"strategic":1,"canDeliver":true,"warheads":10,"alive":true}
+{"day":2,"wings":5,"strategic":1,"canDeliver":true,"warheads":10,"alive":true}
+{"day":3,"wings":4,"strategic":1,"canDeliver":true,"warheads":10,"alive":true}
+{"day":4,"wings":4,"strategic":1,"canDeliver":true,"warheads":10,"alive":true}
+{"day":5,"wings":3,"strategic":1,"canDeliver":true,"warheads":10,"alive":true}
+{"day":6,"wings":3,"strategic":1,"canDeliver":true,"warheads":10,"alive":true}
+{"day":7,"wings":3,"strategic":1,"canDeliver":true,"warheads":10,"alive":true}
+{"day":8,"wings":3,"strategic":1,"canDeliver":true,"warheads":10,"alive":true}
+{"day":9,"wings":3,"strategic":1,"canDeliver":true,"warheads":10,"alive":true}
+{"day":10,"wings":3,"strategic":1,"canDeliver":true,"warheads":10,"alive":true}
+{"day":11,"wings":0,"strategic":0,"canDeliver":false,"warheads":10,"alive":true}
+{"day":12,"wings":0,"strategic":0,"canDeliver":false,"warheads":10,"alive":true}
+{"day":13,"wings":0,"strategic":0,"canDeliver":false,"warheads":10,"alive":true}
+{"day":14,"wings":0,"strategic":0,"canDeliver":false,"warheads":10,"alive":true}
+{"day":15,"wings":0,"strategic":0,"canDeliver":false,"warheads":10,"alive":true}
+{"day":16,"wings":0,"strategic":0,"canDeliver":false,"warheads":10,"alive":true}
+{"day":17,"wings":0,"strategic":0,"canDeliver":false,"warheads":10,"alive":true}
+{"day":18,"wings":0,"strategic":0,"canDeliver":false,"warheads":10,"alive":true}
+{"day":19,"wings":0,"strategic":0,"canDeliver":false,"warheads":10,"alive":true}
+{"day":20,"wings":0,"strategic":0,"canDeliver":false,"warheads":10,"alive":true}
+{"day":0.88,"wing":1393,"cls":"fighter","strength":15,"mission":{"kind":"patrol","x":1097.34164078644,"y":280.50585319944},"sortie":true,"base":3,"baseHeldBy":"CZS","at":[1106.5,285.5],"stack":["settleElements (sim\\systems\\elements.ts:684)","settleFormation (sim\\systems\\elements.ts:656)","<anonymous> (sim\\systems\\airCombat.ts:123)","airCombat (sim\\systems\\airCombat.ts:106)","airSystem (sim\\systems\\air.ts:77)"]}
+{"day":2.54,"wing":1394,"cls":"fighter","strength":8,"mission":{"kind":"patrol","x":1114.765815906058,"y":280.23418409394196},"sortie":true,"base":3,"baseHeldBy":"CZS","at":[1106.5,285.5],"stack":["settleElements (sim\\systems\\elements.ts:684)","settleFormation (sim\\systems\\elements.ts:656)","antiAir (sim\\systems\\airCombat.ts:264)","airSystem (sim\\systems\\air.ts:78)","step (sim\\tick.ts:446)"]}
+{"day":4.38,"wing":1395,"cls":"fighter","strength":8,"mission":{"kind":"patrol","x":1100.96161914439,"y":281.7233094719868},"sortie":true,"base":3,"baseHeldBy":"CZS","at":[1106.5,285.5],"stack":["settleElements (sim\\systems\\elements.ts:684)","settleFormation (sim\\systems\\elements.ts:656)","<anonymous> (sim\\systems\\airCombat.ts:123)","airCombat (sim\\systems\\airCombat.ts:106)","airSystem (sim\\systems\\air.ts:77)"]}
+{"day":10.83,"wing":1396,"cls":"bomber_tac","strength":75,"mission":{"kind":"strike","x":1105.5,"y":283.5},"sortie":true,"base":3,"baseHeldBy":"GER","at":[1106.5,285.5],"stack":["airSystem (sim\\systems\\air.ts:52)","step (sim\\tick.ts:446)","Sim.step (sim\\sim.ts:141)"]}
+{"day":10.83,"wing":1397,"cls":"bomber_tac","strength":75,"mission":{"kind":"strike","x":1104.2853845128084,"y":283.28538451280826},"sortie":true,"base":3,"baseHeldBy":"GER","at":[1106.5,285.5],"stack":["airSystem (sim\\systems\\air.ts:52)","step (sim\\tick.ts:446)","Sim.step (sim\\sim.ts:141)"]}
+{"day":10.83,"wing":1468,"cls":"bomber_str","strength":240,"sortie":false,"base":3,"baseHeldBy":"GER","at":[1106.5,285.5],"stack":["airSystem (sim\\systems\\air.ts:52)","step (sim\\tick.ts:446)","Sim.step (sim\\sim.ts:141)"]}

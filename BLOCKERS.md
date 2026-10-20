@@ -5,6 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.37's Czechoslovakia: it dies holding its 10 warheads; the decision waits on the user (2026-10-20, PLAN 7.37b1, ADR-563)
+- **The bar:** PLAN 7.37's, per case: the decision changed by a rule with an ADR, or the measured
+  cause here, the user's to accept.
+- **Measured** (seed 5309, `docs/evidence/7.37/`): its strike under NUKE_FLOOR while its bomber
+  lived (utility −0.11 to −0.07, desperation 0.51 to 0.70, not extreme); the bomber lost with
+  Prague's airbase, its only one, on day 10.8 (`fallBack` found no base); over the floor from day
+  19 with no means. Its desperation falls 0.70 → 0.21 the day its capital moves.
+- **Options:** ADR-563 a (restraint then means lost, recommended), b ("use it or lose it"), c (a
+  fallen capital in the desperation). PLAN 7.37b2 and b3 (the means said) go on meanwhile.
+
 ### RESOLVED 2026-10-20 (ADR-559, option a, the user's decision: one sortie drawn where a wing is tasked, 0.9 of a live day; 7.36 ticked) · PLAN 7.36's first half: "one sortie drawn for each wing tasked" missed (2026-10-20, PLAN 7.36a)
 - **The bar:** at 25 and 10 m/px over a front in contact, a sortie drawn for each wing tasked on
   the part of the front in view, at the critic's probes (seed 7019; 4483 is the same world).

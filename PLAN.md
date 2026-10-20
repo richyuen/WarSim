@@ -85,6 +85,25 @@ each, split when taken up:
       24, no strike in 100 days), `nukeOverrun1938` green; `nuclearReserve1938.test.ts` red
       without; the pin unchanged by it. Met: decisions on days 55 (shot down), 56, 68; the test
       red without; cc11ee7d is ADR-560's. 7.37's commits: 1 of 20.
+    - [ ] 7.37b Czechoslovakia armed in the editor (seed 5309, `c10_g2_5309_CZS.json`): its wings
+      lost by day 10, its 10 warheads held to its death, the editor saying only "10 warheads".
+      A part each:
+        - [x] 7.37b1 Its decision measured (`tools/diag/wingsLost.ts`, `nukeCase.ts … bomber`,
+          `docs/evidence/7.37/`): fighters lost in air combat days 0.9–4.4; the strategic and
+          tactical groups lost with Prague's airbase, its only one, on day 10.8; its strike under
+          NUKE_FLOOR until then (utility −0.11 to −0.07, desperation 0.51 to 0.70), over it from
+          day 19 with no means. AT: the measured cause in BLOCKERS and ADR-563 (proposed, the
+          user's: a. restraint, then means lost, recommended; b. "use it or lose it"; c. a fallen
+          capital counted in the desperation). Met.
+        - [ ] 7.37b2 The editor says a holder's means: its strategic bomber groups with a base (and
+          the nearest's base) or its missiles, beside "N warheads". AT: a spec on the editor,
+          Czechoslovakia given 10 warheads and a strategic bomber group at Prague, the line names
+          the group and Prague (red without: "has 10 warheads" alone).
+        - [ ] 7.37b3 The game says when a holder's last means is lost: an event and a history row
+          the day `canDeliver` turns false while it holds a warhead it may use, with the cause
+          (its last airbase taken, its group shot down). AT: a unit test on seed 5309's case, the
+          row on day 10–11 naming Prague's airbase (red without: no row); a spec of the row in the
+          history; the pin unchanged.
 - [ ] 7.38 R10-B1: the AI's nuclear choice weighs the people a burst kills (AI nuclear use 7, needs
   8; blocking). `nuclearUtility` has no term for the dead (`src/sim/systems/nuclear.ts:554-560`):
   Germany H-bombs Shanghai for 3,802,105 dead and 105 soldiers at utility 0.025, NUKE_FLOOR itself

@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-563 · 2026-10-20 · proposed (the user's decision) — Czechoslovakia armed in the editor: its bomber lost with its only airbase, its strike under the floor until then (PLAN 7.37b1)
+
+- **Context.** PLAN 7.37 (AI nuclear use 7; critic runs 9 and 10, `c10_g2_5309_CZS.json`):
+  Czechoslovakia, given a strategic bomber group at Prague and 10 warheads in the editor, Germany's
+  war on it, loses its 6 wings by day 10 and dies holding all 10; "what destroyed the wings
+  untraced".
+- **Measured** (seed 5309 at `73edf3e`, the group placed at Prague by `spawnWing` as the editor's
+  tool does; `tools/diag/wingsLost.ts`, `tools/diag/nukeCase.ts … bomber`,
+  `docs/evidence/7.37/`): its three fighter groups fall in air combat and to flak on days 0.9, 2.5
+  and 4.4; on day 10.8 Germany takes Prague's airbase, its only one, and its two tactical groups
+  and the strategic group find no base of its own with room (`fallBack`, `air.ts:52`) and are lost
+  with it (the critic's day 10; here a day later). Until then its strike was weighed each day and
+  stayed under NUKE_FLOOR: desperation 0.51 → 0.70, never extreme (its capital threatened, 15 % of
+  its land lost), the best strike's utility −0.11 → −0.07, in reach from day 5. On day 11 its
+  capital moves and its desperation falls 0.70 → 0.21 (`DESPERATION_CAPITAL` counts a capital with
+  an enemy near it, not one taken; `extreme` counts the fall since PLAN 7.18a). From day 19,
+  overrun and extreme at the new capital (1.13 to 1.20), its best strike's utility 0.043 to 0.048
+  is over the floor: "noReach", no means left. With its bomber alive it would have struck then.
+- **Options.**
+  - (a, recommended) The case stands as restraint, then means lost: a small state that does not
+    strike while its war is 10 days old and its utility under the floor is believable, and the
+    game now says the means and their loss (PLAN 7.37b2, b3). A BLOCKERS entry holds the measured
+    cause.
+  - (b) "Use it or lose it": a holder whose last base for a strategic group is within
+    `CAPITAL_THREAT_KM` of an enemy land formation weighs its strike as extreme. Raises bursts
+    (PLAN 7.37's AT: no rule may raise them to meet it), on top of PLAN 7.38's bars.
+  - Apart, either way: (c) a capital taken in the war counts in the desperation as one threatened
+    (`DESPERATION_CAPITAL`), so a nation does not grow calmer the day its capital falls; also
+    raises bursts, the pin unmoved (no warhead in seed 99's year). Recommended no, until PLAN 7.38's
+    toll is weighed.
+- **Until decided.** PLAN 7.37b2 and b3 go on; no rule changes the decision.
+
 ### ADR-562 · 2026-10-20 · accepted — An island beyond 450 km of every seed is an air zone of its own (PLAN 7.36b2; amends ADR-306, ADR-560)
 
 - **Context.** After ADR-560, on day 10 of Germany–Poland (seed 8217) two held zones still

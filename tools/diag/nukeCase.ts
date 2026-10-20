@@ -6,7 +6,10 @@
  * place's utility and its parts, the delivery it has (strategic bomber wings, missiles), its land and
  * men against the war's start.
  *
- * Usage: npx tsx tools/diag/nukeCase.ts <seed> <holder> <attacker> [warheads = 10] [days = 150]
+ * With `bomber` last (PLAN 7.37b, the critic's Czechoslovakia), the holder is also given a strategic
+ * bomber group at its capital, as the editor's air-wing tool places one, and a row is printed each day.
+ *
+ * Usage: npx tsx tools/diag/nukeCase.ts <seed> <holder> <attacker> [warheads = 10] [days = 150] [bomber]
  */
 import { Sim } from '../../src/sim/sim';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
@@ -23,6 +26,12 @@ const id = (t: string): number => TAGS_1938.indexOf(t) + 1;
 const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
 const H = id(holderTag!);
 const A = id(attackerTag!);
+const bomber = process.argv[7] === 'bomber';
+if (bomber) {
+  const rules = w.rules!;
+  const template = rules.templates.findIndex((t) => t.elements.length > 0 && rules.units[t.elements[0]!.unit]!.cls === 'bomber_str');
+  s.command({ kind: 'spawnWing', nation: H, x: w.nations.cols.capitalX[H]!, y: w.nations.cols.capitalY[H]!, template });
+}
 s.command({ kind: 'grantWarheads', nation: H, count: warheads });
 s.command({ kind: 'declareWar', attacker: A, defender: H });
 const strategicWings = (): number => {
@@ -44,8 +53,8 @@ for (let d = 0; d < days; d++) {
     ww.out.events.length = 0;
     ww.out.fires.length = 0;
   });
-  if (d % 5 !== 4 && bursts.length === 0) continue;
-  const row: Record<string, unknown> = { day: d + 1, warheads: warheadsOf(w, H), weighs: weighsStrikes(w, H), strategicWings: strategicWings(), land: +(w.landCounts().owned[H]! / startLand).toFixed(3), bursts };
+  if (!bomber && d % 5 !== 4 && bursts.length === 0) continue;
+  const row: Record<string, unknown> = { day: d + 1, warheads: warheadsOf(w, H), weighs: weighsStrikes(w, H), strategicWings: strategicWings(), land: +(w.landCounts().owned[H]! / startLand).toFixed(3), lost: +(w.landCounts().lost[H]! / Math.max(1, w.landCounts().owned[H]!)).toFixed(3), capitalFallen: w.wars.list.some((x) => x.capitalsLost?.includes(H)), bursts };
   const war = w.wars.list.find((x) => x.sides[0].includes(H) || x.sides[1].includes(H));
   if (war && weighsStrikes(w, H)) {
     const side = war.sides[0].includes(H) ? 0 : 1;

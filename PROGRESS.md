@@ -20370,3 +20370,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   25 m/px with a wing tasked in view. 7.36a's figures meet it (1, 1, 2, 1; 0.94); 7.36b met the
   second half (the air map). BLOCKERS entry resolved; 7.36 ticked, `plan:archive` run.
 - **Next:** PLAN 7.37 (AI nuclear use), its next part.
+
+## 2026-10-20 — PLAN 7.37b1: Czechoslovakia armed in the editor, its decision measured (ADR-563, proposed)
+
+- **Measured** (seed 5309 at `73edf3e`, a strategic bomber group placed at Prague and 10 warheads,
+  Germany's war; `tools/diag/wingsLost.ts` (new: each wing's removal and its calling frames),
+  `tools/diag/nukeCase.ts … bomber` (new option; rows add the land lost and the capital fallen);
+  `docs/evidence/7.37/`): fighters lost to air combat and flak on days 0.9, 2.5, 4.4; on day 10.8
+  Prague's airbase, its only one, is taken and the strategic and two tactical groups find no base
+  (`fallBack`, `air.ts:52`). The strike weighed daily and under NUKE_FLOOR while the bomber lived
+  (utility −0.11 → −0.07; desperation 0.51 → 0.70, not extreme); over the floor from day 19
+  (0.043–0.048, extreme), "noReach". The day its capital moves its desperation falls 0.70 → 0.21.
+- **Waits on the user:** ADR-563 (a. restraint then means lost, recommended; b. "use it or lose
+  it"; c. a fallen capital counted in the desperation). BLOCKERS entry. 7.37b2 and b3 go on.
+- 7.37's commits: 2 of 20. **Next:** PLAN 7.37b2 (the editor names the means).
