@@ -236,9 +236,11 @@ each, split when taken up:
   the cell goes to the candidate whose own formations press it most, then the lowest id
   (`docs/evidence/7.37/g-tiebreak-candidate.diff`). AT: a unit test, a puppet with no formation
   and its overlord's division both beside an enemy cell, the cell to the overlord (red without:
-  the puppet, its id the lower); from 1938 on seeds 1307 and 8693 on HEAD, no nation with no land
-  formation gains 500 cells or more by flips in two years (each read by `nukeProgramme.ts`'s
-  `held` and `men`); the ADR and the pin's entry.
+  the puppet, its id the lower); from 1938 on seeds 1307 and 8693 on HEAD, Latvia and Lithuania
+  hold under 500 cells more than they own in 1938 at every sample of two years while they have no
+  land formation (`nukeProgramme.ts`'s `held` and `men`); the ADR and the pin's entry. The ADR
+  also says who takes a cell that only the puppet's land borders while its overlord's armies
+  press it (the candidates are neighbouring controllers; the patched run did not meet that case).
 - [ ] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's
   seeds: the same top five 22 years on seed 8693 and 21 on 7019, over the 20-year limit (4219 and
   3613: 18 and 17; run 9's worst 18; `critic/c10_summary.txt` `stasis`); late wars between
