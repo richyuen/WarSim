@@ -1,0 +1,163 @@
+{
+ "seed": 7019,
+ "m": 10,
+ "day": 3,
+ "picks": {
+  "inf": 11,
+  "arm": 41
+ },
+ "critic": [
+  {
+   "label": "inf",
+   "f": 11,
+   "m": 3000,
+   "tick": 74,
+   "tasked": 20,
+   "patrols": 14,
+   "aloft": 18,
+   "over": 13,
+   "drawn": 41
+  },
+  {
+   "label": "inf",
+   "f": 11,
+   "m": 900,
+   "tick": 76,
+   "tasked": 10,
+   "patrols": 4,
+   "aloft": 6,
+   "over": 0,
+   "drawn": 4
+  },
+  {
+   "label": "inf",
+   "f": 11,
+   "m": 250,
+   "tick": 78,
+   "tasked": 9,
+   "patrols": 1,
+   "aloft": 6,
+   "over": 1,
+   "drawn": 3
+  },
+  {
+   "label": "inf",
+   "f": 11,
+   "m": 80,
+   "tick": 80,
+   "tasked": 8,
+   "patrols": 5,
+   "aloft": 6,
+   "over": 4,
+   "drawn": 8
+  },
+  {
+   "label": "inf",
+   "f": 11,
+   "m": 25,
+   "tick": 82,
+   "tasked": 3,
+   "patrols": 2,
+   "aloft": 1,
+   "over": 0,
+   "drawn": 0
+  },
+  {
+   "label": "inf",
+   "f": 11,
+   "m": 10,
+   "tick": 84,
+   "tasked": 0,
+   "patrols": 0,
+   "aloft": 0,
+   "over": 0,
+   "drawn": 0
+  },
+  {
+   "label": "arm",
+   "f": 41,
+   "m": 3000,
+   "tick": 86,
+   "tasked": 24,
+   "patrols": 16,
+   "aloft": 21,
+   "over": 15,
+   "drawn": 47
+  },
+  {
+   "label": "arm",
+   "f": 41,
+   "m": 900,
+   "tick": 88,
+   "tasked": 8,
+   "patrols": 5,
+   "aloft": 3,
+   "over": 0,
+   "drawn": 5
+  },
+  {
+   "label": "arm",
+   "f": 41,
+   "m": 250,
+   "tick": 90,
+   "tasked": 7,
+   "patrols": 0,
+   "aloft": 7,
+   "over": 0,
+   "drawn": 1
+  },
+  {
+   "label": "arm",
+   "f": 41,
+   "m": 80,
+   "tick": 92,
+   "tasked": 8,
+   "patrols": 5,
+   "aloft": 6,
+   "over": 5,
+   "drawn": 9
+  },
+  {
+   "label": "arm",
+   "f": 41,
+   "m": 25,
+   "tick": 94,
+   "tasked": 9,
+   "patrols": 5,
+   "aloft": 4,
+   "over": 0,
+   "drawn": 0
+  },
+  {
+   "label": "arm",
+   "f": 41,
+   "m": 10,
+   "tick": 96,
+   "tasked": 0,
+   "patrols": 0,
+   "aloft": 0,
+   "over": 0,
+   "drawn": 0
+  }
+ ],
+ "days": [
+  {
+   "label": "inf",
+   "f": 11,
+   "samples": 220,
+   "samplesTasked": 136,
+   "shareDrawnWhenTasked": 0.5,
+   "hoursTasked": 16,
+   "hoursDrawn": 12
+  },
+  {
+   "label": "arm",
+   "f": 41,
+   "samples": 222,
+   "samplesTasked": 0,
+   "shareDrawnWhenTasked": 0,
+   "hoursTasked": 0,
+   "hoursDrawn": 0
+  }
+ ]
+}

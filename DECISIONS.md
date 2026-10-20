@@ -167,6 +167,72 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-559 · 2026-10-20 · proposed (the user's decision) — PLAN 7.36's bar for the sorties up close: one drawn while a wing is tasked there, not one for each
+
+- **Context.** PLAN 7.36's AT asks, at 25 and 10 m/px over a front in contact, "at least one
+  sortie drawn in the view for each wing tasked on the part of the front in view". A wing on a
+  patrol flies out, stays over its place 1 to 4 hours, flies back and stands 2 hours on its base
+  (`TURNAROUND_HOURS`): some 40 % of its cycle it is not over the place, and a strike wing is over
+  its target an instant (its sortie turns at once). At no zoom can every wing tasked on a place be
+  over it at every moment without a fiction (no turnaround, or a strike that stays). ADR-558's
+  relay, which the AT does meet in part, puts some of a place's wings on their bases at each
+  moment by design.
+- **Measured** (`tools/diag/airSeen.ts`, `docs/evidence/7.36/airSeen-7019-*.json`, seed 7019,
+  the critic's views): at the critic's four close views a sortie is drawn where none was (1, 1, 2,
+  1); the wings tasked there at those moments 3, 3, 5, 4 by their sorties' targets (patrols and
+  strikes), so "one for each" is missed at each.
+- **Options.** (a, recommended) The bar becomes: at each of the critic's close views where a wing
+  is tasked on the part of the front in view, at least one sortie drawn; and over a live day at
+  25 m/px above a front formation with wings tasked on it, a sortie drawn in at least 0.9 of the
+  moments (`airSeen`'s `shareDrawnWhenTasked`; 0.94 now, 0.52 before ADR-558). (b) Keep "one for
+  each wing tasked": no turnaround drawn and a strike shown over its target for longer than the
+  sim has it there, which the semantic zoom's rule (the same state at every tier) forbids.
+- **Until decided.** PLAN 7.36 stays open on its first half; 7.36b (the air map) is taken up.
+
+### ADR-558 · 2026-10-20 · accepted — Patrols over one place take off in turn (PLAN 7.36a; amends ADR-322's scheduler)
+
+- **Context.** PLAN 7.36 (R10-B3, aircraft 6): 0 sorties drawn at 25 and 10 m/px over a front in
+  contact on the critic's seeds 7019 and 4483 (one world on day 3 of a God-declared war: the same
+  picks and counts). Measured (`tools/diag/airSeen.ts`; `docs/evidence/7.36/`): the drawing is
+  sound (paused and stepped, every sortie over the view is drawn); the sky was empty. The air AI
+  gives its missions at 00:00 and the scheduler launches every ready wing with one in the same
+  hour, so the wings on one place flew out together, stood over it together and turned home
+  together (Germany's four fighter wings over division 11, launched at the same tick, 2.4 h over
+  in a cycle of 5.3). Over a live day at 25 m/px a sortie was drawn in 0.52 of the moments with a
+  wing tasked in view; the critic's two samples at 25 and 10 m/px fell in the gaps.
+- **Decision.** Of a nation's `n` wings on a patrol of the same place (the mission's x and y, as
+  the air AI sets them: `overMen`'s middle of a formation's block), a ready wing takes off no
+  sooner than ⌈its cycle⌉ / n hours after the last of them did (its cycle: out, over, back and its
+  turnaround, `2 km / kmh + over + TURNAROUND_HOURS`; ⌈⌉ the whole hours after which it is ready
+  again), within the hour where that falls inside it, its launch then a fraction of the hour past
+  the tick (`sortieAt` is a function of a real launch). Spaced by an n-th of the hours a wing
+  takes to be ready again, the relay holds no wing back once it turns: the aircraft-hours over
+  the place are those of before. Strikes and supply flights are not relayed: a strike is over its
+  target an instant at any spacing.
+- **Not taken.** A relay that waits while another wing of the place is over it (continuous cover
+  with one wing at a time): it cuts the mass in each air fight by up to n, a larger move of the
+  air war. Whole-hour spacing (⌊cycle / n⌋, then ⌊⌈cycle⌉ / n⌋): three or four wings bunched into
+  consecutive hours and left an hour a cycle with none over (the critic's armoured view at 10 m/px
+  read 0).
+- **Measured** (seed 7019, Germany–Poland, `airSeen` before and after): the critic's four close
+  views (infantry 25 and 10 m/px, armour 25 and 10) 0, 0, 0, 0 → 1, 1, 2, 1 sorties drawn; a live
+  day at 25 m/px over infantry division 11, the moments with a wing tasked in view and a sortie
+  drawn 0.52 → 0.94, the hours 20 of 23 → 24 of 24; at 10 m/px 0.50 → 0.71, 12 of 16 → 20 of 21
+  hours. Armoured division 41 had no wing tasked over it in its day (the spread of ADR-503 leaves
+  a formation without one where a nation has fewer wings than formations in contact). Headless,
+  3 years (`critic/scripts/c10_headless.ts`, written to `.cache/`): sorties aloft a year 53.4,
+  29.7, 36.9 → 55.5, 34.2, 39.1 (seed 99) and 55.3, 31.0, 15.7 → 44.5, 34.9, 16.7 (7019); air
+  battles 1,861, 213, 705 → 2,844, 799, 368 and 3,213, 246, 202 → 1,872, 2,705, 397 (the worlds
+  diverge). Seed 99, 1 year, `--profile --affinity 0xFFFF`: the air system 0.199 → 0.250 ms a
+  tick, the mean tick 2.275 → 2.365 ms (the relays built only in an hour a patrol is ready: the
+  same; the rest is the year's 53 % more air fights).
+- **Pin.** f1dc9ca3 → 5afbdb13.
+- **Tests.** `sortieScheduler1938.test.ts` "patrols of one nation over one place take off in
+  turn": four German fighter wings on a patrol of Prague, 48 hours: their first launches an hour
+  or more apart, one over Prague at every half hour from the first's arrival, each wing's later
+  launches within the hour it is ready, saved mid-relay the same game. Red without the rule (the
+  four launched in one hour).
+
 ### ADR-557 · 2026-10-20 · accepted — A nation without a navy saves for a warship (PLAN 7.35d3b; amends ADR-273, ADR-514)
 
 - **Context.** PLAN 7.35d3 (`docs/evidence/7.35/measure-d.md` §11–12): of 337 nations that lost

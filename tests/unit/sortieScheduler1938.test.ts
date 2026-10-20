@@ -125,4 +125,55 @@ describe('the sortie scheduler (PLAN 5.2b)', () => {
     // Every zone named is a zone, every sortie's land zone or sea zone where it flies.
     for (const z of airborne(w, w.tick).keys()) expect(z).toBeLessThanOrEqual(airOf(w).count);
   });
+
+  it('patrols of one nation over one place take off in turn, and the place has one over it at every hour once the first is there (PLAN 7.36a)', () => {
+    const s = sim();
+    const w = s.world;
+    const prague = at(14.4, 50.1);
+    const wings = [...w.wingBase]
+      .filter(([id, b]) => b > 0 && w.formations.cols.nation[id] === GER && TEMPLATES_1938[w.formations.cols.template[id]!]!.id === 'fighter_group')
+      .map(([id]) => id)
+      .filter((id) => orderMission(w, id, 'patrol', ...prague) === 0)
+      .slice(0, 4);
+    for (const id of [...w.wingMission.keys()]) if (!wings.includes(id)) w.wingMission.delete(id);
+    expect(wings.length).toBe(4);
+    // Each wing's launches over two days, and whether one is over Prague at each half hour.
+    const launches = new Map<number, number[]>(wings.map((id) => [id, []]));
+    const covered: boolean[] = [];
+    for (let hour = 0; hour < 48; hour++) {
+      s.step(1);
+      for (const id of wings) {
+        const q = w.sorties.get(id);
+        const list = launches.get(id)!;
+        if (q && list.at(-1) !== q.launch) list.push(q.launch);
+      }
+      for (const t of [w.tick, w.tick + 0.5]) covered.push(wings.some((id) => w.sorties.has(id) && sortieAt(w.sorties.get(id)!, t, w.cells.w).leg === Leg.Over));
+    }
+    // They did not all go at once: the first launches are a quarter of a cycle apart, or more.
+    const firsts = wings.map((id) => launches.get(id)![0]!).sort((a, b) => a - b);
+    for (let k = 1; k < firsts.length; k++) expect(firsts[k]! - firsts[k - 1]!).toBeGreaterThanOrEqual(1);
+    // Over Prague at every half hour from the first's arrival on (before the rule: none over it
+    // for hours of each cycle, the four of them home together).
+    const first = covered.indexOf(true);
+    expect(first).toBeGreaterThanOrEqual(0);
+    expect(first).toBeLessThan(6);
+    expect(covered.slice(first).every(Boolean)).toBe(true);
+    // None held back once the relay turns: each launch after a wing's first is within the hour it is ready.
+    for (const id of wings) {
+      const list = launches.get(id)!;
+      expect(list.length).toBeGreaterThanOrEqual(7);
+      for (let k = 1; k < list.length; k++) {
+        const prev = w.sorties.get(id)!;
+        const ready = Math.ceil(list[k - 1]! + 2 * (prev.km / prev.kmh) + prev.over + TURNAROUND_HOURS);
+        expect(list[k]!).toBeLessThan(ready + 1);
+      }
+    }
+    // Saved mid-relay, the same game.
+    const u = sim();
+    u.load(s.save());
+    expect(byId(u.world)).toEqual(byId(w));
+    u.step(12);
+    s.step(12);
+    expect(u.hash()).toBe(s.hash());
+  });
 });

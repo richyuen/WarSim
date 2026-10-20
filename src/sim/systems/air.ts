@@ -32,6 +32,9 @@ export function airSystem(world: World): void {
   const c = f.cols;
   // A wing to each live carrier of a fleet, the lowest ids first (PLAN 5.8l).
   const decks = new Map<number, number>();
+  // The patrols' relays (PLAN 7.36a), made when a patrol is first ready to take off this hour.
+  let relay: Map<string, Relay> | null = null;
+  const relayOf = (): Map<string, Relay> => (relay ??= relays(world));
   for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
     if (!f.has(id)) {
       world.wingBase.delete(id);
@@ -65,7 +68,7 @@ export function airSystem(world: World): void {
       c.x[id] = c.x[-base]!;
       c.y[id] = c.y[-base]!;
     }
-    schedule(world, id);
+    schedule(world, id, relayOf);
   }
   const byZone = world.sorties.size > 0 ? airborne(world, world.tick) : new Map<number, number[]>();
   if (byZone.size > 0 || world.airPower.size > 0) airPowerSystem(world, byZone);
@@ -118,12 +121,45 @@ export function liveCarriers(world: World, fleet: number): number {
 /** Hours a wing is on its base after a sortie before it can fly the next (refuelled, rearmed). */
 export const TURNAROUND_HOURS = 2;
 
+/** The patrols of one nation over one place (PLAN 7.36a): how many wings it has on them, and the last launch of one. */
+interface Relay {
+  wings: number;
+  last: number;
+}
+
+/** The key of a patrol's relay: its nation and its place. */
+const relayKey = (nation: number, m: WingMission): string => `${nation}:${m.x}:${m.y}`;
+
+/** The hour's relays: of each nation's wings on a patrol, by place, their count and their latest launch. */
+function relays(world: World): Map<string, Relay> {
+  const out = new Map<string, Relay>();
+  const c = world.formations.cols;
+  for (const [id, m] of world.wingMission) {
+    if (m.kind !== 'patrol' || !world.formations.has(id)) continue;
+    const key = relayKey(c.nation[id]!, m);
+    let r = out.get(key);
+    if (!r) out.set(key, (r = { wings: 0, last: -Infinity }));
+    r.wings++;
+    const s = world.sorties.get(id);
+    if (s && s.launch > r.last) r.last = s.launch;
+  }
+  return out;
+}
+
 /**
  * The scheduler for wing `id` this hour (PLAN 5.2b): a sortie done and turned round is
  * forgotten; then a wing with a mission and none, whose target is within its range of its base,
  * takes off now: a strike turns over its target, a patrol stays `patrolHours`.
+ *
+ * Patrols over one place take off in turn (PLAN 7.36a, ADR-558): of a nation's `n` wings on a
+ * patrol of the same place, one takes off no sooner than ⌈its cycle⌉ / n hours (its flight out,
+ * over and back, and its turnaround, in the whole hours it takes) after the last of them did,
+ * within the hour where that falls in it (a launch is then a fraction of an hour past the tick). They had all flown at the hour
+ * their missions came and turned home together, and the front had no aircraft over it 40 % of
+ * the time, a fighter wing tasked there or not (seed 7019, Germany–Poland: 0 drawn at 25 and
+ * 10 m/px, the critic's run 10). The aircraft-hours over the place are the same.
  */
-function schedule(world: World, id: number): void {
+function schedule(world: World, id: number, relayOf: () => Map<string, Relay>): void {
   const s = world.sorties.get(id);
   if (s) {
     if (world.tick < sortieEnd(s) + TURNAROUND_HOURS) return;
@@ -136,7 +172,19 @@ function schedule(world: World, id: number): void {
   const range = wingRange(world, id);
   if (km > range) return; // its carrier sailed off: it waits
   const kmh = world.rules!.templates[world.formations.cols.template[id]!]!.speedKmh;
-  world.sorties.set(id, { bx: at[0], by: at[1], tx: m.x, ty: m.y, launch: world.tick, kmh, km, over: m.kind === 'patrol' ? patrolHours(range, kmh, km) : 0 });
+  const over = m.kind === 'patrol' ? patrolHours(range, kmh, km) : 0;
+  const r = m.kind === 'patrol' ? relayOf().get(relayKey(world.formations.cols.nation[id]!, m)) : undefined;
+  let launch = world.tick;
+  if (r && r.wings > 1) {
+    const cycle = (kmh > 0 ? (2 * km) / kmh : 0) + over + TURNAROUND_HOURS;
+    // A wing is ready again at the first hour from its launch past its cycle; spaced by an n-th of
+    // that, the relay holds none of them back once it turns. The turn may fall within the hour.
+    const next = r.last + Math.ceil(cycle) / r.wings;
+    if (next >= world.tick + 1) return;
+    launch = Math.max(world.tick, next);
+    r.last = launch;
+  }
+  world.sorties.set(id, { bx: at[0], by: at[1], tx: m.x, ty: m.y, launch, kmh, km, over });
 }
 
 /**

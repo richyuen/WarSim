@@ -65,6 +65,25 @@ each, split when taken up:
   2 zones" for Europe (`critic/c10_h_1307.json`, `c10h_8217_air_hover.png`); air battles a mean of
   2,537 in year 1 and 122 a year after, sorties aloft 39–57 then 0.7–28 (`c10_summary.txt`): the
   fall is 7.29's. The AT above, on the critic's run-10 cases (7019, 8217) too.
+  Its first half's bar waits on the user (ADR-559, proposed): "one for each wing tasked" cannot
+  hold while a wing turns round on its base, or a strike is over its target an instant. A part
+  each:
+    - [x] 7.36a The patrols over one place take off in turn (ADR-558): measured first
+      (`tools/diag/airSeen.ts`, seed 7019; 7019 and 4483 are one world on day 3 of the critic's
+      war): the drawing sound, the sky empty, the wings on one place launched in one hour and home
+      together. AT: at the critic's four close views (infantry and armour, 25 and 10 m/px) a sortie
+      drawn at each (was 0 at each); a live day at 25 m/px over the infantry pick, a sortie drawn in
+      0.9 or more of the moments with a wing tasked in view (was 0.52); a unit test red without;
+      the pin's entry. Met: 1, 1, 2, 1; 0.94; `sortieScheduler1938.test.ts`; f1dc9ca3 → 5afbdb13.
+      Read, not a bar: armoured division 41 had no wing tasked over it in its day (ADR-503's spread,
+      fewer wings than formations in contact).
+    - [ ] 7.36b The air map read (R10-B3): on day 10 of Germany–Poland (8217) one German zone
+      runs from London to Kiev, every hover "held by Germany", the legend "Germany, 2 zones" for
+      Europe (`critic/c10_h_1307.json`, `c10h_8217_air_hover.png`). Measured first: the air zones'
+      sizes on the 1938 map and what the hover and the hatch read (the zone's holder by
+      `airSuperiority`, or the flown power). AT: the parent's second half (two or more of London,
+      Paris, Warsaw and Kiev read another holder or "contested"; no zone of one holder over
+      1,500 km), a spec red without; the pin's entry if a rule moves.
 - [ ] 7.37 AI nuclear use believed, beyond the chains (AI nuclear use 7, needs 8): single bombs on
   small states (Nepal 1,656,090 dead and Afghanistan 3,328,000 on seed 2609, Sweden 1,050,000 on
   1129); Germany strikes one Canadian point twice 90 days apart for 5,620 then 439 (seed 4483,

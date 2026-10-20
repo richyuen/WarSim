@@ -20274,3 +20274,23 @@ No rule changed and nothing on screen changed. One task came out of it.
     with no coast (§14) or no gold (§13) cannot replace.
 - **AT:** every part done, each its bar or its measured reason: 7.35 ticked, `plan:archive` run.
 - **Next:** the first unchecked task, PLAN 7.36 (aircraft 6).
+
+## 2026-10-20 — PLAN 7.36a: patrols over one place take off in turn (ADR-558)
+
+- **Measured** (`tools/diag/airSeen.ts`, seed 7019; `docs/evidence/7.36/`): the critic's run-10
+  sequence reproduces on HEAD (41, 4, 3, 8, 0, 0 sorties at 3,000 to 10 m/px). 7019 and 4483 are
+  one world on day 3 of the God-declared war (same picks, counts). The drawing is sound (paused
+  and stepped, every sortie over the view drawn); the sky was empty: the wings on one place were
+  launched in one hour and turned home together.
+- **Rule:** of a nation's n wings on a patrol of one place, one takes off ⌈its cycle⌉ / n hours
+  after the last, within the hour. Pin f1dc9ca3 → 5afbdb13.
+- **AT (7.36a):** the critic's four close views 0, 0, 0, 0 → 1, 1, 2, 1 drawn; a live day at
+  25 m/px 0.52 → 0.94 of the moments with a wing tasked in view (hours 20/23 → 24/24); 10 m/px
+  0.50 → 0.71. `sortieScheduler1938.test.ts` (red without). Specs by hand, green: airControl,
+  airDemo, airFx, airT3, carrierStrikeRow, patrolsSeen, seaBattleSeen, sortiesSeen (1938).
+- **Perf:** seed 99, 1 year, pinned: air 0.199 → 0.250 ms a tick, mean tick 2.275 → 2.365 ms; the
+  relays built lazily changed nothing, so the cost is the year's 53 % more air fights.
+- **Read:** armoured division 41 had no wing tasked over it in its day (ADR-503's spread).
+- **Waits on the user:** ADR-559 (PLAN 7.36's first-half bar: a. one sortie drawn where a wing is
+  tasked, and 0.9 of a live day at 25 m/px, recommended; b. one for each wing tasked, a fiction).
+- **Next:** PLAN 7.36b (the air map's zones).
