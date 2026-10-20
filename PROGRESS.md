@@ -20191,3 +20191,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Fixed, the code** (ADR-555): `layoutTags` places a tag that must stand on another formation's
   elements after every tag that has a clear place; `tagsCrowd1938` green three runs of three, the
   tag specs green. The spec waits for the view at its tick (it read none in contact 1 run in 3).
+- **Fixed, the test's aim:** `coast1938` reads its fine coast at 800 m/px, T1 beyond the ground's
+  band, as 7.34a moved `coastPicture1938` and `occupiedGround1938`: at its 489 m/px the ground's
+  share is 0.47 since ADR-532, and every shallow by a coast is [33, 61, 100] against the flat sea's
+  [29, 53, 87]. Green.

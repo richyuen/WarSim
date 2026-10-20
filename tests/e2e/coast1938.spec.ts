@@ -59,8 +59,12 @@ test('the fine land mask draws the coast; terrain mode shows terrain', async ({ 
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.view!.lastTick === 0, null, { timeout: 60_000 });
   await page.waitForFunction(() => window.__warsim!.view!.hasFineCoast, null, { timeout: 60_000 });
   const sea = [0x1d, 0x35, 0x57];
-  for (const [x, y] of fineLand) expect(dist(await pixelAt(page, x, y, 40), sea), `fine land at ${x},${y}`).toBeGreaterThan(40);
-  for (const [x, y] of fineWater) expect(dist(await pixelAt(page, x, y, 40), sea), `fine water at ${x},${y}`).toBeLessThan(12);
+  // At T1 beyond the ground's band, where the sea is one colour: 800 m/px (40 px to a cell, 489
+  // m/px, until PLAN 7.34a, ADR-532: there the ground's share is now 0.47, and the sea's shade by
+  // its depth lightens the shallows, [33, 61, 100] by every coast).
+  const t1 = await page.evaluate(() => (window.__warsim!.view!.geo.kmPerCell * 1000) / 800);
+  for (const [x, y] of fineLand) expect(dist(await pixelAt(page, x, y, t1), sea), `fine land at ${x},${y}`).toBeGreaterThan(40);
+  for (const [x, y] of fineWater) expect(dist(await pixelAt(page, x, y, t1), sea), `fine water at ${x},${y}`).toBeLessThan(12);
 
   // Terrain mode: the Sahara is desert-coloured.
   await page.evaluate(() => window.__warsim!.hud.setMapMode('terrain'));
