@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { BATTLE_FLEET_INCOME, budgetOf, NAVY_SHARE, RESERVE_MONTHS } from '../../src/sim/ai/economic';
-import { destroyFormation } from '../../src/sim/systems/elements';
+import { bleedFormation, destroyFormation } from '../../src/sim/systems/elements';
 import { placeFleet } from '../../src/sim/placeForces';
 import { Refusal } from '../../src/shared/commands';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
 import { declareWar } from '../../src/sim/systems/war';
+import { refillable } from '../../src/sim/systems/production';
 import { Domain, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { runEvents } from '../helpers/sim1938';
@@ -134,7 +135,7 @@ describe('the navy\'s cost (PLAN 4.6e1)', () => {
 // (a division's 1,001 and the reserve, 119 gold under a destroyer's) each time it neared a warship's.
 describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
   // Norway's army of 1938 stands just under its peacetime share (aggression 0), Brazil's at 1.9 of it.
-  const setUp = (opts: { tag: string; enemy?: string; army: boolean }): { s: Sim; w: World; NOR: number } => {
+  const setUp = (opts: { tag: string; enemy?: string; army: boolean; bleed?: boolean }): { s: Sim; w: World; NOR: number } => {
     const s = peaceful();
     const w = s.world;
     const NOR = id(opts.tag);
@@ -145,6 +146,13 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
     });
     if (opts.enemy) expect(declareWar(w, NOR, id(opts.enemy), true)).not.toBeNull();
     w.nations.cols.manpower[NOR] = 1e7;
+    // A division bled to half, so the refills have men to give back.
+    if (opts.bleed) {
+      const div = w.formations.ids().find((f) => w.formations.cols.nation[f] === NOR && refillable(w, f) === false && !w.isFleet(f) && !w.isWing(f) && !w.offLand(f));
+      expect(div).toBeDefined();
+      bleedFormation(w, div!, 0.5);
+      expect(refillable(w, div!)).toBe(true);
+    }
     const { income } = budgetOf(w, NOR, monthlyAccounts(w, T));
     const line = w.rules!.templates[fleets.destroyer]!.gold + RESERVE_MONTHS * income;
     // Gold for a destroyer with its reserve, not for a division and then a destroyer.
@@ -162,7 +170,7 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
   });
 
   it('at war, its army at its peacetime share, the army waits and the refills keep the price (red without)', () => {
-    const { s, w, NOR } = setUp({ tag: 'BRA', enemy: 'BOL', army: true });
+    const { s, w, NOR } = setUp({ tag: 'BRA', enemy: 'BOL', army: true, bleed: true });
     const before = w.nations.cols.gold[NOR]!;
     runEvents(s, 1);
     expect(ships(w, NOR)).toEqual([fleets.destroyer]);

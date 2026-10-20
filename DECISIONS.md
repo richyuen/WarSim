@@ -197,7 +197,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Tests.** `navyBudget1938.test.ts` "a nation without a navy saves for a warship": Norway in
   peace, its army under its share, gold for a destroyer and its reserve but not a division too,
   orders the destroyer and no division; Brazil at war with Bolivia, its army over its peacetime
-  share, the same; Norway at war with its army under the share orders the division (the floor).
+  share and a division bled to half, the same (the refills take at most the 100 over the line;
+  red with the refills' keep alone taken out); Norway at war with its army under the share orders the division (the floor).
   The first two red without the rule.
 
 ### ADR-556 · 2026-10-20 · accepted (the user's decision) — The critic judges the design's execution, starts from the last report's cases, and says why a score moved
