@@ -184,13 +184,14 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
   /** Whether a placed tag is nearer than `d` to (x, y). */
   const tagNearer = (x: number, y: number, d: number): boolean => tags.some(x - d, y - d, x + d, y + d, (j) => far(placed[j]!, x, y) < d);
   const sorted = [...items].sort((a, b) => Number(b.picked === true) - Number(a.picked === true) || b.strength - a.strength || a.id - b.id);
-  for (const it of sorted) {
+  /** Places the tag of `it` at the first place the passes allow; false: none did. */
+  const place = (it: TagInput, passes: readonly number[]): boolean => {
     // The part of the formation that is in the view.
     const vx0 = Math.max(it.x0, 0);
     const vx1 = Math.min(it.x1, vw);
     const vy0 = Math.max(it.y0, 0);
     const vy1 = Math.min(it.y1, vh);
-    if (vx1 < vx0 || vy1 < vy0) continue;
+    if (vx1 < vx0 || vy1 < vy0) return true;
     const w = Math.ceil(Math.max(TAG_FLAG_W * scale + pad + measure(it.text, TAG_STRENGTH_FONT(scale)), measure(it.name, TAG_NAME_FONT(scale))) + 2 * pad);
     const x = Math.round(Math.min(Math.max((vx0 + vx1) / 2 - w / 2, edge), Math.max(edge, vw - w - edge)));
     const stepY = h + TAG_GAP;
@@ -224,8 +225,8 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
     // First a place by the block, clear of every other formation's elements, that is not
     // nearer to the middle of another block than that block's own tag, placed before it (PLAN
     // 3.11f: a reader would take it for that block's); then the nearest place clear of the
-    // elements; with none, any free place.
-    for (const pass of [0, 1, 2]) {
+    // elements; with none, any free place (once every other tag has had its clear place).
+    for (const pass of passes) {
       const clear = pass < 2;
       for (const at of pass === 0 ? tries.slice(0, byBlock) : tries) {
         const box = { x: at.x, y: at.y, w, h };
@@ -250,8 +251,13 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
       }
       if (done) break;
     }
-    if (!done) left++;
-  }
+    return done;
+  };
+  // A tag with no place clear of the others' elements goes on them only after every tag that
+  // has one (PLAN 7.4f37): placed first by its strength, it took the place of a weaker block's
+  // own and left that one's tag off it ("233 over 236", a block of 233 almost all under the bar).
+  const forced = sorted.filter((it) => !place(it, [0, 1]));
+  for (const it of forced) if (!place(it, [2])) left++;
   // A tag by its own block is not always the one a reader takes for the block's (ADR-188):
   // by a tall block, "below" is further from its middle than a neighbour's tag over its top.
   // Such a tag has a line too.

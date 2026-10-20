@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-555 · 2026-10-19 · accepted — A tag that must stand on another formation's elements is placed after every tag that has a clear place (PLAN 7.4f37; amends ADR-168)
+
+- **Context.** `npm run check:review` before critic run 10: `tagsCrowd1938` red twice at 12 m/px
+  ("Infantry division 233 over Infantry division 236"). `layoutTags` placed each tag in turn, the
+  strongest first, through all its passes. A strong formation whose block was almost all under the
+  page's bar (233, 10.7k) had no clear place by it, and took its first free place: the one below
+  236's block, on 236's elements. 236's tag then stood 98 px off its own block, and a reader took
+  233's for 236's.
+- **Decision.** Every tag first tries its clear places (passes 0 and 1), in the same order; only
+  the tags that found none take any free place (pass 2), after, in that order. So a forced tag
+  never takes the clear place of a weaker block's own. The grid layout's unit oracle
+  (`tests/unit/tags.test.ts`) does the same.
+- **Measured.** `tagsCrowd1938`: 0 tags over a block whose own tag is not by it at 60 and 12 m/px
+  (96 and 62 tags, none over 120 px off); the tag specs (`tags1938`, `battleView1938`,
+  `formationPanel1938`, `seamFight1938`, `tankBattle1938`, `toBattle1938`) green.
+  Render only: the pin unchanged.
+
 ### ADR-554 · 2026-10-19 · accepted (the user's decision) — A task ends at its number: an AT with a bar, a depth cap, a budget per dimension task, the user's decisions first, `check:review` before the critic
 
 - **Context.** The user's question, "are we making progress on open tasks, or do we just keep

@@ -20188,3 +20188,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   `hulls.tankCount`: since 7.23b `count` is the fallen's marks too, which came an hour before the
   first hull; now 2 hulls after 2 h, 2 drawn after 20 s paused. Thresholds unchanged.
 - **Next:** `tagsCrowd1938` and `coast1938` (the code), then `check:review` again, then the critic.
+- **Fixed, the code** (ADR-555): `layoutTags` places a tag that must stand on another formation's
+  elements after every tag that has a clear place; `tagsCrowd1938` green three runs of three, the
+  tag specs green. The spec waits for the view at its tick (it read none in contact 1 run in 3).

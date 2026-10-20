@@ -18,7 +18,13 @@ test('the tags of formations in contact: apart, by their own blocks, not far out
   await page.evaluate(async ([g, p]) => {
     const s = window.__warsim!.sim;
     s.command({ kind: 'declareWar', attacker: g!, defender: p! });
-    await s.step(24 * 21);
+    const tick = (await s.step(24 * 21)).tick;
+    // The view at that tick: read before, it had no formation in contact (1 run in 3).
+    const v = window.__warsim!.view!;
+    await new Promise<void>((done) => {
+      const wait = (): void => (v.lastTick === tick ? done() : void setTimeout(wait, 5));
+      wait();
+    });
   }, [id('GER'), id('POL')]);
   await page.evaluate(() => {
     const h = window.__warsim!.hud;
