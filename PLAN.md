@@ -365,9 +365,11 @@ each, split when taken up:
   over 20: 5309, 23) and 12.4 at `bcbc99c` (two: 8693, 7019); a long top five is a seed's, about 1
   in 14 on either code. Measured first: on 8693 and 7019, what holds
   the top five (no war among them, the wars they win, their revolts), and Latvia's rise year by
-  year. AT: on the critic's 14 seeds × 30 years no stasis over 20 years (was 2 of 14); then
-  `npm run sweep` on 10 unseen seeds × 50 years: no stasis on 10 of 10 (7.27d's) and ADR-54's
-  limits, riser and faller green; Latvia's rise changed by a rule with an ADR, or a BLOCKERS entry
+  year. AT (the user's, 2026-10-20): `npm run sweep` on 10 unseen seeds × 50 years: no stasis on
+  8 of 10 (7.27's bar: one unchanged world's sweeps end at 7 to 9, `tools/sweep/criteria.ts`) and
+  ADR-54's limits, riser and faller green; the critic's 14 seeds × 30 years read for each rule, not
+  a bar (a top five over 20 years is about 1 seed in 14 on any code, above); Latvia's rise changed
+  by a rule with an ADR, or a BLOCKERS entry
   with its measured cause, the user's to accept; the pin's entry. Stop: two full re-measures flat,
   the bar is the user's (ADR-554).
 - [ ] 7.41 The war at sea seen (naval 6, needs 8, beyond 7.39): Japan–USA (seed 8693) one battle
