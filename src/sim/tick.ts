@@ -21,7 +21,7 @@ import { importLayer, paint, redoEdit, undoEdit } from './editor';
 import { decodeRuns, decodeRunsU32 } from '../shared/mapImport';
 import { FLAG_H, FLAG_W } from '../shared/flagPixels';
 import { Domain, navOf, type World } from './world';
-import { launchNuke, WARHEAD_MAX, detonate } from './systems/nuclear';
+import { launchNuke, meansHeld, tellMeansLost, WARHEAD_MAX, detonate } from './systems/nuclear';
 import { grantTechs, techClosure } from './tech';
 import { placeFleet, placeWing } from './placeForces';
 
@@ -442,7 +442,10 @@ export function applyPendingCommands(world: World): void {
 
 /** Advances the world by one tick using `systems` after command application. */
 export function step(world: World, systems: readonly System[]): void {
+  // A holder's last means of delivery lost in the tick is told (PLAN 7.37b3).
+  const held = meansHeld(world);
   applyPendingCommands(world);
   for (const s of systems) s(world);
+  tellMeansLost(world, held);
   world.tick++;
 }

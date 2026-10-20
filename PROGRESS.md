@@ -20398,3 +20398,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   it). No sim rule: the pin unchanged.
 - **Specs by hand, green:** editorForces1938 (4).
 - 7.37's commits: 3 of 20. **Next:** PLAN 7.37b3 (the game says when the last means is lost).
+
+## 2026-10-20 — PLAN 7.37b3: the game says when a holder's last means is lost; 7.37b done
+
+- **Change:** `EventKind.NukeMeansLost` (61): `step` takes the holders that can deliver by bomber
+  alone at the tick's start (`meansHeld`; null with no warhead in the world) and tells, after the
+  tick's commands and systems, each that can no longer while it holds a warhead it may use
+  (`tellMeansLost`): b = the enemy holding one of its groups' airbases, else 0 (lost in the air);
+  (x, y) = that airbase, its nearest city named. A history row, the ticker, the "capital" cue.
+- **AT:** seed 5309, Czechoslovakia's group at Prague and 10 warheads, Germany's war: one row, on
+  day 11, "Czechoslovakia lost its last means to deliver its warheads: Germany took its airbase
+  near Prague, and its strategic bombers were lost with it" (`nukeMeansLost1938.test.ts`, red
+  without; none for a nation holding no warhead); in the history panel by its type filter and in
+  the ticker (`nukeMeansLost1938.spec.ts`, `docs/evidence/7.37/b3-means-lost-row.png`). Pin
+  unchanged (no warhead in seed 99's year).
+- **Specs by hand, green:** nukeMeansLost1938, editorForces1938.
+- **7.37b done** (b1's decision waits on the user, ADR-563). 7.37's commits: 4 of 20.
+- **Next:** PLAN 7.37's next case (the restrike of one Canadian point, seed 4483).

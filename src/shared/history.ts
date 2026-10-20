@@ -98,6 +98,8 @@ export const HISTORY_ROLES: Readonly<Record<number, readonly [HistoryRole, Histo
   [EventKind.NationSpawned]: ['nation', 'nation'],
   [EventKind.CitySpawned]: ['town', 'nation'],
   [EventKind.CityRazed]: ['town', 'nation'],
+  // A holder's last means of delivery lost (PLAN 7.37b3): the enemy that took its airbase, or none.
+  [EventKind.NukeMeansLost]: ['nation', 'nation'],
 };
 
 /** Stable English type name of a kind (filters, CSV/JSON `type`). */
@@ -161,6 +163,8 @@ export const TICKER_KINDS: ReadonlySet<number> = new Set<number>([
   EventKind.NationSpawned,
   EventKind.CitySpawned,
   EventKind.CityRazed,
+  // A holder's last means of delivery lost (PLAN 7.37b3).
+  EventKind.NukeMeansLost,
 ]);
 /** Kinds of which the ticker takes one row an hour, the last logged: a month's air rows, logged the largest last. */
 export const TICKER_ONE_AN_HOUR: ReadonlySet<number> = new Set<number>([EventKind.AirWar, EventKind.AirRaids]);

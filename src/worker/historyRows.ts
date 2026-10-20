@@ -100,8 +100,8 @@ function townName(world: World, i: number, kind: number, a: number, defName: (de
   return n ? `=${n}` : '';
 }
 
-/** The kinds whose row names the city nearest its place: a strike (PLAN 6.11c), a decision to strike (PLAN 7.25c), a toll without its strike (PLAN 7.32b). */
-const NEAR_KINDS: ReadonlySet<number> = new Set([EventKind.NukeCasualties, EventKind.NukeDecided, EventKind.NukeToll]);
+/** The kinds whose row names the city nearest its place: a strike (PLAN 6.11c), a decision to strike (PLAN 7.25c), a toll without its strike (PLAN 7.32b), a holder's last means lost (PLAN 7.37b3). */
+const NEAR_KINDS: ReadonlySet<number> = new Set([EventKind.NukeCasualties, EventKind.NukeDecided, EventKind.NukeToll, EventKind.NukeMeansLost]);
 
 /**
  * `nationName` gives a nation's name (an i18n key or '=' + literal), `cityName` a city row's

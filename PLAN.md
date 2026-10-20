@@ -85,7 +85,7 @@ each, split when taken up:
       24, no strike in 100 days), `nukeOverrun1938` green; `nuclearReserve1938.test.ts` red
       without; the pin unchanged by it. Met: decisions on days 55 (shot down), 56, 68; the test
       red without; cc11ee7d is ADR-560's. 7.37's commits: 1 of 20.
-    - [ ] 7.37b Czechoslovakia armed in the editor (seed 5309, `c10_g2_5309_CZS.json`): its wings
+    - [x] 7.37b Czechoslovakia armed in the editor (seed 5309, `c10_g2_5309_CZS.json`): its wings
       lost by day 10, its 10 warheads held to its death, the editor saying only "10 warheads".
       A part each:
         - [x] 7.37b1 Its decision measured (`tools/diag/wingsLost.ts`, `nukeCase.ts … bomber`,
@@ -102,11 +102,15 @@ each, split when taken up:
           Met: "Czechoslovakia delivers them by its strategic bomber group at Prague; while it holds
           a warhead that group is kept for them." (`editorForces1938.spec.ts`,
           `docs/evidence/7.37/b2-editor-means.png`).
-        - [ ] 7.37b3 The game says when a holder's last means is lost: an event and a history row
+        - [x] 7.37b3 The game says when a holder's last means is lost: an event and a history row
           the day `canDeliver` turns false while it holds a warhead it may use, with the cause
           (its last airbase taken, its group shot down). AT: a unit test on seed 5309's case, the
           row on day 10–11 naming Prague's airbase (red without: no row); a spec of the row in the
           history; the pin unchanged.
+          Met: `NukeMeansLost` (a tick's start and end compared in `step`, no state kept), on day 11
+          "Czechoslovakia lost its last means to deliver its warheads: Germany took its airbase near
+          Prague, and its strategic bombers were lost with it" (`nukeMeansLost1938.test.ts`, red
+          without; `nukeMeansLost1938.spec.ts`, `docs/evidence/7.37/b3-means-lost-row.png`).
 - [ ] 7.38 R10-B1: the AI's nuclear choice weighs the people a burst kills (AI nuclear use 7, needs
   8; blocking). `nuclearUtility` has no term for the dead (`src/sim/systems/nuclear.ts:554-560`):
   Germany H-bombs Shanghai for 3,802,105 dead and 105 soldiers at utility 0.025, NUKE_FLOOR itself

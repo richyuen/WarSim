@@ -287,6 +287,63 @@ export function deliveryMeans(world: World, n: number): { bombers: number; base:
 }
 
 /**
+ * The holders of warheads that can deliver them by bomber alone at the start of a tick (PLAN
+ * 7.37b3): each with its strategic bomber groups' bases (airbase indices + 1). Null when there is
+ * none, so a world without warheads pays a map lookup. Taken in `step` before the tick's commands
+ * and systems, compared by `tellMeansLost` after them: no state kept between ticks.
+ */
+export function meansHeld(world: World): Map<number, number[]> | null {
+  if (world.warheads.size === 0) return null;
+  let held: Map<number, number[]> | null = null;
+  for (const n of [...world.warheads.keys()].sort((a, b) => a - b)) {
+    if (warheadsOf(world, n) < 1 || !nukesAllowed(world, n) || knows(world, n, 'ballistic_missiles')) continue;
+    const bases = strategicBases(world, n);
+    if (bases.length > 0) (held ??= new Map()).set(n, bases);
+  }
+  return held;
+}
+
+/** The bases (airbase indices + 1) of `n`'s strategic bomber groups at an airbase, in the groups' id order. */
+function strategicBases(world: World, n: number): number[] {
+  const c = world.formations.cols;
+  const rules = world.rules!;
+  const out: [number, number][] = [];
+  for (const [id, base] of world.wingBase) {
+    if (base <= 0 || c.nation[id] !== n || !world.formations.has(id)) continue;
+    const first = rules.templates[c.template[id]!]?.elements[0];
+    if (first && rules.units[first.unit]!.cls === STRATEGIC) out.push([id, base]);
+  }
+  return out.sort((a, b) => a[0] - b[0]).map((p) => p[1]);
+}
+
+/**
+ * Tells of each holder in `held` (`meansHeld`, the tick's start) that lost its last means of
+ * delivery in the tick while it still holds a warhead it may use (PLAN 7.37b3, the critic's
+ * Czechoslovakia: "no word in play when its means are lost"): `NukeMeansLost`, b = the nation
+ * that took one of its groups' airbases (they were lost with it, `fallBack` finding no other), or
+ * 0 for groups lost in the air; (x, y) = that airbase.
+ */
+export function tellMeansLost(world: World, held: Map<number, number[]> | null): void {
+  if (held === null) return;
+  const nc = world.nations.cols;
+  for (const [n, bases] of held) {
+    if (nc.living[n] !== 1 || warheadsOf(world, n) < 1 || !nukesAllowed(world, n) || canDeliver(world, n)) continue;
+    let taker = 0;
+    let at = bases[0]!;
+    for (const b of bases) {
+      const holder = world.cells.controller[world.airbases[b - 1]!.cell]!;
+      if (holder !== n && world.wars.atWar(n, holder)) {
+        taker = holder;
+        at = b;
+        break;
+      }
+    }
+    const [x, y] = basePlace(world, at)!;
+    world.out.emit(world.tick, EventKind.NukeMeansLost, n, taker, x, y);
+  }
+}
+
+/**
  * The strategic bomber group `n` keeps for its warheads (PLAN 7.37a, ADR-561): while it holds one
  * it may use and has no missiles, its strategic bomber group of the lowest id with a base, which
  * the air AI sends on no raid of industry; 0 for none. The critic's France (seed 7127) and

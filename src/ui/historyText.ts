@@ -94,7 +94,9 @@ export function historyText(r: HistoryRow): string {
   // A decision to strike (PLAN 7.25c): its place, and its utility told in words, not as a number.
   // A burst's toll found without its strike's row (PLAN 7.32b; the log has it right after the strike).
   const lost = r.kind === EventKind.NukeToll ? { near: r.near ? t('history.strikeNear', { city: displayName(r.near) }) : '', forces: lostOrNone(nukeToll(r.b)) } : {};
+  // A holder's last means lost (PLAN 7.37b3): the airbase's city.
+  const means = r.kind === EventKind.NukeMeansLost ? { near: r.near ? t('history.strikeNear', { city: displayName(r.near) }) : '' } : {};
   const decided = r.kind === EventKind.NukeDecided ?{ near: r.near ? t('history.strikeNear', { city: displayName(r.near) }) : '', weighed: t(nukeWeighed(r.b / 1000)) } : {};
-  const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships, ...strike, ...lost, ...decided, gold: gold(took) });
+  const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships, ...strike, ...lost, ...decided, ...means, gold: gold(took) });
   return s.charAt(0).toLocaleUpperCase() + s.slice(1);
 }

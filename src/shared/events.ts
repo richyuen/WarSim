@@ -169,6 +169,13 @@ export const EventKind = {
    * history keeps: `History.towns`), b = the nation holding it, (x, y) = where it stood.
    */
   CityRazed: 60,
+  /**
+   * A holder of warheads lost its last means of delivery (PLAN 7.37b3): its last strategic bomber
+   * group, with no missiles, while it holds a warhead it may use. a = the nation, b = the enemy
+   * that took the airbase its groups were lost with (0: lost in the air or otherwise); (x, y) =
+   * that airbase.
+   */
+  NukeMeansLost: 61,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

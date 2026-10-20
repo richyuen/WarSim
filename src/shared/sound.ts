@@ -29,6 +29,8 @@ const CUE_OF_KIND: Readonly<Record<number, Cue>> = {
   [EventKind.NationSpawned]: 'return',
   [EventKind.CitySpawned]: 'town',
   [EventKind.CityRazed]: 'town',
+  // A holder's last means of delivery lost (PLAN 7.37b3): a fall, as a capital's.
+  [EventKind.NukeMeansLost]: 'capital',
 };
 
 /** The cue of an event kind (null: the event is silent). Every kind of the ticker has one. */
