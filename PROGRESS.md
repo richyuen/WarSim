@@ -20252,3 +20252,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   enemy; bombs 100, inland water 274, never a port 118. A nation with no coast builds no ship: the
   reason is the land war's, no rule; the pin unchanged.
 - **Next:** 7.35d3's after-run of `seaYears` (run at `ebec10a`), which closes 7.35d and 7.35.
+
+## 2026-10-20 — PLAN 7.35d done (the after-run) and PLAN 7.35 closed (naval 6, critic run 9's cases)
+
+- **Run** (`seaYears`, 14 seeds × 30 years at `ebec10a`, 7 at a time; `measure-d.md` §15, against
+  §10's at `5acc4ca`): sea battles a world-year in years 2–30 2.5 → 4.9 (7.35d1's 1.9), on every
+  seed (4.1 to 5.8); years 11–30 1.7 → 4.3; late years with no sinking 7–15 a seed → 1–6; navies a
+  day 11.4 → 17.4, sea pairs 1.3 → 3.6; year 1 34.9 → 33.9.
+- **PLAN 7.35 against the critic's evidence, case by case** (36 commits and these two; ADR-554's
+  budget, its last parts):
+  - Italy–UK, seed 2251, a live battle and no ticker row (`c9_n_2251_ITA_ENG.json`): 7.35a, a
+    carrier's battle has a strike row; ships sunk in hours with no row 74 → 0 (`seaRows`).
+  - Japan–USA, seed 3407, no sea battle in 12 days (`c9_n_3407_JAP_USA.json`): 7.35b; the US
+    fleets stage forward, and ten Japan–US battles in 40 days, the first on day 13.6 (before one,
+    on day 39.5; `measure-b4.md` §2), each with its row.
+  - Ships at 20 m/px, destroyers about 10 × 3 px (`c9n_2251_ships_20m_crop4x.png`): 7.35c,
+    destroyers 19 × 5.5 px, submarines 15.5 × 3, cruisers 23.5 (ADR-548).
+  - The late sea battles, 13 a world-year against year 1's 36 (`c9_headless_*.json`, carried by
+    R9-B1's phantom battles): on the same seeds, years 2–30 1.9 → 4.9 against year 1's 20 → 34
+    (7.35d, ADR-549 to ADR-553, ADR-557). The rest of the gap: navies sunk by year 1 that nations
+    with no coast (§14) or no gold (§13) cannot replace.
+- **AT:** every part done, each its bar or its measured reason: 7.35 ticked, `plan:archive` run.
+- **Next:** PLAN 7.36 (aircraft 6).

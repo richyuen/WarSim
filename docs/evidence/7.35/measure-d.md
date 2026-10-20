@@ -695,3 +695,51 @@ months, 1 that the reading stopped had a warship ordered in the tick after (seed
 peace took every port it owned. It is not stranded by a rule of the navy (bombs shut 0.7 %, inland
 water 2 %), and an occupied coast is the war's (5.6 %). No rule builds ships for a nation with no
 port; the reason is the land war's, not the fleet step's. No rule: the pin unchanged.
+
+## 15. The run at `ebec10a` against §10's (7.35d, before and after)
+
+`npx tsx tools/diag/seaYears.ts <seed> 30` on the 14 seeds at `ebec10a` (the rules of 7.35d3b,
+ADR-557; d3c adds none), 7 at a time; JSON in `d3c/years_<seed>.json`, against §10's
+(`d2d3c/years_<seed>.json`, at `5acc4ca`). Before → after:
+
+| all 14 seeds, mean | year 1 | years 2–30 | 2–5 | 6–10 | 11–30 |
+| --- | --- | --- | --- | --- | --- |
+| sea battles | 34.9 → 33.9 | 2.5 → 4.9 | 5.9 → 6.6 | 3.1 → 5.8 | 1.7 → 4.3 |
+| that sank a ship | 33.6 → 32.4 | 2.4 → 4.8 | 5.5 → 6.4 | 3.0 → 5.7 | 1.7 → 4.2 |
+| ships sunk | 350.1 → 345.2 | 32.2 → 50.0 | 77.1 → 77.6 | 46.6 → 57.1 | 19.6 → 42.7 |
+| armed fleets | 99.3 → 99.4 | 74.6 → 79.1 | 79.9 → 86.3 | 75.0 → 86.1 | 73.4 → 75.9 |
+| their power (hp) | 302,097 → 302,487 | 232,208 → 240,531 | 243,335 → 255,381 | 219,418 → 243,908 | 233,180 → 236,716 |
+| nations with a navy | 16.3 → 16.7 | 11.4 → 17.4 | 10.8 → 15.2 | 11.8 → 19.0 | 11.5 → 17.4 |
+| pairs at war | 172.4 → 171.4 | 214.1 → 212.5 | 314.8 → 280.2 | 256.3 → 247.3 | 183.5 → 190.2 |
+| sea pairs | 5.0 → 5.8 | 1.3 → 3.6 | 2.4 → 4.2 | 1.5 → 3.7 | 1.1 → 3.5 |
+| their fleets | 36.3 → 36.3 | 14.9 → 22.2 | 32.6 → 34.7 | 22.0 → 28.2 | 9.6 → 18.3 |
+| their fleets' power (hp) | 109,669 → 109,244 | 42,842 → 69,742 | 100,652 → 105,454 | 64,390 → 84,707 | 25,893 → 58,859 |
+| their fleets under way | 2.7 → 3.0 | 0.5 → 0.8 | 1.1 → 1.1 | 0.8 → 1.1 | 0.3 → 0.7 |
+
+Per seed (sea battles), before → after:
+
+| seed | year 1 | sank a ship | years 2–30, mean | sank a ship | late years with none sinking (of 29) |
+| --- | --- | --- | --- | --- | --- |
+| 1129 | 49 → 43 | 48 → 42 | 2.7 → 4.9 | 2.7 → 4.9 | 13 → 3 |
+| 1471 | 24 → 25 | 24 → 25 | 2.8 → 5.5 | 2.8 → 5.5 | 11 → 2 |
+| 2251 | 39 → 45 | 34 → 40 | 2.1 → 4.8 | 2.1 → 4.8 | 8 → 6 |
+| 2609 | 43 → 36 | 41 → 36 | 1.6 → 4.2 | 1.6 → 4.1 | 13 → 3 |
+| 3407 | 10 → 14 | 10 → 14 | 2.9 → 5.8 | 2.8 → 5.7 | 12 → 4 |
+| 3793 | 37 → 36 | 36 → 35 | 2.4 → 4.8 | 2.3 → 4.7 | 9 → 2 |
+| 4483 | 38 → 26 | 37 → 26 | 2.4 → 5.4 | 2.4 → 5.4 | 10 → 2 |
+| 4957 | 36 → 32 | 36 → 32 | 2.1 → 4.1 | 2.0 → 4.0 | 12 → 1 |
+| 5527 | 34 → 36 | 34 → 36 | 2.5 → 4.2 | 2.3 → 4.0 | 15 → 5 |
+| 6113 | 28 → 25 | 28 → 24 | 2.7 → 4.7 | 2.6 → 4.7 | 8 → 3 |
+| 6653 | 69 → 75 | 61 → 62 | 3.4 → 5.3 | 2.6 → 5.0 | 7 → 3 |
+| 7741 | 29 → 29 | 29 → 29 | 2.6 → 4.3 | 2.5 → 4.2 | 9 → 1 |
+| 8821 | 14 → 14 | 14 → 14 | 2.3 → 4.6 | 2.2 → 4.5 | 10 → 4 |
+| 9901 | 39 → 38 | 39 → 38 | 3.0 → 5.4 | 2.9 → 5.4 | 9 → 3 |
+
+**What it says.** The late war at sea doubled and holds: sea battles a world-year in years 2–30
+2.5 → 4.9 (7.35d1's 1.9 at `10aecbe`), on every seed (4.1 to 5.8), and they do not fade (years
+11–30 1.7 → 4.3); the late years with no sinking 7 to 15 a seed → 1 to 6. Navies a day 11.4 → 17.4,
+sea pairs 1.3 → 3.6. Year 1 stays as it was (34.9 → 33.9). The gap to year 1 is now × 7, was × 14
+(and × 10 at 7.35d1); what is left of it is navies sunk by year 1's wars that nations with no coast
+or no gold cannot replace (§13, §14) and the year-1 wars' own size (pairs at war with a navy each 5.0
+a day in year 1). The critic's own count (13.1 a world-year late at `f0be88c`) was carried by the
+phantom battles of R9-B1; it is the next report's to read.
