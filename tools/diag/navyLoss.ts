@@ -326,7 +326,8 @@ const monthRead = (w: World, y: Year): void => {
     (fleets.get(n) ?? fleets.set(n, []).get(n)!).push(id);
     const t = f.template[id]!;
     const full = ECONOMY_TABLES_1938.templateStrength[t] ?? 0;
-    navy.set(n, (navy.get(n) ?? 0) + (full > 0 ? (upkeepOf(t) * f.strength[id]!) / full : 0));
+    // The share's build test reads the armed fleets' upkeep (PLAN 7.46b1, ADR-574).
+    if (fleetPower(w, id) > 0) navy.set(n, (navy.get(n) ?? 0) + (full > 0 ? (upkeepOf(t) * f.strength[id]!) / full : 0));
   });
   const warshipPending = new Set<number>();
   const transportPending = new Set<number>();

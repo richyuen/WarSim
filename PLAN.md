@@ -111,12 +111,14 @@ each, split when taken up:
       40 %, the army's orders first 27 %, the navy's share 13 %, one in training 10 %; HEAD the same
       four in the same order. Britain (`spentArmy`), Japan (`gold`), France (`navyShare`, nine
       submarine flotillas and no armed fleet) carry most of it. No rule: the pin unchanged.
-    - [ ] 7.46b1 A navy's share counts its armed fleets (7.46a §3, France): NAVY_SHARE and
+    - [x] 7.46b1 A navy's share counts its armed fleets (7.46a §3, France): NAVY_SHARE and
       ADR-557's saving read the upkeep of fleets with armed power, so submarines (and transports,
       2c's) do not stop a nation with no armed fleet from a warship. AT: a unit test, a nation with
       submarines over NAVY_SHARE and no armed fleet orders a warship (red without); France's
       `navyShare` months on the 4 × 10 with the chase from 90/55/33/49 to 0; the world's armed power
       at years 3–10 against HEAD's read; the ADR; the pin's entry; `--profile`.
+      Done (ADR-574, `docs/evidence/7.46/b1.md`): France's share months 0 on all four; the world's
+      armed power with the chase 52–60 % of HEAD's at years 3–5 (was 47–51), 81–96 % at 6–10.
     - [ ] 7.46b2 The army first at war (7.46a §3, Britain): ADR-557's saving of a warship's price
       also at war, while the nation is at war with an enemy that has an armed fleet. AT: a unit test
       (red without); Britain's `spentArmy` months on seeds 7019 and 3613 (87, 66) under 12 each on

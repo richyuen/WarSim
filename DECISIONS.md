@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-574 · 2026-10-20 · accepted — A navy's share counts its armed fleets in the build tests (PLAN 7.46b1; amends ADR-273, ADR-557)
+
+- **Context.** PLAN 7.46 (a navy sunk in a decisive war at sea is built again, from ADR-573). 7.46a
+  (`docs/evidence/7.46/measure-a.md` §3): with the chase, France's battle line is sunk on all four
+  seeds, and on seed 3613 it holds nine submarine flotillas and no other fleet for years (armed
+  power 0, upkeep 25.2). The economic AI summed every fleet's upkeep against NAVY_SHARE (ADR-273),
+  and ADR-557's saving is gated on the same sum: the submarines kept France from any warship, 90 /
+  55 / 33 / 49 months of its depleted navy stopped at the share.
+- **Decision.** The two build tests of the share, a warship's order (economic AI step 3b) and
+  ADR-557's saving for a nation with no armed fleet, read the upkeep of the nation's armed fleets
+  (`fleetPower` > 0: not submarine flotillas, not transport groups). The lay-up over the share,
+  when the books do not balance, still reads every fleet, the dearest first, as ADR-273 did: a
+  nation short of money and holding only submarines lays them up.
+- **Trade.** A nation with many submarines now builds warships to the share over them, so its
+  navy's upkeep may stand above NAVY_SHARE of its income. That is meant: the share is the battle
+  line's, and submarines (raids, ADR-260) and transports (landings, ADR-518, already outside the
+  share) have their own uses. When money runs short the lay-up takes the dearest fleets first,
+  over the whole navy.
+- **Read** (`docs/evidence/7.46/b1.md`; 4 seeds × 10 years with the chase): France's share months
+  0 on every seed; the world's depleted navies stopped at the share, years 3–10, 352 → 4 months;
+  the world's armed power with the chase 52 / 54 / 60 % of HEAD's at years 3–5 (was 51 / 49 / 47)
+  and 81–96 % at years 6–10 (65–79). Years 3–5 stay under 7.46a §4's ceiling of one warship at a
+  time.
+- **Pin.** b6d535fe → b6309877.
+- **Test.** `navyBudget1938.test.ts`: France, its fleets removed, given submarine flotillas over its
+  share and the gold for a destroyer, orders one (red without: none).
+
 ### ADR-573 · 2026-10-20 · proposed (the user's decision) — The chase of an enemy navy beyond a sortie's reach: not adopted; it sinks the navies the late war at sea needs (PLAN 7.39b)
 
 - **Context.** Critic run 10, R10-B2 (naval 6). PLAN 7.39a: 886 fleet-weeks a world-year, years 2–30,

@@ -20803,3 +20803,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - No sim change, the pin unchanged. Specs by hand: none (no UI). The chase worktree
   `C:/Git/WarSim_chase` (HEAD `8c64c3c` + `b-chase.diff` + `navyRebuild.ts`) is kept for 7.46b.
 - **Next:** PLAN 7.46b1.
+
+## 2026-10-20 — PLAN 7.46b1: a navy's share counts its armed fleets (ADR-574)
+
+- **Rule** (`economic.ts`): the two build tests of NAVY_SHARE, a warship's order (3b) and ADR-557's
+  saving, read the upkeep of fleets with `fleetPower` > 0; submarine flotillas and transport groups
+  no longer stop a warship. The lay-up reads every fleet as before. `navyRebuild.ts` and
+  `navyLoss.ts` read the share as the sim does. SPEC §7's navy's cost updated.
+- **AT** (4 seeds × 10 years with the chase, `docs/evidence/7.46/b1.md`, `b1/`): France's
+  `navyShare` months 49/90/55/33 → 0/0/0/0 (met); the world's depleted navies stopped at the share,
+  years 3–10, 352 → 4 months. The world's armed power against HEAD's (a read): 52/54/60 % at years
+  3–5 (chase alone 51/49/47), 81–96 % at years 6–10 (65–79). Years 3–5 stay under 7.46a's ceiling.
+  Left: gold 46 % (Japan, 7.46b3), the army first 36 % (Britain 75–97 months, 7.46b2).
+- **Pin:** b6d535fe → b6309877. **Test:** `navyBudget1938.test.ts`, France with submarines over its
+  share orders a destroyer (red without). `--profile` paired on separate P-cores: the economic AI
+  0.046/0.042 and 0.036/0.036 ms a tick, unchanged.
+- The chase worktree `C:/Git/WarSim_chase` now carries this rule too (for 7.46b2, b3 and c).
+  Specs by hand: none (no UI). 7.46's commits: 2.
+- **Next:** PLAN 7.46b2 (the army first at war: Britain).

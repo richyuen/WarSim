@@ -4,7 +4,7 @@ import { BATTLE_FLEET_INCOME, budgetOf, NAVY_SHARE, RESERVE_MONTHS } from '../..
 import { bleedFormation, destroyFormation } from '../../src/sim/systems/elements';
 import { placeFleet } from '../../src/sim/placeForces';
 import { Refusal } from '../../src/shared/commands';
-import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
+import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938, TAGS_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
 import { declareWar } from '../../src/sim/systems/war';
@@ -184,5 +184,27 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
     runEvents(s, 1);
     expect(land(w, NOR)).toBeGreaterThan(0);
     expect(ships(w, NOR)).toEqual([]);
+  });
+});
+
+// PLAN 7.46b1 (ADR-574): France, its battle line sunk, held nine submarine flotillas and no armed
+// fleet for years (the chase, seed 3613): their upkeep filled NAVY_SHARE, and no warship was ordered.
+describe('a navy\'s share counts its armed fleets (PLAN 7.46b1)', () => {
+  it('a nation with submarines over its share and no armed fleet orders a warship (red without: none)', () => {
+    const s = peaceful();
+    const w = s.world;
+    const FRA = id('FRA');
+    w.formations.forEach((f) => void (w.formations.cols.nation[f] === FRA && w.isFleet(f) && destroyFormation(w, f)));
+    const sub = TEMPLATES_1938.findIndex((t) => t.id === 'submarine_flotilla');
+    expect(sub).toBeGreaterThanOrEqual(0);
+    const port = w.ports.find((p) => w.cells.controller[p.cell] === FRA && placeFleet(w, FRA, sub, p.x, p.y) === Refusal.None)!;
+    const { income } = budgetOf(w, FRA, monthlyAccounts(w, T));
+    while (navyUpkeep(w, FRA) <= NAVY_SHARE * income) expect(placeFleet(w, FRA, sub, port.x, port.y)).toBe(Refusal.None);
+    // Its submarines alone are over the share, and none of its fleets is armed.
+    expect(navyUpkeep(w, FRA)).toBeGreaterThan(NAVY_SHARE * budgetOf(w, FRA, monthlyAccounts(w, T)).income);
+    w.nations.cols.gold[FRA] = w.rules!.templates[fleets.destroyer]!.gold + RESERVE_MONTHS * income + 100;
+    w.nations.cols.manpower[FRA] = 1e7;
+    runEvents(s, 1);
+    expect(ships(w, FRA)).toEqual([fleets.destroyer]);
   });
 });
