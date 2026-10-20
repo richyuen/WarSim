@@ -84,6 +84,22 @@ each, split when taken up:
       `airSuperiority`, or the flown power). AT: the parent's second half (two or more of London,
       Paris, Warsaw and Kiev read another holder or "contested"; no zone of one holder over
       1,500 km), a spec red without; the pin's entry if a rule moves.
+      Measured (`tools/diag/airMapRead.ts`, `docs/evidence/7.36/airMapRead-8217-before.json`):
+      London, Paris and Berlin one land zone of 2.65 M km², 4,000 km across (Britain's island
+      folded in), Warsaw and Kiev another of 1.85 M; 83 of the 86 land zones span over 1,500 km;
+      the hover reads the zone's holder as it is. Two causes, a part each:
+        - [x] 7.36b1 The land's air zones of 300,000 km², not 1.5 M (ADR-560), a zone under a
+          quarter of that joined to its neighbour of least area. AT: two or more of the four read
+          another than Germany (`airMapRead1938.test.ts` and `.spec.ts`, red at 1.5 M); the
+          air battles of seeds 99, 7019, 8217 × 3 years read before and after; the pin's entry.
+          One commit with 7.37a (ADR-561): on these zones the critic's France loses its bomber.
+          Met: London "no one flies there", Paris "held by France", Warsaw "held by Germany",
+          Kiev "no one flies there" (was Germany at all four; the test red at 1.5 M); air battles
+          year 1 2,844 → 3,084, 1,872 → 3,135, 2,222 → 2,894, years 2–3 5,752 → 4,838; cc11ee7d.
+        - [ ] 7.36b2 An island far from every seed folded into its zone: on day 10 two zones held
+          still span over 1,500 km (Nationalist Spain's 2,847 km, the Azores in a zone of Rio de
+          Oro; Japan's 1,556 km). AT: no zone held on day 10 spans over 1,500 km (a unit test,
+          the farthest two of its edge cells, red without); the pin's entry if it moves.
 - [ ] 7.37 AI nuclear use believed, beyond the chains (AI nuclear use 7, needs 8): single bombs on
   small states (Nepal 1,656,090 dead and Afghanistan 3,328,000 on seed 2609, Sweden 1,050,000 on
   1129); Germany strikes one Canadian point twice 90 days apart for 5,620 then 439 (seed 4483,
@@ -110,6 +126,18 @@ each, split when taken up:
   Czechoslovakia armed in the editor still dies holding its 10 warheads; Latvia (seed 1307, 75
   warheads) and Lithuania (8693) nuclear powers, unexplained. Each case's decision measured with the
   cases above, the same AT.
+  Read on the way (ADR-561, `tools/diag/nukeCase.ts`): the critic's France (seed 7127, 10
+  warheads) on the zones before ADR-560 with its bomber kept home: overrun and extreme from day 75,
+  its bomber in reach, its best strike −0.009 (value 0.348, desperation 1.38) and under NUKE_FLOOR
+  for the 25 days left; a case of "a holder at war does not strike", its reason to measure. A part
+  each:
+    - [x] 7.37a A holder of warheads keeps a strategic bomber group for them (ADR-561; one commit
+      with 7.36b1, ADR-560, neither green alone): while a nation holds a warhead it may use and no
+      missiles, its strategic bomber group of the lowest id gets no raid. AT: France on seed 7127
+      on ADR-560's zones keeps its group and strikes before day 75 (was lost raiding Italy on day
+      24, no strike in 100 days), `nukeOverrun1938` green; `nuclearReserve1938.test.ts` red
+      without; the pin unchanged by it. Met: decisions on days 55 (shot down), 56, 68; the test
+      red without; cc11ee7d is ADR-560's. 7.37's commits: 1 of 20.
 - [ ] 7.38 R10-B1: the AI's nuclear choice weighs the people a burst kills (AI nuclear use 7, needs
   8; blocking). `nuclearUtility` has no term for the dead (`src/sim/systems/nuclear.ts:554-560`):
   Germany H-bombs Shanghai for 3,802,105 dead and 105 soldiers at utility 0.025, NUKE_FLOOR itself
@@ -172,6 +200,13 @@ each, split when taken up:
   measured cause, the user's to accept; at 20 m/px the middle of every nation's hull at least 40
   (summed RGB) from the sea's colour there, every nation of the 1938 world counted (a spec, red on
   France's before). Stop: two full re-measures flat, the bar is the user's (ADR-554).
+- [ ] 7.42 A block held back stands within contact reach of its enemy's block on every front (from
+  PLAN 7.36b1, ADR-560; ADR-435's question): `deploy.test.ts`'s 60 days of Germany against Poland
+  (seed 99), Nationalist Spain's block 749 held at DEPLOY_REACH stood 1.518 cells from the
+  Republic's 798, deployed toward another (ticks 435–440; ADR-435's Manchukuo case 1.519). The
+  test holds 1.5 on Germany's and Poland's contacts. AT: world-wide in those 60 days no held-back
+  block over 1.5 cells from its enemy's block (red now, 1.518), a rule with an ADR and the pin's
+  entry; or a BLOCKERS entry with the measured cause, the user's to accept.
 - [ ] 7.29 The late land war's reach (from PLAN 7.26c3, ADR-519, 2026-10-18): after year 1 the land
   war runs at 1.4 formations in contact a day against year 1's 30 while 1 to 14 wars run
   (`docs/evidence/7.26/measure-g.md`), and the measures under 7.26c found the men who cannot get

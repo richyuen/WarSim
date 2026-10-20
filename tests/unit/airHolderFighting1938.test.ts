@@ -25,13 +25,26 @@ describe("an air zone's holder is one fighting there (PLAN 7.8)", () => {
   const air = airOf(world);
   const holders = airHolders(world, air.count);
 
-  it("Warsaw's zone: not Yugoslavia, which is not at war with anyone there", () => {
+  it("a zone of Poland's land where Yugoslavia flew the most and fights no one: not Yugoslavia's; Warsaw's Poland's, Germany's or contested", () => {
+    // Since PLAN 7.36b's smaller zones (ADR-560) Yugoslavia's climbs out are no longer in Warsaw's
+    // zone but in one of Poland's land to its south (zone 63 on day 10): the case is found, not named.
+    const land = new Map<number, Set<number>>();
+    for (let c = 0; c < air.zoneOf.length; c++) {
+      if (world.cells.controller[c] === 0) continue;
+      let s = land.get(air.zoneOf[c]!);
+      if (!s) land.set(air.zoneOf[c]!, (s = new Set()));
+      s.add(world.cells.controller[c]!);
+    }
+    const cases = [...world.airPower].filter(([z, by]) => {
+      const top = [...by].sort((a, b) => b[1] - a[1] || a[0] - b[0])[0]![0];
+      const others = [...by.keys(), ...(land.get(z) ?? [])];
+      return top === YUG && land.get(z)?.has(POL) && !others.some((m) => world.wars.atWar(YUG, m));
+    });
+    expect(cases.length, "a zone of Poland's land where Yugoslavia flew the most, at war with no one there").toBeGreaterThan(0);
+    for (const [z] of cases) expect(holders[z], `zone ${z}`).not.toBe(YUG);
     const [x, y] = cellOf(21.01, 52.23, W, H);
     const z = air.zoneOf[Math.floor(y) * W + Math.floor(x)]!;
-    const flown = world.airPower.get(z);
-    expect(flown?.get(YUG) ?? 0, 'Yugoslavia flew there (its climbs out)').toBeGreaterThan(0);
     process.stderr.write(`Warsaw's zone ${z}: holder ${holders[z]} (Poland ${POL}, Germany ${GER}, contested ${AIR_CONTESTED})\n`);
-    expect(holders[z]).not.toBe(YUG);
     expect([POL, GER, AIR_CONTESTED]).toContain(holders[z]);
   });
 

@@ -27,9 +27,18 @@ describe('air zones (PLAN 5.1a)', () => {
     expect(a.land).toBeGreaterThan(40);
   });
 
-  it('a land zone is of about the target area: within a quarter and three times it', () => {
+  it('a land zone is of about the target area: within a quarter and three times it, beyond a node over the target', () => {
+    // A zone is whole nodes, and since PLAN 7.36b (ADR-560) a province of Siberia, Canada or
+    // Australia is several times the target alone: its zone may be three times the target beyond it.
+    const area = new Float64Array(graph.nodeCount + 1);
+    for (let c = 0; c < graph.nodeOf.length; c++) if (graph.nodeOf[c] !== 0) area[graph.nodeOf[c]!]! += grid.kx[Math.floor(c / grid.w)]! * grid.ky[Math.floor(c / grid.w)]!;
+    const biggest = new Float64Array(a.land + 1);
+    for (let k = 1; k <= graph.nodeCount; k++) if (a.zoneOfNode[k]! <= a.land) biggest[a.zoneOfNode[k]!] = Math.max(biggest[a.zoneOfNode[k]!]!, area[k]!);
     const out: string[] = [];
-    for (let z = 1; z <= a.land; z++) if (a.areaKm2[z]! < AIR_ZONE_KM2 / 4 || a.areaKm2[z]! > 3 * AIR_ZONE_KM2) out.push(`${z}: ${Math.round(a.areaKm2[z]! / 1000)}k km²`);
+    for (let z = 1; z <= a.land; z++) {
+      const over = biggest[z]! > AIR_ZONE_KM2 ? biggest[z]! : 0;
+      if (a.areaKm2[z]! < AIR_ZONE_KM2 / 4 || a.areaKm2[z]! > 3 * AIR_ZONE_KM2 + over) out.push(`${z}: ${Math.round(a.areaKm2[z]! / 1000)}k km²`);
+    }
     expect(out).toEqual([]);
   });
 

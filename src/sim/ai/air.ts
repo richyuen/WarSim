@@ -19,8 +19,8 @@
  * - Strategic bombers bomb industry where the air is won: the enemy's cell with the most industry
  *   within their range whose air zone its superiority is `BOMB_SUPERIORITY` or more in
  *   (`airSuperiority`, PLAN 5.3c); with none, no mission. Superiority there comes of the
- *   fighters over the front, and of the air zones being wide (a zone of 1.5 M km² holds a front
- *   and the industry behind it).
+ *   fighters over the front, and of the zones they fly in. A nation holding a warhead and no
+ *   missiles keeps one group home for it (`nuclearReserve`, PLAN 7.37a).
  * - Paradrops first (PLAN 5.8u3b, `paradrops`): a formation of infantry alone at an airbase with
  *   the transports to lift it, not on the front, is dropped on its own front formation nearest it.
  * - Transports fly supply (PLAN 5.8u3a) to its own land formation short of it (supply under
@@ -50,7 +50,7 @@ import { deployOf, elementIndex, slotCount, withFreshDeployments, wrapDx } from 
 import { hypot } from '../core/dmath';
 import { AIR_HELD, airSuperiority } from '../systems/airSuperiority';
 import { airOf, navOf, type World } from '../world';
-import { carriesNuke } from '../systems/nuclear';
+import { carriesNuke, nuclearReserve } from '../systems/nuclear';
 
 /** A strategic bomber group bombs industry only in an air zone its nation's superiority is this or more in. */
 export const BOMB_SUPERIORITY = AIR_HELD;
@@ -149,6 +149,7 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly 
     const patrols = new Map<number, number>();
     const strikes = new Map<number, number>();
     const lifts = new Map<number, number>();
+    const reserve = nuclearReserve(world, n);
     for (const id of list) {
       const role = roleOf(world, id);
       let target: [number, number] | null = null;
@@ -159,7 +160,7 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly 
         kind = 'patrol';
       } else if (role === 'front') target = nearest(world, id, enemy, strikes) ?? nearest(world, id, enemyForces(), strikes);
       else if (role === 'naval') target = nearest(world, id, enemyFleets, strikes) ?? nearest(world, id, enemy, strikes) ?? nearest(world, id, enemyForces(), strikes);
-      else if (role === 'bomb') target = industry(world, id, n, richest);
+      else if (role === 'bomb') target = id === reserve ? null : industry(world, id, n, richest);
       else if (role === 'lift') {
         target = nearest(world, id, short.filter((g) => c.nation[g] === n), lifts);
         kind = 'supply';

@@ -103,14 +103,23 @@ describe('the nuclear decision (PLAN 6.4b)', () => {
     const calm = make();
     expect(run(calm.s, 24 * 5, EventKind.NukeDecided)).toEqual([]);
     const hit = make();
-    hit.s.command({ kind: 'launchNuke', nation: ENG, x: paris[0], y: paris[1], missile: false });
-    const tick0 = hit.s.world.tick;
     // England's burst on Paris: France's grievance against it, for RETALIATION_DAYS from then.
+    // Its bomber may be stopped short over Paris, BOMBER_INTERCEPT × (1 − its superiority there):
+    // since ADR-560's zones no one has flown in Paris's (0.4; before, England's own patrols over
+    // Britain were in it), and it is: England launches again until one bursts, four at most.
     let g: { by: number; until: number } | undefined;
-    for (let h = 0; h < 48 && !g; h++) {
+    let launches = 0;
+    let tick0 = 0;
+    for (let h = 0; h < 4 * 48 && !g; h++) {
+      if (hit.s.world.nukeLaunches.length === 0 && launches < 4) {
+        hit.s.command({ kind: 'launchNuke', nation: ENG, x: paris[0], y: paris[1], missile: false });
+        launches++;
+        tick0 = hit.s.world.tick;
+      }
       run(hit.s, 1, EventKind.NukeDecided);
       g = hit.s.world.nukeGrievance.get(FRA);
     }
+    process.stderr.write(`England's launches on Paris until one burst: ${launches}\n`);
     expect(g?.by).toBe(ENG);
     expect(g!.until).toBeGreaterThan(tick0 + (RETALIATION_DAYS - 1) * 24);
     expect(g!.until).toBeLessThanOrEqual(tick0 + (RETALIATION_DAYS + 2) * 24);

@@ -20294,3 +20294,39 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Waits on the user:** ADR-559 (PLAN 7.36's first-half bar: a. one sortie drawn where a wing is
   tasked, and 0.9 of a live day at 25 m/px, recommended; b. one for each wing tasked, a fiction).
 - **Next:** PLAN 7.36b (the air map's zones).
+
+## 2026-10-20 — PLAN 7.36b1 + 7.37a: the land's air zones of 300,000 km² (ADR-560), a holder keeps a bomber for its warheads (ADR-561)
+
+- **Measured** (`tools/diag/airMapRead.ts`, seed 8217, day 10 of Germany–Poland;
+  `docs/evidence/7.36/airMapRead-8217-{before,after}.json`): the hover and the hatch read the
+  zone's holder truly; London, Paris and Berlin were one land zone of 2.65 M km², 4,000 km across
+  (Britain folded in whole), Warsaw and Kiev another; 83 of 86 land zones over 1,500 km.
+- **Rule 1 (ADR-560):** `AIR_ZONE_KM2` 1.5 M → 300,000 km² (86 → 320 land zones); a zone under a
+  quarter of that joins its neighbour of least area. The sea's air zones stay the sea zones.
+- **Rule 2 (ADR-561):** while a nation holds a warhead it may use and no missiles, its strategic
+  bomber group of the lowest id gets no raid. Coupled, one commit: on the new zones the critic's
+  France (seed 7127) wins the air over a zone of Italy's and loses its only strategic group raiding
+  it on day 24, and never strikes (`nukeOverrun1938` red); with rule 2 alone on the old zones its
+  war runs otherwise (extreme on day 75, best strike −0.009) and never strikes either. Neither is
+  green alone. Pin 5afbdb13 → cc11ee7d (rule 2 moves nothing in seed 99's year: no warhead).
+- **AT (7.36b1):** day 10, London "no one flies there", Paris "held by France", Warsaw "held by
+  Germany", Kiev "no one flies there" (was Germany at all four): `airMapRead1938.test.ts` (red at
+  1.5 M) and `airMapRead1938.spec.ts` (`docs/evidence/7.36/airMap-8217-day10.png`). Two held zones
+  still over 1,500 km (Spain's with the Azores, Japan's): 7.36b2.
+- **AT (7.37a):** France decides on days 55 (shot down), 56 and 68; `nuclearReserve1938.test.ts`
+  red without. 7.37's commits: 1 of 20.
+- **Read** (both rules; the same figures as the zones alone, no warhead in these years): air
+  battles, seeds 99, 7019, 8217 × 3 years (`airWar.ts`): year 1 2,844 → 3,084, 1,872 → 3,135,
+  2,222 → 2,894; years 2–3 summed 5,752 → 4,838. Strategic bomber days at war with a mission, year
+  1: 88 → 84 %, 47 → 91 %, 70 → 68 %.
+- **Perf:** seed 99 × 1 year, both bundles at once on separate P-cores, swapped: mean tick 2.18 →
+  2.17 ms, air 0.27 → 0.23 ms.
+- **Tests aimed, bars kept** (ADR-560): `airZones1938` bounds a zone of a province over the target
+  beyond it; PLAN 7.8's `airHolderFighting1938` finds its case (Yugoslavia's climbs out now in a
+  zone of Poland's land south of Warsaw's); `nukeDecision1938`'s England launches again when its
+  bomber is stopped short over Paris (2 launches); `deploy.test.ts` holds its 1.5-cell gap on the
+  Germany–Poland contacts (28.4 km), the Spanish front's 1.518 filed as PLAN 7.42 (ADR-435's case).
+  `docs/evidence/5.7/d-air-superiority-mode.png` re-shot on the new zones (airControl, EVIDENCE=1).
+- **Specs by hand, green:** airMapRead, airControl, airDemo, airFx, airT3, carrierStrikeRow,
+  nukeRuins, patrolsSeen, seaBattleSeen, sortiesSeen (1938).
+- **Next:** PLAN 7.36b2 (the far islands).

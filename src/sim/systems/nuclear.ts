@@ -264,6 +264,25 @@ export function canDeliver(world: World, n: number): boolean {
   return false;
 }
 
+/**
+ * The strategic bomber group `n` keeps for its warheads (PLAN 7.37a, ADR-561): while it holds one
+ * it may use and has no missiles, its strategic bomber group of the lowest id with a base, which
+ * the air AI sends on no raid of industry; 0 for none. The critic's France (seed 7127) and
+ * Czechoslovakia (PLAN 7.37) lost their only bombers to raids and died holding their warheads.
+ */
+export function nuclearReserve(world: World, n: number): number {
+  if (!nukesAllowed(world, n) || warheadsOf(world, n) < 1 || knows(world, n, 'ballistic_missiles')) return 0;
+  const c = world.formations.cols;
+  const rules = world.rules!;
+  let best = 0;
+  for (const [id, base] of world.wingBase) {
+    if (base <= 0 || c.nation[id] !== n || !world.formations.has(id) || (best !== 0 && id > best)) continue;
+    const first = rules.templates[c.template[id]!]?.elements[0];
+    if (first && rules.units[first.unit]!.cls === STRATEGIC) best = id;
+  }
+  return best;
+}
+
 /** Whether `n` can put a warhead on (x, y) now (PLAN 7.6): a missile from its capital within MISSILE_KM, or a bomber within range (`nukeBomber`). */
 export function reaches(world: World, n: number, x: number, y: number): boolean {
   const nc = world.nations.cols;

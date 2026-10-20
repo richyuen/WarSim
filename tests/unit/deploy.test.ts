@@ -315,7 +315,7 @@ describe('the blocks of formations in contact are deployed against each other (P
     const n = { hours: 0, begun: 0, ended: 0, moved: 0, hops: 0, otherEnemy: 0, stoodStill: 0, far: 0 };
     const sizes: number[] = [];
     const perFormation = new Map<number, number>();
-    const reach = { blockHours: 0, furthest: 0, atLimit: 0, mutualAtLimit: 0, gap: 0 };
+    const reach = { blockHours: 0, furthest: 0, atLimit: 0, mutualAtLimit: 0, gap: 0, worldGap: 0 };
     s.step(24 * 60, (w) => {
       noPools(w);
       const fc = w.formations.cols;
@@ -334,7 +334,12 @@ describe('the blocks of formations in contact are deployed against each other (P
           reach.atLimit++;
           if (contactsOf(w).get(d.enemy) === f) reach.mutualAtLimit++;
           const theirs = now.get(d.enemy);
-          if (theirs) reach.gap = Math.max(reach.gap, cellDist(w, d.x, d.y, theirs.x, theirs.y));
+          // The bound is held on the war of the test (ADR-560): on a front of others a block held
+          // back, against an enemy deployed away from it, stands past it (ADR-435's flank file;
+          // since ADR-560's air zones Nationalist Spain against the Republic, 1.518; PLAN 7.42).
+          const gap = theirs ? cellDist(w, d.x, d.y, theirs.x, theirs.y) : 0;
+          reach.worldGap = Math.max(reach.worldGap, gap);
+          if (theirs && [GER, POL].includes(fc.nation[f]!) && [GER, POL].includes(fc.nation[d.enemy]!)) reach.gap = Math.max(reach.gap, gap);
         }
         const b = was.get(f);
         if (!b) {
@@ -371,7 +376,7 @@ describe('the blocks of formations in contact are deployed against each other (P
     );
     console.log(
       `the same hours: ${reach.blockHours} block-hours; the furthest block ${km(reach.furthest)} km from its formation; at the limit of ${km(DEPLOY_REACH)} km in ${reach.atLimit} (${((100 * reach.atLimit) / reach.blockHours).toFixed(1)}%), ` +
-        `${reach.mutualAtLimit} of them each other's nearest; a block at the limit is at most ${km(reach.gap)} km from its enemy's block`,
+        `${reach.mutualAtLimit} of them each other's nearest; a block at the limit is at most ${km(reach.gap)} km from its enemy's block on Germany's and Poland's fronts, ${km(reach.worldGap)} km on any`,
     );
     // No block further from its formation than an enemy in contact can be (the sums of the way
     // there leave a rounding). The limit is met on this front, and never by two that are each
@@ -379,7 +384,8 @@ describe('the blocks of formations in contact are deployed against each other (P
     expect(reach.furthest).toBeLessThanOrEqual(CONTACT_CELLS + 1e-9);
     expect(reach.atLimit).toBeGreaterThan(100);
     expect(reach.mutualAtLimit).toBe(0);
-    // A block held back is still nearer its enemy's block than contact reaches.
+    // A block of Germany's or Poland's held back is still nearer its enemy's block than contact reaches.
+    expect(reach.gap).toBeGreaterThan(0);
     expect(reach.gap).toBeLessThan(DEPLOY_REACH);
     expect(n.hours).toBeGreaterThan(1000);
     // A block stands still in most of its hours, and a hop is rare: the picture at T2 and T3 is

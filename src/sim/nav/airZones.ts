@@ -11,16 +11,21 @@
  * graph, by the km between the nodes' centres (a search from all the seeds at once, ties by the
  * lower seed): each such region is joined by its own nodes. A smaller component (an island, a
  * cape cut off at the map's scale) goes whole to the zone of the seed nearest its lowest node by
- * straight km: the air does not ask for land between. Zones 1…`land` are the land's, in the
- * order of their seeds' cells; `land + s` is sea zone s. Derived, not saved, not hashed.
+ * straight km: the air does not ask for land between. A region under a quarter of the target
+ * joins its neighbour of least area (ADR-560). Zones 1…`land` are the land's, in the order of
+ * their seeds' cells; `land + s` is sea zone s. Derived, not saved, not hashed.
  */
 import { sqrt } from '../core/dmath';
 import { Heap, type NavGrid } from './grid';
 import type { ProvinceGraph } from './provinceGraph';
 import type { SeaZones } from './seaZones';
 
-/** The area a land air zone is meant to have, km² (the sea's are `ZONE_KM2`, the same). */
-export const AIR_ZONE_KM2 = 1_500_000;
+/**
+ * The area a land air zone is meant to have, km² (PLAN 7.36b, ADR-560: 1.5 M before, `ZONE_KM2`,
+ * the sea's still; London, Paris and Berlin were one zone 4,000 km across). A province over it is
+ * a zone alone: a zone is whole nodes.
+ */
+export const AIR_ZONE_KM2 = 300_000;
 /** A land component under this share of `AIR_ZONE_KM2` has no seed: it joins the nearest zone. */
 export const ISLAND_SHARE = 1 / 3;
 
@@ -104,7 +109,6 @@ export function buildAirZones(g: NavGrid, graph: ProvinceGraph, sea: SeaZones, t
   // Zones in the order of their seeds' cells.
   seedNodes.sort((a, b) => graph.centre[a]! - graph.centre[b]!);
   const zoneOfNode = new Uint16Array(nodes);
-  const land = seedNodes.length;
   const dist = new Float64Array(nodes).fill(Infinity);
   const heap = new Heap();
   const cx = (k: number): number => graph.centre[k]! % w;
@@ -149,6 +153,48 @@ export function buildAirZones(g: NavGrid, graph: ProvinceGraph, sea: SeaZones, t
     }
     for (let a = 1; a < nodes; a++) if (comp[a] === id) zoneOfNode[a] = best;
   });
+  // A zone under a quarter of the target (a seed on a small node hemmed in by others' growth)
+  // joins the neighbouring zone over the graph with the least area, the smallest first (PLAN
+  // 7.36b, ADR-560); the zones left are numbered again in the order of their seeds.
+  const zArea = new Float64Array(seedNodes.length + 1);
+  for (let k = 1; k < nodes; k++) zArea[zoneOfNode[k]!]! += area[k]!;
+  const into = Int32Array.from({ length: seedNodes.length + 1 }, (_, i) => i);
+  const find = (z: number): number => {
+    while (into[z] !== z) z = into[z]!;
+    return z;
+  };
+  const kept = new Uint8Array(seedNodes.length + 1);
+  for (;;) {
+    let small = 0;
+    for (let z = 1; z <= seedNodes.length; z++) {
+      if (find(z) === z && kept[z] === 0 && zArea[z]! < targetKm2 / 4 && (small === 0 || zArea[z]! < zArea[small]!)) small = z;
+    }
+    if (small === 0) break;
+    let best = 0;
+    for (let k = 1; k < nodes; k++) {
+      if (find(zoneOfNode[k]!) !== small) continue;
+      for (const b of graph.adj[k] ?? []) {
+        const zb = find(zoneOfNode[b]!);
+        if (area[b] === 0 || zb === 0 || zb === small) continue;
+        if (best === 0 || zArea[zb]! < zArea[best]! || (zArea[zb] === zArea[best] && zb < best)) best = zb;
+      }
+    }
+    if (best === 0) kept[small] = 1;
+    else {
+      into[small] = best;
+      zArea[best]! += zArea[small]!;
+    }
+  }
+  const renumber = new Uint16Array(seedNodes.length + 1);
+  const seeds: number[] = [];
+  seedNodes.forEach((k, i) => {
+    if (find(i + 1) === i + 1) {
+      seeds.push(k);
+      renumber[i + 1] = seeds.length;
+    }
+  });
+  for (let k = 1; k < nodes; k++) zoneOfNode[k] = renumber[find(zoneOfNode[k]!)]!;
+  const land = seeds.length;
   const count = land + sea.count;
   const zoneOf = new Uint16Array(n);
   const areaKm2 = new Float64Array(count + 1);
@@ -159,7 +205,7 @@ export function buildAirZones(g: NavGrid, graph: ProvinceGraph, sea: SeaZones, t
     zoneOf[c] = z;
     if (z !== 0) areaKm2[z]! += kx[Math.floor(c / w)]! * ky[Math.floor(c / w)]!;
   }
-  seedNodes.forEach((k, i) => (seedCell[i + 1] = graph.centre[k]!));
+  seeds.forEach((k, i) => (seedCell[i + 1] = graph.centre[k]!));
   for (let s = 1; s <= sea.count; s++) seedCell[land + s] = sea.seedCell[s]!;
   return { zoneOf, zoneOfNode, count, land, areaKm2, seedCell };
 }

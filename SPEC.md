@@ -1777,11 +1777,13 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   elements, buildings and ships shoots down planes.
 - *As built (PLAN 5.1a, ADR-306; `src/sim/nav/airZones.ts`, `airOf(world)`):* the air zones are
   the sea zones over water (428 on the 1938 map) and, over land, regions of whole nodes of the
-  province graph of about 1.5 M km² (`AIR_ZONE_KM2`), 86 in 1938 (0.43 to 4.1 M km²): seeds on
-  a lattice of that side in km, each region grown from its seed over the graph by the km between
-  the nodes' centres; a land mass under a third of the target (an island) joins whole the zone
-  of the nearest seed. Derived, not saved; the sorties' zones (`airborne`), air superiority and the
-  air AI read it.
+  province graph of about 300,000 km² (`AIR_ZONE_KM2`; 1.5 M until PLAN 7.36b, ADR-560, when
+  London, Paris and Berlin were one zone 4,000 km across), 320 in 1938 (82,000 km² to 3.1 M, the
+  largest a province of Siberia, Canada or Australia alone): seeds on a lattice of that side in
+  km, each region grown from its seed over the graph by the km between the nodes' centres; a land
+  mass under a third of the target (an island) joins whole the zone of the nearest seed; a region
+  under a quarter of the target joins its neighbour of least area. Derived, not saved; the
+  sorties' zones (`airborne`), air superiority and the air AI read it.
 - *As built (PLAN 5.1b, ADR-307):* the nine aircraft types of `data/units/air.json` are in the
   rules after the ships, and six wing templates (`data/templates/air.json`) after the fleets: a
   fighter group (3 squadrons of 12), a tactical bomber group (3 × 8), a strategic bomber group

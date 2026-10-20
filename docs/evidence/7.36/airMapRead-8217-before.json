@@ -1,0 +1,161 @@
+{
+ "seed": 8217,
+ "days": 10,
+ "zones": 514,
+ "land": 86,
+ "sea": 428,
+ "contested": 0,
+ "grid": {
+  "w": 2048,
+  "h": 1024
+ },
+ "landAreaKkm2": {
+  "min": 430.972,
+  "median": 1431.258,
+  "max": 4123.795
+ },
+ "landSpanKm": {
+  "min": 1183,
+  "median": 2403,
+  "p90": 4001,
+  "max": 7506,
+  "over1500": 83
+ },
+ "at": [
+  {
+   "name": "london",
+   "zone": 20,
+   "sea": false,
+   "holder": "GER",
+   "areaKkm2": 2649,
+   "spanKm": 4001,
+   "flown": [
+    "GER 187106",
+    "ITA 89560",
+    "CZS 56098",
+    "FRA 55812",
+    "ROM 23398",
+    "NSP 20175",
+    "YUG 19080",
+    "REP 8313",
+    "DEN 866",
+    "POL 60"
+   ]
+  },
+  {
+   "name": "paris",
+   "zone": 20,
+   "sea": false,
+   "holder": "GER",
+   "areaKkm2": 2649,
+   "spanKm": 4001,
+   "flown": [
+    "GER 187106",
+    "ITA 89560",
+    "CZS 56098",
+    "FRA 55812",
+    "ROM 23398",
+    "NSP 20175",
+    "YUG 19080",
+    "REP 8313",
+    "DEN 866",
+    "POL 60"
+   ]
+  },
+  {
+   "name": "warsaw",
+   "zone": 16,
+   "sea": false,
+   "holder": "GER",
+   "areaKkm2": 1854,
+   "spanKm": 2499,
+   "flown": [
+    "YUG 18525",
+    "GER 9982",
+    "ROM 8538",
+    "POL 631",
+    "FRA 17"
+   ]
+  },
+  {
+   "name": "kiev",
+   "zone": 16,
+   "sea": false,
+   "holder": "GER",
+   "areaKkm2": 1854,
+   "spanKm": 2499,
+   "flown": [
+    "YUG 18525",
+    "GER 9982",
+    "ROM 8538",
+    "POL 631",
+    "FRA 17"
+   ]
+  },
+  {
+   "name": "berlin",
+   "zone": 20,
+   "sea": false,
+   "holder": "GER",
+   "areaKkm2": 2649,
+   "spanKm": 4001,
+   "flown": [
+    "GER 187106",
+    "ITA 89560",
+    "CZS 56098",
+    "FRA 55812",
+    "ROM 23398",
+    "NSP 20175",
+    "YUG 19080",
+    "REP 8313",
+    "DEN 866",
+    "POL 60"
+   ]
+  }
+ ],
+ "held": [
+  {
+   "zone": 16,
+   "holder": "GER",
+   "sea": false,
+   "areaKkm2": 1854,
+   "spanKm": 2499
+  },
+  {
+   "zone": 20,
+   "holder": "GER",
+   "sea": false,
+   "areaKkm2": 2649,
+   "spanKm": 4001
+  },
+  {
+   "zone": 24,
+   "holder": "JAP",
+   "sea": false,
+   "areaKkm2": 2736,
+   "spanKm": 3232
+  },
+  {
+   "zone": 35,
+   "holder": "JAP",
+   "sea": false,
+   "areaKkm2": 2604,
+   "spanKm": 2806
+  },
+  {
+   "zone": 37,
+   "holder": "ITA",
+   "sea": false,
+   "areaKkm2": 1689,
+   "spanKm": 2426
+  },
+  {
+   "zone": 43,
+   "holder": "NSP",
+   "sea": false,
+   "areaKkm2": 1255,
+   "spanKm": 2465
+  }
+ ],
+ "heldOver1500": 6
+}

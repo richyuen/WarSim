@@ -167,6 +167,72 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-561 · 2026-10-20 · accepted — A holder of warheads keeps a strategic bomber group for them (PLAN 7.37a)
+
+- **Context.** PLAN 7.37 (AI nuclear use 7): Czechoslovakia, armed in the editor with a bomber
+  group and 10 warheads, lost its wings in days and died holding all 10. With ADR-560's zones the
+  critic's France (seed 7127, 10 warheads, Germany's war on it; R8-B1's case) did the same: its
+  only strategic bomber group raided Italy's industry, in a zone its side held at 0.8, from day 15
+  and was lost on day 24; overrun and in extreme desperation from day 60, its best strike's
+  utility 0.057 to 0.067, it had no means (`tools/diag/nukeCase.ts`).
+- **Decision.** While a nation holds a warhead it may use and knows no missiles, its strategic
+  bomber group of the lowest id with a base (`nuclearReserve`) gets no raid on industry from the
+  air AI; its other groups raid as before. `nukeBomber` still retasks any of them for a warhead.
+- **Measured.** On ADR-560's zones: France decides on day 55 (shot down), 56 (bursts) and 68;
+  `nukeOverrun1938` green, every bar as before. On the zones before ADR-560, ADR-561 alone:
+  France's group, which had raided and lived, stays home, and seed 7127's war runs otherwise:
+  France extreme only on day 75, its best strike −0.009 (value 0.348, desperation 1.38), never
+  over NUKE_FLOOR in 100 days: red. So the two are one commit (ADR-560). That case, a holder
+  overrun with its bomber in reach and under the floor, is PLAN 7.37's to read.
+- **Consequences.** A holder's last strategic group is kept for its warheads, as a second strike's
+  bomber is; a holder with missiles raids with all. `nuclearReserve1938.test.ts` (red without).
+  Seed 99's year holds no warhead: the pin is ADR-560's.
+
+### ADR-560 · 2026-10-20 · accepted — The land's air zones of 300,000 km², not 1.5 M (PLAN 7.36b1; amends ADR-306)
+
+- **Context.** Critic run 10 (R10-B3, aircraft 6): on day 10 of Germany–Poland (seed 8217) the
+  air map hatched one German zone from London to Kiev, every hover "held by Germany"
+  (`c10h_8217_air_hover.png`). Measured (`tools/diag/airMapRead.ts`,
+  `docs/evidence/7.36/airMapRead-8217-before.json`): the hover and the hatch read the zone's
+  holder truly; the zones were the fault. London, Paris and Berlin were one land zone of 2.65 M
+  km², 4,000 km across (Britain, under a third of 1.5 M, folded whole into the nearest seed's),
+  Warsaw and Kiev another of 1.85 M; 83 of the 86 land zones spanned over 1,500 km. A zone is
+  where superiority is reckoned (ADR-315), so Germany's air over Berlin was its air over London.
+- **Decision.** `AIR_ZONE_KM2` 1.5 M → 300,000 km² (a lattice side of 548 km), 86 → 320 land
+  zones. A region under a quarter of the target (a lattice seed on a small node hemmed in by the
+  others' growth; 74,800 km² at 300,000) joins the neighbouring zone over the graph with the least
+  area, the smallest first, and the zones are numbered again in their seeds' order. A province
+  over the target is a zone alone (77 of 320: Siberia, Canada, Australia; the largest 3.05 M): a
+  zone is whole nodes. The sea's air zones stay the sea zones (`ZONE_KM2`, 1.5 M): the naval
+  rules read them.
+- **Measured.** Day 10, seed 8217 (`airMapRead-8217-after.json`): London "no one flies there"
+  (zone of 314,000 km², nobody flew), Paris "held by France" (France 28,727 of the power flown,
+  Italy 3,200), Warsaw "held by Germany", Kiev "no one flies there"; the four in four zones. Held
+  zones that day 12, all land, 10 under 1,500 km (the two over: PLAN 7.36b2). Air battles, seeds
+  99, 7019, 8217 × 3 years (`tools/diag/airWar.ts`, `.cache/a736b/`): year 1 2,844 → 3,084, 1,872
+  → 3,135, 2,222 → 2,894; years 2–3 summed 5,752 → 4,838 (the worlds part after year 1). Sorties
+  fight within 150 km in one zone (ADR-326): more borders split few meetings.
+- **Consequences.** Superiority, its factors on land fire, supply, detection and strikes, the
+  bombers' held zones and the nuclear intercept are reckoned over places of a front's size. The
+  unit test of the zones' areas bounds a zone of a province over the target by three times the
+  target beyond it; PLAN 7.8's test finds its case (a zone of Poland's land where Yugoslavia flew
+  the most, fighting no one there) rather than naming Warsaw's, where the climbs out no longer
+  are. Two tests' worlds moved with it, their bars kept:
+  - `nukeDecision1938`: England's God-given bomber on Paris (seed 1) was stopped short (0.4 where
+    no one has flown; before, Paris's zone held Britain and England's patrols); England launches
+    again until one bursts, four at most (two here), and France strikes back once as before.
+  - `deploy.test.ts`'s gap of a block held back to its enemy's block, under 1.5 cells, is held on
+    the Germany–Poland contacts the test is named for (28.4 km, the bound 29.4): on the Spanish
+    front Nationalist Spain's block 749 stood 1.518 cells from the Republic's 798, deployed toward
+    another (ticks 435–440), the flank file ADR-435 left as the rule allows; SPEC promises only the
+    block within 1.5 of its own formation, which the test holds world-wide. The bound on every
+    front is PLAN 7.42.
+- **Coupled with ADR-561** (one commit): on these zones France's only strategic bomber group (seed
+  7127) wins the air over a zone of Italy's and is lost raiding it on day 24, so the critic's
+  France case (`nukeOverrun1938`) never strikes; ADR-561 keeps it home. Neither passes that test
+  alone (ADR-561's context). Pin 5afbdb13 → cc11ee7d (ADR-561 moves nothing in seed 99's year: no
+  warhead in it).
+
 ### ADR-559 · 2026-10-20 · proposed (the user's decision) — PLAN 7.36's bar for the sorties up close: one drawn while a wing is tasked there, not one for each
 
 - **Context.** PLAN 7.36's AT asks, at 25 and 10 m/px over a front in contact, "at least one
