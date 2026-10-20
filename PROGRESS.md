@@ -20384,3 +20384,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Waits on the user:** ADR-563 (a. restraint then means lost, recommended; b. "use it or lose
   it"; c. a fallen capital counted in the desperation). BLOCKERS entry. 7.37b2 and b3 go on.
 - 7.37's commits: 2 of 20. **Next:** PLAN 7.37b2 (the editor names the means).
+
+## 2026-10-20 — PLAN 7.37b2: the editor names a holder's means
+
+- **Change:** `deliveryMeans` (nuclear.ts) beside `canDeliver`: a holder's strategic bomber groups
+  with a base, the airbase of the one kept for its warheads (`nuclearReserve`, else the lowest id),
+  and its missiles; `NationStat.means` carries it (with the base's name) for a nation holding a
+  warhead; the editor's line under "N warheads" says it (`editor.means*`).
+- **AT:** Czechoslovakia (seed 5309), a strategic bomber group placed at Prague and 10 warheads:
+  "Czechoslovakia delivers them by its strategic bomber group at Prague; while it holds a warhead
+  that group is kept for them." (`editorForces1938.spec.ts`, red without: no such line;
+  `docs/evidence/7.37/b2-editor-means.png`; `7.13/a-editor-forces.png` re-shot, Britain's line in
+  it). No sim rule: the pin unchanged.
+- **Specs by hand, green:** editorForces1938 (4).
+- 7.37's commits: 3 of 20. **Next:** PLAN 7.37b3 (the game says when the last means is lost).

@@ -103,6 +103,31 @@ test('the editor places a fleet, an air wing and warheads; a shared scenario has
   expect(after).toEqual(placed);
 });
 
+// PLAN 7.37b2 (critic runs 9 and 10, `c10_g2_5309_CZS.json`: "the editor says only 'Czechoslovakia
+// has 10 warheads'"): Czechoslovakia given a strategic bomber group at Prague and 10 warheads. The
+// editor says how it would deliver them: the group, and Prague's airbase where it is kept.
+test("the editor names a holder's means: Czechoslovakia's bomber group at Prague (PLAN 7.37b2)", async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=5309');
+  await ready(page);
+  const CZS = id('CZS');
+  await page.getByTestId('editor-btn').click();
+  await page.getByTestId('editor-nation').selectOption(String(CZS));
+  const before = await forces(page, CZS);
+  await page.getByTestId('editor-tool-wing').click();
+  await page.getByTestId('editor-template').selectOption({ label: 'Strategic bomber group' });
+  await centre(page, 14.42, 50.08);
+  await page.mouse.click(700, 400);
+  await expect.poll(async () => (await forces(page, CZS)).wings).toBe(before.wings + 1);
+  await page.getByTestId('editor-warheads').fill('10');
+  await page.getByTestId('editor-warheads-add').click();
+  await expect.poll(() => warheadsOf(page, CZS)).toBe(10);
+  await expect(page.getByTestId('editor-means')).toHaveText('Czechoslovakia delivers them by its strategic bomber group at Prague; while it holds a warhead that group is kept for them.');
+  await expect(page.getByTestId('editor-no-delivery')).toHaveCount(0);
+  await page.getByTestId('editor-panel').screenshot({ path: path.resolve('docs/evidence/7.37/b2-editor-means.png') });
+});
+
 // PLAN 7.22c (critic run 8, naval 6: "placed fleets wander away at once: the North Sea point was
 // empty on day 3", `critic/shots/c8g_5591_21_northsea_day3_30m.png`): the critic's standoff. Two
 // German and two British battle squadrons placed by clicks in the North Sea, the scenario exported

@@ -265,6 +265,28 @@ export function canDeliver(world: World, n: number): boolean {
 }
 
 /**
+ * How `n` would deliver a warhead (PLAN 7.37b2, the critic's Czechoslovakia: the editor said only
+ * "10 warheads"): its strategic bomber groups with a base, the airbase of the one it keeps for them
+ * (`nuclearReserve`, else its lowest id; -1 for none), and whether it knows ballistic missiles. As
+ * `canDeliver` counts them, whether nuclear weapons are allowed it or not.
+ */
+export function deliveryMeans(world: World, n: number): { bombers: number; base: number; missiles: boolean } {
+  const c = world.formations.cols;
+  const rules = world.rules!;
+  let bombers = 0;
+  let first = 0;
+  for (const [id, base] of world.wingBase) {
+    if (base <= 0 || c.nation[id] !== n || !world.formations.has(id)) continue;
+    const el = rules.templates[c.template[id]!]?.elements[0];
+    if (!el || rules.units[el.unit]!.cls !== STRATEGIC) continue;
+    bombers++;
+    if (first === 0 || id < first) first = id;
+  }
+  const kept = nuclearReserve(world, n) || first;
+  return { bombers, base: kept === 0 ? -1 : world.wingBase.get(kept)! - 1, missiles: knows(world, n, 'ballistic_missiles') };
+}
+
+/**
  * The strategic bomber group `n` keeps for its warheads (PLAN 7.37a, ADR-561): while it holds one
  * it may use and has no missiles, its strategic bomber group of the lowest id with a base, which
  * the air AI sends on no raid of industry; 0 for none. The critic's France (seed 7127) and

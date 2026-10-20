@@ -567,6 +567,12 @@ export interface NationStat {
    * and a strategic bomber group at an airbase or ballistic missiles.
    */
   canDeliver: boolean;
+  /**
+   * Its means of delivery (PLAN 7.37b2, `deliveryMeans`), for a nation that holds a warhead (else
+   * null): its strategic bomber groups with a base, the name of the airbase of the one it keeps for
+   * its warheads (null for none), and whether it knows ballistic missiles.
+   */
+  means: { bombers: number; base: string | null; missiles: boolean } | null;
   /** AI aggression 0..100 and income multiplier from traits (PLAN 1.39b1 options). */
   aggression: number;
   incomeMult: number;

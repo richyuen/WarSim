@@ -95,10 +95,13 @@ each, split when taken up:
           day 19 with no means. AT: the measured cause in BLOCKERS and ADR-563 (proposed, the
           user's: a. restraint, then means lost, recommended; b. "use it or lose it"; c. a fallen
           capital counted in the desperation). Met.
-        - [ ] 7.37b2 The editor says a holder's means: its strategic bomber groups with a base (and
+        - [x] 7.37b2 The editor says a holder's means: its strategic bomber groups with a base (and
           the nearest's base) or its missiles, beside "N warheads". AT: a spec on the editor,
           Czechoslovakia given 10 warheads and a strategic bomber group at Prague, the line names
           the group and Prague (red without: "has 10 warheads" alone).
+          Met: "Czechoslovakia delivers them by its strategic bomber group at Prague; while it holds
+          a warhead that group is kept for them." (`editorForces1938.spec.ts`,
+          `docs/evidence/7.37/b2-editor-means.png`).
         - [ ] 7.37b3 The game says when a holder's last means is lost: an event and a history row
           the day `canDeliver` turns false while it holds a warhead it may use, with the cause
           (its last airbase taken, its group shot down). AT: a unit test on seed 5309's case, the

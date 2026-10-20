@@ -52,6 +52,14 @@ export interface EditorPanelProps {
   refusalBase?: RefusedBase | null | undefined;
 }
 
+/** How a holder of warheads would deliver them (PLAN 7.37b2): its missiles, its strategic bomber groups and where the one kept for them stands. */
+export function meansLine(name: string, m: NonNullable<NationStat['means']>): string {
+  const base = m.base ?? '';
+  if (m.missiles && m.bombers > 0) return t('editor.meansBoth', { name, count: m.bombers, base });
+  if (m.missiles) return t('editor.meansMissiles', { name });
+  return t(m.bombers === 1 ? 'editor.meansBombers.one' : 'editor.meansBombers', { name, count: m.bombers, base });
+}
+
 const LAND = TERRAIN_IDS.map((id, i) => [id, i] as const).filter(([, i]) => isLand(i));
 
 /**
@@ -215,6 +223,11 @@ export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onC
           <button type="button" class="god-btn" data-testid="editor-warheads-add" disabled={!(Number(warheads) >= 1)} onClick={() => onWarheads(me.id, Math.floor(Number(warheads)))}>
             {t('editor.add')}
           </button>
+        </div>
+      ) : null}
+      {me && me.warheads > 0 && me.canDeliver && me.means ? (
+        <div class="panel-note" data-testid="editor-means">
+          {meansLine(displayName(me.name), me.means)}
         </div>
       ) : null}
       {me && me.warheads > 0 && !me.canDeliver ? (

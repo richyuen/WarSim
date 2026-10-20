@@ -75,7 +75,7 @@ import { airOf, Domain, laneOf, seaOf, TILE, type World } from '../sim/world';
 import { airHolders } from '../sim/systems/airSuperiority';
 import type { AirZones } from '../sim/nav/airZones';
 import { BufferPool } from './pool';
-import { canDeliver, warheadsOf } from '../sim/systems/nuclear';
+import { canDeliver, deliveryMeans, warheadsOf } from '../sim/systems/nuclear';
 
 export type Post = (msg: FromWorker, transfer: Transferable[]) => void;
 
@@ -118,6 +118,12 @@ function falloutOf(world: World, n: number): number {
   let k = 0;
   for (const c of world.fallout.keys()) if (world.cells.owner[c] === n) k++;
   return k;
+}
+
+/** Nation `n`'s means of delivery as its panel and the editor read them (PLAN 7.37b2): the kept bomber's airbase by name. */
+function meansOf(world: World, n: number): { bombers: number; base: string | null; missiles: boolean } {
+  const m = deliveryMeans(world, n);
+  return { bombers: m.bombers, base: m.base >= 0 ? world.airbases[m.base]!.name : null, missiles: m.missiles };
 }
 
 export class SimServer {
@@ -853,6 +859,7 @@ export class SimServer {
         nukesAllowed: !world.nukesBanned.has(id),
         warheads: warheadsOf(world, id),
         canDeliver: canDeliver(world, id),
+        means: warheadsOf(world, id) > 0 ? meansOf(world, id) : null,
         aggression: nc.aggression[id]!,
         incomeMult: nc.incomeMult[id]!,
         living: nc.living[id] === 1,
