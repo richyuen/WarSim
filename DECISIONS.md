@@ -225,7 +225,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Test.** `navyBudget1938.test.ts`: France, its fleets removed, given submarine flotillas over its
   share and the gold for a destroyer, orders one (red without: none).
 
-### ADR-573 · 2026-10-20 · proposed (the user's decision) — The chase of an enemy navy beyond a sortie's reach: not adopted; it sinks the navies the late war at sea needs (PLAN 7.39b)
+### ADR-573 · 2026-10-20 · accepted (option a, the user's decision, 2026-10-20) — The chase of an enemy navy beyond a sortie's reach: not adopted; it sinks the navies the late war at sea needs (PLAN 7.39b)
 
 - **Context.** Critic run 10, R10-B2 (naval 6). PLAN 7.39a: 886 fleet-weeks a world-year, years 2–30,
   stand on station at an enemy port with the nearest enemy fleet of their waters beyond `SORTIE_KM`.
@@ -256,6 +256,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     from year 2.
   - **c:** re-scope 7.39b's first bar (the far station halved) to the battles alone.
 - **Pin** unchanged (no rule committed).
+- **Decided** (2026-10-20, the user): option a. HEAD stands; the chase waits on PLAN 7.46 and is re-tried
+  on its run (7.46c). PLAN 7.39b stays blocked until then.
 
 ### ADR-572 · 2026-10-20 · accepted — The dead's cost not eased by a high doctrine (PLAN 7.45)
 
@@ -314,7 +316,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   `nukeYieldUtility1938.test.ts` (red without: at desperation 1, two of France's seven places
   take a hydrogen bomb at aggression 100 and a fission one at 0).
 
-### ADR-570 · 2026-10-20 · proposed (the user's decision) — Seed 9901's three Soviet strikes on a lone Chinese division: none of PLAN 7.38's rules changes them (PLAN 7.37h)
+### ADR-570 · 2026-10-20 · accepted (option a, the user's decision, 2026-10-20) — Seed 9901's three Soviet strikes on a lone Chinese division: none of PLAN 7.38's rules changes them (PLAN 7.37h)
 
 - **Context.** PLAN 7.37 (AI nuclear use 7), left by 7.32a (ADR-528): on the critic's code with
   ADR-528, seed 9901's Soviet Union strikes a lone Chinese division of 10,655 to 10,751 men three
@@ -338,6 +340,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     with few warheads keeps them for a better place). A new term to tune, measured on the 14
     seeds first.
 - **Until decided.** 7.37h closes on a (BLOCKERS); no rule. The pin is unchanged.
+- **Decided** (2026-10-20, the user): option a. The three strikes stand under ADR-528's bar; 7.37h
+  closed on its BLOCKERS entry, no rule.
 
 ### ADR-569 · 2026-10-20 · accepted — A place struck in a war is not struck again in it without new value (PLAN 7.38d)
 
@@ -446,7 +450,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   the highest value a fission warhead in flight (through a save and a load) and a fission burst
   (red without).
 
-### ADR-566 · 2026-10-20 · proposed (the user's decision) — PLAN 7.38's "no city struck twice in one war": the named cases are in different wars (PLAN 7.38a)
+### ADR-566 · 2026-10-20 · accepted (option a, the user's decision, 2026-10-20) — PLAN 7.38's "no city struck twice in one war": the named cases are in different wars (PLAN 7.38a)
 
 - **Context.** PLAN 7.38's AT (critic R10-B1): "no city struck twice in one war (was Paris 3,
   Tashkent 6, Banda Aceh 6)". Measured on the critic's code (`docs/evidence/7.38/measure-a.md`):
@@ -464,6 +468,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     a memory of struck cities across wars), the named cases misses until changed.
   - c. b's memory weighed as a cost (the outrage at a city struck again) rather than a bar.
 - **Until decided.** 7.38b and 7.38c go ahead (they do not depend on it); 7.38d does a.
+- **Decided** (2026-10-20, the user): option a. The bar is one war; the named cross-war cases are not
+  counted as misses.
 
 ### ADR-565 · 2026-10-20 · accepted — The nation panel says why a holder at war does not strike; out of reach split into no means and out of range (PLAN 7.37f)
 
@@ -550,7 +556,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   Soviet Union, Germany holding 50 warheads: not a threat, not aimed at, its capital not a target
   (red without); with Germany leading its side, aimed at. `nukeThreat1938.test.ts` passes the side.
 
-### ADR-563 · 2026-10-20 · proposed (the user's decision) — Czechoslovakia armed in the editor: its bomber lost with its only airbase, its strike under the floor until then (PLAN 7.37b1)
+### ADR-563 · 2026-10-20 · accepted (option a, the user's decision, 2026-10-20) — Czechoslovakia armed in the editor: its bomber lost with its only airbase, its strike under the floor until then (PLAN 7.37b1)
 
 - **Context.** PLAN 7.37 (AI nuclear use 7; critic runs 9 and 10, `c10_g2_5309_CZS.json`):
   Czechoslovakia, given a strategic bomber group at Prague and 10 warheads in the editor, Germany's
@@ -581,6 +587,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     raises bursts, the pin unmoved (no warhead in seed 99's year). Recommended no, until PLAN 7.38's
     toll is weighed.
 - **Until decided.** PLAN 7.37b2 and b3 go on; no rule changes the decision.
+- **Decided** (2026-10-20, the user): option a. The case stands as restraint, then means lost; no
+  "use it or lose it" (b), and a fallen capital is not counted in the desperation (c).
 
 ### ADR-562 · 2026-10-20 · accepted — An island beyond 450 km of every seed is an air zone of its own (PLAN 7.36b2; amends ADR-306, ADR-560)
 

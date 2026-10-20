@@ -16,7 +16,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   years 3–5, b1 52–60 %): it builds more and the chase sinks it again.
 - **Next:** PLAN 7.46b3, then 7.46c; 7.47 when taken.
 
-### PLAN 7.39b: the chase of a far enemy navy halves the far station but sinks the navies; the decision waits on the user (2026-10-20, ADR-573)
+### PLAN 7.39b: the chase of a far enemy navy halves the far station but sinks the navies; blocked until PLAN 7.46 (2026-10-20; ADR-573 option a, the user's decision, 2026-10-20)
 - **The bar:** on the critic's 14 seeds × 30 years, the late fleet-weeks on station with the enemy
   fleet beyond reach halved (886 → under 443 a world-year), and sea battles a world-year in years
   2–30 at least 6.6.
@@ -29,8 +29,8 @@ entries are kept and marked **RESOLVED** with the date and fix.
   55 % of HEAD's at year 2, 75 % at year 10, 92 % at year 30.
 - **What is left:** the cause found, a navy sunk in a decisive war at sea and not rebuilt, is PLAN
   7.46. The chase is re-tried on 7.46's run.
-- **Options:** ADR-573 a (HEAD stands, 7.46 first, recommended), b (adopt the chase now), c (7.39b's
-  first bar re-scoped to the battles).
+- **Decided** (2026-10-20, the user): ADR-573 a. HEAD stands; 7.46 first, the chase re-tried on its
+  run (7.46c).
 
 ### RESOLVED 2026-10-20 (PLAN 7.44, ADR-571; PLAN 7.45a, ADR-572; read at PLAN 7.45b; 7.38 ticked) · PLAN 7.38's bar on the dead missed at the first read: 4 bursts under 0.1 killing a million on 4 of 24 seeds (2026-10-20, PLAN 7.38e)
 - **The bar:** on the critic's 14 seeds and 10 unseen ones × 30 years, no burst with a utility
@@ -62,7 +62,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   three, 2.58 M to 0.77 M). Cross-war restrikes on 5861, 761 and 767 are listed for ADR-566, which
   still waits on the user.
 
-### PLAN 7.37h: seed 9901's three Soviet strikes on a lone division, unchanged by 7.38's rules; the decision waits on the user (2026-10-20, ADR-570)
+### RESOLVED 2026-10-20 (ADR-570, option a, the user's decision: the cases stand under ADR-528's bar) · PLAN 7.37h: seed 9901's three Soviet strikes on a lone division, unchanged by 7.38's rules (2026-10-20)
 - **The bar:** PLAN 7.37's, per case: the decision changed by a rule with an ADR, or the measured
   cause here, the user's to accept.
 - **Measured** (`docs/evidence/7.37/h-9901-lone-division.md`): on the critic's code with ADR-528,
@@ -73,7 +73,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **Options:** ADR-570 a (the cases stand, recommended), b (fewer than two divisions not weighed
   outside extreme desperation), c (a warhead's cost growing as the stockpile shrinks).
 
-### PLAN 7.37's Czechoslovakia: it dies holding its 10 warheads; the decision waits on the user (2026-10-20, PLAN 7.37b1, ADR-563)
+### RESOLVED 2026-10-20 (ADR-563, option a, the user's decision: restraint, then means lost) · PLAN 7.37's Czechoslovakia: it dies holding its 10 warheads (2026-10-20, PLAN 7.37b1)
 - **The bar:** PLAN 7.37's, per case: the decision changed by a rule with an ADR, or the measured
   cause here, the user's to accept.
 - **Measured** (seed 5309, `docs/evidence/7.37/`): its strike under NUKE_FLOOR while its bomber

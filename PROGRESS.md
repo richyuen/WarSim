@@ -20842,3 +20842,11 @@ No rule changed and nothing on screen changed. One task came out of it.
 - The chase worktree `C:/Git/WarSim_chase` carries b1, b2 and the tagged tool (for 7.46b3, c).
   Specs by hand: none (no UI). 7.46's commits: 3.
 - **Next:** PLAN 7.46b3 (Japan's gold).
+
+## 2026-10-20 — The user's decisions: option a for ADR-573, 570, 566 and 563
+
+- ADR-573 (the chase): HEAD stands; 7.46 first, the chase re-tried on 7.46c's run; PLAN 7.39b
+  blocked until then. ADR-570 (seed 9901's strikes on a lone division) and ADR-563
+  (Czechoslovakia's unused warheads): the cases stand, their BLOCKERS entries resolved. ADR-566:
+  "no city struck twice" means in one war. No code changes: the code already did option a.
+- **Next:** PLAN 7.46b3 (Japan's gold).
