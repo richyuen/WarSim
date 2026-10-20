@@ -54,6 +54,21 @@ describe("a holder's last means of delivery lost is told (PLAN 7.37b3)", () => {
     expect(cueOfKind(EventKind.NukeMeansLost)).not.toBeNull();
   });
 
+  it('a group lost with its airbase still held: the sentence without a taker', () => {
+    const s = czechoslovakia(10);
+    s.step(24);
+    const w = s.world;
+    let group = 0;
+    w.formations.forEach((f) => {
+      if (w.formations.cols.nation[f] === CZS && w.isWing(f) && w.rules!.units[w.rules!.templates[w.formations.cols.template[f]!]!.elements[0]!.unit]!.cls === 'bomber_str') group = f;
+    });
+    s.command({ kind: 'removeFormation', id: group });
+    s.step(1);
+    const rows = historyRows(w, nationName, cityName(w), defName).filter((r) => r.kind === EventKind.NukeMeansLost);
+    expect(rows.map((r) => [r.a, r.b])).toEqual([[CZS, 0]]);
+    expect(historyText(rows[0]!)).toBe('Czechoslovakia lost its last means to deliver its warheads: its last strategic bomber group near Prague was lost');
+  });
+
   it('no row for a group lost by a nation holding no warhead', () => {
     const s = czechoslovakia(0);
     s.step(24 * 14);

@@ -20415,3 +20415,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Specs by hand, green:** nukeMeansLost1938, editorForces1938.
 - **7.37b done** (b1's decision waits on the user, ADR-563). 7.37's commits: 4 of 20.
 - **Next:** PLAN 7.37's next case (the restrike of one Canadian point, seed 4483).
+- **7.37b3 follow-up:** the check's cost with holders (seed 99 day 10, 10 warheads to 8 nations, 4
+  of them by bomber alone, 215 wings): 0.014 ms a tick, `meansHeld` and `tellMeansLost` timed over
+  20,000 calls (about 0.6 % of a 2.4 ms tick); nothing without a warhead in the world. The sentence
+  of a group lost with its base still held (b = 0) tested too.
