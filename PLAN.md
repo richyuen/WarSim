@@ -68,14 +68,18 @@ each, split when taken up:
       war-weeks a world-year late against 68.5 in year 1; of the late fleet-weeks at war with a
       navy (1,029 a world-year) 901 on station at an enemy port, 886 of them with the nearest enemy
       fleet of their waters beyond `SORTIE_KM`; orders refused 4.3 a world-year. No rule.
-    - [ ] 7.39b The enemy navy beyond a station's reach (7.39a §3, §5: 886 of 1,029 late fleet-weeks
-      at war with a navy). Measured first, for those fleet-weeks: the km to the nearest enemy fleet
-      of the station's waters, where that fleet stands (its bloc's port, a station, under way) and
-      in which war, and whose port the station is (the navy's enemy, a partner of it, a coast with
-      no navy). Then a rule with an ADR (`awayOrder`, `plan`: a fleet at war with a navy seeks it
-      beyond a blockade). AT: those fleet-weeks halved (886 → under 443 a world-year) and sea
-      battles a world-year in years 2–30 above 4.3, on the 14 seeds × 30 years; 7.39's two bars
-      read on that run; a unit test (red without); the pin's entry; `--profile`.
+    - [ ] 7.39b How a late war of two navies begins (7.39a §5: on station far from the enemy's fleet
+      is the shape of year 1 too, 1,402 → 886 fleet-weeks a world-year; the hunts fell × 7.8, the
+      sorties from port × 3.8, the battles × 8.3). Measured first, at the first week of each war of
+      two navies, in year 1 and in years 2–30: each side's armed fleets by state (at its bloc's port,
+      on station at whose port and from which war, under way) and the km between the two sides'
+      nearest fleets; and where year 1's hunts find their prey (at a port or on station, of which
+      war). If late wars begin with both navies out on stations from earlier wars, the rule is in
+      `awayOrder`'s station branch (a war with a navy begun while a fleet holds a station), not in
+      `SORTIE_KM`. Then a rule with an ADR. AT: the late fleet-weeks on station with the enemy fleet
+      beyond reach halved (886 → under 443 a world-year) and sea battles a world-year in years 2–30
+      at least 6.6 (half of the way from 4.3 to 7.39's 8.9), on the 14 seeds × 30 years; 7.39's
+      two bars read on that run; a unit test (red without); the pin's entry; `--profile`.
 - [ ] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g):
   `territory.ts`'s flip scores each neighbouring enemy controller with its side's pressure and
   gives a tie to the lowest id, so a puppet or ally with no army takes the cells its partner's

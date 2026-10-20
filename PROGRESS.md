@@ -20747,3 +20747,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   no target, a stronger enemy: 3 %.
 - No sim change, the pin unchanged. Specs by hand: none (no UI).
 - **Next:** PLAN 7.39b (the enemy navy beyond a station's reach: measured, then a rule).
+- **Correction (same day):** the far station is year 1's shape too (1,402 → 886 fleet-weeks a
+  world-year, × 1.6); what fell with the battles (× 8.3) is the hunts (× 7.8) and the sorties from
+  port (× 3.8). `measure-a.md` §5 rewritten; 7.39b now measures how a late war of two navies begins
+  against year 1's, its battles bar at 6.6 a world-year (half of the way to 8.9).

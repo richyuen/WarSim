@@ -39,10 +39,10 @@ War-weeks a world-year (a war counted each week it runs):
 | a navy against no coast it reaches | 13.4 | 24.6 | 23.7 | 22.4 | 25.3 |
 | neither a navy | 60.1 | 58.9 | 87.7 | 79.4 | 48.1 |
 
-A war of two navies runs as often late as in year 1 (63.4 war-weeks a world-year against 68.5),
-and on 23 to 29 of the 29 late years of every seed. The critic's "18 of 28 samples with no war of
-two navies" (two days, years 10 and 20, at `bcbc99c`) is not what HEAD's weekly read finds: the
-wars are there; the battles are not.
+A war of two navies runs as often late as in year 1 (63.4 war-weeks a world-year against 68.5,
+about 1.2 such wars at any time), and in 23 to 29 of the 29 late years of every seed. The critic's
+"18 of 28 samples with no war of two navies" read two days (years 10 and 20, at `bcbc99c`); it is not
+compared here day for day, but the mean says the wars are there and the battles are not.
 
 ## 3. Where the fleets are (fleet-weeks a world-year, nations at war with a navy)
 
@@ -93,9 +93,20 @@ are the battles' likely source (a reading, not measured here).
   hold the navies from a navy's war: a fleet at war with a navy is counted in §3 wherever it stands.
 - Too few navies: 16.7 nations a day have an armed fleet late, as in year 1 (16.0), after 7.35d3b.
 
-## 5. The cause, and the part it is for
+## 5. What changed from year 1, and the part it is for
 
-The navy's war stands still because its fleets stay on a blockade station beyond the reach of the
-enemy's fleets (886 fleet-weeks a world-year of 1,029 at war with a navy). PLAN 7.39b: measured
-first, for those fleet-weeks, how far the enemy fleet is and where it stands (its own port, a
-station, of which war), and whose port the station is; then a rule with an ADR.
+Fleets on a station far from the enemy's navy are the shape of both periods (1,402 fleet-weeks a
+world-year in year 1, 886 late, × 1.6). What fell with the battles (× 8.3) is the fleets that move
+toward a fight:
+
+| at war with a navy, a world-year | year 1 | years 2–30 | fall |
+| --- | --- | --- | --- |
+| sea battles | 35.7 | 4.3 | × 8.3 |
+| away, an enemy fleet to hunt | 125.6 | 16.1 | × 7.8 |
+| at port, a target to sail for | 141.1 | 37.1 | × 3.8 |
+| under way | 95.8 | 23.8 | × 4.0 |
+| on station, the enemy fleet beyond reach | 1,402.4 | 886.4 | × 1.6 |
+
+So halving the far station weeks is not, alone, the cause found: the question for PLAN 7.39b is how
+a late war of two navies begins (each side's fleets, where they stand, how far apart) against how
+year 1's wars begin, and where year 1's hunts find their prey. Then a rule with an ADR.
