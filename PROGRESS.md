@@ -20541,3 +20541,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   research before 1945).
 - **Specs by hand, green:** nuclearPower1938. 7.37's commits: 14 of 20.
 - **Next:** PLAN 7.38 (7.37h waits on it).
+
+## 2026-10-20 — PLAN 7.38a: the critic's named strikes measured (the dead, the yield, the restrikes)
+
+- **Split:** PLAN 7.38 as parts a (measured), b (the yield by the target), c (the dead weighed),
+  d (a restrike in a war), e (the AT's bars on 14 + 10 seeds).
+- **Tool:** `tools/diag/nukeToll.ts` (new): each AI strike's utility by its parts (value, through,
+  desperation or the resolve, doctrine, the strike back weighed, alliance, outrage, taboo), the
+  people expected dead at each yield, the place's value at a fission yield, the earlier bursts at
+  the place by war, and the AT's three bars counted; saves checkpoints before given ticks.
+- **Measured** on the critic's code (`bcbc99c`, worktree, from its year-20/10 checkpoints; the
+  utilities the critic's; `docs/evidence/7.38/measure-a.md`, `a-toll-*.json`): Shanghai (0.025),
+  Paris (0.026, 0.073) and Rome (0.091) each a near-tie of gain and costs with nothing weighing
+  1.4 to 3.8 million dead; at a fission yield each place worth as much (Paris and Rome 1 of 1) for
+  172,000 to 191,000 people; 8 of 37 decisions a hydrogen bomb where fission covers. Paris's three,
+  Tashkent's six and Banda Aceh's six are each in a new war a year or more apart (CAPITAL_RESTRIKE_DAYS
+  keeps a capital a year), not one war: ADR-566 proposed, the user's. The one restrike within a war:
+  Switzerland (4877, war 293). The strikes back a rule must keep: 4877's Soviet answers to Germany
+  (0.48–0.78), 8693's to the United States (0.69, 0.78).
+- No rule, the pin unchanged. Specs by hand: none (no UI). 7.38's commits: 1.
+- **Next:** PLAN 7.38b (the yield by the target).

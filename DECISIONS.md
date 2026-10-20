@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-566 · 2026-10-20 · proposed (the user's decision) — PLAN 7.38's "no city struck twice in one war": the named cases are in different wars (PLAN 7.38a)
+
+- **Context.** PLAN 7.38's AT (critic R10-B1): "no city struck twice in one war (was Paris 3,
+  Tashkent 6, Banda Aceh 6)". Measured on the critic's code (`docs/evidence/7.38/measure-a.md`):
+  Paris's three strikes are in wars 144, 168 and 181 (and Rome's in 207), each the United States'
+  strike of resolve in a new war with France a year or more after the last; Tashkent's six in wars
+  182, 191, 206, 214, 286 and Banda Aceh's six in 173, 199, 207, 211, 216, 240, by Poland, Italy
+  and Japan. CAPITAL_RESTRIKE_DAYS (365) keeps a struck capital off for a year in any war. The one
+  place struck twice in one war on the three seeds is Switzerland's (4877, war 293, 20 days apart).
+- **Options.**
+  - a. (recommended) The bar as written: one war. 7.38d bars a restrike in the war without new
+    value (Switzerland's case); the cross-war cases are read again after 7.38b and 7.38c (the yield
+    by the target, the dead weighed), which already take most of their dead (Paris's from 3.2 M to
+    under 200,000 at a fission yield), and the named cross-war cases are not counted as misses.
+  - b. A city struck in any war not struck again for some years (CAPITAL_RESTRIKE_DAYS raised, or
+    a memory of struck cities across wars), the named cases misses until changed.
+  - c. b's memory weighed as a cost (the outrage at a city struck again) rather than a bar.
+- **Until decided.** 7.38b and 7.38c go ahead (they do not depend on it); 7.38d does a.
+
 ### ADR-565 · 2026-10-20 · accepted — The nation panel says why a holder at war does not strike; out of reach split into no means and out of range (PLAN 7.37f)
 
 - **Context.** PLAN 7.37 (AI nuclear use 7; critic run 10: three of fourteen worlds never saw a

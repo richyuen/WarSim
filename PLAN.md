@@ -219,6 +219,36 @@ each, split when taken up:
   2026-10-20: the rule is tuned on the critic's); each named case changed, or a BLOCKERS entry
   with its measured cause, the user's to accept; a unit test (red without); the pin's entry. Stop:
   two full re-measures flat, the bar is the user's (ADR-554).
+  A part each, one rule a commit:
+    - [x] 7.38a The named strikes measured on the critic's code (`bcbc99c`, from its checkpoints;
+      `tools/diag/nukeToll.ts`, new: the utility by its parts, the people expected dead at each
+      yield, the place's value at a fission yield, the earlier bursts at the place by war). AT:
+      each named case's row in `docs/evidence/7.38/`, its utility the critic's. Met
+      (`measure-a.md`): Shanghai, Paris (twice) and Rome each a near-tie of gain (0.6 to 0.95) and
+      costs, nothing weighing 1.4 to 3.8 million dead; at a fission yield each place worth as much
+      (Paris, Rome: 1 of 1) for 172,000 to 191,000 people; 8 of 37 decisions a hydrogen bomb where
+      fission covers. Paris's three, Tashkent's and Banda Aceh's are each in a new war a year or
+      more apart, not one war (ADR-566, proposed); the one restrike in a war is Switzerland's
+      (4877, 1,922,429 dead 20 days after 667,994). The strikes back to keep: 4877's Soviet
+      answers (0.48 to 0.78), 8693's (0.69, 0.78).
+    - [ ] 7.38b The yield by the target: a holder of `thermonuclear` weighs each place at both
+      yields and uses a fission one where its value is as high (the value then the higher yield's
+      only where it adds). AT: from `.cache/nukeToll_8693_141385-bcbc99c.bin` with the rule
+      patched in, the United States' first strike on Paris a fission burst (or none) killing under
+      500,000 (was 3,178,766); a unit test, a place whose value fission covers gets a fission burst
+      (red without); the pin's entry.
+    - [ ] 7.38c The dead weighed: the people a burst is expected to kill a cost in the utility,
+      scaled by doctrine (a strike back's bonus untouched). AT: from the checkpoints, no strike on
+      Shanghai (4877), Paris's second nor Rome (8693) at a yield killing a million (was 3.8 M,
+      1.4 M, 3.7 M), and 4877's and 8693's strikes back still decided; a unit test (red without);
+      the pin's entry.
+    - [ ] 7.38d A place struck in a war not struck again in it without new value (Switzerland,
+      4877, day 10497) and, per ADR-566's choice, the cross-war restrikes. AT: from the 4877
+      checkpoint, no second Swiss burst within a blast radius in war 293; a unit test; the pin's
+      entry.
+    - [ ] 7.38e The AT's three bars read on HEAD over the critic's 14 seeds × 30 years, then 10
+      unseen seeds × 30 years (`nukeToll.ts`' bars). One read after 7.38d, a second only if the
+      first misses; flat twice: BLOCKERS, the user's bar.
 - [ ] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean
   of 38 sea battles a world; years 2 to 30 2.7 a world-year (1,090 in 406 world-years) while 50 to
   96 armed fleets stay afloat (115 at the start); at the year-10 and year-20 samples 18 of 28 have
