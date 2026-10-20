@@ -32,7 +32,8 @@ test('T3: the hulls of a fight are counted and stay while the game is paused', a
   }, null, { timeout: 15_000 });
   // Both effects give their count to the hook.
   expect(typeof (await page.evaluate(() => window.__warsim!.view!.wrecks.count))).toBe('number');
-  // Hour by hour until hulls lie in the view.
+  // Hour by hour until hulls lie in the view: tanks' hulls, `tankCount` (since PLAN 7.23b `count`
+  // is the marks of the fallen too, which came an hour before the first hull, and none drawn).
   const first = await page.evaluate(async (start) => {
     const v = window.__warsim!.view!;
     for (let h = 1; h <= 12; h++) {
@@ -42,7 +43,7 @@ test('T3: the hulls of a fight are counted and stay while the game is paused', a
         const wait = (): void => (v.lastTick === tick ? done() : void setTimeout(wait, 5));
         wait();
       });
-      if (v.hulls.count > 0) return { hours: h, count: v.hulls.count };
+      if (v.hulls.tankCount > 0) return { hours: h, count: v.hulls.tankCount };
     }
     return null;
   }, node.start);
@@ -52,7 +53,7 @@ test('T3: the hulls of a fight are counted and stay while the game is paused', a
   const later = await page.evaluate(() => {
     const v = window.__warsim!.view!;
     v.drawUnitLayers(performance.now());
-    return { count: v.hulls.count, shown: v.hulls.shown.length };
+    return { count: v.hulls.tankCount, shown: v.hulls.shown.length };
   });
   console.log(`hulls after ${first!.hours} h: ${first!.count}; ${(HULL_LIFE_MS + 2500) / 1000} s later, paused: ${later.count}, ${later.shown} drawn`);
   expect(later.count).toBe(first!.count);

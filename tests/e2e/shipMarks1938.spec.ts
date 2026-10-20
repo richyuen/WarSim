@@ -207,11 +207,14 @@ test('T3: at 20 m/px every class of ship is drawn long and broad enough to read 
     }, f);
     await page.waitForFunction(() => window.__warsim!.view!.subscription?.tier === 3 && window.__warsim!.view!.individualCount > 0, null, { timeout: 15_000 }).catch(() => undefined);
     await page.waitForTimeout(1500);
-    const got = await page.evaluate((classes) => {
+    const got = await page.evaluate(([classes, a, d]) => {
       const v = window.__warsim!.view!;
       const canvas = document.querySelector('canvas')!;
       const gl = canvas.getContext('webgl2')!;
       v.draw(performance.now());
+      // The two sides' ships alone: since 7.35d2 France's fleets stand on station with Britain's,
+      // and its dark blue hulls read as the sea to this measure (a median of 6.5 px for a destroyer).
+      const sides = new Set([...v.formationsOf(a), ...v.formationsOf(d)]);
       const dpr = canvas.width / canvas.clientWidth;
       const cam = v.controller.cam;
       const [vw, vh] = [canvas.clientWidth, canvas.clientHeight];
@@ -226,7 +229,7 @@ test('T3: at 20 m/px every class of ship is drawn long and broad enough to read 
       const out: { cls: string; len: number; beam: number }[] = [];
       for (let j = 0; j < v.individualCount; j++) {
         const e = index.get(v.individualOwner[j]!);
-        if (e === undefined) continue;
+        if (e === undefined || !sides.has(v.elementFormation[e]!)) continue;
         const frame = v.elementFrame(e);
         const cls = Object.keys(classes).find((k) => classes[k] === frame);
         if (!cls) continue;
@@ -249,7 +252,7 @@ test('T3: at 20 m/px every class of ship is drawn long and broad enough to read 
         out.push({ cls, len: 2 * out1(ux, uy), beam: 2 * Math.min(out1(nx, ny), out1(-nx, -ny)) });
       }
       return out;
-    }, classes);
+    }, [classes, id('ITA'), id('ENG')] as const);
     for (const s of got) {
       (len[s.cls] ??= []).push(s.len);
       (beam[s.cls] ??= []).push(s.beam);

@@ -20173,3 +20173,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Waits on the user:** none. (Whether the critic runs now on HEAD, before 7.35d3b, is the
   user's to ask; the loop takes 7.35d3b otherwise.)
 - **Next:** PLAN 7.35d3b.
+
+## 2026-10-19 — The critic asked for: `check:review` red, four tests not on knownRed (ADR-554)
+
+- **Asked:** "run the critic". `npm run check:review` on 4730f94: typecheck, lint, build, parity,
+  unit (1,748) and sweep config (18) green; e2e red twice, not on `knownRed.json`: `coast1938`
+  (fine water 14.46 from the sea, < 12), `shipMarks1938` 20 m/px (a destroyer 6.5 px, > 17),
+  `tagsCrowd1938` ("233 over 236" at 12 m/px), `wrecksHeld1938` (0 hulls drawn). Same numbers in
+  the batch and alone: the code, not the machine.
+- **Fixed, the tests' aim:** `shipMarks1938` 20 m/px measures the two sides' ships alone: since
+  7.35d2 France's fleets stand on station with Britain's at seed 2251's first battle, and its dark
+  blue hulls read as the sea to the measure (Italy's destroyers 19 px, the rule's). Now 83
+  destroyers 19 × 5.5 px, cruisers 25 × 8.5, as at a59af6c. `wrecksHeld1938` waits on
+  `hulls.tankCount`: since 7.23b `count` is the fallen's marks too, which came an hour before the
+  first hull; now 2 hulls after 2 h, 2 drawn after 20 s paused. Thresholds unchanged.
+- **Next:** `tagsCrowd1938` and `coast1938` (the code), then `check:review` again, then the critic.
