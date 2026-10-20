@@ -316,9 +316,13 @@ each, split when taken up:
   (who, why, the utility's parts). AT: per case, the decision changed by a rule with an ADR, or,
   where no rule changes it, a BLOCKERS entry with the measured cause, the user's to accept; the
   editor says a holder's means and the game says when the last is lost (each a spec, red without);
-  on the critic's 14 seeds no world where 4 or more nations hold 100 or more warheads and at war
-  sees no burst in 30 years, or each such world's reason in the BLOCKERS entry; a unit test for each
-  rule; the pin's entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
+  a world where 4 or more nations hold 100 or more warheads and at war sees no burst in 30 years is
+  not a miss (restraint is believable; the user's, 2026-10-20): for each such world on the critic's
+  14 seeds, the measured reason (each holder's best strike's utility and what held it under
+  NUKE_FLOOR: deterrence, no target, doctrine), and the game tells the player why a holder at war
+  does not strike (a spec, red without); an unexplained case is a BLOCKERS entry. No rule may raise
+  the bursts to meet this. A unit test for each rule; the pin's entry. Stop: two full re-measures
+  flat, the bar is the user's (ADR-554).
   Run 10 (AI nuclear use 7; the toll is 7.38's): 3 of 14 worlds never see a burst while 4 to 6
   nations hold 145 to 164 warheads (seeds 4219, 5309, 6421, `critic/c10_summary.txt`);
   Czechoslovakia armed in the editor still dies holding its 10 warheads; Latvia (seed 1307, 75
@@ -338,9 +342,10 @@ each, split when taken up:
   without new value). AT: on the critic's 14 seeds × 30 years, bursts that kill over 10 times more
   civilians than soldiers at most 10 % of all bursts (was 25 of 58, 43 %), and none with a
   utility under 0.1 that kills a million; no city struck twice in one war (was Paris 3, Tashkent
-  6, Banda Aceh 6); each named case changed, or a BLOCKERS entry with its measured cause, the
-  user's to accept; a unit test (red without); the pin's entry. Stop: two full re-measures flat,
-  the bar is the user's (ADR-554).
+  6, Banda Aceh 6); then the same three bars on 10 unseen seeds × 30 years (the user's,
+  2026-10-20: the rule is tuned on the critic's); each named case changed, or a BLOCKERS entry
+  with its measured cause, the user's to accept; a unit test (red without); the pin's entry. Stop:
+  two full re-measures flat, the bar is the user's (ADR-554).
 - [ ] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean
   of 38 sea battles a world; years 2 to 30 2.7 a world-year (1,090 in 406 world-years) while 50 to
   96 armed fleets stay afloat (115 at the start); at the year-10 and year-20 samples 18 of 28 have
@@ -351,10 +356,10 @@ each, split when taken up:
   in port (no target in reach, orders refused, held home). Then rules with ADRs (the critic's
   "Fix": blockades, raids, escort fights, landings). AT: sea battles per world-year in years 2–30
   at least a quarter of year 1's on the critic's 14 seeds (was 2.7 against 38), and of them at
-  most 5 % sinking nothing (R9-B1's, now 3 %); at the year-10 and year-20 samples at most 9 of 28
-  with no war whose two sides both have a navy (was 18); then the same two figures on 10 unseen
-  seeds × 30 years, to the same bars; a unit test per rule; the pin's entry. Stop: two full
-  re-measures flat, the bar is the user's (ADR-554).
+  most 5 % sinking nothing (R9-B1's, now 3 %); then the same two bars on 10 unseen seeds × 30
+  years. Read, not a bar (the user's, 2026-10-20: which nations go to war is diplomacy's): the
+  year-10 and year-20 samples with no war whose two sides both have a navy (was 18 of 28). A unit
+  test per rule; the pin's entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
 - [ ] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's
   seeds: the same top five 22 years on seed 8693 and 21 on 7019, over the 20-year limit (4219 and
   3613: 18 and 17; run 9's worst 18; `critic/c10_summary.txt` `stasis`); late wars between
