@@ -1152,6 +1152,47 @@ export const RESTRIKE_RADII = 4;
 export const CAPITAL_RESTRIKE_DAYS = 365;
 
 /**
+ * The enemy men of `war`'s side `1 - side` within `radius` km of (x, y), as `nukeTargets` masses
+ * them: land formations within a tenth of the radius in rows, then by km (PLAN 7.38d).
+ */
+function menNear(world: World, war: War, side: number, x: number, y: number, radius: number): number {
+  const c = world.formations.cols;
+  const enemy = new Set(war.sides[1 - side]!);
+  let men = 0;
+  world.formations.forEach((id) => {
+    if (!enemy.has(c.nation[id]!) || world.isFleet(id) || world.isWing(id) || world.offLand(id)) return;
+    if (Math.abs(c.y[id]! - y) <= radius / 10 && seaKm(world, c.x[id]!, c.y[id]!, x, y) <= radius) men += c.strength[id]!;
+  });
+  return men;
+}
+
+/**
+ * A burst of `nation`'s at (x, y) remembered by each war it fights against the land's realm or
+ * controller there (PLAN 7.38d, critic R10-B1: seed 4877's Soviet Union struck Switzerland twice
+ * in war 293, 20 days and 7 cells apart, 667,994 then 1,922,429 dead, the second place's men fewer
+ * than the first's), with the enemy men it found within a blast of it at the striker's largest
+ * yield, before they die. God Mode's bursts (nation 0) belong to no war.
+ */
+function rememberBurst(world: World, nation: number, x: number, y: number): void {
+  if (nation === 0) return;
+  const xx = cellX(world, Math.floor(x));
+  if (xx === null) return;
+  const cell = Math.min(world.cells.h - 1, Math.max(0, Math.floor(y))) * world.cells.w + xx;
+  const nc = world.nations.cols;
+  const realm = (m: number): number => (m !== 0 && nc.overlord[m]! !== 0 ? nc.overlord[m]! : m);
+  const owner = world.cells.owner[cell]!;
+  const held = world.cells.controller[cell]!;
+  const radius = blastRadius(largestYield(world, nation));
+  for (const war of world.wars.list) {
+    const side = war.sides[0].includes(nation) ? 0 : war.sides[1].includes(nation) ? 1 : -1;
+    if (side < 0) continue;
+    const other = war.sides[1 - side]!;
+    if (!other.includes(owner) && !other.includes(realm(owner)) && !other.includes(held)) continue;
+    war.struck = [...(war.struck ?? []), x, y, menNear(world, war, side, x, y, radius), side];
+  }
+}
+
+/**
  * The places `n` weighs in `war` on `side` (PLAN 6.4b): enemy capitals, then the NUKE_TARGETS
  * enemy land formations with the most enemy men within a blast radius of them, each at least a
  * radius from those taken before (PLAN 6.7: massed formations; the strongest formations alone
@@ -1164,7 +1205,9 @@ export const CAPITAL_RESTRIKE_DAYS = 365;
  * first; PLAN 7.18d: four radii, not one), and
  * no capital within a blast radius of a burst of the last CAPITAL_RESTRIKE_DAYS, nor any place
  * within one of a burst on a capital (PLAN 7.6e); elsewhere a place of massed men is weighed after
- * RESTRIKE_DAYS, men massed again.
+ * RESTRIKE_DAYS, men massed again. Within a hydrogen bomb's blast of a burst of the side's in this
+ * war (`War.struck`), no capital for the rest of the war, and a place of massed men only with more
+ * men there than the burst found (PLAN 7.38d).
  * Only on land of the enemies `aim` names (by default `aimOf`: those that can threaten `n`, PLAN
  * 6.12a; the nation that struck it, from any distance, PLAN 6.12b); the massed men weighed are the
  * whole enemy side's.
@@ -1213,6 +1256,18 @@ export function nukeTargets(world: World, n: number, war: War, side: number, aim
     return false;
   };
   const struckThisYear = (x: number, y: number): boolean => within(x, y, struckYear);
+  // The side's bursts of this war keep it off a place within a hydrogen bomb's blast of them for the
+  // rest of the war, a capital always, a place of massed men while no more men are massed there than
+  // the burst found (PLAN 7.38d: new value; the radius the toll's measure of a restrike).
+  const warRadius = blastRadius(2);
+  const ofWar: number[] = [];
+  const s = war.struck ?? [];
+  for (let k = 0; k + 3 < s.length; k += 4) if (s[k + 3] === side) ofWar.push(s[k]!, s[k + 1]!, s[k + 2]!);
+  const warMen = (x: number, y: number): number => {
+    let most = -1;
+    for (let k = 0; k < ofWar.length; k += 3) if (seaKm(world, x, y, ofWar[k]!, ofWar[k + 1]!) <= warRadius) most = Math.max(most, ofWar[k + 2]!);
+    return most;
+  };
   const fair = (x: number, y: number): boolean => {
     const xx = cellX(world, Math.floor(x));
     const yy = Math.floor(y);
@@ -1224,7 +1279,7 @@ export function nukeTargets(world: World, n: number, war: War, side: number, aim
     for (let k = 0; k < anchors.length; k += 2) if (seaKm(world, x, y, anchors[k]!, anchors[k + 1]!) <= FRONT_KM) return true;
     return false;
   };
-  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && at.has(m) && fair(nc.capitalX[m]!, nc.capitalY[m]!) && !struckThisYear(nc.capitalX[m]!, nc.capitalY[m]!)) out.push([nc.capitalX[m]!, nc.capitalY[m]!]);
+  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && at.has(m) && fair(nc.capitalX[m]!, nc.capitalY[m]!) && !struckThisYear(nc.capitalX[m]!, nc.capitalY[m]!) && warMen(nc.capitalX[m]!, nc.capitalY[m]!) < 0) out.push([nc.capitalX[m]!, nc.capitalY[m]!]);
   const near = (a: number, b: number): boolean => Math.abs(c.y[a]! - c.y[b]!) <= radius / 10 && seaKm(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) <= radius;
   const mass = new Map<number, number>();
   for (const a of land) {
@@ -1236,7 +1291,7 @@ export function nukeTargets(world: World, n: number, war: War, side: number, aim
   const taken: number[] = [];
   for (const id of land) {
     if (taken.length >= NUKE_TARGETS) break;
-    if (taken.some((t) => near(t, id)) || !fair(c.x[id]!, c.y[id]!)) continue;
+    if (taken.some((t) => near(t, id)) || !fair(c.x[id]!, c.y[id]!) || mass.get(id)! <= warMen(c.x[id]!, c.y[id]!)) continue;
     taken.push(id);
     out.push([c.x[id]!, c.y[id]!]);
   }
@@ -1622,6 +1677,7 @@ export function detonate(world: World, nation: number, yieldN: number, x: number
   world.out.emit(world.tick, EventKind.NukeDetonated, nation, yieldN, x, y);
   world.nukeTaboo = Math.min(world.nukeTaboo, TABOO_AFTER);
   world.nukeBursts.push({ x, y, tick: world.tick, yieldN });
+  rememberBurst(world, nation, x, y);
   const owner = ownerAt(world, x, y);
   const struck = owner !== 0 && world.nations.cols.overlord[owner]! !== 0 ? world.nations.cols.overlord[owner]! : owner;
   // A strike back settles the score (PLAN 6.12e): its burst gives no grievance.

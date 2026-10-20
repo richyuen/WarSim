@@ -20607,3 +20607,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Fixed after the commit:** day 5893's strike is not on Paris (its place is 30 cells south-east,
   23,000 people against Paris's 183,000): measure-c, ADR-568 and this entry corrected.
 
+
+## 2026-10-20 — PLAN 7.38d: a place struck in a war not struck again in it without new value (ADR-569)
+
+- **Rule:** each war remembers its bursts (`War.struck`: place, the enemy men within a blast when it
+  fell, the striker's side; saved with the war's JSON). Within a hydrogen bomb's radius of a burst of
+  its side in the war, `nukeTargets` weighs no capital for the rest of the war, and massed men only
+  where more are massed than the burst found. Cross-war restrikes untouched (ADR-566, the user's).
+- **AT, the critic's case** (`bcbc99c` worktree, the rule alone, `d-war-rule.diff`; from the 4877
+  checkpoint of day 10432 to year 30 with `92550bf`'s `nukeToll.ts`): day 10477's Swiss burst as
+  before; no second within a blast radius in war 293 (day 10497: a Swiss place 18 cells away, 0.030,
+  no men, 1,385,000 dead, under the floor with 7.38c's cost); restrikes in a war 1 → 0
+  (`docs/evidence/7.38/measure-d.md`). The 7.38c runs' strikes back had no earlier burst of their war
+  near them: decided as before. Worktree restored (HEAD's `nukeToll.ts` back in it).
+- **Tests:** `nukeWarRestrike1938.test.ts` (new; red without: the exclusion off, Kent's four
+  divisions and London a year on weighed). Pin unmoved. Specs by hand: none (no UI).
+- 7.38's commits: 4. **Next:** PLAN 7.38e (the three bars on 14 + 10 seeds).

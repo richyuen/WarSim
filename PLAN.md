@@ -258,10 +258,17 @@ each, split when taken up:
       critic's three read at 0.749, 0.286, 0.510 (`docs/evidence/7.38/measure-c.md`);
       `nukeDeadCost1938.test.ts` red without; the daily call 0.19–0.22 ms before and after; the pin
       unmoved. 7.38's commits: 3.
-    - [ ] 7.38d A place struck in a war not struck again in it without new value (Switzerland,
+    - [x] 7.38d A place struck in a war not struck again in it without new value (Switzerland,
       4877, day 10497) and, per ADR-566's choice, the cross-war restrikes. AT: from the 4877
       checkpoint, no second Swiss burst within a blast radius in war 293; a unit test; the pin's
       entry.
+      Met (ADR-569; ADR-566 undecided, so the cross-war restrikes untouched): `War.struck`, saved;
+      within a hydrogen bomb's radius of a burst of the side's in the war no capital, and massed men
+      only with more than the burst found. On the critic's code with the rule alone, from the 4877
+      checkpoint: day 10477's burst as before, no second within a blast radius in war 293 (the
+      Soviet Union struck a Swiss place 18 cells away, 0.030, which 7.38c keeps under the floor);
+      restrikes in a war 1 → 0 (`docs/evidence/7.38/measure-d.md`); `nukeWarRestrike1938.test.ts`
+      red without; the pin unmoved. 7.38's commits: 4.
     - [ ] 7.38e The AT's three bars read on HEAD over the critic's 14 seeds × 30 years, then 10
       unseen seeds × 30 years (`nukeToll.ts`' bars). One read after 7.38d, a second only if the
       first misses; flat twice: BLOCKERS, the user's bar.

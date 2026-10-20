@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-569 · 2026-10-20 · accepted — A place struck in a war is not struck again in it without new value (PLAN 7.38d)
+
+- **Context.** Critic R10-B1 (run 10, AI nuclear use 7): "a city struck in the war not again
+  without new value". Of the critic's named restrikes only Switzerland's is in one war (seed 4877,
+  war 293: days 10477 and 10497, 7 cells apart, 667,994 then 1,922,429 dead; the second place's men
+  10,440 against the first's 25,067; `docs/evidence/7.38/measure-a.md`). The bursts were
+  remembered only for a year and kept a place off only for RESTRIKE_DAYS (7) unless it was a
+  capital, so a second place of the same city past a week was weighed again for its output.
+- **Decision.**
+  - Each war remembers its bursts (`War.struck`, saved with the war's JSON: an older save's wars
+    have none): the place, the enemy men within a blast of it at the striker's largest yield when
+    it fell, before they die, and the striker's side. A burst belongs to every war its striker
+    fights against the land's owner (or its overlord) or controller there; God Mode's to none.
+  - Within a hydrogen bomb's blast radius of a burst of its side in the war, `nukeTargets` weighs
+    no capital for the rest of the war, and a place of massed men only where more men are massed
+    than the burst found: the new value. Output is not new value (the blast already took it,
+    `bombDamage`). The radius is the hydrogen bomb's whatever the yields, the radius by which
+    `nukeToll.ts` counts a restrike (7.38e's bar), so the rule and its measure agree.
+  - The memory lasts the war, not the year of `world.nukeBursts` (whose year a test pins and the
+    ruins read).
+  - Across wars nothing changes: ADR-566 (the cross-war restrikes) is the user's.
+- **The critic's case** (`bcbc99c` worktree, this rule alone; `docs/evidence/7.38/measure-d.md`,
+  `d-toll-4877-rule.json`, `d-war-rule.diff`): day 10477's burst as before; on day 10497 no burst
+  within a blast radius of the war's: the Soviet Union struck a Swiss place 18 cells away instead
+  (0.030, no men, 1,385,000 dead), which 7.38c's cost of the dead keeps under NUKE_FLOOR. The run's
+  restrikes in a war 1 → 0. With 7.38b and 7.38c the run has no Swiss burst at all; the strikes back
+  kept (8693's, 4877's) had no earlier burst of their war near them and are decided as before.
+- **Cost.** Only for a war with bursts: one pass over the enemy formations at a burst, and a loop
+  over the war's few bursts for each place weighed. Not measured.
+- **Pin.** Unmoved: no burst in seed 99's year.
+- **Tests.** `nukeWarRestrike1938.test.ts`: a German burst on twelve divisions in Kent remembered
+  by the war; a week on four fresh divisions there not weighed, twenty more weighed; the memory
+  saved; London struck by Germany not weighed in the war after the year's memory, weighed in a new
+  war; God Mode's burst no war's (red without: each).
+
 ### ADR-568 · 2026-10-20 · accepted — The people a burst is expected to kill are a cost in the AI's nuclear choice (PLAN 7.38c)
 
 - **Context.** Critic R10-B1 (run 10, AI nuclear use 7): `nuclearUtility` had no term for the dead.

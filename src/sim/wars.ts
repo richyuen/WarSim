@@ -41,6 +41,12 @@ export interface War {
   /** How many strikes each side decided in the war by its resolve to end it (PLAN 7.18h; absent: none). */
   resolveStrikes?: [number, number];
   /**
+   * The war's nuclear bursts (PLAN 7.38d): x, y, the enemy men within a blast of it when it fell and
+   * the striker's side, four numbers a burst (`nukeTargets` keeps the war's strikes off the place;
+   * absent: none).
+   */
+  struck?: number[];
+  /**
    * The most km² each side has held of the other's land in the war, and the tick it was first
    * reached (PLAN 7.27c: whether a side still gains ground; absent: none held yet).
    */
