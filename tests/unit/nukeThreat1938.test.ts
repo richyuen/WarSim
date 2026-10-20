@@ -45,6 +45,11 @@ function decisions(s: Sim, war: War, hours: number): number[][] {
   return out;
 }
 
+/** The side of `war` nation `m` fights on. */
+function sideOf(war: War, m: number): readonly number[] {
+  return war.sides[war.sides[0].includes(m) ? 0 : 1]!;
+}
+
 function armedSoviets(): Sim {
   const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
   s.world.settings.nukesEnabled = true;
@@ -66,13 +71,13 @@ describe('no first use on a nation that cannot threaten the striker (PLAN 6.12a)
     const nc = w.nations.cols;
     process.stderr.write(`income: Soviet Union ${nc.income[SOV]!.toFixed(0)}, the revolt ${nc.income[rebels]!.toFixed(0)}\n`);
     expect(nc.income[rebels]!).toBeLessThan(THREAT_SHARE * nc.income[SOV]!);
-    expect(threatens(w, rebels, SOV)).toBe(false);
+    expect(threatens(w, rebels, SOV, sideOf(war!, rebels))).toBe(false);
     expect(decisions(s, war!, 24 * 30)).toEqual([]);
     expect(warheadsOf(w, SOV)).toBe(5);
     // A warhead of its own: the revolt threatens.
     s.command({ kind: 'grantWarheads', nation: rebels, count: 1 });
     s.step(1);
-    expect(threatens(w, rebels, SOV)).toBe(true);
+    expect(threatens(w, rebels, SOV, sideOf(war!, rebels))).toBe(true);
   });
 
   it('a revolt a third as strong as the Soviet Union but poor (PLAN 6.12f) is not struck either', () => {
@@ -90,7 +95,7 @@ describe('no first use on a nation that cannot threaten the striker (PLAN 6.12a)
     const str = strengths(w);
     process.stderr.write(`strength: Soviet Union ${str[SOV]!.toFixed(0)}, the revolt ${str[rebels]!.toFixed(0)}\n`);
     expect(str[rebels]!).toBeGreaterThan(THREAT_SHARE * str[SOV]!);
-    expect(threatens(w, rebels, SOV)).toBe(false);
+    expect(threatens(w, rebels, SOV, sideOf(war, rebels))).toBe(false);
     expect(decisions(s, war, 24 * 10)).toEqual([]);
   });
 
@@ -104,7 +109,7 @@ describe('no first use on a nation that cannot threaten the striker (PLAN 6.12a)
     s.step(1);
     const nc = w.nations.cols;
     process.stderr.write(`income: Soviet Union ${nc.income[SOV]!.toFixed(0)}, Germany ${nc.income[GER]!.toFixed(0)}\n`);
-    expect(threatens(w, GER, SOV)).toBe(true);
+    expect(threatens(w, GER, SOV, sideOf(war, GER))).toBe(true);
     const decided = decisions(s, war, 24 * 30);
     process.stderr.write(`the Soviet Union decided: ${JSON.stringify(decided)}\n`);
     expect(decided.length).toBeGreaterThan(0);

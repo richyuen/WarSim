@@ -1,0 +1,94 @@
+{
+ "seed": 2609,
+ "years": 30,
+ "rows": [
+  {
+   "day": 7573,
+   "year": 20.75,
+   "by": "SOV",
+   "u": 0.029,
+   "at": [
+    1023.3,
+    275.2
+   ],
+   "target": "ENG",
+   "war": "#132+GER+NSP+LIB+AOF+TUN+IRN+#121+#139+#140+ITA+HUN+ENG+EGY+BCO+AEF+#111 v MON+SOV+EST+FIN+TUR+NOR+SWE+AFG+NEP+SIA+#133+#141",
+   "warDays": 117,
+   "desperation": 1.42,
+   "byResolve": false,
+   "doctrine": 1.2,
+   "extreme": true,
+   "parts": {
+    "econShare": 0.0309,
+    "menShare": 0.0963,
+    "ownShare": 0,
+    "menExpected": 33642,
+    "menAll": 179280,
+    "theatreMen": 349430,
+    "sideMen": 1397721,
+    "capital": 0.3,
+    "through": 1,
+    "value": 1
+   },
+   "launch": 29,
+   "missile": 1,
+   "flightH": 0.12648865728988312,
+   "toll": {
+    "dead": 4939549,
+    "yieldN": 2,
+    "men": 33549,
+    "guns": 120,
+    "tanks": 0,
+    "planes": 0,
+    "ships": 0,
+    "people": 4906000,
+    "econLost": 40001.13,
+    "formationsNear": 3
+   }
+  },
+  {
+   "day": 7654,
+   "year": 20.97,
+   "by": "SOV",
+   "u": 0.547,
+   "at": [
+    1185.8,
+    420.5
+   ],
+   "target": "ITA",
+   "war": "#132+GER+NSP+LIB+AOF+TUN+IRN+#121+#139+#140+ITA+HUN+ENG+EGY+BCO+AEF+#111 v MON+SOV+EST+FIN+TUR+NOR+SWE+AFG+NEP+SIA+#133+#141",
+   "warDays": 198,
+   "desperation": 2,
+   "byResolve": false,
+   "doctrine": 1.2,
+   "extreme": true,
+   "parts": {
+    "econShare": 0,
+    "menShare": 0.0891,
+    "ownShare": 0,
+    "menExpected": 31462,
+    "menAll": 236735,
+    "theatreMen": 353094,
+    "sideMen": 1412377,
+    "capital": 0,
+    "through": 1,
+    "value": 0.891
+   },
+   "launch": 30,
+   "missile": 1,
+   "flightH": 0.1475207358598709,
+   "toll": {
+    "dead": 40479,
+    "yieldN": 2,
+    "men": 31479,
+    "guns": 124,
+    "tanks": 0,
+    "planes": 0,
+    "ships": 0,
+    "people": 9000,
+    "econLost": 4.59,
+    "formationsNear": 3
+   }
+  }
+ ]
+}

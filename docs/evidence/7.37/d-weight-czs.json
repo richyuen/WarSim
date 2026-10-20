@@ -1,0 +1,95 @@
+{
+ "tick": 182592,
+ "day": 7608,
+ "striker": "SOV",
+ "target": "CZS",
+ "warDays": 163,
+ "score": -11,
+ "own": [
+  "SOV",
+  "EST",
+  "FIN",
+  "TUR",
+  "NOR",
+  "SWE",
+  "AFG",
+  "NEP",
+  "SIA",
+  "#133",
+  "MON",
+  "#141"
+ ],
+ "enemy": [
+  "#123",
+  "LIT",
+  "CZS",
+  "YUG",
+  "#117"
+ ],
+ "output": {
+  "striker": 155726,
+  "ownSide": 222529,
+  "enemySide": 32141,
+  "target": 11421,
+  "world": 2941362
+ },
+ "income": {
+  "striker": 919.6750621763163,
+  "strikerRealm": 919.6750621763163,
+  "target": 71.9523,
+  "targetRealm": 5226.393860802087,
+  "ownSide": 1275.6645143795688,
+  "enemySide": 183.76134071135453
+ },
+ "men": {
+  "striker": 7180,
+  "ownSide": 10003,
+  "enemySide": 6240,
+  "target": 6240
+ },
+ "enemyByOutput": [
+  [
+   "#123",
+   12427,
+   64.88469520113613,
+   0,
+   false
+  ],
+  [
+   "LIT",
+   2680,
+   15.941095510218407,
+   0,
+   false
+  ],
+  [
+   "CZS",
+   11421,
+   71.9523,
+   0,
+   false
+  ],
+  [
+   "YUG",
+   5610,
+   30.96525,
+   0,
+   false
+  ],
+  [
+   "#117",
+   3,
+   0.018000000000000002,
+   0,
+   false
+  ]
+ ],
+ "threatens": {
+  "targetWarheads": 0,
+  "realmWarheads": 49,
+  "overlord": "GER",
+  "incomeRatio": 5.683,
+  "THREAT_SHARE": 0.25,
+  "nearCapital": false
+ }
+}

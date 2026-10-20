@@ -121,6 +121,19 @@ each, split when taken up:
       (250,000), on HEAD since PLAN 7.32a, patched into the critic's code: no strike on that point
       (`docs/evidence/7.37/c-restrike-4483-f0be88c{,-adr528}.json`). No new rule. Germany's two
       strikes on Cuba's capital in two wars are 7.38's (a city struck again).
+    - [x] 7.37d Single bombs on small states (run 9: Nepal 1,656,090 dead and Afghanistan 3,328,000
+      on seed 2609, Sweden 1,050,000 on 1129): each decision measured on the critic's code
+      (`nukeChain.ts`; `tools/diag/nukeWeight.ts`, new: the war's sides by output, income and men,
+      and why the struck nation passed `threatens`). AT: the cause, and the decision changed by a
+      rule with an ADR, or a BLOCKERS entry; a unit test red without; the pin's entry. Met: each a
+      puppet of a nuclear power standing out of the war (Nepal and Czechoslovakia Germany's, Sweden
+      and Afghanistan the Soviet Union's), a threat by its overlord's warheads and income alone
+      (`threatens`' realm read), while the strike back weighed never saw that overlord; its side 0.4
+      to 14 % of the striker's by output. ADR-528 alone changes none (Afghanistan struck 95 days
+      later at 0.025, Sweden at 0.246). ADR-564: an overlord's warheads and income count only while
+      it fights beside its puppet in that war. On the critic's code from the same states: no strike
+      on Nepal, Sweden, Afghanistan, nor Czechoslovakia's 1,797,000 dead (`docs/evidence/7.37/d-*`);
+      `nukePuppetThreat1938.test.ts` red without; the pin unchanged. Read on HEAD, not a bar (run 10's 14 seeds × 30 years, `d-head-14seeds-read.txt`): bursts 123 in 14 worlds → 89 in 13, of a million dead or more 26 → 20 (the worlds part after the first decision changed). 7.37's commits: 6 of 20.
 - [ ] 7.38 R10-B1: the AI's nuclear choice weighs the people a burst kills (AI nuclear use 7, needs
   8; blocking). `nuclearUtility` has no term for the dead (`src/sim/systems/nuclear.ts:554-560`):
   Germany H-bombs Shanghai for 3,802,105 dead and 105 soldiers at utility 0.025, NUKE_FLOOR itself

@@ -167,6 +167,57 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-564 · 2026-10-20 · accepted — A puppet threatens by its overlord only while the overlord fights beside it (PLAN 7.37d; amends ADR-394's 6.12a and 6.12f)
+
+- **Context.** PLAN 7.37 (AI nuclear use 7; critic run 9, "single bombs on small states"): the
+  Soviet Union struck Nepal's capital (seed 2609, year 29, 1,656,090 dead, 90 soldiers), the United
+  Kingdom Afghanistan's (2609, year 17.7, 3,328,000 dead, none), Germany Stockholm (1129, year 27,
+  1,050,000 dead, none).
+- **Measured** on the critic's code (`f0be88c`, a worktree; `tools/diag/nukeChain.ts` from the
+  critic's year-20 checkpoints and a checkpoint of year 17.7 by `tools/diag/saveAt.ts`; each
+  decision matched to the critic's log by its tick and utility; `tools/diag/nukeWeight.ts`, new;
+  `docs/evidence/7.37/d-*`):
+  - Each struck nation was a puppet of a nuclear power that stood out of the war: Nepal Germany's
+    (53 warheads; war: the Soviet Union and Mongolia against Estonia and Nepal), Sweden the Soviet
+    Union's (30; the Soviet Union was at war with Germany in another war), Afghanistan the Soviet
+    Union's (4). So was Czechoslovakia, struck by the Soviet Union on seed 2609 in year 20.8
+    (1,797,000 dead, no soldiers, utility 0.043; Germany's puppet, 49 warheads).
+  - Each passed `threatens` by its overlord alone: its own warheads 0, its own income 0.3 %, 3 % and
+    5 % of the striker's (THREAT_SHARE 25 %), no land forces near the striker's capital; the realm
+    read gave it its overlord's warheads and income (realm income 4.8, 0.57 and 0.31 of the
+    striker's). The strike back weighed (`retaliationRisk`, over `enemyCoalition`: the side and its
+    allies) never counted the overlord: Nepal's war was weighed with no retaliation, a strike of the
+    resolve (ADR-488).
+  - Their sides were 0.4 % (Nepal's), 5.5 % (Sweden's), 8.4 % (Afghanistan's) and 14 %
+    (Czechoslovakia's) of the striker's side by output, and the place's value is a share of that
+    side (`econShare`, and the capital's CAPITAL_WEIGHT): each capital was worth value 0.81 to 1.
+  - ADR-528 (THEATRE_MEN_MIN, on HEAD since PLAN 7.32a) patched in alone changes none: Britain
+    strikes Afghanistan 95 days later at 0.025, Germany Sweden at 0.246.
+- **Decision.** `threatens(world, m, n, withM)`: `m`'s overlord's warheads and income count for
+  `m` only while the overlord is on `withM`, the side `m` fights on in that war (`aimOf` passes the
+  enemy side). Else `m` threatens on its own warheads, income and land forces, as any nation. A
+  puppet fighting beside its overlord is unchanged; there the overlord's warheads weigh in the
+  strike back too (`enemyCoalition`). Rejected: weighing the place's output against the larger of
+  the two sides (it reaches every resolve strike of a winner on a weaker enemy, ADR-488's own
+  case); counting the overlord in the strike back (`enemyCoalition`; every war on any puppet of a
+  nuclear power a deterred war).
+- **On the critic's code**, the rule patched in alone, from the same states: no strike on Nepal to
+  year 30 (struck day 10,603), none on Afghanistan in the 120 days from day 6,450 (struck day
+  6,470), none on Sweden (day 9,884), none on Czechoslovakia (day 7,608); the great powers strike
+  each other in their own wars as before (on seed 1129 Germany and the Soviet Union 5 times from
+  day 9,884, as without the rule, the days moved by Sweden's burst gone).
+- **Read on HEAD** (critic run 10's 14 seeds × 30 years, `critic/scripts/c10_headless.ts`, before
+  and after): bursts 123 in 14 worlds → 89 in 13, of a million dead or
+  more 26 → 20, all dead 108 M → 77 M (`docs/evidence/7.37/d-head-14seeds-read.txt`). The worlds part
+  after the first decision the rule changes; the great powers' exchanges stay (seed 7019's 31
+  bursts, all between the Soviet Union, Germany and Japan, the same). Seed 5309's one burst (the
+  United States on the Netherlands) is gone: its world has none in 30 years, a restraint case of
+  PLAN 7.37's AT.
+- **Pin.** Unmoved: no warhead in seed 99's year.
+- **Tests.** `nukePuppetThreat1938.test.ts`: Nepal made Germany's puppet during its war with the
+  Soviet Union, Germany holding 50 warheads: not a threat, not aimed at, its capital not a target
+  (red without); with Germany leading its side, aimed at. `nukeThreat1938.test.ts` passes the side.
+
 ### ADR-563 · 2026-10-20 · proposed (the user's decision) — Czechoslovakia armed in the editor: its bomber lost with its only airbase, its strike under the floor until then (PLAN 7.37b1)
 
 - **Context.** PLAN 7.37 (AI nuclear use 7; critic runs 9 and 10, `c10_g2_5309_CZS.json`):

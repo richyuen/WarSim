@@ -1,0 +1,88 @@
+{
+ "tick": 237216,
+ "day": 9884,
+ "striker": "GER",
+ "target": "SWE",
+ "warDays": 99,
+ "score": 4,
+ "own": [
+  "GER",
+  "ITA",
+  "EGY",
+  "AUT",
+  "CHI"
+ ],
+ "enemy": [
+  "BEL",
+  "AFG",
+  "NOR",
+  "IRN",
+  "SWE"
+ ],
+ "output": {
+  "striker": 630728,
+  "ownSide": 696595,
+  "enemySide": 38149,
+  "target": 20213,
+  "world": 2941362
+ },
+ "income": {
+  "striker": 4384.04377748365,
+  "strikerRealm": 4384.04377748365,
+  "target": 133.4058,
+  "targetRealm": 2492.6125017378995,
+  "ownSide": 4849.01044631353,
+  "enemySide": 248.69426406127246
+ },
+ "men": {
+  "striker": 333661,
+  "ownSide": 333937,
+  "enemySide": 10268,
+  "target": 0
+ },
+ "enemyByOutput": [
+  [
+   "BEL",
+   6295,
+   38.883599999999994,
+   0,
+   false
+  ],
+  [
+   "AFG",
+   280,
+   1.511994061272484,
+   0,
+   false
+  ],
+  [
+   "NOR",
+   10938,
+   72.35487,
+   0,
+   false
+  ],
+  [
+   "IRN",
+   423,
+   2.538,
+   0,
+   false
+  ],
+  [
+   "SWE",
+   20213,
+   133.4058,
+   0,
+   false
+  ]
+ ],
+ "threatens": {
+  "targetWarheads": 0,
+  "realmWarheads": 30,
+  "overlord": "SOV",
+  "incomeRatio": 0.569,
+  "THREAT_SHARE": 0.25,
+  "nearCapital": false
+ }
+}

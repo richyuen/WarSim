@@ -1942,6 +1942,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     theatre (PLAN 7.18c, 7.18j, ADR-492). It counts for at least 250,000 men too: a burst is
     weighed by what it destroys, whole at 25,000 men, not by its share of a beaten side's last
     men (PLAN 7.32a, ADR-528).
+    Only an enemy that can threaten the striker is struck first: it holds a warhead, its income
+    is a quarter of the striker's, or its land forces stand near the striker's capital (PLAN
+    6.12a, 6.12f, ADR-394). A puppet counts its overlord's warheads and income only while the
+    overlord fights beside it in that war (PLAN 7.37d, ADR-564).
   - desperation: rises with losing war score, capital threatened, core loss, and
     fightToDeath.
     A holder winning or holding its own in a war of a year or more, against enemies that

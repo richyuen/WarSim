@@ -1,0 +1,96 @@
+{
+ "tick": 155280,
+ "day": 6470,
+ "striker": "ENG",
+ "target": "AFG",
+ "warDays": 365,
+ "score": 29,
+ "own": [
+  "ENG",
+  "IRE",
+  "SUD",
+  "SRH",
+  "RAJ",
+  "CEY",
+  "MAL",
+  "NFL",
+  "FRA",
+  "NED",
+  "YEM",
+  "SAF",
+  "OMN"
+ ],
+ "enemy": [
+  "TRJ",
+  "TUR",
+  "GRE",
+  "AFG",
+  "SIN"
+ ],
+ "output": {
+  "striker": 298918,
+  "ownSide": 386879,
+  "enemySide": 32650,
+  "target": 22362,
+  "world": 2941362
+ },
+ "income": {
+  "striker": 2350.1307528393313,
+  "strikerRealm": 2350.1307528393313,
+  "target": 120.73637992729357,
+  "targetRealm": 721.242,
+  "ownSide": 2925.1021632787956,
+  "enemySide": 171.42363510668383
+ },
+ "men": {
+  "striker": 182550,
+  "ownSide": 399326,
+  "enemySide": 6240,
+  "target": 0
+ },
+ "enemyByOutput": [
+  [
+   "TRJ",
+   0,
+   0,
+   0,
+   false
+  ],
+  [
+   "TUR",
+   1936,
+   3.7702391321209574,
+   0,
+   false
+  ],
+  [
+   "GRE",
+   2248,
+   13.488000000000001,
+   0,
+   false
+  ],
+  [
+   "AFG",
+   22362,
+   120.73637992729357,
+   0,
+   false
+  ],
+  [
+   "SIN",
+   6104,
+   33.429016047269286,
+   0,
+   false
+  ]
+ ],
+ "threatens": {
+  "targetWarheads": 0,
+  "realmWarheads": 4,
+  "overlord": "SOV",
+  "incomeRatio": 0.307,
+  "THREAT_SHARE": 0.25,
+  "nearCapital": false
+ }
+}

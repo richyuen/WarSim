@@ -1,0 +1,61 @@
+{
+ "tick": 254472,
+ "day": 10603,
+ "striker": "SOV",
+ "target": "NEP",
+ "warDays": 365,
+ "score": 0,
+ "own": [
+  "SOV",
+  "MON"
+ ],
+ "enemy": [
+  "EST",
+  "NEP"
+ ],
+ "output": {
+  "striker": 170089,
+  "ownSide": 170129,
+  "enemySide": 675,
+  "target": 613,
+  "world": 2941362
+ },
+ "income": {
+  "striker": 1010.1991193749041,
+  "strikerRealm": 1010.1991193749041,
+  "target": 3.3102,
+  "targetRealm": 4885.565504526926,
+  "ownSide": 1010.4151193749041,
+  "enemySide": 3.6822
+ },
+ "men": {
+  "striker": 60979,
+  "ownSide": 60979,
+  "enemySide": 0,
+  "target": 0
+ },
+ "enemyByOutput": [
+  [
+   "EST",
+   62,
+   0.37200000000000005,
+   0,
+   false
+  ],
+  [
+   "NEP",
+   613,
+   3.3102,
+   0,
+   false
+  ]
+ ],
+ "threatens": {
+  "targetWarheads": 0,
+  "realmWarheads": 53,
+  "overlord": "GER",
+  "incomeRatio": 4.836,
+  "THREAT_SHARE": 0.25,
+  "nearCapital": false
+ }
+}

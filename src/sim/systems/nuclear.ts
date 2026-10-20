@@ -102,7 +102,8 @@
  * capital and the NUKE_TARGETS places where enemy land formations are most massed (`nukeTargets`;
  * PLAN 6.11a: on land the enemy side holds, within FRONT_KM of its own side, from any distance in
  * its extreme desperation (PLAN 7.6c); PLAN 6.12a: of an
- * enemy that can threaten it, `threatens`: a warhead, THREAT_SHARE of its income (PLAN 6.12f), or
+ * enemy that can threaten it, `threatens`: a warhead, THREAT_SHARE of its income (PLAN 6.12f), its
+ * overlord's only while the overlord fights beside it (PLAN 7.37d), or
  * land forces near its capital),
  * and strikes the one of most utility above NUKE_FLOOR (PLAN 7.25a; above 0 before) (by missile when it knows them and one reaches, else
  * by bomber, a free one or one retasked from a sortie; one out of reach, the next), once a day at
@@ -992,15 +993,19 @@ function retaliates(world: World, n: number, war: War, side: number): boolean {
 export const THREAT_SHARE = 0.25;
 
 /**
- * Whether nation `m` can threaten `n` (PLAN 6.12a, critic R6-B2: the Soviet Union's first strikes in
- * history fell on a revolt statelet of its own land): `m` or its overlord has a warhead, or its
- * realm's income is THREAT_SHARE of `n`'s realm's (PLAN 6.12f), or its land forces stand within
- * CAPITAL_THREAT_KM of `n`'s capital. A nation that cannot is not struck first.
+ * Whether nation `m`, fighting on the side `withM` of a war, can threaten `n` (PLAN 6.12a, critic
+ * R6-B2: the Soviet Union's first strikes in history fell on a revolt statelet of its own land): `m`
+ * or its overlord has a warhead, or its realm's income is THREAT_SHARE of `n`'s realm's (PLAN
+ * 6.12f), or its land forces stand within CAPITAL_THREAT_KM of `n`'s capital. A nation that cannot
+ * is not struck first. Its overlord's warheads and income count only while the overlord fights on
+ * `withM` (PLAN 7.37d, ADR-564): Nepal, Sweden and Afghanistan, each a puppet of a nuclear power
+ * that stood out of the war, were struck for 1.0 to 3.3 million dead, the realm read making them
+ * threats while the strike back weighed (`retaliationRisk`) never saw the overlord.
  */
-export function threatens(world: World, m: number, n: number): boolean {
+export function threatens(world: World, m: number, n: number, withM: readonly number[]): boolean {
   const nc = world.nations.cols;
   const realm = (k: number): number => (nc.overlord[k]! !== 0 ? nc.overlord[k]! : k);
-  const rm = realm(m);
+  const rm = nc.overlord[m]! !== 0 && withM.includes(nc.overlord[m]!) ? nc.overlord[m]! : m;
   if (warheadsOf(world, m) > 0 || warheadsOf(world, rm) > 0) return true;
   if (nc.income[rm]! >= THREAT_SHARE * nc.income[realm(n)]!) return true;
   const cx = nc.capitalX[n]!;
@@ -1035,7 +1040,7 @@ export function aimOf(world: World, n: number, war: War, side: number, industry:
   if (by !== 0) return { at: new Set([by]), anywhere: true };
   const nc = world.nations.cols;
   const at = new Set<number>();
-  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && threatens(world, m, n)) at.add(m);
+  for (const m of war.sides[1 - side]!) if (nc.living[m] === 1 && threatens(world, m, n, war.sides[1 - side]!)) at.add(m);
   if (at.size === 0) return { at, anywhere: false };
   const { desperation, extreme } = desperationOf(world, n, war, side);
   const resolve = resolveOf(world, war, side, retaliationRisk(world, war, side), madWar(world, war));

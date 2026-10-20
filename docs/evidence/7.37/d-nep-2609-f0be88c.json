@@ -1,0 +1,51 @@
+{
+ "seed": 2609,
+ "years": 30,
+ "rows": [
+  {
+   "day": 10603,
+   "year": 29.05,
+   "by": "SOV",
+   "u": 0.614,
+   "at": [
+    1509.3,
+    435.5
+   ],
+   "target": "NEP",
+   "war": "SOV+MON v EST+NEP",
+   "warDays": 365,
+   "desperation": 0,
+   "byResolve": true,
+   "resolve": 1,
+   "doctrine": 1.2,
+   "extreme": false,
+   "parts": {
+    "econShare": 0.5857,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "menAll": 0,
+    "theatreMen": 0,
+    "sideMen": 0,
+    "capital": 0.3,
+    "through": 1,
+    "value": 1
+   },
+   "launch": 42,
+   "missile": 1,
+   "flightH": 0.10290758151677437,
+   "toll": {
+    "dead": 1656090,
+    "yieldN": 2,
+    "men": 90,
+    "guns": 0,
+    "tanks": 0,
+    "planes": 18,
+    "ships": 0,
+    "people": 1656000,
+    "econLost": 400.16,
+    "formationsNear": 1
+   }
+  }
+ ]
+}

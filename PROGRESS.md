@@ -20437,3 +20437,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   that variant read them after the decision had set `war.lastStrike`. The resolve figures above are
   RESOLVE × min(1, war days / 730) (1.0 at 365 days, 1.25 at 455), checked against the logged
   utilities; HEAD's `nukeChain.ts` reads them before the hour (`byResolve`).
+
+## 2026-10-20 — PLAN 7.37d: a puppet threatens by its overlord only while the overlord fights beside it (ADR-564)
+
+- **Measured** on the critic's code (`f0be88c`, worktrees; `nukeChain.ts` from `c9_seed{2609,1129}_y20.bin`
+  and a checkpoint of year 17.7 by `tools/diag/saveAt.ts`, new; `tools/diag/nukeWeight.ts`, new;
+  each decision matched to the critic's log by tick and utility; `docs/evidence/7.37/d-*`): Nepal
+  (Germany's puppet), Sweden and Afghanistan (the Soviet Union's), and Czechoslovakia (seed 2609,
+  1,797,000 dead, Germany's) were each a puppet of a nuclear power standing out of the war; each
+  threatened the striker by its overlord's warheads and income alone (its own income 0.3–5 % of the
+  striker's), while `retaliationRisk` never counted the overlord. Their sides 0.4–14 % of the
+  striker's by output, each capital worth 0.81–1. ADR-528 alone changes none (Afghanistan 95 days
+  later at 0.025; Sweden 0.246).
+- **Rule (ADR-564):** `threatens(world, m, n, withM)`: the overlord's warheads and income count only
+  while the overlord is on `m`'s side of that war. Rejected: the value against the larger side
+  (reaches ADR-488's resolve strikes); the overlord in the strike back (every war on a puppet deterred).
+- **AT:** from the same states on the critic's code, no strike on Nepal, Sweden, Afghanistan nor
+  Czechoslovakia; `nukePuppetThreat1938.test.ts` red without; pin unchanged.
+- **Read on HEAD** (run 10's 14 seeds × 30 years, before/after side by side): bursts 123 in 14
+  worlds → 89 in 13; 1 M+ dead 26 → 20; seed 5309 now has none (a restraint case for 7.37's AT).
+- 7.37's commits: 6 of 20. **Next:** PLAN 7.37's next case (the no-burst worlds 4219, 5309, 6421).
