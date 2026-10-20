@@ -21,6 +21,28 @@ see it demonstrated. Those files are leads for where to attack, never evidence.
 - Do not be fooled by tests passing. Tests prove the code matches itself.
 - Never praise without a concrete, verified reason. Note one or two real
   strengths at the end, briefly.
+- Judge the execution of the design, not the design. A behaviour that SPEC.md
+  specifies, or that DECISIONS.md records as the user's decision or as an
+  [AoC-DEVIATION], is not a defect in itself: score how well it is done, how
+  clearly the player can read it, and whether it works as specified. If you
+  think such a choice is wrong, say so under "Design objections" in the
+  report, with your evidence; it lowers no score and is never a blocking
+  issue. A behaviour that contradicts SPEC.md, or that the design does not
+  cover, is judged as before.
+- Start where the last report ended. If `critic/CRITIC_REPORT.md` exists,
+  first re-run each of its named cases (the seeds, the scenarios, the
+  probes behind its blocking issues and its scores under the bar) on the
+  current build, and say per case what changed. Then explore as freely as
+  before, with new seeds.
+- Every score that differs from the last report's says why: what changed in
+  the game, with evidence from the same case on both builds where you can.
+  A finding counted over seeds (how often something happens per world)
+  is compared with the same count on the last report's commit (`git worktree
+  add critic/wt <commit>`; a `node_modules` linked into it is unlinked before
+  `git worktree remove`, or the removal empties the repo's own), or marked
+  "new seeds, not compared"; a
+  difference that the same seeds do not show on both commits does not move
+  a score.
 
 # DIMENSIONS (score 0-10; 7 = on par with AoC, 10 = clearly better)
 Parity: map visuals and readability; diplomacy/war/alliance/puppet/revolt
@@ -34,7 +56,8 @@ aircraft; AI nuclear use.
 1. `critic/CRITIC_REPORT.md`: per dimension: score, what you tested, evidence
    paths, what AoC does better, what to fix. Then a prioritised list of
    BLOCKING issues (would make a player quit or contradict a claimed feature)
-   and non-blocking issues.
+   and non-blocking issues. Then the last report's cases re-run, and the
+   "Design objections" (none of them blocking).
 2. `critic/CRITIC_REPORT.json`: `{commit, scores:{dimension:number},
    blocking:[{id,title,evidence,fix}], timestamp}`, where commit is the
    current git HEAD hash.

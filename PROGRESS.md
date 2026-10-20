@@ -20208,3 +20208,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   emergent 7.40, naval beyond B2 7.41, aircraft 7.36, AI nuclear use beyond B1 7.37 (run 10's cases
   added).
 - **Next:** PLAN 7.35d3b.
+
+## 2026-10-20 — Run 10's tasks' criteria, and the critic's brief (ADR-556, the user's decisions)
+
+- **Emergent 7 → 6 measured:** not a regression (PLAN 7.40): the same seeds hold the same on the
+  code before and after; 7.40's bar is the sweep's 8 of 10 on unseen seeds.
+- **Criteria:** 7.36 to 7.41 each a number and a stop; 7.37 restraint explained, not forced; 7.38
+  no bar on the civilians' share, the yield by the target, unseen seeds too; 7.39 the navy sides
+  read, not a bar.
+- **The critic's brief:** judges the design's execution, objections apart and never blocking;
+  re-runs the last report's cases first; a moved score says why, counts over seeds compared on
+  the last report's commit.
+- **Next:** PLAN 7.35d3b.

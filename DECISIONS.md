@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-556 · 2026-10-20 · accepted (the user's decision) — The critic judges the design's execution, starts from the last report's cases, and says why a score moved
+
+- **Context.** Critic run 10 scored emergent dynamics 7 → 6 on two seeds of 14 with a top five
+  held over 20 years; replayed on the same seeds, the code before and after shows no change (a
+  long top five is about 1 seed in 14 on either; PLAN 7.40). Its R10-B1 read a share of civilian
+  dead as a defect where SPEC §6.4 makes a city a target (PLAN 7.38's ratio bar dropped).
+- **Decision.** `CRITIC_PROMPT.md` gains three rules: what SPEC.md specifies or DECISIONS.md
+  records as the user's or as an [AoC-DEVIATION] is judged by its execution, and an objection to
+  the choice goes under "Design objections", lowering no score and never blocking; the last
+  report's named cases are re-run first, then new seeds as before; a score that moved says why,
+  and a count over seeds is compared on the last report's commit (a worktree under `critic/`) or
+  marked "new seeds, not compared". The spawn stays without hints (PROMPT 2a).
+- **Cost.** A critic run is longer by a replay on the last report's commit.
+
 ### ADR-555 · 2026-10-19 · accepted — A tag that must stand on another formation's elements is placed after every tag that has a clear place (PLAN 7.4f37; amends ADR-168)
 
 - **Context.** `npm run check:review` before critic run 10: `tagsCrowd1938` red twice at 12 m/px
