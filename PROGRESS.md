@@ -20362,3 +20362,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   sortiesSeen (1938).
 - **7.36b done** (both parts). 7.36 stays open: its first half's bar waits on the user (ADR-559).
 - **Next:** PLAN 7.37 (AI nuclear use), its next part.
+
+## 2026-10-20 — PLAN 7.36 ticked: ADR-559 accepted (option a, the user's decision)
+
+- **Decided:** the first half's bar is one sortie drawn at each of the critic's close views where a
+  wing is tasked on the front in view, and a sortie drawn in 0.9 or more of a live day's moments at
+  25 m/px with a wing tasked in view. 7.36a's figures meet it (1, 1, 2, 1; 0.94); 7.36b met the
+  second half (the air map). BLOCKERS entry resolved; 7.36 ticked, `plan:archive` run.
+- **Next:** PLAN 7.37 (AI nuclear use), its next part.

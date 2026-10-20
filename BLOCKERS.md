@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.36's first half: "one sortie drawn for each wing tasked" missed; the bar waits on the user (2026-10-20, PLAN 7.36a, ADR-559)
+### RESOLVED 2026-10-20 (ADR-559, option a, the user's decision: one sortie drawn where a wing is tasked, 0.9 of a live day; 7.36 ticked) · PLAN 7.36's first half: "one sortie drawn for each wing tasked" missed (2026-10-20, PLAN 7.36a)
 - **The bar:** at 25 and 10 m/px over a front in contact, a sortie drawn for each wing tasked on
   the part of the front in view, at the critic's probes (seed 7019; 4483 is the same world).
 - **What moved** (ADR-558, the relay): at the critic's four close views 0, 0, 0, 0 → 1, 1, 2, 1

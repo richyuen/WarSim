@@ -12191,3 +12191,80 @@ Of 7.33 (open in PLAN.md):
           4,596, Norway 1,443, Sweden 1,408, Yugoslavia 1,360, Romania 1,164): traced per nation
           (its ports: held by the enemy, bombed shut, water `shipyard` does not take), then a rule
           or the reason. Then the "after" run of `seaYears` (7.35d3's last).
+
+<!-- moved 2026-10-20 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25
+  and 10 m/px in every probe (`c9_c_4483.json` `sorties`); the air map on day 10 of Germany–Poland
+  hatches one German zone over all of Europe, every hover "held by Germany" from London to Kiev
+  (`c9h_8217_air_hover.png`, seed 8217). The air war's fall after year 1 (air battles 925–4,302 in
+  year 1, 47–147 later; sorties aloft 36–63, then 6–15; seed 8821 under 5 aloft in 18 of 29 years)
+  follows the land war (ADR-519): PLAN 7.29, whose condition this run meets. AT: at 25 and 10 m/px
+  over a front in contact with wings tasked on it, at least one sortie drawn in the view for each
+  wing tasked on the part of the front in view, counted at each of the critic's probes (4483 and
+  7019; was 0); on day 10 of Germany–Poland (8217) the air map's hover reads a different holder, or
+  "contested", at two or more of London, Paris, Warsaw and Kiev (was "held by Germany" at all
+  four), and no zone of one holder spans more than 1,500 km. Stop: two full re-measures flat, the
+  bar is the user's (ADR-554).
+  Run 10 (R10-B3, blocking; aircraft 6): the same at `bcbc99c`: 0 sorties at 25 and 10 m/px over a
+  front in contact (seed 7019, `critic/c10_c_7019.json` `views[].sorties`; 41–47 at 3,000 m/px,
+  1–9 at 250 and 80); day 10 of Germany–Poland one German zone London to Kiev, the legend "Germany,
+  2 zones" for Europe (`critic/c10_h_1307.json`, `c10h_8217_air_hover.png`); air battles a mean of
+  2,537 in year 1 and 122 a year after, sorties aloft 39–57 then 0.7–28 (`c10_summary.txt`): the
+  fall is 7.29's. The AT above, on the critic's run-10 cases (7019, 8217) too.
+  Its first half's bar re-scoped (ADR-559, option a, the user's decision, 2026-10-20): "one for
+  each wing tasked" cannot hold while a wing turns round on its base, or a strike is over its
+  target an instant; at each of the critic's close views where a wing is tasked on the front in
+  view, at least one sortie drawn, and over a live day at 25 m/px a sortie drawn in 0.9 or more of
+  the moments with a wing tasked in view. Met by 7.36a (1, 1, 2, 1; 0.94) and 7.36b. A part
+  each:
+    - [x] 7.36a The patrols over one place take off in turn (ADR-558): measured first
+      (`tools/diag/airSeen.ts`, seed 7019; 7019 and 4483 are one world on day 3 of the critic's
+      war): the drawing sound, the sky empty, the wings on one place launched in one hour and home
+      together. AT: at the critic's four close views (infantry and armour, 25 and 10 m/px) a sortie
+      drawn at each (was 0 at each); a live day at 25 m/px over the infantry pick, a sortie drawn in
+      0.9 or more of the moments with a wing tasked in view (was 0.52); a unit test red without;
+      the pin's entry. Met: 1, 1, 2, 1; 0.94; `sortieScheduler1938.test.ts`; f1dc9ca3 → 5afbdb13.
+      Read, not a bar: armoured division 41 had no wing tasked over it in its day (ADR-503's spread,
+      fewer wings than formations in contact).
+    - [x] 7.36b The air map read (R10-B3): on day 10 of Germany–Poland (8217) one German zone
+      runs from London to Kiev, every hover "held by Germany", the legend "Germany, 2 zones" for
+      Europe (`critic/c10_h_1307.json`, `c10h_8217_air_hover.png`). Measured first: the air zones'
+      sizes on the 1938 map and what the hover and the hatch read (the zone's holder by
+      `airSuperiority`, or the flown power). AT: the parent's second half (two or more of London,
+      Paris, Warsaw and Kiev read another holder or "contested"; no zone of one holder over
+      1,500 km), a spec red without; the pin's entry if a rule moves.
+      Measured (`tools/diag/airMapRead.ts`, `docs/evidence/7.36/airMapRead-8217-before.json`):
+      London, Paris and Berlin one land zone of 2.65 M km², 4,000 km across (Britain's island
+      folded in), Warsaw and Kiev another of 1.85 M; 83 of the 86 land zones span over 1,500 km;
+      the hover reads the zone's holder as it is. Two causes, a part each:
+        - [x] 7.36b1 The land's air zones of 300,000 km², not 1.5 M (ADR-560), a zone under a
+          quarter of that joined to its neighbour of least area. AT: two or more of the four read
+          another than Germany (`airMapRead1938.test.ts` and `.spec.ts`, red at 1.5 M); the
+          air battles of seeds 99, 7019, 8217 × 3 years read before and after; the pin's entry.
+          One commit with 7.37a (ADR-561): on these zones the critic's France loses its bomber.
+          Met: London "no one flies there", Paris "held by France", Warsaw "held by Germany",
+          Kiev "no one flies there" (was Germany at all four; the test red at 1.5 M); air battles
+          year 1 2,844 → 3,084, 1,872 → 3,135, 2,222 → 2,894, years 2–3 5,752 → 4,838; cc11ee7d.
+        - [x] 7.36b2 An island far from every seed folded into its zone: on day 10 two zones held
+          still span over 1,500 km (Nationalist Spain's 2,847 km, the Azores in a zone of Rio de
+          Oro; Japan's 1,556 km). AT: no zone held on day 10 spans over 1,500 km (a unit test,
+          the farthest two of its edge cells, red without); the pin's entry if it moves.
+          Met (ADR-562, an island beyond 450 km of every seed a zone of its own): the 12 held
+          zones 695 to 1,212 km by edge cells (`airMapRead1938.test.ts`, red without: 2,688 km);
+          Japan's was 1,430 km by the map's projection (the diag read latitude as linear), 835
+          without Formosa; pin cc11ee7d → b6d535fe. Read, not a bar: 28 land zones still span
+          over 1,500 km, single provinces over the target but one, a piece of Colombia cut off in
+          the province graph within reach of its seed (1,783 km).

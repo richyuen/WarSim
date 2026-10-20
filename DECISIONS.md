@@ -261,7 +261,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   alone (ADR-561's context). Pin 5afbdb13 → cc11ee7d (ADR-561 moves nothing in seed 99's year: no
   warhead in it).
 
-### ADR-559 · 2026-10-20 · proposed (the user's decision) — PLAN 7.36's bar for the sorties up close: one drawn while a wing is tasked there, not one for each
+### ADR-559 · 2026-10-20 · accepted (option a, the user's decision, 2026-10-20) — PLAN 7.36's bar for the sorties up close: one drawn while a wing is tasked there, not one for each
 
 - **Context.** PLAN 7.36's AT asks, at 25 and 10 m/px over a front in contact, "at least one
   sortie drawn in the view for each wing tasked on the part of the front in view". A wing on a
@@ -282,6 +282,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   each wing tasked": no turnaround drawn and a strike shown over its target for longer than the
   sim has it there, which the semantic zoom's rule (the same state at every tier) forbids.
 - **Until decided.** PLAN 7.36 stays open on its first half; 7.36b (the air map) is taken up.
+- **Decided** (2026-10-20, the user): option a. 7.36a's figures meet it (1, 1, 2, 1 at the four
+  close views; 0.94 of a live day at 25 m/px), and 7.36b met the second half: PLAN 7.36 ticked.
 
 ### ADR-558 · 2026-10-20 · accepted — Patrols over one place take off in turn (PLAN 7.36a; amends ADR-322's scheduler)
 
