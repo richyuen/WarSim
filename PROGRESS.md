@@ -20195,3 +20195,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   band, as 7.34a moved `coastPicture1938` and `occupiedGround1938`: at its 489 m/px the ground's
   share is 0.47 since ADR-532, and every shallow by a coast is [33, 61, 100] against the flat sea's
   [29, 53, 87]. Green.
+
+## 2026-10-19 — Critic run 10 on bcbc99c (asked by the user)
+
+- **Run:** after `check:review` green on `bcbc99c` (0 red). Scores: map 7, diplomacy 7, emergent 6
+  (7 → 6), God Mode 7, editor 7, stats 7 (6 → 7), UI 7, performance 7, stability 7; semantic zoom
+  8 (7 → 8), naval 6, tanks 8, aircraft 6, AI nuclear use 7. Blocking 3: R10-B1 the AI's nuclear
+  choice blind to the dead (25 of 58 bursts kill over 10× more civilians than soldiers), R10-B2
+  the war at sea over after year 1 (2.7 battles a world-year against 38), R10-B3 the air war a
+  year-1 feature and unseen up close. R9-B1 and R9-B2 fixed.
+- **Filed:** R10-B1 PLAN 7.38, R10-B2 7.39 (after 7.35d3), R10-B3 on 7.36 and 7.29; dimensions:
+  emergent 7.40, naval beyond B2 7.41, aircraft 7.36, AI nuclear use beyond B1 7.37 (run 10's cases
+  added).
+- **Next:** PLAN 7.35d3b.
