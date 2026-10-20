@@ -71,8 +71,8 @@ for (let d = 0; d < days; d++) {
       else {
         let best: { u: number; raw: number; value: number; x: number; y: number; reach: boolean } | null = null;
         for (const p of r.places) {
-          const u = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared });
-          const raw = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared, mad: false });
+          const u = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...r.shared });
+          const raw = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...r.shared, mad: false });
           if (!best || raw > best.raw) best = { u, raw, value: p.value, x: p.x, y: p.y, reach: reaches(w, H, p.x, p.y) };
         }
         row.gate = best!.u > NUKE_FLOOR ? (best!.reach ? 'strike' : 'noReach') : best!.raw > NUKE_FLOOR ? 'mad' : 'low';

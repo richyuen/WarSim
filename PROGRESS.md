@@ -20580,3 +20580,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `nukeYieldChoice1938.test.ts` (new, red without); three tests' hand-made launches given
   `yieldN: 1` (a type's new field). The nuclear unit files: 36 files, 111 tests green. Pin unmoved.
 - 7.38's commits: 2. **Next:** PLAN 7.38c (the dead weighed).
+
+## 2026-10-20 — PLAN 7.38c: the dead weighed (ADR-568)
+
+- **Rule:** `partsIn` counts the people (anyone's) each yield's burst would kill, as `blast` counts
+  them (`PlaceParts.people`); `nuclearUtility` takes `deadCost` = DEAD_COST 0.1 a million × (2 −
+  doctrine) off a burst, × the chance through; a strike back weighs it too, RETALIATION_BONUS as it
+  was. `restraintOf` has a `dead` part and reason (`panel.restraint.dead`). The yield is still
+  chosen by value alone (ADR-567): a line in the ADR, a numbered task if 7.38e trips on it.
+- **AT, the critic's cases** (`bcbc99c` worktree, `b-yield-rule.diff` and `c-dead-rule.diff`
+  patched in, from the 7.38a checkpoints; `docs/evidence/7.38/measure-c.md`): no German strike on
+  Shanghai to year 30 (the case 7.38c alone changes: its fission value 0.370 was under its hydrogen
+  0.402); Paris's first and second and Rome fission bursts (63,634, 89,159, 183,363 dead; 0.027,
+  0.063, 0.068); 8693's Soviet answers decided the next day (0.775, 0.687). 4877 diverges without
+  Shanghai; its Soviet answer to Germany decided (0.646); the critic's three answers at their
+  inputs with the cost 0.749, 0.286, 0.510.
+- **Cost:** run 10's year-20 world of 8693, one year, bundles before / after at once on 0x000F /
+  0x0F00 and swapped: `nuclear` 0.207 / 0.189 and 0.194 / 0.219 ms an hour; the same hash 45025297.
+- **Tests:** `nukeDeadCost1938.test.ts` (new; red without: the three first uses);
+  `nukeRestraint1938`'s sum of the parts takes the new part; hand-made inputs given `people`. The
+  nuclear unit files green (36). Spec by hand, green: nukeRestraint1938. Pin unmoved.
+- 7.38's commits: 3. **Next:** PLAN 7.38d (a restrike in a war, ADR-566's a until decided).
+

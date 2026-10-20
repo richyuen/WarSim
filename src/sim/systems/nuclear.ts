@@ -61,8 +61,8 @@
  *
  * The use decision's utility (PLAN 6.4a, SPEC §6.4; `nuclearUtility`, its inputs `nukeInputs`):
  *   U = targetValue × desperation × doctrine + through × (− RETALIATION_WEIGHT × retaliationRisk
- *       − allianceCost − outrage − TABOO_WEIGHT × taboo)  (+ through × RETALIATION_BONUS, and no
- *       retaliationRisk, when striking back)
+ *       − allianceCost − outrage − TABOO_WEIGHT × taboo − deadCost)  (+ through × RETALIATION_BONUS,
+ *       and no retaliationRisk, when striking back)
  * that is, through × the strike's utility if the warhead gets there: the costs fall only on a burst
  * (the taboo, the grievance and the enemy's answer in `detonate`, outrage and unity in `aftermath`),
  * and a launch stopped short spends its warhead and nothing more (PLAN 7.18i, ADR-491: weighed whole
@@ -96,6 +96,9 @@
  * - outrage (PLAN 6.5b): OUTRAGE_COST, the world's outrage at any strike, + OUTRAGE_WEIGHT × the
  *   outrage at the striker already (to 1 at 100): a pariah is nearer the world turning on it.
  * - taboo (`world.nukeTaboo`): 1, TABOO_AFTER after any burst, back by TABOO_RECOVERY a day.
+ * - deadCost (PLAN 7.38c, `deadCost`): DEAD_COST a million people the burst is expected to kill
+ *   (anyone's, at the yield weighed; `PlaceParts.people`), × (2 − doctrine). A strike back weighs it
+ *   too. The yield is chosen by the place's value alone (PLAN 7.38b), not by its dead.
  *
  * The decision (PLAN 6.4b; `nukeDecisions`), daily, with the AI on: each nation with a warhead,
  * living, not switched off nor a puppet, nukes allowed, in each of its wars weighs each enemy
@@ -636,6 +639,20 @@ export const TABOO_WEIGHT = 0.6;
 export const EXTREME_TABOO = 0.5;
 export const TABOO_AFTER = 0.3;
 export const TABOO_RECOVERY = 0.0005;
+/**
+ * The cost of a burst's dead (PLAN 7.38c, critic R10-B1: `nuclearUtility` had no term for them):
+ * DEAD_COST for each million people it is expected to kill, × (2 − doctrine): 1.5 times it at
+ * aggression −100, half of it at 100 (`deadCost`). Sized on the critic's run 10
+ * (`docs/evidence/7.38/measure-a.md`): the United States' strikes on Paris (1.4 million dead, 0.073)
+ * and Rome (3.7 million, 0.091) under NUKE_FLOOR at its doctrine of 0.65 at any yield, and the Soviet
+ * answer to Germany of 2.5 million dead (0.484, doctrine 1.2) still over it (0.20 less).
+ */
+export const DEAD_COST = 0.1;
+
+/** The cost of `people` expected dead to a striker of `doctrine` (PLAN 7.38c): see DEAD_COST. */
+export function deadCost(people: number, doctrine: number): number {
+  return DEAD_COST * (people / 1_000_000) * (2 - doctrine);
+}
 
 /** What a strike's utility is made of (PLAN 6.4a). */
 export interface NukeInputs {
@@ -643,6 +660,8 @@ export interface NukeInputs {
   targetValue: number;
   /** The chance the warhead gets there (PLAN 7.18i): the costs and the strike back's bonus are × it. */
   through: number;
+  /** The people its burst is expected to kill (PLAN 7.38c): a cost on a burst (`deadCost`). */
+  people: number;
   desperation: number;
   doctrine: number;
   retaliation: number;
@@ -661,7 +680,8 @@ export interface NukeInputs {
 export function nuclearUtility(i: NukeInputs): number {
   // A strike back does not weigh the enemy's second strike (PLAN 6.12d): deterrence failed when it was struck.
   // The costs and the bonus fall only on a burst (PLAN 7.18i): × the chance the warhead gets there.
-  const onBurst = (i.retaliating ? RETALIATION_BONUS : 0) - (i.retaliating ? 0 : RETALIATION_WEIGHT * i.retaliation) - i.allianceCost - i.outrage - TABOO_WEIGHT * i.taboo * (i.extreme ? EXTREME_TABOO : 1);
+  // The dead weigh on a strike back too (PLAN 7.38c); its bonus is as it was.
+  const onBurst = (i.retaliating ? RETALIATION_BONUS : 0) - (i.retaliating ? 0 : RETALIATION_WEIGHT * i.retaliation) - i.allianceCost - i.outrage - TABOO_WEIGHT * i.taboo * (i.extreme ? EXTREME_TABOO : 1) - deadCost(i.people, i.doctrine);
   const u = i.targetValue * i.desperation * i.doctrine + i.through * onBurst;
   return i.mad && !i.extreme && !i.retaliating ? Math.min(0, u) : u;
 }
@@ -832,6 +852,8 @@ export interface PlaceParts {
   value: number;
   /** The warhead's class weighed (PLAN 7.38b): 1 fission, 2 thermonuclear only where its value is higher. */
   yieldN: number;
+  /** The people (not men) its burst is expected to kill at that yield, anyone's (PLAN 7.38c; `expectedPeople`). */
+  people: number;
 }
 
 /** The parts of a burst's value at (x, y) for `n` in `war` on `side` (a diagnostic's). */
@@ -853,8 +875,12 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): 
   const fission = blastRadius(1);
   const radii = radius > fission ? [radius, fission] : [radius];
   const k = radii.length;
-  // The enemy side's output within the blast.
+  // The enemy side's output within the blast, and the people it is expected to kill, anyone's (PLAN
+  // 7.38c), as `blast` counts them.
   const hit = [0, 0];
+  const dead = [0, 0];
+  const shares = radii.map((rr) => peopleShare(rr === fission ? 1 : 2));
+  const pop = world.cells.pop;
   const ry = Math.ceil(radius / 10) + 1;
   const rx = Math.ceil(radius / 4) + 1;
   for (let yy = Math.max(0, Math.floor(y) - ry); yy <= Math.min(h - 1, Math.floor(y) + ry); yy++) {
@@ -862,9 +888,12 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): 
       const xx = cellX(world, Math.floor(x) + dx);
       if (xx === null) continue;
       const cell = yy * w + xx;
-      if (econ[cell] === 0 || !enemy.has(controller[cell]!)) continue;
+      const output = econ[cell] !== 0 && enemy.has(controller[cell]!);
+      if (!output && pop[cell] === 0) continue;
       const km = seaKm(world, x, y, xx + 0.5, yy + 0.5);
       if (km >= radius) continue;
+      for (let r = 0; r < k; r++) dead[r]! += Math.round(pop[cell]! * blastShare(km, radii[r]!) * shares[r]!) * 1000;
+      if (!output) continue;
       const e = econ[cell]! * (1 - (world.bombDamage.get(cell) ?? 0)) * (1 - FALLOUT_INCOME * falloutAt(world, cell));
       for (let r = 0; r < k; r++) hit[r]! += e * blastShare(km, radii[r]!);
     }
@@ -912,7 +941,7 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): 
     }
     const value = Math.max(0, Math.min(1, TARGET_SCALE * share + capital)) * through;
     // The smaller yield first: the larger is taken only where its value is higher.
-    if (best === null || value > best.value) best = { econShare, menShare, ownShare, menAll, theatreMen, sideMen: v.enemyMen, capital, through, value, yieldN: radii[r] === fission ? 1 : 2 };
+    if (best === null || value > best.value) best = { econShare, menShare, ownShare, menAll, theatreMen, sideMen: v.enemyMen, capital, through, value, yieldN: radii[r] === fission ? 1 : 2, people: dead[r]! };
   }
   return best!;
 }
@@ -923,7 +952,7 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): 
  */
 export function nukeInputs(world: World, n: number, war: War, side: number, x: number, y: number, retaliating = false): NukeInputs {
   const p = placeParts(world, n, war, side, x, y);
-  return { targetValue: p.value, through: p.through, ...warInputs(world, n, war, side, retaliating) };
+  return { targetValue: p.value, through: p.through, people: p.people, ...warInputs(world, n, war, side, retaliating) };
 }
 
 /**
@@ -966,7 +995,7 @@ export function resolveOf(world: World, war: War, side: number, retaliation: num
 }
 
 /** The inputs of `n`'s strikes in `war` on `side` but the target's value: the same at every place (PLAN 6.10). */
-function warInputs(world: World, n: number, war: War, side: number, retaliating: boolean): Omit<NukeInputs, 'targetValue' | 'through'> {
+function warInputs(world: World, n: number, war: War, side: number, retaliating: boolean): Omit<NukeInputs, 'targetValue' | 'through' | 'people'> {
   const { desperation, extreme } = desperationOf(world, n, war, side);
   const ally = world.alliances.allianceOf(n);
   const apart = (ally?.members ?? []).filter((m) => m !== n && !war.sides[side]!.includes(m)).length;
@@ -1219,9 +1248,9 @@ export interface WarWeighing {
   /** The enemies it may strike (`aimOf`). */
   aim: Aim;
   /** The inputs shared by its places (none when `aim` is empty). */
-  shared: Omit<NukeInputs, 'targetValue' | 'through'> | null;
+  shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'> | null;
   /** The places weighed, each one's value and the chance a warhead gets there (PLAN 7.18i). */
-  places: { x: number; y: number; value: number; through: number; yieldN: number }[];
+  places: { x: number; y: number; value: number; through: number; yieldN: number; people: number }[];
 }
 
 /** `n`'s weighing of `war` on `side` (PLAN 6.4b), `industry` the day's (`industryOnce`). */
@@ -1235,7 +1264,7 @@ export function weighWar(world: World, n: number, war: War, side: number, indust
     shared,
     places: nukeTargets(world, n, war, side, aim).map(([x, y]) => {
       const p = partsIn(world, n, view, x, y);
-      return { x, y, value: p.value, through: p.through, yieldN: p.yieldN };
+      return { x, y, value: p.value, through: p.through, yieldN: p.yieldN, people: p.people };
     }),
   };
 }
@@ -1316,7 +1345,7 @@ function strikeStopped(world: World, l: NukeLaunch): void {
  * - `strikes`: a strike over NUKE_FLOOR in reach (decided today unless a launch was refused).
  * With them the best place's utility (`u`, MAD's cap in it; −Infinity with none) and its parts.
  */
-export type RestraintReason = 'none' | 'puppet' | 'aiOff' | 'nukesOff' | 'avenging' | 'paused' | 'noThreat' | 'noPlace' | 'mad' | 'deterred' | 'alliance' | 'outrage' | 'taboo' | 'noValue' | 'notDesperate' | 'doctrine' | 'noMeans' | 'outOfRange' | 'strikes';
+export type RestraintReason = 'none' | 'puppet' | 'aiOff' | 'nukesOff' | 'avenging' | 'paused' | 'noThreat' | 'noPlace' | 'mad' | 'deterred' | 'alliance' | 'outrage' | 'taboo' | 'dead' | 'noValue' | 'notDesperate' | 'doctrine' | 'noMeans' | 'outOfRange' | 'strikes';
 export interface Restraint {
   reason: RestraintReason;
   /** The enemy whose strike back holds it (`mad`, `deterred`), else 0. */
@@ -1330,6 +1359,9 @@ export interface Restraint {
   alliance: number;
   outrage: number;
   taboo: number;
+  /** The cost of the people its burst is expected to kill (PLAN 7.38c), and those people. */
+  dead: number;
+  people: number;
   desperation: number;
   doctrine: number;
   through: number;
@@ -1355,7 +1387,7 @@ function deterrerOf(world: World, war: War, side: number): number {
 
 /** Why `n` on `side` of `war` does not strike today (PLAN 7.37e): see `RestraintReason`. */
 export function restraintOf(world: World, n: number, war: War, side: number, industry: () => Float64Array = industryOnce(world)): Restraint {
-  const out: Restraint = { reason: 'none', by: 0, u: -Infinity, value: 0, gain: 0, retaliation: 0, alliance: 0, outrage: 0, taboo: 0, desperation: 0, doctrine: 0, through: 0, x: 0, y: 0 };
+  const out: Restraint = { reason: 'none', by: 0, u: -Infinity, value: 0, gain: 0, retaliation: 0, alliance: 0, outrage: 0, taboo: 0, dead: 0, people: 0, desperation: 0, doctrine: 0, through: 0, x: 0, y: 0 };
   const nc = world.nations.cols;
   if (side < 0 || warheadsOf(world, n) < 1 || nc.living[n] !== 1) return out;
   if (!weighsStrikes(world, n)) {
@@ -1375,8 +1407,8 @@ export function restraintOf(world: World, n: number, war: War, side: number, ind
   let braw = -Infinity;
   let reach = false;
   for (const p of r.places) {
-    const u = nuclearUtility({ targetValue: p.value, through: p.through, ...i });
-    const raw = nuclearUtility({ targetValue: p.value, through: p.through, ...i, mad: false });
+    const u = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...i });
+    const raw = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...i, mad: false });
     if (u > NUKE_FLOOR && reaches(world, n, p.x, p.y)) reach = true;
     if (u > bu || (u === bu && raw > braw)) {
       bu = u;
@@ -1393,6 +1425,8 @@ export function restraintOf(world: World, n: number, war: War, side: number, ind
     alliance: t * i.allianceCost,
     outrage: t * i.outrage,
     taboo: t * TABOO_WEIGHT * i.taboo * (i.extreme ? EXTREME_TABOO : 1),
+    dead: t * deadCost(best.people, i.doctrine),
+    people: best.people,
     desperation: i.desperation,
     doctrine: i.doctrine,
     through: t,
@@ -1402,7 +1436,7 @@ export function restraintOf(world: World, n: number, war: War, side: number, ind
   if (bu > NUKE_FLOOR) return { ...out, reason: reach ? 'strikes' : canDeliver(world, n) ? 'outOfRange' : 'noMeans' };
   if (braw > NUKE_FLOOR) return { ...out, reason: 'mad', by: deterrerOf(world, war, side) };
   if (out.gain > NUKE_FLOOR) {
-    const costs: [RestraintReason, number][] = [['deterred', out.retaliation], ['alliance', out.alliance], ['outrage', out.outrage], ['taboo', out.taboo]];
+    const costs: [RestraintReason, number][] = [['deterred', out.retaliation], ['alliance', out.alliance], ['outrage', out.outrage], ['taboo', out.taboo], ['dead', out.dead]];
     costs.sort((a, b) => b[1] - a[1]);
     const reason = costs[0]![0];
     return { ...out, reason, by: reason === 'deterred' ? deterrerOf(world, war, side) : 0 };
@@ -1430,8 +1464,8 @@ function nukeDecisions(world: World): void {
       if (!shared) continue;
       // Whether the resolve, not the side's own desperation, weighs this war's strikes (PLAN 7.18h).
       let resolved: boolean | null = null;
-      for (const { x, y, value, through, yieldN } of places) {
-        const u = nuclearUtility({ targetValue: value, through, ...shared });
+      for (const { x, y, value, through, yieldN, people } of places) {
+        const u = nuclearUtility({ targetValue: value, through, people, ...shared });
         if (u <= NUKE_FLOOR) continue;
         if (resolved === null) {
           const own = desperationOf(world, n, war, side);

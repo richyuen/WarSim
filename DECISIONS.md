@@ -167,6 +167,45 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-568 · 2026-10-20 · accepted — The people a burst is expected to kill are a cost in the AI's nuclear choice (PLAN 7.38c)
+
+- **Context.** Critic R10-B1 (run 10, AI nuclear use 7): `nuclearUtility` had no term for the dead.
+  Germany H-bombed Shanghai for 3.8 million dead at 0.025, the United States Paris for 1.4 million
+  at 0.073 and Rome for 3.7 million at 0.091 (seeds 4877, 8693), each a near-tie of gain and costs
+  (`docs/evidence/7.38/measure-a.md`). ADR-567 (7.38b) turned Paris's and Rome's into fission
+  bursts (value 1 at both yields); Shanghai's fission value (0.370) is under its hydrogen one
+  (0.402), so the hydrogen bomb stayed the one weighed.
+- **Decision.**
+  - `partsIn` counts the people the burst would kill at each yield it weighs, on every cell in the
+    blast (anyone's: the enemy's, a neutral's, its own), as `blast` counts them
+    (`PlaceParts.people`, that of the yield chosen). The decision's places and `restraintOf` carry it.
+  - `nuclearUtility` takes `deadCost` = DEAD_COST (0.1) a million × (2 − doctrine) off a burst's
+    utility, × the chance through as the other costs. A strike back weighs it too; its
+    RETALIATION_BONUS is as it was. Sized on the critic's cases: Rome and Paris's second under
+    NUKE_FLOOR at the United States' doctrine of 0.65 at any yield (cost 0.50 and 0.19), the
+    Soviet answer of 2.5 million dead (day 10612 of 4877, 0.484, doctrine 1.2) still over it (0.286).
+  - `restraintOf` names it (`dead`, "the people a nuclear strike would kill outweigh what it would
+    gain") when it is the largest of the costs of a place whose gain is over the floor.
+  - The yield is still chosen by the place's value alone (ADR-567): a place whose hydrogen value is
+    a little higher keeps the hydrogen bomb and its cost, and may fall under the floor where a
+    fission strike would have gone. Not a cause of 7.38c's AT; if 7.38e's bars trip on it, a
+    numbered task.
+- **The critic's cases** (`bcbc99c` worktree, ADR-567's and this rule patched in, from its
+  checkpoints; `docs/evidence/7.38/measure-c.md`, `c-toll-*-rule.json`, `c-dead-rule.diff`): no
+  strike on Shanghai to year 30; Paris's first and second and Rome struck as by 7.38b, fission
+  bursts of 63,634, 89,159 and 183,363 dead (utilities 0.027, 0.063, 0.068); 8693's two Soviet
+  answers decided the next day (0.775, 0.687). 4877 diverges without Shanghai; its run's Soviet
+  answer to Germany is decided the next day (0.646), and the critic's three answers read at their
+  inputs with the cost 0.749, 0.286, 0.510.
+- **Cost.** The daily `nuclear` call on run 10's year-20 world of seed 8693 loaded, one year, before
+  and after at the same time on separate P-cores and swapped: 0.207 / 0.189 and 0.194 / 0.219 ms an
+  hour (before / after), the pair's spread; the same hash 45025297.
+- **Pin.** Unmoved: no warhead in seed 99's year.
+- **Tests.** `nukeDeadCost1938.test.ts`: the critic's Rome, Paris and Shanghai inputs over the floor
+  without the cost and under it with; the two strikes back over it, less by the cost; the cost's
+  scale; a place's expected dead the people its burst kills (Berlin, 334,000); `restraintOf`'s part
+  (red without: the three first uses).
+
 ### ADR-567 · 2026-10-20 · accepted — A holder of the hydrogen bomb uses a fission warhead where its value is as high (PLAN 7.38b)
 
 - **Context.** Critic R10-B1 (run 10, AI nuclear use 7). Every place a holder of `thermonuclear`

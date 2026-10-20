@@ -246,11 +246,18 @@ each, split when taken up:
       `NukeLaunch.yieldN`, saved (`world.nukeYields`); the daily call 0.19–0.23 ms an hour before
       and after on run 10's year-20 world of 8693 (no cost seen); `nukeYieldChoice1938.test.ts`
       red without; the pin unmoved. 7.38's commits: 2.
-    - [ ] 7.38c The dead weighed: the people a burst is expected to kill a cost in the utility,
+    - [x] 7.38c The dead weighed: the people a burst is expected to kill a cost in the utility,
       scaled by doctrine (a strike back's bonus untouched). AT: from the checkpoints, no strike on
       Shanghai (4877), Paris's second nor Rome (8693) at a yield killing a million (was 3.8 M,
       1.4 M, 3.7 M), and 4877's and 8693's strikes back still decided; a unit test (red without);
       the pin's entry.
+      Met (ADR-568): DEAD_COST 0.1 a million expected dead × (2 − doctrine), on a burst; on the
+      critic's code with 7.38b and the rule, from its checkpoints, no strike on Shanghai to year 30;
+      Paris's second and Rome fission bursts of 89,159 and 183,363 dead (0.063, 0.068); 8693's Soviet
+      answers decided (0.775, 0.687); 4877 diverges, its run's Soviet answer decided (0.646), the
+      critic's three read at 0.749, 0.286, 0.510 (`docs/evidence/7.38/measure-c.md`);
+      `nukeDeadCost1938.test.ts` red without; the daily call 0.19–0.22 ms before and after; the pin
+      unmoved. 7.38's commits: 3.
     - [ ] 7.38d A place struck in a war not struck again in it without new value (Switzerland,
       4877, day 10497) and, per ADR-566's choice, the cross-war restrikes. AT: from the 4877
       checkpoint, no second Swiss burst within a blast radius in war 293; a unit test; the pin's

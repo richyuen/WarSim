@@ -29,7 +29,7 @@ function world(): Sim {
 function bestUtility(s: Sim, war: ReturnType<Sim['world']['wars']['start']>): number {
   const r = weighWar(s.world, GER, war, 0, dayIndustry(s.world));
   if (!r.shared) return -Infinity;
-  return Math.max(-Infinity, ...r.places.map((p) => nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared! })));
+  return Math.max(-Infinity, ...r.places.map((p) => nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...r.shared! })));
 }
 
 describe("a winner's resolve to end a long war (PLAN 7.18e)", () => {

@@ -23,7 +23,7 @@ import en from '../../src/ui/i18n/en.json' with { type: 'json' };
 import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from '../headless/assets';
 import { seaKm } from '../../src/sim/systems/navalCombat';
-import { blastRadius, blastShare, desperationOf, NUKE_FLOOR, nukeInputs, nuclearUtility, peopleShare, placeParts, RESOLVE, RESOLVE_FULL_DAYS } from '../../src/sim/systems/nuclear';
+import { blastRadius, blastShare, deadCost, desperationOf, NUKE_FLOOR, nukeInputs, nuclearUtility, peopleShare, placeParts, RESOLVE, RESOLVE_FULL_DAYS } from '../../src/sim/systems/nuclear';
 import type { World } from '../../src/sim/world';
 
 const seed = Number(process.argv[2]);
@@ -144,6 +144,9 @@ while (w.tick < T) {
             allianceCost: r3(inputs.allianceCost),
             outrage: r3(inputs.outrage),
             taboo: r3(inputs.taboo),
+            // PLAN 7.38c: the people the decision weighed as dead, and their cost (× the chance through).
+            people: inputs.people,
+            dead: r3(inputs.through * deadCost(inputs.people, inputs.doctrine)),
             mad: inputs.mad,
             extreme: inputs.extreme,
             costs: r3(gain - nuclearUtility(inputs)),

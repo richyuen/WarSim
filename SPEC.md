@@ -1932,7 +1932,7 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   intercepted by fighters and AA, need range) or missiles (later tech, hard to stop).
 - **Use decision** (nuclear AI, daily, at war only). Utility:
   `U = targetValue·desperation·doctrine − through·(retaliationRisk + allianceCost +
-  globalOutrage + tabooBarrier)`, with targetValue already × through, the chance the warhead gets
+  globalOutrage + tabooBarrier + deadCost)`, with targetValue already × through, the chance the warhead gets
   there: U is through × the utility of a burst, whose costs fall only on a burst; a launch stopped
   short spends its warhead and nothing more (PLAN 7.18i, ADR-491).
   - targetValue: enemy capital, industry, fleets in port, massed formations, Major-Battle
@@ -1961,6 +1961,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     utility of first use is ≤ 0 unless desperation is extreme (fightToDeath or capital falling).
   - doctrine and aggression come from traits. Retaliation-doctrine nations strike back after
     being hit.
+  - deadCost: 0.1 for each million people (anyone's) the burst is expected to kill at the yield
+    weighed, × (2 − doctrine): a strike back weighs it too, its bonus as it was (PLAN 7.38c,
+    ADR-568). A holder of the hydrogen bomb uses a fission warhead where its value is as high
+    (PLAN 7.38b, ADR-567); the yield is chosen by the value alone, not by the dead.
 - **Effects**: blast radius (by yield) kills elements by distance falloff and
   destroys city industry and population. A thermonuclear warhead is THERMO_YIELD (50) fission
   ones (PLAN 7.20, ADR-495): its blast and its fallout plume the yield's cube root wider and
@@ -1986,7 +1990,7 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   The nation panel of a holder at war says why it does not strike, in its war whose best place
   weighs most (`restraintOf`, read and never a rule): a puppet, its AI off, barred, avenging,
   waiting for the answer, no threat, no target, deterred by a named enemy (or mutual
-  destruction), its allies, the world's outrage, the taboo, no value, not desperate, its doctrine;
+  destruction), its allies, the world's outrage, the taboo, the people it would kill, no value, not desperate, its doctrine;
   or that it would strike but has no means, or none in range (PLAN 7.37f, ADR-565).
 - **God Mode**: toggle nukes globally and per nation, grant warheads, force a strike.
 

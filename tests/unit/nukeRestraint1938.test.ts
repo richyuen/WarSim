@@ -69,8 +69,8 @@ describe('why a holder at war does not strike (PLAN 7.37e)', () => {
     expect(r.u).toBeLessThanOrEqual(NUKE_FLOOR);
     // The utility is the decision's at that place, and the parts add up to it.
     expect(r.u).toBeCloseTo(nuclearUtility(nukeInputs(s.world, GER, war, side, r.x, r.y)), 9);
-    expect(r.u).toBeCloseTo(Math.min(0, r.gain - r.retaliation - r.alliance - r.outrage - r.taboo), 9);
-    expect(r.retaliation).toBeGreaterThan(Math.max(r.alliance, r.outrage, r.taboo));
+    expect(r.u).toBeCloseTo(Math.min(0, r.gain - r.retaliation - r.alliance - r.outrage - r.taboo - r.dead), 9);
+    expect(r.retaliation).toBeGreaterThan(Math.max(r.alliance, r.outrage, r.taboo, r.dead));
   });
 
   it('losing, against a Poland with a warhead and no means to deliver it: strikes, and the day decides it', () => {

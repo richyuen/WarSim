@@ -66,7 +66,7 @@ for (let d = 0; d < days; d++) {
   const o = (l?.out ?? 'burst') as 'burst' | 'short' | 'flight';
   const r = weighWar(w, N, war, 1, dayIndustry(w));
   let strike = false;
-  if (r.shared) for (const p of r.places) if (nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared }) > NUKE_FLOOR && reaches(w, N, p.x, p.y)) strike = true;
+  if (r.shared) for (const p of r.places) if (nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...r.shared }) > NUKE_FLOOR && reaches(w, N, p.x, p.y)) strike = true;
   held[o]++;
   if (strike) held[`${o}Strike`]++;
   log.push(`day ${d}: held (gap after a launch that ${o === 'short' ? 'was stopped short' : o === 'burst' ? 'burst' : 'is in flight'})${strike ? ', a strike otherwise' : ''}`);

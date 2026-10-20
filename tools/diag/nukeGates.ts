@@ -72,9 +72,9 @@ const catOf = (r: ReturnType<typeof weighWar>, n: number): Cat => {
   let bu = -Infinity;
   let braw = -Infinity;
   for (const p of r.places) {
-    const u = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared });
+    const u = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...r.shared });
     if (u > NUKE_FLOOR && reaches(w, n, p.x, p.y)) anyReach = true;
-    const raw = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared, mad: false });
+    const raw = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...r.shared, mad: false });
     if (raw > braw) {
       braw = raw;
       bu = u;
@@ -137,13 +137,13 @@ for (let y = 0; y < years; y++) {
           let anyReach = false;
           let burst: { u: number; through: number; value: number } | null = null;
           for (const p of r.places) {
-            const u = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared });
+            const u = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...r.shared });
             if (u > NUKE_FLOOR && reaches(w, n, p.x, p.y)) anyReach = true;
-            const raw = nuclearUtility({ targetValue: p.value, through: p.through, ...r.shared, mad: false });
+            const raw = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...r.shared, mad: false });
             if (!best || raw > best.raw) best = { u, raw, value: p.value };
             // PLAN 7.18i: the place's utility if its warhead got there.
             const through = p.through;
-            const ub = through > 0 ? nuclearUtility({ targetValue: Math.min(1, p.value / through), through: 1, ...r.shared, mad: false }) : -Infinity;
+            const ub = through > 0 ? nuclearUtility({ targetValue: Math.min(1, p.value / through), through: 1, people: p.people, ...r.shared, mad: false }) : -Infinity;
             if (!burst || ub > burst.u) burst = { u: ub, through, value: p.value };
           }
           cat = best!.u > NUKE_FLOOR ? (anyReach ? 'strike' : 'noReach') : best!.raw > NUKE_FLOOR ? 'mad' : 'low';

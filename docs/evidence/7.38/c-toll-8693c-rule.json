@@ -1,0 +1,75 @@
+{
+ "seed": 8693,
+ "years": 27.3,
+ "from": "C:/Git/WarSim/.cache/nukeToll_8693_237385-bcbc99c.bin",
+ "bars": {
+  "decided": 1,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 9891,
+   "year": 27.1,
+   "tick": 237385,
+   "by": "United States",
+   "u": 0.068,
+   "at": [
+    1095,
+    344.02
+   ],
+   "target": "France",
+   "war": 207,
+   "warName": "Nationalist Spain+Mexico+Cuba+United States+Italy+Newfoundland+Liberia+Tunisia+Canada v United Kingdom+France+Netherlands+Australia+Yemen+Saudi Arabia+founded#114",
+   "warDays": 534,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.068,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1.463,
+    "ownDesperation": 0.664,
+    "doctrine": 0.65,
+    "gain": 0.951,
+    "retaliation": 0,
+    "allianceCost": 0.1,
+    "outrage": 0.16,
+    "taboo": 1,
+    "people": 172000,
+    "dead": 0.023,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.883
+   },
+   "place": {
+    "econShare": 0.029,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11219,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0.029,
+    "menShare": 0.045,
+    "menExpected": 11219,
+    "capital": 0.3
+   },
+   "peopleExpected": {
+    "thermo": 3709000,
+    "fission": 172000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 183363,
+    "yieldN": 1
+   }
+  }
+ ]
+}

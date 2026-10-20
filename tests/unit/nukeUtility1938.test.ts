@@ -18,7 +18,7 @@ const berlin = cellOf(13.4, 52.52, W, H);
 const moscow = cellOf(37.62, 55.75, W, H);
 const london = cellOf(-0.13, 51.5, W, H);
 
-const base: NukeInputs = { targetValue: 0.8, through: 1, desperation: 1, doctrine: 1, retaliation: 0.2, allianceCost: 0, outrage: 0, taboo: TABOO_AFTER, mad: false, extreme: false, retaliating: false };
+const base: NukeInputs = { targetValue: 0.8, through: 1, people: 0, desperation: 1, doctrine: 1, retaliation: 0.2, allianceCost: 0, outrage: 0, taboo: TABOO_AFTER, mad: false, extreme: false, retaliating: false };
 
 describe('the nuclear use utility (PLAN 6.4a)', () => {
   it.each([
