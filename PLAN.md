@@ -117,9 +117,48 @@ each, split when taken up:
       Soviet Union struck a Swiss place 18 cells away, 0.030, which 7.38c keeps under the floor);
       restrikes in a war 1 → 0 (`docs/evidence/7.38/measure-d.md`); `nukeWarRestrike1938.test.ts`
       red without; the pin unmoved. 7.38's commits: 4.
-    - [ ] 7.38e The AT's three bars read on HEAD over the critic's 14 seeds × 30 years, then 10
+    - [x] 7.38e The AT's three bars read on HEAD over the critic's 14 seeds × 30 years, then 10
       unseen seeds × 30 years (`nukeToll.ts`' bars). One read after 7.38d, a second only if the
       first misses; flat twice: BLOCKERS, the user's bar.
+      Read (first; `docs/evidence/7.38/measure-e.md`, `e-toll-*.json`; unseen seeds 751–760): the
+      critic's 14, 73 decisions: under 0.1 with a million dead 2, restruck in a war 0, hydrogen
+      where fission covers 0; the unseen 10, 105 decisions: 2, 5 (each with more men than the burst
+      before found, as ADR-569 allows), 0. The bar on the dead missed, two causes: the yield chosen
+      by value alone (2081 day 5903, 9437 day 6452: a fission strike at the place of higher utility,
+      190,000 and 32,000 dead against 3.3 M and 2.6 M; PLAN 7.44) and the dead's cost at doctrine
+      1.4 in extreme desperation (Germany, 756 day 8216 and 758 day 9178, 2.3 M and 1.3 M dead at
+      0.037 and 0.060; PLAN 7.45). Seed 9437's Soviet capital struck in three wars (ADR-566). The
+      tool's needless-hydrogen bar compared rounded values (751's 0.90786 against 0.90776): now
+      unrounded, 751 and 758 re-run. Checkpoints before the four misses in `.cache/`. BLOCKERS.
+      7.38's commits: 5.
+  Open after 7.38e's first read (BLOCKERS): the bar on the dead missed on 4 of 24 seeds; its two
+  causes are PLAN 7.44 and 7.45, and 7.45's run is 7.38's second read.
+- [ ] 7.44 The yield chosen by the strike's utility, the dead's cost in it (from PLAN 7.38e, ADR-568's
+  last line; AI nuclear use 7, needs 8). `partsIn` takes a hydrogen bomb wherever its value is higher
+  at all, and 7.38c's cost of the dead then comes off the hydrogen strike alone: seed 2081's Japan
+  strikes a Soviet place for 3,339,183 dead at 0.091 (values 0.828 / 0.810 at fission, 3,328,000 /
+  190,000 people), seed 9437's Poland the Soviet capital for 2,579,111 at 0.060 (0.806 / 0.748,
+  2,568,000 / 32,000), where a fission strike's utility is about 0.27 and 0.23
+  (`docs/evidence/7.38/measure-e.md`). A rule with an ADR: each yield weighed by its utility, the
+  dead's cost of its own toll in it. AT: from `.cache/nukeToll_2081_141673.bin` and
+  `_9437_154848.bin` on the rule, neither strike a burst killing a million (fission, or none); 7.38b's
+  and 7.38c's unit files green (Paris a fission burst, the strikes back decided); the daily
+  `nukeDecisions` cost before and after on a late checkpoint (PLAN 6.10); a unit test, a place where
+  hydrogen's value is a little higher and its dead many gets a fission burst (red without); the pin's
+  entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
+- [ ] 7.45 The dead's cost at a high doctrine in extreme desperation (from PLAN 7.38e; AI nuclear use
+  7, needs 8). DEAD_COST 0.1 a million × (2 − doctrine) is 0.06 a million at Germany's 1.4: seed 756's
+  Germany H-bombs Belgium's capital for 2,294,126 dead at 0.037 (dead cost 0.137), seed 758's 17,112
+  massed Soviet men for 1,334,057 at 0.060 (0.079), each under MAD in extreme desperation, a fission
+  strike under the floor (`docs/evidence/7.38/measure-e.md`). Measured first: each case's utility by
+  its parts at the candidate scales. Then a rule with an ADR (the scale's floor, or the cost not
+  eased by doctrine for a burst of a million and more); where it would take the strikes back away
+  (7.38c's: the 2.5 M Soviet answer at doctrine 1.2 over the floor), the user's, proposed. AT: from
+  `.cache/nukeToll_756_197184.bin` and `_758_220272.bin`, neither strike decided under 0.1 at a
+  million dead; then PLAN 7.38's second read: its three bars on the critic's 14 seeds and 10 unseen
+  ones, 761–770 (756 and 758 are now tuning cases), × 30 years, 7.38 ticked when they hold; a unit
+  test (red without); the pin's entry. Stop: two full re-measures flat, the bar is the user's
+  (ADR-554).
 - [ ] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean
   of 38 sea battles a world; years 2 to 30 2.7 a world-year (1,090 in 406 world-years) while 50 to
   96 armed fleets stay afloat (115 at the start); at the year-10 and year-20 samples 18 of 28 have

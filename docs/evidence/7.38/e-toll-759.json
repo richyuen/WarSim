@@ -1,0 +1,75 @@
+{
+ "seed": 759,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 1,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 8546,
+   "year": 23.41,
+   "tick": 205105,
+   "by": "Yugoslavia",
+   "u": 0.057,
+   "at": [
+    1462.48,
+    372.52
+   ],
+   "target": "British India",
+   "war": 196,
+   "warName": "British India v Iran+Turkey+Greece+Afghanistan+Yugoslavia",
+   "warDays": 30,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.048,
+   "utility": {
+    "value": 0.964,
+    "through": 1,
+    "desperation": 1.12,
+    "ownDesperation": 1.12,
+    "doctrine": 0.75,
+    "gain": 0.809,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 89000,
+    "dead": 0.011,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.761
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.096,
+    "ownShare": 0,
+    "menExpected": 24032,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.583,
+    "econShare": 0,
+    "menShare": 0.058,
+    "menExpected": 14559,
+    "capital": 0
+   },
+   "peopleExpected": {
+    "thermo": 89000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 112997,
+    "yieldN": 2
+   }
+  }
+ ]
+}

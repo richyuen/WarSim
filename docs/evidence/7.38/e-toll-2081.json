@@ -1,0 +1,136 @@
+{
+ "seed": 2081,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 2,
+  "floor": 0.025,
+  "lowUtilityMillion": 1,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 5903,
+   "year": 16.17,
+   "tick": 141673,
+   "by": "Japan",
+   "u": 0.091,
+   "at": [
+    1438.46,
+    487.77
+   ],
+   "target": "Soviet Union",
+   "war": 177,
+   "warName": "Japan+Xinjiang+Lithuania+Ireland+Liberia+Netherlands+Hungary+Albania v Soviet Union+Finland+Norway+Sweden+Afghanistan+China+Mengjiang+Mongolia+Tannu Tuva",
+   "warDays": 378,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.091,
+   "utility": {
+    "value": 0.828,
+    "through": 1,
+    "desperation": 1.036,
+    "ownDesperation": 0,
+    "doctrine": 1.35,
+    "gain": 1.157,
+    "retaliation": 0,
+    "allianceCost": 0.15,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 3328000,
+    "dead": 0.216,
+    "mad": false,
+    "extreme": false,
+    "costs": 1.066
+   },
+   "place": {
+    "econShare": 0.008,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.81,
+    "econShare": 0.006,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0.3
+   },
+   "peopleExpected": {
+    "thermo": 3328000,
+    "fission": 190000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 3339183,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 7003,
+   "year": 19.19,
+   "tick": 168073,
+   "by": "Japan",
+   "u": 0.186,
+   "at": [
+    1668.5,
+    458.79
+   ],
+   "target": "China",
+   "war": 203,
+   "warName": "Japan+Xinjiang+Lithuania+Ireland+Liberia+Yugoslavia+Turkey+United Kingdom+Nationalist Spain+Spanish Republic+Egypt+Anglo-Egyptian Sudan+Belgian Congo+South Africa+Southern Rhodesia+Nigeria+Transjordan+Iran+British India+founded#106+founded#107+founded#108+founded#109+founded#114+founded#115+founded#116+founded#117+Netherlands+Hungary+Albania v Soviet Union+Finland+Norway+Sweden+Afghanistan+China+Mengjiang+Mongolia+Tannu Tuva",
+   "warDays": 365,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.181,
+   "utility": {
+    "value": 0.761,
+    "through": 1,
+    "desperation": 1,
+    "ownDesperation": 0.024,
+    "doctrine": 1.35,
+    "gain": 1.027,
+    "retaliation": 0,
+    "allianceCost": 0.15,
+    "outrage": 0.138,
+    "taboo": 0.85,
+    "people": 751000,
+    "dead": 0.049,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.846
+   },
+   "place": {
+    "econShare": 0.002,
+    "menShare": 0.044,
+    "ownShare": 0,
+    "menExpected": 11117,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.436,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10855,
+    "capital": 0
+   },
+   "peopleExpected": {
+    "thermo": 751000,
+    "fission": 5000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 762087,
+    "yieldN": 2
+   }
+  }
+ ]
+}

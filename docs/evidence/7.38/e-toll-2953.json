@@ -1,0 +1,136 @@
+{
+ "seed": 2953,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 2,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 5689,
+   "year": 15.59,
+   "tick": 136537,
+   "by": "Italy",
+   "u": 0.295,
+   "at": [
+    1237.98,
+    242.14
+   ],
+   "target": "Soviet Union",
+   "war": 197,
+   "warName": "Italy+Yugoslavia+Palestine+Transjordan+founded#105+founded#107+founded#121+Japan+Manchukuo v Soviet Union+Norway+Iraq",
+   "warDays": 391,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.297,
+   "utility": {
+    "value": 0.79,
+    "through": 1,
+    "desperation": 1.071,
+    "ownDesperation": 0.001,
+    "doctrine": 1.3,
+    "gain": 1.1,
+    "retaliation": 0,
+    "allianceCost": 0.1,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 47000,
+    "dead": 0.003,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.803
+   },
+   "place": {
+    "econShare": 0.004,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.79,
+    "econShare": 0.004,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0.3
+   },
+   "peopleExpected": {
+    "thermo": 909000,
+    "fission": 47000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 58183,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 6938,
+   "year": 19.01,
+   "tick": 166513,
+   "by": "Italy",
+   "u": 0.164,
+   "at": [
+    1714.83,
+    413.76
+   ],
+   "target": "Soviet Union",
+   "war": 240,
+   "warName": "Japan+Poland+Romania+Afghanistan+Mengjiang+Xinjiang+Italy+Yugoslavia+Palestine+Transjordan+founded#105+founded#107+founded#121+founded#125 v Soviet Union+Estonia+Finland+Norway+Mongolia+founded#109",
+   "warDays": 377,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.164,
+   "utility": {
+    "value": 0.865,
+    "through": 1,
+    "desperation": 1.033,
+    "ownDesperation": 0.008,
+    "doctrine": 1.3,
+    "gain": 1.161,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.126,
+    "taboo": 0.924,
+    "people": 3802000,
+    "dead": 0.266,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.997
+   },
+   "place": {
+    "econShare": 0.01,
+    "menShare": 0.046,
+    "ownShare": 0,
+    "menExpected": 11554,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.83,
+    "econShare": 0.007,
+    "menShare": 0.046,
+    "menExpected": 11477,
+    "capital": 0.3
+   },
+   "peopleExpected": {
+    "thermo": 3802000,
+    "fission": 191000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 3813513,
+    "yieldN": 2
+   }
+  }
+ ]
+}

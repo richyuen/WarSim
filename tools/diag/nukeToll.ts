@@ -23,7 +23,7 @@ import en from '../../src/ui/i18n/en.json' with { type: 'json' };
 import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from '../headless/assets';
 import { seaKm } from '../../src/sim/systems/navalCombat';
-import { blastRadius, blastShare, deadCost, desperationOf, NUKE_FLOOR, nukeInputs, nuclearUtility, peopleShare, placeParts, RESOLVE, RESOLVE_FULL_DAYS } from '../../src/sim/systems/nuclear';
+import { blastRadius, blastShare, deadCost, desperationOf, largestYield, NUKE_FLOOR, nukeInputs, nuclearUtility, peopleShare, placeParts, RESOLVE, RESOLVE_FULL_DAYS } from '../../src/sim/systems/nuclear';
 import type { World } from '../../src/sim/world';
 
 const seed = Number(process.argv[2]);
@@ -64,6 +64,18 @@ function peopleIn(world: World, yieldN: number, x: number, y: number): number {
     }
   }
   return dead;
+}
+
+/** The land men of `enemy` within `radius` km of (x, y), as `nuclear.ts`' `menNear` counts them (PLAN 7.38e). */
+function menNearPlace(world: World, enemy: number[], x: number, y: number, radius: number): number {
+  const c = world.formations.cols;
+  const set = new Set(enemy);
+  let men = 0;
+  world.formations.forEach((id) => {
+    if (!set.has(c.nation[id]!) || world.isFleet(id) || world.isWing(id) || world.offLand(id)) return;
+    if (Math.abs(c.y[id]! - y) <= radius / 10 && seaKm(world, c.x[id]!, c.y[id]!, x, y) <= radius) men += c.strength[id]!;
+  });
+  return men;
 }
 
 /** The place's value parts with `thermonuclear` unknown to `n` (a fission blast's radius), the tech restored. */
@@ -154,11 +166,20 @@ while (w.tick < T) {
           row.place = { econShare: r3(p.econShare), menShare: r3(p.menShare), ownShare: r3(p.ownShare), menExpected: Math.round(p.menShare * p.theatreMen), theatreMen: Math.round(p.theatreMen), capital: p.capital };
           // At a fission yield: the value the place would have, and its people killed.
           row.fission = { value: r3(f.value), econShare: r3(f.econShare), menShare: r3(f.menShare), menExpected: Math.round(f.menShare * f.theatreMen), capital: f.capital };
+          // PLAN 7.38e: compared unrounded (seed 751's day 7896: 0.90786 against 0.90776, both 0.908 rounded).
+          row.fissionCovers = f.value >= inputs.targetValue;
           row.peopleExpected = { thermo: peopleIn(world, 2, x, y), fission: peopleIn(world, 1, x, y) };
           // The bursts before within a blast radius of the place.
           const near = bursts.filter((b) => seaKm(world, x, y, b.x, b.y) <= thermo);
           row.before = near.map((b) => ({ day: b.day, by: b.by, sameWar: b.war === war.id, dead: b.dead }));
           row.beforeSameWar = near.filter((b) => b.war === war.id).length;
+          // PLAN 7.38e: ADR-569's figures for a restrike in the war: the most men an earlier burst of
+          // the side found within a hydrogen bomb's blast of the place (`War.struck`), and the enemy
+          // men within the striker's blast of the place now, as `menNear` counts them.
+          const s = war.struck ?? [];
+          let menThen = -1;
+          for (let k = 0; k + 3 < s.length; k += 4) if (s[k + 3] === side && seaKm(world, x, y, s[k]!, s[k + 1]!) <= thermo) menThen = Math.max(menThen, s[k + 2]!);
+          if (menThen >= 0) row.warStruck = { menThen, menNow: menNearPlace(world, war.sides[1 - side]!, x, y, blastRadius(largestYield(world, n))) };
           break;
         }
         rows.push(row);
@@ -196,7 +217,7 @@ const decided = rows.filter((r) => !r.unmatched);
 const lowMillion = decided.filter((r) => (r.u as number) < 0.1 && ((r.toll as { dead: number } | undefined)?.dead ?? 0) >= 1_000_000);
 const restruck = decided.filter((r) => ((r.beforeSameWar as number) ?? 0) > 0);
 // A thermonuclear burst where a fission one's place would have been worth as much.
-const thermoNeedless = decided.filter((r) => (r.toll as { yieldN: number } | undefined)?.yieldN === 2 && r.fission !== undefined && (r.fission as { value: number }).value >= (r.utility as { value: number }).value - 1e-9);
+const thermoNeedless = decided.filter((r) => (r.toll as { yieldN: number } | undefined)?.yieldN === 2 && r.fissionCovers === true);
 const bars = { decided: decided.length, floor: NUKE_FLOOR, lowUtilityMillion: lowMillion.length, restruckSameWar: restruck.length, thermoWhereFissionCovers: thermoNeedless.length };
 writeFileSync(out, JSON.stringify({ seed, years, from, bars, rows }, null, 1));
 process.stderr.write(`done: ${rows.length} decisions -> ${out} ${JSON.stringify(bars)}\n`);

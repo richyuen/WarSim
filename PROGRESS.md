@@ -20643,3 +20643,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   is not committed). 7.37's "Met" line overstates: only 7.37a (ADR-561) and 7.37d (ADR-564) are new
   rules. 7.37c's case is changed by ADR-528, already on HEAD. 7.37g's cause is a land rule, filed as
   PLAN 7.43. The rest are measured and told, as listed.
+
+## 2026-10-20 — PLAN 7.38e: the AT's three bars read on HEAD over 24 seeds (first read); the bar on the dead missed, PLAN 7.44 and 7.45 filed
+
+- **Read** (HEAD `7e65ab9`, `nukeToll.ts <seed> 30 new`; `docs/evidence/7.38/measure-e.md`,
+  `e-toll-*.json`): the critic's 14 seeds, 73 decisions: under 0.1 with a million dead 2, restruck
+  in a war 0, hydrogen where fission covers 0. Unseen 751–760, 105 decisions: 2, 5, 0. The five
+  restrikes (seed 758) each had more men than the burst before found (`warStruck`, new): ADR-569's
+  new value, no leak. The critic's named places not struck.
+- **The two misses' causes:** the yield chosen by value alone (2081 day 5903 Japan, 3.34 M dead at
+  0.091, values 0.828 / 0.810; 9437 day 6452 Poland, 2.58 M at 0.060; a fission strike of higher
+  utility, about 0.27 and 0.23): PLAN 7.44, as ADR-568 said. The dead's cost at doctrine 1.4 in
+  extreme desperation under MAD (Germany: 756 day 8216, Belgium's capital, 2.29 M at 0.037; 758 day
+  9178, massed men, 1.33 M at 0.060; fission under the floor): PLAN 7.45, whose run is 7.38's second
+  read (unseen 761–770 then: 756 and 758 are tuning cases). BLOCKERS entry; 7.38 stays open.
+- **Read for the user:** 9437's Soviet capital struck in three wars (ADR-566); 758's day 10063, a
+  place of 551,000 people struck again in its war for more men (ADR-569's massed men).
+- **Tool:** the needless-hydrogen bar compared values rounded to 3 decimals (751's day 7896 read a
+  tie, 0.90786 against 0.90776; 758's day 9067 likewise): now `fissionCovers`, unrounded; 751 and 758
+  re-run (0 each). `warStruck` added. Rounding can only fake a tie, so the other 22 zeros stand.
+- Checkpoints before the four misses: `.cache/nukeToll_{2081_141673,9437_154848,756_197184,758_220272}.bin`.
+- No sim change, the pin unchanged. Specs by hand: none (no UI). 7.38's commits: 5.
+- **Next:** PLAN 7.44 (the yield by the utility).

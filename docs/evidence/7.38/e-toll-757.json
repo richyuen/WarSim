@@ -1,0 +1,197 @@
+{
+ "seed": 757,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 3,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 4126,
+   "year": 11.3,
+   "tick": 99025,
+   "by": "Soviet Union",
+   "u": 0.099,
+   "at": [
+    1448.72,
+    404.72
+   ],
+   "target": "British India",
+   "war": 163,
+   "warName": "founded#124+United Kingdom+British India+Burma+Ceylon+British Malaya+France+Netherlands+Saudi Arabia+Yemen+founded#116+founded#123 v Soviet Union+Estonia+Finland+Turkey+Nationalist Spain+Norway+Egypt+French Morocco+Tunisia+Iran+Mongolia+Tannu Tuva+founded#109+Denmark",
+   "warDays": 232,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.064,
+   "utility": {
+    "value": 0.409,
+    "through": 0.6,
+    "desperation": 1.404,
+    "ownDesperation": 1.404,
+    "doctrine": 1.2,
+    "gain": 0.689,
+    "retaliation": 0.8,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 19000,
+    "dead": 0.001,
+    "mad": true,
+    "extreme": true,
+    "costs": 0.625
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.068,
+    "ownShare": 0,
+    "menExpected": 21351,
+    "theatreMen": 314172,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.409,
+    "econShare": 0,
+    "menShare": 0.068,
+    "menExpected": 21351,
+    "capital": 0
+   },
+   "peopleExpected": {
+    "thermo": 995000,
+    "fission": 19000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 0,
+   "toll": {
+    "dead": 38170,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 4634,
+   "year": 12.7,
+   "tick": 111217,
+   "by": "Soviet Union",
+   "u": 0.04,
+   "at": [
+    1558.49,
+    281.49
+   ],
+   "target": "China",
+   "war": 170,
+   "warName": "China+Communist China+Nepal v Soviet Union+Estonia+Finland+Turkey+Nationalist Spain+Norway+Iran+Mongolia+founded#109+Denmark+founded#128",
+   "warDays": 454,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.028,
+   "utility": {
+    "value": 0.261,
+    "through": 0.6,
+    "desperation": 1.171,
+    "ownDesperation": 1.171,
+    "doctrine": 1.2,
+    "gain": 0.366,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.182,
+    "taboo": 0.554,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.339
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.043,
+    "ownShare": 0,
+    "menExpected": 10854,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.261,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10854,
+    "capital": 0
+   },
+   "peopleExpected": {
+    "thermo": 3000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 0,
+   "toll": {
+    "dead": 9019,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 9824,
+   "year": 26.92,
+   "tick": 235777,
+   "by": "Japan",
+   "u": 0.062,
+   "at": [
+    1926.39,
+    263.26
+   ],
+   "target": "Soviet Union",
+   "war": 325,
+   "warName": "Japan v Soviet Union+Turkey+founded#132",
+   "warDays": 365,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.063,
+   "utility": {
+    "value": 0.731,
+    "through": 1,
+    "desperation": 1,
+    "ownDesperation": 0,
+    "doctrine": 1.35,
+    "gain": 0.987,
+    "retaliation": 0,
+    "allianceCost": 0.2,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 374000,
+    "dead": 0.024,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.924
+   },
+   "place": {
+    "econShare": 0.043,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.67,
+    "econShare": 0.037,
+    "menShare": 0,
+    "menExpected": 0,
+    "capital": 0.3
+   },
+   "peopleExpected": {
+    "thermo": 374000,
+    "fission": 24000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 374000,
+    "yieldN": 2
+   }
+  }
+ ]
+}

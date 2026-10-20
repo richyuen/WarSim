@@ -1,0 +1,75 @@
+{
+ "seed": 8167,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 1,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 5570,
+   "year": 15.26,
+   "tick": 133681,
+   "by": "Japan",
+   "u": 0.117,
+   "at": [
+    1614.64,
+    200.36
+   ],
+   "target": "Soviet Union",
+   "war": 138,
+   "warName": "Italy+Japan+Burma v Soviet Union+Finland+Turkey+Norway+Afghanistan+China+Mongolia+Tannu Tuva+founded#109",
+   "warDays": 552,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.073,
+   "utility": {
+    "value": 0.427,
+    "through": 1,
+    "desperation": 1.512,
+    "ownDesperation": 0.239,
+    "doctrine": 1.35,
+    "gain": 0.873,
+    "retaliation": 0,
+    "allianceCost": 0.1,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.8
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.043,
+    "ownShare": 0,
+    "menExpected": 10674,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.427,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10674,
+    "capital": 0
+   },
+   "peopleExpected": {
+    "thermo": 1000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 10655,
+    "yieldN": 1
+   }
+  }
+ ]
+}

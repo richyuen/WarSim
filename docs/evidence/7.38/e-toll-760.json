@@ -1,0 +1,197 @@
+{
+ "seed": 760,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 3,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 5111,
+   "year": 14,
+   "tick": 122665,
+   "by": "Poland",
+   "u": 0.231,
+   "at": [
+    1630.4,
+    424.07
+   ],
+   "target": "China",
+   "war": 160,
+   "warName": "Japan+Germany+Latvia+Nationalist Spain+founded#105+Italy+Yugoslavia+Albania+France+Portugal+Egypt+Southern Rhodesia+founded#112+founded#114+Poland+Hungary+Yemen+founded#111 v China+Communist China+Nepal",
+   "warDays": 461,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.231,
+   "utility": {
+    "value": 0.834,
+    "through": 1,
+    "desperation": 1.263,
+    "ownDesperation": 0,
+    "doctrine": 0.95,
+    "gain": 1,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 183000,
+    "dead": 0.019,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.769
+   },
+   "place": {
+    "econShare": 0.009,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.834,
+    "econShare": 0.009,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0.3
+   },
+   "peopleExpected": {
+    "thermo": 3421000,
+    "fission": 183000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 194183,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 5201,
+   "year": 14.25,
+   "tick": 124825,
+   "by": "Japan",
+   "u": 0.558,
+   "at": [
+    1465.5,
+    187.5
+   ],
+   "target": "China",
+   "war": 160,
+   "warName": "Japan+Germany+Latvia+Nationalist Spain+founded#105+Italy+Yugoslavia+Albania+France+Portugal+Egypt+Southern Rhodesia+founded#112+founded#114+Poland+Hungary+Yemen+founded#111 v China+Communist China+Nepal",
+   "warDays": 551,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.558,
+   "utility": {
+    "value": 0.449,
+    "through": 1,
+    "desperation": 1.51,
+    "ownDesperation": 0,
+    "doctrine": 1.35,
+    "gain": 0.915,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.1,
+    "taboo": 0.345,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.357
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.449,
+    "econShare": 0,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0
+   },
+   "peopleExpected": {
+    "thermo": 6000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 11183,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 5296,
+   "year": 14.51,
+   "tick": 127105,
+   "by": "Japan",
+   "u": 0.292,
+   "at": [
+    1448.5,
+    167.68
+   ],
+   "target": "China",
+   "war": 160,
+   "warName": "Japan+Germany+Latvia+Nationalist Spain+founded#105+Italy+Yugoslavia+Albania+France+Portugal+Egypt+Southern Rhodesia+founded#112+founded#114+Poland+Hungary+Yemen+founded#111 v China+Communist China",
+   "warDays": 646,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.266,
+   "utility": {
+    "value": 0.308,
+    "through": 1,
+    "desperation": 1.77,
+    "ownDesperation": 0,
+    "doctrine": 1.35,
+    "gain": 0.737,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.213,
+    "taboo": 0.348,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.471
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.031,
+    "ownShare": 0,
+    "menExpected": 7706,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.308,
+    "econShare": 0,
+    "menShare": 0.031,
+    "menExpected": 7706,
+    "capital": 0
+   },
+   "peopleExpected": {
+    "thermo": 0,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 7703,
+    "yieldN": 1
+   }
+  }
+ ]
+}

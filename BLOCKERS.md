@@ -5,6 +5,22 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.38's bar on the dead missed at the first read: 4 bursts under 0.1 killing a million on 4 of 24 seeds (2026-10-20, PLAN 7.38e)
+- **The bar:** on the critic's 14 seeds and 10 unseen ones × 30 years, no burst with a utility
+  under 0.1 that kills a million; no city struck twice in one war; no hydrogen bomb where a fission
+  one covers the place's value.
+- **What moved** (`docs/evidence/7.38/measure-e.md`): the critic's named places are not struck on
+  HEAD; restrikes in a war 0 on the critic's seeds, 5 on the unseen (each with more men than the
+  burst before found, ADR-569's new value); hydrogen where fission covers 0 and 0. Under 0.1 with a
+  million dead: 2 and 2.
+- **What is left, two causes, each a numbered task:** the yield chosen by value alone (seeds 2081,
+  9437: a fission strike at the place of higher utility; PLAN 7.44); the dead's cost at doctrine 1.4
+  in extreme desperation (seeds 756, 758, Germany; PLAN 7.45, whose run is 7.38's second read).
+- **For the user to read, not counted as misses:** seed 9437's Soviet capital struck in three wars
+  (2.58 M, 1.70 M, 0.77 M dead), ADR-566's open question; seed 758's day 10063, a place of 551,000
+  people struck 8 days after a burst 3 cells away (455,938 dead) for 8,452 more men: massed men to
+  ADR-569, a city struck twice to a reader of the bar's word.
+
 ### PLAN 7.37h: seed 9901's three Soviet strikes on a lone division, unchanged by 7.38's rules; the decision waits on the user (2026-10-20, ADR-570)
 - **The bar:** PLAN 7.37's, per case: the decision changed by a rule with an ADR, or the measured
   cause here, the user's to accept.
