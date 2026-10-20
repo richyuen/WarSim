@@ -20850,3 +20850,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   (Czechoslovakia's unused warheads): the cases stand, their BLOCKERS entries resolved. ADR-566:
   "no city struck twice" means in one war. No code changes: the code already did option a.
 - **Next:** PLAN 7.46b3 (Japan's gold).
+
+## 2026-10-20 — The user's decisions: PLAN 7.46's 80 % a read (ADR-576, option a); 7.47 before 7.46c
+
+- 7.46's AT: the world's armed power against HEAD's is reported, not a bar (its 80 % was beyond
+  one warship at a time, 7.46a §4); the chase is judged on 7.39b's battle bars at 7.46c.
+- Order: 7.46b3, then 7.47, then 7.46c (one 14 × 30 run reads both rules).
+- **Next:** PLAN 7.46b3 (Japan's gold).

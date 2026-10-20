@@ -95,8 +95,10 @@ each, split when taken up:
   with the chase applied: per navy lost after a chase's battle, `navyLoss`'s first test that stops
   its warship order (gold, shipyard, the army first, the navy's share) and the days to its first
   warship. Then a rule with an ADR. AT: with the chase, on those 4 seeds × 10 years, the world's
-  armed power at years 3 to 10 at least 80 % of HEAD's without the chase (was 47 % to 79 %); a unit
-  test (red without); the pin's entry. Then 7.39b's two bars, read on the critic's 14 seeds × 30
+  armed power at years 3 to 10 against HEAD's without the chase, read and reported, not a bar
+  (ADR-576, the user's decision, 2026-10-20: was "at least 80 %", out of reach with one warship at a
+  time; the chase is judged on 7.39b's battle bars); a unit test per rule (red without); the pin's
+  entry. Then 7.39b's two bars, read on the critic's 14 seeds × 30
   years with the chase and the rule, decide whether the chase is adopted (ADR-573). Stop: two full
   re-measures flat, the bar is the user's (ADR-554).
   **The bar's ceiling** (7.46a, `measure-a.md` §4): one warship at a time, Britain, Japan and
@@ -134,8 +136,9 @@ each, split when taken up:
       reason. AT: Japan's `gold` months on the 4 × 10 with the chase (88/65/76/48) halved; a unit
       test; the pin's entry.
     - [ ] 7.46c 7.39b's two bars read on the critic's 14 seeds × 30 years with the chase and
-      7.46b's rules, and 7.46's 80 % on the 4 × 10: the chase adopted or not (ADR-573).
-      With PLAN 7.47's rule if it is done first, else without it.
+      7.46b's rules, and the world's armed power on the 4 × 10 reported (ADR-576): the chase
+      adopted or not (ADR-573).
+      Taken after PLAN 7.47 (the user's order, 2026-10-20): read with its rule, one run for both.
 - [ ] 7.47 A navy rebuilt to a ship or two saves for the next at war with a naval enemy (from PLAN
   7.46b2, ADR-575): ADR-557's saving holds only for a nation with no armed fleet, so Britain's first
   destroyer ends it, and its army's orders take the gold again while its navy stands far under its

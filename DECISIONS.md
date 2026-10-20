@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-576 · 2026-10-20 · accepted (option a, the user's decision, 2026-10-20) — PLAN 7.46's 80 % of HEAD's armed power is a read, not a bar
+
+- **Context.** PLAN 7.46's AT asked the world's armed power with the chase at years 3–10 to be at
+  least 80 % of HEAD's. 7.46a (`docs/evidence/7.46/measure-a.md` §4) measured the ceiling of a
+  rule that builds one warship at a time: about 60 % at year 3 and 68 % at year 5. The figure was a
+  stand-in for "the chase does not leave the seas empty"; what the critic judges is the war at sea
+  going on, PLAN 7.39's battle bars.
+- **Options.** a: the 80 % read and reported, not a bar; 7.46c decides the chase on 7.39b's two
+  battle bars. b: warships ordered in parallel by a sunk navy, to reach it (a balance change of its
+  own). c: the bar kept, missed, a BLOCKERS entry.
+- **Decided** (2026-10-20, the user): a. 7.46 and 7.46c report the armed power against HEAD's; the
+  chase is adopted or not on 7.39b's bars (ADR-573). Also the user's order: 7.47 before 7.46c, so
+  the 14 × 30 run reads both rules at once.
+
 ### ADR-575 · 2026-10-20 · accepted — A nation with no armed fleet saves for a warship at war with a naval enemy (PLAN 7.46b2; amends ADR-557)
 
 - **Context.** PLAN 7.46 (a navy sunk in a decisive war at sea is built again). 7.46a
