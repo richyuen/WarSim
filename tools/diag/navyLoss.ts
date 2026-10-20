@@ -32,6 +32,13 @@
  *   (in tenths of the warship's price), and whether the army's orders and refills of the last
  *   month, the last 12 and since the navy was lost would have covered the shortfall.
  *
+ * - PLAN 7.35d3c, no shipyard: each `noShipyard` month says why, from the nation's ports (those it
+ *   owns or controls), in `shipyard`'s order: a port it controls is bombed shut (`shut`), or has
+ *   water off the world's seas (`notOcean`: a lake, the Caspian, a zone of ice, all fixed; `noWater`:
+ *   none the lane graph takes); else a port it owns is held by a nation at war with it (`occupied`)
+ *   or by one at peace (`heldByOther`); else it owns no port now, though it controlled one in 1938
+ *   (`coastCeded`), or never did (`neverPort`). Per nation, and who holds its ports.
+ *
  * Usage: npx tsx tools/diag/navyLoss.ts <seed> <years> [out = .cache/navyLoss_<seed>.json]
  */
 import { writeFileSync } from 'node:fs';
@@ -43,11 +50,12 @@ import { BUILD_MIX_1938, ECONOMY_TABLES_1938, size1938, TAGS_1938 } from '../../
 import { Sim } from '../../src/sim/sim';
 import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
 import { basinAt } from '../../src/sim/systems/navalCombat';
+import { portShut } from '../../src/sim/systems/bombing';
 import { shipyard } from '../../src/sim/systems/production';
 import { DAYS_PER_MONTH } from '../../src/sim/systems/research';
 import { fleetPower } from '../../src/sim/systems/seaControl';
 import type { System } from '../../src/sim/tick';
-import { Domain, seaRangeOf, type World } from '../../src/sim/world';
+import { basinOf, Domain, portSeaOf, seaOf, seaRangeOf, type World } from '../../src/sim/world';
 import { loadAssets1938 } from '../headless/assets';
 
 const seed = Number(process.argv[2]);
@@ -64,6 +72,44 @@ const REASONS = ['dead', 'aiOff', 'noShipyard', 'poor', 'warshipInTraining', 'tr
 type Reason = (typeof REASONS)[number];
 const GONE = ['laidUp', 'died', 'sunk', 'otherGone', 'handedOver', 'disarmed'] as const;
 type Gone = (typeof GONE)[number];
+const YARD = ['shut', 'notOcean', 'noWater', 'occupied', 'heldByOther', 'coastCeded', 'neverPort'] as const;
+type YardWhy = (typeof YARD)[number];
+/** Per nation, the ports it controlled in 1938. */
+const startPorts = new Map<number, number[]>();
+sim.world.ports.forEach((p, i) => {
+  const n = sim.world.cells.controller[p.cell]!;
+  if (n > 0) (startPorts.get(n) ?? startPorts.set(n, []).get(n)!).push(i);
+});
+/** Why `shipyard` finds no port for living nation `n` (PLAN 7.35d3c), and who holds its ports. */
+const yardWhy = (w: World, n: number): { why: YardWhy; holders: number[] } => {
+  const { owner, controller } = w.cells;
+  const water = portSeaOf(w);
+  const sea = seaOf(w);
+  const { basin, ocean } = basinOf(w);
+  let shut = false;
+  let off = false;
+  let dry = false;
+  const holders = new Set<number>();
+  let atWar = false;
+  w.ports.forEach((p, i) => {
+    if (controller[p.cell] === n) {
+      if (water[i]! < 0) dry = true;
+      else if (basin[sea.zoneOf[water[i]!]!] !== ocean) off = true;
+      else if (portShut(w, i)) shut = true;
+    } else if (owner[p.cell] === n) {
+      const h = controller[p.cell]!;
+      holders.add(h);
+      if (w.wars.atWar(n, h)) atWar = true;
+    }
+  });
+  if (shut) return { why: 'shut', holders: [] };
+  if (off) return { why: 'notOcean', holders: [] };
+  if (dry) return { why: 'noWater', holders: [] };
+  if (holders.size > 0) return { why: atWar ? 'occupied' : 'heldByOther', holders: [...holders] };
+  const was = startPorts.get(n) ?? [];
+  if (was.length === 0) return { why: 'neverPort', holders: [] };
+  return { why: 'coastCeded', holders: [...new Set(was.map((i) => owner[w.ports[i]!.cell]!))] };
+};
 const band = (income: number): string => (income < POOR_INCOME ? 'poor' : income < RICH_INCOME ? 'destroyer' : income < BATTLE_FLEET_INCOME ? 'cruiser' : 'battle');
 
 type Year = {
@@ -78,6 +124,8 @@ type Year = {
   bands: Record<string, number>;
   /** PLAN 7.35d3b: the `gold` months traced, by `<band>/<war|peace>`. */
   gold: Record<string, GoldTrace>;
+  /** PLAN 7.35d3c: the `noShipyard` months by why. */
+  yard: Record<YardWhy, number>;
   gone: Record<Gone, number>;
   built: number;
   handedIn: number;
@@ -159,11 +207,11 @@ const orderedRows = (w: World): Map<number, number> => {
 }
 const rows: Year[] = [];
 /** `gold`: per traced gold month, [tick, treasury before the AI, shortfall, balance, army's orders, refills, treasury after the AI, at war]. */
-type Nat = { tag: string; atStart: boolean; lost: number[]; regained: number[]; months: Record<Reason, number>; incomes: number[]; warMonths: number; diedDay?: number; gold: number[][] };
+type Nat = { tag: string; atStart: boolean; lost: number[]; regained: number[]; months: Record<Reason, number>; incomes: number[]; warMonths: number; diedDay?: number; gold: number[][]; yard: Record<YardWhy, number>; yardHolders: Record<string, number> };
 const nations = new Map<number, Nat>();
 const nat = (n: number): Nat => {
   let x = nations.get(n);
-  if (!x) nations.set(n, (x = { tag: tag(n), atStart: false, lost: [], regained: [], months: zero(REASONS), incomes: [], warMonths: 0, gold: [] }));
+  if (!x) nations.set(n, (x = { tag: tag(n), atStart: false, lost: [], regained: [], months: zero(REASONS), incomes: [], warMonths: 0, gold: [], yard: zero(YARD), yardHolders: {} }));
   return x;
 };
 const check = { months: 0, predictedOrder: 0, ordered: 0, disagree: 0 };
@@ -303,7 +351,13 @@ const monthRead = (w: World, y: Year): void => {
     let g: { shortfall: number; balance: number; price: number; income: number; band: string } | undefined;
     if (!living) reason = 'dead';
     else if (!w.settings.aiEnabled || nc.aiOff[n] === 1) reason = 'aiOff';
-    else if (shipyard(w, n) < 0) reason = 'noShipyard';
+    else if (shipyard(w, n) < 0) {
+      reason = 'noShipyard';
+      const { why, holders } = yardWhy(w, n);
+      y.yard[why]++;
+      x.yard[why]++;
+      for (const h of holders) x.yardHolders[`${why}:${tag(h)}`] = (x.yardHolders[`${why}:${tag(h)}`] ?? 0) + 1;
+    }
     else if (income < POOR_INCOME) reason = 'poor';
     else if (warshipPending.has(n)) reason = 'warshipInTraining';
     else if (transportPending.has(n)) reason = 'transportInTraining';
@@ -388,7 +442,7 @@ const monthDone = (w: World, y: Year): void => {
 
 let day = 0;
 for (let year = 1; year <= years; year++) {
-  const y: Year = { year, months: zero(REASONS), monthsAtWar: zero(REASONS), goldRatio: {}, bands: {}, gold: {}, gone: zero(GONE), built: 0, handedIn: 0, shipsSunk: 0, laidUpEvents: 0, navies: 0, lostNavies: 0, navyPairs: 0, seaPairs: 0, seaPairDays: {}, navyDays: {} };
+  const y: Year = { year, months: zero(REASONS), monthsAtWar: zero(REASONS), goldRatio: {}, bands: {}, gold: {}, yard: zero(YARD), gone: zero(GONE), built: 0, handedIn: 0, shipsSunk: 0, laidUpEvents: 0, navies: 0, lostNavies: 0, navyPairs: 0, seaPairs: 0, seaPairDays: {}, navyDays: {} };
   let days = 0;
   sim.step(24 * 365, (w) => {
     const ev = w.out.events;

@@ -20242,3 +20242,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Perf:** seed 99 × 3 years `--profile`, economicAi 0.031–0.032 ms a tick before and after; mean
   tick 1.91 → 1.93 ms (one run each).
 - **Next:** PLAN 7.35d3c (no shipyard), then `seaYears`' after-run.
+
+## 2026-10-20 — PLAN 7.35d3c: no shipyard traced, the coast ceded (no rule)
+
+- **Traced** (`navyLoss` says why per `noShipyard` month, `navyLossYard` sums; `measure-d.md` §14;
+  14 seeds × 30 years at `ebec10a`): of 13,973 no-shipyard months in years 2–30 (15.2 % of the lost
+  navies' months), 12,701 (91 %) the nation owns no port now, its 1938 ports ceded in a peace
+  (Greece 2,408, Yugoslavia 1,948, Poland 1,366, Sweden 1,115, Norway 1,049); 780 occupied by an
+  enemy; bombs 100, inland water 274, never a port 118. A nation with no coast builds no ship: the
+  reason is the land war's, no rule; the pin unchanged.
+- **Next:** 7.35d3's after-run of `seaYears` (run at `ebec10a`), which closes 7.35d and 7.35.

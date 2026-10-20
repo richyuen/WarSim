@@ -280,7 +280,7 @@ each, split when taken up:
           and with an enemy at sea saves for a warship, as for its armour, PLAN 3.5d), or the
           reason. AT: a unit test (red without); `navyLoss`'s gold months and lost navies built
           again, before and after; the pin; `--profile`.
-        - [ ] 7.35d3c No shipyard (d3a, §11: 11.8 % of the lost navies' months; Greece 2,468 of
+        - [x] 7.35d3c No shipyard (d3a, §11: 11.8 % of the lost navies' months; Greece 2,468 of
           4,596, Norway 1,443, Sweden 1,408, Yugoslavia 1,360, Romania 1,164): traced per nation
           (its ports: held by the enemy, bombed shut, water `shipyard` does not take), then a rule
           or the reason. Then the "after" run of `seaYears` (7.35d3's last).
