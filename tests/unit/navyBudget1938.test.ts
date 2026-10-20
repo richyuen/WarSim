@@ -129,3 +129,52 @@ describe('the navy\'s cost (PLAN 4.6e1)', () => {
     process.stderr.write(`Japan laid up ${laid[0]![3]} fleets; its navy ${navyUpkeep(w, JAP).toFixed(0)} a month after, its share ${(NAVY_SHARE * income).toFixed(0)}\n`);
   });
 });
+
+// PLAN 7.35d3b (ADR-557): a navy lost was not built again, the treasury taken by the army's line
+// (a division's 1,001 and the reserve, 119 gold under a destroyer's) each time it neared a warship's.
+describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
+  // Norway's army of 1938 stands just under its peacetime share (aggression 0), Brazil's at 1.9 of it.
+  const setUp = (opts: { tag: string; enemy?: string; army: boolean }): { s: Sim; w: World; NOR: number } => {
+    const s = peaceful();
+    const w = s.world;
+    const NOR = id(opts.tag);
+    w.formations.forEach((f) => {
+      const c = w.formations.cols;
+      if (c.nation[f] !== NOR) return;
+      if (w.isFleet(f) || (!opts.army && !w.isWing(f))) destroyFormation(w, f);
+    });
+    if (opts.enemy) expect(declareWar(w, NOR, id(opts.enemy), true)).not.toBeNull();
+    w.nations.cols.manpower[NOR] = 1e7;
+    const { income } = budgetOf(w, NOR, monthlyAccounts(w, T));
+    const line = w.rules!.templates[fleets.destroyer]!.gold + RESERVE_MONTHS * income;
+    // Gold for a destroyer with its reserve, not for a division and then a destroyer.
+    w.nations.cols.gold[NOR] = line + 100;
+    expect(w.nations.cols.gold[NOR]! - w.rules!.templates[BUILD_MIX_1938.infantry]!.gold).toBeLessThan(line);
+    return { s, w, NOR };
+  };
+  const land = (w: World, n: number): number => w.production.ids().filter((p) => w.production.cols.nation[p] === n && w.rules!.templates[w.production.cols.template[p]!]!.domain === Domain.land).length;
+
+  it('in peace, its army under its share, it orders a destroyer and no division (red without: a division, no ship)', () => {
+    const { s, w, NOR } = setUp({ tag: 'NOR', army: false });
+    runEvents(s, 1);
+    expect(ships(w, NOR)).toEqual([fleets.destroyer]);
+    expect(land(w, NOR)).toBe(0);
+  });
+
+  it('at war, its army at its peacetime share, the army waits and the refills keep the price (red without)', () => {
+    const { s, w, NOR } = setUp({ tag: 'BRA', enemy: 'BOL', army: true });
+    const before = w.nations.cols.gold[NOR]!;
+    runEvents(s, 1);
+    expect(ships(w, NOR)).toEqual([fleets.destroyer]);
+    expect(land(w, NOR)).toBe(0);
+    // The destroyer's price paid, and no more than the 100 over its line in refills.
+    expect(before - w.nations.cols.gold[NOR]!).toBeLessThanOrEqual(w.rules!.templates[fleets.destroyer]!.gold + 100 + 1e-6);
+  });
+
+  it('at war, its army under its peacetime share, the army orders first: no ship is saved for', () => {
+    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'SWE', army: false });
+    runEvents(s, 1);
+    expect(land(w, NOR)).toBeGreaterThan(0);
+    expect(ships(w, NOR)).toEqual([]);
+  });
+});

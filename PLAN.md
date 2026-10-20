@@ -269,7 +269,7 @@ each, split when taken up:
           placed in the tick after (`check`); and per day the pairs at war with a navy each against
           those sharing a basin. Which cause the fall is; the parts after named from it. No rule:
           the pin unchanged (`pickFleet` exported).
-        - [ ] 7.35d3b The gold (d3a, `measure-d.md` §11: of a lost navy's 86,031 nation-months in
+        - [x] 7.35d3b The gold (d3a, `measure-d.md` §11: of a lost navy's 86,031 nation-months in
           years 2–30, 53.1 % stopped by the gold test, a warship of its income's kinds + RESERVE_MONTHS
           of income, the treasury at 0.2 to 1 of it; 5.8 % more passed every test and the army's
           orders spent the month first; 111 of 337 lost navies built again, a median of 2,236 days

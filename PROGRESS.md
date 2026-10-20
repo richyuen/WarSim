@@ -20229,3 +20229,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   line (a division's 1,001 + three months of income) is 119 gold under a destroyer's, so the
   treasury climbs to it and a division is bought (Norway, seed 3407: 1,262 → 261, 1,245 → 244).
 - **Next:** the rule (a nation without a navy saves for a warship), its ADR, tests and pin.
+
+## 2026-10-20 — PLAN 7.35d3b: a nation without a navy saves for a warship (ADR-557)
+
+- **Rule:** the economic AI's army orders and refills keep the cheapest warship's price over the
+  reserve for a nation without a navy that would order one; in peace, and at war with its army at
+  its peacetime share. Pin 25c38def → f1dc9ca3.
+- **AT:** `navyBudget1938.test.ts` (3 tests, two red without); `navyLoss` 14 seeds × 30 years
+  (`measure-d.md` §13): lost navies built again 111 of 337 → 290 of 463 (33 → 63 %), median first
+  rebuild 2,236 → 1,123 days; gold months 45,664 → 41,607; navies a day years 2–30 11.4 → 17.4;
+  ships sunk years 2–30 13,077 → 20,311.
+- **Perf:** seed 99 × 3 years `--profile`, economicAi 0.031–0.032 ms a tick before and after; mean
+  tick 1.91 → 1.93 ms (one run each).
+- **Next:** PLAN 7.35d3c (no shipyard), then `seaYears`' after-run.

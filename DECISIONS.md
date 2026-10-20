@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-557 · 2026-10-20 · accepted — A nation without a navy saves for a warship (PLAN 7.35d3b; amends ADR-273, ADR-514)
+
+- **Context.** PLAN 7.35d3 (`docs/evidence/7.35/measure-d.md` §11–12): of 337 nations that lost
+  their navy on the critic's 14 seeds × 30 years, 111 built one again, a median of 2,236 days
+  after; 53 % of a lost navy's months stopped at 3b's gold test. Traced (§12), the army's line (an
+  infantry division's 1,001 and three months of income) stands 119 gold under a destroyer's
+  (1,120 and the same reserve) and comes first each month: the treasury climbs to it and a
+  division takes it (Norway, seed 3407: 1,262 → 261, then 1,245 → 244). In 86 % of the gold months
+  the army's orders and refills since the loss would have paid the shortfall.
+- **Decision.** In step 3 of the economic AI a nation without a navy (no armed fleet, none in
+  training) that would order one (not poor, a shipyard, no transport wanted, its navy under
+  NAVY_SHARE) saves for the cheapest warship of its income's kinds (`fleetPrice`): an army order
+  is placed only with that price left over the reserve, and step 3a's refills keep it too. In
+  peace always; at war while its army's upkeep stands at its peacetime share (`peaceShare`), so a
+  war's army under it is not starved for a ship. ADR-514 kept the refills' keep off at war for
+  the army's next order; this keep is the warship's, and lasts only until one is ordered.
+- **Not taken.** "With an enemy at sea" alone (PLAN 7.35d3's wording): 15,542 of the 45,664 gold
+  months were at peace; a navy built in peace is there when the war comes, as armour saved in
+  peace (ADR-154). The army's floor as the armour's (`upkeep ≥ peace` in peace too): in peace the
+  army orders only under its peacetime share, so the saving would never hold there.
+- **Measured** (`navyLoss` 14 seeds × 30 years, `d3b/` before, `d3b/after/`): nations that lost a
+  navy and built one again 111 of 337 → 290 of 463 (33 → 63 %), the first a median of 2,236 →
+  1,123 days after; navies a day, years 2–30, 11.4 → 17.4; armed fleets built 935 → 1,642, sunk
+  1,215 → 1,795; ships sunk years 2–30 13,077 → 20,311; gold months 45,664 → 41,607 (warship in
+  training 1,035 → 3,654). Seed 99, 3 years: economicAi 0.031–0.032 ms a tick before and after;
+  formations at the years' ends 978, 810, 798 → 1,016, 864, 719 (one run each, diverging).
+- **Pin.** 25c38def → f1dc9ca3.
+- **Tests.** `navyBudget1938.test.ts` "a nation without a navy saves for a warship": Norway in
+  peace, its army under its share, gold for a destroyer and its reserve but not a division too,
+  orders the destroyer and no division; Brazil at war with Bolivia, its army over its peacetime
+  share, the same; Norway at war with its army under the share orders the division (the floor).
+  The first two red without the rule.
+
 ### ADR-556 · 2026-10-20 · accepted (the user's decision) — The critic judges the design's execution, starts from the last report's cases, and says why a score moved
 
 - **Context.** Critic run 10 scored emergent dynamics 7 → 6 on two seeds of 14 with a top five

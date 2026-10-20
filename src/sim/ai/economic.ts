@@ -52,6 +52,10 @@
  *    shipyard and no fleet in training orders one while its navy's upkeep is under NAVY_SHARE
  *    of its income, if its balance stays above the need with the fleet's upkeep and its gold
  *    covers the price and RESERVE_MONTHS of income; none while it wants a transport group (2c).
+ *    A nation without a navy (no armed fleet) that would order one saves for the cheapest warship
+ *    of its income's kinds (PLAN 7.35d3b, ADR-557, `fleetPrice`): the army's orders and step 3a's
+ *    refills keep its price over the reserve, in peace, and at war while the army stands at its
+ *    peacetime share.
  *    Then a wing (PLAN 5.8s2, `pickWing`), as a fleet: a nation not poor with an airfield and no
  *    wing in training orders one while its air force's upkeep is under AIR_SHARE of its army's,
  *    a fighter group while fighters are under half its wings, else a tactical bomber group.
@@ -92,6 +96,7 @@ import { SUPPRESSION_COST } from '../systems/revolts';
 import { frontierOf } from '../systems/territory';
 import { neighbours4 } from '../nav/grid';
 import { airfield, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
+import { fleetPower } from '../systems/seaControl';
 import { DAYS_PER_MONTH, researchBudget } from '../systems/research';
 import { knowsTechs } from '../tech';
 import { Domain, navBuilt, navOf, portSeaOf, seaRangeOf, type World } from '../world';
@@ -389,6 +394,13 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           shipsPending.set(n, (shipsPending.get(n) ?? 0) + 1);
         }
       }
+      // 3b's saving (PLAN 7.35d3b, ADR-557): a nation without a navy (no armed fleet, none in
+      // training) that would order a warship saves for the cheapest it wants: the army's orders and
+      // the refills keep that price over the reserve, in peace, and at war while its army stands at
+      // its peacetime share (a war's army under it is not starved for a ship). Before, the army's
+      // line (a division's 1,001 and the reserve) came 119 gold under a destroyer's, and the
+      // treasury never climbed past it.
+      const shipPrice = mix.fleets && !wants && (shipsPending.get(n) ?? 0) === 0 && income >= POOR_INCOME && (navy.get(n) ?? 0) < NAVY_SHARE * income && !(fleets.get(n) ?? []).some((id) => fleetPower(world, id) > 0) && shipyard(world, n) >= 0 ? fleetPrice(world, income, mix.fleets) : 0;
       // 4. Research.
       nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
       balance -= nc.research[n]! * DAYS_PER_MONTH;
@@ -424,6 +436,8 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           }
           const newUpkeep = upkeepOfTemplate(t);
           if (balance - newUpkeep <= need) return;
+          // It saves for a warship: an order only with the warship's price left over the reserve.
+          if (shipPrice > 0 && (!atWar || upkeep >= peace) && nc.gold[n]! - rule.gold < shipPrice + RESERVE_MONTHS * income) return;
           if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income || nc.manpower[n]! < rule.manpower) return;
           if (queueFormation(world, n, t) === 0) return;
           nc.builds[n] = nc.builds[n]! + 1;
@@ -442,7 +456,8 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // at war (PLAN 7.26c2b, ADR-514): a nation of an income near 100 saved for most of a year
       // and refilled nothing while its army stood at a fraction of its strength through the war.
       const cap = atWar ? ARMY_SHARE_WAR * income : peace;
-      const keep = !atWar && (pending.get(n) ?? 0) + ordered === 0 && slots > 0 && upkeep < cap ? nextOrderPrice(world, n, income, mix) : 0;
+      // And the warship's price while it saves for one (ADR-557), at war too.
+      const keep = Math.max(!atWar && (pending.get(n) ?? 0) + ordered === 0 && slots > 0 && upkeep < cap ? nextOrderPrice(world, n, income, mix) : 0, shipPrice > 0 && (!atWar || upkeep >= peace) ? shipPrice : 0);
       ({ balance, upkeep } = refill(n, income, need, balance, upkeep, cap, keep));
       // 3b. A fleet (PLAN 4.6e1), with what the army's orders left: one at a time, while the
       // navy is under its share of the income.
@@ -567,8 +582,22 @@ export function pickFleet(world: World, n: number, income: number, kinds: NonNul
   const templates = world.rules!.templates;
   const gold = world.nations.cols.gold[n]!;
   const pays = (t: number): boolean => templates[t] !== undefined && gold >= templates[t]!.gold + RESERVE_MONTHS * income;
-  const wanted = income >= BATTLE_FLEET_INCOME ? [kinds.battle, kinds.cruiser, kinds.destroyer] : income >= RICH_INCOME ? [kinds.cruiser, kinds.destroyer] : [kinds.destroyer];
-  return wanted.find(pays) ?? -1;
+  return fleetsWanted(income, kinds).find(pays) ?? -1;
+}
+
+/** The warships a nation of `income` orders (PLAN 4.6e1), the best first. */
+function fleetsWanted(income: number, kinds: NonNullable<BuildMix['fleets']>): number[] {
+  return income >= BATTLE_FLEET_INCOME ? [kinds.battle, kinds.cruiser, kinds.destroyer] : income >= RICH_INCOME ? [kinds.cruiser, kinds.destroyer] : [kinds.destroyer];
+}
+
+/**
+ * The price a nation without a navy saves for (PLAN 7.35d3b, ADR-557): the cheapest warship of
+ * its income's kinds; 0 when it has none of them.
+ */
+export function fleetPrice(world: World, income: number, kinds: NonNullable<BuildMix['fleets']>): number {
+  const prices = fleetsWanted(income, kinds).map((t) => world.rules!.templates[t]?.gold ?? Infinity);
+  const p = Math.min(...prices);
+  return Number.isFinite(p) ? p : 0;
 }
 
 /**

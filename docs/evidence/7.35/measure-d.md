@@ -639,3 +639,25 @@ Yugoslavia (2609) saw the same, 337 to 352 gold months each.
   its armour (PLAN 3.5d): the army's orders and the refills keep the warship's price over the reserve
   while the army stands at its peacetime share. The rest, 14 % (poorer than the line within the
   run, or the gold taken by wings and transports), is not the army's.
+
+## 13. The rule: a nation without a navy saves for a warship (7.35d3b, ADR-557)
+
+The same 14 seeds × 30 years with the rule (JSON in `d3b/after/`; `npx tsx tools/diag/navyLossGold.ts
+docs/evidence/7.35/d3b/after`), against §12's:
+
+| | before | after |
+| --- | --- | --- |
+| nations that lost a navy / built one again | 337 / 111 (33 %) | 463 / 290 (63 %) |
+| navies lost / built again (episodes) | 473 / 182 | 1,031 / 702 |
+| the first rebuild, median days after the loss | 2,236 | 1,123 |
+| navies a day, years 2–30 (mean of seed-years) | 11.4 | 17.4 |
+| armed fleets built / sunk, 30 years | 935 / 1,215 | 1,642 / 1,795 |
+| ships sunk, years 2–30 | 13,077 | 20,311 |
+| gold months, years 2–30 (of lost navies' months) | 45,664 of 86,031 | 41,607 of 92,087 |
+| a warship in training | 1,035 | 3,654 |
+| covered by the land spend since lost | 86 % | 73 % |
+
+The gold months left are mostly at war with the army under its peacetime share (the floor:
+destroyer band 20,012, the land spend since lost covering 72 %) and in peace slow balances (destroyer
+band 8,547, the army's orders 0 a month: the treasury climbs to the line, 13 to 19 months on a
+balance of 45). More nations lose a navy because more have one to lose. No shipyard is d3c's.
