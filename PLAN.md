@@ -61,6 +61,21 @@ each, split when taken up:
   years. Read, not a bar (the user's, 2026-10-20: which nations go to war is diplomacy's): the
   year-10 and year-20 samples with no war whose two sides both have a navy (was 18 of 28). A unit
   test per rule; the pin's entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
+  In parts:
+    - [x] 7.39a Measured (`docs/evidence/7.39/measure-a.md`, `tools/diag/seaWars.ts`, `seaWhy.ts`;
+      14 seeds × 30 years at `63ba0e4`, the first full measure): sea battles 35.7 in year 1, 4.3 a
+      world-year in years 2–30 (bar 8.9), 2.6 % of them sinking nothing; a war of two navies 63.4
+      war-weeks a world-year late against 68.5 in year 1; of the late fleet-weeks at war with a
+      navy (1,029 a world-year) 901 on station at an enemy port, 886 of them with the nearest enemy
+      fleet of their waters beyond `SORTIE_KM`; orders refused 4.3 a world-year. No rule.
+    - [ ] 7.39b The enemy navy beyond a station's reach (7.39a §3, §5: 886 of 1,029 late fleet-weeks
+      at war with a navy). Measured first, for those fleet-weeks: the km to the nearest enemy fleet
+      of the station's waters, where that fleet stands (its bloc's port, a station, under way) and
+      in which war, and whose port the station is (the navy's enemy, a partner of it, a coast with
+      no navy). Then a rule with an ADR (`awayOrder`, `plan`: a fleet at war with a navy seeks it
+      beyond a blockade). AT: those fleet-weeks halved (886 → under 443 a world-year) and sea
+      battles a world-year in years 2–30 above 4.3, on the 14 seeds × 30 years; 7.39's two bars
+      read on that run; a unit test (red without); the pin's entry; `--profile`.
 - [ ] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g):
   `territory.ts`'s flip scores each neighbouring enemy controller with its side's pressure and
   gives a tie to the lowest id, so a puppet or ally with no army takes the cells its partner's

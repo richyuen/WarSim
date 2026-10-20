@@ -20728,3 +20728,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   the first read).
 - No sim change, the pin unchanged. Specs by hand: none (no UI). 7.38's commits: 5 (+7.44, 7.45a, 7.45b).
 - **Next:** PLAN 7.39 (R10-B2, the war at sea after year 1).
+
+## 2026-10-20 — PLAN 7.39a: why the war at sea stops after year 1, measured (R10-B2)
+
+- **Tools** (new): `tools/diag/seaWars.ts` (weekly: each war's sides by navy; every armed fleet at war
+  by what `plan` / `awayOrder` do with it; for a fleet on station at war with a navy, why the nearest
+  enemy fleet is not hunted; fleets' refused orders) on `tools/diag/seaWhy.ts` (the naval AI's tests
+  in their order, for one sample). `seaMeet` keeps its own copy (7.35's evidence was read with it).
+- **Run** (HEAD `63ba0e4`, the critic's 14 seeds × 30 years, `seaYears` and `seaWars`, 7 and 14 at
+  a time; `docs/evidence/7.39/measure-a.md`, `a/`): sea battles 35.7 in year 1, 4.3 a world-year in
+  years 2–30 (7.39's bar 8.9; the critic's 2.7 was at `bcbc99c`), 2.6 % sinking nothing (bar 5 %,
+  met). Wars of two navies 63.4 war-weeks a world-year late against 68.5 in year 1, on 23–29 of 29
+  late years of every seed: the critic's 18 of 28 samples without one is not HEAD's weekly read.
+- **Cause:** of the late fleet-weeks at war with a navy (1,029 a world-year), 901 are on station at
+  an enemy port, and for 886 the nearest enemy fleet of their waters is beyond `SORTIE_KM` (2,500
+  km): Japan, the United States, Britain and France blockade the ports nearest them and stand far
+  from the enemy's navy until peace. Refused orders (4.3 a world-year, all `NoSeaWay`), ports with
+  no target, a stronger enemy: 3 %.
+- No sim change, the pin unchanged. Specs by hand: none (no UI).
+- **Next:** PLAN 7.39b (the enemy navy beyond a station's reach: measured, then a rule).
