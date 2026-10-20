@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-577 · 2026-10-20 · accepted (the user's decision, 2026-10-20) — PLAN 7.42 and 7.29 closed not done; 7.40 and 7.41 wait on the next critic run
+
+- **Context.** Before the next critic run (PLAN 7.5), Phase 7 held 7.46b3, 7.46c, 7.47, 7.43, 7.40,
+  7.41, 7.42 and 7.29a–c. The user asked which could go.
+- **Decision.**
+  - 7.42 (a held-back block 1.518 cells from its enemy's, against 1.5) closed, not done: found by
+    our own `deploy.test.ts`, not by the critic, and not seen in a game.
+  - 7.29 and its parts a–c (the late land war's reach) closed, not done: each part was "measured
+    first, a rule only if one is found". The next critic report says whether the late land war is
+    still short; a task is filed from it then (PROMPT 2a).
+  - 7.40 (emergent 6) and 7.41 (naval 6) moved after PLAN 7.5: taken only if the next report still
+    scores the dimension under its bar, then placed before 7.5 with that run's tasks; else closed.
+    A deviation from PROMPT 2a's placement (a dimension task before 7.5), the user's.
+  - 7.43 (a puppet with no army takes the cells its overlord's armies win) stays, before the run:
+    its rule is drafted, and Latvia's rise is part of 7.40's case.
+- **Order.** 7.46b3, 7.47, 7.46c, 7.43, then the critic run (7.5, after `npm run check:review`).
+
 ### ADR-576 · 2026-10-20 · accepted (option a, the user's decision, 2026-10-20) — PLAN 7.46's 80 % of HEAD's armed power is a read, not a bar
 
 - **Context.** PLAN 7.46's AT asked the world's armed power with the chase at years 3–10 to be at

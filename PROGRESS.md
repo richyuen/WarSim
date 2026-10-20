@@ -20857,3 +20857,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   one warship at a time, 7.46a §4); the chase is judged on 7.39b's battle bars at 7.46c.
 - Order: 7.46b3, then 7.47, then 7.46c (one 14 × 30 run reads both rules).
 - **Next:** PLAN 7.46b3 (Japan's gold).
+
+## 2026-10-20 — The user's decision: PLAN 7.42 and 7.29 closed, 7.40 and 7.41 after the critic run (ADR-577)
+
+- 7.42 and 7.29 (a–c) closed, not done, and archived. 7.40 and 7.41 moved after PLAN 7.5: taken
+  only if the next report still scores emergent under 7 or naval under 8. 7.43 stays.
+- Order: 7.46b3, 7.47, 7.46c, 7.43, then the critic run.
+- **Next:** PLAN 7.46b3 (Japan's gold).

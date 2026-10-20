@@ -12612,3 +12612,64 @@ Of 7.33 (open in PLAN.md):
       of the resolve after the hour, its resolve spent (4 rows read as hydrogen where fission
       covers): it now puts the war's `lastStrike` and `resolveStrikes` of before the hour back;
       5861, 6421 and 761 re-run, each such burst's hydrogen value above fission's.
+
+<!-- moved 2026-10-20 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.42 A block held back stands within contact reach of its enemy's block on every front (from
+  PLAN 7.36b1, ADR-560; ADR-435's question): `deploy.test.ts`'s 60 days of Germany against Poland
+  (seed 99), Nationalist Spain's block 749 held at DEPLOY_REACH stood 1.518 cells from the
+  Republic's 798, deployed toward another (ticks 435–440; ADR-435's Manchukuo case 1.519). The
+  test holds 1.5 on Germany's and Poland's contacts. AT: world-wide in those 60 days no held-back
+  block over 1.5 cells from its enemy's block (red now, 1.518), a rule with an ADR and the pin's
+  entry; or a BLOCKERS entry with the measured cause, the user's to accept.
+  Closed (ADR-577, the user's decision, 2026-10-20): not done. Found by our own test, not the critic,
+  and unseen in a game.
+
+- [x] 7.29 The late land war's reach (from PLAN 7.26c3, ADR-519, 2026-10-18): after year 1 the land
+  war runs at 1.4 formations in contact a day against year 1's 30 while 1 to 14 wars run
+  (`docs/evidence/7.26/measure-g.md`), and the measures under 7.26c found the men who cannot get
+  to the war: a partner's transports stand at a port with room while a colony or small member has
+  none (`measure-c3.md` §5, ADR-516), and 40 % of an own-front planner's far men stand for want of
+  a way (`measure-c1.md` §6: 16 % across the sea, Japan, Britain, France; 24 % behind closed
+  ground or the sea on their landmass). Not an air-war task: the air AI tasks 0.83 of the wings
+  with an enemy in range, late as in year 1. Taken after 7.27 and 7.28, and only if 7.27's
+  measure or the critic's next run finds the late land war short (met 2026-10-19: run 9 finds the
+  late air war still fallen, 95 % fewer air battles, which ADR-519 traces to the land war's contact;
+  taken after 7.31 to 7.37, as 7.36's late part; run 10, R10-B3: air battles 2,537 in year 1 and
+  122 a year after, the critic's 14 seeds, `critic/c10_summary.txt`); its AT is the land war's
+  (`landWar.ts`'s contact share of the big wars' front days, `armies.ts`), not the air's. A part
+  each:
+    - [x] 7.29a A partner's transports sent to the nation's port (7.26c3b1): a transport group of
+      a partner standing idle at a port, with net room for a nation's smallest free formation,
+      sails to that nation's port and loads it, rather than the men marching to the partner's
+      (ADR-516: a formation of the nation stood at the partner's port on 2 days in 16 seed-years;
+      every other case is a march of a median 42–347 cells). Measured first from a checkpoint:
+      the groups that would sail, the distance, the enemy sea on the way (ADR-517's groups sent
+      home were sunk). AT: a unit test; `landWar.ts`'s `partner` columns and embarks on seeds 2843
+      and 7919 × 8 years; the pin's entry.
+    - [x] 7.29b The lift by sea to a nation's own front (7.26c3c): a formation of an own-front
+      planner that cannot reach its front by land is carried from a port of its nation's on its
+      land to a port of its nation's on the front's land. Measured first: from a checkpoint, for
+      each such formation, such a port with transports and such a port on the front's land. AT:
+      the measure; the rule only if the share of far men standing for want of a way falls with
+      it; a unit test; the pin's entry.
+    - [x] 7.29c A lone new division fed to a front and lost within weeks (from PLAN 7.27e,
+      `docs/evidence/7.27/measure-e.md`): seed 732's Soviet Union, years 7.8–9.3, bought 11
+      divisions in 18 months while its land army stood at one. Measured first, if 7.29 is taken
+      up: where such a division goes from where it is raised and how long it stands before contact.
+      AT: the measure; a rule only if it is one; a unit test and the pin's entry if it moves.
+  Closed (ADR-577, the user's decision, 2026-10-20), with its parts: not done. Each part was "measured
+  first, a rule only if one is found"; the next critic report judges whether the late land war is still
+  short, and a task is filed from it then.

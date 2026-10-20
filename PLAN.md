@@ -161,6 +161,9 @@ each, split when taken up:
   land formation (`nukeProgramme.ts`'s `held` and `men`); the ADR and the pin's entry. The ADR
   also says who takes a cell that only the puppet's land borders while its overlord's armies
   press it (the candidates are neighbouring controllers; the patched run did not meet that case).
+
+- [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
+  AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 - [ ] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's
   seeds: the same top five 22 years on seed 8693 and 21 on 7019, over the 20-year limit (4219 and
   3613: 18 and 17; run 9's worst 18; `critic/c10_summary.txt` `stasis`); late wars between
@@ -178,6 +181,9 @@ each, split when taken up:
   by a rule with an ADR, or a BLOCKERS entry
   with its measured cause, the user's to accept; the pin's entry. Stop: two full re-measures flat,
   the bar is the user's (ADR-554).
+  **After the next critic run** (ADR-577, the user's decision, 2026-10-20): taken only if its report
+  still scores the dimension under the bar, and then moved before 7.5 with that run's tasks; else
+  closed.
 - [ ] 7.41 The war at sea seen (naval 6, needs 8, beyond 7.39): Japan–USA (seed 8693) one battle
   stood with no row for 6 days (hours 330 to 480) and was never shown (`critic/c10_n_8693_JAP_USA
   .json`); Germany–UK on 3613 no sea battle between them in 24 days (`c10_e_3613.json`); at 20 m/px
@@ -189,49 +195,9 @@ each, split when taken up:
   measured cause, the user's to accept; at 20 m/px the middle of every nation's hull at least 40
   (summed RGB) from the sea's colour there, every nation of the 1938 world counted (a spec, red on
   France's before). Stop: two full re-measures flat, the bar is the user's (ADR-554).
-- [ ] 7.42 A block held back stands within contact reach of its enemy's block on every front (from
-  PLAN 7.36b1, ADR-560; ADR-435's question): `deploy.test.ts`'s 60 days of Germany against Poland
-  (seed 99), Nationalist Spain's block 749 held at DEPLOY_REACH stood 1.518 cells from the
-  Republic's 798, deployed toward another (ticks 435–440; ADR-435's Manchukuo case 1.519). The
-  test holds 1.5 on Germany's and Poland's contacts. AT: world-wide in those 60 days no held-back
-  block over 1.5 cells from its enemy's block (red now, 1.518), a rule with an ADR and the pin's
-  entry; or a BLOCKERS entry with the measured cause, the user's to accept.
-- [ ] 7.29 The late land war's reach (from PLAN 7.26c3, ADR-519, 2026-10-18): after year 1 the land
-  war runs at 1.4 formations in contact a day against year 1's 30 while 1 to 14 wars run
-  (`docs/evidence/7.26/measure-g.md`), and the measures under 7.26c found the men who cannot get
-  to the war: a partner's transports stand at a port with room while a colony or small member has
-  none (`measure-c3.md` §5, ADR-516), and 40 % of an own-front planner's far men stand for want of
-  a way (`measure-c1.md` §6: 16 % across the sea, Japan, Britain, France; 24 % behind closed
-  ground or the sea on their landmass). Not an air-war task: the air AI tasks 0.83 of the wings
-  with an enemy in range, late as in year 1. Taken after 7.27 and 7.28, and only if 7.27's
-  measure or the critic's next run finds the late land war short (met 2026-10-19: run 9 finds the
-  late air war still fallen, 95 % fewer air battles, which ADR-519 traces to the land war's contact;
-  taken after 7.31 to 7.37, as 7.36's late part; run 10, R10-B3: air battles 2,537 in year 1 and
-  122 a year after, the critic's 14 seeds, `critic/c10_summary.txt`); its AT is the land war's
-  (`landWar.ts`'s contact share of the big wars' front days, `armies.ts`), not the air's. A part
-  each:
-    - [ ] 7.29a A partner's transports sent to the nation's port (7.26c3b1): a transport group of
-      a partner standing idle at a port, with net room for a nation's smallest free formation,
-      sails to that nation's port and loads it, rather than the men marching to the partner's
-      (ADR-516: a formation of the nation stood at the partner's port on 2 days in 16 seed-years;
-      every other case is a march of a median 42–347 cells). Measured first from a checkpoint:
-      the groups that would sail, the distance, the enemy sea on the way (ADR-517's groups sent
-      home were sunk). AT: a unit test; `landWar.ts`'s `partner` columns and embarks on seeds 2843
-      and 7919 × 8 years; the pin's entry.
-    - [ ] 7.29b The lift by sea to a nation's own front (7.26c3c): a formation of an own-front
-      planner that cannot reach its front by land is carried from a port of its nation's on its
-      land to a port of its nation's on the front's land. Measured first: from a checkpoint, for
-      each such formation, such a port with transports and such a port on the front's land. AT:
-      the measure; the rule only if the share of far men standing for want of a way falls with
-      it; a unit test; the pin's entry.
-    - [ ] 7.29c A lone new division fed to a front and lost within weeks (from PLAN 7.27e,
-      `docs/evidence/7.27/measure-e.md`): seed 732's Soviet Union, years 7.8–9.3, bought 11
-      divisions in 18 months while its land army stood at one. Measured first, if 7.29 is taken
-      up: where such a division goes from where it is raised and how long it stands before contact.
-      AT: the measure; a rule only if it is one; a unit test and the pin's entry if it moves.
-
-- [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
-  AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
+  **After the next critic run** (ADR-577, the user's decision, 2026-10-20): taken only if its report
+  still scores the dimension under the bar, and then moved before 7.5 with that run's tasks; else
+  closed.
 
 ---
 
@@ -490,3 +456,5 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.44 The yield chosen by the strike's utility, the dead's cost in it (from PLAN 7.38e, ADR-568's […]
 - [x] 7.38 R10-B1: the AI's nuclear choice weighs the people a burst kills (AI nuclear use 7, needs […]
 - [x] 7.45 The dead's cost at a high doctrine in extreme desperation (from PLAN 7.38e; AI nuclear use […]
+- [x] 7.42 A block held back stands within contact reach of its enemy's block on every front (from […]
+- [x] 7.29 The late land war's reach (from PLAN 7.26c3, ADR-519, 2026-10-18): after year 1 the land […]
