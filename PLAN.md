@@ -158,6 +158,10 @@ each, split when taken up:
       at war names `restraintOf`'s reason for its war of the highest utility (and the enemy that
       deters it). AT: a spec, Germany given 20 warheads and missiles at war with Poland given 10
       and missiles, losing: the panel says Germany is deterred by Poland (red without: no line).
+      `noReach` is intent without means, not restraint (7.37e: the Soviet Union over NUKE_FLOOR at
+      0.73 on Japan for 56 days, seed 5309 on the critic's code; Poland at 0.56 on Argentina for
+      185 days, HEAD): split it into no means at all (`canDeliver` false) and means out of range,
+      each worded so, and say for the 5309 case which it was (before ADR-561's kept group or not).
     - [ ] 7.37g Latvia (seed 1307, 75 warheads) and Lithuania (8693, 20) nuclear powers (run 10,
       unexplained): how each came to the bomb (`goesForBomb`'s income against
       NUKE_PROGRAMME_INCOME, its land then) measured on the critic's code. AT: the cause, and a
