@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-562 · 2026-10-20 · accepted — An island beyond 450 km of every seed is an air zone of its own (PLAN 7.36b2; amends ADR-306, ADR-560)
+
+- **Context.** After ADR-560, on day 10 of Germany–Poland (seed 8217) two held zones still
+  spanned over 1,500 km by `tools/diag/airMapRead.ts`: Nationalist Spain's, the Azores folded
+  into a zone seeded in Rio de Oro, and Japan's, Formosa folded into Luzon's. A land mass under
+  `ISLAND_SHARE` of the target had no seed and went whole to the zone of the nearest seed, however
+  far. Of the 49 land zones over 1,500 km, 11 were long by such islands alone (the Azores, Hawaii
+  in a zone of Baja California, the islands round New Zealand and Madagascar); the rest are
+  single provinces over the target (Siberia, Canada), which a zone of whole nodes keeps.
+- **Decision.** Such a land mass, taken in the order of its lowest node, joins the nearest seed's
+  zone only if that seed is within `ISLAND_REACH_KM` = 450 km of its lowest node; else it is a
+  zone of its own, seeded there, which a later land mass within reach of it joins. Such a zone has
+  no neighbour over the graph and stays, under a quarter of the target as it may be. The zones are
+  numbered in their seeds' cells' order as before. 320 → 405 land zones, 85 of them islands
+  alone; on a map with no far island the zones are as they were.
+- **Measured.** Reach ∞ (as before), 700, 550, 450, 350 km (scratch, the 1938 map): land zones
+  over 1,500 km long by islands 11, 2, 2, 1, 1; at 550 Formosa still joins Luzon (1,572 km), so
+  450. The one left at 450 and 350 is not a far island: a piece of Colombia's land cut off in the
+  province graph, 75,700 km², within 450 km of the seed (1,783 km). The islands' own zones span
+  1,472 km at most. Day 10 of seed 8217, by edge cells (`airMapRead1938.test.ts`, red without:
+  2,688 km): the 12 held zones 695 to 1,212 km; by `airMapRead.ts` (its latitude now Miller's,
+  not linear: it read Japan's zone as 1,556 km, 1,430 by the map's projection) land zones over
+  1,500 km 40 → 28, held 1 → 0 (`docs/evidence/7.36/airMapRead-8217-b2{-before,}.json`).
+- **Consequences.** The air over Formosa, the Azores or Hawaii is reckoned there, not over the
+  land the nearest seed is on. The area test of the zones exempts a zone all of whose land is
+  under `ISLAND_SHARE` of the target from its lower bound, and holds such zones under a third of
+  the land zones. Pin cc11ee7d → b6d535fe (zone ids key the air's power and superiority).
+
 ### ADR-561 · 2026-10-20 · accepted — A holder of warheads keeps a strategic bomber group for them (PLAN 7.37a)
 
 - **Context.** PLAN 7.37 (AI nuclear use 7): Czechoslovakia, armed in the editor with a bomber

@@ -11,7 +11,8 @@
  * graph, by the km between the nodes' centres (a search from all the seeds at once, ties by the
  * lower seed): each such region is joined by its own nodes. A smaller component (an island, a
  * cape cut off at the map's scale) goes whole to the zone of the seed nearest its lowest node by
- * straight km: the air does not ask for land between. A region under a quarter of the target
+ * straight km, if within `ISLAND_REACH_KM`: the air does not ask for land between; beyond it, it is
+ * a zone of its own (ADR-562). A region under a quarter of the target
  * joins its neighbour of least area (ADR-560). Zones 1…`land` are the land's, in the order of
  * their seeds' cells; `land + s` is sea zone s. Derived, not saved, not hashed.
  */
@@ -28,6 +29,12 @@ import type { SeaZones } from './seaZones';
 export const AIR_ZONE_KM2 = 300_000;
 /** A land component under this share of `AIR_ZONE_KM2` has no seed: it joins the nearest zone. */
 export const ISLAND_SHARE = 1 / 3;
+/**
+ * Such a component joins the nearest seed's zone only within this many km of that seed, else it
+ * is a zone of its own (PLAN 7.36b2, ADR-562): a far island no longer stretches a zone of the
+ * mainland over the sea.
+ */
+export const ISLAND_REACH_KM = 450;
 
 export interface AirZones {
   /** Zone per cell, 1…count (0: none, water too small for a sea zone). */
@@ -42,7 +49,7 @@ export interface AirZones {
   seedCell: Int32Array;
 }
 
-export function buildAirZones(g: NavGrid, graph: ProvinceGraph, sea: SeaZones, targetKm2 = AIR_ZONE_KM2): AirZones {
+export function buildAirZones(g: NavGrid, graph: ProvinceGraph, sea: SeaZones, targetKm2 = AIR_ZONE_KM2, reachKm = ISLAND_REACH_KM): AirZones {
   const { w, h, kx, ky } = g;
   const n = w * h;
   const nodes = graph.nodeCount + 1;
@@ -139,7 +146,10 @@ export function buildAirZones(g: NavGrid, graph: ProvinceGraph, sea: SeaZones, t
       }
     }
   }
-  // The small components: whole, to the zone of the seed nearest their lowest node.
+  // The small components, in the order of their lowest nodes: whole, to the zone of the seed
+  // nearest their lowest node, if that seed is within `reachKm`; else the component is a zone of
+  // its own, seeded at its lowest node, that a later one within reach of it joins (PLAN 7.36b2,
+  // ADR-562: the Azores were in a zone of the Sahara, 2,847 km across).
   compFirst.forEach((k, id) => {
     if (hasSeed[id] === 1) return;
     let best = 0;
@@ -150,6 +160,11 @@ export function buildAirZones(g: NavGrid, graph: ProvinceGraph, sea: SeaZones, t
         bd = d;
         best = zoneOfNode[sd]!;
       }
+    }
+    if (bd > reachKm) {
+      seedNodes.push(k);
+      best = seedNodes.length;
+      zoneOfNode[k] = best;
     }
     for (let a = 1; a < nodes; a++) if (comp[a] === id) zoneOfNode[a] = best;
   });
@@ -186,12 +201,11 @@ export function buildAirZones(g: NavGrid, graph: ProvinceGraph, sea: SeaZones, t
     }
   }
   const renumber = new Uint16Array(seedNodes.length + 1);
-  const seeds: number[] = [];
-  seedNodes.forEach((k, i) => {
-    if (find(i + 1) === i + 1) {
-      seeds.push(k);
-      renumber[i + 1] = seeds.length;
-    }
+  const keptZones = seedNodes.map((_, i) => i + 1).filter((z) => find(z) === z);
+  keptZones.sort((a, b) => graph.centre[seedNodes[a - 1]!]! - graph.centre[seedNodes[b - 1]!]!);
+  const seeds = keptZones.map((z, i) => {
+    renumber[z] = i + 1;
+    return seedNodes[z - 1]!;
   });
   for (let k = 1; k < nodes; k++) zoneOfNode[k] = renumber[find(zoneOfNode[k]!)]!;
   const land = seeds.length;

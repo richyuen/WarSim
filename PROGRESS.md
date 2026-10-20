@@ -20332,3 +20332,33 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Specs by hand, green:** airMapRead, airControl, airDemo, airFx, airT3, carrierStrikeRow,
   nukeRuins, patrolsSeen, seaBattleSeen, sortiesSeen (1938).
 - **Next:** PLAN 7.36b2 (the far islands).
+
+## 2026-10-20 — PLAN 7.36b2: an island beyond 450 km of every seed is an air zone of its own (ADR-562)
+
+- **Measured** (scratch over the 1938 map, then `tools/diag/airMapRead.ts`, seed 8217, day 10):
+  of the 49 land zones over 1,500 km, 11 long by islands alone, folded whole into the nearest
+  seed's zone however far (the Azores into Rio de Oro's, Formosa into Luzon's, Hawaii into Baja
+  California's, the islands round New Zealand and Madagascar); the rest are provinces over the
+  target. Reach ∞, 700, 550, 450, 350 km: island-caused 11, 2, 2, 1, 1; at 550 Formosa still
+  joins Luzon, so 450.
+- **Rule:** a land mass under a third of the target joins the nearest seed's zone only within
+  `ISLAND_REACH_KM` = 450 km of that seed, else it is a zone of its own that later ones within
+  reach join. 320 → 405 land zones, 85 islands alone (their spans 1,472 km at most).
+- **AT:** the 12 zones held on day 10 span 695 to 1,212 km between their farthest edge cells
+  (`airMapRead1938.test.ts`, red without: 2,688 km). Pin cc11ee7d → b6d535fe.
+- **Gotcha:** `airMapRead.ts` read latitude as linear in the row; the map is Miller's. Fixed: it
+  read Japan's zone as 1,556 km, 1,430 by the projection (835 without Formosa). By the fixed tool,
+  land zones over 1,500 km 40 → 28, held 1 → 0 (`docs/evidence/7.36/airMapRead-8217-b2{-before,}.json`).
+- **Read, not a bar:** the one long zone left that is not a single province is a piece of
+  Colombia's land cut off in the province graph (75,700 km²), within 450 km of its seed: 1,783 km.
+  Air battles / sorties aloft, years 1–3 (`airWar.ts`, before → after): seed 99 3,084/620/420 →
+  3,077/642/168; 7019 3,135/2,066/53 → 3,977/1,201/211; 8217 2,894/969/710 → 2,658/980/805.
+- **Tests aimed, bars kept:** `airZones1938`'s area test exempts from its bounds a zone all of
+  whose land is islands under a third of the target, and holds those under a third of the zones.
+- **Perf:** seed 99 × 1 year, pinned, HEAD and this at once on separate cores, swapped: mean tick
+  2.45/2.47 → 2.42/2.43 ms, air 0.217/0.221 → 0.215/0.216 ms.
+- **Unit suite by hand:** 280 files, 1,756 tests green. **Specs by hand, green:** airMapRead,
+  airControl, airDemo, airFx, airOrders, airRead, airT3, carrierStrikeRow, patrolsSeen,
+  sortiesSeen (1938).
+- **7.36b done** (both parts). 7.36 stays open: its first half's bar waits on the user (ADR-559).
+- **Next:** PLAN 7.37 (AI nuclear use), its next part.

@@ -14,38 +14,8 @@ describe('air zones (PLAN 5.1a)', () => {
   const a = airOf(w);
   const { grid, graph } = navOf(w);
   const sea = seaOf(w);
-
-  it('every cell of a province-graph node or a sea zone is in one, and no other; the sea\'s are the sea zones', () => {
-    let wrong = 0;
-    for (let c = 0; c < a.zoneOf.length; c++) {
-      const node = graph.nodeOf[c]!;
-      const want = node !== 0 ? a.zoneOfNode[node]! : sea.zoneOf[c] !== 0 ? a.land + sea.zoneOf[c]! : 0;
-      if (a.zoneOf[c] !== want || (node !== 0 && want === 0) || (want > a.land) !== (node === 0 && sea.zoneOf[c] !== 0)) wrong++;
-    }
-    expect(wrong).toBe(0);
-    expect(a.count).toBe(a.land + sea.count);
-    expect(a.land).toBeGreaterThan(40);
-  });
-
-  it('a land zone is of about the target area: within a quarter and three times it, beyond a node over the target', () => {
-    // A zone is whole nodes, and since PLAN 7.36b (ADR-560) a province of Siberia, Canada or
-    // Australia is several times the target alone: its zone may be three times the target beyond it.
-    const area = new Float64Array(graph.nodeCount + 1);
-    for (let c = 0; c < graph.nodeOf.length; c++) if (graph.nodeOf[c] !== 0) area[graph.nodeOf[c]!]! += grid.kx[Math.floor(c / grid.w)]! * grid.ky[Math.floor(c / grid.w)]!;
-    const biggest = new Float64Array(a.land + 1);
-    for (let k = 1; k <= graph.nodeCount; k++) if (a.zoneOfNode[k]! <= a.land) biggest[a.zoneOfNode[k]!] = Math.max(biggest[a.zoneOfNode[k]!]!, area[k]!);
-    const out: string[] = [];
-    for (let z = 1; z <= a.land; z++) {
-      const over = biggest[z]! > AIR_ZONE_KM2 ? biggest[z]! : 0;
-      if (a.areaKm2[z]! < AIR_ZONE_KM2 / 4 || a.areaKm2[z]! > 3 * AIR_ZONE_KM2 + over) out.push(`${z}: ${Math.round(a.areaKm2[z]! / 1000)}k km²`);
-    }
-    expect(out).toEqual([]);
-  });
-
-  it('a land zone is in one piece over the graph, but for the islands under a third of the target it took in', () => {
-    // The nodes of each zone on its seed's land component are joined by nodes of the zone.
-    const area = new Float64Array(graph.nodeCount + 1);
-    for (let c = 0; c < graph.nodeOf.length; c++) if (graph.nodeOf[c] !== 0) area[graph.nodeOf[c]!]! += grid.kx[Math.floor(c / grid.w)]! * grid.ky[Math.floor(c / grid.w)]!;
+  // The land masses: nodes joined by the graph's neighbours, and their areas.
+  const components = (area: Float64Array): { comp: Int32Array; compArea: number[] } => {
     const comp = new Int32Array(graph.nodeCount + 1).fill(-1);
     const compArea: number[] = [];
     for (let k = 1; k <= graph.nodeCount; k++) {
@@ -65,6 +35,57 @@ describe('air zones (PLAN 5.1a)', () => {
       }
       compArea.push(sum);
     }
+    return { comp, compArea };
+  };
+
+  it('every cell of a province-graph node or a sea zone is in one, and no other; the sea\'s are the sea zones', () => {
+    let wrong = 0;
+    for (let c = 0; c < a.zoneOf.length; c++) {
+      const node = graph.nodeOf[c]!;
+      const want = node !== 0 ? a.zoneOfNode[node]! : sea.zoneOf[c] !== 0 ? a.land + sea.zoneOf[c]! : 0;
+      if (a.zoneOf[c] !== want || (node !== 0 && want === 0) || (want > a.land) !== (node === 0 && sea.zoneOf[c] !== 0)) wrong++;
+    }
+    expect(wrong).toBe(0);
+    expect(a.count).toBe(a.land + sea.count);
+    expect(a.land).toBeGreaterThan(40);
+  });
+
+  it('a land zone is of about the target area: within a quarter and three times it, beyond a node over the target', () => {
+    // A zone is whole nodes, and since PLAN 7.36b (ADR-560) a province of Siberia, Canada or
+    // Australia is several times the target alone: its zone may be three times the target beyond it.
+    // Since PLAN 7.36b2 (ADR-562) islands beyond ISLAND_REACH_KM of every seed are a zone of their
+    // own: such a zone, every node of it on a land mass under ISLAND_SHARE of the target, may be
+    // under a quarter of it.
+    const area = new Float64Array(graph.nodeCount + 1);
+    for (let c = 0; c < graph.nodeOf.length; c++) if (graph.nodeOf[c] !== 0) area[graph.nodeOf[c]!]! += grid.kx[Math.floor(c / grid.w)]! * grid.ky[Math.floor(c / grid.w)]!;
+    const { comp, compArea } = components(area);
+    const biggest = new Float64Array(a.land + 1);
+    const onMainland = new Uint8Array(a.land + 1);
+    for (let k = 1; k <= graph.nodeCount; k++) {
+      const z = a.zoneOfNode[k]!;
+      if (z === 0 || z > a.land) continue;
+      biggest[z] = Math.max(biggest[z]!, area[k]!);
+      if (compArea[comp[k]!]! >= ISLAND_SHARE * AIR_ZONE_KM2) onMainland[z] = 1;
+    }
+    const out: string[] = [];
+    let islands = 0;
+    for (let z = 1; z <= a.land; z++) {
+      const over = biggest[z]! > AIR_ZONE_KM2 ? biggest[z]! : 0;
+      if (onMainland[z] === 0) {
+        islands++;
+        continue;
+      }
+      if (a.areaKm2[z]! < AIR_ZONE_KM2 / 4 || a.areaKm2[z]! > 3 * AIR_ZONE_KM2 + over) out.push(`${z}: ${Math.round(a.areaKm2[z]! / 1000)}k km²`);
+    }
+    expect(out).toEqual([]);
+    expect(islands).toBeLessThan(a.land / 3);
+  });
+
+  it('a land zone is in one piece over the graph, but for the islands under a third of the target it took in', () => {
+    // The nodes of each zone on its seed's land component are joined by nodes of the zone.
+    const area = new Float64Array(graph.nodeCount + 1);
+    for (let c = 0; c < graph.nodeOf.length; c++) if (graph.nodeOf[c] !== 0) area[graph.nodeOf[c]!]! += grid.kx[Math.floor(c / grid.w)]! * grid.ky[Math.floor(c / grid.w)]!;
+    const { comp, compArea } = components(area);
     const broken: number[] = [];
     for (let z = 1; z <= a.land; z++) {
       const seed = graph.nodeOf[a.seedCell[z]!]!;

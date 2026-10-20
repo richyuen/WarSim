@@ -10,6 +10,7 @@
  * Usage: `npx tsx tools/diag/airMapRead.ts [seed] [days] [out.json]`.
  */
 import { writeFileSync } from 'node:fs';
+import { unproject } from '../../src/sim/data/projection';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -33,9 +34,10 @@ const air = airOf(world);
 const { grid } = navOf(world);
 const holders = airHolders(world, air.count);
 
-// Each zone's cells, sampled, as km on a sphere (the grid's km per cell by row).
+// Each zone's cells, sampled, as km on a sphere (the map is Miller's: until PLAN 7.36b2 this read
+// the latitude as linear in the row, and a span far from the equator as more than it is).
 const R = 6371;
-const lonLat = (c: number): [number, number] => [((c % W) + 0.5) / W * 360 - 180, 90 - (Math.floor(c / W) + 0.5) / H * 180];
+const lonLat = (c: number): [number, number] => unproject(((c % W) + 0.5) / W, (Math.floor(c / W) + 0.5) / H);
 const gc = (a: [number, number], b: [number, number]): number => {
   const r = Math.PI / 180;
   const s = Math.sin(((b[1] - a[1]) * r) / 2) ** 2 + Math.cos(a[1] * r) * Math.cos(b[1] * r) * Math.sin(((b[0] - a[0]) * r) / 2) ** 2;

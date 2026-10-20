@@ -77,7 +77,7 @@ each, split when taken up:
       the pin's entry. Met: 1, 1, 2, 1; 0.94; `sortieScheduler1938.test.ts`; f1dc9ca3 → 5afbdb13.
       Read, not a bar: armoured division 41 had no wing tasked over it in its day (ADR-503's spread,
       fewer wings than formations in contact).
-    - [ ] 7.36b The air map read (R10-B3): on day 10 of Germany–Poland (8217) one German zone
+    - [x] 7.36b The air map read (R10-B3): on day 10 of Germany–Poland (8217) one German zone
       runs from London to Kiev, every hover "held by Germany", the legend "Germany, 2 zones" for
       Europe (`critic/c10_h_1307.json`, `c10h_8217_air_hover.png`). Measured first: the air zones'
       sizes on the 1938 map and what the hover and the hatch read (the zone's holder by
@@ -96,10 +96,16 @@ each, split when taken up:
           Met: London "no one flies there", Paris "held by France", Warsaw "held by Germany",
           Kiev "no one flies there" (was Germany at all four; the test red at 1.5 M); air battles
           year 1 2,844 → 3,084, 1,872 → 3,135, 2,222 → 2,894, years 2–3 5,752 → 4,838; cc11ee7d.
-        - [ ] 7.36b2 An island far from every seed folded into its zone: on day 10 two zones held
+        - [x] 7.36b2 An island far from every seed folded into its zone: on day 10 two zones held
           still span over 1,500 km (Nationalist Spain's 2,847 km, the Azores in a zone of Rio de
           Oro; Japan's 1,556 km). AT: no zone held on day 10 spans over 1,500 km (a unit test,
           the farthest two of its edge cells, red without); the pin's entry if it moves.
+          Met (ADR-562, an island beyond 450 km of every seed a zone of its own): the 12 held
+          zones 695 to 1,212 km by edge cells (`airMapRead1938.test.ts`, red without: 2,688 km);
+          Japan's was 1,430 km by the map's projection (the diag read latitude as linear), 835
+          without Formosa; pin cc11ee7d → b6d535fe. Read, not a bar: 28 land zones still span
+          over 1,500 km, single provinces over the target but one, a piece of Colombia cut off in
+          the province graph within reach of its seed (1,783 km).
 - [ ] 7.37 AI nuclear use believed, beyond the chains (AI nuclear use 7, needs 8): single bombs on
   small states (Nepal 1,656,090 dead and Afghanistan 3,328,000 on seed 2609, Sweden 1,050,000 on
   1129); Germany strikes one Canadian point twice 90 days apart for 5,620 then 439 (seed 4483,

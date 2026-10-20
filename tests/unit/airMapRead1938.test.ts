@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AIR_CONTESTED } from '../../src/shared/mapModes';
+import { unproject } from '../../src/sim/data/projection';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -36,5 +37,43 @@ describe("the air map on day 10 of Germany's war on Poland (PLAN 7.36b)", () => 
     process.stderr.write(`${cities.map(([n], i) => `${n} zone ${zones[i]} holder ${read[i] === AIR_CONTESTED ? 'contested' : read[i]}`).join('; ')} (Germany ${GER})\n`);
     expect(read.filter((h) => h !== GER).length).toBeGreaterThanOrEqual(2);
     expect(new Set(zones).size).toBe(4);
+  });
+
+  it('no zone held that day spans over 1,500 km between the farthest two of its edge cells (PLAN 7.36b2)', () => {
+    // Before ADR-562 an island far from every seed went whole to the nearest seed's zone: the
+    // Azores to one of Rio de Oro (Nationalist Spain's, about 2,800 km), Formosa to one of Luzon
+    // (Japan's, about 1,560 km).
+    const edges = new Map<number, number[]>();
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const c = y * W + x;
+        const z = air.zoneOf[c]!;
+        const h = holders[z]!;
+        if (z === 0 || h === 0 || h === AIR_CONTESTED) continue;
+        const edge = air.zoneOf[y * W + ((x + 1) % W)] !== z || air.zoneOf[y * W + ((x + W - 1) % W)] !== z || y === 0 || y === H - 1 || air.zoneOf[c - W] !== z || air.zoneOf[c + W] !== z;
+        if (!edge) continue;
+        let a = edges.get(z);
+        if (!a) edges.set(z, (a = []));
+        a.push(c);
+      }
+    }
+    const r = Math.PI / 180;
+    const span = (cs: number[]): number => {
+      const p = cs.map((c) => unproject(((c % W) + 0.5) / W, (Math.floor(c / W) + 0.5) / H));
+      let m = 0;
+      for (let i = 0; i < p.length; i++) {
+        for (let j = i + 1; j < p.length; j++) {
+          const [lo1, la1] = p[i]!;
+          const [lo2, la2] = p[j]!;
+          const s = Math.sin(((la2 - la1) * r) / 2) ** 2 + Math.cos(la1 * r) * Math.cos(la2 * r) * Math.sin(((lo2 - lo1) * r) / 2) ** 2;
+          m = Math.max(m, 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(s))));
+        }
+      }
+      return m;
+    };
+    const spans = [...edges].map(([z, cs]) => [z, Math.round(span(cs))] as const);
+    process.stderr.write(`held zones ${spans.length}: ${spans.map(([z, s]) => `${z} ${s} km`).join(', ')}\n`);
+    expect(spans.length).toBeGreaterThan(5);
+    expect(spans.filter(([, s]) => s > 1500)).toEqual([]);
   });
 });
