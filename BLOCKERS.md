@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.37h: seed 9901's three Soviet strikes on a lone division, unchanged by 7.38's rules; the decision waits on the user (2026-10-20, ADR-570)
+- **The bar:** PLAN 7.37's, per case: the decision changed by a rule with an ADR, or the measured
+  cause here, the user's to accept.
+- **Measured** (`docs/evidence/7.37/h-9901-lone-division.md`): on the critic's code with ADR-528,
+  three fission bursts on 10,655 to 10,751 men, 0 people killed, desperation 0.99 to 1.18, utilities
+  0.025 to 0.055. 7.38b does not apply (fission only), 7.38c's cost is 0 (no people), 7.38d does not
+  reach them (427 to 1,696 km from the war's earlier bursts, against 92 km). The value is ADR-528's
+  0.43 for a lone division, near NUKE_FLOOR at desperation about 1.
+- **Options:** ADR-570 a (the cases stand, recommended), b (fewer than two divisions not weighed
+  outside extreme desperation), c (a warhead's cost growing as the stockpile shrinks).
+
 ### PLAN 7.37's Czechoslovakia: it dies holding its 10 warheads; the decision waits on the user (2026-10-20, PLAN 7.37b1, ADR-563)
 - **The bar:** PLAN 7.37's, per case: the decision changed by a rule with an ADR, or the measured
   cause here, the user's to accept.

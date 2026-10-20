@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-570 · 2026-10-20 · proposed (the user's decision) — Seed 9901's three Soviet strikes on a lone Chinese division: none of PLAN 7.38's rules changes them (PLAN 7.37h)
+
+- **Context.** PLAN 7.37 (AI nuclear use 7), left by 7.32a (ADR-528): on the critic's code with
+  ADR-528, seed 9901's Soviet Union strikes a lone Chinese division of 10,655 to 10,751 men three
+  times in one war (days 5565, 5628, 5641), at desperation 0.99 to 1.18, not extreme, utilities
+  0.025 to 0.055 (NUKE_FLOOR 0.025). 7.37h: whether 7.38's weight of the dead changes them.
+- **Measured** (`docs/evidence/7.37/h-9901-lone-division.md`): each burst killed the men it was
+  weighed at and 0 people, a fission burst. 7.38b (the yield by the target) does not apply: no
+  `thermonuclear` until day 5977. 7.38c's cost is 0: no people in the blast. 7.38d's in-war bar
+  does not reach them: the war's earlier bursts are 427 to 1,696 km away, against a hydrogen
+  bomb's 92 km. The value of a lone division is ADR-528's 0.43, "near NUKE_FLOOR at a desperation
+  about 1", as that ADR set it.
+- **Options.**
+  - a. (recommended) The cases stand: a nation at desperation about 1 strikes a division in the
+    field with a fission bomb, killing no civilians, far from its other bursts. This is ADR-528's
+    bar, accepted 2026-10-19. A BLOCKERS entry holds the measured cause.
+  - b. A place of massed men of fewer than two divisions (under 20,000 men in the blast) is not
+    weighed outside extreme desperation. Removes these three and the like (fewer bursts; PLAN
+    7.37's AT: no rule may raise them, and this lowers them). Its own PLAN task, with a unit
+    test, the pin's entry and 7.38e's bars read after it.
+  - c. A warhead's own cost: a cost in the utility that grows as the stockpile shrinks (a nation
+    with few warheads keeps them for a better place). A new term to tune, measured on the 14
+    seeds first.
+- **Until decided.** 7.37h closes on a (BLOCKERS); no rule. The pin is unchanged.
+
 ### ADR-569 · 2026-10-20 · accepted — A place struck in a war is not struck again in it without new value (PLAN 7.38d)
 
 - **Context.** Critic R10-B1 (run 10, AI nuclear use 7): "a city struck in the war not again

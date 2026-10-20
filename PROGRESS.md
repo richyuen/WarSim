@@ -20623,3 +20623,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Tests:** `nukeWarRestrike1938.test.ts` (new; red without: the exclusion off, Kent's four
   divisions and London a year on weighed). Pin unmoved. Specs by hand: none (no UI).
 - 7.38's commits: 4. **Next:** PLAN 7.38e (the three bars on 14 + 10 seeds).
+
+## 2026-10-20 — PLAN 7.37h: seed 9901's lone-division strikes unchanged by 7.38's rules (ADR-570, proposed); PLAN 7.37 closed
+
+- **Measured** (`docs/evidence/7.37/h-9901-lone-division.md`, from the critic's run with ADR-528,
+  `docs/evidence/7.32/chain-f0be88c-9901_rule.json`): the three Soviet strikes on 10,655 to 10,751
+  Chinese men (days 5565, 5628, 5641; desperation 0.99 to 1.18; utilities 0.025 to 0.055) were
+  fission bursts that killed 0 people. 7.38b does not apply (no `thermonuclear` until day 5977);
+  7.38c's cost is 0; 7.38d does not reach them: `seaKm` on seed 9901's world puts the war's earlier
+  bursts 427 to 1,696 km away, against `blastRadius(2)` 92.1 km (scratch `.cache/d737h.ts`).
+- The value is ADR-528's 0.43 for a lone division, near NUKE_FLOOR at desperation about 1, as
+  that ADR set it. No rule: ADR-570 proposed (a: the cases stand, recommended; b: under two
+  divisions not weighed outside extreme desperation; c: a warhead's cost growing as the stockpile
+  shrinks), BLOCKERS entry. The pin unchanged. Specs by hand: none (no UI).
+- **PLAN 7.37 closed** (15 commits): each case changed by a rule or in BLOCKERS for the user
+  (ADR-563, ADR-570).
+- **Next:** PLAN 7.38e (the three bars on 14 + 10 seeds × 30 years).
