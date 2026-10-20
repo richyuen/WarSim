@@ -20782,3 +20782,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   92 % at year 30. The 4 × 10 run's 7.3 for years 2–10 had passed 6.6; the first entry's "out of
   reach" was a forecast, now read. The stop stands on the AT's run. The sim reverted, the pin
   unchanged.
+
+## 2026-10-20 — PLAN 7.46a: why a navy the chase sinks is not built again, measured
+
+- **Tool** (new): `tools/diag/navyRebuild.ts`: per nation its armed power against its peak; per
+  depleted navy (under 75 % of the peak) and month, the first test of the fleet step that stops a
+  warship, weighted by the power short; the power lost in battle and built a year.
+- **Measured** (4 seeds × 10 years, HEAD and the chase at once; `docs/evidence/7.46/measure-a.md`,
+  `a/`): the world's armed power with the chase 49–79 % of HEAD's at years 2–10 (bar 80 % at 3–10).
+  The world builds 3–19k a year on both sides; the chase sinks 179k in year 1 (HEAD 77k). Years
+  3–10, the first stop weighted by power short: gold 40 %, the army's orders first 27 %, the navy's
+  share 13 %, one warship in training 10 % (HEAD 36/29/11/12). Britain passes every test and the
+  army spends the month (87 and 66 months on 7019, 3613); Japan stops at the gold; France holds nine
+  submarine flotillas and no armed fleet, and their upkeep fills NAVY_SHARE (90 months on 3613).
+- **Ceiling:** one warship at a time (battle squadron 11.4k power in 900 days), Britain, Japan and
+  France building without a stop would add about 12k a year: 60 % of HEAD at year 3, 68 % at year 5.
+  The AT's 80 % needs parallel orders for a sunk navy or cheaper ships: the user's (ADR-554), written
+  under PLAN 7.46. Parts b1 (the share counts armed fleets), b2 (the saving at war with a navy), b3
+  (the gold), c (the 14 × 30 read) filed.
+- No sim change, the pin unchanged. Specs by hand: none (no UI). The chase worktree
+  `C:/Git/WarSim_chase` (HEAD `8c64c3c` + `b-chase.diff` + `navyRebuild.ts`) is kept for 7.46b.
+- **Next:** PLAN 7.46b1.

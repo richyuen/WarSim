@@ -99,6 +99,34 @@ each, split when taken up:
   test (red without); the pin's entry. Then 7.39b's two bars, read on the critic's 14 seeds × 30
   years with the chase and the rule, decide whether the chase is adopted (ADR-573). Stop: two full
   re-measures flat, the bar is the user's (ADR-554).
+  **The bar's ceiling** (7.46a, `measure-a.md` §4): one warship at a time, Britain, Japan and
+  France each with one in the yard every day from year 1 add about 12k a year: 60 % of HEAD at year
+  3, 68 % at year 5. The 80 % at years 3–5 needs warships ordered in parallel by a sunk navy, or
+  cheaper and faster ones: the user's (ADR-554). The parts b1–b3 are taken against it; their 4 × 10
+  read says how far each moves.
+  In parts:
+    - [x] 7.46a Measured (`tools/diag/navyRebuild.ts`, `docs/evidence/7.46/measure-a.md`; 4 seeds
+      × 10 years, HEAD and the chase at once): per depleted navy (under 75 % of its peak) and month,
+      the first test that stops a warship, weighted by the power short. Years 3–10, the chase: gold
+      40 %, the army's orders first 27 %, the navy's share 13 %, one in training 10 %; HEAD the same
+      four in the same order. Britain (`spentArmy`), Japan (`gold`), France (`navyShare`, nine
+      submarine flotillas and no armed fleet) carry most of it. No rule: the pin unchanged.
+    - [ ] 7.46b1 A navy's share counts its armed fleets (7.46a §3, France): NAVY_SHARE and
+      ADR-557's saving read the upkeep of fleets with armed power, so submarines (and transports,
+      2c's) do not stop a nation with no armed fleet from a warship. AT: a unit test, a nation with
+      submarines over NAVY_SHARE and no armed fleet orders a warship (red without); France's
+      `navyShare` months on the 4 × 10 with the chase from 90/55/33/49 to 0; the world's armed power
+      at years 3–10 against HEAD's read; the ADR; the pin's entry; `--profile`.
+    - [ ] 7.46b2 The army first at war (7.46a §3, Britain): ADR-557's saving of a warship's price
+      also at war, while the nation is at war with an enemy that has an armed fleet. AT: a unit test
+      (red without); Britain's `spentArmy` months on seeds 7019 and 3613 (87, 66) under 12 each on
+      the 4 × 10 with the chase; the armed power read; the ADR; the pin's entry.
+    - [ ] 7.46b3 The gold (7.46a §2, Japan): traced first with `navyLoss.ts` on the chase (the
+      treasury before and after, what the army and the refills take), then a rule with an ADR or the
+      reason. AT: Japan's `gold` months on the 4 × 10 with the chase (88/65/76/48) halved; a unit
+      test; the pin's entry.
+    - [ ] 7.46c 7.39b's two bars read on the critic's 14 seeds × 30 years with the chase and
+      7.46b's rules, and 7.46's 80 % on the 4 × 10: the chase adopted or not (ADR-573).
 - [ ] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g):
   `territory.ts`'s flip scores each neighbouring enemy controller with its side's pressure and
   gives a tie to the lowest id, so a puppet or ally with no army takes the cells its partner's
