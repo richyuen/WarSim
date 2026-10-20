@@ -1270,6 +1270,121 @@ function strikeStopped(world: World, l: NukeLaunch): void {
   }
 }
 
+/**
+ * Why a holder of warheads at war does not strike today (PLAN 7.37e, the user's of 2026-10-20:
+ * restraint is believable, and the game says why): the gate of the day's decision (`nukeDecisions`)
+ * that holds it, by the same reckoning.
+ * - `none`: no warhead, not living or not at war on `side`: nothing to tell.
+ * - `puppet`, `aiOff`, `nukesOff`: it weighs no strike at all (`weighsStrikes`).
+ * - `avenging`: struck, it strikes only the nation that struck it, of another war (`weighsWar`).
+ * - `paused`: its side launched within STRIKE_GAP_DAYS and waits for the answer (`strikePaused`).
+ * - `noThreat`: no enemy that can threaten it (`aimOf`): none is struck first.
+ * - `noPlace`: no fair place (`nukeTargets`): nothing within FRONT_KM, or struck lately.
+ * - `mad`: a strike worth more than NUKE_FLOOR but for the MAD cap; `by`, the enemy whose answer.
+ * - `deterred`, `alliance`, `outrage`, `taboo`: worth more than NUKE_FLOOR as a gain, but for that
+ *   cost, the largest of them (the strike back weighed: `by`, the enemy whose answer).
+ * - `noValue`, `notDesperate`, `doctrine`: the gain alone (value × desperation × doctrine) is at most
+ *   NUKE_FLOOR; the reason its factor least of its full (value 1, desperation 1, doctrine 1).
+ * - `noReach`: a strike over NUKE_FLOOR out of reach of its bombers and missiles.
+ * - `strikes`: a strike over NUKE_FLOOR in reach (decided today unless a launch was refused).
+ * With them the best place's utility (`u`, MAD's cap in it; −Infinity with none) and its parts.
+ */
+export type RestraintReason = 'none' | 'puppet' | 'aiOff' | 'nukesOff' | 'avenging' | 'paused' | 'noThreat' | 'noPlace' | 'mad' | 'deterred' | 'alliance' | 'outrage' | 'taboo' | 'noValue' | 'notDesperate' | 'doctrine' | 'noReach' | 'strikes';
+export interface Restraint {
+  reason: RestraintReason;
+  /** The enemy whose strike back holds it (`mad`, `deterred`), else 0. */
+  by: number;
+  /** The best place's utility as the decision weighs it, MAD's cap in it (−Infinity with no place). */
+  u: number;
+  /** Its parts: the place's value (× the chance through), the gain, and each cost × the chance through. */
+  value: number;
+  gain: number;
+  retaliation: number;
+  alliance: number;
+  outrage: number;
+  taboo: number;
+  desperation: number;
+  doctrine: number;
+  through: number;
+  /** The best place, when one is weighed. */
+  x: number;
+  y: number;
+}
+
+/** The enemy of `side` of `war` (or an ally of one) whose strike back weighs most (`retaliationRisk`'s), else 0. */
+function deterrerOf(world: World, war: War, side: number): number {
+  let best = 0;
+  let r = 0;
+  for (const m of enemyCoalition(world, war, side)) {
+    if (!canDeliver(world, m)) continue;
+    const k = Math.min(1, warheadsOf(world, m) / RETALIATION_FULL) * doctrineOf(world, m);
+    if (k > r) {
+      r = k;
+      best = m;
+    }
+  }
+  return best;
+}
+
+/** Why `n` on `side` of `war` does not strike today (PLAN 7.37e): see `RestraintReason`. */
+export function restraintOf(world: World, n: number, war: War, side: number, industry: () => Float64Array = industryOnce(world)): Restraint {
+  const out: Restraint = { reason: 'none', by: 0, u: -Infinity, value: 0, gain: 0, retaliation: 0, alliance: 0, outrage: 0, taboo: 0, desperation: 0, doctrine: 0, through: 0, x: 0, y: 0 };
+  const nc = world.nations.cols;
+  if (side < 0 || warheadsOf(world, n) < 1 || nc.living[n] !== 1) return out;
+  if (!weighsStrikes(world, n)) {
+    out.reason = nc.overlord[n] !== 0 ? 'puppet' : nc.aiOff[n] === 1 ? 'aiOff' : 'nukesOff';
+    return out;
+  }
+  const avenging = avengingOf(world, n);
+  if (!weighsWar(world, n, war, side, avenging)) return { ...out, reason: 'avenging' };
+  if (!avenging && strikePaused(world, war, side)) return { ...out, reason: 'paused' };
+  const r = weighWar(world, n, war, side, industry);
+  if (!r.shared) return { ...out, reason: 'noThreat' };
+  if (r.places.length === 0) return { ...out, reason: 'noPlace' };
+  const i = r.shared;
+  // The best place as the decision ranks it (MAD's cap in it); its raw utility breaks ties.
+  let best = r.places[0]!;
+  let bu = -Infinity;
+  let braw = -Infinity;
+  let reach = false;
+  for (const p of r.places) {
+    const u = nuclearUtility({ targetValue: p.value, through: p.through, ...i });
+    const raw = nuclearUtility({ targetValue: p.value, through: p.through, ...i, mad: false });
+    if (u > NUKE_FLOOR && reaches(world, n, p.x, p.y)) reach = true;
+    if (u > bu || (u === bu && raw > braw)) {
+      bu = u;
+      braw = raw;
+      best = p;
+    }
+  }
+  const t = best.through;
+  Object.assign(out, {
+    u: bu,
+    value: best.value,
+    gain: best.value * i.desperation * i.doctrine,
+    retaliation: i.retaliating ? 0 : t * RETALIATION_WEIGHT * i.retaliation,
+    alliance: t * i.allianceCost,
+    outrage: t * i.outrage,
+    taboo: t * TABOO_WEIGHT * i.taboo * (i.extreme ? EXTREME_TABOO : 1),
+    desperation: i.desperation,
+    doctrine: i.doctrine,
+    through: t,
+    x: best.x,
+    y: best.y,
+  });
+  if (bu > NUKE_FLOOR) return { ...out, reason: reach ? 'strikes' : 'noReach' };
+  if (braw > NUKE_FLOOR) return { ...out, reason: 'mad', by: deterrerOf(world, war, side) };
+  if (out.gain > NUKE_FLOOR) {
+    const costs: [RestraintReason, number][] = [['deterred', out.retaliation], ['alliance', out.alliance], ['outrage', out.outrage], ['taboo', out.taboo]];
+    costs.sort((a, b) => b[1] - a[1]);
+    const reason = costs[0]![0];
+    return { ...out, reason, by: reason === 'deterred' ? deterrerOf(world, war, side) : 0 };
+  }
+  const factors: [RestraintReason, number][] = [['noValue', out.value], ['notDesperate', Math.min(1, i.desperation)], ['doctrine', Math.min(1, i.doctrine)]];
+  factors.sort((a, b) => a[1] - b[1]);
+  return { ...out, reason: factors[0]![0] };
+}
+
 /** The day's decisions to strike (PLAN 6.4b): see the head of the file. */
 function nukeDecisions(world: World): void {
   if (!world.settings.aiEnabled || world.warheads.size === 0) return;

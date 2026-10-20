@@ -134,6 +134,37 @@ each, split when taken up:
       it fights beside its puppet in that war. On the critic's code from the same states: no strike
       on Nepal, Sweden, Afghanistan, nor Czechoslovakia's 1,797,000 dead (`docs/evidence/7.37/d-*`);
       `nukePuppetThreat1938.test.ts` red without; the pin unchanged. Read on HEAD, not a bar (run 10's 14 seeds × 30 years, `d-head-14seeds-read.txt`): bursts 123 in 14 worlds → 89 in 13, of a million dead or more 26 → 20 (the worlds part after the first decision changed). 7.37's commits: 6 of 20.
+    - [x] 7.37e The no-burst worlds measured (run 10: seeds 4219, 5309, 6421 on the critic's code
+      `bcbc99c`; 5309 on HEAD, its one world without a burst): `restraintOf` in `nuclear.ts`, the
+      gate of the day's decision that holds a holder at war, by the decision's reckoning (puppet,
+      AI off, nukes barred, avenging, paused, no threat, no place, MAD, deterred, alliance,
+      outrage, taboo, no value, not desperate, doctrine, no reach, strikes), with the best place's
+      utility and its parts; `tools/diag/nukeRestraint.ts` reads it each day of 30 years. AT: every
+      holder with a war-day in the four worlds has its days by reason and its nearest day (highest
+      utility, its parts) in `docs/evidence/7.37/e-*.json`; a holder whose days the classifier
+      cannot name (none) is a BLOCKERS entry; `nukeRestraint1938.test.ts` red without (a reason
+      each: not desperate, deterred by Poland with the decision's utility, strikes and the day
+      decides it, no threat, puppet, AI off, nukes barred); the pin unchanged (no rule).
+      Met (`docs/evidence/7.37/e-restraint-*.json`, `e-restraint-summary.txt`): the critic's three
+      worlds reproduced with no decision and no burst in 30 years; every war-day of 20 holders named,
+      none unexplained. By war-days: no threat 24–64 % (an enemy without a warhead, a quarter of its
+      income, nor an army near its capital), no fair place 7–20 %, not desperate 5–20 %, deterred by
+      a strike back 1.4–14 %, the taboo 0.2–2.6 %; 5309 on the critic's code the United Kingdom a
+      puppet 7,641 days with 23 warheads. Nearest days: a strike over NUKE_FLOOR out of reach (no
+      bomber or missile within range: the Soviet Union on Japan at 0.73, 56 days; Poland on Argentina
+      at 0.56, 185 days, HEAD), else at most −0.06 (the taboo, a strike back). Restraint by the
+      decision's gates, no rule changed; the pin unchanged. 7.37's commits: 7 of 20.
+    - [ ] 7.37f The game tells why a holder at war does not strike: the nation panel of a holder
+      at war names `restraintOf`'s reason for its war of the highest utility (and the enemy that
+      deters it). AT: a spec, Germany given 20 warheads and missiles at war with Poland given 10
+      and missiles, losing: the panel says Germany is deterred by Poland (red without: no line).
+    - [ ] 7.37g Latvia (seed 1307, 75 warheads) and Lithuania (8693, 20) nuclear powers (run 10,
+      unexplained): how each came to the bomb (`goesForBomb`'s income against
+      NUKE_PROGRAMME_INCOME, its land then) measured on the critic's code. AT: the cause, and a
+      rule with an ADR or a BLOCKERS entry; and whether the game tells a new programme.
+    - [ ] 7.37h Seed 9901's three Soviet strikes on a lone Chinese division (ADR-528 on, utilities
+      0.025 to 0.055, `docs/evidence/7.32/chain-f0be88c-9901_rule.json`): whether 7.38's weight of
+      the dead changes them; else a rule with an ADR or a BLOCKERS entry.
 - [ ] 7.38 R10-B1: the AI's nuclear choice weighs the people a burst kills (AI nuclear use 7, needs
   8; blocking). `nuclearUtility` has no term for the dead (`src/sim/systems/nuclear.ts:554-560`):
   Germany H-bombs Shanghai for 3,802,105 dead and 105 soldiers at utility 0.025, NUKE_FLOOR itself

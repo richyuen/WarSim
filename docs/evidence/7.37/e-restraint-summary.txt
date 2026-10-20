@@ -1,0 +1,27 @@
+e-restraint-4219-bcbc99c.json bursts 0 decisions 0 war-days 53095 {'noThreat': '40.5%', 'notDesperate': '20.2%', 'noPlace': '19.9%', 'deterred': '14.2%', 'noValue': '3.3%', 'taboo': '1.9%', 'noReach': '0.0%'}
+    GER 50 11189 nearest ('taboo', -0.059, ['BCO', 'ENG', 'IRE'])
+    ITA 14 13230 nearest ('noReach', 0.235, ['IRQ', 'SOV', 'YUG'])
+    ENG 23 11035 nearest ('taboo', -0.078, ['ITA', 'ALB', 'TRJ'])
+    JAP 15 13449 nearest ('noReach', 0.261, ['IRQ', 'SOV', 'YUG'])
+    USA 59 4192 nearest ('notDesperate', -0.804, ['ENG', 'IRE', 'RAJ'])
+    peace {'USA': {'days': 3604, 'warheads': 59}, 'GER': {'days': 814, 'warheads': 50}, 'ITA': {'days': 527, 'warheads': 13}, 'ENG': {'days': 788, 'warheads': 23}, 'JAP': {'days': 504, 'warheads': 15}}
+e-restraint-5309-bcbc99c.json bursts 0 decisions 0 war-days 21488 {'puppet': '60.1%', 'noThreat': '24.4%', 'noPlace': '7.0%', 'notDesperate': '5.2%', 'deterred': '1.6%', 'noValue': '1.2%', 'noReach': '0.3%', 'taboo': '0.2%'}
+    LAT 35 5504 nearest ('deterred', -0.259, ['SOV', 'POL', 'FIN'])
+    SOV 30 5335 nearest ('noReach', 0.73, ['JAP'])
+    ENG 23 9758 nearest ('deterred', -0.28, ['SOV', 'POL', 'LAT'])
+    USA 57 891 nearest None
+    peace {'USA': {'days': 6874, 'warheads': 57}, 'ENG': {'days': 1869, 'warheads': 23}, 'LAT': {'days': 3708, 'warheads': 35}, 'SOV': {'days': 3842, 'warheads': 30}}
+e-restraint-5309-head.json bursts 0 decisions 0 war-days 34361 {'noThreat': '64.3%', 'noPlace': '17.2%', 'notDesperate': '12.9%', 'taboo': '2.6%', 'deterred': '1.4%', 'noValue': '1.0%', 'noReach': '0.5%'}
+    GER 65 12639 nearest ('taboo', -0.984, ['AST', 'CUB', 'MEX'])
+    JAP 16 13656 nearest ('noReach', 0.223, ['SOV', 'FIN', 'IRN'])
+    USA 55 5204 nearest ('deterred', -1.69, ['GER', 'FRA', 'SWE'])
+    POL 11 2862 nearest ('noReach', 0.559, ['ARG', 'PRU', 'PAR'])
+    peace {'USA': {'days': 2951, 'warheads': 55}, 'JAP': {'days': 270, 'warheads': 15}, 'GER': {'days': 410, 'warheads': 65}, 'POL': {'days': 202, 'warheads': 11}}
+e-restraint-6421-bcbc99c.json bursts 0 decisions 0 war-days 59344 {'noThreat': '57.4%', 'noPlace': '14.2%', 'notDesperate': '11.6%', 'puppet': '8.8%', 'deterred': '4.7%', 'noValue': '2.4%', 'taboo': '0.6%', 'noReach': '0.4%'}
+    GER 63 12618 nearest ('notDesperate', -0.217, ['SAU', 'YEM', 'ENG'])
+    ENG 15 11605 nearest ('noReach', 0.537, ['AST'])
+    JAP 14 13184 nearest ('noValue', -0.14, ['IRN', 'GRE', 'YUG'])
+    ITA 11 10917 nearest ('notDesperate', -0.689, ['HUN'])
+    USA 57 1041 nearest ('taboo', 0.002, ['GUA', 'HON', 'ELS'])
+    POL 14 9979 nearest ('notDesperate', -0.692, ['HUN'])
+    peace {'ENG': {'days': 336, 'warheads': 15}, 'USA': {'days': 6724, 'warheads': 58}, 'GER': {'days': 358, 'warheads': 63}, 'JAP': {'days': 562, 'warheads': 14}, 'ITA': {'days': 481, 'warheads': 11}, 'POL': {'days': 285, 'warheads': 14}}

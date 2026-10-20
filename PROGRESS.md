@@ -20457,3 +20457,26 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Read on HEAD** (run 10's 14 seeds × 30 years, before/after side by side): bursts 123 in 14
   worlds → 89 in 13; 1 M+ dead 26 → 20; seed 5309 now has none (a restraint case for 7.37's AT).
 - 7.37's commits: 6 of 20. **Next:** PLAN 7.37's next case (the no-burst worlds 4219, 5309, 6421).
+
+## 2026-10-20 — PLAN 7.37e: the no-burst worlds measured; why each holder at war did not strike
+
+- **Split:** PLAN 7.37's run-10 cases as parts e (the no-burst worlds measured), f (the game tells
+  why a holder at war does not strike), g (Latvia and Lithuania nuclear powers), h (seed 9901's
+  three strikes on a lone division, after 7.38).
+- **Code:** `restraintOf(world, n, war, side)` in `nuclear.ts`: the gate of the day's decision that
+  holds a holder at war, by the decision's own reckoning (`weighsStrikes`, `weighsWar`,
+  `strikePaused`, `weighWar`, `nuclearUtility`, `reaches`), and the best place's utility and parts;
+  a low strike named by its largest cost (deterred, alliance, outrage, taboo) when the gain clears
+  NUKE_FLOOR, else by its smallest factor (no value, not desperate, doctrine). Not called by the sim
+  (the pin unchanged); 7.37f's panel will read it. `nukeRestraint1938.test.ts` (6 cases).
+  `tools/diag/nukeRestraint.ts`: each day of a run, each holder and war.
+- **Measured** (30 years from 1938; the critic's code `bcbc99c` in a worktree with `restraintOf`
+  patched in, and 5309 on HEAD; about 10 minutes each, four side by side): the critic's 4219, 5309,
+  6421 reproduced with no decision and no burst. 20 holders, every war-day named. No threat 24–64 %
+  of war-days, no fair place 7–20 %, not desperate 5–20 %, deterred 1.4–14 %, taboo 0.2–2.6 %
+  (5309 critic: the United Kingdom a puppet with 23 warheads, 60 % of that world's war-days). The
+  nearest a holder came: a strike over NUKE_FLOOR with no bomber or missile in range (the Soviet
+  Union on Japan, 0.73, 56 days, 5309; Poland on Argentina, 0.56, 185 days, HEAD; Japan, Italy,
+  the United Kingdom 0.24–0.54), else at most −0.06. The worlds hold back by the gates, not by a
+  missing rule: no BLOCKERS entry.
+- **Specs by hand:** none (no UI). 7.37's commits: 7 of 20. **Next:** PLAN 7.37f (the panel says why).

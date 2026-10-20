@@ -1,0 +1,3616 @@
+{
+ "seed": 5309,
+ "from": "new",
+ "startDay": 0,
+ "years": 30,
+ "floor": 0.025,
+ "decisions": [],
+ "bursts": [],
+ "holders": {
+  "GER": {
+   "warDays": 12639,
+   "reasons": {
+    "noThreat": 9593,
+    "notDesperate": 1012,
+    "noValue": 6,
+    "noPlace": 1681,
+    "taboo": 347
+   },
+   "nearest": {
+    "war": 190,
+    "enemies": [
+     "AST",
+     "CUB",
+     "MEX",
+     "USA",
+     "CAN"
+    ],
+    "day": 7840,
+    "warDays": 484,
+    "reason": "taboo",
+    "by": null,
+    "u": -0.984,
+    "value": 1,
+    "gain": 0.236,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.169,
+    "doctrine": 1.4,
+    "through": 1,
+    "at": [
+     681.5,
+     314.5
+    ]
+   },
+   "wars": 52,
+   "warheads": 65
+  },
+  "JAP": {
+   "warDays": 13656,
+   "reasons": {
+    "noThreat": 9422,
+    "noPlace": 1719,
+    "noValue": 291,
+    "notDesperate": 1758,
+    "taboo": 465,
+    "noReach": 1
+   },
+   "nearest": {
+    "war": 142,
+    "enemies": [
+     "SOV",
+     "FIN",
+     "IRN",
+     "AFG",
+     "MON",
+     "TAN",
+     "#114",
+     "SWE"
+    ],
+    "day": 4474,
+    "warDays": 387,
+    "reason": "noReach",
+    "by": null,
+    "u": 0.223,
+    "value": 0.47,
+    "gain": 0.673,
+    "retaliation": 0,
+    "alliance": 0.03,
+    "outrage": 0.06,
+    "taboo": 0.36,
+    "desperation": 1.06,
+    "doctrine": 1.35,
+    "through": 0.6,
+    "at": [
+     1417.094,
+     392.906
+    ]
+   },
+   "wars": 57,
+   "warheads": 16
+  },
+  "USA": {
+   "warDays": 5204,
+   "reasons": {
+    "noThreat": 2158,
+    "notDesperate": 1070,
+    "noPlace": 1436,
+    "deterred": 481,
+    "noValue": 59
+   },
+   "nearest": {
+    "war": 231,
+    "enemies": [
+     "GER",
+     "FRA",
+     "SWE",
+     "ITA",
+     "YUG",
+     "ALB",
+     "ENG",
+     "POR",
+     "SUD",
+     "SAF",
+     "JAP",
+     "ROM",
+     "NED",
+     "BUR",
+     "CHI",
+     "MEN",
+     "MON",
+     "POL",
+     "SOV",
+     "SIA",
+     "#113",
+     "EGY",
+     "#112",
+     "TUR",
+     "IRQ",
+     "YEM",
+     "SIN",
+     "RAJ"
+    ],
+    "day": 10590,
+    "warDays": 1,
+    "reason": "deterred",
+    "by": "GER",
+    "u": -1.69,
+    "value": 0.399,
+    "gain": 0.13,
+    "retaliation": 1.12,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.501,
+    "doctrine": 0.65,
+    "through": 1,
+    "at": [
+     592.761,
+     481.5
+    ]
+   },
+   "wars": 14,
+   "warheads": 55
+  },
+  "POL": {
+   "warDays": 2862,
+   "reasons": {
+    "noThreat": 914,
+    "taboo": 97,
+    "noReach": 185,
+    "notDesperate": 601,
+    "noPlace": 1063,
+    "noValue": 2
+   },
+   "nearest": {
+    "war": 212,
+    "enemies": [
+     "ARG",
+     "PRU",
+     "PAR"
+    ],
+    "day": 9628,
+    "warDays": 627,
+    "reason": "noReach",
+    "by": null,
+    "u": 0.559,
+    "value": 0.6,
+    "gain": 0.979,
+    "retaliation": 0,
+    "alliance": 0,
+    "outrage": 0.06,
+    "taboo": 0.36,
+    "desperation": 1.718,
+    "doctrine": 0.95,
+    "through": 0.6,
+    "at": [
+     823.5,
+     630.5
+    ]
+   },
+   "wars": 14,
+   "warheads": 11
+  }
+ },
+ "peace": {
+  "USA": {
+   "days": 2951,
+   "warheads": 55
+  },
+  "JAP": {
+   "days": 270,
+   "warheads": 15
+  },
+  "GER": {
+   "days": 410,
+   "warheads": 65
+  },
+  "POL": {
+   "days": 202,
+   "warheads": 11
+  }
+ },
+ "wars": [
+  {
+   "holder": "GER",
+   "war": 156,
+   "enemies": [
+    "NED",
+    "BCO"
+   ],
+   "warheads": 39,
+   "days": 1825,
+   "reasons": {
+    "noThreat": 1825
+   },
+   "nearest": null,
+   "firstDay": 4840,
+   "lastDay": 6664
+  },
+  {
+   "holder": "JAP",
+   "war": 156,
+   "enemies": [
+    "NED",
+    "BCO"
+   ],
+   "warheads": 14,
+   "days": 1825,
+   "reasons": {
+    "noThreat": 1825
+   },
+   "nearest": null,
+   "firstDay": 4840,
+   "lastDay": 6664
+  },
+  {
+   "holder": "GER",
+   "war": 118,
+   "enemies": [
+    "AST",
+    "CUB",
+    "MEX"
+   ],
+   "warheads": 11,
+   "days": 774,
+   "reasons": {
+    "noThreat": 774
+   },
+   "nearest": null,
+   "firstDay": 3325,
+   "lastDay": 4098
+  },
+  {
+   "holder": "JAP",
+   "war": 118,
+   "enemies": [
+    "AST",
+    "CUB",
+    "MEX"
+   ],
+   "warheads": 11,
+   "days": 774,
+   "reasons": {
+    "noThreat": 774
+   },
+   "nearest": null,
+   "firstDay": 3325,
+   "lastDay": 4098
+  },
+  {
+   "holder": "USA",
+   "war": 177,
+   "enemies": [
+    "NED",
+    "ENG",
+    "CEY",
+    "MAL",
+    "FRA",
+    "CHI",
+    "ARG",
+    "PAR",
+    "SAF"
+   ],
+   "warheads": 46,
+   "days": 732,
+   "reasons": {
+    "noThreat": 732
+   },
+   "nearest": null,
+   "firstDay": 6552,
+   "lastDay": 7283
+  },
+  {
+   "holder": "JAP",
+   "war": 143,
+   "enemies": [
+    "AST",
+    "CUB",
+    "MEX"
+   ],
+   "warheads": 13,
+   "days": 722,
+   "reasons": {
+    "noThreat": 722
+   },
+   "nearest": null,
+   "firstDay": 4112,
+   "lastDay": 4833
+  },
+  {
+   "holder": "GER",
+   "war": 163,
+   "enemies": [
+    "USA",
+    "CAN",
+    "MEX"
+   ],
+   "warheads": 29,
+   "days": 720,
+   "reasons": {
+    "notDesperate": 158,
+    "noValue": 4,
+    "noPlace": 318,
+    "taboo": 240
+   },
+   "nearest": {
+    "day": 5481,
+    "warDays": 432,
+    "reason": "taboo",
+    "by": null,
+    "u": -1.159,
+    "value": 1,
+    "gain": 0.061,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.044,
+    "doctrine": 1.4,
+    "through": 1,
+    "at": [
+     679.583,
+     313.583
+    ]
+   },
+   "firstDay": 5050,
+   "lastDay": 5769
+  },
+  {
+   "holder": "JAP",
+   "war": 163,
+   "enemies": [
+    "USA",
+    "CAN",
+    "MEX"
+   ],
+   "warheads": 14,
+   "days": 720,
+   "reasons": {
+    "notDesperate": 178,
+    "noPlace": 318,
+    "taboo": 221,
+    "noValue": 3
+   },
+   "nearest": {
+    "day": 5478,
+    "warDays": 429,
+    "reason": "taboo",
+    "by": null,
+    "u": -1.179,
+    "value": 1,
+    "gain": 0.041,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.03,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     676.5,
+     313.5
+    ]
+   },
+   "firstDay": 5050,
+   "lastDay": 5769
+  },
+  {
+   "holder": "USA",
+   "war": 163,
+   "enemies": [
+    "ITA",
+    "YUG",
+    "GRE",
+    "POR",
+    "GER",
+    "ROM",
+    "HUN",
+    "FRA",
+    "NSP",
+    "NOR",
+    "SWE",
+    "JAP",
+    "NEP",
+    "CHI",
+    "POL",
+    "TUR",
+    "SIA",
+    "#113",
+    "EGY",
+    "#112",
+    "SIN"
+   ],
+   "warheads": 29,
+   "days": 720,
+   "reasons": {
+    "notDesperate": 194,
+    "noPlace": 526
+   },
+   "nearest": {
+    "day": 5422,
+    "warDays": 373,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.82,
+    "value": 0.037,
+    "gain": 0,
+    "retaliation": 1.12,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0,
+    "doctrine": 0.65,
+    "through": 1,
+    "at": [
+     550.388,
+     466.5
+    ]
+   },
+   "firstDay": 5050,
+   "lastDay": 5769
+  },
+  {
+   "holder": "GER",
+   "war": 215,
+   "enemies": [
+    "AST",
+    "CUB",
+    "MEX",
+    "USA",
+    "CAN",
+    "NSP"
+   ],
+   "warheads": 65,
+   "days": 720,
+   "reasons": {
+    "notDesperate": 242,
+    "noPlace": 476,
+    "noValue": 2
+   },
+   "nearest": {
+    "day": 9129,
+    "warDays": 44,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.207,
+    "value": 1,
+    "gain": 0.013,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.01,
+    "doctrine": 1.4,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 9086,
+   "lastDay": 9805
+  },
+  {
+   "holder": "POL",
+   "war": 215,
+   "enemies": [
+    "AST",
+    "CUB",
+    "MEX",
+    "USA",
+    "CAN",
+    "NSP"
+   ],
+   "warheads": 9,
+   "days": 720,
+   "reasons": {
+    "notDesperate": 242,
+    "noPlace": 476,
+    "noValue": 2
+   },
+   "nearest": {
+    "day": 9120,
+    "warDays": 35,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -0.243,
+    "value": 0.2,
+    "gain": 0.001,
+    "retaliation": 0.104,
+    "alliance": 0,
+    "outrage": 0.02,
+    "taboo": 0.12,
+    "desperation": 0.007,
+    "doctrine": 0.95,
+    "through": 0.2,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 9086,
+   "lastDay": 9805
+  },
+  {
+   "holder": "JAP",
+   "war": 215,
+   "enemies": [
+    "AST",
+    "CUB",
+    "MEX",
+    "USA",
+    "CAN",
+    "NSP"
+   ],
+   "warheads": 15,
+   "days": 720,
+   "reasons": {
+    "notDesperate": 242,
+    "noPlace": 476,
+    "noValue": 2
+   },
+   "nearest": {
+    "day": 9129,
+    "warDays": 44,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.209,
+    "value": 1,
+    "gain": 0.011,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.008,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 9086,
+   "lastDay": 9805
+  },
+  {
+   "holder": "USA",
+   "war": 215,
+   "enemies": [
+    "JAP",
+    "ROM",
+    "NED",
+    "BUR",
+    "NEP",
+    "CHI",
+    "MEN",
+    "MON",
+    "GER",
+    "FRA",
+    "NOR",
+    "SWE",
+    "ITA",
+    "YUG",
+    "ALB",
+    "GRE",
+    "ENG",
+    "POR",
+    "SUD",
+    "SAF",
+    "POL",
+    "SOV",
+    "SIA",
+    "#113",
+    "EGY",
+    "#112",
+    "TUR",
+    "IRQ",
+    "SIN",
+    "RAJ",
+    "ARG",
+    "PRU",
+    "PAR"
+   ],
+   "warheads": 55,
+   "days": 720,
+   "reasons": {
+    "notDesperate": 414,
+    "noPlace": 264,
+    "noValue": 42
+   },
+   "nearest": {
+    "day": 9687,
+    "warDays": 602,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.811,
+    "value": 0.2,
+    "gain": 0.009,
+    "retaliation": 1.12,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.07,
+    "doctrine": 0.65,
+    "through": 1,
+    "at": [
+     987.795,
+     393.205
+    ]
+   },
+   "firstDay": 9086,
+   "lastDay": 9805
+  },
+  {
+   "holder": "GER",
+   "war": 170,
+   "enemies": [
+    "AST",
+    "CUB"
+   ],
+   "warheads": 36,
+   "days": 719,
+   "reasons": {
+    "noThreat": 719
+   },
+   "nearest": null,
+   "firstDay": 5677,
+   "lastDay": 6395
+  },
+  {
+   "holder": "JAP",
+   "war": 170,
+   "enemies": [
+    "AST",
+    "CUB"
+   ],
+   "warheads": 14,
+   "days": 719,
+   "reasons": {
+    "noThreat": 719
+   },
+   "nearest": null,
+   "firstDay": 5677,
+   "lastDay": 6395
+  },
+  {
+   "holder": "GER",
+   "war": 190,
+   "enemies": [
+    "AST",
+    "CUB",
+    "MEX",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 55,
+   "days": 695,
+   "reasons": {
+    "notDesperate": 154,
+    "noPlace": 434,
+    "taboo": 107
+   },
+   "nearest": {
+    "day": 7840,
+    "warDays": 484,
+    "reason": "taboo",
+    "by": null,
+    "u": -0.984,
+    "value": 1,
+    "gain": 0.236,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.169,
+    "doctrine": 1.4,
+    "through": 1,
+    "at": [
+     681.5,
+     314.5
+    ]
+   },
+   "firstDay": 7357,
+   "lastDay": 8051
+  },
+  {
+   "holder": "JAP",
+   "war": 190,
+   "enemies": [
+    "AST",
+    "CUB",
+    "MEX",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 15,
+   "days": 695,
+   "reasons": {
+    "notDesperate": 154,
+    "noPlace": 434,
+    "taboo": 107
+   },
+   "nearest": {
+    "day": 7840,
+    "warDays": 484,
+    "reason": "taboo",
+    "by": null,
+    "u": -0.994,
+    "value": 1,
+    "gain": 0.226,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.168,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     681.5,
+     314.5
+    ]
+   },
+   "firstDay": 7357,
+   "lastDay": 8051
+  },
+  {
+   "holder": "USA",
+   "war": 190,
+   "enemies": [
+    "JAP",
+    "BUR",
+    "NEP",
+    "CHI",
+    "MEN",
+    "MON",
+    "GER",
+    "ROM",
+    "FRA",
+    "NSP",
+    "NOR",
+    "SWE",
+    "ITA",
+    "YUG",
+    "GRE",
+    "ENG",
+    "POR",
+    "SAF",
+    "POL",
+    "TUR",
+    "SIA",
+    "#113",
+    "EGY",
+    "#112",
+    "SIN",
+    "RAJ"
+   ],
+   "warheads": 55,
+   "days": 695,
+   "reasons": {
+    "notDesperate": 177,
+    "noPlace": 518
+   },
+   "nearest": {
+    "day": 7533,
+    "warDays": 177,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.82,
+    "value": 0.112,
+    "gain": 0,
+    "retaliation": 1.12,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0,
+    "doctrine": 0.65,
+    "through": 1,
+    "at": [
+     1881.552,
+     630.448
+    ]
+   },
+   "firstDay": 7357,
+   "lastDay": 8051
+  },
+  {
+   "holder": "USA",
+   "war": 137,
+   "enemies": [
+    "ENG",
+    "RAJ",
+    "CEY",
+    "MAL",
+    "NFL",
+    "FRA",
+    "TUN",
+    "NED",
+    "BCO"
+   ],
+   "warheads": 15,
+   "days": 664,
+   "reasons": {
+    "noThreat": 664
+   },
+   "nearest": null,
+   "firstDay": 3867,
+   "lastDay": 4530
+  },
+  {
+   "holder": "GER",
+   "war": 212,
+   "enemies": [
+    "ARG",
+    "PRU",
+    "PAR"
+   ],
+   "warheads": 65,
+   "days": 627,
+   "reasons": {
+    "noThreat": 627
+   },
+   "nearest": null,
+   "firstDay": 9002,
+   "lastDay": 9628
+  },
+  {
+   "holder": "JAP",
+   "war": 212,
+   "enemies": [
+    "ARG",
+    "PRU",
+    "PAR"
+   ],
+   "warheads": 15,
+   "days": 627,
+   "reasons": {
+    "noThreat": 627
+   },
+   "nearest": null,
+   "firstDay": 9002,
+   "lastDay": 9628
+  },
+  {
+   "holder": "POL",
+   "war": 212,
+   "enemies": [
+    "ARG",
+    "PRU",
+    "PAR"
+   ],
+   "warheads": 7,
+   "days": 579,
+   "reasons": {
+    "noThreat": 325,
+    "taboo": 97,
+    "noReach": 157
+   },
+   "nearest": {
+    "day": 9628,
+    "warDays": 627,
+    "reason": "noReach",
+    "by": null,
+    "u": 0.559,
+    "value": 0.6,
+    "gain": 0.979,
+    "retaliation": 0,
+    "alliance": 0,
+    "outrage": 0.06,
+    "taboo": 0.36,
+    "desperation": 1.718,
+    "doctrine": 0.95,
+    "through": 0.6,
+    "at": [
+     823.5,
+     630.5
+    ]
+   },
+   "firstDay": 9050,
+   "lastDay": 9628
+  },
+  {
+   "holder": "GER",
+   "war": 178,
+   "enemies": [
+    "ARG",
+    "PAR"
+   ],
+   "warheads": 44,
+   "days": 549,
+   "reasons": {
+    "noThreat": 549
+   },
+   "nearest": null,
+   "firstDay": 6587,
+   "lastDay": 7135
+  },
+  {
+   "holder": "JAP",
+   "war": 178,
+   "enemies": [
+    "ARG",
+    "PAR"
+   ],
+   "warheads": 15,
+   "days": 549,
+   "reasons": {
+    "noThreat": 549
+   },
+   "nearest": null,
+   "firstDay": 6587,
+   "lastDay": 7135
+  },
+  {
+   "holder": "JAP",
+   "war": 117,
+   "enemies": [
+    "ENG",
+    "SRH",
+    "RAJ",
+    "CEY",
+    "MAL",
+    "NFL",
+    "FRA",
+    "TUN",
+    "NED",
+    "BCO"
+   ],
+   "warheads": 8,
+   "days": 548,
+   "reasons": {
+    "noThreat": 548
+   },
+   "nearest": null,
+   "firstDay": 3272,
+   "lastDay": 3819
+  },
+  {
+   "holder": "GER",
+   "war": 142,
+   "enemies": [
+    "SOV",
+    "FIN",
+    "IRN",
+    "AFG",
+    "MON",
+    "TAN",
+    "#114",
+    "SWE"
+   ],
+   "warheads": 15,
+   "days": 399,
+   "reasons": {
+    "noThreat": 399
+   },
+   "nearest": null,
+   "firstDay": 4088,
+   "lastDay": 4486
+  },
+  {
+   "holder": "JAP",
+   "war": 142,
+   "enemies": [
+    "SOV",
+    "FIN",
+    "IRN",
+    "AFG",
+    "MON",
+    "TAN",
+    "#114",
+    "SWE"
+   ],
+   "warheads": 12,
+   "days": 399,
+   "reasons": {
+    "noValue": 162,
+    "notDesperate": 202,
+    "taboo": 34,
+    "noReach": 1
+   },
+   "nearest": {
+    "day": 4474,
+    "warDays": 387,
+    "reason": "noReach",
+    "by": null,
+    "u": 0.223,
+    "value": 0.47,
+    "gain": 0.673,
+    "retaliation": 0,
+    "alliance": 0.03,
+    "outrage": 0.06,
+    "taboo": 0.36,
+    "desperation": 1.06,
+    "doctrine": 1.35,
+    "through": 0.6,
+    "at": [
+     1417.094,
+     392.906
+    ]
+   },
+   "firstDay": 4088,
+   "lastDay": 4486
+  },
+  {
+   "holder": "GER",
+   "war": 187,
+   "enemies": [
+    "PAR"
+   ],
+   "warheads": 49,
+   "days": 392,
+   "reasons": {
+    "noThreat": 392
+   },
+   "nearest": null,
+   "firstDay": 7203,
+   "lastDay": 7594
+  },
+  {
+   "holder": "JAP",
+   "war": 187,
+   "enemies": [
+    "PAR"
+   ],
+   "warheads": 15,
+   "days": 392,
+   "reasons": {
+    "noThreat": 392
+   },
+   "nearest": null,
+   "firstDay": 7203,
+   "lastDay": 7594
+  },
+  {
+   "holder": "GER",
+   "war": 228,
+   "enemies": [
+    "NEP",
+    "ARG",
+    "PRU",
+    "BRA",
+    "BOL"
+   ],
+   "warheads": 65,
+   "days": 392,
+   "reasons": {
+    "noThreat": 392
+   },
+   "nearest": null,
+   "firstDay": 10125,
+   "lastDay": 10516
+  },
+  {
+   "holder": "POL",
+   "war": 228,
+   "enemies": [
+    "NEP",
+    "ARG",
+    "PRU",
+    "BRA",
+    "BOL"
+   ],
+   "warheads": 11,
+   "days": 392,
+   "reasons": {
+    "noPlace": 364,
+    "noReach": 28
+   },
+   "nearest": {
+    "day": 10516,
+    "warDays": 392,
+    "reason": "noReach",
+    "by": null,
+    "u": 0.32,
+    "value": 1,
+    "gain": 1.02,
+    "retaliation": 0,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 1.074,
+    "doctrine": 0.95,
+    "through": 1,
+    "at": [
+     669.5,
+     829.5
+    ]
+   },
+   "firstDay": 10125,
+   "lastDay": 10516
+  },
+  {
+   "holder": "JAP",
+   "war": 228,
+   "enemies": [
+    "NEP",
+    "ARG",
+    "PRU",
+    "BRA",
+    "BOL"
+   ],
+   "warheads": 15,
+   "days": 392,
+   "reasons": {
+    "noThreat": 392
+   },
+   "nearest": null,
+   "firstDay": 10125,
+   "lastDay": 10516
+  },
+  {
+   "holder": "GER",
+   "war": 202,
+   "enemies": [
+    "ARG"
+   ],
+   "warheads": 57,
+   "days": 389,
+   "reasons": {
+    "noThreat": 389
+   },
+   "nearest": null,
+   "firstDay": 7882,
+   "lastDay": 8270
+  },
+  {
+   "holder": "JAP",
+   "war": 202,
+   "enemies": [
+    "ARG"
+   ],
+   "warheads": 15,
+   "days": 389,
+   "reasons": {
+    "noThreat": 389
+   },
+   "nearest": null,
+   "firstDay": 7882,
+   "lastDay": 8270
+  },
+  {
+   "holder": "JAP",
+   "war": 152,
+   "enemies": [
+    "SOV",
+    "FIN",
+    "IRN",
+    "AFG",
+    "MON",
+    "TAN",
+    "#114"
+   ],
+   "warheads": 13,
+   "days": 381,
+   "reasons": {
+    "notDesperate": 266,
+    "noValue": 98,
+    "taboo": 17
+   },
+   "nearest": {
+    "day": 5045,
+    "warDays": 381,
+    "reason": "taboo",
+    "by": null,
+    "u": -0.285,
+    "value": 0.366,
+    "gain": 0.515,
+    "retaliation": 0,
+    "alliance": 0.1,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 1.044,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     1417.565,
+     392.816
+    ]
+   },
+   "firstDay": 4665,
+   "lastDay": 5045
+  },
+  {
+   "holder": "GER",
+   "war": 230,
+   "enemies": [
+    "DEN"
+   ],
+   "warheads": 65,
+   "days": 370,
+   "reasons": {
+    "noThreat": 370
+   },
+   "nearest": null,
+   "firstDay": 10581,
+   "lastDay": 10950
+  },
+  {
+   "holder": "POL",
+   "war": 230,
+   "enemies": [
+    "DEN"
+   ],
+   "warheads": 11,
+   "days": 370,
+   "reasons": {
+    "noThreat": 370
+   },
+   "nearest": null,
+   "firstDay": 10581,
+   "lastDay": 10950
+  },
+  {
+   "holder": "JAP",
+   "war": 230,
+   "enemies": [
+    "DEN"
+   ],
+   "warheads": 16,
+   "days": 370,
+   "reasons": {
+    "noThreat": 370
+   },
+   "nearest": null,
+   "firstDay": 10581,
+   "lastDay": 10950
+  },
+  {
+   "holder": "USA",
+   "war": 119,
+   "enemies": [
+    "CUB",
+    "AST"
+   ],
+   "warheads": 7,
+   "days": 364,
+   "reasons": {
+    "noThreat": 364
+   },
+   "nearest": null,
+   "firstDay": 3398,
+   "lastDay": 3761
+  },
+  {
+   "holder": "GER",
+   "war": 116,
+   "enemies": [
+    "FRA",
+    "TUN",
+    "ENG",
+    "SRH",
+    "RAJ",
+    "CEY",
+    "MAL",
+    "NFL",
+    "NED",
+    "BCO"
+   ],
+   "warheads": 5,
+   "days": 352,
+   "reasons": {
+    "noThreat": 352
+   },
+   "nearest": null,
+   "firstDay": 3234,
+   "lastDay": 3585
+  },
+  {
+   "holder": "USA",
+   "war": 205,
+   "enemies": [
+    "LIB"
+   ],
+   "warheads": 55,
+   "days": 341,
+   "reasons": {
+    "noThreat": 341
+   },
+   "nearest": null,
+   "firstDay": 8441,
+   "lastDay": 8781
+  },
+  {
+   "holder": "GER",
+   "war": 206,
+   "enemies": [
+    "NSP",
+    "CUB",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 63,
+   "days": 333,
+   "reasons": {
+    "notDesperate": 30,
+    "noPlace": 303
+   },
+   "nearest": {
+    "day": 8692,
+    "warDays": 244,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.204,
+    "value": 1,
+    "gain": 0.016,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.012,
+    "doctrine": 1.4,
+    "through": 1,
+    "at": [
+     681.5,
+     314.5
+    ]
+   },
+   "firstDay": 8449,
+   "lastDay": 8781
+  },
+  {
+   "holder": "JAP",
+   "war": 206,
+   "enemies": [
+    "NSP",
+    "CUB",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 15,
+   "days": 333,
+   "reasons": {
+    "notDesperate": 30,
+    "noPlace": 303
+   },
+   "nearest": {
+    "day": 8460,
+    "warDays": 12,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.215,
+    "value": 1,
+    "gain": 0.005,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.004,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 8449,
+   "lastDay": 8781
+  },
+  {
+   "holder": "USA",
+   "war": 206,
+   "enemies": [
+    "GER",
+    "FRA",
+    "NOR",
+    "SWE",
+    "ITA",
+    "YUG",
+    "ALB",
+    "GRE",
+    "ENG",
+    "POR",
+    "SAF",
+    "JAP",
+    "ROM",
+    "NED",
+    "BUR",
+    "NEP",
+    "MEN",
+    "MON",
+    "POL",
+    "SOV",
+    "TUR",
+    "SIA",
+    "#113",
+    "EGY",
+    "#112",
+    "SIN",
+    "RAJ"
+   ],
+   "warheads": 55,
+   "days": 333,
+   "reasons": {
+    "deterred": 333
+   },
+   "nearest": {
+    "day": 8769,
+    "warDays": 321,
+    "reason": "deterred",
+    "by": "GER",
+    "u": -1.724,
+    "value": 0.25,
+    "gain": 0.096,
+    "retaliation": 1.12,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.59,
+    "doctrine": 0.65,
+    "through": 1,
+    "at": [
+     992.5,
+     381.641
+    ]
+   },
+   "firstDay": 8449,
+   "lastDay": 8781
+  },
+  {
+   "holder": "GER",
+   "war": 146,
+   "enemies": [
+    "FRA",
+    "TUN",
+    "NED",
+    "SAF"
+   ],
+   "warheads": 17,
+   "days": 304,
+   "reasons": {
+    "noThreat": 304
+   },
+   "nearest": null,
+   "firstDay": 4333,
+   "lastDay": 4636
+  },
+  {
+   "holder": "JAP",
+   "war": 146,
+   "enemies": [
+    "FRA",
+    "TUN",
+    "NED",
+    "SAF"
+   ],
+   "warheads": 13,
+   "days": 304,
+   "reasons": {
+    "noThreat": 304
+   },
+   "nearest": null,
+   "firstDay": 4333,
+   "lastDay": 4636
+  },
+  {
+   "holder": "GER",
+   "war": 186,
+   "enemies": [
+    "SOV",
+    "FIN"
+   ],
+   "warheads": 47,
+   "days": 268,
+   "reasons": {
+    "noThreat": 268
+   },
+   "nearest": null,
+   "firstDay": 7144,
+   "lastDay": 7411
+  },
+  {
+   "holder": "GER",
+   "war": 203,
+   "enemies": [
+    "CHI"
+   ],
+   "warheads": 59,
+   "days": 236,
+   "reasons": {
+    "noThreat": 236
+   },
+   "nearest": null,
+   "firstDay": 8235,
+   "lastDay": 8470
+  },
+  {
+   "holder": "JAP",
+   "war": 203,
+   "enemies": [
+    "CHI"
+   ],
+   "warheads": 15,
+   "days": 236,
+   "reasons": {
+    "noThreat": 236
+   },
+   "nearest": null,
+   "firstDay": 8235,
+   "lastDay": 8470
+  },
+  {
+   "holder": "GER",
+   "war": 130,
+   "enemies": [
+    "ENG",
+    "RAJ",
+    "CEY",
+    "MAL",
+    "NFL",
+    "TUN",
+    "NED"
+   ],
+   "warheads": 9,
+   "days": 211,
+   "reasons": {
+    "noThreat": 211
+   },
+   "nearest": null,
+   "firstDay": 3724,
+   "lastDay": 3934
+  },
+  {
+   "holder": "GER",
+   "war": 174,
+   "enemies": [
+    "SOV",
+    "FIN",
+    "IRN",
+    "AFG",
+    "MON",
+    "TAN"
+   ],
+   "warheads": 36,
+   "days": 206,
+   "reasons": {
+    "noThreat": 206
+   },
+   "nearest": null,
+   "firstDay": 6179,
+   "lastDay": 6384
+  },
+  {
+   "holder": "JAP",
+   "war": 174,
+   "enemies": [
+    "SOV",
+    "FIN",
+    "IRN",
+    "AFG",
+    "MON",
+    "TAN"
+   ],
+   "warheads": 14,
+   "days": 206,
+   "reasons": {
+    "noValue": 26,
+    "notDesperate": 180
+   },
+   "nearest": {
+    "day": 6277,
+    "warDays": 99,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -0.698,
+    "value": 1,
+    "gain": 0.002,
+    "retaliation": 0,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.001,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     1389.619,
+     243.619
+    ]
+   },
+   "firstDay": 6179,
+   "lastDay": 6384
+  },
+  {
+   "holder": "GER",
+   "war": 232,
+   "enemies": [
+    "ARG",
+    "PRU",
+    "BRA",
+    "BOL"
+   ],
+   "warheads": 65,
+   "days": 196,
+   "reasons": {
+    "noThreat": 196
+   },
+   "nearest": null,
+   "firstDay": 10755,
+   "lastDay": 10950
+  },
+  {
+   "holder": "POL",
+   "war": 232,
+   "enemies": [
+    "ARG",
+    "PRU",
+    "BRA",
+    "BOL"
+   ],
+   "warheads": 11,
+   "days": 196,
+   "reasons": {
+    "noPlace": 193,
+    "notDesperate": 3
+   },
+   "nearest": {
+    "day": 10948,
+    "warDays": 194,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -0.7,
+    "value": 0.456,
+    "gain": 0,
+    "retaliation": 0,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0,
+    "doctrine": 0.95,
+    "through": 1,
+    "at": [
+     770.145,
+     618.145
+    ]
+   },
+   "firstDay": 10755,
+   "lastDay": 10950
+  },
+  {
+   "holder": "JAP",
+   "war": 232,
+   "enemies": [
+    "ARG",
+    "PRU",
+    "BRA",
+    "BOL"
+   ],
+   "warheads": 16,
+   "days": 196,
+   "reasons": {
+    "noThreat": 196
+   },
+   "nearest": null,
+   "firstDay": 10755,
+   "lastDay": 10950
+  },
+  {
+   "holder": "GER",
+   "war": 210,
+   "enemies": [
+    "CUB",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 65,
+   "days": 192,
+   "reasons": {
+    "noPlace": 120,
+    "notDesperate": 72
+   },
+   "nearest": {
+    "day": 8947,
+    "warDays": 126,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.218,
+    "value": 1,
+    "gain": 0.002,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.001,
+    "doctrine": 1.4,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 8822,
+   "lastDay": 9013
+  },
+  {
+   "holder": "JAP",
+   "war": 210,
+   "enemies": [
+    "CUB",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 15,
+   "days": 192,
+   "reasons": {
+    "noPlace": 120,
+    "notDesperate": 72
+   },
+   "nearest": {
+    "day": 9013,
+    "warDays": 192,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.22,
+    "value": 1,
+    "gain": 0,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 8822,
+   "lastDay": 9013
+  },
+  {
+   "holder": "USA",
+   "war": 210,
+   "enemies": [
+    "GER",
+    "FRA",
+    "NOR",
+    "SWE",
+    "ITA",
+    "YUG",
+    "ALB",
+    "GRE",
+    "ENG",
+    "POR",
+    "SUD",
+    "SAF",
+    "JAP",
+    "ROM",
+    "NED",
+    "BUR",
+    "NEP",
+    "CHI",
+    "MEN",
+    "MON",
+    "POL",
+    "SOV",
+    "TUR",
+    "SIA",
+    "#113",
+    "EGY",
+    "#112",
+    "SIN",
+    "RAJ"
+   ],
+   "warheads": 55,
+   "days": 192,
+   "reasons": {
+    "notDesperate": 93,
+    "noValue": 17,
+    "deterred": 62,
+    "noPlace": 20
+   },
+   "nearest": {
+    "day": 8960,
+    "warDays": 139,
+    "reason": "deterred",
+    "by": "GER",
+    "u": -1.819,
+    "value": 0.158,
+    "gain": 0.051,
+    "retaliation": 1.12,
+    "alliance": 0.05,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.5,
+    "doctrine": 0.65,
+    "through": 1,
+    "at": [
+     567.735,
+     464.938
+    ]
+   },
+   "firstDay": 8822,
+   "lastDay": 9013
+  },
+  {
+   "holder": "GER",
+   "war": 233,
+   "enemies": [
+    "AST",
+    "MEX",
+    "USA",
+    "CAN",
+    "NSP"
+   ],
+   "warheads": 65,
+   "days": 185,
+   "reasons": {
+    "notDesperate": 185
+   },
+   "nearest": {
+    "day": 10847,
+    "warDays": 82,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.218,
+    "value": 1,
+    "gain": 0.002,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.001,
+    "doctrine": 1.4,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 10766,
+   "lastDay": 10950
+  },
+  {
+   "holder": "POL",
+   "war": 233,
+   "enemies": [
+    "AST",
+    "MEX",
+    "USA",
+    "CAN",
+    "NSP"
+   ],
+   "warheads": 11,
+   "days": 185,
+   "reasons": {
+    "notDesperate": 185
+   },
+   "nearest": {
+    "day": 10771,
+    "warDays": 6,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.219,
+    "value": 1,
+    "gain": 0.001,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.001,
+    "doctrine": 0.95,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 10766,
+   "lastDay": 10950
+  },
+  {
+   "holder": "JAP",
+   "war": 233,
+   "enemies": [
+    "AST",
+    "MEX",
+    "USA",
+    "CAN",
+    "NSP"
+   ],
+   "warheads": 16,
+   "days": 185,
+   "reasons": {
+    "notDesperate": 185
+   },
+   "nearest": {
+    "day": 10772,
+    "warDays": 7,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.219,
+    "value": 1,
+    "gain": 0.001,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.001,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 10766,
+   "lastDay": 10950
+  },
+  {
+   "holder": "USA",
+   "war": 233,
+   "enemies": [
+    "JAP",
+    "ROM",
+    "NED",
+    "BUR",
+    "CHI",
+    "MEN",
+    "MON",
+    "GER",
+    "FRA",
+    "SWE",
+    "ITA",
+    "YUG",
+    "ALB",
+    "ENG",
+    "POR",
+    "SUD",
+    "SAF",
+    "POL",
+    "SOV",
+    "SIA",
+    "#113",
+    "EGY",
+    "#112",
+    "TUR",
+    "IRQ",
+    "YEM",
+    "SIN",
+    "RAJ"
+   ],
+   "warheads": 55,
+   "days": 185,
+   "reasons": {
+    "notDesperate": 185
+   },
+   "nearest": {
+    "day": 10772,
+    "warDays": 7,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.817,
+    "value": 0.414,
+    "gain": 0.003,
+    "retaliation": 1.12,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.01,
+    "doctrine": 0.65,
+    "through": 1,
+    "at": [
+     1868.113,
+     653.887
+    ]
+   },
+   "firstDay": 10766,
+   "lastDay": 10950
+  },
+  {
+   "holder": "GER",
+   "war": 231,
+   "enemies": [
+    "NSP",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 65,
+   "days": 152,
+   "reasons": {
+    "notDesperate": 152
+   },
+   "nearest": {
+    "day": 10601,
+    "warDays": 12,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.218,
+    "value": 1,
+    "gain": 0.002,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.001,
+    "doctrine": 1.4,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 10590,
+   "lastDay": 10741
+  },
+  {
+   "holder": "POL",
+   "war": 231,
+   "enemies": [
+    "NSP",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 11,
+   "days": 152,
+   "reasons": {
+    "notDesperate": 152
+   },
+   "nearest": {
+    "day": 10590,
+    "warDays": 1,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.22,
+    "value": 1,
+    "gain": 0,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0,
+    "doctrine": 0.95,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 10590,
+   "lastDay": 10741
+  },
+  {
+   "holder": "JAP",
+   "war": 231,
+   "enemies": [
+    "NSP",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 16,
+   "days": 152,
+   "reasons": {
+    "notDesperate": 152
+   },
+   "nearest": {
+    "day": 10590,
+    "warDays": 1,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.22,
+    "value": 1,
+    "gain": 0,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 10590,
+   "lastDay": 10741
+  },
+  {
+   "holder": "USA",
+   "war": 231,
+   "enemies": [
+    "GER",
+    "FRA",
+    "SWE",
+    "ITA",
+    "YUG",
+    "ALB",
+    "ENG",
+    "POR",
+    "SUD",
+    "SAF",
+    "JAP",
+    "ROM",
+    "NED",
+    "BUR",
+    "CHI",
+    "MEN",
+    "MON",
+    "POL",
+    "SOV",
+    "SIA",
+    "#113",
+    "EGY",
+    "#112",
+    "TUR",
+    "IRQ",
+    "YEM",
+    "SIN",
+    "RAJ"
+   ],
+   "warheads": 55,
+   "days": 152,
+   "reasons": {
+    "deterred": 86,
+    "noPlace": 66
+   },
+   "nearest": {
+    "day": 10590,
+    "warDays": 1,
+    "reason": "deterred",
+    "by": "GER",
+    "u": -1.69,
+    "value": 0.399,
+    "gain": 0.13,
+    "retaliation": 1.12,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.501,
+    "doctrine": 0.65,
+    "through": 1,
+    "at": [
+     592.761,
+     481.5
+    ]
+   },
+   "firstDay": 10590,
+   "lastDay": 10741
+  },
+  {
+   "holder": "JAP",
+   "war": 165,
+   "enemies": [
+    "MEN"
+   ],
+   "warheads": 14,
+   "days": 136,
+   "reasons": {
+    "noThreat": 136
+   },
+   "nearest": null,
+   "firstDay": 5114,
+   "lastDay": 5249
+  },
+  {
+   "holder": "GER",
+   "war": 149,
+   "enemies": [
+    "SWE"
+   ],
+   "warheads": 16,
+   "days": 122,
+   "reasons": {
+    "noThreat": 122
+   },
+   "nearest": null,
+   "firstDay": 4494,
+   "lastDay": 4615
+  },
+  {
+   "holder": "JAP",
+   "war": 149,
+   "enemies": [
+    "SWE"
+   ],
+   "warheads": 13,
+   "days": 122,
+   "reasons": {
+    "noThreat": 122
+   },
+   "nearest": null,
+   "firstDay": 4494,
+   "lastDay": 4615
+  },
+  {
+   "holder": "GER",
+   "war": 223,
+   "enemies": [
+    "YEM"
+   ],
+   "warheads": 65,
+   "days": 112,
+   "reasons": {
+    "noThreat": 112
+   },
+   "nearest": null,
+   "firstDay": 9955,
+   "lastDay": 10066
+  },
+  {
+   "holder": "POL",
+   "war": 223,
+   "enemies": [
+    "YEM"
+   ],
+   "warheads": 11,
+   "days": 112,
+   "reasons": {
+    "noThreat": 112
+   },
+   "nearest": null,
+   "firstDay": 9955,
+   "lastDay": 10066
+  },
+  {
+   "holder": "JAP",
+   "war": 223,
+   "enemies": [
+    "YEM"
+   ],
+   "warheads": 15,
+   "days": 112,
+   "reasons": {
+    "noThreat": 112
+   },
+   "nearest": null,
+   "firstDay": 9955,
+   "lastDay": 10066
+  },
+  {
+   "holder": "GER",
+   "war": 139,
+   "enemies": [
+    "BCO",
+    "TUN",
+    "NED",
+    "SAF"
+   ],
+   "warheads": 10,
+   "days": 100,
+   "reasons": {
+    "noThreat": 100
+   },
+   "nearest": null,
+   "firstDay": 3983,
+   "lastDay": 4082
+  },
+  {
+   "holder": "JAP",
+   "war": 139,
+   "enemies": [
+    "BCO",
+    "TUN",
+    "NED",
+    "SAF"
+   ],
+   "warheads": 10,
+   "days": 100,
+   "reasons": {
+    "noThreat": 100
+   },
+   "nearest": null,
+   "firstDay": 3983,
+   "lastDay": 4082
+  },
+  {
+   "holder": "GER",
+   "war": 183,
+   "enemies": [
+    "BCO",
+    "SRH",
+    "SAF"
+   ],
+   "warheads": 43,
+   "days": 86,
+   "reasons": {
+    "noThreat": 86
+   },
+   "nearest": null,
+   "firstDay": 6958,
+   "lastDay": 7043
+  },
+  {
+   "holder": "JAP",
+   "war": 183,
+   "enemies": [
+    "BCO",
+    "SRH",
+    "SAF"
+   ],
+   "warheads": 15,
+   "days": 86,
+   "reasons": {
+    "noThreat": 86
+   },
+   "nearest": null,
+   "firstDay": 6958,
+   "lastDay": 7043
+  },
+  {
+   "holder": "GER",
+   "war": 123,
+   "enemies": [
+    "BCO",
+    "SRH",
+    "RAJ",
+    "CEY",
+    "MAL",
+    "NFL",
+    "TUN",
+    "NED"
+   ],
+   "warheads": 6,
+   "days": 85,
+   "reasons": {
+    "noThreat": 85
+   },
+   "nearest": null,
+   "firstDay": 3598,
+   "lastDay": 3682
+  },
+  {
+   "holder": "GER",
+   "war": 179,
+   "enemies": [
+    "SOV",
+    "FIN",
+    "MON",
+    "TAN"
+   ],
+   "warheads": 40,
+   "days": 81,
+   "reasons": {
+    "noThreat": 81
+   },
+   "nearest": null,
+   "firstDay": 6667,
+   "lastDay": 6747
+  },
+  {
+   "holder": "JAP",
+   "war": 179,
+   "enemies": [
+    "SOV",
+    "FIN",
+    "MON",
+    "TAN"
+   ],
+   "warheads": 14,
+   "days": 81,
+   "reasons": {
+    "notDesperate": 29,
+    "noThreat": 52
+   },
+   "nearest": {
+    "day": 6695,
+    "warDays": 29,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -0.75,
+    "value": 0.227,
+    "gain": 0,
+    "retaliation": 0,
+    "alliance": 0.05,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     1417.565,
+     392.816
+    ]
+   },
+   "firstDay": 6667,
+   "lastDay": 6747
+  },
+  {
+   "holder": "GER",
+   "war": 181,
+   "enemies": [
+    "SAR",
+    "BCO",
+    "SRH",
+    "SAF"
+   ],
+   "warheads": 41,
+   "days": 80,
+   "reasons": {
+    "noThreat": 80
+   },
+   "nearest": null,
+   "firstDay": 6793,
+   "lastDay": 6872
+  },
+  {
+   "holder": "JAP",
+   "war": 181,
+   "enemies": [
+    "SAR",
+    "BCO",
+    "SRH",
+    "SAF"
+   ],
+   "warheads": 15,
+   "days": 80,
+   "reasons": {
+    "noThreat": 80
+   },
+   "nearest": null,
+   "firstDay": 6793,
+   "lastDay": 6872
+  },
+  {
+   "holder": "GER",
+   "war": 195,
+   "enemies": [
+    "ROM"
+   ],
+   "warheads": 52,
+   "days": 78,
+   "reasons": {
+    "noThreat": 78
+   },
+   "nearest": null,
+   "firstDay": 7731,
+   "lastDay": 7808
+  },
+  {
+   "holder": "JAP",
+   "war": 195,
+   "enemies": [
+    "ROM"
+   ],
+   "warheads": 15,
+   "days": 78,
+   "reasons": {
+    "notDesperate": 39,
+    "taboo": 21,
+    "noThreat": 18
+   },
+   "nearest": {
+    "day": 7790,
+    "warDays": 60,
+    "reason": "taboo",
+    "by": null,
+    "u": -0.715,
+    "value": 0.471,
+    "gain": 0.035,
+    "retaliation": 0,
+    "alliance": 0.05,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.055,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     1316.536,
+     385.367
+    ]
+   },
+   "firstDay": 7731,
+   "lastDay": 7808
+  },
+  {
+   "holder": "GER",
+   "war": 192,
+   "enemies": [
+    "ROM",
+    "YUG",
+    "HUN",
+    "#117",
+    "ALB"
+   ],
+   "warheads": 50,
+   "days": 75,
+   "reasons": {
+    "noThreat": 75
+   },
+   "nearest": null,
+   "firstDay": 7602,
+   "lastDay": 7676
+  },
+  {
+   "holder": "JAP",
+   "war": 192,
+   "enemies": [
+    "ROM",
+    "YUG",
+    "HUN",
+    "#117",
+    "ALB"
+   ],
+   "warheads": 15,
+   "days": 75,
+   "reasons": {
+    "notDesperate": 10,
+    "taboo": 65
+   },
+   "nearest": {
+    "day": 7648,
+    "warDays": 47,
+    "reason": "taboo",
+    "by": null,
+    "u": -0.628,
+    "value": 0.851,
+    "gain": 0.072,
+    "retaliation": 0,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.063,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     1406.337,
+     369.5
+    ]
+   },
+   "firstDay": 7602,
+   "lastDay": 7676
+  },
+  {
+   "holder": "JAP",
+   "war": 106,
+   "enemies": [
+    "ENG",
+    "SUD",
+    "SRH",
+    "RAJ",
+    "CEY",
+    "MAL",
+    "NFL",
+    "FRA",
+    "TUN",
+    "NED",
+    "BCO"
+   ],
+   "warheads": 1,
+   "days": 69,
+   "reasons": {
+    "noThreat": 69
+   },
+   "nearest": null,
+   "firstDay": 3186,
+   "lastDay": 3254
+  },
+  {
+   "holder": "GER",
+   "war": 182,
+   "enemies": [
+    "MON",
+    "FIN"
+   ],
+   "warheads": 42,
+   "days": 68,
+   "reasons": {
+    "noThreat": 68
+   },
+   "nearest": null,
+   "firstDay": 6877,
+   "lastDay": 6944
+  },
+  {
+   "holder": "JAP",
+   "war": 182,
+   "enemies": [
+    "MON",
+    "FIN"
+   ],
+   "warheads": 15,
+   "days": 68,
+   "reasons": {
+    "noThreat": 68
+   },
+   "nearest": null,
+   "firstDay": 6877,
+   "lastDay": 6944
+  },
+  {
+   "holder": "USA",
+   "war": 148,
+   "enemies": [
+    "CAN"
+   ],
+   "warheads": 15,
+   "days": 57,
+   "reasons": {
+    "noThreat": 57
+   },
+   "nearest": null,
+   "firstDay": 4474,
+   "lastDay": 4530
+  },
+  {
+   "holder": "GER",
+   "war": 207,
+   "enemies": [
+    "SUD"
+   ],
+   "warheads": 61,
+   "days": 57,
+   "reasons": {
+    "noThreat": 57
+   },
+   "nearest": null,
+   "firstDay": 8554,
+   "lastDay": 8610
+  },
+  {
+   "holder": "JAP",
+   "war": 207,
+   "enemies": [
+    "SUD"
+   ],
+   "warheads": 15,
+   "days": 57,
+   "reasons": {
+    "noThreat": 57
+   },
+   "nearest": null,
+   "firstDay": 8554,
+   "lastDay": 8610
+  },
+  {
+   "holder": "GER",
+   "war": 111,
+   "enemies": [
+    "SOV",
+    "FIN",
+    "IRN",
+    "AFG",
+    "BUR",
+    "SIN",
+    "MON",
+    "TAN",
+    "#114"
+   ],
+   "warheads": 1,
+   "days": 54,
+   "reasons": {
+    "noThreat": 54
+   },
+   "nearest": null,
+   "firstDay": 3186,
+   "lastDay": 3239
+  },
+  {
+   "holder": "GER",
+   "war": 135,
+   "enemies": [
+    "EGY",
+    "ALB"
+   ],
+   "warheads": 8,
+   "days": 47,
+   "reasons": {
+    "noThreat": 47
+   },
+   "nearest": null,
+   "firstDay": 3797,
+   "lastDay": 3843
+  },
+  {
+   "holder": "JAP",
+   "war": 135,
+   "enemies": [
+    "EGY",
+    "ALB"
+   ],
+   "warheads": 8,
+   "days": 47,
+   "reasons": {
+    "noThreat": 47
+   },
+   "nearest": null,
+   "firstDay": 3797,
+   "lastDay": 3843
+  },
+  {
+   "holder": "GER",
+   "war": 193,
+   "enemies": [
+    "YUG",
+    "#117",
+    "ALB"
+   ],
+   "warheads": 51,
+   "days": 45,
+   "reasons": {
+    "noThreat": 45
+   },
+   "nearest": null,
+   "firstDay": 7679,
+   "lastDay": 7723
+  },
+  {
+   "holder": "JAP",
+   "war": 193,
+   "enemies": [
+    "YUG",
+    "#117",
+    "ALB"
+   ],
+   "warheads": 15,
+   "days": 45,
+   "reasons": {
+    "noThreat": 45
+   },
+   "nearest": null,
+   "firstDay": 7679,
+   "lastDay": 7723
+  },
+  {
+   "holder": "GER",
+   "war": 229,
+   "enemies": [
+    "NOR",
+    "FIN"
+   ],
+   "warheads": 65,
+   "days": 44,
+   "reasons": {
+    "noThreat": 44
+   },
+   "nearest": null,
+   "firstDay": 10472,
+   "lastDay": 10515
+  },
+  {
+   "holder": "POL",
+   "war": 229,
+   "enemies": [
+    "NOR",
+    "FIN"
+   ],
+   "warheads": 11,
+   "days": 44,
+   "reasons": {
+    "noThreat": 44
+   },
+   "nearest": null,
+   "firstDay": 10472,
+   "lastDay": 10515
+  },
+  {
+   "holder": "JAP",
+   "war": 229,
+   "enemies": [
+    "NOR",
+    "FIN"
+   ],
+   "warheads": 15,
+   "days": 44,
+   "reasons": {
+    "noThreat": 44
+   },
+   "nearest": null,
+   "firstDay": 10472,
+   "lastDay": 10515
+  },
+  {
+   "holder": "JAP",
+   "war": 204,
+   "enemies": [
+    "#119"
+   ],
+   "warheads": 15,
+   "days": 41,
+   "reasons": {
+    "noThreat": 41
+   },
+   "nearest": null,
+   "firstDay": 8249,
+   "lastDay": 8289
+  },
+  {
+   "holder": "JAP",
+   "war": 115,
+   "enemies": [
+    "SOV",
+    "FIN",
+    "IRN",
+    "AFG",
+    "BUR",
+    "SIN",
+    "MON",
+    "TAN",
+    "#114"
+   ],
+   "warheads": 1,
+   "days": 38,
+   "reasons": {
+    "noPlace": 38
+   },
+   "nearest": null,
+   "firstDay": 3186,
+   "lastDay": 3223
+  },
+  {
+   "holder": "GER",
+   "war": 185,
+   "enemies": [
+    "SAF",
+    "SRH"
+   ],
+   "warheads": 44,
+   "days": 38,
+   "reasons": {
+    "noThreat": 38
+   },
+   "nearest": null,
+   "firstDay": 7105,
+   "lastDay": 7142
+  },
+  {
+   "holder": "JAP",
+   "war": 185,
+   "enemies": [
+    "SAF",
+    "SRH"
+   ],
+   "warheads": 15,
+   "days": 38,
+   "reasons": {
+    "noThreat": 38
+   },
+   "nearest": null,
+   "firstDay": 7105,
+   "lastDay": 7142
+  },
+  {
+   "holder": "GER",
+   "war": 227,
+   "enemies": [
+    "#116"
+   ],
+   "warheads": 65,
+   "days": 35,
+   "reasons": {
+    "noThreat": 35
+   },
+   "nearest": null,
+   "firstDay": 10109,
+   "lastDay": 10143
+  },
+  {
+   "holder": "POL",
+   "war": 227,
+   "enemies": [
+    "#116"
+   ],
+   "warheads": 11,
+   "days": 35,
+   "reasons": {
+    "noThreat": 35
+   },
+   "nearest": null,
+   "firstDay": 10109,
+   "lastDay": 10143
+  },
+  {
+   "holder": "JAP",
+   "war": 227,
+   "enemies": [
+    "#116"
+   ],
+   "warheads": 15,
+   "days": 35,
+   "reasons": {
+    "noThreat": 35
+   },
+   "nearest": null,
+   "firstDay": 10109,
+   "lastDay": 10143
+  },
+  {
+   "holder": "GER",
+   "war": 209,
+   "enemies": [
+    "IRQ"
+   ],
+   "warheads": 63,
+   "days": 31,
+   "reasons": {
+    "noThreat": 31
+   },
+   "nearest": null,
+   "firstDay": 8793,
+   "lastDay": 8823
+  },
+  {
+   "holder": "JAP",
+   "war": 209,
+   "enemies": [
+    "IRQ"
+   ],
+   "warheads": 15,
+   "days": 31,
+   "reasons": {
+    "noThreat": 31
+   },
+   "nearest": null,
+   "firstDay": 8793,
+   "lastDay": 8823
+  },
+  {
+   "holder": "GER",
+   "war": 138,
+   "enemies": [
+    "POR"
+   ],
+   "warheads": 9,
+   "days": 29,
+   "reasons": {
+    "noThreat": 29
+   },
+   "nearest": null,
+   "firstDay": 3941,
+   "lastDay": 3969
+  },
+  {
+   "holder": "JAP",
+   "war": 138,
+   "enemies": [
+    "POR"
+   ],
+   "warheads": 9,
+   "days": 29,
+   "reasons": {
+    "noThreat": 29
+   },
+   "nearest": null,
+   "firstDay": 3941,
+   "lastDay": 3969
+  },
+  {
+   "holder": "GER",
+   "war": 180,
+   "enemies": [
+    "BUR"
+   ],
+   "warheads": 41,
+   "days": 26,
+   "reasons": {
+    "noThreat": 26
+   },
+   "nearest": null,
+   "firstDay": 6765,
+   "lastDay": 6790
+  },
+  {
+   "holder": "JAP",
+   "war": 180,
+   "enemies": [
+    "BUR"
+   ],
+   "warheads": 14,
+   "days": 26,
+   "reasons": {
+    "noThreat": 26
+   },
+   "nearest": null,
+   "firstDay": 6765,
+   "lastDay": 6790
+  },
+  {
+   "holder": "GER",
+   "war": 217,
+   "enemies": [
+    "NSP",
+    "CUB",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 65,
+   "days": 26,
+   "reasons": {
+    "noPlace": 25,
+    "notDesperate": 1
+   },
+   "nearest": {
+    "day": 9834,
+    "warDays": 7,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.22,
+    "value": 0.152,
+    "gain": 0,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.001,
+    "doctrine": 1.4,
+    "through": 1,
+    "at": [
+     463.5,
+     472.496
+    ]
+   },
+   "firstDay": 9828,
+   "lastDay": 9853
+  },
+  {
+   "holder": "POL",
+   "war": 217,
+   "enemies": [
+    "NSP",
+    "CUB",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 9,
+   "days": 26,
+   "reasons": {
+    "noPlace": 25,
+    "notDesperate": 1
+   },
+   "nearest": {
+    "day": 9834,
+    "warDays": 7,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.22,
+    "value": 0.152,
+    "gain": 0,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0,
+    "doctrine": 0.95,
+    "through": 1,
+    "at": [
+     463.5,
+     472.496
+    ]
+   },
+   "firstDay": 9828,
+   "lastDay": 9853
+  },
+  {
+   "holder": "JAP",
+   "war": 217,
+   "enemies": [
+    "NSP",
+    "CUB",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 15,
+   "days": 26,
+   "reasons": {
+    "noPlace": 25,
+    "notDesperate": 1
+   },
+   "nearest": {
+    "day": 9834,
+    "warDays": 7,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.22,
+    "value": 0.152,
+    "gain": 0,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     463.5,
+     472.496
+    ]
+   },
+   "firstDay": 9828,
+   "lastDay": 9853
+  },
+  {
+   "holder": "USA",
+   "war": 217,
+   "enemies": [
+    "GER",
+    "FRA",
+    "SWE",
+    "ITA",
+    "YUG",
+    "ALB",
+    "GRE",
+    "ENG",
+    "POR",
+    "SUD",
+    "SAF",
+    "JAP",
+    "ROM",
+    "NED",
+    "BUR",
+    "NEP",
+    "CHI",
+    "MEN",
+    "MON",
+    "POL",
+    "SOV",
+    "SIA",
+    "#113",
+    "EGY",
+    "#112",
+    "TUR",
+    "IRQ",
+    "SIN",
+    "RAJ"
+   ],
+   "warheads": 55,
+   "days": 26,
+   "reasons": {
+    "noPlace": 26
+   },
+   "nearest": null,
+   "firstDay": 9828,
+   "lastDay": 9853
+  },
+  {
+   "holder": "GER",
+   "war": 127,
+   "enemies": [
+    "ALB"
+   ],
+   "warheads": 6,
+   "days": 25,
+   "reasons": {
+    "noThreat": 25
+   },
+   "nearest": null,
+   "firstDay": 3689,
+   "lastDay": 3713
+  },
+  {
+   "holder": "JAP",
+   "war": 127,
+   "enemies": [
+    "ALB"
+   ],
+   "warheads": 6,
+   "days": 25,
+   "reasons": {
+    "noThreat": 25
+   },
+   "nearest": null,
+   "firstDay": 3689,
+   "lastDay": 3713
+  },
+  {
+   "holder": "GER",
+   "war": 216,
+   "enemies": [
+    "NOR",
+    "FIN"
+   ],
+   "warheads": 65,
+   "days": 24,
+   "reasons": {
+    "noThreat": 24
+   },
+   "nearest": null,
+   "firstDay": 9674,
+   "lastDay": 9697
+  },
+  {
+   "holder": "POL",
+   "war": 216,
+   "enemies": [
+    "NOR",
+    "FIN"
+   ],
+   "warheads": 8,
+   "days": 24,
+   "reasons": {
+    "noThreat": 24
+   },
+   "nearest": null,
+   "firstDay": 9674,
+   "lastDay": 9697
+  },
+  {
+   "holder": "JAP",
+   "war": 216,
+   "enemies": [
+    "NOR",
+    "FIN"
+   ],
+   "warheads": 15,
+   "days": 24,
+   "reasons": {
+    "noThreat": 24
+   },
+   "nearest": null,
+   "firstDay": 9674,
+   "lastDay": 9697
+  },
+  {
+   "holder": "JAP",
+   "war": 218,
+   "enemies": [
+    "TAN"
+   ],
+   "warheads": 15,
+   "days": 24,
+   "reasons": {
+    "noThreat": 24
+   },
+   "nearest": null,
+   "firstDay": 9832,
+   "lastDay": 9855
+  },
+  {
+   "holder": "GER",
+   "war": 219,
+   "enemies": [
+    "CUB",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 65,
+   "days": 23,
+   "reasons": {
+    "noPlace": 5,
+    "notDesperate": 18
+   },
+   "nearest": {
+    "day": 9878,
+    "warDays": 23,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.219,
+    "value": 1,
+    "gain": 0.001,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.001,
+    "doctrine": 1.4,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 9856,
+   "lastDay": 9878
+  },
+  {
+   "holder": "POL",
+   "war": 219,
+   "enemies": [
+    "CUB",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 10,
+   "days": 23,
+   "reasons": {
+    "noPlace": 5,
+    "notDesperate": 18
+   },
+   "nearest": {
+    "day": 9861,
+    "warDays": 6,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.22,
+    "value": 1,
+    "gain": 0,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0,
+    "doctrine": 0.95,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 9856,
+   "lastDay": 9878
+  },
+  {
+   "holder": "JAP",
+   "war": 219,
+   "enemies": [
+    "CUB",
+    "MEX",
+    "AST",
+    "USA",
+    "CAN"
+   ],
+   "warheads": 15,
+   "days": 23,
+   "reasons": {
+    "noPlace": 5,
+    "notDesperate": 18
+   },
+   "nearest": {
+    "day": 9861,
+    "warDays": 6,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.22,
+    "value": 1,
+    "gain": 0,
+    "retaliation": 0.52,
+    "alliance": 0,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0,
+    "doctrine": 1.35,
+    "through": 1,
+    "at": [
+     559.5,
+     445.5
+    ]
+   },
+   "firstDay": 9856,
+   "lastDay": 9878
+  },
+  {
+   "holder": "USA",
+   "war": 219,
+   "enemies": [
+    "GER",
+    "FRA",
+    "SWE",
+    "ITA",
+    "YUG",
+    "ALB",
+    "GRE",
+    "ENG",
+    "POR",
+    "SUD",
+    "SAF",
+    "JAP",
+    "ROM",
+    "NED",
+    "BUR",
+    "NEP",
+    "CHI",
+    "MEN",
+    "MON",
+    "POL",
+    "SOV",
+    "SIA",
+    "#113",
+    "EGY",
+    "#112",
+    "TUR",
+    "IRQ",
+    "SIN",
+    "RAJ"
+   ],
+   "warheads": 55,
+   "days": 23,
+   "reasons": {
+    "noPlace": 16,
+    "notDesperate": 7
+   },
+   "nearest": {
+    "day": 9877,
+    "warDays": 22,
+    "reason": "notDesperate",
+    "by": null,
+    "u": -1.87,
+    "value": 0.135,
+    "gain": 0,
+    "retaliation": 1.12,
+    "alliance": 0.05,
+    "outrage": 0.1,
+    "taboo": 0.6,
+    "desperation": 0.001,
+    "doctrine": 0.65,
+    "through": 1,
+    "at": [
+     587.721,
+     479.5
+    ]
+   },
+   "firstDay": 9856,
+   "lastDay": 9878
+  },
+  {
+   "holder": "JAP",
+   "war": 222,
+   "enemies": [
+    "SAR"
+   ],
+   "warheads": 15,
+   "days": 18,
+   "reasons": {
+    "noThreat": 18
+   },
+   "nearest": null,
+   "firstDay": 9922,
+   "lastDay": 9939
+  },
+  {
+   "holder": "GER",
+   "war": 151,
+   "enemies": [
+    "#118"
+   ],
+   "warheads": 17,
+   "days": 17,
+   "reasons": {
+    "noThreat": 17
+   },
+   "nearest": null,
+   "firstDay": 4627,
+   "lastDay": 4643
+  },
+  {
+   "holder": "JAP",
+   "war": 151,
+   "enemies": [
+    "#118"
+   ],
+   "warheads": 13,
+   "days": 17,
+   "reasons": {
+    "noThreat": 17
+   },
+   "nearest": null,
+   "firstDay": 4627,
+   "lastDay": 4643
+  },
+  {
+   "holder": "GER",
+   "war": 211,
+   "enemies": [
+    "TUR",
+    "#116"
+   ],
+   "warheads": 65,
+   "days": 16,
+   "reasons": {
+    "noThreat": 16
+   },
+   "nearest": null,
+   "firstDay": 8947,
+   "lastDay": 8962
+  },
+  {
+   "holder": "JAP",
+   "war": 211,
+   "enemies": [
+    "TUR",
+    "#116"
+   ],
+   "warheads": 15,
+   "days": 16,
+   "reasons": {
+    "noThreat": 16
+   },
+   "nearest": null,
+   "firstDay": 8947,
+   "lastDay": 8962
+  },
+  {
+   "holder": "JAP",
+   "war": 158,
+   "enemies": [
+    "BUR"
+   ],
+   "warheads": 13,
+   "days": 10,
+   "reasons": {
+    "noThreat": 10
+   },
+   "nearest": null,
+   "firstDay": 4869,
+   "lastDay": 4878
+  },
+  {
+   "holder": "GER",
+   "war": 200,
+   "enemies": [
+    "SUD"
+   ],
+   "warheads": 52,
+   "days": 5,
+   "reasons": {
+    "noThreat": 5
+   },
+   "nearest": null,
+   "firstDay": 7805,
+   "lastDay": 7809
+  },
+  {
+   "holder": "JAP",
+   "war": 200,
+   "enemies": [
+    "SUD"
+   ],
+   "warheads": 15,
+   "days": 5,
+   "reasons": {
+    "noThreat": 5
+   },
+   "nearest": null,
+   "firstDay": 7805,
+   "lastDay": 7809
+  },
+  {
+   "holder": "GER",
+   "war": 220,
+   "enemies": [
+    "MAL"
+   ],
+   "warheads": 65,
+   "days": 4,
+   "reasons": {
+    "noThreat": 4
+   },
+   "nearest": null,
+   "firstDay": 9899,
+   "lastDay": 9902
+  },
+  {
+   "holder": "POL",
+   "war": 220,
+   "enemies": [
+    "MAL"
+   ],
+   "warheads": 10,
+   "days": 4,
+   "reasons": {
+    "noThreat": 4
+   },
+   "nearest": null,
+   "firstDay": 9899,
+   "lastDay": 9902
+  },
+  {
+   "holder": "JAP",
+   "war": 220,
+   "enemies": [
+    "MAL"
+   ],
+   "warheads": 15,
+   "days": 4,
+   "reasons": {
+    "noThreat": 4
+   },
+   "nearest": null,
+   "firstDay": 9899,
+   "lastDay": 9902
+  }
+ ]
+}
