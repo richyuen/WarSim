@@ -20561,3 +20561,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   (0.48–0.78), 8693's to the United States (0.69, 0.78).
 - No rule, the pin unchanged. Specs by hand: none (no UI). 7.38's commits: 1.
 - **Next:** PLAN 7.38b (the yield by the target).
+
+## 2026-10-20 — PLAN 7.38b: a fission warhead where it is worth as much (ADR-567)
+
+- **Rule:** `partsIn` weighs a holder of `thermonuclear`'s place at both blast radii in one pass and
+  keeps fission where its value is as high; the hydrogen bomb only where it adds, at its own value
+  (so no utility falls). The places weighed stay those of the largest yield. The yield travels on
+  `NukeLaunch.yieldN` (saved as `world.nukeYields`, a section of its own: older saves load, their
+  launches read as the striker's largest); `launchNuke` takes it, the player's and God Mode's the
+  largest as before. `largestYield` names the old `knows(thermonuclear) ? 2 : 1`.
+- **AT, the critic's case** (`bcbc99c` worktree, the diff patched in, from the 8693 checkpoint 48 h
+  before Paris): decided on day 5891 at 0.026 as before, a fission burst, 203,058 dead (was
+  3,178,766); the Soviet answer the next day at 0.776 as before, 204,884 dead (was 1,174,992).
+  Worktree patch reverted after.
+- **Cost:** run 10's year-20 world of 8693 loaded on HEAD, one year, before and after bundles at the
+  same time on 0x000F / 0x0F00 and swapped: `nuclear` 0.226 / 0.189 and 0.193 / 0.209 ms an hour;
+  the core pair's spread, the same hash 45025297.
+- **Tests:** `nukeYieldChoice1938.test.ts` (new, red without); three tests' hand-made launches given
+  `yieldN: 1` (a type's new field). The nuclear unit files: 36 files, 111 tests green. Pin unmoved.
+- 7.38's commits: 2. **Next:** PLAN 7.38c (the dead weighed).

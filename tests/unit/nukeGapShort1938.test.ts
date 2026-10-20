@@ -31,8 +31,8 @@ function launched(short: number, missiles: number): { w: World; war: War } {
   war.lastStrike = [w.tick, -1];
   war.strikesLive = [short + missiles, 0];
   // A bomber's wing that is no longer there: lost on the way (`arrivals`).
-  for (let k = 0; k < short; k++) w.nukeLaunches.push({ id: w.nextLaunchId++, nation: ENG, missile: 0, wing: 999_999, bx: 0, by: 0, tx: berlin[0], ty: berlin[1], launch: w.tick, arrive: w.tick });
-  for (let k = 0; k < missiles; k++) w.nukeLaunches.push({ id: w.nextLaunchId++, nation: ENG, missile: 1, wing: 0, bx: 0, by: 0, tx: berlin[0], ty: berlin[1], launch: w.tick, arrive: w.tick });
+  for (let k = 0; k < short; k++) w.nukeLaunches.push({ id: w.nextLaunchId++, nation: ENG, missile: 0, wing: 999_999, bx: 0, by: 0, tx: berlin[0], ty: berlin[1], launch: w.tick, arrive: w.tick, yieldN: 1 });
+  for (let k = 0; k < missiles; k++) w.nukeLaunches.push({ id: w.nextLaunchId++, nation: ENG, missile: 1, wing: 0, bx: 0, by: 0, tx: berlin[0], ty: berlin[1], launch: w.tick, arrive: w.tick, yieldN: 1 });
   w.out.events.length = 0;
   nuclearSystem(w);
   expect(count(w, EventKind.NukeIntercepted)).toBe(short);

@@ -1,0 +1,132 @@
+{
+ "seed": 8693,
+ "years": 17,
+ "from": "C:/Git/WarSim/.cache/nukeToll_8693_141385-bcbc99c.bin",
+ "bars": {
+  "decided": 2,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 5891,
+   "year": 16.14,
+   "tick": 141385,
+   "by": "United States",
+   "u": 0.026,
+   "at": [
+    1037.26,
+    294.77
+   ],
+   "target": "France",
+   "war": 144,
+   "warName": "United States+Mexico v Netherlands+British India+Ceylon+British Malaya+France+Tunisia+Australia+Yemen",
+   "warDays": 492,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.026,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1.348,
+    "ownDesperation": 0.053,
+    "doctrine": 0.65,
+    "gain": 0.876,
+    "retaliation": 0,
+    "allianceCost": 0.15,
+    "outrage": 0.1,
+    "taboo": 1,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.85
+   },
+   "place": {
+    "econShare": 0.059,
+    "menShare": 0.08,
+    "ownShare": 0,
+    "menExpected": 20114,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0.059,
+    "menShare": 0.08,
+    "menExpected": 20114,
+    "capital": 0.3
+   },
+   "peopleExpected": {
+    "thermo": 3157000,
+    "fission": 183000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 203058,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 5892,
+   "year": 16.14,
+   "tick": 141409,
+   "by": "Soviet Union",
+   "u": 0.776,
+   "at": [
+    585.89,
+    364.2
+   ],
+   "target": "United States",
+   "war": 154,
+   "warName": "Soviet Union+Germany+Lithuania+Estonia+Finland+Romania+Hungary+Yugoslavia+Greece+Turkey+Spanish Republic+Portugal+Belgium+Sweden+Egypt+Syria+Palestine+Transjordan+Afghanistan+Nepal+Siam+Japan+Mongolia+Tannu Tuva+founded#109+founded#111+founded#112+Switzerland v United States+Canada+Newfoundland+founded#116+founded#117+Mexico+Cuba+South Africa+Southern Rhodesia",
+   "warDays": 148,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": -0.745,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 0.046,
+    "ownDesperation": 0.046,
+    "doctrine": 1.2,
+    "gain": 0.056,
+    "retaliation": 0.65,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 0.3,
+    "mad": true,
+    "extreme": false,
+    "costs": 0.8
+   },
+   "place": {
+    "econShare": 0.006,
+    "menShare": 0.348,
+    "ownShare": 0,
+    "menExpected": 157349,
+    "theatreMen": 452517,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0.006,
+    "menShare": 0.348,
+    "menExpected": 157349,
+    "capital": 0.3
+   },
+   "peopleExpected": {
+    "thermo": 1018000,
+    "fission": 48000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 204884,
+    "yieldN": 1
+   }
+  }
+ ]
+}

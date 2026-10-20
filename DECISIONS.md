@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-567 · 2026-10-20 · accepted — A holder of the hydrogen bomb uses a fission warhead where its value is as high (PLAN 7.38b)
+
+- **Context.** Critic R10-B1 (run 10, AI nuclear use 7). Every place a holder of `thermonuclear`
+  weighed was valued at the hydrogen bomb's radius, and `detonate` read the yield from that tech
+  at the burst. On the critic's code 8 of 37 decisions burst a hydrogen bomb where a fission one's
+  blast was worth as much: the United States on Paris and Rome (value 1 at both yields), 3.2 to
+  3.7 million dead where a fission burst kills 172,000 to 183,000 (`docs/evidence/7.38/measure-a.md`).
+- **Decision.**
+  - `partsIn` weighs a holder's place at both radii in one pass over its cells and formations and
+    keeps the fission yield where its value is as high (ties to fission); the hydrogen bomb only
+    where its value is higher, at its own value. So a decision's utility is what it was, or higher
+    where the smaller blast spares the striker's own men; the places weighed (`nukeTargets`: the
+    massing, the restrike radii) stay those of the holder's largest yield.
+  - The yield chosen travels on the launch (`NukeLaunch.yieldN`) and bursts so. A save carries it
+    in a section of its own (`world.nukeYields`); a save from before has none, read as the
+    striker's largest at the burst. God Mode's and the player's launches use the largest
+    (`launchNuke`'s default, as before).
+- **The critic's case** (`bcbc99c` in a worktree, the rule patched in,
+  `docs/evidence/7.38/b-yield-rule.diff`, from `.cache/nukeToll_8693_141385-bcbc99c.bin`): the
+  United States' first strike on Paris still decided on day 5891 at 0.026, a fission burst of
+  203,058 dead (was 3,178,766); the Soviet answer the next day at 0.776 as before, a fission one,
+  204,884 dead (was 1,174,992) (`b-toll-8693-paris-rule.json`).
+- **Cost.** The daily `nuclear` call on run 10's year-20 world of seed 8693 loaded on HEAD, one
+  year, before and after at the same time on separate P-cores and swapped: 0.226 / 0.189 and
+  0.193 / 0.209 ms an hour (before / after): the core pair's spread, no cost seen; the same hash.
+- **Pin.** Unmoved: no warhead in seed 99's year.
+- **Tests.** `nukeYieldChoice1938.test.ts`: France knowing `thermonuclear` at war with Germany,
+  each place's yield fission where its fission value is as high, and its strike on the place of
+  the highest value a fission warhead in flight (through a save and a load) and a fission burst
+  (red without).
+
 ### ADR-566 · 2026-10-20 · proposed (the user's decision) — PLAN 7.38's "no city struck twice in one war": the named cases are in different wars (PLAN 7.38a)
 
 - **Context.** PLAN 7.38's AT (critic R10-B1): "no city struck twice in one war (was Paris 3,

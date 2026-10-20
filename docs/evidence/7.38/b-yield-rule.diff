@@ -1,0 +1,270 @@
+diff --git a/src/sim/systems/nuclear.ts b/src/sim/systems/nuclear.ts
+index 18d7674..e131da4 100644
+--- a/src/sim/systems/nuclear.ts
++++ b/src/sim/systems/nuclear.ts
+@@ -370,8 +370,11 @@ export function reaches(world: World, n: number, x: number, y: number): boolean
+   return nukeBomber(world, n, x, y) !== null;
+ }
+ 
+-/** Nation `n` launches a warhead at (x, y) by bomber or missile (PLAN 6.2): see the head of the file; why not, else None. */
+-export function launchNuke(world: World, n: number, x: number, y: number, missile: boolean): Refusal {
++/**
++ * Nation `n` launches a warhead at (x, y) by bomber or missile (PLAN 6.2): see the head of the file;
++ * why not, else None. Of class `yieldN` (PLAN 7.38b: the decision's), by default its largest.
++ */
++export function launchNuke(world: World, n: number, x: number, y: number, missile: boolean, yieldN = largestYield(world, n)): Refusal {
+   if (!nukesAllowed(world, n)) return Refusal.NoNukes;
+   if (warheadsOf(world, n) < 1) return Refusal.NoWarhead;
+   let from: [number, number];
+@@ -394,7 +397,7 @@ export function launchNuke(world: World, n: number, x: number, y: number, missil
+   }
+   const h = world.warheads.get(n)!;
+   h.stock--;
+-  world.nukeLaunches.push({ id: world.nextLaunchId++, nation: n, missile: missile ? 1 : 0, wing, bx: from[0], by: from[1], tx: x, ty: y, launch: world.tick, arrive: world.tick + km / Math.max(1, kmh) });
++  world.nukeLaunches.push({ id: world.nextLaunchId++, nation: n, missile: missile ? 1 : 0, wing, bx: from[0], by: from[1], tx: x, ty: y, launch: world.tick, arrive: world.tick + km / Math.max(1, kmh), yieldN: Math.min(yieldN, largestYield(world, n)) });
+   world.out.emit(world.tick, EventKind.NukeLaunched, n, missile ? 1 : 0, x, y);
+   return Refusal.None;
+ }
+@@ -411,6 +414,11 @@ export const BLAST_PEOPLE = 0.05;
+ /** The most of a cell's industry a blast puts out of work. */
+ const BLAST_DAMAGE_MAX = 0.95;
+ 
++/** The largest class of warhead `n` builds: 2 (thermonuclear) once it knows `thermonuclear`, else 1 (PLAN 7.20). */
++export function largestYield(world: World, n: number): number {
++  return knows(world, n, 'thermonuclear') ? 2 : 1;
++}
++
+ /** The blast radius, km, of a warhead of class `yieldN` (1 fission, 2 thermonuclear; `yieldOf`). */
+ export function blastRadius(yieldN: number): number {
+   return BLAST_KM * pow(yieldOf(yieldN), 1 / 3);
+@@ -759,7 +767,7 @@ function strikeView(world: World, n: number, war: War, side: number, industry: (
+   const enemy = new Set(war.sides[1 - side]!);
+   const own = new Set(ownCoalition(world, war, side));
+   const c = world.formations.cols;
+-  const v: StrikeView = { enemy, radius: blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1), fx: [], fy: [], fs: [], fEnemy: [], enemyMen: 0, econAll: () => 0, held: industry };
++  const v: StrikeView = { enemy, radius: blastRadius(largestYield(world, n)), fx: [], fy: [], fs: [], fEnemy: [], enemyMen: 0, econAll: () => 0, held: industry };
+   world.formations.forEach((id) => {
+     const m = c.nation[id]!;
+     const isEnemy = enemy.has(m);
+@@ -822,6 +830,8 @@ export interface PlaceParts {
+   /** The chance the warhead gets there. */
+   through: number;
+   value: number;
++  /** The warhead's class weighed (PLAN 7.38b): 1 fission, 2 thermonuclear only where its value is higher. */
++  yieldN: number;
+ }
+ 
+ /** The parts of a burst's value at (x, y) for `n` in `war` on `side` (a diagnostic's). */
+@@ -829,11 +839,22 @@ export function placeParts(world: World, n: number, war: War, side: number, x: n
+   return partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y);
+ }
+ 
++/**
++ * The yield a place is weighed at (PLAN 7.38b, critic R10-B1): a holder of `thermonuclear` weighs it
++ * at both, and uses a fission warhead where its value is as high (`PlaceParts.yieldN`); the place's
++ * value is then the higher yield's only where it adds. On the critic's seed 8693 the United States
++ * H-bombed Paris and Rome for 3.2 to 3.7 million dead where a fission burst was worth as much (1 of
++ * 1) for 172,000 to 183,000 (`docs/evidence/7.38/measure-a.md`: 8 of 37 decisions so).
++ */
+ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): PlaceParts {
+   const { radius, enemy } = v;
+   const { w, h, econ, controller } = world.cells;
++  // The radii weighed: the holder's widest, and a fission one's when that is wider (PLAN 7.38b).
++  const fission = blastRadius(1);
++  const radii = radius > fission ? [radius, fission] : [radius];
++  const k = radii.length;
+   // The enemy side's output within the blast.
+-  let hit = 0;
++  const hit = [0, 0];
+   const ry = Math.ceil(radius / 10) + 1;
+   const rx = Math.ceil(radius / 4) + 1;
+   for (let yy = Math.max(0, Math.floor(y) - ry); yy <= Math.min(h - 1, Math.floor(y) + ry); yy++) {
+@@ -842,8 +863,10 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number):
+       if (xx === null) continue;
+       const cell = yy * w + xx;
+       if (econ[cell] === 0 || !enemy.has(controller[cell]!)) continue;
+-      const f = blastShare(seaKm(world, x, y, xx + 0.5, yy + 0.5), radius);
+-      if (f > 0) hit += econ[cell]! * (1 - (world.bombDamage.get(cell) ?? 0)) * (1 - FALLOUT_INCOME * falloutAt(world, cell)) * f;
++      const km = seaKm(world, x, y, xx + 0.5, yy + 0.5);
++      if (km >= radius) continue;
++      const e = econ[cell]! * (1 - (world.bombDamage.get(cell) ?? 0)) * (1 - FALLOUT_INCOME * falloutAt(world, cell));
++      for (let r = 0; r < k; r++) hit[r]! += e * blastShare(km, radii[r]!);
+     }
+   }
+   // Men: the enemy side's within it, the striker's side's there taken off; each a share of that
+@@ -852,44 +875,46 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number):
+   // in a blast 1 % of 1.55 million).
+   let menAll = 0;
+   let ownAll = 0;
+-  let menHit = 0;
+-  let ownHit = 0;
+-  for (let k = 0; k < v.fs.length; k++) {
+-    const km = seaKm(world, x, y, v.fx[k]!, v.fy[k]!);
++  const menHit = [0, 0];
++  const ownHit = [0, 0];
++  for (let f = 0; f < v.fs.length; f++) {
++    const km = seaKm(world, x, y, v.fx[f]!, v.fy[f]!);
+     if (km > FRONT_KM) continue;
+-    const s = v.fs[k]!;
+-    const f = blastShare(km, radius) * s;
+-    if (v.fEnemy[k]) {
+-      menAll += s;
+-      menHit += f;
+-    } else {
+-      ownAll += s;
+-      ownHit += f;
+-    }
++    const s = v.fs[f]!;
++    if (v.fEnemy[f]) menAll += s;
++    else ownAll += s;
++    const into = v.fEnemy[f] ? menHit : ownHit;
++    for (let r = 0; r < k; r++) into[r]! += blastShare(km, radii[r]!) * s;
+   }
+   // As a share of all the enemy side's output (summed only when the blast reaches some).
+-  const econAll = hit > 0 ? v.econAll() : 0;
+-  const econShare = econAll > 0 ? hit / econAll : 0;
++  const econAll = hit[0]! > 0 ? v.econAll() : 0;
+   // The theatre counts for at least THEATRE_FLOOR of the enemy side's men (PLAN 7.18j, ADR-492). The
+   // striker's own men are left a share of its theatre alone: what keeps it off them stays whole.
+   // And for at least THEATRE_MEN_MIN men (PLAN 7.32, ADR-528): a warhead is weighed by what it
+   // destroys, not by its share of a beaten side's last men.
+   const theatreMen = Math.max(menAll, THEATRE_FLOOR * v.enemyMen, THEATRE_MEN_MIN);
+-  const menShare = theatreMen > 0 ? menHit / theatreMen : 0;
+-  const ownShare = ownAll > 0 ? ownHit / ownAll : 0;
+-  const share = econShare + menShare - ownShare;
+   const nc = world.nations.cols;
+-  let capital = 0;
+-  // A capital of weight to the enemy side (PLAN 7.18d, critic R8-B1: the Soviet Union struck Nepal's,
+-  // 1,000 dead, at war with China): its nation holds CAPITAL_WEIGHT of the side's output.
+-  for (const m of enemy) {
+-    if (nc.living[m] !== 1 || blastShare(seaKm(world, x, y, nc.capitalX[m]!, nc.capitalY[m]!), radius) === 0) continue;
+-    const all = v.econAll();
+-    if (all > 0 && (v.held()[m] ?? 0) >= CAPITAL_WEIGHT * all) capital = TARGET_CAPITAL;
+-  }
+   // Expected damage (SPEC): as likely as the warhead gets there, by missile when `n` knows them.
+   const through = knows(world, n, 'ballistic_missiles') ? 1 : 1 - bomberIntercept(world, n, x, y);
+-  return { econShare, menShare, ownShare, menAll, theatreMen, sideMen: v.enemyMen, capital, through, value: Math.max(0, Math.min(1, TARGET_SCALE * share + capital)) * through };
++  let best: PlaceParts | null = null;
++  for (let r = k - 1; r >= 0; r--) {
++    const econShare = econAll > 0 ? hit[r]! / econAll : 0;
++    const menShare = theatreMen > 0 ? menHit[r]! / theatreMen : 0;
++    const ownShare = ownAll > 0 ? ownHit[r]! / ownAll : 0;
++    const share = econShare + menShare - ownShare;
++    let capital = 0;
++    // A capital of weight to the enemy side (PLAN 7.18d, critic R8-B1: the Soviet Union struck Nepal's,
++    // 1,000 dead, at war with China): its nation holds CAPITAL_WEIGHT of the side's output.
++    for (const m of enemy) {
++      if (nc.living[m] !== 1 || blastShare(seaKm(world, x, y, nc.capitalX[m]!, nc.capitalY[m]!), radii[r]!) === 0) continue;
++      const all = v.econAll();
++      if (all > 0 && (v.held()[m] ?? 0) >= CAPITAL_WEIGHT * all) capital = TARGET_CAPITAL;
++    }
++    const value = Math.max(0, Math.min(1, TARGET_SCALE * share + capital)) * through;
++    // The smaller yield first: the larger is taken only where its value is higher.
++    if (best === null || value > best.value) best = { econShare, menShare, ownShare, menAll, theatreMen, sideMen: v.enemyMen, capital, through, value, yieldN: radii[r] === fission ? 1 : 2 };
++  }
++  return best!;
+ }
+ 
+ /**
+@@ -1132,7 +1157,7 @@ export function nukeTargets(world: World, n: number, war: War, side: number, aim
+     else if (own.has(c.nation[id]!)) anchors.push(c.x[id]!, c.y[id]!);
+   });
+   const { w, h, owner, controller } = world.cells;
+-  const radius = blastRadius(knows(world, n, 'thermonuclear') ? 2 : 1);
++  const radius = blastRadius(largestYield(world, n));
+   // Bursts of the last RESTRIKE_DAYS and warheads in flight keep any place off. A burst of the last
+   // CAPITAL_RESTRIKE_DAYS keeps off an enemy capital within a blast radius of it, and every place
+   // within a blast radius of a burst on such a capital (PLAN 7.6e: seed 5's Soviet Union struck Tokyo
+@@ -1196,7 +1221,7 @@ export interface WarWeighing {
+   /** The inputs shared by its places (none when `aim` is empty). */
+   shared: Omit<NukeInputs, 'targetValue' | 'through'> | null;
+   /** The places weighed, each one's value and the chance a warhead gets there (PLAN 7.18i). */
+-  places: { x: number; y: number; value: number; through: number }[];
++  places: { x: number; y: number; value: number; through: number; yieldN: number }[];
+ }
+ 
+ /** `n`'s weighing of `war` on `side` (PLAN 6.4b), `industry` the day's (`industryOnce`). */
+@@ -1210,7 +1235,7 @@ export function weighWar(world: World, n: number, war: War, side: number, indust
+     shared,
+     places: nukeTargets(world, n, war, side, aim).map(([x, y]) => {
+       const p = partsIn(world, n, view, x, y);
+-      return { x, y, value: p.value, through: p.through };
++      return { x, y, value: p.value, through: p.through, yieldN: p.yieldN };
+     }),
+   };
+ }
+@@ -1393,7 +1418,7 @@ function nukeDecisions(world: World): void {
+   const industry = industryOnce(world);
+   for (const n of [...world.warheads.keys()].sort((a, b) => a - b)) {
+     if (!weighsStrikes(world, n)) continue;
+-    const options: { u: number; x: number; y: number; back: boolean; war: War; side: number; resolved: boolean }[] = [];
++    const options: { u: number; x: number; y: number; yieldN: number; back: boolean; war: War; side: number; resolved: boolean }[] = [];
+     // While it holds a grievance against an enemy, it strikes no one else (PLAN 6.12b).
+     const avenging = avengingOf(world, n);
+     for (const war of world.wars.list) {
+@@ -1405,20 +1430,20 @@ function nukeDecisions(world: World): void {
+       if (!shared) continue;
+       // Whether the resolve, not the side's own desperation, weighs this war's strikes (PLAN 7.18h).
+       let resolved: boolean | null = null;
+-      for (const { x, y, value, through } of places) {
++      for (const { x, y, value, through, yieldN } of places) {
+         const u = nuclearUtility({ targetValue: value, through, ...shared });
+         if (u <= NUKE_FLOOR) continue;
+         if (resolved === null) {
+           const own = desperationOf(world, n, war, side);
+           resolved = !own.extreme && shared.desperation > own.desperation;
+         }
+-        options.push({ u, x, y, back: avenging, war, side, resolved });
++        options.push({ u, x, y, yieldN, back: avenging, war, side, resolved });
+       }
+     }
+     options.sort((a, b) => b.u - a.u);
+     const missiles = knows(world, n, 'ballistic_missiles');
+     for (const o of options) {
+-      const ok = (missiles && launchNuke(world, n, o.x, o.y, true) === Refusal.None) || launchNuke(world, n, o.x, o.y, false) === Refusal.None;
++      const ok = (missiles && launchNuke(world, n, o.x, o.y, true, o.yieldN) === Refusal.None) || launchNuke(world, n, o.x, o.y, false, o.yieldN) === Refusal.None;
+       if (!ok) continue;
+       world.out.emit(world.tick, EventKind.NukeDecided, n, Math.round(o.u * 1000), o.x, o.y);
+       // The war remembers its side's strike (PLAN 7.18e: the resolve's gap).
+@@ -1587,7 +1612,7 @@ function arrivals(world: World): void {
+     if (lost || hashToUnit(hash32(world.seed, l.id, SALT_INTERCEPT)) < interceptChance(world, l)) {
+       world.out.emit(world.tick, EventKind.NukeIntercepted, l.nation, l.id, l.tx, l.ty);
+       strikeStopped(world, l);
+-    } else detonate(world, l.nation, knows(world, l.nation, 'thermonuclear') ? 2 : 1, l.tx, l.ty, answer);
++    } else detonate(world, l.nation, l.yieldN || largestYield(world, l.nation), l.tx, l.ty, answer);
+   }
+   world.nukeLaunches = left;
+ }
+diff --git a/src/sim/world.ts b/src/sim/world.ts
+index 49d886f..09358cd 100644
+--- a/src/sim/world.ts
++++ b/src/sim/world.ts
+@@ -426,6 +426,8 @@ class WorldCore implements Stateful {
+       ...(w.nukesBanned.size === 0 ? [] : [{ name: 'world.nukesBanned', dtype: 'f64' as const, data: Float64Array.from([...w.nukesBanned].sort((a, b) => a - b)) }]),
+       // The warheads in flight (PLAN 6.2): [next id, then id, nation, missile, wing, bx, by, tx, ty, launch, arrive each], only while there is one.
+       ...(w.nukeLaunches.length === 0 && w.nextLaunchId === 1 ? [] : [{ name: 'world.nukeLaunches', dtype: 'f64' as const, data: Float64Array.from([w.nextLaunchId, ...w.nukeLaunches.flatMap((l) => [l.id, l.nation, l.missile, l.wing, l.bx, l.by, l.tx, l.ty, l.launch, l.arrive])]) }]),
++      // Their yields (PLAN 7.38b), in the same order, only while one is in flight (a section of its own: older saves load).
++      ...(w.nukeLaunches.length === 0 ? [] : [{ name: 'world.nukeYields', dtype: 'f64' as const, data: Float64Array.from(w.nukeLaunches.map((l) => l.yieldN)) }]),
+       // Outrage (PLAN 6.5b): [nation, outrage] each, by nation, only while there is some.
+       ...(w.nukeOutrage.size === 0 ? [] : [{ name: 'world.nukeOutrage', dtype: 'f64' as const, data: Float64Array.from([...w.nukeOutrage].sort((a, b) => a[0] - b[0]).flat()) }]),
+       ...(w.nukeDead.size === 0 ? [] : [{ name: 'world.nukeDead', dtype: 'f64' as const, data: Float64Array.from([...w.nukeDead].sort((a, b) => a[0] - b[0]).flat()) }]),
+@@ -538,7 +540,9 @@ class WorldCore implements Stateful {
+     w.nukeLaunches = [];
+     const nl = sections.find((s) => s.name === 'world.nukeLaunches')?.data as Float64Array | undefined;
+     w.nextLaunchId = nl && nl.length > 0 ? nl[0]! : 1;
+-    for (let at = 1; nl && at + 10 <= nl.length; at += 10) w.nukeLaunches.push({ id: nl[at]!, nation: nl[at + 1]!, missile: nl[at + 2]!, wing: nl[at + 3]!, bx: nl[at + 4]!, by: nl[at + 5]!, tx: nl[at + 6]!, ty: nl[at + 7]!, launch: nl[at + 8]!, arrive: nl[at + 9]! });
++    // A save from before PLAN 7.38b has no yields: 0, read as the striker's largest at the burst.
++    const yields = sections.find((s) => s.name === 'world.nukeYields')?.data as Float64Array | undefined;
++    for (let at = 1; nl && at + 10 <= nl.length; at += 10) w.nukeLaunches.push({ id: nl[at]!, nation: nl[at + 1]!, missile: nl[at + 2]!, wing: nl[at + 3]!, bx: nl[at + 4]!, by: nl[at + 5]!, tx: nl[at + 6]!, ty: nl[at + 7]!, launch: nl[at + 8]!, arrive: nl[at + 9]!, yieldN: yields?.[(at - 1) / 10] ?? 0 });
+     w.nukeTaboo = (sections.find((s) => s.name === 'world.nukeTaboo')?.data as Float64Array | undefined)?.[0] ?? 1;
+     w.nukeOutrage = new Map();
+     const ou = sections.find((s) => s.name === 'world.nukeOutrage')?.data as Float64Array | undefined;
+@@ -741,6 +745,8 @@ export interface NukeLaunch {
+   ty: number;
+   launch: number;
+   arrive: number;
++  /** The warhead's class (PLAN 7.38b: the decision's yield; 1 fission, 2 thermonuclear). */
++  yieldN: number;
+ }
+ 
+ /** Adds to nation `n`'s air totals (PLAN 5.11b): aircraft it lost, what strikes took of it. */

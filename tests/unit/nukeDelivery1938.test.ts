@@ -43,7 +43,7 @@ describe('a warhead delivered (PLAN 6.2)', () => {
       w.airPower.set(zone, new Map([[ENG, own], [GER, enemy]]));
       const s = airSuperiority(w, ENG, zone);
       w.out.events.length = 0;
-      for (let k = 0; k < N; k++) w.nukeLaunches.push({ id: w.nextLaunchId++, nation: ENG, missile: 0, wing, bx: 0, by: 0, tx: berlin[0], ty: berlin[1], launch: w.tick, arrive: w.tick });
+      for (let k = 0; k < N; k++) w.nukeLaunches.push({ id: w.nextLaunchId++, nation: ENG, missile: 0, wing, bx: 0, by: 0, tx: berlin[0], ty: berlin[1], launch: w.tick, arrive: w.tick, yieldN: 1 });
       const p = interceptChance(w, w.nukeLaunches[0]!);
       expect(p).toBeCloseTo(BOMBER_INTERCEPT * (1 - s), 12);
       nuclearSystem(w);

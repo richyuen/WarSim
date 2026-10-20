@@ -231,7 +231,7 @@ each, split when taken up:
       more apart, not one war (ADR-566, proposed); the one restrike in a war is Switzerland's
       (4877, 1,922,429 dead 20 days after 667,994). The strikes back to keep: 4877's Soviet
       answers (0.48 to 0.78), 8693's (0.69, 0.78).
-    - [ ] 7.38b The yield by the target: a holder of `thermonuclear` weighs each place at both
+    - [x] 7.38b The yield by the target: a holder of `thermonuclear` weighs each place at both
       yields and uses a fission one where its value is as high (the value then the higher yield's
       only where it adds). AT: from `.cache/nukeToll_8693_141385-bcbc99c.bin` with the rule
       patched in, the United States' first strike on Paris still decided, a fission burst killing
@@ -240,6 +240,12 @@ each, split when taken up:
       the burst today), saved; the daily `nukeDecisions` cost measured before and after on a late
       checkpoint (PLAN 6.10); a unit test, a place whose value fission covers gets a fission burst
       (red without); the pin's entry.
+      Met (ADR-567): on the critic's code with the rule, Paris struck on day 5891 at 0.026 as before,
+      a fission burst of 203,058 dead (was 3,178,766); the Soviet answer at 0.776 as before, 204,884
+      (was 1,174,992) (`docs/evidence/7.38/b-toll-8693-paris-rule.json`, `b-yield-rule.diff`);
+      `NukeLaunch.yieldN`, saved (`world.nukeYields`); the daily call 0.19–0.23 ms an hour before
+      and after on run 10's year-20 world of 8693 (no cost seen); `nukeYieldChoice1938.test.ts`
+      red without; the pin unmoved. 7.38's commits: 2.
     - [ ] 7.38c The dead weighed: the people a burst is expected to kill a cost in the utility,
       scaled by doctrine (a strike back's bonus untouched). AT: from the checkpoints, no strike on
       Shanghai (4877), Paris's second nor Rome (8693) at a yield killing a million (was 3.8 M,

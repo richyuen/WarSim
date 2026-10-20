@@ -105,7 +105,7 @@ describe('where the AI\'s warheads may fall (PLAN 6.11a)', () => {
     expect(c.world.nukeBursts).toEqual(w.nukeBursts);
     expect(w.nukeBursts.length).toBe(1);
     // A warhead flying to Kent: Kent is not weighed while it flies.
-    w.nukeLaunches.push({ id: w.nextLaunchId++, nation: GER, missile: 1, wing: 0, bx: 0, by: 0, tx: kent[0], ty: kent[1], launch: w.tick, arrive: w.tick + 1000 });
+    w.nukeLaunches.push({ id: w.nextLaunchId++, nation: GER, missile: 1, wing: 0, bx: 0, by: 0, tx: kent[0], ty: kent[1], launch: w.tick, arrive: w.tick + 1000, yieldN: 1 });
     expect(near(nukeTargets(w, GER, war, 0), kent), 'Kent, a warhead on its way').toBe(false);
     w.nukeLaunches.length = 0;
     // A week on, London is a capital struck within the year (PLAN 7.6e, ADR-465; before, weighed
