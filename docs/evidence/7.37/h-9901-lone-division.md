@@ -21,7 +21,7 @@ Each found what it was weighed at, and none was in extreme desperation.
   people are read from the people killed, the same count on the same cells.)
 - **7.38d, no restrike in a war without new value (ADR-569):** excludes a place within a hydrogen
   bomb's blast radius (92.1 km) of an earlier burst of the side in the war. Measured with `seaKm` on
-  seed 9901's 1938 world (`.cache/d737h.ts`, scratch): every earlier burst of the war is 427 to
+  seed 9901's 1938 world (`docs/evidence/7.37/h-d737h.ts.txt`, run from `.cache/` as `npx tsx .cache/d737h.ts`): every earlier burst of the war is 427 to
   1,696 km from each of the three places.
 
 | Strike | Earlier bursts of the war, km |

@@ -20639,3 +20639,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **PLAN 7.37 closed** (15 commits): each case changed by a rule or in BLOCKERS for the user
   (ADR-563, ADR-570).
 - **Next:** PLAN 7.38e (the three bars on 14 + 10 seeds × 30 years).
+- **Fixed after the commit:** the script is kept as `docs/evidence/7.37/h-d737h.ts.txt` (`.cache/`
+  is not committed). 7.37's "Met" line overstates: only 7.37a (ADR-561) and 7.37d (ADR-564) are new
+  rules. 7.37c's case is changed by ADR-528, already on HEAD. 7.37g's cause is a land rule, filed as
+  PLAN 7.43. The rest are measured and told, as listed.

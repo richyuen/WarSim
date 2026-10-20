@@ -1,0 +1,26 @@
+// PLAN 7.37h scratch: the km from each lone-division strike of seed 9901 (critic's code with ADR-528)
+// to each earlier burst of the same war, against a hydrogen bomb's blast radius (PLAN 7.38d's reach).
+import { readFileSync } from 'node:fs';
+import { size1938 } from '../src/sim/scenario1938';
+import { Sim } from '../src/sim/sim';
+import { loadAssets1938 } from '../tools/headless/assets';
+import { seaKm } from '../src/sim/systems/navalCombat';
+import { blastRadius } from '../src/sim/systems/nuclear';
+
+const j = JSON.parse(readFileSync('docs/evidence/7.32/chain-f0be88c-9901_rule.json', 'utf8')) as {
+  rows: { day: number; at: [number, number]; target: string; warDays: number; toll: { men: number; people: number; yieldN: number }; parts: { menExpected: number } }[];
+};
+const SZ = size1938(undefined);
+const sim = new Sim({ scenario: '1938', seed: 9901, assets: loadAssets1938(SZ.w) });
+const w = sim.world;
+const r2 = blastRadius(2);
+console.log(`blastRadius(1) ${blastRadius(1).toFixed(1)} km, blastRadius(2) ${r2.toFixed(1)} km`);
+const war = j.rows.filter((r) => r.target === 'CHI' && r.day <= 5660);
+for (const d of [5565, 5628, 5641]) {
+  const r = war.find((x) => x.day === d)!;
+  for (const e of war) {
+    if (e.day >= d) continue;
+    const km = seaKm(w, r.at[0], r.at[1], e.at[0], e.at[1]);
+    console.log(`${d} (${r.toll.men} men) vs ${e.day} (${e.toll.men} men found): ${km.toFixed(0)} km ${km <= r2 ? 'WITHIN' : 'beyond'}`);
+  }
+}
