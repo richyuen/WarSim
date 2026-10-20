@@ -82,3 +82,13 @@ rows). The other 21 seeds had no hydrogen strike of the resolve, so the fix cann
 The first read's seed 9437 Soviet capital, struck in three wars for 2.58 M, 1.70 M and 0.77 M dead,
 is now struck twice, for 183,183 and 178,111. Under ADR-566's option a these are not misses; b or c
 would count them.
+
+## The critic's named places
+
+At the places 7.38a measured (`docs/evidence/7.38/a-toll-*.json`): no burst at Shanghai (1714.8, 413.8),
+Paris (1037.3, 294.8), Tashkent (1418.2, 348.0) or Banda Aceh (1566.3, 565.7) on any of the 24 seeds.
+Rome (1095.0, 344.0) is struck once, on seed 1307 (day 4177, Germany at war with Italy, a fission
+burst, 183,183 dead; the critic's case was the United States' hydrogen bomb on seed 8693, 3,720,550
+dead). On the critic's seeds of those cases: 4877's one burst is France's on Tunisia (70,000 dead);
+8693's three are the Soviet Union's on Italy and Poland (18,010 to 75,702); 9437's are the Soviet
+capital twice and a Chinese place (183,000).
