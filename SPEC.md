@@ -1771,6 +1771,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   then income and production), naval strike, paradrop/air supply.
 - Each hour per zone: the scheduler launches **sorties**. A sortie flight path is
   derived kinematics `(base, target, launchTick, speed)`, so its position is never stored.
+  A nation's patrols over one place take off in turn, an n-th of a wing's cycle apart, the
+  launch within the hour where that falls (PLAN 7.36a, ADR-558).
   Air combat is at element level between sorties in the same zone. AA from ground
   elements, buildings and ships shoots down planes.
 - *As built (PLAN 5.1a, ADR-306; `src/sim/nav/airZones.ts`, `airOf(world)`):* the air zones are

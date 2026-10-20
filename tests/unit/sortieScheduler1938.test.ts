@@ -163,8 +163,9 @@ describe('the sortie scheduler (PLAN 5.2b)', () => {
       const list = launches.get(id)!;
       expect(list.length).toBeGreaterThanOrEqual(7);
       for (let k = 1; k < list.length; k++) {
-        const prev = w.sorties.get(id)!;
-        const ready = Math.ceil(list[k - 1]! + 2 * (prev.km / prev.kmh) + prev.over + TURNAROUND_HOURS);
+        // Every sortie of a wing from one base to one place has the same flight: the last one's.
+        const flight = w.sorties.get(id)!;
+        const ready = Math.ceil(list[k - 1]! + 2 * (flight.km / flight.kmh) + flight.over + TURNAROUND_HOURS);
         expect(list[k]!).toBeLessThan(ready + 1);
       }
     }

@@ -5,6 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.36's first half: "one sortie drawn for each wing tasked" missed; the bar waits on the user (2026-10-20, PLAN 7.36a, ADR-559)
+- **The bar:** at 25 and 10 m/px over a front in contact, a sortie drawn for each wing tasked on
+  the part of the front in view, at the critic's probes (seed 7019; 4483 is the same world).
+- **What moved** (ADR-558, the relay): at the critic's four close views 0, 0, 0, 0 → 1, 1, 2, 1
+  drawn, with 3, 3, 5, 4 wings tasked there; a live day at 25 m/px 0.52 → 0.94 of the moments
+  with a wing tasked in view (`docs/evidence/7.36/`, `a-patrol-25m.png`).
+- **What is left:** a wing on its base for its turnaround, or a strike past its target, is not
+  over the view; "each" holds only with a fiction. ADR-559: a. re-scope to one drawn where a
+  wing is tasked and 0.9 of a live day (recommended); b. keep it. PLAN 7.36b goes on meanwhile.
+
 ### RESOLVED 2026-10-19 (ADR-525, option a, the user's decision: the bar re-scoped to 0.75; 7.30 ticked) · PLAN 7.30's AT (late operational AI at half of 7.27d's) waits on the user's decision (2026-10-19, PLAN 7.30d, ADR-525)
 Seed 732 × 50 years, pinned, after 7.30b and 7.30c2: years 26–50 0.753 ms a tick (0.785 by load)
 against the bar 0.536; every year's hash equal to 7.27d's (`docs/evidence/7.30/measure-d.md`).
