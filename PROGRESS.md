@@ -20665,3 +20665,23 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Checkpoints before the four misses: `.cache/nukeToll_{2081_141673,9437_154848,756_197184,758_220272}.bin`.
 - No sim change, the pin unchanged. Specs by hand: none (no UI). 7.38's commits: 5.
 - **Next:** PLAN 7.44 (the yield by the utility).
+
+## 2026-10-20 — PLAN 7.44: the yield chosen by the strike's utility, its own dead in it (ADR-571)
+
+- **Rule** (`src/sim/systems/nuclear.ts`): `partsIn` weighs each yield (fission first) by a score and
+  takes the hydrogen bomb only where it is strictly higher; every caller (`weighWar`, `nukeInputs`,
+  `placeParts`, `targetValue`) scores by `nuclearUtility` with the war's inputs, MAD's cap left off
+  (`byUtility`). The value and people reported are the chosen yield's. SPEC §6.4 updated.
+- **AT** (`docs/evidence/7.44/measure.md`, from 7.38e's checkpoints, before / after on HEAD): seed
+  2081's Japan, day 5903, a fission burst at 0.270, 201,183 dead (was hydrogen, 3,339,183 at 0.091);
+  seed 9437's Poland, day 6450 (two days sooner, about a cell away), fission at 0.300, 183,183 dead
+  (was hydrogen, 2,579,111 at 0.060, day 6452). Met.
+- **Cost:** run 10's year-20 world of 8693, one year, before / after bundles at once on 0x000F /
+  0x0F00 and swapped: `nuclear` 0.199 / 0.194 against 0.203 / 0.200 ms an hour; the same hash.
+- **Tests:** `nukeYieldUtility1938.test.ts` (new; red without: at desperation 1 two of France's
+  seven places take a hydrogen bomb at aggression 100 and a fission one at 0; aggression is a u8,
+  0..100). `nukeYieldChoice1938`, `nukeDeadCost1938`, `nukeWarRestrike1938`, `nukeUtility1938` green.
+  Specs by hand: none (no UI).
+- **Gotcha:** `aggression` is a u8 column: −50 wraps to 206 (doctrine 2.56).
+- **Next:** PLAN 7.45 (the dead's cost at a high doctrine in extreme desperation), whose run is 7.38's
+  second read.

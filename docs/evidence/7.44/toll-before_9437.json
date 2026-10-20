@@ -1,0 +1,76 @@
+{
+ "seed": 9437,
+ "years": 17.9,
+ "from": ".cache/nukeToll_9437_154848.bin",
+ "bars": {
+  "decided": 1,
+  "floor": 0.025,
+  "lowUtilityMillion": 1,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 6452,
+   "year": 17.68,
+   "tick": 154849,
+   "by": "Poland",
+   "u": 0.06,
+   "at": [
+    1527.33,
+    466.67
+   ],
+   "target": "Soviet Union",
+   "war": 218,
+   "warName": "Poland+Latvia v Soviet Union+Estonia+Finland+Norway+Sweden+Burma+China+Mongolia+Tannu Tuva+founded#115",
+   "warDays": 632,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.056,
+   "utility": {
+    "value": 0.806,
+    "through": 1,
+    "desperation": 1.732,
+    "ownDesperation": 0.006,
+    "doctrine": 0.95,
+    "gain": 1.325,
+    "retaliation": 0,
+    "allianceCost": 0.3,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 2568000,
+    "dead": 0.27,
+    "mad": false,
+    "extreme": false,
+    "costs": 1.27
+   },
+   "place": {
+    "econShare": 0.006,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11141,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.748,
+    "econShare": 0.001,
+    "menShare": 0.044,
+    "menExpected": 10945,
+    "capital": 0.3
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 2568000,
+    "fission": 32000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 2579111,
+    "yieldN": 2
+   }
+  }
+ ]
+}

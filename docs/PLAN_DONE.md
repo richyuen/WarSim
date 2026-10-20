@@ -12443,3 +12443,37 @@ Of 7.33 (open in PLAN.md):
       a history row and a ticker line with the nuclear cue (`nuclearPower1938.test.ts`, red without;
       `nuclearPower1938.spec.ts`, a world made in Node and loaded, `docs/evidence/7.37/i-nuclear-power-row.png`).
       The pin unchanged. 7.37h waits on 7.38 (its AT reads 7.38's weight of the dead).
+
+<!-- moved 2026-10-20 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.44 The yield chosen by the strike's utility, the dead's cost in it (from PLAN 7.38e, ADR-568's
+  last line; AI nuclear use 7, needs 8). `partsIn` takes a hydrogen bomb wherever its value is higher
+  at all, and 7.38c's cost of the dead then comes off the hydrogen strike alone: seed 2081's Japan
+  strikes a Soviet place for 3,339,183 dead at 0.091 (values 0.828 / 0.810 at fission, 3,328,000 /
+  190,000 people), seed 9437's Poland the Soviet capital for 2,579,111 at 0.060 (0.806 / 0.748,
+  2,568,000 / 32,000), where a fission strike's utility is about 0.27 and 0.23
+  (`docs/evidence/7.38/measure-e.md`). A rule with an ADR: each yield weighed by its utility, the
+  dead's cost of its own toll in it. AT: from `.cache/nukeToll_2081_141673.bin` and
+  `_9437_154848.bin` on the rule, neither strike a burst killing a million (fission, or none); 7.38b's
+  and 7.38c's unit files green (Paris a fission burst, the strikes back decided); the daily
+  `nukeDecisions` cost before and after on a late checkpoint (PLAN 6.10); a unit test, a place where
+  hydrogen's value is a little higher and its dead many gets a fission burst (red without); the pin's
+  entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
+  Met (ADR-571): `partsIn` weighs each yield by a score, every caller the strike's utility (MAD's cap
+  off); from the two checkpoints, 2081 day 5903 a fission burst at 0.270, 201,183 dead (was 3,339,183
+  at 0.091), 9437 day 6450 a fission burst at 0.300, 183,183 dead (was 2,579,111 at 0.060, day 6452)
+  (`docs/evidence/7.44/measure.md`); 7.38b's and 7.38c's unit files green; `nuclear` 0.199 / 0.194
+  ms an hour before, 0.203 / 0.200 after on run 10's year-20 world of 8693 (no cost seen);
+  `nukeYieldUtility1938.test.ts` red without; the pin unmoved.

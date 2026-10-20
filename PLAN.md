@@ -133,19 +133,7 @@ each, split when taken up:
       7.38's commits: 5.
   Open after 7.38e's first read (BLOCKERS): the bar on the dead missed on 4 of 24 seeds; its two
   causes are PLAN 7.44 and 7.45, and 7.45's run is 7.38's second read.
-- [ ] 7.44 The yield chosen by the strike's utility, the dead's cost in it (from PLAN 7.38e, ADR-568's
-  last line; AI nuclear use 7, needs 8). `partsIn` takes a hydrogen bomb wherever its value is higher
-  at all, and 7.38c's cost of the dead then comes off the hydrogen strike alone: seed 2081's Japan
-  strikes a Soviet place for 3,339,183 dead at 0.091 (values 0.828 / 0.810 at fission, 3,328,000 /
-  190,000 people), seed 9437's Poland the Soviet capital for 2,579,111 at 0.060 (0.806 / 0.748,
-  2,568,000 / 32,000), where a fission strike's utility is about 0.27 and 0.23
-  (`docs/evidence/7.38/measure-e.md`). A rule with an ADR: each yield weighed by its utility, the
-  dead's cost of its own toll in it. AT: from `.cache/nukeToll_2081_141673.bin` and
-  `_9437_154848.bin` on the rule, neither strike a burst killing a million (fission, or none); 7.38b's
-  and 7.38c's unit files green (Paris a fission burst, the strikes back decided); the daily
-  `nukeDecisions` cost before and after on a late checkpoint (PLAN 6.10); a unit test, a place where
-  hydrogen's value is a little higher and its dead many gets a fission burst (red without); the pin's
-  entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
+
 - [ ] 7.45 The dead's cost at a high doctrine in extreme desperation (from PLAN 7.38e; AI nuclear use
   7, needs 8). DEAD_COST 0.1 a million × (2 − doctrine) is 0.06 a million at Germany's 1.4: seed 756's
   Germany H-bombs Belgium's capital for 2,294,126 dead at 0.037 (dead cost 0.137), seed 758's 17,112
@@ -512,3 +500,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.35 The war at sea seen and fought (naval 6, needs 8): beyond 7.31, the war at sea mostly […]
 - [x] 7.36 Aircraft seen up close and the air map read (aircraft 6, needs 8): 0 sorties drawn at 25 […]
 - [x] 7.37 AI nuclear use believed, beyond the chains (AI nuclear use 7, needs 8): single bombs on […]
+- [x] 7.44 The yield chosen by the strike's utility, the dead's cost in it (from PLAN 7.38e, ADR-568's […]

@@ -825,11 +825,7 @@ function industryOnce(world: World): () => Float64Array {
 
 /** What a burst of `n`'s at (x, y) is worth against the other side of `war` from `side` (PLAN 6.4a), 0 to 1. */
 export function targetValue(world: World, n: number, war: War, side: number, x: number, y: number): number {
-  return valueIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y);
-}
-
-function valueIn(world: World, n: number, v: StrikeView, x: number, y: number): number {
-  return partsIn(world, n, v, x, y).value;
+  return placeParts(world, n, war, side, x, y).value;
 }
 
 /** What a place's value is made of (`valueIn`; a diagnostic's too). */
@@ -850,7 +846,7 @@ export interface PlaceParts {
   /** The chance the warhead gets there. */
   through: number;
   value: number;
-  /** The warhead's class weighed (PLAN 7.38b): 1 fission, 2 thermonuclear only where its value is higher. */
+  /** The warhead's class weighed (PLAN 7.38b, 7.44): 1 fission, 2 thermonuclear only where its strike's utility is higher. */
   yieldN: number;
   /** The people (not men) its burst is expected to kill at that yield, anyone's (PLAN 7.38c; `expectedPeople`). */
   people: number;
@@ -858,7 +854,20 @@ export interface PlaceParts {
 
 /** The parts of a burst's value at (x, y) for `n` in `war` on `side` (a diagnostic's). */
 export function placeParts(world: World, n: number, war: War, side: number, x: number, y: number): PlaceParts {
-  return partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y);
+  const shared = warInputs(world, n, war, side, retaliates(world, n, war, side));
+  return partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared));
+}
+
+/** What a yield's burst at a place is weighed by: its value, the chance it gets there and the people it kills. */
+type YieldScore = (value: number, through: number, people: number) => number;
+
+/**
+ * The yield's score (PLAN 7.44): the strike's utility with the war's inputs, MAD's cap left off (the
+ * cap is min(0, u): the yield of the higher utility is the same, and under the cap its raw utility
+ * still tells the better yield, as `restraintOf` reads it).
+ */
+function byUtility(shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'>): YieldScore {
+  return (value, through, people) => nuclearUtility({ targetValue: value, through, people, ...shared, mad: false });
 }
 
 /**
@@ -867,8 +876,14 @@ export function placeParts(world: World, n: number, war: War, side: number, x: n
  * value is then the higher yield's only where it adds. On the critic's seed 8693 the United States
  * H-bombed Paris and Rome for 3.2 to 3.7 million dead where a fission burst was worth as much (1 of
  * 1) for 172,000 to 183,000 (`docs/evidence/7.38/measure-a.md`: 8 of 37 decisions so).
+ * Each yield is weighed by `score`, the strike's utility with the dead of its own toll in it (PLAN
+ * 7.44, ADR-571): the hydrogen bomb only where that is higher. By value alone, seed 2081's Japan
+ * H-bombed a Soviet place for 3.3 million dead at 0.091 (values 0.828 and 0.810 at fission, for
+ * 190,000 people) and 9437's Poland the Soviet capital for 2.6 million at 0.060, where a fission
+ * strike's utility was about 0.27 and 0.23 (`docs/evidence/7.38/measure-e.md`). Only the value and
+ * the dead differ between the yields, so the dead's cost decides against a value a little higher.
  */
-function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): PlaceParts {
+function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, score: YieldScore): PlaceParts {
   const { radius, enemy } = v;
   const { w, h, econ, controller } = world.cells;
   // The radii weighed: the holder's widest, and a fission one's when that is wider (PLAN 7.38b).
@@ -926,6 +941,7 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): 
   // Expected damage (SPEC): as likely as the warhead gets there, by missile when `n` knows them.
   const through = knows(world, n, 'ballistic_missiles') ? 1 : 1 - bomberIntercept(world, n, x, y);
   let best: PlaceParts | null = null;
+  let bestScore = -Infinity;
   for (let r = k - 1; r >= 0; r--) {
     const econShare = econAll > 0 ? hit[r]! / econAll : 0;
     const menShare = theatreMen > 0 ? menHit[r]! / theatreMen : 0;
@@ -940,8 +956,12 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): 
       if (all > 0 && (v.held()[m] ?? 0) >= CAPITAL_WEIGHT * all) capital = TARGET_CAPITAL;
     }
     const value = Math.max(0, Math.min(1, TARGET_SCALE * share + capital)) * through;
-    // The smaller yield first: the larger is taken only where its value is higher.
-    if (best === null || value > best.value) best = { econShare, menShare, ownShare, menAll, theatreMen, sideMen: v.enemyMen, capital, through, value, yieldN: radii[r] === fission ? 1 : 2, people: dead[r]! };
+    // The smaller yield first: the larger is taken only where its strike's utility is higher (PLAN 7.44).
+    const sc = score(value, through, dead[r]!);
+    if (best === null || sc > bestScore) {
+      best = { econShare, menShare, ownShare, menAll, theatreMen, sideMen: v.enemyMen, capital, through, value, yieldN: radii[r] === fission ? 1 : 2, people: dead[r]! };
+      bestScore = sc;
+    }
   }
   return best!;
 }
@@ -951,8 +971,9 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number): 
  * target's side struck it (PLAN 6.4b).
  */
 export function nukeInputs(world: World, n: number, war: War, side: number, x: number, y: number, retaliating = false): NukeInputs {
-  const p = placeParts(world, n, war, side, x, y);
-  return { targetValue: p.value, through: p.through, people: p.people, ...warInputs(world, n, war, side, retaliating) };
+  const shared = warInputs(world, n, war, side, retaliating);
+  const p = partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared));
+  return { targetValue: p.value, through: p.through, people: p.people, ...shared };
 }
 
 /**
@@ -1318,7 +1339,7 @@ export function weighWar(world: World, n: number, war: War, side: number, indust
     aim,
     shared,
     places: nukeTargets(world, n, war, side, aim).map(([x, y]) => {
-      const p = partsIn(world, n, view, x, y);
+      const p = partsIn(world, n, view, x, y, byUtility(shared));
       return { x, y, value: p.value, through: p.through, yieldN: p.yieldN, people: p.people };
     }),
   };

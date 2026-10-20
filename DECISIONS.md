@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-571 · 2026-10-20 · accepted — The yield is chosen by the strike's utility, the dead of its own toll in it (PLAN 7.44)
+
+- **Context.** PLAN 7.38e's first read (`docs/evidence/7.38/measure-e.md`): two of the four bursts
+  under 0.1 that kill a million came of ADR-567's choice of the yield by the place's value alone
+  (ADR-568's last line foresaw it). Seed 2081's Japan H-bombed a Soviet place on day 5903 for
+  3,339,183 dead at 0.091 (values 0.828 hydrogen, 0.810 fission; 3,328,000 / 190,000 people
+  expected); seed 9437's Poland the Soviet capital on day 6452 for 2,579,111 at 0.060 (0.806 /
+  0.748; 2,568,000 / 32,000). ADR-568's dead cost came off the hydrogen strike only.
+- **Decision.** `partsIn` weighs each yield it has (fission first) by a score, and takes the
+  hydrogen bomb only where its score is strictly higher. Every caller scores by the strike's
+  utility with the war's inputs (`byUtility`: `nuclearUtility` with MAD's cap left off; the cap is
+  min(0, u), so the better yield is the same, and under it the raw utility still tells them
+  apart, as `restraintOf` reads it): the decision's places (`weighWar`), `nukeInputs`,
+  `placeParts` and `targetValue` (the war's inputs with `retaliates`). The value reported is the
+  chosen yield's, as are the people. Between the yields only the value and the dead differ (the
+  chance through, the costs and the strike back's bonus are the place's or the war's), so the
+  choice is (vH − vF) × desperation × doctrine against (deadCost(peopleH) − deadCost(peopleF)) ×
+  through. ADR-567's case is kept: where fission's value is as high, its utility is as high or
+  higher, and a tie goes to fission.
+- **The cases** (`docs/evidence/7.44/measure.md`, from `.cache/nukeToll_2081_141673.bin` and
+  `_9437_154848.bin`, written on HEAD's rules before this one): 2081 day 5903, the same place, a fission
+  burst at 0.270, 201,183 dead (was 3,339,183 at 0.091); 9437, a fission burst two days earlier
+  (day 6450, a place about one cell from day 6452's) at 0.300, 183,183 dead (was 2,579,111 at 0.060):
+  fission's utility is higher than hydrogen's was, so the strike comes sooner.
+- **Consequences.** A striker of a low doctrine keeps a hydrogen bomb only where it adds much
+  value; one of a high doctrine keeps it more often (the dead weigh × (2 − doctrine)). PLAN 7.45
+  (the dead's cost at a high doctrine in extreme desperation) is untouched: its two cases are
+  fission strikes under the floor. Seed 99's pin unmoved (no holder of `thermonuclear` in year 1).
+  `nukeYieldUtility1938.test.ts` (red without: at desperation 1, two of France's seven places
+  take a hydrogen bomb at aggression 100 and a fission one at 0).
+
 ### ADR-570 · 2026-10-20 · proposed (the user's decision) — Seed 9901's three Soviet strikes on a lone Chinese division: none of PLAN 7.38's rules changes them (PLAN 7.37h)
 
 - **Context.** PLAN 7.37 (AI nuclear use 7), left by 7.32a (ADR-528): on the critic's code with

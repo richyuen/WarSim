@@ -16,6 +16,9 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left, two causes, each a numbered task:** the yield chosen by value alone (seeds 2081,
   9437: a fission strike at the place of higher utility; PLAN 7.44); the dead's cost at doctrine 1.4
   in extreme desperation (seeds 756, 758, Germany; PLAN 7.45, whose run is 7.38's second read).
+- **PLAN 7.44 done (2026-10-20, ADR-571):** the yield chosen by the strike's utility; from the
+  checkpoints, 2081's and 9437's strikes are fission bursts of 201,183 and 183,183 dead (0.270,
+  0.300). Left: PLAN 7.45, then 7.38's second read.
 - **For the user to read, not counted as misses:** seed 9437's Soviet capital struck in three wars
   (2.58 M, 1.70 M, 0.77 M dead), ADR-566's open question; seed 758's day 10063, a place of 551,000
   people struck 8 days after a burst 3 cells away (455,938 dead) for 8,452 more men: massed men to

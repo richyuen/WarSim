@@ -1963,8 +1963,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     being hit.
   - deadCost: 0.1 for each million people (anyone's) the burst is expected to kill at the yield
     weighed, × (2 − doctrine): a strike back weighs it too, its bonus as it was (PLAN 7.38c,
-    ADR-568). A holder of the hydrogen bomb uses a fission warhead where its value is as high
-    (PLAN 7.38b, ADR-567); the yield is chosen by the value alone, not by the dead.
+    ADR-568). A holder of the hydrogen bomb weighs each place at both yields (PLAN 7.38b,
+    ADR-567) and uses the yield of the higher utility, each with its own dead (PLAN 7.44,
+    ADR-571); a tie goes to fission.
 - **Effects**: blast radius (by yield) kills elements by distance falloff and
   destroys city industry and population. A thermonuclear warhead is THERMO_YIELD (50) fission
   ones (PLAN 7.20, ADR-495): its blast and its fallout plume the yield's cube root wider and
