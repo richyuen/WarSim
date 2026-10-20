@@ -1983,6 +1983,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   tells the dead alone (PLAN 7.32b, ADR-529).
   The alert goes once its strike is 72 hours of the game old and it has been shown 8 seconds (a
   paused game's stands), and the panels of the centre stand below it (PLAN 7.25d).
+  The nation panel of a holder at war says why it does not strike, in its war whose best place
+  weighs most (`restraintOf`, read and never a rule): a puppet, its AI off, barred, avenging,
+  waiting for the answer, no threat, no target, deterred by a named enemy (or mutual
+  destruction), its allies, the world's outrage, the taboo, no value, not desperate, its doctrine;
+  or that it would strike but has no means, or none in range (PLAN 7.37f, ADR-565).
 - **God Mode**: toggle nukes globally and per nation, grant warheads, force a strike.
 
 ---

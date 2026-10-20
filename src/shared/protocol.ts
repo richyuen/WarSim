@@ -11,6 +11,9 @@ import type { LandMask } from './landMask';
 import type { Command } from './commands';
 import type { TickerRow } from './history';
 
+/** `restraintOf`'s reasons but `none` (PLAN 7.37f; `src/sim/systems/nuclear.ts`, `RestraintReason`). */
+export type RestraintWhy = 'puppet' | 'aiOff' | 'nukesOff' | 'avenging' | 'paused' | 'noThreat' | 'noPlace' | 'mad' | 'deterred' | 'alliance' | 'outrage' | 'taboo' | 'noValue' | 'notDesperate' | 'doctrine' | 'noMeans' | 'outOfRange' | 'strikes';
+
 export type ScenarioId = 'toy' | '1938' | 'random';
 
 /** Decoded map assets a real-map scenario is built from (PLAN 1.9a). */
@@ -573,6 +576,13 @@ export interface NationStat {
    * its warheads (null for none), and whether it knows ballistic missiles.
    */
   means: { bombers: number; base: string | null; missiles: boolean } | null;
+  /**
+   * Why it does not strike (PLAN 7.37f, the user's of 2026-10-20: restraint is believable, and the
+   * game says why), for a holder of warheads at war (else null): `restraintOf`'s reason in its war
+   * whose best place weighs most (the first in the list when none has a place), the enemy that
+   * deters it (`by`, 0 for none) and that war's id.
+   */
+  restraint: { reason: RestraintWhy; by: number; war: number } | null;
   /** AI aggression 0..100 and income multiplier from traits (PLAN 1.39b1 options). */
   aggression: number;
   incomeMult: number;

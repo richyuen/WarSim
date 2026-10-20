@@ -1,0 +1,59 @@
+/**
+ * PLAN 7.37f (worktree of the critic's bcbc99c, HEAD's `restraintOf` patched in): the Soviet Union's
+ * 56 days over NUKE_FLOOR on Japan out of reach (seed 5309, 7.37e): no means at all, or means out of
+ * range. Each day from a checkpoint: per holder at war, the reason, the utility, `canDeliver`, its
+ * strategic bomber groups with a base (and the nearest one's km to the best place and its range),
+ * and whether it knows missiles.
+ *
+ * Usage: npx tsx tools/diag/noReach737f.ts <seed> <from.bin> <days> <tag> [out.json]
+ */
+import { readFileSync, writeFileSync } from 'node:fs';
+import { size1938, TAGS_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { basePlace, wingRange } from '../../src/sim/systems/air';
+import { canDeliver, dayIndustry, restraintOf, warheadsOf } from '../../src/sim/systems/nuclear';
+
+import { seaKm } from '../../src/sim/systems/navalCombat';
+import { loadAssets1938 } from '../headless/assets';
+
+const [seed, from, daysArg, who, outPath] = process.argv.slice(2);
+const SZ = size1938(undefined);
+const sim = new Sim({ scenario: '1938', seed: Number(seed), assets: loadAssets1938(SZ.w) });
+sim.load(new Uint8Array(readFileSync(from!)));
+const w = sim.world;
+const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
+const N = TAGS_1938.indexOf(who!) + 1;
+const rows: Record<string, unknown>[] = [];
+const counts: Record<string, number> = {};
+for (let d = 0; d < Number(daysArg); d++) {
+  sim.step(24, (ww) => {
+    ww.out.events.length = 0;
+    ww.out.fires.length = 0;
+  });
+  if (warheadsOf(w, N) < 1 || w.nations.cols.living[N] !== 1) continue;
+  const industry = dayIndustry(w);
+  for (const war of w.wars.list) {
+    const side = war.sides[0].includes(N) ? 0 : war.sides[1].includes(N) ? 1 : -1;
+    if (side < 0) continue;
+    const r = restraintOf(w, N, war, side, industry);
+    counts[r.reason] = (counts[r.reason] ?? 0) + 1;
+    if (!(r.u > 0.025)) continue;
+    const c = w.formations.cols;
+    const rules = w.rules!;
+    const bombers: { id: number; km: number; range: number }[] = [];
+    for (const [id, base] of w.wingBase) {
+      if (base <= 0 || c.nation[id] !== N || !w.formations.has(id)) continue;
+      const first = rules.templates[c.template[id]!]?.elements[0];
+      if (!first || rules.units[first.unit]!.cls !== 'bomber_str') continue;
+      const at = basePlace(w, base);
+      bombers.push({ id, km: at ? Math.round(seaKm(w, at[0], at[1], r.x, r.y)) : -1, range: Math.round(wingRange(w, id)) });
+    }
+    rows.push({ day: Math.floor(w.tick / 24), war: war.id, enemies: war.sides[1 - side]!.map(tag), reason: r.reason, u: +r.u.toFixed(3), canDeliver: canDeliver(w, N), bombers, at: [+r.x.toFixed(1), +r.y.toFixed(1)] });
+  }
+}
+const out = { seed: Number(seed), from, who, counts, overFloor: rows };
+writeFileSync(outPath ?? `.cache/noReach737f_${seed}_${who}.json`, JSON.stringify(out, null, 1));
+const by: Record<string, number> = {};
+for (const r of rows) by[r.reason as string] = (by[r.reason as string] ?? 0) + 1;
+console.log(`done: ${who} days over NUKE_FLOOR by reason ${JSON.stringify(by)}; all war-days ${JSON.stringify(counts)}`);
+if (rows[0]) console.log('first', JSON.stringify(rows[0]), '\nlast', JSON.stringify(rows[rows.length - 1]));

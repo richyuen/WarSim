@@ -75,7 +75,7 @@ import { airOf, Domain, laneOf, seaOf, TILE, type World } from '../sim/world';
 import { airHolders } from '../sim/systems/airSuperiority';
 import type { AirZones } from '../sim/nav/airZones';
 import { BufferPool } from './pool';
-import { canDeliver, deliveryMeans, warheadsOf } from '../sim/systems/nuclear';
+import { canDeliver, dayIndustry, deliveryMeans, restraintOf, warheadsOf } from '../sim/systems/nuclear';
 
 export type Post = (msg: FromWorker, transfer: Transferable[]) => void;
 
@@ -820,6 +820,19 @@ export class SimServer {
       if (nc.living[id] === 1 && o !== 0) puppets.set(o, [...(puppets.get(o) ?? []), id]);
     });
     const land = landStandings(world);
+    // Why each holder of warheads at war does not strike (PLAN 7.37f): its war whose best place weighs most.
+    const industry = dayIndustry(world);
+    const restraint = (id: number): NationStat['restraint'] => {
+      if (nc.living[id] !== 1 || warheadsOf(world, id) < 1) return null;
+      let best: { r: ReturnType<typeof restraintOf>; war: number } | null = null;
+      for (const war of world.wars.list) {
+        const side = war.sides[0].includes(id) ? 0 : war.sides[1].includes(id) ? 1 : -1;
+        if (side < 0) continue;
+        const r = restraintOf(world, id, war, side, industry);
+        if (r.reason !== 'none' && (!best || r.u > best.r.u)) best = { r, war: war.id };
+      }
+      return best && best.r.reason !== 'none' ? { reason: best.r.reason, by: best.r.by, war: best.war } : null;
+    };
     const nations: (NationStat & { living: boolean })[] = [];
     world.nations.forEach((id) => {
       if (!withDead && nc.living[id] !== 1) return;
@@ -860,6 +873,7 @@ export class SimServer {
         warheads: warheadsOf(world, id),
         canDeliver: canDeliver(world, id),
         means: warheadsOf(world, id) > 0 ? meansOf(world, id) : null,
+        restraint: restraint(id),
         aggression: nc.aggression[id]!,
         incomeMult: nc.incomeMult[id]!,
         living: nc.living[id] === 1,

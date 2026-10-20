@@ -20480,3 +20480,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   the United Kingdom 0.24–0.54), else at most −0.06. The worlds hold back by the gates, not by a
   missing rule: no BLOCKERS entry.
 - **Specs by hand:** none (no UI). 7.37's commits: 7 of 20. **Next:** PLAN 7.37f (the panel says why).
+
+## 2026-10-20 — PLAN 7.37f: the nation panel says why a holder at war does not strike (ADR-565)
+
+- **Code:** `restraintOf`'s `noReach` split into `noMeans` (`canDeliver` false) and `outOfRange`
+  (means, none reaching the best place). The worker's nation stats carry `restraint` for each
+  living holder at war (its war whose best place weighs most; the deterring enemy; the war); the
+  nation panel's overview shows a sentence per reason under the warheads (`panel.restraint.*`).
+- **AT:** `nukeRestraint1938.spec.ts` (seed 5309; Germany 20 warheads and missiles, at war with
+  Poland given 10 and missiles, fighting to the death, its land east of the Oder painted Polish):
+  "Germany is deterred by Poland: a nuclear strike would bring its answer in kind.", no German
+  decision to strike; Poland "not desperate" (`docs/evidence/7.37/f-restraint-panel.png`). Red
+  without (no line). `nukeRestraint1938.test.ts`: no means, out of range (red without: `noReach`),
+  and the state hash the same with `restraintOf` asked every day. Pin unchanged.
+- **The 5309 case** (critic's code `bcbc99c` in a worktree, HEAD's `restraintOf` patched in, 200
+  days from `critic/c10_seed5309_y10.bin`): out of range on every day over the floor (23 in that
+  window, days 3651–3673): Soviet strategic bombers 6,153 and 8,118 km from Japan's place, range
+  3,000; no missiles. ADR-561's kept group would not change it.
+- **Cost:** 0.01 / 0.25 / 4.09 ms a stats build (once a second) on run 10's year-20 worlds 5309 /
+  4219 / 6421 loaded on HEAD: at most about 0.4 % of the worker's time. Not in the tick.
+- **Specs by hand, green:** nukeRestraint1938. 7.37's commits: 12 of 20 (by subjects).
+- **Next:** PLAN 7.37g (Latvia and Lithuania nuclear powers).

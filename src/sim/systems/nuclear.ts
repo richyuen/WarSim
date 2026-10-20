@@ -1285,11 +1285,13 @@ function strikeStopped(world: World, l: NukeLaunch): void {
  *   cost, the largest of them (the strike back weighed: `by`, the enemy whose answer).
  * - `noValue`, `notDesperate`, `doctrine`: the gain alone (value × desperation × doctrine) is at most
  *   NUKE_FLOOR; the reason its factor least of its full (value 1, desperation 1, doctrine 1).
- * - `noReach`: a strike over NUKE_FLOOR out of reach of its bombers and missiles.
+ * - `noMeans`, `outOfRange`: a strike over NUKE_FLOOR it cannot put down (PLAN 7.37f: intent
+ *   without means, not restraint): no means at all (`canDeliver` false: no missile, no strategic
+ *   bomber with a base), or means none of which reaches the place (`reaches`).
  * - `strikes`: a strike over NUKE_FLOOR in reach (decided today unless a launch was refused).
  * With them the best place's utility (`u`, MAD's cap in it; −Infinity with none) and its parts.
  */
-export type RestraintReason = 'none' | 'puppet' | 'aiOff' | 'nukesOff' | 'avenging' | 'paused' | 'noThreat' | 'noPlace' | 'mad' | 'deterred' | 'alliance' | 'outrage' | 'taboo' | 'noValue' | 'notDesperate' | 'doctrine' | 'noReach' | 'strikes';
+export type RestraintReason = 'none' | 'puppet' | 'aiOff' | 'nukesOff' | 'avenging' | 'paused' | 'noThreat' | 'noPlace' | 'mad' | 'deterred' | 'alliance' | 'outrage' | 'taboo' | 'noValue' | 'notDesperate' | 'doctrine' | 'noMeans' | 'outOfRange' | 'strikes';
 export interface Restraint {
   reason: RestraintReason;
   /** The enemy whose strike back holds it (`mad`, `deterred`), else 0. */
@@ -1372,7 +1374,7 @@ export function restraintOf(world: World, n: number, war: War, side: number, ind
     x: best.x,
     y: best.y,
   });
-  if (bu > NUKE_FLOOR) return { ...out, reason: reach ? 'strikes' : 'noReach' };
+  if (bu > NUKE_FLOOR) return { ...out, reason: reach ? 'strikes' : canDeliver(world, n) ? 'outOfRange' : 'noMeans' };
   if (braw > NUKE_FLOOR) return { ...out, reason: 'mad', by: deterrerOf(world, war, side) };
   if (out.gain > NUKE_FLOOR) {
     const costs: [RestraintReason, number][] = [['deterred', out.retaliation], ['alliance', out.alliance], ['outrage', out.outrage], ['taboo', out.taboo]];

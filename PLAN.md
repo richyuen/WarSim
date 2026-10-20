@@ -154,7 +154,7 @@ each, split when taken up:
       bomber or missile within range: the Soviet Union on Japan at 0.73, 56 days; Poland on Argentina
       at 0.56, 185 days, HEAD), else at most −0.06 (the taboo, a strike back). Restraint by the
       decision's gates, no rule changed; the pin unchanged. 7.37's commits: 7 of 20.
-    - [ ] 7.37f The game tells why a holder at war does not strike: the nation panel of a holder
+    - [x] 7.37f The game tells why a holder at war does not strike: the nation panel of a holder
       at war names `restraintOf`'s reason for its war of the highest utility (and the enemy that
       deters it). AT: a spec, Germany given 20 warheads and missiles at war with Poland given 10
       and missiles, losing: the panel says Germany is deterred by Poland (red without: no line).
@@ -162,6 +162,12 @@ each, split when taken up:
       0.73 on Japan for 56 days, seed 5309 on the critic's code; Poland at 0.56 on Argentina for
       185 days, HEAD): split it into no means at all (`canDeliver` false) and means out of range,
       each worded so, and say for the 5309 case which it was (before ADR-561's kept group or not).
+      Met (ADR-565): "Germany is deterred by Poland: a nuclear strike would bring its answer in
+      kind." (`nukeRestraint1938.spec.ts`, red without: no line; `docs/evidence/7.37/f-restraint-panel.png`);
+      `noMeans` and `outOfRange` (`nukeRestraint1938.test.ts`, red without). The 5309 case out of
+      range: two Soviet strategic bomber groups 6,153 and 8,118 km from the place, range 3,000, no
+      missiles (`f-out-of-range-5309-SOV-bcbc99c.json`); ADR-561 would not change it. 7.37's commits: 12 of 20, counted by the subjects that name
+      it, this one with them (the counts above took a part's follow-ups and 230c9e9 as none).
     - [ ] 7.37g Latvia (seed 1307, 75 warheads) and Lithuania (8693, 20) nuclear powers (run 10,
       unexplained): how each came to the bomb (`goesForBomb`'s income against
       NUKE_PROGRAMME_INCOME, its land then) measured on the critic's code. AT: the cause, and a

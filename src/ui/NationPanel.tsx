@@ -117,6 +117,12 @@ export function NationPanel({
           {row('panel.landShare', `${(nation.landShare * 100).toFixed(1)}%`, 'stat-land-share')}
           {row('panel.army', `${num(nation.men)} (${nation.formations})`, 'stat-army')}
           {nation.warheads > 0 ? row('panel.warheads', num(nation.warheads), 'stat-warheads') : null}
+          {nation.restraint ? (
+            // Why a holder at war does not strike (PLAN 7.37f), in its war that weighs most.
+            <div class="panel-note" data-testid="nation-restraint" data-reason={nation.restraint.reason}>
+              {t(`panel.restraint.${nation.restraint.reason}` as MessageKey, { name: displayName(nation.name), by: displayName(byId.get(nation.restraint.by)?.name ?? '') })}
+            </div>
+          ) : null}
           {nation.nukeDead > 0 || nation.fallout > 0 ? (
             <div class="panel-block" data-testid="panel-nuclear">
               <div class="panel-sub">{t('panel.nuclearAge')}</div>

@@ -167,6 +167,40 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-565 · 2026-10-20 · accepted — The nation panel says why a holder at war does not strike; out of reach split into no means and out of range (PLAN 7.37f)
+
+- **Context.** PLAN 7.37 (AI nuclear use 7; critic run 10: three of fourteen worlds never saw a
+  burst while four to six nations held 145 to 164 warheads). The user's of 2026-10-20: restraint is
+  believable, and the game says why. 7.37e measured the reasons (`restraintOf`); nothing in play
+  showed them. Its `noReach` mixed two things: a holder with no means at all and one whose means do
+  not reach.
+- **Decision.**
+  - `restraintOf`'s `noReach` is two reasons: `noMeans` (`canDeliver` false: no ballistic missiles,
+    no strategic bomber group with a base) and `outOfRange` (means, none of which `reaches` the best
+    place). Both are intent without means, not restraint, and are worded so.
+  - The worker's nation stats (once a second) carry `restraint` for each living holder of a warhead
+    at war: `restraintOf`'s reason in its war whose best place weighs most (the highest utility; with
+    no place in any, the first war in the list), the enemy that deters it (`deterred`, `mad`) and the
+    war. The nation panel's overview shows it under the warheads as a sentence of its own per reason
+    (`panel.restraint.*`), e.g. "Germany is deterred by Poland: a nuclear strike would bring its
+    answer in kind."
+  - `restraintOf` is read, not a rule: the state hash is the same with it asked every day
+    (`nukeRestraint1938.test.ts`); the pin unchanged.
+- **Measured.** The cost, on the critic's year-20 worlds of run 10 loaded on HEAD, 50 builds each:
+  5309 0.01 ms (2 calls), 4219 0.25 ms (5), 6421 4.09 ms (7 calls, six holders at war) a stats
+  build: at most about 0.4 % of the worker's second. Kept in the stats rather than asked for the
+  open panel alone (the economy tab's way): the critic and the HUD read every nation's.
+- **The 5309 case** (7.37e: the Soviet Union over NUKE_FLOOR on Japan at 0.73 for 56 days, the
+  critic's code `bcbc99c`): from the critic's year-10 checkpoint, 200 days, HEAD's `restraintOf`
+  patched in (`docs/evidence/7.37/f-out-of-range-5309-SOV-bcbc99c.json`, script
+  `f-noReach737f.ts.txt`): every day over the floor out of range (23 of them in that window, days
+  3651 to 3673): two strategic bomber groups with a base, 6,153 and 8,118 km from the place, range
+  3,000 km; no missiles. ADR-561's kept group would not change it (the Soviet Union had bombers; none
+  within reach of Japan).
+- **Rejected.** The reason only for the selected nation, asked for (as the economy tab): one more
+  request and its timing for 0.4 % at worst. Every war's reason listed: the panel is short, and the
+  war that weighs most is the one nearest a strike.
+
 ### ADR-564 · 2026-10-20 · accepted — A puppet threatens by its overlord only while the overlord fights beside it (PLAN 7.37d; amends ADR-394's 6.12a and 6.12f)
 
 - **Context.** PLAN 7.37 (AI nuclear use 7; critic run 9, "single bombs on small states"): the

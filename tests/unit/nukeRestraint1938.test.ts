@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
-import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { cellOf } from '../../src/sim/data/terrain';
+import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { nukeInputs, nuclearUtility, NUKE_FLOOR, restraintOf } from '../../src/sim/systems/nuclear';
+import { canDeliver, nukeInputs, nuclearUtility, NUKE_FLOOR, restraintOf } from '../../src/sim/systems/nuclear';
 import { makePuppet } from '../../src/sim/systems/puppets';
 import { declareWar } from '../../src/sim/systems/war';
 import type { War } from '../../src/sim/wars';
@@ -14,20 +15,34 @@ import { nationId } from '../helpers/sim1938';
 // `restraintOf` names the gate of the day's decision that holds a holder at war, by the decision's
 // own reckoning, with the best place's utility and its parts.
 
-const { w: W } = SIZE_1938;
+const { w: W, h: H } = SIZE_1938;
 const [GER, POL, BOL, ITA] = ['GER', 'POL', 'BOL', 'ITA'].map(nationId) as [number, number, number, number];
 
-/** Germany with 20 warheads and missiles at war with Poland, which holds `polish` warheads (and missiles when `missiles`). */
-function germanyOnPoland(polish: number, missiles: boolean): { s: Sim; war: War; side: number } {
+/** Germany with 20 warheads (and missiles unless `german` is false) at war with Poland, which holds `polish` warheads (and missiles when `missiles`). */
+function germanyOnPoland(polish: number, missiles: boolean, german = true): { s: Sim; war: War; side: number } {
   const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
   s.world.settings.nukesEnabled = true;
   s.command({ kind: 'grantWarheads', nation: GER, count: 20 });
-  s.command({ kind: 'grantTech', nation: GER, tech: 'ballistic_missiles' });
+  if (german) s.command({ kind: 'grantTech', nation: GER, tech: 'ballistic_missiles' });
   if (polish > 0) s.command({ kind: 'grantWarheads', nation: POL, count: polish });
   if (missiles) s.command({ kind: 'grantTech', nation: POL, tech: 'ballistic_missiles' });
   s.step(1);
   const war = declareWar(s.world, GER, POL, true)!;
   return { s, war, side: war.sides[0].includes(GER) ? 0 : 1 };
+}
+
+/** `n`'s strategic bomber groups with a base. */
+function strategicWings(s: Sim, n: number): number[] {
+  const c = s.world.formations.cols;
+  const rules = s.world.rules!;
+  return [...s.world.wingBase].filter(([id, base]) => base > 0 && c.nation[id] === n && rules.units[rules.templates[c.template[id]!]!.elements[0]!.unit]!.cls === 'bomber_str').map(([id]) => id).sort((a, b) => a - b);
+}
+
+/** The km from airbase `base` to Warsaw. */
+function kmTo(s: Sim, base: number): number {
+  const [x, y] = s.world.cellPoint(s.world.airbases[base - 1]!.cell);
+  const nc = s.world.nations.cols;
+  return Math.hypot(x - nc.capitalX[POL]!, y - nc.capitalY[POL]!);
 }
 
 /** Germany losing the war outright (the score all the other side's). */
@@ -71,6 +86,49 @@ describe('why a holder at war does not strike (PLAN 7.37e)', () => {
       w.out.events.length = 0;
     });
     expect(decided).toBe(1);
+  });
+
+  // PLAN 7.37f: a strike over NUKE_FLOOR it cannot put down is intent without means, not restraint.
+  it('losing, without missiles and with no strategic bomber: no means', () => {
+    const { s, war, side } = germanyOnPoland(1, false, false);
+    losing(war, side);
+    for (const id of strategicWings(s, GER)) s.command({ kind: 'removeFormation', id });
+    expect(canDeliver(s.world, GER)).toBe(false);
+    const r = restraintOf(s.world, GER, war, side);
+    expect(r.reason).toBe('noMeans');
+    expect(r.u).toBeGreaterThan(NUKE_FLOOR);
+  });
+
+  it('losing, its one strategic bomber group based out of range of every place: out of range', () => {
+    const { s, war, side } = germanyOnPoland(1, false, false);
+    losing(war, side);
+    for (const id of strategicWings(s, GER)) s.command({ kind: 'removeFormation', id });
+    const [bx, by] = cellOf(13.4, 52.52, W, H);
+    s.command({ kind: 'spawnWing', nation: GER, x: bx + 0.5, y: by + 0.5, template: TEMPLATES_1938.findIndex((t) => t.id === 'strategic_bomber_group') });
+    s.step(1);
+    const [keep] = strategicWings(s, GER);
+    expect(keep).toBeDefined();
+    expect(restraintOf(s.world, GER, war, side).reason).toBe('strikes');
+    // Its base moved to the airbase farthest from Warsaw (a set-up: the wing's base is not checked for its owner).
+    const far = s.world.airbases.map((_, i) => i + 1).sort((a, b) => kmTo(s, b) - kmTo(s, a))[0]!;
+    s.world.wingBase.set(keep!, far);
+    expect(canDeliver(s.world, GER)).toBe(true);
+    const r = restraintOf(s.world, GER, war, side);
+    expect(r.reason).toBe('outOfRange');
+    expect(r.u).toBeGreaterThan(NUKE_FLOOR);
+  });
+
+  it('asked every day, it changes nothing of the state (the worker asks it for the panel)', () => {
+    const run = (ask: boolean): number => {
+      const { s, war, side } = germanyOnPoland(10, true);
+      losing(war, side);
+      for (let d = 0; d < 20; d++) {
+        s.step(24);
+        if (ask) for (const n of [GER, POL]) restraintOf(s.world, n, war, war.sides[0].includes(n) ? 0 : 1);
+      }
+      return s.hash();
+    };
+    expect(run(true)).toBe(run(false));
   });
 
   it('against a Poland with no warhead, nor the income or the men to threaten it: no threat', () => {
