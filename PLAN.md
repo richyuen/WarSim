@@ -188,12 +188,17 @@ each, split when taken up:
     - [ ] 7.37h Seed 9901's three Soviet strikes on a lone Chinese division (ADR-528 on, utilities
       0.025 to 0.055, `docs/evidence/7.32/chain-f0be88c-9901_rule.json`): whether 7.38's weight of
       the dead changes them; else a rule with an ADR or a BLOCKERS entry.
-    - [ ] 7.37i The game tells a new nuclear power (from 7.37g: Latvia and Lithuania went for the
+    - [x] 7.37i The game tells a new nuclear power (from 7.37g: Latvia and Lithuania went for the
       bomb with no word in the history): a history row the day a nation learns `atomic_bomb`
       ("Latvia has learned to build the atomic bomb"), with its income's rank. AT: a unit test on a
       nation granted the bomb's prerequisites and NUKE_PROGRAMME_INCOME, the row on the day the
       tech is researched (red without: no row); a spec of the row in the history panel; the pin
       unchanged (a history kind, no rule).
+      Met: `NuclearPower`, emitted by research the day the bomb's line is paid (not for God Mode's
+      grant): "Latvia has learned to build the atomic bomb, with the world's 53rd largest income",
+      a history row and a ticker line with the nuclear cue (`nuclearPower1938.test.ts`, red without;
+      `nuclearPower1938.spec.ts`, a world made in Node and loaded, `docs/evidence/7.37/i-nuclear-power-row.png`).
+      The pin unchanged. 7.37h waits on 7.38 (its AT reads 7.38's weight of the dead).
 - [ ] 7.38 R10-B1: the AI's nuclear choice weighs the people a burst kills (AI nuclear use 7, needs
   8; blocking). `nuclearUtility` has no term for the dead (`src/sim/systems/nuclear.ts:554-560`):
   Germany H-bombs Shanghai for 3,802,105 dead and 105 soldiers at utility 0.025, NUKE_FLOOR itself

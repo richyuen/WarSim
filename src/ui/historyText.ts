@@ -30,6 +30,16 @@ const count = (v: number): string => v.toLocaleString('en-US');
 /** Gold as the history writes it: "1,204", "38", "4.5" (tenths under 10). */
 const gold = (v: number): string => (v < 10 ? v.toLocaleString('en-US', { maximumFractionDigits: 1 }) : count(Math.round(v)));
 
+/** English ordinals' plural categories ("1st", "2nd", "3rd", "4th", "11th", "22nd"). */
+const ORDINAL = new Intl.PluralRules('en-US', { type: 'ordinal' });
+
+/** A rank of income in words (PLAN 7.37i): "largest income" for the first, else "2nd largest income". */
+export function incomeRank(rank: number): string {
+  if (rank <= 1) return t('history.incomeRank.1');
+  const cat = ORDINAL.select(rank) as 'one' | 'two' | 'few' | 'other';
+  return t(`history.incomeRank.${cat}`, { n: count(rank) });
+}
+
 /**
  * A nuclear strike's toll in words (PLAN 7.32b, the critic's R9-B2: "24 dead" did not say who):
  * the civilians killed, then the men, guns and tanks of the forces there lost, those of none left
@@ -96,7 +106,9 @@ export function historyText(r: HistoryRow): string {
   const lost = r.kind === EventKind.NukeToll ? { near: r.near ? t('history.strikeNear', { city: displayName(r.near) }) : '', forces: lostOrNone(nukeToll(r.b)) } : {};
   // A holder's last means lost (PLAN 7.37b3): the airbase's city.
   const means = r.kind === EventKind.NukeMeansLost ? { near: r.near ? t('history.strikeNear', { city: displayName(r.near) }) : '' } : {};
+  // A new nuclear power (PLAN 7.37i): its income's rank, "largest income", "2nd largest income".
+  const power = r.kind === EventKind.NuclearPower ? { rank: incomeRank(r.b) } : {};
   const decided = r.kind === EventKind.NukeDecided ?{ near: r.near ? t('history.strikeNear', { city: displayName(r.near) }) : '', weighed: t(nukeWeighed(r.b / 1000)) } : {};
-  const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships, ...strike, ...lost, ...decided, ...means, gold: gold(took) });
+  const s = t((!r.bn && rb !== 'number' && rb !== 'side' && none in en ? none : key) as MessageKey, { a: part(ra, r.a, r.an), b: part(rb, r.b, r.bn), c: r.cn ? displayName(r.cn) : '', ...ships, ...strike, ...lost, ...decided, ...means, ...power, gold: gold(took) });
   return s.charAt(0).toLocaleUpperCase() + s.slice(1);
 }

@@ -31,6 +31,8 @@ const CUE_OF_KIND: Readonly<Record<number, Cue>> = {
   [EventKind.CityRazed]: 'town',
   // A holder's last means of delivery lost (PLAN 7.37b3): a fall, as a capital's.
   [EventKind.NukeMeansLost]: 'capital',
+  // A new nuclear power (PLAN 7.37i): the nuclear cue.
+  [EventKind.NuclearPower]: 'nuke',
 };
 
 /** The cue of an event kind (null: the event is silent). Every kind of the ticker has one. */

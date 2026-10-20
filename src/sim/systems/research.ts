@@ -9,8 +9,9 @@
  *   pay = min(the tech's gold ÷ its days, what is left to pay, what is left of the day's budget)
  *
  * taken from the treasury; a line whose tech is paid for is closed and the nation knows the tech
- * (`TechResearched`). So a tech takes its days at least, and a poor nation longer. A second line is
- * opened only with budget left over from the first. Nothing is paid by a bankrupt nation, or out
+ * (`TechResearched`; the atomic bomb also `NuclearPower`, a history row, PLAN 7.37i). So a tech
+ * takes its days at least, and a poor nation longer. A second line is opened only with budget left
+ * over from the first. Nothing is paid by a bankrupt nation, or out
  * of a treasury that does not hold the day's payment: research never puts a nation in debt.
  *
  * What is researched next (`nextTech`): of the techs the nation does not know and is not working
@@ -112,6 +113,17 @@ export function researchSystem(world: World): void {
       r.remove(id);
       grantTechs(world, n, techMask([t]));
       world.out.emit(world.tick, EventKind.TechResearched, n, t, NaN, NaN);
+      if (rule.id === 'atomic_bomb') world.out.emit(world.tick, EventKind.NuclearPower, n, incomeRankOf(world, n), nc.capitalX[n]!, nc.capitalY[n]!);
     }
   });
+}
+
+/** Nation `n`'s rank by income among the living nations (1: the largest; PLAN 7.37i's history row). */
+export function incomeRankOf(world: World, n: number): number {
+  const nc = world.nations.cols;
+  let rank = 1;
+  world.nations.forEach((m) => {
+    if (m !== n && nc.living[m] === 1 && nc.income[m]! > nc.income[n]!) rank++;
+  });
+  return rank;
 }

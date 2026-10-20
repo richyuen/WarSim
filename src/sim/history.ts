@@ -48,6 +48,8 @@ export const HISTORY_KINDS: ReadonlySet<number> = new Set<number>([
   EventKind.CityRazed,
   // A holder's last means of delivery lost (PLAN 7.37b3).
   EventKind.NukeMeansLost,
+  // A new nuclear power (PLAN 7.37i).
+  EventKind.NuclearPower,
 ]);
 
 export class History implements Stateful {

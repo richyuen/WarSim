@@ -20523,3 +20523,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   alert. Filed as PLAN 7.37i.
 - No rule, the pin unchanged. Specs by hand: none (no UI). 7.37's commits: 13 of 20.
 - **Next:** PLAN 7.37h (seed 9901's three Soviet strikes on a lone division).
+
+## 2026-10-20 — PLAN 7.37i: the game tells a new nuclear power
+
+- Taken before 7.37h, whose AT asks whether 7.38's weight of the dead changes seed 9901's strikes:
+  it waits on 7.38.
+- **Code:** `EventKind.NuclearPower` (62), emitted by `researchSystem` the day a nation's
+  `atomic_bomb` line is paid; b = its income's rank among the living (`incomeRankOf`), (x, y) its
+  capital. A history kind and a ticker kind (cue `nuke`); `historyText` says the rank in words
+  (`incomeRank`: "largest income", "53rd largest income"). God Mode's grant gives no row.
+- **AT:** `nuclearPower1938.test.ts` (Latvia given the prerequisites and NUKE_PROGRAMME_INCOME,
+  its line all but paid: one row on that day with its rank; red without the emit; none for
+  another tech or God Mode's grant; ordinals). `nuclearPower1938.spec.ts`: the same world made in
+  Node, loaded into the game; the panel's "New nuclear power" filter shows "Latvia has learned to
+  build the atomic bomb, with the world's 53rd largest income" (the month's economy had set its
+  real income first; `docs/evidence/7.37/i-nuclear-power-row.png`). Pin unchanged (no burst of
+  research before 1945).
+- **Specs by hand, green:** nuclearPower1938. 7.37's commits: 14 of 20.
+- **Next:** PLAN 7.38 (7.37h waits on it).

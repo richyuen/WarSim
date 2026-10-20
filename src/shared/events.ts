@@ -176,6 +176,12 @@ export const EventKind = {
    * that airbase.
    */
   NukeMeansLost: 61,
+  /**
+   * A nation learned to build the atomic bomb by its own research (PLAN 7.37i; run 10: Latvia and
+   * Lithuania went for the bomb with no word in the game). a = the nation, b = its income's rank
+   * among the living nations that day (1: the largest), (x, y) = its capital.
+   */
+  NuclearPower: 62,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 
