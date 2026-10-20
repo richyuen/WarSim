@@ -16,7 +16,7 @@ Read on the critic's code (`bcbc99c`, worktree `C:/Git/WarSim_c10`) with both ru
 | seed | case (critic) | was | with 7.38b and 7.38c |
 |---|---|---|---|
 | 4877 | Germany → Shanghai, day 10434, 0.025 | 3,802,105 dead (hydrogen) | not struck: no German strike on China to year 30 |
-| 8693 | United States → Paris (first), day 5891, 0.026 | 3,178,766 (hydrogen) | day 5893, 0.027, fission, 63,634 dead (expected 23,000; cost 0.003) |
+| 8693 | United States → Paris (first), day 5891, 0.026 | 3,178,766 (hydrogen) | not Paris: day 5893, 0.027, a fission burst on massed French men at (1066.1, 331.1), about 30 cells south-east of Paris (1037.3, 294.8), 40,694 men expected; 63,634 dead (23,000 people expected; cost 0.003). Paris at fission was 0.026 before the cost; 183,000 people × 0.1 × 1.35 = 0.025 took it under the floor |
 | 8693 | United States → Paris (second), day 6969, 0.073 | 1,404,231 (hydrogen) | day 6969, 0.063, fission, 89,159 (expected 78,000; cost 0.011) |
 | 8693 | United States → Rome, day 9891, 0.091 | 3,720,550 (hydrogen) | day 9891, 0.068, fission, 183,363 (expected 172,000; cost 0.023) |
 

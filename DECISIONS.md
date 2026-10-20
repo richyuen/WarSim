@@ -192,8 +192,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     numbered task.
 - **The critic's cases** (`bcbc99c` worktree, ADR-567's and this rule patched in, from its
   checkpoints; `docs/evidence/7.38/measure-c.md`, `c-toll-*-rule.json`, `c-dead-rule.diff`): no
-  strike on Shanghai to year 30; Paris's first and second and Rome struck as by 7.38b, fission
-  bursts of 63,634, 89,159 and 183,363 dead (utilities 0.027, 0.063, 0.068); 8693's two Soviet
+  strike on Shanghai to year 30; Paris's second and Rome struck as by 7.38b, fission bursts of
+  89,159 and 183,363 dead (utilities 0.063, 0.068); Paris's first not struck (0.026 at fission,
+  less 0.025 for its 183,000 people), the United States' strike two days later a fission burst on
+  massed French men south-east of it (0.027, 63,634 dead); 8693's two Soviet
   answers decided the next day (0.775, 0.687). 4877 diverges without Shanghai; its run's Soviet
   answer to Germany is decided the next day (0.646), and the critic's three answers read at their
   inputs with the cost 0.749, 0.286, 0.510.
