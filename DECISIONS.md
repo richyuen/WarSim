@@ -185,8 +185,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   world's armed power halves from year 2 (259k → 128k) and stays down (year 10 139k against 177k).
   Seed 8693's fleet-weeks at war with a navy drop 29,458 → 927. The fleets that sail to a battle
   mostly win it (122 against 46 late). The war at sea becomes decisive, and the weaker navy is
-  sunk and not built again at the pace it was lost. The late battles' bar (6.6 over years 2–30) is not
-  in reach on that run (years 11–30 at 3.4 before).
+  sunk and not built again at the pace it was lost. On the AT's run (the critic's 14 seeds × 30
+  years, `docs/evidence/7.39/b/full/`): far station 886 → 14.5 (the first bar met); sea battles
+  years 2–30 4.3 → 5.0 a world-year against the bar's 6.6 (missed); year 1 35.7 → 55.0, so 7.39's
+  quarter-of-year-1 bar moves from 8.9 to 13.8; the world's armed power 55 % of HEAD's at year 2,
+  52 % at year 5, 75 % at year 10, 92 % at year 30.
 - **Options.**
   - **a (recommended):** HEAD stands. The far station keeps both navies afloat, and the late battles
     come from those navies. The chase waits on PLAN 7.46 (a navy sunk in a war at sea built again),

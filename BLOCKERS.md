@@ -13,9 +13,11 @@ entries are kept and marked **RESOLVED** with the date and fix.
   the far station 1,332 → 12.9 fleet-weeks a world-year; sea battles years 2–10 6.4 → 7.3, year 1
   37.3 → 50.8; the world's armed power 259k → 128k from year 2 and still 139k against 177k at
   year 10. The chasers mostly win (122 against 46), and the navies sunk are not built again.
-- **What is left:** the cause found, a navy sunk in a decisive war at sea not rebuilt, is PLAN
-  7.46. The chase is re-tried on 7.46's run. Not run to 14 × 30: the 4 × 10 run already shows the
-  navies halved, with years 11–30 at 3.4 battles a world-year before.
+  The AT's run (14 seeds × 30 years, `b/full/`): the far station 886 → 14.5 (met); sea battles
+  years 2–30 4.3 → 5.0 a world-year (bar 6.6, missed); year 1 35.7 → 55.0; the world's armed power
+  55 % of HEAD's at year 2, 75 % at year 10, 92 % at year 30.
+- **What is left:** the cause found, a navy sunk in a decisive war at sea and not rebuilt, is PLAN
+  7.46. The chase is re-tried on 7.46's run.
 - **Options:** ADR-573 a (HEAD stands, 7.46 first, recommended), b (adopt the chase now), c (7.39b's
   first bar re-scoped to the battles).
 

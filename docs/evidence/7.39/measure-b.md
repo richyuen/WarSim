@@ -1,7 +1,7 @@
 # PLAN 7.39b: how a late war of two navies begins, and the chase tried (critic R10-B2)
 
 At HEAD `23a6095`, from 1938. No rule committed: the pin is unchanged. The rule tried is
-`b-chase.diff` (ADR-573, rejected for now).
+`b-chase.diff` (ADR-573, not adopted; the user's decision).
 
 - `npx tsx tools/diag/seaStart.ts <seed> 30` (new): each war on the first day its two sides both
   have an armed fleet: each side's fleets by state and by what the naval AI does with them, the km
@@ -14,6 +14,10 @@ At HEAD `23a6095`, from 1938. No rule committed: the pin is unchanged. The rule 
 - The chase's A/B, 4 seeds (1307, 3613, 8693, 7019) × 10 years, before (HEAD) and after
   (`b-chase.diff`), the two at once: `seaWars`, `seaYears`, `seaStart`; `b/chase/`, tables
   `node docs/evidence/7.39/b/chase/ab.mjs`.
+- The AT's run of the chase: the critic's 14 seeds × 30 years, `seaWars` and `seaYears` with
+  `b-chase.diff` and its mirror in `seaWhy.ts` (`b-chase-seaWhy.diff`, so that a fleet chasing is
+  not read as on station), against 7.39a's run of HEAD (`a/`; the sim unchanged since). JSON in
+  `b/full/`, table `node docs/evidence/7.39/b/full/read.mjs`.
 
 `seaStart` counts a battle by its record's first hour: 3.4 a world-year late against `seaWars`'
 4.3 (records that begin and end within the hour, or merge, are missed). The bars are `seaWars`'.
@@ -85,13 +89,35 @@ Who lost the battles (`seaStart`, the battles with one side all under way the ho
 other all standing): years 2–10, before, the side that sailed lost fewer ships in 104 and more in 38
 (769 ships against the standers' 1,220); after, 122 and 46 (585 against 1,096).
 
-- The first bar is met by emptying the far stations (1,332 → 12.9 fleet-weeks), not by fighting.
-- The second is not: years 2–10 7.3 against 6.6, with years 11–30 (3.4 before, `measure-a.md`)
-  not run. The world's navy is halved from year 2 (259k → 128k) and stays so through year 10 (139k
-  against 177k). The fleets of nations at war with a navy fall by 96 % on seed 8693 (`wars_*_8693`:
-  29,458 → 927 fleet-weeks), and its wars of two navies by 82 % (1,022 → 185 war-weeks).
-- The chasers mostly win. The war at sea becomes decisive: the navies meet in year 1 and 2, the
+- On this quick run, the first bar is met by emptying the far stations (1,332 → 12.9 fleet-weeks),
+  not by fighting. The battles of years 2–10 pass 6.6 (7.3), but years 11–30 were not run (3.4
+  before, `measure-a.md`). The world's navy is halved from year 2 (259k → 128k) and is still down
+  at year 10 (139k against 177k). The fleets of nations at war with a navy fall by 96 % on seed 8693
+  (`wars_*_8693`: 29,458 → 927 fleet-weeks), and its wars of two navies by 82 % (1,022 → 185
+  war-weeks).
+- The chasers mostly win. The war at sea becomes decisive: the navies meet in years 1 and 2, the
   weaker is sunk, and it is not built again at the pace it was sunk.
+
+The AT's run, the critic's 14 seeds × 30 years (`b/full/`):
+
+| | HEAD | the chase |
+| --- | --- | --- |
+| sea battles, year 1 (a world) | 35.7 | 55.0 |
+| **sea battles, years 2–30 (a world-year; bar 6.6)** | **4.3** | **5.0** |
+| a quarter of year 1 (7.39's bar) | 8.9 | 13.8 |
+| late battles sinking nothing (bar 5 %) | 2.6 % | 1.2 % |
+| **on station, the enemy fleet beyond reach, 2–30 (bar under 443)** | **886.4** | **14.5** |
+| chasing, fleet-weeks a world-year, 2–30 | – | 8.6 |
+| armed power (k) / fleets / navies, year 2 | 255 / 83 / 12.7 | 141 / 45 / 9.1 |
+| year 5 | 226 / 78 / 16.3 | 118 / 41 / 12.9 |
+| year 10 | 188 / 72 / 17.4 | 141 / 49 / 13.8 |
+| year 20 | 212 / 73 / 18.0 | 188 / 59 / 14.6 |
+| year 30 | 254 / 74 / 16.5 | 233 / 62 / 13.5 |
+
+The first bar is met (886 → 14.5). The second is missed: 5.0 a world-year against 6.6. 7.39's own
+bar, a quarter of year 1, moves away (8.9 → 13.8), since year 1 gains 19 battles. The world's
+navy is 55 % of HEAD's at year 2, 52 % at year 5, 75 % at year 10. It is back to 89 % at year 20 and
+92 % at year 30, in fewer fleets and navies.
 
 **What the far station was doing.** Besides the blockade, it kept the navies afloat. Each navy stood
 off the ports nearest it, and both lived until peace. The late battles of HEAD come from those
@@ -101,6 +127,8 @@ would win", sinks one of them. The late bar then rests on the navies being rebui
 
 ## 4. The stop (ADR-554)
 
-7.39b's AT is not met by the rule tried, and the cause found is not the station branch's. BLOCKERS
-entry; the cause, a navy sunk in a decisive war not rebuilt, is PLAN 7.46 with its own AT; the
-chase waits on it (ADR-573, the user's decision). No sim change, the pin unchanged.
+7.39b's AT is not met by the rule tried, on the AT's own run: the battles' bar is missed (5.0
+against 6.6) while the far station is emptied. The cause found is not the station branch's. It
+gets a BLOCKERS entry, and the cause, a navy sunk in a decisive war and not rebuilt, is PLAN 7.46
+with its own AT. The chase waits on it (ADR-573, the user's decision). No sim change, the pin
+unchanged.

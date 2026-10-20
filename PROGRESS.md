@@ -20775,3 +20775,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** Python's text-mode write on Windows turns LF into CRLF; open with `newline=''`.
 - Specs by hand: none (no UI). 7.39's commits: 3.
 - **Next:** PLAN 7.46 (or 7.39b again on the user's decision), then 7.43.
+- **The AT's run (same day, follow-up):** the chase on the critic's 14 seeds × 30 years
+  (`docs/evidence/7.39/b/full/`, `read.mjs`; against 7.39a's run of HEAD): far station 886 → 14.5
+  fleet-weeks a world-year (met); sea battles years 2–30 4.3 → 5.0 (bar 6.6, missed); year 1 35.7 →
+  55.0; sinking nothing 1.2 %; the world's armed power 55 % of HEAD's at year 2, 75 % at year 10,
+  92 % at year 30. The 4 × 10 run's 7.3 for years 2–10 had passed 6.6; the first entry's "out of
+  reach" was a forecast, now read. The stop stands on the AT's run. The sim reverted, the pin
+  unchanged.

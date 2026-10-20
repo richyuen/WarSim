@@ -83,9 +83,10 @@ each, split when taken up:
       **Blocked** (2026-10-20, BLOCKERS, ADR-573 the user's decision; `docs/evidence/7.39/
       measure-b.md`): measured, late wars of two navies begin a median 4,423 km apart (909 in year
       1), and year 1's wars also begin on stations from earlier wars. The chase tried
-      (`b-chase.diff`, 4 seeds × 10 years) empties the far stations (1,332 → 12.9) but halves the
-      world's navy from year 2 (259k → 128k), which puts the late battles' bar out of reach. The
-      cause is PLAN 7.46. Not taken again until 7.46 is done or the user decides.
+      (`b-chase.diff`; the AT's run, 14 seeds × 30 years, `b/full/`) empties the far stations (886
+      → 14.5) but the late battles reach only 5.0 a world-year (bar 6.6): the world's navy is cut
+      to 55 % of HEAD's at year 2 and 75 % at year 10. The cause is PLAN 7.46. Not taken again until
+      7.46 is done or the user decides.
 - [ ] 7.46 A navy sunk in a decisive war at sea is built again (from PLAN 7.39b, ADR-573): with the
   chase (`docs/evidence/7.39/b-chase.diff`) the navies meet in years 1–2, the side that sails to the
   battle mostly wins (122 against 46), and the world's armed power falls 291k → 128k by year 2 and is

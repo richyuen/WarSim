@@ -1,0 +1,2045 @@
+{
+ "seed": 3613,
+ "years": 30,
+ "wallS": 682,
+ "rows": [
+  {
+   "year": 1,
+   "battles": 49,
+   "zero": 1,
+   "shipsSunk": 717,
+   "rejected": {},
+   "weeks": 53,
+   "wars": {
+    "both": 37,
+    "coast": 164,
+    "land": 13,
+    "neither": 109
+   },
+   "vsNavy": {
+    "take": 173,
+    "moving": 236,
+    "awayHome": 51,
+    "awayHunt": 193,
+    "awayChase": 99,
+    "awayNewStation": 3,
+    "stage": 5,
+    "awayStation": 238,
+    "engaged": 8
+   },
+   "vsNone": {
+    "take": 60,
+    "noTarget": 20,
+    "awayStation": 614,
+    "awayNewStation": 34,
+    "moving": 198,
+    "stage": 3,
+    "noBase": 23,
+    "engaged": 7,
+    "awayHome": 10
+   },
+   "who": {
+    "take": {
+     "ENG": 83,
+     "FRA": 41,
+     "ITA": 35,
+     "JAP*": 33,
+     "ENG*": 26,
+     "NSP": 2
+    },
+    "noTarget": {
+     "GER*": 12,
+     "ITA*": 8
+    },
+    "moving": {
+     "JAP": 143,
+     "JAP*": 125,
+     "ITA*": 32,
+     "NED": 24,
+     "SOV*": 23,
+     "ITA": 19
+    },
+    "awayHome": {
+     "ENG": 23,
+     "JAP": 15,
+     "FRA": 10,
+     "JAP*": 10,
+     "CAN": 2,
+     "REP": 1
+    },
+    "awayStation": {
+     "JAP*": 361,
+     "ENG*": 155,
+     "JAP": 132,
+     "SOV*": 56,
+     "SOV": 44,
+     "ITA*": 18
+    },
+    "awayHunt": {
+     "ENG": 120,
+     "FRA": 30,
+     "JAP": 23,
+     "ITA": 19,
+     "POR": 1
+    },
+    "awayChase": {
+     "JAP": 55,
+     "ENG": 38,
+     "SOV": 4,
+     "FRA": 2
+    },
+    "awayNewStation": {
+     "JAP*": 20,
+     "ENG*": 11,
+     "GER": 2,
+     "POL*": 1,
+     "SOV*": 1,
+     "NOR*": 1
+    },
+    "stage": {
+     "ENG": 4,
+     "ENG*": 3,
+     "RAJ": 1
+    },
+    "engaged": {
+     "ITA": 7,
+     "ENG*": 4,
+     "JAP*": 3,
+     "AST": 1
+    },
+    "noBase": {
+     "BRA*": 23
+    }
+   },
+   "prey": {
+    "underWay": 91,
+    "strong": 37,
+    "far": 27,
+    "huntable": 39,
+    "otherWater": 44
+   },
+   "far": {
+    "noBase": 18,
+    "strong": 9
+   }
+  },
+  {
+   "year": 2,
+   "battles": 18,
+   "zero": 0,
+   "shipsSunk": 138,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 44,
+    "coast": 152,
+    "land": 57,
+    "neither": 119
+   },
+   "vsNavy": {
+    "take": 57,
+    "awayHunt": 48,
+    "awayStation": 53,
+    "awayHome": 27,
+    "moving": 259,
+    "awayChase": 46,
+    "tooStrong": 1
+   },
+   "vsNone": {
+    "awayStation": 448,
+    "moving": 33,
+    "awayNewStation": 57,
+    "noTarget": 74,
+    "take": 18
+   },
+   "who": {
+    "awayStation": {
+     "JAP*": 349,
+     "SOV*": 47,
+     "SWE*": 28,
+     "SOV": 20,
+     "USA*": 19,
+     "FRA": 11
+    },
+    "moving": {
+     "JAP": 229,
+     "SOV": 28,
+     "JAP*": 27,
+     "USA*": 5,
+     "GRE": 1,
+     "TUR": 1
+    },
+    "awayNewStation": {
+     "JAP*": 55,
+     "SWE*": 2
+    },
+    "take": {
+     "JAP": 28,
+     "SOV": 18,
+     "JAP*": 14,
+     "TUR": 4,
+     "SOV*": 4,
+     "ENG": 3
+    },
+    "awayHunt": {
+     "JAP": 34,
+     "SOV": 13,
+     "ENG": 1
+    },
+    "awayHome": {
+     "JAP": 24,
+     "SOV": 2,
+     "ENG": 1
+    },
+    "awayChase": {
+     "JAP": 36,
+     "SOV": 10
+    },
+    "noTarget": {
+     "ARG*": 36,
+     "BRA*": 25,
+     "CHL*": 13
+    },
+    "tooStrong": {
+     "TUR": 1
+    }
+   },
+   "prey": {
+    "strong": 7,
+    "underWay": 9,
+    "far": 14,
+    "otherWater": 23
+   },
+   "far": {
+    "strong": 14
+   }
+  },
+  {
+   "year": 3,
+   "battles": 2,
+   "zero": 0,
+   "shipsSunk": 20,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 1,
+    "coast": 221,
+    "land": 33,
+    "neither": 202
+   },
+   "vsNavy": {
+    "moving": 24,
+    "take": 1
+   },
+   "vsNone": {
+    "awayStation": 1320,
+    "take": 18,
+    "noTarget": 31,
+    "moving": 8,
+    "stage": 1
+   },
+   "who": {
+    "awayStation": {
+     "JAP*": 766,
+     "USA*": 472,
+     "SWE*": 58,
+     "BRA*": 14,
+     "PHI*": 10
+    },
+    "take": {
+     "JAP*": 14,
+     "USA*": 2,
+     "MEX": 1,
+     "PHI*": 1,
+     "BRA*": 1
+    },
+    "noTarget": {
+     "POL*": 12,
+     "ARG*": 10,
+     "BRA*": 9
+    },
+    "moving": {
+     "USA": 24,
+     "USA*": 6,
+     "PHI*": 1,
+     "BRA*": 1
+    },
+    "stage": {
+     "PHI*": 1
+    }
+   },
+   "prey": {},
+   "far": {}
+  },
+  {
+   "year": 4,
+   "battles": 7,
+   "zero": 0,
+   "shipsSunk": 39,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 9,
+    "coast": 170,
+    "land": 0,
+    "neither": 122
+   },
+   "vsNavy": {
+    "awayStation": 5,
+    "moving": 55,
+    "take": 4,
+    "awayHunt": 27,
+    "awayChase": 15
+   },
+   "vsNone": {
+    "awayStation": 647,
+    "awayNewStation": 37,
+    "moving": 40,
+    "take": 38,
+    "awayHome": 22,
+    "stage": 8,
+    "noBase": 8
+   },
+   "who": {
+    "awayStation": {
+     "JAP*": 538,
+     "ARG*": 63,
+     "BRA*": 32,
+     "CHL*": 8,
+     "DEN*": 6,
+     "ENG": 3
+    },
+    "awayNewStation": {
+     "JAP*": 36,
+     "BRA*": 1
+    },
+    "moving": {
+     "JAP": 49,
+     "JAP*": 38,
+     "ARG": 6,
+     "CHL*": 2
+    },
+    "take": {
+     "JAP*": 37,
+     "ENG": 3,
+     "CHL": 1,
+     "BRA*": 1
+    },
+    "awayHunt": {
+     "JAP": 24,
+     "ARG": 3
+    },
+    "awayHome": {
+     "JAP*": 22
+    },
+    "stage": {
+     "JAP*": 8
+    },
+    "noBase": {
+     "JAP*": 8
+    },
+    "awayChase": {
+     "JAP": 15
+    }
+   },
+   "prey": {
+    "far": 3,
+    "underWay": 2
+   },
+   "far": {
+    "strong": 3
+   }
+  },
+  {
+   "year": 5,
+   "battles": 3,
+   "zero": 0,
+   "shipsSunk": 25,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 8,
+    "coast": 164,
+    "land": 0,
+    "neither": 102
+   },
+   "vsNavy": {
+    "take": 5,
+    "awayChase": 3,
+    "awayHunt": 108,
+    "awayStation": 19,
+    "moving": 3,
+    "awayNewStation": 2
+   },
+   "vsNone": {
+    "awayStation": 677,
+    "take": 6,
+    "awayNewStation": 13
+   },
+   "who": {
+    "awayStation": {
+     "JAP*": 595,
+     "SWE*": 40,
+     "BRA*": 38,
+     "SWE": 10,
+     "POL": 6,
+     "POL*": 4
+    },
+    "take": {
+     "SWE*": 4,
+     "NOR": 4,
+     "POL*": 1,
+     "BRA*": 1,
+     "POL": 1
+    },
+    "awayChase": {
+     "SWE": 2,
+     "JAP": 1
+    },
+    "awayHunt": {
+     "JAP": 104,
+     "SWE": 2,
+     "POL": 1,
+     "NOR": 1
+    },
+    "moving": {
+     "JAP": 3
+    },
+    "awayNewStation": {
+     "JAP*": 13,
+     "SWE": 2
+    }
+   },
+   "prey": {
+    "strong": 19
+   },
+   "far": {}
+  },
+  {
+   "year": 6,
+   "battles": 4,
+   "zero": 0,
+   "shipsSunk": 37,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 12,
+    "coast": 173,
+    "land": 16,
+    "neither": 23
+   },
+   "vsNavy": {
+    "take": 19,
+    "moving": 56,
+    "awayStation": 9,
+    "stage": 2,
+    "awayChase": 12,
+    "awayHunt": 3,
+    "awayHome": 2
+   },
+   "vsNone": {
+    "awayStation": 503,
+    "stage": 2,
+    "awayHome": 14,
+    "moving": 37,
+    "noTarget": 21,
+    "awayNewStation": 2,
+    "take": 2
+   },
+   "who": {
+    "awayStation": {
+     "JAP*": 395,
+     "BRA*": 52,
+     "SWE*": 34,
+     "NOR*": 11,
+     "SAF*": 11,
+     "DEN": 8
+    },
+    "stage": {
+     "SWE*": 2,
+     "JAP": 2
+    },
+    "awayHome": {
+     "JAP*": 13,
+     "JAP": 2,
+     "SWE*": 1
+    },
+    "moving": {
+     "JAP": 52,
+     "JAP*": 37,
+     "NOR": 2,
+     "SWE": 2
+    },
+    "take": {
+     "JAP": 12,
+     "SWE": 4,
+     "SWE*": 2,
+     "DEN": 1,
+     "GRE": 1,
+     "NOR": 1
+    },
+    "noTarget": {
+     "SWE*": 21
+    },
+    "awayChase": {
+     "JAP": 12
+    },
+    "awayHunt": {
+     "JAP": 2,
+     "GRE": 1
+    },
+    "awayNewStation": {
+     "JAP*": 2
+    }
+   },
+   "prey": {
+    "far": 4,
+    "underWay": 3,
+    "strong": 2
+   },
+   "far": {
+    "strong": 4
+   }
+  },
+  {
+   "year": 7,
+   "battles": 9,
+   "zero": 0,
+   "shipsSunk": 70,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 18,
+    "coast": 179,
+    "land": 0,
+    "neither": 0
+   },
+   "vsNavy": {
+    "stage": 1,
+    "awayChase": 5,
+    "moving": 65,
+    "take": 198,
+    "awayHunt": 4,
+    "awayStation": 35,
+    "awayHome": 1
+   },
+   "vsNone": {
+    "awayStation": 660,
+    "stage": 28,
+    "take": 85,
+    "moving": 59,
+    "awayHome": 28
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 336,
+     "JAP*": 78,
+     "SWE*": 74,
+     "NOR*": 37,
+     "BRA*": 35,
+     "PHI*": 27
+    },
+    "stage": {
+     "USA*": 26,
+     "JAP*": 2,
+     "ENG": 1
+    },
+    "awayChase": {
+     "BRA": 2,
+     "CAN": 2,
+     "PHI": 1
+    },
+    "moving": {
+     "USA": 52,
+     "USA*": 52,
+     "PHI": 7,
+     "PHI*": 6,
+     "CAN": 3,
+     "BRA": 2
+    },
+    "take": {
+     "USA": 182,
+     "USA*": 54,
+     "SOV*": 21,
+     "PHI": 9,
+     "ENG": 3,
+     "PHI*": 3
+    },
+    "awayHunt": {
+     "BRA": 2,
+     "POL": 1,
+     "PHI": 1
+    },
+    "awayHome": {
+     "USA*": 26,
+     "PHI*": 2,
+     "POL": 1
+    }
+   },
+   "prey": {
+    "strong": 4,
+    "far": 30,
+    "underWay": 1
+   },
+   "far": {
+    "strong": 2,
+    "base": 28
+   }
+  },
+  {
+   "year": 8,
+   "battles": 15,
+   "zero": 0,
+   "shipsSunk": 101,
+   "rejected": {},
+   "weeks": 53,
+   "wars": {
+    "both": 25,
+    "coast": 234,
+    "land": 2,
+    "neither": 3
+   },
+   "vsNavy": {
+    "awayStation": 16,
+    "moving": 53,
+    "awayHunt": 17,
+    "take": 11,
+    "awayChase": 34,
+    "awayNewStation": 4,
+    "engaged": 4,
+    "awayHome": 1
+   },
+   "vsNone": {
+    "awayStation": 867,
+    "take": 38,
+    "stage": 29,
+    "moving": 65,
+    "awayNewStation": 9,
+    "awayHome": 3
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 454,
+     "JAP*": 78,
+     "ARG*": 66,
+     "SOV*": 46,
+     "SWE*": 44,
+     "PHI*": 44
+    },
+    "take": {
+     "USA*": 34,
+     "ARG": 5,
+     "SWE*": 2,
+     "JAP": 2,
+     "SIN*": 1,
+     "CHL": 1
+    },
+    "stage": {
+     "USA*": 26,
+     "SWE*": 2,
+     "SIN*": 1
+    },
+    "moving": {
+     "USA*": 58,
+     "JAP": 12,
+     "ARG": 10,
+     "ITA": 8,
+     "SWE": 8,
+     "GER": 6
+    },
+    "awayNewStation": {
+     "NOR*": 3,
+     "SOV*": 2,
+     "SWE*": 2,
+     "JAP": 2,
+     "JAP*": 2,
+     "DEI": 1
+    },
+    "awayHome": {
+     "SWE*": 2,
+     "SIN*": 1,
+     "SWE": 1
+    },
+    "awayHunt": {
+     "JAP": 10,
+     "ARG": 6,
+     "ITA": 1
+    },
+    "awayChase": {
+     "USA": 26,
+     "NOR": 3,
+     "SWE": 2,
+     "PHI": 2,
+     "SIN": 1
+    },
+    "engaged": {
+     "GER": 1,
+     "DEI": 1,
+     "SIN": 1,
+     "NOR": 1
+    }
+   },
+   "prey": {
+    "underWay": 4,
+    "strong": 4,
+    "far": 8
+   },
+   "far": {
+    "strong": 4,
+    "base": 4
+   }
+  },
+  {
+   "year": 9,
+   "battles": 9,
+   "zero": 0,
+   "shipsSunk": 66,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 24,
+    "coast": 165,
+    "land": 0,
+    "neither": 49
+   },
+   "vsNavy": {
+    "take": 8,
+    "awayChase": 3,
+    "moving": 20,
+    "awayStation": 20,
+    "awayHunt": 1
+   },
+   "vsNone": {
+    "awayStation": 233,
+    "moving": 3,
+    "take": 2,
+    "awayNewStation": 8
+   },
+   "who": {
+    "awayStation": {
+     "ARG*": 108,
+     "JAP*": 68,
+     "SOV*": 17,
+     "SIN*": 17,
+     "JAP": 14,
+     "IRN*": 13
+    },
+    "moving": {
+     "JAP": 8,
+     "NED": 8,
+     "IRN": 4,
+     "GER*": 3
+    },
+    "take": {
+     "DEN": 4,
+     "JAP*": 2,
+     "SIN": 2,
+     "GRE": 1,
+     "SOV": 1
+    },
+    "awayChase": {
+     "JAP": 2,
+     "IRN": 1
+    },
+    "awayHunt": {
+     "SIN": 1
+    },
+    "awayNewStation": {
+     "JAP*": 8
+    }
+   },
+   "prey": {
+    "far": 20
+   },
+   "far": {
+    "strong": 6,
+    "base": 6,
+    "noBase": 8
+   }
+  },
+  {
+   "year": 10,
+   "battles": 2,
+   "zero": 0,
+   "shipsSunk": 8,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 13,
+    "coast": 151,
+    "land": 24,
+    "neither": 65
+   },
+   "vsNavy": {
+    "moving": 18,
+    "awayStation": 12,
+    "awayChase": 6,
+    "awayHunt": 2,
+    "take": 1
+   },
+   "vsNone": {
+    "awayStation": 108,
+    "moving": 2,
+    "noTarget": 8,
+    "take": 3
+   },
+   "who": {
+    "awayStation": {
+     "JAP*": 76,
+     "IRN*": 18,
+     "URU*": 14,
+     "NED": 6,
+     "ENG": 4,
+     "JAP": 2
+    },
+    "moving": {
+     "JAP": 16,
+     "IRN*": 2,
+     "NED": 2
+    },
+    "awayChase": {
+     "JAP": 6
+    },
+    "noTarget": {
+     "IRN*": 8
+    },
+    "awayHunt": {
+     "JAP": 2
+    },
+    "take": {
+     "JAP*": 2,
+     "IRN*": 1,
+     "ENG": 1
+    }
+   },
+   "prey": {
+    "far": 11,
+    "underWay": 1
+   },
+   "far": {
+    "noBase": 2,
+    "strong": 9
+   }
+  },
+  {
+   "year": 11,
+   "battles": 4,
+   "zero": 0,
+   "shipsSunk": 28,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 15,
+    "coast": 173,
+    "land": 45,
+    "neither": 53
+   },
+   "vsNavy": {
+    "awayStation": 7,
+    "moving": 2,
+    "take": 8,
+    "awayHunt": 28
+   },
+   "vsNone": {
+    "noTarget": 40,
+    "awayNewStation": 4,
+    "awayStation": 129,
+    "moving": 2
+   },
+   "who": {
+    "awayStation": {
+     "JAP*": 70,
+     "GRE*": 21,
+     "SAF*": 19,
+     "IRN*": 19,
+     "DEN": 6,
+     "ENG": 1
+    },
+    "noTarget": {
+     "IRN*": 30,
+     "SAF*": 10
+    },
+    "moving": {
+     "JAP": 2,
+     "IRN*": 2
+    },
+    "take": {
+     "DEN": 7,
+     "ENG": 1
+    },
+    "awayHunt": {
+     "JAP": 28
+    },
+    "awayNewStation": {
+     "JAP*": 4
+    }
+   },
+   "prey": {
+    "far": 1,
+    "strong": 6
+   },
+   "far": {
+    "strong": 1
+   }
+  },
+  {
+   "year": 12,
+   "battles": 0,
+   "zero": 0,
+   "shipsSunk": 0,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 2,
+    "coast": 299,
+    "land": 82,
+    "neither": 31
+   },
+   "vsNavy": {
+    "moving": 5,
+    "take": 1,
+    "awayHunt": 2,
+    "awayStation": 2
+   },
+   "vsNone": {
+    "awayStation": 472,
+    "awayHome": 2,
+    "moving": 21,
+    "take": 2,
+    "awayNewStation": 2
+   },
+   "who": {
+    "awayStation": {
+     "AST*": 266,
+     "JAP*": 84,
+     "IRN*": 52,
+     "SAF*": 36,
+     "GRE*": 34,
+     "BRA": 1
+    },
+    "awayHome": {
+     "JAP*": 2
+    },
+    "moving": {
+     "JAP*": 14,
+     "AST*": 7,
+     "COL": 2,
+     "URU": 2,
+     "CHL": 1
+    },
+    "take": {
+     "JAP*": 2,
+     "BRA": 1
+    },
+    "awayNewStation": {
+     "JAP*": 2
+    },
+    "awayHunt": {
+     "URU": 2
+    }
+   },
+   "prey": {
+    "far": 2
+   },
+   "far": {
+    "strong": 2
+   }
+  },
+  {
+   "year": 13,
+   "battles": 9,
+   "zero": 0,
+   "shipsSunk": 155,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 16,
+    "coast": 225,
+    "land": 29,
+    "neither": 69
+   },
+   "vsNavy": {
+    "awayStation": 19,
+    "awayChase": 30,
+    "moving": 115,
+    "take": 8,
+    "noBase": 2
+   },
+   "vsNone": {
+    "awayStation": 1055,
+    "moving": 48,
+    "take": 14,
+    "awayNewStation": 1,
+    "awayHome": 29,
+    "stage": 29
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 645,
+     "AST*": 322,
+     "JAP*": 44,
+     "IRN*": 39,
+     "AST": 7,
+     "GRE*": 5
+    },
+    "moving": {
+     "USA": 85,
+     "USA*": 36,
+     "AST": 21,
+     "AST*": 7,
+     "IRN": 6,
+     "IRN*": 4
+    },
+    "awayChase": {
+     "USA": 29,
+     "IRN": 1
+    },
+    "take": {
+     "USA*": 14,
+     "AST": 7,
+     "SAF": 1
+    },
+    "awayNewStation": {
+     "GRE*": 1
+    },
+    "noBase": {
+     "SAF": 2
+    },
+    "awayHome": {
+     "USA*": 29
+    },
+    "stage": {
+     "USA*": 29
+    }
+   },
+   "prey": {
+    "far": 14,
+    "underWay": 5
+   },
+   "far": {
+    "strong": 6,
+    "base": 7,
+    "noBase": 1
+   }
+  },
+  {
+   "year": 14,
+   "battles": 2,
+   "zero": 0,
+   "shipsSunk": 13,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 4,
+    "coast": 138,
+    "land": 1,
+    "neither": 57
+   },
+   "vsNavy": {
+    "moving": 4,
+    "awayStation": 4
+   },
+   "vsNone": {
+    "awayStation": 1174,
+    "moving": 69,
+    "take": 20
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 1044,
+     "AST*": 84,
+     "NED*": 33,
+     "IRN*": 13,
+     "IRN": 4
+    },
+    "moving": {
+     "USA*": 67,
+     "NED": 4,
+     "NED*": 2
+    },
+    "take": {
+     "USA*": 20
+    }
+   },
+   "prey": {
+    "far": 4
+   },
+   "far": {
+    "strong": 4
+   }
+  },
+  {
+   "year": 15,
+   "battles": 5,
+   "zero": 0,
+   "shipsSunk": 28,
+   "rejected": {},
+   "weeks": 53,
+   "wars": {
+    "both": 15,
+    "coast": 60,
+    "land": 0,
+    "neither": 229
+   },
+   "vsNavy": {
+    "take": 5,
+    "noBase": 1,
+    "awayChase": 1,
+    "moving": 8,
+    "awayStation": 5,
+    "awayHunt": 5
+   },
+   "vsNone": {
+    "awayStation": 388,
+    "awayNewStation": 1,
+    "moving": 102,
+    "take": 32,
+    "stage": 30
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 368,
+     "DEN*": 13,
+     "NED*": 5,
+     "SIN": 2,
+     "NED": 2,
+     "GRE*": 2
+    },
+    "take": {
+     "USA*": 26,
+     "DEN*": 5,
+     "GRE": 2,
+     "SIN": 2,
+     "GRE*": 1,
+     "DEN": 1
+    },
+    "noBase": {
+     "SIN": 1
+    },
+    "awayChase": {
+     "GRE": 1
+    },
+    "moving": {
+     "USA*": 100,
+     "GRE": 4,
+     "NED": 3,
+     "GRE*": 2,
+     "SIN": 1
+    },
+    "awayHunt": {
+     "GRE": 2,
+     "DEN": 2,
+     "SIN": 1
+    },
+    "awayNewStation": {
+     "GRE*": 1
+    },
+    "stage": {
+     "USA*": 30
+    }
+   },
+   "prey": {
+    "underWay": 3,
+    "strong": 1,
+    "far": 1
+   },
+   "far": {
+    "noBase": 1
+   }
+  },
+  {
+   "year": 16,
+   "battles": 2,
+   "zero": 0,
+   "shipsSunk": 8,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 5,
+    "coast": 119,
+    "land": 0,
+    "neither": 261
+   },
+   "vsNavy": {
+    "awayStation": 2,
+    "moving": 38
+   },
+   "vsNone": {
+    "awayStation": 1615,
+    "moving": 4,
+    "take": 5
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 1376,
+     "AST*": 224,
+     "NED*": 10,
+     "DEN*": 5,
+     "NED": 2
+    },
+    "moving": {
+     "AST": 35,
+     "USA*": 3,
+     "NED": 3,
+     "NED*": 1
+    },
+    "take": {
+     "DEN*": 4,
+     "USA*": 1
+    }
+   },
+   "prey": {
+    "far": 1,
+    "underWay": 1
+   },
+   "far": {
+    "strong": 1
+   }
+  },
+  {
+   "year": 17,
+   "battles": 0,
+   "zero": 0,
+   "shipsSunk": 0,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 0,
+    "coast": 93,
+    "land": 0,
+    "neither": 201
+   },
+   "vsNavy": {},
+   "vsNone": {
+    "awayStation": 1643
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 1560,
+     "AST*": 49,
+     "DEN*": 34
+    }
+   },
+   "prey": {},
+   "far": {}
+  },
+  {
+   "year": 18,
+   "battles": 2,
+   "zero": 0,
+   "shipsSunk": 19,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 7,
+    "coast": 143,
+    "land": 0,
+    "neither": 74
+   },
+   "vsNavy": {
+    "moving": 38,
+    "awayStation": 33,
+    "take": 2,
+    "awayChase": 30,
+    "awayHunt": 1
+   },
+   "vsNone": {
+    "moving": 62,
+    "awayStation": 1419,
+    "stage": 1,
+    "take": 2,
+    "awayHome": 31,
+    "awayNewStation": 31
+   },
+   "who": {
+    "moving": {
+     "USA*": 60,
+     "USA": 31,
+     "NED": 3,
+     "NED*": 2,
+     "GER": 2,
+     "SOV": 2
+    },
+    "awayStation": {
+     "USA*": 1371,
+     "NED*": 46,
+     "USA": 30,
+     "SOV": 2,
+     "#124*": 2,
+     "NED": 1
+    },
+    "stage": {
+     "USA*": 1
+    },
+    "take": {
+     "GER": 1,
+     "USA": 1,
+     "SOV*": 1,
+     "#124*": 1
+    },
+    "awayChase": {
+     "USA": 30
+    },
+    "awayHunt": {
+     "USA": 1
+    },
+    "awayHome": {
+     "USA*": 31
+    },
+    "awayNewStation": {
+     "USA*": 31
+    }
+   },
+   "prey": {
+    "far": 32,
+    "underWay": 1
+   },
+   "far": {
+    "base": 30,
+    "noBase": 2
+   }
+  },
+  {
+   "year": 19,
+   "battles": 4,
+   "zero": 0,
+   "shipsSunk": 36,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 12,
+    "coast": 108,
+    "land": 2,
+    "neither": 154
+   },
+   "vsNavy": {
+    "take": 2,
+    "awayStation": 36,
+    "awayHunt": 2,
+    "awayChase": 1,
+    "moving": 7
+   },
+   "vsNone": {
+    "awayStation": 1539,
+    "moving": 83,
+    "noBase": 8,
+    "take": 1
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 1322,
+     "AST*": 203,
+     "USA": 31,
+     "#124*": 9,
+     "NED*": 4,
+     "GER": 3
+    },
+    "take": {
+     "GER": 2,
+     "DEN*": 1
+    },
+    "awayHunt": {
+     "#124": 2
+    },
+    "awayChase": {
+     "GER": 1
+    },
+    "moving": {
+     "USA*": 73,
+     "AST*": 7,
+     "#124": 4,
+     "NED": 3,
+     "DEN*": 3
+    },
+    "noBase": {
+     "DEN*": 8
+    }
+   },
+   "prey": {
+    "far": 33,
+    "underWay": 2,
+    "strong": 1
+   },
+   "far": {
+    "strong": 2,
+    "base": 31
+   }
+  },
+  {
+   "year": 20,
+   "battles": 7,
+   "zero": 0,
+   "shipsSunk": 118,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 6,
+    "coast": 59,
+    "land": 0,
+    "neither": 139
+   },
+   "vsNavy": {
+    "moving": 12,
+    "take": 20,
+    "awayHunt": 21,
+    "awayHome": 5,
+    "awayStation": 3
+   },
+   "vsNone": {
+    "awayStation": 546,
+    "take": 2
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 403,
+     "BRA*": 112,
+     "PRU*": 14,
+     "SOV*": 12,
+     "DEN*": 5,
+     "SOV": 2
+    },
+    "moving": {
+     "BRA": 7,
+     "COL": 2,
+     "ARG": 2,
+     "NED": 1
+    },
+    "take": {
+     "BRA": 14,
+     "ARG": 3,
+     "PRU": 2,
+     "PRU*": 2,
+     "NED": 1
+    },
+    "awayHunt": {
+     "ARG": 13,
+     "BRA": 7,
+     "PRU": 1
+    },
+    "awayHome": {
+     "ARG": 4,
+     "PRU": 1
+    }
+   },
+   "prey": {
+    "strong": 1,
+    "far": 2
+   },
+   "far": {
+    "strong": 2
+   }
+  },
+  {
+   "year": 21,
+   "battles": 2,
+   "zero": 0,
+   "shipsSunk": 23,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 9,
+    "coast": 135,
+    "land": 7,
+    "neither": 111
+   },
+   "vsNavy": {
+    "awayHome": 1,
+    "awayChase": 32,
+    "awayStation": 7,
+    "noBase": 8,
+    "awayNewStation": 1
+   },
+   "vsNone": {
+    "awayStation": 1509,
+    "moving": 3,
+    "take": 2,
+    "awayNewStation": 1,
+    "stage": 1
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 1470,
+     "SOV*": 39,
+     "SOV": 7
+    },
+    "moving": {
+     "SOV*": 2,
+     "USA*": 1
+    },
+    "take": {
+     "USA*": 1,
+     "SOV*": 1
+    },
+    "awayNewStation": {
+     "SOV*": 1,
+     "SOV": 1
+    },
+    "stage": {
+     "SOV*": 1
+    },
+    "awayHome": {
+     "CAN": 1
+    },
+    "awayChase": {
+     "USA": 32
+    },
+    "noBase": {
+     "NED": 8
+    }
+   },
+   "prey": {
+    "far": 7
+   },
+   "far": {
+    "strong": 7
+   }
+  },
+  {
+   "year": 22,
+   "battles": 7,
+   "zero": 0,
+   "shipsSunk": 39,
+   "rejected": {},
+   "weeks": 53,
+   "wars": {
+    "both": 24,
+    "coast": 139,
+    "land": 11,
+    "neither": 59
+   },
+   "vsNavy": {
+    "awayStation": 55,
+    "noBase": 15,
+    "take": 2,
+    "awayChase": 32,
+    "moving": 80,
+    "awayHunt": 3
+   },
+   "vsNone": {
+    "awayStation": 1524,
+    "awayNewStation": 1,
+    "noBase": 9,
+    "moving": 3,
+    "take": 1
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 1408,
+     "AST*": 84,
+     "USA": 31,
+     "ENG*": 19,
+     "SOV": 14,
+     "NED*": 10
+    },
+    "noBase": {
+     "NED": 15,
+     "NED*": 9
+    },
+    "take": {
+     "ENG": 2,
+     "GER*": 1
+    },
+    "awayChase": {
+     "USA": 31,
+     "ENG": 1
+    },
+    "moving": {
+     "AST": 42,
+     "USA": 32,
+     "ENG": 2,
+     "NED": 2,
+     "GER*": 2,
+     "SOV": 1
+    },
+    "awayHunt": {
+     "USA": 2,
+     "ENG": 1
+    },
+    "awayNewStation": {
+     "ENG*": 1
+    }
+   },
+   "prey": {
+    "far": 49,
+    "underWay": 4,
+    "strong": 2
+   },
+   "far": {
+    "strong": 18,
+    "base": 31
+   }
+  },
+  {
+   "year": 23,
+   "battles": 0,
+   "zero": 0,
+   "shipsSunk": 0,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 0,
+    "coast": 133,
+    "land": 14,
+    "neither": 101
+   },
+   "vsNavy": {},
+   "vsNone": {
+    "awayStation": 1633,
+    "noTarget": 30
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 1484,
+     "AST*": 105,
+     "GER*": 44
+    },
+    "noTarget": {
+     "BRA*": 22,
+     "COL*": 2,
+     "PRU*": 2,
+     "CHL*": 2,
+     "ARG*": 2
+    }
+   },
+   "prey": {},
+   "far": {}
+  },
+  {
+   "year": 24,
+   "battles": 4,
+   "zero": 0,
+   "shipsSunk": 26,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 42,
+    "coast": 88,
+    "land": 6,
+    "neither": 101
+   },
+   "vsNavy": {
+    "awayStation": 150,
+    "moving": 5,
+    "noBase": 28,
+    "awayHome": 187,
+    "take": 183,
+    "awayHunt": 54
+   },
+   "vsNone": {
+    "awayStation": 511,
+    "awayNewStation": 32,
+    "moving": 3,
+    "take": 6,
+    "noBase": 26
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 499,
+     "USA": 128,
+     "GER": 22,
+     "GER*": 12
+    },
+    "moving": {
+     "NED": 4,
+     "USA*": 2,
+     "GER": 1,
+     "GER*": 1
+    },
+    "awayNewStation": {
+     "USA*": 32
+    },
+    "take": {
+     "USA": 182,
+     "USA*": 4,
+     "GER*": 2,
+     "GER": 1
+    },
+    "noBase": {
+     "CAN": 20,
+     "CAN*": 13,
+     "CUB*": 13,
+     "CUB": 8
+    },
+    "awayHome": {
+     "USA": 187
+    },
+    "awayHunt": {
+     "USA": 54
+    }
+   },
+   "prey": {
+    "far": 137,
+    "strong": 13
+   },
+   "far": {
+    "strong": 9,
+    "noBase": 128
+   }
+  },
+  {
+   "year": 25,
+   "battles": 3,
+   "zero": 0,
+   "shipsSunk": 25,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 3,
+    "coast": 153,
+    "land": 1,
+    "neither": 71
+   },
+   "vsNavy": {
+    "awayStation": 6,
+    "take": 15,
+    "moving": 18,
+    "awayHunt": 15
+   },
+   "vsNone": {
+    "noBase": 53,
+    "awayStation": 1714,
+    "stage": 1,
+    "moving": 21,
+    "take": 15
+   },
+   "who": {
+    "noBase": {
+     "CUB*": 52,
+     "CAN*": 1
+    },
+    "awayStation": {
+     "USA*": 1363,
+     "BRA*": 206,
+     "ARG*": 82,
+     "URU*": 21,
+     "CHL*": 18,
+     "NED*": 17
+    },
+    "stage": {
+     "CAN*": 1
+    },
+    "moving": {
+     "BRA*": 14,
+     "BRA": 11,
+     "CHL": 3,
+     "ARG": 3,
+     "CAN*": 2,
+     "NED*": 2
+    },
+    "take": {
+     "BRA": 11,
+     "BRA*": 11,
+     "ARG": 3,
+     "NED*": 1,
+     "URU": 1,
+     "ARG*": 1
+    },
+    "awayHunt": {
+     "BRA": 11,
+     "ARG": 3,
+     "URU": 1
+    }
+   },
+   "prey": {
+    "strong": 6
+   },
+   "far": {}
+  },
+  {
+   "year": 26,
+   "battles": 7,
+   "zero": 0,
+   "shipsSunk": 39,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 12,
+    "coast": 205,
+    "land": 19,
+    "neither": 85
+   },
+   "vsNavy": {
+    "awayStation": 10,
+    "moving": 51,
+    "awayHunt": 95,
+    "take": 3,
+    "awayHome": 3,
+    "awayChase": 2
+   },
+   "vsNone": {
+    "awayStation": 1577,
+    "noBase": 30,
+    "take": 89,
+    "moving": 16
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 1019,
+     "AST*": 252,
+     "BRA*": 162,
+     "ARG*": 56,
+     "SOV*": 52,
+     "CHL*": 14
+    },
+    "noBase": {
+     "CUB*": 30
+    },
+    "moving": {
+     "AST": 49,
+     "AST*": 14,
+     "CHL": 1,
+     "NED": 1,
+     "CHL*": 1,
+     "USA*": 1
+    },
+    "awayHunt": {
+     "USA": 58,
+     "BRA": 19,
+     "ARG": 8,
+     "AST": 7,
+     "URU": 2,
+     "CHL": 1
+    },
+    "take": {
+     "BRA*": 36,
+     "USA*": 30,
+     "ARG*": 16,
+     "URU*": 4,
+     "CHL*": 3,
+     "PRU": 1
+    },
+    "awayHome": {
+     "BRA": 3
+    },
+    "awayChase": {
+     "USA": 2
+    }
+   },
+   "prey": {
+    "far": 3,
+    "strong": 2,
+    "underWay": 5
+   },
+   "far": {
+    "strong": 3
+   }
+  },
+  {
+   "year": 27,
+   "battles": 4,
+   "zero": 0,
+   "shipsSunk": 34,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 3,
+    "coast": 162,
+    "land": 2,
+    "neither": 112
+   },
+   "vsNavy": {
+    "awayStation": 3,
+    "awayChase": 30,
+    "moving": 60
+   },
+   "vsNone": {
+    "awayHome": 1,
+    "noBase": 26,
+    "moving": 23,
+    "awayStation": 173,
+    "stage": 1,
+    "awayNewStation": 8
+   },
+   "who": {
+    "awayHome": {
+     "SOV*": 1
+    },
+    "noBase": {
+     "SOV*": 26
+    },
+    "moving": {
+     "USA": 60,
+     "USA*": 13,
+     "SOV*": 9,
+     "NED*": 1
+    },
+    "awayStation": {
+     "USA*": 126,
+     "NED*": 32,
+     "SOV*": 15,
+     "NED": 3
+    },
+    "stage": {
+     "SOV*": 1
+    },
+    "awayChase": {
+     "USA": 30
+    },
+    "awayNewStation": {
+     "USA*": 8
+    }
+   },
+   "prey": {
+    "far": 2,
+    "underWay": 1
+   },
+   "far": {
+    "strong": 2
+   }
+  },
+  {
+   "year": 28,
+   "battles": 4,
+   "zero": 0,
+   "shipsSunk": 90,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 4,
+    "coast": 110,
+    "land": 0,
+    "neither": 133
+   },
+   "vsNavy": {
+    "awayChase": 21,
+    "take": 2,
+    "engaged": 3,
+    "moving": 47,
+    "awayStation": 1
+   },
+   "vsNone": {
+    "awayStation": 886,
+    "moving": 84,
+    "take": 19,
+    "stage": 14
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 834,
+     "SOV*": 52,
+     "USA": 1
+    },
+    "awayChase": {
+     "USA": 21
+    },
+    "take": {
+     "BRA*": 11,
+     "ARG*": 4,
+     "USA*": 3,
+     "CUB": 1,
+     "URU*": 1,
+     "USA": 1
+    },
+    "moving": {
+     "USA*": 82,
+     "USA": 45,
+     "NED": 2,
+     "BRA*": 1,
+     "CHL*": 1
+    },
+    "stage": {
+     "USA*": 14
+    },
+    "engaged": {
+     "USA": 2,
+     "NED": 1
+    }
+   },
+   "prey": {
+    "underWay": 1
+   },
+   "far": {}
+  },
+  {
+   "year": 29,
+   "battles": 7,
+   "zero": 0,
+   "shipsSunk": 49,
+   "rejected": {},
+   "weeks": 53,
+   "wars": {
+    "both": 12,
+    "coast": 115,
+    "land": 0,
+    "neither": 143
+   },
+   "vsNavy": {
+    "moving": 25,
+    "awayStation": 20,
+    "awayHunt": 30,
+    "take": 1
+   },
+   "vsNone": {
+    "awayStation": 710,
+    "take": 1,
+    "awayNewStation": 15,
+    "moving": 14
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 658,
+     "SOV*": 39,
+     "USA": 14,
+     "DEN*": 13,
+     "SOV": 4,
+     "ITA": 1
+    },
+    "moving": {
+     "USA": 14,
+     "USA*": 14,
+     "ITA": 7,
+     "NED": 3,
+     "SOV": 1
+    },
+    "take": {
+     "DEN*": 1,
+     "SOV": 1
+    },
+    "awayNewStation": {
+     "USA*": 14,
+     "SOV*": 1
+    },
+    "awayHunt": {
+     "USA": 28,
+     "SOV": 2
+    }
+   },
+   "prey": {
+    "far": 2,
+    "otherWater": 1,
+    "underWay": 15,
+    "strong": 2
+   },
+   "far": {
+    "base": 1,
+    "noBase": 1
+   }
+  },
+  {
+   "year": 30,
+   "battles": 0,
+   "zero": 0,
+   "shipsSunk": 0,
+   "rejected": {},
+   "weeks": 52,
+   "wars": {
+    "both": 0,
+    "coast": 66,
+    "land": 0,
+    "neither": 140
+   },
+   "vsNavy": {},
+   "vsNone": {
+    "awayStation": 638
+   },
+   "who": {
+    "awayStation": {
+     "USA*": 616,
+     "SOV*": 22
+    }
+   },
+   "prey": {},
+   "far": {}
+  }
+ ]
+}
