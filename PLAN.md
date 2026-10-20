@@ -234,8 +234,11 @@ each, split when taken up:
     - [ ] 7.38b The yield by the target: a holder of `thermonuclear` weighs each place at both
       yields and uses a fission one where its value is as high (the value then the higher yield's
       only where it adds). AT: from `.cache/nukeToll_8693_141385-bcbc99c.bin` with the rule
-      patched in, the United States' first strike on Paris a fission burst (or none) killing under
-      500,000 (was 3,178,766); a unit test, a place whose value fission covers gets a fission burst
+      patched in, the United States' first strike on Paris still decided, a fission burst killing
+      under 500,000 (was 3,178,766; its fission value is 1 of 1, so no strike is a miss to explain);
+      the yield chosen at the decision travels on `NukeLaunch` (`detonate` reads `thermonuclear` at
+      the burst today), saved; the daily `nukeDecisions` cost measured before and after on a late
+      checkpoint (PLAN 6.10); a unit test, a place whose value fission covers gets a fission burst
       (red without); the pin's entry.
     - [ ] 7.38c The dead weighed: the people a burst is expected to kill a cost in the utility,
       scaled by doctrine (a strike back's bonus untouched). AT: from the checkpoints, no strike on
