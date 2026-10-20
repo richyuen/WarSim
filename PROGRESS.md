@@ -20433,3 +20433,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   places instead (`docs/evidence/7.37/c-restrike-4483-f0be88c{,-adr528}.json`). No new rule; the pin
   unchanged. Cuba's capital struck in two wars is 7.38's case.
 - 7.37's commits: 5 of 20. **Next:** PLAN 7.37's next case (single bombs on small states, seed 2609).
+- **7.37c note:** in `c-restrike-4483-f0be88c.json` the rows' `desperation` and `resolve` read 0:
+  that variant read them after the decision had set `war.lastStrike`. The resolve figures above are
+  RESOLVE × min(1, war days / 730) (1.0 at 365 days, 1.25 at 455), checked against the logged
+  utilities; HEAD's `nukeChain.ts` reads them before the hour (`byResolve`).
