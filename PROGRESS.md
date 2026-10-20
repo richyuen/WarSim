@@ -20326,7 +20326,9 @@ No rule changed and nothing on screen changed. One task came out of it.
   zone of Poland's land south of Warsaw's); `nukeDecision1938`'s England launches again when its
   bomber is stopped short over Paris (2 launches); `deploy.test.ts` holds its 1.5-cell gap on the
   Germany–Poland contacts (28.4 km), the Spanish front's 1.518 filed as PLAN 7.42 (ADR-435's case).
-  `docs/evidence/5.7/d-air-superiority-mode.png` re-shot on the new zones (airControl, EVIDENCE=1).
+  `docs/evidence/5.7/d-air-superiority-mode.png` re-shot on the new zones (airControl, EVIDENCE=1),
+  and `docs/evidence/7.11/b-berlin-*.png` (nukeRuins writes its evidence on every run, without
+  EVIDENCE=1: a gotcha, its re-shots ride into any commit that runs it by hand).
 - **Specs by hand, green:** airMapRead, airControl, airDemo, airFx, airT3, carrierStrikeRow,
   nukeRuins, patrolsSeen, seaBattleSeen, sortiesSeen (1938).
 - **Next:** PLAN 7.36b2 (the far islands).
