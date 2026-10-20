@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-575 · 2026-10-20 · accepted — A nation with no armed fleet saves for a warship at war with a naval enemy (PLAN 7.46b2; amends ADR-557)
+
+- **Context.** PLAN 7.46 (a navy sunk in a decisive war at sea is built again). 7.46a
+  (`docs/evidence/7.46/measure-a.md` §3): with the chase, Britain's battle line is sunk on all four
+  seeds, and on seeds 7019 and 3613 it passes every test of the fleet step and the army's orders
+  spend the month (`spentArmy` 87 and 66 months; 75 and 97 with ADR-574); its first warship came
+  2,283 and 1,096 days after its navy fell. ADR-557's saving keeps a warship's price over the
+  reserve in peace, and at war only while the army stands at its peacetime share: Britain at war
+  holds an army under that share.
+- **Decision.** The saving also holds at war while one of the nation's wars has an enemy with an
+  armed fleet (`fleetPower` > 0), whatever its army's share: the army's orders (step 3) and the
+  refills (3a) keep the cheapest warship's price of its income's kinds over the reserve. The
+  saving is still for a nation with no armed fleet (ADR-557).
+- **Trade.** A nation in a land war against a naval power now holds a warship's price out of that
+  war. On the run, of the depleted navies' months that ordered a warship, China +15, the Raj +18
+  and Poland +10 (land powers with a coast) with Britain +23, Japan +15, Germany +14, Italy +14
+  and France +11. Meant: a coast before an enemy fleet wants a ship, and the price is one destroyer
+  flotilla's for most of them.
+- **Read** (`docs/evidence/7.46/b2.md`; 4 seeds × 10 years with the chase and ADR-574): Britain's
+  `spentArmy` months 75 / 97 → 33 / 29 on 7019 / 3613, the AT's bar 12 **missed**. The rule's own
+  case (no armed fleet, at war with a naval enemy) is 0 on both; left a navy rebuilt to a ship or
+  two (no longer without one: 23 and 22) and a lost navy in a war with no naval enemy (10 and 7).
+  The world builds 24–80 % more armed power a year (years 2–10), and loses more in battle (year 2
+  44k against 11.8k): the chase sinks the ships rebuilt. The world's armed power 41–48 % of HEAD's
+  at years 3–5 (b1 52–60 %), 66–79 % at years 6–10 (81–96 %). BLOCKERS; PLAN 7.47 takes the
+  rebuilt navy.
+- **Pin.** b6309877 → 77a64cba.
+- **Test.** `navyBudget1938.test.ts`: Norway, its army under its peacetime share, at war with
+  Sweden (an armed fleet) orders a destroyer and no division (red without: a division, no ship).
+  The army-first test of ADR-557 now takes Finland (submarines alone) as the enemy.
+
 ### ADR-574 · 2026-10-20 · accepted — A navy's share counts its armed fleets in the build tests (PLAN 7.46b1; amends ADR-273, ADR-557)
 
 - **Context.** PLAN 7.46 (a navy sunk in a decisive war at sea is built again, from ADR-573). 7.46a

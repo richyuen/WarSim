@@ -1,0 +1,36 @@
+year | HEAD k | chase k (ratio) | chase+b1 k (ratio) | chase+b1+b2 k (ratio) | built chase+b1+b2 k
+1 | 291 | 217 (74 %) | 218 (75 %) | 221 (76 %) | 3.6
+2 | 259 | 128 (49 %) | 131 (51 %) | 117 (45 %) | 13.8
+3 | 253 | 129 (51 %) | 131 (52 %) | 104 (41 %) | 27.1
+4 | 258 | 127 (49 %) | 140 (54 %) | 112 (44 %) | 11.1
+5 | 240 | 114 (47 %) | 144 (60 %) | 115 (48 %) | 22.9
+6 | 196 | 127 (65 %) | 159 (81 %) | 129 (66 %) | 14.4
+7 | 184 | 127 (69 %) | 160 (87 %) | 128 (70 %) | 12.7
+8 | 186 | 132 (71 %) | 159 (86 %) | 133 (72 %) | 23.1
+9 | 185 | 138 (74 %) | 167 (90 %) | 140 (76 %) | 15.8
+10 | 176 | 139 (79 %) | 169 (96 %) | 139 (79 %) | 27.6
+
+head, years 3-10, first stop: noShipyard 786 (3 %), poor 707 (3 %), warshipInTraining 476 (12 %), transportInTraining 79 (2 %), transportWanted 283 (2 %), navyShare 269 (11 %), gold 3463 (36 %), balance 2 (0 %), spentArmy 566 (29 %), spentOther 16 (1 %), ordered 76 (1 %)
+ FRA: 1307 warshipInTraining 10 navyShare 40 gold 37 spentArmy 5 ordered 2 | 3613 warshipInTraining 7 transportInTraining 4 transportWanted 1 navyShare 72 gold 23 ordered 1 | 8693 - | 7019 warshipInTraining 1 navyShare 22 gold 23 spentArmy 4 ordered 1
+ ENG: 1307 warshipInTraining 5 gold 3 balance 1 spentArmy 56 spentOther 1 ordered 1 | 3613 warshipInTraining 17 gold 6 spentArmy 91 spentOther 1 ordered 1 | 8693 navyShare 30 | 7019 navyShare 29 gold 9 balance 1 spentArmy 21 spentOther 2
+ JAP: 1307 - | 3613 - | 8693 navyShare 38 gold 42 spentArmy 23 spentOther 1 | 7019 transportInTraining 2 transportWanted 1 gold 44 spentArmy 15
+
+chase, years 3-10, first stop: noShipyard 472 (1 %), poor 801 (3 %), warshipInTraining 493 (10 %), transportInTraining 118 (3 %), transportWanted 311 (3 %), navyShare 352 (13 %), gold 4522 (40 %), spentArmy 720 (27 %), spentOther 15 (0 %), ordered 83 (1 %)
+ FRA: 1307 warshipInTraining 8 transportInTraining 4 transportWanted 2 navyShare 49 gold 45 spentArmy 6 | 3613 warshipInTraining 10 transportInTraining 4 transportWanted 11 navyShare 90 gold 1 | 8693 warshipInTraining 16 transportInTraining 2 transportWanted 1 navyShare 55 gold 42 ordered 1 | 7019 warshipInTraining 16 navyShare 33 gold 62 spentArmy 5 ordered 1
+ ENG: 1307 warshipInTraining 38 navyShare 4 gold 32 spentArmy 36 ordered 4 | 3613 warshipInTraining 27 transportInTraining 13 transportWanted 5 gold 2 spentArmy 66 ordered 3 | 8693 warshipInTraining 18 transportInTraining 6 transportWanted 9 navyShare 22 gold 50 spentArmy 5 ordered 2 | 7019 warshipInTraining 18 transportInTraining 7 transportWanted 3 spentArmy 87 spentOther 1 ordered 1
+ JAP: 1307 transportInTraining 2 transportWanted 1 navyShare 3 gold 76 spentArmy 32 | 3613 navyShare 46 gold 48 spentArmy 17 spentOther 1 | 8693 transportInTraining 4 transportWanted 2 gold 65 spentArmy 40 spentOther 1 | 7019 warshipInTraining 5 navyShare 1 gold 88 spentArmy 22 ordered 1
+
+b1, years 3-10, first stop: noShipyard 948 (2 %), poor 682 (3 %), warshipInTraining 455 (7 %), transportInTraining 100 (2 %), transportWanted 175 (1 %), navyShare 4 (0 %), gold 4395 (46 %), balance 2 (0 %), spentArmy 720 (36 %), spentOther 22 (0 %), ordered 85 (1 %)
+ FRA: 1307 warshipInTraining 28 transportInTraining 5 transportWanted 1 gold 50 spentArmy 25 spentOther 1 ordered 4 | 3613 warshipInTraining 15 transportInTraining 3 transportWanted 1 gold 95 spentArmy 1 ordered 1 | 8693 warshipInTraining 11 gold 105 spentArmy 1 | 7019 warshipInTraining 11 transportInTraining 4 transportWanted 2 gold 90 spentArmy 10
+ ENG: 1307 warshipInTraining 10 | 3613 warshipInTraining 12 transportInTraining 2 transportWanted 1 gold 4 spentArmy 97 | 8693 warshipInTraining 13 transportInTraining 6 transportWanted 3 gold 3 spentArmy 86 ordered 1 | 7019 warshipInTraining 28 transportInTraining 8 transportWanted 3 spentArmy 75 ordered 3
+ JAP: 1307 warshipInTraining 5 transportInTraining 1 gold 72 spentArmy 35 ordered 1 | 3613 navyShare 3 gold 84 spentArmy 25 | 8693 transportInTraining 2 transportWanted 1 gold 81 spentArmy 28 | 7019 warshipInTraining 6 gold 78 spentArmy 31 ordered 2
+
+b2, years 3-10, first stop: noShipyard 586 (1 %), poor 1004 (2 %), warshipInTraining 1315 (29 %), transportInTraining 118 (3 %), transportWanted 248 (2 %), navyShare 6 (0 %), gold 4870 (43 %), balance 26 (1 %), spentArmy 362 (13 %), spentOther 12 (0 %), ordered 239 (5 %)
+ FRA: 1307 warshipInTraining 20 transportInTraining 5 transportWanted 12 gold 70 spentArmy 1 ordered 3 | 3613 warshipInTraining 25 transportInTraining 2 transportWanted 6 gold 80 ordered 3 | 8693 warshipInTraining 28 navyShare 7 gold 78 ordered 4 | 7019 warshipInTraining 36 transportInTraining 2 gold 66 spentArmy 7 ordered 6
+ ENG: 1307 warshipInTraining 61 transportInTraining 6 transportWanted 4 gold 11 balance 8 spentArmy 16 spentOther 2 ordered 6 | 3613 warshipInTraining 65 transportInTraining 6 transportWanted 3 gold 4 spentArmy 29 ordered 9 | 8693 warshipInTraining 34 transportInTraining 8 transportWanted 4 gold 58 ordered 5 | 7019 warshipInTraining 61 transportInTraining 11 transportWanted 4 gold 1 spentArmy 33 ordered 7
+ JAP: 1307 warshipInTraining 34 gold 52 spentArmy 21 ordered 7 | 3613 warshipInTraining 10 gold 82 spentArmy 18 ordered 2 | 8693 warshipInTraining 25 transportInTraining 3 transportWanted 1 gold 62 spentArmy 15 ordered 5 | 7019 warshipInTraining 20 gold 66 spentArmy 26 spentOther 1 ordered 4
+
+b2, spentArmy months, years 1-10, by fleet and war:
+ ENG: 1307 {"armed/peace":1,"armed/navalFoe":10,"armed/landFoe":5} | 3613 {"armed/landFoe":11,"armed/navalFoe":11,"lost/landFoe":7} | 8693 {} | 7019 {"lost/landFoe":10,"armed/navalFoe":9,"armed/landFoe":9,"armed/peace":5}
+ JAP: 1307 {"armed/navalFoe":13,"armed/landFoe":4,"lost/landFoe":4} | 3613 {"armed/landFoe":14,"armed/navalFoe":4} | 8693 {"armed/landFoe":7,"armed/navalFoe":5,"lost/landFoe":3} | 7019 {"armed/navalFoe":11,"armed/landFoe":11,"armed/peace":4}
+ FRA: 1307 {"armed/navalFoe":1} | 3613 {} | 8693 {} | 7019 {"armed/navalFoe":3,"armed/landFoe":2,"armed/peace":2}

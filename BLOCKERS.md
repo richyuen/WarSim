@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.46b2: Britain's army months at war fall by more than half but miss the bar; the rule is in (2026-10-20, ADR-575)
+- **The bar:** Britain's `spentArmy` months on seeds 7019 and 3613 under 12 each, on 4 seeds × 10
+  years with the chase (`docs/evidence/7.39/b-chase.diff`) and ADR-574.
+- **What moved** (`docs/evidence/7.46/b2.md`): 75 / 97 → 33 / 29. The rule's case, a navy lost at
+  war with an enemy that has an armed fleet, 0 months on both seeds.
+- **What is left:** a navy rebuilt to a ship or two is no longer "without a navy" and the saving
+  ends (23 and 22 months: PLAN 7.47); a lost navy in a war with no naval enemy (10 and 7: the
+  task's text leaves it out, no task). The world's armed power read fell (41–48 % of HEAD's at
+  years 3–5, b1 52–60 %): it builds more and the chase sinks it again.
+- **Next:** PLAN 7.46b3, then 7.46c; 7.47 when taken.
+
 ### PLAN 7.39b: the chase of a far enemy navy halves the far station but sinks the navies; the decision waits on the user (2026-10-20, ADR-573)
 - **The bar:** on the critic's 14 seeds × 30 years, the late fleet-weeks on station with the enemy
   fleet beyond reach halved (886 → under 443 a world-year), and sea battles a world-year in years

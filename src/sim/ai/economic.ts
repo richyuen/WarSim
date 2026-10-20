@@ -56,8 +56,10 @@
  *    covers the price and RESERVE_MONTHS of income; none while it wants a transport group (2c).
  *    A nation without a navy (no armed fleet) that would order one saves for the cheapest warship
  *    of its income's kinds (PLAN 7.35d3b, ADR-557, `fleetPrice`): the army's orders and step 3a's
- *    refills keep its price over the reserve, in peace, and at war while the army stands at its
- *    peacetime share.
+ *    refills keep its price over the reserve, in peace, at war while the army stands at its
+ *    peacetime share, and at war with an enemy that has an armed fleet (PLAN 7.46b2, ADR-575:
+ *    Britain, its battle line sunk, spent every month on its army and ordered its first warship
+ *    years later).
  *    Then a wing (PLAN 5.8s2, `pickWing`), as a fleet: a nation not poor with an airfield and no
  *    wing in training orders one while its air force's upkeep is under AIR_SHARE of its army's,
  *    a fighter group while fighters are under half its wings, else a tactical bomber group.
@@ -409,6 +411,13 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // its peacetime share (a war's army under it is not starved for a ship). Before, the army's
       // line (a division's 1,001 and the reserve) came 119 gold under a destroyer's, and the
       // treasury never climbed past it.
+      // At war with an enemy that has an armed fleet it saves whatever its army's share (PLAN 7.46b2,
+      // ADR-575): the war at sea is one it has lost, and the army's orders took every month.
+      const navalFoe = atWar && world.wars.list.some((w) => {
+        const other = w.sides[0].includes(n) ? w.sides[1] : w.sides[1].includes(n) ? w.sides[0] : undefined;
+        return other !== undefined && other.some((m) => armed.has(m));
+      });
+      const saves = !atWar || navalFoe;
       const shipPrice = mix.fleets && !wants && (shipsPending.get(n) ?? 0) === 0 && income >= POOR_INCOME && (armed.get(n) ?? 0) < NAVY_SHARE * income && !(fleets.get(n) ?? []).some((id) => fleetPower(world, id) > 0) && shipyard(world, n) >= 0 ? fleetPrice(world, income, mix.fleets) : 0;
       // 4. Research.
       nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
@@ -446,7 +455,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           const newUpkeep = upkeepOfTemplate(t);
           if (balance - newUpkeep <= need) return;
           // It saves for a warship: an order only with the warship's price left over the reserve.
-          if (shipPrice > 0 && (!atWar || upkeep >= peace) && nc.gold[n]! - rule.gold < shipPrice + RESERVE_MONTHS * income) return;
+          if (shipPrice > 0 && (saves || upkeep >= peace) && nc.gold[n]! - rule.gold < shipPrice + RESERVE_MONTHS * income) return;
           if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income || nc.manpower[n]! < rule.manpower) return;
           if (queueFormation(world, n, t) === 0) return;
           nc.builds[n] = nc.builds[n]! + 1;
@@ -465,8 +474,8 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // at war (PLAN 7.26c2b, ADR-514): a nation of an income near 100 saved for most of a year
       // and refilled nothing while its army stood at a fraction of its strength through the war.
       const cap = atWar ? ARMY_SHARE_WAR * income : peace;
-      // And the warship's price while it saves for one (ADR-557), at war too.
-      const keep = Math.max(!atWar && (pending.get(n) ?? 0) + ordered === 0 && slots > 0 && upkeep < cap ? nextOrderPrice(world, n, income, mix) : 0, shipPrice > 0 && (!atWar || upkeep >= peace) ? shipPrice : 0);
+      // And the warship's price while it saves for one (ADR-557), at war too (ADR-575).
+      const keep = Math.max(!atWar && (pending.get(n) ?? 0) + ordered === 0 && slots > 0 && upkeep < cap ? nextOrderPrice(world, n, income, mix) : 0, shipPrice > 0 && (saves || upkeep >= peace) ? shipPrice : 0);
       ({ balance, upkeep } = refill(n, income, need, balance, upkeep, cap, keep));
       // 3b. A fleet (PLAN 4.6e1), with what the army's orders left: one at a time, while the
       // armed navy is under its share of the income (PLAN 7.46b1, ADR-574: its submarines and

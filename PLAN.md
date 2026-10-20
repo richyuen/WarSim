@@ -123,12 +123,28 @@ each, split when taken up:
       also at war, while the nation is at war with an enemy that has an armed fleet. AT: a unit test
       (red without); Britain's `spentArmy` months on seeds 7019 and 3613 (87, 66) under 12 each on
       the 4 × 10 with the chase; the armed power read; the ADR; the pin's entry.
+      **Missed** (2026-10-20, BLOCKERS; the rule is in, ADR-575; `docs/evidence/7.46/b2.md`):
+      Britain's `spentArmy` months 75 / 97 with b1 (87 / 66 the chase alone) → 33 / 29 (bar 12).
+      Of them a navy lost at war with a naval enemy, the rule's case, 0; left a navy rebuilt to a
+      ship or two (no longer "without a navy", 23 and 22, 5 of 7019's in peace) and a war with no
+      naval enemy while lost (10, 7), which the task's text leaves out by design.
+      The first is PLAN 7.47.
     - [ ] 7.46b3 The gold (7.46a §2, Japan): traced first with `navyLoss.ts` on the chase (the
       treasury before and after, what the army and the refills take), then a rule with an ADR or the
       reason. AT: Japan's `gold` months on the 4 × 10 with the chase (88/65/76/48) halved; a unit
       test; the pin's entry.
     - [ ] 7.46c 7.39b's two bars read on the critic's 14 seeds × 30 years with the chase and
       7.46b's rules, and 7.46's 80 % on the 4 × 10: the chase adopted or not (ADR-573).
+      With PLAN 7.47's rule if it is done first, else without it.
+- [ ] 7.47 A navy rebuilt to a ship or two saves for the next at war with a naval enemy (from PLAN
+  7.46b2, ADR-575): ADR-557's saving holds only for a nation with no armed fleet, so Britain's first
+  destroyer ends it, and its army's orders take the gold again while its navy stands far under its
+  peak (`spent` armed/navalFoe and armed/landFoe 9 + 9 on seed 7019, 11 + 11 on 3613, with the
+  chase, b1 and b2; `docs/evidence/7.46/b2/`). The rule: the saving also for a nation whose armed
+  navy is under NAVY_SHARE of its income, at war with an enemy that has an armed fleet (the sim
+  knows the share, not the peak). AT: Britain's `spentArmy` months at war with a naval enemy
+  (armed/navalFoe) on the 4 × 10 with the chase (9 and 11 on 7019, 3613) under 3 each; the world's armed power at years 3–10
+  against HEAD's read; a unit test (red without); the ADR; the pin's entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
 - [ ] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g):
   `territory.ts`'s flip scores each neighbouring enemy controller with its side's pressure and
   gives a tie to the lowest id, so a puppet or ally with no army takes the cells its partner's

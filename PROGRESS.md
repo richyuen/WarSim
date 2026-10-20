@@ -20821,3 +20821,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - The chase worktree `C:/Git/WarSim_chase` now carries this rule too (for 7.46b2, b3 and c).
   Specs by hand: none (no UI). 7.46's commits: 2.
 - **Next:** PLAN 7.46b2 (the army first at war: Britain).
+
+## 2026-10-20 — PLAN 7.46b2: the army first at war (ADR-575; the bar missed, the rule in)
+
+- **Rule** (`economic.ts`): ADR-557's saving for a warship (a nation with no armed fleet) also holds
+  at war while one of its wars has an enemy with an armed fleet, whatever its army's share; the
+  army's orders and the refills keep the price. SPEC §7's navy's cost updated.
+- **Tool:** `navyRebuild.ts` tags each `spentArmy` month `<lost|armed>/<peace|navalFoe|landFoe>`.
+- **AT** (4 seeds × 10 years with the chase and ADR-574, `docs/evidence/7.46/b2.md`, `b2/`):
+  Britain's `spentArmy` months 75 / 97 → 33 / 29 on 7019 / 3613 (bar 12, **missed**). The rule's
+  case (lost navy, naval enemy) 0 on both; left a navy rebuilt to a ship or two (23, 22: PLAN 7.47,
+  filed) and a lost navy in a war with no naval enemy (10, 7: outside the task's text). The world
+  builds 24–80 % more a year and the chase sinks it again (lost in battle year 2: 44k against
+  11.8k); the armed power read 41–48 % of HEAD's at years 3–5 (b1 52–60 %).
+- Committed anyway (the advisor's call, written in ADR-575): the rule does its own case and builds
+  more; the fall in power is the chase's, which is not at HEAD. BLOCKERS entry; 7.46b2 unticked.
+- **Pin:** b6309877 → 77a64cba. **Test:** `navyBudget1938.test.ts`, Norway at war with Sweden (an
+  armed fleet), its army under its peacetime share, orders a destroyer and no division (red
+  without); ADR-557's army-first test now takes Finland (submarines only) as the enemy.
+- The chase worktree `C:/Git/WarSim_chase` carries b1, b2 and the tagged tool (for 7.46b3, c).
+  Specs by hand: none (no UI). 7.46's commits: 3.
+- **Next:** PLAN 7.46b3 (Japan's gold).

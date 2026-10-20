@@ -67,11 +67,12 @@ type Year = {
 };
 const rows: Year[] = [];
 type Spell = { from: number; to?: number; firstOrder?: number; peak: number; low: number };
-type Nat = { tag: string; peak: number; spells: Spell[]; months: Record<Reason, number>; weighted: Record<Reason, number> };
+/** `spent`: the `spentArmy` months by `<lost|armed>/<peace|navalFoe|landFoe>` (lost: no armed fleet). */
+type Nat = { tag: string; peak: number; spells: Spell[]; months: Record<Reason, number>; weighted: Record<Reason, number>; spent: Record<string, number> };
 const nations = new Map<number, Nat>();
 const nat = (n: number): Nat => {
   let x = nations.get(n);
-  if (!x) nations.set(n, (x = { tag: tag(n), peak: 0, spells: [], months: zero(REASONS), weighted: zero(REASONS) }));
+  if (!x) nations.set(n, (x = { tag: tag(n), peak: 0, spells: [], months: zero(REASONS), weighted: zero(REASONS), spent: {} }));
   return x;
 };
 
@@ -94,7 +95,7 @@ const armedNow = (w: World): { byNation: Map<number, number>; fleets: Map<number
 let prev = new Map<number, { n: number; p: number }>();
 let battled = new Set<number>();
 let power = new Map<number, number>();
-let pendingMonth: { n: number; reason: Reason; short: number; lost: boolean; rows: Set<string> }[] | null = null;
+let pendingMonth: { n: number; reason: Reason; short: number; lost: boolean; foe: string; rows: Set<string> }[] | null = null;
 const rowsOf = (w: World, n: number): Set<string> => {
   const p = w.production.cols;
   const s = new Set<string>();
@@ -195,7 +196,12 @@ const monthRead = (w: World, y: Year, day: number): void => {
       else if (nc.manpower[n]! < w.rules!.templates[t]!.manpower) reason = 'men';
       else if (balance - (training.get(n) ?? 0) - upkeepOf(t) <= need) reason = 'balance';
     }
-    pendingMonth.push({ n, reason: reason ?? 'ordered', short: x.peak - now, lost: now === 0, rows: rowsOf(w, n) });
+    // The wars' kind, for a month the army spends (PLAN 7.46b2, ADR-575: the saving at war with an enemy that has an armed fleet).
+    const navalFoe = w.wars.list.some((war) => {
+      const other = war.sides[0].includes(n) ? war.sides[1] : war.sides[1].includes(n) ? war.sides[0] : undefined;
+      return other !== undefined && other.some((m) => (power.get(m) ?? 0) > 0);
+    });
+    pendingMonth.push({ n, reason: reason ?? 'ordered', short: x.peak - now, lost: now === 0, foe: !atWar ? 'peace' : navalFoe ? 'navalFoe' : 'landFoe', rows: rowsOf(w, n) });
   }
 };
 
@@ -222,6 +228,10 @@ const monthDone = (w: World, y: Year, day: number): void => {
     if (m.lost) y.lostMonths[reason]++;
     x.months[reason]++;
     x.weighted[reason] += m.short / 1000;
+    if (reason === 'spentArmy') {
+      const k = `${m.lost ? 'lost' : 'armed'}/${m.foe}`;
+      x.spent[k] = (x.spent[k] ?? 0) + 1;
+    }
   }
   pendingMonth = null;
 };

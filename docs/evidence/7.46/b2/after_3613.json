@@ -1,0 +1,2158 @@
+{
+ "seed": 3613,
+ "years": 10,
+ "depleted": 0.75,
+ "wallS": 134,
+ "rows": [
+  {
+   "year": 1,
+   "power": 222307,
+   "shortfall": 127779,
+   "lostInBattle": 186850,
+   "built": 6000,
+   "builtFleets": 5,
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 2,
+    "poor": 7,
+    "warshipInTraining": 32,
+    "transportInTraining": 5,
+    "transportWanted": 5,
+    "navyShare": 0,
+    "gold": 70,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 4,
+    "spentOther": 0,
+    "ordered": 2
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 2.4,
+    "poor": 34,
+    "warshipInTraining": 1046,
+    "transportInTraining": 9.8,
+    "transportWanted": 7.5,
+    "navyShare": 0,
+    "gold": 177.1,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 95.1,
+    "spentOther": 0,
+    "ordered": 19.4
+   },
+   "lostMonths": {
+    "aiOff": 0,
+    "noShipyard": 2,
+    "poor": 5,
+    "warshipInTraining": 26,
+    "transportInTraining": 4,
+    "transportWanted": 4,
+    "navyShare": 0,
+    "gold": 64,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 2
+   },
+   "share": {},
+   "inTraining": {
+    "le365": 15,
+    "le180": 13,
+    "le90": 8
+   }
+  },
+  {
+   "year": 2,
+   "power": 122003,
+   "shortfall": 230724,
+   "lostInBattle": 15050,
+   "built": 10800,
+   "builtFleets": 5,
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 20,
+    "poor": 13,
+    "warshipInTraining": 16,
+    "transportInTraining": 7,
+    "transportWanted": 3,
+    "navyShare": 0,
+    "gold": 161,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 20,
+    "spentOther": 0,
+    "ordered": 3
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 24,
+    "poor": 82.8,
+    "warshipInTraining": 497.8,
+    "transportInTraining": 266.8,
+    "transportWanted": 88.9,
+    "navyShare": 0,
+    "gold": 1045.4,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 673.3,
+    "spentOther": 0,
+    "ordered": 88.9
+   },
+   "lostMonths": {
+    "aiOff": 0,
+    "noShipyard": 20,
+    "poor": 13,
+    "warshipInTraining": 16,
+    "transportInTraining": 6,
+    "transportWanted": 3,
+    "navyShare": 0,
+    "gold": 134,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 3
+   },
+   "share": {},
+   "inTraining": {
+    "le90": 10,
+    "le180": 4
+   }
+  },
+  {
+   "year": 3,
+   "power": 114133,
+   "shortfall": 247661,
+   "lostInBattle": 11950,
+   "built": 25800,
+   "builtFleets": 13,
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 29,
+    "poor": 28,
+    "warshipInTraining": 41,
+    "transportInTraining": 7,
+    "transportWanted": 3,
+    "navyShare": 0,
+    "gold": 142,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 5,
+    "spentOther": 0,
+    "ordered": 7
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 34.8,
+    "poor": 118.4,
+    "warshipInTraining": 988.6,
+    "transportInTraining": 224,
+    "transportWanted": 101.9,
+    "navyShare": 0,
+    "gold": 1188.2,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 158.3,
+    "spentOther": 0,
+    "ordered": 145.1
+   },
+   "lostMonths": {
+    "aiOff": 0,
+    "noShipyard": 29,
+    "poor": 28,
+    "warshipInTraining": 41,
+    "transportInTraining": 6,
+    "transportWanted": 1,
+    "navyShare": 0,
+    "gold": 119,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 7
+   },
+   "share": {},
+   "inTraining": {
+    "le180": 16,
+    "le90": 23
+   }
+  },
+  {
+   "year": 4,
+   "power": 118658,
+   "shortfall": 252873,
+   "lostInBattle": 3600,
+   "built": 14400,
+   "builtFleets": 12,
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 36,
+    "poor": 51,
+    "warshipInTraining": 29,
+    "transportInTraining": 4,
+    "transportWanted": 4,
+    "navyShare": 0,
+    "gold": 130,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 13,
+    "spentOther": 0,
+    "ordered": 5
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 43.2,
+    "poor": 152.4,
+    "warshipInTraining": 399.4,
+    "transportInTraining": 66.4,
+    "transportWanted": 68.8,
+    "navyShare": 0,
+    "gold": 1311.3,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 873.7,
+    "spentOther": 0,
+    "ordered": 114.7
+   },
+   "lostMonths": {
+    "aiOff": 0,
+    "noShipyard": 36,
+    "poor": 51,
+    "warshipInTraining": 29,
+    "transportInTraining": 4,
+    "transportWanted": 3,
+    "navyShare": 0,
+    "gold": 100,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 5
+   },
+   "share": {},
+   "inTraining": {
+    "le90": 17,
+    "le180": 12
+   }
+  },
+  {
+   "year": 5,
+   "power": 119207,
+   "shortfall": 257258,
+   "lostInBattle": 5450,
+   "built": 17400,
+   "builtFleets": 6,
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 31,
+    "poor": 68,
+    "warshipInTraining": 17,
+    "transportInTraining": 1,
+    "transportWanted": 1,
+    "navyShare": 0,
+    "gold": 135,
+    "men": 0,
+    "balance": 8,
+    "spentArmy": 9,
+    "spentOther": 0,
+    "ordered": 3
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 37.2,
+    "poor": 187.2,
+    "warshipInTraining": 935,
+    "transportInTraining": 4,
+    "transportWanted": 4,
+    "navyShare": 0,
+    "gold": 1445.3,
+    "men": 0,
+    "balance": 142.4,
+    "spentArmy": 224.5,
+    "spentOther": 0,
+    "ordered": 104.3
+   },
+   "lostMonths": {
+    "aiOff": 0,
+    "noShipyard": 31,
+    "poor": 68,
+    "warshipInTraining": 17,
+    "transportInTraining": 1,
+    "transportWanted": 1,
+    "navyShare": 0,
+    "gold": 109,
+    "men": 0,
+    "balance": 8,
+    "spentArmy": 8,
+    "spentOther": 0,
+    "ordered": 3
+   },
+   "share": {},
+   "inTraining": {
+    "le180": 6,
+    "le90": 6,
+    "more": 1,
+    "le365": 4
+   }
+  },
+  {
+   "year": 6,
+   "power": 125329,
+   "shortfall": 265344,
+   "lostInBattle": 13900,
+   "built": 10000,
+   "builtFleets": 7,
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 29,
+    "poor": 72,
+    "warshipInTraining": 32,
+    "transportInTraining": 9,
+    "transportWanted": 7,
+    "navyShare": 0,
+    "gold": 143,
+    "men": 0,
+    "balance": 9,
+    "spentArmy": 12,
+    "spentOther": 0,
+    "ordered": 7
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 34.8,
+    "poor": 192,
+    "warshipInTraining": 739.4,
+    "transportInTraining": 217.4,
+    "transportWanted": 144.7,
+    "navyShare": 0,
+    "gold": 1424.4,
+    "men": 0,
+    "balance": 160.2,
+    "spentArmy": 253.1,
+    "spentOther": 0,
+    "ordered": 10
+   },
+   "lostMonths": {
+    "aiOff": 0,
+    "noShipyard": 29,
+    "poor": 72,
+    "warshipInTraining": 32,
+    "transportInTraining": 9,
+    "transportWanted": 7,
+    "navyShare": 0,
+    "gold": 118,
+    "men": 0,
+    "balance": 9,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 7
+   },
+   "share": {},
+   "inTraining": {
+    "le365": 2,
+    "le90": 14,
+    "le180": 16
+   }
+  },
+  {
+   "year": 7,
+   "power": 119293,
+   "shortfall": 270804,
+   "lostInBattle": 9900,
+   "built": 12000,
+   "builtFleets": 10,
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 38,
+    "poor": 59,
+    "warshipInTraining": 32,
+    "transportInTraining": 0,
+    "transportWanted": 4,
+    "navyShare": 0,
+    "gold": 179,
+    "men": 0,
+    "balance": 1,
+    "spentArmy": 13,
+    "spentOther": 1,
+    "ordered": 7
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 61.6,
+    "poor": 157.2,
+    "warshipInTraining": 952.3,
+    "transportInTraining": 0,
+    "transportWanted": 142.4,
+    "navyShare": 0,
+    "gold": 1353.8,
+    "men": 0,
+    "balance": 17.8,
+    "spentArmy": 270.1,
+    "spentOther": 17.8,
+    "ordered": 272.7
+   },
+   "lostMonths": {
+    "aiOff": 0,
+    "noShipyard": 38,
+    "poor": 59,
+    "warshipInTraining": 30,
+    "transportInTraining": 0,
+    "transportWanted": 4,
+    "navyShare": 0,
+    "gold": 145,
+    "men": 0,
+    "balance": 1,
+    "spentArmy": 0,
+    "spentOther": 1,
+    "ordered": 6
+   },
+   "share": {},
+   "inTraining": {
+    "le90": 20,
+    "le180": 12
+   }
+  },
+  {
+   "year": 8,
+   "power": 126545,
+   "shortfall": 270234,
+   "lostInBattle": 4500,
+   "built": 22200,
+   "builtFleets": 10,
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 26,
+    "poor": 66,
+    "warshipInTraining": 39,
+    "transportInTraining": 0,
+    "transportWanted": 12,
+    "navyShare": 0,
+    "gold": 166,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 14,
+    "spentOther": 1,
+    "ordered": 8
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 34.4,
+    "poor": 153.6,
+    "warshipInTraining": 1047.9,
+    "transportInTraining": 0,
+    "transportWanted": 15.5,
+    "navyShare": 0,
+    "gold": 1240.1,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 513.7,
+    "spentOther": 16.3,
+    "ordered": 223
+   },
+   "lostMonths": {
+    "aiOff": 0,
+    "noShipyard": 26,
+    "poor": 66,
+    "warshipInTraining": 36,
+    "transportInTraining": 0,
+    "transportWanted": 11,
+    "navyShare": 0,
+    "gold": 123,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 8
+   },
+   "share": {},
+   "inTraining": {
+    "le90": 21,
+    "le180": 14,
+    "more": 1,
+    "le365": 3
+   }
+  },
+  {
+   "year": 9,
+   "power": 134043,
+   "shortfall": 268859,
+   "lostInBattle": 5700,
+   "built": 12400,
+   "builtFleets": 9,
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 24,
+    "poor": 69,
+    "warshipInTraining": 46,
+    "transportInTraining": 2,
+    "transportWanted": 12,
+    "navyShare": 0,
+    "gold": 127,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 16,
+    "spentOther": 1,
+    "ordered": 7
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 28.8,
+    "poor": 116.4,
+    "warshipInTraining": 1021.2,
+    "transportInTraining": 33.2,
+    "transportWanted": 29.8,
+    "navyShare": 0,
+    "gold": 1104.7,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 738,
+    "spentOther": 15.4,
+    "ordered": 136.1
+   },
+   "lostMonths": {
+    "aiOff": 0,
+    "noShipyard": 24,
+    "poor": 69,
+    "warshipInTraining": 46,
+    "transportInTraining": 2,
+    "transportWanted": 12,
+    "navyShare": 0,
+    "gold": 92,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 7,
+    "spentOther": 0,
+    "ordered": 7
+   },
+   "share": {},
+   "inTraining": {
+    "le180": 18,
+    "le90": 25,
+    "le365": 3
+   }
+  },
+  {
+   "year": 10,
+   "power": 140755,
+   "shortfall": 265632,
+   "lostInBattle": 3600,
+   "built": 27000,
+   "builtFleets": 14,
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 25,
+    "poor": 61,
+    "warshipInTraining": 40,
+    "transportInTraining": 4,
+    "transportWanted": 16,
+    "navyShare": 0,
+    "gold": 107,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 21,
+    "spentOther": 0,
+    "ordered": 7
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 31.6,
+    "poor": 94,
+    "warshipInTraining": 965.1,
+    "transportInTraining": 7.1,
+    "transportWanted": 31.1,
+    "navyShare": 0,
+    "gold": 1123.5,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 778.9,
+    "spentOther": 0,
+    "ordered": 155.5
+   },
+   "lostMonths": {
+    "aiOff": 0,
+    "noShipyard": 25,
+    "poor": 61,
+    "warshipInTraining": 40,
+    "transportInTraining": 2,
+    "transportWanted": 14,
+    "navyShare": 0,
+    "gold": 58,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 15,
+    "spentOther": 0,
+    "ordered": 7
+   },
+   "share": {},
+   "inTraining": {
+    "le90": 26,
+    "le180": 14
+   }
+  }
+ ],
+ "nations": {
+  "1": {
+   "tag": "GER",
+   "peak": 16600,
+   "spells": [
+    {
+     "from": 120,
+     "peak": 16600,
+     "low": 0,
+     "firstOrder": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 25,
+    "transportInTraining": 9,
+    "transportWanted": 4,
+    "navyShare": 0,
+    "gold": 1,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 71,
+    "spentOther": 2,
+    "ordered": 4
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 415,
+    "transportInTraining": 148.2,
+    "transportWanted": 65.2,
+    "navyShare": 0,
+    "gold": 15.4,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 1127,
+    "spentOther": 31.7,
+    "ordered": 66.4
+   },
+   "spent": {
+    "armed/navalFoe": 9,
+    "armed/landFoe": 39,
+    "lost/landFoe": 22,
+    "armed/peace": 1
+   }
+  },
+  "4": {
+   "tag": "POL",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 365,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 104,
+    "poor": 0,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 4,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 124.8,
+    "poor": 0,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 4.8,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "9": {
+   "tag": "FIN",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 1885,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 58,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 69.6,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "10": {
+   "tag": "SOV",
+   "peak": 17800,
+   "spells": [
+    {
+     "from": 577,
+     "peak": 17800,
+     "low": 0,
+     "firstOrder": 1674
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 15,
+    "transportInTraining": 2,
+    "transportWanted": 1,
+    "navyShare": 0,
+    "gold": 61,
+    "men": 0,
+    "balance": 18,
+    "spentArmy": 0,
+    "spentOther": 1,
+    "ordered": 3
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 267,
+    "transportInTraining": 35.6,
+    "transportWanted": 17.8,
+    "navyShare": 0,
+    "gold": 931,
+    "men": 0,
+    "balance": 320.4,
+    "spentArmy": 0,
+    "spentOther": 17.8,
+    "ordered": 53.4
+   },
+   "spent": {}
+  },
+  "11": {
+   "tag": "ROM",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 31,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 1826,
+     "to": 2038
+    },
+    {
+     "from": 2069,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 5,
+    "transportInTraining": 2,
+    "transportWanted": 3,
+    "navyShare": 0,
+    "gold": 60,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 6,
+    "transportInTraining": 2.4,
+    "transportWanted": 3.5,
+    "navyShare": 0,
+    "gold": 72,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1.2
+   },
+   "spent": {}
+  },
+  "14": {
+   "tag": "YUG",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 31,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 1,
+    "poor": 88,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 1,
+    "navyShare": 0,
+    "gold": 29,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 1.2,
+    "poor": 105.6,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 1.2,
+    "navyShare": 0,
+    "gold": 34.8,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "15": {
+   "tag": "ITA",
+   "peak": 23000,
+   "spells": [
+    {
+     "from": 120,
+     "peak": 23000,
+     "low": 0,
+     "firstOrder": 1007
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 31,
+    "transportInTraining": 1,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 73,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 7,
+    "spentOther": 0,
+    "ordered": 4
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 706.3,
+    "transportInTraining": 20.2,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 1632.4,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 156.4,
+    "spentOther": 0,
+    "ordered": 92
+   },
+   "spent": {
+    "lost/landFoe": 1,
+    "armed/navalFoe": 3,
+    "armed/landFoe": 3
+   }
+  },
+  "17": {
+   "tag": "GRE",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 181,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 109,
+    "poor": 0,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 1,
+    "navyShare": 0,
+    "gold": 4,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 130.8,
+    "poor": 0,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 1.2,
+    "navyShare": 0,
+    "gold": 4.8,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "18": {
+   "tag": "TUR",
+   "peak": 2800,
+   "spells": [
+    {
+     "from": 181,
+     "peak": 2800,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 13,
+    "poor": 62,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 39,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 36.4,
+    "poor": 173.6,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 109.2,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "19": {
+   "tag": "FRA",
+   "peak": 35600,
+   "spells": [
+    {
+     "from": 120,
+     "peak": 35600,
+     "low": 0,
+     "firstOrder": 762
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 25,
+    "transportInTraining": 2,
+    "transportWanted": 6,
+    "navyShare": 0,
+    "gold": 80,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 3
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 845.6,
+    "transportInTraining": 71.2,
+    "transportWanted": 212.4,
+    "navyShare": 0,
+    "gold": 2820.4,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 106.8
+   },
+   "spent": {}
+  },
+  "20": {
+   "tag": "ENG",
+   "peak": 86500,
+   "spells": [
+    {
+     "from": 120,
+     "peak": 86500,
+     "low": 0,
+     "firstOrder": 579
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 65,
+    "transportInTraining": 6,
+    "transportWanted": 3,
+    "navyShare": 0,
+    "gold": 4,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 29,
+    "spentOther": 0,
+    "ordered": 9
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 5467.4,
+    "transportInTraining": 519,
+    "transportWanted": 258.3,
+    "navyShare": 0,
+    "gold": 343,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 2480.4,
+    "spentOther": 0,
+    "ordered": 778.5
+   },
+   "spent": {
+    "armed/landFoe": 11,
+    "armed/navalFoe": 11,
+    "lost/landFoe": 7
+   }
+  },
+  "23": {
+   "tag": "NSP",
+   "peak": 2800,
+   "spells": [
+    {
+     "from": 59,
+     "peak": 2800,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 80,
+    "warshipInTraining": 0,
+    "transportInTraining": 2,
+    "transportWanted": 7,
+    "navyShare": 0,
+    "gold": 29,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 224,
+    "warshipInTraining": 0,
+    "transportInTraining": 5.6,
+    "transportWanted": 19.6,
+    "navyShare": 0,
+    "gold": 81.2,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "24": {
+   "tag": "REP",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 31,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 30,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 19,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 36,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 22.8,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "25": {
+   "tag": "POR",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 31,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 49,
+    "warshipInTraining": 0,
+    "transportInTraining": 2,
+    "transportWanted": 30,
+    "navyShare": 0,
+    "gold": 38,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 58.8,
+    "warshipInTraining": 0,
+    "transportInTraining": 2.4,
+    "transportWanted": 36,
+    "navyShare": 0,
+    "gold": 45.6,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "28": {
+   "tag": "NED",
+   "peak": 6800,
+   "spells": [
+    {
+     "from": 212,
+     "peak": 6800,
+     "low": 0,
+     "firstOrder": 2557
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 84,
+    "warshipInTraining": 18,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 9,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 2
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 568.8,
+    "warshipInTraining": 122.4,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 58.8,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 13.6
+   },
+   "spent": {}
+  },
+  "30": {
+   "tag": "DEN",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 365,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 365,
+     "to": 912
+    },
+    {
+     "from": 1673,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 396,
+     "to": 2251
+    },
+    {
+     "from": 2557,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 33,
+    "warshipInTraining": 10,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 28,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 2
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 39.6,
+    "warshipInTraining": 12,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 33.1,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 2.4
+   },
+   "spent": {}
+  },
+  "31": {
+   "tag": "NOR",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 365,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 0,
+    "transportInTraining": 4,
+    "transportWanted": 3,
+    "navyShare": 0,
+    "gold": 101,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 0,
+    "transportInTraining": 4.8,
+    "transportWanted": 3.6,
+    "navyShare": 0,
+    "gold": 121.2,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "32": {
+   "tag": "SWE",
+   "peak": 4000,
+   "spells": [
+    {
+     "from": 638,
+     "peak": 4000,
+     "low": 0,
+     "firstOrder": 1705
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 10,
+    "transportInTraining": 2,
+    "transportWanted": 1,
+    "navyShare": 0,
+    "gold": 83,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 3
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 40,
+    "transportInTraining": 8,
+    "transportWanted": 4,
+    "navyShare": 0,
+    "gold": 313.6,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 12
+   },
+   "spent": {}
+  },
+  "39": {
+   "tag": "SAF",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 851,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 304,
+     "to": 1339
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 5,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 10,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 6,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 12,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1.2
+   },
+   "spent": {}
+  },
+  "44": {
+   "tag": "AOF",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 1885,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 29,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 34.5,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "45": {
+   "tag": "AEF",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 974,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 25,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 34,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 30,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 40.8,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "59": {
+   "tag": "RAJ",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 212,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 487,
+     "to": 882
+    },
+    {
+     "from": 912,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 1095,
+     "to": 3287
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 33,
+    "poor": 3,
+    "warshipInTraining": 10,
+    "transportInTraining": 2,
+    "transportWanted": 1,
+    "navyShare": 0,
+    "gold": 48,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 3
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 39.6,
+    "poor": 3.6,
+    "warshipInTraining": 12,
+    "transportInTraining": 2.4,
+    "transportWanted": 1.2,
+    "navyShare": 0,
+    "gold": 57.6,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 3.6
+   },
+   "spent": {}
+  },
+  "64": {
+   "tag": "INC",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 2647,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 1,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 3,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 1.2,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 3.6,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "67": {
+   "tag": "DEI",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 912,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 792,
+     "to": 1885
+    },
+    {
+     "from": 1946,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 123,
+     "to": 2251
+    },
+    {
+     "from": 2282,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 306
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 15,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 40,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 3
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 18,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 48,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 3.6
+   },
+   "spent": {}
+  },
+  "68": {
+   "tag": "PHI",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 1946,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 915,
+     "to": 3042
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 5,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 30,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 6,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 36,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1.2
+   },
+   "spent": {}
+  },
+  "69": {
+   "tag": "CHI",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 396,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 120,
+     "to": 699
+    },
+    {
+     "from": 730,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 244,
+     "to": 1155
+    },
+    {
+     "from": 1186,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 61,
+     "to": 1430
+    },
+    {
+     "from": 1946,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 670,
+     "to": 2800
+    },
+    {
+     "from": 2830,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 273,
+     "to": 3287
+    },
+    {
+     "from": 3468,
+     "peak": 1200,
+     "low": 150
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 25,
+    "transportInTraining": 2,
+    "transportWanted": 3,
+    "navyShare": 0,
+    "gold": 46,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 5
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 30,
+    "transportInTraining": 2.4,
+    "transportWanted": 3.6,
+    "navyShare": 0,
+    "gold": 53.9,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 6
+   },
+   "spent": {}
+  },
+  "75": {
+   "tag": "JAP",
+   "peak": 53300,
+   "spells": [
+    {
+     "from": 243,
+     "peak": 53300,
+     "low": 0,
+     "firstOrder": 2283
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 10,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 82,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 18,
+    "spentOther": 0,
+    "ordered": 2
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 533,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 3835.9,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 811.8,
+    "spentOther": 0,
+    "ordered": 106.6
+   },
+   "spent": {
+    "armed/landFoe": 14,
+    "armed/navalFoe": 4
+   }
+  },
+  "78": {
+   "tag": "AST",
+   "peak": 7200,
+   "spells": [
+    {
+     "from": 120,
+     "peak": 2800,
+     "low": 0,
+     "firstOrder": 123,
+     "to": 2647
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 20,
+    "transportInTraining": 1,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 56,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 2,
+    "spentOther": 0,
+    "ordered": 4
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 50,
+    "transportInTraining": 1.8,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 105.1,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 3.2,
+    "spentOther": 0,
+    "ordered": 10
+   },
+   "spent": {
+    "armed/navalFoe": 1,
+    "armed/peace": 1
+   }
+  },
+  "80": {
+   "tag": "CAN",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 151,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 579,
+     "to": 912
+    },
+    {
+     "from": 943,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 973,
+     "to": 2099
+    },
+    {
+     "from": 2191,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 10,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 99,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 2
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 12,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 118.2,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 2.4
+   },
+   "spent": {}
+  },
+  "83": {
+   "tag": "MEX",
+   "peak": 3600,
+   "spells": [
+    {
+     "from": 2160,
+     "peak": 3600,
+     "low": 0,
+     "firstOrder": 1127
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 5,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 43,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 18,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 147.6,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 3.6
+   },
+   "spent": {}
+  },
+  "90": {
+   "tag": "CUB",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 2160,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 1278,
+     "to": 3621
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 5,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 42,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 6,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 50.4,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1.2
+   },
+   "spent": {}
+  },
+  "96": {
+   "tag": "PRU",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 2373,
+     "peak": 1200,
+     "low": 0
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 39,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 3,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 46.8,
+    "warshipInTraining": 0,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 3.6,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 0
+   },
+   "spent": {}
+  },
+  "97": {
+   "tag": "BRA",
+   "peak": 2800,
+   "spells": [
+    {
+     "from": 1704,
+     "peak": 2800,
+     "low": 0,
+     "firstOrder": 395
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 5,
+    "transportInTraining": 2,
+    "transportWanted": 3,
+    "navyShare": 0,
+    "gold": 53,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 14,
+    "transportInTraining": 4.7,
+    "transportWanted": 7.1,
+    "navyShare": 0,
+    "gold": 128.1,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 2.8
+   },
+   "spent": {}
+  },
+  "100": {
+   "tag": "CHL",
+   "peak": 1200,
+   "spells": [
+    {
+     "from": 1400,
+     "peak": 1200,
+     "low": 0,
+     "firstOrder": 669,
+     "to": 2251
+    }
+   ],
+   "months": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 5,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 22,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1
+   },
+   "weighted": {
+    "aiOff": 0,
+    "noShipyard": 0,
+    "poor": 0,
+    "warshipInTraining": 6,
+    "transportInTraining": 0,
+    "transportWanted": 0,
+    "navyShare": 0,
+    "gold": 24.6,
+    "men": 0,
+    "balance": 0,
+    "spentArmy": 0,
+    "spentOther": 0,
+    "ordered": 1.2
+   },
+   "spent": {}
+  }
+ }
+}

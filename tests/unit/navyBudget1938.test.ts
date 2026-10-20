@@ -179,11 +179,22 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
     expect(before - w.nations.cols.gold[NOR]!).toBeLessThanOrEqual(w.rules!.templates[fleets.destroyer]!.gold + 100 + 1e-6);
   });
 
-  it('at war, its army under its peacetime share, the army orders first: no ship is saved for', () => {
-    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'SWE', army: false });
+  // The enemy was Sweden until PLAN 7.46b2 (ADR-575): an enemy with an armed fleet now makes it
+  // save. Finland holds submarines alone, no armed fleet.
+  it('at war with an enemy without an armed fleet, its army under its peacetime share, the army orders first: no ship is saved for', () => {
+    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'FIN', army: false });
     runEvents(s, 1);
     expect(land(w, NOR)).toBeGreaterThan(0);
     expect(ships(w, NOR)).toEqual([]);
+  });
+
+  // PLAN 7.46b2 (ADR-575): Britain, its battle line sunk by the chase (seeds 7019, 3613), spent
+  // each month on its army at war and ordered its first warship years later.
+  it('at war with an enemy that has an armed fleet, its army under its peacetime share, it orders a destroyer and no division (red without)', () => {
+    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'SWE', army: false });
+    runEvents(s, 1);
+    expect(ships(w, NOR)).toEqual([fleets.destroyer]);
+    expect(land(w, NOR)).toBe(0);
   });
 });
 
