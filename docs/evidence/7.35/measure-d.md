@@ -589,3 +589,53 @@ income too, and comes first each month (3, then 3a's refills, then 3b).
 - **So the next parts:** the gold (d3b, traced first: the month's gold before and after the army's
   orders, and whether a warship would have been paid for without them); no shipyard (d3c, traced:
   which ports, why none passes). No rule here: the pin unchanged (`pickFleet` exported, as it was).
+
+## 12. The gold traced (7.35d3b, at `06031ee`)
+
+`npx tsx tools/diag/navyLoss.ts <seed> 30` on the 14 seeds again, the economic AI wrapped in the tool
+(the sim unchanged): each month's treasury before and after the AI, the gold of the orders it placed
+by kind, and the refills as the rest (the AI spends gold on nothing else). JSON in `d3b/loss_<seed>.json`
+(`nations[].gold`: per gold month [tick, treasury before the AI, shortfall, balance, the army's
+orders, refills, treasury after, at war]); sums by `npx tsx tools/diag/navyLossGold.ts
+docs/evidence/7.35/d3b`. The runs are d3a's to the month (the first tests' counts the same; 337
+nations lost a navy, 111 built one again).
+
+The gold test reads the treasury before the month's AI: a gold month is short before that month's
+army orders or refills, so what stops it is the months before. Per gold month (years 2–30, 45,664),
+by income band and war (means a month):
+
+| | months | shortfall | balance | army's orders | refills | research | covered by the land spend: last month | last 12 | since lost |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| destroyer, war | 16,563 | 699 | 36 | 21 | 10 | 4 | 0.6 % | 21 % | 79 % |
+| destroyer, peace | 13,707 | 622 | 48 | 30 | 1 | 3 | 0.9 % | 28 % | 84 % |
+| cruiser, war | 9,313 | 600 | 223 | 73 | 88 | 24 | 16 % | 89 % | 96 % |
+| cruiser, peace | 1,556 | 536 | 265 | 97 | 42 | 22 | 24 % | 91 % | 97 % |
+| battle, war | 4,246 | 519 | 607 | 146 | 292 | 74 | 53 % | 94 % | 95 % |
+| battle, peace | 279 | 508 | 725 | 140 | 239 | 74 | 66 % | 94 % | 94 % |
+| all | 45,664 | 632 | 143 | 49 | 52 | 15 | 9.9 % | 47 % | 86 % |
+
+The balance would cover the shortfall within 3 months in 11,602 of them, within 12 in 13,441, later in
+20,387, never (balance ≤ 0) in 234. The treasury the month's AI leaves over the reserve: under a
+tenth of the warship's price in 11,465, under the reserve in 734, the rest spread over the tenths.
+2,231 gold months had an army order in the month itself.
+
+**The race** (Norway, seed 3407, at peace, income about 65, its navy lost in year 1; every month from
+day 821): the treasury climbs by the balance, 920, 989, 1,057, 1,125, 1,193, 1,262, and on that month
+the army's order takes an infantry division (1,001) and leaves 261; again 329 … 1,245, a division, 244;
+between, a wing (3c) now and then (529 → 277, 598 → 220). The destroyer's line (1,120 + three months
+of income, 1,315) is never reached: the army's line (1,001 + the same reserve) is 119 gold lower and
+comes first in the month, so a nation whose army is under its share buys a division each time the
+treasury nears a warship. Brazil (8821), Turkey (3793, 4483), Greece (3793), Romania (6113) and
+Yugoslavia (2609) saw the same, 337 to 352 gold months each.
+
+**What it says.**
+- **The army's orders and refills take the gold the fleet waits for**, not the month's balance: in 86 %
+  of the gold months the land spend since the navy was lost would have paid the shortfall; in 47 %
+  that of the last 12 months. The poorer the nation the slower: a destroyer-band nation's balance of
+  36 to 48 a month climbs to the line in 13 to 19 months, and its army's order, 119 gold cheaper, takes
+  the climb a few months before (cover over 12 months 21–28 %, since lost 79–84 %). A richer one's
+  refills and orders take it month by month (cruiser and battle bands, the last 12 months 89–94 %).
+- **So the rule (d3b's second commit):** a nation without a navy saves for a warship, as one saves for
+  its armour (PLAN 3.5d): the army's orders and the refills keep the warship's price over the reserve
+  while the army stands at its peacetime share. The rest, 14 % (poorer than the line within the
+  run, or the gold taken by wings and transports), is not the army's.

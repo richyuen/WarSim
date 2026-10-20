@@ -20220,3 +20220,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   re-runs the last report's cases first; a moved score says why, counts over seeds compared on
   the last report's commit.
 - **Next:** PLAN 7.35d3b.
+
+## 2026-10-20 — PLAN 7.35d3b, the gold traced (first commit; no rule)
+
+- **Traced** (`navyLoss` wraps the economic AI; `measure-d.md` §12; 14 seeds × 30 years, d3a's runs
+  to the month): of 45,664 gold months of lost navies (years 2–30), the land spend since the navy
+  was lost would have paid the shortfall in 86 %, the last 12 months' in 47 %. The race: the army's
+  line (a division's 1,001 + three months of income) is 119 gold under a destroyer's, so the
+  treasury climbs to it and a division is bought (Norway, seed 3407: 1,262 → 261, 1,245 → 244).
+- **Next:** the rule (a nation without a navy saves for a warship), its ADR, tests and pin.
