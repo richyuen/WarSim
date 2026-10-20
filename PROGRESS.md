@@ -20419,3 +20419,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   of them by bomber alone, 215 wings): 0.014 ms a tick, `meansHeld` and `tellMeansLost` timed over
   20,000 calls (about 0.6 % of a 2.4 ms tick); nothing without a warhead in the world. The sentence
   of a group lost with its base still held (b = 0) tested too.
+
+## 2026-10-20 — PLAN 7.37c: Germany's restrike of one Canadian point measured; ADR-528 changed it
+
+- **Measured** on the critic's code (`f0be88c`, a worktree) from `critic/c9_seed4483_y20.bin`
+  (`tools/diag/nukeChain.ts`, now with `byResolve`, `resolve`, `doctrine`): both strikes on
+  (633.5, 173.5) were strikes of the resolve (ADR-488), war 201's first and second, 90 days apart by
+  RESOLVE_GAP_DAYS. The first on 5,663 men massed (value 1, utility 0.669); the second on 490 men
+  worth 0.906 against a beaten side's theatre of 4,866 (resolve 1.25 × doctrine 1.4, utility 0.981,
+  439 dead, all soldiers).
+- **Changed by ADR-528** (THEATRE_MEN_MIN = 250,000, on HEAD since PLAN 7.32a), patched into the
+  critic's code: no strike on that point; Germany's resolve goes to Cuba's capital and other Canadian
+  places instead (`docs/evidence/7.37/c-restrike-4483-f0be88c{,-adr528}.json`). No new rule; the pin
+  unchanged. Cuba's capital struck in two wars is 7.38's case.
+- 7.37's commits: 5 of 20. **Next:** PLAN 7.37's next case (single bombs on small states, seed 2609).

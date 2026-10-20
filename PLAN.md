@@ -111,6 +111,16 @@ each, split when taken up:
           "Czechoslovakia lost its last means to deliver its warheads: Germany took its airbase near
           Prague, and its strategic bombers were lost with it" (`nukeMeansLost1938.test.ts`, red
           without; `nukeMeansLost1938.spec.ts`, `docs/evidence/7.37/b3-means-lost-row.png`).
+    - [x] 7.37c Germany's restrike of one Canadian point (seed 4483, run 9): its two decisions
+      measured on the critic's code from its year-20 checkpoint (`tools/diag/nukeChain.ts`, now with
+      `byResolve`, `resolve`, `doctrine`). AT: the cause, and the decision changed by a rule with an
+      ADR, or a BLOCKERS entry. Met: both were strikes of the resolve (ADR-488's: a winner's, one a
+      side each RESOLVE_GAP_DAYS, hence 90 days apart), war 201's first and second; the first on
+      5,663 men massed (value 1), the second on 490 men worth 0.906, weighed against a beaten side's
+      theatre of 4,866 men (resolve 1.25, doctrine 1.4: utility 0.981). ADR-528's THEATRE_MEN_MIN
+      (250,000), on HEAD since PLAN 7.32a, patched into the critic's code: no strike on that point
+      (`docs/evidence/7.37/c-restrike-4483-f0be88c{,-adr528}.json`). No new rule. Germany's two
+      strikes on Cuba's capital in two wars are 7.38's (a city struck again).
 - [ ] 7.38 R10-B1: the AI's nuclear choice weighs the people a burst kills (AI nuclear use 7, needs
   8; blocking). `nuclearUtility` has no term for the dead (`src/sim/systems/nuclear.ts:554-560`):
   Germany H-bombs Shanghai for 3,802,105 dead and 105 soldiers at utility 0.025, NUKE_FLOOR itself

@@ -1,0 +1,425 @@
+{
+ "seed": 4483,
+ "years": 30,
+ "rows": [
+  {
+   "day": 7775,
+   "year": 21.3,
+   "by": "GER",
+   "u": 0.714,
+   "at": [
+    517.5,
+    493.5
+   ],
+   "target": "MEX",
+   "war": "GRE+MEX+CUB+CAN v GER+POL+SOV+NSP+POR+MON+ITA+TUR+FRA+ENG+EGY+SUD+SAF+FMO+#111+JAP+RAJ+NEP+SIA+MEN",
+   "warDays": 365,
+   "desperation": 0,
+   "extreme": false,
+   "resolve": 0,
+   "retaliation": 0,
+   "doctrine": 1.4,
+   "lastStrike": [
+    -1,
+    186600
+   ],
+   "resolveStrikes": [
+    0,
+    1
+   ],
+   "warId": 164,
+   "capKm": [
+    "GRE 11483",
+    "MEX 1075",
+    "CUB 895",
+    "CAN 4684"
+   ],
+   "parts": {
+    "econShare": 0.0013,
+    "menShare": 0.102,
+    "ownShare": 0,
+    "menExpected": 25489,
+    "menAll": 32427,
+    "theatreMen": 250000,
+    "sideMen": 39073,
+    "capital": 0,
+    "through": 1,
+    "value": 1
+   },
+   "launch": 3,
+   "missile": 1,
+   "flightH": 0.49723670110688545,
+   "toll": {
+    "dead": 55462,
+    "yieldN": 2,
+    "men": 25462,
+    "guns": 88,
+    "tanks": 0,
+    "planes": 0,
+    "ships": 0,
+    "people": 30000,
+    "econLost": 33.3,
+    "formationsNear": 3
+   }
+  },
+  {
+   "day": 9077,
+   "year": 24.87,
+   "by": "GER",
+   "u": 0.227,
+   "at": [
+    507.7,
+    487.3
+   ],
+   "target": "MEX",
+   "war": "GER+POL+FIN+SOV+BUL+POR+NOR+SWE+MON+TAN+#106+ITA+AUT+TUR+FRA+ENG+EGY+SUD+BCO+SAF+FMO+#111+JAP+RAJ+NEP+SIA+MEN v GRE+MEX+CUB+CAN",
+   "warDays": 566,
+   "desperation": 0,
+   "extreme": false,
+   "resolve": 0,
+   "retaliation": 0,
+   "doctrine": 1.4,
+   "lastStrike": [
+    217848,
+    -1
+   ],
+   "resolveStrikes": [
+    1,
+    0
+   ],
+   "warId": 184,
+   "capKm": [
+    "GRE 11582",
+    "MEX 881",
+    "CUB 978",
+    "CAN 4479"
+   ],
+   "parts": {
+    "econShare": 0.0012,
+    "menShare": 0.0442,
+    "ownShare": 0,
+    "menExpected": 11054,
+    "menAll": 24868,
+    "theatreMen": 250000,
+    "sideMen": 43943,
+    "capital": 0,
+    "through": 1,
+    "value": 0.454
+   },
+   "launch": 4,
+   "missile": 1,
+   "flightH": 0.4994731841725297,
+   "toll": {
+    "dead": 22015,
+    "yieldN": 2,
+    "men": 11015,
+    "guns": 40,
+    "tanks": 0,
+    "planes": 0,
+    "ships": 0,
+    "people": 11000,
+    "econLost": 28.06,
+    "formationsNear": 1
+   }
+  },
+  {
+   "day": 9506,
+   "year": 26.04,
+   "by": "GER",
+   "u": 0.807,
+   "at": [
+    555.4,
+    463.3
+   ],
+   "target": "CUB",
+   "war": "ITA+AUT+FRA+ENG+EGY+SUD+BCO+SAF+FMO+#111+GER+POL+FIN+SOV+BUL+POR+NOR+SWE+MON+TAN+#106+JAP+RAJ+NEP+SIA+CHI+MEN v CAN+MEX+CUB+GRE",
+   "warDays": 365,
+   "desperation": 0,
+   "extreme": false,
+   "resolve": 0,
+   "retaliation": 0,
+   "doctrine": 1.4,
+   "lastStrike": [
+    228144,
+    -1
+   ],
+   "resolveStrikes": [
+    1,
+    0
+   ],
+   "warId": 193,
+   "capKm": [
+    "CAN 4653",
+    "MEX 1785",
+    "CUB 0",
+    "GRE 10508"
+   ],
+   "parts": {
+    "econShare": 0.0556,
+    "menShare": 0.0449,
+    "ownShare": 0,
+    "menExpected": 11232,
+    "menAll": 12480,
+    "theatreMen": 250000,
+    "sideMen": 27840,
+    "capital": 0.3,
+    "through": 1,
+    "value": 1
+   },
+   "launch": 5,
+   "missile": 1,
+   "flightH": 0.4467563405050896,
+   "toll": {
+    "dead": 706200,
+    "yieldN": 2,
+    "men": 11200,
+    "guns": 40,
+    "tanks": 0,
+    "planes": 0,
+    "ships": 0,
+    "people": 695000,
+    "econLost": 1000.97,
+    "formationsNear": 2
+   }
+  },
+  {
+   "day": 9507,
+   "year": 26.05,
+   "by": "USA",
+   "u": 0.72,
+   "at": [
+    1100.2,
+    267.4
+   ],
+   "target": "GER",
+   "war": "USA v ITA+AUT+FRA+ENG+EGY+SUD+BCO+SAF+FMO+#111+GER+POL+FIN+SOV+BUL+POR+NOR+SWE+MON+TAN+#106+JAP+RAJ+NEP+SIA+CHI+MEN",
+   "warDays": 216,
+   "desperation": 0,
+   "extreme": false,
+   "resolve": 0,
+   "retaliation": 1.4,
+   "doctrine": 0.65,
+   "lastStrike": [
+    228168,
+    -1
+   ],
+   "resolveStrikes": null,
+   "warId": 198,
+   "capKm": [
+    "ITA 1184",
+    "AUT 682",
+    "FRA 5091",
+    "ENG 5279",
+    "EGY 3414",
+    "SUD 4488"
+   ],
+   "parts": {
+    "econShare": 0.0197,
+    "menShare": 0.4293,
+    "ownShare": 0,
+    "menExpected": 259436,
+    "menAll": 320394,
+    "theatreMen": 604294,
+    "sideMen": 2417175,
+    "capital": 0.3,
+    "through": 1,
+    "value": 1
+   },
+   "launch": 6,
+   "missile": 1,
+   "flightH": 0.35732603844371624,
+   "toll": {
+    "dead": 5495787,
+    "yieldN": 2,
+    "men": 258787,
+    "guns": 880,
+    "tanks": 522,
+    "planes": 20,
+    "ships": 0,
+    "people": 5237000,
+    "econLost": 36157.58,
+    "formationsNear": 29
+   }
+  },
+  {
+   "day": 10178,
+   "year": 27.89,
+   "by": "GER",
+   "u": 0.307,
+   "at": [
+    555.4,
+    463.3
+   ],
+   "target": "CUB",
+   "war": "GER+POL+FIN+SOV+BUL+POR+NOR+SWE+MON+TAN+#106+ITA+AUT+FRA+ENG+SUD+BCO+SAF+FMO+#111+JAP+RAJ+NEP+SIA+CHI+MEN v GRE+MEX+CUB+CAN",
+   "warDays": 365,
+   "desperation": 0,
+   "extreme": false,
+   "resolve": 0,
+   "retaliation": 0,
+   "doctrine": 1.4,
+   "lastStrike": [
+    244272,
+    -1
+   ],
+   "resolveStrikes": [
+    1,
+    0
+   ],
+   "warId": 201,
+   "capKm": [
+    "GRE 10508",
+    "MEX 1785",
+    "CUB 0",
+    "CAN 4653"
+   ],
+   "parts": {
+    "econShare": 0.0442,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "menAll": 0,
+    "theatreMen": 250000,
+    "sideMen": 25273,
+    "capital": 0.3,
+    "through": 1,
+    "value": 0.742
+   },
+   "launch": 7,
+   "missile": 1,
+   "flightH": 0.4467563405050896,
+   "toll": {
+    "dead": 309000,
+    "yieldN": 2,
+    "men": 0,
+    "guns": 0,
+    "tanks": 0,
+    "planes": 0,
+    "ships": 0,
+    "people": 309000,
+    "econLost": 1000.97,
+    "formationsNear": 0
+   }
+  },
+  {
+   "day": 10268,
+   "year": 28.13,
+   "by": "JAP",
+   "u": 0.213,
+   "at": [
+    323.6,
+    291.8
+   ],
+   "target": "CAN",
+   "war": "GER+POL+FIN+SOV+BUL+POR+NOR+SWE+MON+TAN+#106+ITA+AUT+FRA+ENG+SUD+BCO+SAF+FMO+#111+JAP+RAJ+NEP+SIA+CHI+MEN v GRE+MEX+CUB+CAN",
+   "warDays": 455,
+   "desperation": 0,
+   "extreme": false,
+   "resolve": 0,
+   "retaliation": 0,
+   "doctrine": 1.35,
+   "lastStrike": [
+    246432,
+    -1
+   ],
+   "resolveStrikes": [
+    2,
+    0
+   ],
+   "warId": 201,
+   "capKm": [
+    "GRE 12241",
+    "MEX 3984",
+    "CUB 4653",
+    "CAN 0"
+   ],
+   "parts": {
+    "econShare": 0.0009,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "menAll": 7289,
+    "theatreMen": 250000,
+    "sideMen": 25273,
+    "capital": 0.3,
+    "through": 1,
+    "value": 0.309
+   },
+   "launch": 8,
+   "missile": 1,
+   "flightH": 0.4039651162456721,
+   "toll": {
+    "dead": 5134,
+    "yieldN": 2,
+    "men": 134,
+    "guns": 0,
+    "tanks": 0,
+    "planes": 54,
+    "ships": 0,
+    "people": 5000,
+    "econLost": 43.64,
+    "formationsNear": 2
+   }
+  },
+  {
+   "day": 10358,
+   "year": 28.38,
+   "by": "GER",
+   "u": 0.248,
+   "at": [
+    289.9,
+    254.9
+   ],
+   "target": "CAN",
+   "war": "GER+POL+FIN+SOV+BUL+POR+NOR+SWE+MON+TAN+#106+ITA+AUT+FRA+ENG+SUD+BCO+SAF+FMO+#111+JAP+RAJ+NEP+SIA+CHI+MEN v GRE+MEX+CUB+CAN",
+   "warDays": 545,
+   "desperation": 0,
+   "extreme": false,
+   "resolve": 0,
+   "retaliation": 0,
+   "doctrine": 1.4,
+   "lastStrike": [
+    248592,
+    -1
+   ],
+   "resolveStrikes": [
+    3,
+    0
+   ],
+   "warId": 201,
+   "capKm": [
+    "GRE 12271",
+    "MEX 4687",
+    "CUB 5291",
+    "CAN 677"
+   ],
+   "parts": {
+    "econShare": 0.0007,
+    "menShare": 0.0394,
+    "ownShare": 0,
+    "menExpected": 9839,
+    "menAll": 19114,
+    "theatreMen": 250000,
+    "sideMen": 25459,
+    "capital": 0,
+    "through": 1,
+    "value": 0.401
+   },
+   "launch": 9,
+   "missile": 1,
+   "flightH": 0.47345861748908646,
+   "toll": {
+    "dead": 11845,
+    "yieldN": 2,
+    "men": 9845,
+    "guns": 4,
+    "tanks": 0,
+    "planes": 0,
+    "ships": 0,
+    "people": 2000,
+    "econLost": 13.28,
+    "formationsNear": 5
+   }
+  }
+ ]
+}

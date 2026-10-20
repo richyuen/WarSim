@@ -20,7 +20,7 @@ import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from '../headless/assets';
 import { elementIndex } from '../../src/sim/systems/elements';
 import { seaKm } from '../../src/sim/systems/navalCombat';
-import { blastRadius, desperationOf, placeParts } from '../../src/sim/systems/nuclear';
+import { blastRadius, desperationOf, doctrineOf, placeParts, RESOLVE, RESOLVE_FULL_DAYS } from '../../src/sim/systems/nuclear';
 import { Domain, type World } from '../../src/sim/world';
 
 const seed = Number(process.argv[2]);
@@ -85,6 +85,8 @@ while (w.tick < T) {
     return { l, kit: kitNear(w, l.tx, l.ty, r), econ: industryNear(w, l.tx, l.ty, r), r };
   });
   const launchesBefore = new Set(w.nukeLaunches.map((l) => l.id));
+  // Each war's strikes by resolve before the hour: a decision that adds one was taken by it (PLAN 7.37c).
+  const resolveBefore = new Map(w.wars.list.map((war) => [war, [...(war.resolveStrikes ?? [0, 0])]]));
   sim.step(1, (world) => {
     const ev = world.out.events;
     for (let i = 0; i < ev.length; i += 6) {
@@ -105,6 +107,11 @@ while (w.tick < T) {
           row.war = `${war.sides[0].map(tag).join('+')} v ${war.sides[1].map(tag).join('+')}`;
           row.warDays = Math.round((world.tick - war.startTick) / 24);
           row.desperation = +d.desperation.toFixed(2);
+          // A strike of the resolve (PLAN 7.18e) weighs at RESOLVE × the war's days / RESOLVE_FULL_DAYS.
+          const rs = resolveBefore.get(war)?.[side] ?? 0;
+          row.byResolve = (war.resolveStrikes?.[side as 0 | 1] ?? 0) > rs;
+          if (row.byResolve) row.resolve = +(RESOLVE * Math.min(1, (world.tick - war.startTick) / 24 / RESOLVE_FULL_DAYS)).toFixed(2);
+          row.doctrine = +doctrineOf(world, n).toFixed(2);
           row.extreme = d.extreme;
           row.parts = { econShare: +p.econShare.toFixed(4), menShare: +p.menShare.toFixed(4), ownShare: +p.ownShare.toFixed(4), menExpected: Math.round(p.menShare * p.theatreMen), menAll: p.menAll, theatreMen: Math.round(p.theatreMen), sideMen: p.sideMen, capital: p.capital, through: +p.through.toFixed(2), value: +p.value.toFixed(3) };
           break;
