@@ -1,0 +1,31 @@
+diff --git a/src/sim/systems/territory.ts b/src/sim/systems/territory.ts
+index 6ea7734..554c486 100644
+--- a/src/sim/systems/territory.ts
++++ b/src/sim/systems/territory.ts
+@@ -281,6 +281,7 @@ export function territorySystem(world: World): void {
+     let defence = GARRISON;
+     let best = 0;
+     let bestNation = 0;
++    let bestMine = 0;
+     if (first !== -1) {
+       const dBloc = blocOf(world, d);
+       const wars = world.wars;
+@@ -292,14 +293,17 @@ export function territorySystem(world: World): void {
+         const an = controller[a]!;
+         if (an === 0 || an === bestNation || !wars.atWar(an, d)) continue;
+         let own = 0;
++        let mine = 0;
+         for (let e = first; e !== -1; e = entryNext[e]!) {
+           const n = entryNation[e]!;
++          if (n === an) mine = entryP[e]!;
+           if (n === an || wars.together(n, an, d)) own += entryP[e]!;
+         }
+         const corridor = inCorridor(world, an, c) ? CORRIDOR_PRESSURE : 1; // PLAN 1.23 breakthrough
+         const p = (own * corridor) / (TERRAIN_DEF[terrain[c]!] ?? 1);
+-        if (p > best || (p === best && an < bestNation)) {
++        if (p > best || (p === best && (mine > bestMine || (mine === bestMine && an < bestNation)))) {
+           best = p;
++          bestMine = mine;
+           bestNation = an;
+         }
+       }

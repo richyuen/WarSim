@@ -168,13 +168,32 @@ each, split when taken up:
       range: two Soviet strategic bomber groups 6,153 and 8,118 km from the place, range 3,000, no
       missiles (`f-out-of-range-5309-SOV-bcbc99c.json`); ADR-561 would not change it. 7.37's commits: 12 of 20, counted by the subjects that name
       it, this one with them (the counts above took a part's follow-ups and 230c9e9 as none).
-    - [ ] 7.37g Latvia (seed 1307, 75 warheads) and Lithuania (8693, 20) nuclear powers (run 10,
+    - [x] 7.37g Latvia (seed 1307, 75 warheads) and Lithuania (8693, 20) nuclear powers (run 10,
       unexplained): how each came to the bomb (`goesForBomb`'s income against
       NUKE_PROGRAMME_INCOME, its land then) measured on the critic's code. AT: the cause, and a
       rule with an ADR or a BLOCKERS entry; and whether the game tells a new programme.
+      Met (`tools/diag/nukeProgramme.ts`, new; `docs/evidence/7.37/g-*`): each was the Soviet
+      Union's puppet with no army (0 men from day 180 and 60) when its held land grew from 131 to
+      4,787 cells (Latvia, days 450–660) and 88 to 1,921 (Lithuania, 420–540), Germany's heartland
+      with Berlin among them; its income 4 → 2,824 (second in the world) and 2.2 → 1,034, over
+      NUKE_PROGRAMME_INCOME; the bomb learned on day 3096 in both. The cause is not nuclear: in
+      `territory.ts` a frontier cell goes to the neighbouring enemy controller whose side presses it
+      most, every candidate of one side scored with the same allied pressure, and a tie to the
+      lowest id (Lithuania 6, Latvia 7, the Soviet Union 10; Germany, 1, never loses one). A
+      candidate tie-break by the nation's own pressure (`g-tiebreak-candidate.diff`), patched into
+      the critic's code: two years on, Latvia 359–402 cells and income 24, Lithuania 88 and 2.2,
+      neither a programme. The rule is PLAN 7.43 (a land rule, its ADR and the pin's entry). The
+      game does not tell a new programme (`TechResearched` is no history kind; no row or alert):
+      PLAN 7.37i. No nuclear rule; the pin unchanged.
     - [ ] 7.37h Seed 9901's three Soviet strikes on a lone Chinese division (ADR-528 on, utilities
       0.025 to 0.055, `docs/evidence/7.32/chain-f0be88c-9901_rule.json`): whether 7.38's weight of
       the dead changes them; else a rule with an ADR or a BLOCKERS entry.
+    - [ ] 7.37i The game tells a new nuclear power (from 7.37g: Latvia and Lithuania went for the
+      bomb with no word in the history): a history row the day a nation learns `atomic_bomb`
+      ("Latvia has learned to build the atomic bomb"), with its income's rank. AT: a unit test on a
+      nation granted the bomb's prerequisites and NUKE_PROGRAMME_INCOME, the row on the day the
+      tech is researched (red without: no row); a spec of the row in the history panel; the pin
+      unchanged (a history kind, no rule).
 - [ ] 7.38 R10-B1: the AI's nuclear choice weighs the people a burst kills (AI nuclear use 7, needs
   8; blocking). `nuclearUtility` has no term for the dead (`src/sim/systems/nuclear.ts:554-560`):
   Germany H-bombs Shanghai for 3,802,105 dead and 105 soldiers at utility 0.025, NUKE_FLOOR itself
@@ -209,6 +228,17 @@ each, split when taken up:
   years. Read, not a bar (the user's, 2026-10-20: which nations go to war is diplomacy's): the
   year-10 and year-20 samples with no war whose two sides both have a navy (was 18 of 28). A unit
   test per rule; the pin's entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
+- [ ] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g):
+  `territory.ts`'s flip scores each neighbouring enemy controller with its side's pressure and
+  gives a tie to the lowest id, so a puppet or ally with no army takes the cells its partner's
+  armies win (seed 1307 on `bcbc99c`: Latvia, the Soviet Union's puppet with 0 men, 131 → 4,787
+  cells and Berlin in 210 days; seed 8693, Lithuania 88 → 1,921). Rule: on equal side pressure
+  the cell goes to the candidate whose own formations press it most, then the lowest id
+  (`docs/evidence/7.37/g-tiebreak-candidate.diff`). AT: a unit test, a puppet with no formation
+  and its overlord's division both beside an enemy cell, the cell to the overlord (red without:
+  the puppet, its id the lower); from 1938 on seeds 1307 and 8693 on HEAD, no nation with no land
+  formation gains 500 cells or more by flips in two years (each read by `nukeProgramme.ts`'s
+  `held` and `men`); the ADR and the pin's entry.
 - [ ] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's
   seeds: the same top five 22 years on seed 8693 and 21 on 7019, over the 20-year limit (4219 and
   3613: 18 and 17; run 9's worst 18; `critic/c10_summary.txt` `stasis`); late wars between

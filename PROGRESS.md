@@ -20501,3 +20501,25 @@ No rule changed and nothing on screen changed. One task came out of it.
   4219 / 6421 loaded on HEAD: at most about 0.4 % of the worker's time. Not in the tick.
 - **Specs by hand, green:** nukeRestraint1938. 7.37's commits: 12 of 20 (by subjects).
 - **Next:** PLAN 7.37g (Latvia and Lithuania nuclear powers).
+
+## 2026-10-20 — PLAN 7.37g: Latvia and Lithuania went for the bomb on land a tie-break gave them
+
+- **Measured** on the critic's code (`bcbc99c`, worktree; `tools/diag/nukeProgramme.ts`, new: every
+  N days a nation's income and rank, land by its 1938 owner, men, overlord, nuclear techs and
+  warheads, and the events that moved its land; `docs/evidence/7.37/g-*`): Latvia (seed 1307) and
+  Lithuania (8693) were each the Soviet Union's puppet with no army (0 men from day 180 / 60) when
+  the land they held grew 131 → 4,787 cells (days 450–660) and 88 → 1,921 (420–540): Germany's
+  heartland, Berlin with it (Latvia killed Germany on day 868). Income 4 → 2,824 (second in the
+  world; 5,800 and first by year 8) and 2.2 → 1,034, over NUKE_PROGRAMME_INCOME; both learned the
+  bomb on day 3096, the programmes then built at the same rate as the great powers'.
+- **Cause, not nuclear:** `territory.ts`'s flip scores each neighbouring enemy controller of a
+  frontier cell with its whole side's pressure (`together`), so a puppet and its overlord score the
+  same, and a tie goes to the lowest id: Lithuania 6, Latvia 7, the Soviet Union 10 (Germany, 1,
+  never loses one). A candidate tie-break by the nation's own pressure, patched into the critic's
+  code: two years on, Latvia 359–402 cells (income 24) and Lithuania 88 (2.2), no programme
+  (`g-*-tiebreak.json`, `g-tiebreak-candidate.diff`). Filed as PLAN 7.43 (a land rule, its ADR and
+  the pin's entry), after the critic's blockers.
+- **The game does not tell a new programme:** `TechResearched` is not a history kind; no row or
+  alert. Filed as PLAN 7.37i.
+- No rule, the pin unchanged. Specs by hand: none (no UI). 7.37's commits: 13 of 20.
+- **Next:** PLAN 7.37h (seed 9901's three Soviet strikes on a lone division).
