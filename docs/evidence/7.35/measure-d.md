@@ -671,28 +671,29 @@ nations lost a navy, 290 built one again; 92,087 lost navies' months in years 2â
 `shipyard`'s order: a port it controls bombed shut, or with water off the world's seas (a lake, the
 Caspian, a zone of ice: `basinOf` is fixed, so no season enters), or none the lane graph takes;
 else a port it owns held by a nation at war with it (occupied) or at peace with it; else it owns
-no port now though it controlled one in 1938 (its coast ceded), or never did.
+no port now though it controlled one in 1938 (its coast lost: another nation's land now, by a peace
+or a revival without it; the tool does not tell which), or never did.
 
 | why, years 2â€“30 | months | share |
 | --- | --- | --- |
-| its coast ceded: it owns no port now | 12,701 | 90.9 % |
+| its coast lost: it owns no port now | 12,701 | 90.9 % |
 | occupied: its ports held by an enemy | 780 | 5.6 % |
 | water off the world's seas (lake, Caspian, ice) | 168 | 1.2 % |
-| never a port (Singapore's spawns) | 118 | 0.8 % |
+| never a port (none controlled in 1938) | 118 | 0.8 % |
 | water the lane graph does not take | 106 | 0.8 % |
 | bombed shut | 100 | 0.7 % |
 | held by a nation at peace with it | 0 | 0 |
 | all `noShipyard` | 13,973 | 15.2 % of the lost navies' months |
 
-By nation (all 30 years, over the seeds): Greece 2,437 months on 10 seeds (2,408 ceded: its ports
-Italy's, Albania's, Romania's, Germany's, Yugoslavia's by the peace), Yugoslavia 2,008 on 11 (1,948
-ceded), Poland 1,397 (1,366), Sweden 1,158 (1,115: Germany's on 3 seeds), Norway 1,114 (1,049:
-Germany's), Nationalist Spain 655 (517), the Raj 603 (470), Colombia 591, Iran 589 (462 ceded, 109
+By nation (all 30 years, over the seeds): Greece 2,437 months on 10 seeds (2,408 its coast lost: its 1938
+ports now Italy's, Albania's, Romania's, Germany's, Yugoslavia's), Yugoslavia 2,008 on 11 (1,948
+lost), Poland 1,397 (1,366), Sweden 1,158 (1,115: Germany's on 3 seeds), Norway 1,114 (1,049:
+Germany's), Nationalist Spain 655 (517), the Raj 603 (470), Colombia 591, Iran 589 (462 lost, 109
 its Caspian ports alone), Ireland 541, Turkey 474, Romania 357. `check`: of 93,166 lost navies'
 months, 1 that the reading stopped had a warship ordered in the tick after (seed 6113).
 
-**What it says.** A nation without a shipyard has, nine times in ten, no coast: the land war's
-peace took every port it owned. It is not stranded by a rule of the navy (bombs shut 0.7 %, inland
+**What it says.** A nation without a shipyard has, nine times in ten, no coast: every port it
+held in 1938 is another nation's land now. It is not stranded by a rule of the navy (bombs shut 0.7 %, inland
 water 2 %), and an occupied coast is the war's (5.6 %). No rule builds ships for a nation with no
 port; the reason is the land war's, not the fleet step's. No rule: the pin unchanged.
 

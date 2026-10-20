@@ -20243,11 +20243,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   tick 1.91 → 1.93 ms (one run each).
 - **Next:** PLAN 7.35d3c (no shipyard), then `seaYears`' after-run.
 
-## 2026-10-20 — PLAN 7.35d3c: no shipyard traced, the coast ceded (no rule)
+## 2026-10-20 — PLAN 7.35d3c: no shipyard traced, the coast lost (no rule)
 
 - **Traced** (`navyLoss` says why per `noShipyard` month, `navyLossYard` sums; `measure-d.md` §14;
   14 seeds × 30 years at `ebec10a`): of 13,973 no-shipyard months in years 2–30 (15.2 % of the lost
-  navies' months), 12,701 (91 %) the nation owns no port now, its 1938 ports ceded in a peace
+  navies' months), 12,701 (91 %) the nation owns no port now, its 1938 ports another nation's land
   (Greece 2,408, Yugoslavia 1,948, Poland 1,366, Sweden 1,115, Norway 1,049); 780 occupied by an
   enemy; bombs 100, inland water 274, never a port 118. A nation with no coast builds no ship: the
   reason is the land war's, no rule; the pin unchanged.
@@ -20273,4 +20273,4 @@ No rule changed and nothing on screen changed. One task came out of it.
     (7.35d, ADR-549 to ADR-553, ADR-557). The rest of the gap: navies sunk by year 1 that nations
     with no coast (§14) or no gold (§13) cannot replace.
 - **AT:** every part done, each its bar or its measured reason: 7.35 ticked, `plan:archive` run.
-- **Next:** PLAN 7.36 (aircraft 6).
+- **Next:** the first unchecked task, PLAN 7.36 (aircraft 6).
