@@ -1,0 +1,200 @@
+{
+ "seed": 2953,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 3,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 5689,
+   "year": 15.59,
+   "tick": 136537,
+   "by": "Italy",
+   "u": 0.294,
+   "at": [
+    1237.98,
+    242.14
+   ],
+   "target": "Soviet Union",
+   "war": 197,
+   "warName": "Italy+Yugoslavia+Palestine+Transjordan+founded#105+founded#107+founded#121+Japan+Manchukuo v Soviet Union+Norway+Iraq",
+   "warDays": 391,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.295,
+   "utility": {
+    "value": 0.79,
+    "through": 1,
+    "desperation": 1.071,
+    "ownDesperation": 0.001,
+    "doctrine": 1.3,
+    "gain": 1.1,
+    "retaliation": 0,
+    "allianceCost": 0.1,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 47000,
+    "dead": 0.005,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.805
+   },
+   "place": {
+    "econShare": 0.004,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.79,
+    "econShare": 0.004,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 909000,
+    "fission": 47000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 58183,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 6938,
+   "year": 19.01,
+   "tick": 166513,
+   "by": "Italy",
+   "u": 0.364,
+   "at": [
+    1714.83,
+    413.76
+   ],
+   "target": "Soviet Union",
+   "war": 240,
+   "warName": "Japan+Poland+Romania+Afghanistan+Mengjiang+Xinjiang+Italy+Yugoslavia+Palestine+Transjordan+founded#105+founded#107+founded#121+founded#125 v Soviet Union+Estonia+Finland+Norway+Mongolia+founded#109",
+   "warDays": 377,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.364,
+   "utility": {
+    "value": 0.83,
+    "through": 1,
+    "desperation": 1.033,
+    "ownDesperation": 0.008,
+    "doctrine": 1.3,
+    "gain": 1.114,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.126,
+    "taboo": 0.924,
+    "people": 191000,
+    "dead": 0.019,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.75
+   },
+   "place": {
+    "econShare": 0.007,
+    "menShare": 0.046,
+    "ownShare": 0,
+    "menExpected": 11477,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.83,
+    "econShare": 0.007,
+    "menShare": 0.046,
+    "menExpected": 11477,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 3802000,
+    "fission": 191000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 202416,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 8734,
+   "year": 23.93,
+   "tick": 209617,
+   "by": "Italy",
+   "u": 0.459,
+   "at": [
+    1309.29,
+    262.22
+   ],
+   "target": "Soviet Union",
+   "war": 305,
+   "warName": "Italy v Soviet Union+Norway",
+   "warDays": 454,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.46,
+   "utility": {
+    "value": 0.818,
+    "through": 1,
+    "desperation": 1.244,
+    "ownDesperation": 0.009,
+    "doctrine": 1.3,
+    "gain": 1.323,
+    "retaliation": 0,
+    "allianceCost": 0.15,
+    "outrage": 0.112,
+    "taboo": 1,
+    "people": 23000,
+    "dead": 0.002,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.864
+   },
+   "place": {
+    "econShare": 0.007,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.818,
+    "econShare": 0.007,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 387000,
+    "fission": 23000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 34183,
+    "yieldN": 1
+   }
+  }
+ ]
+}

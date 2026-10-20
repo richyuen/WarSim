@@ -1,0 +1,217 @@
+{
+ "seed": 7583,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 4,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 5233,
+   "year": 14.34,
+   "tick": 125593,
+   "by": "Soviet Union",
+   "u": 0.548,
+   "at": [
+    1247.5,
+    306.04
+   ],
+   "target": "Germany",
+   "war": 173,
+   "warName": "Germany+Iran v Soviet Union+Finland+Yugoslavia+Norway+Sweden+China+Mongolia+Tannu Tuva+founded#108",
+   "warDays": 138,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.548,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1.724,
+    "ownDesperation": 1.724,
+    "doctrine": 1.2,
+    "gain": 2.068,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.52
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.174,
+    "ownShare": 0,
+    "menExpected": 67683,
+    "theatreMen": 388070,
+    "capital": 0
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0,
+    "menShare": 0.174,
+    "menExpected": 67683,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 167000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 67698,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 5234,
+   "year": 14.34,
+   "tick": 125617,
+   "by": "Germany",
+   "u": 0.459,
+   "at": [
+    1159.01,
+    370.26
+   ],
+   "target": "Soviet Union",
+   "missile": 1,
+   "toll": {
+    "dead": 86000,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 5729,
+   "year": 15.7,
+   "tick": 137497,
+   "by": "Soviet Union",
+   "u": 0.686,
+   "at": [
+    710.16,
+    564.03
+   ],
+   "target": "Netherlands",
+   "war": 180,
+   "warName": "France+United Kingdom+British India+Ceylon+British Malaya+Newfoundland+Netherlands+Portugal+Burma+South Africa+Yemen+Anglo-Egyptian Sudan v Soviet Union+Finland+Yugoslavia+Greece+Norway+Sweden+Afghanistan+China+Mongolia+Tannu Tuva+founded#108",
+   "warDays": 365,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.686,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1,
+    "ownDesperation": 0.005,
+    "doctrine": 1.2,
+    "gain": 1.2,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.183,
+    "taboo": 0.547,
+    "people": 26000,
+    "dead": 0.003,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.514
+   },
+   "place": {
+    "econShare": 0.002,
+    "menShare": 0.09,
+    "ownShare": 0,
+    "menExpected": 22428,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0.002,
+    "menShare": 0.09,
+    "menExpected": 22428,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 594000,
+    "fission": 26000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 48366,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 5819,
+   "year": 15.94,
+   "tick": 139657,
+   "by": "Soviet Union",
+   "u": 0.606,
+   "at": [
+    1615.78,
+    618.78
+   ],
+   "target": "Netherlands",
+   "war": 180,
+   "warName": "France+United Kingdom+British India+Ceylon+British Malaya+Newfoundland+Netherlands+Portugal+Burma+South Africa+Yemen+Anglo-Egyptian Sudan v Soviet Union+Finland+Yugoslavia+Greece+Norway+Sweden+Afghanistan+China+Mongolia+Tannu Tuva+founded#108",
+   "warDays": 455,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.552,
+   "utility": {
+    "value": 0.706,
+    "through": 1,
+    "desperation": 1.247,
+    "ownDesperation": 0.005,
+    "doctrine": 1.2,
+    "gain": 1.055,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.296,
+    "taboo": 0.345,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.503
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.071,
+    "ownShare": 0,
+    "menExpected": 17633,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.706,
+    "econShare": 0,
+    "menShare": 0.071,
+    "menExpected": 17633,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 165000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 17642,
+    "yieldN": 1
+   }
+  }
+ ]
+}

@@ -1,0 +1,76 @@
+{
+ "seed": 763,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 1,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 5955,
+   "year": 16.32,
+   "tick": 142921,
+   "by": "Soviet Union",
+   "u": 0.453,
+   "at": [
+    1819.02,
+    385.28
+   ],
+   "target": "Japan",
+   "war": 151,
+   "warName": "Soviet Union+Lithuania+Latvia+Finland+Romania+Norway+Sweden+Egypt+French Morocco+Tunisia+Transjordan+Iran+Afghanistan+China+Mengjiang+Xinjiang+Mongolia+Tannu Tuva+founded#108+founded#109 v Japan",
+   "warDays": 365,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.453,
+   "utility": {
+    "value": 0.978,
+    "through": 1,
+    "desperation": 1,
+    "ownDesperation": 0,
+    "doctrine": 1.2,
+    "gain": 1.174,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 208000,
+    "dead": 0.021,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.721
+   },
+   "place": {
+    "econShare": 0.068,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 59,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.978,
+    "econShare": 0.068,
+    "menShare": 0,
+    "menExpected": 59,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 3973000,
+    "fission": 208000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 208050,
+    "yieldN": 1
+   }
+  }
+ ]
+}

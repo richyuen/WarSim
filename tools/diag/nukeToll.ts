@@ -7,9 +7,10 @@
  * (dead, men), and the earlier bursts within a blast radius of the place: in the same war (by
  * `War.id`) and in any.
  *
- * Read after the hour of the decision (as `nukeChain.ts`): the war's `lastStrike` is then set, so a
- * strike of the resolve is told by `resolveStrikes` before and after the hour, and its desperation
- * set to the resolve's as the decision weighed it.
+ * Read after the hour of the decision (as `nukeChain.ts`): a strike of the resolve is told by
+ * `resolveStrikes` before and after the hour. The place is weighed with the war's `lastStrike` and
+ * `resolveStrikes` of before the hour put back (PLAN 7.45b): after it the resolve is spent, and each
+ * yield's score, and so the yield and value read, were the war's without it.
  *
  * Usage: npx tsx tools/diag/nukeToll.ts <seed> <years> [from.bin | new] [out.json] [saveTicks]
  * `saveTicks`: comma-separated ticks; a checkpoint is saved 48 hours before each, to
@@ -94,6 +95,15 @@ function fissionParts(world: World, n: number, war: Parameters<typeof placeParts
   }
 }
 
+type Strikes = { lastStrike: [number, number] | undefined; resolveStrikes: [number, number] | undefined };
+/** Puts a war's `lastStrike` and `resolveStrikes` as in `s` (an absent one deleted). */
+function setStrikes(war: World['wars']['list'][number], s: Strikes): void {
+  if (s.lastStrike) war.lastStrike = s.lastStrike;
+  else delete war.lastStrike;
+  if (s.resolveStrikes) war.resolveStrikes = s.resolveStrikes;
+  else delete war.resolveStrikes;
+}
+
 type Row = Record<string, unknown>;
 const rows: Row[] = [];
 const byLaunch = new Map<number, Row>();
@@ -111,6 +121,7 @@ while (w.tick < T) {
   }
   const launchesBefore = new Set(w.nukeLaunches.map((l) => l.id));
   const resolveBefore = new Map(w.wars.list.map((war) => [war, [...(war.resolveStrikes ?? [0, 0])]]));
+  const warBefore = new Map(w.wars.list.map((war) => [war, { lastStrike: war.lastStrike ? ([...war.lastStrike] as [number, number]) : undefined, resolveStrikes: war.resolveStrikes ? ([...war.resolveStrikes] as [number, number]) : undefined }]));
   // The grievances as the decision weighed them: a strike back spends its own within the hour (PLAN 7.45).
   const grievanceBefore = new Map([...w.nukeGrievance].map(([k, g]) => [k, { ...g }]));
   sim.step(1, (world) => {
@@ -132,11 +143,15 @@ while (w.tick < T) {
           if (side < 0 || !war.sides[1 - side]!.includes(owner)) continue;
           const g = grievanceBefore.get(n);
           const back = g !== undefined && g.until > world.tick && war.sides[1 - side]!.includes(g.by);
-          const inputs = nukeInputs(world, n, war, side, x, y, back);
-          const own = desperationOf(world, n, war, side);
           const rs = resolveBefore.get(war)?.[side] ?? 0;
           const byResolve = (war.resolveStrikes?.[side as 0 | 1] ?? 0) > rs;
-          // The resolve as the decision weighed it (after the hour `lastStrike` keeps it at 0).
+          // The war's strikes as the decision saw them (PLAN 7.45b): after the hour `lastStrike` keeps
+          // the resolve at 0, so each yield's score (and the yield chosen) would be weighed without it.
+          const after = { lastStrike: war.lastStrike, resolveStrikes: war.resolveStrikes };
+          const before = warBefore.get(war);
+          if (before) setStrikes(war, before);
+          const inputs = nukeInputs(world, n, war, side, x, y, back);
+          const own = desperationOf(world, n, war, side);
           if (byResolve) inputs.desperation = Math.max(own.desperation, RESOLVE * Math.min(1, (world.tick - war.startTick) / 24 / RESOLVE_FULL_DAYS));
           const p = placeParts(world, n, war, side, x, y);
           const f = fissionParts(world, n, war, side, x, y);
@@ -171,6 +186,7 @@ while (w.tick < T) {
           // PLAN 7.38e: compared unrounded (seed 751's day 7896: 0.90786 against 0.90776, both 0.908 rounded).
           row.fissionCovers = f.value >= inputs.targetValue;
           row.peopleExpected = { thermo: peopleIn(world, 2, x, y), fission: peopleIn(world, 1, x, y) };
+          setStrikes(war, after);
           // The bursts before within a blast radius of the place.
           const near = bursts.filter((b) => seaKm(world, x, y, b.x, b.y) <= thermo);
           row.before = near.map((b) => ({ day: b.day, by: b.by, sameWar: b.war === war.id, dead: b.dead }));

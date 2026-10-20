@@ -20707,3 +20707,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   scale line at doctrine 1.5 now the new rule's (DEAD_COST, was half). Both green. Specs by hand:
   none (no UI).
 - **Next:** PLAN 7.45b, 7.38's second read (critic's 14 + 761–770 × 30 years).
+
+## 2026-10-20 — PLAN 7.45b: 7.38's second read, the three bars met on 24 seeds; 7.45 and 7.38 ticked
+
+- **Read** (HEAD `7f87eb8`, `nukeToll.ts <seed> 30 new`; `docs/evidence/7.45/b-read.md`,
+  `b-toll-*.json`): the critic's 14 seeds, 53 decisions: under 0.1 with a million dead 0, restruck
+  in a war 0, hydrogen where fission covers 0. Unseen 761–770, 45 decisions: 0, 0, 0. No burst of a
+  million dead on any of the 24 (the first read: 20, 4 under 0.1); the most 754,042 (767, a fission
+  burst at 1.296). 22 of 24 worlds still see a burst (all but 5309 and 762). Met: PLAN 7.38 (R10-B1)
+  and 7.45 ticked, the BLOCKERS entry resolved.
+- **Tool fix** (`nukeToll.ts`): a strike of the resolve was weighed after the hour, when the war's
+  `lastStrike` has spent the resolve (5861's Italy: desperation 0.026 against 1.551). The tool's own
+  yield choice then went to fission, so "fission covers" was true by construction: 4 rows on 5861,
+  6421 and 761 in the first runs. It now puts the war's `lastStrike` and `resolveStrikes` of before
+  the hour back while it weighs the place. The three seeds were re-run, and each such hydrogen burst's
+  value is above fission's (0.453 / 0.434 to 0.995 / 0.449). The recomputed utility is now within
+  0.011 of the sim's.
+- **For the user (ADR-566):** places struck again in a later war on 5861, 9437, 761 and 767. 9437's
+  Soviet capital is now struck twice (183,183 and 178,111 dead; three times for 2.58 M to 0.77 M at
+  the first read).
+- No sim change, the pin unchanged. Specs by hand: none (no UI). 7.38's commits: 5 (+7.44, 7.45a, 7.45b).
+- **Next:** PLAN 7.39 (R10-B2, the war at sea after year 1).

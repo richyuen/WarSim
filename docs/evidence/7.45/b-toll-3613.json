@@ -1,0 +1,76 @@
+{
+ "seed": 3613,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 1,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 6177,
+   "year": 16.92,
+   "tick": 148249,
+   "by": "Italy",
+   "u": 0.199,
+   "at": [
+    1461.55,
+    334.21
+   ],
+   "target": "Soviet Union",
+   "war": 196,
+   "warName": "founded#115+Estonia+Nationalist Spain+Italy+Austria+Hungary+Albania+Xinjiang+Communist China v Soviet Union+Finland+Yugoslavia+Greece+Iran+Mongolia+founded#113+Portugal",
+   "warDays": 370,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.199,
+   "utility": {
+    "value": 0.759,
+    "through": 1,
+    "desperation": 1.014,
+    "ownDesperation": 0,
+    "doctrine": 1.3,
+    "gain": 1,
+    "retaliation": 0,
+    "allianceCost": 0.1,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 8000,
+    "dead": 0.001,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.801
+   },
+   "place": {
+    "econShare": 0.001,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.759,
+    "econShare": 0.001,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 135000,
+    "fission": 8000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 19183,
+    "yieldN": 1
+   }
+  }
+ ]
+}

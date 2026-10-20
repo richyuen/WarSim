@@ -1,0 +1,76 @@
+{
+ "seed": 4219,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 1,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 6755,
+   "year": 18.51,
+   "tick": 162121,
+   "by": "Netherlands",
+   "u": 0.086,
+   "at": [
+    1463.18,
+    430.06
+   ],
+   "target": "British India",
+   "war": 177,
+   "warName": "China+Nepal+Tibet+Japan+United Kingdom+Soviet Union+Romania+Albania+Portugal+Anglo-Egyptian Sudan+Palestine+Saudi Arabia+Burma+Ceylon+British Malaya+Mongolia+Newfoundland+Peru+France+Czechoslovakia+Lithuania+Italy+Nationalist Spain+Sweden+founded#107+Luxembourg+Belgium+Netherlands+Switzerland+Mengjiang+Iraq v British India",
+   "warDays": 608,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.086,
+   "utility": {
+    "value": 0.857,
+    "through": 1,
+    "desperation": 1.666,
+    "ownDesperation": 0.521,
+    "doctrine": 0.6,
+    "gain": 0.857,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 147000,
+    "dead": 0.021,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.771
+   },
+   "place": {
+    "econShare": 0.011,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.857,
+    "econShare": 0.011,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 3274000,
+    "fission": 147000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 158183,
+    "yieldN": 1
+   }
+  }
+ ]
+}

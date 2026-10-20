@@ -1,0 +1,76 @@
+{
+ "seed": 765,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 1,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 8253,
+   "year": 22.61,
+   "tick": 198073,
+   "by": "Japan",
+   "u": 0.584,
+   "at": [
+    1631.73,
+    632.42
+   ],
+   "target": "Netherlands",
+   "war": 196,
+   "warName": "Germany+Poland+Albania+Turkey+Ireland+Sweden+Transjordan+Iran+Hungary+Yugoslavia+Greece+Egypt+Anglo-Egyptian Sudan+Southern Rhodesia+founded#112+Japan+Manchukuo+Xinjiang v United Kingdom+Liberia+Venezuela+Netherlands+Nigeria+founded#115",
+   "warDays": 365,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.584,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1,
+    "ownDesperation": 0.07,
+    "doctrine": 1.35,
+    "gain": 1.35,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 158000,
+    "dead": 0.016,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.766
+   },
+   "place": {
+    "econShare": 0.026,
+    "menShare": 0.09,
+    "ownShare": 0,
+    "menExpected": 22598,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0.026,
+    "menShare": 0.09,
+    "menExpected": 22598,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 2602000,
+    "fission": 158000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 180538,
+    "yieldN": 1
+   }
+  }
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "seed": 4877,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 1,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 9815,
+   "year": 26.89,
+   "tick": 235561,
+   "by": "France",
+   "u": 0.291,
+   "at": [
+    1086.5,
+    397.5
+   ],
+   "target": "Tunisia",
+   "missile": 1,
+   "toll": {
+    "dead": 70000,
+    "yieldN": 2
+   }
+  }
+ ]
+}
