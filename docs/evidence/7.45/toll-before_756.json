@@ -1,0 +1,138 @@
+{
+ "seed": 756,
+ "years": 23.5,
+ "from": ".cache/nukeToll_756_197184.bin",
+ "bars": {
+  "decided": 2,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 8216,
+   "year": 22.51,
+   "tick": 197185,
+   "by": "Germany",
+   "u": 0.046,
+   "at": [
+    1048.64,
+    280.19
+   ],
+   "target": "Belgium",
+   "war": 181,
+   "warName": "Brazil+Paraguay+Portugal+Transjordan+Iraq+Saudi Arabia+China+Mengjiang+Guatemala+Colombia+founded#108+Anglo-Egyptian Sudan+Liberia+French Morocco+Tunisia+Syria+Burma+Siam+Netherlands+Belgium+Manchukuo+Soviet Union+Finland+British India+Mongolia+founded#104+founded#111+Yugoslavia v Germany",
+   "warDays": 18,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.046,
+   "utility": {
+    "value": 0.915,
+    "through": 1,
+    "desperation": 1.015,
+    "ownDesperation": 1.015,
+    "doctrine": 1.4,
+    "gain": 1.301,
+    "retaliation": 0.8,
+    "allianceCost": 0.1,
+    "outrage": 0.383,
+    "taboo": 0.414,
+    "people": 129000,
+    "dead": 0.008,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.255
+   },
+   "place": {
+    "econShare": 0.017,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.915,
+    "econShare": 0.017,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 3085000,
+    "fission": 129000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 140183,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 8472,
+   "year": 23.21,
+   "tick": 203329,
+   "by": "Germany",
+   "u": 1.38,
+   "at": [
+    1051.96,
+    268.71
+   ],
+   "target": "Netherlands",
+   "war": 181,
+   "warName": "Brazil+Paraguay+Portugal+Transjordan+Iraq+Saudi Arabia+China+Mengjiang+Guatemala+Colombia+founded#108+Anglo-Egyptian Sudan+Liberia+French Morocco+Tunisia+Syria+Burma+Siam+Netherlands+Belgium+Manchukuo+Soviet Union+Finland+British India+Mongolia+founded#104+founded#111+Yugoslavia v Germany",
+   "warDays": 274,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 1.38,
+   "utility": {
+    "value": 0.976,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 2.733,
+    "retaliation": 0.8,
+    "allianceCost": 0.1,
+    "outrage": 0.381,
+    "taboo": 0.428,
+    "people": 1719000,
+    "dead": 0.103,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.352
+   },
+   "place": {
+    "econShare": 0.026,
+    "menShare": 0.041,
+    "ownShare": 0,
+    "menExpected": 10282,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.818,
+    "econShare": 0.019,
+    "menShare": 0.033,
+    "menExpected": 8257,
+    "capital": 0.3
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 1719000,
+    "fission": 86000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 1729283,
+    "yieldN": 2
+   }
+  }
+ ]
+}

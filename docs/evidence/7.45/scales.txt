@@ -1,0 +1,104 @@
+decisions 170  capped (skip) 2
+
+== doctrine > 1 (rules differ) ==
+1307 d4177 Germany->Italy ret=false doc=1.4 ext=true M=0.17 dead=183183 u=0.033 | now=0.033 floor1=0.029 floor08=0.031 millionUneased=0.033 flat=0.029
+1307 d4869 Soviet Union->Japan ret=false doc=1.2 ext=true M=0.21 dead=577209 u=0.104 | now=0.104 floor1=0.1 floor08=0.104 millionUneased=0.104 flat=0.1
+1307 d8642 Germany->Soviet Union ret=true doc=1.4 ext=false M=0.37 dead=385183 u=0.814 | now=0.829 floor1=0.829 floor08=0.829 millionUneased=0.829 flat=0.829
+2081 d5903 Japan->Soviet Union ret=false doc=1.35 ext=false M=3.33 dead=3339183 u=0.091 | now=0.271 floor1=0.264 floor08=0.268 millionUneased=0.271 flat=0.264
+2081 d7003 Japan->China ret=false doc=1.35 ext=false M=0.75 dead=762087 u=0.186 | now=0.186 floor1=0.16 floor08=0.175 millionUneased=0.186 flat=0.16
+2953 d6938 Italy->Soviet Union ret=false doc=1.3 ext=false M=3.8 dead=3813513 u=0.164 | now=0.37 floor1=0.365 floor08=0.368 millionUneased=0.37 flat=0.365
+3613 d6177 Italy->Soviet Union ret=false doc=1.3 ext=false M=0.14 dead=146183 u=0.193 | now=0.199 floor1=0.199 floor08=0.199 millionUneased=0.199 flat=0.199
+3613 d9440 Japan->Soviet Union ret=false doc=1.35 ext=false M=0.46 dead=460000 u=0.026 | now=0.026 floor1=0.01 floor08=0.019 millionUneased=0.026 flat=0.01
+3613 d10713 Italy->Soviet Union ret=false doc=1.3 ext=false M=0.22 dead=229183 u=0.29 | now=0.29 floor1=0.283 floor08=0.288 millionUneased=0.29 flat=0.283
+5861 d6755 Italy->Soviet Union ret=false doc=1.3 ext=false M=0.96 dead=973317 u=0.239 | now=0.28 floor1=0.278 floor08=0.279 millionUneased=0.28 flat=0.278
+5861 d8983 Soviet Union->Japan ret=false doc=1.2 ext=true M=0.21 dead=375795 u=0.036 | now=0.036 floor1=0.032 floor08=0.036 millionUneased=0.036 flat=0.032
+6421 d10141 Soviet Union->Latvia ret=false doc=1.2 ext=false M=1.05 dead=1050000 u=0.463 | now=0.531 floor1=0.53 floor08=0.531 millionUneased=0.531 flat=0.53
+6421 d10142 Germany->Soviet Union ret=true doc=1.4 ext=false M=3.27 dead=3274000 u=0.473 | now=0.661 floor1=0.655 floor08=0.658 millionUneased=0.661 flat=0.655
+7019 d6333 Soviet Union->Japan ret=false doc=1.2 ext=false M=0.21 dead=476392 u=0.945 | now=0.946 floor1=0.942 floor08=0.946 millionUneased=0.946 flat=0.942
+7019 d8804 Soviet Union->Japan ret=false doc=1.2 ext=false M=1.77 dead=1792483 u=0.358 | now=0.358 floor1=0.325 floor08=0.358 millionUneased=0.326 flat=0.325
+7019 d10929 Soviet Union->Xinjiang ret=false doc=1.2 ext=false M=0.98 dead=991886 u=0.098 | now=0.098 floor1=0.078 floor08=0.098 millionUneased=0.098 flat=0.078
+753 d10626 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.14 dead=145000 u=0.694 | now=0.694 floor1=0.691 floor08=0.694 millionUneased=0.694 flat=0.691
+753 d10633 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.35 dead=349000 u=0.552 | now=0.578 floor1=0.578 floor08=0.578 millionUneased=0.578 flat=0.578
+753 d10752 Germany->France ret=false doc=1.4 ext=true M=0.52 dead=535222 u=0.264 | now=0.264 floor1=0.243 floor08=0.254 millionUneased=0.264 flat=0.243
+754 d3212 Soviet Union->United Kingdom ret=false doc=1.2 ext=true M=0.25 dead=594042 u=0.267 | now=0.267 floor1=0.266 floor08=0.267 millionUneased=0.267 flat=0.266
+754 d3346 Soviet Union->Netherlands ret=false doc=1.2 ext=false M=0.2 dead=212183 u=0.216 | now=0.216 floor1=0.214 floor08=0.216 millionUneased=0.216 flat=0.214
+754 d3590 Soviet Union->France ret=false doc=1.2 ext=true M=0.18 dead=194223 u=0.481 | now=0.481 floor1=0.479 floor08=0.481 millionUneased=0.481 flat=0.479
+754 d3830 Soviet Union->United Kingdom ret=false doc=1.2 ext=true M=0.24 dead=252925 u=0.14 | now=0.14 floor1=0.137 floor08=0.14 millionUneased=0.14 flat=0.137
+754 d8979 Soviet Union->British India ret=false doc=1.2 ext=false M=0.15 dead=147000 u=0.054 | now=0.054 floor1=0.052 floor08=0.054 millionUneased=0.054 flat=0.052
+756 d7858 Germany->United Kingdom ret=false doc=1.4 ext=true M=0.24 dead=undefined u=0.29 | now=0.29 floor1=0.28 floor08=0.285 millionUneased=0.29 flat=0.28
+756 d7915 Germany->France ret=false doc=1.4 ext=true M=0.24 dead=26330 u=0.245 | now=0.245 floor1=0.235 floor08=0.24 millionUneased=0.245 flat=0.235
+756 d7989 Germany->Netherlands ret=false doc=1.4 ext=true M=3.76 dead=3773183 u=0.944 | now=1.002 floor1=0.994 floor08=0.998 millionUneased=1.002 flat=0.994
+756 d8216 Germany->Belgium ret=false doc=1.4 ext=true M=2.28 dead=2294126 u=0.037 | now=0.037 floor1=-0.054 floor08=-0.009 millionUneased=-0.054 flat=-0.054
+757 d9824 Japan->Soviet Union ret=false doc=1.35 ext=false M=0.37 dead=374000 u=0.062 | now=0.062 floor1=0.049 floor08=0.056 millionUneased=0.062 flat=0.049
+758 d9060 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.17 dead=203727 u=1.052 | now=1.052 floor1=1.049 floor08=1.052 millionUneased=1.052 flat=1.049
+758 d9066 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.17 dead=206785 u=0.29 | now=0.29 floor1=0.283 floor08=0.287 millionUneased=0.29 flat=0.283
+758 d9067 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.12 dead=132222 u=0.763 | now=0.772 floor1=0.772 floor08=0.772 millionUneased=0.772 flat=0.772
+758 d9076 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.16 dead=174039 u=0.664 | now=0.665 floor1=0.665 floor08=0.665 millionUneased=0.665 flat=0.665
+758 d9090 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.42 dead=420791 u=0.483 | now=0.503 floor1=0.503 floor08=0.503 millionUneased=0.503 flat=0.503
+758 d9105 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.46 dead=460498 u=0.468 | now=0.468 floor1=0.459 floor08=0.468 millionUneased=0.468 flat=0.459
+758 d9114 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.11 dead=130014 u=0.642 | now=0.642 floor1=0.64 floor08=0.642 millionUneased=0.642 flat=0.64
+758 d9117 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.14 dead=159764 u=1.105 | now=1.105 floor1=1.1 floor08=1.102 millionUneased=1.105 flat=1.1
+758 d9125 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.57 dead=569551 u=0.412 | now=0.435 floor1=0.435 floor08=0.435 millionUneased=0.435 flat=0.435
+758 d9132 Soviet Union->Germany ret=true doc=1.2 ext=false M=3.16 dead=3157000 u=0.552 | now=0.752 floor1=0.748 floor08=0.752 millionUneased=0.752 flat=0.748
+758 d9165 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.26 dead=271419 u=0.664 | now=0.666 floor1=0.666 floor08=0.666 millionUneased=0.666 flat=0.666
+758 d9178 Germany->Soviet Union ret=false doc=1.4 ext=true M=1.32 dead=1334057 u=0.06 | now=0.06 floor1=0.007 floor08=0.034 millionUneased=0.007 flat=0.007
+758 d9219 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.1 dead=119826 u=0.057 | now=0.057 floor1=0.053 floor08=0.055 millionUneased=0.057 flat=0.053
+758 d9222 Soviet Union->Germany ret=true doc=1.2 ext=false M=4.91 dead=4906000 u=0.792 | now=1.101 floor1=1.096 floor08=1.101 millionUneased=1.101 flat=1.096
+758 d9253 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.12 dead=135454 u=0.052 | now=0.052 floor1=0.047 floor08=0.05 millionUneased=0.052 flat=0.047
+758 d9276 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.47 dead=486424 u=0.054 | now=0.054 floor1=0.035 floor08=0.045 millionUneased=0.054 flat=0.035
+758 d9293 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.52 dead=537167 u=0.052 | now=0.052 floor1=0.031 floor08=0.042 millionUneased=0.052 flat=0.031
+758 d9300 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.64 dead=656917 u=0.233 | now=0.233 floor1=0.207 floor08=0.22 millionUneased=0.233 flat=0.207
+758 d9307 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.86 dead=869203 u=0.262 | now=0.262 floor1=0.228 floor08=0.245 millionUneased=0.262 flat=0.228
+758 d9349 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.5 dead=508369 u=0.833 | now=0.833 floor1=0.823 floor08=0.833 millionUneased=0.833 flat=0.823
+758 d9371 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.13 dead=145616 u=0.157 | now=0.157 floor1=0.152 floor08=0.154 millionUneased=0.157 flat=0.152
+758 d9380 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.11 dead=124556 u=0.356 | now=0.356 floor1=0.352 floor08=0.354 millionUneased=0.356 flat=0.352
+758 d9409 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.27 dead=283246 u=0.296 | now=0.296 floor1=0.285 floor08=0.291 millionUneased=0.296 flat=0.285
+758 d9418 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.71 dead=707854 u=0.532 | now=0.532 floor1=0.518 floor08=0.532 millionUneased=0.532 flat=0.518
+758 d9437 Germany->founded#133 ret=false doc=1.4 ext=true M=0.1 dead=100000 u=1.249 | now=1.249 floor1=1.245 floor08=1.247 millionUneased=1.249 flat=1.245
+758 d9447 Germany->Soviet Union ret=false doc=1.4 ext=true M=0.27 dead=288489 u=0.216 | now=0.216 floor1=0.205 floor08=0.211 millionUneased=0.216 flat=0.205
+758 d9448 Soviet Union->Germany ret=true doc=1.2 ext=false M=2.08 dead=2094753 u=0.621 | now=0.688 floor1=0.688 floor08=0.688 millionUneased=0.688 flat=0.688
+758 d9492 Germany->Soviet Union ret=false doc=1.4 ext=true M=2.59 dead=2607136 u=0.273 | now=0.273 floor1=0.169 floor08=0.221 millionUneased=0.169 flat=0.169
+758 d9493 Soviet Union->Germany ret=true doc=1.2 ext=false M=0.81 dead=812000 u=0.832 | now=0.862 floor1=0.861 floor08=0.862 millionUneased=0.862 flat=0.861
+758 d10042 Germany->founded#121 ret=false doc=1.4 ext=false M=0.33 dead=326000 u=0.232 | now=0.232 floor1=0.219 floor08=0.225 millionUneased=0.232 flat=0.219
+758 d10052 Germany->founded#122 ret=false doc=1.4 ext=false M=0.14 dead=149111 u=0.041 | now=0.041 floor1=0.036 floor08=0.038 millionUneased=0.041 flat=0.036
+758 d10055 Germany->founded#121 ret=false doc=1.4 ext=false M=0.45 dead=455938 u=0.072 | now=0.072 floor1=0.054 floor08=0.063 millionUneased=0.072 flat=0.054
+758 d10063 Germany->founded#121 ret=false doc=1.4 ext=false M=0.55 dead=564053 u=0.333 | now=0.333 floor1=0.311 floor08=0.322 millionUneased=0.333 flat=0.311
+758 d10113 Germany->founded#122 ret=false doc=1.4 ext=false M=0.21 dead=256873 u=0.055 | now=0.055 floor1=0.046 floor08=0.051 millionUneased=0.055 flat=0.046
+7583 d5819 Soviet Union->Netherlands ret=false doc=1.2 ext=false M=0.17 dead=183282 u=0.604 | now=0.604 floor1=0.601 floor08=0.604 millionUneased=0.604 flat=0.601
+7583 d6852 Germany->Soviet Union ret=true doc=1.4 ext=false M=1.57 dead=1573008 u=0.336 | now=0.424 floor1=0.421 floor08=0.423 millionUneased=0.424 flat=0.421
+7583 d8055 Soviet Union->Germany ret=false doc=1.2 ext=true M=0.19 dead=233553 u=0.037 | now=0.037 floor1=0.033 floor08=0.037 millionUneased=0.037 flat=0.033
+7583 d8056 Germany->Soviet Union ret=true doc=1.4 ext=false M=0.13 dead=129080 u=0.425 | now=0.425 floor1=0.42 floor08=0.422 millionUneased=0.425 flat=0.42
+7583 d8106 Soviet Union->Nationalist Spain ret=false doc=1.2 ext=true M=0.56 dead=595972 u=0.27 | now=0.27 floor1=0.259 floor08=0.27 millionUneased=0.27 flat=0.259
+7583 d8107 Germany->Soviet Union ret=true doc=1.4 ext=false M=1.36 dead=1357000 u=0.244 | now=0.32 floor1=0.317 floor08=0.319 millionUneased=0.32 flat=0.317
+7583 d8124 Germany->Soviet Union ret=true doc=1.4 ext=false M=1.44 dead=1444000 u=0.224 | now=0.304 floor1=0.301 floor08=0.303 millionUneased=0.304 flat=0.301
+7583 d8944 Soviet Union->Japan ret=false doc=1.2 ext=true M=0.21 dead=440033 u=0.116 | now=0.117 floor1=0.113 floor08=0.117 millionUneased=0.117 flat=0.113
+7583 d10132 Japan->Soviet Union ret=false doc=1.35 ext=false M=0.37 dead=385183 u=0.301 | now=0.301 floor1=0.288 floor08=0.295 millionUneased=0.301 flat=0.288
+9437 d7181 Italy->Soviet Union ret=false doc=1.3 ext=false M=1.68 dead=1695135 u=0.252 | now=0.342 floor1=0.339 floor08=0.341 millionUneased=0.342 flat=0.339
+
+now: under floor 1 (strikes back 0); still <0.1 & >=1M 2
+  lost: 758 d9167 Germany->Iran ret=false doc=1.4 ext=true M=0.02 dead=39783 u=0.025 | now=0.025 floor1=0.024 floor08=0.025 millionUneased=0.025 flat=0.024
+  bad: 756 d8216 Germany->Belgium ret=false doc=1.4 ext=true M=2.28 dead=2294126 u=0.037 | now=0.037 floor1=-0.054 floor08=-0.009 millionUneased=-0.054 flat=-0.054
+  bad: 758 d9178 Germany->Soviet Union ret=false doc=1.4 ext=true M=1.32 dead=1334057 u=0.06 | now=0.06 floor1=0.007 floor08=0.034 millionUneased=0.007 flat=0.007
+
+floor1: under floor 4 (strikes back 0); still <0.1 & >=1M 0
+  lost: 3613 d9440 Japan->Soviet Union ret=false doc=1.35 ext=false M=0.46 dead=460000 u=0.026 | now=0.026 floor1=0.01 floor08=0.019 millionUneased=0.026 flat=0.01
+  lost: 756 d8216 Germany->Belgium ret=false doc=1.4 ext=true M=2.28 dead=2294126 u=0.037 | now=0.037 floor1=-0.054 floor08=-0.009 millionUneased=-0.054 flat=-0.054
+  lost: 758 d9167 Germany->Iran ret=false doc=1.4 ext=true M=0.02 dead=39783 u=0.025 | now=0.025 floor1=0.024 floor08=0.025 millionUneased=0.025 flat=0.024
+  lost: 758 d9178 Germany->Soviet Union ret=false doc=1.4 ext=true M=1.32 dead=1334057 u=0.06 | now=0.06 floor1=0.007 floor08=0.034 millionUneased=0.007 flat=0.007
+
+floor08: under floor 3 (strikes back 0); still <0.1 & >=1M 1
+  lost: 3613 d9440 Japan->Soviet Union ret=false doc=1.35 ext=false M=0.46 dead=460000 u=0.026 | now=0.026 floor1=0.01 floor08=0.019 millionUneased=0.026 flat=0.01
+  lost: 756 d8216 Germany->Belgium ret=false doc=1.4 ext=true M=2.28 dead=2294126 u=0.037 | now=0.037 floor1=-0.054 floor08=-0.009 millionUneased=-0.054 flat=-0.054
+  lost: 758 d9167 Germany->Iran ret=false doc=1.4 ext=true M=0.02 dead=39783 u=0.025 | now=0.025 floor1=0.024 floor08=0.025 millionUneased=0.025 flat=0.024
+  bad: 758 d9178 Germany->Soviet Union ret=false doc=1.4 ext=true M=1.32 dead=1334057 u=0.06 | now=0.06 floor1=0.007 floor08=0.034 millionUneased=0.007 flat=0.007
+
+millionUneased: under floor 3 (strikes back 0); still <0.1 & >=1M 0
+  lost: 756 d8216 Germany->Belgium ret=false doc=1.4 ext=true M=2.28 dead=2294126 u=0.037 | now=0.037 floor1=-0.054 floor08=-0.009 millionUneased=-0.054 flat=-0.054
+  lost: 758 d9167 Germany->Iran ret=false doc=1.4 ext=true M=0.02 dead=39783 u=0.025 | now=0.025 floor1=0.024 floor08=0.025 millionUneased=0.025 flat=0.024
+  lost: 758 d9178 Germany->Soviet Union ret=false doc=1.4 ext=true M=1.32 dead=1334057 u=0.06 | now=0.06 floor1=0.007 floor08=0.034 millionUneased=0.007 flat=0.007
+
+flat: under floor 4 (strikes back 0); still <0.1 & >=1M 0
+  lost: 3613 d9440 Japan->Soviet Union ret=false doc=1.35 ext=false M=0.46 dead=460000 u=0.026 | now=0.026 floor1=0.01 floor08=0.019 millionUneased=0.026 flat=0.01
+  lost: 756 d8216 Germany->Belgium ret=false doc=1.4 ext=true M=2.28 dead=2294126 u=0.037 | now=0.037 floor1=-0.054 floor08=-0.009 millionUneased=-0.054 flat=-0.054
+  lost: 758 d9167 Germany->Iran ret=false doc=1.4 ext=true M=0.02 dead=39783 u=0.025 | now=0.025 floor1=0.024 floor08=0.025 millionUneased=0.025 flat=0.024
+  lost: 758 d9178 Germany->Soviet Union ret=false doc=1.4 ext=true M=1.32 dead=1334057 u=0.06 | now=0.06 floor1=0.007 floor08=0.034 millionUneased=0.007 flat=0.007

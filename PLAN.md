@@ -147,6 +147,17 @@ each, split when taken up:
   ones, 761–770 (756 and 758 are now tuning cases), × 30 years, 7.38 ticked when they hold; a unit
   test (red without); the pin's entry. Stop: two full re-measures flat, the bar is the user's
   (ADR-554).
+  A part each:
+    - [x] 7.45a The rule: the scale (2 − doctrine) at least 1. AT: from the two checkpoints, neither
+      strike decided under 0.1 at a million dead; a unit test (red without); the pin's entry.
+      Met (ADR-572; `docs/evidence/7.45/measure.md`): measured first on 7.38e's 170 decisions, no
+      strike back under the floor at any candidate; 758 day 9178 not struck (day 9179: 722,738 dead
+      at 0.105); 756 day 8216 a fission burst on HEAD before the rule (7.44's), 140,183 dead at 0.041
+      after; `nukeDeadCostFloor1938.test.ts` red without. `nukeToll.ts` reads the grievance before
+      the hour (it marked no strike back). Read for 7.45b: 758 day 9493, 2,001,992 dead at 0.072.
+    - [ ] 7.45b PLAN 7.38's second read: its three bars on the critic's 14 seeds and 761–770 × 30
+      years on HEAD; 7.38 and 7.45 ticked when they hold, else BLOCKERS (the second re-measure:
+      flat twice, the bar is the user's).
 - [ ] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean
   of 38 sea battles a world; years 2 to 30 2.7 a world-year (1,090 in 406 world-years) while 50 to
   96 armed fleets stay afloat (115 at the start); at the year-10 and year-20 samples 18 of 28 have

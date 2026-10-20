@@ -1,0 +1,1541 @@
+{
+ "seed": 758,
+ "years": 26.2,
+ "from": ".cache/nukeToll_758_220272.bin",
+ "bars": {
+  "decided": 24,
+  "floor": 0.025,
+  "lowUtilityMillion": 1,
+  "restruckSameWar": 2,
+  "thermoWhereFissionCovers": 0
+ },
+ "rows": [
+  {
+   "day": 9179,
+   "year": 25.15,
+   "tick": 220297,
+   "by": "Germany",
+   "u": 0.105,
+   "at": [
+    1126.1,
+    286.5
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany+Belgium",
+   "warDays": 285,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.102,
+   "utility": {
+    "value": 0.734,
+    "through": 1,
+    "desperation": 1.725,
+    "ownDesperation": 1.725,
+    "doctrine": 1.4,
+    "gain": 1.773,
+    "retaliation": 1.2,
+    "allianceCost": 0.15,
+    "outrage": 0.399,
+    "taboo": 0.306,
+    "people": 705000,
+    "dead": 0.07,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.671
+   },
+   "place": {
+    "econShare": 0.002,
+    "menShare": 0.071,
+    "ownShare": 0,
+    "menExpected": 17758,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.327,
+    "econShare": 0,
+    "menShare": 0.033,
+    "menExpected": 8136,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 705000,
+    "fission": 2000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 722738,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9216,
+   "year": 25.25,
+   "tick": 221185,
+   "by": "Germany",
+   "u": 0.053,
+   "at": [
+    1297.57,
+    356.57
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany+Belgium",
+   "warDays": 322,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.05,
+   "utility": {
+    "value": 0.593,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 1.659,
+    "retaliation": 1.2,
+    "allianceCost": 0.15,
+    "outrage": 0.397,
+    "taboo": 0.319,
+    "people": 63000,
+    "dead": 0.006,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.609
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.059,
+    "ownShare": 0,
+    "menExpected": 14776,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.304,
+    "econShare": 0,
+    "menShare": 0.03,
+    "menExpected": 7609,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 63000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 77808,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9222,
+   "year": 25.27,
+   "tick": 221329,
+   "by": "Soviet Union",
+   "u": 1.096,
+   "at": [
+    1023.32,
+    275.17
+   ],
+   "target": "Germany",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany+Belgium",
+   "warDays": 328,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 1.096,
+   "utility": {
+    "value": 0.923,
+    "through": 1,
+    "desperation": 0.676,
+    "ownDesperation": 0.676,
+    "doctrine": 1.2,
+    "gain": 0.748,
+    "retaliation": 1.4,
+    "allianceCost": 0.05,
+    "outrage": 0.396,
+    "taboo": 0.303,
+    "people": 248000,
+    "dead": 0.025,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.348
+   },
+   "place": {
+    "econShare": 0.062,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.923,
+    "econShare": 0.062,
+    "menShare": 0,
+    "menExpected": 0,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 4906000,
+    "fission": 248000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 248000,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 9224,
+   "year": 25.27,
+   "tick": 221377,
+   "by": "Germany",
+   "u": 0.2,
+   "at": [
+    1289.5,
+    327.25
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany+Belgium",
+   "warDays": 330,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.206,
+   "utility": {
+    "value": 0.691,
+    "through": 1,
+    "desperation": 1.868,
+    "ownDesperation": 1.868,
+    "doctrine": 1.4,
+    "gain": 1.806,
+    "retaliation": 1.2,
+    "allianceCost": 0.15,
+    "outrage": 0.399,
+    "taboo": 0.301,
+    "people": 4000,
+    "dead": 0,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.6
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.069,
+    "ownShare": 0,
+    "menExpected": 17256,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.496,
+    "econShare": 0,
+    "menShare": 0.05,
+    "menExpected": 12396,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 4000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 21222,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9252,
+   "year": 25.35,
+   "tick": 222049,
+   "by": "Soviet Union",
+   "u": 0.76,
+   "at": [
+    1034.81,
+    301.83
+   ],
+   "target": "Germany",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 358,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.76,
+   "utility": {
+    "value": 0.471,
+    "through": 1,
+    "desperation": 0.704,
+    "ownDesperation": 0.704,
+    "doctrine": 1.2,
+    "gain": 0.398,
+    "retaliation": 1.4,
+    "allianceCost": 0.05,
+    "outrage": 0.398,
+    "taboo": 0.314,
+    "people": 12000,
+    "dead": 0.001,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.363
+   },
+   "place": {
+    "econShare": 0.002,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.471,
+    "econShare": 0.002,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 301000,
+    "fission": 12000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 23183,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 9253,
+   "year": 25.35,
+   "tick": 222073,
+   "by": "Germany",
+   "u": 0.041,
+   "at": [
+    1173.87,
+    264.5
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 359,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.032,
+   "utility": {
+    "value": 0.546,
+    "through": 1,
+    "desperation": 1.953,
+    "ownDesperation": 1.953,
+    "doctrine": 1.4,
+    "gain": 1.492,
+    "retaliation": 1.2,
+    "allianceCost": 0,
+    "outrage": 0.398,
+    "taboo": 0.3,
+    "people": 122000,
+    "dead": 0.012,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.46
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.054,
+    "ownShare": 0,
+    "menExpected": 13549,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.141,
+    "econShare": 0,
+    "menShare": 0.014,
+    "menExpected": 3526,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 122000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 135502,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9261,
+   "year": 25.37,
+   "tick": 222265,
+   "by": "Germany",
+   "u": 0.231,
+   "at": [
+    1081.5,
+    313.39
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 367,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.224,
+   "utility": {
+    "value": 0.615,
+    "through": 1,
+    "desperation": 1.955,
+    "ownDesperation": 1.955,
+    "doctrine": 1.4,
+    "gain": 1.685,
+    "retaliation": 1.2,
+    "allianceCost": 0,
+    "outrage": 0.399,
+    "taboo": 0.304,
+    "people": 98000,
+    "dead": 0.01,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.46
+   },
+   "place": {
+    "econShare": 0.001,
+    "menShare": 0.061,
+    "ownShare": 0,
+    "menExpected": 15225,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.051,
+    "econShare": 0,
+    "menShare": 0.005,
+    "menExpected": 1273,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 98000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 113193,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9268,
+   "year": 25.39,
+   "tick": 222433,
+   "by": "Germany",
+   "u": 0.174,
+   "at": [
+    1289.11,
+    401.89
+   ],
+   "target": "Iran",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 374,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.159,
+   "utility": {
+    "value": 0.589,
+    "through": 1,
+    "desperation": 1.955,
+    "ownDesperation": 1.955,
+    "doctrine": 1.4,
+    "gain": 1.612,
+    "retaliation": 1.2,
+    "allianceCost": 0,
+    "outrage": 0.399,
+    "taboo": 0.303,
+    "people": 24000,
+    "dead": 0.002,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.453
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.059,
+    "ownShare": 0,
+    "menExpected": 14713,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.435,
+    "econShare": 0,
+    "menShare": 0.044,
+    "menExpected": 10877,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 24000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 38735,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9301,
+   "year": 25.48,
+   "tick": 223225,
+   "by": "Germany",
+   "u": 0.05,
+   "at": [
+    1108.74,
+    314.5
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 407,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.046,
+   "utility": {
+    "value": 0.559,
+    "through": 1,
+    "desperation": 1.977,
+    "ownDesperation": 1.977,
+    "doctrine": 1.4,
+    "gain": 1.546,
+    "retaliation": 1.2,
+    "allianceCost": 0,
+    "outrage": 0.398,
+    "taboo": 0.317,
+    "people": 475000,
+    "dead": 0.048,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.5
+   },
+   "place": {
+    "econShare": 0.001,
+    "menShare": 0.055,
+    "ownShare": 0,
+    "menExpected": 13648,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.106,
+    "econShare": 0,
+    "menShare": 0.011,
+    "menExpected": 2647,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 475000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 488629,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9314,
+   "year": 25.52,
+   "tick": 223537,
+   "by": "Germany",
+   "u": 0.917,
+   "at": [
+    1103.35,
+    339.35
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 420,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.933,
+   "utility": {
+    "value": 0.877,
+    "through": 1,
+    "desperation": 1.967,
+    "ownDesperation": 1.967,
+    "doctrine": 1.4,
+    "gain": 2.415,
+    "retaliation": 1.2,
+    "allianceCost": 0,
+    "outrage": 0.399,
+    "taboo": 0.306,
+    "people": 314000,
+    "dead": 0.031,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.482
+   },
+   "place": {
+    "econShare": 0.002,
+    "menShare": 0.086,
+    "ownShare": 0,
+    "menExpected": 21533,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.381,
+    "econShare": 0,
+    "menShare": 0.038,
+    "menExpected": 9516,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 314000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 335481,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9319,
+   "year": 25.53,
+   "tick": 223657,
+   "by": "Soviet Union",
+   "u": 0.691,
+   "at": [
+    1041.57,
+    303.5
+   ],
+   "target": "Germany",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 425,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.678,
+   "utility": {
+    "value": 0.272,
+    "through": 1,
+    "desperation": 0.78,
+    "ownDesperation": 0.78,
+    "doctrine": 1.2,
+    "gain": 0.255,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.395,
+    "taboo": 0.302,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.424
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.027,
+    "ownShare": 0,
+    "menExpected": 6854,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.272,
+    "econShare": 0,
+    "menShare": 0.027,
+    "menExpected": 6854,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 171000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 6888,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 9330,
+   "year": 25.56,
+   "tick": 223921,
+   "by": "Germany",
+   "u": 0.032,
+   "at": [
+    1118.5,
+    288.5
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 436,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.034,
+   "utility": {
+    "value": 0.544,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 1.523,
+    "retaliation": 1.2,
+    "allianceCost": 0,
+    "outrage": 0.399,
+    "taboo": 0.305,
+    "people": 386000,
+    "dead": 0.039,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.489
+   },
+   "place": {
+    "econShare": 0.001,
+    "menShare": 0.053,
+    "ownShare": 0,
+    "menExpected": 13303,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.29,
+    "econShare": 0,
+    "menShare": 0.029,
+    "menExpected": 7241,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 386000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 399331,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9398,
+   "year": 25.75,
+   "tick": 225553,
+   "by": "Germany",
+   "u": 0.049,
+   "at": [
+    1107.14,
+    346.14
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 504,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.054,
+   "utility": {
+    "value": 0.556,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 1.556,
+    "retaliation": 1.2,
+    "allianceCost": 0,
+    "outrage": 0.395,
+    "taboo": 0.334,
+    "people": 476000,
+    "dead": 0.048,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.503
+   },
+   "place": {
+    "econShare": 0.002,
+    "menShare": 0.053,
+    "ownShare": 0,
+    "menExpected": 13357,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.241,
+    "econShare": 0,
+    "menShare": 0.024,
+    "menExpected": 6009,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 476000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 489335,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9402,
+   "year": 25.76,
+   "tick": 225649,
+   "by": "Soviet Union",
+   "u": 0.902,
+   "at": [
+    969.27,
+    418.63
+   ],
+   "target": "Germany",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 508,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.902,
+   "utility": {
+    "value": 0.488,
+    "through": 1,
+    "desperation": 0.815,
+    "ownDesperation": 0.815,
+    "doctrine": 1.2,
+    "gain": 0.478,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.394,
+    "taboo": 0.302,
+    "people": 5000,
+    "dead": 0.001,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.425
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.049,
+    "ownShare": 0,
+    "menExpected": 12177,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.488,
+    "econShare": 0,
+    "menShare": 0.049,
+    "menExpected": 12177,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 74000,
+    "fission": 5000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "warStruck": {
+    "menThen": 12460,
+    "menNow": 13530
+   },
+   "missile": 1,
+   "toll": {
+    "dead": 17157,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 9407,
+   "year": 25.77,
+   "tick": 225769,
+   "by": "Germany",
+   "u": 0.154,
+   "at": [
+    1107.02,
+    314.5
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 513,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.163,
+   "utility": {
+    "value": 0.627,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 1.756,
+    "retaliation": 1.2,
+    "allianceCost": 0.1,
+    "outrage": 0.399,
+    "taboo": 0.302,
+    "people": 425000,
+    "dead": 0.043,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.593
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.062,
+    "ownShare": 0,
+    "menExpected": 15586,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.083,
+    "econShare": 0,
+    "menShare": 0.008,
+    "menExpected": 2067,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 425000,
+    "fission": 8000
+   },
+   "before": [
+    {
+     "day": 9301.1,
+     "by": "Germany",
+     "sameWar": true,
+     "dead": 488629
+    }
+   ],
+   "beforeSameWar": 1,
+   "warStruck": {
+    "menThen": 31672,
+    "menNow": 37501
+   },
+   "missile": 1,
+   "toll": {
+    "dead": 440633,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9414,
+   "year": 25.79,
+   "tick": 225937,
+   "by": "Germany",
+   "u": 1.299,
+   "at": [
+    1209.5,
+    430.05
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 520,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 1.299,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 2.8,
+    "retaliation": 1.2,
+    "allianceCost": 0.05,
+    "outrage": 0.399,
+    "taboo": 0.303,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.501
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.283,
+    "ownShare": 0,
+    "menExpected": 70792,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0,
+    "menShare": 0.283,
+    "menExpected": 70792,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 19000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 70713,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 9423,
+   "year": 25.82,
+   "tick": 226153,
+   "by": "Germany",
+   "u": 0.704,
+   "at": [
+    1121.5,
+    308.38
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 529,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.73,
+   "utility": {
+    "value": 0.804,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 2.25,
+    "retaliation": 1.2,
+    "allianceCost": 0.05,
+    "outrage": 0.399,
+    "taboo": 0.304,
+    "people": 194000,
+    "dead": 0.019,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.52
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.08,
+    "ownShare": 0,
+    "menExpected": 19972,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.191,
+    "econShare": 0,
+    "menShare": 0.019,
+    "menExpected": 4780,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 194000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 213920,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9435,
+   "year": 25.85,
+   "tick": 226441,
+   "by": "Germany",
+   "u": 1.264,
+   "at": [
+    1222.54,
+    410.5
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 541,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 1.264,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 2.8,
+    "retaliation": 1.2,
+    "allianceCost": 0.05,
+    "outrage": 0.399,
+    "taboo": 0.306,
+    "people": 355000,
+    "dead": 0.035,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.536
+   },
+   "place": {
+    "econShare": 0.001,
+    "menShare": 0.139,
+    "ownShare": 0,
+    "menExpected": 34713,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.865,
+    "econShare": 0,
+    "menShare": 0.086,
+    "menExpected": 21623,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 355000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 389716,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9438,
+   "year": 25.86,
+   "tick": 226513,
+   "by": "Soviet Union",
+   "u": 0.95,
+   "at": [
+    1022.16,
+    268.16
+   ],
+   "target": "Germany",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 544,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.944,
+   "utility": {
+    "value": 0.539,
+    "through": 1,
+    "desperation": 0.891,
+    "ownDesperation": 0.891,
+    "doctrine": 1.2,
+    "gain": 0.576,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.397,
+    "taboo": 0.301,
+    "people": 541000,
+    "dead": 0.054,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.368
+   },
+   "place": {
+    "econShare": 0.012,
+    "menShare": 0.042,
+    "ownShare": 0,
+    "menExpected": 10542,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.41,
+    "econShare": 0,
+    "menShare": 0.041,
+    "menExpected": 10187,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 541000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 551550,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9470,
+   "year": 25.95,
+   "tick": 227281,
+   "by": "Germany",
+   "u": 0.184,
+   "at": [
+    1116.5,
+    303.87
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 576,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.189,
+   "utility": {
+    "value": 0.656,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 1.838,
+    "retaliation": 1.2,
+    "allianceCost": 0.1,
+    "outrage": 0.397,
+    "taboo": 0.316,
+    "people": 968000,
+    "dead": 0.097,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.649
+   },
+   "place": {
+    "econShare": 0.001,
+    "menShare": 0.065,
+    "ownShare": 0,
+    "menExpected": 16198,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.001,
+    "econShare": 0,
+    "menShare": 0,
+    "menExpected": 8,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 968000,
+    "fission": 1000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 985327,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9493,
+   "year": 26.01,
+   "tick": 227833,
+   "by": "Germany",
+   "u": 0.072,
+   "at": [
+    1117.5,
+    301.5
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 599,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.078,
+   "utility": {
+    "value": 0.653,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 1.828,
+    "retaliation": 1.2,
+    "allianceCost": 0.1,
+    "outrage": 0.398,
+    "taboo": 0.311,
+    "people": 1977000,
+    "dead": 0.198,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.749
+   },
+   "place": {
+    "econShare": 0.001,
+    "menShare": 0.064,
+    "ownShare": 0,
+    "menExpected": 16077,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.193,
+    "econShare": 0,
+    "menShare": 0.019,
+    "menExpected": 4820,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 1977000,
+    "fission": 1000
+   },
+   "before": [
+    {
+     "day": 9470.1,
+     "by": "Germany",
+     "sameWar": true,
+     "dead": 985327
+    }
+   ],
+   "beforeSameWar": 1,
+   "warStruck": {
+    "menThen": 28582,
+    "menNow": 29102
+   },
+   "missile": 1,
+   "toll": {
+    "dead": 2001992,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9506,
+   "year": 26.04,
+   "tick": 228145,
+   "by": "Soviet Union",
+   "u": 0.929,
+   "at": [
+    1021.07,
+    260.07
+   ],
+   "target": "Germany",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 612,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.925,
+   "utility": {
+    "value": 0.556,
+    "through": 1,
+    "desperation": 0.927,
+    "ownDesperation": 0.927,
+    "doctrine": 1.2,
+    "gain": 0.618,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.395,
+    "taboo": 0.306,
+    "people": 1143000,
+    "dead": 0.114,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.307
+   },
+   "place": {
+    "econShare": 0.026,
+    "menShare": 0.029,
+    "ownShare": 0,
+    "menExpected": 7311,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.284,
+    "econShare": 0,
+    "menShare": 0.028,
+    "menExpected": 7061,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 1143000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 1150301,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9511,
+   "year": 26.06,
+   "tick": 228265,
+   "by": "Germany",
+   "u": 0.109,
+   "at": [
+    1125.5,
+    295.81
+   ],
+   "target": "Soviet Union",
+   "war": 230,
+   "warName": "Soviet Union+Lithuania+Finland+Turkey+Norway+Sweden+Egypt+Iraq+Iran+Afghanistan+Manchukuo+Mongolia+Tannu Tuva v Nationalist Spain+French Morocco+Italy+South Africa+Netherlands+Yemen+Germany",
+   "warDays": 617,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.117,
+   "utility": {
+    "value": 0.607,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 1.701,
+    "retaliation": 1.2,
+    "allianceCost": 0.1,
+    "outrage": 0.399,
+    "taboo": 0.302,
+    "people": 346000,
+    "dead": 0.035,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.584
+   },
+   "place": {
+    "econShare": 0.001,
+    "menShare": 0.06,
+    "ownShare": 0,
+    "menExpected": 15048,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.018,
+    "econShare": 0,
+    "menShare": 0.002,
+    "menExpected": 454,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 346000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 363321,
+    "yieldN": 2
+   }
+  },
+  {
+   "day": 9537,
+   "year": 26.13,
+   "tick": 228889,
+   "by": "Soviet Union",
+   "u": 0.416,
+   "at": [
+    1022.67,
+    262.67
+   ],
+   "target": "Germany",
+   "war": 268,
+   "warName": "Portugal+Germany v Soviet Union+Lithuania+Romania+Bulgaria+Yugoslavia+Turkey+France+Egypt+Iran+Manchukuo",
+   "warDays": 0,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.416,
+   "utility": {
+    "value": 0.379,
+    "through": 1,
+    "desperation": 0.003,
+    "ownDesperation": 0.003,
+    "doctrine": 1.2,
+    "gain": 0.001,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.398,
+    "taboo": 0.313,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.415
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.038,
+    "ownShare": 0,
+    "menExpected": 9439,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.379,
+    "econShare": 0,
+    "menShare": 0.038,
+    "menExpected": 9439,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 358000,
+    "fission": 0
+   },
+   "before": [
+    {
+     "day": 9438.1,
+     "by": "Soviet Union",
+     "sameWar": false,
+     "dead": 551550
+    },
+    {
+     "day": 9506.1,
+     "by": "Soviet Union",
+     "sameWar": false,
+     "dead": 1150301
+    }
+   ],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 9456,
+    "yieldN": 1
+   }
+  }
+ ]
+}

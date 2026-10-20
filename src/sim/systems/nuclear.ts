@@ -97,8 +97,9 @@
  *   outrage at the striker already (to 1 at 100): a pariah is nearer the world turning on it.
  * - taboo (`world.nukeTaboo`): 1, TABOO_AFTER after any burst, back by TABOO_RECOVERY a day.
  * - deadCost (PLAN 7.38c, `deadCost`): DEAD_COST a million people the burst is expected to kill
- *   (anyone's, at the yield weighed; `PlaceParts.people`), × (2 − doctrine). A strike back weighs it
- *   too. The yield is chosen by the place's value alone (PLAN 7.38b), not by its dead.
+ *   (anyone's, at the yield weighed; `PlaceParts.people`), × (2 − doctrine), at least 1 (PLAN 7.45:
+ *   a high doctrine does not ease it). A strike back weighs it too. The yield is the one of the
+ *   higher utility, each with its own dead (PLAN 7.44).
  *
  * The decision (PLAN 6.4b; `nukeDecisions`), daily, with the AI on: each nation with a warhead,
  * living, not switched off nor a puppet, nukes allowed, in each of its wars weighs each enemy
@@ -641,17 +642,18 @@ export const TABOO_AFTER = 0.3;
 export const TABOO_RECOVERY = 0.0005;
 /**
  * The cost of a burst's dead (PLAN 7.38c, critic R10-B1: `nuclearUtility` had no term for them):
- * DEAD_COST for each million people it is expected to kill, × (2 − doctrine): 1.5 times it at
- * aggression −100, half of it at 100 (`deadCost`). Sized on the critic's run 10
+ * DEAD_COST for each million people it is expected to kill, × (2 − doctrine) and at least × 1: 1.5
+ * times it at aggression 0, DEAD_COST itself from 50 up (`deadCost`; PLAN 7.45, ADR-572: half of it
+ * at 100 let Germany, doctrine 1.4, H-bomb 1.3 million in extreme desperation at 0.060, seed 758). Sized on the critic's run 10
  * (`docs/evidence/7.38/measure-a.md`): the United States' strikes on Paris (1.4 million dead, 0.073)
  * and Rome (3.7 million, 0.091) under NUKE_FLOOR at its doctrine of 0.65 at any yield, and the Soviet
  * answer to Germany of 2.5 million dead (0.484, doctrine 1.2) still over it (0.20 less).
  */
 export const DEAD_COST = 0.1;
 
-/** The cost of `people` expected dead to a striker of `doctrine` (PLAN 7.38c): see DEAD_COST. */
+/** The cost of `people` expected dead to a striker of `doctrine` (PLAN 7.38c, 7.45): see DEAD_COST. */
 export function deadCost(people: number, doctrine: number): number {
-  return DEAD_COST * (people / 1_000_000) * (2 - doctrine);
+  return DEAD_COST * (people / 1_000_000) * Math.max(1, 2 - doctrine);
 }
 
 /** What a strike's utility is made of (PLAN 6.4a). */

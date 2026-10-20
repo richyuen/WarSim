@@ -48,9 +48,9 @@ describe('the dead weighed (PLAN 7.38c)', () => {
     expect(before - after).toBeCloseTo(deadCost(i.people, i.doctrine), 9);
   });
 
-  it('the cost is DEAD_COST a million × (2 − doctrine), × the chance the warhead gets there', () => {
+  it('the cost is DEAD_COST a million × (2 − doctrine), at least × 1, × the chance the warhead gets there', () => {
     expect(deadCost(1_000_000, 1)).toBeCloseTo(DEAD_COST, 12);
-    expect(deadCost(1_000_000, 1.5)).toBeCloseTo(DEAD_COST / 2, 12);
+    expect(deadCost(1_000_000, 1.5)).toBeCloseTo(DEAD_COST, 12); // at least × 1 (PLAN 7.45, ADR-572)
     expect(deadCost(1_000_000, 0.5)).toBeCloseTo(DEAD_COST * 1.5, 12);
     const i = inputs({ people: 2_000_000, through: 0.5, targetValue: 0.5 });
     expect(nuclearUtility({ ...i, people: 0 }) - nuclearUtility(i)).toBeCloseTo(0.5 * deadCost(2_000_000, 1), 12);

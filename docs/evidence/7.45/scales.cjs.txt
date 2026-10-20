@@ -1,0 +1,40 @@
+// PLAN 7.45 measure: every decided strike of 7.38e's 24 seeds re-weighed under candidate dead-cost scales.
+const fs = require('fs');
+const dir = process.argv[2];
+const FLOOR = 0.025, DC = 0.1;
+const rules = {
+  now: (M, d) => DC * M * (2 - d),
+  floor1: (M, d) => DC * M * Math.max(1, 2 - d),
+  floor08: (M, d) => DC * M * Math.max(0.8, 2 - d),
+  millionUneased: (M, d) => (M >= 1 ? DC * M * Math.max(1, 2 - d) : DC * M * (2 - d)),
+  flat: (M) => DC * M,
+};
+const out = [];
+for (const f of fs.readdirSync(dir).filter((f) => /^e-toll-\d+\.json$/.test(f))) {
+  const r = JSON.parse(fs.readFileSync(dir + '/' + f, 'utf8'));
+  for (const row of r.rows) {
+    const t = row.utility; if (!t) continue;
+    const M = t.people / 1e6, d = t.doctrine;
+    const capped = t.mad && !t.extreme && !(row.u - row.uRecomputed > 0.5);
+    const back = row.u - row.uRecomputed > 0.5; const onBurstNoDead = (row.u - t.gain) / t.through + rules.now(M, d);
+    const fisGain = row.fission ? row.fission.value * t.desperation * d : null;
+    const fisM = (row.peopleExpected?.fission ?? 0) / 1e6;
+    const res = { seed: r.seed, day: row.day, by: row.by, target: row.target, ret: row.u - row.uRecomputed > 0.5, doc: d, ext: t.extreme, capped, M: +M.toFixed(2), dead: row.toll?.dead, yieldN: row.toll?.yieldN, u: row.u };
+    for (const [k, fn] of Object.entries(rules)) {
+      const uh = t.gain + t.through * (onBurstNoDead - fn(M, d));
+      const uf = fisGain === null ? -Infinity : fisGain + t.through * (onBurstNoDead - fn(fisM, d));
+      res[k] = +Math.max(uh, uf).toFixed(3);
+    }
+    out.push(res);
+  }
+}
+const show = (o) => `${o.seed} d${o.day} ${o.by}->${o.target} ret=${o.ret} doc=${o.doc} ext=${o.ext} M=${o.M} dead=${o.dead} u=${o.u} | ` + Object.keys(rules).map((k) => `${k}=${o[k]}`).join(' ');
+console.log('decisions', out.length, ' capped (skip)', out.filter((o) => o.capped).length);
+console.log('\n== doctrine > 1 (rules differ) ==');
+for (const o of out.filter((o) => o.doc > 1 && o.M > 0.05)) console.log(show(o));
+for (const k of Object.keys(rules)) {
+  const lost = out.filter((o) => !o.capped && o[k] <= FLOOR);
+  const bad = out.filter((o) => !o.capped && o[k] > FLOOR && o[k] < 0.1 && o.M >= 1);
+  console.log(`\n${k}: under floor ${lost.length} (strikes back ${lost.filter((o) => o.ret).length}); still <0.1 & >=1M ${bad.length}`);
+  for (const o of lost) console.log("  lost: " + show(o)); for (const o of bad) console.log("  bad: " + show(o));
+}

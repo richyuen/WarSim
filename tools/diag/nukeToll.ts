@@ -111,6 +111,8 @@ while (w.tick < T) {
   }
   const launchesBefore = new Set(w.nukeLaunches.map((l) => l.id));
   const resolveBefore = new Map(w.wars.list.map((war) => [war, [...(war.resolveStrikes ?? [0, 0])]]));
+  // The grievances as the decision weighed them: a strike back spends its own within the hour (PLAN 7.45).
+  const grievanceBefore = new Map([...w.nukeGrievance].map(([k, g]) => [k, { ...g }]));
   sim.step(1, (world) => {
     const ev = world.out.events;
     for (let i = 0; i < ev.length; i += 6) {
@@ -128,7 +130,7 @@ while (w.tick < T) {
         for (const war of world.wars.list) {
           const side = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
           if (side < 0 || !war.sides[1 - side]!.includes(owner)) continue;
-          const g = world.nukeGrievance.get(n);
+          const g = grievanceBefore.get(n);
           const back = g !== undefined && g.until > world.tick && war.sides[1 - side]!.includes(g.by);
           const inputs = nukeInputs(world, n, war, side, x, y, back);
           const own = desperationOf(world, n, war, side);

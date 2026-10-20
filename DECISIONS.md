@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-572 · 2026-10-20 · accepted — The dead's cost not eased by a high doctrine (PLAN 7.45)
+
+- **Context.** PLAN 7.38e's first read (`docs/evidence/7.38/measure-e.md`, cause B): ADR-568's
+  cost of the dead is DEAD_COST 0.1 a million × (2 − doctrine), 0.06 a million at Germany's
+  doctrine of 1.4. In extreme desperation under MAD Germany H-bombed 17,112 massed Soviet men for
+  1,334,057 dead at 0.060 (seed 758, day 9178) and Belgium's capital for 2,294,126 at 0.037 (seed
+  756, day 8216).
+- **Decision.** The scale is (2 − doctrine), at least 1 (`deadCost`): a doctrine above 1
+  (aggression over 50) weighs the dead at DEAD_COST a million, a lower one more, as ADR-568 had
+  it (the United States at 0.65: 1.35).
+- **Measured first** (`docs/evidence/7.45/measure.md`, every decision of 7.38e's 24 seeds re-weighed):
+  at the floor of 1 no strike under 0.1 at a million dead; two near-floor first uses also fall under
+  NUKE_FLOOR (3613 day 9440, Japan, 460,000 dead, 0.026 → 0.010); no strike back does (758's
+  Soviet answers and the German ones at doctrine 1.4 at least 0.30 over it; 7.38c's three 4877
+  answers 0.742, 0.237, 0.510). So PLAN 7.45's clause for a rule that takes the strikes back away
+  does not apply, and the rule is not proposed. Not the cost uneased from a million dead alone: it
+  would jump at 1 M. Not a flat scale: it would drop the extra weight on a low doctrine.
+- **The cases**, from 7.38e's checkpoints on HEAD with the rule: 758 day 9178 not struck (day 9179,
+  722,738 dead at 0.105); 756 day 8216 a fission burst (140,183 dead, 0.041), as on HEAD before it:
+  7.44's choice by the utility had already changed it, against measure-e's reading.
+- **Consequences.** Germany's later strikes in 758's run still kill a million at times: day 9493,
+  2,001,992 dead at 0.072, extreme desperation under MAD, a restrike with 2 % more men than the
+  burst before found (ADR-569). PLAN 7.45b, 7.38's second read, counts such cases. Seed 99's pin
+  unmoved (no warhead in year 1). `nukeDeadCostFloor1938.test.ts` (red without);
+  `nukeDeadCost1938`'s line on the scale at doctrine 1.5 now the new rule's.
+
 ### ADR-571 · 2026-10-20 · accepted — The yield is chosen by the strike's utility, the dead of its own toll in it (PLAN 7.44)
 
 - **Context.** PLAN 7.38e's first read (`docs/evidence/7.38/measure-e.md`): two of the four bursts

@@ -20685,3 +20685,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `aggression` is a u8 column: −50 wraps to 206 (doctrine 2.56).
 - **Next:** PLAN 7.45 (the dead's cost at a high doctrine in extreme desperation), whose run is 7.38's
   second read.
+
+## 2026-10-20 — PLAN 7.45a: the dead's cost not eased by a high doctrine (ADR-572)
+
+- **Measured first** (`docs/evidence/7.45/measure.md`, `scales.txt`): 7.38e's 170 decisions re-weighed
+  at five scales. At max(1, 2 − doctrine) no strike under 0.1 at a million; two near-floor first
+  uses fall under NUKE_FLOOR (3613 d9440, 0.026 → 0.010); no strike back does (all ≥ 0.30 over it;
+  7.38c's 4877 answers 0.742, 0.237, 0.510). Not proposed: 7.45's clause for strikes back lost does
+  not apply.
+- **Rule** (`deadCost`): DEAD_COST a million × max(1, 2 − doctrine). SPEC §6.4 and the file head
+  updated (the head's "yield by value alone" line was stale since 7.44).
+- **AT, from 7.38e's checkpoints, before (HEAD) / after:** 758 day 9178, 1,334,057 dead at 0.060 /
+  not struck (day 9179: 722,738 at 0.105). 756 day 8216 was already a fission burst on HEAD (7.44's
+  choice by the utility: 140,183 dead, 0.046 / 0.041): measure-e's reading that 7.44 could not reach
+  it was wrong. Met.
+- **Read for 7.45b:** 758 day 9493, Germany, 2,001,992 dead at 0.072 (extreme, MAD; a restrike with
+  2 % more men than the burst before found).
+- **Tool:** `nukeToll.ts` read the grievance after the hour, when a strike back has spent it, so no
+  row was marked a strike back and `uRecomputed` was ~2 low on each. It now reads them before.
+- **Tests:** `nukeDeadCostFloor1938.test.ts` (new; red without: 3 of 3). `nukeDeadCost1938`'s
+  scale line at doctrine 1.5 now the new rule's (DEAD_COST, was half). Both green. Specs by hand:
+  none (no UI).
+- **Next:** PLAN 7.45b, 7.38's second read (critic's 14 + 761–770 × 30 years).
