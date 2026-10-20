@@ -339,10 +339,12 @@ each, split when taken up:
   Measured first: each case's utility by its parts, the yield against the target, and the earlier
   strikes on the same city in the war. Then a rule with an ADR (the critic's "Fix": the dead a
   cost scaled by doctrine and outrage; the yield by the target; a city struck in the war not again
-  without new value). AT: on the critic's 14 seeds × 30 years, bursts that kill over 10 times more
-  civilians than soldiers at most 10 % of all bursts (was 25 of 58, 43 %), and none with a
-  utility under 0.1 that kills a million; no city struck twice in one war (was Paris 3, Tashkent
-  6, Banda Aceh 6); then the same three bars on 10 unseen seeds × 30 years (the user's,
+  without new value). No bar on the share of civilians among the dead (the user's, 2026-10-20: a
+  city is a target in SPEC §6.4; the critic's 25 of 58 is read, not a bar). AT: on the critic's 14
+  seeds × 30 years, no burst with a utility under 0.1 that kills a million (was Shanghai, Paris
+  twice, Rome); no city struck twice in one war (was Paris 3, Tashkent 6, Banda Aceh 6); no
+  hydrogen bomb where a fission bomb's blast covers the target's value (the formations or the city
+  it was chosen for); then the same three bars on 10 unseen seeds × 30 years (the user's,
   2026-10-20: the rule is tuned on the critic's); each named case changed, or a BLOCKERS entry
   with its measured cause, the user's to accept; a unit test (red without); the pin's entry. Stop:
   two full re-measures flat, the bar is the user's (ADR-554).
