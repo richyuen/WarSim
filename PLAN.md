@@ -359,7 +359,11 @@ each, split when taken up:
   seeds: the same top five 22 years on seed 8693 and 21 on 7019, over the 20-year limit (4219 and
   3613: 18 and 17; run 9's worst 18; `critic/c10_summary.txt` `stasis`); late wars between
   nations that cannot fight at sea (7.39's); Latvia the second-largest nation on seed 1307 at year
-  30 (14.2 % of the land, 75 warheads), unexplained. Measured first: on 8693 and 7019, what holds
+  30 (14.2 % of the land, 75 warheads), unexplained. Not a regression (measured 2026-10-20, the top
+  five by controlled land each year, 30 years): run 9's 14 seeds mean 11.4 years at `f0be88c` and at
+  `bcbc99c`, none over 20; run 10's 14 seeds mean 11.1 at `0b0d5a2` (before 7.35's naval rules, one
+  over 20: 5309, 23) and 12.4 at `bcbc99c` (two: 8693, 7019); a long top five is a seed's, about 1
+  in 14 on either code. Measured first: on 8693 and 7019, what holds
   the top five (no war among them, the wars they win, their revolts), and Latvia's rise year by
   year. AT: on the critic's 14 seeds × 30 years no stasis over 20 years (was 2 of 14); then
   `npm run sweep` on 10 unseen seeds × 50 years: no stasis on 10 of 10 (7.27d's) and ADR-54's
