@@ -80,6 +80,24 @@ each, split when taken up:
       beyond reach halved (886 → under 443 a world-year) and sea battles a world-year in years 2–30
       at least 6.6 (half of the way from 4.3 to 7.39's 8.9), on the 14 seeds × 30 years; 7.39's
       two bars read on that run; a unit test (red without); the pin's entry; `--profile`.
+      **Blocked** (2026-10-20, BLOCKERS, ADR-573 the user's decision; `docs/evidence/7.39/
+      measure-b.md`): measured, late wars of two navies begin a median 4,423 km apart (909 in year
+      1), and year 1's wars also begin on stations from earlier wars. The chase tried
+      (`b-chase.diff`, 4 seeds × 10 years) empties the far stations (1,332 → 12.9) but halves the
+      world's navy from year 2 (259k → 128k), which puts the late battles' bar out of reach. The
+      cause is PLAN 7.46. Not taken again until 7.46 is done or the user decides.
+- [ ] 7.46 A navy sunk in a decisive war at sea is built again (from PLAN 7.39b, ADR-573): with the
+  chase (`docs/evidence/7.39/b-chase.diff`) the navies meet in years 1–2, the side that sails to the
+  battle mostly wins (122 against 46), and the world's armed power falls 291k → 128k by year 2 and is
+  139k at year 10, against HEAD's 177k (4 seeds 1307, 3613, 8693, 7019 × 10 years,
+  `measure-b.md` §3). 7.35d3 rebuilt the navies at HEAD's pace of loss. Measured first, on that run
+  with the chase applied: per navy lost after a chase's battle, `navyLoss`'s first test that stops
+  its warship order (gold, shipyard, the army first, the navy's share) and the days to its first
+  warship. Then a rule with an ADR. AT: with the chase, on those 4 seeds × 10 years, the world's
+  armed power at years 3 to 10 at least 80 % of HEAD's without the chase (was 47 % to 79 %); a unit
+  test (red without); the pin's entry. Then 7.39b's two bars, read on the critic's 14 seeds × 30
+  years with the chase and the rule, decide whether the chase is adopted (ADR-573). Stop: two full
+  re-measures flat, the bar is the user's (ADR-554).
 - [ ] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g):
   `territory.ts`'s flip scores each neighbouring enemy controller with its side's pressure and
   gives a tie to the lowest id, so a puppet or ally with no army takes the cells its partner's

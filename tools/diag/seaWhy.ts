@@ -231,3 +231,44 @@ export function preyWhy(ctx: WhyCtx, f: number): Prey {
   const tg = nc.together.reduce((s, x) => s + (seaKm(w, c.x[x.id]!, c.y[x.id]!, (at % ww) + 0.5, Math.floor(at / ww) + 0.5) <= SORTIE_KM ? x.p : 0), 0);
   return nc.enemyIn(z.zoneOf[at]!) > tg ? 'strong' : 'huntable';
 }
+
+/**
+ * PLAN 7.39b: for a fleet whose nearest enemy fleet of its waters is beyond `SORTIE_KM` (`preyWhy`'s
+ * `far`), whether its bloc holds a port from which that enemy fleet is in reach: the port's water
+ * open, of the fleet's waters, within `SORTIE_KM` of the enemy fleet, its zone's enemy power no more
+ * than the power of the nation's standing warfleets of those waters. `base` / `noBase`; and whether
+ * that enemy fleet's zone's power is over the navy's (`strong`, the base not counted then).
+ */
+export function farBase(ctx: WhyCtx, f: number): 'base' | 'noBase' | 'strong' | 'notFar' {
+  const w = ctx.w;
+  const c = w.formations.cols;
+  const ww = w.cells.w;
+  const z = seaOf(w);
+  const n = c.nation[f]!;
+  const nc = nationCtx(ctx, n);
+  const mine = keyAt(w, nc.keys, c.x[f]!, c.y[f]!);
+  let best = Infinity;
+  let gs = -1;
+  w.formations.forEach((e) => {
+    if (!w.isFleet(e) || !w.wars.atWar(n, c.nation[e]!) || fleetPower(w, e) <= 0) return;
+    if (keyAt(w, nc.keys, c.x[e]!, c.y[e]!) !== mine) return;
+    const d = seaKm(w, c.x[f]!, c.y[f]!, c.x[e]!, c.y[e]!);
+    if (d < best) [best, gs] = [d, e];
+  });
+  if (gs < 0 || best <= SORTIE_KM) return 'notFar';
+  const navy = nc.together.reduce((s, g) => s + (keyAt(w, nc.keys, c.x[g.id]!, c.y[g.id]!) === mine ? g.p : 0), 0);
+  const ex = c.x[gs]!;
+  const ey = c.y[gs]!;
+  if (nc.enemyIn(z.zoneOf[Math.floor(ey) * ww + Math.floor(ex)]!) > navy) return 'strong';
+  const water = portSeaOf(w);
+  const ctl = w.cells.controller;
+  const has = w.ports.some((p, i) => {
+    const at = water[i]!;
+    const holder = ctl[p.cell]!;
+    if (at < 0 || holder === 0 || blocOf(w, holder) !== nc.bloc) return false;
+    const zone = z.zoneOf[at]!;
+    if (zone === 0 || z.closed[zone] === 1 || nc.keys[zone] !== mine || nc.enemyIn(zone) > navy) return false;
+    return seaKm(w, (at % ww) + 0.5, Math.floor(at / ww) + 0.5, ex, ey) <= SORTIE_KM;
+  });
+  return has ? 'base' : 'noBase';
+}

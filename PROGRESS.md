@@ -20751,3 +20751,27 @@ No rule changed and nothing on screen changed. One task came out of it.
   world-year, × 1.6); what fell with the battles (× 8.3) is the hunts (× 7.8) and the sorties from
   port (× 3.8). `measure-a.md` §5 rewritten; 7.39b now measures how a late war of two navies begins
   against year 1's, its battles bar at 6.6 a world-year (half of the way to 8.9).
+
+## 2026-10-20 — PLAN 7.39b: how a late war of two navies begins, measured; the chase tried and not adopted (ADR-573, blocked)
+
+- **Tools** (new): `tools/diag/seaStart.ts` (each war on its first day as one of two navies: each
+  side's fleets by state and by `sortieWhy`, the km between the navies, its battles in 30 and 90
+  days; each sea battle's place, who sailed to it, the ships each side lost); `farBase` in
+  `seaWhy.ts`, counted by `seaWars.ts` (`far`).
+- **Measured** (the critic's 14 seeds × 30 years at `23a6095`; `docs/evidence/7.39/measure-b.md`,
+  `b/`): late wars of two navies begin 2.4 a world-year (9.6 in year 1) with the navies a median
+  4,423 km apart (909), 69 % beyond `SORTIE_KM` (28 %); 0.87 battles in 90 days a war (2.91).
+  Year 1's wars begin on stations from earlier wars too (41–60 % of the fleets), so the stations
+  are not what changed. The distance is. Of the far station weeks only 38 % have a bloc port in
+  reach of the enemy fleet, so no stage to a base can halve them.
+- **Tried** (`b-chase.diff`): a fleet on station sails for the nearest enemy warfleet of its waters
+  beyond reach whose zone its navy there can win. 4 seeds × 10 years, before / after at once: far
+  station 1,332 → 12.9 fleet-weeks a world-year; battles years 2–10 6.4 → 7.3, year 1 37.3 → 50.8;
+  the world's armed power 259k → 128k from year 2, 139k against 177k at year 10. The chasers mostly
+  win (122 against 46): the weaker navy is sunk and not built again. Not run to 14 × 30.
+- **Stop (ADR-554):** no rule committed, the pin unchanged. BLOCKERS entry; ADR-573 proposed, the
+  user's decision (a: HEAD stands, 7.46 first; b: the chase now; c: 7.39b's first bar re-scoped);
+  PLAN 7.46 (a navy sunk in a decisive war at sea built again) filed with its AT.
+- **Gotcha:** Python's text-mode write on Windows turns LF into CRLF; open with `newline=''`.
+- Specs by hand: none (no UI). 7.39's commits: 3.
+- **Next:** PLAN 7.46 (or 7.39b again on the user's decision), then 7.43.

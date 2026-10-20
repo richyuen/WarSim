@@ -1,0 +1,3935 @@
+{
+ "seed": 2953,
+ "years": 30,
+ "wallS": 654,
+ "wars": [
+  {
+   "id": 1,
+   "day": 0,
+   "year": 1,
+   "initial": true,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "NSP"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "take": 1
+     }
+    },
+    {
+     "nations": [
+      "REP"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "take": 1
+     }
+    }
+   ],
+   "km": 909,
+   "kmSame": 909,
+   "b30": 2,
+   "b90": 2
+  },
+  {
+   "id": 3,
+   "day": 1,
+   "year": 1,
+   "initial": true,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "ENG",
+      "AST",
+      "CAN",
+      "FRA"
+     ],
+     "fleets": 38,
+     "state": {
+      "moving": 26,
+      "home": 12
+     },
+     "why": {
+      "stage": 2,
+      "take": 10
+     }
+    },
+    {
+     "nations": [
+      "NED"
+     ],
+     "fleets": 3,
+     "state": {
+      "home": 3
+     },
+     "why": {
+      "take": 3
+     }
+    }
+   ],
+   "km": 276,
+   "kmSame": 276,
+   "b30": 4,
+   "b90": 4
+  },
+  {
+   "id": 4,
+   "day": 6,
+   "year": 1,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GER",
+      "ITA",
+      "JAP"
+     ],
+     "fleets": 30,
+     "state": {
+      "moving": 12,
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "NED"
+     ],
+     "fleets": 2,
+     "state": {
+      "home": 2
+     },
+     "why": {
+      "take": 2
+     }
+    }
+   ],
+   "km": 3648,
+   "kmSame": 3648,
+   "b30": 3,
+   "b90": 3
+  },
+  {
+   "id": 13,
+   "day": 53,
+   "year": 1,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "SOV"
+     ],
+     "fleets": 5,
+     "state": {
+      "moving": 5
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "ROM",
+      "YUG"
+     ],
+     "fleets": 2,
+     "state": {
+      "moving": 2
+     },
+     "why": {}
+    }
+   ],
+   "km": 1374,
+   "kmSame": 1374,
+   "b30": 2,
+   "b90": 2
+  },
+  {
+   "id": 14,
+   "day": 54,
+   "year": 1,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "NSP"
+     ],
+     "fleets": 1,
+     "state": {
+      "moving": 1
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "POR",
+      "ENG",
+      "AST",
+      "CAN"
+     ],
+     "fleets": 27,
+     "state": {
+      "home": 27
+     },
+     "why": {
+      "take": 22,
+      "stage": 5
+     }
+    }
+   ],
+   "km": 999,
+   "kmSame": 999,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 15,
+   "day": 67,
+   "year": 1,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "SOV"
+     ],
+     "fleets": 5,
+     "state": {
+      "moving": 2,
+      "stOther": 3
+     },
+     "why": {
+      "awayStation": 3
+     }
+    },
+    {
+     "nations": [
+      "TUR",
+      "GRE"
+     ],
+     "fleets": 2,
+     "state": {
+      "home": 1,
+      "moving": 1
+     },
+     "why": {
+      "take": 1
+     }
+    }
+   ],
+   "km": 90,
+   "kmSame": 90,
+   "b30": 2,
+   "b90": 2
+  },
+  {
+   "id": 25,
+   "day": 209,
+   "year": 1,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GER",
+      "ITA",
+      "JAP"
+     ],
+     "fleets": 30,
+     "state": {
+      "moving": 12,
+      "stOther": 17,
+      "stPeace": 1
+     },
+     "why": {
+      "awayStation": 17,
+      "awayNewStation": 1
+     }
+    },
+    {
+     "nations": [
+      "BRA"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "take": 1
+     }
+    }
+   ],
+   "km": 8981,
+   "kmSame": 8981,
+   "b30": 3,
+   "b90": 3
+  },
+  {
+   "id": 27,
+   "day": 230,
+   "year": 1,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GER",
+      "ITA",
+      "JAP"
+     ],
+     "fleets": 28,
+     "state": {
+      "moving": 9,
+      "stOther": 19
+     },
+     "why": {
+      "awayStation": 19
+     }
+    },
+    {
+     "nations": [
+      "ENG",
+      "RAJ",
+      "AST",
+      "CAN",
+      "FRA"
+     ],
+     "fleets": 37,
+     "state": {
+      "stOther": 25,
+      "home": 1,
+      "moving": 11
+     },
+     "why": {
+      "awayStation": 25,
+      "take": 1
+     }
+    }
+   ],
+   "km": 4462,
+   "kmSame": 4462,
+   "b30": 0,
+   "b90": 1
+  },
+  {
+   "id": 30,
+   "day": 375,
+   "year": 2,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "SOV"
+     ],
+     "fleets": 5,
+     "state": {
+      "moving": 5
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "NOR",
+      "POL",
+      "SWE"
+     ],
+     "fleets": 4,
+     "state": {
+      "moving": 1,
+      "home": 3
+     },
+     "why": {
+      "take": 3
+     }
+    }
+   ],
+   "km": 1596,
+   "kmSame": 1596,
+   "b30": 3,
+   "b90": 7
+  },
+  {
+   "id": 35,
+   "day": 482,
+   "year": 2,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GER",
+      "ITA",
+      "JAP"
+     ],
+     "fleets": 28,
+     "state": {
+      "stOther": 20,
+      "moving": 8
+     },
+     "why": {
+      "awayStation": 20
+     }
+    },
+    {
+     "nations": [
+      "FRA"
+     ],
+     "fleets": 11,
+     "state": {
+      "moving": 1,
+      "stOther": 10
+     },
+     "why": {
+      "awayStation": 10
+     }
+    }
+   ],
+   "km": 8095,
+   "kmSame": 8095,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 40,
+   "day": 585,
+   "year": 2,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "SOV"
+     ],
+     "fleets": 1,
+     "state": {
+      "moving": 1
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "FRA"
+     ],
+     "fleets": 11,
+     "state": {
+      "stOther": 11
+     },
+     "why": {
+      "awayStation": 11
+     }
+    }
+   ],
+   "km": 2501,
+   "kmSame": 2501,
+   "b30": 3,
+   "b90": 3
+  },
+  {
+   "id": 42,
+   "day": 699,
+   "year": 2,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "ITA",
+      "GER",
+      "JAP"
+     ],
+     "fleets": 28,
+     "state": {
+      "moving": 8,
+      "stOther": 20
+     },
+     "why": {
+      "awayStation": 20
+     }
+    },
+    {
+     "nations": [
+      "FRA",
+      "ENG",
+      "RAJ",
+      "DEI"
+     ],
+     "fleets": 38,
+     "state": {
+      "stOther": 37,
+      "home": 1
+     },
+     "why": {
+      "awayStation": 37,
+      "take": 1
+     }
+    }
+   ],
+   "km": 3070,
+   "kmSame": 3070,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 45,
+   "day": 1001,
+   "year": 3,
+   "initial": false,
+   "late": 108,
+   "sides": [
+    {
+     "nations": [
+      "SOV"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "take": 1
+     }
+    },
+    {
+     "nations": [
+      "ENG",
+      "RAJ",
+      "FRA",
+      "DEI"
+     ],
+     "fleets": 38,
+     "state": {
+      "stOther": 38
+     },
+     "why": {
+      "awayHunt": 37,
+      "awayStation": 1
+     }
+    }
+   ],
+   "km": 2185,
+   "kmSame": 2185,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 49,
+   "day": 1092,
+   "year": 3,
+   "initial": false,
+   "late": 6,
+   "sides": [
+    {
+     "nations": [
+      "ENG",
+      "RAJ",
+      "FRA"
+     ],
+     "fleets": 37,
+     "state": {
+      "stOther": 37
+     },
+     "why": {
+      "awayStation": 37
+     }
+    },
+    {
+     "nations": [
+      "COL"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "take": 1
+     }
+    }
+   ],
+   "km": 8486,
+   "kmSame": 8486,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 56,
+   "day": 1259,
+   "year": 4,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "ITA",
+      "GER",
+      "JAP"
+     ],
+     "fleets": 28,
+     "state": {
+      "moving": 10,
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "ENG",
+      "RAJ"
+     ],
+     "fleets": 26,
+     "state": {
+      "stOther": 26
+     },
+     "why": {
+      "awayHunt": 25,
+      "awayStation": 1
+     }
+    }
+   ],
+   "km": 630,
+   "kmSame": 630,
+   "b30": 7,
+   "b90": 9
+  },
+  {
+   "id": 57,
+   "day": 1273,
+   "year": 4,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "ITA",
+      "GER",
+      "JAP"
+     ],
+     "fleets": 28,
+     "state": {
+      "moving": 10,
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "POR"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "take": 1
+     }
+    }
+   ],
+   "km": 2029,
+   "kmSame": 2029,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 58,
+   "day": 1278,
+   "year": 4,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "ARG"
+     ],
+     "fleets": 3,
+     "state": {
+      "moving": 3
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "COL"
+     ],
+     "fleets": 1,
+     "state": {
+      "stOther": 1
+     },
+     "why": {
+      "awayStation": 1
+     }
+    }
+   ],
+   "km": 3331,
+   "kmSame": 3331,
+   "b30": 2,
+   "b90": 2
+  },
+  {
+   "id": 61,
+   "day": 1546,
+   "year": 5,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "NOR",
+      "SWE",
+      "FRA"
+     ],
+     "fleets": 13,
+     "state": {
+      "stOther": 12,
+      "home": 1
+     },
+     "why": {
+      "awayStation": 12,
+      "take": 1
+     }
+    }
+   ],
+   "km": 7620,
+   "kmSame": 7620,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 64,
+   "day": 1616,
+   "year": 5,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "TUR",
+      "GRE"
+     ],
+     "fleets": 2,
+     "state": {
+      "home": 2
+     },
+     "why": {
+      "take": 2
+     }
+    }
+   ],
+   "km": 7966,
+   "kmSame": 8573,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 66,
+   "day": 1740,
+   "year": 5,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "TUR"
+     ],
+     "fleets": 1,
+     "state": {
+      "stOther": 1
+     },
+     "why": {
+      "awayHunt": 1
+     }
+    },
+    {
+     "nations": [
+      "FRA"
+     ],
+     "fleets": 11,
+     "state": {
+      "moving": 11
+     },
+     "why": {}
+    }
+   ],
+   "km": 733,
+   "kmSame": 733,
+   "b30": 2,
+   "b90": 2
+  },
+  {
+   "id": 69,
+   "day": 1812,
+   "year": 5,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "ENG",
+      "FRA"
+     ],
+     "fleets": 24,
+     "state": {
+      "stOther": 24
+     },
+     "why": {
+      "awayStation": 24
+     }
+    }
+   ],
+   "km": 7188,
+   "kmSame": 7188,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 70,
+   "day": 1833,
+   "year": 6,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 15,
+      "sea": 3
+     },
+     "why": {
+      "awayStation": 15,
+      "awayNewStation": 3
+     }
+    },
+    {
+     "nations": [
+      "CAN",
+      "MEX"
+     ],
+     "fleets": 3,
+     "state": {
+      "home": 3
+     },
+     "why": {
+      "noBase": 1,
+      "take": 2
+     }
+    }
+   ],
+   "km": 13935,
+   "kmSame": 13935,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 76,
+   "day": 1969,
+   "year": 6,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "USA",
+      "PHI"
+     ],
+     "fleets": 28,
+     "state": {
+      "moving": 28
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "CAN",
+      "MEX"
+     ],
+     "fleets": 4,
+     "state": {
+      "home": 1,
+      "stOther": 3
+     },
+     "why": {
+      "emptyBombed": 1,
+      "awayStation": 3
+     }
+    }
+   ],
+   "km": 2607,
+   "kmSame": 2607,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 80,
+   "day": 2050,
+   "year": 6,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "home": 18
+     },
+     "why": {
+      "take": 18
+     }
+    },
+    {
+     "nations": [
+      "ENG",
+      "FRA"
+     ],
+     "fleets": 24,
+     "state": {
+      "stOther": 24
+     },
+     "why": {
+      "awayStation": 24
+     }
+    }
+   ],
+   "km": 8709,
+   "kmSame": 8709,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 85,
+   "day": 2239,
+   "year": 7,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "home": 18
+     },
+     "why": {
+      "take": 18
+     }
+    },
+    {
+     "nations": [
+      "NOR"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "take": 1
+     }
+    }
+   ],
+   "km": 3972,
+   "kmSame": 3972,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 90,
+   "day": 2323,
+   "year": 7,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GER",
+      "JAP"
+     ],
+     "fleets": 19,
+     "state": {
+      "stOther": 19
+     },
+     "why": {
+      "awayStation": 19
+     }
+    },
+    {
+     "nations": [
+      "ENG",
+      "FRA",
+      "SAF"
+     ],
+     "fleets": 23,
+     "state": {
+      "stThis": 15,
+      "moving": 7,
+      "home": 1
+     },
+     "why": {
+      "awayStation": 15,
+      "stage": 1
+     }
+    }
+   ],
+   "km": 5219,
+   "kmSame": 5219,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 91,
+   "day": 2340,
+   "year": 7,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "USA",
+      "PHI"
+     ],
+     "fleets": 28,
+     "state": {
+      "moving": 28
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "ENG",
+      "FRA",
+      "SAF",
+      "ARG"
+     ],
+     "fleets": 27,
+     "state": {
+      "stOther": 23,
+      "home": 4
+     },
+     "why": {
+      "awayStation": 23,
+      "noBase": 4
+     }
+    }
+   ],
+   "km": 5100,
+   "kmSame": 5100,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 103,
+   "day": 2505,
+   "year": 7,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GER",
+      "JAP"
+     ],
+     "fleets": 19,
+     "state": {
+      "stOther": 19
+     },
+     "why": {
+      "awayStation": 19
+     }
+    },
+    {
+     "nations": [
+      "ARG",
+      "ENG",
+      "FRA",
+      "SAF"
+     ],
+     "fleets": 17,
+     "state": {
+      "home": 5,
+      "stOther": 11,
+      "moving": 1
+     },
+     "why": {
+      "stage": 2,
+      "take": 3,
+      "awayStation": 11
+     }
+    }
+   ],
+   "km": 5191,
+   "kmSame": 5191,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 114,
+   "day": 2780,
+   "year": 8,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "MEX"
+     ],
+     "fleets": 1,
+     "state": {
+      "moving": 1
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "USA"
+     ],
+     "fleets": 27,
+     "state": {
+      "stOther": 27
+     },
+     "why": {
+      "awayStation": 27
+     }
+    }
+   ],
+   "km": 3780,
+   "kmSame": 3780,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 129,
+   "day": 3168,
+   "year": 9,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GRE"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "take": 1
+     }
+    },
+    {
+     "nations": [
+      "GER",
+      "JAP"
+     ],
+     "fleets": 19,
+     "state": {
+      "home": 1,
+      "stOther": 18
+     },
+     "why": {
+      "stage": 1,
+      "awayStation": 18
+     }
+    }
+   ],
+   "km": 2852,
+   "kmSame": 2852,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 131,
+   "day": 3243,
+   "year": 9,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "NED",
+      "ENG",
+      "FRA",
+      "SAF",
+      "ARG"
+     ],
+     "fleets": 15,
+     "state": {
+      "home": 8,
+      "moving": 7
+     },
+     "why": {
+      "take": 8
+     }
+    }
+   ],
+   "km": 6029,
+   "kmSame": 6029,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 162,
+   "day": 4344,
+   "year": 12,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GRE"
+     ],
+     "fleets": 1,
+     "state": {
+      "moving": 1
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "home": 18
+     },
+     "why": {
+      "noBase": 18
+     }
+    }
+   ],
+   "km": 9075,
+   "kmSame": 9075,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 165,
+   "day": 4423,
+   "year": 13,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "home": 18
+     },
+     "why": {
+      "stage": 18
+     }
+    },
+    {
+     "nations": [
+      "ENG",
+      "FRA",
+      "NED",
+      "SAF",
+      "ARG"
+     ],
+     "fleets": 15,
+     "state": {
+      "home": 15
+     },
+     "why": {
+      "take": 15
+     }
+    }
+   ],
+   "km": 4710,
+   "kmSame": 4710,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 166,
+   "day": 4433,
+   "year": 13,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "USA"
+     ],
+     "fleets": 28,
+     "state": {
+      "moving": 28
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "CUB"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "take": 1
+     }
+    }
+   ],
+   "km": 854,
+   "kmSame": 854,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 170,
+   "day": 4465,
+   "year": 13,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "AST"
+     ],
+     "fleets": 7,
+     "state": {
+      "moving": 7
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "NED",
+      "ENG",
+      "FRA",
+      "SAF",
+      "ARG"
+     ],
+     "fleets": 15,
+     "state": {
+      "stOther": 10,
+      "home": 5
+     },
+     "why": {
+      "awayStation": 10,
+      "take": 5
+     }
+    }
+   ],
+   "km": 2106,
+   "kmSame": 2106,
+   "b30": 2,
+   "b90": 2
+  },
+  {
+   "id": 178,
+   "day": 4780,
+   "year": 14,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "CAN",
+      "MEX"
+     ],
+     "fleets": 2,
+     "state": {
+      "stOther": 2
+     },
+     "why": {
+      "awayStation": 2
+     }
+    }
+   ],
+   "km": 6810,
+   "kmSame": 6810,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 184,
+   "day": 4860,
+   "year": 14,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "moving": 18
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "NED",
+      "ENG",
+      "FRA",
+      "ARG"
+     ],
+     "fleets": 14,
+     "state": {
+      "moving": 1,
+      "stOther": 6,
+      "stThis": 7
+     },
+     "why": {
+      "awayStation": 8,
+      "awayHunt": 5
+     }
+    }
+   ],
+   "km": 4136,
+   "kmSame": 4136,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 193,
+   "day": 5262,
+   "year": 15,
+   "initial": false,
+   "late": 36,
+   "sides": [
+    {
+     "nations": [
+      "SOV"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "stage": 1
+     }
+    },
+    {
+     "nations": [
+      "INC"
+     ],
+     "fleets": 1,
+     "state": {
+      "stThis": 1
+     },
+     "why": {
+      "awayStation": 1
+     }
+    }
+   ],
+   "km": 8093,
+   "kmSame": 8093,
+   "b30": 0,
+   "b90": 1
+  },
+  {
+   "id": 202,
+   "day": 5401,
+   "year": 15,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GRE"
+     ],
+     "fleets": 2,
+     "state": {
+      "moving": 2
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "CAN",
+      "MEX"
+     ],
+     "fleets": 2,
+     "state": {
+      "home": 2
+     },
+     "why": {
+      "noBase": 2
+     }
+    }
+   ],
+   "km": 10372,
+   "kmSame": 10372,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 203,
+   "day": 5443,
+   "year": 15,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "ENG",
+      "FRA",
+      "NED",
+      "ARG"
+     ],
+     "fleets": 14,
+     "state": {
+      "home": 9,
+      "moving": 5
+     },
+     "why": {
+      "take": 1,
+      "noBase": 7,
+      "stage": 1
+     }
+    },
+    {
+     "nations": [
+      "CAN",
+      "MEX"
+     ],
+     "fleets": 2,
+     "state": {
+      "moving": 1,
+      "home": 1
+     },
+     "why": {
+      "take": 1
+     }
+    }
+   ],
+   "km": 6992,
+   "kmSame": 6992,
+   "b30": 0,
+   "b90": 2
+  },
+  {
+   "id": 205,
+   "day": 5459,
+   "year": 15,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 17,
+     "state": {
+      "stOther": 17
+     },
+     "why": {
+      "awayStation": 17
+     }
+    },
+    {
+     "nations": [
+      "GRE"
+     ],
+     "fleets": 2,
+     "state": {
+      "stOther": 2
+     },
+     "why": {
+      "awayStation": 2
+     }
+    }
+   ],
+   "km": 7963,
+   "kmSame": 7963,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 217,
+   "day": 5739,
+   "year": 16,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 17,
+     "state": {
+      "home": 17
+     },
+     "why": {
+      "take": 17
+     }
+    },
+    {
+     "nations": [
+      "FRA",
+      "ENG",
+      "NED",
+      "ARG"
+     ],
+     "fleets": 14,
+     "state": {
+      "stOther": 13,
+      "home": 1
+     },
+     "why": {
+      "awayStation": 13,
+      "take": 1
+     }
+    }
+   ],
+   "km": 7722,
+   "kmSame": 7722,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 218,
+   "day": 5748,
+   "year": 16,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 17,
+     "state": {
+      "stOther": 17
+     },
+     "why": {
+      "awayStation": 17
+     }
+    },
+    {
+     "nations": [
+      "GRE"
+     ],
+     "fleets": 2,
+     "state": {
+      "stOther": 2
+     },
+     "why": {
+      "awayStation": 2
+     }
+    }
+   ],
+   "km": 7879,
+   "kmSame": 7879,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 223,
+   "day": 6089,
+   "year": 17,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "ITA",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 1,
+      "awayHunt": 17
+     }
+    },
+    {
+     "nations": [
+      "INC"
+     ],
+     "fleets": 1,
+     "state": {
+      "stOther": 1
+     },
+     "why": {
+      "take": 1
+     }
+    }
+   ],
+   "km": 935,
+   "kmSame": 935,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 228,
+   "day": 6274,
+   "year": 18,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP",
+      "ITA"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 17,
+      "home": 1
+     },
+     "why": {
+      "awayStation": 17,
+      "take": 1
+     }
+    },
+    {
+     "nations": [
+      "NED",
+      "FRA",
+      "ARG"
+     ],
+     "fleets": 13,
+     "state": {
+      "moving": 1,
+      "stOther": 12
+     },
+     "why": {
+      "awayStation": 12
+     }
+    }
+   ],
+   "km": 5792,
+   "kmSame": 5792,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 243,
+   "day": 6621,
+   "year": 19,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "ITA",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "MEX"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "stage": 1
+     }
+    }
+   ],
+   "km": 13096,
+   "kmSame": 13096,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 246,
+   "day": 6684,
+   "year": 19,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "ITA",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 1,
+      "stPeace": 17
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "NED",
+      "ARG"
+     ],
+     "fleets": 6,
+     "state": {
+      "home": 1,
+      "stOther": 5
+     },
+     "why": {
+      "take": 1,
+      "awayStation": 5
+     }
+    }
+   ],
+   "km": 6464,
+   "kmSame": 6464,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 268,
+   "day": 7251,
+   "year": 20,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "ITA",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 1,
+      "home": 17
+     },
+     "why": {
+      "awayStation": 1,
+      "take": 17
+     }
+    },
+    {
+     "nations": [
+      "FRA",
+      "NED",
+      "ARG"
+     ],
+     "fleets": 13,
+     "state": {
+      "home": 13
+     },
+     "why": {
+      "take": 13
+     }
+    }
+   ],
+   "km": 5959,
+   "kmSame": 5959,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 273,
+   "day": 7417,
+   "year": 21,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GRE"
+     ],
+     "fleets": 2,
+     "state": {
+      "stThis": 2
+     },
+     "why": {
+      "awayStation": 2
+     }
+    },
+    {
+     "nations": [
+      "ITA",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "home": 1,
+      "stOther": 17
+     },
+     "why": {
+      "take": 1,
+      "awayStation": 17
+     }
+    }
+   ],
+   "km": 1031,
+   "kmSame": -1,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 275,
+   "day": 7445,
+   "year": 21,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "RAJ",
+      "SWE"
+     ],
+     "fleets": 6,
+     "state": {
+      "moving": 1,
+      "home": 5
+     },
+     "why": {
+      "take": 5
+     }
+    },
+    {
+     "nations": [
+      "ITA",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    }
+   ],
+   "km": 3501,
+   "kmSame": 3501,
+   "b30": 2,
+   "b90": 2
+  },
+  {
+   "id": 276,
+   "day": 7459,
+   "year": 21,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "REP"
+     ],
+     "fleets": 2,
+     "state": {
+      "moving": 2
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "ITA",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    }
+   ],
+   "km": 7273,
+   "kmSame": 7273,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 286,
+   "day": 7776,
+   "year": 22,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GRE",
+      "REP",
+      "JAP"
+     ],
+     "fleets": 21,
+     "state": {
+      "stOther": 21
+     },
+     "why": {
+      "awayStation": 21
+     }
+    },
+    {
+     "nations": [
+      "SWE"
+     ],
+     "fleets": 5,
+     "state": {
+      "home": 5
+     },
+     "why": {
+      "take": 5
+     }
+    }
+   ],
+   "km": 958,
+   "kmSame": 958,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 287,
+   "day": 7783,
+   "year": 22,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GRE",
+      "REP",
+      "RAJ",
+      "JAP"
+     ],
+     "fleets": 22,
+     "state": {
+      "stOther": 22
+     },
+     "why": {
+      "awayStation": 22
+     }
+    },
+    {
+     "nations": [
+      "CAN",
+      "MEX"
+     ],
+     "fleets": 2,
+     "state": {
+      "stOther": 2
+     },
+     "why": {
+      "awayStation": 2
+     }
+    }
+   ],
+   "km": 3969,
+   "kmSame": 3969,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 291,
+   "day": 7832,
+   "year": 22,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "RAJ",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "NED",
+      "ARG"
+     ],
+     "fleets": 6,
+     "state": {
+      "home": 1,
+      "stOther": 5
+     },
+     "why": {
+      "take": 1,
+      "awayStation": 5
+     }
+    }
+   ],
+   "km": 11031,
+   "kmSame": 11031,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 295,
+   "day": 7916,
+   "year": 22,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "RAJ",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "CAN",
+      "MEX"
+     ],
+     "fleets": 2,
+     "state": {
+      "home": 2
+     },
+     "why": {
+      "take": 2
+     }
+    }
+   ],
+   "km": 14950,
+   "kmSame": 14950,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 300,
+   "day": 8133,
+   "year": 23,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "RAJ",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "NED",
+      "ARG"
+     ],
+     "fleets": 6,
+     "state": {
+      "stThis": 1,
+      "moving": 5
+     },
+     "why": {
+      "awayStation": 1
+     }
+    }
+   ],
+   "km": 11776,
+   "kmSame": 11776,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 301,
+   "day": 8150,
+   "year": 23,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP",
+      "RAJ"
+     ],
+     "fleets": 18,
+     "state": {
+      "stOther": 18
+     },
+     "why": {
+      "awayStation": 18
+     }
+    },
+    {
+     "nations": [
+      "NED",
+      "ENG",
+      "FRA",
+      "ARG"
+     ],
+     "fleets": 14,
+     "state": {
+      "moving": 2,
+      "stOther": 7,
+      "stThis": 5
+     },
+     "why": {
+      "awayStation": 12
+     }
+    }
+   ],
+   "km": 7468,
+   "kmSame": 7468,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 313,
+   "day": 8553,
+   "year": 24,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "RAJ",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "moving": 1,
+      "home": 17
+     },
+     "why": {
+      "take": 17
+     }
+    },
+    {
+     "nations": [
+      "FRA",
+      "NED",
+      "ARG"
+     ],
+     "fleets": 13,
+     "state": {
+      "stOther": 12,
+      "home": 1
+     },
+     "why": {
+      "awayStation": 12,
+      "take": 1
+     }
+    }
+   ],
+   "km": 937,
+   "kmSame": 937,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 316,
+   "day": 8630,
+   "year": 24,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "AST"
+     ],
+     "fleets": 7,
+     "state": {
+      "moving": 7
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "NED",
+      "ENG",
+      "FRA",
+      "ARG"
+     ],
+     "fleets": 14,
+     "state": {
+      "stOther": 14
+     },
+     "why": {
+      "awayStation": 14
+     }
+    }
+   ],
+   "km": 7340,
+   "kmSame": 7340,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 324,
+   "day": 8875,
+   "year": 25,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 17,
+     "state": {
+      "stThis": 17
+     },
+     "why": {
+      "awayStation": 17
+     }
+    },
+    {
+     "nations": [
+      "ENG",
+      "NED",
+      "ARG"
+     ],
+     "fleets": 7,
+     "state": {
+      "stOther": 6,
+      "stThis": 1
+     },
+     "why": {
+      "awayStation": 7
+     }
+    }
+   ],
+   "km": 3159,
+   "kmSame": 3159,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 334,
+   "day": 9147,
+   "year": 26,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "CHL"
+     ],
+     "fleets": 2,
+     "state": {
+      "home": 2
+     },
+     "why": {
+      "take": 2
+     }
+    },
+    {
+     "nations": [
+      "ARG",
+      "ENG",
+      "FRA",
+      "NED"
+     ],
+     "fleets": 13,
+     "state": {
+      "stOther": 13
+     },
+     "why": {
+      "awayStation": 13
+     }
+    }
+   ],
+   "km": 8866,
+   "kmSame": 8866,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 349,
+   "day": 9596,
+   "year": 27,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 17,
+     "state": {
+      "stOther": 17
+     },
+     "why": {
+      "awayHunt": 17
+     }
+    },
+    {
+     "nations": [
+      "FRA",
+      "ENG",
+      "NED",
+      "ARG"
+     ],
+     "fleets": 13,
+     "state": {
+      "stPeace": 7,
+      "home": 6
+     },
+     "why": {
+      "awayNewStation": 7,
+      "take": 6
+     }
+    }
+   ],
+   "km": 1602,
+   "kmSame": 1602,
+   "b30": 1,
+   "b90": 1
+  },
+  {
+   "id": 350,
+   "day": 9603,
+   "year": 27,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GER"
+     ],
+     "fleets": 1,
+     "state": {
+      "engaged": 1
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "FRA"
+     ],
+     "fleets": 6,
+     "state": {
+      "stOther": 6
+     },
+     "why": {
+      "awayStation": 6
+     }
+    }
+   ],
+   "km": 3711,
+   "kmSame": 3711,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 359,
+   "day": 9792,
+   "year": 27,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GER"
+     ],
+     "fleets": 1,
+     "state": {
+      "moving": 1
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "FRA",
+      "ARG"
+     ],
+     "fleets": 11,
+     "state": {
+      "stOther": 11
+     },
+     "why": {
+      "awayStation": 11
+     }
+    }
+   ],
+   "km": 6133,
+   "kmSame": 6133,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 364,
+   "day": 10128,
+   "year": 28,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GER",
+      "JAP"
+     ],
+     "fleets": 18,
+     "state": {
+      "moving": 1,
+      "stOther": 17
+     },
+     "why": {
+      "awayHunt": 17
+     }
+    },
+    {
+     "nations": [
+      "SWE"
+     ],
+     "fleets": 5,
+     "state": {
+      "stOther": 5
+     },
+     "why": {
+      "awayStation": 5
+     }
+    }
+   ],
+   "km": 2081,
+   "kmSame": 2081,
+   "b30": 4,
+   "b90": 4
+  },
+  {
+   "id": 366,
+   "day": 10183,
+   "year": 28,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "CHL"
+     ],
+     "fleets": 2,
+     "state": {
+      "moving": 2
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "ARG",
+      "ENG",
+      "FRA",
+      "NED"
+     ],
+     "fleets": 13,
+     "state": {
+      "stOther": 13
+     },
+     "why": {
+      "awayStation": 13
+     }
+    }
+   ],
+   "km": 9987,
+   "kmSame": 9987,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 367,
+   "day": 10219,
+   "year": 28,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GER"
+     ],
+     "fleets": 1,
+     "state": {
+      "stOther": 1
+     },
+     "why": {
+      "awayStation": 1
+     }
+    },
+    {
+     "nations": [
+      "ENG",
+      "FRA",
+      "ARG"
+     ],
+     "fleets": 12,
+     "state": {
+      "stOther": 12
+     },
+     "why": {
+      "awayStation": 12
+     }
+    }
+   ],
+   "km": 2577,
+   "kmSame": 2577,
+   "b30": 0,
+   "b90": 2
+  },
+  {
+   "id": 370,
+   "day": 10271,
+   "year": 29,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 15,
+     "state": {
+      "moving": 15
+     },
+     "why": {}
+    },
+    {
+     "nations": [
+      "NED",
+      "ENG",
+      "FRA",
+      "ARG"
+     ],
+     "fleets": 13,
+     "state": {
+      "home": 1,
+      "stOther": 1,
+      "moving": 6,
+      "stPeace": 5
+     },
+     "why": {
+      "take": 1,
+      "awayStation": 1,
+      "awayHunt": 5
+     }
+    }
+   ],
+   "km": 4895,
+   "kmSame": 4895,
+   "b30": 2,
+   "b90": 4
+  },
+  {
+   "id": 374,
+   "day": 10346,
+   "year": 29,
+   "initial": false,
+   "late": 15,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 15,
+     "state": {
+      "stOther": 15
+     },
+     "why": {
+      "awayHunt": 9,
+      "awayStation": 6
+     }
+    },
+    {
+     "nations": [
+      "NOR"
+     ],
+     "fleets": 1,
+     "state": {
+      "home": 1
+     },
+     "why": {
+      "take": 1
+     }
+    }
+   ],
+   "km": 1811,
+   "kmSame": 1811,
+   "b30": 2,
+   "b90": 2
+  },
+  {
+   "id": 385,
+   "day": 10898,
+   "year": 30,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "JAP"
+     ],
+     "fleets": 15,
+     "state": {
+      "stThis": 15
+     },
+     "why": {
+      "awayStation": 15
+     }
+    },
+    {
+     "nations": [
+      "ENG",
+      "NED"
+     ],
+     "fleets": 2,
+     "state": {
+      "stThis": 2
+     },
+     "why": {
+      "awayStation": 2
+     }
+    }
+   ],
+   "km": 3731,
+   "kmSame": 3731,
+   "b30": 0,
+   "b90": 0
+  },
+  {
+   "id": 386,
+   "day": 10912,
+   "year": 30,
+   "initial": false,
+   "late": 0,
+   "sides": [
+    {
+     "nations": [
+      "GER"
+     ],
+     "fleets": 1,
+     "state": {
+      "stOther": 1
+     },
+     "why": {
+      "awayStation": 1
+     }
+    },
+    {
+     "nations": [
+      "NED"
+     ],
+     "fleets": 1,
+     "state": {
+      "stOther": 1
+     },
+     "why": {
+      "awayStation": 1
+     }
+    }
+   ],
+   "km": 15648,
+   "kmSame": 15648,
+   "b30": 0,
+   "b90": 0
+  }
+ ],
+ "battles": [
+  {
+   "day": 1,
+   "year": 1,
+   "war": 3,
+   "warAge": 0,
+   "place": "portA",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 1,
+   "year": 1,
+   "war": 3,
+   "warAge": 0,
+   "place": "sea",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 8,
+   "year": 1,
+   "war": 3,
+   "warAge": 7,
+   "place": "sea",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 10,
+   "year": 1,
+   "war": 3,
+   "warAge": 9,
+   "place": "sea",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 13,
+   "year": 1,
+   "war": 1,
+   "warAge": 13,
+   "place": "portA",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 14,
+   "year": 1,
+   "war": 4,
+   "warAge": 8,
+   "place": "sea",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 15,
+   "year": 1,
+   "war": 4,
+   "warAge": 9,
+   "place": "sea",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 19,
+   "year": 1,
+   "war": 4,
+   "warAge": 13,
+   "place": "portB",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 28,
+   "year": 1,
+   "war": 7,
+   "warAge": 8,
+   "place": "portB",
+   "movedA": 3,
+   "stoodA": 0,
+   "movedB": 2,
+   "stoodB": 1
+  },
+  {
+   "day": 29,
+   "year": 1,
+   "war": 1,
+   "warAge": 29,
+   "place": "portA",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 64,
+   "year": 1,
+   "war": 13,
+   "warAge": 11,
+   "place": "sea",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 64,
+   "year": 1,
+   "war": 13,
+   "warAge": 11,
+   "place": "portB",
+   "movedA": 2,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 67,
+   "year": 1,
+   "war": 15,
+   "warAge": 0,
+   "place": "portB",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 89,
+   "year": 1,
+   "war": 15,
+   "warAge": 22,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 2,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 220,
+   "year": 1,
+   "war": 25,
+   "warAge": 11,
+   "place": "portA",
+   "movedA": 2,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 221,
+   "year": 1,
+   "war": 25,
+   "warAge": 12,
+   "place": "portA",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 224,
+   "year": 1,
+   "war": 25,
+   "warAge": 15,
+   "place": "portB",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 256,
+   "year": 1,
+   "war": 28,
+   "warAge": 0,
+   "place": "portB",
+   "movedA": 5,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 287,
+   "year": 1,
+   "war": 27,
+   "warAge": 57,
+   "place": "portOther",
+   "movedA": 0,
+   "stoodA": 3,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 390,
+   "year": 2,
+   "war": 30,
+   "warAge": 15,
+   "place": "portB",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 395,
+   "year": 2,
+   "war": 30,
+   "warAge": 20,
+   "place": "portB",
+   "movedA": 0,
+   "stoodA": 3,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 396,
+   "year": 2,
+   "war": 30,
+   "warAge": 21,
+   "place": "portA",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 417,
+   "year": 2,
+   "war": 30,
+   "warAge": 42,
+   "place": "sea",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 417,
+   "year": 2,
+   "war": 30,
+   "warAge": 42,
+   "place": "portB",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 2
+  },
+  {
+   "day": 443,
+   "year": 2,
+   "war": 30,
+   "warAge": 68,
+   "place": "portB",
+   "movedA": 3,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 444,
+   "year": 2,
+   "war": 30,
+   "warAge": 69,
+   "place": "portB",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 599,
+   "year": 2,
+   "war": 40,
+   "warAge": 14,
+   "place": "sea",
+   "movedA": 6,
+   "stoodA": 0,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 600,
+   "year": 2,
+   "war": 40,
+   "warAge": 15,
+   "place": "sea",
+   "movedA": 3,
+   "stoodA": 0,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 601,
+   "year": 2,
+   "war": 40,
+   "warAge": 16,
+   "place": "sea",
+   "movedA": 2,
+   "stoodA": 0,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 885,
+   "year": 3,
+   "war": 25,
+   "warAge": 676,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 0,
+   "stoodB": 2
+  },
+  {
+   "day": 1005,
+   "year": 3,
+   "war": 42,
+   "warAge": 306,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 11,
+   "stoodB": 0
+  },
+  {
+   "day": 1008,
+   "year": 3,
+   "war": 42,
+   "warAge": 309,
+   "place": "sea",
+   "movedA": 3,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 1069,
+   "year": 3,
+   "war": 42,
+   "warAge": 370,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 1216,
+   "year": 4,
+   "war": 51,
+   "warAge": 120,
+   "place": "portB",
+   "movedA": 2,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 1260,
+   "year": 4,
+   "war": 56,
+   "warAge": 1,
+   "place": "portOther",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 1260,
+   "year": 4,
+   "war": 56,
+   "warAge": 1,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 5,
+   "stoodB": 0
+  },
+  {
+   "day": 1261,
+   "year": 4,
+   "war": 56,
+   "warAge": 2,
+   "place": "sea",
+   "movedA": 3,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 2
+  },
+  {
+   "day": 1269,
+   "year": 4,
+   "war": 56,
+   "warAge": 10,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 3,
+   "stoodB": 0
+  },
+  {
+   "day": 1273,
+   "year": 4,
+   "war": 56,
+   "warAge": 14,
+   "place": "portB",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 1276,
+   "year": 4,
+   "war": 57,
+   "warAge": 3,
+   "place": "portB",
+   "movedA": 5,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 1280,
+   "year": 4,
+   "war": 56,
+   "warAge": 21,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 3,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 1281,
+   "year": 4,
+   "war": 56,
+   "warAge": 22,
+   "place": "portB",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 5,
+   "stoodB": 0
+  },
+  {
+   "day": 1291,
+   "year": 4,
+   "war": 56,
+   "warAge": 32,
+   "place": "sea",
+   "movedA": 3,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 3
+  },
+  {
+   "day": 1292,
+   "year": 4,
+   "war": 56,
+   "warAge": 33,
+   "place": "sea",
+   "movedA": 3,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 5
+  },
+  {
+   "day": 1293,
+   "year": 4,
+   "war": 58,
+   "warAge": 15,
+   "place": "portOther",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 1300,
+   "year": 4,
+   "war": 58,
+   "warAge": 22,
+   "place": "portB",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 1746,
+   "year": 5,
+   "war": 66,
+   "warAge": 6,
+   "place": "sea",
+   "movedA": 3,
+   "stoodA": 0,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 1746,
+   "year": 5,
+   "war": 66,
+   "warAge": 6,
+   "place": "sea",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 2,
+   "stoodB": 0
+  },
+  {
+   "day": 1830,
+   "year": 6,
+   "war": 69,
+   "warAge": 18,
+   "place": "portOther",
+   "movedA": 0,
+   "stoodA": 2,
+   "movedB": 3,
+   "stoodB": 0
+  },
+  {
+   "day": 1979,
+   "year": 6,
+   "war": 76,
+   "warAge": 10,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 2,
+   "movedB": 4,
+   "stoodB": 0
+  },
+  {
+   "day": 2248,
+   "year": 7,
+   "war": 85,
+   "warAge": 9,
+   "place": "portB",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 2395,
+   "year": 7,
+   "war": 85,
+   "warAge": 156,
+   "place": "portB",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 2543,
+   "year": 7,
+   "war": 91,
+   "warAge": 203,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 2,
+   "stoodB": 0
+  },
+  {
+   "day": 2679,
+   "year": 8,
+   "war": 109,
+   "warAge": 38,
+   "place": "portB",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 2780,
+   "year": 8,
+   "war": 91,
+   "warAge": 440,
+   "place": "sea",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 0,
+   "stoodB": 3
+  },
+  {
+   "day": 3191,
+   "year": 9,
+   "war": 129,
+   "warAge": 23,
+   "place": "portB",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 3914,
+   "year": 11,
+   "war": 131,
+   "warAge": 671,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 4436,
+   "year": 13,
+   "war": 166,
+   "warAge": 3,
+   "place": "portB",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 4474,
+   "year": 13,
+   "war": 170,
+   "warAge": 9,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 4483,
+   "year": 13,
+   "war": 170,
+   "warAge": 18,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 2,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 4865,
+   "year": 14,
+   "war": 170,
+   "warAge": 400,
+   "place": "portOther",
+   "movedA": 4,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 5296,
+   "year": 15,
+   "war": 193,
+   "warAge": 70,
+   "place": "portB",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 5305,
+   "year": 15,
+   "war": 197,
+   "warAge": 7,
+   "place": "portOther",
+   "movedA": 0,
+   "stoodA": 3,
+   "movedB": 0,
+   "stoodB": 10
+  },
+  {
+   "day": 5306,
+   "year": 15,
+   "war": 197,
+   "warAge": 8,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 0,
+   "stoodB": 10
+  },
+  {
+   "day": 5483,
+   "year": 16,
+   "war": 203,
+   "warAge": 40,
+   "place": "portOther",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 5489,
+   "year": 16,
+   "war": 203,
+   "warAge": 46,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 2,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 5549,
+   "year": 16,
+   "war": 210,
+   "warAge": 36,
+   "place": "portB",
+   "movedA": 2,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 5742,
+   "year": 16,
+   "war": 217,
+   "warAge": 3,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 5903,
+   "year": 17,
+   "war": 210,
+   "warAge": 390,
+   "place": "portB",
+   "movedA": 0,
+   "stoodA": 2,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 5908,
+   "year": 17,
+   "war": 217,
+   "warAge": 169,
+   "place": "portB",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 5916,
+   "year": 17,
+   "war": 217,
+   "warAge": 177,
+   "place": "portB",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 6093,
+   "year": 17,
+   "war": 223,
+   "warAge": 4,
+   "place": "portOther",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 8,
+   "stoodB": 0
+  },
+  {
+   "day": 7257,
+   "year": 20,
+   "war": 268,
+   "warAge": 6,
+   "place": "portB",
+   "movedA": 8,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 7451,
+   "year": 21,
+   "war": 275,
+   "warAge": 6,
+   "place": "portA",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 7460,
+   "year": 21,
+   "war": 275,
+   "warAge": 15,
+   "place": "portB",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 7704,
+   "year": 22,
+   "war": 268,
+   "warAge": 453,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 2,
+   "movedB": 0,
+   "stoodB": 2
+  },
+  {
+   "day": 7789,
+   "year": 22,
+   "war": 286,
+   "warAge": 13,
+   "place": "portOther",
+   "movedA": 5,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 7809,
+   "year": 22,
+   "war": 287,
+   "warAge": 26,
+   "place": "portOther",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 8682,
+   "year": 24,
+   "war": 313,
+   "warAge": 129,
+   "place": "portOther",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 6,
+   "stoodB": 0
+  },
+  {
+   "day": 8684,
+   "year": 24,
+   "war": 313,
+   "warAge": 131,
+   "place": "portOther",
+   "movedA": 0,
+   "stoodA": 7,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 8880,
+   "year": 25,
+   "war": 324,
+   "warAge": 5,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 0,
+   "stoodB": 4
+  },
+  {
+   "day": 9603,
+   "year": 27,
+   "war": 350,
+   "warAge": 0,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 9604,
+   "year": 27,
+   "war": 349,
+   "warAge": 8,
+   "place": "portA",
+   "movedA": 1,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 2
+  },
+  {
+   "day": 9692,
+   "year": 27,
+   "war": 356,
+   "warAge": 2,
+   "place": "portB",
+   "movedA": 4,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 9806,
+   "year": 27,
+   "war": 349,
+   "warAge": 210,
+   "place": "portB",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 8,
+   "stoodB": 0
+  },
+  {
+   "day": 9951,
+   "year": 28,
+   "war": 359,
+   "warAge": 159,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 10131,
+   "year": 28,
+   "war": 357,
+   "warAge": 423,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 10134,
+   "year": 28,
+   "war": 364,
+   "warAge": 6,
+   "place": "portOther",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 6,
+   "stoodB": 0
+  },
+  {
+   "day": 10138,
+   "year": 28,
+   "war": 364,
+   "warAge": 10,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 4,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 10138,
+   "year": 28,
+   "war": 364,
+   "warAge": 10,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 4,
+   "movedB": 2,
+   "stoodB": 0
+  },
+  {
+   "day": 10140,
+   "year": 28,
+   "war": 364,
+   "warAge": 12,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 3,
+   "movedB": 6,
+   "stoodB": 0
+  },
+  {
+   "day": 10268,
+   "year": 29,
+   "war": 367,
+   "warAge": 49,
+   "place": "sea",
+   "movedA": 4,
+   "stoodA": 0,
+   "movedB": 1,
+   "stoodB": 0
+  },
+  {
+   "day": 10273,
+   "year": 29,
+   "war": 367,
+   "warAge": 54,
+   "place": "portB",
+   "movedA": 3,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 10290,
+   "year": 29,
+   "war": 364,
+   "warAge": 162,
+   "place": "sea",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 10293,
+   "year": 29,
+   "war": 364,
+   "warAge": 165,
+   "place": "sea",
+   "movedA": 6,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 10294,
+   "year": 29,
+   "war": 370,
+   "warAge": 23,
+   "place": "sea",
+   "movedA": 5,
+   "stoodA": 0,
+   "movedB": 2,
+   "stoodB": 0
+  },
+  {
+   "day": 10301,
+   "year": 29,
+   "war": 370,
+   "warAge": 30,
+   "place": "sea",
+   "movedA": 3,
+   "stoodA": 0,
+   "movedB": 6,
+   "stoodB": 0
+  },
+  {
+   "day": 10307,
+   "year": 29,
+   "war": 370,
+   "warAge": 36,
+   "place": "portOther",
+   "movedA": 5,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 10332,
+   "year": 29,
+   "war": 370,
+   "warAge": 61,
+   "place": "portOther",
+   "movedA": 6,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 10356,
+   "year": 29,
+   "war": 374,
+   "warAge": 25,
+   "place": "portOther",
+   "movedA": 7,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 10363,
+   "year": 29,
+   "war": 374,
+   "warAge": 32,
+   "place": "portB",
+   "movedA": 2,
+   "stoodA": 0,
+   "movedB": 0,
+   "stoodB": 1
+  },
+  {
+   "day": 10467,
+   "year": 29,
+   "war": 370,
+   "warAge": 196,
+   "place": "portA",
+   "movedA": 0,
+   "stoodA": 1,
+   "movedB": 6,
+   "stoodB": 0
+  }
+ ]
+}

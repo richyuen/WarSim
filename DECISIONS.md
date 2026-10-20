@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-573 · 2026-10-20 · proposed (the user's decision) — The chase of an enemy navy beyond a sortie's reach: not adopted; it sinks the navies the late war at sea needs (PLAN 7.39b)
+
+- **Context.** Critic run 10, R10-B2 (naval 6). PLAN 7.39a: 886 fleet-weeks a world-year, years 2–30,
+  stand on station at an enemy port with the nearest enemy fleet of their waters beyond `SORTIE_KM`.
+  PLAN 7.39b (`docs/evidence/7.39/measure-b.md`): late wars of two navies begin with the navies a
+  median 4,423 km apart, against 909 in year 1. A war begun beyond `SORTIE_KM` has 0.52 battles in 90
+  days late, one begun within it 1.62. Year 1's wars also begin with fleets on stations from earlier
+  wars (41 %, 60 % far), so the distance between the navies is what changed, not the stations.
+- **Tried** (`docs/evidence/7.39/b-chase.diff`). In `awayOrder`, after a battle in reach and before
+  its station, the fleet sails for the nearest standing enemy warfleet of its waters beyond
+  `SORTIE_KM`, from a zone with no enemy ship, if that fleet's zone's enemy power is no more than the
+  nation's standing warfleets of those waters. A stage to a forward base was set aside first: only
+  38 % of the far fleet-weeks have a port of the bloc's within reach of the enemy fleet.
+- **Measured** (4 seeds × 10 years, before and after at once). Far station 1,332 → 12.9 fleet-weeks
+  a world-year (the first bar met). Sea battles years 2–10 6.4 → 7.3, year 1 37.3 → 50.8. The
+  world's armed power halves from year 2 (259k → 128k) and stays down (year 10 139k against 177k).
+  Seed 8693's fleet-weeks at war with a navy drop 29,458 → 927. The fleets that sail to a battle
+  mostly win it (122 against 46 late). The war at sea becomes decisive, and the weaker navy is
+  sunk and not built again at the pace it was lost. The late battles' bar (6.6 over years 2–30) is not
+  in reach on that run (years 11–30 at 3.4 before).
+- **Options.**
+  - **a (recommended):** HEAD stands. The far station keeps both navies afloat, and the late battles
+    come from those navies. The chase waits on PLAN 7.46 (a navy sunk in a war at sea built again),
+    and is re-tried on its run.
+  - **b:** adopt the chase now: no far stations, more battles in years 1–2, half the world's navy
+    from year 2.
+  - **c:** re-scope 7.39b's first bar (the far station halved) to the battles alone.
+- **Pin** unchanged (no rule committed).
+
 ### ADR-572 · 2026-10-20 · accepted — The dead's cost not eased by a high doctrine (PLAN 7.45)
 
 - **Context.** PLAN 7.38e's first read (`docs/evidence/7.38/measure-e.md`, cause B): ADR-568's

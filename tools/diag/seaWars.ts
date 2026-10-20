@@ -26,7 +26,7 @@ import { loadAssets1938 } from '../headless/assets';
 import { fleetPower } from '../../src/sim/systems/seaControl';
 import { keyAt, waterKeys } from '../../src/sim/ai/naval';
 import { portSeaOf, seaOf, type World } from '../../src/sim/world';
-import { preyWhy, sortieWhy, whyCtx, type Prey, type Why } from './seaWhy';
+import { farBase, preyWhy, sortieWhy, whyCtx, type Prey, type Why } from './seaWhy';
 
 const seed = Number(process.argv[2]);
 const years = Number(process.argv[3] ?? 30);
@@ -51,6 +51,8 @@ type Year = {
   who: Partial<Record<Bucket, Record<string, number>>>;
   /** Fleet-weeks on station (`awayStation`) at war with a navy, by why the nearest enemy fleet is not hunted (`preyWhy`). */
   prey: Partial<Record<Prey, number>>;
+  /** Of those `far` (PLAN 7.39b): a bloc port with the enemy fleet in reach (`farBase`), none, or that fleet's zone over the navy. */
+  far: Record<string, number>;
 };
 const rows: Year[] = [];
 const t0 = Date.now();
@@ -109,6 +111,10 @@ const sample = (w: World, y: Year): void => {
       if (vsNavy && b === 'awayStation') {
         const q = preyWhy(ctx, f);
         y.prey[q] = (y.prey[q] ?? 0) + 1;
+        if (q === 'far') {
+          const b = farBase(ctx, f);
+          y.far[b] = (y.far[b] ?? 0) + 1;
+        }
       }
       const who = (y.who[b] ??= {});
       const k = `${tag(n)}${vsNavy ? '' : '*'}`;
@@ -119,7 +125,7 @@ const sample = (w: World, y: Year): void => {
 };
 
 for (let year = 1; year <= years; year++) {
-  const y: Year = { year, battles: 0, zero: 0, shipsSunk: 0, rejected: {}, weeks: 0, wars: { both: 0, coast: 0, land: 0, neither: 0 }, vsNavy: {}, vsNone: {}, who: {}, prey: {} };
+  const y: Year = { year, battles: 0, zero: 0, shipsSunk: 0, rejected: {}, weeks: 0, wars: { both: 0, coast: 0, land: 0, neither: 0 }, vsNavy: {}, vsNone: {}, who: {}, prey: {}, far: {} };
   sim.step(24 * 365, (w) => {
     const ev = w.out.events;
     for (let i = 0; i < ev.length; i += 6) {

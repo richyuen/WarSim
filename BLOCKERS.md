@@ -5,6 +5,20 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.39b: the chase of a far enemy navy halves the far station but sinks the navies; the decision waits on the user (2026-10-20, ADR-573)
+- **The bar:** on the critic's 14 seeds × 30 years, the late fleet-weeks on station with the enemy
+  fleet beyond reach halved (886 → under 443 a world-year), and sea battles a world-year in years
+  2–30 at least 6.6.
+- **What moved** (`docs/evidence/7.39/measure-b.md`, the chase `b-chase.diff`, 4 seeds × 10 years):
+  the far station 1,332 → 12.9 fleet-weeks a world-year; sea battles years 2–10 6.4 → 7.3, year 1
+  37.3 → 50.8; the world's armed power 259k → 128k from year 2 and still 139k against 177k at
+  year 10. The chasers mostly win (122 against 46), and the navies sunk are not built again.
+- **What is left:** the cause found, a navy sunk in a decisive war at sea not rebuilt, is PLAN
+  7.46. The chase is re-tried on 7.46's run. Not run to 14 × 30: the 4 × 10 run already shows the
+  navies halved, with years 11–30 at 3.4 battles a world-year before.
+- **Options:** ADR-573 a (HEAD stands, 7.46 first, recommended), b (adopt the chase now), c (7.39b's
+  first bar re-scoped to the battles).
+
 ### RESOLVED 2026-10-20 (PLAN 7.44, ADR-571; PLAN 7.45a, ADR-572; read at PLAN 7.45b; 7.38 ticked) · PLAN 7.38's bar on the dead missed at the first read: 4 bursts under 0.1 killing a million on 4 of 24 seeds (2026-10-20, PLAN 7.38e)
 - **The bar:** on the critic's 14 seeds and 10 unseen ones × 30 years, no burst with a utility
   under 0.1 that kills a million; no city struck twice in one war; no hydrogen bomb where a fission
