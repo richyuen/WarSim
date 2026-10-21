@@ -52,8 +52,8 @@ R10-B1 and R10-B3 mostly; naval 6 → 7, aircraft 6 → 7): R11-B1 and R11-B2 ar
 The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval 7 is 7.41 (moved
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split when taken up:
 
-- [ ] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged land formations worldwide, mean of daily
-  samples, 0.3–0.7 at years 10 and 20 on the critic's 24 worlds (of about 300 of nations at war),
+- [ ] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged
+  land formations worldwide, mean of daily samples, 0.3–0.7 at years 10 and 20 on the critic's 24 worlds (of about 300 of nations at war),
   against 55–107 in year 1; the same on `bcbc99c` (1.1 and 0.3). Seed 6421 year 21: 9 wars, 0 in
   contact at 25 fortnightly samples while 309–7,179 cells change hands a fortnight; the Germany–Soviet
   war there has a 4,795-edge land border. Piles at war: the United Kingdom 85 of 160 divisions at
