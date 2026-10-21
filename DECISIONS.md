@@ -184,7 +184,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     DEPLOY_RANGE of its own front, boards its transports for its own port on its front's land
     nearest them, in `planLanding`'s turn and lock), the bar reset to what the fleet carries: the
     island share of the 48 saves together after 60 days under 20 % (24.7 % at day 1, 25.9 % at day
-    60 on HEAD; the perfect weekly ferry 17.3 %); after PLAN 7.49f.
+    60 on HEAD; the perfect weekly ferry 17.3 %); after PLAN 7.49f. The 17.3 % takes every
+    nation's transports at its island army's port: for the `noneFree` nations (20–27 % of the
+    island formations) they stand at a theatre port, so the ferry must recall them too (one more
+    way a round trip), or what it reaches is nearer 20 % than 17 %.
   - **b:** the ferry, and transports bought for a home army (ADR-518's slot opened to a fronted
     nation with island formations of more men than its room), the bar kept at 10 %.
   - **c:** 7.49d closed not done; the home armies stay (the next report judges).
