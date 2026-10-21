@@ -2705,6 +2705,11 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
   every channel times one factor, which keeps its hue and saturation; black is a grey of
   that lightness. Any other colour is drawn as it is (until then every colour was mixed
   45% toward white, and a dark red and a rose came out two pale reds).
+  A ship is the exception (PLAN 7.41b, ADR-602): its atlas frame holds the hull's fill in red
+  and its marks and outline in green (`splitShipTint`), the shader tints the fill alone and
+  draws the marks grey, and a ship of a hue within 25° of the sea's is at least 0.6 light
+  (`shipTint`): a blue nation's tinted marks were the sea's colour at 20 m/px. The Pixi bench
+  (`benchBP.ts`) multiplies the atlas by the tint as before; its ship frames are not decoded.
 - Effects: GPU particle pools (muzzle, impacts, smoke, explosions, nukes). *As built (PLAN
   2.4a):* tracers, muzzle flashes and impacts are drawn with Canvas2D on the overlay; no pools yet.
 
