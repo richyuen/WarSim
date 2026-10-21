@@ -1,0 +1,74 @@
+{
+ "seed": 6421,
+ "steps": [
+  {
+   "name": "revolt_bavaria",
+   "hint": "Click a province: it revolts.",
+   "nations0": 102,
+   "nations1": 103,
+   "tickerAfterClick": [
+    "1 January 1938 · Paused",
+    "1 January 1938 Germany declared war on Free Saxony"
+   ],
+   "tickerDay": [
+    "2 January 1938 · Paused",
+    "1 January 1938 Germany declared war on Free Saxony"
+   ]
+  },
+  {
+   "name": "spawn_poland_east",
+   "hint": "Click land: a new nation is set down there, at peace, of the province and the nearest of its holder's. Click again for another.",
+   "nations0": 103,
+   "nations1": 104,
+   "tickerAfterClick": [
+    "2 January 1938 · Paused",
+    "1 January 1938 Germany declared war on Free Saxony",
+    "2 January 1938 Free Silesian Voivodeship was set up on land of Poland"
+   ],
+   "tickerDay": [
+    "3 January 1938 · Paused",
+    "1 January 1938 Germany declared war on Free Saxony",
+    "2 January 1938 Free Silesian Voivodeship was set up on land of Poland"
+   ]
+  },
+  {
+   "name": "found_city",
+   "hint": "Click land: a town is founded there, for whoever holds it. Click again for another.",
+   "nations0": 104,
+   "nations1": 104,
+   "tickerAfterClick": [
+    "3 January 1938 · Paused",
+    "1 January 1938 Germany declared war on Free Saxony",
+    "2 January 1938 Free Silesian Voivodeship was set up on land of Poland",
+    "3 January 1938 New Town was founded in Germany"
+   ],
+   "tickerDay": [
+    "4 January 1938 · Paused",
+    "1 January 1938 Germany declared war on Free Saxony",
+    "2 January 1938 Free Silesian Voivodeship was set up on land of Poland",
+    "3 January 1938 New Town was founded in Germany"
+   ]
+  },
+  {
+   "name": "raze_prague",
+   "hint": "Click a city: it is razed. Click again for another.",
+   "nations0": 104,
+   "nations1": 104,
+   "tickerAfterClick": [
+    "4 January 1938 · Paused",
+    "1 January 1938 Germany declared war on Free Saxony",
+    "2 January 1938 Free Silesian Voivodeship was set up on land of Poland",
+    "3 January 1938 New Town was founded in Germany",
+    "4 January 1938 Prague in Czechoslovakia was razed"
+   ],
+   "tickerDay": [
+    "5 January 1938 · Paused",
+    "1 January 1938 Germany declared war on Free Saxony",
+    "2 January 1938 Free Silesian Voivodeship was set up on land of Poland",
+    "3 January 1938 New Town was founded in Germany",
+    "4 January 1938 Prague in Czechoslovakia was razed"
+   ]
+  }
+ ],
+ "errors": []
+}

@@ -21011,3 +21011,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - The three specs green by hand. The review's screenshots written into `docs/evidence/` restored
   (each spec writes its task's evidence on every run).
 - **Next:** `check:review` again, then the critic (PLAN 7.5).
+
+## 2026-10-21 — PLAN 7.5: critic run 11
+
+- **Run:** after `check:review` green on `dd3b730` (1 known red, 0 not known). Scores: map 7, diplomacy 7, emergent 6, God 7, editor 7, stats 7, UI 7, performance 7, stability 7, semantic zoom 8, naval 7 (was 6), tanks 8, aircraft 7 (was 6), AI nuclear use 7; **2 blocking** (R11-B1 the land war after year 1, R11-B2 the H-bomb at the floor on Greenock and a spot struck three times).
+- Filed: R11-B1 PLAN 7.49, R11-B2 PLAN 7.50; the dimensions under the bar: emergent 6 PLAN 7.40 and naval 7 PLAN 7.41 (moved before 7.5 under ADR-577, their run-11 cases added), aircraft 7 PLAN 7.51, AI nuclear use 7 PLAN 7.52. Balance findings are taken in Phase 7 (ADR-58's deferral was for phases 2–6).
+- 7.46 stays open on b2 and b3 (BLOCKERS; ADR-578 waits on the user).
+- **Next:** PLAN 7.49 (7.46's parts wait on BLOCKERS).

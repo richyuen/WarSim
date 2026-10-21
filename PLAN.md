@@ -112,8 +112,42 @@ each, split when taken up:
       `docs/evidence/7.46/c-adopt.diff`, read the pin again, gate, tick 7.46c and 7.39b.
       Done (2026-10-20): applied to `bf4b2bb`, the pin fdd3a67c as measured, the gate green.
 
-- [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
-  AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
+Run 11's (report of 2026-10-21 on `dd3b730`, `critic/CRITIC_REPORT.md`; run 10's R10-B2 fixed,
+R10-B1 and R10-B3 mostly; naval 6 → 7, aircraft 6 → 7): R11-B1 and R11-B2 are PLAN 7.49 and 7.50.
+The dimensions under the bar: emergent 6 is 7.40 and naval 7 is 7.41 (moved here, ADR-577),
+aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split when taken up:
+
+- [ ] 7.49 The land war after year 1 (R11-B1): engaged land formations worldwide, mean of daily
+  samples, 0.3–0.7 at years 10 and 20 on the critic's 24 worlds (of about 300 of nations at war),
+  against 55–107 in year 1; the same on `bcbc99c` (1.1 and 0.3). Seed 6421 year 21: 9 wars, 0 in
+  contact at 25 fortnightly samples while 309–7,179 cells change hands a fortnight; the Germany–Soviet
+  war there has a 4,795-edge land border. Piles at war: the United Kingdom 85 of 160 divisions at
+  London (7019, year 10), the Soviet Union 53 in one place (5309), Italy 46 of 55 (8011), Japan 33
+  of 35 (8167); 60 British divisions still at Wick for a month (1129). Seed 99's formations 917 in
+  year 1, 610 by year 5. Evidence: `critic/c11_engaged_head.json`, `c11_engaged_c10.json`,
+  `c11_engaged_year21.log`, `c11_stacks_y10.json`, `c11_wick_1129.json`, `c11_u_6421.json`. Measured
+  first, from the critic's year-10 and year-20 saves (`critic/c11_seed*_y10.bin`): for the
+  formations of nations at war, what holds each (the order it has or none, the AI step that passes it
+  over), and how cells change hands with no contact. Then a rule a cause, each with an ADR. AT:
+  engaged land formations per war running, mean of daily samples in years 2–20, at least a quarter
+  of year 1's (7.39's bar for the sea), on 10 unseen seeds × 20 years; seed 6421's year 21 from the
+  critic's save read (was 0 of 25 samples), not a bar; a unit test per rule (red without); the pin's
+  entry; `--profile`. Stop: two full re-measures flat, the bar is the user's (ADR-554).
+- [ ] 7.50 The H-bomb at the floor on a city of a million, and the spot struck again (R11-B2): seed
+  1129, 14 March 1954, the Soviet Union on Greenock, a hydrogen bomb, 1,105,514 dead (1,071,000
+  civilians) at utility 0.026, against counters of 1.3k–7.5k men; PLAN 7.38's bar ("no burst under
+  0.1 that kills a million") missed on an unseen seed. Seed 2081, years 27–28: Germany strikes
+  [1219.5, 421.5] three times in 184 days (hydrogen, hydrogen, atomic) for 5,179, 3,879 and 4,090
+  men at 0.48–0.54. Evidence: `critic/c11_headless_1129.json`, `c11_f_1129.json`,
+  `c11_headless_2081.json`, `c11f_1129_14_alert.png`. The critic's fix: the dead weighed so a
+  floor-value strike cannot pay for a city (DEAD_COST 0.1 a million), fission where the target is a
+  few divisions, ADR-569's "no restrike without new value" over the war's last year. Measured first
+  from the critic's saves (`c11_seed1129_y17s.bin`, `c11_seed2081_y20.bin`): each strike's parts
+  (`nukeCase.ts`). AT: the Greenock strike, replayed, is not a burst under 0.1 that kills a million;
+  2081's spot not struck a third time within a year without new value; 7.38's bar on 10 unseen
+  seeds × 30 years (none of them 7.38's or 7.45b's): no burst under 0.1 kills a million, no place
+  struck three times in a year; a unit test per rule (red without); the pin's entry. Stop: two full
+  re-measures flat, the bar is the user's (ADR-554).
 - [ ] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's
   seeds: the same top five 22 years on seed 8693 and 21 on 7019, over the 20-year limit (4219 and
   3613: 18 and 17; run 9's worst 18; `critic/c10_summary.txt` `stasis`); late wars between
@@ -131,9 +165,13 @@ each, split when taken up:
   by a rule with an ADR, or a BLOCKERS entry
   with its measured cause, the user's to accept; the pin's entry. Stop: two full re-measures flat,
   the bar is the user's (ADR-554).
-  **After the next critic run** (ADR-577, the user's decision, 2026-10-20): taken only if its report
-  still scores the dimension under the bar, and then moved before 7.5 with that run's tasks; else
-  closed.
+  **Taken** (ADR-577: run 11, `critic/CRITIC_REPORT.md` on `dd3b730`, still scores emergent 6): what
+  R11-B1 (7.49) leaves. Run 11 on the same 14 seeds: the longest top five 22 years (3613), one seed
+  over 20 (run 10: two); the 10 new seeds at most 20. New in run 11, on both commits: the late map
+  shredded, pieces of 2–400 cells of one holder 469 at the 1938 start, 604–1,039 at year 20 (the
+  Soviet Union alone 94–287; `critic/c11_frag_head.json`, `c11v_6421_ger_sov_6000m.png`). Added to
+  the AT: on the sweep's seeds, such pieces at year 20 at most 1.25 × the 1938 start's (586), or a
+  BLOCKERS entry with the measured cause, the user's to accept.
 - [ ] 7.41 The war at sea seen (naval 6, needs 8, beyond 7.39): Japan–USA (seed 8693) one battle
   stood with no row for 6 days (hours 330 to 480) and was never shown (`critic/c10_n_8693_JAP_USA
   .json`); Germany–UK on 3613 no sea battle between them in 24 days (`c10_e_3613.json`); at 20 m/px
@@ -145,9 +183,38 @@ each, split when taken up:
   measured cause, the user's to accept; at 20 m/px the middle of every nation's hull at least 40
   (summed RGB) from the sea's colour there, every nation of the 1938 world counted (a spec, red on
   France's before). Stop: two full re-measures flat, the bar is the user's (ADR-554).
-  **After the next critic run** (ADR-577, the user's decision, 2026-10-20): taken only if its report
-  still scores the dimension under the bar, and then moved before 7.5 with that run's tasks; else
-  closed.
+  **Taken** (ADR-577: run 11 scores naval 7, needs 8): Japan–USA on 8693 9 of 9 battles with no
+  ticker row again (`critic/c11_n_8693_JAP_USA.json`); Germany–UK on 2081 7 of 11
+  (`c11_n_2081_GER_ENG.json`); at 20–40 m/px the enemy side dark ovals beside red British
+  silhouettes; a late battle two destroyer flotillas, two overlapping counters at 1,500 m/px, its
+  row gone in days (`c11o_6421_*`); two navies placed face to face in the North Sea by the editor
+  fight no battle in 30 days (`c11_g_4877.json`; run 10 saw one on day 3). Added to the AT: every
+  battle of the 2081 case has its row (was 7 of 11 without); the editor case meets within 30 days,
+  or a BLOCKERS entry with the measured cause.
+- [ ] 7.51 Aircraft (aircraft 7, needs 8, beyond 7.49): the late air war unchanged, 3,160 air
+  battles in year 1 and 120 a world-year after on the same 14 seeds (122 on `bcbc99c`), sorties
+  aloft after year 1 a mean of 8.1 (`critic/c11_cmp.json`, `c11_h_1307.json`); the critic reads it as
+  R11-B1 seen from the air, so it is read after 7.49. The aircraft drawn at T3 are three white glyphs
+  the size of a squad, not in a nation's colour (`critic/shots/c11c_7019_inf_0010m.png`). AT: at 10
+  m/px on the critic's 7019 front every drawn aircraft's middle within 40 (summed RGB) of its
+  nation's tint, and its span at least 4 × a man's figure there (a spec, red before); air battles in
+  years 2–20 after 7.49, on its 10 unseen seeds, at least a tenth of year 1's, or a BLOCKERS entry
+  with the measured cause, the user's to accept. Stop: two full re-measures flat, the bar is the
+  user's (ADR-554).
+- [ ] 7.52 AI nuclear use (aiNukes 7, needs 8, beyond R11-B2): the restraint line names a deterrent
+  that is itself a puppet ("Soviet Union is deterred by Germany" while Germany's own line reads "is
+  a puppet: the use of its warheads is its overlord's"; `critic/c11_t_1129.json`); bursts on the
+  same 14 seeds 58 → 93, in 7 worlds (1129: 46 in 13 years, 11.7 M dead; 4877: 44); 29 of 93 kill
+  over ten times more civilians than soldiers (a read, the user's, PLAN 7.38). The critic's design
+  objection (cities with no soldiers struck: Berlin 334,000 civilians and 379 men by the
+  editor-armed Poland, `c11_g2_9437_POL.json`; the weight of the dead too small) is the user's: an
+  ADR proposed when taken up. AT: the deterrent named is the nation whose answer is feared (the
+  overlord for a puppet), a unit test on the 1129 case (red before); bursts a world on 10 unseen
+  seeds × 30 years read against run 11's 93 on 14, not a bar; the ADR. Stop: two full re-measures
+  flat, the bar is the user's (ADR-554).
+
+- [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
+  AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
 ---
 

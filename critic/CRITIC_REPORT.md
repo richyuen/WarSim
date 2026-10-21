@@ -1,385 +1,317 @@
-# Critic report, run 10
+# Critic report, run 11
 
-- **Commit:** `bcbc99c3456a9cda884a822feef32f76064105a5`. PLAN 7.30 to 7.34 are done since run 9; 7.35 is nearly done;
-  7.36, 7.37 and 7.29 are open. The working tree has an uncommitted `DECISIONS.md` change, which is not part of what I
-  judged.
-- **Date:** 2026-10-19/20.
-- **Build:** `vite build --outDir critic/c10_dist`, exit 0 (`critic/c10_build.log`). Served with `vite preview` on port
-  5299. Chromium through Playwright, headless, 1600 × 900 unless stated.
-- **Seeds:** all new to this repo: 1307, 2081, 2953, 3613, 4219, 4877, 5309, 5861, 6421, 7019, 7583, 8167, 8693,
-  9437, and 8217 for the air map.
+- **Commit:** `dd3b730a2b7521286d7c9ae276c80aa050240ed8`. Run 10 was on `bcbc99c`; 67 commits since (PLAN 7.35–7.48, 7.36,
+  7.37, 7.38, 7.39, 7.43 ticked; 7.29 and 7.42 closed not done by the user, ADR-577).
+- **Date:** 2026-10-21.
+- **Build:** `vite build --outDir critic/c11_dist`, exit 0 (`critic/c11_build.log`). Served with `vite preview` on port
+  **5311** (5299 was held by a stale preview from 2026-10-20, PID 50044, serving `dist/`, not mine; left alone).
+  Chromium through Playwright, headless, 1600 × 900.
 - **Runs:**
-  - 14 unaided headless worlds × 30 years (`critic/scripts/c10_batch.sh`, `c10_headless.ts`), with year-10 and year-20
-    saves.
-  - Summary: `critic/c10_summary.txt`, made by `critic/scripts/c10_summ.py`.
-  - The worlds ran side by side, so their timings are contended. The pinned tick figures were taken alone.
-- **Reference:**
-  - `reference/text/AOC_TEXT_NOTES.md`, cited by line.
-  - `reference/screens/`.
-  - AoC's nukes, God tools and performance are known from text only. My confidence is lower there.
-- **Prefix:** every path below was made in this run (prefix `c10`). Scripts are in `critic/scripts/c10_*`.
+  - 24 unaided headless worlds × 30 years (`critic/scripts/c11_batch.sh`, `c11_headless.ts`): run 10's 14 seeds
+    (1307 … 9437) **for a same-seed comparison**, and 10 new seeds (1129, 2347, 3491, 4513, 5683, 6151, 7247, 8011,
+    8849, 9781). Year-10 and year-20 saves.
+  - Comparison of the same 14 seeds on both commits: `critic/c11_cmp.json` (`critic/scripts/c11_cmp.py`; `c10_*` files
+    are `bcbc99c`, `c11_*` are HEAD). Full burst list: `critic/c11_summary_all.txt`.
+  - Run 10's checkpoints re-read at `bcbc99c` in a worktree (`critic/wt`, removed after; node_modules junction unlinked
+    first) for every new count: engagement, piles, fragmentation.
+- **Reference:** `reference/text/AOC_TEXT_NOTES.md`, `reference/screens/`. AoC's nukes, God tools and performance are
+  known from text only; my confidence is lower there.
+- **Prefix:** every path below was made in this run (prefix `c11`). Scripts are in `critic/scripts/c11_*`.
 
 ## Verdict
 
-**Run 9's two blockers are fixed** on seeds the builder never saw:
+**Run 10's three blockers are answered as filed**, on the same seeds:
 
-- **Phantom sea battles:** 37 of 1,090 late sea battles sink nothing (3 %), against 95 % to 98 % in run 9.
-- **AI strikes on empty ground in weekly chains:** none. The smallest AI toll is 6,878, and all of those dead were
-  soldiers.
-- **The toll is told:** "21,766 men and 80 guns lost" now stands beside the civilian dead.
+- **R10-B2 (sea war over after year 1): fixed.** Same 14 seeds: 13.17 sea battles a world-year in years 2–30, against
+  2.68 on `bcbc99c`; 0.6 % sink nothing. The 10 new seeds give 13.45.
+- **R10-B1 (nukes blind to the dead): mostly fixed.** On the same 14 seeds, bursts under utility 0.1 that kill a
+  million civilians go from 5 to 0. But on a new seed the same failure recurs (Greenock, below), and the AI now fires
+  far more: 93 bursts against 58 on the same seeds.
+- **R10-B3 (air war): two of three parts fixed.** Sorties are now drawn at 25 and 10 m/px over the 7019 front (1–3,
+  was 0); the air map no longer has one German zone from London to Kiev. The third part, the late air war, is unchanged:
+  120 air battles a world-year after year 1 against 122.
 
-**Also verified:**
-
-- The T1 to T2 seam is now a blend.
-- The history tells convoy raids with figures, and tells God's acts.
-- A pointer leads to the enemy when it is off screen.
-
-**What still keeps three differentiators under 8 is what a watcher sees after year 1:**
-
-1. **The AI's nuclear targeting ignores the civilians it kills (R10-B1).**
-   - Hydrogen bombs fall on Paris, Rome and Shanghai at the utility floor, for 1.4 to 3.8 million dead.
-   - The same cities are struck again and again.
-2. **The war at sea is over after year 1 (R10-B2).** There are 2.7 sea battles a world-year after year 1, against 38 in
-   year 1.
-3. **The air war is a year-1 feature (R10-B3):**
-   - Air battles fall 95 %.
-   - No aircraft are drawn up close.
-   - One air zone covers a continent.
+**What I newly measured is worse than anything run 10 named: after year 1 the land war has no battles (R11-B1).**
+Across 48 checkpoints (years 10 and 20, 24 worlds) a mean of 0.3 to 0.7 land formations are in contact, worldwide,
+while about 300 formations belong to nations at war and thousands of cells change hands each fortnight. In year 1 the
+same count is 55 to 107. It is the same on `bcbc99c` (1.1 and 0.3), so it is not a regression and moves no score; it is
+the read ADR-577 deferred to this report ("the next critic report says whether the late land war is still short"). It
+is: armies stand in piles of 30 to 85 divisions at home while their nations are at war, and the conquests that happen
+are walk-ins that leave the map in ribbons.
 
 ## Scores
 
-| Dimension | Run 9 | Run 10 |
+| Dimension | Run 10 | Run 11 |
 |---|---|---|
 | Map visuals and readability | 7 | 7 |
 | Diplomacy, war, alliance, puppet, revolt depth | 7 | 7 |
-| Emergent world dynamics over long runs | 7 | **6** |
+| Emergent world dynamics over long runs | 6 | 6 |
 | God Mode | 7 | 7 |
 | Editor and scenarios | 7 | 7 |
-| Stats and history | 6 | **7** |
+| Stats and history | 7 | 7 |
 | UI/UX and polish | 7 | 7 |
 | Performance | 7 | 7 |
 | Stability | 7 | 7 |
-| Semantic zoom to unit level (needs 8) | 7 | **8** |
-| Naval warfare (needs 8) | 6 | 6 |
+| Semantic zoom to unit level (needs 8) | 8 | 8 |
+| Naval warfare (needs 8) | 6 | **7** |
 | Tanks (needs 8) | 8 | 8 |
-| Aircraft (needs 8) | 6 | 6 |
+| Aircraft (needs 8) | 6 | **7** |
 | AI nuclear use (needs 8) | 7 | 7 |
 
-## What happened to the run 9 blockers
+## Run 10's cases re-run
 
-| Run 9 id | Now | Evidence |
+| Run 10 case | On HEAD | Evidence |
 |---|---|---|
-| R9-B1: phantom sea battles | **Fixed.** On 14 new worlds, years 2 to 30: 37 of 1,090 sea battles sink nothing (3 %). The most on one world is 11 in 29 years. No pair repeats daily. | `critic/c10_summary.txt`, `critic/c10_headless_*.json` (`rows[].sea`, `seaLog`) |
-| R9-B2: weekly chains on empty ground, told by civilian dead alone | **Fixed as filed.** The smallest AI toll is 6,878 (all soldiers), and no weekly chain is left. The alert and the history now read, for example, "3,157,000 civilians killed; 21,766 men and 80 guns lost". The inverse problem replaces it: R10-B1. | `critic/c10_summary.txt`, `critic/c10_f_8693.json`, `critic/shots/c10f_8693_11_alert.png` |
+| R10-B1: Shanghai 3.8 M at 0.025 (4877), Paris ×3 and Rome (8693), Tashkent/Banda Aceh ×6 (9437), 25 of 58 bursts >10× civilians | Same 14 seeds: no burst under 0.1 kills 500,000 civilians (was 7, of which 5 over a million). 8693 has no burst at all in 30 years; 4877's 44 bursts and 9437's 8 hit no named city twice in a year. **But** 29 of 93 bursts still kill >10× more civilians than soldiers (a read, not a bar: the user's decision in PLAN 7.38), and on new seed 1129 a hydrogen bomb kills 1,105,514 at utility 0.026 (R11-B2). | `critic/c11_cmp.json`, `critic/c11_summary_all.txt` |
+| R10-B2: sea battles 2.7 a world-year after year 1, 18 of 28 samples with no naval war | 13.17 a world-year (same seeds); spread evenly over years 2–30 (665 to 995 per 5-year bucket in the logs). Samples with no war of two navies: 14 of 28 against 15 of 28 by the same script on `bcbc99c` (run 10's "18" was a different count). | `critic/c11_cmp.json`, `critic/c11_fleets.json`, `critic/c10_fleets.json` |
+| R10-B3: 0 sorties at 25/10 m/px (7019); one German air zone London–Kiev (8217); air battles 2,537 → 122 | 1 sortie at 25 and 10 m/px on infantry, 3 on armour, 2 at 15 m/px live (`c11_c_7019.json`). 8217 day 10: Germany holds 2 zones (Germany, Poland, the Baltic coast), Czechoslovakia, Italy, France each hold their own, Kiev reads "no one flies there". Air battles: 3,160 in year 1, 120 a year after (same seeds). | `critic/c11_c_7019.json`, `critic/shots/c11c_7019_inf_0010m.png`, `critic/shots/c11h_8217_air_hover.png`, `critic/c11_h_1307.json` |
+| Japan–USA naval, 20 days (8693) | 9 battles between them, **9 of 9 with no ticker row** (run 10: 9 and 9). Unchanged. | `critic/c11_n_8693_JAP_USA.json` |
+| Germany–UK sea rows (2081) | 11 battles seen, 7 without a row (run 10: 14 and 9). Rows frame both fleets; up to 58 shots drawn. | `critic/c11_n_2081_GER_ENG.json`, `critic/shots/c11n_2081_GER_ENG_3_20m.png` |
+| Stale map tooltip | **Fifth run running.** "Prague · capital … Unrest 0" a day after Prague is razed; "London · capital" after a wheel-out to 24,738 m/px. Corrects only on a mouse move. | `critic/c11_s_6421.json`, `critic/c11_h_1307.json`, `critic/shots/c11q_6421_raze_prague_1day.png` |
+| Editor-armed Czechoslovakia dies holding 10 warheads, unexplained | **Fixed in what it tells:** the editor now says "delivers them by its strategic bomber group at Prague", and the history reads "11 January 1938 Czechoslovakia lost its last means to deliver its warheads: Germany took its airbase near Prague". | `critic/c11_g2_5309_CZS.json` |
+| Editor-armed Poland bombs Rome and Prague for almost no soldiers | Unchanged to the man: Berlin 334,000 civilians / 379 men, Rome 172,000 / 90, Prague 134,000 / 390. Under SPEC §6.4 (a city is a target): see Design objections. | `critic/c11_g2_9437_POL.json`, `critic/shots/c11g2_9437_POL_11_alert.png` |
+| Stasis 21–22 years (7019, 8693) | Same seeds: longest top-5 stasis 22 years (3613), one seed over 20 (run 10: two). New seeds: max 20. Not changed. | `critic/c11_cmp.json` |
+| Seed 99 tick 1.67–1.69 ms (budget 1.5) | 1.388 and 1.409 ms, alone and pinned; year 1 2.24 ms (budget 2.4). | `critic/c11_perf_seed99_5y_solo.log`, `..._solo2.log` |
+| Title's Cancel / file input unstyled | Unchanged. | `critic/shots/c11g_4877_10_title_pending.png` |
+| Browser = headless | 3 of 3 year hashes equal on 1307 (f4aaf3da, 42f4596c, 0e68f495); save/load twin equal (3.77 MB). A headless replay of 1129 from year 10 to 16 lands on the batch's hash (8ea1eabe). | `critic/c11_h_1307.json`, `critic/scripts/c11_ck.ts` |
 
 ## Dimensions
 
-### Map visuals and readability: 7
+### Map visuals and readability: 7 (unchanged)
 
-- **Tested:**
-  - The boot.
-  - A continuous wheel zoom from 6,000 to 3 m/px over Germany–Poland (seed 5861).
-  - God and AI bomb ruins at 3,000 to 30 m/px.
-  - A 1954 world from a headless save (8693) and a 1961 one (4877).
-  - The Random world after a year.
-- **Evidence:** `critic/shots/c10z_5861_sheet.png`, `c10z_5861_04_07.png`, `c10a_4219_ruins.png`,
-  `c10f_8693_sheet.png`, `c10l_4877_4_history.png`, `c10r_02_year1.png`.
-- **Better:** run 9's hard cut is now a blend. Terrain fades in under the fill over three notches (1,007, 644 and
-  412 m/px; `c10z_5861_04_07.png`).
-- **Weak:**
-  - At 412 m/px the political colours are a faint tint over terrain, so Germany and Poland are told apart mostly by the
-    border band.
-  - At 40 m/px, ships of a sea battle are four dark specks with no nation colour (`c10e_3613_sea_1_0040m.png`).
-  - The stale tooltip, still (see UI).
-- **AoC does better:** one flat style at every zoom (`reference/screens/steam-screenshot-00.jpg`).
+- **Tested:** a continuous wheel zoom 6,000 → 3 m/px (5861); the 1953 and 1958 worlds from saves (1129, 6421); the
+  Germany–Soviet border of a year-21 war at 6,000 and 1,500 m/px; ruins of God and AI bombs.
+- **Evidence:** `critic/shots/c11z_5861_sheet.png`, `c11v_6421_ger_sov_6000m.png`, `c11v_6421_ger_sov_1500m.png`,
+  `c11f_1129_14_goto.png`, `c11t_1129_r0_n10.png`; `critic/c11_frag_head.json`, `critic/c11_frag_c10.json`.
+- **Works:** the T1→T2 blend holds; the 1953 Europe (`c11t_1129_r0_n10.png`) reads as AoC's does, labels and flags on
+  every nation.
+- **Weak (new finding, present on both commits):** late maps are shredded. In year 21 of 6421, Soviet land inside the
+  German conquest is hundreds of red ribbons, parallelograms and triangles with straight edges
+  (`c11v_6421_ger_sov_6000m.png`). Pieces of 2–400 cells of one holder: 469 at the 1938 start; 604–1,039 at year 20 on
+  HEAD and 658–1,018 on `bcbc99c` (same 14 seeds); the Soviet Union alone 94–287 pieces. AoC's late worlds are
+  contiguous blobs (`reference/screens/community-dominated-world-a.png`, steam-screenshot-02). Not a change, so not a
+  score move; it is a reason the score is not higher.
+- **Also:** the Greenock blast leaves the Glasgow city marker untouched beside a 1,071,000-dead ruin
+  (`c11f_1129_14_goto.png`).
 
-### Diplomacy, war, alliance, puppet, revolt depth: 7
+### Diplomacy, war, alliance, puppet, revolt depth: 7 (unchanged)
 
-- **Tested:**
-  - 14 unaided 30-year worlds.
-  - 3 late years of seed 4877 in the page, counted by type through the history's filter.
-- **Evidence:** `critic/c10_l_4877.json` (`historyTypes`), `critic/c10_summary.txt`.
-- **Works:** in 3 late years, seed 4877 has:
-  - 231 war declarations and 226 peaces.
-  - 87 alliances joined.
-  - 54 puppets made, 31 released and 9 integrated.
-  - 49 revolts, 24 revivals and 11 unions.
-- **Weak:**
-  - Seed 2953 runs 0 to 3 wars at year's end through years 21 to 30, and seed 7019 runs 1 to 4.
-  - Pacts form and dissolve within days ("Free Liberec founded a Defensive Pact" … "was dissolved", 1 to 4 January
-    1961, `c10l_4877_4_history.png`).
-- **AoC does better:** nothing measured (text only, notes lines 254 to 346).
+- **Tested:** 24 × 30-year worlds; 3 late years of 4877 in the page, counted by the history's type filter.
+- **Evidence:** `critic/c11_l_4877.json` (`historyTypes`), `critic/c11_cmp.json`.
+- **Works:** 3 years from 1958 on 4877: 204 wars declared, 201 peaces, 63 alliances joined, 51 puppets made, 30
+  revolts, 16 revivals, 12 unions. Same-seed late wars a year 4.33 (was 4.08).
+- **Weak:** wars are declared and made peace in volume, but see R11-B1: they are fought by almost no one.
+- **AoC does better:** nothing measured (text only).
 
-### Emergent world dynamics over long runs: 6 (down from 7)
+### Emergent world dynamics over long runs: 6 (unchanged)
 
-- **Tested:** 14 seeds × 30 years headless.
-- **Evidence:** `critic/c10_summary.txt` (the `stasis` figure is the longest run of years with the same five largest
-  nations), `critic/c10_fleets.json`.
-- **Why down:**
-  - **Stasis inside 30 years.**
-    - Seed 8693 keeps the same top five for 22 years and seed 7019 for 21. Run 9's worst was 18.
-    - 22 and 21 years are already over the builder's own stasis limit (20 years, set for 50-year runs).
-    - Seeds 4219 and 3613 hold for 18 and 17 years.
-  - **Late wars are between nations that cannot fight at sea:**
-    - At the year-10 and year-20 samples, 18 of 28 have no war whose two sides both have a navy.
-    - 50 to 96 armed fleets stand idle all the while (`c10_fleets.json`).
-- **Good:**
-  - 67 to 89 nations are alive at year 30, 0 to 11 of them founded in play.
-  - 4.2 to 25.3 % of the land changes hands in the last 5 years.
-- **Odd, unexplained:**
-  - Latvia ends seed 1307 as the second-largest nation, with 14.2 % of the land and 75 warheads.
-  - Lithuania is a nuclear power on 8693.
-- **AoC does better:** "the world can continue to change for thousands of years" (notes line 230). Not testable here.
+- **Tested:** 24 seeds × 30 years; engagement, piles and fragmentation counted on 48 checkpoints of HEAD and 28 of
+  `bcbc99c`.
+- **Evidence:** `critic/c11_cmp.json`, `critic/c11_engaged_head.json`, `critic/c11_engaged_c10.json`,
+  `critic/c11_engaged_year21.log`, `critic/c11_engaged_y1_6421.log`, `critic/c11_stacks_y10.json`,
+  `critic/c11_stacks_c10_y10.json`.
+- **Not better:** stasis max 22 on the same seeds (one over 20, was two); the new seeds max 20. 68–83 nations living at
+  year 30, 1–13 founded; 3.3–33.6 % of land changes hands in the last 5 years.
+- **Why not higher (R11-B1, on both commits):** the long-run world is a map of wars with no fighting. Seed 6421, year
+  21: 9 wars, 49 nations at war, 0 land formations in contact at every one of 25 fortnightly samples, while 309 to
+  7,179 cells change hands each fortnight. Seed 99 shows the armies themselves shrinking: 917 formations in year 1, 610
+  by year 5 (`c11_perf_seed99_5y_solo.log`; run 10's log: 810 → 823).
 
-### God Mode: 7
+### God Mode: 7 (unchanged)
 
-- **Tested** by clicks: Revolt, Spawn nation, Found city, Raze city, both bomb sizes, and the phone at 390 × 844.
-- **Evidence:** `critic/c10_q_6421.json`, `critic/shots/c10q_6421_*`, `critic/c10_a_4219.json`, `critic/c10_s_6421.json`.
-- **Fixed since run 9:** every act is now told:
-  - "Free Silesian Voivodeship was set up on land of Poland".
-  - "New Town was founded in Germany".
-  - "Prague in Czechoslovakia was razed".
-- **Works:**
-  - On the phone the seven tools fit inside 390 px.
-  - The bombs tell their toll: Paris (H) "3,329,000 civilians killed; 47,440 men and 162 guns lost"; London (A)
-    314,000.
-- **Weak:** the tooltip still reads "Prague · capital, Czechoslovakia, Unrest 0" a day after the raze, until the mouse
-  moves (`c10q_6421_raze_prague_1day.png`, `c10_s_6421.json` `tipStill`).
-- **AoC does better:** a wider set: Edit Terrain, Spawn Major Battle, Kill (notes lines 260 and 449).
+- **Tested** by clicks: Revolt, Spawn nation, Found city, Raze city, H-bomb on Paris, A-bomb on London, the phone.
+- **Evidence:** `critic/c11_q_6421.json`, `critic/shots/c11q_6421_*`, `critic/c11_a_4219.json`, `critic/shots/c11a_*`.
+- **Works:** each act is told in the ticker ("Free Silesian Voivodeship was set up on land of Poland", "Prague in
+  Czechoslovakia was razed"). Seven tools fit the phone.
+- **Weak:** the stale tooltip over the razed Prague. The revolt in Bavaria is told only as "Germany declared war on Free
+  Saxony", not as a revolt.
+- **AoC does better:** Edit Terrain, Spawn Major Battle, Kill (notes lines 260, 449).
 
-### Editor and scenarios: 7
+### Editor and scenarios: 7 (unchanged)
 
-- **Tested:**
-  - Fleets in the North Sea; a fleet inland, which is refused.
-  - A bomber group and 10 warheads for Poland (seeds 4877 and 9437) and for Czechoslovakia (seed 5309).
-  - A scenario exported, then chosen on the title (Cancel, then Start) and played.
-  - The Random world.
-- **Evidence:** `critic/c10_g_4877.json`, `critic/c10_g2_9437_POL.json`, `critic/c10_g3_9437_POL.json`,
-  `critic/c10_g2_5309_CZS.json`, `critic/shots/c10g_4877_10_title_pending.png`, `critic/c10_r_random.json`.
-- **Works:**
-  - The loaded scenario keeps every force placed.
-  - Poland strikes Berlin on day 45 (334,000 dead).
-- **Weak:**
-  - **Poland, armed in the editor, bombs cities with almost no troops in them:**
-    - Rome: 172,000 dead, 142 soldiers.
-    - Prague: 134,000 dead, 390 soldiers, the day before Warsaw falls ("after long hesitation").
-  - **Czechoslovakia still dies holding all 10 warheads.**
-    - Its 6 wings are gone by day 10.
-    - The editor says only "Czechoslovakia has 10 warheads".
-    - Nothing in play says the means are lost (PLAN 7.37, open).
-  - The title's Cancel button and its file input are still unstyled browser controls (`c10g_4877_10_title_pending.png`).
-- **AoC does better:** terrain and flag painting in its editor (notes lines 42, 84 and 498).
+- **Tested:** fleets placed in the North Sea for Germany and Britain; a fleet on Berlin (refused: "no water of a sea is
+  near the place"); a bomber group and 10 warheads for Poland (9437) and Czechoslovakia (5309); export, title
+  Cancel/Start, play.
+- **Evidence:** `critic/c11_g_4877.json`, `critic/c11_g2_9437_POL.json`, `critic/c11_g2_5309_CZS.json`,
+  `critic/shots/c11g_4877_20_northsea_day3_300m.png`.
+- **Better:** the editor names a holder's means of delivery; play tells when they are lost.
+- **Weak:** the two navies placed face to face in the North Sea fight no battle in 30 days (`marks[].sea` 0; run 10
+  saw 1 at day 3). The title's Cancel and file input are still browser-default controls.
 
-### Stats and history: 7 (up from 6)
+### Stats and history: 7 (unchanged)
 
-- **Tested:** 3 late years in the page (seed 4877, 2,782 rows), counted by type; the nuclear charts; the strike rows.
-- **Evidence:** `critic/c10_l_4877.json`, `critic/shots/c10l_4877_4_history.png`, `critic/shots/c10f_8693_83_history.png`,
-  `critic/c10_a_4219.json` (`chartOptions`).
-- **Why up:**
-  - The phantom flood is gone.
-  - Convoy raids are one row a quarter, with the gold taken ("over three months: 58 gold of cargo taken").
-  - Strike rows name the men and guns lost.
-  - God's acts are rows.
-- **Weak:**
-  - "X's air force struck Y this month" is 693 of 2,782 rows (25 %).
-  - "Land handed over" is a further 385.
+- **Tested:** the history's filter over 3 late years (2,535 rows); the nuclear charts; the nation panel.
+- **Evidence:** `critic/c11_l_4877.json`, `critic/shots/c11a_4219_33_chart_*.png`, `critic/c11_t_1129.json`.
+- **New and working:** "New nuclear power" rows (6 in 3 years); the nation panel's line on why a holder at war does not
+  strike ("Soviet Union is deterred by Germany: a nuclear strike would bring its answer in kind",
+  `c11t_1129_r0_n10.png`).
+- **Weak:** "Air raids" are 587 of 2,535 rows (23 %). The restraint line can name a deterrent that is itself a puppet
+  (Germany, whose own line reads "is a puppet: the use of its warheads is its overlord's"), which reads as a
+  contradiction.
 
-### UI/UX and polish: 7
+### UI/UX and polish: 7 (unchanged)
 
-- **Tested:**
-  - The tooltip after a wheel zoom, a camera jump, a raze and a 2 px mouse move.
-  - The phone.
-- **Evidence:** `critic/c10_h_1307.json` (`tip0`, `tip1`), `critic/c10_s_6421.json` (`raze`),
-  `critic/shots/c10a_4219_20_paris_600m_day10.png`, `critic/shots/c10h_8217_air_hover.png`.
-- **The stale tooltip, fourth run running:**
-  - After a wheel-out to 24,738 m/px it still reads "London · capital".
-  - After "Go to Paris" it reads "London … Unrest 40" over the Paris ruin.
-  - It also reads "Prague · capital" over the air map.
-  - It corrects only when the mouse moves (`tipMoved2px`).
+- **Evidence:** `critic/c11_s_6421.json`, `critic/c11_h_1307.json`, `critic/shots/c11g_4877_10_title_pending.png`,
+  `critic/shots/c11f_1129_14_alert.png`.
+- The nuclear alert, Go to and the restraint lines work. The stale tooltip (fifth run) and the unstyled title controls
+  remain.
 
-### Performance: 7
+### Performance: 7 (unchanged)
 
-- **Tested:**
-  - Seed 99 for 5 years, pinned and alone, twice.
-  - The browser at Max for 3 late years from a 1958 save (seed 4877).
-  - The Random world.
-- **Evidence:** `critic/c10_perf_seed99_5y_solo.log`, `critic/c10_perf_seed99_5y_solo2.log`, `critic/c10_l_4877.json`.
-- **Seed 99:**
-  - Year 1 is 2.14 ms (budget 2.4).
-  - The 5-year mean is 1.67 and 1.69 ms against the 1.5 ms budget: 12 % over, and worse than run 9's 1.55.
-- **Browser:** 20 to 22 s per late year at 59.8 to 60 fps. The longest gap between ticks is 225 ms; none is over 500 ms.
-- **Random world:** 60 nations, boot in 4.3 s.
-- **AoC:** unknown (text only).
+- **Tested:** seed 99 × 5 years, pinned, alone, twice; the page at Max for 3 years from a 1957 save (4877); the Random
+  world.
+- **Evidence:** `critic/c11_perf_seed99_5y_solo.log`, `critic/c11_perf_seed99_5y_solo2.log`, `critic/c11_l_4877.json`,
+  `critic/c11_r_random.json`.
+- **Better on the same measure:** 1.388 / 1.409 ms mean (run 10: 1.67 / 1.69; budget 1.5); part of it is fewer
+  formations (610 at year 5, was 823). Page: 21–24 s a late year at 59.4–60 fps; longest gap 281 ms, none over 500.
+  Random world: 60 nations, boot 2.5 s, a year in 17 s.
+- **Why still 7:** AoC's performance is known from text only; I have nothing to show WarSim better.
 
-### Stability: 7
+### Stability: 7 (unchanged)
 
-- **Tested:**
-  - Browser against headless for 3 years (seed 1307).
-  - A save/load twin.
-  - A year-10 save loaded in the page and run 7 years at Max (8693).
-  - Errors in every session.
-- **Evidence:**
-  - `critic/c10_h_1307.json`: 3 of 3 year hashes equal (6e32afb6, 761c71b7, 215685eb). The twin is equal, and the save is
-    3.9 MB.
-  - `critic/c10_f_8693.json`: the page reproduces the headless US strike on Paris on the same day, 17 February 1954.
-  - `errors` and `fatal` are empty in every `critic/c10_*.json`.
-- **Why 7:** no crash, desync or error. I have nothing that shows AoC less stable.
+- **Evidence:** `critic/c11_h_1307.json` (3/3 hashes equal, twin equal), the 1129 replay hash, `errors` and `fatal`
+  empty in every `critic/c11_*.json` except my own script's click timeout in `c11_o_6421.json`.
+- No crash, desync or console error in any session.
 
-### Semantic zoom to unit level: 8 (up from 7)
+### Semantic zoom to unit level: 8 (unchanged)
 
-- **Tested:**
-  - Germany–Poland at 3,000, 900, 250, 80, 25 and 10 m/px live (seed 7019).
-  - A continuous wheel zoom (5861).
-  - Armour at 25 m/px for 45 s (3613).
-- **Evidence:** `critic/c10_c_7019.json`, `critic/shots/c10c_7019_sheet.png`, `c10c_7019_inf_0010m.png`,
-  `c10c_7019_inf_0900m_crop3x.png`, `c10z_5861_04_07.png`, `c10e_3613_arm_lvl0_25m_4.png`.
-- **Why 8:** each of run 9's three seams is answered.
-  - **The T1 to T2 seam** is a blend over three notches.
-  - **At 900 m/px** each counter carries a grid of its elements.
-  - **At 10 m/px** an infantry division's men stand in ranks, with tracers. A marker at the frame's edge points to the
-    enemy it fights ("Infantry division 549, 7 km", `c10c_7019_inf_0010m.png`).
-- **Better than AoC:**
-  - From a world map to single men and tanks, without leaving the game.
-  - AoC's units are a cosmetic line of sprites with no stats (notes lines 398 and 411).
-- **Remaining:**
-  - No aircraft at T3 (R10-B3).
-  - Ships at 40 m/px are dark specks.
-  - Counters still overlap in stacks at 900 m/px.
+- **Tested:** Germany–Poland at 3,000 to 10 m/px live (7019); a continuous wheel zoom (5861).
+- **Evidence:** `critic/c11_c_7019.json`, `critic/shots/c11c_7019_inf_0025m.png`, `c11c_7019_inf_0010m.png`,
+  `c11z_5861_sheet.png`.
+- **Why 8:** men in ranks with tracers and a contact line at 25 m/px, a pointer to the enemy off frame, and now
+  aircraft over the front at T3. Nothing like it exists in AoC (its units are a cosmetic line of sprites, notes lines
+  398, 411).
+- **What keeps it from more (R11-B1):** after year 1 there is almost nothing to zoom into. On a year-21 save the page
+  finds 0 engaged formations to look at (`critic/c11_u_6421.json`). Aircraft at 10 m/px are the size of a squad.
 
-### Naval warfare: 6 (needs 8)
+### Naval warfare: 7 (up from 6)
 
-- **Tested:**
-  - Germany–UK (seed 2081): 4 sea rows clicked, each watched 4 s at x1 and at 20 m/px.
-  - Japan–USA for 20 days (8693).
-  - Germany–UK–Poland for 24 days (3613).
-  - Every sea battle of 14 worlds × 30 years.
-  - Armed fleets at years 0, 10 and 20.
-- **Evidence:** `critic/c10_n_2081_GER_ENG.json`, `critic/shots/c10n_2081_sheet.png`, `critic/c10_n_8693_JAP_USA.json`,
-  `critic/c10_e_3613.json`, `critic/c10_summary.txt`, `critic/c10_fleets.json`.
-- **Works in year 1:**
-  - Sea rows frame both fleets firing, with up to 70 shots drawn.
-  - A carrier strike has its own row.
-  - At 20 m/px British ships are red hull silhouettes in formation.
-- **Bad:**
-  - **R10-B2:** after year 1 there are 2.7 sea battles a world-year.
-  - Japan–USA: one battle with no row stood for 6 days (hours 330 to 480) and was never shown.
-  - Germany–UK on 3613: no sea battle between them in 24 days.
-  - The enemy's ships at 20 m/px are dark ellipses with no colour (`c10n_2081_sheet.png`, panel 4).
-- **AoC has no navy.** To reach 8, the sea war must continue past the first year.
+- **Tested:** 24 × 30 years of sea battles; Germany–UK sea rows clicked (2081); Japan–USA 20 days (8693); a year-21
+  Italy–UK battle from a save (6421); a sea row at 150/40/15 m/px (3613).
+- **Evidence:** `critic/c11_cmp.json`, `critic/c11_n_2081_GER_ENG.json`, `critic/c11_n_8693_JAP_USA.json`,
+  `critic/c11_o_6421.json`, `critic/shots/c11n_2081_GER_ENG_3_20m.png`, `c11e_3613_sea_00_row_clicked.png`,
+  `c11e_3613_sea_1_0040m.png`, `c11o_6421_00b_battle_area_1500m.png`.
+- **Why up (same seeds, both commits):** the sea war now runs all 30 years: 13.17 battles a world-year after year 1
+  (2.68 on `bcbc99c`); the late battles are between the great navies (Japan–USSR 178, Germany–UK 133, Japan–UK 124 in
+  the logs), 0.6 % sink nothing.
+- **Why not 8:**
+  - 9 of 9 Japan–USA battles and 7 of 11 Germany–UK battles have no ticker row: the player cannot find them.
+  - A late battle is two single destroyer flotillas, two overlapping counters at 1,500 m/px (`c11o_6421_*`); the row
+    is gone within days.
+  - At 20–40 m/px the enemy side reads as dark ovals (wrecks and submerged boats) beside red British silhouettes.
+- **AoC has no navy.**
 
-### Tanks: 8 (needs 8)
+### Tanks: 8 (unchanged)
 
-- **Tested:**
-  - Armoured division 41 against French infantry, at 25 m/px (x1 and x2) and at 80 m/px (seed 3613).
-  - Armour at every tier (7019).
-- **Evidence:** `critic/c10_e_3613.json` (`wreckWatch`), `critic/shots/c10e_3613_arm_lvl0_25m_4.png`,
-  `c10c_7019_arm_0010m.png`.
-- **Why 8:**
-  - `hullsShown` rises from 1 to 11 in 40 s at x1.
-  - German tank ranks face French blocks, with tracers, a contact line and burnt hulls.
-  - Nothing comparable exists in AoC.
-- **Remaining:** hulls leave the count within about 20 s at x2 once the division moves on.
+- **Tested:** Armoured division 41 against French infantry at 25 m/px (x1, x2) and 80 m/px (3613); armour at every
+  tier (7019).
+- **Evidence:** `critic/c11_e_3613.json` (`wreckWatch`), `critic/shots/c11e_3613_arm_lvl0_25m_4.png`,
+  `c11c_7019_arm_0010m.png`.
+- **Why 8:** German tank ranks against French blocks with tracers and a contact line; burnt hulls rise to 9 shown at x1
+  and 18 at x2 (`hullsShown`). Nothing comparable in AoC.
+- **Remaining:** hulls leave the view within seconds once the fight moves (`c11e_3613_arm_lvl0_25m_8.png` is empty
+  grass); and tanks fight almost only in year 1 (R11-B1).
 
-### Aircraft: 6 (needs 8)
+### Aircraft: 7 (up from 6)
 
-- **Tested:**
-  - Sorties drawn per tier (7019).
-  - The air map on day 10 of Germany–Poland (8217).
-  - 14 worlds' air battles per year.
-- **Evidence:** `critic/c10_c_7019.json`, `critic/shots/c10h_8217_air_hover.png`, `critic/c10_h_1307.json`,
-  `critic/c10_summary.txt`.
-- **Better:** 41 to 47 sorties are drawn at 3,000 m/px, and 1 to 9 at 250 and 80 m/px.
-- **Bad (R10-B3):**
-  - 0 sorties at 25 and 10 m/px.
-  - On day 10, one German zone runs from London to Kiev. The legend lists Germany with 2 zones for all of Europe.
-  - Air battles: a mean of 2,537 in year 1, then 122 a year.
-  - Mean sorties aloft fall from 39 to 57 in year 1 to between 0.7 and 28 in the sampled later years.
+- **Tested:** sorties per tier (7019); the air map on day 10 (8217); air battles per year on 24 worlds.
+- **Evidence:** `critic/c11_c_7019.json`, `critic/shots/c11c_7019_inf_0010m.png`, `critic/shots/c11h_8217_air_hover.png`,
+  `critic/c11_h_1307.json` (`airHolders`, `hovers`), `critic/c11_cmp.json`.
+- **Why up (same cases, both builds):** 0 → 1–3 sorties drawn at 25 and 10 m/px over the 7019 front; the 8217 air map
+  splits Europe into fronts (Germany 2 zones, its own and Poland's; Czechoslovakia, Italy, France their own; Kiev "no
+  one flies there") where run 10 had one German zone from London to Kiev.
+- **Why not 8:** the late air war is unchanged: 3,160 air battles in year 1, 120 a year after (122 on `bcbc99c`); mean
+  sorties aloft after year 1 8.1. The aircraft drawn at T3 are three white glyphs the size of a squad, not in a nation
+  colour.
 - **AoC has no air war.**
 
-### AI nuclear use: 7 (needs 8)
+### AI nuclear use: 7 (unchanged)
 
-- **Tested:**
-  - 14 unaided 30-year worlds: 58 bursts in 11 worlds, each with its decision's utility and toll.
-  - An AI exchange seen in the page from a year-10 save (8693): the alert, Go to, the 200 m/px ruin, the history.
-  - Poland and Czechoslovakia armed in the editor.
-- **Evidence:** `critic/c10_summary.txt`, `critic/c10_headless_*.json` (`nukeLog`), `critic/c10_f_8693.json`,
-  `critic/shots/c10f_8693_11_alert.png`, `c10f_8693_11_ruin_200m.png`, `critic/c10_g3_9437_POL.json`.
-- **Better (verified):**
-  - No chains on empty ground.
-  - Strikes are answered: the Soviet Union struck Washington 7 days after Paris (1,174,992 dead).
-  - The player is told the men and guns lost.
-- **Short of 8 (R10-B1).** The utility has no term for the people a burst kills (`src/sim/systems/nuclear.ts:554-560`).
-  - Germany H-bombs Shanghai for 3,802,105 dead and 105 soldiers, at utility 0.025, the floor itself.
-  - The United States H-bombs Paris three times in six years, then Rome: 8.9 million dead for under 45,000 soldiers,
-    at utilities 0.026 to 0.091.
-  - On seed 9437, Tashkent is struck 6 times and Banda Aceh 6 times, by Poland, Italy and Japan.
-  - 25 of 58 bursts kill over 10 times more civilians than soldiers.
-- **Also:**
-  - 3 of 14 worlds never see a burst, while 4 to 6 nations hold 145 to 164 warheads (4219, 5309, 6421).
-  - Czechoslovakia armed in the editor dies holding 10 warheads.
-- **AoC's nukes are God-only** (notes lines 414 to 418). The AI side is WarSim's own, so it must be believable.
+- **Tested:** 24 × 30 years, 188 bursts with utility and toll; the 1954 Soviet–British exchange of 1129 in the page
+  from a year-17 save (13 alerts, Go to, ruins); the restraint panel on 1129 and 6151; Poland and Czechoslovakia armed
+  in the editor.
+- **Evidence:** `critic/c11_cmp.json`, `critic/c11_summary_all.txt`, `critic/c11_f_1129.json`,
+  `critic/shots/c11f_1129_14_alert.png`, `c11f_1129_14_goto.png`, `c11f_1129_11_goto.png`, `critic/c11_t_1129.json`,
+  `critic/c11_t_6151.json`.
+- **Better (verified on the same seeds):** no burst under 0.1 that kills half a million civilians on run 10's 14 seeds
+  (was 7). The panel says why a holder holds back (puppet, deterred, paused, out of range, not desperate, no threat);
+  the game says when means are lost and when a nation goes nuclear.
+- **Why not 8 (R11-B2):**
+  - New seed 1129: "Soviet Union struck United Kingdom with a hydrogen bomb near Greenock: 1,071,000 civilians killed;
+    34,514 men" at utility 0.026, the floor, with a hydrogen bomb against three counters of 1.3k–7.5k men in view. This is exactly the bar
+    PLAN 7.38 ticked as met on 10 unseen seeds.
+  - Seed 2081: Germany strikes one spot [1219.5, 421.5] three times in 184 days (hydrogen, hydrogen, atomic) for 5,179,
+    3,879 and 4,090 men, at utilities 0.48–0.54.
+- **Reads (not bars):** bursts on the same 14 seeds 58 → 93, concentrated in 7 worlds (was 11). 1129 has 46 bursts and
+  11.7 M dead; 4877 44 bursts and 6.9 M. 29 of 93 bursts kill over ten times more civilians than soldiers.
+- **AoC's nukes are God-only** (notes lines 414–418).
 
 ## Blocking issues, in priority order
 
-1. **R10-B1. The AI's nuclear targeting is blind to the civilians it kills.**
-   - **What happens:** hydrogen bombs fall on great cities at the utility floor, and the same cities are struck again
-     and again.
-     - Seed 4877, year 29: Germany on Shanghai, 3,802,105 dead and 105 soldiers, utility 0.025.
-     - Seed 8693: the United States on Paris in years 17, 20 and 23 (3,178,766, 1,404,231 and 609,000 dead; utilities
-       0.026, 0.073 and 0.026), then on Rome in year 28 (3,720,550 dead, 11,550 soldiers, 0.091).
-     - Seed 9437: Tashkent struck 6 times and Banda Aceh 6 times.
-     - Over all 14 worlds, 25 of 58 bursts kill over 10 times more civilians than soldiers.
-   - **In the page:** "United States struck France with a hydrogen bomb near Paris: 3,157,000 civilians killed; 21,766
-     men and 80 guns lost" (`c10f_8693_11_alert.png`).
-   - **Evidence:** `critic/c10_summary.txt`, `critic/c10_headless_4877.json`, `critic/c10_headless_8693.json`,
-     `critic/c10_headless_9437.json`, `critic/c10_f_8693.json`, `src/sim/systems/nuclear.ts:554-560`.
-   - **Fix:**
-     - Make the people a burst kills a cost in the utility, so a strike of floor-level value never takes a city of
-       millions.
-     - Choose the yield by the target.
-     - Do not re-strike a struck city in the same war unless it holds new value.
-2. **R10-B2. The war at sea is over after year 1.**
-   - **The numbers:**
-     - Year 1: a mean of 38 sea battles a world.
-     - Years 2 to 30: 2.7 a world-year (1,090 in 406 world-years).
-     - 50 to 96 armed fleets remain (115 at the start).
-     - At the year-10 and year-20 samples, 18 of 28 have no war whose two sides both have a navy.
-   - **What a player sees:** after 1938 the oceans are empty of fighting while the land wars go on.
-   - **Evidence:** `critic/c10_summary.txt`, `critic/c10_fleets.json`, `critic/c10_headless_*.json` (`rows[].sea`).
-   - **Fix:** bring the fleets of naval powers out in their later wars (blockades, raids, escort fights, landings).
-     Measure sea battles per world-year after year 1 against year 1.
-3. **R10-B3. The air war is a year-1 feature, and cannot be seen up close.**
-   - **The numbers:** air battles fall from 2,537 in year 1 to 122 a year after it, a mean over 14 worlds.
-   - **Up close:** 0 sorties are drawn at 25 and 10 m/px over a front in contact (seed 7019).
-   - **On the air map:** one German zone covers London to Kiev, and every hover reads "held by Germany"
-     (`c10h_8217_air_hover.png`).
-   - **Evidence:** `critic/c10_summary.txt`, `critic/c10_c_7019.json`, `critic/c10_h_1307.json`,
-     `critic/shots/c10h_8217_air_hover.png`.
-   - **Fix:** draw sorties at T3, give the air map zones the size of fronts, and keep the late air war in proportion
-     to the late land war (PLAN 7.29, 7.36).
+1. **R11-B1. After year 1 the land war has no battles: armies stand in piles at home while land changes hands without
+   contact.**
+   - **The numbers:** engaged land formations, worldwide, mean of 8 daily samples: years 10 and 20 on 24 worlds 0.3–0.7
+     (of about 300 belonging to nations at war). Year 1 of 6421: 55–107 every 15 days. Seed 6421 year 21: 0 at every
+     one of 25 fortnightly samples with 7–9 wars running and 309–7,179 cells flipping per fortnight; 2081 and 9437:
+     0–4.
+   - **The piles (at war):** United Kingdom 85 of 160 divisions (953,109 men) at London (7019, year 10); 61 at London
+     (6151); Soviet Union 53 in one place (5309); Italy 46 of 55 (8011); Japan 33 of 35 (8167). Seed 1129: 60 British
+     divisions (740,840 men) stand still at Wick for the whole month before the Soviet strike that kills 665,160 of them
+     (`c11f_1129_11_goto.png`: a "×60 75.5k" counter on the Caithness coast). SPEC gives the AI amphibious invasions
+     ("Amphibious invasion"; "Invasions", PLAN 4.6b), so this is an execution failure, not an uncovered gap. The Germany–Soviet war of 6421 has a
+     4,795-edge land border and still no contact, so it is not only an overseas problem.
+   - **What a player sees:** wars in the chips, land changing colour in ribbons, and nothing to zoom into. The tanks,
+     the men in ranks and the aircraft at T3 are a year-1 show. The late air war (120 battles a year against 3,160) is
+     the same fact seen from the air.
+   - **Both commits:** `bcbc99c` gives 1.1 and 0.3 engaged at years 10 and 20 on the same seeds, and the same capital
+     piles (`c11_stacks_c10_y10.json`). Newly measured, not a regression; it moves no score. It is the read ADR-577
+     asked of this report.
+   - **Evidence:** `critic/c11_engaged_head.json`, `critic/c11_engaged_c10.json`, `critic/c11_engaged_year21.log`,
+     `critic/c11_engaged_y1_6421.log`, `critic/c11_stacks_y10.json`, `critic/c11_stacks_c10_y10.json`,
+     `critic/c11_wick_1129.json`, `critic/c11_u_6421.json`, `critic/shots/c11f_1129_11_goto.png`,
+     `critic/shots/c11v_6421_ger_sov_6000m.png`.
+   - **Fix:** make a nation at war send its standing armies to its fronts and over the sea to its enemies (the
+     invasion AI with the idle piles as its pool), so that contact after year 1 is in proportion to the wars running.
+     Measure engaged formations per war per year after year 1 against year 1, on unseen seeds.
+2. **R11-B2. The AI still H-bombs a city of a million at the utility floor, and spends warheads on the same few
+   thousand men again and again; PLAN 7.38's bar fails on an unseen seed.**
+   - Seed 1129, 14 March 1954: Soviet Union on Greenock, hydrogen bomb, 1,105,514 dead (1,071,000 civilians, 34,514
+     men), utility 0.026. PLAN 7.38's AT: "no burst with a utility under 0.1 that kills a million", reported met on 10
+     unseen seeds.
+   - Seed 2081, years 27–28: Germany strikes [1219.5, 421.5] three times in 184 days for 5,179, 3,879 and 4,090 men.
+   - **Evidence:** `critic/c11_headless_1129.json`, `critic/c11_f_1129.json`, `critic/shots/c11f_1129_14_alert.png`,
+     `critic/shots/c11f_1129_14_goto.png`, `critic/c11_headless_2081.json`, `critic/c11_cmp.json`.
+   - **Fix:** weigh the dead so that a floor-value strike cannot pay for a city (DEAD_COST 0.1 a million lets 0.13 of
+     value buy a million dead); choose fission where the target is a few divisions; extend ADR-569's "no restrike
+     without new value" to a spot struck within the war's last year. Measure on seeds the rule was not tuned on.
 
 ## Non-blocking issues
 
-- **Stale map tooltip**, fourth run running. It corrects only on a mouse move (`c10_s_6421.json`,
-  `c10a_4219_20_paris_600m_day10.png`).
-- **Stasis** of 21 to 22 years on two seeds within 30 years (`c10_summary.txt`).
-- **Seed 99's tick mean is 1.67 to 1.69 ms** against the 1.5 ms budget (`c10_perf_seed99_5y_solo*.log`).
-- **Editor-armed Czechoslovakia dies holding 10 warheads**, with no word in the editor or in play
-  (`c10_g2_5309_CZS.json`).
-- **Editor-armed Poland bombs Rome and Prague** for 142 and 390 soldiers (`c10_g3_9437_POL.json`).
-- **Enemy ships at T3 are dark ellipses** with no nation colour (`c10n_2081_sheet.png`).
-- **Air-raid rows are 25 % of the history** (`c10_l_4877.json`).
-- **The title's Cancel button and file input are unstyled** (`c10g_4877_10_title_pending.png`).
-- **Latvia and Lithuania become nuclear great powers** (seeds 1307 and 8693; `c10_summary.txt`). It is unexplained,
-  and may be legitimate emergence.
+- **Shredded late maps** (both commits): Soviet land in 94–287 pieces at year 20; straight-edged ribbons in year 21 of
+  6421 (`c11v_6421_ger_sov_6000m.png`, `c11_frag_head.json`, `c11_frag_c10.json`).
+- **Stale map tooltip**, fifth run (`c11_s_6421.json`).
+- **Sea battles without a ticker row:** 9 of 9 Japan–USA (8693), 7 of 11 (2081).
+- **Editor fleets face to face fight nothing in 30 days** (`c11_g_4877.json`).
+- **Restraint line names a puppet as the deterrent** (`c11_t_1129.json`).
+- **Air-raid rows 23 % of the history** (`c11_l_4877.json`).
+- **Aircraft at T3 are white glyphs the size of a squad** (`c11c_7019_inf_0010m.png`).
+- **The title's Cancel button and file input are unstyled** (`c11g_4877_10_title_pending.png`).
+- **A God revolt is told as "Germany declared war on Free Saxony", not as a revolt** (`c11_q_6421.json`).
+- **Glasgow's marker untouched beside the Greenock ruin** (`c11f_1129_14_goto.png`).
+
+## Design objections (none blocking, no score lowered)
+
+- **Cities as nuclear targets with no soldiers in them.** SPEC §6.4 makes a city a target and the user decided there is
+  no bar on the civilians' share (PLAN 7.38). The editor-armed Poland still bombs Berlin (334,000 civilians, 379 men),
+  Rome (172,000, 90) and Prague (134,000, 390) in its first 60 days, identical to run 10. With DEAD_COST at 0.1 a
+  million, the weight of the dead is too small to change any of them. I think a player will read these as atrocities
+  without a reason, and that the weight should be larger; that is the user's call.
+- **The volume of nuclear war.** 46 bursts in 13 years on 1129 is a full exchange every few months. Within the design,
+  but it makes the nuclear taboo look thin.
 
 ## Strengths, verified
 
-- **Determinism.**
-  - Browser equals headless year by year.
-  - A year-10 save replayed in the page produces the same strike on the same day 7 years later (`c10_h_1307.json`,
-    `c10_f_8693.json`).
-- **Run 9's blockers are fixed on unseen seeds, and the zoom's seams are closed:**
-  - Phantom sea battles: 3 % zero-loss.
-  - Chains of strikes on empty ground: none left.
-  - The zoom from a world map to men in ranks is now continuous (`c10z_5861_04_07.png`, `c10c_7019_inf_0010m.png`).
+- **The sea war now lasts the whole game** on the same seeds: 2.68 → 13.17 battles a world-year after year 1
+  (`c11_cmp.json`).
+- **Determinism:** browser equals headless year by year; a year-10 save replayed headless to year 16 lands on the
+  batch's hash (`c11_h_1307.json`, `c11_ck.ts`).
