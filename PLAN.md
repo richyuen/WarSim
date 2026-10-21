@@ -112,20 +112,6 @@ each, split when taken up:
       `docs/evidence/7.46/c-adopt.diff`, read the pin again, gate, tick 7.46c and 7.39b.
       Done (2026-10-20): applied to `bf4b2bb`, the pin fdd3a67c as measured, the gate green.
 
-- [ ] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g):
-  `territory.ts`'s flip scores each neighbouring enemy controller with its side's pressure and
-  gives a tie to the lowest id, so a puppet or ally with no army takes the cells its partner's
-  armies win (seed 1307 on `bcbc99c`: Latvia, the Soviet Union's puppet with 0 men, 131 → 4,787
-  cells and Berlin in 210 days; seed 8693, Lithuania 88 → 1,921). Rule: on equal side pressure
-  the cell goes to the candidate whose own formations press it most, then the lowest id
-  (`docs/evidence/7.37/g-tiebreak-candidate.diff`). AT: a unit test, a puppet with no formation
-  and its overlord's division both beside an enemy cell, the cell to the overlord (red without:
-  the puppet, its id the lower); from 1938 on seeds 1307 and 8693 on HEAD, Latvia and Lithuania
-  hold under 500 cells more than they own in 1938 at every sample of two years while they have no
-  land formation (`nukeProgramme.ts`'s `held` and `men`); the ADR and the pin's entry. The ADR
-  also says who takes a cell that only the puppet's land borders while its overlord's armies
-  press it (the candidates are neighbouring controllers; the patched run did not meet that case).
-
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 - [ ] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's
@@ -425,3 +411,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.47 A navy rebuilt to a ship or two saves for the next at war with a naval enemy (from PLAN […]
 - [x] 7.48 The critic's overrun France strikes before it loses its last bomber, with the chase (AI […]
 - [x] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean […]
+- [x] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g): […]

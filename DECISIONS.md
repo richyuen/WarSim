@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-582 · 2026-10-20 · accepted — On a side's equal pressure a cell goes to the neighbouring member whose own formations press it (PLAN 7.43)
+
+- **Context.** `territory.ts`'s flip scores each neighbouring enemy controller of a frontier cell
+  with its whole side's pressure (`Wars.together`), so a puppet and its overlord beside the same
+  cell score the same, and the tie went to the lowest id. On the critic's run 10 (`bcbc99c`)
+  Latvia (seed 1307, id 7) and Lithuania (8693, id 6), each the Soviet Union's (10) puppet with no
+  army, took the cells its divisions won: Latvia 131 → 4,787 cells and Berlin in 210 days,
+  Lithuania 88 → 1,921, both then over NUKE_PROGRAMME_INCOME and nuclear powers (PLAN 7.37g).
+- **Decision.** On equal pressure the cell goes to the candidate whose own formations' pressure
+  on it is the greatest, then to the lowest id. A side's pressure and the defence are unchanged:
+  the rule decides only who of a side takes the cell, never whether it flips.
+- **A cell only the puppet borders** (the task's question). The candidates are the nations that
+  hold a neighbouring cell; a member with no formations that alone borders the cell scores its
+  side's pressure and takes it, as before: the overlord, holding no neighbour, cannot. Its
+  overlord's next cells, beside its own, are its own, so a puppet's strip along a front grows by
+  the cells next to it alone and no longer by every cell its overlord's armies win.
+- **Read** (`docs/evidence/7.43/read.md`, 2 years from 1938 at `60ac86b` with and without):
+  Latvia and Lithuania hold no more than their 1938 land at any sample on either code; on HEAD the
+  case no longer arises within two years (Latvia dies on 1307, Lithuania holds 81 cells on 8693),
+  so the read guards and 7.37g's replay at `bcbc99c` proves (Latvia 359–402, Lithuania 88). With
+  the rule Latvia lives on 1307 (139 cells at day 720).
+- **Pin.** fdd3a67c → a1a50bcc.
+- **Test.** `tests/unit/territory.test.ts` (PLAN 7.43): a Soviet division and its puppet Latvia,
+  no formation, beside a Polish cell: the cell is the Soviet Union's (red without: Latvia's).
+- **Cost.** One assignment and one comparison in the flip's candidate loop; no `--profile`.
+
 ### ADR-581 · 2026-10-20 · accepted — In extreme desperation the alliance's cost weighs half, as the taboo (PLAN 7.48)
 
 - **Context.** With the chase (ADR-580), `nukeOverrun1938.test.ts` (critic R8-B1's France: seed

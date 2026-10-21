@@ -1245,7 +1245,11 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 - *Partners* (PLAN 1.42b, ADR-50): nations on the same side of a war (`Wars.sameSide`) fight on
   each other's fronts. An attacker's pressure on a cell includes that of its partners at war
   with the holder, and the holder's defence that of its partners; the cell flips to the member
-  that holds the neighbouring cell. A formation on a partner's supply network is in supply, and
+  that holds the neighbouring cell. Members beside it score their side's same pressure; the tie
+  goes to the one whose own formations press the cell most, then the lowest id (PLAN 7.43,
+  ADR-582: a puppet with no army took its overlord's conquests by its lower id). A cell that only
+  a member with no formations borders is still its (the candidates are the neighbouring holders).
+  A formation on a partner's supply network is in supply, and
   repatriation leaves it there while the shared war lasts. The operational AI counts a partner's
   front cells against a common enemy as its own front (within its deploy range).
 - *Liberation* (PLAN 3.4Rj, ADR-147): a cell that flips to a nation not at war with its owner

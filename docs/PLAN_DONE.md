@@ -12803,3 +12803,34 @@ Of 7.33 (open in PLAN.md):
       Done (2026-10-20, `docs/evidence/7.39/c.md`): seeds 20011–20101 at `f68f92d`: sea battles
       years 2–30 13.91 a world-year against a quarter of year 1's 13.85 (met by 0.5 %), 0.7 %
       sinking nothing. 7.39's AT met on both runs.
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g):
+  `territory.ts`'s flip scores each neighbouring enemy controller with its side's pressure and
+  gives a tie to the lowest id, so a puppet or ally with no army takes the cells its partner's
+  armies win (seed 1307 on `bcbc99c`: Latvia, the Soviet Union's puppet with 0 men, 131 → 4,787
+  cells and Berlin in 210 days; seed 8693, Lithuania 88 → 1,921). Rule: on equal side pressure
+  the cell goes to the candidate whose own formations press it most, then the lowest id
+  (`docs/evidence/7.37/g-tiebreak-candidate.diff`). AT: a unit test, a puppet with no formation
+  and its overlord's division both beside an enemy cell, the cell to the overlord (red without:
+  the puppet, its id the lower); from 1938 on seeds 1307 and 8693 on HEAD, Latvia and Lithuania
+  hold under 500 cells more than they own in 1938 at every sample of two years while they have no
+  land formation (`nukeProgramme.ts`'s `held` and `men`); the ADR and the pin's entry. The ADR
+  also says who takes a cell that only the puppet's land borders while its overlord's armies
+  press it (the candidates are neighbouring controllers; the patched run did not meet that case).
+  Done (2026-10-20, ADR-582, `docs/evidence/7.43/read.md`): the unit test red without; on HEAD
+  Latvia and Lithuania never hold over their 1938 land in two years, with or without the rule
+  (the case no longer arises there; 7.37g's replay at `bcbc99c` is the proof); pin a1a50bcc.

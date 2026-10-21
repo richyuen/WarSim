@@ -285,6 +285,44 @@ describe('partners on a front (PLAN 1.42b)', () => {
   });
 });
 
+// PLAN 7.43 (ADR-582): a side's pressure is the same for each of its nations beside a cell, so a
+// tie went to the lowest id, and a puppet with no army took the land its overlord's armies won
+// (seed 1307 on `bcbc99c`: Latvia, 0 men, 131 → 4,787 cells and Berlin). The tie now goes to the
+// nation whose own formations press the cell most, then to the lowest id.
+describe('a cell taken goes to the nation whose own army presses it (PLAN 7.43)', () => {
+  const LAT = nationId('LAT');
+  const SOV = nationId('SOV');
+
+  it('an overlord’s division and its puppet with no army beside an enemy cell: the cell is the overlord’s', () => {
+    expect(LAT).toBeLessThan(SOV); // the old tie-break's pick
+    const s = block(5);
+    const w = s.world;
+    // West of the line Soviet land, a column of Latvian land along it; the target cell has
+    // Latvia's cell to its west and a Soviet cell to its north.
+    const yt = Y0 + 6;
+    for (let y = Y0; y < Y0 + BH; y++) {
+      for (let x = X0; x < SPLIT; x++) {
+        const n = x === SPLIT - 1 ? LAT : SOV;
+        w.setOwner(y * W + x, n);
+        w.setController(y * W + x, n);
+      }
+    }
+    w.setOwner((yt - 1) * W + SPLIT, SOV);
+    w.setController((yt - 1) * W + SPLIT, SOV);
+    w.wars.set(GER, POL, false);
+    w.nations.cols.overlord[LAT] = SOV;
+    w.wars.start([SOV, LAT], [POL], 0);
+    spawn(w, SOV, SPLIT - 2, yt);
+    let latMen = 0;
+    w.formations.forEach((f) => { if (w.formations.cols.nation[f] === LAT) latMen++; });
+    expect(latMen).toBe(0);
+    const target = yt * W + SPLIT;
+    expect(w.cells.controller[target]).toBe(POL);
+    s.step(HOLD_TICKS + 2);
+    expect(w.cells.controller[target]).toBe(SOV);
+  });
+});
+
 // PLAN 3.4Rj (ADR-147): a cell taken by a nation that is not at war with its owner is the
 // owner's again. Before, it was the taker's to hold with no war: no peace gave it back.
 describe('a cell taken from its occupier by a third nation (PLAN 3.4Rj)', () => {

@@ -20974,3 +20974,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   years 11–30). The navy falls to about half by years 2–3 and is back at 94 % of year 1's by year 30.
 - No code changed; the pin unchanged. Specs by hand: none (no UI).
 - **Next:** PLAN 7.43, then the critic run (7.5).
+
+## 2026-10-20 — PLAN 7.43: a cell taken goes to the side's nation whose own formations press it (ADR-582)
+
+- **Rule** (`territory.ts`): on a side's equal pressure the cell flips to the neighbouring member
+  whose own formations press it most, then the lowest id (`docs/evidence/7.37/g-tiebreak-candidate.diff`
+  as it stood). SPEC §territory's partners line. A cell only a puppet borders is still the
+  puppet's (the candidates are the neighbouring holders; ADR-582 says so).
+- **AT:** the unit test (`territory.test.ts`, PLAN 7.43: a Soviet division and its puppet Latvia
+  with no formation beside a Polish cell, the cell the Soviet Union's; red without, Latvia's).
+  `nukeProgramme.ts` 2 years from 1938 on 1307 (Latvia) and 8693 (Lithuania), every 30 days, HEAD
+  and the rule at once (`docs/evidence/7.43/`): neither holds more than its 1938 land at any sample
+  on either code (bar under +500): met, but on HEAD the critic's case no longer arises within two
+  years (Latvia dies on 1307 by day 270; Lithuania 81 cells on 8693 throughout), so the read is a
+  guard and 7.37g's replay at `bcbc99c` the proof (Latvia 359–402, Lithuania 88). With the rule
+  Latvia lives on 1307 (139 cells at day 720).
+- **Pin:** fdd3a67c → a1a50bcc. No `--profile`: one assignment and one comparison in the loop.
+- Specs by hand: none (no UI).
+- **Next:** the critic run (PLAN 7.5; `npm run check:review` first, PROMPT 2a).
