@@ -21215,3 +21215,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - 7.49 has no part left that is not the user's; its own bar (engaged per war at least a quarter of
   year 1's, ~2) stands unmet at 0.120 / 0.143.
 - **Next:** PLAN 7.54 (the send at the first refused march), then 7.55; then 7.49's own AT read.
+
+## 2026-10-21 — PLAN 7.54a: the send passes over a refused march (ADR-594)
+
+- **Traced** (`tools/diag/sendTrace.ts`, `docs/evidence/7.54/a.md`): in the four cases every refused
+  march is a neutral nation's ground between, none the long way. 4513 Kotor, 7247 and 8693 Annaba: no
+  candidate reaches the port (the transports in a German exclave); 5–39 other German ports on that
+  land are in the army's reach, none with transports. 1129 Warri: the nearest three behind Turkey, the
+  fourth open. 7.54 split: a (this), b (the transports go to the army).
+- **Rule** (`sendToPort`): one passage; a refusal on another land ends the send (7.7's test
+  unchanged), one on the port's land is passed over, the send ending at the third refused search
+  (refusals across the passage's groups are microseconds, no search).
+- 1129's fourth is sent but its march is 317 steps of desert (~240 days): no boarding in 60 days.
+- **Test:** `sendPastRefusal1938.test.ts` (red without). Pin unchanged (69e93c3b). Specs by hand:
+  none (no UI).
+- **Next:** PLAN 7.54b.

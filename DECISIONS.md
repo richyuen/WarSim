@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-594 · 2026-10-21 · accepted — The send to the landing's port passes over a march refused on the port's land (PLAN 7.54a)
+
+- **Context** (`docs/evidence/7.54/a.md`, `tools/diag/sendTrace.ts`). `sendToPort` ended at the
+  first formation whose march to the port was refused (PLAN 7.7, ADR-422's era: seed 3371's Italy
+  tried 109 formations a week, each a failed search of about 10 ms). Traced on the four cases of
+  7.49f §3, every refusal is a neutral nation's ground between the formation and the port, none
+  ADR-422's long way and none no way at all. Three of them (4513 Kotor, 7247 and 8693 Annaba) reach
+  the port with no candidate: the transports stand in an exclave (PLAN 7.54b). In the fourth (1129
+  year 20, Britain to Warri) the nearest three stand behind Turkey and the fourth's march is open:
+  the send ended at the first, every week. Refusals in another group of the passage are judged by
+  `mayReach` with no search (1–60 µs each); Britain's are searches (0.5 ms).
+- **Decision** (`ai/invasion.ts` `sendToPort`): one passage for the send. A refusal of a formation
+  on another land than the port's ends the send (7.7's case, its test unchanged); one on the port's
+  land is passed over, and so are the others at a cell already refused, with no order; the send
+  ends at the SEND_SEARCHES-th (3) refusal that was a search (the start and the port in one group
+  of the passage). At most three searches a send: 7.7's guard kept.
+- **Consequences.** `sendPastRefusal1938.test.ts` (red without: a German division in East Prussia
+  listed first, one in Germany sent). On 1129 year 20 Britain's fourth is sent and marches, but
+  over 317 steps of desert (about 1.3 cells a day, some 240 days): no boarding in 60 days. The
+  transports going to the army is 7.54b. Pin unchanged (69e93c3b): seed 99's first year has no
+  such send.
+
 ### ADR-593 · 2026-10-21 · accepted — The invasion AI takes aboard a formation at its port by the port's land cell or its water (PLAN 7.49f)
 
 - **Context** (`docs/evidence/7.49/d.md` §4, `docs/evidence/7.49/f.md`). `planLanding` sends its

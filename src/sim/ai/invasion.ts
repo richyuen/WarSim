@@ -23,9 +23,9 @@
  *   next (PLAN 7.49f, ADR-593: by its water alone, an army sent to a port whose water is 4–11 cells
  *   off its land cell, as Glasgow's or Hamburg's, stood there and was never loaded);
  * - with none there, its free land formations on the port's land, nearest the port first, are
- *   sent to it (`orderMove`) until their men fill the room, or until one cannot be sent (PLAN 7.7:
- *   the port out of its army's reach by land; each failed order is a search of the map); they go
- *   aboard on a later day.
+ *   sent to it (`orderMove`) until their men fill the room (`sendToPort`: one refused on the port's
+ *   land is passed over, PLAN 7.54; the send ends at one on another land, PLAN 7.7, or at the
+ *   SEND_SEARCHES-th refusal that was a search of the map); they go aboard on a later day.
  *
  * Not here: an escort or a fleet sent to hold the landing's sea (PLAN 4.6c), a landing in a war
  * in which the nation has a front.
@@ -34,7 +34,8 @@ import { isDayStart } from '../../shared/calendar';
 import { neighbours4 } from '../nav/grid';
 import { frontierOf } from '../systems/territory';
 import { orderLanding, transportRoom } from '../systems/amphibious';
-import { orderMove } from '../systems/movement';
+import { mayReach } from '../nav/provinceGraph';
+import { orderMove, passageOf, snapTarget } from '../systems/movement';
 import { AT_PORT_CELLS, seaKm } from '../systems/navalCombat';
 import { seaHolder } from '../systems/seaControl';
 import { navOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
@@ -179,19 +180,49 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
 }
 
 /**
- * Orders formations `ids`, the nearest first, to (px, py), a port's point, until their men fill
- * `room`; the first that cannot be ordered there ends it (PLAN 7.7, critic R7-B2): all go to the one
- * port, and one that cannot reach it says the port is out of its army's reach by land. Seed 3371's
- * Italy tried its 109 formations each week from year 27, each a failed search of about 10 ms: calls
- * of 0.7 to 1.1 s, 86 % of the tick. The men ordered.
+ * A send passes over at most this many refused marches that were searches (PLAN 7.54, ADR-594):
+ * each such refusal is a search of the map (up to about 10 ms, PLAN 7.7), so the send costs at
+ * most a few of them.
+ */
+export const SEND_SEARCHES = 3;
+
+/**
+ * Orders formations `ids`, the nearest first, of one nation, to (px, py), a port's point, until
+ * their men fill `room`. The men ordered.
+ *
+ * - One whose land is not the port's ends it (PLAN 7.7, critic R7-B2): no way by land reaches the
+ *   port from there. Seed 3371's Italy tried its 109 formations each week from year 27, each a
+ *   failed search of about 10 ms: calls of 0.7 to 1.1 s, 86 % of the tick.
+ * - One refused on the port's land is passed over (PLAN 7.54, ADR-594): a refusal says its own
+ *   ground is cut off from the port (a neutral nation between), not the army's. Before, the first
+ *   refusal ended the send, and with the nearest cut off nobody was sent, every week (seed 1129
+ *   year 20: Britain's nearest three in Turkey's way to Warri, the fourth's march open). The
+ *   others at a cell already refused are passed over with no order; the send ends at the
+ *   SEND_SEARCHES-th refusal that was a search (not judged at once by `mayReach`: the start's
+ *   ground and the port's in two groups of the passage, a refusal of microseconds).
  */
 export function sendToPort(world: World, ids: readonly number[], px: number, py: number, room: number): number {
   const c = world.formations.cols;
+  const nav = navOf(world);
+  const w = world.cells.w;
+  const tx = Math.floor(px);
+  const ty = Math.floor(py);
+  const pass = ids.length > 0 ? passageOf(world, c.nation[ids[0]!]!) : undefined;
+  const refusedAt = new Set<number>();
+  let searched = 0;
   let men = 0;
   for (const id of ids) {
     if (men + c.strength[id]! > room) break;
-    if (!orderMove(world, id, px, py)) break;
-    men += c.strength[id]!;
+    const at = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+    if (refusedAt.has(at)) continue;
+    if (orderMove(world, id, px, py, pass)) {
+      men += c.strength[id]!;
+      continue;
+    }
+    if (nav.grid.component[at] !== nav.grid.component[ty * w + tx]) break;
+    refusedAt.add(at);
+    const goal = snapTarget(world, at, tx, ty);
+    if (goal >= 0 && mayReach(nav.grid, nav.graph, at, goal, pass) && ++searched >= SEND_SEARCHES) break;
   }
   return men;
 }

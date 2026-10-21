@@ -1,0 +1,235 @@
+{
+ "totals": {
+  "first": {
+   "island": 73,
+   "atWar": 147
+  },
+  "last": {
+   "island": 74,
+   "atWar": 142
+  }
+ },
+ "firstPct": "49.7",
+ "lastPct": "52.1",
+ "carried": 26,
+ "bestPct": "32.0",
+ "carry": [
+  {
+   "seed": 1129,
+   "nation": "ENG",
+   "km": 1524,
+   "oneWayDays": 3.8,
+   "trips": 4,
+   "room": 24000,
+   "islandMen": 89458,
+   "island": 11,
+   "carryMen": 89458,
+   "carryFormations": 11
+  },
+  {
+   "seed": 1129,
+   "nation": "NED",
+   "km": null,
+   "oneWayDays": null,
+   "trips": 0,
+   "room": 24000,
+   "islandMen": 217282,
+   "island": 18,
+   "carryMen": 0,
+   "carryFormations": 0
+  },
+  {
+   "seed": 1129,
+   "nation": "JAP",
+   "km": 202,
+   "oneWayDays": 0.5,
+   "trips": 8,
+   "room": 24000,
+   "islandMen": 541794,
+   "island": 43,
+   "carryMen": 192000,
+   "carryFormations": 15
+  }
+ ],
+ "rows": [
+  {
+   "seed": 1129,
+   "src": "critic/c11_seed1129_y20.bin",
+   "first": {
+    "island": 73,
+    "atWar": 147
+   },
+   "last": {
+    "island": 74,
+    "atWar": 142
+   },
+   "nations": [
+    {
+     "nation": "ENG",
+     "island0": 11,
+     "islandMen0": 89458,
+     "island1": 12,
+     "islandMen1": 104488,
+     "gates": {
+      "fronted": 0,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 60,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 0,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 9,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 24000,
+     "boarded": 0,
+     "boardedMen": 0,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "CHI",
+        "CCP",
+        "BUR",
+        "SOV",
+        "ROM",
+        "NOR",
+        "SWE",
+        "IRQ",
+        "AFG",
+        "SIN",
+        "MON",
+        "TAN",
+        "#117",
+        "#118"
+       ],
+       "landFront": false
+      }
+     ],
+     "muster": "home"
+    },
+    {
+     "nation": "NED",
+     "island0": 18,
+     "islandMen0": 217282,
+     "island1": 18,
+     "islandMen1": 216767,
+     "gates": {
+      "fronted": 0,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 60
+     },
+     "actorGates": {
+      "fronted": 0,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 9
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 24000,
+     "boarded": 0,
+     "boardedMen": 0,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "CHI",
+        "CCP",
+        "BUR",
+        "SOV",
+        "ROM",
+        "NOR",
+        "SWE",
+        "IRQ",
+        "AFG",
+        "SIN",
+        "MON",
+        "TAN",
+        "#117",
+        "#118"
+       ],
+       "landFront": false
+      }
+     ],
+     "muster": "home"
+    },
+    {
+     "nation": "JAP",
+     "island0": 43,
+     "islandMen0": 541794,
+     "island1": 43,
+     "islandMen1": 523232,
+     "gates": {
+      "fronted": 60,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 9,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 0,
+     "boarded": 0,
+     "boardedMen": 0,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "CHI",
+        "CCP",
+        "BUR",
+        "SOV",
+        "ROM",
+        "REP",
+        "NOR",
+        "SWE",
+        "FMO",
+        "IRQ",
+        "IRN",
+        "AFG",
+        "SIN",
+        "MON",
+        "TAN",
+        "#117",
+        "#118"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    }
+   ]
+  }
+ ]
+}

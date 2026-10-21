@@ -143,6 +143,17 @@ when taken up:
   of their save; the nations on `send` 30+ of 60 days with none boarded (`islandArmies.ts`) 9 → 5 or
   fewer; no call of the invasion AI over 50 ms on those runs (`--profile` or the tool's timing; 7.7's
   guard); a unit test (red without); the ADR; the pin's entry.
+  Traced (`docs/evidence/7.54/trace.json`, `tools/diag/sendTrace.ts`): every refusal is a neutral
+  nation's ground between, none the long way; in 4513, 7247 and 8693 no candidate reaches the port
+  (the transports in an exclave: Kotor, Annaba) and 5–145 reach other ports of the nation on that
+  land, none with transports; in 1129 the fourth's march is open. Two causes, a part each; the AT
+  read after both.
+    - [x] 7.54a The send passes over a march refused on the port's land (ADR-594); the send ends
+      at one on another land (7.7's case) or at the third refusal that was a search. AT: 1129's
+      Britain sends its fourth; a unit test (red without); the pin's entry.
+    - [ ] 7.54b The transports go to the army: when the nearest free formation's march to the
+      transports' port is refused, the group sails to the nation's port on that land that the
+      formation reaches, nearest it, with a way by sea; no formation is sent that day. AT: 7.54's.
 - [ ] 7.55 A transport group with room under a division's (found at 7.49f, emergent 6,
   `docs/evidence/7.49/f.md` §3; 7.49d's note on 4513 Latvia): the invasion AI plans with the group
   of most room at a port, and `sendToPort` and `orderLanding` take no formation over its room, so a
