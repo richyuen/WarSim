@@ -13,7 +13,10 @@ entries are kept and marked **RESOLVED** with the date and fix.
   test; red without), but its case is 10 of the 1,059 on day 1 (`ferryAlly.ts`): 793 are of nations
   whose land front is an ally's alone, with no front cell of their own, which no ferry takes (the
   ferry and the landing read a nation's own front cells); 187 have no ally's port on that land
-  (the Soviet Union's 158 on 5309 year 20, the task's named case, untraced); 69 no transports at a port.
+  (the Soviet Union's 158 on 5309 year 20, the task's named case: front cells of its own,
+  transports at its port, no port of its or an ally's on that land; neither d2 nor 7.64 reaches
+  them, and no task is filed for them: the remedy, a landing at a coast with no port or at an
+  enemy's port in the same war, is a design choice); 69 no transports at a port.
 - **What is left:** the nations fronted through an ally alone, filed as PLAN 7.64 with its own AT.
   The user's: (a, recommended) 7.49d2 ticked on the rule's own case, as 7.49c, 7.49f and 7.54 were;
   (b) 7.49d2 closed not done, the rule kept; (c) kept open until 7.64 lands and the figure is read

@@ -183,7 +183,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   own port on their front cells' lands, the 48 saves together after 60 days) 939 → 934, bar under
   470: missed. Of the 1,059 on day 1 (`tools/diag/ferryAlly.ts`), 793 are of nations whose land
   front is an ally's alone (no front cell of their own, so no ferry: PLAN 7.64), 187 have no ally's
-  port there, 69 no transports at a port, and 10 are the rule's case. Island share 18.2 → 18.1 %,
+  port there (the Soviet Union's 158 on 5309: own front cells and transports at port, no port of
+  its or an ally's on that land; neither this rule nor 7.64 reaches them), 69 no transports at a
+  port, and 10 are the rule's case. The read tests ports against the lands of a nation's own front
+  cells (7.49d §3's 217 against the lands with the allies' cells in): the 793 are "no own port"
+  because they have no front cell, not for their ports. Island share 18.2 → 18.1 %,
   28.3 → 28.2 %; engaged identical to three places. BLOCKERS, the user's.
 - **Pin.** Unchanged (seed 99's first year has no nation in the rule's case).
 

@@ -21602,3 +21602,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Budget:** 7.49 at 19 commits by its number in the subjects (one left).
 - **Next:** PLAN 7.49d3 (transports bought for a home army), 7.49's 20th commit: at the budget the
   loop writes what moved case by case and closes 7.49 (ADR-554); 7.49e1 then waits on the user.
+- **Record corrected** (same day, documents only): 7.49d §3's 217 tested ports against the front's
+  lands with the allies' cells in, `noOwnPort` against the nation's own front cells' (the 793 are
+  that difference); the Soviet Union's 158 on 5309 placed (own front cells, transports at port, no
+  port of its or an ally's on that land: neither d2 nor 7.64 reaches them; no task filed, the
+  remedy a design choice, told to the user). `d2.md` §3, ADR-613, the BLOCKERS entry.
