@@ -1,0 +1,566 @@
+[
+ {
+  "seed": 1129,
+  "src": "1938@60",
+  "day": 62,
+  "formations": 641,
+  "states": {
+   "engaged": 58,
+   "retreat": 17,
+   "home": 2,
+   "aboard": 1,
+   "attack": 95,
+   "hold": 292,
+   "elsewhere": 0,
+   "noFront": 0,
+   "island": 4,
+   "near": 55,
+   "far": 117
+  },
+  "marching": 387,
+  "stalled": 8,
+  "flips": 111,
+  "walkIns": 45,
+  "nationsAtWar": 23,
+  "noFrontNations": 0,
+  "piles": [
+   [
+    "TUR far 1175,346",
+    5
+   ],
+   [
+    "SOV near 1169,303",
+    3
+   ],
+   [
+    "GRE far 1167,347",
+    3
+   ],
+   [
+    "TUR far 1176,343",
+    3
+   ],
+   [
+    "SOV near 1178,304",
+    2
+   ]
+  ]
+ },
+ {
+  "seed": 1129,
+  "src": "1938@150",
+  "day": 152,
+  "formations": 781,
+  "states": {
+   "engaged": 56,
+   "retreat": 6,
+   "home": 0,
+   "aboard": 0,
+   "attack": 188,
+   "hold": 282,
+   "elsewhere": 0,
+   "noFront": 0,
+   "island": 30,
+   "near": 53,
+   "far": 166
+  },
+  "marching": 470,
+  "stalled": 15,
+  "flips": 248,
+  "walkIns": 218,
+  "nationsAtWar": 60,
+  "noFrontNations": 0,
+  "piles": [
+   [
+    "SOV far 1158,320",
+    6
+   ],
+   [
+    "FRA near 1063,327",
+    6
+   ],
+   [
+    "SOV far 1152,319",
+    4
+   ],
+   [
+    "SOV far 1157,319",
+    4
+   ],
+   [
+    "CHI near 1716,376",
+    4
+   ]
+  ]
+ },
+ {
+  "seed": 1129,
+  "src": "1938@300",
+  "day": 302,
+  "formations": 384,
+  "states": {
+   "engaged": 0,
+   "retreat": 0,
+   "home": 16,
+   "aboard": 2,
+   "attack": 37,
+   "hold": 203,
+   "elsewhere": 15,
+   "noFront": 0,
+   "island": 16,
+   "near": 52,
+   "far": 43
+  },
+  "marching": 253,
+  "stalled": 13,
+  "flips": 115,
+  "walkIns": 96,
+  "nationsAtWar": 48,
+  "noFrontNations": 0,
+  "piles": [
+   [
+    "GER near 1031,344",
+    8
+   ],
+   [
+    "RAJ far 1438,487",
+    5
+   ],
+   [
+    "ITA near 1030,344",
+    4
+   ],
+   [
+    "POL near 1031,344",
+    4
+   ],
+   [
+    "DEI island 1665,638",
+    4
+   ]
+  ]
+ },
+ {
+  "seed": 2081,
+  "src": "1938@60",
+  "day": 62,
+  "formations": 772,
+  "states": {
+   "engaged": 136,
+   "retreat": 28,
+   "home": 0,
+   "aboard": 0,
+   "attack": 111,
+   "hold": 330,
+   "elsewhere": 0,
+   "noFront": 0,
+   "island": 27,
+   "near": 53,
+   "far": 87
+  },
+  "marching": 441,
+  "stalled": 38,
+  "flips": 255,
+  "walkIns": 84,
+  "nationsAtWar": 55,
+  "noFrontNations": 0,
+  "piles": [
+   [
+    "TUR far 1157,346",
+    3
+   ],
+   [
+    "SOV near 1170,325",
+    2
+   ],
+   [
+    "SOV near 1181,326",
+    2
+   ],
+   [
+    "CHI near 1675,354",
+    2
+   ],
+   [
+    "GER near 1140,254",
+    1
+   ]
+  ]
+ },
+ {
+  "seed": 2081,
+  "src": "1938@150",
+  "day": 152,
+  "formations": 655,
+  "states": {
+   "engaged": 27,
+   "retreat": 8,
+   "home": 3,
+   "aboard": 1,
+   "attack": 162,
+   "hold": 178,
+   "elsewhere": 0,
+   "noFront": 42,
+   "island": 23,
+   "near": 48,
+   "far": 163
+  },
+  "marching": 336,
+  "stalled": 23,
+  "flips": 114,
+  "walkIns": 78,
+  "nationsAtWar": 55,
+  "noFrontNations": 4,
+  "piles": [
+   [
+    "NSP noFront 973,376",
+    15
+   ],
+   [
+    "POL far 997,297",
+    12
+   ],
+   [
+    "NSP noFront 974,374",
+    12
+   ],
+   [
+    "SOV far 1176,240",
+    7
+   ],
+   [
+    "ITA near 1002,301",
+    7
+   ]
+  ]
+ },
+ {
+  "seed": 2081,
+  "src": "1938@300",
+  "day": 302,
+  "formations": 462,
+  "states": {
+   "engaged": 0,
+   "retreat": 1,
+   "home": 18,
+   "aboard": 0,
+   "attack": 24,
+   "hold": 252,
+   "elsewhere": 0,
+   "noFront": 52,
+   "island": 11,
+   "near": 13,
+   "far": 91
+  },
+  "marching": 276,
+  "stalled": 5,
+  "flips": 53,
+  "walkIns": 48,
+  "nationsAtWar": 50,
+  "noFrontNations": 25,
+  "piles": [
+   [
+    "NSP noFront 978,333",
+    34
+   ],
+   [
+    "ITA far 1079,328",
+    5
+   ],
+   [
+    "SOV far 1270,348",
+    4
+   ],
+   [
+    "GER far 997,298",
+    3
+   ],
+   [
+    "SOV far 1271,349",
+    3
+   ]
+  ]
+ },
+ {
+  "seed": 6421,
+  "src": "1938@60",
+  "day": 62,
+  "formations": 564,
+  "states": {
+   "engaged": 63,
+   "retreat": 18,
+   "home": 0,
+   "aboard": 1,
+   "attack": 149,
+   "hold": 231,
+   "elsewhere": 2,
+   "noFront": 0,
+   "island": 4,
+   "near": 32,
+   "far": 64
+  },
+  "marching": 382,
+  "stalled": 9,
+  "flips": 101,
+  "walkIns": 37,
+  "nationsAtWar": 25,
+  "noFrontNations": 0,
+  "piles": [
+   [
+    "SOV near 1150,305",
+    2
+   ],
+   [
+    "SOV near 1157,317",
+    2
+   ],
+   [
+    "POL far 1151,297",
+    2
+   ],
+   [
+    "GER far 1149,295",
+    1
+   ],
+   [
+    "GER near 1135,304",
+    1
+   ]
+  ]
+ },
+ {
+  "seed": 6421,
+  "src": "1938@150",
+  "day": 152,
+  "formations": 707,
+  "states": {
+   "engaged": 23,
+   "retreat": 8,
+   "home": 7,
+   "aboard": 0,
+   "attack": 143,
+   "hold": 333,
+   "elsewhere": 0,
+   "noFront": 14,
+   "island": 29,
+   "near": 39,
+   "far": 111
+  },
+  "marching": 474,
+  "stalled": 18,
+  "flips": 204,
+  "walkIns": 124,
+  "nationsAtWar": 63,
+  "noFrontNations": 4,
+  "piles": [
+   [
+    "ITA near 1080,306",
+    7
+   ],
+   [
+    "NSP noFront 978,375",
+    5
+   ],
+   [
+    "SOV far 1148,314",
+    4
+   ],
+   [
+    "NSP noFront 1013,334",
+    4
+   ],
+   [
+    "SOV near 1195,173",
+    3
+   ]
+  ]
+ },
+ {
+  "seed": 6421,
+  "src": "1938@300",
+  "day": 302,
+  "formations": 544,
+  "states": {
+   "engaged": 33,
+   "retreat": 8,
+   "home": 0,
+   "aboard": 0,
+   "attack": 80,
+   "hold": 224,
+   "elsewhere": 0,
+   "noFront": 40,
+   "island": 24,
+   "near": 38,
+   "far": 97
+  },
+  "marching": 304,
+  "stalled": 34,
+  "flips": 89,
+  "walkIns": 75,
+  "nationsAtWar": 60,
+  "noFrontNations": 5,
+  "piles": [
+   [
+    "NSP noFront 978,333",
+    32
+   ],
+   [
+    "ITA far 1034,338",
+    12
+   ],
+   [
+    "SOV near 1089,166",
+    8
+   ],
+   [
+    "POL far 1034,339",
+    7
+   ],
+   [
+    "ITA far 1040,337",
+    6
+   ]
+  ]
+ },
+ {
+  "seed": 7019,
+  "src": "1938@60",
+  "day": 62,
+  "formations": 672,
+  "states": {
+   "engaged": 72,
+   "retreat": 9,
+   "home": 0,
+   "aboard": 1,
+   "attack": 148,
+   "hold": 219,
+   "elsewhere": 2,
+   "noFront": 0,
+   "island": 26,
+   "near": 64,
+   "far": 131
+  },
+  "marching": 369,
+  "stalled": 10,
+  "flips": 79,
+  "walkIns": 29,
+  "nationsAtWar": 59,
+  "noFrontNations": 0,
+  "piles": [
+   [
+    "SOV near 1167,300",
+    4
+   ],
+   [
+    "SOV near 1186,304",
+    2
+   ],
+   [
+    "CHI near 1683,367",
+    2
+   ],
+   [
+    "NSP near 979,350",
+    2
+   ],
+   [
+    "REP near 977,343",
+    2
+   ]
+  ]
+ },
+ {
+  "seed": 7019,
+  "src": "1938@150",
+  "day": 152,
+  "formations": 663,
+  "states": {
+   "engaged": 9,
+   "retreat": 2,
+   "home": 2,
+   "aboard": 1,
+   "attack": 148,
+   "hold": 360,
+   "elsewhere": 10,
+   "noFront": 0,
+   "island": 25,
+   "near": 17,
+   "far": 89
+  },
+  "marching": 517,
+  "stalled": 37,
+  "flips": 142,
+  "walkIns": 102,
+  "nationsAtWar": 54,
+  "noFrontNations": 0,
+  "piles": [
+   [
+    "GER far 1162,297",
+    3
+   ],
+   [
+    "SOV far 1165,320",
+    3
+   ],
+   [
+    "JAP island 1819,385",
+    3
+   ],
+   [
+    "GER far 1177,269",
+    2
+   ],
+   [
+    "SOV far 1148,308",
+    2
+   ]
+  ]
+ },
+ {
+  "seed": 7019,
+  "src": "1938@300",
+  "day": 302,
+  "formations": 467,
+  "states": {
+   "engaged": 15,
+   "retreat": 3,
+   "home": 0,
+   "aboard": 1,
+   "attack": 88,
+   "hold": 290,
+   "elsewhere": 0,
+   "noFront": 0,
+   "island": 21,
+   "near": 11,
+   "far": 38
+  },
+  "marching": 378,
+  "stalled": 53,
+  "flips": 127,
+  "walkIns": 82,
+  "nationsAtWar": 59,
+  "noFrontNations": 0,
+  "piles": [
+   [
+    "RAJ far 1438,487",
+    9
+   ],
+   [
+    "ITA far 1222,503",
+    4
+   ],
+   [
+    "ITA far 1023,388",
+    3
+   ],
+   [
+    "ENG island 1023,275",
+    3
+   ],
+   [
+    "DEI island 1665,638",
+    3
+   ]
+  ]
+ }
+]

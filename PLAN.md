@@ -53,6 +53,43 @@ when taken up:
   sea), on 10 unseen seeds × 20 years; seed 6421's year 21 from the critic's save read (was 0 of 25
   samples), not a bar; a unit test per rule (red without); the pin's entry; `--profile`. Stop: two
   full re-measures flat, the bar is the user's (ADR-554).
+  In parts (each read on the critic's 48 saves, `critic/c11_seed*_y10.bin` and `_y20.bin`, for its
+  own figure, and for engaged land formations worldwide and per war, `tools/diag/warSides.ts`):
+    - [x] 7.49a Measured (`docs/evidence/7.49/measure.md`; `tools/diag/landStates.ts`,
+      `warSides.ts`, `armyGates.ts`, `noOnesCells.ts`, `stuckMarch.ts`): engaged per war 8.5 / 7.7 in
+      year 1 (6421, 7019), 0.07 at year 10 and 0.14 at year 20 (worldwide 0.34, 0.57); of the land
+      formations at war, engaged 6.7 % → 0.2 %, stranded on a landmass with no front of their
+      nation 3 % → 21–28 %, walk-ins 62 % → 95 % of the cells taken; armed wars (5 a side near the
+      front) 3–4 a world in year 1, 0.5 late. Four causes, b to e. No rule: the pin unchanged.
+    - [ ] 7.49b Strait crossings (measure §4.1): a land formation standing on a cell no nation
+      controls (Gibraltar, Bab-el-Mandeb, the Bosporus, the Øresund, the Palk Strait: no province)
+      is never ordered again (8011 year 10: 90 divisions at Gibraltar, no ask in 8 days). Traced
+      first: why its plan asks nothing (its class, the reach, the march that stopped). AT: land
+      formations of nations at war on such cells after 30 days of each of the 48 saves under 41
+      (411 at the saves; `noOnesCells.ts --days 30` on HEAD first, the before); a unit test (red
+      without); engaged worldwide and per war read; the ADR; the pin's entry; `--profile`.
+    - [ ] 7.49c The warship's saving with no army left (measure §4.2; ADR-575, ADR-579): at war
+      with a naval enemy, a nation with an army under its peacetime share saves for a warship
+      whatever its army (6421 year 20: the Soviet Union, one division, 2,407 gold, buys nothing
+      while Germany walks in). AT: on the 48 saves, nations at war with 3 formations or fewer
+      stopped at the month start by the warship's saving (`armyGates.ts`, "ship(navalFoe)" with no
+      order) 0 (10 and 11 at years 10 and 20); a unit test on the case (red without); the ADR
+      (amends ADR-575; ADR-578 a, the user's, kept: the floor against an enemy with no fleet);
+      the pin's entry.
+    - [ ] 7.49d The sea powers' home armies (measure §4.3): of the land formations at war, those
+      on a landmass with no front of their nation 21–28 % late against 3 % in year 1, most at a
+      capital (7019 year 10: Britain 85 divisions at London, an overseas war, two transport
+      groups; Japan at Tokyo, the United States at Washington). Measured first: per such nation,
+      the invasion AI's gate each day (`planLanding`'s), its transports' room and how many it
+      lands a month. AT: the island share on the 48 saves after 60 days under 10 % (21.4 %, 27.7 %
+      at the saves); a unit test (red without); engaged worldwide and per war read; the ADR; the
+      pin's entry; `--profile`.
+    - [ ] 7.49e The defenders' purse (measure §4.4): late, nations at war of income 150–500 hold
+      4.5–4.8 formations, 91–98 of 124–127 stopped by the price (1,001) and RESERVE_MONTHS (3) of
+      income kept back. Measured first: what such a nation raises in a year with the reserve at war
+      cut while its army is under its peacetime share. AT: the land formations of the band at war
+      after 180 days of each of the 48 saves at least 1.5 × those of HEAD's same run; a unit test
+      (red without); the ADR; the pin's entry.
 - [ ] 7.50 The H-bomb at the floor on a city of a million, and the spot struck again (R11-B2): seed
   1129, 14 March 1954, the Soviet Union on Greenock, a hydrogen bomb, 1,105,514 dead (1,071,000
   civilians) at utility 0.026, against counters of 1.3k–7.5k men; PLAN 7.38's bar ("no burst under

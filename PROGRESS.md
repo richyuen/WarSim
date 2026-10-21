@@ -21047,3 +21047,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   run 11's cases (naval 7; the bars as filed, the 3613 case run 11 did not repeat dropped); the header's
   sweep line says sweeps run again in Phase 7; 7.49's and run 11's lines wrapped.
 - **Next:** PLAN 7.49.
+
+## 2026-10-21 — PLAN 7.49a: the land war after year 1 measured; four causes filed (b–e)
+
+- **Measured** on the critic's 48 saves (sim code unchanged since `dd3b730`) and year 1 of four seeds
+  (`docs/evidence/7.49/measure.md`): engaged land formations per war 8.5 / 7.7 in year 1, 0.07 / 0.14
+  at years 10 / 20 (worldwide 54 → 0.34 / 0.57). Of the formations at war: engaged 6.7 % → 0.2 %;
+  on a landmass with no front of their nation 3 % → 21–28 %; `far` and `hold` the same early and
+  late (not causes). Cells taken with no defender within 6 cells 62 % → 95 %. Wars with 5 a side near
+  the front 3–4 a world in year 1, 0.5 late; their formations stand over 15 cells from any enemy.
+- **Causes, each a part:** 7.49b strait cells no one holds (411 formations at war stuck there on the
+  48 saves; 90 at Gibraltar on 8011, never asked again); 7.49c the warship's saving with no army left
+  (6421's Soviet Union, ADR-575); 7.49d the sea powers' home armies at their capitals (Britain 85 at
+  London on 7019); 7.49e the defenders' purse (price 1,001 + 3 months' income kept back).
+- **Not a part:** late wars are declared on the weak by design (`strategic.ts`, ~1.5 × the target
+  before the bonuses); if the parts leave the per-war bar far off, it is the user's (ADR-554).
+- New diag tools: `landStates.ts`, `warSides.ts`, `armyGates.ts`, `noOnesCells.ts`, `stuckMarch.ts`.
+  No rule; the pin unchanged. Specs by hand: none (no UI). 7.49's commits: 1 of 20.
+- **Next:** PLAN 7.49b.
