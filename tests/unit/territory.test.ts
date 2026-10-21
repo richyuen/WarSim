@@ -8,7 +8,8 @@ import { Sim } from '../../src/sim/sim';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import { frontierOf, HOLD_TICKS, territorySystem } from '../../src/sim/systems/territory';
 import { Wars } from '../../src/sim/wars';
-import { laneOf, type World } from '../../src/sim/world';
+import { laneOf, navOf, type World } from '../../src/sim/world';
+import { acrossOf } from '../../src/sim/nav/crossings';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
 
@@ -148,12 +149,14 @@ describe('territory pressure and fronts (PLAN 1.14)', () => {
     w.frontier = null;
     const rebuilt = [...frontierOf(w)].sort((a, b) => a - b);
     expect(incremental).toEqual(rebuilt);
-    // The rebuild scan is the definition: a held cell with a 4-neighbour its holder is at war with.
+    // The rebuild scan is the definition: a held cell with a 4-neighbour its holder is at war with,
+    // or on a crossing's shore another shore of it (PLAN 7.49b1, ADR-588).
     const ctl = w.cells.controller;
+    const across = acrossOf(navOf(w).grid);
     const byRule: number[] = [];
     for (let c = 0; c < W * H; c++) {
       const x = c % W;
-      const nb = [c - W, c + W, x > 0 ? c - 1 : c + W - 1, x < W - 1 ? c + 1 : c - W + 1].filter((n) => n >= 0 && n < W * H);
+      const nb = [c - W, c + W, x > 0 ? c - 1 : c + W - 1, x < W - 1 ? c + 1 : c - W + 1, ...(across.get(c) ?? [])].filter((n) => n >= 0 && n < W * H);
       if (ctl[c] !== 0 && nb.some((n) => ctl[n] !== 0 && w.wars.atWar(ctl[c]!, ctl[n]!))) byRule.push(c);
     }
     expect(rebuilt).toEqual(byRule);

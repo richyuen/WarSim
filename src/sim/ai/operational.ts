@@ -63,8 +63,8 @@
  */
 import { atAnyPort } from '../systems/amphibious';
 import { orderMove, passageOf, snapTarget, wasLong } from '../systems/movement';
-import { frontierOf, GARRISON, PRESSURE_RADIUS } from '../systems/territory';
-import { neighbours4, pocketOf, type Passage } from '../nav/grid';
+import { frontierOf, frontNeighbours, GARRISON, PRESSURE_RADIUS } from '../systems/territory';
+import { pocketOf, type Passage } from '../nav/grid';
 import { CORRIDOR_REFUSAL, wideJoined, wideNode, type CorridorRefusal } from '../nav/provinceGraph';
 import { navOf, type World } from '../world';
 
@@ -1196,14 +1196,14 @@ function holdCell(s: Pick<Sector, 'cells' | 'cx' | 'cy'>, w: number): number {
   return best;
 }
 
-/** The enemy cell touching the sector's front nearest its centre (lowest id on ties). */
+/** The enemy cell touching the sector's front nearest its centre (lowest id on ties); over a crossing too (`frontNeighbours`). */
 function attackCell(world: World, s: Sector, enemy: (m: number) => boolean, nb: number[]): number {
-  const { w, h, controller } = world.cells;
+  const { w, controller } = world.cells;
   let best = -1;
   let bd = Infinity;
   for (const cells of s.cells) {
     for (const c of cells) {
-      for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
+      for (const k of frontNeighbours(world, c, nb)) {
         if (!enemy(controller[k]!)) continue;
         const ex = (k % w) + 0.5 - s.cx;
         const ey = Math.floor(k / w) + 0.5 - s.cy;

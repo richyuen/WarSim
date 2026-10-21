@@ -12,7 +12,9 @@
  * into the cells within R cells of it (over the east and west edges only on a map that loops,
  * PLAN 3.12Rsc). A frontier cell C controlled by D is contested by each
  * nation A at war with D that controls a 4-neighbour of C (the connectivity rule: control spreads
- * cell by cell from held land and can never jump past a line). A's pressure on C, divided by C's
+ * cell by cell from held land and can never jump past a line). On the shore of a crossing (a
+ * strait's walkable lane, of no province and no holder) the other shores of it count as
+ * 4-neighbours (`frontNeighbours`, PLAN 7.49b1, ADR-588): the front steps over the strait. A's pressure on C, divided by C's
  * terrain defence, must exceed D's bloc pressure + GARRISON for HOLD_TICKS consecutive hours
  * (`cells.flip`, saved); C then flips to the strongest such A (lowest id on ties).
  *
@@ -31,9 +33,10 @@
  * the two sides own).
  */
 import terrainJson from '../../../data/terrain.json' with { type: 'json' };
+import { acrossOf } from '../nav/crossings';
 import { neighbours4 } from '../nav/grid';
 import { CORRIDOR_PRESSURE, CORRIDOR_RATE, inCorridor } from './majorBattles';
-import type { World } from '../world';
+import { navOf, type World } from '../world';
 import { blocOf } from './supply';
 
 export const PRESSURE_RADIUS = 2;
@@ -53,9 +56,24 @@ export function holdHours(world: World): number {
 const BLOCK_SHIFT = 3;
 const TERRAIN_DEF = terrainJson.terrain.map((t) => t.defense);
 
-function neighbours(world: World, c: number, out: number[]): number[] {
-  return neighbours4(c, world.cells.w, world.cells.h, world.settings.loopingMap, out);
+/**
+ * The cells that touch `c` for the fronts (PLAN 7.49b1, ADR-588): its 4-neighbours, and on the
+ * shore of a crossing the other shores of it (`acrossOf`), after them in ascending order.
+ */
+export function frontNeighbours(world: World, c: number, out: number[]): number[] {
+  neighbours4(c, world.cells.w, world.cells.h, world.settings.loopingMap, out);
+  const over = acrossOf(navOf(world).grid).get(c);
+  if (over) {
+    const four = out.length;
+    for (const k of over) {
+      let dup = false;
+      for (let i = 0; i < four; i++) if (out[i] === k) dup = true;
+      if (!dup) out.push(k);
+    }
+  }
+  return out;
 }
+const neighbours = frontNeighbours;
 
 const scratch: number[] = [];
 function onFrontier(world: World, c: number): boolean {
@@ -107,6 +125,33 @@ export function frontierOf(world: World): Set<number> {
       const b = ctl[k]!;
       return b !== a && b !== 0 && wars.atWar(a, b);
     };
+    // A shore's other shores (PLAN 7.49b1, ADR-588). A shore whose hostile neighbour is over the
+    // crossing alone is not on the border index: the shores are walked beside its cells, so that
+    // the set is in ascending order still.
+    const across = acrossOf(navOf(world).grid);
+    const shores = [...across.keys()];
+    let si = 0;
+    const overHostile = (a: number, c: number): boolean => {
+      const over = across.get(c);
+      if (over) for (const k of over) if (hostile(a, k)) return true;
+      return false;
+    };
+    const add = (c: number): void => {
+      const x = c % w;
+      f.add(c);
+      mask[c] = 1;
+      const block = ((c - x) / w >> BLOCK_SHIFT) * bw + (x >> BLOCK_SHIFT);
+      blocks[block] = blocks[block]! + 1;
+    };
+    /** The shores before `c` that are off the border index (a cell off it has no hostile 4-neighbour). */
+    const shoresBefore = (c: number): void => {
+      for (; si < shores.length && shores[si]! < c; si++) {
+        const k = shores[si]!;
+        const a = ctl[k]!;
+        if (a !== 0 && fighting[a] === 1 && overHostile(a, k)) add(k);
+      }
+      if (si < shores.length && shores[si] === c) si++;
+    };
     const bits = world.borderBits();
     for (let i = 0; i < bits.length; i++) {
       // The word's cells in ascending order: its lowest set bit first.
@@ -114,6 +159,7 @@ export function frontierOf(world: World): Set<number> {
         const low = word & -word;
         word ^= low;
         const c = (i << 5) + 31 - Math.clz32(low);
+        if (si < shores.length && shores[si]! <= c) shoresBefore(c);
         const a = ctl[c]!;
         if (fighting[a] !== 1) continue;
         const x = c % w;
@@ -121,15 +167,13 @@ export function frontierOf(world: World): Set<number> {
           (c >= w && hostile(a, c - w)) ||
           (c < n - w && hostile(a, c + w)) ||
           (x > 0 ? hostile(a, c - 1) : wrap && hostile(a, c + w - 1)) ||
-          (x < w - 1 ? hostile(a, c + 1) : wrap && hostile(a, c - w + 1))
-        ) {
-          f.add(c);
-          mask[c] = 1;
-          const block = ((c - x) / w >> BLOCK_SHIFT) * bw + (x >> BLOCK_SHIFT);
-          blocks[block] = blocks[block]! + 1;
-        }
+          (x < w - 1 ? hostile(a, c + 1) : wrap && hostile(a, c - w + 1)) ||
+          overHostile(a, c)
+        )
+          add(c);
       }
     }
+    shoresBefore(n);
   }
   // Uncontested cells carry no hold progress; what is left is on the frontier, in ascending order
   // as the scan gathered it (PLAN 7.1h: gathered here, not by another scan of the grid).

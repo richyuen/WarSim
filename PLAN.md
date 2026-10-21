@@ -68,6 +68,17 @@ when taken up:
       formations of nations at war on such cells after 30 days of each of the 48 saves under 41
       (411 at the saves; `noOnesCells.ts --days 30` on HEAD first, the before); a unit test (red
       without); engaged worldwide and per war read; the ADR; the pin's entry; `--profile`.
+      Traced (`docs/evidence/7.49/b.md`): two causes, a part each; the bar read after both.
+      - [x] 7.49b1 The front over a strait: a march over a crossing waits before the far shore's
+        enemy cell for a flip that no held cell next to it can make (the connectivity rule; 6421
+        year 10: 162 at Gibraltar, Italy's shore behind them). The shores of a crossing count as
+        neighbours for the fronts. AT: `noOnesCells.ts --days 30` on the 48 saves under 140 (398 on
+        HEAD, about 280 of them on the march); a unit test (red without); engaged read; ADR-588; the pin.
+      - [ ] 7.49b2 Shut in on a crossing: a formation on a crossing whose shores are all closed to
+        it (8011 year 10: 90 at Gibraltar between Nationalist Spain and #108, a pocket of one cell
+        that reaches no sector) is never ordered and never sent home. It marches home as from a
+        stranger's land. AT: the 48 saves' count after 30 days under 41 (7.49b's bar); a unit test
+        (red without); engaged read; the ADR; the pin; `--profile`.
     - [ ] 7.49c The warship's saving with no army left (measure §4.2; ADR-575, ADR-579): at war
       with a naval enemy, a nation with an army under its peacetime share saves for a warship
       whatever its army (6421 year 20: the Soviet Union, one division, 2,407 gold, buys nothing

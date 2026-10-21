@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-588 · 2026-10-21 · accepted — The front over a strait: the shores of a crossing are neighbours for the fronts (PLAN 7.49b1)
+
+- **Context.** `docs/evidence/7.49/b.md`. A crossing (a strait's walkable lane, `straits.json`) has
+  no province and no holder. A march over it waits before the far shore's enemy cell until that
+  cell flips, and a cell is contested only by a nation holding a 4-neighbour of it: no one does, so
+  the flip never comes. On the 48 saves of run 11, 398 land formations of nations at war stood on
+  such cells after 30 days, about 280 of them on the march (6421 year 10: 162 at Gibraltar, Italy
+  holding the shore behind them, at war with French Morocco ahead).
+- **Decision.** The shores of a body of crossing cells (land cells 8-adjacent to it, `nav/crossings.ts`,
+  derived from the terrain once a grid) count as neighbours of each other for the fronts
+  (`frontNeighbours` in `territory.ts`): the frontier set and its rebuild (the shores off the border
+  index walked beside it in ascending order), the contest of a cell, the upkeep after a flip; and
+  the operational AI's attack cell of a sector. Pressure is as before (by distance: a formation on
+  the crossing presses the far shore).
+- **Not done:** a holder for the crossing cells (the count would fall to nothing with no one moved),
+  or a contest from a crossing that a formation stands on (an army cut off on it would take ground
+  with no land behind it).
+- **Consequences.** The count 398 → 116; what is left is shut in (PLAN 7.49b2). Engaged land
+  formations per war at years 10 / 20, 30 days of each save: 0.115 / 0.136 → 0.115 / 0.144 (the
+  freed armies mostly walk into empty land). Defenders may cross the other way as well.
+- **Pin.** a1a50bcc → 191b0cd5.
+
 ### ADR-587 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — PLAN 7.53c missed: rivalry moves no armed war; what next for 7.53
 
 - **Context.** `docs/evidence/7.53/c.md`. Rivalry (RIVAL 1, then 2 with one war more than MAX_WARS

@@ -1262,7 +1262,9 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
 - **Pressure field.** Each land formation projects control pressure into cells within
   `r = f(type, strength, org)` km. Pressure is weighted by strength × org × terrain-defence
   inverse × supply. Only cells in the **frontier set** are updated: cells whose
-  controller differs from a 4-neighbour at war with it, plus cells inside the radius of
+  controller differs from a 4-neighbour at war with it (on the shore of a crossing, a strait's
+  walkable lane of no province and no holder, the other shores of it count as 4-neighbours, so a
+  front steps over the strait: PLAN 7.49b1, ADR-588), plus cells inside the radius of
   formations not at peace. Full-grid scans are forbidden in the hot loop.
 - A cell flips to the attacker when the attacker's pressure exceeds the defender's
   pressure + garrison for `holdTicks`. Flips spread like AoC fronts, pixel by pixel, but

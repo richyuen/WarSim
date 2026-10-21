@@ -21123,3 +21123,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - 7.53c and 7.53 closed, not done; 7.53b (rivals apart, ADR-586) stays; rivalry not landed
   (`docs/evidence/7.53/c-candidate.diff`). BLOCKERS entry resolved. `plan:archive` moved 7.53.
 - **Next:** PLAN 7.49b (strait crossings).
+
+## 2026-10-21 — PLAN 7.49b1: the front over a strait (ADR-588)
+
+- **Traced** (`docs/evidence/7.49/b.md`): of the 398 land formations of nations at war on a no
+  one's cell after 30 days of the 48 saves, about 280 march and wait before the far shore's enemy
+  cell, which no one can contest (the crossing has no holder); the rest are shut in between
+  neutrals (b2). 7.49b split in two.
+- **Rule** (`nav/crossings.ts`, `territory.ts` `frontNeighbours`, `operational.ts` `attackCell`):
+  the shores of a crossing count as neighbours for the fronts. SPEC §4.
+- **AT:** 398 → 116 (bar under 140): met. Engaged per war at years 10 / 20: 0.115 / 0.136 →
+  0.115 / 0.144.
+- **Test:** `straitFront1938.test.ts` (3 of 4 red with HEAD's `territory.ts`). Pin a1a50bcc →
+  191b0cd5. Specs by hand: none (no UI).
+- **Next:** PLAN 7.49b2 (shut in on a crossing).
