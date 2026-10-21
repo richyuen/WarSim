@@ -1978,6 +1978,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     ADR-572): a strike back weighs it too, its bonus as it was (PLAN 7.38c, ADR-568). A holder of the hydrogen bomb weighs each place at both yields (PLAN 7.38b,
     ADR-567) and uses the yield of the higher utility, each with its own dead (PLAN 7.44,
     ADR-571); a tie goes to fission.
+  - The floor: a strike is decided above NUKE_FLOOR (0.025, PLAN 7.25a), and above 0.1 for each
+    million people it is expected to kill (× the chance through), to 0.1 at a million (PLAN 7.50a,
+    ADR-599: in extreme desperation gain and costs of 1.5 to 1.9 each made a million dead a near-tie
+    at 0.026). Each yield is weighed by its utility above its own floor.
 - **Effects**: blast radius (by yield) kills elements by distance falloff and
   destroys city industry and population. A thermonuclear warhead is THERMO_YIELD (50) fission
   ones (PLAN 7.20, ADR-495): its blast and its fallout plume the yield's cube root wider and

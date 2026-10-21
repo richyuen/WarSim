@@ -200,6 +200,23 @@ when taken up:
   seeds × 30 years (none of them 7.38's or 7.45b's): no burst under 0.1 kills a million, no place
   struck three times in a year; a unit test per rule (red without); the pin's entry. Stop: two full
   re-measures flat, the bar is the user's (ADR-554).
+  Measured (`docs/evidence/7.50/measure.md`, `nukeToll.ts` on a worktree of `dd3b730`, whose
+  `nuclear.ts` is HEAD's): Greenock's gain 1.771 against costs 1.744, the million dead 0.107 of them
+  (a flat DEAD_COST rise to close it, ~0.6 a million, sinks ADR-572's kept case); 2081's spot is
+  ADR-569's "new value" (8,953 men found, 11,073 there again), each a strike back. A part each; the
+  10 unseen seeds read after both (`nukeToll.ts`'s `thriceInYear`, new).
+    - [x] 7.50a The dead's floor: the floor a strike passes rises with its expected dead, 0.1 a
+      million to 0.1 (7.38's bar), never under NUKE_FLOOR; each yield weighed by its utility above
+      its own floor. AT: the
+      Greenock strike, replayed from `c11_seed1129_y17s.bin`, is not decided (was 0.026, 1,105,514
+      dead); ADR-572's kept case still over its floor; a unit test (red without); the ADR; the pin.
+      Rule in (ADR-599, `docs/evidence/7.50/a-toll-1129-rule.json`): day 5916 not decided; Greenock
+      taken on day 5962 at 0.101 for the same 1,105,514 (over the bar by 0.001); ADR-572's case at
+      0.237 over its 0.1. Pin unchanged.
+    - [ ] 7.50b The year's restrike: within a year of a burst there, a place of massed men struck by
+      the side in the war is weighed only with twice the men the burst found (ADR-569 after the
+      year). AT: 2081's spot not struck a third time (replayed from a checkpoint before day 9679);
+      a unit test (red without); the ADR; the pin; then 7.50's 10 unseen seeds.
 
 - [ ] 7.41 The war at sea seen (naval 7, needs 8, beyond 7.39; moved before 7.5 by ADR-577): the
   sea war runs all 30 years now (13.17 battles a world-year after year 1), but the player cannot

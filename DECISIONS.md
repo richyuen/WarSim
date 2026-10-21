@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-599 · 2026-10-21 · accepted — The floor a nuclear strike passes rises with its dead, to 0.1 at a million (PLAN 7.50a)
+
+- **Context** (critic R11-B2, `docs/evidence/7.50/measure.md`). On the critic's seed 1129, 14 March
+  1954, the Soviet Union H-bombed Greenock for 1,105,514 dead at a utility of 0.026, PLAN 7.38's bar
+  ("no burst under 0.1 that kills a million") missed on an unseen seed. In extreme desperation under
+  MAD its gain was 1.771 and its costs 1.744: the utility is the small difference of two large sums,
+  and the dead's cost (DEAD_COST, 0.1 a million at its doctrine) is 0.107 of them. A flat rise of
+  DEAD_COST to close that gap is about 0.6 a million, which sinks the strike back ADR-572 kept
+  (4877: the Soviet Union answers Germany, 2,474,000 at 0.237) and moves every row of 7.45b's table.
+- **Decision.** `strikeFloor(people, through)`: a strike is decided only above NUKE_FLOOR and above
+  DEAD_FLOOR (0.1) for each million it is expected to kill (× the chance through), to DEAD_FLOOR at a
+  million. The decision (`nukeDecisions`) and the restraint (`restraintOf`: a new case of its reason
+  `dead`, over NUKE_FLOOR, under its dead's floor) read it; each yield of a place is weighed by its
+  utility above its own floor (`byUtility`), so a hydrogen bomb whose dead raise its floor over its
+  utility gives way to a fission one that passes.
+- **Why a floor, and why it stops at a million.** A strike that kills a million is not taken on a
+  near-tie; that is 7.38's bar, now a rule. Past a million the dead's cost in the utility grows on
+  (0.1 a million, more at a low doctrine), so the floor need not: a floor of the dead's whole cost
+  again would refuse ADR-572's case (floor 0.247 against 0.237).
+- **Consequences.** The critic's case, replayed on a worktree of `dd3b730` (whose `nuclear.ts` is
+  HEAD's) from `c11_seed1129_y17s.bin` (`docs/evidence/7.50/a-toll-1129-rule.json`): day 5916's strike is not
+  decided (fission there −0.50); the Soviet Union strikes on, and on day 5962, its desperation higher,
+  takes Greenock at 0.101 for the same 1,105,514: over the bar, by 0.001. Ireland's 536,000 goes at
+  0.099 (floor 0.054), Germany's 695,000 at 0.160. The year's bursts: 22 decisions (20 before), none
+  under 0.1 that kills a million (1 before). Seed 99's year has no warhead: the pin unchanged
+  (63d0cfd9). Test: `nukeDeadFloor1938.test.ts`.
+
 ### ADR-598 · 2026-10-21 · accepted — A transport group with room under a division's does not bar the order of another (PLAN 7.55; amends ADR-518)
 
 - **Context** (`docs/evidence/7.55/measure.md`). ADR-518's order (`economic.ts` 2c, `wantsTransport`)

@@ -113,7 +113,8 @@
  * enemy that can threaten it, `threatens`: a warhead, THREAT_SHARE of its income (PLAN 6.12f), its
  * overlord's only while the overlord fights beside it (PLAN 7.37d), or
  * land forces near its capital),
- * and strikes the one of most utility above NUKE_FLOOR (PLAN 7.25a; above 0 before) (by missile when it knows them and one reaches, else
+ * and strikes the one of most utility above its floor (`strikeFloor`: NUKE_FLOOR, PLAN 7.25a, above 0
+ * before; higher with the people it is expected to kill, PLAN 7.50a) (by missile when it knows them and one reaches, else
  * by bomber, a free one or one retasked from a sortie; one out of reach, the next), once a day at
  * most. The decision is told (`NukeDecided`).
  * Retaliation: a burst on a nation's land (its owner's, not the striker's) gives it a grievance
@@ -633,6 +634,23 @@ export const CAPITAL_THREAT_KM = 150;
  * and France's, 0.035 to 0.12); 9 of 172 decisions of seeds 1 to 10 x 30 years at or under it.
  */
 export const NUKE_FLOOR = 0.025;
+/**
+ * The floor a strike passes rises with the people it is expected to kill (PLAN 7.50a, critic
+ * R11-B2): DEAD_FLOOR for each million, to DEAD_FLOOR at a million, never under NUKE_FLOOR
+ * (`strikeFloor`). In extreme desperation a strike's utility is the small difference of a gain and
+ * costs of 1.5 to 1.9 each, and the dead's cost (DEAD_COST a million) a small part of them: on the
+ * critic's seed 1129 the Soviet Union H-bombed Greenock for 1,105,514 dead at 0.026, its gain 1.771
+ * against costs of 1.744 (`docs/evidence/7.50/measure.md`). A strike that kills a million is not
+ * taken on a near-tie (7.38's bar: no burst under 0.1 that kills a million). The floor stops at a
+ * million: past it the dead's cost in the utility grows on, and the strike back of ADR-572 (2.5
+ * million at 0.237) is weighed by it as before.
+ */
+export const DEAD_FLOOR = 0.1;
+
+/** The utility a strike of `people` expected dead must pass, the chance through `through` (PLAN 7.50a): see DEAD_FLOOR. */
+export function strikeFloor(people: number, through: number): number {
+  return Math.max(NUKE_FLOOR, DEAD_FLOOR * Math.min(1, (through * people) / 1_000_000));
+}
 export const RETALIATION_WEIGHT = 0.8;
 export const RETALIATION_FULL = 5;
 export const RETALIATION_BONUS = 1;
@@ -870,10 +888,11 @@ type YieldScore = (value: number, through: number, people: number) => number;
 /**
  * The yield's score (PLAN 7.44): the strike's utility with the war's inputs, MAD's cap left off (the
  * cap is min(0, u): the yield of the higher utility is the same, and under the cap its raw utility
- * still tells the better yield, as `restraintOf` reads it).
+ * still tells the better yield, as `restraintOf` reads it); above its own floor (PLAN 7.50a,
+ * `strikeFloor`): a yield whose dead raise the floor over its utility gives way to one that passes.
  */
 function byUtility(shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'>): YieldScore {
-  return (value, through, people) => nuclearUtility({ targetValue: value, through, people, ...shared, mad: false });
+  return (value, through, people) => nuclearUtility({ targetValue: value, through, people, ...shared, mad: false }) - strikeFloor(people, through);
 }
 
 /**
@@ -1417,15 +1436,16 @@ function strikeStopped(world: World, l: NukeLaunch): void {
  * - `paused`: its side launched within STRIKE_GAP_DAYS and waits for the answer (`strikePaused`).
  * - `noThreat`: no enemy that can threaten it (`aimOf`): none is struck first.
  * - `noPlace`: no fair place (`nukeTargets`): nothing within FRONT_KM, or struck lately.
- * - `mad`: a strike worth more than NUKE_FLOOR but for the MAD cap; `by`, the enemy whose answer.
+ * - `mad`: a strike worth more than its floor (`strikeFloor`) but for the MAD cap; `by`, the enemy whose answer.
+ * - `dead` (PLAN 7.50a): worth more than NUKE_FLOOR, but not the floor the people it would kill raise.
  * - `deterred`, `alliance`, `outrage`, `taboo`: worth more than NUKE_FLOOR as a gain, but for that
- *   cost, the largest of them (the strike back weighed: `by`, the enemy whose answer).
+ *   cost, the largest of them (the strike back weighed: `by`, the enemy whose answer); `dead` too.
  * - `noValue`, `notDesperate`, `doctrine`: the gain alone (value × desperation × doctrine) is at most
  *   NUKE_FLOOR; the reason its factor least of its full (value 1, desperation 1, doctrine 1).
  * - `noMeans`, `outOfRange`: a strike over NUKE_FLOOR it cannot put down (PLAN 7.37f: intent
  *   without means, not restraint): no means at all (`canDeliver` false: no missile, no strategic
  *   bomber with a base), or means none of which reaches the place (`reaches`).
- * - `strikes`: a strike over NUKE_FLOOR in reach (decided today unless a launch was refused).
+ * - `strikes`: a strike over its floor in reach (decided today unless a launch was refused).
  * With them the best place's utility (`u`, MAD's cap in it; −Infinity with none) and its parts.
  */
 export type RestraintReason = 'none' | 'puppet' | 'aiOff' | 'nukesOff' | 'avenging' | 'paused' | 'noThreat' | 'noPlace' | 'mad' | 'deterred' | 'alliance' | 'outrage' | 'taboo' | 'dead' | 'noValue' | 'notDesperate' | 'doctrine' | 'noMeans' | 'outOfRange' | 'strikes';
@@ -1484,21 +1504,26 @@ export function restraintOf(world: World, n: number, war: War, side: number, ind
   if (!r.shared) return { ...out, reason: 'noThreat' };
   if (r.places.length === 0) return { ...out, reason: 'noPlace' };
   const i = r.shared;
-  // The best place as the decision ranks it (MAD's cap in it); its raw utility breaks ties.
+  // The best place as the decision ranks it (MAD's cap in it): of those over their floor (PLAN 7.50a)
+  // if any, the most utility; its raw utility breaks ties.
   let best = r.places[0]!;
   let bu = -Infinity;
   let braw = -Infinity;
+  let bover = false;
   let reach = false;
   for (const p of r.places) {
     const u = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...i });
     const raw = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...i, mad: false });
-    if (u > NUKE_FLOOR && reaches(world, n, p.x, p.y)) reach = true;
-    if (u > bu || (u === bu && raw > braw)) {
+    const over = u > strikeFloor(p.people, p.through);
+    if (over && reaches(world, n, p.x, p.y)) reach = true;
+    if ((over && !bover) || (over === bover && (u > bu || (u === bu && raw > braw)))) {
       bu = u;
       braw = raw;
+      bover = over;
       best = p;
     }
   }
+  const floor = strikeFloor(best.people, best.through);
   const t = best.through;
   Object.assign(out, {
     u: bu,
@@ -1516,8 +1541,10 @@ export function restraintOf(world: World, n: number, war: War, side: number, ind
     x: best.x,
     y: best.y,
   });
-  if (bu > NUKE_FLOOR) return { ...out, reason: reach ? 'strikes' : canDeliver(world, n) ? 'outOfRange' : 'noMeans' };
-  if (braw > NUKE_FLOOR) return { ...out, reason: 'mad', by: deterrerOf(world, war, side) };
+  if (bu > floor) return { ...out, reason: reach ? 'strikes' : canDeliver(world, n) ? 'outOfRange' : 'noMeans' };
+  if (braw > floor) return { ...out, reason: 'mad', by: deterrerOf(world, war, side) };
+  // Over NUKE_FLOOR, under the floor its dead raise (PLAN 7.50a).
+  if (braw > NUKE_FLOOR) return { ...out, reason: 'dead' };
   if (out.gain > NUKE_FLOOR) {
     const costs: [RestraintReason, number][] = [['deterred', out.retaliation], ['alliance', out.alliance], ['outrage', out.outrage], ['taboo', out.taboo], ['dead', out.dead]];
     costs.sort((a, b) => b[1] - a[1]);
@@ -1549,7 +1576,7 @@ function nukeDecisions(world: World): void {
       let resolved: boolean | null = null;
       for (const { x, y, value, through, yieldN, people } of places) {
         const u = nuclearUtility({ targetValue: value, through, people, ...shared });
-        if (u <= NUKE_FLOOR) continue;
+        if (u <= strikeFloor(people, through)) continue;
         if (resolved === null) {
           const own = desperationOf(world, n, war, side);
           resolved = !own.extreme && shared.desperation > own.desperation;

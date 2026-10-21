@@ -12,6 +12,9 @@
  * `resolveStrikes` of before the hour put back (PLAN 7.45b): after it the resolve is spent, and each
  * yield's score, and so the yield and value read, were the war's without it.
  *
+ * PLAN 7.50: `thriceInYear`, the bursts with two others within a hydrogen bomb's blast radius in the
+ * 365 days before them (critic R11-B2: seed 2081's Germany struck one spot three times in 184 days).
+ *
  * Usage: npx tsx tools/diag/nukeToll.ts <seed> <years> [from.bin | new] [out.json] [saveTicks]
  * `saveTicks`: comma-separated ticks; a checkpoint is saved 48 hours before each, to
  * `.cache/nukeToll_<seed>_<tick>.bin` (a named case's A/B from a state just before it).
@@ -236,6 +239,10 @@ const lowMillion = decided.filter((r) => (r.u as number) < 0.1 && ((r.toll as { 
 const restruck = decided.filter((r) => ((r.beforeSameWar as number) ?? 0) > 0);
 // A thermonuclear burst where a fission one's place would have been worth as much.
 const thermoNeedless = decided.filter((r) => (r.toll as { yieldN: number } | undefined)?.yieldN === 2 && r.fissionCovers === true);
-const bars = { decided: decided.length, floor: NUKE_FLOOR, lowUtilityMillion: lowMillion.length, restruckSameWar: restruck.length, thermoWhereFissionCovers: thermoNeedless.length };
-writeFileSync(out, JSON.stringify({ seed, years, from, bars, rows }, null, 1));
+// PLAN 7.50: a place struck a third time within a year, any striker (the bursts, within a hydrogen
+// bomb's blast radius of the place, of the 365 days before it).
+const thermoKm = blastRadius(2);
+const thriceInYear = bursts.filter((b) => bursts.filter((e) => e !== b && e.day < b.day && e.day >= b.day - 365 && seaKm(w, b.x, b.y, e.x, e.y) <= thermoKm).length >= 2).map((b) => ({ day: b.day, by: b.by, at: [b.x, b.y], dead: b.dead }));
+const bars = { decided: decided.length, floor: NUKE_FLOOR, lowUtilityMillion: lowMillion.length, restruckSameWar: restruck.length, thermoWhereFissionCovers: thermoNeedless.length, thriceInYear: thriceInYear.length };
+writeFileSync(out, JSON.stringify({ seed, years, from, bars, thriceInYear, rows }, null, 1));
 process.stderr.write(`done: ${rows.length} decisions -> ${out} ${JSON.stringify(bars)}\n`);

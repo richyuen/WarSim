@@ -21300,3 +21300,23 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `navyBudget1938.test.ts` (red without: Sweden ordered a destroyer flotilla). Specs by hand:
   none (no UI).
 - **Next:** PLAN 7.50 (the H-bomb at the floor on a city).
+
+## 2026-10-21 — PLAN 7.50a: the dead's floor (ADR-599)
+
+- **Measured first** (`docs/evidence/7.50/measure.md`, `nukeToll.ts` on a worktree of the critic's
+  `dd3b730`, whose `nuclear.ts` is HEAD's): 1129's Greenock (1,105,514 dead at 0.026) is a near-tie
+  of a gain of 1.771 and costs of 1.744 in extreme desperation, its million dead 0.107 of them; a flat
+  DEAD_COST rise to close it (~0.6 a million) sinks ADR-572's kept case. 2081's spot struck three times
+  is ADR-569's "new value" each time (8,953 men found, 11,073 there again), each a strike back. A
+  part each. `nukeToll.ts` counts `thriceInYear` now (7.50's second bar).
+- **Rule** (`nuclear.ts` `strikeFloor`): the floor a strike passes is NUKE_FLOOR, or DEAD_FLOOR (0.1)
+  a million of its expected dead, to 0.1 at a million; each yield weighed above its own floor;
+  `restraintOf` tells `dead` for a strike over NUKE_FLOOR under its dead's floor. SPEC §6.4.
+- **AT:** the critic's 1129, replayed from its save with the rule: day 5916 not decided; Greenock is
+  taken on day 5962 at 0.101 for the same toll (over 7.38's bar by 0.001, said plainly); ADR-572's
+  case 0.237 over its floor of 0.1. Pin unchanged (63d0cfd9).
+- **Gotcha:** in `cd X && (A) & (B) &` only A runs in X: the first 2081 "replay at the critic's
+  commit" ran HEAD's code (no desync: a replay alone from the critic's year-20 save lands on its year
+  21 and 22 hashes).
+- **Test:** `nukeDeadFloor1938.test.ts` (red without). Specs by hand: none (no UI change).
+- **Next:** PLAN 7.50b (the year's restrike).
