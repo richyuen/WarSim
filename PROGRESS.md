@@ -20864,3 +20864,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   only if the next report still scores emergent under 7 or naval under 8. 7.43 stays.
 - Order: 7.46b3, 7.47, 7.46c, 7.43, then the critic run.
 - **Next:** PLAN 7.46b3 (Japan's gold).
+
+## 2026-10-20 — PLAN 7.46b3: Japan's gold traced; no rule, the bar needs ADR-557's floor (ADR-578 proposed)
+
+- **Tool:** `navyRebuild.ts` traces each `gold` month (the economic AI wrapped, as `navyLoss.ts`):
+  its kind `<lost|armed>/<peace|navalFoe|landFoe>/<over|underPeace>`, the treasury against the
+  line, the month's land orders, refills and other orders, the army against its peacetime share.
+  `navyLoss.ts` (the task's text) sees lost navies only; 77 % of Japan's months have an armed fleet.
+- **Trace** (4 seeds × 10 years with the chase, ADR-574 and ADR-575; `docs/evidence/7.46/b3.md`,
+  `b3/`): Japan's gold months 52 / 82 / 62 / 66 on 1307 / 3613 / 8693 / 7019 (bars 38 / 24 / 32 /
+  44). Of 262: armed/navalFoe 76 (7.47's case), a war with no naval enemy 144, a lost navy's climb
+  40. All 262 with the army under its peacetime share (0.18–0.39 of it): the refills spend each
+  month's surplus to the reserve; Japan neither raises divisions nor buys a warship in China.
+  Every navalFoe month taken away still misses on 3613 (63) and 8693 (38).
+- No rule: the land war's months are ADR-557's floor, the user's to lift (ADR-578: a, the floor
+  stands and 7.46b3 closes with the reason, recommended; b, the saving in every war; c, open on
+  BLOCKERS). BLOCKERS entry; 7.46b3 unticked. Japan's navalFoe months added to 7.47's AT as a read.
+- No sim change, the pin unchanged. Specs by hand: none (no UI). 7.46's commits: 4.
+- **Next:** PLAN 7.47 (7.46c after it).

@@ -135,6 +135,12 @@ each, split when taken up:
       treasury before and after, what the army and the refills take), then a rule with an ADR or the
       reason. AT: Japan's `gold` months on the 4 × 10 with the chase (88/65/76/48) halved; a unit
       test; the pin's entry.
+      **No rule** (2026-10-20, BLOCKERS, ADR-578 proposed, the user's; `docs/evidence/7.46/b3.md`,
+      traced with `navyRebuild`'s gold trace, as 77 % of the months have an armed fleet left): now
+      52 / 82 / 62 / 66 on 1307 / 3613 / 8693 / 7019 (bars 38 / 24 / 32 / 44). Of 262 months, 76 a
+      navy rebuilt to a ship or two at war with a naval enemy (7.47's case), 144 a war with no naval
+      enemy and the army under its peacetime share (ADR-557's floor), 40 a lost navy's climb.
+      Without the land war's months the bar is out of reach on 3613 and 8693 (63, 38).
     - [ ] 7.46c 7.39b's two bars read on the critic's 14 seeds × 30 years with the chase and
       7.46b's rules, and the world's armed power on the 4 × 10 reported (ADR-576): the chase
       adopted or not (ADR-573).
@@ -146,7 +152,9 @@ each, split when taken up:
   chase, b1 and b2; `docs/evidence/7.46/b2/`). The rule: the saving also for a nation whose armed
   navy is under NAVY_SHARE of its income, at war with an enemy that has an armed fleet (the sim
   knows the share, not the peak). AT: Britain's `spentArmy` months at war with a naval enemy
-  (armed/navalFoe) on the 4 × 10 with the chase (9 and 11 on 7019, 3613) under 3 each; the world's armed power at years 3–10
+  (armed/navalFoe) on the 4 × 10 with the chase (9 and 11 on 7019, 3613) under 3 each; read too,
+  Japan's `gold` months of an armed navy at war with a naval enemy (18 / 18 / 13 / 27 on 1307 /
+  3613 / 8693 / 7019, 7.46b3, `docs/evidence/7.46/b3/`); the world's armed power at years 3–10
   against HEAD's read; a unit test (red without); the ADR; the pin's entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
 - [ ] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g):
   `territory.ts`'s flip scores each neighbouring enemy controller with its side's pressure and

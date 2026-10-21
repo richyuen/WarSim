@@ -17,12 +17,18 @@
  *   the days left to the warship in training.
  * - Per depleted spell (from the month a nation goes under DEPLETED to the month it is back over
  *   it, or the run's end): the days from its start to its first warship ordered.
+ * - PLAN 7.46b3, the gold: per `gold` month, its kind (`<lost|armed>/<peace|navalFoe|landFoe>/
+ *   <overPeace|underPeace>`, the last the army with its orders in training against its peacetime
+ *   share, which gates ADR-557's saving at war), the armed navy's share of income, and a row:
+ *   the treasury against the line (the cheapest warship of its income's kinds and RESERVE_MONTHS
+ *   of income), and what the month's AI spent (the economic AI wrapped, as in `navyLoss.ts`).
  *
  * Usage: npx tsx tools/diag/navyRebuild.ts <seed> <years> [out = .cache/navyRebuild_<seed>.json]
  */
 import { writeFileSync } from 'node:fs';
 import { isMonthStart } from '../../src/shared/calendar';
-import { budgetOf, NAVY_SHARE, pickFleet, POOR_INCOME, wantsTransport } from '../../src/sim/ai/economic';
+import { budgetOf, fleetPrice, NAVY_SHARE, peaceShare, pickFleet, POOR_INCOME, RESERVE_MONTHS, wantsTransport } from '../../src/sim/ai/economic';
+import type { System } from '../../src/sim/tick';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, size1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
@@ -39,6 +45,46 @@ const SZ = size1938(undefined);
 const sim = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SZ.w) });
 const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
 const kinds = BUILD_MIX_1938.fleets!;
+// PLAN 7.46b3: the economic AI wrapped (tool only), as `navyLoss.ts` does: per nation each month the
+// treasury before and after the AI, the land orders' gold, the other orders', the refills as the rest.
+let aiMonth = new Map<number, { before: number; after: number; army: number; other: number; refill: number }>();
+{
+  const s = sim as unknown as { systems: readonly System[] };
+  const i = s.systems.findIndex((f) => f.name === 'economicAiSystem');
+  if (i < 0) throw new Error('economicAiSystem not found');
+  const inner = s.systems[i]!;
+  s.systems = s.systems.map((f, k) =>
+    k !== i
+      ? f
+      : (w: World): void => {
+          if (!isMonthStart(w.startDay, w.tick)) return inner(w);
+          const nc = w.nations.cols;
+          const before = new Map<number, number>();
+          w.nations.forEach((n) => before.set(n, nc.gold[n]!));
+          const rows0 = new Map<number, number>();
+          w.production.forEach((id) => rows0.set(id, w.production.cols.template[id]!));
+          inner(w);
+          aiMonth = new Map();
+          const orders = new Map<number, { army: number; other: number }>();
+          const p = w.production.cols;
+          w.production.forEach((id) => {
+            if (rows0.get(id) === p.template[id]) return;
+            const rule = w.rules!.templates[p.template[id]!]!;
+            const o = orders.get(p.nation[id]!) ?? { army: 0, other: 0 };
+            if (rule.domain === Domain.land) o.army += rule.gold;
+            else o.other += rule.gold;
+            orders.set(p.nation[id]!, o);
+          });
+          for (const [n, g0] of before) {
+            const after = nc.gold[n]!;
+            const o = orders.get(n) ?? { army: 0, other: 0 };
+            aiMonth.set(n, { before: g0, after, army: o.army, other: o.other, refill: Math.max(0, g0 - after - o.army - o.other) });
+          }
+        },
+  );
+}
+/** Per traced `gold` month: [day, kind, treasury, line (cheapest warship + reserve), income, balance, army's orders, refills, other orders, treasury after, army's upkeep with its orders in training, its peacetime share of income]. */
+type GoldRow = [number, string, number, number, number, number, number, number, number, number, number, number];
 const warships = new Set([kinds.battle, kinds.cruiser, kinds.destroyer]);
 const upkeepOf = (t: number): number => UPKEEP_SCALE * (ECONOMY_TABLES_1938.templateUpkeep[t] ?? 0);
 
@@ -68,11 +114,11 @@ type Year = {
 const rows: Year[] = [];
 type Spell = { from: number; to?: number; firstOrder?: number; peak: number; low: number };
 /** `spent`: the `spentArmy` months by `<lost|armed>/<peace|navalFoe|landFoe>` (lost: no armed fleet). */
-type Nat = { tag: string; peak: number; spells: Spell[]; months: Record<Reason, number>; weighted: Record<Reason, number>; spent: Record<string, number> };
+type Nat = { tag: string; peak: number; spells: Spell[]; months: Record<Reason, number>; weighted: Record<Reason, number>; spent: Record<string, number>; goldKind: Record<string, number>; goldNavyPct: number[]; gold: GoldRow[] };
 const nations = new Map<number, Nat>();
 const nat = (n: number): Nat => {
   let x = nations.get(n);
-  if (!x) nations.set(n, (x = { tag: tag(n), peak: 0, spells: [], months: zero(REASONS), weighted: zero(REASONS), spent: {} }));
+  if (!x) nations.set(n, (x = { tag: tag(n), peak: 0, spells: [], months: zero(REASONS), weighted: zero(REASONS), spent: {}, goldKind: {}, goldNavyPct: [], gold: [] }));
   return x;
 };
 
@@ -95,7 +141,7 @@ const armedNow = (w: World): { byNation: Map<number, number>; fleets: Map<number
 let prev = new Map<number, { n: number; p: number }>();
 let battled = new Set<number>();
 let power = new Map<number, number>();
-let pendingMonth: { n: number; reason: Reason; short: number; lost: boolean; foe: string; rows: Set<string> }[] | null = null;
+let pendingMonth: { n: number; reason: Reason; short: number; lost: boolean; foe: string; rows: Set<string>; g?: { gold: number; line: number; income: number; balance: number; overPeace: boolean; navyPct: number; army: number; peace: number } | undefined }[] | null = null;
 const rowsOf = (w: World, n: number): Set<string> => {
   const p = w.production.cols;
   const s = new Set<string>();
@@ -139,8 +185,15 @@ const monthRead = (w: World, y: Year, day: number): void => {
   const f = w.formations.cols;
   const fleets = new Map<number, number[]>();
   const navy = new Map<number, number>();
+  const armyUp = new Map<number, number>();
   w.formations.forEach((id) => {
-    if (!w.isFleet(id)) return;
+    if (!w.isFleet(id)) {
+      if (w.isWing(id) || w.offLand(id)) return;
+      const t = f.template[id]!;
+      const full = ECONOMY_TABLES_1938.templateStrength[t] ?? 0;
+      armyUp.set(f.nation[id]!, (armyUp.get(f.nation[id]!) ?? 0) + (full > 0 ? (upkeepOf(t) * f.strength[id]!) / full : 0));
+      return;
+    }
     const n = f.nation[id]!;
     (fleets.get(n) ?? fleets.set(n, []).get(n)!).push(id);
     const t = f.template[id]!;
@@ -201,7 +254,10 @@ const monthRead = (w: World, y: Year, day: number): void => {
       const other = war.sides[0].includes(n) ? war.sides[1] : war.sides[1].includes(n) ? war.sides[0] : undefined;
       return other !== undefined && other.some((m) => (power.get(m) ?? 0) > 0);
     });
-    pendingMonth.push({ n, reason: reason ?? 'ordered', short: x.peak - now, lost: now === 0, foe: !atWar ? 'peace' : navalFoe ? 'navalFoe' : 'landFoe', rows: rowsOf(w, n) });
+    // The army (with its orders in training) over its peacetime share: ADR-557's saving at war holds then; and the armed navy's share of income.
+    const overPeace = (armyUp.get(n) ?? 0) + (training.get(n) ?? 0) >= peaceShare(nc.aggression[n]!) * income;
+    const g = reason === 'gold' ? { gold: nc.gold[n]!, line: fleetPrice(w, income, kinds) + RESERVE_MONTHS * income, income, balance, overPeace, navyPct: Math.round((100 * (navy.get(n) ?? 0)) / Math.max(1, income)), army: (armyUp.get(n) ?? 0) + (training.get(n) ?? 0), peace: peaceShare(nc.aggression[n]!) * income } : undefined;
+    pendingMonth.push({ n, reason: reason ?? 'ordered', short: x.peak - now, lost: now === 0, foe: !atWar ? 'peace' : navalFoe ? 'navalFoe' : 'landFoe', rows: rowsOf(w, n), g });
   }
 };
 
@@ -231,6 +287,13 @@ const monthDone = (w: World, y: Year, day: number): void => {
     if (reason === 'spentArmy') {
       const k = `${m.lost ? 'lost' : 'armed'}/${m.foe}`;
       x.spent[k] = (x.spent[k] ?? 0) + 1;
+    }
+    if (reason === 'gold' && m.g) {
+      const k = `${m.lost ? 'lost' : 'armed'}/${m.foe}/${m.g.overPeace ? 'overPeace' : 'underPeace'}`;
+      x.goldKind[k] = (x.goldKind[k] ?? 0) + 1;
+      x.goldNavyPct.push(m.g.navyPct);
+      const ai = aiMonth.get(m.n);
+      x.gold.push([day, k, Math.round(m.g.gold), Math.round(m.g.line), Math.round(m.g.income), Math.round(m.g.balance), ai?.army ?? -1, Math.round(ai?.refill ?? -1), ai?.other ?? -1, Math.round(ai?.after ?? -1), Math.round(m.g.army), Math.round(m.g.peace)]);
     }
   }
   pendingMonth = null;

@@ -5,6 +5,18 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.46b3: Japan's gold months need a saving in a land war, which ADR-557 rules out; no rule (2026-10-20, ADR-578 proposed, the user's decision)
+- **The bar:** Japan's `gold` months on 4 seeds × 10 years with the chase halved, 76 / 48 / 65 / 88
+  → 38 / 24 / 32 / 44 (seeds 1307, 3613, 8693, 7019).
+- **What moved:** nothing this task (traced, no rule). With ADR-574 and ADR-575 they stand at
+  52 / 82 / 62 / 66 (`docs/evidence/7.46/b3.md`).
+- **Why:** of the 262 months, 76 are a navy rebuilt to a ship or two at war with a naval enemy
+  (PLAN 7.47's case), 144 are a war with no naval enemy while Japan's army stands under its
+  peacetime share (ADR-557 keeps that army first), 40 a lost navy's climb while the saving holds.
+  Every navalFoe month taken away leaves 11 / 63 / 38 / 34: 3613 and 8693 still over.
+- **What is left:** the user's (ADR-578): the floor kept and the task closed with the reason, or
+  the saving in every war. PLAN 7.47 takes the navalFoe months either way.
+
 ### PLAN 7.46b2: Britain's army months at war fall by more than half but miss the bar; the rule is in (2026-10-20, ADR-575)
 - **The bar:** Britain's `spentArmy` months on seeds 7019 and 3613 under 12 each, on 4 seeds × 10
   years with the chase (`docs/evidence/7.39/b-chase.diff`) and ADR-574.

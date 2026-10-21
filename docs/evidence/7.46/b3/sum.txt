@@ -1,0 +1,24 @@
+seed | chase alone (AT baseline) | bar (half) | b2 | this run | depleted spells
+1307 | 76 | 38 | 52 | 52 | spells 1
+3613 | 48 | 24 | 82 | 82 | spells 1
+8693 | 65 | 32 | 62 | 62 | spells 1
+7019 | 88 | 44 | 66 | 66 | spells 1
+
+Japan gold months by kind (<lost|armed>/<peace|navalFoe|landFoe>/<army vs its peacetime share>):
+ 1307 {"armed/navalFoe/underPeace":18,"armed/landFoe/underPeace":5,"lost/navalFoe/underPeace":23,"lost/landFoe/underPeace":5,"lost/peace/underPeace":1}
+ 3613 {"armed/navalFoe/underPeace":18,"armed/landFoe/underPeace":63,"lost/navalFoe/underPeace":1}
+ 8693 {"armed/navalFoe/underPeace":13,"lost/navalFoe/underPeace":11,"armed/landFoe/underPeace":27,"lost/landFoe/underPeace":11}
+ 7019 {"armed/navalFoe/underPeace":27,"armed/landFoe/underPeace":30,"lost/navalFoe/underPeace":5,"lost/landFoe/underPeace":3,"armed/peace/underPeace":1}
+ all 262 armed/navalFoe/underPeace 76 (29 %), armed/landFoe/underPeace 125 (48 %), lost/navalFoe/underPeace 40 (15 %), lost/landFoe/underPeace 19 (7 %), lost/peace/underPeace 1 (0 %), armed/peace/underPeace 1 (0 %)
+
+per seed: treasury/line, the month's refills and other (non-land) orders, army upkeep/peacetime line:
+ 1307 treasury/line 0.90 | refills/month 73 | months with a land order 4, a wing order 6 | army/peace line 0.21 (max 0.32)
+ 3613 treasury/line 0.87 | refills/month 284 | months with a land order 3, a wing order 0 | army/peace line 0.39 (max 0.54)
+ 8693 treasury/line 0.91 | refills/month 222 | months with a land order 8, a wing order 7 | army/peace line 0.24 (max 0.42)
+ 7019 treasury/line 0.90 | refills/month 136 | months with a land order 10, a wing order 0 | army/peace line 0.18 (max 0.25)
+
+upper bound of a rule within ADR-557 (every navalFoe gold month removed):
+ 1307: 52 - 41 = 11 (bar 38) met
+ 3613: 82 - 19 = 63 (bar 24) missed
+ 8693: 62 - 24 = 38 (bar 32) missed
+ 7019: 66 - 32 = 34 (bar 44) met

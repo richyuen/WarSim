@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-578 · 2026-10-20 · proposed (the user's decision) — PLAN 7.46b3's bar on Japan's gold needs the saving in a land war, against ADR-557's floor
+
+- **Context.** PLAN 7.46b3's AT halves Japan's `gold` months on 4 seeds × 10 years with the chase
+  (76 / 48 / 65 / 88 → 38 / 24 / 32 / 44 on 1307, 3613, 8693, 7019; now 52 / 82 / 62 / 66 with
+  ADR-574 and ADR-575). Traced (`docs/evidence/7.46/b3.md`, `navyRebuild`'s gold trace): of the 262
+  months, 76 (29 %) are a navy rebuilt to a ship or two at war with a naval enemy (ADR-557's saving
+  ends at the first warship afloat: PLAN 7.47's case); 144 (55 %) are at war with no naval enemy;
+  40 (15 %) are a lost navy's climb to the line while the saving holds. In all 262 Japan's army
+  stands under its peacetime share (0.18–0.39 of it on the seeds' means): the refills spend each
+  month's surplus to the reserve, and neither a division nor a warship is bought. ADR-557 keeps an
+  army under its peacetime share first at war ("a war's army under it is not starved for a ship");
+  ADR-575 lifted that only for a war with a naval enemy.
+- **The bar against the rules.** Every navalFoe month taken away (7.47's rule, the climb shortened)
+  leaves 11 / 63 / 38 / 34: met on 1307 and 7019, missed on 3613 and 8693. The bar needs the land
+  war's months.
+- **Options.**
+  - a (recommended): ADR-557's floor stands. 7.46b3 closed with the reason, not done (no rule:
+    the pin unchanged); Japan's navalFoe months (18 / 18 / 13 / 27) read in PLAN 7.47's AT, which
+    takes them. A depleted navy in a land war against no fleet does not need a ship to fight it,
+    and the army there is the one that bleeds.
+  - b: a navy under NAVY_SHARE of the income saves for a warship in every war, its army under its
+    peacetime share or not; amends ADR-557 at the land war's army's cost (Japan's in China, China's,
+    the Raj's, Poland's), and the wing step (3c, 6 of the 40 climbing months) keeps the price too.
+    7.46b3 then takes that rule, its AT as written.
+  - c: the bar kept and missed, 7.46b3 left open on BLOCKERS until the next critic report.
+- Until decided: 7.46b3 stays open with a BLOCKERS entry; the loop takes PLAN 7.47 (the navalFoe
+  months, either way).
+
 ### ADR-577 · 2026-10-20 · accepted (the user's decision, 2026-10-20) — PLAN 7.42 and 7.29 closed not done; 7.40 and 7.41 wait on the next critic run
 
 - **Context.** Before the next critic run (PLAN 7.5), Phase 7 held 7.46b3, 7.46c, 7.47, 7.43, 7.40,
