@@ -117,7 +117,7 @@ when taken up:
       Measured (`docs/evidence/7.49/e.md`, `tools/diag/purse.ts`): 564 / 564 on HEAD, bar 846; the
       reserve cut 616 / 603 (none kept), 596 / 590 (a month); no reserve and no slot limit 632 / 615:
       the price, one slot under 400 a month and the warship's saving bound it. BLOCKERS, the user's
-      (ADR-592 proposed: the cut with the bar at 1.08 ×, recommended; the cut and the cadre division,
+      (ADR-592 proposed: the cut with the bar at 1.05 ×, recommended; the cut and the cadre division,
       the bar kept; closed not done).
     - [ ] 7.49f The landing's port (found at 7.49d, `docs/evidence/7.49/d.md` §4): `planLanding`
       sends formations to its port's land cell but loads only those within AT_PORT_CELLS of the

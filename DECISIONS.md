@@ -183,7 +183,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Options:**
   - **a (recommended):** the reserve cut landed (`docs/evidence/7.49/e/reserve-cut.diff`,
     WAR_RESERVE_MONTHS 0) with the bar reset to what the purse buys: the band's formations after
-    180 days at least 1.08 × HEAD's on the 48 saves together (1,219 against 1,128; the measure 1.08).
+    180 days at least 1.05 × HEAD's on the 48 saves together (1,185 against 1,128; the measure 1,219, 1.08 ×).
     It is safe (no debt in a year) and doubles the band's orders; its effect on the fronts is small.
   - **b:** the reserve cut and a cheaper order: at war under its peacetime share, a nation that
     cannot pay the infantry division orders the cadre division (12 infantry and 2 guns against

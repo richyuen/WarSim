@@ -12,7 +12,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   peacetime share, none kept, 616 / 603; one month, 596 / 590; no reserve and no slot limit, 632 /
   615. Gold still stops 284 / 218 band-months, one order in training at a time allows two divisions
   in 180 days (252 against the gap of 282), and the warship's saving 70 / 46 months.
-- **What is left:** the user's (ADR-592): (a, recommended) the cut landed, bar 1.08 × of the 48
+- **What is left:** the user's (ADR-592): (a, recommended) the cut landed, bar 1.05 × of the 48
   saves together; (b) the cut and the cadre division ordered at war, bar kept, as a numbered task;
   (c) 7.49e closed not done. Meanwhile the loop takes 7.49f.
 

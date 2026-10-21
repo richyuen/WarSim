@@ -21192,7 +21192,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   reserve and no slot limit 632 / 615. Gold still stops 284 / 218 band-months (a division is 2–7
   months of the band's gross), one slot under 400 a month allows two divisions in 180 days, and the
   warship's saving (ADR-575) 70 / 46. Over a year the cut gives 11 % / 14 % more, no debt.
-- BLOCKERS entry; ADR-592 proposed, the user's (a, recommended: the cut, bar 1.08 × of the 48 saves
+- BLOCKERS entry; ADR-592 proposed, the user's (a, recommended: the cut, bar 1.05 × of the 48 saves
   together; b the cut and the cadre division at war, bar kept; c closed not done). The rule tried is
   `docs/evidence/7.49/e/reserve-cut.diff`.
 - No rule: the pin unchanged (da485175). Specs by hand: none (no UI).
