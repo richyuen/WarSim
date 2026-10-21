@@ -56,8 +56,12 @@ each, split when taken up:
   day 48. Measured first with `nukeCase.ts` on the chase: which part keeps the utility under the
   floor (the value of the place, the alliance's cost, the outrage) against the other critic's
   set-ups (`nukePoland1938`, `nukeGapShort1938`). Then a rule with an ADR, or the reason. AT:
-  `nukeOverrun1938.test.ts` green with the chase applied (its every assertion as it stands; red
-  without the rule), and green on HEAD; the other `tests/unit/nuke*` files green; the pin's entry.
+  with the chase applied, `nukeOverrun1938.test.ts`'s core holds, red without the rule: France
+  decides a strike before day 68 (its bomber's loss), every decision above `NUKE_FLOOR`, none near
+  a recent burst, the gap kept; and green on HEAD. Its luck-bound assertions (a launch shot down by
+  German fighters, the relaunch within the gap) are re-based as at PLAN 7.26b (ADR-508's Tests:
+  "re-based, rule kept") only if the chase's world has no launch stopped short, the gap case then
+  carried by `nukeGapShort1938.test.ts`; the other `tests/unit/nuke*` files green; the pin's entry.
   Then the chase lands (7.46c). Stop: one rule tried; if none clears the floor without lowering it,
   the bar is the user's (ADR-554).
 - [ ] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean
