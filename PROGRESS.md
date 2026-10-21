@@ -21524,3 +21524,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   a place thrice in a year: 0. A measure, not a bar: the civilians' share is 7.52c's, the user's.
 - **Budget:** 7.52 at 3 commits of 20.
 - **Next:** 7.52c (an ADR proposed, the user's; no rule before the user's word).
+
+## 2026-10-21 — PLAN 7.52c: cities with no soldiers struck, an ADR proposed (ADR-611; ticked, 7.52 ticked)
+
+- **Measured** (`docs/evidence/7.52/c.md`): the critic's Poland headless (`nukeCase.ts 9437 POL GER 10
+  65 bomber`, `c-pol9437.jsonl`): Berlin on day 27 (the critic's browser: day 43), 0.074 against a
+  floor of 0.025; value 0.168 = (10 × output 0.053 + capital 0.3) × through 0.201, no men in the
+  blast; the dead 0.007 of the utility. Under the floor at DEAD_COST about 8 × or without the capital.
+- **First order on 7.52b's bursts** (`c_counterfactual.py`, 66 of 73 with their parts; an upper
+  bound): 15 civilian bursts, 13 on a capital. DEAD_COST 0.2 / 0.5 / 1.0 removes 3 / 5 / 9 (2 / 3 / 7
+  civilian); a capital on a strike back only, 13 (11); a capital on a first strike only with an army
+  in the blast, 8 (8, 240 men among 1.08 million dead). No strike back of these seeds falls at any
+  DEAD_COST to 1.0; ADR-572's 4877 answer does from 0.2.
+- **ADR-611 proposed** (the user's): a DEAD_COST; b (recommended) the capital with an army; c the
+  capital on a strike back only; d no rule. No rule: the pin unchanged.
+- **Budget:** 7.52 at 4 commits of 20; ticked on its AT (a, b, c done).
+- **Next:** every open task waits on the user (7.49c–f, 7.54, 7.56, 7.60, 7.51b after 7.49; ADR-591,
+  592, 611); 7.5 (the critic) when due or at the DONE condition.

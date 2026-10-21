@@ -216,33 +216,6 @@ when taken up:
     - [ ] 7.51b The late air war: air battles in years 2–20, on 7.49's 10 unseen seeds, at least a
       tenth of year 1's, or a BLOCKERS entry with the measured cause, the user's to accept. Read
       after 7.49 (whose parts c–f wait on the user). Stop: two full re-measures flat (ADR-554).
-- [ ] 7.52 AI nuclear use (aiNukes 7, needs 8, beyond R11-B2): the restraint line names a deterrent
-  that is itself a puppet ("Soviet Union is deterred by Germany" while Germany's own line reads "is
-  a puppet: the use of its warheads is its overlord's"; `critic/c11_t_1129.json`); bursts on the
-  same 14 seeds 58 → 93, in 7 worlds (1129: 46 in 13 years, 11.7 M dead; 4877: 44); 29 of 93 kill
-  over ten times more civilians than soldiers (a read, the user's, PLAN 7.38). The critic's design
-  objection (cities with no soldiers struck: Berlin 334,000 civilians and 379 men by the
-  editor-armed Poland, `c11_g2_9437_POL.json`; the weight of the dead too small) is the user's: an
-  ADR proposed when taken up. AT: the deterrent named is the nation whose answer is feared (the
-  overlord for a puppet), a unit test on the 1129 case (red before); bursts a world on 10 unseen
-  seeds × 30 years read against run 11's 93 on 14, not a bar; the ADR. Stop: two full re-measures
-  flat, the bar is the user's (ADR-554).
-  In parts:
-    - [x] 7.52a The deterrent named answers: a puppet's warheads answer no strike (none weighs or
-      launches them), so they leave the strike back weighed, its name and MAD; one reckoning for
-      the risk and the name (`strikeBack`). AT: `nukeRestraint1938.test.ts`, the 1129 shape (red
-      before: deterred by the puppet Poland; after, strikes, and with France beside it deterred by
-      France); the critic's save: the Soviet Union "deterred by Germany" → strikes (risk 1.4 → 0.8,
-      Britain's). ADR-610. Done (`docs/evidence/7.52/a.md`).
-    - [x] 7.52b The bursts read: bursts a world on 10 unseen seeds × 30 years against run 11's 93
-      on 14 (a measure, not a bar), with 7.52a in; the share killing over ten times more civilians
-      than soldiers. Stop: two full re-measures flat (ADR-554). Done (`docs/evidence/7.52/b.md`):
-      seeds 781–790, 73 bursts in 9 worlds (7.3 a world; run 11: 93 in 7 of 14, 6.6), 21 (29 %) over
-      ten times more civilians than men (run 11: 29, 31 %).
-    - [ ] 7.52c The critic's design objection, the user's: cities with no soldiers struck (Berlin,
-      334,000 civilians and 379 men by the editor-armed Poland, `c11_g2_9437_POL.json`), the weight
-      of the dead too small. AT: an ADR proposed with the options and the measured figures; no rule
-      before the user's word.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
@@ -520,3 +493,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.61 A land-based wing's strike sinks a whole fleet at once (found at 7.60, naval 7, […]
 - [x] 7.58 The editor's fleet laid up at the month start (found at 7.41b, editor 7, […]
 - [x] 7.59 Two placed navies out of sight never meet (found at 7.41c, editor 7, naval 7, […]
+- [x] 7.52 AI nuclear use (aiNukes 7, needs 8, beyond R11-B2): the restraint line names a deterrent […]

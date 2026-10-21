@@ -1,0 +1,47 @@
+bursts with utility rows 66 of which civ>10x 15
+retaliating 10 extreme 33
+civ>10x: retaliating 1 capital place 13 menShare 0 9
+DEAD_COST 0.1: bursts dropped 0 (civ>10x 0, other 0), dead 0, civilians 0
+DEAD_COST 0.2: bursts dropped 3 (civ>10x 2, other 1), dead 351,579, civilians 330,000
+DEAD_COST 0.3: bursts dropped 3 (civ>10x 2, other 1), dead 351,579, civilians 330,000
+DEAD_COST 0.5: bursts dropped 5 (civ>10x 3, other 2), dead 1,137,744, civilians 1,035,000
+DEAD_COST 1.0: bursts dropped 9 (civ>10x 7, other 2), dead 3,287,352, civilians 3,146,000
+DEAD_COST 2.0: bursts dropped 17 (civ>10x 12, other 5), dead 5,190,221, civilians 4,505,000
+
+781 5139 Germany -> founded#105 u 0.06 thr 0.2 ppl 134000 doc 1.4 ext False ret False cap 0.3 menSh 0.001 dead 134240 men 240
+781 8656 Germany -> founded#118 u 0.077 thr 1 ppl 54000 doc 1.4 ext False ret False cap 0.3 menSh 0 dead 54000 men 0
+783 3554 Soviet Union -> Germany u 0.199 thr 0.6 ppl 334000 doc 1.2 ext False ret False cap 0.3 menSh 0.034 dead 350140 men 16140
+786 9745 Soviet Union -> Germany u 0.62 thr 1 ppl 40000 doc 1.2 ext False ret True cap 0.3 menSh 0 dead 40000 men 0
+788 9185 Germany -> Belgium u 0.345 thr 1 ppl 183000 doc 1.4 ext True ret False cap 0.3 menSh 0 dead 183000 men 0
+788 9192 Germany -> Italy u 0.118 thr 1 ppl 79000 doc 1.4 ext True ret False cap 0.3 menSh 0 dead 79000 men 0
+788 9199 Germany -> Belgium u 0.171 thr 1 ppl 248000 doc 1.4 ext True ret False cap 0.3 menSh 0 dead 248000 men 0
+788 9225 Germany -> Belgium u 0.194 thr 1 ppl 497000 doc 1.4 ext True ret False cap 0 menSh 0.043 dead 507706 men 10706
+788 9253 Germany -> Belgium u 0.795 thr 1 ppl 1064000 doc 1.4 ext True ret False cap 0.3 menSh 0.046 dead 1075549 men 11549
+788 9287 Germany -> Belgium u 0.442 thr 1 ppl 413000 doc 1.4 ext True ret False cap 0.3 menSh 0.023 dead 418785 men 5785
+788 9843 Germany -> Belgium u 0.47 thr 1 ppl 100000 doc 1.4 ext False ret False cap 0.3 menSh 0 dead 100000 men 0
+788 9933 Germany -> Italy u 0.416 thr 1 ppl 76000 doc 1.4 ext False ret False cap 0.3 menSh 0 dead 76000 men 0
+788 10577 Germany -> Switzerland u 0.032 thr 1 ppl 172000 doc 1.4 ext False ret False cap 0.3 menSh 0 dead 172000 men 0
+788 10700 Germany -> Switzerland u 0.333 thr 1 ppl 465000 doc 1.4 ext True ret False cap 0 menSh 0.044 dead 475919 men 10919
+789 5910 Japan -> United Kingdom u 0.025 thr 1 ppl 91000 doc 1.35 ext False ret False cap 0.3 menSh 0 dead 91000 men 0
+
+capital first strikes 24; under the floor without the capital: 13 (civ>10x 11, other 2), dead 2,990,080, men 56,080
+   781 5139 Germany -> founded#105 {'dead': 134240, 'yieldN': 1, 'men': 240}
+   783 3554 Soviet Union -> Germany {'dead': 350140, 'yieldN': 1, 'men': 16140}
+   787 6938 Japan -> Soviet Union {'dead': 32183, 'yieldN': 1, 'men': 11183}
+   788 9185 Germany -> Belgium {'dead': 183000, 'yieldN': 1, 'men': 0}
+   788 9192 Germany -> Italy {'dead': 79000, 'yieldN': 1, 'men': 0}
+   788 9199 Germany -> Belgium {'dead': 248000, 'yieldN': 1, 'men': 0}
+   788 9253 Germany -> Belgium {'dead': 1075549, 'yieldN': 2, 'men': 11549}
+   788 9287 Germany -> Belgium {'dead': 418785, 'yieldN': 2, 'men': 5785}
+   788 9843 Germany -> Belgium {'dead': 100000, 'yieldN': 1, 'men': 0}
+   788 9933 Germany -> Italy {'dead': 76000, 'yieldN': 1, 'men': 0}
+   788 10376 Germany -> Iran {'dead': 30183, 'yieldN': 1, 'men': 11183}
+   788 10577 Germany -> Switzerland {'dead': 172000, 'yieldN': 1, 'men': 0}
+   789 5910 Japan -> United Kingdom {'dead': 91000, 'yieldN': 1, 'men': 0}
+
+DEAD_COST 0.2: strikes back under the floor 0 of 10
+DEAD_COST 0.3: strikes back under the floor 0 of 10
+DEAD_COST 0.5: strikes back under the floor 0 of 10
+DEAD_COST 1.0: strikes back under the floor 0 of 10
+
+b2 (capital with men share >= 0.01): under the floor 8 (civ>10x 8, other 0), dead 1,083,240, men 240

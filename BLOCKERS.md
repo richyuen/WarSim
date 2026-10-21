@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.52c: cities with no soldiers struck, the rule waits on the user (2026-10-21, ADR-611 proposed; the user's decision)
+- **The bar:** an ADR proposed with the options and the measured figures; no rule before the
+  user's word (met; 7.52 ticked).
+- **What was measured** (`docs/evidence/7.52/c.md`): Poland's Berlin passes at 0.074 against 0.025;
+  the dead weigh 0.007 of it; the capital's 0.3 is most of the place's value. Of 7.52b's 15 civilian
+  bursts, 13 are on a capital.
+- **What is left:** the user's choice in ADR-611: (a) DEAD_COST raised (reopens ADR-572); (b,
+  recommended) a capital counts on a first strike only with an army in it (8 removed, all civilian);
+  (c) a capital on a strike back only (13 removed, 11 civilian); (d) no rule. Meanwhile the loop
+  takes the next task (7.5, the critic, when due).
+
 ### PLAN 7.60: whole fleets 70 % → 12 %, one strike still over half; the rule is in (2026-10-21, ADR-605; the user's decision)
 - **The bar:** on 8693's war (`carrierSink.ts 8693 JAP USA 20`) no carrier strike sinks more than
   half of a fleet that had lost none (8 on HEAD); the carriers' sinkings there within 25 % of 64; on

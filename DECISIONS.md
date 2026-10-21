@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-611 · 2026-10-21 · proposed (the user's decision) — PLAN 7.52c: cities with no soldiers struck; the capital's value carries them, not the dead's weight
+
+- **Context** (critic run 11, design objection; `docs/evidence/7.52/c.md`). The editor-armed Poland
+  of seed 9437 bombs Berlin (334,000 civilians, 379 men), Rome and Prague in its first 60 days; the
+  critic reads them as atrocities without a reason and asks for a larger weight on the dead
+  (DEAD_COST 0.1 a million). On 7.52b's 10 unseen seeds, 15 of the 66 bursts with their utility's
+  parts kill over ten times more civilians than men.
+- **Measured.** Poland's Berlin (headless, `tools/diag/nukeCase.ts 9437 POL GER 10 65 bomber`): 0.074
+  against a floor of 0.025; the place's value 0.168 is (10 × output 0.053 + capital 0.3) × the chance
+  through 0.201, no men in the blast; the dead's share of the utility 0.007. Berlin falls under the
+  floor at DEAD_COST about 0.8 (8 ×), or at 0.015 without the capital's 0.3. Of the 15 civilian
+  bursts, 13 are on a capital. First order (an upper bound: the striker's next place not modelled):
+  DEAD_COST 0.2 / 0.5 / 1.0 removes 3 / 5 / 9 bursts, of them 2 / 3 / 7 civilian; the capital on a
+  strike back only removes 13 (11 civilian, 2 on 11,183 men each); the capital on a first strike
+  only with an army in the blast (men share ≥ 0.01) removes 8, all civilian (240 men among 1,083,240
+  dead).
+- **Options:**
+  - **a:** DEAD_COST raised (0.5 to 1.0). Fewest civilian bursts removed for the largest change; a
+    strike back weighs the dead too, and ADR-572's Soviet answer (2.5 million dead at 0.237) falls
+    under its floor from 0.2, so a strike back would need exempting (against ADR-568, PLAN 7.45).
+  - **b (recommended), the b2 rule:** a capital's TARGET_CAPITAL counts on a first strike only with
+    an army in the blast (men share of the theatre at least 0.01); on a strike back as now. It takes
+    the empty capital (8 of 8 removed are civilian) and keeps a capital with an army in it, and
+    deterrence by the cities, as they are. Amends SPEC §6.4's "a city is a target" for a first
+    strike. Cost: the editor-armed holder of R8-B1 (run 8, "never strikes") may strike later or at
+    men, or not in 60 days: not measured, and the numbered task's AT would read it.
+  - **c:** the capital on a strike back only (b1: 13 removed, 11 civilian). Removes most; also the
+    capital with an army in it as a first target.
+  - **d:** no rule. SPEC §6.4 and PLAN 7.38's "no bar on the civilians' share" stand; the objection
+    is answered here.
+- **Meanwhile:** no rule, the pin unchanged. A rule the user takes becomes a numbered task with its
+  own AT (the critic's Poland case, the 7.52b seeds re-read, R8-B1's strike within 60 days).
+
 ### ADR-610 · 2026-10-21 · accepted — A puppet's warheads answer no strike: they leave the strike back weighed, its name and MAD (PLAN 7.52a; amends PLAN 6.4a's retaliationRisk and MAD)
 
 - **Context** (critic run 11, AI nuclear use 7, `critic/c11_t_1129.json`): the panel read "Soviet

@@ -13256,3 +13256,47 @@ Of 7.33 (open in PLAN.md):
   Rule in (ADR-608, `docs/evidence/7.59/a.md`): a placed fleet at war closes on a standing enemy
   warfleet in its place's zone that its navy can win; Britain's pair in a sea battle 0 → 2 of 2
   (hour 27), back on its place from day 9; at peace it holds. Pin unchanged.
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.52 AI nuclear use (aiNukes 7, needs 8, beyond R11-B2): the restraint line names a deterrent
+  that is itself a puppet ("Soviet Union is deterred by Germany" while Germany's own line reads "is
+  a puppet: the use of its warheads is its overlord's"; `critic/c11_t_1129.json`); bursts on the
+  same 14 seeds 58 → 93, in 7 worlds (1129: 46 in 13 years, 11.7 M dead; 4877: 44); 29 of 93 kill
+  over ten times more civilians than soldiers (a read, the user's, PLAN 7.38). The critic's design
+  objection (cities with no soldiers struck: Berlin 334,000 civilians and 379 men by the
+  editor-armed Poland, `c11_g2_9437_POL.json`; the weight of the dead too small) is the user's: an
+  ADR proposed when taken up. AT: the deterrent named is the nation whose answer is feared (the
+  overlord for a puppet), a unit test on the 1129 case (red before); bursts a world on 10 unseen
+  seeds × 30 years read against run 11's 93 on 14, not a bar; the ADR. Stop: two full re-measures
+  flat, the bar is the user's (ADR-554).
+  In parts:
+    - [x] 7.52a The deterrent named answers: a puppet's warheads answer no strike (none weighs or
+      launches them), so they leave the strike back weighed, its name and MAD; one reckoning for
+      the risk and the name (`strikeBack`). AT: `nukeRestraint1938.test.ts`, the 1129 shape (red
+      before: deterred by the puppet Poland; after, strikes, and with France beside it deterred by
+      France); the critic's save: the Soviet Union "deterred by Germany" → strikes (risk 1.4 → 0.8,
+      Britain's). ADR-610. Done (`docs/evidence/7.52/a.md`).
+    - [x] 7.52b The bursts read: bursts a world on 10 unseen seeds × 30 years against run 11's 93
+      on 14 (a measure, not a bar), with 7.52a in; the share killing over ten times more civilians
+      than soldiers. Stop: two full re-measures flat (ADR-554). Done (`docs/evidence/7.52/b.md`):
+      seeds 781–790, 73 bursts in 9 worlds (7.3 a world; run 11: 93 in 7 of 14, 6.6), 21 (29 %) over
+      ten times more civilians than men (run 11: 29, 31 %).
+    - [x] 7.52c The critic's design objection, the user's: cities with no soldiers struck (Berlin,
+      334,000 civilians and 379 men by the editor-armed Poland, `c11_g2_9437_POL.json`), the weight
+      of the dead too small. AT: an ADR proposed with the options and the measured figures; no rule
+      before the user's word. Done (ADR-611 proposed, `docs/evidence/7.52/c.md`): the capital's 0.3,
+      not the dead's weight, carries 13 of the 15 civilian bursts; Berlin under the floor at DEAD_COST
+      8 × or without the capital; the rule waits on the user.
