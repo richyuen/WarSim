@@ -638,6 +638,80 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
         expect(w.formations.cols.moving[dd]).toBe(0);
         expect(w.formations.cols.x[dd]).toBe(at(tobruk)[0]);
       });
+
+      // PLAN 7.39b, 7.46c, ADR-580: beyond `SORTIE_KM`, the nearest enemy warfleet of its waters whose
+      // zone its navy there can win is chased, before the station. Before, a fleet on station never
+      // sought one beyond reach, and late wars' navies stood thousands of km apart until peace.
+      /** The seed cell of the zone nearest Tobruk's water beyond `SORTIE_KM`, of its waters, open, with no Italian ship. */
+      const farWater = (w: World, from: number): number => {
+        const z = seaOf(w);
+        const keys = waterKeys(w, GRE);
+        const mine = keys[z.zoneOf[from]!]!;
+        let best = Infinity;
+        let cell = -1;
+        for (let zone = 1; zone < z.seedCell.length; zone++) {
+          const s = z.seedCell[zone]!;
+          if (s < 0 || z.closed[zone] === 1 || keys[zone] !== mine || zoneEnemy(w, s) > 0) continue;
+          const d = seaKm(w, ...at(from), ...at(s));
+          if (d > SORTIE_KM && d < best) [best, cell] = [d, s];
+        }
+        expect(cell, 'open water of its waters beyond SORTIE_KM').toBeGreaterThanOrEqual(0);
+        return cell;
+      };
+      /** Fleet `f` with its first `keep` ships of `of` afloat, the rest sunk (a ship is an element of strength 1: halving a strength sinks it). */
+      const thin = (w: World, f: number, keep: number, of: number): void => {
+        const ec = w.elements.cols;
+        const ships: number[] = [];
+        w.elements.forEach((e) => void (ec.formation[e] === f && ships.push(e)));
+        expect(ships.length).toBe(of);
+        ships.slice(keep).forEach((e) => void (ec.strength[e] = 0));
+      };
+      /**
+       * A Greek destroyer flotilla at Tobruk with half its ships, Greece's other fleets sunk: no battle it can
+       * win in reach (the blockade case). An Italian destroyer flotilla beyond reach with `keep` of its ships.
+       */
+      const chaseCase = (keep: number): { w: World; dd: number; sea: number; p: number; enemy: number } => {
+        const { w, wing, water } = setup();
+        noBombers(w, wing);
+        const tobruk = water('Tobruk');
+        const dd = addFleet(w, GRE, 'destroyer_flotilla', ...at(tobruk));
+        const shipsOf = (f: number): number => {
+          let k = 0;
+          w.elements.forEach((e) => void (w.elements.cols.formation[e] === f && k++));
+          return k;
+        };
+        const of = shipsOf(dd);
+        own({ world: w } as Sim, GRE).forEach((f) => f !== dd && thin(w, f, 0, shipsOf(f)));
+        thin(w, dd, Math.floor(of / 2), of);
+        const p = fleetPower(w, dd);
+        expect(p, 'half a flotilla afloat').toBeGreaterThan(0);
+        w.ports.forEach((port, i) => {
+          const cell = portSeaOf(w)[i]!;
+          if (cell < 0 || w.cells.controller[port.cell] !== ITA || seaKm(w, ...at(tobruk), ...at(cell)) > SORTIE_KM) return;
+          const e = zoneEnemy(w, cell);
+          if (e > 0) expect(e, port.name).toBeGreaterThan(p);
+        });
+        const sea = farWater(w, tobruk);
+        const ita = addFleet(w, ITA, 'destroyer_flotilla', ...at(sea));
+        thin(w, ita, keep, of);
+        return { w, dd, sea, p, enemy: zoneEnemy(w, sea) };
+      };
+
+      it('the same flotilla at Tobruk sails for an Italian flotilla beyond SORTIE_KM, of its waters, weaker than it (the chase)', () => {
+        const { w, dd, sea, p, enemy } = chaseCase(1);
+        expect(enemy, 'an Italian ship there').toBeGreaterThan(0);
+        expect(enemy).toBeLessThanOrEqual(p);
+        greekTurn(w);
+        expect(w.formations.cols.moving[dd], 'under way from Tobruk').toBe(1);
+        expect(w.formations.cols.targetCell[dd], 'for the far Italian flotilla').toBe(sea);
+      });
+
+      it('an Italian flotilla beyond SORTIE_KM stronger than Greece\'s navy of those waters is not chased: the flotilla keeps its station', () => {
+        const { w, dd, p, enemy } = chaseCase(Number.MAX_SAFE_INTEGER);
+        expect(enemy).toBeGreaterThan(p);
+        greekTurn(w);
+        expect(w.formations.cols.moving[dd]).toBe(0);
+      });
     });
 
     // PLAN 7.35d2c, ADR-550: a standing enemy warfleet in reach, of the fleet's basin, whose zone the

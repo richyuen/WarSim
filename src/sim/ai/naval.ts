@@ -28,7 +28,7 @@
  *   `AVOID_RATIO` times its own sails home (`sailHome`).
  * - At war, any other warfleet away from its ports gets a new order on its AI day (`awayOrder`,
  *   PLAN 7.35d2b): a winnable battle in reach first (a standing enemy warfleet too, PLAN 7.35d2c);
- *   else it keeps its station by an enemy port
+ *   else one beyond reach its navy of those waters can win (the chase, ADR-580); else it keeps its station by an enemy port
  *   (the blockade); else a new station at an enemy port in reach; else home. Before, it stood
  *   where its sortie ended until peace, at ports whose holders had made their peace.
  * - At war, under the enemy's naval bombers (PLAN 7.35b3b, ADR-544: a wing of the naval role at an
@@ -296,7 +296,17 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
   const hunts: Hunt[] = [];
   for (const q of prey()) if (world.wars.atWar(n, q.nation)) hunts.push({ at: q.at, enemy: enemyIn(q.zone), basin: keys[q.zone]! });
   // Away (PLAN 7.35d2b): a new order from where it stands; one escorting a landing stays.
-  for (const { id, e } of away) if (!escorting(id)) awayOrder(world, id, e, keyAt(world, keys, c.x[id]!, c.y[id]!), targets, hunts, together, emptyBombed, (cell) => near(cellOf(id), cell));
+  // The power of its standing warfleets by waters' key, in port and away (PLAN 7.39b, ADR-580): its navy there, that a chase is weighed against.
+  const navy = new Map<number, number>();
+  for (const x of [...war, ...away]) {
+    const k = keyAt(world, keys, c.x[x.id]!, c.y[x.id]!);
+    navy.set(k, (navy.get(k) ?? 0) + x.p);
+  }
+  for (const { id, e } of away) {
+    if (escorting(id)) continue;
+    const mine = keyAt(world, keys, c.x[id]!, c.y[id]!);
+    awayOrder(world, id, e, mine, targets, hunts, together, emptyBombed, (cell) => near(cellOf(id), cell), navy.get(mine) ?? 0);
+  }
   if (war.length === 0) return;
   let bases: number[] | undefined;
   /** The targets a sortie may take (PLAN 7.35b4c2): not empty water under the enemy's naval bombers; a base with none of them in reach is no forward base. */
@@ -346,6 +356,13 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
  *   an enemy port with enemy ships in its zone. Sought by its ports, from a zone that has the
  *   enemy's ships already, the fleets hopped every week between them a few cells apart, never
  *   meeting the ships (seed 1129, year 3, five British fleets);
+ * - else, from a zone with no enemy ship, the nearest standing enemy warfleet of its waters beyond
+ *   `SORTIE_KM` whose zone's enemy power is no more than its nation's standing warfleets of those
+ *   waters together (`navy`): it sails for it, the chase (PLAN 7.39b, 7.46c, ADR-580). Before, late
+ *   wars' navies stood on stations a median 4,423 km apart until peace (`docs/evidence/7.39/
+ *   measure-b.md` §1). With the navies rebuilt (ADR-574, ADR-575, ADR-579) the chase empties those
+ *   stations (886 → 53 fleet-weeks a world-year) and lifts the late sea battles 12.6 → 14.7 a
+ *   world-year, at about half the world's navy in years 2–5 (`docs/evidence/7.46/c.md`);
  * - by an enemy-held port's water: it stays, on station (the blockade, PLAN 4.4b: the zone held
  *   against the port's holder halves its province's income);
  * - else the nearest enemy port within `SORTIE_KM` that a sortie may take (its zone's enemy no more
@@ -362,6 +379,7 @@ function awayOrder(
   together: (cell: number) => number,
   emptyBombed: (t: Target) => boolean,
   by: (cell: number) => boolean,
+  navy: number,
 ): void {
   const c = world.formations.cols;
   const w = world.cells.w;
@@ -373,14 +391,23 @@ function awayOrder(
   // An enemy warfleet in reach, of its basin, whose zone the fleets together can win (PLAN 7.35d2c):
   // a battle from any zone, as its ships are sought, not their zone's ports. By one already: it stays.
   let beside = false;
+  // Beyond `SORTIE_KM` (PLAN 7.39b, ADR-580): the nearest enemy warfleet of its waters whose zone its
+  // navy there (`navy`) can win, from a zone with no enemy ship: the chase, before a station.
+  let chase = -1;
+  let bestC = Infinity;
   for (const t of hunts) {
-    if (t.basin !== mine || t.enemy > together(t.at)) continue;
+    if (t.basin !== mine) continue;
+    const d = seaKm(world, c.x[id]!, c.y[id]!, (t.at % w) + 0.5, Math.floor(t.at / w) + 0.5);
+    if (d > SORTIE_KM) {
+      if (here === 0 && t.enemy <= navy && d < bestC) [bestC, chase] = [d, t.at];
+      continue;
+    }
+    if (t.enemy > together(t.at)) continue;
     if (by(t.at)) {
       beside = true;
       continue;
     }
-    const d = seaKm(world, c.x[id]!, c.y[id]!, (t.at % w) + 0.5, Math.floor(t.at / w) + 0.5);
-    if (d <= SORTIE_KM && d < bestB) [bestB, battle] = [d, t.at];
+    if (d < bestB) [bestB, battle] = [d, t.at];
   }
   if (beside) return;
   for (const t of targets) {
@@ -395,7 +422,7 @@ function awayOrder(
     if (here === 0 && t.enemy > 0 && d < bestB) [bestB, battle] = [d, t.at];
     if (d < bestS) [bestS, station] = [d, t.at];
   }
-  const target = battle >= 0 ? battle : onStation ? -1 : station;
+  const target = battle >= 0 ? battle : chase >= 0 ? chase : onStation ? -1 : station;
   if (target >= 0) orderSail(world, id, (target % w) + 0.5, Math.floor(target / w) + 0.5);
   else if (!onStation) sailHome(world, id);
 }

@@ -26,7 +26,7 @@ import { portSeaOf, seaOf, seaRangeOf, type World } from '../../src/sim/world';
  *   it stays, the blockade), `awayNewStation` (an enemy port in reach: it sails there), `awayHome`
  *   (sent home: the enemy's power, the bombers, or no station).
  */
-export type Why = 'take' | 'stage' | 'stageThere' | 'noBase' | 'noTarget' | 'tooStrong' | 'emptyBombed' | 'awayBeside' | 'awayHunt' | 'awayStation' | 'awayNewStation' | 'awayHome';
+export type Why = 'take' | 'stage' | 'stageThere' | 'noBase' | 'noTarget' | 'tooStrong' | 'emptyBombed' | 'awayBeside' | 'awayHunt' | 'awayChase' | 'awayStation' | 'awayNewStation' | 'awayHome';
 
 /**
  * For a fleet on station (`awayStation`), why the nearest armed enemy fleet is not hunted: none at
@@ -142,10 +142,17 @@ export function sortieWhy(ctx: WhyCtx, f: number): { why: Why; text: string; inR
     // `awayOrder`, in its order.
     let beside = false;
     let hunt = Infinity;
+    let chase = Infinity;
+    const navy = nc.together.reduce((s, g) => s + (keyAt(w, nc.keys, c.x[g.id]!, c.y[g.id]!) === mine ? g.p : 0), 0);
     for (const t of nc.hunts) {
-      if (t.basin !== mine || t.enemy > together(t.at)) continue;
+      if (t.basin !== mine) continue;
+      if (km(t.at) > SORTIE_KM) {
+        if (here === 0 && t.enemy <= navy) chase = Math.min(chase, km(t.at));
+        continue;
+      }
+      if (t.enemy > together(t.at)) continue;
       if (near(w, cellOf(w, f), t.at)) beside = true;
-      else if (km(t.at) <= SORTIE_KM) hunt = Math.min(hunt, km(t.at));
+      else hunt = Math.min(hunt, km(t.at));
     }
     if (beside) return { why: 'awayBeside', text: 'by an enemy fleet', inReach: 0 };
     let onStation = '';
@@ -162,6 +169,7 @@ export function sortieWhy(ctx: WhyCtx, f: number): { why: Why; text: string; inR
       station = Math.min(station, d);
     }
     if (hunt < Infinity) return { why: 'awayHunt', text: `a battle ${Math.round(hunt)} km`, inReach: 0 };
+    if (chase < Infinity) return { why: 'awayChase', text: `a chase ${Math.round(chase)} km`, inReach: 0 };
     if (onStation) return { why: 'awayStation', text: `on station at ${onStation}`, inReach: 0 };
     if (station < Infinity) return { why: 'awayNewStation', text: `a station ${Math.round(station)} km`, inReach: 0 };
     return { why: 'awayHome', text: 'no station', inReach: 0 };

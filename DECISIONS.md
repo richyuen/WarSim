@@ -198,7 +198,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   whole while not extreme, half fighting to the death; day 55's measured parts at Berlin give 0.034
   over the floor (0.0175 with the cost whole; red without the rule).
 
-### ADR-580 · 2026-10-20 · accepted (under the user's rule, ADR-573 a and ADR-576 a; lands after PLAN 7.48) — The chase adopted: a warfleet away at war sails for a winnable enemy navy beyond a sortie's reach (PLAN 7.46c, 7.39b)
+### ADR-580 · 2026-10-20 · accepted (under the user's rule, ADR-573 a and ADR-576 a; landed after PLAN 7.48) — The chase adopted: a warfleet away at war sails for a winnable enemy navy beyond a sortie's reach (PLAN 7.46c, 7.39b)
 
 - **Context.** ADR-573 tried the chase (`docs/evidence/7.39/b-chase.diff`) and set it aside: it
   emptied the far stations but sank the navies, which were not built again (late sea battles 5.0
@@ -231,6 +231,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   cause is PLAN 7.48; the chase lands after it, from `docs/evidence/7.46/c-adopt.diff` (applies to
   `ac0f20e`), its pin read again then.
 - **Pin** (measured with the diff on `ac0f20e`): 3754b256 → fdd3a67c.
+- **Landed** (2026-10-20, after PLAN 7.48, ADR-581): `c-adopt.diff` applied to `bf4b2bb` as it
+  stands; the pin read again, fdd3a67c (7.48's rule has no warhead in seed 99's year).
 - **Test.** `navalAi1938.test.ts`: a Greek destroyer flotilla at Tobruk with half its ships,
   Greece's other fleets sunk (no battle it can win in reach), sails for an Italian flotilla of a
   ship beyond `SORTIE_KM` in its waters (red without: it keeps its station); the same Italian
@@ -419,7 +421,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   on its run (7.46c). PLAN 7.39b stays blocked until then.
 - **Re-tried** (2026-10-20, PLAN 7.46c): with the navies rebuilt (ADR-574, 575, 579) both of 7.39b's
   bars are met on the critic's 14 seeds × 30 years (late battles 14.7, far station 53.3). Adopted:
-  ADR-580, landing after PLAN 7.48.
+  ADR-580, landed after PLAN 7.48.
 
 ### ADR-572 · 2026-10-20 · accepted — The dead's cost not eased by a high doctrine (PLAN 7.45)
 

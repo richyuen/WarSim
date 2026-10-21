@@ -37,7 +37,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   months are 7.47's read above (the code is that run's). The entry stays open: 3613's 12 is at the
   bar, not under it; what is left is a war with no naval enemy and peace, which the task leaves out.
 
-### PLAN 7.39b: the chase of a far enemy navy halves the far station but sinks the navies; blocked until PLAN 7.46 (2026-10-20; ADR-573 option a, the user's decision, 2026-10-20)
+### RESOLVED 2026-10-20 (the chase landed, ADR-580; 7.39b and 7.46c ticked) · PLAN 7.39b: the chase of a far enemy navy halves the far station but sinks the navies; blocked until PLAN 7.46 (2026-10-20; ADR-573 option a, the user's decision, 2026-10-20)
 - **The bar:** on the critic's 14 seeds × 30 years, the late fleet-weeks on station with the enemy
   fleet beyond reach halved (886 → under 443 a world-year), and sea battles a world-year in years
   2–30 at least 6.6.
@@ -58,6 +58,8 @@ entries are kept and marked **RESOLVED** with the date and fix.
   of HEAD's at years 2–5, 75 % at year 30. Not landed: with it the critic's overrun France
   (`nukeOverrun1938.test.ts`) does not strike, PLAN 7.48. Resolved when the chase lands after it
   (`docs/evidence/7.46/c-adopt.diff`).
+- **Resolved** (2026-10-20): PLAN 7.48 (ADR-581) made the overrun France strike with the chase; the
+  chase landed on `bf4b2bb`, the pin fdd3a67c.
 
 ### RESOLVED 2026-10-20 (PLAN 7.44, ADR-571; PLAN 7.45a, ADR-572; read at PLAN 7.45b; 7.38 ticked) · PLAN 7.38's bar on the dead missed at the first read: 4 bursts under 0.1 killing a million on 4 of 24 seeds (2026-10-20, PLAN 7.38e)
 - **The bar:** on the critic's 14 seeds and 10 unseen ones × 30 years, no burst with a utility

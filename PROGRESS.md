@@ -20951,3 +20951,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Specs by hand: none (no UI).
 - **Next:** the chase lands (PLAN 7.46c, 7.39b; `docs/evidence/7.46/c-adopt.diff`), then 7.39c, 7.43,
   the critic run.
+
+## 2026-10-20 — PLAN 7.46c, 7.39b: the chase lands (ADR-580)
+
+- `docs/evidence/7.46/c-adopt.diff` applied to `bf4b2bb` as it stands (the rule in `naval.ts`'s
+  `awayOrder`, its `seaWhy` mirror, SPEC §7, `navalAi1938.test.ts`'s two cases). The pin read
+  again: fdd3a67c, as measured on `ac0f20e` (PLAN 7.48's rule has no warhead in seed 99's year).
+- 7.39b and 7.46c ticked; the 7.39b BLOCKERS entry resolved; the naval parity row notes the chase.
+  7.46 stays open on b2 and b3 (BLOCKERS; ADR-578 waits on the user).
+- Specs by hand: none (no UI).
+- **Next:** PLAN 7.39c (7.39's two bars on 10 unseen seeds × 30 years with the chase), then 7.43,
+  the critic run.

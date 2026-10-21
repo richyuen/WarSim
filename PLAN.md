@@ -68,7 +68,7 @@ each, split when taken up:
       war-weeks a world-year late against 68.5 in year 1; of the late fleet-weeks at war with a
       navy (1,029 a world-year) 901 on station at an enemy port, 886 of them with the nearest enemy
       fleet of their waters beyond `SORTIE_KM`; orders refused 4.3 a world-year. No rule.
-    - [ ] 7.39b How a late war of two navies begins (7.39a §5: on station far from the enemy's fleet
+    - [x] 7.39b How a late war of two navies begins (7.39a §5: on station far from the enemy's fleet
       is the shape of year 1 too, 1,402 → 886 fleet-weeks a world-year; the hunts fell × 7.8, the
       sorties from port × 3.8, the battles × 8.3). Measured first, at the first week of each war of
       two navies, in year 1 and in years 2–30: each side's armed fleets by state (at its bloc's port,
@@ -92,6 +92,7 @@ each, split when taken up:
       years 2–30 14.7 a world-year (bar 6.6); 7.39's two bars on that run 14.7 against 13.9 and
       1.7 %; a unit test (red without); the pin 3754b256 → fdd3a67c; `--profile` read. Ticked when
       the chase lands (`docs/evidence/7.46/c-adopt.diff`), after PLAN 7.48.
+      Done (2026-10-20): the chase landed after PLAN 7.48 (ADR-580, ADR-581), the pin fdd3a67c.
     - [ ] 7.39c 7.39's two bars on 10 unseen seeds × 30 years (the AT's second half), with the chase
       (ADR-580): sea battles a world-year in years 2–30 at least a quarter of year 1's, of them at
       most 5 % sinking nothing. `seaYears` on seeds no 7.39 or 7.46 run has seen. AT: both bars on
@@ -152,7 +153,7 @@ each, split when taken up:
       navy rebuilt to a ship or two at war with a naval enemy (7.47's case), 144 a war with no naval
       enemy and the army under its peacetime share (ADR-557's floor), 40 a lost navy's climb.
       Without the land war's months the bar is out of reach on 3613 and 8693 (63, 38).
-    - [ ] 7.46c 7.39b's two bars read on the critic's 14 seeds × 30 years with the chase and
+    - [x] 7.46c 7.39b's two bars read on the critic's 14 seeds × 30 years with the chase and
       7.46b's rules, and the world's armed power on the 4 × 10 reported (ADR-576): the chase
       adopted or not (ADR-573).
       Taken after PLAN 7.47 (the user's order, 2026-10-20): read with its rule, one run for both.
@@ -161,6 +162,7 @@ each, split when taken up:
       with the chase 47–54 % of HEAD's at years 2–5, 63 % at 10, 75 % at 30; the 4 × 10 read is
       7.47's. Not landed: with it `nukeOverrun1938.test.ts` is red (§6), PLAN 7.48. After 7.48: apply
       `docs/evidence/7.46/c-adopt.diff`, read the pin again, gate, tick 7.46c and 7.39b.
+      Done (2026-10-20): applied to `bf4b2bb`, the pin fdd3a67c as measured, the gate green.
 
 - [ ] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g):
   `territory.ts`'s flip scores each neighbouring enemy controller with its side's pressure and

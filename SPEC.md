@@ -2046,7 +2046,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   order on its day (PLAN 7.35d2b, ADR-549): by such a standing enemy warfleet, it stays; else the
   nearest battle in reach that it and its fleets there together can win, a standing enemy
   warfleet from any zone, or from a zone with no enemy ship an enemy port with enemy ships in
-  its zone; else, by an
+  its zone; else, from a zone with no enemy ship, the nearest standing enemy warfleet of its waters
+  beyond 2,500 km whose zone's enemy power is no more than its nation's standing warfleets of those
+  waters together (the chase, PLAN 7.39b, 7.46c, ADR-580); else, by an
   enemy port's water, it keeps its station (the blockade); else the nearest enemy port a sortie
   may take; else home. At peace a fleet away from its ports turns home.
   A fleet the editor placed holds its place instead, at peace and at war (`World.station`, saved
