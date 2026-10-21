@@ -2084,10 +2084,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   waters together (the chase, PLAN 7.39b, 7.46c, ADR-580); else, by an
   enemy port's water, it keeps its station (the blockade); else the nearest enemy port a sortie
   may take; else home. At peace a fleet away from its ports turns home.
-  A fleet the editor placed holds its place instead, at peace and at war (`World.station`, saved
+  A fleet the editor placed holds its place instead (`World.station`, saved
   while there is one; PLAN 7.22c, ADR-500): the AI sends it nowhere and sails it back when a
   battle drew it more than 3 cells off; a player's order that sails it, or its breaking off
-  beaten, lets go of the place.
+  beaten, lets go of the place. At war it holds its sea (PLAN 7.59, ADR-608): it sails for the
+  nearest standing enemy warfleet in the zone of its place whose zone's enemy its nation's
+  warfleets together can win (its own power counted with them there), then back to its place.
   At war, a submarine flotilla that stands off an enemy bloc's convoy way sails for the
   nearest zone of one within 4,000 km (PLAN 4.6d, ADR-271).
   *The navy's cost (PLAN 4.6e1, ADR-273; `src/sim/ai/economic.ts`):* a nation keeps its navy's
