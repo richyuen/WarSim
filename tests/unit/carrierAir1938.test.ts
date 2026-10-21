@@ -4,7 +4,8 @@ import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { wingRange } from '../../src/sim/systems/air';
 import { NAVAL_STRIKE_FIRE, shipEffectiveness } from '../../src/sim/systems/airCombat';
-import { CARRIER_CYCLE, CARRIER_SPOT_SHARE, findSeaBattles, navalCombatSystem, seaKm } from '../../src/sim/systems/navalCombat';
+import { hash32, hashToUnit } from '../../src/sim/core/hash';
+import { CARRIER_CYCLE, CARRIER_SPOT_SHARE, findSeaBattles, navalCombatSystem, SALT_CARRIER, seaKm } from '../../src/sim/systems/navalCombat';
 import type { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
@@ -65,13 +66,20 @@ describe('carrier air groups in fleet battles (PLAN 5.4d)', () => {
     const rules = w.rules!;
     const targets = [...w.elements.ids()].filter((e) => ec.formation[e] === bb && ec.strength[e]! > 0 && rules.units[ec.unit[e]!]!.cls !== 'ss');
     const total = targets.reduce((s, t) => s + rules.units[ec.unit[t]!]!.hpPerUnit * ec.strength[t]!, 0);
-    let want = 0;
+    // Each squadron puts its whole fire on one ship, picked by hit points (PLAN 7.60, ADR-605; it
+    // was spread over every ship by them): a ship takes at most what it has left.
+    const fire = new Map<number, number>();
     for (const wing of wings)
-      for (const e of [...w.elements.ids()].filter((x) => ec.formation[x] === wing))
-        for (const t of targets) {
-          const ut = rules.units[ec.unit[t]!]!;
-          want += (ec.strength[e]! * shipEffectiveness(rules.units[ec.unit[e]!]!, ut) * NAVAL_STRIKE_FIRE * ((ut.hpPerUnit * ec.strength[t]!) / total)) / ut.hpPerUnit;
-        }
+      for (const e of [...w.elements.ids()].filter((x) => ec.formation[x] === wing && ec.strength[x]! > 0)) {
+        const u = hashToUnit(hash32(w.seed, w.tick, e, SALT_CARRIER)) * total;
+        let acc = 0;
+        const t = targets.find((x) => (acc += rules.units[ec.unit[x]!]!.hpPerUnit * ec.strength[x]!) > u)!;
+        const ut = rules.units[ec.unit[t]!]!;
+        fire.set(t, (fire.get(t) ?? 0) + (ec.strength[e]! * shipEffectiveness(rules.units[ec.unit[e]!]!, ut) * NAVAL_STRIKE_FIRE) / ut.hpPerUnit);
+      }
+    let want = 0;
+    for (const [t, d] of fire) want += Math.min(d, ec.strength[t]! - ec.wound[t]!);
+    expect(fire.size, 'ships struck: at most one a squadron').toBeLessThan(targets.length);
     const before = ships(w, bb);
     navalCombatSystem(w);
     expect(before - ships(w, bb)).toBeCloseTo(want, 6);

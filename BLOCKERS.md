@@ -5,6 +5,20 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.60: whole fleets 70 % → 12 %, one strike still over half; the rule is in (2026-10-21, ADR-605; the user's decision)
+- **The bar:** on 8693's war (`carrierSink.ts 8693 JAP USA 20`) no carrier strike sinks more than
+  half of a fleet that had lost none (8 on HEAD); the carriers' sinkings there within 25 % of 64; on
+  4 seeds × 1 year the ships sunk with their whole fleet in one strike under a quarter.
+- **What moved** (`docs/evidence/7.60/a.md`): each squadron strikes one ship, picked by hit points
+  (ADR-605). Over half of an untouched fleet 8 → 1; sunk 64 → 66 (met); whole-fleet ships 594 of 853
+  (70 %) → 126 of 1,083 (12 %, met).
+- **What is left:** one strike (hour 449): a lone flotilla of 8 under six squadrons' 6.4 ships of
+  fire loses 5. Any rule that keeps the fire sinks 5 or more; under the bar only by less fire, which
+  is tuning (not done). The user's: (a, recommended) 7.60 ticked, the first bar read as met in kind
+  (8 → 1, a strike of more fire than half the fleet); (b) 7.60 closed not done, the rule kept; (c)
+  keep open for a cut of the carriers' fire (`NAVAL_STRIKE_FIRE` or the wings' size), a balance
+  change. Meanwhile the loop takes 7.61.
+
 ### PLAN 7.56: 1129 boards, 8693 cannot; the rules are in (2026-10-21, ADR-596, ADR-597; the user's decision)
 - **The bar:** on the 48 saves, the two cases (8693 year 10 Germany, 1129 year 20 Britain) board a
   formation within 60 days of their save.

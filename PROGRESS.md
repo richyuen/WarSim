@@ -21416,3 +21416,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   `sunk` figures had the same last-hour miss; `sunkNoRow` likely unmoved, not re-read.
 - **Test:** none (no rule). Specs by hand: none (no UI change).
 - **Next:** PLAN 7.60 (a whole fleet sunk at once).
+
+## 2026-10-21 — PLAN 7.60: a carrier's strike sinks ship by ship (ADR-605; bar missed by one)
+
+- **Rule** (`navalCombat.ts`): each squadron of a carrier's strike puts its whole fire on one enemy
+  ship, picked by hit points as a gun picks (`SALT_CARRIER`); before, spread over every ship, alike
+  ships sank together. `carrierSink.ts` counts whole-fleet strikes and strikes over half of an
+  untouched fleet.
+- **Read** (`docs/evidence/7.60/a.md`): 8693's war: over half of an untouched fleet 8 → 1 (bar 0:
+  missed, a lone flotilla under 6.4 ships of fire loses 5 of 8), sunk 64 → 66 (met), sea battles
+  6 → 9; 4 seeds × 1 year: whole-fleet ships 594 of 853 → 126 of 1,083 (met). BLOCKERS, the user's
+  (a tick, b close, c a cut of the carriers' fire). Pin 63d0cfd9 → 076aae87.
+- **Found:** a land-based wing's strike on a fleet spreads the same way (478 of 575 whole-fleet):
+  PLAN 7.61.
+- **Test:** `carrierPick1938.test.ts` (red before: 8 of 8 at hour 337; after 2 of 8 at hour 329);
+  `carrierAir1938.test.ts`'s exact damage restated for the pick. Specs by hand: carrierStrikeRow1938
+  (1 passed).
+- **Next:** PLAN 7.61 (a land-based wing's strike on a fleet).

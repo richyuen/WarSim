@@ -1,0 +1,528 @@
+{
+ "summary": {
+  "seed": 8693,
+  "A": "JAP",
+  "D": "USA",
+  "days": 20,
+  "carrier": {
+   "strikes": 29,
+   "fleetsStruck": 11,
+   "sunk": 66,
+   "perStrike": 2.276,
+   "hpUnits": 67.904,
+   "strikesThatSank": 28,
+   "wholeFleetStrikes": 5,
+   "wholeFleetShips": 8,
+   "overHalfUntouched": 1
+  },
+  "land": {
+   "strikes": 10,
+   "fleetsStruck": 3,
+   "sunk": 24,
+   "perStrike": 2.4,
+   "hpUnits": 24,
+   "strikesThatSank": 3,
+   "wholeFleetStrikes": 3,
+   "wholeFleetShips": 24,
+   "overHalfUntouched": 3
+  },
+  "seaBattles": 9,
+  "shipsLostInThem": 64
+ },
+ "battles": [
+  {
+   "h": 305,
+   "a": "USA",
+   "lostA": 0,
+   "b": "JAP",
+   "lostB": 0
+  },
+  {
+   "h": 337,
+   "a": "USA",
+   "lostA": 13,
+   "b": "JAP",
+   "lostB": 0
+  },
+  {
+   "h": 369,
+   "a": "USA",
+   "lostA": 10,
+   "b": "JAP",
+   "lostB": 0
+  },
+  {
+   "h": 405,
+   "a": "USA",
+   "lostA": 7,
+   "b": "JAP",
+   "lostB": 0
+  },
+  {
+   "h": 421,
+   "a": "USA",
+   "lostA": 1,
+   "b": "JAP",
+   "lostB": 0
+  },
+  {
+   "h": 433,
+   "a": "USA",
+   "lostA": 18,
+   "b": "JAP",
+   "lostB": 0
+  },
+  {
+   "h": 449,
+   "a": "USA",
+   "lostA": 5,
+   "b": "JAP",
+   "lostB": 0
+  },
+  {
+   "h": 457,
+   "a": "USA",
+   "lostA": 7,
+   "b": "JAP",
+   "lostB": 0
+  },
+  {
+   "h": 473,
+   "a": "USA",
+   "lostA": 3,
+   "b": "JAP",
+   "lostB": 0
+  }
+ ],
+ "strikes": [
+  {
+   "h": 76,
+   "kind": "land",
+   "wings": "1327:ENG",
+   "fleet": 1239,
+   "nation": "REP",
+   "ships": 8,
+   "sunk": 0,
+   "hpUnits": 4,
+   "untouched": true
+  },
+  {
+   "h": 84,
+   "kind": "land",
+   "wings": "1327:ENG",
+   "fleet": 1239,
+   "nation": "REP",
+   "ships": 8,
+   "sunk": 8,
+   "hpUnits": 4,
+   "untouched": true
+  },
+  {
+   "h": 100,
+   "kind": "land",
+   "wings": "1375:JAP,1376:JAP",
+   "fleet": 1126,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 0,
+   "hpUnits": 2.4,
+   "untouched": true
+  },
+  {
+   "h": 100,
+   "kind": "land",
+   "wings": "1375:JAP,1376:JAP",
+   "fleet": 1127,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 0,
+   "hpUnits": 2.4,
+   "untouched": true
+  },
+  {
+   "h": 108,
+   "kind": "land",
+   "wings": "1375:JAP,1376:JAP",
+   "fleet": 1126,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 0,
+   "hpUnits": 2.4,
+   "untouched": true
+  },
+  {
+   "h": 108,
+   "kind": "land",
+   "wings": "1375:JAP,1376:JAP",
+   "fleet": 1127,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 0,
+   "hpUnits": 2.4,
+   "untouched": true
+  },
+  {
+   "h": 116,
+   "kind": "land",
+   "wings": "1375:JAP,1376:JAP",
+   "fleet": 1126,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 0,
+   "hpUnits": 2.4,
+   "untouched": true
+  },
+  {
+   "h": 116,
+   "kind": "land",
+   "wings": "1375:JAP,1376:JAP",
+   "fleet": 1127,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 0,
+   "hpUnits": 2.4,
+   "untouched": true
+  },
+  {
+   "h": 124,
+   "kind": "land",
+   "wings": "1375:JAP",
+   "fleet": 1126,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 8,
+   "hpUnits": 0.8,
+   "untouched": true
+  },
+  {
+   "h": 124,
+   "kind": "land",
+   "wings": "1375:JAP",
+   "fleet": 1127,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 8,
+   "hpUnits": 0.8,
+   "untouched": true
+  },
+  {
+   "h": 329,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1107,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 2,
+   "hpUnits": 2,
+   "untouched": true
+  },
+  {
+   "h": 329,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1108,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 3,
+   "hpUnits": 3,
+   "untouched": true
+  },
+  {
+   "h": 333,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1108,
+   "nation": "USA",
+   "ships": 5,
+   "sunk": 4,
+   "hpUnits": 4,
+   "untouched": false
+  },
+  {
+   "h": 333,
+   "kind": "carrier",
+   "wings": "1463:JAP",
+   "fleet": 1107,
+   "nation": "USA",
+   "ships": 6,
+   "sunk": 1,
+   "hpUnits": 1,
+   "untouched": false
+  },
+  {
+   "h": 337,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1107,
+   "nation": "USA",
+   "ships": 5,
+   "sunk": 3,
+   "hpUnits": 3,
+   "untouched": false
+  },
+  {
+   "h": 357,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1106,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 0,
+   "hpUnits": 1.714,
+   "untouched": true
+  },
+  {
+   "h": 361,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1106,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 1,
+   "hpUnits": 1.857,
+   "untouched": true
+  },
+  {
+   "h": 361,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1107,
+   "nation": "USA",
+   "ships": 2,
+   "sunk": 1,
+   "hpUnits": 1,
+   "untouched": false
+  },
+  {
+   "h": 365,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1106,
+   "nation": "USA",
+   "ships": 7,
+   "sunk": 3,
+   "hpUnits": 2.143,
+   "untouched": false
+  },
+  {
+   "h": 369,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1106,
+   "nation": "USA",
+   "ships": 4,
+   "sunk": 3,
+   "hpUnits": 1.286,
+   "untouched": false
+  },
+  {
+   "h": 401,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1121,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 4,
+   "hpUnits": 4,
+   "untouched": true
+  },
+  {
+   "h": 405,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1121,
+   "nation": "USA",
+   "ships": 4,
+   "sunk": 3,
+   "hpUnits": 3,
+   "untouched": false
+  },
+  {
+   "h": 421,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1106,
+   "nation": "USA",
+   "ships": 1,
+   "sunk": 1,
+   "hpUnits": 1,
+   "untouched": false
+  },
+  {
+   "h": 425,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1102,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 3,
+   "hpUnits": 3,
+   "untouched": true
+  },
+  {
+   "h": 425,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1103,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 3,
+   "hpUnits": 3,
+   "untouched": true
+  },
+  {
+   "h": 429,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1100,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 2,
+   "hpUnits": 2,
+   "untouched": true
+  },
+  {
+   "h": 429,
+   "kind": "carrier",
+   "wings": "1462:JAP",
+   "fleet": 1103,
+   "nation": "USA",
+   "ships": 5,
+   "sunk": 2,
+   "hpUnits": 2,
+   "untouched": false
+  },
+  {
+   "h": 429,
+   "kind": "carrier",
+   "wings": "1463:JAP",
+   "fleet": 1102,
+   "nation": "USA",
+   "ships": 5,
+   "sunk": 2,
+   "hpUnits": 2,
+   "untouched": false
+  },
+  {
+   "h": 433,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1100,
+   "nation": "USA",
+   "ships": 6,
+   "sunk": 5,
+   "hpUnits": 5,
+   "untouched": false
+  },
+  {
+   "h": 449,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1101,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 5,
+   "hpUnits": 5,
+   "untouched": true
+  },
+  {
+   "h": 453,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1103,
+   "nation": "USA",
+   "ships": 3,
+   "sunk": 2,
+   "hpUnits": 2,
+   "untouched": false
+  },
+  {
+   "h": 453,
+   "kind": "carrier",
+   "wings": "1463:JAP",
+   "fleet": 1102,
+   "nation": "USA",
+   "ships": 3,
+   "sunk": 1,
+   "hpUnits": 1,
+   "untouched": false
+  },
+  {
+   "h": 457,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1102,
+   "nation": "USA",
+   "ships": 2,
+   "sunk": 2,
+   "hpUnits": 1.36,
+   "untouched": false
+  },
+  {
+   "h": 457,
+   "kind": "carrier",
+   "wings": "1463:JAP",
+   "fleet": 1100,
+   "nation": "USA",
+   "ships": 1,
+   "sunk": 1,
+   "hpUnits": 1,
+   "untouched": false
+  },
+  {
+   "h": 457,
+   "kind": "carrier",
+   "wings": "1463:JAP",
+   "fleet": 1103,
+   "nation": "USA",
+   "ships": 1,
+   "sunk": 1,
+   "hpUnits": 1,
+   "untouched": false
+  },
+  {
+   "h": 473,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1101,
+   "nation": "USA",
+   "ships": 3,
+   "sunk": 3,
+   "hpUnits": 3,
+   "untouched": false
+  },
+  {
+   "h": 477,
+   "kind": "carrier",
+   "wings": "1456:USA,1457:USA,1458:USA,1459:USA",
+   "fleet": 1129,
+   "nation": "JAP",
+   "ships": 16,
+   "sunk": 2,
+   "hpUnits": 3.686,
+   "untouched": true
+  },
+  {
+   "h": 477,
+   "kind": "carrier",
+   "wings": "1462:JAP,1463:JAP",
+   "fleet": 1098,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 2,
+   "hpUnits": 2.629,
+   "untouched": true
+  },
+  {
+   "h": 477,
+   "kind": "carrier",
+   "wings": "1462:JAP",
+   "fleet": 1099,
+   "nation": "USA",
+   "ships": 8,
+   "sunk": 1,
+   "hpUnits": 1.229,
+   "untouched": true
+  }
+ ]
+}

@@ -194,6 +194,17 @@ when taken up:
   it strikes with none of them lost before (8 such strikes on HEAD), and the ships carriers sink there within 25 % of HEAD's 64; on
   the 4 seeds × 1 year, the ships sunk with their whole fleet in one strike under a quarter of the
   carriers' (594 of 853 on HEAD); a unit test (red without); the ADR; the pin's entry.
+  Rule in (ADR-605, `docs/evidence/7.60/a.md`; each squadron strikes one ship, picked by hit
+  points): over half 8 → 1, bar 0: missed (a lone flotilla under 6.4 ships of fire); sunk 64 → 66;
+  whole-fleet 594 of 853 → 126 of 1,083. BLOCKERS, the user's (a tick, b close, c keep open).
+- [ ] 7.61 A land-based wing's strike sinks a whole fleet at once (found at 7.60, naval 7,
+  `docs/evidence/7.60/a.md` §4): `strikes` (PLAN 5.4c) spreads a wing's fire on a fleet over its
+  ships by hit points, as the carriers' did before ADR-605: of the ships land-based strikes sank on 4
+  seeds × 1 year (`carrierSink.ts <seed> - - 365`), 478 of 575 with their whole fleet in one strike;
+  8693's war (`carrierSink.ts 8693 JAP USA 20`) 24 of 24. AT: on the 4 seeds × 1 year, the ships
+  land-based strikes sank with their whole fleet in one strike under a quarter of theirs; on 8693's
+  war, strikes over half of a fleet that had lost none 3 → 1 or fewer; a land target's spread as
+  before (a unit test on each, the first red without); the ADR; the pin's entry.
 - [ ] 7.58 The editor's fleet laid up at the month start (found at 7.41b, editor 7,
   `docs/evidence/7.41/b.md`, ADR-602): a fleet the editor places at tick 0 is destroyed in that
   hour by the navy budget (`economic.ts`, step 1: "the fleets that stand … are laid up") when its

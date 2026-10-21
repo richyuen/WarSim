@@ -83,6 +83,8 @@ export const SEA_FIRE_SCALE = 2;
 export const SCREEN = 0.6;
 const SALT_TARGET = 0x5e47;
 const SALT_HUNT = 0x5e49;
+/** A carrier squadron's pick of the ship it strikes (PLAN 7.60). */
+export const SALT_CARRIER = 0x5e4a;
 /** Hours a fleet that broke off is out of every sea battle (PLAN 4.3c). */
 export const BREAK_HOURS = 24;
 /** The slack of a reach (km, `inReach`): a micrometre. */
@@ -776,27 +778,29 @@ export function navalCombatSystem(world: World): void {
         }
       }
       // Its carriers' wings (PLAN 5.4d): once in CARRIER_CYCLE hours, each wing that reaches the
-      // range strikes the enemy's surface ships of the battle, as a naval strike does (`strikes`):
-      // its aircraft × `shipEffectiveness` × NAVAL_STRIKE_FIRE, spread by the ships' hit points.
+      // range strikes the enemy's surface ships of the battle: each of its squadrons puts its
+      // aircraft × `shipEffectiveness` × NAVAL_STRIKE_FIRE on one ship, picked by hit points as a
+      // gun picks (PLAN 7.60, ADR-605). Spread over every ship, alike ships took the same wound and
+      // a fleet went down whole in one strike after two or three that sank nothing.
       if (world.tick % CARRIER_CYCLE === 0) {
         for (const wing of air.get(sf) ?? []) {
           const table = tableOf(false, CARRIER_SPOT_SHARE * wingRange(world, wing));
           if (table.total <= 0) continue;
-          // Its bombs on the fleets it strikes, for the page (PLAN 7.35a; as a strike's, PLAN 5.9):
-          // about each fleet at T0 to T2, on its ships as drawn at T3. Events, not state.
-          for (const g of new Set(table.cand.map((t) => ec.formation[t]!))) {
-            world.out.emit(world.tick, EventKind.StrikeHit, g, wing, f.x[g]!, f.y[g]!);
-            world.out.emit(world.tick, EventKind.AirStrike, wing, 0, f.x[g]!, f.y[g]!);
-          }
+          const struck = new Set<number>();
           for (const s of idx.get(wing) ?? []) {
             if (ec.strength[s]! <= 0) continue;
             const us = units[ec.unit[s]!]!;
-            for (const t of table.cand) {
-              const ut = units[ec.unit[t]!]!;
-              const share = (ut.hpPerUnit * ec.strength[t]!) / table.total;
-              const dmg = (ec.strength[s]! * shipEffectiveness(us, ut) * NAVAL_STRIKE_FIRE * buffAtk * share) / defOf(t) / ut.hpPerUnit;
-              if (dmg > 0) pending.set(t, (pending.get(t) ?? 0) + dmg);
-            }
+            const t = pick(table, s, SALT_CARRIER);
+            const ut = units[ec.unit[t]!]!;
+            const dmg = (ec.strength[s]! * shipEffectiveness(us, ut) * NAVAL_STRIKE_FIRE * buffAtk) / defOf(t) / ut.hpPerUnit;
+            if (dmg > 0) pending.set(t, (pending.get(t) ?? 0) + dmg);
+            struck.add(ec.formation[t]!);
+          }
+          // Its bombs on the fleets it strikes, for the page (PLAN 7.35a; as a strike's, PLAN 5.9):
+          // about each fleet at T0 to T2, on its ships as drawn at T3. Events, not state.
+          for (const g of [...struck].sort((a, b) => a - b)) {
+            world.out.emit(world.tick, EventKind.StrikeHit, g, wing, f.x[g]!, f.y[g]!);
+            world.out.emit(world.tick, EventKind.AirStrike, wing, 0, f.x[g]!, f.y[g]!);
           }
         }
       }

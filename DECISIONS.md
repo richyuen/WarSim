@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-605 · 2026-10-21 · accepted — Each squadron of a carrier's strike puts its fire on one ship, picked by hit points (PLAN 7.60; amends ADR-319's spread)
+
+- **Context** (found by the builder at PLAN 7.57, `docs/evidence/7.57/a.md` §4): a carrier's
+  strike spread each squadron's fire over every enemy surface ship in reach by hit points. A fleet's
+  ships are mostly alike, so they took the same wound and reached a whole ship in the same hour: two
+  or three strikes with nothing lost, then the fleet gone at once (594 of the 853 ships carriers
+  sank on 4 seeds × 1 year; 8693's Japan–United States war 64 of 64), while gunfire sinks ship by
+  ship.
+- **Decision.** Each squadron puts its whole fire (aircraft × `shipEffectiveness` ×
+  `NAVAL_STRIKE_FIRE`) on one ship, picked by hit points as a ship's gun picks (`pick`, salt
+  `SALT_CARRIER`). The mean fire is the same; fire beyond the ship's whole is lost, as a gun's. The
+  strike's bombs on the page fall on the fleets the picks hit.
+- **Evidence** (`docs/evidence/7.60/a.md`, `tools/diag/carrierSink.ts`): 8693's war: strikes sinking
+  over half of a fleet that had lost none 8 → 1, ships carriers sank 64 → 66, sea battles 6 → 9 (a
+  flotilla under half its ships breaks off and fights again); 4 seeds × 1 year: ships sunk with their
+  whole fleet in one strike 594 of 853 (70 %) → 126 of 1,083 (12 %).
+- **Consequences.** 7.60's first bar (0 strikes over half) is missed by one: a lone flotilla under
+  6.4 ships of fire (hour 449) loses 5 of 8 under any rule that keeps the fire; under the bar only by
+  less fire, tuning not done (ADR-554): BLOCKERS, the user's. A land-based wing's strike on a fleet
+  (`strikes`, PLAN 5.4c) spreads the same way (478 of its 575 ships sunk whole-fleet on the 4 seeds):
+  PLAN 7.61. `carrierAir1938.test.ts`'s exact damage restated for the pick. Pin 63d0cfd9 → 076aae87.
+
 ### ADR-604 · 2026-10-21 · accepted — A carrier's strike sinks ships: 7.41a's "sinks nothing" was its tool's miss (PLAN 7.57; no rule)
 
 - **Context** (found by the builder at PLAN 7.41a §3, not the critic): 8693's six Japan–United States

@@ -42,11 +42,13 @@ const seaEls = (w: World): Map<number, El> => {
 };
 
 type Kind = 'carrier' | 'land';
-type Strike = { h: number; kind: Kind; wings: string; fleet: number; nation: string; ships: number; sunk: number; hpUnits: number };
+type Strike = { h: number; kind: Kind; wings: string; fleet: number; nation: string; ships: number; sunk: number; hpUnits: number; untouched: boolean };
 const strikes: Strike[] = [];
 const battles: { h: number; a: string; lostA: number; b: string; lostB: number }[] = [];
 let prev = new Map<number, El>();
 const nationOf = new Map<number, number>();
+/** Each fleet's ships when first seen (PLAN 7.60: a strike on a fleet that had lost none). */
+const firstShips = new Map<number, number>();
 for (let t = 0; t < days * 24; t++) {
   sim.step(1, (w) => {
     const now = seaEls(w);
@@ -85,18 +87,24 @@ for (let t = 0; t < days * 24; t++) {
         hp += b.s - sAfter + (a?.w ?? 0) - b.w;
       }
       const n = w.formations.has(g) ? c.nation[g]! : (nationOf.get(g) ?? 0);
-      strikes.push({ h: w.tick, kind, wings: [...wings].map((x) => `${x}:${tag(c.nation[x]!)}`).join(','), fleet: g, nation: tag(n), ships, sunk, hpUnits: Math.round(hp * 1000) / 1000 });
+      strikes.push({ h: w.tick, kind, wings: [...wings].map((x) => `${x}:${tag(c.nation[x]!)}`).join(','), fleet: g, nation: tag(n), ships, sunk, hpUnits: Math.round(hp * 1000) / 1000, untouched: ships >= (firstShips.get(g) ?? 0) });
     }
+    for (const e of now.values()) if (!firstShips.has(e.f)) firstShips.set(e.f, [...now.values()].filter((x) => x.f === e.f).reduce((a, x) => a + x.s, 0));
     for (const f of new Set([...now.values()].map((e) => e.f))) nationOf.set(f, c.nation[f]!);
     w.out.events.length = 0;
     w.out.fires.length = 0;
     prev = now;
   });
 }
-const sum = (kind: Kind): { strikes: number; fleetsStruck: number; sunk: number; perStrike: number; hpUnits: number; strikesThatSank: number } => {
+type Sum = { strikes: number; fleetsStruck: number; sunk: number; perStrike: number; hpUnits: number; strikesThatSank: number; wholeFleetStrikes: number; wholeFleetShips: number; overHalfUntouched: number };
+const sum = (kind: Kind): Sum => {
   const s = strikes.filter((x) => x.kind === kind);
   const sunk = s.reduce((a, x) => a + x.sunk, 0);
-  return { strikes: s.length, fleetsStruck: new Set(s.map((x) => x.fleet)).size, sunk, perStrike: s.length ? Math.round((sunk / s.length) * 1000) / 1000 : 0, hpUnits: Math.round(s.reduce((a, x) => a + x.hpUnits, 0) * 1000) / 1000, strikesThatSank: s.filter((x) => x.sunk > 0).length };
+  // PLAN 7.60: strikes that sank the whole fleet they struck (and its ships); strikes that sank more
+  // than half of a fleet that had lost none before.
+  const whole = s.filter((x) => x.sunk > 0 && x.sunk === x.ships);
+  const overHalf = s.filter((x) => x.untouched && 2 * x.sunk > x.ships).length;
+  return { strikes: s.length, fleetsStruck: new Set(s.map((x) => x.fleet)).size, sunk, perStrike: s.length ? Math.round((sunk / s.length) * 1000) / 1000 : 0, hpUnits: Math.round(s.reduce((a, x) => a + x.hpUnits, 0) * 1000) / 1000, strikesThatSank: s.filter((x) => x.sunk > 0).length, wholeFleetStrikes: whole.length, wholeFleetShips: whole.reduce((a, x) => a + x.sunk, 0), overHalfUntouched: overHalf };
 };
 const war = A === '-' ? battles : battles.filter((b) => [b.a, b.b].includes(A) && [b.a, b.b].includes(D));
 const summary = { seed, A, D, days, carrier: sum('carrier'), land: sum('land'), seaBattles: war.length, shipsLostInThem: war.reduce((a, b) => a + b.lostA + b.lostB, 0) };
