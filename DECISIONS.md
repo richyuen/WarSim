@@ -306,7 +306,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   so the refills now keep a warship's price. The case now sinks the enemy side's fleets first, and
   the same war with them afloat asserts no refill (red without this rule).
 
-### ADR-578 · 2026-10-20 · proposed (the user's decision) — PLAN 7.46b3's bar on Japan's gold needs the saving in a land war, against ADR-557's floor
+### ADR-578 · 2026-10-20 · accepted (option a, the user's decision, 2026-10-21) — PLAN 7.46b3's bar on Japan's gold needs the saving in a land war, against ADR-557's floor
 
 - **Context.** PLAN 7.46b3's AT halves Japan's `gold` months on 4 seeds × 10 years with the chase
   (76 / 48 / 65 / 88 → 38 / 24 / 32 / 44 on 1307, 3613, 8693, 7019; now 52 / 82 / 62 / 66 with
@@ -336,6 +336,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Read since** (PLAN 7.47, ADR-579, `docs/evidence/7.47.md`): with 7.47's rule Japan's gold
   months are 37 / 45 / 27 / 44 against the bars 38 / 24 / 32 / 44: under on 1307 and 8693, at the
   bar on 7019, over on 3613 (of its 45, 24 a land war's). Option a or b decides 3613 alone.
+- **Decided** (2026-10-21, the user): a. ADR-557's floor stands; 7.46b3 closed, not done (no
+  rule, the pin unchanged). Also against b: PLAN 7.49 (R11-B1) needs the armies at war to fight,
+  and b moves their gold to a navy no enemy fleet calls for.
 
 ### ADR-577 · 2026-10-20 · accepted (the user's decision, 2026-10-20) — PLAN 7.42 and 7.29 closed not done; 7.40 and 7.41 wait on the next critic run
 

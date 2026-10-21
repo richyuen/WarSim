@@ -91,7 +91,7 @@ each, split when taken up:
       ship or two (no longer "without a navy", 23 and 22, 5 of 7019's in peace) and a war with no
       naval enemy while lost (10, 7), which the task's text leaves out by design.
       The first is PLAN 7.47.
-    - [ ] 7.46b3 The gold (7.46a §2, Japan): traced first with `navyLoss.ts` on the chase (the
+    - [x] 7.46b3 The gold (7.46a §2, Japan): traced first with `navyLoss.ts` on the chase (the
       treasury before and after, what the army and the refills take), then a rule with an ADR or the
       reason. AT: Japan's `gold` months on the 4 × 10 with the chase (88/65/76/48) halved; a unit
       test; the pin's entry.
@@ -101,6 +101,8 @@ each, split when taken up:
       navy rebuilt to a ship or two at war with a naval enemy (7.47's case), 144 a war with no naval
       enemy and the army under its peacetime share (ADR-557's floor), 40 a lost navy's climb.
       Without the land war's months the bar is out of reach on 3613 and 8693 (63, 38).
+      Closed (ADR-578 a, the user's decision, 2026-10-21): not done. With PLAN 7.47 37 / 45 / 27 / 44;
+      3613 over on a land war's months, which ADR-557's floor keeps for the army.
     - [x] 7.46c 7.39b's two bars read on the critic's 14 seeds × 30 years with the chase and
       7.46b's rules, and the world's armed power on the 4 × 10 reported (ADR-576): the chase
       adopted or not (ADR-573).

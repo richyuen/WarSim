@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.46b3: Japan's gold months need a saving in a land war, which ADR-557 rules out; no rule (2026-10-20, ADR-578 proposed, the user's decision)
+### RESOLVED 2026-10-21 (ADR-578, option a, the user's decision: the floor stands, 7.46b3 closed not done) · PLAN 7.46b3: Japan's gold months need a saving in a land war, which ADR-557 rules out; no rule (2026-10-20, ADR-578 proposed, the user's decision)
 - **The bar:** Japan's `gold` months on 4 seeds × 10 years with the chase halved, 76 / 48 / 65 / 88
   → 38 / 24 / 32 / 44 (seeds 1307, 3613, 8693, 7019).
 - **What moved:** nothing this task (traced, no rule). With ADR-574 and ADR-575 they stand at

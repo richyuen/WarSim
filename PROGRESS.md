@@ -21026,3 +21026,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   start, not a measured figure. The emergent score (6) is answered by PLAN 7.49 (R11-B1), whose first
   line carries it; an exception to ADR-486. `plan:archive` moved 7.40.
 - **Next:** PLAN 7.49.
+
+## 2026-10-21 — ADR-578 option a (the user's decision): PLAN 7.46b3 closed not done
+
+- ADR-557's floor stands: a nation's army under its peacetime share at war is not starved for a warship
+  against an enemy with no fleet. 7.46b3 closed, not done (Japan's gold months 37 / 45 / 27 / 44 with
+  PLAN 7.47; 3613 over on a land war's months). BLOCKERS entry resolved. 7.46 stays open on 7.46b2.
+- **Next:** PLAN 7.49.
