@@ -5,6 +5,19 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.49d: the transports cannot carry the home armies to the bar; no rule (2026-10-21, ADR-591 proposed, the user's decision)
+- **The bar:** the island share (land formations of nations at war on a landmass with no front of
+  their nation) on the 48 saves after 60 days under 10 %.
+- **What moved:** nothing (measured, no rule; `docs/evidence/7.49/d.md`). HEAD 21.8 % / 29.6 % at
+  years 10 / 20. 62–66 % of the island formations are of nations with a front in each war on another
+  landmass, which no rule ships (`planLanding` only lands in a war with no front). A perfect ferry
+  to their own front ports would leave 13.2 % / 21.1 % (weekly loading), 10.7 % / 17.6 % (daily):
+  one or two transport groups a nation against 8.5 × their room in island men.
+- **What is left:** the user's (ADR-591): (a, recommended) the ferry, bar reset to under 20 % of the
+  48 saves together; (b) the ferry and transports bought for a home army, bar kept; (c) 7.49d closed
+  not done; (d) a muster-style redeploy. A second cause found, a defect (formations sent to a
+  port's land cell, loaded only near its water): PLAN 7.49f. Meanwhile the loop takes 7.49e.
+
 ### PLAN 7.49c: the bar met, Britain's guard missed on drift; the rule is in (2026-10-21, ADR-590; the user's decision)
 - **The bar:** on the 48 saves, nations at war with 3 formations or fewer stopped at the month start by
   the warship's saving with no order, 0 (10 and 11 before): **met** (0 / 0, all 48 order a division).

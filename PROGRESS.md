@@ -21165,3 +21165,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `navyBudget1938.test.ts` (new case red without; ADR-575/579's cases now give Norway four
   bled divisions). Specs by hand: none (no UI). 7.49's commits: 4 of 20.
 - **Next:** PLAN 7.49d (the sea powers' home armies).
+
+## 2026-10-21 — PLAN 7.49d: the home armies measured; the transports cannot carry them to the bar (ADR-591 proposed)
+
+- **Measured** (`tools/diag/islandArmies.ts`, 60 days of each of the 48 saves, `docs/evidence/7.49/d.md`):
+  the island share 21.4 % / 27.7 % at the saves (the measure's figure, reproduced), **21.8 % / 29.6 %**
+  after 60 days (bar under 10 %). The watched nations board 6 / 0 formations in 60 days.
+- 62–66 % of the island formations are of nations with a land front in each war, on another landmass
+  (Britain's 117 at London on 7019, the United States' 135 and 127 on 5683 and 8693): `planLanding`
+  lands only in a war with no front, and no rule ships a home army to its own front overseas.
+- A perfect ferry (all transport room each round trip, straight km, 16.5 km/h) leaves 13.2 % / 21.1 %
+  loading weekly, 10.7 % / 17.6 % daily: the bar is out of the transports' reach. BLOCKERS entry;
+  ADR-591 proposed, the user's (a, recommended: the ferry with the bar under 20 % of the 48 saves
+  together; b the ferry and transports bought, bar kept; c closed not done; d a muster-style redeploy).
+- **Second cause found, a defect:** `planLanding` sends formations to a port's land cell but loads
+  only those near its water; 19 of 579 ports have the water 4–11 cells off (2081 year 20: Germany's 56
+  on Britain, `send` all 60 days, none aboard). Filed as PLAN 7.49f.
+- No rule: the pin unchanged (da485175). Specs by hand: none (no UI).
+- **Next:** PLAN 7.49e (the defenders' purse), then 7.49f.

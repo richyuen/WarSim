@@ -103,12 +103,26 @@ when taken up:
       set, not measured: the measured-first step may show the transports cannot carry it, then
       the user's, ADR-554); a unit test (red without); engaged worldwide and per war read; the ADR; the
       pin's entry; `--profile`.
+      Measured (`docs/evidence/7.49/d.md`, `tools/diag/islandArmies.ts`): 21.8 % / 29.6 % after 60
+      days on HEAD; 62–66 % of them of nations fronted in each war overseas, which no rule ships; a
+      perfect ferry leaves 13.2 % / 21.1 % (10.7 % / 17.6 % loading daily): the transports cannot
+      carry it. BLOCKERS, the user's (ADR-591 proposed: the ferry with the bar under 20 % of the 48
+      saves together, recommended; the ferry and transports bought, the bar kept; closed not done).
     - [ ] 7.49e The defenders' purse (measure §4.4): late, nations at war of income 150–500 hold
       4.5–4.8 formations, 91–98 of 124–127 stopped by the price (1,001) and RESERVE_MONTHS (3) of
       income kept back. Measured first: what such a nation raises in a year with the reserve at war
       cut while its army is under its peacetime share. AT: the land formations of the band at war
       after 180 days of each of the 48 saves at least 1.5 × those of HEAD's same run; a unit test
       (red without); the ADR; the pin's entry.
+    - [ ] 7.49f The landing's port (found at 7.49d, `docs/evidence/7.49/d.md` §4): `planLanding`
+      sends formations to its port's land cell but loads only those within AT_PORT_CELLS of the
+      port's water (`tryLanding` takes either); at 19 of the 579 ports the water is 4–11 cells off,
+      so the army stands at the port and is never loaded (2081 year 20: Germany's port 602 on
+      Britain, 56 island formations on `send` all 60 days, none aboard). AT: on the 48 saves, the
+      nations on `send` 30 days or more of 60 with none boarded (`islandArmies.ts`) 10 → 0; formations
+      boarded by the island nations in 60 days read (6 / 0 on HEAD); a unit test (red without:
+      formations at a port whose water is beyond AT_PORT_CELLS go aboard); engaged read; the ADR;
+      the pin's entry.
 - [ ] 7.50 The H-bomb at the floor on a city of a million, and the spot struck again (R11-B2): seed
   1129, 14 March 1954, the Soviet Union on Greenock, a hydrogen bomb, 1,105,514 dead (1,071,000
   civilians) at utility 0.026, against counters of 1.3k–7.5k men; PLAN 7.38's bar ("no burst under

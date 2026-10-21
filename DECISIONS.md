@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-591 · 2026-10-21 · proposed (the user's decision) — PLAN 7.49d: the transports cannot carry the home armies to the bar; the ferry and its bar
+
+- **Context** (`docs/evidence/7.49/d.md`). The island share (land formations of nations at war
+  standing on a landmass with no front of their nation) after 60 days of the 48 saves is 21.8 % and
+  29.6 % on HEAD; the AT's bar is under 10 %, set before the measure, with "the measured-first step
+  may show the transports cannot carry it, then the user's". 62–66 % of the island formations are
+  of nations with a land front in each war on another landmass (Britain at London, the United
+  States, Japan): `planLanding` plans a landing only in a war with no front (ADR-511), so no rule
+  ships them. A perfect ferry to the nation's own front ports, all its transport room each round
+  trip at 16.5 km/h over straight lines, would leave 13.2 % / 21.1 % loading weekly and 10.7 % /
+  17.6 % loading daily: one or two groups of 24,000 men a nation against 8.5 × their room in
+  island men, and no own port on the front's land for 217 at year 20.
+- **Options:**
+  - **a (recommended):** the ferry built as 7.49d1 (a fronted nation's island army, beyond
+    DEPLOY_RANGE of its own front, boards its transports for its own port on its front's land
+    nearest them, in `planLanding`'s turn and lock), the bar reset to what the fleet carries: the
+    island share of the 48 saves together after 60 days under 20 % (24.7 % at day 1, 25.9 % at day
+    60 on HEAD; the perfect weekly ferry 17.3 %); after PLAN 7.49f.
+  - **b:** the ferry, and transports bought for a home army (ADR-518's slot opened to a fronted
+    nation with island formations of more men than its room), the bar kept at 10 %.
+  - **c:** 7.49d closed not done; the home armies stay (the next report judges).
+  - **d:** a home army redeployed to the theatre as overseas muster raises new ones (a sealift
+    abstraction; against "sealift exists since PLAN 4.5", not recommended).
+- **Meanwhile:** the loop takes 7.49e, then 7.49f (the send/load port defect, not the user's).
+
 ### ADR-590 · 2026-10-21 · accepted — At war with a naval enemy, an army of a few formations or none orders before the warship's saving (PLAN 7.49c; amends ADR-575, ADR-579)
 
 - **Context.** `docs/evidence/7.49/c.md`, measure §4.2. ADR-575 (and ADR-579 for a navy rebuilt
