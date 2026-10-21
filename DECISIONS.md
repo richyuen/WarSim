@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-592 · 2026-10-21 · proposed (the user's decision) — PLAN 7.49e: the defenders' purse cannot raise the band's army to the bar; the reserve cut and its bar
+
+- **Context** (`docs/evidence/7.49/e.md`, `tools/diag/purse.ts`). The band (nations at war of
+  income 150–500 a month, 126 / 124 on the year-10 / year-20 saves) holds 564 / 564 land
+  formations after 180 days on HEAD; the AT's bar is 1.5 × that, 846. Gold stops the army's order
+  in 549 / 432 of the band's months: the division's 1,001 and RESERVE_MONTHS (3) of income. With
+  the reserve cut to none at war while the army is under its peacetime share the band reaches
+  616 / 603 (orders 60 → 150, 67 → 118); with one month, 596 / 590; with no reserve and no slot
+  limit, 632 / 615. What stops it then: gold still (284 / 218 months; a division is 2–7 months of
+  the band's whole gross income), one order in training at a time under 400 a month (two
+  divisions in 180 days at the most, 252 for the band against a gap of 282, before the war's
+  losses), and the warship's saving (ADR-575; 70 / 46 months). Over a year the cut leaves 11 % /
+  14 % more formations, orders doubled, and no nation in debt or disbanding.
+- **Options:**
+  - **a (recommended):** the reserve cut landed (`docs/evidence/7.49/e/reserve-cut.diff`,
+    WAR_RESERVE_MONTHS 0) with the bar reset to what the purse buys: the band's formations after
+    180 days at least 1.08 × HEAD's on the 48 saves together (1,219 against 1,128; the measure 1.08).
+    It is safe (no debt in a year) and doubles the band's orders; its effect on the fronts is small.
+  - **b:** the reserve cut and a cheaper order: at war under its peacetime share, a nation that
+    cannot pay the infantry division orders the cadre division (12 infantry and 2 guns against
+    24, 3 and an AT gun; about half the price), as a numbered task with its own AT; the bar kept
+    at 1.5 ×. Two divisions in 180 days under one slot still bound it, so this may also miss.
+  - **c:** 7.49e closed not done; no rule (the next report judges).
+- **Not taken:** the slots (one order at a time under 400 a month, `PARALLEL_INCOME`) and the
+  warship's saving (ADR-575, the user's line through ADR-578 a and ADR-590) are rules of their own,
+  not the purse's.
+- **Meanwhile:** no rule, the pin unchanged; the loop takes 7.49f.
+
 ### ADR-591 · 2026-10-21 · proposed (the user's decision) — PLAN 7.49d: the transports cannot carry the home armies to the bar; the ferry and its bar
 
 - **Context** (`docs/evidence/7.49/d.md`). The island share (land formations of nations at war

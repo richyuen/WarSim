@@ -21183,3 +21183,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   on Britain, `send` all 60 days, none aboard). Filed as PLAN 7.49f.
 - No rule: the pin unchanged (da485175). Specs by hand: none (no UI).
 - **Next:** PLAN 7.49e (the defenders' purse), then 7.49f.
+
+## 2026-10-21 — PLAN 7.49e: the defenders' purse measured; the bar out of the purse's reach (ADR-592 proposed)
+
+- **Measured** (`tools/diag/purse.ts`, 180 days of each of the 48 saves, `docs/evidence/7.49/e.md`):
+  the band (at war, income 150–500; 126 / 124 nations) holds 564 / 564 land formations on HEAD, bar
+  846. The reserve cut at war under the peacetime share: none kept 616 / 603, a month 596 / 590; no
+  reserve and no slot limit 632 / 615. Gold still stops 284 / 218 band-months (a division is 2–7
+  months of the band's gross), one slot under 400 a month allows two divisions in 180 days, and the
+  warship's saving (ADR-575) 70 / 46. Over a year the cut gives 11 % / 14 % more, no debt.
+- BLOCKERS entry; ADR-592 proposed, the user's (a, recommended: the cut, bar 1.08 × of the 48 saves
+  together; b the cut and the cadre division at war, bar kept; c closed not done). The rule tried is
+  `docs/evidence/7.49/e/reserve-cut.diff`.
+- No rule: the pin unchanged (da485175). Specs by hand: none (no UI).
+- **Next:** PLAN 7.49f (the landing's port).

@@ -114,6 +114,11 @@ when taken up:
       cut while its army is under its peacetime share. AT: the land formations of the band at war
       after 180 days of each of the 48 saves at least 1.5 × those of HEAD's same run; a unit test
       (red without); the ADR; the pin's entry.
+      Measured (`docs/evidence/7.49/e.md`, `tools/diag/purse.ts`): 564 / 564 on HEAD, bar 846; the
+      reserve cut 616 / 603 (none kept), 596 / 590 (a month); no reserve and no slot limit 632 / 615:
+      the price, one slot under 400 a month and the warship's saving bound it. BLOCKERS, the user's
+      (ADR-592 proposed: the cut with the bar at 1.08 ×, recommended; the cut and the cadre division,
+      the bar kept; closed not done).
     - [ ] 7.49f The landing's port (found at 7.49d, `docs/evidence/7.49/d.md` §4): `planLanding`
       sends formations to its port's land cell but loads only those within AT_PORT_CELLS of the
       port's water (`tryLanding` takes either); at 19 of the 579 ports the water is 4–11 cells off,

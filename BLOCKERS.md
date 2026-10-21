@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.49e: the defenders' purse cannot raise the band's army to the bar; no rule (2026-10-21, ADR-592 proposed, the user's decision)
+- **The bar:** the land formations of nations at war of income 150–500 after 180 days of each of
+  the 48 saves at least 1.5 × HEAD's same run (564 / 564 → 846).
+- **What moved** (`docs/evidence/7.49/e.md`, measured, no rule): the reserve cut at war under the
+  peacetime share, none kept, 616 / 603; one month, 596 / 590; no reserve and no slot limit, 632 /
+  615. Gold still stops 284 / 218 band-months, one order in training at a time allows two divisions
+  in 180 days (252 against the gap of 282), and the warship's saving 70 / 46 months.
+- **What is left:** the user's (ADR-592): (a, recommended) the cut landed, bar 1.08 × of the 48
+  saves together; (b) the cut and the cadre division ordered at war, bar kept, as a numbered task;
+  (c) 7.49e closed not done. Meanwhile the loop takes 7.49f.
+
 ### PLAN 7.49d: the transports cannot carry the home armies to the bar; no rule (2026-10-21, ADR-591 proposed, the user's decision)
 - **The bar:** the island share (land formations of nations at war on a landmass with no front of
   their nation) on the 48 saves after 60 days under 10 %.

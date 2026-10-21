@@ -1,0 +1,36 @@
+diff --git a/src/sim/ai/economic.ts b/src/sim/ai/economic.ts
+index 4d251c8..8d65f81 100644
+--- a/src/sim/ai/economic.ts
++++ b/src/sim/ai/economic.ts
+@@ -137,6 +137,11 @@ export const RESERVE_MONTHS = 3;
+  * Union, 3,100 to 4,200 gold on 950 a month, never held a group's 980 and three months more.
+  */
+ export const DELIVERY_RESERVE_MONTHS = 1;
++/**
++ * The months of income a nation at war keeps back from its army's orders while its army stands
++ * under its peacetime share (PLAN 7.49e, ADR-592).
++ */
++export const WAR_RESERVE_MONTHS = 0;
+ export const PARALLEL_INCOME = 400;
+ export const MAX_PARALLEL = 6;
+ export const POOR_INCOME = 20;
+@@ -453,7 +458,9 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
+           if (t < 0) return;
+           let rule = rules.templates[t]!;
+           const plain = rules.templates[mix.infantry];
+-          if (plain && rule.gold > plain.gold && nc.gold[n]! < rule.gold + RESERVE_MONTHS * income) {
++          // The reserve kept back (PLAN 7.49e, ADR-592): WAR_RESERVE_MONTHS at war while the army is under its peacetime share.
++          const reserve = (atWar && upkeep < peace ? WAR_RESERVE_MONTHS : RESERVE_MONTHS) * income;
++          if (plain && rule.gold > plain.gold && nc.gold[n]! < rule.gold + reserve) {
+             t = mix.infantry;
+             rule = plain;
+           }
+@@ -469,7 +476,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
+           if (balance - newUpkeep <= need) return;
+           // It saves for a warship: an order only with the warship's price left over the reserve.
+           if (shipPrice > 0 && (saves || upkeep >= peace) && nc.gold[n]! - rule.gold < shipPrice + RESERVE_MONTHS * income) return;
+-          if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income || nc.manpower[n]! < rule.manpower) return;
++          if (nc.gold[n]! < rule.gold + reserve || nc.manpower[n]! < rule.manpower) return;
+           if (queueFormation(world, n, t) === 0) return;
+           nc.builds[n] = nc.builds[n]! + 1;
+           ordered++;
