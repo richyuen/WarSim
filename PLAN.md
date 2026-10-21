@@ -200,6 +200,36 @@ when taken up:
   spec, red on France's before); the editor case meets at sea within 30 days, or a BLOCKERS entry
   with the measured cause, the user's to accept. Stop: two full re-measures flat, the bar is the
   user's (ADR-554).
+  Measured (`docs/evidence/7.41/a.md`; `tools/diag/seaRows.ts` sampled at the critic's six hours,
+  and the page's rows): the critic's probe counts a battle "rowless" by `pair === null` and never
+  reads `strike`; 8693's 9 samples are all carrier strikes, each with its row in the page
+  ("Carrier strike: Japan on United States's ships"). What has no row is a battle no weapon reaches
+  yet (its fleets closing; ADR-542 kept it so): 2081 h 42, Britain's carrier 264 km from Germany's
+  battle squadron, 11 of 86 battle-hours. Three causes, a part each:
+    - [x] 7.41a A battle no weapon reaches has its row: "Fleets closing: {a} and {b}", after the
+      strikes, its click framing its nearest two fleets at war. AT: on 8693 (20 days) and 2081 (7
+      days) every sampled battle of the two wars has a row in the page, the closing one's click puts
+      both its fleets on the screen (a spec, red before: 2081 h 42 has none); the ADR (amends
+      ADR-542's "no row"); the pin unchanged (view only).
+      Done (ADR-601, `docs/evidence/7.41/a.md`): 9 of 9 and 15 of 15 (14 before) in the page; from
+      2081's closing row both fleets on the screen at 429 m/px.
+    - [ ] 7.41b Hulls against the sea: at 20 m/px the middle of every nation's hull at least 40
+      (summed RGB) from the sea's colour there, every nation of the 1938 world counted (a spec, red
+      on France's before); the ADR.
+    - [ ] 7.41c The editor's fleets: two navies placed face to face in the North Sea by the editor
+      fight no battle in 30 days (`critic/c11_g_4877.json`). Traced first (`seaMeet.ts` on the
+      critic's scenario: their orders, detection, the war's sides). AT: the case meets at sea within
+      30 days, or a BLOCKERS entry with the measured cause, the user's to accept; a unit test (red
+      without) if a rule; the pin's entry.
+- [ ] 7.57 A carrier's strike sinks nothing (found at 7.41, naval 7, `docs/evidence/7.41/a.md`
+  §3): `navalCombatSystem` spreads a wing's strike over every surface ship in reach by its hit
+  points, so on 8693 Japan's carrier group (two wings of 24) puts 0.4 of a ship's hit points on
+  each of 16 American destroyers a strike, and its six battles in 20 days (49 hours, strikes every
+  4) sink 0 ships while the fleets part after three strikes. Measured first: carrier battles' ships
+  sunk per strike on the critic's 14 seeds' year 1 against a naval bomber group's strike on land
+  targets (PLAN 5.9). AT: 8693's six battles sink at least one ship (0 on HEAD); carrier strikes'
+  ships sunk per strike on 4 seeds × 1 year read before and after; a unit test (red without); the
+  ADR; the pin's entry.
 - [ ] 7.51 Aircraft (aircraft 7, needs 8, beyond 7.49): the late air war unchanged, 3,160 air
   battles in year 1 and 120 a world-year after on the same 14 seeds (122 on `bcbc99c`), sorties
   aloft after year 1 a mean of 8.1 (`critic/c11_cmp.json`, `c11_h_1307.json`); the critic reads it as

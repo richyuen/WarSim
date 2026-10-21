@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-601 · 2026-10-21 · accepted — A sea battle no weapon reaches yet has its row, by its two nearest fleets at war (PLAN 7.41a; amends ADR-542's "no row")
+
+- **Context** (critic run 11, naval 7: "9 of 9 Japan–USA battles and 7 of 11 Germany–UK battles have
+  no ticker row", `critic/c11_n_8693_JAP_USA.json`, `c11_n_2081_GER_ENG.json`). Measured
+  (`docs/evidence/7.41/a.md`): the critic's probe counts `pair === null` and never reads `strike`.
+  8693's 9 samples are all carrier strikes, each with its row in the page ("Carrier strike: Japan
+  on United States's ships"; `a-strike-row-8693.png`): disputed by that evidence. What has no row is
+  a battle whose fleets see each other while no weapon reaches (closing): 2081 h 42, Britain's
+  carrier 264 km from Germany's battle squadron; 11 of 86 battle-hours of 2081's two wars in 7 days.
+  ADR-542 kept such a battle without a row.
+- **Decision** (view only). The snapshot's sea battle carries its nearest two fleets at war whatever
+  their distance, their middle and the cells between (`closing`; SEA_STRIDE 16 → 20,
+  `SeaBattleView.closing`). The ticker lists a battle with neither a pair nor a strike after the
+  strikes: "Fleets closing: {a} and {b}" ("Show the two fleets closing"), and its click frames
+  those two with SEA_PAIR_MARGIN, as a pair's. The rows of pairs and strikes keep their order and
+  their frames: the specs that index them by `pair` and `strike` take the same rows.
+- **Not chosen.** The middle of a closing row on the water (ADR-494's for a pair): two fleets 264 km
+  apart are framed whole whatever lies between; the frame's middle on land does not hide either.
+- **Consequences.** In the page at the critic's six-hour samples (`a-rows-8693.json`,
+  `a-rows-2081.json`): every sea battle has its row at every sample, the war's battles 9 of 9 on
+  8693 and 15 of 15 on 2081 (14 before). From the closing row on 2081 at hour 41 both fleets on the
+  screen at 429 m/px (`tests/e2e/seaClosingRow1938.spec.ts`, `a-closing-row-2081.png`). The sim
+  untouched: the pin unchanged.
+- **Found.** Japan's carrier strikes on 8693 sink nothing in 49 hours (each spread over 16
+  destroyers, 0.4 of a ship each): PLAN 7.57.
+
 ### ADR-600 · 2026-10-21 · accepted — Within a year of a burst, a place struck in the war needs twice the men it found (PLAN 7.50b; amends ADR-569)
 
 - **Context** (critic R11-B2, `docs/evidence/7.50/measure.md`). On the critic's seed 2081 Germany

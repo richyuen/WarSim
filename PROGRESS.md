@@ -21345,3 +21345,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   unit test per rule, the pin unchanged (seed 99's year has no warhead). Greenock is taken 46 days
   later at 0.101, said in the read.
 - **Next:** PLAN 7.41 (the war at sea seen).
+
+## 2026-10-21 — PLAN 7.41a: a sea battle's fleets closing have their row (ADR-601)
+
+- **Measured** (`docs/evidence/7.41/a.md`; `seaRows.ts` now samples the critic's six hours): the
+  critic's "9 of 9 Japan–USA battles with no row" (8693) are carrier strikes, each with its row in
+  the page; its probe reads `pair` alone. What had none: a battle no weapon reaches yet (fleets
+  closing; 2081 h 42, a carrier 264 km from a battle squadron; 11 of 86 battle-hours). 7.41 split
+  in three (a rows, b hulls against the sea, c the editor's fleets).
+- **Rule** (view only): the snapshot's battle carries its nearest two fleets at war (SEA_STRIDE 20);
+  such a battle is listed "Fleets closing: {a} and {b}" after the strikes, its click framing both.
+- **AT:** in the page at the critic's samples, the war's battles with a row 9 / 9 (8693) and 15 / 15
+  (2081, 14 before); every battle has its row at every sample. Pin unchanged (view only).
+- **Found:** Japan's carrier strikes on 8693 sink nothing in 49 hours (each spread over 16
+  destroyers, 0.4 of a ship each): PLAN 7.57.
+- **Test:** `seaClosingRow1938.spec.ts` (red before). Specs by hand: it, `carrierStrikeRow1938`,
+  `seaRow1938`, `seaBattleSeen1938`, `navalDemo1938`, `seaBattle1938` (7 passed).
+- **Next:** PLAN 7.41b (hulls against the sea at 20 m/px).

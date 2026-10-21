@@ -1507,14 +1507,23 @@ export class SimServer {
         // the line between the two nearest the middle whose cell is no land (PLAN 7.19b).
         let pair: [number, number, number, number] = [mx, my, -1, -1];
         let best = Infinity;
+        // Its nearest two fleets at war whatever their distance (PLAN 7.41a): where no weapon
+        // reaches yet (the fleets closing), its row frames them.
+        let near: [number, number, number, number] = [mx, my, -1, -1];
+        let nearBest = Infinity;
         const live = b.fleets.filter((f) => world.formations.has(f));
         for (let i = 0; i < live.length; i++) {
           for (let j = i + 1; j < live.length; j++) {
             const [f, g] = [live[i]!, live[j]!];
-            if (!world.wars.atWar(fc0.nation[f]!, fc0.nation[g]!) || !inShipReach(world, f, g)) continue;
+            if (!world.wars.atWar(fc0.nation[f]!, fc0.nation[g]!)) continue;
             const dx = wrapDx(world, fc0.x[f]!, fc0.x[g]!);
             const dy = fc0.y[g]! - fc0.y[f]!;
             const d = Math.hypot(dx, dy);
+            if (d < nearBest) {
+              nearBest = d;
+              near = [(((fc0.x[f]! + dx / 2) % w) + w) % w, fc0.y[f]! + dy / 2, Math.abs(dx), Math.abs(dy)];
+            }
+            if (!inShipReach(world, f, g)) continue;
             if (d >= best) continue;
             best = d;
             let at = 0.5;
@@ -1532,7 +1541,7 @@ export class SimServer {
         // With no such pair, the fleet its carriers' wings strike (PLAN 7.35a): a row of its own.
         const hit = pair[2] < 0 ? strikeTarget(world, live) : null;
         const strike = hit ? [fc0.x[hit.target]!, fc0.y[hit.target]!, fc0.nation[hit.carrier]!] : [0, 0, 0];
-        return [b.x, b.y, r, b.a, b.b, mx, my, x1 - x0, y1 - y0, ...pair, ...strike];
+        return [b.x, b.y, r, b.a, b.b, mx, my, x1 - x0, y1 - y0, ...pair, ...strike, ...near];
       }),
     );
     // The sorties in the air (PLAN 5.7a): what `sortieAt` needs, the launch from this tick.

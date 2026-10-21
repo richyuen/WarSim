@@ -55,6 +55,8 @@ const kit = (w: World, f: number): { cls: Record<string, number>; gunKm: number;
 
 type Track = { start: number; hours: number; pairHours: number; rowHours: number; sunk: number; sunkNoPair: number; sunkNoRow: number; sunkRowGone: number; prevRow: boolean; lastLost: number; a: string; b: string; x: number; y: number; nearest: { km: number; p: string; q: string }[]; fleets: Set<string> };
 const tracks = new Map<SeaBattle, Track>();
+/** PLAN 7.41a: at every sixth hour (the critic's samples, `c11_n_seabattles.mjs`), each battle of `A` or `D` and its row: a pair, a carrier strike or none. */
+const samples: { h: number; battles: { a: string; b: string; row: 'pair' | 'strike' | 'none'; km: number; reach: string }[] }[] = [];
 const done: Track[] = [];
 const fleetText = (w: World, f: number): string => {
   const c = w.formations.cols;
@@ -111,6 +113,25 @@ for (let t = 0; t < days * 24; t++) {
       done.push(tr);
       tracks.delete(rec);
     }
+    if (w.tick % 6 === 0) {
+      const bs = [];
+      for (const rec of w.seaBattles) {
+        if (![rec.a, rec.b].includes(id(A)) && ![rec.a, rec.b].includes(id(D))) continue;
+        const live = rec.fleets.filter((f) => w.formations.has(f));
+        let pair = false;
+        let best = { km: Infinity, reach: '' };
+        for (let i = 0; i < live.length; i++)
+          for (let j = i + 1; j < live.length; j++) {
+            const [f, g] = [live[i]!, live[j]!];
+            if (!w.wars.atWar(c.nation[f]!, c.nation[g]!)) continue;
+            if (inShipReach(w, f, g)) pair = true;
+            const km = seaKm(w, c.x[f]!, c.y[f]!, c.x[g]!, c.y[g]!);
+            if (km < best.km) best = { km: Math.round(km * 10) / 10, reach: `${fleetText(w, f)} | ${fleetText(w, g)} | eng${c.engaged[f]}/${c.engaged[g]} ret${c.retreat[f]}/${c.retreat[g]}` };
+          }
+        bs.push({ a: tag(rec.a), b: tag(rec.b), row: pair ? ('pair' as const) : strikeTarget(w, live) ? ('strike' as const) : ('none' as const), km: best.km, reach: best.reach });
+      }
+      if (bs.length > 0) samples.push({ h: w.tick, battles: bs });
+    }
     w.out.events.length = 0;
     w.out.fires.length = 0;
   });
@@ -131,6 +152,6 @@ const sum = (rs: typeof rows) => ({
   sunkRowGone: rs.reduce((s, r) => s + r.sunkRowGone, 0),
 });
 const summary = { seed, A, D, days, all: sum(rows), mine: sum(mine) };
-writeFileSync(out, JSON.stringify({ ...summary, rows }, null, 1));
+writeFileSync(out, JSON.stringify({ ...summary, rows, samples }, null, 1));
 console.log(JSON.stringify(summary, null, 1));
 for (const r of mine.filter((r) => r.rowHours < r.hours)) console.log(JSON.stringify({ a: r.a, b: r.b, start: r.start, hours: r.hours, pairHours: r.pairHours, rowHours: r.rowHours, sunk: r.sunk, sunkNoPair: r.sunkNoPair, sunkNoRow: r.sunkNoRow, fleets: r.fleets, nearest: r.nearest.slice(0, 2) }));

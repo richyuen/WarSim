@@ -34,7 +34,8 @@ export function Ticker({
   orders?: { seq: number; kind: string; text: string }[];
   onOrder?: (seq: number) => void;
   /** The sea battles going on (PLAN 4.10b), before the orders: beside a panel the first only. */
-  seas?: { key: string; text: string; strike?: boolean }[];
+  /** `kind`: two fleets within reach (`pair`), a carrier's strike, or its fleets closing (PLAN 7.41a); its tooltip says what the click shows. */
+  seas?: { key: string; text: string; kind?: 'pair' | 'strike' | 'closing' }[];
   onSea?: (key: string) => void;
 }) {
   return (
@@ -54,7 +55,7 @@ export function Ticker({
         })}
         {(short ? seas.slice(0, 1) : seas).map((b) => (
           <li key={`sea-${b.key}`}>
-            <button type="button" class="ticker-row sea-battle" data-testid="sea-battle-row" title={t(b.strike ? 'ticker.toCarrierStrike' : 'ticker.toSeaBattle')} onClick={() => onSea(b.key)}>
+            <button type="button" class="ticker-row sea-battle" data-testid="sea-battle-row" title={t(b.kind === 'strike' ? 'ticker.toCarrierStrike' : b.kind === 'closing' ? 'ticker.toSeaClosing' : 'ticker.toSeaBattle')} onClick={() => onSea(b.key)}>
               <span class="ticker-line">{'⚓'} {b.text}</span>
             </button>
           </li>

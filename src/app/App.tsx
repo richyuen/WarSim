@@ -84,14 +84,16 @@ export function App({
   const orders = orderNews.map((n) => ({ seq: n.seq, kind: n.kind, text: orderNewsText(n, orderName(n.id)) }));
   // The sea battles going on (PLAN 4.10b), each by its two sides' names: those with two fleets
   // within reach of a ship's weapon (PLAN 7.19b), then those a carrier's wings fight alone, by
-  // the striker and the struck (PLAN 7.35a: they sank ships with no row).
-  const seaBattles = [...hud.seaBattles.value.filter((b) => b.pair !== null), ...hud.seaBattles.value.filter((b) => b.pair === null && b.strike !== null)];
+  // the striker and the struck (PLAN 7.35a: they sank ships with no row), then those no weapon
+  // reaches yet, its fleets closing (PLAN 7.41a: the critic found battles and no row).
+  const all = hud.seaBattles.value;
+  const seaBattles = [...all.filter((b) => b.pair !== null), ...all.filter((b) => b.pair === null && b.strike !== null), ...all.filter((b) => b.pair === null && b.strike === null && b.closing !== null)];
   const seaKey = (b: { x: number; y: number; a: number; b: number }): string => `${b.a}-${b.b}-${Math.round(b.x)}-${Math.round(b.y)}`;
   const nameOfSide = (n: number): string => displayName(byId.get(n)?.name ?? '?');
   const seas = seaBattles.map((b) => ({
     key: seaKey(b),
-    strike: !b.pair && b.strike !== null,
-    text: b.pair || !b.strike ? t('ticker.seaBattle', { a: nameOfSide(b.a), b: nameOfSide(b.b) }) : t('ticker.carrierStrike', { a: nameOfSide(b.strike.by), b: nameOfSide(b.strike.by === b.a ? b.b : b.a) }),
+    kind: b.pair ? ('pair' as const) : b.strike ? ('strike' as const) : ('closing' as const),
+    text: b.pair ? t('ticker.seaBattle', { a: nameOfSide(b.a), b: nameOfSide(b.b) }) : b.strike ? t('ticker.carrierStrike', { a: nameOfSide(b.strike.by), b: nameOfSide(b.strike.by === b.a ? b.b : b.a) }) : t('ticker.seaClosing', { a: nameOfSide(b.a), b: nameOfSide(b.b) }),
   }));
   const lastOrder = formationTitle ? orderNews.filter((n) => n.id === hud.formation.value).at(-1) : undefined;
   return (
@@ -148,6 +150,8 @@ export function App({
             if (b?.pair) hud.onShowSeaBattle(b.pair.x, b.pair.y, [b.pair.w + 2 * SEA_PAIR_MARGIN, b.pair.h + 2 * SEA_PAIR_MARGIN]);
             // A carrier's strike (PLAN 7.35a): the fleet it strikes, its ships and the bombs on them.
             else if (b?.strike) hud.onShowSeaBattle(b.strike.x, b.strike.y, [STRIKE_VIEW_CELLS, STRIKE_VIEW_CELLS]);
+            // Its fleets closing (PLAN 7.41a): its nearest two at war, both on the screen.
+            else if (b?.closing) hud.onShowSeaBattle(b.closing.x, b.closing.y, [b.closing.w + 2 * SEA_PAIR_MARGIN, b.closing.h + 2 * SEA_PAIR_MARGIN]);
           }}
           onOrder={(seq) => {
             const n = orderNews.find((o) => o.seq === seq);
