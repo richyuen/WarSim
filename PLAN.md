@@ -36,22 +36,23 @@ The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
 when taken up:
 
-- [ ] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged
-  land formations worldwide, mean of daily samples, 0.3–0.7 at years 10 and 20 on the critic's 24
-  worlds (of about 300 of nations at war), against 55–107 in year 1; the same on `bcbc99c` (1.1
-  and 0.3). Seed 6421 year 21: 9 wars, 0 in contact at 25 fortnightly samples while 309–7,179
-  cells change hands a fortnight; the Germany–Soviet war there has a 4,795-edge land border. Piles at war: the United Kingdom 85 of 160 divisions at
-  London (7019, year 10), the Soviet Union 53 in one place (5309), Italy 46 of 55 (8011), Japan 33
-  of 35 (8167); 60 British divisions still at Wick for a month (1129). Seed 99's formations 917 in
-  year 1, 610 by year 5. Evidence: `critic/c11_engaged_head.json`, `c11_engaged_c10.json`,
-  `c11_engaged_year21.log`, `c11_stacks_y10.json`, `c11_wick_1129.json`, `c11_u_6421.json`. Measured
-  first, from the critic's year-10 and year-20 saves (`critic/c11_seed*_y10.bin`): for the
-  formations of nations at war, what holds each (the order it has or none, the AI step that passes it
-  over), and how cells change hands with no contact. Then a rule a cause, each with an ADR. AT:
-  engaged land formations per war running, mean of daily samples in years 2–20, at least a quarter
-  of year 1's (7.39's bar for the sea), on 10 unseen seeds × 20 years; seed 6421's year 21 from the
-  critic's save read (was 0 of 25 samples), not a bar; a unit test per rule (red without); the pin's
-  entry; `--profile`. Stop: two full re-measures flat, the bar is the user's (ADR-554).
+- [ ] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged land
+  formations worldwide, mean of daily samples, 0.3–0.7 at years 10 and 20 on the critic's 24 worlds
+  (of about 300 of nations at war), against 55–107 in year 1; the same on `bcbc99c` (1.1 and 0.3).
+  Seed 6421 year 21: 9 wars, 0 in contact at 25 fortnightly samples while 309–7,179 cells change
+  hands a fortnight; the Germany–Soviet war there has a 4,795-edge land border. Piles at war: the
+  United Kingdom 85 of 160 divisions at London (7019, year 10), the Soviet Union 53 in one place
+  (5309), Italy 46 of 55 (8011), Japan 33 of 35 (8167); 60 British divisions still at Wick for a
+  month (1129). Seed 99's formations 917 in year 1, 610 by year 5. Evidence:
+  `critic/c11_engaged_head.json`, `c11_engaged_c10.json`, `c11_engaged_year21.log`,
+  `c11_stacks_y10.json`, `c11_wick_1129.json`, `c11_u_6421.json`. Measured first, from the critic's
+  year-10 and year-20 saves (`critic/c11_seed*_y10.bin`): for the formations of nations at war, what
+  holds each (the order it has or none, the AI step that passes it over), and how cells change hands
+  with no contact. Then a rule a cause, each with an ADR. AT: engaged land formations per war
+  running, mean of daily samples in years 2–20, at least a quarter of year 1's (7.39's bar for the
+  sea), on 10 unseen seeds × 20 years; seed 6421's year 21 from the critic's save read (was 0 of 25
+  samples), not a bar; a unit test per rule (red without); the pin's entry; `--profile`. Stop: two
+  full re-measures flat, the bar is the user's (ADR-554).
 - [ ] 7.50 The H-bomb at the floor on a city of a million, and the spot struck again (R11-B2): seed
   1129, 14 March 1954, the Soviet Union on Greenock, a hydrogen bomb, 1,105,514 dead (1,071,000
   civilians) at utility 0.026, against counters of 1.3k–7.5k men; PLAN 7.38's bar ("no burst under
