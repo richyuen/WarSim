@@ -1,0 +1,81 @@
+{
+ "seed": 784,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 1,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0,
+  "thriceInYear": 0,
+  "bursts": 1,
+  "civOver10x": 0
+ },
+ "thriceInYear": [],
+ "rows": [
+  {
+   "day": 8034,
+   "year": 22.01,
+   "tick": 192817,
+   "by": "Japan",
+   "u": 0.42,
+   "at": [
+    1433.14,
+    414.86
+   ],
+   "target": "British India",
+   "war": 229,
+   "warName": "Japan+Burma+founded#136+founded#137 v Belgium+Portugal+founded#121+British India+South Africa+Southern Rhodesia",
+   "warDays": 675,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.404,
+   "utility": {
+    "value": 0.448,
+    "through": 1,
+    "desperation": 1.849,
+    "ownDesperation": 0.012,
+    "doctrine": 1.35,
+    "gain": 1.119,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 146000,
+    "dead": 0.015,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.715
+   },
+   "place": {
+    "econShare": 0.001,
+    "menShare": 0.044,
+    "ownShare": 0,
+    "menExpected": 11068,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.427,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10676,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 146000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 10655,
+    "yieldN": 1,
+    "men": 10655
+   }
+  }
+ ]
+}

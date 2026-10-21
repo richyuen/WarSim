@@ -1,0 +1,266 @@
+{
+ "seed": 787,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 4,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0,
+  "thriceInYear": 0,
+  "bursts": 3,
+  "civOver10x": 0
+ },
+ "thriceInYear": [],
+ "rows": [
+  {
+   "day": 4077,
+   "year": 11.17,
+   "tick": 97849,
+   "by": "Soviet Union",
+   "u": 0.204,
+   "at": [
+    1100.23,
+    267.4
+   ],
+   "target": "Germany",
+   "war": 167,
+   "warName": "Germany+Turkey+Anglo-Egyptian Sudan+South Africa+Gold Coast+French West Africa+French Equatorial Africa+founded#108+Burma v Soviet Union+Estonia+Saudi Arabia+Yemen+Afghanistan+Mongolia+Tannu Tuva+founded#105+founded#113+founded#117",
+   "warDays": 158,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.202,
+   "utility": {
+    "value": 0.6,
+    "through": 0.6,
+    "desperation": 1.595,
+    "ownDesperation": 1.595,
+    "doctrine": 1.2,
+    "gain": 1.149,
+    "retaliation": 1.4,
+    "allianceCost": 0.025,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 334000,
+    "dead": 0.02,
+    "mad": false,
+    "extreme": true,
+    "costs": 0.947
+   },
+   "place": {
+    "econShare": 0.029,
+    "menShare": 0.051,
+    "ownShare": 0,
+    "menExpected": 33827,
+    "theatreMen": 666884,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.6,
+    "econShare": 0.029,
+    "menShare": 0.051,
+    "menExpected": 33827,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 5237000,
+    "fission": 334000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 0,
+   "intercepted": true
+  },
+  {
+   "day": 5122,
+   "year": 14.03,
+   "tick": 122929,
+   "by": "Japan",
+   "u": 0.025,
+   "at": [
+    1317.5,
+    457.5
+   ],
+   "target": "United Kingdom",
+   "war": 192,
+   "warName": "Japan+China+Communist China+Tibet+Nepal+Xinjiang v United Kingdom+British India+Ceylon+British Malaya+Netherlands+Iraq+Nationalist Spain+Portugal+Oman",
+   "warDays": 437,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.025,
+   "utility": {
+    "value": 0.449,
+    "through": 1,
+    "desperation": 1.197,
+    "ownDesperation": 0.386,
+    "doctrine": 1.35,
+    "gain": 0.725,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.7
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.449,
+    "econShare": 0,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 0,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 11183,
+    "yieldN": 1,
+    "men": 11183
+   }
+  },
+  {
+   "day": 5645,
+   "year": 15.47,
+   "tick": 135481,
+   "by": "Japan",
+   "u": 0.78,
+   "at": [
+    1342.79,
+    249.77
+   ],
+   "target": "Soviet Union",
+   "war": 210,
+   "warName": "Japan+China+Communist China+Tibet+Nepal v Soviet Union+Estonia+Afghanistan+Mongolia+Tannu Tuva+founded#138",
+   "warDays": 365,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.78,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1,
+    "ownDesperation": 0,
+    "doctrine": 1.35,
+    "gain": 1.35,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.181,
+    "taboo": 0.561,
+    "people": 23000,
+    "dead": 0.002,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.57
+   },
+   "place": {
+    "econShare": 0.005,
+    "menShare": 0.179,
+    "ownShare": 0,
+    "menExpected": 44856,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0.005,
+    "menShare": 0.179,
+    "menExpected": 44856,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 380000,
+    "fission": 23000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 67732,
+    "yieldN": 1,
+    "men": 44732
+   }
+  },
+  {
+   "day": 6938,
+   "year": 19.01,
+   "tick": 166513,
+   "by": "Japan",
+   "u": 0.4,
+   "at": [
+    1552.29,
+    240.04
+   ],
+   "target": "Soviet Union",
+   "war": 257,
+   "warName": "Japan+China+Communist China+Tibet+Nepal v Soviet Union+Estonia+Afghanistan+Mongolia+Tannu Tuva",
+   "warDays": 405,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.4,
+   "utility": {
+    "value": 0.817,
+    "through": 1,
+    "desperation": 1.11,
+    "ownDesperation": 0.145,
+    "doctrine": 1.35,
+    "gain": 1.224,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.204,
+    "taboo": 0.946,
+    "people": 21000,
+    "dead": 0.002,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.824
+   },
+   "place": {
+    "econShare": 0.007,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.817,
+    "econShare": 0.007,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 363000,
+    "fission": 21000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 32183,
+    "yieldN": 1,
+    "men": 11183
+   }
+  }
+ ]
+}

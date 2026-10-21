@@ -1,0 +1,1184 @@
+{
+ "seed": 788,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 19,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0,
+  "thriceInYear": 0,
+  "bursts": 19,
+  "civOver10x": 11
+ },
+ "thriceInYear": [],
+ "rows": [
+  {
+   "day": 9054,
+   "year": 24.81,
+   "tick": 217297,
+   "by": "Germany",
+   "u": 1.386,
+   "at": [
+    1194.5,
+    587.3
+   ],
+   "target": "Anglo-Egyptian Sudan",
+   "war": 222,
+   "warName": "Soviet Union+Estonia+Finland+Romania+Bulgaria+Turkey+France+Nationalist Spain+Switzerland+Norway+Sweden+Egypt+Anglo-Egyptian Sudan+French Morocco+Syria+Transjordan+Iraq+Yemen+Iran+Afghanistan+British India+Communist China+Brazil+founded#117+Mongolia+Tannu Tuva v Germany",
+   "warDays": 48,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 1.366,
+   "utility": {
+    "value": 0.992,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.4,
+    "gain": 2.778,
+    "retaliation": 1.2,
+    "allianceCost": 0.05,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 20000,
+    "dead": 0.002,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.412
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.099,
+    "ownShare": 0,
+    "menExpected": 41541,
+    "theatreMen": 418758,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.553,
+    "econShare": 0,
+    "menShare": 0.055,
+    "menExpected": 23177,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 20000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 67065,
+    "yieldN": 2,
+    "men": 47065
+   }
+  },
+  {
+   "day": 9055,
+   "year": 24.81,
+   "tick": 217321,
+   "by": "Soviet Union",
+   "u": 0.749,
+   "at": [
+    1106.66,
+    260.49
+   ],
+   "target": "Germany",
+   "missile": 1,
+   "toll": {
+    "dead": 29000,
+    "yieldN": 1,
+    "men": 0
+   }
+  },
+  {
+   "day": 9185,
+   "year": 25.16,
+   "tick": 220441,
+   "by": "Germany",
+   "u": 0.345,
+   "at": [
+    1037.26,
+    294.77
+   ],
+   "target": "Belgium",
+   "war": 221,
+   "warName": "Germany+Denmark v Spanish Republic+Italy+Japan+China+Tunisia+Belgium",
+   "warDays": 205,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.346,
+   "utility": {
+    "value": 0.483,
+    "through": 1,
+    "desperation": 1.758,
+    "ownDesperation": 1.758,
+    "doctrine": 1.4,
+    "gain": 1.189,
+    "retaliation": 0.6,
+    "allianceCost": 0.025,
+    "outrage": 0.21,
+    "taboo": 0.365,
+    "people": 183000,
+    "dead": 0.018,
+    "mad": true,
+    "extreme": true,
+    "costs": 0.843
+   },
+   "place": {
+    "econShare": 0.018,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.483,
+    "econShare": 0.018,
+    "menShare": 0,
+    "menExpected": 0,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 3157000,
+    "fission": 183000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 183000,
+    "yieldN": 1,
+    "men": 0
+   }
+  },
+  {
+   "day": 9186,
+   "year": 25.17,
+   "tick": 220465,
+   "by": "Belgium",
+   "u": 1.333,
+   "at": [
+    633.5,
+    172.5
+   ],
+   "target": "Germany",
+   "war": 221,
+   "warName": "Germany+Denmark v Spanish Republic+Italy+Japan+China+Tunisia+Belgium",
+   "warDays": 206,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 1.334,
+   "utility": {
+    "value": 0.545,
+    "through": 1,
+    "desperation": 1.601,
+    "ownDesperation": 1.601,
+    "doctrine": 0.6,
+    "gain": 0.524,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 0.3,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": true,
+    "costs": -0.81
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.055,
+    "ownShare": 0,
+    "menExpected": 13630,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.545,
+    "econShare": 0,
+    "menShare": 0.055,
+    "menExpected": 13630,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 0,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 13636,
+    "yieldN": 1,
+    "men": 13636
+   }
+  },
+  {
+   "day": 9192,
+   "year": 25.18,
+   "tick": 220609,
+   "by": "Germany",
+   "u": 0.118,
+   "at": [
+    1095.46,
+    242.72
+   ],
+   "target": "Italy",
+   "war": 221,
+   "warName": "Germany+Denmark v Spanish Republic+Italy+Japan+China+Tunisia+Belgium",
+   "warDays": 212,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.118,
+   "utility": {
+    "value": 0.427,
+    "through": 1,
+    "desperation": 1.758,
+    "ownDesperation": 1.758,
+    "doctrine": 1.4,
+    "gain": 1.052,
+    "retaliation": 0.6,
+    "allianceCost": 0.025,
+    "outrage": 0.33,
+    "taboo": 0.303,
+    "people": 79000,
+    "dead": 0.008,
+    "mad": true,
+    "extreme": true,
+    "costs": 0.933
+   },
+   "place": {
+    "econShare": 0.013,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.427,
+    "econShare": 0.013,
+    "menShare": 0,
+    "menExpected": 0,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 1340000,
+    "fission": 79000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 79000,
+    "yieldN": 1,
+    "men": 0
+   }
+  },
+  {
+   "day": 9199,
+   "year": 25.2,
+   "tick": 220777,
+   "by": "Germany",
+   "u": 0.171,
+   "at": [
+    1023.32,
+    275.17
+   ],
+   "target": "Belgium",
+   "war": 221,
+   "warName": "Germany+Denmark v Spanish Republic+Italy+Japan+China+Tunisia+Belgium",
+   "warDays": 219,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.185,
+   "utility": {
+    "value": 0.487,
+    "through": 1,
+    "desperation": 1.766,
+    "ownDesperation": 1.766,
+    "doctrine": 1.4,
+    "gain": 1.205,
+    "retaliation": 0.6,
+    "allianceCost": 0.025,
+    "outrage": 0.399,
+    "taboo": 0.303,
+    "people": 248000,
+    "dead": 0.025,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.02
+   },
+   "place": {
+    "econShare": 0.019,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.487,
+    "econShare": 0.019,
+    "menShare": 0,
+    "menExpected": 0,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 4906000,
+    "fission": 248000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 248000,
+    "yieldN": 1,
+    "men": 0
+   }
+  },
+  {
+   "day": 9225,
+   "year": 25.27,
+   "tick": 221401,
+   "by": "Germany",
+   "u": 0.194,
+   "at": [
+    1022.8,
+    268.8
+   ],
+   "target": "Belgium",
+   "war": 221,
+   "warName": "Germany+Denmark v Spanish Republic+Italy+Japan+China+Tunisia+Belgium",
+   "warDays": 245,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.18,
+   "utility": {
+    "value": 0.497,
+    "through": 1,
+    "desperation": 1.763,
+    "ownDesperation": 1.763,
+    "doctrine": 1.4,
+    "gain": 1.227,
+    "retaliation": 0.6,
+    "allianceCost": 0.025,
+    "outrage": 0.398,
+    "taboo": 0.313,
+    "people": 497000,
+    "dead": 0.05,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.047
+   },
+   "place": {
+    "econShare": 0.007,
+    "menShare": 0.043,
+    "ownShare": 0,
+    "menExpected": 10705,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.414,
+    "econShare": 0,
+    "menShare": 0.041,
+    "menExpected": 10264,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 497000,
+    "fission": 1000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 507706,
+    "yieldN": 2,
+    "men": 10706
+   }
+  },
+  {
+   "day": 9226,
+   "year": 25.28,
+   "tick": 221425,
+   "by": "Belgium",
+   "u": 0.946,
+   "at": [
+    1097.57,
+    258.5
+   ],
+   "target": "Germany",
+   "war": 221,
+   "warName": "Germany+Denmark v Spanish Republic+Italy+Japan+China+Tunisia+Belgium",
+   "warDays": 246,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.947,
+   "utility": {
+    "value": 0.243,
+    "through": 1,
+    "desperation": 1.741,
+    "ownDesperation": 1.741,
+    "doctrine": 0.6,
+    "gain": 0.254,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.217,
+    "taboo": 0.3,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": true,
+    "costs": -0.693
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.027,
+    "ownShare": 0.003,
+    "menExpected": 6743,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.243,
+    "econShare": 0,
+    "menShare": 0.027,
+    "menExpected": 6743,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 298000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 6969,
+    "yieldN": 1,
+    "men": 6969
+   }
+  },
+  {
+   "day": 9253,
+   "year": 25.35,
+   "tick": 222073,
+   "by": "Germany",
+   "u": 0.795,
+   "at": [
+    1042.5,
+    559.39
+   ],
+   "target": "Belgium",
+   "war": 221,
+   "warName": "Germany+Denmark v Spanish Republic+Italy+Japan+China+Tunisia+Belgium",
+   "warDays": 273,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.78,
+   "utility": {
+    "value": 0.768,
+    "through": 1,
+    "desperation": 1.753,
+    "ownDesperation": 1.753,
+    "doctrine": 1.4,
+    "gain": 1.884,
+    "retaliation": 0.6,
+    "allianceCost": 0.025,
+    "outrage": 0.398,
+    "taboo": 0.314,
+    "people": 1064000,
+    "dead": 0.106,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.103
+   },
+   "place": {
+    "econShare": 0.001,
+    "menShare": 0.046,
+    "ownShare": 0,
+    "menExpected": 11564,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.431,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10764,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 1064000,
+    "fission": 11000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 1075549,
+    "yieldN": 2,
+    "men": 11549
+   }
+  },
+  {
+   "day": 9287,
+   "year": 25.44,
+   "tick": 222889,
+   "by": "Germany",
+   "u": 0.442,
+   "at": [
+    995.83,
+    236.5
+   ],
+   "target": "Belgium",
+   "war": 221,
+   "warName": "Germany+Denmark v Spanish Republic+Italy+Japan+China+Tunisia+Belgium",
+   "warDays": 307,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.437,
+   "utility": {
+    "value": 0.596,
+    "through": 1,
+    "desperation": 1.768,
+    "ownDesperation": 1.768,
+    "doctrine": 1.4,
+    "gain": 1.475,
+    "retaliation": 0.6,
+    "allianceCost": 0.025,
+    "outrage": 0.397,
+    "taboo": 0.317,
+    "people": 413000,
+    "dead": 0.041,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.039
+   },
+   "place": {
+    "econShare": 0.006,
+    "menShare": 0.023,
+    "ownShare": 0,
+    "menExpected": 5787,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.227,
+    "econShare": 0,
+    "menShare": 0.023,
+    "menExpected": 5651,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 413000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 418785,
+    "yieldN": 2,
+    "men": 5785
+   }
+  },
+  {
+   "day": 9753,
+   "year": 26.72,
+   "tick": 234073,
+   "by": "Germany",
+   "u": 0.29,
+   "at": [
+    1777.16,
+    305.16
+   ],
+   "target": "Japan",
+   "war": 236,
+   "warName": "United Kingdom+Venezuela+founded#119+Portugal+Belgian Congo+South Africa+Southern Rhodesia+Germany v Belgium+Italy+Japan+Tunisia",
+   "warDays": 365,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.262,
+   "utility": {
+    "value": 0.724,
+    "through": 1,
+    "desperation": 1,
+    "ownDesperation": 0,
+    "doctrine": 1.4,
+    "gain": 1.014,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.365,
+    "taboo": 0.533,
+    "people": 172000,
+    "dead": 0.017,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.752
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.072,
+    "ownShare": 0,
+    "menExpected": 18067,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.697,
+    "econShare": 0,
+    "menShare": 0.07,
+    "menExpected": 17426,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 172000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 17439,
+    "yieldN": 1,
+    "men": 17439
+   }
+  },
+  {
+   "day": 9843,
+   "year": 26.97,
+   "tick": 236233,
+   "by": "Germany",
+   "u": 0.47,
+   "at": [
+    1013.07,
+    267.76
+   ],
+   "target": "Belgium",
+   "war": 236,
+   "warName": "United Kingdom+Venezuela+founded#119+Portugal+Belgian Congo+South Africa+Southern Rhodesia+Germany v Belgium+Italy+Japan+Tunisia",
+   "warDays": 455,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.47,
+   "utility": {
+    "value": 0.648,
+    "through": 1,
+    "desperation": 1.247,
+    "ownDesperation": 0,
+    "doctrine": 1.4,
+    "gain": 1.131,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.393,
+    "taboo": 0.345,
+    "people": 100000,
+    "dead": 0.01,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.66
+   },
+   "place": {
+    "econShare": 0.035,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.648,
+    "econShare": 0.035,
+    "menShare": 0,
+    "menExpected": 0,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 2117000,
+    "fission": 100000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 100000,
+    "yieldN": 1,
+    "men": 0
+   }
+  },
+  {
+   "day": 9853,
+   "year": 26.99,
+   "tick": 236473,
+   "by": "Soviet Union",
+   "u": 0.657,
+   "at": [
+    633.5,
+    172.5
+   ],
+   "target": "Germany",
+   "war": 244,
+   "warName": "Soviet Union+Estonia+Finland+Romania+Bulgaria+Turkey+Nationalist Spain+Switzerland+Norway+Sweden+Egypt+Anglo-Egyptian Sudan+French Morocco+Syria+Transjordan+Iraq+Yemen+Iran+British India+Communist China+Brazil+founded#117+Mongolia+Tannu Tuva v Germany+Venezuela+founded#119+Southern Rhodesia",
+   "warDays": 0,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.657,
+   "utility": {
+    "value": 0.152,
+    "through": 1,
+    "desperation": 0,
+    "ownDesperation": 0,
+    "doctrine": 1.2,
+    "gain": 0,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.16,
+    "taboo": 0.305,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.657
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.015,
+    "ownShare": 0,
+    "menExpected": 3805,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.152,
+    "econShare": 0,
+    "menShare": 0.015,
+    "menExpected": 3805,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 0,
+    "fission": 0
+   },
+   "before": [
+    {
+     "day": 9186.1,
+     "by": "Belgium",
+     "sameWar": false,
+     "dead": 13636
+    }
+   ],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 3806,
+    "yieldN": 1,
+    "men": 3806
+   }
+  },
+  {
+   "day": 9933,
+   "year": 27.21,
+   "tick": 238393,
+   "by": "Germany",
+   "u": 0.416,
+   "at": [
+    1095.46,
+    242.72
+   ],
+   "target": "Italy",
+   "war": 236,
+   "warName": "United Kingdom+Venezuela+founded#119+Portugal+Belgian Congo+South Africa+Southern Rhodesia+Germany v Belgium+Italy+Japan+Tunisia",
+   "warDays": 545,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.416,
+   "utility": {
+    "value": 0.512,
+    "through": 1,
+    "desperation": 1.493,
+    "ownDesperation": 0,
+    "doctrine": 1.4,
+    "gain": 1.071,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.393,
+    "taboo": 0.34,
+    "people": 76000,
+    "dead": 0.008,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.655
+   },
+   "place": {
+    "econShare": 0.021,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.512,
+    "econShare": 0.021,
+    "menShare": 0,
+    "menExpected": 0,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 1293000,
+    "fission": 76000
+   },
+   "before": [
+    {
+     "day": 9192.1,
+     "by": "Germany",
+     "sameWar": false,
+     "dead": 79000
+    }
+   ],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 76000,
+    "yieldN": 1,
+    "men": 0
+   }
+  },
+  {
+   "day": 10376,
+   "year": 28.43,
+   "tick": 249025,
+   "by": "Germany",
+   "u": 0.408,
+   "at": [
+    1323.05,
+    423.67
+   ],
+   "target": "Iran",
+   "war": 248,
+   "warName": "Portugal+Belgian Congo+South Africa+Germany v Greece+Turkey+Iran+Afghanistan+Yemen",
+   "warDays": 405,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.408,
+   "utility": {
+    "value": 0.766,
+    "through": 1,
+    "desperation": 1.11,
+    "ownDesperation": 0.135,
+    "doctrine": 1.4,
+    "gain": 1.19,
+    "retaliation": 0,
+    "allianceCost": 0.1,
+    "outrage": 0.367,
+    "taboo": 0.521,
+    "people": 19000,
+    "dead": 0.002,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.782
+   },
+   "place": {
+    "econShare": 0.002,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.766,
+    "econShare": 0.002,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 346000,
+    "fission": 19000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 30183,
+    "yieldN": 1,
+    "men": 11183
+   }
+  },
+  {
+   "day": 10469,
+   "year": 28.68,
+   "tick": 251257,
+   "by": "Germany",
+   "u": 0.646,
+   "at": [
+    1202.5,
+    731.01
+   ],
+   "target": "Iran",
+   "war": 248,
+   "warName": "Belgian Congo+South Africa+Germany v Greece+Turkey+Iran+Afghanistan+Yemen",
+   "warDays": 498,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.643,
+   "utility": {
+    "value": 0.756,
+    "through": 1,
+    "desperation": 1.364,
+    "ownDesperation": 0.123,
+    "doctrine": 1.4,
+    "gain": 1.445,
+    "retaliation": 0,
+    "allianceCost": 0.2,
+    "outrage": 0.393,
+    "taboo": 0.347,
+    "people": 8000,
+    "dead": 0.001,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.802
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.076,
+    "ownShare": 0,
+    "menExpected": 18896,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.22,
+    "econShare": 0,
+    "menShare": 0.022,
+    "menExpected": 5489,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 8000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 27152,
+    "yieldN": 2,
+    "men": 19152
+   }
+  },
+  {
+   "day": 10577,
+   "year": 28.98,
+   "tick": 253849,
+   "by": "Germany",
+   "u": 0.032,
+   "at": [
+    1095,
+    344.02
+   ],
+   "target": "Switzerland",
+   "war": 258,
+   "warName": "Germany+Belgian Congo+South Africa+French Morocco v Bulgaria+Switzerland+Romania",
+   "warDays": 22,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.033,
+   "utility": {
+    "value": 0.986,
+    "through": 1,
+    "desperation": 0.582,
+    "ownDesperation": 0.582,
+    "doctrine": 1.4,
+    "gain": 0.804,
+    "retaliation": 0,
+    "allianceCost": 0.15,
+    "outrage": 0.392,
+    "taboo": 0.354,
+    "people": 172000,
+    "dead": 0.017,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.771
+   },
+   "place": {
+    "econShare": 0.069,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.986,
+    "econShare": 0.069,
+    "menShare": 0,
+    "menExpected": 0,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 3709000,
+    "fission": 172000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 172000,
+    "yieldN": 1,
+    "men": 0
+   }
+  },
+  {
+   "day": 10700,
+   "year": 29.32,
+   "tick": 256801,
+   "by": "Germany",
+   "u": 0.333,
+   "at": [
+    1083.84,
+    319.84
+   ],
+   "target": "Switzerland",
+   "war": 258,
+   "warName": "Germany+Belgian Congo+South Africa+French Morocco v Bulgaria+Switzerland+Romania",
+   "warDays": 145,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.324,
+   "utility": {
+    "value": 0.566,
+    "through": 1,
+    "desperation": 1.192,
+    "ownDesperation": 1.192,
+    "doctrine": 1.4,
+    "gain": 0.944,
+    "retaliation": 0,
+    "allianceCost": 0.075,
+    "outrage": 0.391,
+    "taboo": 0.362,
+    "people": 465000,
+    "dead": 0.047,
+    "mad": false,
+    "extreme": true,
+    "costs": 0.621
+   },
+   "place": {
+    "econShare": 0.013,
+    "menShare": 0.044,
+    "ownShare": 0,
+    "menExpected": 10961,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.425,
+    "econShare": 0,
+    "menShare": 0.042,
+    "menExpected": 10573,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 465000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 475919,
+    "yieldN": 2,
+    "men": 10919
+   }
+  },
+  {
+   "day": 10707,
+   "year": 29.33,
+   "tick": 256969,
+   "by": "Soviet Union",
+   "u": 0.602,
+   "at": [
+    617.16,
+    154.16
+   ],
+   "target": "Germany",
+   "war": 263,
+   "warName": "Soviet Union+Estonia+Finland+Italy+Greece+Turkey+Nationalist Spain+Spanish Republic+Belgium+Norway+Sweden+Anglo-Egyptian Sudan+Tunisia+Syria+Transjordan+Iraq+Yemen+Iran+Afghanistan+British India+Communist China+Japan+Brazil+founded#124+Tannu Tuva v Germany+French Morocco",
+   "warDays": 0,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.602,
+   "utility": {
+    "value": 0.433,
+    "through": 1,
+    "desperation": 0,
+    "ownDesperation": 0,
+    "doctrine": 1.2,
+    "gain": 0,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.216,
+    "taboo": 0.303,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.602
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.043,
+    "ownShare": 0,
+    "menExpected": 10829,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.433,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10829,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 0,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 10844,
+    "yieldN": 1,
+    "men": 10844
+   }
+  }
+ ]
+}

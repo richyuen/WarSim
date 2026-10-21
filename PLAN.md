@@ -234,9 +234,11 @@ when taken up:
       before: deterred by the puppet Poland; after, strikes, and with France beside it deterred by
       France); the critic's save: the Soviet Union "deterred by Germany" → strikes (risk 1.4 → 0.8,
       Britain's). ADR-610. Done (`docs/evidence/7.52/a.md`).
-    - [ ] 7.52b The bursts read: bursts a world on 10 unseen seeds × 30 years against run 11's 93
+    - [x] 7.52b The bursts read: bursts a world on 10 unseen seeds × 30 years against run 11's 93
       on 14 (a measure, not a bar), with 7.52a in; the share killing over ten times more civilians
-      than soldiers. Stop: two full re-measures flat (ADR-554).
+      than soldiers. Stop: two full re-measures flat (ADR-554). Done (`docs/evidence/7.52/b.md`):
+      seeds 781–790, 73 bursts in 9 worlds (7.3 a world; run 11: 93 in 7 of 14, 6.6), 21 (29 %) over
+      ten times more civilians than men (run 11: 29, 31 %).
     - [ ] 7.52c The critic's design objection, the user's: cities with no soldiers struck (Berlin,
       334,000 civilians and 379 men by the editor-armed Poland, `c11_g2_9437_POL.json`), the weight
       of the dead too small. AT: an ADR proposed with the options and the measured figures; no rule

@@ -1,0 +1,703 @@
+{
+ "seed": 790,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 11,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0,
+  "thriceInYear": 0,
+  "bursts": 9,
+  "civOver10x": 0
+ },
+ "thriceInYear": [],
+ "rows": [
+  {
+   "day": 3757,
+   "year": 10.29,
+   "tick": 90169,
+   "by": "Germany",
+   "u": 0.218,
+   "at": [
+    1086.74,
+    300.26
+   ],
+   "target": "Poland",
+   "war": 100,
+   "warName": "Greece+Poland+Lithuania+founded#105 v Italy+Germany+Latvia+Yugoslavia",
+   "warDays": 15,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.214,
+   "utility": {
+    "value": 0.596,
+    "through": 0.6,
+    "desperation": 0.76,
+    "ownDesperation": 0.76,
+    "doctrine": 1.4,
+    "gain": 0.634,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.42
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.099,
+    "ownShare": 0,
+    "menExpected": 58980,
+    "theatreMen": 594637,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.596,
+    "econShare": 0,
+    "menShare": 0.099,
+    "menExpected": 58980,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 1859000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 0,
+   "toll": {
+    "dead": 56375,
+    "yieldN": 1,
+    "men": 56375
+   }
+  },
+  {
+   "day": 3764,
+   "year": 10.31,
+   "tick": 90337,
+   "by": "Germany",
+   "u": 0.605,
+   "at": [
+    1073.36,
+    294.5
+   ],
+   "target": "Poland",
+   "war": 100,
+   "warName": "Greece+Poland+Lithuania+founded#105 v Italy+Germany+Latvia+Yugoslavia",
+   "warDays": 22,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.567,
+   "utility": {
+    "value": 0.751,
+    "through": 1,
+    "desperation": 0.921,
+    "ownDesperation": 0.921,
+    "doctrine": 1.4,
+    "gain": 0.969,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.219,
+    "taboo": 0.303,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.402
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.075,
+    "ownShare": 0,
+    "menExpected": 42703,
+    "theatreMen": 569707,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.751,
+    "econShare": 0,
+    "menShare": 0.075,
+    "menExpected": 42703,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 2412000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 0,
+   "toll": {
+    "dead": 40356,
+    "yieldN": 1,
+    "men": 40356
+   }
+  },
+  {
+   "day": 3773,
+   "year": 10.34,
+   "tick": 90553,
+   "by": "Germany",
+   "u": 0.138,
+   "at": [
+    1117.1,
+    299.64
+   ],
+   "target": "Poland",
+   "war": 100,
+   "warName": "Greece+Poland+Lithuania+founded#105 v Italy+Germany+Yugoslavia",
+   "warDays": 31,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.129,
+   "utility": {
+    "value": 0.36,
+    "through": 0.36,
+    "desperation": 0.64,
+    "ownDesperation": 0.64,
+    "doctrine": 1.4,
+    "gain": 0.322,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.339,
+    "taboo": 0.304,
+    "people": 154000,
+    "dead": 0.006,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.193
+   },
+   "place": {
+    "econShare": 0.013,
+    "menShare": 0.079,
+    "ownShare": 0,
+    "menExpected": 33710,
+    "theatreMen": 426969,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.36,
+    "econShare": 0.013,
+    "menShare": 0.079,
+    "menExpected": 33710,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 2993000,
+    "fission": 154000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 0,
+   "intercepted": true,
+   "toll": {
+    "dead": 187601,
+    "yieldN": 1,
+    "men": 33601
+   }
+  },
+  {
+   "day": 3774,
+   "year": 10.34,
+   "tick": 90577,
+   "by": "Germany",
+   "u": 0.143,
+   "at": [
+    1117.1,
+    299.64
+   ],
+   "target": "Poland",
+   "war": 100,
+   "warName": "Greece+Poland+Lithuania+founded#105 v Italy+Germany+Yugoslavia",
+   "warDays": 32,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.145,
+   "utility": {
+    "value": 0.367,
+    "through": 0.367,
+    "desperation": 0.666,
+    "ownDesperation": 0.666,
+    "doctrine": 1.4,
+    "gain": 0.342,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.339,
+    "taboo": 0.305,
+    "people": 154000,
+    "dead": 0.006,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.197
+   },
+   "place": {
+    "econShare": 0.013,
+    "menShare": 0.079,
+    "ownShare": 0,
+    "menExpected": 33710,
+    "theatreMen": 426873,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.367,
+    "econShare": 0.013,
+    "menShare": 0.079,
+    "menExpected": 33710,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 2993000,
+    "fission": 154000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 0,
+   "intercepted": true
+  },
+  {
+   "day": 3775,
+   "year": 10.34,
+   "tick": 90601,
+   "by": "Germany",
+   "u": 0.158,
+   "at": [
+    1117.1,
+    299.64
+   ],
+   "target": "Poland",
+   "war": 100,
+   "warName": "Greece+Poland+Lithuania+founded#105 v Italy+Germany+Yugoslavia",
+   "warDays": 33,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.155,
+   "utility": {
+    "value": 0.372,
+    "through": 0.372,
+    "desperation": 0.681,
+    "ownDesperation": 0.681,
+    "doctrine": 1.4,
+    "gain": 0.355,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.339,
+    "taboo": 0.305,
+    "people": 154000,
+    "dead": 0.006,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.2
+   },
+   "place": {
+    "econShare": 0.013,
+    "menShare": 0.077,
+    "ownShare": 0,
+    "menExpected": 33705,
+    "theatreMen": 439182,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.372,
+    "econShare": 0.013,
+    "menShare": 0.077,
+    "menExpected": 33705,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 2993000,
+    "fission": 154000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 0
+  },
+  {
+   "day": 3782,
+   "year": 10.36,
+   "tick": 90769,
+   "by": "Germany",
+   "u": 0.206,
+   "at": [
+    1142.42,
+    250.58
+   ],
+   "target": "Poland",
+   "war": 100,
+   "warName": "Greece+Poland+Lithuania+founded#105 v Italy+Germany+Yugoslavia",
+   "warDays": 40,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.183,
+   "utility": {
+    "value": 0.257,
+    "through": 0.6,
+    "desperation": 1.328,
+    "ownDesperation": 1.328,
+    "doctrine": 1.4,
+    "gain": 0.477,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.399,
+    "taboo": 0.303,
+    "people": 1000,
+    "dead": 0,
+    "mad": false,
+    "extreme": true,
+    "costs": 0.294
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.043,
+    "ownShare": 0,
+    "menExpected": 10676,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.257,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10676,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 168000,
+    "fission": 1000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 0,
+   "toll": {
+    "dead": 10043,
+    "yieldN": 1,
+    "men": 9043
+   }
+  },
+  {
+   "day": 3789,
+   "year": 10.38,
+   "tick": 90937,
+   "by": "Germany",
+   "u": 0.126,
+   "at": [
+    1113.48,
+    279.52
+   ],
+   "target": "Poland",
+   "war": 100,
+   "warName": "Greece+Poland+Lithuania+founded#105 v Italy+Germany+Yugoslavia",
+   "warDays": 47,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.111,
+   "utility": {
+    "value": 0.289,
+    "through": 1,
+    "desperation": 1.488,
+    "ownDesperation": 1.488,
+    "doctrine": 1.4,
+    "gain": 0.601,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.399,
+    "taboo": 0.303,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": true,
+    "costs": 0.491
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.029,
+    "ownShare": 0,
+    "menExpected": 10855,
+    "theatreMen": 376551,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.289,
+    "econShare": 0,
+    "menShare": 0.029,
+    "menExpected": 10855,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 275000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 0,
+   "toll": {
+    "dead": 10118,
+    "yieldN": 1,
+    "men": 10118
+   }
+  },
+  {
+   "day": 6170,
+   "year": 16.9,
+   "tick": 148081,
+   "by": "Soviet Union",
+   "u": 0.025,
+   "at": [
+    1009.58,
+    347.42
+   ],
+   "target": "Poland",
+   "war": 165,
+   "warName": "Turkey+Greece+Poland+Lithuania+founded#105+founded#107+Tunisia+Hungary+Latvia v Soviet Union+Estonia+Finland+Romania+Syria+Transjordan+Iraq+Afghanistan+Xinjiang+Mongolia+Tannu Tuva",
+   "warDays": 343,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.025,
+   "utility": {
+    "value": 0.866,
+    "through": 1,
+    "desperation": 1.147,
+    "ownDesperation": 1.147,
+    "doctrine": 1.2,
+    "gain": 1.192,
+    "retaliation": 0.95,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 67000,
+    "dead": 0.007,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.167
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.086,
+    "ownShare": 0,
+    "menExpected": 21615,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.777,
+    "econShare": 0,
+    "menShare": 0.078,
+    "menExpected": 19433,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 67000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 88579,
+    "yieldN": 2,
+    "men": 21579
+   }
+  },
+  {
+   "day": 6171,
+   "year": 16.91,
+   "tick": 148105,
+   "by": "Poland",
+   "u": 0.539,
+   "at": [
+    1341.67,
+    289.5
+   ],
+   "target": "Soviet Union",
+   "war": 165,
+   "warName": "Turkey+Greece+Poland+Lithuania+founded#105+founded#107+Tunisia+Hungary+Latvia v Soviet Union+Estonia+Finland+Romania+Syria+Transjordan+Iraq+Afghanistan+Xinjiang+Mongolia+Tannu Tuva",
+   "warDays": 344,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.538,
+   "utility": {
+    "value": 0.443,
+    "through": 1,
+    "desperation": 0.045,
+    "ownDesperation": 0.045,
+    "doctrine": 0.95,
+    "gain": 0.019,
+    "retaliation": 1.2,
+    "allianceCost": 0.2,
+    "outrage": 0.1,
+    "taboo": 0.3,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.52
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.044,
+    "ownShare": 0,
+    "menExpected": 11068,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.427,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10676,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 0,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 10655,
+    "yieldN": 1,
+    "men": 10655
+   }
+  },
+  {
+   "day": 10649,
+   "year": 29.18,
+   "tick": 255577,
+   "by": "Soviet Union",
+   "u": 0.209,
+   "at": [
+    1380.66,
+    319.66
+   ],
+   "target": "Poland",
+   "war": 279,
+   "warName": "Latvia+Turkey+Greece+Poland+Lithuania+Italy+France+Spanish Republic+Saudi Arabia+founded#121+founded#124+founded#105+founded#106+founded#107+Tunisia+Hungary+Oman+Yemen+founded#116+Iran v Soviet Union+Xinjiang+Mongolia",
+   "warDays": 100,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.212,
+   "utility": {
+    "value": 0.87,
+    "through": 1,
+    "desperation": 1.32,
+    "ownDesperation": 1.32,
+    "doctrine": 1.2,
+    "gain": 1.378,
+    "retaliation": 0.95,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 58000,
+    "dead": 0.006,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.166
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.087,
+    "ownShare": 0,
+    "menExpected": 62299,
+    "theatreMen": 716328,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.658,
+    "econShare": 0,
+    "menShare": 0.066,
+    "menExpected": 47131,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 58000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 120215,
+    "yieldN": 2,
+    "men": 62215
+   }
+  },
+  {
+   "day": 10650,
+   "year": 29.18,
+   "tick": 255601,
+   "by": "Poland",
+   "u": 0.721,
+   "at": [
+    1380.5,
+    223.04
+   ],
+   "target": "Soviet Union",
+   "war": 279,
+   "warName": "Latvia+Turkey+Greece+Poland+Lithuania+Italy+France+Spanish Republic+Saudi Arabia+founded#121+founded#124+founded#105+founded#106+founded#107+Tunisia+Hungary+Oman+Yemen+founded#116+Iran v Soviet Union+Xinjiang+Mongolia",
+   "warDays": 101,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.721,
+   "utility": {
+    "value": 0.435,
+    "through": 1,
+    "desperation": 0.003,
+    "ownDesperation": 0.003,
+    "doctrine": 0.95,
+    "gain": 0.001,
+    "retaliation": 1.2,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 0.3,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.72
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.043,
+    "ownShare": 0,
+    "menExpected": 10855,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.435,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10855,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 6000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 10886,
+    "yieldN": 1,
+    "men": 10886
+   }
+  }
+ ]
+}

@@ -15,13 +15,16 @@
  * PLAN 7.50: `thriceInYear`, the bursts with two others within a hydrogen bomb's blast radius in the
  * 365 days before them (critic R11-B2: seed 2081's Germany struck one spot three times in 184 days).
  *
+ * PLAN 7.52b: each toll's `men` (the `NukeToll` event), and `civOver10x`, the bursts that killed over
+ * ten times more civilians than men (the critic's count).
+ *
  * Usage: npx tsx tools/diag/nukeToll.ts <seed> <years> [from.bin | new] [out.json] [saveTicks]
  * `saveTicks`: comma-separated ticks; a checkpoint is saved 48 hours before each, to
  * `.cache/nukeToll_<seed>_<tick>.bin` (a named case's A/B from a state just before it).
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { EventKind } from '../../src/shared/events';
-import { nukeStrike } from '../../src/shared/history';
+import { nukeStrike, nukeToll } from '../../src/shared/history';
 import { NATIONS_1938, size1938 } from '../../src/sim/scenario1938';
 import en from '../../src/ui/i18n/en.json' with { type: 'json' };
 import { Sim } from '../../src/sim/sim';
@@ -112,6 +115,8 @@ const rows: Row[] = [];
 const byLaunch = new Map<number, Row>();
 /** Every burst of the run: place, day, war id, striker. */
 const bursts: { x: number; y: number; day: number; war: number; by: string; dead: number }[] = [];
+// The toll of the burst last told, waiting for its men (PLAN 7.52b).
+let lastToll: { toll: { men?: number }; x: number; y: number } | undefined;
 const T = years * 365 * 24;
 const t0 = performance.now();
 const r3 = (v: number): number => +v.toFixed(3);
@@ -221,11 +226,19 @@ while (w.tick < T) {
         const row = [...byLaunch.values()].find((r) => !r.toll && Math.abs((r.at as number[])[0]! - x) < 0.01 && Math.abs((r.at as number[])[1]! - y) < 0.01);
         if (row) {
           row.toll = { dead: s.dead, yieldN: s.yieldN };
+          lastToll = { toll: row.toll as { men?: number }, x, y };
           bursts.push({ x, y, day: +(world.tick / 24).toFixed(1), war: (row.war as number) ?? -1, by: row.by as string, dead: s.dead });
         } else {
-          rows.push({ day: +(world.tick / 24).toFixed(1), by: name(n), unmatched: true, toll: { dead: s.dead, yieldN: s.yieldN } });
+          const toll: { dead: number; yieldN: number; men?: number } = { dead: s.dead, yieldN: s.yieldN };
+          rows.push({ day: +(world.tick / 24).toFixed(1), by: name(n), unmatched: true, toll });
+          lastToll = { toll, x, y };
           bursts.push({ x, y, day: +(world.tick / 24).toFixed(1), war: -1, by: name(n), dead: s.dead });
         }
+      }
+      // PLAN 7.52b: the men the burst killed (`NukeToll`, emitted right after its `NukeCasualties`).
+      if (kind === EventKind.NukeToll && lastToll && lastToll.x === ev[i + 4]! && lastToll.y === ev[i + 5]!) {
+        lastToll.toll.men = nukeToll(ev[i + 3]!).men;
+        lastToll = undefined;
       }
     }
     world.out.events.length = 0;
@@ -243,6 +256,14 @@ const thermoNeedless = decided.filter((r) => (r.toll as { yieldN: number } | und
 // bomb's blast radius of the place, of the 365 days before it).
 const thermoKm = blastRadius(2);
 const thriceInYear = bursts.filter((b) => bursts.filter((e) => e !== b && e.day < b.day && e.day >= b.day - 365 && seaKm(w, b.x, b.y, e.x, e.y) <= thermoKm).length >= 2).map((b) => ({ day: b.day, by: b.by, at: [b.x, b.y], dead: b.dead }));
-const bars = { decided: decided.length, floor: NUKE_FLOOR, lowUtilityMillion: lowMillion.length, restruckSameWar: restruck.length, thermoWhereFissionCovers: thermoNeedless.length, thriceInYear: thriceInYear.length };
+// PLAN 7.52b: the bursts that killed over ten times more civilians (the dead less the men) than men,
+// or civilians and no men (the critic's count, `critic/scripts/c11_cmp.py`).
+const tolls = rows.map((r) => r.toll as { dead: number; men?: number } | undefined).filter((t) => t !== undefined);
+const civOver10x = tolls.filter((t) => {
+  const men = t.men ?? 0;
+  const civ = t.dead - men;
+  return men > 0 ? civ > 10 * men : civ > 0;
+}).length;
+const bars = { decided: decided.length, floor: NUKE_FLOOR, lowUtilityMillion: lowMillion.length, restruckSameWar: restruck.length, thermoWhereFissionCovers: thermoNeedless.length, thriceInYear: thriceInYear.length, bursts: tolls.length, civOver10x };
 writeFileSync(out, JSON.stringify({ seed, years, from, bars, thriceInYear, rows }, null, 1));
 process.stderr.write(`done: ${rows.length} decisions -> ${out} ${JSON.stringify(bars)}\n`);

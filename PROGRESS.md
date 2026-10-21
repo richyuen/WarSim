@@ -21513,3 +21513,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `nukeRestraint1938.test.ts`, two cases (red without: "deterred" for "strikes"; by 4 for
   19). Specs by hand: none (one panel string, no spec reads it).
 - **Next:** 7.52b (the bursts read), 7.52c (the user's ADR).
+
+## 2026-10-21 — PLAN 7.52b: the bursts read on 10 unseen seeds (ticked)
+
+- **Tool** (`nukeToll.ts`): each toll's `men` from the burst's `NukeToll`; `civOver10x`, the critic's
+  count (civilians over ten times the men, `c11_cmp.py`).
+- **Read** (`docs/evidence/7.52/b.md`, seeds 781–790 × 30 years, HEAD `ec1ac280`): 73 bursts in 9 of 10
+  worlds, 7.3 a world (run 11: 93 in 7 of 14, 6.6 a world; most in one world 46 → 19); 21 of 73 (29 %)
+  kill over ten times more civilians than men (run 11: 29 of 93, 31 %). Under 0.1 and a million: 0;
+  a place thrice in a year: 0. A measure, not a bar: the civilians' share is 7.52c's, the user's.
+- **Budget:** 7.52 at 3 commits of 20.
+- **Next:** 7.52c (an ADR proposed, the user's; no rule before the user's word).
