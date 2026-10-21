@@ -12,7 +12,7 @@ import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle }
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, counterNation, type CounterSource } from '../render/units/counters';
 import { drawSeaBattles } from '../render/units/seaBattles';
-import { drawSorties, planeZoom, type PlacedSortie } from '../render/units/sorties';
+import { airFxSize, drawSorties, type PlacedSortie } from '../render/units/sorties';
 import { AirFx } from '../render/fx/air';
 import { NukeFx } from '../render/fx/nuke';
 import { TierHandover } from '../render/units/handover';
@@ -1669,10 +1669,13 @@ export class MapView {
     // hour that began at T, which the page plays from its arrival (the formations go from where
     // they were to where they are): the frame's time is T + its share of the tick (PLAN 5.7d: it
     // was T + 1 + the share, the sorties an hour ahead of all else and of their own fights).
-    this.sortieMarks = drawSorties(ctx, this.sorties, this.tickProgress(now) - 1, cam, this.geo, vw, vh, 1, (n) => hex(n), this.unitScale);
+    // In its sprites' tint, as its men and tanks (PLAN 7.51a: Germany's grey was drawn as it is
+    // on the map, under a white edge: "white glyphs").
+    const tint = (n: number): string => `#${this.nationColor(n).toString(16).padStart(6, '0')}`;
+    this.sortieMarks = drawSorties(ctx, this.sorties, this.tickProgress(now) - 1, cam, this.geo, vw, vh, 1, tint, this.unitScale, this.shares.individuals);
     // The air's fights, bombs and flak (PLAN 5.7b), with the sorties; at T3 a strike's bombs on
     // the men it hit, its formation's drawn elements (PLAN 5.9).
-    this.airFx.draw(ctx, cam, this.geo, vw, vh, now, this.unitScale * planeZoom(cam.scale), this.shares.individuals, (f) => this.elementPlaces(f));
+    this.airFx.draw(ctx, cam, this.geo, vw, vh, now, airFxSize(cam.scale, this.unitScale), this.shares.individuals, (f) => this.elementPlaces(f));
     this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);
     // The sea battles going on (PLAN 4.10b), at T0 to T2: gone with the figures of T3.
     this.seaMarks = drawSeaBattles(ctx, this.seas, cam, this.geo, vw, vh, 1 - this.shares.individuals, this.unitScale);

@@ -3,12 +3,14 @@
  * as planes of its nation's colour where `sortieAt` has it at the frame's time, heading its way;
  * one over its target circles there (a patrol over its zone). The place is the sim's function of
  * the sortie's launch, so a frame between two ticks is where the sortie is then, not a guess. One
- * plane for a few aircraft, up to three in a vee; a bomber's larger than a fighter's. T0 to T2.
+ * plane for a few aircraft, up to three in a vee; a bomber's larger than a fighter's. Every tier;
+ * at T3 a plane is PLANE_MEN men's figures wide (PLAN 7.51a).
  */
 import { SORTIE_STRIDE, SortieRole } from '../../shared/protocol';
 import { Leg, sortieAt, type Sortie } from '../../shared/sorties';
 import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 import { sizeScale } from '../sizeScale';
+import { LINE_CELLS } from './individuals';
 
 /** A plane's span, CSS px (before the unit size), by role: a fighter's, a bomber's. */
 export const PLANE_PX = [13, 14, 16, 19, 15, 16] as const;
@@ -23,10 +25,27 @@ export const ORBIT_VIEW = 0.6;
 export const ZOOM_FULL = 6;
 export const ZOOM_LEAST = 0.55;
 
+/**
+ * A fighter's span at T3 in figures of a man of a firing line (`LINE_CELLS`), a bomber's by its
+ * PLANE_PX against a fighter's (PLAN 7.51a, ADR-609). The critic's run 11: at 10 m/px a plane was
+ * its 13–19 px, three men's figures, "the size of a squad". Further out the PLANE_PX floor holds:
+ * this is over it from about 18 m/px in, so T0 to T2 are as they were.
+ */
+export const PLANE_MEN = 5;
+
+/** A plane's span, CSS px, of `role` at zoom `scale` (px a cell) and unit size `unit`: its PLANE_PX (`planeZoom` taken), and at T3 PLANE_MEN men's figures. */
+export function planeSpan(role: number, scale: number, unit = 1): number {
+  const px = PLANE_PX[role] ?? PLANE_PX[SortieRole.fighter];
+  return Math.max(px * unit * planeZoom(scale), (PLANE_MEN * px * LINE_CELLS * sizeScale * scale * unit) / PLANE_PX[SortieRole.fighter]);
+}
+
+/** The air's marks' size (`AirFx.draw`): a fighter's span against its PLANE_PX, so that a fight is the size of its planes. */
+export const airFxSize = (scale: number, unit = 1): number => planeSpan(SortieRole.fighter, scale, unit) / PLANE_PX[SortieRole.fighter];
+
 /** The planes' size at zoom `scale` (px a cell): 1 from `ZOOM_FULL` in, down to `ZOOM_LEAST` further out. */
 export const planeZoom = (scale: number): number => Math.min(1, Math.max(ZOOM_LEAST, scale / ZOOM_FULL));
 
-/** A placed sortie (for tests): its place on screen, its heading (rad, screen), its leg. */
+/** A placed sortie (for tests): its place on screen, its heading (rad, screen), its leg; each plane's middle and the span. */
 export interface PlacedSortie {
   x: number;
   y: number;
@@ -34,6 +53,8 @@ export interface PlacedSortie {
   leg: Leg;
   planes: number;
   nation: number;
+  span: number;
+  at: [number, number][];
 }
 
 /** Planes drawn for a wing of `aircraft`: one, two or three. */
@@ -64,7 +85,7 @@ export function sortiePlace(rows: ArrayLike<number>, i: number, t: number, w: nu
   return { x: p.x, y: p.y, heading: p.leg === Leg.Out ? out : out + Math.PI, leg: p.leg };
 }
 
-/** One plane: fuselage, wings and tail, its nose along `heading`. */
+/** One plane: fuselage, wings and tail, its nose along `heading`; its edge under its fill, so a small plane is its colour (PLAN 7.51a: the edge over it made it white). */
 function plane(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, span: number): void {
   const h = span / 2;
   ctx.save();
@@ -84,14 +105,16 @@ function plane(ctx: CanvasRenderingContext2D, x: number, y: number, heading: num
   ctx.lineTo(0, h);
   ctx.lineTo(h * 0.2, h * 0.12);
   ctx.closePath();
-  ctx.fill();
   ctx.stroke();
+  ctx.fill();
   ctx.restore();
 }
 
 /**
  * Draws the sorties of `rows` (a snapshot's, SORTIE_STRIDE each) at `t` hours from its tick, at
- * `alpha`, each in its nation's colour (`colour`); returns them placed on screen, for tests.
+ * `alpha`, each in its nation's colour (`colour`: its sprites' tint); returns them placed on
+ * screen, for tests. `close`, the share of T3's figures: there a plane's edge is dark, as a
+ * figure's, against the ground (PLAN 7.51a); further out light, against its nation's fill.
  */
 export function drawSorties(
   ctx: CanvasRenderingContext2D,
@@ -104,7 +127,9 @@ export function drawSorties(
   alpha: number,
   colour: (nation: number) => string,
   size = 1,
+  close = 0,
 ): PlacedSortie[] {
+  const unit = size;
   const out: PlacedSortie[] = [];
   if (alpha <= 0.01 || rows.length === 0) return out;
   const offs = itemOffsets(cam, geo, vw);
@@ -114,7 +139,8 @@ export function drawSorties(
   ctx.globalAlpha = alpha;
   // A light edge and a shadow: a plane is seen over its own nation's land, of its own colour.
   ctx.lineWidth = 1.25;
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+  const edge = close >= 0.5 ? 'rgba(20, 20, 20, 0.9)' : 'rgba(255, 255, 255, 0.95)';
+  ctx.strokeStyle = edge;
   ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
   ctx.shadowBlur = 3;
   for (let i = 0; i + SORTIE_STRIDE <= rows.length; i += SORTIE_STRIDE) {
@@ -122,7 +148,7 @@ export function drawSorties(
     const at = sortiePlace(rows, i, t, geo.wrapX ? geo.w : 0);
     if (!at) continue;
     const role = rows[i + 10]!;
-    const span = (PLANE_PX[role] ?? PLANE_PX[SortieRole.fighter]) * size;
+    const span = planeSpan(role, cam.scale, unit);
     const n = planesOf(rows[i + 9]!);
     for (const off of offs) {
       let [x, y] = worldToScreen(cam, at.x + off, at.y, vw, vh);
@@ -135,7 +161,8 @@ export function drawSorties(
         [x, y] = [ox + r * Math.cos(at.orbit.angle), oy + r * Math.sin(at.orbit.angle)];
       }
       if (x < -3 * span || y < -3 * span || x > vw + 3 * span || y > vh + 3 * span) continue;
-      out.push({ x, y, heading: at.heading, leg: at.leg, planes: n, nation: rows[i + 8]! });
+      const placed: PlacedSortie = { x, y, heading: at.heading, leg: at.leg, planes: n, nation: rows[i + 8]!, span, at: [] };
+      out.push(placed);
       // A short trail behind it.
       ctx.save();
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
@@ -153,7 +180,9 @@ export function drawSorties(
       for (let k = 0; k < n; k++) {
         const b = k === 0 ? 0 : back;
         const sgn = k === 1 ? -1 : k === 2 ? 1 : 0;
-        plane(ctx, x - cos * b - sin * side * sgn, y - sin * b + cos * side * sgn, at.heading, span);
+        const [px, py] = [x - cos * b - sin * side * sgn, y - sin * b + cos * side * sgn];
+        placed.at.push([px, py]);
+        plane(ctx, px, py, at.heading, span);
       }
     }
   }

@@ -208,6 +208,14 @@ when taken up:
   years 2–20 after 7.49, on its 10 unseen seeds, at least a tenth of year 1's, or a BLOCKERS entry
   with the measured cause, the user's to accept. Stop: two full re-measures flat, the bar is the
   user's (ADR-554).
+  In parts:
+    - [x] 7.51a The planes at T3: each drawn plane's middle within 40 (summed RGB) of its nation's
+      sprite tint and its span at least 4 men's figures, at 10 m/px on the 7019 front
+      (`tests/e2e/planesT3_1938.spec.ts`, red before: off 285, 1.48 men). AT: the spec; ADR-609.
+      Rule in (ADR-609, `docs/evidence/7.51/a.md`): off 0, 5.00 men.
+    - [ ] 7.51b The late air war: air battles in years 2–20, on 7.49's 10 unseen seeds, at least a
+      tenth of year 1's, or a BLOCKERS entry with the measured cause, the user's to accept. Read
+      after 7.49 (whose parts c–f wait on the user). Stop: two full re-measures flat (ADR-554).
 - [ ] 7.52 AI nuclear use (aiNukes 7, needs 8, beyond R11-B2): the restraint line names a deterrent
   that is itself a puppet ("Soviet Union is deterred by Germany" while Germany's own line reads "is
   a puppet: the use of its warheads is its overlord's"; `critic/c11_t_1129.json`); bursts on the

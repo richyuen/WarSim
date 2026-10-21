@@ -21479,3 +21479,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   sea; both fight within 10 days" (red without: 0 of 2); a peace case added (10 days on place).
   Specs by hand: none (no UI change).
 - **Next:** PLAN 7.51 (aircraft); 7.49c–f, 7.54, 7.56, 7.60 wait on the user (BLOCKERS).
+
+## 2026-10-21 — PLAN 7.51a: the planes at T3 in their nation's tint, five men wide (ADR-609)
+
+- **Split** 7.51: a, the planes drawn at T3 (this); b, the late air war, read after 7.49 (its parts
+  c–f wait on the user).
+- **Measured** (`tests/e2e/planesT3_1938.spec.ts`, new; `docs/evidence/7.51/a.md`): seed 7019,
+  Germany–Poland, hour 73, 10 m/px on a German sortie: a man's figure 8.81 px; the plane 13 px (1.48
+  men), its middle 109 grey against its tint 204 (off 285). The white edge was stroked over a
+  fuselage some 1.5 px wide, and the fill was the map's dark grey, not the men's sprite tint.
+- **Rule** (view only): edge under the fill; fill `spriteTint` at every tier; dark edge at T3; span
+  the larger of PLANE_PX and 5 men's figures (over the floor from about 18 m/px in); the air's marks
+  scaled with it (`airFxSize`). After: off 0, 44 px (5.00 men). Pin unchanged.
+- **Test:** `planesT3_1938.spec.ts` (red before: off 285, 1.48 men). Specs by hand, green: planesT3,
+  airT3, airFx, airDemo, sortiesSeen, patrolsSeen, carrierStrikeRow, seaBattleSeen (8 passed);
+  `sortiesDrawn.test.ts`.
+- **Gotcha:** `EVIDENCE=1` on other tasks' specs rewrites their evidence images; restore them.
+- **Next:** 7.51b waits on 7.49; PLAN 7.52 (the restraint line names a puppet's overlord).

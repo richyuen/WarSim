@@ -1913,7 +1913,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   has it at the frame's time (in the hour the snapshot ends, as the formations are played: 5.7d),
   a patrol circling over its target, T0 to T2 (every tier since PLAN 5.9; its circle at most 0.6 × its
   share of the view's smaller half side on the screen since PLAN 7.24c, so at T3 it stays over the
-  fight the camera is on; the circle is the page's, the sim's place its middle).
+  fight the camera is on; the circle is the page's, the sim's place its middle). A plane is its
+  nation's sprite tint, its edge under its fill (dark at T3, light further out), and at T3 at least
+  PLANE_MEN = 5 figures of a man wide, the air's marks scaled with it (PLAN 7.51a, ADR-609).
 - *As built (PLAN 5.7b, ADR-324; `render/fx/air.ts`):* an hour's air fight is tracers and flak with
   smoke trails for the aircraft lost; a strike, bombs bursting about its target; a sortie under
   AA (`FlakFired`), flak puffs about it; on the render clock, T0 to T2.

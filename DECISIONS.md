@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-609 · 2026-10-21 · accepted — A plane is drawn in its nation's sprite tint, its edge under its fill, and at T3 five men's figures wide (PLAN 7.51a; amends PLAN 5.7a's planes)
+
+- **Context** (critic run 11, aircraft 7, `critic/shots/c11c_7019_inf_0010m.png`): at 10 m/px over
+  the Germany–Poland front of seed 7019 the aircraft were "three white glyphs the size of a squad,
+  not in a nation's colour".
+- **Measured** (`tests/e2e/planesT3_1938.spec.ts`, `docs/evidence/7.51/a.md`): the same front, day 4,
+  10 m/px: a man's figure 8.81 px; Germany's plane 13 px (1.48 men), its middle 109,109,109 against
+  its sprite tint 204,204,204 (off 285, summed RGB). Two causes: the 1.25 px white edge was stroked
+  over the fill, and a fuselage some 1.5 px wide was all edge; and the planes took the nation's map
+  colour (Germany's dark grey), not the lighter tint its men and tanks have against the ground
+  (`spriteTint`, PLAN 7.9b).
+- **Decision.** View only. A plane's edge is stroked under its fill; its fill is its nation's sprite
+  tint at every tier; at T3 (the figures' share at least a half) the edge is dark, as a figure's,
+  further out light against the nation's fill. Its span is its PLANE_PX (the floor, as before) or
+  PLANE_MEN = 5 figures of a man of a firing line (`LINE_CELLS`), a bomber by its PLANE_PX against a
+  fighter's, the larger: over the floor from about 18 m/px in, so T0 to T2 keep their sizes. The
+  air's fights, bombs and flak take the same factor (`airFxSize`), so a fight is the size of its
+  planes.
+- **Evidence.** After: 3 German planes, middles 204,204,204 (off 0), span 44 px (5.00 men); the bar
+  40 and 4 men. Specs by hand green: planesT3, airT3, airFx, airDemo, sortiesSeen, patrolsSeen,
+  carrierStrikeRow, seaBattleSeen.
+- **Consequences.** `PlacedSortie` carries each plane's middle and the span. Pin unchanged
+  (a2ae195b): no sim change.
+
 ### ADR-608 · 2026-10-21 · accepted — A fleet the editor placed holds its sea at war: it closes on an enemy warfleet in its place's zone (PLAN 7.59; amends PLAN 7.22c's "holds its place")
 
 - **Context** (found at PLAN 7.41c, `docs/evidence/7.41/c.md`; editor 7, naval 7): a placed fleet
