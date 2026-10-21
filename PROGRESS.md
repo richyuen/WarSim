@@ -21018,3 +21018,11 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Filed: R11-B1 PLAN 7.49, R11-B2 PLAN 7.50; the dimensions under the bar: emergent 6 PLAN 7.40 and naval 7 PLAN 7.41 (moved before 7.5 under ADR-577, their run-11 cases added), aircraft 7 PLAN 7.51, AI nuclear use 7 PLAN 7.52. Balance findings are taken in Phase 7 (ADR-58's deferral was for phases 2–6).
 - 7.46 stays open on b2 and b3 (BLOCKERS; ADR-578 waits on the user).
 - **Next:** PLAN 7.49 (7.46's parts wait on BLOCKERS).
+
+## 2026-10-21 — PLAN 7.40 closed not done (ADR-583, the user's decision)
+
+- The user asked whether 7.40 should go. Closed, not done: its stasis case is a seed's luck on any code
+  (measured 2026-10-20), Latvia's cause fixed by 7.43, and the late map's bar was set from the 1938
+  start, not a measured figure. The emergent score (6) is answered by PLAN 7.49 (R11-B1), whose first
+  line carries it; an exception to ADR-486. `plan:archive` moved 7.40.
+- **Next:** PLAN 7.49.

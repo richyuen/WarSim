@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-583 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — PLAN 7.40 closed not done; emergent 6 is answered by PLAN 7.49
+
+- **Context.** Run 11 (`critic/CRITIC_REPORT.md` on `dd3b730`) scores emergent dynamics 6. PLAN 7.40,
+  its dimension task (ADR-486), held three cases: a top five unchanged over 20 years (measured
+  2026-10-20 as about 1 seed in 14 on any code, `bcbc99c` and before alike: a seed's luck, not a
+  defect); Latvia's rise (its cause fixed by PLAN 7.43, ADR-582); and, added from run 11, the late
+  map in pieces, with a bar (586 pieces at year 20) taken from the 1938 start, not from a measured
+  reachable figure, under the best seed the critic read (604). The critic gives as the reason for
+  the 6 the wars with no fighting after year 1 (R11-B1), which PLAN 7.49 takes.
+- **Decision.** 7.40 closed, not done. The emergent score is answered by 7.49, whose first line
+  carries it: an exception to ADR-486's task of its own for each dimension under the bar, the
+  user's. If the next report still scores emergent under 7 after 7.49, a task is filed from that
+  report's findings (PROMPT 2a).
+
 ### ADR-582 · 2026-10-20 · accepted — On a side's equal pressure a cell goes to the neighbouring member whose own formations press it (PLAN 7.43)
 
 - **Context.** `territory.ts`'s flip scores each neighbouring enemy controller of a frontier cell

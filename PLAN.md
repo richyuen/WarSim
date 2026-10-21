@@ -114,10 +114,10 @@ each, split when taken up:
 
 Run 11's (report of 2026-10-21 on `dd3b730`, `critic/CRITIC_REPORT.md`; run 10's R10-B2 fixed,
 R10-B1 and R10-B3 mostly; naval 6 → 7, aircraft 6 → 7): R11-B1 and R11-B2 are PLAN 7.49 and 7.50.
-The dimensions under the bar: emergent 6 is 7.40 and naval 7 is 7.41 (moved here, ADR-577),
-aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split when taken up:
+The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval 7 is 7.41 (moved
+here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split when taken up:
 
-- [ ] 7.49 The land war after year 1 (R11-B1): engaged land formations worldwide, mean of daily
+- [ ] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged land formations worldwide, mean of daily
   samples, 0.3–0.7 at years 10 and 20 on the critic's 24 worlds (of about 300 of nations at war),
   against 55–107 in year 1; the same on `bcbc99c` (1.1 and 0.3). Seed 6421 year 21: 9 wars, 0 in
   contact at 25 fortnightly samples while 309–7,179 cells change hands a fortnight; the Germany–Soviet
@@ -148,30 +148,7 @@ aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split w
   seeds × 30 years (none of them 7.38's or 7.45b's): no burst under 0.1 kills a million, no place
   struck three times in a year; a unit test per rule (red without); the pin's entry. Stop: two full
   re-measures flat, the bar is the user's (ADR-554).
-- [ ] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's
-  seeds: the same top five 22 years on seed 8693 and 21 on 7019, over the 20-year limit (4219 and
-  3613: 18 and 17; run 9's worst 18; `critic/c10_summary.txt` `stasis`); late wars between
-  nations that cannot fight at sea (7.39's); Latvia the second-largest nation on seed 1307 at year
-  30 (14.2 % of the land, 75 warheads), unexplained. Not a regression (measured 2026-10-20, the top
-  five by controlled land each year, 30 years): run 9's 14 seeds mean 11.4 years at `f0be88c` and at
-  `bcbc99c`, none over 20; run 10's 14 seeds mean 11.1 at `0b0d5a2` (before 7.35's naval rules, one
-  over 20: 5309, 23) and 12.4 at `bcbc99c` (two: 8693, 7019); a long top five is a seed's, about 1
-  in 14 on either code. Measured first: on 8693 and 7019, what holds
-  the top five (no war among them, the wars they win, their revolts), and Latvia's rise year by
-  year. AT (the user's, 2026-10-20): `npm run sweep` on 10 unseen seeds × 50 years: no stasis on
-  8 of 10 (7.27's bar: one unchanged world's sweeps end at 7 to 9, `tools/sweep/criteria.ts`) and
-  ADR-54's limits, riser and faller green; the critic's 14 seeds × 30 years read for each rule, not
-  a bar (a top five over 20 years is about 1 seed in 14 on any code, above); Latvia's rise changed
-  by a rule with an ADR, or a BLOCKERS entry
-  with its measured cause, the user's to accept; the pin's entry. Stop: two full re-measures flat,
-  the bar is the user's (ADR-554).
-  **Taken** (ADR-577: run 11, `critic/CRITIC_REPORT.md` on `dd3b730`, still scores emergent 6): what
-  R11-B1 (7.49) leaves. Run 11 on the same 14 seeds: the longest top five 22 years (3613), one seed
-  over 20 (run 10: two); the 10 new seeds at most 20. New in run 11, on both commits: the late map
-  shredded, pieces of 2–400 cells of one holder 469 at the 1938 start, 604–1,039 at year 20 (the
-  Soviet Union alone 94–287; `critic/c11_frag_head.json`, `c11v_6421_ger_sov_6000m.png`). Added to
-  the AT: on the sweep's seeds, such pieces at year 20 at most 1.25 × the 1938 start's (586), or a
-  BLOCKERS entry with the measured cause, the user's to accept.
+
 - [ ] 7.41 The war at sea seen (naval 6, needs 8, beyond 7.39): Japan–USA (seed 8693) one battle
   stood with no row for 6 days (hours 330 to 480) and was never shown (`critic/c10_n_8693_JAP_USA
   .json`); Germany–UK on 3613 no sea battle between them in 24 days (`c10_e_3613.json`); at 20 m/px
@@ -479,3 +456,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.48 The critic's overrun France strikes before it loses its last bomber, with the chase (AI […]
 - [x] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean […]
 - [x] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g): […]
+- [x] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's […]

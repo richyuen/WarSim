@@ -12834,3 +12834,44 @@ Of 7.33 (open in PLAN.md):
   Done (2026-10-20, ADR-582, `docs/evidence/7.43/read.md`): the unit test red without; on HEAD
   Latvia and Lithuania never hold over their 1938 land in two years, with or without the rule
   (the case no longer arises there; 7.37g's replay at `bcbc99c` is the proof); pin a1a50bcc.
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's
+  seeds: the same top five 22 years on seed 8693 and 21 on 7019, over the 20-year limit (4219 and
+  3613: 18 and 17; run 9's worst 18; `critic/c10_summary.txt` `stasis`); late wars between
+  nations that cannot fight at sea (7.39's); Latvia the second-largest nation on seed 1307 at year
+  30 (14.2 % of the land, 75 warheads), unexplained. Not a regression (measured 2026-10-20, the top
+  five by controlled land each year, 30 years): run 9's 14 seeds mean 11.4 years at `f0be88c` and at
+  `bcbc99c`, none over 20; run 10's 14 seeds mean 11.1 at `0b0d5a2` (before 7.35's naval rules, one
+  over 20: 5309, 23) and 12.4 at `bcbc99c` (two: 8693, 7019); a long top five is a seed's, about 1
+  in 14 on either code. Measured first: on 8693 and 7019, what holds
+  the top five (no war among them, the wars they win, their revolts), and Latvia's rise year by
+  year. AT (the user's, 2026-10-20): `npm run sweep` on 10 unseen seeds × 50 years: no stasis on
+  8 of 10 (7.27's bar: one unchanged world's sweeps end at 7 to 9, `tools/sweep/criteria.ts`) and
+  ADR-54's limits, riser and faller green; the critic's 14 seeds × 30 years read for each rule, not
+  a bar (a top five over 20 years is about 1 seed in 14 on any code, above); Latvia's rise changed
+  by a rule with an ADR, or a BLOCKERS entry
+  with its measured cause, the user's to accept; the pin's entry. Stop: two full re-measures flat,
+  the bar is the user's (ADR-554).
+  **Taken** (ADR-577: run 11, `critic/CRITIC_REPORT.md` on `dd3b730`, still scores emergent 6): what
+  R11-B1 (7.49) leaves. Run 11 on the same 14 seeds: the longest top five 22 years (3613), one seed
+  over 20 (run 10: two); the 10 new seeds at most 20. New in run 11, on both commits: the late map
+  shredded, pieces of 2–400 cells of one holder 469 at the 1938 start, 604–1,039 at year 20 (the
+  Soviet Union alone 94–287; `critic/c11_frag_head.json`, `c11v_6421_ger_sov_6000m.png`). Added to
+  the AT: on the sweep's seeds, such pieces at year 20 at most 1.25 × the 1938 start's (586), or a
+  BLOCKERS entry with the measured cause, the user's to accept.
+  Closed (ADR-583, the user's decision, 2026-10-21): not done. The stasis a seed's luck on any code,
+  Latvia's cause fixed by 7.43; the emergent score is answered by 7.49 (R11-B1).
