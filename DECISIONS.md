@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-596 · 2026-10-21 · accepted — The operational AI leaves alone a formation on the march to its transports' port (PLAN 7.56a)
+
+- **Context** (`docs/evidence/7.56/a.md`). The invasion AI sends free formations to the port where
+  its transports stand (`sendToPort`); those within DEPLOY_RANGE_CELLS of its own front are not
+  sent (PLAN 7.26c3a). The operational AI mans an ally's front too (PLAN 1.42b), and re-ordered the
+  formations so sent within days to a sector of it: seed 1129 year 20, Britain's 335 sent to Adana
+  (18.8 days) was re-ordered on day 35, 18 steps off, to Germany's front; 445, sent on day 37, on day
+  40; every week the same. The measure's other finding: `sailToArmy`'s pick was quick in both of
+  7.56's cases (8693: 6.4 + 5 days; 1129: 27 + 19), and the slow marches were on foot, so the
+  desert's move cost, not DRY_SPEED.
+- **Decision** (`ai/operational.ts` `planNation`; `systems/amphibious.ts` `transportPorts`,
+  `marchingToPort`): a formation on the march whose target is within AT_PORT_CELLS of the land cell
+  of a port its nation holds, at which a transport group of its nation stands (not under way, with
+  room), is not one of the plan's free formations: no allotment, no march from afar, no spare. It
+  still counts where it stands. One that stands at the port is not covered: the invasion AI loads it
+  on its next day (1129: on day 53, five days at Adana, it was taken again; the plan's day 51 had
+  not loaded it, PLAN 7.56b).
+- **Consequences.** `landingMarchKept1938.test.ts` (red without). 1129's 335 reaches Adana on day 48.
+  The operational AI's mean on 1129, a year alone, pinned, 0.440 → 0.468 ms a tick (the run's drift),
+  longest call 180.7 → 179.8 ms. A march the operational AI itself gave to a front cell within
+  AT_PORT_CELLS of such a port is not planned again until it ends. Pin d188faed → 63d0cfd9.
+
 ### ADR-595 · 2026-10-21 · accepted — The invasion AI sails its transports to the army when the army cannot march to them (PLAN 7.54b)
 
 - **Context** (`docs/evidence/7.54/a.md`, `b.md`). After a landing the transports sail for their

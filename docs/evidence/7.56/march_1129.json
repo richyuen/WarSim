@@ -1,0 +1,2133 @@
+[
+ {
+  "seed": 1129,
+  "src": "critic/c11_seed1129_y20.bin",
+  "nation": "ENG",
+  "found": true,
+  "day": 7301,
+  "transportsAt": "Warri",
+  "room": 24000,
+  "target": "Athens",
+  "formations": 7,
+  "ports": [
+   {
+    "name": "Luanda",
+    "sail": 4.9
+   },
+   {
+    "name": "Lagos",
+    "sail": 0.7
+   },
+   {
+    "name": "Accra",
+    "sail": 1.6
+   },
+   {
+    "name": "Monrovia",
+    "sail": 5
+   },
+   {
+    "name": "Beirut",
+    "sail": 27.1
+   },
+   {
+    "name": "Istanbul",
+    "sail": 26.7
+   },
+   {
+    "name": "Dubai",
+    "sail": 39.4
+   },
+   {
+    "name": "Tel Aviv",
+    "sail": 27.3
+   },
+   {
+    "name": "Dar es Salaam",
+    "sail": 27.2
+   },
+   {
+    "name": "Kuwait City",
+    "sail": 40.6
+   },
+   {
+    "name": "Lomé",
+    "sail": 1.2
+   },
+   {
+    "name": "Kampala",
+    "sail": null
+   },
+   {
+    "name": "Mogadishu",
+    "sail": 29
+   },
+   {
+    "name": "Aden",
+    "sail": 34.4
+   },
+   {
+    "name": "Mombasa",
+    "sail": 27.8
+   },
+   {
+    "name": "Freetown",
+    "sail": 6.3
+   },
+   {
+    "name": "Abu Dhabi",
+    "sail": 39.6
+   },
+   {
+    "name": "İzmir",
+    "sail": 25.8
+   },
+   {
+    "name": "Bursa",
+    "sail": 26.4
+   },
+   {
+    "name": "Doha",
+    "sail": 39.5
+   },
+   {
+    "name": "Adana",
+    "sail": 27.1
+   },
+   {
+    "name": "Bur Said",
+    "sail": 26.8
+   },
+   {
+    "name": "Samsun",
+    "sail": 29.4
+   },
+   {
+    "name": "Gaza City",
+    "sail": 27.2
+   },
+   {
+    "name": "Mwanza",
+    "sail": null
+   },
+   {
+    "name": "Usumbura",
+    "sail": null
+   },
+   {
+    "name": "Berbera",
+    "sail": 34.8
+   },
+   {
+    "name": "Kalemie",
+    "sail": null
+   },
+   {
+    "name": "Benguela",
+    "sail": 5.9
+   },
+   {
+    "name": "Mzuzu",
+    "sail": null
+   },
+   {
+    "name": "Bathurst",
+    "sail": 8.2
+   },
+   {
+    "name": "Ṭarābulus",
+    "sail": 27.2
+   },
+   {
+    "name": "Haifa",
+    "sail": 27.2
+   },
+   {
+    "name": "Málaga",
+    "sail": 17.9
+   },
+   {
+    "name": "Gibraltar",
+    "sail": 17.3
+   },
+   {
+    "name": "Gölcük",
+    "sail": 26.4
+   },
+   {
+    "name": "Basra",
+    "sail": 40.4
+   }
+  ],
+  "searches": 259,
+  "searchMs": 693,
+  "picked": {
+   "id": 335,
+   "port": "Adana",
+   "sail": 27.1,
+   "marchNow": 18.8,
+   "marchFed": 18.8,
+   "steps": 26,
+   "series": 45.9,
+   "side": 27.1
+  },
+  "leastSeries": {
+   "id": 920,
+   "port": "Kuwait City",
+   "sail": 40.6,
+   "marchNow": 0,
+   "marchFed": 0,
+   "steps": 0,
+   "series": 40.6,
+   "side": 40.6
+  },
+  "leastSide": {
+   "id": 335,
+   "port": "Beirut",
+   "sail": 27.1,
+   "marchNow": 21.1,
+   "marchFed": 21.1,
+   "steps": 24,
+   "series": 48.2,
+   "side": 27.1
+  },
+  "underSixty": {
+   "series": 20,
+   "side": 50,
+   "of": 165
+  },
+  "forms": [
+   {
+    "id": 335,
+    "dist": 378,
+    "men": 12460,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 3,
+    "at": 781538,
+    "now": 1
+   },
+   {
+    "id": 445,
+    "dist": 378,
+    "men": 12460,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 3,
+    "at": 781538,
+    "now": 1
+   },
+   {
+    "id": 1077,
+    "dist": 378,
+    "men": 8504,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 3,
+    "at": 781538,
+    "now": 1
+   },
+   {
+    "id": 920,
+    "dist": 380,
+    "men": 10967,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 7,
+    "at": 871696,
+    "now": 1
+   },
+   {
+    "id": 1253,
+    "dist": 568,
+    "men": 7669,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 3,
+    "at": 597318,
+    "now": 1
+   },
+   {
+    "id": 695,
+    "dist": 639,
+    "men": 4178,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 4,
+    "at": 349460,
+    "now": 1
+   },
+   {
+    "id": 1268,
+    "dist": 919,
+    "men": 9225,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 0.5,
+    "terrain": 8,
+    "at": 159183,
+    "now": 1
+   }
+  ],
+  "quickest": [
+   {
+    "id": 335,
+    "dist": 378,
+    "reachable": 23,
+    "quickest": {
+     "port": "Ṭarābulus",
+     "marchNow": 18.3,
+     "marchFed": 18.3,
+     "sail": 27.2
+    }
+   },
+   {
+    "id": 445,
+    "dist": 378,
+    "reachable": 23,
+    "quickest": {
+     "port": "Ṭarābulus",
+     "marchNow": 18.3,
+     "marchFed": 18.3,
+     "sail": 27.2
+    }
+   },
+   {
+    "id": 1077,
+    "dist": 378,
+    "reachable": 23,
+    "quickest": {
+     "port": "Ṭarābulus",
+     "marchNow": 18.3,
+     "marchFed": 18.3,
+     "sail": 27.2
+    }
+   },
+   {
+    "id": 920,
+    "dist": 380,
+    "reachable": 30,
+    "quickest": {
+     "port": "Kuwait City",
+     "marchNow": 0,
+     "marchFed": 0,
+     "sail": 40.6
+    }
+   },
+   {
+    "id": 1253,
+    "dist": 568,
+    "reachable": 22,
+    "quickest": {
+     "port": "Istanbul",
+     "marchNow": 103.5,
+     "marchFed": 103.5,
+     "sail": 26.7
+    }
+   },
+   {
+    "id": 695,
+    "dist": 639,
+    "reachable": 22,
+    "quickest": {
+     "port": "Istanbul",
+     "marchNow": 124.6,
+     "marchFed": 124.6,
+     "sail": 26.7
+    }
+   },
+   {
+    "id": 1268,
+    "dist": 919,
+    "reachable": 22,
+    "quickest": {
+     "port": "Istanbul",
+     "marchNow": 225.4,
+     "marchFed": 225.4,
+     "sail": 26.7
+    }
+   }
+  ],
+  "pairs": [
+   {
+    "id": 335,
+    "port": "Beirut",
+    "sail": 27.1,
+    "marchNow": 21.1,
+    "marchFed": 21.1,
+    "steps": 24,
+    "series": 48.2,
+    "side": 27.1
+   },
+   {
+    "id": 335,
+    "port": "Istanbul",
+    "sail": 26.7,
+    "marchNow": 47.5,
+    "marchFed": 47.5,
+    "steps": 65,
+    "series": 74.1,
+    "side": 47.5
+   },
+   {
+    "id": 335,
+    "port": "Dubai",
+    "sail": 39.4,
+    "marchNow": 91,
+    "marchFed": 91,
+    "steps": 104,
+    "series": 130.4,
+    "side": 91
+   },
+   {
+    "id": 335,
+    "port": "Tel Aviv",
+    "sail": 27.3,
+    "marchNow": 25.9,
+    "marchFed": 25.9,
+    "steps": 29,
+    "series": 53.2,
+    "side": 27.3
+   },
+   {
+    "id": 335,
+    "port": "Dar es Salaam",
+    "sail": 27.2,
+    "marchNow": 225.5,
+    "marchFed": 225.5,
+    "steps": 261,
+    "series": 252.6,
+    "side": 225.5
+   },
+   {
+    "id": 335,
+    "port": "Kuwait City",
+    "sail": 40.6,
+    "marchNow": 41.5,
+    "marchFed": 41.5,
+    "steps": 49,
+    "series": 82.1,
+    "side": 41.5
+   },
+   {
+    "id": 335,
+    "port": "Mogadishu",
+    "sail": 29,
+    "marchNow": 186.7,
+    "marchFed": 186.7,
+    "steps": 212,
+    "series": 215.8,
+    "side": 186.7
+   },
+   {
+    "id": 335,
+    "port": "Aden",
+    "sail": 34.4,
+    "marchNow": 128.4,
+    "marchFed": 128.4,
+    "steps": 148,
+    "series": 162.8,
+    "side": 128.4
+   },
+   {
+    "id": 335,
+    "port": "Mombasa",
+    "sail": 27.8,
+    "marchNow": 212.9,
+    "marchFed": 212.9,
+    "steps": 244,
+    "series": 240.7,
+    "side": 212.9
+   },
+   {
+    "id": 335,
+    "port": "Abu Dhabi",
+    "sail": 39.6,
+    "marchNow": 85.7,
+    "marchFed": 85.7,
+    "steps": 99,
+    "series": 125.3,
+    "side": 85.7
+   },
+   {
+    "id": 335,
+    "port": "İzmir",
+    "sail": 25.8,
+    "marchNow": 50.3,
+    "marchFed": 50.3,
+    "steps": 72,
+    "series": 76,
+    "side": 50.3
+   },
+   {
+    "id": 335,
+    "port": "Bursa",
+    "sail": 26.4,
+    "marchNow": 45.1,
+    "marchFed": 45.1,
+    "steps": 61,
+    "series": 71.5,
+    "side": 45.1
+   },
+   {
+    "id": 335,
+    "port": "Doha",
+    "sail": 39.5,
+    "marchNow": 71.3,
+    "marchFed": 71.3,
+    "steps": 81,
+    "series": 110.8,
+    "side": 71.3
+   },
+   {
+    "id": 335,
+    "port": "Adana",
+    "sail": 27.1,
+    "marchNow": 18.8,
+    "marchFed": 18.8,
+    "steps": 26,
+    "series": 45.9,
+    "side": 27.1
+   },
+   {
+    "id": 335,
+    "port": "Bur Said",
+    "sail": 26.8,
+    "marchNow": 40.1,
+    "marchFed": 40.1,
+    "steps": 48,
+    "series": 67,
+    "side": 40.1
+   },
+   {
+    "id": 335,
+    "port": "Samsun",
+    "sail": 29.4,
+    "marchNow": 62.4,
+    "marchFed": 62.4,
+    "steps": 82,
+    "series": 91.9,
+    "side": 62.4
+   },
+   {
+    "id": 335,
+    "port": "Gaza City",
+    "sail": 27.2,
+    "marchNow": 29.9,
+    "marchFed": 29.9,
+    "steps": 35,
+    "series": 57.2,
+    "side": 29.9
+   },
+   {
+    "id": 335,
+    "port": "Berbera",
+    "sail": 34.8,
+    "marchNow": 159.1,
+    "marchFed": 159.1,
+    "steps": 174,
+    "series": 193.9,
+    "side": 159.1
+   },
+   {
+    "id": 335,
+    "port": "Benguela",
+    "sail": 5.9,
+    "marchNow": 329.3,
+    "marchFed": 329.3,
+    "steps": 383,
+    "series": 335.2,
+    "side": 329.3
+   },
+   {
+    "id": 335,
+    "port": "Ṭarābulus",
+    "sail": 27.2,
+    "marchNow": 18.3,
+    "marchFed": 18.3,
+    "steps": 22,
+    "series": 45.4,
+    "side": 27.2
+   },
+   {
+    "id": 335,
+    "port": "Haifa",
+    "sail": 27.2,
+    "marchNow": 23.9,
+    "marchFed": 23.9,
+    "steps": 27,
+    "series": 51.1,
+    "side": 27.2
+   },
+   {
+    "id": 335,
+    "port": "Gölcük",
+    "sail": 26.4,
+    "marchNow": 45.3,
+    "marchFed": 45.3,
+    "steps": 58,
+    "series": 71.8,
+    "side": 45.3
+   },
+   {
+    "id": 335,
+    "port": "Basra",
+    "sail": 40.4,
+    "marchNow": 38.4,
+    "marchFed": 38.4,
+    "steps": 48,
+    "series": 78.8,
+    "side": 40.4
+   },
+   {
+    "id": 445,
+    "port": "Beirut",
+    "sail": 27.1,
+    "marchNow": 21.1,
+    "marchFed": 21.1,
+    "steps": 24,
+    "series": 48.2,
+    "side": 27.1
+   },
+   {
+    "id": 445,
+    "port": "Istanbul",
+    "sail": 26.7,
+    "marchNow": 47.5,
+    "marchFed": 47.5,
+    "steps": 65,
+    "series": 74.1,
+    "side": 47.5
+   },
+   {
+    "id": 445,
+    "port": "Dubai",
+    "sail": 39.4,
+    "marchNow": 91,
+    "marchFed": 91,
+    "steps": 104,
+    "series": 130.4,
+    "side": 91
+   },
+   {
+    "id": 445,
+    "port": "Tel Aviv",
+    "sail": 27.3,
+    "marchNow": 25.9,
+    "marchFed": 25.9,
+    "steps": 29,
+    "series": 53.2,
+    "side": 27.3
+   },
+   {
+    "id": 445,
+    "port": "Dar es Salaam",
+    "sail": 27.2,
+    "marchNow": 225.5,
+    "marchFed": 225.5,
+    "steps": 261,
+    "series": 252.6,
+    "side": 225.5
+   },
+   {
+    "id": 445,
+    "port": "Kuwait City",
+    "sail": 40.6,
+    "marchNow": 41.5,
+    "marchFed": 41.5,
+    "steps": 49,
+    "series": 82.1,
+    "side": 41.5
+   },
+   {
+    "id": 445,
+    "port": "Mogadishu",
+    "sail": 29,
+    "marchNow": 186.7,
+    "marchFed": 186.7,
+    "steps": 212,
+    "series": 215.8,
+    "side": 186.7
+   },
+   {
+    "id": 445,
+    "port": "Aden",
+    "sail": 34.4,
+    "marchNow": 128.4,
+    "marchFed": 128.4,
+    "steps": 148,
+    "series": 162.8,
+    "side": 128.4
+   },
+   {
+    "id": 445,
+    "port": "Mombasa",
+    "sail": 27.8,
+    "marchNow": 212.9,
+    "marchFed": 212.9,
+    "steps": 244,
+    "series": 240.7,
+    "side": 212.9
+   },
+   {
+    "id": 445,
+    "port": "Abu Dhabi",
+    "sail": 39.6,
+    "marchNow": 85.7,
+    "marchFed": 85.7,
+    "steps": 99,
+    "series": 125.3,
+    "side": 85.7
+   },
+   {
+    "id": 445,
+    "port": "İzmir",
+    "sail": 25.8,
+    "marchNow": 50.3,
+    "marchFed": 50.3,
+    "steps": 72,
+    "series": 76,
+    "side": 50.3
+   },
+   {
+    "id": 445,
+    "port": "Bursa",
+    "sail": 26.4,
+    "marchNow": 45.1,
+    "marchFed": 45.1,
+    "steps": 61,
+    "series": 71.5,
+    "side": 45.1
+   },
+   {
+    "id": 445,
+    "port": "Doha",
+    "sail": 39.5,
+    "marchNow": 71.3,
+    "marchFed": 71.3,
+    "steps": 81,
+    "series": 110.8,
+    "side": 71.3
+   },
+   {
+    "id": 445,
+    "port": "Adana",
+    "sail": 27.1,
+    "marchNow": 18.8,
+    "marchFed": 18.8,
+    "steps": 26,
+    "series": 45.9,
+    "side": 27.1
+   },
+   {
+    "id": 445,
+    "port": "Bur Said",
+    "sail": 26.8,
+    "marchNow": 40.1,
+    "marchFed": 40.1,
+    "steps": 48,
+    "series": 67,
+    "side": 40.1
+   },
+   {
+    "id": 445,
+    "port": "Samsun",
+    "sail": 29.4,
+    "marchNow": 62.4,
+    "marchFed": 62.4,
+    "steps": 82,
+    "series": 91.9,
+    "side": 62.4
+   },
+   {
+    "id": 445,
+    "port": "Gaza City",
+    "sail": 27.2,
+    "marchNow": 29.9,
+    "marchFed": 29.9,
+    "steps": 35,
+    "series": 57.2,
+    "side": 29.9
+   },
+   {
+    "id": 445,
+    "port": "Berbera",
+    "sail": 34.8,
+    "marchNow": 159.1,
+    "marchFed": 159.1,
+    "steps": 174,
+    "series": 193.9,
+    "side": 159.1
+   },
+   {
+    "id": 445,
+    "port": "Benguela",
+    "sail": 5.9,
+    "marchNow": 329.3,
+    "marchFed": 329.3,
+    "steps": 383,
+    "series": 335.2,
+    "side": 329.3
+   },
+   {
+    "id": 445,
+    "port": "Ṭarābulus",
+    "sail": 27.2,
+    "marchNow": 18.3,
+    "marchFed": 18.3,
+    "steps": 22,
+    "series": 45.4,
+    "side": 27.2
+   },
+   {
+    "id": 445,
+    "port": "Haifa",
+    "sail": 27.2,
+    "marchNow": 23.9,
+    "marchFed": 23.9,
+    "steps": 27,
+    "series": 51.1,
+    "side": 27.2
+   },
+   {
+    "id": 445,
+    "port": "Gölcük",
+    "sail": 26.4,
+    "marchNow": 45.3,
+    "marchFed": 45.3,
+    "steps": 58,
+    "series": 71.8,
+    "side": 45.3
+   },
+   {
+    "id": 445,
+    "port": "Basra",
+    "sail": 40.4,
+    "marchNow": 38.4,
+    "marchFed": 38.4,
+    "steps": 48,
+    "series": 78.8,
+    "side": 40.4
+   },
+   {
+    "id": 1077,
+    "port": "Beirut",
+    "sail": 27.1,
+    "marchNow": 21.1,
+    "marchFed": 21.1,
+    "steps": 24,
+    "series": 48.2,
+    "side": 27.1
+   },
+   {
+    "id": 1077,
+    "port": "Istanbul",
+    "sail": 26.7,
+    "marchNow": 47.5,
+    "marchFed": 47.5,
+    "steps": 65,
+    "series": 74.1,
+    "side": 47.5
+   },
+   {
+    "id": 1077,
+    "port": "Dubai",
+    "sail": 39.4,
+    "marchNow": 91,
+    "marchFed": 91,
+    "steps": 104,
+    "series": 130.4,
+    "side": 91
+   },
+   {
+    "id": 1077,
+    "port": "Tel Aviv",
+    "sail": 27.3,
+    "marchNow": 25.9,
+    "marchFed": 25.9,
+    "steps": 29,
+    "series": 53.2,
+    "side": 27.3
+   },
+   {
+    "id": 1077,
+    "port": "Dar es Salaam",
+    "sail": 27.2,
+    "marchNow": 225.5,
+    "marchFed": 225.5,
+    "steps": 261,
+    "series": 252.6,
+    "side": 225.5
+   },
+   {
+    "id": 1077,
+    "port": "Kuwait City",
+    "sail": 40.6,
+    "marchNow": 41.5,
+    "marchFed": 41.5,
+    "steps": 49,
+    "series": 82.1,
+    "side": 41.5
+   },
+   {
+    "id": 1077,
+    "port": "Mogadishu",
+    "sail": 29,
+    "marchNow": 186.7,
+    "marchFed": 186.7,
+    "steps": 212,
+    "series": 215.8,
+    "side": 186.7
+   },
+   {
+    "id": 1077,
+    "port": "Aden",
+    "sail": 34.4,
+    "marchNow": 128.4,
+    "marchFed": 128.4,
+    "steps": 148,
+    "series": 162.8,
+    "side": 128.4
+   },
+   {
+    "id": 1077,
+    "port": "Mombasa",
+    "sail": 27.8,
+    "marchNow": 212.9,
+    "marchFed": 212.9,
+    "steps": 244,
+    "series": 240.7,
+    "side": 212.9
+   },
+   {
+    "id": 1077,
+    "port": "Abu Dhabi",
+    "sail": 39.6,
+    "marchNow": 85.7,
+    "marchFed": 85.7,
+    "steps": 99,
+    "series": 125.3,
+    "side": 85.7
+   },
+   {
+    "id": 1077,
+    "port": "İzmir",
+    "sail": 25.8,
+    "marchNow": 50.3,
+    "marchFed": 50.3,
+    "steps": 72,
+    "series": 76,
+    "side": 50.3
+   },
+   {
+    "id": 1077,
+    "port": "Bursa",
+    "sail": 26.4,
+    "marchNow": 45.1,
+    "marchFed": 45.1,
+    "steps": 61,
+    "series": 71.5,
+    "side": 45.1
+   },
+   {
+    "id": 1077,
+    "port": "Doha",
+    "sail": 39.5,
+    "marchNow": 71.3,
+    "marchFed": 71.3,
+    "steps": 81,
+    "series": 110.8,
+    "side": 71.3
+   },
+   {
+    "id": 1077,
+    "port": "Adana",
+    "sail": 27.1,
+    "marchNow": 18.8,
+    "marchFed": 18.8,
+    "steps": 26,
+    "series": 45.9,
+    "side": 27.1
+   },
+   {
+    "id": 1077,
+    "port": "Bur Said",
+    "sail": 26.8,
+    "marchNow": 40.1,
+    "marchFed": 40.1,
+    "steps": 48,
+    "series": 67,
+    "side": 40.1
+   },
+   {
+    "id": 1077,
+    "port": "Samsun",
+    "sail": 29.4,
+    "marchNow": 62.4,
+    "marchFed": 62.4,
+    "steps": 82,
+    "series": 91.9,
+    "side": 62.4
+   },
+   {
+    "id": 1077,
+    "port": "Gaza City",
+    "sail": 27.2,
+    "marchNow": 29.9,
+    "marchFed": 29.9,
+    "steps": 35,
+    "series": 57.2,
+    "side": 29.9
+   },
+   {
+    "id": 1077,
+    "port": "Berbera",
+    "sail": 34.8,
+    "marchNow": 159.1,
+    "marchFed": 159.1,
+    "steps": 174,
+    "series": 193.9,
+    "side": 159.1
+   },
+   {
+    "id": 1077,
+    "port": "Benguela",
+    "sail": 5.9,
+    "marchNow": 329.3,
+    "marchFed": 329.3,
+    "steps": 383,
+    "series": 335.2,
+    "side": 329.3
+   },
+   {
+    "id": 1077,
+    "port": "Ṭarābulus",
+    "sail": 27.2,
+    "marchNow": 18.3,
+    "marchFed": 18.3,
+    "steps": 22,
+    "series": 45.4,
+    "side": 27.2
+   },
+   {
+    "id": 1077,
+    "port": "Haifa",
+    "sail": 27.2,
+    "marchNow": 23.9,
+    "marchFed": 23.9,
+    "steps": 27,
+    "series": 51.1,
+    "side": 27.2
+   },
+   {
+    "id": 1077,
+    "port": "Gölcük",
+    "sail": 26.4,
+    "marchNow": 45.3,
+    "marchFed": 45.3,
+    "steps": 58,
+    "series": 71.8,
+    "side": 45.3
+   },
+   {
+    "id": 1077,
+    "port": "Basra",
+    "sail": 40.4,
+    "marchNow": 38.4,
+    "marchFed": 38.4,
+    "steps": 48,
+    "series": 78.8,
+    "side": 40.4
+   },
+   {
+    "id": 920,
+    "port": "Luanda",
+    "sail": 4.9,
+    "marchNow": 284.5,
+    "marchFed": 284.5,
+    "steps": 283,
+    "series": 289.4,
+    "side": 284.5
+   },
+   {
+    "id": 920,
+    "port": "Lagos",
+    "sail": 0.7,
+    "marchNow": 276.7,
+    "marchFed": 276.7,
+    "steps": 331,
+    "series": 277.4,
+    "side": 276.7
+   },
+   {
+    "id": 920,
+    "port": "Accra",
+    "sail": 1.6,
+    "marchNow": 299.4,
+    "marchFed": 299.4,
+    "steps": 350,
+    "series": 301,
+    "side": 299.4
+   },
+   {
+    "id": 920,
+    "port": "Monrovia",
+    "sail": 5,
+    "marchNow": 375.2,
+    "marchFed": 375.2,
+    "steps": 414,
+    "series": 380.1,
+    "side": 375.2
+   },
+   {
+    "id": 920,
+    "port": "Beirut",
+    "sail": 27.1,
+    "marchNow": 55.6,
+    "marchFed": 55.6,
+    "steps": 72,
+    "series": 82.7,
+    "side": 55.6
+   },
+   {
+    "id": 920,
+    "port": "Istanbul",
+    "sail": 26.7,
+    "marchNow": 87.6,
+    "marchFed": 87.6,
+    "steps": 114,
+    "series": 114.2,
+    "side": 87.6
+   },
+   {
+    "id": 920,
+    "port": "Dubai",
+    "sail": 39.4,
+    "marchNow": 49.9,
+    "marchFed": 49.9,
+    "steps": 56,
+    "series": 89.3,
+    "side": 49.9
+   },
+   {
+    "id": 920,
+    "port": "Tel Aviv",
+    "sail": 27.3,
+    "marchNow": 54.8,
+    "marchFed": 54.8,
+    "steps": 74,
+    "series": 82,
+    "side": 54.8
+   },
+   {
+    "id": 920,
+    "port": "Dar es Salaam",
+    "sail": 27.2,
+    "marchNow": 184.4,
+    "marchFed": 184.4,
+    "steps": 213,
+    "series": 211.6,
+    "side": 184.4
+   },
+   {
+    "id": 920,
+    "port": "Kuwait City",
+    "sail": 40.6,
+    "marchNow": 0,
+    "marchFed": 0,
+    "steps": 0,
+    "series": 40.6,
+    "side": 40.6
+   },
+   {
+    "id": 920,
+    "port": "Lomé",
+    "sail": 1.2,
+    "marchNow": 293.5,
+    "marchFed": 293.5,
+    "steps": 343,
+    "series": 294.8,
+    "side": 293.5
+   },
+   {
+    "id": 920,
+    "port": "Mogadishu",
+    "sail": 29,
+    "marchNow": 144.3,
+    "marchFed": 144.3,
+    "steps": 162,
+    "series": 173.3,
+    "side": 144.3
+   },
+   {
+    "id": 920,
+    "port": "Aden",
+    "sail": 34.4,
+    "marchNow": 83.2,
+    "marchFed": 83.2,
+    "steps": 98,
+    "series": 117.6,
+    "side": 83.2
+   },
+   {
+    "id": 920,
+    "port": "Mombasa",
+    "sail": 27.8,
+    "marchNow": 171.8,
+    "marchFed": 171.8,
+    "steps": 196,
+    "series": 199.6,
+    "side": 171.8
+   },
+   {
+    "id": 920,
+    "port": "Freetown",
+    "sail": 6.3,
+    "marchNow": 369.5,
+    "marchFed": 369.5,
+    "steps": 429,
+    "series": 375.8,
+    "side": 369.5
+   },
+   {
+    "id": 920,
+    "port": "Abu Dhabi",
+    "sail": 39.6,
+    "marchNow": 44.6,
+    "marchFed": 44.6,
+    "steps": 51,
+    "series": 84.2,
+    "side": 44.6
+   },
+   {
+    "id": 920,
+    "port": "İzmir",
+    "sail": 25.8,
+    "marchNow": 90.4,
+    "marchFed": 90.4,
+    "steps": 121,
+    "series": 116.2,
+    "side": 90.4
+   },
+   {
+    "id": 920,
+    "port": "Bursa",
+    "sail": 26.4,
+    "marchNow": 85.2,
+    "marchFed": 85.2,
+    "steps": 110,
+    "series": 111.6,
+    "side": 85.2
+   },
+   {
+    "id": 920,
+    "port": "Doha",
+    "sail": 39.5,
+    "marchNow": 30.2,
+    "marchFed": 30.2,
+    "steps": 33,
+    "series": 69.7,
+    "side": 39.5
+   },
+   {
+    "id": 920,
+    "port": "Adana",
+    "sail": 27.1,
+    "marchNow": 59.2,
+    "marchFed": 59.2,
+    "steps": 75,
+    "series": 86.3,
+    "side": 59.2
+   },
+   {
+    "id": 920,
+    "port": "Bur Said",
+    "sail": 26.8,
+    "marchNow": 65.9,
+    "marchFed": 65.9,
+    "steps": 89,
+    "series": 92.8,
+    "side": 65.9
+   },
+   {
+    "id": 920,
+    "port": "Samsun",
+    "sail": 29.4,
+    "marchNow": 102.5,
+    "marchFed": 102.5,
+    "steps": 131,
+    "series": 132,
+    "side": 102.5
+   },
+   {
+    "id": 920,
+    "port": "Gaza City",
+    "sail": 27.2,
+    "marchNow": 56.6,
+    "marchFed": 56.6,
+    "steps": 76,
+    "series": 83.9,
+    "side": 56.6
+   },
+   {
+    "id": 920,
+    "port": "Berbera",
+    "sail": 34.8,
+    "marchNow": 114.8,
+    "marchFed": 114.8,
+    "steps": 123,
+    "series": 149.5,
+    "side": 114.8
+   },
+   {
+    "id": 920,
+    "port": "Benguela",
+    "sail": 5.9,
+    "marchNow": 288.3,
+    "marchFed": 288.3,
+    "steps": 335,
+    "series": 294.2,
+    "side": 288.3
+   },
+   {
+    "id": 920,
+    "port": "Bathurst",
+    "sail": 8.2,
+    "marchNow": 346.3,
+    "marchFed": 346.3,
+    "steps": 447,
+    "series": 354.6,
+    "side": 346.3
+   },
+   {
+    "id": 920,
+    "port": "Ṭarābulus",
+    "sail": 27.2,
+    "marchNow": 55.2,
+    "marchFed": 55.2,
+    "steps": 69,
+    "series": 82.3,
+    "side": 55.2
+   },
+   {
+    "id": 920,
+    "port": "Haifa",
+    "sail": 27.2,
+    "marchNow": 53.6,
+    "marchFed": 53.6,
+    "steps": 73,
+    "series": 80.8,
+    "side": 53.6
+   },
+   {
+    "id": 920,
+    "port": "Gölcük",
+    "sail": 26.4,
+    "marchNow": 85.5,
+    "marchFed": 85.5,
+    "steps": 107,
+    "series": 111.9,
+    "side": 85.5
+   },
+   {
+    "id": 920,
+    "port": "Basra",
+    "sail": 40.4,
+    "marchNow": 5.9,
+    "marchFed": 5.9,
+    "steps": 8,
+    "series": 46.3,
+    "side": 40.4
+   },
+   {
+    "id": 1253,
+    "port": "Beirut",
+    "sail": 27.1,
+    "marchNow": 159,
+    "marchFed": 159,
+    "steps": 269,
+    "series": 186.1,
+    "side": 159
+   },
+   {
+    "id": 1253,
+    "port": "Istanbul",
+    "sail": 26.7,
+    "marchNow": 103.5,
+    "marchFed": 103.5,
+    "steps": 195,
+    "series": 130.2,
+    "side": 103.5
+   },
+   {
+    "id": 1253,
+    "port": "Dubai",
+    "sail": 39.4,
+    "marchNow": 243.1,
+    "marchFed": 243.1,
+    "steps": 370,
+    "series": 282.5,
+    "side": 243.1
+   },
+   {
+    "id": 1253,
+    "port": "Tel Aviv",
+    "sail": 27.3,
+    "marchNow": 166.4,
+    "marchFed": 166.4,
+    "steps": 280,
+    "series": 193.7,
+    "side": 166.4
+   },
+   {
+    "id": 1253,
+    "port": "Dar es Salaam",
+    "sail": 27.2,
+    "marchNow": 383,
+    "marchFed": 383,
+    "steps": 523,
+    "series": 410.1,
+    "side": 383
+   },
+   {
+    "id": 1253,
+    "port": "Kuwait City",
+    "sail": 40.6,
+    "marchNow": 192.4,
+    "marchFed": 192.4,
+    "steps": 307,
+    "series": 233,
+    "side": 192.4
+   },
+   {
+    "id": 1253,
+    "port": "Mogadishu",
+    "sail": 29,
+    "marchNow": 335.4,
+    "marchFed": 335.4,
+    "steps": 466,
+    "series": 364.5,
+    "side": 335.4
+   },
+   {
+    "id": 1253,
+    "port": "Aden",
+    "sail": 34.4,
+    "marchNow": 277.3,
+    "marchFed": 277.3,
+    "steps": 403,
+    "series": 311.7,
+    "side": 277.3
+   },
+   {
+    "id": 1253,
+    "port": "Mombasa",
+    "sail": 27.8,
+    "marchNow": 369,
+    "marchFed": 369,
+    "steps": 505,
+    "series": 396.8,
+    "side": 369
+   },
+   {
+    "id": 1253,
+    "port": "Abu Dhabi",
+    "sail": 39.6,
+    "marchNow": 237.6,
+    "marchFed": 237.6,
+    "steps": 363,
+    "series": 277.2,
+    "side": 237.6
+   },
+   {
+    "id": 1253,
+    "port": "İzmir",
+    "sail": 25.8,
+    "marchNow": 121.4,
+    "marchFed": 121.4,
+    "steps": 216,
+    "series": 147.2,
+    "side": 121.4
+   },
+   {
+    "id": 1253,
+    "port": "Bursa",
+    "sail": 26.4,
+    "marchNow": 109.3,
+    "marchFed": 109.3,
+    "steps": 203,
+    "series": 135.7,
+    "side": 109.3
+   },
+   {
+    "id": 1253,
+    "port": "Doha",
+    "sail": 39.5,
+    "marchNow": 221.8,
+    "marchFed": 221.8,
+    "steps": 335,
+    "series": 261.3,
+    "side": 221.8
+   },
+   {
+    "id": 1253,
+    "port": "Adana",
+    "sail": 27.1,
+    "marchNow": 134.3,
+    "marchFed": 134.3,
+    "steps": 235,
+    "series": 161.4,
+    "side": 134.3
+   },
+   {
+    "id": 1253,
+    "port": "Bur Said",
+    "sail": 26.8,
+    "marchNow": 179.9,
+    "marchFed": 179.9,
+    "steps": 298,
+    "series": 206.8,
+    "side": 179.9
+   },
+   {
+    "id": 1253,
+    "port": "Samsun",
+    "sail": 29.4,
+    "marchNow": 131.6,
+    "marchFed": 131.6,
+    "steps": 239,
+    "series": 161.1,
+    "side": 131.6
+   },
+   {
+    "id": 1253,
+    "port": "Gaza City",
+    "sail": 27.2,
+    "marchNow": 169.8,
+    "marchFed": 169.8,
+    "steps": 284,
+    "series": 197,
+    "side": 169.8
+   },
+   {
+    "id": 1253,
+    "port": "Berbera",
+    "sail": 34.8,
+    "marchNow": 307.8,
+    "marchFed": 307.8,
+    "steps": 429,
+    "series": 342.5,
+    "side": 307.8
+   },
+   {
+    "id": 1253,
+    "port": "Ṭarābulus",
+    "sail": 27.2,
+    "marchNow": 155.5,
+    "marchFed": 155.5,
+    "steps": 265,
+    "series": 182.6,
+    "side": 155.5
+   },
+   {
+    "id": 1253,
+    "port": "Haifa",
+    "sail": 27.2,
+    "marchNow": 163.8,
+    "marchFed": 163.8,
+    "steps": 276,
+    "series": 191,
+    "side": 163.8
+   },
+   {
+    "id": 1253,
+    "port": "Gölcük",
+    "sail": 26.4,
+    "marchNow": 108,
+    "marchFed": 108,
+    "steps": 200,
+    "series": 134.4,
+    "side": 108
+   },
+   {
+    "id": 1253,
+    "port": "Basra",
+    "sail": 40.4,
+    "marchNow": 189.1,
+    "marchFed": 189.1,
+    "steps": 308,
+    "series": 229.5,
+    "side": 189.1
+   },
+   {
+    "id": 695,
+    "port": "Beirut",
+    "sail": 27.1,
+    "marchNow": 180,
+    "marchFed": 180,
+    "steps": 256,
+    "series": 207.2,
+    "side": 180
+   },
+   {
+    "id": 695,
+    "port": "Istanbul",
+    "sail": 26.7,
+    "marchNow": 124.6,
+    "marchFed": 124.6,
+    "steps": 182,
+    "series": 151.3,
+    "side": 124.6
+   },
+   {
+    "id": 695,
+    "port": "Dubai",
+    "sail": 39.4,
+    "marchNow": 263.7,
+    "marchFed": 263.7,
+    "steps": 357,
+    "series": 303.1,
+    "side": 263.7
+   },
+   {
+    "id": 695,
+    "port": "Tel Aviv",
+    "sail": 27.3,
+    "marchNow": 187.4,
+    "marchFed": 187.4,
+    "steps": 267,
+    "series": 214.7,
+    "side": 187.4
+   },
+   {
+    "id": 695,
+    "port": "Dar es Salaam",
+    "sail": 27.2,
+    "marchNow": 403.6,
+    "marchFed": 403.6,
+    "steps": 510,
+    "series": 430.8,
+    "side": 403.6
+   },
+   {
+    "id": 695,
+    "port": "Kuwait City",
+    "sail": 40.6,
+    "marchNow": 213.1,
+    "marchFed": 213.1,
+    "steps": 294,
+    "series": 253.6,
+    "side": 213.1
+   },
+   {
+    "id": 695,
+    "port": "Mogadishu",
+    "sail": 29,
+    "marchNow": 363.1,
+    "marchFed": 363.1,
+    "steps": 447,
+    "series": 392.1,
+    "side": 363.1
+   },
+   {
+    "id": 695,
+    "port": "Aden",
+    "sail": 34.4,
+    "marchNow": 303.2,
+    "marchFed": 303.2,
+    "steps": 384,
+    "series": 337.6,
+    "side": 303.2
+   },
+   {
+    "id": 695,
+    "port": "Mombasa",
+    "sail": 27.8,
+    "marchNow": 389.6,
+    "marchFed": 389.6,
+    "steps": 492,
+    "series": 417.4,
+    "side": 389.6
+   },
+   {
+    "id": 695,
+    "port": "Abu Dhabi",
+    "sail": 39.6,
+    "marchNow": 258.2,
+    "marchFed": 258.2,
+    "steps": 350,
+    "series": 297.8,
+    "side": 258.2
+   },
+   {
+    "id": 695,
+    "port": "İzmir",
+    "sail": 25.8,
+    "marchNow": 142.3,
+    "marchFed": 142.3,
+    "steps": 203,
+    "series": 168,
+    "side": 142.3
+   },
+   {
+    "id": 695,
+    "port": "Bursa",
+    "sail": 26.4,
+    "marchNow": 130.3,
+    "marchFed": 130.3,
+    "steps": 190,
+    "series": 156.7,
+    "side": 130.3
+   },
+   {
+    "id": 695,
+    "port": "Doha",
+    "sail": 39.5,
+    "marchNow": 242.4,
+    "marchFed": 242.4,
+    "steps": 322,
+    "series": 281.9,
+    "side": 242.4
+   },
+   {
+    "id": 695,
+    "port": "Adana",
+    "sail": 27.1,
+    "marchNow": 155.4,
+    "marchFed": 155.4,
+    "steps": 222,
+    "series": 182.5,
+    "side": 155.4
+   },
+   {
+    "id": 695,
+    "port": "Bur Said",
+    "sail": 26.8,
+    "marchNow": 199.6,
+    "marchFed": 199.6,
+    "steps": 284,
+    "series": 226.4,
+    "side": 199.6
+   },
+   {
+    "id": 695,
+    "port": "Samsun",
+    "sail": 29.4,
+    "marchNow": 155.3,
+    "marchFed": 155.3,
+    "steps": 223,
+    "series": 184.8,
+    "side": 155.3
+   },
+   {
+    "id": 695,
+    "port": "Gaza City",
+    "sail": 27.2,
+    "marchNow": 190.7,
+    "marchFed": 190.7,
+    "steps": 271,
+    "series": 218,
+    "side": 190.7
+   },
+   {
+    "id": 695,
+    "port": "Berbera",
+    "sail": 34.8,
+    "marchNow": 333.9,
+    "marchFed": 333.9,
+    "steps": 413,
+    "series": 368.7,
+    "side": 333.9
+   },
+   {
+    "id": 695,
+    "port": "Ṭarābulus",
+    "sail": 27.2,
+    "marchNow": 176.5,
+    "marchFed": 176.5,
+    "steps": 252,
+    "series": 203.7,
+    "side": 176.5
+   },
+   {
+    "id": 695,
+    "port": "Haifa",
+    "sail": 27.2,
+    "marchNow": 184.8,
+    "marchFed": 184.8,
+    "steps": 263,
+    "series": 212,
+    "side": 184.8
+   },
+   {
+    "id": 695,
+    "port": "Gölcük",
+    "sail": 26.4,
+    "marchNow": 128.3,
+    "marchFed": 128.3,
+    "steps": 187,
+    "series": 154.7,
+    "side": 128.3
+   },
+   {
+    "id": 695,
+    "port": "Basra",
+    "sail": 40.4,
+    "marchNow": 209.9,
+    "marchFed": 209.9,
+    "steps": 295,
+    "series": 250.3,
+    "side": 209.9
+   },
+   {
+    "id": 1268,
+    "port": "Beirut",
+    "sail": 27.1,
+    "marchNow": 282.5,
+    "marchFed": 282.5,
+    "steps": 451,
+    "series": 309.7,
+    "side": 282.5
+   },
+   {
+    "id": 1268,
+    "port": "Istanbul",
+    "sail": 26.7,
+    "marchNow": 225.4,
+    "marchFed": 225.4,
+    "steps": 381,
+    "series": 252,
+    "side": 225.4
+   },
+   {
+    "id": 1268,
+    "port": "Dubai",
+    "sail": 39.4,
+    "marchNow": 365.9,
+    "marchFed": 365.9,
+    "steps": 553,
+    "series": 405.3,
+    "side": 365.9
+   },
+   {
+    "id": 1268,
+    "port": "Tel Aviv",
+    "sail": 27.3,
+    "marchNow": 290.8,
+    "marchFed": 290.8,
+    "steps": 462,
+    "series": 318,
+    "side": 290.8
+   },
+   {
+    "id": 1268,
+    "port": "Dar es Salaam",
+    "sail": 27.2,
+    "marchNow": 500.1,
+    "marchFed": 500.1,
+    "steps": 709,
+    "series": 527.3,
+    "side": 500.1
+   },
+   {
+    "id": 1268,
+    "port": "Kuwait City",
+    "sail": 40.6,
+    "marchNow": 316.3,
+    "marchFed": 316.3,
+    "steps": 493,
+    "series": 356.9,
+    "side": 316.3
+   },
+   {
+    "id": 1268,
+    "port": "Mogadishu",
+    "sail": 29,
+    "marchNow": 459.6,
+    "marchFed": 459.6,
+    "steps": 646,
+    "series": 488.6,
+    "side": 459.6
+   },
+   {
+    "id": 1268,
+    "port": "Aden",
+    "sail": 34.4,
+    "marchNow": 399.6,
+    "marchFed": 399.6,
+    "steps": 582,
+    "series": 434,
+    "side": 399.6
+   },
+   {
+    "id": 1268,
+    "port": "Mombasa",
+    "sail": 27.8,
+    "marchNow": 486.1,
+    "marchFed": 486.1,
+    "steps": 691,
+    "series": 514,
+    "side": 486.1
+   },
+   {
+    "id": 1268,
+    "port": "Abu Dhabi",
+    "sail": 39.6,
+    "marchNow": 359.7,
+    "marchFed": 359.7,
+    "steps": 538,
+    "series": 399.3,
+    "side": 359.7
+   },
+   {
+    "id": 1268,
+    "port": "İzmir",
+    "sail": 25.8,
+    "marchNow": 247.5,
+    "marchFed": 247.5,
+    "steps": 406,
+    "series": 273.3,
+    "side": 247.5
+   },
+   {
+    "id": 1268,
+    "port": "Bursa",
+    "sail": 26.4,
+    "marchNow": 230.8,
+    "marchFed": 230.8,
+    "steps": 388,
+    "series": 257.2,
+    "side": 230.8
+   },
+   {
+    "id": 1268,
+    "port": "Doha",
+    "sail": 39.5,
+    "marchNow": 343.3,
+    "marchFed": 343.3,
+    "steps": 520,
+    "series": 382.8,
+    "side": 343.3
+   },
+   {
+    "id": 1268,
+    "port": "Adana",
+    "sail": 27.1,
+    "marchNow": 253.9,
+    "marchFed": 253.9,
+    "steps": 419,
+    "series": 281,
+    "side": 253.9
+   },
+   {
+    "id": 1268,
+    "port": "Bur Said",
+    "sail": 26.8,
+    "marchNow": 301.5,
+    "marchFed": 301.5,
+    "steps": 479,
+    "series": 328.3,
+    "side": 301.5
+   },
+   {
+    "id": 1268,
+    "port": "Samsun",
+    "sail": 29.4,
+    "marchNow": 255.2,
+    "marchFed": 255.2,
+    "steps": 422,
+    "series": 284.6,
+    "side": 255.2
+   },
+   {
+    "id": 1268,
+    "port": "Gaza City",
+    "sail": 27.2,
+    "marchNow": 293.4,
+    "marchFed": 293.4,
+    "steps": 466,
+    "series": 320.7,
+    "side": 293.4
+   },
+   {
+    "id": 1268,
+    "port": "Berbera",
+    "sail": 34.8,
+    "marchNow": 430.4,
+    "marchFed": 430.4,
+    "steps": 611,
+    "series": 465.2,
+    "side": 430.4
+   },
+   {
+    "id": 1268,
+    "port": "Ṭarābulus",
+    "sail": 27.2,
+    "marchNow": 278.1,
+    "marchFed": 278.1,
+    "steps": 448,
+    "series": 305.2,
+    "side": 278.1
+   },
+   {
+    "id": 1268,
+    "port": "Haifa",
+    "sail": 27.2,
+    "marchNow": 287.6,
+    "marchFed": 287.6,
+    "steps": 458,
+    "series": 314.8,
+    "side": 287.6
+   },
+   {
+    "id": 1268,
+    "port": "Gölcük",
+    "sail": 26.4,
+    "marchNow": 229.7,
+    "marchFed": 229.7,
+    "steps": 385,
+    "series": 256.2,
+    "side": 229.7
+   },
+   {
+    "id": 1268,
+    "port": "Basra",
+    "sail": 40.4,
+    "marchNow": 313.1,
+    "marchFed": 313.1,
+    "steps": 492,
+    "series": 353.5,
+    "side": 313.1
+   }
+  ],
+  "sends": [
+   {
+    "day": 30,
+    "port": "Adana",
+    "held": {
+     "free": 3,
+     "moving": 8
+    },
+    "free": 3,
+    "sent": [
+     {
+      "id": 335,
+      "rank": 0,
+      "cells": 31,
+      "men": 12460,
+      "steps": 26,
+      "days": 18.8
+     }
+    ],
+    "nearestFree": [
+     {
+      "id": 335,
+      "cells": 31,
+      "men": 12460,
+      "terrain": 3,
+      "sent": true
+     },
+     {
+      "id": 445,
+      "cells": 31,
+      "men": 12460,
+      "terrain": 3,
+      "sent": false
+     },
+     {
+      "id": 1077,
+      "cells": 31,
+      "men": 8504,
+      "terrain": 3,
+      "sent": false
+     }
+    ],
+    "allFree": 3
+   },
+   {
+    "day": 37,
+    "port": "Adana",
+    "held": {
+     "moving": 4,
+     "free": 7
+    },
+    "free": 7,
+    "sent": [
+     {
+      "id": 445,
+      "rank": 0,
+      "cells": 31,
+      "men": 12460,
+      "steps": 26,
+      "days": 18.8
+     }
+    ],
+    "nearestFree": [
+     {
+      "id": 445,
+      "cells": 31,
+      "men": 12460,
+      "terrain": 3,
+      "sent": true
+     },
+     {
+      "id": 1077,
+      "cells": 31,
+      "men": 12238,
+      "terrain": 3,
+      "sent": false
+     },
+     {
+      "id": 580,
+      "cells": 83,
+      "men": 12460,
+      "terrain": 5,
+      "sent": false
+     },
+     {
+      "id": 558,
+      "cells": 88,
+      "men": 12318,
+      "terrain": 5,
+      "sent": false
+     },
+     {
+      "id": 941,
+      "cells": 88,
+      "men": 7461,
+      "terrain": 5,
+      "sent": false
+     },
+     {
+      "id": 1253,
+      "cells": 223,
+      "men": 7636,
+      "terrain": 2,
+      "sent": false
+     },
+     {
+      "id": 1268,
+      "cells": 604,
+      "men": 9225,
+      "terrain": 8,
+      "sent": false
+     }
+    ],
+    "allFree": 7
+   }
+  ]
+ }
+]

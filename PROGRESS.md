@@ -21249,3 +21249,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Wandering read** (the 48 saves, `noTransport` days against 7.49f's run): up 10+ days only for the
   four cases' nations and 7583 year 10 Germany (0 → 27: one voyage, then `send` 14 and `noneFree` 19;
   none boarded before or after). No group sails port to port.
+
+## 2026-10-21 — PLAN 7.56a: the landing's march kept from the operational AI (ADR-596)
+
+- **Task order:** 7.54b's "Next: 7.55" and its BLOCKERS line disagreed with the file; PLAN puts 7.56
+  above 7.55, so 7.56 (PROMPT step 3, file order).
+- **Measured** (`tools/diag/portMarch.ts`, `docs/evidence/7.56/a.md`): `sailToArmy`'s pick is quick
+  in both cases (8693: 6.4 days' sail + 5 days' march to Antalya; 1129: 27 + 19 to Adana). The slow
+  marches are on foot (the desert's move cost; 7.56's "DRY_SPEED" was wrong). 8693: on day 10, 183
+  of Germany's 190 formations on the land on the operational AI's marches, the 7 free 58+ days from
+  every port. 1129: two causes, 7.56a and 7.56b.
+- **Rule** (`operational.ts` `planNation`, `amphibious.ts` `transportPorts` / `marchingToPort`): a
+  formation on the march to a port where its nation's transports stand is not a free formation of
+  the plan. Before, the allotment re-ordered Britain's 335 on day 35, 18 steps off Adana, to
+  Germany's front (an ally's, PLAN 1.42b; `whoOrders.ts`, `cellHolders.ts`), and 445 on day 40.
+- **AT:** 335 reaches Adana on day 48. It does not board: Britain's plan aims at Baku on the Caspian,
+  `NoSeaWay` every invasion day (`landingProbe.ts`): PLAN 7.56b. Standing at the port, it is taken
+  again on day 53 (not covered: noted in ADR-596).
+- `--profile` on 1129, a year alone, pinned: operationalAi 0.440 → 0.468 ms a tick, longest 180.7 →
+  179.8 ms. Pin d188faed → 63d0cfd9.
+- **Test:** `landingMarchKept1938.test.ts` (red without). Specs by hand: none (no UI).
+- **Next:** PLAN 7.56b (the landing's target over no sea).

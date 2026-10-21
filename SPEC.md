@@ -2054,7 +2054,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   unable to march there (the transports in an exclave), the transports sail instead for a port
   of the nation that one of its four nearest can march to, and nobody is sent that day (PLAN
   7.54b, ADR-595). A nation with a front in another war uses only
-  formations beyond the deploy range of its own front on their land. A landing takes a cell a nation owns where the target is owned.
+  formations beyond the deploy range of its own front on their land. A formation on the march to
+  a port where its nation's transports stand is not one the operational AI plans with (PLAN
+  7.56a, ADR-596: it manned an ally's front with them on the way). A landing takes a cell a nation owns where the target is owned.
   *Fleets at sea (PLAN 4.6c, ADR-270; `src/sim/ai/naval.ts`):* daily, staggered weekly by id. At
   war, each warfleet (power: its armed ships' hit points, submarines left out) standing at a
   port of its nation sails, within 2,500 km, to a landing of its nation's under way (escort),

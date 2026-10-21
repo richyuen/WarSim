@@ -1,0 +1,6753 @@
+[
+ {
+  "seed": 8693,
+  "src": "critic/c11_seed8693_y10.bin",
+  "nation": "GER",
+  "found": true,
+  "day": 3651,
+  "transportsAt": "Annaba",
+  "room": 24000,
+  "target": "Lomé",
+  "formations": 29,
+  "ports": [
+   {
+    "name": "Amsterdam",
+    "sail": 11.2
+   },
+   {
+    "name": "Istanbul",
+    "sail": 6.5
+   },
+   {
+    "name": "İzmir",
+    "sail": 5.6
+   },
+   {
+    "name": "Bursa",
+    "sail": 6.3
+   },
+   {
+    "name": "The Hague",
+    "sail": 10.8
+   },
+   {
+    "name": "Königsberg",
+    "sail": 15.3
+   },
+   {
+    "name": "Constanța",
+    "sail": 7.3
+   },
+   {
+    "name": "Le Havre",
+    "sail": 9.6
+   },
+   {
+    "name": "Antwerp",
+    "sail": 10.3
+   },
+   {
+    "name": "Antalya",
+    "sail": 6.4
+   },
+   {
+    "name": "Wilhelmshaven",
+    "sail": 11.8
+   },
+   {
+    "name": "Kiel",
+    "sail": 13.6
+   },
+   {
+    "name": "Brest",
+    "sail": 8.6
+   },
+   {
+    "name": "Cherbourg",
+    "sail": 9.3
+   },
+   {
+    "name": "Den Helder",
+    "sail": 11
+   },
+   {
+    "name": "Liepāja",
+    "sail": 15.4
+   },
+   {
+    "name": "Gölcük",
+    "sail": 6.3
+   },
+   {
+    "name": "Varna",
+    "sail": 7.1
+   },
+   {
+    "name": "Hamburg",
+    "sail": 11.7
+   },
+   {
+    "name": "Bremen",
+    "sail": 11.7
+   }
+  ],
+  "searches": 580,
+  "searchMs": 182,
+  "picked": {
+   "id": 11,
+   "port": "Antalya",
+   "sail": 6.4,
+   "marchNow": 5,
+   "marchFed": 5,
+   "steps": 7,
+   "series": 11.4,
+   "side": 6.4
+  },
+  "leastSeries": {
+   "id": 45,
+   "port": "Antalya",
+   "sail": 6.4,
+   "marchNow": 1.8,
+   "marchFed": 1.8,
+   "steps": 7,
+   "series": 8.1,
+   "side": 6.4
+  },
+  "leastSide": {
+   "id": 11,
+   "port": "Antalya",
+   "sail": 6.4,
+   "marchNow": 5,
+   "marchFed": 5,
+   "steps": 7,
+   "series": 11.4,
+   "side": 6.4
+  },
+  "underSixty": {
+   "series": 218,
+   "side": 244,
+   "of": 580
+  },
+  "forms": [
+   {
+    "id": 11,
+    "dist": 138,
+    "men": 2731,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 5,
+    "at": 775349,
+    "now": 1
+   },
+   {
+    "id": 19,
+    "dist": 138,
+    "men": 2467,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 5,
+    "at": 775349,
+    "now": 1
+   },
+   {
+    "id": 27,
+    "dist": 138,
+    "men": 2733,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 5,
+    "at": 775349,
+    "now": 1
+   },
+   {
+    "id": 45,
+    "dist": 138,
+    "men": 2345,
+    "template": 6,
+    "foot": false,
+    "kmh": 12,
+    "supply": 1,
+    "terrain": 5,
+    "at": 775349,
+    "now": 1
+   },
+   {
+    "id": 755,
+    "dist": 138,
+    "men": 2381,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 5,
+    "at": 775349,
+    "now": 1
+   },
+   {
+    "id": 772,
+    "dist": 138,
+    "men": 2899,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 5,
+    "at": 775349,
+    "now": 1
+   },
+   {
+    "id": 1419,
+    "dist": 138,
+    "men": 1258,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 5,
+    "at": 775349,
+    "now": 1
+   },
+   {
+    "id": 13,
+    "dist": 142,
+    "men": 3434,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 29,
+    "dist": 142,
+    "men": 3475,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 161,
+    "dist": 142,
+    "men": 3638,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 163,
+    "dist": 142,
+    "men": 3382,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 245,
+    "dist": 142,
+    "men": 10318,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 284,
+    "dist": 142,
+    "men": 12460,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 573,
+    "dist": 142,
+    "men": 12460,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 676,
+    "dist": 142,
+    "men": 6034,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 712,
+    "dist": 142,
+    "men": 3777,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 1036,
+    "dist": 142,
+    "men": 4161,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 1172,
+    "dist": 142,
+    "men": 4329,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 1428,
+    "dist": 142,
+    "men": 12460,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 2,
+    "at": 547916,
+    "now": 1
+   },
+   {
+    "id": 1460,
+    "dist": 229,
+    "men": 3705,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 7,
+    "at": 847085,
+    "now": 1
+   },
+   {
+    "id": 179,
+    "dist": 234,
+    "men": 4233,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 7,
+    "at": 851184,
+    "now": 1
+   },
+   {
+    "id": 515,
+    "dist": 269,
+    "men": 4089,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 7,
+    "at": 871689,
+    "now": 1
+   },
+   {
+    "id": 92,
+    "dist": 301,
+    "men": 2045,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 7,
+    "at": 929037,
+    "now": 1
+   },
+   {
+    "id": 972,
+    "dist": 301,
+    "men": 2117,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 3,
+    "at": 920849,
+    "now": 1
+   },
+   {
+    "id": 3,
+    "dist": 303,
+    "men": 3278,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 7,
+    "at": 949509,
+    "now": 1
+   },
+   {
+    "id": 159,
+    "dist": 307,
+    "men": 1805,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 7,
+    "at": 922902,
+    "now": 1
+   },
+   {
+    "id": 1292,
+    "dist": 309,
+    "men": 1973,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 7,
+    "at": 937233,
+    "now": 1
+   },
+   {
+    "id": 675,
+    "dist": 326,
+    "men": 3001,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 7,
+    "at": 941344,
+    "now": 1
+   },
+   {
+    "id": 373,
+    "dist": 330,
+    "men": 2429,
+    "template": 0,
+    "foot": true,
+    "kmh": 4,
+    "supply": 1,
+    "terrain": 7,
+    "at": 947489,
+    "now": 1
+   }
+  ],
+  "quickest": [
+   {
+    "id": 11,
+    "dist": 138,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 5,
+     "marchFed": 5,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 19,
+    "dist": 138,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 5,
+     "marchFed": 5,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 27,
+    "dist": 138,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 5,
+     "marchFed": 5,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 45,
+    "dist": 138,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 1.8,
+     "marchFed": 1.8,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 755,
+    "dist": 138,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 5,
+     "marchFed": 5,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 772,
+    "dist": 138,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 5,
+     "marchFed": 5,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 1419,
+    "dist": 138,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 5,
+     "marchFed": 5,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 13,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 29,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 161,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 163,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 245,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 284,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 573,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 676,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 712,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 1036,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 1172,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 1428,
+    "dist": 142,
+    "reachable": 20,
+    "quickest": {
+     "port": "Hamburg",
+     "marchNow": 10,
+     "marchFed": 10,
+     "sail": 11.7
+    }
+   },
+   {
+    "id": 1460,
+    "dist": 229,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 57.7,
+     "marchFed": 57.7,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 179,
+    "dist": 234,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 60,
+     "marchFed": 60,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 515,
+    "dist": 269,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 80.6,
+     "marchFed": 80.6,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 92,
+    "dist": 301,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 94.9,
+     "marchFed": 94.9,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 972,
+    "dist": 301,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 94.1,
+     "marchFed": 94.1,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 3,
+    "dist": 303,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 98.3,
+     "marchFed": 98.3,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 159,
+    "dist": 307,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 96.5,
+     "marchFed": 96.5,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 1292,
+    "dist": 309,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 99.2,
+     "marchFed": 99.2,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 675,
+    "dist": 326,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 106.4,
+     "marchFed": 106.4,
+     "sail": 6.4
+    }
+   },
+   {
+    "id": 373,
+    "dist": 330,
+    "reachable": 20,
+    "quickest": {
+     "port": "Antalya",
+     "marchNow": 109,
+     "marchFed": 109,
+     "sail": 6.4
+    }
+   }
+  ],
+  "pairs": [
+   {
+    "id": 11,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 112.3,
+    "marchFed": 112.3,
+    "steps": 164,
+    "series": 123.5,
+    "side": 112.3
+   },
+   {
+    "id": 11,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 24.6,
+    "marchFed": 24.6,
+    "steps": 32,
+    "series": 31.1,
+    "side": 24.6
+   },
+   {
+    "id": 11,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 27,
+    "series": 28.4,
+    "side": 22.7
+   },
+   {
+    "id": 11,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 22.3,
+    "marchFed": 22.3,
+    "steps": 28,
+    "series": 28.5,
+    "side": 22.3
+   },
+   {
+    "id": 11,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 113.2,
+    "marchFed": 113.2,
+    "steps": 167,
+    "series": 124,
+    "side": 113.2
+   },
+   {
+    "id": 11,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 94.5,
+    "marchFed": 94.5,
+    "steps": 135,
+    "series": 109.8,
+    "side": 94.5
+   },
+   {
+    "id": 11,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 44.4,
+    "marchFed": 44.4,
+    "steps": 57,
+    "series": 51.7,
+    "side": 44.4
+   },
+   {
+    "id": 11,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 122.9,
+    "marchFed": 122.9,
+    "steps": 188,
+    "series": 132.5,
+    "side": 122.9
+   },
+   {
+    "id": 11,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 113.6,
+    "marchFed": 113.6,
+    "steps": 166,
+    "series": 123.9,
+    "side": 113.6
+   },
+   {
+    "id": 11,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 5,
+    "marchFed": 5,
+    "steps": 7,
+    "series": 11.4,
+    "side": 6.4
+   },
+   {
+    "id": 11,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 107.4,
+    "marchFed": 107.4,
+    "steps": 147,
+    "series": 119.2,
+    "side": 107.4
+   },
+   {
+    "id": 11,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 103,
+    "marchFed": 103,
+    "steps": 133,
+    "series": 116.6,
+    "side": 103
+   },
+   {
+    "id": 11,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 134,
+    "marchFed": 134,
+    "steps": 215,
+    "series": 142.5,
+    "side": 134
+   },
+   {
+    "id": 11,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 129.8,
+    "marchFed": 129.8,
+    "steps": 199,
+    "series": 139.1,
+    "side": 129.8
+   },
+   {
+    "id": 11,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 116.5,
+    "marchFed": 116.5,
+    "steps": 165,
+    "series": 127.4,
+    "side": 116.5
+   },
+   {
+    "id": 11,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 101.5,
+    "marchFed": 101.5,
+    "steps": 149,
+    "series": 116.9,
+    "side": 101.5
+   },
+   {
+    "id": 11,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 28,
+    "series": 29,
+    "side": 22.7
+   },
+   {
+    "id": 11,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 40.1,
+    "marchFed": 40.1,
+    "steps": 50,
+    "series": 47.2,
+    "side": 40.1
+   },
+   {
+    "id": 11,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 103.3,
+    "marchFed": 103.3,
+    "steps": 134,
+    "series": 115,
+    "side": 103.3
+   },
+   {
+    "id": 11,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 104.1,
+    "marchFed": 104.1,
+    "steps": 139,
+    "series": 115.8,
+    "side": 104.1
+   },
+   {
+    "id": 19,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 112.3,
+    "marchFed": 112.3,
+    "steps": 164,
+    "series": 123.5,
+    "side": 112.3
+   },
+   {
+    "id": 19,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 24.6,
+    "marchFed": 24.6,
+    "steps": 32,
+    "series": 31.1,
+    "side": 24.6
+   },
+   {
+    "id": 19,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 27,
+    "series": 28.4,
+    "side": 22.7
+   },
+   {
+    "id": 19,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 22.3,
+    "marchFed": 22.3,
+    "steps": 28,
+    "series": 28.5,
+    "side": 22.3
+   },
+   {
+    "id": 19,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 113.2,
+    "marchFed": 113.2,
+    "steps": 167,
+    "series": 124,
+    "side": 113.2
+   },
+   {
+    "id": 19,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 94.5,
+    "marchFed": 94.5,
+    "steps": 135,
+    "series": 109.8,
+    "side": 94.5
+   },
+   {
+    "id": 19,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 44.4,
+    "marchFed": 44.4,
+    "steps": 57,
+    "series": 51.7,
+    "side": 44.4
+   },
+   {
+    "id": 19,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 122.9,
+    "marchFed": 122.9,
+    "steps": 188,
+    "series": 132.5,
+    "side": 122.9
+   },
+   {
+    "id": 19,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 113.6,
+    "marchFed": 113.6,
+    "steps": 166,
+    "series": 123.9,
+    "side": 113.6
+   },
+   {
+    "id": 19,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 5,
+    "marchFed": 5,
+    "steps": 7,
+    "series": 11.4,
+    "side": 6.4
+   },
+   {
+    "id": 19,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 107.4,
+    "marchFed": 107.4,
+    "steps": 147,
+    "series": 119.2,
+    "side": 107.4
+   },
+   {
+    "id": 19,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 103,
+    "marchFed": 103,
+    "steps": 133,
+    "series": 116.6,
+    "side": 103
+   },
+   {
+    "id": 19,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 134,
+    "marchFed": 134,
+    "steps": 215,
+    "series": 142.5,
+    "side": 134
+   },
+   {
+    "id": 19,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 129.8,
+    "marchFed": 129.8,
+    "steps": 199,
+    "series": 139.1,
+    "side": 129.8
+   },
+   {
+    "id": 19,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 116.5,
+    "marchFed": 116.5,
+    "steps": 165,
+    "series": 127.4,
+    "side": 116.5
+   },
+   {
+    "id": 19,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 101.5,
+    "marchFed": 101.5,
+    "steps": 149,
+    "series": 116.9,
+    "side": 101.5
+   },
+   {
+    "id": 19,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 28,
+    "series": 29,
+    "side": 22.7
+   },
+   {
+    "id": 19,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 40.1,
+    "marchFed": 40.1,
+    "steps": 50,
+    "series": 47.2,
+    "side": 40.1
+   },
+   {
+    "id": 19,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 103.3,
+    "marchFed": 103.3,
+    "steps": 134,
+    "series": 115,
+    "side": 103.3
+   },
+   {
+    "id": 19,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 104.1,
+    "marchFed": 104.1,
+    "steps": 139,
+    "series": 115.8,
+    "side": 104.1
+   },
+   {
+    "id": 27,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 112.3,
+    "marchFed": 112.3,
+    "steps": 164,
+    "series": 123.5,
+    "side": 112.3
+   },
+   {
+    "id": 27,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 24.6,
+    "marchFed": 24.6,
+    "steps": 32,
+    "series": 31.1,
+    "side": 24.6
+   },
+   {
+    "id": 27,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 27,
+    "series": 28.4,
+    "side": 22.7
+   },
+   {
+    "id": 27,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 22.3,
+    "marchFed": 22.3,
+    "steps": 28,
+    "series": 28.5,
+    "side": 22.3
+   },
+   {
+    "id": 27,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 113.2,
+    "marchFed": 113.2,
+    "steps": 167,
+    "series": 124,
+    "side": 113.2
+   },
+   {
+    "id": 27,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 94.5,
+    "marchFed": 94.5,
+    "steps": 135,
+    "series": 109.8,
+    "side": 94.5
+   },
+   {
+    "id": 27,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 44.4,
+    "marchFed": 44.4,
+    "steps": 57,
+    "series": 51.7,
+    "side": 44.4
+   },
+   {
+    "id": 27,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 122.9,
+    "marchFed": 122.9,
+    "steps": 188,
+    "series": 132.5,
+    "side": 122.9
+   },
+   {
+    "id": 27,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 113.6,
+    "marchFed": 113.6,
+    "steps": 166,
+    "series": 123.9,
+    "side": 113.6
+   },
+   {
+    "id": 27,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 5,
+    "marchFed": 5,
+    "steps": 7,
+    "series": 11.4,
+    "side": 6.4
+   },
+   {
+    "id": 27,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 107.4,
+    "marchFed": 107.4,
+    "steps": 147,
+    "series": 119.2,
+    "side": 107.4
+   },
+   {
+    "id": 27,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 103,
+    "marchFed": 103,
+    "steps": 133,
+    "series": 116.6,
+    "side": 103
+   },
+   {
+    "id": 27,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 134,
+    "marchFed": 134,
+    "steps": 215,
+    "series": 142.5,
+    "side": 134
+   },
+   {
+    "id": 27,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 129.8,
+    "marchFed": 129.8,
+    "steps": 199,
+    "series": 139.1,
+    "side": 129.8
+   },
+   {
+    "id": 27,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 116.5,
+    "marchFed": 116.5,
+    "steps": 165,
+    "series": 127.4,
+    "side": 116.5
+   },
+   {
+    "id": 27,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 101.5,
+    "marchFed": 101.5,
+    "steps": 149,
+    "series": 116.9,
+    "side": 101.5
+   },
+   {
+    "id": 27,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 28,
+    "series": 29,
+    "side": 22.7
+   },
+   {
+    "id": 27,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 40.1,
+    "marchFed": 40.1,
+    "steps": 50,
+    "series": 47.2,
+    "side": 40.1
+   },
+   {
+    "id": 27,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 103.3,
+    "marchFed": 103.3,
+    "steps": 134,
+    "series": 115,
+    "side": 103.3
+   },
+   {
+    "id": 27,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 104.1,
+    "marchFed": 104.1,
+    "steps": 139,
+    "series": 115.8,
+    "side": 104.1
+   },
+   {
+    "id": 45,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 38.2,
+    "marchFed": 38.2,
+    "steps": 168,
+    "series": 49.5,
+    "side": 38.2
+   },
+   {
+    "id": 45,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 8.5,
+    "marchFed": 8.5,
+    "steps": 32,
+    "series": 15,
+    "side": 8.5
+   },
+   {
+    "id": 45,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 8.1,
+    "marchFed": 8.1,
+    "steps": 27,
+    "series": 13.7,
+    "side": 8.1
+   },
+   {
+    "id": 45,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 8.4,
+    "marchFed": 8.4,
+    "steps": 28,
+    "series": 14.6,
+    "side": 8.4
+   },
+   {
+    "id": 45,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 38.5,
+    "marchFed": 38.5,
+    "steps": 171,
+    "series": 49.4,
+    "side": 38.5
+   },
+   {
+    "id": 45,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 31.4,
+    "marchFed": 31.4,
+    "steps": 136,
+    "series": 46.7,
+    "side": 31.4
+   },
+   {
+    "id": 45,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 15.3,
+    "marchFed": 15.3,
+    "steps": 57,
+    "series": 22.6,
+    "side": 15.3
+   },
+   {
+    "id": 45,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 41.6,
+    "marchFed": 41.6,
+    "steps": 192,
+    "series": 51.2,
+    "side": 41.6
+   },
+   {
+    "id": 45,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 38.3,
+    "marchFed": 38.3,
+    "steps": 168,
+    "series": 48.6,
+    "side": 38.3
+   },
+   {
+    "id": 45,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 1.8,
+    "marchFed": 1.8,
+    "steps": 7,
+    "series": 8.1,
+    "side": 6.4
+   },
+   {
+    "id": 45,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 36.4,
+    "marchFed": 36.4,
+    "steps": 151,
+    "series": 48.2,
+    "side": 36.4
+   },
+   {
+    "id": 45,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 35.3,
+    "marchFed": 35.3,
+    "steps": 142,
+    "series": 48.9,
+    "side": 35.3
+   },
+   {
+    "id": 45,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 45.6,
+    "marchFed": 45.6,
+    "steps": 219,
+    "series": 54.1,
+    "side": 45.6
+   },
+   {
+    "id": 45,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 44.1,
+    "marchFed": 44.1,
+    "steps": 203,
+    "series": 53.3,
+    "side": 44.1
+   },
+   {
+    "id": 45,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 39.3,
+    "marchFed": 39.3,
+    "steps": 171,
+    "series": 50.2,
+    "side": 39.3
+   },
+   {
+    "id": 45,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 34,
+    "marchFed": 34,
+    "steps": 150,
+    "series": 49.4,
+    "side": 34
+   },
+   {
+    "id": 45,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 8.7,
+    "marchFed": 8.7,
+    "steps": 28,
+    "series": 15,
+    "side": 8.7
+   },
+   {
+    "id": 45,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 14,
+    "marchFed": 14,
+    "steps": 50,
+    "series": 21.1,
+    "side": 14
+   },
+   {
+    "id": 45,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 34.8,
+    "marchFed": 34.8,
+    "steps": 140,
+    "series": 46.5,
+    "side": 34.8
+   },
+   {
+    "id": 45,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 35.3,
+    "marchFed": 35.3,
+    "steps": 145,
+    "series": 47,
+    "side": 35.3
+   },
+   {
+    "id": 755,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 112.3,
+    "marchFed": 112.3,
+    "steps": 164,
+    "series": 123.5,
+    "side": 112.3
+   },
+   {
+    "id": 755,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 24.6,
+    "marchFed": 24.6,
+    "steps": 32,
+    "series": 31.1,
+    "side": 24.6
+   },
+   {
+    "id": 755,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 27,
+    "series": 28.4,
+    "side": 22.7
+   },
+   {
+    "id": 755,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 22.3,
+    "marchFed": 22.3,
+    "steps": 28,
+    "series": 28.5,
+    "side": 22.3
+   },
+   {
+    "id": 755,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 113.2,
+    "marchFed": 113.2,
+    "steps": 167,
+    "series": 124,
+    "side": 113.2
+   },
+   {
+    "id": 755,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 94.5,
+    "marchFed": 94.5,
+    "steps": 135,
+    "series": 109.8,
+    "side": 94.5
+   },
+   {
+    "id": 755,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 44.4,
+    "marchFed": 44.4,
+    "steps": 57,
+    "series": 51.7,
+    "side": 44.4
+   },
+   {
+    "id": 755,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 122.9,
+    "marchFed": 122.9,
+    "steps": 188,
+    "series": 132.5,
+    "side": 122.9
+   },
+   {
+    "id": 755,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 113.6,
+    "marchFed": 113.6,
+    "steps": 166,
+    "series": 123.9,
+    "side": 113.6
+   },
+   {
+    "id": 755,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 5,
+    "marchFed": 5,
+    "steps": 7,
+    "series": 11.4,
+    "side": 6.4
+   },
+   {
+    "id": 755,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 107.4,
+    "marchFed": 107.4,
+    "steps": 147,
+    "series": 119.2,
+    "side": 107.4
+   },
+   {
+    "id": 755,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 103,
+    "marchFed": 103,
+    "steps": 133,
+    "series": 116.6,
+    "side": 103
+   },
+   {
+    "id": 755,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 134,
+    "marchFed": 134,
+    "steps": 215,
+    "series": 142.5,
+    "side": 134
+   },
+   {
+    "id": 755,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 129.8,
+    "marchFed": 129.8,
+    "steps": 199,
+    "series": 139.1,
+    "side": 129.8
+   },
+   {
+    "id": 755,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 116.5,
+    "marchFed": 116.5,
+    "steps": 165,
+    "series": 127.4,
+    "side": 116.5
+   },
+   {
+    "id": 755,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 101.5,
+    "marchFed": 101.5,
+    "steps": 149,
+    "series": 116.9,
+    "side": 101.5
+   },
+   {
+    "id": 755,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 28,
+    "series": 29,
+    "side": 22.7
+   },
+   {
+    "id": 755,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 40.1,
+    "marchFed": 40.1,
+    "steps": 50,
+    "series": 47.2,
+    "side": 40.1
+   },
+   {
+    "id": 755,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 103.3,
+    "marchFed": 103.3,
+    "steps": 134,
+    "series": 115,
+    "side": 103.3
+   },
+   {
+    "id": 755,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 104.1,
+    "marchFed": 104.1,
+    "steps": 139,
+    "series": 115.8,
+    "side": 104.1
+   },
+   {
+    "id": 772,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 112.3,
+    "marchFed": 112.3,
+    "steps": 164,
+    "series": 123.5,
+    "side": 112.3
+   },
+   {
+    "id": 772,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 24.6,
+    "marchFed": 24.6,
+    "steps": 32,
+    "series": 31.1,
+    "side": 24.6
+   },
+   {
+    "id": 772,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 27,
+    "series": 28.4,
+    "side": 22.7
+   },
+   {
+    "id": 772,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 22.3,
+    "marchFed": 22.3,
+    "steps": 28,
+    "series": 28.5,
+    "side": 22.3
+   },
+   {
+    "id": 772,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 113.2,
+    "marchFed": 113.2,
+    "steps": 167,
+    "series": 124,
+    "side": 113.2
+   },
+   {
+    "id": 772,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 94.5,
+    "marchFed": 94.5,
+    "steps": 135,
+    "series": 109.8,
+    "side": 94.5
+   },
+   {
+    "id": 772,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 44.4,
+    "marchFed": 44.4,
+    "steps": 57,
+    "series": 51.7,
+    "side": 44.4
+   },
+   {
+    "id": 772,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 122.9,
+    "marchFed": 122.9,
+    "steps": 188,
+    "series": 132.5,
+    "side": 122.9
+   },
+   {
+    "id": 772,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 113.6,
+    "marchFed": 113.6,
+    "steps": 166,
+    "series": 123.9,
+    "side": 113.6
+   },
+   {
+    "id": 772,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 5,
+    "marchFed": 5,
+    "steps": 7,
+    "series": 11.4,
+    "side": 6.4
+   },
+   {
+    "id": 772,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 107.4,
+    "marchFed": 107.4,
+    "steps": 147,
+    "series": 119.2,
+    "side": 107.4
+   },
+   {
+    "id": 772,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 103,
+    "marchFed": 103,
+    "steps": 133,
+    "series": 116.6,
+    "side": 103
+   },
+   {
+    "id": 772,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 134,
+    "marchFed": 134,
+    "steps": 215,
+    "series": 142.5,
+    "side": 134
+   },
+   {
+    "id": 772,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 129.8,
+    "marchFed": 129.8,
+    "steps": 199,
+    "series": 139.1,
+    "side": 129.8
+   },
+   {
+    "id": 772,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 116.5,
+    "marchFed": 116.5,
+    "steps": 165,
+    "series": 127.4,
+    "side": 116.5
+   },
+   {
+    "id": 772,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 101.5,
+    "marchFed": 101.5,
+    "steps": 149,
+    "series": 116.9,
+    "side": 101.5
+   },
+   {
+    "id": 772,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 28,
+    "series": 29,
+    "side": 22.7
+   },
+   {
+    "id": 772,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 40.1,
+    "marchFed": 40.1,
+    "steps": 50,
+    "series": 47.2,
+    "side": 40.1
+   },
+   {
+    "id": 772,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 103.3,
+    "marchFed": 103.3,
+    "steps": 134,
+    "series": 115,
+    "side": 103.3
+   },
+   {
+    "id": 772,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 104.1,
+    "marchFed": 104.1,
+    "steps": 139,
+    "series": 115.8,
+    "side": 104.1
+   },
+   {
+    "id": 1419,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 112.3,
+    "marchFed": 112.3,
+    "steps": 164,
+    "series": 123.5,
+    "side": 112.3
+   },
+   {
+    "id": 1419,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 24.6,
+    "marchFed": 24.6,
+    "steps": 32,
+    "series": 31.1,
+    "side": 24.6
+   },
+   {
+    "id": 1419,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 27,
+    "series": 28.4,
+    "side": 22.7
+   },
+   {
+    "id": 1419,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 22.3,
+    "marchFed": 22.3,
+    "steps": 28,
+    "series": 28.5,
+    "side": 22.3
+   },
+   {
+    "id": 1419,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 113.2,
+    "marchFed": 113.2,
+    "steps": 167,
+    "series": 124,
+    "side": 113.2
+   },
+   {
+    "id": 1419,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 94.5,
+    "marchFed": 94.5,
+    "steps": 135,
+    "series": 109.8,
+    "side": 94.5
+   },
+   {
+    "id": 1419,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 44.4,
+    "marchFed": 44.4,
+    "steps": 57,
+    "series": 51.7,
+    "side": 44.4
+   },
+   {
+    "id": 1419,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 122.9,
+    "marchFed": 122.9,
+    "steps": 188,
+    "series": 132.5,
+    "side": 122.9
+   },
+   {
+    "id": 1419,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 113.6,
+    "marchFed": 113.6,
+    "steps": 166,
+    "series": 123.9,
+    "side": 113.6
+   },
+   {
+    "id": 1419,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 5,
+    "marchFed": 5,
+    "steps": 7,
+    "series": 11.4,
+    "side": 6.4
+   },
+   {
+    "id": 1419,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 107.4,
+    "marchFed": 107.4,
+    "steps": 147,
+    "series": 119.2,
+    "side": 107.4
+   },
+   {
+    "id": 1419,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 103,
+    "marchFed": 103,
+    "steps": 133,
+    "series": 116.6,
+    "side": 103
+   },
+   {
+    "id": 1419,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 134,
+    "marchFed": 134,
+    "steps": 215,
+    "series": 142.5,
+    "side": 134
+   },
+   {
+    "id": 1419,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 129.8,
+    "marchFed": 129.8,
+    "steps": 199,
+    "series": 139.1,
+    "side": 129.8
+   },
+   {
+    "id": 1419,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 116.5,
+    "marchFed": 116.5,
+    "steps": 165,
+    "series": 127.4,
+    "side": 116.5
+   },
+   {
+    "id": 1419,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 101.5,
+    "marchFed": 101.5,
+    "steps": 149,
+    "series": 116.9,
+    "side": 101.5
+   },
+   {
+    "id": 1419,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 22.7,
+    "marchFed": 22.7,
+    "steps": 28,
+    "series": 29,
+    "side": 22.7
+   },
+   {
+    "id": 1419,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 40.1,
+    "marchFed": 40.1,
+    "steps": 50,
+    "series": 47.2,
+    "side": 40.1
+   },
+   {
+    "id": 1419,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 103.3,
+    "marchFed": 103.3,
+    "steps": 134,
+    "series": 115,
+    "side": 103.3
+   },
+   {
+    "id": 1419,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 104.1,
+    "marchFed": 104.1,
+    "steps": 139,
+    "series": 115.8,
+    "side": 104.1
+   },
+   {
+    "id": 13,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 13,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 13,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 13,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 13,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 13,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 13,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 13,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 13,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 13,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 13,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 13,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 13,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 13,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 13,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 13,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 13,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 13,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 13,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 13,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 29,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 29,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 29,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 29,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 29,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 29,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 29,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 29,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 29,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 29,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 29,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 29,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 29,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 29,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 29,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 29,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 29,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 29,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 29,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 29,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 161,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 161,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 161,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 161,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 161,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 161,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 161,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 161,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 161,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 161,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 161,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 161,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 161,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 161,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 161,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 161,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 161,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 161,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 161,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 161,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 163,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 163,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 163,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 163,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 163,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 163,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 163,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 163,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 163,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 163,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 163,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 163,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 163,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 163,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 163,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 163,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 163,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 163,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 163,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 163,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 245,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 245,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 245,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 245,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 245,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 245,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 245,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 245,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 245,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 245,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 245,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 245,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 245,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 245,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 245,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 245,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 245,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 245,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 245,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 245,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 284,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 284,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 284,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 284,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 284,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 284,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 284,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 284,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 284,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 284,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 284,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 284,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 284,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 284,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 284,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 284,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 284,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 284,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 284,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 284,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 573,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 573,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 573,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 573,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 573,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 573,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 573,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 573,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 573,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 573,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 573,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 573,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 573,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 573,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 573,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 573,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 573,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 573,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 573,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 573,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 676,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 676,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 676,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 676,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 676,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 676,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 676,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 676,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 676,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 676,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 676,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 676,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 676,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 676,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 676,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 676,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 676,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 676,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 676,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 676,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 712,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 712,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 712,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 712,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 712,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 712,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 712,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 712,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 712,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 712,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 712,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 712,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 712,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 712,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 712,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 712,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 712,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 712,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 712,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 712,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 1036,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 1036,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 1036,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 1036,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 1036,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 1036,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 1036,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 1036,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 1036,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 1036,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 1036,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 1036,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 1036,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 1036,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 1036,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 1036,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 1036,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 1036,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 1036,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 1036,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 1172,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 1172,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 1172,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 1172,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 1172,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 1172,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 1172,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 1172,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 1172,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 1172,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 1172,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 1172,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 1172,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 1172,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 1172,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 1172,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 1172,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 1172,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 1172,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 1172,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 1428,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 49,
+    "series": 31.9,
+    "side": 20.7
+   },
+   {
+    "id": 1428,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 66.5,
+    "marchFed": 66.5,
+    "steps": 97,
+    "series": 73,
+    "side": 66.5
+   },
+   {
+    "id": 1428,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 75.5,
+    "marchFed": 75.5,
+    "steps": 104,
+    "series": 81.2,
+    "side": 75.5
+   },
+   {
+    "id": 1428,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 73.6,
+    "marchFed": 73.6,
+    "steps": 105,
+    "series": 79.9,
+    "side": 73.6
+   },
+   {
+    "id": 1428,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.2,
+    "side": 22.4
+   },
+   {
+    "id": 1428,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 20.7,
+    "marchFed": 20.7,
+    "steps": 40,
+    "series": 36,
+    "side": 20.7
+   },
+   {
+    "id": 1428,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 55.9,
+    "marchFed": 55.9,
+    "steps": 98,
+    "series": 63.2,
+    "side": 55.9
+   },
+   {
+    "id": 1428,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 37.1,
+    "marchFed": 37.1,
+    "steps": 75,
+    "series": 46.7,
+    "side": 37.1
+   },
+   {
+    "id": 1428,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 23.6,
+    "marchFed": 23.6,
+    "steps": 51,
+    "series": 33.9,
+    "side": 23.6
+   },
+   {
+    "id": 1428,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 87.2,
+    "marchFed": 87.2,
+    "steps": 117,
+    "series": 93.6,
+    "side": 87.2
+   },
+   {
+    "id": 1428,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 14.7,
+    "marchFed": 14.7,
+    "steps": 32,
+    "series": 26.5,
+    "side": 14.7
+   },
+   {
+    "id": 1428,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 11,
+    "marchFed": 11,
+    "steps": 19,
+    "series": 24.6,
+    "side": 13.6
+   },
+   {
+    "id": 1428,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 51.1,
+    "marchFed": 51.1,
+    "steps": 102,
+    "series": 59.6,
+    "side": 51.1
+   },
+   {
+    "id": 1428,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 43.2,
+    "marchFed": 43.2,
+    "steps": 86,
+    "series": 52.4,
+    "side": 43.2
+   },
+   {
+    "id": 1428,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 22.4,
+    "marchFed": 22.4,
+    "steps": 52,
+    "series": 33.4,
+    "side": 22.4
+   },
+   {
+    "id": 1428,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 30.6,
+    "marchFed": 30.6,
+    "steps": 58,
+    "series": 46,
+    "side": 30.6
+   },
+   {
+    "id": 1428,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 70.8,
+    "marchFed": 70.8,
+    "steps": 102,
+    "series": 77.1,
+    "side": 70.8
+   },
+   {
+    "id": 1428,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 58.4,
+    "marchFed": 58.4,
+    "steps": 90,
+    "series": 65.4,
+    "side": 58.4
+   },
+   {
+    "id": 1428,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 10,
+    "marchFed": 10,
+    "steps": 20,
+    "series": 21.7,
+    "side": 11.7
+   },
+   {
+    "id": 1428,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 11.9,
+    "marchFed": 11.9,
+    "steps": 26,
+    "series": 23.6,
+    "side": 11.9
+   },
+   {
+    "id": 1460,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 154.4,
+    "marchFed": 154.4,
+    "steps": 226,
+    "series": 165.6,
+    "side": 154.4
+   },
+   {
+    "id": 1460,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 67.6,
+    "marchFed": 67.6,
+    "steps": 88,
+    "series": 74.1,
+    "side": 67.6
+   },
+   {
+    "id": 1460,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 70.4,
+    "marchFed": 70.4,
+    "steps": 95,
+    "series": 76,
+    "side": 70.4
+   },
+   {
+    "id": 1460,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 65.2,
+    "marchFed": 65.2,
+    "steps": 84,
+    "series": 71.5,
+    "side": 65.2
+   },
+   {
+    "id": 1460,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 155,
+    "marchFed": 155,
+    "steps": 229,
+    "series": 165.9,
+    "side": 155
+   },
+   {
+    "id": 1460,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 135.5,
+    "marchFed": 135.5,
+    "steps": 198,
+    "series": 150.8,
+    "side": 135.5
+   },
+   {
+    "id": 1460,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 84.8,
+    "marchFed": 84.8,
+    "steps": 114,
+    "series": 92.1,
+    "side": 84.8
+   },
+   {
+    "id": 1460,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 164.8,
+    "marchFed": 164.8,
+    "steps": 253,
+    "series": 174.4,
+    "side": 164.8
+   },
+   {
+    "id": 1460,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 155.5,
+    "marchFed": 155.5,
+    "steps": 228,
+    "series": 165.8,
+    "side": 155.5
+   },
+   {
+    "id": 1460,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 57.7,
+    "marchFed": 57.7,
+    "steps": 75,
+    "series": 64,
+    "side": 57.7
+   },
+   {
+    "id": 1460,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 149.4,
+    "marchFed": 149.4,
+    "steps": 209,
+    "series": 161.2,
+    "side": 149.4
+   },
+   {
+    "id": 1460,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 145.6,
+    "marchFed": 145.6,
+    "steps": 196,
+    "series": 159.2,
+    "side": 145.6
+   },
+   {
+    "id": 1460,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 175.8,
+    "marchFed": 175.8,
+    "steps": 280,
+    "series": 184.3,
+    "side": 175.8
+   },
+   {
+    "id": 1460,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 171.7,
+    "marchFed": 171.7,
+    "steps": 264,
+    "series": 180.9,
+    "side": 171.7
+   },
+   {
+    "id": 1460,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 158.6,
+    "marchFed": 158.6,
+    "steps": 229,
+    "series": 169.6,
+    "side": 158.6
+   },
+   {
+    "id": 1460,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 142.6,
+    "marchFed": 142.6,
+    "steps": 206,
+    "series": 158,
+    "side": 142.6
+   },
+   {
+    "id": 1460,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 65.5,
+    "marchFed": 65.5,
+    "steps": 81,
+    "series": 71.8,
+    "side": 65.5
+   },
+   {
+    "id": 1460,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 80.4,
+    "marchFed": 80.4,
+    "steps": 106,
+    "series": 87.4,
+    "side": 80.4
+   },
+   {
+    "id": 1460,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 144.2,
+    "marchFed": 144.2,
+    "steps": 197,
+    "series": 155.9,
+    "side": 144.2
+   },
+   {
+    "id": 1460,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 146.3,
+    "marchFed": 146.3,
+    "steps": 203,
+    "series": 158,
+    "side": 146.3
+   },
+   {
+    "id": 179,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 156.9,
+    "marchFed": 156.9,
+    "steps": 228,
+    "series": 168.1,
+    "side": 156.9
+   },
+   {
+    "id": 179,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 69.9,
+    "marchFed": 69.9,
+    "steps": 90,
+    "series": 76.4,
+    "side": 69.9
+   },
+   {
+    "id": 179,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 72.7,
+    "marchFed": 72.7,
+    "steps": 97,
+    "series": 78.3,
+    "side": 72.7
+   },
+   {
+    "id": 179,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 67.5,
+    "marchFed": 67.5,
+    "steps": 86,
+    "series": 73.8,
+    "side": 67.5
+   },
+   {
+    "id": 179,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 157.6,
+    "marchFed": 157.6,
+    "steps": 231,
+    "series": 168.4,
+    "side": 157.6
+   },
+   {
+    "id": 179,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 137.1,
+    "marchFed": 137.1,
+    "steps": 195,
+    "series": 152.4,
+    "side": 137.1
+   },
+   {
+    "id": 179,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 87.1,
+    "marchFed": 87.1,
+    "steps": 116,
+    "series": 94.4,
+    "side": 87.1
+   },
+   {
+    "id": 179,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 167.4,
+    "marchFed": 167.4,
+    "steps": 255,
+    "series": 177,
+    "side": 167.4
+   },
+   {
+    "id": 179,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 158.1,
+    "marchFed": 158.1,
+    "steps": 230,
+    "series": 168.4,
+    "side": 158.1
+   },
+   {
+    "id": 179,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 60,
+    "marchFed": 60,
+    "steps": 77,
+    "series": 66.3,
+    "side": 60
+   },
+   {
+    "id": 179,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 152,
+    "marchFed": 152,
+    "steps": 211,
+    "series": 163.8,
+    "side": 152
+   },
+   {
+    "id": 179,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 148.1,
+    "marchFed": 148.1,
+    "steps": 198,
+    "series": 161.7,
+    "side": 148.1
+   },
+   {
+    "id": 179,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 178.4,
+    "marchFed": 178.4,
+    "steps": 282,
+    "series": 187,
+    "side": 178.4
+   },
+   {
+    "id": 179,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 174.3,
+    "marchFed": 174.3,
+    "steps": 266,
+    "series": 183.5,
+    "side": 174.3
+   },
+   {
+    "id": 179,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 161.1,
+    "marchFed": 161.1,
+    "steps": 231,
+    "series": 172.1,
+    "side": 161.1
+   },
+   {
+    "id": 179,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 144.5,
+    "marchFed": 144.5,
+    "steps": 208,
+    "series": 159.9,
+    "side": 144.5
+   },
+   {
+    "id": 179,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 67.8,
+    "marchFed": 67.8,
+    "steps": 83,
+    "series": 74.1,
+    "side": 67.8
+   },
+   {
+    "id": 179,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 82.7,
+    "marchFed": 82.7,
+    "steps": 108,
+    "series": 89.7,
+    "side": 82.7
+   },
+   {
+    "id": 179,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 146.8,
+    "marchFed": 146.8,
+    "steps": 199,
+    "series": 158.5,
+    "side": 146.8
+   },
+   {
+    "id": 179,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 148.8,
+    "marchFed": 148.8,
+    "steps": 205,
+    "series": 160.5,
+    "side": 148.8
+   },
+   {
+    "id": 515,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 193.7,
+    "marchFed": 193.7,
+    "steps": 318,
+    "series": 204.9,
+    "side": 193.7
+   },
+   {
+    "id": 515,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 90.2,
+    "marchFed": 90.2,
+    "steps": 131,
+    "series": 96.7,
+    "side": 90.2
+   },
+   {
+    "id": 515,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 93,
+    "marchFed": 93,
+    "steps": 138,
+    "series": 98.6,
+    "side": 93
+   },
+   {
+    "id": 515,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 87.8,
+    "marchFed": 87.8,
+    "steps": 127,
+    "series": 94.1,
+    "side": 87.8
+   },
+   {
+    "id": 515,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 195.3,
+    "marchFed": 195.3,
+    "steps": 322,
+    "series": 206.1,
+    "side": 195.3
+   },
+   {
+    "id": 515,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 155.3,
+    "marchFed": 155.3,
+    "steps": 231,
+    "series": 170.6,
+    "side": 155.3
+   },
+   {
+    "id": 515,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 107.4,
+    "marchFed": 107.4,
+    "steps": 157,
+    "series": 114.7,
+    "side": 107.4
+   },
+   {
+    "id": 515,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 209.4,
+    "marchFed": 209.4,
+    "steps": 345,
+    "series": 219,
+    "side": 209.4
+   },
+   {
+    "id": 515,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 195,
+    "marchFed": 195,
+    "steps": 321,
+    "series": 205.4,
+    "side": 195
+   },
+   {
+    "id": 515,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 80.6,
+    "marchFed": 80.6,
+    "steps": 118,
+    "series": 86.9,
+    "side": 80.6
+   },
+   {
+    "id": 515,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 189.2,
+    "marchFed": 189.2,
+    "steps": 302,
+    "series": 201,
+    "side": 189.2
+   },
+   {
+    "id": 515,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 186.7,
+    "marchFed": 186.7,
+    "steps": 290,
+    "series": 200.4,
+    "side": 186.7
+   },
+   {
+    "id": 515,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 232.2,
+    "marchFed": 232.2,
+    "steps": 376,
+    "series": 240.7,
+    "side": 232.2
+   },
+   {
+    "id": 515,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 214.5,
+    "marchFed": 214.5,
+    "steps": 356,
+    "series": 223.7,
+    "side": 214.5
+   },
+   {
+    "id": 515,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 196.9,
+    "marchFed": 196.9,
+    "steps": 322,
+    "series": 207.9,
+    "side": 196.9
+   },
+   {
+    "id": 515,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 156.7,
+    "marchFed": 156.7,
+    "steps": 227,
+    "series": 172.1,
+    "side": 156.7
+   },
+   {
+    "id": 515,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 88.1,
+    "marchFed": 88.1,
+    "steps": 124,
+    "series": 94.4,
+    "side": 88.1
+   },
+   {
+    "id": 515,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 103,
+    "marchFed": 103,
+    "steps": 149,
+    "series": 110,
+    "side": 103
+   },
+   {
+    "id": 515,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 184,
+    "marchFed": 184,
+    "steps": 290,
+    "series": 195.7,
+    "side": 184
+   },
+   {
+    "id": 515,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 185.9,
+    "marchFed": 185.9,
+    "steps": 296,
+    "series": 197.6,
+    "side": 185.9
+   },
+   {
+    "id": 92,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 215.6,
+    "marchFed": 215.6,
+    "steps": 346,
+    "series": 226.8,
+    "side": 215.6
+   },
+   {
+    "id": 92,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 104.8,
+    "marchFed": 104.8,
+    "steps": 129,
+    "series": 111.3,
+    "side": 104.8
+   },
+   {
+    "id": 92,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 107.6,
+    "marchFed": 107.6,
+    "steps": 136,
+    "series": 113.3,
+    "side": 107.6
+   },
+   {
+    "id": 92,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 102.5,
+    "marchFed": 102.5,
+    "steps": 125,
+    "series": 108.7,
+    "side": 102.5
+   },
+   {
+    "id": 92,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 217.3,
+    "marchFed": 217.3,
+    "steps": 350,
+    "series": 228.1,
+    "side": 217.3
+   },
+   {
+    "id": 92,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 177.9,
+    "marchFed": 177.9,
+    "steps": 259,
+    "series": 193.2,
+    "side": 177.9
+   },
+   {
+    "id": 92,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 126.9,
+    "marchFed": 126.9,
+    "steps": 150,
+    "series": 134.2,
+    "side": 126.9
+   },
+   {
+    "id": 92,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 230.7,
+    "marchFed": 230.7,
+    "steps": 373,
+    "series": 240.3,
+    "side": 230.7
+   },
+   {
+    "id": 92,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 216.6,
+    "marchFed": 216.6,
+    "steps": 349,
+    "series": 227,
+    "side": 216.6
+   },
+   {
+    "id": 92,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 94.9,
+    "marchFed": 94.9,
+    "steps": 116,
+    "series": 101.3,
+    "side": 94.9
+   },
+   {
+    "id": 92,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 211.1,
+    "marchFed": 211.1,
+    "steps": 330,
+    "series": 222.9,
+    "side": 211.1
+   },
+   {
+    "id": 92,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 208.7,
+    "marchFed": 208.7,
+    "steps": 318,
+    "series": 222.3,
+    "side": 208.7
+   },
+   {
+    "id": 92,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 253.6,
+    "marchFed": 253.6,
+    "steps": 404,
+    "series": 262.2,
+    "side": 253.6
+   },
+   {
+    "id": 92,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 235.8,
+    "marchFed": 235.8,
+    "steps": 384,
+    "series": 245,
+    "side": 235.8
+   },
+   {
+    "id": 92,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 218.9,
+    "marchFed": 218.9,
+    "steps": 350,
+    "series": 229.8,
+    "side": 218.9
+   },
+   {
+    "id": 92,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 179.6,
+    "marchFed": 179.6,
+    "steps": 255,
+    "series": 195,
+    "side": 179.6
+   },
+   {
+    "id": 92,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 102.7,
+    "marchFed": 102.7,
+    "steps": 122,
+    "series": 109,
+    "side": 102.7
+   },
+   {
+    "id": 92,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 117.6,
+    "marchFed": 117.6,
+    "steps": 147,
+    "series": 124.7,
+    "side": 117.6
+   },
+   {
+    "id": 92,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 206,
+    "marchFed": 206,
+    "steps": 318,
+    "series": 217.6,
+    "side": 206
+   },
+   {
+    "id": 92,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 207.9,
+    "marchFed": 207.9,
+    "steps": 324,
+    "series": 219.6,
+    "side": 207.9
+   },
+   {
+    "id": 972,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 213.3,
+    "marchFed": 213.3,
+    "steps": 342,
+    "series": 224.5,
+    "side": 213.3
+   },
+   {
+    "id": 972,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 104,
+    "marchFed": 104,
+    "steps": 125,
+    "series": 110.5,
+    "side": 104
+   },
+   {
+    "id": 972,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 106.8,
+    "marchFed": 106.8,
+    "steps": 132,
+    "series": 112.5,
+    "side": 106.8
+   },
+   {
+    "id": 972,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 101.7,
+    "marchFed": 101.7,
+    "steps": 121,
+    "series": 107.9,
+    "side": 101.7
+   },
+   {
+    "id": 972,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 215,
+    "marchFed": 215,
+    "steps": 346,
+    "series": 225.8,
+    "side": 215
+   },
+   {
+    "id": 972,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 175,
+    "marchFed": 175,
+    "steps": 255,
+    "series": 190.3,
+    "side": 175
+   },
+   {
+    "id": 972,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 124.8,
+    "marchFed": 124.8,
+    "steps": 146,
+    "series": 132.1,
+    "side": 124.8
+   },
+   {
+    "id": 972,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 229,
+    "marchFed": 229,
+    "steps": 369,
+    "series": 238.6,
+    "side": 229
+   },
+   {
+    "id": 972,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 214.7,
+    "marchFed": 214.7,
+    "steps": 345,
+    "series": 225,
+    "side": 214.7
+   },
+   {
+    "id": 972,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 94.1,
+    "marchFed": 94.1,
+    "steps": 112,
+    "series": 100.5,
+    "side": 94.1
+   },
+   {
+    "id": 972,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 208.8,
+    "marchFed": 208.8,
+    "steps": 326,
+    "series": 220.6,
+    "side": 208.8
+   },
+   {
+    "id": 972,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 206.4,
+    "marchFed": 206.4,
+    "steps": 314,
+    "series": 220,
+    "side": 206.4
+   },
+   {
+    "id": 972,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 251.8,
+    "marchFed": 251.8,
+    "steps": 400,
+    "series": 260.4,
+    "side": 251.8
+   },
+   {
+    "id": 972,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 234.1,
+    "marchFed": 234.1,
+    "steps": 380,
+    "series": 243.4,
+    "side": 234.1
+   },
+   {
+    "id": 972,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 216.6,
+    "marchFed": 216.6,
+    "steps": 346,
+    "series": 227.5,
+    "side": 216.6
+   },
+   {
+    "id": 972,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 176.4,
+    "marchFed": 176.4,
+    "steps": 251,
+    "series": 191.7,
+    "side": 176.4
+   },
+   {
+    "id": 972,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 101.9,
+    "marchFed": 101.9,
+    "steps": 118,
+    "series": 108.2,
+    "side": 101.9
+   },
+   {
+    "id": 972,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 116.8,
+    "marchFed": 116.8,
+    "steps": 143,
+    "series": 123.9,
+    "side": 116.8
+   },
+   {
+    "id": 972,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 203.6,
+    "marchFed": 203.6,
+    "steps": 314,
+    "series": 215.3,
+    "side": 203.6
+   },
+   {
+    "id": 972,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 205.6,
+    "marchFed": 205.6,
+    "steps": 320,
+    "series": 217.3,
+    "side": 205.6
+   },
+   {
+    "id": 3,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 220.5,
+    "marchFed": 220.5,
+    "steps": 356,
+    "series": 231.8,
+    "side": 220.5
+   },
+   {
+    "id": 3,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 108.2,
+    "marchFed": 108.2,
+    "steps": 139,
+    "series": 114.7,
+    "side": 108.2
+   },
+   {
+    "id": 3,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 111,
+    "marchFed": 111,
+    "steps": 146,
+    "series": 116.7,
+    "side": 111
+   },
+   {
+    "id": 3,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 105.9,
+    "marchFed": 105.9,
+    "steps": 135,
+    "series": 112.1,
+    "side": 105.9
+   },
+   {
+    "id": 3,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 222.2,
+    "marchFed": 222.2,
+    "steps": 360,
+    "series": 233,
+    "side": 222.2
+   },
+   {
+    "id": 3,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 183.2,
+    "marchFed": 183.2,
+    "steps": 269,
+    "series": 198.5,
+    "side": 183.2
+   },
+   {
+    "id": 3,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 130.6,
+    "marchFed": 130.6,
+    "steps": 160,
+    "series": 137.9,
+    "side": 130.6
+   },
+   {
+    "id": 3,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 235.6,
+    "marchFed": 235.6,
+    "steps": 383,
+    "series": 245.2,
+    "side": 235.6
+   },
+   {
+    "id": 3,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 221.5,
+    "marchFed": 221.5,
+    "steps": 359,
+    "series": 231.9,
+    "side": 221.5
+   },
+   {
+    "id": 3,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 98.3,
+    "marchFed": 98.3,
+    "steps": 126,
+    "series": 104.7,
+    "side": 98.3
+   },
+   {
+    "id": 3,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 216.1,
+    "marchFed": 216.1,
+    "steps": 340,
+    "series": 227.9,
+    "side": 216.1
+   },
+   {
+    "id": 3,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 213.6,
+    "marchFed": 213.6,
+    "steps": 328,
+    "series": 227.2,
+    "side": 213.6
+   },
+   {
+    "id": 3,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 258.5,
+    "marchFed": 258.5,
+    "steps": 414,
+    "series": 267.1,
+    "side": 258.5
+   },
+   {
+    "id": 3,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 240.7,
+    "marchFed": 240.7,
+    "steps": 394,
+    "series": 250,
+    "side": 240.7
+   },
+   {
+    "id": 3,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 223.8,
+    "marchFed": 223.8,
+    "steps": 360,
+    "series": 234.8,
+    "side": 223.8
+   },
+   {
+    "id": 3,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 184.3,
+    "marchFed": 184.3,
+    "steps": 265,
+    "series": 199.7,
+    "side": 184.3
+   },
+   {
+    "id": 3,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 106.1,
+    "marchFed": 106.1,
+    "steps": 132,
+    "series": 112.4,
+    "side": 106.1
+   },
+   {
+    "id": 3,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 124.8,
+    "marchFed": 124.8,
+    "steps": 153,
+    "series": 131.8,
+    "side": 124.8
+   },
+   {
+    "id": 3,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 210.9,
+    "marchFed": 210.9,
+    "steps": 328,
+    "series": 222.6,
+    "side": 210.9
+   },
+   {
+    "id": 3,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 212.8,
+    "marchFed": 212.8,
+    "steps": 334,
+    "series": 224.5,
+    "side": 212.8
+   },
+   {
+    "id": 159,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 215.7,
+    "marchFed": 215.7,
+    "steps": 343,
+    "series": 226.9,
+    "side": 215.7
+   },
+   {
+    "id": 159,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 106.4,
+    "marchFed": 106.4,
+    "steps": 126,
+    "series": 112.9,
+    "side": 106.4
+   },
+   {
+    "id": 159,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 112.9,
+    "marchFed": 112.9,
+    "steps": 133,
+    "series": 118.5,
+    "side": 112.9
+   },
+   {
+    "id": 159,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 104.1,
+    "marchFed": 104.1,
+    "steps": 122,
+    "series": 110.3,
+    "side": 104.1
+   },
+   {
+    "id": 159,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 217.3,
+    "marchFed": 217.3,
+    "steps": 347,
+    "series": 228.2,
+    "side": 217.3
+   },
+   {
+    "id": 159,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 177.4,
+    "marchFed": 177.4,
+    "steps": 256,
+    "series": 192.7,
+    "side": 177.4
+   },
+   {
+    "id": 159,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 127.2,
+    "marchFed": 127.2,
+    "steps": 147,
+    "series": 134.5,
+    "side": 127.2
+   },
+   {
+    "id": 159,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 231.4,
+    "marchFed": 231.4,
+    "steps": 370,
+    "series": 241,
+    "side": 231.4
+   },
+   {
+    "id": 159,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 217,
+    "marchFed": 217,
+    "steps": 346,
+    "series": 227.4,
+    "side": 217
+   },
+   {
+    "id": 159,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 96.5,
+    "marchFed": 96.5,
+    "steps": 113,
+    "series": 102.9,
+    "side": 96.5
+   },
+   {
+    "id": 159,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 211.2,
+    "marchFed": 211.2,
+    "steps": 327,
+    "series": 223,
+    "side": 211.2
+   },
+   {
+    "id": 159,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 208.7,
+    "marchFed": 208.7,
+    "steps": 315,
+    "series": 222.4,
+    "side": 208.7
+   },
+   {
+    "id": 159,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 261.4,
+    "marchFed": 261.4,
+    "steps": 396,
+    "series": 270,
+    "side": 261.4
+   },
+   {
+    "id": 159,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 236.5,
+    "marchFed": 236.5,
+    "steps": 381,
+    "series": 245.7,
+    "side": 236.5
+   },
+   {
+    "id": 159,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 218.9,
+    "marchFed": 218.9,
+    "steps": 347,
+    "series": 229.9,
+    "side": 218.9
+   },
+   {
+    "id": 159,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 178.8,
+    "marchFed": 178.8,
+    "steps": 252,
+    "series": 194.1,
+    "side": 178.8
+   },
+   {
+    "id": 159,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 104.3,
+    "marchFed": 104.3,
+    "steps": 119,
+    "series": 110.6,
+    "side": 104.3
+   },
+   {
+    "id": 159,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 119.2,
+    "marchFed": 119.2,
+    "steps": 144,
+    "series": 126.3,
+    "side": 119.2
+   },
+   {
+    "id": 159,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 206,
+    "marchFed": 206,
+    "steps": 315,
+    "series": 217.7,
+    "side": 206
+   },
+   {
+    "id": 159,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 207.9,
+    "marchFed": 207.9,
+    "steps": 321,
+    "series": 219.6,
+    "side": 207.9
+   },
+   {
+    "id": 1292,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 219.9,
+    "marchFed": 219.9,
+    "steps": 350,
+    "series": 231.1,
+    "side": 219.9
+   },
+   {
+    "id": 1292,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 109.1,
+    "marchFed": 109.1,
+    "steps": 133,
+    "series": 115.6,
+    "side": 109.1
+   },
+   {
+    "id": 1292,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 111.9,
+    "marchFed": 111.9,
+    "steps": 140,
+    "series": 117.5,
+    "side": 111.9
+   },
+   {
+    "id": 1292,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 106.7,
+    "marchFed": 106.7,
+    "steps": 129,
+    "series": 113,
+    "side": 106.7
+   },
+   {
+    "id": 1292,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 221.5,
+    "marchFed": 221.5,
+    "steps": 354,
+    "series": 232.4,
+    "side": 221.5
+   },
+   {
+    "id": 1292,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 182,
+    "marchFed": 182,
+    "steps": 263,
+    "series": 197.3,
+    "side": 182
+   },
+   {
+    "id": 1292,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 130.8,
+    "marchFed": 130.8,
+    "steps": 154,
+    "series": 138.1,
+    "side": 130.8
+   },
+   {
+    "id": 1292,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 234.9,
+    "marchFed": 234.9,
+    "steps": 377,
+    "series": 244.5,
+    "side": 234.9
+   },
+   {
+    "id": 1292,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 220.9,
+    "marchFed": 220.9,
+    "steps": 353,
+    "series": 231.2,
+    "side": 220.9
+   },
+   {
+    "id": 1292,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 99.2,
+    "marchFed": 99.2,
+    "steps": 120,
+    "series": 105.6,
+    "side": 99.2
+   },
+   {
+    "id": 1292,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 215.4,
+    "marchFed": 215.4,
+    "steps": 334,
+    "series": 227.2,
+    "side": 215.4
+   },
+   {
+    "id": 1292,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 213,
+    "marchFed": 213,
+    "steps": 322,
+    "series": 226.6,
+    "side": 213
+   },
+   {
+    "id": 1292,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 257.9,
+    "marchFed": 257.9,
+    "steps": 408,
+    "series": 266.5,
+    "side": 257.9
+   },
+   {
+    "id": 1292,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 240,
+    "marchFed": 240,
+    "steps": 388,
+    "series": 249.3,
+    "side": 240
+   },
+   {
+    "id": 1292,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 223.1,
+    "marchFed": 223.1,
+    "steps": 354,
+    "series": 234.1,
+    "side": 223.1
+   },
+   {
+    "id": 1292,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 183.9,
+    "marchFed": 183.9,
+    "steps": 259,
+    "series": 199.3,
+    "side": 183.9
+   },
+   {
+    "id": 1292,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 107,
+    "marchFed": 107,
+    "steps": 126,
+    "series": 113.3,
+    "side": 107
+   },
+   {
+    "id": 1292,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 125.2,
+    "marchFed": 125.2,
+    "steps": 147,
+    "series": 132.2,
+    "side": 125.2
+   },
+   {
+    "id": 1292,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 210.2,
+    "marchFed": 210.2,
+    "steps": 322,
+    "series": 221.9,
+    "side": 210.2
+   },
+   {
+    "id": 1292,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 212.2,
+    "marchFed": 212.2,
+    "steps": 328,
+    "series": 223.8,
+    "side": 212.2
+   },
+   {
+    "id": 675,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 225.5,
+    "marchFed": 225.5,
+    "steps": 352,
+    "series": 236.7,
+    "side": 225.5
+   },
+   {
+    "id": 675,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 118.9,
+    "marchFed": 118.9,
+    "steps": 131,
+    "series": 125.4,
+    "side": 118.9
+   },
+   {
+    "id": 675,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 122.3,
+    "marchFed": 122.3,
+    "steps": 142,
+    "series": 128,
+    "side": 122.3
+   },
+   {
+    "id": 675,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 117.9,
+    "marchFed": 117.9,
+    "steps": 131,
+    "series": 124.2,
+    "side": 117.9
+   },
+   {
+    "id": 675,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 227.2,
+    "marchFed": 227.2,
+    "steps": 356,
+    "series": 238,
+    "side": 227.2
+   },
+   {
+    "id": 675,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 187.3,
+    "marchFed": 187.3,
+    "steps": 265,
+    "series": 202.6,
+    "side": 187.3
+   },
+   {
+    "id": 675,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 137.1,
+    "marchFed": 137.1,
+    "steps": 156,
+    "series": 144.4,
+    "side": 137.1
+   },
+   {
+    "id": 675,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 241.2,
+    "marchFed": 241.2,
+    "steps": 379,
+    "series": 250.8,
+    "side": 241.2
+   },
+   {
+    "id": 675,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 226.9,
+    "marchFed": 226.9,
+    "steps": 355,
+    "series": 237.2,
+    "side": 226.9
+   },
+   {
+    "id": 675,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 106.4,
+    "marchFed": 106.4,
+    "steps": 122,
+    "series": 112.8,
+    "side": 106.4
+   },
+   {
+    "id": 675,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 221,
+    "marchFed": 221,
+    "steps": 336,
+    "series": 232.8,
+    "side": 221
+   },
+   {
+    "id": 675,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 218.6,
+    "marchFed": 218.6,
+    "steps": 324,
+    "series": 232.2,
+    "side": 218.6
+   },
+   {
+    "id": 675,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 271.1,
+    "marchFed": 271.1,
+    "steps": 405,
+    "series": 279.7,
+    "side": 271.1
+   },
+   {
+    "id": 675,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 246.3,
+    "marchFed": 246.3,
+    "steps": 390,
+    "series": 255.6,
+    "side": 246.3
+   },
+   {
+    "id": 675,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 228.7,
+    "marchFed": 228.7,
+    "steps": 356,
+    "series": 239.7,
+    "side": 228.7
+   },
+   {
+    "id": 675,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 188.6,
+    "marchFed": 188.6,
+    "steps": 261,
+    "series": 204,
+    "side": 188.6
+   },
+   {
+    "id": 675,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 114.2,
+    "marchFed": 114.2,
+    "steps": 128,
+    "series": 120.5,
+    "side": 114.2
+   },
+   {
+    "id": 675,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 130.6,
+    "marchFed": 130.6,
+    "steps": 149,
+    "series": 137.6,
+    "side": 130.6
+   },
+   {
+    "id": 675,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 215.8,
+    "marchFed": 215.8,
+    "steps": 324,
+    "series": 227.5,
+    "side": 215.8
+   },
+   {
+    "id": 675,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 217.8,
+    "marchFed": 217.8,
+    "steps": 330,
+    "series": 229.5,
+    "side": 217.8
+   },
+   {
+    "id": 373,
+    "port": "Amsterdam",
+    "sail": 11.2,
+    "marchNow": 228.2,
+    "marchFed": 228.2,
+    "steps": 355,
+    "series": 239.5,
+    "side": 228.2
+   },
+   {
+    "id": 373,
+    "port": "Istanbul",
+    "sail": 6.5,
+    "marchNow": 123,
+    "marchFed": 123,
+    "steps": 137,
+    "series": 129.5,
+    "side": 123
+   },
+   {
+    "id": 373,
+    "port": "İzmir",
+    "sail": 5.6,
+    "marchNow": 126.4,
+    "marchFed": 126.4,
+    "steps": 148,
+    "series": 132,
+    "side": 126.4
+   },
+   {
+    "id": 373,
+    "port": "Bursa",
+    "sail": 6.3,
+    "marchNow": 122,
+    "marchFed": 122,
+    "steps": 137,
+    "series": 128.3,
+    "side": 122
+   },
+   {
+    "id": 373,
+    "port": "The Hague",
+    "sail": 10.8,
+    "marchNow": 229.9,
+    "marchFed": 229.9,
+    "steps": 359,
+    "series": 240.7,
+    "side": 229.9
+   },
+   {
+    "id": 373,
+    "port": "Königsberg",
+    "sail": 15.3,
+    "marchNow": 189.9,
+    "marchFed": 189.9,
+    "steps": 268,
+    "series": 205.2,
+    "side": 189.9
+   },
+   {
+    "id": 373,
+    "port": "Constanța",
+    "sail": 7.3,
+    "marchNow": 139.7,
+    "marchFed": 139.7,
+    "steps": 159,
+    "series": 147,
+    "side": 139.7
+   },
+   {
+    "id": 373,
+    "port": "Le Havre",
+    "sail": 9.6,
+    "marchNow": 243.9,
+    "marchFed": 243.9,
+    "steps": 382,
+    "series": 253.6,
+    "side": 243.9
+   },
+   {
+    "id": 373,
+    "port": "Antwerp",
+    "sail": 10.3,
+    "marchNow": 229.6,
+    "marchFed": 229.6,
+    "steps": 358,
+    "series": 239.9,
+    "side": 229.6
+   },
+   {
+    "id": 373,
+    "port": "Antalya",
+    "sail": 6.4,
+    "marchNow": 109,
+    "marchFed": 109,
+    "steps": 125,
+    "series": 115.4,
+    "side": 109
+   },
+   {
+    "id": 373,
+    "port": "Wilhelmshaven",
+    "sail": 11.8,
+    "marchNow": 223.7,
+    "marchFed": 223.7,
+    "steps": 339,
+    "series": 235.5,
+    "side": 223.7
+   },
+   {
+    "id": 373,
+    "port": "Kiel",
+    "sail": 13.6,
+    "marchNow": 221.3,
+    "marchFed": 221.3,
+    "steps": 327,
+    "series": 235,
+    "side": 221.3
+   },
+   {
+    "id": 373,
+    "port": "Brest",
+    "sail": 8.6,
+    "marchNow": 274.5,
+    "marchFed": 274.5,
+    "steps": 408,
+    "series": 283,
+    "side": 274.5
+   },
+   {
+    "id": 373,
+    "port": "Cherbourg",
+    "sail": 9.3,
+    "marchNow": 249.1,
+    "marchFed": 249.1,
+    "steps": 393,
+    "series": 258.3,
+    "side": 249.1
+   },
+   {
+    "id": 373,
+    "port": "Den Helder",
+    "sail": 11,
+    "marchNow": 231.5,
+    "marchFed": 231.5,
+    "steps": 359,
+    "series": 242.5,
+    "side": 231.5
+   },
+   {
+    "id": 373,
+    "port": "Liepāja",
+    "sail": 15.4,
+    "marchNow": 191.3,
+    "marchFed": 191.3,
+    "steps": 264,
+    "series": 206.6,
+    "side": 191.3
+   },
+   {
+    "id": 373,
+    "port": "Gölcük",
+    "sail": 6.3,
+    "marchNow": 116.8,
+    "marchFed": 116.8,
+    "steps": 131,
+    "series": 123.1,
+    "side": 116.8
+   },
+   {
+    "id": 373,
+    "port": "Varna",
+    "sail": 7.1,
+    "marchNow": 134.8,
+    "marchFed": 134.8,
+    "steps": 155,
+    "series": 141.8,
+    "side": 134.8
+   },
+   {
+    "id": 373,
+    "port": "Hamburg",
+    "sail": 11.7,
+    "marchNow": 218.6,
+    "marchFed": 218.6,
+    "steps": 327,
+    "series": 230.3,
+    "side": 218.6
+   },
+   {
+    "id": 373,
+    "port": "Bremen",
+    "sail": 11.7,
+    "marchNow": 220.5,
+    "marchFed": 220.5,
+    "steps": 333,
+    "series": 232.2,
+    "side": 220.5
+   }
+  ],
+  "sends": [
+   {
+    "day": 10,
+    "port": "Antalya",
+    "held": {
+     "moving": 183,
+     "free": 7
+    },
+    "free": 7,
+    "sent": [
+     {
+      "id": 87,
+      "rank": 0,
+      "cells": 85,
+      "men": 7396,
+      "steps": 79,
+      "days": 60.3
+     },
+     {
+      "id": 107,
+      "rank": 1,
+      "cells": 99,
+      "men": 7132,
+      "steps": 80,
+      "days": 59.7
+     },
+     {
+      "id": 131,
+      "rank": 2,
+      "cells": 104,
+      "men": 7132,
+      "steps": 82,
+      "days": 62.1
+     }
+    ],
+    "nearestFree": [
+     {
+      "id": 87,
+      "cells": 85,
+      "men": 7396,
+      "terrain": 7,
+      "sent": true
+     },
+     {
+      "id": 107,
+      "cells": 99,
+      "men": 7132,
+      "terrain": 7,
+      "sent": true
+     },
+     {
+      "id": 131,
+      "cells": 104,
+      "men": 7132,
+      "terrain": 7,
+      "sent": true
+     },
+     {
+      "id": 209,
+      "cells": 105,
+      "men": 7420,
+      "terrain": 7,
+      "sent": false
+     },
+     {
+      "id": 88,
+      "cells": 107,
+      "men": 7420,
+      "terrain": 7,
+      "sent": false
+     },
+     {
+      "id": 20,
+      "cells": 182,
+      "men": 2021,
+      "terrain": 7,
+      "sent": false
+     },
+     {
+      "id": 74,
+      "cells": 208,
+      "men": 3033,
+      "terrain": 2,
+      "sent": false
+     }
+    ],
+    "allFree": 7
+   },
+   {
+    "day": 17,
+    "port": "Antalya",
+    "held": {
+     "moving": 187,
+     "free": 3
+    },
+    "free": 3,
+    "sent": [
+     {
+      "id": 117,
+      "rank": 0,
+      "cells": 208,
+      "men": 977,
+      "steps": 117,
+      "days": 87.2
+     },
+     {
+      "id": 857,
+      "rank": 1,
+      "cells": 208,
+      "men": 4101,
+      "steps": 117,
+      "days": 87.2
+     },
+     {
+      "id": 1021,
+      "rank": 2,
+      "cells": 208,
+      "men": 974,
+      "steps": 117,
+      "days": 87.2
+     }
+    ],
+    "nearestFree": [
+     {
+      "id": 117,
+      "cells": 208,
+      "men": 977,
+      "terrain": 2,
+      "sent": true
+     },
+     {
+      "id": 857,
+      "cells": 208,
+      "men": 4101,
+      "terrain": 2,
+      "sent": true
+     },
+     {
+      "id": 1021,
+      "cells": 208,
+      "men": 974,
+      "terrain": 2,
+      "sent": true
+     }
+    ],
+    "allFree": 3
+   }
+  ]
+ }
+]

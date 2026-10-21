@@ -61,7 +61,7 @@
  * the straight line (`orderMove`'s `direct`); the formation then takes the nearest other sector of
  * its class within the range, by its own front cell, up to DIVERTS of them, and else holds.
  */
-import { atAnyPort } from '../systems/amphibious';
+import { atAnyPort, marchingToPort, transportPorts } from '../systems/amphibious';
 import { orderMove, passageOf, snapTarget, wasLong } from '../systems/movement';
 import { frontierOf, frontNeighbours, GARRISON, PRESSURE_RADIUS } from '../systems/territory';
 import { pocketOf, type Passage } from '../nav/grid';
@@ -493,13 +493,17 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const mine: number[] = [];
   /** n's formations, free or not. */
   const all: number[] = [];
-  for (const id of stand.byNation.get(n) ?? []) {
+  // A formation on the march to a port where n's transports stand is the invasion AI's (PLAN 7.56a,
+  // ADR-596): sent to go aboard (`sendToPort`), it is no free formation of the fronts.
+  const ownIds = stand.byNation.get(n) ?? [];
+  const ports = transportPorts(world, ownIds);
+  for (const id of ownIds) {
     if (world.offLand(id)) continue; // neither one of its own to send nor an enemy's strength in a sector (PLAN 4.2b)
     all.push(id);
     const k = Math.floor(f.y[id]! / sector) * bw + Math.floor(f.x[id]! / sector);
     stands.set(k, (stands.get(k) ?? 0) + 1);
     if (f.strength[id]! > take) holds.set(k, (holds.get(k) ?? 0) + 1);
-    if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0) mine.push(id);
+    if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0 && (ports.length === 0 || !marchingToPort(world, id, ports))) mine.push(id);
   }
   if (mine.length === 0) return;
   const dist2 = (id: number, s: Sector): number => {

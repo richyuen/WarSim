@@ -85,6 +85,35 @@ export function atAnyPort(world: World, cell: number): boolean {
   const r = world.atSize(AT_PORT_CELLS);
   return world.ports.some((p, i) => water[i]! >= 0 && (near(world, cell, p.cell, r) || near(world, cell, water[i]!, r)));
 }
+
+/**
+ * Of a nation's formations `ids`, the land cells of the ports its nation holds at which one of its
+ * transport groups stands (not under way, with room; its water within `AT_PORT_CELLS` of the
+ * group): where the invasion AI sends its formations to go aboard (`sendToPort`, PLAN 7.56a).
+ */
+export function transportPorts(world: World, ids: readonly number[]): number[] {
+  const c = world.formations.cols;
+  const w = world.cells.w;
+  const water = portSeaOf(world);
+  const r = world.atSize(AT_PORT_CELLS);
+  const cells: number[] = [];
+  for (const id of ids) {
+    if (!world.isFleet(id) || c.moving[id] === 1 || transportRoom(world, id) <= 0) continue;
+    const at = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+    const i = world.ports.findIndex((p, k) => water[k]! >= 0 && world.cells.controller[p.cell] === c.nation[id] && near(world, at, water[k]!, r));
+    if (i >= 0 && !cells.includes(world.ports[i]!.cell)) cells.push(world.ports[i]!.cell);
+  }
+  return cells;
+}
+
+/** Whether land formation `id` is on the march to one of the port cells `ports` (`transportPorts`): its target within `AT_PORT_CELLS` of it. */
+export function marchingToPort(world: World, id: number, ports: readonly number[]): boolean {
+  const c = world.formations.cols;
+  if (c.moving[id] !== 1) return false;
+  const r = world.atSize(AT_PORT_CELLS);
+  return ports.some((p) => near(world, c.targetCell[id]!, p, r));
+}
+
 const near = (world: World, a: number, b: number, r: number): boolean => {
   const w = world.cells.w;
   let dx = Math.abs((a % w) - (b % w));

@@ -166,6 +166,20 @@ when taken up:
   whether a port nearer by march time had a way by sea for the transports. AT: on the 48 saves, the
   two cases board a formation within 60 days of their save; a unit test (red without); the ADR; the
   pin's entry.
+  Measured (`docs/evidence/7.56/a.md`, `tools/diag/portMarch.ts`): `sailToArmy`'s pick is quick in
+  both (8693: 6.4 days' sail, 5 days' march to Antalya; 1129: 27 + 19 to Adana); the slow ones are on
+  foot (desert's cost, not DRY_SPEED). 8693: at day 10, 183 of 190 on the operational AI's marches,
+  the 7 free 58+ days from every port. 1129: two causes, a part each; 8693 read after both.
+    - [x] 7.56a The operational AI re-takes the landing's march: a formation sent to the transports'
+      port is re-ordered within days to a sector of an ally's front (PLAN 1.42b), which the invasion
+      AI's "far from the front" does not count (1129: 335 on day 35, 18 steps off Adana; 445 on day
+      40). It is no free formation of the plan while on the march to a port where its nation's
+      transports stand. AT: 1129's 335 reaches Adana; a unit test (red without); ADR-596; the pin.
+    - [ ] 7.56b The landing's target over no sea: `planLanding` takes the enemy port nearest the
+      transports by straight km (1129 at Adana: Baku, then Türkmenbaşy, on the Caspian), `tryLanding`
+      refuses it (`NoSeaWay`) every invasion day, and the army at the port never boards. The target
+      is the nearest the transports have a way by sea to. AT: 7.56's (1129 boards within 60 days);
+      a unit test (red without); the ADR; the pin; `--profile`.
 - [ ] 7.55 A transport group with room under a division's (found at 7.49f, emergent 6,
   `docs/evidence/7.49/f.md` §3; 7.49d's note on 4513 Latvia): the invasion AI plans with the group
   of most room at a port, and `sendToPort` and `orderLanding` take no formation over its room, so a
