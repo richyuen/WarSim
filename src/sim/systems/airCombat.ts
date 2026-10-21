@@ -15,6 +15,7 @@ import { bombIndustry } from './bombing';
 import { ARMOR_PEN, effectiveness } from './combat';
 import { Leg, legHours, sortieAt, type Sortie } from './sorties';
 import { strikeFactor } from './airSuperiority';
+import { pickByHealth, type HealthTable } from './pickByHealth';
 
 /** The share of an aircraft's air attack that is hit points on a target of defence 1 in an hour. */
 export const AIR_FIRE = 0.05;
@@ -329,6 +330,8 @@ export const STRIKE_FIRE = 0.2;
  * spread over men in cover (`STRIKE_FIRE`).
  */
 export const NAVAL_STRIKE_FIRE = 1;
+/** A land-based squadron's pick of the ship it strikes (PLAN 7.61; the carriers' is `SALT_CARRIER`). */
+export const SALT_STRIKE_SHIP = 0x5e4b;
 
 /** An aircraft's fire on a ship, per point of `NAVAL_STRIKE_FIRE`: its hard attack, halved where the ship's armour beats its piercing. */
 export function shipEffectiveness(us: UnitRule, ut: UnitRule): number {
@@ -397,9 +400,9 @@ function formationsByCell(world: World, aims: readonly { tx: number; ty: number 
  * elements of the formations of nations at war with its own within `AA_CELLS` of the target:
  * the land's and fleets' (PLAN 5.4c), not wings, nor what is aboard. Each squadron's fire is its aircraft × its
  * `effectiveness` on the target (soft, or hard on armour, halved where armour beats piercing)
- * × `STRIKE_FIRE`, on a ship its `shipEffectiveness` × `NAVAL_STRIKE_FIRE`, spread over the
- * elements by their health (strength × hp, as a land element
- * picks its targets), in units lost: ÷ the target's `hpPerUnit`; carried as on the land. Run
+ * × `STRIKE_FIRE`, spread over the elements by their health (strength × hp, as a land element
+ * picks its targets); its share on the ships (their health of the whole) × `shipEffectiveness` ×
+ * `NAVAL_STRIKE_FIRE` goes on one ship, picked by hit points (PLAN 7.61); in units lost: ÷ the target's `hpPerUnit`; carried as on the land. Run
  * before the hour's air fights, so a sortie turned home in them strikes nothing. Emits
  * `AirStrike` per strike that found a target.
  */
@@ -448,14 +451,31 @@ export function strikes(world: World): void {
     const total = health.reduce((a, b) => a + b, 0);
     const loss = new Map<number, number>();
     const air = strikeFactor(world, id, s.tx, s.ty);
+    // The ships among the targets by health (PLAN 7.61, ADR-606): a squadron's share of its fire on
+    // ships (their health of the whole) goes on one ship, picked by hit points as a gun picks; spread
+    // over every ship, alike ships took the same wound and a fleet went down whole in one strike.
+    // The land's targets keep their spread.
+    const ships: HealthTable = { cand: [], cum: [], total: 0 };
+    targets.forEach((t, k) => {
+      if (rules.units[ec.unit[t]!]!.domain !== Domain.sea) return;
+      ships.total += health[k]!;
+      ships.cand.push(t);
+      ships.cum.push(ships.total);
+    });
     for (const e of index.get(id) ?? []) {
       const us = rules.units[ec.unit[e]!]!;
       targets.forEach((t, k) => {
         const ut = rules.units[ec.unit[t]!]!;
-        const fire = ut.domain === Domain.sea ? shipEffectiveness(us, ut) * NAVAL_STRIKE_FIRE : effectiveness(us, ut) * STRIKE_FIRE;
+        if (ut.domain === Domain.sea) return;
+        const fire = effectiveness(us, ut) * STRIKE_FIRE;
         const units = (ec.strength[e]! * fire * air * health[k]!) / total / ut.hpPerUnit;
         if (units > 0) loss.set(t, (loss.get(t) ?? 0) + units);
       });
+      if (ships.total <= 0) continue;
+      const t = pickByHealth(ships, world.seed, world.tick, e, SALT_STRIKE_SHIP);
+      const ut = rules.units[ec.unit[t]!]!;
+      const units = (ec.strength[e]! * shipEffectiveness(us, ut) * NAVAL_STRIKE_FIRE * air * ships.total) / total / ut.hpPerUnit;
+      if (units > 0) loss.set(t, (loss.get(t) ?? 0) + units);
     }
     let took = 0;
     const hit = new Set<number>();

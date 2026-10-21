@@ -60,7 +60,8 @@
  *
  * Not here: sea control (PLAN 4.4); the AI's orders (PLAN 4.6).
  */
-import { hash32, hashToUnit } from '../core/hash';
+import { hash32 } from '../core/hash';
+import { pickByHealth, type HealthTable } from './pickByHealth';
 import { atan2, hypot } from '../core/dmath';
 import { EventKind } from '../../shared/events';
 import { SIDE_SHIPS } from '../../shared/history';
@@ -700,7 +701,7 @@ export function navalCombatSystem(world: World): void {
       // The enemy's ships by weight (hit points), on the surface or under water, in the fleets
       // within `reach` km of this one (PLAN 7.19a: a weapon reaches the fleet it fires at).
       const tables = new Map<number, { cand: number[]; cum: number[]; total: number }>();
-      const tableOf = (sub: boolean, reach: number): { cand: number[]; cum: number[]; total: number } => {
+      const tableOf = (sub: boolean, reach: number): HealthTable => {
         const key = sub ? -1 - reach : reach;
         let table = tables.get(key);
         if (!table) {
@@ -720,18 +721,7 @@ export function navalCombatSystem(world: World): void {
         }
         return table;
       };
-      const pick = (table: { cand: number[]; cum: number[]; total: number }, s: number, salt: number): number => {
-        if (table.total <= 0) return 0;
-        const u = hashToUnit(hash32(world.seed, world.tick, s, salt)) * table.total;
-        let lo = 0;
-        let hi = table.cand.length - 1;
-        while (lo < hi) {
-          const mid = (lo + hi) >> 1;
-          if (table.cum[mid]! > u) hi = mid;
-          else lo = mid + 1;
-        }
-        return table.cand[lo]!;
-      };
+      const pick = (table: HealthTable, s: number, salt: number): number => pickByHealth(table, world.seed, world.tick, s, salt);
       // `torpedo`: the record's weapon field is −1 − the unit type (PLAN 4.7c: the view draws its track).
       const volley = (s: number, t: number, dmg: number, torpedo = false): void => {
         if (dmg <= 0) return;

@@ -13179,3 +13179,28 @@ Of 7.33 (open in PLAN.md):
   64 ships in 8693's six battles, whose history lines record them; 7.41a's 0 was `seaRows`' miss of
   a battle's last hour (fixed). Per strike over a year of 4 seeds: carrier 0.62–1.74, land-based
   0.08–0.73. Found: whole fleets sunk in one hour (PLAN 7.60).
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.61 A land-based wing's strike sinks a whole fleet at once (found at 7.60, naval 7,
+  `docs/evidence/7.60/a.md` §4): `strikes` (PLAN 5.4c) spreads a wing's fire on a fleet over its
+  ships by hit points, as the carriers' did before ADR-605: of the ships land-based strikes sank on 4
+  seeds × 1 year (`carrierSink.ts <seed> - - 365`), 478 of 575 with their whole fleet in one strike;
+  8693's war (`carrierSink.ts 8693 JAP USA 20`) 24 of 24. AT: on the 4 seeds × 1 year, the ships
+  land-based strikes sank with their whole fleet in one strike under a quarter of theirs; on 8693's
+  war, strikes over half of a fleet that had lost none 3 → 1 or fewer; a land target's spread as
+  before (a unit test on each, the first red without); the ADR; the pin's entry.
+  Rule in (ADR-606, `docs/evidence/7.61/a.md`; each squadron's share on the ships on one ship, by hit
+  points): whole-fleet 390 of 431 (on `1fe30f8`) → 90 of 586 (15 %); over half 3 → 0; both met.

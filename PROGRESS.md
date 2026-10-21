@@ -21433,3 +21433,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   `carrierAir1938.test.ts`'s exact damage restated for the pick. Specs by hand: carrierStrikeRow1938
   (1 passed).
 - **Next:** PLAN 7.61 (a land-based wing's strike on a fleet).
+
+## 2026-10-21 — PLAN 7.61: a land-based wing's strike sinks ship by ship (ADR-606; ticked)
+
+- **Rule** (`airCombat.ts` `strikes`): the ships among a strike's targets make a table by health;
+  each squadron's share of its fire on them goes on one ship, picked by hit points
+  (`SALT_STRIKE_SHIP`). The land's targets keep their share by the same arithmetic. The pick is now
+  one function, `pickByHealth.ts`, used by the guns, the carriers and this.
+- **Read** (`docs/evidence/7.61/a.md`; before = `1fe30f82`'s figures from 7.60's evidence): 4 seeds ×
+  1 year, whole-fleet ships 390 of 431 (90 %) → 90 of 586 (15 %), bar under 25 %: met; 8693's war,
+  strikes over half of an untouched fleet 3 → 0, bar 1: met. PLAN's 478 of 575 was at `f8a8c44f`.
+  Pin 076aae87 → a2ae195b.
+- **Test:** `strikePick1938.test.ts` (red without: 8 of 8 at hour 84; with: 3 of 8 at hour 76);
+  `navalStrike1938.test.ts`'s exact damage restated for the pick; `airStrike1938.test.ts` (the land's
+  spread, unchanged) passes. Specs by hand, green: airFx1938, airT3_1938, seaRow1938 (3),
+  seaBattleSeen1938, carrierStrikeRow1938 (7 passed).
+- **Next:** the open tasks ahead wait on the user (7.49c–f, 7.54, 7.56, 7.60 in BLOCKERS); PLAN 7.58
+  (the editor's fleet laid up at the month start).

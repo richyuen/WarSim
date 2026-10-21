@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { NAVAL_STRIKE_FIRE, shipEffectiveness, strikes } from '../../src/sim/systems/airCombat';
+import { NAVAL_STRIKE_FIRE, SALT_STRIKE_SHIP, shipEffectiveness, strikes } from '../../src/sim/systems/airCombat';
+import { hash32, hashToUnit } from '../../src/sim/core/hash';
 import { ARMOR_PEN } from '../../src/sim/systems/combat';
 import type { UnitRule, World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -47,7 +48,7 @@ describe('naval strike (PLAN 5.4c)', () => {
     expect(NAVAL_STRIKE_FIRE).toBe(1);
   });
 
-  it('an Italian naval bomber group on a British fleet: its hit points spread by the ships\' health, by the rule', () => {
+  it('an Italian naval bomber group on a British fleet: each squadron\'s hit points on one ship, picked by health, by the rule', () => {
     const w = sim().world;
     w.wars.start([ITA], [ENG], 0);
     const wing = wingOf(w, ITA, 'naval_bomber_group');
@@ -55,12 +56,21 @@ describe('naval strike (PLAN 5.4c)', () => {
     alone(w, [fleet]);
     const ec = w.elements.cols;
     const rules = w.rules!;
-    const els = [...w.elements.ids()].filter((e) => ec.formation[e] === fleet);
-    const health = els.map((t) => ec.strength[t]! * rules.units[ec.unit[t]!]!.hpPerUnit);
-    const total = health.reduce((a, b) => a + b, 0);
+    const els = [...w.elements.ids()].filter((e) => ec.formation[e] === fleet && ec.strength[e]! > 0).sort((a, b) => a - b);
+    const total = els.reduce((s, t) => s + ec.strength[t]! * rules.units[ec.unit[t]!]!.hpPerUnit, 0);
+    // Each squadron puts its fire on one ship, picked by hit points (PLAN 7.61, ADR-606; it was
+    // spread over every ship by them): a ship takes at most what it has left.
+    const fire = new Map<number, number>();
+    for (const e of [...w.elements.ids()].filter((x) => ec.formation[x] === wing)) {
+      const u = hashToUnit(hash32(w.seed, w.tick, e, SALT_STRIKE_SHIP)) * total;
+      let acc = 0;
+      const t = els.find((x) => (acc += ec.strength[x]! * rules.units[ec.unit[x]!]!.hpPerUnit) > u)!;
+      const ut = rules.units[ec.unit[t]!]!;
+      fire.set(t, (fire.get(t) ?? 0) + (ec.strength[e]! * shipEffectiveness(rules.units[ec.unit[e]!]!, ut) * NAVAL_STRIKE_FIRE) / ut.hpPerUnit);
+    }
     let want = 0;
-    for (const e of [...w.elements.ids()].filter((x) => ec.formation[x] === wing))
-      els.forEach((t, k) => (want += (ec.strength[e]! * shipEffectiveness(rules.units[ec.unit[e]!]!, rules.units[ec.unit[t]!]!) * NAVAL_STRIKE_FIRE * health[k]!) / total / rules.units[ec.unit[t]!]!.hpPerUnit));
+    for (const [t, d] of fire) want += Math.min(d, ec.strength[t]! - ec.wound[t]!);
+    expect(fire.size, 'ships struck: at most one a squadron').toBeLessThan(els.length);
     const before = ships(w, fleet);
     arriving(w, wing, w.formations.cols.x[fleet]!, w.formations.cols.y[fleet]!);
     strikes(w);

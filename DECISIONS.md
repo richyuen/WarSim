@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-606 · 2026-10-21 · accepted — A land-based squadron's fire on ships goes on one ship, picked by hit points (PLAN 7.61; amends ADR-318's spread)
+
+- **Context** (found by the builder at PLAN 7.60, `docs/evidence/7.60/a.md` §4): `strikes` (PLAN
+  5.4c) spread a land-based wing's fire over every ship in reach by hit points, as the carriers' did
+  before ADR-605: alike ships took the same wound and a fleet went down whole in one strike (on
+  `1fe30f82`, 390 of the 431 ships land-based strikes sank on 4 seeds × 1 year; 8693's war 24 of 24,
+  3 strikes of 8 of 8).
+- **Decision.** The ships among a strike's targets make a table by health; each squadron's share of
+  its fire on them (their health of the whole) × `shipEffectiveness` × `NAVAL_STRIKE_FIRE` goes on one
+  ship, picked by hit points (`pickByHealth`, salt `SALT_STRIKE_SHIP`; the guns' and the carriers'
+  pick moved into the same function). The land's targets keep their share and its arithmetic, so a
+  strike on land is as it was. Fire beyond what a ship has left is lost, as a gun's.
+- **Evidence** (`docs/evidence/7.61/a.md`): 4 seeds × 1 year, whole-fleet ships 390 of 431 (90 %) →
+  90 of 586 (15 %); 8693's war, strikes over half of a fleet that had lost none 3 → 0, the same 24
+  ships sunk over 13 strikes in 56 hours.
+- **Consequences.** `navalStrike1938.test.ts`'s exact damage restated for the pick. Pin 076aae87 →
+  a2ae195b.
+
 ### ADR-605 · 2026-10-21 · accepted — Each squadron of a carrier's strike puts its fire on one ship, picked by hit points (PLAN 7.60; amends ADR-319's spread)
 
 - **Context** (found by the builder at PLAN 7.57, `docs/evidence/7.57/a.md` §4): a carrier's
