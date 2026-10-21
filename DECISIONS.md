@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-608 · 2026-10-21 · accepted — A fleet the editor placed holds its sea at war: it closes on an enemy warfleet in its place's zone (PLAN 7.59; amends PLAN 7.22c's "holds its place")
+
+- **Context** (found at PLAN 7.41c, `docs/evidence/7.41/c.md`; editor 7, naval 7): a placed fleet
+  held its place at war and fought only what came within its sight, about 29 km. The critic's two
+  navies, placed 107–120 km apart in the North Sea, could never meet: Britain's placed pair fought
+  nothing in 30 days at war.
+- **Measured** (`docs/evidence/7.59/a.md`, `tools/diag/editorFleets.ts`'s daily rows): on Britain's
+  first AI day Germany's placed pair stands 107–114 km off in the place's own zone, and `awayOrder`'s
+  battle test takes it (22,800 against 99,700). Every later nearest enemy is in another zone, and
+  from day 9 on they are Italian fleets 1,972–6,383 km off, which the battle test takes as well. A
+  reach in km (SORTIE_KM) would send the North Sea's placed squadrons to the Mediterranean.
+- **Decision.** At war, on its AI day, a fleet the editor placed sails for the nearest standing
+  enemy warfleet in the zone of its place (the sea it holds) whose zone's enemy power is no more than
+  its nation's warfleets within SORTIE_KM of it together (`together`), and stays by one it is
+  already by; with none, it sails back to its place when it is off it. Its own power counts in
+  `together` for a battle in its place's zone, for its nation's other fleets as well. Not the placed
+  fleets' power alone: on the case that is 22,800 against 22,800, a pass that one more German ship
+  would undo. At peace the place holds as before. The place is let go as before, on a player's
+  order or on breaking off beaten.
+- **Evidence.** The critic's scenario, 30 days: Britain's placed fleets in a sea battle 0 → 2 of 2
+  (hour 27, with the home fleet against Germany's 1468), back on their place from day 9; Germany's
+  pair fights as before.
+- **Consequences.** `fleetStation1938.test.ts`: 7.22c's "Britain's pair never left" restated as
+  "holds its sea and both fight within 10 days" (red without: 0 of 2), and a peace case added. Pin
+  unchanged (a2ae195b): seed 99 has no placed fleet.
+
 ### ADR-607 · 2026-10-21 · accepted — A fleet the editor placed is not laid up by the navy's budget (PLAN 7.58; amends PLAN 4.6e1's lay-up)
 
 - **Context** (found by the builder at PLAN 7.41b, `docs/evidence/7.41/b.md`): step 1 of the

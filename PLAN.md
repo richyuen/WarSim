@@ -198,15 +198,6 @@ when taken up:
   points): over half 8 → 1, bar 0: missed (a lone flotilla under 6.4 ships of fire); sunk 64 → 66;
   whole-fleet 594 of 853 → 126 of 1,083. BLOCKERS, the user's (a tick, b close, c keep open).
 
-- [ ] 7.59 Two placed navies out of sight never meet (found at 7.41c, editor 7, naval 7,
-  `docs/evidence/7.41/c.md`, ADR-603): a fleet the editor placed holds its place (PLAN 7.22c) and
-  sees about 29 km, so the critic's British pair, 107–120 km from Germany's placed squadrons, fights
-  nothing in 30 days at war. Measured first: on the critic's scenario (`editorFleets.ts`), each
-  placed fleet's nearest standing enemy warfleet each day and whether `awayOrder`'s battle test
-  (its zone's enemy no more than its fleets there together) would take it. AT: on the critic's
-  scenario both pairs of placed fleets are in a sea battle within 30 days (Britain's 0 on HEAD); a
-  placed fleet at peace still holds its place; a unit test (red without); the ADR (amends 7.22c's
-  "holds its place"); the pin's entry.
 - [ ] 7.51 Aircraft (aircraft 7, needs 8, beyond 7.49): the late air war unchanged, 3,160 air
   battles in year 1 and 120 a world-year after on the same 14 seeds (122 on `bcbc99c`), sorties
   aloft after year 1 a mean of 8.1 (`critic/c11_cmp.json`, `c11_h_1307.json`); the critic reads it as
@@ -504,3 +495,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.57 A carrier's strike sinks nothing (found at 7.41, naval 7, `docs/evidence/7.41/a.md` […]
 - [x] 7.61 A land-based wing's strike sinks a whole fleet at once (found at 7.60, naval 7, […]
 - [x] 7.58 The editor's fleet laid up at the month start (found at 7.41b, editor 7, […]
+- [x] 7.59 Two placed navies out of sight never meet (found at 7.41c, editor 7, naval 7, […]

@@ -15,9 +15,12 @@ import { decodeScenarioFile } from '../../src/shared/scenarioFile';
 import { size1938, TAGS_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from '../headless/assets';
-import { seaKm } from '../../src/sim/systems/navalCombat';
-import { fleetPower } from '../../src/sim/systems/seaControl';
-import type { World } from '../../src/sim/world';
+import { keyAt, seaKm, waterKeys } from '../../src/sim/systems/navalCombat';
+import { fleetPower, navalPower } from '../../src/sim/systems/seaControl';
+import { blocOf } from '../../src/sim/systems/supply';
+import { SORTIE_KM, standingWarfleets } from '../../src/sim/ai/naval';
+import { STAGGER } from '../../src/sim/ai/strategic';
+import { seaOf, type World } from '../../src/sim/world';
 
 const file = process.argv[2]!;
 const days = Number(process.argv[3] ?? 30);
@@ -52,6 +55,8 @@ const editor: Fleet[] = [];
 const battles: { first: number; last: number; fleets: string[]; a: string; b: string; lostA: number; lostB: number; at: string; editor: boolean }[] = [];
 const open = new Map<object, (typeof battles)[number]>();
 const samples: { day: number; standing: number; editorIn: number }[] = [];
+/** PLAN 7.59, measured first: each living editor fleet each day at 00:00, its nearest standing enemy warfleet and the battle test `awayOrder` applies (the zone's enemy power no more than its nation's warfleets within SORTIE_KM together). */
+const daily: { day: number; id: number; aiDay: boolean; standing: boolean; offPlace: number; placeZone: number; foe?: string; km?: number; foeZone?: number; sameZone?: boolean; sameWaters?: boolean; enemy?: number; together?: number; placedTogether?: number; takes?: boolean }[] = [];
 const last = new Map<number, { x: number; y: number; engaged: boolean; moving: boolean; power: number }>();
 let t0 = -1;
 
@@ -111,6 +116,42 @@ for (let h = 1; h < days * 24; h++) {
       }
       last.set(e.id, { x: c.x[e.id]!, y: c.y[e.id]!, engaged: c.engaged[e.id] === 1, moving: c.moving[e.id] === 1, power: Math.round(fleetPower(w, e.id)) });
     }
+    if (hour % 24 === 0) {
+      const z = seaOf(w);
+      const ww = w.cells.w;
+      const power = navalPower(w);
+      const prey = standingWarfleets(w);
+      for (const e of editor) {
+        if (!w.formations.has(e.id) || !w.isFleet(e.id)) continue;
+        const n = c.nation[e.id]!;
+        const st = w.station.get(e.id);
+        const bloc = blocOf(w, n);
+        const keys = waterKeys(w, n);
+        const zoneAtXY = (x: number, y: number): number => z.zoneOf[Math.floor(y) * ww + Math.floor(x)]!;
+        const placeZone = st ? zoneAtXY(st[0], st[1]) : -1;
+        const r: (typeof daily)[number] = { day: hour / 24, id: e.id, aiDay: (Math.floor(w.tick / 24) + n) % STAGGER === 0, standing: c.moving[e.id] !== 1 && c.engaged[e.id] !== 1, offPlace: st ? Math.round(Math.max(Math.abs(c.x[e.id]! - st[0]), Math.abs(c.y[e.id]! - st[1]))) : -1, placeZone };
+        let best = Infinity;
+        for (const q of prey) {
+          if (!w.wars.atWar(n, q.nation)) continue;
+          const km = seaKm(w, c.x[e.id]!, c.y[e.id]!, (q.at % ww) + 0.5, Math.floor(q.at / ww) + 0.5);
+          if (km >= best) continue;
+          best = km;
+          let enemy = 0;
+          for (const [b, p] of power.get(q.zone) ?? []) if (b !== bloc && w.wars.atWar(b, n)) enemy += p;
+          let together = 0;
+          let placedTogether = 0;
+          w.formations.forEach((g) => {
+            if (!w.isFleet(g) || c.nation[g] !== n || c.moving[g] === 1 || c.engaged[g] === 1) return;
+            const p = fleetPower(w, g);
+            if (p <= 0 || seaKm(w, c.x[g]!, c.y[g]!, (q.at % ww) + 0.5, Math.floor(q.at / ww) + 0.5) > SORTIE_KM) return;
+            together += p;
+            if (w.station.has(g)) placedTogether += p;
+          });
+          Object.assign(r, { foe: `${q.at}:${tag(q.nation)}`, km: Math.round(km), foeZone: q.zone, sameZone: q.zone === placeZone, sameWaters: keys[q.zone] === keyAt(w, keys, c.x[e.id]!, c.y[e.id]!), enemy: Math.round(enemy), together: Math.round(together), placedTogether: Math.round(placedTogether), takes: enemy <= together });
+        }
+        daily.push(r);
+      }
+    }
     if (hour % 24 === 0 && [3, 10, 30].includes(hour / 24)) {
       samples.push({ day: hour / 24, standing: w.seaBattles.length, editorIn: w.seaBattles.filter((b) => b.fleets.some((f) => isEditor.has(f))).length });
     }
@@ -126,7 +167,7 @@ for (let h = 1; h < days * 24; h++) {
   }
 }
 
-const report = { file, name: header.name, days, A, D, pre, editor, editorBattles: battles.filter((b) => b.editor), pairBattles: battles.length, samples, battles };
+const report = { file, name: header.name, days, A, D, pre, editor, editorBattles: battles.filter((b) => b.editor), pairBattles: battles.length, samples, daily, battles };
 writeFileSync(out, JSON.stringify(report, null, 1));
 console.log(JSON.stringify({ editor, editorBattles: report.editorBattles, pairBattles: battles.length, samples }, null, 1));
 console.log(`written ${out}`);

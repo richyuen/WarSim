@@ -13229,3 +13229,30 @@ Of 7.33 (open in PLAN.md):
   test on each, the first red without); the ADR; the pin's entry.
   Rule in (ADR-607, `docs/evidence/7.58/a.md`): a fleet on its editor's station is not laid up nor
   counted in the share; placed squadrons gone after the first hour 33 → 0; pin unchanged.
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.59 Two placed navies out of sight never meet (found at 7.41c, editor 7, naval 7,
+  `docs/evidence/7.41/c.md`, ADR-603): a fleet the editor placed holds its place (PLAN 7.22c) and
+  sees about 29 km, so the critic's British pair, 107–120 km from Germany's placed squadrons, fights
+  nothing in 30 days at war. Measured first: on the critic's scenario (`editorFleets.ts`), each
+  placed fleet's nearest standing enemy warfleet each day and whether `awayOrder`'s battle test
+  (its zone's enemy no more than its fleets there together) would take it. AT: on the critic's
+  scenario both pairs of placed fleets are in a sea battle within 30 days (Britain's 0 on HEAD); a
+  placed fleet at peace still holds its place; a unit test (red without); the ADR (amends 7.22c's
+  "holds its place"); the pin's entry.
+  Rule in (ADR-608, `docs/evidence/7.59/a.md`): a placed fleet at war closes on a standing enemy
+  warfleet in its place's zone that its navy can win; Britain's pair in a sea battle 0 → 2 of 2
+  (hour 27), back on its place from day 9; at peace it holds. Pin unchanged.

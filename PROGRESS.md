@@ -21461,3 +21461,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `navyBudget1938.test.ts`, two (both red without: 33 gone; Japan's placed one laid up
   first); the 4.6e1 lay-up test unchanged, green. Specs by hand: none (no UI change).
 - **Next:** PLAN 7.59 (two placed navies out of sight never meet).
+
+## 2026-10-21 — PLAN 7.59: a placed fleet at war holds its sea (ADR-608; ticked)
+
+- **Measured** (`tools/diag/editorFleets.ts`, daily rows; `docs/evidence/7.59/a.md`): on the critic's
+  scenario, on Britain's first AI day Germany's placed pair stands 107–114 km off in the place's own
+  zone (263) and `awayOrder`'s battle test takes it (22,800 against 99,700); every later nearest enemy
+  is in another zone, from day 9 Italian fleets 1,972–6,383 km off, which the test takes too: the
+  reach is the place's zone, not SORTIE_KM.
+- **Rule** (`naval.ts`): at war a placed fleet sails for the nearest standing enemy warfleet in its
+  place's zone whose zone's enemy its nation's warfleets together can win (its power counted in
+  `together` for that zone), stays by one it is by, else back to its place. At peace unchanged.
+- **Read:** Britain's placed pair in a sea battle 0 → 2 of 2 (hour 27), on its place again from
+  day 9; Germany's pair as before (3 battles each, sunk by French fleets at hours 101–102). AT met.
+  Pin unchanged (a2ae195b; seed 99 has no placed fleet).
+- **Test:** `fleetStation1938.test.ts`: 7.22c's "Britain's pair never left" restated to "holds its
+  sea; both fight within 10 days" (red without: 0 of 2); a peace case added (10 days on place).
+  Specs by hand: none (no UI change).
+- **Next:** PLAN 7.51 (aircraft); 7.49c–f, 7.54, 7.56, 7.60 wait on the user (BLOCKERS).

@@ -44,9 +44,12 @@
  *   bloc's convoy way sails for the zone of one nearest it within `RAID_KM`.
  * - At peace: a fleet away from its bloc's ports sails home (`sailHome`: its bloc's nearest port, a
  *   transport group's its nation's, PLAN 7.35b4b).
- * - A fleet the editor placed (`World.station`, PLAN 7.22c) holds its place, at peace and at war:
- *   none of the above moves it; away from it by more than `AT_PORT_CELLS` (a battle drew it off)
- *   it sails back. It fights where it is seen, as any fleet.
+ * - A fleet the editor placed (`World.station`, PLAN 7.22c) holds its place: none of the above
+ *   moves it; away from it by more than `AT_PORT_CELLS` (a battle drew it off) it sails back. At
+ *   war it holds its sea (PLAN 7.59, ADR-608): it sails for the nearest standing enemy warfleet in
+ *   the zone of its place whose zone's enemy its nation's warfleets together can win (its own
+ *   power counts with them for a battle in that zone), and stays by one it is by; with none, back
+ *   to its place. It fights where it is seen, as any fleet.
  */
 import { isDayStart } from '../../shared/calendar';
 import { transportRoom } from '../systems/amphibious';
@@ -127,25 +130,38 @@ export function navalAi(world: World): void {
   const c = f.cols;
   // The standing fleets by nation, of the nations that act today.
   const fleets = new Map<number, number[]>();
+  // The fleets the editor placed (`World.station`) of nations at war, that act today (PLAN 7.59).
+  const placed = new Map<number, number[]>();
   f.forEach((id) => {
     if (!world.isFleet(id) || c.moving[id] === 1 || c.engaged[id] === 1 || seaRangeOf(world, id) !== undefined) return;
     const n = c.nation[id]!;
     if (nc.living[n] !== 1 || nc.aiOff[n] === 1 || (day + n) % STAGGER !== 0) return;
     const at = world.station.get(id);
     if (at) {
-      // Placed by the editor: back to its place when a battle drew it off.
-      if (Math.abs(c.x[id]! - at[0]) > world.atSize(AT_PORT_CELLS) || Math.abs(c.y[id]! - at[1]) > world.atSize(AT_PORT_CELLS)) orderSail(world, id, at[0], at[1]);
+      // Placed by the editor: at war it holds its sea (`plan`, PLAN 7.59); at peace, back to its
+      // place when a battle drew it off.
+      if (world.wars.list.some((war) => war.sides[0].includes(n) || war.sides[1].includes(n))) {
+        let list = placed.get(n);
+        if (!list) placed.set(n, (list = []));
+        list.push(id);
+      } else if (offPlace(world, id, at)) orderSail(world, id, at[0], at[1]);
       return;
     }
     let list = fleets.get(n);
     if (!list) fleets.set(n, (list = []));
     list.push(id);
   });
-  if (fleets.size === 0) return;
+  if (fleets.size === 0 && placed.size === 0) return;
   const power = world.wars.list.length > 0 ? navalPower(world) : new Map<number, Map<number, number>>();
   let standing: Prey[] | undefined;
   const prey = (): Prey[] => (standing ??= standingWarfleets(world));
-  for (const n of [...fleets.keys()].sort((a, b) => a - b)) plan(world, n, fleets.get(n)!, power, prey);
+  for (const n of [...new Set([...fleets.keys(), ...placed.keys()])].sort((a, b) => a - b)) plan(world, n, fleets.get(n) ?? [], power, prey, placed.get(n) ?? []);
+}
+
+/** Whether fleet `id` is more than `AT_PORT_CELLS` from its editor's place `at` (PLAN 7.22c). */
+function offPlace(world: World, id: number, at: readonly [number, number]): boolean {
+  const c = world.formations.cols;
+  return Math.abs(c.x[id]! - at[0]) > world.atSize(AT_PORT_CELLS) || Math.abs(c.y[id]! - at[1]) > world.atSize(AT_PORT_CELLS);
 }
 
 /** An enemy port as a target: its water's cell, its zone's enemy power, its waters' key (`waterKeys`, PLAN 7.35d2d; named for the basin it was). */
@@ -190,7 +206,7 @@ export function standingWarfleets(world: World): Prey[] {
   return out;
 }
 
-function plan(world: World, n: number, mine: number[], power: Map<number, Map<number, number>>, prey: () => Prey[]): void {
+function plan(world: World, n: number, mine: number[], power: Map<number, Map<number, number>>, prey: () => Prey[], placed: readonly number[] = []): void {
   const c = world.formations.cols;
   const w = world.cells.w;
   const water = portSeaOf(world);
@@ -255,7 +271,15 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
     war.push({ id, p });
   }
   if (raiders.length > 0) raid(world, n, raiders);
-  if (war.length === 0 && away.length === 0) return;
+  // The editor's fleets of n at war, with power, and the zone of each one's place: the sea it holds (PLAN 7.59).
+  const held: { id: number; p: number; zone: number }[] = [];
+  for (const id of placed) {
+    const p = fleetPower(world, id);
+    const at = world.station.get(id)!;
+    if (p > 0) held.push({ id, p, zone: z.zoneOf[Math.floor(at[1]) * w + Math.floor(at[0])]! });
+    else if (offPlace(world, id, at)) orderSail(world, id, at[0], at[1]);
+  }
+  if (war.length === 0 && away.length === 0 && held.length === 0) return;
   // The escort: the water of a landing of its own under way.
   let escort = -1;
   for (const [fid, e] of [...world.embarked].sort((a, b) => a[0] - b[0])) {
@@ -273,6 +297,8 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
       t = 0;
       for (const x of war) if (km(x.id, cell) <= SORTIE_KM) t += x.p;
       for (const x of away) if (km(x.id, cell) <= SORTIE_KM) t += x.p;
+      // The editor's fleets join a battle in the sea each holds (PLAN 7.59).
+      for (const x of held) if (x.zone === z.zoneOf[cell] && km(x.id, cell) <= SORTIE_KM) t += x.p;
       sums.set(cell, t);
     }
     return t;
@@ -295,6 +321,25 @@ function plan(world: World, n: number, mine: number[], power: Map<number, Map<nu
   // enemy power: a battle to seek, as a port with enemy ships is; no station, no forward base.
   const hunts: Hunt[] = [];
   for (const q of prey()) if (world.wars.atWar(n, q.nation)) hunts.push({ at: q.at, enemy: enemyIn(q.zone), basin: keys[q.zone]! });
+  // The editor's fleets hold their sea (PLAN 7.59, ADR-608): each sails for the nearest standing
+  // enemy warfleet in the zone of its place whose zone's enemy its warfleets together can win, and
+  // stays by one it is by; with none, back to its place when off it. Before, it held its place
+  // and fought only what came within sight of it (about 29 km), and the critic's two navies,
+  // placed 107–120 km apart in the North Sea, stood (`docs/evidence/7.59/a.md`).
+  for (const { id, zone } of held) {
+    let best = Infinity;
+    let target = -1;
+    for (const q of prey()) {
+      if (q.zone !== zone || !world.wars.atWar(n, q.nation)) continue;
+      const d = km(id, q.at);
+      if (d < best && enemyIn(q.zone) <= together(q.at)) [best, target] = [d, q.at];
+    }
+    const at = world.station.get(id)!;
+    if (target >= 0) {
+      if (!near(cellOf(id), target)) orderSail(world, id, (target % w) + 0.5, Math.floor(target / w) + 0.5);
+    } else if (offPlace(world, id, at)) orderSail(world, id, at[0], at[1]);
+  }
+  if (war.length === 0 && away.length === 0) return;
   // Away (PLAN 7.35d2b): a new order from where it stands; one escorting a landing stays.
   // The power of its standing warfleets by waters' key, in port and away (PLAN 7.39b, ADR-580): its navy there, that a chase is weighed against.
   const navy = new Map<number, number>();

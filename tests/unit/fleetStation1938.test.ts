@@ -4,6 +4,7 @@ import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { AT_PORT_CELLS } from '../../src/sim/systems/navalCombat';
 import { declareWar } from '../../src/sim/systems/war';
+import { seaOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { nationId, runEvents } from '../helpers/sim1938';
 
@@ -13,6 +14,9 @@ import { nationId, runEvents } from '../helpers/sim1938';
 // nation's ports home at peace (the British pair sailed 28 and 30 cells on the first day, before the
 // war), and at war home from a zone where the enemy was 1.5 times stronger. A fleet the editor
 // places now holds its place (`World.station`) until a player orders it away or it breaks off beaten.
+// PLAN 7.59 (ADR-608): at war it holds its sea. Placed 107–120 km apart, beyond a sighting (about
+// 29 km), the two navies stood for 30 days; a placed fleet now sails for a standing enemy warfleet in
+// the zone of its place that its nation's warfleets together can win, and comes back after.
 
 const { w: W } = SIZE_1938;
 const [ENG, GER] = ['ENG', 'GER'].map(nationId) as [number, number];
@@ -48,31 +52,47 @@ const off = (s: Sim, f: number): number => {
 };
 
 describe('a fleet placed by the editor holds its sea (PLAN 7.22c)', () => {
-  it("the critic's North Sea: each holds its place until it is driven off; Britain's pair stands there for 10 days of the war", () => {
+  it("the critic's North Sea: each holds its sea until it is driven off; Britain's pair goes for Germany's and fights within 10 days (PLAN 7.59)", () => {
     const { s, fleets } = placed();
     const w = s.world;
     expect(fleets).toHaveLength(4);
     for (const f of fleets) expect(w.station.has(f), `fleet ${f} has its place`).toBe(true);
     const at = fleets.map((f) => [...w.station.get(f)!]);
+    const z = seaOf(w);
+    const zone = (x: number, y: number): number => z.zoneOf[Math.floor(y) * W + Math.floor(x)]!;
+    const placeZone = at.map(([x, y]) => zone(x!, y!));
     expect(declareWar(w, GER, ENG, true)).not.toBeNull();
     const brokeOff = new Set<number>();
+    const fought = new Set<number>();
     const c = w.formations.cols;
-    for (let d = 1; d <= 10; d++) {
-      const ev = runEvents(s, 24);
+    for (let h = 1; h <= 10 * 24; h++) {
+      const ev = runEvents(s, 1);
       for (const e of ev) if (e[1] === EventKind.FormationRetreated && fleets.includes(e[2]!)) brokeOff.add(e[2]!);
       for (const [i, f] of fleets.entries()) {
         if (!w.formations.has(f)) continue;
+        if (c.engaged[f] === 1) fought.add(f);
         if (w.station.has(f)) {
-          // Its place is where it was put; it is there, or in a battle there, or on its way back.
+          // Its place is where it was put; it is there, in a battle, under way, or standing in its place's sea.
           expect(w.station.get(f), `fleet ${f}'s place`).toEqual(at[i]);
-          expect(off(s, f) <= AT_PORT_CELLS || c.engaged[f] === 1 || c.moving[f] === 1, `fleet ${f} on day ${d}: ${off(s, f).toFixed(1)} cells off`).toBe(true);
+          const inSea = zone(c.x[f]!, c.y[f]!) === placeZone[i];
+          expect(off(s, f) <= AT_PORT_CELLS || c.engaged[f] === 1 || c.moving[f] === 1 || inSea, `fleet ${f} at hour ${h}: ${off(s, f).toFixed(1)} cells off, out of its sea`).toBe(true);
         } else expect(brokeOff.has(f), `fleet ${f} let go of its place only on breaking off`).toBe(true);
       }
     }
-    // Britain's pair: no battle came to it, and it never left.
-    for (const f of fleets.filter((f) => c.nation[f] === ENG)) {
-      expect(w.formations.has(f)).toBe(true);
-      expect(off(s, f), `British fleet ${f}`).toBeLessThanOrEqual(AT_PORT_CELLS);
+    // Britain's pair: before, no battle came to it and it never left (stationed beyond a sighting).
+    const british = fleets.filter((f) => c.nation[f] === ENG);
+    expect(british.filter((f) => fought.has(f)), 'British placed fleets in a sea battle within 10 days').toHaveLength(2);
+  }, 300_000);
+
+  it('at peace each holds its place: 10 days, every AI day among them, within AT_PORT_CELLS of it (PLAN 7.59)', () => {
+    const { s, fleets } = placed();
+    const w = s.world;
+    for (let d = 1; d <= 10; d++) {
+      s.step(24);
+      for (const f of fleets) {
+        expect(w.formations.has(f), `fleet ${f} on day ${d}`).toBe(true);
+        expect(off(s, f), `fleet ${f} on day ${d}`).toBeLessThanOrEqual(AT_PORT_CELLS);
+      }
     }
   }, 300_000);
 
