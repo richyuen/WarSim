@@ -5,6 +5,21 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.56: 1129 boards, 8693 cannot; the rules are in (2026-10-21, ADR-596, ADR-597; the user's decision)
+- **The bar:** on the 48 saves, the two cases (8693 year 10 Germany, 1129 year 20 Britain) board a
+  formation within 60 days of their save.
+- **What moved** (`docs/evidence/7.56/a.md`, `b.md`): 1129 boards (0 → 1): the operational AI no
+  longer takes back a formation on its march to the transports' port (7.56a), and the landing's
+  target is a port in the transports' waters, not Baku on the Caspian (7.56b). 7.54's count 7 → 6.
+- **What is left:** 8693. The measure: `sailToArmy`'s pick is quick (6.4 days' sail, 5 days' march to
+  Antalya), but by day 10, when the transports stand there, 183 of Germany's 190 formations on that
+  land are on the operational AI's marches; the 7 free stand 58–109 days of desert from every German
+  port. 7.56's "DRY_SPEED" was wrong: the slow ones are on foot. No rule of the landing's routing
+  reaches it. The user's: (a, recommended) 7.56 ticked on its rules' own case (1129: 0 → 1), 8693
+  read as an army that is the fronts'; (b) 7.56 closed not done, the rules kept; (c) a rule that lets
+  the landing take formations from the operational AI's marches, a design change (an ADR proposed
+  when taken up). Meanwhile the loop takes 7.55.
+
 ### PLAN 7.54: the send and the transports' port fixed, the AT's count 9 → 7; the rules are in (2026-10-21, ADR-594, ADR-595; the user's decision)
 - **The bar:** on the 48 saves, the four cases of 7.49f §3 (4513, 7247, 8693 year 10 Germany; 1129
   year 20 Britain) board a formation within 60 days; the nations on `send` 30+ of 60 days with none

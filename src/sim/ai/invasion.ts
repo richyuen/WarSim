@@ -16,7 +16,10 @@
  *   battle) at a port it holds with the most room (`transportRoom`, the lower id on a tie);
  * - the target: the port held by one of those enemies nearest those transports (`seaKm`)
  *   whose water's zone is not closed by ice nor held by a nation at war with it (a landing there
- *   would be thrown back, PLAN 4.5b): the landing takes a port, a cell with water by it;
+ *   would be thrown back, PLAN 4.5b), in the waters the transports sail (`waterKeys`: not a lake
+ *   across land, not behind a passage shut to n; PLAN 7.56b, ADR-597: seed 1129 year 20, Britain's
+ *   at Adana aimed at Baku on the Caspian, `orderSail` refused the way, and the army at the port
+ *   never boarded): the landing takes a port, a cell with water by it;
  * - its formations at that port (land formations within `AT_PORT_CELLS` of its land cell or of its
  *   water, as `tryLanding` takes them; not under way, in no fight, not retreating or going home)
  *   are ordered there by `orderLanding`, one by one, until the transports have no room for the
@@ -39,7 +42,7 @@ import { frontierOf } from '../systems/territory';
 import { orderLanding, transportRoom } from '../systems/amphibious';
 import { findRoute, mayReach } from '../nav/provinceGraph';
 import { orderMove, passageOf, snapTarget } from '../systems/movement';
-import { AT_PORT_CELLS, seaKm } from '../systems/navalCombat';
+import { AT_PORT_CELLS, keyAt, seaKm, waterKeys } from '../systems/navalCombat';
 import { orderSail } from '../systems/sail';
 import { seaHolder } from '../systems/seaControl';
 import { navOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
@@ -119,8 +122,10 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
     [fleet, room, port] = [id, r, i];
   });
   if (fleet === 0) return;
-  // The enemy's port nearest them whose sea is open to n.
+  // The enemy's port nearest them whose sea is open to n, in the waters they sail (PLAN 7.56b).
   const z = seaOf(world);
+  const keys = waterKeys(world, n);
+  const mine = keyAt(world, keys, c.x[fleet]!, c.y[fleet]!);
   let target = -1;
   let best = Infinity;
   world.ports.forEach((p, i) => {
@@ -128,7 +133,7 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
     const at = water[i]!;
     if (holder === 0 || at < 0 || !foes.has(holder)) return;
     const zone = z.zoneOf[at]!;
-    if (zone === 0 || z.closed[zone] === 1) return;
+    if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) return;
     const sea = seaHolder(world, zone);
     if (sea !== 0 && world.wars.atWar(sea, n)) return;
     const d = seaKm(world, c.x[fleet]!, c.y[fleet]!, (at % w) + 0.5, Math.floor(at / w) + 0.5);

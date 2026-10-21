@@ -31,7 +31,7 @@ import { neighbours4 } from '../../src/sim/nav/grid';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { transportRoom } from '../../src/sim/systems/amphibious';
-import { AT_PORT_CELLS, seaKm } from '../../src/sim/systems/navalCombat';
+import { AT_PORT_CELLS, keyAt, seaKm, waterKeys } from '../../src/sim/systems/navalCombat';
 import { sailKmh } from '../../src/sim/systems/sail';
 import { musterPoint, spawnPoint } from '../../src/sim/systems/production';
 import { seaHolder } from '../../src/sim/systems/seaControl';
@@ -149,13 +149,15 @@ for (const { seed, src } of cases) {
     });
     if (fleet === 0) return { g: 'noTransport', roomAtPort: 0 };
     const z = seaOf(w);
+    const keys = waterKeys(w, n);
+    const mine = keyAt(w, keys, c.x[fleet]!, c.y[fleet]!);
     let target = -1;
     w.ports.forEach((p, i) => {
       const holder = ctl[p.cell]!;
       const at = water[i]!;
       if (holder === 0 || at < 0 || !foes.has(holder)) return;
       const zone = z.zoneOf[at]!;
-      if (zone === 0 || z.closed[zone] === 1) return;
+      if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) return;
       const sea = seaHolder(w, zone);
       if (sea !== 0 && w.wars.atWar(sea, n)) return;
       target = i;

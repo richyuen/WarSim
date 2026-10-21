@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-597 · 2026-10-21 · accepted — The landing's target is a port in the waters its transports sail (PLAN 7.56b)
+
+- **Context** (`docs/evidence/7.56/a.md` §4, `b.md`). `planLanding` aimed at the enemy port nearest
+  its transports by straight km (`seaKm`) whose zone was open and not held by an enemy. Seed 1129
+  year 20: Britain's transports at Adana, at war with the Soviet Union, aimed at Baku, then
+  Türkmenbaşy, on the Caspian. `tryLanding` refused it (`NoSeaWay`: `orderSail` has no way over the
+  water) and `planLanding` returned at that refusal, every invasion day: Britain's division stood
+  at Adana from day 48 (ADR-596) and never boarded.
+- **Decision** (`ai/invasion.ts` `planLanding`): the target is the nearest such port whose zone has
+  the transports' key of `waterKeys(world, n)` (`keyAt` where they stand): the waters a ship of n
+  sails between, not a lake across land, not behind a passage shut to n, as `orderSail` routes and
+  as the naval AI's targets are read (ADR-551, ADR-552). With none, no landing that day
+  (`islandArmies.ts`'s `noTarget`, its mirror read so too).
+- **Consequences.** `landingOverSea1938.test.ts` (red without: Britain's transports at Manama, whose
+  nearest Soviet ports are on the Caspian). 1129 year 20: Britain boards within 60 days (0 → 1).
+  On the 48 saves, 60 days: 7.54's count (on `send` 30+ of 60 days, none boarded) 7 → 6, boarded
+  5 / 1 → 5 / 2; island share flat. The invasion AI's longest call on 1129, a year alone, pinned,
+  23.0 ms (guard 50). Seed 99's year has no such target: the pin unchanged (63d0cfd9).
+- A port in the transports' waters may still be refused at the landing (the zoned water nearest the
+  target that `tryLanding` sails for is not the port's own water); not seen in the cases read.
+
 ### ADR-596 · 2026-10-21 · accepted — The operational AI leaves alone a formation on the march to its transports' port (PLAN 7.56a)
 
 - **Context** (`docs/evidence/7.56/a.md`). The invasion AI sends free formations to the port where

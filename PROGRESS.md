@@ -21270,3 +21270,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   179.8 ms. Pin d188faed → 63d0cfd9.
 - **Test:** `landingMarchKept1938.test.ts` (red without). Specs by hand: none (no UI).
 - **Next:** PLAN 7.56b (the landing's target over no sea).
+
+## 2026-10-21 — PLAN 7.56b: the landing's target in the transports' waters (ADR-597); 7.56's AT missed, the user's
+
+- **Rule** (`invasion.ts` `planLanding`): the target is the nearest enemy port whose zone has the
+  transports' key of `waterKeys` (as `orderSail` routes, as the naval AI's targets). Before, 1129's
+  Britain at Adana aimed at Baku on the Caspian; `NoSeaWay` every invasion day. `islandArmies.ts`'s
+  mirror reads the key too. SPEC §7 (Invasions).
+- **AT** (7.56's, `docs/evidence/7.56/b.md`): 1129 boards (0 → 1); 8693 does not: 1 of 2, missed. The
+  near army is on the operational AI's marches, the free one 58+ days from every port (7.56a's measure).
+  BLOCKERS entry, the user's (a tick, b close, c the landing takes from the operational AI's marches).
+- 48 saves, 60 days: 7.54's count 7 → **6** (bar 5); boarded 5 / 1 → 5 / 2; island share flat.
+  Invasion AI's longest call on 1129, a year alone, pinned, 23.0 ms (guard 50). Pin unchanged (63d0cfd9).
+- **Test:** `landingOverSea1938.test.ts` (Britain's transports at Manama, the Caspian nearest; red
+  without). Specs by hand: none (no UI).
+- **Next:** PLAN 7.55 (the transports' room under a division's).

@@ -2046,7 +2046,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   *Invasions (PLAN 4.6b, ADR-268, ADR-511; `src/sim/ai/invasion.ts`):* daily, staggered weekly
   by id, a nation with no formation aboard and a war in which it has no land front today takes
   its transport group with the most room at a port it holds, and aims at the port nearest them,
-  of an enemy of such a war, whose sea is open to it (not closed by ice, not held by its enemy).
+  of an enemy of such a war, whose sea is open to it (not closed by ice, not held by its enemy)
+  and in the waters they sail (not a lake across land, not behind a passage shut to it: PLAN
+  7.56b, ADR-597).
   Its free formations at that port (within 3 cells of its land cell or of its water, as an
   order over the sea takes them: PLAN 7.49f, ADR-593) go aboard there; with none there, the nearest on the port's
   land are sent to it to fill the room (one whose march there is refused is passed over, the send

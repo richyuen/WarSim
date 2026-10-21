@@ -175,11 +175,15 @@ when taken up:
       AI's "far from the front" does not count (1129: 335 on day 35, 18 steps off Adana; 445 on day
       40). It is no free formation of the plan while on the march to a port where its nation's
       transports stand. AT: 1129's 335 reaches Adana; a unit test (red without); ADR-596; the pin.
-    - [ ] 7.56b The landing's target over no sea: `planLanding` takes the enemy port nearest the
+    - [x] 7.56b The landing's target over no sea: `planLanding` takes the enemy port nearest the
       transports by straight km (1129 at Adana: Baku, then Türkmenbaşy, on the Caspian), `tryLanding`
       refuses it (`NoSeaWay`) every invasion day, and the army at the port never boards. The target
       is the nearest the transports have a way by sea to. AT: 7.56's (1129 boards within 60 days);
       a unit test (red without); the ADR; the pin; `--profile`.
+  Rules in (ADR-596, ADR-597; `docs/evidence/7.56/b.md`): 1129 boards (0 → 1); 8693 does not (no free
+  formation within 58 days of a port, its near army on the operational AI's marches): the AT, 2 of 2,
+  missed. 7.54's count 7 → 6. BLOCKERS, the user's (a tick, b close, c the landing takes from the
+  operational AI's army, a design change).
 - [ ] 7.55 A transport group with room under a division's (found at 7.49f, emergent 6,
   `docs/evidence/7.49/f.md` §3; 7.49d's note on 4513 Latvia): the invasion AI plans with the group
   of most room at a port, and `sendToPort` and `orderLanding` take no formation over its room, so a
