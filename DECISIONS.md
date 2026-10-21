@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-604 · 2026-10-21 · accepted — A carrier's strike sinks ships: 7.41a's "sinks nothing" was its tool's miss (PLAN 7.57; no rule)
+
+- **Context** (found by the builder at PLAN 7.41a §3, not the critic): 8693's six Japan–United States
+  battles read "0 ships sunk in 20 days" from `tools/diag/seaRows.ts`.
+- **Evidence** (`docs/evidence/7.57/a.md`, `tools/diag/carrierSink.ts`, new): the same war on HEAD,
+  hour by hour: 28 carrier strikes sink 64 ships (8 flotillas of 8), and the six battles' history
+  lines record 64 lost. 7.41a's arithmetic was right (0.4 of a ship on each of 16 a strike, the wound
+  carried); `seaRows` missed the hour each battle ended, which is the hour a flotilla sinks whole.
+  Over a year of 4 seeds (1129, 2081, 7019, 8693) a carrier's strike sinks 0.62–1.74 ships, a
+  land-based wing's strike on a fleet 0.08–0.73.
+- **Decision.** No rule. `seaRows` adds a battle's last hour (its record's count at its end). 7.57's
+  AT holds on HEAD (64 sunk; "0 on HEAD" was the tool's). The pin unchanged (no sim change).
+- **Found.** 594 of the 853 ships the carriers sank on the 4 seeds went down with the whole of their
+  fleet in one strike hour: the strike spreads by hit points over alike ships, which reach a whole
+  ship together; PLAN 7.60.
+
 ### ADR-603 · 2026-10-21 · accepted — The editor's fleets meet at sea on day 1.4: the critic's "no battle in 30 days" disputed (PLAN 7.41c; no rule)
 
 - **Context** (critic run 11, editor 7 and naval 7: "the two navies placed face to face in the North

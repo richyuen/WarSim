@@ -109,7 +109,12 @@ for (let t = 0; t < days * 24; t++) {
     }
     for (const [rec, tr] of tracks) {
       if (w.seaBattles.includes(rec)) continue;
-      // Its last hour's losses are in its row: the record's count when it ended.
+      // Its last hour's losses (PLAN 7.57: a fleet sunk whole ends the battle in that hour, and
+      // until then they were never read): the record's count when it ended, in the hour's row.
+      const sunk = rec.lostA + rec.lostB - tr.lastLost;
+      tr.sunk += sunk;
+      if (tr.prevRow) tr.sunkRowGone += sunk;
+      else tr.sunkNoRow += sunk;
       done.push(tr);
       tracks.delete(rec);
     }

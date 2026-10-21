@@ -21400,3 +21400,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   "52 ships lost" in the first battle not traced (German aircraft over that water).
 - **Test:** none (no rule). Specs by hand: none (no UI change).
 - **Next:** PLAN 7.57 (a carrier's strike sinks nothing).
+
+## 2026-10-21 — PLAN 7.57: a carrier's strike sinks ships; 7.41a's 0 was the tool's (ADR-604; ticked)
+
+- **Traced** (`tools/diag/carrierSink.ts`, new; `docs/evidence/7.57/a.md`): 8693 JAP → USA, 20 days on
+  HEAD: 28 carrier strikes sink 64 ships (8 flotillas of 8); the six battles' history lines record
+  64 lost. 7.41a §3's 0 came from `seaRows.ts`, which never read the hour a battle ended, the hour a
+  flotilla sinks whole. Fixed there: 8693 sunk 0 → 64.
+- **Read** (4 seeds × 1 year, no declared war): ships sunk a carrier strike 0.62 / 0.93 / 0.96 / 1.74
+  (1129, 2081, 7019, 8693), a land-based strike on a fleet 0.08 / 0.09 / 0.73 / 0.23. No rule, so
+  before = after.
+- **Decision:** no rule (ADR-604); 7.57's AT holds on HEAD (≥ 1 sunk: 64). Pin unchanged.
+- **Found:** 594 of the 853 carrier-sunk ships went down with their whole fleet in one strike hour
+  (alike ships take the same wound and reach a whole ship together): PLAN 7.60. Earlier `seaRows`
+  `sunk` figures had the same last-hour miss; `sunkNoRow` likely unmoved, not re-read.
+- **Test:** none (no rule). Specs by hand: none (no UI change).
+- **Next:** PLAN 7.60 (a whole fleet sunk at once).

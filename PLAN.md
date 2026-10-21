@@ -185,15 +185,15 @@ when taken up:
   missed. 7.54's count 7 → 6. BLOCKERS, the user's (a tick, b close, c the landing takes from the
   operational AI's army, a design change).
 
-- [ ] 7.57 A carrier's strike sinks nothing (found at 7.41, naval 7, `docs/evidence/7.41/a.md`
-  §3): `navalCombatSystem` spreads a wing's strike over every surface ship in reach by its hit
-  points, so on 8693 Japan's carrier group (two wings of 24) puts 0.4 of a ship's hit points on
-  each of 16 American destroyers a strike, and its six battles in 20 days (49 hours, strikes every
-  4) sink 0 ships while the fleets part after three strikes. Measured first: carrier battles' ships
-  sunk per strike on the critic's 14 seeds' year 1 against a naval bomber group's strike on land
-  targets (PLAN 5.9). AT: 8693's six battles sink at least one ship (0 on HEAD); carrier strikes'
-  ships sunk per strike on 4 seeds × 1 year read before and after; a unit test (red without); the
-  ADR; the pin's entry.
+- [ ] 7.60 A carrier's strike sinks a whole fleet at once (found at 7.57, naval 7,
+  `docs/evidence/7.57/a.md` §4): the strike spreads its damage by hit points over a fleet's ships,
+  mostly alike, so each takes the same wound and all reach a whole ship in the same strike: two or
+  three strikes with nothing lost, then the fleet gone in one hour (594 of the 853 ships carriers
+  sank on 4 seeds × 1 year; 8693's war 64 of 64), while gunfire sinks ship by ship. AT: on 8693's
+  war (`carrierSink.ts 8693 JAP USA 20`) no carrier strike sinks more than half the ships of a fleet
+  it strikes with none of them lost before (8 such strikes on HEAD), and the ships carriers sink there within 25 % of HEAD's 64; on
+  the 4 seeds × 1 year, the ships sunk with their whole fleet in one strike under a quarter of the
+  carriers' (594 of 853 on HEAD); a unit test (red without); the ADR; the pin's entry.
 - [ ] 7.58 The editor's fleet laid up at the month start (found at 7.41b, editor 7,
   `docs/evidence/7.41/b.md`, ADR-602): a fleet the editor places at tick 0 is destroyed in that
   hour by the navy budget (`economic.ts`, step 1: "the fleets that stand … are laid up") when its
@@ -505,3 +505,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.55 A transport group with room under a division's (found at 7.49f, emergent 6, […]
 - [x] 7.50 The H-bomb at the floor on a city of a million, and the spot struck again (R11-B2): seed […]
 - [x] 7.41 The war at sea seen (naval 7, needs 8, beyond 7.39; moved before 7.5 by ADR-577): the […]
+- [x] 7.57 A carrier's strike sinks nothing (found at 7.41, naval 7, `docs/evidence/7.41/a.md` […]

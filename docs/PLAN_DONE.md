@@ -13151,3 +13151,31 @@ Of 7.33 (open in PLAN.md):
       at hour 34, at HEAD and at `dd3b730` (4 battles with an editor fleet, 30 between the blocs, 0
       standing at the critic's three instants); in the page the battle, its row and its history line.
       No rule, the pin unchanged. Leads: PLAN 7.58, 7.59.
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.57 A carrier's strike sinks nothing (found at 7.41, naval 7, `docs/evidence/7.41/a.md`
+  §3): `navalCombatSystem` spreads a wing's strike over every surface ship in reach by its hit
+  points, so on 8693 Japan's carrier group (two wings of 24) puts 0.4 of a ship's hit points on
+  each of 16 American destroyers a strike, and its six battles in 20 days (49 hours, strikes every
+  4) sink 0 ships while the fleets part after three strikes. Measured first: carrier battles' ships
+  sunk per strike on the critic's 14 seeds' year 1 against a naval bomber group's strike on land
+  targets (PLAN 5.9). AT: 8693's six battles sink at least one ship (0 on HEAD); carrier strikes'
+  ships sunk per strike on 4 seeds × 1 year read before and after; a unit test (red without); the
+  ADR; the pin's entry.
+  Traced (`docs/evidence/7.57/a.md`, `tools/diag/carrierSink.ts`; ADR-604, no rule): the strikes sink
+  64 ships in 8693's six battles, whose history lines record them; 7.41a's 0 was `seaRows`' miss of
+  a battle's last hour (fixed). Per strike over a year of 4 seeds: carrier 0.62–1.74, land-based
+  0.08–0.73. Found: whole fleets sunk in one hour (PLAN 7.60).
