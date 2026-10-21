@@ -47,23 +47,6 @@ late air war's fall), which take run 10's cases. The dimensions under the bar: e
 naval 6 beyond R10-B2 is 7.41, aircraft 6 is 7.36, AI nuclear use 7 beyond R10-B1 is 7.37. A task
 each, split when taken up:
 
-- [ ] 7.48 The critic's overrun France strikes before it loses its last bomber, with the chase (AI
-  nuclear use 7, R8-B1's case; from PLAN 7.46c, `docs/evidence/7.46/c.md` §6): with ADR-580's chase
-  applied (`docs/evidence/7.46/c-adopt.diff`), seed 7127, France with 10 warheads and Germany's war
-  on it stands at extreme desperation (1.08–1.14) from day 55 with its bomber, its best place at
-  0.017–0.020 against `NUKE_FLOOR` 0.025, and loses the bomber with Paris on day 68: no decision in
-  100 days. On HEAD it strikes on day 55 (0.048) only because a colony capital of its side fell on
-  day 48. Measured first with `nukeCase.ts` on the chase: which part keeps the utility under the
-  floor (the value of the place, the alliance's cost, the outrage) against the other critic's
-  set-ups (`nukePoland1938`, `nukeGapShort1938`). Then a rule with an ADR, or the reason. AT:
-  with the chase applied, `nukeOverrun1938.test.ts`'s core holds, red without the rule: France
-  decides a strike before day 68 (its bomber's loss), every decision above `NUKE_FLOOR`, none near
-  a recent burst, the gap kept; and green on HEAD. Its luck-bound assertions (a launch shot down by
-  German fighters, the relaunch within the gap) are re-based as at PLAN 7.26b (ADR-508's Tests:
-  "re-based, rule kept") only if the chase's world has no launch stopped short, the gap case then
-  carried by `nukeGapShort1938.test.ts`; the other `tests/unit/nuke*` files green; the pin's entry.
-  Then the chase lands (7.46c). Stop: one rule tried; if none clears the floor without lowering it,
-  the bar is the user's (ADR-554).
 - [ ] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean
   of 38 sea battles a world; years 2 to 30 2.7 a world-year (1,090 in 406 world-years) while 50 to
   96 armed fleets stay afloat (115 at the start); at the year-10 and year-20 samples 18 of 28 have
@@ -490,3 +473,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.42 A block held back stands within contact reach of its enemy's block on every front (from […]
 - [x] 7.29 The late land war's reach (from PLAN 7.26c3, ADR-519, 2026-10-18): after year 1 the land […]
 - [x] 7.47 A navy rebuilt to a ship or two saves for the next at war with a naval enemy (from PLAN […]
+- [x] 7.48 The critic's overrun France strikes before it loses its last bomber, with the chase (AI […]

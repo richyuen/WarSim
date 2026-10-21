@@ -92,7 +92,11 @@
  *   deliver a warhead (`canDeliver`): its warheads / RETALIATION_FULL, to 1, × its doctrine.
  * - MAD (`assured`): a side has an assured second strike when a nation of it (with its allies)
  *   has MAD_WARHEADS and a means of delivery.
- * - allianceCost: ALLIANCE_COST for each ally not at its side in that war, to ALLIANCE_COST_MAX.
+ * - allianceCost: ALLIANCE_COST for each ally not at its side in that war, to ALLIANCE_COST_MAX;
+ *   EXTREME_TABOO of it in extreme desperation, as the taboo (PLAN 7.48, ADR-581: the critic's
+ *   France, overrun with 10 warheads and three allies apart, its best place Berlin through 0.21,
+ *   stood 15 days at 0.017–0.020 under NUKE_FLOOR and lost its bomber with Paris; Poland, one
+ *   ally fewer and no capital's dead, struck at 0.047).
  * - outrage (PLAN 6.5b): OUTRAGE_COST, the world's outrage at any strike, + OUTRAGE_WEIGHT × the
  *   outrage at the striker already (to 1 at 100): a pariah is nearer the world turning on it.
  * - taboo (`world.nukeTaboo`): 1, TABOO_AFTER after any burst, back by TABOO_RECOVERY a day.
@@ -1028,7 +1032,8 @@ function warInputs(world: World, n: number, war: War, side: number, retaliating:
     desperation: Math.max(desperation, resolveOf(world, war, side, retaliation, mad)),
     doctrine: doctrineOf(world, n),
     retaliation,
-    allianceCost: Math.min(ALLIANCE_COST_MAX, ALLIANCE_COST * apart),
+    // Halved in extreme desperation, as the taboo (PLAN 7.48, ADR-581).
+    allianceCost: Math.min(ALLIANCE_COST_MAX, ALLIANCE_COST * apart) * (extreme ? EXTREME_TABOO : 1),
     outrage: OUTRAGE_COST + OUTRAGE_WEIGHT * Math.min(1, (world.nukeOutrage.get(n) ?? 0) / 100),
     taboo: world.nukeTaboo,
     mad,

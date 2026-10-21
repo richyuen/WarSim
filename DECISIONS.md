@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-581 · 2026-10-20 · accepted — In extreme desperation the alliance's cost weighs half, as the taboo (PLAN 7.48)
+
+- **Context.** With the chase (ADR-580), `nukeOverrun1938.test.ts` (critic R8-B1's France: seed
+  7127, 10 warheads, Germany's war on it) is red: France stands at extreme desperation (1.08–1.14)
+  from day 55 with its bomber, its best place Berlin at 0.017–0.020 under `NUKE_FLOOR` (0.025),
+  and loses the bomber with Paris on day 68. On HEAD it struck on day 55 (0.048) only because a
+  colony capital of its side fell on day 48 (`docs/evidence/7.46/c.md` §6).
+- **Measured** (`nukeCase.ts`, which now prints the best place's parts; `docs/evidence/7.48.md`).
+  France on day 55 and the critic's Poland (seed 7127, a bomber at Warsaw) on day 44, both
+  extreme, both through 0.214: the gain France 0.166 × 1.083 × 0.8 = 0.144, Poland 0.128 × 1.263
+  × 0.95 = 0.154; the costs on a burst France 0.15 alliance + 0.1 outrage + 0.3 taboo + 0.040
+  dead (Berlin, 334,000) = 0.59, Poland 0.1 + 0.1 + 0.3 + 0 = 0.5. France's place is worth more;
+  it stands under the floor by one ally more apart (Belgium, the Netherlands and Luxembourg
+  joined its alliance, not its war) and a capital's dead. The value and the outrage are not it.
+- **Decision.** `warInputs`: the alliance's cost × EXTREME_TABOO (0.5) in extreme desperation,
+  as the taboo already is (PLAN 6.7): a nation fighting for its life weighs its allies'
+  displeasure at half. Every reader of `allianceCost` (`restraintOf`'s reasons, the tools) sees
+  the cost as weighed. NUKE_FLOOR, EXTREME_TABOO and the dead's cost unchanged.
+- **Not the dead's cost.** Halving it in extreme desperation alone leaves France at about 0.022,
+  under the floor, and would reopen ADR-572 (PLAN 7.45: seed 758's Germany, H-bomb in extreme
+  desperation at 0.060).
+- **Read.** With the chase and the rule, France decides on day 52 (0.044; shot down) and again on
+  day 53 (0.040), its bomber still there: `nukeOverrun1938.test.ts` green with the chase, its
+  luck-bound assertions as they stand (a launch shot down, the next within the gap); no re-base.
+  On HEAD with the rule, France decides on day 55 at 0.063 (0.048 before). The 36 `tests/unit/nuke*`
+  files green on both.
+- **Pin.** Unchanged (3754b256): seed 99's first year has no warhead.
+- **Test.** `nukeAllianceExtreme1938.test.ts`: France with three allies apart weighs their cost
+  whole while not extreme, half fighting to the death; day 55's measured parts at Berlin give 0.034
+  over the floor (0.0175 with the cost whole; red without the rule).
+
 ### ADR-580 · 2026-10-20 · accepted (under the user's rule, ADR-573 a and ADR-576 a; lands after PLAN 7.48) — The chase adopted: a warfleet away at war sails for a winnable enemy navy beyond a sortie's reach (PLAN 7.46c, 7.39b)
 
 - **Context.** ADR-573 tried the chase (`docs/evidence/7.39/b-chase.diff`) and set it aside: it

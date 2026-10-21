@@ -6,6 +6,9 @@
  * place's utility and its parts, the delivery it has (strategic bomber wings, missiles), its land and
  * men against the war's start.
  *
+ * The best place's row tells its value, the chance through, the people its burst kills and its parts
+ * (`placeParts`; PLAN 7.48).
+ *
  * With `bomber` last (PLAN 7.37b, the critic's Czechoslovakia), the holder is also given a strategic
  * bomber group at its capital, as the editor's air-wing tool places one, and a row is printed each day.
  *
@@ -15,7 +18,7 @@ import { Sim } from '../../src/sim/sim';
 import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { assets1938 } from '../../tests/helpers/earth';
 import { EventKind } from '../../src/shared/events';
-import { avengingOf, dayIndustry, desperationOf, nuclearUtility, NUKE_FLOOR, reaches, strikePaused, warheadsOf, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
+import { avengingOf, dayIndustry, desperationOf, nuclearUtility, NUKE_FLOOR, placeParts, reaches, strikePaused, warheadsOf, weighsStrikes, weighsWar, weighWar } from '../../src/sim/systems/nuclear';
 
 const [seedArg, holderTag, attackerTag] = process.argv.slice(2);
 const warheads = Number(process.argv[5] ?? 10);
@@ -69,14 +72,16 @@ for (let d = 0; d < days; d++) {
       else if (!r.shared) row.gate = 'noAim';
       else if (r.places.length === 0) row.gate = 'noPlace';
       else {
-        let best: { u: number; raw: number; value: number; x: number; y: number; reach: boolean } | null = null;
+        let best: { u: number; raw: number; value: number; through: number; people: number; x: number; y: number; reach: boolean } | null = null;
         for (const p of r.places) {
           const u = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...r.shared });
           const raw = nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...r.shared, mad: false });
-          if (!best || raw > best.raw) best = { u, raw, value: p.value, x: p.x, y: p.y, reach: reaches(w, H, p.x, p.y) };
+          if (!best || raw > best.raw) best = { u, raw, value: p.value, through: p.through, people: p.people, x: p.x, y: p.y, reach: reaches(w, H, p.x, p.y) };
         }
         row.gate = best!.u > NUKE_FLOOR ? (best!.reach ? 'strike' : 'noReach') : best!.raw > NUKE_FLOOR ? 'mad' : 'low';
-        row.best = { u: +best!.u.toFixed(3), raw: +best!.raw.toFixed(3), value: +best!.value.toFixed(3), reach: best!.reach };
+        row.best = { u: +best!.u.toFixed(3), raw: +best!.raw.toFixed(3), value: +best!.value.toFixed(3), through: +best!.through.toFixed(3), people: best!.people, at: [+best!.x.toFixed(1), +best!.y.toFixed(1)], reach: best!.reach };
+        // What the best place's value is made of (PLAN 7.48): the output, the men, the capital.
+        row.place = Object.fromEntries(Object.entries(placeParts(w, H, war, side, best!.x, best!.y)).map(([k, v]) => [k, +v.toFixed(3)]));
         row.parts = Object.fromEntries(Object.entries(r.shared).map(([k, v]) => [k, typeof v === 'number' ? +v.toFixed(3) : v]));
         row.aim = [...r.aim.at].map(tag);
       }

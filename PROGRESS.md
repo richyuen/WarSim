@@ -20932,3 +20932,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - 7.39c filed (7.39's bars on 10 unseen seeds, with the chase). This commit is documents and
   evidence alone. Specs by hand: none (no UI).
 - **Next:** PLAN 7.48, then the chase lands (7.46c, 7.39b), then 7.39c, 7.43, the critic run.
+
+## 2026-10-20 — PLAN 7.48: the overrun France strikes with the chase; the alliance's cost at half in extreme desperation (ADR-581)
+
+- **Measured** (`nukeCase.ts`, now printing the best place's value, chance through, people and
+  `placeParts`; `docs/evidence/7.48.md`): with the chase, France's best place is Berlin (value
+  0.166 through 0.214; gain 0.144); against the critic's Poland (0.154), it stands 0.008 under the
+  floor by one ally more apart (the Low Countries joined its alliance, not its war: 0.15 against
+  0.10) and Berlin's dead (0.040). Value and outrage are not it.
+- **Rule** (`nuclear.ts`, `warInputs`): the alliance's cost × EXTREME_TABOO in extreme desperation,
+  as the taboo. SPEC §6.4's allianceCost.
+- **AT:** with the chase, `nukeOverrun1938.test.ts` 3 of 3 green: France decides on day 52 (0.044,
+  shot down) and day 53 (0.040), its bomber kept; the luck-bound assertions hold as they stand
+  (no re-base). On HEAD green, France on day 55 at 0.063 (0.048). The 36 `tests/unit/nuke*` files
+  green on both. Pin unchanged (3754b256, no warhead in seed 99's year).
+- **Test:** `nukeAllianceExtreme1938.test.ts` (France, three allies apart; day 55's parts give 0.034,
+  0.0175 without the rule: red without).
+- Specs by hand: none (no UI).
+- **Next:** the chase lands (PLAN 7.46c, 7.39b; `docs/evidence/7.46/c-adopt.diff`), then 7.39c, 7.43,
+  the critic run.

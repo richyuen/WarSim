@@ -1959,6 +1959,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - taboo: a global value that starts high, drops sharply after the first use worldwide,
     and recovers slowly. When both sides have assured second strike (**MAD**), the
     utility of first use is ≤ 0 unless desperation is extreme (fightToDeath or capital falling).
+    In extreme desperation the taboo weighs half (PLAN 6.7).
+  - allianceCost: 0.05 for each ally not at the striker's side in that war, to 0.3; half of it in
+    extreme desperation, as the taboo (PLAN 7.48, ADR-581: the critic's overrun France, three
+    allies apart, its bomber's strike on Berlin 0.017–0.020 under the floor for 15 days).
   - doctrine and aggression come from traits. Retaliation-doctrine nations strike back after
     being hit.
   - deadCost: 0.1 for each million people (anyone's) the burst is expected to kill at the yield

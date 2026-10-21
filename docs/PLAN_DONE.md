@@ -12701,3 +12701,35 @@ Of 7.33 (open in PLAN.md):
   against HEAD's read; a unit test (red without); the ADR; the pin's entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
   Done (ADR-579, `docs/evidence/7.47.md`): Britain's armed/navalFoe months 9 / 11 → 0 / 0 (met);
   Japan's armed/navalFoe gold months 76 → 38; the armed power 46–51 % of HEAD's at years 3–5.
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.48 The critic's overrun France strikes before it loses its last bomber, with the chase (AI
+  nuclear use 7, R8-B1's case; from PLAN 7.46c, `docs/evidence/7.46/c.md` §6): with ADR-580's chase
+  applied (`docs/evidence/7.46/c-adopt.diff`), seed 7127, France with 10 warheads and Germany's war
+  on it stands at extreme desperation (1.08–1.14) from day 55 with its bomber, its best place at
+  0.017–0.020 against `NUKE_FLOOR` 0.025, and loses the bomber with Paris on day 68: no decision in
+  100 days. On HEAD it strikes on day 55 (0.048) only because a colony capital of its side fell on
+  day 48. Measured first with `nukeCase.ts` on the chase: which part keeps the utility under the
+  floor (the value of the place, the alliance's cost, the outrage) against the other critic's
+  set-ups (`nukePoland1938`, `nukeGapShort1938`). Then a rule with an ADR, or the reason. AT:
+  with the chase applied, `nukeOverrun1938.test.ts`'s core holds, red without the rule: France
+  decides a strike before day 68 (its bomber's loss), every decision above `NUKE_FLOOR`, none near
+  a recent burst, the gap kept; and green on HEAD. Its luck-bound assertions (a launch shot down by
+  German fighters, the relaunch within the gap) are re-based as at PLAN 7.26b (ADR-508's Tests:
+  "re-based, rule kept") only if the chase's world has no launch stopped short, the gap case then
+  carried by `nukeGapShort1938.test.ts`; the other `tests/unit/nuke*` files green; the pin's entry.
+  Then the chase lands (7.46c). Stop: one rule tried; if none clears the floor without lowering it,
+  the bar is the user's (ADR-554).
