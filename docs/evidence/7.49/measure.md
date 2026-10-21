@@ -110,7 +110,7 @@ raise in a year with the reserve at war cut while its army is under its peacetim
 - `far` (16 %) and the marches to hold cells where the threat is 0 (~37 %): the same in year 1.
 - The stand-off just out of contact (formations 2–4 cells apart): none (§3).
 - Germany–Soviet Union on 6421 year 20 (the critic's case): the war is 63 days old; the Soviet army
-  died in the war before. Its armour against a walk-in is 4.2.
+  died in the war before, and it raises none since: §4.2.
 
 ## 6. The bar
 

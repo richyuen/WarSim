@@ -71,18 +71,23 @@ when taken up:
     - [ ] 7.49c The warship's saving with no army left (measure §4.2; ADR-575, ADR-579): at war
       with a naval enemy, a nation with an army under its peacetime share saves for a warship
       whatever its army (6421 year 20: the Soviet Union, one division, 2,407 gold, buys nothing
-      while Germany walks in). AT: on the 48 saves, nations at war with 3 formations or fewer
+      while Germany walks in). The rule's case is narrower than ADR-557's floor, which ADR-575 set
+      aside for Britain's 33 divisions (7.46b2): a few formations or none, or an enemy on its land
+      with nothing to meet it. AT: on the 48 saves, nations at war with 3 formations or fewer
       stopped at the month start by the warship's saving (`armyGates.ts`, "ship(navalFoe)" with no
-      order) 0 (10 and 11 at years 10 and 20); a unit test on the case (red without); the ADR
-      (amends ADR-575; ADR-578 a, the user's, kept: the floor against an enemy with no fleet);
-      the pin's entry.
+      order) 0 (10 and 11 at years 10 and 20); Britain's `spentArmy` months on 7019 and 3613 read
+      again as 7.47's (4 / 12), no higher; a unit test on the case (red without); the ADR (amends
+      ADR-575; ADR-578 a, the user's, kept: the floor against an enemy with no fleet; proposed as
+      the user's if it reopens 578 a's reasoning); the pin's entry.
     - [ ] 7.49d The sea powers' home armies (measure §4.3): of the land formations at war, those
       on a landmass with no front of their nation 21–28 % late against 3 % in year 1, most at a
       capital (7019 year 10: Britain 85 divisions at London, an overseas war, two transport
       groups; Japan at Tokyo, the United States at Washington). Measured first: per such nation,
       the invasion AI's gate each day (`planLanding`'s), its transports' room and how many it
-      lands a month. AT: the island share on the 48 saves after 60 days under 10 % (21.4 %, 27.7 %
-      at the saves); a unit test (red without); engaged worldwide and per war read; the ADR; the
+      lands a month, and the decisions in this ground first (overseas muster, ADR-518). AT: the
+      island share on the 48 saves after 60 days under 10 % (21.4 %, 27.7 % at the saves; a bar
+      set, not measured: the measured-first step may show the transports cannot carry it, then
+      the user's, ADR-554); a unit test (red without); engaged worldwide and per war read; the ADR; the
       pin's entry; `--profile`.
     - [ ] 7.49e The defenders' purse (measure §4.4): late, nations at war of income 150–500 hold
       4.5–4.8 formations, 91–98 of 124–127 stopped by the price (1,001) and RESERVE_MONTHS (3) of
