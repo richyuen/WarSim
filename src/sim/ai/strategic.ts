@@ -108,7 +108,7 @@ export function strengths(world: World): Float64Array {
   return s;
 }
 
-function warsOf(world: World, n: number): number {
+export function warsOf(world: World, n: number): number {
   return world.wars.list.filter((w) => w.sides[0].includes(n) || w.sides[1].includes(n)).length;
 }
 
@@ -136,6 +136,60 @@ function claimsOn(world: World, n: number, t: number): boolean {
   return false;
 }
 
+/**
+ * The strength of `n` with its allies, and the defence of a target `t` (PLAN 3.8e: a puppet is
+ * defended by its overlord, whose strength holds the puppet's own, `strengths`): its realm, with the
+ * allies and guarantors of both. `str` is `strengths(world)`.
+ */
+export function sides(world: World, str: Float64Array): { withAllies: (n: number) => number; defence: (t: number) => number } {
+  const nc = world.nations.cols;
+  const al = world.alliances;
+  const withAllies = (n: number): number => {
+    let s = str[n]!;
+    for (const m of al.allianceOf(n)?.members ?? []) if (m !== n) s += ALLY_WEIGHT * str[m]!;
+    return s;
+  };
+  const defence = (t: number): number => {
+    const o = nc.overlord[t]!;
+    let s = 0;
+    for (const x of o !== 0 ? [o, t] : [t]) {
+      s += withAllies(x);
+      for (const g of al.guarantorsOf(x)) s += ALLY_WEIGHT * str[g]!;
+    }
+    return Math.max(1, s);
+  };
+  return { withAllies, defence };
+}
+
+/** A declaration's utility by its terms (the module's formula), and their sum `u`. */
+export interface WarUtility {
+  strength: number;
+  opportunity: number;
+  claim: number;
+  exhaustion: number;
+  wars: number;
+  pariah: number;
+  restless: number;
+  u: number;
+}
+
+/**
+ * The utility of `n`'s war on `t` (the module's formula): `attack` is `n`'s strength with its allies,
+ * `defence` the target's (`sides`), `wars` how many wars `n` is in, `restless` its restlessness
+ * (0 while at war). Summed in the formula's order.
+ */
+export function warUtility(world: World, n: number, t: number, attack: number, defence: number, wars: number, restless: number): WarUtility {
+  const nc = world.nations.cols;
+  const strength = (nc.aggression[n]! / 100) * (Math.min(RATIO_CAP, attack / defence) - 1);
+  const opportunity = warsOf(world, t) > 0 ? OPPORTUNITY : 0;
+  const claim = claimsOn(world, n, t) ? CLAIM : 0;
+  const exhaustion = exhaustionOf(world, n) / 100;
+  const warsTerm = WARS_PENALTY * wars;
+  const pariah = PARIAH_WAR * relationHit(world, n, t);
+  const u = strength + opportunity + claim - exhaustion - warsTerm + pariah + restless;
+  return { strength, opportunity, claim, exhaustion, wars: warsTerm, pariah, restless, u };
+}
+
 export function strategicAi(world: World): void {
   if (!world.settings.aiEnabled || !isDayStart(world.tick)) return;
   const day = world.tick / 24;
@@ -154,22 +208,7 @@ export function strategicAi(world: World): void {
   const nb = neighbourMap(world);
   const str = strengths(world);
   const al = world.alliances;
-  const withAllies = (n: number): number => {
-    let s = str[n]!;
-    for (const m of al.allianceOf(n)?.members ?? []) if (m !== n) s += ALLY_WEIGHT * str[m]!;
-    return s;
-  };
-  // A puppet is defended by its overlord (PLAN 3.8e), whose strength holds the puppet's own
-  // (`strengths`): the target is read as its realm, with the allies and guarantors of both.
-  const defence = (t: number): number => {
-    const o = nc.overlord[t]!;
-    let s = 0;
-    for (const x of o !== 0 ? [o, t] : [t]) {
-      s += withAllies(x);
-      for (const g of al.guarantorsOf(x)) s += ALLY_WEIGHT * str[g]!;
-    }
-    return Math.max(1, s);
-  };
+  const { withAllies, defence } = sides(world, str);
   for (const n of actors) {
     const neighbours = [...(nb.get(n) ?? [])].sort((a, b) => a - b);
     // War.
@@ -182,7 +221,7 @@ export function strategicAi(world: World): void {
       for (const t of neighbours) {
         // Whom it may declare on (PLAN 3.8: not a puppet of its ally either, which it used to pick).
         if (whyNotWar(world, n, t) !== Refusal.None) continue;
-        const u = (nc.aggression[n]! / 100) * (Math.min(RATIO_CAP, attack / defence(t)) - 1) + (warsOf(world, t) > 0 ? OPPORTUNITY : 0) + (claimsOn(world, n, t) ? CLAIM : 0) - exhaustionOf(world, n) / 100 - WARS_PENALTY * wars + PARIAH_WAR * relationHit(world, n, t) + restless;
+        const u = warUtility(world, n, t, attack, defence(t), wars, restless).u;
         if (u > bestU) {
           bestU = u;
           best = t;

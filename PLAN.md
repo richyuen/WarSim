@@ -48,18 +48,21 @@ when taken up:
   beside it; `sweep:quick`'s limits (no hegemon, borders moving) hold; a unit test per rule (red
   without); the pin's entry; `--profile`. Stop: two full re-measures flat, the bar is the user's
   (ADR-554). In parts:
-    - [ ] 7.53a Measured on HEAD, 4 seeds × 20 years (the tuning seeds, none of the AT's): armed wars
-      a world by year; the great powers (`GREAT`: the strongest by `strengths`) by year: how many
-      share an alliance, how many pairs of them are neighbours, at war, and what the best
-      declaration of one on another scores (`strategicAi`'s utility, by its terms). No rule.
-    - [ ] 7.53b Rivalry: a bonus to the utility of a war between two great powers, neighbours, the
-      larger the nearer their strengths. AT: armed wars a world in years 2–20 on the 4 tuning seeds
-      at least twice 7.53a's; a unit test (red without); the ADR with the constants; the pin's entry.
-    - [ ] 7.53c Alliances of rivals split: a member great power of an alliance whose leader (or
-      another member) is a great power, with no war in common with it, loses loyalty monthly until
-      it leaves (`allianceSystem`'s LEAVE_LOYALTY). AT: great powers sharing an alliance at years
-      10 and 20 on the 4 tuning seeds halved against 7.53b's run; a unit test (red without); the
-      ADR; the pin's entry.
+    - [x] 7.53a Measured on HEAD (`docs/evidence/7.53/measure-a.md`, `tools/diag/peers.ts`; seeds
+      3011, 3023, 3037, 3041 × 20 years, the tuning seeds): armed wars 2.73 a world in year 1, 0.57
+      in years 2–20. Of the 6 great powers' 15 pairs, 3.8 allied (Germany's alliance of 1938 holds 3
+      to 5 of them), 4.1 neighbours, 1.6 at war, 1.1 open (neighbours, neither allied nor at war).
+      Where great powers fight (3037's years 15–20) the land war has contact. So the split first
+      (b), then rivalry (c). The utility moved into `warUtility` (no rule: the pin unchanged).
+    - [ ] 7.53b Alliances of rivals split: a member great power of an alliance in which another
+      member is a great power, with no war in common with it, loses loyalty monthly until it leaves
+      (`allianceSystem`'s LEAVE_LOYALTY). AT: great pairs allied, mean of years 2–20 on the 4 tuning
+      seeds, halved (3.80 in 7.53a); armed wars read beside it; a unit test (red without); the ADR;
+      the pin's entry.
+    - [ ] 7.53c Rivalry: a bonus to the utility of a war between two great powers, neighbours, the
+      larger the nearer their strengths (`warUtility`). AT: armed wars a world in years 2–20 on the 4
+      tuning seeds at least twice 7.53a's (0.57 → 1.14) with b in; a unit test (red without); the
+      ADR with the constants; the pin's entry; `--profile`.
 - [ ] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged land
   formations worldwide, mean of daily samples, 0.3–0.7 at years 10 and 20 on the critic's 24 worlds
   (of about 300 of nations at war), against 55–107 in year 1; the same on `bcbc99c` (1.1 and 0.3).

@@ -21073,3 +21073,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   common split (4); taken before PLAN 7.49b. Filed as PLAN 7.53 (a measured, b rivalry, c split),
   placed before 7.49. The other options (a lower strength bar, valuing the prize) not taken.
 - **Next:** PLAN 7.53a.
+
+## 2026-10-21 — PLAN 7.53a: wars between peers measured on HEAD
+
+- `tools/diag/peers.ts` on seeds 3011, 3023, 3037, 3041 × 20 years (`docs/evidence/7.53/measure-a.md`):
+  armed wars 2.73 a world in year 1, 0.57 in years 2–20. Of the 6 great powers' 15 pairs: 3.8 allied,
+  4.1 neighbours, 1.6 at war, 1.1 open. Germany's 1938 alliance holds 3–5 of the great powers from year
+  2. Where great powers fight (3037, years 15–20) armed wars and contact come back near year 1's.
+- So the alliance split first (7.53b), rivalry after (7.53c): the parts swapped in PLAN.md.
+- The declaration's utility moved into `warUtility` (`strategic.ts`), the same sum in the same order:
+  the pin unchanged (checked). Specs by hand: none (no UI).
+- **Next:** PLAN 7.53b.
