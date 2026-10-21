@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { transportRoom } from '../../src/sim/systems/amphibious';
+import { destroyFormation } from '../../src/sim/systems/elements';
 import { CARRIER_CYCLE, carrierStrikes } from '../../src/sim/systems/navalCombat';
+import { fleetPower } from '../../src/sim/systems/seaControl';
 import { sortieAt } from '../../src/sim/systems/sorties';
 import { assets1938 } from '../helpers/earth';
 
@@ -17,6 +20,15 @@ describe('a carrier\'s strikes as flights (PLAN 4.12b)', () => {
     const sim = new Sim({ scenario: '1938', seed: 6131, assets: assets1938(SIZE_1938.w) });
     sim.command({ kind: 'declareWar', attacker: id('GER'), defender: id('ENG') });
     sim.command({ kind: 'declareWar', attacker: id('JAP'), defender: id('USA') });
+    // No transports (PLAN 7.49d1): a landing or a ferry under way draws the warfleets to escort it,
+    // and Britain's ferry of its first days kept its carriers from the battle with the Germans.
+    const w0 = sim.world;
+    const tps: number[] = [];
+    w0.formations.forEach((f) => {
+      if (w0.isFleet(f) && ['ENG', 'JAP', 'GER', 'USA'].map(id).includes(w0.formations.cols.nation[f]!) && transportRoom(w0, f) > 0 && fleetPower(w0, f) <= 0) tps.push(f);
+    });
+    expect(tps.length).toBeGreaterThan(0);
+    for (const f of tps) destroyFormation(w0, f);
     let flights: ReturnType<typeof carrierStrikes> = [];
     let hour = 0;
     for (; hour < 80 && flights.length === 0; hour++) sim.step(1, (w) => (flights = carrierStrikes(w)));

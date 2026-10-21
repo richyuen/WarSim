@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-612 · 2026-10-21 · accepted — The ferry: a nation with a land front ships its army on a landmass with no front to its own port on a front's land (PLAN 7.49d1; ADR-591 a)
+
+- **Context** (critic run 11, R11-B1; `docs/evidence/7.49/d.md` §2). Of the land formations at war,
+  21.8 % / 29.5 % stand on a landmass with none of their nation's front cells after 60 days of the
+  critic's year-10 / year-20 saves; 62–66 % of them of nations fronted in each war, which no rule
+  ships: the invasion AI lands only in a war with no front (ADR-511), and the operational AI orders
+  the formations within DEPLOY_RANGE_CELLS of a front on their land (7019 year 10: Britain's 117
+  divisions at home, its war with Japan fought in Asia).
+- **Decision.** In the invasion AI's turn and lock (a nation's actor day, none of its formations
+  aboard), when no landing has a target, a nation with a land front ships its free formations
+  standing on a landmass with none of its own front cells (`planFerry`): its transports at a port of
+  its own (the landing's pick) take them aboard there, or send the nearest on the port's land to it,
+  for its port on a front's land nearest them by sea (open, unbombed, in their waters, not held by
+  its enemy); transports standing on a front's land, or on a land with none of that army, sail for a
+  port of its on the army's land (`sailToArmy`, PLAN 7.54b). The boarding steps are the landing's
+  (`board`, shared).
+- **Measured** (`docs/evidence/7.49/d1.md`): island share after 60 days 21.8 → 18.2 % (year 10),
+  29.5 → 28.3 % (year 20), 25.8 → 23.4 % of the 48 together (the bar of ADR-591 a, under 20 %, is read
+  after PLAN 7.49d2 and d3); boarded by the watched nations 7 → 86. Engaged per war 0.134 → 0.135
+  (flat): of those landed, 50 of 133 land beyond 60 cells of their front (Britain at Wilhelmshaven,
+  its front in Asia): the port nearest the transports, not the front (PLAN 7.63).
+- **Cost.** The invasion AI's mean 0.011 → 0.017 ms an hour on seed 99, longest call 15.1 ms.
+- **Pin.** a2ae195b → 4f1e7dd8 (seed 99's first year: its fronted nations ferry).
+
 ### ADR-611 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — PLAN 7.52c: cities with no soldiers struck; the capital's value carries them, not the dead's weight
 
 - **Context** (critic run 11, design objection; `docs/evidence/7.52/c.md`). The editor-armed Poland

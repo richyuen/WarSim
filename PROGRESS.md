@@ -21557,3 +21557,27 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Filed 7.49d2 (an ally's port in the same war) and 7.49d3 (ADR-518's transport slot for a home
   army), siblings of 7.49d1 by the depth cap; the 20 % bar read after d3. No code.
 - **Next:** PLAN 7.49d1.
+
+## 2026-10-21 — PLAN 7.49d1: the ferry (ADR-612; ticked)
+
+- **Rule** (`ai/invasion.ts`, `planFerry`): in the invasion AI's turn and lock, when no landing has
+  a target, a nation with a land front ships its free formations on a landmass with none of its
+  front cells to its own port on a front's land nearest its transports by sea; transports on a
+  front's land, or on a land with none of that army, sail for it (`sailToArmy`). The landing's
+  boarding steps are shared (`transportsAtPort`, `board`). SPEC §7 (Invasions).
+- **Read** (`docs/evidence/7.49/d1.md`, 48 saves × 60 days, HEAD `cc864e75` the before): island share
+  21.8 → 18.2 % (year 10), 29.5 → 28.3 % (year 20), 25.8 → 23.4 % together (7.49d's bar, under 20 %,
+  read after d2 and d3); boarded by the watched nations 7 → 86. Engaged (`warSides.ts`, 30 days):
+  per war 0.134 → 0.135, worldwide 0.592 → 0.596: flat.
+- **Found** (`tools/diag/ferryLanded.ts`, new): 50 of 133 landed beyond 60 cells of their front, the
+  port nearest the transports, not the front (7019: Britain at Wilhelmshaven, its war in Asia).
+  Filed as PLAN 7.63 with its own AT.
+- **Test:** `ferry1938.test.ts`, two cases (aboard for a port on the front's land; transports sail
+  home for the army), both red without. Specs by hand: none (no drawn change).
+- **Profile** (seed 99, 2 years, pinned): invasionAi mean 0.011 → 0.017 ms an hour, longest call
+  15.1 ms (guard 50). Mean tick 1.80 → 1.90 ms over the two years (a different world from year 1:
+  formations 784 → 721 at year 2's end).
+- **Pin:** a2ae195b → 4f1e7dd8.
+- **Budget:** 7.49 at 17 commits by its number in the subjects.
+- **Next:** PLAN 7.49d2 (an ally's port).
+- **Test aimed:** `carrierStrikes1938.test.ts` (PLAN 4.12b) relied on Britain's carriers meeting the Germans by hour 80; Britain's ferry drew them to escort it. Its setup now removes the four nations' transport groups: the same battle and flights at hour 43 as before the rule; no assertion changed.

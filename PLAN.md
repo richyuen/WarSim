@@ -113,7 +113,7 @@ when taken up:
       after 60 days under 20 % (25.9 % on HEAD at day 60). Widened the same day (the user's): the
       ferry to an ally's port and transports bought for a home army, d2 and d3, siblings of d1 by the
       depth cap. In parts:
-      - [ ] 7.49d1 The ferry: a nation at war with a land front, whose land formations stand beyond
+      - [x] 7.49d1 The ferry: a nation at war with a land front, whose land formations stand beyond
         DEPLOY_RANGE of its own front on a landmass with no front of its nation, boards them on its
         transports for its own port on the front's land nearest them (in `planLanding`'s turn and
         lock), and recalls a group standing at a theatre port to carry them. AT: the island share of
@@ -121,6 +121,9 @@ when taken up:
         is 7.49d's, read after d3); engaged worldwide and per war read; a unit test (red without: an
         island army of a fronted nation boards for its front); no invasion AI call over 50 ms (7.7's
         guard); the pin's entry; `--profile`.
+        Rule in (ADR-612, `docs/evidence/7.49/d1.md`): island share after 60 days 25.8 → 23.4 % of the
+        48 together (21.8 → 18.2 %, 29.5 → 28.3 %); boarded 7 → 86; engaged per war 0.134 → 0.135;
+        longest invasion call 15.1 ms; 50 of 133 landed beyond 60 cells of their front (PLAN 7.63).
       - [ ] 7.49d2 The ferry to an ally's port (the user's, 2026-10-21): a nation with no port of its
         own on its front's land ferries to the port of an ally in the same war there, nearest its
         front (217 island formations at year 20 have no own port there, the Soviet Union's 158 on
@@ -165,6 +168,18 @@ when taken up:
       ports with their water near (causes: PLAN 7.54, 7.55; two untraced). BLOCKERS, the user's (a
       tick, b close, c keep open). Ticked (2026-10-21, the user's: option a, on the rule's own
       count).
+
+- [ ] 7.63 The ferry's port nearest the front (found at 7.49d1, `docs/evidence/7.49/d1.md` §3; carries
+  emergent 6 with 7.49): the ferry lands at the nation's port on a front's land nearest its
+  transports by sea, which may be far from the front (7019 year 10: Britain at Wilhelmshaven and
+  Constanța, 524–626 cells from its front in Asia; Japan at Fusan, 139–160 from China); of the 133
+  formations landed in 60 days of the 48 saves, 50 beyond DEPLOY_RANGE_CELLS (60) of their front at
+  the landing, 71 within it on day 60, 3 engaged on any day. The ferry's port: of its ports on a
+  front's land, the nearest a front cell of its own (straight cells), the sea's way the tie-break.
+  AT: of the formations landed in 60 days of the 48 saves (`ferryLanded.ts`), within 60 cells of
+  their front on day 60 at least 80 % (71 of 133, 53 %, on 7.49d1's code); engaged worldwide and per
+  war read (`warSides.ts`); no invasion AI call over 50 ms; a unit test (red without: Britain at
+  war with Japan lands at a port nearer its front); the ADR; the pin's entry.
 
 - [ ] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21;
   AI nuclear use 7, the critic's run 11 design objection; `docs/evidence/7.52/c.md`): a capital's

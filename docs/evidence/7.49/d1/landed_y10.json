@@ -1,0 +1,944 @@
+{
+ "all": {
+  "landed": 75,
+  "onFrontLand": 69,
+  "engagedEver": 0,
+  "within60": 43,
+  "within60Last": 37
+ },
+ "rows": [
+  {
+   "seed": 1129,
+   "src": "critic/c11_seed1129_y10.bin",
+   "landed": 0,
+   "onFrontLand": 0,
+   "engagedEver": 0,
+   "within60": 0,
+   "within60Last": 0,
+   "list": []
+  },
+  {
+   "seed": 1307,
+   "src": "critic/c11_seed1307_y10.bin",
+   "landed": 1,
+   "onFrontLand": 1,
+   "engagedEver": 0,
+   "within60": 1,
+   "within60Last": 1,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 60,
+     "port": "Fusan",
+     "cellsToFront": 59,
+     "engagedDays": 0,
+     "lastCells": 59,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 2081,
+   "src": "critic/c11_seed2081_y10.bin",
+   "landed": 4,
+   "onFrontLand": 4,
+   "engagedEver": 0,
+   "within60": 2,
+   "within60Last": 4,
+   "list": [
+    {
+     "nation": "GER",
+     "day": 18,
+     "port": "Laayoune",
+     "cellsToFront": 111,
+     "engagedDays": 0,
+     "lastCells": 0,
+     "alive": true
+    },
+    {
+     "nation": "GER",
+     "day": 32,
+     "port": "Laayoune",
+     "cellsToFront": 101,
+     "engagedDays": 0,
+     "lastCells": 0,
+     "alive": true
+    },
+    {
+     "nation": "NOR",
+     "day": 59,
+     "port": "Belfast",
+     "cellsToFront": 0,
+     "engagedDays": 0,
+     "lastCells": 0,
+     "alive": true
+    },
+    {
+     "nation": "GER",
+     "day": 58,
+     "port": "Sydney",
+     "cellsToFront": 1,
+     "engagedDays": 0,
+     "lastCells": 2,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 2347,
+   "src": "critic/c11_seed2347_y10.bin",
+   "landed": 8,
+   "onFrontLand": 7,
+   "engagedEver": 0,
+   "within60": 3,
+   "within60Last": 0,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 7,
+     "port": "Fusan",
+     "cellsToFront": 166,
+     "engagedDays": 0,
+     "lastCells": 157,
+     "alive": true
+    },
+    {
+     "nation": "NED",
+     "day": 15,
+     "port": "Makassar",
+     "cellsToFront": 29,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 21,
+     "port": "Fusan",
+     "cellsToFront": 166,
+     "engagedDays": 0,
+     "lastCells": 167,
+     "alive": true
+    },
+    {
+     "nation": "LIT",
+     "day": 28,
+     "port": "Valletta",
+     "cellsToFront": -1,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": true
+    },
+    {
+     "nation": "NED",
+     "day": 29,
+     "port": "Makassar",
+     "cellsToFront": 29,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 39,
+     "port": "Fusan",
+     "cellsToFront": 166,
+     "engagedDays": 0,
+     "lastCells": 173,
+     "alive": true
+    },
+    {
+     "nation": "NED",
+     "day": 43,
+     "port": "Makassar",
+     "cellsToFront": 29,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 53,
+     "port": "Fusan",
+     "cellsToFront": 166,
+     "engagedDays": 0,
+     "lastCells": 168,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 2953,
+   "src": "critic/c11_seed2953_y10.bin",
+   "landed": 3,
+   "onFrontLand": 3,
+   "engagedEver": 0,
+   "within60": 2,
+   "within60Last": 2,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 29,
+     "port": "Hong Kong",
+     "cellsToFront": 3,
+     "engagedDays": 0,
+     "lastCells": 1,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 57,
+     "port": "Hong Kong",
+     "cellsToFront": 4,
+     "engagedDays": 0,
+     "lastCells": 2,
+     "alive": true
+    },
+    {
+     "nation": "GER",
+     "day": 60,
+     "port": "Cherbourg",
+     "cellsToFront": 693,
+     "engagedDays": 0,
+     "lastCells": 693,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 3491,
+   "src": "critic/c11_seed3491_y10.bin",
+   "landed": 7,
+   "onFrontLand": 5,
+   "engagedEver": 0,
+   "within60": 5,
+   "within60Last": 5,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 17,
+     "port": "Dakar",
+     "cellsToFront": -1,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": true
+    },
+    {
+     "nation": "ENG",
+     "day": 23,
+     "port": "Belfast",
+     "cellsToFront": 6,
+     "engagedDays": 0,
+     "lastCells": 1,
+     "alive": true
+    },
+    {
+     "nation": "NED",
+     "day": 27,
+     "port": "Bandjarmasin",
+     "cellsToFront": 26,
+     "engagedDays": 0,
+     "lastCells": 1,
+     "alive": true
+    },
+    {
+     "nation": "NED",
+     "day": 41,
+     "port": "Bandjarmasin",
+     "cellsToFront": 26,
+     "engagedDays": 0,
+     "lastCells": 8,
+     "alive": true
+    },
+    {
+     "nation": "ENG",
+     "day": 44,
+     "port": "Belfast",
+     "cellsToFront": 10,
+     "engagedDays": 0,
+     "lastCells": 1,
+     "alive": true
+    },
+    {
+     "nation": "ITA",
+     "day": 52,
+     "port": "Dublin",
+     "cellsToFront": -1,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": true
+    },
+    {
+     "nation": "NED",
+     "day": 55,
+     "port": "Bandjarmasin",
+     "cellsToFront": 26,
+     "engagedDays": 0,
+     "lastCells": 24,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 3613,
+   "src": "critic/c11_seed3613_y10.bin",
+   "landed": 1,
+   "onFrontLand": 1,
+   "engagedEver": 0,
+   "within60": 1,
+   "within60Last": 1,
+   "list": [
+    {
+     "nation": "GER",
+     "day": 60,
+     "port": "Libreville",
+     "cellsToFront": 0,
+     "engagedDays": 0,
+     "lastCells": 0,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 4219,
+   "src": "critic/c11_seed4219_y10.bin",
+   "landed": 1,
+   "onFrontLand": 0,
+   "engagedEver": 0,
+   "within60": 0,
+   "within60Last": 0,
+   "list": [
+    {
+     "nation": "ENG",
+     "day": 50,
+     "port": "Athens",
+     "cellsToFront": -1,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 4513,
+   "src": "critic/c11_seed4513_y10.bin",
+   "landed": 0,
+   "onFrontLand": 0,
+   "engagedEver": 0,
+   "within60": 0,
+   "within60Last": 0,
+   "list": []
+  },
+  {
+   "seed": 4877,
+   "src": "critic/c11_seed4877_y10.bin",
+   "landed": 3,
+   "onFrontLand": 3,
+   "engagedEver": 0,
+   "within60": 3,
+   "within60Last": 3,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 11,
+     "port": "Fusan",
+     "cellsToFront": 52,
+     "engagedDays": 0,
+     "lastCells": 19,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 25,
+     "port": "Fusan",
+     "cellsToFront": 52,
+     "engagedDays": 0,
+     "lastCells": 20,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 39,
+     "port": "Fusan",
+     "cellsToFront": 52,
+     "engagedDays": 0,
+     "lastCells": 41,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 5309,
+   "src": "critic/c11_seed5309_y10.bin",
+   "landed": 0,
+   "onFrontLand": 0,
+   "engagedEver": 0,
+   "within60": 0,
+   "within60Last": 0,
+   "list": []
+  },
+  {
+   "seed": 5683,
+   "src": "critic/c11_seed5683_y10.bin",
+   "landed": 5,
+   "onFrontLand": 5,
+   "engagedEver": 0,
+   "within60": 3,
+   "within60Last": 1,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 21,
+     "port": "Fusan",
+     "cellsToFront": 57,
+     "engagedDays": 0,
+     "lastCells": 93,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 35,
+     "port": "Fusan",
+     "cellsToFront": 57,
+     "engagedDays": 0,
+     "lastCells": 73,
+     "alive": true
+    },
+    {
+     "nation": "ENG",
+     "day": 47,
+     "port": "Dakar",
+     "cellsToFront": 276,
+     "engagedDays": 0,
+     "lastCells": 264,
+     "alive": true
+    },
+    {
+     "nation": "FRA",
+     "day": 52,
+     "port": "Dakar",
+     "cellsToFront": 230,
+     "engagedDays": 0,
+     "lastCells": 229,
+     "alive": true
+    },
+    {
+     "nation": "NED",
+     "day": 58,
+     "port": "Massawa",
+     "cellsToFront": 0,
+     "engagedDays": 0,
+     "lastCells": 1,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 5861,
+   "src": "critic/c11_seed5861_y10.bin",
+   "landed": 1,
+   "onFrontLand": 1,
+   "engagedEver": 0,
+   "within60": 1,
+   "within60Last": 1,
+   "list": [
+    {
+     "nation": "ITA",
+     "day": 54,
+     "port": "Göteborg",
+     "cellsToFront": 0,
+     "engagedDays": 0,
+     "lastCells": 0,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 6151,
+   "src": "critic/c11_seed6151_y10.bin",
+   "landed": 1,
+   "onFrontLand": 0,
+   "engagedEver": 0,
+   "within60": 0,
+   "within60Last": 0,
+   "list": [
+    {
+     "nation": "BEL",
+     "day": 43,
+     "port": "Muscat",
+     "cellsToFront": -1,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 6421,
+   "src": "critic/c11_seed6421_y10.bin",
+   "landed": 6,
+   "onFrontLand": 6,
+   "engagedEver": 0,
+   "within60": 6,
+   "within60Last": 3,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 14,
+     "port": "Foochow",
+     "cellsToFront": 17,
+     "engagedDays": 0,
+     "lastCells": 1,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 28,
+     "port": "Fusan",
+     "cellsToFront": 48,
+     "engagedDays": 0,
+     "lastCells": 65,
+     "alive": true
+    },
+    {
+     "nation": "NED",
+     "day": 30,
+     "port": "Haiphong",
+     "cellsToFront": 2,
+     "engagedDays": 0,
+     "lastCells": 23,
+     "alive": true
+    },
+    {
+     "nation": "BRA",
+     "day": 34,
+     "port": "La Serena",
+     "cellsToFront": 1,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": false
+    },
+    {
+     "nation": "JAP",
+     "day": 42,
+     "port": "Fusan",
+     "cellsToFront": 48,
+     "engagedDays": 0,
+     "lastCells": 65,
+     "alive": true
+    },
+    {
+     "nation": "NED",
+     "day": 58,
+     "port": "Haiphong",
+     "cellsToFront": 2,
+     "engagedDays": 0,
+     "lastCells": 3,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 7019,
+   "src": "critic/c11_seed7019_y10.bin",
+   "landed": 7,
+   "onFrontLand": 7,
+   "engagedEver": 0,
+   "within60": 0,
+   "within60Last": 0,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 18,
+     "port": "Fusan",
+     "cellsToFront": 158,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": false
+    },
+    {
+     "nation": "ENG",
+     "day": 22,
+     "port": "Wilhelmshaven",
+     "cellsToFront": 602,
+     "engagedDays": 0,
+     "lastCells": 587,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 32,
+     "port": "Fusan",
+     "cellsToFront": 160,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": false
+    },
+    {
+     "nation": "ENG",
+     "day": 38,
+     "port": "Constanța",
+     "cellsToFront": 524,
+     "engagedDays": 0,
+     "lastCells": 519,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 47,
+     "port": "Chongjin",
+     "cellsToFront": 114,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": false
+    },
+    {
+     "nation": "ENG",
+     "day": 57,
+     "port": "Wilhelmshaven",
+     "cellsToFront": 626,
+     "engagedDays": 0,
+     "lastCells": 621,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 60,
+     "port": "Fusan",
+     "cellsToFront": 139,
+     "engagedDays": 0,
+     "lastCells": 139,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 7247,
+   "src": "critic/c11_seed7247_y10.bin",
+   "landed": 7,
+   "onFrontLand": 6,
+   "engagedEver": 0,
+   "within60": 5,
+   "within60Last": 5,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 21,
+     "port": "Fusan",
+     "cellsToFront": 57,
+     "engagedDays": 0,
+     "lastCells": 23,
+     "alive": true
+    },
+    {
+     "nation": "RAJ",
+     "day": 22,
+     "port": "Doha",
+     "cellsToFront": 0,
+     "engagedDays": 0,
+     "lastCells": 0,
+     "alive": true
+    },
+    {
+     "nation": "ITA",
+     "day": 32,
+     "port": "Bandar-e-Abbas",
+     "cellsToFront": 0,
+     "engagedDays": 0,
+     "lastCells": 1,
+     "alive": true
+    },
+    {
+     "nation": "GER",
+     "day": 34,
+     "port": "Bandar-e-Abbas",
+     "cellsToFront": -1,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 35,
+     "port": "Fusan",
+     "cellsToFront": 57,
+     "engagedDays": 0,
+     "lastCells": 35,
+     "alive": true
+    },
+    {
+     "nation": "ENG",
+     "day": 46,
+     "port": "Dakar",
+     "cellsToFront": 361,
+     "engagedDays": 0,
+     "lastCells": 363,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 53,
+     "port": "Fusan",
+     "cellsToFront": 59,
+     "engagedDays": 0,
+     "lastCells": 59,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 7583,
+   "src": "critic/c11_seed7583_y10.bin",
+   "landed": 6,
+   "onFrontLand": 6,
+   "engagedEver": 0,
+   "within60": 3,
+   "within60Last": 3,
+   "list": [
+    {
+     "nation": "NED",
+     "day": 6,
+     "port": "Bandjarmasin",
+     "cellsToFront": 44,
+     "engagedDays": 0,
+     "lastCells": 5,
+     "alive": true
+    },
+    {
+     "nation": "AST",
+     "day": 20,
+     "port": "Port Moresby",
+     "cellsToFront": 35,
+     "engagedDays": 0,
+     "lastCells": 2,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 28,
+     "port": "Fusan",
+     "cellsToFront": 558,
+     "engagedDays": 0,
+     "lastCells": 551,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 42,
+     "port": "Fusan",
+     "cellsToFront": 558,
+     "engagedDays": 0,
+     "lastCells": 552,
+     "alive": true
+    },
+    {
+     "nation": "AST",
+     "day": 48,
+     "port": "Port Moresby",
+     "cellsToFront": 35,
+     "engagedDays": 0,
+     "lastCells": 29,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 56,
+     "port": "Fusan",
+     "cellsToFront": 558,
+     "engagedDays": 0,
+     "lastCells": 558,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 8011,
+   "src": "critic/c11_seed8011_y10.bin",
+   "landed": 0,
+   "onFrontLand": 0,
+   "engagedEver": 0,
+   "within60": 0,
+   "within60Last": 0,
+   "list": []
+  },
+  {
+   "seed": 8167,
+   "src": "critic/c11_seed8167_y10.bin",
+   "landed": 5,
+   "onFrontLand": 5,
+   "engagedEver": 0,
+   "within60": 5,
+   "within60Last": 5,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 17,
+     "port": "Fusan",
+     "cellsToFront": 54,
+     "engagedDays": 0,
+     "lastCells": 12,
+     "alive": true
+    },
+    {
+     "nation": "NSP",
+     "day": 23,
+     "port": "Lagos",
+     "cellsToFront": 1,
+     "engagedDays": 0,
+     "lastCells": 0,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 31,
+     "port": "Fusan",
+     "cellsToFront": 54,
+     "engagedDays": 0,
+     "lastCells": 29,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 45,
+     "port": "Fusan",
+     "cellsToFront": 54,
+     "engagedDays": 0,
+     "lastCells": 44,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 59,
+     "port": "Fusan",
+     "cellsToFront": 54,
+     "engagedDays": 0,
+     "lastCells": 55,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 8693,
+   "src": "critic/c11_seed8693_y10.bin",
+   "landed": 4,
+   "onFrontLand": 4,
+   "engagedEver": 0,
+   "within60": 0,
+   "within60Last": 0,
+   "list": [
+    {
+     "nation": "USA",
+     "day": 26,
+     "port": "Mers-el-Kébir",
+     "cellsToFront": 263,
+     "engagedDays": 0,
+     "lastCells": 268,
+     "alive": true
+    },
+    {
+     "nation": "USA",
+     "day": 40,
+     "port": "Dakar",
+     "cellsToFront": 217,
+     "engagedDays": 0,
+     "lastCells": 217,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 42,
+     "port": "Foochow",
+     "cellsToFront": 481,
+     "engagedDays": 0,
+     "lastCells": 470,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 60,
+     "port": "Fusan",
+     "cellsToFront": 554,
+     "engagedDays": 0,
+     "lastCells": 554,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 8849,
+   "src": "critic/c11_seed8849_y10.bin",
+   "landed": 0,
+   "onFrontLand": 0,
+   "engagedEver": 0,
+   "within60": 0,
+   "within60Last": 0,
+   "list": []
+  },
+  {
+   "seed": 9437,
+   "src": "critic/c11_seed9437_y10.bin",
+   "landed": 5,
+   "onFrontLand": 5,
+   "engagedEver": 0,
+   "within60": 3,
+   "within60Last": 3,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 14,
+     "port": "Fusan",
+     "cellsToFront": 49,
+     "engagedDays": 0,
+     "lastCells": 17,
+     "alive": true
+    },
+    {
+     "nation": "GER",
+     "day": 25,
+     "port": "Cherbourg",
+     "cellsToFront": 144,
+     "engagedDays": 0,
+     "lastCells": 168,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 32,
+     "port": "Fusan",
+     "cellsToFront": 49,
+     "engagedDays": 0,
+     "lastCells": 33,
+     "alive": true
+    },
+    {
+     "nation": "GER",
+     "day": 39,
+     "port": "Cherbourg",
+     "cellsToFront": 144,
+     "engagedDays": 0,
+     "lastCells": 152,
+     "alive": true
+    },
+    {
+     "nation": "NED",
+     "day": 46,
+     "port": "Bangkok",
+     "cellsToFront": 0,
+     "engagedDays": 0,
+     "lastCells": 18,
+     "alive": true
+    }
+   ]
+  },
+  {
+   "seed": 9781,
+   "src": "critic/c11_seed9781_y10.bin",
+   "landed": 0,
+   "onFrontLand": 0,
+   "engagedEver": 0,
+   "within60": 0,
+   "within60Last": 0,
+   "list": []
+  }
+ ]
+}
