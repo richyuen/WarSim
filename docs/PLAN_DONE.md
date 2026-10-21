@@ -13093,3 +13093,61 @@ Of 7.33 (open in PLAN.md):
   Read (`docs/evidence/7.50/read.md`, seeds 771–780 × 30 years on `2dc4e1b`): no burst under 0.1
   kills a million, no place struck three times in a year (0 and 0, 127 bursts); the most dead 953,790
   at 0.629. Greenock taken 46 days later at 0.101 (over the bar by 0.001). Pin unchanged.
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.41 The war at sea seen (naval 7, needs 8, beyond 7.39; moved before 7.5 by ADR-577): the
+  sea war runs all 30 years now (13.17 battles a world-year after year 1), but the player cannot
+  find or read it. Run 11: Japan–USA on seed 8693 9 of 9 battles with no ticker row
+  (`critic/c11_n_8693_JAP_USA.json`; run 10 the same, one battle 150 hours with none); Germany–UK
+  on 2081 7 of 11 (`c11_n_2081_GER_ENG.json`); a late battle two destroyer flotillas, two
+  overlapping counters at 1,500 m/px, its row gone in days (`c11o_6421_*`); at 20–40 m/px the enemy
+  side dark ovals beside red British silhouettes (France's dark blue hulls read as the sea, seen at
+  7.35c); two navies placed face to face in the North Sea by the editor fight no battle in 30 days
+  (`c11_g_4877.json`; run 10 saw one on day 3). Measured first: the 8693 and 2081 battles with no
+  row (their kind, their reach), the editor fleets' orders. AT: every battle of the 8693 and 2081
+  cases has its row (was 9 of 9 and 7 of 11 without); at 20 m/px the middle of every nation's hull
+  at least 40 (summed RGB) from the sea's colour there, every nation of the 1938 world counted (a
+  spec, red on France's before); the editor case meets at sea within 30 days, or a BLOCKERS entry
+  with the measured cause, the user's to accept. Stop: two full re-measures flat, the bar is the
+  user's (ADR-554).
+  Measured (`docs/evidence/7.41/a.md`; `tools/diag/seaRows.ts` sampled at the critic's six hours,
+  and the page's rows): the critic's probe counts a battle "rowless" by `pair === null` and never
+  reads `strike`; 8693's 9 samples are all carrier strikes, each with its row in the page
+  ("Carrier strike: Japan on United States's ships"). What has no row is a battle no weapon reaches
+  yet (its fleets closing; ADR-542 kept it so): 2081 h 42, Britain's carrier 264 km from Germany's
+  battle squadron, 11 of 86 battle-hours. Three causes, a part each:
+    - [x] 7.41a A battle no weapon reaches has its row: "Fleets closing: {a} and {b}", after the
+      strikes, its click framing its nearest two fleets at war. AT: on 8693 (20 days) and 2081 (7
+      days) every sampled battle of the two wars has a row in the page, the closing one's click puts
+      both its fleets on the screen (a spec, red before: 2081 h 42 has none); the ADR (amends
+      ADR-542's "no row"); the pin unchanged (view only).
+      Done (ADR-601, `docs/evidence/7.41/a.md`): 9 of 9 and 15 of 15 (14 before) in the page; from
+      2081's closing row both fleets on the screen at 429 m/px.
+    - [x] 7.41b Hulls against the sea: at 20 m/px the middle of every nation's hull at least 40
+      (summed RGB) from the sea's colour there, every nation of the 1938 world counted (a spec, red
+      on France's before); the ADR.
+      Done (ADR-602, `docs/evidence/7.41/b.md`): a ship's marks grey, a ship of the sea's hue
+      lighter; least 6 / 13 → 49 / 48 (deep / shelf), 95 nation-classes under 40 → 0.
+    - [x] 7.41c The editor's fleets: two navies placed face to face in the North Sea by the editor
+      fight no battle in 30 days (`critic/c11_g_4877.json`). Traced first (`seaMeet.ts` on the
+      critic's scenario: their orders, detection, the war's sides; and the lead of 7.41b: at a
+      month's start the navy budget lays up an editor's fleet a nation cannot pay for). AT: the case meets at sea within
+      30 days, or a BLOCKERS entry with the measured cause, the user's to accept; a unit test (red
+      without) if a rule; the pin's entry.
+      Done (ADR-603, `docs/evidence/7.41/c.md`, `tools/diag/editorFleets.ts`): the case meets at sea
+      at hour 34, at HEAD and at `dd3b730` (4 battles with an editor fleet, 30 between the blocs, 0
+      standing at the critic's three instants); in the page the battle, its row and its history line.
+      No rule, the pin unchanged. Leads: PLAN 7.58, 7.59.

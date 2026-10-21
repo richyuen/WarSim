@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-603 · 2026-10-21 · accepted — The editor's fleets meet at sea on day 1.4: the critic's "no battle in 30 days" disputed (PLAN 7.41c; no rule)
+
+- **Context** (critic run 11, editor 7 and naval 7: "the two navies placed face to face in the North
+  Sea fight no battle in 30 days", `critic/c11_g_4877.json`). Its probe read the sea battles
+  standing at days 3, 10 and 30 (`hud.seaBattles.value.length`).
+- **Evidence** (`docs/evidence/7.41/c.md`, `tools/diag/editorFleets.ts` on the critic's exported
+  scenario with its two declarations): at HEAD and at the critic's `dd3b730` alike, 4 sea battles
+  hold an editor fleet, the first from hour 34 to 55 (Germany's 1469 against six British fleets,
+  237 km off Newcastle); both German squadrons are sunk by hour 101; 30 battles between the two
+  blocs in 30 days; 0 standing at each of the critic's three instants. In the page the same: a
+  Germany–United Kingdom battle every hour from 34 to 55, its ticker row, and the history's "United
+  Kingdom and Germany fought at sea" on 3 January.
+- **Decision.** No rule: the finding is disputed by that evidence. 7.41c's AT holds.
+- **Found.** Britain's two placed squadrons fight nothing in 30 days: a placed fleet holds its
+  place (PLAN 7.22c) and sees about 29 km, and the critic's stations are 107–120 km from the
+  enemy's; PLAN 7.59. The month-start lay-up of a placed fleet its nation cannot pay for (ADR-602's
+  lead) did not touch this case; PLAN 7.58.
+
 ### ADR-602 · 2026-10-21 · accepted — A ship's marks are grey, and a ship of the sea's hue is lighter (PLAN 7.41b; amends ADR-548's look, keeps 7.10a's marks)
 
 - **Context** (critic run 11, naval 7: at 20–40 m/px "the enemy side reads as dark ovals"; 7.35c:

@@ -185,45 +185,6 @@ when taken up:
   missed. 7.54's count 7 → 6. BLOCKERS, the user's (a tick, b close, c the landing takes from the
   operational AI's army, a design change).
 
-- [ ] 7.41 The war at sea seen (naval 7, needs 8, beyond 7.39; moved before 7.5 by ADR-577): the
-  sea war runs all 30 years now (13.17 battles a world-year after year 1), but the player cannot
-  find or read it. Run 11: Japan–USA on seed 8693 9 of 9 battles with no ticker row
-  (`critic/c11_n_8693_JAP_USA.json`; run 10 the same, one battle 150 hours with none); Germany–UK
-  on 2081 7 of 11 (`c11_n_2081_GER_ENG.json`); a late battle two destroyer flotillas, two
-  overlapping counters at 1,500 m/px, its row gone in days (`c11o_6421_*`); at 20–40 m/px the enemy
-  side dark ovals beside red British silhouettes (France's dark blue hulls read as the sea, seen at
-  7.35c); two navies placed face to face in the North Sea by the editor fight no battle in 30 days
-  (`c11_g_4877.json`; run 10 saw one on day 3). Measured first: the 8693 and 2081 battles with no
-  row (their kind, their reach), the editor fleets' orders. AT: every battle of the 8693 and 2081
-  cases has its row (was 9 of 9 and 7 of 11 without); at 20 m/px the middle of every nation's hull
-  at least 40 (summed RGB) from the sea's colour there, every nation of the 1938 world counted (a
-  spec, red on France's before); the editor case meets at sea within 30 days, or a BLOCKERS entry
-  with the measured cause, the user's to accept. Stop: two full re-measures flat, the bar is the
-  user's (ADR-554).
-  Measured (`docs/evidence/7.41/a.md`; `tools/diag/seaRows.ts` sampled at the critic's six hours,
-  and the page's rows): the critic's probe counts a battle "rowless" by `pair === null` and never
-  reads `strike`; 8693's 9 samples are all carrier strikes, each with its row in the page
-  ("Carrier strike: Japan on United States's ships"). What has no row is a battle no weapon reaches
-  yet (its fleets closing; ADR-542 kept it so): 2081 h 42, Britain's carrier 264 km from Germany's
-  battle squadron, 11 of 86 battle-hours. Three causes, a part each:
-    - [x] 7.41a A battle no weapon reaches has its row: "Fleets closing: {a} and {b}", after the
-      strikes, its click framing its nearest two fleets at war. AT: on 8693 (20 days) and 2081 (7
-      days) every sampled battle of the two wars has a row in the page, the closing one's click puts
-      both its fleets on the screen (a spec, red before: 2081 h 42 has none); the ADR (amends
-      ADR-542's "no row"); the pin unchanged (view only).
-      Done (ADR-601, `docs/evidence/7.41/a.md`): 9 of 9 and 15 of 15 (14 before) in the page; from
-      2081's closing row both fleets on the screen at 429 m/px.
-    - [x] 7.41b Hulls against the sea: at 20 m/px the middle of every nation's hull at least 40
-      (summed RGB) from the sea's colour there, every nation of the 1938 world counted (a spec, red
-      on France's before); the ADR.
-      Done (ADR-602, `docs/evidence/7.41/b.md`): a ship's marks grey, a ship of the sea's hue
-      lighter; least 6 / 13 → 49 / 48 (deep / shelf), 95 nation-classes under 40 → 0.
-    - [ ] 7.41c The editor's fleets: two navies placed face to face in the North Sea by the editor
-      fight no battle in 30 days (`critic/c11_g_4877.json`). Traced first (`seaMeet.ts` on the
-      critic's scenario: their orders, detection, the war's sides; and the lead of 7.41b: at a
-      month's start the navy budget lays up an editor's fleet a nation cannot pay for). AT: the case meets at sea within
-      30 days, or a BLOCKERS entry with the measured cause, the user's to accept; a unit test (red
-      without) if a rule; the pin's entry.
 - [ ] 7.57 A carrier's strike sinks nothing (found at 7.41, naval 7, `docs/evidence/7.41/a.md`
   §3): `navalCombatSystem` spreads a wing's strike over every surface ship in reach by its hit
   points, so on 8693 Japan's carrier group (two wings of 24) puts 0.4 of a ship's hit points on
@@ -233,6 +194,23 @@ when taken up:
   targets (PLAN 5.9). AT: 8693's six battles sink at least one ship (0 on HEAD); carrier strikes'
   ships sunk per strike on 4 seeds × 1 year read before and after; a unit test (red without); the
   ADR; the pin's entry.
+- [ ] 7.58 The editor's fleet laid up at the month start (found at 7.41b, editor 7,
+  `docs/evidence/7.41/b.md`, ADR-602): a fleet the editor places at tick 0 is destroyed in that
+  hour by the navy budget (`economic.ts`, step 1: "the fleets that stand … are laid up") when its
+  nation's navy is over its share of income: 33 of the 102 living nations' battle squadrons gone
+  after the first hour of seed 99. The player's placement vanishes with one history line. AT: of a
+  battle squadron placed by the editor for each of the 102 living nations at tick 0 of seed 99, none
+  laid up in the first month (33 on HEAD); a nation's own fleets still laid up as before (a unit
+  test on each, the first red without); the ADR; the pin's entry.
+- [ ] 7.59 Two placed navies out of sight never meet (found at 7.41c, editor 7, naval 7,
+  `docs/evidence/7.41/c.md`, ADR-603): a fleet the editor placed holds its place (PLAN 7.22c) and
+  sees about 29 km, so the critic's British pair, 107–120 km from Germany's placed squadrons, fights
+  nothing in 30 days at war. Measured first: on the critic's scenario (`editorFleets.ts`), each
+  placed fleet's nearest standing enemy warfleet each day and whether `awayOrder`'s battle test
+  (its zone's enemy no more than its fleets there together) would take it. AT: on the critic's
+  scenario both pairs of placed fleets are in a sea battle within 30 days (Britain's 0 on HEAD); a
+  placed fleet at peace still holds its place; a unit test (red without); the ADR (amends 7.22c's
+  "holds its place"); the pin's entry.
 - [ ] 7.51 Aircraft (aircraft 7, needs 8, beyond 7.49): the late air war unchanged, 3,160 air
   battles in year 1 and 120 a world-year after on the same 14 seeds (122 on `bcbc99c`), sorties
   aloft after year 1 a mean of 8.1 (`critic/c11_cmp.json`, `c11_h_1307.json`); the critic reads it as
@@ -526,3 +504,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.53 Wars between peers (ADR-585, the user's decision, 2026-10-21: options 2 and 4 of the […]
 - [x] 7.55 A transport group with room under a division's (found at 7.49f, emergent 6, […]
 - [x] 7.50 The H-bomb at the floor on a city of a million, and the spot struck again (R11-B2): seed […]
+- [x] 7.41 The war at sea seen (naval 7, needs 8, beyond 7.39; moved before 7.5 by ADR-577): the […]

@@ -21381,3 +21381,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   hand, green: hullsSea1938, shipMarks1938 (3), seaBattle1938, navalDemo1938, seaRow1938 (3),
   navalCounter1938, seaBattleSeen1938, spriteColours1938, tint1938, smallMark1938 (15 passed).
 - **Next:** PLAN 7.41c (the editor's fleets).
+
+## 2026-10-21 — PLAN 7.41c: the editor's fleets meet at sea (ADR-603; 7.41 ticked)
+
+- **Traced** (`tools/diag/editorFleets.ts`, new: a `.warsim-scenario` loaded headless, the critic's
+  declarations, hour by hour; `docs/evidence/7.41/c.md`): the critic's exported standoff on seed 4877
+  at HEAD and at its `dd3b730` alike: 4 sea battles hold an editor fleet, the first from hour 34 to
+  55 (Germany's placed 1469 against six British fleets off Newcastle); both German squadrons sunk by
+  hour 101; 30 battles between the blocs in 30 days; 0 standing at days 3, 10 and 30, the instants
+  the critic's probe read. In the page (a scratch run on the critic's helpers): the battle every hour
+  34–55, "Fleets closing: United Kingdom and Germany" in the ticker, the history's line on 3 January.
+- **Decision:** no rule; the finding disputed by that evidence (ADR-603). 7.41c's AT holds; 7.41's
+  three bars hold (a: every battle its row; b: hulls ≥ 40 from the sea; c: the case meets at sea), so
+  7.41 is ticked. Pin unchanged (no sim change).
+- **Found:** Britain's two placed squadrons fight nothing: a placed fleet holds its place (7.22c)
+  and sees about 29 km, the stations 107–120 km apart (PLAN 7.59). 7.41b's lead, the month-start
+  lay-up of a placed fleet its nation cannot pay for, did not touch this case (PLAN 7.58). Britain's
+  "52 ships lost" in the first battle not traced (German aircraft over that water).
+- **Test:** none (no rule). Specs by hand: none (no UI change).
+- **Next:** PLAN 7.57 (a carrier's strike sinks nothing).
