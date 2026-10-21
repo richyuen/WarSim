@@ -19,7 +19,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **Read with PLAN 7.47 (2026-10-20, ADR-579):** 37 / 45 / 27 / 44 against 38 / 24 / 32 / 44: under
   on 1307 and 8693, at the bar on 7019, over on 3613 (24 of its 45 a land war's).
 
-### PLAN 7.46b2: Britain's army months at war fall by more than half but miss the bar; the rule is in (2026-10-20, ADR-575)
+### RESOLVED 2026-10-21 (ADR-584, the user's decision: 7.46b2 closed not done at its bar, 7.46 done) · PLAN 7.46b2: Britain's army months at war fall by more than half but miss the bar; the rule is in (2026-10-20, ADR-575)
 - **The bar:** Britain's `spentArmy` months on seeds 7019 and 3613 under 12 each, on 4 seeds × 10
   years with the chase (`docs/evidence/7.39/b-chase.diff`) and ADR-574.
 - **What moved** (`docs/evidence/7.46/b2.md`): 75 / 97 → 33 / 29. The rule's case, a navy lost at

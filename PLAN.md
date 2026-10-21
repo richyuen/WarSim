@@ -47,73 +47,6 @@ late air war's fall), which take run 10's cases. The dimensions under the bar: e
 naval 6 beyond R10-B2 is 7.41, aircraft 6 is 7.36, AI nuclear use 7 beyond R10-B1 is 7.37. A task
 each, split when taken up:
 
-- [ ] 7.46 A navy sunk in a decisive war at sea is built again (from PLAN 7.39b, ADR-573): with the
-  chase (`docs/evidence/7.39/b-chase.diff`) the navies meet in years 1–2, the side that sails to the
-  battle mostly wins (122 against 46), and the world's armed power falls 291k → 128k by year 2 and is
-  139k at year 10, against HEAD's 177k (4 seeds 1307, 3613, 8693, 7019 × 10 years,
-  `measure-b.md` §3). 7.35d3 rebuilt the navies at HEAD's pace of loss. Measured first, on that run
-  with the chase applied: per navy lost after a chase's battle, `navyLoss`'s first test that stops
-  its warship order (gold, shipyard, the army first, the navy's share) and the days to its first
-  warship. Then a rule with an ADR. AT: with the chase, on those 4 seeds × 10 years, the world's
-  armed power at years 3 to 10 against HEAD's without the chase, read and reported, not a bar
-  (ADR-576, the user's decision, 2026-10-20: was "at least 80 %", out of reach with one warship at a
-  time; the chase is judged on 7.39b's battle bars); a unit test per rule (red without); the pin's
-  entry. Then 7.39b's two bars, read on the critic's 14 seeds × 30
-  years with the chase and the rule, decide whether the chase is adopted (ADR-573). Stop: two full
-  re-measures flat, the bar is the user's (ADR-554).
-  **The bar's ceiling** (7.46a, `measure-a.md` §4): one warship at a time, Britain, Japan and
-  France each with one in the yard every day from year 1 add about 12k a year: 60 % of HEAD at year
-  3, 68 % at year 5. The 80 % at years 3–5 needs warships ordered in parallel by a sunk navy, or
-  cheaper and faster ones: the user's (ADR-554). The parts b1–b3 are taken against it; their 4 × 10
-  read says how far each moves.
-  In parts:
-    - [x] 7.46a Measured (`tools/diag/navyRebuild.ts`, `docs/evidence/7.46/measure-a.md`; 4 seeds
-      × 10 years, HEAD and the chase at once): per depleted navy (under 75 % of its peak) and month,
-      the first test that stops a warship, weighted by the power short. Years 3–10, the chase: gold
-      40 %, the army's orders first 27 %, the navy's share 13 %, one in training 10 %; HEAD the same
-      four in the same order. Britain (`spentArmy`), Japan (`gold`), France (`navyShare`, nine
-      submarine flotillas and no armed fleet) carry most of it. No rule: the pin unchanged.
-    - [x] 7.46b1 A navy's share counts its armed fleets (7.46a §3, France): NAVY_SHARE and
-      ADR-557's saving read the upkeep of fleets with armed power, so submarines (and transports,
-      2c's) do not stop a nation with no armed fleet from a warship. AT: a unit test, a nation with
-      submarines over NAVY_SHARE and no armed fleet orders a warship (red without); France's
-      `navyShare` months on the 4 × 10 with the chase from 90/55/33/49 to 0; the world's armed power
-      at years 3–10 against HEAD's read; the ADR; the pin's entry; `--profile`.
-      Done (ADR-574, `docs/evidence/7.46/b1.md`): France's share months 0 on all four; the world's
-      armed power with the chase 52–60 % of HEAD's at years 3–5 (was 47–51), 81–96 % at 6–10.
-    - [ ] 7.46b2 The army first at war (7.46a §3, Britain): ADR-557's saving of a warship's price
-      also at war, while the nation is at war with an enemy that has an armed fleet. AT: a unit test
-      (red without); Britain's `spentArmy` months on seeds 7019 and 3613 (87, 66) under 12 each on
-      the 4 × 10 with the chase; the armed power read; the ADR; the pin's entry.
-      **Missed** (2026-10-20, BLOCKERS; the rule is in, ADR-575; `docs/evidence/7.46/b2.md`):
-      Britain's `spentArmy` months 75 / 97 with b1 (87 / 66 the chase alone) → 33 / 29 (bar 12).
-      Of them a navy lost at war with a naval enemy, the rule's case, 0; left a navy rebuilt to a
-      ship or two (no longer "without a navy", 23 and 22, 5 of 7019's in peace) and a war with no
-      naval enemy while lost (10, 7), which the task's text leaves out by design.
-      The first is PLAN 7.47.
-    - [x] 7.46b3 The gold (7.46a §2, Japan): traced first with `navyLoss.ts` on the chase (the
-      treasury before and after, what the army and the refills take), then a rule with an ADR or the
-      reason. AT: Japan's `gold` months on the 4 × 10 with the chase (88/65/76/48) halved; a unit
-      test; the pin's entry.
-      **No rule** (2026-10-20, BLOCKERS, ADR-578 proposed, the user's; `docs/evidence/7.46/b3.md`,
-      traced with `navyRebuild`'s gold trace, as 77 % of the months have an armed fleet left): now
-      52 / 82 / 62 / 66 on 1307 / 3613 / 8693 / 7019 (bars 38 / 24 / 32 / 44). Of 262 months, 76 a
-      navy rebuilt to a ship or two at war with a naval enemy (7.47's case), 144 a war with no naval
-      enemy and the army under its peacetime share (ADR-557's floor), 40 a lost navy's climb.
-      Without the land war's months the bar is out of reach on 3613 and 8693 (63, 38).
-      Closed (ADR-578 a, the user's decision, 2026-10-21): not done. With PLAN 7.47 37 / 45 / 27 / 44;
-      3613 over on a land war's months, which ADR-557's floor keeps for the army.
-    - [x] 7.46c 7.39b's two bars read on the critic's 14 seeds × 30 years with the chase and
-      7.46b's rules, and the world's armed power on the 4 × 10 reported (ADR-576): the chase
-      adopted or not (ADR-573).
-      Taken after PLAN 7.47 (the user's order, 2026-10-20): read with its rule, one run for both.
-      **Read** (2026-10-20, ADR-580, `docs/evidence/7.46/c.md`): both bars met (far station 53.3,
-      late battles 14.7): the chase to be adopted. HEAD alone 12.6 late battles; the world's navy
-      with the chase 47–54 % of HEAD's at years 2–5, 63 % at 10, 75 % at 30; the 4 × 10 read is
-      7.47's. Not landed: with it `nukeOverrun1938.test.ts` is red (§6), PLAN 7.48. After 7.48: apply
-      `docs/evidence/7.46/c-adopt.diff`, read the pin again, gate, tick 7.46c and 7.39b.
-      Done (2026-10-20): applied to `bf4b2bb`, the pin fdd3a67c as measured, the gate green.
-
 Run 11's (report of 2026-10-21 on `dd3b730`, `critic/CRITIC_REPORT.md`; run 10's R10-B2 fixed,
 R10-B1 and R10-B3 mostly; naval 6 → 7, aircraft 6 → 7): R11-B1 and R11-B2 are PLAN 7.49 and 7.50.
 The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval 7 is 7.41 (moved
@@ -459,3 +392,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean […]
 - [x] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g): […]
 - [x] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's […]
+- [x] 7.46 A navy sunk in a decisive war at sea is built again (from PLAN 7.39b, ADR-573): with the […]

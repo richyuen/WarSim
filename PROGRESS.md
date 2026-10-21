@@ -21033,3 +21033,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   against an enemy with no fleet. 7.46b3 closed, not done (Japan's gold months 37 / 45 / 27 / 44 with
   PLAN 7.47; 3613 over on a land war's months). BLOCKERS entry resolved. 7.46 stays open on 7.46b2.
 - **Next:** PLAN 7.49.
+
+## 2026-10-21 — PLAN 7.46b2 closed not done, PLAN 7.46 done (ADR-584, the user's decision)
+
+- 7.46b2 at its bar: Britain's `spentArmy` months 4 / 12 with PLAN 7.47 (bar under 12); 3613's 12 a war
+  with no naval enemy (5, ADR-578 a's case) and peace (7). Closed, not done; BLOCKERS entry resolved.
+- 7.46 ticked: its AT a read (ADR-576), the chase adopted (ADR-580), every part done or closed.
+- **Next:** PLAN 7.49.

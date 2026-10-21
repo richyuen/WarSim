@@ -167,6 +167,17 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-584 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — PLAN 7.46b2 closed not done at its bar; PLAN 7.46 done
+
+- **Context.** PLAN 7.46b2's AT: Britain's `spentArmy` months on seeds 7019 and 3613 under 12 each
+  (4 seeds × 10 years with the chase; 87 / 66 before). With ADR-575 33 / 29; with PLAN 7.47
+  (ADR-579) 4 / 12 (`docs/evidence/7.47.md`). 3613's 12: 5 months at war with no naval enemy (the
+  case ADR-578 a leaves to the army) and 7 in peace with a navy of a ship or two.
+- **Options.** a: 7.46b2 closed, not done, with that reason, and 7.46 ticked (its AT a read and the
+  chase adopted, ADR-576, ADR-580; every part done or closed). b: a navy of a ship or two saves in
+  peace too, a rule for 7 months of one seed. c: open on BLOCKERS until the next critic report.
+- **Decided** (2026-10-21, the user): a. Run 11 did not name a navy left unbuilt; naval rose 6 → 7.
+
 ### ADR-583 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — PLAN 7.40 closed not done; emergent 6 is answered by PLAN 7.49
 
 - **Context.** Run 11 (`critic/CRITIC_REPORT.md` on `dd3b730`) scores emergent dynamics 6. PLAN 7.40,
