@@ -12,6 +12,7 @@ import { declareWar } from '../../src/sim/systems/war';
 import { refillable } from '../../src/sim/systems/production';
 import { Domain, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
+import { project } from '../../src/sim/data/projection';
 import { runEvents } from '../helpers/sim1938';
 
 // PLAN 4.6e1: the navy's cost. A nation keeps its navy's upkeep near NAVY_SHARE of its income:
@@ -297,5 +298,61 @@ describe('a navy\'s share counts its armed fleets (PLAN 7.46b1)', () => {
     w.nations.cols.manpower[FRA] = 1e7;
     runEvents(s, 1);
     expect(ships(w, FRA)).toEqual([fleets.destroyer]);
+  });
+});
+
+// PLAN 7.58 (ADR-607): a fleet the editor placed at tick 0 (a month's start) was laid up in that
+// hour by the navy's budget when its nation's navy was over its share: 33 of the 102 living
+// nations' battle squadrons of seed 99, placed on open sea, gone with one history line each.
+describe('a fleet the editor placed is not laid up (PLAN 7.58)', () => {
+  it('a battle squadron placed for each living nation at tick 0 of seed 99 stands after the month\'s start (red without: 33 gone)', () => {
+    const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+    const w = s.world;
+    expect(w.tick).toBe(0);
+    // 7.41b's grid: 11 a row, 3 cells apart, about 38° W 28° N (open Atlantic, no enemy in an hour).
+    const [u, v] = project(-38, 28);
+    const [x0, y0] = [u * W, v * SIZE_1938.h];
+    const living: number[] = [];
+    w.nations.forEach((n) => void (w.nations.cols.living[n] === 1 && living.push(n)));
+    expect(living.length).toBe(102);
+    const rows = Math.ceil(living.length / 11);
+    const placed: { n: number; id: number; generation: number }[] = [];
+    living.forEach((n, k) => {
+      const x = x0 + ((k % 11) - 5) * 3;
+      const y = y0 + (Math.floor(k / 11) - (rows - 1) / 2) * 3;
+      expect(placeFleet(w, n, fleets.battle, x, y)).toBe(Refusal.None);
+      const id = Math.max(...w.formations.ids().filter((f) => w.formations.cols.nation[f] === n && w.isFleet(f)));
+      expect(w.station.has(id)).toBe(true);
+      placed.push({ n, id, generation: w.formations.generation[id]! });
+    });
+    const ev = runEvents(s, 1);
+    const gone = placed.filter((p) => !w.formations.has(p.id) || w.formations.generation[p.id] !== p.generation);
+    process.stderr.write(`placed ${placed.length}, gone after the first hour ${gone.length}; nations laying up ${ev.filter((e) => e[1] === EventKind.FleetsLaidUp).length}\n`);
+    expect(gone.map((p) => TAGS_1938[p.n - 1])).toEqual([]);
+  });
+
+  it('a nation in debt keeps a squadron the editor placed and lays up its own as before (red without: the placed one, the dearest, goes)', () => {
+    const s = peaceful();
+    const w = s.world;
+    const JAP = id('JAP');
+    const tpl = (f: number): number => w.formations.cols.template[f]!;
+    const battles = (): number[] => w.formations.ids().filter((f) => w.formations.cols.nation[f] === JAP && w.isFleet(f) && tpl(f) === fleets.battle);
+    const own = battles();
+    expect(own.length).toBeGreaterThan(0);
+    const port = w.ports.find((p) => w.cells.controller[p.cell] === JAP)!;
+    expect(placeFleet(w, JAP, fleets.battle, port.x, port.y)).toBe(Refusal.None);
+    const mine = Math.max(...battles());
+    expect(w.station.has(mine)).toBe(true);
+    const generation = w.formations.generation[mine]!;
+    w.nations.cols.gold[JAP] = -1e5;
+    const income = monthlyAccounts(w, T).gross[JAP]!;
+    const ev = runEvents(s, 1);
+    expect(ev.filter((e) => e[1] === EventKind.FleetsLaidUp && e[2] === JAP).length).toBe(1);
+    // The placed squadron stands, its place held.
+    expect(w.formations.has(mine) && w.formations.generation[mine] === generation).toBe(true);
+    expect(w.station.has(mine)).toBe(true);
+    // Its own battle squadrons laid up as before, until its own navy is within its share.
+    expect(battles().filter((f) => f !== mine).length).toBeLessThan(own.length);
+    expect(navyUpkeep(w, JAP) - UPKEEP_SCALE * T.templateUpkeep[fleets.battle]!).toBeLessThanOrEqual(NAVY_SHARE * income);
   });
 });

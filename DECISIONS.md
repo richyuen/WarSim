@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-607 · 2026-10-21 · accepted — A fleet the editor placed is not laid up by the navy's budget (PLAN 7.58; amends PLAN 4.6e1's lay-up)
+
+- **Context** (found by the builder at PLAN 7.41b, `docs/evidence/7.41/b.md`): step 1 of the
+  economic AI lays up a nation's standing fleets, the dearest first, while its navy is over
+  NAVY_SHARE of its income and it is short of money. A fleet the editor places at tick 0 (a month's
+  start) was laid up in that hour: of a battle squadron placed for each of the 102 living nations of
+  seed 99, 33 were gone after the first hour, with one history line each. The player's placement
+  vanished.
+- **Decision.** A fleet that holds the place the editor gave it (`World.station`, PLAN 7.22c) is no
+  candidate for the lay-up, and its upkeep is not counted in the navy's share that the lay-up reads:
+  a placement adds to a nation's navy and does not make it lay up its own fleets in its stead. The
+  exemption lasts as long as the station does: a fleet a player orders away or that breaks off
+  beaten (`breakOff`) is an ordinary fleet again. It still counts as a navy for the build tests
+  (`armed`, step 3): a nation given a battle squadron orders no more ships for it. Its upkeep is
+  still charged, so a short treasury may send divisions home (the army's step, unchanged).
+- **Evidence** (`docs/evidence/7.58/a.md`): placed squadrons gone after the first hour 33 → 0 of
+  102; Japan in debt with one placed keeps it and lays up its own as before.
+- **Consequences.** Two tests in `navyBudget1938.test.ts` (both red without). Pin unchanged
+  (a2ae195b): seed 99's start has no placed fleet.
+
 ### ADR-606 · 2026-10-21 · accepted — A land-based squadron's fire on ships goes on one ship, picked by hit points (PLAN 7.61; amends ADR-318's spread)
 
 - **Context** (found by the builder at PLAN 7.60, `docs/evidence/7.60/a.md` §4): `strikes` (PLAN

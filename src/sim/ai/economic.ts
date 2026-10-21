@@ -19,7 +19,10 @@
  *    income, a warhead is scrapped at a time (its WARHEAD_UPKEEP saved).
  *    Before the army (PLAN 4.6e1): while its navy's upkeep is over NAVY_SHARE of its income, the
  *    fleets that stand (not under way, not in a sea battle) are laid up, the dearest first
- *    (`FleetsLaidUp`, a crew's DISBAND_MANPOWER back to the pool).
+ *    (`FleetsLaidUp`, a crew's DISBAND_MANPOWER back to the pool). A fleet the editor placed that
+ *    holds its place (`World.station`, PLAN 7.22c) is neither laid up nor counted in that share
+ *    (PLAN 7.58, ADR-607: 33 of 102 placed at tick 0 of seed 99 were gone in the first hour); it
+ *    still counts as a navy for the build tests (step 3).
  * 2. Suppression, while a province it holds has unrest ≥ SUPPRESS_FROM (`suppressionLevel`):
  *    SUPPRESS_FULL while the treasury holds a month of it over RESERVE_MONTHS of income, else
  *    SUPPRESS_LEVEL while the budget has room (B before any suppression > SUPPRESS_ROOM × income),
@@ -244,7 +247,8 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
         l.push(id);
         fleets.set(n, l);
         const u = upkeepOf(world, id);
-        navy.set(n, (navy.get(n) ?? 0) + u);
+        // A fleet the editor placed (PLAN 7.58, ADR-607) is the player's: no part of the share a lay-up reads.
+        if (!world.station.has(id)) navy.set(n, (navy.get(n) ?? 0) + u);
         if (fleetPower(world, id) > 0) armed.set(n, (armed.get(n) ?? 0) + u);
         return;
       }
@@ -352,7 +356,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           balance += WARHEAD_UPKEEP;
         }
         let laid = 0;
-        const standing = (fleets.get(n) ?? []).filter((id) => f.moving[id] !== 1 && f.engaged[id] !== 1 && seaRangeOf(world, id) === undefined).sort((a, b) => upkeepOf(world, b) - upkeepOf(world, a) || a - b);
+        const standing = (fleets.get(n) ?? []).filter((id) => f.moving[id] !== 1 && f.engaged[id] !== 1 && seaRangeOf(world, id) === undefined && !world.station.has(id)).sort((a, b) => upkeepOf(world, b) - upkeepOf(world, a) || a - b);
         for (const id of standing) {
           if (balance >= need || nc.gold[n]! >= RUNWAY_MONTHS * (need - balance) || (navy.get(n) ?? 0) <= NAVY_SHARE * income) break;
           const u = upkeepOf(world, id);

@@ -13204,3 +13204,28 @@ Of 7.33 (open in PLAN.md):
   before (a unit test on each, the first red without); the ADR; the pin's entry.
   Rule in (ADR-606, `docs/evidence/7.61/a.md`; each squadron's share on the ships on one ship, by hit
   points): whole-fleet 390 of 431 (on `1fe30f8`) → 90 of 586 (15 %); over half 3 → 0; both met.
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.58 The editor's fleet laid up at the month start (found at 7.41b, editor 7,
+  `docs/evidence/7.41/b.md`, ADR-602): a fleet the editor places at tick 0 is destroyed in that
+  hour by the navy budget (`economic.ts`, step 1: "the fleets that stand … are laid up") when its
+  nation's navy is over its share of income: 33 of the 102 living nations' battle squadrons gone
+  after the first hour of seed 99. The player's placement vanishes with one history line. AT: of a
+  battle squadron placed by the editor for each of the 102 living nations at tick 0 of seed 99, none
+  laid up in the first month (33 on HEAD); a nation's own fleets still laid up as before (a unit
+  test on each, the first red without); the ADR; the pin's entry.
+  Rule in (ADR-607, `docs/evidence/7.58/a.md`): a fleet on its editor's station is not laid up nor
+  counted in the share; placed squadrons gone after the first hour 33 → 0; pin unchanged.

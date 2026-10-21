@@ -21450,3 +21450,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   seaBattleSeen1938, carrierStrikeRow1938 (7 passed).
 - **Next:** the open tasks ahead wait on the user (7.49c–f, 7.54, 7.56, 7.60 in BLOCKERS); PLAN 7.58
   (the editor's fleet laid up at the month start).
+
+## 2026-10-21 — PLAN 7.58: a fleet the editor placed is not laid up (ADR-607; ticked)
+
+- **Rule** (`economic.ts` step 1): a fleet holding its editor's place (`World.station`, PLAN 7.22c)
+  is no lay-up candidate and its upkeep is not in the navy's share the lay-up reads; still a navy
+  for the build tests (`armed`). Ordered away or broken off, it is an ordinary fleet again.
+- **Read** (`docs/evidence/7.58/a.md`): seed 99, a battle squadron placed for each of the 102 living
+  nations at tick 0: gone after the first hour 33 → 0 (bar 0: met). Pin unchanged (a2ae195b).
+- **Test:** `navyBudget1938.test.ts`, two (both red without: 33 gone; Japan's placed one laid up
+  first); the 4.6e1 lay-up test unchanged, green. Specs by hand: none (no UI change).
+- **Next:** PLAN 7.59 (two placed navies out of sight never meet).

@@ -198,14 +198,6 @@ when taken up:
   points): over half 8 → 1, bar 0: missed (a lone flotilla under 6.4 ships of fire); sunk 64 → 66;
   whole-fleet 594 of 853 → 126 of 1,083. BLOCKERS, the user's (a tick, b close, c keep open).
 
-- [ ] 7.58 The editor's fleet laid up at the month start (found at 7.41b, editor 7,
-  `docs/evidence/7.41/b.md`, ADR-602): a fleet the editor places at tick 0 is destroyed in that
-  hour by the navy budget (`economic.ts`, step 1: "the fleets that stand … are laid up") when its
-  nation's navy is over its share of income: 33 of the 102 living nations' battle squadrons gone
-  after the first hour of seed 99. The player's placement vanishes with one history line. AT: of a
-  battle squadron placed by the editor for each of the 102 living nations at tick 0 of seed 99, none
-  laid up in the first month (33 on HEAD); a nation's own fleets still laid up as before (a unit
-  test on each, the first red without); the ADR; the pin's entry.
 - [ ] 7.59 Two placed navies out of sight never meet (found at 7.41c, editor 7, naval 7,
   `docs/evidence/7.41/c.md`, ADR-603): a fleet the editor placed holds its place (PLAN 7.22c) and
   sees about 29 km, so the critic's British pair, 107–120 km from Germany's placed squadrons, fights
@@ -511,3 +503,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.41 The war at sea seen (naval 7, needs 8, beyond 7.39; moved before 7.5 by ADR-577): the […]
 - [x] 7.57 A carrier's strike sinks nothing (found at 7.41, naval 7, `docs/evidence/7.41/a.md` […]
 - [x] 7.61 A land-based wing's strike sinks a whole fleet at once (found at 7.60, naval 7, […]
+- [x] 7.58 The editor's fleet laid up at the month start (found at 7.41b, editor 7, […]
