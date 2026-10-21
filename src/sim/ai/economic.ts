@@ -59,7 +59,8 @@
  *    refills keep its price over the reserve, in peace, at war while the army stands at its
  *    peacetime share, and at war with an enemy that has an armed fleet (PLAN 7.46b2, ADR-575:
  *    Britain, its battle line sunk, spent every month on its army and ordered its first warship
- *    years later).
+ *    years later); at war with such an enemy a navy rebuilt to a ship or two, its armed fleets
+ *    under NAVY_SHARE, saves too (PLAN 7.47, ADR-579: the first destroyer ended the saving).
  *    Then a wing (PLAN 5.8s2, `pickWing`), as a fleet: a nation not poor with an airfield and no
  *    wing in training orders one while its air force's upkeep is under AIR_SHARE of its army's,
  *    a fighter group while fighters are under half its wings, else a tactical bomber group.
@@ -417,8 +418,11 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
         const other = w.sides[0].includes(n) ? w.sides[1] : w.sides[1].includes(n) ? w.sides[0] : undefined;
         return other !== undefined && other.some((m) => armed.has(m));
       });
+      // A navy rebuilt to a ship or two (armed, under its share) saves too while at war with such an
+      // enemy (PLAN 7.47, ADR-579): Britain's first destroyer ended the saving, and its army's orders took
+      // the gold again while its navy stood far under its peak.
       const saves = !atWar || navalFoe;
-      const shipPrice = mix.fleets && !wants && (shipsPending.get(n) ?? 0) === 0 && income >= POOR_INCOME && (armed.get(n) ?? 0) < NAVY_SHARE * income && !(fleets.get(n) ?? []).some((id) => fleetPower(world, id) > 0) && shipyard(world, n) >= 0 ? fleetPrice(world, income, mix.fleets) : 0;
+      const shipPrice = mix.fleets && !wants && (shipsPending.get(n) ?? 0) === 0 && income >= POOR_INCOME && (armed.get(n) ?? 0) < NAVY_SHARE * income && (navalFoe || !(fleets.get(n) ?? []).some((id) => fleetPower(world, id) > 0)) && shipyard(world, n) >= 0 ? fleetPrice(world, income, mix.fleets) : 0;
       // 4. Research.
       nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
       balance -= nc.research[n]! * DAYS_PER_MONTH;

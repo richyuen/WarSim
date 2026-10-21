@@ -20882,3 +20882,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   BLOCKERS). BLOCKERS entry; 7.46b3 unticked. Japan's navalFoe months added to 7.47's AT as a read.
 - No sim change, the pin unchanged. Specs by hand: none (no UI). 7.46's commits: 4.
 - **Next:** PLAN 7.47 (7.46c after it).
+
+## 2026-10-20 — PLAN 7.47: a navy rebuilt to a ship or two saves for the next at war with a naval enemy (ADR-579)
+
+- **Rule** (`economic.ts`, `shipPrice`): ADR-557's saving also for a nation whose armed fleets'
+  upkeep is under NAVY_SHARE of its income, while one of its wars has an enemy with an armed fleet
+  (before: no armed fleet only). SPEC §7's navy's cost updated.
+- **AT** (4 seeds × 10 years with the chase, ADR-574 and ADR-575; `docs/evidence/7.47.md`, `7.47/`):
+  Britain's `spentArmy` armed/navalFoe months 9 / 11 → 0 / 0 on 7019 / 3613 (bar under 3, met).
+  Read: Japan's armed/navalFoe gold months 18 / 18 / 13 / 27 → 11 / 13 / 8 / 6; all its gold months
+  37 / 45 / 27 / 44 against 7.46b3's bars 38 / 24 / 32 / 44 (3613 alone over; ADR-578's read). The
+  world's armed power 46–51 % of HEAD's at years 3–5 (b2 41–48 %), 66–81 % at 6–10.
+- **Pin:** 77a64cba → 3754b256. **Test:** `navyBudget1938.test.ts`, Norway with one destroyer
+  flotilla at war with Sweden orders a destroyer and no division (red without); with Finland its
+  army orders first. `refill.test.ts`'s ADR-514 case (Germany against Poland) met the rule: it now
+  sinks the enemy side's fleets first, and the war with them afloat asserts no refill (ADR-579).
+  No `--profile`: `navalFoe` was already computed, the rule adds a boolean.
+- The chase worktree `C:/Git/WarSim_chase` carries 7.47 too (for 7.46c). Specs by hand: none (no UI).
+- **Next:** PLAN 7.46c (7.39b's two bars on the critic's 14 seeds × 30 years with the chase and 7.46b/7.47's rules).

@@ -16,6 +16,8 @@ entries are kept and marked **RESOLVED** with the date and fix.
   Every navalFoe month taken away leaves 11 / 63 / 38 / 34: 3613 and 8693 still over.
 - **What is left:** the user's (ADR-578): the floor kept and the task closed with the reason, or
   the saving in every war. PLAN 7.47 takes the navalFoe months either way.
+- **Read with PLAN 7.47 (2026-10-20, ADR-579):** 37 / 45 / 27 / 44 against 38 / 24 / 32 / 44: under
+  on 1307 and 8693, at the bar on 7019, over on 3613 (24 of its 45 a land war's).
 
 ### PLAN 7.46b2: Britain's army months at war fall by more than half but miss the bar; the rule is in (2026-10-20, ADR-575)
 - **The bar:** Britain's `spentArmy` months on seeds 7019 and 3613 under 12 each, on 4 seeds × 10
@@ -27,6 +29,10 @@ entries are kept and marked **RESOLVED** with the date and fix.
   task's text leaves it out, no task). The world's armed power read fell (41–48 % of HEAD's at
   years 3–5, b1 52–60 %): it builds more and the chase sinks it again.
 - **Next:** PLAN 7.46b3, then 7.46c; 7.47 when taken.
+- **PLAN 7.47 done (2026-10-20, ADR-579, `docs/evidence/7.47.md`):** the rebuilt navy's months at
+  war with a naval enemy 9 / 11 → 0 / 0. Britain's `spentArmy` months of every kind now 4 / 12 on
+  7019 / 3613 (bar under 12: met on 7019, at it on 3613); left a war with no naval enemy (3, 5)
+  and peace (1, 7). The entry stays open for 7.46c's read.
 
 ### PLAN 7.39b: the chase of a far enemy navy halves the far station but sinks the navies; blocked until PLAN 7.46 (2026-10-20; ADR-573 option a, the user's decision, 2026-10-20)
 - **The bar:** on the critic's 14 seeds × 30 years, the late fleet-weeks on station with the enemy

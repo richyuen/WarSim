@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-579 · 2026-10-20 · accepted — A navy rebuilt to a ship or two saves for the next at war with a naval enemy (PLAN 7.47; amends ADR-557, ADR-575)
+
+- **Context.** PLAN 7.46b2 (ADR-575): ADR-557's saving held only for a nation with no armed fleet,
+  so the first warship a sunk navy rebuilt ended it, and its army's orders took the gold again
+  while its navy stood far under its peak: Britain's `spentArmy` months at war with a naval enemy
+  with an armed fleet afloat, 9 and 11 on seeds 7019 and 3613 (4 seeds × 10 years with the chase,
+  ADR-574 and ADR-575). The sim knows the navy's share of the income, not its peak.
+- **Decision.** The saving also holds for a nation whose armed fleets' upkeep is under NAVY_SHARE
+  of its income, while one of its wars has an enemy with an armed fleet (`navalFoe`, ADR-575). In
+  peace and in a war with no naval enemy a nation with an armed fleet does not save, as before.
+- **Trade.** It widens ADR-575's: a land power with a coast and a ship or two (China, the Raj,
+  Poland) now holds a warship's price out of its army's orders in a war against a naval power. The
+  price is one destroyer flotilla's for most of them, and the share test stops it once the navy is
+  back to its share.
+- **Read** (`docs/evidence/7.47.md`; the same 4 × 10 with this rule): Britain's armed/navalFoe
+  months 9 / 11 → 0 / 0 (the AT's bar, under 3, met); its warships ordered 6 / 9 / 5 / 7 → 11 / 14 /
+  6 / 15 (1307 / 3613 / 8693 / 7019). Japan's gold months of an armed navy at war with a naval
+  enemy 76 → 38 on the four. The world's armed power against HEAD's 46–51 % at years 3–5 (b2 41–48
+  %), 66–81 % at years 6–10 (66–79 %); a read (ADR-576).
+- **Pin.** 77a64cba → 3754b256.
+- **Test.** `navyBudget1938.test.ts`: Norway with one destroyer flotilla (under its share), its army
+  under its peacetime share, at war with Sweden (an armed fleet) orders a destroyer and no division
+  (red without: a division, no ship); at war with Finland (no armed fleet) its army orders first.
+  `refill.test.ts`'s ADR-514 case (Germany at war with Poland refills with 0.9 of a division over
+  its reserve) met this rule: Poland's side has armed fleets and Germany's navy is under its share,
+  so the refills now keep a warship's price. The case now sinks the enemy side's fleets first, and
+  the same war with them afloat asserts no refill (red without this rule).
+
 ### ADR-578 · 2026-10-20 · proposed (the user's decision) — PLAN 7.46b3's bar on Japan's gold needs the saving in a land war, against ADR-557's floor
 
 - **Context.** PLAN 7.46b3's AT halves Japan's `gold` months on 4 seeds × 10 years with the chase
@@ -194,6 +222,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - c: the bar kept and missed, 7.46b3 left open on BLOCKERS until the next critic report.
 - Until decided: 7.46b3 stays open with a BLOCKERS entry; the loop takes PLAN 7.47 (the navalFoe
   months, either way).
+- **Read since** (PLAN 7.47, ADR-579, `docs/evidence/7.47.md`): with 7.47's rule Japan's gold
+  months are 37 / 45 / 27 / 44 against the bars 38 / 24 / 32 / 44: under on 1307 and 8693, at the
+  bar on 7019, over on 3613 (of its 45, 24 a land war's). Option a or b decides 3613 alone.
 
 ### ADR-577 · 2026-10-20 · accepted (the user's decision, 2026-10-20) — PLAN 7.42 and 7.29 closed not done; 7.40 and 7.41 wait on the next critic run
 

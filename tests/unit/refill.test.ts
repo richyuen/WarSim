@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { budgetOf, economicAi, REFILL_MONTH, RESERVE_MONTHS } from '../../src/sim/ai/economic';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { bleedFormation, elementIndex, settleFormation } from '../../src/sim/systems/elements';
+import { bleedFormation, destroyFormation, elementIndex, settleFormation } from '../../src/sim/systems/elements';
 import { monthlyAccounts } from '../../src/sim/systems/economy';
 import { queueFormation, refillable, refillFormation } from '../../src/sim/systems/production';
 import { declareWar } from '../../src/sim/systems/war';
@@ -174,16 +174,28 @@ describe("a formation is refilled from its nation's pool (PLAN 7.3e1)", () => {
   it('at war the refills do not keep the next order its price (PLAN 7.26c2b)', () => {
     // Before, seed 2843's Brazil saved for a division through a war of six months, and its 612
     // and 38 men at Bolivia's border were refilled by no man while the pool held 1.21 M.
-    const { w, id } = bled();
-    const nc = w.nations.cols;
-    for (const o of w.production.ids()) if (w.production.cols.nation[o] === GER) w.production.remove(o);
-    expect(declareWar(w, GER, POL)).not.toBeNull();
-    const { income } = budgetOf(w, GER, monthlyAccounts(w, ECONOMY_TABLES_1938));
-    const price = w.rules!.templates[BUILD_MIX_1938.infantry]!.gold;
-    nc.gold[GER] = RESERVE_MONTHS * income + 0.9 * price;
-    const before = w.formations.cols.strength[id]!;
-    month(w);
-    expect(w.production.ids().filter((o) => w.production.cols.nation[o] === GER).length).toBe(0);
+    // Until PLAN 7.47 (ADR-579) Poland and its allies kept their fleets here: with an armed fleet on
+    // the enemy's side, Germany's navy under its share now saves for a warship (the case below).
+    const atWarWith = (sink: boolean): { w: World; id: number; before: number } => {
+      const { w, id } = bled();
+      const nc = w.nations.cols;
+      for (const o of w.production.ids()) if (w.production.cols.nation[o] === GER) w.production.remove(o);
+      expect(declareWar(w, GER, POL)).not.toBeNull();
+      const foes = new Set(w.wars.list.flatMap((war) => (war.sides[0].includes(GER) ? war.sides[1] : war.sides[1].includes(GER) ? war.sides[0] : [])));
+      if (sink) w.formations.forEach((f) => void (w.isFleet(f) && foes.has(w.formations.cols.nation[f]!) && destroyFormation(w, f)));
+      const { income } = budgetOf(w, GER, monthlyAccounts(w, ECONOMY_TABLES_1938));
+      const price = w.rules!.templates[BUILD_MIX_1938.infantry]!.gold;
+      nc.gold[GER] = RESERVE_MONTHS * income + 0.9 * price;
+      const before = w.formations.cols.strength[id]!;
+      month(w);
+      expect(w.production.ids().filter((o) => w.production.cols.nation[o] === GER).length).toBe(0);
+      return { w, id, before };
+    };
+    const { w, id, before } = atWarWith(true);
     expect(w.formations.cols.strength[id]!).toBeGreaterThan(before + 0.95 * REFILL_MONTH * fullOf(w, id) - 1);
+    // PLAN 7.47 (ADR-579): at war with an enemy that has an armed fleet, a navy under its share keeps
+    // a warship's price over the reserve from the refills too: none on 0.9 of a division over it.
+    const naval = atWarWith(false);
+    expect(naval.w.formations.cols.strength[naval.id]!).toBe(naval.before);
   });
 });

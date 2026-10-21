@@ -135,7 +135,7 @@ describe('the navy\'s cost (PLAN 4.6e1)', () => {
 // (a division's 1,001 and the reserve, 119 gold under a destroyer's) each time it neared a warship's.
 describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
   // Norway's army of 1938 stands just under its peacetime share (aggression 0), Brazil's at 1.9 of it.
-  const setUp = (opts: { tag: string; enemy?: string; army: boolean; bleed?: boolean }): { s: Sim; w: World; NOR: number } => {
+  const setUp = (opts: { tag: string; enemy?: string; army: boolean; bleed?: boolean; flotilla?: boolean }): { s: Sim; w: World; NOR: number } => {
     const s = peaceful();
     const w = s.world;
     const NOR = id(opts.tag);
@@ -144,6 +144,12 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
       if (c.nation[f] !== NOR) return;
       if (w.isFleet(f) || (!opts.army && !w.isWing(f))) destroyFormation(w, f);
     });
+    // A navy rebuilt to one destroyer flotilla (PLAN 7.47): armed, its upkeep under the share.
+    if (opts.flotilla) {
+      expect(w.ports.some((p) => w.cells.controller[p.cell] === NOR && placeFleet(w, NOR, fleets.destroyer, p.x, p.y) === Refusal.None)).toBe(true);
+      expect(navyUpkeep(w, NOR)).toBeGreaterThan(0);
+      expect(navyUpkeep(w, NOR)).toBeLessThan(NAVY_SHARE * budgetOf(w, NOR, monthlyAccounts(w, T)).income);
+    }
     if (opts.enemy) expect(declareWar(w, NOR, id(opts.enemy), true)).not.toBeNull();
     w.nations.cols.manpower[NOR] = 1e7;
     // A division bled to half, so the refills have men to give back.
@@ -195,6 +201,22 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
     runEvents(s, 1);
     expect(ships(w, NOR)).toEqual([fleets.destroyer]);
     expect(land(w, NOR)).toBe(0);
+  });
+
+  // PLAN 7.47: Britain's first destroyer rebuilt ended the saving (seeds 7019, 3613 with the
+  // chase): its army's orders took the gold again while its navy stood far under its peak.
+  it('with a navy rebuilt to one flotilla under its share, at war with an enemy that has an armed fleet, it orders a destroyer and no division (red without)', () => {
+    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'SWE', army: false, flotilla: true });
+    runEvents(s, 1);
+    expect(ships(w, NOR)).toEqual([fleets.destroyer]);
+    expect(land(w, NOR)).toBe(0);
+  });
+
+  it('with a navy of one flotilla, at war with an enemy without an armed fleet, the army orders first: no ship is saved for', () => {
+    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'FIN', army: false, flotilla: true });
+    runEvents(s, 1);
+    expect(land(w, NOR)).toBeGreaterThan(0);
+    expect(ships(w, NOR)).toEqual([]);
   });
 });
 

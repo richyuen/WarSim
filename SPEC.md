@@ -2060,7 +2060,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   every fleet.
   ADR-557's saving (a nation with no armed fleet keeps a warship's price over the reserve from its
   army's orders and refills) holds in peace, at war with its army at its peacetime share, and at
-  war with an enemy that has an armed fleet (PLAN 7.46b2, ADR-575).
+  war with an enemy that has an armed fleet (PLAN 7.46b2, ADR-575). At war with such an enemy it
+  holds too for a navy rebuilt to a ship or two, its armed fleets' upkeep under the share (PLAN
+  7.47, ADR-579).
   Its transport group is bought apart (PLAN 7.26h2, ADR-518), before research and the army's
   orders, outside the navy's share, on a month of reserve: at war, in a war in which it has no
   land front and whose enemy holds a port, with a free formation on a land with a port of its

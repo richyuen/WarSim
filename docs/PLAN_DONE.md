@@ -12673,3 +12673,31 @@ Of 7.33 (open in PLAN.md):
   Closed (ADR-577, the user's decision, 2026-10-20), with its parts: not done. Each part was "measured
   first, a rule only if one is found"; the next critic report judges whether the late land war is still
   short, and a task is filed from it then.
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.47 A navy rebuilt to a ship or two saves for the next at war with a naval enemy (from PLAN
+  7.46b2, ADR-575): ADR-557's saving holds only for a nation with no armed fleet, so Britain's first
+  destroyer ends it, and its army's orders take the gold again while its navy stands far under its
+  peak (`spent` armed/navalFoe and armed/landFoe 9 + 9 on seed 7019, 11 + 11 on 3613, with the
+  chase, b1 and b2; `docs/evidence/7.46/b2/`). The rule: the saving also for a nation whose armed
+  navy is under NAVY_SHARE of its income, at war with an enemy that has an armed fleet (the sim
+  knows the share, not the peak). AT: Britain's `spentArmy` months at war with a naval enemy
+  (armed/navalFoe) on the 4 × 10 with the chase (9 and 11 on 7019, 3613) under 3 each; read too,
+  Japan's `gold` months of an armed navy at war with a naval enemy (18 / 18 / 13 / 27 on 1307 /
+  3613 / 8693 / 7019, 7.46b3, `docs/evidence/7.46/b3/`); the world's armed power at years 3–10
+  against HEAD's read; a unit test (red without); the ADR; the pin's entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
+  Done (ADR-579, `docs/evidence/7.47.md`): Britain's armed/navalFoe months 9 / 11 → 0 / 0 (met);
+  Japan's armed/navalFoe gold months 76 → 38; the armed power 46–51 % of HEAD's at years 3–5.
