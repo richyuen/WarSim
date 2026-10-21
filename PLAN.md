@@ -47,58 +47,6 @@ late air war's fall), which take run 10's cases. The dimensions under the bar: e
 naval 6 beyond R10-B2 is 7.41, aircraft 6 is 7.36, AI nuclear use 7 beyond R10-B1 is 7.37. A task
 each, split when taken up:
 
-- [ ] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean
-  of 38 sea battles a world; years 2 to 30 2.7 a world-year (1,090 in 406 world-years) while 50 to
-  96 armed fleets stay afloat (115 at the start); at the year-10 and year-20 samples 18 of 28 have
-  no war whose two sides both have a navy (`critic/c10_summary.txt`, `c10_fleets.json`,
-  `c10_headless_*.json` `rows[].sea`). Taken after 7.35d3 (why the sunk navies are not built
-  again) and on its "after" run. Measured first, on the critic's 14 seeds: the late wars' sides by
-  navy, and for the naval powers' wars with each other or a coastal enemy, why their fleets stay
-  in port (no target in reach, orders refused, held home). Then rules with ADRs (the critic's
-  "Fix": blockades, raids, escort fights, landings). AT: sea battles per world-year in years 2–30
-  at least a quarter of year 1's on the critic's 14 seeds (was 2.7 against 38), and of them at
-  most 5 % sinking nothing (R9-B1's, now 3 %); then the same two bars on 10 unseen seeds × 30
-  years. Read, not a bar (the user's, 2026-10-20: which nations go to war is diplomacy's): the
-  year-10 and year-20 samples with no war whose two sides both have a navy (was 18 of 28). A unit
-  test per rule; the pin's entry. Stop: two full re-measures flat, the bar is the user's (ADR-554).
-  In parts:
-    - [x] 7.39a Measured (`docs/evidence/7.39/measure-a.md`, `tools/diag/seaWars.ts`, `seaWhy.ts`;
-      14 seeds × 30 years at `63ba0e4`, the first full measure): sea battles 35.7 in year 1, 4.3 a
-      world-year in years 2–30 (bar 8.9), 2.6 % of them sinking nothing; a war of two navies 63.4
-      war-weeks a world-year late against 68.5 in year 1; of the late fleet-weeks at war with a
-      navy (1,029 a world-year) 901 on station at an enemy port, 886 of them with the nearest enemy
-      fleet of their waters beyond `SORTIE_KM`; orders refused 4.3 a world-year. No rule.
-    - [x] 7.39b How a late war of two navies begins (7.39a §5: on station far from the enemy's fleet
-      is the shape of year 1 too, 1,402 → 886 fleet-weeks a world-year; the hunts fell × 7.8, the
-      sorties from port × 3.8, the battles × 8.3). Measured first, at the first week of each war of
-      two navies, in year 1 and in years 2–30: each side's armed fleets by state (at its bloc's port,
-      on station at whose port and from which war, under way) and the km between the two sides'
-      nearest fleets; and where year 1's hunts find their prey (at a port or on station, of which
-      war). If late wars begin with both navies out on stations from earlier wars, the rule is in
-      `awayOrder`'s station branch (a war with a navy begun while a fleet holds a station), not in
-      `SORTIE_KM`. Then a rule with an ADR. AT: the late fleet-weeks on station with the enemy fleet
-      beyond reach halved (886 → under 443 a world-year) and sea battles a world-year in years 2–30
-      at least 6.6 (half of the way from 4.3 to 7.39's 8.9), on the 14 seeds × 30 years; 7.39's
-      two bars read on that run; a unit test (red without); the pin's entry; `--profile`.
-      **Blocked** (2026-10-20, BLOCKERS, ADR-573 the user's decision; `docs/evidence/7.39/
-      measure-b.md`): measured, late wars of two navies begin a median 4,423 km apart (909 in year
-      1), and year 1's wars also begin on stations from earlier wars. The chase tried
-      (`b-chase.diff`; the AT's run, 14 seeds × 30 years, `b/full/`) empties the far stations (886
-      → 14.5) but the late battles reach only 5.0 a world-year (bar 6.6): the world's navy is cut
-      to 55 % of HEAD's at year 2 and 75 % at year 10. The cause is PLAN 7.46. Not taken again until
-      7.46 is done (ADR-573 a, the user's decision, 2026-10-20).
-      **Read** (2026-10-20, PLAN 7.46c, ADR-580, `docs/evidence/7.46/c.md`): the chase with the
-      navies rebuilt, on the 14 seeds × 30 years: far station 53.3 (bar under 443), sea battles
-      years 2–30 14.7 a world-year (bar 6.6); 7.39's two bars on that run 14.7 against 13.9 and
-      1.7 %; a unit test (red without); the pin 3754b256 → fdd3a67c; `--profile` read. Ticked when
-      the chase lands (`docs/evidence/7.46/c-adopt.diff`), after PLAN 7.48.
-      Done (2026-10-20): the chase landed after PLAN 7.48 (ADR-580, ADR-581), the pin fdd3a67c.
-    - [ ] 7.39c 7.39's two bars on 10 unseen seeds × 30 years (the AT's second half), with the chase
-      (ADR-580): sea battles a world-year in years 2–30 at least a quarter of year 1's, of them at
-      most 5 % sinking nothing. `seaYears` on seeds no 7.39 or 7.46 run has seen. AT: both bars on
-      the 10 seeds' mean; the chase's margin on the critic's 14 was 6 % (14.7 against 13.9), HEAD
-      without it 34 % (12.6 against 9.4, `docs/evidence/7.46/c.md` §2): a miss is read against HEAD
-      without the chase on the same seeds and goes to the user (ADR-554). Stop: one run.
 - [ ] 7.46 A navy sunk in a decisive war at sea is built again (from PLAN 7.39b, ADR-573): with the
   chase (`docs/evidence/7.39/b-chase.diff`) the navies meet in years 1–2, the side that sails to the
   battle mostly wins (122 against 46), and the world's armed power falls 291k → 128k by year 2 and is
@@ -476,3 +424,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.29 The late land war's reach (from PLAN 7.26c3, ADR-519, 2026-10-18): after year 1 the land […]
 - [x] 7.47 A navy rebuilt to a ship or two saves for the next at war with a naval enemy (from PLAN […]
 - [x] 7.48 The critic's overrun France strikes before it loses its last bomber, with the chase (AI […]
+- [x] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean […]

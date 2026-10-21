@@ -20962,3 +20962,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Specs by hand: none (no UI).
 - **Next:** PLAN 7.39c (7.39's two bars on 10 unseen seeds × 30 years with the chase), then 7.43,
   the critic run.
+
+## 2026-10-20 — PLAN 7.39c, 7.39: 7.39's two bars on 10 unseen seeds × 30 years (R10-B2 done)
+
+- `seaYears` on seeds 20011, 20021, 20023, 20029, 20047, 20051, 20063, 20071, 20089, 20101 (no 7.39,
+  7.46 or 7.47 run has seen them) × 30 years at `f68f92d`, ten at once, about 55 minutes
+  (`docs/evidence/7.39/c.md`, `c/read.mjs`).
+- **AT:** sea battles in years 2–30 13.91 a world-year against a quarter of year 1's 13.85 (55.4):
+  met by 0.5 % (6 % on the critic's 14); 0.7 % sinking nothing (bar 5 %). 7.39c and 7.39 ticked.
+  The chase lifts year 1 and with it the bar; the late figure is steady (14.1 years 2–10, 13.8
+  years 11–30). The navy falls to about half by years 2–3 and is back at 94 % of year 1's by year 30.
+- No code changed; the pin unchanged. Specs by hand: none (no UI).
+- **Next:** PLAN 7.43, then the critic run (7.5).
