@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { NATIONS_1938 } from '../../src/sim/scenario1938';
-import { GREY_LIGHT, leastLight, SPRITE_LIGHT, spriteTint } from '../../src/render/units/tint';
+import { GREY_LIGHT, hueOf, leastLight, SEA_COLOR, SEA_HUE, SEA_HUE_FAR, SEA_HUE_NEAR, SHIP_SEA_LIGHT, shipTint, SPRITE_LIGHT, spriteTint } from '../../src/render/units/tint';
 
 // PLAN 3.11e (the critic's R3-B3: "Soviet tanks are tinted pink, near Poland's own pink",
 // `critic/shots/c3j_12_tank_live_006m_2.png`): a sprite's tint was its nation's colour mixed
@@ -64,5 +64,38 @@ describe('the tint of a nation\'s sprites', () => {
     expect(hsl(spriteTint(own('GER'))).s).toBeLessThan(0.01);
     // Germany's from Poland's and from France's by more than before (61 and the French 47 apart).
     expect(apart(spriteTint(own('GER')), spriteTint(own('FRA')))).toBeGreaterThan(120);
+  });
+});
+
+// PLAN 7.41b (critic run 11, naval 7; ADR-602): at 20 m/px a ship's middle is its grey marks and its
+// hull's fill mixed, and a blue hull at SPRITE_LIGHT mixed with them was the shelf sea's colour
+// (France's battleship 13 from it, summed RGB). A ship of a hue near the sea's is lighter.
+describe("the tint of a nation's ships", () => {
+  it("the sea's hue is the map's sea", () => {
+    expect(SEA_HUE).toBeCloseTo(hsl(SEA_COLOR).h, 6);
+    expect(Math.round(SEA_HUE)).toBe(215);
+  });
+
+  it("France's is lighter than its sprites', to SHIP_SEA_LIGHT, its hue and saturation kept", () => {
+    const [sprite, ship] = [hsl(spriteTint(own('FRA'))), hsl(shipTint(own('FRA')))];
+    expect(sprite.l).toBeLessThan(SHIP_SEA_LIGHT - 0.1);
+    expect(ship.l).toBeGreaterThan(SHIP_SEA_LIGHT - 0.005);
+    expect(Math.abs(ship.h - sprite.h)).toBeLessThan(3);
+    expect(Math.abs(ship.s - sprite.s)).toBeLessThan(0.03);
+  });
+
+  it("a hue far from the sea's and a grey are as their sprites'", () => {
+    for (const tag of ['ENG', 'SOV', 'GER', 'ITA', 'JAP']) expect(shipTint(own(tag)), tag).toBe(spriteTint(own(tag)));
+  });
+
+  it("no nation's ship is darker than its sprites', and every one near the sea's hue is at least SHIP_SEA_LIGHT", () => {
+    for (const n of NATIONS_1938) {
+      const c = parseInt(n.color.slice(1), 16);
+      const [sprite, ship] = [hsl(spriteTint(c)), hsl(shipTint(c))];
+      expect(ship.l, n.tag).toBeGreaterThan(sprite.l - 0.005);
+      const off = Math.abs(((hueOf(spriteTint(c)) - SEA_HUE + 540) % 360) - 180);
+      if (sprite.s >= 0.3 && off <= SEA_HUE_NEAR) expect(ship.l, n.tag).toBeGreaterThan(SHIP_SEA_LIGHT - 0.005);
+      if (off >= SEA_HUE_FAR) expect(shipTint(c), n.tag).toBe(spriteTint(c));
+    }
   });
 });

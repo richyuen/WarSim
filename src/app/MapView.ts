@@ -54,7 +54,7 @@ import { SLOT_GAP_CELLS, shipFrameMinPx, shipSideCells } from '../render/units/s
 import { appendWakes } from '../render/units/wakes';
 import { contactLines, drawContactLines, type ContactForm, type ContactLine } from '../render/units/contactLines';
 import { drawEnemyPointers, enemyPointers, POINTER_FONT, type EnemyPointer, type PointerSource } from '../render/units/enemyPointers';
-import { spriteTint } from '../render/units/tint';
+import { SEA_COLOR, shipTint, spriteTint } from '../render/units/tint';
 import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
 import type { MapLayers, SimClient } from './simClient';
@@ -268,7 +268,7 @@ export class MapView {
     this.gl = gl;
     setSizeScale(geo.scale ?? 1);
     this.map = new MapRenderer(gl, geo.w, geo.h, { wrapX: geo.wrapX, cellM: geo.kmPerCell * 1000, maxTexture });
-    this.map.setColor(0, 0x1d3557);
+    this.map.setColor(0, SEA_COLOR);
     const atlas = drawUnitAtlas();
     this.proxies = new ProxyRenderer(gl, atlas);
     this.groundThings = new GroundInstances(gl);
@@ -1094,7 +1094,7 @@ export class MapView {
       p.data[o + 6] = shownFrame(e.frame[i]!, (e.flags[i]! & FormationFlag.engaged) !== 0) + (marching(e.flags[i]!) ? marchFraction(e.id[i]!) : 0);
       // What is left of the element: its share of its size (PLAN 2.11g; an empty one is gone from the sim).
       p.data[o + 7] = spriteAlpha(e.strength[i]!, e.size[i]!);
-      p.colors.set(this.spriteRgba(e.nation[i]!), i * 4);
+      p.colors.set(this.spriteRgba(e.nation[i]!, e.frame[i]!), i * 4);
     }
     this.elementTurrets = hulls;
     this.elementTurretOwner = new Uint32Array(hulls);
@@ -1262,7 +1262,7 @@ export class MapView {
       const x = this.unwrapped(e.x[i]!, e.prevX[i]!) + near;
       const px0 = e.prevX[i]! + near;
       const moving = marching(e.flags[i]!);
-      const rgba = this.spriteRgba(e.nation[i]!);
+      const rgba = this.spriteRgba(e.nation[i]!, frame);
       for (let k = 0; k < n; k++, j++) {
         const o = j * PROXY_STRIDE;
         const dx = off[k * 2]! * s;
@@ -2108,10 +2108,11 @@ export class MapView {
   /**
    * Tint of an element sprite or a figure: the nation's sprite colour (`nationColor`), as its
    * stand-in sprite has it. The dark outline of the atlas, not a lift toward white (PLAN 2.14a,
-   * PLAN 3.11e), is what sets a sprite off against the ground.
+   * PLAN 3.11e), is what sets a sprite off against the ground. A ship's is lighter where its hue
+   * is the sea's (`shipTint`, PLAN 7.41b).
    */
-  private spriteRgba(id: number): [number, number, number, number] {
-    const col = this.nationColor(id);
+  private spriteRgba(id: number, frame: number): [number, number, number, number] {
+    const col = isShipFrame(frame) ? shipTint(this.ownColor.get(id) ?? 0x888888) : this.nationColor(id);
     return [(col >> 16) & 255, (col >> 8) & 255, col & 255, 255];
   }
 

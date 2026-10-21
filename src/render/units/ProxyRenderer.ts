@@ -8,7 +8,7 @@
  */
 import * as twgl from 'twgl.js';
 import type { Camera } from '../camera';
-import { smallFrameOf } from '../../shared/unitLooks';
+import { isShipFrame, smallFrameOf } from '../../shared/unitLooks';
 import { hash2 } from '../hash';
 import { ATLAS_FRAMES } from './atlas';
 
@@ -24,6 +24,9 @@ const MARCH_SPAN = 0.49;
 export function marchFraction(seed: number): number {
   return 0.5 + MARCH_SPAN * (hash2(seed, 0x6d61) / 2 ** 32);
 }
+
+/** Whether each frame of the atlas is a ship's (`isShipFrame`), for the shader: GLSL floats. */
+const SHIP_OF = Array.from({ length: ATLAS_FRAMES }, (_, frame) => (isShipFrame(frame) ? '1.0' : '0.0')).join(', ');
 
 const VS = `#version 300 es
 precision highp float;
@@ -47,6 +50,9 @@ out vec2 vUv;
 out vec2 vUvSmall;
 out float vSmall;
 out vec4 vColor;
+out float vShip;
+// A ship's frame is in two parts (PLAN 7.41b, splitShipTint): red the hull, tinted; green its marks, grey.
+const float SHIP[${ATLAS_FRAMES}] = float[${ATLAS_FRAMES}](${SHIP_OF});
 void main() {
   vec2 pos = mix(aPrevCur.xy, aPrevCur.zw, uT);
   float frame = floor(aMisc.z);
@@ -73,6 +79,7 @@ void main() {
   vSmall = uSmall * step(0.5, abs(small - frame)) * (1.0 - gone);
   vUvSmall = vec2((max(small, 0.0) + aCorner.x + 0.5) / ${ATLAS_FRAMES.toFixed(1)}, aCorner.y + 0.5);
   vColor = vec4(aColor.rgb, aColor.a * aMisc.w * uAlpha * (1.0 - gone * uSmall));
+  vShip = SHIP[int(frame)];
 }
 `;
 
@@ -83,13 +90,15 @@ in vec2 vUv;
 in vec2 vUvSmall;
 in float vSmall;
 in vec4 vColor;
+in float vShip;
 out vec4 outColor;
 void main() {
   vec4 t = texture(uAtlas, vUv);
   if (vSmall > 0.0) t = mix(t, texture(uAtlas, vUvSmall), vSmall);
   // White silhouette → tint; dark outline stays dark. The atlas is premultiplied (PLAN 7.21b), so
   // is what is drawn: the tint's alpha scales the colour as well.
-  outColor = vec4(t.rgb * vColor.rgb * vColor.a, t.a * vColor.a);
+  vec3 c = vShip > 0.5 ? t.r * vColor.rgb + vec3(t.g) : t.rgb * vColor.rgb;
+  outColor = vec4(c * vColor.a, t.a * vColor.a);
   if (outColor.a < 0.02) discard;
 }
 `;

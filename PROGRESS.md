@@ -21362,3 +21362,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `seaClosingRow1938.spec.ts` (red before). Specs by hand: it, `carrierStrikeRow1938`,
   `seaRow1938`, `seaBattleSeen1938`, `navalDemo1938`, `seaBattle1938` (7 passed).
 - **Next:** PLAN 7.41b (hulls against the sea at 20 m/px).
+
+## 2026-10-21 — PLAN 7.41b: hulls against the sea (ADR-602)
+
+- **Measured** (`tests/e2e/hullsSea1938.spec.ts`, `docs/evidence/7.41/b.md`): a battle squadron of
+  each of the 102 living nations at 20 m/px on the deep Atlantic and the North Sea's shelf, the
+  middle pixel of each of 1,632 ships against the sea about it (summed RGB). Before: least 6 deep
+  (France's destroyer 10), 13 on the shelf (France's battleship 13); 95 nation-classes under 40. A
+  ship's middle there is its marks mixed with its fill, and a blue nation's tinted marks were the
+  deep sea's colour. The critic's "dark ovals" (`c11n_2081_GER_ENG_3_20m.png`) are wrecks and oil
+  slicks of the ships the carrier strike sank, drawn as meant.
+- **Rule** (view only): the atlas stores a ship's fill (red) apart from its marks (green); the
+  shader tints the fill alone, the marks stay grey. `shipTint`: a ship within 25° of the sea's hue
+  at least 0.6 light (0.42 before). After: least 49 deep, 48 shelf; none under 40. Pin unchanged.
+- **Gotcha:** an editor's fleet placed at tick 0 (a month start) is laid up in that hour by the
+  navy budget when its nation cannot pay (33 of 102 squadrons): noted under PLAN 7.41c.
+- **Test:** `hullsSea1938.spec.ts` (red before: 95 under 40), `tint.test.ts` (`shipTint`). Specs by
+  hand, green: hullsSea1938, shipMarks1938 (3), seaBattle1938, navalDemo1938, seaRow1938 (3),
+  navalCounter1938, seaBattleSeen1938, spriteColours1938, tint1938, smallMark1938 (15 passed).
+- **Next:** PLAN 7.41c (the editor's fleets).

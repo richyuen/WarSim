@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-602 · 2026-10-21 · accepted — A ship's marks are grey, and a ship of the sea's hue is lighter (PLAN 7.41b; amends ADR-548's look, keeps 7.10a's marks)
+
+- **Context** (critic run 11, naval 7: at 20–40 m/px "the enemy side reads as dark ovals"; 7.35c:
+  France's dark blue hulls read as the sea). The critic's ovals are wrecks and slicks, drawn as
+  meant (`docs/evidence/7.41/b.md`). Measured on living hulls (`tests/e2e/hullsSea1938.spec.ts`: a
+  battle squadron of each of the 102 living nations at 20 m/px, the middle pixel of each ship
+  against the sea about it, summed RGB): the middle of a ship there is its marks mixed with its fill;
+  tinted, a blue nation's marks were the deep sea's colour. Before: least 6 deep (France's destroyer
+  10), 13 on the shelf (France's battleship); 95 nation-classes under 40.
+- **Decision** (view only).
+  - A ship's frame is in two parts (`atlas.ts` `splitShipTint`): drawn with its hull white and
+    black, red holds the fill and green the marks and outline; the shader tints the red alone and
+    draws the green as grey (`ProxyRenderer`). Other frames unchanged (a tank's greys still take
+    its tint darker).
+  - `shipTint`: a ship of a hue within SEA_HUE_NEAR (25°) of the sea's (215°, `SEA_COLOR`) is at
+    least SHIP_SEA_LIGHT (0.6) light, to SPRITE_LIGHT's at SEA_HUE_FAR (50°), hue and saturation
+    kept; greys and far hues as their sprites'.
+- **Not chosen.** Lighter marks for every ship: they cost 7.10a's contrast of marks on a red or
+  dark hull. Marks away from the middle: the measure would pass while the ship still read dark.
+  The lightness alone: a mark is 0.23 of the tint, so any blue tint made it the deep sea's shade.
+- **Consequences.** After: least 49 deep, 48 on the shelf, none under 40; France 49 and 54.
+  `shipMarks1938`'s marks contrast at 15 m/px median 0.75, least 0.66 (bars 0.6, 0.25). The sim
+  untouched: the pin unchanged.
+- **Found.** At tick 0 (a month's start) the editor's squadrons of 33 small nations were laid up
+  in the same hour by the navy budget: a lead for 7.41c (the editor's fleets that fight no battle).
+
 ### ADR-601 · 2026-10-21 · accepted — A sea battle no weapon reaches yet has its row, by its two nearest fleets at war (PLAN 7.41a; amends ADR-542's "no row")
 
 - **Context** (critic run 11, naval 7: "9 of 9 Japan–USA battles and 7 of 11 Germany–UK battles have

@@ -8,7 +8,7 @@
  * middle of both frames, so that a turret drawn at its hull's place turns about its ring. Greys
  * take the nation's tint darker: tracks, decks and the open bay of a half-track.
  */
-import { Frame } from '../../shared/unitLooks';
+import { Frame, isShipFrame } from '../../shared/unitLooks';
 
 export const ATLAS_FRAME = 64;
 export const ATLAS_FRAMES = Object.keys(Frame).length;
@@ -71,16 +71,18 @@ export function drawUnitAtlas(): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = ATLAS_FRAME * ATLAS_FRAMES;
   c.height = ATLAS_FRAME;
-  const g = c.getContext('2d')!;
-  const frame = (i: number, draw: (g: CanvasRenderingContext2D) => void): void => {
-    g.save();
-    g.translate(i * ATLAS_FRAME + ATLAS_FRAME / 2, ATLAS_FRAME / 2);
-    g.lineJoin = 'round';
-    g.lineWidth = 5;
-    g.strokeStyle = 'rgba(15,15,20,0.95)';
-    g.fillStyle = '#ffffff';
-    draw(g);
-    g.restore();
+  const g = c.getContext('2d', { willReadFrequently: true })!;
+  const ships = new Map<number, (g: CanvasRenderingContext2D) => void>();
+  const frame = (i: number, draw: (g: CanvasRenderingContext2D) => void, on = g, fill = '#ffffff'): void => {
+    on.save();
+    on.translate(i * ATLAS_FRAME + ATLAS_FRAME / 2, ATLAS_FRAME / 2);
+    on.lineJoin = 'round';
+    on.lineWidth = 5;
+    on.strokeStyle = 'rgba(15,15,20,0.95)';
+    on.fillStyle = fill;
+    draw(on);
+    on.restore();
+    if (on === g && isShipFrame(i)) ships.set(i, draw);
   };
   // Infantry: a soldier seen from above facing +x (head, shoulders, rifle). The outline of the two
   // infantry frames is INFANTRY_LINE, not 5 (PLAN 7.21a): a man is 5 to 9 px at T3, where the 5-px
@@ -342,12 +344,47 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     g.stroke();
     g.fill();
   });
+  splitShipTint(c, ships, frame);
   return c;
+}
+
+/**
+ * A ship's frame in two parts (PLAN 7.41b, ADR-602): red is the hull's fill, which the shader
+ * tints with the nation's colour, and green and blue its marks and outline, which it draws as
+ * they are, grey (`ProxyRenderer`'s `SHIP_FRAMES`). Each is drawn a second time with its hull
+ * black: that is the marks alone, and what the white hull adds is the fill. Both are sums of what
+ * covers a pixel, so they stay apart through the mipmaps.
+ *
+ * Tinted, as every frame is, a blue nation's marks were its colour's dark shade, which is the
+ * sea's (critic run 11: at 20 m/px France's ships read as the sea, the middle of a destroyer 10
+ * from the deep sea's colour, summed RGB).
+ */
+function splitShipTint(c: HTMLCanvasElement, ships: Map<number, (g: CanvasRenderingContext2D) => void>, frame: (i: number, draw: (g: CanvasRenderingContext2D) => void, on: CanvasRenderingContext2D, fill: string) => void): void {
+  const dark = document.createElement('canvas');
+  dark.width = c.width;
+  dark.height = c.height;
+  const d = dark.getContext('2d', { willReadFrequently: true })!;
+  const g = c.getContext('2d', { willReadFrequently: true })!;
+  for (const [i, draw] of ships) {
+    frame(i, draw, d, '#000000');
+    const x = i * ATLAS_FRAME;
+    const lit = g.getImageData(x, 0, ATLAS_FRAME, ATLAS_FRAME);
+    const marks = d.getImageData(x, 0, ATLAS_FRAME, ATLAS_FRAME).data;
+    const px = lit.data;
+    for (let k = 0; k < px.length; k += 4) {
+      const all = (px[k]! + px[k + 1]! + px[k + 2]!) / 3;
+      const grey = (marks[k]! + marks[k + 1]! + marks[k + 2]!) / 3;
+      px[k] = Math.max(0, Math.round(all - grey));
+      px[k + 1] = Math.round(grey);
+      px[k + 2] = Math.round(grey);
+    }
+    g.putImageData(lit, x, 0);
+  }
 }
 
 /** The outline of the infantry's two frames, atlas px (the others' is 5): PLAN 7.21a. */
 const INFANTRY_LINE = 2.5;
-/** The dark of a ship's marks (PLAN 7.10a): no tint lightens it. */
+/** The dark of a ship's marks (PLAN 7.10a): no tint lightens it, nor darkens it (PLAN 7.41b: `splitShipTint`). */
 const SHIP_DETAIL = '#3a3a3a';
 /** Greys of the atlas: what the nation's tint makes darker. */
 const TRACK = '#7d7d7d';

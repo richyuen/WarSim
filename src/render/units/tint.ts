@@ -45,3 +45,67 @@ export function spriteTint(own: number): number {
   const to = (v: number): number => Math.max(0, Math.min(255, Math.round((v + m) * 255)));
   return (to(r1) << 16) | (to(g1) << 8) | to(b1);
 }
+
+/** The sea's colour on the map (palette entry 0). */
+export const SEA_COLOR = 0x1d3557;
+/** The sea's hue, degrees (HSL): 215. */
+export const SEA_HUE = hueOf(SEA_COLOR);
+/**
+ * The least lightness of a ship's tint whose hue is the sea's (PLAN 7.41b, ADR-602): at 20 m/px a
+ * ship is some 20 px long, its middle its grey marks and its hull's fill mixed, and a blue hull of
+ * SPRITE_LIGHT mixed with them is the shelf sea's colour (France's battleship 13 from it, summed
+ * RGB, the bar 40).
+ */
+export const SHIP_SEA_LIGHT = 0.6;
+/** Within this many degrees of the sea's hue a ship's least lightness is SHIP_SEA_LIGHT… */
+export const SEA_HUE_NEAR = 25;
+/** …and from there it falls to SPRITE_LIGHT's at this many. */
+export const SEA_HUE_FAR = 50;
+
+/** The hue of a colour (0xRRGGBB), degrees, HSL; 0 for a grey. */
+export function hueOf(c: number): number {
+  const [r, g, b] = [((c >> 16) & 255) / 255, ((c >> 8) & 255) / 255, (c & 255) / 255];
+  const max = Math.max(r, g, b);
+  const d = max - Math.min(r, g, b);
+  if (d === 0) return 0;
+  const h = max === r ? ((g - b) / d + 6) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return h * 60;
+}
+
+/**
+ * The colour of a nation's ships (PLAN 7.41b): its sprites' (`spriteTint`), and one of a hue near
+ * the sea's made lighter, to SHIP_SEA_LIGHT within SEA_HUE_NEAR of it, its hue and saturation
+ * kept. A grey is told from the sea by its hue already.
+ */
+export function shipTint(own: number): number {
+  const t = spriteTint(own);
+  const [r, g, b] = [((t >> 16) & 255) / 255, ((t >> 8) & 255) / 255, (t & 255) / 255];
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  if (d === 0) return t;
+  const light = (max + min) / 2;
+  const s = d / (1 - Math.abs(2 * light - 1));
+  if (s < GREY_SATURATION) return t;
+  const off = Math.abs(((hueOf(t) - SEA_HUE + 540) % 360) - 180);
+  const near = Math.min(1, Math.max(0, (SEA_HUE_FAR - off) / (SEA_HUE_FAR - SEA_HUE_NEAR)));
+  const least = SPRITE_LIGHT + (SHIP_SEA_LIGHT - SPRITE_LIGHT) * near;
+  return light >= least ? t : withLight(t, least);
+}
+
+/** Colour `c` (0xRRGGBB) at lightness `l` (HSL), its hue and saturation kept. */
+function withLight(c: number, l: number): number {
+  const [r, g, b] = [((c >> 16) & 255) / 255, ((c >> 8) & 255) / 255, (c & 255) / 255];
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const light = (max + min) / 2;
+  const d = max - min;
+  const s = d === 0 ? 0 : d / (1 - Math.abs(2 * light - 1));
+  const h = hueOf(c) / 60;
+  const ch = (1 - Math.abs(2 * l - 1)) * s;
+  const x = ch * (1 - Math.abs((h % 2) - 1));
+  const m = l - ch / 2;
+  const [r1, g1, b1] = h < 1 ? [ch, x, 0] : h < 2 ? [x, ch, 0] : h < 3 ? [0, ch, x] : h < 4 ? [0, x, ch] : h < 5 ? [x, 0, ch] : [ch, 0, x];
+  const to = (v: number): number => Math.max(0, Math.min(255, Math.round((v + m) * 255)));
+  return (to(r1) << 16) | (to(g1) << 8) | to(b1);
+}

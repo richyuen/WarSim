@@ -213,12 +213,15 @@ when taken up:
       ADR-542's "no row"); the pin unchanged (view only).
       Done (ADR-601, `docs/evidence/7.41/a.md`): 9 of 9 and 15 of 15 (14 before) in the page; from
       2081's closing row both fleets on the screen at 429 m/px.
-    - [ ] 7.41b Hulls against the sea: at 20 m/px the middle of every nation's hull at least 40
+    - [x] 7.41b Hulls against the sea: at 20 m/px the middle of every nation's hull at least 40
       (summed RGB) from the sea's colour there, every nation of the 1938 world counted (a spec, red
       on France's before); the ADR.
+      Done (ADR-602, `docs/evidence/7.41/b.md`): a ship's marks grey, a ship of the sea's hue
+      lighter; least 6 / 13 → 49 / 48 (deep / shelf), 95 nation-classes under 40 → 0.
     - [ ] 7.41c The editor's fleets: two navies placed face to face in the North Sea by the editor
       fight no battle in 30 days (`critic/c11_g_4877.json`). Traced first (`seaMeet.ts` on the
-      critic's scenario: their orders, detection, the war's sides). AT: the case meets at sea within
+      critic's scenario: their orders, detection, the war's sides; and the lead of 7.41b: at a
+      month's start the navy budget lays up an editor's fleet a nation cannot pay for). AT: the case meets at sea within
       30 days, or a BLOCKERS entry with the measured cause, the user's to accept; a unit test (red
       without) if a rule; the pin's entry.
 - [ ] 7.57 A carrier's strike sinks nothing (found at 7.41, naval 7, `docs/evidence/7.41/a.md`
