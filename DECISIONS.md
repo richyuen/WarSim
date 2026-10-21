@@ -196,6 +196,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   a group for the ferry; with one in training, no second and a warship; with no army off the front's
   land, none (red without: no group; and no warship with the group counted). The landing case's
   "Saudi Arabia alone: none" now reads the landing's want false and the ferry's group ordered.
+- **Decided** (2026-10-21, the user): option a: PLAN 7.49d3 ticked on its own case, 7.49d's 20 % bar read at day 180 (19.6 %); PLAN 7.49 closed not done at its budget.
 
 ### ADR-613 · 2026-10-21 · accepted — The ferry to an ally's port: with no port of its own on its front's land, a nation ships its army to an ally's there (PLAN 7.49d2; amends ADR-612)
 
@@ -220,6 +221,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   because they have no front cell, not for their ports. Island share 18.2 → 18.1 %,
   28.3 → 28.2 %; engaged identical to three places. BLOCKERS, the user's.
 - **Pin.** Unchanged (seed 99's first year has no nation in the rule's case).
+- **Decided** (2026-10-21, the user): option a: PLAN 7.49d2 ticked on the rule's own case.
 
 ### ADR-612 · 2026-10-21 · accepted — The ferry: a nation with a land front ships its army on a landmass with no front to its own port on a front's land (PLAN 7.49d1; ADR-591 a)
 

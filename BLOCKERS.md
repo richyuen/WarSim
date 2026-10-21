@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.49d3 and 7.49 at its budget: transports bought, both bars of d3 missed; 7.49's AT missed at 20 commits (2026-10-21, ADR-614; the user's decision)
+### RESOLVED 2026-10-21 (option a each, the user's decision: 7.49d3 ticked, 7.49 closed not done) · PLAN 7.49d3 and 7.49 at its budget: transports bought, both bars of d3 missed; 7.49's AT missed at 20 commits (2026-10-21, ADR-614; the user's decision)
 - **The bars:** 7.49d3: the island share of the 48 saves together after 60 days under 20 % (7.49d's,
   with d1–d3 in); the island formations of nations with no transports after 180 days under half of
   HEAD's (397: under 199); no nation in debt for it in a year. 7.49: engaged land formations per war
@@ -25,7 +25,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   budget for a cause not yet named (what holds two armies on one front apart after year 1: no part
   traced it). Meanwhile the loop takes PLAN 7.65.
 
-### PLAN 7.49d2: the ferry to an ally's port is in; the AT's figure 939 → 934, bar under 470 (2026-10-21, ADR-613; the user's decision)
+### RESOLVED 2026-10-21 (option a, the user's decision: 7.49d2 ticked) · PLAN 7.49d2: the ferry to an ally's port is in; the AT's figure 939 → 934, bar under 470 (2026-10-21, ADR-613; the user's decision)
 - **The bar:** the island formations of nations with no own port on their front's land, after 60
   days of the 48 saves together (`islandArmies.ts`'s `noOwnPort`), under half of 7.49d1's same
   read (939: under 470).

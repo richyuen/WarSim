@@ -21633,3 +21633,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   Glasgow boards, Britain's home army ferried (117 → 95 in a year on 7019), the Soviet 158 on 5309
   unreached. 7.49e1 moved to PLAN 7.65. BLOCKERS, the user's (d3 a/b/c; 7.49 a/b).
 - **Next:** PLAN 7.65 (the reserve cut), then 7.63, 7.64, 7.62.
+
+## 2026-10-21 — The user's decisions: ADR-613 and ADR-614 option a, the land war's task closed
+
+- Ticked on their rules' own cases: 7.49d2 (ADR-613), 7.49d3 (ADR-614; 7.49d's 20 % bar read at day
+  180, 19.6 %). 7.49 closed not done at its budget (ticked as 7.40 was, its parts with it); emergent
+  6 waits for the next critic report. Two BLOCKERS entries resolved. No code: the pin unchanged.
+- **Next:** PLAN 7.65 (the reserve cut), then 7.63, 7.64, 7.62.
