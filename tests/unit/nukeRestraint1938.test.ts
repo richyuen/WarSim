@@ -16,7 +16,7 @@ import { nationId } from '../helpers/sim1938';
 // own reckoning, with the best place's utility and its parts.
 
 const { w: W, h: H } = SIZE_1938;
-const [GER, POL, BOL, ITA] = ['GER', 'POL', 'BOL', 'ITA'].map(nationId) as [number, number, number, number];
+const [GER, POL, BOL, ITA, FRA] = ['GER', 'POL', 'BOL', 'ITA', 'FRA'].map(nationId) as [number, number, number, number, number];
 
 /** Germany with 20 warheads (and missiles unless `german` is false) at war with Poland, which holds `polish` warheads (and missiles when `missiles`). */
 function germanyOnPoland(polish: number, missiles: boolean, german = true): { s: Sim; war: War; side: number } {
@@ -151,6 +151,36 @@ describe('why a holder at war does not strike (PLAN 7.37e)', () => {
       s.step(1);
       expect(restraintOf(s.world, GER, war, side).reason, why).toBe(why);
     }
+  });
+
+  // PLAN 7.52a (critic run 11, seed 1129: "Soviet Union is deterred by Germany" while Germany, a
+  // puppet of Denmark, weighs no strike): a puppet's warheads answer no strike, so they neither hold
+  // a holder back nor name its deterrent.
+  it('losing, against a Poland that is a puppet: its warheads answer no strike, and Germany strikes', () => {
+    const { s, war, side } = germanyOnPoland(10, true);
+    losing(war, side);
+    expect(restraintOf(s.world, GER, war, side).by).toBe(POL);
+    expect(makePuppet(s.world, BOL, POL, 20)).toBe(true);
+    expect(war.sides[1 - side]).toContain(POL);
+    const r = restraintOf(s.world, GER, war, side);
+    expect(r.reason).toBe('strikes');
+    expect(r.by).toBe(0);
+    expect(r.retaliation).toBe(0);
+  });
+
+  it('losing, against a puppet Poland and a France that answers: deterred by France, not by the puppet', () => {
+    const { s, war, side } = germanyOnPoland(10, true);
+    s.command({ kind: 'grantWarheads', nation: FRA, count: 5 });
+    s.command({ kind: 'grantTech', nation: FRA, tech: 'ballistic_missiles' });
+    s.step(1);
+    war.sides[1 - side]!.push(FRA);
+    losing(war, side);
+    // Poland's 10 weigh more than France's 5 while it answers.
+    expect(restraintOf(s.world, GER, war, side).by).toBe(POL);
+    expect(makePuppet(s.world, BOL, POL, 20)).toBe(true);
+    const r = restraintOf(s.world, GER, war, side);
+    expect(r.reason).toBe('deterred');
+    expect(r.by).toBe(FRA);
   });
 
   it('a nation at peace or without a warhead has nothing to tell', () => {

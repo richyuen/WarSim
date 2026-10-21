@@ -89,9 +89,11 @@
  *   this war (PLAN 7.18a: the capital moves after the fall, and no enemy is near the new one).
  * - doctrine, 0.5 to 1.5: 0.5 + aggression / 100 (no trait of its own: aggression read as one).
  * - retaliationRisk (`retaliationRisk`): the most of any enemy and any ally of an enemy that can
- *   deliver a warhead (`canDeliver`): its warheads / RETALIATION_FULL, to 1, × its doctrine.
+ *   answer a strike (`answers`): its warheads / RETALIATION_FULL, to 1, × its doctrine.
  * - MAD (`assured`): a side has an assured second strike when a nation of it (with its allies)
- *   has MAD_WARHEADS and a means of delivery.
+ *   has MAD_WARHEADS and can answer.
+ *   A nation answers when it can deliver a warhead (`canDeliver`) and has no overlord (PLAN 7.52a,
+ *   ADR-610): a puppet weighs no strike (`weighsStrikes`), and no one launches its warheads.
  * - allianceCost: ALLIANCE_COST for each ally not at its side in that war, to ALLIANCE_COST_MAX;
  *   EXTREME_TABOO of it in extreme desperation, as the taboo (PLAN 7.48, ADR-581: the critic's
  *   France, overrun with 10 warheads and three allies apart, its best place Berlin through 0.21,
@@ -729,9 +731,18 @@ function ownCoalition(world: World, war: War, side: number): number[] {
   return [...out].sort((a, b) => a - b);
 }
 
-/** Whether one of `nations` has an assured second strike (PLAN 6.4a): MAD_WARHEADS and a means of delivery. */
+/**
+ * Whether `m` can answer a strike (PLAN 7.52a, ADR-610): it can deliver a warhead and has no
+ * overlord. A puppet weighs no strike and no one launches its warheads (critic run 11, seed 1129:
+ * the Soviet Union was "deterred by Germany", a puppet of Denmark, by Germany's 11 warheads).
+ */
+function answers(world: World, m: number): boolean {
+  return world.nations.cols.overlord[m] === 0 && canDeliver(world, m);
+}
+
+/** Whether one of `nations` has an assured second strike (PLAN 6.4a): MAD_WARHEADS and it can answer (`answers`). */
 function assured(world: World, nations: readonly number[]): boolean {
-  return nations.some((m) => warheadsOf(world, m) >= MAD_WARHEADS && canDeliver(world, m));
+  return nations.some((m) => warheadsOf(world, m) >= MAD_WARHEADS && answers(world, m));
 }
 
 /** Whether `war` is between two sides that each, with their allies, have an assured second strike (PLAN 6.8: MAD). */
@@ -739,11 +750,28 @@ export function madWar(world: World, war: War): boolean {
   return world.warheads.size > 1 && assured(world, ownCoalition(world, war, 0)) && assured(world, ownCoalition(world, war, 1));
 }
 
-/** The risk of a strike back from the enemy side of `war` and its allies (PLAN 6.4a). */
+/**
+ * The strike back `side` of `war` fears (PLAN 6.4a): the risk, the most of any enemy or ally of one
+ * that answers (`answers`), and `by`, that nation (0 with none). One reckoning for the decision's
+ * cost and the panel's name (PLAN 7.52a: they had been two).
+ */
+export function strikeBack(world: World, war: War, side: number): { risk: number; by: number } {
+  let risk = 0;
+  let by = 0;
+  for (const m of enemyCoalition(world, war, side)) {
+    if (!answers(world, m)) continue;
+    const k = Math.min(1, warheadsOf(world, m) / RETALIATION_FULL) * doctrineOf(world, m);
+    if (k > risk) {
+      risk = k;
+      by = m;
+    }
+  }
+  return { risk, by };
+}
+
+/** The risk of a strike back from the enemy side of `war` and its allies (PLAN 6.4a; `strikeBack`). */
 export function retaliationRisk(world: World, war: War, side: number): number {
-  let r = 0;
-  for (const m of enemyCoalition(world, war, side)) if (canDeliver(world, m)) r = Math.max(r, Math.min(1, warheadsOf(world, m) / RETALIATION_FULL) * doctrineOf(world, m));
-  return r;
+  return strikeBack(world, war, side).risk;
 }
 
 /** `n`'s desperation in `war` on `side` (PLAN 6.4a), 0 to 2, and whether it is extreme. */
@@ -1490,21 +1518,6 @@ export interface Restraint {
   y: number;
 }
 
-/** The enemy of `side` of `war` (or an ally of one) whose strike back weighs most (`retaliationRisk`'s), else 0. */
-function deterrerOf(world: World, war: War, side: number): number {
-  let best = 0;
-  let r = 0;
-  for (const m of enemyCoalition(world, war, side)) {
-    if (!canDeliver(world, m)) continue;
-    const k = Math.min(1, warheadsOf(world, m) / RETALIATION_FULL) * doctrineOf(world, m);
-    if (k > r) {
-      r = k;
-      best = m;
-    }
-  }
-  return best;
-}
-
 /** Why `n` on `side` of `war` does not strike today (PLAN 7.37e): see `RestraintReason`. */
 export function restraintOf(world: World, n: number, war: War, side: number, industry: () => Float64Array = industryOnce(world)): Restraint {
   const out: Restraint = { reason: 'none', by: 0, u: -Infinity, value: 0, gain: 0, retaliation: 0, alliance: 0, outrage: 0, taboo: 0, dead: 0, people: 0, desperation: 0, doctrine: 0, through: 0, x: 0, y: 0 };
@@ -1559,14 +1572,14 @@ export function restraintOf(world: World, n: number, war: War, side: number, ind
     y: best.y,
   });
   if (bu > floor) return { ...out, reason: reach ? 'strikes' : canDeliver(world, n) ? 'outOfRange' : 'noMeans' };
-  if (braw > floor) return { ...out, reason: 'mad', by: deterrerOf(world, war, side) };
+  if (braw > floor) return { ...out, reason: 'mad', by: strikeBack(world, war, side).by };
   // Over NUKE_FLOOR, under the floor its dead raise (PLAN 7.50a).
   if (braw > NUKE_FLOOR) return { ...out, reason: 'dead' };
   if (out.gain > NUKE_FLOOR) {
     const costs: [RestraintReason, number][] = [['deterred', out.retaliation], ['alliance', out.alliance], ['outrage', out.outrage], ['taboo', out.taboo], ['dead', out.dead]];
     costs.sort((a, b) => b[1] - a[1]);
     const reason = costs[0]![0];
-    return { ...out, reason, by: reason === 'deterred' ? deterrerOf(world, war, side) : 0 };
+    return { ...out, reason, by: reason === 'deterred' ? strikeBack(world, war, side).by : 0 };
   }
   const factors: [RestraintReason, number][] = [['noValue', out.value], ['notDesperate', Math.min(1, i.desperation)], ['doctrine', Math.min(1, i.doctrine)]];
   factors.sort((a, b) => a[1] - b[1]);

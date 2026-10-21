@@ -21498,3 +21498,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Seen:** airT3's strike at 20 m/px after the change (bursts ×1.7 with `airFxSize`): each a ring
   about a block of men wide, the men under them visible; no change needed.
 - **Next:** 7.51b waits on 7.49; PLAN 7.52 (the restraint line names a puppet's overlord).
+
+## 2026-10-21 — PLAN 7.52a: a puppet's warheads answer no strike (ADR-610)
+
+- **Split** 7.52: a, the deterrent named (this); b, the bursts read on 10 unseen × 30 years; c, the
+  critic's design objection (struck cities with no soldiers), an ADR proposed, the user's.
+- **Measured** (`docs/evidence/7.52/a.md`, the critic's `c11_seed1129_y17s.bin`): Germany, a puppet of
+  Denmark (no warheads), holds 11; no one launches a puppet's stock, yet the strike back weighed and
+  the name counted it (1.4 against Britain's 0.8). The plan's "the overlord for a puppet" would name
+  Denmark, which holds none: not taken.
+- **Rule** (`nuclear.ts`): `answers` (delivers and has no overlord) in `strikeBack` (the risk and its
+  nation, one reckoning; `deterrerOf` gone) and `assured`. The puppet line reworded. After: the Soviet
+  Union deterred by Germany → strikes (risk 0.8, Britain's).
+- **Test:** `nukeRestraint1938.test.ts`, two cases (red without: "deterred" for "strikes"; by 4 for
+  19). Specs by hand: none (one panel string, no spec reads it).
+- **Next:** 7.52b (the bursts read), 7.52c (the user's ADR).

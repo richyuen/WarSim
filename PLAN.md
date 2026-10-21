@@ -227,6 +227,20 @@ when taken up:
   overlord for a puppet), a unit test on the 1129 case (red before); bursts a world on 10 unseen
   seeds × 30 years read against run 11's 93 on 14, not a bar; the ADR. Stop: two full re-measures
   flat, the bar is the user's (ADR-554).
+  In parts:
+    - [x] 7.52a The deterrent named answers: a puppet's warheads answer no strike (none weighs or
+      launches them), so they leave the strike back weighed, its name and MAD; one reckoning for
+      the risk and the name (`strikeBack`). AT: `nukeRestraint1938.test.ts`, the 1129 shape (red
+      before: deterred by the puppet Poland; after, strikes, and with France beside it deterred by
+      France); the critic's save: the Soviet Union "deterred by Germany" → strikes (risk 1.4 → 0.8,
+      Britain's). ADR-610. Done (`docs/evidence/7.52/a.md`).
+    - [ ] 7.52b The bursts read: bursts a world on 10 unseen seeds × 30 years against run 11's 93
+      on 14 (a measure, not a bar), with 7.52a in; the share killing over ten times more civilians
+      than soldiers. Stop: two full re-measures flat (ADR-554).
+    - [ ] 7.52c The critic's design objection, the user's: cities with no soldiers struck (Berlin,
+      334,000 civilians and 379 men by the editor-armed Poland, `c11_g2_9437_POL.json`), the weight
+      of the dead too small. AT: an ADR proposed with the options and the measured figures; no rule
+      before the user's word.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

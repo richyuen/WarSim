@@ -1971,7 +1971,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     ADR-490).
   - retaliationRisk: the enemy's *and its allies'* deliverable second-strike capacity ×
     their doctrine, plus survivable assets (dispersed bombers: a bomber flying counts, ADR-385;
-    submarines carry no warhead, ADR-434).
+    submarines carry no warhead, ADR-434). A puppet's warheads answer no strike: it weighs none
+    and no one launches them, so they count neither here nor for MAD, and the panel's deterrent is
+    the nation of most of this capacity (PLAN 7.52a, ADR-610).
   - taboo: a global value that starts high, drops sharply after the first use worldwide,
     and recovers slowly. When both sides have assured second strike (**MAD**), the
     utility of first use is ≤ 0 unless desperation is extreme (fightToDeath or capital falling).

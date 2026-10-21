@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-610 · 2026-10-21 · accepted — A puppet's warheads answer no strike: they leave the strike back weighed, its name and MAD (PLAN 7.52a; amends PLAN 6.4a's retaliationRisk and MAD)
+
+- **Context** (critic run 11, AI nuclear use 7, `critic/c11_t_1129.json`): the panel read "Soviet
+  Union is deterred by Germany" while Germany's own line read "is a puppet: the use of its warheads
+  is its overlord's to decide", a contradiction.
+- **Measured** (`docs/evidence/7.52/a.md`, the critic's save): Germany, a puppet of Denmark (no
+  warheads), holds 11; a launch draws only the launcher's own stock (`launchNuke`) and a puppet
+  weighs no strike (`weighsStrikes`), so no one ever launches them. Yet the strike back weighed
+  (`retaliationRisk`) and the name (`deterrerOf`, a second copy of the same max) counted them: 1.4,
+  over Britain's 0.8. The overlord, as the plan's AT had it, would name Denmark, which has none: a
+  new contradiction, so not taken.
+- **Decision.** A nation answers a strike (`answers`) when it can deliver a warhead and has no
+  overlord. `strikeBack` gives the risk and the nation of it in one reckoning (the decision's cost and
+  the panel's name); `assured` (MAD) reads `answers` too. The puppet's line now reads "its warheads
+  stay in store and answer no strike while it has an overlord". Not changed: `threatens` (whom a
+  holder may strike first) still counts a puppet's warheads, as a threat in store: released or in
+  revolt, they are its own again (ADR-564 is about the overlord's).
+- **Evidence.** The critic's save: the Soviet Union deterred by Germany (1.4) → strikes (0.8, Britain).
+  `nukeRestraint1938.test.ts`, two cases red without.
+- **Consequences.** A holder at war with a puppet holding warheads is held back less: more strikes
+  where the puppet held the most of its enemies' answer (the critic's save above). Bursts are read in
+  PLAN 7.52b, not a bar. Pin: the gate proves it (seed 99's first year has no puppet with warheads).
+
 ### ADR-609 · 2026-10-21 · accepted — A plane is drawn in its nation's sprite tint, its edge under its fill, and at T3 five men's figures wide (PLAN 7.51a; amends PLAN 5.7a's planes)
 
 - **Context** (critic run 11, aircraft 7, `critic/shots/c11c_7019_inf_0010m.png`): at 10 m/px over
