@@ -54,11 +54,15 @@ when taken up:
       to 5 of them), 4.1 neighbours, 1.6 at war, 1.1 open (neighbours, neither allied nor at war).
       Where great powers fight (3037's years 15–20) the land war has contact. So the split first
       (b), then rivalry (c). The utility moved into `warUtility` (no rule: the pin unchanged).
-    - [ ] 7.53b Alliances of rivals split: a member great power of an alliance in which another
+    - [x] 7.53b Alliances of rivals split: a member great power of an alliance in which another
       member is a great power, with no war in common with it, loses loyalty monthly until it leaves
       (`allianceSystem`'s LEAVE_LOYALTY). AT: great pairs allied, mean of years 2–20 on the 4 tuning
       seeds, halved (3.80 in 7.53a); armed wars read beside it; a unit test (red without); the ADR;
       the pin's entry.
+      Done (ADR-586, `docs/evidence/7.53/b.md`): rivals part unless they fight a great power
+      together, from 3 years after the start, and a great power joins no alliance holding one;
+      great pairs allied 3.80 → 0.52; armed wars 0.57 → 0.60 (rivalry is c); year 1 and the pin
+      unchanged; `rivalsApart1938.test.ts` (red without).
     - [ ] 7.53c Rivalry: a bonus to the utility of a war between two great powers, neighbours, the
       larger the nearer their strengths (`warUtility`). AT: armed wars a world in years 2–20 on the 4
       tuning seeds at least twice 7.53a's (0.57 → 1.14) with b in; a unit test (red without); the

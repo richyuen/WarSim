@@ -2026,6 +2026,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     joins a neighbour's alliance or forms one (30%).
   - *Coalitions:* monthly, the unaligned neighbours of a nation earning > 25% of world income
     form or join a coalition.
+  - *Rivals apart (PLAN 7.53b, ADR-586):* the great powers are the 6 strongest living nations that
+    are no puppet. From 3 years after the scenario's start, monthly, each great power of an
+    alliance but its first (the leader if it is one, else the strongest) loses 30 loyalty while it
+    fights no great power together with the first, and leaves under 25; a great power joins no
+    alliance that holds another (against a threat, a coalition), and an alliance against a threat
+    or a coalition is founded with one great power at most.
   - *Switches:* `setAi` per nation; setting `aiEnabled`.
   - *10-year AT:* `tests/sweep/` runs 3 seeds as its own `npm run check` stage.
 - **Operational AI** (every 6 h): assigns formations to fronts proportionally to

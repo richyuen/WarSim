@@ -21084,3 +21084,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - The declaration's utility moved into `warUtility` (`strategic.ts`), the same sum in the same order:
   the pin unchanged (checked). Specs by hand: none (no UI).
 - **Next:** PLAN 7.53b.
+
+## 2026-10-21 — PLAN 7.53b: rivals apart (ADR-586)
+
+- **Rule** (`strategic.ts`, `rivalsApart`, monthly): from 3 years after the start, each great power
+  (the 6 strongest, no puppet) of an alliance but its first loses 30 loyalty a month while it fights
+  no great power together with the first, and leaves under 25; a great power joins no alliance that
+  holds another, and new alliances and coalitions take one great power at most. SPEC §7.
+- **AT** (4 tuning seeds × 20 years, `docs/evidence/7.53/b.md`): great pairs allied 3.80 → 0.52 (bar
+  1.90): met. Armed wars 0.57 → 0.60, great pairs at war 1.57 → 1.16: rivalry (7.53c) is the motive.
+- Five forms tried: any war in common kept them; leavers joined another bloc; the alliance's pull to
+  its unity holds a loyalty at 25 exactly, so the rule lets it go itself; without a grace the
+  Anti-Comintern pact split in February 1938.
+- **Test:** `rivalsApart1938.test.ts` (3 cases; red with the loss at 0). Pin unchanged (a1a50bcc: the
+  rule waits 3 years). No `--profile`: one sort of the nations a day.
+- Specs by hand: none (no UI).
+- **Next:** PLAN 7.53c (rivalry).

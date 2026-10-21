@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-586 · 2026-10-21 · accepted — Rivals apart: the great powers of an alliance part unless they fight a great power together (PLAN 7.53b; ADR-585's option 4)
+
+- **Context.** PLAN 7.53a (`docs/evidence/7.53/measure-a.md`): Germany's alliance of 1938 held 3 to
+  5 of the 6 great powers from year 2; of their 15 pairs 3.8 allied, 1.1 open to a war.
+- **Decision** (`strategic.ts`, `rivalsApart`, monthly with the coalitions): the great powers are
+  the GREAT_POWERS (6) strongest living nations that are no puppet (`strengths`). From
+  RIVAL_GRACE_YEARS (3) after the scenario's start, each great power of an alliance but its first
+  (the leader if it is one, else the strongest of them) loses RIVAL_LOYALTY (30) loyalty a month
+  while it fights no great power together with the first, and leaves once under LEAVE_LOYALTY (25).
+  A great power joins no alliance that holds another (the alliance against a threat, a coalition),
+  and an alliance against a threat or a coalition is founded with one great power at most. A nation
+  whose AI is off loses nothing.
+- **Why so** (`docs/evidence/7.53/b.md`, five forms on the tuning seeds): any war in common kept
+  them (an alliance draws its members into its wars on small nations most months); a great power
+  that left joined another bloc; the alliance system's pull to the unity holds a loyalty at 25
+  exactly at a unity of 100, so the rule lets it go itself; without the grace Italy and Japan left
+  the Anti-Comintern pact in February 1938.
+- **Measured** (4 tuning seeds × 20 years, years 2–20): great pairs allied 3.80 → 0.52 (bar 1.90);
+  armed wars 0.57 → 0.60, great pairs at war 1.57 → 1.16, wars 6.27 → 6.68. Year 1 unchanged.
+- **Pin.** Unchanged (a1a50bcc): the rule waits three years, the pin reads one.
+- **Consequences.** Blocs no longer hold several great powers in peace; rivalry (7.53c) gives them
+  the motive to fight. The sweep's limits are read at 7.53's AT.
+
 ### ADR-585 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — Wars between peers: a rivalry motive and alliances of rivals that split (PLAN 7.53, before 7.49b)
 
 - **Context.** PLAN 7.49a (`docs/evidence/7.49/measure.md` §3): wars with 5 or more land formations a

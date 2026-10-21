@@ -25,6 +25,9 @@
  * unaligned neighbours (not its puppets) form or join a coalition alliance; and those of the nation
  * the world is most outraged at for its nuclear strikes (`worstPariah`, PLAN 6.5b) a league of
  * their own, 'alliance.pariah', that does not have it.
+ * Rivals apart (monthly, PLAN 7.53b): the great powers of an alliance but its first lose loyalty while
+ * they fight no great power together with it, and leave (`allianceSystem`); and a great power joins no
+ * alliance that holds another (against a threat, or a coalition).
  * God Mode can switch the AI off globally (setting `aiEnabled`) or per nation (`setAi`).
  */
 import { isDayStart, isMonthStart } from '../../shared/calendar';
@@ -32,7 +35,7 @@ import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { makePeace, declareWar, whyNotWar } from '../systems/war';
-import { canJoin, noWarAmong } from '../systems/alliances';
+import { canJoin, LEAVE_LOYALTY, leaveAlliance, noWarAmong } from '../systems/alliances';
 import { relationHit, worstPariah } from '../systems/nuclear';
 import { forceMen } from '../systems/seaControl';
 import { navOf, type World } from '../world';
@@ -69,6 +72,33 @@ export const PARIAH_WAR = 0.5;
  */
 export const RESTLESS = 0.3;
 export const RESTLESS_YEARS = 10;
+/**
+ * The great powers (PLAN 7.53, ADR-585, the user's decision): the GREAT_POWERS strongest living
+ * nations that are no puppet (`strengths`, lowest id on ties).
+ */
+export const GREAT_POWERS = 6;
+/**
+ * Rivals apart (PLAN 7.53b): monthly, in an alliance that holds two or more great powers, each of
+ * them but its first (the leader if it is one, else the strongest of them) loses this much loyalty
+ * while it fights no great power together with the first (the two on one side of a war whose other
+ * side has a great power: a war of theirs on a small nation does not keep them, as their alliance
+ * draws them into one most months), and leaves once under LEAVE_LOYALTY (`allianceSystem`'s pull to
+ * the unity lifts a loyalty of 0 to 25 at a unity of 100, so there it would never go). From 100 it
+ * goes in the third month, from 60 (a new member's) in the second. Measured before (PLAN 7.53a): Germany's alliance of 1938
+ * held 3 to 5 of the 6 great powers from year 2, and they never fought one another.
+ */
+export const RIVAL_LOYALTY = 30;
+/**
+ * The years from the scenario's start before rivals part (PLAN 7.53b): the alliances a scenario
+ * sets (1938's Anti-Comintern pact of Germany, Italy and Japan, three of its six great powers) have
+ * their war first; without it they parted in the second month, before any war of theirs.
+ */
+export const RIVAL_GRACE_YEARS = 3;
+
+/** Whether rivals part yet (PLAN 7.53b): RIVAL_GRACE_YEARS after the scenario's start. */
+export function rivalsPart(world: World): boolean {
+  return world.tick >= 24 * 365 * RIVAL_GRACE_YEARS;
+}
 const SALT_WAR = 0xa101;
 const SALT_ALLY = 0xa102;
 
@@ -190,6 +220,40 @@ export function warUtility(world: World, n: number, t: number, attack: number, d
   return { strength, opportunity, claim, exhaustion, wars: warsTerm, pariah, restless, u };
 }
 
+/** The great powers: the GREAT_POWERS strongest living nations that are no puppet, by `str` (`strengths`), lowest id on ties. */
+export function greatPowers(world: World, str: Float64Array): Set<number> {
+  const nc = world.nations.cols;
+  const living: number[] = [];
+  world.nations.forEach((n) => {
+    if (nc.living[n] === 1 && nc.overlord[n] === 0) living.push(n);
+  });
+  return new Set(living.sort((a, b) => str[b]! - str[a]! || a - b).slice(0, GREAT_POWERS));
+}
+
+/** Whether a and b fight on one side of a war against a great power (`greats`). */
+function peerWarInCommon(world: World, a: number, b: number, greats: Set<number>): boolean {
+  return world.wars.list.some((w) => w.sides.some((side, i) => side.includes(a) && side.includes(b) && w.sides[1 - i]!.some((m) => greats.has(m))));
+}
+
+/** Monthly (PLAN 7.53b): the great powers of an alliance but its first lose RIVAL_LOYALTY while they fight no great power together with it. */
+export function rivalsApart(world: World, str: Float64Array, greats: Set<number>): void {
+  if (!rivalsPart(world)) return;
+  const nc = world.nations.cols;
+  for (const a of [...world.alliances.list]) {
+    const mine = a.members.filter((m) => greats.has(m));
+    if (mine.length < 2) continue;
+    const first = greats.has(a.leader) ? a.leader : mine.sort((x, y) => str[y]! - str[x]! || x - y)[0]!;
+    const leaving: number[] = [];
+    for (let i = 0; i < a.members.length; i++) {
+      const m = a.members[i]!;
+      if (m === first || !greats.has(m) || nc.aiOff[m] === 1 || peerWarInCommon(world, m, first, greats)) continue;
+      a.loyalty[i] = Math.max(0, a.loyalty[i]! - RIVAL_LOYALTY);
+      if (a.loyalty[i]! < LEAVE_LOYALTY) leaving.push(m);
+    }
+    for (const m of leaving) leaveAlliance(world, m);
+  }
+}
+
 export function strategicAi(world: World): void {
   if (!world.settings.aiEnabled || !isDayStart(world.tick)) return;
   const day = world.tick / 24;
@@ -209,6 +273,8 @@ export function strategicAi(world: World): void {
   const str = strengths(world);
   const al = world.alliances;
   const { withAllies, defence } = sides(world, str);
+  // The great powers, once rivals part (PLAN 7.53b; none before: no join is refused for them).
+  const greats = rivalsPart(world) ? greatPowers(world, str) : new Set<number>();
   for (const n of actors) {
     const neighbours = [...(nb.get(n) ?? [])].sort((a, b) => a - b);
     // War.
@@ -233,22 +299,26 @@ export function strategicAi(world: World): void {
     if (!al.allianceOf(n)) {
       const threat = neighbours.find((t) => nc.aggression[t]! >= THREAT_AGGRESSION && str[t]! > THREAT_RATIO * Math.max(1, str[n]!) && !world.wars.atWar(n, t));
       if (threat !== undefined && hashToUnit(hash32(world.seed, day, n, SALT_ALLY)) < ALLY_P) {
-        const options = neighbours.map((m) => al.allianceOf(m)).filter((a) => a && !a.members.includes(threat) && canJoin(world, n, a));
+        // A great power does not join one that holds another (PLAN 7.53b: rivals apart).
+        const options = neighbours.map((m) => al.allianceOf(m)).filter((a) => a && !a.members.includes(threat) && canJoin(world, n, a) && !(greats.has(n) && a.members.some((m) => greats.has(m))));
         const join = options.sort((a, b) => b!.members.reduce((s, m) => s + str[m]!, 0) - a!.members.reduce((s, m) => s + str[m]!, 0) || a!.id - b!.id)[0];
         if (join && al.join(n, join)) world.out.emit(world.tick, EventKind.AllianceJoined, n, join.id, NaN, NaN);
         else {
-          const partner = [...(nb.get(threat) ?? [])].sort((a, b) => a - b).find((m) => m !== n && nc.living[m] === 1 && !al.allianceOf(m) && nc.overlord[m] === 0 && noWarAmong(world, [n, m]));
+          const partner = [...(nb.get(threat) ?? [])].sort((a, b) => a - b).find((m) => m !== n && nc.living[m] === 1 && !al.allianceOf(m) && nc.overlord[m] === 0 && !(greats.has(n) && greats.has(m)) && noWarAmong(world, [n, m]));
           const a = partner !== undefined ? al.create(n, [partner], 'alliance.defensive', 40) : null;
           if (a) for (const m of a.members) world.out.emit(world.tick, EventKind.AllianceJoined, m, a.id, NaN, NaN);
         }
       }
     }
   }
-  if (isMonthStart(world.startDay, world.tick)) coalition(world, nb, str);
+  if (isMonthStart(world.startDay, world.tick)) {
+    coalition(world, nb, str, greats);
+    rivalsApart(world, str, greats);
+  }
 }
 
 /** Monthly: unaligned neighbours of a hegemon (> HEGEMON_SHARE of world income) ally; and of the worst nuclear pariah (PLAN 6.5b). */
-function coalition(world: World, nb: Map<number, Set<number>>, str: Float64Array): void {
+function coalition(world: World, nb: Map<number, Set<number>>, str: Float64Array, greats: Set<number>): void {
   const nc = world.nations.cols;
   let total = 0;
   let top = 0;
@@ -258,16 +328,16 @@ function coalition(world: World, nb: Map<number, Set<number>>, str: Float64Array
     if (top === 0 || nc.income[n]! > nc.income[top]!) top = n;
   });
   const hegemon = top !== 0 && total > 0 && nc.income[top]! / total > HEGEMON_SHARE ? top : 0;
-  if (hegemon !== 0) coalitionAbout(world, nb, str, hegemon);
+  if (hegemon !== 0) coalitionAbout(world, nb, str, greats, hegemon);
   const pariah = worstPariah(world);
-  if (pariah !== 0 && pariah !== hegemon) coalitionAbout(world, nb, str, pariah, 'alliance.pariah');
+  if (pariah !== 0 && pariah !== hegemon) coalitionAbout(world, nb, str, greats, pariah, 'alliance.pariah');
 }
 
 /**
  * The unaligned neighbours of `top` form or join an alliance named `nameKey`: a coalition about a
  * hegemon, the first of its name; a league about a pariah (PLAN 6.5b), one that does not have it.
  */
-function coalitionAbout(world: World, nb: Map<number, Set<number>>, str: Float64Array, top: number, nameKey = 'alliance.coalition'): void {
+function coalitionAbout(world: World, nb: Map<number, Set<number>>, str: Float64Array, greats: Set<number>, top: number, nameKey = 'alliance.coalition'): void {
   const nc = world.nations.cols;
   const al = world.alliances;
   const members = [...(nb.get(top) ?? [])]
@@ -277,11 +347,20 @@ function coalitionAbout(world: World, nb: Map<number, Set<number>>, str: Float64
   for (const m of members) {
     if (al.allianceOf(m)) continue;
     if (existing) {
+      // A great power does not join one that holds another (PLAN 7.53b).
+      if (greats.has(m) && existing.members.some((x) => greats.has(x))) continue;
       if (canJoin(world, m, existing) && al.join(m, existing)) world.out.emit(world.tick, EventKind.AllianceJoined, m, existing.id, NaN, NaN);
     }
   }
   if (!existing) {
-    const free = members.filter((m) => !al.allianceOf(m));
+    // One great power at most among its founders (PLAN 7.53b), the strongest.
+    let great = false;
+    const free = members.filter((m) => {
+      if (al.allianceOf(m)) return false;
+      if (!greats.has(m)) return true;
+      if (great) return false;
+      return (great = true);
+    });
     if (free.length >= 2 && noWarAmong(world, free)) {
       const a = al.create(free[0]!, free.slice(1), nameKey, 50);
       if (a) for (const m of a.members) world.out.emit(world.tick, EventKind.AllianceJoined, m, a.id, NaN, NaN);
