@@ -21333,3 +21333,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `nukeYearRestrike1938.test.ts` (red without); ADR-569's `nukeWarRestrike1938.test.ts`
   passes unchanged. Specs by hand: none (no UI change).
 - **Next:** 7.50's AT on 10 unseen seeds × 30 years (`nukeToll.ts`).
+
+## 2026-10-21 — PLAN 7.50: the read on 10 unseen seeds (ticked)
+
+- `nukeToll.ts` on seeds 771–780 × 30 years, HEAD `2dc4e1b` (`docs/evidence/7.50/read.md`): 129
+  decisions, 127 bursts (23 hydrogen), none of a million dead; under 0.1 and a million: **0**; a place
+  struck three times in a year: **0**. Both bars of 7.50's AT hold. 775 has four restrikes in a war,
+  each allowed (twice the men within a year, or past it); two strike a city a year and a day after the
+  last burst there (ADR-569's case past the year), noted for the critic.
+- 7.50 ticked: Greenock's day not decided, the spot not struck a third time, the 10 seeds' bars, a
+  unit test per rule, the pin unchanged (seed 99's year has no warhead). Greenock is taken 46 days
+  later at 0.101, said in the read.
+- **Next:** PLAN 7.41 (the war at sea seen).

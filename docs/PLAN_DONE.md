@@ -13041,3 +13041,55 @@ Of 7.33 (open in PLAN.md):
   a group under the infantry division's room (12,460) no longer counts. The three cases order a
   transport group within 60 days (0 → 3 of 3); `navyBudget1938.test.ts` (red without); the pin
   unchanged (63d0cfd9); 7.54's count 6 → 6 in 60 days (the groups train 90).
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.50 The H-bomb at the floor on a city of a million, and the spot struck again (R11-B2): seed
+  1129, 14 March 1954, the Soviet Union on Greenock, a hydrogen bomb, 1,105,514 dead (1,071,000
+  civilians) at utility 0.026, against counters of 1.3k–7.5k men; PLAN 7.38's bar ("no burst under
+  0.1 that kills a million") missed on an unseen seed. Seed 2081, years 27–28: Germany strikes
+  [1219.5, 421.5] three times in 184 days (hydrogen, hydrogen, atomic) for 5,179, 3,879 and 4,090
+  men at 0.48–0.54. Evidence: `critic/c11_headless_1129.json`, `c11_f_1129.json`,
+  `c11_headless_2081.json`, `c11f_1129_14_alert.png`. The critic's fix: the dead weighed so a
+  floor-value strike cannot pay for a city (DEAD_COST 0.1 a million), fission where the target is a
+  few divisions, ADR-569's "no restrike without new value" over the war's last year. Measured first
+  from the critic's saves (`c11_seed1129_y17s.bin`, `c11_seed2081_y20.bin`): each strike's parts
+  (`nukeCase.ts`). AT: the Greenock strike, replayed, is not a burst under 0.1 that kills a million;
+  2081's spot not struck a third time within a year without new value; 7.38's bar on 10 unseen
+  seeds × 30 years (none of them 7.38's or 7.45b's): no burst under 0.1 kills a million, no place
+  struck three times in a year; a unit test per rule (red without); the pin's entry. Stop: two full
+  re-measures flat, the bar is the user's (ADR-554).
+  Measured (`docs/evidence/7.50/measure.md`, `nukeToll.ts` on a worktree of `dd3b730`, whose
+  `nuclear.ts` is HEAD's): Greenock's gain 1.771 against costs 1.744, the million dead 0.107 of them
+  (a flat DEAD_COST rise to close it, ~0.6 a million, sinks ADR-572's kept case); 2081's spot is
+  ADR-569's "new value" (8,953 men found, 11,073 there again), each a strike back. A part each; the
+  10 unseen seeds read after both (`nukeToll.ts`'s `thriceInYear`, new).
+    - [x] 7.50a The dead's floor: the floor a strike passes rises with its expected dead, 0.1 a
+      million to 0.1 (7.38's bar), never under NUKE_FLOOR; each yield weighed by its utility above
+      its own floor. AT: the
+      Greenock strike, replayed from `c11_seed1129_y17s.bin`, is not decided (was 0.026, 1,105,514
+      dead); ADR-572's kept case still over its floor; a unit test (red without); the ADR; the pin.
+      Rule in (ADR-599, `docs/evidence/7.50/a-toll-1129-rule.json`): day 5916 not decided; Greenock
+      taken on day 5962 at 0.101 for the same 1,105,514 (over the bar by 0.001); ADR-572's case at
+      0.237 over its 0.1. Pin unchanged.
+    - [x] 7.50b The year's restrike: within a year of a burst there, a place of massed men struck by
+      the side in the war is weighed only with twice the men the burst found (ADR-569 after the
+      year). AT: 2081's spot not struck a third time (replayed from a checkpoint before day 9679);
+      a unit test (red without); the ADR; the pin; then 7.50's 10 unseen seeds.
+      Rule in (ADR-600, `docs/evidence/7.50/b-toll-2081-rule.json`): the spot struck on days 9556 and
+      9741 (twice the first find massed there), no third (was 9556, 9679, 9863). Pin unchanged.
+  Read (`docs/evidence/7.50/read.md`, seeds 771–780 × 30 years on `2dc4e1b`): no burst under 0.1
+  kills a million, no place struck three times in a year (0 and 0, 127 bursts); the most dead 953,790
+  at 0.629. Greenock taken 46 days later at 0.101 (over the bar by 0.001). Pin unchanged.

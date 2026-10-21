@@ -1,0 +1,333 @@
+{
+ "seed": 778,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 5,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0,
+  "thriceInYear": 0
+ },
+ "thriceInYear": [],
+ "rows": [
+  {
+   "day": 5058,
+   "year": 13.86,
+   "tick": 121393,
+   "by": "Japan",
+   "u": 0.305,
+   "at": [
+    1630.4,
+    424.07
+   ],
+   "target": "China",
+   "war": 135,
+   "warName": "Japan+Germany+Italy v China+Tibet+Communist China+Nepal",
+   "warDays": 1570,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.305,
+   "utility": {
+    "value": 0.379,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 0.771,
+    "doctrine": 1.35,
+    "gain": 1.023,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 183000,
+    "dead": 0.018,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.718
+   },
+   "place": {
+    "econShare": 0.008,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.379,
+    "econShare": 0.008,
+    "menShare": 0,
+    "menExpected": 0,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 3421000,
+    "fission": 183000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 183000,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 5165,
+   "year": 14.15,
+   "tick": 123961,
+   "by": "Japan",
+   "u": 1.984,
+   "at": [
+    1620.57,
+    82.57
+   ],
+   "target": "China",
+   "war": 135,
+   "warName": "Japan+Germany+Italy v China+Tibet+Communist China+Nepal",
+   "warDays": 1677,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 1.898,
+   "utility": {
+    "value": 0.86,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 0.732,
+    "doctrine": 1.35,
+    "gain": 2.322,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.212,
+    "taboo": 0.354,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.424
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.086,
+    "ownShare": 0,
+    "menExpected": 21499,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.86,
+    "econShare": 0,
+    "menShare": 0.086,
+    "menExpected": 21499,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 43000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 21485,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 5255,
+   "year": 14.4,
+   "tick": 126121,
+   "by": "Japan",
+   "u": 0.616,
+   "at": [
+    1609.32,
+    431.5
+   ],
+   "target": "China",
+   "war": 135,
+   "warName": "Japan+Germany+Italy v China+Tibet+Communist China+Nepal",
+   "warDays": 1767,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.579,
+   "utility": {
+    "value": 0.412,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 0.692,
+    "doctrine": 1.35,
+    "gain": 1.112,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.325,
+    "taboo": 0.345,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.532
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.041,
+    "ownShare": 0,
+    "menExpected": 10291,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.412,
+    "econShare": 0,
+    "menShare": 0.041,
+    "menExpected": 10291,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 83000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 10310,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 5431,
+   "year": 14.88,
+   "tick": 130345,
+   "by": "Japan",
+   "u": 0.026,
+   "at": [
+    1307.65,
+    354.19
+   ],
+   "target": "Soviet Union",
+   "war": 168,
+   "warName": "Japan+Germany+Italy v Soviet Union+Afghanistan+Mongolia",
+   "warDays": 396,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.027,
+   "utility": {
+    "value": 0.444,
+    "through": 1,
+    "desperation": 1.085,
+    "ownDesperation": 0,
+    "doctrine": 1.35,
+    "gain": 0.651,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.387,
+    "taboo": 0.388,
+    "people": 42000,
+    "dead": 0.004,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.624
+   },
+   "place": {
+    "econShare": 0.014,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.444,
+    "econShare": 0.014,
+    "menShare": 0,
+    "menExpected": 0,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 700000,
+    "fission": 42000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 42000,
+    "yieldN": 1
+   }
+  },
+  {
+   "day": 6603,
+   "year": 18.09,
+   "tick": 158473,
+   "by": "Japan",
+   "u": 0.843,
+   "at": [
+    1630.4,
+    424.07
+   ],
+   "target": "China",
+   "war": 186,
+   "warName": "Japan+Germany+Italy v China+Tibet+Communist China+Nepal+Afghanistan+Mongolia",
+   "warDays": 546,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.843,
+   "utility": {
+    "value": 0.844,
+    "through": 1,
+    "desperation": 1.496,
+    "ownDesperation": 0.133,
+    "doctrine": 1.35,
+    "gain": 1.705,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.312,
+    "taboo": 0.886,
+    "people": 178000,
+    "dead": 0.018,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.861
+   },
+   "place": {
+    "econShare": 0.01,
+    "menShare": 0.045,
+    "ownShare": 0,
+    "menExpected": 11214,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.844,
+    "econShare": 0.01,
+    "menShare": 0.045,
+    "menExpected": 11214,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 3319000,
+    "fission": 178000
+   },
+   "before": [
+    {
+     "day": 5058.1,
+     "by": "Japan",
+     "sameWar": false,
+     "dead": 183000
+    }
+   ],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 189183,
+    "yieldN": 1
+   }
+  }
+ ]
+}
