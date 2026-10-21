@@ -21065,3 +21065,11 @@ No rule changed and nothing on screen changed. One task came out of it.
 - New diag tools: `landStates.ts`, `warSides.ts`, `armyGates.ts`, `noOnesCells.ts`, `stuckMarch.ts`.
   No rule; the pin unchanged. Specs by hand: none (no UI). 7.49's commits: 1 of 20.
 - **Next:** PLAN 7.49b.
+
+## 2026-10-21 — PLAN 7.53 filed (ADR-585, the user's decision)
+
+- The user chose two of the four ways to change the strategic AI's choice of wars: a rivalry motive
+  between great powers of like strength (2), and alliances that hold two great powers with no war in
+  common split (4); taken before PLAN 7.49b. Filed as PLAN 7.53 (a measured, b rivalry, c split),
+  placed before 7.49. The other options (a lower strength bar, valuing the prize) not taken.
+- **Next:** PLAN 7.53a.

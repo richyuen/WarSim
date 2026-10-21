@@ -36,6 +36,30 @@ The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
 when taken up:
 
+- [ ] 7.53 Wars between peers (ADR-585, the user's decision, 2026-10-21: options 2 and 4 of the
+  strategic AI's choice of wars; taken before 7.49b, whose parts help only where both sides are
+  armed): wars with 5 or more land formations a side within DEPLOY_RANGE_CELLS of the front
+  ("armed", `tools/diag/warSides.ts`) 3–4 a world in year 1, 0.5 at years 10 and 20 on the critic's
+  48 saves (`docs/evidence/7.49/measure.md` §3). Two rules, a part each: a rivalry motive in the
+  declaration's utility for neighbours of like strength that are both great powers, and an alliance
+  that holds two great powers with no war in common loses their loyalty until one leaves. AT: armed
+  wars a world, mean of weekly samples in years 2–20, at least 1.5 on 10 unseen seeds × 20 years
+  (HEAD's figure on the same run, the before); engaged land formations worldwide and per war read
+  beside it; `sweep:quick`'s limits (no hegemon, borders moving) hold; a unit test per rule (red
+  without); the pin's entry; `--profile`. Stop: two full re-measures flat, the bar is the user's
+  (ADR-554). In parts:
+    - [ ] 7.53a Measured on HEAD, 4 seeds × 20 years (the tuning seeds, none of the AT's): armed wars
+      a world by year; the great powers (`GREAT`: the strongest by `strengths`) by year: how many
+      share an alliance, how many pairs of them are neighbours, at war, and what the best
+      declaration of one on another scores (`strategicAi`'s utility, by its terms). No rule.
+    - [ ] 7.53b Rivalry: a bonus to the utility of a war between two great powers, neighbours, the
+      larger the nearer their strengths. AT: armed wars a world in years 2–20 on the 4 tuning seeds
+      at least twice 7.53a's; a unit test (red without); the ADR with the constants; the pin's entry.
+    - [ ] 7.53c Alliances of rivals split: a member great power of an alliance whose leader (or
+      another member) is a great power, with no war in common with it, loses loyalty monthly until
+      it leaves (`allianceSystem`'s LEAVE_LOYALTY). AT: great powers sharing an alliance at years
+      10 and 20 on the 4 tuning seeds halved against 7.53b's run; a unit test (red without); the
+      ADR; the pin's entry.
 - [ ] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged land
   formations worldwide, mean of daily samples, 0.3–0.7 at years 10 and 20 on the critic's 24 worlds
   (of about 300 of nations at war), against 55–107 in year 1; the same on `bcbc99c` (1.1 and 0.3).

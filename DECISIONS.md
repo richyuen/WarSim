@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-585 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — Wars between peers: a rivalry motive and alliances of rivals that split (PLAN 7.53, before 7.49b)
+
+- **Context.** PLAN 7.49a (`docs/evidence/7.49/measure.md` §3): wars with 5 or more land formations a
+  side near the front run 3–4 a world in year 1 and 0.5 at years 10 and 20, and contact goes with
+  them. A declaration's utility is `aggression/100 × (min(3, ratio) − 1)` plus OPPORTUNITY, CLAIM and
+  RESTLESS, over DECLARE_AT (0.5), with allies at ALLY_WEIGHT (`strategic.ts`): about 1.5 × the
+  target's strength without the bonuses, so late wars are declared on the weak. And the great powers
+  end in one alliance (6421 year 20: Germany, Japan, Italy and Poland), where they never meet.
+- **Options** (put to the user): 1, lower the strength bar (also more wars on the weak); 2, a rivalry
+  motive for neighbours of like strength that are both great powers; 3, value the prize (income,
+  cities, cores) over the weakness (a redesign, the most balance risk); 4, alliances that hold two
+  great powers with no war in common split, so the strong stand on opposite sides.
+- **Decided** (2026-10-21, the user): 2 and 4, as PLAN 7.53, taken before 7.49b. Each a rule of its
+  own with its unit test, the pin's entry and its constants in an ADR of its own when it lands.
+- **Consequences.** More wars between great powers late: more losses, more desperate nations (the
+  nuclear AI's case: 7.50 and 7.52 are read after it), a faster map; the sweep's limits (no
+  hegemon, borders moving) are read with it.
+
 ### ADR-584 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — PLAN 7.46b2 closed not done at its bar; PLAN 7.46 done
 
 - **Context.** PLAN 7.46b2's AT: Britain's `spentArmy` months on seeds 7019 and 3613 under 12 each
