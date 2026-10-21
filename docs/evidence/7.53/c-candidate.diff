@@ -1,0 +1,130 @@
+diff --git a/src/sim/ai/strategic.ts b/src/sim/ai/strategic.ts
+index 319ae96..f90f3ac 100644
+--- a/src/sim/ai/strategic.ts
++++ b/src/sim/ai/strategic.ts
+@@ -14,6 +14,7 @@
+  *              + CLAIM (n has a core on land t holds) − exhaustion/100 − WARS_PENALTY × wars
+  *              + PARIAH_WAR × relationHit(n, t)  (the world's outrage at t's nuclear strikes, PLAN 6.5b)
+  *              + RESTLESS × min(1, years n has been at peace / RESTLESS_YEARS)  (in no war; PLAN 7.14)
++ *              + RIVAL × aggression/100 × max(0, 1 − |ln(attack/defence)| / ln RIVAL_BAND)  (n and t great powers; PLAN 7.53c)
+  * over neighbours t that are valid targets; the best t with utility > DECLARE_AT is attacked
+  * with probability DECLARE_P × aggression/100.
+  * Stalemate peace: a war older than STALEMATE_DAYS with |score| < STALEMATE_SCORE and both
+@@ -33,6 +34,7 @@
+ import { isDayStart, isMonthStart } from '../../shared/calendar';
+ import { Refusal } from '../../shared/commands';
+ import { EventKind } from '../../shared/events';
++import { log } from '../core/dmath';
+ import { hash32, hashToUnit } from '../core/hash';
+ import { makePeace, declareWar, whyNotWar } from '../systems/war';
+ import { canJoin, LEAVE_LOYALTY, leaveAlliance, noWarAmong } from '../systems/alliances';
+@@ -77,6 +79,12 @@ export const RESTLESS_YEARS = 10;
+  * nations that are no puppet (`strengths`, lowest id on ties).
+  */
+ export const GREAT_POWERS = 6;
++/**
++ * A great power has at least this share of the strongest one's strength (PLAN 7.53c): from year 10
++ * the sixth strongest of the tuning seeds had 1–6 % of the first's (`tools/diag/peers.ts`), and the
++ * rules of rivals bound the strongest to nations that were no peer of it.
++ */
++export const GREAT_FLOOR = 0.25;
+ /**
+  * Rivals apart (PLAN 7.53b): monthly, in an alliance that holds two or more great powers, each of
+  * them but its first (the leader if it is one, else the strongest of them) loses this much loyalty
+@@ -88,6 +96,22 @@ export const GREAT_POWERS = 6;
+  * held 3 to 5 of the 6 great powers from year 2, and they never fought one another.
+  */
+ export const RIVAL_LOYALTY = 30;
++/**
++ * Rivalry (PLAN 7.53c, ADR-585's option 2): a great power's war on a neighbouring one has RIVAL ×
++ * aggression/100 × closeness more utility, closeness 1 at even strength (`attack` / `defence`, the
++ * allies counted) and falling to 0 at RIVAL_BAND times either way (on the log of the ratio); from
++ * RIVAL_GRACE_YEARS after the start, as rivals part. Measured before (PLAN 7.53a): late wars were
++ * declared on the weak by the strength term alone, and the best declaration of two great
++ * neighbours, neither allied nor at war, scored a median of −0.3 to 0.7, its strength term near 0.
++ */
++export const RIVAL = 2;
++export const RIVAL_BAND = 2;
++/**
++ * The wars a great power may be in beyond MAX_WARS for a war on another (PLAN 7.53c): measured with
++ * rivalry alone, MAX_WARS stopped most of the declarations on a rival that scored over DECLARE_AT
++ * (the great powers stood in two wars on small nations).
++ */
++export const RIVAL_WARS = 1;
+ /**
+  * The years from the scenario's start before rivals part (PLAN 7.53b): the alliances a scenario
+  * sets (1938's Anti-Comintern pact of Germany, Italy and Japan, three of its six great powers) have
+@@ -200,15 +224,17 @@ export interface WarUtility {
+   wars: number;
+   pariah: number;
+   restless: number;
++  rivalry: number;
+   u: number;
+ }
+ 
+ /**
+  * The utility of `n`'s war on `t` (the module's formula): `attack` is `n`'s strength with its allies,
+  * `defence` the target's (`sides`), `wars` how many wars `n` is in, `restless` its restlessness
+- * (0 while at war). Summed in the formula's order.
++ * (0 while at war), `rivals` whether both are great powers (`greatPowers`, once rivals part; PLAN
++ * 7.53c). Summed in the formula's order.
+  */
+-export function warUtility(world: World, n: number, t: number, attack: number, defence: number, wars: number, restless: number): WarUtility {
++export function warUtility(world: World, n: number, t: number, attack: number, defence: number, wars: number, restless: number, rivals = false): WarUtility {
+   const nc = world.nations.cols;
+   const strength = (nc.aggression[n]! / 100) * (Math.min(RATIO_CAP, attack / defence) - 1);
+   const opportunity = warsOf(world, t) > 0 ? OPPORTUNITY : 0;
+@@ -216,18 +242,21 @@ export function warUtility(world: World, n: number, t: number, attack: number, d
+   const exhaustion = exhaustionOf(world, n) / 100;
+   const warsTerm = WARS_PENALTY * wars;
+   const pariah = PARIAH_WAR * relationHit(world, n, t);
+-  const u = strength + opportunity + claim - exhaustion - warsTerm + pariah + restless;
+-  return { strength, opportunity, claim, exhaustion, wars: warsTerm, pariah, restless, u };
++  const rivalry = rivals ? ((RIVAL * nc.aggression[n]!) / 100) * Math.max(0, 1 - Math.abs(log(attack / defence)) / log(RIVAL_BAND)) : 0;
++  const u = strength + opportunity + claim - exhaustion - warsTerm + pariah + restless + rivalry;
++  return { strength, opportunity, claim, exhaustion, wars: warsTerm, pariah, restless, rivalry, u };
+ }
+ 
+-/** The great powers: the GREAT_POWERS strongest living nations that are no puppet, by `str` (`strengths`), lowest id on ties. */
++/** The great powers: of the GREAT_POWERS strongest living nations that are no puppet, by `str` (`strengths`, lowest id on ties), those of GREAT_FLOOR of the first's strength or more. */
+ export function greatPowers(world: World, str: Float64Array): Set<number> {
+   const nc = world.nations.cols;
+   const living: number[] = [];
+   world.nations.forEach((n) => {
+     if (nc.living[n] === 1 && nc.overlord[n] === 0) living.push(n);
+   });
+-  return new Set(living.sort((a, b) => str[b]! - str[a]! || a - b).slice(0, GREAT_POWERS));
++  const top = living.sort((a, b) => str[b]! - str[a]! || a - b).slice(0, GREAT_POWERS);
++  const floor = top.length > 0 ? GREAT_FLOOR * str[top[0]!]! : 0;
++  return new Set(top.filter((n) => str[n]! >= floor));
+ }
+ 
+ /** Whether a and b fight on one side of a war against a great power (`greats`). */
+@@ -273,21 +302,24 @@ export function strategicAi(world: World): void {
+   const str = strengths(world);
+   const al = world.alliances;
+   const { withAllies, defence } = sides(world, str);
+-  // The great powers, once rivals part (PLAN 7.53b; none before: no join is refused for them).
++  // The great powers, once rivals part (PLAN 7.53b, 7.53c; none before: no join refused, no rivalry).
+   const greats = rivalsPart(world) ? greatPowers(world, str) : new Set<number>();
+   for (const n of actors) {
+     const neighbours = [...(nb.get(n) ?? [])].sort((a, b) => a - b);
+     // War.
+     const wars = warsOf(world, n);
+-    if (wars < MAX_WARS && nc.aggression[n]! >= PACIFIST_BELOW && nc.gold[n]! >= 0 && nc.bankrupt[n] !== 1) {
++    // A great power has RIVAL_WARS more, for a war on another (PLAN 7.53c).
++    const great = greats.has(n);
++    if ((wars < MAX_WARS || (great && wars < MAX_WARS + RIVAL_WARS)) && nc.aggression[n]! >= PACIFIST_BELOW && nc.gold[n]! >= 0 && nc.bankrupt[n] !== 1) {
+       const attack = withAllies(n);
+       const restless = wars === 0 ? restlessOf(world, n) : 0;
+       let best = 0;
+       let bestU = DECLARE_AT;
+       for (const t of neighbours) {
++        if (wars >= MAX_WARS && !greats.has(t)) continue;
+         // Whom it may declare on (PLAN 3.8: not a puppet of its ally either, which it used to pick).
+         if (whyNotWar(world, n, t) !== Refusal.None) continue;
+-        const u = warUtility(world, n, t, attack, defence(t), wars, restless).u;
++        const u = warUtility(world, n, t, attack, defence(t), wars, restless, great && greats.has(t)).u;
+         if (u > bestU) {
+           bestU = u;
+           best = t;

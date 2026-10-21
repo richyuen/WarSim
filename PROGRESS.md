@@ -21100,3 +21100,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   rule waits 3 years). No `--profile`: one sort of the nations a day.
 - Specs by hand: none (no UI).
 - **Next:** PLAN 7.53c (rivalry).
+
+## 2026-10-21 — PLAN 7.53c: rivalry tried, armed wars flat; not landed (ADR-587 proposed)
+
+- Rivalry (a bonus to a war between two great powers near even strength) in three forms on the 4
+  tuning seeds × 20 years (`docs/evidence/7.53/c.md`): armed wars 0.54–0.64 against 0.57 (bar 1.14).
+  MAX_WARS stopped most rival declarations at RIVAL 1; with RIVAL 2 and one war more for a rival the
+  rest is the draw and a weaker target. Great pairs at war rose 1.16 → 1.68, but most of those wars
+  have a front with one side's armies elsewhere (7.49's causes).
+- The sixth "great power" has 1–6 % of the first's strength from year 10; with a floor of a quarter of
+  the first's, there are 2 great powers from year 10 on every seed, and the motive changes nothing
+  between them (new peer wars 1.09 a year with it, 1.13 without).
+- Not landed: main keeps 7.53b; the candidate is `docs/evidence/7.53/c-candidate.diff`. `peers.ts`
+  reads the front and armies of peer wars, peer declarations a year and the sixth's share. BLOCKERS
+  entry; ADR-587 proposed (the user's): close 7.53 and take 7.49b (recommended), land rivalry anyway,
+  take 7.53b back too, or a part on the concentration of strength.
+- Specs by hand: none (no UI). Pin unchanged.
+- **Next:** the user's answer on ADR-587.

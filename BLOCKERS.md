@@ -5,6 +5,14 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.53c: rivalry moves no armed war; the bar missed (2026-10-21, ADR-587 proposed, the user's decision)
+- **The bar:** armed wars a world in years 2–20 on the 4 tuning seeds at least twice 7.53a's (0.57 →
+  1.14); 7.53's own, 1.5 on 10 unseen seeds.
+- **What moved** (`docs/evidence/7.53/c.md`): with rivalry in its three forms 0.54–0.64; great pairs at
+  war 1.16 → 1.68 without a floor on what is great, 1.93 with and without the motive when there is one.
+- **What is left:** the armies of the weaker side are not at the front (PLAN 7.49b–e), and from year 10
+  the world has 2 powers of a quarter of the strongest's strength. Not landed; the user's (ADR-587).
+
 ### RESOLVED 2026-10-21 (ADR-578, option a, the user's decision: the floor stands, 7.46b3 closed not done) · PLAN 7.46b3: Japan's gold months need a saving in a land war, which ADR-557 rules out; no rule (2026-10-20, ADR-578 proposed, the user's decision)
 - **The bar:** Japan's `gold` months on 4 seeds × 10 years with the chase halved, 76 / 48 / 65 / 88
   → 38 / 24 / 32 / 44 (seeds 1307, 3613, 8693, 7019).

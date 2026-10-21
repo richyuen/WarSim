@@ -67,6 +67,11 @@ when taken up:
       larger the nearer their strengths (`warUtility`). AT: armed wars a world in years 2–20 on the 4
       tuning seeds at least twice 7.53a's (0.57 → 1.14) with b in; a unit test (red without); the
       ADR with the constants; the pin's entry; `--profile`.
+      **Missed** (2026-10-21, BLOCKERS, ADR-587 proposed, the user's; `docs/evidence/7.53/c.md`, the
+      code in `c-candidate.diff`, not landed): armed wars 0.54–0.64 in three forms (RIVAL 1; 2 with
+      a war over MAX_WARS for a rival; with a floor of a quarter of the strongest's strength). The
+      great pairs at war have fronts and one side's armies elsewhere (7.49's causes); from year 10
+      there are 2 powers of that size, and the motive changes nothing between them.
 - [ ] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged land
   formations worldwide, mean of daily samples, 0.3–0.7 at years 10 and 20 on the critic's 24 worlds
   (of about 300 of nations at war), against 55–107 in year 1; the same on `bcbc99c` (1.1 and 0.3).

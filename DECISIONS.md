@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-587 · 2026-10-21 · proposed (the user's decision) — PLAN 7.53c missed: rivalry moves no armed war; what next for 7.53
+
+- **Context.** `docs/evidence/7.53/c.md`. Rivalry (RIVAL 1, then 2 with one war more than MAX_WARS
+  for a rival, then with a floor of a quarter of the strongest's strength for a great power) on the
+  4 tuning seeds × 20 years: armed wars 0.54–0.64 against 0.57 before (bar 1.14). Of the great pairs
+  at war most have a land front with one side's armies elsewhere (7.49's causes). From year 10 there
+  are 2 powers of a quarter of the strongest's strength on every seed; between them the motive
+  changes nothing (new wars between great powers 1.09 a year with it, 1.13 without).
+- **Options.** a: 7.53 closed, not done: 7.53b stays (ADR-586; blocs split, year 1 and the pin
+  unchanged), rivalry not landed (`c-candidate.diff` kept), and the loop takes 7.49b, whose parts are
+  what holds the armies away from the fronts. b: rivalry landed with the floor, though it moves no
+  figure, and 7.53 closed. c: a: and 7.53b taken back too (it moved no armed war either). d: 7.53
+  kept open with a part on the concentration of strength (the third strongest under a quarter of
+  the first from year 10): long-run balance work, before 7.49b.
+- **Recommended:** a.
+
 ### ADR-586 · 2026-10-21 · accepted — Rivals apart: the great powers of an alliance part unless they fight a great power together (PLAN 7.53b; ADR-585's option 4)
 
 - **Context.** PLAN 7.53a (`docs/evidence/7.53/measure-a.md`): Germany's alliance of 1938 held 3 to

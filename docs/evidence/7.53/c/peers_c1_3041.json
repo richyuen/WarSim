@@ -1,0 +1,434 @@
+{
+ "summary": {
+  "seed": 3041,
+  "years": 20,
+  "armedYear1": 2.81,
+  "armedLater": 0.56,
+  "engagedLater": 1.48,
+  "warsLater": 7.55,
+  "alliedLater": 0.65,
+  "atWarLater": 0.95
+ },
+ "years": [
+  {
+   "year": 1,
+   "wars": 6.71,
+   "armed": 2.81,
+   "engaged": 34.42,
+   "greatPairsAllied": 2.38,
+   "greatPairsNeighbours": 4.04,
+   "greatPairsAtWar": 0.48,
+   "greatPairsOpen": 1.58,
+   "openBestU": 0.19,
+   "openBestUMax": 0.6550485242069399,
+   "openStrength": 0.37,
+   "greats": [
+    "SOV/a6",
+    "ITA/a1",
+    "GER/a1",
+    "NSP",
+    "USA",
+    "POL/a1"
+   ]
+  },
+  {
+   "year": 2,
+   "wars": 8.5,
+   "armed": 1.85,
+   "engaged": 6.69,
+   "greatPairsAllied": 4.85,
+   "greatPairsNeighbours": 4.79,
+   "greatPairsAtWar": 0.46,
+   "greatPairsOpen": 1.63,
+   "openBestU": 0.25,
+   "openBestUMax": 1.0860706013107642,
+   "openStrength": 0.91,
+   "greats": [
+    "SOV/a6",
+    "USA",
+    "GER/a1",
+    "ITA/a1",
+    "POL/a1",
+    "JAP/a1"
+   ]
+  },
+  {
+   "year": 3,
+   "wars": 9.12,
+   "armed": 2.29,
+   "engaged": 0.67,
+   "greatPairsAllied": 6,
+   "greatPairsNeighbours": 5.6,
+   "greatPairsAtWar": 0,
+   "greatPairsOpen": 2.6,
+   "openBestU": 0.02,
+   "openBestUMax": 1.0674976477327505,
+   "openStrength": 1.09,
+   "greats": [
+    "SOV/a6",
+    "USA",
+    "GER/a1",
+    "ITA/a1",
+    "JAP/a1",
+    "POL/a1"
+   ]
+  },
+  {
+   "year": 4,
+   "wars": 8.54,
+   "armed": 0.77,
+   "engaged": 4.17,
+   "greatPairsAllied": 1.5,
+   "greatPairsNeighbours": 5.13,
+   "greatPairsAtWar": 1.69,
+   "greatPairsOpen": 3.38,
+   "openBestU": 0.87,
+   "openBestUMax": 1.7048493150684931,
+   "openStrength": 1,
+   "greats": [
+    "USA",
+    "SOV/a6",
+    "GER/a15",
+    "ITA/a3",
+    "JAP/a16",
+    "ENG/a2"
+   ]
+  },
+  {
+   "year": 5,
+   "wars": 6.38,
+   "armed": 0.48,
+   "engaged": 0.48,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 5,
+   "greatPairsAtWar": 2.96,
+   "greatPairsOpen": 3.6,
+   "openBestU": 0.53,
+   "openBestUMax": 1.2051954628961359,
+   "openStrength": 1.4,
+   "greats": [
+    "USA",
+    "SOV/a6",
+    "GER/a15",
+    "ITA/a3",
+    "ENG/a2",
+    "JAP/a17"
+   ]
+  },
+  {
+   "year": 6,
+   "wars": 7.48,
+   "armed": 0.48,
+   "engaged": 3.58,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 5,
+   "greatPairsAtWar": 3.96,
+   "greatPairsOpen": 4,
+   "openBestU": 0.17,
+   "openBestUMax": 1.242,
+   "openStrength": 1.4,
+   "greats": [
+    "USA",
+    "SOV/a6",
+    "GER/a15",
+    "ITA/a3",
+    "ENG/a2",
+    "JAP/a17"
+   ]
+  },
+  {
+   "year": 7,
+   "wars": 5.55,
+   "armed": 1.81,
+   "engaged": 4.7,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 3.75,
+   "greatPairsAtWar": 2.83,
+   "greatPairsOpen": 2.23,
+   "openBestU": 1.17,
+   "openBestUMax": 1.249,
+   "openStrength": 1.4,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "SOV/a6",
+    "JAP/a17",
+    "AST",
+    "SWE/a11"
+   ]
+  },
+  {
+   "year": 8,
+   "wars": 8.85,
+   "armed": 0.81,
+   "engaged": 1.71,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 2.04,
+   "greatPairsAtWar": 1.33,
+   "greatPairsOpen": 0.71,
+   "openBestU": 0.64,
+   "openBestUMax": 0.6419999999999999,
+   "openStrength": 1.8,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "SOV/a6",
+    "JAP/a17",
+    "AST",
+    "SWE/a11"
+   ]
+  },
+  {
+   "year": 9,
+   "wars": 8.31,
+   "armed": 0.02,
+   "engaged": 0.13,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 2.15,
+   "greatPairsAtWar": 0,
+   "greatPairsOpen": 2.15,
+   "openBestU": 0.6,
+   "openBestUMax": 0.621,
+   "openStrength": 1.8,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "SOV/a6",
+    "JAP/a17",
+    "AST",
+    "ARG"
+   ]
+  },
+  {
+   "year": 10,
+   "wars": 8.44,
+   "armed": 0.19,
+   "engaged": 0.4,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 2,
+   "greatPairsAtWar": 0,
+   "greatPairsOpen": 2,
+   "openBestU": 0.3,
+   "openBestUMax": 1.5304274779107105,
+   "openStrength": 0.48,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "SOV/a6",
+    "JAP/a17",
+    "AST",
+    "ARG"
+   ]
+  },
+  {
+   "year": 11,
+   "wars": 9.52,
+   "armed": 0.9,
+   "engaged": 1.15,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 2,
+   "greatPairsAtWar": 0.63,
+   "greatPairsOpen": 1.37,
+   "openBestU": 0.25,
+   "openBestUMax": 0.37324061888504556,
+   "openStrength": 0.2,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "JAP/a17",
+    "SOV/a6",
+    "AST",
+    "ARG"
+   ]
+  },
+  {
+   "year": 12,
+   "wars": 8.37,
+   "armed": 0.35,
+   "engaged": 0.54,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 2,
+   "greatPairsAtWar": 0.62,
+   "greatPairsOpen": 1.38,
+   "openBestU": 0.19,
+   "openBestUMax": 0.9311932813147801,
+   "openStrength": 0.8,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "JAP/a17",
+    "AST",
+    "SOV/a6",
+    "ARG"
+   ]
+  },
+  {
+   "year": 13,
+   "wars": 6.23,
+   "armed": 0,
+   "engaged": 0.15,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 2,
+   "greatPairsAtWar": 0,
+   "greatPairsOpen": 2,
+   "openBestU": 1.24,
+   "openBestUMax": 1.311926783530143,
+   "openStrength": 1.8,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "JAP/a17",
+    "SOV/a6",
+    "AST",
+    "ARG"
+   ]
+  },
+  {
+   "year": 14,
+   "wars": 7.74,
+   "armed": 0,
+   "engaged": 0.34,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 2,
+   "greatPairsAtWar": 0.32,
+   "greatPairsOpen": 1.68,
+   "openBestU": 1.14,
+   "openBestUMax": 2.069619399469828,
+   "openStrength": 1.8,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "JAP",
+    "SOV/a6",
+    "AST",
+    "ARG"
+   ]
+  },
+  {
+   "year": 15,
+   "wars": 5.35,
+   "armed": 0.08,
+   "engaged": 0.17,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 1.54,
+   "greatPairsAtWar": 0.81,
+   "greatPairsOpen": 0.73,
+   "openBestU": 2.07,
+   "openBestUMax": 2.0723865788901685,
+   "openStrength": 1.7,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "JAP",
+    "AST",
+    "ARG",
+    "SOV/a6"
+   ]
+  },
+  {
+   "year": 16,
+   "wars": 5.13,
+   "armed": 0,
+   "engaged": 0.19,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 0.85,
+   "greatPairsAtWar": 0,
+   "greatPairsOpen": 0.85,
+   "openBestU": null,
+   "openBestUMax": null,
+   "openStrength": null,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "JAP",
+    "AST",
+    "ARG",
+    "SOV/a6"
+   ]
+  },
+  {
+   "year": 17,
+   "wars": 9.46,
+   "armed": 0,
+   "engaged": 0.37,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 2,
+   "greatPairsAtWar": 0,
+   "greatPairsOpen": 2,
+   "openBestU": 1.28,
+   "openBestUMax": 1.3838707483540038,
+   "openStrength": 1.8,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "JAP",
+    "SOV/a6",
+    "AST",
+    "ARG"
+   ]
+  },
+  {
+   "year": 18,
+   "wars": 8.62,
+   "armed": 0.1,
+   "engaged": 0.33,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 1.5,
+   "greatPairsAtWar": 0.87,
+   "greatPairsOpen": 0.63,
+   "openBestU": 1.12,
+   "openBestUMax": 1.5125334122202352,
+   "openStrength": 1.8,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "JAP/a8",
+    "AST",
+    "ARG",
+    "SOV/a6"
+   ]
+  },
+  {
+   "year": 19,
+   "wars": 6.31,
+   "armed": 0.42,
+   "engaged": 2.02,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 2.65,
+   "greatPairsAtWar": 1.13,
+   "greatPairsOpen": 1.52,
+   "openBestU": 0.82,
+   "openBestUMax": 1.0709111490132104,
+   "openStrength": 1.8,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "JAP/a8",
+    "AST",
+    "ARG",
+    "SOV/a6"
+   ]
+  },
+  {
+   "year": 20,
+   "wars": 5.54,
+   "armed": 0.13,
+   "engaged": 0.23,
+   "greatPairsAllied": 0,
+   "greatPairsNeighbours": 3,
+   "greatPairsAtWar": 0.33,
+   "greatPairsOpen": 2.67,
+   "openBestU": 1.25,
+   "openBestUMax": 1.6005651937375376,
+   "openStrength": 1.8,
+   "greats": [
+    "USA",
+    "GER/a15",
+    "JAP/a8",
+    "AST",
+    "ARG",
+    "SOV/a6"
+   ]
+  }
+ ]
+}
