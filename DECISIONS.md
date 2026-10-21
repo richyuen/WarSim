@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-611 · 2026-10-21 · proposed (the user's decision) — PLAN 7.52c: cities with no soldiers struck; the capital's value carries them, not the dead's weight
+### ADR-611 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — PLAN 7.52c: cities with no soldiers struck; the capital's value carries them, not the dead's weight
 
 - **Context** (critic run 11, design objection; `docs/evidence/7.52/c.md`). The editor-armed Poland
   of seed 9437 bombs Berlin (334,000 civilians, 379 men), Rome and Prague in its first 60 days; the
@@ -199,6 +199,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     is answered here.
 - **Meanwhile:** no rule, the pin unchanged. A rule the user takes becomes a numbered task with its
   own AT (the critic's Poland case, the 7.52b seeds re-read, R8-B1's strike within 60 days).
+- **Decided** (2026-10-21, the user): b. A numbered task, PLAN 7.62: a capital's TARGET_CAPITAL counts on a first strike only with an army in the blast; a strike back as now.
 
 ### ADR-610 · 2026-10-21 · accepted — A puppet's warheads answer no strike: they leave the strike back weighed, its name and MAD (PLAN 7.52a; amends PLAN 6.4a's retaliationRisk and MAD)
 
@@ -332,6 +333,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   less fire, tuning not done (ADR-554): BLOCKERS, the user's. A land-based wing's strike on a fleet
   (`strikes`, PLAN 5.4c) spreads the same way (478 of its 575 ships sunk whole-fleet on the 4 seeds):
   PLAN 7.61. `carrierAir1938.test.ts`'s exact damage restated for the pick. Pin 63d0cfd9 → 076aae87.
+- **Decided** (2026-10-21, the user): a (BLOCKERS' option). 7.60 ticked, the first bar read as met in kind (8 → 1, a strike of more fire than half the fleet).
 
 ### ADR-604 · 2026-10-21 · accepted — A carrier's strike sinks ships: 7.41a's "sinks nothing" was its tool's miss (PLAN 7.57; no rule)
 
@@ -516,6 +518,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   23.0 ms (guard 50). Seed 99's year has no such target: the pin unchanged (63d0cfd9).
 - A port in the transports' waters may still be refused at the landing (the zoned water nearest the
   target that `tryLanding` sails for is not the port's own water); not seen in the cases read.
+- **Decided** (2026-10-21, the user): a (BLOCKERS' option). 7.56 ticked on its rules' own case (1129: 0 → 1); 8693 read as an army that is the fronts'.
 
 ### ADR-596 · 2026-10-21 · accepted — The operational AI leaves alone a formation on the march to its transports' port (PLAN 7.56a)
 
@@ -538,6 +541,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   The operational AI's mean on 1129, a year alone, pinned, 0.440 → 0.468 ms a tick (the run's drift),
   longest call 180.7 → 179.8 ms. A march the operational AI itself gave to a front cell within
   AT_PORT_CELLS of such a port is not planned again until it ends. Pin d188faed → 63d0cfd9.
+- **Decided** (2026-10-21, the user): a (BLOCKERS' option). 7.56 ticked on its rules' own case (1129: 0 → 1); 8693 read as an army that is the fronts'.
 
 ### ADR-595 · 2026-10-21 · accepted — The invasion AI sails its transports to the army when the army cannot march to them (PLAN 7.54b)
 
@@ -557,6 +561,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   but its marches cross desert (65–240 days: PLAN 7.56). The invasion AI's longest call on 1129, a
   year alone, 36.6 → 34.5 ms (guard 50). Island share flat. Pin 69e93c3b → d188faed. Whether 7.54
   is ticked is the user's (BLOCKERS).
+- **Decided** (2026-10-21, the user): a (BLOCKERS' option). 7.54 ticked on its rules' own cases; the rest is 7.55's and 7.56's.
 
 ### ADR-594 · 2026-10-21 · accepted — The send to the landing's port passes over a march refused on the port's land (PLAN 7.54a)
 
@@ -579,6 +584,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   over 317 steps of desert (about 1.3 cells a day, some 240 days): no boarding in 60 days. The
   transports going to the army is 7.54b. Pin unchanged (69e93c3b): seed 99's first year has no
   such send.
+- **Decided** (2026-10-21, the user): a (BLOCKERS' option). 7.54 ticked on its rules' own cases; the rest is 7.55's and 7.56's.
 
 ### ADR-593 · 2026-10-21 · accepted — The invasion AI takes aboard a formation at its port by the port's land cell or its water (PLAN 7.49f)
 
@@ -597,8 +603,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   send ended at the first refusal (PLAN 7.54), the transports' room under a division's (PLAN 7.55),
   two untraced. Island share 21.8 % / 29.6 %, engaged per war 0.120 / 0.143: flat. Pin da485175 →
   69e93c3b. Whether 7.49f is ticked is the user's (BLOCKERS).
+- **Decided** (2026-10-21, the user): a (BLOCKERS' option). 7.49f ticked on the rule's own count (1 → 0); the AT read as mis-measured.
 
-### ADR-592 · 2026-10-21 · proposed (the user's decision) — PLAN 7.49e: the defenders' purse cannot raise the band's army to the bar; the reserve cut and its bar
+### ADR-592 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — PLAN 7.49e: the defenders' purse cannot raise the band's army to the bar; the reserve cut and its bar
 
 - **Context** (`docs/evidence/7.49/e.md`, `tools/diag/purse.ts`). The band (nations at war of
   income 150–500 a month, 126 / 124 on the year-10 / year-20 saves) holds 564 / 564 land
@@ -625,8 +632,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   warship's saving (ADR-575, the user's line through ADR-578 a and ADR-590) are rules of their own,
   not the purse's.
 - **Meanwhile:** no rule, the pin unchanged; the loop takes 7.49f.
+- **Decided** (2026-10-21, the user): a. PLAN 7.49e1: the reserve cut landed, the bar 1.05 × of the 48 saves together.
 
-### ADR-591 · 2026-10-21 · proposed (the user's decision) — PLAN 7.49d: the transports cannot carry the home armies to the bar; the ferry and its bar
+### ADR-591 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — PLAN 7.49d: the transports cannot carry the home armies to the bar; the ferry and its bar
 
 - **Context** (`docs/evidence/7.49/d.md`). The island share (land formations of nations at war
   standing on a landmass with no front of their nation) after 60 days of the 48 saves is 21.8 % and
@@ -653,6 +661,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **d:** a home army redeployed to the theatre as overseas muster raises new ones (a sealift
     abstraction; against "sealift exists since PLAN 4.5", not recommended).
 - **Meanwhile:** the loop takes 7.49e, then 7.49f (the send/load port defect, not the user's).
+- **Decided** (2026-10-21, the user): a. PLAN 7.49d1: the ferry, the bar the island share of the 48 saves together under 20 %.
 
 ### ADR-590 · 2026-10-21 · accepted — At war with a naval enemy, an army of a few formations or none orders before the warship's saving (PLAN 7.49c; amends ADR-575, ADR-579)
 
@@ -685,6 +694,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   divisions of 1938, with none, and with none and a destroyer flotilla, orders a division and no
   warship (red without). ADR-575's and ADR-579's cases now give Norway four divisions bled to half
   (over FEW_FORMATIONS, under its peacetime share).
+- **Decided** (2026-10-21, the user): a (BLOCKERS' option). 7.49c ticked on its bar; Britain's guard read as the world's drift.
 
 ### ADR-589 · 2026-10-21 · accepted — Shut in on a crossing: a formation whose crossing's every exit is a stranger's marches home (PLAN 7.49b2)
 

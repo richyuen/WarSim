@@ -13300,3 +13300,87 @@ Of 7.33 (open in PLAN.md):
       before the user's word. Done (ADR-611 proposed, `docs/evidence/7.52/c.md`): the capital's 0.3,
       not the dead's weight, carries 13 of the 15 civilian bursts; Berlin under the floor at DEAD_COST
       8 × or without the capital; the rule waits on the user.
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.54 The landing's send ends at the first refused march (found at 7.49f, emergent 6,
+  `docs/evidence/7.49/f.md` §3): `sendToPort` stops at the first formation whose march to the port
+  is refused (PLAN 7.7's bound, set against seed 3371's 0.7–1.1 s calls), and when the nearest is
+  refused nobody is sent, every week: 4513 year 10 Germany at Kotor (8 of 8 refused), 7247 year 10
+  and 8693 year 10 Germany at Annaba (143 and 29, all), 1129 year 20 Britain at Warri (the nearest
+  3 refused, the fourth allowed). Traced first: why each march is refused (ADR-422's bound, a
+  nation not in the war across the way, no way), and whether another port of the nation on that
+  land has its army in reach. AT: on the 48 saves, the four cases board a formation within 60 days
+  of their save; the nations on `send` 30+ of 60 days with none boarded (`islandArmies.ts`) 9 → 5 or
+  fewer; no call of the invasion AI over 50 ms on those runs (`--profile` or the tool's timing; 7.7's
+  guard); a unit test (red without); the ADR; the pin's entry.
+  Traced (`docs/evidence/7.54/trace.json`, `tools/diag/sendTrace.ts`): every refusal is a neutral
+  nation's ground between, none the long way; in 4513, 7247 and 8693 no candidate reaches the port
+  (the transports in an exclave: Kotor, Annaba) and 5–145 reach other ports of the nation on that
+  land, none with transports; in 1129 the fourth's march is open. Two causes, a part each; the AT
+  read after both.
+    - [x] 7.54a The send passes over a march refused on the port's land (ADR-594); the send ends
+      at one on another land (7.7's case) or at the third refusal that was a search. AT: 1129's
+      Britain sends its fourth; a unit test (red without); the pin's entry.
+    - [x] 7.54b The transports go to the army: when the nearest free formation's march to the
+      transports' port is refused, the group sails to the nation's port on that land that the
+      formation reaches, nearest it, with a way by sea; no formation is sent that day. AT: 7.54's.
+      Rule in (ADR-595, `docs/evidence/7.54/b.md`; of the 4 nearest formations, the 4 ports nearest
+      each): 7.54's count 9 → 7, bar 5: missed; the four cases 2 of 4 board (4513, 7247); 8693 and
+      1129 have their transports by the army, its marches over desert (PLAN 7.56); longest call
+      34.5 ms. BLOCKERS, the user's (a tick, b close, c keep open). Ticked with 7.54 (2026-10-21, the
+      user's: option a, on its rules' own cases).
+
+- [x] 7.56 The landing's army marches over desert to its port (found at 7.54b, emergent 6,
+  `docs/evidence/7.54/b.md` §2): sent to the port the transports reached, the formations of 8693
+  year 10 Germany (to Antalya) and 1129 year 20 Britain (to Adana, before to Warri) cross desert at
+  about 1.2 cells a day (DRY_SPEED): 65 to 240 days, so none boards in 60. Measured first: per case,
+  the march days from the nearest free formations to each port of the nation on that land, and
+  whether a port nearer by march time had a way by sea for the transports. AT: on the 48 saves, the
+  two cases board a formation within 60 days of their save; a unit test (red without); the ADR; the
+  pin's entry.
+  Measured (`docs/evidence/7.56/a.md`, `tools/diag/portMarch.ts`): `sailToArmy`'s pick is quick in
+  both (8693: 6.4 days' sail, 5 days' march to Antalya; 1129: 27 + 19 to Adana); the slow ones are on
+  foot (desert's cost, not DRY_SPEED). 8693: at day 10, 183 of 190 on the operational AI's marches,
+  the 7 free 58+ days from every port. 1129: two causes, a part each; 8693 read after both.
+    - [x] 7.56a The operational AI re-takes the landing's march: a formation sent to the transports'
+      port is re-ordered within days to a sector of an ally's front (PLAN 1.42b), which the invasion
+      AI's "far from the front" does not count (1129: 335 on day 35, 18 steps off Adana; 445 on day
+      40). It is no free formation of the plan while on the march to a port where its nation's
+      transports stand. AT: 1129's 335 reaches Adana; a unit test (red without); ADR-596; the pin.
+    - [x] 7.56b The landing's target over no sea: `planLanding` takes the enemy port nearest the
+      transports by straight km (1129 at Adana: Baku, then Türkmenbaşy, on the Caspian), `tryLanding`
+      refuses it (`NoSeaWay`) every invasion day, and the army at the port never boards. The target
+      is the nearest the transports have a way by sea to. AT: 7.56's (1129 boards within 60 days);
+      a unit test (red without); the ADR; the pin; `--profile`.
+  Rules in (ADR-596, ADR-597; `docs/evidence/7.56/b.md`): 1129 boards (0 → 1); 8693 does not (no free
+  formation within 58 days of a port, its near army on the operational AI's marches): the AT, 2 of 2,
+  missed. 7.54's count 7 → 6. BLOCKERS, the user's (a tick, b close, c the landing takes from the
+  operational AI's army, a design change). Ticked (2026-10-21, the user's: option a, on its rules'
+  own case).
+
+- [x] 7.60 A carrier's strike sinks a whole fleet at once (found at 7.57, naval 7,
+  `docs/evidence/7.57/a.md` §4): the strike spreads its damage by hit points over a fleet's ships,
+  mostly alike, so each takes the same wound and all reach a whole ship in the same strike: two or
+  three strikes with nothing lost, then the fleet gone in one hour (594 of the 853 ships carriers
+  sank on 4 seeds × 1 year; 8693's war 64 of 64), while gunfire sinks ship by ship. AT: on 8693's
+  war (`carrierSink.ts 8693 JAP USA 20`) no carrier strike sinks more than half the ships of a fleet
+  it strikes with none of them lost before (8 such strikes on HEAD), and the ships carriers sink there within 25 % of HEAD's 64; on
+  the 4 seeds × 1 year, the ships sunk with their whole fleet in one strike under a quarter of the
+  carriers' (594 of 853 on HEAD); a unit test (red without); the ADR; the pin's entry.
+  Rule in (ADR-605, `docs/evidence/7.60/a.md`; each squadron strikes one ship, picked by hit
+  points): over half 8 → 1, bar 0: missed (a lone flotilla under 6.4 ships of fire); sunk 64 → 66;
+  whole-fleet 594 of 853 → 126 of 1,083. BLOCKERS, the user's (a tick, b close, c keep open).
+  Ticked (2026-10-21, the user's: option a, the first bar read as met in kind).

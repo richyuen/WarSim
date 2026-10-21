@@ -21541,3 +21541,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Budget:** 7.52 at 4 commits of 20; ticked on its AT (a, b, c done).
 - **Next:** every open task waits on the user (7.49c–f, 7.54, 7.56, 7.60, 7.51b after 7.49; ADR-591,
   592, 611); 7.5 (the critic) when due or at the DONE condition.
+
+## 2026-10-21 — The user's decisions: every recommendation taken (ADR-590–597, 605, 611)
+
+- Ticked on their rules' own cases (option a each): 7.49c (ADR-590), 7.49f (ADR-593), 7.54 (ADR-594,
+  595), 7.56 (ADR-596, 597), 7.60 (ADR-605). `plan:archive` moved 7.54, 7.56, 7.60.
+- Re-scoped: 7.49d (ADR-591 a) to the ferry, bar under 20 % of the 48 saves together, as 7.49d1;
+  7.49e (ADR-592 a) to the reserve cut, bar 1.05 ×, as 7.49e1.
+- Filed: PLAN 7.62 (ADR-611 b): a capital is a first-strike target only with an army in the blast.
+- Eight BLOCKERS entries resolved. No code: the pin unchanged.
+- **Next:** PLAN 7.49d1 (the ferry), then 7.49e1, 7.62.

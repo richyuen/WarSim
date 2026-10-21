@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.52c: cities with no soldiers struck, the rule waits on the user (2026-10-21, ADR-611 proposed; the user's decision)
+### RESOLVED 2026-10-21 (ADR-611 b, the user's decision: the rule filed as PLAN 7.62) · PLAN 7.52c: cities with no soldiers struck, the rule waits on the user (2026-10-21, ADR-611 proposed; the user's decision)
 - **The bar:** an ADR proposed with the options and the measured figures; no rule before the
   user's word (met; 7.52 ticked).
 - **What was measured** (`docs/evidence/7.52/c.md`): Poland's Berlin passes at 0.074 against 0.025;
@@ -16,7 +16,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   (c) a capital on a strike back only (13 removed, 11 civilian); (d) no rule. Meanwhile the loop
   takes the next task (7.5, the critic, when due).
 
-### PLAN 7.60: whole fleets 70 % → 12 %, one strike still over half; the rule is in (2026-10-21, ADR-605; the user's decision)
+### RESOLVED 2026-10-21 (ADR-605, option a, the user's decision: 7.60 ticked) · PLAN 7.60: whole fleets 70 % → 12 %, one strike still over half; the rule is in (2026-10-21, ADR-605; the user's decision)
 - **The bar:** on 8693's war (`carrierSink.ts 8693 JAP USA 20`) no carrier strike sinks more than
   half of a fleet that had lost none (8 on HEAD); the carriers' sinkings there within 25 % of 64; on
   4 seeds × 1 year the ships sunk with their whole fleet in one strike under a quarter.
@@ -30,7 +30,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   keep open for a cut of the carriers' fire (`NAVAL_STRIKE_FIRE` or the wings' size), a balance
   change. Meanwhile the loop takes 7.61.
 
-### PLAN 7.56: 1129 boards, 8693 cannot; the rules are in (2026-10-21, ADR-596, ADR-597; the user's decision)
+### RESOLVED 2026-10-21 (option a, the user's decision: 7.56 ticked) · PLAN 7.56: 1129 boards, 8693 cannot; the rules are in (2026-10-21, ADR-596, ADR-597; the user's decision)
 - **The bar:** on the 48 saves, the two cases (8693 year 10 Germany, 1129 year 20 Britain) board a
   formation within 60 days of their save.
 - **What moved** (`docs/evidence/7.56/a.md`, `b.md`): 1129 boards (0 → 1): the operational AI no
@@ -45,7 +45,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   the landing take formations from the operational AI's marches, a design change (an ADR proposed
   when taken up). Meanwhile the loop takes 7.55.
 
-### PLAN 7.54: the send and the transports' port fixed, the AT's count 9 → 7; the rules are in (2026-10-21, ADR-594, ADR-595; the user's decision)
+### RESOLVED 2026-10-21 (option a, the user's decision: 7.54 ticked) · PLAN 7.54: the send and the transports' port fixed, the AT's count 9 → 7; the rules are in (2026-10-21, ADR-594, ADR-595; the user's decision)
 - **The bar:** on the 48 saves, the four cases of 7.49f §3 (4513, 7247, 8693 year 10 Germany; 1129
   year 20 Britain) board a formation within 60 days; the nations on `send` 30+ of 60 days with none
   boarded (`islandArmies.ts`) 9 → 5 or fewer; no invasion AI call over 50 ms.
@@ -61,7 +61,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **Read again after 7.55 (2026-10-21, ADR-598):** 6 → 6 in 60 days: 5683 Japan and 7247 Germany now order a
   transport group, which trains 90 days.
 
-### PLAN 7.49f: the rule's own case fixed, the AT's count 10 → 9; the rule is in (2026-10-21, ADR-593; the user's decision)
+### RESOLVED 2026-10-21 (option a, the user's decision: 7.49f ticked) · PLAN 7.49f: the rule's own case fixed, the AT's count 10 → 9; the rule is in (2026-10-21, ADR-593; the user's decision)
 - **The bar:** on the 48 saves, the nations on `send` 30 days or more of 60 with none boarded
   (`islandArmies.ts`) 10 → 0.
 - **What moved** (`docs/evidence/7.49/f.md`): 10 → 9; boarded 6 / 0 → 6 / 1. The critic's named case
@@ -76,7 +76,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **Read again after 7.54 and 7.56 (2026-10-21):** the count 10 → 9 → 7 → 6, bar 0; 7.55 still open.
 - **Read again after 7.55 (2026-10-21, ADR-598):** 6 in 60 days; its three cases order transports (90 days' training).
 
-### PLAN 7.49e: the defenders' purse cannot raise the band's army to the bar; no rule (2026-10-21, ADR-592 proposed, the user's decision)
+### RESOLVED 2026-10-21 (ADR-592 a, the user's decision: the cut as PLAN 7.49e1, bar 1.05 ×) · PLAN 7.49e: the defenders' purse cannot raise the band's army to the bar; no rule (2026-10-21, ADR-592 proposed, the user's decision)
 - **The bar:** the land formations of nations at war of income 150–500 after 180 days of each of
   the 48 saves at least 1.5 × HEAD's same run (564 / 564 → 846).
 - **What moved** (`docs/evidence/7.49/e.md`, measured, no rule): the reserve cut at war under the
@@ -87,7 +87,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   saves together; (b) the cut and the cadre division ordered at war, bar kept, as a numbered task;
   (c) 7.49e closed not done. Meanwhile the loop takes 7.49f.
 
-### PLAN 7.49d: the transports cannot carry the home armies to the bar; no rule (2026-10-21, ADR-591 proposed, the user's decision)
+### RESOLVED 2026-10-21 (ADR-591 a, the user's decision: the ferry as PLAN 7.49d1, bar under 20 %) · PLAN 7.49d: the transports cannot carry the home armies to the bar; no rule (2026-10-21, ADR-591 proposed, the user's decision)
 - **The bar:** the island share (land formations of nations at war on a landmass with no front of
   their nation) on the 48 saves after 60 days under 10 %.
 - **What moved:** nothing (measured, no rule; `docs/evidence/7.49/d.md`). HEAD 21.8 % / 29.6 % at
@@ -100,7 +100,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   not done; (d) a muster-style redeploy. A second cause found, a defect (formations sent to a
   port's land cell, loaded only near its water): PLAN 7.49f. Meanwhile the loop takes 7.49e.
 
-### PLAN 7.49c: the bar met, Britain's guard missed on drift; the rule is in (2026-10-21, ADR-590; the user's decision)
+### RESOLVED 2026-10-21 (option a, the user's decision: 7.49c ticked) · PLAN 7.49c: the bar met, Britain's guard missed on drift; the rule is in (2026-10-21, ADR-590; the user's decision)
 - **The bar:** on the 48 saves, nations at war with 3 formations or fewer stopped at the month start by
   the warship's saving with no order, 0 (10 and 11 before): **met** (0 / 0, all 48 order a division).
   The guard: Britain's `spentArmy` months on 7019 and 3613 "as 7.47's (4 / 12), no higher".
