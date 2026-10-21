@@ -190,6 +190,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   its front in Asia): the port nearest the transports, not the front (PLAN 7.63).
 - **Cost.** The invasion AI's mean 0.011 → 0.017 ms an hour on seed 99, longest call 15.1 ms.
 - **Pin.** a2ae195b → 4f1e7dd8 (seed 99's first year: its fronted nations ferry).
+- **Consequence, not measured here.** A ferry under way is, to the naval AI, a landing of its
+  nation's under way: its warfleets in port within 2,500 km sail to escort it, not to a sortie
+  (`carrierStrikes1938.test.ts`: Britain's first-week ferry kept its carriers from the battle with
+  the Germans; the test now removes the transports). The sea war's figures are read at the naval
+  dimension's task (PLAN 7.41) and the next critic run.
 
 ### ADR-611 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — PLAN 7.52c: cities with no soldiers struck; the capital's value carries them, not the dead's weight
 
