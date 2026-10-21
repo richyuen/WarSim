@@ -5,9 +5,8 @@ pass before ticking; it names a number and a stop (a figure, its bar, the run th
 ADR-554). Work top-down, and split a task if it grows past one iteration, at most twice (7.35a,
 7.35a1, no deeper); a dimension task has 20 commits (PROMPT "KEEPING ITERATIONS SHORT").
 "Gate" = the full suite (tsc, eslint, vitest, build, parity) passes.
-Balance sweeps are suspended until phases 2–6 are complete (ADR-58, PROMPT "KEEPING ITERATIONS
-SHORT"): no sweep after a rule change. Each of those phases ends with a review that runs one
-quick sweep as a smoke test.
+Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7 they run again
+(PROMPT "KEEPING ITERATIONS SHORT": tune on `sweep:quick`, one full sweep per task on unseen seeds).
 
 ## Phase 0 — Foundations & benchmarks
 
@@ -31,33 +30,17 @@ quick sweep as a smoke test.
 
 ## Phase 7 — Balance, polish, soak
 
-Run 8's blocking issues and its dimensions under the DONE condition's bar (report of 2026-10-17 on
-`fd27e85`, its "Fix" lines and evidence; R8-B1 to R8-B3 are PLAN 7.18 to 7.20, the dimensions 7.21
-to 7.25; PROMPT 2a, ADR-486). A task each, split when taken up:
-
-Run 9's (report of 2026-10-19 on `f0be88c`, `critic/CRITIC_REPORT.md`; run 8's three blockers
-fixed): R9-B1 and R9-B2 are PLAN 7.31 and 7.32, the dimensions under the bar 7.33 to 7.37 (stats 6,
-semantic zoom 7, naval 6, aircraft 6, AI nuclear use 7; tanks reached 8). The late air war's fall
-is 7.29's matter (ADR-519), taken up with 7.36. A task each, split when taken up:
-
-Run 10's (report of 2026-10-19 on `bcbc99c`, `critic/CRITIC_REPORT.md`; run 9's two blockers
-fixed; stats 7 and semantic zoom 8 reached the bar, emergent 7 → 6): R10-B1 and R10-B2 are PLAN
-7.38 and 7.39, after 7.35's last parts; R10-B3 is 7.36 (its sight and the air map) and 7.29 (the
-late air war's fall), which take run 10's cases. The dimensions under the bar: emergent 6 is 7.40,
-naval 6 beyond R10-B2 is 7.41, aircraft 6 is 7.36, AI nuclear use 7 beyond R10-B1 is 7.37. A task
-each, split when taken up:
-
 Run 11's (report of 2026-10-21 on `dd3b730`, `critic/CRITIC_REPORT.md`; run 10's R10-B2 fixed,
 R10-B1 and R10-B3 mostly; naval 6 → 7, aircraft 6 → 7): R11-B1 and R11-B2 are PLAN 7.49 and 7.50.
 The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval 7 is 7.41 (moved
-here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split when taken up:
+here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
+when taken up:
 
 - [ ] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged
   land formations worldwide, mean of daily samples, 0.3–0.7 at years 10 and 20 on the critic's 24
-  worlds (of about 300 of nations at war),
-  against 55–107 in year 1; the same on `bcbc99c` (1.1 and 0.3). Seed 6421 year 21: 9 wars, 0 in
-  contact at 25 fortnightly samples while 309–7,179 cells change hands a fortnight; the Germany–Soviet
-  war there has a 4,795-edge land border. Piles at war: the United Kingdom 85 of 160 divisions at
+  worlds (of about 300 of nations at war), against 55–107 in year 1; the same on `bcbc99c` (1.1
+  and 0.3). Seed 6421 year 21: 9 wars, 0 in contact at 25 fortnightly samples while 309–7,179
+  cells change hands a fortnight; the Germany–Soviet war there has a 4,795-edge land border. Piles at war: the United Kingdom 85 of 160 divisions at
   London (7019, year 10), the Soviet Union 53 in one place (5309), Italy 46 of 55 (8011), Japan 33
   of 35 (8167); 60 British divisions still at Wick for a month (1129). Seed 99's formations 917 in
   year 1, 610 by year 5. Evidence: `critic/c11_engaged_head.json`, `c11_engaged_c10.json`,
@@ -85,25 +68,21 @@ here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A ta
   struck three times in a year; a unit test per rule (red without); the pin's entry. Stop: two full
   re-measures flat, the bar is the user's (ADR-554).
 
-- [ ] 7.41 The war at sea seen (naval 6, needs 8, beyond 7.39): Japan–USA (seed 8693) one battle
-  stood with no row for 6 days (hours 330 to 480) and was never shown (`critic/c10_n_8693_JAP_USA
-  .json`); Germany–UK on 3613 no sea battle between them in 24 days (`c10_e_3613.json`); at 20 m/px
-  the enemy's ships are dark ellipses with no colour (`c10n_2081_sheet.png` panel 4; seen at
-  7.35c's check:review: France's dark blue hulls read as the sea, `shipMarks1938`'s measure took
-  them for it). Measured first: the 8693 battle's hours (why no row: its kind, its reach), the 3613
-  fleets' orders. AT: every hour of a live sea battle on the critic's 8693 case has its row (was
-  150 hours with none); Germany–UK on 3613 meets at sea within 24 days, or a BLOCKERS entry with the
-  measured cause, the user's to accept; at 20 m/px the middle of every nation's hull at least 40
-  (summed RGB) from the sea's colour there, every nation of the 1938 world counted (a spec, red on
-  France's before). Stop: two full re-measures flat, the bar is the user's (ADR-554).
-  **Taken** (ADR-577: run 11 scores naval 7, needs 8): Japan–USA on 8693 9 of 9 battles with no
-  ticker row again (`critic/c11_n_8693_JAP_USA.json`); Germany–UK on 2081 7 of 11
-  (`c11_n_2081_GER_ENG.json`); at 20–40 m/px the enemy side dark ovals beside red British
-  silhouettes; a late battle two destroyer flotillas, two overlapping counters at 1,500 m/px, its
-  row gone in days (`c11o_6421_*`); two navies placed face to face in the North Sea by the editor
-  fight no battle in 30 days (`c11_g_4877.json`; run 10 saw one on day 3). Added to the AT: every
-  battle of the 2081 case has its row (was 7 of 11 without); the editor case meets within 30 days,
-  or a BLOCKERS entry with the measured cause.
+- [ ] 7.41 The war at sea seen (naval 7, needs 8, beyond 7.39; moved before 7.5 by ADR-577): the
+  sea war runs all 30 years now (13.17 battles a world-year after year 1), but the player cannot
+  find or read it. Run 11: Japan–USA on seed 8693 9 of 9 battles with no ticker row
+  (`critic/c11_n_8693_JAP_USA.json`; run 10 the same, one battle 150 hours with none); Germany–UK
+  on 2081 7 of 11 (`c11_n_2081_GER_ENG.json`); a late battle two destroyer flotillas, two
+  overlapping counters at 1,500 m/px, its row gone in days (`c11o_6421_*`); at 20–40 m/px the enemy
+  side dark ovals beside red British silhouettes (France's dark blue hulls read as the sea, seen at
+  7.35c); two navies placed face to face in the North Sea by the editor fight no battle in 30 days
+  (`c11_g_4877.json`; run 10 saw one on day 3). Measured first: the 8693 and 2081 battles with no
+  row (their kind, their reach), the editor fleets' orders. AT: every battle of the 8693 and 2081
+  cases has its row (was 9 of 9 and 7 of 11 without); at 20 m/px the middle of every nation's hull
+  at least 40 (summed RGB) from the sea's colour there, every nation of the 1938 world counted (a
+  spec, red on France's before); the editor case meets at sea within 30 days, or a BLOCKERS entry
+  with the measured cause, the user's to accept. Stop: two full re-measures flat, the bar is the
+  user's (ADR-554).
 - [ ] 7.51 Aircraft (aircraft 7, needs 8, beyond 7.49): the late air war unchanged, 3,160 air
   battles in year 1 and 120 a world-year after on the same 14 seeds (122 on `bcbc99c`), sorties
   aloft after year 1 a mean of 8.1 (`critic/c11_cmp.json`, `c11_h_1307.json`); the critic reads it as

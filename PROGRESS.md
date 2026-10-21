@@ -21040,3 +21040,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   with no naval enemy (5, ADR-578 a's case) and peace (7). Closed, not done; BLOCKERS entry resolved.
 - 7.46 ticked: its AT a read (ADR-576), the chase adopted (ADR-580), every part done or closed.
 - **Next:** PLAN 7.49.
+
+## 2026-10-21 — PLAN.md tidied (the user's request)
+
+- Runs 8–10's headers removed (every task they named done or closed); 7.41 rewritten as one task on
+  run 11's cases (naval 7; the bars as filed, the 3613 case run 11 did not repeat dropped); the header's
+  sweep line says sweeps run again in Phase 7; 7.49's and run 11's lines wrapped.
+- **Next:** PLAN 7.49.
