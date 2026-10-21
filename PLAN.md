@@ -90,6 +90,9 @@ when taken up:
       again as 7.47's (4 / 12), no higher; a unit test on the case (red without); the ADR (amends
       ADR-575; ADR-578 a, the user's, kept: the floor against an enemy with no fleet; proposed as
       the user's if it reopens 578 a's reasoning); the pin's entry.
+      Rule in (ADR-590, `docs/evidence/7.49/c.md`): the bar met (10 / 11 → 0 / 0); Britain's
+      guard missed on the world's drift (HEAD 20 / 8 → 35 / 16, the rule's own kind 0 → 1 / 0):
+      BLOCKERS, the user's (tick, close, or keep open).
     - [ ] 7.49d The sea powers' home armies (measure §4.3): of the land formations at war, those
       on a landmass with no front of their nation 21–28 % late against 3 % in year 1, most at a
       capital (7019 year 10: Britain 85 divisions at London, an overseas war, two transport

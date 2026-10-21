@@ -21148,3 +21148,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   `--profile`: territory 0.161 → 0.180 ms a tick (year 1), mean tick 2.458 → 2.477 ms.
 - **Test:** `straitShutIn1938.test.ts` (red without). Pin unchanged (191b0cd5). Specs by hand: none.
 - **Next:** PLAN 7.49c (the warship's saving with no army left).
+
+## 2026-10-21 — PLAN 7.49c: the warship's saving with no army left (ADR-590); the guard waits on the user
+
+- **Rule** (`economic.ts` `saves`, FEW_FORMATIONS 3): at war with a naval enemy, a nation of 3 land
+  formations on land or fewer does not save for a warship; its army orders first under ADR-557's floor,
+  as against an enemy with no fleet. SPEC §7 (the navy's share).
+- **AT bar** (`armyGates.ts` on the 48 saves, `docs/evidence/7.49/c.md`): nations at war with 3
+  formations or fewer stopped by the saving with no order 10 / 11 → **0 / 0**: met; all 48 of the old
+  case order a division (6421's Soviet Union among them). The tool keeps the old rule's gate as `was`
+  and now reads land orders.
+- **Guard missed:** Britain's `spentArmy` months on 7019 / 3613 HEAD 20 / 8 → 35 / 16 (7.47's 4 / 12 were
+  on other code); the rule's own kind 0 → 1 / 0, the rise in land wars and peace (the world's drift).
+  Not ticked: BLOCKERS entry, the user's (a tick, b close, c keep open).
+- Engaged per war 0.115 / 0.144 → 0.120 / 0.143 (flat). Pin 191b0cd5 → da485175.
+- **Test:** `navyBudget1938.test.ts` (new case red without; ADR-575/579's cases now give Norway four
+  bled divisions). Specs by hand: none (no UI). 7.49's commits: 4 of 20.
+- **Next:** PLAN 7.49d (the sea powers' home armies).

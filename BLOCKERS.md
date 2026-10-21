@@ -5,6 +5,18 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.49c: the bar met, Britain's guard missed on drift; the rule is in (2026-10-21, ADR-590; the user's decision)
+- **The bar:** on the 48 saves, nations at war with 3 formations or fewer stopped at the month start by
+  the warship's saving with no order, 0 (10 and 11 before): **met** (0 / 0, all 48 order a division).
+  The guard: Britain's `spentArmy` months on 7019 and 3613 "as 7.47's (4 / 12), no higher".
+- **What moved** (`docs/evidence/7.49/c.md`): Britain's months HEAD 20 / 8 → 35 / 16. The rule's own kind
+  for Britain (`armed/navalFoe`) 0 → 1 / 0 → 0; the rise is in land wars (19 → 29, 6 → 11) and peace
+  (1 → 5, 2 → 5), where the rule reads the same before and after. 7.47's 4 / 12 were read on other code;
+  HEAD stood at 20 on 7019 before this rule.
+- **What is left:** the user's: (a, recommended) 7.49c ticked on its bar, the guard read as the world's
+  drift; (b) 7.49c closed not done, the rule kept; (c) the guard kept and 7.49c left open until the next
+  critic report. Meanwhile the loop takes 7.49d.
+
 ### RESOLVED 2026-10-21 (ADR-587 a, the user's decision: 7.53 closed not done, 7.53b kept, rivalry not landed) · PLAN 7.53c: rivalry moves no armed war; the bar missed (2026-10-21, ADR-587 proposed, the user's decision)
 - **The bar:** armed wars a world in years 2–20 on the 4 tuning seeds at least twice 7.53a's (0.57 →
   1.14); 7.53's own, 1.5 on 10 unseen seeds.

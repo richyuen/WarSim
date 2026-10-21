@@ -60,7 +60,9 @@
  *    peacetime share, and at war with an enemy that has an armed fleet (PLAN 7.46b2, ADR-575:
  *    Britain, its battle line sunk, spent every month on its army and ordered its first warship
  *    years later); at war with such an enemy a navy rebuilt to a ship or two, its armed fleets
- *    under NAVY_SHARE, saves too (PLAN 7.47, ADR-579: the first destroyer ended the saving).
+ *    under NAVY_SHARE, saves too (PLAN 7.47, ADR-579: the first destroyer ended the saving); but
+ *    not at war with FEW_FORMATIONS land formations or fewer, whose army orders first (PLAN 7.49c,
+ *    ADR-590).
  *    Then a wing (PLAN 5.8s2, `pickWing`), as a fleet: a nation not poor with an airfield and no
  *    wing in training orders one while its air force's upkeep is under AIR_SHARE of its army's,
  *    a fighter group while fighters are under half its wings, else a tactical bomber group.
@@ -192,6 +194,11 @@ export const AIR_SHARE = 0.1;
 export const NAVY_SHARE = 0.12;
 /** The income from which a nation builds battle squadrons (below it, cruiser squadrons from RICH_INCOME, destroyer flotillas under that). */
 export const BATTLE_FLEET_INCOME = 1000;
+/**
+ * At war with a naval enemy, a nation with this many land formations on land or fewer does not save
+ * for a warship (PLAN 7.49c, ADR-590): its army orders first, as in a war with no naval enemy.
+ */
+export const FEW_FORMATIONS = 3;
 
 export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World) => void {
   const upkeepOf = (world: World, id: number): number => {
@@ -421,7 +428,9 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // A navy rebuilt to a ship or two (armed, under its share) saves too while at war with such an
       // enemy (PLAN 7.47, ADR-579): Britain's first destroyer ended the saving, and its army's orders took
       // the gold again while its navy stood far under its peak.
-      const saves = !atWar || navalFoe;
+      // Not with an army of a few formations or none (PLAN 7.49c, ADR-590): 6421's Soviet Union, one
+      // division and 2,407 gold at war with Germany in year 20, bought nothing while Germany walked in.
+      const saves = !atWar || (navalFoe && (own.get(n)?.length ?? 0) > FEW_FORMATIONS);
       const shipPrice = mix.fleets && !wants && (shipsPending.get(n) ?? 0) === 0 && income >= POOR_INCOME && (armed.get(n) ?? 0) < NAVY_SHARE * income && (navalFoe || !(fleets.get(n) ?? []).some((id) => fleetPower(world, id) > 0)) && shipyard(world, n) >= 0 ? fleetPrice(world, income, mix.fleets) : 0;
       // 4. Research.
       nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);

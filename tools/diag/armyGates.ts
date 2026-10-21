@@ -8,14 +8,16 @@
  * - gold (under the price of its order, the infantry division's, + RESERVE_MONTHS × income);
  * - manpower (under the infantry division's men; a poor nation's: the cadre division's, `pickTemplate`);
  * - ship: the warship's saving (`armyOrders`), at war with a naval enemy or with no armed fleet;
+ *   at war with a naval enemy only with more than FEW_FORMATIONS land formations on land (PLAN 7.49c,
+ *   ADR-590); `was` is the gate under the rule before it (ADR-575, ADR-579), where it differs;
  * - none of these (then the balance, the warship's saving or a refusal of the queue).
- * Then the month is run and what the nation ordered (`nations.builds`) is read.
+ * Then the month is run and what the nation ordered (`nations.builds`) is read, and its land orders.
  *
  * Usage: npx tsx tools/diag/armyGates.ts <out.json> <seed:state.bin> [...]
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { isMonthStart } from '../../src/shared/calendar';
-import { ARMY_SHARE_WAR, fleetPrice, MAX_PARALLEL, PARALLEL_INCOME, peaceShare, POOR_INCOME, RESERVE_MONTHS } from '../../src/sim/ai/economic';
+import { ARMY_SHARE_WAR, FEW_FORMATIONS, fleetPrice, MAX_PARALLEL, PARALLEL_INCOME, peaceShare, POOR_INCOME, RESERVE_MONTHS } from '../../src/sim/ai/economic';
 import { shipyard } from '../../src/sim/systems/production';
 import { fleetPower } from '../../src/sim/systems/seaControl';
 import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
@@ -50,13 +52,14 @@ for (const { seed, bin } of cases) {
   w.formations.forEach((id) => {
     if (w.isFleet(id) && fleetPower(w, id) > 0) armed.add(f.nation[id]!);
   });
-  const land = new Map<number, { n: number; men: number }>();
+  const land = new Map<number, { n: number; men: number; onLand: number }>();
   w.formations.forEach((id) => {
     if (w.isFleet(id) || w.isWing(id)) return;
     const n = f.nation[id]!;
-    const e = land.get(n) ?? { n: 0, men: 0 };
+    const e = land.get(n) ?? { n: 0, men: 0, onLand: 0 };
     e.n++;
     e.men += f.strength[id]!;
+    if (!w.offLand(id)) e.onLand++;
     land.set(n, e);
   });
   const T = ECONOMY_TABLES_1938;
@@ -83,6 +86,7 @@ for (const { seed, bin } of cases) {
   const a = monthlyAccounts(w, T);
   for (const n of fighting) acc.set(n, { income: a.gross[n]!, army: (armyUp.get(n) ?? 0) + (training.get(n) ?? 0) });
   const gate = new Map<number, string>();
+  const was = new Map<number, string>();
   for (const n of fighting) {
     const { income, army } = acc.get(n)!;
     const slots = Math.min(MAX_PARALLEL, 1 + Math.floor(income / PARALLEL_INCOME));
@@ -94,15 +98,30 @@ for (const { seed, bin } of cases) {
       return other !== undefined && other.some((m) => armed.has(m));
     });
     const ship = income >= POOR_INCOME && (navalFoe || !armed.has(n)) && shipyard(w, n) >= 0 ? fleetPrice(w, income, BUILD_MIX_1938.fleets) : 0;
-    let g = 'none';
-    if ((pending.get(n) ?? 0) >= slots) g = 'slots';
-    else if (army >= ARMY_SHARE_WAR * income) g = 'share';
-    else if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income) g = 'gold';
-    else if (nc.manpower[n]! < rule.manpower) g = 'manpower';
-    else if (ship > 0 && (navalFoe || army >= peaceShare(nc.aggression[n]!) * income) && nc.gold[n]! - rule.gold < ship + RESERVE_MONTHS * income) g = navalFoe ? 'ship(navalFoe)' : 'ship';
-    gate.set(n, g);
+    const peace = army >= peaceShare(nc.aggression[n]!) * income;
+    const first = (saves: boolean): string => {
+      if ((pending.get(n) ?? 0) >= slots) return 'slots';
+      if (army >= ARMY_SHARE_WAR * income) return 'share';
+      if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income) return 'gold';
+      if (nc.manpower[n]! < rule.manpower) return 'manpower';
+      if (ship > 0 && (saves || peace) && nc.gold[n]! - rule.gold < ship + RESERVE_MONTHS * income) return saves ? 'ship(navalFoe)' : 'ship';
+      return 'none';
+    };
+    gate.set(n, first(navalFoe && (land.get(n)?.onLand ?? 0) > FEW_FORMATIONS));
+    was.set(n, first(navalFoe));
   }
+  const landQueued = (): Map<number, number> => {
+    const m = new Map<number, number>();
+    w.production.forEach((id) => {
+      if (w.rules!.templates[w.production.cols.template[id]!]?.domain !== Domain.land) return;
+      const n = w.production.cols.nation[id]!;
+      m.set(n, (m.get(n) ?? 0) + 1);
+    });
+    return m;
+  };
+  const queuedBefore = landQueued();
   s.step(1, quiet);
+  const queuedAfter = landQueued();
   for (const n of fighting) {
     const { income, army } = acc.get(n)!;
     rows.push({
@@ -119,7 +138,10 @@ for (const { seed, bin } of cases) {
       manpower: Math.round(nc.manpower[n]!),
       price: (income < POOR_INCOME ? cadre : inf).gold,
       gate: gate.get(n),
+      ...(was.get(n) !== gate.get(n) ? { was: was.get(n) } : {}),
       ordered: nc.builds[n]! - before.get(n)!,
+      // Land orders of the month (its land queue's growth; one done in this tick is not seen).
+      landOrdered: Math.max(0, (queuedAfter.get(n) ?? 0) - (queuedBefore.get(n) ?? 0)),
     });
   }
   process.stderr.write(`${seed} ${bin}: ${fighting.length} at war\n`);

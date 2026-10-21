@@ -2082,7 +2082,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   army's orders and refills) holds in peace, at war with its army at its peacetime share, and at
   war with an enemy that has an armed fleet (PLAN 7.46b2, ADR-575). At war with such an enemy it
   holds too for a navy rebuilt to a ship or two, its armed fleets' upkeep under the share (PLAN
-  7.47, ADR-579).
+  7.47, ADR-579). Not for a nation of FEW_FORMATIONS (3) land formations or fewer: at war with
+  such an enemy its army orders first, as against an enemy with no fleet (PLAN 7.49c, ADR-590).
   Its transport group is bought apart (PLAN 7.26h2, ADR-518), before research and the army's
   orders, outside the navy's share, on a month of reserve: at war, in a war in which it has no
   land front and whose enemy holds a port, with a free formation on a land with a port of its

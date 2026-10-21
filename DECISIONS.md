@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-590 · 2026-10-21 · accepted — At war with a naval enemy, an army of a few formations or none orders before the warship's saving (PLAN 7.49c; amends ADR-575, ADR-579)
+
+- **Context.** `docs/evidence/7.49/c.md`, measure §4.2. ADR-575 (and ADR-579 for a navy rebuilt
+  to a ship or two) keeps the cheapest warship's price over the reserve from the army's orders and
+  refills while one of a nation's wars has an enemy with an armed fleet, whatever its army. On the
+  critic's saves this held nations with no army left: 6421 year 20, the Soviet Union at war with
+  Germany, one division, 2,407 gold, buys nothing while Germany walks in (its gold less a
+  division's 1,001 under a destroyer's price and three months of income). Of the nations at war
+  with 3 land formations or fewer, the saving stopped 23 and 25 at the month start on the year-10
+  and year-20 saves, 10 and 11 of them ordering nothing that month.
+- **Decision** (`economic.ts`, `saves`): at war with a naval enemy, the saving holds only for a
+  nation with more than FEW_FORMATIONS (3) land formations on land. With 3 or fewer it falls to
+  ADR-557's floor, as in a war with no naval enemy: the army orders first while it stands under
+  its peacetime share; at or over that share the saving holds. The warship is still bought from
+  what the army's orders leave (step 3b).
+- **Not taken:** the PLAN's other case, "an enemy on its land with nothing to meet it": a spatial
+  test that no AT case reads, and the home armies of 7.49d's. One cause.
+- **Not 578 a reopened:** the floor against an enemy with no fleet (ADR-578 a, the user's) is
+  untouched; this narrows ADR-575's lift of the floor, not the floor.
+- **Consequences** (`docs/evidence/7.49/c.md`). On the 48 saves the nations at war with 3
+  formations or fewer stopped by the saving with no order that month: 10 / 11 → 0 / 0 (the AT's bar);
+  all 48 of the old case order a division. Engaged land formations per war 0.115 / 0.144 → 0.120 /
+  0.143 (flat). Britain's `spentArmy` months on 7019 / 3613 (10 years): HEAD 20 / 8, after 35 / 16,
+  against 7.47's 4 / 12 read on other code: the AT's guard missed; the rule's own kind
+  (`armed/navalFoe`) 0 → 1 / 0 → 0, the rise in land wars and peace, where the rule reads the same
+  (the world diverged). BLOCKERS, the user's.
+- **Pin.** 191b0cd5 → da485175.
+- **Test.** `navyBudget1938.test.ts`: Norway at war with Sweden (an armed fleet) with its 3
+  divisions of 1938, with none, and with none and a destroyer flotilla, orders a division and no
+  warship (red without). ADR-575's and ADR-579's cases now give Norway four divisions bled to half
+  (over FEW_FORMATIONS, under its peacetime share).
+
 ### ADR-589 · 2026-10-21 · accepted — Shut in on a crossing: a formation whose crossing's every exit is a stranger's marches home (PLAN 7.49b2)
 
 - **Context.** `docs/evidence/7.49/b.md`. 8011 year 10: 90 German and Italian divisions idle at
