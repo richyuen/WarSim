@@ -20900,3 +20900,35 @@ No rule changed and nothing on screen changed. One task came out of it.
   No `--profile`: `navalFoe` was already computed, the rule adds a boolean.
 - The chase worktree `C:/Git/WarSim_chase` carries 7.47 too (for 7.46c). Specs by hand: none (no UI).
 - **Next:** PLAN 7.46c (7.39b's two bars on the critic's 14 seeds × 30 years with the chase and 7.46b/7.47's rules).
+
+## 2026-10-20 — PLAN 7.46c: the chase read with the navies rebuilt; both of 7.39b's bars met; it lands after PLAN 7.48 (ADR-580)
+
+- **Run** (the chase worktree reset to `ac0f20e` + `b-chase.diff` + its `seaWhy` mirror, nothing
+  else; `seaWars` and `seaYears`, the critic's 14 seeds × 30 years, 14 at a time, ~45 min;
+  `docs/evidence/7.46/c.md`, `c/`): sea battles years 2–30 14.7 a world-year (bar 6.6), far station
+  53.3 fleet-weeks a world-year (bar under 443): met. 7.39's two bars on that run: 14.7 against a
+  quarter of year 1's 55.7 (13.9), 1.7 % sinking nothing. Every seed 11.6–18.0.
+- **HEAD without the chase** (`seaYears` alone, `c/head/`): 12.6 late battles a world-year (4.3 at
+  `63ba0e4`): the rebuilt navies (ADR-574, 575, 579) did most of it. The chase adds 2.1 and empties
+  the far stations, at the world's navy: 54 % of HEAD's armed power at year 2, 47–49 % at 3–5, 63 %
+  at 10, 75 % at 30. Its margin on 7.39's bar is 6 % (HEAD alone 34 %). Written in ADR-580 for the
+  user. The 4 × 10 armed-power read is 7.47's (the same code).
+- **Decided** under the user's rule (ADR-573 a, ADR-576 a): adopt. Built and measured: the rule,
+  the `seaWhy` mirror, SPEC §7, `navalAi1938.test.ts`'s two cases (the Tobruk flotilla at half its
+  ships chases a one-ship Italian flotilla beyond `SORTIE_KM`, red without; not a full one stronger
+  than Greece's navy there), the pin 3754b256 → fdd3a67c. `--profile` (seed 99 × 5, before and
+  after at once): navalAi 2.0–2.6 % → 2.0–3.0 % of the tick, its longest call 12 → 43–46 ms in years
+  1–2.
+- **Not landed:** the gate is red with it: `nukeOverrun1938.test.ts` (critic R8-B1's France, seed
+  7127), France makes no decision in 100 days. Traced (`nukeCase.ts`, both codes at once; `c.md` §6):
+  on HEAD a colony capital of France's side falls on day 48 (+25 score) and France strikes on day
+  55 at 0.048; with the chase none falls before Paris (day 68), and France stands 15 days at extreme
+  desperation with its bomber, its best place 0.005–0.008 under `NUKE_FLOOR`. A nuclear cause, not
+  the chase's: PLAN 7.48, placed first. The whole change is `docs/evidence/7.46/c-adopt.diff`
+  (applies to `ac0f20e`); main's code is unchanged, the pin unmoved. 7.39b and 7.46c stay unticked.
+- **Gotcha:** a ship is an element of strength 1, so halving strengths sinks a fleet:
+  `weakenAll` in the navalAi blockade test returns 0 (its "e > p" holds trivially). The new tests
+  sink whole ships (`thin`). The old test is left as it is.
+- 7.39c filed (7.39's bars on 10 unseen seeds, with the chase). This commit is documents and
+  evidence alone. Specs by hand: none (no UI).
+- **Next:** PLAN 7.48, then the chase lands (7.46c, 7.39b), then 7.39c, 7.43, the critic run.

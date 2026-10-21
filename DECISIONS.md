@@ -167,6 +167,44 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-580 · 2026-10-20 · accepted (under the user's rule, ADR-573 a and ADR-576 a; lands after PLAN 7.48) — The chase adopted: a warfleet away at war sails for a winnable enemy navy beyond a sortie's reach (PLAN 7.46c, 7.39b)
+
+- **Context.** ADR-573 tried the chase (`docs/evidence/7.39/b-chase.diff`) and set it aside: it
+  emptied the far stations but sank the navies, which were not built again (late sea battles 5.0
+  a world-year against 7.39b's 6.6). The user's rule: re-tried on PLAN 7.46's run, adopted or not
+  on 7.39b's two bars, the world's armed power a read (ADR-576). ADR-574, ADR-575 and ADR-579 now
+  rebuild a sunk navy.
+- **Decision.** In `awayOrder`, after a battle in reach and before its station: from a zone with
+  no enemy ship, the nearest standing enemy warfleet of its waters beyond `SORTIE_KM` whose zone's
+  enemy power is no more than its nation's standing warfleets of those waters together, in port
+  and away (its navy there). `seaWhy.ts` mirrors it (`awayChase`). SPEC §7's fleets at sea.
+- **Read** (`docs/evidence/7.46/c.md`; the critic's 14 seeds × 30 years at `ac0f20e` with the
+  chase): sea battles years 2–30 14.7 a world-year (bar 6.6, met); on station with the enemy
+  fleet beyond reach 53.3 fleet-weeks a world-year (bar under 443, met; 886 at `63ba0e4`).
+  PLAN 7.39's two bars on the same run: 14.7 against a quarter of year 1's 55.7 (13.9), 1.7 %
+  sinking nothing (bar 5 %): met. Every seed 11.6–18.0.
+- **Trade, for the user.** HEAD at `ac0f20e` without the chase already has 12.6 late battles a
+  world-year (4.3 at `63ba0e4`: the rebuilt navies did most of it) and clears 7.39's quarter of
+  its own year 1 (9.4) by 34 %. The chase adds 2.1 and empties the far stations, at the world's
+  navy: 54 % of HEAD's armed power at year 2, 47–49 % at years 3–5, 63 % at year 10, 75 % at
+  years 20 and 30. It lifts year 1 to 55.7 battles, so its margin on 7.39's bar is 6 %; on unseen
+  seeds (PLAN 7.39c) it may miss where HEAD alone would not. Reversible in one commit (the rule,
+  its two tests, the pin).
+- **Cost** (`--profile`, seed 99 × 5 years, before and after at once): navalAi 2.0–2.6 % → 2.0–3.0
+  % of the tick, its longest call 12 → 43–46 ms in years 1–2; the mean tick 1.88 → 1.64 ms (the
+  worlds part).
+- **Not landed yet.** With the chase `nukeOverrun1938.test.ts` (critic R8-B1's France, seed 7127) is
+  red: on HEAD a colony capital of France's side falls on day 48 and France strikes on day 55 at
+  0.048; with the chase none falls before Paris, and France stands 15 days at extreme desperation
+  0.005–0.008 under `NUKE_FLOOR` until its bomber is lost (`docs/evidence/7.46/c.md` §6). The nuclear
+  cause is PLAN 7.48; the chase lands after it, from `docs/evidence/7.46/c-adopt.diff` (applies to
+  `ac0f20e`), its pin read again then.
+- **Pin** (measured with the diff on `ac0f20e`): 3754b256 → fdd3a67c.
+- **Test.** `navalAi1938.test.ts`: a Greek destroyer flotilla at Tobruk with half its ships,
+  Greece's other fleets sunk (no battle it can win in reach), sails for an Italian flotilla of a
+  ship beyond `SORTIE_KM` in its waters (red without: it keeps its station); the same Italian
+  flotilla at full strength, stronger than Greece's navy there, is not chased.
+
 ### ADR-579 · 2026-10-20 · accepted — A navy rebuilt to a ship or two saves for the next at war with a naval enemy (PLAN 7.47; amends ADR-557, ADR-575)
 
 - **Context.** PLAN 7.46b2 (ADR-575): ADR-557's saving held only for a nation with no armed fleet,
@@ -348,6 +386,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Pin** unchanged (no rule committed).
 - **Decided** (2026-10-20, the user): option a. HEAD stands; the chase waits on PLAN 7.46 and is re-tried
   on its run (7.46c). PLAN 7.39b stays blocked until then.
+- **Re-tried** (2026-10-20, PLAN 7.46c): with the navies rebuilt (ADR-574, 575, 579) both of 7.39b's
+  bars are met on the critic's 14 seeds × 30 years (late battles 14.7, far station 53.3). Adopted:
+  ADR-580, landing after PLAN 7.48.
 
 ### ADR-572 · 2026-10-20 · accepted — The dead's cost not eased by a high doctrine (PLAN 7.45)
 

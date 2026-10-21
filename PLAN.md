@@ -47,6 +47,19 @@ late air war's fall), which take run 10's cases. The dimensions under the bar: e
 naval 6 beyond R10-B2 is 7.41, aircraft 6 is 7.36, AI nuclear use 7 beyond R10-B1 is 7.37. A task
 each, split when taken up:
 
+- [ ] 7.48 The critic's overrun France strikes before it loses its last bomber, with the chase (AI
+  nuclear use 7, R8-B1's case; from PLAN 7.46c, `docs/evidence/7.46/c.md` §6): with ADR-580's chase
+  applied (`docs/evidence/7.46/c-adopt.diff`), seed 7127, France with 10 warheads and Germany's war
+  on it stands at extreme desperation (1.08–1.14) from day 55 with its bomber, its best place at
+  0.017–0.020 against `NUKE_FLOOR` 0.025, and loses the bomber with Paris on day 68: no decision in
+  100 days. On HEAD it strikes on day 55 (0.048) only because a colony capital of its side fell on
+  day 48. Measured first with `nukeCase.ts` on the chase: which part keeps the utility under the
+  floor (the value of the place, the alliance's cost, the outrage) against the other critic's
+  set-ups (`nukePoland1938`, `nukeGapShort1938`). Then a rule with an ADR, or the reason. AT:
+  `nukeOverrun1938.test.ts` green with the chase applied (its every assertion as it stands; red
+  without the rule), and green on HEAD; the other `tests/unit/nuke*` files green; the pin's entry.
+  Then the chase lands (7.46c). Stop: one rule tried; if none clears the floor without lowering it,
+  the bar is the user's (ADR-554).
 - [ ] 7.39 R10-B2: the war at sea goes on after year 1 (naval 6, needs 8; blocking). Year 1 a mean
   of 38 sea battles a world; years 2 to 30 2.7 a world-year (1,090 in 406 world-years) while 50 to
   96 armed fleets stay afloat (115 at the start); at the year-10 and year-20 samples 18 of 28 have
@@ -87,6 +100,17 @@ each, split when taken up:
       → 14.5) but the late battles reach only 5.0 a world-year (bar 6.6): the world's navy is cut
       to 55 % of HEAD's at year 2 and 75 % at year 10. The cause is PLAN 7.46. Not taken again until
       7.46 is done (ADR-573 a, the user's decision, 2026-10-20).
+      **Read** (2026-10-20, PLAN 7.46c, ADR-580, `docs/evidence/7.46/c.md`): the chase with the
+      navies rebuilt, on the 14 seeds × 30 years: far station 53.3 (bar under 443), sea battles
+      years 2–30 14.7 a world-year (bar 6.6); 7.39's two bars on that run 14.7 against 13.9 and
+      1.7 %; a unit test (red without); the pin 3754b256 → fdd3a67c; `--profile` read. Ticked when
+      the chase lands (`docs/evidence/7.46/c-adopt.diff`), after PLAN 7.48.
+    - [ ] 7.39c 7.39's two bars on 10 unseen seeds × 30 years (the AT's second half), with the chase
+      (ADR-580): sea battles a world-year in years 2–30 at least a quarter of year 1's, of them at
+      most 5 % sinking nothing. `seaYears` on seeds no 7.39 or 7.46 run has seen. AT: both bars on
+      the 10 seeds' mean; the chase's margin on the critic's 14 was 6 % (14.7 against 13.9), HEAD
+      without it 34 % (12.6 against 9.4, `docs/evidence/7.46/c.md` §2): a miss is read against HEAD
+      without the chase on the same seeds and goes to the user (ADR-554). Stop: one run.
 - [ ] 7.46 A navy sunk in a decisive war at sea is built again (from PLAN 7.39b, ADR-573): with the
   chase (`docs/evidence/7.39/b-chase.diff`) the navies meet in years 1–2, the side that sails to the
   battle mostly wins (122 against 46), and the world's armed power falls 291k → 128k by year 2 and is
@@ -145,6 +169,11 @@ each, split when taken up:
       7.46b's rules, and the world's armed power on the 4 × 10 reported (ADR-576): the chase
       adopted or not (ADR-573).
       Taken after PLAN 7.47 (the user's order, 2026-10-20): read with its rule, one run for both.
+      **Read** (2026-10-20, ADR-580, `docs/evidence/7.46/c.md`): both bars met (far station 53.3,
+      late battles 14.7): the chase to be adopted. HEAD alone 12.6 late battles; the world's navy
+      with the chase 47–54 % of HEAD's at years 2–5, 63 % at 10, 75 % at 30; the 4 × 10 read is
+      7.47's. Not landed: with it `nukeOverrun1938.test.ts` is red (§6), PLAN 7.48. After 7.48: apply
+      `docs/evidence/7.46/c-adopt.diff`, read the pin again, gate, tick 7.46c and 7.39b.
 
 - [ ] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g):
   `territory.ts`'s flip scores each neighbouring enemy controller with its side's pressure and

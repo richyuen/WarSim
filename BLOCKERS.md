@@ -33,6 +33,9 @@ entries are kept and marked **RESOLVED** with the date and fix.
   war with a naval enemy 9 / 11 → 0 / 0. Britain's `spentArmy` months of every kind now 4 / 12 on
   7019 / 3613 (bar under 12: met on 7019, at it on 3613); left a war with no naval enemy (3, 5)
   and peace (1, 7). The entry stays open for 7.46c's read.
+- **Read at PLAN 7.46c (2026-10-20, ADR-580):** the chase to be adopted on 7.39b's bars; Britain's
+  months are 7.47's read above (the code is that run's). The entry stays open: 3613's 12 is at the
+  bar, not under it; what is left is a war with no naval enemy and peace, which the task leaves out.
 
 ### PLAN 7.39b: the chase of a far enemy navy halves the far station but sinks the navies; blocked until PLAN 7.46 (2026-10-20; ADR-573 option a, the user's decision, 2026-10-20)
 - **The bar:** on the critic's 14 seeds × 30 years, the late fleet-weeks on station with the enemy
@@ -49,6 +52,12 @@ entries are kept and marked **RESOLVED** with the date and fix.
   7.46. The chase is re-tried on 7.46's run.
 - **Decided** (2026-10-20, the user): ADR-573 a. HEAD stands; 7.46 first, the chase re-tried on its
   run (7.46c).
+- **Read at PLAN 7.46c** (2026-10-20, `docs/evidence/7.46/c.md`): re-tried with ADR-574, 575 and
+  579 on the 14 seeds × 30 years: far station 53.3, late sea battles 14.7 a world-year (both bars
+  met); to be adopted (ADR-580). HEAD without the chase has 12.6; the world's navy with it 47–54 %
+  of HEAD's at years 2–5, 75 % at year 30. Not landed: with it the critic's overrun France
+  (`nukeOverrun1938.test.ts`) does not strike, PLAN 7.48. Resolved when the chase lands after it
+  (`docs/evidence/7.46/c-adopt.diff`).
 
 ### RESOLVED 2026-10-20 (PLAN 7.44, ADR-571; PLAN 7.45a, ADR-572; read at PLAN 7.45b; 7.38 ticked) · PLAN 7.38's bar on the dead missed at the first read: 4 bursts under 0.1 killing a million on 4 of 24 seeds (2026-10-20, PLAN 7.38e)
 - **The bar:** on the critic's 14 seeds and 10 unseen ones × 30 years, no burst with a utility
