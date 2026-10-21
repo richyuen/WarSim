@@ -8,6 +8,9 @@ import { armourFires, busiest } from '../helpers/armourFire';
 // into 1938 the square with the most armour firing is found in Node, the camera is put on it at
 // T2, one hour is stepped, and the turrets are read from the instance data of frames drawn at
 // chosen times: before the shots, as the last has left, and after the silence.
+// Since the rules after `bcbc99c` (PLAN 7.37 to 7.48) moved the world a dogfight is in the hour's
+// view: its marks last DOGFIGHT_MS, past the turrets' return. "At rest" after the silence is read
+// with the air's marks left out, and the whole view at rest once they are done.
 
 /**
  * From day 16: the first hour of armour fire after it (`armourFires`). From the first week's end
@@ -76,8 +79,16 @@ test('T2 and T3: a tank that fires has its turret on its target, and back on its
     const at = turrets(fired);
     const over = v.turretAims.until + 100;
     const after = turrets(over);
+    // The air's marks of the hour (a dogfight's last DOGFIGHT_MS) may outlive the turrets' return:
+    // at `over` every layer but them is at rest, and the whole view once they are done.
+    const air = v.airFx;
+    const airAnimating = air.animating.bind(air);
+    air.animating = () => false;
+    const animatingAfter = v.unitsAnimating(over);
+    air.animating = airAnimating;
+    const rest = Math.max(over, air.until);
     v.draw(fired);
-    return { before, at, after, animatingAtShot, animatingAfter: v.unitsAnimating(over), fired, shots: v.fire.shots.map((s) => ({ ...s })), skipped: v.fire.skipped, wait: over - v.fire.from };
+    return { before, at, after, animatingAtShot, animatingAfter, animatingAtRest: v.unitsAnimating(rest), airAfter: air.animating(over), fired, shots: v.fire.shots.map((s) => ({ ...s })), skipped: v.fire.skipped, wait: over - v.fire.from };
   });
   expect(t2.skipped).toBe(0);
   const tanks = new Set(node.fires.map((f) => f.shooter));
@@ -107,6 +118,8 @@ test('T2 and T3: a tank that fires has its turret on its target, and back on its
   // After the silence they are back, and the view is at rest.
   for (const t of t2.after) expect(t.turret, `turret of ${t.id} after`).toBe(t.hull);
   expect(t2.animatingAfter).toBe(false);
+  expect(t2.animatingAtRest).toBe(false);
+  if (t2.airAfter) console.log(`an air mark of the hour outlives the turrets' return (${t2.wait.toFixed(0)} ms after the first shot)`);
   expect(t2.wait).toBeLessThan(3500);
 
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/3.6') : info.outputPath();

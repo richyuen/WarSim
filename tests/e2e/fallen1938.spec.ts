@@ -15,12 +15,13 @@ import { NATIONS_1938 } from '../../src/sim/scenario1938';
 // Division 544 since PLAN 7.9e (550 before: since the 1938 start changed, PLAN 7.4f31 and f32, it
 // lost 31 men on day 22 and 5 of its marks were in the view; 544 loses 426, in contact all day).
 // Division 568 since ADR-537 (544 no longer in contact on day 21; 568 loses 904 on day 22, in
-// contact all of it).
+// contact all of it). Division 556 since the rules after `bcbc99c` (PLAN 7.37 to 7.48 moved the
+// pin; 568 no longer in contact on day 21; 556 loses 1,871 on day 22, in contact all of it).
 
 const nation = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
 const GER = nation('GER');
 const POL = nation('POL');
-const POLE = 568;
+const POLE = 556;
 const VIEW = { width: 1600, height: 900 };
 const HOURS = 24;
 const key = (h: { element: number; figure: number }): string => `${h.element}:${h.figure}`;

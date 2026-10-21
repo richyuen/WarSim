@@ -18,6 +18,8 @@ import { armourFires, busiest } from '../helpers/armourFire';
 // A tank's sprite is 8 px here (PLAN 7.9d), its block's elements about 4 px apart: only the tanks
 // whose middle no later sprite covers are read (ADR-538; the median of all 54 was 0.81, under a
 // neighbour's edge, since the scene moved to a block at rest).
+// The view 1400 × 800 since the rules after `bcbc99c` (PLAN 7.37 to 7.48) moved the scene: at
+// 900 × 560 34 of its 88 tanks were off the canvas and 51 covered, 3 read; all 88 on it now, 5 read.
 
 /** From the first week's end: the first hour of armour fire after it (`armourFires`). */
 const FROM = 24 * 7;
@@ -33,7 +35,7 @@ test('T2: a tank is its small mark where a sprite is at its least size, and a hu
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/3.6') : info.outputPath();
   mkdirSync(out, { recursive: true });
 
-  await page.setViewportSize({ width: 900, height: 560 });
+  await page.setViewportSize({ width: 1400, height: 800 });
   await page.goto('/?scenario=1938&paused=1&seed=1938');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
   expect(await page.evaluate(async (n) => {

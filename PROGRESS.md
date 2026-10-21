@@ -20992,3 +20992,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin:** fdd3a67c → a1a50bcc. No `--profile`: one assignment and one comparison in the loop.
 - Specs by hand: none (no UI).
 - **Next:** the critic run (PLAN 7.5; `npm run check:review` first, PROMPT 2a).
+
+## 2026-10-20 — PLAN 7.5: `check:review` red on three seeded scenes the rules after `bcbc99c` moved
+
+- **Run:** `npm run check:review` on `4d5d2de` before the critic (PROMPT 2a): typecheck, lint, unit,
+  build, parity green; e2e red twice and not on `knownRed.json`: `fallen1938`, `smallMark1938`,
+  `turrets1938` (`fightSeen1938`'s Germany–Poland case red, known). The cause of all three: the world's
+  course since the last green review (`bcbc99c`), PLAN 7.37 to 7.48's rules; no drawing code changed.
+- `fallen1938`: Polish division 568 no longer in contact on day 21 of seed 4242's war; 556 is
+  (loses 1,871 on day 22, in contact all of it; read headless), as the spec moved before (550, 544, 568).
+- `smallMark1938`: the hour's busiest square packs its 88 tanks; at 900 × 560 34 were off the canvas
+  and 51 covered, 3 read (bar 5). The view 1400 × 800: all 88 on it, 5 read; mark 1.0, hull 0.83.
+  The hour, the bars and the method unchanged.
+- `turrets1938`: every turret check green; the view not at rest after the silence for the air's
+  marks alone (a dogfight in the hour, DOGFIGHT_MS 3,500 against the turrets' 2,773 ms). At the
+  turrets' return every other layer is at rest (asserted), and the whole view once the air's marks
+  are done (asserted).
+- The three specs green by hand. The review's screenshots written into `docs/evidence/` restored
+  (each spec writes its task's evidence on every run).
+- **Next:** `check:review` again, then the critic (PLAN 7.5).
