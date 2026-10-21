@@ -1197,6 +1197,15 @@ export const RESTRIKE_RADII = 4;
  * point a year apart).
  */
 export const CAPITAL_RESTRIKE_DAYS = 365;
+/**
+ * Within CAPITAL_RESTRIKE_DAYS of a burst of its side in the war, a place of massed men within a
+ * hydrogen bomb's blast of it is weighed only with this many times the men the burst found (PLAN
+ * 7.50b, critic R11-B2); after the year, more than it found (ADR-569). On the critic's seed 2081
+ * Germany struck one Soviet spot on days 9556, 9679 and 9863 for 5,181, 3,846 and 4,090 men, each a
+ * strike back: the first burst found 8,953 men, and 11,073 massed there again were new value
+ * (`docs/evidence/7.50/measure.md`).
+ */
+export const RESTRIKE_YEAR_MEN = 2;
 
 /**
  * The enemy men of `war`'s side `1 - side` within `radius` km of (x, y), as `nukeTargets` masses
@@ -1218,7 +1227,8 @@ function menNear(world: World, war: War, side: number, x: number, y: number, rad
  * controller there (PLAN 7.38d, critic R10-B1: seed 4877's Soviet Union struck Switzerland twice
  * in war 293, 20 days and 7 cells apart, 667,994 then 1,922,429 dead, the second place's men fewer
  * than the first's), with the enemy men it found within a blast of it at the striker's largest
- * yield, before they die. God Mode's bursts (nation 0) belong to no war.
+ * yield, before they die, and its tick (`War.struckTick`, PLAN 7.50b). God Mode's bursts (nation 0)
+ * belong to no war.
  */
 function rememberBurst(world: World, nation: number, x: number, y: number): void {
   if (nation === 0) return;
@@ -1235,7 +1245,10 @@ function rememberBurst(world: World, nation: number, x: number, y: number): void
     if (side < 0) continue;
     const other = war.sides[1 - side]!;
     if (!other.includes(owner) && !other.includes(realm(owner)) && !other.includes(held)) continue;
-    war.struck = [...(war.struck ?? []), x, y, menNear(world, war, side, x, y, radius), side];
+    const ticks = (war.struckTick ?? []).slice();
+  while (ticks.length < (war.struck?.length ?? 0) / 4) ticks.push(-1);
+  war.struck = [...(war.struck ?? []), x, y, menNear(world, war, side, x, y, radius), side];
+  war.struckTick = [...ticks, world.tick];
   }
 }
 
@@ -1254,7 +1267,8 @@ function rememberBurst(world: World, nation: number, x: number, y: number): void
  * within one of a burst on a capital (PLAN 7.6e); elsewhere a place of massed men is weighed after
  * RESTRIKE_DAYS, men massed again. Within a hydrogen bomb's blast of a burst of the side's in this
  * war (`War.struck`), no capital for the rest of the war, and a place of massed men only with more
- * men there than the burst found (PLAN 7.38d).
+ * men there than the burst found (PLAN 7.38d), within a year of the burst RESTRIKE_YEAR_MEN times
+ * them (PLAN 7.50b).
  * Only on land of the enemies `aim` names (by default `aimOf`: those that can threaten `n`, PLAN
  * 6.12a; the nation that struck it, from any distance, PLAN 6.12b); the massed men weighed are the
  * whole enemy side's.
@@ -1306,10 +1320,13 @@ export function nukeTargets(world: World, n: number, war: War, side: number, aim
   // The side's bursts of this war keep it off a place within a hydrogen bomb's blast of them for the
   // rest of the war, a capital always, a place of massed men while no more men are massed there than
   // the burst found (PLAN 7.38d: new value; the radius the toll's measure of a restrike).
+  // Within a year of such a burst, RESTRIKE_YEAR_MEN times the men it found (PLAN 7.50b).
   const warRadius = blastRadius(2);
   const ofWar: number[] = [];
   const s = war.struck ?? [];
-  for (let k = 0; k + 3 < s.length; k += 4) if (s[k + 3] === side) ofWar.push(s[k]!, s[k + 1]!, s[k + 2]!);
+  const st = war.struckTick ?? [];
+  const yearAgo = world.tick - CAPITAL_RESTRIKE_DAYS * 24;
+  for (let k = 0; k + 3 < s.length; k += 4) if (s[k + 3] === side) ofWar.push(s[k]!, s[k + 1]!, s[k + 2]! * ((st[k / 4] ?? -1) >= 0 && st[k / 4]! > yearAgo ? RESTRIKE_YEAR_MEN : 1));
   const warMen = (x: number, y: number): number => {
     let most = -1;
     for (let k = 0; k < ofWar.length; k += 3) if (seaKm(world, x, y, ofWar[k]!, ofWar[k + 1]!) <= warRadius) most = Math.max(most, ofWar[k + 2]!);

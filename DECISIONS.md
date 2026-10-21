@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-600 · 2026-10-21 · accepted — Within a year of a burst, a place struck in the war needs twice the men it found (PLAN 7.50b; amends ADR-569)
+
+- **Context** (critic R11-B2, `docs/evidence/7.50/measure.md`). On the critic's seed 2081 Germany
+  struck one Soviet spot, [1219.5, 421.5], on days 9556, 9679 and 9863 of war 265 for 5,181, 3,846
+  and 4,090 men, each a strike back worth 0.15–0.21 at utilities of 0.48–0.54 (the strike back's
+  bonus). ADR-569 worked as written: the first burst found 8,953 men, and 11,073 massed there again
+  on day 9679 (probed from a checkpoint) were "new value". A refill of a few thousand men within
+  months was enough.
+- **Decision.** Each war keeps the tick of each of its bursts (`War.struckTick`, beside `struck`,
+  saved with the war's JSON; an older save's wars have none and their bursts read as a year old).
+  Within CAPITAL_RESTRIKE_DAYS (365) of a burst of its side in the war, a place of massed men within
+  a hydrogen bomb's blast of it is weighed only with RESTRIKE_YEAR_MEN (2) times the men the burst
+  found; after the year, more than it found (ADR-569). Capitals as before (none for the rest of the
+  war). The critic's fix named "a spot struck within the war's last year": this is it, with the
+  new value measured against the burst's own find. Across wars nothing changes (ADR-566).
+- **Consequences.** The critic's case, on a worktree of `dd3b730` with 7.50a and this rule, from a
+  checkpoint 48 hours before day 9556 to year 28 (`b-toll-2081-before.json`, `b-toll-2081-rule.json`):
+  before, the spot struck on days 9556, 9679 and 9863; with the rule, on 9556 and 9741 (5,875 men:
+  more than twice the first find massed there), no third; 7 decisions against 8. Seed 99's year has
+  no warhead: the pin unchanged (63d0cfd9). Test: `nukeYearRestrike1938.test.ts` (Kent: 171,763 men
+  massed a week after a burst that found 137,060 not weighed; weighed with the burst a year old, and
+  with no ticks); `nukeWarRestrike1938.test.ts` (ADR-569's) passes unchanged.
+
 ### ADR-599 · 2026-10-21 · accepted — The floor a nuclear strike passes rises with its dead, to 0.1 at a million (PLAN 7.50a)
 
 - **Context** (critic R11-B2, `docs/evidence/7.50/measure.md`). On the critic's seed 1129, 14 March
@@ -906,6 +929,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   closed on its BLOCKERS entry, no rule.
 
 ### ADR-569 · 2026-10-20 · accepted — A place struck in a war is not struck again in it without new value (PLAN 7.38d)
+
+- **Amended** (2026-10-21, ADR-600): within a year of the burst, the new value is twice the men it found.
 
 - **Context.** Critic R10-B1 (run 10, AI nuclear use 7): "a city struck in the war not again
   without new value". Of the critic's named restrikes only Switzerland's is in one war (seed 4877,

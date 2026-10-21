@@ -21320,3 +21320,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   21 and 22 hashes).
 - **Test:** `nukeDeadFloor1938.test.ts` (red without). Specs by hand: none (no UI change).
 - **Next:** PLAN 7.50b (the year's restrike).
+
+## 2026-10-21 — PLAN 7.50b: the year's restrike (ADR-600)
+
+- **Rule** (`nuclear.ts` `nukeTargets`, `rememberBurst`; `War.struckTick`): within a year of a burst of
+  its side in the war, a place of massed men within a hydrogen bomb's blast of it is weighed only with
+  RESTRIKE_YEAR_MEN (2) times the men the burst found; after the year ADR-569's "more than it found".
+  An older save's bursts read as a year old. SPEC §6.4.
+- **AT:** the critic's 2081 on a worktree of `dd3b730` with 7.50a and this rule, from a checkpoint 48
+  hours before day 9556: the spot struck on days 9556 and 9741 (twice the first find massed there,
+  5,875 men), no third (was 9556, 9679, 9863). Pin unchanged (63d0cfd9).
+- **Test:** `nukeYearRestrike1938.test.ts` (red without); ADR-569's `nukeWarRestrike1938.test.ts`
+  passes unchanged. Specs by hand: none (no UI change).
+- **Next:** 7.50's AT on 10 unseen seeds × 30 years (`nukeToll.ts`).

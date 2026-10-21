@@ -213,10 +213,12 @@ when taken up:
       Rule in (ADR-599, `docs/evidence/7.50/a-toll-1129-rule.json`): day 5916 not decided; Greenock
       taken on day 5962 at 0.101 for the same 1,105,514 (over the bar by 0.001); ADR-572's case at
       0.237 over its 0.1. Pin unchanged.
-    - [ ] 7.50b The year's restrike: within a year of a burst there, a place of massed men struck by
+    - [x] 7.50b The year's restrike: within a year of a burst there, a place of massed men struck by
       the side in the war is weighed only with twice the men the burst found (ADR-569 after the
       year). AT: 2081's spot not struck a third time (replayed from a checkpoint before day 9679);
       a unit test (red without); the ADR; the pin; then 7.50's 10 unseen seeds.
+      Rule in (ADR-600, `docs/evidence/7.50/b-toll-2081-rule.json`): the spot struck on days 9556 and
+      9741 (twice the first find massed there), no third (was 9556, 9679, 9863). Pin unchanged.
 
 - [ ] 7.41 The war at sea seen (naval 7, needs 8, beyond 7.39; moved before 7.5 by ADR-577): the
   sea war runs all 30 years now (13.17 battles a world-year after year 1), but the player cannot

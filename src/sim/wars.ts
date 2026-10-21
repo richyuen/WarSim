@@ -47,6 +47,11 @@ export interface War {
    */
   struck?: number[];
   /**
+   * The tick of each burst of `struck`, in its order (PLAN 7.50b; absent, or shorter than `struck`:
+   * an older save's, its bursts read as over a year old, -1 for each).
+   */
+  struckTick?: number[];
+  /**
    * The most km² each side has held of the other's land in the war, and the tick it was first
    * reached (PLAN 7.27c: whether a side still gains ground; absent: none held yet).
    */

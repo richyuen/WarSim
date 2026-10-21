@@ -1954,6 +1954,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     is a quarter of the striker's, or its land forces stand near the striker's capital (PLAN
     6.12a, 6.12f, ADR-394). A puppet counts its overlord's warheads and income only while the
     overlord fights beside it in that war (PLAN 7.37d, ADR-564).
+    A place within a hydrogen bomb's blast of a burst of the side's in the war: no capital for the
+    rest of the war; a place of massed men only with more men than the burst found (PLAN 7.38d,
+    ADR-569), twice them within a year of the burst (PLAN 7.50b, ADR-600).
   - desperation: rises with losing war score, capital threatened, core loss, and
     fightToDeath.
     A holder winning or holding its own in a war of a year or more, against enemies that
