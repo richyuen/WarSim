@@ -2096,7 +2096,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   Its transport group is bought apart (PLAN 7.26h2, ADR-518), before research and the army's
   orders, outside the navy's share, on a month of reserve: at war, in a war in which it has no
   land front and whose enemy holds a port, with a free formation on a land with a port of its
-  own and no group; while it wants one it orders no other fleet. Short of money and over
+  own and no group (a group with room under an infantry division's men is none: sunk to one or
+  two transports, it carries no division and is never refilled; PLAN 7.55, ADR-598); while it
+  wants one it orders no other fleet. Short of money and over
   it, it lays up its fleets in port, the dearest first, before its army is sent home.
   *A navy's weight (PLAN 4.6e2, ADR-274):* a fleet weighs half its armed ships' hit points in
   men (a transport's or a submarine's nothing): in a nation's strength for the strategic AI (a

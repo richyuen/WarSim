@@ -13013,3 +13013,31 @@ Of 7.33 (open in PLAN.md):
       there are 2 powers of that size, and the motive changes nothing between them.
       Closed (ADR-587 a, the user's decision, 2026-10-21): not done; 7.53 closed with it, not done,
       7.53b kept. The armed wars are 7.49's.
+
+<!-- moved 2026-10-21 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.55 A transport group with room under a division's (found at 7.49f, emergent 6,
+  `docs/evidence/7.49/f.md` §3; 7.49d's note on 4513 Latvia): the invasion AI plans with the group
+  of most room at a port, and `sendToPort` and `orderLanding` take no formation over its room, so a
+  group of one or two transports (2,000–4,000 men) holds the nation's landings for good: 5683 year
+  20 Japan at Miyazaki (2,000), 7247 year 20 Germany at Nouadhibou (4,000), 4513 year 10 Latvia
+  (`atPort` 60 days, 2,000). Measured first: per case, the nation's groups and their room, the
+  smallest formation on the port's land, and whether ADR-518's transport order is barred. AT: on the
+  48 saves, the three cases board a formation or order a transport within 60 days; a unit test (red
+  without); the ADR; the pin's entry.
+  Done (ADR-598, `docs/evidence/7.55/measure.md`): ADR-518's order was barred by any group afloat;
+  a group under the infantry division's room (12,460) no longer counts. The three cases order a
+  transport group within 60 days (0 → 3 of 3); `navyBudget1938.test.ts` (red without); the pin
+  unchanged (63d0cfd9); 7.54's count 6 → 6 in 60 days (the groups train 90).

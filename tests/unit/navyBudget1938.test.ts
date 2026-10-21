@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { BATTLE_FLEET_INCOME, budgetOf, FEW_FORMATIONS, NAVY_SHARE, peaceShare, RESERVE_MONTHS } from '../../src/sim/ai/economic';
-import { bleedFormation, destroyFormation } from '../../src/sim/systems/elements';
+import { applyLoss, bleedFormation, destroyFormation, elementIndex, settleFormation } from '../../src/sim/systems/elements';
+import { TRANSPORT_MEN, transportRoom } from '../../src/sim/systems/amphibious';
 import { placeFleet } from '../../src/sim/placeForces';
 import { Refusal } from '../../src/shared/commands';
 import { addFormations, BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938, TAGS_1938, TEMPLATES_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
@@ -67,6 +68,36 @@ describe('the navy\'s cost (PLAN 4.6e1)', () => {
     expect(declareWar(w, SWE, ICE, true)).not.toBeNull();
     runEvents(s, 1);
     expect(ships(w, SWE)).toEqual([fleets.transport]);
+  });
+
+  // PLAN 7.55 (ADR-598): a group sunk to one or two transports carries no division and is never
+  // refilled; it held the landings of 5683's Japan, 7247's Germany and 4513's Latvia for good.
+  it('at war with no front, a transport group with room under a division\'s is none: it orders another; one with a division\'s room, not', () => {
+    const setUp = (left: number): { w: World; SWE: number } => {
+      const s = peaceful();
+      const w = s.world;
+      const [SWE, ICE] = [id('SWE'), id('ICE')];
+      const port = w.ports.find((p) => w.cells.controller[p.cell] === SWE)!;
+      expect(placeFleet(w, SWE, fleets.transport, port.x, port.y)).toBe(Refusal.None);
+      const group = w.formations.ids().find((f) => w.formations.cols.nation[f] === SWE && w.formations.cols.template[f] === fleets.transport)!;
+      // All but `left` transports sunk.
+      const els = elementIndex(w).get(group)!;
+      for (const e of els.slice(left)) applyLoss(w, e, w.elements.cols.strength[e]!);
+      settleFormation(w, group);
+      expect(transportRoom(w, group)).toBe(left * TRANSPORT_MEN);
+      w.nations.cols.gold[SWE] = 1e6;
+      w.nations.cols.manpower[SWE] = 1e7;
+      expect(declareWar(w, SWE, ICE, true)).not.toBeNull();
+      runEvents(s, 1);
+      return { w, SWE };
+    };
+    const division = T.templateStrength[BUILD_MIX_1938.infantry]!;
+    expect(TRANSPORT_MEN).toBeLessThan(division);
+    const one = setUp(1);
+    expect(ships(one.w, one.SWE)).toEqual([fleets.transport]);
+    // Room for a division (7 × 2,000 against 12,460): it has its transports.
+    const seven = setUp(Math.ceil(division / TRANSPORT_MEN));
+    expect(ships(seven.w, seven.SWE)).not.toContain(fleets.transport);
   });
 
   // PLAN 7.26h2 (ADR-518): measured on two seeds, Britain, its four groups of 1938 sunk, ordered

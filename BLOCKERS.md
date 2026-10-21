@@ -33,6 +33,8 @@ entries are kept and marked **RESOLVED** with the date and fix.
   (b) 7.54 closed not done, the rules kept; (c) 7.54 kept open until 7.56 lands and the count is
   read again. Meanwhile the loop takes 7.55.
 - **Read again after 7.56 (2026-10-21):** the count 7 → 6, bar 5 (1129 boards; 8693 is 7.56's entry).
+- **Read again after 7.55 (2026-10-21, ADR-598):** 6 → 6 in 60 days: 5683 Japan and 7247 Germany now order a
+  transport group, which trains 90 days.
 
 ### PLAN 7.49f: the rule's own case fixed, the AT's count 10 → 9; the rule is in (2026-10-21, ADR-593; the user's decision)
 - **The bar:** on the 48 saves, the nations on `send` 30 days or more of 60 with none boarded
@@ -47,6 +49,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   kept; (c) 7.49f kept open until 7.54 and 7.55 land and the count is read again. Meanwhile the
   loop takes 7.54.
 - **Read again after 7.54 and 7.56 (2026-10-21):** the count 10 → 9 → 7 → 6, bar 0; 7.55 still open.
+- **Read again after 7.55 (2026-10-21, ADR-598):** 6 in 60 days; its three cases order transports (90 days' training).
 
 ### PLAN 7.49e: the defenders' purse cannot raise the band's army to the bar; no rule (2026-10-21, ADR-592 proposed, the user's decision)
 - **The bar:** the land formations of nations at war of income 150–500 after 180 days of each of

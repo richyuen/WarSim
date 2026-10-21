@@ -1,0 +1,218 @@
+[
+ {
+  "seed": 5683,
+  "src": "critic/c11_seed5683_y20.bin",
+  "tag": "JAP",
+  "day0": {
+   "groups": [
+    {
+     "id": 164,
+     "room": 2000,
+     "moving": 0,
+     "engaged": 0,
+     "seaRange": false,
+     "port": 324,
+     "portName": "Miyazaki"
+    }
+   ],
+   "bigRoom": 2000,
+   "bigPort": "Miyazaki",
+   "land": {
+    "count": 36,
+    "min": 12460,
+    "median": 12460
+   },
+   "onPortLand": {
+    "count": 35,
+    "min": 12460,
+    "median": 12460
+   },
+   "wantsTransport": false,
+   "transportTraining": 0,
+   "gold": 3185,
+   "income": 938,
+   "poor": false,
+   "shipyard": true,
+   "price": 630
+  },
+  "after": {
+   "groups": [
+    {
+     "id": 164,
+     "room": 2000,
+     "moving": 0,
+     "engaged": 0,
+     "seaRange": false,
+     "port": 324,
+     "portName": "Miyazaki"
+    }
+   ],
+   "bigRoom": 2000,
+   "bigPort": "Miyazaki",
+   "land": {
+    "count": 37,
+    "min": 12460,
+    "median": 12460
+   },
+   "onPortLand": {
+    "count": 36,
+    "min": 12460,
+    "median": 12460
+   },
+   "wantsTransport": false,
+   "transportTraining": 0,
+   "gold": 3906,
+   "income": 938,
+   "poor": false,
+   "shipyard": true,
+   "price": 630
+  },
+  "ordered": 0,
+  "newGroups": [],
+  "boarded": 0
+ },
+ {
+  "seed": 7247,
+  "src": "critic/c11_seed7247_y20.bin",
+  "tag": "GER",
+  "day0": {
+   "groups": [
+    {
+     "id": 904,
+     "room": 4000,
+     "moving": 0,
+     "engaged": 0,
+     "seaRange": false,
+     "port": 388,
+     "portName": "Nouadhibou"
+    }
+   ],
+   "bigRoom": 4000,
+   "bigPort": "Nouadhibou",
+   "land": {
+    "count": 213,
+    "min": 9,
+    "median": 10259
+   },
+   "onPortLand": {
+    "count": 205,
+    "min": 9,
+    "median": 10259
+   },
+   "wantsTransport": false,
+   "transportTraining": 0,
+   "gold": 17305,
+   "income": 5209,
+   "poor": false,
+   "shipyard": true,
+   "price": 630
+  },
+  "after": {
+   "groups": [
+    {
+     "id": 904,
+     "room": 4000,
+     "moving": 0,
+     "engaged": 0,
+     "seaRange": false,
+     "port": 388,
+     "portName": "Nouadhibou"
+    }
+   ],
+   "bigRoom": 4000,
+   "bigPort": "Nouadhibou",
+   "land": {
+    "count": 214,
+    "min": 9,
+    "median": 10241
+   },
+   "onPortLand": {
+    "count": 206,
+    "min": 9,
+    "median": 10241
+   },
+   "wantsTransport": false,
+   "transportTraining": 0,
+   "gold": 17751,
+   "income": 5210,
+   "poor": false,
+   "shipyard": true,
+   "price": 630
+  },
+  "ordered": 0,
+  "newGroups": [],
+  "boarded": 0
+ },
+ {
+  "seed": 4513,
+  "src": "critic/c11_seed4513_y10.bin",
+  "tag": "LAT",
+  "day0": {
+   "groups": [
+    {
+     "id": 992,
+     "room": 2000,
+     "moving": 0,
+     "engaged": 0,
+     "seaRange": false,
+     "port": 602,
+     "portName": "Glasgow"
+    }
+   ],
+   "bigRoom": 2000,
+   "bigPort": "Glasgow",
+   "land": {
+    "count": 37,
+    "min": 288,
+    "median": 12460
+   },
+   "onPortLand": {
+    "count": 14,
+    "min": 5500,
+    "median": 12460
+   },
+   "wantsTransport": false,
+   "transportTraining": 0,
+   "gold": 13115,
+   "income": 3814,
+   "poor": false,
+   "shipyard": true,
+   "price": 630
+  },
+  "after": {
+   "groups": [
+    {
+     "id": 992,
+     "room": 2000,
+     "moving": 0,
+     "engaged": 0,
+     "seaRange": false,
+     "port": 602,
+     "portName": "Glasgow"
+    }
+   ],
+   "bigRoom": 2000,
+   "bigPort": "Glasgow",
+   "land": {
+    "count": 37,
+    "min": 288,
+    "median": 12460
+   },
+   "onPortLand": {
+    "count": 14,
+    "min": 5500,
+    "median": 12460
+   },
+   "wantsTransport": false,
+   "transportTraining": 0,
+   "gold": 13123,
+   "income": 3814,
+   "poor": false,
+   "shipyard": true,
+   "price": 630
+  },
+  "ordered": 0,
+  "newGroups": [],
+  "boarded": 0
+ }
+]

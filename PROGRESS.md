@@ -21285,3 +21285,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `landingOverSea1938.test.ts` (Britain's transports at Manama, the Caspian nearest; red
   without). Specs by hand: none (no UI).
 - **Next:** PLAN 7.55 (the transports' room under a division's).
+
+## 2026-10-21 — PLAN 7.55: a transport group under a division's room bars no order (ADR-598)
+
+- **Measured** (`tools/diag/smallGroup.ts`, `docs/evidence/7.55/measure.md`): 5683 y20 Japan (2,000 at
+  Miyazaki), 7247 y20 Germany (4,000 at Nouadhibou), 4513 y10 Latvia (2,000 at Glasgow): rich, a
+  shipyard, at war with no front; `wantsTransport` false because a group of theirs is afloat. No fleet
+  is refilled, so the group held their landings for good.
+- **Rule** (`economic.ts` `wantsTransport`): a transport group counts only with room for the infantry
+  division's men (12,460). Template, not the formations on the port's land (7247 has one of 9 men).
+- **AT:** the three order a transport group within 60 days (0 → 3 of 3). Reach (`transportWant.ts`,
+  the 48 saves as saved): nations that want one 116 → 125. 7.54's count 6 → 6 in 60 days (training
+  90). Pin unchanged (63d0cfd9).
+- **Test:** `navyBudget1938.test.ts` (red without: Sweden ordered a destroyer flotilla). Specs by hand:
+  none (no UI).
+- **Next:** PLAN 7.50 (the H-bomb at the floor on a city).

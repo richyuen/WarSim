@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-598 · 2026-10-21 · accepted — A transport group with room under a division's does not bar the order of another (PLAN 7.55; amends ADR-518)
+
+- **Context** (`docs/evidence/7.55/measure.md`). ADR-518's order (`economic.ts` 2c, `wantsTransport`)
+  was barred by any transport group of the nation's afloat. A group whose transports are sunk to one
+  or two has room for 2,000–4,000 men; an infantry division has 12,460, and no fleet is refilled
+  (`refillable` is the land's). `planLanding` took that group (the most room) and `sendToPort` and
+  `orderLanding` took no formation over its room, so it held the nation's landings for good. On the
+  critic's saves: 5683 year 20 Japan (2,000 at Miyazaki), 7247 year 20 Germany (4,000 at
+  Nouadhibou), 4513 year 10 Latvia (2,000 at Glasgow): each rich (income 938–5,209, gold 3,185–17,305),
+  with a shipyard, at war with no front, `wantsTransport` false, nothing ordered in 60 days.
+- **Decision.** A transport group counts as the nation's own only with room for at least the men of
+  the build mix's infantry division (`tables.templateStrength[mix.infantry]`, 12,460 in the 1938
+  rules); `wantsTransport` takes that as `division` (0, the old rule, when not given). The
+  threshold is the template's, not the smallest formation on the port's land: 7247's Germany has a
+  formation of 9 men there, which a 4,000 group carries while the 205 others wait.
+- **Set aside.** `sendToPort` passing over a formation too big for the room (it would board a
+  remnant and leave the army); refilling fleets (a wider change, the navy's budget).
+- **Consequences.** The three cases each order a transport group within 60 days (0 → 3 of 3,
+  `docs/evidence/7.55/after.json`); none boards in the 60 days (a group trains 90). On the 48 saves,
+  as saved, the nations at war that want one 116 → 125: the three, Brazil (2,000), Romania (10,000,
+  twice), Latvia (6,000), Canada (8,000) and France (12,000, 460 men short); while they want one
+  they order no warship (ADR-518). A shrunken group is not disbanded: a long war may leave a
+  nation more than one, at 0.5 gold a transport; `planLanding` takes the one of most room. Seed
+  99's year has no such group: the pin unchanged (63d0cfd9). Test: `navyBudget1938.test.ts`
+  (Sweden at war with Iceland, its group sunk to one transport: red without, it ordered a
+  destroyer flotilla).
+
 ### ADR-597 · 2026-10-21 · accepted — The landing's target is a port in the waters its transports sail (PLAN 7.56b)
 
 - **Context** (`docs/evidence/7.56/a.md` §4, `b.md`). `planLanding` aimed at the enemy port nearest

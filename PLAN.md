@@ -184,15 +184,7 @@ when taken up:
   formation within 58 days of a port, its near army on the operational AI's marches): the AT, 2 of 2,
   missed. 7.54's count 7 → 6. BLOCKERS, the user's (a tick, b close, c the landing takes from the
   operational AI's army, a design change).
-- [ ] 7.55 A transport group with room under a division's (found at 7.49f, emergent 6,
-  `docs/evidence/7.49/f.md` §3; 7.49d's note on 4513 Latvia): the invasion AI plans with the group
-  of most room at a port, and `sendToPort` and `orderLanding` take no formation over its room, so a
-  group of one or two transports (2,000–4,000 men) holds the nation's landings for good: 5683 year
-  20 Japan at Miyazaki (2,000), 7247 year 20 Germany at Nouadhibou (4,000), 4513 year 10 Latvia
-  (`atPort` 60 days, 2,000). Measured first: per case, the nation's groups and their room, the
-  smallest formation on the port's land, and whether ADR-518's transport order is barred. AT: on the
-  48 saves, the three cases board a formation or order a transport within 60 days; a unit test (red
-  without); the ADR; the pin's entry.
+
 - [ ] 7.50 The H-bomb at the floor on a city of a million, and the spot struck again (R11-B2): seed
   1129, 14 March 1954, the Soviet Union on Greenock, a hydrogen bomb, 1,105,514 dead (1,071,000
   civilians) at utility 0.026, against counters of 1.3k–7.5k men; PLAN 7.38's bar ("no burst under
@@ -515,3 +507,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's […]
 - [x] 7.46 A navy sunk in a decisive war at sea is built again (from PLAN 7.39b, ADR-573): with the […]
 - [x] 7.53 Wars between peers (ADR-585, the user's decision, 2026-10-21: options 2 and 4 of the […]
+- [x] 7.55 A transport group with room under a division's (found at 7.49f, emergent 6, […]

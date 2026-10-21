@@ -76,12 +76,17 @@
  * 2c. A transport group for a landing (PLAN 7.26h2, ADR-518, `wantsTransport`), after 2b: a
  *    nation in a war in which it has no land front (per war, as the invasion AI's landing since
  *    ADR-511), against an enemy that holds a port, with a free land formation on a land with a
- *    port of its own, and no transport group of its own afloat or in training, orders one, paid as
+ *    port of its own, and no transport group of its own afloat with a division's room (PLAN 7.55,
+ *    ADR-598) or in training, orders one, paid as
  *    2b's group (the price and DELIVERY_RESERVE_MONTHS of income, the shortfall carried for
  *    RUNWAY_MONTHS), outside the navy's share; while it wants one it orders no other fleet. It was
  *    3b's first fleet, behind the navy's share, a front in any war and three months of reserve:
  *    Britain, its four groups of 1938 sunk, ordered none in the five years after on two seeds,
  *    every month over its share (0.13 to 0.31 of income), on 62 of 64 with a front in another war.
+ *    A group cut down to one or two transports (2,000–4,000 men) no longer counts (PLAN 7.55):
+ *    no division fits in it and no ship is refilled, so it held the nation's landings for good
+ *    (seed 5683 year 20 Japan, 7247 year 20 Germany, 4513 year 10 Latvia: rich, a shipyard, no
+ *    order in 60 days).
  * 4. Research (PLAN 3.1b, `systems/research.ts`), set between 2 and 3: the budget of the days
  *    to come is RESEARCH_SHARE of income, at most what the lines can take (`researchCap`), and
  *    nothing for a nation in debt or one that step 1 would have disband (short, and the
@@ -103,6 +108,7 @@ import { SUPPRESSION_COST } from '../systems/revolts';
 import { frontierOf } from '../systems/territory';
 import { neighbours4 } from '../nav/grid';
 import { airfield, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
+import { transportRoom } from '../systems/amphibious';
 import { fleetPower } from '../systems/seaControl';
 import { DAYS_PER_MONTH, researchBudget } from '../systems/research';
 import { knowsTechs } from '../tech';
@@ -401,7 +407,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       }
       // 2c. A transport group for a landing (PLAN 7.26h2, ADR-518), as 2b's group: before research
       // and the army's orders, outside the navy's share; while it wants one, no other fleet.
-      const wants = mix.fleets !== undefined && atWar && income >= POOR_INCOME && !transportsPending.has(n) && wantsTransport(world, n, mix.fleets.transport, fleets.get(n) ?? []);
+      const wants = mix.fleets !== undefined && atWar && income >= POOR_INCOME && !transportsPending.has(n) && wantsTransport(world, n, mix.fleets.transport, fleets.get(n) ?? [], tables.templateStrength[mix.infantry] ?? 0);
       if (wants && shipyard(world, n) >= 0) {
         const t = mix.fleets!.transport;
         const rule = world.rules.templates[t]!;
@@ -662,10 +668,12 @@ function pickWing(world: World, n: number, kinds: NonNullable<BuildMix['wings']>
  * side holds a port with water, and a free land formation of its own (not under way, in no fight,
  * not retreating or going home) stands on a land with a port it holds: men to carry, from where
  * they go aboard, to a coast to land on.
+ * A group of its with room under `division` men is not one (PLAN 7.55, ADR-598): its transports
+ * sunk to one or two, it carries no division, and no ship is refilled.
  */
-export function wantsTransport(world: World, n: number, transport: number, own: readonly number[]): boolean {
+export function wantsTransport(world: World, n: number, transport: number, own: readonly number[], division = 0): boolean {
   const f = world.formations.cols;
-  if (own.some((id) => f.template[id] === transport)) return false;
+  if (own.some((id) => f.template[id] === transport && transportRoom(world, id) >= division)) return false;
   const { w, h, controller } = world.cells;
   const nb: number[] = [];
   const fronted = new Set<number>();
