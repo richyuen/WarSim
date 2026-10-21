@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-587 · 2026-10-21 · proposed (the user's decision) — PLAN 7.53c missed: rivalry moves no armed war; what next for 7.53
+### ADR-587 · 2026-10-21 · accepted (the user's decision, 2026-10-21) — PLAN 7.53c missed: rivalry moves no armed war; what next for 7.53
 
 - **Context.** `docs/evidence/7.53/c.md`. Rivalry (RIVAL 1, then 2 with one war more than MAX_WARS
   for a rival, then with a floor of a quarter of the strongest's strength for a great power) on the
@@ -182,6 +182,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   kept open with a part on the concentration of strength (the third strongest under a quarter of
   the first from year 10): long-run balance work, before 7.49b.
 - **Recommended:** a.
+- **Decided** (2026-10-21, the user): a. 7.53 closed, not done; 7.53b stays; the loop takes 7.49b.
 
 ### ADR-586 · 2026-10-21 · accepted — Rivals apart: the great powers of an alliance part unless they fight a great power together (PLAN 7.53b; ADR-585's option 4)
 

@@ -36,42 +36,6 @@ The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
 when taken up:
 
-- [ ] 7.53 Wars between peers (ADR-585, the user's decision, 2026-10-21: options 2 and 4 of the
-  strategic AI's choice of wars; taken before 7.49b, whose parts help only where both sides are
-  armed): wars with 5 or more land formations a side within DEPLOY_RANGE_CELLS of the front
-  ("armed", `tools/diag/warSides.ts`) 3–4 a world in year 1, 0.5 at years 10 and 20 on the critic's
-  48 saves (`docs/evidence/7.49/measure.md` §3). Two rules, a part each: a rivalry motive in the
-  declaration's utility for neighbours of like strength that are both great powers, and an alliance
-  that holds two great powers with no war in common loses their loyalty until one leaves. AT: armed
-  wars a world, mean of weekly samples in years 2–20, at least 1.5 on 10 unseen seeds × 20 years
-  (HEAD's figure on the same run, the before); engaged land formations worldwide and per war read
-  beside it; `sweep:quick`'s limits (no hegemon, borders moving) hold; a unit test per rule (red
-  without); the pin's entry; `--profile`. Stop: two full re-measures flat, the bar is the user's
-  (ADR-554). In parts:
-    - [x] 7.53a Measured on HEAD (`docs/evidence/7.53/measure-a.md`, `tools/diag/peers.ts`; seeds
-      3011, 3023, 3037, 3041 × 20 years, the tuning seeds): armed wars 2.73 a world in year 1, 0.57
-      in years 2–20. Of the 6 great powers' 15 pairs, 3.8 allied (Germany's alliance of 1938 holds 3
-      to 5 of them), 4.1 neighbours, 1.6 at war, 1.1 open (neighbours, neither allied nor at war).
-      Where great powers fight (3037's years 15–20) the land war has contact. So the split first
-      (b), then rivalry (c). The utility moved into `warUtility` (no rule: the pin unchanged).
-    - [x] 7.53b Alliances of rivals split: a member great power of an alliance in which another
-      member is a great power, with no war in common with it, loses loyalty monthly until it leaves
-      (`allianceSystem`'s LEAVE_LOYALTY). AT: great pairs allied, mean of years 2–20 on the 4 tuning
-      seeds, halved (3.80 in 7.53a); armed wars read beside it; a unit test (red without); the ADR;
-      the pin's entry.
-      Done (ADR-586, `docs/evidence/7.53/b.md`): rivals part unless they fight a great power
-      together, from 3 years after the start, and a great power joins no alliance holding one;
-      great pairs allied 3.80 → 0.52; armed wars 0.57 → 0.60 (rivalry is c); year 1 and the pin
-      unchanged; `rivalsApart1938.test.ts` (red without).
-    - [ ] 7.53c Rivalry: a bonus to the utility of a war between two great powers, neighbours, the
-      larger the nearer their strengths (`warUtility`). AT: armed wars a world in years 2–20 on the 4
-      tuning seeds at least twice 7.53a's (0.57 → 1.14) with b in; a unit test (red without); the
-      ADR with the constants; the pin's entry; `--profile`.
-      **Missed** (2026-10-21, BLOCKERS, ADR-587 proposed, the user's; `docs/evidence/7.53/c.md`, the
-      code in `c-candidate.diff`, not landed): armed wars 0.54–0.64 in three forms (RIVAL 1; 2 with
-      a war over MAX_WARS for a rival; with a floor of a quarter of the strongest's strength). The
-      great pairs at war have fronts and one side's armies elsewhere (7.49's causes); from year 10
-      there are 2 powers of that size, and the motive changes nothing between them.
 - [ ] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged land
   formations worldwide, mean of daily samples, 0.3–0.7 at years 10 and 20 on the critic's 24 worlds
   (of about 300 of nations at war), against 55–107 in year 1; the same on `bcbc99c` (1.1 and 0.3).
@@ -452,3 +416,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.43 A cell taken goes to the side's nation whose own formations press it (from PLAN 7.37g): […]
 - [x] 7.40 Emergent world dynamics (emergent 6, needs 7): stasis inside 30 years on the critic's […]
 - [x] 7.46 A navy sunk in a decisive war at sea is built again (from PLAN 7.39b, ADR-573): with the […]
+- [x] 7.53 Wars between peers (ADR-585, the user's decision, 2026-10-21: options 2 and 4 of the […]

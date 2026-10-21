@@ -21117,3 +21117,9 @@ No rule changed and nothing on screen changed. One task came out of it.
   take 7.53b back too, or a part on the concentration of strength.
 - Specs by hand: none (no UI). Pin unchanged.
 - **Next:** the user's answer on ADR-587.
+
+## 2026-10-21 — ADR-587 a (the user's decision): PLAN 7.53 closed not done
+
+- 7.53c and 7.53 closed, not done; 7.53b (rivals apart, ADR-586) stays; rivalry not landed
+  (`docs/evidence/7.53/c-candidate.diff`). BLOCKERS entry resolved. `plan:archive` moved 7.53.
+- **Next:** PLAN 7.49b (strait crossings).

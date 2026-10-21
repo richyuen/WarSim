@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.53c: rivalry moves no armed war; the bar missed (2026-10-21, ADR-587 proposed, the user's decision)
+### RESOLVED 2026-10-21 (ADR-587 a, the user's decision: 7.53 closed not done, 7.53b kept, rivalry not landed) · PLAN 7.53c: rivalry moves no armed war; the bar missed (2026-10-21, ADR-587 proposed, the user's decision)
 - **The bar:** armed wars a world in years 2–20 on the 4 tuning seeds at least twice 7.53a's (0.57 →
   1.14); 7.53's own, 1.5 on 10 unseen seeds.
 - **What moved** (`docs/evidence/7.53/c.md`): with rivalry in its three forms 0.54–0.64; great pairs at
