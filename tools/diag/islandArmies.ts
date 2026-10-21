@@ -7,6 +7,12 @@
  *   nation's front cells, while it has one (`landStates.ts`'s classification), on day 1 and on
  *   the last day (the AT's figure); of those, `noOwnPort`: the island formations of nations that
  *   hold no port (with water) on a landmass of a front cell of their own (PLAN 7.49d2's figure);
+ *   `noTransports`: the island formations of nations with no transport room afloat (no group, or
+ *   groups whose transports are all sunk; PLAN 7.49d3's figure); with `MID=<day>[,<day>...]` in
+ *   the environment, the same reads on those days too (`mid`, by day: 7.49d's island share at day
+ *   60 of a longer run);
+ * - `debt`: the nations with a transport group in training on some day of the run whose gold went
+ *   under 0 on a day (PLAN 7.49d3's "no nation in debt for it"), the first such day and the least gold;
  * - per nation with `MIN_ISLAND` or more island formations on day 1, daily: `planLanding`'s gate
  *   (read only, as `landWar.ts`: `fronted` a front in each of its wars, `aboard`, `noTransport`,
  *   `noTarget`, `atPort`, `send`, `noneFree`) and whether the day is its actor day (`STAGGER`);
@@ -29,7 +35,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { DEPLOY_RANGE_CELLS } from '../../src/sim/ai/operational';
 import { STAGGER } from '../../src/sim/ai/strategic';
 import { neighbours4 } from '../../src/sim/nav/grid';
-import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
+import { BUILD_MIX_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { transportRoom } from '../../src/sim/systems/amphibious';
 import { AT_PORT_CELLS, keyAt, seaKm, waterKeys } from '../../src/sim/systems/navalCombat';
@@ -59,7 +65,10 @@ const near = (world: World, a: number, b: number, r: number): boolean => {
 };
 
 const rows: unknown[] = [];
-const totals = { first: { island: 0, atWar: 0, noOwnPort: 0 }, last: { island: 0, atWar: 0, noOwnPort: 0 } };
+const MIDS = (process.env.MID ?? '').split(',').filter((x) => x !== '').map(Number);
+const zero = (): { island: number; atWar: number; noOwnPort: number; noTransports: number } => ({ island: 0, atWar: 0, noOwnPort: 0, noTransports: 0 });
+const totals = { first: zero(), mid: Object.fromEntries(MIDS.map((d) => [d, zero()])) as Record<number, ReturnType<typeof zero>>, last: zero() };
+const debt: { seed: number; nation: string; day: number; gold: number }[] = [];
 const carry: { seed: number; nation: string; km: number; oneWayDays: number; trips: number; room: number; islandMen: number; island: number; carryMen: number; carryFormations: number }[] = [];
 for (const { seed, src } of cases) {
   const s = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SIZE_1938.w) });
@@ -108,11 +117,16 @@ for (const { seed, src } of cases) {
     const water = portSeaOf(w);
     return w.ports.some((p, i) => water[i]! >= 0 && w.cells.controller[p.cell] === n && lands.has(comp[p.cell]!));
   };
-  const islandOf = (fr: ReturnType<typeof fronts>): { share: { island: number; atWar: number; noOwnPort: number }; by: Map<number, { n: number; men: number }> } => {
+  const islandOf = (fr: ReturnType<typeof fronts>): { share: { island: number; atWar: number; noOwnPort: number; noTransports: number }; by: Map<number, { n: number; men: number }> } => {
     let island = 0;
     let atWar = 0;
     let noOwnPort = 0;
+    let noTransports = 0;
     const ported = new Map<number, boolean>();
+    const room = new Map<number, number>();
+    w.formations.forEach((id) => {
+      if (w.isFleet(id)) room.set(c.nation[id]!, (room.get(c.nation[id]!) ?? 0) + transportRoom(w, id));
+    });
     const by = new Map<number, { n: number; men: number }>();
     w.formations.forEach((id) => {
       if (!isLandF(id)) return;
@@ -125,12 +139,13 @@ for (const { seed, src } of cases) {
       island++;
       if (!ported.has(n)) ported.set(n, ownPort(n, fr));
       if (!ported.get(n)) noOwnPort++;
+      if ((room.get(n) ?? 0) === 0) noTransports++;
       const b = by.get(n) ?? { n: 0, men: 0 };
       b.n++;
       b.men += c.strength[id]!;
       by.set(n, b);
     });
-    return { share: { island, atWar, noOwnPort }, by };
+    return { share: { island, atWar, noOwnPort, noTransports }, by };
   };
 
   /** `planLanding`'s gates, read only, with its foes (the wars with no front of its own) and its front. */
@@ -297,6 +312,9 @@ for (const { seed, src } of cases) {
   for (const [id] of w.embarked) boardedOn.set(id, -1);
   let fr = s1;
   let last = first;
+  const mid = new Map<number, ReturnType<typeof islandOf>>();
+  const training = new Set<number>();
+  const owing = new Map<number, { day: number; gold: number }>();
   for (let d = 1; d <= days; d++) {
     // The gate as the AI reads it at the day's start: the state after the day before.
     const aboardBy = new Set<number>();
@@ -344,6 +362,17 @@ for (const { seed, src } of cases) {
       }
     }
     fr = fronts();
+    if (MIDS.includes(d)) mid.set(d, islandOf(fr));
+    w.production.forEach((p) => {
+      if (w.production.cols.template[p] === BUILD_MIX_1938.fleets!.transport) training.add(w.production.cols.nation[p]!);
+    });
+    for (const n of training) {
+      const g = nat.gold[n]!;
+      if (nat.living[n] !== 1 || g >= 0) continue;
+      const o = owing.get(n);
+      if (!o) owing.set(n, { day: d, gold: g });
+      else o.gold = Math.min(o.gold, g);
+    }
     if (d === days) last = islandOf(fr);
   }
   for (const [n, row] of watched) {
@@ -351,21 +380,22 @@ for (const { seed, src } of cases) {
     row.island1 = b?.n ?? 0;
     row.islandMen1 = b?.men ?? 0;
   }
-  totals.first.island += first.share.island;
-  totals.first.atWar += first.share.atWar;
-  totals.first.noOwnPort += first.share.noOwnPort;
-  totals.last.noOwnPort += last.share.noOwnPort;
-  totals.last.island += last.share.island;
-  totals.last.atWar += last.share.atWar;
+  for (const [n, o] of owing) debt.push({ seed, nation: tag(n), day: o.day, gold: Math.round(o.gold) });
+  for (const [t, v] of [[totals.first, first], ...MIDS.map((d) => [totals.mid[d]!, mid.get(d) ?? last] as const), [totals.last, last]] as const) {
+    t.island += v.share.island;
+    t.atWar += v.share.atWar;
+    t.noOwnPort += v.share.noOwnPort;
+    t.noTransports += v.share.noTransports;
+  }
   const nations = [...watched.values()].map((r) => ({
     ...r,
     transportGroups: Math.max(0, ...r.transportGroups),
     roomAll: Math.round(r.roomAll.reduce((a, b) => a + b, 0) / Math.max(1, r.roomAll.length)),
     roomAtPort: Math.round(r.roomAtPort.reduce((a, b) => a + b, 0) / Math.max(1, r.roomAtPort.length)),
   }));
-  rows.push({ seed, src, first: first.share, last: last.share, nations });
+  rows.push({ seed, src, first: first.share, mid: Object.fromEntries([...mid].map(([d, v]) => [d, v.share])), last: last.share, nations });
   process.stderr.write(
-    `${seed} ${src}: island ${first.share.island}/${first.share.atWar} -> ${last.share.island}/${last.share.atWar} (no own port ${first.share.noOwnPort} -> ${last.share.noOwnPort}); ` +
+    `${seed} ${src}: island ${first.share.island}/${first.share.atWar} -> ${last.share.island}/${last.share.atWar} (no own port ${first.share.noOwnPort} -> ${last.share.noOwnPort}; no transports ${first.share.noTransports} -> ${last.share.noTransports}${[...mid].map(([d, v]) => `; day ${d} ${v.share.island}/${v.share.atWar}, no transports ${v.share.noTransports}`).join('')}); ` +
       nations.map((r) => `${r.nation} ${r.island0}->${r.island1} board ${r.boarded} land ${r.landed} room ${r.roomAll} ${JSON.stringify(r.gates)}`).join('; ') +
       '\n',
   );
@@ -373,6 +403,6 @@ for (const { seed, src } of cases) {
 const pct = (a: { island: number; atWar: number }): string => ((100 * a.island) / Math.max(1, a.atWar)).toFixed(1);
 const carried = carry.reduce((a, r) => a + r.carryFormations, 0);
 const best = { island: totals.first.island - carried, atWar: totals.first.atWar };
-writeFileSync(out, JSON.stringify({ totals, firstPct: pct(totals.first), lastPct: pct(totals.last), carried, bestPct: pct(best), carry, rows }, null, 1));
+writeFileSync(out, JSON.stringify({ totals, firstPct: pct(totals.first), midPct: Object.fromEntries(MIDS.map((d) => [d, pct(totals.mid[d]!)])), debt, lastPct: pct(totals.last), carried, bestPct: pct(best), carry, rows }, null, 1));
 console.error(`carry: ${carried} of ${totals.first.island} island formations at best; island ${pct(best)} % at best`);
-console.log(`done: ${rows.length} -> ${out}; island ${pct(totals.first)} % -> ${pct(totals.last)} % after ${days} days; no own port ${totals.first.noOwnPort} -> ${totals.last.noOwnPort}`);
+console.log(`done: ${rows.length} -> ${out}; island ${pct(totals.first)} % -> ${pct(totals.last)} % after ${days} days${MIDS.map((d) => ` (${pct(totals.mid[d]!)} % at day ${d}, no transports ${totals.mid[d]!.noTransports})`).join('')}; no own port ${totals.first.noOwnPort} -> ${totals.last.noOwnPort}; no transports ${totals.first.noTransports} -> ${totals.last.noTransports}; in debt with transports in training ${debt.length}`);

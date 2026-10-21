@@ -141,6 +141,9 @@ when taken up:
         after 60 days under 20 % (7.49d's bar, with d1 and d2 in); the island formations of nations
         with no transports, after 180 days of the 48 saves, under half of HEAD's same run; no nation
         in debt for it in a year; a unit test (red without); the ADR; the pin's entry.
+        Rule in (ADR-614, `docs/evidence/7.49/d3.md`): the island share at day 60 23.3 → 23.3 %
+        (missed: a group trains 90 days; 19.6 % at day 180, 13.9 % at day 365); no transports after
+        180 days 397 → 268, bar under 199: missed; in debt for it 0 (met). BLOCKERS, the user's.
     - [ ] 7.49e The defenders' purse (measure §4.4): late, nations at war of income 150–500 hold
       4.5–4.8 formations, 91–98 of 124–127 stopped by the price (1,001) and RESERVE_MONTHS (3) of
       income kept back. Measured first: what such a nation raises in a year with the reserve at war
@@ -153,11 +156,7 @@ when taken up:
       (ADR-592 proposed: the cut with the bar at 1.05 ×, recommended; the cut and the cadre division,
       the bar kept; closed not done).
       ADR-592 a (the user's, 2026-10-21): the bar is now 1.05 × of the 48 saves together. In parts:
-      - [ ] 7.49e1 The reserve cut: at war, with its army under its peacetime share, a nation keeps no
-        reserve of income back from the army's orders (`docs/evidence/7.49/e/reserve-cut.diff`,
-        WAR_RESERVE_MONTHS 0). AT: the band's land formations after 180 days of the 48 saves together
-        at least 1.05 × HEAD's (1,128 → 1,185; `purse.ts`); no nation of the band in debt or
-        disbanding in a year; a unit test (red without); the ADR; the pin's entry.
+      - [ ] 7.49e1 The reserve cut: moved to PLAN 7.65 at 7.49's budget (ADR-554; its text there).
     - [x] 7.49f The landing's port (found at 7.49d, `docs/evidence/7.49/d.md` §4): `planLanding`
       sends formations to its port's land cell but loads only those within AT_PORT_CELLS of the
       port's water (`tryLanding` takes either); at 19 of the 579 ports the water is 4–11 cells off,
@@ -172,6 +171,17 @@ when taken up:
       ports with their water near (causes: PLAN 7.54, 7.55; two untraced). BLOCKERS, the user's (a
       tick, b close, c keep open). Ticked (2026-10-21, the user's: option a, on the rule's own
       count).
+
+  At the budget (20 commits, 2026-10-21; `docs/evidence/7.49/d3.md` §3): the AT missed, engaged
+  per war in years 2–20 0.052 of year 1's on seeds 7401–7410 (bar 0.25); 6421's year 21 a mean of 1.0
+  engaged a day (was 0 of 25 samples). Case by case in d3.md §3. BLOCKERS, the user's (step 8).
+
+- [ ] 7.65 The reserve cut (7.49e1, moved at 7.49's budget; ADR-592 a, the user's; carries emergent 6
+  with 7.49): at war, with its army under its peacetime share, a nation keeps no reserve of income
+  back from the army's orders (`docs/evidence/7.49/e/reserve-cut.diff`, WAR_RESERVE_MONTHS 0). AT:
+  the land formations of nations at war of income 150–500 after 180 days of the 48 saves together
+  at least 1.05 × HEAD's (1,128 → 1,185; `purse.ts`); no nation of the band in debt or disbanding in
+  a year; a unit test (red without); the ADR; the pin's entry.
 
 - [ ] 7.63 The ferry's port nearest the front (found at 7.49d1, `docs/evidence/7.49/d1.md` §3; carries
   emergent 6 with 7.49): the ferry lands at the nation's port on a front's land nearest its

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
-import { BATTLE_FLEET_INCOME, budgetOf, FEW_FORMATIONS, NAVY_SHARE, peaceShare, RESERVE_MONTHS } from '../../src/sim/ai/economic';
+import { BATTLE_FLEET_INCOME, budgetOf, FEW_FORMATIONS, NAVY_SHARE, peaceShare, RESERVE_MONTHS, wantsFerry, wantsTransport } from '../../src/sim/ai/economic';
 import { applyLoss, bleedFormation, destroyFormation, elementIndex, settleFormation } from '../../src/sim/systems/elements';
 import { TRANSPORT_MEN, transportRoom } from '../../src/sim/systems/amphibious';
 import { placeFleet } from '../../src/sim/placeForces';
@@ -9,8 +9,8 @@ import { addFormations, BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938, TAGS_193
 import { Sim } from '../../src/sim/sim';
 import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
 import { declareWar } from '../../src/sim/systems/war';
-import { refillable } from '../../src/sim/systems/production';
-import { Domain, type World } from '../../src/sim/world';
+import { queueFormation, refillable } from '../../src/sim/systems/production';
+import { Domain, navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { project } from '../../src/sim/data/projection';
 import { runEvents } from '../helpers/sim1938';
@@ -129,12 +129,55 @@ describe('the navy\'s cost (PLAN 4.6e1)', () => {
     // At war with Saudi Arabia, a land front by Aden and Iraq, and with Iceland across the sea.
     const both = setUp(['SAU', 'ICE']);
     expect(ships(both.w, both.ENG)).toEqual([fleets.transport]);
-    // With Saudi Arabia alone every war has its front: none.
+    // With Saudi Arabia alone every war has its front: the landing wants none. Its home army on
+    // Great Britain, beyond that front, orders one for the ferry since PLAN 7.49d3 (ADR-614; the
+    // case below).
     const fronted = setUp(['SAU']);
-    expect(ships(fronted.w, fronted.ENG)).toEqual([]);
+    expect(wantsTransport(fronted.w, fronted.ENG, fleets.transport, [], T.templateStrength[BUILD_MIX_1938.infantry])).toBe(false);
+    expect(ships(fronted.w, fronted.ENG)).toEqual([fleets.transport]);
     // No army to carry: none.
     const empty = setUp(['SAU', 'ICE'], false);
     expect(ships(empty.w, empty.ENG)).toEqual([]);
+  });
+
+  // PLAN 7.49d3 (ADR-614; the user's, ADR-591 b): a nation with a land front and its home army
+  // beyond it, with no transports, never had any (90 and 155 island formations of such nations on
+  // the critic's year-10 and year-20 saves): only a landing in a war with no front ordered a group.
+  it('at war with a land front, its island army over its transports\' room, it orders a group for the ferry, and its warships go on (red without)', () => {
+    const setUp = (home = true): { s: Sim; w: World; ENG: number } => {
+      const s = peaceful();
+      const w = s.world;
+      const ENG = id('ENG');
+      const comp = navOf(w).grid.component;
+      // The front's land: Saudi Arabia's (Asia, by Aden and Iraq).
+      const front = comp[w.cells.controller.findIndex((h) => h === id('SAU'))]!;
+      w.formations.forEach((f) => {
+        const c = w.formations.cols;
+        if (c.nation[f] !== ENG) return;
+        const island = comp[Math.floor(c.y[f]!) * W + Math.floor(c.x[f]!)] !== front;
+        if ((w.isFleet(f) && c.template[f] === fleets.transport) || (!home && !w.isFleet(f) && !w.isWing(f) && island)) destroyFormation(w, f);
+      });
+      expect(declareWar(w, ENG, id('SAU'), true)).not.toBeNull();
+      w.nations.cols.gold[ENG] = 1e6;
+      w.nations.cols.manpower[ENG] = 1e7;
+      return { s, w, ENG };
+    };
+    const a = setUp();
+    expect(wantsFerry(a.w, a.ENG, [])).toBe(true);
+    runEvents(a.s, 1);
+    expect(ships(a.w, a.ENG)).toContain(fleets.transport);
+    // A group already in training: no second, and it holds back no warship (its navy under its
+    // share). Else the want, back each month, ordered a group a time and never a warship.
+    const c = setUp();
+    expect(queueFormation(c.w, c.ENG, fleets.transport)).not.toBe(0);
+    runEvents(c.s, 1);
+    expect(ships(c.w, c.ENG).filter((t) => t === fleets.transport)).toHaveLength(1);
+    expect(ships(c.w, c.ENG).filter((t) => t !== fleets.transport).length).toBeGreaterThan(0);
+    // No army off the front's land: no ferry, no group.
+    const b = setUp(false);
+    expect(wantsFerry(b.w, b.ENG, [])).toBe(false);
+    runEvents(b.s, 1);
+    expect(ships(b.w, b.ENG)).not.toContain(fleets.transport);
   });
 
   it('short of money, a nation over its share lays up its fleets in port, the dearest first, before its army goes home', () => {

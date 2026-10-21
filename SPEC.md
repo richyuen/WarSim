@@ -2122,7 +2122,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   land front and whose enemy holds a port, with a free formation on a land with a port of its
   own and no group (a group with room under an infantry division's men is none: sunk to one or
   two transports, it carries no division and is never refilled; PLAN 7.55, ADR-598); while it
-  wants one it orders no other fleet. Short of money and over
+  wants one it orders no other fleet. The ferry's want orders one too (PLAN 7.49d3, ADR-614): a
+  land front, a port of its own or of an ally in the war on that front's land, and an island army
+  (standing on a land with a port of its own and no front cell of its) of more men than its
+  transports' room; it stops no other fleet, and its transports in training hold back no
+  warship, as it holds for the war's length. Short of money and over
   it, it lays up its fleets in port, the dearest first, before its army is sent home.
   *A navy's weight (PLAN 4.6e2, ADR-274):* a fleet weighs half its armed ships' hit points in
   men (a transport's or a submarine's nothing): in a nation's strength for the strategic AI (a

@@ -5,6 +5,26 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.49d3 and 7.49 at its budget: transports bought, both bars of d3 missed; 7.49's AT missed at 20 commits (2026-10-21, ADR-614; the user's decision)
+- **The bars:** 7.49d3: the island share of the 48 saves together after 60 days under 20 % (7.49d's,
+  with d1–d3 in); the island formations of nations with no transports after 180 days under half of
+  HEAD's (397: under 199); no nation in debt for it in a year. 7.49: engaged land formations per war
+  in years 2–20 at least a quarter of year 1's on 10 unseen seeds × 20 years.
+- **What moved** (`docs/evidence/7.49/d3.md`): the island share at day 60 23.3 → 23.3 % (a group
+  ordered on day 1 trains 90 days; nothing it carries lands by day 60), at day 180 21.5 → 19.6 %, at
+  day 365 13.9 %; no transports after 180 days 397 → 268 (−32 %); in debt 0 (met). 7.49's AT on seeds
+  7401–7410: years 2–20 at 0.052 of year 1's per war (0.30 against 5.79); engaged per war on the 48
+  saves 0.134 → 0.137 across d1–d3: the parts fixed what each named, and the land war after year 1
+  did not move. 7.49 is at 20 commits (ADR-554): closed by step 8.
+- **What is left:** the user's. For 7.49d3: (a, recommended) ticked on its rule's own case (no
+  transports −32 %, no debt; the 20 % bar read at day 180, where a 90-day group can have sailed,
+  19.6 %: met); (b) closed not done, the rule kept; (c) kept open for a ceiling-free second try at
+  the no-transports bar. For 7.49: (a, recommended) closed not done, ticked as 7.40 was, its open
+  parts with it (7.49d2's entry below decided with it; 7.49e1 already moved to PLAN 7.65); emergent
+  6 judged by the next critic report, 7.63, 7.64 and 7.65 still filed; (b) kept open with a new
+  budget for a cause not yet named (what holds two armies on one front apart after year 1: no part
+  traced it). Meanwhile the loop takes PLAN 7.65.
+
 ### PLAN 7.49d2: the ferry to an ally's port is in; the AT's figure 939 → 934, bar under 470 (2026-10-21, ADR-613; the user's decision)
 - **The bar:** the island formations of nations with no own port on their front's land, after 60
   days of the 48 saves together (`islandArmies.ts`'s `noOwnPort`), under half of 7.49d1's same

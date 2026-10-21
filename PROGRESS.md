@@ -21607,3 +21607,29 @@ No rule changed and nothing on screen changed. One task came out of it.
   that difference); the Soviet Union's 158 on 5309 placed (own front cells, transports at port, no
   port of its or an ally's on that land: neither d2 nor 7.64 reaches them; no task filed, the
   remedy a design choice, told to the user). `d2.md` §3, ADR-613, the BLOCKERS entry.
+
+## 2026-10-21 — PLAN 7.49d3: transports bought for a home army (ADR-614; bars missed); 7.49 at its budget
+
+- **Rule** (`ai/economic.ts`, `wantsFerry`, step 2c): a nation at war with a land front, a port of
+  its or an ally's on that front's land, and an island army of more men than its transports' room
+  orders a transport group, paid as the landing's. It stops no other fleet or warship's saving, and
+  its transports in training are not a pending ship for 3b (else, the want holding for the war's
+  length, no warship again). SPEC §7 (the navy's budget).
+- **Read** (`docs/evidence/7.49/d3.md`, the 48 saves together, HEAD `c8eae9c7` the before;
+  `islandArmies.ts`'s new `noTransports`, `MID` and `debt`): island share at day 60 23.3 → 23.3 %
+  (bar under 20 %: missed, a group trains 90 days), day 180 21.5 → 19.6 %, day 365 13.9 %; no
+  transports after 180 days 397 → 268 (bar under 199: missed); in debt for it 0 (met). Engaged
+  (`warSides.ts`): worldwide 0.596 → 0.602, per war 0.135 → 0.137. Seed 99 year 1 (`ferryOrders.ts`,
+  new): transport orders 6 → 9, warships 5 → 4, at most one group a nation.
+- **Test:** `navyBudget1938.test.ts`, a new case (Britain at war with Saudi Arabia: a group for the
+  ferry; with one in training a warship and no second; no army off the front's land, none), red
+  without either half; the landing case's "Saudi Arabia alone: none" now reads the landing's want
+  false and the ferry's group. Specs by hand: none (no drawn change).
+- **Pin:** 4f1e7dd8 → e8f654c9.
+- **7.49 at its budget** (20 commits; ADR-554): its AT read on seeds 7401–7410 × 20 years
+  (`landEngaged.ts`, new): engaged per war in years 2–20 at 0.052 of year 1's (0.30 against 5.79; bar
+  0.25): missed. 6421 year 21 from the critic's save: a mean of 1.0 engaged a day (was 0 of 25
+  samples). Case by case in d3.md §3: the strait (411 → 25), the warship's saving (10 / 11 → 0 / 0),
+  Glasgow boards, Britain's home army ferried (117 → 95 in a year on 7019), the Soviet 158 on 5309
+  unreached. 7.49e1 moved to PLAN 7.65. BLOCKERS, the user's (d3 a/b/c; 7.49 a/b).
+- **Next:** PLAN 7.65 (the reserve cut), then 7.63, 7.64, 7.62.

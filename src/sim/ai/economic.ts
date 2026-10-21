@@ -90,6 +90,11 @@
  *    no division fits in it and no ship is refilled, so it held the nation's landings for good
  *    (seed 5683 year 20 Japan, 7247 year 20 Germany, 4513 year 10 Latvia: rich, a shipyard, no
  *    order in 60 days).
+ *    The ferry's want orders one too (PLAN 7.49d3, ADR-614, `wantsFerry`): a nation with a land
+ *    front, a port of its or an ally's on that front's land, and an island army (on a land with a
+ *    port of its own and no front) of more men than its transports' room. Unlike the landing's, it
+ *    stops no other fleet: Britain's island army outnumbers any room it could buy, so the want holds
+ *    for the war's length; one group in training at a time, a warship between.
  * 4. Research (PLAN 3.1b, `systems/research.ts`), set between 2 and 3: the budget of the days
  *    to come is RESEARCH_SHARE of income, at most what the lines can take (`researchCap`), and
  *    nothing for a nation in debt or one that step 1 would have disband (short, and the
@@ -275,14 +280,14 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     /** Per nation: the fleets in training, and the wings (PLAN 5.8s2). */
     const shipsPending = new Map<number, number>();
     const wingsPending = new Map<number, number>();
-    /** The nations with a transport group in training (PLAN 7.26h2). */
-    const transportsPending = new Set<number>();
+    /** The nations with a transport group in training (PLAN 7.26h2), and how many each. */
+    const transportsPending = new Map<number, number>();
     world.production.forEach((id) => {
       const n = world.production.cols.nation[id]!;
       const t = world.production.cols.template[id]!;
       if (world.rules?.templates[t]?.domain === Domain.sea) {
         shipsPending.set(n, (shipsPending.get(n) ?? 0) + 1);
-        if (t === mix.fleets?.transport) transportsPending.add(n);
+        if (t === mix.fleets?.transport) transportsPending.set(n, (transportsPending.get(n) ?? 0) + 1);
         return;
       }
       if (world.rules?.templates[t]?.domain === Domain.air) {
@@ -412,7 +417,13 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // 2c. A transport group for a landing (PLAN 7.26h2, ADR-518), as 2b's group: before research
       // and the army's orders, outside the navy's share; while it wants one, no other fleet.
       const wants = mix.fleets !== undefined && atWar && income >= POOR_INCOME && !transportsPending.has(n) && wantsTransport(world, n, mix.fleets.transport, fleets.get(n) ?? [], tables.templateStrength[mix.infantry] ?? 0);
-      if (wants && shipyard(world, n) >= 0) {
+      // The ferry's want (PLAN 7.49d3, ADR-614) orders as the landing's, but stops no other fleet and
+      // no warship's saving: it holds while the island army outnumbers the room, for the war's length,
+      // and its transports in training do not hold back 3b's warships (else none would come).
+      const ferrying = !wants && mix.fleets !== undefined && atWar && income >= POOR_INCOME && wantsFerry(world, n, fleets.get(n) ?? []);
+      const ferry = ferrying && !transportsPending.has(n);
+      const warshipsPending = (shipsPending.get(n) ?? 0) - (ferrying ? (transportsPending.get(n) ?? 0) : 0);
+      if ((wants || ferry) && shipyard(world, n) >= 0) {
         const t = mix.fleets!.transport;
         const rule = world.rules.templates[t]!;
         const u = upkeepOfTemplate(t);
@@ -441,7 +452,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // Not with an army of a few formations or none (PLAN 7.49c, ADR-590): 6421's Soviet Union, one
       // division and 2,407 gold at war with Germany in year 20, bought nothing while Germany walked in.
       const saves = !atWar || (navalFoe && (own.get(n)?.length ?? 0) > FEW_FORMATIONS);
-      const shipPrice = mix.fleets && !wants && (shipsPending.get(n) ?? 0) === 0 && income >= POOR_INCOME && (armed.get(n) ?? 0) < NAVY_SHARE * income && (navalFoe || !(fleets.get(n) ?? []).some((id) => fleetPower(world, id) > 0)) && shipyard(world, n) >= 0 ? fleetPrice(world, income, mix.fleets) : 0;
+      const shipPrice = mix.fleets && !wants && warshipsPending === 0 && income >= POOR_INCOME && (armed.get(n) ?? 0) < NAVY_SHARE * income && (navalFoe || !(fleets.get(n) ?? []).some((id) => fleetPower(world, id) > 0)) && shipyard(world, n) >= 0 ? fleetPrice(world, income, mix.fleets) : 0;
       // 4. Research.
       nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
       balance -= nc.research[n]! * DAYS_PER_MONTH;
@@ -503,7 +514,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // 3b. A fleet (PLAN 4.6e1), with what the army's orders left: one at a time, while the
       // armed navy is under its share of the income (PLAN 7.46b1, ADR-574: its submarines and
       // transports are not of the battle line it builds).
-      const fleet = mix.fleets && !wants && (shipsPending.get(n) ?? 0) === 0 && (armed.get(n) ?? 0) < NAVY_SHARE * income ? pickFleet(world, n, income, mix.fleets) : -1;
+      const fleet = mix.fleets && !wants && warshipsPending === 0 && (armed.get(n) ?? 0) < NAVY_SHARE * income ? pickFleet(world, n, income, mix.fleets) : -1;
       if (fleet >= 0 && shipyard(world, n) >= 0) {
         const rule = rules.templates[fleet]!;
         const u = upkeepOfTemplate(fleet);
@@ -715,6 +726,56 @@ export function wantsTransport(world: World, n: number, transport: number, own: 
     if (lands.has(comp[Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!)]!)) free = true;
   });
   return free;
+}
+
+/**
+ * Whether nation `n`, at war, wants a transport group for the ferry (PLAN 7.49d3, ADR-614; the
+ * user's, ADR-591 b): it holds a cell on a land front (beside a nation at war with it), a port with
+ * water of its own or of a nation fighting beside it (`sameSide`) stands on a landmass of those
+ * cells (where the ferry lands, `planFerry`), and its standing land formations on the landmasses
+ * with a port of its own and none of those cells (its island army, where the ferry boards) hold more
+ * men than the room of its transports afloat (`own`, every group's, sunk ones' none). Before, only a
+ * landing's want ordered one (`wantsTransport`): a fronted nation with no transports never had any
+ * (90 and 155 island formations of such nations on the critic's year-10 and year-20 saves).
+ */
+export function wantsFerry(world: World, n: number, own: readonly number[]): boolean {
+  const { w, h, controller } = world.cells;
+  const comp = navOf(world).grid.component;
+  const nb: number[] = [];
+  const fronts = new Set<number>();
+  for (const c of frontierOf(world)) {
+    if (controller[c] !== n || fronts.has(comp[c]!)) continue;
+    for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
+      const m = controller[k]!;
+      if (m !== 0 && m !== n && world.wars.atWar(n, m)) {
+        fronts.add(comp[c]!);
+        break;
+      }
+    }
+  }
+  if (fronts.size === 0) return false;
+  const water = portSeaOf(world);
+  const homes = new Set<number>();
+  let landing = false;
+  world.ports.forEach((p, i) => {
+    if (water[i]! < 0) return;
+    const holder = controller[p.cell]!;
+    const land = comp[p.cell]!;
+    if (fronts.has(land)) {
+      if (holder === n || (holder !== 0 && world.wars.sameSide(n, holder))) landing = true;
+    } else if (holder === n) homes.add(land);
+  });
+  if (!landing || homes.size === 0) return false;
+  let room = 0;
+  for (const id of own) room += transportRoom(world, id);
+  const f = world.formations.cols;
+  let men = 0;
+  world.formations.forEach((id) => {
+    if (men > room || f.nation[id] !== n || world.isFleet(id) || world.isWing(id) || world.offLand(id)) return;
+    if (f.moving[id] === 1 || f.engaged[id] === 1 || f.retreat[id] !== 0 || f.home[id] !== 0) return;
+    if (homes.has(comp[Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!)]!)) men += f.strength[id]!;
+  });
+  return men > room;
 }
 
 /** Share of tank elements among the elements of n's enemies' formations. */

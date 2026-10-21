@@ -167,6 +167,36 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-614 · 2026-10-21 · accepted — Transports bought for a home army: the ferry's want orders a group, and stops no warship (PLAN 7.49d3; ADR-591 b, the user's; amends ADR-518)
+
+- **Context** (PLAN 7.49d3, the user's widening of ADR-591 a, 2026-10-21; `docs/evidence/7.49/d3.md`).
+  ADR-518's order buys a transport group only for a landing in a war with no front. A nation with a
+  land front and its army at home beyond it never ordered one: the ferry (ADR-612, 613) had nothing
+  to carry them on (367 island formations of nations with no transport room on day 1 of the
+  critic's 48 saves).
+- **Decision** (`economic.ts`, `wantsFerry`, step 2c): a nation at war, not poor, with no transport
+  group in training, with a cell on a land front, a port of its own or of a nation fighting beside
+  it on that front's land, and standing land formations on the lands with a port of its own and no
+  front cell of its holding more men than the room of all its transports afloat, orders a transport
+  group, paid as the landing's group. The PLAN's wording, with no ceiling.
+- **The choice: it stops nothing else.** The landing's want stops every other fleet and the
+  warship's saving while it holds, and ends when the group is bought. The ferry's holds for the war's
+  length (Britain's island army outnumbers any room it could buy), so it stops no other fleet, no
+  warship's saving, and its transports in training are not a pending ship for 3b: with them counted
+  3b would order no warship again. Not taken: a ceiling of room (N groups), a deviation from the
+  user's wording. Measured on seed 99's first year (`ferryOrders.ts`): transport groups ordered 6 →
+  9, warships 5 → 4, at most one group a nation, none in debt.
+- **Measured** (`docs/evidence/7.49/d3.md`, the 48 saves together, HEAD `c8eae9c7` the before): the
+  island share after 60 days 23.3 % → 23.3 % (bar under 20 %: missed; a group trains 90 days), after
+  180 days 21.5 → 19.6 %, after 365 days 13.9 %; the island formations of nations with no transports
+  after 180 days 397 → 268 (bar under 199: missed); in debt with a group in training, in a year: 0
+  (met). Engaged per war 0.135 → 0.137 (flat). BLOCKERS, the user's.
+- **Pin.** 4f1e7dd8 → e8f654c9 (seed 99's first year: France, Britain and the Netherlands order a group).
+- **Tests.** `navyBudget1938.test.ts`: Britain at war with Saudi Arabia, its transports gone, orders
+  a group for the ferry; with one in training, no second and a warship; with no army off the front's
+  land, none (red without: no group; and no warship with the group counted). The landing case's
+  "Saudi Arabia alone: none" now reads the landing's want false and the ferry's group ordered.
+
 ### ADR-613 · 2026-10-21 · accepted — The ferry to an ally's port: with no port of its own on its front's land, a nation ships its army to an ally's there (PLAN 7.49d2; amends ADR-612)
 
 - **Context** (PLAN 7.49d2, the user's, 2026-10-21; `docs/evidence/7.49/d.md` §3). The ferry
