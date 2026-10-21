@@ -21495,4 +21495,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   airT3, airFx, airDemo, sortiesSeen, patrolsSeen, carrierStrikeRow, seaBattleSeen (8 passed);
   `sortiesDrawn.test.ts`.
 - **Gotcha:** `EVIDENCE=1` on other tasks' specs rewrites their evidence images; restore them.
+- **Seen:** airT3's strike at 20 m/px after the change (bursts ×1.7 with `airFxSize`): each a ring
+  about a block of men wide, the men under them visible; no change needed.
 - **Next:** 7.51b waits on 7.49; PLAN 7.52 (the restraint line names a puppet's overlord).
