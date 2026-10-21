@@ -49,6 +49,8 @@ margin.
 no battle has `closing`, no "Fleets closing" row): 2081 at hour 41, "⚓ Fleets closing: United
 Kingdom and Germany", 2 battles and 2 rows; its fleets 1063 and 1199 23.7 cells apart, from the
 row at 429 m/px with 10 and 16 of their ships on the screen (`a-closing-row-2081.png`).
+Red before, read in the page: the probe on a build of `51b2b62`'s `src`, 2081 at h 42, two
+battles (kinds `none`, `pair`) and one row.
 
 ## 3. Found: a carrier's strike sinks nothing (PLAN 7.57)
 
