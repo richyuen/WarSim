@@ -21137,3 +21137,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `straitFront1938.test.ts` (3 of 4 red with HEAD's `territory.ts`). Pin a1a50bcc →
   191b0cd5. Specs by hand: none (no UI).
 - **Next:** PLAN 7.49b2 (shut in on a crossing).
+
+## 2026-10-21 — PLAN 7.49b2: shut in on a crossing (ADR-589); 7.49b done
+
+- **Rule** (`movement.ts` `repatriationSystem`, `nav/crossings.ts` `exitsOf`): an idle land
+  formation on a crossing whose every exit is a stranger's marches home to its spawn point (8011:
+  90 at Gibraltar between Nationalist Spain and #108). SPEC §4 (repatriation in `movement.ts`).
+- **AT** (7.49b's): land formations of nations at war on no one's cells after 30 days of the 48
+  saves 398 → 116 (b1) → **25**, bar under 41: met. Engaged per war unchanged (0.115 / 0.144).
+  `--profile`: territory 0.161 → 0.180 ms a tick (year 1), mean tick 2.458 → 2.477 ms.
+- **Test:** `straitShutIn1938.test.ts` (red without). Pin unchanged (191b0cd5). Specs by hand: none.
+- **Next:** PLAN 7.49c (the warship's saving with no army left).

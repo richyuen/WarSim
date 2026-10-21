@@ -43,3 +43,18 @@ rebuild, the contest of a cell, the upkeep after a flip) and in the planner's `a
   (3.6 → 4.4): the armies that crossed walk into land with no army of the enemy's.
 - The pin: a1a50bcc → 191b0cd5. Test: `tests/unit/straitFront1938.test.ts` (3 of 4 red with
   HEAD's `territory.ts`).
+
+## b2: shut in on a crossing (ADR-589)
+
+An idle land formation on a crossing whose every exit (land cells 4-adjacent to the body,
+`exitsOf`) is a stranger's (`foreignTo`) marches home to its spawn point (`repatriationSystem`).
+
+- Count after 30 days, with b1: 116 → **25** (7.49b's bar under 41: met). Left: 5683 year 10 13
+  Soviet divisions at the Bosporus (an exit is Soviet: a reserve beside its own land, some of it
+  ordered in the 8 days probed), 12 on the march, 1–3 a save.
+- Engaged land formations, 30 days of each save: unchanged from b1 (per war 0.115 / 0.144).
+- Tick (`npm run sim -- --scenario 1938 --seed 99 --years 2 --profile`, 3592ad0 and b1 + b2 side
+  by side on separate cores): territory 0.161 → 0.180 ms (year 1), 0.108 → 0.129 (year 2); mean
+  tick 2.458 → 2.477, 1.514 → 1.440 ms.
+- The pin unchanged (191b0cd5). Test: `tests/unit/straitShutIn1938.test.ts` (1 of 3 red without
+  the rule: the other two check the exits and the case left alone).

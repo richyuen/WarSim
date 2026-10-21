@@ -37,7 +37,8 @@
  * Repatriation (daily at 00:00; critic B1, 2026-10-03): an idle formation standing on land held
  * by a nation outside its supply bloc that it is neither at war with nor fighting beside
  * (occupied land handed back at a peace, mostly) marches to the nearest cell its own nation controls within REPATRIATE_CELLS, or
- * with none there to its nation's spawn point. Such formations used to
+ * with none there to its nation's spawn point; so does one idle on a crossing whose every exit is
+ * such a nation's (shut in, PLAN 7.49b2, ADR-589), to the spawn point. Such formations used to
  * stay where the peace found them, out of supply, until attrition had killed them: most of an
  * army that had just won a war.
  *
@@ -65,6 +66,7 @@
 import { EventKind, RejectReason } from '../../shared/events';
 import { atan2 } from '../core/dmath';
 import { Mobility, MOVE_COST, stepKm, type JoinRuns, type MobilityId, type NavGrid, type Passage } from '../nav/grid';
+import { exitsOf } from '../nav/crossings';
 import { nearestCellWhere } from '../data/ownership';
 import { dropRuns, findDirectRoute, findRoute, JOIN_PROBE, joinedKept, nodeGroups, type ProvinceGraph } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
@@ -528,6 +530,18 @@ function order(world: World, id: number, x: number, y: number, pass: Passage | u
   return true;
 }
 
+/**
+ * Whether a formation of `nation` on crossing cell `cell` is shut in (PLAN 7.49b2, ADR-589): every
+ * exit of the crossing (`exitsOf`) is held by a nation foreign to it. Its plan reaches no front
+ * (the crossing is a pocket of open ground) and no repatriation took it, the crossing being nobody's.
+ */
+function shutIn(world: World, nation: number, cell: number): boolean {
+  const exits = exitsOf(navOf(world).grid).get(cell);
+  if (!exits || exits.length === 0) return false;
+  for (const k of exits) if (!foreignTo(world, nation, world.cells.controller[k]!)) return false;
+  return true;
+}
+
 export function repatriationSystem(world: World): void {
   if (!isDayStart(world.tick)) return;
   const f = world.formations;
@@ -541,10 +555,13 @@ export function repatriationSystem(world: World): void {
     const nation = c.nation[id]!;
     const cell = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
     const holder = controller[cell]!;
-    if (!foreignTo(world, nation, holder)) return;
+    const shut = holder === 0 && shutIn(world, nation, cell);
+    if (!shut && !foreignTo(world, nation, holder)) return;
     let way = ways.get(nation);
     if (!way) ways.set(nation, (way = homeward(world, nation)));
-    const home = nearestCellWhere((k) => controller[k] === nation && comp[k] === comp[cell], c.x[id]!, c.y[id]!, w, h, world.atSize(REPATRIATE_CELLS), world.settings.loopingMap);
+    // Shut in on a crossing (ADR-589): to the spawn point, not to the nearest of its own cells,
+    // which on a strait is an enclave as shut (8011: German Gibraltar, in Nationalist Spain).
+    const home = shut ? -1 : nearestCellWhere((k) => controller[k] === nation && comp[k] === comp[cell], c.x[id]!, c.y[id]!, w, h, world.atSize(REPATRIATE_CELLS), world.settings.loopingMap);
     if (home >= 0 && order(world, id, (home % w) + 0.5, Math.floor(home / w) + 0.5, way, HOME_MARCH)) return;
     const at = spawnPoint(world, nation);
     if (!at) return;

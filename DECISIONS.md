@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-589 · 2026-10-21 · accepted — Shut in on a crossing: a formation whose crossing's every exit is a stranger's marches home (PLAN 7.49b2)
+
+- **Context.** `docs/evidence/7.49/b.md`. 8011 year 10: 90 German and Italian divisions idle at
+  Gibraltar, Nationalist Spain to the north and #108 to the south, neither in their wars (the
+  diagonal to German Gibraltar cuts a corner of water). The planner's class of the cell is a pocket
+  of one cell that reaches no sector, so no order is asked; repatriation takes a formation idle on a
+  stranger's land only, and a crossing is nobody's.
+- **Decision** (`movement.ts`, `repatriationSystem`, daily): an idle land formation on a crossing
+  whose every exit (the land cells 4-adjacent to the crossing's body, `exitsOf`) is held by a nation
+  foreign to it (`foreignTo`) marches home, as from a stranger's land: to its nation's spawn point,
+  over any ground but its enemies', and is set there where no land leads.
+- **Why the spawn point:** the nearest cell of its own on a strait is an enclave as shut in (German
+  Gibraltar, one cell inside Nationalist Spain), where the planner would leave it as before.
+- **Consequences.** On the 48 saves after 30 days (with ADR-588): 116 → 25 (7.49b's bar under 41).
+  Left: 13 Soviet divisions at the Bosporus on 5683 year 10, a reserve beside their own land (an
+  exit is Soviet; the plans order some of them), and 12 others on the march, 1–3 a save. Engaged
+  land formations unchanged (0.115 / 0.144 per war at years 10 / 20). Tick: territory 0.161 → 0.180
+  ms a tick in year 1 of seed 99 with ADR-588, the mean tick 2.458 → 2.477 ms (side by side).
+- **Pin.** Unchanged (191b0cd5): no crossing shuts a formation in on seed 99's first year.
+
 ### ADR-588 · 2026-10-21 · accepted — The front over a strait: the shores of a crossing are neighbours for the fronts (PLAN 7.49b1)
 
 - **Context.** `docs/evidence/7.49/b.md`. A crossing (a strait's walkable lane, `straits.json`) has

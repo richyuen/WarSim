@@ -61,7 +61,7 @@ when taken up:
       formations at war, engaged 6.7 % → 0.2 %, stranded on a landmass with no front of their
       nation 3 % → 21–28 %, walk-ins 62 % → 95 % of the cells taken; armed wars (5 a side near the
       front) 3–4 a world in year 1, 0.5 late. Four causes, b to e. No rule: the pin unchanged.
-    - [ ] 7.49b Strait crossings (measure §4.1): a land formation standing on a cell no nation
+    - [x] 7.49b Strait crossings (measure §4.1): a land formation standing on a cell no nation
       controls (Gibraltar, Bab-el-Mandeb, the Bosporus, the Øresund, the Palk Strait: no province)
       is never ordered again (8011 year 10: 90 divisions at Gibraltar, no ask in 8 days). Traced
       first: why its plan asks nothing (its class, the reach, the march that stopped). AT: land
@@ -74,7 +74,7 @@ when taken up:
         year 10: 162 at Gibraltar, Italy's shore behind them). The shores of a crossing count as
         neighbours for the fronts. AT: `noOnesCells.ts --days 30` on the 48 saves under 140 (398 on
         HEAD, about 280 of them on the march); a unit test (red without); engaged read; ADR-588; the pin.
-      - [ ] 7.49b2 Shut in on a crossing: a formation on a crossing whose shores are all closed to
+      - [x] 7.49b2 Shut in on a crossing: a formation on a crossing whose shores are all closed to
         it (8011 year 10: 90 at Gibraltar between Nationalist Spain and #108, a pocket of one cell
         that reaches no sector) is never ordered and never sent home. It marches home as from a
         stranger's land. AT: the 48 saves' count after 30 days under 41 (7.49b's bar); a unit test

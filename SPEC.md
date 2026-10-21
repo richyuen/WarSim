@@ -746,7 +746,9 @@ not say `founded`), the made one; a cached flag is made again when what it was m
   - *Deadlock (ADR-47):* a war older than 5 years ends on its score, fight to the death or not.
   - *After peace:* a 2-year truce between the leaders. Idle formations left on land of a nation
     they are not at war with march home (`repatriationSystem`, daily): to the nearest cell of
-    their nation within 80 cells, or to its spawn point. The march home, and no other order,
+    their nation within 80 cells, or to its spawn point. So do idle formations shut in on a
+    crossing, every land cell beside its lane held by such a nation (PLAN 7.49b2, ADR-589): to
+    the spawn point, the nearest own cell on a strait being an enclave as shut in. The march home, and no other order,
     crosses the ground of any nation at peace with its own (`formations.home`, ADR-169); it
     is not fed there, and the operational AI leaves it alone until it arrives.
     A formation is set on the spawn point only where no land leads there.

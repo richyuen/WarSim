@@ -6,7 +6,10 @@
  * has no province and no holder, and without it no front stepped over a strait (an army on the
  * crossing waited before the far shore's cell for a flip that no held cell next to it could make).
  *
- * Derived from the terrain alone, built once a grid (`acrossOf`); never saved.
+ * The exits of a crossing (PLAN 7.49b2, ADR-589): the land cells 4-adjacent to its body, the ways
+ * off it of the planner's 4-connected walk of open ground (`pocketOf`; `exitsOf`).
+ *
+ * Derived from the terrain alone, built once a grid (`acrossOf`, `exitsOf`); never saved.
  */
 import { Terrain } from '../../shared/terrain';
 import type { NavGrid } from './grid';
@@ -14,19 +17,32 @@ import type { NavGrid } from './grid';
 /** By shore cell, the other shore cells of its body (ascending); shores of two bodies have both. */
 export type Across = ReadonlyMap<number, Int32Array>;
 
-const BUILT = new WeakMap<NavGrid, Across>();
+/** By crossing cell, the land cells 4-adjacent to its body (ascending). */
+export type Exits = ReadonlyMap<number, Int32Array>;
+
+const BUILT = new WeakMap<NavGrid, { across: Across; exits: Exits }>();
+
+function built(grid: NavGrid): { across: Across; exits: Exits } {
+  let b = BUILT.get(grid);
+  if (!b) BUILT.set(grid, (b = build(grid)));
+  return b;
+}
 
 /** The shores of `grid`'s crossings (`Across`), built on first use. */
 export function acrossOf(grid: NavGrid): Across {
-  let across = BUILT.get(grid);
-  if (!across) BUILT.set(grid, (across = buildAcross(grid)));
-  return across;
+  return built(grid).across;
 }
 
-function buildAcross(grid: NavGrid): Across {
+/** The exits of `grid`'s crossings (`Exits`), built on first use. */
+export function exitsOf(grid: NavGrid): Exits {
+  return built(grid).exits;
+}
+
+function build(grid: NavGrid): { across: Across; exits: Exits } {
   const { w, h, wrapX, terrain, component } = grid;
   const seen = new Uint8Array(w * h);
   const sets = new Map<number, Set<number>>();
+  const exits = new Map<number, Int32Array>();
   const body: number[] = [];
   const stack: number[] = [];
   /** The cell at (x, y) on the grid, x over the seam where the map wraps; -1 off it. */
@@ -55,16 +71,21 @@ function buildAcross(grid: NavGrid): Across {
       }
     }
     const shores = new Set<number>();
+    const four = new Set<number>();
     for (const c of body) {
       const x = c % w;
       const y = (c - x) / w;
       for (let dy = -1; dy <= 1; dy++) {
         for (let dx = -1; dx <= 1; dx++) {
           const k = at(x + dx, y + dy);
-          if (k >= 0 && component[k] !== 0 && terrain[k] !== Terrain.Crossing) shores.add(k);
+          if (k < 0 || component[k] === 0 || terrain[k] === Terrain.Crossing) continue;
+          shores.add(k);
+          if (dx === 0 || dy === 0) four.add(k);
         }
       }
     }
+    const out = Int32Array.from(four).sort();
+    for (const c of body) exits.set(c, out);
     for (const s of shores) {
       let set = sets.get(s);
       if (!set) sets.set(s, (set = new Set()));
@@ -76,5 +97,5 @@ function buildAcross(grid: NavGrid): Across {
     const others = Int32Array.from(sets.get(s)!).sort();
     if (others.length > 0) across.set(s, others);
   }
-  return across;
+  return { across, exits };
 }
