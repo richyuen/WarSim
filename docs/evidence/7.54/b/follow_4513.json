@@ -1,0 +1,335 @@
+[
+ {
+  "seed": 4513,
+  "src": "critic/c11_seed4513_y10.bin",
+  "nation": "GER",
+  "found": true,
+  "day": 3651,
+  "port": "Kotor",
+  "portCell": 697450,
+  "portHolderNeighbours": [
+   "GER",
+   "#0"
+  ],
+  "target": "Beihai",
+  "targetHolder": "CHI",
+  "room": 24000,
+  "candidates": 8,
+  "reachable": 0,
+  "firstOk": -1,
+  "noWayAtAll": 0,
+  "blockers": [
+   "FRA",
+   "SOV",
+   "CZS",
+   "HUN",
+   "ROM",
+   "YUG",
+   "LAT"
+  ],
+  "wars": [
+   [
+    [
+     "CHI",
+     "NEP",
+     "TIB",
+     "CCP"
+    ],
+    [
+     "JAP",
+     "GER",
+     "NSP",
+     "ITA"
+    ]
+   ]
+  ],
+  "head": [
+   {
+    "id": 1433,
+    "dist": 100,
+    "men": 11320,
+    "at": 625705,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.046,
+    "grouped": true,
+    "freeWay": 86,
+    "blockers": {
+     "FRA": 6,
+     "SOV": 60,
+     "CZS": 5,
+     "HUN": 3,
+     "ROM": 3,
+     "YUG": 5
+    }
+   },
+   {
+    "id": 321,
+    "dist": 113,
+    "men": 12460,
+    "at": 621598,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.006,
+    "grouped": true,
+    "freeWay": 97,
+    "blockers": {
+     "LAT": 2,
+     "SOV": 65,
+     "FRA": 8,
+     "CZS": 5,
+     "HUN": 3,
+     "ROM": 3,
+     "YUG": 5
+    }
+   },
+   {
+    "id": 984,
+    "dist": 113,
+    "men": 12460,
+    "at": 621598,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.003,
+    "grouped": true,
+    "freeWay": 97,
+    "blockers": {
+     "LAT": 2,
+     "SOV": 65,
+     "FRA": 8,
+     "CZS": 5,
+     "HUN": 3,
+     "ROM": 3,
+     "YUG": 5
+    }
+   },
+   {
+    "id": 69,
+    "dist": 139,
+    "men": 12460,
+    "at": 603149,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.007,
+    "grouped": true,
+    "freeWay": 114,
+    "blockers": {
+     "LAT": 36,
+     "SOV": 49,
+     "CZS": 5,
+     "HUN": 3,
+     "ROM": 3,
+     "YUG": 5
+    }
+   },
+   {
+    "id": 212,
+    "dist": 139,
+    "men": 12460,
+    "at": 603149,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.004,
+    "grouped": true,
+    "freeWay": 114,
+    "blockers": {
+     "LAT": 36,
+     "SOV": 49,
+     "CZS": 5,
+     "HUN": 3,
+     "ROM": 3,
+     "YUG": 5
+    }
+   },
+   {
+    "id": 96,
+    "dist": 175,
+    "men": 12460,
+    "at": 609254,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.002,
+    "grouped": true,
+    "freeWay": 152,
+    "blockers": {
+     "LAT": 25,
+     "SOV": 60,
+     "YUG": 7,
+     "HUN": 4
+    }
+   },
+   {
+    "id": 333,
+    "dist": 175,
+    "men": 12460,
+    "at": 609254,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.001,
+    "grouped": true,
+    "freeWay": 152,
+    "blockers": {
+     "LAT": 25,
+     "SOV": 60,
+     "YUG": 7,
+     "HUN": 4
+    }
+   },
+   {
+    "id": 1286,
+    "dist": 175,
+    "men": 12460,
+    "at": 609254,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.002,
+    "grouped": true,
+    "freeWay": 152,
+    "blockers": {
+     "LAT": 25,
+     "SOV": 60,
+     "YUG": 7,
+     "HUN": 4
+    }
+   }
+  ],
+  "otherPorts": [
+   {
+    "port": "Vigo",
+    "cell": 699342,
+    "reached": 5,
+    "men": 62300,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Le Havre",
+    "cell": 594945,
+    "reached": 5,
+    "men": 62300,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Brest",
+    "cell": 609254,
+    "reached": 5,
+    "men": 62300,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Cherbourg",
+    "cell": 592886,
+    "reached": 5,
+    "men": 62300,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Ferrol",
+    "cell": 682961,
+    "reached": 5,
+    "men": 62300,
+    "transportsRoom": 0
+   }
+  ],
+  "follow": [
+   {
+    "day": 5,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1009@1130,341(Podgorica)"
+    ]
+   },
+   {
+    "day": 10,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1009@1130,341(Podgorica)"
+    ]
+   },
+   {
+    "day": 15,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1009@1130,341(Podgorica)"
+    ]
+   },
+   {
+    "day": 20,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1009@1130,341(Podgorica)"
+    ]
+   },
+   {
+    "day": 25,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1009@1130,341(Podgorica)"
+    ]
+   },
+   {
+    "day": 30,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1009@1130,341(Podgorica)"
+    ]
+   },
+   {
+    "day": 35,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1009@1130,341(Podgorica)"
+    ]
+   },
+   {
+    "day": 40,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1009@1130,341(Podgorica)"
+    ]
+   },
+   {
+    "day": 45,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1009@1130,341(Podgorica)"
+    ]
+   },
+   {
+    "day": 50,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1009@1130,341(Podgorica)"
+    ]
+   },
+   {
+    "day": 55,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1009@1130,341(Podgorica)"
+    ]
+   }
+  ]
+ }
+]

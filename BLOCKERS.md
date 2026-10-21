@@ -5,6 +5,19 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.54: the send and the transports' port fixed, the AT's count 9 → 7; the rules are in (2026-10-21, ADR-594, ADR-595; the user's decision)
+- **The bar:** on the 48 saves, the four cases of 7.49f §3 (4513, 7247, 8693 year 10 Germany; 1129
+  year 20 Britain) board a formation within 60 days; the nations on `send` 30+ of 60 days with none
+  boarded (`islandArmies.ts`) 9 → 5 or fewer; no invasion AI call over 50 ms.
+- **What moved** (`docs/evidence/7.54/a.md`, `b.md`): 9 → 7; the cases 2 of 4 board (4513, 7247; the
+  transports had stood in a German exclave). Longest call 34.5 ms on 1129 alone (36.6 before).
+- **What is left:** 8693 and 1129: the transports reach a port by the army in 10 and 30 days, but the
+  army's marches there cross desert (65–240 days): PLAN 7.56. The count's others are 7.55's (two),
+  7.49f's untraced two and 8167 Lithuania. The user's: (a, recommended) 7.54 ticked on its rules'
+  own cases (the refusals and the exclave: 4 nations held so → 0), the rest filed as 7.55 and 7.56;
+  (b) 7.54 closed not done, the rules kept; (c) 7.54 kept open until 7.56 lands and the count is
+  read again. Meanwhile the loop takes 7.55.
+
 ### PLAN 7.49f: the rule's own case fixed, the AT's count 10 → 9; the rule is in (2026-10-21, ADR-593; the user's decision)
 - **The bar:** on the 48 saves, the nations on `send` 30 days or more of 60 with none boarded
   (`islandArmies.ts`) 10 → 0.

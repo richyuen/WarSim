@@ -2050,7 +2050,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   Its free formations at that port (within 3 cells of its land cell or of its water, as an
   order over the sea takes them: PLAN 7.49f, ADR-593) go aboard there; with none there, the nearest on the port's
   land are sent to it to fill the room (one whose march there is refused is passed over, the send
-  ending at the third refused march that was a search: PLAN 7.54a, ADR-594). A nation with a front in another war uses only
+  ending at the third refused march that was a search: PLAN 7.54a, ADR-594); with the nearest
+  unable to march there (the transports in an exclave), the transports sail instead for a port
+  of the nation that one of its four nearest can march to, and nobody is sent that day (PLAN
+  7.54b, ADR-595). A nation with a front in another war uses only
   formations beyond the deploy range of its own front on their land. A landing takes a cell a nation owns where the target is owned.
   *Fleets at sea (PLAN 4.6c, ADR-270; `src/sim/ai/naval.ts`):* daily, staggered weekly by id. At
   war, each warfleet (power: its armed ships' hit points, submarines left out) standing at a

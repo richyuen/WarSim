@@ -154,6 +154,18 @@ when taken up:
     - [ ] 7.54b The transports go to the army: when the nearest free formation's march to the
       transports' port is refused, the group sails to the nation's port on that land that the
       formation reaches, nearest it, with a way by sea; no formation is sent that day. AT: 7.54's.
+      Rule in (ADR-595, `docs/evidence/7.54/b.md`; of the 4 nearest formations, the 4 ports nearest
+      each): 7.54's count 9 → 7, bar 5: missed; the four cases 2 of 4 board (4513, 7247); 8693 and
+      1129 have their transports by the army, its marches over desert (PLAN 7.56); longest call
+      34.5 ms. BLOCKERS, the user's (a tick, b close, c keep open).
+- [ ] 7.56 The landing's army marches over desert to its port (found at 7.54b, emergent 6,
+  `docs/evidence/7.54/b.md` §2): sent to the port the transports reached, the formations of 8693
+  year 10 Germany (to Antalya) and 1129 year 20 Britain (to Adana, before to Warri) cross desert at
+  about 1.2 cells a day (DRY_SPEED): 65 to 240 days, so none boards in 60. Measured first: per case,
+  the march days from the nearest free formations to each port of the nation on that land, and
+  whether a port nearer by march time had a way by sea for the transports. AT: on the 48 saves, the
+  two cases board a formation within 60 days of their save; a unit test (red without); the ADR; the
+  pin's entry.
 - [ ] 7.55 A transport group with room under a division's (found at 7.49f, emergent 6,
   `docs/evidence/7.49/f.md` §3; 7.49d's note on 4513 Latvia): the invasion AI plans with the group
   of most room at a port, and `sendToPort` and `orderLanding` take no formation over its room, so a

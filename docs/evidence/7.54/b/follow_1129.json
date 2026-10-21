@@ -1,0 +1,527 @@
+[
+ {
+  "seed": 1129,
+  "src": "critic/c11_seed1129_y20.bin",
+  "nation": "ENG",
+  "found": true,
+  "day": 7301,
+  "port": "Warri",
+  "portCell": 1158176,
+  "portHolderNeighbours": [
+   "ENG"
+  ],
+  "target": "Athens",
+  "targetHolder": "SWE",
+  "room": 24000,
+  "candidates": 7,
+  "reachable": 1,
+  "firstOk": 3,
+  "noWayAtAll": 0,
+  "blockers": [
+   "TUR",
+   "IRN"
+  ],
+  "wars": [
+   [
+    [
+     "ENG",
+     "ITA",
+     "IRE",
+     "POR",
+     "SUD",
+     "RAJ",
+     "CEY",
+     "MAL",
+     "FRA",
+     "BCO",
+     "LIB",
+     "NED",
+     "DEN",
+     "GER",
+     "OMN",
+     "YEM",
+     "BEL"
+    ],
+    [
+     "CHI",
+     "CCP",
+     "BUR",
+     "SOV",
+     "ROM",
+     "NOR",
+     "SWE",
+     "IRQ",
+     "AFG",
+     "SIN",
+     "MON",
+     "TAN",
+     "#117",
+     "#118"
+    ]
+   ]
+  ],
+  "head": [
+   {
+    "id": 335,
+    "dist": 378,
+    "men": 12460,
+    "at": 781538,
+    "holder": "ENG",
+    "ok": false,
+    "ms": 1.936,
+    "grouped": false,
+    "freeWay": 199,
+    "blockers": {
+     "TUR": 26
+    }
+   },
+   {
+    "id": 445,
+    "dist": 378,
+    "men": 12460,
+    "at": 781538,
+    "holder": "ENG",
+    "ok": false,
+    "ms": 0.005,
+    "grouped": false,
+    "freeWay": 199,
+    "blockers": {
+     "TUR": 26
+    }
+   },
+   {
+    "id": 1077,
+    "dist": 378,
+    "men": 8504,
+    "at": 781538,
+    "holder": "ENG",
+    "ok": false,
+    "ms": 0.002,
+    "grouped": false,
+    "freeWay": 199,
+    "blockers": {
+     "TUR": 26
+    }
+   },
+   {
+    "id": 920,
+    "dist": 380,
+    "men": 10967,
+    "at": 871696,
+    "holder": "ENG",
+    "ok": true,
+    "ms": 2.627,
+    "grouped": false,
+    "freeWay": null,
+    "blockers": {}
+   },
+   {
+    "id": 1253,
+    "dist": 568,
+    "men": 7669,
+    "at": 597318,
+    "holder": "GER",
+    "ok": false,
+    "ms": 5.059,
+    "grouped": false,
+    "freeWay": 324,
+    "blockers": {
+     "TUR": 50,
+     "IRN": 5
+    }
+   },
+   {
+    "id": 695,
+    "dist": 639,
+    "men": 4178,
+    "at": 349460,
+    "holder": "GER",
+    "ok": false,
+    "ms": 9.006,
+    "grouped": false,
+    "freeWay": 413,
+    "blockers": {
+     "TUR": 49,
+     "IRN": 4
+    }
+   },
+   {
+    "id": 1268,
+    "dist": 919,
+    "men": 9225,
+    "at": 159183,
+    "holder": "GER",
+    "ok": false,
+    "ms": 12.275,
+    "grouped": false,
+    "freeWay": 531,
+    "blockers": {
+     "TUR": 49,
+     "IRN": 4
+    }
+   }
+  ],
+  "otherPorts": [
+   {
+    "port": "Luanda",
+    "cell": 1326155,
+    "reached": 1,
+    "men": 10967,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Lagos",
+    "cell": 1147922,
+    "reached": 1,
+    "men": 10967,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Accra",
+    "cell": 1158142,
+    "reached": 1,
+    "men": 10967,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Monrovia",
+    "cell": 1147842,
+    "reached": 1,
+    "men": 10967,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Beirut",
+    "cell": 812234,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Istanbul",
+    "cell": 715941,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Dubai",
+    "cell": 924986,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Tel Aviv",
+    "cell": 836806,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Dar es Salaam",
+    "cell": 1303775,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Kuwait City",
+    "cell": 871696,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Lomé",
+    "cell": 1152006,
+    "reached": 1,
+    "men": 10967,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Kampala",
+    "cell": 1219769,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Mogadishu",
+    "cell": 1199361,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Aden",
+    "cell": 1072383,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Mombasa",
+    "cell": 1271009,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Freetown",
+    "cell": 1123253,
+    "reached": 1,
+    "men": 10967,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Abu Dhabi",
+    "cell": 935221,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "İzmir",
+    "cell": 752794,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Bursa",
+    "cell": 728229,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Doha",
+    "cell": 922916,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Adana",
+    "cell": 771272,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Bur Said",
+    "cell": 849079,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Samsun",
+    "cell": 713934,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Gaza City",
+    "cell": 842948,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Mwanza",
+    "cell": 1252539,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Usumbura",
+    "cell": 1262759,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Berbera",
+    "cell": 1101056,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Kalemie",
+    "cell": 1291430,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Benguela",
+    "cell": 1371212,
+    "reached": 4,
+    "men": 44391,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Mzuzu",
+    "cell": 1356993,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Bathurst",
+    "cell": 1065889,
+    "reached": 1,
+    "men": 10967,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Ṭarābulus",
+    "cell": 806092,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Haifa",
+    "cell": 826567,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Málaga",
+    "cell": 775142,
+    "reached": 0,
+    "men": 0,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Gibraltar",
+    "cell": 783329,
+    "reached": 0,
+    "men": 0,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Gölcük",
+    "cell": 722089,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Basra",
+    "cell": 857359,
+    "reached": 7,
+    "men": 65463,
+    "transportsRoom": 0
+   }
+  ],
+  "follow": [
+   {
+    "day": 5,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "504@975,573>"
+    ]
+   },
+   {
+    "day": 10,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "504@907,506>"
+    ]
+   },
+   {
+    "day": 15,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "504@937,414>"
+    ]
+   },
+   {
+    "day": 20,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "504@1042,373>"
+    ]
+   },
+   {
+    "day": 25,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "504@1151,389>"
+    ]
+   },
+   {
+    "day": 30,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "504@1222,378(Adana)"
+    ]
+   },
+   {
+    "day": 35,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "504@1222,378(Adana)"
+    ]
+   },
+   {
+    "day": 40,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "504@1222,378(Adana)"
+    ]
+   },
+   {
+    "day": 45,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "504@1222,378(Adana)"
+    ]
+   },
+   {
+    "day": 50,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "504@1222,378(Adana)"
+    ]
+   },
+   {
+    "day": 55,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "504@1222,378(Adana)"
+    ]
+   }
+  ]
+ }
+]

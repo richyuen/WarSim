@@ -25,18 +25,22 @@
  * - with none there, its free land formations on the port's land, nearest the port first, are
  *   sent to it (`orderMove`) until their men fill the room (`sendToPort`: one refused on the port's
  *   land is passed over, PLAN 7.54; the send ends at one on another land, PLAN 7.7, or at the
- *   SEND_SEARCHES-th refusal that was a search of the map); they go aboard on a later day.
+ *   SEND_SEARCHES-th refusal that was a search of the map); they go aboard on a later day;
+ * - with the nearest of them unable to march there (the transports in an exclave, neutral ground
+ *   between), the transports sail instead for a port of the nation that it, or one of the next
+ *   nearest, can march to (`sailToArmy`, PLAN 7.54b), and nobody is sent that day.
  *
  * Not here: an escort or a fleet sent to hold the landing's sea (PLAN 4.6c), a landing in a war
  * in which the nation has a front.
  */
 import { isDayStart } from '../../shared/calendar';
-import { neighbours4 } from '../nav/grid';
+import { neighbours4, type MobilityId, type Passage } from '../nav/grid';
 import { frontierOf } from '../systems/territory';
 import { orderLanding, transportRoom } from '../systems/amphibious';
-import { mayReach } from '../nav/provinceGraph';
+import { findRoute, mayReach } from '../nav/provinceGraph';
 import { orderMove, passageOf, snapTarget } from '../systems/movement';
 import { AT_PORT_CELLS, seaKm } from '../systems/navalCombat';
+import { orderSail } from '../systems/sail';
 import { seaHolder } from '../systems/seaControl';
 import { navOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
 import { DEPLOY_RANGE_CELLS } from './operational';
@@ -175,8 +179,63 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
     by.push([dx + Math.abs(Math.floor(k / w) - Math.floor(home / w)), id]);
   });
   by.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  if (by.length === 0) return;
   const [px, py] = world.cellPoint(home);
-  sendToPort(world, by.map(([, id]) => id), px, py, room);
+  // The transports go to the army (PLAN 7.54b): the nearest's march to their port refused.
+  const pass = passageOf(world, n);
+  if (!marches(world, by[0]![1], home, pass)) {
+    sailToArmy(world, fleet, port, by.slice(0, SAIL_TRIES).map(([, id]) => id), pass);
+    return;
+  }
+  sendToPort(world, by.map(([, id]) => id), px, py, room, pass);
+}
+
+/** How many formations, and of the ports nearest each, a sail to the army tries (PLAN 7.54b). */
+export const SAIL_TRIES = 4;
+
+/** Whether land formation `id` may march to `cell` under `pass` (as `orderMove` routes it; a route asked again is the passage's). */
+function marches(world: World, id: number, cell: number, pass: Passage): boolean {
+  const c = world.formations.cols;
+  const w = world.cells.w;
+  const nav = navOf(world);
+  const at = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+  const goal = snapTarget(world, at, cell % w, Math.floor(cell / w));
+  const rule = world.rules?.templates[c.template[id]!];
+  return goal >= 0 && rule !== undefined && findRoute(nav.grid, nav.graph, rule.mobility as MobilityId, at, goal, pass) !== null;
+}
+
+/**
+ * Transport group `fleet`, at port `from`, sails for a port of its nation on the land of the
+ * formations `ids` (the nearest first): for each in turn, of the SAIL_TRIES ports nearest it (cells,
+ * the lower index on a tie), the first it may march to with a way by sea (PLAN 7.54b, ADR-595).
+ * After a landing the transports sail for their nation's nearest port (`sailHome`), which may be an
+ * exclave (seed 4513 year 10: Germany's at Kotor, 7247 and 8693: Annaba, neutral ground all round):
+ * its army could not walk there, and nobody was sent, every week. Whether it sailed.
+ */
+function sailToArmy(world: World, fleet: number, from: number, ids: readonly number[], pass: Passage): boolean {
+  const c = world.formations.cols;
+  const w = world.cells.w;
+  const ctl = world.cells.controller;
+  const water = portSeaOf(world);
+  const comp = navOf(world).grid.component;
+  for (const id of ids) {
+    const n = c.nation[id]!;
+    const at = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+    const ports: [number, number][] = [];
+    world.ports.forEach((p, k) => {
+      if (k === from || water[k]! < 0 || ctl[p.cell] !== n || comp[p.cell] !== comp[at]) return;
+      let dx = Math.abs((p.cell % w) - (at % w));
+      if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+      ports.push([dx + Math.abs(Math.floor(p.cell / w) - Math.floor(at / w)), k]);
+    });
+    ports.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    for (const [, k] of ports.slice(0, SAIL_TRIES)) {
+      if (!marches(world, id, world.ports[k]!.cell, pass)) continue;
+      const sea = water[k]!;
+      if (orderSail(world, fleet, (sea % w) + 0.5, Math.floor(sea / w) + 0.5)) return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -188,7 +247,7 @@ export const SEND_SEARCHES = 3;
 
 /**
  * Orders formations `ids`, the nearest first, of one nation, to (px, py), a port's point, until
- * their men fill `room`. The men ordered.
+ * their men fill `room` (`passage`: the nation's, if the caller has it). The men ordered.
  *
  * - One whose land is not the port's ends it (PLAN 7.7, critic R7-B2): no way by land reaches the
  *   port from there. Seed 3371's Italy tried its 109 formations each week from year 27, each a
@@ -201,13 +260,13 @@ export const SEND_SEARCHES = 3;
  *   SEND_SEARCHES-th refusal that was a search (not judged at once by `mayReach`: the start's
  *   ground and the port's in two groups of the passage, a refusal of microseconds).
  */
-export function sendToPort(world: World, ids: readonly number[], px: number, py: number, room: number): number {
+export function sendToPort(world: World, ids: readonly number[], px: number, py: number, room: number, passage?: Passage): number {
   const c = world.formations.cols;
   const nav = navOf(world);
   const w = world.cells.w;
   const tx = Math.floor(px);
   const ty = Math.floor(py);
-  const pass = ids.length > 0 ? passageOf(world, c.nation[ids[0]!]!) : undefined;
+  const pass = passage ?? (ids.length > 0 ? passageOf(world, c.nation[ids[0]!]!) : undefined);
   const refusedAt = new Set<number>();
   let searched = 0;
   let men = 0;

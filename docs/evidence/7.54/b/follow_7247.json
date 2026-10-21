@@ -1,0 +1,725 @@
+[
+ {
+  "seed": 7247,
+  "src": "critic/c11_seed7247_y10.bin",
+  "nation": "GER",
+  "found": true,
+  "day": 3651,
+  "port": "Annaba",
+  "portCell": 773164,
+  "portHolderNeighbours": [
+   "#0",
+   "GER"
+  ],
+  "target": "Bandar-e-Abbas",
+  "targetHolder": "IRN",
+  "room": 24000,
+  "candidates": 145,
+  "reachable": 0,
+  "firstOk": -1,
+  "noWayAtAll": 0,
+  "blockers": [
+   "NSP",
+   "FMO",
+   "FRA",
+   "DEN",
+   "SOV",
+   "RAJ",
+   "IRQ",
+   "TRJ",
+   "SYR",
+   "PAL",
+   "TUN",
+   "TUR",
+   "#105"
+  ],
+  "wars": [
+   [
+    [
+     "JAP",
+     "GER",
+     "ROM",
+     "YUG",
+     "ITA",
+     "ALB",
+     "POL"
+    ],
+    [
+     "CHI",
+     "TIB",
+     "CCP",
+     "NEP",
+     "EST",
+     "FIN",
+     "NOR",
+     "SWE",
+     "IRN",
+     "AFG",
+     "SIN",
+     "MON",
+     "TAN"
+    ]
+   ],
+   [
+    [
+     "EGY"
+    ],
+    [
+     "ITA",
+     "ALB",
+     "GER",
+     "ROM",
+     "YUG",
+     "JAP",
+     "MAN",
+     "POL"
+    ]
+   ]
+  ],
+  "head": [
+   {
+    "id": 53,
+    "dist": 59,
+    "men": 12460,
+    "at": 756729,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.053,
+    "grouped": true,
+    "freeWay": 112,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   },
+   {
+    "id": 744,
+    "dist": 60,
+    "men": 12460,
+    "at": 762869,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.007,
+    "grouped": true,
+    "freeWay": 108,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   },
+   {
+    "id": 192,
+    "dist": 61,
+    "men": 12460,
+    "at": 748539,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.004,
+    "grouped": true,
+    "freeWay": 116,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   },
+   {
+    "id": 8,
+    "dist": 62,
+    "men": 12460,
+    "at": 764914,
+    "holder": "REP",
+    "ok": false,
+    "ms": 0.003,
+    "grouped": true,
+    "freeWay": 105,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   },
+   {
+    "id": 1000,
+    "dist": 62,
+    "men": 12460,
+    "at": 773102,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.004,
+    "grouped": true,
+    "freeWay": 101,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   },
+   {
+    "id": 364,
+    "dist": 66,
+    "men": 12460,
+    "at": 758769,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.002,
+    "grouped": true,
+    "freeWay": 106,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   },
+   {
+    "id": 34,
+    "dist": 67,
+    "men": 12460,
+    "at": 732157,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.002,
+    "grouped": true,
+    "freeWay": 118,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   },
+   {
+    "id": 155,
+    "dist": 67,
+    "men": 12460,
+    "at": 764909,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.004,
+    "grouped": true,
+    "freeWay": 100,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   },
+   {
+    "id": 340,
+    "dist": 68,
+    "men": 12460,
+    "at": 730109,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.002,
+    "grouped": true,
+    "freeWay": 118,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   },
+   {
+    "id": 713,
+    "dist": 68,
+    "men": 12460,
+    "at": 736250,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.001,
+    "grouped": true,
+    "freeWay": 115,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   },
+   {
+    "id": 153,
+    "dist": 70,
+    "men": 12460,
+    "at": 738295,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.001,
+    "grouped": true,
+    "freeWay": 112,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   },
+   {
+    "id": 761,
+    "dist": 70,
+    "men": 12460,
+    "at": 758765,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.001,
+    "grouped": true,
+    "freeWay": 102,
+    "blockers": {
+     "NSP": 6,
+     "FMO": 23,
+     "FRA": 31
+    }
+   }
+  ],
+  "otherPorts": [
+   {
+    "port": "Tallinn",
+    "cell": 435340,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Helsinki",
+    "cell": 421005,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Oslo",
+    "cell": 425021,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Stockholm",
+    "cell": 435302,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Leningrad",
+    "cell": 425132,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Archangel",
+    "cell": 341222,
+    "reached": 27,
+    "men": 336420,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Bergen",
+    "cell": 416798,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Trondheim",
+    "cell": 363579,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Tromsø",
+    "cell": 242796,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "The Hague",
+    "cell": 554008,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Bilbao",
+    "cell": 685039,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Königsberg",
+    "cell": 513140,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Vigo",
+    "cell": 699342,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Le Havre",
+    "cell": 594945,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Atyrau",
+    "cell": 630055,
+    "reached": 145,
+    "men": 1799740,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Sundsvall",
+    "cell": 382050,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Kristiansand",
+    "cell": 455725,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Vaasa",
+    "cell": 369786,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Luleå",
+    "cell": 322686,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Hammerfest",
+    "cell": 220295,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Antwerp",
+    "cell": 568345,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Göteborg",
+    "cell": 461892,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Málaga",
+    "cell": 775142,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Wilhelmshaven",
+    "cell": 531501,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Kiel",
+    "cell": 519225,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Brest",
+    "cell": 609254,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Cherbourg",
+    "cell": 592886,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Kronstadt",
+    "cell": 427177,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Murmansk",
+    "cell": 255164,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Den Helder",
+    "cell": 541723,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Karlskrona",
+    "cell": 488536,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Horten",
+    "cell": 435259,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Liepāja",
+    "cell": 484472,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Ferrol",
+    "cell": 682961,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Cartagena",
+    "cell": 762874,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Lisbon",
+    "cell": 748492,
+    "reached": 0,
+    "men": 0,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Hamburg",
+    "cell": 531512,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Bremen",
+    "cell": 539698,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Memel",
+    "cell": 496760,
+    "reached": 122,
+    "men": 1513160,
+    "transportsRoom": 0
+   }
+  ],
+  "follow": [
+   {
+    "day": 5,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0
+   },
+   {
+    "day": 10,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 11,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 12,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 13,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 14,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 15,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 16,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 17,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 18,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 19,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 20,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 21,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 22,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 23,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 24,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 25,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 26,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 27,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 28,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 29,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 30,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 31,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 32,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 1
+   },
+   {
+    "day": 35,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0
+   },
+   {
+    "day": 40,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0
+   },
+   {
+    "day": 45,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0
+   },
+   {
+    "day": 50,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0
+   },
+   {
+    "day": 55,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0
+   }
+  ]
+ }
+]

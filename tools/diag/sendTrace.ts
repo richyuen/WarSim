@@ -202,10 +202,10 @@ for (const { seed, src, n } of cases) {
       otherPorts: others,
     };
     // The follow (FOLLOW=1): the rest of the days as the sim runs them; each day, the candidates
-    // under way whose path ends within AT_PORT_CELLS of the port, the nearest of them (cells), and
-    // the nation's formations aboard.
+    // under way whose path ends within AT_PORT_CELLS of the port, the nearest of them (cells), the
+    // nation's formations aboard, and its transport groups (id@cell, `>` under way, the port by).
     if (process.env.FOLLOW === '1') {
-      const follow: { day: number; toPort: number; nearest: number; aboard: number }[] = [];
+      const follow: { day: number; toPort: number; nearest: number; aboard: number; groups: string[] }[] = [];
       const ids = by.map(([, id]) => id);
       for (let e = d + 1; e < days; e++) {
         s.step(24, quiet);
@@ -221,7 +221,14 @@ for (const { seed, src, n } of cases) {
         }
         let aboardN = 0;
         for (const id of w.embarked.keys()) if (c.nation[id] === n) aboardN++;
-        if (e % 5 === 0 || aboardN > 0) follow.push({ day: e, toPort, nearest: Number.isFinite(nearest) ? nearest : -1, aboard: aboardN });
+        const groups: string[] = [];
+        w.formations.forEach((g) => {
+          if (!w.isFleet(g) || c.nation[g] !== n || transportRoom(w, g) <= 0) return;
+          const k = cellOf(g);
+          const pi = w.ports.findIndex((_p, q) => water[q]! >= 0 && near(w, k, water[q]!, w.atSize(AT_PORT_CELLS)));
+          groups.push(`${g}@${k % cw},${Math.floor(k / cw)}${c.moving[g] === 1 ? '>' : ''}${pi >= 0 ? `(${w.ports[pi]!.name})` : ''}`);
+        });
+        if (e % 5 === 0 || aboardN > 0) follow.push({ day: e, toPort, nearest: Number.isFinite(nearest) ? nearest : -1, aboard: aboardN, groups });
       }
       (row as { follow?: unknown }).follow = follow;
     }

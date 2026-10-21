@@ -21230,3 +21230,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `sendPastRefusal1938.test.ts` (red without). Pin unchanged (69e93c3b). Specs by hand:
   none (no UI).
 - **Next:** PLAN 7.54b.
+
+## 2026-10-21 — PLAN 7.54b: the transports go to the army (ADR-595); 7.54's AT missed, the user's
+
+- **Rule** (`ai/invasion.ts` `sailToArmy`): when the nearest free formation cannot march to the
+  transports' port, the group sails for a port of its nation on that land that one of the 4 nearest
+  formations can march to (of the 4 ports nearest each), with a way by sea; nobody is sent that day.
+  The first version tried the nearest formation alone, which in 4513 is cut off from every port.
+- **AT** (`docs/evidence/7.54/b.md`, 60 days of the 48 saves): on `send` 30+ days with none boarded
+  9 → **7**, bar 5: missed. The four cases: 2 of 4 board (4513, 7247 year 10). 8693 and 1129 have
+  their transports by the army in 10 / 30 days, but its marches cross desert at ~1.2 cells a day
+  (65–240 days): PLAN 7.56, new. Longest invasion call on 1129, a year alone, 36.6 → 34.5 ms (guard
+  50). BLOCKERS entry, the user's (a tick, b close, c keep open). Island share flat.
+- **Test:** `transportsToArmy1938.test.ts` (red without; the AI off and the invasion AI run by hand:
+  Germany's 1938 army is on the march under the other AIs). Pin 69e93c3b → d188faed. Specs by hand:
+  none (no UI).
+- **Next:** PLAN 7.55 (the transports' room under a division's).

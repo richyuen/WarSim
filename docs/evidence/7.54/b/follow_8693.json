@@ -1,0 +1,518 @@
+[
+ {
+  "seed": 8693,
+  "src": "critic/c11_seed8693_y10.bin",
+  "nation": "GER",
+  "found": true,
+  "day": 3651,
+  "port": "Annaba",
+  "portCell": 773164,
+  "portHolderNeighbours": [
+   "#0",
+   "GER"
+  ],
+  "target": "Lomé",
+  "targetHolder": "NSP",
+  "room": 24000,
+  "candidates": 29,
+  "reachable": 0,
+  "firstOk": -1,
+  "noWayAtAll": 0,
+  "blockers": [
+   "#114",
+   "LEB",
+   "TRJ",
+   "EGY",
+   "USA",
+   "#106"
+  ],
+  "wars": [
+   [
+    [
+     "JAP",
+     "CHI",
+     "GER",
+     "LIT",
+     "HUN",
+     "IRE",
+     "YUG",
+     "ALB",
+     "BCO",
+     "POL",
+     "PAL",
+     "SAU",
+     "MEN"
+    ],
+    [
+     "POR",
+     "LIB",
+     "NSP"
+    ]
+   ],
+   [
+    [
+     "ITA",
+     "YUG",
+     "ALB",
+     "BCO",
+     "GER",
+     "LIT",
+     "HUN",
+     "IRE",
+     "JAP",
+     "CHI",
+     "MEN"
+    ],
+    [
+     "#115"
+    ]
+   ]
+  ],
+  "head": [
+   {
+    "id": 11,
+    "dist": 138,
+    "men": 2731,
+    "at": 775349,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.046,
+    "grouped": true,
+    "freeWay": 221,
+    "blockers": {
+     "#114": 1,
+     "LEB": 8,
+     "TRJ": 1,
+     "EGY": 10,
+     "USA": 8
+    }
+   },
+   {
+    "id": 19,
+    "dist": 138,
+    "men": 2467,
+    "at": 775349,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.005,
+    "grouped": true,
+    "freeWay": 221,
+    "blockers": {
+     "#114": 1,
+     "LEB": 8,
+     "TRJ": 1,
+     "EGY": 10,
+     "USA": 8
+    }
+   },
+   {
+    "id": 27,
+    "dist": 138,
+    "men": 2733,
+    "at": 775349,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.003,
+    "grouped": true,
+    "freeWay": 221,
+    "blockers": {
+     "#114": 1,
+     "LEB": 8,
+     "TRJ": 1,
+     "EGY": 10,
+     "USA": 8
+    }
+   },
+   {
+    "id": 45,
+    "dist": 138,
+    "men": 2345,
+    "at": 775349,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.004,
+    "grouped": true,
+    "freeWay": 221,
+    "blockers": {
+     "#114": 1,
+     "LEB": 8,
+     "TRJ": 1,
+     "EGY": 7,
+     "USA": 8
+    }
+   },
+   {
+    "id": 755,
+    "dist": 138,
+    "men": 2381,
+    "at": 775349,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.008,
+    "grouped": true,
+    "freeWay": 221,
+    "blockers": {
+     "#114": 1,
+     "LEB": 8,
+     "TRJ": 1,
+     "EGY": 10,
+     "USA": 8
+    }
+   },
+   {
+    "id": 772,
+    "dist": 138,
+    "men": 2899,
+    "at": 775349,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.002,
+    "grouped": true,
+    "freeWay": 221,
+    "blockers": {
+     "#114": 1,
+     "LEB": 8,
+     "TRJ": 1,
+     "EGY": 10,
+     "USA": 8
+    }
+   },
+   {
+    "id": 1419,
+    "dist": 138,
+    "men": 1258,
+    "at": 775349,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.002,
+    "grouped": true,
+    "freeWay": 221,
+    "blockers": {
+     "#114": 1,
+     "LEB": 8,
+     "TRJ": 1,
+     "EGY": 10,
+     "USA": 8
+    }
+   },
+   {
+    "id": 13,
+    "dist": 142,
+    "men": 3434,
+    "at": 547916,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.003,
+    "grouped": true,
+    "freeWay": 217,
+    "blockers": {
+     "#106": 29,
+     "USA": 49
+    }
+   },
+   {
+    "id": 29,
+    "dist": 142,
+    "men": 3475,
+    "at": 547916,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.004,
+    "grouped": true,
+    "freeWay": 217,
+    "blockers": {
+     "#106": 29,
+     "USA": 49
+    }
+   },
+   {
+    "id": 161,
+    "dist": 142,
+    "men": 3638,
+    "at": 547916,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.002,
+    "grouped": true,
+    "freeWay": 217,
+    "blockers": {
+     "#106": 29,
+     "USA": 49
+    }
+   },
+   {
+    "id": 163,
+    "dist": 142,
+    "men": 3382,
+    "at": 547916,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.002,
+    "grouped": true,
+    "freeWay": 217,
+    "blockers": {
+     "#106": 29,
+     "USA": 49
+    }
+   },
+   {
+    "id": 245,
+    "dist": 142,
+    "men": 10318,
+    "at": 547916,
+    "holder": "GER",
+    "ok": false,
+    "ms": 0.002,
+    "grouped": true,
+    "freeWay": 217,
+    "blockers": {
+     "#106": 29,
+     "USA": 49
+    }
+   }
+  ],
+  "otherPorts": [
+   {
+    "port": "Amsterdam",
+    "cell": 549915,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Istanbul",
+    "cell": 715941,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "İzmir",
+    "cell": 752794,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Bursa",
+    "cell": 728229,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "The Hague",
+    "cell": 554008,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Königsberg",
+    "cell": 513140,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Constanța",
+    "cell": 672930,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Le Havre",
+    "cell": 594945,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Antwerp",
+    "cell": 568345,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Antalya",
+    "cell": 773294,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Wilhelmshaven",
+    "cell": 531501,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Kiel",
+    "cell": 519225,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Brest",
+    "cell": 609254,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Cherbourg",
+    "cell": 592886,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Den Helder",
+    "cell": 541723,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Liepāja",
+    "cell": 484472,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Gölcük",
+    "cell": 722089,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Varna",
+    "cell": 687262,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Hamburg",
+    "cell": 531512,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   },
+   {
+    "port": "Bremen",
+    "cell": 539698,
+    "reached": 29,
+    "men": 125417,
+    "transportsRoom": 0
+   }
+  ],
+  "follow": [
+   {
+    "day": 5,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1449@1130,389>"
+    ]
+   },
+   {
+    "day": 10,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1449@1198,378(Antalya)"
+    ]
+   },
+   {
+    "day": 15,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1449@1198,378(Antalya)"
+    ]
+   },
+   {
+    "day": 20,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1449@1198,378(Antalya)"
+    ]
+   },
+   {
+    "day": 25,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1449@1198,378(Antalya)"
+    ]
+   },
+   {
+    "day": 30,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1449@1198,378(Antalya)"
+    ]
+   },
+   {
+    "day": 35,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1449@1198,378(Antalya)"
+    ]
+   },
+   {
+    "day": 40,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1449@1198,378(Antalya)"
+    ]
+   },
+   {
+    "day": 45,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1449@1198,378(Antalya)"
+    ]
+   },
+   {
+    "day": 50,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1449@1198,378(Antalya)"
+    ]
+   },
+   {
+    "day": 55,
+    "toPort": 0,
+    "nearest": -1,
+    "aboard": 0,
+    "groups": [
+     "1449@1198,378(Antalya)"
+    ]
+   }
+  ]
+ }
+]

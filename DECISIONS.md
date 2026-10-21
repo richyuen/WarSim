@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-595 · 2026-10-21 · accepted — The invasion AI sails its transports to the army when the army cannot march to them (PLAN 7.54b)
+
+- **Context** (`docs/evidence/7.54/a.md`, `b.md`). After a landing the transports sail for their
+  nation's nearest port (`sailHome`), which may be an exclave: in 4513, 7247 and 8693 year 10
+  Germany's stood at Kotor or Annaba, neutral ground all round, and no candidate could march there;
+  5–39 other German ports on that land were in the army's reach, none with transports. Nobody was
+  sent, every week.
+- **Decision** (`ai/invasion.ts` `sailToArmy`): when the nearest free formation's march to the
+  transports' port is refused, the group sails for a port of its nation on that land: for each of
+  the SAIL_TRIES (4) nearest formations, of the 4 ports nearest it, the first it may march to with a
+  way by sea. Nobody is sent that day; the next planning day finds the transports by the army. At
+  most 16 route asks (most judged by the passage's groups) and 16 sail orders a day a nation.
+- **Consequences.** `transportsToArmy1938.test.ts` (red without). On the 48 saves: 7.54's figure,
+  the nations on `send` 30+ of 60 days with none boarded, 9 → 7 (bar 5 or fewer: missed); of the
+  four cases 4513 and 7247 board, 8693 and 1129 have their transports by the army in 10 and 30 days
+  but its marches cross desert (65–240 days: PLAN 7.56). The invasion AI's longest call on 1129, a
+  year alone, 36.6 → 34.5 ms (guard 50). Island share flat. Pin 69e93c3b → d188faed. Whether 7.54
+  is ticked is the user's (BLOCKERS).
+
 ### ADR-594 · 2026-10-21 · accepted — The send to the landing's port passes over a march refused on the port's land (PLAN 7.54a)
 
 - **Context** (`docs/evidence/7.54/a.md`, `tools/diag/sendTrace.ts`). `sendToPort` ended at the
