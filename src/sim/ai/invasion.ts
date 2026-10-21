@@ -17,9 +17,11 @@
  * - the target: the port held by one of those enemies nearest those transports (`seaKm`)
  *   whose water's zone is not closed by ice nor held by a nation at war with it (a landing there
  *   would be thrown back, PLAN 4.5b): the landing takes a port, a cell with water by it;
- * - its formations at that port (land formations within `AT_PORT_CELLS` of its water, not under
- *   way, in no fight, not retreating or going home) are ordered there by `orderLanding`, one by
- *   one, until the transports have no room for the next;
+ * - its formations at that port (land formations within `AT_PORT_CELLS` of its land cell or of its
+ *   water, as `tryLanding` takes them; not under way, in no fight, not retreating or going home)
+ *   are ordered there by `orderLanding`, one by one, until the transports have no room for the
+ *   next (PLAN 7.49f, ADR-593: by its water alone, an army sent to a port whose water is 4–11 cells
+ *   off its land cell, as Glasgow's or Hamburg's, stood there and was never loaded);
  * - with none there, its free land formations on the port's land, nearest the port first, are
  *   sent to it (`orderMove`) until their men fill the room, or until one cannot be sent (PLAN 7.7:
  *   the port out of its army's reach by land; each failed order is a search of the map); they go
@@ -152,7 +154,7 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
   let sent = 0;
   const atPort: number[] = [];
   f.forEach((id) => {
-    if (free(id) && near(world, cellOf(id), water[port]!, world.atSize(AT_PORT_CELLS))) atPort.push(id);
+    if (free(id) && (near(world, cellOf(id), world.ports[port]!.cell, world.atSize(AT_PORT_CELLS)) || near(world, cellOf(id), water[port]!, world.atSize(AT_PORT_CELLS)))) atPort.push(id);
   });
   for (const id of atPort) {
     if (!orderLanding(world, id, tx, ty)) break;

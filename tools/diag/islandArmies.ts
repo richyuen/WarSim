@@ -176,7 +176,7 @@ for (const { seed, src } of cases) {
     const land = comp[w.ports[port]!.cell]!;
     w.formations.forEach((id) => {
       if (!isLandF(id) || !free(id)) return;
-      if (near(w, cellOf(id), water[port]!, w.atSize(AT_PORT_CELLS))) atPort = true;
+      if (near(w, cellOf(id), w.ports[port]!.cell, w.atSize(AT_PORT_CELLS)) || near(w, cellOf(id), water[port]!, w.atSize(AT_PORT_CELLS))) atPort = true;
       else if (comp[cellOf(id)] === land) onLand = true;
     });
     return { g: atPort ? 'atPort' : onLand ? 'send' : 'noneFree', roomAtPort: room };

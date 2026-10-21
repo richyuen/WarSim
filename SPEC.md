@@ -2047,7 +2047,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   by id, a nation with no formation aboard and a war in which it has no land front today takes
   its transport group with the most room at a port it holds, and aims at the port nearest them,
   of an enemy of such a war, whose sea is open to it (not closed by ice, not held by its enemy).
-  Its free formations at that port go aboard there; with none there, the nearest on the port's
+  Its free formations at that port (within 3 cells of its land cell or of its water, as an
+  order over the sea takes them: PLAN 7.49f, ADR-593) go aboard there; with none there, the nearest on the port's
   land are sent to it to fill the room. A nation with a front in another war uses only
   formations beyond the deploy range of its own front on their land. A landing takes a cell a nation owns where the target is owned.
   *Fleets at sea (PLAN 4.6c, ADR-270; `src/sim/ai/naval.ts`):* daily, staggered weekly by id. At

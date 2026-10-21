@@ -21197,3 +21197,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   `docs/evidence/7.49/e/reserve-cut.diff`.
 - No rule: the pin unchanged (da485175). Specs by hand: none (no UI).
 - **Next:** PLAN 7.49f (the landing's port).
+
+## 2026-10-21 — PLAN 7.49f: the landing's port (ADR-593); the AT's count misses, the user's
+
+- **Rule** (`ai/invasion.ts` `planLanding`): a free formation within AT_PORT_CELLS of the port's land
+  cell or of its water goes aboard, as `tryLanding` takes it; before, by its water alone, an army sent
+  to a port whose water is 4–11 cells off (19 of 579 ports: Glasgow, London, Hamburg) stood unloaded.
+  `islandArmies.ts`'s mirror reads the same. SPEC §7 (Invasions).
+- **AT** (`docs/evidence/7.49/f.md`, 60 days of the 48 saves): nations on `send` 30+ days with none
+  boarded 10 → **9**, bar 0: missed. The critic's case (2081, Germany at Glasgow) boards (0 → 1). 7.49d §4
+  had put all ten on the far water; only that one plans from such a port. The nine: the send ended at
+  the first refused march (4: PLAN 7.54, new), the transports' room under a division's (3: PLAN 7.55,
+  new), two untraced. BLOCKERS entry, the user's (a tick, b close, c keep open).
+- Island share 21.8 % / 29.6 %, engaged per war 0.120 / 0.143: flat. Pin da485175 → 69e93c3b.
+- **Test:** `landingPort1938.test.ts` (red without). Specs by hand: none (no UI). 7.49's commits: 7 of
+  20; 7.54 and 7.55 are numbered tasks of their own, outside that count.
+- 7.49 has no part left that is not the user's; its own bar (engaged per war at least a quarter of
+  year 1's, ~2) stands unmet at 0.120 / 0.143.
+- **Next:** PLAN 7.54 (the send at the first refused march), then 7.55; then 7.49's own AT read.

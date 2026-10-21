@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-593 · 2026-10-21 · accepted — The invasion AI takes aboard a formation at its port by the port's land cell or its water (PLAN 7.49f)
+
+- **Context** (`docs/evidence/7.49/d.md` §4, `docs/evidence/7.49/f.md`). `planLanding` sends its
+  formations to the port's land cell but took aboard only those within AT_PORT_CELLS (3) of the
+  port's water, while `tryLanding` takes a formation within 3 of either (ADR-299). At 19 of the 579
+  ports the water is 4–11 cells off the land cell: an army sent there stood unloaded and more were
+  sent each week (2081 year 20: Germany's 56 on Britain at Glasgow, `send` all 60 days, none aboard).
+- **Decision** (`ai/invasion.ts`): a free formation within AT_PORT_CELLS of the port's land cell or
+  of its water is at the port and goes aboard, as an order over the sea takes it. The mirror in
+  `tools/diag/islandArmies.ts` reads the same. SPEC §7 (Invasions).
+- **Consequences.** `landingPort1938.test.ts` (red without). On the 48 saves the rule's own case
+  1 → 0 (2081's Germany boards); the AT's figure, watched nations on `send` 30+ of 60 days with none
+  boarded, 10 → 9 (bar 0, missed): 7.49d §4 had counted the ten as held by the far water, and nine
+  plan from ports whose water is within 3 cells. Their causes: the march to the port refused and the
+  send ended at the first refusal (PLAN 7.54), the transports' room under a division's (PLAN 7.55),
+  two untraced. Island share 21.8 % / 29.6 %, engaged per war 0.120 / 0.143: flat. Pin da485175 →
+  69e93c3b. Whether 7.49f is ticked is the user's (BLOCKERS).
+
 ### ADR-592 · 2026-10-21 · proposed (the user's decision) — PLAN 7.49e: the defenders' purse cannot raise the band's army to the bar; the reserve cut and its bar
 
 - **Context** (`docs/evidence/7.49/e.md`, `tools/diag/purse.ts`). The band (nations at war of

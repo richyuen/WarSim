@@ -128,6 +128,30 @@ when taken up:
       boarded by the island nations in 60 days read (6 / 0 on HEAD); a unit test (red without:
       formations at a port whose water is beyond AT_PORT_CELLS go aboard); engaged read; the ADR;
       the pin's entry.
+      Rule in (ADR-593, `docs/evidence/7.49/f.md`): the rule's own case 1 → 0 (2081's Germany boards
+      at Glasgow); the AT's count 10 → 9, bar missed: 7.49d §4 mis-read the nine, which plan from
+      ports with their water near (causes: PLAN 7.54, 7.55; two untraced). BLOCKERS, the user's (a
+      tick, b close, c keep open).
+- [ ] 7.54 The landing's send ends at the first refused march (found at 7.49f, emergent 6,
+  `docs/evidence/7.49/f.md` §3): `sendToPort` stops at the first formation whose march to the port
+  is refused (PLAN 7.7's bound, set against seed 3371's 0.7–1.1 s calls), and when the nearest is
+  refused nobody is sent, every week: 4513 year 10 Germany at Kotor (8 of 8 refused), 7247 year 10
+  and 8693 year 10 Germany at Annaba (143 and 29, all), 1129 year 20 Britain at Warri (the nearest
+  3 refused, the fourth allowed). Traced first: why each march is refused (ADR-422's bound, a
+  nation not in the war across the way, no way), and whether another port of the nation on that
+  land has its army in reach. AT: on the 48 saves, the four cases board a formation within 60 days
+  of their save; the nations on `send` 30+ of 60 days with none boarded (`islandArmies.ts`) 9 → 5 or
+  fewer; no call of the invasion AI over 50 ms on those runs (`--profile` or the tool's timing; 7.7's
+  guard); a unit test (red without); the ADR; the pin's entry.
+- [ ] 7.55 A transport group with room under a division's (found at 7.49f, emergent 6,
+  `docs/evidence/7.49/f.md` §3; 7.49d's note on 4513 Latvia): the invasion AI plans with the group
+  of most room at a port, and `sendToPort` and `orderLanding` take no formation over its room, so a
+  group of one or two transports (2,000–4,000 men) holds the nation's landings for good: 5683 year
+  20 Japan at Miyazaki (2,000), 7247 year 20 Germany at Nouadhibou (4,000), 4513 year 10 Latvia
+  (`atPort` 60 days, 2,000). Measured first: per case, the nation's groups and their room, the
+  smallest formation on the port's land, and whether ADR-518's transport order is barred. AT: on the
+  48 saves, the three cases board a formation or order a transport within 60 days; a unit test (red
+  without); the ADR; the pin's entry.
 - [ ] 7.50 The H-bomb at the floor on a city of a million, and the spot struck again (R11-B2): seed
   1129, 14 March 1954, the Soviet Union on Greenock, a hydrogen bomb, 1,105,514 dead (1,071,000
   civilians) at utility 0.026, against counters of 1.3k–7.5k men; PLAN 7.38's bar ("no burst under
