@@ -5,7 +5,8 @@
  * - the island share: of the land formations of living nations at war, those standing (not on
  *   the march, engaged, retreating, going home or aboard) on a landmass with none of their
  *   nation's front cells, while it has one (`landStates.ts`'s classification), on day 1 and on
- *   the last day (the AT's figure);
+ *   the last day (the AT's figure); of those, `noOwnPort`: the island formations of nations that
+ *   hold no port (with water) on a landmass of a front cell of their own (PLAN 7.49d2's figure);
  * - per nation with `MIN_ISLAND` or more island formations on day 1, daily: `planLanding`'s gate
  *   (read only, as `landWar.ts`: `fronted` a front in each of its wars, `aboard`, `noTransport`,
  *   `noTarget`, `atPort`, `send`, `noneFree`) and whether the day is its actor day (`STAGGER`);
@@ -58,7 +59,7 @@ const near = (world: World, a: number, b: number, r: number): boolean => {
 };
 
 const rows: unknown[] = [];
-const totals = { first: { island: 0, atWar: 0 }, last: { island: 0, atWar: 0 } };
+const totals = { first: { island: 0, atWar: 0, noOwnPort: 0 }, last: { island: 0, atWar: 0, noOwnPort: 0 } };
 const carry: { seed: number; nation: string; km: number; oneWayDays: number; trips: number; room: number; islandMen: number; island: number; carryMen: number; carryFormations: number }[] = [];
 for (const { seed, src } of cases) {
   const s = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SIZE_1938.w) });
@@ -99,9 +100,19 @@ for (const { seed, src } of cases) {
     return m;
   };
   const isLandF = (id: number): boolean => !w.isFleet(id) && !w.isWing(id);
-  const islandOf = (fr: ReturnType<typeof fronts>): { share: { island: number; atWar: number }; by: Map<number, { n: number; men: number }> } => {
+  /** Whether nation `n` holds a port with water on a landmass of one of its own front cells (PLAN 7.49d2). */
+  const ownPort = (n: number, fr: ReturnType<typeof fronts>): boolean => {
+    const f = fr.get(n);
+    if (!f) return false;
+    const lands = new Set(f.own.map((k) => comp[k]!));
+    const water = portSeaOf(w);
+    return w.ports.some((p, i) => water[i]! >= 0 && w.cells.controller[p.cell] === n && lands.has(comp[p.cell]!));
+  };
+  const islandOf = (fr: ReturnType<typeof fronts>): { share: { island: number; atWar: number; noOwnPort: number }; by: Map<number, { n: number; men: number }> } => {
     let island = 0;
     let atWar = 0;
+    let noOwnPort = 0;
+    const ported = new Map<number, boolean>();
     const by = new Map<number, { n: number; men: number }>();
     w.formations.forEach((id) => {
       if (!isLandF(id)) return;
@@ -112,12 +123,14 @@ for (const { seed, src } of cases) {
       if (w.offLand(id) || c.engaged[id] === 1 || c.retreat[id] !== 0 || c.home[id] !== 0 || c.moving[id] === 1) return;
       if (f.cells === 0 || f.lands.has(comp[cellOf(id)]!)) return;
       island++;
+      if (!ported.has(n)) ported.set(n, ownPort(n, fr));
+      if (!ported.get(n)) noOwnPort++;
       const b = by.get(n) ?? { n: 0, men: 0 };
       b.n++;
       b.men += c.strength[id]!;
       by.set(n, b);
     });
-    return { share: { island, atWar }, by };
+    return { share: { island, atWar, noOwnPort }, by };
   };
 
   /** `planLanding`'s gates, read only, with its foes (the wars with no front of its own) and its front. */
@@ -340,6 +353,8 @@ for (const { seed, src } of cases) {
   }
   totals.first.island += first.share.island;
   totals.first.atWar += first.share.atWar;
+  totals.first.noOwnPort += first.share.noOwnPort;
+  totals.last.noOwnPort += last.share.noOwnPort;
   totals.last.island += last.share.island;
   totals.last.atWar += last.share.atWar;
   const nations = [...watched.values()].map((r) => ({
@@ -350,7 +365,7 @@ for (const { seed, src } of cases) {
   }));
   rows.push({ seed, src, first: first.share, last: last.share, nations });
   process.stderr.write(
-    `${seed} ${src}: island ${first.share.island}/${first.share.atWar} -> ${last.share.island}/${last.share.atWar}; ` +
+    `${seed} ${src}: island ${first.share.island}/${first.share.atWar} -> ${last.share.island}/${last.share.atWar} (no own port ${first.share.noOwnPort} -> ${last.share.noOwnPort}); ` +
       nations.map((r) => `${r.nation} ${r.island0}->${r.island1} board ${r.boarded} land ${r.landed} room ${r.roomAll} ${JSON.stringify(r.gates)}`).join('; ') +
       '\n',
   );
@@ -360,4 +375,4 @@ const carried = carry.reduce((a, r) => a + r.carryFormations, 0);
 const best = { island: totals.first.island - carried, atWar: totals.first.atWar };
 writeFileSync(out, JSON.stringify({ totals, firstPct: pct(totals.first), lastPct: pct(totals.last), carried, bestPct: pct(best), carry, rows }, null, 1));
 console.error(`carry: ${carried} of ${totals.first.island} island formations at best; island ${pct(best)} % at best`);
-console.log(`done: ${rows.length} -> ${out}; island ${pct(totals.first)} % -> ${pct(totals.last)} % after ${days} days`);
+console.log(`done: ${rows.length} -> ${out}; island ${pct(totals.first)} % -> ${pct(totals.last)} % after ${days} days; no own port ${totals.first.noOwnPort} -> ${totals.last.noOwnPort}`);

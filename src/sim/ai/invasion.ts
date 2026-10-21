@@ -197,7 +197,13 @@ function standing(world: World, id: number, n: number): boolean {
  * - else the target: of its ports on a front's land (its water in a zone open, not shut by bombs,
  *   in the waters the transports sail, not held by a nation at war with it), the nearest the
  *   transports by sea (`seaKm`); its island formations at their port go aboard for it, or the
- *   nearest on the port's land are sent there (`board`, as a landing's).
+ *   nearest on the port's land are sent there (`board`, as a landing's);
+ * - with no such port of its own, an ally's (PLAN 7.49d2, ADR-613): of the ports of nations fighting
+ *   beside it (`sameSide`) that pass the same tests, the nearest a front cell of its own on that land
+ *   (straight cells), the nearest by sea on a tie. Before, a nation with no port of its own on its
+ *   front's land shipped nobody (critic run 11, seed 5309 year 20: the Soviet Union's 158 island
+ *   formations; 217 such at year 20 on the critic's saves). It lands there as at its own: `land`
+ *   takes a cell from an enemy alone, and a nation fighting beside it is no foreign ground.
  *
  * In the landing's turn and lock: a nation's actor day, with none of its formations aboard, and a
  * landing in a war with no front planned first. Whether it acted.
@@ -241,18 +247,44 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
   const z = seaOf(world);
   const keys = waterKeys(world, n);
   const mine = keyAt(world, keys, c.x[fleet]!, c.y[fleet]!);
+  /** Whether port `i`, on a front's land, takes the ferry: open, unbombed, its sea in their waters and not an enemy's. */
+  const open = (i: number): boolean => {
+    const at = water[i]!;
+    if (at < 0 || !lands.has(comp[world.ports[i]!.cell]!) || portShut(world, i)) return false;
+    const zone = z.zoneOf[at]!;
+    if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) return false;
+    const sea = seaHolder(world, zone);
+    return sea === 0 || !world.wars.atWar(sea, n);
+  };
+  const km = (i: number): number => seaKm(world, c.x[fleet]!, c.y[fleet]!, (water[i]! % w) + 0.5, Math.floor(water[i]! / w) + 0.5);
   let target = -1;
   let best = Infinity;
   world.ports.forEach((p, i) => {
-    const at = water[i]!;
-    if (at < 0 || ctl[p.cell] !== n || !lands.has(comp[p.cell]!) || portShut(world, i)) return;
-    const zone = z.zoneOf[at]!;
-    if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) return;
-    const sea = seaHolder(world, zone);
-    if (sea !== 0 && world.wars.atWar(sea, n)) return;
-    const d = seaKm(world, c.x[fleet]!, c.y[fleet]!, (at % w) + 0.5, Math.floor(at / w) + 0.5);
+    if (ctl[p.cell] !== n || !open(i)) return;
+    const d = km(i);
     if (d < best) [best, target] = [d, i];
   });
+  // With none, an ally's (PLAN 7.49d2): of the ports held by a nation fighting beside it, the
+  // nearest a front cell of its own on that land (straight cells), the sea's way the tie-break.
+  if (target < 0) {
+    let near2 = Infinity;
+    world.ports.forEach((p, i) => {
+      const h = ctl[p.cell]!;
+      if (h === 0 || !world.wars.sameSide(n, h) || !open(i)) return;
+      const l = comp[p.cell]!;
+      let d2 = Infinity;
+      for (const k of front) {
+        if (comp[k] !== l) continue;
+        let dx = Math.abs((k % w) - (p.cell % w));
+        if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+        const dy = Math.floor(k / w) - Math.floor(p.cell / w);
+        d2 = Math.min(d2, dx * dx + dy * dy);
+      }
+      if (d2 > near2) return;
+      const d = km(i);
+      if (d2 < near2 || d < best) [near2, best, target] = [d2, d, i];
+    });
+  }
   if (target < 0) return false;
   board(world, fleet, tp.room, port, world.ports[target]!.cell, free);
   return true;

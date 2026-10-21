@@ -34,12 +34,12 @@ interface Case {
   home: number;
 }
 
-function setUp(): Case {
+function setUp(allies = false): Case {
   const s = new Sim({ scenario: '1938', seed: 4603, assets: assets1938(W) });
   const w = s.world;
   const c = w.formations.cols;
   const comp = navOf(w).grid.component;
-  expect(declareWar(w, ENG, ITA, true)).not.toBeNull();
+  expect(declareWar(w, ENG, ITA, !allies)).not.toBeNull();
   // The air out of it (PLAN 5.12b: strikes could win the peace first).
   for (const [wing] of [...w.wingBase]) destroyFormation(w, wing);
   // Britain's land fronts: on a land other than Britain's.
@@ -125,5 +125,37 @@ describe('the ferry (PLAN 7.49d1)', () => {
     const goal = c.targetCell[tp]!;
     const near = (a: number, b: number): boolean => Math.abs((a % W) - (b % W)) <= r && Math.abs(Math.floor(a / W) - Math.floor(b / W)) <= r;
     expect(w.ports.some((p, i) => water[i]! >= 0 && w.cells.controller[p.cell] === ENG && comp[p.cell] === home && near(goal, water[i]!))).toBe(true);
+  });
+
+  // PLAN 7.49d2, ADR-613: with no port of its own on a front's land, it ferries to an ally's
+  // there. Britain's allies in the war with it; its ports on its fronts' lands handed to one of
+  // them: before, nobody went aboard (critic run 11, seed 5309 year 20: the Soviet Union's 158).
+  it('with no port of its own on a front\'s land, it goes aboard for an ally\'s there', () => {
+    const { s, w, glasgow, tp, div, frontLands } = setUp(true);
+    const c = w.formations.cols;
+    const comp = navOf(w).grid.component;
+    const water = portSeaOf(w);
+    const ctl = w.cells.controller;
+    const theirs = w.ports.findIndex((p, i) => water[i]! >= 0 && ctl[p.cell] !== ENG && w.wars.sameSide(ENG, ctl[p.cell]!) && frontLands.has(comp[p.cell]!));
+    expect(theirs).toBeGreaterThanOrEqual(0);
+    const ally = ctl[w.ports[theirs]!.cell]!;
+    for (const p of w.ports) if (ctl[p.cell] === ENG && frontLands.has(comp[p.cell]!)) w.setController(p.cell, ally);
+    const sea = water[glasgow]!;
+    [c.x[tp], c.y[tp]] = [(sea % W) + 0.5, Math.floor(sea / W) + 0.5];
+    c.moving[tp] = 0;
+    let embarked = -1;
+    for (let d = 0; d < 2 * STAGGER && embarked < 0; d++) {
+      s.step(24, (world) => {
+        const ev = world.out.events;
+        for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.FormationEmbarked && ev[i + 2] === div) embarked = d;
+      });
+    }
+    expect(embarked).toBeGreaterThanOrEqual(0);
+    const e = w.embarked.get(div)!;
+    expect(e.fleet).toBe(tp);
+    // For an ally's port on a front's land.
+    expect(frontLands.has(comp[e.target]!)).toBe(true);
+    expect(w.ports.some((p) => p.cell === e.target)).toBe(true);
+    expect(w.wars.sameSide(ENG, ctl[e.target]!)).toBe(true);
   });
 });

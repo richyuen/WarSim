@@ -2078,7 +2078,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   front cells to its own port on a front's land nearest its transports by sea (open, unbombed,
   not held by its enemy), boarding them as a landing does; transports standing at a port on a
   front's land, or on a land with none of that army, sail instead for a port of its that the
-  army's formations nearest them can march to.
+  army's formations nearest them can march to. With no such port of its own, an ally's (PLAN
+  7.49d2, ADR-613): of the ports held by nations fighting beside it that pass the same tests, the
+  nearest a front cell of its own on that land, the nearest by sea on a tie.
   *Fleets at sea (PLAN 4.6c, ADR-270; `src/sim/ai/naval.ts`):* daily, staggered weekly by id. At
   war, each warfleet (power: its armed ships' hit points, submarines left out) standing at a
   port of its nation sails, within 2,500 km, to a landing of its nation's under way (escort),

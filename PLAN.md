@@ -130,6 +130,10 @@ when taken up:
         5309 among them). AT: the island formations of nations with no own port on the front's land
         after 60 days of the 48 saves together, under half of 7.49d1's same read; a unit test (red
         without); the ADR; the pin's entry.
+        Rule in (ADR-613, `docs/evidence/7.49/d2.md`): the figure 939 → 934, bar under 470: missed.
+        Of the 1,059 on day 1 (`ferryAlly.ts`), 793 of nations fronted through an ally alone (PLAN
+        7.64), 187 with no ally's port there, 10 the rule's case. Pin unchanged. BLOCKERS, the
+        user's (a tick on the rule's case, b close, c keep open).
       - [ ] 7.49d3 Transports bought for a home army (the user's, 2026-10-21; ADR-591 b's half):
         ADR-518's transport slot opened to a nation at war with a land front whose island formations
         hold more men than its transport room, or which has none (90 / 155 island formations at
@@ -180,6 +184,19 @@ when taken up:
   their front on day 60 at least 80 % (71 of 133, 53 %, on 7.49d1's code); engaged worldwide and per
   war read (`warSides.ts`); no invasion AI call over 50 ms; a unit test (red without: Britain at
   war with Japan lands at a port nearer its front); the ADR; the pin's entry.
+
+- [ ] 7.64 The ferry for a nation fronted through an ally alone (found at 7.49d2,
+  `docs/evidence/7.49/d2.md` §3; carries emergent 6 with 7.49): a nation at war whose land front is
+  an ally's alone (it holds no front cell itself; its allies' cells face the enemy) is never
+  ferried: `invasionAi` reads a nation's own front cells, and with none `planFerry` is not called.
+  Of the island formations of nations with no own port on their front's land, 793 of 1,059 on day 1
+  of the 48 saves (Latvia's 40 on 5309 year 20). The rule: such a nation's front is the cells of
+  the allies beside whom it fights (`wars.together`) for the ferry's lands and its
+  port's choice. AT: the island formations of nations with no front cell of their own after 60
+  days of the 48 saves together (`islandArmies.ts`, a read to add; HEAD first, the before) under
+  half of HEAD's; engaged worldwide and per war read (`warSides.ts`); no invasion AI call over 50
+  ms; a unit test (red without: a nation fronted through an ally boards for that front's land); the
+  ADR; the pin's entry.
 
 - [ ] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21;
   AI nuclear use 7, the critic's run 11 design objection; `docs/evidence/7.52/c.md`): a capital's

@@ -21581,3 +21581,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Budget:** 7.49 at 17 commits by its number in the subjects.
 - **Next:** PLAN 7.49d2 (an ally's port).
 - **Test aimed:** `carrierStrikes1938.test.ts` (PLAN 4.12b) relied on Britain's carriers meeting the Germans by hour 80; Britain's ferry drew them to escort it. Its setup now removes the four nations' transport groups: the same battle and flights at hour 43 as before the rule; no assertion changed.
+
+## 2026-10-21 — PLAN 7.49d2: the ferry to an ally's port (ADR-613; bar missed, the user's)
+
+- **Rule** (`ai/invasion.ts`, `planFerry`): with no port of its own on a land of its front cells
+  passing the ferry's tests, an ally's (`wars.sameSide`) there, the nearest a front cell of its own,
+  the nearest by sea on a tie. SPEC §7 (Invasions).
+- **Read** (`docs/evidence/7.49/d2.md`, 48 saves × 60 days, HEAD `c0aa26a8` the before): the AT's
+  figure (island formations of nations with no own port on their front cells' lands,
+  `islandArmies.ts`'s new `noOwnPort`) 939 → 934, bar under 470: missed. Island share 18.2 → 18.1 %,
+  28.3 → 28.2 %; engaged worldwide 0.596, identical to 7.49d1's read.
+- **Found** (`tools/diag/ferryAlly.ts`, new): of the 1,059 on day 1, 793 are of nations fronted
+  through an ally alone (no front cell of their own, so `planFerry` is never called): PLAN 7.64
+  filed with its own AT; 187 have no ally's port there (the Soviet Union's 158 on 5309, untraced);
+  10 are the rule's case. BLOCKERS, the user's (a tick on the rule's case, b close, c keep open).
+- **Test:** `ferry1938.test.ts`, a third case (Britain's ports on its fronts' lands handed to an
+  ally; the division at Glasgow boards for the ally's port), red without. Specs by hand: none (no
+  drawn change).
+- **Pin:** unchanged (seed 99's first year has no nation in the case).
+- **Budget:** 7.49 at 19 commits by its number in the subjects (one left).
+- **Next:** PLAN 7.49d3 (transports bought for a home army), 7.49's 20th commit: at the budget the
+  loop writes what moved case by case and closes 7.49 (ADR-554); 7.49e1 then waits on the user.

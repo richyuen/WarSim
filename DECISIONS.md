@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-613 · 2026-10-21 · accepted — The ferry to an ally's port: with no port of its own on its front's land, a nation ships its army to an ally's there (PLAN 7.49d2; amends ADR-612)
+
+- **Context** (PLAN 7.49d2, the user's, 2026-10-21; `docs/evidence/7.49/d.md` §3). The ferry
+  (ADR-612) sails only for a port of the nation's own on a land of its front cells; a nation with
+  none there ships nobody (217 island formations at year 20 of the critic's saves so counted).
+- **Decision.** In `planFerry`, when none of its own ports passes the ferry's tests, an ally's: of
+  the ports held by a nation fighting beside it (`wars.sameSide`) on a land of its own front cells,
+  with water in an open zone, unbombed, in its transports' waters and its sea not an enemy's, the
+  nearest a front cell of its own (straight cells), the nearest by sea on a tie. The front, not the
+  transports, picks the port, as PLAN 7.63 asks of its own ports; its own still go first, as the
+  task asks. The landing is as at its own port: `land` takes a cell from an enemy alone, and a nation
+  fighting beside it is not foreign ground (`foreignTo`), so nobody is sent home from it.
+- **Measured** (`docs/evidence/7.49/d2.md`): the AT's figure (island formations of nations with no
+  own port on their front cells' lands, the 48 saves together after 60 days) 939 → 934, bar under
+  470: missed. Of the 1,059 on day 1 (`tools/diag/ferryAlly.ts`), 793 are of nations whose land
+  front is an ally's alone (no front cell of their own, so no ferry: PLAN 7.64), 187 have no ally's
+  port there, 69 no transports at a port, and 10 are the rule's case. Island share 18.2 → 18.1 %,
+  28.3 → 28.2 %; engaged identical to three places. BLOCKERS, the user's.
+- **Pin.** Unchanged (seed 99's first year has no nation in the rule's case).
+
 ### ADR-612 · 2026-10-21 · accepted — The ferry: a nation with a land front ships its army on a landmass with no front to its own port on a front's land (PLAN 7.49d1; ADR-591 a)
 
 - **Context** (critic run 11, R11-B1; `docs/evidence/7.49/d.md` §2). Of the land formations at war,

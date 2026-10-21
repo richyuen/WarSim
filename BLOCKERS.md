@@ -5,6 +5,20 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.49d2: the ferry to an ally's port is in; the AT's figure 939 → 934, bar under 470 (2026-10-21, ADR-613; the user's decision)
+- **The bar:** the island formations of nations with no own port on their front's land, after 60
+  days of the 48 saves together (`islandArmies.ts`'s `noOwnPort`), under half of 7.49d1's same
+  read (939: under 470).
+- **What moved** (`docs/evidence/7.49/d2.md`): 939 → 934. The rule works on its case (the unit
+  test; red without), but its case is 10 of the 1,059 on day 1 (`ferryAlly.ts`): 793 are of nations
+  whose land front is an ally's alone, with no front cell of their own, which no ferry takes (the
+  ferry and the landing read a nation's own front cells); 187 have no ally's port on that land
+  (the Soviet Union's 158 on 5309 year 20, the task's named case, untraced); 69 no transports at a port.
+- **What is left:** the nations fronted through an ally alone, filed as PLAN 7.64 with its own AT.
+  The user's: (a, recommended) 7.49d2 ticked on the rule's own case, as 7.49c, 7.49f and 7.54 were;
+  (b) 7.49d2 closed not done, the rule kept; (c) kept open until 7.64 lands and the figure is read
+  again. Meanwhile the loop takes 7.49d3.
+
 ### RESOLVED 2026-10-21 (ADR-611 b, the user's decision: the rule filed as PLAN 7.62) · PLAN 7.52c: cities with no soldiers struck, the rule waits on the user (2026-10-21, ADR-611 proposed; the user's decision)
 - **The bar:** an ADR proposed with the options and the measured figures; no rule before the
   user's word (met; 7.52 ticked).
