@@ -21551,3 +21551,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Filed: PLAN 7.62 (ADR-611 b): a capital is a first-strike target only with an army in the blast.
 - Eight BLOCKERS entries resolved. No code: the pin unchanged.
 - **Next:** PLAN 7.49d1 (the ferry), then 7.49e1, 7.62.
+
+## 2026-10-21 — The user widens 7.49d: the ferry to an ally's port, transports bought (ADR-591)
+
+- Filed 7.49d2 (an ally's port in the same war) and 7.49d3 (ADR-518's transport slot for a home
+  army), siblings of 7.49d1 by the depth cap; the 20 % bar read after d3. No code.
+- **Next:** PLAN 7.49d1.

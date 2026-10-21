@@ -110,15 +110,30 @@ when taken up:
       carry it. BLOCKERS, the user's (ADR-591 proposed: the ferry with the bar under 20 % of the 48
       saves together, recommended; the ferry and transports bought, the bar kept; closed not done).
       ADR-591 a (the user's, 2026-10-21): the bar is now the island share of the 48 saves together
-      after 60 days under 20 % (25.9 % on HEAD at day 60). In parts:
+      after 60 days under 20 % (25.9 % on HEAD at day 60). Widened the same day (the user's): the
+      ferry to an ally's port and transports bought for a home army, d2 and d3, siblings of d1 by the
+      depth cap. In parts:
       - [ ] 7.49d1 The ferry: a nation at war with a land front, whose land formations stand beyond
         DEPLOY_RANGE of its own front on a landmass with no front of its nation, boards them on its
         transports for its own port on the front's land nearest them (in `planLanding`'s turn and
         lock), and recalls a group standing at a theatre port to carry them. AT: the island share of
-        the 48 saves together after 60 days under 20 % (`islandArmies.ts`; HEAD first, the before);
-        engaged worldwide and per war read; a unit test (red without: an island army of a fronted
-        nation boards for its front); no invasion AI call over 50 ms (7.7's guard); the pin's entry;
-        `--profile`.
+        the 48 saves together after 60 days read (`islandArmies.ts`; HEAD first, the before; the bar
+        is 7.49d's, read after d3); engaged worldwide and per war read; a unit test (red without: an
+        island army of a fronted nation boards for its front); no invasion AI call over 50 ms (7.7's
+        guard); the pin's entry; `--profile`.
+      - [ ] 7.49d2 The ferry to an ally's port (the user's, 2026-10-21): a nation with no port of its
+        own on its front's land ferries to the port of an ally in the same war there, nearest its
+        front (217 island formations at year 20 have no own port there, the Soviet Union's 158 on
+        5309 among them). AT: the island formations of nations with no own port on the front's land
+        after 60 days of the 48 saves together, under half of 7.49d1's same read; a unit test (red
+        without); the ADR; the pin's entry.
+      - [ ] 7.49d3 Transports bought for a home army (the user's, 2026-10-21; ADR-591 b's half):
+        ADR-518's transport slot opened to a nation at war with a land front whose island formations
+        hold more men than its transport room, or which has none (90 / 155 island formations at
+        years 10 / 20 of nations with no transports). AT: the island share of the 48 saves together
+        after 60 days under 20 % (7.49d's bar, with d1 and d2 in); the island formations of nations
+        with no transports, after 180 days of the 48 saves, under half of HEAD's same run; no nation
+        in debt for it in a year; a unit test (red without); the ADR; the pin's entry.
     - [ ] 7.49e The defenders' purse (measure §4.4): late, nations at war of income 150–500 hold
       4.5–4.8 formations, 91–98 of 124–127 stopped by the price (1,001) and RESERVE_MONTHS (3) of
       income kept back. Measured first: what such a nation raises in a year with the reserve at war

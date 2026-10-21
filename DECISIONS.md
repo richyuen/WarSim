@@ -662,6 +662,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     abstraction; against "sealift exists since PLAN 4.5", not recommended).
 - **Meanwhile:** the loop takes 7.49e, then 7.49f (the send/load port defect, not the user's).
 - **Decided** (2026-10-21, the user): a. PLAN 7.49d1: the ferry, the bar the island share of the 48 saves together under 20 %.
+  Widened the same day (the user): the ferry also to an ally's port in the same war (PLAN 7.49d2),
+  and b's transports bought for a home army (PLAN 7.49d3); the bar stays 20 %.
 
 ### ADR-590 · 2026-10-21 · accepted — At war with a naval enemy, an army of a few formations or none orders before the warship's saving (PLAN 7.49c; amends ADR-575, ADR-579)
 
