@@ -21246,3 +21246,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   Germany's 1938 army is on the march under the other AIs). Pin 69e93c3b → d188faed. Specs by hand:
   none (no UI).
 - **Next:** PLAN 7.55 (the transports' room under a division's).
+- **Wandering read** (the 48 saves, `noTransport` days against 7.49f's run): up 10+ days only for the
+  four cases' nations and 7583 year 10 Germany (0 → 27: one voyage, then `send` 14 and `noneFree` 19;
+  none boarded before or after). No group sails port to port.
