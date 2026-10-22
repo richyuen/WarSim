@@ -5,6 +5,20 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.68: a lost capital moves to the land its nation holds most of is in, ticked on the reading of ADR-620 (a); moves on that land 134 of 138, bar all of them (2026-10-21, ADR-620; the user's decision)
+- **The bar:** every `CapitalMoved` to a city in 180 days of the critic's 48 saves lands on the
+  landmass where its nation holds the most cells (`capitalMoves.ts`): all of them.
+- **What moved** (`docs/evidence/7.68.md`): 128 of 136 (HEAD) → 134 of 138; of the moves whose
+  nation held a city on that land, 128 of 133 → 134 of 134. The unit test (Japan's capital to
+  Honshu, not Korea; red without) holds.
+- **Why it misses:** the four left have no city of their nation on the most-held land (Cuba twice,
+  6 cells against 18 and 21; Nationalist Spain, 14 against 60; Greece, Crete's 32 against the
+  mainland's 38); the task's rule takes a city, so they go to a city elsewhere.
+- **What is left:** the user's. (a, recommended) the tick stands, the AT read as "every move whose
+  nation has a city on that land"; (b) a field capital on the most-held land instead of a city
+  elsewhere (a rule change, a re-read, a new pin); (c) unticked, reopened. Meanwhile the loop takes
+  PLAN 7.69.
+
 ### PLAN 7.67: new divisions of a nation fronted through an ally alone raised toward that front is in; such island formations after 180 days 493 → 466, bar under 369.75 (2026-10-21, ADR-619; the user's decision)
 - **The bar:** the island formations of nations with no front cell of their own after 180 days of
   the critic's 48 saves together (`islandArmies.ts`, `noOwnFront`) under 0.75 × HEAD's (493); no

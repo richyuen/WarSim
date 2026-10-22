@@ -21775,4 +21775,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `capitals.test.ts`, a new case (Japan: Tokyo and Honshu's large cities taken, the
   capital to Honshu, not Korea), red without the rule. Specs by hand: none (no drawn change).
 - **Pin:** 75df825b → 32761b44.
+- **BLOCKERS**, the user's: the AT asked for all moves (134 of 138); (a) tick stands on ADR-620's
+  reading, (b) a field capital on the most-held land, (c) reopen. ADR-620 proposed.
 - **Next:** PLAN 7.69 (the AI lands on an enemy capital on a coast with no port).
