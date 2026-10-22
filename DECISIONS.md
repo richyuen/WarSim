@@ -167,6 +167,57 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-637 · 2026-10-22 · proposed (the user's decision) — Every idle transport group carries in the ferry's turn (PLAN 7.88b)
+
+- **Context** (PLAN 7.79c, `docs/evidence/7.79/c.md` §4). The ferry (ADR-612) ships with one transport
+  group a turn (`transportsAtPort`: the most room, the lowest id), once in STAGGER days. On run 12's saves
+  the USA has 12 and 34 groups of 24,000 men standing at its ports for 30 days, and 60 divisions (714,480
+  men) stranded on 1129 year 10: one group a turn carries two of them, eight in 30 days. PLAN 7.88a lets a
+  turn pass over a group that cannot act; that alone cannot clear the piles.
+- **Options:** (a) PLAN 7.88b: in the ferry's turn every standing group at a port of the nation's with an
+  army to carry acts (each by `board`, as today's one), so the ferry's lift is the transports the nation
+  has bought. More transports at sea at once (and open to the enemy's navy and bombers), and island
+  garrisons drained as fast as the groups allow; the piles of 30 or more cleared on the 3 saves is the AT.
+  (b) One group a turn, as now: the stranded army leaves at two divisions a week on 1129; 7.88b dropped.
+  (c) Open. Meanwhile the loop takes PLAN 7.88a.
+
+### ADR-636 · 2026-10-22 · accepted — The ferry takes the army that cannot walk to its front on its own land (PLAN 7.79c; amends ADR-612)
+
+- **Context** (`docs/evidence/7.79/measure.md` §3, `c.md`). The ferry (ADR-612) took a nation's
+  formations standing on a landmass with no front cell of its own; the operational AI allots a class of
+  formations only to the sectors it reaches (PLAN 3.5b). A formation on a front's land that reaches none
+  of its front there (closed ground between, another province group or pocket) was neither: critic run
+  12, 1129 year 10, 60 and 53 US divisions on two cells 30 days at war with Britain; 6421 year 20, 77.
+- **Read first.** `tryLanding` carries to a port on the boarders' own landmass (nothing asks the
+  target's land against theirs), so the rule is the ferry's free set.
+- **Decision** (`ai/invasion.ts`, `planFerry`, `frontReach`): a standing land formation on a front's
+  land is the ferry's when its class (landmass, group of provinces with open ground, ground) reaches no
+  front cell of the nation's on that land, nor a cell of its side's beside an enemy of its (the
+  operational AI's sectors). The reach is the operational AI's, one function now (`reachesOnLand`,
+  `groundReader` in `ai/operational.ts`; `planNation` reads the same reader). A port takes the ferry only
+  if a front cell is reached from it, so the ferried do not land where they stand for good again.
+- **Read** (`c.md`): free for the USA's ferry 20 → 157 (1129 year 10), 16 → 210 (6421 year 20). The
+  AT's piles 3 → 3: the turn's one transport group is one that cannot act (Nuuk; Port-of-Spain and
+  Roseau), and one group a turn carries two of 1129's divisions (PLAN 7.88, ADR-637). 7.79c closed not
+  done (ADR-554).
+- **Test.** `strandedFerry1938.test.ts`: Germany at war with Lithuania alone, its front East Prussia's
+  beyond Poland; a division at a home port that reaches no front cell goes aboard for a cell from which
+  the front is reached. Red without the free set. The port half is not red without it there (the port
+  nearest the front is East Prussia's already): a guard, untested by a case of its own.
+  Restated (history moved, claim kept): `ferry1938`'s "transports at a port on a front's land sail for
+  the army at home": the group at Hong Kong now boards Hong Kong's garrison (beyond China, it reaches no
+  front cell) for the front; the test clears the stranded on that land first, so it has no army to carry
+  there, as the claim says.
+- **Limits.** A group at a mainland port with stranded formations on its land boards them before it
+  sails to an island army. `wantsFerry` (ADR-614) not widened: the USA had 12 and 34 groups.
+- **Cost** (both bundles at once on separate P-cores, swapped; `.cache/prof79c/`): seed 99's year 1
+  2.68 / 2.33 → 2.63 / 2.30 ms by core (the same), invasion AI 0.084 / 0.065 → 0.102 / 0.078 ms by core
+  (about a fifth dearer); seed 99's 5 years 1.91 / 1.67 → 2.24 / 1.94 ms by core, another world from year
+  2 (1,330 operational plans in year 2 against 1,019); a year from 1129 year 10 invasion AI 0.16 → 0.25
+  ms, tick 2.52 / 2.46 → 2.27 / 2.16; from 6421 year 20 invasion AI 0.33–0.35 both, tick 4.04 / 3.86 →
+  3.72 / 3.66 (PLAN 7.83).
+- **Pin.** e6c74731 → e66bef2e.
+
 ### ADR-635 · 2026-10-22 · proposed (the user's decision) — The far army is months from the threatened sectors beyond the range: PLAN 7.79d's 30-day bar is out of reach (PLAN 7.79d)
 
 - **Context.** PLAN 7.79d was to send a far formation (standing, on its day in MARCH_DAYS) to the nearest

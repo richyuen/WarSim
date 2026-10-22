@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { wantsFerry, wantsTransport } from '../../src/sim/ai/economic';
-import { DEPLOY_RANGE_CELLS } from '../../src/sim/ai/operational';
+import { DEPLOY_RANGE_CELLS, groundReader, reachesOnLand } from '../../src/sim/ai/operational';
 import { STAGGER } from '../../src/sim/ai/strategic';
 import { neighbours4 } from '../../src/sim/nav/grid';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
@@ -9,6 +9,7 @@ import { Sim } from '../../src/sim/sim';
 import { destroyFormation, equipFormation } from '../../src/sim/systems/elements';
 import { transportRoom } from '../../src/sim/systems/amphibious';
 import { AT_PORT_CELLS } from '../../src/sim/systems/navalCombat';
+import { passageOf } from '../../src/sim/systems/movement';
 import { musterPoint, spawnPoint } from '../../src/sim/systems/production';
 import { frontierOf } from '../../src/sim/systems/territory';
 import { declareWar } from '../../src/sim/systems/war';
@@ -148,6 +149,23 @@ describe('the ferry (PLAN 7.49d1)', () => {
     const sea = water[there]!;
     [c.x[tp], c.y[tp]] = [(sea % W) + 0.5, Math.floor(sea / W) + 0.5];
     c.moving[tp] = 0;
+    // No army of Britain's to carry on that land (PLAN 7.79c, ADR-636): its formations there that
+    // reach no front cell (Hong Kong's garrison, beyond China) are the ferry's too, and go first.
+    const pass = passageOf(w, ENG);
+    const ground = groundReader(w, pass);
+    const front: number[] = [];
+    for (const k of frontierOf(w)) {
+      if (w.cells.controller[k] === ENG && neighbours4(k, W, H, w.settings.loopingMap, []).some((q) => w.cells.controller[q] !== 0 && w.wars.atWar(ENG, w.cells.controller[q]!))) front.push(k);
+    }
+    const land = comp[w.ports[there]!.cell]!;
+    const stranded: number[] = [];
+    w.formations.forEach((f) => {
+      if (c.nation[f] !== ENG || w.isFleet(f) || w.isWing(f) || w.offLand(f)) return;
+      const k = Math.floor(c.y[f]!) * W + Math.floor(c.x[f]!);
+      if (comp[k] === land && !front.some((q) => reachesOnLand(w, pass, ground, k, q))) stranded.push(f);
+    });
+    expect(stranded.length).toBeGreaterThan(0);
+    for (const f of stranded) destroyFormation(w, f);
     let sailed = false;
     for (let d = 0; d < STAGGER && !sailed; d++) {
       s.step(24);

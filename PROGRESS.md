@@ -22166,3 +22166,30 @@ No rule changed and nothing on screen changed. One task came out of it.
   7.79c's ferry.
 - **Pin:** unchanged, e6c74731 (probe fields only; the gate's pin run proves it).
 - **Next:** PLAN 7.79c.
+
+## 2026-10-22 — PLAN 7.79c closed not done: the stranded army is the ferry's, its one transport group a turn cannot act (ADR-636; ADR-637 proposed)
+
+- **Read first:** `tryLanding` carries to a port on the boarders' own landmass, so the rule is the ferry's
+  free set. Transports are not short (`tools/diag/strandFerry.ts`): the USA has 12 (1129 year 10) and 34
+  (6421 year 20) groups standing at its ports 30 of 30 days, nobody aboard, `wantsFerry` true.
+- **Rule** (ADR-636): a standing land formation on a front's land whose class reaches no front cell of
+  its nation's there, nor of its side's beside its enemies, is the ferry's; a port from which no front
+  cell is reached takes no ferry. The reach is the operational AI's, one function now
+  (`reachesOnLand`, `groundReader`).
+- **Read** (`docs/evidence/7.79/c.md`): free for the USA's ferry 20 → 157 and 16 → 210. Piles 3 → 3: the
+  ferry's turn takes one group (most room, lowest id), and on both saves it cannot act (Nuuk: Greenland's
+  army does not march to it; Port-of-Spain, Roseau: the sail to the army refused). One group (24,000
+  men) a turn would carry two of 1129's 60 divisions anyway.
+- **Closed not done** (ADR-554): BLOCKERS entry; PLAN 7.88 filed before 7.80: (a) try the groups until
+  one acts, the loop's next; (b) every idle group carries, the user's (ADR-637).
+- **Test:** `strandedFerry1938.test.ts` (Germany at war with Lithuania, a division west of Poland goes
+  aboard for East Prussia), red without the free set; the port filter is a guard with no case of its own.
+  `ferry1938` restated (claim kept): its group at Hong Kong now boards Hong Kong's stranded garrison
+  first, so the test clears it before reading the sail home.
+- **Timing** (both bundles at once on separate P-cores, swapped): seed 99's year 1 the same (2.68 / 2.33
+  → 2.63 / 2.30 ms by core), invasion AI about a fifth dearer (~0.015 ms a tick). Seed 99's five years
+  1.91 / 1.67 → 2.24 / 1.94 ms by core: another world from year 2 (1,330 operational plans in year 2
+  against 1,019), over the 1.5 ms budget as HEAD was (PLAN 7.83). From 1129 year 10 the invasion AI
+  0.16 → 0.25 ms; from 6421 year 20 unchanged.
+- **Pin:** e6c74731 → e66bef2e.
+- **Next:** PLAN 7.88a (7.79's own AT waits on 7.88, and on 7.87 if the user takes ADR-635's a).

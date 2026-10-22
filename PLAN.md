@@ -92,13 +92,33 @@ them, are 7.81–7.86. A task each, split when taken up:
       far formations that reach a threatened sector on their landmass (0.96, 0.15, 0.17 a far plan) stand
       206–353 cells from it, none within 110; a march of 1.4–2.1 cells a day puts none in range in 30
       days. No rule written; the pin unchanged. The rule over a season is PLAN 7.87, the user's.
-    - [ ] 7.79c The ferry from a fronted landmass whose front the army cannot reach (measure §3): the
+    - [x] 7.79c The ferry from a fronted landmass whose front the army cannot reach (measure §3): the
       ferry (ADR-612) takes far formations whose class reaches no sector of the nation, as from a
       landmass with no front (read first: whether `planLanding` carries to a port on the boarders' own
       landmass, else the rule is a sea march to the far port). AT: piles of 30 or more of a nation at war on one cell 30 days running
       on 1129 year 10, 6421 year 20 and 7019 year 10 (`piles.ts --days 30`) 3 → 0; a unit test (red
       without); the ADR; the pin's entry.
-    Then 7.79's AT on 10 unseen seeds × 20 years (HEAD's figure read on them first).
+      Closed not done (ADR-636, BLOCKERS 2026-10-22; `docs/evidence/7.79/c.md`): the rule is in (free for
+      the USA's ferry 20 → 157 on 1129 year 10, 16 → 210 on 6421 year 20; a port from which no front cell
+      is reached takes no ferry); piles 3 → 3. The turn's one transport group is one that cannot act
+      (Nuuk; Port-of-Spain, Roseau), and one group a turn carries two of 1129's 60 divisions: PLAN 7.88.
+      Pin e6c74731 → e66bef2e.
+    Then, after PLAN 7.88 (and 7.87 if the user takes it, ADR-635), 7.79's AT on 10 unseen seeds × 20
+    years (HEAD's figure read on them first).
+- [ ] 7.88 The ferry's transport groups (found at 7.79c; R12-B1): `transportsAtPort` gives the ferry one group a
+  turn, the most room and then the lowest id, and on run 12's saves that group can never act (1129 year 10:
+  group 126 at Nuuk, whose island army does not march to it; 6421 year 20: groups at Port-of-Spain and
+  Roseau, the sail to the army refused), while 11 and 33 more stand idle at US ports; and one group (24,000
+  men) a turn carries two of 1129's 60 stranded divisions. In two parts:
+    - [ ] 7.88a The ferry tries its standing groups at its ports, those on the land of an army it would
+      carry first, then the most room, the lowest id, until one gives an order, up to SAIL_TRIES of them.
+      AT: on 1129 year 10 and 6421 year 20, the USA's ferry turns in 30 days that give an order 0 → at
+      least half; piles read (`piles.ts --days 30`); a unit test (red without); the ADR; the pin's entry;
+      `--profile`.
+    - [ ] 7.88b Every standing group with an army to carry acts in a turn (waits on the user's ADR-637:
+      option a; dropped on b). AT: piles of 30 or more of a nation at war on one cell 30 days running on
+      1129 year 10, 6421 year 20 and 7019 year 10 3 → 0; transports at sea and island garrisons read
+      before and after; a unit test (red without); the ADR; the pin's entry; `--profile`.
 - [ ] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at
   year 20 1,174 a world on HEAD against 837 on `dd3b730` (469 at the 1938 start), worse on 24 of 24
   seeds; founded statelets at year 20 20.7 a world (6.6). 7247's Russia German grey and Soviet red

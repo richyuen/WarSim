@@ -5,6 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.79c: the stranded army is the ferry's now, but its one transport group a turn cannot act; piles 3 → 3 (2026-10-22, ADR-636; ADR-637 proposed, the user's decision)
+- **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
+  year 20 and 7019 year 10 (`piles.ts --days 30`) 3 → 0; a unit test red without; the ADR; the pin.
+- **What moved:** the rule is in (ADR-636): free for the USA's ferry 20 → 157 and 16 → 210; a unit test
+  red without; pin e6c74731 → e66bef2e. The piles 3 → 3 (`docs/evidence/7.79/c.md`).
+- **What is left:** PLAN 7.88. (a) the turn's group (most room, lowest id) is one that cannot act, at
+  Nuuk and at Port-of-Spain/Roseau, while 11 and 33 stand idle: the loop's next. (b) one group a turn
+  carries two of 1129's 60 divisions: the user's (ADR-637: a, every idle group carries; b, one a turn;
+  c, open).
+
 ### PLAN 7.79d: the far army is 80–170 days of march from the threatened sectors beyond the range; the 30-day bar out of reach (2026-10-22, ADR-635 proposed; the user's decision)
 - **The bar:** on run 12's saves 1129, 2081 and 6421 year 20, the threatened sectors with a formation of
   the planner within the range after 30 days (`frontSpread.ts`, `inRangeThreatenedAPlan`) at least twice

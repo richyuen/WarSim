@@ -484,6 +484,50 @@ function foesOf(world: World, m: number, fighting: Set<number>, stand: Standings
   return mask;
 }
 
+/**
+ * The ground a cell of open ground lies in on passage `pass`: a pocket (its number), a wide ground
+ * or ground whose cells come to one (minus the wide ground's number), or 0 for ground too wide to
+ * walk that came to none (PLAN 3.10c2b, 3.10c2b3a). What `wideNode` has answered is read first
+ * (PLAN 7.1i: `pocketOf` asks it of each cell). The reach of a class (`planNation`) and the ferry's
+ * (`reachesOnLand`) read it.
+ */
+export function groundReader(world: World, pass: Passage): (c: number) => number {
+  const nav = navOf(world);
+  const nodeOf = nav.graph.nodeOf;
+  const wideCell = (c: number): number => {
+    const node = nodeOf[c]!;
+    const m = pass.wide?.[node] ?? 0;
+    return m > 0 ? m : m < 0 ? 0 : wideNode(nav.graph, pass, node);
+  };
+  return (c: number): number => {
+    const wide = wideCell(c);
+    return wide !== 0 ? -wide : pocketOf(nav.grid, pass, c, wideCell);
+  };
+}
+
+/**
+ * Whether a formation of the nation of passage `pass` standing at cell `from` reaches cell `to`
+ * (PLAN 7.79c): `planNation`'s reach of a class to a sector's cell (PLAN 3.5b, 3.10c2b2,
+ * 3.10c2b3a) for two cells of one landmass, asked per pair: one group of provinces with open
+ * ground (none asked from closed ground, which it walks out of), then one pocket or none, and two
+ * wide grounds joined by the cells. `groundAt`: `groundReader` of `pass`, kept across the calls.
+ */
+export function reachesOnLand(world: World, pass: Passage, groundAt: (c: number) => number, from: number, to: number): boolean {
+  const nav = navOf(world);
+  const land = nav.grid.component;
+  if (land[from] === 0 || land[from] !== land[to]) return false;
+  const nodeOf = nav.graph.nodeOf;
+  const node = nodeOf[from]!;
+  const g = node !== 0 && pass.ok[pass.holder[from]!] === 1 ? pass.group![node]! : -1;
+  if (g < 0) return true;
+  if (nodeOf[to] !== 0 && pass.group![nodeOf[to]!] !== g) return false;
+  const ground = nodeOf[to] === 0 ? 0 : groundAt(to);
+  const mine = groundAt(from);
+  if (ground === mine) return true;
+  if (ground > 0 || mine > 0) return false;
+  return ground === 0 || mine === 0 || wideJoined(nav.grid, nav.graph, pass, -mine, -ground);
+}
+
 /** A holder's frontier cells, in the frontier's order. */
 interface Front {
   cells: number[];
@@ -636,21 +680,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const land = nav.grid.component;
   const nodeOf = nav.graph.nodeOf;
   const group = pass.group!;
-  // What `wideNode` has answered is read here first (PLAN 7.1i: `pocketOf` asks it of each cell).
-  const wideCell = (c: number): number => {
-    const node = nodeOf[c]!;
-    const m = pass.wide?.[node] ?? 0;
-    return m > 0 ? m : m < 0 ? 0 : wideNode(nav.graph, pass, node);
-  };
-  /**
-   * The ground a cell of open ground lies in: a pocket (its number), a wide ground or ground
-   * whose cells come to one (minus the wide ground's number), or 0 for ground too wide to walk
-   * that came to none.
-   */
-  const groundAt = (c: number): number => {
-    const wide = wideCell(c);
-    return wide !== 0 ? -wide : pocketOf(nav.grid, pass, c, wideCell);
-  };
+  const groundAt = groundReader(world, pass);
   /** `groundAt`, timed when a plan is (`OP_PROBE`). */
   const groundOf = (c: number): number => {
     if (!timing) return groundAt(c);

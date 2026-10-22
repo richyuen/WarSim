@@ -56,7 +56,7 @@ import { orderSail } from '../systems/sail';
 import { seaHolder } from '../systems/seaControl';
 import { beachReach } from '../systems/seaSupply';
 import { navOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
-import { DEPLOY_RANGE_CELLS } from './operational';
+import { DEPLOY_RANGE_CELLS, groundReader, reachesOnLand } from './operational';
 import { STAGGER } from './strategic';
 
 const near = (world: World, a: number, b: number, r: number): boolean => {
@@ -437,6 +437,57 @@ function standing(world: World, id: number, n: number): boolean {
 }
 
 /**
+ * Whether a formation of nation `n` at a cell reaches a front cell on its land (PLAN 7.79c,
+ * ADR-636): a cell of `front` (its own, or its allies' for a nation with none, `invasionAi`), else
+ * a cell of its side's beside an enemy of n's (those whose sectors the operational AI allots it
+ * to), by `reachesOnLand`. Asked once per class of cells (landmass, group of provinces with open
+ * ground, and ground; the operational AI's classes) and kept for the call; the side's cells are
+ * looked for once, when a class reaches none of `front`.
+ */
+function frontReach(world: World, n: number, front: readonly number[], pass: Passage): (cell: number) => boolean {
+  const nav = navOf(world);
+  const comp = nav.grid.component;
+  const nodeOf = nav.graph.nodeOf;
+  const groundAt = groundReader(world, pass);
+  let side: number[] | undefined;
+  const byLand = (cells: readonly number[]): Map<number, number[]> => {
+    const m = new Map<number, number[]>();
+    for (const k of cells) (m.get(comp[k]!) ?? m.set(comp[k]!, []).get(comp[k]!)!).push(k);
+    return m;
+  };
+  const own = byLand(front);
+  let sideOn: Map<number, number[]> | undefined;
+  const known = new Map<string, boolean>();
+  return (cell: number): boolean => {
+    const l = comp[cell]!;
+    if (l === 0) return false;
+    const node = nodeOf[cell]!;
+    const g = node !== 0 && pass.ok[pass.holder[cell]!] === 1 ? pass.group![node]! : -1;
+    const key = `${l}:${g}:${g < 0 ? 0 : groundAt(cell)}`;
+    const was = known.get(key);
+    if (was !== undefined) return was;
+    const any = (cells: readonly number[] | undefined): boolean => (cells ?? []).some((k) => reachesOnLand(world, pass, groundAt, cell, k));
+    let r = any(own.get(l));
+    if (!r) {
+      if (!side) {
+        side = [];
+        const { w, h, controller } = world.cells;
+        const nb: number[] = [];
+        for (const c of frontierOf(world)) {
+          const a = controller[c]!;
+          if (a === 0 || (a !== n && !world.wars.sameSide(n, a))) continue;
+          if (neighbours4(c, w, h, world.settings.loopingMap, nb).some((q) => controller[q] !== 0 && world.wars.atWar(n, controller[q]!))) side.push(c);
+        }
+        sideOn = byLand(side);
+      }
+      r = any(sideOn!.get(l));
+    }
+    known.set(key, r);
+    return r;
+  };
+}
+
+/**
  * The ferry (PLAN 7.49d1, ADR-612): nation `n`, at war with a land front (`front`, its cells on
  * it), ships its army standing on a landmass with none of those cells to its own port on a front's
  * land. Before, no rule did: the invasion AI landed only in a war with no front, and the
@@ -481,10 +532,16 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
   const cellOf = (id: number): number => Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
   const lands = new Set<number>();
   for (const k of front) lands.add(comp[k]!);
+  // On a front's land, the formations that reach none of its front cells there, nor of its side's
+  // beside its enemies (the operational AI's sectors), are the ferry's too (PLAN 7.79c, ADR-636):
+  // the operational AI allots a class only to the sectors it reaches, so they stood for good.
+  const pass = passageOf(world, n);
+  const reach = frontReach(world, n, front, pass);
   const free = (id: number): boolean => {
     if (!standing(world, id, n)) return false;
-    const l = comp[cellOf(id)]!;
-    return l !== 0 && !lands.has(l);
+    const k = cellOf(id);
+    const l = comp[k]!;
+    return l !== 0 && (!lands.has(l) || !reach(k));
   };
   const island: number[] = [];
   f.forEach((id) => {
@@ -504,20 +561,24 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
       return [dx + Math.abs(Math.floor(k / w) - Math.floor(from / w)), id];
     });
     by.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-    return sailToArmy(world, fleet, port, by.slice(0, SAIL_TRIES).map(([, id]) => id), passageOf(world, n));
+    return sailToArmy(world, fleet, port, by.slice(0, SAIL_TRIES).map(([, id]) => id), pass);
   }
   // Its port on a front's land nearest them by sea.
   const z = seaOf(world);
   const keys = waterKeys(world, n);
   const mine = keyAt(world, keys, c.x[fleet]!, c.y[fleet]!);
-  /** Whether port `i`, on a front's land, takes the ferry: open, unbombed, its sea in their waters and not an enemy's. */
+  /**
+   * Whether port `i`, on a front's land, takes the ferry: open, unbombed, its sea in their waters
+   * and not an enemy's, and a front cell reached from it (PLAN 7.79c: who lands where none is
+   * reached stands there for good).
+   */
   const open = (i: number): boolean => {
     const at = water[i]!;
     if (at < 0 || !lands.has(comp[world.ports[i]!.cell]!) || portShut(world, i)) return false;
     const zone = z.zoneOf[at]!;
     if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) return false;
     const sea = seaHolder(world, zone);
-    return sea === 0 || !world.wars.atWar(sea, n);
+    return (sea === 0 || !world.wars.atWar(sea, n)) && reach(world.ports[i]!.cell);
   };
   const km = (i: number): number => seaKm(world, c.x[fleet]!, c.y[fleet]!, (water[i]! % w) + 0.5, Math.floor(water[i]! / w) + 0.5);
   /** The squared straight cells from port `i` to the nearest front cell of n's on its land (PLAN 7.63). */
