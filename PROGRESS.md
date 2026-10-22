@@ -22291,3 +22291,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Timing:** the pass bounded at the safe steps, 7.7 ms a call (same picks); ~18 relocations a world-year.
 - **Pin:** 68eb57f6 → dc72fc97.
 - **Next:** 7.81b's AT on unseen 791–800 × 30 years against `dd3b730`'s read.
+
+## 2026-10-22 — PLAN 7.81b closed not done: the capital moves follow the reserve cut's captures
+
+- **Read** (`docs/evidence/7.81/b.md` §5, `capitalChurn.ts`, HEAD `c5de94b3` against `dd3b730`, unseen
+  791–800 × 30 years): moves a world 392.8 → 450.6 (bar: not above 392.8), captures 218.8 → 374.8, three
+  captures in 30 days 112 → 82 (bar: 0). Moves per capture 1.80 → 1.20, field moves 200.3 → 117.6.
+- **Closed not done** (ADR-554): BLOCKERS entry. The captures' volume is the reserve cut's war (7.80a,
+  ADR-639, the user's); the cases of three in 30 days are overruns. 7.81 stays open on 7.81b.
+- **Next:** PLAN 7.82 (7.79, 7.80b, 7.88b wait on ADR-635, ADR-639, ADR-637).

@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.81b: the capital moves follow the captures, the reserve cut's war; three captures in 30 days are overruns (2026-10-22, ADR-640, ADR-641; waits on ADR-639, the user's decision)
+- **The bar:** on 10 unseen seeds × 30 years capital moves a world not above `dd3b730`'s on the same seeds,
+  and no capital captured three times in 30 days.
+- **What moved** (`docs/evidence/7.81/b.md`): field capitals go far from the enemy (ADR-640) and lost
+  capitals to the safest city (ADR-641). On 791–800: moves per capture 1.80 → 1.20, field moves 200.3 →
+  117.6 a world, three captures in 30 days 112 → 82. Moves a world 392.8 → 450.6: captures are 218.8 →
+  374.8, 1.71 × `dd3b730`'s.
+- **What is left:** the volume of captures is the war the reserve cut brought (7.80a, ADR-639: the user's
+  a, b or c). Three captures in 30 days are nations overrun with no safer city on their main land; none
+  is a bar for a placement rule. Read again once ADR-639 is decided.
+
 ### PLAN 7.80: the late map's shreds are the reserve cut's war, a user's rule (2026-10-22, ADR-639 proposed; the user's decision)
 - **The bar:** on 10 unseen seeds, pieces of 2–400 cells at year 20 not above `dd3b730`'s on the same
   seeds; founded statelets at year 20 not above `dd3b730`'s.

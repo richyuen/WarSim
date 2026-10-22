@@ -77,3 +77,23 @@ The six left on 3301 (Nationalist Spain, the Republic, Romania, Czechoslovakia, 
 pick was the safest city on the main land each time (`bestCityMost` = the pick's gap); overrun nations.
 The Raj and Nationalist Spain had safer cities on other lands (33, 23 steps), which ADR-620 leaves out.
 The bounded pass (out to the safe steps) gives the same picks: 3301 the same counts.
+
+## 5. 7.81b's AT: HEAD `c5de94b3` against `dd3b730` on unseen 791–800 × 30 years
+
+| seed | moves | captures | cases of 3+ in 30 days |
+|---|---|---|---|
+| 791 | 374 → 409 | 125 → 359 | 6 → 9 |
+| 792 | 442 → 575 | 268 → 510 | 13 → 16 |
+| 793 | 419 → 515 | 267 → 399 | 12 → 8 |
+| 794 | 222 → 423 | 141 → 368 | 4 → 6 |
+| 795 | 520 → 581 | 308 → 456 | 15 → 17 |
+| 796 | 535 → 303 | 235 → 268 | 12 → 3 |
+| 797 | 370 → 473 | 229 → 367 | 13 → 5 |
+| 798 | 276 → 416 | 165 → 329 | 9 → 2 |
+| 799 | 472 → 458 | 255 → 377 | 19 → 8 |
+| 800 | 298 → 353 | 195 → 315 | 9 → 8 |
+| **a world** | **392.8 → 450.6** | **218.8 → 374.8** | **112 → 82** |
+
+Both bars missed. Moves per capture 1.80 → 1.20 and field moves 200.3 → 117.6 a world: the moves left
+follow the captures, 1.71 times `dd3b730`'s, more war (the step 7.80a found, the reserve cut, ADR-639).
+The cases of three in 30 days are overruns (§4), on `dd3b730` as on HEAD.

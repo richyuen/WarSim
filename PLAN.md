@@ -180,6 +180,9 @@ them, are 7.81–7.86. A task each, split when taken up:
           + 10 years cases of three captures in 30 days 13 → under half; a unit test (red without); the
           ADR; the pin's entry.
           Done (ADR-641): 13 → 6; captures 275 → 181, moves 274 → 212; pin 68eb57f6 → dc72fc97.
+      Closed not done (ADR-554, BLOCKERS 2026-10-22; `b.md` §5): on 791–800 × 30 years moves a world
+      392.8 → 450.6 (bar 392.8), captures 218.8 → 374.8, three captures in 30 days 112 → 82 (bar 0). Moves
+      per capture 1.80 → 1.20: the moves follow the captures, the reserve cut's war (ADR-639, the user's).
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts
   (`critic/c12_cmp_all.txt`, `c12_summary_all.txt`). Taken up after 7.79 and 7.80, re-read on their HEAD
