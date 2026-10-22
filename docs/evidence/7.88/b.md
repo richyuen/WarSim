@@ -88,4 +88,5 @@ AI mean a tick by core, HEAD → rule:
 
 Within the noise; seed 99's world differs from the first ferry turn on (mean tick 2.15 / 2.08 →
 1.76 / 1.86 ms, another history). The longest call from 6421 is not traced; the turn of 26 groups is
-the likely one.
+the likely one. The seed-99 pair ran while an unpinned 30-day read of 1129 (`pileDaily.ts`)
+ran too, on both bundles alike.

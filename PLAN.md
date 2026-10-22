@@ -115,6 +115,8 @@ them, are 7.81–7.86. A task each, split when taken up:
   1129 year 10, 6421 year 20 and 7019 year 10 2 → 0 (`piles.ts --days 30`); transports at sea and
   formations aboard read (`ferryLift.ts`); a unit test (red without); the ADR; the pin's entry;
   `--profile`.
+  In the same commit: `planFerry`'s doc ("its transports" bullet) and `SAIL_TRIES`'s still say a turn tries
+  groups until one acts (7.88a); since ADR-642 every group acts and SAIL_TRIES counts the refusals that end it.
 - [ ] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at
   year 20 1,174 a world on HEAD against 837 on `dd3b730` (469 at the 1938 start), worse on 24 of 24
   seeds; founded statelets at year 20 20.7 a world (6.6). 7247's Russia German grey and Soviet red
