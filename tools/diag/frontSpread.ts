@@ -55,6 +55,12 @@ for (const { seed, bin, skip } of cases) {
     engaged: 0,
     wars: 0,
     landAtWar: 0,
+    threatenedNear: 0,
+    farPlans: 0,
+    far: 0,
+    farHot: 0,
+    farHotCells: 0,
+    farHotNear: 0,
   };
   const controller0 = new Uint16Array(w.cells.controller);
   for (let d = 0; d < days; d++) {
@@ -70,7 +76,15 @@ for (const { seed, bin, skip } of cases) {
         t.threatened++;
         t.inThreatened += x.n;
         if (x.n > 0) t.threatenedManned++;
+        if (x.inRange) t.threatenedNear++;
         if (x.attack) t.threatenedAttack++;
+      }
+      if (p.empty && p.empty.farHot !== undefined) {
+        t.farPlans++;
+        t.far += p.empty.far;
+        t.farHot += p.empty.farHot;
+        t.farHotCells += p.empty.farHotCells ?? 0;
+        t.farHotNear += p.empty.farHotNear ?? 0;
       }
       for (const c of p.classes) {
         t.classes++;
@@ -112,6 +126,11 @@ for (const { seed, bin, skip } of cases) {
     classesThin: r(t.thin / t.classes),
     inRangeSectorsAPlan: r(t.classFront / t.plans),
     inRangeThreatenedAPlan: r(t.classThreatened / t.plans),
+    threatenedNearAPlan: r(t.threatenedNear / t.plans),
+    farAFarPlan: r(t.far / Math.max(1, t.farPlans)),
+    farHotAFarPlan: r(t.farHot / Math.max(1, t.farPlans)),
+    farHotCells: r(t.farHotCells / Math.max(1, t.farHot)),
+    farHotNearAFarPlan: r(t.farHotNear / Math.max(1, t.farPlans)),
     allottedThreatenedBefore: r(t.before / t.classIds),
     allottedThreatenedAfter: r(t.after / t.classIds),
     canTake: r(t.canTake / t.classIds),

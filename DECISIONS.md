@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-635 · 2026-10-22 · proposed (the user's decision) — The far army is months from the threatened sectors beyond the range: PLAN 7.79d's 30-day bar is out of reach (PLAN 7.79d)
+
+- **Context.** PLAN 7.79d was to send a far formation (standing, on its day in MARCH_DAYS) to the nearest
+  threatened sector its class reaches when that sector has less of the planner than its threat's share.
+  AT: on run 12's saves 1129, 2081 and 6421 year 20, the threatened sectors with a formation of the
+  planner within DEPLOY_RANGE_CELLS after 30 days at least twice HEAD's (`inRangeThreatenedAPlan` 1.27,
+  1.62, 5.58).
+- **Read first** (`docs/evidence/7.79/d/measure.md`, HEAD `7bcadb21`, days 21–30 after the load): the far
+  formations whose class reaches a threatened sector on its landmass are 0.96 of 5.59, 0.15 of 1.29 and
+  0.17 of 7.41 a far plan, their nearest threatened sector 330, 353 and 206 cells off (straight line), none
+  within 110 cells (the range and a month's march). A land formation marches 1.4–2.1 cells a day (p25–p90):
+  80–170 days before one is within the range. No share can raise the figure within 30 days. The rule
+  was not written; the pin is unchanged (e6c74731).
+- **Beyond the bar.** 83 %, 89 % and 98 % of the far formations reach no threatened sector on their
+  landmass at all: PLAN 7.79c's ferry, the larger lever, next.
+- **Options:** (a) PLAN 7.87: the rule as 7.79d wrote it, judged over a season (the figure read over 180
+  days from the same saves, at least twice HEAD's), the share in strength, min((1 − RESERVE) × the army ×
+  the sector's share of the threat, OFFENSIVE_RATIO × threat), so that one small enemy does not draw the
+  whole army; several far formations to a sector (a deviation from ADR-190's one a sector). (b) No rule:
+  a march of four to seven months is no answer to engaged per war; 7.79's own AT on 10 unseen seeds
+  judges after 7.79c, and 7.87 is dropped. (c) Open. Meanwhile the loop takes PLAN 7.79c.
+- **Tools.** `tools/diag/marchSpeed.ts`; `frontSpread.ts`' far columns (read only, `OP_PROBE.sectors`).
+
 ### ADR-634 · 2026-10-22 · accepted — The threatened sectors first: the allotment by where the enemy stands, and a kept march yields to it (PLAN 7.79b; amends ADR-53, PLAN 1.25's weights)
 
 - **Context** (`docs/evidence/7.79/measure.md` §2, `b.md`): late, a nation at war allots its army

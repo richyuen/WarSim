@@ -80,7 +80,7 @@ them, are 7.81–7.86. A task each, split when taken up:
       sectors yielding (they took half), not those begun beyond the range; year 1 from one day-60
       save 0.741 → 0.895, 0.578 → 0.857; engaged per war late 0–0.46 (little moved: 7.79d's); pin
       a4ff4661 → e6c74731; operational AI about a tenth dearer on the long fronts.
-    - [ ] 7.79d The march to a threatened sector beyond the range (measure §2.1 a): late 88–98 % of the
+    - [x] 7.79d The march to a threatened sector beyond the range (measure §2.1 a): late 88–98 % of the
       threatened sectors on 1129 and 2081 year 20 and 6421 year 20 have no formation of the planner
       within DEPLOY_RANGE_CELLS, and the marches from afar serve only sectors with nobody. A far
       formation (standing, its day in MARCH_DAYS) marches to the nearest threatened sector its class
@@ -88,6 +88,10 @@ them, are 7.81–7.86. A task each, split when taken up:
       threatened sectors with a formation of the planner within the range after 30 days at least
       twice HEAD's (`frontSpread.ts`, `inRangeThreatenedAPlan`); engaged per war read; a unit test
       (red without); the ADR; the pin's entry; `--profile`.
+      Closed not done (ADR-635 proposed, BLOCKERS 2026-10-22; `docs/evidence/7.79/d/measure.md`): the
+      far formations that reach a threatened sector on their landmass (0.96, 0.15, 0.17 a far plan) stand
+      206–353 cells from it, none within 110; a march of 1.4–2.1 cells a day puts none in range in 30
+      days. No rule written; the pin unchanged. The rule over a season is PLAN 7.87, the user's.
     - [ ] 7.79c The ferry from a fronted landmass whose front the army cannot reach (measure §3): the
       ferry (ADR-612) takes far formations whose class reaches no sector of the nation, as from a
       landmass with no front (read first: whether `planLanding` carries to a port on the boarders' own
@@ -151,6 +155,14 @@ them, are 7.81–7.86. A task each, split when taken up:
   measured on the critic's seeds; on 10 unseen seeds × 30 years bursts a world and civilian bursts (over
   10 × men) not above `dd3b730`'s on the same seeds, or the user's ADR accepting the measured volume;
   the gate green.
+- [ ] 7.87 The far march to a threatened sector, over a season (found at 7.79d; R12-B1; waits on the
+  user's ADR-635: option a; dropped on b): a far formation (standing, its day in MARCH_DAYS) marches to
+  the nearest threatened sector its class reaches on its landmass when the planner's strength within
+  the range of it and marching to it is under min((1 − RESERVE) × the army × the sector's share of the
+  threat, OFFENSIVE_RATIO × threat); before the marches to empty sectors. AT: on run 12's saves 1129,
+  2081 and 6421 year 20, `inRangeThreatenedAPlan` over days 1–180 (`frontSpread.ts`) at least twice
+  HEAD's on the same window (read first); engaged per war read; a unit test (red without); the ADR;
+  the pin's entry; `--profile`.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

@@ -22151,3 +22151,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   6421 1.85/1.71 → 2.02/2.13), the tick 6–9 % (PLAN 7.83).
 - **Pin:** a4ff4661 → e6c74731.
 - **Next:** PLAN 7.79d.
+
+## 2026-10-22 — PLAN 7.79d closed not done: the far army is months from the threats beyond the range (ADR-635 proposed)
+
+- **Read first** (`docs/evidence/7.79/d/measure.md`; `frontSpread.ts` far columns, `OP_PROBE.sectors`
+  fields `inRange`, `farHot*`, read only; `tools/diag/marchSpeed.ts`): on 1129, 2081 and 6421 year 20,
+  days 21–30, HEAD's `inRangeThreatenedAPlan` 1.27, 1.62, 5.58 (the same as 7.79b's `d21_rule`). The far
+  formations whose class reaches a threatened sector on its landmass: 0.96 of 5.59, 0.15 of 1.29, 0.17
+  of 7.41 a far plan, 330, 353 and 206 cells from the nearest, none within 110. Land formations march
+  1.4–2.1 cells a day: 80–170 days before one is within the range.
+- **Closed not done** (ADR-554): no share can meet the 30-day bar, so the rule was not written. BLOCKERS
+  entry; PLAN 7.87 filed (the rule judged over 180 days), the user's (ADR-635: a, b or c).
+- **Beyond the bar:** 83–98 % of the far formations reach no threatened sector on their landmass: PLAN
+  7.79c's ferry.
+- **Pin:** unchanged, e6c74731 (probe fields only; the gate's pin run proves it).
+- **Next:** PLAN 7.79c.

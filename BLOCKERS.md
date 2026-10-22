@@ -5,6 +5,18 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.79d: the far army is 80–170 days of march from the threatened sectors beyond the range; the 30-day bar out of reach (2026-10-22, ADR-635 proposed; the user's decision)
+- **The bar:** on run 12's saves 1129, 2081 and 6421 year 20, the threatened sectors with a formation of
+  the planner within the range after 30 days (`frontSpread.ts`, `inRangeThreatenedAPlan`) at least twice
+  HEAD's (1.27, 1.62, 5.58); a unit test red without; the pin's entry.
+- **What moved:** nothing; no rule written (`docs/evidence/7.79/d/measure.md`). The far formations that
+  reach a threatened sector on their landmass (0.96, 0.15, 0.17 a far plan) stand 206–353 cells from the
+  nearest, none within 110 (the range and a month's march at 1.4–2.1 cells a day). No share of the far
+  army can raise the figure in 30 days.
+- **What is left:** the user's (ADR-635). (a) PLAN 7.87, the rule judged over 180 days; (b) no rule, 7.87
+  dropped, 7.79's AT judges after 7.79c; (c) open. Meanwhile the loop takes PLAN 7.79c (83–98 % of the
+  far formations reach no threatened sector on their landmass: the ferry's).
+
 ### RESOLVED 2026-10-22 (option b, the user's decision: 7.74 closed not done; PLAN 7.78 dropped; industry stays a first-strike target) · PLAN 7.74: Poland's first strike is an empty Berlin by its output, not an army; the AT red on HEAD (2026-10-22, ADR-632 proposed; the user's decision)
 - **The bar:** on `nukeCase.ts 9437 POL GER 10 65 bomber`, a first decision within 60 days within a
   blast's radius of a land formation of the other side of Poland's war; red with THEATRE_FLOOR

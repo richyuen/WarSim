@@ -147,10 +147,10 @@ export const OP_PROBE: { now?: () => number; plan?: (p: PlanTimes) => void; ask?
 export interface SectorsSeen {
   nation: number;
   tick: number;
-  sectors: { threat: number; n: number; strength: number; attack: boolean; cx: number; cy: number }[];
+  sectors: { threat: number; n: number; strength: number; attack: boolean; cx: number; cy: number; inRange?: boolean }[];
   classes: { ids: number; front: number; threatened: number; before: number; after: number; filled: number; canTake: number; keptCold: number }[];
   /** Of the marches from afar: sectors with no taker allotted passed over for a taker marching in, for one of the planner's standing in or next to it, for one of its side's (a partner's sector); the empty sectors (-1: not looked for: no far formation and none to spare); the far formations; summed over the far formations' searches, the empty sectors their class reaches (`reached`), those on another landmass, and those `reaches` refused; per class with far formations, its cell, ground and province group, the empty sectors it reaches, and the sectors it does not reach for want of a snapped cell, for another province group, for another pocket. */
-  empty?: { takers: number; stood: number; sideStood: number; empties: number; far: number; reachedEmpty: number; otherLand: number; unreached: number; classes?: { cell: number; ground: number; provinceGroup: number; far: number; reached: number; snap: number; group: number; pocket: number }[] } | undefined;
+  empty?: { takers: number; stood: number; sideStood: number; empties: number; far: number; reachedEmpty: number; otherLand: number; unreached: number; farHot?: number; farHotCells?: number; farHotNear?: number; classes?: { cell: number; ground: number; provinceGroup: number; far: number; reached: number; snap: number; group: number; pocket: number }[] } | undefined;
 }
 
 /** One `askMove` of a timed plan (`OP_PROBE`): the formation, the cell it stood on, the cell asked, the answer, ms, and the refusal kept for it before the call. */
@@ -1058,6 +1058,19 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       empties++;
     }
     if (probeEmpty) {
+      // PLAN 7.79d, read only: the far formations whose class reaches a threatened sector on its landmass, and the cells to the nearest.
+      probeEmpty.farHot = 0;
+      probeEmpty.farHotCells = 0;
+      for (const id of far) {
+        const ci = classOf[id]!;
+        let bd = Infinity;
+        for (const i of reached[ci]!) if (list[i]!.threat > 0 && land[list[i]!.hold] === land[classCell[ci]!]) bd = Math.min(bd, dist2(id, list[i]!));
+        if (bd < Infinity) {
+          probeEmpty.farHot++;
+          probeEmpty.farHotCells += Math.sqrt(bd);
+          if (Math.sqrt(bd) <= range + 50) probeEmpty.farHotNear = (probeEmpty.farHotNear ?? 0) + 1;
+        }
+      }
       probeEmpty.empties = empties;
       probeEmpty.far = far.length;
       if (probeReach) {
@@ -1145,7 +1158,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     }
   }
   mark();
-  if (OP_PROBE.sectors) OP_PROBE.sectors({ nation: n, tick: world.tick, classes: probeClasses, empty: probeEmpty, sectors: list.map((s) => ({ threat: s.threat, n: s.formations.length, strength: s.strength, attack: s.formations.length > 0 && s.strength >= OFFENSIVE_RATIO * s.threat, cx: s.cx, cy: s.cy })) });
+  if (OP_PROBE.sectors) OP_PROBE.sectors({ nation: n, tick: world.tick, classes: probeClasses, empty: probeEmpty, sectors: list.map((s) => ({ threat: s.threat, n: s.formations.length, strength: s.strength, attack: s.formations.length > 0 && s.strength >= OFFENSIVE_RATIO * s.threat, cx: s.cx, cy: s.cy, inRange: s.threat > 0 && all.some((id) => dist2(id, s) <= range2) })) });
   // Orders.
   const isArmour = (id: number): boolean => (armour[f.template[id]!] ?? 0) >= SPEARHEAD_ARMOUR;
   for (const s of list) {
