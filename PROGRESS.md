@@ -22066,3 +22066,23 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 7.5, the critic run, the next iteration's task: it is the first unchecked task (step 3),
   and with every other task closed the DONE condition's trigger of step 2a applies (`critic:due` cannot
   see it: Phase 7 has no phase review). `npm run check:review` first, then the critic (ADR-554).
+
+## 2026-10-22 — PLAN 7.5: check:review red before critic run 12; three causes fixed, the rerun cut off
+
+- **Why the critic is due:** `critic:due` says no (no phase review since `dd3b730`), but every task
+  before PLAN 7.5 is closed, so step 2a's DONE-condition trigger applies (ADR-554).
+- **check:review on `e53f7154`:** red, 5 tests not on `knownRed.json` (fightSeen1938 and zoomDemo1938
+  known red as before). Each bisected from `dd3b730` (the last green review):
+  - `aiSweep1-3` ("fleets that stand after ten years: expected 0"): `91d596b8`, PLAN 7.69. Before it 1
+    of 197 start fleets stood ten years (a Soviet fleet, struck at its base on day 913 at war); the
+    rules now free every fleet by year 10. Guard moved to year 1, at least 25 standing (53, 49, 63 on
+    seeds 1-3): ADR-633, `79f0431f`.
+  - `research1938`: `3f672059` (PLAN 7.67) slowed Germany's research under the bar; by `aad43437`
+    (PLAN 7.73a) Germany on seed 1938 is dead by December 1938. The AI's history, not the panel: the
+    spec runs with the AI off (the budget is a rule without AI), `4879a43d`.
+  - `editorForces1938` North Sea standoff: `7bb2427b` (PLAN 7.59, ADR-608) restated the unit test and
+    not this spec. Restated to ADR-608 from an hourly read (battle at Germany's places, hours 27-46),
+    `b925f374`.
+- **Rerun on `b925f374`:** typecheck, lint, build and parity green; stopped by Claude Code in the
+  unit stage for low system memory (not a test failure). Not restarted.
+- **Next:** `npm run check:review` on this HEAD, alone on the machine; green, then the critic (step 2a).
