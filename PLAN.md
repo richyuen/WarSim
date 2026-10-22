@@ -36,6 +36,14 @@ The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
 when taken up:
 
+- [ ] 7.77 The late land war under the air war (found at 7.51b; emergent 6, aircraft 7; R11-B1 as
+  7.49 left it, ADR-614): the air war follows the land war by design (ADR-377), and late the land
+  war stands at a twentieth of year 1's. AT: on seeds 7401–7410 × 20 years (`airLate.ts`), land
+  formations engaged per war in years 2–20 at least a tenth of year 1's (0.057 on `309f0d4e`),
+  and air battles at least a tenth of year 1's (0.065); no tick over budget; the pin's entry.
+  Stop: two full re-measures flat, the bar is the user's (ADR-554). Waits on the user's choice in
+  BLOCKERS (7.51b).
+
 - [ ] 7.74 An overrun holder's first strike is on the enemy overrunning it (found at 7.62; PLAN
   7.18j's claim, which only the critic's France case held, and France now holds fire): a case of an
   editor-armed holder at war that still strikes under ADR-629 (the critic's Poland,
@@ -62,6 +70,10 @@ when taken up:
     - [ ] 7.51b The late air war: air battles in years 2–20, on 7.49's 10 unseen seeds, at least a
       tenth of year 1's, or a BLOCKERS entry with the measured cause, the user's to accept. Read
       after 7.49 (whose parts c–f wait on the user). Stop: two full re-measures flat (ADR-554).
+      Measured, bar missed (`docs/evidence/7.51/b.md`, `tools/diag/airLate.ts`, on `309f0d4e`):
+      0.065 of year 1 pooled (2 of 10 seeds at a tenth); the cause, the late land war (air battles
+      against engaged r 0.45, against wars 0.06; engaged per war 0.057 of year 1): PLAN 7.77; the
+      user's (BLOCKERS).
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

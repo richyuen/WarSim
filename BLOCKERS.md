@@ -5,6 +5,25 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.51b: the late air war measured; air battles in years 2–20 at 0.065 of year 1's, bar a tenth; the cause the late land war (2026-10-22; the user's decision)
+- **The bar:** on PLAN 7.49's unseen seeds 7401–7410 × 20 years, air battles a year in years 2–20
+  at least a tenth of year 1's, or this entry with the measured cause, the user's to accept.
+- **What moved** (`docs/evidence/7.51/b.md`, `tools/diag/airLate.ts`, on `309f0d4e`): year 1
+  31,097 air battles on the ten seeds, years 2–20 200.7 a seed a year: 0.065 (by seed 0.043–0.146;
+  7405 and 7410 at a tenth). Run 11 read 0.038 on its 14 seeds. Sorties aloft 40–58 in year 1,
+  10–14 after.
+- **The cause, measured:** the air war follows the land war (ADR-377: a nation at war flies at
+  the enemy's land forces in range). Over the 190 seed-years, air battles against land formations
+  engaged r 0.45, against wars running 0.06; by quartile of engaged, 112 / 136 / 187 / 317 air
+  battles a year. Engaged per war late is 0.057 of year 1's, the air 0.065 of its own. PLAN 7.26
+  found the air AI tasks as much of what is in range late as early (ADR-519) and a patrol over home
+  meets nothing (ADR-520).
+- **What is left:** the user's. (a, recommended) 7.51b closed not done on this cause, and the
+  late land war taken up again as PLAN 7.77 (its bar a tenth of year 1's, 7.49's was a quarter);
+  (b) 7.51b closed not done, no land-war task: the aircraft score waits for the next critic run;
+  (c) an air rule not tied to the land war (an air war over enemy airbases or fleets with no
+  front: measured as meeting little in ADR-520), its own task. Meanwhile the loop takes PLAN 7.74.
+
 ### RESOLVED 2026-10-22 (option b, the user's decision: the rule in, the France test amended to what it makes; 7.62 ticked on its own case, its 30-year bars missed; PLAN 7.74 re-homes 7.18j's aim) · PLAN 7.62: the empty-capital rule silences the critic's France of R8-B1; `nukeOverrun1938.test.ts` red with it, so the rule waits in a patch (2026-10-22, ADR-629 proposed; the user's decision)
 - **The bar:** the critic's Poland (`nukeCase.ts 9437 POL GER 10 65 bomber`) strikes no capital with
   men share under 0.01 in 60 days and still strikes within 60 days (R8-B1); seeds 781–790 × 30

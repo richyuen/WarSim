@@ -22016,3 +22016,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin:** 2c4e2593 → a4ff4661.
 - **Order:** committed after PLAN 7.76 (its France test red with this rule alone).
 - **Next:** PLAN 7.51b's measurement (the user's go: 5 runs at a time), then 7.74.
+
+## 2026-10-22 — PLAN 7.51b: the late air war measured; bar missed, the cause the late land war (the user's)
+
+- **Tool:** `tools/diag/airLate.ts` (new): per year air battles, sorties aloft, wars, wings, land
+  formations engaged and per war. Seeds 7401–7410 × 20 years on `309f0d4e`, five at a time (the
+  first try, twenty sims at once, was stopped by Claude Code for low memory).
+- **Read** (`docs/evidence/7.51/b.md`): air battles years 2–20 at 0.065 of year 1's pooled (bar
+  0.10; 7405 0.146, 7410 0.100, the rest 0.043–0.065). Air battles follow land formations engaged
+  (r 0.45; wars r 0.06); engaged per war late 0.057 of year 1's.
+- **BLOCKERS**, the user's: (a) 7.51b closed not done, PLAN 7.77 (the late land war) next;
+  (b) closed, no task; (c) an air rule not tied to the land war.
+- **Next:** PLAN 7.74 while 7.51b and 7.77 wait on the user.
