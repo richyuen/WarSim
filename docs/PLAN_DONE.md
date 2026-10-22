@@ -13847,3 +13847,37 @@ Of 7.33 (open in PLAN.md):
   AT on 7.73c's read (`docs/evidence/7.73/c.md`): far landings held 30 days by a side with a front of
   its own in 75/308 wars (24.4 %, bar a fifth); engaged per war-day 0.2400 (bar not below 0.2383);
   longest invasion AI call 12.6 ms (bar 50); no lander in debt.
+
+<!-- moved 2026-10-22 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21;
+  AI nuclear use 7, the critic's run 11 design objection; `docs/evidence/7.52/c.md`): a capital's
+  TARGET_CAPITAL counts on a first strike only with an army in the blast (men share of the
+  theatre's men at least 0.01); on a strike back as now. AT: the critic's Poland case
+  (`nukeCase.ts 9437 POL GER 10 65 bomber`) strikes no capital with men share under 0.01 in 60
+  days (Berlin on day 27 on HEAD); 7.52b's seeds 781–790 × 30 years re-read (`nukeToll.ts`): the
+  bursts with civilians over 10 × men at most 21 − 8 = 13 of them (21 of 73 on `ec1ac280`), and the
+  strikes back unchanged in count; R8-B1 held: an editor-armed holder at war (the same Poland case)
+  still strikes within 60 days, or a BLOCKERS entry with what it strikes instead; a unit test (red
+  without: an empty enemy capital as a first strike's best place); SPEC §6.4 amended; the ADR's
+  entry; the pin's entry.
+  Measured, not in (ADR-629 proposed, `docs/evidence/7.62/README.md`, the rule in
+  `docs/evidence/7.62/rule.patch`): Poland strikes a Soviet army on day 35 (met), but the critic's
+  France of R8-B1 never strikes (its one strike was an empty Berlin) and `nukeOverrun1938.test.ts` is
+  red; the 30-year bars missed too (20 → 21, 21 → 23): the user's (BLOCKERS).
+  In (2026-10-22, the user's decision b, ADR-629 accepted): the patch applied, the France test
+  amended (an empty Berlin weighs no capital, 99 places in 100 days; France holds fire; red without:
+  58 places weighed 0.3, Berlin struck days 58–59). Ticked on Poland's case; the 30-year bars missed
+  (21, bar 13; 23, bar 21). Pin unchanged (2c4e2593). Left: PLAN 7.74.

@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.62: the empty-capital rule silences the critic's France of R8-B1; `nukeOverrun1938.test.ts` red with it, so the rule waits in a patch (2026-10-22, ADR-629 proposed; the user's decision)
+### RESOLVED 2026-10-22 (option b, the user's decision: the rule in, the France test amended to what it makes; 7.62 ticked on its own case, its 30-year bars missed; PLAN 7.74 re-homes 7.18j's aim) · PLAN 7.62: the empty-capital rule silences the critic's France of R8-B1; `nukeOverrun1938.test.ts` red with it, so the rule waits in a patch (2026-10-22, ADR-629 proposed; the user's decision)
 - **The bar:** the critic's Poland (`nukeCase.ts 9437 POL GER 10 65 bomber`) strikes no capital with
   men share under 0.01 in 60 days and still strikes within 60 days (R8-B1); seeds 781–790 × 30
   years: civilian bursts (over 10 × men) at most 13, strikes back unchanged; a unit test, red without;

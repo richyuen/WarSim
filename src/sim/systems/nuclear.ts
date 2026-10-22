@@ -77,7 +77,8 @@
  *   the striker's side's men there (the men each as a share of the side's within FRONT_KM of the
  *   place, its theatre; PLAN 7.18c; the enemy's theatre at least THEATRE_FLOOR of all the side's
  *   men, PLAN 7.18j, and at least THEATRE_MEN_MIN men, PLAN 7.32); + TARGET_CAPITAL with an enemy capital in it, of a nation that
- *   holds CAPITAL_WEIGHT of the side's output (PLAN 7.18d); × the chance the
+ *   holds CAPITAL_WEIGHT of the side's output (PLAN 7.18d), on a first strike only with CAPITAL_MEN_MIN of
+ *   the theatre's men in the blast (PLAN 7.62, ADR-629: an empty capital is no first strike's target); × the chance the
  *   warhead gets there (PLAN 6.7, SPEC's "expected damage": 1 by missile, 1 − the bomber's
  *   interception chance there by bomber).
  * - desperation (`desperationOf`), 0 to 2: how far its side is losing the war (−score / 100), the
@@ -625,6 +626,14 @@ export const TARGET_SCALE = 10;
 export const TARGET_CAPITAL = 0.3;
 /** The share of its side's output a nation holds for its capital to be worth TARGET_CAPITAL (PLAN 7.18d). */
 export const CAPITAL_WEIGHT = 0.1;
+/**
+ * The share of the theatre's men (`PlaceParts.menShare`) a first strike's blast holds for an enemy
+ * capital in it to be worth TARGET_CAPITAL (PLAN 7.62, ADR-629, the user's decision: critic run 11's
+ * editor-armed Poland bombed Berlin, 334,000 civilians and 379 men, on the capital's value; on 7.52b's
+ * seeds 13 of 15 bursts that killed over ten times more civilians than men were on a capital). A
+ * strike back weighs a capital whole.
+ */
+export const CAPITAL_MEN_MIN = 0.01;
 export const DESPERATION_CAPITAL = 0.5;
 export const DESPERATION_FTD = 0.5;
 /** The weight of the share of its side's men lost in the war (PLAN 7.6a). */
@@ -907,7 +916,7 @@ export interface PlaceParts {
 /** The parts of a burst's value at (x, y) for `n` in `war` on `side` (a diagnostic's). */
 export function placeParts(world: World, n: number, war: War, side: number, x: number, y: number): PlaceParts {
   const shared = warInputs(world, n, war, side, retaliates(world, n, war, side));
-  return partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared));
+  return partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared), shared.retaliating);
 }
 
 /** What a yield's burst at a place is weighed by: its value, the chance it gets there and the people it kills. */
@@ -936,7 +945,7 @@ function byUtility(shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'
  * strike's utility was about 0.27 and 0.23 (`docs/evidence/7.38/measure-e.md`). Only the value and
  * the dead differ between the yields, so the dead's cost decides against a value a little higher.
  */
-function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, score: YieldScore): PlaceParts {
+function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, score: YieldScore, retaliating: boolean): PlaceParts {
   const { radius, enemy } = v;
   const { w, h, econ, controller } = world.cells;
   // The radii weighed: the holder's widest, and a fission one's when that is wider (PLAN 7.38b).
@@ -1002,8 +1011,10 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, s
     const share = econShare + menShare - ownShare;
     let capital = 0;
     // A capital of weight to the enemy side (PLAN 7.18d, critic R8-B1: the Soviet Union struck Nepal's,
-    // 1,000 dead, at war with China): its nation holds CAPITAL_WEIGHT of the side's output.
-    for (const m of enemy) {
+    // 1,000 dead, at war with China): its nation holds CAPITAL_WEIGHT of the side's output. On a first
+    // strike only with an army in the blast (PLAN 7.62, ADR-629): CAPITAL_MEN_MIN of the theatre's men
+    // at this yield, so a capital may count at the wider yield alone.
+    for (const m of retaliating || menShare >= CAPITAL_MEN_MIN ? enemy : []) {
       if (nc.living[m] !== 1 || blastShare(seaKm(world, x, y, nc.capitalX[m]!, nc.capitalY[m]!), radii[r]!) === 0) continue;
       const all = v.econAll();
       if (all > 0 && (v.held()[m] ?? 0) >= CAPITAL_WEIGHT * all) capital = TARGET_CAPITAL;
@@ -1025,7 +1036,7 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, s
  */
 export function nukeInputs(world: World, n: number, war: War, side: number, x: number, y: number, retaliating = false): NukeInputs {
   const shared = warInputs(world, n, war, side, retaliating);
-  const p = partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared));
+  const p = partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared), shared.retaliating);
   return { targetValue: p.value, through: p.through, people: p.people, ...shared };
 }
 
@@ -1410,7 +1421,7 @@ export function weighWar(world: World, n: number, war: War, side: number, indust
     aim,
     shared,
     places: nukeTargets(world, n, war, side, aim).map(([x, y]) => {
-      const p = partsIn(world, n, view, x, y, byUtility(shared));
+      const p = partsIn(world, n, view, x, y, byUtility(shared), shared.retaliating);
       return { x, y, value: p.value, through: p.through, yieldN: p.yieldN, people: p.people };
     }),
   };

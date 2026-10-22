@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-629 · 2026-10-22 · proposed (the user's decision) — An empty capital as no first-strike target, measured: it silences the critic's France of R8-B1 (PLAN 7.62; ADR-611 b)
+### ADR-629 · 2026-10-22 · accepted (option b, the user's decision, 2026-10-22) — An empty capital as no first-strike target, measured: it silences the critic's France of R8-B1 (PLAN 7.62; ADR-611 b)
 
 - **Context** (ADR-611, critic run 11's design objection): the editor-armed Poland of seed 9437
   bombed Berlin, 334,000 civilians and 379 men, on the capital's TARGET_CAPITAL (0.3). The user chose
@@ -184,7 +184,18 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   back 21 → 23 (bar unchanged), the worlds parting at the first changed decision.
 - **Options:** (a) no rule (ADR-611 d), the France test stands; (b) the rule in and the France test
   amended to what it makes; (c) kept open. A variant keeping France's empty Berlin keeps Poland's.
-- **Meanwhile:** no rule; the pin unchanged (2c4e2593; with the rule it is unchanged too).
+- **Decision** (the user's, b): the rule in (`partsIn`, CAPITAL_MEN_MIN 0.01; SPEC §6.4; the unit test
+  `nukeEmptyCapital1938.test.ts`, red without). PLAN 7.18's France test amended to what the rule
+  makes. Its claim was "France struck" before day 75, its first decision on Germany, a launch shot
+  down and the next within the gap. It is now: an empty Berlin (a place France weighs within a
+  blast's radius of Germany's capital, men share under CAPITAL_MEN_MIN) weighs no capital on a
+  first strike (99 such places weighed in 100 days, capital 0; without the rule 58 of 58 weighed
+  0.3), and France decides and launches nothing in 100 days (without the rule: days 58 and 59 on
+  Berlin). The gap and the launch shot down stay covered by `nukeGapShort1938.test.ts` and
+  `nukeDelivery1938.test.ts`; the first decision's place on the overrunning enemy (PLAN 7.18j) was
+  this test's alone and is filed as PLAN 7.74. PLAN 7.62 ticked on its own case (Poland met), its
+  30-year bars missed (civilian bursts 21, bar 13; strikes back 23, bar 21).
+- **Pin:** unchanged (2c4e2593).
 
 ### ADR-628 · 2026-10-22 · accepted — A front with nobody is not held (PLAN 7.73c; amends ADR-623)
 

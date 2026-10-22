@@ -21966,3 +21966,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   bar a fifth), engaged per war-day 0.2400 (bar 0.2383), longest invasion AI call 12.6 ms (bar 50),
   no lander in debt.
 - **Next:** ADR-629 b (PLAN 7.62's rule in, the France test amended).
+
+## 2026-10-22 — PLAN 7.62: an empty capital is no first-strike target, in (the user's decision: ADR-629 b)
+
+- **Rule** (`systems/nuclear.ts`, `partsIn`, CAPITAL_MEN_MIN 0.01): `docs/evidence/7.62/rule.patch`
+  applied as measured: an enemy capital's TARGET_CAPITAL counts on a first strike only with a
+  hundredth of the theatre's men in the blast; on a strike back whole. SPEC §6.4's line.
+- **Test amended (the user's decision):** `nukeOverrun1938.test.ts`'s first case, "France struck",
+  is now: an empty Berlin weighs no capital on a first strike (99 places in 100 days, capital 0) and
+  France holds fire in 100 days. Red without the rule (58 of 58 such places weighed 0.3, Berlin
+  decided days 58 and 59). The gap and the launch shot down stay with `nukeGapShort1938.test.ts`
+  and `nukeDelivery1938.test.ts`; 7.18j's aim (the first decision on the overrunning enemy) was this
+  case's alone: PLAN 7.74 re-homes it on Poland's case. `nukeEmptyCapital1938.test.ts` added.
+- **Ticked** on Poland's case (its first strike day 35 on a Soviet army, no empty capital), the
+  30-year bars missed as measured (civilian bursts 21, bar 13; strikes back 23, bar 21).
+- **Pin:** unchanged, 2c4e2593.
+- **Next:** PLAN 7.74; 7.51b's measurement waits on the user (its runs were stopped for memory).

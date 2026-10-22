@@ -6,7 +6,9 @@ strike back it counts as before (`partsIn`, `src/sim/systems/nuclear.ts`).
 
 Before: HEAD `1ad0c127`. After: the same with the rule. Same tools, same seeds, run side by side.
 
-**Status: not in.** With the rule, the critic's France of R8-B1 (§4) never strikes, and
+**Status: in** (2026-10-22, the user's decision b, ADR-629): `rule.patch` applied on `main`, and
+`tests/unit/nukeOverrun1938.test.ts`'s first case amended to what the rule makes (an empty Berlin
+weighs no capital; France holds fire in 100 days). Before that decision: **not in.** With the rule, the critic's France of R8-B1 (§4) never strikes, and
 `tests/unit/nukeOverrun1938.test.ts` ("France struck") goes red; a test is not weakened, so the rule
 waits in `rule.patch` (the code, SPEC §6.4's line and the unit test; `git apply` from the repo's
 root) for the user's decision (BLOCKERS, ADR-629).

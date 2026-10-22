@@ -36,21 +36,13 @@ The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
 when taken up:
 
-- [ ] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21;
-  AI nuclear use 7, the critic's run 11 design objection; `docs/evidence/7.52/c.md`): a capital's
-  TARGET_CAPITAL counts on a first strike only with an army in the blast (men share of the
-  theatre's men at least 0.01); on a strike back as now. AT: the critic's Poland case
-  (`nukeCase.ts 9437 POL GER 10 65 bomber`) strikes no capital with men share under 0.01 in 60
-  days (Berlin on day 27 on HEAD); 7.52b's seeds 781–790 × 30 years re-read (`nukeToll.ts`): the
-  bursts with civilians over 10 × men at most 21 − 8 = 13 of them (21 of 73 on `ec1ac280`), and the
-  strikes back unchanged in count; R8-B1 held: an editor-armed holder at war (the same Poland case)
-  still strikes within 60 days, or a BLOCKERS entry with what it strikes instead; a unit test (red
-  without: an empty enemy capital as a first strike's best place); SPEC §6.4 amended; the ADR's
-  entry; the pin's entry.
-  Measured, not in (ADR-629 proposed, `docs/evidence/7.62/README.md`, the rule in
-  `docs/evidence/7.62/rule.patch`): Poland strikes a Soviet army on day 35 (met), but the critic's
-  France of R8-B1 never strikes (its one strike was an empty Berlin) and `nukeOverrun1938.test.ts` is
-  red; the 30-year bars missed too (20 → 21, 21 → 23): the user's (BLOCKERS).
+- [ ] 7.74 An overrun holder's first strike is on the enemy overrunning it (found at 7.62; PLAN
+  7.18j's claim, which only the critic's France case held, and France now holds fire): a case of an
+  editor-armed holder at war that still strikes under ADR-629 (the critic's Poland,
+  `nukeCase.ts 9437 POL GER 10 65 bomber`, its first decision day 35 on a Soviet army). AT: a unit
+  test on that case: a first decision within 60 days, its place the cell of or within a blast's
+  radius of a formation of a nation on the other side of the holder's war; red with the aim taken
+  off (PLAN 7.18j's rule reverted by hand); no rule change, pin unchanged.
 
 - [ ] 7.51 Aircraft (aircraft 7, needs 8, beyond 7.49): the late air war unchanged, 3,160 air
   battles in year 1 and 120 a world-year after on the same 14 seeds (122 on `bcbc99c`), sorties
@@ -363,3 +355,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.72 The landing and the ferry board as a group (found at 7.70b, ADR-623): the first […]
 - [x] 7.73 The Normandy without a loss of fight (7.70b's bar, ADR-623): with the rule, engaged land […]
 - [x] 7.70 The AI's invasions open new fronts (the user's, 2026-10-21; a Normandy: a landing on […]
+- [x] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21; […]
