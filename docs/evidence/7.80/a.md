@@ -60,7 +60,8 @@ within the noise of two 8-seed means (the seeds' spread at `d15131c4` gives one 
 about 25; 865 against 909 is about one standard error of their difference).
 None of the candidates the critic named is the step: walk-ins without fronts (PLAN 7.73c,
 `1ad0c127`), moving capitals (7.68, `90015d7d`) and beach supply (7.70a `65bd907c`, 7.75
-`309f0d4e`) all fall after `7e27d0a4` or between it and HEAD, where the mean moves 865 → 909.
+`309f0d4e`): 7.68 and 7.70a fall between `3f672059` and `7e27d0a4` (831 → 865), 7.73c and 7.75
+between `7e27d0a4` and HEAD (865 → 909), both moves within the noise.
 
 ## 3. Shredding per conquest fell
 
