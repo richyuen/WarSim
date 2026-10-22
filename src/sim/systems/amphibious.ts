@@ -126,12 +126,17 @@ const near = (world: World, a: number, b: number, r: number): boolean => {
  * it is at no port of its nation, no transport of its nation there has room, the target has no
  * water near it, or the transports have no way there. Nothing is changed then.
  */
-export function orderLanding(world: World, id: number, x: number, y: number): boolean {
-  return tryLanding(world, id, x, y) === 0;
+export function orderLanding(world: World, id: number, x: number, y: number, via = 0): boolean {
+  return tryLanding(world, id, x, y, via) === 0;
 }
 
-/** `orderLanding`, with why it refused (`RejectReason`, PLAN 4.9a); 0 when ordered. */
-export function tryLanding(world: World, id: number, x: number, y: number): 0 | RejectReason {
+/**
+ * `orderLanding`, with why it refused (`RejectReason`, PLAN 4.9a); 0 when ordered. `via`: a
+ * transport group that may be under way already, when it carries a formation embarked on it (a
+ * group going aboard one after another in one hour, PLAN 7.70b: the first's order sets the
+ * transports sailing, and the standing test refused the rest).
+ */
+export function tryLanding(world: World, id: number, x: number, y: number, via = 0): 0 | RejectReason {
   const f = world.formations;
   const c = f.cols;
   if (!f.has(id) || world.afloat(id) || !world.rules) return world.afloat(id) ? RejectReason.Aboard : RejectReason.NotLand;
@@ -158,7 +163,8 @@ export function tryLanding(world: World, id: number, x: number, y: number): 0 | 
   let fleet = 0;
   for (const i of at) {
     f.forEach((o) => {
-      if (fleet !== 0 || !world.isFleet(o) || c.nation[o] !== nation || c.moving[o] === 1 || c.engaged[o] === 1) return;
+      if (fleet !== 0 || !world.isFleet(o) || c.nation[o] !== nation || c.engaged[o] === 1) return;
+      if (c.moving[o] === 1 && !(o === via && carrying(world, o))) return;
       if (!near(world, cellOfPlace(world, o), water[i]!, world.atSize(AT_PORT_CELLS))) return;
       if (transportRoom(world, o) - aboard(world, o) >= men) fleet = o;
     });
@@ -188,6 +194,12 @@ export function tryLanding(world: World, id: number, x: number, y: number): 0 | 
   c.y[id] = c.y[fleet]!;
   world.out.emit(world.tick, EventKind.FormationEmbarked, id, nation, c.x[id]!, c.y[id]!);
   return 0;
+}
+
+/** Whether transport group `fleet` carries a formation embarked on it. */
+function carrying(world: World, fleet: number): boolean {
+  for (const e of world.embarked.values()) if (e.fleet === fleet) return true;
+  return false;
 }
 
 /**

@@ -1,0 +1,461 @@
+{
+ "days": 180,
+ "holdDays": 30,
+ "nearCells": 3,
+ "division": 12460,
+ "summary": {
+  "open": 92,
+  "opened": 22,
+  "openedFronted": 8,
+  "wars": 132,
+  "engaged": 3074,
+  "warDays": 11382,
+  "landed": 150,
+  "far": 37,
+  "held": 32,
+  "share": 0.2391304347826087,
+  "shareFronted": 0.08695652173913043,
+  "engagedPerWar": 0.2700755578984361
+ },
+ "rows": [
+  {
+   "seed": 5861,
+   "open": 9,
+   "opened": 2,
+   "openedFronted": 1,
+   "wars": 12,
+   "engagedPerWar": 0.5463800904977375,
+   "landed": 13,
+   "far": [
+    {
+     "war": "127",
+     "by": "JAP",
+     "day": 23,
+     "held": false,
+     "cells": 0,
+     "fronted": true
+    },
+    {
+     "war": "133",
+     "by": "ITA",
+     "day": 54,
+     "held": true,
+     "cells": 1,
+     "fronted": false
+    },
+    {
+     "war": "130",
+     "by": "FRA",
+     "day": 91,
+     "held": true,
+     "cells": 4,
+     "fronted": true
+    },
+    {
+     "war": "130",
+     "by": "ENG",
+     "day": 106,
+     "held": false,
+     "cells": 0,
+     "fronted": true
+    }
+   ],
+   "debt": []
+  },
+  {
+   "seed": 6151,
+   "open": 6,
+   "opened": 2,
+   "openedFronted": 0,
+   "wars": 7,
+   "engagedPerWar": 0.9607843137254902,
+   "landed": 14,
+   "far": [
+    {
+     "war": "103",
+     "by": "SOV",
+     "day": 90,
+     "held": false,
+     "cells": 0,
+     "fronted": false
+    },
+    {
+     "war": "103",
+     "by": "ROM",
+     "day": 115,
+     "held": true,
+     "cells": 1,
+     "fronted": false
+    },
+    {
+     "war": "109",
+     "by": "BUR",
+     "day": 124,
+     "held": true,
+     "cells": 1,
+     "fronted": false
+    },
+    {
+     "war": "103",
+     "by": "YUG",
+     "day": 145,
+     "held": false,
+     "cells": 0,
+     "fronted": false
+    }
+   ],
+   "debt": []
+  },
+  {
+   "seed": 6421,
+   "open": 7,
+   "opened": 1,
+   "openedFronted": 0,
+   "wars": 9,
+   "engagedPerWar": 0.10452418096723869,
+   "landed": 10,
+   "far": [
+    {
+     "war": "88",
+     "by": "BRA",
+     "day": 34,
+     "held": true,
+     "cells": 17,
+     "fronted": false
+    }
+   ],
+   "debt": []
+  },
+  {
+   "seed": 7019,
+   "open": 5,
+   "opened": 1,
+   "openedFronted": 0,
+   "wars": 7,
+   "engagedPerWar": 0.2658450704225352,
+   "landed": 13,
+   "far": [
+    {
+     "war": "120",
+     "by": "NSP",
+     "day": 78,
+     "held": true,
+     "cells": 12,
+     "fronted": false
+    },
+    {
+     "war": "120",
+     "by": "NED",
+     "day": 90,
+     "held": true,
+     "cells": 36,
+     "fronted": false
+    },
+    {
+     "war": "120",
+     "by": "BEL",
+     "day": 117,
+     "held": true,
+     "cells": 10,
+     "fronted": false
+    }
+   ],
+   "debt": []
+  },
+  {
+   "seed": 7247,
+   "open": 5,
+   "opened": 2,
+   "openedFronted": 0,
+   "wars": 9,
+   "engagedPerWar": 0.7598533455545371,
+   "landed": 19,
+   "far": [
+    {
+     "war": "88",
+     "by": "NED",
+     "day": 20,
+     "held": true,
+     "cells": 12,
+     "fronted": false
+    },
+    {
+     "war": "88",
+     "by": "RAJ",
+     "day": 22,
+     "held": true,
+     "cells": 19,
+     "fronted": false
+    },
+    {
+     "war": "75",
+     "by": "GER",
+     "day": 24,
+     "held": true,
+     "cells": 14,
+     "fronted": false
+    },
+    {
+     "war": "75",
+     "by": "GER",
+     "day": 53,
+     "held": true,
+     "cells": 7,
+     "fronted": false
+    },
+    {
+     "war": "75",
+     "by": "GER",
+     "day": 68,
+     "held": true,
+     "cells": 8,
+     "fronted": false
+    },
+    {
+     "war": "75",
+     "by": "ALB",
+     "day": 144,
+     "held": true,
+     "cells": 10,
+     "fronted": false
+    }
+   ],
+   "debt": []
+  },
+  {
+   "seed": 7583,
+   "open": 10,
+   "opened": 2,
+   "openedFronted": 2,
+   "wars": 14,
+   "engagedPerWar": 0.16817906836055657,
+   "landed": 17,
+   "far": [
+    {
+     "war": "156",
+     "by": "GER",
+     "day": 51,
+     "held": true,
+     "cells": 2,
+     "fronted": true
+    },
+    {
+     "war": "156",
+     "by": "GER",
+     "day": 81,
+     "held": true,
+     "cells": 8,
+     "fronted": true
+    },
+    {
+     "war": "147",
+     "by": "CHI",
+     "day": 117,
+     "held": false,
+     "cells": 0,
+     "fronted": false
+    },
+    {
+     "war": "140",
+     "by": "FRA",
+     "day": 119,
+     "held": true,
+     "cells": 4,
+     "fronted": true
+    }
+   ],
+   "debt": []
+  },
+  {
+   "seed": 8011,
+   "open": 10,
+   "opened": 2,
+   "openedFronted": 1,
+   "wars": 11,
+   "engagedPerWar": 0.008119079837618403,
+   "landed": 11,
+   "far": [
+    {
+     "war": "121",
+     "by": "JAP",
+     "day": 68,
+     "held": true,
+     "cells": 19,
+     "fronted": true
+    },
+    {
+     "war": "120",
+     "by": "ROM",
+     "day": 100,
+     "held": true,
+     "cells": 25,
+     "fronted": false
+    },
+    {
+     "war": "121",
+     "by": "GER",
+     "day": 114,
+     "held": true,
+     "cells": 14,
+     "fronted": true
+    }
+   ],
+   "debt": []
+  },
+  {
+   "seed": 8167,
+   "open": 2,
+   "opened": 2,
+   "openedFronted": 1,
+   "wars": 6,
+   "engagedPerWar": 0.4565587734241908,
+   "landed": 14,
+   "far": [
+    {
+     "war": "105",
+     "by": "NSP",
+     "day": 23,
+     "held": true,
+     "cells": 23,
+     "fronted": false
+    },
+    {
+     "war": "103",
+     "by": "LIT",
+     "day": 89,
+     "held": true,
+     "cells": 16,
+     "fronted": true
+    }
+   ],
+   "debt": []
+  },
+  {
+   "seed": 8693,
+   "open": 12,
+   "opened": 0,
+   "openedFronted": 0,
+   "wars": 18,
+   "engagedPerWar": 0.1272475795297372,
+   "landed": 11,
+   "far": [],
+   "debt": []
+  },
+  {
+   "seed": 8849,
+   "open": 8,
+   "opened": 2,
+   "openedFronted": 0,
+   "wars": 11,
+   "engagedPerWar": 0.06901217861975643,
+   "landed": 8,
+   "far": [
+    {
+     "war": "161",
+     "by": "NSP",
+     "day": 69,
+     "held": true,
+     "cells": 21,
+     "fronted": false
+    },
+    {
+     "war": "165",
+     "by": "GER",
+     "day": 132,
+     "held": true,
+     "cells": 1,
+     "fronted": false
+    }
+   ],
+   "debt": []
+  },
+  {
+   "seed": 9437,
+   "open": 10,
+   "opened": 3,
+   "openedFronted": 1,
+   "wars": 14,
+   "engagedPerWar": 0.256838905775076,
+   "landed": 11,
+   "far": [
+    {
+     "war": "138",
+     "by": "BRA",
+     "day": 2,
+     "held": true,
+     "cells": 14,
+     "fronted": false
+    },
+    {
+     "war": "139",
+     "by": "NED",
+     "day": 46,
+     "held": true,
+     "cells": 12,
+     "fronted": true
+    },
+    {
+     "war": "141",
+     "by": "BRA",
+     "day": 112,
+     "held": true,
+     "cells": 2,
+     "fronted": false
+    }
+   ],
+   "debt": []
+  },
+  {
+   "seed": 9781,
+   "open": 8,
+   "opened": 3,
+   "openedFronted": 2,
+   "wars": 14,
+   "engagedPerWar": 0.055841293166789124,
+   "landed": 9,
+   "far": [
+    {
+     "war": "132",
+     "by": "FRA",
+     "day": 59,
+     "held": true,
+     "cells": 28,
+     "fronted": true
+    },
+    {
+     "war": "132",
+     "by": "JAP",
+     "day": 109,
+     "held": true,
+     "cells": 29,
+     "fronted": true
+    },
+    {
+     "war": "133",
+     "by": "NOR",
+     "day": 125,
+     "held": true,
+     "cells": 24,
+     "fronted": false
+    },
+    {
+     "war": "133",
+     "by": "POL",
+     "day": 140,
+     "held": true,
+     "cells": 24,
+     "fronted": false
+    },
+    {
+     "war": "138",
+     "by": "ENG",
+     "day": 148,
+     "held": true,
+     "cells": 4,
+     "fronted": true
+    }
+   ],
+   "debt": []
+  }
+ ]
+}

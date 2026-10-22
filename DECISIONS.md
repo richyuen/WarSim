@@ -167,6 +167,58 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-623 · 2026-10-21 · proposed — A new front: the AI lands its free army behind or beside its held front (PLAN 7.70b; amends ADR-268, ADR-511)
+
+- **Context** (PLAN 7.70b, the user's 7.70: invasions that open new fronts, a Normandy). The AI
+  landed only in a war in which it had no land front (`planLanding`, ADR-268, ADR-511), and the
+  ferry took a nation's army to its own front (ADR-612): no landing opened a front beside or behind
+  one. And every landing carried one formation a trip: the first's order sets the transports
+  sailing (`orderSail`), and `tryLanding` takes only transports that stand.
+- **Decision** (`ai/invasion.ts`, `planNormandy`). In the invasion AI's turn and lock, after a
+  landing that gave no order and before the ferry: a nation with a land front of its own that it
+  holds (`frontHeld`: its land formations' men in the squares of DEPLOY_RANGE_CELLS' side about its
+  front cells and those beside, at least those of the nations at war with it there) lands its free
+  army (standing, not within DEPLOY_RANGE_CELLS of its front on their land) on an enemy's coastal
+  city: of the enemies of its wars with a front; more than DEPLOY_RANGE_CELLS (straight) from every
+  cell of its front; a water cell within 2 cells whose zone is open, in the transports' waters, held
+  by no enemy and reached by its bloc's way from home (`beachReach`, `seaSupply.ts`); on a land
+  where its bloc owns and controls no city. Of those, the most worth (3 for a capital, 1 for
+  another city) over one more than the enemy's land formations within 10 cells; nearest by sea on
+  a tie, then the lower cell. A front not held leaves the turn to the ferry, which brings the army
+  to it. The group (`board`'s `group`): its free formations at the port go aboard once their men
+  fill 0.75 of the room, or no more of its free army on the port's land is left to come; until
+  then the rest are sent there, and none goes aboard while one of its nation marches to the port;
+  each boards the same transports though they are under way already (`tryLanding`'s `via`), and
+  one with no room left is passed over for a smaller one after it. The escort is the naval AI's,
+  as for any landing.
+- **Coupled to ADR-622's scope** (the user's): the target's land is one where a beachhead is fed
+  from the beach. Under 7.70a's rule as it stands (no beach source on a land where the bloc has a
+  city), Britain's bloc has no target in Europe, nor Germany in Norway; the Normandies land on
+  islands and other continents. If the user widens 7.70a (BLOCKERS, option b), this test widens
+  with it, no rewrite.
+- **Read** (`tools/diag/newFronts.ts`, new; 180 days of the critic's 48 saves; `docs/evidence/7.70/b.md`):
+  the AT's count as written (a far landing that holds 30 days, by war) 88 of 310 open wars (28.4 %,
+  HEAD) → 101 of 304 (33.2 %): over a fifth before and after, since a lander with no front at
+  all counts. By a side with a front of its own (a Normandy proper): 39 of 310 (12.6 %) → 70 of
+  304 (23.0 %), over a fifth. Engaged land formations per war-day 0.238 → 0.219 (the bar: not below
+  HEAD's, **missed**, lower in all four batches). No lander in debt. The invasion AI's longest call
+  10.3 ms (seed 99's year; bar 50).
+- **Limits.** (1) `frontHeld` holds at none against none: a front cell with nobody of either side
+  near is held, and the free army goes overseas rather than to it (the unit test is that case).
+  (2) The group waits with no bound while one of its nation marches to the port: a march that
+  stalls holds the transports from the Normandy and the ferry until it ends. (3) The worth divides
+  by the enemy's formations near, as the task asks: a beachhead with nobody to fight adds no
+  engaged formation, which with the ferry's lost turns is the likely cause of the engaged miss
+  (landings in 180 days 638 → 555). (4) The old landing and the ferry still carry one formation
+  a trip (PLAN 7.72).
+- **Test.** `normandy1938.test.ts`: Britain at war with Germany, its front with Germany overseas
+  (a British cell handed to Germany), nobody near it, an island with a city handed to Germany,
+  British transports at Portsmouth with a group there: on Britain's day a group of three quarters
+  of the room or more goes aboard for that island, more than DEPLOY_RANGE_CELLS from the front.
+  Red without the rule (the ferry takes one formation for the front).
+- **Pin.** cd6ce5eb → b749e952.
+- **Proposed**: the engaged bar is missed, so the tick is the user's (BLOCKERS).
+
 ### ADR-622 · 2026-10-21 · proposed — Supply over the beach: a held coast on a land with no city of the bloc is a source, fed from the sea (PLAN 7.70a; amends ADR-259)
 
 - **Context** (PLAN 7.70a, the user's 7.70: invasions that open new fronts). Supply's sources were

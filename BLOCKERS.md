@@ -5,6 +5,28 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.70b: the new front is in; by a side with a front of its own 12.6 % → 23.0 % of the open wars, engaged per war-day 0.238 → 0.219, bar not below HEAD's (2026-10-21, ADR-623; the user's decision)
+- **The bar** (the whole's, PLAN 7.70, read for 7.70b): on the critic's 48 saves, 180 days
+  (`newFronts.ts`, new), the wars with a landing more than DEPLOY_RANGE_CELLS from every front cell
+  of the lander's own that holds 30 days on, in at least a fifth of the open wars (a side with
+  transports of a division's room and an enemy coast it reaches by sea); engaged per war not below
+  HEAD's; no invasion AI call over 50 ms; no nation in debt for it; the unit test, red without.
+- **What moved** (`docs/evidence/7.70/b.md`): as the AT is written, 88/310 (28.4 %, HEAD) →
+  101/304 (33.2 %), over a fifth before and after, as a lander with no front at all counts; by a
+  side with a front of its own (a Normandy proper) 39/310 (12.6 %) → 70/304 (23.0 %): met. Japan
+  39, Germany 19, Britain 15, the Netherlands 13, the United States 12 of the 131 such landings
+  that held. No lander in debt; longest call 10.3 ms. `normandy1938.test.ts` holds, red without.
+  Engaged land formations per war-day 0.238 → 0.219 (−8 %, lower in all four batches): missed.
+- **Why it misses** (likely, not measured): the target's worth is divided by the enemy's
+  formations near, as the task asks, so the armies land where nobody fights; the group holds the
+  turn while its rest marches to the port, so the ferry, whose landings reach the fights, gets
+  fewer turns (landings 638 → 555); `frontHeld` holds at none against none. Filed as PLAN 7.73.
+- **What is left:** the user's. (a, recommended) 7.70b ticked on its rule's own case and the
+  fronted reading, 7.73 to win the fight back; (b) closed not done, the rule kept, 7.73 next;
+  (c) kept open. ADR-623 proposed. Meanwhile the loop takes PLAN 7.70c (the follow-through).
+- **Also found:** every landing and ferry trip carries one formation (the first's order sets the
+  transports sailing; `tryLanding` takes standing transports alone): PLAN 7.72.
+
 ### PLAN 7.70a: supply over the beach is in; seed 99's first-year tick 2.35 → 2.44–2.48 ms, budget 2.4 (2026-10-21, ADR-622; the user's decision)
 - **The bar:** a division ashore on an enemy coast with no port keeps supply at least 0.5 for 30
   days and loses it under an enemy-held zone (a unit test, red without); seed 99's year: no tick

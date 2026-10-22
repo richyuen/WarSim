@@ -21829,3 +21829,29 @@ No rule changed and nothing on screen changed. One task came out of it.
   open) and 7.70b's scope (a beach on a land where the bloc holds a city is not fed: (a) keep it per
   land, (b) widen it to any held coast the city network does not reach).
 - **Next:** PLAN 7.70b (the plan), unless the user widens 7.70a first.
+
+## 2026-10-21 — PLAN 7.70b: a new front, the AI's landing behind or beside its held front (ADR-623; bar missed, the user's)
+
+- **Rule** (`ai/invasion.ts`, `planNormandy`; `seaSupply.ts`, `beachReach`; `amphibious.ts`,
+  `tryLanding`'s `via`): after a landing that gave no order, before the ferry, a nation that holds
+  its land front (its men about the front at least the enemy's) lands its free army as a group on
+  an enemy's coastal city more than DEPLOY_RANGE_CELLS from that front, on a land where its bloc
+  owns and controls no city (fed from the beach, ADR-622's scope), by water its bloc's way from home
+  reaches: worth (3 a capital, 1 a city) over one more than the enemy's formations near. The group
+  boards together (0.75 of the room, or all that can come). SPEC §7.
+- **Read** (`docs/evidence/7.70/b.md`, new `tools/diag/newFronts.ts`, 180 days of the critic's 48
+  saves): the AT's count as written 88/310 → 101/304 (over a fifth on HEAD already: a lander with
+  no front counts); by a side with a front of its own 39/310 (12.6 %) → 70/304 (23.0 %), bar a
+  fifth: met. Engaged per war-day 0.238 → 0.219, bar not below HEAD's: **missed**. No lander in
+  debt. Invasion AI's longest call 10.3 ms; tick mean 2.455 ms (7.70a's band).
+- **Found:** every landing and ferry trip carried one formation (the first's order sets the
+  transports sailing; `tryLanding` takes standing transports alone): PLAN 7.72, filed. The engaged
+  miss's likely causes: PLAN 7.73, filed. Germany's 1938 cities are all on Eurasia, where Britain's
+  bloc owns a city: under 7.70a's scope Britain has no Normandy in Europe.
+- **Test:** `normandy1938.test.ts` (Britain's front overseas, an island with a city handed to
+  Germany: a group of 3/4 of the room goes aboard for it), red without. Specs by hand: none (no
+  drawn change).
+- **Pin:** cd6ce5eb → b749e952.
+- **BLOCKERS**, the user's: (a) tick on the rule's own case and the fronted reading, 7.73 next;
+  (b) close not done; (c) keep open. ADR-623 proposed.
+- **Next:** PLAN 7.70c (the follow-through), 7.70a and 7.70b waiting on the user.

@@ -110,6 +110,29 @@ export function seaBeaches(world: World): Map<number, number[]> {
 }
 
 /**
+ * Where a beachhead of nation `n`'s would be fed from the sea (PLAN 7.70b, ADR-623): the lands on
+ * which its bloc owns and controls a city (`cityLands`: a beach there is no source, 7.70a's rule),
+ * and the zones its bloc's way from home reaches (`seen[zone]` 1; `seaWay`, no zone an enemy of
+ * the bloc holds). A coast cell on a land not in `cityLands`, beside a zone `seen` and not iced, is
+ * a beach source once the bloc controls it. Null for a bloc with no city or no port (no beach of
+ * its is fed). For the world as it is when called; the caller keeps nothing of it.
+ */
+export function beachReach(world: World, n: number): { cityLands: ReadonlySet<number>; seen: Uint8Array } | null {
+  const { parts } = seaReach(world);
+  const b = parts.blocOfNation[n] ?? 0;
+  const cities = parts.cities.get(b);
+  const byComp = parts.ports.get(b);
+  if (!cities || !byComp) return null;
+  let seen = parts.seen.get(b);
+  if (!seen) {
+    seaWay(world, b, parts.own.get(b)!, byComp, world.wars.nations());
+    seen = seaSeen.slice(0, seaOf(world).count + 1);
+    parts.seen.set(b, seen);
+  }
+  return { cityLands: new Set(cities.keys()), seen };
+}
+
+/**
  * The land cells by the sea (PLAN 7.70a): those with a 4-neighbour in a sea zone, ascending, and
  * the zones beside each (`zones[at[i]]` to `zones[at[i + 1]]`, distinct). Kept by the grid's
  * components and the zones, which are the map's own.

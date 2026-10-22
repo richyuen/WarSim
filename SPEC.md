@@ -2101,6 +2101,20 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   nearest a front cell of its own on that land, the nearest by sea on a tie. A nation with no
   front cell of its own (its land front its allies' alone) takes as its front cells their cells
   beside the enemies it fights with them (`wars.together`; PLAN 7.64, ADR-617).
+  A new front (PLAN 7.70b, ADR-623), in the same turn and lock, after a landing that gave no order
+  and before the ferry: a nation with a land front of its own that it holds (its land formations'
+  men in the squares of the deploy range's side about its front cells, and those beside, at least
+  those of the nations at war with it there) lands its free army (standing, beyond the deploy
+  range of its front on their land) on an enemy's coastal city, of the enemies of its wars with a
+  front, more than the deploy range from its front, with a water cell within 2 cells passing the
+  landing's tests and reached by its bloc's way from home, on a land where its bloc owns and
+  controls no city (a beachhead there is fed from the beach, §6.2; not on one where it has a city,
+  ADR-622's scope): the most worth (3 for a capital, 1 for another city) over one more than the
+  enemy's land formations within 10 cells; nearest by sea on a tie. Its free formations at the
+  port go aboard as a group: once their men fill three quarters of the room, or no more of its
+  free army on the port's land is left to come (the rest sent there meanwhile; none aboard while
+  one marches there), each on the same transports, passing over one with no room left. A front not
+  held leaves the turn to the ferry.
   *Fleets at sea (PLAN 4.6c, ADR-270; `src/sim/ai/naval.ts`):* daily, staggered weekly by id. At
   war, each warfleet (power: its armed ships' hit points, submarines left out) standing at a
   port of its nation sails, within 2,500 km, to a landing of its nation's under way (escort),

@@ -65,11 +65,32 @@ when taken up:
       one, escorted as a landing is now. AT: the whole's count (above), its bar; a unit test (red
       without: a nation with a land front and a free army lands behind the enemy's front);
       SPEC §7 amended; the ADR; the pin's entry.
+      Rule in (ADR-623, `normandy1938.test.ts`, `docs/evidence/7.70/b.md`, pin b749e952): the count
+      by `newFronts.ts`, as written 88/310 → 101/304 (over a fifth on HEAD too), by a side with a
+      front of its own 39/310 (12.6 %) → 70/304 (23.0 %); engaged per war-day 0.238 → 0.219, the bar
+      missed: the user's (BLOCKERS); its likely causes are PLAN 7.73.
     - [ ] 7.70c The follow-through: the ferry and its want take a beachhead with no port as a
       front's land (its coast cell where the port would be), so reinforcements reach it; the
       operational AI holds and widens it as any front. AT: the whole's 30-day hold at least
       half of the landings of 7.70b; a unit test (red without: transports with a division sail
       for a beachhead with no port); the ADR; the pin's entry.
+
+- [ ] 7.72 The landing and the ferry board as a group (found at 7.70b, ADR-623): the first
+  formation's `orderLanding` sets the transports sailing (`orderSail`), and `tryLanding` takes only
+  standing transports, so every landing and ferry trip carries one formation, whatever the room
+  (7.70b's `via` is for its group alone). AT: a unit test (red without: two divisions at a port
+  with transports of room for both, a landing in a war with no front boards both, and the ferry
+  both); on the 48 saves, 180 days (`newFronts.ts`), engaged per war-day not below the before;
+  the ADR; the pin's entry.
+
+- [ ] 7.73 The Normandy without a loss of fight (7.70b's bar, ADR-623): with the rule, engaged land
+  formations per war-day on the 48 saves, 180 days (`newFronts.ts`), 0.238 → 0.219. Likely causes
+  (not measured): the worth over the enemy's formations near lands where nobody fights; the group
+  holds the turn while its rest marches, so the ferry gets fewer (landings 638 → 555); `frontHeld`
+  holds at none against none. AT: engaged per war-day at least HEAD-before-7.70b's 0.238 with the
+  fronted share (by a side with a front of its own) at least a fifth, on the same read; a unit test
+  of the cause fixed (red without); the ADR; the pin's entry. Stop: two full re-reads flat, the bar
+  is the user's (ADR-554).
 
 - [ ] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21;
   AI nuclear use 7, the critic's run 11 design objection; `docs/evidence/7.52/c.md`): a capital's
