@@ -21677,3 +21677,23 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin:** cffa092a → 8387d0c3.
 - **BLOCKERS**, the user's: (a) tick on the rule's own case, (b) close not done, (c) keep open.
 - **Next:** PLAN 7.64 (the ferry for a nation fronted through an ally alone), then 7.62.
+
+## 2026-10-21 — PLAN 7.64: the ferry for a nation fronted through an ally alone (ADR-617; bar missed, the user's)
+
+- **Rule** (`ai/invasion.ts`), two halves, each needed: (a) an actor at war with no front cell of its
+  own takes as the ferry's front its allies' cells beside the enemies it fights with them
+  (`wars.together`); (b) `board` and `planLanding` return whether an order was given, so a landing
+  that ships nobody (no army at its port nor on its land) leaves the turn to the ferry. Before, (b)
+  took 970 of the 1,521 days of the watched such nations. SPEC §7 (the ferry).
+- **Read** (`docs/evidence/7.64.md`, the critic's 48 saves, `islandArmies.ts` with a new read,
+  `noOwnFront`): such island formations after 60 days 850 (HEAD `e759a88f`) → 696 (−18 %), bar under
+  425: missed. They are ferried a group's room at a time (one group of 24,000 men, a voyage of
+  weeks; some have none, and `wantsFerry` reads the own front: PLAN 7.66, filed). Engaged
+  (`warSides.ts`) 0.588 → 0.604 worldwide, 0.133 → 0.137 per war. Invasion AI mean 0.015 / 0.018 →
+  0.033 / 0.051 ms an hour, longest call 5.8 ms.
+- **Test:** `ferry1938.test.ts`, a new case (Britain's front cells handed to an ally, its transports
+  in Africa sail home for the division at Glasgow), red without either half. Specs by hand: none (no
+  drawn change).
+- **Pin:** 8387d0c3 → 2bc0e4df.
+- **BLOCKERS**, the user's: (a) tick on the rule's own case, (b) close not done, (c) keep open.
+- **Next:** PLAN 7.66 (transports bought for a nation fronted through an ally alone), then 7.62.

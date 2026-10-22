@@ -1,0 +1,1717 @@
+{
+ "totals": {
+  "first": {
+   "island": 717,
+   "atWar": 4004,
+   "noOwnPort": 56,
+   "noTransports": 60,
+   "noOwnFront": 51
+  },
+  "mid": {},
+  "last": {
+   "island": 893,
+   "atWar": 3910,
+   "noOwnPort": 71,
+   "noTransports": 81,
+   "noOwnFront": 57
+  }
+ },
+ "firstPct": "17.9",
+ "midPct": {},
+ "debt": [],
+ "lastPct": "22.8",
+ "carried": 189,
+ "bestPct": "13.2",
+ "carry": [
+  {
+   "seed": 5861,
+   "nation": "ENG",
+   "km": 3728,
+   "oneWayDays": 9.4,
+   "trips": 2,
+   "room": 24000,
+   "islandMen": 233479,
+   "island": 19,
+   "carryMen": 48000,
+   "carryFormations": 4
+  },
+  {
+   "seed": 6421,
+   "nation": "JAP",
+   "km": 202,
+   "oneWayDays": 0.5,
+   "trips": 8,
+   "room": 48000,
+   "islandMen": 82880,
+   "island": 6,
+   "carryMen": 82880,
+   "carryFormations": 6
+  },
+  {
+   "seed": 6421,
+   "nation": "AST",
+   "km": 818,
+   "oneWayDays": 2.1,
+   "trips": 6,
+   "room": 24000,
+   "islandMen": 87240,
+   "island": 8,
+   "carryMen": 87240,
+   "carryFormations": 8
+  },
+  {
+   "seed": 7019,
+   "nation": "ENG",
+   "km": 549,
+   "oneWayDays": 1.4,
+   "trips": 6,
+   "room": 48000,
+   "islandMen": 1611655,
+   "island": 139,
+   "carryMen": 288000,
+   "carryFormations": 25
+  },
+  {
+   "seed": 7019,
+   "nation": "JAP",
+   "km": 202,
+   "oneWayDays": 0.5,
+   "trips": 8,
+   "room": 24000,
+   "islandMen": 469140,
+   "island": 37,
+   "carryMen": 192000,
+   "carryFormations": 15
+  },
+  {
+   "seed": 7019,
+   "nation": "NED",
+   "km": 5535,
+   "oneWayDays": 14,
+   "trips": 2,
+   "room": 24000,
+   "islandMen": 70420,
+   "island": 6,
+   "carryMen": 48000,
+   "carryFormations": 4
+  },
+  {
+   "seed": 7247,
+   "nation": "AST",
+   "km": 818,
+   "oneWayDays": 2.1,
+   "trips": 6,
+   "room": 24000,
+   "islandMen": 105940,
+   "island": 10,
+   "carryMen": 105940,
+   "carryFormations": 10
+  },
+  {
+   "seed": 7247,
+   "nation": "GER",
+   "km": 129,
+   "oneWayDays": 0.3,
+   "trips": 8,
+   "room": 4000,
+   "islandMen": 60976,
+   "island": 8,
+   "carryMen": 32000,
+   "carryFormations": 4
+  },
+  {
+   "seed": 7247,
+   "nation": "JAP",
+   "km": null,
+   "oneWayDays": null,
+   "trips": 0,
+   "room": 24000,
+   "islandMen": 60038,
+   "island": 9,
+   "carryMen": 0,
+   "carryFormations": 0
+  },
+  {
+   "seed": 7583,
+   "nation": "JAP",
+   "km": 202,
+   "oneWayDays": 0.5,
+   "trips": 8,
+   "room": 24000,
+   "islandMen": 140840,
+   "island": 10,
+   "carryMen": 140840,
+   "carryFormations": 10
+  },
+  {
+   "seed": 7583,
+   "nation": "GER",
+   "km": 129,
+   "oneWayDays": 0.3,
+   "trips": 8,
+   "room": 24000,
+   "islandMen": 186900,
+   "island": 15,
+   "carryMen": 186900,
+   "carryFormations": 15
+  },
+  {
+   "seed": 8011,
+   "nation": "JAP",
+   "km": 202,
+   "oneWayDays": 0.5,
+   "trips": 8,
+   "room": 24000,
+   "islandMen": 302820,
+   "island": 23,
+   "carryMen": 192000,
+   "carryFormations": 15
+  },
+  {
+   "seed": 8167,
+   "nation": "LIT",
+   "km": 129,
+   "oneWayDays": 0.3,
+   "trips": 8,
+   "room": 24000,
+   "islandMen": 86389,
+   "island": 7,
+   "carryMen": 86389,
+   "carryFormations": 7
+  },
+  {
+   "seed": 8167,
+   "nation": "JAP",
+   "km": 202,
+   "oneWayDays": 0.5,
+   "trips": 8,
+   "room": 24000,
+   "islandMen": 660380,
+   "island": 53,
+   "carryMen": 192000,
+   "carryFormations": 15
+  },
+  {
+   "seed": 8693,
+   "nation": "JAP",
+   "km": 202,
+   "oneWayDays": 0.5,
+   "trips": 8,
+   "room": 24000,
+   "islandMen": 548240,
+   "island": 44,
+   "carryMen": 192000,
+   "carryFormations": 15
+  },
+  {
+   "seed": 8693,
+   "nation": "USA",
+   "km": 4839,
+   "oneWayDays": 12.2,
+   "trips": 2,
+   "room": 48000,
+   "islandMen": 2329470,
+   "island": 206,
+   "carryMen": 96000,
+   "carryFormations": 8
+  },
+  {
+   "seed": 8693,
+   "nation": "NED",
+   "km": null,
+   "oneWayDays": null,
+   "trips": 0,
+   "room": 0,
+   "islandMen": 84625,
+   "island": 7,
+   "carryMen": 0,
+   "carryFormations": 0
+  },
+  {
+   "seed": 8693,
+   "nation": "RAJ",
+   "km": null,
+   "oneWayDays": null,
+   "trips": 0,
+   "room": 0,
+   "islandMen": 62300,
+   "island": 5,
+   "carryMen": 0,
+   "carryFormations": 0
+  },
+  {
+   "seed": 8693,
+   "nation": "GER",
+   "km": 456,
+   "oneWayDays": 1.2,
+   "trips": 7,
+   "room": 24000,
+   "islandMen": 178825,
+   "island": 15,
+   "carryMen": 168000,
+   "carryFormations": 14
+  },
+  {
+   "seed": 9437,
+   "nation": "GER",
+   "km": 2905,
+   "oneWayDays": null,
+   "trips": 0,
+   "room": 0,
+   "islandMen": 139803,
+   "island": 16,
+   "carryMen": 0,
+   "carryFormations": 0
+  },
+  {
+   "seed": 9437,
+   "nation": "JAP",
+   "km": 202,
+   "oneWayDays": 0.5,
+   "trips": 8,
+   "room": 48000,
+   "islandMen": 114920,
+   "island": 9,
+   "carryMen": 114920,
+   "carryFormations": 9
+  },
+  {
+   "seed": 9437,
+   "nation": "USA",
+   "km": 3731,
+   "oneWayDays": 9.4,
+   "trips": 2,
+   "room": 72000,
+   "islandMen": 56080,
+   "island": 5,
+   "carryMen": 56080,
+   "carryFormations": 5
+  }
+ ],
+ "rows": [
+  {
+   "seed": 5861,
+   "src": "critic/c11_seed5861_y20.bin",
+   "first": {
+    "island": 23,
+    "atWar": 126,
+    "noOwnPort": 1,
+    "noTransports": 4,
+    "noOwnFront": 1
+   },
+   "mid": {},
+   "last": {
+    "island": 22,
+    "atWar": 124,
+    "noOwnPort": 1,
+    "noTransports": 4,
+    "noOwnFront": 1
+   },
+   "nations": [
+    {
+     "nation": "ENG",
+     "island0": 19,
+     "islandMen0": 233479,
+     "island1": 18,
+     "islandMen1": 221019,
+     "gates": {
+      "fronted": 60,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 9,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 0,
+     "boarded": 1,
+     "boardedMen": 12460,
+     "landed": 1,
+     "landedMen": 12460,
+     "wars": [
+      {
+       "foes": [
+        "SOV",
+        "FIN",
+        "IRN",
+        "AFG",
+        "BUR",
+        "SIA",
+        "TAN",
+        "#107",
+        "MON"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    }
+   ]
+  },
+  {
+   "seed": 6151,
+   "src": "critic/c11_seed6151_y20.bin",
+   "first": {
+    "island": 0,
+    "atWar": 0,
+    "noOwnPort": 0,
+    "noTransports": 0,
+    "noOwnFront": 0
+   },
+   "mid": {},
+   "last": {
+    "island": 96,
+    "atWar": 461,
+    "noOwnPort": 18,
+    "noTransports": 5,
+    "noOwnFront": 18
+   },
+   "nations": []
+  },
+  {
+   "seed": 6421,
+   "src": "critic/c11_seed6421_y20.bin",
+   "first": {
+    "island": 27,
+    "atWar": 242,
+    "noOwnPort": 7,
+    "noTransports": 13,
+    "noOwnFront": 3
+   },
+   "mid": {},
+   "last": {
+    "island": 14,
+    "atWar": 233,
+    "noOwnPort": 7,
+    "noTransports": 13,
+    "noOwnFront": 7
+   },
+   "nations": [
+    {
+     "nation": "JAP",
+     "island0": 6,
+     "islandMen0": 82880,
+     "island1": 1,
+     "islandMen1": 12460,
+     "gates": {
+      "fronted": 56,
+      "aboard": 1,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 3,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 8,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 1,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 2,
+     "roomAll": 48000,
+     "roomAtPort": 1200,
+     "boarded": 5,
+     "boardedMen": 70420,
+     "landed": 3,
+     "landedMen": 45500,
+     "wars": [
+      {
+       "foes": [
+        "RAJ",
+        "NSP",
+        "NED",
+        "POR",
+        "SIN",
+        "FMO",
+        "BUR"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    },
+    {
+     "nation": "AST",
+     "island0": 8,
+     "islandMen0": 87240,
+     "island1": 0,
+     "islandMen1": 0,
+     "gates": {
+      "fronted": 40,
+      "aboard": 7,
+      "noTransport": 1,
+      "noTarget": 0,
+      "atPort": 12,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 5,
+      "aboard": 0,
+      "noTransport": 1,
+      "noTarget": 0,
+      "atPort": 2,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 4800,
+     "boarded": 2,
+     "boardedMen": 24368,
+     "landed": 2,
+     "landedMen": 24128,
+     "wars": [
+      {
+       "foes": [
+        "NED",
+        "ENG",
+        "SUD",
+        "BCO",
+        "SAU",
+        "YEM",
+        "GUA",
+        "FRA",
+        "NSP",
+        "POR",
+        "SIN",
+        "SIA",
+        "RAJ",
+        "FMO"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    }
+   ]
+  },
+  {
+   "seed": 7019,
+   "src": "critic/c11_seed7019_y20.bin",
+   "first": {
+    "island": 186,
+    "atWar": 530,
+    "noOwnPort": 9,
+    "noTransports": 0,
+    "noOwnFront": 9
+   },
+   "mid": {},
+   "last": {
+    "island": 177,
+    "atWar": 395,
+    "noOwnPort": 7,
+    "noTransports": 0,
+    "noOwnFront": 7
+   },
+   "nations": [
+    {
+     "nation": "ENG",
+     "island0": 139,
+     "islandMen0": 1611655,
+     "island1": 137,
+     "islandMen1": 1603307,
+     "gates": {
+      "fronted": 60,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 9,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 2,
+     "roomAll": 48000,
+     "roomAtPort": 0,
+     "boarded": 2,
+     "boardedMen": 15460,
+     "landed": 2,
+     "landedMen": 15460,
+     "wars": [
+      {
+       "foes": [
+        "SOV",
+        "EST",
+        "FIN",
+        "MON",
+        "MEN"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    },
+    {
+     "nation": "JAP",
+     "island0": 37,
+     "islandMen0": 469140,
+     "island1": 33,
+     "islandMen1": 419300,
+     "gates": {
+      "fronted": 60,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 9,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 0,
+     "boarded": 4,
+     "boardedMen": 49840,
+     "landed": 4,
+     "landedMen": 49840,
+     "wars": [
+      {
+       "foes": [
+        "SOV",
+        "EST",
+        "MON"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    },
+    {
+     "nation": "NED",
+     "island0": 6,
+     "islandMen0": 70420,
+     "island1": 5,
+     "islandMen1": 57960,
+     "gates": {
+      "fronted": 0,
+      "aboard": 3,
+      "noTransport": 51,
+      "noTarget": 0,
+      "atPort": 5,
+      "send": 0,
+      "noneFree": 1
+     },
+     "actorGates": {
+      "fronted": 0,
+      "aboard": 0,
+      "noTransport": 7,
+      "noTarget": 0,
+      "atPort": 1,
+      "send": 0,
+      "noneFree": 1
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 2400,
+     "boarded": 1,
+     "boardedMen": 12460,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "SOV",
+        "EST",
+        "MON"
+       ],
+       "landFront": false
+      }
+     ],
+     "muster": "home"
+    }
+   ]
+  },
+  {
+   "seed": 7247,
+   "src": "critic/c11_seed7247_y20.bin",
+   "first": {
+    "island": 29,
+    "atWar": 344,
+    "noOwnPort": 8,
+    "noTransports": 0,
+    "noOwnFront": 8
+   },
+   "mid": {},
+   "last": {
+    "island": 19,
+    "atWar": 349,
+    "noOwnPort": 8,
+    "noTransports": 0,
+    "noOwnFront": 8
+   },
+   "nations": [
+    {
+     "nation": "AST",
+     "island0": 10,
+     "islandMen0": 105940,
+     "island1": 8,
+     "islandMen1": 87240,
+     "gates": {
+      "fronted": 60,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 8,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 0,
+     "boarded": 2,
+     "boardedMen": 18700,
+     "landed": 2,
+     "landedMen": 18700,
+     "wars": [
+      {
+       "foes": [
+        "JAP",
+        "CHI",
+        "MAN",
+        "MON",
+        "GER",
+        "ROM",
+        "YUG",
+        "ALB",
+        "TUR",
+        "NSP",
+        "REP",
+        "TRJ",
+        "IRN",
+        "AFG",
+        "NEP",
+        "SIA",
+        "CCP",
+        "#107",
+        "#108",
+        "ITA",
+        "POL"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    },
+    {
+     "nation": "GER",
+     "island0": 8,
+     "islandMen0": 60976,
+     "island1": 8,
+     "islandMen1": 60976,
+     "gates": {
+      "fronted": 0,
+      "aboard": 0,
+      "noTransport": 9,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 51,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 0,
+      "aboard": 0,
+      "noTransport": 1,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 7,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 4000,
+     "roomAtPort": 3400,
+     "boarded": 0,
+     "boardedMen": 0,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "FRA"
+       ],
+       "landFront": false
+      },
+      {
+       "foes": [
+        "AST"
+       ],
+       "landFront": false
+      }
+     ],
+     "muster": "home"
+    },
+    {
+     "nation": "JAP",
+     "island0": 9,
+     "islandMen0": 60038,
+     "island1": 2,
+     "islandMen1": 33040,
+     "gates": {
+      "fronted": 60,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 9,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 0,
+     "boarded": 2,
+     "boardedMen": 24920,
+     "landed": 2,
+     "landedMen": 24920,
+     "wars": [
+      {
+       "foes": [
+        "FRA"
+       ],
+       "landFront": true
+      },
+      {
+       "foes": [
+        "AST"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    }
+   ]
+  },
+  {
+   "seed": 7583,
+   "src": "critic/c11_seed7583_y20.bin",
+   "first": {
+    "island": 32,
+    "atWar": 207,
+    "noOwnPort": 1,
+    "noTransports": 5,
+    "noOwnFront": 1
+   },
+   "mid": {},
+   "last": {
+    "island": 37,
+    "atWar": 205,
+    "noOwnPort": 4,
+    "noTransports": 13,
+    "noOwnFront": 4
+   },
+   "nations": [
+    {
+     "nation": "JAP",
+     "island0": 10,
+     "islandMen0": 140840,
+     "island1": 9,
+     "islandMen1": 128380,
+     "gates": {
+      "fronted": 60,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 9,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 0,
+     "boarded": 1,
+     "boardedMen": 12460,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "YEM",
+        "FRA",
+        "NED",
+        "SAF",
+        "SIN",
+        "OMN",
+        "SAR",
+        "NEP",
+        "#126",
+        "SIA",
+        "RAJ",
+        "SRH"
+       ],
+       "landFront": true
+      },
+      {
+       "foes": [
+        "MON",
+        "FIN",
+        "NOR",
+        "SWE",
+        "AFG",
+        "CHI",
+        "CCP",
+        "TAN"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    },
+    {
+     "nation": "GER",
+     "island0": 15,
+     "islandMen0": 186900,
+     "island1": 14,
+     "islandMen1": 174440,
+     "gates": {
+      "fronted": 7,
+      "aboard": 46,
+      "noTransport": 4,
+      "noTarget": 0,
+      "atPort": 3,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 1,
+      "aboard": 6,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 1,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 1200,
+     "boarded": 1,
+     "boardedMen": 12460,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "YEM",
+        "FRA",
+        "NED",
+        "SAF",
+        "SIN",
+        "OMN",
+        "SAR",
+        "NEP",
+        "#126",
+        "SIA",
+        "RAJ",
+        "SRH"
+       ],
+       "landFront": true
+      },
+      {
+       "foes": [
+        "SOV",
+        "FIN",
+        "NOR",
+        "SWE",
+        "AFG",
+        "CHI",
+        "CCP",
+        "TAN",
+        "MON"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "home"
+    }
+   ]
+  },
+  {
+   "seed": 8011,
+   "src": "critic/c11_seed8011_y20.bin",
+   "first": {
+    "island": 30,
+    "atWar": 351,
+    "noOwnPort": 2,
+    "noTransports": 3,
+    "noOwnFront": 1
+   },
+   "mid": {},
+   "last": {
+    "island": 22,
+    "atWar": 351,
+    "noOwnPort": 2,
+    "noTransports": 3,
+    "noOwnFront": 1
+   },
+   "nations": [
+    {
+     "nation": "JAP",
+     "island0": 23,
+     "islandMen0": 302820,
+     "island1": 19,
+     "islandMen1": 244860,
+     "gates": {
+      "fronted": 60,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 9,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 0,
+     "boarded": 4,
+     "boardedMen": 57960,
+     "landed": 3,
+     "landedMen": 45500,
+     "wars": [
+      {
+       "foes": [
+        "MON",
+        "FIN",
+        "NOR",
+        "EGY",
+        "SAU",
+        "YEM",
+        "OMN",
+        "IRN",
+        "AFG",
+        "CHI",
+        "TAN"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    }
+   ]
+  },
+  {
+   "seed": 8167,
+   "src": "critic/c11_seed8167_y20.bin",
+   "first": {
+    "island": 64,
+    "atWar": 463,
+    "noOwnPort": 3,
+    "noTransports": 1,
+    "noOwnFront": 3
+   },
+   "mid": {},
+   "last": {
+    "island": 0,
+    "atWar": 14,
+    "noOwnPort": 0,
+    "noTransports": 0,
+    "noOwnFront": 0
+   },
+   "nations": [
+    {
+     "nation": "LIT",
+     "island0": 7,
+     "islandMen0": 86389,
+     "island1": 0,
+     "islandMen1": 0,
+     "gates": {
+      "fronted": 56,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 8,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 0,
+     "boarded": 0,
+     "boardedMen": 0,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "OMN",
+        "NED",
+        "SAU"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "home"
+    },
+    {
+     "nation": "JAP",
+     "island0": 53,
+     "islandMen0": 660380,
+     "island1": 0,
+     "islandMen1": 0,
+     "gates": {
+      "fronted": 56,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 8,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 0,
+     "boarded": 2,
+     "boardedMen": 24920,
+     "landed": 2,
+     "landedMen": 24920,
+     "wars": [
+      {
+       "foes": [
+        "OMN",
+        "NED",
+        "SAU"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    }
+   ]
+  },
+  {
+   "seed": 8693,
+   "src": "critic/c11_seed8693_y20.bin",
+   "first": {
+    "island": 285,
+    "atWar": 665,
+    "noOwnPort": 17,
+    "noTransports": 15,
+    "noOwnFront": 17
+   },
+   "mid": {},
+   "last": {
+    "island": 274,
+    "atWar": 662,
+    "noOwnPort": 11,
+    "noTransports": 15,
+    "noOwnFront": 8
+   },
+   "nations": [
+    {
+     "nation": "JAP",
+     "island0": 44,
+     "islandMen0": 548240,
+     "island1": 43,
+     "islandMen1": 535780,
+     "gates": {
+      "fronted": 0,
+      "aboard": 1,
+      "noTransport": 50,
+      "noTarget": 0,
+      "atPort": 6,
+      "send": 0,
+      "noneFree": 3
+     },
+     "actorGates": {
+      "fronted": 0,
+      "aboard": 0,
+      "noTransport": 7,
+      "noTarget": 0,
+      "atPort": 1,
+      "send": 0,
+      "noneFree": 1
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 3600,
+     "boarded": 1,
+     "boardedMen": 12460,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "USA",
+        "CAN",
+        "NFL",
+        "MEX"
+       ],
+       "landFront": true
+      },
+      {
+       "foes": [
+        "GCO",
+        "NED"
+       ],
+       "landFront": false
+      }
+     ],
+     "muster": "theatre"
+    },
+    {
+     "nation": "USA",
+     "island0": 206,
+     "islandMen0": 2329470,
+     "island1": 199,
+     "islandMen1": 2248470,
+     "gates": {
+      "fronted": 60,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 9,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 2,
+     "roomAll": 48000,
+     "roomAtPort": 0,
+     "boarded": 1,
+     "boardedMen": 12460,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "ITA",
+        "YUG",
+        "ALB",
+        "ENG",
+        "POR",
+        "SUD",
+        "BCO",
+        "#115",
+        "GER",
+        "LIT",
+        "HUN",
+        "IRE",
+        "#109",
+        "JAP",
+        "FRA",
+        "RAJ",
+        "CHI",
+        "SIN",
+        "POL",
+        "SOV",
+        "TUR",
+        "EGY",
+        "PAL",
+        "TRJ",
+        "IRQ",
+        "SAU",
+        "#116",
+        "#122",
+        "MEN",
+        "#110",
+        "IRN",
+        "SYR",
+        "AFG"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    },
+    {
+     "nation": "NED",
+     "island0": 7,
+     "islandMen0": 84625,
+     "island1": 7,
+     "islandMen1": 82351,
+     "gates": {
+      "fronted": 6,
+      "aboard": 0,
+      "noTransport": 54,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 1,
+      "aboard": 0,
+      "noTransport": 8,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 0,
+     "roomAll": 0,
+     "roomAtPort": 0,
+     "boarded": 0,
+     "boardedMen": 0,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "JAP",
+        "RAJ",
+        "CHI",
+        "SIN",
+        "MON",
+        "GER",
+        "LIT",
+        "HUN",
+        "IRE",
+        "#109",
+        "ITA",
+        "YUG",
+        "ALB",
+        "POR",
+        "SUD",
+        "BCO",
+        "#115",
+        "POL",
+        "SOV",
+        "TUR",
+        "EGY",
+        "PAL",
+        "TRJ",
+        "IRQ",
+        "SAU",
+        "#116",
+        "#122",
+        "MEN",
+        "#110",
+        "IRN",
+        "SYR",
+        "AFG"
+       ],
+       "landFront": false
+      }
+     ],
+     "muster": "home"
+    },
+    {
+     "nation": "RAJ",
+     "island0": 5,
+     "islandMen0": 62300,
+     "island1": 5,
+     "islandMen1": 62300,
+     "gates": {
+      "fronted": 0,
+      "aboard": 0,
+      "noTransport": 60,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 0,
+      "aboard": 0,
+      "noTransport": 8,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 0,
+     "roomAll": 0,
+     "roomAtPort": 0,
+     "boarded": 0,
+     "boardedMen": 0,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "USA",
+        "CAN",
+        "NFL",
+        "MEX"
+       ],
+       "landFront": false
+      },
+      {
+       "foes": [
+        "GCO",
+        "NED"
+       ],
+       "landFront": false
+      }
+     ],
+     "muster": "home"
+    },
+    {
+     "nation": "GER",
+     "island0": 15,
+     "islandMen0": 178825,
+     "island1": 14,
+     "islandMen1": 166365,
+     "gates": {
+      "fronted": 0,
+      "aboard": 40,
+      "noTransport": 16,
+      "noTarget": 0,
+      "atPort": 2,
+      "send": 0,
+      "noneFree": 2
+     },
+     "actorGates": {
+      "fronted": 0,
+      "aboard": 5,
+      "noTransport": 1,
+      "noTarget": 0,
+      "atPort": 1,
+      "send": 0,
+      "noneFree": 1
+     },
+     "transportGroups": 1,
+     "roomAll": 24000,
+     "roomAtPort": 1600,
+     "boarded": 1,
+     "boardedMen": 12460,
+     "landed": 1,
+     "landedMen": 12316,
+     "wars": [
+      {
+       "foes": [
+        "USA",
+        "CAN",
+        "NFL",
+        "MEX"
+       ],
+       "landFront": true
+      },
+      {
+       "foes": [
+        "GCO",
+        "NED"
+       ],
+       "landFront": false
+      }
+     ],
+     "muster": "home"
+    }
+   ]
+  },
+  {
+   "seed": 8849,
+   "src": "critic/c11_seed8849_y20.bin",
+   "first": {
+    "island": 0,
+    "atWar": 2,
+    "noOwnPort": 0,
+    "noTransports": 0,
+    "noOwnFront": 0
+   },
+   "mid": {},
+   "last": {
+    "island": 0,
+    "atWar": 3,
+    "noOwnPort": 0,
+    "noTransports": 0,
+    "noOwnFront": 0
+   },
+   "nations": []
+  },
+  {
+   "seed": 9437,
+   "src": "critic/c11_seed9437_y20.bin",
+   "first": {
+    "island": 32,
+    "atWar": 570,
+    "noOwnPort": 2,
+    "noTransports": 18,
+    "noOwnFront": 2
+   },
+   "mid": {},
+   "last": {
+    "island": 37,
+    "atWar": 594,
+    "noOwnPort": 12,
+    "noTransports": 28,
+    "noOwnFront": 2
+   },
+   "nations": [
+    {
+     "nation": "GER",
+     "island0": 16,
+     "islandMen0": 139803,
+     "island1": 16,
+     "islandMen1": 139803,
+     "gates": {
+      "fronted": 42,
+      "aboard": 0,
+      "noTransport": 18,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 6,
+      "aboard": 0,
+      "noTransport": 2,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 0,
+     "roomAll": 0,
+     "roomAtPort": 0,
+     "boarded": 0,
+     "boardedMen": 0,
+     "landed": 0,
+     "landedMen": 0,
+     "wars": [
+      {
+       "foes": [
+        "POR",
+        "SAF",
+        "SRH",
+        "RAJ"
+       ],
+       "landFront": true
+      },
+      {
+       "foes": [
+        "SUD",
+        "NED",
+        "PAN",
+        "VEN"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "home"
+    },
+    {
+     "nation": "JAP",
+     "island0": 9,
+     "islandMen0": 114920,
+     "island1": 5,
+     "islandMen1": 56960,
+     "gates": {
+      "fronted": 60,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 9,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 2,
+     "roomAll": 48000,
+     "roomAtPort": 0,
+     "boarded": 1,
+     "boardedMen": 20580,
+     "landed": 1,
+     "landedMen": 20580,
+     "wars": [
+      {
+       "foes": [
+        "POR",
+        "SAF",
+        "SRH",
+        "RAJ"
+       ],
+       "landFront": true
+      },
+      {
+       "foes": [
+        "SOV",
+        "EST",
+        "FIN",
+        "NOR",
+        "AFG",
+        "SIA",
+        "CCP",
+        "TIB",
+        "#112",
+        "MON"
+       ],
+       "landFront": true
+      },
+      {
+       "foes": [
+        "SUD",
+        "NED",
+        "PAN",
+        "VEN"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "theatre"
+    },
+    {
+     "nation": "USA",
+     "island0": 5,
+     "islandMen0": 56080,
+     "island1": 4,
+     "islandMen1": 43620,
+     "gates": {
+      "fronted": 60,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "actorGates": {
+      "fronted": 9,
+      "aboard": 0,
+      "noTransport": 0,
+      "noTarget": 0,
+      "atPort": 0,
+      "send": 0,
+      "noneFree": 0
+     },
+     "transportGroups": 3,
+     "roomAll": 72000,
+     "roomAtPort": 0,
+     "boarded": 1,
+     "boardedMen": 12460,
+     "landed": 1,
+     "landedMen": 12460,
+     "wars": [
+      {
+       "foes": [
+        "ENG",
+        "CEY",
+        "MAL",
+        "NFL",
+        "FRA",
+        "CHI",
+        "NSP",
+        "NED",
+        "PAN",
+        "VEN",
+        "SUD",
+        "#118"
+       ],
+       "landFront": true
+      }
+     ],
+     "muster": "home"
+    }
+   ]
+  },
+  {
+   "seed": 9781,
+   "src": "critic/c11_seed9781_y20.bin",
+   "first": {
+    "island": 9,
+    "atWar": 504,
+    "noOwnPort": 6,
+    "noTransports": 1,
+    "noOwnFront": 6
+   },
+   "mid": {},
+   "last": {
+    "island": 195,
+    "atWar": 519,
+    "noOwnPort": 1,
+    "noTransports": 0,
+    "noOwnFront": 1
+   },
+   "nations": []
+  }
+ ]
+}

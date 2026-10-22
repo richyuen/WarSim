@@ -63,6 +63,22 @@ when taken up:
   half of HEAD's; engaged worldwide and per war read (`warSides.ts`); no invasion AI call over 50
   ms; a unit test (red without: a nation fronted through an ally boards for that front's land); the
   ADR; the pin's entry.
+  Rule in (ADR-617, `docs/evidence/7.64.md`; with a second half: a landing that ships nobody leaves
+  the turn to the ferry, else it never ran for such a nation): 850 → 696 after 60 days (−18 %), bar
+  under 425: missed (one group of 24,000 men a nation, a voyage of weeks; none bought, PLAN 7.66);
+  BLOCKERS, the user's.
+
+- [ ] 7.66 Transports bought for a nation fronted through an ally alone (found at 7.64,
+  `docs/evidence/7.64.md` §2; carries emergent 6 with 7.49): the ferry's want (`wantsFerry`,
+  `ai/economic.ts`, ADR-614) reads the nation's own front cells, so a nation whose land front is its
+  allies' alone orders no transport group for its island army (after 7.64, 696 such island
+  formations after 60 days of the 48 saves; the Netherlands and the British Raj on 8693 year 20 with
+  no transports at all). The rule: such a nation's front for the want is its allies' cells beside
+  the enemies it fights with them, as 7.64's ferry. AT: the island formations of nations with no
+  front cell of their own after 180 days of the 48 saves together (`islandArmies.ts`, `MID=180` on a
+  180-day run; HEAD first, the before) under 0.75 × HEAD's; no nation in debt for it (`debt`); a
+  unit test (red without: a nation fronted through an ally alone, its island army over its room,
+  orders a transport group); the ADR; the pin's entry.
 
 - [ ] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21;
   AI nuclear use 7, the critic's run 11 design objection; `docs/evidence/7.52/c.md`): a capital's

@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-617 · 2026-10-21 · accepted — The ferry for a nation fronted through an ally alone: its allies' front cells, and a landing that ships nobody leaves the turn (PLAN 7.64; amends ADR-612)
+
+- **Context** (PLAN 7.64; `docs/evidence/7.49/d2.md` §3). A nation at war whose land front is its
+  allies' alone (it holds no cell beside an enemy) was never ferried: `invasionAi` called
+  `planFerry` with the nation's own front cells, and with none did not call it. And for such a
+  nation every war is "a war with no front", so the landing went first and took the turn whenever
+  it had transports at a port and an enemy port to sail for, even with nobody at that port or on
+  its land to ship (970 of the 1,521 days of the 27 such nations watched on the critic's 48 saves).
+  On the 48 saves: 793 island formations of such nations on day 1 (Latvia's 40 on 5309 year 20).
+- **Decision.** (a) An actor with no front cell of its own takes as the ferry's front its allies'
+  cells beside the enemies it fights with them (`wars.together`), for the lands it ferries from
+  and to and for its port's choice (ADR-616's nearest a front cell). (b) `board` returns whether
+  it gave an order and the landing returns that: a landing that ordered nobody leaves the day's
+  turn to the ferry, as a landing with no target did (ADR-612).
+- **Measured** (`docs/evidence/7.64.md`): such island formations after 60 days 850 (HEAD) → 696
+  (−18 %); the bar, under half (425), missed. The ferry moves them a group's room at a time: as a
+  rule one group of 24,000 men, a voyage of weeks; the want that buys transports for the ferry
+  (ADR-614) reads the nation's own front, so such a nation buys none for it (PLAN 7.66). Engaged
+  (`warSides.ts`) 0.588 → 0.604 worldwide, 0.133 → 0.137 per war. The invasion AI's mean 0.015 /
+  0.018 → 0.033 / 0.051 ms an hour, longest call 5.8 ms (seed 99, two years). BLOCKERS, the user's.
+- **Pin.** 8387d0c3 → 2bc0e4df.
+- **Test.** `ferry1938.test.ts`, a new case: the United Kingdom and its allies at war with Italy,
+  every British cell beside an enemy handed to an ally, its army on the fronts' lands gone, its
+  transports at a British port in Africa: they sail home for the division at Glasgow. Red without
+  either half.
+
 ### ADR-616 · 2026-10-21 · accepted — The ferry's port nearest the front: of a nation's ports on its front's land, the nearest a front cell of its own (PLAN 7.63; amends ADR-612)
 
 - **Context** (PLAN 7.63; `docs/evidence/7.49/d1.md` §3). The ferry (ADR-612) sailed for the

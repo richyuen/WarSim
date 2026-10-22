@@ -5,6 +5,23 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.64: the ferry for a nation fronted through an ally alone is in; such island formations after 60 days 850 → 696, bar under 425 (2026-10-21, ADR-617; the user's decision)
+- **The bar:** the island formations of nations with no front cell of their own after 60 days of
+  the critic's 48 saves together (`islandArmies.ts`, `noOwnFront`) under half of HEAD's (850).
+- **What moved** (`docs/evidence/7.64.md`): 850 → 696 (−18 %). The rule has two halves, each needed:
+  the allies' front cells for the ferry, and a landing that ships nobody leaves the turn (it took
+  970 of the 1,521 days of the watched such nations). The ferry ships them now, a group's room at a
+  time: the Netherlands by 1–3 formations in each of nine saves, Australia 8 → 5, Britain on 2347
+  8 → 4, the United States 212 → 211. Engaged (`warSides.ts`) 0.588 → 0.604 worldwide, 0.133 →
+  0.137 per war. The unit test, the ADR, the pin and the 50 ms bound (5.8 ms) are met.
+- **Why it misses:** the transports. Such a nation has as a rule one group of 24,000 men, a voyage of
+  weeks between its island and its allies' front; some have none, and the want that buys them
+  (ADR-614) reads the nation's own front, so it buys none for the ferry: PLAN 7.66, filed.
+- **What is left:** the user's. (a, recommended) 7.64 ticked on its rule's own case: such a nation
+  is ferried now (its transports sail for its army and take it to its allies' front), the rest of
+  the bar is 7.66's transports; (b) closed not done, the rule kept; (c) kept open until 7.66 is read
+  with it. Meanwhile the loop takes PLAN 7.66.
+
 ### PLAN 7.63: the ferry's port nearest the front is in; within 60 cells on day 60 at 69 %, bar 80 % (2026-10-21, ADR-616; the user's decision)
 - **The bar:** of the formations ferried and landed in 60 days of the critic's 48 saves
   (`ferryLanded.ts`), within 60 cells of their front on day 60 at least 80 %.

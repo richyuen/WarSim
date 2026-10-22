@@ -2073,7 +2073,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   formations beyond the deploy range of its own front on their land. A formation on the march to
   a port where its nation's transports stand is not one the operational AI plans with (PLAN
   7.56a, ADR-596: it manned an ally's front with them on the way). A landing takes a cell a nation owns where the target is owned.
-  The ferry (PLAN 7.49d1, ADR-612), in the same turn and lock when no landing has a target: a
+  The ferry (PLAN 7.49d1, ADR-612), in the same turn and lock when no landing gave an order (no
+  target, or nobody at its port nor on its land: PLAN 7.64, ADR-617): a
   nation with a land front ships its free formations standing on a landmass with none of its
   front cells to its own port on a front's land nearest a front cell of its own there (straight
   cells; the nearest its transports by sea on a tie; PLAN 7.63, ADR-616; open, unbombed, not held
@@ -2081,7 +2082,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   front's land, or on a land with none of that army, sail instead for a port of its that the
   army's formations nearest them can march to. With no such port of its own, an ally's (PLAN
   7.49d2, ADR-613): of the ports held by nations fighting beside it that pass the same tests, the
-  nearest a front cell of its own on that land, the nearest by sea on a tie.
+  nearest a front cell of its own on that land, the nearest by sea on a tie. A nation with no
+  front cell of its own (its land front its allies' alone) takes as its front cells their cells
+  beside the enemies it fights with them (`wars.together`; PLAN 7.64, ADR-617).
   *Fleets at sea (PLAN 4.6c, ADR-270; `src/sim/ai/naval.ts`):* daily, staggered weekly by id. At
   war, each warfleet (power: its armed ships' hit points, submarines left out) standing at a
   port of its nation sails, within 2,500 km, to a landing of its nation's under way (escort),

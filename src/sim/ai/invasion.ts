@@ -84,6 +84,21 @@ export function invasionAi(world: World): void {
     }
     if (onFront) (frontCells.get(a) ?? frontCells.set(a, []).get(a)!).push(c);
   }
+  // An actor at war with no front cell of its own: the ferry's front is its allies' cells beside the
+  // enemies it fights with them (`wars.together`; PLAN 7.64, ADR-617).
+  const allyFront = new Map<number, number[]>();
+  const bare = actors.filter((n) => !frontCells.has(n));
+  if (bare.length > 0) {
+    for (const c of frontierOf(world)) {
+      const a = controller[c]!;
+      if (a === 0) continue;
+      for (const n of bare) {
+        if (!world.wars.sameSide(n, a)) continue;
+        if (!neighbours4(c, w, h, world.settings.loopingMap, nb).some((q) => controller[q] !== 0 && world.wars.together(n, a, controller[q]!))) continue;
+        (allyFront.get(n) ?? allyFront.set(n, []).get(n)!).push(c);
+      }
+    }
+  }
   const aboard = new Set<number>();
   for (const id of world.embarked.keys()) aboard.add(world.formations.cols.nation[id]!);
   for (const n of actors) {
@@ -100,7 +115,8 @@ export function invasionAi(world: World): void {
     }
     const front = frontCells.get(n) ?? [];
     if (foes.size > 0 && planLanding(world, n, foes, front)) continue;
-    if (front.length > 0) planFerry(world, n, front);
+    const ferried = front.length > 0 ? front : (allyFront.get(n) ?? []);
+    if (ferried.length > 0) planFerry(world, n, ferried);
   }
 }
 
@@ -126,7 +142,12 @@ function transportsAtPort(world: World, n: number): { fleet: number; room: numbe
   return fleet === 0 ? null : { fleet, room, port };
 }
 
-/** Whether `n`'s landing has a target: false with no transports at a port of its own or no enemy port to sail for (the ferry may take the turn then, PLAN 7.49d1). */
+/**
+ * Whether `n`'s landing acted: false with no transports at a port of its own, no enemy port to sail
+ * for (the ferry may take the turn then, PLAN 7.49d1), or nobody to ship from where they stand
+ * (PLAN 7.64, ADR-617: no army at the port nor on its land; before, the turn was taken all the same,
+ * on 970 of the 1,521 days of the nations fronted through an ally alone on the critic's 48 saves).
+ */
 function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: readonly number[]): boolean {
   const c = world.formations.cols;
   const w = world.cells.w;
@@ -173,8 +194,7 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
     return false;
   };
   const free = (id: number): boolean => standing(world, id, n) && (front.length === 0 || !nearFront(id));
-  board(world, tp.fleet, tp.room, tp.port, world.ports[target]!.cell, free);
-  return true;
+  return board(world, tp.fleet, tp.room, tp.port, world.ports[target]!.cell, free);
 }
 
 /** Whether land formation `id` of nation `n` is free to be shipped: on land, standing, in no fight, not retreating or going home. */
@@ -209,8 +229,14 @@ function standing(world: World, id: number, n: number): boolean {
  *   formations; 217 such at year 20 on the critic's saves). It lands there as at its own: `land`
  *   takes a cell from an enemy alone, and a nation fighting beside it is no foreign ground.
  *
+ * - a nation with no front cell of its own (its land front its allies' alone) takes as its front
+ *   their cells beside the enemies it fights with them (`wars.together`; PLAN 7.64, ADR-617).
+ *   Before, it was never ferried (critic run 11: 793 island formations of such nations on day 1 of
+ *   the 48 saves, Latvia's 40 on 5309 year 20).
+ *
  * In the landing's turn and lock: a nation's actor day, with none of its formations aboard, and a
- * landing in a war with no front planned first. Whether it acted.
+ * landing in a war with no front planned first (the ferry takes the turn when it gave no order).
+ * Whether it acted.
  */
 function planFerry(world: World, n: number, front: readonly number[]): boolean {
   const f = world.formations;
@@ -293,8 +319,7 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
   let target = pick((h) => h === n);
   if (target < 0) target = pick((h) => h !== 0 && h !== n && world.wars.sameSide(n, h));
   if (target < 0) return false;
-  board(world, fleet, tp.room, port, world.ports[target]!.cell, free);
-  return true;
+  return board(world, fleet, tp.room, port, world.ports[target]!.cell, free);
 }
 
 /**
@@ -302,9 +327,10 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
  * cell `goal`: those at the port (within `AT_PORT_CELLS` of its land cell or of its water, as
  * `tryLanding` takes them) are ordered there one by one until the room is full; with none there,
  * the nearest on the port's land are sent to it (`sendToPort`), or, with the nearest unable to
- * march there, the transports sail to them (`sailToArmy`). See the head of the file.
+ * march there, the transports sail to them (`sailToArmy`). See the head of the file. Whether any
+ * order was given (PLAN 7.64).
  */
-function board(world: World, fleet: number, room: number, port: number, goal: number, free: (id: number) => boolean): void {
+function board(world: World, fleet: number, room: number, port: number, goal: number, free: (id: number) => boolean): boolean {
   const f = world.formations;
   const c = f.cols;
   const w = world.cells.w;
@@ -322,7 +348,7 @@ function board(world: World, fleet: number, room: number, port: number, goal: nu
     if (!orderLanding(world, id, tx, ty)) break;
     sent++;
   }
-  if (sent > 0 || atPort.length > 0) return;
+  if (sent > 0 || atPort.length > 0) return sent > 0;
   // None there: the nearest free ones on the port's land are sent to it, to fill the room.
   const home = world.ports[port]!.cell;
   const comp = navOf(world).grid.component;
@@ -336,15 +362,12 @@ function board(world: World, fleet: number, room: number, port: number, goal: nu
     by.push([dx + Math.abs(Math.floor(k / w) - Math.floor(home / w)), id]);
   });
   by.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-  if (by.length === 0) return;
+  if (by.length === 0) return false;
   const [px, py] = world.cellPoint(home);
   // The transports go to the army (PLAN 7.54b): the nearest's march to their port refused.
   const pass = passageOf(world, n);
-  if (!marches(world, by[0]![1], home, pass)) {
-    sailToArmy(world, fleet, port, by.slice(0, SAIL_TRIES).map(([, id]) => id), pass);
-    return;
-  }
-  sendToPort(world, by.map(([, id]) => id), px, py, room, pass);
+  if (!marches(world, by[0]![1], home, pass)) return sailToArmy(world, fleet, port, by.slice(0, SAIL_TRIES).map(([, id]) => id), pass);
+  return sendToPort(world, by.map(([, id]) => id), px, py, room, pass) > 0;
 }
 
 /** How many formations, and of the ports nearest each, a sail to the army tries (PLAN 7.54b). */

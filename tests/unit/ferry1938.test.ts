@@ -190,4 +190,46 @@ describe('the ferry (PLAN 7.49d1)', () => {
     expect(w.ports.some((p) => p.cell === e.target)).toBe(true);
     expect(w.wars.sameSide(ENG, ctl[e.target]!)).toBe(true);
   });
+
+  // PLAN 7.64, ADR-617: a nation whose land front is its allies' alone (no cell of its own beside
+  // an enemy) takes their cells as its front for the ferry; and a landing that ships nobody (no army
+  // at its port nor on its land) leaves the turn to it. Britain's cells beside its enemies handed to
+  // an ally, its army in Africa gone, its transports at a port of its there: they sail home for the
+  // division at Glasgow. Before, nothing (critic run 11: 793 such island formations on day 1 of the
+  // 48 saves, Latvia's 40 on 5309 year 20).
+  it('a nation fronted through an ally alone sends its transports for its army', () => {
+    const { s, w, tp, frontLands, home } = setUp(true);
+    const c = w.formations.cols;
+    const comp = navOf(w).grid.component;
+    const water = portSeaOf(w);
+    const ctl = w.cells.controller;
+    const theirs = w.ports.findIndex((p, i) => water[i]! >= 0 && ctl[p.cell] !== ENG && w.wars.sameSide(ENG, ctl[p.cell]!) && frontLands.has(comp[p.cell]!));
+    expect(theirs).toBeGreaterThanOrEqual(0);
+    const ally = ctl[w.ports[theirs]!.cell]!;
+    const beside = (k: number): boolean => neighbours4(k, W, H, w.settings.loopingMap, []).some((q) => ctl[q] !== 0 && w.wars.atWar(ENG, ctl[q]!));
+    for (const k of [...frontierOf(w)]) if (ctl[k] === ENG && beside(k)) w.setController(k, ally);
+    expect([...frontierOf(w)].some((k) => ctl[k] === ENG && beside(k))).toBe(false);
+    // Its army on the fronts' lands gone; the transports at a port of its there.
+    const gone: number[] = [];
+    w.formations.forEach((f) => {
+      if (c.nation[f] === ENG && !w.isFleet(f) && !w.isWing(f) && frontLands.has(comp[Math.floor(c.y[f]!) * W + Math.floor(c.x[f]!)]!)) gone.push(f);
+    });
+    for (const f of gone) destroyFormation(w, f);
+    const there = w.ports.findIndex((p, i) => water[i]! >= 0 && ctl[p.cell] === ENG && frontLands.has(comp[p.cell]!));
+    expect(there).toBeGreaterThanOrEqual(0);
+    const sea = water[there]!;
+    [c.x[tp], c.y[tp]] = [(sea % W) + 0.5, Math.floor(sea / W) + 0.5];
+    c.moving[tp] = 0;
+    let sailed = false;
+    for (let d = 0; d < STAGGER && !sailed; d++) {
+      s.step(24);
+      sailed = c.moving[tp] === 1;
+    }
+    expect(sailed).toBe(true);
+    // For the water of a British port on Britain.
+    const r = w.atSize(AT_PORT_CELLS);
+    const goal = c.targetCell[tp]!;
+    const near = (a: number, b: number): boolean => Math.abs((a % W) - (b % W)) <= r && Math.abs(Math.floor(a / W) - Math.floor(b / W)) <= r;
+    expect(w.ports.some((p, i) => water[i]! >= 0 && ctl[p.cell] === ENG && comp[p.cell] === home && near(goal, water[i]!))).toBe(true);
+  });
 });
