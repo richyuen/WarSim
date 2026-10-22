@@ -2111,7 +2111,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   A new front (PLAN 7.70b, ADR-623), in the same turn and lock, after a landing that gave no order
   and before the ferry: a nation with a land front of its own that it holds (its land formations'
   men in the squares of the deploy range's side about its front cells, and those beside, at least
-  those of the nations at war with it there) lands its free army (standing, beyond the deploy
+  those of the nations at war with it there, and more than none: a front with nobody of either
+  side about it is not held, PLAN 7.73c, ADR-628) lands its free army (standing, beyond the deploy
   range of its front on their land) on an enemy's coastal city, of the enemies of its wars with a
   front, more than the deploy range from its front, with a water cell within 2 cells passing the
   landing's tests and reached by its bloc's way from home, on a land where its bloc owns and

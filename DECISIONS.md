@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-628 · 2026-10-22 · accepted — A front with nobody is not held (PLAN 7.73c; amends ADR-623)
+
+- **Context** (PLAN 7.73, 7.70b's missed bar; ADR-623 limit 1). `frontHeld` held a front when its
+  nation's men about it were at least the enemy's there, so a front with nobody of either side near
+  was held (none against none): a nation whose front stood empty sent its free army overseas on a
+  Normandy, and the ferry, which would have taken it to that front, lost the turn.
+- **Decision.** `frontHeld` (`ai/invasion.ts`) holds a front only with more than none of its
+  nation's men about it, and at least the enemy's there; a front with nobody is not held, and the
+  turn is the ferry's. Considered: a share of the front's length to be held (a constant to tune for
+  a case this rare); not taken.
+- **Read** (`newFronts.ts`; 180 days of the critic's 48 saves; `docs/evidence/7.73/c.md`; HEAD's read
+  matches 7.73b's after in every column): engaged per war-day 0.2372 → 0.2400 (by batch 0.1177 →
+  0.1177, 0.2930 → 0.2930, 0.1678 → 0.1828, 0.3596 → 0.3597: up in one, flat in three); fronted 76
+  → 75 of 308 (24.4 %); landings 671 → 672; far landings held 30 days 290 → 293; no lander in debt.
+  PLAN 7.73's bar met: engaged at least HEAD-before-7.70b's 0.2383, fronted at least a fifth. Seed
+  99's year: invasion AI mean 0.053 ms, longest call 12.6 ms (bar 50); tick mean 2.468 ms.
+- **Test.** `normandy1938.test.ts`: the fixture takes Britain's land formations off the front's
+  land and from within two of `frontHeld`'s squares of the front (1938's colonial garrisons stood
+  near it); guarded by a British division on a front cell, 7.70b's case and assertions hold;
+  unguarded, the group goes aboard for the front's land, not the island. Red without (unguarded).
+- **Pin.** Unchanged, 2c4e2593 (no front with nobody in seed 99's first year).
+
 ### ADR-627 · 2026-10-22 · accepted — A Normandy's group waits for a march to its port within a week (PLAN 7.73b; amends ADR-623)
 
 - **Context** (PLAN 7.73, 7.70b's missed bar; ADR-623 limit 2). A Normandy's group under three
@@ -298,7 +320,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   HEAD's, **missed**, lower in all four batches). No lander in debt. The invasion AI's longest call
   10.3 ms (seed 99's year; bar 50).
 - **Limits.** (1) `frontHeld` holds at none against none: a front cell with nobody of either side
-  near is held, and the free army goes overseas rather than to it (the unit test is that case).
+  near is held, and the free army goes overseas rather than to it (the unit test is that case;
+  not held since ADR-628, PLAN 7.73c, the test's front given a guard).
   (2) The group waits with no bound while one of its nation marches to the port: a march that
   stalls holds the transports from the Normandy and the ferry until it ends (bounded by ADR-627, PLAN 7.73b). (3) The worth divides
   by the enemy's formations near, as the task asks: a beachhead with nobody to fight adds no

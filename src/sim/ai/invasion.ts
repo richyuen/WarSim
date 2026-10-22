@@ -146,9 +146,11 @@ const NORMANDY_SHORE_CELLS = 2;
 /**
  * Whether nation `n`'s front (`front`, its cells on it) is held (PLAN 7.70b, ADR-623): its land
  * formations' men about the front at least those of the nations at war with it there. "About": in
- * a square of DEPLOY_RANGE_CELLS' side (this map's) that holds a front cell, or one beside it. A
- * front not held wants the army the ferry brings (planFerry); a held one spares its free army for
- * a landing behind the enemy's (planNormandy).
+ * a square of DEPLOY_RANGE_CELLS' side (this map's) that holds a front cell, or one beside it, and
+ * more than none (PLAN 7.73c, ADR-628: before, a front with nobody of either side near was held, and
+ * the free army sailed overseas while the front stood empty). A front not held wants the army the
+ * ferry brings (planFerry); a held one spares its free army for a landing behind the enemy's
+ * (planNormandy).
  */
 function frontHeld(world: World, n: number, front: readonly number[]): boolean {
   const c = world.formations.cols;
@@ -183,7 +185,8 @@ function frontHeld(world: World, n: number, front: readonly number[]): boolean {
     if (m === n) own += c.strength[id]!;
     else if (world.wars.atWar(n, m)) theirs += c.strength[id]!;
   });
-  return own >= theirs;
+  // Nobody of either side near: not held, so the ferry brings the army (PLAN 7.73c, ADR-628).
+  return own > 0 && own >= theirs;
 }
 
 /**

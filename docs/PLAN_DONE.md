@@ -13745,3 +13745,46 @@ Of 7.33 (open in PLAN.md):
   the ADR; the pin's entry.
   Rule in (ADR-625, `groupBoarding1938.test.ts`, `docs/evidence/7.72/README.md`, pin 9c5fa3ba):
   engaged per war-day 0.2182 → 0.2227; trips of 2+ formations 53 → 90.
+
+<!-- moved 2026-10-22 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.73 The Normandy without a loss of fight (7.70b's bar, ADR-623): with the rule, engaged land
+  formations per war-day on the 48 saves, 180 days (`newFronts.ts`), 0.238 → 0.219. Likely causes
+  (not measured): the worth over the enemy's formations near lands where nobody fights; the group
+  holds the turn while its rest marches, so the ferry gets fewer (landings 638 → 555); `frontHeld`
+  holds at none against none. AT: engaged per war-day at least HEAD-before-7.70b's 0.238 with the
+  fronted share (by a side with a front of its own) at least a fifth, on the same read; a unit test
+  of the cause fixed (red without); the ADR; the pin's entry. Stop: two full re-reads flat, the bar
+  is the user's (ADR-554).
+  In parts (one cause each; the whole's bar read after each):
+    - [x] 7.73a The worth near the front's rear: 7.70b's text asks for a target "near the enemy's
+      front's rear", which ADR-623's worth never weighed. AT: a unit test (red without: of two enemy
+      coasts alike, the group sails for the one nearer its front); engaged per war-day above HEAD's
+      on the same read; the ADR; the pin's entry.
+      Rule in (ADR-626, `normandyRear1938.test.ts`, `docs/evidence/7.73/a.md`, pin ebdbf431):
+      engaged per war-day 0.2227 → 0.2355 (up in each batch), fronted 68/304 → 67/306 (21.9 %).
+    - [x] 7.73b The group's wait bounded: a Normandy's group holds the nation's turn with no bound
+      while one of its nation marches to the port (ADR-623 limit 2), so the ferry gets fewer turns.
+      AT: a unit test (red without: a march to the port that stalls holds the transports past the
+      bound); the whole's read; the ADR; the pin's entry.
+      Rule in (ADR-627, `groupWait1938.test.ts`, `docs/evidence/7.73/b.md`, pin 2c4e2593):
+      engaged per war-day 0.2355 → 0.2372 (up in three batches of four), fronted 67 → 76 of 306.
+    - [x] 7.73c A front with nobody is not held: `frontHeld` holds at none against none (ADR-623
+      limit 1). AT: a unit test (red without: a front with no formation of either side near sends
+      the free army there, not overseas; `normandy1938.test.ts`' fixture given a British division
+      near its front, its assertions kept); the whole's read; the ADR; the pin's entry.
+      Rule in (ADR-628, `normandy1938.test.ts`, `docs/evidence/7.73/c.md`, pin unchanged): engaged
+      per war-day 0.2372 → 0.2400 (y20a up, the other three flat), fronted 75 of 308 (24.4 %): the
+      whole's bar (0.2383, a fifth) met.

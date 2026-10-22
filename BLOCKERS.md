@@ -26,6 +26,9 @@ entries are kept and marked **RESOLVED** with the date and fix.
   (c) kept open. ADR-623 proposed. Meanwhile the loop takes PLAN 7.70c (the follow-through).
 - **Also found:** every landing and ferry trip carries one formation (the first's order sets the
   transports sailing; `tryLanding` takes standing transports alone): PLAN 7.72.
+- **2026-10-22, PLAN 7.73 done** (7.72, 7.73a–c; ADR-625–628): on the same read, engaged per
+  war-day 0.2400 against this bar's 0.2383 (HEAD before 7.70b), fronted 75/308 (24.4 %), no
+  lander in debt, longest call 12.6 ms. The fight lost is won back; the decision stays the user's.
 
 ### PLAN 7.70a: supply over the beach is in; seed 99's first-year tick 2.35 → 2.44–2.48 ms, budget 2.4 (2026-10-21, ADR-622; the user's decision)
 - **The bar:** a division ashore on an enemy coast with no port keeps supply at least 0.5 for 30

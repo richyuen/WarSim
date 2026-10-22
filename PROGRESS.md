@@ -21919,3 +21919,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   Specs by hand: none (no drawn change).
 - **Pin:** ebdbf431 → 2c4e2593.
 - **Next:** PLAN 7.73c (a front with nobody is not held); 7.70a, 7.70b wait on the user.
+
+## 2026-10-22 — PLAN 7.73c: a front with nobody is not held (ADR-628); PLAN 7.73 done
+
+- **Rule** (`ai/invasion.ts`, `frontHeld`): a front is held only with more than none of its
+  nation's men about it (and at least the enemy's); before, none against none was held, and an
+  empty front's free army went overseas on a Normandy instead of being ferried to it. SPEC §7 amended.
+- **Read** (`docs/evidence/7.73/c.md`; `newFronts.ts`, 180 days of the critic's 48 saves; HEAD's
+  read matches 7.73b's after exactly): engaged per war-day 0.2372 → 0.2400 (y20a 0.1678 → 0.1828,
+  the other three flat), fronted 76 → 75 of 308 (24.4 %), far landings held 290 → 293, no lander
+  in debt. PLAN 7.73's bar (HEAD-before-7.70b's 0.2383, fronted a fifth) met: 7.73 ticked.
+- **Cost** (seed 99's year): invasion AI mean 0.053 ms, longest call 12.6 ms; tick mean 2.468 ms.
+- **Test:** `normandy1938.test.ts` restructured: one fixture, colonial garrisons near the front
+  taken off; guarded (7.70b's case, assertions kept) and unguarded (ferried to the front's land),
+  the second red without. Specs by hand: none (no drawn change).
+- **Pin:** unchanged, 2c4e2593.
+- **BLOCKERS:** 7.70b's entry gets the line that 7.73 won the fight back; 7.70a, 7.70b still the user's.
+- **Next:** PLAN 7.62 (an empty capital is no first-strike target).
