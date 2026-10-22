@@ -22115,3 +22115,8 @@ No rule changed and nothing on screen changed. One task came out of it.
   landmass with no front (PLAN 7.79c).
 - **Pin:** unchanged (no rule).
 - **Next:** PLAN 7.79b.
+- **Amended** (the same day, `measure.md` §2.1): the weights alone do not fit (1129 year 20 allots 0.006
+  to threatened sectors, 2081 year 20 0.24). Two halves: within the range threatened sectors are 0.002–0.08
+  of the sectors late against 0.38–0.48 in year 1 (7.79b); and on 1129, 2081 and 6421 year 20 88–98 % of
+  the threatened sectors are beyond the army's range, which no march from afar serves (7.79d, new).
+  7.79c's ferry: check first that `planLanding` carries to a port on the boarders' own landmass.

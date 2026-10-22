@@ -41,8 +41,37 @@ where the armies near a front stand against the enemy's, is this measure's.
   of 10–50) and win.
 - Threatened sectors attacking: 0.02 in year 1, 0–0.09 late. Not a late cause.
 
-**Cause 1 (PLAN 7.79b):** with a long front and small threats the allotment puts the army by front
-length, not by where the enemy stands.
+### 2.1 In range or not (`range_*.json`, the same saves, 10 days; year 1 30 days)
+
+The allotment sees only the sectors with one of the class within DEPLOY_RANGE_CELLS (60). Per plan,
+summed over its classes:
+
+| save | sectors | threatened | in range | threatened in range | threatened share of those in range |
+|---|---|---|---|---|---|
+| 6421 year 1 | 144 | 31.2 | 26.1 | 12.4 | 0.48 |
+| 7019 year 1 | 138 | 25.3 | 28.0 | 10.6 | 0.38 |
+| 6421 year 10 | 269 | 14.3 | 92.0 | 4.0 | 0.04 |
+| 6421 year 20 | 916 | 26.9 | 174.1 | 3.1 | 0.02 |
+| 7019 year 10 | 185 | 9.5 | 74.7 | 3.8 | 0.05 |
+| 7019 year 20 | 123 | 6.3 | 40.6 | 3.3 | 0.08 |
+| 1129 year 10 | 128 | 2.7 | 32.3 | 0.5 | 0.02 |
+| 1129 year 20 | 269 | 6.7 | 57.5 | 0.14 | 0.002 |
+| 2081 year 20 | 840 | 26.2 | 84.3 | 1.1 | 0.01 |
+
+The weights alone do not fit (1129 year 20 allots 0.006 to threatened sectors, 2081 year 20 0.24):
+two things are at work. (a) Out of range: in year 1 two in five threatened sectors have the army
+within the range, late one in two on 7019 and one in twenty to one in fifty on 1129, 2081 and 6421
+year 20; no rule sends a far formation to a threatened sector (the marches from afar and the
+formations to spare go to sectors with nobody). (b) In range, outweighed: of the sectors in range,
+threatened 0.38–0.48 in year 1, 0.002–0.08 late, so 1 + threat / 10,000 hands the army to the
+empty front by its length. And the final share is under the allotment's (2081 year 20 0.24 → 0.05):
+sectors are filled nearest-first from the formations within the range of each.
+
+**Cause 1 (PLAN 7.79b):** (b), the weights. within the range, with a long front and small threats the allotment puts
+the army by front length, not by where the enemy stands.
+
+**Cause 3 (PLAN 7.79d):** (a), the threatened sectors beyond the range of the army, which no march
+from afar serves.
 
 ## 3. The pile of 60 US divisions (1129 year 10; `piles.ts`, `pileOrders.ts`)
 

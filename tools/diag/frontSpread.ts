@@ -3,7 +3,8 @@
  * (or `1938`, with `--skip` days first), for `days` days, every plan's sectors at its orders
  * (`OP_PROBE.sectors`): per plan the sectors, those with a threat (enemy formations in the 3 × 3
  * sector neighbourhood), the formations allotted, and of them in threatened sectors before and
- * after "every sector gets one"; the threatened sectors manned and attacking. Summed per save,
+ * after "every sector gets one"; the threatened sectors manned and attacking; and of the classes
+ * allotted, the sectors and threatened sectors with one of the class within DEPLOY_RANGE_CELLS. Summed per save,
  * with the engaged land formations and the wars a day.
  *
  * Usage: npx tsx tools/diag/frontSpread.ts <out.json> <days> <seed:state.bin|seed:1938:skipDays> [...]
@@ -46,6 +47,8 @@ for (const { seed, bin, skip } of cases) {
     before: 0,
     after: 0,
     classIds: 0,
+    classFront: 0,
+    classThreatened: 0,
     engaged: 0,
     wars: 0,
     landAtWar: 0,
@@ -68,6 +71,8 @@ for (const { seed, bin, skip } of cases) {
       for (const c of p.classes) {
         t.classes++;
         t.classIds += c.ids;
+        t.classFront += c.front;
+        t.classThreatened += c.threatened;
         if (c.ids < c.front) t.thin++;
         t.before += c.before;
         t.after += c.after;
@@ -96,6 +101,8 @@ for (const { seed, bin, skip } of cases) {
     threatenedManned: r(t.threatenedManned / t.threatened),
     threatenedAttack: r(t.threatenedAttack / t.threatened),
     classesThin: r(t.thin / t.classes),
+    inRangeSectorsAPlan: r(t.classFront / t.plans),
+    inRangeThreatenedAPlan: r(t.classThreatened / t.plans),
     allottedThreatenedBefore: r(t.before / t.classIds),
     allottedThreatenedAfter: r(t.after / t.classIds),
     engagedADay: r(t.engaged / days),

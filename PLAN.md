@@ -54,7 +54,8 @@ them, are 7.81–7.86. A task each, split when taken up:
   more divisions of a nation at war in one place for 30 days; a unit test, red without; the gate green.
   In parts (7.49's parts moved the armies to the landmass and left engaged per war flat, 0.134 → 0.137;
   what 7.49a left open is the second factor of engaged per war, engaged per armed war, about 20 in year
-  1 and 0.4 late: in a late armed war the armies near the front stand apart, 115 of 140 beyond 15 cells):
+  1 and 0.4 late: in a late armed war the armies near the front stand apart, 115 of 140 beyond 15 cells;
+  order b, d, c):
     - [x] 7.79a Measured, on run 12's saves (HEAD's sim code) and year 1 of 6421 and 7019
       (`tools/diag/frontSpread.ts`, `OP_PROBE.sectors`, `docs/evidence/7.79/`): per plan of a nation at
       war, its sectors, those threatened, the formations allotted, the share of them in threatened
@@ -65,15 +66,26 @@ them, are 7.81–7.86. A task each, split when taken up:
       in year 1, 0.006–0.23 late; "every sector gets one" not it (late the same before and after); the
       weights 1 + threat / 10,000 lose to fronts of 120–920 sectors. The US piles: their class reaches
       none of the sectors (overseas, or closed ground), and the ferry needs a landmass with no front.
-    - [ ] 7.79b The allotment by where the enemy stands (measure §2): a plan's formations go to its
-      threatened sectors first, in proportion to threat, and the empty front gets what is left over
-      them (each threatened sector's share at least what year 1's weights gave it). AT: on the 8 late
-      saves of measure §2, the share of the allotted in threatened sectors at least 0.5 (0.006–0.23 on
-      HEAD); in year 1 of 6421 and 7019 not under HEAD's (0.741, 0.578); engaged per war on the 8 saves
-      read (`frontSpread.ts`); a unit test (red without); the ADR; the pin's entry; `--profile`.
+    - [ ] 7.79b The allotment by where the enemy stands, within the range (measure §2.1 b): a class's
+      formations go to the threatened sectors it reaches within the range first, in proportion to
+      threat, and the empty front gets what is left over them. AT: on the 7 late saves of measure
+      §2.1, the formations allotted to threatened sectors (`allottedThreatenedBefore`) at least 0.5 of
+      what the threatened sectors in range could take on each (read on HEAD first); in year 1 of 6421
+      and 7019 the share in threatened sectors not under HEAD's (0.741, 0.578); engaged per war on the
+      saves read (`frontSpread.ts`); a unit test (red without); the ADR; the pin's entry; `--profile`
+      against `9490fd78` (before the probe).
+    - [ ] 7.79d The march to a threatened sector beyond the range (measure §2.1 a): late 88–98 % of the
+      threatened sectors on 1129 and 2081 year 20 and 6421 year 20 have no formation of the planner
+      within DEPLOY_RANGE_CELLS, and the marches from afar serve only sectors with nobody. A far
+      formation (standing, its day in MARCH_DAYS) marches to the nearest threatened sector its class
+      reaches when one has fewer of the planner than its threat's share. AT: on those 3 saves the
+      threatened sectors with a formation of the planner within the range after 30 days at least
+      twice HEAD's (`frontSpread.ts`, `inRangeThreatenedAPlan`); engaged per war read; a unit test
+      (red without); the ADR; the pin's entry; `--profile`.
     - [ ] 7.79c The ferry from a fronted landmass whose front the army cannot reach (measure §3): the
       ferry (ADR-612) takes far formations whose class reaches no sector of the nation, as from a
-      landmass with no front. AT: piles of 30 or more of a nation at war on one cell 30 days running
+      landmass with no front (read first: whether `planLanding` carries to a port on the boarders' own
+      landmass, else the rule is a sea march to the far port). AT: piles of 30 or more of a nation at war on one cell 30 days running
       on 1129 year 10, 6421 year 20 and 7019 year 10 (`piles.ts --days 30`) 3 → 0; a unit test (red
       without); the ADR; the pin's entry.
     Then 7.79's AT on 10 unseen seeds × 20 years (HEAD's figure read on them first).
