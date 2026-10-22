@@ -70,7 +70,7 @@ import { exitsOf } from '../nav/crossings';
 import { nearestCellWhere } from '../data/ownership';
 import { dropRuns, findDirectRoute, findRoute, JOIN_PROBE, joinedKept, nodeGroups, type ProvinceGraph } from '../nav/provinceGraph';
 import { isDayStart } from '../../shared/calendar';
-import { Domain, navOf, type World } from '../world';
+import { Domain, navOf, type TemplateRule, type World } from '../world';
 import { transportsPort, tryLanding } from './amphibious';
 import { noteMove } from './elements';
 import { spawnPoint } from './production';
@@ -576,6 +576,51 @@ export function repatriationSystem(world: World): void {
   });
 }
 
+/** Land formation `id`'s pace on the march, km an hour on ground of cost 1 (its fuel and its buffs). */
+function marchKmPerHour(world: World, id: number, rule: TemplateRule): number {
+  const c = world.formations.cols;
+  const fuelled = rule.mobility === Mobility.foot ? 1 : DRY_SPEED + (1 - DRY_SPEED) * c.supply[id]!;
+  return rule.speedKmh * MARCH_DUTY * fuelled * Math.max(0.05, 1 + world.buffs.sum('speed', 'nation', c.nation[id]!) + world.buffs.sum('speed', 'formation', id));
+}
+
+/**
+ * The hours land formation `id` on the march has left to its target at its pace of now, by its
+ * path and the ground's costs as `movementSystem` steps them (fallout not counted); Infinity while
+ * it does not go on: in a fight (`engaged`), or with its next step on the ground of a nation at
+ * war with it, where it waits for the front (PLAN 7.73b). 0 when it is not on the march.
+ */
+export function marchHoursLeft(world: World, id: number): number {
+  const c = world.formations.cols;
+  if (c.moving[id] !== 1) return 0;
+  if (c.engaged[id] === 1) return Infinity;
+  const path = world.paths.get(id);
+  const rule = world.rules?.templates[c.template[id]!];
+  if (!path || !rule) return Infinity;
+  const nav = navOf(world);
+  const w = world.cells.w;
+  const costRow = MOVE_COST[rule.mobility]!;
+  const kmPerHour = marchKmPerHour(world, id, rule);
+  const i0 = c.pathStep[id]!;
+  if (i0 < path.length - 1 && c.retreat[id] === 0) {
+    const holder = world.cells.controller[path[i0 + 1]!]!;
+    if (holder !== 0 && holder !== c.nation[id] && world.wars.atWar(c.nation[id]!, holder)) return Infinity;
+  }
+  let hours = 0;
+  for (let i = i0; i < path.length - 1; i++) {
+    const a = path[i]!;
+    const b = path[i + 1]!;
+    const ay = Math.floor(a / w);
+    const by = Math.floor(b / w);
+    let dx = (b % w) - (a % w);
+    if (dx > 1) dx -= w;
+    if (dx < -1) dx += w;
+    const ground = world.cells.terrain[b]!;
+    const seg = (stepKm(nav.grid, by > ay ? ay : by, dx, by - ay) * costRow[ground]!) / (kmPerHour * rule.terrainSpeed[ground]!);
+    hours += i === i0 ? seg * (1 - c.stepFrac[id]!) : seg;
+  }
+  return hours;
+}
+
 export function movementSystem(world: World): void {
   const f = world.formations;
   const c = f.cols;
@@ -597,8 +642,7 @@ export function movementSystem(world: World): void {
     }
     noteMove(world, id);
     const costRow = MOVE_COST[rule.mobility]!;
-    const fuelled = rule.mobility === Mobility.foot ? 1 : DRY_SPEED + (1 - DRY_SPEED) * c.supply[id]!;
-    const kmPerHour = rule.speedKmh * MARCH_DUTY * fuelled * Math.max(0.05, 1 + world.buffs.sum('speed', 'nation', c.nation[id]!) + world.buffs.sum('speed', 'formation', id));
+    const kmPerHour = marchKmPerHour(world, id, rule);
     let i = c.pathStep[id]!;
     let frac = c.stepFrac[id]!;
     let budget = 1; // hours this tick

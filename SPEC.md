@@ -2122,7 +2122,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   nearest by sea on a tie. Its free formations at the
   port go aboard as a group: once their men fill three quarters of the room, or no more of its
   free army on the port's land is left to come (the rest sent there meanwhile; none aboard while
-  one marches there), each on the same transports, passing over one with no room left. A front not
+  one marches there and is there within a week, the nation's next invasion turn, by its path at its
+  pace; a march in a fight or before an enemy's cell, or one farther, is not waited for: the group
+  at the port goes aboard as it is, or with nobody there the turn is the ferry's, PLAN 7.73b,
+  ADR-627), each on the same transports, passing over one with no room left. A front not
   held leaves the turn to the ferry.
   *Fleets at sea (PLAN 4.6c, ADR-270; `src/sim/ai/naval.ts`):* daily, staggered weekly by id. At
   war, each warfleet (power: its armed ships' hit points, submarines left out) standing at a

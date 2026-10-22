@@ -21902,3 +21902,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `normandyRear1938.test.ts`, red without. Specs by hand: none (no drawn change).
 - **Pin:** 9c5fa3ba → ebdbf431.
 - **Next:** PLAN 7.73b (the group's wait bounded); 7.70a, 7.70b wait on the user.
+
+## 2026-10-22 — PLAN 7.73b: a Normandy's group waits for a march to its port within a week (ADR-627)
+
+- **Rule** (`ai/invasion.ts`, `board`; `systems/movement.ts`, `marchHoursLeft`, new): a Normandy's
+  group waits for a march to its port only while the march goes on (not in a fight, not before an
+  enemy's cell) and is there within NORMANDY_WAIT_DAYS (7, the next invasion turn) by its path at
+  its pace; else the group at the port goes aboard as it is, or the turn is the ferry's. The
+  march's pace is now one function (`marchKmPerHour`), shared with `movementSystem`. SPEC §7 amended.
+- **Read** (`docs/evidence/7.73/b.md`; `newFronts.ts`, 180 days of the critic's 48 saves; HEAD's
+  read matches 7.73a's after exactly): engaged per war-day 0.2355 → 0.2372 (y20a down, the other
+  three up), fronted 67 → 76 of 306 (24.8 %), landings 648 → 671, far landings held 274 → 290, no
+  lander in debt. 7.73's bar (0.238) still short: 7.73c next.
+- **Cost** (seed 99's year): invasion AI mean 0.053 ms, longest call 11.1 ms; tick mean 2.521 ms.
+- **Test:** `groupWait1938.test.ts` (stalled, far and near marches), red without (stalled and far).
+  Specs by hand: none (no drawn change).
+- **Pin:** ebdbf431 → 2c4e2593.
+- **Next:** PLAN 7.73c (a front with nobody is not held); 7.70a, 7.70b wait on the user.

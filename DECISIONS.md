@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-627 · 2026-10-22 · accepted — A Normandy's group waits for a march to its port within a week (PLAN 7.73b; amends ADR-623)
+
+- **Context** (PLAN 7.73, 7.70b's missed bar; ADR-623 limit 2). A Normandy's group under three
+  quarters of its room held its nation's invasion turn while any formation of its nation marched
+  to the transports' port, with no bound: a march that stalled (in a fight on the way, or before
+  an enemy's cell, where a march waits for the front) or a long one kept the transports from the
+  Normandy and the ferry until it ended.
+- **Decision.** `board` (`ai/invasion.ts`) waits for a march to its port only while it goes on and
+  is there within NORMANDY_WAIT_DAYS (STAGGER, 7: the nation's next invasion turn), read as the
+  march's time left, not the time waited: `marchHoursLeft` (`systems/movement.ts`, new) sums its
+  path's steps from where it is at its pace of now as `movementSystem` steps them (fallout not
+  counted), Infinity in a fight or with its next step on the ground of a nation at war with it. A
+  march past the bound is dropped on the first turn that sees it, not after a week. With such a
+  march and none within the bound, the group at the port goes aboard as it is, or, with nobody
+  there, the turn is the ferry's. `movementSystem`'s pace is the same function (`marchKmPerHour`),
+  bit for bit. Considered: counting the men on the way against the room left so that no second
+  send follows (no stall bounded by it), and a column for the time the group has waited (a save
+  format change for one AI rule); not taken.
+- **Read** (`newFronts.ts`; 180 days of the critic's 48 saves; `docs/evidence/7.73/b.md`; HEAD's
+  read matches 7.73a's after in every column): engaged per war-day 0.2355 → 0.2372 (by batch
+  0.1173 → 0.1177, 0.2830 → 0.2930, 0.1803 → 0.1678, 0.3562 → 0.3596); fronted 67 → 76 of 306
+  (24.8 %); landings 648 → 671; far landings held 30 days 274 → 290; embarked 717 → 754 in 584 →
+  622 trips; no lander in debt. PLAN 7.73's bar (0.238) not reached; 7.73c next. Seed 99's year:
+  invasion AI mean 0.053 ms, longest call 11.1 ms (bar 50); tick mean 2.521 ms.
+- **Test.** `groupWait1938.test.ts`: one British division at Portsmouth under the group's share,
+  a second marching there: in a fight on the way, or from the far north (830 hours left), the
+  first goes aboard; within the bound (49 hours) nobody does. Red without (the first two).
+- **Pin.** ebdbf431 → 2c4e2593.
+
 ### ADR-626 · 2026-10-22 · accepted — A Normandy's worth rises near the front's rear (PLAN 7.73a; amends ADR-623)
 
 - **Context** (PLAN 7.73, 7.70b's missed bar). 7.70b's text asks for a target "of most worth (a
@@ -271,7 +300,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Limits.** (1) `frontHeld` holds at none against none: a front cell with nobody of either side
   near is held, and the free army goes overseas rather than to it (the unit test is that case).
   (2) The group waits with no bound while one of its nation marches to the port: a march that
-  stalls holds the transports from the Normandy and the ferry until it ends. (3) The worth divides
+  stalls holds the transports from the Normandy and the ferry until it ends (bounded by ADR-627, PLAN 7.73b). (3) The worth divides
   by the enemy's formations near, as the task asks: a beachhead with nobody to fight adds no
   engaged formation, which with the ferry's lost turns is the likely cause of the engaged miss
   (landings in 180 days 638 → 555). (4) The old landing and the ferry still carry one formation

@@ -92,10 +92,12 @@ when taken up:
       on the same read; the ADR; the pin's entry.
       Rule in (ADR-626, `normandyRear1938.test.ts`, `docs/evidence/7.73/a.md`, pin ebdbf431):
       engaged per war-day 0.2227 → 0.2355 (up in each batch), fronted 68/304 → 67/306 (21.9 %).
-    - [ ] 7.73b The group's wait bounded: a Normandy's group holds the nation's turn with no bound
+    - [x] 7.73b The group's wait bounded: a Normandy's group holds the nation's turn with no bound
       while one of its nation marches to the port (ADR-623 limit 2), so the ferry gets fewer turns.
       AT: a unit test (red without: a march to the port that stalls holds the transports past the
       bound); the whole's read; the ADR; the pin's entry.
+      Rule in (ADR-627, `groupWait1938.test.ts`, `docs/evidence/7.73/b.md`, pin 2c4e2593):
+      engaged per war-day 0.2355 → 0.2372 (up in three batches of four), fronted 67 → 76 of 306.
     - [ ] 7.73c A front with nobody is not held: `frontHeld` holds at none against none (ADR-623
       limit 1). AT: a unit test (red without: a front with no formation of either side near sends
       the free army there, not overseas; `normandy1938.test.ts`' fixture given a British division

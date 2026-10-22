@@ -48,7 +48,7 @@ import { neighbours4, type MobilityId, type Passage } from '../nav/grid';
 import { frontierOf } from '../systems/territory';
 import { marchingToPort, orderLanding, transportRoom } from '../systems/amphibious';
 import { findRoute, mayReach } from '../nav/provinceGraph';
-import { orderMove, passageOf, snapTarget } from '../systems/movement';
+import { marchHoursLeft, orderMove, passageOf, snapTarget } from '../systems/movement';
 import { AT_PORT_CELLS, keyAt, seaKm, waterKeys } from '../systems/navalCombat';
 import { portShut } from '../systems/bombing';
 import { capitalCell } from '../systems/capitals';
@@ -138,6 +138,8 @@ export const NORMANDY_NEAR_CELLS = 10;
 export const NORMANDY_CAPITAL_WORTH = 3;
 /** A Normandy's group goes aboard with at least this share of its transports' room, or all its free army on their port's land (PLAN 7.70b). */
 export const NORMANDY_GROUP_SHARE = 0.75;
+/** A Normandy's group waits for a march to its port that is there within this many days: the nation's next invasion turn (PLAN 7.73b). */
+export const NORMANDY_WAIT_DAYS = STAGGER;
 /** How far, in cells, from a city the water its landing goes ashore by is looked for (as `tryLanding`'s reach; PLAN 7.70b). */
 const NORMANDY_SHORE_CELLS = 2;
 
@@ -594,27 +596,6 @@ function board(world: World, fleet: number, room: number, port: number, goal: nu
   f.forEach((id) => {
     if (free(id) && (near(world, cellOf(id), home, world.atSize(AT_PORT_CELLS)) || near(world, cellOf(id), water[port]!, world.atSize(AT_PORT_CELLS)))) atPort.push(id);
   });
-  // A group (PLAN 7.70b): aboard once it fills NORMANDY_GROUP_SHARE of the room or no more is to
-  // come; meanwhile none goes while one of its nation marches to the port, and the rest of its free
-  // army on the port's land is sent to fill the room left.
-  let left = room;
-  let boarding: readonly number[] = atPort;
-  const there = new Set(group ? atPort : []);
-  if (group) {
-    let men = 0;
-    for (const id of atPort) men += c.strength[id]!;
-    if (men < NORMANDY_GROUP_SHARE * room) {
-      let coming = false;
-      let others = false;
-      f.forEach((id) => {
-        if (c.nation[id] !== n || world.isFleet(id) || world.isWing(id)) return;
-        if (marchingToPort(world, id, [home])) coming = true;
-        else if (!there.has(id) && free(id) && comp[cellOf(id)] === land) others = true;
-      });
-      if (coming) return true;
-      if (others) [boarding, left] = [[], room - men];
-    }
-  }
   // Its formations at the port go aboard.
   const aboard = (ids: readonly number[]): boolean => {
     let sent = 0;
@@ -627,6 +608,35 @@ function board(world: World, fleet: number, room: number, port: number, goal: nu
     }
     return sent > 0;
   };
+  // A group (PLAN 7.70b): aboard once it fills NORMANDY_GROUP_SHARE of the room or no more is to
+  // come; meanwhile none goes while one of its nation marches to the port and is there within
+  // NORMANDY_WAIT_DAYS, and the rest of its free army on the port's land is sent to fill the room
+  // left. A march that does not go on (in a fight, before the enemy's ground) or comes later is not
+  // waited for (PLAN 7.73b, ADR-627): the group at the port goes aboard as it is, or with nobody
+  // there the turn is the ferry's. Before, a march that stalled held the transports with no bound.
+  let left = room;
+  let boarding: readonly number[] = atPort;
+  const there = new Set(group ? atPort : []);
+  if (group) {
+    let men = 0;
+    for (const id of atPort) men += c.strength[id]!;
+    if (men < NORMANDY_GROUP_SHARE * room) {
+      let coming = false;
+      let late = false;
+      let others = false;
+      const wait = NORMANDY_WAIT_DAYS * 24;
+      f.forEach((id) => {
+        if (c.nation[id] !== n || world.isFleet(id) || world.isWing(id)) return;
+        if (marchingToPort(world, id, [home])) {
+          if (marchHoursLeft(world, id) <= wait) coming = true;
+          else late = true;
+        } else if (!there.has(id) && free(id) && comp[cellOf(id)] === land) others = true;
+      });
+      if (coming) return true;
+      if (late) return there.size > 0 && aboard(atPort);
+      if (others) [boarding, left] = [[], room - men];
+    }
+  }
   if (boarding.length > 0) return aboard(boarding);
   // None there: the nearest free ones on the port's land are sent to it, to fill the room.
   const by: [number, number][] = [];
