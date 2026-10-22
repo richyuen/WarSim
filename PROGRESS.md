@@ -21866,7 +21866,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   the critic's 48 saves): the AT's 30-day hold 249 of 287 far landings, before and after (the bar,
   half, met on HEAD already). The isolating column, beachheads reached by a later landing: 74/430
   → 70/424, flat. Engaged per war-day 0.219 → 0.218. A probe of 90 days on four saves: 1 of 29
-  ferry embarkations for a beach; fronts on a portless land are rare there (0–7 per sample).
+  embarkations of every kind for a beach; fronts on a portless land are rare there (0–7 per sample).
 - **Test:** `beachFerry1938.test.ts`, red without either half (want false; nobody aboard). Specs by
   hand: none (no drawn change).
 - **Cost** (seed 99's year): invasion AI longest call 8.4 ms; tick mean 2.471 ms (7.70a's band).

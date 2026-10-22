@@ -187,8 +187,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Read** (`newFronts.ts` with a `reinforced` column; 180 days of the critic's 48 saves;
   `docs/evidence/7.70/c.md`): the AT's 30-day hold 249 of 287 far landings (86.8 %) before and
   after, the bar (half) met on HEAD already; the beachheads a later landing reached 74 of 430 →
-  70 of 424 (flat); engaged per war-day 0.219 → 0.218. The case is rare on the saves: 1 of 29 ferry
-  embarkations for a beach in 90 days of four saves. Invasion AI's longest call 8.4 ms (seed 99's
+  70 of 424 (flat); engaged per war-day 0.219 → 0.218. The case is rare on the saves: 1 of 29
+  embarkations of every kind for a beach in 90 days of four saves. Invasion AI's longest call 8.4 ms (seed 99's
   year); tick mean 2.471 ms (7.70a's band).
 - **Test.** `beachFerry1938.test.ts`, red without either half.
 - **Limits.** A trip still carries one formation (PLAN 7.72).

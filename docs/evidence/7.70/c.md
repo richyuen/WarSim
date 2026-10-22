@@ -24,7 +24,7 @@ band, 2.44–2.48), the invasion AI's longest call 8.4 ms (bar 50).
 
 ## 2. Why the saves barely move (a probe, 90 days of 1129, 2081, 4219, 7019 year 10)
 
-Ferry embarkations 29: to a port 22, to a beach 1 (7019). A nation's front on a land with no open
+Embarkations of every kind (landings, Normandies and the ferry) 29: to a port 22, to a beach of the nation's own 1 (7019). A nation's front on a land with no open
 port of its own or of an ally, sampled every 30 days: 2, 13, 1 and 1 such nation-lands on the four
 saves. The case the rule serves is rare on the critic's saves. Why a beachhead so seldom stands as
 a front on a portless land (taken whole, thrown back, or beside a port of its side) is not measured.
