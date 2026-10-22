@@ -20,6 +20,11 @@
  *   the beachhead's): a Normandy proper, beside or behind its front; a lander with none counts in `opened`
  *   alone (the landings of a war with no front, PLAN 4.6b).
  * - `debt`: the landers of (1) and (2) whose gold went under 0 on a day after their landing.
+ * - `reinforced` (PLAN 7.70c): the far landings of (1) and (2) (beachheads) that a later landing
+ *   reached: a `FormationLanded` on a later day by the lander or a nation of its side, on the
+ *   beachhead's landmass within DEPLOY_RANGE_CELLS of it (the ferry's trip to the beachhead); and
+ *   `reinforcements`, those landings. `cellsHeld`: the cells within NEAR_CELLS held 30 days on,
+ *   summed over the far landings that held.
  *
  * Usage: npx tsx tools/diag/newFronts.ts <out.json> <days> <seed:state.bin> [...]
  */
@@ -49,9 +54,9 @@ const cases = process.argv.slice(4).map((a) => {
 const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
 
 type Landing = { war: number; side: number; nation: number; at: number; land: number; day: number; far: number; fronted: boolean };
-type Row = { seed: number; open: number; opened: number; openedFronted: number; wars: number; engagedPerWar: number; landed: number; far: { war: string; by: string; day: number; held: boolean; cells: number; fronted: boolean }[]; debt: string[] };
+type Row = { seed: number; open: number; opened: number; openedFronted: number; wars: number; engagedPerWar: number; landed: number; reinforced: number; reinforcedFronted: number; reinforcements: number; far: { war: string; by: string; day: number; held: boolean; cells: number; fronted: boolean }[]; debt: string[] };
 const rows: Row[] = [];
-const totals = { open: 0, opened: 0, openedFronted: 0, wars: 0, engaged: 0, warDays: 0, landed: 0, far: 0, held: 0 };
+const totals = { open: 0, opened: 0, openedFronted: 0, wars: 0, engaged: 0, warDays: 0, landed: 0, far: 0, held: 0, cellsHeld: 0, beachheads: 0, beachheadsFronted: 0, reinforced: 0, reinforcedFronted: 0, reinforcements: 0 };
 for (const { seed, src } of cases) {
   const s = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SIZE_1938.w) });
   s.load(new Uint8Array(readFileSync(src)));
@@ -111,6 +116,9 @@ for (const { seed, src } of cases) {
   const landers = new Set<number>();
   const owing = new Set<number>();
   let landed = 0;
+  // The beachheads (far landings, any day) and the later landings that reached them (PLAN 7.70c).
+  const beachheads: { nation: number; at: number; day: number; fronted: boolean; hits: number }[] = [];
+  let reinforcements = 0;
   let engaged = 0;
   let warDays = 0;
   let day = 0;
@@ -119,10 +127,17 @@ for (const { seed, src } of cases) {
     for (let i = 0; i < ev.length; i += 6) {
       if (ev[i + 1] !== EventKind.FormationLanded) continue;
       landed++;
-      if (day > days - HOLD_DAYS) continue;
       const n = ev[i + 3]!;
       const at = Math.floor(ev[i + 5]!) * w + Math.floor(ev[i + 4]!);
       const ctl = wd.cells.controller;
+      let hit = false;
+      for (const b of beachheads) {
+        if (b.day >= day || comp[b.at] !== comp[at] || dist2(b.at, at) > range * range) continue;
+        if (b.nation !== n && !wd.wars.sameSide(n, b.nation)) continue;
+        b.hits++;
+        hit = true;
+      }
+      if (hit) reinforcements++;
       // n's own front cells, beyond the beachhead's.
       let far = Infinity;
       let fronted = false;
@@ -133,6 +148,8 @@ for (const { seed, src } of cases) {
         far = Math.min(far, dist2(c, at));
       }
       if (far <= range * range) continue;
+      if (!beachheads.some((b) => b.nation === n && b.day === day && dist2(b.at, at) <= range * range)) beachheads.push({ nation: n, at, day, fronted, hits: 0 });
+      if (day > days - HOLD_DAYS) continue;
       for (const war of wd.wars.list) {
         const si = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
         if (si < 0) continue;
@@ -200,7 +217,9 @@ for (const { seed, src } of cases) {
     for (const n of landers) if (nat.gold[n]! < 0) owing.add(n);
   }
   const openedOpen = [...opened.keys()].filter((k) => open.has(k)).length;
-  const row: Row = { seed, open: open.size, opened: openedOpen, openedFronted: [...openedFronted].filter((k) => open.has(k)).length, wars: warsSeen.size, engagedPerWar: warDays > 0 ? engaged / warDays : 0, landed, far: farRows, debt: [...owing].map(tag) };
+  const reinforced = beachheads.filter((b) => b.hits > 0).length;
+  const reinforcedFronted = beachheads.filter((b) => b.hits > 0 && b.fronted).length;
+  const row: Row = { seed, open: open.size, opened: openedOpen, openedFronted: [...openedFronted].filter((k) => open.has(k)).length, wars: warsSeen.size, engagedPerWar: warDays > 0 ? engaged / warDays : 0, landed, reinforced, reinforcedFronted, reinforcements, far: farRows, debt: [...owing].map(tag) };
   rows.push(row);
   totals.open += row.open;
   totals.opened += row.opened;
@@ -211,7 +230,13 @@ for (const { seed, src } of cases) {
   totals.landed += landed;
   totals.far += farRows.length;
   totals.held += farRows.filter((r) => r.held).length;
-  console.log(`${seed} ${src}: wars ${row.wars}, open ${row.open}, opened ${row.opened} (by a side with a front ${row.openedFronted}); landed ${landed}, far ${farRows.length} (held ${farRows.filter((r) => r.held).length}); engaged/war ${row.engagedPerWar.toFixed(2)}; ${farRows.map((r) => `${r.by} w${r.war} d${r.day}${r.held ? ' held' : ''}${r.fronted ? ' fronted' : ''}`).join(', ')}${row.debt.length ? `; debt ${row.debt.join('/')}` : ''}`);
+  totals.cellsHeld += farRows.reduce((a, r) => a + r.cells, 0);
+  totals.beachheads += beachheads.length;
+  totals.beachheadsFronted += beachheads.filter((b) => b.fronted).length;
+  totals.reinforced += reinforced;
+  totals.reinforcedFronted += reinforcedFronted;
+  totals.reinforcements += reinforcements;
+  console.log(`${seed} ${src}: wars ${row.wars}, open ${row.open}, opened ${row.opened} (by a side with a front ${row.openedFronted}); landed ${landed}, far ${farRows.length} (held ${farRows.filter((r) => r.held).length}); beachheads ${beachheads.length} (reinforced ${reinforced}, by ${reinforcements} landings); engaged/war ${row.engagedPerWar.toFixed(2)}; ${farRows.map((r) => `${r.by} w${r.war} d${r.day}${r.held ? ' held' : ''}${r.fronted ? ' fronted' : ''}`).join(', ')}${row.debt.length ? `; debt ${row.debt.join('/')}` : ''}`);
 }
 const summary = { ...totals, share: totals.open > 0 ? totals.opened / totals.open : 0, shareFronted: totals.open > 0 ? totals.openedFronted / totals.open : 0, engagedPerWar: totals.warDays > 0 ? totals.engaged / totals.warDays : 0 };
 console.log(`total: ${JSON.stringify(summary)}`);

@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-624 · 2026-10-21 · accepted — The ferry and its want take a beachhead with no port as a front's land (PLAN 7.70c; amends ADR-612, ADR-614)
+
+- **Context** (PLAN 7.70c, the follow-through of the user's 7.70). The ferry (ADR-612) took a
+  nation's army only to a port of its own or of an ally (ADR-613) on a front's land, and its want
+  (ADR-614) bought transports only with such a port: a beachhead on a coast with no port, a
+  Normandy's (ADR-623), was never reinforced from home.
+- **Decision.** `planFerry` (`ai/invasion.ts`): on a front's land where no port of its own nor of a
+  nation fighting beside it passes the ferry's tests, a front cell of its own beside water whose
+  zone passes them (not iced, in the transports' waters, held by no enemy) stands as its port
+  there; of such cells, the nearest the transports by sea. Ranked with its own ports by PLAN 7.63's
+  measure (straight distance to its front on that land), it is on the front, distance 0: it goes
+  before every port of its own not on a front cell, and an ally's port only when neither is there.
+  The alternative, a beach only when no port anywhere passes, was not taken: the task's text is
+  "as a front's land, its coast cell where the port would be". `wantsFerry` (`ai/economic.ts`): a
+  front cell of its own beside water not iced stands as a landing port on that front's land.
+  The operational AI needs no change: the landed formations stand within DEPLOY_RANGE_CELLS of a
+  front on their land, which it orders as any.
+- **Read** (`newFronts.ts` with a `reinforced` column; 180 days of the critic's 48 saves;
+  `docs/evidence/7.70/c.md`): the AT's 30-day hold 249 of 287 far landings (86.8 %) before and
+  after, the bar (half) met on HEAD already; the beachheads a later landing reached 74 of 430 →
+  70 of 424 (flat); engaged per war-day 0.219 → 0.218. The case is rare on the saves: 1 of 29 ferry
+  embarkations for a beach in 90 days of four saves. Invasion AI's longest call 8.4 ms (seed 99's
+  year); tick mean 2.471 ms (7.70a's band).
+- **Test.** `beachFerry1938.test.ts`, red without either half.
+- **Limits.** A trip still carries one formation (PLAN 7.72).
+- **Pin.** unchanged, b749e952 (no such case in seed 99's year).
+
 ### ADR-623 · 2026-10-21 · proposed — A new front: the AI lands its free army behind or beside its held front (PLAN 7.70b; amends ADR-268, ADR-511)
 
 - **Context** (PLAN 7.70b, the user's 7.70: invasions that open new fronts, a Normandy). The AI

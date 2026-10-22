@@ -21855,3 +21855,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **BLOCKERS**, the user's: (a) tick on the rule's own case and the fronted reading, 7.73 next;
   (b) close not done; (c) keep open. ADR-623 proposed.
 - **Next:** PLAN 7.70c (the follow-through), 7.70a and 7.70b waiting on the user.
+
+## 2026-10-21 — PLAN 7.70c: the ferry to a beachhead with no port (ADR-624)
+
+- **Rule** (`ai/invasion.ts`, `planFerry`; `ai/economic.ts`, `wantsFerry`): on a front's land with
+  no open port of its own or an ally's, a front cell of its own beside open water is its landing
+  port (distance 0 to the front, so before any port not on a front cell; nearest by sea of such
+  cells); the want counts it as a landing port. SPEC §7 amended.
+- **Read** (`docs/evidence/7.70/c.md`; `newFronts.ts` with a new `reinforced` column; 180 days of
+  the critic's 48 saves): the AT's 30-day hold 249 of 287 far landings, before and after (the bar,
+  half, met on HEAD already). The isolating column, beachheads reached by a later landing: 74/430
+  → 70/424, flat. Engaged per war-day 0.219 → 0.218. A probe of 90 days on four saves: 1 of 29
+  ferry embarkations for a beach; fronts on a portless land are rare there (0–7 per sample).
+- **Test:** `beachFerry1938.test.ts`, red without either half (want false; nobody aboard). Specs by
+  hand: none (no drawn change).
+- **Cost** (seed 99's year): invasion AI longest call 8.4 ms; tick mean 2.471 ms (7.70a's band).
+- **Pin:** unchanged, b749e952.
+- **Next:** PLAN 7.72 (the landing and the ferry board as a group); 7.70a, 7.70b wait on the user.

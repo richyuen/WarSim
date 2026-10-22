@@ -69,11 +69,13 @@ when taken up:
       by `newFronts.ts`, as written 88/310 → 101/304 (over a fifth on HEAD too), by a side with a
       front of its own 39/310 (12.6 %) → 70/304 (23.0 %); engaged per war-day 0.238 → 0.219, the bar
       missed: the user's (BLOCKERS); its likely causes are PLAN 7.73.
-    - [ ] 7.70c The follow-through: the ferry and its want take a beachhead with no port as a
+    - [x] 7.70c The follow-through: the ferry and its want take a beachhead with no port as a
       front's land (its coast cell where the port would be), so reinforcements reach it; the
       operational AI holds and widens it as any front. AT: the whole's 30-day hold at least
       half of the landings of 7.70b; a unit test (red without: transports with a division sail
       for a beachhead with no port); the ADR; the pin's entry.
+      Rule in (ADR-624, `beachFerry1938.test.ts`, `docs/evidence/7.70/c.md`, pin unchanged): the
+      30-day hold 249/287 before and after (met on HEAD); beachheads reached later 74/430 → 70/424.
 
 - [ ] 7.72 The landing and the ferry board as a group (found at 7.70b, ADR-623): the first
   formation's `orderLanding` sets the transports sailing (`orderSail`), and `tryLanding` takes only

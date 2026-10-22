@@ -122,7 +122,7 @@ import { transportRoom } from '../systems/amphibious';
 import { fleetPower } from '../systems/seaControl';
 import { DAYS_PER_MONTH, researchBudget } from '../systems/research';
 import { knowsTechs } from '../tech';
-import { Domain, navBuilt, navOf, portSeaOf, seaRangeOf, type World } from '../world';
+import { Domain, navBuilt, navOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
 
 export const DEBT_PAYBACK = 1 / 12;
 /**
@@ -750,21 +750,29 @@ export function wantsTransport(world: World, n: number, transport: number, own: 
  * men than the room of its transports afloat (`own`, every group's, sunk ones' none). Before, only a
  * landing's want ordered one (`wantsTransport`): a fronted nation with no transports never had any
  * (90 and 155 island formations of such nations on the critic's year-10 and year-20 saves).
+ * A front cell of its own beside open water (a zone not iced) stands as such a port on its land: the
+ * ferry lands at a beachhead with no port there (PLAN 7.70c, ADR-624).
  */
 export function wantsFerry(world: World, n: number, own: readonly number[]): boolean {
   const { w, h, controller } = world.cells;
   const comp = navOf(world).grid.component;
   const nb: number[] = [];
   const fronts = new Set<number>();
+  const z = seaOf(world);
+  let landing = false;
   for (const c of frontierOf(world)) {
-    if (controller[c] !== n || fronts.has(comp[c]!)) continue;
+    if (controller[c] !== n || (fronts.has(comp[c]!) && landing)) continue;
+    let front = false;
+    let beach = false;
     for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
       const m = controller[k]!;
-      if (m !== 0 && m !== n && world.wars.atWar(n, m)) {
-        fronts.add(comp[c]!);
-        break;
-      }
+      if (m !== 0 && m !== n && world.wars.atWar(n, m)) front = true;
+      const zone = z.zoneOf[k]!;
+      if (zone !== 0 && z.closed[zone] !== 1) beach = true;
     }
+    if (!front) continue;
+    fronts.add(comp[c]!);
+    if (beach) landing = true;
   }
   // With no front cell of its own, its allies' cells beside the enemies it fights with them, as the
   // ferry's front (PLAN 7.66, ADR-618; the ferry's since PLAN 7.64, ADR-617).
@@ -784,7 +792,6 @@ export function wantsFerry(world: World, n: number, own: readonly number[]): boo
   if (fronts.size === 0) return false;
   const water = portSeaOf(world);
   const homes = new Set<number>();
-  let landing = false;
   world.ports.forEach((p, i) => {
     if (water[i]! < 0) return;
     const holder = controller[p.cell]!;

@@ -2100,7 +2100,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   7.49d2, ADR-613): of the ports held by nations fighting beside it that pass the same tests, the
   nearest a front cell of its own on that land, the nearest by sea on a tie. A nation with no
   front cell of its own (its land front its allies' alone) takes as its front cells their cells
-  beside the enemies it fights with them (`wars.together`; PLAN 7.64, ADR-617).
+  beside the enemies it fights with them (`wars.together`; PLAN 7.64, ADR-617). A beachhead with
+  no port (PLAN 7.70c, ADR-624): on a front's land where no port of its own nor of an ally passes
+  those tests, a front cell of its own beside water that passes them (its zone not iced, in the
+  transports' waters, held by no enemy) stands as its port there, on the front itself (nearer it
+  than any port not on a front cell; the nearest the transports by sea of such cells), so the
+  ferry reinforces a landing on a coast with no port.
   A new front (PLAN 7.70b, ADR-623), in the same turn and lock, after a landing that gave no order
   and before the ferry: a nation with a land front of its own that it holds (its land formations'
   men in the squares of the deploy range's side about its front cells, and those beside, at least
@@ -2158,7 +2163,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   two transports, it carries no division and is never refilled; PLAN 7.55, ADR-598); while it
   wants one it orders no other fleet. The ferry's want orders one too (PLAN 7.49d3, ADR-614): a
   land front (with no front cell of its own, its allies' cells beside the enemies it fights with
-  them, as the ferry's: PLAN 7.66, ADR-618), a port of its own or of an ally in the war on that front's land, and an island army
+  them, as the ferry's: PLAN 7.66, ADR-618), a port of its own or of an ally in the war on that front's land (or a front cell of
+  its own there beside water not iced, a beachhead's: PLAN 7.70c, ADR-624), and an island army
   (standing on a land with a port of its own and no front cell of its) of more men than its
   transports' room; it stops no other fleet, and its transports in training hold back no
   warship, as it holds for the war's length. Short of money and over

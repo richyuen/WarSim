@@ -521,24 +521,45 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
     return d2;
   };
   // Of the ports that pass `whose`, the nearest a front cell of n's on that land (straight cells),
-  // the sea's way the tie-break: its own first (PLAN 7.63), else an ally's (PLAN 7.49d2).
-  const pick = (whose: (h: number) => boolean): number => {
-    let target = -1;
-    let near2 = Infinity;
-    let best = Infinity;
+  // the sea's way the tie-break: its own first (PLAN 7.63), else an ally's (PLAN 7.49d2). The cell
+  // to land at, or -1.
+  const pick = (whose: (h: number) => boolean, near2 = Infinity, best = Infinity, target = -1): number => {
     world.ports.forEach((p, i) => {
       if (!whose(ctl[p.cell]!) || !open(i)) return;
       const d2 = toFront(i);
       if (d2 > near2) return;
       const d = km(i);
-      if (d2 < near2 || d < best) [near2, best, target] = [d2, d, i];
+      if (d2 < near2 || d < best) [near2, best, target] = [d2, d, p.cell];
     });
     return target;
   };
-  let target = pick((h) => h === n);
-  if (target < 0) target = pick((h) => h !== 0 && h !== n && world.wars.sameSide(n, h));
+  // A beachhead with no port (PLAN 7.70c, ADR-624): on a front's land where no port of its own nor
+  // of a nation fighting beside it passes `open`, a front cell of n's beside water whose zone passes
+  // `open`'s tests stands as its port, on the front itself; the nearest the transports by sea.
+  const ported = new Set<number>();
+  world.ports.forEach((p, i) => {
+    const hd = ctl[p.cell]!;
+    if ((hd === n || (hd !== 0 && world.wars.sameSide(n, hd))) && open(i)) ported.add(comp[p.cell]!);
+  });
+  const { h } = world.cells;
+  const nb: number[] = [];
+  let beach = -1;
+  let beachKm = Infinity;
+  for (const k of front) {
+    if (ctl[k] !== n || ported.has(comp[k]!)) continue;
+    for (const q of neighbours4(k, w, h, world.settings.loopingMap, nb)) {
+      const zone = z.zoneOf[q]!;
+      if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) continue;
+      const sea = seaHolder(world, zone);
+      if (sea !== 0 && world.wars.atWar(sea, n)) continue;
+      const d = seaKm(world, c.x[fleet]!, c.y[fleet]!, (q % w) + 0.5, Math.floor(q / w) + 0.5);
+      if (d < beachKm || (d === beachKm && k < beach)) [beach, beachKm] = [k, d];
+    }
+  }
+  let target = beach >= 0 ? pick((hd) => hd === n, 0, beachKm, beach) : pick((hd) => hd === n);
+  if (target < 0) target = pick((hd) => hd !== 0 && hd !== n && world.wars.sameSide(n, hd));
   if (target < 0) return false;
-  return board(world, fleet, tp.room, port, world.ports[target]!.cell, free);
+  return board(world, fleet, tp.room, port, target, free);
 }
 
 /**
