@@ -127,7 +127,22 @@ export const DIVERTS = 2;
  * timed by its parts and handed to `plan`. None set (the game, the tests), nothing is timed. Not
  * state: in no save and no hash, and a timed plan gives the orders an untimed one gives.
  */
-export const OP_PROBE: { now?: () => number; plan?: (p: PlanTimes) => void; ask?: (a: AskTimes) => void } = {};
+export const OP_PROBE: { now?: () => number; plan?: (p: PlanTimes) => void; ask?: (a: AskTimes) => void; sectors?: (s: SectorsSeen) => void } = {};
+
+/**
+ * One plan's sectors at its orders (`OP_PROBE.sectors`, PLAN 7.79a, `tools/diag/frontSpread.ts`):
+ * each sector's threat, formations, strength and whether it attacks; and per class allotted, its
+ * formations, its sectors, and the formations allotted to sectors with a threat before and after
+ * "every sector gets one".
+ */
+export interface SectorsSeen {
+  nation: number;
+  tick: number;
+  sectors: { threat: number; n: number; strength: number; attack: boolean; cx: number; cy: number }[];
+  classes: { ids: number; front: number; threatened: number; before: number; after: number }[];
+  /** Of the marches from afar: sectors with no taker allotted passed over for a taker marching in, for one of the planner's standing in or next to it, for one of its side's (a partner's sector); the empty sectors (-1: not looked for: no far formation and none to spare); the far formations; summed over the far formations' searches, the empty sectors their class reaches (`reached`), those on another landmass, and those `reaches` refused; per class with far formations, its cell, ground and province group, the empty sectors it reaches, and the sectors it does not reach for want of a snapped cell, for another province group, for another pocket. */
+  empty?: { takers: number; stood: number; sideStood: number; empties: number; far: number; reachedEmpty: number; otherLand: number; unreached: number; classes?: { cell: number; ground: number; provinceGroup: number; far: number; reached: number; snap: number; group: number; pocket: number }[] } | undefined;
+}
 
 /** One `askMove` of a timed plan (`OP_PROBE`): the formation, the cell it stood on, the cell asked, the answer, ms, and the refusal kept for it before the call. */
 export interface AskTimes {
@@ -637,6 +652,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     timing.joinMs += OP_PROBE.now!() - t;
     return r;
   };
+  const probeReach = OP_PROBE.sectors ? classCell.map((c, ci) => ({ cell: c, ground: classGround[ci]!, provinceGroup: classGroup[ci]!, far: 0, reached: 0, snap: 0, group: 0, pocket: 0 })) : undefined;
   for (let i = 0; i < sn; i++) {
     const s = list[i]!;
     const hold = s.hold;
@@ -654,7 +670,10 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         to = known ?? snapTarget(world, from, hold % w, Math.floor(hold / w));
         if (known === undefined) other.set(land[from]!, to);
       }
-      if (to < 0 || (g >= 0 && nodeOf[to] !== 0 && group[nodeOf[to]!] !== g)) continue;
+      if (to < 0 || (g >= 0 && nodeOf[to] !== 0 && group[nodeOf[to]!] !== g)) {
+        if (probeReach) probeReach[ci]![to < 0 ? 'snap' : 'group']++;
+        continue;
+      }
       // The pocket of the order's cell is the class's, or neither is in one (PLAN 3.10c2b2:
       // the cells are walked from the sector's cell too, once a cell). A class on closed ground
       // walks out of it, into a pocket too: it is not asked.
@@ -668,7 +687,10 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       }
       const mine = classGround[ci]!;
       if (ground !== mine) {
-        if (ground > 0 || mine > 0) continue;
+        if (ground > 0 || mine > 0) {
+          if (probeReach) probeReach[ci]!.pocket++;
+          continue;
+        }
         // Two wide grounds: the cells join them or the class does not reach the sector (PLAN
         // 3.10c2b3a, ADR-193). Ground that came to no wide ground may be joined to any.
         if (ground < 0 && mine < 0) (unasked[ci] ??= new Map()).set(i, ground);
@@ -781,6 +803,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   /** Of the class in hand: a sector's place among those it reaches, and how many of the class march into it. */
   const place = new Int32Array(sn);
   const has = new Int32Array(sn);
+  const probeClasses: SectorsSeen['classes'] = [];
+  const probeEmpty: SectorsSeen['empty'] = OP_PROBE.sectors ? { takers: 0, stood: 0, sideStood: 0, empties: -1, far: far.length, reachedEmpty: 0, otherLand: 0, unreached: 0 } : undefined;
   // Each class is allotted to the sectors it reaches, and to no other.
   for (let ci = 0; ci < byClass.length; ci++) {
     const ids = byClass[ci]!;
@@ -848,6 +872,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         left--;
       }
     }
+    const seen = OP_PROBE.sectors ? { ids: ids.length, front: front.length, threatened: front.filter((i) => list[i]!.threat > 0).length, before: front.reduce((t, i, k) => t + (list[i]!.threat > 0 ? counts[k]! : 0), 0), after: 0 } : undefined;
     // Every sector gets one while formations last: take from the largest allotments.
     for (let k = 0; k < counts.length; k++) {
       if (counts[k]! > 0) continue;
@@ -856,6 +881,10 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       if (j < 0) break;
       counts[j]!--;
       counts[k] = 1;
+    }
+    if (seen) {
+      seen.after = front.reduce((t, i, k) => t + (list[i]!.threat > 0 ? counts[k]! : 0), 0);
+      probeClasses.push(seen);
     }
     // Sticky first: a formation already marching into a sector keeps it, also beyond the sector's
     // allotment of today (ADR-53). It counts towards the allotment, so fewer others are sent.
@@ -943,10 +972,25 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     for (let i = 0; i < sn; i++) {
       const s = list[i]!;
       if (s.formations.some((id) => f.strength[id]! > take)) continue;
-      if (takers[i]! > 0 || stoodAt(s, holds) > 0) continue;
-      if (!s.own && sideStood(s)) continue;
+      if (takers[i]! > 0 || stoodAt(s, holds) > 0) {
+        if (probeEmpty) probeEmpty[takers[i]! > 0 ? 'takers' : 'stood']++;
+        continue;
+      }
+      if (!s.own && sideStood(s)) {
+        if (probeEmpty) probeEmpty.sideStood++;
+        continue;
+      }
       empty[i] = !s.own && ownFront ? 2 : 1;
       empties++;
+    }
+    if (probeEmpty) {
+      probeEmpty.empties = empties;
+      probeEmpty.far = far.length;
+      if (probeReach) {
+        for (const id of far) probeReach[classOf[id]!]!.far++;
+        for (let ci = 0; ci < probeReach.length; ci++) probeReach[ci]!.reached = reached[ci]!.filter((i) => empty[i] !== 0).length;
+        probeEmpty.classes = probeReach.filter((r) => r.far > 0);
+      }
     }
     /** Of a sector: 1 = no formation of n is within the range of it, 2 = one is (0: not asked yet). */
     const alone = new Uint8Array(sn);
@@ -966,13 +1010,18 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         let bd = lone ? spare2 : Infinity;
         for (const i of reached[ci]!) {
           // Not to the shore across the water from it (where an order to another landmass ends).
-          if (empty[i] !== kind || land[list[i]!.hold] !== land[classCell[ci]!]) continue;
+          if (empty[i] !== kind) continue;
+          if (land[list[i]!.hold] !== land[classCell[ci]!]) {
+            if (probeEmpty && !lone) probeEmpty.otherLand++;
+            continue;
+          }
           const d = dist2(id, list[i]!);
           if (d < bd && (!lone || isAlone(i)) && reaches(ci, i)) {
             bd = d;
             best = i;
-          }
+          } else if (probeEmpty && !lone && d < bd) probeEmpty.unreached++;
         }
+        if (probeEmpty && !lone) probeEmpty.reachedEmpty += reached[ci]!.filter((i) => empty[i] === kind).length;
         if (best >= 0) return [best, bd];
       }
       return [-1, Infinity];
@@ -1022,6 +1071,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     }
   }
   mark();
+  if (OP_PROBE.sectors) OP_PROBE.sectors({ nation: n, tick: world.tick, classes: probeClasses, empty: probeEmpty, sectors: list.map((s) => ({ threat: s.threat, n: s.formations.length, strength: s.strength, attack: s.formations.length > 0 && s.strength >= OFFENSIVE_RATIO * s.threat, cx: s.cx, cy: s.cy })) });
   // Orders.
   const isArmour = (id: number): boolean => (armour[f.template[id]!] ?? 0) >= SPEARHEAD_ARMOUR;
   for (const s of list) {

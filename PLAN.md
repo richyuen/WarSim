@@ -52,6 +52,31 @@ them, are 7.81–7.86. A task each, split when taken up:
   on 10 unseen seeds × 20 years, engaged land formations a war, mean of daily samples in years 2–20, at
   least a tenth of year 1's (HEAD's 0.34 / 5.1 = 0.067, read on the same seeds first); no pile of 30 or
   more divisions of a nation at war in one place for 30 days; a unit test, red without; the gate green.
+  In parts (7.49's parts moved the armies to the landmass and left engaged per war flat, 0.134 → 0.137;
+  what 7.49a left open is the second factor of engaged per war, engaged per armed war, about 20 in year
+  1 and 0.4 late: in a late armed war the armies near the front stand apart, 115 of 140 beyond 15 cells):
+    - [x] 7.79a Measured, on run 12's saves (HEAD's sim code) and year 1 of 6421 and 7019
+      (`tools/diag/frontSpread.ts`, `OP_PROBE.sectors`, `docs/evidence/7.79/`): per plan of a nation at
+      war, its sectors, those threatened, the formations allotted, the share of them in threatened
+      sectors before and after "every sector gets one", the threatened sectors manned and attacking;
+      and the 1129 year-10 pile of 60 US divisions traced. AT: the table, year 1 against late, and the
+      cause it names, each a part with its own AT; no rule: the pin unchanged.
+      Measured (`docs/evidence/7.79/measure.md`): the share of the allotted in threatened sectors 0.58–0.74
+      in year 1, 0.006–0.23 late; "every sector gets one" not it (late the same before and after); the
+      weights 1 + threat / 10,000 lose to fronts of 120–920 sectors. The US piles: their class reaches
+      none of the sectors (overseas, or closed ground), and the ferry needs a landmass with no front.
+    - [ ] 7.79b The allotment by where the enemy stands (measure §2): a plan's formations go to its
+      threatened sectors first, in proportion to threat, and the empty front gets what is left over
+      them (each threatened sector's share at least what year 1's weights gave it). AT: on the 8 late
+      saves of measure §2, the share of the allotted in threatened sectors at least 0.5 (0.006–0.23 on
+      HEAD); in year 1 of 6421 and 7019 not under HEAD's (0.741, 0.578); engaged per war on the 8 saves
+      read (`frontSpread.ts`); a unit test (red without); the ADR; the pin's entry; `--profile`.
+    - [ ] 7.79c The ferry from a fronted landmass whose front the army cannot reach (measure §3): the
+      ferry (ADR-612) takes far formations whose class reaches no sector of the nation, as from a
+      landmass with no front. AT: piles of 30 or more of a nation at war on one cell 30 days running
+      on 1129 year 10, 6421 year 20 and 7019 year 10 (`piles.ts --days 30`) 3 → 0; a unit test (red
+      without); the ADR; the pin's entry.
+    Then 7.79's AT on 10 unseen seeds × 20 years (HEAD's figure read on them first).
 - [ ] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at
   year 20 1,174 a world on HEAD against 837 on `dd3b730` (469 at the 1938 start), worse on 24 of 24
   seeds; founded statelets at year 20 20.7 a world (6.6). 7247's Russia German grey and Soviet red

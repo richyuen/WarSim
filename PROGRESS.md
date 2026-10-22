@@ -22101,3 +22101,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   nuclear use (bursts 188 → 497; the cause measured, the volume the user's). Run 12's evidence committed (no `.bin`
   checkpoints, no shots, as run 11).
 - **Next:** PLAN 7.79.
+
+## 2026-10-22 — PLAN 7.79a: the late army stands by the front's length, not by the enemy (measured, no rule)
+
+- **Split:** 7.79 in parts a–c (7.49's parts moved armies to the landmass, engaged per war flat; this
+  takes the second factor, engaged per armed war).
+- **Measured** (`docs/evidence/7.79/measure.md`; `tools/diag/frontSpread.ts`, `piles.ts`, `pileOrders.ts`;
+  `OP_PROBE.sectors`, read only): of the formations a plan allots, in threatened sectors 0.58–0.74 in
+  year 1 (6421, 7019) against 0.006–0.23 on 8 late saves of run 12. "Every sector gets one" is not it;
+  the weights 1 + threat / 10,000 lose to late fronts of 120–920 sectors with 3–27 threatened (PLAN 7.79b).
+- **The US piles** (1129 year 10: 60 and 53 at two cells; 6421 year 20: 77): the class reaches none of
+  the USA's sectors (35 of 38 overseas, 3 behind closed ground or in a pocket); the ferry needs a
+  landmass with no front (PLAN 7.79c).
+- **Pin:** unchanged (no rule).
+- **Next:** PLAN 7.79b.
