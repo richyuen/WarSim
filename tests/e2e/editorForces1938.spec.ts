@@ -131,9 +131,10 @@ test("the editor names a holder's means: Czechoslovakia's bomber group at Prague
 // PLAN 7.22c (critic run 8, naval 6: "placed fleets wander away at once: the North Sea point was
 // empty on day 3", `critic/shots/c8g_5591_21_northsea_day3_30m.png`): the critic's standoff. Two
 // German and two British battle squadrons placed by clicks in the North Sea, the scenario exported
-// and started from the title, Germany at war with Britain, the AI on: on day 3 Britain's pair is at
-// its places (Germany's met the Home Fleet; a fleet beaten lets go of its place, `fleetStation1938`).
-test("the critic's North Sea standoff: fleets placed in the editor hold their places into the war (PLAN 7.22c)", async ({ page }, info) => {
+// and started from the title, Germany at war with Britain, the AI on: on day 3 Britain's pair holds
+// its sea (PLAN 7.59, ADR-608): it has fought Germany's pair at Germany's places and is there or back
+// at its own (a fleet beaten lets go of its place, `fleetStation1938`).
+test("the critic's North Sea standoff: fleets placed in the editor hold their sea into the war (PLAN 7.22c, 7.59)", async ({ page }, info) => {
   test.setTimeout(300_000);
   await page.setViewportSize({ width: 1400, height: 800 });
   await page.goto('/?scenario=1938&paused=1&seed=5591');
@@ -181,14 +182,29 @@ test("the critic's North Sea standoff: fleets placed in the editor hold their pl
 
   // Germany declares war on Britain; three days of the AI's war.
   await page.evaluate(([g, e]) => window.__warsim!.sim.command({ kind: 'declareWar', attacker: g!, defender: e! }), [GER, ENG]);
-  await page.evaluate(async () => {
+  const hours = await page.evaluate(async ({ placed, g, e }) => {
     const { sim, view } = window.__warsim!;
-    const t = (await sim.step(3 * 24)).tick;
-    await new Promise<void>((done) => {
-      const wait = (): void => (view!.lastTick >= t ? done() : void setTimeout(wait, 10));
-      wait();
-    });
-  });
+    const out: { h: number; battles: { x: number; y: number }[]; fleets: ({ x: number; y: number } | null)[] }[] = [];
+    for (let h = 1; h <= 3 * 24; h++) {
+      const t = (await sim.step(1)).tick;
+      await new Promise<void>((done) => {
+        const wait = (): void => (view!.lastTick >= t ? done() : void setTimeout(wait, 10));
+        wait();
+      });
+      const battles = view!.seaBattles().filter((b) => (b.a === g && b.b === e) || (b.a === e && b.b === g)).map((b) => ({ x: b.x, y: b.y }));
+      const s = await sim.inspect(true);
+      const fleets = placed.map((id) => {
+        const f = s.formations.find((f) => f.id === id);
+        return f ? { x: f.x, y: f.y } : null;
+      });
+      out.push({ h, battles, fleets });
+    }
+    return out;
+  }, { placed, g: GER, e: ENG });
+  // The British–German sea battles of the three days, by where they were fought.
+  const fought = hours.flatMap((r) => r.battles.map((b) => ({ h: r.h, ...b })));
+  const cells = (a: { x: number; y: number }, b: { x: number; y: number }): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+  console.log(`British–German sea battles: ${fought.length} battle-hours, from hour ${fought[0]?.h ?? '-'} to ${fought.at(-1)?.h ?? '-'}`);
   const now = await page.evaluate(async (placed) => {
     const s = await window.__warsim!.sim.inspect(true);
     return placed.map((id) => {
@@ -198,12 +214,23 @@ test("the critic's North Sea standoff: fleets placed in the editor hold their pl
   }, placed);
   const offBy = at.map((a, i) => (now[i] ? Math.max(Math.abs(now[i]!.x - a.x), Math.abs(now[i]!.y - a.y)) : Infinity));
   console.log(`day 3 of the war: the placed fleets ${at.map((a, i) => `${a.id} (${a.nation === GER ? 'German' : 'British'}) ${Number.isFinite(offBy[i]!) ? `${offBy[i]!.toFixed(1)} cells off` : 'gone'}`).join(', ')}`);
+  // PLAN 7.59 (ADR-608): at war a placed fleet holds its sea; Britain's pair goes for Germany's,
+  // placed 8–10 cells off in the same sea, and fights it there (the North Sea point is not empty:
+  // the critic's objection). Measured on 2026-10-22: the battle from hour 27 to 46 at Germany's
+  // places, Germany's pair broken off east, Britain's standing where it was fought. Before 7.59 the
+  // pair stood at its places and fought nothing.
+  const german = at.filter((a) => a.nation === GER);
+  const inSea = fought.filter((b) => german.some((g) => cells(b, g) <= 3));
+  expect(inSea.length, 'a British–German sea battle at the German places within 3 days').toBeGreaterThan(0);
   for (const [i, a] of at.entries()) {
     if (a.nation !== ENG) continue;
-    expect(offBy[i], `British fleet ${a.id} at its place on day 3`).toBeLessThanOrEqual(3);
+    const f = now[i];
+    expect(f, `British fleet ${a.id} in being on day 3`).not.toBeNull();
+    const byBattle = Math.min(...inSea.map((b) => cells(f!, b)));
+    expect(offBy[i]! <= 3 || byBattle <= 3, `British fleet ${a.id} on day 3: ${offBy[i]!.toFixed(1)} cells off its place, ${byBattle.toFixed(1)} off the battle`).toBe(true);
   }
-  // The critic's view of the day: the British pair's point at 30 m/px.
-  const [bx, by] = [(at[2]!.x + at[3]!.x) / 2, (at[2]!.y + at[3]!.y) / 2];
+  // The critic's view of the day: the British pair where it is on day 3, at 300 and 30 m/px.
+  const [bx, by] = [(now[2]!.x + now[3]!.x) / 2, (now[2]!.y + now[3]!.y) / 2];
   await page.evaluate(({ x, y }) => {
     const v = window.__warsim!.view!;
     v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / 300 });
@@ -213,7 +240,7 @@ test("the critic's North Sea standoff: fleets placed in the editor hold their pl
   await page.evaluate(({ x, y }) => {
     const v = window.__warsim!.view!;
     v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / 30 });
-  }, { x: at[2]!.x, y: at[2]!.y });
+  }, { x: now[2]!.x, y: now[2]!.y });
   await page.waitForFunction(() => window.__warsim!.view!.individualCount > 0, null, { timeout: 15_000 });
   await page.waitForTimeout(1500);
   await page.screenshot({ path: path.resolve('docs/evidence/7.22/c-northsea-day3-30m.png') });
