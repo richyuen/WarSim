@@ -36,7 +36,7 @@ import { Mobility } from '../nav/grid';
 import { airOf, Domain, navOf, type World } from '../world';
 import { AIR_SUPPLY, airSuperiority } from './airSuperiority';
 import { bleedFormation, breakDown } from './elements';
-import { markSeaLinks, seaLinkedAll } from './seaSupply';
+import { blocCityLands, markSeaLinks, seaFeeds, type SeaFeeds } from './seaSupply';
 
 /** Network refresh period (12 h since PLAN 1.25: armies in motion keep it dirty; dry within 12 + 8 h). */
 export const SUPPLY_REFRESH_HOURS = 12;
@@ -68,6 +68,13 @@ export const BREAKDOWN_PER_DAY = 0.1;
  * On ground of its own side with no network, a pocket, nothing reaches it.
  */
 export const SUPPLY_REACH = 2;
+/**
+ * Supply over the beach (PLAN 7.70a, ADR-622): a formation fed by a network on a land where its
+ * bloc owns and controls no city (fed from the sea at its coast: `seaBeaches`) is fed at half
+ * SUPPLY_RATE, towards BEACH_SUPPLY and no higher; above it, it falls at SUPPLY_RATE to it.
+ */
+export const BEACH_SUPPLY = 0.75;
+export const BEACH_RATE = SUPPLY_RATE / 2;
 const TERRAIN_ATTRITION = terrainJson.terrain.map((t) => t.supplyAttrition);
 
 /** Supply bloc of a nation: its overlord's id, or its own when it has none. */
@@ -318,13 +325,18 @@ function cityMask(world: World): Uint8Array {
  * higher one, and a loaded world, which refreshes in full, went on otherwise than the world
  * that was saved.
  */
-export function refreshSupplyNetwork(world: World, linkedAll?: Map<number, number[]>): void {
+export function refreshSupplyNetwork(world: World, feeds?: SeaFeeds): void {
   refreshStats.written = refreshStats.flooded = refreshStats.mended = refreshStats.dried = refreshStats.full = 0;
-  refresh(world, linkedAll ?? seaLinkedAll(world));
+  refresh(world, feeds ?? seaFeeds(world));
 }
 
-/** `linkedAll`: `seaLinkedAll` of the world as it is (the supply system's, asked in the same hour). */
-function refresh(world: World, linkedAll: Map<number, number[]>): void {
+/**
+ * `feeds`: `seaFeeds` of the world as it is (the supply system's, asked in the same hour). A
+ * bloc's beach sources (PLAN 7.70a) are sources as its cities are; a changed cell on a land where
+ * it has one floods it whole (the mends ask after cities alone).
+ */
+function refresh(world: World, feeds: SeaFeeds): void {
+  const linkedAll = feeds.linked;
   const { w, h, controller, owner, terrain, supply } = world.cells;
   const wrap = world.settings.loopingMap;
   const blocOfNation = new Uint16Array(world.nations.highWater + 1);
@@ -377,6 +389,24 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
     // mends at its changed cells left a land newly joined unflooded).
     for (const b of world.supplySeaBlocs) whole(b);
     for (const [b, kept] of reached) if (own[b] === 1 && kept.n > 2 * kept.base) whole(b);
+    // A changed cell on a land where a bloc it names has a beach source (PLAN 7.70a): whole.
+    if (feeds.beaches.size > 0) {
+      const beachLand = new Set<number>();
+      for (const [b, list] of feeds.beaches) for (const cell of list) beachLand.add(b * 0x100000000 + comp[cell]!);
+      const onBeach = (n: number, land: number): void => {
+        const b = blocNow(n);
+        if (b !== 0 && beachLand.has(b * 0x100000000 + land)) whole(b);
+      };
+      for (const [c, was] of changed) {
+        const land = comp[c]!;
+        if (land === 0) continue;
+        onBeach(was >>> 16, land);
+        onBeach(was & 0xffff, land);
+        onBeach(controller[c]!, land);
+        onBeach(owner[c]!, land);
+        if (supply[c] !== 0 && beachLand.has(supply[c]! * 0x100000000 + land)) whole(supply[c]!);
+      }
+    }
     // A city that changed hands: a source made or lost (PLAN 7.1h: until then its blocs were
     // flooded whole). A source made is flooded from (below); the land that hung on a source lost
     // must reach another of its bloc's, or the bloc is flooded whole.
@@ -470,6 +500,13 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
     if (!list) sources.set(b, (list = []));
     list.push(cell);
   });
+  // And its beach sources (PLAN 7.70a).
+  for (const [b, cells] of feeds.beaches) {
+    if (!full && (b >= only.length || only[b] !== 1)) continue;
+    let list = sources.get(b);
+    if (!list) sources.set(b, (list = []));
+    for (const cell of cells) list.push(cell);
+  }
   // The blocs with work, in ascending order: flooded whole (they have sources) or mended.
   const blocs = [...sources.keys(), ...gains.keys()].sort((a, b) => a - b);
   for (const b of blocs) {
@@ -576,7 +613,7 @@ function refresh(world: World, linkedAll: Map<number, number[]>): void {
   }
   if (again) {
     world.supplyDirty = true;
-    refresh(world, linkedAll);
+    refresh(world, feeds);
   }
 }
 
@@ -637,6 +674,20 @@ export function supplySystem(world: World): void {
     for (let t = 0; t < templates.length; t++) offLandTemplate[t] = templates[t]?.domain === Domain.sea || templates[t]?.domain === Domain.air ? 1 : 0;
   }
   const embarked = world.embarked;
+  // The (bloc, land) pairs where the bloc owns and controls a city (PLAN 7.70a): a network
+  // elsewhere is fed at its beach. Asked once a call, at the first formation fed.
+  const comp = navOf(world).grid.component;
+  let cityLand: ((b: number, land: number) => boolean) | null = null;
+  const beachFed = (net: number, cell: number): boolean => {
+    const land = comp[cell]!;
+    if (land === 0) return false;
+    if (!cityLand) {
+      const blocOfNation = new Uint16Array(world.nations.highWater + 1);
+      world.nations.forEach((n) => (blocOfNation[n] = blocOf(world, n)));
+      cityLand = blocCityLands(world, blocOfNation);
+    }
+    return !cityLand(net, land);
+  };
   f.forEach((id) => {
     // A fleet is not fed over land: it keeps what it has (PLAN 4.2b; the sea's supply is PLAN 4.4).
     // Nor is an air wing, nor an army aboard (`World.offLand`).
@@ -645,6 +696,9 @@ export function supplySystem(world: World): void {
     nation = c.nation[id]!;
     bloc = blocOf(world, nation);
     let inSupply = feeds(supply[cell]!);
+    /** The network that feeds it, and a cell of it. */
+    let fedNet = inSupply ? supply[cell]! : 0;
+    let fedCell = cell;
     if (!inSupply) {
       const ctl = controller[cell]!;
       const ctlBloc = ctl === 0 ? 0 : blocOf(world, ctl);
@@ -667,6 +721,8 @@ export function supplySystem(world: World): void {
             last = net;
             if (feeds(net)) {
               inSupply = true;
+              fedNet = net;
+              fedCell = y * w + xw;
               break;
             }
           }
@@ -678,9 +734,12 @@ export function supplySystem(world: World): void {
     const burn = c.moving[id] === 1 && c.engaged[id] !== 1 ? MARCH_BURN * (rule?.fuel ?? 0) : 0;
     // Under the enemy's air it is fed slower, under its own faster (PLAN 5.8t1). Full, it stays
     // full whatever the air: the gain is never below nothing while AIR_SUPPLY is at most 1, so
-    // the air is not asked (PLAN 7.1h).
-    const gain = inSupply && s < 1 && world.airPower.size > 0 ? SUPPLY_RATE * (1 + AIR_SUPPLY * (2 * airOver(nation, cell) - 1)) : SUPPLY_RATE;
-    c.supply[id] = inSupply ? Math.min(1, s + gain) : Math.max(0, s - SUPPLY_RATE - burn);
+    // the air is not asked (PLAN 7.1h). Fed at a beach, slower and to BEACH_SUPPLY (PLAN 7.70a).
+    const beach = inSupply && beachFed(fedNet, fedCell);
+    const cap = beach ? BEACH_SUPPLY : 1;
+    const rate = beach ? BEACH_RATE : SUPPLY_RATE;
+    const gain = inSupply && s < cap && world.airPower.size > 0 ? rate * (1 + AIR_SUPPLY * (2 * airOver(nation, cell) - 1)) : rate;
+    c.supply[id] = !inSupply ? Math.max(0, s - SUPPLY_RATE - burn) : s > cap ? Math.max(cap, s - SUPPLY_RATE) : Math.min(cap, s + gain);
     // Not in contact (PLAN 3.5a): a formation gets its order back out of the fight.
     if (inSupply && c.engaged[id] !== 1) c.org[id] = Math.min(1, c.org[id]! + ORG_RATE);
     if (c.supply[id] === 0) {

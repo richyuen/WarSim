@@ -55,6 +55,8 @@ when taken up:
       an enemy's coast with no port (a unit test, red without: unfed after 30 days) keeps supply
       at least 0.5 for 30 days, and under an enemy-held zone loses it; seed 99's year: no tick
       over budget (the profile); SPEC §6.2 amended; the ADR; the pin's entry.
+      Rule in (ADR-622, `beachSupply1938.test.ts`, pin cd6ce5eb); the budget missed (tick 2.35 →
+      2.44–2.48 ms, budget 2.4): the tick is the user's, and so is 7.70b's scope (BLOCKERS).
     - [ ] 7.70b The plan: a nation at war with a land front, its free army beyond its front's need
       (on no front's land, or beyond DEPLOY_RANGE_CELLS of its front) and its transports with a
       division's room, lands on the enemy's coast cell of most worth (a city, the capital, near

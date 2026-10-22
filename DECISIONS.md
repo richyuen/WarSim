@@ -167,6 +167,51 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-622 · 2026-10-21 · proposed — Supply over the beach: a held coast on a land with no city of the bloc is a source, fed from the sea (PLAN 7.70a; amends ADR-259)
+
+- **Context** (PLAN 7.70a, the user's 7.70: invasions that open new fronts). Supply's sources were
+  the cities a bloc owns and controls, its network spread over held land alone (ADR-25), and a city
+  fed only on a land joined to home by sea (ADR-259). A division ashore on an enemy's coast with no
+  port, on a land where its bloc holds no city, had no network: dry in 8 h, bled from then on.
+- **Decision.** On a land (`NavGrid.component`) where the bloc owns and controls no city, a coast
+  cell it controls (a land cell with a 4-neighbour in a sea zone) is a source of its network
+  (`seaBeaches`, `seaSupply.ts`) when a zone beside it, not iced, is reached from a home port's
+  zone by ADR-259's way: entering no zone held by a nation at war with the bloc, through no passage
+  shut to it. So an enemy holding the water cuts it. A formation fed by a network on a land where
+  that network's bloc owns and controls no city is fed at `BEACH_RATE` 1/16 an hour (half
+  `SUPPLY_RATE`) to `BEACH_SUPPLY` 0.75 and no higher; above it, it falls at `SUPPLY_RATE` to it
+  (the task said "at a rate under a city's": the cap is the lasting difference, as supply scales
+  pressure, fire and speed). Constants are powers of two, so the level steps exactly.
+- **Where.** The beach sources are made with the reach of ADR-259 at the refresh hour and are part
+  of `markSeaLinks`' key, so a bloc whose beach sources change (a zone taken, a coast cell won or
+  lost) is flooded whole. A partial refresh floods whole a bloc that has a beach source on the land
+  of a changed cell: the mends (`holds`, `part`) ask after cities alone and would dry a beach
+  network. A full refresh and a partial one give the same network (the reference rule of
+  `supply.test.ts` takes the beach sources).
+- **Limits.** (1) The network is laid at the refresh hour (every 12 h): a landing between two is
+  dry until the next (the test lands the hour before one). (2) Per the task's "a landmass where it
+  has no source of its own", a beach on a land where the bloc has a city is not fed: Britain's bloc
+  (India) or the Soviet Union in France or Norway, Germany in Norway. Most great-power landings of
+  7.70b would be on Eurasia (BLOCKERS: the user's). (3) Held islets with no city of their holder,
+  and Greenland and the like, are fed at peace as well: 28 blocs hold such coasts in 1938.
+- **Cost** (seed 99's first year, `--profile`, `--affinity`): supply 0.161 ms a tick (HEAD) →
+  0.28; tick mean 2.35 → 2.44–2.48 ms alone (budget of the first year 2.4: **missed**); run side by
+  side on separate cores, both orders, supply 0.182 / 0.190 → 0.291 / 0.284, tick 2.59 / 2.64 →
+  2.78 / 2.72. On one state (day 90): the hourly pass +0.037 ms (the table of blocs' city lands,
+  16 µs, and the check of each fed formation); a year's sea read at the refresh hours 277 → about
+  750 ms (the coast scan of 27,619 cells 0.32 ms and the searches 0.17 ms a refresh), the network
+  refresh 783 → 884 ms. The rest of the gap is the world's: 37,245 → 38,821 cells flipped. Made
+  cheaper on the way, behaviour unchanged (the hash held): the searches of a bloc at war with
+  nobody are the map's, kept by their start zones; a passage's bank is kept by the passages and
+  the terrain; the beaches reuse the reach's searches and are made only for the supply's refresh
+  (`convoyWays` 0.24 → 0.15 ms a call).
+- **Test.** `beachSupply1938.test.ts`: a British division put ashore on a coast of a nation at war
+  with Britain, no port within 4 cells, on a land of 50 cells or more with no British city: supply
+  at least 0.5 for 30 days, at BEACH_SUPPLY after a day; that nation holding the zones by the land,
+  dry over 29 of the 30 days. Red without the rule (0 within the first day).
+- **Pin.** 32761b44 → cd6ce5eb.
+- **Proposed**: the budget is missed, so the tick is the user's (BLOCKERS).
+
 ### ADR-621 · 2026-10-21 · accepted — The AI's landing aims at an enemy capital on a coast, as at a port (PLAN 7.69; amends ADR-268)
 
 - **Context** (PLAN 7.69, found at 7.67). The invasion AI's landing aimed at an enemy's port alone

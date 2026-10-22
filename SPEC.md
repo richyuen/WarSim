@@ -1092,7 +1092,8 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   same to the cell. A bloc's spans cover its network and may cover more.
 - *Formations* (hourly): on their own bloc's network, supply rises by 1/8 per hour towards 1;
   off it, it falls by 1/8 towards 0. At 0 a formation loses (2% + terrain `supplyAttrition`) of its
-  strength per day, applied hourly. An encircled division is dry within 8–14 h.
+  strength per day, applied hourly. An encircled division is dry within 8–14 h. On a network
+  fed from a beach (§6.2 supply over the beach, PLAN 7.70a) it rises by 1/16 towards 0.75.
 - *Reach* (PLAN 3.4Rf, ADR-143): a formation on a cell that is not its side's (an enemy's, a
   third nation's, nobody's) is fed as on its network when a cell of a network that feeds it
   lies within `SUPPLY_REACH` = 2 cells (Chebyshev, the distance of the pressure below): the
@@ -1730,6 +1731,15 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   of the bloc (`seaLinkedAll`); at each refresh hour a bloc whose joined lands changed is
   refreshed whole (`markSeaLinks`; ADR-272). (At war with Italy Malta was cut at once while Italy's
   submarines held the zones about it; since PLAN 4.4d a submarine holds no sea.)
+  *Supply over the beach (PLAN 7.70a, ADR-622):* on a land where the bloc owns and controls no
+  city, a coast cell it controls is a source of its network (`seaBeaches`) while a zone of the
+  water beside it, not iced, is reached by such a way from a home port's zone (so no enemy
+  holds it); its key at the refresh hour is part of `markSeaLinks`'s, and a cell that changes
+  hands on such a land floods its bloc whole (the mends ask after cities alone). A formation fed
+  by a network on a land where that network's bloc owns and controls no city is fed at
+  `BEACH_RATE` (1/16 an hour) to `BEACH_SUPPLY` (0.75) and no higher. A beachhead is fed from
+  the refresh after its landing (up to 12 h on); one on a land where the bloc holds a city (a
+  landing in France by a Britain whose bloc holds cities in Asia, the same land) is not.
   *Convoys and raiding (PLAN 4.4d, ADR-260; `src/sim/systems/convoys.ts`):* the income of a
   land joined to home by sea goes by convoy along its way (`convoyWays`, the zones from a home
   port's to the land's port). In each zone of it the boats (S) of the nations at war with

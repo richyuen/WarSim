@@ -5,6 +5,30 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.70a: supply over the beach is in; seed 99's first-year tick 2.35 → 2.44–2.48 ms, budget 2.4 (2026-10-21, ADR-622; the user's decision)
+- **The bar:** a division ashore on an enemy coast with no port keeps supply at least 0.5 for 30
+  days and loses it under an enemy-held zone (a unit test, red without); seed 99's year: no tick
+  over budget (the profile); SPEC §6.2 amended; the ADR; the pin's entry.
+- **What moved:** all but the budget. `beachSupply1938.test.ts` holds (at least 0.5 for 30 days,
+  0.75 after a day; dry under the enemy's zones), red without. SPEC §4 and §6.2, ADR-622, pin
+  32761b44 → cd6ce5eb. The tick: supply 0.161 → 0.28 ms; the tick mean alone 2.35 (HEAD, 98 % of
+  the budget) → 2.44–2.48; side by side, both core orders, +0.07 to +0.18.
+- **Why it misses:** the beach sources are found at each refresh hour by a scan of the 27,619
+  coast cells (0.32 ms, reads scattered over the grid) and searches of the sea (0.17 ms), and the
+  hourly pass checks each fed formation's land (+0.037 ms); the rest is the world going otherwise
+  (37,245 → 38,821 cells flipped). The searches and banks were made cheaper on the way (the hash
+  held); what is left is near the floor of reading those cells.
+- **What is left:** the user's. (a, recommended) 7.70a ticked on its rule's own case, the tick
+  cost logged (PROMPT: a tick over budget is fixed before the next task that needs a full sweep);
+  (b) closed not done, the rule kept; (c) kept open. Meanwhile the loop takes PLAN 7.70b.
+- **Scope, for 7.70b (the user's):** per 7.70a's "a landmass where it has no source of its own",
+  a beach on a land where the bloc holds a city is not fed: Britain's bloc (India) or the Soviet
+  Union landing in France or Norway, Germany in Norway; so most great-power landings of 7.70b, on
+  Eurasia, would starve. (a) keep it per land, 7.70b aims at lands with no city of the lander
+  (islands, the Americas for Europe's powers); (b) widen it: a held coast cell that the city
+  network does not reach is a source (feeds coastal pockets too, a Courland; a rule change, a new
+  pin, its own task before 7.70b).
+
 ### RESOLVED 2026-10-21 (option a, the user's decision: 7.69 ticked; 7.71 dropped) · PLAN 7.69: the AI's landing on an enemy capital on a coast is in; such capitals landed on in 180 days 8 → 26 of 99, bar at least half (2026-10-21, ADR-621; the user's decision)
 - **The bar:** of the enemy capitals on a coast of a land with no port of their nation, in the wars
   of the critic's 48 saves whose other side has transports and no land front with them, a landing

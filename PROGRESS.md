@@ -21805,3 +21805,27 @@ No rule changed and nothing on screen changed. One task came out of it.
   critic's saves, written before 7.68's rule moves a lost capital to its most-held land, and a port
   is the better beachhead.
 - **Next:** PLAN 7.70a (supply over the beach).
+
+## 2026-10-21 — PLAN 7.70a: supply over the beach (ADR-622; budget missed, the user's)
+
+- **Rule** (`systems/seaSupply.ts`, `seaBeaches`; `systems/supply.ts`): on a land where its bloc
+  owns and controls no city, a coast cell the bloc controls is a source of its network while a zone
+  beside it is reached from a home port's zone by ADR-259's way (no enemy-held zone, no shut
+  passage); a formation fed there is fed at 1/16 an hour to 0.75 (`BEACH_RATE`, `BEACH_SUPPLY`). A
+  changed beach-source set floods the bloc whole (`markSeaLinks`' key), as does a changed cell on a
+  land where it has one. SPEC §4 and §6.2.
+- **Test:** `beachSupply1938.test.ts` (a British division ashore on a portless coast of a land with
+  no British city: at least 0.5 for 30 days; the enemy holding the zones: dry), red without (0
+  within a day). `supply.test.ts`' reference rule takes the beach sources. Whole unit suite by
+  hand: 1,842 passed. Specs by hand: none (no drawn change).
+- **Cost** (seed 99's first year): supply 0.161 → 0.28 ms a tick; tick mean 2.35 → 2.44–2.48 alone
+  (budget 2.4: missed); side by side on separate cores, both orders, +0.07 to +0.18. Cut on the way,
+  the hash held: a bloc at peace's sea search kept by its start zones (`convoyWays` 0.24 → 0.15
+  ms), passage banks kept, the beaches reuse the reach's searches and are made for the refresh alone,
+  the coast scan on typed arrays (0.49 → 0.32 ms a refresh), the hourly city table typed (0.20 →
+  0.016 ms). First call's build 160 → 38 ms.
+- **Pin:** 32761b44 → cd6ce5eb.
+- **BLOCKERS**, the user's: the tick ((a) tick on the rule's own case, (b) close not done, (c) keep
+  open) and 7.70b's scope (a beach on a land where the bloc holds a city is not fed: (a) keep it per
+  land, (b) widen it to any held coast the city network does not reach).
+- **Next:** PLAN 7.70b (the plan), unless the user widens 7.70a first.
