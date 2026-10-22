@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-632 · 2026-10-22 · proposed (the user's decision) — Poland's first strike is still an empty Berlin, by its output; PLAN 7.62's "Soviet army" was a misread (PLAN 7.74; amends the read of ADR-629, ADR-631)
+### ADR-632 · 2026-10-22 · accepted, option b (the user's decision) — Poland's first strike is still an empty Berlin, by its output; PLAN 7.62's "Soviet army" was a misread (PLAN 7.74; amends the read of ADR-629, ADR-631)
 
 - **Context.** PLAN 7.74 was to test that the critic's editor-armed Poland of run 11 (seed 9437,
   `nukeCase.ts 9437 POL GER 10 65 bomber`) first decides on the enemy overrunning it, as 7.62 and
@@ -192,6 +192,16 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   strike is a target as SPEC §6.4 weighs it; 7.74 closed not done, 7.62 left as ticked, the
   objection waits for the next critic run. (c) Kept open.
 - **Pin:** unchanged (2c4e2593).
+- **Decided** (2026-10-22, the user: option b). A place's output stays a first-strike target as
+  SPEC §6.4 weighs it; 7.74 closed not done, PLAN 7.78 dropped, 7.62 left as ticked, the critic's
+  objection (a design objection, not blocking) waits for the next run. What weighed it
+  (`docs/evidence/7.74/alternatives.txt`, the probe `polAlt.ts.txt`): the hour before the decision
+  Poland had 5 places in reach of 12: Berlin u 0.028, the only one over the floor; German armies by
+  Luxembourg (men share 0.018) and Göttingen (0.014), u -0.040 and -0.047; Rome -0.053; Tirana
+  -0.210. Under (a) Poland would not have struck an army instead, only held fire. The armies
+  overrunning Poland stand on its own land, which PLAN 6.11a keeps out of the places; and a city's
+  industry as a first strike is the reading of 1945 (Hiroshima and Nagasaki, chosen as cities of
+  war value to force a surrender).
 
 ### ADR-631 · 2026-10-22 · accepted (the user's decision) — A capital taken counts in the desperation as one threatened (PLAN 7.76; amends ADR-485)
 

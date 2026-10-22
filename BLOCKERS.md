@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.74: Poland's first strike is an empty Berlin by its output, not an army; the AT red on HEAD (2026-10-22, ADR-632 proposed; the user's decision)
+### RESOLVED 2026-10-22 (option b, the user's decision: 7.74 closed not done; PLAN 7.78 dropped; industry stays a first-strike target) · PLAN 7.74: Poland's first strike is an empty Berlin by its output, not an army; the AT red on HEAD (2026-10-22, ADR-632 proposed; the user's decision)
 - **The bar:** on `nukeCase.ts 9437 POL GER 10 65 bomber`, a first decision within 60 days within a
   blast's radius of a land formation of the other side of Poland's war; red with THEATRE_FLOOR
   reverted; no rule change.

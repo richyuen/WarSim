@@ -13983,3 +13983,41 @@ Of 7.33 (open in PLAN.md):
       against engaged r 0.45, against wars 0.06; engaged per war 0.057 of year 1): PLAN 7.77; the
       user's (BLOCKERS). Closed not done (2026-10-22, the user's decision b): no land-war task; the
       aircraft score waits for the next critic run. 7.51 closed with it (7.51a done, b not).
+
+<!-- moved 2026-10-22 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.74 An overrun holder's first strike is on the enemy overrunning it (found at 7.62; PLAN
+  7.18j's claim, which only the critic's France case held, and France now holds fire): a case of an
+  editor-armed holder at war that still strikes under ADR-629 (the critic's Poland,
+  `nukeCase.ts 9437 POL GER 10 65 bomber`, its first decision day 35 on a Soviet army). AT: a unit
+  test on that case: a first decision within 60 days, its place the cell of or within a blast's
+  radius of a formation of a nation on the other side of the holder's war; red with the aim taken
+  off (PLAN 7.18j's rule reverted by hand); no rule change, pin unchanged.
+  Blocked (2026-10-22, BLOCKERS, ADR-632 proposed, the user's): red on HEAD. The first decision,
+  day 35, is Berlin by its output alone (men share 0.0004, 334,000 people); 7.62's "a Soviet army"
+  was a misread; THEATRE_FLOOR binds nothing on this case. The test: `docs/evidence/7.74/`.
+  Closed not done (2026-10-22, the user's decision: ADR-632 b). In reach the hour before, no army
+  scored over the floor (two German armies of the west, u -0.040 and -0.047); the armies in Poland
+  stand on its own land, no target by PLAN 6.11a (`docs/evidence/7.74/alternatives.txt`).
+
+- [x] 7.78 On a first strike a place's output counts only with an army in the blast (found at 7.74;
+  ADR-632 a, proposed, the user's): the critic's Poland (seed 9437) still bombs an empty Berlin on
+  day 35, its output share 0.050 alone carrying u 0.028 over NUKE_FLOOR 0.025, as PLAN 7.62 did for
+  the capital's weight (CAPITAL_MEN_MIN). AT: `docs/evidence/7.74/nukeOverrunAim1938.test.ts.txt` in
+  `tests/unit/`, green (a first decision within 60 days within a blast's radius of an army of the
+  other side), red on HEAD `ce2e9630`; seeds 781–790 × 30 years (`nukeToll.ts`), read before and
+  after on the same code but the rule: bursts with civilians over 10 × men not more than before;
+  the pin moved in DECISIONS if it moves.
+  Dropped (2026-10-22, the user's decision: ADR-632 b), not done.

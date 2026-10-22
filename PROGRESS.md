@@ -22054,3 +22054,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   army in the blast), the user's (ADR-632: a, b or c).
 - **Pin:** unchanged, a4ff4661 (no rule change).
 - **Next:** the user's ADR-632; the loop has no task before PLAN 7.5.
+
+## 2026-10-22 — PLAN 7.74 closed not done, PLAN 7.78 dropped (the user's decision: ADR-632 b)
+
+- **Read first** (`docs/evidence/7.74/alternatives.txt`): the hour before Poland's day-35 decision, Berlin
+  (u 0.028) was the only place in reach over NUKE_FLOOR; the two armies in reach (German, by Luxembourg
+  and Göttingen) at u -0.040 and -0.047; the armies in Poland are on its own land (PLAN 6.11a). So (a)
+  would only have held fire to day 61.
+- **Decided:** industry stays a first-strike target (SPEC §6.4); 7.74 ticked closed not done, 7.78
+  dropped, the BLOCKERS entry resolved, ADR-632 accepted (b). No code: the pin unchanged.
+- **Next:** no task before PLAN 7.5 (the critic), which runs when due or at the DONE condition.

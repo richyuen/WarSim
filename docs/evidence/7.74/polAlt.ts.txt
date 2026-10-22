@@ -1,0 +1,55 @@
+// Probe: Poland's ranked strike options (seed 9437) in the hour before its first decision.
+import { Sim } from 'C:/Git/WarSim/src/sim/sim';
+import { SIZE_1938, TAGS_1938 } from 'C:/Git/WarSim/src/sim/scenario1938';
+import { assets1938 } from 'C:/Git/WarSim/tests/helpers/earth';
+import { EventKind } from 'C:/Git/WarSim/src/shared/events';
+import cities from 'C:/Git/WarSim/data/scenarios/1938/cities.json' with { type: 'json' };
+import { dayIndustry, nuclearUtility, NUKE_FLOOR, placeParts, reaches, weighWar } from 'C:/Git/WarSim/src/sim/systems/nuclear';
+
+const s = new Sim({ scenario: '1938', seed: 9437, assets: assets1938(SIZE_1938.w) });
+const w = s.world;
+const id = (t: string): number => TAGS_1938.indexOf(t) + 1;
+const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
+const H = id('POL');
+const rules = w.rules!;
+const template = rules.templates.findIndex((t) => t.elements.length > 0 && rules.units[t.elements[0]!.unit]!.cls === 'bomber_str');
+s.command({ kind: 'spawnWing', nation: H, x: w.nations.cols.capitalX[H]!, y: w.nations.cols.capitalY[H]!, template });
+s.command({ kind: 'grantWarheads', nation: H, count: 10 });
+s.command({ kind: 'declareWar', attacker: id('GER'), defender: H });
+
+const nearestCity = (x: number, y: number): string => {
+  let best = '';
+  let bd = Infinity;
+  const c = w.cities.cols;
+  w.cities.forEach((cid) => {
+    const d = Math.hypot(c.x[cid]! - x, c.y[cid]! - y);
+    if (d < bd) { bd = d; best = `${(cities as { cities: { name: string }[] }).cities[c.def[cid]!]?.name ?? '?'} (${d.toFixed(1)} cells)`; }
+  });
+  return best;
+};
+const snapshot = (): string[] => {
+  const war = w.wars.list.find((v) => v.sides[0].includes(H) || v.sides[1].includes(H))!;
+  const side = war.sides[0].includes(H) ? 0 : 1;
+  const r = weighWar(w, H, war, side, dayIndustry(w));
+  const rows = r.places.map((p) => {
+    const u = r.shared ? nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...r.shared }) : NaN;
+    const cell = Math.floor(p.y) * w.cells.w + Math.floor(p.x);
+    const parts = placeParts(w, H, war, side, p.x, p.y);
+    return { u, reach: reaches(w, H, p.x, p.y), at: `${p.x.toFixed(1)},${p.y.toFixed(1)}`, holder: tag(w.cells.controller[cell]!), city: nearestCity(p.x, p.y), econ: parts.econShare, men: parts.menShare, capital: parts.capital, value: p.value, through: p.through, people: p.people };
+  });
+  rows.sort((a, b) => b.u - a.u);
+  return [`places ${rows.length}, in reach ${rows.filter((x) => x.reach).length}; aim ${[...r.aim.at].map(tag).join(' ')}`, ...rows.filter((x) => x.reach).slice(0, 12).map((x) => JSON.stringify(x)), 'best out of reach:', ...rows.filter((x) => !x.reach).slice(0, 5).map((x) => JSON.stringify(x))];
+};
+
+for (let d = 0; d < 34; d++) s.step(24, (ww) => { ww.out.events.length = 0; ww.out.fires.length = 0; });
+let last: string[] = [];
+for (let h = 0; h < 48; h++) {
+  last = snapshot();
+  let hit = '';
+  s.step(1, (ww) => {
+    const ev = ww.out.events;
+    for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.NukeDecided && ev[i + 2] === H) hit = `decided at ${ev[i + 4]!.toFixed(1)},${ev[i + 5]!.toFixed(1)} u ${ev[i + 3]! / 1000}`;
+    ww.out.events.length = 0; ww.out.fires.length = 0;
+  });
+  if (hit) { console.log(`day 35 hour ${h}: ${hit}\nranking the hour before:\n${last.join('\n')}`); break; }
+}
