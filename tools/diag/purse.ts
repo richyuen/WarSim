@@ -9,8 +9,8 @@
  * formations. And at each month start, per band nation, the first gate of an army order (as
  * `armyGates.ts`, read before the month runs): slots, share, balance (the month's balance less
  * research's budget, the orders in training and a division's upkeep, at or under the need), gold
- * (the reserve: RESERVE_MONTHS, or the env's PURSE_WAR_RESERVE months at war while the army is
- * under its peacetime share, the rule measured), manpower, ship (the warship's saving, as
+ * (the reserve: RESERVE_MONTHS, or at war while the army is under its peacetime share
+ * WAR_RESERVE_MONTHS (ADR-615) or the env's PURSE_WAR_RESERVE months), manpower, ship (the warship's saving, as
  * `armyGates.ts`), none; with whether the nation placed a land order that month (`gate:ordered`).
  * The AT's figure: the day-0 band's land formations on the last day, summed.
  *
@@ -19,7 +19,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { isMonthStart } from '../../src/shared/calendar';
 import { EventKind } from '../../src/shared/events';
-import { ARMY_SHARE_WAR, budgetOf, FEW_FORMATIONS, fleetPrice, MAX_PARALLEL, PARALLEL_INCOME, peaceShare, POOR_INCOME, RESERVE_MONTHS, RUNWAY_MONTHS } from '../../src/sim/ai/economic';
+import { ARMY_SHARE_WAR, budgetOf, FEW_FORMATIONS, fleetPrice, MAX_PARALLEL, PARALLEL_INCOME, peaceShare, POOR_INCOME, RESERVE_MONTHS, RUNWAY_MONTHS, WAR_RESERVE_MONTHS } from '../../src/sim/ai/economic';
 import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
 import { shipyard } from '../../src/sim/systems/production';
 import { DAYS_PER_MONTH, researchBudget } from '../../src/sim/systems/research';
@@ -69,7 +69,7 @@ const band = (w: World): Map<number, number> => {
 };
 
 const T = ECONOMY_TABLES_1938;
-const WAR_RESERVE = process.env.PURSE_WAR_RESERVE !== undefined ? Number(process.env.PURSE_WAR_RESERVE) : RESERVE_MONTHS;
+const WAR_RESERVE = process.env.PURSE_WAR_RESERVE !== undefined ? Number(process.env.PURSE_WAR_RESERVE) : WAR_RESERVE_MONTHS;
 /** The first gate of an army order of each band nation at this month start (see above). */
 const gates = (w: World, b: Set<number>): Map<number, string> => {
   const nc = w.nations.cols;
