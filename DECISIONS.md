@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-620 · 2026-10-21 · accepted — A lost capital moves to the land its nation holds most of (PLAN 7.68; amends PLAN 1.15's relocation)
+
+- **Context** (PLAN 7.68, found at 7.67). A lost capital moved to its nation's largest city owned and
+  controlled, wherever it stood (`relocateCapital`), so the Netherlands' went to a one-cell Caribbean
+  islet with no port (land 529) and the British Raj's to a four-cell islet off Burma (531) while each
+  held far more land elsewhere; there its new divisions piled up (7.67) and no AI landing reached it
+  (7.69).
+- **Decision.** Of the cities the nation owns and controls, those on the landmass
+  (`navOf(world).grid.component`) where it owns and controls the most cells; of those the largest,
+  lowest id on ties, as before. Two points the task left open: (a) when that landmass has no city of
+  the nation, the landmass with the most such cells **among those with a city** (a capital stays a
+  city while the nation has one; no field capital where a city is left); (b) a tie of cells goes to
+  the lowest landmass id. A cell of no landmass (0) counts for none. One grid pass a move (a rare
+  event, as `captureCapital`'s). All five callers take it: capture, a capital given away
+  (ADR-145), two in revolts, the editor.
+- **Measured** (`docs/evidence/7.68.md`, 180 days of the critic's 48 saves, `capitalMoves.ts`): moves
+  to a city on the most-held land 128 of 136 (HEAD) → 134 of 138; of the moves whose nation held a
+  city there, 128 of 133 → 134 of 134. The four left have no city of their nation on that land
+  (Cuba twice, Nationalist Spain, Greece with Crete): (a) above. At the 1938 start the rule changes
+  the pick of one nation alone (the Philippines); Denmark (Greenland) and the Netherlands (Suriname)
+  went to the land they hold most of already.
+- **Pin.** 75df825b → 32761b44.
+- **Test.** `capitals.test.ts`, a new case: Japan's Tokyo and Honshu's other cities of its size
+  taken, the largest city left in Korea, more Japanese cells on Honshu: the capital moves to
+  Honshu's largest left. Red without the rule (Korea's city).
+
 ### ADR-619 · 2026-10-21 · proposed — New divisions of a nation fronted through an ally alone raised toward that front (PLAN 7.67; amends ADR-47)
 
 - **Context** (PLAN 7.67; `docs/evidence/7.66.md` §3). A new land formation appears at its nation's

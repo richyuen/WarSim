@@ -21762,3 +21762,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin:** 85d3c9f3 → 75df825b.
 - **BLOCKERS**, the user's: (a) tick on the rule's own case, (b) close not done, (c) keep open.
 - **Next:** PLAN 7.68 (a capital moves to the land its nation holds most of).
+
+## 2026-10-21 — PLAN 7.68: a lost capital moves to the land its nation holds most of (ADR-620)
+
+- **Rule** (`systems/capitals.ts`, `relocateCapital`): of the cities a nation owns and controls,
+  those on the landmass where it owns and controls the most cells (of the landmasses with such a
+  city), the largest there. SPEC §4 amended.
+- **Read** (`docs/evidence/7.68.md`, new `tools/diag/capitalMoves.ts`, 180 days of the critic's 48
+  saves): moves to a city on the most-held land 128/136 (HEAD) → 134/138; of those whose nation had
+  a city there 128/133 → 134/134. The 4 left have no city there (Cuba ×2, Nationalist Spain, Greece).
+  At the 1938 start only the Philippines' pick changes.
+- **Test:** `capitals.test.ts`, a new case (Japan: Tokyo and Honshu's large cities taken, the
+  capital to Honshu, not Korea), red without the rule. Specs by hand: none (no drawn change).
+- **Pin:** 75df825b → 32761b44.
+- **Next:** PLAN 7.69 (the AI lands on an enemy capital on a coast with no port).

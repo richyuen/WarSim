@@ -13629,3 +13629,31 @@ Of 7.33 (open in PLAN.md):
   of 119 watched nations a group more; the named cases stand on lands with no port of their own,
   PLAN 7.67); no nation in debt; BLOCKERS, the user's. Ticked (2026-10-21, the user's:
   option a, on the rule's own case).
+
+<!-- moved 2026-10-22 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.68 A capital moves to the land its nation holds most of (the user's, 2026-10-21; found at
+  7.67): a capital lost moves to the nation's largest city it owns and controls, wherever it stands
+  (`relocateCapital`, `systems/capitals.ts`), so the Netherlands' went to a one-cell Caribbean islet
+  with no port (land 529; 1129, 4877 and 8693 year 20), the British Raj's to a four-cell islet off
+  Burma (531), Greece's to a 32-cell island, while each held far more land elsewhere (the
+  Netherlands 4,966 cells on 8693 year 20). There its new divisions pile up (7.67) and no AI landing
+  can reach it (7.69). The rule: of the cities it owns and controls, those on the landmass where it
+  owns and controls the most cells; of those the largest, as now. AT: every `CapitalMoved` to a city
+  in 180 days of the 48 saves (a read to add; HEAD first, the before) lands on the landmass where
+  its nation holds the most cells: all of them (HEAD's share the before); a unit test (red without:
+  a nation whose capital is taken, its largest city left on an islet and more of its cells on
+  another land, moves its capital to a city on that land); SPEC §4 amended; the ADR; the pin's
+  entry.

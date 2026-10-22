@@ -5,7 +5,7 @@ import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { eliminateNation } from '../../src/sim/systems/capitals';
 import { blocOf } from '../../src/sim/systems/supply';
-import type { World } from '../../src/sim/world';
+import { navOf, type World } from '../../src/sim/world';
 import { deadLand } from '../helpers/deadLand';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -93,6 +93,49 @@ describe('occupation and capitals (PLAN 1.15)', () => {
     expect(cityName(s, next)).not.toBe('');
     // Holding the new capital too moves it again; no event while nothing changes.
     expect(eventsOf(stepEvents(s), EventKind.CapitalCaptured)).toEqual([]);
+  });
+
+  it('a captured capital moves to the land its nation holds most of, not to its largest city elsewhere (PLAN 7.68)', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    s.world.settings.aiEnabled = false;
+    const w = s.world;
+    const JAP = nationId('JAP');
+    const SOV = nationId('SOV');
+    w.wars.set(JAP, SOV, true);
+    const cc = w.cities.cols;
+    const comp = navOf(w).grid.component;
+    const tokyo = capitalCity(w, JAP);
+    const home = comp[cc.cell[tokyo]!]!;
+    // Every Japanese city of the largest size on the home island taken with Tokyo: the largest
+    // left stand on other lands, where Japan holds fewer cells.
+    const top = cc.size[tokyo]!;
+    w.cities.forEach((id) => {
+      const cell = cc.cell[id]!;
+      if (w.cells.owner[cell] === JAP && comp[cell] === home && cc.size[id] === top) s.command({ kind: 'paintControl', nation: SOV, x: cc.x[id]!, y: cc.y[id]!, r: 1 });
+    });
+    const ev = stepEvents(s);
+    expect(eventsOf(ev, EventKind.CapitalCaptured).map((e) => e[0])).toEqual([JAP]);
+    const held = new Map<number, number>();
+    for (let c = 0; c < w.cells.owner.length; c++) {
+      if (w.cells.owner[c] === JAP && w.cells.controller[c] === JAP && comp[c] !== 0) held.set(comp[c]!, (held.get(comp[c]!) ?? 0) + 1);
+    }
+    const most = [...held].sort((a, b) => b[1] - a[1] || a[0] - b[0])[0]![0];
+    expect(most).toBe(home);
+    // The largest city Japan still holds stands on another land (the old rule's pick).
+    let largest = 0;
+    let largestHome = 0;
+    w.cities.forEach((id) => {
+      const cell = cc.cell[id]!;
+      if (w.cells.owner[cell] !== JAP || w.cells.controller[cell] !== JAP) return;
+      if (largest === 0 || cc.size[id]! > cc.size[largest]!) largest = id;
+      if (comp[cell] === home && (largestHome === 0 || cc.size[id]! > cc.size[largestHome]!)) largestHome = id;
+    });
+    expect(comp[cc.cell[largest]!]).not.toBe(home);
+    expect(cc.size[largest]!).toBeGreaterThan(cc.size[largestHome]!);
+    const next = capitalCity(w, JAP);
+    expect(eventsOf(ev, EventKind.CapitalMoved).map((e) => e[1])).toEqual([next]);
+    expect(next).toBe(largestHome);
+    expect(comp[cc.cell[next]!]).toBe(home);
   });
 
   it('without a war, occupying the capital captures nothing', () => {

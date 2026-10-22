@@ -9,8 +9,9 @@
  * capital city, `CapitalCaptured` is emitted. Then:
  * - with `winnerTakesAll`, the capturer annexes everything the loser controls (owner and
  *   controller) and the loser's land it already occupies, and the loser is eliminated;
- * - otherwise the capital moves to the loser's largest city that it both owns and controls
- *   (lowest city id on ties) with `CapitalMoved`. Without such a city, it moves to the loser's
+ * - otherwise the capital moves to the loser's largest city that it both owns and controls on the
+ *   landmass where it owns and controls the most cells (`relocateCapital`, PLAN 7.68) with
+ *   `CapitalMoved`. Without such a city, it moves to the loser's
  *   controlled cell nearest the old capital (a field capital). A field capital is lost by any
  *   change of control and relocates the same way; a nation with no cell left is eliminated.
  *
@@ -25,7 +26,7 @@
  */
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
-import type { World } from '../world';
+import { navOf, type World } from '../world';
 import { leaveAlliance } from './alliances';
 import { destroyFormation } from './elements';
 import { releasePuppet } from './puppets';
@@ -114,18 +115,35 @@ export function captureCapital(world: World, loser: number, capturer: number, ci
 }
 
 /**
- * Moves `n`'s capital to its largest city it owns and controls (lowest id on ties), else to a
- * field capital; eliminates it without land. Used after capture and when rebels take it.
+ * Moves `n`'s capital to a city it owns and controls on the landmass where it owns and controls the
+ * most cells (PLAN 7.68, ADR-620; of the landmasses with such a city, lowest landmass id on ties),
+ * its largest there (lowest id on ties); else to a field capital; eliminates it without land. Used
+ * after capture, a capital given away, and when rebels take it. A cell of no landmass (0) counts
+ * for none.
  */
 export function relocateCapital(world: World, n: number): void {
   const cc = world.cities.cols;
   const nc = world.nations.cols;
   const { owner, controller } = world.cells;
+  const comp = navOf(world).grid.component;
+  // A rare event: one grid pass is acceptable here (not the hourly hot loop).
+  const held = new Map<number, number>();
+  for (let c = 0; c < owner.length; c++) {
+    if (owner[c] === n && controller[c] === n && comp[c] !== 0) held.set(comp[c]!, (held.get(comp[c]!) ?? 0) + 1);
+  }
   let best = 0;
+  let bestHeld = -1;
   world.cities.forEach((id) => {
     const cell = cc.cell[id]!;
     if (owner[cell] !== n || controller[cell] !== n || cc.capitalOf[id] !== 0) return;
-    if (best === 0 || cc.size[id]! > cc.size[best]!) best = id;
+    const k = held.get(comp[cell]!) ?? 0;
+    const land = comp[cell]!;
+    const better =
+      best === 0 ||
+      k > bestHeld ||
+      (k === bestHeld && land < comp[cc.cell[best]!]!) ||
+      (k === bestHeld && land === comp[cc.cell[best]!]! && cc.size[id]! > cc.size[best]!);
+    if (better) [best, bestHeld] = [id, k];
   });
   if (best !== 0) {
     cc.capitalOf[best] = n;

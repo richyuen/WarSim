@@ -1278,8 +1278,11 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   reduced income and raise unrest.
 - *Implemented v1 (PLAN 1.15; `src/sim/systems/capitals.ts`):*
   - Capture: an enemy at war holding a capital city → `CapitalCaptured`. The capital relocates to
-    the largest owned and controlled city (`CapitalMoved`); without one it becomes a field capital
-    on the nearest held cell. A nation with no land left is eliminated (formations, production
+    an owned and controlled city on the landmass where the nation owns and controls the most cells
+    (of the landmasses with such a city; lowest landmass id on ties), its largest there (lowest id
+    on ties; PLAN 7.68, ADR-620: before, the largest anywhere, so a nation holding thousands of
+    cells on one land moved its capital to a one-cell islet) (`CapitalMoved`); without one it
+    becomes a field capital on the nearest held cell. A nation with no land left is eliminated (formations, production
     and wars removed).
   - Given away (PLAN 3.4Rh, ADR-145): a capital city on a cell its nation no longer owns (the
     editor's paint, the God brush, an import, land ceded) moves the same way, hourly, with
@@ -1300,7 +1303,7 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     replay). The God Mode territory brush sent it until PLAN 2.17b and sends the editor's
     nation paint since (ADR-118).
   - The war-score jump comes with 1.16.
-- **Capital capture**: the war score jumps, the capital relocates to the largest owned city, and with
+- **Capital capture**: the war score jumps, the capital relocates to the largest owned city on the land the nation holds most of, and with
   the `winnerTakesAll` setting the capturer annexes all of the loser's controlled territory.
 - *Cores, collapse and revival implemented v1 (PLAN 1.20, ADR-33; `src/sim/systems/revival.ts`):*
   - *Cores:* each province has a core (its 1938 owner) plus claims resolved from the scenario's
