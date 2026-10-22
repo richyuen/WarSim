@@ -21796,3 +21796,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **BLOCKERS**, the user's: (a) tick on the rule's own case, 7.71 next; (b) close not done; (c) keep
   open. ADR-621 proposed.
 - **Next:** PLAN 7.71 (the portless capital before a nearer port).
+
+## 2026-10-21 — The user's decisions: ADR-619, ADR-620, ADR-621 option a; 7.71 dropped
+
+- Ticked on their rules' own cases: 7.67 (ADR-619), 7.69 (ADR-621); 7.68's tick stands (ADR-620).
+  Three BLOCKERS entries resolved. No code: the pin unchanged.
+- PLAN 7.71 (a portless capital before a nearer port) dropped, no rule: 7.69's 99 cases are of the
+  critic's saves, written before 7.68's rule moves a lost capital to its most-held land, and a port
+  is the better beachhead.
+- **Next:** PLAN 7.70a (supply over the beach).

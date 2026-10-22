@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.69: the AI's landing on an enemy capital on a coast is in; such capitals landed on in 180 days 8 → 26 of 99, bar at least half (2026-10-21, ADR-621; the user's decision)
+### RESOLVED 2026-10-21 (option a, the user's decision: 7.69 ticked; 7.71 dropped) · PLAN 7.69: the AI's landing on an enemy capital on a coast is in; such capitals landed on in 180 days 8 → 26 of 99, bar at least half (2026-10-21, ADR-621; the user's decision)
 - **The bar:** of the enemy capitals on a coast of a land with no port of their nation, in the wars
   of the critic's 48 saves whose other side has transports and no land front with them, a landing
   on that capital's land within 180 days for at least half (`capitalLandings.ts`); no invasion AI
@@ -21,7 +21,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   (filed: a coastal capital with no port of its nation taken before nearer ports) taken next;
   (b) closed not done, the rule kept, 7.71 next; (c) kept open. Meanwhile the loop takes PLAN 7.71.
 
-### PLAN 7.68: a lost capital moves to the land its nation holds most of is in, ticked on the reading of ADR-620 (a); moves on that land 134 of 138, bar all of them (2026-10-21, ADR-620; the user's decision)
+### RESOLVED 2026-10-21 (option a, the user's decision: the tick stands) · PLAN 7.68: a lost capital moves to the land its nation holds most of is in, ticked on the reading of ADR-620 (a); moves on that land 134 of 138, bar all of them (2026-10-21, ADR-620; the user's decision)
 - **The bar:** every `CapitalMoved` to a city in 180 days of the critic's 48 saves lands on the
   landmass where its nation holds the most cells (`capitalMoves.ts`): all of them.
 - **What moved** (`docs/evidence/7.68.md`): 128 of 136 (HEAD) → 134 of 138; of the moves whose
@@ -35,7 +35,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   elsewhere (a rule change, a re-read, a new pin); (c) unticked, reopened. Meanwhile the loop takes
   PLAN 7.69.
 
-### PLAN 7.67: new divisions of a nation fronted through an ally alone raised toward that front is in; such island formations after 180 days 493 → 466, bar under 369.75 (2026-10-21, ADR-619; the user's decision)
+### RESOLVED 2026-10-21 (option a, the user's decision: 7.67 ticked) · PLAN 7.67: new divisions of a nation fronted through an ally alone raised toward that front is in; such island formations after 180 days 493 → 466, bar under 369.75 (2026-10-21, ADR-619; the user's decision)
 - **The bar:** the island formations of nations with no front cell of their own after 180 days of
   the critic's 48 saves together (`islandArmies.ts`, `noOwnFront`) under 0.75 × HEAD's (493); no
   formation raised on land 529 in 180 days of 1129 year 20; no production call over 50 ms.

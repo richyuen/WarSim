@@ -36,52 +36,6 @@ The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
 when taken up:
 
-- [ ] 7.67 New divisions of a nation fronted through an ally alone raised toward that front (the
-  user's, 2026-10-21; found at 7.66, `docs/evidence/7.66.md` §3; carries emergent 6 with 7.49): a
-  new formation appears at the nation's held cell nearest its capital, or, with a front of its own
-  on another landmass, at its city nearest that front (`musterPoint`, `systems/production.ts`). A
-  nation whose land front is its allies' alone has no front of its own, so it raises its whole army
-  at home, wherever its capital stands: the Netherlands' capital moved by its losses to a one-cell
-  Caribbean islet with no port (land 529), and 16 divisions raised there on 1129 year 20, 5 on
-  8693 year 20; the British Raj's on a four-cell islet off Burma (land 531). Across the 48 saves the
-  island formations of such nations grow from 793 on day 1 to 850 on day 60 (7.64's after): raised
-  at home faster than the ferry takes them. The rule: for a nation at war with no front cell of its
-  own, the theatre is its allies' cells beside the enemies it fights with them (`wars.together`,
-  as the ferry's, ADR-617): its city on that front's land nearest a front cell; with none there,
-  its city with a port with water nearest that front by sea; else as now. AT: the island formations
-  of nations with no front cell of their own after 180 days of the 48 saves together
-  (`islandArmies.ts`, `noOwnFront`, `MID=60`; HEAD first, the before; 493 on `dea55f30`) under
-  0.75 × HEAD's; no formation raised on land 529 in the 180 days of 1129 year 20 (16 there on day
-  1); no production call over 50 ms; a unit test (red without: a nation fronted through an ally
-  alone, its capital on an islet with no port, raises its new division at its port nearest that
-  front); the ADR; the pin's entry.
-
-- [ ] 7.69 The AI's landing on a coast with no port: an enemy capital (the user's, 2026-10-21; found
-  at 7.67): the AI's landing aims at an enemy's port alone (`planLanding`, `ai/invasion.ts`), so an
-  enemy capital on a land where the enemy holds no port is never invaded (the Netherlands' on its
-  islet), though the landing itself can go ashore on any coast (`orderLanding`, a beach as Normandy
-  was). The rule: of a landing's targets, beside the enemy's ports, an enemy capital's cell on a
-  coast (beside water of a zone), at its sea's distance as a port is; nearest first, as now. AT: of
-  the enemy capitals on lands with no port of their nation, of the wars of the 48 saves whose
-  other side has transports and no land front with it (a read to add; HEAD first, 0 on HEAD by the
-  rule), a landing on that capital's land within 180 days for at least half; no invasion AI call
-  over 50 ms; a unit test (red without: a nation at war with the Netherlands, its capital on an
-  islet with no port, the transports at a port of its own, lands on that islet); SPEC §7 amended;
-  the ADR; the pin's entry. Landings on a beach beside a front, as Normandy's, are beyond it: a task
-  of their own if the user wants one.
-
-- [ ] 7.71 The landing takes a portless enemy capital before a nearer port (found at 7.69,
-  `docs/evidence/7.69.md` §3; the loop's while 7.69 waits on the user): of the 153 attackers whose
-  coastal enemy capital on a land with no port of its nation was not landed on in 180 days of the
-  48 saves after 7.69's rule, an enemy port was nearer by sea than the capital for 121, and the
-  landing takes the nearest target (`planLanding`). The rule: of a landing's targets, such a
-  capital (its nation controls no port on its land) is taken before every port of the war's
-  enemies while it passes a port's tests; nearest of them first, as now. AT: 7.69's read
-  (`capitalLandings.ts`, 180 days of the 48 saves; 7.69's after, 26 of 99, the before): at least
-  half of the cases landed on; no invasion AI call over 50 ms; a unit test (red without: Britain
-  at war with the Netherlands, a Dutch port nearer its transports than the Dutch capital on a
-  portless islet, lands on the islet); SPEC §7 amended; the ADR; the pin's entry.
-
 - [ ] 7.70 The AI's invasions open new fronts (the user's, 2026-10-21; a Normandy: a landing on
   an enemy's coast, port or none, beside or behind its front, that holds and grows; carries
   emergent 6 and naval 7): the AI lands only in a war in which it has no land front, at an enemy's
@@ -432,3 +386,6 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.64 The ferry for a nation fronted through an ally alone (found at 7.49d2, […]
 - [x] 7.66 Transports bought for a nation fronted through an ally alone (found at 7.64, […]
 - [x] 7.68 A capital moves to the land its nation holds most of (the user's, 2026-10-21; found at […]
+- [x] 7.67 New divisions of a nation fronted through an ally alone raised toward that front (the […]
+- [x] 7.69 The AI's landing on a coast with no port: an enemy capital (the user's, 2026-10-21; found […]
+- [x] 7.71 The landing takes a portless enemy capital before a nearer port (found at 7.69, […]

@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-621 · 2026-10-21 · proposed — The AI's landing aims at an enemy capital on a coast, as at a port (PLAN 7.69; amends ADR-268)
+### ADR-621 · 2026-10-21 · accepted — The AI's landing aims at an enemy capital on a coast, as at a port (PLAN 7.69; amends ADR-268)
 
 - **Context** (PLAN 7.69, found at 7.67). The invasion AI's landing aimed at an enemy's port alone
   (`planLanding`), so an enemy capital on a land where its nation holds no port was never invaded:
@@ -191,8 +191,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Test.** `landingOnCapital1938.test.ts`: Britain at war with a Netherlands that holds a portless
   islet alone, its capital there, transports and a division at Manama: the division boards for the
   islet. Red without the rule (no target).
+- **Decided** (2026-10-21, the user): option a: PLAN 7.69 ticked on the rule's own case; PLAN 7.71 (the capital before a nearer port) dropped, no rule: its cases are of saves written before ADR-620.
 
-### ADR-620 · 2026-10-21 · proposed — A lost capital moves to the land its nation holds most of (PLAN 7.68; amends PLAN 1.15's relocation)
+### ADR-620 · 2026-10-21 · accepted — A lost capital moves to the land its nation holds most of (PLAN 7.68; amends PLAN 1.15's relocation)
 
 - **Context** (PLAN 7.68, found at 7.67). A lost capital moved to its nation's largest city owned and
   controlled, wherever it stood (`relocateCapital`), so the Netherlands' went to a one-cell Caribbean
@@ -218,8 +219,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Test.** `capitals.test.ts`, a new case: Japan's Tokyo and Honshu's other cities of its size
   taken, the largest city left in Korea, more Japanese cells on Honshu: the capital moves to
   Honshu's largest left. Red without the rule (Korea's city).
+- **Decided** (2026-10-21, the user): option a: the tick stands, the AT read as every move whose nation has a city on that land.
 
-### ADR-619 · 2026-10-21 · proposed — New divisions of a nation fronted through an ally alone raised toward that front (PLAN 7.67; amends ADR-47)
+### ADR-619 · 2026-10-21 · accepted — New divisions of a nation fronted through an ally alone raised toward that front (PLAN 7.67; amends ADR-47)
 
 - **Context** (PLAN 7.67; `docs/evidence/7.66.md` §3). A new land formation appears at its nation's
   held cell nearest the capital, or, with a front of its own on another landmass only, at its city
@@ -246,6 +248,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   port. A division is raised at a British city on a land of the allies' front; with those cities'
   cells handed to the ally, at a British port with water off those lands and off the islet. Red
   without the rule (home on the islet), and without the port's branch alone.
+- **Decided** (2026-10-21, the user): option a: PLAN 7.67 ticked on the rule's own case.
 
 ### ADR-618 · 2026-10-21 · accepted — Transports bought for a nation fronted through an ally alone: the ferry's want reads its allies' front cells (PLAN 7.66; amends ADR-614)
 
