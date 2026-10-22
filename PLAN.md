@@ -154,7 +154,18 @@ them, are 7.81–7.86. A task each, split when taken up:
   moves a world in 30 years against 405). AT: an e2e spec, red before, where the tooltip over a city
   names the place under the cursor after the map changes beneath it; on 10 unseen seeds × 30 years
   capital moves a world not above `dd3b730`'s on the same seeds and no capital captured three times in
-  30 days; the gate green.
+  30 days; the gate green. In two parts, one cause each:
+    - [x] 7.81a The tooltip read again under a still mouse: the hover was read on `pointermove` alone, so a
+      wheel zoom, a Go to, a key pan, a new snapshot or a razed city left it as it was. The view keeps the
+      mouse's point and reads what is under it after every frame it draws. AT: `mapTooltip1938`'s "the
+      tooltip follows the map beneath a still mouse" (Berlin under the mouse, the camera moved so Paris is,
+      Paris razed, its land painted German), red before ("Berlin · capital" over Paris); the gate green.
+      Done: red on HEAD, green with the view's change; `docs/evidence/7.81/a-paris-still-mouse.png`,
+      `a-paris-razed-occupied.png`.
+    - [ ] 7.81b The moving capital captured again and again: on 10 unseen seeds × 30 years capital moves a
+      world not above `dd3b730`'s on the same seeds (read first) and no capital captured three times in 30
+      days; the cause measured first on 3301 and 6421 (the critic's cases); a unit test (red without); the
+      ADR; the pin's entry.
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts
   (`critic/c12_cmp_all.txt`, `c12_summary_all.txt`). Taken up after 7.79 and 7.80, re-read on their HEAD

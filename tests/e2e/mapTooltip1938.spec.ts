@@ -66,3 +66,44 @@ test('a tooltip names the nation under the mouse, and its occupier', async ({ pa
   await expect(tip).toHaveCount(0);
   await page.mouse.up();
 });
+
+// PLAN 7.81a (the critic's stale tooltip, six runs: "London" over Paris after a Go to, "Prague ·
+// capital" a day after Prague was razed): under a mouse that does not move, the tooltip names what
+// is under it after the camera moves and after the map changes beneath it.
+test('the tooltip follows the map beneath a still mouse', async ({ page }) => {
+  test.setTimeout(120_000);
+  await open1938(page, 1938);
+  const [cx, cy] = cellOf(10, 50, W, H);
+  await lookAt(page, cx, cy, 3000);
+  const tip = page.getByTestId('map-tooltip');
+  const cityTip = page.getByTestId('tooltip-city');
+
+  const [bx, by] = await at(page, 13.4, 52.52);
+  await page.mouse.move(bx, by);
+  await expect(cityTip).toContainText('Berlin');
+
+  // The camera moves (as a Go to does) so that Paris is under the mouse, which stays still.
+  const [px, py] = cellOf(2.35, 48.86, W, H);
+  await page.evaluate(({ px, py, mx, my }) => {
+    const v = window.__warsim!.view!;
+    const c = v.controller.cam;
+    const r = document.getElementById('map')!.getBoundingClientRect();
+    v.controller.set({ cx: px + 0.5 - (mx - r.left - r.width / 2) / c.scale, cy: py + 0.5 - (my - r.top - r.height / 2) / c.scale, scale: c.scale });
+  }, { px, py, mx: bx, my: by });
+  await expect(cityTip).toContainText('Paris');
+  await expect(tip).toContainText('France');
+  await expect(tip).not.toContainText('Germany');
+
+  // Paris razed beneath it: no city in the tooltip, France's land still named.
+  const city = await page.evaluate(({ px, py }) => window.__warsim!.view!.cityNear(px, py), { px, py });
+  expect(city).toBeGreaterThan(0);
+  await page.evaluate((city) => window.__warsim!.sim.command({ kind: 'removeCity', city }), city);
+  await page.evaluate(() => window.__warsim!.sim.step(1));
+  await expect(cityTip).toHaveCount(0);
+  await expect(tip).toContainText('France');
+
+  // Its land taken by Germany beneath it: occupied by Germany.
+  await page.evaluate(({ ger, px, py }) => window.__warsim!.sim.command({ kind: 'paintControl', nation: ger, x: px, y: py, r: 3 }), { ger: id('GER'), px, py });
+  await page.evaluate(() => window.__warsim!.sim.step(1));
+  await expect(tip).toContainText('Occupied by Germany');
+});

@@ -230,6 +230,10 @@ export class MapView {
   groundShare = 0;
   /** Told of the nation under the mouse (PLAN 7.4f7): its owner, its holder and the client point; null off land. */
   onHover: ((h: MapHover | null) => void) | null = null;
+  /** The client point of a mouse at rest on the map with no button down, or null (PLAN 7.81a). */
+  private mouseAt: { x: number; y: number } | null = null;
+  /** What `onHover` was told last, as a key: told again only when it changes (PLAN 7.81a). */
+  private hoverKey = '';
   /** Whether the ground of T2 and T3 is the most of the picture (PLAN 7.4f3): occupied land is a tint there, not hatched. */
   groundShown = false;
   /** Told when `groundShown` changes. */
@@ -291,22 +295,18 @@ export class MapView {
     let stroke: { id: number; cx: number; cy: number } | null = null;
     // The nation under a mouse at rest on the map (PLAN 7.4f7, the critic's "no tooltip on
     // hover"): its owner and its holder, and where the cursor is; none while a button is down.
+    // The point is kept, and read again after every frame drawn (PLAN 7.81a, the critic's stale
+    // tooltip, six runs): a wheel zoom, a Go to, a key pan or a new snapshot under a mouse that
+    // does not move changes what is under it.
     canvas.addEventListener('pointermove', (e) => {
       if (!this.onHover || e.pointerType !== 'mouse') return;
-      if (e.buttons !== 0) return void this.onHover(null);
-      const r = canvas.getBoundingClientRect();
-      const [sx, sy] = [e.clientX - r.left, e.clientY - r.top];
-      const cell = this.cellAt(sx, sy);
-      const k = cell ? cell[1] * this.geo.w + cell[0] : -1;
-      const owner = k >= 0 ? (this.ownerGrid[k] ?? 0) : 0;
-      const holder = k >= 0 ? (this.controlGrid[k] ?? 0) : 0;
-      // A city whose dot is under the mouse, and the province (PLAN 7.4f13, the critic's N6).
-      const c = this.cityLabels.dotAt(sx, sy);
-      const city = c ? { name: c.name, capital: c.capital, size: c.size } : null;
-      const province = cell ? this.provinceAt(cell[0], cell[1]) : 0;
-      this.onHover(owner === 0 && holder === 0 && !city ? null : { owner, holder, city, province, x: e.clientX, y: e.clientY });
+      this.mouseAt = e.buttons !== 0 ? null : { x: e.clientX, y: e.clientY };
+      this.readHover();
     });
-    canvas.addEventListener('pointerleave', () => this.onHover?.(null));
+    canvas.addEventListener('pointerleave', () => {
+      this.mouseAt = null;
+      this.readHover();
+    });
     // The sea zone under the cursor in the sea-control mode (PLAN 4.10c), told when it changes.
     canvas.addEventListener('pointermove', (e) => {
       if (this.mapMode !== 'seaControl' && this.mapMode !== 'airControl') return;
@@ -2098,6 +2098,34 @@ export class MapView {
     return cellOfPoint(this.geo, ...screenToWorld(this.controller.cam, sx, sy, this.canvas.clientWidth, this.canvas.clientHeight));
   }
 
+  /**
+   * Tells `onHover` what is under the kept mouse point (PLAN 7.4f7, 7.81a): the owner and holder of
+   * the cell, a city whose dot is there (PLAN 7.4f13) and the province; null with no mouse or
+   * nothing there. Told only when that changes, or when a new snapshot came (the province's unrest
+   * is read from it).
+   */
+  private readHover(): void {
+    if (!this.onHover) return;
+    const m = this.mouseAt;
+    let hover: MapHover | null = null;
+    if (m) {
+      const r = this.canvas.getBoundingClientRect();
+      const [sx, sy] = [m.x - r.left, m.y - r.top];
+      const cell = this.cellAt(sx, sy);
+      const k = cell ? cell[1] * this.geo.w + cell[0] : -1;
+      const owner = k >= 0 ? (this.ownerGrid[k] ?? 0) : 0;
+      const holder = k >= 0 ? (this.controlGrid[k] ?? 0) : 0;
+      const c = this.cityLabels.dotAt(sx, sy);
+      const city = c ? { name: c.name, capital: c.capital, size: c.size } : null;
+      const province = cell ? this.provinceAt(cell[0], cell[1]) : 0;
+      if (owner !== 0 || holder !== 0 || city) hover = { owner, holder, city, province, x: m.x, y: m.y };
+    }
+    const key = hover ? `${hover.owner}|${hover.holder}|${hover.city ? `${hover.city.name}|${hover.city.capital}` : ''}|${hover.province}|${hover.x}|${hover.y}|${this.snapArrival}` : '';
+    if (key === this.hoverKey) return;
+    this.hoverKey = key;
+    this.onHover(hover);
+  }
+
   /** Admin-1 province of a cell (0 = none or not yet known). */
   provinceAt(x: number, y: number): number {
     return this.provinceGrid?.[y * this.geo.w + x] ?? 0;
@@ -2169,6 +2197,7 @@ export class MapView {
     this.draw(now);
     this.dirty = false;
     this.lastCam = { ...c };
+    if (this.mouseAt) this.readHover();
     // A frame that leaves a unit animation unfinished is followed by another, however late that
     // one comes, so that the end of an animation is what stays on screen. The question is asked
     // after the draw, at the draw's own time (PLAN 2.7m): asked before it, the answer is "no"

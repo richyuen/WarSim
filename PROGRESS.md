@@ -22235,3 +22235,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `mklink /J` from Git Bash fails ("Invalid switch", `//c` eats the `/J`); the worktree runs
   worked without it (the same counts as the critic's saves), so there was no link to remove.
 - **Next:** PLAN 7.81 (7.80b waits on ADR-639, 7.88b on ADR-637).
+
+## 2026-10-22 — PLAN 7.81a: the map tooltip read again under a still mouse (UI)
+
+- **Waits:** PLAN 7.79's AT on 7.88b and 7.87 (ADR-637, ADR-635), 7.80b on ADR-639: so the loop took 7.81,
+  split in two (the tooltip, the moving capital: one cause each).
+- **Cause:** `MapView` read the hover on `pointermove` alone. A wheel zoom, a Go to, a key pan, a new
+  snapshot or a razed city under a mouse that does not move left the tooltip as it was: the critic's six runs
+  ("London" over Paris after a Go to, "Prague · capital" after the raze, "Unrest 0").
+- **Fix:** the view keeps the mouse's client point (none with a button down or off the canvas) and reads what
+  is under it after every frame it draws (`readHover`), telling the HUD only when it changed or a new
+  snapshot came (the unrest is read from it).
+- **Test:** `mapTooltip1938` gains "the tooltip follows the map beneath a still mouse": Berlin under the
+  mouse, the camera set so Paris is under it, Paris razed, its land painted German; red on HEAD ("Berlin ·
+  capital" over Paris), green with the change. Specs run by hand: `mapTooltip1938` (2 of 2).
+- **Seen:** `docs/evidence/7.81/a-paris-still-mouse.png`, `a-paris-razed-occupied.png`.
+- **Pin:** unchanged (view code only).
+- **Next:** PLAN 7.81b (the moving capital captured again and again).
