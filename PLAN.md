@@ -84,6 +84,39 @@ when taken up:
   the ADR; the pin's entry. Landings on a beach beside a front, as Normandy's, are beyond it: a task
   of their own if the user wants one.
 
+- [ ] 7.70 The AI's invasions open new fronts (the user's, 2026-10-21; a Normandy: a landing on
+  an enemy's coast, port or none, beside or behind its front, that holds and grows; carries
+  emergent 6 and naval 7): the AI lands only in a war in which it has no land front, at an enemy's
+  port (`planLanding`, ADR-268, ADR-511), and a beachhead is fed only by a network within
+  SUPPLY_REACH of it: supply's sources are cities their holder owns and controls, and it spreads
+  over held land alone (`systems/supply.ts`), so an army ashore on another landmass with no
+  ally's land beside it starves. AT (the whole): on the 48 saves, 180 days (a read to add, HEAD
+  first, the before): the wars in which a side lands on a landmass or a stretch of coast more than
+  DEPLOY_RANGE_CELLS from every front cell of its own and holds a cell there 30 days on, counted
+  by war; at least one in a fifth of the wars where a side has transports with a division's room
+  and an enemy coast it reaches by sea (HEAD's share the before); engaged per war (`warSides.ts`)
+  not below HEAD's; no invasion AI call over 50 ms; no nation in debt for it. In parts:
+    - [ ] 7.70a Supply over the beach: a bloc's cells on a landmass where it has no source of its
+      own are fed from the sea (a held coastal cell a source, at a rate under a city's) while its
+      water's zone is held by no enemy and a way by sea joins it to the bloc's home
+      (`seaSupply.ts`'s `seaLinked`); an enemy holding the zone cuts it. AT: a division landed on
+      an enemy's coast with no port (a unit test, red without: unfed after 30 days) keeps supply
+      at least 0.5 for 30 days, and under an enemy-held zone loses it; seed 99's year: no tick
+      over budget (the profile); SPEC §6.2 amended; the ADR; the pin's entry.
+    - [ ] 7.70b The plan: a nation at war with a land front, its free army beyond its front's need
+      (on no front's land, or beyond DEPLOY_RANGE_CELLS of its front) and its transports with a
+      division's room, lands on the enemy's coast cell of most worth (a city, the capital, near
+      the enemy's front's rear) and fewest enemy formations near, in reach by a sea no enemy
+      holds, more than DEPLOY_RANGE_CELLS from its own front; a group of divisions at once, not
+      one, escorted as a landing is now. AT: the whole's count (above), its bar; a unit test (red
+      without: a nation with a land front and a free army lands behind the enemy's front);
+      SPEC §7 amended; the ADR; the pin's entry.
+    - [ ] 7.70c The follow-through: the ferry and its want take a beachhead with no port as a
+      front's land (its coast cell where the port would be), so reinforcements reach it; the
+      operational AI holds and widens it as any front. AT: the whole's 30-day hold at least
+      half of the landings of 7.70b; a unit test (red without: transports with a division sail
+      for a beachhead with no port); the ADR; the pin's entry.
+
 - [ ] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21;
   AI nuclear use 7, the critic's run 11 design objection; `docs/evidence/7.52/c.md`): a capital's
   TARGET_CAPITAL counts on a first strike only with an army in the blast (men share of the

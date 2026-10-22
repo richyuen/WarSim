@@ -21739,3 +21739,8 @@ No rule changed and nothing on screen changed. One task came out of it.
   islet with no port is never invaded by the AI.
 - Filed (the user's): PLAN 7.68 (a capital moves to the land its nation holds most of) and 7.69
   (the AI lands on an enemy capital on a coast with no port), after 7.67 and before 7.62.
+- Filed (the user's): PLAN 7.70, the AI's invasions open new fronts (a Normandy), in three parts:
+  supply over the beach (a beachhead on another landmass is unfed today: supply's sources are
+  cities owned and controlled, spread over held land alone), the plan (a landing beside or behind
+  the enemy's front by a nation with a land front), the follow-through (the ferry to a beachhead
+  with no port). After 7.69, before 7.62.
