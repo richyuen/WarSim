@@ -167,6 +167,64 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-634 · 2026-10-22 · accepted — The threatened sectors first: the allotment by where the enemy stands, and a kept march yields to it (PLAN 7.79b; amends ADR-53, PLAN 1.25's weights)
+
+- **Context** (`docs/evidence/7.79/measure.md` §2, `b.md`): late, a nation at war allots its army
+  over a front of 120–920 sectors with 3–27 threatened by weights 1 + threat / THREAT_UNIT, and the
+  enemy's formations are small: the threatened sectors weigh 1–3 against the empty front's
+  hundreds. And 0.52–0.63 of the formations within DEPLOY_RANGE_CELLS of a threatened sector were on
+  a march, kept by ADR-53, into a sector with no threat. Of those formations 0.37–0.46 stood in a
+  threatened sector after the plan (year 1: 0.62–0.82).
+- **Decision.** Per class: (1) the threatened sectors share, by largest remainders over their
+  threat, as many formations as are of the class within the range of one of them, each no more
+  than its pool; the other sectors share what is left over 1 + threat / THREAT_UNIT, as before.
+  (2) "Every sector gets one" takes only from the largest allotments of the sectors with no
+  threat. (3) A formation marching into a sector of the class with no threat, within the range of
+  a threatened sector, yields to the threatened sectors' allotments (they are filled first,
+  nearest-first, from the free formations and those yielding); one that none takes keeps its march.
+  A march that began beyond the range of its sector (`originCell`: one from afar or to spare, PLAN
+  3.10c1a, 3.10c1d; the allotment sends none from that far) does not yield, and a march is never
+  released for another sector with no threat, so ADR-53's guard against daily re-planning stands
+  where there is no enemy. The spare rule's weights (what the front can spare) stay 1 + threat /
+  THREAT_UNIT.
+- **Set aside.** Exempting every march on an errand (PLAN 3.10c1d2: into a sector that would have
+  nobody without it) undid the late gain (2081 year 20, days 21–30: 0.023 placed, HEAD's figure):
+  late almost every march into the empty front is the only one there. Yielding only to a threatened
+  sector nearer than the march's end did not keep the spare marches (one starts at the threatened
+  end with its end 59.9 cells off, the threat 2.5).
+- **Measured** (`b.md`, `frontSpread.ts`). The AT's figure (allotted to threatened sectors of what
+  they could take, distinct formations) was 0.88–1.63 on HEAD on 6 of the 7 saves (the counts
+  overlap where pools do): it passed on HEAD and could not tell the rule; with the rule 1.0 on all 7.
+  The figure that tells it, those placed in a threatened sector of those within the range of one:
+  days 1–10 after the load 0.37–0.46 → 0.51–0.85 on the five saves where it was under 1 (1129's two
+  1.0 → 1.0–1.25); days 21–30 0.02–0.68 → 0.28–1.0 on all 7. Share of the army in threatened sectors,
+  days 1–10: 6421 year 10 0.079 → 0.132, 7019 0.069 → 0.123 and 0.232 → 0.530, 2081 year 20 0.053 →
+  0.097. Year 1 from one day-60 save of the old rule, 30 days: share 0.741 → 0.895 (6421), 0.578 →
+  0.857 (7019); engaged a war 14.6 → 17.4, 10.5 → 12.1; cells that changed hands 2,529 → 2,012,
+  4,773 → 3,299. From 1938 (days 61–90) 6421 reads 0.691: after 60 days the two rules are two wars,
+  and fewer formations stood within the range of a threat (0.909 → 0.704), 0.98 of them placed.
+  The same-start read is the one the AT's year-1 clause is judged on.
+- **Cost.** One year from the same save, both bundles at once on separate P-cores and swapped:
+  2081 year 20 mean tick 2.34 / 2.08 → 2.37 / 2.44 ms (operational AI 1.04 / 0.95 → 1.13 / 1.15);
+  6421 year 20 3.88 / 3.51 → 3.82 / 4.06 ms (1.85 / 1.71 → 2.02 / 2.13); supply, movement,
+  territory and the count of slow plans the same. The allotment's part over 30 days: 382 → 498 ms
+  on 6421 (another war by then: asks 506 → 588), 41 → 37 on 2081. About a tenth more operational AI
+  on the long fronts. Seed 99, 5 years from 1938 against `9490fd78`: 1.93 / 1.69 → 1.66 / 1.77 ms
+  (year 1 2.53 / 2.21 → 2.32 / 2.57). PLAN 7.83 owns the tick.
+- **Tests restated** (the history moved, the claim kept): ADR-53's "marches are not countermanded"
+  allows a march into a sector with no threat turned to one by a threatened sector, and no other
+  change; `nukeOverrun1938` France decides on no empty capital (it now finds an army over the floor
+  on day 48) in place of "holds fire"; `nukeMeansLost1938` the row on the day the means are lost
+  (day 14; was 10.8); `wholeTanks` division 41's 48 hours from hour 231 (first fired at in hour 237
+  on the Polish front; was France's 220 from hour 72); `coast1938`'s share of march hours on the
+  mask's river steps 0.001 → 0.003 (1,706 of 836,631 hours against 297 on HEAD, on the same 19
+  steps: a group of six divisions sent across a river in China to a threatened front cell at
+  (1696, 400), 130–160 hours each; their orders 6–13 against HEAD's 7–19, no turning back: traffic,
+  not a thrash; ADR-322's precedent).
+- **Consequences.** Pin a4ff4661 → e6c74731. Late engaged per war moves little on 10 days: the
+  threatened sectors beyond the range of the army (88–98 % on 1129, 2081 and 6421 year 20) are
+  PLAN 7.79d's. Unit test `tests/unit/threatFirst1938.test.ts` (red with the old rule: 4 of 6 placed).
+
 ### ADR-633 · 2026-10-22 · accepted — The ten-year runs' fleet guard reads the first year: 25 of the start's fleets standing, for one after ten years (amends PLAN 4.2b's AT; the rule PLAN 7.69's)
 
 - **Context** (`npm run check:review` before critic run 12, PLAN 7.5): `tests/sweep/aiSweep1-3` red,

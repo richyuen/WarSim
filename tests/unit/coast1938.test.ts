@@ -114,7 +114,11 @@ describe('formations and elements against the fine land mask (PLAN 2.9a)', () =>
     // Before PLAN 4.1d2: 1,266 of 774,232 hours over the mask's water by its bit alone, on 77 steps. What is left is steps with no way over land (a river of the mask).
     // Under 0.0006 until PLAN 5.6 (322 of 799,261 hours, on 16 steps); the air AI's game marches
     // more over those rivers (582 of 773,802, on 19 steps; ADR-322), the rule the same: 0.001.
-    expect(march.wet / march.hours).toBeLessThan(0.001);
+    // PLAN 7.79b (ADR-634): the army goes to the threatened sectors first, and in China that is
+    // across a river of the mask: a group of six divisions sent to the front cell at (1696, 400)
+    // and on, each on the river's steps 130–160 hours (1,706 of 836,631, on 19 steps; 297 before
+    // it on the same seed; the orders per formation no more than before). The rule the same: 0.003.
+    expect(march.wet / march.hours).toBeLessThan(0.003);
   }, 120_000);
 
   it('a step with a way over land (PLAN 4.1d2): every place of it surely land, from the one cell’s point to the other’s, and the same walked back', () => {

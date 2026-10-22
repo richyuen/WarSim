@@ -24,12 +24,18 @@
  * join the two (`wideJoined`).
  * Each class is allotted by itself, to the
  * sectors it reaches: in what follows "they" is one class and "sectors" those.
- * They are allotted to sectors in proportion to 1 + threat/THREAT_UNIT (largest remainders; every
- * sector gets one while formations last). The range is to each sector (PLAN 3.10c1, ADR-187): a
+ * They are allotted to the threatened sectors first (PLAN 7.79b, ADR-634): those with a threat
+ * share, in proportion to it, as many as there are of them within the range of one, and the other
+ * sectors share what is left in proportion to 1 + threat/THREAT_UNIT (largest remainders; every
+ * sector gets one while formations last, taken from the largest allotments of those with no
+ * threat). The range is to each sector (PLAN 3.10c1, ADR-187): a
  * sector is allotted no more than the formations of the class within DEPLOY_RANGE_CELLS of it, and
  * takes only those, so a nation with two fronts far apart mans each from the formations near it. A formation already marching into a sector keeps it,
  * whatever the sector's allotment is today (ADR-53: the allotment moves every day with the threat,
- * and a march of weeks that is re-planned daily never arrives); the others fill what is left of
+ * and a march of weeks that is re-planned daily never arrives), but for one marching into a
+ * sector with no threat that is within the range of a threatened sector, its march begun within
+ * the range of its sector: it yields to the threatened sectors' allotments and keeps its march
+ * when none takes it (ADR-634); the others fill what is left of
  * the allotments nearest-first, and what is then left joins its nearest sector. A sector whose allotted strength ≥ OFFENSIVE_RATIO × its threat attacks:
  * its formations march on the enemy cell next to the sector's front nearest its centre;
  * otherwise they hold the own front cell nearest the centre. Orders already being followed
@@ -133,13 +139,16 @@ export const OP_PROBE: { now?: () => number; plan?: (p: PlanTimes) => void; ask?
  * One plan's sectors at its orders (`OP_PROBE.sectors`, PLAN 7.79a, `tools/diag/frontSpread.ts`):
  * each sector's threat, formations, strength and whether it attacks; and per class allotted, its
  * formations, its sectors, and the formations allotted to sectors with a threat before and after
- * "every sector gets one".
+ * "every sector gets one"; those placed in a threatened sector (`filled`, PLAN 7.79b), and those
+ * the threatened sectors could take (`canTake`: of its formations, those within the range of a
+ * threatened sector it is allotted to), and of those the ones kept on a march into a sector with no
+ * threat (`keptCold`).
  */
 export interface SectorsSeen {
   nation: number;
   tick: number;
   sectors: { threat: number; n: number; strength: number; attack: boolean; cx: number; cy: number }[];
-  classes: { ids: number; front: number; threatened: number; before: number; after: number }[];
+  classes: { ids: number; front: number; threatened: number; before: number; after: number; filled: number; canTake: number; keptCold: number }[];
   /** Of the marches from afar: sectors with no taker allotted passed over for a taker marching in, for one of the planner's standing in or next to it, for one of its side's (a partner's sector); the empty sectors (-1: not looked for: no far formation and none to spare); the far formations; summed over the far formations' searches, the empty sectors their class reaches (`reached`), those on another landmass, and those `reaches` refused; per class with far formations, its cell, ground and province group, the empty sectors it reaches, and the sectors it does not reach for want of a snapped cell, for another province group, for another pocket. */
   empty?: { takers: number; stood: number; sideStood: number; empties: number; far: number; reachedEmpty: number; otherLand: number; unreached: number; classes?: { cell: number; ground: number; provinceGroup: number; far: number; reached: number; snap: number; group: number; pocket: number }[] } | undefined;
 }
@@ -181,6 +190,46 @@ export interface PlanTimes {
   grounds: number;
   groundMs: number;
 }
+/**
+ * Allots up to `left` formations to the sectors `keys` (indices into `pool` and `counts`) by
+ * largest remainders over `weight`, each no more than its pool: one whose share is more takes its
+ * pool, and the others share the rest by their weights. Returns how many it allotted.
+ */
+function allot(keys: readonly number[], weight: (k: number) => number, pool: readonly number[], left: number, counts: number[]): number {
+  const start = left;
+  const open = new Set(keys);
+  for (let capped = true; capped && open.size > 0; ) {
+    capped = false;
+    let total = 0;
+    for (const k of open) total += weight(k);
+    const share = left / total;
+    for (const k of open) {
+      if (share * weight(k) <= pool[k]!) continue;
+      counts[k] = pool[k]!;
+      left -= pool[k]!;
+      open.delete(k);
+      capped = true;
+    }
+  }
+  if (open.size > 0) {
+    let total = 0;
+    for (const k of open) total += weight(k);
+    const quota = [...open].map((k) => [k, (left * weight(k)) / total] as const);
+    for (const [k, q] of quota) {
+      counts[k] = Math.floor(q);
+      left -= counts[k]!;
+    }
+    quota.sort((a, b) => b[1] - Math.floor(b[1]) - (a[1] - Math.floor(a[1])) || a[0] - b[0]);
+    for (const [k] of quota) {
+      if (left <= 0) break;
+      if (counts[k]! >= pool[k]!) continue;
+      counts[k]!++;
+      left--;
+    }
+  }
+  return start - left;
+}
+
 /** The plan being timed, and the clock's reading at its last mark (`OP_PROBE`). */
 let timing: PlanTimes | undefined;
 let lastMark = 0;
@@ -836,48 +885,35 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     has.fill(0);
     place.fill(-1);
     for (let k = 0; k < front.length; k++) place[front[k]!] = k;
-    // Allotment by largest remainders over weights 1 + threat/THREAT_UNIT. A sector is allotted
-    // no more than its pool: one whose share is more takes its pool, and the others share the
-    // rest by their weights.
-    const weights = front.map((i) => 1 + list[i]!.threat / THREAT_UNIT);
+    // Threatened first (PLAN 7.79b, ADR-634): the threatened sectors share, by their threat, as
+    // many as there are of the class within the range of one of them, and the rest of the front
+    // shares what is left by 1 + threat/THREAT_UNIT. Each is allotted no more than its pool.
     const counts = front.map(() => 0);
-    const open = new Set(front.map((_, k) => k));
-    let left = ids.length;
-    for (let capped = true; capped && open.size > 0; ) {
-      capped = false;
-      let total = 0;
-      for (const k of open) total += weights[k]!;
-      const share = left / total;
-      for (const k of open) {
-        if (share * weights[k]! <= pool[k]!) continue;
-        counts[k] = pool[k]!;
-        left -= pool[k]!;
-        open.delete(k);
-        capped = true;
-      }
-    }
-    if (open.size > 0) {
-      let total = 0;
-      for (const k of open) total += weights[k]!;
-      const quota = [...open].map((k) => [k, (left * weights[k]!) / total] as const);
-      for (const [k, q] of quota) {
-        counts[k] = Math.floor(q);
-        left -= counts[k]!;
-      }
-      quota.sort((a, b) => b[1] - Math.floor(b[1]) - (a[1] - Math.floor(a[1])) || a[0] - b[0]);
-      for (const [k] of quota) {
-        if (left <= 0) break;
-        if (counts[k]! >= pool[k]!) continue;
-        counts[k]!++;
-        left--;
-      }
-    }
-    const seen = OP_PROBE.sectors ? { ids: ids.length, front: front.length, threatened: front.filter((i) => list[i]!.threat > 0).length, before: front.reduce((t, i, k) => t + (list[i]!.threat > 0 ? counts[k]! : 0), 0), after: 0 } : undefined;
-    // Every sector gets one while formations last: take from the largest allotments.
+    const hot: number[] = [];
+    const cold: number[] = [];
+    for (let k = 0; k < front.length; k++) (list[front[k]!]!.threat > 0 ? hot : cold).push(k);
+    const nearHot = new Set(hot.length > 0 ? ids.filter((id) => hot.some((k) => dist2(id, list[front[k]!]!) <= range2)) : []);
+    const near = nearHot.size;
+    const given = allot(hot, (k) => list[front[k]!]!.threat, pool, near, counts);
+    allot(cold, (k) => 1 + list[front[k]!]!.threat / THREAT_UNIT, pool, ids.length - given, counts);
+    const seen = OP_PROBE.sectors
+      ? {
+          ids: ids.length,
+          front: front.length,
+          threatened: front.filter((i) => list[i]!.threat > 0).length,
+          before: front.reduce((t, i, k) => t + (list[i]!.threat > 0 ? counts[k]! : 0), 0),
+          after: 0,
+          filled: 0,
+          canTake: near,
+          keptCold: 0,
+        }
+      : undefined;
+    // Every sector gets one while formations last: take from the largest allotments of the
+    // sectors with no threat (PLAN 7.79b: not from the threatened).
     for (let k = 0; k < counts.length; k++) {
       if (counts[k]! > 0) continue;
       let j = -1;
-      for (let m = 0; m < counts.length; m++) if (counts[m]! > 1 && (j < 0 || counts[m]! > counts[j]!)) j = m;
+      for (let m = 0; m < counts.length; m++) if (counts[m]! > 1 && list[front[m]!]!.threat <= 0 && (j < 0 || counts[m]! > counts[j]!)) j = m;
       if (j < 0) break;
       counts[j]!--;
       counts[k] = 1;
@@ -888,25 +924,40 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     }
     // Sticky first: a formation already marching into a sector keeps it, also beyond the sector's
     // allotment of today (ADR-53). It counts towards the allotment, so fewer others are sent.
+    // But one marching into a sector of the class's with no threat that is within the range of a
+    // threatened sector yields to the threatened sectors' allotments (PLAN 7.79b, ADR-634), and
+    // keeps its march only if none of them takes it; not one whose march began beyond the range
+    // of the sector (a march from afar or to spare: the allotment sends none from that far).
+    const fromAfar = (id: number, s: Sector): boolean => {
+      const o = f.originCell[id]!;
+      let dx = Math.abs((o % w) + 0.5 - s.cx);
+      if (loop && dx > w / 2) dx = w - dx;
+      const dy = Math.floor(o / w) + 0.5 - s.cy;
+      return dx * dx + dy * dy > (range - 1) * (range - 1);
+    };
     const free = new Set(ids);
+    const yielding = new Map<number, number>();
+    const keep = (id: number, i: number): void => {
+      list[i]!.formations.push(id);
+      list[i]!.strength += f.strength[id]!;
+      has[i]!++;
+    };
     for (const id of ids) {
       if (f.moving[id] !== 1) continue;
       const i = indexOf(sectorOfCell(f.targetCell[id]!));
       if (i === undefined) continue;
       free.delete(id);
-      list[i]!.formations.push(id);
-      list[i]!.strength += f.strength[id]!;
-      has[i]!++;
+      if (list[i]!.threat <= 0 && place[i]! >= 0 && nearHot.has(id) && !fromAfar(id, list[i]!)) yielding.set(id, i);
+      else keep(id, i);
     }
     // Then nearest-first, most threatened sectors first, each sector from the formations
-    // within the range of it.
-    for (const i of byThreat) {
-      if (place[i]! < 0) continue;
+    // within the range of it; the threatened ones from those that yield too.
+    const fill = (i: number, from: Iterable<number>, out: (id: number) => void): void => {
       const s = list[i]!;
       for (let m = has[i]!; m < counts[place[i]!]!; m++) {
         let best = -1;
         let bd = Infinity;
-        for (const id of free) {
+        for (const id of from) {
           const d = dist2(id, s);
           if (d > range2) continue;
           if (d < bd || (d === bd && id < best)) {
@@ -915,11 +966,30 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
           }
         }
         if (best < 0) break;
-        free.delete(best);
+        out(best);
         s.formations.push(best);
         s.strength += f.strength[best]!;
       }
+    };
+    let kept = yielding.size === 0;
+    const hotFree = kept ? free : new Set([...free, ...yielding.keys()]);
+    for (const i of byThreat) {
+      if (place[i]! < 0) continue;
+      if (!kept && list[i]!.threat <= 0) {
+        // The threatened sectors are filled: those that yielded and were not taken keep their march.
+        for (const [id, j] of yielding) keep(id, j);
+        kept = true;
+      }
+      if (kept) fill(i, free, (id) => free.delete(id));
+      else
+        fill(i, hotFree, (id) => {
+          hotFree.delete(id);
+          free.delete(id);
+          yielding.delete(id);
+        });
     }
+    if (!kept) for (const [id, j] of yielding) keep(id, j);
+    if (seen) for (const [, j] of yielding) if (list[j]!.threat <= 0) seen.keptCold++;
     // Those left over (the allotments near them were taken by others, or by marches kept above)
     // join the nearest sector of the class: it is within the range, or they would not be here.
     for (const id of free) {
@@ -935,6 +1005,10 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       if (best < 0) continue;
       list[best]!.formations.push(id);
       list[best]!.strength += f.strength[id]!;
+    }
+    if (seen) {
+      const mine = new Set(ids);
+      for (const s of list) if (s.threat > 0) for (const id of s.formations) if (mine.has(id)) seen.filled++;
     }
   }
   mark();

@@ -12,6 +12,9 @@ import { nationId } from '../helpers/sim1938';
 // the whole tanks of its damage, and one more with the chance of the rest; nothing is carried. The
 // critic's case (run 8, seed 3929): armoured division 41 in contact with France's 220 from hour 72
 // took 3.5 tanks of fire in 48 hours, in fractions over its 34 elements, and lost none.
+// Restated by PLAN 7.79b (ADR-634): with the army allotted to the threatened sectors first, the
+// division marches east to the Polish front and is first fired at in hour 237 (before, France's 220
+// from hour 72); the 48 hours are from hour 231, about its contact.
 
 /** A world of one element, for the loss alone. */
 function one(strength: number, wound = 0): World {
@@ -54,7 +57,7 @@ describe("the critic's armour fight (seed 3929, Germany on Poland and France)", 
       const sim = new Sim({ scenario: '1938', seed: 3929, assets: assets1938(SIZE_1938.w) });
       sim.command({ kind: 'declareWar', attacker: nationId('GER'), defender: nationId('POL') });
       sim.command({ kind: 'declareWar', attacker: nationId('GER'), defender: nationId('FRA') });
-      sim.step(72);
+      sim.step(231);
       const w = sim.world;
       const ec = w.elements.cols;
       const units = w.rules!.units;

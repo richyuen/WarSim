@@ -27,12 +27,17 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
   // an empty capital no first strike's target, France's best place in reach is an army under the floor
   // (utility 0.005-0.019, NUKE_FLOOR 0.025), and it holds fire. The gap and the launch shot down are
   // `nukeGapShort1938.test.ts`'s and `nukeDelivery1938.test.ts`'s.
-  it("the critic's France: an empty Berlin weighs no capital on a first strike, and France holds fire in 100 days", () => {
+  // Restated by PLAN 7.79b (ADR-634): with the army allotted to the threatened sectors first, France
+  // finds an army over the floor (day 48, men share 0.063, no capital weighed; with the rule's first
+  // form, day 76, Germany's capital moved to the French front with an army in the blast, men share
+  // 0.0127). The claim is the rule's: France decides on no empty capital (men share under
+  // CAPITAL_MEN_MIN with a capital weighed) in 100 days.
+  it("the critic's France: an empty Berlin weighs no capital on a first strike, and France decides on no empty capital in 100 days", () => {
     const s = new Sim({ scenario: '1938', seed: 7127, assets: assets1938(W) });
     const w = s.world;
     s.command({ kind: 'grantWarheads', nation: FRA, count: 10 });
     s.command({ kind: 'declareWar', attacker: GER, defender: FRA });
-    const decided: { day: number; x: number; y: number }[] = [];
+    const decided: { day: number; x: number; y: number; menShare: number; capital: number }[] = [];
     let launched = 0;
     /** Places France weighs within a blast's radius of Berlin with men share under CAPITAL_MEN_MIN, and of them with the capital weighed. */
     let emptyBerlin = 0;
@@ -43,7 +48,10 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
         for (let i = 0; i < ev.length; i += 6) {
           if (ev[i + 2] !== FRA) continue;
           if (ev[i + 1] === EventKind.NukeLaunched) launched++;
-          if (ev[i + 1] === EventKind.NukeDecided) decided.push({ day: d, x: ev[i + 4]!, y: ev[i + 5]! });
+          if (ev[i + 1] !== EventKind.NukeDecided) continue;
+          const war = ww.wars.list.find((x) => x.sides[1].includes(FRA));
+          const p = war ? placeParts(ww, FRA, war, 1, ev[i + 4]!, ev[i + 5]!) : { menShare: -1, capital: -1 };
+          decided.push({ day: d, x: ev[i + 4]!, y: ev[i + 5]!, menShare: p.menShare, capital: p.capital });
         }
         ww.out.events.length = 0;
         ww.out.fires.length = 0;
@@ -63,8 +71,8 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
 `);
     expect(emptyBerlin, 'France weighs an empty Berlin').toBeGreaterThan(0);
     expect(emptyBerlinCapital, 'an empty Berlin weighs no capital on a first strike').toBe(0);
-    expect(decided, 'France holds fire').toEqual([]);
-    expect(launched, 'France launched').toBe(0);
+    expect(decided.filter((x) => x.menShare < 0 || (x.capital > 0 && x.menShare < CAPITAL_MEN_MIN)), 'France decides on an empty capital').toEqual([]);
+    expect(launched, 'France launched').toBeLessThanOrEqual(decided.length);
   }, 600_000);
 
   // PLAN 7.18a's fall, apart since 7.18i (ADR-491): with its costs × the chance through, France's

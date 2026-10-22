@@ -46,6 +46,9 @@ for (const { seed, bin, skip } of cases) {
     thin: 0,
     before: 0,
     after: 0,
+    canTake: 0,
+    filled: 0,
+    keptCold: 0,
     classIds: 0,
     classFront: 0,
     classThreatened: 0,
@@ -53,6 +56,7 @@ for (const { seed, bin, skip } of cases) {
     wars: 0,
     landAtWar: 0,
   };
+  const controller0 = new Uint16Array(w.cells.controller);
   for (let d = 0; d < days; d++) {
     plans = [];
     s.step(24, quiet);
@@ -76,6 +80,9 @@ for (const { seed, bin, skip } of cases) {
         if (c.ids < c.front) t.thin++;
         t.before += c.before;
         t.after += c.after;
+        t.canTake += c.canTake;
+        t.filled += c.filled;
+        t.keptCold += c.keptCold;
       }
     }
     const fighting = w.wars.nations();
@@ -87,6 +94,8 @@ for (const { seed, bin, skip } of cases) {
     });
     t.wars += w.wars.list.length;
   }
+  let flipped = 0;
+  for (let c = 0; c < controller0.length; c++) if (controller0[c] !== w.cells.controller[c]) flipped++;
   const r = (x: number): number => Math.round(x * 1000) / 1000;
   const row = {
     seed,
@@ -105,10 +114,16 @@ for (const { seed, bin, skip } of cases) {
     inRangeThreatenedAPlan: r(t.classThreatened / t.plans),
     allottedThreatenedBefore: r(t.before / t.classIds),
     allottedThreatenedAfter: r(t.after / t.classIds),
+    canTake: r(t.canTake / t.classIds),
+    beforeOfCanTake: r(t.before / Math.max(1, t.canTake)),
+    afterOfCanTake: r(t.after / Math.max(1, t.canTake)),
+    filledOfCanTake: r(t.filled / Math.max(1, t.canTake)),
+    keptColdOfCanTake: r(t.keptCold / Math.max(1, t.canTake)),
     engagedADay: r(t.engaged / days),
     warsADay: r(t.wars / days),
     engagedAWar: r(t.engaged / Math.max(1, t.wars)),
     landAtWarADay: r(t.landAtWar / days),
+    cellsChanged: flipped,
   };
   result.push(row);
   process.stderr.write(`${JSON.stringify(row)}\n`);

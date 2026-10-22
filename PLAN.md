@@ -66,7 +66,7 @@ them, are 7.81–7.86. A task each, split when taken up:
       in year 1, 0.006–0.23 late; "every sector gets one" not it (late the same before and after); the
       weights 1 + threat / 10,000 lose to fronts of 120–920 sectors. The US piles: their class reaches
       none of the sectors (overseas, or closed ground), and the ferry needs a landmass with no front.
-    - [ ] 7.79b The allotment by where the enemy stands, within the range (measure §2.1 b): a class's
+    - [x] 7.79b The allotment by where the enemy stands, within the range (measure §2.1 b): a class's
       formations go to the threatened sectors it reaches within the range first, in proportion to
       threat, and the empty front gets what is left over them. AT: on the 7 late saves of measure
       §2.1, the formations allotted to threatened sectors (`allottedThreatenedBefore`) at least 0.5 of
@@ -74,6 +74,12 @@ them, are 7.81–7.86. A task each, split when taken up:
       and 7019 the share in threatened sectors not under HEAD's (0.741, 0.578); engaged per war on the
       saves read (`frontSpread.ts`); a unit test (red without); the ADR; the pin's entry; `--profile`
       against `9490fd78` (before the probe).
+      Done (ADR-634, `docs/evidence/7.79/b.md`): 1.0 on all 7 (HEAD 0.88–1.63 on 6 of them: the
+      counts overlap, so the figure passed on HEAD); placed in threatened sectors of those within
+      range 0.37–0.46 → 0.51–0.85 (days 21–30: 0.02–0.68 → 0.28–1.0), kept marches into empty
+      sectors yielding (they took half), not those begun beyond the range; year 1 from one day-60
+      save 0.741 → 0.895, 0.578 → 0.857; engaged per war late 0–0.46 (little moved: 7.79d's); pin
+      a4ff4661 → e6c74731; operational AI about a tenth dearer on the long fronts.
     - [ ] 7.79d The march to a threatened sector beyond the range (measure §2.1 a): late 88–98 % of the
       threatened sectors on 1129 and 2081 year 20 and 6421 year 20 have no formation of the planner
       within DEPLOY_RANGE_CELLS, and the marches from afar serve only sectors with nobody. A far

@@ -22120,3 +22120,34 @@ No rule changed and nothing on screen changed. One task came out of it.
   of the sectors late against 0.38–0.48 in year 1 (7.79b); and on 1129, 2081 and 6421 year 20 88–98 % of
   the threatened sectors are beyond the army's range, which no march from afar serves (7.79d, new).
   7.79c's ferry: check first that `planLanding` carries to a port on the boarders' own landmass.
+
+## 2026-10-22 — PLAN 7.79b: the threatened sectors first (ADR-634)
+
+- **HEAD first** (`docs/evidence/7.79/b.md`; `frontSpread.ts` gains `canTake`, `filled`, `keptCold`,
+  `cellsChanged`): the AT's figure (allotted to threatened sectors of the distinct formations within
+  their range) was 0.88–1.63 on HEAD on 6 of the 7 late saves: it passed before any rule. The figure
+  that isolates the rule, those placed in a threatened sector: 0.37–0.46 late, 0.62–0.82 in year 1.
+  Half or more of the rest were on marches kept by ADR-53 into sectors with no threat.
+- **Rule:** threatened sectors share, by threat, as many as are within range of one; the rest of the
+  front shares what is left; "every sector gets one" takes only from unthreatened sectors; a march into
+  an unthreatened sector by a formation within range of a threatened one yields (kept if none takes it),
+  unless it began beyond the range (from afar or to spare: `originCell`).
+- **Gate found:** the first form also undid the spare marches (`operationalAi` "to spare": a division
+  sent twice). Exempting errands (PLAN 3.10c1d2) fixed that but undid the late gain (2081 days 21–30:
+  0.023, HEAD's); "a threat nearer than the march's end" did not keep them. `originCell` does both.
+- **Read (final code):** placed of those in range days 1–10 0.37–0.46 → 0.51–0.85, days 21–30 0.02–0.68 →
+  0.28–1.0. Year 1 from one day-60 save: 0.741 → 0.895 (6421), 0.578 → 0.857 (7019); engaged a war 14.6 →
+  17.4, 10.5 → 12.1. From 1938 6421 reads 0.691 (two different wars after 60 days). Late engaged per war
+  moved little (most threatened sectors are beyond the army's range: PLAN 7.79d).
+- **Tests restated** (history moved, claim kept; ADR-634): ADR-53's marches test, `nukeOverrun1938`
+  (no empty capital, not "holds fire": France now finds an army on day 48), `nukeMeansLost1938` (the row on
+  the day the means are lost, now 14), `wholeTanks` (division 41's contact now hour 237, on the Polish front),
+  `coast1938` (march hours on the mask's river steps 0.001 → 0.003: 1,706 against HEAD's 297, a group of six
+  sent across a river in China; orders per formation no more than HEAD's, no turning back). ADR-53's test:
+  407 marches watched, 30 turned to a threatened sector, 0 otherwise changed.
+- **Red without:** the rule reverted by hand with the probe kept: the new test reads 4 of 6.
+- **Timing:** both bundles at once on separate P-cores. Seed 99 against `9490fd78` 1.93/1.69 → 1.66/1.77 ms.
+  From the same late saves the operational AI is about a tenth dearer (2081 1.04/0.95 → 1.13/1.15 ms,
+  6421 1.85/1.71 → 2.02/2.13), the tick 6–9 % (PLAN 7.83).
+- **Pin:** a4ff4661 → e6c74731.
+- **Next:** PLAN 7.79d.

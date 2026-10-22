@@ -1,6 +1,6 @@
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { DEPLOY_RANGE_CELLS, MARCH_DAYS, SECTOR_CELLS, STAGGER, takeMen } from '../../src/sim/ai/operational';
+import { DEPLOY_RANGE_CELLS, MARCH_DAYS, OP_PROBE, SECTOR_CELLS, STAGGER, takeMen } from '../../src/sim/ai/operational';
 import { SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { frontierOf } from '../../src/sim/systems/territory';
@@ -160,18 +160,36 @@ describe('marches are not countermanded (PLAN 1.42f, ADR-53)', () => {
     };
     runEvents(s, 1);
     w.wars.between(GER, POL)!.war.fightToDeath = [true, true];
+    // The sectors with a threat at the German plan (PLAN 7.79b, ADR-634): a march into a sector
+    // with no threat may be turned to one of them, and to no other.
+    let threatened = new Set<number>();
+    OP_PROBE.sectors = (p) => {
+      if (p.nation !== GER) return;
+      threatened = new Set(p.sectors.filter((x) => x.threat > 0).map((x) => Math.floor(x.cy / SECTOR_CELLS) * bw + Math.floor(x.cx / SECTOR_CELLS)));
+    };
+    /** Whether a cell's sector is a threatened one or next to one (an order goes to the sector's front cell or the enemy's next to it). */
+    const byThreat = (c: number): boolean => {
+      const k = sectorOf(c);
+      const ky = Math.floor(k / bw);
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (threatened.has((ky + dy) * bw + ((k - ky * bw + dx + bw) % bw))) return true;
+      return false;
+    };
     // Before each German plan: its free formations on the march into a sector that is still a
-    // front sector. After the plan: their targets, which must be within one sector of the old ones.
+    // front sector. After the plan: their targets, which must be within one sector of the old ones,
+    // but for a march into a sector with no threat turned to a threatened one.
     let watched = new Map<number, number>();
     let marches = 0;
     let countermanded = 0;
+    let turned = 0;
     s.step(24 * 14, (ww) => {
       ww.out.events.length = 0;
       ww.out.fires.length = 0;
       for (const [id, target] of watched) {
         if (!ww.formations.has(id) || f.moving[id] !== 1) continue; // destroyed, or arrived and stopped
         marches++;
-        if (dist(f.targetCell[id]!, target) > SECTOR_CELLS) countermanded++;
+        if (dist(f.targetCell[id]!, target) <= SECTOR_CELLS) continue;
+        if (!threatened.has(sectorOf(target)) && byThreat(f.targetCell[id]!)) turned++;
+        else countermanded++;
       }
       watched = new Map();
       // The planner runs in tick T when T is a multiple of 6 and (T / 6 + nation) is a multiple of STAGGER.
@@ -181,8 +199,12 @@ describe('marches are not countermanded (PLAN 1.42f, ADR-53)', () => {
         if (f.nation[id] === GER && f.moving[id] === 1 && f.engaged[id] !== 1 && sectors.has(sectorOf(f.targetCell[id]!))) watched.set(id, f.targetCell[id]!);
       }
     });
+    delete OP_PROBE.sectors;
+    process.stderr.write(`marches watched ${marches}, turned to a threatened sector ${turned}, countermanded ${countermanded}
+`);
     expect(marches).toBeGreaterThan(50);
     expect(countermanded).toBe(0);
+    expect(turned).toBeLessThan(marches / 2);
   }, 180_000);
 });
 

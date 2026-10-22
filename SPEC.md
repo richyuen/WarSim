@@ -2244,10 +2244,16 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     the provinces that have closed ground are walked, once a passage and only when two wide
     grounds are asked for, and two wide grounds that a run of such cells touches are joined.
     Ground that was walked 4,096 cells and came to no wide ground is taken to reach any.
-  - *Allotment:* the rest go to sectors by largest remainders over 1 + threat/10,000, with every
-    sector getting one while formations last. Formations already marching into a sector keep it,
-    also beyond the sector's allotment of the day [ADR-53]; the rest fill what is left
-    nearest-first.
+  - *Allotment:* the rest go to the threatened sectors first (PLAN 7.79b, ADR-634): those with a
+    threat share, by largest remainders over their threat, as many as there are of the class
+    within 60 cells of one of them; the other sectors share what is left over 1 + threat/10,000,
+    every sector getting one while formations last (taken from the largest allotments of those
+    with no threat). Formations already marching into a sector keep it, also beyond the sector's
+    allotment of the day [ADR-53], except one marching into a sector with no threat that is
+    within 60 cells of a threatened one and began its march within 60 cells of its sector (not a
+    march from afar or to spare): it yields to the threatened sectors' allotments and keeps its
+    march only when none takes it. The rest fill what is left nearest-first, the threatened
+    sectors first.
   - *Orders:* a sector at ≥ 1.5× local superiority attacks the enemy cell next to its centre;
     otherwise it holds its front cell. A formation is not re-ordered if its target is within a
     sector of the current one. An order refused for want of a way is not given again while

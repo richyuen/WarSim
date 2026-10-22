@@ -17,7 +17,9 @@ import { nationId } from '../helpers/sim1938';
 // bomber group placed at Prague as the editor's tool places one, 10 warheads, Germany's war on it.
 // Prague's airbase, its only one, is taken on day 10.8 and its groups are lost with it
 // (`docs/evidence/7.37/wingsLost-5309-CZS.jsonl`): the history says so, once, naming Germany and
-// Prague.
+// Prague. Restated by PLAN 7.79b (ADR-634): the day Prague's airbase falls moves with the land
+// war's rules (day 10.8, then 13.4 and later as the allotment changed); the row is told on the
+// day the means are lost, whichever it is, within 40 days.
 
 const { w: W } = SIZE_1938;
 const [CZS, GER] = ['CZS', 'GER'].map(nationId) as [number, number];
@@ -37,18 +39,24 @@ function czechoslovakia(warheads: number): Sim {
 }
 
 describe("a holder's last means of delivery lost is told (PLAN 7.37b3)", () => {
-  it("Czechoslovakia's bomber lost with Prague's airbase: one row, Germany and Prague named, on day 10 or 11", () => {
+  it("Czechoslovakia's bomber lost with Prague's airbase: one row, Germany and Prague named, on the day it is lost", () => {
     const s = czechoslovakia(10);
     s.step(24);
     expect(canDeliver(s.world, CZS), 'it can deliver at first').toBe(true);
-    s.step(24 * 13);
-    expect(canDeliver(s.world, CZS)).toBe(false);
+    let lost = -1;
+    for (let d = 1; d < 40 && lost < 0; d++) {
+      s.step(24);
+      if (!canDeliver(s.world, CZS)) lost = d;
+    }
+    process.stderr.write(`Czechoslovakia's means lost on day ${lost}
+`);
+    expect(lost, 'the means lost within 40 days').toBeGreaterThan(0);
     const rows = historyRows(s.world, nationName, cityName(s.world), defName).filter((r) => r.kind === EventKind.NukeMeansLost);
     expect(rows).toHaveLength(1);
     const r = rows[0]!;
     expect([r.a, r.b]).toEqual([CZS, GER]);
-    expect(r.tick / 24).toBeGreaterThanOrEqual(10);
-    expect(r.tick / 24).toBeLessThan(12);
+    expect(r.tick / 24).toBeGreaterThanOrEqual(lost);
+    expect(r.tick / 24).toBeLessThan(lost + 1);
     expect(historyText(r)).toBe('Czechoslovakia lost its last means to deliver its warheads: Germany took its airbase near Prague, and its strategic bombers were lost with it');
     expect(TICKER_KINDS.has(EventKind.NukeMeansLost)).toBe(true);
     expect(cueOfKind(EventKind.NukeMeansLost)).not.toBeNull();
