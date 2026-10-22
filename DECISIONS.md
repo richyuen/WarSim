@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-642 · 2026-10-22 · accepted — Every transport group with an army to carry acts in the ferry's turn (PLAN 7.88b; the user's ADR-637 a; amends ADR-638)
+
+- **Context** (`docs/evidence/7.88/b.md`). After ADR-638 the ferry's turn ended at the first transport
+  group that gave an order: one group (24,000 men, two divisions) a turn, once in STAGGER days, while on
+  critic run 12's saves 60 and 53 US divisions stood on two cells for 30 days (1129 year 10) and 75 on one
+  (6421 year 20), with 12 and 34 US groups in port. The user chose (a) in ADR-637: every idle group
+  carries.
+- **Decision** (`ai/invasion.ts`, `planFerry`): the groups in ADR-638's order each take the turn in turn,
+  until the room of those that gave an order covers the men of the army free for the ferry, or SAIL_TRIES
+  (4) gave none (a refusal may cost searches of the map). A formation ordered is no longer standing, so
+  the next group takes others.
+- **Read** (`b.md`): the first ferry turn's groups that gave an order 1 → 6 on 1129, 1 → 26 on 6421. Piles
+  of 30 or more for 30 days on 1129 year 10, 6421 year 20 and 7019 year 10: 3 → 2 (the AT's bar 0;
+  missed). 6421's pile marched to Norfolk as one stack and boarded after 23 days. On 1129 four groups
+  stand at Norfolk (eight divisions a turn), and the turns after the first were skipped: the invasion AI
+  plans nothing for a nation while one of its formations is aboard (PLAN 4.6b), and 2 US divisions were
+  aboard 22 days. That lock is PLAN 7.89. Transports at sea (the nations at war, a day) 3.9 → 5.9 on 1129,
+  4.3 → 4.8 on 6421; island garrisons about the same.
+- **Test.** `strandedFerry1938.test.ts`, "two groups at two ports each take their division aboard"; red
+  with the turn ended at the first group that acted.
+- **Test restated** (history moved, claim kept): `nukeStrikeAgain1938` (PLAN 7.6d, the critic's God-set
+  France) asked for two French strike decisions in the first 60 days; before the rule days 33 and 40, with
+  it 53 and 60 (Germany's war moved), so one fell on day 60. Its claim is a France that keeps losing
+  strikes again soon after the first (the critic's held 49 days; without ADR-461, days 41 and 90): now
+  the second within 30 days of the first (7 days with the rule), the war still on.
+- **Pin.** dc72fc97 → b7653c3c.
+- **Cost** (both bundles at once on separate P-cores, swapped; `.cache/prof88b/`): invasion AI by core,
+  seed 99's five years 0.203 / 0.194 → 0.109 / 0.120 ms (another world from the first ferry turn), a
+  year from 1129 year 10 0.270 / 0.249 → 0.248 / 0.278, from 6421 year 20 0.421 / 0.364 → 0.363 / 0.406:
+  within the noise. The longest call from 6421 61–63 → 87–93 ms (not traced; the turn of 26 groups is the likely one).
+
 ### ADR-641 · 2026-10-22 · accepted — A lost capital goes to the safest city on its main land, the largest of those safe enough (PLAN 7.81b2; amends ADR-620)
 
 - **Context** (`docs/evidence/7.81/b.md` §1). ADR-620 moved a lost capital to the largest city on the land

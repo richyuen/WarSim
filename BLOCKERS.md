@@ -5,6 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.88b: every group carries now, but one formation aboard holds the nation's turn; piles 3 → 2 (2026-10-22, ADR-642)
+- **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
+  year 20 and 7019 year 10 (`piles.ts --days 30`) 3 → 0; a unit test red without; the ADR; the pin.
+- **What moved** (`docs/evidence/7.88/b.md`): the rule is in (the user's ADR-637 a): the first ferry
+  turn's groups that gave an order 1 → 6 on 1129, 1 → 26 on 6421; 6421's pile of 75 cleared (it boarded at
+  Norfolk after 23 days). Piles 3 → 2: 1129's 60 (by Chicago) and 49 stay.
+- **What is left:** PLAN 7.89. The invasion AI skips a nation's whole turn while one of its formations is
+  aboard (PLAN 4.6b): on 1129, 2 divisions aboard for 22 days skipped the USA's next three turns. No
+  decision of the user's waits on it; the loop takes it next.
+
 ### RESOLVED 2026-10-22 (the user's decision: the bar is capital moves per capture at most 1.25, met at 1.20; 7.81b and 7.81 done) · PLAN 7.81b: the capital moves follow the captures, the reserve cut's war; three captures in 30 days are overruns (2026-10-22, ADR-640, ADR-641; waits on ADR-639, the user's decision)
 - **The bar:** on 10 unseen seeds × 30 years capital moves a world not above `dd3b730`'s on the same seeds,
   and no capital captured three times in 30 days.

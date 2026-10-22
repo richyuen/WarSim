@@ -103,25 +103,18 @@ them, are 7.81–7.86. A task each, split when taken up:
       is reached takes no ferry); piles 3 → 3. The turn's one transport group is one that cannot act
       (Nuuk; Port-of-Spain, Roseau), and one group a turn carries two of 1129's 60 divisions: PLAN 7.88.
       Pin e6c74731 → e66bef2e.
-    Then, after PLAN 7.88 (7.87 dropped, ADR-635 b), 7.79's AT on 10 unseen seeds × 20
+    Then, after PLAN 7.88 and 7.89 (7.87 dropped, ADR-635 b), 7.79's AT on 10 unseen seeds × 20
     years (HEAD's figure read on them first).
-- [ ] 7.88 The ferry's transport groups (found at 7.79c; R12-B1): `transportsAtPort` gives the ferry one group a
-  turn, the most room and then the lowest id, and on run 12's saves that group can never act (1129 year 10:
-  group 126 at Nuuk, whose island army does not march to it; 6421 year 20: groups at Port-of-Spain and
-  Roseau, the sail to the army refused), while 11 and 33 more stand idle at US ports; and one group (24,000
-  men) a turn carries two of 1129's 60 stranded divisions. In two parts:
-    - [x] 7.88a The ferry tries its standing groups at its ports, those on the land of an army it would
-      carry first, then the most room, the lowest id, until one gives an order, up to SAIL_TRIES of them.
-      AT: on 1129 year 10 and 6421 year 20, the USA's ferry turns in 30 days that give an order 0 → at
-      least half; piles read (`piles.ts --days 30`); a unit test (red without); the ADR; the pin's entry;
-      `--profile`.
-      Done (ADR-638, `docs/evidence/7.88/a.md`, `tools/diag/ferryTurns.ts`): 0 of 4 → 3 of 3 on both
-      (Nuuk's groups passed over for Norfolk's; Norfolk's first on 6421); piles 3 → 3 (7.88b's); invasion
-      AI cost within the noise; pin e66bef2e → 083f2585.
-    - [ ] 7.88b Every standing group with an army to carry acts in a turn (the user's ADR-637 a,
-      2026-10-22). AT: piles of 30 or more of a nation at war on one cell 30 days running on
-      1129 year 10, 6421 year 20 and 7019 year 10 3 → 0; transports at sea and island garrisons read
-      before and after; a unit test (red without); the ADR; the pin's entry; `--profile`.
+
+- [ ] 7.89 The invasion turn held by one formation aboard (found at 7.88b; R12-B1): `invasionAi` skips a
+  nation's whole turn (landing, Normandy, ferry) while any formation of its is aboard (PLAN 4.6b). With
+  every group acting (ADR-637 a), the first turn's boarders hold every other group of the nation for
+  their voyage: 1129 year 10, 2 US divisions aboard days 3657–3679 and the USA's three actor days after
+  skipped, while 49 and 60 stood on two cells; 6421 year 20, 74 at Norfolk waited 23 days to board
+  (`docs/evidence/7.88/b.md`). AT: piles of 30 or more of a nation at war on one cell 30 days running on
+  1129 year 10, 6421 year 20 and 7019 year 10 2 → 0 (`piles.ts --days 30`); transports at sea and
+  formations aboard read (`ferryLift.ts`); a unit test (red without); the ADR; the pin's entry;
+  `--profile`.
 - [ ] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at
   year 20 1,174 a world on HEAD against 837 on `dd3b730` (469 at the 1938 start), worse on 24 of 24
   seeds; founded statelets at year 20 20.7 a world (6.6). 7247's Russia German grey and Soviet red
@@ -487,3 +480,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.78 On a first strike a place's output counts only with an army in the blast (found at 7.74; […]
 - [x] 7.81 Map visuals (mapVisuals 6, needs 7, beyond R12-B2): the map tooltip is stale, sixth run […]
 - [x] 7.87 The far march to a threatened sector, over a season (found at 7.79d; R12-B1; waits on the […]
+- [x] 7.88 The ferry's transport groups (found at 7.79c; R12-B1): `transportsAtPort` gives the ferry one group a […]

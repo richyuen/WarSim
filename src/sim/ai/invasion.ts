@@ -594,16 +594,25 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
   if (groups.length === 0) return false;
   const z = seaOf(world);
   const keys = waterKeys(world, n);
+  // Every group with an army left to carry acts (PLAN 7.88b, the user's ADR-637 a): the turn goes
+  // on until the room of the groups that gave an order covers the free army's men, or SAIL_TRIES
+  // groups gave none (each refusal may cost searches of the map). A formation ordered is no longer
+  // standing, so the next group takes others. Before, the first group that acted ended the turn:
+  // one group (24,000 men) a week while 60 divisions stood on 1129 year 10.
+  let men = 0;
+  for (const id of island) men += c.strength[id]!;
   const tries: FerryTry[] = [];
   let acted = false;
-  for (const g of groups.slice(0, SAIL_TRIES)) {
+  let refused = 0;
+  for (const g of groups) {
+    if (men <= 0 || refused >= SAIL_TRIES) break;
     const t: FerryTry = { fleet: g.fleet, port: g.port, room: g.room, way: 'board', acted: false };
     tries.push(t);
     t.acted = ferryGroup(g.fleet, g.room, g.port, t);
     if (t.acted) {
       acted = true;
-      break;
-    }
+      men -= g.room;
+    } else refused++;
   }
   FERRY_PROBE.turn?.({ nation: n, free: island.length, groups: groups.length, tries });
   return acted;

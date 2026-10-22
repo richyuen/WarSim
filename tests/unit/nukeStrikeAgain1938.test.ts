@@ -43,7 +43,13 @@ describe('a nation fighting for its life that struck once strikes again (PLAN 7.
       sim.step(24, watch);
     }
     process.stderr.write(`France's strike decisions on days ${decided.map((t) => Math.floor(t / 24)).join(', ')}\n`);
-    expect(decided.filter((t) => t < 24 * 60).length, 'strikes in the first 60 days').toBeGreaterThanOrEqual(2);
+    // Restated (PLAN 7.88b, ADR-642; history moved, claim kept): the claim is a second strike soon
+    // after the first, not the first's day. It asked for two in the first 60 days (days 33 and 40
+    // before ADR-642); with every transport group ferrying, Germany's war moved and France struck on
+    // days 53 and 60. The second now within 30 days of the first (the critic's France held 49 days;
+    // without ADR-461's men lost, days 41 and 90).
+    expect(decided.length, 'strikes in 90 days').toBeGreaterThanOrEqual(2);
+    expect(decided[1]! - decided[0]!, 'hours from the first strike to the second').toBeLessThanOrEqual(24 * 30);
     // The war it struck in is still on: the later strikes are of a France that keeps losing.
     expect(world.wars.list.includes(war)).toBe(true);
   });

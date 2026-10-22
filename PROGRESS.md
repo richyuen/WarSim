@@ -22311,3 +22311,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   791–800 (`docs/evidence/7.81/b.md` §5): 4,506 / 3,748 = 1.20 (`dd3b730` 1.80). 7.81b ticked, and 7.81
   with it (7.81a's spec, this bar, the gate green). BLOCKERS entries resolved.
 - **Next:** PLAN 7.88b, then 7.80b, then 7.79's AT.
+
+## 2026-10-22 — PLAN 7.88b closed not done: every group carries; one formation aboard holds the turn (ADR-642)
+
+- **Rule** (the user's ADR-637 a): the ferry's groups each take the turn in turn (7.88a's order) until the
+  room of those that gave an order covers the free army's men, or SAIL_TRIES gave none; before, the first
+  that gave an order ended it.
+- **Read** (`docs/evidence/7.88/b.md`): the first turn's groups giving an order 1 → 6 on 1129 year 10, 1 → 26
+  on 6421 year 20. Piles of 30+ for 30 days 3 → 2 (bar 0): 6421's 75 marched to Norfolk and boarded after
+  23 days; 1129's 60 (by Chicago, ~120 cells from Norfolk) and 49 stay. Four groups at Norfolk carry eight
+  divisions a turn, and the USA's next three turns were skipped: the invasion AI plans nothing for a
+  nation while one of its formations is aboard (PLAN 4.6b), 2 divisions aboard 22 days. That lock is
+  PLAN 7.89 (BLOCKERS). Transports at sea (nations at war) 3.9 → 5.9 and 4.3 → 4.8; island garrisons the
+  same (`tools/diag/ferryLift.ts`, `pileDaily.ts`).
+- **Test:** `strandedFerry1938.test.ts` "two groups at two ports each take their division aboard"; red with
+  the turn ended at the first group. `stranded(spare)` keeps extra divisions for the caller.
+- **Timing** (pairs on separate P-cores, swapped, `.cache/prof88b/`): invasion AI within the noise; the
+  longest call from 6421 61–63 → 87–93 ms.
+- **Gate found:** `nukeStrikeAgain1938` asked two French strikes in 60 days: days 33, 40 → 53, 60. Restated
+  on the gap (the second within 30 days of the first; ADR-642), claim kept.
+- **Pin:** dc72fc97 → b7653c3c.
+- **Next:** PLAN 7.89 (the lock), then 7.80b.

@@ -14086,3 +14086,40 @@ Of 7.33 (open in PLAN.md):
   the pin's entry; `--profile`.
   Dropped (2026-10-22, the user's decision: ADR-635 b), not done; reopened only if 7.79's AT stays flat
   after 7.88b.
+
+<!-- moved 2026-10-22 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.88 The ferry's transport groups (found at 7.79c; R12-B1): `transportsAtPort` gives the ferry one group a
+  turn, the most room and then the lowest id, and on run 12's saves that group can never act (1129 year 10:
+  group 126 at Nuuk, whose island army does not march to it; 6421 year 20: groups at Port-of-Spain and
+  Roseau, the sail to the army refused), while 11 and 33 more stand idle at US ports; and one group (24,000
+  men) a turn carries two of 1129's 60 stranded divisions. In two parts (closed, ADR-554: 7.88a done, 7.88b
+  closed not done; what is left is PLAN 7.89):
+    - [x] 7.88a The ferry tries its standing groups at its ports, those on the land of an army it would
+      carry first, then the most room, the lowest id, until one gives an order, up to SAIL_TRIES of them.
+      AT: on 1129 year 10 and 6421 year 20, the USA's ferry turns in 30 days that give an order 0 → at
+      least half; piles read (`piles.ts --days 30`); a unit test (red without); the ADR; the pin's entry;
+      `--profile`.
+      Done (ADR-638, `docs/evidence/7.88/a.md`, `tools/diag/ferryTurns.ts`): 0 of 4 → 3 of 3 on both
+      (Nuuk's groups passed over for Norfolk's; Norfolk's first on 6421); piles 3 → 3 (7.88b's); invasion
+      AI cost within the noise; pin e66bef2e → 083f2585.
+    - [x] 7.88b Every standing group with an army to carry acts in a turn (the user's ADR-637 a,
+      2026-10-22). AT: piles of 30 or more of a nation at war on one cell 30 days running on
+      1129 year 10, 6421 year 20 and 7019 year 10 3 → 0; transports at sea and island garrisons read
+      before and after; a unit test (red without); the ADR; the pin's entry; `--profile`.
+      Closed not done (ADR-642, BLOCKERS 2026-10-22; `docs/evidence/7.88/b.md`): the rule is in (the
+      first turn's groups that gave an order 1 → 6 on 1129, 1 → 26 on 6421); piles 3 → 2 (6421's
+      cleared; 1129's 60 and 49 stay). The lock that holds a nation's turn while one of its formations is
+      aboard skipped the next three turns: PLAN 7.89.

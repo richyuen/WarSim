@@ -6,6 +6,7 @@ import { neighbours4 } from '../../src/sim/nav/grid';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Refusal } from '../../src/shared/commands';
 import { placeFleet } from '../../src/sim/placeForces';
+import { AT_PORT_CELLS } from '../../src/sim/systems/navalCombat';
 import { Sim } from '../../src/sim/sim';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import { transportRoom } from '../../src/sim/systems/amphibious';
@@ -33,7 +34,7 @@ const LIT = id('LIT');
  * standing at a home port that reaches no front cell, and Germany's one transport group at that
  * port's water. `reaches`: whether a cell reaches a front cell.
  */
-function stranded(): { w: Sim['world']; div: number; tp: number; home: { p: { cell: number }; i: number }; europe: number; reaches: (k: number) => boolean } {
+function stranded(spare = 0): { w: Sim['world']; div: number; tp: number; home: { p: { cell: number }; i: number }; europe: number; reaches: (k: number) => boolean; more: number[] } {
   const s = new Sim({ scenario: '1938', seed: 4603, assets: assets1938(W) });
   const w = s.world;
   s.command({ kind: 'setSetting', key: 'aiEnabled', value: false });
@@ -81,12 +82,19 @@ function stranded(): { w: Sim['world']; div: number; tp: number; home: { p: { ce
     if (comp[Math.floor(c.y[f]!) * W + Math.floor(c.x[f]!)] === europe) div = f;
   });
   expect(div).toBeGreaterThan(0);
+  // `spare` more German divisions that fit the room, kept for the caller to place.
+  const more: number[] = [];
+  w.formations.forEach((f) => {
+    if (more.length >= spare || f === div || c.nation[f] !== GER || w.offLand(f) || w.isWing(f) || w.isFleet(f) || c.strength[f]! > room) return;
+    more.push(f);
+  });
+  expect(more).toHaveLength(spare);
   // The front not held: no German land formation within the range of it (`frontHeld`).
   const r = w.atSize(DEPLOY_RANGE_CELLS);
   const nearFront = (x: number, y: number): boolean => front.some((k) => Math.abs((k % W) + 0.5 - x) <= 2 * r && Math.abs(Math.floor(k / W) + 0.5 - y) <= 2 * r);
   const ids: number[] = [];
   w.formations.forEach((f) => ids.push(f));
-  for (const f of ids) if (f !== div && c.nation[f] === GER && !w.isFleet(f) && !w.isWing(f) && nearFront(c.x[f]!, c.y[f]!)) destroyFormation(w, f);
+  for (const f of ids) if (f !== div && !more.includes(f) && c.nation[f] === GER && !w.isFleet(f) && !w.isWing(f) && nearFront(c.x[f]!, c.y[f]!)) destroyFormation(w, f);
   [c.x[div], c.y[div]] = w.cellPoint(home!.p.cell);
   c.moving[div] = 0;
   c.engaged[div] = 0;
@@ -94,7 +102,7 @@ function stranded(): { w: Sim['world']; div: number; tp: number; home: { p: { ce
   c.home[div] = 0;
   w.paths.delete(div);
   expect(reaches(home!.p.cell)).toBe(false);
-  return { w, div, tp: tp!, home: home!, europe, reaches };
+  return { w, div, tp: tp!, home: home!, europe, reaches, more };
 }
 
 describe('the ferry from a front’s land the army cannot walk to its front (PLAN 7.79c)', () => {
@@ -162,5 +170,58 @@ describe('the ferry tries its groups until one acts (PLAN 7.88a)', () => {
     const target = w.embarked.get(div)!.target;
     expect(comp[target]).toBe(europe);
     expect(reaches(target)).toBe(true);
+  });
+});
+
+// PLAN 7.88b, the user's ADR-637 a: the ferry's turn ended at the first group that gave an order,
+// so the ferry carried one group's room (24,000 men) a turn: critic run 12, seed 1129 year 10, 60 US
+// divisions at one cell for 30 days while 11 more US groups stood at its ports. Here a second German
+// group stands at a second home port (far from the first, neither reaching the front), with a
+// division of its own there. Both groups take their division aboard in the one turn. Before, the
+// first group's division alone went.
+describe('every group with an army to carry acts in the ferry’s turn (PLAN 7.88b)', () => {
+  it('two groups at two ports each take their division aboard', () => {
+    const { w, div, tp, home, europe, reaches, more } = stranded(1);
+    const c = w.formations.cols;
+    const comp = navOf(w).grid.component;
+    const water = portSeaOf(w);
+    const ctl = w.cells.controller;
+    const room = transportRoom(w, tp);
+    // A second home port of Germany's on Europe, reaching no front cell, far from the first.
+    const far = (a: number, b: number): boolean => Math.abs((a % W) - (b % W)) + Math.abs(Math.floor(a / W) - Math.floor(b / W)) > 4 * w.atSize(AT_PORT_CELLS);
+    const other = w.ports.findIndex((p, i) => i !== home.i && water[i]! >= 0 && ctl[p.cell] === GER && comp[p.cell] === europe && !reaches(p.cell) && far(p.cell, home.p.cell));
+    expect(other).toBeGreaterThanOrEqual(0);
+    const sea2 = water[other]!;
+    // A second group, the same template, at that port's water; both standing.
+    const before = new Set<number>();
+    w.formations.forEach((f) => before.add(f));
+    expect(placeFleet(w, GER, c.template[tp]!, (sea2 % W) + 0.5, Math.floor(sea2 / W) + 0.5)).toBe(Refusal.None);
+    let second = 0;
+    w.formations.forEach((f) => {
+      if (!before.has(f)) second = f;
+    });
+    expect(second).toBeGreaterThan(0);
+    expect(transportRoom(w, second)).toBe(room);
+    w.station.delete(second);
+    [c.x[second], c.y[second]] = [(sea2 % W) + 0.5, Math.floor(sea2 / W) + 0.5];
+    for (const f of [tp, second]) c.moving[f] = 0;
+    // A second German division, standing at the second port.
+    const div2 = more[0]!;
+    [c.x[div2], c.y[div2]] = w.cellPoint(w.ports[other]!.cell);
+    c.moving[div2] = 0;
+    c.engaged[div2] = 0;
+    c.retreat[div2] = 0;
+    c.home[div2] = 0;
+    w.paths.delete(div2);
+    w.settings.aiEnabled = true;
+    invasionAi(w);
+    w.settings.aiEnabled = false;
+    // Both divisions aboard, each for a cell on Europe from which the front is reached.
+    for (const d of [div, div2]) {
+      const target = w.embarked.get(d)?.target;
+      expect(target).toBeDefined();
+      expect(comp[target!]).toBe(europe);
+      expect(reaches(target!)).toBe(true);
+    }
   });
 });
