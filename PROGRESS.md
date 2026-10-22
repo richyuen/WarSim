@@ -22063,4 +22063,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   would only have held fire to day 61.
 - **Decided:** industry stays a first-strike target (SPEC §6.4); 7.74 ticked closed not done, 7.78
   dropped, the BLOCKERS entry resolved, ADR-632 accepted (b). No code: the pin unchanged.
-- **Next:** no task before PLAN 7.5 (the critic), which runs when due or at the DONE condition.
+- **Next:** PLAN 7.5, the critic run, the next iteration's task: it is the first unchecked task (step 3),
+  and with every other task closed the DONE condition's trigger of step 2a applies (`critic:due` cannot
+  see it: Phase 7 has no phase review). `npm run check:review` first, then the critic (ADR-554).
