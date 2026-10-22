@@ -36,6 +36,78 @@ The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
 when taken up:
 
+Run 12's (report of 2026-10-22 on `896ff779`, `critic/CRITIC_REPORT.md`; R11-B2 closed; map visuals
+and performance 7 → 6): R12-B1 and R12-B2 are PLAN 7.79 and 7.80; the dimensions under the bar, beyond
+them, are 7.81–7.86. A task each, split when taken up:
+
+- [ ] 7.79 The land war after year 1, again (R12-B1; R11-B1 not fixed by 7.49): on the critic's same 48
+  checkpoints (years 10 and 20 of run 11's 24 seeds) 1.52 land formations engaged of about 358 of nations
+  at war, with 7.3 wars running; daily over 30 years on 32 worlds 33.7 engaged in year 1 and 2.11 after
+  (5.1 a war in year 1, 0.34 after). Seed 6421's year-21 Germany–Soviet war 0–2 engaged over 60 days; 60
+  US divisions (714,480 men) idle in one place at war (1129, year 10). Evidence:
+  `critic/c12_cmp_checkpoints.json`, `c12_cmp_all.txt`, `c12_engaged_w1.json`–`w3.json`,
+  `c12_y_6421_gersov.json`, `c12_stacks_y10_w1.json`. The critic's fix: a nation at war sends its
+  standing army to its fronts and holds a front line it fights for. Measure first what keeps the army
+  from the front (where the formations of nations at war stand late, and why the AI leaves them). AT:
+  on 10 unseen seeds × 20 years, engaged land formations a war, mean of daily samples in years 2–20, at
+  least a tenth of year 1's (HEAD's 0.34 / 5.1 = 0.067, read on the same seeds first); no pile of 30 or
+  more divisions of a nation at war in one place for 30 days; a unit test, red without; the gate green.
+- [ ] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at
+  year 20 1,174 a world on HEAD against 837 on `dd3b730` (469 at the 1938 start), worse on 24 of 24
+  seeds; founded statelets at year 20 20.7 a world (6.6). 7247's Russia German grey and Soviet red
+  mottled with Czechoslovak pockets; 6421 Hungary's orange with Soviet islands; West Africa in shards.
+  Evidence: `critic/c12_frag_head_w12.json`, `c12_frag_head_w3.json`, `c11_frag_head.json`,
+  `critic/shots/c12x_7247_y20_eurasia.png`, `c12y_6421_gersov_d60.png`. Measure first, by bisecting
+  `dd3b730..896ff779` on the critic's count, which change cuts the map (walk-in occupation without
+  fronts, revolts and statelets ×3, moving capitals, beach-fed coastal pockets). If pockets on a supplied
+  beach (ADR-630, the user's) are the main cause, the count goes to the user as that rule's price.
+  AT: on 10 unseen seeds, pieces of 2–400 cells at year 20 not above `dd3b730`'s on the same seeds
+  (read first); founded statelets at year 20 not above `dd3b730`'s; the gate green.
+- [ ] 7.81 Map visuals (mapVisuals 6, needs 7, beyond R12-B2): the map tooltip is stale, sixth run
+  ("London" over Paris, `critic/shots/c12a_4219_20_paris_150m_day10.png`); a moving capital is
+  captured again and again ("Australia captured Turkey's capital" on 2, 13 and 28 December 1947,
+  `c12w_3301_z_history.png`; the Netherlands' capital moved 26 times in one year of 6421; 919 capital
+  moves a world in 30 years against 405). AT: an e2e spec, red before, where the tooltip over a city
+  names the place under the cursor after the map changes beneath it; on 10 unseen seeds × 30 years
+  capital moves a world not above `dd3b730`'s on the same seeds and no capital captured three times in
+  30 days; the gate green.
+- [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
+  years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts
+  (`critic/c12_cmp_all.txt`, `c12_summary_all.txt`). Taken up after 7.79 and 7.80, re-read on their HEAD
+  first. AT: on 10 unseen seeds × 30 years no stasis over 15 years (the critic's measure, read the same
+  way), and the share of cells changing hands by a front battle in years 10–30 measured and at least
+  HEAD's; the gate green.
+- [ ] 7.83 Performance (performance 6, needs 7): seed 99's mean tick 1.785–1.790 ms pinned on HEAD
+  against 1.388 on `dd3b730` (+29 %), over the 1.5 ms budget; year 1 2.45 ms (budget 2.4); p95 6.8–8.5 ms
+  against 3.3–5.9; the page's late years 23–32 s at Max (21–24 s). Part is a busier world (64,120 cells
+  flipped by year 5 against 19,531). Evidence: `critic/c12_perf_seed99_5y_solo.log`, `…_solo2.log`,
+  `…_dd3b730.log`. Measure first with `--profile` on both commits, the same session, pinned, which
+  systems grew. AT: `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF` mean tick
+  ≤ 1.5 ms and year 1 ≤ 2.4 ms, twice; no rule's outcome changed only to save time (a rule change logged
+  in DECISIONS with its own reason); the gate green.
+- [ ] 7.84 Naval (naval 7, needs 8): a carrier strike's row, clicked, shows two US destroyer counters and
+  no aircraft (`sorties` 0 at 84 m/px, `critic/shots/c12n4_8693_rowless_clicked.png`); the Japan–USA
+  battle at 85 m/px shows the American side as a pale ring and nothing else
+  (`c12n_8693_JAP_USA_0_live.png`); late sea battles 13.29 → 9.30 a world-year, wars of two navies
+  1.14 → 0.29 (`c12_fleets.json`). AT: an e2e spec on seed 8693's Japan–USA carrier strike, red before:
+  clicking its row shows the striking aircraft and both sides' ships at the zoom it opens; on 10 unseen
+  seeds × 20 years late sea battles a world-year not below `dd3b730`'s on the same seeds; the gate green.
+- [ ] 7.85 Aircraft (aircraft 7, needs 8): air battles after year 1 153 a world-year against 2,853 in year 1
+  (0.054; 7.51b closed not done on the land-war cause, BLOCKERS 2026-10-22); a carrier strike shows no
+  aircraft (7.84 shares the case). Taken up after 7.79, re-read on its HEAD first. AT: on 10 unseen seeds ×
+  20 years air battles a year in years 2–20 at least a tenth of year 1's, or, if 7.79's land war does
+  not carry the air war there, the measured cause and the choice of 7.51b's (c) (an air war not tied to
+  the land war) to the user; the gate green.
+- [ ] 7.86 AI nuclear use (aiNukes 7, needs 8, beyond R11-B2): bursts on the same 24 seeds 188 → 497
+  (20.7 a world, 31 of 32 worlds); bursts killing over ten times more civilians than men 61 → 109; a
+  million or more civilians 4 → 8 (Germany on the Low Countries 3,090,000 civilians for 337 men at
+  utility 0.164, 5861; Germany on the Netherlands then Denmark in 7 days, 2,284,000 and 1,340,000 for 0
+  and 473 men at 2.04 and 1.83, 2347). The critic's design objection (cities struck as massacres; ADR-632
+  b keeps output a first-strike target) is the user's. Measure first which change raised the bursts
+  2.6 × (more wars, more warheads, or the rule), then put the choice to the user in an ADR. AT: the cause
+  measured on the critic's seeds; on 10 unseen seeds × 30 years bursts a world and civilian bursts (over
+  10 × men) not above `dd3b730`'s on the same seeds, or the user's ADR accepting the measured volume;
+  the gate green.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

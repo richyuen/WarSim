@@ -22086,3 +22086,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Rerun on `b925f374`:** typecheck, lint, build and parity green; stopped by Claude Code in the
   unit stage for low system memory (not a test failure). Not restarted.
 - **Next:** `npm run check:review` on this HEAD, alone on the machine; green, then the critic (step 2a).
+
+## 2026-10-22 — PLAN 7.5: critic run 12 on `896ff779` (check:review green)
+
+- **check:review on `896ff779`:** green, alone on the machine: 2 known red (fightSeen1938, zoomDemo1938), 0 not known.
+- **Critic run 12** (`critic/CRITIC_REPORT.md`): mapVisuals 6 (was 7), diplomacy 7, emergent 6, godMode 7, editor 7,
+  stats 7, UI 7, performance 6 (was 7), stability 7; semanticZoom 8, naval 7, tanks 8, aircraft 7, aiNukes 7.
+  Blocking 2: R12-B1 (the land war after year 1, R11-B1 not fixed: 2.11 engaged a day after year 1 against 33.7 in
+  year 1), R12-B2 (the late map shreds: 1,174 pieces of 2–400 cells at year 20 against 837 on `dd3b730`, 24 of 24
+  seeds). R11-B2 closed. Seed 99's tick 1.79 ms against 1.39 on `dd3b730` (budget 1.5).
+- **Filed:** PLAN 7.79 (R12-B1), 7.80 (R12-B2, carries map visuals), 7.81 map visuals (stale tooltip, recaptured
+  moving capitals), 7.82 emergent (stasis over 15 years), 7.83 performance (seed 99 under 1.5 ms), 7.84 naval (the
+  carrier strike's row shows no aircraft; late sea war), 7.85 aircraft (the late air war, after 7.79), 7.86 AI
+  nuclear use (bursts 188 → 497; the cause measured, the volume the user's). Run 12's evidence committed (no `.bin`
+  checkpoints, no shots, as run 11).
+- **Next:** PLAN 7.79.

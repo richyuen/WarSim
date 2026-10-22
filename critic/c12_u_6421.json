@@ -1,0 +1,38 @@
+{
+ "seed": 6421,
+ "bin": "critic/c12_seed6421_y20.bin",
+ "fronts": [
+  {
+   "id": 204,
+   "n": 1,
+   "x": 1368.5,
+   "y": 360.5756810088025,
+   "views": [
+    {
+     "el": 0,
+     "ind": 0,
+     "sorties": 1,
+     "contact": 0,
+     "mpp": 3000
+    },
+    {
+     "el": 131,
+     "ind": 0,
+     "sorties": 0,
+     "contact": 1,
+     "mpp": 250
+    },
+    {
+     "el": 79,
+     "ind": 1474,
+     "sorties": 0,
+     "contact": 0,
+     "mpp": 25
+    }
+   ]
+  }
+ ],
+ "engaged": 2,
+ "aloftWorld": 5,
+ "errors": []
+}

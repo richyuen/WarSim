@@ -1,14 +1,14 @@
 {
-  "commit": "dd3b730a2b7521286d7c9ae276c80aa050240ed8",
+  "commit": "896ff7799d1cefa7f891091bc249423fa0c2998a",
   "scores": {
-    "mapVisuals": 7,
+    "mapVisuals": 6,
     "diplomacyWarDepth": 7,
     "emergentDynamics": 6,
     "godMode": 7,
     "editorScenarios": 7,
     "statsHistory": 7,
     "uiUxPolish": 7,
-    "performance": 7,
+    "performance": 6,
     "stability": 7,
     "semanticZoom": 8,
     "naval": 7,
@@ -18,37 +18,38 @@
   },
   "blocking": [
     {
-      "id": "R11-B1",
-      "title": "After year 1 the land war has no battles: armies stand in piles at home while land changes hands without contact. Engaged land formations worldwide at years 10 and 20 on 24 worlds: mean 0.3-0.7 of about 300 belonging to nations at war (year 1: 55-107). Seed 6421 year 21: 0 engaged at all 25 fortnightly samples with 7-9 wars and 309-7,179 cells flipping per fortnight. At war, the UK keeps 85 of 160 divisions at London (7019) and 60 idle at Wick (1129, where a Soviet A-bomb kills 665,160 of them). Late air battles 120 a year against 3,160 in year 1. Same on bcbc99c (1.1 and 0.3): newly measured, not a regression; the read ADR-577 deferred to this report.",
+      "id": "R12-B1",
+      "title": "After year 1 the land war still has almost no battles (R11-B1 not fixed). Same 48 checkpoints (years 10/20, run 11's 24 seeds), same script: 1.52 engaged land formations (dd3b730: 0.50) of 358 belonging to nations at war, with 7.3 wars running (4.6). Daily over 30 years on 32 HEAD worlds: 33.7 engaged in year 1, 2.11 after (5.1 a war in year 1, 0.34 after). In the page: 6421's year-21 Germany-Soviet war shows 0-2 engaged over 60 days; 60 idle US divisions (714,480 men) stand in one place at war (1129, year 10).",
       "evidence": [
+        "critic/c12_cmp_checkpoints.json",
+        "critic/c12_cmp_all.txt",
+        "critic/c12_engaged_w1.json",
+        "critic/c12_engaged_w2.json",
+        "critic/c12_engaged_w3.json",
         "critic/c11_engaged_head.json",
-        "critic/c11_engaged_c10.json",
-        "critic/c11_engaged_year21.log",
-        "critic/c11_engaged_y1_6421.log",
-        "critic/c11_stacks_y10.json",
-        "critic/c11_stacks_c10_y10.json",
-        "critic/c11_wick_1129.json",
-        "critic/c11_u_6421.json",
-        "critic/shots/c11f_1129_11_goto.png",
-        "critic/shots/c11v_6421_ger_sov_6000m.png",
-        "critic/c11_cmp.json"
+        "critic/c12_y_6421_gersov.json",
+        "critic/shots/c12y_6421_gersov_d30.png",
+        "critic/c12_w_3301.json",
+        "critic/c12_stacks_y10_w1.json",
+        "critic/c12_u_6421.json"
       ],
-      "fix": "Make a nation at war send its standing armies to its fronts and over the sea to its enemies (the invasion AI, PLAN 4.6b, with the idle piles as its pool), so that contact after year 1 is in proportion to the wars running. Measure engaged formations per war-year after year 1 against year 1, on unseen seeds."
+      "fix": "Make a nation at war send its standing army to its fronts and hold a front line it fights for, so contact per war after year 1 is a real fraction of year 1's. Measure engaged formations per war after year 1 on unseen seeds, with a bar."
     },
     {
-      "id": "R11-B2",
-      "title": "The AI still H-bombs a city of a million at the utility floor, and re-strikes the same few thousand men; PLAN 7.38's bar fails on an unseen seed. Seed 1129: Soviet Union on Greenock, hydrogen bomb, 1,105,514 dead (34,514 men) at utility 0.026. Seed 2081: Germany strikes one spot three times in 184 days for 5,179, 3,879 and 4,090 men.",
+      "id": "R12-B2",
+      "title": "The late map shreds, worse than run 11 on every seed: pieces of 2-400 cells of one holder at year 20 are 1,174 a world on HEAD against 837 on dd3b730, worse on 24 of 24 same seeds (469 at the 1938 start); founded statelets at year 20 20.7 a world (6.6). Russia reads as grey-and-red confetti with blue pockets (7247), Soviet land as red islands in Hungarian orange (6421), West Africa in shards.",
       "evidence": [
-        "critic/c11_headless_1129.json",
-        "critic/c11_f_1129.json",
-        "critic/shots/c11f_1129_14_alert.png",
-        "critic/shots/c11f_1129_14_goto.png",
-        "critic/c11_headless_2081.json",
-        "critic/c11_cmp.json",
-        "critic/c11_summary_all.txt"
+        "critic/c12_cmp_checkpoints.json",
+        "critic/c12_frag_head_w12.json",
+        "critic/c12_frag_head_w3.json",
+        "critic/c11_frag_head.json",
+        "critic/c12_cmp_all.txt",
+        "critic/shots/c12x_7247_y20_eurasia.png",
+        "critic/shots/c12x_7247_y20_world.png",
+        "critic/shots/c12y_6421_gersov_d60.png"
       ],
-      "fix": "Weigh the dead so a floor-value strike cannot pay for a city (DEAD_COST 0.1 a million lets 0.13 of value buy a million dead); choose fission where the target is a few divisions; extend ADR-569's no-restrike-without-new-value to a spot struck within the last year. Measure on seeds the rule was not tuned on."
+      "fix": "Measure which of this run's changes cuts the map (walk-in occupation without fronts, revolts and statelets x3, capitals that move, beach-fed coastal pockets). Pockets that hold on a supplied beach are the user's (ADR-630); if they are the main cause, put the count to the user as the price of that rule. Otherwise make conquest follow fronts so occupation does not leave confetti, and bar the pieces count at year 20 on unseen seeds against dd3b730."
     }
   ],
-  "timestamp": "2026-10-21T05:22:09Z"
+  "timestamp": "2026-10-22T18:18:47Z"
 }

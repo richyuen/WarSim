@@ -1,0 +1,11 @@
+
+> warsim@0.0.1 sim
+> tsx tools/headless/cli.ts --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF
+
+pinned to CPUs 0xffff
+year   1  tick 8760  hash a4ff4661  nations 94  formations 951  flipped 27311  tick ms mean 2.4509 p95 6.9614  (21.52 s)
+year   2  tick 17520  hash a56a9555  nations 91  formations 697  flipped 39213  tick ms mean 1.8669 p95 7.4168  (16.39 s)
+year   3  tick 26280  hash 4542dbb0  nations 96  formations 641  flipped 39387  tick ms mean 1.3546 p95 7.2564  (11.91 s)
+year   4  tick 35040  hash cbc3f12c  nations 100  formations 627  flipped 46675  tick ms mean 1.5975 p95 7.8633  (14.04 s)
+year   5  tick 43800  hash 09167f24  nations 98  formations 643  flipped 64120  tick ms mean 1.6783 p95 8.5189  (14.74 s)
+done: 5 years, 78.6 s wall, mean tick 1.7896 ms, final hash 09167f24 → .cache/runs/1938-seed99-5y.json
