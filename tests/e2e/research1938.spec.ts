@@ -16,6 +16,12 @@ test('research on the page: Germany works on three techs, and a month pays more 
   await page.setViewportSize({ width: 1400, height: 800 });
   await page.goto('/?scenario=1938&paused=1&seed=1938');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.hud.techs.value.length > 0, null, { timeout: 60_000 });
+  // The AI off: the panel and the budget's rule are the subject, not the year's wars. A nation
+  // without AI still has its research budget set monthly by the rule (`economic.ts`, step 4). With
+  // the AI on, this seed's history decided the test: after PLAN 7.67's raising a month paid a line
+  // no more than the 5 points asked below, and by PLAN 7.73a (the landings of 7.70-7.72 between) Germany
+  // is dead by December 1938.
+  await page.evaluate(() => window.__warsim!.sim.command({ kind: 'setSetting', key: 'aiEnabled', value: false }, true));
   const GER = id('GER');
   await page.evaluate((n) => window.__warsim!.view!.select(n), GER);
   await page.getByTestId('tab-economy').click();
