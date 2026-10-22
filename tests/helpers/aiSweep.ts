@@ -103,6 +103,8 @@ export function aiSweep(seed: number): void {
   const shortAt: string[] = [];
   let shortDead = 0;
   let nextWar = s.world.wars.nextId;
+  // The fleets of the start that stand at the end of the first year (PLAN 4.2b's daily test asks them).
+  let standingYear1 = 0;
   for (let y = 0; y < 10; y++) {
     if (y === 9) saved = s.save();
     const year: Record<string, number> = {};
@@ -220,6 +222,7 @@ export function aiSweep(seed: number): void {
       if (isMonthStart(w.startDay, w.tick)) expect(deadLand(w), `seed ${seed}, tick ${w.tick}: land of the dead`).toEqual([]);
     });
     yearly.push(year);
+    if (y === 0) standingYear1 = fleets.start - fleets.gone - fleets.sailed - fleets.fought - fleets.carried - fleets.laid;
     // Invariant (review in PLAN 1.34a): no alliance has two members at war with each other.
     for (const al of s.world.alliances.list) {
       for (const m of al.members) for (const o of al.members) if (m < o) expect(s.world.wars.atWar(m, o), `seed ${seed} year ${y}: allies ${m} and ${o} at war`).toBe(false);
@@ -263,7 +266,15 @@ export function aiSweep(seed: number): void {
   expect(counts['SeaBattle'] ?? 0, `seed ${seed}: sea battles in ten years`).toBeGreaterThanOrEqual(1);
   process.stderr.write(`seed ${seed}: ${counts['SeaBattle'] ?? 0} sea battles (PLAN 4.6c)\n`);
   process.stderr.write(`seed ${seed}: ${counts['FormationEmbarked'] ?? 0} formations embarked, ${counts['FormationLanded'] ?? 0} landed, ${counts['LandingRepulsed'] ?? 0} thrown back (PLAN 4.6b)\n`);
-  expect(fleets.start - fleets.gone - fleets.sailed - fleets.fought - fleets.carried - fleets.laid, `seed ${seed}: fleets that stand after ten years`).toBeGreaterThan(0);
+  // That the daily test of the fleets asks something (PLAN 4.2b): many fleets of the start stand
+  // through the first year. Until PLAN 7.69 this asked for one standing after ten years; since the
+  // AI sails fleets (4.6c), lays them up (4.6e1) and lands at capitals (7.69), every fleet of the start
+  // has sailed or fought by year 10 (seed 1's last, a Soviet fleet, struck at its base on day 913 of
+  // the Soviet war with Britain): 1 of 197 standing on seeds 1 and 2 before 7.69, 0 after. At the end
+  // of year 1, 53, 49 and 63 of 197 stand on seeds 1, 2 and 3 (2026-10-22); the floor is about half.
+  process.stderr.write(`seed ${seed}: ${standingYear1} of ${fleets.start} fleets of the start stand after one year, ${fleets.start - fleets.gone - fleets.sailed - fleets.fought - fleets.carried - fleets.laid} after ten (PLAN 4.2b)
+`);
+  expect(standingYear1, `seed ${seed}: fleets of the start that stand after one year`).toBeGreaterThanOrEqual(25);
   process.stderr.write(`seed ${seed}: ${fleets.start} fleets at the start, ${fleets.start - fleets.gone - fleets.sailed - fleets.fought - fleets.carried - fleets.laid} at their cells with their ships after ten years, ${fleets.sailed} sailed (from bases lost, PLAN 4.4e; by the naval AI, PLAN 4.6c), ${fleets.fought} in sea battles, ${fleets.carried} carried troops (PLAN 4.5a), ${fleets.laid} laid up (PLAN 4.6e1), ${fleets.gone} gone with their nations
 `);
   // PLAN 3.12Rk: no march home waits out a war before an enemy's cell.

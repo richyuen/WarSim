@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-633 · 2026-10-22 · accepted — The ten-year runs' fleet guard reads the first year: 25 of the start's fleets standing, for one after ten years (amends PLAN 4.2b's AT; the rule PLAN 7.69's)
+
+- **Context** (`npm run check:review` before critic run 12, PLAN 7.5): `tests/sweep/aiSweep1-3` red,
+  "fleets that stand after ten years: expected 0 to be greater than 0". Bisected on seed 1 from
+  `dd3b730` (green) to HEAD: the first red commit is `91d596b8` (PLAN 7.69, the AI's landing aims
+  at an enemy capital on a coast). Its own gate ran the pin alone (ADR-278), which the change
+  leaves (32761b44).
+- **Measured** (fleetsStand's counts, `tests/helpers/fleetsStand.ts`): before 7.69, 1 of 197 fleets
+  of the start stood after ten years on seeds 1 and 2 (seed 1's a Soviet fleet at its base); after,
+  0. That fleet is struck at its base on day 913 of the Soviet war with Britain (counted
+  `fought`): its nation at war, the rules' work. Seed 1 stood 86 / 53 / 4 / 1 on days 30, 365,
+  1,825 and 3,650 before 7.69, 86 / 53 / 3 / 0 after. On HEAD, after one year: 53, 49 and 63 of 197
+  on seeds 1, 2 and 3.
+- **Decision.** PLAN 4.2b's guard that the daily test asks something (a fleet no rule should have
+  touched is still a line, and that test is unchanged) reads the first year: at least 25 of the
+  start's fleets stand at its end, about half the least measured. The count after ten years is
+  printed. As at PLAN 4.4e, 4.6c and 4.6e1, a rule that frees fleets moves the guard's figure: the
+  AI sails, lays up and fights its fleets, so after ten years every fleet of the start has been
+  freed. The old guard was one fleet from empty.
+- **Consequences.** The three ten-year runs green (53, 49, 63). No sim change, pin unchanged.
+
 ### ADR-632 · 2026-10-22 · accepted, option b (the user's decision) — Poland's first strike is still an empty Berlin, by its output; PLAN 7.62's "Soviet army" was a misread (PLAN 7.74; amends the read of ADR-629, ADR-631)
 
 - **Context.** PLAN 7.74 was to test that the critic's editor-armed Poland of run 11 (seed 9437,
