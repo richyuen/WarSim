@@ -1,0 +1,130 @@
+{
+ "all": {
+  "landed": 12,
+  "onFrontLand": 12,
+  "engagedEver": 3,
+  "within60": 4,
+  "within60Last": 5
+ },
+ "rows": [
+  {
+   "seed": 7019,
+   "src": "critic/c11_seed7019_y10.bin",
+   "landed": 12,
+   "onFrontLand": 12,
+   "engagedEver": 3,
+   "within60": 4,
+   "within60Last": 5,
+   "list": [
+    {
+     "nation": "JAP",
+     "day": 19,
+     "port": "Wonsan",
+     "cellsToFront": 129,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": false
+    },
+    {
+     "nation": "JAP",
+     "day": 33,
+     "port": "Chongjin",
+     "cellsToFront": 122,
+     "engagedDays": 0,
+     "lastCells": 6,
+     "alive": false
+    },
+    {
+     "nation": "JAP",
+     "day": 47,
+     "port": "Wonsan",
+     "cellsToFront": 126,
+     "engagedDays": 0,
+     "lastCells": 9,
+     "alive": false
+    },
+    {
+     "nation": "JAP",
+     "day": 61,
+     "port": "Wonsan",
+     "cellsToFront": 108,
+     "engagedDays": 0,
+     "lastCells": 431,
+     "alive": false
+    },
+    {
+     "nation": "ENG",
+     "day": 74,
+     "port": "Jinxi",
+     "cellsToFront": 93,
+     "engagedDays": 0,
+     "lastCells": 55,
+     "alive": true
+    },
+    {
+     "nation": "JAP",
+     "day": 75,
+     "port": "Chongjin",
+     "cellsToFront": 86,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": false
+    },
+    {
+     "nation": "NED",
+     "day": 90,
+     "port": "Nagasaki",
+     "cellsToFront": 0,
+     "engagedDays": 4,
+     "lastCells": -1,
+     "alive": false
+    },
+    {
+     "nation": "JAP",
+     "day": 89,
+     "port": "Wonsan",
+     "cellsToFront": 97,
+     "engagedDays": 0,
+     "lastCells": -1,
+     "alive": false
+    },
+    {
+     "nation": "JAP",
+     "day": 112,
+     "port": "Hiroshima",
+     "cellsToFront": 1,
+     "engagedDays": 8,
+     "lastCells": -1,
+     "alive": false
+    },
+    {
+     "nation": "BEL",
+     "day": 117,
+     "port": "Jinxi",
+     "cellsToFront": 0,
+     "engagedDays": 0,
+     "lastCells": 0,
+     "alive": true
+    },
+    {
+     "nation": "ENG",
+     "day": 119,
+     "port": "Jinxi",
+     "cellsToFront": 64,
+     "engagedDays": 0,
+     "lastCells": 55,
+     "alive": true
+    },
+    {
+     "nation": "NED",
+     "day": 156,
+     "port": "Miyazaki",
+     "cellsToFront": 0,
+     "engagedDays": 13,
+     "lastCells": -1,
+     "alive": false
+    }
+   ]
+  }
+ ]
+}

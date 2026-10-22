@@ -5,6 +5,26 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.63: the ferry's port nearest the front is in; within 60 cells on day 60 at 69 %, bar 80 % (2026-10-21, ADR-616; the user's decision)
+- **The bar:** of the formations ferried and landed in 60 days of the critic's 48 saves
+  (`ferryLanded.ts`), within 60 cells of their front on day 60 at least 80 %.
+- **What moved** (`docs/evidence/7.63.md`): 66 of 133 (50 %, HEAD) → 70 of 102 (69 %). Landed
+  beyond 60 cells 41 → 7. Fewer land in the 60 days (133 → 102): a port by the front is a longer
+  voyage. On the critic's case (7019 year 10, read 180 days) Britain lands at Jinxi in China, 64–93
+  cells from its front, on days 74 and 119, where it landed at Wilhelmshaven and Constanța
+  (524–626) before. Engaged (`warSides.ts`) flat at 0.588 worldwide, 0.133 per war. The unit test,
+  the ADR, the pin and the 50 ms bound (5.6 ms) are met.
+- **What is out of the port's reach:** of the 102, 10 are the landing AI's beachheads on a land with
+  no front (the read counts every formation that boards and lands), 8 landed by a front gone from
+  their land by day 60, 7 died. Of the 77 alive by a front of their nation on day 60, 70 are within
+  60 cells (91 %).
+- **What is left:** the user's. (a, recommended) 7.63 ticked on its rule's own case: the bar read on
+  the ferry's own landings, alive by a front on day 60, 91 %; the far landings 41 → 7; (b) closed
+  not done, the rule kept; (c) kept open for a second rule on the seven left (a port whose land's
+  front is beyond 60 cells of every port of the nation's: Japan's in Korea, the Netherlands at
+  Mombasa; the remedy, a landing at a coast with no port, is a design choice). Meanwhile the loop
+  takes PLAN 7.64.
+
 ### RESOLVED 2026-10-21 (option a each, the user's decision: 7.49d3 ticked, 7.49 closed not done) · PLAN 7.49d3 and 7.49 at its budget: transports bought, both bars of d3 missed; 7.49's AT missed at 20 commits (2026-10-21, ADR-614; the user's decision)
 - **The bars:** 7.49d3: the island share of the 48 saves together after 60 days under 20 % (7.49d's,
   with d1–d3 in); the island formations of nations with no transports after 180 days under half of

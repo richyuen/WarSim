@@ -21658,3 +21658,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   divisions added instead the bigger army raised a wing order). Specs by hand: none (no drawn change).
 - **Pin:** e8f654c9 → cffa092a.
 - **Next:** PLAN 7.63 (the ferry's port nearest the front), then 7.64, 7.62.
+
+## 2026-10-21 — PLAN 7.63: the ferry's port nearest the front (ADR-616; bar missed, the user's)
+
+- **Rule** (`ai/invasion.ts`, `planFerry`): of its ports on a front's land that take the ferry, the
+  nearest a front cell of its own on that land (straight cells), the nearest by sea on a tie (was:
+  the nearest by sea); an ally's picked the same way, one function for both. SPEC §7 (the ferry).
+- **Read** (`docs/evidence/7.63.md`, the critic's 48 saves, `ferryLanded.ts`, 60 days): within 60
+  cells of their front on day 60, 66 of 133 (50 %, HEAD `3626f954`) → 70 of 102 (69 %), bar 80 %:
+  missed. Beyond 60 cells 41 → 7. Of the 102, 10 are landing-AI beachheads (no front on their land),
+  8 landed by a front gone by day 60, 7 died; of the 77 alive by a front, 70 (91 %). Fewer land in
+  60 days: the port by the front is a longer voyage (7019 year 10, 180 days: Britain at Jinxi in
+  China on days 74 and 119, 64–93 cells, where it landed at Wilhelmshaven and Constanța, 524–626).
+  Engaged (`warSides.ts`, 30 days) 0.588 / 0.133 before and after. Invasion AI longest call 5.6 ms.
+- **Test:** `ferry1938.test.ts`, a new case (Britain at war with Italy, from Glasgow: Berbera, 9
+  cells; red without: Gibraltar, 314). The AT named Britain and Japan: no land front between them
+  at the 1938 start, so the ferry never runs there. Specs by hand: none (no drawn change).
+- **Pin:** cffa092a → 8387d0c3.
+- **BLOCKERS**, the user's: (a) tick on the rule's own case, (b) close not done, (c) keep open.
+- **Next:** PLAN 7.64 (the ferry for a nation fronted through an ally alone), then 7.62.

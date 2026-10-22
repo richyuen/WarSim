@@ -47,6 +47,9 @@ when taken up:
   their front on day 60 at least 80 % (71 of 133, 53 %, on 7.49d1's code); engaged worldwide and per
   war read (`warSides.ts`); no invasion AI call over 50 ms; a unit test (red without: Britain at
   war with Japan lands at a port nearer its front); the ADR; the pin's entry.
+  Rule in (ADR-616, `docs/evidence/7.63.md`; the test's case Britain and Italy, no British front
+  with Japan in 1938): 66 of 133 (50 %) → 70 of 102 (69 %), beyond 60 cells 41 → 7; the bar missed,
+  BLOCKERS, the user's.
 
 - [ ] 7.64 The ferry for a nation fronted through an ally alone (found at 7.49d2,
   `docs/evidence/7.49/d2.md` §3; carries emergent 6 with 7.49): a nation at war whose land front is

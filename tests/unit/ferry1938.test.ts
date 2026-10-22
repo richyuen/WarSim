@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
+import { DEPLOY_RANGE_CELLS } from '../../src/sim/ai/operational';
 import { STAGGER } from '../../src/sim/ai/strategic';
 import { neighbours4 } from '../../src/sim/nav/grid';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
@@ -101,6 +102,37 @@ describe('the ferry (PLAN 7.49d1)', () => {
     expect(frontLands.has(comp[e.target]!)).toBe(true);
     expect(w.cells.controller[e.target]).toBe(ENG);
     expect(w.ports.some((p) => p.cell === e.target)).toBe(true);
+  });
+
+  // PLAN 7.63, ADR-616: of its ports on a front's land, the nearest a front cell of its own, not the
+  // nearest the transports by sea. Before, from Glasgow: Gibraltar, 314 cells from Britain's front
+  // with Italy (Africa and Eurasia are one land); now Berbera, 9 (critic run 11, seed 7019 year 10:
+  // Britain's ferry to Wilhelmshaven and Constanța, 524–626 cells from its front in Asia).
+  it('it goes aboard for its port on a front\'s land nearest its front', () => {
+    const { s, w, glasgow, tp, div } = setUp();
+    const c = w.formations.cols;
+    const sea = portSeaOf(w)[glasgow]!;
+    [c.x[tp], c.y[tp]] = [(sea % W) + 0.5, Math.floor(sea / W) + 0.5];
+    c.moving[tp] = 0;
+    let embarked = -1;
+    for (let d = 0; d < 2 * STAGGER && embarked < 0; d++) {
+      s.step(24, (world) => {
+        const ev = world.out.events;
+        for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.FormationEmbarked && ev[i + 2] === div) embarked = d;
+      });
+    }
+    expect(embarked).toBeGreaterThanOrEqual(0);
+    const goal = w.embarked.get(div)!.target;
+    // Its straight cells to the nearest British cell beside Italy's.
+    let d2 = Infinity;
+    for (const k of frontierOf(w)) {
+      if (w.cells.controller[k] !== ENG) continue;
+      if (!neighbours4(k, W, H, w.settings.loopingMap, []).some((q) => w.cells.controller[q] !== 0 && w.wars.atWar(ENG, w.cells.controller[q]!))) continue;
+      const dx = (k % W) - (goal % W);
+      const dy = Math.floor(k / W) - Math.floor(goal / W);
+      d2 = Math.min(d2, dx * dx + dy * dy);
+    }
+    expect(Math.sqrt(d2)).toBeLessThanOrEqual(w.atSize(DEPLOY_RANGE_CELLS));
   });
 
   it('transports at a port on a front\'s land sail for the army at home', () => {

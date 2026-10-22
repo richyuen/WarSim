@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-616 · 2026-10-21 · accepted — The ferry's port nearest the front: of a nation's ports on its front's land, the nearest a front cell of its own (PLAN 7.63; amends ADR-612)
+
+- **Context** (PLAN 7.63; `docs/evidence/7.49/d1.md` §3). The ferry (ADR-612) sailed for the
+  nation's port on a front's land nearest its transports by sea, which may be far from the front:
+  critic run 11, seed 7019 year 10, Britain at Wilhelmshaven and Constanța, 524–626 cells from its
+  front in Asia (Eurasia is one land). On HEAD 41 of the 133 formations ferried and landed in 60 days
+  of the critic's 48 saves stood beyond DEPLOY_RANGE_CELLS of their front on day 60, out of the
+  operational AI's reach.
+- **Decision.** In `planFerry`, of its own ports that take the ferry (open, unbombed, in its
+  transports' waters, not an enemy's sea), the nearest a front cell of its own on that land
+  (straight cells), the nearest by sea on a tie; else an ally's picked the same way (ADR-613's
+  rule, now one function for both). A longer voyage to a port by the front is taken over a short
+  one to a port with no war near it.
+- **Measured** (`docs/evidence/7.63.md`): within 60 cells of their front on day 60, 66 of 133 (50 %)
+  → 70 of 102 (69 %); the bar, 80 %, missed. Beyond 60 cells 41 → 7. Fewer land in 60 days (the
+  ports by the front are further by sea). Of the 102, 10 are the landing AI's beachheads on a land
+  with no front, 8 landed by a front gone by day 60, 7 died: of the 77 alive by a front of theirs,
+  70 within 60 cells (91 %). Engaged (`warSides.ts`) 0.588 worldwide, 0.133 per war, before and
+  after. The invasion AI's longest call 5.6 ms (seed 99, two years). BLOCKERS, the user's.
+- **Pin.** cffa092a → 8387d0c3 (seed 99's first year has ferries).
+- **Test.** `ferry1938.test.ts`, a new case: the United Kingdom at war with Italy, a division at
+  Glasgow goes aboard for a port within DEPLOY_RANGE_CELLS of its front (Berbera, 9 cells); red
+  without (Gibraltar, 314). The AT's named pair, Britain and Japan, has no land front at the 1938
+  start, so the ferry is not called there.
+
 ### ADR-615 · 2026-10-21 · accepted — The reserve cut: at war under its peacetime share, a nation's army orders keep no reserve (PLAN 7.65; ADR-592 a, the user's)
 
 - **Context** (ADR-592, `docs/evidence/7.49/e.md`): the defenders of an income of 150–500 a month

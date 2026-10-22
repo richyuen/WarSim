@@ -2075,8 +2075,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   7.56a, ADR-596: it manned an ally's front with them on the way). A landing takes a cell a nation owns where the target is owned.
   The ferry (PLAN 7.49d1, ADR-612), in the same turn and lock when no landing has a target: a
   nation with a land front ships its free formations standing on a landmass with none of its
-  front cells to its own port on a front's land nearest its transports by sea (open, unbombed,
-  not held by its enemy), boarding them as a landing does; transports standing at a port on a
+  front cells to its own port on a front's land nearest a front cell of its own there (straight
+  cells; the nearest its transports by sea on a tie; PLAN 7.63, ADR-616; open, unbombed, not held
+  by its enemy), boarding them as a landing does; transports standing at a port on a
   front's land, or on a land with none of that army, sail instead for a port of its that the
   army's formations nearest them can march to. With no such port of its own, an ally's (PLAN
   7.49d2, ADR-613): of the ports held by nations fighting beside it that pass the same tests, the
