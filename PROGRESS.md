@@ -21727,3 +21727,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   any nation and 69 on one where only an ally holds a port: 167 (3.6 % of the island formations,
   1.2 % of the land formations at war), the Netherlands most (16 on 1129 year 20).
 - **Next:** PLAN 7.67 or 7.62, the user's call on 7.67.
+
+## 2026-10-21 — PLAN 7.67 rewritten (the user's): new divisions raised toward an ally's front
+
+- Why the islet armies are there (read on the saves): the Netherlands' capital moved by its losses
+  to a one-cell Caribbean islet (land 529), the British Raj's to a four-cell islet off Burma (531),
+  Greece's to a 32-cell island; `musterPoint` raises every new formation of a nation with no front
+  cell of its own at its held cell nearest the capital, so they pile up there (16 on 1129 year 20).
+  7.67 is now that rule (the theatre of a nation fronted through an ally alone), before 7.62.
+- Found beside it: the AI's landings aim only at an enemy's port (`planLanding`), so a capital on an
+  islet with no port is never invaded by the AI.

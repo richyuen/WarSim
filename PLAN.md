@@ -36,19 +36,25 @@ The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
 when taken up:
 
-- [ ] 7.67 The ferry for an army on a land with no port of its nation (found at 7.66,
-  `docs/evidence/7.66.md` §3; carries emergent 6 with 7.49): a nation at war whose free land
-  formations stand on a landmass with no front and no port of its own (the Netherlands' 5 on land
-  529, one cell, and the British Raj's 5 on land 531, four cells, 8693 year 20: islets of their own
-  with no port at all, of any nation) is neither ferried nor wants transports for them: the ferry
-  and its want board only at the nation's own port on the army's land. The rule: on a land of its
-  with no port with water, its transports take its army aboard at the land's coast (a cell of its
-  beside the sea, as a port's water), for the ferry and for its want; on a land where an ally
-  (`sameSide`) holds a port and it holds none, at that port. AT: the island formations on lands with
-  no port of their nation, of nations at war, after 180 days of the 48 saves together
-  (`islandArmies.ts`, a read to add; HEAD first, the before) under 0.75 × HEAD's; no invasion AI
-  call over 50 ms; a unit test (red without: a nation's division on an islet of its with no port
-  goes aboard its transports there); the ADR; the pin's entry.
+- [ ] 7.67 New divisions of a nation fronted through an ally alone raised toward that front (the
+  user's, 2026-10-21; found at 7.66, `docs/evidence/7.66.md` §3; carries emergent 6 with 7.49): a
+  new formation appears at the nation's held cell nearest its capital, or, with a front of its own
+  on another landmass, at its city nearest that front (`musterPoint`, `systems/production.ts`). A
+  nation whose land front is its allies' alone has no front of its own, so it raises its whole army
+  at home, wherever its capital stands: the Netherlands' capital moved by its losses to a one-cell
+  Caribbean islet with no port (land 529), and 16 divisions raised there on 1129 year 20, 5 on
+  8693 year 20; the British Raj's on a four-cell islet off Burma (land 531). Across the 48 saves the
+  island formations of such nations grow from 793 on day 1 to 850 on day 60 (7.64's after): raised
+  at home faster than the ferry takes them. The rule: for a nation at war with no front cell of its
+  own, the theatre is its allies' cells beside the enemies it fights with them (`wars.together`,
+  as the ferry's, ADR-617): its city on that front's land nearest a front cell; with none there,
+  its city with a port with water nearest that front by sea; else as now. AT: the island formations
+  of nations with no front cell of their own after 180 days of the 48 saves together
+  (`islandArmies.ts`, `noOwnFront`, `MID=60`; HEAD first, the before; 493 on `dea55f30`) under
+  0.75 × HEAD's; no formation raised on land 529 in the 180 days of 1129 year 20 (16 there on day
+  1); no production call over 50 ms; a unit test (red without: a nation fronted through an ally
+  alone, its capital on an islet with no port, raises its new division at its port nearest that
+  front); the ADR; the pin's entry.
 
 - [ ] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21;
   AI nuclear use 7, the critic's run 11 design objection; `docs/evidence/7.52/c.md`): a capital's
