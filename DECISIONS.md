@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-639 · 2026-10-22 · proposed (the user's decision) — The late map's shreds are the price of the reserve cut's war: accept, take enclaves back at the treaty, or undo the cut (PLAN 7.80)
+
+- **Context** (PLAN 7.80a, `docs/evidence/7.80/a.md`). Critic run 12 (R12-B2): small pieces (2–400
+  cells of one holder) at year 20 837 → 1,174 a world, `dd3b730` → `896ff779`, 24 of 24 seeds. Bisected
+  at year 10 over the range's 39 sim commits, 8 seeds each, the tool reproducing the critic's saves at
+  both ends: the step is `d15131c4`, PLAN 7.65's reserve cut (ADR-615, from ADR-592 a, the user's), 755
+  → 865, 8 of 8 seeds up, 110 of the 162; nothing else beyond the noise. None of the critic's suspects
+  (walk-ins, moving capitals, beach supply) is the step; occupation pockets are +8 of the +337.
+- **Why.** More land changes hands (cells flipped to year 20 1.51 ×); pieces per 10,000 flips fell (15.4
+  → 14.3). The growth is land a nation owns (+288), 358 of the 1,174 enclaves at peace (one other
+  nation's land all round, no war with it; 229 on `dd3b730`): a treaty hands over the occupied land
+  cell by cell (ADR-51), so the peace keeps the occupation's pattern. PLAN 7.80's text sends a user's
+  rule found to be the cause to the user as that rule's price.
+- **Options:** (a) PLAN 7.80b: at a peace, a piece of the loser's of at most 400 cells that the
+  settlement leaves wholly inside the winner's land (water aside) goes to the winner with the annexed
+  land, and a piece of the winner's so inside the loser's goes back to the loser; neither a capital's
+  piece nor a nation's largest. AT: on 10 unseen seeds × 20 years small pieces at year 20 not above
+  `dd3b730`'s on the same seeds (read first), founded statelets read; the ceiling of any enclave rule on
+  run 12's saves is 816 against 837 (every peace enclave gone; under on 15 of 24 seeds), so the bar may
+  be missed, and the enclaves of revolts and deaths are not reached. (b) Accept the count as the reserve
+  cut's price: PLAN 7.80 closed, R12-B2 answered by this ADR; the next critic judges the map as it is.
+  (c) Undo the reserve cut (ADR-615): its land war goes with it (7.65's 1.086 × the band's formations at
+  war). Recommended: (a), the war kept and the treaty's pockets tidied; (b) if the bar's margin is too
+  thin to be worth a rule. Meanwhile the loop takes PLAN 7.81.
+
 ### ADR-638 · 2026-10-22 · accepted — The ferry's turn tries its transport groups until one acts (PLAN 7.88a; amends ADR-612)
 
 - **Context** (PLAN 7.79c, `docs/evidence/7.79/c.md` §4). The ferry (ADR-612) took the turn's one

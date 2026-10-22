@@ -22216,3 +22216,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   the noise on seed 99's year 1 and a year from each save.
 - **Pin:** e66bef2e → 083f2585 (the refactor alone keeps e66bef2e).
 - **Next:** PLAN 7.88b waits on the user (ADR-637); then 7.80.
+
+## 2026-10-22 — PLAN 7.80a: the late map's shreds measured; the reserve cut's war (ADR-639 proposed)
+
+- **Waits:** PLAN 7.88b on ADR-637 (the user's); so the loop took 7.80.
+- **Kinds** (`tools/diag/fragKinds.ts`, read only; `docs/evidence/7.80/a.md` §1): on the critic's 24 shared
+  seeds the small pieces (2–400 cells) at year 20 837 → 1,174 are land a nation owns (+288), inland more
+  than coastal (+186, +102); occupation pockets +8, beach-held pockets +5: ADR-630 is not the cause.
+  Enclaves at peace 229 → 358; founded pieces 11 → 53.
+- **Bisected** at year 10, 8 seeds a commit, over the range's 39 sim commits, the tool in a worktree of
+  each (both ends reproduce the critic's saves exactly): the step is `d15131c4`, PLAN 7.65's reserve cut
+  (ADR-615, from the user's ADR-592 a), 755 → 865 on 8 of 8; nothing else beyond the noise; none of the
+  critic's suspects (walk-ins, moving capitals, beach supply).
+- **Per conquest:** cells flipped to year 20 1.51 ×; pieces per 10,000 flips 15.4 → 14.3. The war is the
+  cause, not a worse conquest. Every peace enclave gone would leave 816 against 837 (15 of 24 seeds under).
+- **To the user** (ADR-639, BLOCKERS): (a) PLAN 7.80b, the treaty's pockets go with the land round them;
+  (b) the count as the cut's price; (c) undo the cut. The pin unchanged (no sim code).
+- **Gotcha:** `mklink /J` from Git Bash fails ("Invalid switch", `//c` eats the `/J`); the worktree runs
+  worked without it (the same counts as the critic's saves), so there was no link to remove.
+- **Next:** PLAN 7.81 (7.80b waits on ADR-639, 7.88b on ADR-637).

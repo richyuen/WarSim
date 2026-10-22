@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.80: the late map's shreds are the reserve cut's war, a user's rule (2026-10-22, ADR-639 proposed; the user's decision)
+- **The bar:** on 10 unseen seeds, pieces of 2–400 cells at year 20 not above `dd3b730`'s on the same
+  seeds; founded statelets at year 20 not above `dd3b730`'s.
+- **What moved:** nothing; no rule written (PLAN 7.80a, `docs/evidence/7.80/a.md`). Bisected at year 10:
+  the step is `d15131c4`, PLAN 7.65's reserve cut (ADR-615, from the user's ADR-592 a), 755 → 865 on 8 of
+  8 seeds. More land changes hands (1.51 × by year 20) and pieces per flip fell; 358 of run 12's 1,174
+  small pieces at year 20 are enclaves at peace (229 on `dd3b730`).
+- **What is left:** the user's (ADR-639). (a) PLAN 7.80b, the settlement's pockets go with the land round
+  them (ceiling on run 12's saves 816 against 837); (b) accept the count as the cut's price; (c) undo the
+  cut. Meanwhile the loop takes PLAN 7.81.
+
 ### PLAN 7.79c: the stranded army is the ferry's now, but its one transport group a turn cannot act; piles 3 → 3 (2026-10-22, ADR-636; ADR-637 proposed, the user's decision)
 - **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
   year 20 and 7019 year 10 (`piles.ts --days 30`) 3 → 0; a unit test red without; the ADR; the pin.

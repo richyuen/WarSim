@@ -132,7 +132,21 @@ them, are 7.81–7.86. A task each, split when taken up:
   fronts, revolts and statelets ×3, moving capitals, beach-fed coastal pockets). If pockets on a supplied
   beach (ADR-630, the user's) are the main cause, the count goes to the user as that rule's price.
   AT: on 10 unseen seeds, pieces of 2–400 cells at year 20 not above `dd3b730`'s on the same seeds
-  (read first); founded statelets at year 20 not above `dd3b730`'s; the gate green.
+  (read first); founded statelets at year 20 not above `dd3b730`'s; the gate green. In parts:
+    - [x] 7.80a Measured: the small pieces by kind on the critic's saves (occupied, founded, own;
+      coastal; enclaves, at war or not), and the step bisected at year 10 over `dd3b730..896ff779`'s sim
+      commits, 8 seeds each (`tools/diag/fragKinds.ts`, read only). AT: the tables and the commit they
+      name; no rule: the pin unchanged.
+      Done (`docs/evidence/7.80/a.md`): the step is `d15131c4`, PLAN 7.65's reserve cut (ADR-615, the
+      user's ADR-592 a), 755 → 865, 8 of 8 seeds; nothing else beyond the noise. Owned land, not
+      occupation (+288 of +337 at year 20); 358 of the 1,174 enclaves at peace (229); more land changes
+      hands (1.51 ×) and pieces per flip fell. To the user as the cut's price (ADR-639, proposed).
+    - [ ] 7.80b At a peace, the settlement's pockets go with the land round them (waits on the user's
+      ADR-639: option a; dropped on b or c): a piece of the loser's of at most 400 cells left wholly
+      inside the winner's land (water aside) goes to the winner, a piece of the winner's so inside the
+      loser's back to the loser; never a capital's piece nor a nation's largest. AT: on 10 unseen seeds
+      × 20 years small pieces at year 20 not above `dd3b730`'s on the same seeds (read first), founded
+      statelets read; a unit test (red without); the ADR; the pin's entry; `--profile`.
 - [ ] 7.81 Map visuals (mapVisuals 6, needs 7, beyond R12-B2): the map tooltip is stale, sixth run
   ("London" over Paris, `critic/shots/c12a_4219_20_paris_150m_day10.png`); a moving capital is
   captured again and again ("Australia captured Turkey's capital" on 2, 13 and 28 December 1947,
