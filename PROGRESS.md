@@ -21697,3 +21697,23 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin:** 8387d0c3 → 2bc0e4df.
 - **BLOCKERS**, the user's: (a) tick on the rule's own case, (b) close not done, (c) keep open.
 - **Next:** PLAN 7.66 (transports bought for a nation fronted through an ally alone), then 7.62.
+
+## 2026-10-21 — PLAN 7.66: transports bought for a nation fronted through an ally alone (ADR-618; bar missed, the user's)
+
+- **Rule** (`ai/economic.ts`, `wantsFerry`): with no front cell of its own, the want's front is its
+  allies' cells beside the enemies it fights with them (`wars.together`), the ferry's front since
+  ADR-617. SPEC §7 (the navy's cost).
+- **Read** (`docs/evidence/7.66.md`, the critic's 48 saves, `islandArmies.ts` `noOwnFront`, 180
+  days): 482 (HEAD `fce40df2`) → 493, bar under 361.5: missed. Day 60 696 in both (7.64's after: the
+  before ran on HEAD). 10 of 119 watched nations a transport group more by day 180 (215 → 225), none
+  fewer; the runs' divergence outweighs it (Britain 63 → 0 on 6151 y10, 0 → 133 on 7019 y20). No
+  nation in debt. The named cases (the Netherlands and the British Raj on 8693 y20) stand on lands
+  with no port of their own: neither the want nor the ferry can board them (PLAN 7.67, filed).
+  Economic AI 0.029 ms an hour (seed 99, two years), as before.
+- **Test:** `ferry1938.test.ts`, a new case (one group of a division's room, so the landing's want is
+  silent; two divisions at Glasgow; Britain's front cells handed to an ally): the want holds and a
+  group is queued; red without, the want and the order each alone. Specs by hand: none (no drawn
+  change).
+- **Pin:** 2bc0e4df → 85d3c9f3.
+- **BLOCKERS**, the user's: (a) tick on the rule's own case, (b) close not done, (c) keep open.
+- **Next:** PLAN 7.67 (the ferry for an army on a land with no port of its nation), then 7.62.

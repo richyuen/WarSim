@@ -92,7 +92,8 @@
  *    (seed 5683 year 20 Japan, 7247 year 20 Germany, 4513 year 10 Latvia: rich, a shipyard, no
  *    order in 60 days).
  *    The ferry's want orders one too (PLAN 7.49d3, ADR-614, `wantsFerry`): a nation with a land
- *    front, a port of its or an ally's on that front's land, and an island army (on a land with a
+ *    front (or, with no front cell of its own, its allies' beside the enemies it fights with them:
+ *    PLAN 7.66, ADR-618), a port of its or an ally's on that front's land, and an island army (on a land with a
  *    port of its own and no front) of more men than its transports' room. Unlike the landing's, it
  *    stops no other fleet: Britain's island army outnumbers any room it could buy, so the want holds
  *    for the war's length; one group in training at a time, a warship between.
@@ -741,7 +742,8 @@ export function wantsTransport(world: World, n: number, transport: number, own: 
 
 /**
  * Whether nation `n`, at war, wants a transport group for the ferry (PLAN 7.49d3, ADR-614; the
- * user's, ADR-591 b): it holds a cell on a land front (beside a nation at war with it), a port with
+ * user's, ADR-591 b): it holds a cell on a land front (beside a nation at war with it), or, with none,
+ * an ally's cell beside an enemy it fights with that ally (`wars.together`; PLAN 7.66, ADR-618), a port with
  * water of its own or of a nation fighting beside it (`sameSide`) stands on a landmass of those
  * cells (where the ferry lands, `planFerry`), and its standing land formations on the landmasses
  * with a port of its own and none of those cells (its island army, where the ferry boards) hold more
@@ -761,6 +763,21 @@ export function wantsFerry(world: World, n: number, own: readonly number[]): boo
       if (m !== 0 && m !== n && world.wars.atWar(n, m)) {
         fronts.add(comp[c]!);
         break;
+      }
+    }
+  }
+  // With no front cell of its own, its allies' cells beside the enemies it fights with them, as the
+  // ferry's front (PLAN 7.66, ADR-618; the ferry's since PLAN 7.64, ADR-617).
+  if (fronts.size === 0) {
+    for (const c of frontierOf(world)) {
+      const a = controller[c]!;
+      if (a === 0 || fronts.has(comp[c]!) || !world.wars.sameSide(n, a)) continue;
+      for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
+        const m = controller[k]!;
+        if (m !== 0 && world.wars.together(n, a, m)) {
+          fronts.add(comp[c]!);
+          break;
+        }
       }
     }
   }

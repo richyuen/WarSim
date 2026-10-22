@@ -2127,7 +2127,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   own and no group (a group with room under an infantry division's men is none: sunk to one or
   two transports, it carries no division and is never refilled; PLAN 7.55, ADR-598); while it
   wants one it orders no other fleet. The ferry's want orders one too (PLAN 7.49d3, ADR-614): a
-  land front, a port of its own or of an ally in the war on that front's land, and an island army
+  land front (with no front cell of its own, its allies' cells beside the enemies it fights with
+  them, as the ferry's: PLAN 7.66, ADR-618), a port of its own or of an ally in the war on that front's land, and an island army
   (standing on a land with a port of its own and no front cell of its) of more men than its
   transports' room; it stops no other fleet, and its transports in training hold back no
   warship, as it holds for the war's length. Short of money and over

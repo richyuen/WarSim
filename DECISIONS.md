@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-618 · 2026-10-21 · accepted — Transports bought for a nation fronted through an ally alone: the ferry's want reads its allies' front cells (PLAN 7.66; amends ADR-614)
+
+- **Context** (PLAN 7.66; `docs/evidence/7.64.md` §2). The ferry's want of a transport group
+  (`wantsFerry`, ADR-614) read the nation's own front cells, so a nation whose land front is its
+  allies' alone ordered no group for its island army, though the ferry itself takes such a nation's
+  army to its allies' front since ADR-617.
+- **Decision.** With no front cell of its own, the want's front is its allies' cells beside the
+  enemies it fights with them (`wars.together`), the ferry's front of ADR-617. Nothing else of the
+  want changes.
+- **Measured** (`docs/evidence/7.66.md`): such island formations after 180 days of the critic's 48
+  saves 482 (HEAD) → 493; the bar, under 0.75 × 482, missed. Ten of the 119 watched nations have a
+  group more by day 180 (215 → 225 groups), none fewer; the runs' divergence (Britain with or
+  without a front cell of its own on a day: 63 → 0, 0 → 133) outweighs them. The task's named cases
+  (the Netherlands and the British Raj on 8693 year 20) stand on landmasses where they hold no port:
+  no group would board them (PLAN 7.67). No nation in debt for it. The economic AI's cost unchanged
+  (0.029 ms an hour, seed 99). BLOCKERS, the user's.
+- **Pin.** 2bc0e4df → 85d3c9f3.
+- **Test.** `ferry1938.test.ts`, a new case: the United Kingdom and its allies at war with Italy,
+  every British cell beside an enemy handed to an ally, one transport group of a division's room
+  (the landing's want silent), two divisions at Glasgow: the want holds and a group is queued at
+  the month's start. Red without (the want and the order, each alone).
+
 ### ADR-617 · 2026-10-21 · accepted — The ferry for a nation fronted through an ally alone: its allies' front cells, and a landing that ships nobody leaves the turn (PLAN 7.64; amends ADR-612)
 
 - **Context** (PLAN 7.64; `docs/evidence/7.49/d2.md` §3). A nation at war whose land front is its

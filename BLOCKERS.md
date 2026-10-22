@@ -5,6 +5,21 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.66: transports bought for a nation fronted through an ally alone is in; such island formations after 180 days 482 → 493, bar under 361.5 (2026-10-21, ADR-618; the user's decision)
+- **The bar:** the island formations of nations with no front cell of their own after 180 days of
+  the critic's 48 saves together (`islandArmies.ts`, `noOwnFront`) under 0.75 × HEAD's (482).
+- **What moved** (`docs/evidence/7.66.md`): 482 → 493, noise. The rule works on its own case (the
+  unit test: a group queued, red without), and on the saves 10 of 119 watched nations have a
+  transport group more by day 180 (215 → 225); none in debt. But a group takes a month or more to
+  come, and the runs' divergence (Britain with or without a front cell of its own on a day: 6151
+  year 10 63 → 0, 7019 year 20 0 → 133) outweighs what it carries.
+- **Why it misses:** the named cases (the Netherlands and the British Raj on 8693 year 20) stand on
+  landmasses where their nation holds no port: the want sees their allies' front now, but no port
+  of theirs to board at, so neither the want nor the ferry takes them. PLAN 7.67, filed.
+- **What is left:** the user's. (a, recommended) 7.66 ticked on its rule's own case (the want reads
+  the ally's front as the ferry does; the groups come); (b) closed not done, the rule kept; (c) kept
+  open until 7.67 is read with it. Meanwhile the loop takes PLAN 7.67.
+
 ### PLAN 7.64: the ferry for a nation fronted through an ally alone is in; such island formations after 60 days 850 → 696, bar under 425 (2026-10-21, ADR-617; the user's decision)
 - **The bar:** the island formations of nations with no front cell of their own after 60 days of
   the critic's 48 saves together (`islandArmies.ts`, `noOwnFront`) under half of HEAD's (850).

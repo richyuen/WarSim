@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
+import { wantsFerry, wantsTransport } from '../../src/sim/ai/economic';
 import { DEPLOY_RANGE_CELLS } from '../../src/sim/ai/operational';
 import { STAGGER } from '../../src/sim/ai/strategic';
 import { neighbours4 } from '../../src/sim/nav/grid';
-import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
+import { BUILD_MIX_1938, ECONOMY_TABLES_1938, NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { destroyFormation } from '../../src/sim/systems/elements';
+import { destroyFormation, equipFormation } from '../../src/sim/systems/elements';
 import { transportRoom } from '../../src/sim/systems/amphibious';
 import { AT_PORT_CELLS } from '../../src/sim/systems/navalCombat';
 import { frontierOf } from '../../src/sim/systems/territory';
@@ -231,5 +232,40 @@ describe('the ferry (PLAN 7.49d1)', () => {
     const goal = c.targetCell[tp]!;
     const near = (a: number, b: number): boolean => Math.abs((a % W) - (b % W)) <= r && Math.abs(Math.floor(a / W) - Math.floor(b / W)) <= r;
     expect(w.ports.some((p, i) => water[i]! >= 0 && ctl[p.cell] === ENG && comp[p.cell] === home && near(goal, water[i]!))).toBe(true);
+  });
+
+  // PLAN 7.66, ADR-618: the ferry's want of transports reads the same front. Britain's cells beside
+  // its enemies handed to an ally, one transport group of a division's room (the landing's want is
+  // then silent), two divisions at Glasgow, more men than the room: it wants a group for the ferry
+  // and orders one. Before, the want read its own front cells alone (critic run 11, after 7.64: 696
+  // island formations of such nations after 60 days of the 48 saves; the Netherlands and the British
+  // Raj on 8693 year 20 with no transports at all).
+  it('a nation fronted through an ally alone, its island army over its room, orders a transport group', () => {
+    const { s, w, tp, div } = setUp(true);
+    const c = w.formations.cols;
+    const ctl = w.cells.controller;
+    const water = portSeaOf(w);
+    const comp = navOf(w).grid.component;
+    const beside = (k: number): boolean => neighbours4(k, W, H, w.settings.loopingMap, []).some((q) => ctl[q] !== 0 && w.wars.atWar(ENG, ctl[q]!));
+    const fronts = new Set<number>();
+    for (const k of frontierOf(w)) if (ctl[k] === ENG && beside(k)) fronts.add(comp[k]!);
+    const theirs = w.ports.findIndex((p, i) => water[i]! >= 0 && ctl[p.cell] !== ENG && w.wars.sameSide(ENG, ctl[p.cell]!) && fronts.has(comp[p.cell]!));
+    expect(theirs).toBeGreaterThanOrEqual(0);
+    const ally = ctl[w.ports[theirs]!.cell]!;
+    for (const k of [...frontierOf(w)]) if (ctl[k] === ENG && beside(k)) w.setController(k, ally);
+    expect([...frontierOf(w)].some((k) => ctl[k] === ENG && beside(k))).toBe(false);
+    // A second division at Glasgow, as the editor's spawn makes one.
+    const infantry = BUILD_MIX_1938.infantry;
+    const div2 = w.formations.create();
+    [c.nation[div2], c.x[div2], c.y[div2], c.org[div2], c.template[div2], c.supply[div2]] = [ENG, c.x[div]!, c.y[div]!, 1, infantry, 1];
+    equipFormation(w, div2, infantry);
+    expect(c.strength[div]! + c.strength[div2]!).toBeGreaterThan(transportRoom(w, tp));
+    const transport = BUILD_MIX_1938.fleets!.transport;
+    expect(wantsTransport(w, ENG, transport, [tp], ECONOMY_TABLES_1938.templateStrength[infantry]!)).toBe(false);
+    expect(wantsFerry(w, ENG, [tp])).toBe(true);
+    w.nations.cols.gold[ENG] = 1e6;
+    w.nations.cols.manpower[ENG] = 1e7;
+    s.step(1);
+    expect(w.production.ids().some((p) => w.production.cols.nation[p] === ENG && w.production.cols.template[p] === transport)).toBe(true);
   });
 });
