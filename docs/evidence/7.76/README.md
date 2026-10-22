@@ -46,3 +46,9 @@ capital fell strikes sooner or more, and the worlds part from there (781: Japan 
 new nation's army, 50,828 dead, all men, before day 6,444 at Germany; 790: Poland on day 6,112 at
 Germany, before the United States on day 6,196). No bar was set before this read; the user accepted
 it as measured.
+
+## Correction (PLAN 7.74, 2026-10-22)
+
+Poland's "day 35 … a Soviet place / army" above is `pol.py`'s previous-day best place (by utility, out of
+reach), not where the decision fell. The day-35 decision is Berlin on its output alone (output share
+0.050, men share 0.0004, capital 0, u 0.028, 334,000 people): `docs/evidence/7.74/README.md`.

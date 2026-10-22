@@ -7,7 +7,8 @@
  * men against the war's start.
  *
  * The best place's row tells its value, the chance through, the people its burst kills and its parts
- * (`placeParts`; PLAN 7.48).
+ * (`placeParts`; PLAN 7.48). It is the best by utility, in reach or not: on a decision day the row's
+ * `decided` gives where the decision fell and that place's parts as they were weighed (PLAN 7.74).
  *
  * With `bomber` last (PLAN 7.37b, the critic's Czechoslovakia), the holder is also given a strategic
  * bomber group at its capital, as the editor's air-wing tool places one, and a row is printed each day.
@@ -50,15 +51,24 @@ const strategicWings = (): number => {
 const startLand = w.landCounts().owned[H]!;
 for (let d = 0; d < days; d++) {
   const bursts: string[] = [];
+  const decided: Record<string, unknown>[] = [];
   s.step(24, (ww) => {
     const ev = ww.out.events;
-    for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.NukeDecided && ev[i + 2] === H) bursts.push(`decided u ${ev[i + 3]! / 1000}`);
+    for (let i = 0; i < ev.length; i += 6) {
+      if (ev[i + 1] !== EventKind.NukeDecided || ev[i + 2] !== H) continue;
+      bursts.push(`decided u ${ev[i + 3]! / 1000}`);
+      // Where the decision fell, and that place's parts as they were weighed (PLAN 7.74).
+      const [x, y] = [ev[i + 4]!, ev[i + 5]!];
+      const war = ww.wars.list.find((v) => v.sides[0].includes(H) || v.sides[1].includes(H));
+      if (war) decided.push({ at: [+x.toFixed(1), +y.toFixed(1)], ...Object.fromEntries(Object.entries(placeParts(ww, H, war, war.sides[0].includes(H) ? 0 : 1, x, y)).map(([k, v]) => [k, +v.toFixed(4)])) });
+    }
     ww.out.events.length = 0;
     ww.out.fires.length = 0;
   });
   if (!bomber && d % 5 !== 4 && bursts.length === 0) continue;
   const row: Record<string, unknown> = { day: d + 1, warheads: warheadsOf(w, H), weighs: weighsStrikes(w, H), strategicWings: strategicWings(), land: +(w.landCounts().owned[H]! / startLand).toFixed(3), lost: +(w.landCounts().lost[H]! / Math.max(1, w.landCounts().owned[H]!)).toFixed(3), capitalFallen: w.wars.list.some((x) => x.capitalsLost?.includes(H)), bursts };
   const war = w.wars.list.find((x) => x.sides[0].includes(H) || x.sides[1].includes(H));
+  if (decided.length > 0) row.decided = decided;
   if (war && weighsStrikes(w, H)) {
     const side = war.sides[0].includes(H) ? 0 : 1;
     if (weighsWar(w, H, war, side, avengingOf(w, H))) {

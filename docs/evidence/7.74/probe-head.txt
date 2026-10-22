@@ -1,0 +1,5 @@
+decided u 0.028, 0.0 km from Berlin; parts {"econShare":0.049816464354511356,"menShare":0.0004119982262743149,"ownShare":0,"menAll":940950,"theatreMen":940950,"sideMen":1957520,"capital":0,"through":0.2000079463339135,"value":0.10046091648292763,"yieldN":1,"people":334000}
+Poland's first decision: day 34 at (1100.2, 267.4); nearest enemy army GER 4982 men at 91 km; nearest army of anyone GER 4982 men at 91 km; blast radius 25 km
+     × the critic's Poland of run 11 (seed 9437): its first decision within 60 days, on an army of the side at war with it 4701ms
+ FAIL  tests/unit/nukeOverrunAim1938.test.ts > an overrun holder's first strike is on the enemy overrunning it (PLAN 7.74) > the critic's Poland of run 11 (seed 9437): its first decision within 60 days, on an army of the side at war with it
+AssertionError: the place: an army of the side at war with Poland in its cell or within a blast's radius: expected false to be true // Object.is equality

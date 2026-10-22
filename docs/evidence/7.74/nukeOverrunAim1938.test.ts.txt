@@ -1,0 +1,76 @@
+import { describe, expect, it } from 'vitest';
+import { EventKind } from '../../src/shared/events';
+import { SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { blastRadius, placeParts } from '../../src/sim/systems/nuclear';
+import { seaKm } from '../../src/sim/systems/navalCombat';
+import type { World } from '../../src/sim/world';
+import { assets1938 } from '../helpers/earth';
+import { nationId } from '../helpers/sim1938';
+
+// PLAN 7.74 (found at PLAN 7.62): an overrun holder's first strike is on the enemy overrunning it.
+// PLAN 7.18j's claim (a place's men weighed against at least THEATRE_FLOOR of the enemy side's men,
+// so a lone garrison far from the front is not a theatre of its own) was held by the critic's France
+// alone, and France now holds fire (PLAN 7.62, ADR-629). Its case here is the critic's Poland of run
+// 11 (`tools/diag/nukeCase.ts 9437 POL GER 10 65 bomber`): 10 warheads and a strategic bomber group
+// at Warsaw by the editor's tools, then Germany's war on it. Its first decision falls on an army of
+// the side at war with it.
+
+const { w: W } = SIZE_1938;
+const [POL, GER] = ['POL', 'GER'].map(nationId) as [number, number];
+const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
+
+/** The land formation of `nations` nearest (`x`, `y`), km, with its nation and strength. */
+function nearest(world: World, nations: Set<number>, x: number, y: number): { km: number; nation: number; strength: number; same: boolean } | null {
+  const c = world.formations.cols;
+  let best: { km: number; nation: number; strength: number; same: boolean } | null = null;
+  world.formations.forEach((id) => {
+    if (!nations.has(c.nation[id]!) || world.offLand(id)) return;
+    const km = seaKm(world, x, y, c.x[id]!, c.y[id]!);
+    if (!best || km < best.km) {
+      best = { km, nation: c.nation[id]!, strength: c.strength[id]!, same: Math.floor(c.x[id]!) === Math.floor(x) && Math.floor(c.y[id]!) === Math.floor(y) };
+    }
+  });
+  return best;
+}
+
+describe("an overrun holder's first strike is on the enemy overrunning it (PLAN 7.74)", () => {
+  it("the critic's Poland of run 11 (seed 9437): its first decision within 60 days, on an army of the side at war with it", () => {
+    const s = new Sim({ scenario: '1938', seed: 9437, assets: assets1938(W) });
+    const w = s.world;
+    const rules = w.rules!;
+    const template = rules.templates.findIndex((t) => t.elements.length > 0 && rules.units[t.elements[0]!.unit]!.cls === 'bomber_str');
+    s.command({ kind: 'spawnWing', nation: POL, x: w.nations.cols.capitalX[POL]!, y: w.nations.cols.capitalY[POL]!, template });
+    s.command({ kind: 'grantWarheads', nation: POL, count: 10 });
+    s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+
+    let first: { day: number; x: number; y: number; enemy: ReturnType<typeof nearest>; any: ReturnType<typeof nearest> } | null = null;
+    for (let d = 0; d < 60 && !first; d++) {
+      s.step(24, (ww) => {
+        const ev = ww.out.events;
+        for (let i = 0; i < ev.length && !first; i += 6) {
+          if (ev[i + 1] !== EventKind.NukeDecided || ev[i + 2] !== POL) continue;
+          const war = ww.wars.list.find((x) => x.sides[1].includes(POL) && x.sides[0].includes(GER));
+          const x = ev[i + 4]!;
+          const y = ev[i + 5]!;
+          const others = new Set<number>();
+          for (let n = 1; n < ww.nations.cols.living.length; n++) if (n !== POL) others.add(n);
+          first = { day: d, x, y, enemy: nearest(ww, new Set(war?.sides[0] ?? []), x, y), any: nearest(ww, others, x, y) };
+          // The decided place's parts and its distance from Berlin (the probe's finding: Berlin itself).
+          const parts = placeParts(ww, POL, war!, 1, x, y);
+          const berlinKm = seaKm(ww, x, y, ww.nations.cols.capitalX[GER]!, ww.nations.cols.capitalY[GER]!);
+          process.stderr.write(`decided u ${ev[i + 3]! / 1000}, ${berlinKm.toFixed(1)} km from Berlin; parts ${JSON.stringify(parts)}\n`);
+        }
+        ww.out.events.length = 0;
+        ww.out.fires.length = 0;
+      });
+    }
+    const f = first as typeof first;
+    process.stderr.write(
+      `Poland's first decision: ${f ? `day ${f.day} at (${f.x.toFixed(1)}, ${f.y.toFixed(1)}); nearest enemy army ${f.enemy ? `${tag(f.enemy.nation)} ${f.enemy.strength} men at ${f.enemy.km.toFixed(0)} km${f.enemy.same ? ' (its cell)' : ''}` : 'none'}; nearest army of anyone ${f.any ? `${tag(f.any.nation)} ${f.any.strength} men at ${f.any.km.toFixed(0)} km` : 'none'}; blast radius ${blastRadius(1).toFixed(0)} km` : 'none in 60 days'}\n`,
+    );
+    expect(f, 'Poland decides a strike within 60 days').not.toBeNull();
+    expect(f!.enemy, 'the side at war with Poland has an army').not.toBeNull();
+    expect(f!.enemy!.same || f!.enemy!.km <= blastRadius(1), "the place: an army of the side at war with Poland in its cell or within a blast's radius").toBe(true);
+  }, 600_000);
+});

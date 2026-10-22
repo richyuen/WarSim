@@ -5,6 +5,20 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.74: Poland's first strike is an empty Berlin by its output, not an army; the AT red on HEAD (2026-10-22, ADR-632 proposed; the user's decision)
+- **The bar:** on `nukeCase.ts 9437 POL GER 10 65 bomber`, a first decision within 60 days within a
+  blast's radius of a land formation of the other side of Poland's war; red with THEATRE_FLOOR
+  reverted; no rule change.
+- **What moved:** nothing (no rule change). The test (`docs/evidence/7.74/nukeOverrunAim1938.test.ts.txt`)
+  is red on HEAD: the first decision, day 35, is Berlin by its output alone (output share 0.050, men
+  share 0.0004, capital 0, u 0.028, 334,000 people), the nearest army 91 km off. The same with
+  THEATRE_FLOOR 0 (the floor binds nothing here). PLAN 7.62's and 7.76's "a Soviet army" was the
+  previous day's out-of-reach best place, printed by `pol.py`: 7.62's own bar was missed.
+- **What is left:** the user's (ADR-632). (a, recommended) PLAN 7.78, a place's output on a first
+  strike only with an army in the blast, its AT 7.74's test; 7.74 closed not done into it. (b) An
+  empty city's industry stays a first-strike target; 7.74 closed not done. (c) Open. Meanwhile the
+  loop has no task before PLAN 7.5.
+
 ### RESOLVED 2026-10-22 (option b, the user's decision: 7.51b and 7.51 closed not done; PLAN 7.77 dropped; the aircraft score waits for the next critic run) · PLAN 7.51b: the late air war measured; air battles in years 2–20 at 0.065 of year 1's, bar a tenth; the cause the late land war (2026-10-22; the user's decision)
 - **The bar:** on PLAN 7.49's unseen seeds 7401–7410 × 20 years, air battles a year in years 2–20
   at least a tenth of year 1's, or this entry with the measured cause, the user's to accept.

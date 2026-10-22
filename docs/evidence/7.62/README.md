@@ -95,3 +95,9 @@ findings meet on this case: run 8's R8-B1 ("France and Poland, given 10 warheads
 overrun, never strike") and run 11's objection (Berlin with no men struck for its civilians). Any
 variant of the rule that lets France strike an empty Berlin lets Poland do the same: Poland's Berlin
 (day 28) was in extreme desperation too (1.03).
+
+## Correction (PLAN 7.74, 2026-10-22)
+
+Poland's "day 35 … a Soviet place / army" above is `pol.py`'s previous-day best place (by utility, out of
+reach), not where the decision fell. The day-35 decision is Berlin on its output alone (output share
+0.050, men share 0.0004, capital 0, u 0.028, 334,000 people): `docs/evidence/7.74/README.md`.

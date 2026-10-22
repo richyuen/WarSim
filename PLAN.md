@@ -43,6 +43,18 @@ when taken up:
   test on that case: a first decision within 60 days, its place the cell of or within a blast's
   radius of a formation of a nation on the other side of the holder's war; red with the aim taken
   off (PLAN 7.18j's rule reverted by hand); no rule change, pin unchanged.
+  Blocked (2026-10-22, BLOCKERS, ADR-632 proposed, the user's): red on HEAD. The first decision,
+  day 35, is Berlin by its output alone (men share 0.0004, 334,000 people); 7.62's "a Soviet army"
+  was a misread; THEATRE_FLOOR binds nothing on this case. The test: `docs/evidence/7.74/`.
+
+- [ ] 7.78 On a first strike a place's output counts only with an army in the blast (found at 7.74;
+  ADR-632 a, proposed, the user's): the critic's Poland (seed 9437) still bombs an empty Berlin on
+  day 35, its output share 0.050 alone carrying u 0.028 over NUKE_FLOOR 0.025, as PLAN 7.62 did for
+  the capital's weight (CAPITAL_MEN_MIN). AT: `docs/evidence/7.74/nukeOverrunAim1938.test.ts.txt` in
+  `tests/unit/`, green (a first decision within 60 days within a blast's radius of an army of the
+  other side), red on HEAD `ce2e9630`; seeds 781–790 × 30 years (`nukeToll.ts`), read before and
+  after on the same code but the rule: bursts with civilians over 10 × men not more than before;
+  the pin moved in DECISIONS if it moves.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

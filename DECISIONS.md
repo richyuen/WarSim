@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-632 · 2026-10-22 · proposed (the user's decision) — Poland's first strike is still an empty Berlin, by its output; PLAN 7.62's "Soviet army" was a misread (PLAN 7.74; amends the read of ADR-629, ADR-631)
+
+- **Context.** PLAN 7.74 was to test that the critic's editor-armed Poland of run 11 (seed 9437,
+  `nukeCase.ts 9437 POL GER 10 65 bomber`) first decides on the enemy overrunning it, as 7.62 and
+  7.76 had read it ("day 35, a Soviet army"), red with PLAN 7.18j's THEATRE_FLOOR reverted, no rule
+  change.
+- **Read** (`docs/evidence/7.74/README.md`, HEAD `ce2e9630`). The decision's own place (the
+  `NukeDecided` event's) is Berlin, 0.0 km from Germany's capital: output share 0.050, men share
+  0.0004, capital 0, value 0.100, through 0.2, u 0.028 (NUKE_FLOOR 0.025), 334,000 people; the
+  nearest army 91 km off (blast radius 25 km). The 7.62 and 7.76 reads came from `pol.py`, which
+  prints the previous day's best place by utility in reach or not: a Soviet place out of reach.
+  THEATRE_FLOOR binds nothing here (theatre 940,950 men, a quarter of the side 489,380), so the AT's
+  red-without half cannot hold on this case either. Poland's first decision on an army is day 61,
+  after Berlin (day 35) and a city of 154,000 people (day 51, men share 0.008).
+- **What it changes.** ADR-629's decision rested on "Poland met: day 35 on an army"; PLAN 7.62's bar
+  ("no capital with men share under 0.01 struck in 60 days") was missed: Berlin, men share 0.0004,
+  day 35. The capital's weight is gone (0.3 → 0), the output's (TARGET_SCALE × 0.050) carries it.
+  The critic's run-11 objection (Berlin, 334,000 civilians and 379 men) stands, a week later.
+- **Tool.** `tools/diag/nukeCase.ts` prints each decision's place and parts as weighed (`decided`).
+- **Options:** (a, recommended) PLAN 7.78: on a first strike a place's output counts only with an
+  army in the blast as the capital does (CAPITAL_MEN_MIN), its AT 7.74's test (the probe in
+  `docs/evidence/7.74/`) green, red on HEAD; 7.74 closed not done into it. (b) Industry on a first
+  strike is a target as SPEC §6.4 weighs it; 7.74 closed not done, 7.62 left as ticked, the
+  objection waits for the next critic run. (c) Kept open.
+- **Pin:** unchanged (2c4e2593).
+
 ### ADR-631 · 2026-10-22 · accepted (the user's decision) — A capital taken counts in the desperation as one threatened (PLAN 7.76; amends ADR-485)
 
 - **Context.** PLAN 7.75's beach supply turned `nukeOverrun1938.test.ts` red: the critic's France

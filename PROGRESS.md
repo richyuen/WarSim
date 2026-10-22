@@ -22035,3 +22035,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   0.065 of year 1's); PLAN 7.77 (the late land war) dropped; the BLOCKERS entry resolved. The
   aircraft score waits for the next critic run.
 - **Next:** PLAN 7.74 (an overrun holder's first strike on the enemy overrunning it).
+
+## 2026-10-22 — PLAN 7.74: the AT red on HEAD; Poland's first strike is still an empty Berlin (ADR-632 proposed, the user's)
+
+- **Test written** (`docs/evidence/7.74/nukeOverrunAim1938.test.ts.txt`, kept out of the suite since
+  it is red): the critic's Poland of run 11 (seed 9437, 10 warheads, a strategic bomber at Warsaw,
+  Germany's war), the place read from the `NukeDecided` event at the hour of the decision.
+- **Read:** red on HEAD. Day 35's decision is Berlin (0.0 km from Germany's capital) by its output
+  alone: output share 0.050, men share 0.0004, capital 0, u 0.028 (floor 0.025), 334,000 people; the
+  nearest army 91 km off. The same with THEATRE_FLOOR 0: the theatre (940,950 men) is over the floor,
+  so 7.18j's rule changes nothing on this case. Poland's first decision on an army is day 61.
+- **The misread:** 7.62's and 7.76's "day 35, a Soviet army" came from `pol.py`, which printed the
+  previous day's best place by utility, out of reach. 7.62's own bar (no capital with men share under
+  0.01 struck in 60 days) was missed; the run-11 objection (Berlin, 334,000 civilians) stands.
+  Corrections appended to `docs/evidence/7.62/README.md` and `7.76/README.md`.
+- **Tool:** `tools/diag/nukeCase.ts` prints each decision's own place and parts (`decided`).
+- **BLOCKERS / PLAN:** 7.74 blocked; PLAN 7.78 filed (a place's output on a first strike only with an
+  army in the blast), the user's (ADR-632: a, b or c).
+- **Pin:** unchanged, a4ff4661 (no rule change).
+- **Next:** the user's ADR-632; the loop has no task before PLAN 7.5.
