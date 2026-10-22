@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.66: transports bought for a nation fronted through an ally alone is in; such island formations after 180 days 482 → 493, bar under 361.5 (2026-10-21, ADR-618; the user's decision)
+### RESOLVED 2026-10-21 (option a, the user's decision: 7.66 ticked) · PLAN 7.66: transports bought for a nation fronted through an ally alone is in; such island formations after 180 days 482 → 493, bar under 361.5 (2026-10-21, ADR-618; the user's decision)
 - **The bar:** the island formations of nations with no front cell of their own after 180 days of
   the critic's 48 saves together (`islandArmies.ts`, `noOwnFront`) under 0.75 × HEAD's (482).
 - **What moved** (`docs/evidence/7.66.md`): 482 → 493, noise. The rule works on its own case (the
@@ -19,8 +19,9 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** the user's. (a, recommended) 7.66 ticked on its rule's own case (the want reads
   the ally's front as the ferry does; the groups come); (b) closed not done, the rule kept; (c) kept
   open until 7.67 is read with it. Meanwhile the loop takes PLAN 7.67.
+- **Decided** (2026-10-21, the user): option a: PLAN 7.66 ticked on the rule's own case.
 
-### PLAN 7.64: the ferry for a nation fronted through an ally alone is in; such island formations after 60 days 850 → 696, bar under 425 (2026-10-21, ADR-617; the user's decision)
+### RESOLVED 2026-10-21 (option a, the user's decision: 7.64 ticked) · PLAN 7.64: the ferry for a nation fronted through an ally alone is in; such island formations after 60 days 850 → 696, bar under 425 (2026-10-21, ADR-617; the user's decision)
 - **The bar:** the island formations of nations with no front cell of their own after 60 days of
   the critic's 48 saves together (`islandArmies.ts`, `noOwnFront`) under half of HEAD's (850).
 - **What moved** (`docs/evidence/7.64.md`): 850 → 696 (−18 %). The rule has two halves, each needed:
@@ -36,8 +37,9 @@ entries are kept and marked **RESOLVED** with the date and fix.
   is ferried now (its transports sail for its army and take it to its allies' front), the rest of
   the bar is 7.66's transports; (b) closed not done, the rule kept; (c) kept open until 7.66 is read
   with it. Meanwhile the loop takes PLAN 7.66.
+- **Decided** (2026-10-21, the user): option a: PLAN 7.64 ticked on the rule's own case.
 
-### PLAN 7.63: the ferry's port nearest the front is in; within 60 cells on day 60 at 69 %, bar 80 % (2026-10-21, ADR-616; the user's decision)
+### RESOLVED 2026-10-21 (option a, the user's decision: 7.63 ticked) · PLAN 7.63: the ferry's port nearest the front is in; within 60 cells on day 60 at 69 %, bar 80 % (2026-10-21, ADR-616; the user's decision)
 - **The bar:** of the formations ferried and landed in 60 days of the critic's 48 saves
   (`ferryLanded.ts`), within 60 cells of their front on day 60 at least 80 %.
 - **What moved** (`docs/evidence/7.63.md`): 66 of 133 (50 %, HEAD) → 70 of 102 (69 %). Landed
@@ -56,6 +58,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   front is beyond 60 cells of every port of the nation's: Japan's in Korea, the Netherlands at
   Mombasa; the remedy, a landing at a coast with no port, is a design choice). Meanwhile the loop
   takes PLAN 7.64.
+- **Decided** (2026-10-21, the user): option a: PLAN 7.63 ticked on the rule's own case.
 
 ### RESOLVED 2026-10-21 (option a each, the user's decision: 7.49d3 ticked, 7.49 closed not done) · PLAN 7.49d3 and 7.49 at its budget: transports bought, both bars of d3 missed; 7.49's AT missed at 20 commits (2026-10-21, ADR-614; the user's decision)
 - **The bars:** 7.49d3: the island share of the 48 saves together after 60 days under 20 % (7.49d's,

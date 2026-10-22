@@ -188,6 +188,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   every British cell beside an enemy handed to an ally, one transport group of a division's room
   (the landing's want silent), two divisions at Glasgow: the want holds and a group is queued at
   the month's start. Red without (the want and the order, each alone).
+- **Decided** (2026-10-21, the user): option a: PLAN 7.66 ticked on the rule's own case.
 
 ### ADR-617 · 2026-10-21 · accepted — The ferry for a nation fronted through an ally alone: its allies' front cells, and a landing that ships nobody leaves the turn (PLAN 7.64; amends ADR-612)
 
@@ -214,6 +215,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   every British cell beside an enemy handed to an ally, its army on the fronts' lands gone, its
   transports at a British port in Africa: they sail home for the division at Glasgow. Red without
   either half.
+- **Decided** (2026-10-21, the user): option a: PLAN 7.64 ticked on the rule's own case.
 
 ### ADR-616 · 2026-10-21 · accepted — The ferry's port nearest the front: of a nation's ports on its front's land, the nearest a front cell of its own (PLAN 7.63; amends ADR-612)
 
@@ -239,6 +241,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   Glasgow goes aboard for a port within DEPLOY_RANGE_CELLS of its front (Berbera, 9 cells); red
   without (Gibraltar, 314). The AT's named pair, Britain and Japan, has no land front at the 1938
   start, so the ferry is not called there.
+- **Decided** (2026-10-21, the user): option a: PLAN 7.63 ticked on the rule's own case.
 
 ### ADR-615 · 2026-10-21 · accepted — The reserve cut: at war under its peacetime share, a nation's army orders keep no reserve (PLAN 7.65; ADR-592 a, the user's)
 

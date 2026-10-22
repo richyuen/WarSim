@@ -21717,3 +21717,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin:** 2bc0e4df → 85d3c9f3.
 - **BLOCKERS**, the user's: (a) tick on the rule's own case, (b) close not done, (c) keep open.
 - **Next:** PLAN 7.67 (the ferry for an army on a land with no port of its nation), then 7.62.
+
+## 2026-10-21 — The user's decisions: ADR-616, ADR-617 and ADR-618 option a
+
+- Ticked on their rules' own cases: 7.63 (ADR-616), 7.64 (ADR-617), 7.66 (ADR-618). Three BLOCKERS
+  entries resolved. No code: the pin unchanged.
+- 7.67's reach, read on day 1 of the critic's 48 saves (no run): of 14,092 land formations of nations
+  at war, 4,698 stand on a land with no front of their own; of those, 98 on a land with no port of
+  any nation and 69 on one where only an ally holds a port: 167 (3.6 % of the island formations,
+  1.2 % of the land formations at war), the Netherlands most (16 on 1129 year 20).
+- **Next:** PLAN 7.67 or 7.62, the user's call on 7.67.

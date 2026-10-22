@@ -36,53 +36,6 @@ The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
 when taken up:
 
-- [ ] 7.63 The ferry's port nearest the front (found at 7.49d1, `docs/evidence/7.49/d1.md` §3; carries
-  emergent 6 with 7.49): the ferry lands at the nation's port on a front's land nearest its
-  transports by sea, which may be far from the front (7019 year 10: Britain at Wilhelmshaven and
-  Constanța, 524–626 cells from its front in Asia; Japan at Fusan, 139–160 from China); of the 133
-  formations landed in 60 days of the 48 saves, 50 beyond DEPLOY_RANGE_CELLS (60) of their front at
-  the landing, 71 within it on day 60, 3 engaged on any day. The ferry's port: of its ports on a
-  front's land, the nearest a front cell of its own (straight cells), the sea's way the tie-break.
-  AT: of the formations landed in 60 days of the 48 saves (`ferryLanded.ts`), within 60 cells of
-  their front on day 60 at least 80 % (71 of 133, 53 %, on 7.49d1's code); engaged worldwide and per
-  war read (`warSides.ts`); no invasion AI call over 50 ms; a unit test (red without: Britain at
-  war with Japan lands at a port nearer its front); the ADR; the pin's entry.
-  Rule in (ADR-616, `docs/evidence/7.63.md`; the test's case Britain and Italy, no British front
-  with Japan in 1938): 66 of 133 (50 %) → 70 of 102 (69 %), beyond 60 cells 41 → 7; the bar missed,
-  BLOCKERS, the user's.
-
-- [ ] 7.64 The ferry for a nation fronted through an ally alone (found at 7.49d2,
-  `docs/evidence/7.49/d2.md` §3; carries emergent 6 with 7.49): a nation at war whose land front is
-  an ally's alone (it holds no front cell itself; its allies' cells face the enemy) is never
-  ferried: `invasionAi` reads a nation's own front cells, and with none `planFerry` is not called.
-  Of the island formations of nations with no own port on their front's land, 793 of 1,059 on day 1
-  of the 48 saves (Latvia's 40 on 5309 year 20). The rule: such a nation's front is the cells of
-  the allies beside whom it fights (`wars.together`) for the ferry's lands and its
-  port's choice. AT: the island formations of nations with no front cell of their own after 60
-  days of the 48 saves together (`islandArmies.ts`, a read to add; HEAD first, the before) under
-  half of HEAD's; engaged worldwide and per war read (`warSides.ts`); no invasion AI call over 50
-  ms; a unit test (red without: a nation fronted through an ally boards for that front's land); the
-  ADR; the pin's entry.
-  Rule in (ADR-617, `docs/evidence/7.64.md`; with a second half: a landing that ships nobody leaves
-  the turn to the ferry, else it never ran for such a nation): 850 → 696 after 60 days (−18 %), bar
-  under 425: missed (one group of 24,000 men a nation, a voyage of weeks; none bought, PLAN 7.66);
-  BLOCKERS, the user's.
-
-- [ ] 7.66 Transports bought for a nation fronted through an ally alone (found at 7.64,
-  `docs/evidence/7.64.md` §2; carries emergent 6 with 7.49): the ferry's want (`wantsFerry`,
-  `ai/economic.ts`, ADR-614) reads the nation's own front cells, so a nation whose land front is its
-  allies' alone orders no transport group for its island army (after 7.64, 696 such island
-  formations after 60 days of the 48 saves; the Netherlands and the British Raj on 8693 year 20 with
-  no transports at all). The rule: such a nation's front for the want is its allies' cells beside
-  the enemies it fights with them, as 7.64's ferry. AT: the island formations of nations with no
-  front cell of their own after 180 days of the 48 saves together (`islandArmies.ts`, `MID=180` on a
-  180-day run; HEAD first, the before) under 0.75 × HEAD's; no nation in debt for it (`debt`); a
-  unit test (red without: a nation fronted through an ally alone, its island army over its room,
-  orders a transport group); the ADR; the pin's entry.
-  Rule in (ADR-618, `docs/evidence/7.66.md`): 482 → 493 after 180 days, bar under 361.5: missed (10
-  of 119 watched nations a group more; the named cases stand on lands with no port of their own,
-  PLAN 7.67); no nation in debt; BLOCKERS, the user's.
-
 - [ ] 7.67 The ferry for an army on a land with no port of its nation (found at 7.66,
   `docs/evidence/7.66.md` §3; carries emergent 6 with 7.49): a nation at war whose free land
   formations stand on a landmass with no front and no port of its own (the Netherlands' 5 on land
@@ -410,3 +363,6 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.60 A carrier's strike sinks a whole fleet at once (found at 7.57, naval 7, […]
 - [x] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged land […]
 - [x] 7.65 The reserve cut (7.49e1, moved at 7.49's budget; ADR-592 a, the user's; carries emergent 6 […]
+- [x] 7.63 The ferry's port nearest the front (found at 7.49d1, `docs/evidence/7.49/d1.md` §3; carries […]
+- [x] 7.64 The ferry for a nation fronted through an ally alone (found at 7.49d2, […]
+- [x] 7.66 Transports bought for a nation fronted through an ally alone (found at 7.64, […]
