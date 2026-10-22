@@ -21744,3 +21744,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   cities owned and controlled, spread over held land alone), the plan (a landing beside or behind
   the enemy's front by a nation with a land front), the follow-through (the ferry to a beachhead
   with no port). After 7.69, before 7.62.
+
+## 2026-10-21 — PLAN 7.67: new divisions of a nation fronted through an ally alone raised toward that front (ADR-619; bar missed, the user's)
+
+- **Rule** (`systems/production.ts`, `musterPoint`): with no front cell of its own, a nation at war
+  raises at its city on a land of its allies' cells beside the enemies it fights with them
+  (`wars.together`) nearest one of them; with none there, at its port nearest them by sea; else at
+  home. SPEC §7 (overseas muster).
+- **Read** (`docs/evidence/7.67.md`, the critic's 48 saves, `islandArmies.ts` `noOwnFront`, 180
+  days; a new read `raisedPortless`): 493 (HEAD = 7.66's after, no code since) → 466, bar under
+  369.75: missed. None raised on land 529 of 1129 year 20 after, nor before (HEAD none). 11 raised
+  on portless lands over the saves, 4 on the Raj's islet (531): the capital's place, 7.68.
+  Production's longest call 7.8 ms (before 4.0).
+- **Test:** `ferry1938.test.ts`, a new case (Britain's front cells handed to an ally, its capital on
+  a portless islet: raised on the allies' front's land, then at a port), red without the rule and
+  without the port's branch. Specs by hand: none (no drawn change).
+- **Pin:** 85d3c9f3 → 75df825b.
+- **BLOCKERS**, the user's: (a) tick on the rule's own case, (b) close not done, (c) keep open.
+- **Next:** PLAN 7.68 (a capital moves to the land its nation holds most of).

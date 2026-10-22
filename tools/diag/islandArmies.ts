@@ -25,6 +25,8 @@
  * - why a nation has no front on its island: the wars it is in, and whether each has a land front
  *   anywhere (the enemy's land is overseas), from `muster`, where `musterPoint` raises its new
  *   formations (home or the theatre).
+ * - `raisedPortless`: per save, the land formations raised (`FormationSpawned`) on a landmass with
+ *   no port of any nation, by landmass (PLAN 7.67: none on land 529 of 1129 year 20).
  *
  * - `carry`: the best a ferry could carry in the days (no rule does), per watched nation: the straight
  *   km from its port on its island army's land to its nearest port on a land of its front (or an
@@ -34,6 +36,7 @@
  * Usage: npx tsx tools/diag/islandArmies.ts <out.json> <days> <seed:state.bin> [...]
  */
 import { readFileSync, writeFileSync } from 'node:fs';
+import { EventKind } from '../../src/shared/events';
 import { DEPLOY_RANGE_CELLS } from '../../src/sim/ai/operational';
 import { STAGGER } from '../../src/sim/ai/strategic';
 import { neighbours4 } from '../../src/sim/nav/grid';
@@ -76,8 +79,17 @@ const carry: { seed: number; nation: string; km: number; oneWayDays: number; tri
 for (const { seed, src } of cases) {
   const s = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SIZE_1938.w) });
   const w = s.world;
+  // The land formations raised on a landmass with no port of any nation (PLAN 7.67), by land.
+  const raised = new Map<number, number>();
+  let ported = new Set<number>();
   const quiet = (ww: typeof w): void => {
-    ww.out.events.length = 0;
+    const ev = ww.out.events;
+    for (let i = 0; i < ev.length; i += 6) {
+      if (ev[i + 1] !== EventKind.FormationSpawned || ww.isFleet(ev[i + 2]!) || ww.isWing(ev[i + 2]!)) continue;
+      const l = navOf(ww).grid.component[Math.floor(ev[i + 5]!) * ww.cells.w + Math.floor(ev[i + 4]!)]!;
+      if (!ported.has(l)) raised.set(l, (raised.get(l) ?? 0) + 1);
+    }
+    ev.length = 0;
     ww.out.fires.length = 0;
   };
   s.load(new Uint8Array(readFileSync(src)));
@@ -86,6 +98,7 @@ for (const { seed, src } of cases) {
   const cw = w.cells.w;
   const cellOf = (id: number): number => Math.floor(c.y[id]!) * cw + Math.floor(c.x[id]!);
   const comp = navOf(w).grid.component;
+  ported = new Set(w.ports.map((p) => comp[p.cell]!));
   const nb: number[] = [];
 
   /** Each living nation at war: its front cells (landStates' way) and the cells it holds itself on the front (invasion's). */
@@ -399,9 +412,11 @@ for (const { seed, src } of cases) {
     roomAll: Math.round(r.roomAll.reduce((a, b) => a + b, 0) / Math.max(1, r.roomAll.length)),
     roomAtPort: Math.round(r.roomAtPort.reduce((a, b) => a + b, 0) / Math.max(1, r.roomAtPort.length)),
   }));
-  rows.push({ seed, src, first: first.share, mid: Object.fromEntries([...mid].map(([d, v]) => [d, v.share])), last: last.share, nations });
+  const raisedPortless = Object.fromEntries([...raised].sort((a, b) => a[0] - b[0]));
+  rows.push({ seed, src, raisedPortless, first: first.share, mid: Object.fromEntries([...mid].map(([d, v]) => [d, v.share])), last: last.share, nations });
   process.stderr.write(
     `${seed} ${src}: island ${first.share.island}/${first.share.atWar} -> ${last.share.island}/${last.share.atWar} (no own port ${first.share.noOwnPort} -> ${last.share.noOwnPort}; no transports ${first.share.noTransports} -> ${last.share.noTransports}; no own front ${first.share.noOwnFront} -> ${last.share.noOwnFront}${[...mid].map(([d, v]) => `; day ${d} ${v.share.island}/${v.share.atWar}, no transports ${v.share.noTransports}`).join('')}); ` +
+      `raised on portless lands ${JSON.stringify(raisedPortless)}; ` +
       nations.map((r) => `${r.nation} ${r.island0}->${r.island1} board ${r.boarded} land ${r.landed} room ${r.roomAll} ${JSON.stringify(r.gates)}`).join('; ') +
       '\n',
   );

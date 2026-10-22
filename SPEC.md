@@ -2261,7 +2261,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     saving, the refills, the fleets and the wings keep the 3 months.
   - *Overseas muster (ADR-47):* a nation whose fronts all lie on other landmasses than its
     capital raises new formations in the theatre (nearest own city to the front), an abstraction
-    of sealift until PLAN 4.5.
+    of sealift until PLAN 4.5. A nation at war with no front cell of its own (its land front its
+    allies' alone; PLAN 7.67, ADR-619) takes its allies' cells beside the enemies it fights with
+    them as its front, as the ferry does (ADR-617): its city on a landmass of those cells nearest
+    one of them; with none there, its port with water nearest one of them by sea (`seaKm`), where
+    the ferry boards; with no port, at home.
   - *Build mix* (PLAN 3.5d, ADR-154): cadre divisions if income < 20. A nation wants a share
     of its army's upkeep in tanks (`armourWanted`): none up to an income of 200, rising in a
     line to 0.3 at 1,000 (`ARMOUR_SHARE_MAX`, `ARMOUR_FULL_INCOME`). While its army, with the

@@ -5,6 +5,21 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.67: new divisions of a nation fronted through an ally alone raised toward that front is in; such island formations after 180 days 493 → 466, bar under 369.75 (2026-10-21, ADR-619; the user's decision)
+- **The bar:** the island formations of nations with no front cell of their own after 180 days of
+  the critic's 48 saves together (`islandArmies.ts`, `noOwnFront`) under 0.75 × HEAD's (493); no
+  formation raised on land 529 in 180 days of 1129 year 20; no production call over 50 ms.
+- **What moved** (`docs/evidence/7.67.md`): 493 → 466 (−5.5 %), 8 saves fewer and 5 more, the
+  runs' divergence the most of it. None raised on land 529, but none on HEAD either (the
+  Netherlands holds a front cell of its own on 141 of the 180 days; few formations are raised so
+  late). Production's longest call 7.8 ms. The unit test (a division raised on the allies' front's
+  land, else at a port, not on the capital's portless islet; red without) holds.
+- **Why it misses:** the figure is of the armies standing on day 1, which only the ferry moves, a
+  group's room at a time; the rule moves only the formations raised in the 180 days.
+- **What is left:** the user's. (a, recommended) 7.67 ticked on its rule's own case; (b) closed
+  not done, the rule kept; (c) kept open until 7.68 (the capital's place) is read with it.
+  Meanwhile the loop takes PLAN 7.68.
+
 ### RESOLVED 2026-10-21 (option a, the user's decision: 7.66 ticked) · PLAN 7.66: transports bought for a nation fronted through an ally alone is in; such island formations after 180 days 482 → 493, bar under 361.5 (2026-10-21, ADR-618; the user's decision)
 - **The bar:** the island formations of nations with no front cell of their own after 180 days of
   the critic's 48 saves together (`islandArmies.ts`, `noOwnFront`) under 0.75 × HEAD's (482).

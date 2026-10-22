@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-619 · 2026-10-21 · proposed — New divisions of a nation fronted through an ally alone raised toward that front (PLAN 7.67; amends ADR-47)
+
+- **Context** (PLAN 7.67; `docs/evidence/7.66.md` §3). A new land formation appears at its nation's
+  held cell nearest the capital, or, with a front of its own on another landmass only, at its city
+  nearest that front (`musterPoint`, ADR-47). A nation whose land front is its allies' alone has no
+  front cell of its own, so it raised its whole army at home wherever its capital stood: the
+  Netherlands', moved by its losses to a one-cell Caribbean islet with no port (land 529), had 16
+  divisions there on 1129 year 20, where no transport can take them aboard (ADR-612).
+- **Decision.** For a nation at war with no front cell of its own, the theatre is its allies' cells
+  beside the enemies it fights with them (`wars.together`, the ferry's front of ADR-617): its city
+  (owned and controlled) on a landmass of those cells nearest one of them on it; with none there,
+  its **port** with water (owned and controlled) nearest one of them by sea (`seaKm`), at its city
+  in the port's cell, else the port's cell; with no port, at home as before. The task's text says
+  "its city with a port"; a port is taken whether or not a city stands in its cell, since the port is
+  where the ferry boards. A nation in no war skips the search (the same answer, home).
+- **Measured** (`docs/evidence/7.67.md`): such island formations after 180 days of the critic's 48
+  saves 493 (HEAD, 7.66's after) → 466 (−5.5 %); the bar, under 0.75 × 493, missed. No formation
+  raised on land 529 in 180 days of 1129 year 20, after and before (HEAD none either: the
+  Netherlands holds a front cell of its own on 141 of the days, and few formations are raised so
+  late). Production's longest call 7.8 ms (before 4.0), mean 0.0055 ms an hour (0.0039). BLOCKERS,
+  the user's.
+- **Pin.** 85d3c9f3 → 75df825b.
+- **Test.** `ferry1938.test.ts`, a new case: the United Kingdom and its allies at war with Italy,
+  every British cell beside an enemy handed to an ally, its capital moved to an islet of its with no
+  port. A division is raised at a British city on a land of the allies' front; with those cities'
+  cells handed to the ally, at a British port with water off those lands and off the islet. Red
+  without the rule (home on the islet), and without the port's branch alone.
+
 ### ADR-618 · 2026-10-21 · accepted — Transports bought for a nation fronted through an ally alone: the ferry's want reads its allies' front cells (PLAN 7.66; amends ADR-614)
 
 - **Context** (PLAN 7.66; `docs/evidence/7.64.md` §2). The ferry's want of a transport group

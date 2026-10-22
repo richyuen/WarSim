@@ -18,6 +18,12 @@
  * theatre instead: at the city it owns and controls nearest (and on the same landmass as) its
  * front cell nearest the capital (`cityStand`), or at that front cell without such a city.
  * Japan's divisions otherwise piled up on the home islands while its army in China withered.
+ * A nation at war with no front cell of its own (its land front its allies' alone; PLAN 7.67,
+ * ADR-619) takes as its front its allies' cells beside the enemies it fights with them (as the
+ * ferry does, ADR-617): its city on a landmass of those cells nearest one of them; with none there,
+ * its port nearest one of them by sea, where the ferry boards. Before, it raised its whole army at
+ * home: the Netherlands' 16 divisions on a one-cell Caribbean islet with no port (critic run 11,
+ * seed 1129 year 20), where no transport could take them aboard.
  *
  * Ships (PLAN 4.2e): a fleet of a sea template is queued only by a nation that controls a port a
  * ship reaches (`shipyard`), and is delivered at the water of that port on its ready day (its
@@ -41,6 +47,8 @@ import { basinOf, Domain, navOf, portSeaOf, seaOf, type World } from '../world';
 import { portShut } from './bombing';
 import { waterOf } from './sail';
 import { frontierOf } from './territory';
+import { neighbours4 } from '../nav/grid';
+import { seaKm } from './navalCombat';
 
 export const SPAWN_REACH_CELLS = 40;
 /** Gold cost = PRODUCTION_COST_SCALE × Σ element unit gold cost (ADR-23). */
@@ -165,7 +173,7 @@ export function musterPoint(world: World, nation: number): [number, number] | nu
       front = c;
     }
   }
-  if (front < 0) return home;
+  if (front < 0) return allyTheatre(world, nation, dist2) ?? home;
   const fx = (front % w) + 0.5;
   const fy = Math.floor(front / w) + 0.5;
   const cc = world.cities.cols;
@@ -181,6 +189,62 @@ export function musterPoint(world: World, nation: number): [number, number] | nu
     }
   });
   return best !== 0 ? cityStand(world, best) : world.cellPoint(front);
+}
+
+/**
+ * Where a nation at war with no front cell of its own raises a land formation (PLAN 7.67, ADR-619;
+ * module comment), or null for home: the theatre is its allies' cells beside the enemies it fights
+ * with them (`wars.together`, the ferry's front, ADR-617). Its city (owned and controlled) on a
+ * landmass of those cells nearest one of them on it; with none there, its port with water nearest
+ * one of them by sea (`seaKm`), at its city in the port's cell, else the port's cell.
+ */
+function allyTheatre(world: World, nation: number, dist2: (x: number, y: number, tx: number, ty: number) => number): [number, number] | null {
+  if (!world.wars.list.some((war) => war.sides[0].includes(nation) || war.sides[1].includes(nation))) return null;
+  const { w, h, controller, owner } = world.cells;
+  const comp = navOf(world).grid.component;
+  const nb: number[] = [];
+  const front: number[] = [];
+  const lands = new Set<number>();
+  for (const c of frontierOf(world)) {
+    const a = controller[c]!;
+    if (a === 0 || a === nation || !world.wars.sameSide(nation, a)) continue;
+    if (!neighbours4(c, w, h, world.settings.loopingMap, nb).some((q) => controller[q] !== 0 && world.wars.together(nation, a, controller[q]!))) continue;
+    front.push(c);
+    lands.add(comp[c]!);
+  }
+  if (front.length === 0) return null;
+  const cc = world.cities.cols;
+  let best = 0;
+  let bd = Infinity;
+  world.cities.forEach((id) => {
+    const cell = cc.cell[id]!;
+    if (owner[cell] !== nation || controller[cell] !== nation || !lands.has(comp[cell]!)) return;
+    for (const k of front) {
+      if (comp[k] !== comp[cell]) continue;
+      const d = dist2(cc.x[id]!, cc.y[id]!, (k % w) + 0.5, Math.floor(k / w) + 0.5);
+      if (d < bd) [bd, best] = [d, id];
+    }
+  });
+  if (best !== 0) return cityStand(world, best);
+  const water = portSeaOf(world);
+  let port = -1;
+  let km = Infinity;
+  world.ports.forEach((p, i) => {
+    const at = water[i]!;
+    if (at < 0 || owner[p.cell] !== nation || controller[p.cell] !== nation) return;
+    const [x, y] = [(at % w) + 0.5, Math.floor(at / w) + 0.5];
+    for (const k of front) {
+      const d = seaKm(world, x, y, (k % w) + 0.5, Math.floor(k / w) + 0.5);
+      if (d < km) [km, port] = [d, i];
+    }
+  });
+  if (port < 0) return null;
+  const cell = world.ports[port]!.cell;
+  let city = 0;
+  world.cities.forEach((id) => {
+    if (city === 0 && cc.cell[id] === cell) city = id;
+  });
+  return city !== 0 ? cityStand(world, city) : world.cellPoint(cell);
 }
 
 /**

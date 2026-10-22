@@ -9,6 +9,7 @@ import { Sim } from '../../src/sim/sim';
 import { destroyFormation, equipFormation } from '../../src/sim/systems/elements';
 import { transportRoom } from '../../src/sim/systems/amphibious';
 import { AT_PORT_CELLS } from '../../src/sim/systems/navalCombat';
+import { musterPoint, spawnPoint } from '../../src/sim/systems/production';
 import { frontierOf } from '../../src/sim/systems/territory';
 import { declareWar } from '../../src/sim/systems/war';
 import { navOf, portSeaOf, type World } from '../../src/sim/world';
@@ -267,5 +268,58 @@ describe('the ferry (PLAN 7.49d1)', () => {
     w.nations.cols.manpower[ENG] = 1e7;
     s.step(1);
     expect(w.production.ids().some((p) => w.production.cols.nation[p] === ENG && w.production.cols.template[p] === transport)).toBe(true);
+  });
+
+  // PLAN 7.67, ADR-619: where its new divisions are raised. Britain's cells beside its enemies
+  // handed to an ally, its capital moved to an islet of its with no port: a division is raised at its
+  // city on a land of its allies' front; with those cities lost, at its port nearest that front by
+  // sea, where the ferry boards. Before, at home on the islet (critic run 11, seed 1129 year 20: the
+  // Netherlands' 16 divisions on a one-cell Caribbean islet with no port).
+  it('a nation fronted through an ally alone, its capital on an islet with no port, raises its divisions toward that front', () => {
+    const { w } = setUp(true);
+    const ctl = w.cells.controller;
+    const own = w.cells.owner;
+    const water = portSeaOf(w);
+    const comp = navOf(w).grid.component;
+    const beside = (k: number): boolean => neighbours4(k, W, H, w.settings.loopingMap, []).some((q) => ctl[q] !== 0 && w.wars.atWar(ENG, ctl[q]!));
+    const theirs = w.ports.findIndex((p, i) => water[i]! >= 0 && ctl[p.cell] !== ENG && w.wars.sameSide(ENG, ctl[p.cell]!));
+    expect(theirs).toBeGreaterThanOrEqual(0);
+    const ally = ctl[w.ports[theirs]!.cell]!;
+    for (const k of [...frontierOf(w)]) if (ctl[k] === ENG && beside(k)) w.setController(k, ally);
+    expect([...frontierOf(w)].some((k) => ctl[k] === ENG && beside(k))).toBe(false);
+    // The allies' front's lands.
+    const lands = new Set<number>();
+    for (const k of frontierOf(w)) {
+      const a = ctl[k]!;
+      if (a !== 0 && w.wars.sameSide(ENG, a) && neighbours4(k, W, H, w.settings.loopingMap, []).some((q) => ctl[q] !== 0 && w.wars.together(ENG, a, ctl[q]!))) lands.add(comp[k]!);
+    }
+    expect(lands.size).toBeGreaterThan(0);
+    // An islet of Britain's with no port: its capital there.
+    const ported = new Set(w.ports.map((p) => comp[p.cell]!));
+    const size = new Map<number, number>();
+    for (let k = 0; k < W * H; k++) if (comp[k]! > 0) size.set(comp[k]!, (size.get(comp[k]!) ?? 0) + 1);
+    let islet = -1;
+    for (let k = 0; k < W * H && islet < 0; k++) {
+      const l = comp[k]!;
+      if (l > 0 && own[k] === ENG && ctl[k] === ENG && !ported.has(l) && !lands.has(l) && size.get(l)! <= 4) islet = k;
+    }
+    expect(islet).toBeGreaterThanOrEqual(0);
+    const nc = w.nations.cols;
+    [nc.capitalX[ENG], nc.capitalY[ENG]] = [(islet % W) + 0.5, Math.floor(islet / W) + 0.5];
+    const cellAt = (p: [number, number]): number => Math.floor(p[1]) * W + Math.floor(p[0]);
+    expect(comp[cellAt(spawnPoint(w, ENG)!)]).toBe(comp[islet]);
+    // At its city on a land of the allies' front.
+    const at = cellAt(musterPoint(w, ENG)!);
+    expect(lands.has(comp[at]!)).toBe(true);
+    expect(w.cities.ids().some((city) => w.cities.cols.cell[city] === at && own[at] === ENG && ctl[at] === ENG)).toBe(true);
+    // Its cities there lost: at its port with water, off those lands.
+    w.cities.forEach((city) => {
+      const k = w.cities.cols.cell[city]!;
+      if (own[k] === ENG && ctl[k] === ENG && lands.has(comp[k]!)) w.setController(k, ally);
+    });
+    const port = cellAt(musterPoint(w, ENG)!);
+    expect(comp[port]).not.toBe(comp[islet]);
+    expect(lands.has(comp[port]!)).toBe(false);
+    expect(w.ports.some((p, i) => p.cell === port && water[i]! >= 0 && own[port] === ENG && ctl[port] === ENG)).toBe(true);
   });
 });
