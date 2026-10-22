@@ -110,11 +110,14 @@ them, are 7.81–7.86. A task each, split when taken up:
   group 126 at Nuuk, whose island army does not march to it; 6421 year 20: groups at Port-of-Spain and
   Roseau, the sail to the army refused), while 11 and 33 more stand idle at US ports; and one group (24,000
   men) a turn carries two of 1129's 60 stranded divisions. In two parts:
-    - [ ] 7.88a The ferry tries its standing groups at its ports, those on the land of an army it would
+    - [x] 7.88a The ferry tries its standing groups at its ports, those on the land of an army it would
       carry first, then the most room, the lowest id, until one gives an order, up to SAIL_TRIES of them.
       AT: on 1129 year 10 and 6421 year 20, the USA's ferry turns in 30 days that give an order 0 → at
       least half; piles read (`piles.ts --days 30`); a unit test (red without); the ADR; the pin's entry;
       `--profile`.
+      Done (ADR-638, `docs/evidence/7.88/a.md`, `tools/diag/ferryTurns.ts`): 0 of 4 → 3 of 3 on both
+      (Nuuk's groups passed over for Norfolk's; Norfolk's first on 6421); piles 3 → 3 (7.88b's); invasion
+      AI cost within the noise; pin e66bef2e → 083f2585.
     - [ ] 7.88b Every standing group with an army to carry acts in a turn (waits on the user's ADR-637:
       option a; dropped on b). AT: piles of 30 or more of a nation at war on one cell 30 days running on
       1129 year 10, 6421 year 20 and 7019 year 10 3 → 0; transports at sea and island garrisons read

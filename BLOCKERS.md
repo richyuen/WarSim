@@ -14,6 +14,8 @@ entries are kept and marked **RESOLVED** with the date and fix.
   Nuuk and at Port-of-Spain/Roseau, while 11 and 33 stand idle: the loop's next. (b) one group a turn
   carries two of 1129's 60 divisions: the user's (ADR-637: a, every idle group carries; b, one a turn;
   c, open).
+- **2026-10-22, PLAN 7.88a done** (ADR-638): (a) fixed, the USA's ferry turns that give an order 0 of 4 →
+  3 of 3 on both saves; the piles 3 → 3 still (`docs/evidence/7.88/a.md`). (b) waits on ADR-637.
 
 ### PLAN 7.79d: the far army is 80–170 days of march from the threatened sectors beyond the range; the 30-day bar out of reach (2026-10-22, ADR-635 proposed; the user's decision)
 - **The bar:** on run 12's saves 1129, 2081 and 6421 year 20, the threatened sectors with a formation of

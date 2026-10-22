@@ -167,6 +167,46 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-638 · 2026-10-22 · accepted — The ferry's turn tries its transport groups until one acts (PLAN 7.88a; amends ADR-612)
+
+- **Context** (PLAN 7.79c, `docs/evidence/7.79/c.md` §4). The ferry (ADR-612) took the turn's one
+  transport group as a landing's (`transportsAtPort`: the most room, the lowest id). On critic run 12's
+  saves that group could never act: 1129 year 10, group 126 at Nuuk (Greenland's army does not march to
+  it); 6421 year 20, groups at Port-of-Spain and Roseau (the sail to the army refused); while 11 and 33
+  more of the USA's stood idle at its ports. The USA's ferry turns in 30 days that gave an order: 0 of 4
+  on each (`docs/evidence/7.88/a.md`, `tools/diag/ferryTurns.ts`, `FERRY_PROBE`).
+- **Decision** (`ai/invasion.ts`, `planFerry`, `transportGroupsAtPort`): the turn takes the nation's
+  transport groups standing at its ports (as `transportsAtPort` takes them), those at a port on the land
+  of a formation free for the ferry first, then the most room, the lower id, and tries them in turn
+  until one gives an order, up to SAIL_TRIES (4) of them. A group that gives no order gave none (a sail
+  refused emits its MoveRejected event alone). The landing's and the Normandy's turns keep one group
+  (`transportsAtPort`, unchanged).
+- **Read** (`a.md`): turns that gave an order 0 of 4 → 3 of 3 on both saves (the fourth actor day is
+  skipped with a division aboard). 1129: Nuuk's two groups are passed over, Norfolk's acts; 6421:
+  Norfolk's comes first (Port-of-Spain and Roseau have no army of the USA's). Piles of 30 or more for 30
+  days on 1129 year 10, 6421 year 20, 7019 year 10: 3 → 3 (60, 53; 77 → 75): one group (24,000 men) a
+  turn, PLAN 7.88b (ADR-637, the user's).
+- **Test.** `strandedFerry1938.test.ts`, "the ferry tries its groups until one acts": two German groups
+  of one room, the lower id at Baku (handed to Germany; the Caspian reaches no port on the front's
+  land), the other at the stranded division's port; the division goes aboard. Red with one group a turn.
+- **Test restated** (history moved, claim kept): `warBattle`'s 60 days of seed 99 (PLAN 2.14f5a) asked
+  for under a tenth of the answers with one side under a tenth of the other (ADR-94). On the commit
+  before it read 74 of 762 (the bound 76.2); with the rule 77 of 746, all of the rise in Germany's war on
+  Poland. The rule gives no order there that HEAD did not until day 16 (the state hash equal on days
+  12–15, through Italy's two refused tries on day 13: a refused try writes nothing); on day 16 Japan's
+  turn takes its group at Hiroshima (on its army's land, boarding at once) for HEAD's at Haiphong, and
+  history moves from there. Of the uneven answers, those whose war had a battle with no side under a
+  tenth to name (the answers the rule chose): 31 on the commit before, 16 with the rule; the rest are
+  wars whose every battle is so. The test now bounds those the rule chose, under a twentieth (tighter
+  than the tenth), and reports all of them. `battlesOf` (`systems/warBattle.ts`) is `largestBattle`'s
+  first half, exported for it (reads only; the pick unchanged). A count of battles passed over with a
+  larger smaller side would be 0 by construction (the pick is that maximum) and was not taken.
+- **Cost** (both bundles at once on separate P-cores, swapped; `.cache/prof88a/`): invasion AI by core,
+  seed 99's year 1 0.090 / 0.075 → 0.097 / 0.077 ms, a year from 1129 year 10 0.260 / 0.254 → 0.256 /
+  0.242, from 6421 year 20 0.359 / 0.344 → 0.363 / 0.355: within the noise. Seed 99's year-1 tick 2.60 /
+  2.27 → 2.49 / 2.31 ms by core; its five years 2.13 / 1.92 → 2.00 / 1.89 (another world from year 1).
+- **Pin.** e66bef2e → 083f2585 (the refactor alone, one group in HEAD's order, keeps e66bef2e).
+
 ### ADR-637 · 2026-10-22 · proposed (the user's decision) — Every idle transport group carries in the ferry's turn (PLAN 7.88b)
 
 - **Context** (PLAN 7.79c, `docs/evidence/7.79/c.md` §4). The ferry (ADR-612) ships with one transport

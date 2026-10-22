@@ -19,62 +19,24 @@ export type WarBattleSite = Omit<WarBattle, 'tick'>;
 
 /** The largest battle of war `warId` (the leaders' before their allies'; then by the men of its smaller side, then of both; of equals, the one with the lowest formation id), or null when none of its formations are in contact across its sides. */
 export function largestBattle(world: World, warId: number): WarBattleSite | null {
-  const war = world.wars.list.find((w) => w.id === warId);
-  if (!war) return null;
+  const all = battlesOf(world, warId);
+  if (all === null) return null;
+  const { battles, members, pairs, find, sideOf, leads, facing } = all;
   const c = world.formations.cols;
   const w = world.cells.w;
-  const sideOf = (nation: number): number => (war.sides[0].includes(nation) ? 0 : war.sides[1].includes(nation) ? 1 : -1);
-  const sides: [number[], number[]] = [[], []];
-  world.formations.forEach((id) => {
-    // A fleet in a sea battle is engaged too: no battle of the land (ADR-337).
-    const s = c.engaged[id] === 1 && !world.offLand(id) ? sideOf(c.nation[id]!) : -1;
-    if (s >= 0) sides[s]!.push(id);
-  });
-  const parent = new Map<number, number>();
-  const find = (a: number): number => {
-    let r = a;
-    while (parent.get(r) !== r) r = parent.get(r)!;
-    parent.set(a, r);
-    return r;
-  };
-  const pairs: [number, number][] = [];
-  for (const a of sides[0]) {
-    for (const b of sides[1]) {
-      if (cellDist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) > world.atSize(CONTACT_CELLS)) continue;
-      pairs.push([a, b]);
-      if (!parent.has(a)) parent.set(a, a);
-      if (!parent.has(b)) parent.set(b, b);
-      const ra = find(a);
-      const rb = find(b);
-      if (ra !== rb) parent.set(Math.max(ra, rb), Math.min(ra, rb));
-    }
-  }
-  if (pairs.length === 0) return null;
-  // Men by battle and side (a battle's root is its lowest formation id). A battle is as large as its smaller side (ADR-94).
-  const men = new Map<number, [number, number]>();
-  for (const f of parent.keys()) {
-    const m = men.get(find(f)) ?? [0, 0];
-    m[sideOf(c.nation[f]!)]! += c.strength[f]!;
-    men.set(find(f), m);
-  }
-  // The battles of the war's leaders, whom its banner names (ADR-95): by the leaders' formations (two, one, none) in a pair of each other's nearest enemy.
-  const contacts = contactsOf(world);
-  const leads = (f: number): number => (c.nation[f] === war.sides[0][0] || c.nation[f] === war.sides[1][0] ? 1 : 0);
-  const facing = (a: number, b: number): number => (contacts.get(a) === b ? 1 : 0) + (contacts.get(b) === a ? 1 : 0);
-  const led = new Map<number, number>();
-  for (const [a, b] of pairs) if (facing(a, b) === 2) led.set(find(a), Math.max(led.get(find(a)) ?? 0, leads(a) + leads(b)));
-  const larger = (r: number, than: number): boolean => {
-    const l = (led.get(r) ?? 0) - (led.get(than) ?? 0);
+  const larger = (x: WarBattleGroup, than: WarBattleGroup): boolean => {
+    const l = x.led - than.led;
     if (l !== 0) return l > 0;
-    const [a, b] = [men.get(r)!, men.get(than)!];
+    const [a, b] = [x.men, than.men];
     const d = Math.min(a[0], a[1]) - Math.min(b[0], b[1]) || a[0] + a[1] - b[0] - b[1];
-    return d > 0 || (d === 0 && r < than);
+    return d > 0 || (d === 0 && x.root < than.root);
   };
-  let root = -1;
-  for (const r of men.keys()) if (root < 0 || larger(r, root)) root = r;
+  let top: WarBattleGroup | null = null;
+  for (const g of battles) if (top === null || larger(g, top)) top = g;
+  const root = top!.root;
   const count: [number, number] = [0, 0];
   const strength: [number, number] = [0, 0];
-  for (const f of parent.keys()) {
+  for (const f of members) {
     if (find(f) !== root) continue;
     const s = sideOf(c.nation[f]!);
     count[s]!++;
@@ -151,4 +113,65 @@ export function warsWithBattle(world: World): Set<number> {
     if (attackers!.some((a) => defenders!.some((b) => cellDist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) <= world.atSize(CONTACT_CELLS)))) out.add(war.id);
   }
   return out;
+}
+
+/** One battle of a war (`battlesOf`): its root (its lowest formation id), its men by side, and its leaders' formations in a pair of each other's nearest enemy (two, one, none; ADR-95). */
+export interface WarBattleGroup {
+  root: number;
+  men: [number, number];
+  led: number;
+}
+
+/**
+ * The battles of war `warId` now (see the head of the file), with what `largestBattle` picks
+ * from them: the formations in them, the pairs in contact across its sides, a pair's battle (`find`), a nation's side, and
+ * whether a formation is a leader's and two face each other. Null with no war or no pair. Reads only.
+ */
+export function battlesOf(world: World, warId: number): { battles: WarBattleGroup[]; members: number[]; pairs: [number, number][]; find: (f: number) => number; sideOf: (nation: number) => number; leads: (f: number) => number; facing: (a: number, b: number) => number } | null {
+  const war = world.wars.list.find((w) => w.id === warId);
+  if (!war) return null;
+  const c = world.formations.cols;
+  const sideOf = (nation: number): number => (war.sides[0].includes(nation) ? 0 : war.sides[1].includes(nation) ? 1 : -1);
+  const sides: [number[], number[]] = [[], []];
+  world.formations.forEach((id) => {
+    // A fleet in a sea battle is engaged too: no battle of the land (ADR-337).
+    const s = c.engaged[id] === 1 && !world.offLand(id) ? sideOf(c.nation[id]!) : -1;
+    if (s >= 0) sides[s]!.push(id);
+  });
+  const parent = new Map<number, number>();
+  const find = (a: number): number => {
+    let r = a;
+    while (parent.get(r) !== r) r = parent.get(r)!;
+    parent.set(a, r);
+    return r;
+  };
+  const pairs: [number, number][] = [];
+  for (const a of sides[0]) {
+    for (const b of sides[1]) {
+      if (cellDist(world, c.x[a]!, c.y[a]!, c.x[b]!, c.y[b]!) > world.atSize(CONTACT_CELLS)) continue;
+      pairs.push([a, b]);
+      if (!parent.has(a)) parent.set(a, a);
+      if (!parent.has(b)) parent.set(b, b);
+      const ra = find(a);
+      const rb = find(b);
+      if (ra !== rb) parent.set(Math.max(ra, rb), Math.min(ra, rb));
+    }
+  }
+  if (pairs.length === 0) return null;
+  // Men by battle and side (a battle's root is its lowest formation id). A battle is as large as its smaller side (ADR-94).
+  const men = new Map<number, [number, number]>();
+  for (const f of parent.keys()) {
+    const m = men.get(find(f)) ?? [0, 0];
+    m[sideOf(c.nation[f]!)]! += c.strength[f]!;
+    men.set(find(f), m);
+  }
+  // The battles of the war's leaders, whom its banner names (ADR-95): by the leaders' formations (two, one, none) in a pair of each other's nearest enemy.
+  const contacts = contactsOf(world);
+  const leads = (f: number): number => (c.nation[f] === war.sides[0][0] || c.nation[f] === war.sides[1][0] ? 1 : 0);
+  const facing = (a: number, b: number): number => (contacts.get(a) === b ? 1 : 0) + (contacts.get(b) === a ? 1 : 0);
+  const led = new Map<number, number>();
+  for (const [a, b] of pairs) if (facing(a, b) === 2) led.set(find(a), Math.max(led.get(find(a)) ?? 0, leads(a) + leads(b)));
+  const battles: WarBattleGroup[] = [];
+  for (const [root, m] of men) battles.push({ root, men: m, led: led.get(root) ?? 0 });
+  return { battles, members: [...parent.keys()], pairs, find, sideOf, leads, facing };
 }

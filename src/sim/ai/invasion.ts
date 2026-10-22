@@ -111,7 +111,10 @@ export function invasionAi(world: World): void {
   const aboard = new Set<number>();
   for (const id of world.embarked.keys()) aboard.add(world.formations.cols.nation[id]!);
   for (const n of actors) {
-    if (aboard.has(n)) continue;
+    if (aboard.has(n)) {
+      FERRY_PROBE.skip?.(n, 'aboard');
+      continue;
+    }
     // The enemies of its wars in which it has no front (PLAN 7.26c3a).
     const mine = faced.get(n);
     const foes = new Set<number>();
@@ -123,12 +126,19 @@ export function invasionAi(world: World): void {
       for (const e of other) if (e !== n) foes.add(e);
     }
     const front = frontCells.get(n) ?? [];
-    if (foes.size > 0 && planLanding(world, n, foes, front)) continue;
+    if (foes.size > 0 && planLanding(world, n, foes, front)) {
+      FERRY_PROBE.skip?.(n, 'landing');
+      continue;
+    }
     // A new front (PLAN 7.70b, ADR-623): with its own front held, its free army lands behind the
     // enemy's; with it not held, the ferry takes its army there first.
-    if (front.length > 0 && mine && frontHeld(world, n, front) && planNormandy(world, n, mine, front)) continue;
+    if (front.length > 0 && mine && frontHeld(world, n, front) && planNormandy(world, n, mine, front)) {
+      FERRY_PROBE.skip?.(n, 'normandy');
+      continue;
+    }
     const ferried = front.length > 0 ? front : (allyFront.get(n) ?? []);
     if (ferried.length > 0) planFerry(world, n, ferried);
+    else FERRY_PROBE.skip?.(n, 'noFront');
   }
 }
 
@@ -354,6 +364,27 @@ function planNormandy(world: World, n: number, faced: ReadonlySet<number>, front
   return board(world, tp.fleet, tp.room, tp.port, target, free, true);
 }
 
+/**
+ * The transport groups of nation `n` standing at a port it holds (as `transportsAtPort` takes
+ * them): fleet, room, port index; the most room first, the lower id on a tie.
+ */
+function transportGroupsAtPort(world: World, n: number): { fleet: number; room: number; port: number }[] {
+  const c = world.formations.cols;
+  const w = world.cells.w;
+  const water = portSeaOf(world);
+  const ctl = world.cells.controller;
+  const out: { fleet: number; room: number; port: number }[] = [];
+  world.formations.forEach((id) => {
+    if (!world.isFleet(id) || c.nation[id] !== n || c.moving[id] === 1 || c.engaged[id] === 1 || seaRangeOf(world, id) !== undefined) return;
+    const room = transportRoom(world, id);
+    if (room <= 0) return;
+    const at = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+    const port = world.ports.findIndex((p, k) => water[k]! >= 0 && ctl[p.cell] === n && near(world, at, water[k]!, world.atSize(AT_PORT_CELLS)));
+    if (port >= 0) out.push({ fleet: id, room, port });
+  });
+  return out.sort((a, b) => b.room - a.room || a.fleet - b.fleet);
+}
+
 /** The transport group of nation `n` standing at a port it holds with the most room (the lower id on a tie): fleet, room, port index; null for none. */
 function transportsAtPort(world: World, n: number): { fleet: number; room: number; port: number } | null {
   const f = world.formations;
@@ -495,7 +526,10 @@ function frontReach(world: World, n: number, front: readonly number[], pass: Pas
  * (critic run 11, seed 7019 year 10: Britain's 117 divisions at home while its war with Japan was
  * fought in Asia; of the land formations at war, 21–30 % stood so on the critic's 48 saves).
  *
- * - its transports: as a landing's (`transportsAtPort`);
+ * - its transports: its groups standing at its ports (`transportGroupsAtPort`), those on the land
+ *   of an army they would carry first, then the most room, the lower id, tried in turn until one
+ *   gives an order, up to SAIL_TRIES of them (PLAN 7.88a, ADR-638; before, the most room's alone,
+ *   as a landing's, and on critic run 12's saves that one could never act);
  * - standing at a port on a front's land, or on a land with none of its island army, they sail for
  *   a port of its on that army's land (`sailToArmy`, its formations nearest the transports first);
  * - else the target: of its ports on a front's land (its water in a zone open, not shut by bombs,
@@ -548,94 +582,140 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
     if (!world.isFleet(id) && !world.isWing(id) && free(id)) island.push(id);
   });
   if (island.length === 0) return false;
-  const tp = transportsAtPort(world, n);
-  if (!tp) return false;
-  const { fleet, port } = tp;
-  const from = world.ports[port]!.cell;
-  // Away from the army (in the theatre, or on another island): they go to it, the nearest first.
-  if (!island.some((id) => comp[cellOf(id)] === comp[from])) {
-    const by = island.map((id): [number, number] => {
-      const k = cellOf(id);
-      let dx = Math.abs((k % w) - (from % w));
-      if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
-      return [dx + Math.abs(Math.floor(k / w) - Math.floor(from / w)), id];
-    });
-    by.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-    return sailToArmy(world, fleet, port, by.slice(0, SAIL_TRIES).map(([, id]) => id), pass);
-  }
-  // Its port on a front's land nearest them by sea.
+  // Its transport groups standing at its ports (PLAN 7.88a, ADR-638): those on the land of an army
+  // they would carry first, then the most room, the lower id; tried in turn until one gives an
+  // order, up to SAIL_TRIES. Before, the turn was the one with the most room's, and on critic run
+  // 12's saves that one could never act (1129 year 10: at Nuuk, Greenland's army does not march to
+  // it; 6421 year 20: at Port-of-Spain and Roseau, the sail to the army refused) while 11 and 33
+  // more stood idle at the USA's ports: 0 orders in 4 turns on each.
+  const armyLands = new Set(island.map((id) => comp[cellOf(id)]!));
+  const onArmy = (g: { port: number }): number => (armyLands.has(comp[world.ports[g.port]!.cell]!) ? 0 : 1);
+  const groups = transportGroupsAtPort(world, n).sort((a, b) => onArmy(a) - onArmy(b) || b.room - a.room || a.fleet - b.fleet);
+  if (groups.length === 0) return false;
   const z = seaOf(world);
   const keys = waterKeys(world, n);
-  const mine = keyAt(world, keys, c.x[fleet]!, c.y[fleet]!);
-  /**
-   * Whether port `i`, on a front's land, takes the ferry: open, unbombed, its sea in their waters
-   * and not an enemy's, and a front cell reached from it (PLAN 7.79c: who lands where none is
-   * reached stands there for good).
-   */
-  const open = (i: number): boolean => {
-    const at = water[i]!;
-    if (at < 0 || !lands.has(comp[world.ports[i]!.cell]!) || portShut(world, i)) return false;
-    const zone = z.zoneOf[at]!;
-    if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) return false;
-    const sea = seaHolder(world, zone);
-    return (sea === 0 || !world.wars.atWar(sea, n)) && reach(world.ports[i]!.cell);
-  };
-  const km = (i: number): number => seaKm(world, c.x[fleet]!, c.y[fleet]!, (water[i]! % w) + 0.5, Math.floor(water[i]! / w) + 0.5);
-  /** The squared straight cells from port `i` to the nearest front cell of n's on its land (PLAN 7.63). */
-  const toFront = (i: number): number => {
-    const at = world.ports[i]!.cell;
-    const l = comp[at]!;
-    let d2 = Infinity;
-    for (const k of front) {
-      if (comp[k] !== l) continue;
-      let dx = Math.abs((k % w) - (at % w));
-      if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
-      const dy = Math.floor(k / w) - Math.floor(at / w);
-      d2 = Math.min(d2, dx * dx + dy * dy);
-    }
-    return d2;
-  };
-  // Of the ports that pass `whose`, the nearest a front cell of n's on that land (straight cells),
-  // the sea's way the tie-break: its own first (PLAN 7.63), else an ally's (PLAN 7.49d2). The cell
-  // to land at, or -1.
-  const pick = (whose: (h: number) => boolean, near2 = Infinity, best = Infinity, target = -1): number => {
-    world.ports.forEach((p, i) => {
-      if (!whose(ctl[p.cell]!) || !open(i)) return;
-      const d2 = toFront(i);
-      if (d2 > near2) return;
-      const d = km(i);
-      if (d2 < near2 || d < best) [near2, best, target] = [d2, d, p.cell];
-    });
-    return target;
-  };
-  // A beachhead with no port (PLAN 7.70c, ADR-624): on a front's land where no port of its own nor
-  // of a nation fighting beside it passes `open`, a front cell of n's beside water whose zone passes
-  // `open`'s tests stands as its port, on the front itself; the nearest the transports by sea.
-  const ported = new Set<number>();
-  world.ports.forEach((p, i) => {
-    const hd = ctl[p.cell]!;
-    if ((hd === n || (hd !== 0 && world.wars.sameSide(n, hd))) && open(i)) ported.add(comp[p.cell]!);
-  });
-  const { h } = world.cells;
-  const nb: number[] = [];
-  let beach = -1;
-  let beachKm = Infinity;
-  for (const k of front) {
-    if (ctl[k] !== n || ported.has(comp[k]!)) continue;
-    for (const q of neighbours4(k, w, h, world.settings.loopingMap, nb)) {
-      const zone = z.zoneOf[q]!;
-      if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) continue;
-      const sea = seaHolder(world, zone);
-      if (sea !== 0 && world.wars.atWar(sea, n)) continue;
-      const d = seaKm(world, c.x[fleet]!, c.y[fleet]!, (q % w) + 0.5, Math.floor(q / w) + 0.5);
-      if (d < beachKm || (d === beachKm && k < beach)) [beach, beachKm] = [k, d];
+  const tries: FerryTry[] = [];
+  let acted = false;
+  for (const g of groups.slice(0, SAIL_TRIES)) {
+    const t: FerryTry = { fleet: g.fleet, port: g.port, room: g.room, way: 'board', acted: false };
+    tries.push(t);
+    t.acted = ferryGroup(g.fleet, g.room, g.port, t);
+    if (t.acted) {
+      acted = true;
+      break;
     }
   }
-  let target = beach >= 0 ? pick((hd) => hd === n, 0, beachKm, beach) : pick((hd) => hd === n);
-  if (target < 0) target = pick((hd) => hd !== 0 && hd !== n && world.wars.sameSide(n, hd));
-  if (target < 0) return false;
-  return board(world, fleet, tp.room, port, target, free);
+  FERRY_PROBE.turn?.({ nation: n, free: island.length, groups: groups.length, tries });
+  return acted;
+
+  /** Transport group `fleet` (room `room`, at port `port`) takes the turn: whether it gave an order. */
+  function ferryGroup(fleet: number, room: number, port: number, t: FerryTry): boolean {
+    const from = world.ports[port]!.cell;
+    // Away from the army (in the theatre, or on another island): they go to it, the nearest first.
+    if (!island.some((id) => comp[cellOf(id)] === comp[from])) {
+      t.way = 'sail';
+      const by = island.map((id): [number, number] => {
+        const k = cellOf(id);
+        let dx = Math.abs((k % w) - (from % w));
+        if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+        return [dx + Math.abs(Math.floor(k / w) - Math.floor(from / w)), id];
+      });
+      by.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+      return sailToArmy(world, fleet, port, by.slice(0, SAIL_TRIES).map(([, id]) => id), pass);
+    }
+    // Its port on a front's land nearest them by sea.
+    const mine = keyAt(world, keys, c.x[fleet]!, c.y[fleet]!);
+    /**
+     * Whether port `i`, on a front's land, takes the ferry: open, unbombed, its sea in their waters
+     * and not an enemy's, and a front cell reached from it (PLAN 7.79c: who lands where none is
+     * reached stands there for good).
+     */
+    const open = (i: number): boolean => {
+      const at = water[i]!;
+      if (at < 0 || !lands.has(comp[world.ports[i]!.cell]!) || portShut(world, i)) return false;
+      const zone = z.zoneOf[at]!;
+      if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) return false;
+      const sea = seaHolder(world, zone);
+      return (sea === 0 || !world.wars.atWar(sea, n)) && reach(world.ports[i]!.cell);
+    };
+    const km = (i: number): number => seaKm(world, c.x[fleet]!, c.y[fleet]!, (water[i]! % w) + 0.5, Math.floor(water[i]! / w) + 0.5);
+    /** The squared straight cells from port `i` to the nearest front cell of n's on its land (PLAN 7.63). */
+    const toFront = (i: number): number => {
+      const at = world.ports[i]!.cell;
+      const l = comp[at]!;
+      let d2 = Infinity;
+      for (const k of front) {
+        if (comp[k] !== l) continue;
+        let dx = Math.abs((k % w) - (at % w));
+        if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+        const dy = Math.floor(k / w) - Math.floor(at / w);
+        d2 = Math.min(d2, dx * dx + dy * dy);
+      }
+      return d2;
+    };
+    // Of the ports that pass `whose`, the nearest a front cell of n's on that land (straight cells),
+    // the sea's way the tie-break: its own first (PLAN 7.63), else an ally's (PLAN 7.49d2). The cell
+    // to land at, or -1.
+    const pick = (whose: (h: number) => boolean, near2 = Infinity, best = Infinity, target = -1): number => {
+      world.ports.forEach((p, i) => {
+        if (!whose(ctl[p.cell]!) || !open(i)) return;
+        const d2 = toFront(i);
+        if (d2 > near2) return;
+        const d = km(i);
+        if (d2 < near2 || d < best) [near2, best, target] = [d2, d, p.cell];
+      });
+      return target;
+    };
+    // A beachhead with no port (PLAN 7.70c, ADR-624): on a front's land where no port of its own nor
+    // of a nation fighting beside it passes `open`, a front cell of n's beside water whose zone passes
+    // `open`'s tests stands as its port, on the front itself; the nearest the transports by sea.
+    const ported = new Set<number>();
+    world.ports.forEach((p, i) => {
+      const hd = ctl[p.cell]!;
+      if ((hd === n || (hd !== 0 && world.wars.sameSide(n, hd))) && open(i)) ported.add(comp[p.cell]!);
+    });
+    const { h } = world.cells;
+    const nb: number[] = [];
+    let beach = -1;
+    let beachKm = Infinity;
+    for (const k of front) {
+      if (ctl[k] !== n || ported.has(comp[k]!)) continue;
+      for (const q of neighbours4(k, w, h, world.settings.loopingMap, nb)) {
+        const zone = z.zoneOf[q]!;
+        if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) continue;
+        const sea = seaHolder(world, zone);
+        if (sea !== 0 && world.wars.atWar(sea, n)) continue;
+        const d = seaKm(world, c.x[fleet]!, c.y[fleet]!, (q % w) + 0.5, Math.floor(q / w) + 0.5);
+        if (d < beachKm || (d === beachKm && k < beach)) [beach, beachKm] = [k, d];
+      }
+    }
+    let target = beach >= 0 ? pick((hd) => hd === n, 0, beachKm, beach) : pick((hd) => hd === n);
+    if (target < 0) target = pick((hd) => hd !== 0 && hd !== n && world.wars.sameSide(n, hd));
+    if (target < 0) {
+      t.way = 'noPort';
+      return false;
+    }
+    return board(world, fleet, room, port, target, free);
+  }
 }
+
+/** One transport group a ferry turn tried (`FERRY_PROBE`): its way (`sail` to the army, `noPort` on a front's land, `board`) and whether it gave an order. */
+export interface FerryTry {
+  fleet: number;
+  port: number;
+  room: number;
+  way: 'sail' | 'noPort' | 'board';
+  acted: boolean;
+}
+/** One ferry turn (`FERRY_PROBE`): the nation, its army free for the ferry, its groups standing at its ports, and those tried. */
+export interface FerryTurn {
+  nation: number;
+  free: number;
+  groups: number;
+  tries: FerryTry[];
+}
+/** A read-only probe of the invasion AI's turns (PLAN 7.88a, `tools/diag/ferryTurns.ts`): `skip` for an actor whose turn did not reach the ferry, `turn` for each that did. */
+export const FERRY_PROBE: { turn?: (t: FerryTurn) => void; skip?: (n: number, why: 'aboard' | 'landing' | 'normandy' | 'noFront') => void } = {};
 
 /**
  * Transport group `fleet` (room `room`, at port `port`) takes its nation's formations (`free`) to
@@ -721,7 +801,7 @@ function board(world: World, fleet: number, room: number, port: number, goal: nu
   return sendToPort(world, by.map(([, id]) => id), px, py, left, pass) > 0 || (there.size > 0 && aboard(atPort));
 }
 
-/** How many formations, and of the ports nearest each, a sail to the army tries (PLAN 7.54b). */
+/** How many formations, and of the ports nearest each, a sail to the army tries (PLAN 7.54b); and how many transport groups a ferry turn tries (PLAN 7.88a). */
 export const SAIL_TRIES = 4;
 
 /** Whether land formation `id` may march to `cell` under `pass` (as `orderMove` routes it; a route asked again is the passage's). */

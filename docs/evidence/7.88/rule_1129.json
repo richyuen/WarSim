@@ -1,0 +1,116 @@
+[
+ {
+  "seed": 1129,
+  "bin": "critic/c12_seed1129_y10.bin",
+  "tag": "USA",
+  "skips": {
+   "aboard": 1
+  },
+  "ferryTurns": 3,
+  "acted": 3,
+  "turns": [
+   {
+    "nation": 82,
+    "free": 157,
+    "groups": 12,
+    "tries": [
+     {
+      "fleet": 126,
+      "port": 216,
+      "room": 24000,
+      "way": "board",
+      "acted": false
+     },
+     {
+      "fleet": 138,
+      "port": 216,
+      "room": 24000,
+      "way": "board",
+      "acted": false
+     },
+     {
+      "fleet": 365,
+      "port": 128,
+      "room": 24000,
+      "way": "board",
+      "acted": true
+     }
+    ],
+    "day": 3656,
+    "port": [
+     "Nuuk",
+     "Nuuk",
+     "Norfolk"
+    ]
+   },
+   {
+    "nation": 82,
+    "free": 156,
+    "groups": 12,
+    "tries": [
+     {
+      "fleet": 126,
+      "port": 216,
+      "room": 24000,
+      "way": "board",
+      "acted": false
+     },
+     {
+      "fleet": 138,
+      "port": 216,
+      "room": 24000,
+      "way": "board",
+      "acted": false
+     },
+     {
+      "fleet": 365,
+      "port": 128,
+      "room": 24000,
+      "way": "board",
+      "acted": true
+     }
+    ],
+    "day": 3663,
+    "port": [
+     "Nuuk",
+     "Nuuk",
+     "Norfolk"
+    ]
+   },
+   {
+    "nation": 82,
+    "free": 156,
+    "groups": 12,
+    "tries": [
+     {
+      "fleet": 126,
+      "port": 216,
+      "room": 24000,
+      "way": "board",
+      "acted": false
+     },
+     {
+      "fleet": 138,
+      "port": 216,
+      "room": 24000,
+      "way": "board",
+      "acted": false
+     },
+     {
+      "fleet": 365,
+      "port": 128,
+      "room": 24000,
+      "way": "board",
+      "acted": true
+     }
+    ],
+    "day": 3670,
+    "port": [
+     "Nuuk",
+     "Nuuk",
+     "Norfolk"
+    ]
+   }
+  ]
+ }
+]

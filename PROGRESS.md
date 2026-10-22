@@ -22193,3 +22193,26 @@ No rule changed and nothing on screen changed. One task came out of it.
   0.16 → 0.25 ms; from 6421 year 20 unchanged.
 - **Pin:** e6c74731 → e66bef2e.
 - **Next:** PLAN 7.88a (7.79's own AT waits on 7.88, and on 7.87 if the user takes ADR-635's a).
+
+## 2026-10-22 — PLAN 7.88a: the ferry's turn tries its transport groups until one acts (ADR-638)
+
+- **HEAD first** (`docs/evidence/7.88/a.md`; `tools/diag/ferryTurns.ts`, `FERRY_PROBE`, read only): the
+  USA's ferry turns in 30 days that gave an order 0 of 4 on 1129 year 10 (group 126 at Nuuk each turn)
+  and 0 of 4 on 6421 year 20 (Port-of-Spain, then Roseau, the sail refused).
+- **Rule:** the turn tries the groups standing at the nation's ports, those on the land of a formation
+  free for the ferry first, then the most room, the lower id, until one gives an order, up to SAIL_TRIES.
+  The landing's and the Normandy's turns keep their one group.
+- **Read:** 3 of 3 on both (the fourth actor day skipped with a division aboard): AT met. Piles of 30 or
+  more for 30 days 3 → 3 (60, 53; 77 → 75): one group a turn is 7.88b's cause (ADR-637, the user's).
+- **Test:** `strandedFerry1938.test.ts` gains "the ferry tries its groups until one acts" (a German group
+  at Baku, handed to Germany, passed over for one at the division's port); red with one group a turn.
+  The file's setup is shared by both cases now (the 7.79c case unchanged).
+- **Gate found:** `warBattle`'s 60-day test (uneven largest battles under a tenth, ADR-94) 74 of 762 on
+  HEAD (bound 76.2) → 77 of 746. The hash is equal to HEAD's through day 15 (a refused try writes
+  nothing); Japan's day-16 turn takes Hiroshima's group for Haiphong's and history moves. Of the uneven,
+  those whose war had a battle with no side under a tenth: 31 → 16. Restated (ADR-638): that count under
+  a twentieth, all reported; `battlesOf` exported from `largestBattle`.
+- **Timing** (both bundles at once on separate P-cores, swapped, `.cache/prof88a/`): invasion AI within
+  the noise on seed 99's year 1 and a year from each save.
+- **Pin:** e66bef2e → 083f2585 (the refactor alone keeps e66bef2e).
+- **Next:** PLAN 7.88b waits on the user (ADR-637); then 7.80.

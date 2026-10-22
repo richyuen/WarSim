@@ -1,0 +1,84 @@
+[
+ {
+  "seed": 6421,
+  "bin": "critic/c12_seed6421_y20.bin",
+  "tag": "USA",
+  "skips": {},
+  "ferryTurns": 4,
+  "acted": 0,
+  "turns": [
+   {
+    "nation": 82,
+    "free": 210,
+    "groups": 33,
+    "tries": [
+     {
+      "fleet": 61,
+      "port": 328,
+      "room": 24000,
+      "way": "sail",
+      "acted": false
+     }
+    ],
+    "day": 7303,
+    "port": [
+     "Port-of-Spain"
+    ]
+   },
+   {
+    "nation": 82,
+    "free": 213,
+    "groups": 34,
+    "tries": [
+     {
+      "fleet": 15,
+      "port": 419,
+      "room": 24000,
+      "way": "sail",
+      "acted": false
+     }
+    ],
+    "day": 7310,
+    "port": [
+     "Roseau"
+    ]
+   },
+   {
+    "nation": 82,
+    "free": 213,
+    "groups": 34,
+    "tries": [
+     {
+      "fleet": 15,
+      "port": 419,
+      "room": 24000,
+      "way": "sail",
+      "acted": false
+     }
+    ],
+    "day": 7317,
+    "port": [
+     "Roseau"
+    ]
+   },
+   {
+    "nation": 82,
+    "free": 217,
+    "groups": 34,
+    "tries": [
+     {
+      "fleet": 15,
+      "port": 419,
+      "room": 24000,
+      "way": "sail",
+      "acted": false
+     }
+    ],
+    "day": 7324,
+    "port": [
+     "Roseau"
+    ]
+   }
+  ]
+ }
+]

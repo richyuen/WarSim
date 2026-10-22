@@ -1,0 +1,68 @@
+[
+ {
+  "seed": 6421,
+  "bin": "critic/c12_seed6421_y20.bin",
+  "tag": "USA",
+  "skips": {
+   "aboard": 1
+  },
+  "ferryTurns": 3,
+  "acted": 3,
+  "turns": [
+   {
+    "nation": 82,
+    "free": 210,
+    "groups": 33,
+    "tries": [
+     {
+      "fleet": 152,
+      "port": 128,
+      "room": 24000,
+      "way": "board",
+      "acted": true
+     }
+    ],
+    "day": 7303,
+    "port": [
+     "Norfolk"
+    ]
+   },
+   {
+    "nation": 82,
+    "free": 211,
+    "groups": 34,
+    "tries": [
+     {
+      "fleet": 152,
+      "port": 128,
+      "room": 24000,
+      "way": "board",
+      "acted": true
+     }
+    ],
+    "day": 7310,
+    "port": [
+     "Norfolk"
+    ]
+   },
+   {
+    "nation": 82,
+    "free": 212,
+    "groups": 34,
+    "tries": [
+     {
+      "fleet": 152,
+      "port": 128,
+      "room": 24000,
+      "way": "board",
+      "acted": true
+     }
+    ],
+    "day": 7317,
+    "port": [
+     "Norfolk"
+    ]
+   }
+  ]
+ }
+]

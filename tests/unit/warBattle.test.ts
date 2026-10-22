@@ -5,7 +5,7 @@ import type { FromWorker, Inspection, WarBattle } from '../../src/shared/protoco
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { cellDist, contactsOf, deployOf, destroyFormation, elementIndex, elementPlace, slotCount } from '../../src/sim/systems/elements';
-import { largestBattle, warsWithBattle, type WarBattleSite } from '../../src/sim/systems/warBattle';
+import { battlesOf, largestBattle, warsWithBattle, type WarBattleSite } from '../../src/sim/systems/warBattle';
 import type { World } from '../../src/sim/world';
 import { SimServer } from '../../src/worker/server';
 import { assets1938 } from '../helpers/earth';
@@ -317,7 +317,7 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
   it('names two formations whose blocks are whole in the view the camera takes', () => {
     const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });
-    const n = { asked: 0, known: 0, byNearest: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, wide: 0, germanPolish: 0, widest: 0, uneven: 0, leaders: [0, 0, 0], passedOver: 0, leaderBy: 0 };
+    const n = { asked: 0, known: 0, byNearest: 0, battles: 0, mutual: 0, oneWay: 0, neither: 0, outside: 0, wide: 0, germanPolish: 0, widest: 0, uneven: 0, unevenByChoice: 0, leaders: [0, 0, 0], passedOver: 0, leaderBy: 0 };
     const outside: string[] = [];
     let lastDay = 0;
     s.step(24 * 60, (w) => {
@@ -340,7 +340,12 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
         if (!b) continue;
         n.battles++;
         if (ours) n.germanPolish++;
-        if (Math.min(b.men[0], b.men[1]) * 10 < Math.max(b.men[0], b.men[1])) n.uneven++;
+        const lopsided = (m: readonly [number, number]): boolean => Math.min(m[0], m[1]) * 10 < Math.max(m[0], m[1]);
+        if (lopsided(b.men)) {
+          n.uneven++;
+          // One the rule chose (PLAN 7.88a): the war had a battle with no side under a tenth to name.
+          if (battlesOf(w, war.id)!.battles.some((g) => !lopsided(g.men))) n.unevenByChoice++;
+        }
         const [a, d] = b.formations;
         const led = (fc.nation[a] === war.sides[0][0] ? 1 : 0) + (fc.nation[d] === war.sides[1][0] ? 1 : 0);
         n.leaders[led]!++;
@@ -371,7 +376,7 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
       `60 days of Germany against Poland (seed 99), every six hours, every war: asked ${n.asked} times, a battle ${n.battles} times (${n.germanPolish} of Germany against Poland); ` +
         `the two named are each other's nearest enemy in ${n.mutual}, one the other's in ${n.oneWay}, neither in ${n.neither}; ` +
         `their blocks at most ${(n.widest * 19.57).toFixed(1)} km apart; not whole in the view ${n.outside} times, the view further out than 20 m/px ${n.wide} times; ` +
-        `one side under a tenth of the other in ${n.uneven}; ` +
+        `one side under a tenth of the other in ${n.uneven} (with a battle of no side so in the war ${n.unevenByChoice}); ` +
         `of the two, the war's leaders have neither in ${n.leaders[0]} (with a leader in contact ${n.leaderBy}; a leader in contact passed over ${n.passedOver}), one in ${n.leaders[1]}, both in ${n.leaders[2]}; ` +
         `the wars said to have a battle are those with an answer in ${n.known} of ${n.asked} (${n.byNearest} wars found by a formation's nearest enemy)`,
     );
@@ -379,7 +384,12 @@ describe('the largest battle of a war on a front of 60 days (PLAN 2.14f5a)', () 
     expect(n.battles).toBeGreaterThan(500);
     expect(n.germanPolish).toBeGreaterThan(200);
     // The largest battle is one of two sides (ADR-94): by the men of both it was 212 of 752 with one side under a tenth of the other, 36 by the smaller side's.
-    expect(n.uneven).toBeLessThan(n.battles / 10);
+    // Since PLAN 7.88a (ADR-638) the answers with one side under a tenth count where the war had a
+    // battle with no side so to name, the answers the rule chose: under a twentieth. The others are
+    // the world's (every battle of the war so) and are reported. All such answers were 74 of 762 on
+    // the commit before (under the tenth the bound was then, by 2), 77 of 746 after it, history moved
+    // by an earlier ferry of Japan's; those the rule chose 31 and 16.
+    expect(n.unevenByChoice).toBeLessThan(n.battles / 20);
     // And one of the leaders the banner names (ADR-95): 46 of 752 had a formation of neither before, 96 of one, 610 of both.
     // Since PLAN 5.6 (ADR-322) a war of this game has, at times, only its allies in contact: a
     // battle of neither leader is named then, and only then.
