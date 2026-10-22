@@ -22278,3 +22278,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   inlined); a few calls a world-year after the rule.
 - **Pin:** 083f2585 → 68eb57f6.
 - **Next:** PLAN 7.81b2 (the city capital).
+
+## 2026-10-22 — PLAN 7.81b2: a lost capital goes to the safest city on its main land (ADR-641)
+
+- **Rule:** ADR-620's landmass kept; there the city farthest from the enemy's land up to
+  `CAPITAL_SAFE_STEPS` (20 cells, about two weeks' march), then the largest. No enemy: the largest, as before.
+- **Read** (`docs/evidence/7.81/b.md` §4): 3301 + 10 years captures 275 → 181, moves 274 → 212, three
+  captures in 30 days 13 → 6 (AT under half: met); the six left are overruns with no safer city on the
+  main land. 6421 unchanged (8 moves).
+- **Test:** `capitals.test.ts`'s PLAN 1.15 case restated to the rule (the largest city was the old claim):
+  the pick against an independent count of steps, and the largest city nearer the Germans; red without.
+- **Timing:** the pass bounded at the safe steps, 7.7 ms a call (same picks); ~18 relocations a world-year.
+- **Pin:** 68eb57f6 → dc72fc97.
+- **Next:** 7.81b's AT on unseen 791–800 × 30 years against `dd3b730`'s read.

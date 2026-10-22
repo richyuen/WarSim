@@ -63,3 +63,17 @@ capital captured three times in 30 days: the AT's "none" is a bar the old code i
 
 `enemyDistance`, the grid pass, 14 ms a call on the 2048 × 1024 map (88 ms with `neighbours4`'s array:
 inlined).
+
+## 4. b2: a lost capital goes to the safest city on its main land (ADR-641)
+
+`CAPITAL_SAFE_STEPS` = 20: the city farthest from the enemy's land up to 20 steps, then the largest.
+
+| case | captures | moves | cases of 3+ captures in 30 days | median gap of a capture's new city |
+|---|---|---|---|---|
+| 3301, 1938 + 10 years (b1 → b2) | 275 → 181 | 274 → 212 | 13 → 6 | 6 → 13 |
+| 6421, year 10 save + 365 days | 8 → 8 | 8 → 8 | 0 → 0 | 20 → 39 |
+
+The six left on 3301 (Nationalist Spain, the Republic, Romania, Czechoslovakia, the Raj, Indochina): the
+pick was the safest city on the main land each time (`bestCityMost` = the pick's gap); overrun nations.
+The Raj and Nationalist Spain had safer cities on other lands (33, 23 steps), which ADR-620 leaves out.
+The bounded pass (out to the safe steps) gives the same picks: 3301 the same counts.

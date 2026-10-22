@@ -78,10 +78,10 @@ export function capitalCell(world: World, n: number): number {
 
 /**
  * Steps (4-neighbour, over land and sea) from each cell to the nearest cell held by a nation at war
- * with `n`; null when no nation at war with it holds a cell. A rare event's grid pass (a capital
- * moving), not the hourly hot loop.
+ * with `n`, out to `cap` steps (-1 beyond); null when no nation at war with it holds a cell. A rare
+ * event's grid pass (a capital moving), not the hourly hot loop.
  */
-export function enemyDistance(world: World, n: number): Int32Array | null {
+export function enemyDistance(world: World, n: number, cap = Infinity): Int32Array | null {
   const { w, h, controller } = world.cells;
   const enemy = new Uint8Array(world.nations.highWater);
   let any = false;
@@ -112,6 +112,7 @@ export function enemyDistance(world: World, n: number): Int32Array | null {
   for (let head = 0; head < tail; head++) {
     const c = queue[head]!;
     const d = dist[c]! + 1;
+    if (d > cap) break; // the queue is in order of steps
     const x = c % w;
     if (c >= w && dist[c - w] === -1) {
       dist[c - w] = d;
@@ -215,11 +216,19 @@ export function captureCapital(world: World, loser: number, capturer: number, ci
 }
 
 /**
+ * Steps from the enemy's land beyond which a city is as safe a capital as any (PLAN 7.81b2, ADR-641),
+ * in cells of the map's default size: about two weeks of a land formation's march (1.4–2.1 cells a
+ * day). Beyond it the largest city wins, as before.
+ */
+export const CAPITAL_SAFE_STEPS = 20;
+
+/**
  * Moves `n`'s capital to a city it owns and controls on the landmass where it owns and controls the
- * most cells (PLAN 7.68, ADR-620; of the landmasses with such a city, lowest landmass id on ties),
- * its largest there (lowest id on ties); else to a field capital; eliminates it without land. Used
- * after capture, a capital given away, and when rebels take it. A cell of no landmass (0) counts
- * for none.
+ * most cells (PLAN 7.68, ADR-620; of the landmasses with such a city, lowest landmass id on ties);
+ * there the city farthest from the land of the nations at war with it, up to CAPITAL_SAFE_STEPS
+ * (PLAN 7.81b2, ADR-641: the largest city fell days later, and the next), then the largest, then the
+ * lowest id; else to a field capital; eliminates it without land. Used after capture, a capital given
+ * away, and when rebels take it. A cell of no landmass (0) counts for none.
  */
 export function relocateCapital(world: World, n: number): void {
   const cc = world.cities.cols;
@@ -231,19 +240,25 @@ export function relocateCapital(world: World, n: number): void {
   for (let c = 0; c < owner.length; c++) {
     if (owner[c] === n && controller[c] === n && comp[c] !== 0) held.set(comp[c]!, (held.get(comp[c]!) ?? 0) + 1);
   }
+  const safe = world.atSize(CAPITAL_SAFE_STEPS);
+  let dist: Int32Array | null | undefined; // read once, when there is a city to choose from
+  const safety = (cell: number): number => {
+    if (dist === undefined) dist = enemyDistance(world, n, safe);
+    return dist === null || dist[cell]! < 0 ? safe : Math.min(dist[cell]!, safe);
+  };
   let best = 0;
   let bestHeld = -1;
+  let bestSafety = -1;
   world.cities.forEach((id) => {
     const cell = cc.cell[id]!;
     if (owner[cell] !== n || controller[cell] !== n || cc.capitalOf[id] !== 0) return;
     const k = held.get(comp[cell]!) ?? 0;
     const land = comp[cell]!;
-    const better =
-      best === 0 ||
-      k > bestHeld ||
-      (k === bestHeld && land < comp[cc.cell[best]!]!) ||
-      (k === bestHeld && land === comp[cc.cell[best]!]! && cc.size[id]! > cc.size[best]!);
-    if (better) [best, bestHeld] = [id, k];
+    if (best !== 0 && (k < bestHeld || (k === bestHeld && land > comp[cc.cell[best]!]!))) return;
+    const sameLand = best !== 0 && k === bestHeld && land === comp[cc.cell[best]!]!;
+    const sf = safety(cell);
+    const better = !sameLand || sf > bestSafety || (sf === bestSafety && cc.size[id]! > cc.size[best]!);
+    if (better) [best, bestHeld, bestSafety] = [id, k, sf];
   });
   if (best !== 0) {
     cc.capitalOf[best] = n;

@@ -3,7 +3,7 @@ import { isMonthStart } from '../../src/shared/calendar';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { eliminateNation } from '../../src/sim/systems/capitals';
+import { CAPITAL_SAFE_STEPS, eliminateNation } from '../../src/sim/systems/capitals';
 import { blocOf } from '../../src/sim/systems/supply';
 import { navOf, type World } from '../../src/sim/world';
 import { deadLand } from '../helpers/deadLand';
@@ -65,7 +65,7 @@ describe('occupation and capitals (PLAN 1.15)', () => {
     expect(occupied).toBeGreaterThan(28); // the painted disc plus front gains
   });
 
-  it('a captured capital moves to the largest city the nation still holds', () => {
+  it('a captured capital moves to the city farthest from the enemy, the largest of those safe enough (PLAN 1.15, 7.81b2)', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const w = s.world;
     w.wars.set(GER, POL, true);
@@ -81,13 +81,30 @@ describe('occupation and capitals (PLAN 1.15)', () => {
     expect(next).toBe(moved[0]![1]);
     expect(next).not.toBe(warsaw);
     expect(cc.capitalOf[warsaw]).toBe(0);
-    // Largest remaining POL-held city.
-    let maxSize = 0;
+    // The Polish-held city farthest from German-held land, up to CAPITAL_SAFE_STEPS, then the largest
+    // (ADR-641). Steps over an open grid are the Manhattan distance to the nearest German cell.
+    const ger: number[] = [];
+    w.cells.controller.forEach((k, c) => k === GER && ger.push(c));
+    const safety = (cell: number): number => {
+      let d = Infinity;
+      for (const g of ger) d = Math.min(d, Math.abs((g % W) - (cell % W)) + Math.abs(Math.floor(g / W) - Math.floor(cell / W)));
+      return Math.min(d, CAPITAL_SAFE_STEPS);
+    };
+    let pick = 0;
+    let largest = 0;
     w.cities.forEach((id) => {
       const cell = cc.cell[id]!;
-      if (w.cells.owner[cell] === POL && w.cells.controller[cell] === POL) maxSize = Math.max(maxSize, cc.size[id]!);
+      if (w.cells.owner[cell] !== POL || w.cells.controller[cell] !== POL || id === next) return;
+      if (largest === 0 || cc.size[id]! > cc.size[largest]!) largest = id;
+      if (pick === 0 || safety(cell) > safety(cc.cell[pick]!) || (safety(cell) === safety(cc.cell[pick]!) && cc.size[id]! > cc.size[pick]!)) pick = id;
     });
-    expect(cc.size[next]).toBe(maxSize);
+    // No other Polish city is safer, nor as safe and larger.
+    const sNext = safety(cc.cell[next]!);
+    expect(sNext >= safety(cc.cell[pick]!)).toBe(true);
+    if (sNext === safety(cc.cell[pick]!)) expect(cc.size[next]!).toBeGreaterThanOrEqual(cc.size[pick]!);
+    // And the old pick, the largest city, stood nearer the Germans (PLAN 7.81b2: the rule decides here).
+    expect(cc.size[largest]!).toBeGreaterThan(cc.size[next]!);
+    expect(safety(cc.cell[largest]!)).toBeLessThan(sNext);
     expect([w.nations.cols.capitalX[POL], w.nations.cols.capitalY[POL]]).toEqual([cc.x[next], cc.y[next]]);
     expect(w.nations.cols.living[POL]).toBe(1);
     expect(cityName(s, next)).not.toBe('');

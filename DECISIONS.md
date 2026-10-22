@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-641 · 2026-10-22 · accepted — A lost capital goes to the safest city on its main land, the largest of those safe enough (PLAN 7.81b2; amends ADR-620)
+
+- **Context** (`docs/evidence/7.81/b.md` §1). ADR-620 moved a lost capital to the largest city on the land
+  its nation holds most of, wherever the enemy stood: a median 5–6 steps from the enemy's land, so it fell
+  days later, then the next. On 3301 (1938 + 10 years) 113 of 230 such moves passed over a city of the same
+  land more than 5 steps safer; 13 nations had their capital captured three times in 30 days (Saudi Arabia
+  4 steps from the enemy with a city 43 away; the Raj 2 against 21; Latvia 3 against 13).
+- **Decision** (`systems/capitals.ts`, `relocateCapital`, `CAPITAL_SAFE_STEPS` = 20 cells of the default
+  size, about two weeks of a land formation's march): ADR-620's landmass is kept; there the city farthest
+  from the land of the nations at war with it (`enemyDistance`, capped at the safe steps), then the largest,
+  then the lowest id. With no enemy holding land, every city is as safe: the largest, as before. A nation
+  overrun loses its other cities before its capital: the farthest is the last to fall.
+- **Read** (§4): 3301 + 10 years captures 275 → 181, moves 274 → 212, cases of three in 30 days 13 → 6
+  (each left a nation overrun with no city on its main land safer than the pick); 6421 year 10 + 365 days
+  unchanged at 8 moves. The grid pass is capped at the safe steps: 7.7 ms a call.
+- **Restated:** `capitals.test.ts`'s PLAN 1.15 case ("the largest city") now reads the new rule against an
+  independent count of the steps, and that the largest city stood nearer the Germans (red without).
+- **Pin.** 68eb57f6 → dc72fc97.
+
 ### ADR-640 · 2026-10-22 · accepted — A field capital at war goes to the cell farthest from the enemy (PLAN 7.81b1; amends PLAN 1.15's field capital)
 
 - **Context** (PLAN 7.81b, critic run 12: "a moving capital captured again and again", 919 capital moves a
