@@ -26,8 +26,8 @@
  *   critic's 48 saves); a port wins a tie;
  * - its formations at that port (land formations within `AT_PORT_CELLS` of its land cell or of its
  *   water, as `tryLanding` takes them; not under way, in no fight, not retreating or going home)
- *   are ordered there by `orderLanding`, one by one, until the transports have no room for the
- *   next (PLAN 7.49f, ADR-593: by its water alone, an army sent to a port whose water is 4–11 cells
+ *   are ordered there by `orderLanding`, one by one, onto those transports (under way once the
+ *   first is aboard; PLAN 7.72, ADR-625), until they have no room for the next (PLAN 7.49f, ADR-593: by its water alone, an army sent to a port whose water is 4–11 cells
  *   off its land cell, as Glasgow's or Hamburg's, stood there and was never loaded);
  * - with none there, its free land formations on the port's land, nearest the port first, are
  *   sent to it (`orderMove`) until their men fill the room (`sendToPort`: one refused on the port's
@@ -610,7 +610,9 @@ function board(world: World, fleet: number, room: number, port: number, goal: nu
   const aboard = (ids: readonly number[]): boolean => {
     let sent = 0;
     for (const id of ids) {
-      if (orderLanding(world, id, tx, ty, group ? fleet : 0)) sent++;
+      // On `fleet` though the first's order set it sailing (PLAN 7.72, ADR-625: before, the standing
+      // test refused the rest, and every landing and ferry trip carried one formation).
+      if (orderLanding(world, id, tx, ty, fleet)) sent++;
       // A group passes over one with no room left for it, for a smaller one after it.
       else if (!group) break;
     }

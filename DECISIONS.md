@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-625 · 2026-10-22 · accepted — The landing and the ferry board as a group (PLAN 7.72; amends ADR-268, ADR-612)
+
+- **Context** (PLAN 7.72, found at 7.70b). The first formation's `orderLanding` sets its transports
+  sailing (`orderSail`), and `tryLanding` took standing transports alone, so every landing and
+  every ferry trip carried one formation, whatever the room (7.70b's `via` was for its group alone).
+- **Decision.** `board` (`ai/invasion.ts`) passes its transport group to every `orderLanding`:
+  `tryLanding` takes that group under way when it carries a formation embarked on it, and it is
+  still at the port's water within the hour. The formations at the port go aboard one after another
+  on it until it has no room for the next, all for the one landing. The player's order over the sea
+  (`seaBound`) is not changed: one order a formation, as before.
+- **Read** (`newFronts.ts` with `embarked`, `trips`, `grouped` columns; 180 days of the critic's 48
+  saves; `docs/evidence/7.72/README.md`): engaged per war-day 0.2182 → 0.2227 (the AT's bar: not
+  below the before, met); trips of two formations or more 53 → 90, formations a trip 1.12 → 1.24
+  (634 in 565 → 689 in 555); far landings held 30 days 249 → 262; no lander in debt.
+- **Test.** `groupBoarding1938.test.ts`, red without (one aboard, in the landing and the ferry).
+- **Pin.** b749e952 → 9c5fa3ba (seed 99's year boards more than one formation a trip).
+
 ### ADR-624 · 2026-10-21 · accepted — The ferry and its want take a beachhead with no port as a front's land (PLAN 7.70c; amends ADR-612, ADR-614)
 
 - **Context** (PLAN 7.70c, the follow-through of the user's 7.70). The ferry (ADR-612) took a

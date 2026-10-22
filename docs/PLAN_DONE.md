@@ -13721,3 +13721,27 @@ Of 7.33 (open in PLAN.md):
   under which a lost capital moves to the land its nation holds most of (134 of 138 moves), so a
   capital stranded on a portless islet should be rare in new games; 7.69 lands on one when no port
   is a target, and a port is the better beachhead (reinforced and fed). No rule.
+
+<!-- moved 2026-10-22 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.72 The landing and the ferry board as a group (found at 7.70b, ADR-623): the first
+  formation's `orderLanding` sets the transports sailing (`orderSail`), and `tryLanding` takes only
+  standing transports, so every landing and ferry trip carries one formation, whatever the room
+  (7.70b's `via` is for its group alone). AT: a unit test (red without: two divisions at a port
+  with transports of room for both, a landing in a war with no front boards both, and the ferry
+  both); on the 48 saves, 180 days (`newFronts.ts`), engaged per war-day not below the before;
+  the ADR; the pin's entry.
+  Rule in (ADR-625, `groupBoarding1938.test.ts`, `docs/evidence/7.72/README.md`, pin 9c5fa3ba):
+  engaged per war-day 0.2182 → 0.2227; trips of 2+ formations 53 → 90.

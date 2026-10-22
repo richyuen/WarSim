@@ -2080,7 +2080,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   ADR-621: a capital on a land where its nation holds no port was never invaded); a port wins a
   tie. The landing goes ashore by the target, port or beach (`orderLanding`).
   Its free formations at that port (within 3 cells of its land cell or of its water, as an
-  order over the sea takes them: PLAN 7.49f, ADR-593) go aboard there; with none there, the nearest on the port's
+  order over the sea takes them: PLAN 7.49f, ADR-593) go aboard there, one after another on the
+  one transport group, under way once the first is aboard, until it has no room for the next
+  (PLAN 7.72, ADR-625: before, every trip carried one formation); with none there, the nearest on the port's
   land are sent to it to fill the room (one whose march there is refused is passed over, the send
   ending at the third refused march that was a search: PLAN 7.54a, ADR-594); with the nearest
   unable to march there (the transports in an exclave), the transports sail instead for a port

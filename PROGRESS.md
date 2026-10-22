@@ -21872,3 +21872,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Cost** (seed 99's year): invasion AI longest call 8.4 ms; tick mean 2.471 ms (7.70a's band).
 - **Pin:** unchanged, b749e952.
 - **Next:** PLAN 7.72 (the landing and the ferry board as a group); 7.70a, 7.70b wait on the user.
+
+## 2026-10-22 — PLAN 7.72: the landing and the ferry board as a group (ADR-625)
+
+- **Rule** (`ai/invasion.ts`, `board`): every `orderLanding` of the invasion AI passes its transport
+  group (`via`), so the formations at the port go aboard one after another on the group the first
+  set sailing, until it has no room; before, the standing test refused the second. SPEC §7 amended.
+- **Read** (`docs/evidence/7.72/README.md`; `newFronts.ts` with `embarked`, `trips`, `grouped`
+  columns; 180 days of the critic's 48 saves; the before matches 7.70c's after in every old column):
+  engaged per war-day 0.2182 → 0.2227 (bar: not below the before, met); trips of 2+ formations
+  53 → 90, formations a trip 1.12 → 1.24; far landings held 30 days 249 → 262; no lander in debt.
+- **Test:** `groupBoarding1938.test.ts` (a landing with no front and the ferry each take two
+  divisions on one transport group), red without (one aboard). Specs by hand: none (no drawn change).
+- **Pin:** b749e952 → 9c5fa3ba.
+- **Next:** PLAN 7.73 (the Normandy without a loss of fight); 7.70a, 7.70b wait on the user.

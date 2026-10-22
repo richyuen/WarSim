@@ -77,14 +77,6 @@ when taken up:
       Rule in (ADR-624, `beachFerry1938.test.ts`, `docs/evidence/7.70/c.md`, pin unchanged): the
       30-day hold 249/287 before and after (met on HEAD); beachheads reached later 74/430 → 70/424.
 
-- [ ] 7.72 The landing and the ferry board as a group (found at 7.70b, ADR-623): the first
-  formation's `orderLanding` sets the transports sailing (`orderSail`), and `tryLanding` takes only
-  standing transports, so every landing and ferry trip carries one formation, whatever the room
-  (7.70b's `via` is for its group alone). AT: a unit test (red without: two divisions at a port
-  with transports of room for both, a landing in a war with no front boards both, and the ferry
-  both); on the 48 saves, 180 days (`newFronts.ts`), engaged per war-day not below the before;
-  the ADR; the pin's entry.
-
 - [ ] 7.73 The Normandy without a loss of fight (7.70b's bar, ADR-623): with the rule, engaged land
   formations per war-day on the 48 saves, 180 days (`newFronts.ts`), 0.238 → 0.219. Likely causes
   (not measured): the worth over the enemy's formations near lands where nobody fights; the group
@@ -414,3 +406,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.67 New divisions of a nation fronted through an ally alone raised toward that front (the […]
 - [x] 7.69 The AI's landing on a coast with no port: an enemy capital (the user's, 2026-10-21; found […]
 - [x] 7.71 The landing takes a portless enemy capital before a nearer port (found at 7.69, […]
+- [x] 7.72 The landing and the ferry board as a group (found at 7.70b, ADR-623): the first […]

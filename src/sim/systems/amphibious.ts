@@ -134,7 +134,8 @@ export function orderLanding(world: World, id: number, x: number, y: number, via
  * `orderLanding`, with why it refused (`RejectReason`, PLAN 4.9a); 0 when ordered. `via`: a
  * transport group that may be under way already, when it carries a formation embarked on it (a
  * group going aboard one after another in one hour, PLAN 7.70b: the first's order sets the
- * transports sailing, and the standing test refused the rest).
+ * transports sailing, and the standing test refused the rest; every landing and ferry trip of the
+ * invasion AI passes its group, PLAN 7.72, ADR-625).
  */
 export function tryLanding(world: World, id: number, x: number, y: number, via = 0): 0 | RejectReason {
   const f = world.formations;
