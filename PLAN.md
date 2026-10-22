@@ -86,14 +86,16 @@ when taken up:
 - [ ] 7.67 The ferry for an army on a land with no port of its nation (found at 7.66,
   `docs/evidence/7.66.md` §3; carries emergent 6 with 7.49): a nation at war whose free land
   formations stand on a landmass with no front and no port of its own (the Netherlands' 5 on land
-  529 and the British Raj's 5 on land 531, 8693 year 20) is neither ferried nor wants transports
-  for them: the ferry and its want board only at the nation's own port on the army's land. The
-  rule: on such a land, the port of a nation fighting beside it (`sameSide`) is its port to board
-  at, for the ferry and for its want. AT: the island formations on lands with no port of their
-  nation, of nations at war, after 180 days of the 48 saves together (`islandArmies.ts`, a read to
-  add; HEAD first, the before) under 0.75 × HEAD's; no invasion AI call over 50 ms; a unit test (red
-  without: a nation's division on a land where only an ally holds a port goes aboard there); the
-  ADR; the pin's entry.
+  529, one cell, and the British Raj's 5 on land 531, four cells, 8693 year 20: islets of their own
+  with no port at all, of any nation) is neither ferried nor wants transports for them: the ferry
+  and its want board only at the nation's own port on the army's land. The rule: on a land of its
+  with no port with water, its transports take its army aboard at the land's coast (a cell of its
+  beside the sea, as a port's water), for the ferry and for its want; on a land where an ally
+  (`sameSide`) holds a port and it holds none, at that port. AT: the island formations on lands with
+  no port of their nation, of nations at war, after 180 days of the 48 saves together
+  (`islandArmies.ts`, a read to add; HEAD first, the before) under 0.75 × HEAD's; no invasion AI
+  call over 50 ms; a unit test (red without: a nation's division on an islet of its with no port
+  goes aboard its transports there); the ADR; the pin's entry.
 
 - [ ] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21;
   AI nuclear use 7, the critic's run 11 design objection; `docs/evidence/7.52/c.md`): a capital's
