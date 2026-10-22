@@ -185,6 +185,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Restated:** `capitals.test.ts`'s PLAN 1.15 case ("the largest city") now reads the new rule against an
   independent count of the steps, and that the largest city stood nearer the Germans (red without).
 - **Pin.** 68eb57f6 → dc72fc97.
+- **AT** (2026-10-22, the user's bar: capital moves per capture at most 1.25 on 10 unseen seeds × 30
+  years, for moves a world not above `dd3b730`'s and no capital captured thrice in 30 days): 1.20 on
+  791–800 (`dd3b730` 1.80); PLAN 7.81b done.
 
 ### ADR-640 · 2026-10-22 · accepted — A field capital at war goes to the cell farthest from the enemy (PLAN 7.81b1; amends PLAN 1.15's field capital)
 
@@ -206,7 +209,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   pick is PLAN 7.81b2's.
 - **Pin.** 083f2585 → 68eb57f6.
 
-### ADR-639 · 2026-10-22 · proposed (the user's decision) — The late map's shreds are the price of the reserve cut's war: accept, take enclaves back at the treaty, or undo the cut (PLAN 7.80)
+### ADR-639 · 2026-10-22 · accepted, option a (the user's decision) — The late map's shreds are the price of the reserve cut's war: accept, take enclaves back at the treaty, or undo the cut (PLAN 7.80)
 
 - **Context** (PLAN 7.80a, `docs/evidence/7.80/a.md`). Critic run 12 (R12-B2): small pieces (2–400
   cells of one holder) at year 20 837 → 1,174 a world, `dd3b730` → `896ff779`, 24 of 24 seeds. Bisected
@@ -230,6 +233,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   (c) Undo the reserve cut (ADR-615): its land war goes with it (7.65's 1.086 × the band's formations at
   war). Recommended: (a), the war kept and the treaty's pockets tidied; (b) if the bar's margin is too
   thin to be worth a rule. Meanwhile the loop takes PLAN 7.81.
+- **Decided** (2026-10-22, the user): (a), PLAN 7.80b; what it leaves over the bar is the reserve cut's
+  price (b). The capital moves' volume of PLAN 7.81b is read the same way: its bar is now capital moves
+  per capture, at most 1.25 (the user's).
 
 ### ADR-638 · 2026-10-22 · accepted — The ferry's turn tries its transport groups until one acts (PLAN 7.88a; amends ADR-612)
 
@@ -271,7 +277,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   2.27 → 2.49 / 2.31 ms by core; its five years 2.13 / 1.92 → 2.00 / 1.89 (another world from year 1).
 - **Pin.** e66bef2e → 083f2585 (the refactor alone, one group in HEAD's order, keeps e66bef2e).
 
-### ADR-637 · 2026-10-22 · proposed (the user's decision) — Every idle transport group carries in the ferry's turn (PLAN 7.88b)
+### ADR-637 · 2026-10-22 · accepted, option a (the user's decision) — Every idle transport group carries in the ferry's turn (PLAN 7.88b)
 
 - **Context** (PLAN 7.79c, `docs/evidence/7.79/c.md` §4). The ferry (ADR-612) ships with one transport
   group a turn (`transportsAtPort`: the most room, the lowest id), once in STAGGER days. On run 12's saves
@@ -284,6 +290,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   garrisons drained as fast as the groups allow; the piles of 30 or more cleared on the 3 saves is the AT.
   (b) One group a turn, as now: the stranded army leaves at two divisions a week on 1129; 7.88b dropped.
   (c) Open. Meanwhile the loop takes PLAN 7.88a.
+- **Decided** (2026-10-22, the user): (a), PLAN 7.88b.
 
 ### ADR-636 · 2026-10-22 · accepted — The ferry takes the army that cannot walk to its front on its own land (PLAN 7.79c; amends ADR-612)
 
@@ -322,7 +329,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   3.72 / 3.66 (PLAN 7.83).
 - **Pin.** e6c74731 → e66bef2e.
 
-### ADR-635 · 2026-10-22 · proposed (the user's decision) — The far army is months from the threatened sectors beyond the range: PLAN 7.79d's 30-day bar is out of reach (PLAN 7.79d)
+### ADR-635 · 2026-10-22 · accepted, option b (the user's decision) — The far army is months from the threatened sectors beyond the range: PLAN 7.79d's 30-day bar is out of reach (PLAN 7.79d)
 
 - **Context.** PLAN 7.79d was to send a far formation (standing, on its day in MARCH_DAYS) to the nearest
   threatened sector its class reaches when that sector has less of the planner than its threat's share.
@@ -343,6 +350,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   whole army; several far formations to a sector (a deviation from ADR-190's one a sector). (b) No rule:
   a march of four to seven months is no answer to engaged per war; 7.79's own AT on 10 unseen seeds
   judges after 7.79c, and 7.87 is dropped. (c) Open. Meanwhile the loop takes PLAN 7.79c.
+- **Decided** (2026-10-22, the user): (b), PLAN 7.87 dropped; reopened only if 7.79's AT stays flat after
+  PLAN 7.88b.
 - **Tools.** `tools/diag/marchSpeed.ts`; `frontSpread.ts`' far columns (read only, `OP_PROBE.sectors`).
 
 ### ADR-634 · 2026-10-22 · accepted — The threatened sectors first: the allotment by where the enemy stands, and a kept march yields to it (PLAN 7.79b; amends ADR-53, PLAN 1.25's weights)

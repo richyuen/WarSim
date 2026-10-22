@@ -22300,3 +22300,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Closed not done** (ADR-554): BLOCKERS entry. The captures' volume is the reserve cut's war (7.80a,
   ADR-639, the user's); the cases of three in 30 days are overruns. 7.81 stays open on 7.81b.
 - **Next:** PLAN 7.82 (7.79, 7.80b, 7.88b wait on ADR-635, ADR-639, ADR-637).
+
+## 2026-10-22 — The user's decisions: ADR-639 a, ADR-637 a, ADR-635 b; PLAN 7.81b's bar per capture (7.81 done)
+
+- **ADR-639 (a):** PLAN 7.80b, the treaty's pockets go with the land round them; what it leaves over the
+  bar is the reserve cut's price. **ADR-637 (a):** PLAN 7.88b, every idle transport group carries.
+  **ADR-635 (b):** no far-march rule, PLAN 7.87 dropped (reopened only if 7.79's AT stays flat after 7.88b).
+- **PLAN 7.81b's bar** (the user's): capital moves per capture at most 1.25 on 10 unseen seeds × 30 years,
+  for moves a world not above `dd3b730`'s and no capital captured thrice in 30 days. Read already on
+  791–800 (`docs/evidence/7.81/b.md` §5): 4,506 / 3,748 = 1.20 (`dd3b730` 1.80). 7.81b ticked, and 7.81
+  with it (7.81a's spec, this bar, the gate green). BLOCKERS entries resolved.
+- **Next:** PLAN 7.88b, then 7.80b, then 7.79's AT.

@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.81b: the capital moves follow the captures, the reserve cut's war; three captures in 30 days are overruns (2026-10-22, ADR-640, ADR-641; waits on ADR-639, the user's decision)
+### RESOLVED 2026-10-22 (the user's decision: the bar is capital moves per capture at most 1.25, met at 1.20; 7.81b and 7.81 done) · PLAN 7.81b: the capital moves follow the captures, the reserve cut's war; three captures in 30 days are overruns (2026-10-22, ADR-640, ADR-641; waits on ADR-639, the user's decision)
 - **The bar:** on 10 unseen seeds × 30 years capital moves a world not above `dd3b730`'s on the same seeds,
   and no capital captured three times in 30 days.
 - **What moved** (`docs/evidence/7.81/b.md`): field capitals go far from the enemy (ADR-640) and lost
@@ -16,7 +16,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   a, b or c). Three captures in 30 days are nations overrun with no safer city on their main land; none
   is a bar for a placement rule. Read again once ADR-639 is decided.
 
-### PLAN 7.80: the late map's shreds are the reserve cut's war, a user's rule (2026-10-22, ADR-639 proposed; the user's decision)
+### RESOLVED 2026-10-22 (option a, the user's decision: PLAN 7.80b next; what it leaves over the bar is the cut's price) · PLAN 7.80: the late map's shreds are the reserve cut's war, a user's rule (2026-10-22, ADR-639 proposed; the user's decision)
 - **The bar:** on 10 unseen seeds, pieces of 2–400 cells at year 20 not above `dd3b730`'s on the same
   seeds; founded statelets at year 20 not above `dd3b730`'s.
 - **What moved:** nothing; no rule written (PLAN 7.80a, `docs/evidence/7.80/a.md`). Bisected at year 10:
@@ -27,7 +27,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   them (ceiling on run 12's saves 816 against 837); (b) accept the count as the cut's price; (c) undo the
   cut. Meanwhile the loop takes PLAN 7.81.
 
-### PLAN 7.79c: the stranded army is the ferry's now, but its one transport group a turn cannot act; piles 3 → 3 (2026-10-22, ADR-636; ADR-637 proposed, the user's decision)
+### RESOLVED 2026-10-22 (option a, the user's decision: PLAN 7.88b, every idle group carries) · PLAN 7.79c: the stranded army is the ferry's now, but its one transport group a turn cannot act; piles 3 → 3 (2026-10-22, ADR-636; ADR-637 proposed, the user's decision)
 - **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
   year 20 and 7019 year 10 (`piles.ts --days 30`) 3 → 0; a unit test red without; the ADR; the pin.
 - **What moved:** the rule is in (ADR-636): free for the USA's ferry 20 → 157 and 16 → 210; a unit test
@@ -39,7 +39,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **2026-10-22, PLAN 7.88a done** (ADR-638): (a) fixed, the USA's ferry turns that give an order 0 of 4 →
   3 of 3 on both saves; the piles 3 → 3 still (`docs/evidence/7.88/a.md`). (b) waits on ADR-637.
 
-### PLAN 7.79d: the far army is 80–170 days of march from the threatened sectors beyond the range; the 30-day bar out of reach (2026-10-22, ADR-635 proposed; the user's decision)
+### RESOLVED 2026-10-22 (option b, the user's decision: no rule; PLAN 7.87 dropped) · PLAN 7.79d: the far army is 80–170 days of march from the threatened sectors beyond the range; the 30-day bar out of reach (2026-10-22, ADR-635 proposed; the user's decision)
 - **The bar:** on run 12's saves 1129, 2081 and 6421 year 20, the threatened sectors with a formation of
   the planner within the range after 30 days (`frontSpread.ts`, `inRangeThreatenedAPlan`) at least twice
   HEAD's (1.27, 1.62, 5.58); a unit test red without; the pin's entry.

@@ -14021,3 +14021,68 @@ Of 7.33 (open in PLAN.md):
   after on the same code but the rule: bursts with civilians over 10 × men not more than before;
   the pin moved in DECISIONS if it moves.
   Dropped (2026-10-22, the user's decision: ADR-632 b), not done.
+
+<!-- moved 2026-10-22 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.81 Map visuals (mapVisuals 6, needs 7, beyond R12-B2): the map tooltip is stale, sixth run
+  ("London" over Paris, `critic/shots/c12a_4219_20_paris_150m_day10.png`); a moving capital is
+  captured again and again ("Australia captured Turkey's capital" on 2, 13 and 28 December 1947,
+  `c12w_3301_z_history.png`; the Netherlands' capital moved 26 times in one year of 6421; 919 capital
+  moves a world in 30 years against 405). AT: an e2e spec, red before, where the tooltip over a city
+  names the place under the cursor after the map changes beneath it; on 10 unseen seeds × 30 years
+  capital moves per capture at most 1.25 (the user's bar, 2026-10-22: before, capital moves a world not
+  above `dd3b730`'s and no capital captured three times in 30 days); the gate green. In two parts, one cause each:
+    - [x] 7.81a The tooltip read again under a still mouse: the hover was read on `pointermove` alone, so a
+      wheel zoom, a Go to, a key pan, a new snapshot or a razed city left it as it was. The view keeps the
+      mouse's point and reads what is under it after every frame it draws. AT: `mapTooltip1938`'s "the
+      tooltip follows the map beneath a still mouse" (Berlin under the mouse, the camera moved so Paris is,
+      Paris razed, its land painted German), red before ("Berlin · capital" over Paris); the gate green.
+      Done: red on HEAD, green with the view's change; `docs/evidence/7.81/a-paris-still-mouse.png`,
+      `a-paris-razed-occupied.png`.
+    - [x] 7.81b The moving capital captured again and again: on 10 unseen seeds × 30 years capital moves per
+      capture at most 1.25 (the user's bar, 2026-10-22; before, capital moves a world not above
+      `dd3b730`'s on the same seeds and no capital captured three times in 30 days); the cause measured first on 3301 and 6421 (the critic's cases); a unit test (red without); the
+      ADR; the pin's entry.
+      Measured (`docs/evidence/7.81/b.md`, `tools/diag/capitalChurn.ts`): two causes. `dd3b730` on
+      unseen seeds 791–800 × 30 years: 392.8 moves and 218.8 captures a world, 112 cases of a capital
+      captured three times in 30 days. In two parts, then 7.81b's AT on 791–800:
+        - [x] 7.81b1 A field capital at war goes to the controlled cell farthest from the enemy, on the land
+          the nation controls most of (before: the cell nearest the old capital, a front cell). AT: on 6421
+          year 10 + 365 days field moves moved again within 30 days 31 → under 5; a unit test (red
+          without); the ADR; the pin's entry.
+          Done (ADR-640): 31 → 0, moves 42 → 8; 3301 + 10 years moves 347 → 274; pin 083f2585 → 68eb57f6.
+        - [x] 7.81b2 A lost capital goes to the city farthest from the enemy on the land its nation holds
+          most of, the largest among those far enough (before: the largest there, median 5–6 steps from
+          the enemy; on 3301 113 of 230 such moves passed over a city more than 5 steps safer). AT: on 3301
+          + 10 years cases of three captures in 30 days 13 → under half; a unit test (red without); the
+          ADR; the pin's entry.
+          Done (ADR-641): 13 → 6; captures 275 → 181, moves 274 → 212; pin 68eb57f6 → dc72fc97.
+      Closed not done (ADR-554, BLOCKERS 2026-10-22; `b.md` §5): on 791–800 × 30 years moves a world
+      392.8 → 450.6 (bar 392.8), captures 218.8 → 374.8, three captures in 30 days 112 → 82 (bar 0). Moves
+      per capture 1.80 → 1.20: the moves follow the captures, the reserve cut's war (ADR-639, the user's).
+      Done on the user's bar (2026-10-22): moves per capture on 791–800 × 30 years 4,506 / 3,748 = 1.20,
+      at most 1.25 (`dd3b730` 1.80); the moves a world and the cases of three in 30 days left as the
+      reserve cut's war's price (ADR-639).
+
+- [x] 7.87 The far march to a threatened sector, over a season (found at 7.79d; R12-B1; waits on the
+  user's ADR-635: option a; dropped on b): a far formation (standing, its day in MARCH_DAYS) marches to
+  the nearest threatened sector its class reaches on its landmass when the planner's strength within
+  the range of it and marching to it is under min((1 − RESERVE) × the army × the sector's share of the
+  threat, OFFENSIVE_RATIO × threat); before the marches to empty sectors. AT: on run 12's saves 1129,
+  2081 and 6421 year 20, `inRangeThreatenedAPlan` over days 1–180 (`frontSpread.ts`) at least twice
+  HEAD's on the same window (read first); engaged per war read; a unit test (red without); the ADR;
+  the pin's entry; `--profile`.
+  Dropped (2026-10-22, the user's decision: ADR-635 b), not done; reopened only if 7.79's AT stays flat
+  after 7.88b.

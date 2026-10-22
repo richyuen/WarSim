@@ -103,7 +103,7 @@ them, are 7.81–7.86. A task each, split when taken up:
       is reached takes no ferry); piles 3 → 3. The turn's one transport group is one that cannot act
       (Nuuk; Port-of-Spain, Roseau), and one group a turn carries two of 1129's 60 divisions: PLAN 7.88.
       Pin e6c74731 → e66bef2e.
-    Then, after PLAN 7.88 (and 7.87 if the user takes it, ADR-635), 7.79's AT on 10 unseen seeds × 20
+    Then, after PLAN 7.88 (7.87 dropped, ADR-635 b), 7.79's AT on 10 unseen seeds × 20
     years (HEAD's figure read on them first).
 - [ ] 7.88 The ferry's transport groups (found at 7.79c; R12-B1): `transportsAtPort` gives the ferry one group a
   turn, the most room and then the lowest id, and on run 12's saves that group can never act (1129 year 10:
@@ -118,8 +118,8 @@ them, are 7.81–7.86. A task each, split when taken up:
       Done (ADR-638, `docs/evidence/7.88/a.md`, `tools/diag/ferryTurns.ts`): 0 of 4 → 3 of 3 on both
       (Nuuk's groups passed over for Norfolk's; Norfolk's first on 6421); piles 3 → 3 (7.88b's); invasion
       AI cost within the noise; pin e66bef2e → 083f2585.
-    - [ ] 7.88b Every standing group with an army to carry acts in a turn (waits on the user's ADR-637:
-      option a; dropped on b). AT: piles of 30 or more of a nation at war on one cell 30 days running on
+    - [ ] 7.88b Every standing group with an army to carry acts in a turn (the user's ADR-637 a,
+      2026-10-22). AT: piles of 30 or more of a nation at war on one cell 30 days running on
       1129 year 10, 6421 year 20 and 7019 year 10 3 → 0; transports at sea and island garrisons read
       before and after; a unit test (red without); the ADR; the pin's entry; `--profile`.
 - [ ] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at
@@ -141,48 +141,13 @@ them, are 7.81–7.86. A task each, split when taken up:
       user's ADR-592 a), 755 → 865, 8 of 8 seeds; nothing else beyond the noise. Owned land, not
       occupation (+288 of +337 at year 20); 358 of the 1,174 enclaves at peace (229); more land changes
       hands (1.51 ×) and pieces per flip fell. To the user as the cut's price (ADR-639, proposed).
-    - [ ] 7.80b At a peace, the settlement's pockets go with the land round them (waits on the user's
-      ADR-639: option a; dropped on b or c): a piece of the loser's of at most 400 cells left wholly
+    - [ ] 7.80b At a peace, the settlement's pockets go with the land round them (the user's ADR-639 a,
+      2026-10-22; what the rule leaves over the bar is the reserve cut's price, b): a piece of the loser's of at most 400 cells left wholly
       inside the winner's land (water aside) goes to the winner, a piece of the winner's so inside the
       loser's back to the loser; never a capital's piece nor a nation's largest. AT: on 10 unseen seeds
       × 20 years small pieces at year 20 not above `dd3b730`'s on the same seeds (read first), founded
       statelets read; a unit test (red without); the ADR; the pin's entry; `--profile`.
-- [ ] 7.81 Map visuals (mapVisuals 6, needs 7, beyond R12-B2): the map tooltip is stale, sixth run
-  ("London" over Paris, `critic/shots/c12a_4219_20_paris_150m_day10.png`); a moving capital is
-  captured again and again ("Australia captured Turkey's capital" on 2, 13 and 28 December 1947,
-  `c12w_3301_z_history.png`; the Netherlands' capital moved 26 times in one year of 6421; 919 capital
-  moves a world in 30 years against 405). AT: an e2e spec, red before, where the tooltip over a city
-  names the place under the cursor after the map changes beneath it; on 10 unseen seeds × 30 years
-  capital moves a world not above `dd3b730`'s on the same seeds and no capital captured three times in
-  30 days; the gate green. In two parts, one cause each:
-    - [x] 7.81a The tooltip read again under a still mouse: the hover was read on `pointermove` alone, so a
-      wheel zoom, a Go to, a key pan, a new snapshot or a razed city left it as it was. The view keeps the
-      mouse's point and reads what is under it after every frame it draws. AT: `mapTooltip1938`'s "the
-      tooltip follows the map beneath a still mouse" (Berlin under the mouse, the camera moved so Paris is,
-      Paris razed, its land painted German), red before ("Berlin · capital" over Paris); the gate green.
-      Done: red on HEAD, green with the view's change; `docs/evidence/7.81/a-paris-still-mouse.png`,
-      `a-paris-razed-occupied.png`.
-    - [ ] 7.81b The moving capital captured again and again: on 10 unseen seeds × 30 years capital moves a
-      world not above `dd3b730`'s on the same seeds (read first) and no capital captured three times in 30
-      days; the cause measured first on 3301 and 6421 (the critic's cases); a unit test (red without); the
-      ADR; the pin's entry.
-      Measured (`docs/evidence/7.81/b.md`, `tools/diag/capitalChurn.ts`): two causes. `dd3b730` on
-      unseen seeds 791–800 × 30 years: 392.8 moves and 218.8 captures a world, 112 cases of a capital
-      captured three times in 30 days. In two parts, then 7.81b's AT on 791–800:
-        - [x] 7.81b1 A field capital at war goes to the controlled cell farthest from the enemy, on the land
-          the nation controls most of (before: the cell nearest the old capital, a front cell). AT: on 6421
-          year 10 + 365 days field moves moved again within 30 days 31 → under 5; a unit test (red
-          without); the ADR; the pin's entry.
-          Done (ADR-640): 31 → 0, moves 42 → 8; 3301 + 10 years moves 347 → 274; pin 083f2585 → 68eb57f6.
-        - [x] 7.81b2 A lost capital goes to the city farthest from the enemy on the land its nation holds
-          most of, the largest among those far enough (before: the largest there, median 5–6 steps from
-          the enemy; on 3301 113 of 230 such moves passed over a city more than 5 steps safer). AT: on 3301
-          + 10 years cases of three captures in 30 days 13 → under half; a unit test (red without); the
-          ADR; the pin's entry.
-          Done (ADR-641): 13 → 6; captures 275 → 181, moves 274 → 212; pin 68eb57f6 → dc72fc97.
-      Closed not done (ADR-554, BLOCKERS 2026-10-22; `b.md` §5): on 791–800 × 30 years moves a world
-      392.8 → 450.6 (bar 392.8), captures 218.8 → 374.8, three captures in 30 days 112 → 82 (bar 0). Moves
-      per capture 1.80 → 1.20: the moves follow the captures, the reserve cut's war (ADR-639, the user's).
+
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts
   (`critic/c12_cmp_all.txt`, `c12_summary_all.txt`). Taken up after 7.79 and 7.80, re-read on their HEAD
@@ -220,14 +185,7 @@ them, are 7.81–7.86. A task each, split when taken up:
   measured on the critic's seeds; on 10 unseen seeds × 30 years bursts a world and civilian bursts (over
   10 × men) not above `dd3b730`'s on the same seeds, or the user's ADR accepting the measured volume;
   the gate green.
-- [ ] 7.87 The far march to a threatened sector, over a season (found at 7.79d; R12-B1; waits on the
-  user's ADR-635: option a; dropped on b): a far formation (standing, its day in MARCH_DAYS) marches to
-  the nearest threatened sector its class reaches on its landmass when the planner's strength within
-  the range of it and marching to it is under min((1 − RESERVE) × the army × the sector's share of the
-  threat, OFFENSIVE_RATIO × threat); before the marches to empty sectors. AT: on run 12's saves 1129,
-  2081 and 6421 year 20, `inRangeThreatenedAPlan` over days 1–180 (`frontSpread.ts`) at least twice
-  HEAD's on the same window (read first); engaged per war read; a unit test (red without); the ADR;
-  the pin's entry; `--profile`.
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -527,3 +485,5 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.51 Aircraft (aircraft 7, needs 8, beyond 7.49): the late air war unchanged, 3,160 air […]
 - [x] 7.74 An overrun holder's first strike is on the enemy overrunning it (found at 7.62; PLAN […]
 - [x] 7.78 On a first strike a place's output counts only with an army in the blast (found at 7.74; […]
+- [x] 7.81 Map visuals (mapVisuals 6, needs 7, beyond R12-B2): the map tooltip is stale, sixth run […]
+- [x] 7.87 The far march to a threatened sector, over a season (found at 7.79d; R12-B1; waits on the […]
