@@ -5,7 +5,6 @@ import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1
 import { Sim } from '../../src/sim/sim';
 import { annexNation, integratePuppet, makePuppet, releasePuppet } from '../../src/sim/systems/puppets';
 import { collapseNation } from '../../src/sim/systems/revival';
-import { seaBeaches } from '../../src/sim/systems/seaSupply';
 import { SUPPLY_REACH, SUPPLY_REFRESH_HOURS, blocOf, refreshStats, refreshSupplyNetwork } from '../../src/sim/systems/supply';
 import { World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -90,8 +89,7 @@ function referenceNetwork(world: World, layer: Uint16Array, only?: Set<number>):
     if (only && !only.has(b)) return;
     sources.set(b, [...(sources.get(b) ?? []), cell]);
   });
-  // A bloc's beach sources (PLAN 7.70a): coast cells on a land where it holds no city.
-  for (const [b, cells] of seaBeaches(world)) if (!only || only.has(b)) sources.set(b, [...(sources.get(b) ?? []), ...cells]);
+  // The beaches are no sources of the network (PLAN 7.75: they feed a layer of their own).
   for (const b of [...sources.keys()].sort((p, q) => p - q)) {
     const queue = sources.get(b)!.filter((s) => out[s] === 0);
     for (const s of queue) out[s] = b;

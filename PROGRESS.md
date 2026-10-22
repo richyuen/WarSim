@@ -21998,3 +21998,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   five worlds unchanged. No bar was set before the read: the user accepted it as measured.
 - **Pin:** unchanged, 2c4e2593.
 - **Next:** PLAN 7.75 (the beach rule) on top, then 7.51b's measurement.
+
+## 2026-10-22 — PLAN 7.75: supply over the beach on any land (ADR-630, the user's decision: ADR-622's scope b)
+
+- **Rule** (`systems/seaSupply.ts`, `systems/supply.ts`): a held coast cell the cities' network does
+  not reach is a beach source on any land; the beaches feed a layer of their own
+  (`World.supplyBeach`, saved), made whole at each refresh hour after the network
+  (`refreshBeaches`), and the network is the cities' alone again. `planNormandy` drops its
+  no-city-land filter. SPEC §4, §6.2, §7 amended.
+- **Test:** `beachPocket1938.test.ts` (a British pocket on Eurasia at 0.75 for 30 days, 0 without;
+  the network's formation at 1; dry under the enemy's zones; full refresh and load give the same
+  layer). `supply.test.ts`'s reference flood no longer takes the beaches as the network's sources.
+- **Cost** (seed 99's year, side by side, both orders): supply 0.30 → 0.24 ms; tick within the
+  pair's spread (2.66–2.75 → 2.67–2.72); invasion AI longest call 16.1 ms.
+- **Read** (`docs/evidence/7.75/README.md`, 48 saves × 180 days): engaged per war-day 0.2400 →
+  0.2505, fronted 75 → 80 of 312 (25.6 %), far landings held 293 → 321, no lander in debt.
+- **Pin:** 2c4e2593 → a4ff4661.
+- **Order:** committed after PLAN 7.76 (its France test red with this rule alone).
+- **Next:** PLAN 7.51b's measurement (the user's go: 5 runs at a time), then 7.74.

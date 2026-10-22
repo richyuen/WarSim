@@ -357,3 +357,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.70 The AI's invasions open new fronts (the user's, 2026-10-21; a Normandy: a landing on […]
 - [x] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21; […]
 - [x] 7.76 A capital taken counts in the desperation (found at 7.75; the user's decision, 2026-10-22; […]
+- [x] 7.75 Supply over the beach on any land (ADR-622's scope b, the user's decision, 2026-10-22; […]

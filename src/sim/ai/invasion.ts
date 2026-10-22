@@ -222,9 +222,9 @@ function nearOwnFront(world: World, id: number, front: readonly number[]): boole
  * - the target: of the cities held by a nation at war with it that fights it in a war in which it
  *   has a front (`faced`'s wars), each with a water cell within NORMANDY_SHORE_CELLS whose zone is
  *   not iced, is in the waters the transports sail, is held by no nation at war with it, and is
- *   reached by its bloc's way from home (`beachReach`), on a land where its bloc owns and controls
- *   no city (a beachhead there is fed from the beach, PLAN 7.70a; on a land where it has one, it is
- *   not, ADR-622's scope, the user's), more than DEPLOY_RANGE_CELLS (straight) from every cell of
+ *   reached by its bloc's way from home (`beachReach`: a beachhead there is fed from the beach,
+ *   PLAN 7.70a; on any land since PLAN 7.75, ADR-630, the user's decision; until then only on one
+ *   where its bloc owned and controlled no city), more than DEPLOY_RANGE_CELLS (straight) from every cell of
  *   its front: the most worth (NORMANDY_CAPITAL_WORTH for an enemy's capital, 1 for another city,
  *   times DEPLOY_RANGE_CELLS over its straight distance to the nearest cell of its front: near the
  *   enemy's front's rear, PLAN 7.73a, ADR-626; before, of two cities alike the nearest by sea won
@@ -318,7 +318,7 @@ function planNormandy(world: World, n: number, faced: ReadonlySet<number>, front
     const holder = ctl[cell]!;
     if (!enemies.has(holder)) return;
     const land = comp[cell]!;
-    if (land === 0 || feed.cityLands.has(land)) return;
+    if (land === 0) return;
     const d2Front = toFront2(cell);
     if (d2Front <= r * r) return;
     // The water it goes ashore by: the nearest open one within the shore's reach.

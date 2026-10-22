@@ -13908,3 +13908,32 @@ Of 7.33 (open in PLAN.md):
   France's 0 → 0.5; the France tests green with 7.75's source; Poland first strike day 35 at an army
   as before; seeds 781–790: five worlds unchanged, bursts 132 → 168, strikes back 23 → 39,
   civilian bursts 21 → 26, dead 13.6 M → 20.5 M: accepted by the user.
+
+<!-- moved 2026-10-22 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.75 Supply over the beach on any land (ADR-622's scope b, the user's decision, 2026-10-22;
+  emergent 6, naval 7): a held coast cell the bloc's cities' network does not reach is a beach
+  source on any land (from 7.70a only on a land where the bloc owned and controlled no city, so a
+  British landing in France or Norway starved: its bloc holds India). AT: a unit test (red without:
+  a British division ashore beyond its network on a land with a city of its bloc dry): at least 0.5
+  for 30 days at a beach's rate, a British formation in the network on that land at 1, dry under the
+  enemy's zones, a full refresh and a load giving the same layer; seed 99's year: supply's mean
+  under 7.70a's 0.28 ms + 0.07 (0.35); the 48 saves, 180 days (`newFronts.ts`): engaged per
+  war-day not below 0.2383 and the fronted share at least a fifth; no lander in debt; longest
+  invasion AI call under 50 ms; SPEC §4, §6.2, §7 amended; the ADR; the pin's entry.
+  Done (ADR-630, `docs/evidence/7.75/README.md`, `beachPocket1938.test.ts`, pin 2c4e2593 →
+  a4ff4661): the pocket 0.75 from a day on (0 without), the network's 1; supply 0.30 → 0.24 ms
+  (both core orders); engaged per war-day 0.2400 → 0.2505, fronted 75 → 80 of 312 (25.6 %), far
+  landings held 293 → 321, no lander in debt, longest invasion AI call 16.1 ms.

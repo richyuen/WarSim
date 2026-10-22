@@ -191,6 +191,37 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   No bar was set before the read; the user accepted it as measured.
 - **Pin.** Unchanged (2c4e2593): seed 99's first year has no warhead.
 
+### ADR-630 · 2026-10-22 · accepted (the user's decision: ADR-622's scope b) — Supply over the beach on any land: a held coast the network does not reach feeds a layer of its own (PLAN 7.75; amends ADR-622, ADR-623)
+
+- **Context.** ADR-622 (PLAN 7.70a) made a coast cell a bloc controls a source of its supply network
+  only on a land where the bloc owned and controlled no city. A pocket on a land with a city of the
+  bloc's starved: Britain's bloc holds India, so a British landing in France or Norway, beyond the
+  reach of its network, was dry in 8 hours, and `planNormandy` (ADR-623) aimed only at lands with
+  no city of the lander's bloc. The user chose b: any held coast cell the network does not reach.
+- **Decision.** The beaches are no longer sources of the network: it is the cities' alone again, as
+  before ADR-622 (its trigger that refreshed a bloc whole at any changed cell on a beach's land, and
+  the beach list in `markSeaLinks`'s key, go with it). A beach source (`seaBeaches`) is a coast cell
+  the bloc controls with no network's mark (`cells.supply` 0: a bloc's flood marks only the cells it
+  controls), beside a zone not iced that its way from home reaches, on any land. At each refresh
+  hour, after the network's refresh, the beach's layer (`World.supplyBeach`, state, saved) is made
+  whole: each bloc in ascending order floods from its beach sources over the cells it controls that
+  are in no network (`refreshBeaches`). A formation no network feeds, on its cell or within
+  SUPPLY_REACH off its side's ground, is fed by the layer at BEACH_RATE to BEACH_SUPPLY. The layer is
+  made from the network alone, and a partial refresh gives the network a full one gives, so a loaded
+  world goes on as the saved one. `planNormandy` drops its no-city-land filter.
+  Considered: the beaches as a second phase of each bloc's flood in the network itself; not taken: it needs the partial refresh's mends, drying and lost sources to keep a
+  beach bit, and the network's whole-bloc trigger fired on every coastal change.
+- **Read** (`docs/evidence/7.75/README.md`). The unit test `beachPocket1938.test.ts`: a British
+  division ashore on an enemy coast beyond its network, on a land where its bloc holds a city, at
+  0.75 from a day on (without: 0); a British formation in the network there at 1; dry under the
+  enemy's zones; a full refresh and a load give the same layer. Seed 99's year, side by side, both
+  core orders: supply 0.310 / 0.294 → 0.234 / 0.243 ms; the tick mean 2.75 / 2.66 → 2.67 / 2.72 ms
+  (the world otherwise: cells flipped 38,160 → 27,311); invasion AI longest call 16.1 ms. The
+  critic's 48 saves, 180 days (`newFronts.ts`; HEAD's read matches 7.73c's after in every column):
+  engaged per war-day 0.2400 → 0.2505, fronted 75 → 80 of 312 open wars (25.6 %), landings 672 →
+  692, far landings held 293 → 321, no lander in debt.
+- **Pin.** 2c4e2593 → a4ff4661.
+
 ### ADR-629 · 2026-10-22 · accepted (option b, the user's decision, 2026-10-22) — An empty capital as no first-strike target, measured: it silences the critic's France of R8-B1 (PLAN 7.62; ADR-611 b)
 
 - **Context** (ADR-611, critic run 11's design objection): the editor-armed Poland of seed 9437

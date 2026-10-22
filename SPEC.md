@@ -1092,8 +1092,8 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   same to the cell. A bloc's spans cover its network and may cover more.
 - *Formations* (hourly): on their own bloc's network, supply rises by 1/8 per hour towards 1;
   off it, it falls by 1/8 towards 0. At 0 a formation loses (2% + terrain `supplyAttrition`) of its
-  strength per day, applied hourly. An encircled division is dry within 8–14 h. On a network
-  fed from a beach (§6.2 supply over the beach, PLAN 7.70a) it rises by 1/16 towards 0.75.
+  strength per day, applied hourly. An encircled division is dry within 8–14 h. Fed by the
+  beach's layer (§6.2 supply over the beach, PLAN 7.70a, 7.75) it rises by 1/16 towards 0.75.
 - *Reach* (PLAN 3.4Rf, ADR-143): a formation on a cell that is not its side's (an enemy's, a
   third nation's, nobody's) is fed as on its network when a cell of a network that feeds it
   lies within `SUPPLY_REACH` = 2 cells (Chebyshev, the distance of the pressure below): the
@@ -1731,15 +1731,18 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   of the bloc (`seaLinkedAll`); at each refresh hour a bloc whose joined lands changed is
   refreshed whole (`markSeaLinks`; ADR-272). (At war with Italy Malta was cut at once while Italy's
   submarines held the zones about it; since PLAN 4.4d a submarine holds no sea.)
-  *Supply over the beach (PLAN 7.70a, ADR-622):* on a land where the bloc owns and controls no
-  city, a coast cell it controls is a source of its network (`seaBeaches`) while a zone of the
-  water beside it, not iced, is reached by such a way from a home port's zone (so no enemy
-  holds it); its key at the refresh hour is part of `markSeaLinks`'s, and a cell that changes
-  hands on such a land floods its bloc whole (the mends ask after cities alone). A formation fed
-  by a network on a land where that network's bloc owns and controls no city is fed at
-  `BEACH_RATE` (1/16 an hour) to `BEACH_SUPPLY` (0.75) and no higher. A beachhead is fed from
-  the refresh after its landing (up to 12 h on); one on a land where the bloc holds a city (a
-  landing in France by a Britain whose bloc holds cities in Asia, the same land) is not.
+  *Supply over the beach (PLAN 7.70a, ADR-622; PLAN 7.75, ADR-630, the user's decision):* a coast
+  cell the bloc controls that its cities' network does not reach is a beach source (`seaBeaches`)
+  while a zone of the water beside it, not iced, is reached by such a way from a home port's zone
+  (so no enemy holds it), on any land. The beaches feed a layer of their own
+  (`World.supplyBeach`, saved): at each refresh hour, after the network's refresh, it is made
+  whole, each bloc in ascending order flooding from its beach sources over the cells it controls
+  that are in no network (`refreshBeaches`). A formation no network feeds (on its cell, or within
+  `SUPPLY_REACH` off its side's ground) is fed by that layer at `BEACH_RATE` (1/16 an hour) to
+  `BEACH_SUPPLY` (0.75) and no higher. A beachhead is fed from the refresh after its landing (up
+  to 12 h on), a landing in France by a Britain whose bloc holds cities in Asia as well (from
+  7.70a to 7.75 a beach was a source only on a land where the bloc owned and controlled no city,
+  and of the network itself).
   *Convoys and raiding (PLAN 4.4d, ADR-260; `src/sim/systems/convoys.ts`):* the income of a
   land joined to home by sea goes by convoy along its way (`convoyWays`, the zones from a home
   port's to the land's port). In each zone of it the boats (S) of the nations at war with
@@ -2119,9 +2122,8 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   side about it is not held, PLAN 7.73c, ADR-628) lands its free army (standing, beyond the deploy
   range of its front on their land) on an enemy's coastal city, of the enemies of its wars with a
   front, more than the deploy range from its front, with a water cell within 2 cells passing the
-  landing's tests and reached by its bloc's way from home, on a land where its bloc owns and
-  controls no city (a beachhead there is fed from the beach, §6.2; not on one where it has a city,
-  ADR-622's scope): the most worth (3 for a capital, 1 for another city, times the deploy range
+  landing's tests and reached by its bloc's way from home (a beachhead there is fed from the
+  beach, §6.2; on any land since PLAN 7.75, ADR-630): the most worth (3 for a capital, 1 for another city, times the deploy range
   over its straight distance to the nearest cell of the nation's front: near the enemy's front's
   rear, PLAN 7.73a, ADR-626) over one more than the enemy's land formations within 10 cells;
   nearest by sea on a tie. Its free formations at the

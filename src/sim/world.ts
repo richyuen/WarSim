@@ -413,6 +413,8 @@ class WorldCore implements Stateful {
       // A player's order over the sea marching to its port (PLAN 4.9b): [id, target] each, only while there is one.
       ...(w.seaBound.size === 0 ? [] : [{ name: 'world.seaBound', dtype: 'f64' as const, data: Float64Array.from([...w.seaBound].sort((a, b) => a[0] - b[0]).flat()) }]),
       // The fleets placed by the editor that hold their place (PLAN 7.22c): [id, x, y] each, only while there is one.
+      // The beach's supply layer (PLAN 7.75): [cell, bloc] each, only while there is one.
+      ...(w.supplyBeach.size === 0 ? [] : [{ name: 'world.supplyBeach', dtype: 'i32' as const, data: Int32Array.from([...w.supplyBeach].sort((a, b) => a[0] - b[0]).flat()) }]),
       ...(w.station.size === 0 ? [] : [{ name: 'world.station', dtype: 'f64' as const, data: Float64Array.from([...w.station].sort((a, b) => a[0] - b[0]).flatMap(([id, [x, y]]) => [id, x, y])) }]),
       ...(w.embarked.size === 0 ? [] : [{ name: 'world.embarked', dtype: 'f64' as const, data: Float64Array.from([...w.embarked].sort((a, b) => a[0] - b[0]).flatMap(([id, e]) => [id, e.fleet, e.land, e.water, e.target])) }]),
       // Sea control (PLAN 4.4a): [zones + 1, holders..., days...], only while a zone is held.
@@ -500,6 +502,9 @@ class WorldCore implements Stateful {
       if (!w.airPower.has(z)) w.airPower.set(z, new Map());
       w.airPower.get(z)!.set(power[at + 1]!, power[at + 2]!);
     }
+    w.supplyBeach = new Map();
+    const beach = sections.find((s) => s.name === 'world.supplyBeach')?.data as Int32Array | undefined;
+    for (let at = 0; beach && at < beach.length; at += 2) w.supplyBeach.set(beach[at]!, beach[at + 1]!);
     w.sorties = new Map();
     const sorties = sections.find((s) => s.name === 'world.sorties')?.data as Float64Array | undefined;
     for (let at = 0; sorties && at < sorties.length; at += 9) {
@@ -868,6 +873,12 @@ export class World {
    * (ADR-196). Valid from a full refresh on; a full refresh rebuilds it.
    */
   supplySpans = new Map<number, { spans: Int32Array; n: number; base: number; lanes: number[] }>();
+  /**
+   * The beach's supply layer (PLAN 7.75, ADR-630): per cell fed from a beach source, the bloc whose
+   * beach feeds it (`refreshBeaches`). State: made again whole at each supply refresh hour from the
+   * network as refreshed, and read in the hours between, so it is saved.
+   */
+  supplyBeach = new Map<number, number>();
   /** Derived (not state): bumped by every controller change (label re-derivation, PLAN 1.29). */
   controlChanges = 0;
   /** Derived (not state): bumped by every owner change through `setOwner` (`seaReach`'s hour, PLAN 7.1l2). */

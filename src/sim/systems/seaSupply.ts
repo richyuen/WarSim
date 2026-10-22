@@ -12,15 +12,19 @@
  * bloc has no port is not cut by sea: its trade is not followed. A city is a source of its
  * bloc's network only on a component that is home, joined or not cut (`seaLinked`).
  *
- * Supply over the beach (PLAN 7.70a, ADR-622): on a land where the bloc owns and controls no
- * city, a coast cell it controls is a source of its network (`seaBeaches`) when a zone of the
- * water beside it is not closed by ice and is reached from a home port's zone by a way as above
- * (one that enters no zone an enemy of the bloc holds). A formation fed on such a land is fed at
- * a beach's rate (supply.ts).
+ * Supply over the beach (PLAN 7.70a, ADR-622; widened by PLAN 7.75, ADR-630, the user's
+ * decision): a coast cell the bloc controls that its cities' network does not reach is a beach
+ * source (`seaBeaches`, asked after the network's refresh) when a zone of the water beside it is
+ * not closed by ice and is reached from a home port's zone by a way as above (one that enters no
+ * zone an enemy of the bloc holds). The beach's own layer is flooded from them (supply.ts,
+ * `refreshBeaches`), and a formation fed by it is fed at a beach's rate. Until 7.75 only a coast on
+ * a land where the bloc owned and controlled no city was one, and a pocket on a land with a city of
+ * the bloc's (a landing in France or Norway by Britain's bloc, which holds India) starved.
  *
- * The supply's refresh reads it; whether it changed for a bloc is asked at each refresh hour
- * (`markSeaLinks`): a bloc whose joined components or beach sources changed is refreshed whole,
- * so a partial refresh gives what a full one gives.
+ * The supply's refresh reads the joined lands; whether they changed for a bloc is asked at each
+ * refresh hour (`markSeaLinks`): a bloc whose joined components changed is refreshed whole, so a
+ * partial refresh gives what a full one gives. The beach's layer is made again whole at each
+ * refresh hour from the network as refreshed.
  */
 import { isLand } from '../../shared/terrain';
 import { cellOf } from '../data/terrain';
@@ -104,20 +108,22 @@ export function seaLinkedAll(world: World): Map<number, number[]> {
   return seaReach(world).linked;
 }
 
-/** Per bloc with any, its beach sources (PLAN 7.70a, the head of the file): coast cells, ascending. */
+/**
+ * Per bloc with any, its beach sources (PLAN 7.70a, 7.75, the head of the file): coast cells,
+ * ascending, the blocs ascending. Read from the supply network as it stands (`cells.supply`).
+ */
 export function seaBeaches(world: World): Map<number, number[]> {
-  return seaReach(world, true).beaches!;
+  return beachesOf(world, seaReach(world).parts);
 }
 
 /**
- * Where a beachhead of nation `n`'s would be fed from the sea (PLAN 7.70b, ADR-623): the lands on
- * which its bloc owns and controls a city (`cityLands`: a beach there is no source, 7.70a's rule),
- * and the zones its bloc's way from home reaches (`seen[zone]` 1; `seaWay`, no zone an enemy of
- * the bloc holds). A coast cell on a land not in `cityLands`, beside a zone `seen` and not iced, is
- * a beach source once the bloc controls it. Null for a bloc with no city or no port (no beach of
- * its is fed). For the world as it is when called; the caller keeps nothing of it.
+ * Where a beachhead of nation `n`'s would be fed from the sea (PLAN 7.70b, ADR-623): the zones its
+ * bloc's way from home reaches (`seen[zone]` 1; `seaWay`, no zone an enemy of the bloc holds). A
+ * coast cell beside a zone `seen` and not iced is fed once the bloc controls it: by its cities'
+ * network, or else as a beach source (PLAN 7.75). Null for a bloc with no city or no port (no
+ * beach of its is fed). For the world as it is when called; the caller keeps nothing of it.
  */
-export function beachReach(world: World, n: number): { cityLands: ReadonlySet<number>; seen: Uint8Array } | null {
+export function beachReach(world: World, n: number): { seen: Uint8Array } | null {
   const { parts } = seaReach(world);
   const b = parts.blocOfNation[n] ?? 0;
   const cities = parts.cities.get(b);
@@ -129,7 +135,7 @@ export function beachReach(world: World, n: number): { cityLands: ReadonlySet<nu
     seen = seaSeen.slice(0, seaOf(world).count + 1);
     parts.seen.set(b, seen);
   }
-  return { cityLands: new Set(cities.keys()), seen };
+  return { seen };
 }
 
 /**
@@ -225,40 +231,6 @@ function landCities(world: World, comp: Uint32Array): LandCities {
   return out;
 }
 
-/** `blocCityLands`' table, reused from call to call. */
-let blocLandTable = new Uint8Array(0);
-
-/**
- * Whether bloc `b` owns and controls a city on land `land` (PLAN 7.70a: a network on a land where
- * its bloc has none is fed from its beach), for the world as it is when called: one pass over the
- * cities. `blocOfNation`: each nation's supply bloc. Valid until the next call.
- */
-export function blocCityLands(world: World, blocOfNation: ArrayLike<number>): (b: number, land: number) => boolean {
-  const { table, n, slotOf } = cityLandTable(world, blocOfNation);
-  return (b, land) => {
-    const slot = land < slotOf.length ? slotOf[land]! : -1;
-    return slot >= 0 && b < blocOfNation.length && table[b * n + slot] === 1;
-  };
-}
-
-/** `blocCityLands`' table: 1 at `b * n + slotOf[land]` where bloc b owns and controls a city on the land. */
-function cityLandTable(world: World, blocOfNation: ArrayLike<number>): { table: Uint8Array; n: number; slotOf: Int32Array } {
-  const comp = navOf(world).grid.component;
-  const { cells, slots, lands, slotOf } = landCities(world, comp);
-  const { owner, controller } = world.cells;
-  const n = lands.length;
-  const size = blocOfNation.length * n;
-  if (blocLandTable.length < size) blocLandTable = new Uint8Array(size);
-  else blocLandTable.fill(0, 0, size);
-  const table = blocLandTable;
-  for (let i = 0; i < cells.length; i++) {
-    const cell = cells[i]!;
-    const ctl = controller[cell]!;
-    if (ctl === 0 || owner[cell] !== ctl) continue;
-    table[blocOfNation[ctl]! * n + slots[i]!] = 1;
-  }
-  return { table, n, slotOf };
-}
 /** The count of each (land slot, bloc) pair of a call, 0 between calls, and the pairs in the order met. */
 let pairCount = new Uint32Array(0);
 let pairOrder = new Int32Array(0);
@@ -266,12 +238,10 @@ let pairOrder = new Int32Array(0);
 interface Reach {
   linked: Map<number, number[]>;
   ways: Map<number, Map<number, number[]>>;
-  /** Computed when first asked for (`seaReach`'s `withBeaches`), from `parts`; null until then. */
-  beaches: Map<number, number[]> | null;
   parts: ReachParts;
 }
 
-/** What `reach` made the ways from, for the beaches asked later in the same state. */
+/** What `reach` made the ways from, for the beaches asked later in the same state (`beachesOf`). */
 interface ReachParts {
   blocOfNation: Uint16Array;
   /** Per bloc with a city: its cities' lands with their counts. */
@@ -317,7 +287,7 @@ function sameArray(a: ArrayLike<number> | null, b: ArrayLike<number> | null): bo
 }
 
 /** The ways and the joined lands of every bloc, kept within the hour while nothing they are made from changes (`ReachKept`). */
-function seaReach(world: World, withBeaches = false): Reach {
+function seaReach(world: World): Reach {
   reachStats.calls++;
   const comp = navOf(world).grid.component;
   const w = world.cells.w;
@@ -345,12 +315,10 @@ function seaReach(world: World, withBeaches = false): Reach {
     sameArray(kept.nations, nations) &&
     sameArray(kept.holder, holder)
   ) {
-    if (withBeaches && kept.out.beaches === null) kept.out.beaches = beachesOf(world, kept.out.parts);
     return kept.out;
   }
   reachStats.computed++;
   const out = reach(world, blocOfNation, nations);
-  if (withBeaches) out.beaches = beachesOf(world, out.parts);
   reachKept.set(world, { tick: world.tick, control: world.controlChanges, owner: world.ownerChanges, wars: world.wars.version, cities: world.citiesVersion, cityCount: world.cities.count, cityHigh: world.cities.highWater, comp, nations, holder: holder && holder.slice(), out });
   return out;
 }
@@ -443,7 +411,7 @@ function reach(world: World, blocOfNation: Uint16Array, nations: Int32Array): Re
     for (const c of m.keys()) if (own.has(c) || !byComp?.has(c)) list.push(c);
     out.set(b, list.sort((p, q) => p - q));
   }
-  return { linked: out, ways, beaches: null, parts: { blocOfNation, cities, ports, own: ownOf, seen: seenOf } };
+  return { linked: out, ways, parts: { blocOfNation, cities, ports, own: ownOf, seen: seenOf } };
 }
 
 /** The search's marks of `seaWay`: per zone, reached (`seaSeen`), from which zone, in what order. */
@@ -517,29 +485,15 @@ interface PeaceWay {
 const peaceWays = new WeakMap<SeaZones, Map<string, PeaceWay>>();
 
 /**
- * The beach sources of every bloc (PLAN 7.70a, the head of the file), from what `reach` made the
- * ways from: the coast cells each bloc controls on a land where it owns and controls no city,
- * beside a zone its way from home reaches.
+ * The beach sources of every bloc (PLAN 7.70a, 7.75, the head of the file), from what `reach` made
+ * the ways from: the coast cells each bloc controls that its network does not reach (`cells.supply`
+ * 0 there: a bloc's flood marks only cells it controls), beside a zone its way from home reaches.
  */
-const coastSlots = new WeakMap<Coast, { slotOf: Int32Array; at: Int32Array }>();
 function beachesOf(world: World, parts: ReachParts): Map<number, number[]> {
   const { blocOfNation, cities, ports, own } = parts;
-  const comp = navOf(world).grid.component;
-  const controller = world.cells.controller;
+  const { controller, supply } = world.cells;
   const z = seaOf(world);
   const coast = coastOf(world);
-  const { table, n, slotOf } = cityLandTable(world, blocOfNation);
-  // Each coast cell's land's slot among the cities' lands (-1: no city there), kept by the slots.
-  let slots = coastSlots.get(coast);
-  if (!slots || slots.slotOf !== slotOf) {
-    const at = new Int32Array(coast.cells.length);
-    for (let i = 0; i < at.length; i++) {
-      const land = comp[coast.cells[i]!]!;
-      at[i] = land < slotOf.length ? slotOf[land]! : -1;
-    }
-    coastSlots.set(coast, (slots = { slotOf, at }));
-  }
-  const slotAt = slots.at;
   // The blocs that can have a beach: with a city (a home) and a port.
   const can = new Uint8Array(blocOfNation.length);
   for (const b of cities.keys()) if (ports.has(b)) can[b] = 1;
@@ -547,12 +501,12 @@ function beachesOf(world: World, parts: ReachParts): Map<number, number[]> {
   const shore = new Map<number, number[]>();
   const cells = coast.cells;
   for (let i = 0; i < cells.length; i++) {
-    const ctl = controller[cells[i]!]!;
+    const cell = cells[i]!;
+    if (supply[cell] !== 0) continue;
+    const ctl = controller[cell]!;
     if (ctl === 0) continue;
     const b = blocOfNation[ctl]!;
     if (can[b] !== 1) continue;
-    const slot = slotAt[i]!;
-    if (slot >= 0 && table[b * n + slot] === 1) continue;
     let list = shore.get(b);
     if (!list) shore.set(b, (list = []));
     list.push(i);
@@ -564,7 +518,8 @@ function beachesOf(world: World, parts: ReachParts): Map<number, number[]> {
     let seen = parts.seen.get(b);
     if (!seen) {
       seaWay(world, b, own.get(b)!, byComp, fighting);
-      seen = seaSeen;
+      seen = seaSeen.slice(0, z.count + 1);
+      parts.seen.set(b, seen);
     }
     const fed: number[] = [];
     for (const i of shore.get(b)!) {
@@ -581,21 +536,19 @@ function beachesOf(world: World, parts: ReachParts): Map<number, number[]> {
   return out;
 }
 
-/** What the supply's refresh reads of the sea: `seaLinkedAll` and `seaBeaches`. */
+/** What the supply's refresh reads of the sea: `seaLinkedAll`. */
 export interface SeaFeeds {
   linked: Map<number, number[]>;
-  beaches: Map<number, number[]>;
 }
 
 /** `SeaFeeds` of the world as it is. */
 export function seaFeeds(world: World): SeaFeeds {
-  const r = seaReach(world, true);
-  return { linked: r.linked, beaches: r.beaches! };
+  return { linked: seaReach(world).linked };
 }
 
 /**
- * At a refresh hour: each bloc whose joined components (`seaLinked`) or beach sources
- * (`seaBeaches`, PLAN 7.70a) are not those it had at the last ask is marked to be refreshed whole
+ * At a refresh hour: each bloc whose joined components (`seaLinked`) are not those it had at the
+ * last ask is marked to be refreshed whole
  * (`supplySeaBlocs`, ADR-272). What it had is kept in `World.seaLinks` (derived: a loaded world
  * refreshes in full). Returns what it asked, for the refresh of the same hour.
  */
@@ -604,8 +557,7 @@ export function markSeaLinks(world: World): SeaFeeds {
   const now = new Map<number, string>();
   const all = seaFeeds(world);
   for (const [b, list] of all.linked) {
-    const beach = all.beaches.get(b);
-    const key = beach ? `${list.join(',')}|${beach.join(',')}` : list.join(',');
+    const key = list.join(',');
     now.set(b, key);
     if (was.get(b) !== key) world.supplySeaBlocs.add(b);
   }

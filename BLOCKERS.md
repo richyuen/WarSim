@@ -53,7 +53,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   war-day 0.2400 against this bar's 0.2383 (HEAD before 7.70b), fronted 75/308 (24.4 %), no
   lander in debt, longest call 12.6 ms. The fight lost is won back; the decision stays the user's.
 
-### RESOLVED 2026-10-22 (option a, the user's decision: 7.70a ticked, the tick cost logged; the scope left per land, its option b would be a task of its own, not decided) · PLAN 7.70a: supply over the beach is in; seed 99's first-year tick 2.35 → 2.44–2.48 ms, budget 2.4 (2026-10-21, ADR-622; the user's decision)
+### RESOLVED 2026-10-22 (option a, the user's decision: 7.70a ticked, the tick cost logged; the scope: option b, the user's decision the same day, done as PLAN 7.75, ADR-630) · PLAN 7.70a: supply over the beach is in; seed 99's first-year tick 2.35 → 2.44–2.48 ms, budget 2.4 (2026-10-21, ADR-622; the user's decision)
 - **The bar:** a division ashore on an enemy coast with no port keeps supply at least 0.5 for 30
   days and loses it under an enemy-held zone (a unit test, red without); seed 99's year: no tick
   over budget (the profile); SPEC §6.2 amended; the ADR; the pin's entry.
