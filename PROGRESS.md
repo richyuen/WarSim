@@ -21954,3 +21954,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **BLOCKERS**, the user's: (a) no rule, (b) the rule in with the France test amended, (c) open.
 - **Pin:** unchanged, 2c4e2593 (and unchanged with the rule).
 - **Next:** PLAN 7.51b (the late air war) if 7.49 no longer holds it; else 7.5.
+
+## 2026-10-22 — PLAN 7.70a, 7.70b and 7.70 ticked (the user's decisions: ADR-622 a, ADR-623 a)
+
+- **Decided by the user:** 7.70a ticked on its rule's own case, its tick cost logged (seed 99's
+  first-year tick 2.35 → 2.44–2.48 ms, budget 2.4: fixed before the next task that needs a full
+  sweep); 7.70b ticked on its fronted reading, PLAN 7.73 having won the fight back. ADR-622 and
+  ADR-623 accepted; their BLOCKERS entries resolved. ADR-622's scope question (beach supply per land,
+  or any coast cell the city network does not reach) was not decided: left per land.
+- **7.70 ticked:** the whole's AT on 7.73c's read: fronted far landings held 30 days 75/308 (24.4 %,
+  bar a fifth), engaged per war-day 0.2400 (bar 0.2383), longest invasion AI call 12.6 ms (bar 50),
+  no lander in debt.
+- **Next:** ADR-629 b (PLAN 7.62's rule in, the France test amended).

@@ -302,7 +302,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Limits.** A trip still carries one formation (PLAN 7.72).
 - **Pin.** unchanged, b749e952 (no such case in seed 99's year).
 
-### ADR-623 · 2026-10-21 · proposed — A new front: the AI lands its free army behind or beside its held front (PLAN 7.70b; amends ADR-268, ADR-511)
+### ADR-623 · 2026-10-21 · accepted (option a, the user's decision, 2026-10-22) — A new front: the AI lands its free army behind or beside its held front (PLAN 7.70b; amends ADR-268, ADR-511)
 
 - **Context** (PLAN 7.70b, the user's 7.70: invasions that open new fronts, a Normandy). The AI
   landed only in a war in which it had no land front (`planLanding`, ADR-268, ADR-511), and the
@@ -355,7 +355,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Pin.** cd6ce5eb → b749e952.
 - **Proposed**: the engaged bar is missed, so the tick is the user's (BLOCKERS).
 
-### ADR-622 · 2026-10-21 · proposed — Supply over the beach: a held coast on a land with no city of the bloc is a source, fed from the sea (PLAN 7.70a; amends ADR-259)
+### ADR-622 · 2026-10-21 · accepted (option a, the user's decision, 2026-10-22) — Supply over the beach: a held coast on a land with no city of the bloc is a source, fed from the sea (PLAN 7.70a; amends ADR-259)
 
 - **Context** (PLAN 7.70a, the user's 7.70: invasions that open new fronts). Supply's sources were
   the cities a bloc owns and controls, its network spread over held land alone (ADR-25), and a city
