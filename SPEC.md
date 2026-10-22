@@ -2065,7 +2065,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   its transport group with the most room at a port it holds, and aims at the port nearest them,
   of an enemy of such a war, whose sea is open to it (not closed by ice, not held by its enemy)
   and in the waters they sail (not a lake across land, not behind a passage shut to it: PLAN
-  7.56b, ADR-597).
+  7.56b, ADR-597); or, nearer them by sea, the capital of such an enemy held by one of them on a
+  coast, at the distance of a water cell beside it that passes the same tests (PLAN 7.69,
+  ADR-621: a capital on a land where its nation holds no port was never invaded); a port wins a
+  tie. The landing goes ashore by the target, port or beach (`orderLanding`).
   Its free formations at that port (within 3 cells of its land cell or of its water, as an
   order over the sea takes them: PLAN 7.49f, ADR-593) go aboard there; with none there, the nearest on the port's
   land are sent to it to fill the room (one whose march there is refused is passed over, the send

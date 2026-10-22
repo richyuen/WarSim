@@ -1,0 +1,404 @@
+{
+ "days": 180,
+ "total": {
+  "cases": 27,
+  "landed": 10
+ },
+ "cases": [
+  {
+   "seed": 5861,
+   "capital": "FIN",
+   "cell": 418930,
+   "land": 263,
+   "landCells": 7,
+   "attackers": [
+    "ITA",
+    "YUG",
+    "#106"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 5861,
+   "capital": "BUR",
+   "cell": 1078833,
+   "land": 56,
+   "landCells": 362792,
+   "attackers": [
+    "ITA",
+    "YUG",
+    "#106"
+   ],
+   "landed": true,
+   "day": 27,
+   "by": "YUG"
+  },
+  {
+   "seed": 6421,
+   "capital": "NSP",
+   "cell": 736271,
+   "land": 398,
+   "landCells": 14,
+   "attackers": [
+    "LIT",
+    "ALB"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 6421,
+   "capital": "NED",
+   "cell": 1079927,
+   "land": 529,
+   "landCells": 1,
+   "attackers": [
+    "LIT",
+    "ALB"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 6421,
+   "capital": "NOR",
+   "cell": 46168,
+   "land": 6,
+   "landCells": 1117,
+   "attackers": [
+    "YUG",
+    "POL"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 7019,
+   "capital": "EST",
+   "cell": 443522,
+   "land": 276,
+   "landCells": 8,
+   "attackers": [
+    "FRA",
+    "NSP",
+    "BRA",
+    "NED",
+    "BEL"
+   ],
+   "landed": true,
+   "day": 9,
+   "by": "BEL"
+  },
+  {
+   "seed": 7247,
+   "capital": "EST",
+   "cell": 449668,
+   "land": 279,
+   "landCells": 20,
+   "attackers": [
+    "MAN"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 7247,
+   "capital": "FIN",
+   "cell": 418930,
+   "land": 263,
+   "landCells": 7,
+   "attackers": [
+    "MAN"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 7247,
+   "capital": "NOR",
+   "cell": 46168,
+   "land": 6,
+   "landCells": 1117,
+   "attackers": [
+    "MAN"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 7247,
+   "capital": "SWE",
+   "cell": 463976,
+   "land": 285,
+   "landCells": 22,
+   "attackers": [
+    "MAN"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 7583,
+   "capital": "OMN",
+   "cell": 1023283,
+   "land": 56,
+   "landCells": 362792,
+   "attackers": [
+    "YUG",
+    "POL"
+   ],
+   "landed": true,
+   "day": 62,
+   "by": "JAP"
+  },
+  {
+   "seed": 7583,
+   "capital": "FIN",
+   "cell": 332940,
+   "land": 217,
+   "landCells": 1,
+   "attackers": [
+    "NSP",
+    "YUG"
+   ],
+   "landed": true,
+   "day": 64,
+   "by": "NSP"
+  },
+  {
+   "seed": 7583,
+   "capital": "NOR",
+   "cell": 46168,
+   "land": 6,
+   "landCells": 1117,
+   "attackers": [
+    "NSP",
+    "YUG"
+   ],
+   "landed": true,
+   "day": 95,
+   "by": "GER"
+  },
+  {
+   "seed": 7583,
+   "capital": "SWE",
+   "cell": 463976,
+   "land": 285,
+   "landCells": 22,
+   "attackers": [
+    "NSP",
+    "YUG"
+   ],
+   "landed": true,
+   "day": 20,
+   "by": "GER"
+  },
+  {
+   "seed": 8167,
+   "capital": "OMN",
+   "cell": 1023283,
+   "land": 56,
+   "landCells": 362792,
+   "attackers": [
+    "LAT",
+    "FIN",
+    "ITA",
+    "NSP",
+    "NOR",
+    "SWE",
+    "IRN"
+   ],
+   "landed": true,
+   "day": 58,
+   "by": "SOV"
+  },
+  {
+   "seed": 8167,
+   "capital": "SAU",
+   "cell": 1027311,
+   "land": 501,
+   "landCells": 1,
+   "attackers": [
+    "LAT",
+    "FIN",
+    "ITA",
+    "NSP",
+    "NOR",
+    "SWE",
+    "IRN"
+   ],
+   "landed": true,
+   "day": 66,
+   "by": "NSP"
+  },
+  {
+   "seed": 8693,
+   "capital": "RAJ",
+   "cell": 1086991,
+   "land": 531,
+   "landCells": 4,
+   "attackers": [
+    "CAN"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 8693,
+   "capital": "NED",
+   "cell": 1079927,
+   "land": 529,
+   "landCells": 1,
+   "attackers": [
+    "JAP",
+    "CHI",
+    "GER",
+    "ITA",
+    "POL",
+    "SOV"
+   ],
+   "landed": true,
+   "day": 36,
+   "by": "GER"
+  },
+  {
+   "seed": 8849,
+   "capital": "BUR",
+   "cell": 1076783,
+   "land": 523,
+   "landCells": 1,
+   "attackers": [
+    "CHI"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 9437,
+   "capital": "RAJ",
+   "cell": 1086991,
+   "land": 531,
+   "landCells": 4,
+   "attackers": [
+    "FRA",
+    "YUG",
+    "CHI",
+    "POL",
+    "ROM"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 9437,
+   "capital": "EST",
+   "cell": 449668,
+   "land": 279,
+   "landCells": 20,
+   "attackers": [
+    "YUG"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 9437,
+   "capital": "PAN",
+   "cell": 1124904,
+   "land": 116,
+   "landCells": 164430,
+   "attackers": [
+    "YUG",
+    "POL",
+    "ROM"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 9437,
+   "capital": "VEN",
+   "cell": 1084016,
+   "land": 533,
+   "landCells": 8,
+   "attackers": [
+    "YUG",
+    "POL",
+    "ROM"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 9781,
+   "capital": "#127",
+   "cell": 1281246,
+   "land": 56,
+   "landCells": 362792,
+   "attackers": [
+    "USA",
+    "CAN",
+    "MEX"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 9781,
+   "capital": "FIN",
+   "cell": 423026,
+   "land": 263,
+   "landCells": 7,
+   "attackers": [
+    "USA",
+    "CAN",
+    "MEX"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 9781,
+   "capital": "EGY",
+   "cell": 898239,
+   "land": 56,
+   "landCells": 362792,
+   "attackers": [
+    "AST"
+   ],
+   "landed": true,
+   "day": 149,
+   "by": "AST"
+  },
+  {
+   "seed": 9781,
+   "capital": "RAJ",
+   "cell": 1086991,
+   "land": 531,
+   "landCells": 4,
+   "attackers": [
+    "AST"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  }
+ ]
+}

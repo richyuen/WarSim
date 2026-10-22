@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-621 · 2026-10-21 · proposed — The AI's landing aims at an enemy capital on a coast, as at a port (PLAN 7.69; amends ADR-268)
+
+- **Context** (PLAN 7.69, found at 7.67). The invasion AI's landing aimed at an enemy's port alone
+  (`planLanding`), so an enemy capital on a land where its nation holds no port was never invaded:
+  the Netherlands' on a one-cell Caribbean islet (land 529) in 6 of the critic's 48 saves, the
+  British Raj's on a four-cell islet off Burma (531) in 13. The landing itself goes ashore on any
+  coast (`orderLanding`).
+- **Decision.** Of a landing's targets, beside the enemies' ports, each such enemy's capital
+  (`capitalCell`, a field capital too) held by one of them, at the sea distance of a water cell
+  beside it whose zone passes a port's tests (open, not iced, in the transports' waters, not held
+  by a nation at war with the lander). Nearest first, as before; a port wins a tie; the enemies
+  taken in id order. Every coastal capital is a target, a port's land or not, as the task says.
+- **Measured** (`docs/evidence/7.69.md`, `capitalLandings.ts`, 180 days of the 48 saves): of 99
+  coastal capitals on lands with no port of their nation, in wars whose other side has transports
+  and no land front with them, landed on 8 (HEAD, none off the continents) → 26 (18 off them, the
+  Netherlands' islet twice). Bar: at least half. **Missed**: for 121 of 153 attackers left an
+  enemy port is nearer than the capital, and the rule takes the nearest (PLAN 7.71 filed: the
+  capital first). The invasion AI's longest call 5.0 ms (seed 99's year).
+- **Proposed**: the bar is missed, so the tick is the user's (BLOCKERS).
+- **Pin.** Unchanged, 32761b44: no landing of seed 99's first year has an enemy capital nearer
+  than its port.
+- **Test.** `landingOnCapital1938.test.ts`: Britain at war with a Netherlands that holds a portless
+  islet alone, its capital there, transports and a division at Manama: the division boards for the
+  islet. Red without the rule (no target).
+
 ### ADR-620 · 2026-10-21 · proposed — A lost capital moves to the land its nation holds most of (PLAN 7.68; amends PLAN 1.15's relocation)
 
 - **Context** (PLAN 7.68, found at 7.67). A lost capital moved to its nation's largest city owned and

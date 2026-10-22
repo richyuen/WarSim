@@ -19,7 +19,11 @@
  *   would be thrown back, PLAN 4.5b), in the waters the transports sail (`waterKeys`: not a lake
  *   across land, not behind a passage shut to n; PLAN 7.56b, ADR-597: seed 1129 year 20, Britain's
  *   at Adana aimed at Baku on the Caspian, `orderSail` refused the way, and the army at the port
- *   never boarded): the landing takes a port, a cell with water by it;
+ *   never boarded): the landing takes a port, a cell with water by it; or, nearer by sea, the
+ *   capital (`capitalCell`) of one of those enemies held by one of them on a coast (a cell beside
+ *   it of a zone that passes the same tests; PLAN 7.69, ADR-621: a capital on a land with no port
+ *   of its nation was never invaded, the Netherlands' on a one-cell islet, land 529, in 6 of the
+ *   critic's 48 saves); a port wins a tie;
  * - its formations at that port (land formations within `AT_PORT_CELLS` of its land cell or of its
  *   water, as `tryLanding` takes them; not under way, in no fight, not retreating or going home)
  *   are ordered there by `orderLanding`, one by one, until the transports have no room for the
@@ -44,6 +48,7 @@ import { findRoute, mayReach } from '../nav/provinceGraph';
 import { orderMove, passageOf, snapTarget } from '../systems/movement';
 import { AT_PORT_CELLS, keyAt, seaKm, waterKeys } from '../systems/navalCombat';
 import { portShut } from '../systems/bombing';
+import { capitalCell } from '../systems/capitals';
 import { orderSail } from '../systems/sail';
 import { seaHolder } from '../systems/seaControl';
 import { navOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
@@ -143,8 +148,8 @@ function transportsAtPort(world: World, n: number): { fleet: number; room: numbe
 }
 
 /**
- * Whether `n`'s landing acted: false with no transports at a port of its own, no enemy port to sail
- * for (the ferry may take the turn then, PLAN 7.49d1), or nobody to ship from where they stand
+ * Whether `n`'s landing acted: false with no transports at a port of its own, no enemy port nor
+ * coastal capital to sail for (the ferry may take the turn then, PLAN 7.49d1), or nobody to ship from where they stand
  * (PLAN 7.64, ADR-617: no army at the port nor on its land; before, the turn was taken all the same,
  * on 970 of the 1,521 days of the nations fronted through an ally alone on the critic's 48 saves).
  */
@@ -158,23 +163,37 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
   const tp = transportsAtPort(world, n);
   if (!tp) return false;
   const { fleet } = tp;
-  // The enemy's port nearest them whose sea is open to n, in the waters they sail (PLAN 7.56b).
+  // The enemy's port nearest them whose sea is open to n, in the waters they sail (PLAN 7.56b), or
+  // an enemy capital on a coast of such a sea (PLAN 7.69).
   const z = seaOf(world);
   const keys = waterKeys(world, n);
   const mine = keyAt(world, keys, c.x[fleet]!, c.y[fleet]!);
   let target = -1;
   let best = Infinity;
+  const open = (at: number): number => {
+    const zone = z.zoneOf[at]!;
+    if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) return Infinity;
+    const sea = seaHolder(world, zone);
+    if (sea !== 0 && world.wars.atWar(sea, n)) return Infinity;
+    return seaKm(world, c.x[fleet]!, c.y[fleet]!, (at % w) + 0.5, Math.floor(at / w) + 0.5);
+  };
   world.ports.forEach((p, i) => {
     const holder = ctl[p.cell]!;
     const at = water[i]!;
     if (holder === 0 || at < 0 || !foes.has(holder)) return;
-    const zone = z.zoneOf[at]!;
-    if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) return;
-    const sea = seaHolder(world, zone);
-    if (sea !== 0 && world.wars.atWar(sea, n)) return;
-    const d = seaKm(world, c.x[fleet]!, c.y[fleet]!, (at % w) + 0.5, Math.floor(at / w) + 0.5);
-    if (d < best) [best, target] = [d, i];
+    const d = open(at);
+    if (d < best) [best, target] = [d, p.cell];
   });
+  const nb: number[] = [];
+  for (const e of [...foes].sort((a, b) => a - b)) {
+    if (world.nations.cols.living[e] !== 1) continue;
+    const cap = capitalCell(world, e);
+    if (cap < 0 || cap >= ctl.length || !foes.has(ctl[cap]!)) continue;
+    for (const q of neighbours4(cap, w, world.cells.h, world.settings.loopingMap, nb)) {
+      const d = open(q);
+      if (d < best) [best, target] = [d, cap];
+    }
+  }
   if (target < 0) return false;
   // A nation with a front in another war lands with its far army only (PLAN 7.26c3a): those within
   // the deploy range of its own front, on that front's land, are the operational AI's, which
@@ -194,7 +213,7 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
     return false;
   };
   const free = (id: number): boolean => standing(world, id, n) && (front.length === 0 || !nearFront(id));
-  return board(world, tp.fleet, tp.room, tp.port, world.ports[target]!.cell, free);
+  return board(world, tp.fleet, tp.room, tp.port, target, free);
 }
 
 /** Whether land formation `id` of nation `n` is free to be shipped: on land, standing, in no fight, not retreating or going home. */

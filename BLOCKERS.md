@@ -5,6 +5,22 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.69: the AI's landing on an enemy capital on a coast is in; such capitals landed on in 180 days 8 → 26 of 99, bar at least half (2026-10-21, ADR-621; the user's decision)
+- **The bar:** of the enemy capitals on a coast of a land with no port of their nation, in the wars
+  of the critic's 48 saves whose other side has transports and no land front with them, a landing
+  on that capital's land within 180 days for at least half (`capitalLandings.ts`); no invasion AI
+  call over 50 ms.
+- **What moved** (`docs/evidence/7.69.md`): 8 of 99 (HEAD, none off the continents) → 26 of 99 (18
+  off them; the Netherlands' islet, land 529, 2 of 6; the Raj's, 531, 0 of 13). Longest call 5.0 ms.
+  The unit test (Britain lands on the Netherlands' portless islet capital; red without) holds. The
+  pin unchanged.
+- **Why it misses:** the task's rule is "nearest first": for 121 of the 153 attackers of the cases
+  left, an enemy port is nearer by sea than the capital (19 more had the capital as their target
+  and landed nowhere in 180 days; 9 had no transports at a port of their own).
+- **What is left:** the user's. (a, recommended) 7.69 ticked on its rule's own case and PLAN 7.71
+  (filed: a coastal capital with no port of its nation taken before nearer ports) taken next;
+  (b) closed not done, the rule kept, 7.71 next; (c) kept open. Meanwhile the loop takes PLAN 7.71.
+
 ### PLAN 7.68: a lost capital moves to the land its nation holds most of is in, ticked on the reading of ADR-620 (a); moves on that land 134 of 138, bar all of them (2026-10-21, ADR-620; the user's decision)
 - **The bar:** every `CapitalMoved` to a city in 180 days of the critic's 48 saves lands on the
   landmass where its nation holds the most cells (`capitalMoves.ts`): all of them.

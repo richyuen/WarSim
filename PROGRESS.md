@@ -21778,3 +21778,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **BLOCKERS**, the user's: the AT asked for all moves (134 of 138); (a) tick stands on ADR-620's
   reading, (b) a field capital on the most-held land, (c) reopen. ADR-620 proposed.
 - **Next:** PLAN 7.69 (the AI lands on an enemy capital on a coast with no port).
+
+## 2026-10-21 — PLAN 7.69: the AI's landing on an enemy capital on a coast (ADR-621; bar missed, the user's)
+
+- **Rule** (`ai/invasion.ts`, `planLanding`): beside the enemies' ports, each enemy's capital held by
+  one of them on a coast, at the sea distance of a water cell beside it that passes a port's tests;
+  nearest first, a port wins a tie. SPEC §7 amended.
+- **Read** (`docs/evidence/7.69.md`, new `tools/diag/capitalLandings.ts`, 180 days of the critic's
+  48 saves): coastal capitals on lands with no port of their nation, in wars whose other side has
+  transports and no land front with them, landed on 8 of 99 (HEAD) → 26 of 99; bar at least half:
+  missed. Off the continents 0 → 18 (the Netherlands' islet 2 of 6, the Raj's 0 of 13). Why: for
+  121 of 153 attackers left an enemy port is nearer than the capital (filed as PLAN 7.71).
+  Invasion AI's longest call 5.0 ms (seed 99's year).
+- **Test:** `landingOnCapital1938.test.ts` (Britain lands on the Netherlands' capital on a portless
+  islet; red without). Specs by hand: none (no drawn change).
+- **Pin:** unchanged, 32761b44 (no landing of seed 99's year picks a capital over its port).
+- **BLOCKERS**, the user's: (a) tick on the rule's own case, 7.71 next; (b) close not done; (c) keep
+  open. ADR-621 proposed.
+- **Next:** PLAN 7.71 (the portless capital before a nearer port).

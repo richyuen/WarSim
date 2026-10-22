@@ -70,6 +70,18 @@ when taken up:
   the ADR; the pin's entry. Landings on a beach beside a front, as Normandy's, are beyond it: a task
   of their own if the user wants one.
 
+- [ ] 7.71 The landing takes a portless enemy capital before a nearer port (found at 7.69,
+  `docs/evidence/7.69.md` §3; the loop's while 7.69 waits on the user): of the 153 attackers whose
+  coastal enemy capital on a land with no port of its nation was not landed on in 180 days of the
+  48 saves after 7.69's rule, an enemy port was nearer by sea than the capital for 121, and the
+  landing takes the nearest target (`planLanding`). The rule: of a landing's targets, such a
+  capital (its nation controls no port on its land) is taken before every port of the war's
+  enemies while it passes a port's tests; nearest of them first, as now. AT: 7.69's read
+  (`capitalLandings.ts`, 180 days of the 48 saves; 7.69's after, 26 of 99, the before): at least
+  half of the cases landed on; no invasion AI call over 50 ms; a unit test (red without: Britain
+  at war with the Netherlands, a Dutch port nearer its transports than the Dutch capital on a
+  portless islet, lands on the islet); SPEC §7 amended; the ADR; the pin's entry.
+
 - [ ] 7.70 The AI's invasions open new fronts (the user's, 2026-10-21; a Normandy: a landing on
   an enemy's coast, port or none, beside or behind its front, that holds and grows; carries
   emergent 6 and naval 7): the AI lands only in a war in which it has no land front, at an enemy's

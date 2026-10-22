@@ -1,0 +1,350 @@
+{
+ "days": 180,
+ "total": {
+  "cases": 24,
+  "landed": 2
+ },
+ "cases": [
+  {
+   "seed": 1129,
+   "capital": "NED",
+   "cell": 1079927,
+   "land": 529,
+   "landCells": 1,
+   "attackers": [
+    "POL"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 1307,
+   "capital": "TUN",
+   "cell": 814142,
+   "land": 435,
+   "landCells": 2,
+   "attackers": [
+    "ROM"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 1307,
+   "capital": "OMN",
+   "cell": 935234,
+   "land": 56,
+   "landCells": 362792,
+   "attackers": [
+    "ROM"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 2081,
+   "capital": "NSP",
+   "cell": 736271,
+   "land": 398,
+   "landCells": 14,
+   "attackers": [
+    "NED",
+    "AST"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 2081,
+   "capital": "RAJ",
+   "cell": 1086991,
+   "land": 531,
+   "landCells": 4,
+   "attackers": [
+    "POL"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 2347,
+   "capital": "TUN",
+   "cell": 814141,
+   "land": 435,
+   "landCells": 2,
+   "attackers": [
+    "LIT",
+    "ROM",
+    "NOR",
+    "SWE"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 2953,
+   "capital": "EST",
+   "cell": 443522,
+   "land": 276,
+   "landCells": 8,
+   "attackers": [
+    "BRA"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 2953,
+   "capital": "FIN",
+   "cell": 423026,
+   "land": 263,
+   "landCells": 7,
+   "attackers": [
+    "BRA"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 3491,
+   "capital": "TUR",
+   "cell": 775325,
+   "land": 421,
+   "landCells": 2,
+   "attackers": [
+    "ITA",
+    "NED"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 3613,
+   "capital": "LIB",
+   "cell": 1153991,
+   "land": 56,
+   "landCells": 362792,
+   "attackers": [
+    "HUN",
+    "GER",
+    "JAP"
+   ],
+   "landed": true,
+   "day": 1,
+   "by": "GER"
+  },
+  {
+   "seed": 3613,
+   "capital": "YUG",
+   "cell": 689249,
+   "land": 389,
+   "landCells": 1,
+   "attackers": [
+    "HUN"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 3613,
+   "capital": "GRE",
+   "cell": 793742,
+   "land": 426,
+   "landCells": 32,
+   "attackers": [
+    "JAP"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 4219,
+   "capital": "EST",
+   "cell": 449668,
+   "land": 279,
+   "landCells": 20,
+   "attackers": [
+    "BUR",
+    "ITA",
+    "BEL"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 4219,
+   "capital": "YUG",
+   "cell": 689249,
+   "land": 389,
+   "landCells": 1,
+   "attackers": [
+    "BUR",
+    "ITA",
+    "BEL"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 4219,
+   "capital": "TUR",
+   "cell": 775325,
+   "land": 421,
+   "landCells": 2,
+   "attackers": [
+    "BUR",
+    "ITA",
+    "BEL"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 4513,
+   "capital": "RAJ",
+   "cell": 1086991,
+   "land": 531,
+   "landCells": 4,
+   "attackers": [
+    "LAT",
+    "FIN",
+    "SWE"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 4513,
+   "capital": "TUN",
+   "cell": 814142,
+   "land": 435,
+   "landCells": 2,
+   "attackers": [
+    "LAT",
+    "FIN",
+    "SWE"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 5309,
+   "capital": "YUG",
+   "cell": 689249,
+   "land": 389,
+   "landCells": 1,
+   "attackers": [
+    "NED"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 5309,
+   "capital": "NSP",
+   "cell": 736271,
+   "land": 398,
+   "landCells": 14,
+   "attackers": [
+    "JAP"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 5683,
+   "capital": "YUG",
+   "cell": 689249,
+   "land": 389,
+   "landCells": 1,
+   "attackers": [
+    "MEX"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 5683,
+   "capital": "GRE",
+   "cell": 793742,
+   "land": 426,
+   "landCells": 32,
+   "attackers": [
+    "MEX"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 5683,
+   "capital": "RAJ",
+   "cell": 1086991,
+   "land": 531,
+   "landCells": 4,
+   "attackers": [
+    "SOV",
+    "GER",
+    "POL",
+    "NOR",
+    "SWE"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  },
+  {
+   "seed": 5683,
+   "capital": "BUR",
+   "cell": 1078833,
+   "land": 56,
+   "landCells": 362792,
+   "attackers": [
+    "SOV",
+    "GER",
+    "POL",
+    "NOR",
+    "SWE"
+   ],
+   "landed": true,
+   "day": 16,
+   "by": "JAP"
+  },
+  {
+   "seed": 5683,
+   "capital": "TUN",
+   "cell": 814141,
+   "land": 435,
+   "landCells": 2,
+   "attackers": [
+    "SOV",
+    "GER",
+    "POL",
+    "NOR",
+    "SWE"
+   ],
+   "landed": false,
+   "day": 0,
+   "by": ""
+  }
+ ]
+}
