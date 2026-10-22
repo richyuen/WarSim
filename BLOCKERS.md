@@ -5,6 +5,29 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.62: the empty-capital rule silences the critic's France of R8-B1; `nukeOverrun1938.test.ts` red with it, so the rule waits in a patch (2026-10-22, ADR-629 proposed; the user's decision)
+- **The bar:** the critic's Poland (`nukeCase.ts 9437 POL GER 10 65 bomber`) strikes no capital with
+  men share under 0.01 in 60 days and still strikes within 60 days (R8-B1); seeds 781–790 × 30
+  years: civilian bursts (over 10 × men) at most 13, strikes back unchanged; a unit test, red without;
+  and the gate green.
+- **What moved** (`docs/evidence/7.62/README.md`; the rule in `docs/evidence/7.62/rule.patch`):
+  Poland's Berlin (day 28, men 0) is gone, its first strike day 35 at a Soviet army: met. But the
+  critic's France of R8-B1 (seed 7127, PLAN 7.18's test "France struck") never strikes in 100 days:
+  its only strike before was Berlin, capital 0.3, men 0, 334,000 people (days 59–60); with the rule
+  its best place in reach is an enemy army at utility 0.005–0.019 against the floor 0.025. The test is
+  red in the gate and again alone, and is not weakened, so the rule is not on `main`. On the 30-year
+  seeds: empty-capital first strikes 6 → 0, each replaced by a strike on an army (1,238,135 dead, 135
+  men → 158,709, 89,709 men), but civilian bursts 20 → 21 (bar 13) and strikes back 21 → 23 (bar
+  unchanged): the worlds part at the first changed decision; on HEAD only 5 of the 20 civilian
+  bursts were the rule's kind.
+- **The conflict:** run 8's R8-B1 (the editor-armed France and Poland never strike) and run 11's
+  objection (an empty Berlin struck for its civilians) meet on one case. A variant that lets France
+  strike an empty Berlin lets Poland do the same (its Berlin was in extreme desperation too, 1.03).
+- **What is left:** the user's. (a) no rule (ADR-611 d): the France test stands; (b) the rule in
+  (`git apply docs/evidence/7.62/rule.patch`) and the France test's claim amended to what the rule
+  makes (no strike in 100 days, its best place an army under the floor), the test change the user's;
+  (c) kept open. Meanwhile the loop takes the next task.
+
 ### PLAN 7.70b: the new front is in; by a side with a front of its own 12.6 % → 23.0 % of the open wars, engaged per war-day 0.238 → 0.219, bar not below HEAD's (2026-10-21, ADR-623; the user's decision)
 - **The bar** (the whole's, PLAN 7.70, read for 7.70b): on the critic's 48 saves, 180 days
   (`newFronts.ts`, new), the wars with a landing more than DEPLOY_RANGE_CELLS from every front cell

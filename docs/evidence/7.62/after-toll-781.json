@@ -1,0 +1,396 @@
+{
+ "seed": 781,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 6,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0,
+  "thriceInYear": 0,
+  "bursts": 6,
+  "civOver10x": 1
+ },
+ "thriceInYear": [],
+ "rows": [
+  {
+   "day": 6233,
+   "year": 17.08,
+   "tick": 149593,
+   "by": "Japan",
+   "u": 0.058,
+   "at": [
+    1165.5,
+    204.5
+   ],
+   "target": "Finland",
+   "war": 228,
+   "warName": "Japan+Manchukuo+Nepal v Soviet Union+Finland+Mongolia+Tannu Tuva",
+   "warDays": 365,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.058,
+   "utility": {
+    "value": 0.63,
+    "through": 1,
+    "desperation": 1,
+    "ownDesperation": 0,
+    "doctrine": 1.35,
+    "gain": 0.851,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 423000,
+    "dead": 0.042,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.792
+   },
+   "place": {
+    "econShare": 0.02,
+    "menShare": 0.043,
+    "ownShare": 0,
+    "menExpected": 10647,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.533,
+    "econShare": 0.011,
+    "menShare": 0.043,
+    "menExpected": 10647,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 423000,
+    "fission": 16000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 433646,
+    "yieldN": 2,
+    "men": 10646
+   }
+  },
+  {
+   "day": 6444,
+   "year": 17.65,
+   "tick": 154657,
+   "by": "Japan",
+   "u": 0.039,
+   "at": [
+    1203.78,
+    494.78
+   ],
+   "target": "Germany",
+   "war": 240,
+   "warName": "Germany+Czechoslovakia+Poland+Lithuania+Romania+Bulgaria+Yugoslavia+Greece+Turkey+Norway+Sweden+Palestine+Tibet+founded#125+founded#130+founded#137 v Japan+Manchukuo+Mengjiang",
+   "warDays": 194,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.04,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1.101,
+    "ownDesperation": 1.101,
+    "doctrine": 1.35,
+    "gain": 1.486,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.204,
+    "taboo": 0.406,
+    "people": 4000,
+    "dead": 0,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.446
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.169,
+    "ownShare": 0,
+    "menExpected": 56985,
+    "theatreMen": 336807,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.69,
+    "econShare": 0,
+    "menShare": 0.069,
+    "menExpected": 23224,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 4000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 60890,
+    "yieldN": 2,
+    "men": 56890
+   }
+  },
+  {
+   "day": 6445,
+   "year": 17.66,
+   "tick": 154681,
+   "by": "Germany",
+   "u": 0.833,
+   "at": [
+    1688.39,
+    431.5
+   ],
+   "target": "Japan",
+   "war": 240,
+   "warName": "Germany+Czechoslovakia+Poland+Lithuania+Romania+Bulgaria+Yugoslavia+Greece+Turkey+Norway+Sweden+Palestine+Tibet+founded#125+founded#130+founded#137 v Japan+Manchukuo+Mengjiang",
+   "warDays": 195,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.826,
+   "utility": {
+    "value": 0.427,
+    "through": 1,
+    "desperation": 0.178,
+    "ownDesperation": 0.178,
+    "doctrine": 1.4,
+    "gain": 0.106,
+    "retaliation": 1.35,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 0.3,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.72
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.043,
+    "ownShare": 0,
+    "menExpected": 10676,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.427,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10676,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 210000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 10655,
+    "yieldN": 1,
+    "men": 10655
+   }
+  },
+  {
+   "day": 6491,
+   "year": 17.78,
+   "tick": 155785,
+   "by": "Japan",
+   "u": 0.029,
+   "at": [
+    1494.5,
+    280.5
+   ],
+   "target": "Germany",
+   "war": 240,
+   "warName": "Germany+Czechoslovakia+Poland+Lithuania+Romania+Bulgaria+Yugoslavia+Greece+Turkey+Norway+Sweden+Palestine+Tibet+founded#125+founded#130+founded#137 v Japan+Manchukuo+Mengjiang",
+   "warDays": 241,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.043,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1.171,
+    "ownDesperation": 1.171,
+    "doctrine": 1.35,
+    "gain": 1.581,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.321,
+    "taboo": 0.323,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.538
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.193,
+    "ownShare": 0,
+    "menExpected": 61791,
+    "theatreMen": 319512,
+    "capital": 0
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0,
+    "menShare": 0.193,
+    "menExpected": 61791,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 18000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 61756,
+    "yieldN": 1,
+    "men": 61756
+   }
+  },
+  {
+   "day": 6492,
+   "year": 17.79,
+   "tick": 155809,
+   "by": "Germany",
+   "u": 0.752,
+   "at": [
+    1658.5,
+    280.17
+   ],
+   "target": "Japan",
+   "war": 240,
+   "warName": "Germany+Czechoslovakia+Poland+Lithuania+Romania+Bulgaria+Yugoslavia+Greece+Turkey+Norway+Sweden+Palestine+Tibet+founded#125+founded#130+founded#137 v Japan+Manchukuo+Mengjiang",
+   "warDays": 242,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.75,
+   "utility": {
+    "value": 0.447,
+    "through": 1,
+    "desperation": 0.236,
+    "ownDesperation": 0.236,
+    "doctrine": 1.4,
+    "gain": 0.148,
+    "retaliation": 1.35,
+    "allianceCost": 0,
+    "outrage": 0.216,
+    "taboo": 0.3,
+    "people": 6000,
+    "dead": 0.001,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.603
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.044,
+    "ownShare": 0,
+    "menExpected": 11116,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.434,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10855,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 6000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 17087,
+    "yieldN": 2,
+    "men": 11087
+   }
+  },
+  {
+   "day": 7871,
+   "year": 21.56,
+   "tick": 188905,
+   "by": "Japan",
+   "u": 0.457,
+   "at": [
+    1415.25,
+    366.46
+   ],
+   "target": "Soviet Union",
+   "war": 271,
+   "warName": "Japan+Manchukuo+Mengjiang v Soviet Union+Finland",
+   "warDays": 365,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.457,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1,
+    "ownDesperation": 0.209,
+    "doctrine": 1.35,
+    "gain": 1.35,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.296,
+    "taboo": 0.989,
+    "people": 33000,
+    "dead": 0.003,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.893
+   },
+   "place": {
+    "econShare": 0.004,
+    "menShare": 0.135,
+    "ownShare": 0,
+    "menExpected": 33642,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0.004,
+    "menShare": 0.135,
+    "menExpected": 33642,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 532000,
+    "fission": 33000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 66549,
+    "yieldN": 1,
+    "men": 33549
+   }
+  }
+ ]
+}

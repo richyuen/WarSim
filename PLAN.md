@@ -88,6 +88,10 @@ when taken up:
   still strikes within 60 days, or a BLOCKERS entry with what it strikes instead; a unit test (red
   without: an empty enemy capital as a first strike's best place); SPEC §6.4 amended; the ADR's
   entry; the pin's entry.
+  Measured, not in (ADR-629 proposed, `docs/evidence/7.62/README.md`, the rule in
+  `docs/evidence/7.62/rule.patch`): Poland strikes a Soviet army on day 35 (met), but the critic's
+  France of R8-B1 never strikes (its one strike was an empty Berlin) and `nukeOverrun1938.test.ts` is
+  red; the 30-year bars missed too (20 → 21, 21 → 23): the user's (BLOCKERS).
 
 - [ ] 7.51 Aircraft (aircraft 7, needs 8, beyond 7.49): the late air war unchanged, 3,160 air
   battles in year 1 and 120 a world-year after on the same 14 seeds (122 on `bcbc99c`), sorties

@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-629 · 2026-10-22 · proposed (the user's decision) — An empty capital as no first-strike target, measured: it silences the critic's France of R8-B1 (PLAN 7.62; ADR-611 b)
+
+- **Context** (ADR-611, critic run 11's design objection): the editor-armed Poland of seed 9437
+  bombed Berlin, 334,000 civilians and 379 men, on the capital's TARGET_CAPITAL (0.3). The user chose
+  b: the capital counts on a first strike only with an army in the blast.
+- **The rule, measured** (`docs/evidence/7.62/rule.patch`, not on `main`): `partsIn` adds
+  TARGET_CAPITAL for an enemy capital in the blast only on a strike back (`retaliates`) or when the
+  blast holds CAPITAL_MEN_MIN (0.01) of the theatre's men at the yield weighed; SPEC §6.4's line; the
+  unit test `nukeEmptyCapital1938.test.ts`, red without.
+- **Read** (`docs/evidence/7.62/README.md`; HEAD `1ad0c127` before): Poland's first strike, day 28 on
+  Berlin (men 0) → day 35 on a Soviet army (men 0.039). The critic's France of R8-B1 (seed 7127):
+  Berlin, men 0, days 59–60 → no strike in 100 days (best place an army at 0.005–0.019, floor 0.025);
+  PLAN 7.18's `nukeOverrun1938.test.ts` "France struck" red. Seeds 781–790 × 30 years: empty-capital
+  first strikes 6 → 0, each replaced by one on an army; civilian bursts 20 → 21 (bar 13), strikes
+  back 21 → 23 (bar unchanged), the worlds parting at the first changed decision.
+- **Options:** (a) no rule (ADR-611 d), the France test stands; (b) the rule in and the France test
+  amended to what it makes; (c) kept open. A variant keeping France's empty Berlin keeps Poland's.
+- **Meanwhile:** no rule; the pin unchanged (2c4e2593; with the rule it is unchanged too).
+
 ### ADR-628 · 2026-10-22 · accepted — A front with nobody is not held (PLAN 7.73c; amends ADR-623)
 
 - **Context** (PLAN 7.73, 7.70b's missed bar; ADR-623 limit 1). `frontHeld` held a front when its

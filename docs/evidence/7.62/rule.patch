@@ -1,0 +1,156 @@
+diff --git a/SPEC.md b/SPEC.md
+index 97589e18..6e9c4488 100644
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -1962,7 +1962,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
+   there: U is through × the utility of a burst, whose costs fall only on a burst; a launch stopped
+   short spends its warhead and nothing more (PLAN 7.18i, ADR-491).
+   - targetValue: enemy capital, industry, fleets in port, massed formations, Major-Battle
+-    fronts. Uses expected damage from blast radius × local value. Men are weighed as a share
++    fronts. Uses expected damage from blast radius × local value. An enemy capital counts on a
++    first strike only with an army in the blast (at least a hundredth of the theatre's men); on a
++    strike back it counts whole (PLAN 7.62, ADR-629, the user's decision: an empty capital is no
++    first strike's target). Men are weighed as a share
+     of the enemy side's men in the place's theatre (within 1,000 km), and that theatre counts
+     for at least a quarter of all the side's men: a lone garrison is not the whole of its
+     theatre (PLAN 7.18c, 7.18j, ADR-492). It counts for at least 250,000 men too: a burst is
+diff --git a/src/sim/systems/nuclear.ts b/src/sim/systems/nuclear.ts
+index 96ff4d9a..85b879e5 100644
+--- a/src/sim/systems/nuclear.ts
++++ b/src/sim/systems/nuclear.ts
+@@ -77,7 +77,8 @@
+  *   the striker's side's men there (the men each as a share of the side's within FRONT_KM of the
+  *   place, its theatre; PLAN 7.18c; the enemy's theatre at least THEATRE_FLOOR of all the side's
+  *   men, PLAN 7.18j, and at least THEATRE_MEN_MIN men, PLAN 7.32); + TARGET_CAPITAL with an enemy capital in it, of a nation that
+- *   holds CAPITAL_WEIGHT of the side's output (PLAN 7.18d); × the chance the
++ *   holds CAPITAL_WEIGHT of the side's output (PLAN 7.18d), on a first strike only with CAPITAL_MEN_MIN of
++ *   the theatre's men in the blast (PLAN 7.62, ADR-629: an empty capital is no first strike's target); × the chance the
+  *   warhead gets there (PLAN 6.7, SPEC's "expected damage": 1 by missile, 1 − the bomber's
+  *   interception chance there by bomber).
+  * - desperation (`desperationOf`), 0 to 2: how far its side is losing the war (−score / 100), the
+@@ -625,6 +626,14 @@ export const TARGET_SCALE = 10;
+ export const TARGET_CAPITAL = 0.3;
+ /** The share of its side's output a nation holds for its capital to be worth TARGET_CAPITAL (PLAN 7.18d). */
+ export const CAPITAL_WEIGHT = 0.1;
++/**
++ * The share of the theatre's men (`PlaceParts.menShare`) a first strike's blast holds for an enemy
++ * capital in it to be worth TARGET_CAPITAL (PLAN 7.62, ADR-629, the user's decision: critic run 11's
++ * editor-armed Poland bombed Berlin, 334,000 civilians and 379 men, on the capital's value; on 7.52b's
++ * seeds 13 of 15 bursts that killed over ten times more civilians than men were on a capital). A
++ * strike back weighs a capital whole.
++ */
++export const CAPITAL_MEN_MIN = 0.01;
+ export const DESPERATION_CAPITAL = 0.5;
+ export const DESPERATION_FTD = 0.5;
+ /** The weight of the share of its side's men lost in the war (PLAN 7.6a). */
+@@ -907,7 +916,7 @@ export interface PlaceParts {
+ /** The parts of a burst's value at (x, y) for `n` in `war` on `side` (a diagnostic's). */
+ export function placeParts(world: World, n: number, war: War, side: number, x: number, y: number): PlaceParts {
+   const shared = warInputs(world, n, war, side, retaliates(world, n, war, side));
+-  return partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared));
++  return partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared), shared.retaliating);
+ }
+ 
+ /** What a yield's burst at a place is weighed by: its value, the chance it gets there and the people it kills. */
+@@ -936,7 +945,7 @@ function byUtility(shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'
+  * strike's utility was about 0.27 and 0.23 (`docs/evidence/7.38/measure-e.md`). Only the value and
+  * the dead differ between the yields, so the dead's cost decides against a value a little higher.
+  */
+-function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, score: YieldScore): PlaceParts {
++function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, score: YieldScore, retaliating: boolean): PlaceParts {
+   const { radius, enemy } = v;
+   const { w, h, econ, controller } = world.cells;
+   // The radii weighed: the holder's widest, and a fission one's when that is wider (PLAN 7.38b).
+@@ -1002,8 +1011,10 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, s
+     const share = econShare + menShare - ownShare;
+     let capital = 0;
+     // A capital of weight to the enemy side (PLAN 7.18d, critic R8-B1: the Soviet Union struck Nepal's,
+-    // 1,000 dead, at war with China): its nation holds CAPITAL_WEIGHT of the side's output.
+-    for (const m of enemy) {
++    // 1,000 dead, at war with China): its nation holds CAPITAL_WEIGHT of the side's output. On a first
++    // strike only with an army in the blast (PLAN 7.62, ADR-629): CAPITAL_MEN_MIN of the theatre's men
++    // at this yield, so a capital may count at the wider yield alone.
++    for (const m of retaliating || menShare >= CAPITAL_MEN_MIN ? enemy : []) {
+       if (nc.living[m] !== 1 || blastShare(seaKm(world, x, y, nc.capitalX[m]!, nc.capitalY[m]!), radii[r]!) === 0) continue;
+       const all = v.econAll();
+       if (all > 0 && (v.held()[m] ?? 0) >= CAPITAL_WEIGHT * all) capital = TARGET_CAPITAL;
+@@ -1025,7 +1036,7 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, s
+  */
+ export function nukeInputs(world: World, n: number, war: War, side: number, x: number, y: number, retaliating = false): NukeInputs {
+   const shared = warInputs(world, n, war, side, retaliating);
+-  const p = partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared));
++  const p = partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared), shared.retaliating);
+   return { targetValue: p.value, through: p.through, people: p.people, ...shared };
+ }
+ 
+@@ -1410,7 +1421,7 @@ export function weighWar(world: World, n: number, war: War, side: number, indust
+     aim,
+     shared,
+     places: nukeTargets(world, n, war, side, aim).map(([x, y]) => {
+-      const p = partsIn(world, n, view, x, y, byUtility(shared));
++      const p = partsIn(world, n, view, x, y, byUtility(shared), shared.retaliating);
+       return { x, y, value: p.value, through: p.through, yieldN: p.yieldN, people: p.people };
+     }),
+   };
+diff --git a/tests/unit/nukeEmptyCapital1938.test.ts b/tests/unit/nukeEmptyCapital1938.test.ts
+new file mode 100644
+index 00000000..7004cff6
+--- /dev/null
++++ b/tests/unit/nukeEmptyCapital1938.test.ts
+@@ -0,0 +1,56 @@
++import { describe, expect, it } from 'vitest';
++import { cellOf } from '../../src/sim/data/terrain';
++import { SIZE_1938 } from '../../src/sim/scenario1938';
++import { Sim } from '../../src/sim/sim';
++import { destroyFormation } from '../../src/sim/systems/elements';
++import { blastRadius, CAPITAL_MEN_MIN, placeParts, TARGET_CAPITAL } from '../../src/sim/systems/nuclear';
++import { seaKm } from '../../src/sim/systems/navalCombat';
++import { grantTechs, techMask } from '../../src/sim/tech';
++import { assets1938 } from '../helpers/earth';
++import { addDivision, nationId } from '../helpers/sim1938';
++
++// PLAN 7.62 (ADR-629, the user's decision; critic run 11's design objection): the editor-armed Poland
++// of seed 9437 bombed Berlin, 334,000 civilians and 379 men, on the capital's TARGET_CAPITAL alone.
++// A capital counts on a first strike only with CAPITAL_MEN_MIN of the theatre's men in the blast; on a
++// strike back it counts as before.
++
++const { w: W, h: H } = SIZE_1938;
++const [FRA, GER] = ['FRA', 'GER'].map(nationId) as [number, number];
++
++describe('an empty capital is no first-strike target (PLAN 7.62)', () => {
++  it('Paris with no army: no capital on a first strike; with an army, or on a strike back, the capital whole', () => {
++    const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });
++    const w = s.world;
++    // Missiles: every warhead gets there.
++    grantTechs(w, GER, techMask([w.rules!.techs.findIndex((t) => t.id === 'ballistic_missiles')]));
++    const war = w.wars.start([GER], [FRA], 0);
++    const [px, py] = cellOf(2.35, 48.86, W, H).map((v) => Math.floor(v) + 0.5) as [number, number];
++    const c = w.formations.cols;
++    // Paris emptied: no French formation within two blast radii.
++    const reach = 2 * blastRadius(1);
++    w.formations.ids().forEach((id) => {
++      if (c.nation[id] === FRA && seaKm(w, px, py, c.x[id]!, c.y[id]!) < reach) destroyFormation(w, id);
++    });
++
++    const empty = placeParts(w, GER, war, 0, px, py);
++    process.stderr.write(`empty Paris, first strike: men share ${empty.menShare.toFixed(4)}, capital ${empty.capital}, value ${empty.value.toFixed(3)}\n`);
++    expect(empty.menShare).toBeLessThan(CAPITAL_MEN_MIN);
++    expect(empty.capital).toBe(0);
++
++    // A strike back (a grievance against France, the doctrine to answer it): the capital whole.
++    w.nations.cols.aggression[GER] = Math.max(0, w.nations.cols.aggression[GER]!);
++    w.nukeGrievance.set(GER, { by: FRA, until: w.tick + 24 * 365 });
++    const back = placeParts(w, GER, war, 0, px, py);
++    process.stderr.write(`empty Paris, strike back: capital ${back.capital}, value ${back.value.toFixed(3)}\n`);
++    // (Paris's output alone fills the value to 1 here: the capital's part is read, not the value.)
++    expect(back.capital).toBe(TARGET_CAPITAL);
++    w.nukeGrievance.delete(GER);
++
++    // An army in Paris (three divisions): a first strike weighs the capital whole.
++    for (let k = 0; k < 3; k++) addDivision(w, FRA, px, py);
++    const held = placeParts(w, GER, war, 0, px, py);
++    process.stderr.write(`Paris with an army, first strike: men share ${held.menShare.toFixed(4)}, capital ${held.capital}, value ${held.value.toFixed(3)}\n`);
++    expect(held.menShare).toBeGreaterThanOrEqual(CAPITAL_MEN_MIN);
++    expect(held.capital).toBe(TARGET_CAPITAL);
++  }, 300_000);
++});

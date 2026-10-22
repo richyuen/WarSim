@@ -21936,3 +21936,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin:** unchanged, 2c4e2593.
 - **BLOCKERS:** 7.70b's entry gets the line that 7.73 won the fight back; 7.70a, 7.70b still the user's.
 - **Next:** PLAN 7.62 (an empty capital is no first-strike target).
+
+## 2026-10-22 — PLAN 7.62: an empty capital as no first-strike target, measured; not in (ADR-629 proposed, the user's)
+
+- **Rule tried** (`systems/nuclear.ts`, `partsIn`, CAPITAL_MEN_MIN 0.01; ADR-611 b): an enemy
+  capital's TARGET_CAPITAL counts on a first strike only with a hundredth of the theatre's men in the
+  blast; on a strike back as before. Kept in `docs/evidence/7.62/rule.patch` with SPEC's line and the
+  unit test (red without), not on `main`.
+- **Why not in:** the gate went red on `nukeOverrun1938.test.ts` ("France struck", PLAN 7.18): the
+  critic's France of R8-B1 (seed 7127) struck only an empty Berlin (days 59–60, 334,000 people) and
+  with the rule never strikes in 100 days (best place an army at 0.005–0.019, floor 0.025). A test is
+  not weakened.
+- **Read** (`docs/evidence/7.62/README.md`; before HEAD `1ad0c127`): Poland's Berlin day 28 → a Soviet
+  army day 35 (met). Seeds 781–790 × 30 years: empty-capital first strikes 6 → 0, each replaced by
+  one on an army (1,238,135 dead, 135 men → 158,709, 89,709 men); civilian bursts 20 → 21 (bar 13),
+  strikes back 21 → 23 (bar unchanged): missed, the worlds parting at the first changed decision.
+- **BLOCKERS**, the user's: (a) no rule, (b) the rule in with the France test amended, (c) open.
+- **Pin:** unchanged, 2c4e2593 (and unchanged with the rule).
+- **Next:** PLAN 7.51b (the late air war) if 7.49 no longer holds it; else 7.5.
