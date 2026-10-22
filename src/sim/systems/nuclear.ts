@@ -85,7 +85,10 @@
  *   share of its land held by others, DESPERATION_MEN × the share of its side's men lost in the war
  *   (`menLost`, the exhaustion's; PLAN 7.6a: France's army fell from 555k to 163k men in 40 days at
  *   0.5), DESPERATION_CAPITAL with enemy land forces within
- *   CAPITAL_THREAT_KM of its capital, DESPERATION_FTD when its side fights to the death.
+ *   CAPITAL_THREAT_KM of its capital or its capital taken in this war (PLAN 7.76, ADR-631: the
+ *   capital moves after the fall, no enemy is near the new one, and the critic's France fell from
+ *   1.15 with the Germans before Paris to 0.92 after they took it), DESPERATION_FTD when its side
+ *   fights to the death.
  *   Extreme: at least 1, fighting to the death, its capital threatened, or its capital taken in
  *   this war (PLAN 7.18a: the capital moves after the fall, and no enemy is near the new one).
  * - doctrine, 0.5 to 1.5: 0.5 + aggression / 100 (no trait of its own: aggression read as one).
@@ -800,11 +803,11 @@ export function desperationOf(world: World, n: number, war: War, side: number): 
     if (seaKm(world, cx, cy, c.x[id]!, c.y[id]!) <= CAPITAL_THREAT_KM) threatened = true;
   });
   const ftd = war.fightToDeath[side]!;
-  const desperation = Math.min(2, losing + lost + DESPERATION_MEN * menLost(world, war, side) + (threatened ? DESPERATION_CAPITAL : 0) + (ftd ? DESPERATION_FTD : 0));
-  // Extreme with its capital taken in this war too (PLAN 7.18a, critic R8-B1): a capital that has
-  // moved after the fall has no enemy near it, and France overrun counted as less desperate than
-  // with the Germans before Paris.
+  // Its capital taken in this war counts as one threatened (PLAN 7.76, ADR-631), in the sum and for
+  // the extreme (PLAN 7.18a, critic R8-B1): a capital that has moved after the fall has no enemy
+  // near it, and France overrun counted as less desperate than with the Germans before Paris.
   const fallen = war.capitalsLost?.includes(n) ?? false;
+  const desperation = Math.min(2, losing + lost + DESPERATION_MEN * menLost(world, war, side) + (threatened || fallen ? DESPERATION_CAPITAL : 0) + (ftd ? DESPERATION_FTD : 0));
   return { desperation, extreme: desperation >= 1 && (ftd || threatened || fallen) };
 }
 

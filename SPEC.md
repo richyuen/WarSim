@@ -1978,8 +1978,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     A place within a hydrogen bomb's blast of a burst of the side's in the war: no capital for the
     rest of the war; a place of massed men only with more men than the burst found (PLAN 7.38d,
     ADR-569), twice them within a year of the burst (PLAN 7.50b, ADR-600).
-  - desperation: rises with losing war score, capital threatened, core loss, and
-    fightToDeath.
+  - desperation: rises with losing war score, capital threatened or taken in the war (PLAN
+    7.76, ADR-631: the capital moves after its fall, with no enemy near the new one), core
+    loss, and fightToDeath.
     A holder winning or holding its own in a war of a year or more, against enemies that
     cannot strike back, weighs as at a desperation rising to 2 at two years (resolve to end
     the war; one such strike a side every 90 days, three in a war at most; places anywhere on

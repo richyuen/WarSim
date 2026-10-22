@@ -21982,3 +21982,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   30-year bars missed as measured (civilian bursts 21, bar 13; strikes back 23, bar 21).
 - **Pin:** unchanged, 2c4e2593.
 - **Next:** PLAN 7.74; 7.51b's measurement waits on the user (its runs were stopped for memory).
+
+## 2026-10-22 — PLAN 7.76: a capital taken counts in the desperation (ADR-631, the user's decision)
+
+- **Found at 7.75:** the beach rule turned `nukeOverrun1938.test.ts` red ("the critic's France
+  without warheads stays in extreme desperation after the fall"): fed coastal pockets, France at
+  0.92 after Paris fell (HEAD 1.23 at day 100, on a later German gain). The user chose to fix the
+  cause; 7.75 waits in a stash until this is in.
+- **Rule** (`systems/nuclear.ts`, `desperationOf`): DESPERATION_CAPITAL with the capital threatened
+  or taken in the war. SPEC §6.4.
+- **Test:** `nukeCapitalFallen1938.test.ts`, red without; `nukeOverrun1938.test.ts` 3/3 with 7.75's
+  source applied too.
+- **Read** (`docs/evidence/7.76/README.md`): Poland unchanged (day 35, an army); seeds 781–790 × 30
+  years: bursts 132 → 168, strikes back 23 → 39, civilian bursts 21 → 26, dead 13.6 M → 20.5 M,
+  five worlds unchanged. No bar was set before the read: the user accepted it as measured.
+- **Pin:** unchanged, 2c4e2593.
+- **Next:** PLAN 7.75 (the beach rule) on top, then 7.51b's measurement.

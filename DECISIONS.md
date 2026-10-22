@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-631 · 2026-10-22 · accepted (the user's decision) — A capital taken counts in the desperation as one threatened (PLAN 7.76; amends ADR-485)
+
+- **Context.** PLAN 7.75's beach supply turned `nukeOverrun1938.test.ts` red: the critic's France
+  (seed 7127, no warheads) is in extreme desperation after Paris falls only with desperation at
+  least 1, and the fall of its capital counted for the extreme alone (ADR-485). Its capital moved
+  after the fall, no German was near the new one, and DESPERATION_CAPITAL went: 1.15 with the
+  Germans before Paris, 0.92 once they had taken it (HEAD: 0.98–1.03 after the fall, 1.23 by day 100
+  after a further German gain that the beach-fed French pockets now hold off). The user chose to
+  fix the cause rather than amend the test.
+- **Decision.** `desperationOf` adds DESPERATION_CAPITAL when the nation's capital is threatened
+  (an enemy land formation within CAPITAL_THREAT_KM) or was taken in this war
+  (`War.capitalsLost`). The extreme's rule is unchanged. Only the nuclear AI reads it.
+- **Read** (`docs/evidence/7.76/README.md`; before HEAD `bb3aab03`, whose nuclear rules are 7.62's
+  after: `docs/evidence/7.62/after-*`). The unit test `nukeCapitalFallen1938.test.ts`: France's
+  desperation with its capital taken 0 → 0.5 (without the rule 0). With PLAN 7.75's source as well,
+  `nukeOverrun1938.test.ts` green (3 of 3). The critic's Poland (`nukeCase.ts 9437 POL GER 10 65
+  bomber`): unchanged, first decision day 35 at a Soviet army. The critic's France with warheads
+  (`7127 FRA GER 10 100`): no burst in 100 days, as before. Seeds 781–790 × 30 years (`nukeToll.ts`):
+  783–786 and 788 unchanged; over the ten, decisions 133 → 169, bursts 132 → 168, strikes back
+  23 → 39, bursts with civilians over 10 × men 21 → 26 (PLAN 7.62's bar was 13), dead 13.56 M →
+  20.54 M, men among them 4.33 M (32 %) → 5.99 M (29 %), first strikes on an empty capital 0 → 0.
+  No bar was set before the read; the user accepted it as measured.
+- **Pin.** Unchanged (2c4e2593): seed 99's first year has no warhead.
+
 ### ADR-629 · 2026-10-22 · accepted (option b, the user's decision, 2026-10-22) — An empty capital as no first-strike target, measured: it silences the critic's France of R8-B1 (PLAN 7.62; ADR-611 b)
 
 - **Context** (ADR-611, critic run 11's design objection): the editor-armed Poland of seed 9437

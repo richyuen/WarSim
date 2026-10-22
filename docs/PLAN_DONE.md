@@ -13881,3 +13881,30 @@ Of 7.33 (open in PLAN.md):
   amended (an empty Berlin weighs no capital, 99 places in 100 days; France holds fire; red without:
   58 places weighed 0.3, Berlin struck days 58–59). Ticked on Poland's case; the 30-year bars missed
   (21, bar 13; 23, bar 21). Pin unchanged (2c4e2593). Left: PLAN 7.74.
+
+<!-- moved 2026-10-22 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.76 A capital taken counts in the desperation (found at 7.75; the user's decision, 2026-10-22;
+  AI nuclear use 7): a nation whose capital an enemy took in the war (`War.capitalsLost`) weighs
+  DESPERATION_CAPITAL as with an enemy near its capital; before it counted for the extreme alone,
+  and the critic's France (seed 7127, no warheads) read 1.15 before Paris fell and 0.92 after it
+  under PLAN 7.75's beach supply, so `nukeOverrun1938.test.ts` went red with 7.75. AT: a unit test
+  (red without: France's capital taken adds nothing); `nukeOverrun1938.test.ts` green with 7.75's
+  rule; the critic's Poland case unchanged; seeds 781–790 × 30 years read (`nukeToll.ts`), the
+  user's to accept; SPEC §6.4; the ADR; the pin's entry.
+  Done (ADR-631, `docs/evidence/7.76/README.md`, `nukeCapitalFallen1938.test.ts`, red without):
+  France's 0 → 0.5; the France tests green with 7.75's source; Poland first strike day 35 at an army
+  as before; seeds 781–790: five worlds unchanged, bursts 132 → 168, strikes back 23 → 39,
+  civilian bursts 21 → 26, dead 13.6 M → 20.5 M: accepted by the user.

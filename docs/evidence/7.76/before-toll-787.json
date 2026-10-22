@@ -1,0 +1,1143 @@
+{
+ "seed": 787,
+ "years": 30,
+ "from": "new",
+ "bars": {
+  "decided": 20,
+  "floor": 0.025,
+  "lowUtilityMillion": 0,
+  "restruckSameWar": 0,
+  "thermoWhereFissionCovers": 0,
+  "thriceInYear": 0,
+  "bursts": 20,
+  "civOver10x": 3
+ },
+ "thriceInYear": [],
+ "rows": [
+  {
+   "day": 4862,
+   "year": 13.32,
+   "tick": 116689,
+   "by": "Soviet Union",
+   "u": 0.068,
+   "at": [
+    927.5,
+    404.5
+   ],
+   "target": "Germany",
+   "war": 222,
+   "warName": "Germany+Poland+Lithuania+Latvia+Nationalist Spain+Switzerland+Belgium+Liberia+French Morocco+founded#108+founded#118+Mexico+Canada v Soviet Union+Finland+Turkey+Sweden+Nepal+Communist China+Mongolia+Tannu Tuva+founded#104",
+   "warDays": 355,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.068,
+   "utility": {
+    "value": 0.69,
+    "through": 1,
+    "desperation": 1.921,
+    "ownDesperation": 1.921,
+    "doctrine": 1.2,
+    "gain": 1.59,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.1,
+    "taboo": 1,
+    "people": 17000,
+    "dead": 0.002,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.522
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.069,
+    "ownShare": 0,
+    "menExpected": 27037,
+    "theatreMen": 393227,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.69,
+    "econShare": 0,
+    "menShare": 0.069,
+    "menExpected": 27037,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 225000,
+    "fission": 17000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 44017,
+    "yieldN": 1,
+    "men": 27017
+   }
+  },
+  {
+   "day": 4863,
+   "year": 13.32,
+   "tick": 116713,
+   "by": "Germany",
+   "u": 0.715,
+   "at": [
+    1418.2,
+    348
+   ],
+   "target": "Soviet Union",
+   "missile": 1,
+   "toll": {
+    "dead": 48215,
+    "yieldN": 1,
+    "men": 215
+   }
+  },
+  {
+   "day": 5295,
+   "year": 14.51,
+   "tick": 127081,
+   "by": "Soviet Union",
+   "u": 0.414,
+   "at": [
+    1745.56,
+    372.56
+   ],
+   "target": "Japan",
+   "war": 243,
+   "warName": "Japan+Burma+Siam+China+France+Philippines+Netherlands+Mengjiang+Australia+Italy+Portugal+Xinjiang v Soviet Union+Estonia+Finland+Sweden+Nepal+Communist China+Mongolia+Tannu Tuva+founded#104",
+   "warDays": 365,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.389,
+   "utility": {
+    "value": 0.739,
+    "through": 1,
+    "desperation": 1,
+    "ownDesperation": 0.024,
+    "doctrine": 1.2,
+    "gain": 0.887,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.188,
+    "taboo": 0.516,
+    "people": 17000,
+    "dead": 0.002,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.499
+   },
+   "place": {
+    "econShare": 0.001,
+    "menShare": 0.043,
+    "ownShare": 0,
+    "menExpected": 10695,
+    "theatreMen": 250000,
+    "capital": 0.3
+   },
+   "fission": {
+    "value": 0.739,
+    "econShare": 0.001,
+    "menShare": 0.043,
+    "menExpected": 10695,
+    "capital": 0.3
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 1417000,
+    "fission": 17000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 27672,
+    "yieldN": 1,
+    "men": 10672
+   }
+  },
+  {
+   "day": 5402,
+   "year": 14.8,
+   "tick": 129649,
+   "by": "Soviet Union",
+   "u": 0.103,
+   "at": [
+    1599.44,
+    441.44
+   ],
+   "target": "China",
+   "war": 243,
+   "warName": "Japan+Burma+Siam+China+France+Philippines+Netherlands+Mengjiang+Australia+Italy+Portugal+Xinjiang v Soviet Union+Estonia+Finland+Sweden+Nepal+Communist China+Mongolia+Tannu Tuva+founded#104",
+   "warDays": 472,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.084,
+   "utility": {
+    "value": 0.383,
+    "through": 1,
+    "desperation": 1.293,
+    "ownDesperation": 0.032,
+    "doctrine": 1.2,
+    "gain": 0.595,
+    "retaliation": 0,
+    "allianceCost": 0,
+    "outrage": 0.299,
+    "taboo": 0.354,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.512
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.038,
+    "ownShare": 0,
+    "menExpected": 9586,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.383,
+    "econShare": 0,
+    "menShare": 0.038,
+    "menExpected": 9586,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 155000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 9591,
+    "yieldN": 1,
+    "men": 9591
+   }
+  },
+  {
+   "day": 5987,
+   "year": 16.4,
+   "tick": 143689,
+   "by": "Soviet Union",
+   "u": 0.025,
+   "at": [
+    1016.5,
+    333.5
+   ],
+   "target": "Germany",
+   "war": 269,
+   "warName": "Germany+Poland+Lithuania+Latvia+Nationalist Spain+Switzerland+Belgium+Liberia+French Morocco+founded#108+founded#118+Mexico+Canada v Soviet Union+Finland+Sweden+Nepal+Communist China+Mongolia+Tannu Tuva",
+   "warDays": 255,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.025,
+   "utility": {
+    "value": 0.734,
+    "through": 1,
+    "desperation": 1.906,
+    "ownDesperation": 1.906,
+    "doctrine": 1.2,
+    "gain": 1.679,
+    "retaliation": 1.4,
+    "allianceCost": 0,
+    "outrage": 0.356,
+    "taboo": 0.592,
+    "people": 3000,
+    "dead": 0,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.654
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.073,
+    "ownShare": 0,
+    "menExpected": 40142,
+    "theatreMen": 546678,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.734,
+    "econShare": 0,
+    "menShare": 0.073,
+    "menExpected": 40142,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 251000,
+    "fission": 3000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 43087,
+    "yieldN": 1,
+    "men": 40087
+   }
+  },
+  {
+   "day": 5988,
+   "year": 16.41,
+   "tick": 143713,
+   "by": "Germany",
+   "u": 0.684,
+   "at": [
+    1581.5,
+    469.02
+   ],
+   "target": "Soviet Union",
+   "war": 269,
+   "warName": "Germany+Poland+Lithuania+Latvia+Nationalist Spain+Switzerland+Belgium+Liberia+French Morocco+founded#108+founded#118+Mexico+Canada v Soviet Union+Finland+Sweden+Nepal+Communist China+Mongolia+Tannu Tuva",
+   "warDays": 256,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.684,
+   "utility": {
+    "value": 0.433,
+    "through": 1,
+    "desperation": 0,
+    "ownDesperation": 0,
+    "doctrine": 1.4,
+    "gain": 0,
+    "retaliation": 1.2,
+    "allianceCost": 0,
+    "outrage": 0.136,
+    "taboo": 0.3,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.684
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.043,
+    "ownShare": 0,
+    "menExpected": 10834,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.433,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10834,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 44000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 10799,
+    "yieldN": 1,
+    "men": 10799
+   }
+  },
+  {
+   "day": 6859,
+   "year": 18.79,
+   "tick": 164617,
+   "by": "Soviet Union",
+   "u": 0.039,
+   "at": [
+    1114.5,
+    554.5
+   ],
+   "target": "Nationalist Spain",
+   "war": 312,
+   "warName": "Germany+Poland+Lithuania+Latvia+Hungary+Nationalist Spain+Switzerland+Belgium+Liberia+French Morocco+founded#108+founded#118 v Soviet Union+Finland+Sweden+Iran+Nepal+Communist China+Mongolia+Tannu Tuva",
+   "warDays": 133,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.04,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1.492,
+    "ownDesperation": 1.492,
+    "doctrine": 1.2,
+    "gain": 1.79,
+    "retaliation": 1.4,
+    "allianceCost": 0.075,
+    "outrage": 0.335,
+    "taboo": 0.735,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.75
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.239,
+    "ownShare": 0,
+    "menExpected": 130316,
+    "theatreMen": 544168,
+    "capital": 0
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0,
+    "menShare": 0.239,
+    "menExpected": 130316,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 37000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 130258,
+    "yieldN": 1,
+    "men": 130258
+   }
+  },
+  {
+   "day": 6860,
+   "year": 18.79,
+   "tick": 164641,
+   "by": "Germany",
+   "u": 0.679,
+   "at": [
+    1235.5,
+    421.62
+   ],
+   "target": "Soviet Union",
+   "missile": 1,
+   "toll": {
+    "dead": 8395,
+    "yieldN": 1,
+    "men": 8395
+   }
+  },
+  {
+   "day": 8843,
+   "year": 24.23,
+   "tick": 212233,
+   "by": "Soviet Union",
+   "u": 0.117,
+   "at": [
+    1309.91,
+    405.09
+   ],
+   "target": "founded#175",
+   "war": 393,
+   "warName": "Germany+Poland+Romania+Hungary+Italy+Switzerland+Liberia+French West Africa+French Morocco+founded#118+founded#141+founded#175+founded#177+founded#178+founded#179+founded#159+founded#153+founded#157 v Soviet Union+Finland+Sweden+Nepal+Communist China+Mongolia+Tannu Tuva",
+   "warDays": 24,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.107,
+   "utility": {
+    "value": 0.994,
+    "through": 1,
+    "desperation": 1.533,
+    "ownDesperation": 1.533,
+    "doctrine": 1.2,
+    "gain": 1.828,
+    "retaliation": 1.4,
+    "allianceCost": 0.05,
+    "outrage": 0.251,
+    "taboo": 1,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.721
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.099,
+    "ownShare": 0,
+    "menExpected": 55503,
+    "theatreMen": 558369,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.994,
+    "econShare": 0,
+    "menShare": 0.099,
+    "menExpected": 55503,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 4000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 55567,
+    "yieldN": 1,
+    "men": 55567
+   }
+  },
+  {
+   "day": 8844,
+   "year": 24.23,
+   "tick": 212257,
+   "by": "Germany",
+   "u": 0.617,
+   "at": [
+    1237.98,
+    242.14
+   ],
+   "target": "Soviet Union",
+   "war": 393,
+   "warName": "Germany+Poland+Romania+Hungary+Italy+Switzerland+Liberia+French West Africa+French Morocco+founded#118+founded#141+founded#175+founded#177+founded#178+founded#179+founded#159+founded#153+founded#157 v Soviet Union+Finland+Sweden+Nepal+Communist China+Mongolia+Tannu Tuva",
+   "warDays": 25,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.617,
+   "utility": {
+    "value": 0.37,
+    "through": 1,
+    "desperation": 0.026,
+    "ownDesperation": 0.026,
+    "doctrine": 1.4,
+    "gain": 0.014,
+    "retaliation": 1.2,
+    "allianceCost": 0.05,
+    "outrage": 0.161,
+    "taboo": 0.3,
+    "people": 47000,
+    "dead": 0.005,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.604
+   },
+   "place": {
+    "econShare": 0.007,
+    "menShare": 0,
+    "ownShare": 0,
+    "menExpected": 0,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.07,
+    "econShare": 0.007,
+    "menShare": 0,
+    "menExpected": 0,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 909000,
+    "fission": 47000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 47000,
+    "yieldN": 1,
+    "men": 0
+   }
+  },
+  {
+   "day": 8956,
+   "year": 24.54,
+   "tick": 214945,
+   "by": "Soviet Union",
+   "u": 0.613,
+   "at": [
+    1563.5,
+    473.76
+   ],
+   "target": "Burma",
+   "war": 394,
+   "warName": "Japan+Burma+France+Philippines+Netherlands+China+Mengjiang+Australia+Italy+Portugal+Xinjiang+British India+Yemen+Oman+founded#133+Siam v Soviet Union+Finland+Sweden+Nepal+Communist China+Mongolia+Tannu Tuva+founded#166+Iraq",
+   "warDays": 78,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.611,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1.031,
+    "ownDesperation": 1.031,
+    "doctrine": 1.2,
+    "gain": 1.237,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.363,
+    "taboo": 0.356,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.626
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.139,
+    "ownShare": 0,
+    "menExpected": 34654,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0,
+    "menShare": 0.139,
+    "menExpected": 34654,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 204000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 34620,
+    "yieldN": 1,
+    "men": 34620
+   }
+  },
+  {
+   "day": 8963,
+   "year": 24.56,
+   "tick": 215113,
+   "by": "Soviet Union",
+   "u": 0.606,
+   "at": [
+    1561.18,
+    464.18
+   ],
+   "target": "Burma",
+   "war": 394,
+   "warName": "Japan+Burma+France+Philippines+Netherlands+China+Mengjiang+Australia+Italy+Portugal+Xinjiang+British India+Yemen+Oman+founded#133+Siam v Soviet Union+Finland+Sweden+Nepal+Communist China+Mongolia+Tannu Tuva+founded#166+Iraq",
+   "warDays": 85,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.606,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1.031,
+    "ownDesperation": 1.031,
+    "doctrine": 1.2,
+    "gain": 1.238,
+    "retaliation": 0,
+    "allianceCost": 0.05,
+    "outrage": 0.399,
+    "taboo": 0.303,
+    "people": 0,
+    "dead": 0,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.632
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.14,
+    "ownShare": 0,
+    "menExpected": 34885,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0,
+    "menShare": 0.14,
+    "menExpected": 34885,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 50000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 34899,
+    "yieldN": 1,
+    "men": 34899
+   }
+  },
+  {
+   "day": 9063,
+   "year": 24.83,
+   "tick": 217513,
+   "by": "Poland",
+   "u": 0.029,
+   "at": [
+    1203.5,
+    696.15
+   ],
+   "target": "Nationalist Spain",
+   "war": 383,
+   "warName": "founded#153+founded#157+Germany+Poland+Lithuania+Romania+Hungary+Italy+Switzerland+Liberia+French West Africa+French Morocco+Afghanistan+founded#118+founded#141+founded#148+founded#175+founded#177+founded#178+founded#179+founded#159 v Nationalist Spain+Southern Rhodesia",
+   "warDays": 543,
+   "byResolve": true,
+   "retaliating": false,
+   "uRecomputed": 0.019,
+   "utility": {
+    "value": 0.447,
+    "through": 1,
+    "desperation": 1.488,
+    "ownDesperation": 0.117,
+    "doctrine": 0.95,
+    "gain": 0.632,
+    "retaliation": 0,
+    "allianceCost": 0.3,
+    "outrage": 0.1,
+    "taboo": 0.35,
+    "people": 32000,
+    "dead": 0.003,
+    "mad": false,
+    "extreme": false,
+    "costs": 0.613
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.044,
+    "ownShare": 0,
+    "menExpected": 11068,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.431,
+    "econShare": 0,
+    "menShare": 0.043,
+    "menExpected": 10676,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 32000,
+    "fission": 1000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 11655,
+    "yieldN": 1,
+    "men": 10655
+   }
+  },
+  {
+   "day": 9172,
+   "year": 25.13,
+   "tick": 220129,
+   "by": "Poland",
+   "u": 0.048,
+   "at": [
+    1450.5,
+    436.5
+   ],
+   "target": "Germany",
+   "war": 405,
+   "warName": "Germany+Lithuania+Latvia+Romania+Hungary+Switzerland+Liberia+French West Africa+Afghanistan+founded#141+founded#148+founded#175+founded#177+founded#178+founded#179+founded#159+founded#153+founded#157+Turkey v Poland+founded#161+France+Philippines+China+Mengjiang+Japan+Burma+Australia+Xinjiang+Yemen+Oman+founded#133+Siam+French Morocco",
+   "warDays": 129,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.048,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1.67,
+    "ownDesperation": 1.67,
+    "doctrine": 0.95,
+    "gain": 1.587,
+    "retaliation": 1.4,
+    "allianceCost": 0.1,
+    "outrage": 0.212,
+    "taboo": 0.355,
+    "people": 5000,
+    "dead": 0.001,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.539
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.21,
+    "ownShare": 0,
+    "menExpected": 89623,
+    "theatreMen": 426641,
+    "capital": 0
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0,
+    "menShare": 0.21,
+    "menExpected": 89623,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 280000,
+    "fission": 5000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 94552,
+    "yieldN": 1,
+    "men": 89552
+   }
+  },
+  {
+   "day": 9173,
+   "year": 25.13,
+   "tick": 220153,
+   "by": "Germany",
+   "u": 0.673,
+   "at": [
+    273.5,
+    257.5
+   ],
+   "target": "Poland",
+   "war": 405,
+   "warName": "Germany+Lithuania+Latvia+Romania+Hungary+Switzerland+Liberia+French West Africa+Afghanistan+founded#141+founded#148+founded#175+founded#177+founded#178+founded#179+founded#159+founded#153+founded#157+Turkey v Poland+founded#161+France+Philippines+China+Mengjiang+Japan+Burma+Australia+Xinjiang+Yemen+Oman+founded#133+Siam+French Morocco",
+   "warDays": 130,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.673,
+   "utility": {
+    "value": 0.607,
+    "through": 1,
+    "desperation": 0.129,
+    "ownDesperation": 0.129,
+    "doctrine": 1.4,
+    "gain": 0.11,
+    "retaliation": 0.95,
+    "allianceCost": 0,
+    "outrage": 0.257,
+    "taboo": 0.3,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.563
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.061,
+    "ownShare": 0,
+    "menExpected": 15186,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.575,
+    "econShare": 0,
+    "menShare": 0.058,
+    "menExpected": 14386,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 0,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 15188,
+    "yieldN": 2,
+    "men": 15188
+   }
+  },
+  {
+   "day": 9970,
+   "year": 27.32,
+   "tick": 239281,
+   "by": "Soviet Union",
+   "u": 0.721,
+   "at": [
+    1076.5,
+    345.5
+   ],
+   "target": "Germany",
+   "war": 418,
+   "warName": "Germany+Lithuania+Latvia+Romania+Hungary+Switzerland+Liberia+French West Africa+Afghanistan+founded#141+founded#148+founded#175+founded#177+founded#178+founded#179+founded#159+founded#153+founded#157+Turkey v Soviet Union+Finland+United Kingdom+Mongolia+Tannu Tuva+founded#166+founded#185",
+   "warDays": 283,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.721,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 2,
+    "ownDesperation": 2,
+    "doctrine": 1.2,
+    "gain": 2.4,
+    "retaliation": 1.4,
+    "allianceCost": 0.025,
+    "outrage": 0.324,
+    "taboo": 0.698,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.679
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.12,
+    "ownShare": 0,
+    "menExpected": 34135,
+    "theatreMen": 284399,
+    "capital": 0
+   },
+   "fission": {
+    "value": 1,
+    "econShare": 0,
+    "menShare": 0.12,
+    "menExpected": 34135,
+    "capital": 0
+   },
+   "fissionCovers": true,
+   "peopleExpected": {
+    "thermo": 53000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 34005,
+    "yieldN": 1,
+    "men": 34005
+   }
+  },
+  {
+   "day": 9971,
+   "year": 27.32,
+   "tick": 239305,
+   "by": "Germany",
+   "u": 0.49,
+   "at": [
+    1418.2,
+    348
+   ],
+   "target": "Soviet Union",
+   "missile": 1,
+   "toll": {
+    "dead": 46160,
+    "yieldN": 1,
+    "men": 160
+   }
+  },
+  {
+   "day": 10102,
+   "year": 27.68,
+   "tick": 242449,
+   "by": "Poland",
+   "u": 0.232,
+   "at": [
+    946.5,
+    427.5
+   ],
+   "target": "Germany",
+   "war": 427,
+   "warName": "Germany+Lithuania+Latvia+Romania+Hungary+Switzerland+Liberia+French West Africa+Afghanistan+founded#141+founded#148+founded#175+founded#177+founded#178+founded#179+founded#159+founded#153+founded#157+Turkey v Poland+United Kingdom+Philippines+Netherlands+China+Mengjiang+Japan+Australia+Xinjiang+British India+Yemen+Siam+French Morocco+Tunisia+Nepal",
+   "warDays": 121,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.232,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1.903,
+    "ownDesperation": 1.903,
+    "doctrine": 0.95,
+    "gain": 1.808,
+    "retaliation": 1.4,
+    "allianceCost": 0.075,
+    "outrage": 0.262,
+    "taboo": 0.366,
+    "people": 82000,
+    "dead": 0.009,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.575
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.109,
+    "ownShare": 0,
+    "menExpected": 27174,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.922,
+    "econShare": 0,
+    "menShare": 0.092,
+    "menExpected": 23008,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 82000,
+    "fission": 6000
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 109127,
+    "yieldN": 2,
+    "men": 27127
+   }
+  },
+  {
+   "day": 10103,
+   "year": 27.68,
+   "tick": 242473,
+   "by": "Germany",
+   "u": 0.395,
+   "at": [
+    542.5,
+    177.5
+   ],
+   "target": "Poland",
+   "war": 427,
+   "warName": "Germany+Lithuania+Latvia+Romania+Hungary+Switzerland+Liberia+French West Africa+Afghanistan+founded#141+founded#148+founded#175+founded#177+founded#178+founded#179+founded#159+founded#153+founded#157+Turkey v Poland+United Kingdom+Philippines+Netherlands+China+Mengjiang+Japan+Australia+Xinjiang+British India+Yemen+Siam+French Morocco+Tunisia+Nepal",
+   "warDays": 122,
+   "byResolve": false,
+   "retaliating": true,
+   "uRecomputed": 0.395,
+   "utility": {
+    "value": 0.101,
+    "through": 1,
+    "desperation": 0.108,
+    "ownDesperation": 0.108,
+    "doctrine": 1.4,
+    "gain": 0.015,
+    "retaliation": 0.95,
+    "allianceCost": 0.05,
+    "outrage": 0.39,
+    "taboo": 0.3,
+    "people": 0,
+    "dead": 0,
+    "mad": true,
+    "extreme": false,
+    "costs": -0.38
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.01,
+    "ownShare": 0,
+    "menExpected": 2534,
+    "theatreMen": 250000,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.099,
+    "econShare": 0,
+    "menShare": 0.01,
+    "menExpected": 2466,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 0,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 2533,
+    "yieldN": 2,
+    "men": 2533
+   }
+  },
+  {
+   "day": 10109,
+   "year": 27.7,
+   "tick": 242617,
+   "by": "Poland",
+   "u": 0.044,
+   "at": [
+    1248.41,
+    243.41
+   ],
+   "target": "Germany",
+   "war": 427,
+   "warName": "Germany+Lithuania+Latvia+Romania+Hungary+Switzerland+Liberia+French West Africa+Afghanistan+founded#141+founded#148+founded#175+founded#177+founded#178+founded#179+founded#159+founded#153+founded#157+Turkey v Poland+United Kingdom+Philippines+Netherlands+China+Mengjiang+Japan+Australia+Xinjiang+British India+Yemen+Siam+French Morocco+Tunisia+Nepal",
+   "warDays": 128,
+   "byResolve": false,
+   "retaliating": false,
+   "uRecomputed": 0.045,
+   "utility": {
+    "value": 1,
+    "through": 1,
+    "desperation": 1.81,
+    "ownDesperation": 1.81,
+    "doctrine": 0.95,
+    "gain": 1.72,
+    "retaliation": 1.4,
+    "allianceCost": 0.075,
+    "outrage": 0.382,
+    "taboo": 0.303,
+    "people": 67000,
+    "dead": 0.007,
+    "mad": true,
+    "extreme": true,
+    "costs": 1.674
+   },
+   "place": {
+    "econShare": 0,
+    "menShare": 0.11,
+    "ownShare": 0,
+    "menExpected": 46559,
+    "theatreMen": 421597,
+    "capital": 0
+   },
+   "fission": {
+    "value": 0.726,
+    "econShare": 0,
+    "menShare": 0.073,
+    "menExpected": 30611,
+    "capital": 0
+   },
+   "fissionCovers": false,
+   "peopleExpected": {
+    "thermo": 67000,
+    "fission": 0
+   },
+   "before": [],
+   "beforeSameWar": 0,
+   "missile": 1,
+   "toll": {
+    "dead": 113515,
+    "yieldN": 2,
+    "men": 46515
+   }
+  }
+ ]
+}
