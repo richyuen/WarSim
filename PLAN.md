@@ -85,6 +85,21 @@ when taken up:
   fronted share (by a side with a front of its own) at least a fifth, on the same read; a unit test
   of the cause fixed (red without); the ADR; the pin's entry. Stop: two full re-reads flat, the bar
   is the user's (ADR-554).
+  In parts (one cause each; the whole's bar read after each):
+    - [x] 7.73a The worth near the front's rear: 7.70b's text asks for a target "near the enemy's
+      front's rear", which ADR-623's worth never weighed. AT: a unit test (red without: of two enemy
+      coasts alike, the group sails for the one nearer its front); engaged per war-day above HEAD's
+      on the same read; the ADR; the pin's entry.
+      Rule in (ADR-626, `normandyRear1938.test.ts`, `docs/evidence/7.73/a.md`, pin ebdbf431):
+      engaged per war-day 0.2227 → 0.2355 (up in each batch), fronted 68/304 → 67/306 (21.9 %).
+    - [ ] 7.73b The group's wait bounded: a Normandy's group holds the nation's turn with no bound
+      while one of its nation marches to the port (ADR-623 limit 2), so the ferry gets fewer turns.
+      AT: a unit test (red without: a march to the port that stalls holds the transports past the
+      bound); the whole's read; the ADR; the pin's entry.
+    - [ ] 7.73c A front with nobody is not held: `frontHeld` holds at none against none (ADR-623
+      limit 1). AT: a unit test (red without: a front with no formation of either side near sends
+      the free army there, not overseas; `normandy1938.test.ts`' fixture given a British division
+      near its front, its assertions kept); the whole's read; the ADR; the pin's entry.
 
 - [ ] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21;
   AI nuclear use 7, the critic's run 11 design objection; `docs/evidence/7.52/c.md`): a capital's

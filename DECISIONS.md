@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-626 · 2026-10-22 · accepted — A Normandy's worth rises near the front's rear (PLAN 7.73a; amends ADR-623)
+
+- **Context** (PLAN 7.73, 7.70b's missed bar). 7.70b's text asks for a target "of most worth (a
+  city, the capital, near the enemy's front's rear) and fewest enemy formations near"; ADR-623's
+  worth took the city and the enemy's formations, not the nearness: of two cities alike, the nearest
+  the transports by sea won, however far from the war's front, and the armies landed where nobody
+  fought (engaged land formations per war-day 0.238 → 0.219 with ADR-623).
+- **Decision.** `planNormandy` (`ai/invasion.ts`): a city's worth (3 a capital, 1 another) times
+  DEPLOY_RANGE_CELLS over its straight distance to the nearest cell of the nation's front (under 1,
+  as every target is beyond that range), over one more than the enemy's land formations within 10
+  cells, as before. Considered: dropping the division by the enemy's formations near (the task's
+  own "fewest enemy formations near"), not taken.
+- **Read** (`newFronts.ts`; 180 days of the critic's 48 saves; `docs/evidence/7.73/a.md`): engaged
+  per war-day 0.2227 → 0.2355, up in each batch of 12 (0.1165 → 0.1173, 0.2573 → 0.2830, 0.1583 →
+  0.1803, 0.3540 → 0.3562); fronted 68/304 (22.4 %) → 67/306 (21.9 %); landings 615 → 648; far
+  landings held 30 days 262 → 274. PLAN 7.73's bar (0.238) not reached by this part alone.
+  Invasion AI's longest call 14.8 ms (seed 99's year; bar 50); tick mean 2.490 ms.
+- **Test.** `normandyRear1938.test.ts` (two German islands, one near Britain's front, one nearer
+  Portsmouth: the group sails for the first), red without (the second).
+- **Pin.** 9c5fa3ba → ebdbf431.
+
 ### ADR-625 · 2026-10-22 · accepted — The landing and the ferry board as a group (PLAN 7.72; amends ADR-268, ADR-612)
 
 - **Context** (PLAN 7.72, found at 7.70b). The first formation's `orderLanding` sets its transports

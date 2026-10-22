@@ -2116,8 +2116,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   front, more than the deploy range from its front, with a water cell within 2 cells passing the
   landing's tests and reached by its bloc's way from home, on a land where its bloc owns and
   controls no city (a beachhead there is fed from the beach, §6.2; not on one where it has a city,
-  ADR-622's scope): the most worth (3 for a capital, 1 for another city) over one more than the
-  enemy's land formations within 10 cells; nearest by sea on a tie. Its free formations at the
+  ADR-622's scope): the most worth (3 for a capital, 1 for another city, times the deploy range
+  over its straight distance to the nearest cell of the nation's front: near the enemy's front's
+  rear, PLAN 7.73a, ADR-626) over one more than the enemy's land formations within 10 cells;
+  nearest by sea on a tie. Its free formations at the
   port go aboard as a group: once their men fill three quarters of the room, or no more of its
   free army on the port's land is left to come (the rest sent there meanwhile; none aboard while
   one marches there), each on the same transports, passing over one with no room left. A front not

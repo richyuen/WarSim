@@ -21886,3 +21886,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   divisions on one transport group), red without (one aboard). Specs by hand: none (no drawn change).
 - **Pin:** b749e952 → 9c5fa3ba.
 - **Next:** PLAN 7.73 (the Normandy without a loss of fight); 7.70a, 7.70b wait on the user.
+
+## 2026-10-22 — PLAN 7.73a: a Normandy's worth rises near the front's rear (ADR-626)
+
+- **Split** PLAN 7.73 into its three likely causes, one a part: a (the worth), b (the group's wait
+  bounded), c (a front with nobody not held).
+- **Rule** (`ai/invasion.ts`, `planNormandy`): a target city's worth × DEPLOY_RANGE_CELLS over its
+  straight distance to the nation's nearest front cell, as 7.70b's text ("near the enemy's front's
+  rear") asked and ADR-623 left out. SPEC §7 amended.
+- **Read** (`docs/evidence/7.73/a.md`; `newFronts.ts`, 180 days of the critic's 48 saves; HEAD's
+  read matches 7.72's after exactly): engaged per war-day 0.2227 → 0.2355 (up in all four batches),
+  fronted 68/304 → 67/306 (21.9 %), far landings held 262 → 274, no lander in debt. 7.73's bar
+  (0.238) not yet: b and c next. A read takes about 2 minutes (four batches side by side).
+- **Cost** (seed 99's year): invasion AI longest call 14.8 ms; tick mean 2.490 ms.
+- **Test:** `normandyRear1938.test.ts`, red without. Specs by hand: none (no drawn change).
+- **Pin:** 9c5fa3ba → ebdbf431.
+- **Next:** PLAN 7.73b (the group's wait bounded); 7.70a, 7.70b wait on the user.

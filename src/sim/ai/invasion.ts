@@ -220,9 +220,12 @@ function nearOwnFront(world: World, id: number, front: readonly number[]): boole
  *   reached by its bloc's way from home (`beachReach`), on a land where its bloc owns and controls
  *   no city (a beachhead there is fed from the beach, PLAN 7.70a; on a land where it has one, it is
  *   not, ADR-622's scope, the user's), more than DEPLOY_RANGE_CELLS (straight) from every cell of
- *   its front: the most worth (NORMANDY_CAPITAL_WORTH for an enemy's capital, 1 for another city)
- *   over one more than the enemy's land formations within NORMANDY_NEAR_CELLS, the nearest by sea
- *   on a tie, then the lower cell;
+ *   its front: the most worth (NORMANDY_CAPITAL_WORTH for an enemy's capital, 1 for another city,
+ *   times DEPLOY_RANGE_CELLS over its straight distance to the nearest cell of its front: near the
+ *   enemy's front's rear, PLAN 7.73a, ADR-626; before, of two cities alike the nearest by sea won
+ *   however far from the war, and the armies landed where nobody fought) over one more than the
+ *   enemy's land formations within NORMANDY_NEAR_CELLS, the nearest by sea on a tie, then the lower
+ *   cell;
  * - a group (`board` with `group`): its free formations at the transports' port go aboard once
  *   their men fill NORMANDY_GROUP_SHARE of the room, or no more of its free army there is left to
  *   come; before that, the nearest on the port's land are sent to it, and none goes aboard while
@@ -261,14 +264,16 @@ function planNormandy(world: World, n: number, faced: ReadonlySet<number>, front
     return sea === 0 || !world.wars.atWar(sea, n);
   };
   const r = world.atSize(DEPLOY_RANGE_CELLS);
-  const farFromFront = (cell: number): boolean => {
+  /** The squared straight cells from `cell` to the nearest cell of n's front. */
+  const toFront2 = (cell: number): number => {
+    let d2 = Infinity;
     for (const k of front) {
       let dx = Math.abs((k % w) - (cell % w));
       if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
       const dy = Math.floor(k / w) - Math.floor(cell / w);
-      if (dx * dx + dy * dy <= r * r) return false;
+      d2 = Math.min(d2, dx * dx + dy * dy);
     }
-    return true;
+    return d2;
   };
   // The enemy's land formations, by squares of NORMANDY_NEAR_CELLS.
   const bs = Math.max(1, Math.ceil(world.atSize(NORMANDY_NEAR_CELLS)));
@@ -308,7 +313,9 @@ function planNormandy(world: World, n: number, faced: ReadonlySet<number>, front
     const holder = ctl[cell]!;
     if (!enemies.has(holder)) return;
     const land = comp[cell]!;
-    if (land === 0 || feed.cityLands.has(land) || !farFromFront(cell)) return;
+    if (land === 0 || feed.cityLands.has(land)) return;
+    const d2Front = toFront2(cell);
+    if (d2Front <= r * r) return;
     // The water it goes ashore by: the nearest open one within the shore's reach.
     let sea = -1;
     let d2 = Infinity;
@@ -329,7 +336,9 @@ function planNormandy(world: World, n: number, faced: ReadonlySet<number>, front
       }
     }
     if (sea < 0) return;
-    const worth = cc.capitalOf[city] === holder ? NORMANDY_CAPITAL_WORTH : 1;
+    // Near the enemy's front's rear (PLAN 7.73a): the worth falls as the city lies farther from n's
+    // front, DEPLOY_RANGE_CELLS over its straight distance (under 1, as it is beyond that range).
+    const worth = ((cc.capitalOf[city] === holder ? NORMANDY_CAPITAL_WORTH : 1) * r) / Math.sqrt(d2Front);
     const s = worth / (1 + enemiesNear(cell));
     if (s < score) return;
     const d = seaKm(world, fx, fy, (sea % w) + 0.5, Math.floor(sea / w) + 0.5);
