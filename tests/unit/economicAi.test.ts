@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { ARMOUR_FULL_INCOME, ARMOUR_SHARE_MAX, ARMY_SHARE_WAR, armourWanted, economicAi, MAX_PARALLEL, PARALLEL_INCOME, peaceShare, POOR_INCOME, RESERVE_MONTHS, RICH_INCOME, SUPPRESS_FULL, SUPPRESS_LEVEL, SUPPRESS_ROOM, suppressionLevel } from '../../src/sim/ai/economic';
+import { ARMOUR_FULL_INCOME, ARMOUR_SHARE_MAX, ARMY_SHARE_WAR, armourWanted, economicAi, MAX_PARALLEL, PARALLEL_INCOME, peaceShare, POOR_INCOME, RESERVE_MONTHS, RICH_INCOME, SUPPRESS_FULL, SUPPRESS_LEVEL, SUPPRESS_ROOM, suppressionLevel, WAR_RESERVE_MONTHS } from '../../src/sim/ai/economic';
 import { SUPPRESSION_COST } from '../../src/sim/systems/revolts';
 import { RULES_1938 } from '../../src/sim/scenario1938';
 import { monthlyAccounts } from '../../src/sim/systems/economy';
@@ -148,12 +148,13 @@ describe('economic AI (PLAN 1.26)', () => {
     const panzer = RULES_1938.templates[PANZER]!.gold;
     const infantry = RULES_1938.templates[BUILD_MIX_1938.infantry]!.gold;
     expect(panzer).toBeGreaterThan(infantry);
+    // At war with no army its reserve is WAR_RESERVE_MONTHS of income (PLAN 7.65, ADR-615).
     // Enough for the panzer division and the reserve: it is ordered first.
-    expect(order((income) => panzer + RESERVE_MONTHS * income + 1)[0]).toBe(PANZER);
+    expect(order((income) => panzer + WAR_RESERVE_MONTHS * income + 1)[0]).toBe(PANZER);
     // Enough for infantry only: infantry is ordered (before PLAN 1.42c nothing was).
-    expect(order((income) => infantry + RESERVE_MONTHS * income + 1)).toEqual([BUILD_MIX_1938.infantry]);
+    expect(order((income) => infantry + WAR_RESERVE_MONTHS * income + 1)).toEqual([BUILD_MIX_1938.infantry]);
     // Not enough for either: nothing.
-    expect(order((income) => RESERVE_MONTHS * income)).toEqual([]);
+    expect(order((income) => WAR_RESERVE_MONTHS * income + infantry - 1)).toEqual([]);
   });
 });
 
@@ -247,8 +248,41 @@ describe('the mix (PLAN 3.5d)', () => {
   it('a nation whose army is under its peacetime share does not save for armour: it raises what it can pay for (PLAN 7.3b)', () => {
     // Seed 7321: the Soviet Union, its army gone at war, two slots and gold for two infantry
     // divisions, ordered one at a time for ten years. Before PLAN 7.3b this was [infantry]: the
-    // one in training and nothing more. Now two more, with the gold for two.
-    expect(saving((income) => 2 * price(BUILD_MIX_1938.infantry) + RESERVE_MONTHS * income + 1, false)).toEqual([BUILD_MIX_1938.infantry, BUILD_MIX_1938.infantry, BUILD_MIX_1938.infantry]);
+    // one in training and nothing more. Now two more, with the gold for two (and the reserve of
+    // a nation at war with its army under its peacetime share, PLAN 7.65).
+    expect(saving((income) => 2 * price(BUILD_MIX_1938.infantry) + WAR_RESERVE_MONTHS * income + 1, false)).toEqual([BUILD_MIX_1938.infantry, BUILD_MIX_1938.infantry, BUILD_MIX_1938.infantry]);
+  });
+
+  it('at war with its army under its peacetime share a nation keeps no reserve from its orders (PLAN 7.65, ADR-615)', () => {
+    // The defenders of an income of 150-500 were stopped by gold in 549 of 751 months at war
+    // (PLAN 7.49e): a division's price and three months of income more. Before, [infantry]: the
+    // one in training and nothing more.
+    expect(WAR_RESERVE_MONTHS).toBe(0);
+    const inf = BUILD_MIX_1938.infantry;
+    expect(saving(() => price(inf) + 1, false)).toEqual([inf, inf]);
+    // Under the price: nothing.
+    expect(saving(() => price(inf) - 1, false)).toEqual([inf]);
+    // In peace the reserve is RESERVE_MONTHS: the same gold orders nothing more, and the price
+    // with the reserve one division more.
+    const atPeace = (gold: (income: number) => number): number[] => {
+      const s = peaceful();
+      const w = s.world;
+      const nc = w.nations.cols;
+      w.settings.aiEnabled = true;
+      w.nations.forEach((n) => (nc.aiOff[n] = n === GER! ? 0 : 1));
+      // Its land army cleared, its fleets kept: a nation with no navy saves for a warship (ADR-557).
+      w.formations.ids().filter((id) => w.formations.cols.nation[id] === GER! && !w.isFleet(id) && !w.isWing(id)).forEach((id) => destroyFormation(w, id));
+      rich(w, GER!);
+      nc.aggression[GER!] = 100; // room in its peacetime share for the orders
+      const income = Math.max(0, monthlyAccounts(w, ECONOMY_TABLES_1938).gross[GER!]!);
+      expect(monthlyAccounts(w, ECONOMY_TABLES_1938).upkeep[GER!]!).toBeLessThan(peaceShare(nc.aggression[GER!]!) * income);
+      expect(queueFormation(w, GER!, inf)).not.toBe(0);
+      nc.gold[GER!] = gold(income);
+      economicAi(ECONOMY_TABLES_1938, BUILD_MIX_1938)(w);
+      return orders(w, GER!);
+    };
+    expect(atPeace(() => price(inf) + 1)).toEqual([inf]);
+    expect(atPeace((income) => price(inf) + RESERVE_MONTHS * income + 1)).toEqual([inf, inf]);
   });
 
   it('against an armour-heavy enemy a rich nation orders its armour and motorised divisions', () => {

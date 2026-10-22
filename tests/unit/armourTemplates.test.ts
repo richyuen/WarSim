@@ -3,7 +3,7 @@ import unitsLand from '../../data/units/land.json';
 import en from '../../src/ui/i18n/en.json';
 import { EventKind } from '../../src/shared/events';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, NATIONS_1938, RULES_1938, SIZE_1938, TEMPLATES_LAND, UNIT_IDS_1938 } from '../../src/sim/scenario1938';
-import { economicAi, RESERVE_MONTHS } from '../../src/sim/ai/economic';
+import { economicAi, WAR_RESERVE_MONTHS } from '../../src/sim/ai/economic';
 import { Sim } from '../../src/sim/sim';
 import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
 import { destroyFormation, elementIndex } from '../../src/sim/systems/elements';
@@ -151,11 +151,11 @@ describe('armour templates (PLAN 3.1c)', () => {
     // The mechanised division is not armour: knowing it changes nothing.
     expect(order([MECH])).toBe(PANZER);
     // Short of the price of the best with its reserve, it orders the best it has the gold for,
-    // not infantry.
+    // not infantry. At war with no army, its reserve is WAR_RESERVE_MONTHS (PLAN 7.65, ADR-615).
     const price = (t: number): number => RULES_1938.templates[t]!.gold;
     expect(price(HEAVY)).toBeGreaterThan(price(PANZER_2));
-    expect(order([PANZER_2, HEAVY], (income) => price(PANZER_2) + RESERVE_MONTHS * income + 1)).toBe(PANZER_2);
-    expect(order([PANZER_2, HEAVY], (income) => price(PANZER) + RESERVE_MONTHS * income + 1)).toBe(PANZER);
-    expect(order([PANZER_2, HEAVY], (income) => price(BUILD_MIX_1938.infantry) + RESERVE_MONTHS * income + 1)).toBe(BUILD_MIX_1938.infantry);
+    expect(order([PANZER_2, HEAVY], (income) => price(PANZER_2) + WAR_RESERVE_MONTHS * income + 1)).toBe(PANZER_2);
+    expect(order([PANZER_2, HEAVY], (income) => price(PANZER) + WAR_RESERVE_MONTHS * income + 1)).toBe(PANZER);
+    expect(order([PANZER_2, HEAVY], (income) => price(BUILD_MIX_1938.infantry) + WAR_RESERVE_MONTHS * income + 1)).toBe(BUILD_MIX_1938.infantry);
   });
 });

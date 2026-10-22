@@ -36,13 +36,6 @@ The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
 when taken up:
 
-- [ ] 7.65 The reserve cut (7.49e1, moved at 7.49's budget; ADR-592 a, the user's; carries emergent 6
-  with 7.49): at war, with its army under its peacetime share, a nation keeps no reserve of income
-  back from the army's orders (`docs/evidence/7.49/e/reserve-cut.diff`, WAR_RESERVE_MONTHS 0). AT:
-  the land formations of nations at war of income 150–500 after 180 days of the 48 saves together
-  at least 1.05 × HEAD's (1,128 → 1,185; `purse.ts`); no nation of the band in debt or disbanding in
-  a year; a unit test (red without); the ADR; the pin's entry.
-
 - [ ] 7.63 The ferry's port nearest the front (found at 7.49d1, `docs/evidence/7.49/d1.md` §3; carries
   emergent 6 with 7.49): the ferry lands at the nation's port on a front's land nearest its
   transports by sea, which may be far from the front (7019 year 10: Britain at Wilhelmshaven and
@@ -380,3 +373,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.56 The landing's army marches over desert to its port (found at 7.54b, emergent 6, […]
 - [x] 7.60 A carrier's strike sinks a whole fleet at once (found at 7.57, naval 7, […]
 - [x] 7.49 The land war after year 1 (R11-B1; carries emergent 6, needs 7, ADR-583): engaged land […]
+- [x] 7.65 The reserve cut (7.49e1, moved at 7.49's budget; ADR-592 a, the user's; carries emergent 6 […]

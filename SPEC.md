@@ -2250,7 +2250,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   - *Building:* up to 1 + income/400 orders in training at once (at most 6; ADR-47). It needs
     army upkeep, counting the orders in training, under 35% × (0.3 + 0.7 × aggression/100) of
     income in peace (60% at war), a positive balance after the new upkeep, and 3 months of
-    income in reserve.
+    income in reserve; at war, while that upkeep is under the peacetime share, no reserve
+    (`WAR_RESERVE_MONTHS` 0, for the armour's pick too; PLAN 7.65, ADR-615: the defenders of an
+    income of 150–500 were stopped by gold in most of their months at war). The warship's
+    saving, the refills, the fleets and the wings keep the 3 months.
   - *Overseas muster (ADR-47):* a nation whose fronts all lie on other landmasses than its
     capital raises new formations in the theatre (nearest own city to the front), an abstraction
     of sealift until PLAN 4.5.

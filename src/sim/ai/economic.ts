@@ -33,7 +33,8 @@
  *    while army upkeep (with the orders in training) is below ARMY_SHARE × (PEACE_ARMY_BASE +
  *    (1 − PEACE_ARMY_BASE) × aggression/100) (peace: placid nations keep smaller standing
  *    armies) / ARMY_SHARE_WAR (war) of income, B stays positive after the new upkeep, and gold covers the
- *    order plus RESERVE_MONTHS of income. (Critic B1, 2026-10-03: one order at a time for
+ *    order plus RESERVE_MONTHS of income; at war, while that upkeep is under the peacetime share,
+ *    plus WAR_RESERVE_MONTHS (none; PLAN 7.65, ADR-615: the defenders' months stopped by gold). (Critic B1, 2026-10-03: one order at a time for
  *    everybody meant ~36 divisions a year worldwide; armies never recovered from a war and the
  *    great powers sat on unspent treasuries.) Mix: poor nations
  *    (income < POOR_INCOME) raise cadre divisions. A nation with less of its army's upkeep in
@@ -151,6 +152,14 @@ export const RESERVE_MONTHS = 3;
  * Union, 3,100 to 4,200 gold on 950 a month, never held a group's 980 and three months more.
  */
 export const DELIVERY_RESERVE_MONTHS = 1;
+/**
+ * The months of income a nation at war keeps back from its army's orders, and from the pick of
+ * its armour, while its army (with its orders in training) stands under its peacetime share
+ * (PLAN 7.65, ADR-615; ADR-592 a, the user's): none. With RESERVE_MONTHS, the defenders of an
+ * income of 150-500 a month were stopped by gold in 549 of 751 months at war (PLAN 7.49e). The
+ * warship's saving, the refills, the fleets and the wings keep RESERVE_MONTHS.
+ */
+export const WAR_RESERVE_MONTHS = 0;
 export const PARALLEL_INCOME = 400;
 export const MAX_PARALLEL = 6;
 export const POOR_INCOME = 20;
@@ -468,13 +477,15 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       const armyOrders = (): void => {
         for (let k = pending.get(n) ?? 0; k < slots; k++) {
           if (upkeep >= (atWar ? ARMY_SHARE_WAR * income : peace)) return;
+          // The reserve kept back (PLAN 7.65, ADR-615): WAR_RESERVE_MONTHS at war while the army is under its peacetime share.
+          const reserve = (atWar && upkeep < peace ? WAR_RESERVE_MONTHS : RESERVE_MONTHS) * income;
           // It saves for its armour only with an army of its peacetime share (PLAN 7.3b).
-          let t = pickTemplate(world, n, income, atWar, mix, upkeep > 0 ? inTanks / upkeep : 0, k > 0 && upkeep >= peace);
+          let t = pickTemplate(world, n, income, atWar, mix, upkeep > 0 ? inTanks / upkeep : 0, k > 0 && upkeep >= peace, reserve);
           // It saves for its armour: no order more this month.
           if (t < 0) return;
           let rule = rules.templates[t]!;
           const plain = rules.templates[mix.infantry];
-          if (plain && rule.gold > plain.gold && nc.gold[n]! < rule.gold + RESERVE_MONTHS * income) {
+          if (plain && rule.gold > plain.gold && nc.gold[n]! < rule.gold + reserve) {
             t = mix.infantry;
             rule = plain;
           }
@@ -490,7 +501,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           if (balance - newUpkeep <= need) return;
           // It saves for a warship: an order only with the warship's price left over the reserve.
           if (shipPrice > 0 && (saves || upkeep >= peace) && nc.gold[n]! - rule.gold < shipPrice + RESERVE_MONTHS * income) return;
-          if (nc.gold[n]! < rule.gold + RESERVE_MONTHS * income || nc.manpower[n]! < rule.manpower) return;
+          if (nc.gold[n]! < rule.gold + reserve || nc.manpower[n]! < rule.manpower) return;
           if (queueFormation(world, n, t) === 0) return;
           nc.builds[n] = nc.builds[n]! + 1;
           ordered++;
@@ -589,7 +600,7 @@ function restlessNations(world: World): Set<number> {
  * (`peaceShare`). -1: none, it saves for its armour.
  *
  * A nation that wants armour orders the best armoured division of `mix.armour` (the best
- * first) that it knows the techs of. Short of that one's price with the reserve, a nation that
+ * first) that it knows the techs of. Short of that one's price with `reserve` (the build step's), a nation that
  * saves orders nothing (PLAN 3.5d: an army's upkeep costs the same gold in armour as on foot, and
  * a treasury that buys the infantry division whenever it has its price never has the price of
  * an armoured one). One whose army is under its peacetime share does not save (PLAN 7.3b: the
@@ -599,13 +610,13 @@ function restlessNations(world: World): Set<number> {
  * the gold for none the best it knows, which the caller replaces by infantry (PLAN 1.42c: the
  * queue does not stand empty). Knowing none, its order is what it would be with armour enough.
  */
-function pickTemplate(world: World, n: number, income: number, atWar: boolean, mix: BuildMix, armour: number, saves: boolean): number {
+function pickTemplate(world: World, n: number, income: number, atWar: boolean, mix: BuildMix, armour: number, saves: boolean, reserve: number): number {
   if (income < POOR_INCOME) return mix.cadre;
   if (armour < armourWanted(income)) {
     const templates = world.rules!.templates;
     const known = mix.armour.filter((t) => templates[t] !== undefined && knowsTechs(world, n, templates[t]!.techs));
     const gold = world.nations.cols.gold[n]!;
-    const pays = (t: number): boolean => gold >= templates[t]!.gold + RESERVE_MONTHS * income;
+    const pays = (t: number): boolean => gold >= templates[t]!.gold + reserve;
     if (known.length > 0) return saves ? (pays(known[0]!) ? known[0]! : -1) : (known.find(pays) ?? known[0]!);
   }
   if (atWar && armourShareOfEnemies(world, n) >= ARMOUR_HEAVY) return mix.motorised;

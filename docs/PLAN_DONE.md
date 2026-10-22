@@ -13542,3 +13542,26 @@ Of 7.33 (open in PLAN.md):
   engaged a day (was 0 of 25 samples). Case by case in d3.md §3. BLOCKERS, the user's (step 8).
   Closed not done (2026-10-21, the user's: option a, ticked as 7.40 was, its parts with it; emergent
   6 judged by the next critic report; 7.63, 7.64 and 7.65 stay filed).
+
+<!-- moved 2026-10-22 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.65 The reserve cut (7.49e1, moved at 7.49's budget; ADR-592 a, the user's; carries emergent 6
+  with 7.49): at war, with its army under its peacetime share, a nation keeps no reserve of income
+  back from the army's orders (`docs/evidence/7.49/e/reserve-cut.diff`, WAR_RESERVE_MONTHS 0). AT:
+  the land formations of nations at war of income 150–500 after 180 days of the 48 saves together
+  at least 1.05 × HEAD's (1,128 → 1,185; `purse.ts`); no nation of the band in debt or disbanding in
+  a year; a unit test (red without); the ADR; the pin's entry.
+  Rule in (ADR-615, `docs/evidence/7.65.md`): 1,110 → 1,205 (1.086 × HEAD's, HEAD re-read on
+  `56f83362`); none in debt or disbanding in a year; pin e8f654c9 → cffa092a.

@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-615 · 2026-10-21 · accepted — The reserve cut: at war under its peacetime share, a nation's army orders keep no reserve (PLAN 7.65; ADR-592 a, the user's)
+
+- **Context** (ADR-592, `docs/evidence/7.49/e.md`): the defenders of an income of 150–500 a month
+  were stopped by gold in most of their months at war: a division's price and RESERVE_MONTHS (3)
+  of income more. The user took ADR-592 a: the cut landed, its bar the band's formations after
+  180 days at least 1.05 × HEAD's on the critic's 48 saves together.
+- **Decision** (`economic.ts`, step 3, `WAR_RESERVE_MONTHS` 0): at war, while the army's upkeep
+  with its orders in training is under its peacetime share (`peaceShare`), an army order keeps
+  WAR_RESERVE_MONTHS of income back, not RESERVE_MONTHS; read anew for each order of the month.
+  Beyond 7.49e's diff, the armour's pick (`pickTemplate`) reads the same reserve: with the pick
+  at three months, a nation with the gold for a cheaper tank and not for the best with three
+  months more fell to infantry. The warship's saving (ADR-557, 575), the refills, the fleets and
+  the wings keep RESERVE_MONTHS: rules of their own.
+- **Measured** (`docs/evidence/7.65.md`, HEAD `56f83362` the before): the band's land formations
+  after 180 days 1,110 → 1,205 (1.086 ×; bar 1,166, and the AT's 1,185 from 7.49e's code): met;
+  orders 123 → 253. In a year no band nation in debt or disbanding (met).
+- **Pin.** e8f654c9 → cffa092a (seed 99's first year: nations at war under their share order sooner).
+- **Tests.** `economicAi.test.ts`, a new case (red without). Four tests whose gold was sized to the
+  three months in the rule's case (at war, no army) are sized to the reserve now in force, their
+  assertions as before; PLAN 7.26c2b's refill case stands with the army over its peacetime share.
+
 ### ADR-614 · 2026-10-21 · accepted — Transports bought for a home army: the ferry's want orders a group, and stops no warship (PLAN 7.49d3; ADR-591 b, the user's; amends ADR-518)
 
 - **Context** (PLAN 7.49d3, the user's widening of ADR-591 a, 2026-10-21; `docs/evidence/7.49/d3.md`).

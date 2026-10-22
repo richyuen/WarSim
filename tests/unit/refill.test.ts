@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { budgetOf, economicAi, REFILL_MONTH, RESERVE_MONTHS } from '../../src/sim/ai/economic';
+import { budgetOf, economicAi, peaceShare, REFILL_MONTH, RESERVE_MONTHS } from '../../src/sim/ai/economic';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { bleedFormation, destroyFormation, elementIndex, settleFormation } from '../../src/sim/systems/elements';
-import { monthlyAccounts } from '../../src/sim/systems/economy';
+import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
 import { queueFormation, refillable, refillFormation } from '../../src/sim/systems/production';
 import { declareWar } from '../../src/sim/systems/war';
 import { Domain, type World } from '../../src/sim/world';
@@ -184,6 +184,20 @@ describe("a formation is refilled from its nation's pool (PLAN 7.3e1)", () => {
       const foes = new Set(w.wars.list.flatMap((war) => (war.sides[0].includes(GER) ? war.sides[1] : war.sides[1].includes(GER) ? war.sides[0] : [])));
       if (sink) w.formations.forEach((f) => void (w.isFleet(f) && foes.has(w.formations.cols.nation[f]!) && destroyFormation(w, f)));
       const { income } = budgetOf(w, GER, monthlyAccounts(w, ECONOMY_TABLES_1938));
+      // Its army over its peacetime share (aggression 0): under it, at war, an order keeps no
+      // reserve (PLAN 7.65, ADR-615) and 0.9 of a division over the refills' reserve pays for one.
+      nc.aggression[GER] = 0;
+      const army = (): number => {
+        let u = 0;
+        const f = w.formations.cols;
+        w.formations.forEach((x) => {
+          if (f.nation[x] !== GER || w.isFleet(x) || w.isWing(x) || w.offLand(x)) return;
+          const full = ECONOMY_TABLES_1938.templateStrength[f.template[x]!] ?? 0;
+          if (full > 0) u += (UPKEEP_SCALE * (ECONOMY_TABLES_1938.templateUpkeep[f.template[x]!] ?? 0) * f.strength[x]!) / full;
+        });
+        return u;
+      };
+      expect(army()).toBeGreaterThan(peaceShare(nc.aggression[GER]!) * income);
       const price = w.rules!.templates[BUILD_MIX_1938.infantry]!.gold;
       nc.gold[GER] = RESERVE_MONTHS * income + 0.9 * price;
       const before = w.formations.cols.strength[id]!;

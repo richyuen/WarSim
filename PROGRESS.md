@@ -21640,3 +21640,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   180, 19.6 %). 7.49 closed not done at its budget (ticked as 7.40 was, its parts with it); emergent
   6 waits for the next critic report. Two BLOCKERS entries resolved. No code: the pin unchanged.
 - **Next:** PLAN 7.65 (the reserve cut), then 7.63, 7.64, 7.62.
+
+## 2026-10-21 — PLAN 7.65: the reserve cut (ADR-615; ticked)
+
+- **Rule** (`ai/economic.ts`, step 3, `WAR_RESERVE_MONTHS` 0): at war, while the army with its
+  orders in training is under its peacetime share, an army order keeps no reserve of income back
+  (was 3 months); the armour's pick (`pickTemplate`) reads the same reserve, beyond 7.49e's diff
+  (else a cheaper tank paid for fell to infantry). The warship's saving, refills, fleets and wings
+  keep RESERVE_MONTHS. SPEC §7 (Building).
+- **Read** (`docs/evidence/7.65.md`, the critic's 48 saves, `purse.ts`): HEAD re-read on `56f83362`,
+  1,110 (7.49e's 1,128 was before the ferry); the rule 1,205 after 180 days, 1.086 × (bar 1,166, and
+  the AT's 1,185): met. Orders 123 → 253. A year: no band nation in debt or disbanding (met).
+- **Test:** `economicAi.test.ts`, a new case (red without). Four tests sized their gold to the three
+  months in the rule's own case (at war, no army) and were red: `armourTemplates` (the pick's three
+  thresholds), `economicAi` 1.42c and 7.3b (gold sized to WAR_RESERVE_MONTHS, assertions as before),
+  `refill` 7.26c2b (its case now stands with the army over its peacetime share, aggression 0; with
+  divisions added instead the bigger army raised a wing order). Specs by hand: none (no drawn change).
+- **Pin:** e8f654c9 → cffa092a.
+- **Next:** PLAN 7.63 (the ferry's port nearest the front), then 7.64, 7.62.
