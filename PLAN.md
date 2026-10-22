@@ -56,6 +56,34 @@ when taken up:
   alone, its capital on an islet with no port, raises its new division at its port nearest that
   front); the ADR; the pin's entry.
 
+- [ ] 7.68 A capital moves to the land its nation holds most of (the user's, 2026-10-21; found at
+  7.67): a capital lost moves to the nation's largest city it owns and controls, wherever it stands
+  (`relocateCapital`, `systems/capitals.ts`), so the Netherlands' went to a one-cell Caribbean islet
+  with no port (land 529; 1129, 4877 and 8693 year 20), the British Raj's to a four-cell islet off
+  Burma (531), Greece's to a 32-cell island, while each held far more land elsewhere (the
+  Netherlands 4,966 cells on 8693 year 20). There its new divisions pile up (7.67) and no AI landing
+  can reach it (7.69). The rule: of the cities it owns and controls, those on the landmass where it
+  owns and controls the most cells; of those the largest, as now. AT: every `CapitalMoved` to a city
+  in 180 days of the 48 saves (a read to add; HEAD first, the before) lands on the landmass where
+  its nation holds the most cells: all of them (HEAD's share the before); a unit test (red without:
+  a nation whose capital is taken, its largest city left on an islet and more of its cells on
+  another land, moves its capital to a city on that land); SPEC §4 amended; the ADR; the pin's
+  entry.
+
+- [ ] 7.69 The AI's landing on a coast with no port: an enemy capital (the user's, 2026-10-21; found
+  at 7.67): the AI's landing aims at an enemy's port alone (`planLanding`, `ai/invasion.ts`), so an
+  enemy capital on a land where the enemy holds no port is never invaded (the Netherlands' on its
+  islet), though the landing itself can go ashore on any coast (`orderLanding`, a beach as Normandy
+  was). The rule: of a landing's targets, beside the enemy's ports, an enemy capital's cell on a
+  coast (beside water of a zone), at its sea's distance as a port is; nearest first, as now. AT: of
+  the enemy capitals on lands with no port of their nation, of the wars of the 48 saves whose
+  other side has transports and no land front with it (a read to add; HEAD first, 0 on HEAD by the
+  rule), a landing on that capital's land within 180 days for at least half; no invasion AI call
+  over 50 ms; a unit test (red without: a nation at war with the Netherlands, its capital on an
+  islet with no port, the transports at a port of its own, lands on that islet); SPEC §7 amended;
+  the ADR; the pin's entry. Landings on a beach beside a front, as Normandy's, are beyond it: a task
+  of their own if the user wants one.
+
 - [ ] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21;
   AI nuclear use 7, the critic's run 11 design objection; `docs/evidence/7.52/c.md`): a capital's
   TARGET_CAPITAL counts on a first strike only with an army in the blast (men share of the

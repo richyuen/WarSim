@@ -21737,3 +21737,5 @@ No rule changed and nothing on screen changed. One task came out of it.
   7.67 is now that rule (the theatre of a nation fronted through an ally alone), before 7.62.
 - Found beside it: the AI's landings aim only at an enemy's port (`planLanding`), so a capital on an
   islet with no port is never invaded by the AI.
+- Filed (the user's): PLAN 7.68 (a capital moves to the land its nation holds most of) and 7.69
+  (the AI lands on an enemy capital on a coast with no port), after 7.67 and before 7.62.
