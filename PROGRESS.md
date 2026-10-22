@@ -22252,3 +22252,29 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Seen:** `docs/evidence/7.81/a-paris-still-mouse.png`, `a-paris-razed-occupied.png`.
 - **Pin:** unchanged (view code only).
 - **Next:** PLAN 7.81b (the moving capital captured again and again).
+
+## 2026-10-22 — PLAN 7.81b1: a field capital at war goes to the cell farthest from the enemy (ADR-640)
+
+- **Measured first** (`docs/evidence/7.81/b.md`, `tools/diag/capitalChurn.ts`, read only): on the critic's
+  cases, 6421 year 10 + 365 days 42 moves, 37 to a field capital, 31 of them moved again within 30 days,
+  every one a step from the enemy (the Netherlands' 26 times in 40 days, holding ~5,400 cells); 3301 1938
+  + 10 years 275 captures and 347 moves, 13 nations captured three times in 30 days, and 113 of 230 moves
+  to a city passed over one of the same land more than 5 steps safer. Two causes: 7.81b split in b1
+  (field) and b2 (city).
+- **Base read first** (the AT's): `dd3b730` in a worktree on unseen seeds 791–800 × 30 years, 392.8 moves
+  and 218.8 captures a world, 112 cases of three captures in 30 days (the old code is far from "none").
+- **Rule:** the field capital at war goes to the controlled cell farthest from the cells the enemies hold
+  (`enemyDistance`, one breadth-first pass from all of them), on the land the nation controls most of;
+  ties to the one nearest the old capital. No enemy holding land: nearest the old capital, as before.
+- **Read:** 6421 moves 42 → 8, field moves again within 30 days 31 → 0; 3301 moves 347 → 274, field moves
+  100 → 27; captures unchanged (b2's).
+- **Test:** `capitals.test.ts` "a field capital at war goes to the cell farthest from the enemy" (Germany
+  takes every Polish city cell; the field capital more than 10 steps from German-held land); red without
+  (1 step).
+- **Restated:** `seam.test.ts` "a capital in the field moves to the nation's nearest cell on its side of the
+  seam" runs at peace (its setup is at war with Poland): its claim is the nearest-cell search, the rule
+  at peace; at war the farthest cell, the nearest only on its ties (claim kept).
+- **Timing:** `enemyDistance` 14 ms a call on the 2048 × 1024 map (88 ms with `neighbours4`'s array, so
+  inlined); a few calls a world-year after the rule.
+- **Pin:** 083f2585 → 68eb57f6.
+- **Next:** PLAN 7.81b2 (the city capital).

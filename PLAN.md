@@ -166,6 +166,19 @@ them, are 7.81–7.86. A task each, split when taken up:
       world not above `dd3b730`'s on the same seeds (read first) and no capital captured three times in 30
       days; the cause measured first on 3301 and 6421 (the critic's cases); a unit test (red without); the
       ADR; the pin's entry.
+      Measured (`docs/evidence/7.81/b.md`, `tools/diag/capitalChurn.ts`): two causes. `dd3b730` on
+      unseen seeds 791–800 × 30 years: 392.8 moves and 218.8 captures a world, 112 cases of a capital
+      captured three times in 30 days. In two parts, then 7.81b's AT on 791–800:
+        - [x] 7.81b1 A field capital at war goes to the controlled cell farthest from the enemy, on the land
+          the nation controls most of (before: the cell nearest the old capital, a front cell). AT: on 6421
+          year 10 + 365 days field moves moved again within 30 days 31 → under 5; a unit test (red
+          without); the ADR; the pin's entry.
+          Done (ADR-640): 31 → 0, moves 42 → 8; 3301 + 10 years moves 347 → 274; pin 083f2585 → 68eb57f6.
+        - [ ] 7.81b2 A lost capital goes to the city farthest from the enemy on the land its nation holds
+          most of, the largest among those far enough (before: the largest there, median 5–6 steps from
+          the enemy; on 3301 113 of 230 such moves passed over a city more than 5 steps safer). AT: on 3301
+          + 10 years cases of three captures in 30 days 13 → under half; a unit test (red without); the
+          ADR; the pin's entry.
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts
   (`critic/c12_cmp_all.txt`, `c12_summary_all.txt`). Taken up after 7.79 and 7.80, re-read on their HEAD

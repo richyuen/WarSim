@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-640 · 2026-10-22 · accepted — A field capital at war goes to the cell farthest from the enemy (PLAN 7.81b1; amends PLAN 1.15's field capital)
+
+- **Context** (PLAN 7.81b, critic run 12: "a moving capital captured again and again", 919 capital moves a
+  world against 405; `docs/evidence/7.81/b.md` §1). A nation with no city left took as its field capital
+  the controlled cell nearest the old capital. After a capture that is a front cell (one step from the
+  enemy in every case read), and a field capital is lost by any change of control, so it fell back a cell
+  with each day's advance: on 6421 the Netherlands' moved 26 times in 40 days while it held about 5,400
+  cells; on 3301 Sudan's 24 times, Latvia's 18.
+- **Decision** (`systems/capitals.ts`, `relocateToField`, `enemyDistance`): when a nation at war with it
+  holds a cell, the field capital goes to the controlled cell farthest from the cells its enemies hold
+  (steps over land and sea, breadth first from all of them at once), on the landmass where the nation
+  controls the most cells (lowest landmass id on ties; any controlled cell when none is on a landmass);
+  of those the one nearest the old capital, then the lower cell. With no enemy holding land (a field
+  capital given away at a peace), the controlled cell nearest the old capital, as before. The grid pass
+  is a rare event's, as `captureCapital`'s (14 ms on the 2048 × 1024 map).
+- **Read** (§3): 6421 year 10 + 365 days, moves 42 → 8, field moves moved again within 30 days 31 → 0;
+  3301 1938 + 10 years, moves 347 → 274, field moves 100 → 27. The captures unchanged: a city capital's
+  pick is PLAN 7.81b2's.
+- **Pin.** 083f2585 → 68eb57f6.
+
 ### ADR-639 · 2026-10-22 · proposed (the user's decision) — The late map's shreds are the price of the reserve cut's war: accept, take enclaves back at the treaty, or undo the cut (PLAN 7.80)
 
 - **Context** (PLAN 7.80a, `docs/evidence/7.80/a.md`). Critic run 12 (R12-B2): small pieces (2–400

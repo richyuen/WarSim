@@ -232,6 +232,37 @@ describe('occupation and capitals (PLAN 1.15)', () => {
     expect(w.nations.cols.living[LUX]).toBe(0);
   });
 
+  it('a field capital at war goes to the cell farthest from the enemy, not to the front beside the lost one (PLAN 7.81b1)', () => {
+    const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
+    s.world.settings.aiEnabled = false;
+    const w = s.world;
+    w.wars.set(GER, POL, true);
+    const cc = w.cities.cols;
+    // Germany takes every Polish city cell; the capital falls from city to city, then to the field.
+    w.cities.forEach((id) => {
+      if (w.cells.owner[cc.cell[id]!] === POL) s.command({ kind: 'paintControl', nation: GER, x: cc.x[id]!, y: cc.y[id]!, r: 0 });
+    });
+    let field: number[] | undefined;
+    for (let t = 0; t < 48 && !field; t++) field = eventsOf(stepEvents(s), EventKind.CapitalMoved).find((e) => e[1] === 0);
+    expect(field).toBeDefined();
+    const at = Math.floor(field![3]!) * W + Math.floor(field![2]!);
+    expect(w.cells.controller[at]).toBe(POL);
+    // The gap to the nearest German-held cell, against the most any Polish-held cell has.
+    const ger: number[] = [];
+    const pol: number[] = [];
+    w.cells.controller.forEach((k, c) => (k === GER ? ger.push(c) : k === POL ? pol.push(c) : 0));
+    const gap = (c: number): number => {
+      let best = Infinity;
+      for (const g of ger) best = Math.min(best, Math.abs((g % W) - (c % W)) + Math.abs(Math.floor(g / W) - Math.floor(c / W)));
+      return best;
+    };
+    const near = pol.filter((c) => gap(c) <= 2).length;
+    expect(near).toBeGreaterThan(0); // the front the old rule put it on
+    expect(gap(at)).toBeGreaterThan(10);
+    // It stands while nothing near it changes hands.
+    expect(eventsOf(stepEvents(s, 24), EventKind.CapitalMoved)).toEqual([]);
+  });
+
   // PLAN 2.16Rf: a dead nation is the owner and the controller of no cell.
   it('a nation that dies with its capital leaves the land a third nation holds to that nation', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });

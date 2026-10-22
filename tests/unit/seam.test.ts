@@ -301,6 +301,9 @@ describe('nothing of the sim joins the two edges of a map that does not loop (PL
     it("a capital in the field moves to the nation's nearest cell on its side of the seam", () => {
       for (const loop of [false, true]) {
         const world = edges(loop);
+        // At peace: the field capital is the nearest cell then (at war, the farthest from the enemy's
+        // land, ADR-640, nearest only on its ties).
+        world.wars.set(GER, POL, false);
         const cc = world.cities.cols;
         const nc = world.nations.cols;
         world.cities.forEach((city) => {

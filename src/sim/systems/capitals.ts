@@ -76,11 +76,80 @@ export function capitalCell(world: World, n: number): number {
   return city !== 0 ? cc.cell[city]! : Math.floor(nc.capitalY[n]!) * world.cells.w + Math.floor(nc.capitalX[n]!);
 }
 
-/** Moves the capital to the nation's controlled cell nearest the old one, or eliminates it. */
+/**
+ * Steps (4-neighbour, over land and sea) from each cell to the nearest cell held by a nation at war
+ * with `n`; null when no nation at war with it holds a cell. A rare event's grid pass (a capital
+ * moving), not the hourly hot loop.
+ */
+export function enemyDistance(world: World, n: number): Int32Array | null {
+  const { w, h, controller } = world.cells;
+  const enemy = new Uint8Array(world.nations.highWater);
+  let any = false;
+  for (const war of world.wars.list) {
+    const them = war.sides[0].includes(n) ? war.sides[1] : war.sides[1].includes(n) ? war.sides[0] : null;
+    if (!them) continue;
+    for (const m of them) {
+      if (!world.wars.atWar(n, m)) continue;
+      enemy[m] = 1;
+      any = true;
+    }
+  }
+  if (!any) return null;
+  const dist = new Int32Array(controller.length).fill(-1);
+  const queue = new Int32Array(controller.length);
+  let tail = 0;
+  for (let c = 0; c < controller.length; c++) {
+    if (enemy[controller[c]!] === 1) {
+      dist[c] = 0;
+      queue[tail++] = c;
+    }
+  }
+  if (tail === 0) return null;
+  // Breadth first from every enemy cell at once; the four neighbours inline (the order of
+  // `neighbours4`), as the pass is over the whole grid.
+  const wrap = world.settings.loopingMap;
+  const last = w * h - w;
+  for (let head = 0; head < tail; head++) {
+    const c = queue[head]!;
+    const d = dist[c]! + 1;
+    const x = c % w;
+    if (c >= w && dist[c - w] === -1) {
+      dist[c - w] = d;
+      queue[tail++] = c - w;
+    }
+    if (c < last && dist[c + w] === -1) {
+      dist[c + w] = d;
+      queue[tail++] = c + w;
+    }
+    const left = x > 0 ? c - 1 : wrap ? c + w - 1 : -1;
+    if (left >= 0 && dist[left] === -1) {
+      dist[left] = d;
+      queue[tail++] = left;
+    }
+    const right = x < w - 1 ? c + 1 : wrap ? c - w + 1 : -1;
+    if (right >= 0 && dist[right] === -1) {
+      dist[right] = d;
+      queue[tail++] = right;
+    }
+  }
+  return dist;
+}
+
+/**
+ * Moves the capital to a field capital, or eliminates the nation without a cell. At war (PLAN 7.81b1,
+ * ADR-640): the controlled cell farthest from the cells its enemies hold (`enemyDistance`), on the
+ * landmass where it controls the most cells; ties to the one nearest the old capital, then the lower
+ * cell. The nearest controlled cell to a lost capital is a front cell, so the field capital fell with
+ * each day's advance (the Netherlands' moved 26 times in a year). With no enemy holding land, the
+ * controlled cell nearest the old capital, as before.
+ */
 function relocateToField(world: World, n: number): void {
   const nc = world.nations.cols;
   const { w, h, controller } = world.cells;
-  const cell = nearestCellWhere((c) => controller[c] === n, nc.capitalX[n]!, nc.capitalY[n]!, w, h, Math.max(w, h), world.settings.loopingMap);
+  const dist = enemyDistance(world, n);
+  const cell = dist
+    ? farthestFieldCell(world, n, dist)
+    : nearestCellWhere((c) => controller[c] === n, nc.capitalX[n]!, nc.capitalY[n]!, w, h, Math.max(w, h), world.settings.loopingMap);
   if (cell < 0) {
     eliminateNation(world, n);
     return;
@@ -89,6 +158,37 @@ function relocateToField(world: World, n: number): void {
   nc.capitalX[n] = x + 0.5;
   nc.capitalY[n] = (cell - x) / w + 0.5;
   world.out.emit(world.tick, EventKind.CapitalMoved, n, 0, nc.capitalX[n]!, nc.capitalY[n]!);
+}
+
+/** `relocateToField`'s pick at war: -1 when `n` controls no cell. */
+function farthestFieldCell(world: World, n: number, dist: Int32Array): number {
+  const nc = world.nations.cols;
+  const { w, controller } = world.cells;
+  const comp = navOf(world).grid.component;
+  // The landmass where n controls the most cells (lowest id on ties; a cell of none counts for none).
+  const count = new Map<number, number>();
+  for (let c = 0; c < controller.length; c++) if (controller[c] === n && comp[c] !== 0) count.set(comp[c]!, (count.get(comp[c]!) ?? 0) + 1);
+  let land = 0;
+  let landCells = 0;
+  for (const [l, k] of count) if (k > landCells || (k === landCells && l < land)) [land, landCells] = [l, k];
+  const x0 = nc.capitalX[n]!;
+  const y0 = nc.capitalY[n]!;
+  const wrap = world.settings.loopingMap;
+  let best = -1;
+  let bestDist = -1;
+  let bestNear = Infinity;
+  for (let c = 0; c < controller.length; c++) {
+    if (controller[c] !== n || (land !== 0 && comp[c] !== land)) continue;
+    const d = dist[c]!;
+    if (d < bestDist) continue;
+    const x = c % w;
+    let dx = Math.abs(x + 0.5 - x0);
+    if (wrap && dx > w / 2) dx = w - dx;
+    const dy = (c - x) / w + 0.5 - y0;
+    const near = dx * dx + dy * dy;
+    if (d > bestDist || near < bestNear) [best, bestDist, bestNear] = [c, d, near];
+  }
+  return best;
 }
 
 export function captureCapital(world: World, loser: number, capturer: number, city: number): void {
