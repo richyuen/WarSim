@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.51b: the late air war measured; air battles in years 2–20 at 0.065 of year 1's, bar a tenth; the cause the late land war (2026-10-22; the user's decision)
+### RESOLVED 2026-10-22 (option b, the user's decision: 7.51b and 7.51 closed not done; PLAN 7.77 dropped; the aircraft score waits for the next critic run) · PLAN 7.51b: the late air war measured; air battles in years 2–20 at 0.065 of year 1's, bar a tenth; the cause the late land war (2026-10-22; the user's decision)
 - **The bar:** on PLAN 7.49's unseen seeds 7401–7410 × 20 years, air battles a year in years 2–20
   at least a tenth of year 1's, or this entry with the measured cause, the user's to accept.
 - **What moved** (`docs/evidence/7.51/b.md`, `tools/diag/airLate.ts`, on `309f0d4e`): year 1

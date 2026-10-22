@@ -22028,3 +22028,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **BLOCKERS**, the user's: (a) 7.51b closed not done, PLAN 7.77 (the late land war) next;
   (b) closed, no task; (c) an air rule not tied to the land war.
 - **Next:** PLAN 7.74 while 7.51b and 7.77 wait on the user.
+
+## 2026-10-22 — PLAN 7.51b closed not done (the user's decision b)
+
+- 7.51b and its parent 7.51 ticked closed not done (7.51a done, the late air war's bar missed at
+  0.065 of year 1's); PLAN 7.77 (the late land war) dropped; the BLOCKERS entry resolved. The
+  aircraft score waits for the next critic run.
+- **Next:** PLAN 7.74 (an overrun holder's first strike on the enemy overrunning it).

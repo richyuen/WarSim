@@ -13937,3 +13937,49 @@ Of 7.33 (open in PLAN.md):
   a4ff4661): the pocket 0.75 from a day on (0 without), the network's 1; supply 0.30 → 0.24 ms
   (both core orders); engaged per war-day 0.2400 → 0.2505, fronted 75 → 80 of 312 (25.6 %), far
   landings held 293 → 321, no lander in debt, longest invasion AI call 16.1 ms.
+
+<!-- moved 2026-10-22 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.77 The late land war under the air war (found at 7.51b; emergent 6, aircraft 7; R11-B1 as
+  7.49 left it, ADR-614): the air war follows the land war by design (ADR-377), and late the land
+  war stands at a twentieth of year 1's. AT: on seeds 7401–7410 × 20 years (`airLate.ts`), land
+  formations engaged per war in years 2–20 at least a tenth of year 1's (0.057 on `309f0d4e`),
+  and air battles at least a tenth of year 1's (0.065); no tick over budget; the pin's entry.
+  Stop: two full re-measures flat, the bar is the user's (ADR-554). Waits on the user's choice in
+  BLOCKERS (7.51b). Dropped (2026-10-22, the user's decision: 7.51b's option b), not done.
+
+- [x] 7.51 Aircraft (aircraft 7, needs 8, beyond 7.49): the late air war unchanged, 3,160 air
+  battles in year 1 and 120 a world-year after on the same 14 seeds (122 on `bcbc99c`), sorties
+  aloft after year 1 a mean of 8.1 (`critic/c11_cmp.json`, `c11_h_1307.json`); the critic reads it as
+  R11-B1 seen from the air, so it is read after 7.49. The aircraft drawn at T3 are three white glyphs
+  the size of a squad, not in a nation's colour (`critic/shots/c11c_7019_inf_0010m.png`). AT: at 10
+  m/px on the critic's 7019 front every drawn aircraft's middle within 40 (summed RGB) of its
+  nation's tint, and its span at least 4 × a man's figure there (a spec, red before); air battles in
+  years 2–20 after 7.49, on its 10 unseen seeds, at least a tenth of year 1's, or a BLOCKERS entry
+  with the measured cause, the user's to accept. Stop: two full re-measures flat, the bar is the
+  user's (ADR-554).
+  In parts:
+    - [x] 7.51a The planes at T3: each drawn plane's middle within 40 (summed RGB) of its nation's
+      sprite tint and its span at least 4 men's figures, at 10 m/px on the 7019 front
+      (`tests/e2e/planesT3_1938.spec.ts`, red before: off 285, 1.48 men). AT: the spec; ADR-609.
+      Rule in (ADR-609, `docs/evidence/7.51/a.md`): off 0, 5.00 men.
+    - [x] 7.51b The late air war: air battles in years 2–20, on 7.49's 10 unseen seeds, at least a
+      tenth of year 1's, or a BLOCKERS entry with the measured cause, the user's to accept. Read
+      after 7.49 (whose parts c–f wait on the user). Stop: two full re-measures flat (ADR-554).
+      Measured, bar missed (`docs/evidence/7.51/b.md`, `tools/diag/airLate.ts`, on `309f0d4e`):
+      0.065 of year 1 pooled (2 of 10 seeds at a tenth); the cause, the late land war (air battles
+      against engaged r 0.45, against wars 0.06; engaged per war 0.057 of year 1): PLAN 7.77; the
+      user's (BLOCKERS). Closed not done (2026-10-22, the user's decision b): no land-war task; the
+      aircraft score waits for the next critic run. 7.51 closed with it (7.51a done, b not).

@@ -36,14 +36,6 @@ The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval
 here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
 when taken up:
 
-- [ ] 7.77 The late land war under the air war (found at 7.51b; emergent 6, aircraft 7; R11-B1 as
-  7.49 left it, ADR-614): the air war follows the land war by design (ADR-377), and late the land
-  war stands at a twentieth of year 1's. AT: on seeds 7401–7410 × 20 years (`airLate.ts`), land
-  formations engaged per war in years 2–20 at least a tenth of year 1's (0.057 on `309f0d4e`),
-  and air battles at least a tenth of year 1's (0.065); no tick over budget; the pin's entry.
-  Stop: two full re-measures flat, the bar is the user's (ADR-554). Waits on the user's choice in
-  BLOCKERS (7.51b).
-
 - [ ] 7.74 An overrun holder's first strike is on the enemy overrunning it (found at 7.62; PLAN
   7.18j's claim, which only the critic's France case held, and France now holds fire): a case of an
   editor-armed holder at war that still strikes under ADR-629 (the critic's Poland,
@@ -51,29 +43,6 @@ when taken up:
   test on that case: a first decision within 60 days, its place the cell of or within a blast's
   radius of a formation of a nation on the other side of the holder's war; red with the aim taken
   off (PLAN 7.18j's rule reverted by hand); no rule change, pin unchanged.
-
-- [ ] 7.51 Aircraft (aircraft 7, needs 8, beyond 7.49): the late air war unchanged, 3,160 air
-  battles in year 1 and 120 a world-year after on the same 14 seeds (122 on `bcbc99c`), sorties
-  aloft after year 1 a mean of 8.1 (`critic/c11_cmp.json`, `c11_h_1307.json`); the critic reads it as
-  R11-B1 seen from the air, so it is read after 7.49. The aircraft drawn at T3 are three white glyphs
-  the size of a squad, not in a nation's colour (`critic/shots/c11c_7019_inf_0010m.png`). AT: at 10
-  m/px on the critic's 7019 front every drawn aircraft's middle within 40 (summed RGB) of its
-  nation's tint, and its span at least 4 × a man's figure there (a spec, red before); air battles in
-  years 2–20 after 7.49, on its 10 unseen seeds, at least a tenth of year 1's, or a BLOCKERS entry
-  with the measured cause, the user's to accept. Stop: two full re-measures flat, the bar is the
-  user's (ADR-554).
-  In parts:
-    - [x] 7.51a The planes at T3: each drawn plane's middle within 40 (summed RGB) of its nation's
-      sprite tint and its span at least 4 men's figures, at 10 m/px on the 7019 front
-      (`tests/e2e/planesT3_1938.spec.ts`, red before: off 285, 1.48 men). AT: the spec; ADR-609.
-      Rule in (ADR-609, `docs/evidence/7.51/a.md`): off 0, 5.00 men.
-    - [ ] 7.51b The late air war: air battles in years 2–20, on 7.49's 10 unseen seeds, at least a
-      tenth of year 1's, or a BLOCKERS entry with the measured cause, the user's to accept. Read
-      after 7.49 (whose parts c–f wait on the user). Stop: two full re-measures flat (ADR-554).
-      Measured, bar missed (`docs/evidence/7.51/b.md`, `tools/diag/airLate.ts`, on `309f0d4e`):
-      0.065 of year 1 pooled (2 of 10 seeds at a tenth); the cause, the late land war (air battles
-      against engaged r 0.45, against wars 0.06; engaged per war 0.057 of year 1): PLAN 7.77; the
-      user's (BLOCKERS).
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
@@ -370,3 +339,5 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.62 An empty capital is no first-strike target (ADR-611 b, the user's decision, 2026-10-21; […]
 - [x] 7.76 A capital taken counts in the desperation (found at 7.75; the user's decision, 2026-10-22; […]
 - [x] 7.75 Supply over the beach on any land (ADR-622's scope b, the user's decision, 2026-10-22; […]
+- [x] 7.77 The late land war under the air war (found at 7.51b; emergent 6, aircraft 7; R11-B1 as […]
+- [x] 7.51 Aircraft (aircraft 7, needs 8, beyond 7.49): the late air war unchanged, 3,160 air […]
