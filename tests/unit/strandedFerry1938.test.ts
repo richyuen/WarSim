@@ -181,7 +181,9 @@ describe('the ferry tries its groups until one acts (PLAN 7.88a)', () => {
 // first group's division alone went.
 describe('every group with an army to carry acts in the ferry’s turn (PLAN 7.88b)', () => {
   it('two groups at two ports each take their division aboard', () => {
-    const { w, div, tp, home, europe, reaches, more } = stranded(1);
+    // Three divisions (the third left where it stands): the free army over one group's room, so the
+    // turn goes on past the first group's order (a group carries two since PLAN 7.90d, ADR-647).
+    const { w, div, tp, home, europe, reaches, more } = stranded(2);
     const c = w.formations.cols;
     const comp = navOf(w).grid.component;
     const water = portSeaOf(w);

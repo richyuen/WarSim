@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-647 · 2026-10-22 · accepted — A transport carries 2,100 men: a group of 12 takes two infantry divisions of 1938 (PLAN 7.90d; amends PLAN 4.5a's figure)
+
+- **Context** (`docs/evidence/7.90/a.md` §4). `TRANSPORT_MEN` gave a transport 2,000 men, a group's 12
+  24,000, "two infantry divisions of 1938"; the 1938 infantry division (`infantry_div`) is 12,460 at
+  full strength, and two (24,920) did not fit. Critic run 12, 1129 year 10: 15 of the USA's 17 ferry
+  trips in 90 days carried one division, half the room the group was set for.
+- **Decision** (`systems/amphibious.ts`): `TRANSPORT_MEN` 2,100, a group 25,200: two divisions of 12,460
+  with 280 to spare, the smallest round figure over 24,920. No formation on run 12's 1129 and 6421 saves
+  is over 12,600 (two of those fit exactly); a formation's strength is its elements' and does not pass
+  its template. Everything read by the room moves with it: every landing's and ferry trip's lift, the
+  Normandy's NORMANDY_GROUP_SHARE of the room, `wantsFerry`'s men against the room, and
+  `wantsTransport`'s group "with room for a division" (now 6 transports of 12, not 7).
+- **Read** (`docs/evidence/7.90/d.md`, 90 days): 1129 year 10, divisions a trip 1.12 → 1.87 (trips of
+  two 2 → 13 of 15), landed 19 → 28 (from the Baltimore pile 15 → 22), piles on day 90 60/17 → 60/7.
+  The two trips of one are three groups splitting a port's last four divisions (PLAN 7.90g). 6421 year
+  20: 87 landed either way (its groups refuse at Dakar, PLAN 7.90f).
+- **Not changed.** A player's order still sets a group sailing with its first division (the next goes
+  on another group): only the AI names a group under way (`via`, ADR-625).
+- **Test.** `amphibious1938.test.ts`, "a transport group takes two full infantry divisions on one trip,
+  the second on the group already under way"; red without. Two tests that built "an army over one
+  group's room" of two divisions take three now (`ferry1938.test.ts`, the ferry's want through an
+  ally; `strandedFerry1938.test.ts`, two groups at two ports, ADR-642): with two the first group's
+  room covers the army, the turn ends there (ADR-642's stop), and the other group waits a week.
+- **Pin.** 8a571863 → 5ea2c9d8.
+
 ### ADR-646 · 2026-10-22 · accepted — A ferry group away from the army sails for it by the formations on a land with a port of the nation's (PLAN 7.90c; amends ADR-595)
 
 - **Context** (`docs/evidence/7.90/a.md` §2). A transport group standing away from the free army (in the

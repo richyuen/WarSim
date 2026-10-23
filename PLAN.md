@@ -144,11 +144,15 @@ them, are 7.81–7.86. A task each, split when taken up:
       land with a port of the nation's; every group landing at Bathurst under way within 2–6 days, San
       Juan's, Roseau's, Bissau's on the first turn; 1129's landed 8 → 19 (15 from the Baltimore pile),
       piles on day 90 60/43 → 60/17; 6421's 78 → 87. The pin unchanged.
-    - [ ] 7.90d A division over half the room (a.md §4): `TRANSPORT_MEN` gives a group 24,000 men, "two
+    - [x] 7.90d A division over half the room (a.md §4): `TRANSPORT_MEN` gives a group 24,000 men, "two
       infantry divisions of 1938", and the template is 12,460, so every trip carries one a group. The rule
       changes every landing's lift too (ADR when taken up). AT: on 1129 year 10 the divisions a group
       carries a trip (`ferryTrip.ts`, `landed` by fleet) 1 → 2; a unit test (red without); the ADR; the
       pin's entry.
+      Done (ADR-647, `docs/evidence/7.90/d.md`): a transport 2,100 men, a group 25,200; on 1129 year 10 a
+      trip 1.12 → 1.87, trips of two 2 → 13 of 15 (the mode 2), landed 19 → 28, piles on day 90 60/17 →
+      60/7; the two of one are three groups splitting a port's last four (7.90g). 6421: 87 landed either
+      way. Pin 8a571863 → 5ea2c9d8.
     - [ ] 7.90e The ferry's transports (a.md §5): `wantsFerry` counts only the army on landmasses with a port
       and no front, not the army on a fronted landmass that reaches no front (the ferry's since ADR-636),
       so it is false on 1129 year 10 with ~150 such formations and 131,961 gold. AT: on 1129 year 10
@@ -162,7 +166,16 @@ them, are 7.81–7.86. A task each, split when taken up:
       groups at Dakar and Bathurst that give no order on every turn they stand there 27–29 → 0, or the
       read shows the refusal right (no formation there the ferry should carry: then closed so, the
       reason in c.md); a unit test (red without) with a rule; the ADR; the pin's entry.
-    Then 7.90's AT, read after 7.90b–f (a.md §6: on the 60 it is likely missed; that goes to BLOCKERS).
+    - [ ] 7.90g A port's army split over its groups (found at 7.90d, `docs/evidence/7.90/d.md`): on 1129 year
+      10, on the turn of day 3712, three groups at Norfolk (365, 568, 571) took the Baltimore pile's last
+      four divisions 2 / 1 / 1, each in the turn's order taking the nearest left, so a group sailed with one
+      where two groups had room for the four; 6421 year 20's 27 trips of one are unread. Read first whose
+      the trips of one are on both saves (the port's free army when the group went, the room left); then the
+      rule it names. AT: on 1129 year 10 and 6421 year 20 (`ferryTrip.ts`, `landed` by fleet and sail day)
+      the trips of one that left at their port a free formation the group had room for (1129: 2; 6421:
+      read first) → 0, or the read shows each right (closed so, the reason in the note); a unit test (red
+      without) with a rule; the ADR; the pin's entry.
+    Then 7.90's AT, read after 7.90b–g (a.md §6: on the 60 it is likely missed; that goes to BLOCKERS).
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts

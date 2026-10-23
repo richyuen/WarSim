@@ -4,7 +4,7 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, PORTS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { destroyFormation } from '../../src/sim/systems/elements';
-import { LANDING_ORG, TRANSPORT_MEN, transportRoom } from '../../src/sim/systems/amphibious';
+import { LANDING_ORG, orderLanding, TRANSPORT_MEN, transportRoom } from '../../src/sim/systems/amphibious';
 import { navOf, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, runEvents } from '../helpers/sim1938';
@@ -97,8 +97,26 @@ describe('amphibious movement (PLAN 4.5a)', () => {
       else refused = true;
     }
     expect(refused).toBe(true);
-    // A group's 24,000 take one division of 12,460, not two: two go aboard, the third marches.
+    // A player's order sets a group sailing with its first division, so each takes one: two go
+    // aboard, the third marches (the AI's next goes on the group it names, below).
     expect(aboard).toBe(2);
+  });
+
+  // PLAN 7.90d (ADR-647): a group's 12 transports were given 24,000 men, "two divisions", and a
+  // division of 1938 is 12,460, so every ferry trip and landing took one a group.
+  it('a transport group takes two full infantry divisions on one trip, the second on the group already under way', () => {
+    const s = sim();
+    const w = s.world;
+    const [cx, cy] = at(1.86, 50.95);
+    const first = atPortsmouth(w);
+    const second = atPortsmouth(w);
+    expect(w.formations.cols.strength[first]).toBe(12460);
+    expect(w.formations.cols.strength[second]).toBe(12460);
+    expect(orderLanding(w, first, cx, cy)).toBe(true);
+    const fleet = w.embarked.get(first)!.fleet;
+    expect(transportRoom(w, fleet)).toBe(12 * TRANSPORT_MEN);
+    expect(orderLanding(w, second, cx, cy, fleet)).toBe(true);
+    expect(w.embarked.get(second)?.fleet).toBe(fleet);
   });
 
   it('transports sunk with a division aboard take it with them', () => {

@@ -43,8 +43,12 @@ import { orderSail } from './sail';
 import { seaHolder } from './seaControl';
 import { blocOf } from './supply';
 
-/** Men a transport carries. A transport group's 12 carry 24,000: two infantry divisions of 1938. */
-export const TRANSPORT_MEN = 2000;
+/**
+ * Men a transport carries. A transport group's 12 carry 25,200: two infantry divisions of 1938
+ * (12,460 each, `infantry_div` at full strength) with 280 to spare (PLAN 7.90d, ADR-647). Before,
+ * 2,000: the group's 24,000 took one such division a trip, half what it was set for.
+ */
+export const TRANSPORT_MEN = 2100;
 /** The org a formation has at most when it has landed (PLAN 4.5a): a landing leaves it in disorder. */
 export const LANDING_ORG = 0.5;
 /** How far, in cells, the landing's water is looked for from the target. */

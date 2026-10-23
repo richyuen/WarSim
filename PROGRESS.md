@@ -22441,3 +22441,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Filed:** PLAN 7.90f (Dakar's 25 groups refusing a board every turn on 6421). The turn still tries every
   group there (never tried 0), refusals' searches at most 45 of 68.
 - **Next:** PLAN 7.90d.
+
+## 2026-10-22 — PLAN 7.90d: a transport group takes two divisions (ADR-647)
+
+- **Rule:** `TRANSPORT_MEN` 2,000 → 2,100, a group of 12 transports 24,000 → 25,200 men: two 1938
+  infantry divisions of 12,460 with 280 to spare. No land formation on run 12's 1129 or 6421 save is
+  over 12,600.
+- **Read** (`docs/evidence/7.90/d.md`, `ferryTrip.ts` 90 days, a trip = group and sail day): 1129 year
+  10, divisions a trip 1.12 → 1.87 (trips of two 2 → 13 of 15), landed 19 → 28 (from the Baltimore pile
+  15 → 22), piles on day 90 60/17 → 60/7. 6421 year 20: 87 landed either way (Dakar's refusals, 7.90f).
+- **Test:** `amphibious1938.test.ts` "a transport group takes two full infantry divisions on one trip"
+  (red without: the second went on Portsmouth's other group). The Portsmouth count test beside it keeps
+  two aboard: a player's order sets a group sailing with its first division (only the AI's `via` boards
+  one under way), its comment now says so. `navyBudget1938.test.ts`'s comment: 6 × 2,100. Two tests
+  whose "army over one group's room" was two divisions take three (`ferry1938`, `strandedFerry1938`):
+  with two, one group's room now covers the army and the turn stops there (ADR-642). The gate found
+  them; the related run had not been run by hand first.
+- **Filed:** PLAN 7.90g (the two trips of one: three groups at Norfolk split the pile's last four 2/1/1).
+- **Pin:** 8a571863 → 5ea2c9d8.
+- **Next:** PLAN 7.90e.

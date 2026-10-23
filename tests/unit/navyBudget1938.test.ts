@@ -96,7 +96,7 @@ describe('the navy\'s cost (PLAN 4.6e1)', () => {
     expect(TRANSPORT_MEN).toBeLessThan(division);
     const one = setUp(1);
     expect(ships(one.w, one.SWE)).toEqual([fleets.transport]);
-    // Room for a division (7 × 2,000 against 12,460): it has its transports.
+    // Room for a division (6 × 2,100 against 12,460): it has its transports.
     const seven = setUp(Math.ceil(division / TRANSPORT_MEN));
     expect(ships(seven.w, seven.SWE)).not.toContain(fleets.transport);
   });
