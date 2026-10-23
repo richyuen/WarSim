@@ -38,7 +38,8 @@ On 6421 the ferry has 8 turns, not 13: 5 of the USA's actor days went to Normand
 landing aboard, the ferry following (`c_turns_6421.json`, `ferryTurns.ts`), the groups free for them
 now home. Left on 6421: 20–26 groups at Dakar, and later Bathurst's, refuse a `board` every turn (on
 the African front's land, the army by them not sent to the port); 7.90b's read had those refusals
-too. 1129's 60 by Chicago do not move (7.90's bar on them, `a.md` §6).
+too: filed as PLAN 7.90f. The turn still tries every group on 6421 (never tried 0 on each late turn,
+7.90b's figure) and its refusals searched at most 45 (bound 68; HEAD 18). 1129's 60 by Chicago do not move (7.90's bar on them, `a.md` §6).
 
 Timing (`.cache/prof90c/`, pairs on separate P-cores, swapped, a year from each save): invasion AI a
 tick, HEAD → rule, 1129 year 10 0.312 / 0.279 → 0.296 / 0.343 ms (longest 58 / 53 → 51 / 95 ms), 6421

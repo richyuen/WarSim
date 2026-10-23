@@ -154,7 +154,15 @@ them, are 7.81–7.86. A task each, split when taken up:
       so it is false on 1129 year 10 with ~150 such formations and 131,961 gold. AT: on 1129 year 10
       `wantsFerry` true on day 0 and a US transport group in training by day 30 (HEAD: false, none); a unit
       test (red without); the ADR; the pin's entry.
-    Then 7.90's AT, read after 7.90b–e (a.md §6: on the 60 it is likely missed; that goes to BLOCKERS).
+    - [ ] 7.90f The board refused at Dakar (found at 7.90c, `docs/evidence/7.90/c.md`): on 6421 year 20,
+      with the way back mended, 25 US groups stand at Dakar (and 2–4 at Bathurst) from day 56 to day 90
+      and refuse a `board` every turn (9 searches each, no order), on the African front's land with free
+      army on it. Read first why (`ferryTurns.ts`, `ferryStuck.ts`: the board's target, the nearest's
+      march to the port); then the rule it names. AT: on 6421 year 20, days 30–90 (`ferryTrip.ts`), the
+      groups at Dakar and Bathurst that give no order on every turn they stand there 27–29 → 0, or the
+      read shows the refusal right (no formation there the ferry should carry: then closed so, the
+      reason in c.md); a unit test (red without) with a rule; the ADR; the pin's entry.
+    Then 7.90's AT, read after 7.90b–f (a.md §6: on the 60 it is likely missed; that goes to BLOCKERS).
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts

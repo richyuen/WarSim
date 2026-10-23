@@ -22438,4 +22438,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Timing** (`.cache/prof90c/`): invasion AI within the pairs' spread, one 95 ms call on 1129.
 - **Probe:** `ferryTrip.ts`'s refused-sail lines take the four as the rule does.
 - **Pin:** unchanged, 8a571863.
+- **Filed:** PLAN 7.90f (Dakar's 25 groups refusing a board every turn on 6421). The turn still tries every
+  group there (never tried 0), refusals' searches at most 45 of 68.
 - **Next:** PLAN 7.90d.
