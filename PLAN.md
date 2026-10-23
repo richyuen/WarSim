@@ -139,6 +139,9 @@ them, are 7.81–7.86. A task each, split when taken up:
   `dd3b730`'s and late sea battles a world-year not below its, both read on the same seeds; ADR-615's
   own measure (the band's formations after 180 days on the critic's 48 saves) not under HEAD's; a unit
   test (red without); the ADR; the pin's entry.
+  Share read (`docs/evidence/7.95/share.md`, `navySave95.ts`): the months a saving would stop are of
+  armies under half their peacetime share (72 of 88, 93 of 100); S ≥ 0.5 changes 16 and 7 in ten years.
+  Waits on ADR-667 (BLOCKERS).
 - [ ] 7.85 Aircraft (aircraft 7, needs 8): air battles after year 1 153 a world-year against 2,853 in year 1
   (0.054; 7.51b closed not done on the land-war cause, BLOCKERS 2026-10-22); a carrier strike shows no
   aircraft (7.84 shares the case). Taken up after 7.79, re-read on its HEAD first. AT: on 10 unseen seeds ×

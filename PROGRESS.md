@@ -22999,3 +22999,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   (b) a rule of fewer searches; (c) the 3 % cache.
 - **No rule;** the pin unchanged (b9bff4bd).
 - **Next:** 7.94 waits on ADR-666; the loop takes 7.84.
+
+## 2026-10-23 — PLAN 7.95's share, read: the gold is in ADR-615's armies (ADR-667 to the user)
+
+- **Read** (`docs/evidence/7.95/share.md`; `tools/diag/navySave95.ts`, new; 3613 and 4219 × 10 years): of
+  the months a navy-less nation at war with no naval enemy, under the warship's line, ordered army
+  instead, 72 of 88 and 93 of 100 had its army under half its peacetime share. A share S ≥ 0.5 changes
+  16 and 7 of them; S ≈ 0.25 reaches the defenders ADR-615 serves.
+- **Verdict:** no rule; BLOCKERS entry; ADR-667 proposed: (a) the smaller navies accepted, 7.95 closed not
+  done, 7.84 on its first bar (recommended); (b) S = 0.25; (c) S = 0.5.
+- **No rule;** the pin unchanged (b9bff4bd).
+- **Next:** 7.95 waits on ADR-667; the loop takes 7.85.

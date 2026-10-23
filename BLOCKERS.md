@@ -862,6 +862,15 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 - **Left:** ADR-666: (a) closed not done (recommended); (b) a rule of fewer searches, the pin moves;
   (c) the 3 % cache, closed not done. The pin unchanged (b9bff4bd).
 
+## 2026-10-23 — PLAN 7.95: the share that would save is ADR-615's army (ADR-667 waits on the user)
+
+- **Bar:** fleets in years 10–20 at least 0.9 of `dd3b730`'s and late sea battles not below its, on 10
+  unseen seeds × 20 years, with S read first (`docs/evidence/7.95/share.md`).
+- **What moved:** nothing yet; the read: the order-months a saving would stop are 82–93 % armies under half
+  their peacetime share. S ≥ 0.5 changes 16 and 7 months in ten years.
+- **Left:** ADR-667: (a) the smaller navies accepted, 7.95 closed not done, 7.84 on its first bar
+  (recommended); (b) S = 0.25; (c) S = 0.5. The pin unchanged (b9bff4bd).
+
 ## Watch list (not blocking)
 
 - **From the tenth independent read (PLAN 4.8a, 2026-10-12), suspicions not run:**

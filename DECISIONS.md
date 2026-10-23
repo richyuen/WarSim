@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-667 · 2026-10-23 · proposed, the user's decision — A warship's saving in a land war: the share that would save is ADR-615's army (PLAN 7.95)
+
+- **Context** (`docs/evidence/7.95/share.md`). PLAN 7.95 (ADR-656 b): at war with no naval enemy, a nation
+  with a shipyard and no armed fleet saves for its cheapest warship while its army is at or over a share
+  S of its peacetime share; S read first on 3613 and 4219.
+- **Read** (`tools/diag/navySave95.ts`, years 1–10): of the months such a nation, under the warship's
+  line, placed a land order instead, **72 of 88 (3613) and 93 of 100 (4219) had its army under half its
+  peacetime share**. S = 0.5 or more changes 16 and 7 of those months in ten years; S near 0.25 would
+  reach most, and those are the armies far under their share that ADR-615 (the user's ADR-592 a) keeps
+  the reserve from.
+- **Options:**
+  - **(a)** ADR-656's fallback (a): accept the smaller late navies as the price of ADR-615's defenders;
+    7.95 closed not done with no rule; 7.84's battles bar dropped, 7.84 judged by its first bar (met by
+    7.84a/b) and the next critic report.
+  - **(b)** The rule at S = 0.25, its AT as filed (fleets and battles on 10 unseen seeds × 20 years against
+    `dd3b730`, and ADR-615's own measure on the critic's 48 saves not under HEAD's), knowing it reaches
+    into ADR-615's armies.
+  - **(c)** The rule at S = 0.5, the AT as filed; the read expects little to move.
+- **Recommended: (a).** The read puts the gold the navies lack in the armies the user chose to serve
+  first; (b) is that choice reversed in part, and (c) is unlikely to meet the bars. 7.84 then closes on
+  its first bar.
+- **Consequences:** until decided, no rule; the pin unchanged (b9bff4bd).
+
 ### ADR-666 · 2026-10-23 · proposed, the user's decision — The operational AI's half is not in caches (PLAN 7.94)
 
 - **Context** (`docs/evidence/7.94/measure.md`). PLAN 7.94 (ADR-654 a): operationalAi's mean a tick on a
