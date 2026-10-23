@@ -226,6 +226,10 @@ them, are 7.81–7.86. A task each, split when taken up:
       left; HEAD 1 in 120 days → 0 (no sail refused), day 7387's five sails ordered; landed 87 either
       way. The pin unchanged (5161de24).
     Then 7.90's AT, read after 7.90b–h (a.md §6: on the 60 it is likely missed; that goes to BLOCKERS).
+    Read (`docs/evidence/7.90/at.md`): 2 → 2, missed (BLOCKERS 2026-10-23). The Baltimore pile 53 → 31 by
+    day 30 (7 by day 85), the 60 by Chicago unmoved; the same with g.patch. Both piles predate the rules;
+    the bar's scope is the user's (ADR-653: (a) judged from 1938 by 7.79's AT, recommended; (b), (c) a
+    PLAN 7.93). Open only for 7.90g (ADR-651).
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts

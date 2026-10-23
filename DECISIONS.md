@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-653 · 2026-10-23 · proposed (the user's decision) — The piles bar on the critic's saves, or on fresh worlds (PLAN 7.90's AT missed)
+
+- **Context** (`docs/evidence/7.90/at.md`). PLAN 7.90's bar, piles of 30 or more of a nation at war on
+  one cell 30 days running on run 12's 1129 year 10, 6421 year 20 and 7019 year 10, 2 → 0, read 2 → 2
+  after 7.90b–h (and with 7.90g's held patch). The ferry now carries 1129's Baltimore pile off (53 → 31
+  by day 30, 7 by day 85; 7.89's 53 → 41), one division over the bar on day 30. The 60 by Chicago do not
+  move in 90 days: 121 cells from a sea port, never the nearest to a group while the 53 stand.
+- **Why out of reach on the save:** both piles were built before the save, by run 12's code, when the
+  ferry carried none of the mainland army. From the saved day a march to the Atlantic ports is 58–86
+  days, and the USA's 12 groups move at most 12–24 divisions off in 30 days (about 26 groups needed);
+  transports bought now train for months. No rule meets the bar from this save in 30 days.
+- **Options:** (a) The saves measure the lift, not a bar: 7.90 closes as missed, and whether HEAD's rules
+  build such piles at all is judged from 1938 by 7.79's AT clause (no pile of 30+ of a nation at war for
+  30 days on 10 unseen seeds × 20 years), read next. No rule. (b) PLAN 7.93: the army that reaches no
+  front marches ahead to the ports that have a group, before the lift, with a bar on 1129 year 10 over
+  90 days (the 60 under 30 by day 90). (c) PLAN 7.93 as more lift: the ferry's want sized to the army
+  that waits (`wantsFerry`'s room against the far army's men), a bar on groups bought and landed over a
+  year. **Recommended: (a)**, since the save's piles are history the new rules did not write, and 7.79's
+  read from 1938 shows whether they form now; (b) or (c) is filed then if they do.
+- **Consequences:** under (a) the loop reads 7.79's AT next; 7.90 stays open only for 7.90g (ADR-651).
+
 ### ADR-652 · 2026-10-23 · accepted — The ferry's sail to the army passes over formations cut off from their ports (PLAN 7.90h; amends ADR-646)
 
 - **Context** (`docs/evidence/7.90/c.md` "7.90f: the read", `h.md`). A transport group away from the free

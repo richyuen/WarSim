@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.90: the ferry carries the Baltimore pile off, but not within 30 days, and the 60 by Chicago do not move; piles 2 → 2 (2026-10-23, ADR-653 proposed; the user's decision)
+- **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
+  year 20 and 7019 year 10 (`piles.ts --days 30`) 2 → 0.
+- **What moved** (7.90b–h, `docs/evidence/7.90/at.md`): every group tried a turn, the way back, two
+  divisions a trip, transports bought for the far army, the sail past cut-off remnants. The Baltimore
+  pile 53 → 31 by day 30 (7.89: 41) and 7 by day 85; 6421 and 7019 none. With 7.90g's held patch the same.
+- **What is left:** the 60 by Chicago (121 cells from a sea port, never the nearest to a group), and the
+  Baltimore pile's one division over the bar on day 30. Both piles predate the rules that move them; no
+  rule meets the bar from the save in 30 days. The user's (ADR-653): (a) judge piles from 1938 by 7.79's
+  AT, (b) a staging march (PLAN 7.93), (c) more lift (PLAN 7.93). 7.90g still waits on ADR-651.
+
 ### PLAN 7.91 (and 7.90g after it): held on `nukePoland1938` seed 5591, whose "on Germany" is the user's to keep or drop (2026-10-22, ADR-651 proposed; the user's decision)
 - **The bar:** with 7.91's patch, `nukePoland1938` green on its three seeds with the first burst on
   Germany (PLAN 7.92's AT, first branch), so that 7.91 and then 7.90g can be committed.

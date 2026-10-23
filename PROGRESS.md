@@ -22572,3 +22572,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin:** unchanged, 5161de24 (so 7.91's and 7.90g's held pins are not made staler by this commit).
 - **Next:** 7.90's AT read (piles of 30+ on 1129 y10, 6421 y20, 7019 y10; likely missed on the 60 by
   Chicago, then BLOCKERS), or the next open task.
+
+## 2026-10-23 — PLAN 7.90's AT read: missed, 2 → 2; the bar's scope to the user (ADR-653)
+
+- **Start:** gate green on `26d917d3`; critic not due. ADR-651 still the user's.
+- **Read** (`docs/evidence/7.90/at.md`, `at_piles*.json`, `at_daily_1129*.log`): piles of 30+ 30 days
+  running on 1129 y10, 6421 y20, 7019 y10: 2 → 2 on HEAD and with 7.90g's held patch. The Baltimore pile
+  53 → 31 by day 30 (7.89: 41), 7 by day 85; the 60 by Chicago unmoved in 90 days; 6421 and 7019 none.
+- **Verdict:** missed; BLOCKERS entry. The piles were built by run 12's code before the save; no rule
+  moves 31 of the 60 in 30 days from it (a march to a port 58–86 days; ~26 groups needed). ADR-653
+  proposed: (a) judge piles from 1938 by 7.79's AT (recommended), (b) a staging march, (c) more lift.
+  No rule; the pin unchanged (5161de24). 7.90 stays open for 7.90g (ADR-651).
+- **Next:** under ADR-653 (a), 7.79's AT on 10 unseen seeds × 20 years (HEAD's figure); else PLAN 7.93.
+  7.83 (performance) is independent of both user decisions.
