@@ -34,7 +34,7 @@
 import { EventKind, RejectReason } from '../../shared/events';
 import { isLand } from '../../shared/terrain';
 import { nearestCellWhere } from '../data/ownership';
-import { FlipCause, navOf, portSeaOf, seaOf, type World } from '../world';
+import { FlipCause, navOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
 import { destroyFormation, elementIndex } from './elements';
 import { AT_PORT_CELLS, sailHome } from './navalCombat';
 import { orderMove } from './movement';
@@ -80,6 +80,27 @@ function aboard(world: World, fleet: number): number {
 
 const cellOfPlace = (world: World, id: number): number => Math.floor(world.formations.cols.y[id]!) * world.cells.w + Math.floor(world.formations.cols.x[id]!);
 /**
+ * The transport groups of nation `n` standing at a port it holds (as `invasion.ts`'s `transportsAtPort` takes
+ * them): fleet, room, port index; the most room first, the lower id on a tie.
+ */
+export function transportGroupsAtPort(world: World, n: number): { fleet: number; room: number; port: number }[] {
+  const c = world.formations.cols;
+  const w = world.cells.w;
+  const water = portSeaOf(world);
+  const ctl = world.cells.controller;
+  const out: { fleet: number; room: number; port: number }[] = [];
+  world.formations.forEach((id) => {
+    if (c.nation[id] !== n || !world.isFleet(id) || c.moving[id] === 1 || c.engaged[id] === 1 || seaRangeOf(world, id) !== undefined) return;
+    const room = transportRoom(world, id);
+    if (room <= 0) return;
+    const at = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+    const port = world.ports.findIndex((p, k) => water[k]! >= 0 && ctl[p.cell] === n && near(world, at, water[k]!, world.atSize(AT_PORT_CELLS)));
+    if (port >= 0) out.push({ fleet: id, room, port });
+  });
+  return out.sort((a, b) => b.room - a.room || a.fleet - b.fleet);
+}
+
+/**
  * Whether a formation on `cell` stands at a port, anyone's, shut or not (those `tryLanding` looks
  * for, their holders aside): where it does not, an order over the sea from there is refused the
  * sea (`NoPort`) whoever holds what, and is a march over its land (PLAN 1.42g).
@@ -118,7 +139,8 @@ export function marchingToPort(world: World, id: number, ports: readonly number[
   return ports.some((p) => near(world, c.targetCell[id]!, p, r));
 }
 
-const near = (world: World, a: number, b: number, r: number): boolean => {
+/** Whether cells a and b lie within r cells of each other on both axes (the map's loop taken). */
+export const near = (world: World, a: number, b: number, r: number): boolean => {
   const w = world.cells.w;
   let dx = Math.abs((a % w) - (b % w));
   if (world.settings.loopingMap && dx > w / 2) dx = w - dx;

@@ -48,7 +48,7 @@
 import { isDayStart } from '../../shared/calendar';
 import { neighbours4, type MobilityId, type Passage } from '../nav/grid';
 import { frontierOf } from '../systems/territory';
-import { marchingToPort, orderLanding, transportRoom } from '../systems/amphibious';
+import { marchingToPort, near, orderLanding, transportGroupsAtPort } from '../systems/amphibious';
 import { CORRIDOR_REFUSAL, findRoute, mayReach } from '../nav/provinceGraph';
 import { marchHoursLeft, orderMove, passageOf, snapTarget } from '../systems/movement';
 import { AT_PORT_CELLS, keyAt, seaKm, waterKeys } from '../systems/navalCombat';
@@ -57,16 +57,10 @@ import { capitalCell } from '../systems/capitals';
 import { orderSail } from '../systems/sail';
 import { seaHolder } from '../systems/seaControl';
 import { beachReach } from '../systems/seaSupply';
-import { navOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
+import { navOf, portSeaOf, seaOf, type World } from '../world';
 import { DEPLOY_RANGE_CELLS, groundReader, reachOnLand, reachesOnLand } from './operational';
 import { STAGGER } from './strategic';
 
-const near = (world: World, a: number, b: number, r: number): boolean => {
-  const w = world.cells.w;
-  let dx = Math.abs((a % w) - (b % w));
-  if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
-  return dx <= r && Math.abs(Math.floor(a / w) - Math.floor(b / w)) <= r;
-};
 
 export function invasionAi(world: World): void {
   if (!world.settings.aiEnabled || !isDayStart(world.tick) || world.wars.list.length === 0 || !world.rules) return;
@@ -505,26 +499,6 @@ function nearestSq(world: World, cells: readonly number[]): (cell: number) => nu
   };
 }
 
-/**
- * The transport groups of nation `n` standing at a port it holds (as `transportsAtPort` takes
- * them): fleet, room, port index; the most room first, the lower id on a tie.
- */
-function transportGroupsAtPort(world: World, n: number): { fleet: number; room: number; port: number }[] {
-  const c = world.formations.cols;
-  const w = world.cells.w;
-  const water = portSeaOf(world);
-  const ctl = world.cells.controller;
-  const out: { fleet: number; room: number; port: number }[] = [];
-  world.formations.forEach((id) => {
-    if (c.nation[id] !== n || !world.isFleet(id) || c.moving[id] === 1 || c.engaged[id] === 1 || seaRangeOf(world, id) !== undefined) return;
-    const room = transportRoom(world, id);
-    if (room <= 0) return;
-    const at = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
-    const port = world.ports.findIndex((p, k) => water[k]! >= 0 && ctl[p.cell] === n && near(world, at, water[k]!, world.atSize(AT_PORT_CELLS)));
-    if (port >= 0) out.push({ fleet: id, room, port });
-  });
-  return out.sort((a, b) => b.room - a.room || a.fleet - b.fleet);
-}
 
 /**
  * The transport group of a nation standing at a port it holds with the most room (the lower id on

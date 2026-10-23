@@ -29,6 +29,15 @@ describe('the AI\'s invasions (PLAN 4.6b)', () => {
     const w = s.world;
     const home = navOf(w).grid.component[Math.floor(w.nations.cols.capitalY[ENG]!) * W + Math.floor(w.nations.cols.capitalX[ENG]!)]!;
     expect(declareWar(w, ENG, ICE, true)).not.toBeNull();
+    // One war (PLAN 7.82d, ADR-670: a war choice across the sea). Britain, with no land target over
+    // the bar, declared on Brazil on day 22; Japan on Denmark and Iceland on day 2, and Germany, its
+    // ally, overran Denmark by day 4, which ended Britain's war before its landing. A truce of the
+    // three with every nation outside the war keeps them out of another (nobody joins against one).
+    for (const x of [ENG, ICE, DEN]) {
+      w.nations.forEach((n) => {
+        if (n !== x && !w.wars.atWar(x, n)) w.wars.truces.push({ a: x, b: n, untilTick: w.tick + 24 * 365 });
+      });
+    }
     // The air out of it (PLAN 5.12b): British strikes on Denmark's forces, in contact or not, won
     // Britain the peace on the seventh day, before its landing on the ninth. The case is the landing.
     for (const [wing] of [...w.wingBase]) if ([ENG, ICE, DEN].includes(w.formations.cols.nation[wing]!)) destroyFormation(w, wing);

@@ -167,6 +167,36 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-670 · 2026-10-23 · accepted — A war across the sea: with no land target over the bar, the nations a nation could land on (PLAN 7.82d)
+
+- **Context** (`docs/evidence/7.82/d/at.md`). PLAN 7.82d (ADR-665 b): on seed 845 the United States,
+  Canada and Denmark were at war 12–24 days a year and held their cells to 2 % for 19 years (years
+  8–26), the critic's longest stasis. The war choice (`strategicAi`) looked at land neighbours alone.
+- **Read** (`tools/diag/warChoice.ts`, new; HEAD's 845, years 8–26): Canada is the USA's puppet; their
+  land neighbours (Mexico, Cuba) score under DECLARE_AT, Greenland has none. The Soviet Union, its
+  transport groups at its own ports on their water on 13 of 19 years, scored 1.0–1.4 on the USA bloc
+  and 1.4–1.7 on Denmark, with no land target over the bar on 77–84 of its turns: it could land on
+  them, and never looked.
+- **Decision.** `warTarget`: a nation takes its best land neighbour over DECLARE_AT as before; with
+  none, the best over DECLARE_AT of `seaTargets`, the nations holding a port on a water where a
+  transport group of its own stands at its own port (`planLanding`'s reach: the same water,
+  `waterKeys`; not a sea ice closes; not one an enemy holds). Land wars first, so a front is not left
+  for an overseas war. `transportGroupsAtPort` (and `near`) moved from `ai/invasion.ts` to
+  `systems/amphibious.ts` unchanged, so the strategic AI reads them without an import cycle
+  (`invasion.ts` reads `STAGGER` at load). **[AoC-DEVIATION]** none: AoC's nations declare on those
+  they reach, by land or sea (TEXT: its naval invasions; low confidence on how it picks).
+- **AT** (845 × 30 years from 1938, `churnAt.ts`): longest stasis **19 → 5** years (bar 15); days at war
+  a year in years 8–26: USA **310**, Canada **358**, Denmark **122** (bar 60). 844 (for information) 17 →
+  4. Unit test `warOverSea1938`, red without (no `warTarget`, `seaTargets`).
+- **Also read:** engaged land formations per war in years 2–20 on 821–830 × 20 years 0.480 → **0.493**
+  (7 seeds of 10 up; 7.82c's rule had 0.421); the front battles up in number (845 8.7k → 22.9k, 844
+  17.2k → 20.2k in years 10–30) but down in share (1.9 → 1.4 %, 1.8 → 1.6 %), as all changes of hands
+  rise 1.3–3.7×. 7.82's own bar (share at least HEAD's) is read on 851–860 next. strategicAi's tick
+  0.03 ms as before.
+- **Tests:** two 1938 cases of one war (`invasionAi1938`'s Iceland, `navalAi1938`'s Italy) met new wars
+  across the sea in their windows; each gives its war's nations a truce with every nation outside it.
+- **Pin:** b9bff4bd → 7c2e4700.
+
 ### ADR-669 · 2026-10-23 · proposed (the user's decision) — The remnant at war: the landing rule adds orders, not landings (PLAN 7.82c's AT missed)
 
 - **Context** (`docs/evidence/7.82/c/at.md`). PLAN 7.82c (ADR-665 b): ADR-664's candidate (`b.patch`: a

@@ -23044,3 +23044,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   lift; (c) the rule anyway.
 - **No rule;** the pin unchanged (b9bff4bd).
 - **Next:** 7.82d (it does not wait on ADR-669).
+
+## 2026-10-23 — PLAN 7.82d: a war across the sea; 845's stasis 19 → 5 years (ADR-670)
+
+- **Read** (`tools/diag/warChoice.ts`, new; `docs/evidence/7.82/d/845_port.*`): on 845, years 8–26, the war
+  choice looked at land neighbours alone. Canada is the USA's puppet; Mexico and Cuba score under the bar
+  on the USA, Greenland has no land neighbour. The Soviet Union, its transports at its own ports on their
+  water on 13 of 19 years, scored 1.0–1.7 on all three, with no land target over the bar on 77–84 turns.
+- **Rule** (`warTarget`, `seaTargets` in `ai/strategic.ts`): with no land neighbour over DECLARE_AT, the
+  best over it of the nations a transport group at its own port could land on (`planLanding`'s reach).
+  `transportGroupsAtPort` and `near` moved to `systems/amphibious.ts` (no import cycle with `invasion.ts`).
+  Unit test `warOverSea1938`, red without.
+- **AT** (845 × 30 from 1938, `churnAt.ts`): stasis 19 → **5** (bar 15); days at war a year in years 8–26
+  USA 310, CAN 358, DEN 122 (bar 60). 844: 17 → 4. Engaged per war on 821–830 × 20 (`landAt.ts`) 0.480 →
+  0.493. Battle share 1.9 → 1.4 % on 845, 1.8 → 1.6 % on 844: battles up, all changes up more. strategicAi
+  0.03 ms a tick as before.
+- **Tests isolated:** `invasionAi1938`'s Iceland case and `navalAi1938`'s Italy case went red: new wars
+  across the sea in their windows (Britain on Brazil; Japan on Denmark with Germany joining; Japan on the
+  Spanish Republic with Italy joining). Each now gives the nations of its war a truce with every nation
+  outside it, so the case stays one war; assertions unchanged, the Iceland history as HEAD's (day 1, day 5).
+- **Pin:** b9bff4bd → 7c2e4700.
+- **Next:** 7.82's AT on 851–860 × 30 years; its battle-share clause is at risk (share down on both seeds read).

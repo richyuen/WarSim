@@ -85,13 +85,19 @@ them, are 7.81–7.86. A task each, split when taken up:
       Missed (`docs/evidence/7.82/c/at.md`): Denmark −2.3k cells with the rule, +4.0k without; landed on
       20 times with, 22 without (orders 19 → 65; 82–95 % of the plans on it end with no transports);
       engaged per war 0.421. No rule; BLOCKERS; ADR-669 to the user. The loop takes 7.82d.
-    - [ ] 7.82d The holders at peace (ADR-665 b; 844, 845: Denmark, Canada and the USA at war 12–29 days a
+    - [x] 7.82d The holders at peace (ADR-665 b; 844, 845: Denmark, Canada and the USA at war 12–29 days a
       year and fixed to 2 % of their cells for 17–19 years). Read first on 845 over its span (years 8–26):
       which nations could reach each of them (a land front, a port in range of their transports), how the
       strategic AI scores them as a target against the one it picks (`ai/strategic.ts`), and why none is
       picked; then a rule on what it names. AT: on 845 × 30 years the longest stasis at most 15 years
       (19 on HEAD), wars on the three in years 8–26 at least 60 days a year each on average; a unit test,
       red without; the ADR; the pin's entry. Then 7.82's AT on 851–860 × 30 years.
+      Done (ADR-670, `docs/evidence/7.82/d/at.md`): the war choice looked across no sea; Canada the USA's
+      puppet, their land neighbours under the bar, Greenland with none; the Soviet Union, its transports
+      at its ports on their water, at 1.0–1.7 on them. Rule: with no land target over the bar, the best of
+      those it could land on (`seaTargets`). 845: stasis 19 → 5, days at war USA 310, CAN 358, DEN 122;
+      engaged per war on 821–830 0.480 → 0.493; battle share 1.9 → 1.4 % (the battles up 2.6×, all
+      changes up 3.7×). Pin 7c2e4700.
 
 - [ ] 7.99 An air war beyond the land war (found at 7.85; aircraft 7, needs 8; ADR-668 b, 7.51b's (c)):
   air battles in years 2–20 0.066 of year 1's on 871–880, the air war flying only at enemy land forces in

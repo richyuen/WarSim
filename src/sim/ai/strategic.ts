@@ -15,7 +15,8 @@
  *              + PARIAH_WAR × relationHit(n, t)  (the world's outrage at t's nuclear strikes, PLAN 6.5b)
  *              + RESTLESS × min(1, years n has been at peace / RESTLESS_YEARS)  (in no war; PLAN 7.14)
  * over neighbours t that are valid targets; the best t with utility > DECLARE_AT is attacked
- * with probability DECLARE_P × aggression/100.
+ * with probability DECLARE_P × aggression/100. With no neighbour over the bar, the same over the
+ * nations it could land on across the sea (`seaTargets`, PLAN 7.82d).
  * Stalemate peace: a war older than STALEMATE_DAYS with |score| < STALEMATE_SCORE and both
  * sides' exhaustion > STALEMATE_EXHAUSTION ends in peace on its score.
  * Alliances: an unaligned nation bordering an aggressive (≥ THREAT_AGGRESSION) neighbour more
@@ -37,8 +38,10 @@ import { hash32, hashToUnit } from '../core/hash';
 import { makePeace, declareWar, whyNotWar } from '../systems/war';
 import { canJoin, LEAVE_LOYALTY, leaveAlliance, noWarAmong } from '../systems/alliances';
 import { relationHit, worstPariah } from '../systems/nuclear';
-import { forceMen } from '../systems/seaControl';
-import { navOf, type World } from '../world';
+import { transportGroupsAtPort } from '../systems/amphibious';
+import { keyAt, waterKeys } from '../systems/navalCombat';
+import { forceMen, seaHolder } from '../systems/seaControl';
+import { navOf, portSeaOf, seaOf, type World } from '../world';
 
 export const STAGGER = 7;
 /** Nations below this aggression never start wars (they still defend, ally and make peace). */
@@ -254,6 +257,60 @@ export function rivalsApart(world: World, str: Float64Array, greats: Set<number>
   }
 }
 
+/**
+ * The nations `n` could land on (PLAN 7.82d, ADR-670): those holding a port on a water where a
+ * transport group of `n`'s stands at a port of its own (`transportGroupsAtPort`), as `planLanding`
+ * reaches them: the same water (`waterKeys`), not a sea ice closes, not one an enemy of `n` holds.
+ * Ascending, `n` left out; none without such a group.
+ */
+export function seaTargets(world: World, n: number): number[] {
+  const groups = transportGroupsAtPort(world, n);
+  if (groups.length === 0) return [];
+  const c = world.formations.cols;
+  const keys = waterKeys(world, n);
+  const lift = new Set(groups.map((g) => keyAt(world, keys, c.x[g.fleet]!, c.y[g.fleet]!)));
+  const z = seaOf(world);
+  const water = portSeaOf(world);
+  const ctl = world.cells.controller;
+  const out = new Set<number>();
+  world.ports.forEach((p, i) => {
+    const holder = ctl[p.cell]!;
+    const at = water[i]!;
+    if (holder === 0 || holder === n || out.has(holder) || at < 0) return;
+    const zone = z.zoneOf[at]!;
+    if (zone === 0 || z.closed[zone] === 1 || !lift.has(keys[zone]!)) return;
+    const sea = seaHolder(world, zone);
+    if (sea !== 0 && world.wars.atWar(sea, n)) return;
+    out.add(holder);
+  });
+  return [...out].sort((a, b) => a - b);
+}
+
+/**
+ * Whom `n` declares on this turn, or 0 (the module's formula): the land neighbour (`neighbours`,
+ * ascending) of the highest utility over DECLARE_AT that it may declare on (`whyNotWar`; PLAN 3.8:
+ * not a puppet of its ally either); with none, the nation across the sea it could land on
+ * (`seaTargets`) of the highest utility over DECLARE_AT (PLAN 7.82d, ADR-670). Read before (seed 845,
+ * years 8–26, `tools/diag/warChoice.ts`): the United States, its puppet Canada and Denmark's Greenland
+ * had no land neighbour over the bar for 19 years, and held their cells to 2 % at peace; the Soviet
+ * Union, its transports at its ports on their water, scored 1.0–1.7 on them and had no land target
+ * over the bar on 77–84 of its turns. Land wars come first: the sea's targets only on a turn none is.
+ * `attack` is `n`'s strength with its allies, `defence` a target's (`sides`).
+ */
+export function warTarget(world: World, n: number, neighbours: readonly number[], attack: number, defence: (t: number) => number, wars: number, restless: number): number {
+  const pick = (among: readonly number[], skip?: ReadonlySet<number>): number => {
+    let best = 0;
+    let bestU = DECLARE_AT;
+    for (const t of among) {
+      if (skip?.has(t) || whyNotWar(world, n, t) !== Refusal.None) continue;
+      const u = warUtility(world, n, t, attack, defence(t), wars, restless).u;
+      if (u > bestU) [bestU, best] = [u, t];
+    }
+    return best;
+  };
+  return pick(neighbours) || pick(seaTargets(world, n), new Set(neighbours));
+}
+
 export function strategicAi(world: World): void {
   if (!world.settings.aiEnabled || !isDayStart(world.tick)) return;
   const day = world.tick / 24;
@@ -280,19 +337,7 @@ export function strategicAi(world: World): void {
     // War.
     const wars = warsOf(world, n);
     if (wars < MAX_WARS && nc.aggression[n]! >= PACIFIST_BELOW && nc.gold[n]! >= 0 && nc.bankrupt[n] !== 1) {
-      const attack = withAllies(n);
-      const restless = wars === 0 ? restlessOf(world, n) : 0;
-      let best = 0;
-      let bestU = DECLARE_AT;
-      for (const t of neighbours) {
-        // Whom it may declare on (PLAN 3.8: not a puppet of its ally either, which it used to pick).
-        if (whyNotWar(world, n, t) !== Refusal.None) continue;
-        const u = warUtility(world, n, t, attack, defence(t), wars, restless).u;
-        if (u > bestU) {
-          bestU = u;
-          best = t;
-        }
-      }
+      const best = warTarget(world, n, neighbours, withAllies(n), defence, wars, wars === 0 ? restlessOf(world, n) : 0);
       if (best !== 0 && hashToUnit(hash32(world.seed, day, n, SALT_WAR)) < (DECLARE_P * nc.aggression[n]!) / 100) declareWar(world, n, best);
     }
     // Alliances against a threat.

@@ -262,6 +262,12 @@ describe('the AI\'s fleets at sea (PLAN 4.6c)', () => {
     const USA = id('USA');
     expect(declareWar(w, ITA, USA, true)).not.toBeNull();
     w.nations.cols.aiOff[USA] = 1;
+    // One war (PLAN 7.82d, ADR-670): Japan declared on the Spanish Republic across the sea on day 2,
+    // Italy joined it as Japan's ally, and its fleets sailed for Spain's ports. A truce with every
+    // nation outside the war keeps Italy out of another (nobody joins against a truce partner).
+    w.nations.forEach((n) => {
+      if (n !== ITA && !w.wars.atWar(ITA, n)) w.wars.truces.push({ a: ITA, b: n, untilTick: w.tick + 24 * 365 });
+    });
     const fleets = own(s, ITA);
     const at = new Map(fleets.map((f) => [f, [c.x[f]!, c.y[f]!]]));
     s.step(8 * 24);
