@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-664 · 2026-10-23 · accepted — The overseas holders: 7.82b's AT met on HEAD after 7.97, no rule (PLAN 7.82b)
+
+- **Context** (`docs/evidence/7.82/b.md`). PLAN 7.82b: on 834 and 835 × 30 years the longest stasis at
+  most 15 years (17, 18 at 7.82a), the battle share in years 10–30 not under 1.68 % pooled.
+- **Read:** two causes. On 835 the USA and Canada are at peace for most of the span (no landing rule
+  reaches them). On both, Denmark's Greenland (25–33k cells, one Danish formation) is at war and never
+  landed on: half its towns have open water, but the landing takes the enemy port nearest the
+  transports and the Normandy the city nearest the planner's front, and Greenland is never either.
+- **Rule tried** (`docs/evidence/7.82/b.patch`): a target on a land where the planner's enemies stand
+  with at most 2 land formations counts its sea km over 3 (a landing) and its worth times 3 (a
+  Normandy). From the 834 save it lands on Greenland (Denmark 33.3k → 21.5k cells in four years); from
+  835's, nothing for Denmark.
+- **AT:** with the rule 9 and 13 years, 1.84 %; **HEAD without it (7.97's rule in) 7 and 14 years,
+  1.77 %**. The bar is met on HEAD; the rule's difference on 30-year runs is not separable from chance.
+- **Decision:** no rule; 7.82b ticked on its AT met by HEAD. About 40 % of the enemy ports of nations
+  at war stand on land the rule calls empty: a redirect that broad is not committed on a difference
+  within noise. The patch is a candidate if 7.82's AT on unseen seeds finds a span held by a remnant at
+  war, judged then by landings on the holder's cells and the cells it loses, from a save.
+- **Consequences:** no rule; the pin unchanged (b9bff4bd). 7.82's AT on 841–850 × 30 years next; its
+  battle-share clause's baseline (1.96 %, 7.82a) was read before 7.97 and is reported, not binding,
+  until re-read.
+
 ### ADR-663 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The lift's size: more transports carry the American army to another coast (PLAN 7.98's AT missed)
 
 - **Context** (`docs/evidence/7.98/at.md`). PLAN 7.98 (ADR-662 a): on 821–830 × 20 years American piles

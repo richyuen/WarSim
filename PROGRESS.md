@@ -22961,3 +22961,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - The lift rule stays out (`docs/evidence/7.98/patch` kept); no task filed; the American piles (12 on
   HEAD) go to the next critic report. The pin unchanged (b9bff4bd).
 - **Next:** 7.82b (its trial rule's AT on 834 and 835 × 30 years is running).
+
+## 2026-10-23 — PLAN 7.82b: the overseas holders; the AT met on HEAD after 7.97, no rule (ADR-664)
+
+- **Read** (`docs/evidence/7.82/b.md`; `overseasHold.ts`'s probe on 834 and 835): on 835 the USA and
+  Canada are at peace most of the span; on both, Denmark's Greenland is at war and never landed on
+  (the landing takes the enemy port nearest the transports, the Normandy the city nearest the front).
+- **Rule tried** (`b.patch`): a target on a land with at most 2 enemy formations pulled ×3. From the 834
+  save Greenland is landed on (Denmark 33.3k → 21.5k cells); from 835's nothing.
+- **AT** (834, 835 × 30 years): with the rule 9, 13 years, 1.84 %; HEAD without it 7, 14, 1.77 %. The
+  bar (≤ 15, ≥ 1.68 %) is met on HEAD: 7.97's rule changed both histories. No rule; the test and the
+  patch kept in the evidence.
+- **No rule;** the pin unchanged (b9bff4bd).
+- **Next:** 7.82's AT on 841–850 × 30 years.

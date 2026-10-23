@@ -1,0 +1,123 @@
+import { describe, expect, it } from 'vitest';
+import { EMPTY_LAND_FORMATIONS, EMPTY_LAND_PULL, invasionAi } from '../../src/sim/ai/invasion';
+import { STAGGER } from '../../src/sim/ai/strategic';
+import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { destroyFormation } from '../../src/sim/systems/elements';
+import { transportRoom } from '../../src/sim/systems/amphibious';
+import { keyAt, seaKm, waterKeys } from '../../src/sim/systems/navalCombat';
+import { declareWar } from '../../src/sim/systems/war';
+import { navOf, portSeaOf, seaOf } from '../../src/sim/world';
+import { assets1938 } from '../helpers/earth';
+
+// PLAN 7.82b: the landing took the enemy port nearest the transports, so a land of the enemy far
+// from them and from every front was never landed on, however empty: on seeds 834 and 835 Denmark's
+// Greenland (25–33k cells, one Danish formation) held its cells at war for 17 and 18 years, the
+// fifth place of the critic's stasis. The United Kingdom in 1938 at war with Denmark's side, its
+// transports at a British port from which Copenhagen (more than EMPTY_LAND_FORMATIONS of their army on
+// its land) is their nearest port and Sisimiut (Greenland, none of it) within EMPTY_LAND_PULL times
+// as far: on Britain's invasion day its division there goes aboard for an empty land of theirs (on
+// this seed Iceland's, nearer than Greenland). Before, for Copenhagen.
+
+const { w: W } = SIZE_1938;
+const id = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
+const ENG = id('ENG');
+const DEN = id('DEN');
+
+describe('the landing on an empty land (PLAN 7.82b)', () => {
+  it('a nation at war with Denmark lands on an empty land of its side before Copenhagen', () => {
+    const s = new Sim({ scenario: '1938', seed: 4601, assets: assets1938(W) });
+    const w = s.world;
+    s.command({ kind: 'setSetting', key: 'aiEnabled', value: false });
+    // Denmark's 1938 army is two formations: a third at Copenhagen makes its land a defended one.
+    const [cx, cy] = w.cellPoint(w.ports.find((p) => p.name === 'Copenhagen')!.cell);
+    s.command({ kind: 'spawnFormation', nation: DEN, x: cx, y: cy, strength: 10_000 });
+    s.step(1);
+    s.step(24 - (w.tick % 24));
+    while ((w.tick / 24 + ENG) % STAGGER !== 0) s.step(24);
+    const c = w.formations.cols;
+    const ctl = w.cells.controller;
+    const water = portSeaOf(w);
+    const z = seaOf(w);
+    const comp = navOf(w).grid.component;
+    const at = (name: string): number => w.ports.findIndex((p) => p.name === name);
+    const sis = at('Sisimiut');
+    const cop = at('Copenhagen');
+    expect(sis).toBeGreaterThanOrEqual(0);
+    expect(cop).toBeGreaterThanOrEqual(0);
+    expect(ctl[w.ports[sis]!.cell]).toBe(DEN);
+    expect(ctl[w.ports[cop]!.cell]).toBe(DEN);
+    const greenland = comp[w.ports[sis]!.cell]!;
+    const home = comp[w.ports[cop]!.cell]!;
+    // At war with Denmark's side, with no land front with it.
+    const war = declareWar(w, ENG, DEN, true);
+    expect(war).not.toBeNull();
+    const theirs = new Set(war!.sides[war!.sides[0].includes(ENG) ? 1 : 0]);
+    expect(theirs.has(DEN)).toBe(true);
+    // Their army: none on Greenland, more than EMPTY_LAND_FORMATIONS on Copenhagen's land.
+    let onHome = 0;
+    w.formations.forEach((f) => {
+      if (!theirs.has(c.nation[f]!) || w.isFleet(f) || w.isWing(f) || w.offLand(f)) return;
+      const land = comp[Math.floor(c.y[f]!) * W + Math.floor(c.x[f]!)]!;
+      if (land === greenland) destroyFormation(w, f);
+      else if (land === home) onHome++;
+    });
+    expect(onHome).toBeGreaterThan(EMPTY_LAND_FORMATIONS);
+    // One British transport group, at the British port from which Copenhagen is the nearer, and
+    // Sisimiut is nearest to within EMPTY_LAND_PULL of it.
+    const groups: number[] = [];
+    w.formations.forEach((f) => {
+      if (w.isFleet(f) && c.nation[f] === ENG && transportRoom(w, f) > 0) groups.push(f);
+    });
+    const [tp, ...rest] = groups;
+    expect(tp).toBeDefined();
+    for (const f of rest) destroyFormation(w, f);
+    const keys = waterKeys(w, ENG);
+    const km = (from: number, to: number): number => seaKm(w, (from % W) + 0.5, Math.floor(from / W) + 0.5, (to % W) + 0.5, Math.floor(to / W) + 0.5);
+    let pick = -1;
+    let margin = 0;
+    w.ports.forEach((p, i) => {
+      const sea = water[i]!;
+      if (ctl[p.cell] !== ENG || sea < 0 || z.closed[z.zoneOf[sea]!] === 1) return;
+      const mine = keyAt(w, keys, (sea % W) + 0.5, Math.floor(sea / W) + 0.5);
+      if (keys[z.zoneOf[water[sis]!]!] !== mine || keys[z.zoneOf[water[cop]!]!] !== mine) return;
+      const toCop = km(sea, water[cop]!);
+      const toSis = km(sea, water[sis]!);
+      // Every other port of theirs farther than Copenhagen, or in the ice.
+      const nearer = w.ports.some((q, j) => j !== cop && theirs.has(ctl[q.cell]!) && water[j]! >= 0 && z.closed[z.zoneOf[water[j]!]!] !== 1 && km(sea, water[j]!) <= toCop);
+      if (nearer || toSis <= toCop || toSis >= EMPTY_LAND_PULL * toCop) return;
+      const m = Math.min(toSis / toCop - 1, EMPTY_LAND_PULL - toSis / toCop);
+      if (m > margin) [pick, margin] = [i, m];
+    });
+    expect(pick).toBeGreaterThanOrEqual(0);
+    const port = w.ports[pick]!;
+    const sea = water[pick]!;
+    [c.x[tp!], c.y[tp!]] = [(sea % W) + 0.5, Math.floor(sea / W) + 0.5];
+    c.moving[tp!] = 0;
+    // A British division at that port, standing.
+    let div = -1;
+    w.formations.forEach((f) => {
+      if (div < 0 && c.nation[f] === ENG && !w.offLand(f) && !w.isWing(f) && !w.isFleet(f) && transportRoom(w, tp!) >= c.strength[f]!) div = f;
+    });
+    expect(div).toBeGreaterThan(0);
+    [c.x[div], c.y[div]] = w.cellPoint(port.cell);
+    c.moving[div] = 0;
+    w.paths.delete(div);
+    // The invasion AI on that day: the division goes aboard, bound for an empty land of theirs
+    // (Greenland, or a nearer one of Denmark's side's), not for Copenhagen's.
+    w.settings.aiEnabled = true;
+    invasionAi(w);
+    w.settings.aiEnabled = false;
+    expect(w.embarked.has(div)).toBe(true);
+    const target = w.embarked.get(div)!.target;
+    const land = comp[target]!;
+    expect(theirs.has(ctl[target]!)).toBe(true);
+    expect(land).not.toBe(home);
+    let onTarget = 0;
+    w.formations.forEach((f) => {
+      if (!theirs.has(c.nation[f]!) || w.isFleet(f) || w.isWing(f) || w.offLand(f)) return;
+      if (comp[Math.floor(c.y[f]!) * W + Math.floor(c.x[f]!)] === land) onTarget++;
+    });
+    expect(onTarget).toBeLessThanOrEqual(EMPTY_LAND_FORMATIONS);
+  });
+});

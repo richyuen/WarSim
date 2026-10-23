@@ -60,7 +60,7 @@ them, are 7.81–7.86. A task each, split when taken up:
       the USA at 77,534 cells for 18 years, Canada 44,798 for 12, Denmark's Greenland 25.5–25.9k at war
       297 days a year with 0.01 engaged, Australia sixth). Changes in years 10–30: walk-in 57.3 %, revolt
       29.6 %, peace 10.4 %, battle 1.96 % (1.3–2.5 by seed), landing 0.02 %.
-    - [ ] 7.82b The overseas holders that hold still (7.82a: Canada, the United States, Denmark's
+    - [x] 7.82b The overseas holders that hold still (7.82a: Canada, the United States, Denmark's
       Greenland and Australia keep their cells to the hundred for a decade or more, at war or not, and
       hold the five's last places; landings 0.02 % of the changes). Read first on 834's and 835's spans
       who is at war with them, and whether an enemy's landing is ever planned on their coasts and why
@@ -68,6 +68,9 @@ them, are 7.81–7.86. A task each, split when taken up:
       longest stasis at most 15 years (17, 18 on HEAD), the battle share in years 10–30 not under 1.68 %
       pooled on the two (HEAD's); a unit test, red without; the ADR; the pin's entry. Then 7.82's AT on 10 unseen
       seeds × 30 years (841 on).
+      Done, no rule (ADR-664, `docs/evidence/7.82/b.md`): the AT met on HEAD after 7.97 (834 7 years,
+      835 14, battle 1.77 %); the Greenland rule tried (`b.patch`: a target on a land with at most 2
+      enemy formations pulled ×3) 9, 13, 1.84 %, not separable from chance; kept as a candidate.
 
 - [ ] 7.94 The operational AI's cost on the busier world (found at 7.83's AT; performance 6, needs 7;
   taken: ADR-654 a, the user's decision of 2026-10-23): 0.60 ms a tick on HEAD's year-4 world of
