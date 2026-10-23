@@ -22422,3 +22422,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   tick 1.87 / 1.81 → 1.80 / 1.87 ms, the same history.
 - **Pin:** unchanged, 8a571863.
 - **Next:** PLAN 7.90c.
+
+## 2026-10-22 — PLAN 7.90c: the ferry's way back past port-less islands (ADR-646)
+
+- **Rule:** a transport group away from the army sails for it by the free army's 4 nearest on a land
+  with a port of the nation's (other than its own); before, the 4 nearest whatever their land, and from
+  Bathurst, San Juan, Roseau and Bissau those were Caribbean garrisons with no US port, refused weekly.
+- **Read** (`docs/evidence/7.90/c.md`, 90 days, `ferryTrip.ts`): 1129 year 10, every group landing at
+  Bathurst under way within 2–6 days (bar 14; HEAD 52–62 days standing); landed 8 → 19 (15 from the
+  Baltimore pile), orders 23 → 69, piles on day 90 60/43 → 60/17. 6421 year 20: landed 78 → 87; 5 of
+  its actor days now go to Normandy landings. Left: 6421's 20–26 groups at Dakar refuse a `board` every
+  turn (as on HEAD); 1129's 60 by Chicago unmoved (7.90's bar, `a.md` §6).
+- **Test:** `strandedFerry1938.test.ts` "a group at a far port sails for the army past four on
+  port-less islets" (red without).
+- **Timing** (`.cache/prof90c/`): invasion AI within the pairs' spread, one 95 ms call on 1129.
+- **Probe:** `ferryTrip.ts`'s refused-sail lines take the four as the rule does.
+- **Pin:** unchanged, 8a571863.
+- **Next:** PLAN 7.90d.

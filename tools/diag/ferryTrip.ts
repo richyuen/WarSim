@@ -102,12 +102,12 @@ const portsOn = (l: number, skip: number): number => ownPorts().filter((i) => i 
 FERRY_PROBE.turn = (t): void => {
   if (t.nation !== n) return;
   const day = w.tick / 24;
-  // A sail refused: the free army's SAIL_TRIES formations nearest its port, as `sailToArmy` takes them (landmass, the nation's other ports there).
+  // A sail refused: the free army's SAIL_TRIES formations nearest its port on a land with another port of the nation's, as `planFerry` gives them to `sailToArmy` (PLAN 7.90c; landmass, the nation's other ports there).
   const refusedSails = t.tries
     .filter((x) => x.way === 'sail' && !x.acted)
     .map((x) => {
       const from = w.ports[x.port]!.cell;
-      const by = t.island.map((id) => [steps(cellOf(id), from), id] as const).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+      const by = t.island.filter((id) => portsOn(comp[cellOf(id)]!, x.port) > 0).map((id) => [steps(cellOf(id), from), id] as const).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
       return { fleet: x.fleet, port: w.ports[x.port]!.name, nearest: by.slice(0, 4).map(([d, id]) => `${id} ${d} cells landmass ${comp[cellOf(id)]} ports ${portsOn(comp[cellOf(id)]!, x.port)}`) };
     });
   turns.push({ day, free: t.free, groups: t.groups, tries: t.tries.map((x) => `${x.fleet}@${w.ports[x.port]?.name ?? x.port}:${x.way}${x.acted ? '+' : '-'}${x.searches > 0 ? `#${x.searches}` : ''}`), refusedSails });

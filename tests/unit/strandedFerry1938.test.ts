@@ -329,3 +329,54 @@ describe('a ferry turn is not ended by refusals that cost nothing (PLAN 7.90b)',
     expect(reaches(target)).toBe(true);
   });
 });
+
+// PLAN 7.90c, ADR-646: a transport group away from the army sailed for a port by the free army's
+// SAIL_TRIES formations nearest it, whatever their land, and `sailToArmy` takes only a land with a
+// port of the nation's. Critic run 12, seed 1129 year 10: the five US groups landed at Bathurst found
+// their four nearest on Caribbean islands with no US port and stood 52–62 days, while ~150 free
+// formations stood on the mainland. Here Germany's group stands at San Juan (made Germany's), four
+// German divisions on the islets by it that hold no port, the rest of the army in Europe. The group
+// sails for Europe. Before, the four were tried, no port was found, and it stood.
+describe('the ferry’s way back passes over an army on land with no port (PLAN 7.90c)', () => {
+  it('a group at a far port sails for the army past four on port-less islets', () => {
+    const { w, tp, more } = stranded(4);
+    const c = w.formations.cols;
+    const comp = navOf(w).grid.component;
+    const water = portSeaOf(w);
+    const sj = w.ports.findIndex((p) => p.name === 'San Juan');
+    expect(sj).toBeGreaterThanOrEqual(0);
+    const from = w.ports[sj]!.cell;
+    w.cells.controller[from] = GER;
+    const sea = water[sj]!;
+    expect(sea).toBeGreaterThanOrEqual(0);
+    [c.x[tp], c.y[tp]] = [(sea % W) + 0.5, Math.floor(sea / W) + 0.5];
+    c.moving[tp] = 0;
+    // The four islets nearest San Juan with no port on them, each a land of its own.
+    const ported = new Set<number>();
+    w.ports.forEach((p) => ported.add(comp[p.cell]!));
+    const best = new Map<number, [number, number]>();
+    for (let k = 0; k < W * H; k++) {
+      const l = comp[k]!;
+      if (l === 0 || l === comp[from] || ported.has(l)) continue;
+      const d = Math.abs((k % W) - (from % W)) + Math.abs(Math.floor(k / W) - Math.floor(from / W));
+      const b = best.get(l);
+      if (b === undefined || d < b[0]) best.set(l, [d, k]);
+    }
+    const islets = [...best.values()].sort((a, b) => a[0] - b[0] || a[1] - b[1]).slice(0, 4);
+    expect(islets).toHaveLength(4);
+    for (const [d] of islets) expect(d).toBeLessThan(40);
+    more.forEach((f, i) => {
+      [c.x[f], c.y[f]] = w.cellPoint(islets[i]![1]);
+      c.moving[f] = 0;
+      c.engaged[f] = 0;
+      c.retreat[f] = 0;
+      c.home[f] = 0;
+      w.paths.delete(f);
+    });
+    w.settings.aiEnabled = true;
+    invasionAi(w);
+    w.settings.aiEnabled = false;
+    // Under way for a port of Germany's in Europe, the army's land.
+    expect(c.moving[tp]).toBe(1);
+  });
+});

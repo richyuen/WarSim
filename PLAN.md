@@ -135,11 +135,15 @@ them, are 7.81–7.86. A task each, split when taken up:
       (FERRY_SEARCHES 68), a refusal at a port taken by the groups after it there until an order; never
       tried 6.5 → 0 and 26.3 → 0 (every turn); the refusals searched at most 18 a turn. The groups now
       tried refuse the sail back (7.90c's), so the landed barely move (7 → 8, 77 → 78). The pin unchanged.
-    - [ ] 7.90c The way back (a.md §2): a group away from the army sails for a port by the free army's 4
+    - [x] 7.90c The way back (a.md §2): a group away from the army sails for a port by the free army's 4
       formations nearest it, and from Bathurst, San Juan and Roseau those are garrisons on islands with no
       port of the nation, so the sail is refused every week and the mainland army never tried. AT: on 1129
       year 10 the five groups that land at Bathurst under way within 14 days of landing (HEAD: standing
       52–62 days, to day 90); a unit test (red without); the ADR; the pin's entry.
+      Done (ADR-646, `docs/evidence/7.90/c.md`): the four tried are the nearest of the free army on a
+      land with a port of the nation's; every group landing at Bathurst under way within 2–6 days, San
+      Juan's, Roseau's, Bissau's on the first turn; 1129's landed 8 → 19 (15 from the Baltimore pile),
+      piles on day 90 60/43 → 60/17; 6421's 78 → 87. The pin unchanged.
     - [ ] 7.90d A division over half the room (a.md §4): `TRANSPORT_MEN` gives a group 24,000 men, "two
       infantry divisions of 1938", and the template is 12,460, so every trip carries one a group. The rule
       changes every landing's lift too (ADR when taken up). AT: on 1129 year 10 the divisions a group

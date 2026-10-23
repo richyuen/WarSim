@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-646 · 2026-10-22 · accepted — A ferry group away from the army sails for it by the formations on a land with a port of the nation's (PLAN 7.90c; amends ADR-595)
+
+- **Context** (`docs/evidence/7.90/a.md` §2). A transport group standing away from the free army (in the
+  theatre after a trip, or at a port on another island) sails for it by the SAIL_TRIES (4) free
+  formations nearest it (`sailToArmy`, ADR-595), and `sailToArmy` looks for a port of the nation's on
+  each one's land. From the far ports the four nearest were garrisons on islands with no such port:
+  critic run 12, 1129 year 10, the five US groups landed at Bathurst, and those at San Juan, Roseau and
+  Bissau, found 612, 618, 1321 and 611 on Caribbean islands, refused, and stood 52–90 days while ~150
+  free formations stood on the mainland with 73 US ports.
+- **Decision** (`ai/invasion.ts`, `planFerry`'s `ferryGroup`): the four are the nearest of the free
+  army on a land holding a port of the nation's with water, other than the group's own. The rest of the
+  sail as before. Edge: a free army on port-less islands alone gives an empty list, a refusal with no
+  search, as before.
+- **Read** (`docs/evidence/7.90/c.md`, 90 days): on 1129 year 10 every group that lands at Bathurst is
+  under way within 2–6 days (HEAD: standing 52–62 days); San Juan's, Roseau's and Bissau's sail on the
+  first turn. Landed 8 → 19 (from the Baltimore pile 4 → 15), ferry orders 23 → 69, the piles on day 90
+  60/43 → 60/17. 6421 year 20: landed 78 → 87.
+- **Timing** (`.cache/prof90c/`, pairs on separate P-cores, swapped): invasion AI a tick, HEAD → rule,
+  1129 year 10 0.312 / 0.279 → 0.296 / 0.343 ms (longest 58 / 53 → 51 / 95 ms), 6421 year 20 0.462 /
+  0.380 → 0.374 / 0.454 ms (longest 65 / 71 → 68 / 72 ms): within the pairs' spread but for one call.
+- **Test.** `strandedFerry1938.test.ts`, "a group at a far port sails for the army past four on
+  port-less islets"; red without.
+- **Pin.** Unchanged (8a571863): seed 99's first year is hash for hash HEAD's.
+
 ### ADR-645 · 2026-10-22 · accepted — A ferry turn is bounded by its refusals' route searches, a port's refusal taken by its other groups (PLAN 7.90b; amends ADR-642)
 
 - **Context** (`docs/evidence/7.90/a.md` §2). ADR-642 ended the ferry's turn at SAIL_TRIES (4) transport

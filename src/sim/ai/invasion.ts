@@ -659,7 +659,16 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
     // Away from the army (in the theatre, or on another island): they go to it, the nearest first.
     if (!island.some((id) => comp[cellOf(id)] === comp[from])) {
       t.way = 'sail';
-      const by = island.map((id): [number, number] => {
+      // Of the free army, those on a land with a port of n's to sail for (PLAN 7.90c, ADR-646):
+      // `sailToArmy` takes no other. Before, the SAIL_TRIES nearest were tried whatever their land,
+      // and from a far port they were garrisons on islands with none (critic run 12, 1129 year 10:
+      // Bathurst's five groups, the four nearest on Caribbean islands with no US port, stood 52–62
+      // days while ~150 free formations stood on the mainland with 73 ports).
+      const ported = new Set<number>();
+      world.ports.forEach((p, k) => {
+        if (k !== port && water[k]! >= 0 && ctl[p.cell] === n) ported.add(comp[p.cell]!);
+      });
+      const by = island.filter((id) => ported.has(comp[cellOf(id)]!)).map((id): [number, number] => {
         const k = cellOf(id);
         let dx = Math.abs((k % w) - (from % w));
         if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
