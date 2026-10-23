@@ -1,0 +1,71 @@
+{
+ "seed": 3613,
+ "fromY": 10,
+ "toY": 20,
+ "bursts": 0,
+ "holderWarDays": 28508,
+ "weighed": 9605,
+ "gainOver": 3069,
+ "uOver": 0,
+ "reasons": {
+  "noThreat": 17447,
+  "notDesperate": 4922,
+  "noValue": 1614,
+  "deterred": 2752,
+  "taboo": 317,
+  "noPlace": 76,
+  "puppet": 1380
+ },
+ "means": {
+  "u": -1.0069,
+  "value": 0.3103,
+  "gain": 0.1025,
+  "desperation": 0.22,
+  "doctrine": 1.2037,
+  "through": 0.8031,
+  "retaliation": 0.5132,
+  "alliance": 0.0271,
+  "outrage": 0.0803,
+  "taboo": 0.4792,
+  "dead": 0.0097
+ },
+ "steps": [
+  0.05,
+  0.1,
+  0.25,
+  0.5,
+  1
+ ],
+ "atLeast": {
+  "value": [
+   6034,
+   5765,
+   4834,
+   3148,
+   499
+  ],
+  "desperation": [
+   3850,
+   2812,
+   1838,
+   1419,
+   877
+  ],
+  "doctrine": [
+   9605,
+   9605,
+   9605,
+   9605,
+   7089
+  ],
+  "through": [
+   9605,
+   9605,
+   8450,
+   8438,
+   6039
+  ]
+ },
+ "rows": [],
+ "rowsNote": "only the strike days kept of 3069 rows with gain or u over NUKE_FLOOR"
+}

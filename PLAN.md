@@ -187,11 +187,21 @@ them, are 7.81–7.86. A task each, split when taken up:
   `docs/evidence/7.86/measure.md`). AT: on 10 unseen seeds × 30 years bursts a world and civilian bursts
   (over 10 × men) not above `dd3b730`'s on the same seeds (read there first); a unit test, red without;
   the ADR; the pin's entry. In parts:
-    - [ ] 7.96a Read which input of the decision moved: daily, for each nation with warheads at war, the
+    - [x] 7.96a Read which input of the decision moved: daily, for each nation with warheads at war, the
       best place's utility and its parts (desperation, value, the chance through, the strike back, the
       costs) under `dd3b730`'s rule, in its world and in HEAD's (the old and rule trees of 7.86), years
       11–20 on two seeds. AT: the input whose shift accounts for at least half of the days over the floor
       gained, named with its figures, and the rule it points to as 7.96b; no rule: the pin unchanged.
+      Read (`docs/evidence/7.96/a.md`, `tools/diag/nukeRate.ts`, 2953 and 3613 years 10–20): the broken taboo.
+      17 of the 23 strike days in HEAD's world fall under the floor with the world's taboo whole: one burst
+      (TABOO_AFTER 0.3, four years to recover) pays for the next ones, the volleys. The trigger is the
+      busier war (`noThreat` 91 → 68 % and 61 → 34 % of holder-war-days, desperation 0.15–0.22 → 0.30–0.31,
+      a first strike passing with the taboo whole); extreme desperation holds 1. The pin unchanged.
+    - [ ] 7.96b The taboo after a burst (7.96a): TABOO_AFTER 0.3 lets one burst lower every nation's taboo
+      cost for about four years; first order on 7.96a's 23 strike days, 0.6 keeps 8 and 1.0 keeps 6. Rule:
+      a burst breaks the taboo less (TABOO_AFTER raised), or only for the war it fell in; chosen on a
+      `nukeVolume.ts` A/B on 4 of 7.86's seeds × 30 years, then read on 10 unseen seeds against `dd3b730`.
+      AT: 7.96's bar; a unit test (red without); the ADR; the pin's entry.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

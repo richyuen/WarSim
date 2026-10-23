@@ -22809,3 +22809,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - 7.96: `dd3b730`'s nuclear rule fires 1.93 × as often a holder-day at war in HEAD's world; 7.96a reads
   which input moved (two seeds, years 11–20, old and rule trees), 7.96b the rule. AT 7.86's bar.
 - **Next:** 7.96a (the user asked for it now; 7.79's AT after).
+
+## 2026-10-23 — PLAN 7.96a: the broken taboo pays for most strikes in the busier war (read only)
+
+- **Read** (`docs/evidence/7.96/a.md`; `tools/diag/nukeRate.ts`, new: `restraintOf` daily for each holder
+  and war; seeds 2953 and 3613, years 10–20; the old and rule trees of 7.86, under `dd3b730`'s rule). The
+  probe leaves the world alone (bursts 0 / 0 / 13 / 13 as `nukeVolume.ts`). HEAD's world: `noThreat` days
+  91 → 68 % and 61 → 34 %, desperation and the place's value up, the taboo cost halved (0.51 → 0.28).
+  Of the 23 strike days, 17 fall under the floor with the world's taboo whole, 6 stand without it;
+  extreme desperation holds 1. The volleys (3613: Germany on days 6690, 6697, 6780, 6787, 6805, 6821)
+  are the taboo one burst broke for four years.
+- **First order:** TABOO_AFTER 0.6 keeps 8 of 23 strike days, 1.0 keeps 6.
+- **Filed:** 7.96b, the taboo after a burst (TABOO_AFTER raised, or the break kept to its war).
+- **No rule;** the pin unchanged (7098dd29).
+- **Next:** 7.96b.
