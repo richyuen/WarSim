@@ -5,6 +5,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.96c: the volleys bar met only by holding R7-B1's fight-for-life France two months (2026-10-23, ADR-660 proposed; the user's decision)
+- **The bar:** 7.96's (ADR-658 b): volleys (bursts by a striker within 30 days of its own last) and the
+  civilian share not above `dd3b730`'s on 811–820 × 30 years (29 %, 32 %).
+- **What moved** (`docs/evidence/7.96/c.md`, `c.patch`): a flat 60-day wait gives 5 % and 16 %, and turns
+  `nukeStrikeAgain1938` (R7-B1) red; keeping the week for nations in extreme desperation gives 30 % and
+  14 %, the test green. HEAD 31 %, 13 %.
+- **What is left:** the user's (ADR-660): (a) the flat 60 days, R7-B1's test restated (recommended); (b)
+  the week kept for the desperate, the bar missed by a point; (c) neither.
+
 ### PLAN 7.83c: supply's beach layer −7 %, short of `dd3b730` + 0.03 (2026-10-23)
 - **The bar:** supply's mean a tick on a year from HEAD's year-4 save of seed 99 at most `dd3b730`'s rules'
   + 0.03 (0.168 ms; 0.153 against the pairs' own HEAD), the year's hash f278491d and the pin unchanged.

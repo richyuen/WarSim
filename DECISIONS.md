@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-660 · 2026-10-23 · proposed (the user's decision) — The volleys are mostly fight-for-life strikes: R7-B1's France against run 12's volleys (PLAN 7.96c's AT missed)
+
+- **Context** (`docs/evidence/7.96/c.md`). 7.96's bar (ADR-658 b): bursts by a striker within 30 days of
+  its own last, and the civilian share, not above `dd3b730`'s on 10 unseen seeds × 30 years. A side waits
+  STRIKE_GAP_DAYS (7, PLAN 7.25b) after its burst before its next first use in the war.
+- **Read** (811–820 × 30 years): `dd3b730` 29 % volleys, 32 % civilian; HEAD 31 %, 13 %. A flat 60-day
+  wait: 5 %, 16 %, met, but `nukeStrikeAgain1938` (PLAN 7.6d, critic R7-B1: France fighting to the death
+  must strike again within 30 days of its first) is red: one strike in 90 days. 60 days with the week
+  kept for a nation in extreme desperation: the test green, volleys 30 % (bar 29 %), civilian 14 %.
+  Bursts 244 (HEAD), 276 and 256, reported. So the volleys are mostly the strikes of nations fighting
+  for their lives.
+- **Options:**
+  - **(a)** The flat 60 days (`c.patch` with EXTREME_GAP_DAYS 60): the volleys bar met; R7-B1's claim
+    restated to the rule ("a France fighting for its life strikes again in the war", the second within
+    120 days of the first, the test's window lengthened), a test changed by the user's decision. A
+    desperate nation holds two months between first uses.
+  - **(b)** The week kept for the desperate (`c.patch` as it is): R7-B1 kept, the volleys bar missed by
+    a point (30 % against 29 %), and the volleys barely below HEAD's 31 %. Committed as a rule for the
+    others; 7.96 closed not done; the aiNukes score waits for the critic.
+  - **(c)** Neither: 7.96 closed not done, HEAD's week for every nation.
+- **Recommended: (a).** It is the only option that meets the bar the user chose, and the critic's
+  latest objection is the volleys; R7-B1 (run 7) asked that France strike at all before it was lost,
+  which a second strike two months on still does.
+- **Consequences:** no rule committed; the pin unchanged by any option (7098dd29).
+
 ### ADR-658 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — 7.96's bar against what the nuclear AI owns (PLAN 7.96b's A/B missed)
 
 - **Context** (`docs/evidence/7.96/a.md`, `b.md`). 7.96a: in HEAD's world 17 of 23 strike days pass the

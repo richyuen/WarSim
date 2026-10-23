@@ -1,0 +1,95 @@
+diff --git a/SPEC.md b/SPEC.md
+index 45ac1c84..a574ea59 100644
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -2004,6 +2004,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
+     and recovers slowly. When both sides have assured second strike (**MAD**), the
+     utility of first use is ≤ 0 unless desperation is extreme (fightToDeath or capital falling).
+     In extreme desperation the taboo weighs half (PLAN 6.7).
++    After a burst a side waits STRIKE_GAP_DAYS for the answer before its next first use in that
++    war (PLAN 7.25b, a week; two months since PLAN 7.96c, ADR-659: the broken taboo made a week's
++    wait a volley). A strike back is not held.
+   - allianceCost: 0.05 for each ally not at the striker's side in that war, to 0.3; half of it in
+     extreme desperation, as the taboo (PLAN 7.48, ADR-581: the critic's overrun France, three
+     allies apart, its bomber's strike on Berlin 0.017–0.020 under the floor for 15 days).
+diff --git a/src/sim/systems/nuclear.ts b/src/sim/systems/nuclear.ts
+index 870f4adb..6c831c2b 100644
+--- a/src/sim/systems/nuclear.ts
++++ b/src/sim/systems/nuclear.ts
+@@ -1462,16 +1462,31 @@ export function dayIndustry(world: World): () => Float64Array {
+  * burst gives none: PLAN 6.12b, e). A launch stopped short (shot down, or its bomber lost on the way)
+  * starts no gap (PLAN 7.28, ADR-491's promise): none of what the gap waits for follows it, and under
+  * the enemy's air the side launches again the next day (`War.strikesLive`).
++ * Two months since PLAN 7.96c (ADR-659; critic run 12's volleys: HEAD's bursts by a striker within 30
++ * days of its own last 34 % on four of its seeds, `dd3b730`'s 8 %): with the taboo one burst breaks
++ * (7.96a), a week's wait let a side strike again five times in four months; 30 days left 24 %. A
++ * nation in extreme desperation keeps the week (EXTREME_GAP_DAYS).
+  */
+-export const STRIKE_GAP_DAYS = 7;
++export const STRIKE_GAP_DAYS = 60;
++/**
++ * The wait of a nation in extreme desperation (`desperationOf`: fighting to the death, or its capital
++ * threatened or taken, and desperate): the week of PLAN 7.25b (ADR-659). It fights for its life, as the
++ * taboo's half (PLAN 6.7) says, and the critic's France that held 49 days was R7-B1 (PLAN 7.6d).
++ */
++export const EXTREME_GAP_DAYS = 7;
+ 
+ /**
+  * Whether `side` of `war` launched within STRIKE_GAP_DAYS (PLAN 7.25b) a warhead not stopped short
+- * (PLAN 7.28): no first use of it today.
++ * (PLAN 7.28): no first use of it today. For `n` of that side in extreme desperation the wait is
++ * EXTREME_GAP_DAYS (ADR-659); without `n`, the side's wait.
+  */
+-export function strikePaused(world: World, war: War, side: number): boolean {
++export function strikePaused(world: World, war: War, side: number, n = 0): boolean {
+   const last = war.lastStrike?.[side];
+-  return last !== undefined && last >= 0 && world.tick - last < STRIKE_GAP_DAYS * 24 && (war.strikesLive?.[side] ?? 1) > 0;
++  if (last === undefined || last < 0 || (war.strikesLive?.[side] ?? 1) <= 0) return false;
++  const since = world.tick - last;
++  if (since >= STRIKE_GAP_DAYS * 24) return false;
++  if (since < EXTREME_GAP_DAYS * 24 || n === 0) return true;
++  return !desperationOf(world, n, war, side).extreme;
+ }
+ 
+ /** A launch stopped short (PLAN 7.28): in each war whose side's last strike it was, one live launch fewer. */
+@@ -1543,7 +1558,7 @@ export function restraintOf(world: World, n: number, war: War, side: number, ind
+   }
+   const avenging = avengingOf(world, n);
+   if (!weighsWar(world, n, war, side, avenging)) return { ...out, reason: 'avenging' };
+-  if (!avenging && strikePaused(world, war, side)) return { ...out, reason: 'paused' };
++  if (!avenging && strikePaused(world, war, side, n)) return { ...out, reason: 'paused' };
+   const r = weighWar(world, n, war, side, industry);
+   if (!r.shared) return { ...out, reason: 'noThreat' };
+   if (r.places.length === 0) return { ...out, reason: 'noPlace' };
+@@ -1613,7 +1628,7 @@ function nukeDecisions(world: World): void {
+       const side = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
+       if (!weighsWar(world, n, war, side, avenging)) continue;
+       // A first use waits for the answer to its side's last launch (PLAN 7.25b); a strike back does not.
+-      if (!avenging && strikePaused(world, war, side)) continue;
++      if (!avenging && strikePaused(world, war, side, n)) continue;
+       const { shared, places } = weighWar(world, n, war, side, industry);
+       if (!shared) continue;
+       // Whether the resolve, not the side's own desperation, weighs this war's strikes (PLAN 7.18h).
+diff --git a/tests/unit/nukeGapShort1938.test.ts b/tests/unit/nukeGapShort1938.test.ts
+index e49b6fb2..12438fae 100644
+--- a/tests/unit/nukeGapShort1938.test.ts
++++ b/tests/unit/nukeGapShort1938.test.ts
+@@ -59,6 +59,18 @@ describe('the gap after a launch (PLAN 7.25b, 7.28)', () => {
+     }
+   }, 300_000);
+ 
++  // PLAN 7.96c (ADR-659; critic run 12's volleys: HEAD's bursts by a striker within 30 days of its own
++  // last 34 % against `dd3b730`'s 8 %): the side waits two months for the answer, not a week.
++  it('a side that burst a warhead holds its next first use in the war for two months', () => {
++    const { w, war } = launched(0, 1);
++    for (const day of [7, 30, 59]) {
++      w.tick = war.lastStrike![0] + day * 24;
++      expect(strikePaused(w, war, 0), `day ${day}`).toBe(true);
++    }
++    w.tick = war.lastStrike![0] + 60 * 24;
++    expect(strikePaused(w, war, 0), 'day 60').toBe(false);
++  }, 300_000);
++
+   it('a war of an older save, with no count of live launches, holds as before', () => {
+     const w = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) }).world;
+     const war = w.wars.start([ENG], [GER], 0);

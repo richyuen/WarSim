@@ -210,6 +210,10 @@ them, are 7.81–7.86. A task each, split when taken up:
       7.96b's four seeds (`dd3b730` 8 %); a side waits STRIKE_GAP_DAYS (7) after its strike before its next
       first use in the war. Rule: a longer wait for the answer, chosen on a `nukeVolume.ts` A/B on those four
       seeds × 30 years (the volleys table of `b.md`), then read on 811–820. AT: 7.96's bar.
+      Ruled, not committed (ADR-660 proposed, BLOCKERS 2026-10-23; `docs/evidence/7.96/c.md`, `c.patch`): on
+      811–820 a flat 60 days gives volleys 5 % (`dd3b730` 29 %, HEAD 31 %) and turns `nukeStrikeAgain1938`
+      (R7-B1) red; the week kept for the desperate, 30 %, the test green. Which critic finding wins is the
+      user's. The pin unchanged.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

@@ -22841,3 +22841,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 
 - 7.96's AT: the share of bursts by a striker within 30 days of its own last, and the civilian share, not
   above `dd3b730`'s on 10 unseen seeds × 30 years; the volume reported. 7.96c: a longer wait after a strike.
+
+## 2026-10-23 — PLAN 7.96c: the volleys are mostly fight-for-life strikes; ruled, not committed (ADR-660 to the user)
+
+- **A/B** (four of 7.86's seeds × 30 years): STRIKE_GAP_DAYS 30 leaves 24 % of bursts within 30 days of the
+  striker's own last, 60 gives 8 % (`dd3b730` 8 %, HEAD 34 %).
+- **Unseen 811–820 × 30 years** (`docs/evidence/7.96/c.md`): flat 60 days, volleys 5 % (`dd3b730` 29 %, HEAD
+  31 %), civilian 16 % (32 %, 13 %): met; but the gate red on `nukeStrikeAgain1938` (R7-B1's France must
+  strike again within 30 days; it struck once in 90). With the week kept for nations in extreme
+  desperation the test is green and the volleys 30 %: the volleys are mostly theirs.
+- **Verdict:** missed without the user; `c.patch` saved, code restored; ADR-660 proposed, BLOCKERS entry.
+- **Gotcha:** I ticked 7.96 before the gate and had to unwind it (`plan:archive` had moved it): gate the
+  code first, then tick.
+- **No rule;** the pin unchanged (7098dd29).
+- **Next:** 7.96 waits on ADR-660; the loop takes 7.79's AT.
