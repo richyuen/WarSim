@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { BATTLE_FLEET_INCOME, budgetOf, FEW_FORMATIONS, NAVY_SHARE, peaceShare, RESERVE_MONTHS, wantsFerry, wantsTransport } from '../../src/sim/ai/economic';
+import { frontReach } from '../../src/sim/ai/invasion';
+import { neighbours4 } from '../../src/sim/nav/grid';
+import { passageOf } from '../../src/sim/systems/movement';
 import { applyLoss, bleedFormation, destroyFormation, elementIndex, settleFormation } from '../../src/sim/systems/elements';
 import { TRANSPORT_MEN, transportRoom } from '../../src/sim/systems/amphibious';
 import { placeFleet } from '../../src/sim/placeForces';
@@ -21,7 +24,7 @@ import { runEvents } from '../helpers/sim1938';
 // over it and short of money, it lays up its fleets in port, the dearest first, before its
 // army is sent home.
 
-const { w: W } = SIZE_1938;
+const { w: W, h: H } = SIZE_1938;
 const id = (t: string): number => TAGS_1938.indexOf(t) + 1;
 const T = ECONOMY_TABLES_1938;
 const fleets = BUILD_MIX_1938.fleets;
@@ -158,6 +161,26 @@ describe('the navy\'s cost (PLAN 4.6e1)', () => {
         if ((w.isFleet(f) && c.template[f] === fleets.transport) || (!home && !w.isFleet(f) && !w.isWing(f) && island)) destroyFormation(w, f);
       });
       expect(declareWar(w, ENG, id('SAU'), true)).not.toBeNull();
+      if (!home) {
+        // Nor on the front's land beyond the front's reach (India's, Burma's: Persia between, closed
+        // to it): the ferry's since PLAN 7.79c, the want's since PLAN 7.90e (ADR-648). The army that
+        // reaches the front (Aden's, Iraq's) stays.
+        const { controller } = w.cells;
+        const frontCells: number[] = [];
+        for (let k = 0; k < W * H; k++) if (controller[k] === ENG && neighbours4(k, W, H, false, []).some((q) => controller[q] === id('SAU'))) frontCells.push(k);
+        const reach = frontReach(w, ENG, frontCells, passageOf(w, ENG));
+        const c = w.formations.cols;
+        const ids: number[] = [];
+        w.formations.forEach((f) => ids.push(f));
+        let kept = 0;
+        for (const f of ids) {
+          if (c.nation[f] !== ENG || w.isFleet(f) || w.isWing(f) || w.offLand(f)) continue;
+          const k = Math.floor(c.y[f]!) * W + Math.floor(c.x[f]!);
+          if (comp[k] === front && !reach(k)) destroyFormation(w, f);
+          else kept++;
+        }
+        expect(kept).toBeGreaterThan(0);
+      }
       w.nations.cols.gold[ENG] = 1e6;
       w.nations.cols.manpower[ENG] = 1e7;
       return { s, w, ENG };

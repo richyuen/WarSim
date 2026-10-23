@@ -1,0 +1,54 @@
+{"division":12460,"landed":2,"landedFromPiles":[0,0],"stillAboard":16,"stillMarching":9,"meanMarchDays":null,"meanWaitDays":0,"meanSeaDays":22,"groupDays":{"P":146,"W":57,"B":0,"L":109,"E":60,"S":0,"X":0},"ferryTurns":4,"atPortNoGroupMean":42.9,"atPortNoGroupMax":65,"orders":22}
+ports by the first pile: Milwaukee@688651 31 cells; Chicago@705036 40 cells; Gary@709135 45 cells; Cleveland@709167 77 cells; Buffalo@690751 84 cells; Rochester@686662 89 cells; Kuujjuarapik@504389 117 cells; Baltimore@739916 121 cells
+126	PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	
+	3650 Nuuk
+138	PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	
+	3650 Nuuk
+365	PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLL	3656:board 3663:board 3670:board
+	3650 Norfolk
+549	PPPPPPPLLLLLLLLLLLLLLLLLLLLLLPW	3656:board
+	3650 Kuujjuarapik | 3679 Bathurst
+568	PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLL	3656:board 3663:board 3670:board
+	3650 Norfolk
+571	PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLL	3656:board 3663:board 3670:board
+	3650 Norfolk
+574	PPPPPPPEEEEEEPLLLLLLLLLLLLLLLLL	3656:sail 3663:board
+	3650 San Juan | 3662 Norfolk | 3663 Baltimore
+1015	PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLL	3656:board 3663:board 3670:board
+	3650 Norfolk
+1119	PPPPPPPEEEEEEEEEEEEEEEEEEEPPLLL	3656:sail 3677:board
+	3650 Bissau | 3675 Baltimore
+1120	PPPPPPPEEEEEEEEEPPPPPLLLLLLLLLL	3656:sail 3670:board
+	3650 Roseau | 3666 Baltimore
+1122	PPPPPPPEEEEEEEEEEEEEEEEEEEEEEEP	3656:board
+	3650 Corpus Christi | 3661 West Palm Beach | 3680 Kuujjuarapik
+1123	PPPPPPPEEEPPPPLLLLLLLLLLLLLLLLL	3656:sail 3663:board
+	3650 Pearl Harbor | 3660 Hilo
+turn 3656 free 157 groups 12: 126@Nuuk:board-#1 138@Nuuk:same- 365@Norfolk:board+#1 549@Kuujjuarapik:board+ 568@Norfolk:board+#1 571@Norfolk:board+#2 1015@Norfolk:board+#1 1122@Corpus Christi:board+#9 574@San Juan:sail+#1 1119@Bissau:sail+#2 1120@Roseau:sail+ 1123@Pearl Harbor:sail+#1
+turn 3663 free 147 groups 8: 126@Nuuk:board-#1 138@Nuuk:same- 365@Norfolk:board+#1 568@Norfolk:board+#1 571@Norfolk:board+#1 574@Baltimore:board+ 1015@Norfolk:board+#1 1123@Hilo:board+
+turn 3670 free 143 groups 7: 126@Nuuk:board-#1 138@Nuuk:same- 365@Norfolk:board+ 568@Norfolk:board+ 571@Norfolk:board+ 1015@Norfolk:board+ 1120@Baltimore:board+
+turn 3677 free 141 groups 3: 126@Nuuk:board-#1 138@Nuuk:same- 1119@Baltimore:board+
+after the voyage 365: laden from day 3671 for 10, then stood 0 days (to the end)
+after the voyage 549: laden from day 3657 for 22, then stood 2 days (to the end)
+after the voyage 568: laden from day 3671 for 10, then stood 0 days (to the end)
+after the voyage 571: laden from day 3671 for 10, then stood 0 days (to the end)
+after the voyage 574: laden from day 3664 for 17, then stood 0 days (to the end)
+after the voyage 1015: laden from day 3671 for 10, then stood 0 days (to the end)
+after the voyage 1119: laden from day 3678 for 3, then stood 0 days (to the end)
+after the voyage 1120: laden from day 3671 for 10, then stood 0 days (to the end)
+after the voyage 1123: laden from day 3664 for 17, then stood 0 days (to the end)
+still marching 257 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 288 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 343 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 347 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 368 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 369 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 388 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 532 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 507 from 1061793 since 3680 to Bathurst moving 1 hours left 36
+landed 507 from 504389 march - aboard 3657 sailed 3657 ashore 3679 at 1061793 (929,518)
+landed 908 from 504389 march - aboard 3657 sailed 3657 ashore 3679 at 1061794 (930,518)
+day 3650 at a port with no group 61 groups 12 training 0 room 302400 wantsT false wantsF true gold 131961 aboard 0 piles 60/49
+day 3660 at a port with no group 54 groups 12 training 1 room 302400 wantsT false wantsF true gold 115127 aboard 2 piles 60/45
+day 3670 at a port with no group 10 groups 12 training 1 room 302400 wantsT false wantsF true gold 115083 aboard 6 piles 60/35
+day 3680 at a port with no group 49 groups 12 training 1 room 302400 wantsT false wantsF true gold 115038 aboard 16 piles 60/31

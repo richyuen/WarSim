@@ -153,11 +153,15 @@ them, are 7.81–7.86. A task each, split when taken up:
       trip 1.12 → 1.87, trips of two 2 → 13 of 15 (the mode 2), landed 19 → 28, piles on day 90 60/17 →
       60/7; the two of one are three groups splitting a port's last four (7.90g). 6421: 87 landed either
       way. Pin 8a571863 → 5ea2c9d8.
-    - [ ] 7.90e The ferry's transports (a.md §5): `wantsFerry` counts only the army on landmasses with a port
+    - [x] 7.90e The ferry's transports (a.md §5): `wantsFerry` counts only the army on landmasses with a port
       and no front, not the army on a fronted landmass that reaches no front (the ferry's since ADR-636),
       so it is false on 1129 year 10 with ~150 such formations and 131,961 gold. AT: on 1129 year 10
       `wantsFerry` true on day 0 and a US transport group in training by day 30 (HEAD: false, none); a unit
       test (red without); the ADR; the pin's entry.
+      Done (ADR-648, `docs/evidence/7.90/e.md`): on a front's land with a port of its own, the standing
+      formations that reach no front cell (`frontReach`, the ferry's test) count against the room; on 1129
+      year 10 `wantsFerry` false → true on day 0, groups in training 0 → 1 from day 10. Pin 5ea2c9d8 →
+      5161de24.
     - [ ] 7.90f The board refused at Dakar (found at 7.90c, `docs/evidence/7.90/c.md`): on 6421 year 20,
       with the way back mended, 25 US groups stand at Dakar (and 2–4 at Bathurst) from day 56 to day 90
       and refuse a `board` every turn (9 searches each, no order), on the African front's land with free

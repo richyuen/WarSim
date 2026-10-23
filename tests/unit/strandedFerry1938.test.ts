@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { wantsFerry } from '../../src/sim/ai/economic';
 import { invasionAi } from '../../src/sim/ai/invasion';
 import { DEPLOY_RANGE_CELLS, groundReader, reachesOnLand } from '../../src/sim/ai/operational';
 import { STAGGER } from '../../src/sim/ai/strategic';
@@ -380,5 +381,37 @@ describe('the ferry’s way back passes over an army on land with no port (PLAN 
     w.settings.aiEnabled = false;
     // Under way for a port of Germany's in Europe, the army's land.
     expect(c.moving[tp]).toBe(1);
+  });
+});
+
+// PLAN 7.90e, ADR-648: the economic AI's ferry want (`wantsFerry`, ADR-614) counted only the army on a
+// land with a port of the nation's and no front cell, not the army on a front's land that reaches none
+// of its front cells (the ferry's since PLAN 7.79c, ADR-636). Critic run 12, 1129 year 10: the USA, ~150
+// free formations on its mainland beside a front they cannot walk to, wanted none with 131,961 gold.
+// Here Germany at war with Lithuania, its army west of Poland reaching no front cell, its one transport
+// group afloat: three divisions at a home port outnumber its room, so it wants one. Before, it wanted none.
+describe('the ferry’s want counts the army that reaches no front on its land (PLAN 7.90e)', () => {
+  it('a nation whose army on a front’s land reaches no front cell wants a transport group', () => {
+    const { w, tp, home, europe, reaches, more } = stranded(2);
+    const c = w.formations.cols;
+    const comp = navOf(w).grid.component;
+    // Two more divisions standing at the home port with the first: three over the group's room of two.
+    for (const f of more) {
+      [c.x[f], c.y[f]] = w.cellPoint(home.p.cell);
+      c.moving[f] = 0;
+      c.engaged[f] = 0;
+      c.retreat[f] = 0;
+      c.home[f] = 0;
+      w.paths.delete(f);
+    }
+    // Its standing army on Europe that reaches no front cell outnumbers the group's room.
+    let men = 0;
+    w.formations.forEach((f) => {
+      if (c.nation[f] !== GER || w.offLand(f) || w.isWing(f) || w.isFleet(f) || c.moving[f] === 1 || c.engaged[f] === 1) return;
+      const k = Math.floor(c.y[f]!) * W + Math.floor(c.x[f]!);
+      if (comp[k] === europe && !reaches(k)) men += c.strength[f]!;
+    });
+    expect(men).toBeGreaterThan(transportRoom(w, tp));
+    expect(wantsFerry(w, GER, [tp])).toBe(true);
   });
 });

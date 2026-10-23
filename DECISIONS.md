@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-648 · 2026-10-22 · accepted — The ferry's transport want counts the army on a front's land that reaches no front cell (PLAN 7.90e; amends ADR-614)
+
+- **Context** (`docs/evidence/7.90/a.md` §5). `wantsFerry` (ADR-614) counted against the transports'
+  room only the standing army on a land with a port of the nation's and none of its front cells. Since
+  PLAN 7.79c (ADR-636) the ferry also takes, on a front's land, the formations that reach no front
+  cell; the want did not count them. Critic run 12, 1129 year 10: the USA, a front cell on its
+  mainland beside an enemy its army cannot walk to and ~150 free formations there, wanted no transport
+  any day of 90 with 131,961 gold, and none was in training.
+- **Decision** (`ai/economic.ts`): on a land of the front cells (its own, else its allies' beside the
+  enemies it fights with them, as `invasionAi` gives the ferry) with a port of its own, a standing
+  formation counts when it reaches none of those cells nor of its side's beside its enemies:
+  `frontReach` (ADR-636's test, exported from `ai/invasion.ts`), made at the first such formation and
+  kept per class of cells. The rest of the want is unchanged (a landing port on a front's land, men
+  over room, one group in training at a time, no fleet held back).
+- **Read** (`docs/evidence/7.90/e.md`, 30 days): 1129 year 10, `wantsFerry` false → true on day 0;
+  groups in training 0 → 1 from day 10 to day 30.
+- **Test.** `strandedFerry1938.test.ts`, "a nation whose army on a front's land reaches no front cell
+  wants a transport group"; red without.
+- **Pin.** 5ea2c9d8 → 5161de24.
+
 ### ADR-647 · 2026-10-22 · accepted — A transport carries 2,100 men: a group of 12 takes two infantry divisions of 1938 (PLAN 7.90d; amends PLAN 4.5a's figure)
 
 - **Context** (`docs/evidence/7.90/a.md` §4). `TRANSPORT_MEN` gave a transport 2,000 men, a group's 12

@@ -94,7 +94,8 @@
  *    The ferry's want orders one too (PLAN 7.49d3, ADR-614, `wantsFerry`): a nation with a land
  *    front (or, with no front cell of its own, its allies' beside the enemies it fights with them:
  *    PLAN 7.66, ADR-618), a port of its or an ally's on that front's land, and an island army (on a land with a
- *    port of its own and no front) of more men than its transports' room. Unlike the landing's, it
+ *    port of its own and no front, or on a front's land with a port of its own and reaching none of
+ *    its front cells: PLAN 7.90e, ADR-648) of more men than its transports' room. Unlike the landing's, it
  *    stops no other fleet: Britain's island army outnumbers any room it could buy, so the want holds
  *    for the war's length; one group in training at a time, a warship between.
  * 4. Research (PLAN 3.1b, `systems/research.ts`), set between 2 and 3: the budget of the days
@@ -119,6 +120,8 @@ import { frontierOf } from '../systems/territory';
 import { neighbours4 } from '../nav/grid';
 import { airfield, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
 import { transportRoom } from '../systems/amphibious';
+import { passageOf } from '../systems/movement';
+import { frontReach } from './invasion';
 import { fleetPower } from '../systems/seaControl';
 import { DAYS_PER_MONTH, researchBudget } from '../systems/research';
 import { knowsTechs } from '../tech';
@@ -752,16 +755,23 @@ export function wantsTransport(world: World, n: number, transport: number, own: 
  * (90 and 155 island formations of such nations on the critic's year-10 and year-20 saves).
  * A front cell of its own beside open water (a zone not iced) stands as such a port on its land: the
  * ferry lands at a beachhead with no port there (PLAN 7.70c, ADR-624).
+ * On a land of those cells with a port of its own, its standing formations that reach none of them
+ * (nor of its side's beside its enemies: `frontReach`, as the ferry's own test) count as island army
+ * too (PLAN 7.90e, ADR-648): the ferry has taken them since PLAN 7.79c (ADR-636), and the want did
+ * not count them (critic run 12, 1129 year 10: the USA, ~150 free formations on its mainland with a
+ * front cell it does not reach, false every day with 131,961 gold and no group in training).
  */
 export function wantsFerry(world: World, n: number, own: readonly number[]): boolean {
   const { w, h, controller } = world.cells;
   const comp = navOf(world).grid.component;
   const nb: number[] = [];
   const fronts = new Set<number>();
+  // The front cells (the ferry's `front`, `invasionAi`): those of its own, else its allies'.
+  const cells: number[] = [];
   const z = seaOf(world);
   let landing = false;
   for (const c of frontierOf(world)) {
-    if (controller[c] !== n || (fronts.has(comp[c]!) && landing)) continue;
+    if (controller[c] !== n) continue;
     let front = false;
     let beach = false;
     for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
@@ -772,6 +782,7 @@ export function wantsFerry(world: World, n: number, own: readonly number[]): boo
     }
     if (!front) continue;
     fronts.add(comp[c]!);
+    cells.push(c);
     if (beach) landing = true;
   }
   // With no front cell of its own, its allies' cells beside the enemies it fights with them, as the
@@ -779,11 +790,12 @@ export function wantsFerry(world: World, n: number, own: readonly number[]): boo
   if (fronts.size === 0) {
     for (const c of frontierOf(world)) {
       const a = controller[c]!;
-      if (a === 0 || fronts.has(comp[c]!) || !world.wars.sameSide(n, a)) continue;
+      if (a === 0 || !world.wars.sameSide(n, a)) continue;
       for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
         const m = controller[k]!;
         if (m !== 0 && world.wars.together(n, a, m)) {
           fronts.add(comp[c]!);
+          cells.push(c);
           break;
         }
       }
@@ -792,23 +804,34 @@ export function wantsFerry(world: World, n: number, own: readonly number[]): boo
   if (fronts.size === 0) return false;
   const water = portSeaOf(world);
   const homes = new Set<number>();
+  // The fronts' lands with a port of its own, where a formation that reaches no front cell boards.
+  const cut = new Set<number>();
   world.ports.forEach((p, i) => {
     if (water[i]! < 0) return;
     const holder = controller[p.cell]!;
     const land = comp[p.cell]!;
     if (fronts.has(land)) {
       if (holder === n || (holder !== 0 && world.wars.sameSide(n, holder))) landing = true;
+      if (holder === n) cut.add(land);
     } else if (holder === n) homes.add(land);
   });
-  if (!landing || homes.size === 0) return false;
+  if (!landing || (homes.size === 0 && cut.size === 0)) return false;
   let room = 0;
   for (const id of own) room += transportRoom(world, id);
   const f = world.formations.cols;
   let men = 0;
+  // Made at the first formation on such a land: route searches, kept per class of cells.
+  let reach: ((cell: number) => boolean) | undefined;
   world.formations.forEach((id) => {
     if (men > room || f.nation[id] !== n || world.isFleet(id) || world.isWing(id) || world.offLand(id)) return;
     if (f.moving[id] === 1 || f.engaged[id] === 1 || f.retreat[id] !== 0 || f.home[id] !== 0) return;
-    if (homes.has(comp[Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!)]!)) men += f.strength[id]!;
+    const k = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
+    const land = comp[k]!;
+    if (homes.has(land)) men += f.strength[id]!;
+    else if (cut.has(land)) {
+      reach ??= frontReach(world, n, cells, passageOf(world, n));
+      if (!reach(k)) men += f.strength[id]!;
+    }
   });
   return men > room;
 }

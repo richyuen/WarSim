@@ -22460,3 +22460,23 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Filed:** PLAN 7.90g (the two trips of one: three groups at Norfolk split the pile's last four 2/1/1).
 - **Pin:** 8a571863 → 5ea2c9d8.
 - **Next:** PLAN 7.90e.
+
+## 2026-10-22 — PLAN 7.90e: the ferry's transports bought for the army that reaches no front (ADR-648)
+
+- **Rule:** `wantsFerry` counts, on a front's land with a port of the nation's, its standing formations
+  that reach no front cell (`frontReach`, ADR-636's test, exported from `ai/invasion.ts`); before, only the
+  army on a land with no front cell.
+- **Read** (`docs/evidence/7.90/e.md`, `ferryTrip.ts` 30 days): 1129 year 10, `wantsFerry` false → true on
+  day 0, US groups in training 0 → 1 from day 10 (one at a time, ADR-614); piles on day 30 unchanged
+  (60/31), the 12 afloat the same.
+- **Test:** `strandedFerry1938.test.ts` "a nation whose army on a front's land reaches no front cell wants
+  a transport group" (red without). `navyBudget1938.test.ts`'s "no army off the front's land: no group"
+  case had Britain's armies in India and Burma on the front's land (Asia) beyond the reach of Aden and
+  Iraq: the ferry's since 7.79c, now the want's; its setup removes them too (the army that reaches the
+  front kept, at least one), the assertion unchanged. The related run found it before the gate.
+- **Timing** (`.cache/prof90e/`, pairs at once on separate P-cores, swapped): economicAi seed 99 5 years
+  0.037 / 0.035 → 0.033 / 0.039 ms; 1129 year 11 0.048 / 0.046 → 0.052 / 0.053 ms (+0.006, 0.2 % of the
+  tick). Mean tick seed 99 1.95 / 1.81 → 1.97 / 2.11 ms, 1129 2.92 / 2.85 → 2.99 / 2.99 ms, with a
+  changed history (the hash moves) beside a system cost that does not.
+- **Pin:** 5ea2c9d8 → 5161de24.
+- **Next:** PLAN 7.90f.

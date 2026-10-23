@@ -486,9 +486,10 @@ function standing(world: World, id: number, n: number): boolean {
  * a cell of its side's beside an enemy of n's (those whose sectors the operational AI allots it
  * to), by `reachesOnLand`. Asked once per class of cells (landmass, group of provinces with open
  * ground, and ground; the operational AI's classes) and kept for the call; the side's cells are
- * looked for once, when a class reaches none of `front`.
+ * looked for once, when a class reaches none of `front`. The economic AI's `wantsFerry` reads it
+ * too (PLAN 7.90e, ADR-648).
  */
-function frontReach(world: World, n: number, front: readonly number[], pass: Passage): (cell: number) => boolean {
+export function frontReach(world: World, n: number, front: readonly number[], pass: Passage): (cell: number) => boolean {
   const nav = navOf(world);
   const comp = nav.grid.component;
   const nodeOf = nav.graph.nodeOf;
