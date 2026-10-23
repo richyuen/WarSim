@@ -167,9 +167,10 @@ them, are 7.81–7.86. A task each, split when taken up:
       read shows the refusal right (no formation there the ferry should carry: then closed so, the
       reason in c.md); a unit test (red without) with a rule; the ADR; the pin's entry.
     - [ ] 7.90g A port's army split over its groups (found at 7.90d, `docs/evidence/7.90/d.md`): on 1129 year
-      10, on the turn of day 3712, three groups at Norfolk (365, 568, 571) took the Baltimore pile's last
-      four divisions 2 / 1 / 1, each in the turn's order taking the nearest left, so a group sailed with one
-      where two groups had room for the four; 6421 year 20's 27 trips of one are unread. Read first whose
+      10, four divisions of the Baltimore pile sent on day 3664 were aboard three groups at Norfolk (365,
+      568, 571) on day 3713, 2 / 1 / 1, where two groups had room for the four; 568's and 571's tries of
+      the day-3712 turn were sends (a route search), and by what rule the four went aboard which group is
+      unread. 6421 year 20's 27 trips of one are unread too. Read first whose
       the trips of one are on both saves (the port's free army when the group went, the room left); then the
       rule it names. AT: on 1129 year 10 and 6421 year 20 (`ferryTrip.ts`, `landed` by fleet and sail day)
       the trips of one that left at their port a free formation the group had room for (1129: 2; 6421:

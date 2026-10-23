@@ -18,11 +18,11 @@ transport group and the day it sailed (`landed[].fleet`, `landed[].sailed`).
 | HEAD (7.90c) | 17 | 19 | 1.12 | 15 / 2 | 15 | 60/38 | 60/17 |
 | rule | 15 | **28** | **1.87** | **2 / 13** | 22 | 60/31 | **60/7** |
 
-Every trip but two carries two (HEAD: group 549's two trips alone). The two of one (568 and 571, sailed day 3713) are the last
-four of the Baltimore pile at Norfolk on the turn of day 3712, split 2 / 1 / 1 over three groups
-(365, 568, 571): each group took the turn in its order and sent or boarded the nearest left, so the
-third group sailed with one where two groups would have carried the four. That is the split of a
-port's army over its groups, not the room: PLAN 7.90g. The mode is 2, the bar's figure.
+Every trip but two carries two (HEAD: group 549's two trips alone). The two of one (568 and 571, sailed day 3713): four divisions of
+the Baltimore pile, sent on day 3664, were aboard three groups at Norfolk (365, 568, 571) on day
+3713, 2 / 1 / 1, where two groups had room for the four. 568's and 571's tries on the day-3712 turn
+were sends (a route search, `#1`), not boards; by what rule the four went aboard which group was not
+read. Each trip of one had room for a second division; the split, not the room: PLAN 7.90g. The mode is 2, the bar's figure.
 
 ## Beside it: 6421 year 20
 
