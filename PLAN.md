@@ -71,6 +71,9 @@ them, are 7.81–7.86. A task each, split when taken up:
       Done, no rule (ADR-664, `docs/evidence/7.82/b.md`): the AT met on HEAD after 7.97 (834 7 years,
       835 14, battle 1.77 %); the Greenland rule tried (`b.patch`: a target on a land with at most 2
       enemy formations pulled ×3) 9, 13, 1.84 %, not separable from chance; kept as a candidate.
+  7.82's AT read (`docs/evidence/7.82/at.md`, 841–850 × 30 years): stasis over 15 years on 3 of 10 (843
+  19: Denmark at war, untouched; 844 17 and 845 19: Denmark, Canada, the USA at peace), battle share
+  1.82 %. Missed; waits on ADR-665 (BLOCKERS).
 
 - [ ] 7.94 The operational AI's cost on the busier world (found at 7.83's AT; performance 6, needs 7;
   taken: ADR-654 a, the user's decision of 2026-10-23): 0.60 ms a tick on HEAD's year-4 world of

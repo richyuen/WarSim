@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-665 · 2026-10-23 · proposed, the user's decision — Stasis on unseen seeds: one remnant at war, two holders at peace (PLAN 7.82's AT missed)
+
+- **Context** (`docs/evidence/7.82/at.md`). PLAN 7.82's AT on 841–850 × 30 years: no stasis over 15
+  years (the critic's measure), the battle share in years 10–30 at least 1.96 % (7.82a's, read before
+  7.97's rule).
+- **Read:** stasis over 15 years on **3 of 10** (843 19, 844 17, 845 19; 846 at 15); battle share
+  **1.82 %** pooled (7.82b's HEAD control on 834–835: 1.77 %). Of the three: on 843 Denmark is at war
+  315 days a year with nothing engaged and its cells rising (the at-war remnant of 7.82b's read, which
+  `docs/evidence/7.82/b.patch` reaches); on 844 Denmark is at peace (29 days a year at war) and fixed at
+  32k cells for 17 years; on 845 Denmark, Canada and the USA are all at peace (12–24 days at war a year)
+  and each within 2 % of its cells for 19 years. No landing rule reaches a nation nobody fights.
+- **Options:**
+  - **(a)** 7.82 closed not done; the stasis and the battle share go to the next critic report. No rule.
+  - **(b)** Two parts. 7.82c: the at-war remnant (`b.patch`), judged from a save of 843 before its span
+    (landings on Denmark's cells and the cells it loses over 5 years, against HEAD from the same save).
+    7.82d: the holders at peace, read first on 845 (which nations could reach them, and why the strategic
+    AI's war choice never picks them), then a rule on what it names. Then 7.82's AT again on 851–860.
+  - **(c)** As (b) without 7.82d: only the remnant at war, 7.82's AT re-run after it; the peaceful
+    holders to the next critic report.
+- **Recommended: (b).** Emergent dynamics is under its bar (6, needs 7), and both causes are now read on
+  unseen seeds, two of the three failing seeds by the second. (a) leaves a dimension under the bar with
+  its causes named; (c) fixes at most one of three seeds.
+- **Consequences:** until decided, no rule; the pin unchanged (b9bff4bd).
+
 ### ADR-664 · 2026-10-23 · accepted — The overseas holders: 7.82b's AT met on HEAD after 7.97, no rule (PLAN 7.82b)
 
 - **Context** (`docs/evidence/7.82/b.md`). PLAN 7.82b: on 834 and 835 × 30 years the longest stasis at

@@ -843,6 +843,16 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
   (recommended); (b) drop it and file PLAN 7.99 to read what holds a landed army at its beachhead; (c)
   commit it anyway. The code is restored; the pin unchanged (b9bff4bd).
 
+## 2026-10-23 — PLAN 7.82's AT missed: stasis over 15 years on 3 of 10 unseen seeds (ADR-665 waits on the user)
+
+- **Bar:** on 10 unseen seeds × 30 years no stasis over 15 years; the battle share in years 10–30 at least
+  1.96 % (`docs/evidence/7.82/at.md`).
+- **What moved:** on 841–850 3 of 10 over 15 (843 19, 844 17, 845 19), battle share 1.82 %. 843: Denmark
+  at war, untouched, growing; 844 and 845: Denmark, Canada, the USA at peace for most of the span.
+- **Left:** ADR-665: (a) 7.82 closed not done; (b) 7.82c (the at-war remnant, `b.patch`, from an 843
+  save) and 7.82d (the holders at peace: the war choice), then the AT on 851–860 (recommended); (c) 7.82c
+  only. No rule; the pin unchanged (b9bff4bd).
+
 ## Watch list (not blocking)
 
 - **From the tenth independent read (PLAN 4.8a, 2026-10-12), suspicions not run:**

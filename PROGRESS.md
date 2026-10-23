@@ -22974,3 +22974,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   patch kept in the evidence.
 - **No rule;** the pin unchanged (b9bff4bd).
 - **Next:** 7.82's AT on 841–850 × 30 years.
+
+## 2026-10-23 — PLAN 7.82's AT on unseen seeds: stasis over 15 years on 3 of 10 (ADR-665 to the user)
+
+- **Read** (`docs/evidence/7.82/at.md`; 841–850 × 30 years, `churnAt.ts`, ~1.5 h): longest stasis 7–19
+  years, over 15 on 843 (19), 844 (17), 845 (19); battle share in years 10–30 1.82 % pooled (7.82a's
+  1.96 % was read before 7.97).
+- **Causes:** 843 Denmark at war 315 days a year, nothing engaged, its cells rising (7.82b's at-war
+  remnant); 844 Denmark at peace and fixed; 845 Denmark, Canada and the USA at peace and fixed.
+- **Verdict:** not ticked; BLOCKERS entry; ADR-665 proposed: (a) closed not done; (b) 7.82c (the remnant,
+  `b.patch`, from an 843 save) and 7.82d (the holders at peace: the war choice), then the AT on 851–860
+  (recommended); (c) 7.82c only.
+- **No rule;** the pin unchanged (b9bff4bd).
+- **Next:** 7.82 waits on ADR-665; the loop takes 7.94.
