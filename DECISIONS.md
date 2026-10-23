@@ -338,6 +338,33 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   "on Germany, or on a place of at least 50,000 enemy men" (the land of a nation of the enemy side
   kept); then PLAN 7.91 is committed from its patch, and 7.90g from its. No nuclear rule.
 
+### ADR-650 · 2026-10-22 · accepted — A stack counts its lines and files with those that come from its own side (PLAN 7.91; amends ADR-89 and ADR-133)
+
+- **Context** (`docs/evidence/7.91/case.md`). A formation whose nearest enemy faces a nearer one comes
+  up to that enemy's block, a line behind those nearer that enemy, two lines a file (ADR-202), the
+  next file abreast, right and left by turns, `DEPLOY_ABREAST` (1 cell) out at most (ADR-133). The
+  lines before it were all those nearer the enemy, from any side: ADR-133's own "not done", "a stack
+  begins its files sooner than it need". With ADR-649's ferry (`docs/evidence/7.90/g.patch`), on day
+  60 of `deploy.test.ts` six Chinese divisions from the south-west of a Japanese one (393) took files
+  0 to 5, so the ten from the south-east began at file 5 and stood 0.69 to 1 cell to the side of
+  their line; four of them, and seven Chinese blocks on another Japanese division (366), had no
+  enemy in the battle's view (20 m/px, 0.82 cells high): 86 of 97 in contact shared a view, under
+  the test's bar of 0.9.
+- **Decision** (`deployOf`): its lines and files are counted with those nearer the enemy that come
+  from much the same side, within 60° of its own bearing from the enemy's block (ADR-89's test for
+  the one that enemy faces, which stays in the count as before). Those from another side stand on
+  theirs; a block of theirs in its way still stops it, and the file then goes out to one with room
+  (ADR-201). Nothing else of the walk changes.
+- **Read.** Day 60 of `deploy.test.ts`, in contact sharing a view: HEAD 69 of 70 → 96 of 99; with
+  g.patch 86 of 97 → 72 of 75. No two deployed blocks' middles within 0.1 cells, either way.
+- **Test.** `deploy.test.ts`, "a stack that comes to an enemy from another side than a nearer one
+  counts its own files": ten German divisions from the south of a Pole, 1.1 cells off, and four
+  from the west, 1.4 off, behind the German it faces; each of the four in one view with the Pole's
+  block. Red without: the last 0.87 cells to the side, against 0.72.
+- **Pin** (the blocks are read by the air AI's patrols and the fires' places, so the history moves):
+  5161de24 → 41d60509, on 5161de24's tree.
+- **Deviation from AoC:** none; AoC has no blocks of elements.
+
 ### ADR-648 · 2026-10-22 · accepted — The ferry's transport want counts the army on a front's land that reaches no front cell (PLAN 7.90e; amends ADR-614)
 
 - **Context** (`docs/evidence/7.90/a.md` §5). `wantsFerry` (ADR-614) counted against the transports'

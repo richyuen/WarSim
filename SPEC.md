@@ -1206,7 +1206,8 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   faces a nearer formation comes up to that enemy's block, and no block goes further from its
   formation than contact reaches (`DEPLOY_REACH`, 1.5 cells; ADR-98); a line of a stack with no
   room before its formation's place stands abreast of the lines that have, a block's width out
-  to the right and left by turns (ADR-133); a line stands behind the lines before it by their
+  to the right and left by turns (ADR-133), its lines and files counted with those that come from
+  within 60° of its own side (PLAN 7.91, ADR-650); a line stands behind the lines before it by their
   depths, and a file beside the others by the widest block of the stack, so that a tank
   brigade (7 by 4 elements) and a tank corps (11 by 5) of one stack do not stand in one
   another (PLAN 3.11c1, ADR-200); a block on the way to an enemy's block stops the gap short

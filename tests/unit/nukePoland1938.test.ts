@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
-import { nukeStrike } from '../../src/shared/history';
+import { nukeStrike, nukeToll } from '../../src/shared/history';
 import { BUILD_MIX_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { canDeliver } from '../../src/sim/systems/nuclear';
@@ -17,6 +17,8 @@ import { nationId } from '../helpers/sim1938';
 
 const { w: W } = SIZE_1938;
 const [POL, GER] = ['POL', 'GER'].map(nationId) as [number, number];
+/** The men a first burst off Germany must kill (ADR-651 a). */
+const MASSED_MEN = 50_000;
 
 /** Poland's strategic bomber groups with a base. */
 function strategicWings(world: World): number {
@@ -49,7 +51,7 @@ describe("the critic's Poland strikes (PLAN 7.18f, 7.18i)", () => {
     expect(canDeliver(w, POL)).toBe(true);
 
     const decided: number[] = [];
-    const bursts: { day: number; on: number; dead: number }[] = [];
+    const bursts: { day: number; on: number; dead: number; men: number }[] = [];
     let deliverUntil = -1;
     let enemies = new Set<number>();
     for (let d = 0; d < 120; d++) {
@@ -60,8 +62,10 @@ describe("the critic's Poland strikes (PLAN 7.18f, 7.18i)", () => {
           if (ev[i + 1] === EventKind.NukeDecided) decided.push(d);
           if (ev[i + 1] === EventKind.NukeCasualties) {
             const st = nukeStrike(ev[i + 3]!);
-            bursts.push({ day: d, on: st.nation, dead: st.dead });
+            bursts.push({ day: d, on: st.nation, dead: st.dead, men: 0 });
           }
+          // The men the burst killed, logged right after it (PLAN 7.32b).
+          if (ev[i + 1] === EventKind.NukeToll && bursts.length > 0) bursts[bursts.length - 1]!.men = nukeToll(ev[i + 3]!).men;
         }
         ww.out.events.length = 0;
         ww.out.fires.length = 0;
@@ -77,8 +81,11 @@ describe("the critic's Poland strikes (PLAN 7.18f, 7.18i)", () => {
     expect(decided[0]!, 'while it could still deliver').toBeLessThanOrEqual(deliverUntil + 1);
     expect(bursts.length, 'a warhead of Poland burst').toBeGreaterThan(0);
     expect(enemies.has(bursts[0]!.on), 'on the land of a nation of the enemy side').toBe(true);
-    // On the Germans overrunning it, not a lighter theatre of their side (PLAN 7.18j's AT).
-    expect(bursts[0]!.on, 'on Germany').toBe(GER);
+    // On the Germans overrunning it, or on an army of their side of at least MASSED_MEN, not a lighter
+    // theatre of their side (PLAN 7.18j's AT). ADR-651 a (the user's decision): an army that size before
+    // Poland's ally is a fair target by `nukeTargets`; a city of another nation with few men is not.
+    const first = bursts[0]!;
+    expect(first.on === GER || first.men >= MASSED_MEN, `on Germany, or on at least ${MASSED_MEN} men (on ${first.on}, ${first.men} men)`).toBe(true);
     expect(bursts[0]!.dead).toBeGreaterThan(0);
   }, 600_000);
 });

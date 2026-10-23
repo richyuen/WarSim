@@ -106,24 +106,6 @@ them, are 7.81–7.86. A task each, split when taken up:
     Then, after PLAN 7.88, 7.89 and 7.90 (7.87 dropped, ADR-635 b), 7.79's AT on 10 unseen seeds × 20
     years (HEAD's figure read on them first).
 
-- [ ] 7.91 Blocks stacked on one enemy out of its view (found at 7.90g, `docs/evidence/7.90/g.md` "The gate"):
-  with 7.90g's rule (`docs/evidence/7.90/g.patch`) seed 99's 60-day world of `deploy.test.ts` has 97
-  formations in contact, 86 (89%) sharing a view at 20 m/px with their nearest enemy, against the test's
-  bar of 90% (HEAD: 69 of 70). All 11 are Chinese blocks against two Japanese formations
-  (`tools/diag/deployView.ts`, `g_deploy_seed99_rule.log`): three stacked on one cell 1.0–1.5 cells from
-  393, its block deployed against another, the Chinese blocks 1.0–1.35 apart from it with none of either
-  seen; seven from four cells against 366 (landed day 12.9, 45 elements), 0.75–1.15 apart. HEAD has one
-  such pair (410 against 393, `g_deploy_seed99_head.log`). A deploy rule (`deployOf`, ADR-89, ADR-133),
-  not the ferry's. AT: with g.patch applied, `deploy.test.ts` all green (the day-60 share ≥ 0.9, from
-  0.887) and green on HEAD; a unit test of the case (several divisions on one cell coming up to an enemy
-  whose block faces another, each in one view with it), red without; the ADR. Then 7.90g is committed
-  from g.patch (its AT read, its pin f9344f0e).
-  Ruled, not committed (`docs/evidence/7.91/case.md`, `patch`, ADR-650 in the patch): the lines and
-  files of a stack counted with those from within 60° of its own side; HEAD 69/70 → 96/99, g.patch 86/97
-  → 72/75; the test red without (0.87 cells against 0.72); pin 5161de24 → 41d60509. The whole unit suite
-  1870 of 1871: `nukePoland1938` 5591, a nuclear weighing cause. The user chose ADR-651 a (2026-10-23):
-  the test's last assertion becomes "on Germany, or on a place of at least 50,000 enemy men", then
-  this is committed from its patch, and 7.90g from its.
 - [ ] 7.90 The ferry's lift short of the army (found at 7.89; R12-B1): on critic run 12's 1129 year 10 the
   USA's 12 transport groups hold 288,000 men (24,000 each) against about 1.35 million in two piles of a
   nation at war (60 divisions at 625163 by Chicago, 53 at 746057 by Norfolk). A round trip of Norfolk's
@@ -622,3 +604,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at […]
 - [x] 7.92 A far army of the enemy side weighed as the one overrunning the striker (found at 7.91, […]
 - [x] 7.83 Performance (performance 6, needs 7): seed 99's mean tick 1.785–1.790 ms pinned on HEAD […]
+- [x] 7.91 Blocks stacked on one enemy out of its view (found at 7.90g, `docs/evidence/7.90/g.md` "The gate"): […]

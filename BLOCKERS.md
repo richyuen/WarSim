@@ -28,7 +28,18 @@ entries are kept and marked **RESOLVED** with the date and fix.
   `seaReach`, which supply reads after it in the hour. Less needs fewer searches a turn, a rule change.
   No decision of the user's waits on it; the loop takes PLAN 7.83c, and 7.83's AT is read after 7.83d.
 
-### PLAN 7.91 (and 7.90g after it): held on `nukePoland1938` seed 5591, whose "on Germany" is the user's to keep or drop (2026-10-22, ADR-651 proposed; the user's decision)
+### PLAN 7.89: a formation aboard holds no ferry turn now, but the lift is short of the army; piles 2 → 2 (2026-10-22, ADR-643)
+- **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
+  year 20 and 7019 year 10 (`piles.ts --days 30`) 2 → 0; a unit test red without; the ADR; the pin.
+- **What moved** (`docs/evidence/7.89/a.md`): the rule is in: the lock holds a landing and a Normandy only
+  while a landing is at sea, never the ferry. The USA's ferry turns on 1129 1 → 4; ferry boardings in 30
+  days 3 → 7 (1129), 3 → 78 (6421), 0 → 1 (7019); landings the same; a unit test red without; pin
+  b7653c3c → 0b3aea1f. Piles 2 → 2: 1129's 53 fall to 41, its 60 by Chicago do not move.
+- **What is left:** PLAN 7.90. The USA's 12 groups hold 288,000 men against about 1.35 million in the two
+  piles; a round trip carries 4–8 divisions. No decision of the user's waits on it; the loop takes it after
+  PLAN 7.80b.
+
+### RESOLVED 2026-10-23 (ADR-651 a, the user's decision: the assertion widened, 7.91 committed from its patch; 7.90g next) · PLAN 7.91 (and 7.90g after it): held on `nukePoland1938` seed 5591, whose "on Germany" is the user's to keep or drop (2026-10-22, ADR-651 proposed; the user's decision)
 - **The bar:** with 7.91's patch, `nukePoland1938` green on its three seeds with the first burst on
   Germany (PLAN 7.92's AT, first branch), so that 7.91 and then 7.90g can be committed.
 - **What moved:** nothing; no rule written (PLAN 7.92, `docs/evidence/7.92/measure.md`). The Italian army
@@ -40,17 +51,6 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What was left:** the user's (ADR-651). (a) replace the test's "on Germany" by "on Germany, or on a place of
   at least 50,000 enemy men", then 7.91 and 7.90g land from their patches; (b) a rule weighing the striker's own
   front first; (c) open. Meanwhile the loop takes PLAN 7.90h.
-
-### PLAN 7.89: a formation aboard holds no ferry turn now, but the lift is short of the army; piles 2 → 2 (2026-10-22, ADR-643)
-- **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
-  year 20 and 7019 year 10 (`piles.ts --days 30`) 2 → 0; a unit test red without; the ADR; the pin.
-- **What moved** (`docs/evidence/7.89/a.md`): the rule is in: the lock holds a landing and a Normandy only
-  while a landing is at sea, never the ferry. The USA's ferry turns on 1129 1 → 4; ferry boardings in 30
-  days 3 → 7 (1129), 3 → 78 (6421), 0 → 1 (7019); landings the same; a unit test red without; pin
-  b7653c3c → 0b3aea1f. Piles 2 → 2: 1129's 53 fall to 41, its 60 by Chicago do not move.
-- **What is left:** PLAN 7.90. The USA's 12 groups hold 288,000 men against about 1.35 million in the two
-  piles; a round trip carries 4–8 divisions. No decision of the user's waits on it; the loop takes it after
-  PLAN 7.80b.
 
 ### RESOLVED 2026-10-23 (option b, the user's decision: PLAN 7.95, a warship's saving in a land war; 7.84's battles bar waits on it) · PLAN 7.84d: the navies not rebuilt after year 2 for ADR-615's war reserve; the fleets bar out of reach without the user (2026-10-23, ADR-656 proposed; the user's decision)
 - **The bar:** on 7.84c's 10 seeds × 20 years (`seaYears.ts`), armed fleets in years 10–20 at least 0.9 of

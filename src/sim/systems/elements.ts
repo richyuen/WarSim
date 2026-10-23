@@ -300,6 +300,7 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
       const others = comers.get(enemy) ?? [];
       // The lines before this one, nearest that enemy first.
       const ahead = others.slice(0, Math.max(0, others.findIndex((o) => o[0] === f))).map((o) => o[0]);
+      let facedAhead = false;
       const idx = elementIndex(world);
       const enemySlots = slotCount(world, enemy, idx.get(enemy)?.length ?? 0);
       const theirs = deployOf(world, enemy, enemySlots);
@@ -334,8 +335,26 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
         const ax = wrapDx(world, tx, fx);
         const ay = fy - ty;
         const al = sqrt(ax * ax + ay * ay);
-        if (al > 1e-9 && (ax * cos(theirs.facing) + ay * sin(theirs.facing)) / al > 0.5) ahead.unshift(contacts.get(enemy)!);
+        if (al > 1e-9 && (ax * cos(theirs.facing) + ay * sin(theirs.facing)) / al > 0.5) {
+          ahead.unshift(contacts.get(enemy)!);
+          facedAhead = true;
+        }
       }
+      // Its lines and files are counted with those that come from much the same side (within
+      // 60°, as the one that enemy faces): those from another side stand on theirs, and where one
+      // stands in its way the file goes out to one with room (PLAN 7.91: six Chinese divisions
+      // from the south-west of a Japanese one took files 0 to 5, so the ten from the south-east
+      // began at file 5 and stood up to a cell to the side, out of the battle's view).
+      const bx = wrapDx(world, tx, fx);
+      const by = fy - ty;
+      const bl = sqrt(bx * bx + by * by);
+      const sameSide = (g: number): boolean => {
+        const gx = wrapDx(world, tx, c.x[g]!);
+        const gy = c.y[g]! - ty;
+        const gl = sqrt(gx * gx + gy * gy);
+        return bl <= 1e-9 || gl <= 1e-9 || (gx * bx + gy * by) / (gl * bl) > 0.5;
+      };
+      const lineUp = ahead.filter((g, i) => (facedAhead && i === 0) || sameSide(g));
       // On the way to a block: as many lines as have room before its own place, `DEPLOY_LINES`
       // at most (PLAN 3.11c3a: seven divisions on one enemy stood six lines deep, 20 km), one
       // behind another, each by the depth of those before it (PLAN 3.11c1: a tank brigade behind a
@@ -350,7 +369,7 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
       let lines = 0;
       let widest = slotGrid(count).cols;
       for (const [g] of others) widest = Math.max(widest, slotGrid(slotCount(world, g, idx.get(g)?.length ?? 0)).cols);
-      for (const g of [...ahead, f]) {
+      for (const g of [...lineUp, f]) {
         const grid = g === f ? slotGrid(count) : slotGrid(slotCount(world, g, idx.get(g)?.length ?? 0));
         // The one that enemy faces is a line of the stack too.
         widest = Math.max(widest, grid.cols);

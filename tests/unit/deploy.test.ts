@@ -242,6 +242,37 @@ describe('the blocks of formations in contact are deployed against each other (P
     }
   });
 
+  // PLAN 7.91: the lines of a stack were counted with those of every formation nearer the enemy,
+  // from whatever side. On day 60 of the test below (with ADR-649's ferry) six Chinese divisions
+  // from the south-west of a Japanese one took files 0 to 5, and ten from the south-east began at
+  // file 5 and stood up to a cell to the side of their line, out of the battle's view.
+  it('a stack that comes to an enemy from another side than a nearer one counts its own files: each of its blocks in one view with the enemy\'s', () => {
+    const { s, a, b, site } = pair();
+    const w = s.world;
+    const [px, py] = [site[0] + 1, site[1]];
+    // Ten from the south of the Pole, 1.1 cells off (nearer than the four), and four from the
+    // west, 1.4 off, behind the German it faces (1 cell off, its nearest).
+    const south: [number, number] = [px, py + 1.1];
+    const west: [number, number] = [px - 1.4, py];
+    for (const [x, y] of [south, west]) expect(w.onLand(x, y)).toBe(true);
+    const fromSouth = Array.from({ length: 10 }, () => addDivision(w, GER, south[0], south[1]));
+    const fromWest = Array.from({ length: 4 }, () => addDivision(w, GER, west[0], west[1]));
+    s.step(2);
+    expect(contactsOf(w).get(b)).toBe(a);
+    const theirs = deployOf(w, b, 28)!;
+    const blocks = [a, ...fromSouth, ...fromWest].map((f) => deployOf(w, f, 28)!);
+    for (let i = 0; i < blocks.length; i++) for (let j = i + 1; j < blocks.length; j++) expect(Math.hypot(blocks[i]!.x - blocks[j]!.x, blocks[i]!.y - blocks[j]!.y)).toBeGreaterThan(0.1);
+    // Each of the four in one view at 20 m/px with the Pole's block, centred between the two, 50 px
+    // clear of its edges (the measure of the test below, on the blocks' middles). Before, they were
+    // counted after the ten and stood in files 5 to 7, the last 0.87 cells to the side of the Pole's block.
+    for (const f of fromWest) {
+      const d = deployOf(w, f, 28)!;
+      expect(Math.abs(theirs.x - d.x), `formation ${f}`).toBeLessThan(VIEW.w - 0.1);
+      expect(Math.abs(theirs.y - d.y), `formation ${f}`).toBeLessThan(VIEW.h - 0.1);
+      expect(w.onLand(d.x, d.y)).toBe(true);
+    }
+  });
+
   it('after 60 days of Germany against Poland most formations in contact have their enemy\'s elements in one view at 20 m/px', () => {
     const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
     s.command({ kind: 'declareWar', attacker: GER, defender: POL });

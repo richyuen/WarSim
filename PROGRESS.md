@@ -22761,3 +22761,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   was stopped by Claude Code for low memory (each run holds 2.4–4 GB by year 20), now 6 at a time.
 - **Next:** ADR-651 a in code (the test, 7.91's patch, then 7.90g's), gated once the runs leave the
   memory; then 7.86's read.
+
+## 2026-10-23 — PLAN 7.91: a stack counts its lines and files with those from its own side (ADR-650; ADR-651 a)
+
+- **Applied** `docs/evidence/7.91/patch` (its DECISIONS hunk by hand, ADR-650 between 651 and 648):
+  `deployOf` counts a stack's lines and files with those nearer the enemy that come from within 60° of
+  its own side. The read of the patch stands (day 60 of `deploy.test.ts`: HEAD 69/70 → 96/99; with
+  g.patch 86/97 → 72/75; the new test red without, 0.87 cells against 0.72).
+- **ADR-651 a** (the user's): `nukePoland1938`'s last assertion is "on Germany, or on a burst that killed
+  at least 50,000 men" (`MASSED_MEN`, the burst's `NukeToll`), the enemy side's land kept. Seeds: 5591
+  on Italy, 64,445 men (the army before France); 7127 and 3929 on Germany, 334,384 / 334,409 dead.
+- **Pin:** 5161de24 → 41d60509 (ADR-650).
+- **Next:** 7.90g from `docs/evidence/7.90/g.patch`, then 7.86's read (`nukeVolume.ts`, its event buffer
+  now cleared each hour: the first runs counted every hour's events again and grew to 4 GB).

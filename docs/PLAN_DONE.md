@@ -14301,3 +14301,39 @@ Of 7.33 (open in PLAN.md):
     2.57 / 2.53 (machine drift: 2.36 / 2.39 paired); paired against the code before 7.83b, 1.993 → 1.849
     (−7 %), same hash. On HEAD's year-4 world the new rules add +0.145 ms (was +0.41), and `dd3b730`'s
     rules alone cost 1.82. The bar's scope is the user's (ADR-654); the operational AI is PLAN 7.94.
+
+<!-- moved 2026-10-23 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.91 Blocks stacked on one enemy out of its view (found at 7.90g, `docs/evidence/7.90/g.md` "The gate"):
+  with 7.90g's rule (`docs/evidence/7.90/g.patch`) seed 99's 60-day world of `deploy.test.ts` has 97
+  formations in contact, 86 (89%) sharing a view at 20 m/px with their nearest enemy, against the test's
+  bar of 90% (HEAD: 69 of 70). All 11 are Chinese blocks against two Japanese formations
+  (`tools/diag/deployView.ts`, `g_deploy_seed99_rule.log`): three stacked on one cell 1.0–1.5 cells from
+  393, its block deployed against another, the Chinese blocks 1.0–1.35 apart from it with none of either
+  seen; seven from four cells against 366 (landed day 12.9, 45 elements), 0.75–1.15 apart. HEAD has one
+  such pair (410 against 393, `g_deploy_seed99_head.log`). A deploy rule (`deployOf`, ADR-89, ADR-133),
+  not the ferry's. AT: with g.patch applied, `deploy.test.ts` all green (the day-60 share ≥ 0.9, from
+  0.887) and green on HEAD; a unit test of the case (several divisions on one cell coming up to an enemy
+  whose block faces another, each in one view with it), red without; the ADR. Then 7.90g is committed
+  from g.patch (its AT read, its pin f9344f0e).
+  Ruled, not committed (`docs/evidence/7.91/case.md`, `patch`, ADR-650 in the patch): the lines and
+  files of a stack counted with those from within 60° of its own side; HEAD 69/70 → 96/99, g.patch 86/97
+  → 72/75; the test red without (0.87 cells against 0.72); pin 5161de24 → 41d60509. The whole unit suite
+  1870 of 1871: `nukePoland1938` 5591, a nuclear weighing cause. The user chose ADR-651 a (2026-10-23):
+  the test's last assertion becomes "on Germany, or on a place of at least 50,000 enemy men", then
+  this is committed from its patch, and 7.90g from its.
+  Done (ADR-650, from `docs/evidence/7.91/patch`, its DECISIONS hunk by hand): `nukePoland1938` green on
+  its three seeds (5591 on 64,445 Italian men; 7127 and 3929 on Germany, as before), `deploy.test.ts`
+  green; pin 5161de24 → 41d60509.
