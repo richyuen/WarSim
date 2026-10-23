@@ -1,0 +1,34 @@
+import { readFileSync } from 'node:fs';
+import { performance } from 'node:perf_hooks';
+import { Sim } from '../../src/sim/sim';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { loadAssets1938 } from '../../tools/headless/assets';
+import { OP_PROBE } from '../../src/sim/ai/operational';
+const s = new Sim({ scenario: '1938', seed: 99, assets: loadAssets1938(SIZE_1938.w) });
+s.load(new Uint8Array(readFileSync('.cache/prof94/h0_y4.bin')));
+const w = s.world;
+OP_PROBE.now = () => performance.now();
+const seen = new Map<string, [number, string]>();
+const tally: Record<string, [number, number]> = {};
+const add = (k: string, ms: number): void => { const t = (tally[k] ??= [0, 0]); t[0]++; t[1] += ms; };
+OP_PROBE.ask = (a) => {
+  const f = w.formations.cols;
+  const moving = f.moving[a.id] === 1;
+  const p = w.paths.get(a.id);
+  const ok = a.pass.ok;
+  const sh = (c: number | undefined): number => (c === undefined ? 9 : ok[a.pass.holder[c]!]!);
+  const step = moving && p ? `${p[f.pathStep[a.id]!]}-${p[f.pathStep[a.id]! + 1] ?? -1}-${f.stepFrac[a.id]! < 0.5 ? 0 : 1}-${sh(p[f.pathStep[a.id]!])}${sh(p[f.pathStep[a.id]! + 1])}` : 'x';
+  const key = `${a.id}|${a.from}|${step}|${a.to}`;
+  const now = w.flipLogBase + w.flipLog.length;
+  const log = w.flipLog;
+  let k = log.length - 1;
+  for (; k >= 0; k--) { const fh = Math.floor(log[k]! / 65536); if (ok[fh] !== ok[log[k]! - fh * 65536]) break; }
+  const mixedAt = w.flipLogBase + k + 1;
+  const okKey = Array.from(ok).join('');
+  const prev = seen.get(key);
+  const kind = `${a.answer} ${moving ? 'moving' : 'standing'} ${prev === undefined ? 'first' : prev[1] !== okKey ? 'repeat-okchanged' : mixedAt <= prev[0] ? 'repeat-nomixed' : 'repeat-mixed'}`;
+  add(kind, a.ms);
+  seen.set(key, [now, okKey]);
+};
+for (let d = 0; d < 60; d++) s.step(24);
+for (const [k, [n, ms]] of Object.entries(tally).sort((a, b) => b[1][1] - a[1][1])) console.log(k.padEnd(36), n, ms.toFixed(1));

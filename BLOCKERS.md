@@ -853,6 +853,15 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
   save) and 7.82d (the holders at peace: the war choice), then the AT on 851–860 (recommended); (c) 7.82c
   only. No rule; the pin unchanged (b9bff4bd).
 
+## 2026-10-23 — PLAN 7.94: the operational AI's half is not in caches (ADR-666 waits on the user)
+
+- **Bar:** operationalAi's mean a tick on a year from HEAD's year-4 save of seed 99 at most 0.40 ms, no
+  outcome changed (`docs/evidence/7.94/measure.md`).
+- **What moved:** nothing; measured 0.794 and 0.770 ms. Caches could spare 2 of 15 `joinWide` walks and
+  42 repeated 'long' orders (about 3 %); the rest is first-time searches in a tuned search.
+- **Left:** ADR-666: (a) closed not done (recommended); (b) a rule of fewer searches, the pin moves;
+  (c) the 3 % cache, closed not done. The pin unchanged (b9bff4bd).
+
 ## Watch list (not blocking)
 
 - **From the tenth independent read (PLAN 4.8a, 2026-10-12), suspicions not run:**

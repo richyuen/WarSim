@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-666 · 2026-10-23 · proposed, the user's decision — The operational AI's half is not in caches (PLAN 7.94)
+
+- **Context** (`docs/evidence/7.94/measure.md`). PLAN 7.94 (ADR-654 a): operationalAi's mean a tick on a
+  year from HEAD's year-4 save of seed 99 at most 0.40 ms, without changing an outcome (the year's hash
+  and the pin unchanged).
+- **Read** (HEAD `87263bc9`; year-5 hash ca1b3d47, the task's f278491d being 7.83's): **0.794 and 0.770
+  ms** in a swapped pair. By function: the orders' searches 34 % (`findPath` 30 % self), the reach
+  test's `joinWide` 16 %, `sectorShape` and `groundOf` 17 %, `pocketOf` 7.5 %.
+- **What caches could take:** of `joinWide`'s 15 walks in 60 days, 2 (12 follow a real change of the
+  ground, 10 with a new answer); of the orders asked again, 42 'long' answers to moving formations with
+  nothing changed (36 ms in 60 days, about 3 %). The rest is searches each asked for the first time, in
+  the search tuned at PLAN 1.25 and 1.42f. About 5 % in all.
+- **Options:**
+  - **(a)** 7.94 closed not done, nothing committed; performance goes to the next critic report.
+  - **(b)** 7.94 re-scoped as a rule (the pin moves): the plan asks fewer searches (a 'long' or refused
+    answer kept for MARCH_DAYS whatever the flips, as the far army's own pace; the minors' plans of one
+    free formation taken every MARCH_DAYS days), with the 0.40 bar and the land war's figures (engaged
+    per war on 821–830 not below HEAD's) as its AT.
+  - **(c)** The cache of the 42 repeats committed (about 3 %, the hash unchanged); 7.94 closed not done.
+- **Recommended: (a).** The outcome-free bar is out of reach by about 45 points; (c) adds a cache
+  for 3 %. (b) is the way to the bar, but it changes what the AI does, as each of today's rule tasks
+  did, and wants its own measure of the land war.
+- **Consequences:** until decided, no change; the pin unchanged (b9bff4bd).
+
 ### ADR-665 · 2026-10-23 · proposed, the user's decision — Stasis on unseen seeds: one remnant at war, two holders at peace (PLAN 7.82's AT missed)
 
 - **Context** (`docs/evidence/7.82/at.md`). PLAN 7.82's AT on 841–850 × 30 years: no stasis over 15

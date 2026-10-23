@@ -1,0 +1,7 @@
+seed 99 from day 1460, 60 days: 15 walks (0.25 a day) of 3 sets of open holders; land cells of no node 0, their flips 0
+why walked again | walks | partition changed | same
+first | 3 | 0 | 0
+open or shut | 12 | 10 | 2
+after flips, by the classes of the flips | walks | changed | flips
+ticks with 2+ walks: 1 (2 walks), of them repeating another walk's partition in the tick: 0
+answers kept across judged flips: 2, wrong against a walk afresh: 0; most bytes held by live runs at a walk: 442688

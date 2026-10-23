@@ -22987,3 +22987,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   (recommended); (c) 7.82c only.
 - **No rule;** the pin unchanged (b9bff4bd).
 - **Next:** 7.82 waits on ADR-665; the loop takes 7.94.
+
+## 2026-10-23 — PLAN 7.94 measured: the operational AI's half is not in caches (ADR-666 to the user)
+
+- **Read** (`docs/evidence/7.94/measure.md`): HEAD's year-4 save of seed 99 rewritten (year-5 hash
+  ca1b3d47; the task's f278491d was 7.83's); operationalAi 0.794 and 0.770 ms in a swapped pair (bar
+  0.40). By function: orders' searches 34 %, `joinWide` 16 %, `sectorShape`/`groundOf` 17 %, `pocketOf`
+  7.5 %. `joinWalks.ts`: 2 of 15 walks avoidable; `longAsk.ts` (new probe, in the evidence): 42 repeated
+  'long' orders with nothing changed, about 3 %.
+- **Verdict:** no cut committed; BLOCKERS entry; ADR-666 proposed: (a) closed not done (recommended);
+  (b) a rule of fewer searches; (c) the 3 % cache.
+- **No rule;** the pin unchanged (b9bff4bd).
+- **Next:** 7.94 waits on ADR-666; the loop takes 7.84.

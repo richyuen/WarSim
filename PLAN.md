@@ -82,6 +82,9 @@ them, are 7.81–7.86. A task each, split when taken up:
   outcome. AT: operationalAi's mean a tick on a year from that save at most 0.40 ms (profiled, swapped
   pairs against HEAD's in the same session); the year's hash f278491d and the pin unchanged
   (5161de24); seed 7 × 3 years, the random and toy worlds the same hash; the gate green.
+  Measured (`docs/evidence/7.94/measure.md`, HEAD `87263bc9`, year-5 hash ca1b3d47): 0.794 and 0.770
+  ms; caches could take about 5 % (2 of 15 `joinWide` walks, 42 repeated 'long' orders); the rest is
+  first-time searches. Waits on ADR-666 (BLOCKERS).
 - [ ] 7.84 Naval (naval 7, needs 8): a carrier strike's row, clicked, shows two US destroyer counters and
   no aircraft (`sorties` 0 at 84 m/px, `critic/shots/c12n4_8693_rowless_clicked.png`); the Japan–USA
   battle at 85 m/px shows the American side as a pale ring and nothing else
