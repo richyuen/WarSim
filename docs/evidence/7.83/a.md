@@ -77,3 +77,9 @@ flipped), not by dearer calls: a cut there is an optimisation of the system as i
 rule. Parts (each the same outcome, pin unchanged): 7.83b the invasion AI's ferry turn, 7.83c supply's
 beach layer, 7.83d the capitals system; then 7.83's AT read, and if it still misses, the busier world's
 systems (operational AI first) or the bar's scope (the user's).
+
+For 7.83b–d: `a/build.sh` builds `dd3b730` as the base. A part's AT compares HEAD before its change
+with HEAD after it, so its base bundle is the commit before the part, and the year-4 save is written
+again from that commit (`--years 4 --save`; the year-4 hash c9bb34b2 on `e0c5433e`). The invasion AI's
+slow calls (327–339 a year, about one a day) say the ferry's turn itself runs over 1 ms; its route
+searches (FERRY_SEARCHES 68 a turn) are the first place to look under `node --cpu-prof`.
