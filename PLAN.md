@@ -114,11 +114,39 @@ them, are 7.81–7.86. A task each, split when taken up:
   move (`docs/evidence/7.89/a.md` §3). AT: piles of 30 or more of a nation at war on one cell 30 days
   running on 1129 year 10, 6421 year 20 and 7019 year 10 2 → 0 (`piles.ts --days 30`); a unit test (red
   without); the ADR; the pin's entry; `--profile`. In parts:
-    - [ ] 7.90a Measured, on 1129 year 10 over 90 days (read only): the US groups' round trip by step
+    - [x] 7.90a Measured, on 1129 year 10 over 90 days (read only): the US groups' round trip by step
       (days marching to the port, waiting to board, at sea, back), the transports the economic AI buys
       the USA (`transportWant.ts`; PLAN 7.49d3, 7.66), and what else stands between the piles and the
       lift (the 60's march to a port, any port of the USA's nearer them). AT: the table, and the rule it
       names, each a part with its own AT; no rule: the pin unchanged.
+      Measured (`docs/evidence/7.90/a.md`, `tools/diag/ferryTrip.ts`, `ferryStuck.ts`): 14–15 days to
+      board, 18 at sea to Bathurst, and no way back (the five groups there stood 52–62 days); one
+      division a group (12,460 in 24,000); 7 landed in 90 days, none from the piles; after day 30 0.88
+      orders a turn (6421 year 20: 0.22). The 49 stand at Baltimore, a port with no group; the 60's
+      nearest sea port is 121 cells off (the Great Lakes' water its own). `wantsFerry` false with 131,961
+      gold. 7.90's bar on the 60 is out of reach in 30 days by the ferry alone (§6: ~26 groups needed).
+    - [ ] 7.90b The turn's refusals (a.md §2): the turn ends at `SAIL_TRIES` groups that gave no order,
+      and the same ones refuse first every week (Nuuk's two, sorted first by `onArmy`, then Bathurst's,
+      San Juan's, Bissau's; 6421: Freetown, Dakar, Roseau, Port-of-Spain), so the rest are never tried.
+      AT: on 1129 year 10 and 6421 year 20, days 30–90 (`ferryTrip.ts`), the groups at a port never tried
+      a turn 6.5 and 26.3 → 0, the turn's cost bounded (`--profile`, the invasion AI's longest call);
+      a unit test (red without); the ADR; the pin's entry.
+    - [ ] 7.90c The way back (a.md §2): a group away from the army sails for a port by the free army's 4
+      formations nearest it, and from Bathurst, San Juan and Roseau those are garrisons on islands with no
+      port of the nation, so the sail is refused every week and the mainland army never tried. AT: on 1129
+      year 10 the five groups that land at Bathurst under way within 14 days of landing (HEAD: standing
+      52–62 days, to day 90); a unit test (red without); the ADR; the pin's entry.
+    - [ ] 7.90d A division over half the room (a.md §4): `TRANSPORT_MEN` gives a group 24,000 men, "two
+      infantry divisions of 1938", and the template is 12,460, so every trip carries one a group. The rule
+      changes every landing's lift too (ADR when taken up). AT: on 1129 year 10 the divisions a group
+      carries a trip (`ferryTrip.ts`, `landed` by fleet) 1 → 2; a unit test (red without); the ADR; the
+      pin's entry.
+    - [ ] 7.90e The ferry's transports (a.md §5): `wantsFerry` counts only the army on landmasses with a port
+      and no front, not the army on a fronted landmass that reaches no front (the ferry's since ADR-636),
+      so it is false on 1129 year 10 with ~150 such formations and 131,961 gold. AT: on 1129 year 10
+      `wantsFerry` true on day 0 and a US transport group in training by day 30 (HEAD: false, none); a unit
+      test (red without); the ADR; the pin's entry.
+    Then 7.90's AT, read after 7.90b–e (a.md §6: on the 60 it is likely missed; that goes to BLOCKERS).
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts

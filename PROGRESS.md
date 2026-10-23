@@ -22382,3 +22382,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   1.93 / 1.92 ms, another history (year 5 cells flipped 70,041 → 46,720).
 - **Pin:** 0b3aea1f → 8a571863.
 - **Next:** PLAN 7.90a.
+
+## 2026-10-22 — PLAN 7.90a: the ferry's round trip measured; four causes filed as 7.90b–e
+
+- **Read** (`docs/evidence/7.90/a.md`, run 12's 1129 year 10 over 90 days; 6421 year 20 beside it;
+  `tools/diag/ferryTrip.ts`, `ferryStuck.ts`, new): 14–15 days from the send to aboard, 0 waiting, 18 at
+  sea Norfolk → Bathurst, and no way back: the five groups landed at Bathurst stood 52–62 days, to day 90.
+  One division a group a trip (12,460 men in 24,000). 7 divisions landed in 90 days, none from the
+  piles (60 / 49 → 60 / 43). After day 30, 0.88 ferry orders a turn (6421: 0.22).
+- **Causes:** (b) the turn ends at 4 groups that gave no order, and the same refuse first every week
+  (Nuuk's two, then Bathurst's, San Juan's): 6.5 of 11.4 groups never tried a turn (6421: 26.3 of 30.6);
+  (c) a group's sail back takes the free army's 4 nearest, garrisons on port-less Caribbean islands, so
+  it is refused; (d) a division (12,460) over half a group's room (24,000); (e) `wantsFerry` counts no
+  army on a fronted landmass, so false with 131,961 gold. Also: the 49 stand at Baltimore, a port with no
+  group; the 60's nearest sea port is 121 cells off (the Great Lakes' water its own).
+- **The bar:** 7.90's piles bar on the 60 is out of reach in 30 days by the ferry alone (about 26 groups
+  with room for two each needed); the parts' bars are scoped to what each mends.
+- **Probe:** `FerryTurn.island` (the free army at the turn's start), read only; the pin unchanged.
+- **Next:** PLAN 7.90b.

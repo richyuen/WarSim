@@ -1,0 +1,153 @@
+day 3692: USA ports 73
+front cells by landmass: [[116,9],[56,91]]
+cell 625163 (523,305) landmass 116 holder USA
+cell 746057 (585,364) landmass 116 holder USA
+cell 1061794 (930,518) landmass 56 holder USA
+land formations 169: strength min 1800 p25 12460 median 12460 p75 12460 max 12460; over 12,000: 130
+
+group 126 room 24000 at Nuuk landmass 4 key 1 moving 0
+  formation 610 (815,135) 120 cells, landmass 4, strength 6240 ferry-only; its other ports none
+  formation 1031 (815,135) 120 cells, landmass 4, strength 12460 ferry-only; its other ports none
+  formation 718 (625,274) 209 cells, landmass 116, strength 12460; its other ports Kuujjuarapik 72 cells march, Boston 72 cells march, Boston 73 cells march, Providence 78 cells march
+  formation 915 (624,277) 213 cells, landmass 116, strength 12460; its other ports Boston 68 cells march, Boston 69 cells march, Kuujjuarapik 74 cells march, Providence 74 cells march
+
+group 138 room 24000 at Nuuk landmass 4 key 1 moving 0
+  formation 610 (815,135) 120 cells, landmass 4, strength 6240 ferry-only; its other ports none
+  formation 1031 (815,135) 120 cells, landmass 4, strength 12460 ferry-only; its other ports none
+  formation 718 (625,274) 209 cells, landmass 116, strength 12460; its other ports Kuujjuarapik 72 cells march, Boston 72 cells march, Boston 73 cells march, Providence 78 cells march
+  formation 915 (624,277) 213 cells, landmass 116, strength 12460; its other ports Boston 68 cells march, Boston 69 cells march, Kuujjuarapik 74 cells march, Providence 74 cells march
+
+group 365 room 24000 at Bathurst landmass 56 key 1 moving 0
+  formation 619 (985,565) 101 cells, landmass 56, strength 1800; its other ports Conakry 62 cells march, Bissau 87 cells march
+  formation 612 (676,513) 260 cells, landmass 510, strength 6240 ferry-only; its other ports none
+  formation 618 (676,513) 260 cells, landmass 510, strength 7240 ferry-only; its other ports none
+  formation 1321 (631,527) 305 cells, landmass 529, strength 12460 ferry-only; its other ports none
+
+group 549 room 24000 at Bathurst landmass 56 key 1 moving 0
+  formation 619 (985,565) 101 cells, landmass 56, strength 1800; its other ports Conakry 62 cells march, Bissau 87 cells march
+  formation 612 (676,513) 260 cells, landmass 510, strength 6240 ferry-only; its other ports none
+  formation 618 (676,513) 260 cells, landmass 510, strength 7240 ferry-only; its other ports none
+  formation 1321 (631,527) 305 cells, landmass 529, strength 12460 ferry-only; its other ports none
+
+group 568 room 24000 at Bathurst landmass 56 key 1 moving 0
+  formation 619 (985,565) 101 cells, landmass 56, strength 1800; its other ports Conakry 62 cells march, Bissau 87 cells march
+  formation 612 (676,513) 260 cells, landmass 510, strength 6240 ferry-only; its other ports none
+  formation 618 (676,513) 260 cells, landmass 510, strength 7240 ferry-only; its other ports none
+  formation 1321 (631,527) 305 cells, landmass 529, strength 12460 ferry-only; its other ports none
+
+group 571 room 24000 at Bathurst landmass 56 key 1 moving 0
+  formation 619 (985,565) 101 cells, landmass 56, strength 1800; its other ports Conakry 62 cells march, Bissau 87 cells march
+  formation 612 (676,513) 260 cells, landmass 510, strength 6240 ferry-only; its other ports none
+  formation 618 (676,513) 260 cells, landmass 510, strength 7240 ferry-only; its other ports none
+  formation 1321 (631,527) 305 cells, landmass 529, strength 12460 ferry-only; its other ports none
+
+group 574 room 24000 at San Juan landmass 491 key 1 moving 0
+  formation 612 (676,513) 51 cells, landmass 510, strength 6240 ferry-only; its other ports none
+  formation 618 (676,513) 51 cells, landmass 510, strength 7240 ferry-only; its other ports none
+  formation 1321 (631,527) 52 cells, landmass 529, strength 12460 ferry-only; its other ports none
+  formation 611 (625,525) 56 cells, landmass 521, strength 6240 ferry-only; its other ports none
+
+group 1015 room 24000 at Bathurst landmass 56 key 1 moving 0
+  formation 619 (985,565) 101 cells, landmass 56, strength 1800; its other ports Conakry 62 cells march, Bissau 87 cells march
+  formation 612 (676,513) 260 cells, landmass 510, strength 6240 ferry-only; its other ports none
+  formation 618 (676,513) 260 cells, landmass 510, strength 7240 ferry-only; its other ports none
+  formation 1321 (631,527) 305 cells, landmass 529, strength 12460 ferry-only; its other ports none
+
+group 1119 room 24000 at Bissau landmass 56 key 1 moving 0
+  formation 619 (985,565) 87 cells, landmass 56, strength 1800; its other ports Conakry 62 cells march, Bathurst 101 cells march
+  formation 612 (676,513) 274 cells, landmass 510, strength 6240 ferry-only; its other ports none
+  formation 618 (676,513) 274 cells, landmass 510, strength 7240 ferry-only; its other ports none
+  formation 1321 (631,527) 305 cells, landmass 529, strength 12460 ferry-only; its other ports none
+
+group 1120 room 24000 at Roseau landmass 506 key 1 moving 0
+  formation 612 (676,513) 7 cells, landmass 510, strength 6240 ferry-only; its other ports none
+  formation 618 (676,513) 7 cells, landmass 510, strength 7240 ferry-only; its other ports none
+  formation 1321 (631,527) 62 cells, landmass 529, strength 12460 ferry-only; its other ports none
+  formation 611 (625,525) 66 cells, landmass 521, strength 6240 ferry-only; its other ports none
+
+group 1122 room 24000 at Kuujjuarapik landmass 116 key 1 moving 0
+  formation 718 (625,274) 72 cells, landmass 116, strength 12460; its other ports Boston 72 cells march, Boston 73 cells march, Providence 78 cells march, Bridgeport 92 cells march
+  formation 915 (624,277) 74 cells, landmass 116, strength 12460; its other ports Boston 68 cells march, Boston 69 cells march, Providence 74 cells march, Bridgeport 88 cells march
+  formation 1365 (624,278) 75 cells, landmass 116, strength 5700; its other ports Boston 67 cells march, Boston 68 cells march, Providence 73 cells march, Bridgeport 87 cells march
+  formation 648 (623,280) 76 cells, landmass 116, strength 12460; its other ports Boston 64 cells march, Boston 65 cells march, Providence 70 cells march, Bridgeport 84 cells march
+
+group 1123 room 24000 at Pearl Harbor landmass 478 key 1 moving 0
+  formation 887 (139,482) 23 cells, landmass 485, strength 12460 ferry-only; its other ports Hilo 3 cells march
+  formation 172 (140,483) 25 cells, landmass 485, strength 12460 ferry-only; its other ports Hilo 1 cells march
+  formation 198 (141,483) 26 cells, landmass 485, strength 12460 ferry-only; its other ports Hilo 0 cells march
+  formation 620 (457,481) 340 cells, landmass 116, strength 6240; its other ports Matamoros 47 cells NO-MARCH, Corpus Christi 58 cells NO-MARCH, Houston 83 cells NO-MARCH, Guaymas 112 cells NO-MARCH
+
+ports: name landmass water-key closed
+  St. John's (723,304) landmass 116 key 1 
+  New York (603,351) landmass 116 key 1 
+  Los Angeles (351,396) landmass 116 key 1 
+  Chicago (524,344) landmass 116 key 423 
+  Miami (567,447) landmass 116 key 1 
+  San Francisco (327,371) landmass 116 key 1 
+  Boston (619,341) landmass 116 key 1 
+  Seattle (328,304) landmass 116 key 1 
+  San Diego (357,403) landmass 116 key 1 
+  Tampa (554,433) landmass 116 key 1 
+  Pearl Harbor (125,473) landmass 478 key 1 
+  New Orleans (511,421) landmass 116 key 1 
+  Anchorage (171,196) landmass 116 key 1 
+  San Juan (647,491) landmass 491 key 1 
+  Cleveland (559,346) landmass 116 key 425 
+  San Jose (330,374) landmass 116 key 1 
+  Conakry (946,542) landmass 56 key 1 
+  Milwaukee (523,336) landmass 116 key 423 
+  Norfolk (590,377) landmass 116 key 1 
+  Buffalo (575,337) landmass 116 key 425 
+  Kingston (587,493) landmass 490 key 1 
+  Bissau (934,529) landmass 56 key 1 
+  Cayenne (726,569) landmass 116 key 1 
+  Bermuda (655,406) landmass 440 key 1 
+  Nuuk (729,169) landmass 4 key 1 
+  Kodiak (156,225) landmass 280 key 1 
+  Utqiaġvik (132,101) landmass 116 key 1 closed
+  Nome (83,167) landmass 116 key 1 
+  Prudhoe Bay (178,111) landmass 116 key 1 closed
+  Point Hope (77,130) landmass 116 key 1 closed
+  Cold Bay (98,246) landmass 308 key 1 
+  Baltimore (588,361) landmass 116 key 1 
+  Bridgeport (607,348) landmass 116 key 1 
+  Jacksonville (559,419) landmass 116 key 1 
+  Rochester (582,335) landmass 116 key 424 
+  Matamoros (469,446) landmass 116 key 1 
+  Port-of-Spain (674,536) landmass 545 key 1 
+  Corpus Christi (469,435) landmass 116 key 1 
+  Bridgetown (685,521) landmass 520 key 1 
+  Santa Barbara (342,393) landmass 116 key 1 
+  Savannah (562,408) landmass 116 key 1 
+  Wilmington (580,394) landmass 116 key 1 
+  Guaymas (393,433) landmass 116 key 1 
+  Hilo (141,483) landmass 485 key 1 
+  Kingstown (675,521) landmass 519 key 1 
+  Bathurst (929,520) landmass 56 key 1 
+  Eureka (318,351) landmass 116 key 1 
+  Castries (677,517) landmass 512 key 1 
+  Sydney (681,315) landmass 116 key 1 
+  Saint John's (672,499) landmass 497 key 1 
+  Saint George's (672,528) landmass 534 key 1 
+  Freeport (576,442) landmass 459 key 1 
+  Roseau (674,508) landmass 506 key 1 
+  Basseterre (667,498) landmass 496 key 1 
+  Pago Pago (52,679) landmass 708 key 1 
+  Sitka (254,231) landmass 282 key 1 
+  Kuujjuarapik (581,246) landmass 116 key 1 
+  Providence (617,344) landmass 116 key 1 
+  West Palm Beach (568,441) landmass 116 key 1 
+  Tacoma (327,306) landmass 116 key 1 
+  Sarasota (554,437) landmass 116 key 1 
+  Irvine (353,398) landmass 116 key 1 
+  Oceanside (356,401) landmass 116 key 1 
+  Gary (527,346) landmass 116 key 423 
+  Norfolk (589,377) landmass 116 key 1 
+  San Diego (357,404) landmass 116 key 1 
+  Bremerton (326,304) landmass 116 key 1 
+  New York (603,352) landmass 116 key 1 
+  Boston (619,340) landmass 116 key 1 
+  Guam (1847,520) landmass 518 key 1 
+  Guantánamo Bay (596,482) landmass 470 key 1 
+  Philadelphia (596,357) landmass 116 key 1 
+  Houston (481,422) landmass 116 key 1 

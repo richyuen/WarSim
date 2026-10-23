@@ -629,7 +629,7 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
       men -= g.room;
     } else refused++;
   }
-  FERRY_PROBE.turn?.({ nation: n, free: island.length, groups: groups.length, tries });
+  FERRY_PROBE.turn?.({ nation: n, free: island.length, island, groups: groups.length, tries });
   return acted;
 
   /** Transport group `fleet` (room `room`, at port `port`) takes the turn: whether it gave an order. */
@@ -735,6 +735,8 @@ export interface FerryTry {
 export interface FerryTurn {
   nation: number;
   free: number;
+  /** The free army's formations at the turn's start (PLAN 7.90a). */
+  island: readonly number[];
   groups: number;
   tries: FerryTry[];
 }
