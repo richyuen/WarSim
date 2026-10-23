@@ -890,7 +890,7 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 - **Left:** ADR-669: (a) no rule, 7.82c closed not done, 7.82d next (recommended); (b) as (a) and PLAN
   7.100 for the lift to a remnant overseas; (c) the rule committed anyway. The pin unchanged (b9bff4bd).
 
-## 2026-10-23 · PLAN 7.82's AT on 851–860: the stasis met, the front battle's share 1.67 % (ADR-671)
+## RESOLVED 2026-10-23 (option b, the user's decision: 7.82 closed not done, PLAN 7.100 for the walk-in and revolt churn) · PLAN 7.82's AT on 851–860: the stasis met, the front battle's share 1.67 % (ADR-671)
 
 - **Bar:** on 10 unseen seeds × 30 years no stasis over 15 years; the battle share in years 10–30 at
   least 1.96 % (`docs/evidence/7.82/at.md`, last section).

@@ -23084,3 +23084,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   re-scoped to HEAD's on the same seeds.
 - **No rule;** the pin unchanged (7c2e4700).
 - **Next:** PLAN 7.99 (an air war beyond the land war); 7.82 waits on ADR-671.
+
+## 2026-10-23 — ADR-671 b (the user's decision; documents)
+
+- **7.82** closed not done; **PLAN 7.100** filed: fronts, not walk-ins (the share at least 1.96 % on 10
+  unseen seeds × 30 years, read first where the walk-ins come from).
+- No rule; the pin unchanged (7c2e4700).
+- **Next:** PLAN 7.99, then 7.100.

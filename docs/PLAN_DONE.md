@@ -14781,3 +14781,80 @@ Of 7.33 (open in PLAN.md):
   Re-read (`docs/evidence/7.85/at.md`, 871–880 × 20 years): 0.066 (7.51b 0.065), the cause the land war's
   as before (engaged per war late 0.071 of year 1's). Closed not done (ADR-668 b, the user's decision,
   2026-10-23): the air rule not tied to the land war is PLAN 7.99.
+
+<!-- moved 2026-10-23 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
+  years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts
+  (`critic/c12_cmp_all.txt`, `c12_summary_all.txt`). Taken up after 7.79 and 7.80, re-read on their HEAD
+  first. AT: on 10 unseen seeds × 30 years no stasis over 15 years (the critic's measure, read the same
+  way), and the share of cells changing hands by a front battle in years 10–30 measured and at least
+  HEAD's (1.96 % pooled on 831–840, 7.82a); the gate green.
+  In parts:
+    - [x] 7.82a Measured, on HEAD, unseen seeds 831–840 × 30 years (`tools/diag/churnAt.ts`, new; the
+      changes tallied by cause in `World.flipsBy`, derived, not state): the longest stasis per seed as the
+      critic reads it (the five holding the most cells by controller, yearly, as a set), its span's five
+      with their cells, days at war and engaged formations; the changes of controller in years 10–30 by
+      cause (front battle: a cell taken over its garrison and a formation of its side; walk-in: over the
+      garrison alone; peace, revolt, revival, capital, puppet, landing). AT: the table in
+      `docs/evidence/7.82/measure.md`, HEAD's front-battle share written into 7.82's AT as its bar, and
+      the cause it names, each a part with its own AT; no rule: the pin unchanged.
+      Measured (`docs/evidence/7.82/measure.md`): stasis over 15 years on 2 of 10 (834 17, 835 18; the
+      rest 6–12); the long spans are held by the fifth and sixth places, land no front reaches (in 835
+      the USA at 77,534 cells for 18 years, Canada 44,798 for 12, Denmark's Greenland 25.5–25.9k at war
+      297 days a year with 0.01 engaged, Australia sixth). Changes in years 10–30: walk-in 57.3 %, revolt
+      29.6 %, peace 10.4 %, battle 1.96 % (1.3–2.5 by seed), landing 0.02 %.
+    - [x] 7.82b The overseas holders that hold still (7.82a: Canada, the United States, Denmark's
+      Greenland and Australia keep their cells to the hundred for a decade or more, at war or not, and
+      hold the five's last places; landings 0.02 % of the changes). Read first on 834's and 835's spans
+      who is at war with them, and whether an enemy's landing is ever planned on their coasts and why
+      not (`amphibious.ts`'s targets), then a rule on what it names. AT: on 834 and 835 × 30 years the
+      longest stasis at most 15 years (17, 18 on HEAD), the battle share in years 10–30 not under 1.68 %
+      pooled on the two (HEAD's); a unit test, red without; the ADR; the pin's entry. Then 7.82's AT on 10 unseen
+      seeds × 30 years (841 on).
+      Done, no rule (ADR-664, `docs/evidence/7.82/b.md`): the AT met on HEAD after 7.97 (834 7 years,
+      835 14, battle 1.77 %); the Greenland rule tried (`b.patch`: a target on a land with at most 2
+      enemy formations pulled ×3) 9, 13, 1.84 %, not separable from chance; kept as a candidate.
+  7.82's AT read (`docs/evidence/7.82/at.md`, 841–850 × 30 years): stasis over 15 years on 3 of 10 (843
+  19: Denmark at war, untouched; 844 17 and 845 19: Denmark, Canada, the USA at peace), battle share
+  1.82 %. Missed; ADR-665 b (the user's decision, 2026-10-23): two parts, then the AT again on 851–860.
+    - [x] 7.82c The remnant at war (ADR-665 b; 843: Denmark at war 315 days a year, nothing engaged, its
+      cells rising 35k → 43k over a 19-year span): the candidate of ADR-664 (`docs/evidence/7.82/b.patch`,
+      a target on a land where the planner's enemies stand with at most 2 land formations pulled ×3; its
+      unit test `b/landingEmptyLand1938.test.ts.txt`). AT: from HEAD's save of 843 at year 11, 10 years
+      run with the rule and without (`overseasHold.ts`'s landings on Denmark, `churnAt.ts`'s cells): with
+      it Denmark loses at least 10,000 cells and is landed on at least 10 times, without it under 2,000;
+      engaged per war on 821–830 × 20 years not below 0.480 (`landAt.ts`); the unit test red without; the
+      ADR; the pin's entry.
+      Missed (`docs/evidence/7.82/c/at.md`): Denmark −2.3k cells with the rule, +4.0k without; landed on
+      20 times with, 22 without (orders 19 → 65; 82–95 % of the plans on it end with no transports);
+      engaged per war 0.421. No rule. Closed not done (2026-10-23, the user's decision: ADR-669 a); the
+      patch stays a candidate in the evidence.
+    - [x] 7.82d The holders at peace (ADR-665 b; 844, 845: Denmark, Canada and the USA at war 12–29 days a
+      year and fixed to 2 % of their cells for 17–19 years). Read first on 845 over its span (years 8–26):
+      which nations could reach each of them (a land front, a port in range of their transports), how the
+      strategic AI scores them as a target against the one it picks (`ai/strategic.ts`), and why none is
+      picked; then a rule on what it names. AT: on 845 × 30 years the longest stasis at most 15 years
+      (19 on HEAD), wars on the three in years 8–26 at least 60 days a year each on average; a unit test,
+      red without; the ADR; the pin's entry. Then 7.82's AT on 851–860 × 30 years.
+      Done (ADR-670, `docs/evidence/7.82/d/at.md`): the war choice looked across no sea; Canada the USA's
+      puppet, their land neighbours under the bar, Greenland with none; the Soviet Union, its transports
+      at its ports on their water, at 1.0–1.7 on them. Rule: with no land target over the bar, the best of
+      those it could land on (`seaTargets`). 845: stasis 19 → 5, days at war USA 310, CAN 358, DEN 122;
+      engaged per war on 821–830 0.480 → 0.493; battle share 1.9 → 1.4 % (the battles up 2.6×, all
+      changes up 3.7×). Pin 7c2e4700.
+  7.82's AT read again (`docs/evidence/7.82/at.md`, last section; 851–860 × 30 years): stasis over 15
+  years on 0 of 10 (856 at 15), met; battle share 1.67 % (bar 1.96 %), missed. No rule. Closed not done (2026-10-23, the user's
+  decision: ADR-671 b); the share is PLAN 7.100.

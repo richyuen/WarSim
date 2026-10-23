@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-671 · 2026-10-23 · proposed (the user's decision) — Emergent dynamics: the stasis gone, the front battle's share under its bar (PLAN 7.82's AT on 851–860)
+### ADR-671 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — Emergent dynamics: the stasis gone, the front battle's share under its bar (PLAN 7.82's AT on 851–860)
 
 - **Context** (`docs/evidence/7.82/at.md`, last section). PLAN 7.82's AT: on 10 unseen seeds × 30 years
   no stasis over 15 years (the critic's measure), and the share of cells changing hands by a front battle
@@ -191,7 +191,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   851–860 at most 15), but the emergent score's complaint is the share, which three reads put at
   1.67–1.82 % against 1.96 %. (a) leaves the fronts to the critic with the cause unread; (c) lowers a bar
   every read since 7.97 has missed.
-- **Consequences:** until decided, no rule; the pin unchanged (7c2e4700). The loop takes PLAN 7.99.
+- **Consequences:** no rule; the pin unchanged (7c2e4700). 7.82 closed not done; PLAN 7.100 filed (the
+  share, the bar kept). The loop takes PLAN 7.99, then 7.100.
 
 ### ADR-670 · 2026-10-23 · accepted — A war across the sea: with no land target over the bar, the nations a nation could land on (PLAN 7.82d)
 
