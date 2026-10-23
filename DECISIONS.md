@@ -167,6 +167,40 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-657 · 2026-10-23 · proposed (the user's decision) — The AI's bursts follow the busier war, not its warheads or the nuclear rules (PLAN 7.86's AT)
+
+- **Context** (`docs/evidence/7.86/measure.md`). Critic run 12: bursts on the same 24 seeds 188 → 497,
+  civilian bursts (over ten times more civilians than men) 61 → 109, a million civilians 4 → 8. PLAN 7.86
+  asked which change raised them. Read on 12 of the critic's seeds × 30 years (`nukeVolume.ts`), in
+  three trees: `dd3b730`; HEAD `07c623c7` with `dd3b730`'s `nuclear.ts`; HEAD. `dd3b730` reproduces the
+  critic's run-11 bursts exactly (85).
+- **Read.** Bursts 85 → 190 → 213 (×2.51). Warheads: no (holder-years ×0.98, stock at war the same).
+  Wars: ×1.16 holder-days at war, all of it in years 21–30. The nuclear rules since `dd3b730` (ADR-599,
+  600, 610, 629 b, 631): ×1.12, not distinguishable from zero on 12 seeds, civilian bursts 37 → 34. The
+  rest, ×1.93, is `dd3b730`'s own rule firing twice as often a holder-day at war in HEAD's world: in
+  years 11–20 holder-years at war 31.7 against 32.6, bursts 19 against 72. Which input of the decision
+  moved is not read. Civilian bursts' share fell 31 % → 16 %; their count rose with the volume (26 → 34;
+  a million or more 1 → 4); worlds with a burst 6 → 12 of 12.
+- **Why the AT's bar is out of reach without a new rule:** with the nuclear changes since `dd3b730`
+  taken out, the world still bursts 190 against 85. The bar (bursts a world and civilian bursts on 10
+  unseen seeds × 30 years not above `dd3b730`'s) can be met only by a rule that lowers the rate a
+  holder-day at war in the busier war, or set aside by the user.
+- **Options:**
+  - **(a)** Accept the measured volume: the bursts follow the war the critic asked for (R11-B1,
+    R12-B1), and the nuclear rules since `dd3b730` neither raised them nor the civilians' share. 7.86
+    closes on its AT's second branch; the aiNukes score waits for the next critic run. No rule.
+  - **(b)** PLAN 7.96: read first which input of the decision doubled the rate (the utility's parts as
+    decided, `nukeToll.ts`, on two of these seeds in the rule and old trees, years 11–20), then a rule on
+    that input. AT: 7.86's bar on 10 unseen seeds × 30 years, read against `dd3b730` on the same seeds;
+    a unit test, red without; the ADR; the pin.
+  - **(c)** A restraint that does not depend on the cause: a world taboo that rises with each burst
+    anywhere and decays over years, so volleys and the spread fall wherever they come from. AT as (b).
+    It answers the critic's "habit" directly, and may hold back strikes the rules would call right.
+- **Recommended: (b).** The aiNukes score is under its bar on the volume, so (a) likely leaves it at 7.
+  (b) aims at the input that moved rather than at the bursts as such, and (c) stays open if (b)'s read
+  names nothing a rule can fix.
+- **Consequences:** no rule changed; the pin unchanged (7098dd29). `tools/diag/nukeVolume.ts` is new.
+
 ### ADR-656 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — The navies after year 2 and the war reserve's cut (PLAN 7.84d's AT missed)
 
 - **Context** (`docs/evidence/7.84/d.md`). On the critic's seeds HEAD's navies are not rebuilt after

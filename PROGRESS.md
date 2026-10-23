@@ -22787,3 +22787,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   (the user's ADR-653 a).
 - **Next:** 7.86's read (`nukeVolume.ts` on this HEAD, `dd3b730`, and this HEAD with `dd3b730`'s
   `nuclear.ts`).
+
+## 2026-10-23 — PLAN 7.86: the AI's bursts follow the busier war, not warheads or the nuclear rules (read only; ADR-657)
+
+- **Read** (`docs/evidence/7.86/measure.md`; `tools/diag/nukeVolume.ts`, new; the first 12 of the critic's
+  same-24 seeds × 30 years, 8 at a time, ~1 h): `dd3b730`, HEAD `07c623c7` with `dd3b730`'s `nuclear.ts`,
+  HEAD. `dd3b730` gives 85 bursts, the critic's run-11 count exactly. Bursts 85 → 190 → 213 (×2.51):
+  warheads ×0.98; holder-days at war ×1.16 (years 21–30); the nuclear rules since `dd3b730` ×1.12, noise
+  on 12 seeds (civilian bursts 37 → 34); ×1.93 the old rule firing more often a holder-day at war in
+  HEAD's world (years 11–20: 19 → 72 at 31.7 / 32.6 holder-years at war). Civilian share 31 % → 16 %,
+  count 26 → 34; worlds with a burst 6 → 12. Interception unchanged (97–98 % burst).
+- **Verdict:** the AT's bar needs a new rule or the user: ADR-657 proposed, BLOCKERS entry; 7.86 open.
+- **Gotcha:** a tool's `sim.step(1, cb)` must clear `world.out.events` and `fires` itself (`Sim.step`
+  clears them only without a callback); the first runs read every hour's events again and grew to 4 GB.
+- **No rule;** the pin unchanged (7098dd29).
+- **Next:** 7.86 and 7.84's second bar wait on ADR-657 and 7.95; the loop takes 7.79's AT (10 unseen
+  seeds × 20 years).

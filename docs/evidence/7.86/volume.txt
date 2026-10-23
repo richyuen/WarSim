@@ -1,0 +1,29 @@
+seeds read in all three: 12 [1307, 2081, 2953, 3613, 4219, 4877, 5309, 5861, 6421, 7019, 7583, 8167]
+
+| Tree | Bursts (a world) | Civ > 10 × men | ≥ 1 M civilians | Worlds with a burst | Wars declared a world | Nation-years at war a world | Holder-years a world | Their share at war | Holder-years at war a world | Stock a holder-day at war | Warheads built a world | Bursts per 1,000 holder-days at war |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| old | 85 (7.1) | 26 | 1 | 6 | 269 | 1192 | 95.0 | 0.69 | 65.8 | 21.4 | 160 | 0.29 |
+| rule | 190 (15.8) | 37 | 5 | 12 | 436 | 1550 | 93.1 | 0.82 | 76.1 | 21.3 | 171 | 0.57 |
+| head | 213 (17.8) | 34 | 4 | 12 | 444 | 1545 | 93.0 | 0.81 | 74.9 | 21.3 | 170 | 0.65 |
+
+By ten-year third (bursts; holder-years at war a world; bursts per 1,000 holder-days at war):
+  years 1-10: old 3; 3.7; 0.18 | rule 3; 3.4; 0.20 | head 3; 3.4; 0.20
+  years 11-20: old 19; 31.7; 0.14 | rule 72; 32.6; 0.50 | head 70; 31.2; 0.51
+  years 21-30: old 63; 30.4; 0.47 | rule 115; 40.1; 0.65 | head 140; 40.4; 0.79
+
+bursts old 85 -> rule 190 (the world, x2.24) -> head 213 (the rule, x1.12); all x2.51
+holder-days at war old -> rule x1.16: holder-days x0.98 (warheads), their share at war x1.18 (wars); bursts per holder-day at war old -> rule x1.93, rule -> head x1.14
+
+Per seed (bursts old / rule / head; holder-years at war old / rule / head):
+  1307: 3 / 35 / 29; 78.3 / 77.5 / 78.1
+  2081: 23 / 15 / 19; 71.1 / 104.0 / 104.8
+  2953: 0 / 26 / 27; 64.5 / 54.4 / 55.8
+  3613: 0 / 29 / 36; 75.0 / 83.9 / 79.7
+  4219: 0 / 7 / 16; 48.7 / 82.4 / 78.7
+  4877: 44 / 4 / 4; 95.7 / 76.9 / 76.9
+  5309: 0 / 19 / 8; 52.6 / 56.4 / 56.6
+  5861: 9 / 13 / 30; 76.3 / 80.1 / 81.6
+  6421: 2 / 10 / 10; 84.3 / 84.4 / 84.4
+  7019: 0 / 2 / 2; 33.6 / 52.0 / 52.0
+  7583: 0 / 8 / 13; 65.2 / 79.2 / 65.5
+  8167: 4 / 22 / 19; 44.3 / 81.8 / 84.8

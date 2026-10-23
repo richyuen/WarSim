@@ -190,6 +190,11 @@ them, are 7.81–7.86. A task each, split when taken up:
   measured on the critic's seeds; on 10 unseen seeds × 30 years bursts a world and civilian bursts (over
   10 × men) not above `dd3b730`'s on the same seeds, or the user's ADR accepting the measured volume;
   the gate green.
+  Read (`docs/evidence/7.86/measure.md`, `tools/diag/nukeVolume.ts`, 12 of the critic's seeds × 30 years on
+  `dd3b730`, HEAD `07c623c7` with `dd3b730`'s `nuclear.ts`, and HEAD): bursts 85 → 190 → 213. Warheads
+  ×0.98, holder-days at war ×1.16, the nuclear rules since `dd3b730` ×1.12 (noise); ×1.93 the old rule
+  firing more often a holder-day at war in HEAD's world (years 11–20: 19 → 72 bursts at the same
+  holder-years at war). The AT's bar needs a new rule or the user: ADR-657 (BLOCKERS 2026-10-23).
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
