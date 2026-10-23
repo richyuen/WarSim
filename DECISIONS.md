@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-658 · 2026-10-23 · proposed (the user's decision) — 7.96's bar against what the nuclear AI owns (PLAN 7.96b's A/B missed)
+
+- **Context** (`docs/evidence/7.96/a.md`, `b.md`). 7.96a: in HEAD's world 17 of 23 strike days pass the
+  floor only with the world's taboo broken by an earlier burst (TABOO_AFTER 0.3, four years to recover);
+  the trigger is the land war (desperation and the places' value up, nations threatened on 32–66 % of
+  their days at war against 9–39 %). 7.96b, live on four seeds × 30 years: TABOO_AFTER 0.6 gives bursts
+  122 → 97, 0.7 101; `dd3b730` 12. Volleys (the same striker within 30 days) 42 → 27 at 0.6, 31 at 0.7,
+  not in order. A dearer taboo delays a strike whose gain stays: in a live world the strike comes later.
+- **Why the bar is out of reach:** 7.96's bar (bursts a world and civilian bursts on 10 unseen seeds ×
+  30 years not above `dd3b730`'s; read there: 89 bursts and 28 civilian on 811–819) asks the nuclear AI
+  to undo a volume the land war makes. What drives the gain is desperation from nations overrun, which
+  SPEC §6.4's fight-for-life strike reads on purpose.
+- **Options:**
+  - **(a)** Accept the volume (ADR-657 a, with the mechanism read). 7.96 closes; the aiNukes score
+    waits for the next critic run. No rule.
+  - **(b)** Re-scope 7.96's bar to what the nuclear AI owns, in the critic's words ("volleys", a
+    "habit"): on 10 unseen seeds × 30 years, the share of bursts by a striker within 30 days of its own
+    last, and the share of civilian bursts, not above `dd3b730`'s; the volume reported, not barred.
+    PLAN 7.96c then tries a rule on the volleys (a striker's own burst raises its next strike's cost
+    for a season, say), read first on 7.96b's four seeds against the volleys table.
+  - **(c)** A restraint on the trigger: desperation weighs less toward a strike (a doctrine change
+    against SPEC §6.4's fight-for-life strike), under 7.96's bar as it stands.
+- **Recommended: (b).** It matches the critic's objection and what the nuclear rules can move; (a) leaves
+  aiNukes at 7 on the volume, and (c) changes the doctrine the user kept in ADR-632 b.
+- **Consequences:** no rule changed; the pin unchanged (7098dd29). 7.96b closed not done; 7.96 waits on
+  this.
+
 ### ADR-657 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — The AI's bursts follow the busier war, not its warheads or the nuclear rules (PLAN 7.86's AT)
 
 - **Context** (`docs/evidence/7.86/measure.md`). Critic run 12: bursts on the same 24 seeds 188 → 497,

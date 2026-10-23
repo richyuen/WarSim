@@ -22823,3 +22823,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Filed:** 7.96b, the taboo after a burst (TABOO_AFTER raised, or the break kept to its war).
 - **No rule;** the pin unchanged (7098dd29).
 - **Next:** 7.96b.
+
+## 2026-10-23 — PLAN 7.96b: the taboo after a burst, A/B; closed not done (ADR-658 to the user)
+
+- **A/B** (`docs/evidence/7.96/b.md`; `nukeVolume.ts`, 1307, 2953, 3613, 5861 × 30 years): TABOO_AFTER 0.6 /
+  0.7 give bursts 122 → 97 / 101 (`dd3b730` 12), civilian 19 → 15 / 22; volleys within 30 days 42 → 27 /
+  31, longest chain 10 → 3 / 9: not in order, not told from noise. 7.96a's first-order table (8 of 23
+  kept) did not hold: a strike the taboo holds comes back later (a note in `a.md`).
+- **Base:** `dd3b730` on unseen 811–819 × 30 years, 89 bursts, 28 civilian (820 not run: its runner
+  was stopped by Claude Code for low memory before it began; the batches then ran 12 at once).
+- **Verdict:** 7.96b closed not done, BLOCKERS entry; ADR-658 proposed: (a) accept the volume, (b) the bar
+  on volleys and civilian share, then 7.96c (recommended), (c) a restraint on desperation's strike.
+- **No rule;** the pin unchanged (7098dd29).
+- **Next:** 7.96 waits on ADR-658; the loop takes 7.79's AT.

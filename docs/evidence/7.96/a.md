@@ -71,3 +71,7 @@ The taboo after a burst: TABOO_AFTER 0.3 lets one burst pay for the next ones of
 years. Candidates for 7.96b: TABOO_AFTER raised (0.6 keeps 8 of 23 first order), or the break limited to
 the war of the burst. The bar is 7.96's (bursts a world and civilian bursts on 10 unseen seeds × 30
 years not above `dd3b730`'s).
+
+**Note (7.96b, `b.md`):** the live A/B does not bear out the TABOO_AFTER table above. On four seeds × 30
+years, 0.6 cuts bursts 122 → 97 and 0.7 to 101, where the table's 8 of 23 would have cut about two
+thirds. Each strike the taboo holds comes back later. Read the table as days read alone, not a forecast.
