@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-657 · 2026-10-23 · proposed (the user's decision) — The AI's bursts follow the busier war, not its warheads or the nuclear rules (PLAN 7.86's AT)
+### ADR-657 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — The AI's bursts follow the busier war, not its warheads or the nuclear rules (PLAN 7.86's AT)
 
 - **Context** (`docs/evidence/7.86/measure.md`). Critic run 12: bursts on the same 24 seeds 188 → 497,
   civilian bursts (over ten times more civilians than men) 61 → 109, a million civilians 4 → 8. PLAN 7.86
@@ -200,6 +200,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   (b) aims at the input that moved rather than at the bursts as such, and (c) stays open if (b)'s read
   names nothing a rule can fix.
 - **Consequences:** no rule changed; the pin unchanged (7098dd29). `tools/diag/nukeVolume.ts` is new.
+- **Decided** (2026-10-23, the user: option b, as recommended). PLAN 7.96 is filed and taken next: the
+  input read first (part a), then the rule on it; 7.86 closes into it.
 
 ### ADR-656 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — The navies after year 2 and the war reserve's cut (PLAN 7.84d's AT missed)
 

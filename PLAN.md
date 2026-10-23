@@ -180,21 +180,18 @@ them, are 7.81–7.86. A task each, split when taken up:
   20 years air battles a year in years 2–20 at least a tenth of year 1's, or, if 7.79's land war does
   not carry the air war there, the measured cause and the choice of 7.51b's (c) (an air war not tied to
   the land war) to the user; the gate green.
-- [ ] 7.86 AI nuclear use (aiNukes 7, needs 8, beyond R11-B2): bursts on the same 24 seeds 188 → 497
-  (20.7 a world, 31 of 32 worlds); bursts killing over ten times more civilians than men 61 → 109; a
-  million or more civilians 4 → 8 (Germany on the Low Countries 3,090,000 civilians for 337 men at
-  utility 0.164, 5861; Germany on the Netherlands then Denmark in 7 days, 2,284,000 and 1,340,000 for 0
-  and 473 men at 2.04 and 1.83, 2347). The critic's design objection (cities struck as massacres; ADR-632
-  b keeps output a first-strike target) is the user's. Measure first which change raised the bursts
-  2.6 × (more wars, more warheads, or the rule), then put the choice to the user in an ADR. AT: the cause
-  measured on the critic's seeds; on 10 unseen seeds × 30 years bursts a world and civilian bursts (over
-  10 × men) not above `dd3b730`'s on the same seeds, or the user's ADR accepting the measured volume;
-  the gate green.
-  Read (`docs/evidence/7.86/measure.md`, `tools/diag/nukeVolume.ts`, 12 of the critic's seeds × 30 years on
-  `dd3b730`, HEAD `07c623c7` with `dd3b730`'s `nuclear.ts`, and HEAD): bursts 85 → 190 → 213. Warheads
-  ×0.98, holder-days at war ×1.16, the nuclear rules since `dd3b730` ×1.12 (noise); ×1.93 the old rule
-  firing more often a holder-day at war in HEAD's world (years 11–20: 19 → 72 bursts at the same
-  holder-years at war). The AT's bar needs a new rule or the user: ADR-657 (BLOCKERS 2026-10-23).
+
+- [ ] 7.96 The nuclear rate in the busier war (found at 7.86; aiNukes 7, needs 8; ADR-657 b, the user's
+  decision): `dd3b730`'s own nuclear rule fires 1.93 × as often a holder-day at war in HEAD's world as in
+  its own (years 11–20 on 12 of the critic's seeds: 19 → 72 bursts at 31.7 / 32.6 holder-years at war;
+  `docs/evidence/7.86/measure.md`). AT: on 10 unseen seeds × 30 years bursts a world and civilian bursts
+  (over 10 × men) not above `dd3b730`'s on the same seeds (read there first); a unit test, red without;
+  the ADR; the pin's entry. In parts:
+    - [ ] 7.96a Read which input of the decision moved: daily, for each nation with warheads at war, the
+      best place's utility and its parts (desperation, value, the chance through, the strike back, the
+      costs) under `dd3b730`'s rule, in its world and in HEAD's (the old and rule trees of 7.86), years
+      11–20 on two seeds. AT: the input whose shift accounts for at least half of the days over the floor
+      gained, named with its figures, and the rule it points to as 7.96b; no rule: the pin unchanged.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
@@ -504,3 +501,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.83 Performance (performance 6, needs 7): seed 99's mean tick 1.785–1.790 ms pinned on HEAD […]
 - [x] 7.91 Blocks stacked on one enemy out of its view (found at 7.90g, `docs/evidence/7.90/g.md` "The gate"): […]
 - [x] 7.90 The ferry's lift short of the army (found at 7.89; R12-B1): on critic run 12's 1129 year 10 the […]
+- [x] 7.86 AI nuclear use (aiNukes 7, needs 8, beyond R11-B2): bursts on the same 24 seeds 188 → 497 […]

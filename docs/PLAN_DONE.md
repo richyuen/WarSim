@@ -14461,3 +14461,34 @@ Of 7.33 (open in PLAN.md):
     day 30 (7 by day 85), the 60 by Chicago unmoved; the same with g.patch. Both piles predate the rules;
     the user chose (a) (ADR-653, 2026-10-23): the piles bar closed as missed, the piles judged from 1938 by
     7.79's AT; no PLAN 7.93. Closed not done with 7.90g (ADR-653 a).
+
+<!-- moved 2026-10-23 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.86 AI nuclear use (aiNukes 7, needs 8, beyond R11-B2): bursts on the same 24 seeds 188 → 497
+  (20.7 a world, 31 of 32 worlds); bursts killing over ten times more civilians than men 61 → 109; a
+  million or more civilians 4 → 8 (Germany on the Low Countries 3,090,000 civilians for 337 men at
+  utility 0.164, 5861; Germany on the Netherlands then Denmark in 7 days, 2,284,000 and 1,340,000 for 0
+  and 473 men at 2.04 and 1.83, 2347). The critic's design objection (cities struck as massacres; ADR-632
+  b keeps output a first-strike target) is the user's. Measure first which change raised the bursts
+  2.6 × (more wars, more warheads, or the rule), then put the choice to the user in an ADR. AT: the cause
+  measured on the critic's seeds; on 10 unseen seeds × 30 years bursts a world and civilian bursts (over
+  10 × men) not above `dd3b730`'s on the same seeds, or the user's ADR accepting the measured volume;
+  the gate green.
+  Read (`docs/evidence/7.86/measure.md`, `tools/diag/nukeVolume.ts`, 12 of the critic's seeds × 30 years on
+  `dd3b730`, HEAD `07c623c7` with `dd3b730`'s `nuclear.ts`, and HEAD): bursts 85 → 190 → 213. Warheads
+  ×0.98, holder-days at war ×1.16, the nuclear rules since `dd3b730` ×1.12 (noise); ×1.93 the old rule
+  firing more often a holder-day at war in HEAD's world (years 11–20: 19 → 72 bursts at the same
+  holder-years at war). The AT's bar needs a new rule or the user: ADR-657 (BLOCKERS 2026-10-23).
+  Closed not done into PLAN 7.96 (ADR-657 b, the user's decision).

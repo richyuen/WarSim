@@ -22803,3 +22803,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No rule;** the pin unchanged (7098dd29).
 - **Next:** 7.86 and 7.84's second bar wait on ADR-657 and 7.95; the loop takes 7.79's AT (10 unseen
   seeds × 20 years).
+
+## 2026-10-23 — ADR-657 b (the user's decision): PLAN 7.96 filed; 7.86 closed into it (documents)
+
+- 7.96: `dd3b730`'s nuclear rule fires 1.93 × as often a holder-day at war in HEAD's world; 7.96a reads
+  which input moved (two seeds, years 11–20, old and rule trees), 7.96b the rule. AT 7.86's bar.
+- **Next:** 7.96a (the user asked for it now; 7.79's AT after).

@@ -5,16 +5,6 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.86: the AI's bursts ×2.5 follow the busier war; the nuclear rules since `dd3b730` are not the cause (2026-10-23, ADR-657 proposed; the user's decision)
-- **The bar:** on 10 unseen seeds × 30 years, bursts a world and civilian bursts (over 10 × men) not above
-  `dd3b730`'s on the same seeds, or the user's ADR accepting the measured volume.
-- **What moved** (`docs/evidence/7.86/measure.md`, 12 of the critic's seeds × 30 years, three trees): the
-  cause read. Bursts 85 → 190 → 213: warheads ×0.98, holder-days at war ×1.16, the nuclear rules since
-  `dd3b730` ×1.12 (noise on 12 seeds), and ×1.93 the same old rule firing more often a holder-day at war
-  in HEAD's world. Civilian bursts' share 31 % → 16 %, their count 26 → 34.
-- **What is left:** the user's (ADR-657). (a) accept the volume; (b) PLAN 7.96, read which input of the
-  decision moved, then a rule on it (recommended); (c) a world taboo rising with each burst.
-
 ### PLAN 7.83c: supply's beach layer −7 %, short of `dd3b730` + 0.03 (2026-10-23)
 - **The bar:** supply's mean a tick on a year from HEAD's year-4 save of seed 99 at most `dd3b730`'s rules'
   + 0.03 (0.168 ms; 0.153 against the pairs' own HEAD), the year's hash f278491d and the pin unchanged.
@@ -48,6 +38,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** PLAN 7.90. The USA's 12 groups hold 288,000 men against about 1.35 million in the two
   piles; a round trip carries 4–8 divisions. No decision of the user's waits on it; the loop takes it after
   PLAN 7.80b.
+
+### RESOLVED 2026-10-23 (option b, the user's decision: PLAN 7.96, the input that doubled the rate, then a rule on it; 7.86 closed into it) · PLAN 7.86: the AI's bursts ×2.5 follow the busier war; the nuclear rules since `dd3b730` are not the cause (2026-10-23, ADR-657 proposed; the user's decision)
+- **The bar:** on 10 unseen seeds × 30 years, bursts a world and civilian bursts (over 10 × men) not above
+  `dd3b730`'s on the same seeds, or the user's ADR accepting the measured volume.
+- **What moved** (`docs/evidence/7.86/measure.md`, 12 of the critic's seeds × 30 years, three trees): the
+  cause read. Bursts 85 → 190 → 213: warheads ×0.98, holder-days at war ×1.16, the nuclear rules since
+  `dd3b730` ×1.12 (noise on 12 seeds), and ×1.93 the same old rule firing more often a holder-day at war
+  in HEAD's world. Civilian bursts' share 31 % → 16 %, their count 26 → 34.
+- **What is left:** the user's (ADR-657). (a) accept the volume; (b) PLAN 7.96, read which input of the
+  decision moved, then a rule on it (recommended); (c) a world taboo rising with each burst.
 
 ### RESOLVED 2026-10-23 (ADR-651 a, the user's decision: the assertion widened, 7.91 committed from its patch; 7.90g next) · PLAN 7.91 (and 7.90g after it): held on `nukePoland1938` seed 5591, whose "on Germany" is the user's to keep or drop (2026-10-22, ADR-651 proposed; the user's decision)
 - **The bar:** with 7.91's patch, `nukePoland1938` green on its three seeds with the first burst on
