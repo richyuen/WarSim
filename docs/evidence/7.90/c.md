@@ -46,3 +46,32 @@ tick, HEAD → rule, 1129 year 10 0.312 / 0.279 → 0.296 / 0.343 ms (longest 58
 year 20 0.462 / 0.380 → 0.374 / 0.454 ms (longest 65 / 71 → 68 / 72 ms).
 
 The pin is unchanged (8a571863).
+
+## 7.90f: the read (2026-10-22, on HEAD `a56637fc`, after 7.90d and 7.90e)
+
+The stand at Dakar this note found (20–26 groups refusing a `board` days 56–90) is not on HEAD: its
+history moved with 7.90d's and 7.90e's rules. Read again with the commands of 7.90c
+(`f_trip_6421.*`, `ferryTrip.ts … 90 6421 critic/c12_seed6421_y20.bin USA`; `f_turns_6421.json`,
+`ferryTurns.ts … 90 6421:critic/c12_seed6421_y20.bin:USA`):
+
+- **The AT's figure**, groups at Dakar and Bathurst that gave no order on every turn they stood there,
+  days 30–90: 27–29 on 7.90c's code, **3** on HEAD: 107, 141 and 285, which landed troops there from
+  St. John's (ordered day 7373), stand at Dakar from day 7386 and refuse a `board` on the one turn
+  there (7387; 9 searches each, 141 `same`). None stands at Bathurst. Why the African landings fell
+  to these three groups is not read.
+- **Why the board is refused** (`f_free_6421.log`, `ferryFree.ts 6421 critic/c12_seed6421_y20.bin USA
+  docs/evidence/7.90/f_turns_6421.json 7387`): the free army on Dakar's land (landmass 56) is four
+  formations on a US enclave at (1031–1032, 334–335), 5,700 + 1,708 + 16 + 16 men, which reach no
+  front cell (free, the ferry's), but march to none of the USA's six ports on that land (Lisbon 90–91
+  cells, Dakar 284, Bathurst 288, Conakry 293, Freetown 296: every one refused). The nearest's march
+  to Dakar refused, `board` asks the sail to them (`sailToArmy`), refused for the same reason. The
+  ferry boards only at a port (ADR-624's beachhead is where it lands, not where it boards), so
+  nothing on that land can be lifted: the refusal is right. 7.90f is closed so; no rule, the pin
+  unchanged.
+- **Where the idle stand is now** (not 7.90f's bar): 9 groups at Port-of-Spain to day 90 and 6 at
+  Baltimore from day 83 refuse a *sail* to the army. A group away from the army takes the four
+  nearest of the free army on lands with a port of the nation's (7.90c's rule), and on day 7387 those
+  four are the same cut-off remnants: each port's groups search them again (8 searches at Norfolk,
+  Baltimore, Tampico, Port-of-Spain), while division 16 at Glasgow (land 278, no front), 1 cell from
+  a US port it marches to, is never tried. Of the day's 21 free (140,277 men), 14 are garrisons on
+  islands with no US port. Filed as PLAN 7.90h.

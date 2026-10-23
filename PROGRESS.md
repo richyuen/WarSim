@@ -22480,3 +22480,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   changed history (the hash moves) beside a system cost that does not.
 - **Pin:** 5ea2c9d8 → 5161de24.
 - **Next:** PLAN 7.90f.
+
+## 2026-10-22 — PLAN 7.90f closed so: the board at Dakar refused rightly
+
+- **Read** (`docs/evidence/7.90/c.md` "7.90f: the read", `f_trip_6421.*`, `f_turns_6421.json`,
+  `f_free_6421.log`; new probe `tools/diag/ferryFree.ts`, a ferry turn's free army and whether each
+  marches to its land's ports): on HEAD the stand at Dakar 7.90c found moved with 7.90d/e. Groups at
+  Dakar and Bathurst giving no order on every turn there, days 30–90: 27–29 → 3 (107, 141, 285 at Dakar
+  from day 7386, one turn), Bathurst 0. The free army on Dakar's land is four remnants (5,700 + 1,708 +
+  16 + 16 men) on a US enclave at (1032,335) that march to none of the USA's six ports on that land; the
+  ferry boards only at a port, so the refusal is right. No rule, no unit test, no ADR; the pin unchanged
+  (5161de24).
+- **Filed:** PLAN 7.90h. Groups away from the army sail for the four nearest of the free army on ported
+  lands, and on day 7387 those are the same remnants: five ports' groups search them again and are
+  refused, while division 16 at Glasgow (1 cell from its port) is never tried; 9 groups stand at
+  Port-of-Spain and 6 at Baltimore to day 90.
+- **Next:** PLAN 7.90g.

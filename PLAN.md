@@ -162,7 +162,7 @@ them, are 7.81–7.86. A task each, split when taken up:
       formations that reach no front cell (`frontReach`, the ferry's test) count against the room; on 1129
       year 10 `wantsFerry` false → true on day 0, groups in training 0 → 1 from day 10. Pin 5ea2c9d8 →
       5161de24.
-    - [ ] 7.90f The board refused at Dakar (found at 7.90c, `docs/evidence/7.90/c.md`): on 6421 year 20,
+    - [x] 7.90f The board refused at Dakar (found at 7.90c, `docs/evidence/7.90/c.md`): on 6421 year 20,
       with the way back mended, 25 US groups stand at Dakar (and 2–4 at Bathurst) from day 56 to day 90
       and refuse a `board` every turn (9 searches each, no order), on the African front's land with free
       army on it. Read first why (`ferryTurns.ts`, `ferryStuck.ts`: the board's target, the nearest's
@@ -170,6 +170,11 @@ them, are 7.81–7.86. A task each, split when taken up:
       groups at Dakar and Bathurst that give no order on every turn they stand there 27–29 → 0, or the
       read shows the refusal right (no formation there the ferry should carry: then closed so, the
       reason in c.md); a unit test (red without) with a rule; the ADR; the pin's entry.
+      Closed so (`docs/evidence/7.90/c.md` "7.90f: the read"): on HEAD the stand moved with 7.90d/e; the
+      figure 27–29 → 3 (107, 141, 285 at Dakar from day 7386, one turn), Bathurst 0. The free army on
+      Dakar's land is four remnants (7,440 men) on a US enclave at (1032,335) that march to none of the
+      USA's six ports there (`ferryFree.ts`): the ferry boards only at a port, so the refusal is right.
+      No rule; the pin unchanged (5161de24). The idle stand is now sails refused: 7.90h.
     - [ ] 7.90g A port's army split over its groups (found at 7.90d, `docs/evidence/7.90/d.md`): on 1129 year
       10, four divisions of the Baltimore pile sent on day 3664 were aboard three groups at Norfolk (365,
       568, 571) on day 3713, 2 / 1 / 1, where two groups had room for the four; 568's and 571's tries of
@@ -180,7 +185,18 @@ them, are 7.81–7.86. A task each, split when taken up:
       the trips of one that left at their port a free formation the group had room for (1129: 2; 6421:
       read first) → 0, or the read shows each right (closed so, the reason in the note); a unit test (red
       without) with a rule; the ADR; the pin's entry.
-    Then 7.90's AT, read after 7.90b–g (a.md §6: on the 60 it is likely missed; that goes to BLOCKERS).
+    - [ ] 7.90h The sail to cut-off remnants (found at 7.90f, `docs/evidence/7.90/c.md` "7.90f: the read"): a
+      group away from the army sails for the four nearest of the free army on lands with a port of the
+      nation's (7.90c's rule), whether or not they march to one. On 6421 year 20 day 7387 those four are
+      the remnants on landmass 56 cut off from all six US ports there: the groups at Norfolk, Baltimore,
+      Tampico, Corpus Christi and Port-of-Spain each search them again (8 searches; the rest `same`) and
+      are refused, while division 16 at Glasgow, 1 cell from a US port it marches to, is never tried; 9
+      groups at Port-of-Spain and 6 at Baltimore stand to day 90. AT: on 6421 year 20 over 120 days
+      (`ferryTrip.ts`, `ferryFree.ts` on each turn with a sail refused) the turns on which a sail was
+      refused while a free formation that marches to a port of its land was not tried (HEAD: 1 in 90
+      days, day 7387; the 120 read first) → 0; a unit test (red without) with a rule; the ADR; the pin's
+      entry. One division: it does not move 7.90's bar on the piles.
+    Then 7.90's AT, read after 7.90b–h (a.md §6: on the 60 it is likely missed; that goes to BLOCKERS).
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts
