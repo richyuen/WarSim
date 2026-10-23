@@ -831,7 +831,7 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
   worth (31 sectors in the Sahara that nobody attacks). Both are balance, and wait for
   Phase 7 (ADR-58).
 
-## 2026-10-23 — PLAN 7.98's AT missed: American piles 12 → 19, engaged 0.480 → 0.471 (ADR-663 waits on the user)
+## RESOLVED 2026-10-23 (option a, the user's decision: the rule dropped, 7.98 closed not done, no task) · PLAN 7.98's AT missed: American piles 12 → 19, engaged 0.480 → 0.471 (ADR-663)
 
 - **Bar:** on 821–830 × 20 years American piles of 30+ held 30 days at most 4, engaged per war not below
   0.480 (`docs/evidence/7.98/at.md`).

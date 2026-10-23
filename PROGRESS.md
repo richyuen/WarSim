@@ -22955,3 +22955,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No rule;** the pin unchanged (b9bff4bd). 7.82b's draft read (`docs/evidence/7.82/b.md`) stays out of
   this commit; its trial rule will take the next ADR number.
 - **Next:** 7.98 waits on ADR-663; the loop takes 7.82b.
+
+## 2026-10-23 — ADR-663 a (the user's decision): 7.98 closed not done, the rule dropped (documents)
+
+- The lift rule stays out (`docs/evidence/7.98/patch` kept); no task filed; the American piles (12 on
+  HEAD) go to the next critic report. The pin unchanged (b9bff4bd).
+- **Next:** 7.82b (its trial rule's AT on 834 and 835 × 30 years is running).

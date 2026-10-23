@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-663 · 2026-10-23 · proposed, the user's decision — The lift's size: more transports carry the American army to another coast (PLAN 7.98's AT missed)
+### ADR-663 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The lift's size: more transports carry the American army to another coast (PLAN 7.98's AT missed)
 
 - **Context** (`docs/evidence/7.98/at.md`). PLAN 7.98 (ADR-662 a): on 821–830 × 20 years American piles
   of 30+ held 30 days 12 → at most 4, engaged per war in years 2–20 not below 0.480.
@@ -192,6 +192,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   (b) is the way if the piles are to be pursued: the cause it would read is the operational AI's, not
   the navy's.
 - **Consequences:** under (a) and (b) no rule; the pin unchanged (b9bff4bd). Until decided: the same.
+- **Decided (a):** the rule dropped (the patch kept in the evidence); 7.98 closed not done; no task
+  filed: the American piles (12 on HEAD) go to the next critic report. The loop takes 7.82.
 
 ### ADR-662 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The American piles: the transports go to the army, and the lift is short (PLAN 7.97's AT missed)
 

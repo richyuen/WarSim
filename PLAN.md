@@ -40,18 +40,6 @@ Run 12's (report of 2026-10-22 on `896ff779`, `critic/CRITIC_REPORT.md`; R11-B2 
 and performance 7 → 6): R12-B1 and R12-B2 are PLAN 7.79 and 7.80; the dimensions under the bar, beyond
 them, are 7.81–7.86. A task each, split when taken up:
 
-- [ ] 7.98 The lift's size (found at 7.97's AT; R12-B1; ADR-662 a): with 7.97's rule in, 12 American
-  piles of 30+ held 30 days on 821–830 × 20 years; 827 year 14: 69 US divisions at Nome, a port, the
-  front across the Bering Strait, two transport groups at ports, both acting. The economic AI keeps one
-  transport group in training at a time for the ferry (`wantsFerry`, ADR-614), whatever the army
-  waiting. The ferry's want sized to the army waiting: more than one group in training while the free
-  army's men exceed the room of the nation's groups. AT: on 821–830 × 20 years (`tools/diag/landAt.ts`)
-  American piles of 30+ held 30 days 12 → at most 4, engaged per war in years 2–20 not below 0.480; a
-  unit test, red without; the ADR; the pin's entry. Then the loop takes 7.82.
-  Read (`docs/evidence/7.98/at.md`): the rule tried (`patch`: another group while one trains, while the
-  island army outnumbers the room afloat and in training) American piles 12 → 19, engaged 0.480 →
-  0.471: the army ferried to other coasts stands there. Waits on ADR-663 (BLOCKERS).
-
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts
   (`critic/c12_cmp_all.txt`, `c12_summary_all.txt`). Taken up after 7.79 and 7.80, re-read on their HEAD
@@ -461,3 +449,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.96 The nuclear rate in the busier war (found at 7.86; aiNukes 7, needs 8; ADR-657 b, the user's […]
 - [x] 7.79 The land war after year 1, again (R12-B1; R11-B1 not fixed by 7.49): on the critic's same 48 […]
 - [x] 7.97 The American piles (found at 7.79's AT; R12-B1; ADR-661 a, as ADR-653's (b)): on unseen seeds […]
+- [x] 7.98 The lift's size (found at 7.97's AT; R12-B1; ADR-662 a): with 7.97's rule in, 12 American […]

@@ -14655,3 +14655,31 @@ Of 7.33 (open in PLAN.md):
   18 → 12 American piles, engaged 0.480; the bar missed. Closed not done (ADR-662 a, the user's
   decision, 2026-10-23): the rule committed (`sailToMost`; pin 7098dd29 → b9bff4bd), the lift's size
   is PLAN 7.98.
+
+<!-- moved 2026-10-23 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.98 The lift's size (found at 7.97's AT; R12-B1; ADR-662 a): with 7.97's rule in, 12 American
+  piles of 30+ held 30 days on 821–830 × 20 years; 827 year 14: 69 US divisions at Nome, a port, the
+  front across the Bering Strait, two transport groups at ports, both acting. The economic AI keeps one
+  transport group in training at a time for the ferry (`wantsFerry`, ADR-614), whatever the army
+  waiting. The ferry's want sized to the army waiting: more than one group in training while the free
+  army's men exceed the room of the nation's groups. AT: on 821–830 × 20 years (`tools/diag/landAt.ts`)
+  American piles of 30+ held 30 days 12 → at most 4, engaged per war in years 2–20 not below 0.480; a
+  unit test, red without; the ADR; the pin's entry. Then the loop takes 7.82.
+  Read (`docs/evidence/7.98/at.md`): the rule tried (`patch`: another group while one trains, while the
+  island army outnumbers the room afloat and in training) American piles 12 → 19, engaged 0.480 →
+  0.471: the army ferried to other coasts stands there. Closed not done (ADR-663 a, the user's
+  decision, 2026-10-23): the rule dropped, no task filed; the American piles go to the next critic
+  report.
