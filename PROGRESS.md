@@ -22898,3 +22898,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - 7.82b's read had begun (`tools/diag/overseasHold.ts`, a `LANDING_PROBE` in `invasion.ts`; not in this
   commit); it resumes after 7.97.
 - **Next:** 7.97.
+
+## 2026-10-23 — PLAN 7.82b's probe (read tool only)
+
+- `LANDING_PROBE` in `invasion.ts` (diagnostics only, inert without a callback): each invasion turn's
+  branch, each landing and Normandy planned and how it ended, and for watched nations the tests their
+  ports and cities failed or their best against the pick. `tools/diag/overseasHold.ts`: per year, the
+  USA, Canada, Denmark and Australia: days at war, enemies' turns and plans, landings on them; a
+  checkpoint at the start year in `.cache/hold82/`.
+- Run on 834 (years 6–22) and 835 (12–29); output in `.cache/hold82/`, not yet read (7.82b resumes after
+  7.97). First sight: on 835 the USA and Canada at war with nobody in years 12–13.
+- **No rule;** the pin unchanged (the gate's pin test).
+- **Next:** 7.97.

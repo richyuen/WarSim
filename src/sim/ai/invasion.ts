@@ -136,6 +136,7 @@ export function invasionAi(world: World): void {
     const atPorts: AtPorts = () => (groups ??= transportGroupsAtPort(world, n));
     if (landing.has(n)) {
       FERRY_PROBE.skip?.(n, 'aboard');
+      LANDING_PROBE.turn?.(n, 'aboard');
       if (ferried.length > 0) planFerry(world, n, ferried, atPorts);
       continue;
     }
@@ -153,14 +154,54 @@ export function invasionAi(world: World): void {
     }
     // A new front (PLAN 7.70b, ADR-623): with its own front held, its free army lands behind the
     // enemy's; with it not held, the ferry takes its army there first.
-    if (front.length > 0 && mine && frontHeld(world, n, front) && planNormandy(world, n, mine, front, atPorts)) {
+    const held = front.length > 0 && mine !== undefined && frontHeld(world, n, front);
+    if (front.length > 0 && mine && !held) LANDING_PROBE.turn?.(n, 'frontNotHeld');
+    if (held && planNormandy(world, n, mine!, front, atPorts)) {
       FERRY_PROBE.skip?.(n, 'normandy');
+      LANDING_PROBE.turn?.(n, 'normandy');
       continue;
     }
+    LANDING_PROBE.turn?.(n, 'ferry');
     if (ferried.length > 0) planFerry(world, n, ferried, atPorts);
     else FERRY_PROBE.skip?.(n, 'noFront');
   }
 }
+
+/**
+ * One landing or Normandy a nation planned (`LANDING_PROBE`, PLAN 7.82b): the enemies it looked at,
+ * the cell picked (-1 for none), how the plan ended, and for each watched nation among the enemies
+ * how its best place fared (`watched`: its nearest port's km, or its best city's score, against the
+ * pick's; else the tests its places failed, by count).
+ */
+export type LandingPlan = {
+  nation: number;
+  kind: 'landing' | 'normandy';
+  foes: number[];
+  target: number;
+  why: 'noTransports' | 'noFeed' | 'noEnemies' | 'noTarget' | 'noArmy' | 'order';
+  best?: number;
+  watched?: Record<number, { best: number; failed: Record<string, number> }> | undefined;
+};
+/**
+ * Diagnostics only (`tools/diag/overseasHold.ts`): each landing and Normandy planned past its
+ * transports' test, the branch each invasion turn took, and the nations whose places are traced.
+ */
+export const LANDING_PROBE: {
+  plan?: (p: LandingPlan) => void;
+  turn?: (n: number, branch: 'aboard' | 'frontNotHeld' | 'normandy' | 'ferry') => void;
+  watch?: ReadonlySet<number>;
+} = {};
+type Watched = NonNullable<LandingPlan['watched']>;
+const watchFail = (seen: Watched | undefined, holder: number, why: string): void => {
+  if (!seen || !LANDING_PROBE.watch!.has(holder)) return;
+  const e = (seen[holder] ??= { best: Number.NaN, failed: {} });
+  e.failed[why] = (e.failed[why] ?? 0) + 1;
+};
+const watchBest = (seen: Watched | undefined, holder: number, v: number, better: (a: number, b: number) => boolean): void => {
+  if (!seen || !LANDING_PROBE.watch!.has(holder)) return;
+  const e = (seen[holder] ??= { best: Number.NaN, failed: {} });
+  if (Number.isNaN(e.best) || better(v, e.best)) e.best = v;
+};
 
 /** A Normandy's target is looked for this many cells about an enemy's coastal city for the enemy's land formations (PLAN 7.70b). */
 export const NORMANDY_NEAR_CELLS = 10;
@@ -274,9 +315,15 @@ function planNormandy(world: World, n: number, faced: ReadonlySet<number>, front
   const { w, h } = world.cells;
   const ctl = world.cells.controller;
   const tp = transportsAtPort(atPorts);
-  if (!tp) return false;
+  if (!tp) {
+    LANDING_PROBE.plan?.({ nation: n, kind: 'normandy', foes: [...faced], target: -1, why: 'noTransports' });
+    return false;
+  }
   const feed = beachReach(world, n);
-  if (!feed) return false;
+  if (!feed) {
+    LANDING_PROBE.plan?.({ nation: n, kind: 'normandy', foes: [...faced], target: -1, why: 'noFeed' });
+    return false;
+  }
   // The enemies of its wars with a front.
   const enemies = new Set<number>();
   for (const war of world.wars.list) {
@@ -286,18 +333,27 @@ function planNormandy(world: World, n: number, faced: ReadonlySet<number>, front
     if (!other.some((e) => faced.has(e))) continue;
     for (const e of other) if (e !== n && world.nations.cols.living[e] === 1) enemies.add(e);
   }
-  if (enemies.size === 0) return false;
+  if (enemies.size === 0) {
+    LANDING_PROBE.plan?.({ nation: n, kind: 'normandy', foes: [...faced], target: -1, why: 'noEnemies' });
+    return false;
+  }
   const comp = navOf(world).grid.component;
   const z = seaOf(world);
   const keys = waterKeys(world, n);
   const fx = c.x[tp.fleet]!;
   const fy = c.y[tp.fleet]!;
   const mine = keyAt(world, keys, fx, fy);
-  const zoneOk = (zone: number): boolean => {
-    if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine || feed.seen[zone] !== 1) return false;
+  // Why a zone takes no beach ('' when it does).
+  const zoneWhy = (zone: number): string => {
+    if (zone === 0) return 'land';
+    if (z.closed[zone] === 1) return 'ice';
+    if (keys[zone] !== mine) return 'otherWater';
+    if (feed.seen[zone] !== 1) return 'notFed';
     const sea = seaHolder(world, zone);
-    return sea === 0 || !world.wars.atWar(sea, n);
+    return sea === 0 || !world.wars.atWar(sea, n) ? '' : 'seaHeld';
   };
+  const zoneOk = (zone: number): boolean => zoneWhy(zone) === '';
+  const seen: Watched | undefined = LANDING_PROBE.watch && LANDING_PROBE.plan ? {} : undefined;
   const r = world.atSize(DEPLOY_RANGE_CELLS);
   const toFront2 = nearestSq(world, front);
   // The enemy's land formations, by squares of NORMANDY_NEAR_CELLS.
@@ -338,7 +394,7 @@ function planNormandy(world: World, n: number, faced: ReadonlySet<number>, front
     const holder = ctl[cell]!;
     if (!enemies.has(holder)) return;
     const land = comp[cell]!;
-    if (land === 0) return;
+    if (land === 0) return watchFail(seen, holder, 'noLand');
     // The water it goes ashore by: the nearest open one within the shore's reach (looked for before
     // the front's distance, the dearer test: most enemy cities lie inland; PLAN 7.83b).
     let sea = -1;
@@ -359,20 +415,44 @@ function planNormandy(world: World, n: number, faced: ReadonlySet<number>, front
         [sea, d2] = [q, dx * dx + dy * dy];
       }
     }
-    if (sea < 0) return;
+    if (sea < 0) {
+      if (seen && LANDING_PROBE.watch!.has(holder)) {
+        // The first test the nearest water within the shore's reach failed.
+        let why = 'noWater';
+        let dBest = Infinity;
+        for (let dy = -shore; dy <= shore; dy++) {
+          for (let dx = -shore; dx <= shore; dx++) {
+            const y = y0 + dy;
+            const x = (x0 + dx + w) % w;
+            if (y < 0 || y >= h || dx * dx + dy * dy >= dBest) continue;
+            const reason = zoneWhy(z.zoneOf[y * w + x]!);
+            if (reason === 'land') continue;
+            [why, dBest] = [reason, dx * dx + dy * dy];
+          }
+        }
+        watchFail(seen, holder, why);
+      }
+      return;
+    }
     const d2Front = toFront2(cell);
-    if (d2Front <= r * r) return;
+    if (d2Front <= r * r) return watchFail(seen, holder, 'nearFront');
     // Near the enemy's front's rear (PLAN 7.73a): the worth falls as the city lies farther from n's
     // front, DEPLOY_RANGE_CELLS over its straight distance (under 1, as it is beyond that range).
     const worth = ((cc.capitalOf[city] === holder ? NORMANDY_CAPITAL_WORTH : 1) * r) / Math.sqrt(d2Front);
     const s = worth / (1 + enemiesNear(cell));
+    watchBest(seen, holder, s, (a, b) => a > b);
     if (s < score) return;
     const d = seaKm(world, fx, fy, (sea % w) + 0.5, Math.floor(sea / w) + 0.5);
     if (s > score || d < km || (d === km && cell < target)) [target, score, km] = [cell, s, d];
   });
-  if (target < 0) return false;
+  if (target < 0) {
+    LANDING_PROBE.plan?.({ nation: n, kind: 'normandy', foes: [...enemies], target: -1, why: 'noTarget', watched: seen });
+    return false;
+  }
   const free = (id: number): boolean => standing(world, id, n) && !nearOwnFront(world, id, front);
-  return board(world, tp.fleet, tp.room, tp.port, target, free, true);
+  const acted = board(world, tp.fleet, tp.room, tp.port, target, free, true);
+  LANDING_PROBE.plan?.({ nation: n, kind: 'normandy', foes: [...enemies], target, why: acted ? 'order' : 'noArmy', best: score, watched: seen });
+  return acted;
 }
 
 /**
@@ -472,7 +552,10 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
   const ctl = world.cells.controller;
   // Its transports at a port it holds: the most room.
   const tp = transportsAtPort(atPorts);
-  if (!tp) return false;
+  if (!tp) {
+    LANDING_PROBE.plan?.({ nation: n, kind: 'landing', foes: [...foes], target: -1, why: 'noTransports' });
+    return false;
+  }
   const { fleet } = tp;
   // The enemy's port nearest them whose sea is open to n, in the waters they sail (PLAN 7.56b), or
   // an enemy capital on a coast of such a sea (PLAN 7.69).
@@ -481,19 +564,30 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
   const mine = keyAt(world, keys, c.x[fleet]!, c.y[fleet]!);
   let target = -1;
   let best = Infinity;
-  const open = (at: number): number => {
+  const seen: Watched | undefined = LANDING_PROBE.watch && LANDING_PROBE.plan ? {} : undefined;
+  // The km to the water at a cell, or why a landing does not sail there.
+  const reach = (at: number): number | string => {
     const zone = z.zoneOf[at]!;
-    if (zone === 0 || z.closed[zone] === 1 || keys[zone] !== mine) return Infinity;
+    if (zone === 0) return 'land';
+    if (z.closed[zone] === 1) return 'ice';
+    if (keys[zone] !== mine) return 'otherWater';
     const sea = seaHolder(world, zone);
-    if (sea !== 0 && world.wars.atWar(sea, n)) return Infinity;
+    if (sea !== 0 && world.wars.atWar(sea, n)) return 'seaHeld';
     return seaKm(world, c.x[fleet]!, c.y[fleet]!, (at % w) + 0.5, Math.floor(at / w) + 0.5);
+  };
+  const open = (at: number): number => {
+    const d = reach(at);
+    return typeof d === 'number' ? d : Infinity;
   };
   world.ports.forEach((p, i) => {
     const holder = ctl[p.cell]!;
     const at = water[i]!;
-    if (holder === 0 || at < 0 || !foes.has(holder)) return;
-    const d = open(at);
-    if (d < best) [best, target] = [d, p.cell];
+    if (holder === 0 || !foes.has(holder)) return;
+    if (at < 0) return watchFail(seen, holder, 'noWater');
+    const d = reach(at);
+    if (typeof d === 'string') watchFail(seen, holder, d);
+    else watchBest(seen, holder, d, (a, b) => a < b);
+    if (typeof d === 'number' && d < best) [best, target] = [d, p.cell];
   });
   const nb: number[] = [];
   for (const e of [...foes].sort((a, b) => a - b)) {
@@ -505,12 +599,17 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
       if (d < best) [best, target] = [d, cap];
     }
   }
-  if (target < 0) return false;
+  if (target < 0) {
+    LANDING_PROBE.plan?.({ nation: n, kind: 'landing', foes: [...foes], target: -1, why: 'noTarget', watched: seen });
+    return false;
+  }
   // A nation with a front in another war lands with its far army only (PLAN 7.26c3a): those within
   // the deploy range of its own front, on that front's land, are the operational AI's, which
   // marched them back.
   const free = (id: number): boolean => standing(world, id, n) && (front.length === 0 || !nearOwnFront(world, id, front));
-  return board(world, tp.fleet, tp.room, tp.port, target, free);
+  const acted = board(world, tp.fleet, tp.room, tp.port, target, free);
+  LANDING_PROBE.plan?.({ nation: n, kind: 'landing', foes: [...foes], target, why: acted ? 'order' : 'noArmy', best, watched: seen });
+  return acted;
 }
 
 /** Whether land formation `id` of nation `n` is free to be shipped: on land, standing, in no fight, not retreating or going home. */
