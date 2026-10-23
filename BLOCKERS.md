@@ -1416,7 +1416,7 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 - **Left:** PLAN 7.92; then `git apply docs/evidence/7.91/patch`, its pin read again, and 7.91
   committed. No user decision waits on 7.91 itself; 7.92's may (its AT).
 
-## 2026-10-23 — PLAN 7.97's AT missed: American piles 18 → 12, bar 4 (ADR-662 waits on the user)
+## RESOLVED 2026-10-23 (option a, the user's decision: the rule committed, 7.97 closed not done, PLAN 7.98 for the lift) · PLAN 7.97's AT missed: American piles 18 → 12, bar 4 (ADR-662)
 
 - **Bar:** on 821–830 × 20 years American piles of 30+ held 30 days at most 4, engaged per war not below
   0.477 (`docs/evidence/7.97/at.md`).

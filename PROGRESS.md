@@ -22927,3 +22927,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   PLAN 7.98 for the lift (recommended), (b) commit, no task, (c) drop.
 - **No rule;** the pin unchanged (7098dd29).
 - **Next:** 7.97 waits on ADR-662; the loop takes 7.82b.
+
+## 2026-10-23 — ADR-662 a (the user's decision): PLAN 7.97's rule committed, closed not done; PLAN 7.98 filed
+
+- **Rule** (`docs/evidence/7.97/patch`, `sailToMost` in `ai/invasion.ts`): a transport group that gives no
+  order at its port sails for the land and cell of most of its nation's free army; the landing takes a
+  group on a land with free army first. Read at 7.97's AT: American piles 18 → 12 (bar 4), engaged per
+  war 0.477 → 0.480. Unit test `transportsToMost1938`, red without.
+- **Pin:** 7098dd29 → b9bff4bd.
+- **7.98** filed for the lift's size (the ferry's transport want sized to the army waiting); AT American
+  piles 12 → at most 4 on 821–830 × 20 years.
+- 7.82b's read is under way (`docs/evidence/7.82/b.md`, not in this commit); its rule is re-read on
+  this HEAD.
+- **Next:** 7.98.

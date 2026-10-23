@@ -178,7 +178,7 @@ export type LandingPlan = {
   kind: 'landing' | 'normandy';
   foes: number[];
   target: number;
-  why: 'noTransports' | 'noFeed' | 'noEnemies' | 'noTarget' | 'noArmy' | 'order';
+  why: 'noTransports' | 'noFeed' | 'noEnemies' | 'noTarget' | 'noArmy' | 'order' | 'sail';
   best?: number;
   watched?: Record<number, { best: number; failed: Record<string, number> }> | undefined;
 };
@@ -550,12 +550,26 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
   const w = world.cells.w;
   const water = portSeaOf(world);
   const ctl = world.cells.controller;
-  // Its transports at a port it holds: the most room.
-  const tp = transportsAtPort(atPorts);
-  if (!tp) {
+  const all = atPorts();
+  if (all.length === 0) {
     LANDING_PROBE.plan?.({ nation: n, kind: 'landing', foes: [...foes], target: -1, why: 'noTransports' });
     return false;
   }
+  // A nation with a front in another war lands with its far army only (PLAN 7.26c3a): those within
+  // the deploy range of its own front, on that front's land, are the operational AI's, which
+  // marched them back.
+  const free = (id: number): boolean => standing(world, id, n) && (front.length === 0 || !nearOwnFront(world, id, front));
+  const army: number[] = [];
+  world.formations.forEach((id) => {
+    if (c.nation[id] === n && !world.isFleet(id) && !world.isWing(id) && free(id)) army.push(id);
+  });
+  // Its transports at a port it holds: of those on a land where some of its free army stands, the
+  // most room (PLAN 7.97, ADR-662); with none so, the most room. Before, the most room's alone, and
+  // on seed 822 year 5 that group stood at Pearl Harbor, found nobody on Hawaii and gave no order
+  // every week while 32–36 US divisions stood at Washington.
+  const comp = navOf(world).grid.component;
+  const armyLands = new Set(army.map((id) => comp[Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!)]!));
+  const tp = all.find((g) => armyLands.has(comp[world.ports[g.port]!.cell]!)) ?? all[0]!;
   const { fleet } = tp;
   // The enemy's port nearest them whose sea is open to n, in the waters they sail (PLAN 7.56b), or
   // an enemy capital on a coast of such a sea (PLAN 7.69).
@@ -603,13 +617,64 @@ function planLanding(world: World, n: number, foes: ReadonlySet<number>, front: 
     LANDING_PROBE.plan?.({ nation: n, kind: 'landing', foes: [...foes], target: -1, why: 'noTarget', watched: seen });
     return false;
   }
-  // A nation with a front in another war lands with its far army only (PLAN 7.26c3a): those within
-  // the deploy range of its own front, on that front's land, are the operational AI's, which
-  // marched them back.
-  const free = (id: number): boolean => standing(world, id, n) && (front.length === 0 || !nearOwnFront(world, id, front));
   const acted = board(world, tp.fleet, tp.room, tp.port, target, free);
-  LANDING_PROBE.plan?.({ nation: n, kind: 'landing', foes: [...foes], target, why: acted ? 'order' : 'noArmy', best, watched: seen });
-  return acted;
+  // Nobody shipped from where the transports stand: they sail for the land where most of the free
+  // army stands (PLAN 7.97, ADR-662).
+  const sailed = !acted && sailToMost(world, tp.fleet, tp.port, army, passageOf(world, n), { cut: new Set(), budget: FERRY_SEARCHES, tried: [] });
+  LANDING_PROBE.plan?.({ nation: n, kind: 'landing', foes: [...foes], target, why: acted ? 'order' : sailed ? 'sail' : 'noArmy', best, watched: seen });
+  return acted || sailed;
+}
+
+/**
+ * Transport group `fleet` at port `from`, which gave no order there, sails for the land where most of
+ * its nation's free army `army` stands by men, of the lands with a port of the nation's (the lower
+ * land on a tie), when that is not the port's own land: by its formations there, those on the cell where
+ * most of them stand first, then the nearest the port (straight cells), the lower id (`sailToArmy`,
+ * bound by `scan`). PLAN 7.97, ADR-662:
+ * before, a group that found nobody to ship at its port stood there, and the lift came only from the
+ * ports where groups happened to stand (seed 822 year 5: the landing's group at Pearl Harbor every
+ * week, 32–36 US divisions at Washington; 825 year 17: the ferry's 14 groups at Tallinn, Bizerte and
+ * Djibouti refused week after week, 166 free formations in the Americas, one group at Norfolk).
+ * Whether it sailed.
+ */
+function sailToMost(world: World, fleet: number, from: number, army: readonly number[], pass: Passage, scan: SailScan): boolean {
+  const c = world.formations.cols;
+  const w = world.cells.w;
+  const ctl = world.cells.controller;
+  const water = portSeaOf(world);
+  const comp = navOf(world).grid.component;
+  const n = c.nation[fleet]!;
+  const cellOf = (id: number): number => Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
+  const ported = new Set<number>();
+  world.ports.forEach((p, k) => {
+    if (k !== from && water[k]! >= 0 && ctl[p.cell] === n) ported.add(comp[p.cell]!);
+  });
+  const men = new Map<number, number>();
+  for (const id of army) {
+    const l = comp[cellOf(id)]!;
+    if (ported.has(l)) men.set(l, (men.get(l) ?? 0) + c.strength[id]!);
+  }
+  let most = -1;
+  let top = 0;
+  for (const [l, m] of men) if (m > top || (m === top && l < most)) [most, top] = [l, m];
+  const home = world.ports[from]!.cell;
+  if (most < 0 || most === comp[home]) return false;
+  // Its cells there by how many of the army stand on each, the most first.
+  const on = new Map<number, number>();
+  for (const id of army) {
+    const k = cellOf(id);
+    if (comp[k] === most) on.set(k, (on.get(k) ?? 0) + 1);
+  }
+  const by: [number, number, number][] = [];
+  for (const id of army) {
+    const k = cellOf(id);
+    if (comp[k] !== most) continue;
+    let dx = Math.abs((k % w) - (home % w));
+    if (world.settings.loopingMap && dx > w / 2) dx = w - dx;
+    by.push([on.get(k)!, dx + Math.abs(Math.floor(k / w) - Math.floor(home / w)), id]);
+  }
+  by.sort((a, b) => b[0] - a[0] || a[1] - b[1] || a[2] - b[2]);
+  return sailToArmy(world, fleet, from, by.map(([, , id]) => id), pass, scan);
 }
 
 /** Whether land formation `id` of nation `n` is free to be shipped: on land, standing, in no fight, not retreating or going home. */
@@ -932,16 +997,23 @@ function planFerry(world: World, n: number, front: readonly number[], atPortsOf:
       t.way = 'noPort';
       return false;
     }
-    return board(world, fleet, room, port, target, free, false, pass);
+    const was = CORRIDOR_REFUSAL.searches;
+    if (board(world, fleet, room, port, target, free, false, pass)) return true;
+    // Nobody shipped from its port: it sails for the land where most of the free army stands, when
+    // that is not its port's (PLAN 7.97, ADR-662).
+    t.tried = [];
+    const sailed = sailToMost(world, fleet, port, island, pass, { cut, budget: FERRY_SEARCHES - searched - (CORRIDOR_REFUSAL.searches - was), tried: t.tried });
+    if (sailed) t.way = 'toMost';
+    return sailed;
   }
 }
 
-/** One transport group a ferry turn tried (`FERRY_PROBE`): its way (`sail` to the army, `noPort` on a front's land, `board`, `same`: a refusal at its port since the turn's last order taken as its own, PLAN 7.90b) and whether it gave an order. */
+/** One transport group a ferry turn tried (`FERRY_PROBE`): its way (`sail` to the army, `noPort` on a front's land, `board`, `same`: a refusal at its port since the turn's last order taken as its own, PLAN 7.90b; `toMost`: nobody shipped, it sailed for the land of most of the free army, PLAN 7.97) and whether it gave an order. */
 export interface FerryTry {
   fleet: number;
   port: number;
   room: number;
-  way: 'sail' | 'noPort' | 'board' | 'same';
+  way: 'sail' | 'noPort' | 'board' | 'same' | 'toMost';
   acted: boolean;
   /** The route searches it made (`CORRIDOR_REFUSAL.searches`; 0 for `same`, PLAN 7.90b). */
   searches: number;

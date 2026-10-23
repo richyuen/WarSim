@@ -14627,3 +14627,31 @@ Of 7.33 (open in PLAN.md):
     (before 7.79's first rule 0.055; bar 0.1); piles of 30+ held 30 days 32 (before 29; bar 0), 18
     American. Both bars missed: BLOCKERS 2026-10-23. Closed not done (ADR-661 a, the user's decision): the
     American piles are PLAN 7.97; the late engaged figure waits on the next critic report.
+
+<!-- moved 2026-10-23 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.97 The American piles (found at 7.79's AT; R12-B1; ADR-661 a, as ADR-653's (b)): on unseen seeds
+  821–830 × 20 years 32 piles of 30 or more formations of a nation at war held one cell 30 days, 18 of
+  them American (cell (585,364) on 5 seeds, up to 548 days and 107 formations; `docs/evidence/7.79/at.md`):
+  the US home army reaches no front by land, and the ferry lifts from the ports where its transport
+  groups stand, not where the army stands. The army that reaches no front marches to the ports that
+  have a transport group before the lift. AT: on 821–830 × 20 years (`tools/diag/landAt.ts`) American
+  piles of 30+ held 30 days 18 → at most 4, engaged per war in years 2–20 not below 0.477 (HEAD's); a
+  unit test, red without; the ADR; the pin's entry. Then the loop takes 7.82.
+  Read (`docs/evidence/7.97/at.md`): the cause is the transports away from the army, not the army
+  inland; the rule tried (`patch`: a group with no order sails for the land of most of the free army)
+  18 → 12 American piles, engaged 0.480; the bar missed. Closed not done (ADR-662 a, the user's
+  decision, 2026-10-23): the rule committed (`sailToMost`; pin 7098dd29 → b9bff4bd), the lift's size
+  is PLAN 7.98.
