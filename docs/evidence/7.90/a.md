@@ -13,15 +13,17 @@ marching to that port; `L` under way laden; `E` under way empty.
 
 | step | days | read |
 |---|---|---|
-| ordered to the port: sent (day 3656) to aboard (3671) | 14–15 | Norfolk's four groups `W` days 7–21; those sent stood at Baltimore (§3), 12–18 cells off |
+| ordered to the port: sent (day 3656) to aboard (3671) | 14 (mean 18.2 of those landed) | Norfolk's four groups `W` days 7–21; the four aboard marched from the Baltimore pile (§3), 12–18 cells off |
 | aboard to sailing | 0 | aboard and under way the same day |
 | at sea, Norfolk → Bathurst (the Gambia) | 18 | Kuujjuarapik → Bathurst 22; Kuujjuarapik → St. John's 9 |
 | back | **never** | the five groups landed at Bathurst stood there 52–62 days, to the end (§2) |
 | carried a trip | **1 division a group** | room 24,000, a division 12,460 (§4) |
 
-In 90 days 7 divisions landed (4 from Norfolk, 2 from Kuujjuarapik, 1 to St. John's), 0 of them from
-the piles' cells; the ferry gave 21 orders in 12 turns, and after day 30 0.88 a turn. The piles: 60 / 49
-on day 0, 60 / 41 on day 30, 60 / 43 on day 90.
+In 90 days 7 divisions landed (4 from Norfolk, 2 from Kuujjuarapik, 1 to St. John's), 4 of them from
+the Baltimore pile, none from the 60; the ferry gave 21 orders in 12 turns, and after day 30 0.88 a
+turn. 8 more of the Baltimore pile, sent on days 3664 and 3671, reached Norfolk after its groups had
+sailed and stand there with no group to day 90. The piles: 60 / 49 on day 0, 60 / 41 on day 30, 60 / 43
+on day 90 (7.89's 53 is the most seen on the cell in its 30 days; 49 is the save's).
 
 ## 2. Why the groups stand at the far port and are not tried
 
@@ -43,8 +45,9 @@ refused) and refuse every turn; two more refusals (Bathurst's, San Juan's, Bissa
 | 1129 year 10 | 8 | 11.4 | 6.5 | 0.88 | 147–151 |
 | 6421 year 20 | 9 | 30.6 | 26.3 | 0.22 | 75–82 |
 
-Never tried on 1129: Roseau, Pearl Harbor (on every one of the 12 turns; Pearl Harbor's could act:
-Hawaii's three free divisions stand by Hilo and march there) and three of Bathurst's five. On 6421 the
+Never tried on 1129: Roseau, Pearl Harbor (on every one of the 12 turns; Pearl Harbor's might act,
+inferred from `ferryStuck.ts`, not read from a turn: Hawaii's three divisions stand by Hilo, on a
+landmass with no front, and may march there) and three of Bathurst's five. On 6421 the
 refusers are Freetown and Dakar (`board`) and Roseau and Port-of-Spain (`sail`); 6421's groups do sail
 back from their first trip (24 laden 12 days on day 7318, standing 2 days, then home), but none of the
 30 at Norfolk is tried after day 30.
@@ -53,14 +56,15 @@ back from their first trip (24 laden 12 days on day 7318, standing 2 days, then 
 
 - **1129's 49 stand at Baltimore** (746057 at (585, 364), within `AT_PORT_CELLS` of Baltimore at
   (588, 361)): a port of the USA where no group stands. The groups are at Norfolk, 16 cells on, so the
-  ferry sends them marching 14 days. Land formations standing by a port with no group: 61 on day 0,
-  58–68 through the 90 days.
+  ferry sends them marching 14 days, and those that reach Norfolk after its groups sail stand there
+  (8 to day 90). Land formations standing by a port with no group: 61 on day 0, 58–68 through the 90
+  days.
 - **1129's 60 by Chicago** (625163, (523, 305)): the nearest ports are on the Great Lakes (Milwaukee 31
   cells, Chicago 40, Gary 45, Cleveland 77, Buffalo 84), whose water is its own (`waterKeys` 423–425;
   the Atlantic's and Pacific's is 1); the nearest port on the sea, Baltimore, is 121 cells off, about
   60–85 days' march at 1.4–2.1 cells a day. `board` sends the free army nearest the group's port first,
   so none of the 60 is sent while one of the 49 stands nearer.
-- **6421's 61 march to Norfolk** from Quebec and Labrador (about 170 cells): on the march from day 7304,
+- **6421's 61 march to Norfolk** (70 with those standing at a port waiting, `stillMarching`) from Quebec and Labrador (about 170 cells): on the march from day 7304,
   3–15 days still to go on day 7390 (`marchingLeft` in `trip_6421.json`).
 
 ## 4. A division over half a group's room

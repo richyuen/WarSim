@@ -155,7 +155,7 @@ for (let d = 0; d <= days; d++) {
     } else if (marchingToPort(w, id, ports)) {
       marching.add(c.targetCell[id]!);
       if (!t) trips.set(id, { id, from, march: day });
-    } else if (t && t.aboard === undefined) trips.delete(id); // turned back
+    } else if (t && t.aboard === undefined && !ports.some((k) => near(cellOf(id), k))) trips.delete(id); // turned back (one standing at a port waits to board)
   });
   for (const id of tgs) {
     if (!groups.has(id)) groups.set(id, new Array<string>(d).fill('·'));
@@ -169,7 +169,7 @@ for (let d = 0; d <= days; d++) {
     const p = portAt(id);
     const name = p < 0 ? `(${cellOf(id) % W},${Math.floor(cellOf(id) / W)})` : w.ports[p]!.name;
     const row = where.get(id) ?? where.set(id, []).get(id)!;
-    if (row.at(-1)?.split(' ')[1] !== name) row.push(`${day} ${name}`);
+    if (row.at(-1)?.slice(row.at(-1)!.indexOf(' ') + 1) !== name) row.push(`${day} ${name}`);
   }
   prev = cellNow;
   // Land formations standing by a port of the nation where no transport group of its stands.

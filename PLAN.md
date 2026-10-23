@@ -121,7 +121,7 @@ them, are 7.81–7.86. A task each, split when taken up:
       names, each a part with its own AT; no rule: the pin unchanged.
       Measured (`docs/evidence/7.90/a.md`, `tools/diag/ferryTrip.ts`, `ferryStuck.ts`): 14–15 days to
       board, 18 at sea to Bathurst, and no way back (the five groups there stood 52–62 days); one
-      division a group (12,460 in 24,000); 7 landed in 90 days, none from the piles; after day 30 0.88
+      division a group (12,460 in 24,000); 7 landed in 90 days, 4 from the Baltimore pile; after day 30 0.88
       orders a turn (6421 year 20: 0.22). The 49 stand at Baltimore, a port with no group; the 60's
       nearest sea port is 121 cells off (the Great Lakes' water its own). `wantsFerry` false with 131,961
       gold. 7.90's bar on the 60 is out of reach in 30 days by the ferry alone (§6: ~26 groups needed).

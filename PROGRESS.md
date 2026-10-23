@@ -22400,3 +22400,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   with room for two each needed); the parts' bars are scoped to what each mends.
 - **Probe:** `FerryTurn.island` (the free army at the turn's start), read only; the pin unchanged.
 - **Next:** PLAN 7.90b.
+
+## 2026-10-22 — PLAN 7.90a corrected: four of the seven landed came from the Baltimore pile
+
+- **Probe fix:** `ferryTrip.ts` dropped a marcher's trip the day it stood at the port, so its start was
+  read as the port: "none from the piles" (above and in `b32b33bb`) was wrong. Now 4 of the 7 landed are
+  from the Baltimore pile (746057), a march of 14 days; 8 more of it, sent on days 3664 and 3671, reached
+  Norfolk after its groups had sailed and stand there with no group to day 90. The causes and parts
+  7.90b–e are unchanged. `docs/evidence/7.90/a.md` §1–§3 and the 7.90a line amended.
