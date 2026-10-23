@@ -22552,3 +22552,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   the bomb to the German city; (c) open. No rule; the test stands; the pin unchanged (5161de24).
   BLOCKERS entry for 7.91 and 7.90g.
 - **Next:** PLAN 7.90h.
+
+## 2026-10-23 — PLAN 7.90h: the ferry's sail passes over remnants cut off from their ports (ADR-652)
+
+- **Start:** gate green on `9ae9ec70`; critic not due. ADR-651 still the user's (7.91, 7.90g wait on it).
+- **Read** (`docs/evidence/7.90/h.md`, new probe `tools/diag/sailCut.ts` with a probe-only
+  `FerryTry.tried`; `NOPROBE=1` gives the same hash): on 6421 year 20 over 120 days, turns with a sail
+  refused while a free formation marching to a port of its land was not asked: HEAD 1 (day 7387: five
+  ports' groups asked the four remnants on the US enclave in Africa; division 16 by Glasgow never asked).
+- **Rule:** the ferry's sail asks the free army on ported lands past those whose march to all their
+  land's SAIL_TRIES nearest ports is refused (a set of the turn, the later sails pass over them), ending
+  at SAIL_TRIES open marches or the turn's searches left; such a refusal does not mark its port `same`.
+  `board`'s sail unchanged. 1 → 0 (no sail refused in 120 days); day 7387's five sails ordered; landed in
+  90 days 87 either way (orders 104 → 109).
+- **Test:** `strandedFerry1938.test.ts` "a group at a far port sails for the army past four on an
+  enclave" (red without). Related run by hand before the gate: 260 files, 1,319 tests green.
+- **Timing** (`.cache/prof90h/`): invasion AI 0.476 / 0.378 → 0.394 / 0.459 ms, longest 85 / 77 → 82 /
+  100 ms; within the spread.
+- **Pin:** unchanged, 5161de24 (so 7.91's and 7.90g's held pins are not made staler by this commit).
+- **Next:** 7.90's AT read (piles of 30+ on 1129 y10, 6421 y20, 7019 y10; likely missed on the 60 by
+  Chicago, then BLOCKERS), or the next open task.

@@ -384,6 +384,67 @@ describe('the ferry’s way back passes over an army on land with no port (PLAN 
   });
 });
 
+// PLAN 7.90h, ADR-652: a group away from the army sailed for a port by the SAIL_TRIES formations of
+// the free army nearest it on a land with a port of the nation's, whether or not they march to one.
+// Critic run 12, seed 6421 year 20 day 7387: four US remnants on an enclave in Africa, cut off from
+// the USA's six ports there, were searched again by the groups at five ports and refused, while a
+// division a cell from Glasgow was never tried. Here Germany's group stands at San Juan (made
+// Germany's), four German divisions on a one-cell German enclave in Portugal (neutral ground all
+// round), the nearest of its army on Europe; the rest of the army stands in Germany. The group sails
+// for a port in Europe past the four. Before, the four were tried, none marched, and it stood.
+describe('the ferry’s way back passes over an army cut off from its ports (PLAN 7.90h)', () => {
+  it('a group at a far port sails for the army past four on an enclave', () => {
+    const { w, tp, more, europe } = stranded(4);
+    const c = w.formations.cols;
+    const ctl = w.cells.controller;
+    const comp = navOf(w).grid.component;
+    const water = portSeaOf(w);
+    const POR = id('POR');
+    const sj = w.ports.findIndex((p) => p.name === 'San Juan');
+    expect(sj).toBeGreaterThanOrEqual(0);
+    w.cells.controller[w.ports[sj]!.cell] = GER;
+    const sea = water[sj]!;
+    expect(sea).toBeGreaterThanOrEqual(0);
+    [c.x[tp], c.y[tp]] = [(sea % W) + 0.5, Math.floor(sea / W) + 0.5];
+    c.moving[tp] = 0;
+    // A Portuguese cell on Europe with Portuguese ground all round (two cells out), made Germany's.
+    let enclave = -1;
+    for (let k = 0; k < W * H && enclave < 0; k++) {
+      if (ctl[k] !== POR || comp[k] !== europe) continue;
+      const x = k % W;
+      const y = Math.floor(k / W);
+      let inner = true;
+      for (let dy = -2; dy <= 2 && inner; dy++) for (let dx = -2; dx <= 2 && inner; dx++) if (ctl[(y + dy) * W + x + dx] !== POR || comp[(y + dy) * W + x + dx] !== europe) inner = false;
+      if (inner) enclave = k;
+    }
+    expect(enclave).toBeGreaterThanOrEqual(0);
+    ctl[enclave] = GER;
+    for (const f of more) {
+      [c.x[f], c.y[f]] = w.cellPoint(enclave);
+      c.moving[f] = 0;
+      c.engaged[f] = 0;
+      c.retreat[f] = 0;
+      c.home[f] = 0;
+      w.paths.delete(f);
+    }
+    // The four are the nearest San Juan of Germany's land formations on Europe.
+    const from = w.ports[sj]!.cell;
+    const steps = (k: number): number => Math.abs((k % W) - (from % W)) + Math.abs(Math.floor(k / W) - Math.floor(from / W));
+    w.formations.forEach((f) => {
+      if (c.nation[f] !== GER || w.isFleet(f) || w.isWing(f) || w.offLand(f) || more.includes(f)) return;
+      const k = Math.floor(c.y[f]!) * W + Math.floor(c.x[f]!);
+      if (comp[k] === europe) expect(steps(k)).toBeGreaterThan(steps(enclave));
+    });
+    w.settings.aiEnabled = true;
+    invasionAi(w);
+    w.settings.aiEnabled = false;
+    // Under way for a port of Germany's in Europe.
+    expect(c.moving[tp]).toBe(1);
+    const path = w.paths.get(tp);
+    expect(path).toBeDefined();
+  });
+});
+
 // PLAN 7.90e, ADR-648: the economic AI's ferry want (`wantsFerry`, ADR-614) counted only the army on a
 // land with a port of the nation's and no front cell, not the army on a front's land that reaches none
 // of its front cells (the ferry's since PLAN 7.79c, ADR-636). Critic run 12, 1129 year 10: the USA, ~150

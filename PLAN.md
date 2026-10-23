@@ -210,7 +210,7 @@ them, are 7.81–7.86. A task each, split when taken up:
       and pin f9344f0e in the patch. The gate red on `deploy.test.ts`'s day-60 share (0.887 < 0.9) on the
       new history, a deploy cause: waits on PLAN 7.91 (itself on ADR-651), then applied (its `src/` and
       `tests/unit/` parts; the DECISIONS and pin hunks by hand, the pin read again) and committed.
-    - [ ] 7.90h The sail to cut-off remnants (found at 7.90f, `docs/evidence/7.90/c.md` "7.90f: the read"): a
+    - [x] 7.90h The sail to cut-off remnants (found at 7.90f, `docs/evidence/7.90/c.md` "7.90f: the read"): a
       group away from the army sails for the four nearest of the free army on lands with a port of the
       nation's (7.90c's rule), whether or not they march to one. On 6421 year 20 day 7387 those four are
       the remnants on landmass 56 cut off from all six US ports there: the groups at Norfolk, Baltimore,
@@ -221,6 +221,10 @@ them, are 7.81–7.86. A task each, split when taken up:
       refused while a free formation that marches to a port of its land was not tried (HEAD: 1 in 90
       days, day 7387; the 120 read first) → 0; a unit test (red without) with a rule; the ADR; the pin's
       entry. One division: it does not move 7.90's bar on the piles.
+      Done (ADR-652, `docs/evidence/7.90/h.md`, `tools/diag/sailCut.ts`): the ferry's sail asks past the
+      formations cut off from their land's ports, kept in a set of the turn, within the turn's searches
+      left; HEAD 1 in 120 days → 0 (no sail refused), day 7387's five sails ordered; landed 87 either
+      way. The pin unchanged (5161de24).
     Then 7.90's AT, read after 7.90b–h (a.md §6: on the 60 it is likely missed; that goes to BLOCKERS).
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21

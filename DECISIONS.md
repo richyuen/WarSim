@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-652 · 2026-10-23 · accepted — The ferry's sail to the army passes over formations cut off from their ports (PLAN 7.90h; amends ADR-646)
+
+- **Context** (`docs/evidence/7.90/c.md` "7.90f: the read", `h.md`). A transport group away from the free
+  army sails for it by the SAIL_TRIES (4) nearest of the free army on lands with a port of the nation's
+  (ADR-646), whether or not they march to one. Critic run 12, 6421 year 20 day 7387: the four were US
+  remnants on an enclave in Africa cut off from the USA's six ports there, and the groups at five ports
+  each asked them again and were refused, while division 16, a cell from Glasgow, was never asked.
+- **Decision** (`ai/invasion.ts`, `planFerry`, `sailToArmy`): the ferry's sail asks the free army on
+  ported lands nearest first; one whose march to all of its land's SAIL_TRIES nearest ports is refused
+  goes into a set of the turn (`cut`, never kept) that the turn's later sails pass over; the sail ends at
+  SAIL_TRIES formations whose march was open, or once its route searches reach what the turn has left of
+  FERRY_SEARCHES (asked between formations: up to SAIL_TRIES − 1 over). A sail that found new formations
+  cut off does not mark its port refused for the groups after it there (ADR-645's `same`): they ask past
+  them. The board's sail to the army (`board`, its nearest unable to march to its port) is unchanged.
+- **Read** (`h.md`, `tools/diag/sailCut.ts`, 120 days): turns with a sail refused while a free formation
+  marching to a port of its land was not asked, HEAD 1 (day 7387) → 0 (no sail refused); on day 7387 the
+  groups at Norfolk and Baltimore sail (5 orders, HEAD 0). Landed in 90 days 87 either way, orders 104 →
+  109.
+- **Timing** (`.cache/prof90h/`, pairs on separate P-cores, swapped, a year from the save): invasion AI a
+  tick 0.476 / 0.378 → 0.394 / 0.459 ms, longest call 85 / 77 → 82 / 100 ms: within the pairs' spread.
+- **Test.** `strandedFerry1938.test.ts`, "a group at a far port sails for the army past four on an
+  enclave"; red without.
+- **Pin.** Unchanged (5161de24): seed 99's first year is hash for hash HEAD's.
+
 ### ADR-651 · 2026-10-22 · proposed (the user's decision) — An overrun nation's warhead on the enemy side's densest army before its ally, or on the nation overrunning it (PLAN 7.92)
 
 - **Context** (PLAN 7.91, 7.92; `docs/evidence/7.92/measure.md`). With 7.91's deploy rule

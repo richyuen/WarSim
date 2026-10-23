@@ -631,6 +631,9 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
   let acted = false;
   let searched = 0;
   const refusedAt = new Set<number>();
+  // The free formations a sail found marching to none of their land's ports this turn (PLAN 7.90h,
+  // ADR-652): the sails after it pass over them. Of the turn only, never kept.
+  const cut = new Set<number>();
   for (const g of groups) {
     if (men <= 0 || searched >= FERRY_SEARCHES) break;
     const t: FerryTry = { fleet: g.fleet, port: g.port, room: g.room, way: 'board', acted: false, searches: 0 };
@@ -640,6 +643,7 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
       continue;
     }
     const was = CORRIDOR_REFUSAL.searches;
+    const cutWas = cut.size;
     t.acted = ferryGroup(g.fleet, g.room, g.port, t);
     t.searches = CORRIDOR_REFUSAL.searches - was;
     if (t.acted) {
@@ -647,7 +651,9 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
       men -= g.room;
       refusedAt.clear();
     } else {
-      refusedAt.add(g.port);
+      // A sail that found formations cut off leaves its port open: the next group there sails
+      // for the army past them (PLAN 7.90h).
+      if (cut.size === cutWas) refusedAt.add(g.port);
       searched += t.searches;
     }
   }
@@ -676,7 +682,13 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
         return [dx + Math.abs(Math.floor(k / w) - Math.floor(from / w)), id];
       });
       by.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-      return sailToArmy(world, fleet, port, by.slice(0, SAIL_TRIES).map(([, id]) => id), pass);
+      // The nearest that march to a port of their land, past those cut off from every one (PLAN
+      // 7.90h, ADR-652), within the turn's searches left. Before, the SAIL_TRIES nearest whatever
+      // their march, and on critic run 12, 6421 year 20 day 7387, four remnants on a US enclave in
+      // Africa cut off from the USA's six ports there were searched again by the groups at five
+      // ports, all refused, while division 16, a cell from Glasgow, was never tried.
+      t.tried = [];
+      return sailToArmy(world, fleet, port, by.map(([, id]) => id), pass, { cut, budget: FERRY_SEARCHES - searched, tried: t.tried });
     }
     // Its port on a front's land nearest them by sea.
     const mine = keyAt(world, keys, c.x[fleet]!, c.y[fleet]!);
@@ -763,6 +775,8 @@ export interface FerryTry {
   acted: boolean;
   /** The route searches it made (`CORRIDOR_REFUSAL.searches`; 0 for `same`, PLAN 7.90b). */
   searches: number;
+  /** For a `sail`, the formations whose ports it tried (PLAN 7.90h; read only). */
+  tried?: number[];
 }
 /** One ferry turn (`FERRY_PROBE`): the nation, its army free for the ferry, its groups standing at its ports, and those tried. */
 export interface FerryTurn {
@@ -867,7 +881,10 @@ export const SAIL_TRIES = 4;
  * The route searches (`CORRIDOR_REFUSAL.searches`) the refusals of a ferry turn may make before it
  * ends (PLAN 7.90b, ADR-645; it replaced ADR-642's SAIL_TRIES refusing groups). A refusal's worst is
  * a march refused and a sail to the army refused (1 + SAIL_TRIES × SAIL_TRIES searches, up to about
- * 10 ms each, PLAN 7.7), so the turn's refusals cost about what ADR-642's four groups' could.
+ * 10 ms each, PLAN 7.7), so the turn's refusals cost about what ADR-642's four groups' could. The
+ * ferry's sail to the army scans past formations cut off from their ports (PLAN 7.90h, ADR-652) with
+ * the turn's searches left as its bound, so one refusal may take them all (and up to SAIL_TRIES − 1
+ * over: the bound is asked between formations).
  */
 export const FERRY_SEARCHES = 4 * (1 + SAIL_TRIES * SAIL_TRIES);
 
@@ -890,13 +907,18 @@ function marches(world: World, id: number, cell: number, pass: Passage): boolean
  * exclave (seed 4513 year 10: Germany's at Kotor, 7247 and 8693: Annaba, neutral ground all round):
  * its army could not walk there, and nobody was sent, every week. Whether it sailed.
  */
-function sailToArmy(world: World, fleet: number, from: number, ids: readonly number[], pass: Passage): boolean {
+function sailToArmy(world: World, fleet: number, from: number, ids: readonly number[], pass: Passage, scan?: SailScan): boolean {
   const c = world.formations.cols;
   const w = world.cells.w;
   const ctl = world.cells.controller;
   const water = portSeaOf(world);
   const comp = navOf(world).grid.component;
+  const start = CORRIDOR_REFUSAL.searches;
+  let open = 0;
   for (const id of ids) {
+    if (scan !== undefined && (open >= SAIL_TRIES || CORRIDOR_REFUSAL.searches - start >= scan.budget)) break;
+    if (scan?.cut.has(id)) continue;
+    scan?.tried.push(id);
     const n = c.nation[id]!;
     const at = Math.floor(c.y[id]!) * w + Math.floor(c.x[id]!);
     const ports: [number, number][] = [];
@@ -907,13 +929,30 @@ function sailToArmy(world: World, fleet: number, from: number, ids: readonly num
       ports.push([dx + Math.abs(Math.floor(p.cell / w) - Math.floor(at / w)), k]);
     });
     ports.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    let marched = false;
     for (const [, k] of ports.slice(0, SAIL_TRIES)) {
       if (!marches(world, id, world.ports[k]!.cell, pass)) continue;
+      marched = true;
       const sea = water[k]!;
       if (orderSail(world, fleet, (sea % w) + 0.5, Math.floor(sea / w) + 0.5)) return true;
     }
+    if (marched) open++;
+    else scan?.cut.add(id);
   }
   return false;
+}
+
+/**
+ * A ferry's sail to the army over its whole free army (PLAN 7.90h, ADR-652): the formations in
+ * `cut` (found marching to none of their land's SAIL_TRIES nearest ports earlier in the turn) are
+ * passed over and those found so are added; it ends at SAIL_TRIES formations whose march was open
+ * (their ports' ways by sea refused) or once its route searches reach `budget`. `tried`: those it
+ * asked, for `FERRY_PROBE`.
+ */
+interface SailScan {
+  cut: Set<number>;
+  budget: number;
+  tried: number[];
 }
 
 /**
