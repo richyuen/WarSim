@@ -197,7 +197,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   across the sea in their windows; each gives its war's nations a truce with every nation outside it.
 - **Pin:** b9bff4bd → 7c2e4700.
 
-### ADR-669 · 2026-10-23 · proposed (the user's decision) — The remnant at war: the landing rule adds orders, not landings (PLAN 7.82c's AT missed)
+### ADR-669 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The remnant at war: the landing rule adds orders, not landings (PLAN 7.82c's AT missed)
 
 - **Context** (`docs/evidence/7.82/c/at.md`). PLAN 7.82c (ADR-665 b): ADR-664's candidate (`b.patch`: a
   target on a land where the planner's enemies stand with at most 2 land formations pulled ×3), judged

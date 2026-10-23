@@ -23065,3 +23065,9 @@ No rule changed and nothing on screen changed. One task came out of it.
   outside it, so the case stays one war; assertions unchanged, the Iceland history as HEAD's (day 1, day 5).
 - **Pin:** b9bff4bd → 7c2e4700.
 - **Next:** 7.82's AT on 851–860 × 30 years; its battle-share clause is at risk (share down on both seeds read).
+
+## 2026-10-23 — ADR-669 a (the user's decision; documents)
+
+- **7.82c** closed not done: no rule; ADR-664's patch stays a candidate in `docs/evidence/7.82/`.
+- No rule; the pin unchanged (7c2e4700).
+- **Next:** 7.82's AT on 851–860 × 30 years (running).

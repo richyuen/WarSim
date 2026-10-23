@@ -74,7 +74,7 @@ them, are 7.81–7.86. A task each, split when taken up:
   7.82's AT read (`docs/evidence/7.82/at.md`, 841–850 × 30 years): stasis over 15 years on 3 of 10 (843
   19: Denmark at war, untouched; 844 17 and 845 19: Denmark, Canada, the USA at peace), battle share
   1.82 %. Missed; ADR-665 b (the user's decision, 2026-10-23): two parts, then the AT again on 851–860.
-    - [ ] 7.82c The remnant at war (ADR-665 b; 843: Denmark at war 315 days a year, nothing engaged, its
+    - [x] 7.82c The remnant at war (ADR-665 b; 843: Denmark at war 315 days a year, nothing engaged, its
       cells rising 35k → 43k over a 19-year span): the candidate of ADR-664 (`docs/evidence/7.82/b.patch`,
       a target on a land where the planner's enemies stand with at most 2 land formations pulled ×3; its
       unit test `b/landingEmptyLand1938.test.ts.txt`). AT: from HEAD's save of 843 at year 11, 10 years
@@ -84,7 +84,8 @@ them, are 7.81–7.86. A task each, split when taken up:
       ADR; the pin's entry.
       Missed (`docs/evidence/7.82/c/at.md`): Denmark −2.3k cells with the rule, +4.0k without; landed on
       20 times with, 22 without (orders 19 → 65; 82–95 % of the plans on it end with no transports);
-      engaged per war 0.421. No rule; BLOCKERS; ADR-669 to the user. The loop takes 7.82d.
+      engaged per war 0.421. No rule. Closed not done (2026-10-23, the user's decision: ADR-669 a); the
+      patch stays a candidate in the evidence.
     - [x] 7.82d The holders at peace (ADR-665 b; 844, 845: Denmark, Canada and the USA at war 12–29 days a
       year and fixed to 2 % of their cells for 17–19 years). Read first on 845 over its span (years 8–26):
       which nations could reach each of them (a land front, a port in range of their transports), how the
