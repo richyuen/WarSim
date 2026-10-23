@@ -22685,3 +22685,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   after (50 Japanese, 16 American, 214 m/px); `carrierStrikeRow1938.spec.ts` green (2251, 376 m/px, its
   struck ships and bombs). Looked at: both fleets in the frame, their counters clear of the edges.
 - **Next:** 7.84b (the wing in the air through the strike's cycle).
+
+## 2026-10-23 — PLAN 7.84b: a carrier's wing in the air through its strike's cycle (ADR-655)
+
+- **Start:** gate green on `ccbb3623`.
+- **Cause:** `carrierStrikes` drew each strike as a flight out, over the target at the strike's hour and
+  straight back (`over` 0). On 8693, 250 km at 380 km/h, that is 1.3 hours in the air of every 4. The
+  critic's click at hour 330 fell in the gap.
+- **Change:** each strike's flight has the cycle's hours left over after the flights out and back as hours
+  over its target (`4 − 2 × hours`, at least 0). Every strike whose flight is in the air in the hour the
+  page plays is listed (the cycles before `last` too). View only: the pin unchanged (5161de24).
+- **AT:** `carrierStrikeView1938.spec.ts` with its plane checks: Japanese sorties on the screen from the
+  row and at hours 327–330 (2, 2, 2, 2; HEAD 0, 2, 0, 0). `carrierStrikes1938.test.ts` red on HEAD ("no
+  flight in the air at hour 44.75"), green after: a flight in the air at every quarter-hour while the
+  strike stands, including times the old flights left empty. Its old check (a flight drawn ends no
+  sooner than the hour played) now counts the hours over. Evidence `docs/evidence/7.84/a-strike-view-8693.png`:
+  the planes over the American flotillas, the Japanese fleet in the frame.
+- **7.85** shares the case ("a carrier strike shows no aircraft"); that line of it is met here.
+- **Gate:** green; `scenario1938.test.ts`'s build-time check read 2,056 ms against 2,000 in the parallel run, then green alone (the gate's rerun); view-only change.
+- **Next:** 7.84c (late sea battles: read where the fall is first).

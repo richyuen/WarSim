@@ -94,4 +94,6 @@ test("a carrier strike's row shows the carrier's ships, the struck ships and the
   console.log(`seed 8693: from the row at ${first.m.toFixed(0)} m/px, ${first.striker} Japanese ships, ${first.struck} American and ${first.planes} Japanese sorties on the screen; then ${JSON.stringify(hours)}`);
   expect(first.striker, "the carrier's fleet's ships on the screen from the row").toBeGreaterThan(0);
   expect(first.struck, 'the struck ships on the screen from the row').toBeGreaterThan(0);
+  expect(first.planes, "the carrier's planes on the screen from the row").toBeGreaterThan(0);
+  for (const r of hours) expect(r.planes, `the carrier's planes on the screen at hour ${r.hour}`).toBeGreaterThan(0);
 });

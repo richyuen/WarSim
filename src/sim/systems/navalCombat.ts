@@ -840,9 +840,10 @@ export function navalCombatSystem(world: World): void {
  * stored, as `sortieAt` is. A carrier's wing in reach of its battle's range strikes once in
  * CARRIER_CYCLE hours (`navalCombatSystem`), at once; its flight is drawn as a sortie that is over
  * its target at that hour: from its fleet to the nearest enemy fleet of the battle with a ship on
- * the surface, at its template's speed, and back. The strikes of the cycle's hour just gone (the
- * flight home) and of the next (the flight out). A battle's first strike may come after the hour
- * just gone: its flight home is drawn all the same (the record keeps no first hour). Reads only.
+ * the surface, at its template's speed, over it until the next strike's flight is (PLAN 7.84b),
+ * and back. Every strike whose flight is in the air in the hour before the tick or at it. A
+ * battle's first strike may come after the hour just gone: its flight home is drawn all the same
+ * (the record keeps no first hour). Reads only.
  */
 export function carrierStrikes(world: World): { wing: number; nation: number; sortie: Sortie }[] {
   const out: { wing: number; nation: number; sortie: Sortie }[] = [];
@@ -870,9 +871,16 @@ export function carrierStrikes(world: World): { wing: number; nation: number; so
         const kmh = rules.templates[c.template[wing]!]?.speedKmh ?? 0;
         if (kmh <= 0 || CARRIER_SPOT_SHARE * wingRange(world, wing) < km) continue;
         const hours = km / kmh;
-        for (const strike of [last, last + CARRIER_CYCLE]) {
-          if (strike - hours > world.tick || strike + hours < world.tick - 1) continue;
-          out.push({ wing, nation: c.nation[wing]!, sortie: { bx: c.x[sf]!, by: c.y[sf]!, tx: c.x[target]!, ty: c.y[target]!, launch: strike - hours, kmh, km, over: 0 } });
+        // Over the target from its strike until the next flight's comes (PLAN 7.84b): the cycle's
+        // hours the flights out and back leave. With none (`over` 0) a wing 180 km off was in the
+        // air 1.2 hours of every 4, and a row clicked between showed no plane.
+        const over = Math.max(0, CARRIER_CYCLE - 2 * hours);
+        const back = Math.ceil((hours + over + 1) / CARRIER_CYCLE);
+        const ahead = Math.ceil(hours / CARRIER_CYCLE);
+        for (let k = -back; k <= ahead; k++) {
+          const strike = last + k * CARRIER_CYCLE;
+          if (strike - hours > world.tick || strike + over + hours <= world.tick - 1) continue;
+          out.push({ wing, nation: c.nation[wing]!, sortie: { bx: c.x[sf]!, by: c.y[sf]!, tx: c.x[target]!, ty: c.y[target]!, launch: strike - hours, kmh, km, over } });
         }
       }
     }

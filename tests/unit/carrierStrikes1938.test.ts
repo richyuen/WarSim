@@ -3,9 +3,9 @@ import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { transportRoom } from '../../src/sim/systems/amphibious';
 import { destroyFormation } from '../../src/sim/systems/elements';
-import { CARRIER_CYCLE, carrierStrikes } from '../../src/sim/systems/navalCombat';
+import { CARRIER_CYCLE, carrierStrikes, strikeTarget } from '../../src/sim/systems/navalCombat';
 import { fleetPower } from '../../src/sim/systems/seaControl';
-import { sortieAt } from '../../src/sim/systems/sorties';
+import { Leg, sortieAt } from '../../src/sim/systems/sorties';
 import { assets1938 } from '../helpers/earth';
 
 // PLAN 4.12b (the critic's R5-B4): a carrier's strike is drawn as a sortie. The sim strikes at
@@ -45,14 +45,39 @@ describe('a carrier\'s strikes as flights (PLAN 4.12b)', () => {
       const target = battle.fleets.find((f) => c.x[f] === s.tx && c.y[f] === s.ty)!;
       expect(target).toBeDefined();
       expect(w.wars.atWar(nation, c.nation[target]!)).toBe(true);
-      // Over it at a strike's hour, and gone home before the next but one.
+      // Over it at a strike's hour, and in the air in the hour the page plays: home no sooner
+      // than its start (since PLAN 7.84b, over its target till the next flight's strike).
       const strike = s.launch + s.km / s.kmh;
       expect(Math.abs(strike - Math.round(strike))).toBeLessThan(1e-6);
       expect(Math.round(strike) % CARRIER_CYCLE).toBe(0);
       const over = sortieAt(s, strike, w.cells.w);
       expect(Math.hypot(over.x - s.tx, over.y - s.ty)).toBeLessThan(1e-6);
-      expect(strike + s.km / s.kmh).toBeGreaterThanOrEqual(w.tick - 1);
+      expect(s.over).toBeCloseTo(Math.max(0, CARRIER_CYCLE - (2 * s.km) / s.kmh), 9);
+      expect(strike + s.over + s.km / s.kmh).toBeGreaterThan(w.tick - 1);
     }
     console.log(`hour ${hour}: ${flights.length} flights of carriers' strikes, the first ${flights[0]!.sortie.km.toFixed(0)} km at ${flights[0]!.sortie.kmh} km/h`);
+    // PLAN 7.84b (critic run 12: a strike's row clicked showed no plane): while the carriers strike,
+    // their wing is in the air at every time the page plays (the hour before the tick), not in the
+    // hour or so about each strike alone: over the target the hours its flights leave of the cycle.
+    let held = 0;
+    let gaps = 0;
+    for (let h = 0; h < 3 * CARRIER_CYCLE; h++) {
+      let fl: ReturnType<typeof carrierStrikes> = [];
+      let striking = false;
+      sim.step(1, (w) => {
+        fl = carrierStrikes(w);
+        striking = w.seaBattles.some((b) => strikeTarget(w, b.fleets) !== null);
+      });
+      if (!striking) break;
+      for (let q = 0; q <= 4; q++) {
+        const t = sim.world.tick - 1 + q / 4;
+        expect(fl.some((f) => sortieAt(f.sortie, t, sim.world.cells.w).leg !== Leg.Home), `a carrier's flight in the air at hour ${t}`).toBe(true);
+        // The times the flights out and back alone (no hours over the target) leave empty.
+        if (!fl.some((f) => sortieAt({ ...f.sortie, over: 0 }, t, sim.world.cells.w).leg !== Leg.Home)) gaps++;
+      }
+      held++;
+    }
+    expect(held, 'hours of carriers striking after the first flight').toBeGreaterThanOrEqual(2);
+    expect(gaps, "times between two strikes' flights out and back among them").toBeGreaterThan(0);
   });
 });

@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-655 · 2026-10-23 · accepted — A carrier's wing drawn over its target between its strikes (PLAN 7.84b)
+
+- **Context.** The sim strikes once in `CARRIER_CYCLE` (4) hours, at once (PLAN 4.12b). The page drew
+  each strike as a flight out, over the target at the strike's hour, and straight back (`over` 0). At
+  the critic's 8693 (250 km at 380 km/h) the wing was in the air 1.3 hours of every 4. A strike's row
+  clicked between flights showed no plane (critic run 12, naval 7).
+- **Decision.** `carrierStrikes` gives each strike's flight the cycle's hours that its flights out and
+  back leave (`over` = 4 − 2 × hours out, at least 0). The wing circles the struck fleet until the next
+  flight arrives, so it is in the air for the whole time its carrier strikes. This is the page's
+  derivation alone. The damage still lands at the strike's hour, and its bombs are drawn then. A flight
+  over 2 hours out has no hours over its target, and the flights overlap as before.
+- **Why not** draw the planes only at the carrier: the critic's case is the strike seen on the struck
+  ships, and a wing over its target between hits reads as the strike it is.
+- **Consequences.** View only: the pin is unchanged (5161de24).
+
 ### ADR-654 · 2026-10-23 · proposed (the user's decision) — The tick budget against a busier world (PLAN 7.83's AT missed)
 
 - **Context** (`docs/evidence/7.83/at.md`). PLAN 7.83's AT is seed 99 × 5 years, alone on 0xFFFF:
