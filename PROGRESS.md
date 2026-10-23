@@ -22873,7 +22873,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   30+ held 30 days 32 on all 10 seeds (bar 0; before 29), 18 American (cell (585,364) on 5 seeds, up to
   548 days, the largest 107).
 - **Verdict:** 7.79 not ticked; BLOCKERS entry; ADR-661 proposed: (a) closed not done + PLAN 7.97 for the
-  American piles, (b) closed not done, judged by the next critic report (recommended), (c) re-scoped to
+  American piles (recommended, per ADR-653 a), (b) closed not done, judged by the next critic report, (c) re-scoped to
   the rise and ticked. 7.79 counts 6 commits by its number (plus 7.88–7.91).
 - **No rule;** the pin unchanged (7098dd29).
 - **Next:** 7.79 waits on ADR-661; the loop takes 7.82 (re-read on this HEAD first).

@@ -11,8 +11,9 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What moved** (`docs/evidence/7.79/at.md`, seeds 821–830, `landAt.ts`): against the tree before 7.79's
   first rule on the same seeds, late engaged per war 0.295 → 0.477, the ratio 0.055 → 0.074 (bar 0.1);
   piles held 30 days 29 → 32, 18 of them American (one cell on 5 seeds, up to 548 days).
-- **What is left:** the user's (ADR-661): (a) 7.79 closed not done, PLAN 7.97 for the American piles;
-  (b) 7.79 closed not done, judged by the next critic report (recommended); (c) the bar re-scoped to the
+- **What is left:** the user's (ADR-661): (a) 7.79 closed not done, PLAN 7.97 for the American piles
+  (recommended, as ADR-653 a set for piles built from 1938); (b) 7.79 closed not done, judged by the next
+  critic report; (c) the bar re-scoped to the
   rise, 7.79 ticked.
 
 ### PLAN 7.83c: supply's beach layer −7 %, short of `dd3b730` + 0.03 (2026-10-23)

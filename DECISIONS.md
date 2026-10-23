@@ -186,10 +186,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     critic report (7.5); the loop takes 7.82.
   - **(c)** 7.79 ticked on what moved: the bar re-scoped to the rise against the pre-7.79 tree on the
     same seeds (late engaged per war ×1.62, the ratio ×1.35), the piles bar dropped.
-- **Recommended: (b).** 7.79 has had four parts and three follow-up tasks (7.88–7.91), and the fronts
-  moved a third; a further task on the American piles (ADR-653 named it if piles formed) answers 18 of 32,
-  not the European ones, and not the engaged bar. The critic, run on this HEAD, judges whether the late
-  war it asked for is now there. (a) if the user wants the home-army piles worked on first.
+- **Recommended: (a).** ADR-653 a (the user's) filed a task for the piles if HEAD's rules build them from
+  1938, and they do; PROMPT step 8 files a found cause as a numbered task. The American home army is that
+  cause (18 of 32, one cell on half the seeds). The engaged bar has no measured cause beyond 7.79's parts
+  (four, and 7.88–7.91 after them) and waits on the critic. (b) departs from ADR-653's consequence: the
+  piles then go to the critic unworked.
 - **Consequences:** no rule; the pin unchanged (7098dd29).
 
 ### ADR-660 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The volleys are mostly fight-for-life strikes: R7-B1's France against run 12's volleys (PLAN 7.96c's AT missed)
