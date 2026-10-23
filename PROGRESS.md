@@ -22512,3 +22512,27 @@ No rule changed and nothing on screen changed. One task came out of it.
   such pair. A deploy cause, as at ADR-132. Not committed; BLOCKERS entry.
 - **Filed:** PLAN 7.91, before 7.90: the deploy case, then 7.90g from its patch.
 - **Next:** PLAN 7.91.
+
+## 2026-10-22 — PLAN 7.91 ruled and held for a nuclear test; PLAN 7.92 filed
+
+- **Start:** gate green on `f7a029db`; critic not due.
+- **Cause** (`docs/evidence/7.91/case.md`): a block coming up to an enemy's block counted its lines and
+  files with every formation nearer that enemy, from any side (ADR-133's "not done"). With 7.90g's
+  patch, six Chinese divisions from the south-west of Japan's 393 took files 0 to 5, and the ten from
+  the south-east began at file 5 and stood 0.69 to 1 cell to the side of their line, across the view's
+  short axis.
+- **Rule (held in `docs/evidence/7.91/patch`, ADR-650):** lines and files counted with those from within
+  60° of the block's own side; the one the enemy faces stays where it was. `deploy.test.ts` day 60 in one
+  view: HEAD 69/70 → 96/99, g.patch 86/97 → 72/75; 0 blocks on another. New test "a stack that comes to an
+  enemy from another side than a nearer one counts its own files" red without (0.87 cells against 0.72).
+  Pin 5161de24 → 41d60509 (the air AI's patrols and the fires read the blocks).
+- **Not committed:** the whole unit suite 1870 of 1871: `nukePoland1938` seed 5591's first burst falls
+  on an Italian army on the Alps front (64,445 men, u 0.027, day 21) where HEAD's fell on a German city
+  (9,924 men, 334,000 people, u 0.081, day 23). On HEAD too that Italian army is Poland's best place on
+  days 12–21 (`nukeCase.ts`): the place's theatre (enemy men within 1,000 km of it) takes in the German
+  army in Poland, so ADR-492's floor never binds. A nuclear weighing cause; no deploy variant tried to
+  move the seed. New probe `tools/diag/nukePoland5591.ts` (the test's set-up, the decision and burst
+  with who stands there).
+- **Filed:** PLAN 7.92 before 7.91. Order now 7.92, 7.91 (its pin read again), 7.90g (its `src/` and
+  `tests/unit/` hunks; DECISIONS and pin by hand). Both held pins are stale by construction.
+- **Next:** PLAN 7.92.

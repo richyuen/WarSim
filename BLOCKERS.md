@@ -1286,3 +1286,21 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
   ferry's commit. The test is not narrowed.
 - **Left:** PLAN 7.91 mends the deploy case; then `git apply docs/evidence/7.90/g.patch` and commit
   7.90g. No user decision waits.
+- **2026-10-22:** 7.91's rule mends it (g.patch + rule: 72 of 75, 0.96) but is held itself, on PLAN 7.92
+  (entry below). The order is now 7.92, 7.91, 7.90g; g.patch's DECISIONS and pin hunks will not apply
+  after 7.91 (apply its `src/` and `tests/unit/` parts, the rest by hand, its pin read again).
+
+## 2026-10-22 — PLAN 7.91 waits on PLAN 7.92 (a nuclear test on a new history)
+
+- **What:** 7.91's rule (a stack counts its lines and files with those from its own side, ADR-650)
+  meets its AT (`docs/evidence/7.91/case.md`): `deploy.test.ts` green on HEAD (96 of 99) and with
+  7.90g's patch (72 of 75), its unit test red without. The whole unit suite with it: 1870 of 1871.
+  `nukePoland1938.test.ts` seed 5591 red: Poland's first burst falls on an Italian army on the Alps
+  front (64,445 men, u 0.027, day 21) where HEAD's fell on a German city (9,924 men, 334,000 people,
+  u 0.081, day 23). On HEAD too the Italian army is Poland's best place on days 12–21: a weighing
+  cause (a place's theatre is the enemy's men within 1,000 km of it, and here takes in the German
+  army in Poland, so ADR-492's floor never binds), not the deploy's.
+- **Tried:** read both rules' decisions (`tools/diag/nukePoland5591.ts`, `nukeCase.ts`). No deploy
+  variant tried to move the seed: that would take the luck, not the cause. The test is not narrowed.
+- **Left:** PLAN 7.92; then `git apply docs/evidence/7.91/patch`, its pin read again, and 7.91
+  committed. No user decision waits on 7.91 itself; 7.92's may (its AT).

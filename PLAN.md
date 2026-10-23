@@ -106,6 +106,23 @@ them, are 7.81–7.86. A task each, split when taken up:
     Then, after PLAN 7.88, 7.89 and 7.90 (7.87 dropped, ADR-635 b), 7.79's AT on 10 unseen seeds × 20
     years (HEAD's figure read on them first).
 
+- [ ] 7.92 A far army of the enemy side weighed as the one overrunning the striker (found at 7.91,
+  `docs/evidence/7.91/case.md`; 7.18j's case again): with 7.91's rule (`docs/evidence/7.91/patch`)
+  `nukePoland1938` seed 5591 is red: Poland's first burst falls on an Italian army on the Alps front of
+  Italy's war on France, about 1,000 km from Warsaw (64,445 men, u 0.027, day 21), where HEAD's fell on a
+  German city (9,924 men and 334,000 people, u 0.081, day 23). On HEAD too the Italian army is Poland's
+  best place on days 12–21 (`nukeCase.ts 5591 POL GER 10 26 bomber`). A place's men are weighed against
+  its theatre, the enemy side's men within FRONT_KM (1,000 km) of the place (PLAN 7.18c), which there
+  takes in the German army in Poland (1.08 million), so THEATRE_FLOOR (ADR-492) never binds. Measure
+  first, on the test's three seeds with 7.91's patch and on HEAD: each day's best place in reach, its
+  men, its theatre, and the enemies of the striker's war there (a nation of the enemy side at war with
+  another nation alone, or on the striker). AT: with 7.91's patch, `nukePoland1938` green on its three
+  seeds with the first burst on Germany, and green on HEAD; a unit test of the case (a dense army of the
+  enemy side on another front against the army overrunning the striker), red without; the ADR; the
+  pin's entry; or, if the measure shows the far army a fair target by the rules' intent, the choice put
+  to the user in an ADR (as 7.86's AT), the test standing. Then 7.91 is committed from its patch (its
+  pin read again).
+
 - [ ] 7.91 Blocks stacked on one enemy out of its view (found at 7.90g, `docs/evidence/7.90/g.md` "The gate"):
   with 7.90g's rule (`docs/evidence/7.90/g.patch`) seed 99's 60-day world of `deploy.test.ts` has 97
   formations in contact, 86 (89%) sharing a view at 20 m/px with their nearest enemy, against the test's
@@ -118,6 +135,10 @@ them, are 7.81–7.86. A task each, split when taken up:
   0.887) and green on HEAD; a unit test of the case (several divisions on one cell coming up to an enemy
   whose block faces another, each in one view with it), red without; the ADR. Then 7.90g is committed
   from g.patch (its AT read, its pin f9344f0e).
+  Ruled, not committed (`docs/evidence/7.91/case.md`, `patch`, ADR-650 in the patch): the lines and
+  files of a stack counted with those from within 60° of its own side; HEAD 69/70 → 96/99, g.patch 86/97
+  → 72/75; the test red without (0.87 cells against 0.72); pin 5161de24 → 41d60509. The whole unit suite
+  1870 of 1871: `nukePoland1938` 5591, a nuclear weighing cause: waits on PLAN 7.92.
 - [ ] 7.90 The ferry's lift short of the army (found at 7.89; R12-B1): on critic run 12's 1129 year 10 the
   USA's 12 transport groups hold 288,000 men (24,000 each) against about 1.35 million in two piles of a
   nation at war (60 divisions at 625163 by Chicago, 53 at 746057 by Norfolk). A round trip of Norfolk's
@@ -202,7 +223,8 @@ them, are 7.81–7.86. A task each, split when taken up:
       the port, which sailed with it alone; in g.patch `via` named is that group or a refusal. AT met:
       1129 1 → 0, 6421 21 → 0 (strict; loosely 2 → 0, 23 → 1, the one right); test red without; ADR-649
       and pin f9344f0e in the patch. The gate red on `deploy.test.ts`'s day-60 share (0.887 < 0.9) on the
-      new history, a deploy cause: waits on PLAN 7.91, then applied (`git apply`) and committed.
+      new history, a deploy cause: waits on PLAN 7.91 (itself on 7.92), then applied (its `src/` and
+      `tests/unit/` parts; the DECISIONS and pin hunks by hand, the pin read again) and committed.
     - [ ] 7.90h The sail to cut-off remnants (found at 7.90f, `docs/evidence/7.90/c.md` "7.90f: the read"): a
       group away from the army sails for the four nearest of the free army on lands with a port of the
       nation's (7.90c's rule), whether or not they march to one. On 6421 year 20 day 7387 those four are
