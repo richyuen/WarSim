@@ -273,9 +273,14 @@ them, are 7.81–7.86. A task each, split when taken up:
       → 0.188 ms a tick (−7 %, three swapped pairs; bar 0.153 against the pairs' HEAD, 0.168 absolute).
       What is left is the coast scan (27,619 cells each refresh, scattered reads; the network changed at
       every one of 240 refresh hours), `seaWay` and the flood. No rule changed; the pin unchanged.
-    - [ ] 7.83d The capitals system (ADR-620, 640, 641): the same. AT: capitals' mean a tick at most
+    - [x] 7.83d The capitals system (ADR-620, 640, 641): the same. AT: capitals' mean a tick at most
       0.035 ms on that save's year (HEAD 0.075, `dd3b730`'s rules 0.027); the pin and the save's year
       hash unchanged; the gate green.
+      Done (`docs/evidence/7.83/d.md`): the hourly loop a `for` over the city ids (no call a city); the
+      field capital's search stopped at its targets, its buffers kept; a city's safety the diamond of
+      rings around it (the open grid's steps are |dx| + |dy|); `held`'s pass only with cities on two
+      landmasses. 0.0732 → 0.0270 ms a tick (three swapped pairs), longest call 26 → 16–24 ms; hash
+      f278491d, seed 7 × 3 years, random and toy worlds the same. No rule changed; the pin unchanged.
     Then 7.83's AT read again (alone, 0xFFFF, twice); if it misses, the busier world's systems
     (operational AI first) as parts, or the bar's scope to the user.
 - [ ] 7.84 Naval (naval 7, needs 8): a carrier strike's row, clicked, shows two US destroyer counters and

@@ -1,0 +1,8 @@
+import sys
+p='src/sim/systems/capitals.ts'
+s=open(p,encoding='utf-8',newline='').read()
+s=s.replace("export function capitalsSystem(world: World): void {","const P: any = ((globalThis as any).__cap ??= { field: 0, reloc: 0, cells: [] as number[], fieldNull: 0, relocCities: 0, safetyCalls: 0 });\nif (!(globalThis as any).__capHook) { (globalThis as any).__capHook = 1; process.on('exit', () => { const c = P.cells.sort((a: number, b: number) => a - b); console.error('CAP', JSON.stringify({ field: P.field, fieldNull: P.fieldNull, reloc: P.reloc, safetyCalls: P.safetyCalls, cellsMed: c[c.length >> 1], cellsMax: c[c.length - 1], cells: c.join(',') })); }); }\nexport function capitalsSystem(world: World): void {",1)
+s=s.replace("  const dist = enemyDistance(world, n);\n  const cell = dist","  const dist = enemyDistance(world, n);\n  P.field++; if (!dist) P.fieldNull++; { let k = 0; for (let c = 0; c < controller.length; c++) if (controller[c] === n) k++; P.cells.push(k); }\n  const cell = dist",1)
+s=s.replace("  const held = new Map<number, number>();","  P.reloc++;\n  const held = new Map<number, number>();",1)
+s=s.replace("    if (dist === undefined) dist = enemyDistance","    P.safetyCalls++;\n    if (dist === undefined) dist = enemyDistance",1)
+open(p,'w',encoding='utf-8',newline='').write(s)

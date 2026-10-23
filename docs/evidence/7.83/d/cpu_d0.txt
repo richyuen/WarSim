@@ -1,0 +1,36 @@
+root capitalsSystem total 647 ms
+--- total (inclusive)
+    647 100.0% capitalsSystem d0.mjs:20753
+    577  89.1% forEach d0.mjs:13252
+    306  47.3% (anon) d0.mjs:20758
+    257  39.7% relocateToField d0.mjs:20839
+    236  36.5% enemyDistance d0.mjs:20787
+    230  35.5% captureCapital d0.mjs:20881
+    230  35.5% (anon) d0.mjs:20772
+    219  33.8% relocateCapital d0.mjs:20902
+     80  12.3% farthestFieldCell d0.mjs:20853
+     78  12.1% (anon) d0.mjs:20920
+     77  11.9% safety d0.mjs:20913
+     16   2.4% eliminateNation d0.mjs:20959
+     15   2.3% leaveLand d0.mjs:20940
+      1   0.1% noteCapitalCaptured d0.mjs:21285
+      1   0.1% provincesOf d0.mjs:13466
+      1   0.1% holdsCore d0.mjs:20741
+      0   0.0% changed d0.mjs:14232
+      0   0.0% endAllOf d0.mjs:14298
+--- self
+    236  36.5% enemyDistance d0.mjs:20787
+     99  15.3% relocateCapital d0.mjs:20902
+     80  12.3% farthestFieldCell d0.mjs:20853
+     76  11.8% (anon) d0.mjs:20758
+     70  10.9% capitalsSystem d0.mjs:20753
+     42   6.5% forEach d0.mjs:13252
+     15   2.3% leaveLand d0.mjs:20940
+     14   2.1% (anon) d0.mjs:20772
+      6   0.9% captureCapital d0.mjs:20881
+      5   0.8% safety d0.mjs:20913
+      2   0.2% (anon) d0.mjs:20920
+      1   0.2% relocateToField d0.mjs:20839
+      1   0.1% noteCapitalCaptured d0.mjs:21285
+      1   0.1% provincesOf d0.mjs:13466
+      0   0.0% changed d0.mjs:14232

@@ -22632,3 +22632,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   all 240 refresh hours read, so it never applies. BLOCKERS entry; 7.83c closed not done.
 - **No rule changed:** no ADR; the pin unchanged (5161de24).
 - **Next:** PLAN 7.83d (the capitals system).
+
+## 2026-10-23 — PLAN 7.83d: the capitals system cut by 63 %, no outcome changed; bar met
+
+- **Start:** gate green on `670c7345`; critic not due. ADR-651 and ADR-653 still the user's.
+- **Read** (`docs/evidence/7.83/d.md`, `node --cpu-prof` on a year from HEAD's year-4 save of seed 99): 647 ms
+  a year; the hourly loop ~190 (a callback for every city to find the capitals), the 29 moves ~450
+  (`enemyDistance`'s full-grid pass and 16 MB of arrays 236, `held`'s pass 99, the field pick's two passes 80).
+- **Cut:** the hourly loop a `for` over the city ids; the field capital's search over the nation's cells
+  only, stopped once each has its steps, buffers kept between calls; a city's safety the diamond scan
+  around it (`enemyWithin`, steps |dx| + |dy| on the open grid, the short way round when looping);
+  `held`'s grid pass only when the free cities are on two landmasses or more.
+- **AT** (three swapped pairs, `--profile`): capitals 0.0732 → 0.0270 ms a tick (bar 0.035): met. Longest
+  call 26 → 16–24 ms, calls of 1 ms or more 29 → 16–22 a year. Hash f278491d; seed 7 × 3 years 14ce18f9,
+  the random world 4d199771, toy 399f837f, the same on HEAD and after.
+- **Test:** `capitalsDistance.test.ts` (the stopped search and the diamond scan against the old full pass,
+  open and looping maps). Related run by hand: 263 files, 1,330 tests green; the pin green (sweep config).
+- **No rule changed:** no ADR; the pin unchanged (5161de24).
+- **Next:** 7.83's AT read again (alone, 0xFFFF, twice; 7.83a: 1.829 / 1.821 against 1.5).
