@@ -831,6 +831,18 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
   worth (31 sectors in the Sahara that nobody attacks). Both are balance, and wait for
   Phase 7 (ADR-58).
 
+## 2026-10-23 — PLAN 7.98's AT missed: American piles 12 → 19, engaged 0.480 → 0.471 (ADR-663 waits on the user)
+
+- **Bar:** on 821–830 × 20 years American piles of 30+ held 30 days at most 4, engaged per war not below
+  0.480 (`docs/evidence/7.98/at.md`).
+- **What moved:** the rule (`docs/evidence/7.98/patch`: the ferry's want orders another transport group
+  while one trains, while the island army outnumbers the room afloat and in training) thinned the home
+  piles and made new ones abroad where the army went ashore (France, India, Africa, East Asia, Spain):
+  12 → 19, engaged 0.471.
+- **Left:** ADR-663: (a) drop the rule, 7.98 closed not done, the piles to the next critic report
+  (recommended); (b) drop it and file PLAN 7.99 to read what holds a landed army at its beachhead; (c)
+  commit it anyway. The code is restored; the pin unchanged (b9bff4bd).
+
 ## Watch list (not blocking)
 
 - **From the tenth independent read (PLAN 4.8a, 2026-10-12), suspicions not run:**

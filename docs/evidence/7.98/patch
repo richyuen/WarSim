@@ -1,0 +1,125 @@
+diff --git a/src/sim/ai/economic.ts b/src/sim/ai/economic.ts
+index a1a5791e..1f628b8e 100644
+--- a/src/sim/ai/economic.ts
++++ b/src/sim/ai/economic.ts
+@@ -97,7 +97,9 @@
+  *    port of its own and no front, or on a front's land with a port of its own and reaching none of
+  *    its front cells: PLAN 7.90e, ADR-648) of more men than its transports' room. Unlike the landing's, it
+  *    stops no other fleet: Britain's island army outnumbers any room it could buy, so the want holds
+- *    for the war's length; one group in training at a time, a warship between.
++ *    for the war's length; a warship between. A second group (and more) is ordered while one is in
++ *    training when the island army outnumbers the room afloat and in training together (PLAN 7.98,
++ *    ADR-663); before, one in training at a time.
+  * 4. Research (PLAN 3.1b, `systems/research.ts`), set between 2 and 3: the budget of the days
+  *    to come is RESEARCH_SHARE of income, at most what the lines can take (`researchCap`), and
+  *    nothing for a nation in debt or one that step 1 would have disband (short, and the
+@@ -119,7 +121,7 @@ import { SUPPRESSION_COST } from '../systems/revolts';
+ import { frontierOf } from '../systems/territory';
+ import { neighbours4 } from '../nav/grid';
+ import { airfield, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
+-import { transportRoom } from '../systems/amphibious';
++import { TRANSPORT_MEN, transportRoom } from '../systems/amphibious';
+ import { passageOf } from '../systems/movement';
+ import { frontReach } from './invasion';
+ import { fleetPower } from '../systems/seaControl';
+@@ -434,7 +436,10 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
+       // no warship's saving: it holds while the island army outnumbers the room, for the war's length,
+       // and its transports in training do not hold back 3b's warships (else none would come).
+       const ferrying = !wants && mix.fleets !== undefined && atWar && income >= POOR_INCOME && wantsFerry(world, n, fleets.get(n) ?? []);
+-      const ferry = ferrying && !transportsPending.has(n);
++      // Another group while one is in training when the island army outnumbers the room afloat and in
++      // training together (PLAN 7.98, ADR-663): before, one group in training at a time, whatever the
++      // army waiting (827 year 14: 69 US divisions at Nome, two groups).
++      const ferry = ferrying && (!transportsPending.has(n) || wantsFerry(world, n, fleets.get(n) ?? [], (transportsPending.get(n) ?? 0) * templateRoom(world, mix.fleets!.transport)));
+       const warshipsPending = (shipsPending.get(n) ?? 0) - (ferrying ? (transportsPending.get(n) ?? 0) : 0);
+       if ((wants || ferry) && shipyard(world, n) >= 0) {
+         const t = mix.fleets!.transport;
+@@ -750,7 +755,9 @@ export function wantsTransport(world: World, n: number, transport: number, own:
+  * water of its own or of a nation fighting beside it (`sameSide`) stands on a landmass of those
+  * cells (where the ferry lands, `planFerry`), and its standing land formations on the landmasses
+  * with a port of its own and none of those cells (its island army, where the ferry boards) hold more
+- * men than the room of its transports afloat (`own`, every group's, sunk ones' none). Before, only a
++ * men than the room of its transports afloat (`own`, every group's, sunk ones' none) and `training`
++ * men more (the room of its groups in training, when the economic AI asks for another; PLAN 7.98,
++ * ADR-663). Before, only a
+  * landing's want ordered one (`wantsTransport`): a fronted nation with no transports never had any
+  * (90 and 155 island formations of such nations on the critic's year-10 and year-20 saves).
+  * A front cell of its own beside open water (a zone not iced) stands as such a port on its land: the
+@@ -761,7 +768,7 @@ export function wantsTransport(world: World, n: number, transport: number, own:
+  * not count them (critic run 12, 1129 year 10: the USA, ~150 free formations on its mainland with a
+  * front cell it does not reach, false every day with 131,961 gold and no group in training).
+  */
+-export function wantsFerry(world: World, n: number, own: readonly number[]): boolean {
++export function wantsFerry(world: World, n: number, own: readonly number[], training = 0): boolean {
+   const { w, h, controller } = world.cells;
+   const comp = navOf(world).grid.component;
+   const nb: number[] = [];
+@@ -816,7 +823,7 @@ export function wantsFerry(world: World, n: number, own: readonly number[]): boo
+     } else if (holder === n) homes.add(land);
+   });
+   if (!landing || (homes.size === 0 && cut.size === 0)) return false;
+-  let room = 0;
++  let room = training;
+   for (const id of own) room += transportRoom(world, id);
+   const f = world.formations.cols;
+   let men = 0;
+@@ -836,6 +843,14 @@ export function wantsFerry(world: World, n: number, own: readonly number[]): boo
+   return men > room;
+ }
+ 
++/** The men a fleet of template `t` carries when new: its transports' (`transportRoom`'s count). */
++function templateRoom(world: World, t: number): number {
++  const units = world.rules!.units;
++  let ships = 0;
++  for (const e of world.rules!.templates[t]?.elements ?? []) if (units[e.unit]!.cls === 'tp') ships += e.count;
++  return ships * TRANSPORT_MEN;
++}
++
+ /** Share of tank elements among the elements of n's enemies' formations. */
+ function armourShareOfEnemies(world: World, n: number): number {
+   const idx = elementIndex(world);
+diff --git a/tests/unit/navyBudget1938.test.ts b/tests/unit/navyBudget1938.test.ts
+index 122aa280..2d0b72e8 100644
+--- a/tests/unit/navyBudget1938.test.ts
++++ b/tests/unit/navyBudget1938.test.ts
+@@ -189,13 +189,37 @@ describe('the navy\'s cost (PLAN 4.6e1)', () => {
+     expect(wantsFerry(a.w, a.ENG, [])).toBe(true);
+     runEvents(a.s, 1);
+     expect(ships(a.w, a.ENG)).toContain(fleets.transport);
+-    // A group already in training: no second, and it holds back no warship (its navy under its
+-    // share). Else the want, back each month, ordered a group a time and never a warship.
++    // A group already in training, the island army over its room too: a second (PLAN 7.98, ADR-663,
++    // the user's decision ADR-662 a; before, one in training at a time whatever the army waiting),
++    // and they hold back no warship (its navy under its share): else the want, back each month,
++    // ordered a group a time and never a warship.
+     const c = setUp();
+     expect(queueFormation(c.w, c.ENG, fleets.transport)).not.toBe(0);
++    // A group of 1938's template: 12 transports.
++    expect(wantsFerry(c.w, c.ENG, [], 12 * TRANSPORT_MEN)).toBe(true);
+     runEvents(c.s, 1);
+-    expect(ships(c.w, c.ENG).filter((t) => t === fleets.transport)).toHaveLength(1);
++    expect(ships(c.w, c.ENG).filter((t) => t === fleets.transport)).toHaveLength(2);
+     expect(ships(c.w, c.ENG).filter((t) => t !== fleets.transport).length).toBeGreaterThan(0);
++    // The island army within the room of the group in training: no second.
++    const d = setUp();
++    {
++      const comp = navOf(d.w).grid.component;
++      const fc = d.w.formations.cols;
++      const front = comp[d.w.cells.controller.findIndex((h) => h === id('SAU'))]!;
++      const island: number[] = [];
++      d.w.formations.forEach((f) => {
++        if (fc.nation[f] === d.ENG && !d.w.isFleet(f) && !d.w.isWing(f) && !d.w.offLand(f) && comp[Math.floor(fc.y[f]!) * W + Math.floor(fc.x[f]!)] !== front) island.push(f);
++      });
++      island.sort((x, y) => fc.strength[x]! - fc.strength[y]!);
++      // One formation left off the front's land, under a group's room.
++      for (const f of island.slice(1)) destroyFormation(d.w, f);
++      expect(fc.strength[island[0]!]!).toBeLessThan(12 * TRANSPORT_MEN);
++    }
++    expect(wantsFerry(d.w, d.ENG, [])).toBe(true);
++    expect(wantsFerry(d.w, d.ENG, [], 12 * TRANSPORT_MEN)).toBe(false);
++    expect(queueFormation(d.w, d.ENG, fleets.transport)).not.toBe(0);
++    runEvents(d.s, 1);
++    expect(ships(d.w, d.ENG).filter((t) => t === fleets.transport)).toHaveLength(1);
+     // No army off the front's land: no ferry, no group.
+     const b = setUp(false);
+     expect(wantsFerry(b.w, b.ENG, [])).toBe(false);

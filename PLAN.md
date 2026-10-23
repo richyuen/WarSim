@@ -48,6 +48,9 @@ them, are 7.81–7.86. A task each, split when taken up:
   army's men exceed the room of the nation's groups. AT: on 821–830 × 20 years (`tools/diag/landAt.ts`)
   American piles of 30+ held 30 days 12 → at most 4, engaged per war in years 2–20 not below 0.480; a
   unit test, red without; the ADR; the pin's entry. Then the loop takes 7.82.
+  Read (`docs/evidence/7.98/at.md`): the rule tried (`patch`: another group while one trains, while the
+  island army outnumbers the room afloat and in training) American piles 12 → 19, engaged 0.480 →
+  0.471: the army ferried to other coasts stands there. Waits on ADR-663 (BLOCKERS).
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts

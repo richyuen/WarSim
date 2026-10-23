@@ -22940,3 +22940,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - 7.82b's read is under way (`docs/evidence/7.82/b.md`, not in this commit); its rule is re-read on
   this HEAD.
 - **Next:** 7.98.
+
+## 2026-10-23 — PLAN 7.98's AT: American piles 12 → 19, both bars missed (ADR-663 to the user)
+
+- **Rule tried** (`docs/evidence/7.98/patch`): the ferry's want orders another transport group while one
+  is in training, while the island army outnumbers the room afloat and in training together; before,
+  one in training at a time. `navyBudget1938`'s ferry case restated; red without.
+- **AT** (821–830 × 20 years, `docs/evidence/7.98/at/`): American piles 12 → 19 (bar 4), all 31 → 38;
+  engaged per war 0.480 → 0.471 (bar 0.480). The home piles thin; new ones stand abroad where the
+  larger lift put the army ashore (France, India, Africa, East Asia, Spain).
+- **Verdict:** not ticked; code restored, patch kept; BLOCKERS entry; ADR-663 proposed: (a) drop, 7.98
+  closed not done, no task (recommended); (b) drop, PLAN 7.99 for the landed army at its beachhead; (c)
+  commit anyway.
+- **No rule;** the pin unchanged (b9bff4bd). 7.82b's draft read (`docs/evidence/7.82/b.md`) stays out of
+  this commit; its trial rule will take the next ADR number.
+- **Next:** 7.98 waits on ADR-663; the loop takes 7.82b.
