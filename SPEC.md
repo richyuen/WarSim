@@ -2184,7 +2184,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   land front (with no front cell of its own, its allies' cells beside the enemies it fights with
   them, as the ferry's: PLAN 7.66, ADR-618), a port of its own or of an ally in the war on that front's land (or a front cell of
   its own there beside water not iced, a beachhead's: PLAN 7.70c, ADR-624), and an island army
-  (standing on a land with a port of its own and no front cell of its) of more men than its
+  (standing on a land with a port of its own and no front cell of its, or on a front's land with a
+  port of its own and reaching none of its front cells, the ferry's own test: PLAN 7.90e, ADR-648)
+  of more men than its
   transports' room; it stops no other fleet, and its transports in training hold back no
   warship, as it holds for the war's length. Short of money and over
   it, it lays up its fleets in port, the dearest first, before its army is sent home.
