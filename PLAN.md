@@ -40,74 +40,14 @@ Run 12's (report of 2026-10-22 on `896ff779`, `critic/CRITIC_REPORT.md`; R11-B2 
 and performance 7 → 6): R12-B1 and R12-B2 are PLAN 7.79 and 7.80; the dimensions under the bar, beyond
 them, are 7.81–7.86. A task each, split when taken up:
 
-- [ ] 7.79 The land war after year 1, again (R12-B1; R11-B1 not fixed by 7.49): on the critic's same 48
-  checkpoints (years 10 and 20 of run 11's 24 seeds) 1.52 land formations engaged of about 358 of nations
-  at war, with 7.3 wars running; daily over 30 years on 32 worlds 33.7 engaged in year 1 and 2.11 after
-  (5.1 a war in year 1, 0.34 after). Seed 6421's year-21 Germany–Soviet war 0–2 engaged over 60 days; 60
-  US divisions (714,480 men) idle in one place at war (1129, year 10). Evidence:
-  `critic/c12_cmp_checkpoints.json`, `c12_cmp_all.txt`, `c12_engaged_w1.json`–`w3.json`,
-  `c12_y_6421_gersov.json`, `c12_stacks_y10_w1.json`. The critic's fix: a nation at war sends its
-  standing army to its fronts and holds a front line it fights for. Measure first what keeps the army
-  from the front (where the formations of nations at war stand late, and why the AI leaves them). AT:
-  on 10 unseen seeds × 20 years, engaged land formations a war, mean of daily samples in years 2–20, at
-  least a tenth of year 1's (HEAD's 0.34 / 5.1 = 0.067, read on the same seeds first); no pile of 30 or
-  more divisions of a nation at war in one place for 30 days; a unit test, red without; the gate green.
-  In parts (7.49's parts moved the armies to the landmass and left engaged per war flat, 0.134 → 0.137;
-  what 7.49a left open is the second factor of engaged per war, engaged per armed war, about 20 in year
-  1 and 0.4 late: in a late armed war the armies near the front stand apart, 115 of 140 beyond 15 cells;
-  order b, d, c):
-    - [x] 7.79a Measured, on run 12's saves (HEAD's sim code) and year 1 of 6421 and 7019
-      (`tools/diag/frontSpread.ts`, `OP_PROBE.sectors`, `docs/evidence/7.79/`): per plan of a nation at
-      war, its sectors, those threatened, the formations allotted, the share of them in threatened
-      sectors before and after "every sector gets one", the threatened sectors manned and attacking;
-      and the 1129 year-10 pile of 60 US divisions traced. AT: the table, year 1 against late, and the
-      cause it names, each a part with its own AT; no rule: the pin unchanged.
-      Measured (`docs/evidence/7.79/measure.md`): the share of the allotted in threatened sectors 0.58–0.74
-      in year 1, 0.006–0.23 late; "every sector gets one" not it (late the same before and after); the
-      weights 1 + threat / 10,000 lose to fronts of 120–920 sectors. The US piles: their class reaches
-      none of the sectors (overseas, or closed ground), and the ferry needs a landmass with no front.
-    - [x] 7.79b The allotment by where the enemy stands, within the range (measure §2.1 b): a class's
-      formations go to the threatened sectors it reaches within the range first, in proportion to
-      threat, and the empty front gets what is left over them. AT: on the 7 late saves of measure
-      §2.1, the formations allotted to threatened sectors (`allottedThreatenedBefore`) at least 0.5 of
-      what the threatened sectors in range could take on each (read on HEAD first); in year 1 of 6421
-      and 7019 the share in threatened sectors not under HEAD's (0.741, 0.578); engaged per war on the
-      saves read (`frontSpread.ts`); a unit test (red without); the ADR; the pin's entry; `--profile`
-      against `9490fd78` (before the probe).
-      Done (ADR-634, `docs/evidence/7.79/b.md`): 1.0 on all 7 (HEAD 0.88–1.63 on 6 of them: the
-      counts overlap, so the figure passed on HEAD); placed in threatened sectors of those within
-      range 0.37–0.46 → 0.51–0.85 (days 21–30: 0.02–0.68 → 0.28–1.0), kept marches into empty
-      sectors yielding (they took half), not those begun beyond the range; year 1 from one day-60
-      save 0.741 → 0.895, 0.578 → 0.857; engaged per war late 0–0.46 (little moved: 7.79d's); pin
-      a4ff4661 → e6c74731; operational AI about a tenth dearer on the long fronts.
-    - [x] 7.79d The march to a threatened sector beyond the range (measure §2.1 a): late 88–98 % of the
-      threatened sectors on 1129 and 2081 year 20 and 6421 year 20 have no formation of the planner
-      within DEPLOY_RANGE_CELLS, and the marches from afar serve only sectors with nobody. A far
-      formation (standing, its day in MARCH_DAYS) marches to the nearest threatened sector its class
-      reaches when one has fewer of the planner than its threat's share. AT: on those 3 saves the
-      threatened sectors with a formation of the planner within the range after 30 days at least
-      twice HEAD's (`frontSpread.ts`, `inRangeThreatenedAPlan`); engaged per war read; a unit test
-      (red without); the ADR; the pin's entry; `--profile`.
-      Closed not done (ADR-635 proposed, BLOCKERS 2026-10-22; `docs/evidence/7.79/d/measure.md`): the
-      far formations that reach a threatened sector on their landmass (0.96, 0.15, 0.17 a far plan) stand
-      206–353 cells from it, none within 110; a march of 1.4–2.1 cells a day puts none in range in 30
-      days. No rule written; the pin unchanged. The rule over a season is PLAN 7.87, the user's.
-    - [x] 7.79c The ferry from a fronted landmass whose front the army cannot reach (measure §3): the
-      ferry (ADR-612) takes far formations whose class reaches no sector of the nation, as from a
-      landmass with no front (read first: whether `planLanding` carries to a port on the boarders' own
-      landmass, else the rule is a sea march to the far port). AT: piles of 30 or more of a nation at war on one cell 30 days running
-      on 1129 year 10, 6421 year 20 and 7019 year 10 (`piles.ts --days 30`) 3 → 0; a unit test (red
-      without); the ADR; the pin's entry.
-      Closed not done (ADR-636, BLOCKERS 2026-10-22; `docs/evidence/7.79/c.md`): the rule is in (free for
-      the USA's ferry 20 → 157 on 1129 year 10, 16 → 210 on 6421 year 20; a port from which no front cell
-      is reached takes no ferry); piles 3 → 3. The turn's one transport group is one that cannot act
-      (Nuuk; Port-of-Spain, Roseau), and one group a turn carries two of 1129's 60 divisions: PLAN 7.88.
-      Pin e6c74731 → e66bef2e.
-    Then, after PLAN 7.88, 7.89 and 7.90 (7.87 dropped, ADR-635 b), 7.79's AT on 10 unseen seeds × 20
-    years (HEAD's figure read on them first).
-    Read (`docs/evidence/7.79/at.md`, 821–830, `tools/diag/landAt.ts`): engaged per war 0.074 of year 1's
-    (before 7.79's first rule 0.055; bar 0.1); piles of 30+ held 30 days 32 (before 29; bar 0), 18
-    American. Both bars missed: BLOCKERS 2026-10-23, ADR-661 proposed (the user's decision); not ticked.
+- [ ] 7.97 The American piles (found at 7.79's AT; R12-B1; ADR-661 a, as ADR-653's (b)): on unseen seeds
+  821–830 × 20 years 32 piles of 30 or more formations of a nation at war held one cell 30 days, 18 of
+  them American (cell (585,364) on 5 seeds, up to 548 days and 107 formations; `docs/evidence/7.79/at.md`):
+  the US home army reaches no front by land, and the ferry lifts from the ports where its transport
+  groups stand, not where the army stands. The army that reaches no front marches to the ports that
+  have a transport group before the lift. AT: on 821–830 × 20 years (`tools/diag/landAt.ts`) American
+  piles of 30+ held 30 days 18 → at most 4, engaged per war in years 2–20 not below 0.477 (HEAD's); a
+  unit test, red without; the ADR; the pin's entry. Then the loop takes 7.82.
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts
@@ -516,3 +456,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.90 The ferry's lift short of the army (found at 7.89; R12-B1): on critic run 12's 1129 year 10 the […]
 - [x] 7.86 AI nuclear use (aiNukes 7, needs 8, beyond R11-B2): bursts on the same 24 seeds 188 → 497 […]
 - [x] 7.96 The nuclear rate in the busier war (found at 7.86; aiNukes 7, needs 8; ADR-657 b, the user's […]
+- [x] 7.79 The land war after year 1, again (R12-B1; R11-B1 not fixed by 7.49): on the critic's same 48 […]

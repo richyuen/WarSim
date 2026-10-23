@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.79: the land war after year 1 on fresh worlds, engaged per war 0.074 of year 1's, 32 piles held 30 days (2026-10-23, ADR-661 proposed; the user's decision)
+### RESOLVED 2026-10-23 (option a, the user's decision: 7.79 closed not done, PLAN 7.97 for the American piles) · PLAN 7.79: the land war after year 1 on fresh worlds, engaged per war 0.074 of year 1's, 32 piles held 30 days (2026-10-23, ADR-661 proposed; the user's decision)
 - **The bar:** on 10 unseen seeds × 20 years engaged land formations a war in years 2–20 at least a tenth
   of year 1's, and no pile of 30 or more of a nation at war on one cell for 30 days.
 - **What moved** (`docs/evidence/7.79/at.md`, seeds 821–830, `landAt.ts`): against the tree before 7.79's

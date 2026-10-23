@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-661 · 2026-10-23 · proposed (the user's decision) — The land war after year 1 on fresh worlds: both of 7.79's bars missed (PLAN 7.79's AT)
+### ADR-661 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The land war after year 1 on fresh worlds: both of 7.79's bars missed (PLAN 7.79's AT)
 
 - **Context** (`docs/evidence/7.79/at.md`). PLAN 7.79's AT (R12-B1) on 10 unseen seeds × 20 years
   (821–830, `tools/diag/landAt.ts`): engaged land formations a war in years 2–20 at least a tenth of year
@@ -192,6 +192,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   (four, and 7.88–7.91 after them) and waits on the critic. (b) departs from ADR-653's consequence: the
   piles then go to the critic unworked.
 - **Consequences:** no rule; the pin unchanged (7098dd29).
+- **Decided** (2026-10-23, the user: option a, as recommended). 7.79 closed not done at both bars; PLAN
+  7.97 filed for the American piles (AT: on 821–830 × 20 years American piles of 30+ held 30 days 18 → at
+  most 4, engaged per war not below 0.477), before 7.82. The late engaged figure waits on the next
+  critic report.
 
 ### ADR-660 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The volleys are mostly fight-for-life strikes: R7-B1's France against run 12's volleys (PLAN 7.96c's AT missed)
 

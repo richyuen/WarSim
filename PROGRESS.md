@@ -22890,3 +22890,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   for 18 years, Canada fixed 12, Greenland at war 297 days a year with nothing engaged). Filed 7.82b.
 - **No rule;** the pin unchanged.
 - **Next:** 7.82b.
+
+## 2026-10-23 — ADR-661 a (the user's decision): 7.79 closed not done; PLAN 7.97 filed for the American piles (documents)
+
+- 7.97: the army that reaches no front marches to the ports with a transport group before the lift; AT on
+  821–830 × 20 years, American piles of 30+ held 30 days 18 → at most 4, engaged per war not below 0.477.
+- 7.82b's read had begun (`tools/diag/overseasHold.ts`, a `LANDING_PROBE` in `invasion.ts`; not in this
+  commit); it resumes after 7.97.
+- **Next:** 7.97.
