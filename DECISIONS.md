@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-661 · 2026-10-23 · proposed (the user's decision) — The land war after year 1 on fresh worlds: both of 7.79's bars missed (PLAN 7.79's AT)
+
+- **Context** (`docs/evidence/7.79/at.md`). PLAN 7.79's AT (R12-B1) on 10 unseen seeds × 20 years
+  (821–830, `tools/diag/landAt.ts`): engaged land formations a war in years 2–20 at least a tenth of year
+  1's, and no pile of 30 or more formations of a nation at war on one cell for 30 days running.
+- **Read:** engaged per war 6.476 in year 1, 0.477 after: **0.074** (bar 0.1; 3 seeds of 10 over it). The
+  tree before 7.79's first rule, on the same seeds: 5.330, 0.295, 0.055. Piles held 30 days: **32** on
+  all 10 seeds (bar 0; before 7.79: 29), 18 of them American (one cell on 5 seeds, up to 548 days and
+  107 formations), the rest Italian, Soviet, German, British and French, mostly in years 1–6.
+- **Options:**
+  - **(a)** 7.79 closed not done at both bars; PLAN 7.97 filed for the American piles (ADR-653's (b),
+    the army that reaches no front marches to the ports that have a transport group before the lift), AT
+    on the same 10 seeds × 20 years: American piles of 30+ held 30 days 18 → at most 4, engaged per war
+    not below 0.477. The late engaged figure waits on the next critic report. The loop then takes 7.97,
+    then 7.82.
+  - **(b)** 7.79 closed not done; no task filed. The late land war and the piles are judged by the next
+    critic report (7.5); the loop takes 7.82.
+  - **(c)** 7.79 ticked on what moved: the bar re-scoped to the rise against the pre-7.79 tree on the
+    same seeds (late engaged per war ×1.62, the ratio ×1.35), the piles bar dropped.
+- **Recommended: (b).** 7.79 has had four parts and three follow-up tasks (7.88–7.91), and the fronts
+  moved a third; a further task on the American piles (ADR-653 named it if piles formed) answers 18 of 32,
+  not the European ones, and not the engaged bar. The critic, run on this HEAD, judges whether the late
+  war it asked for is now there. (a) if the user wants the home-army piles worked on first.
+- **Consequences:** no rule; the pin unchanged (7098dd29).
+
 ### ADR-660 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The volleys are mostly fight-for-life strikes: R7-B1's France against run 12's volleys (PLAN 7.96c's AT missed)
 
 - **Context** (`docs/evidence/7.96/c.md`). 7.96's bar (ADR-658 b): bursts by a striker within 30 days of

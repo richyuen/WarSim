@@ -5,6 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.79: the land war after year 1 on fresh worlds, engaged per war 0.074 of year 1's, 32 piles held 30 days (2026-10-23, ADR-661 proposed; the user's decision)
+- **The bar:** on 10 unseen seeds × 20 years engaged land formations a war in years 2–20 at least a tenth
+  of year 1's, and no pile of 30 or more of a nation at war on one cell for 30 days.
+- **What moved** (`docs/evidence/7.79/at.md`, seeds 821–830, `landAt.ts`): against the tree before 7.79's
+  first rule on the same seeds, late engaged per war 0.295 → 0.477, the ratio 0.055 → 0.074 (bar 0.1);
+  piles held 30 days 29 → 32, 18 of them American (one cell on 5 seeds, up to 548 days).
+- **What is left:** the user's (ADR-661): (a) 7.79 closed not done, PLAN 7.97 for the American piles;
+  (b) 7.79 closed not done, judged by the next critic report (recommended); (c) the bar re-scoped to the
+  rise, 7.79 ticked.
+
 ### PLAN 7.83c: supply's beach layer −7 %, short of `dd3b730` + 0.03 (2026-10-23)
 - **The bar:** supply's mean a tick on a year from HEAD's year-4 save of seed 99 at most `dd3b730`'s rules'
   + 0.03 (0.168 ms; 0.153 against the pairs' own HEAD), the year's hash f278491d and the pin unchanged.

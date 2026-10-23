@@ -105,6 +105,9 @@ them, are 7.81–7.86. A task each, split when taken up:
       Pin e6c74731 → e66bef2e.
     Then, after PLAN 7.88, 7.89 and 7.90 (7.87 dropped, ADR-635 b), 7.79's AT on 10 unseen seeds × 20
     years (HEAD's figure read on them first).
+    Read (`docs/evidence/7.79/at.md`, 821–830, `tools/diag/landAt.ts`): engaged per war 0.074 of year 1's
+    (before 7.79's first rule 0.055; bar 0.1); piles of 30+ held 30 days 32 (before 29; bar 0), 18
+    American. Both bars missed: BLOCKERS 2026-10-23, ADR-661 proposed (the user's decision); not ticked.
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts

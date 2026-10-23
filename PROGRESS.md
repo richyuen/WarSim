@@ -22864,3 +22864,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   decision (France again as soon as the wait allows: days 33 and 93 in 120). SPEC §6.4, PARITY row 6.
 - **Pin:** unchanged (7098dd29).
 - **Next:** 7.79's AT (10 unseen seeds × 20 years; 821 on).
+
+## 2026-10-23 — PLAN 7.79's AT on fresh worlds: both bars missed (ADR-661 to the user)
+
+- **Read** (`docs/evidence/7.79/at.md`; `tools/diag/landAt.ts`, new: `landEngaged.ts`'s sampling plus the
+  piles' running days; unseen 821–830 × 20 years, HEAD and `b5af8b75`, the tree before 7.79b, 5 at a time,
+  ~45 min): engaged per war 6.476 → 0.477, ratio 0.074 (bar 0.1; before 7.79 0.055, late ×1.62); piles of
+  30+ held 30 days 32 on all 10 seeds (bar 0; before 29), 18 American (cell (585,364) on 5 seeds, up to
+  548 days, the largest 107).
+- **Verdict:** 7.79 not ticked; BLOCKERS entry; ADR-661 proposed: (a) closed not done + PLAN 7.97 for the
+  American piles, (b) closed not done, judged by the next critic report (recommended), (c) re-scoped to
+  the rise and ticked. 7.79 counts 6 commits by its number (plus 7.88–7.91).
+- **No rule;** the pin unchanged (7098dd29).
+- **Next:** 7.79 waits on ADR-661; the loop takes 7.82 (re-read on this HEAD first).

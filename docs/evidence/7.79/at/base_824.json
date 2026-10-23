@@ -1,0 +1,574 @@
+{
+ "summary": {
+  "seed": 824,
+  "years": 20,
+  "year1": {
+   "engaged": 36.5013698630137,
+   "wars": 5.841095890410959,
+   "perWar": 6.24906191369606
+  },
+  "late": {
+   "engaged": 2.6005767844268206,
+   "wars": 10.402451333813987,
+   "perWar": 0.24999653456425613
+  },
+  "piles": 49,
+  "longPiles": 1
+ },
+ "longPiles": [
+  {
+   "nation": "GER",
+   "cell": 713870,
+   "first": 6840,
+   "run": 0,
+   "longest": 98,
+   "longestEnd": 6937,
+   "days": 98,
+   "most": 36
+  }
+ ],
+ "piles": [
+  {
+   "nation": "GER",
+   "cell": 713870,
+   "first": 6840,
+   "run": 0,
+   "longest": 98,
+   "longestEnd": 6937,
+   "days": 98,
+   "most": 36
+  },
+  {
+   "nation": "GER",
+   "cell": 709784,
+   "first": 6945,
+   "run": 0,
+   "longest": 11,
+   "longestEnd": 6955,
+   "days": 11,
+   "most": 37
+  },
+  {
+   "nation": "USA",
+   "cell": 744009,
+   "first": 2439,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2439,
+   "days": 1,
+   "most": 87
+  },
+  {
+   "nation": "USA",
+   "cell": 723530,
+   "first": 2445,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2445,
+   "days": 1,
+   "most": 69
+  },
+  {
+   "nation": "USA",
+   "cell": 739913,
+   "first": 2440,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2440,
+   "days": 1,
+   "most": 68
+  },
+  {
+   "nation": "USA",
+   "cell": 737865,
+   "first": 2441,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2441,
+   "days": 1,
+   "most": 68
+  },
+  {
+   "nation": "USA",
+   "cell": 733769,
+   "first": 2442,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2442,
+   "days": 1,
+   "most": 68
+  },
+  {
+   "nation": "USA",
+   "cell": 729673,
+   "first": 2443,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2443,
+   "days": 1,
+   "most": 68
+  },
+  {
+   "nation": "USA",
+   "cell": 727625,
+   "first": 2444,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2444,
+   "days": 1,
+   "most": 68
+  },
+  {
+   "nation": "USA",
+   "cell": 721482,
+   "first": 2446,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2446,
+   "days": 1,
+   "most": 68
+  },
+  {
+   "nation": "USA",
+   "cell": 717386,
+   "first": 2447,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2447,
+   "days": 1,
+   "most": 62
+  },
+  {
+   "nation": "USA",
+   "cell": 715338,
+   "first": 2448,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2448,
+   "days": 1,
+   "most": 50
+  },
+  {
+   "nation": "USA",
+   "cell": 711242,
+   "first": 2449,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2449,
+   "days": 1,
+   "most": 50
+  },
+  {
+   "nation": "USA",
+   "cell": 709194,
+   "first": 2450,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2450,
+   "days": 1,
+   "most": 50
+  },
+  {
+   "nation": "USA",
+   "cell": 707146,
+   "first": 2451,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2451,
+   "days": 1,
+   "most": 44
+  },
+  {
+   "nation": "USA",
+   "cell": 705097,
+   "first": 2452,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2452,
+   "days": 1,
+   "most": 44
+  },
+  {
+   "nation": "USA",
+   "cell": 703048,
+   "first": 2453,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2453,
+   "days": 1,
+   "most": 44
+  },
+  {
+   "nation": "USA",
+   "cell": 698951,
+   "first": 2454,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2454,
+   "days": 1,
+   "most": 44
+  },
+  {
+   "nation": "USA",
+   "cell": 696903,
+   "first": 2455,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2455,
+   "days": 1,
+   "most": 44
+  },
+  {
+   "nation": "GER",
+   "cell": 713869,
+   "first": 6839,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 6839,
+   "days": 1,
+   "most": 43
+  },
+  {
+   "nation": "USA",
+   "cell": 692805,
+   "first": 2456,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2456,
+   "days": 1,
+   "most": 42
+  },
+  {
+   "nation": "USA",
+   "cell": 690756,
+   "first": 2457,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2457,
+   "days": 1,
+   "most": 42
+  },
+  {
+   "nation": "USA",
+   "cell": 688707,
+   "first": 2458,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2458,
+   "days": 1,
+   "most": 42
+  },
+  {
+   "nation": "USA",
+   "cell": 688705,
+   "first": 2459,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2459,
+   "days": 1,
+   "most": 40
+  },
+  {
+   "nation": "USA",
+   "cell": 686654,
+   "first": 2460,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2460,
+   "days": 1,
+   "most": 40
+  },
+  {
+   "nation": "USA",
+   "cell": 688701,
+   "first": 2461,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2461,
+   "days": 1,
+   "most": 40
+  },
+  {
+   "nation": "USA",
+   "cell": 688699,
+   "first": 2462,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 2462,
+   "days": 1,
+   "most": 40
+  },
+  {
+   "nation": "GER",
+   "cell": 726135,
+   "first": 6823,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 6823,
+   "days": 1,
+   "most": 38
+  },
+  {
+   "nation": "GER",
+   "cell": 724088,
+   "first": 6824,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 6824,
+   "days": 1,
+   "most": 38
+  },
+  {
+   "nation": "GER",
+   "cell": 717952,
+   "first": 6830,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 6830,
+   "days": 1,
+   "most": 38
+  },
+  {
+   "nation": "GER",
+   "cell": 717954,
+   "first": 6831,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 6831,
+   "days": 1,
+   "most": 38
+  },
+  {
+   "nation": "GER",
+   "cell": 717957,
+   "first": 6833,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 6833,
+   "days": 1,
+   "most": 38
+  },
+  {
+   "nation": "GER",
+   "cell": 715912,
+   "first": 6835,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 6835,
+   "days": 1,
+   "most": 38
+  },
+  {
+   "nation": "GER",
+   "cell": 715916,
+   "first": 6838,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 6838,
+   "days": 1,
+   "most": 34
+  },
+  {
+   "nation": "GER",
+   "cell": 562300,
+   "first": 328,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 328,
+   "days": 1,
+   "most": 32
+  },
+  {
+   "nation": "GER",
+   "cell": 558204,
+   "first": 329,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 329,
+   "days": 1,
+   "most": 32
+  },
+  {
+   "nation": "GER",
+   "cell": 556156,
+   "first": 330,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 330,
+   "days": 1,
+   "most": 32
+  },
+  {
+   "nation": "GER",
+   "cell": 552060,
+   "first": 331,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 331,
+   "days": 1,
+   "most": 32
+  },
+  {
+   "nation": "GER",
+   "cell": 550012,
+   "first": 332,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 332,
+   "days": 1,
+   "most": 32
+  },
+  {
+   "nation": "GER",
+   "cell": 545916,
+   "first": 333,
+   "run": 0,
+   "longest": 1,
+   "longestEnd": 333,
+   "days": 1,
+   "most": 32
+  }
+ ],
+ "rows": [
+  {
+   "year": 1,
+   "engaged": 36.5013698630137,
+   "wars": 5.841095890410959,
+   "perWar": 6.24906191369606,
+   "land": 803.9123287671233
+  },
+  {
+   "year": 2,
+   "engaged": 4.087671232876712,
+   "wars": 10.953424657534246,
+   "perWar": 0.37318659329664833,
+   "land": 534.5643835616438
+  },
+  {
+   "year": 3,
+   "engaged": 2.4027397260273973,
+   "wars": 8.654794520547945,
+   "perWar": 0.2776194998417221,
+   "land": 502.8493150684931
+  },
+  {
+   "year": 4,
+   "engaged": 3.1890410958904107,
+   "wars": 7.071232876712329,
+   "perWar": 0.4509879891514917,
+   "land": 545.986301369863
+  },
+  {
+   "year": 5,
+   "engaged": 6.846575342465753,
+   "wars": 8.315068493150685,
+   "perWar": 0.8233937397034596,
+   "land": 530.9205479452055
+  },
+  {
+   "year": 6,
+   "engaged": 5.802739726027397,
+   "wars": 12.95890410958904,
+   "perWar": 0.44778012684989427,
+   "land": 522.3917808219178
+  },
+  {
+   "year": 7,
+   "engaged": 3.7643835616438355,
+   "wars": 13.284931506849315,
+   "perWar": 0.2833573932769643,
+   "land": 469.1315068493151
+  },
+  {
+   "year": 8,
+   "engaged": 1.8520547945205479,
+   "wars": 15.819178082191781,
+   "perWar": 0.11707655005195705,
+   "land": 432.413698630137
+  },
+  {
+   "year": 9,
+   "engaged": 2.6767123287671235,
+   "wars": 13.56986301369863,
+   "perWar": 0.19725418938017364,
+   "land": 457.43835616438355
+  },
+  {
+   "year": 10,
+   "engaged": 1.6356164383561644,
+   "wars": 15.654794520547945,
+   "perWar": 0.10448022401120056,
+   "land": 477.0876712328767
+  },
+  {
+   "year": 11,
+   "engaged": 3.4547945205479453,
+   "wars": 9.684931506849315,
+   "perWar": 0.35671852899575673,
+   "land": 498.8027397260274
+  },
+  {
+   "year": 12,
+   "engaged": 1.115068493150685,
+   "wars": 8.676712328767124,
+   "perWar": 0.12851278812756553,
+   "land": 509.3424657534247
+  },
+  {
+   "year": 13,
+   "engaged": 2.871232876712329,
+   "wars": 9.583561643835617,
+   "perWar": 0.2995997712978845,
+   "land": 470.5452054794521
+  },
+  {
+   "year": 14,
+   "engaged": 1.7287671232876711,
+   "wars": 10.572602739726028,
+   "perWar": 0.16351386369525783,
+   "land": 458.3972602739726
+  },
+  {
+   "year": 15,
+   "engaged": 0.6219178082191781,
+   "wars": 9.767123287671232,
+   "perWar": 0.06367461430575035,
+   "land": 433.9178082191781
+  },
+  {
+   "year": 16,
+   "engaged": 1.663013698630137,
+   "wars": 7.583561643835616,
+   "perWar": 0.21929190751445088,
+   "land": 436.08493150684933
+  },
+  {
+   "year": 17,
+   "engaged": 0.8958904109589041,
+   "wars": 9.997260273972604,
+   "perWar": 0.08961359276514114,
+   "land": 466.7479452054794
+  },
+  {
+   "year": 18,
+   "engaged": 1.5945205479452054,
+   "wars": 11.347945205479451,
+   "perWar": 0.1405118300338001,
+   "land": 533.0739726027397
+  },
+  {
+   "year": 19,
+   "engaged": 1.5013698630136987,
+   "wars": 8.243835616438357,
+   "perWar": 0.1821203057494184,
+   "land": 590.3397260273972
+  },
+  {
+   "year": 20,
+   "engaged": 1.7068493150684931,
+   "wars": 5.906849315068493,
+   "perWar": 0.288961038961039,
+   "land": 593.3561643835617
+  }
+ ]
+}
