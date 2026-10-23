@@ -47,9 +47,13 @@ pair higher on all 10.
 
 ## Verdict
 
-- **Not battles per naval war.** Where two navies at war share a basin, HEAD fights twice as many battles
-  (9.1 → 18.4 a pair-year) and as many of the fleets are under way. No naval combat or hunting rule
-  lost battles.
+- **Not battles per naval war.** Where two navies at war share a basin, HEAD counts twice as many battles
+  (9.1 → 18.4 a pair-year) and as many of the fleets are under way. The count is every `SeaBattle` row
+  over those pairs, battles against transport groups among them (HEAD has more afloat since 7.90d/e),
+  so what it shows is that battles per pair did not fall.
+- **Read first in 7.84d:** whether the year-1 navies' nations are alive and hold a port at years 5, 10
+  and 20 (HEAD has more capitals taken and annexations a world, `critic/c12_cmp_all.txt`); if their
+  builders are gone the cause is the world's, not the economic AI's.
 - **Not the land war's count of wars.** HEAD has more wars (pairs at war 234 → 327).
 - **The fall is in the navies.** Both commits lose half their armed fleets in year 1–2 (75–83 → 43–46).
   On `dd3b730` they are rebuilt (52 at year 5, 66 at year 10, 81 at year 20; navies 10 → 20); on HEAD
