@@ -593,8 +593,7 @@ function refresh(world: World, feeds: SeaFeeds): void {
   }
 }
 
-/** The beach flood's marks (1: in the layer), 0 between floods, and its queue. */
-let beachSeen = new Uint8Array(0);
+/** The beach flood's queue. */
 const beachQueue: number[] = [];
 
 /**
@@ -603,41 +602,40 @@ const beachQueue: number[] = [];
  * loops), from its beach sources (`seaBeaches`: coast cells it controls that its network does not
  * reach, fed from the sea) over the cells it controls that are in no network and not yet in the
  * layer. Asked at each refresh hour, after the network's refresh: a partial refresh gives the
- * network a full one gives, so the layer is the same too.
+ * network a full one gives, so the layer is the same too. A cell is set in the layer as it is
+ * queued (the queue's order is the order set), and the layer is the flood's mark (PLAN 7.83c).
  */
 export function refreshBeaches(world: World): void {
   const layer = world.supplyBeach;
   layer.clear();
   const { w, h, controller, supply } = world.cells;
   const wrap = world.settings.loopingMap;
-  if (beachSeen.length !== w * h) beachSeen = new Uint8Array(w * h);
   const sources = seaBeaches(world);
   if (sources.size === 0) return;
+  layer.reserve(w * h);
   const blocOfNation = new Uint16Array(world.nations.highWater + 1);
   world.nations.forEach((n) => (blocOfNation[n] = blocOf(world, n)));
   for (const [b, cells] of sources) {
     beachQueue.length = 0;
     for (const s of cells) {
-      if (beachSeen[s] === 1) continue;
-      beachSeen[s] = 1;
+      if (layer.at(s) !== 0) continue;
+      layer.set(s, b);
       beachQueue.push(s);
     }
     for (let head = 0; head < beachQueue.length; head++) {
       const c = beachQueue[head]!;
-      layer.set(c, b);
       const x = c % w;
       const row = c - x;
       for (let k = 0; k < 4; k++) {
         const n = k === 0 ? (row > 0 ? c - w : -1) : k === 1 ? (row < w * (h - 1) ? c + w : -1) : k === 2 ? (x > 0 ? c - 1 : wrap ? c + w - 1 : -1) : x < w - 1 ? c + 1 : wrap ? row : -1;
-        if (n < 0 || beachSeen[n] === 1 || supply[n] !== 0) continue;
+        if (n < 0 || supply[n] !== 0 || layer.at(n) !== 0) continue;
         const ctl = controller[n]!;
         if (ctl === 0 || blocOfNation[ctl] !== b) continue;
-        beachSeen[n] = 1;
+        layer.set(n, b);
         beachQueue.push(n);
       }
     }
   }
-  for (const c of layer.keys()) beachSeen[c] = 0;
 }
 
 /**
@@ -740,7 +738,7 @@ export function supplySystem(world: World): void {
     }
     // No network: the beach's layer, on the cell, or (off ground of its side) within the reach.
     if (!inSupply && beachLayer.size > 0) {
-      if (feeds(beachLayer.get(cell) ?? 0)) inSupply = beach = true;
+      if (feeds(beachLayer.at(cell))) inSupply = beach = true;
       else {
         const ctl = controller[cell]!;
         const ctlBloc = ctl === 0 ? 0 : blocOf(world, ctl);
@@ -755,7 +753,7 @@ export function supplySystem(world: World): void {
               const x = cx + dx;
               const xw = x < 0 ? (wrap ? x + w : -1) : x >= w ? (wrap ? x - w : -1) : x;
               if (xw < 0) continue;
-              if (feeds(beachLayer.get(y * w + xw) ?? 0)) {
+              if (feeds(beachLayer.at(y * w + xw))) {
                 inSupply = beach = true;
                 break;
               }

@@ -18,6 +18,7 @@ import { RngStreams } from './core/rng';
 import { takeSection, type Section } from './core/sections';
 import type { Stateful } from './core/state';
 import { Table } from './core/table';
+import { SparseLayer } from './core/sparseLayer';
 import { Alliances } from './alliances';
 import { Provinces } from './provinces';
 import { Buffs } from './buffs';
@@ -502,7 +503,7 @@ class WorldCore implements Stateful {
       if (!w.airPower.has(z)) w.airPower.set(z, new Map());
       w.airPower.get(z)!.set(power[at + 1]!, power[at + 2]!);
     }
-    w.supplyBeach = new Map();
+    w.supplyBeach = new SparseLayer();
     const beach = sections.find((s) => s.name === 'world.supplyBeach')?.data as Int32Array | undefined;
     for (let at = 0; beach && at < beach.length; at += 2) w.supplyBeach.set(beach[at]!, beach[at + 1]!);
     w.sorties = new Map();
@@ -878,7 +879,7 @@ export class World {
    * beach feeds it (`refreshBeaches`). State: made again whole at each supply refresh hour from the
    * network as refreshed, and read in the hours between, so it is saved.
    */
-  supplyBeach = new Map<number, number>();
+  supplyBeach = new SparseLayer();
   /** Derived (not state): bumped by every controller change (label re-derivation, PLAN 1.29). */
   controlChanges = 0;
   /** Derived (not state): bumped by every owner change through `setOwner` (`seaReach`'s hour, PLAN 7.1l2). */

@@ -1,0 +1,19 @@
+import { readFileSync } from 'node:fs';
+import { SIZE_1938 } from '../../../src/sim/scenario1938';
+import { Sim } from '../../../src/sim/sim';
+import { loadAssets1938 } from '../../../tools/headless/assets';
+const s = new Sim({ scenario: '1938', seed: 99, assets: loadAssets1938(SIZE_1938.w) });
+s.load(new Uint8Array(readFileSync('.cache/prof83/h0_y4.bin')));
+const w = (s as any).world;
+let hours = 0, dirty = 0, same = 0;
+let prev: Uint16Array | null = null;
+for (let d = 0; d < 120; d++) for (let k = 0; k < 2; k++) {
+  // just before a refresh hour: step to tick % 12 === 11 then read the flags the supply system reads
+  while ((w.tick + 1) % 12 !== 0) s.step(1);
+  s.step(1); // supply ran at an hour where tick % 12 === 0? read after
+  hours++;
+  const cur = w.cells.supply as Uint16Array;
+  if (prev && prev.length === cur.length) { let eq = true; for (let i = 0; i < cur.length; i++) if (prev[i] !== cur[i]) { eq = false; break; } if (eq) same++; }
+  prev = cur.slice();
+}
+console.log({ hours, sameSupplyAsLastRefresh: same });

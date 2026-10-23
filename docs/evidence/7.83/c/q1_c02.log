@@ -1,0 +1,34 @@
+pinned to CPUs 0xf00
+year   5  tick 43800  hash f278491d  nations 88  formations 594  flipped 52208  tick ms mean 1.9334 p95 9.0290  (17.00 s)
+  operationalAi  0.5750 ms   29.8 %  max    58.4  slow  1377 calls 0.5676 ms
+  supply         0.1974 ms   10.2 %  max    37.5  slow   662 calls 0.1400 ms
+  airAi          0.1932 ms   10.0 %  max    67.5  slow   346 calls 0.1920 ms
+  territory      0.1501 ms    7.8 %  max     6.1  slow    55 calls 0.0136 ms
+  invasionAi     0.1480 ms    7.7 %  max    37.4  slow   265 calls 0.1393 ms
+  combat         0.1209 ms    6.3 %  max     4.1  slow    42 calls 0.0101 ms
+  movement       0.1094 ms    5.7 %  max     3.7  slow    45 calls 0.0099 ms
+  capitals       0.0714 ms    3.7 %  max    25.9  slow    29 calls 0.0470 ms
+  air            0.0574 ms    3.0 %  max     7.0  slow    22 calls 0.0056 ms
+  war            0.0497 ms    2.6 %  max    58.2  slow    13 calls 0.0308 ms
+  economicAi     0.0429 ms    2.2 %  max    51.7  slow    12 calls 0.0427 ms
+  navalCombat    0.0363 ms    1.9 %  max     4.7  slow    13 calls 0.0032 ms
+  economy        0.0332 ms    1.7 %  max    27.9  slow    12 calls 0.0331 ms
+  bombardment    0.0277 ms    1.4 %  max     2.0  slow     3 calls 0.0005 ms
+  strategicAi    0.0272 ms    1.4 %  max    14.7  slow    19 calls 0.0062 ms
+  seaControl     0.0240 ms    1.2 %  max     4.3  slow    15 calls 0.0033 ms
+  navalAi        0.0190 ms    1.0 %  max     4.7  slow    39 calls 0.0076 ms
+  retreat        0.0131 ms    0.7 %  max     0.6  slow     0 calls 0.0000 ms
+  stats          0.0067 ms    0.3 %  max     6.1  slow    13 calls 0.0065 ms
+  revolts        0.0063 ms    0.3 %  max    21.0  slow    13 calls 0.0060 ms
+  production     0.0056 ms    0.3 %  max     5.4  slow    12 calls 0.0046 ms
+  puppets        0.0046 ms    0.2 %  max    38.6  slow     1 calls 0.0044 ms
+  repatriation   0.0038 ms    0.2 %  max     2.2  slow     4 calls 0.0007 ms
+  research       0.0021 ms    0.1 %  max     2.0  slow     2 calls 0.0004 ms
+  amphibious     0.0017 ms    0.1 %  max     2.7  slow     1 calls 0.0003 ms
+  efficiency     0.0011 ms    0.1 %  max     1.3  slow     1 calls 0.0001 ms
+  nuclear        0.0009 ms    0.0 %  max     0.3  slow     0 calls 0.0000 ms
+  alliances      0.0004 ms    0.0 %  max     0.2  slow     0 calls 0.0000 ms
+  orgLoss        0.0004 ms    0.0 %  max     0.1  slow     0 calls 0.0000 ms
+  buffs          0.0002 ms    0.0 %  max     0.1  slow     0 calls 0.0000 ms
+  collapse       0.0002 ms    0.0 %  max     0.0  slow     0 calls 0.0000 ms
+done: 1 years, 17.0 s wall, mean tick 1.9334 ms, final hash f278491d → .cache/runs/1938-seed99-1y.json

@@ -265,9 +265,14 @@ them, are 7.81–7.86. A task each, split when taken up:
       invasionAi 0.238 → 0.160 ms a tick (−33 %, pairs swapped; bar 0.119). What is left is the rules'
       own work: the reach walks (37 a year), the bounded route searches, `seaReach` (shared with
       supply). No rule changed; the pin unchanged.
-    - [ ] 7.83c Supply's beach layer (ADR-622, ADR-630): the same, on the same save. AT: supply's mean a
+    - [x] 7.83c Supply's beach layer (ADR-622, ADR-630): the same, on the same save. AT: supply's mean a
       tick down to `dd3b730`'s rules' +0.03 or less (HEAD 0.217 against 0.138); the pin and the save's
       year hash unchanged; the gate green.
+      Closed not done (BLOCKERS 2026-10-23; `docs/evidence/7.83/c.md`): the beach layer an array by cell
+      (`SparseLayer`; the flood's set and the formations' lookups an index), hash f278491d; supply 0.202
+      → 0.188 ms a tick (−7 %, three swapped pairs; bar 0.153 against the pairs' HEAD, 0.168 absolute).
+      What is left is the coast scan (27,619 cells each refresh, scattered reads; the network changed at
+      every one of 240 refresh hours), `seaWay` and the flood. No rule changed; the pin unchanged.
     - [ ] 7.83d The capitals system (ADR-620, 640, 641): the same. AT: capitals' mean a tick at most
       0.035 ms on that save's year (HEAD 0.075, `dd3b730`'s rules 0.027); the pin and the save's year
       hash unchanged; the gate green.

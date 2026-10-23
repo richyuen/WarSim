@@ -5,6 +5,18 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.83c: supply's beach layer −7 %, short of `dd3b730` + 0.03 (2026-10-23)
+- **The bar:** supply's mean a tick on a year from HEAD's year-4 save of seed 99 at most `dd3b730`'s rules'
+  + 0.03 (0.168 ms; 0.153 against the pairs' own HEAD), the year's hash f278491d and the pin unchanged.
+- **What moved** (`docs/evidence/7.83/c.md`): the beach layer an array by cell (`SparseLayer`), the flood's
+  marks the layer itself; hash f278491d, random and toy worlds the same: 0.202 → 0.188 ms (three swapped
+  pairs); refreshBeaches 558 → 389 ms a year profiled, the per-formation loop near `dd3b730`'s.
+- **What is left:** about 0.04 ms a tick: the coast scan (27,619 coast cells asked their network each
+  refresh, scattered over the grid; the network changed at all 240 refresh hours read, so last hour's
+  candidates never hold), `seaWay` for the blocs `reach` did not search, the flood. Less needs the coast
+  cells whose network changed kept by the network's refresh, a larger change than this part. No
+  decision of the user's waits on it; the loop takes PLAN 7.83d, and 7.83's AT is read after it.
+
 ### PLAN 7.83b: the invasion AI's turn −33 %, short of half (2026-10-23)
 - **The bar:** invasionAi's mean a tick on a year from HEAD's year-4 save of seed 99 at most half of
   HEAD's in the same swapped pairs (0.238 → 0.119 ms), the year's hash f278491d and the pin unchanged.

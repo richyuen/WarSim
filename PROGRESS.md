@@ -22615,3 +22615,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   `seaReach` shared with supply. BLOCKERS entry; 7.83b closed not done.
 - **No rule changed:** no ADR; the pin unchanged (5161de24), the save's year hash unchanged.
 - **Next:** PLAN 7.83c (supply's beach layer).
+
+## 2026-10-23 — PLAN 7.83c: supply's beach layer an array by cell, no outcome changed; bar missed
+
+- **Start:** gate green on `1e890b8e`; critic not due. ADR-651 and ADR-653 still the user's.
+- **Read** (`docs/evidence/7.83/c.md`, `node --cpu-prof` on a year from HEAD's year-4 save of seed 99,
+  `dd3b730` on the same save beside it): supply 1,800 ms a year against 1,050; the beach refresh 558
+  (the coast scan ~210, `seaWay` 78, the flood's `Map` writes and marks 191) and the per-formation loop
+  +163 (its 5 × 5 window of `Map.get` on the beach layer).
+- **Cut:** `World.supplyBeach` a `SparseLayer` (new `src/sim/core/sparseLayer.ts`: 16-bit values by cell
+  and the list set, answering as the `Map`; the save's section the same); the flood marks in the layer
+  as it queues. Hash f278491d; random world seed 7 4d199771 either way; toy the same; `saveYear` and
+  the pin green by hand (sweep config). Test `sparseLayer.test.ts` (the layer against a `Map`).
+- **AT** (three swapped pairs, `--profile`): supply 0.202 → 0.188 ms a tick (−7 %); bar 0.153 against the
+  pairs' HEAD (0.168 absolute): missed. Reusing last hour's coast candidates: the network changed at
+  all 240 refresh hours read, so it never applies. BLOCKERS entry; 7.83c closed not done.
+- **No rule changed:** no ADR; the pin unchanged (5161de24).
+- **Next:** PLAN 7.83d (the capitals system).

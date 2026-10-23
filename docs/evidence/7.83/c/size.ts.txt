@@ -1,0 +1,11 @@
+import { readFileSync } from 'node:fs';
+import { SIZE_1938 } from '../../../src/sim/scenario1938';
+import { Sim } from '../../../src/sim/sim';
+import { loadAssets1938 } from '../../../tools/headless/assets';
+const s = new Sim({ scenario: '1938', seed: 99, assets: loadAssets1938(SIZE_1938.w) });
+s.load(new Uint8Array(readFileSync('.cache/prof83/h0_y4.bin')));
+const w = (s as any).world;
+const { w: W, h: H, supply, terrain } = w.cells;
+let zero = 0; for (let i = 0; i < W * H; i++) if (supply[i] === 0) zero++;
+console.log('grid', W, H, W * H, 'supply0', zero, 'formations', w.formations.count ?? '?');
+for (let d = 0; d < 60; d += 10) { s.step(240); console.log('day', d + 10, 'layer', w.supplyBeach.size); }
