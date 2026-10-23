@@ -257,10 +257,15 @@ them, are 7.81–7.86. A task each, split when taken up:
       off (on 8693 the Japanese fleets ~10 cells away, off the screen). AT: `carrierStrikeView1938.spec.ts`
       on 8693's Japan–USA strike, red before (0 Japanese ships): from the row both sides' ships on the
       screen (> 0 each); `carrierStrikeRow1938.spec.ts` green; the pin unchanged (view only).
+      Done (`ccbb3623`): the snapshot's sea row carries the carrier–target box (SEA_STRIDE 24), framed with
+      STRIKE_MARGIN 1.2 cells; 8693 0 → 50 Japanese ships beside 16 American at 214 m/px; 2251 at 396 m/px
+      (the T1–T2 band: both sides as counters).
     - [x] 7.84b The wing's flight: drawn only about each strike (`carrierStrikes`, `over` 0), 250 km at
       380 km/h in the air 1.3 hours of every 4. AT: the spec's planes of the striker on the screen from
       the row and at each of the next 4 hours (HEAD: 0, 2, 0, 0); `carrierStrikes1938.test.ts` red without
       (a flight in the air at every quarter-hour the page plays while the strike stands); the pin unchanged.
+      Done (`afdb7f3a`, ADR-655): each flight over its target the cycle's hours its flights out and back
+      leave; the spec's planes 2, 2, 2, 2, 2; the unit test red on HEAD at hour 44.75.
     - [ ] 7.84c Late sea battles: 13.29 → 9.30 a world-year, wars of two navies 1.14 → 0.29
       (`critic/c12_fleets.json`). Read first whether the fall is in wars of two navies (7.79's land war)
       or in battles a naval war (a naval rule). AT: the parent's second bar, or the measured cause to

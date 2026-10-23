@@ -180,7 +180,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   over 2 hours out has no hours over its target, and the flights overlap as before.
 - **Why not** draw the planes only at the carrier: the critic's case is the strike seen on the struck
   ships, and a wing over its target between hits reads as the strike it is.
-- **Consequences.** View only: the pin is unchanged (5161de24).
+- **Consequences.** View only: the pin is unchanged (5161de24). The battle record keeps no first hour,
+  so a wing is drawn over its target up to two cycles before its first strike, as its flight home was.
 
 ### ADR-654 · 2026-10-23 · proposed (the user's decision) — The tick budget against a busier world (PLAN 7.83's AT missed)
 

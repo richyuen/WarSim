@@ -22704,3 +22704,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **7.85** shares the case ("a carrier strike shows no aircraft"); that line of it is met here.
 - **Gate:** green; `scenario1938.test.ts`'s build-time check read 2,056 ms against 2,000 in the parallel run, then green alone (the gate's rerun); view-only change.
 - **Next:** 7.84c (late sea battles: read where the fall is first).
+- **After 7.84b** (review): sea specs run by hand, all green: `seaBattleSeen1938`, `navalDemo1938`,
+  `carrierStrikeRow1938`, `seaRow1938` (3), `seaClosingRow1938`. 2251's strike row opens at 396 m/px (the
+  T1–T2 band): both sides as counters, the British planes on the struck German fleet. `carrierStrikes`'
+  doc and ADR-655 say a wing is drawn over its target up to two cycles before a battle's first strike.

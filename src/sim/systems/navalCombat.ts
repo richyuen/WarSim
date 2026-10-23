@@ -841,9 +841,9 @@ export function navalCombatSystem(world: World): void {
  * CARRIER_CYCLE hours (`navalCombatSystem`), at once; its flight is drawn as a sortie that is over
  * its target at that hour: from its fleet to the nearest enemy fleet of the battle with a ship on
  * the surface, at its template's speed, over it until the next strike's flight is (PLAN 7.84b),
- * and back. Every strike whose flight is in the air in the hour before the tick or at it. A
- * battle's first strike may come after the hour just gone: its flight home is drawn all the same
- * (the record keeps no first hour). Reads only.
+ * and back. Every strike whose flight is in the air in the hour before the tick or at it. The
+ * record keeps no first hour, so a battle's first strikes are drawn as if it had been fought for
+ * the cycles before (up to two: the flights over their target until the next's), reads only.
  */
 export function carrierStrikes(world: World): { wing: number; nation: number; sortie: Sortie }[] {
   const out: { wing: number; nation: number; sortie: Sortie }[] = [];
