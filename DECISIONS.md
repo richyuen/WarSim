@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-645 · 2026-10-22 · accepted — A ferry turn is bounded by its refusals' route searches, a port's refusal taken by its other groups (PLAN 7.90b; amends ADR-642)
+
+- **Context** (`docs/evidence/7.90/a.md` §2). ADR-642 ended the ferry's turn at SAIL_TRIES (4) transport
+  groups that gave no order, as a bound on cost (a refusal may search the map). The groups go in one
+  order every week, so the same ones refused first and the rest were never tried: critic run 12, 1129
+  year 10, 6.5 of the USA's 11.4 groups at a port never tried a turn (Nuuk's two, then Bathurst's or San
+  Juan's); 6421 year 20, 26.3 of 30.6 (Freetown, Dakar, Roseau, Port-of-Spain first). Most of those
+  refusals made no search at all (a sail to an island with no port of the nation).
+- **Decision** (`ai/invasion.ts`, `planFerry`): the turn ends once the route searches its refusals made
+  (`CORRIDOR_REFUSAL.searches`) reach FERRY_SEARCHES (68 = 4 × (1 + SAIL_TRIES²), ADR-642's four groups'
+  worst), or as before when the room of those that gave an order covers the free army's men. A group
+  at a port where a group refused since the turn's last order takes that refusal (`same`) with no
+  search: it would carry the same army from the same water. Edge: two groups at one port of different
+  room; they are sorted by room, the larger first, and a larger group's refusal is the smaller's.
+  The never-tried figure reads the groups the refusal stop skipped; on a save where the room covers
+  the army the turn still ends early, and that is not this rule's regression.
+- **Read** (`docs/evidence/7.90/b.md`, 90 days): never tried a turn, days 30–90, 6.5 → 0 (1129) and
+  26.3 → 0 (6421), 0 on every turn; the refusals searched at most 18 a turn (the bound never reached).
+  The groups now tried refuse the sail back to the army (PLAN 7.90c's cause), so the landed barely
+  move: 7 → 8 (1129), 77 → 78 (6421).
+- **Timing** (`.cache/prof90b/`, pairs on separate P-cores, swapped): invasion AI a tick, HEAD → rule,
+  1129 year 10 0.298 / 0.261 → 0.275 / 0.325 ms (longest 51 / 58 → 59 / 59 ms), 6421 year 20 0.428 /
+  0.372 → 0.392 / 0.469 ms (longest 74 / 74 → 74 / 84 ms): within the pairs' spread.
+- **Test.** `strandedFerry1938.test.ts`, "tries a group past five refusing at one port"; red with
+  ADR-642's stop.
+- **Pin.** Unchanged (8a571863): seed 99's five years are hash for hash HEAD's (961ca0d2 at year 5).
+
 ### ADR-644 · 2026-10-22 · accepted — At a decisive peace, the settlement's pockets go with the land round them (PLAN 7.80b; the user's ADR-639 a; amends ADR-51)
 
 - **Context** (PLAN 7.80a, `docs/evidence/7.80/a.md`). The treaty hands over the occupied land cell by

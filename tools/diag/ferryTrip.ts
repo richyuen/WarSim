@@ -110,7 +110,7 @@ FERRY_PROBE.turn = (t): void => {
       const by = t.island.map((id) => [steps(cellOf(id), from), id] as const).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
       return { fleet: x.fleet, port: w.ports[x.port]!.name, nearest: by.slice(0, 4).map(([d, id]) => `${id} ${d} cells landmass ${comp[cellOf(id)]} ports ${portsOn(comp[cellOf(id)]!, x.port)}`) };
     });
-  turns.push({ day, free: t.free, groups: t.groups, tries: t.tries.map((x) => `${x.fleet}@${w.ports[x.port]?.name ?? x.port}:${x.way}${x.acted ? '+' : '-'}`), refusedSails });
+  turns.push({ day, free: t.free, groups: t.groups, tries: t.tries.map((x) => `${x.fleet}@${w.ports[x.port]?.name ?? x.port}:${x.way}${x.acted ? '+' : '-'}${x.searches > 0 ? `#${x.searches}` : ''}`), refusedSails });
   for (const x of t.tries) if (x.acted) orders.push({ day, fleet: x.fleet, way: x.way });
 };
 interface Trip { id: number; from: number; march?: number; aboard?: number; sailed?: number; ashore?: number; at?: number; fleet?: number }

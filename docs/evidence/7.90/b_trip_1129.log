@@ -1,0 +1,119 @@
+{"division":12460,"landed":8,"landedFromPiles":[0,4],"stillAboard":0,"stillMarching":14,"meanMarchDays":18.2,"meanWaitDays":0,"meanSeaDays":20.6,"groupDays":{"P":807,"W":112,"B":0,"L":143,"E":30,"S":0,"X":0},"ferryTurns":12,"atPortNoGroupMean":60.8,"atPortNoGroupMax":67,"orders":23}
+ports by the first pile: Milwaukee@688651 31 cells; Chicago@705036 40 cells; Gary@709135 45 cells; Cleveland@709167 77 cells; Buffalo@690751 84 cells; Rochester@686662 89 cells; Kuujjuarapik@504389 117 cells; Baltimore@739916 121 cells
+126	PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	
+	3650 Nuuk
+138	PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	
+	3650 Nuuk
+365	PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLLLLLLLLLLPWPPPPPPPPPPPPPPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	3656:board 3663:board 3670:board
+	3650 Norfolk | 3688 Bathurst
+549	PPPPPPPLLLLLLLLLLLLLLLLLLLLLLPWWPPPPPPPPWPPPPPPPPPPPPPPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	3656:board
+	3650 Kuujjuarapik | 3679 Bathurst
+568	PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLLLLLLLLLLPWPPPPPPPPPPPPPPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	3656:board 3663:board 3670:board
+	3650 Norfolk | 3688 Bathurst
+571	PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLLLLLLLLLLPWPPPPPPPPPPPPPPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	3656:board 3663:board 3670:board
+	3650 Norfolk | 3688 Bathurst
+574	PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	
+	3650 San Juan
+1015	PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLLLLLLLLLLPWPPPPPPPPPPPPPPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	3656:board 3663:board 3670:board
+	3650 Norfolk | 3688 Bathurst
+1119	PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	
+	3650 Bissau
+1120	PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	
+	3650 Roseau
+1122	PPPPPPPEEEEEEEEEEEEEEEEEEEEEEEPPPPPWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWLLLLLLLLLPWWPPEEEEPPP	3656:board 3684:board 3691:board 3698:board 3705:board 3712:board 3719:board 3733:board
+	3650 Corpus Christi | 3661 West Palm Beach | 3680 Kuujjuarapik | 3729 St. John's | 3738 Boston
+1123	PPPPPPPEEEPPPPLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP	3656:sail 3663:board
+	3650 Pearl Harbor | 3660 Hilo | 3704 Bathurst
+turn 3656 free 157 groups 12: 126@Nuuk:board-#1 138@Nuuk:same- 365@Norfolk:board+#1 549@Kuujjuarapik:board+ 568@Norfolk:board+#1 571@Norfolk:board+#1 1015@Norfolk:board+#1 1122@Corpus Christi:board+#9 574@San Juan:sail- 1119@Bissau:sail- 1120@Roseau:sail- 1123@Pearl Harbor:sail+#1
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+turn 3663 free 151 groups 10: 126@Nuuk:board-#1 138@Nuuk:same- 365@Norfolk:board+#2 568@Norfolk:board+#1 571@Norfolk:board+#1 1015@Norfolk:board+#1 1123@Hilo:board+ 574@San Juan:sail- 1119@Bissau:sail- 1120@Roseau:sail-
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+turn 3670 free 149 groups 9: 126@Nuuk:board-#1 138@Nuuk:same- 365@Norfolk:board+ 568@Norfolk:board+#1 571@Norfolk:board+#1 1015@Norfolk:board+#1 574@San Juan:sail- 1119@Bissau:sail- 1120@Roseau:sail-
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+turn 3677 free 147 groups 5: 126@Nuuk:board-#1 138@Nuuk:same- 574@San Juan:sail- 1119@Bissau:sail- 1120@Roseau:sail-
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+turn 3684 free 150 groups 7: 126@Nuuk:board-#1 138@Nuuk:same- 1122@Kuujjuarapik:board+#1 549@Bathurst:sail- 574@San Juan:sail- 1119@Bissau:sail- 1120@Roseau:sail-
+    sail refused 549@Bathurst: 612 260 cells landmass 510 ports 0; 618 260 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 309 cells landmass 521 ports 0
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+turn 3691 free 149 groups 11: 126@Nuuk:board-#1 138@Nuuk:same- 1122@Kuujjuarapik:board+#2 365@Bathurst:sail- 549@Bathurst:same- 568@Bathurst:same- 571@Bathurst:same- 574@San Juan:sail- 1015@Bathurst:same- 1119@Bissau:sail- 1120@Roseau:sail-
+    sail refused 365@Bathurst: 612 260 cells landmass 510 ports 0; 618 260 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 309 cells landmass 521 ports 0
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+turn 3698 free 147 groups 11: 126@Nuuk:board-#1 138@Nuuk:same- 1122@Kuujjuarapik:board+#1 365@Bathurst:sail- 549@Bathurst:same- 568@Bathurst:same- 571@Bathurst:same- 574@San Juan:sail- 1015@Bathurst:same- 1119@Bissau:sail- 1120@Roseau:sail-
+    sail refused 365@Bathurst: 612 260 cells landmass 510 ports 0; 618 260 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 309 cells landmass 521 ports 0
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+turn 3705 free 146 groups 12: 126@Nuuk:board-#1 138@Nuuk:same- 1122@Kuujjuarapik:board+#2 365@Bathurst:sail- 549@Bathurst:same- 568@Bathurst:same- 571@Bathurst:same- 574@San Juan:sail- 1015@Bathurst:same- 1119@Bissau:sail- 1120@Roseau:sail- 1123@Bathurst:same-
+    sail refused 365@Bathurst: 612 260 cells landmass 510 ports 0; 618 260 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 309 cells landmass 521 ports 0
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+turn 3712 free 146 groups 12: 126@Nuuk:board-#1 138@Nuuk:same- 1122@Kuujjuarapik:board+#1 365@Bathurst:sail- 549@Bathurst:same- 568@Bathurst:same- 571@Bathurst:same- 574@San Juan:sail- 1015@Bathurst:same- 1119@Bissau:sail- 1120@Roseau:sail- 1123@Bathurst:same-
+    sail refused 365@Bathurst: 612 260 cells landmass 510 ports 0; 618 260 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 309 cells landmass 521 ports 0
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+turn 3719 free 146 groups 12: 126@Nuuk:board-#1 138@Nuuk:same- 1122@Kuujjuarapik:board+ 365@Bathurst:sail- 549@Bathurst:same- 568@Bathurst:same- 571@Bathurst:same- 574@San Juan:sail- 1015@Bathurst:same- 1119@Bissau:sail- 1120@Roseau:sail- 1123@Bathurst:same-
+    sail refused 365@Bathurst: 612 260 cells landmass 510 ports 0; 618 260 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 309 cells landmass 521 ports 0
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+turn 3726 free 147 groups 11: 126@Nuuk:board-#1 138@Nuuk:same- 365@Bathurst:sail- 549@Bathurst:same- 568@Bathurst:same- 571@Bathurst:same- 574@San Juan:sail- 1015@Bathurst:same- 1119@Bissau:sail- 1120@Roseau:sail- 1123@Bathurst:same-
+    sail refused 365@Bathurst: 612 260 cells landmass 510 ports 0; 618 260 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 309 cells landmass 521 ports 0
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+turn 3733 free 147 groups 12: 126@Nuuk:board-#1 138@Nuuk:same- 1122@St. John's:board+#2 365@Bathurst:sail- 549@Bathurst:same- 568@Bathurst:same- 571@Bathurst:same- 574@San Juan:sail- 1015@Bathurst:same- 1119@Bissau:sail- 1120@Roseau:sail- 1123@Bathurst:same-
+    sail refused 365@Bathurst: 612 260 cells landmass 510 ports 0; 618 260 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 309 cells landmass 521 ports 0
+    sail refused 574@San Juan: 612 51 cells landmass 510 ports 0; 618 51 cells landmass 510 ports 0; 1321 52 cells landmass 529 ports 0; 611 56 cells landmass 521 ports 0
+    sail refused 1119@Bissau: 612 274 cells landmass 510 ports 0; 618 274 cells landmass 510 ports 0; 1321 305 cells landmass 529 ports 0; 611 313 cells landmass 521 ports 0
+    sail refused 1120@Roseau: 612 7 cells landmass 510 ports 0; 618 7 cells landmass 510 ports 0; 1321 62 cells landmass 529 ports 0; 611 66 cells landmass 521 ports 0
+after the voyage 365: laden from day 3671 for 18, then stood 52 days (to the end)
+after the voyage 549: laden from day 3657 for 22, then stood 62 days (to the end)
+after the voyage 568: laden from day 3671 for 18, then stood 52 days (to the end)
+after the voyage 571: laden from day 3671 for 18, then stood 52 days (to the end)
+after the voyage 1015: laden from day 3671 for 18, then stood 52 days (to the end)
+after the voyage 1122: laden from day 3720 for 9, then stood 5 days
+after the voyage 1123: laden from day 3664 for 40, then stood 37 days (to the end)
+still marching 162 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 168 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 174 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 224 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 257 from 746057 since 3664 to Norfolk moving 0 hours left 0
+still marching 288 from 746057 since 3671 to Norfolk moving 0 hours left 0
+still marching 343 from 746057 since 3671 to Norfolk moving 0 hours left 0
+still marching 347 from 746057 since 3671 to Norfolk moving 0 hours left 0
+still marching 616 from 629308 since 3692 to Kuujjuarapik moving 0 hours left 0
+still marching 766 from 545391 since 3692 to Kuujjuarapik moving 0 hours left 0
+still marching 718 from 561777 since 3699 to Kuujjuarapik moving 0 hours left 0
+still marching 915 from 567920 since 3706 to Kuujjuarapik moving 1 hours left 19
+landed 507 from 504389 march - aboard 3657 sailed 3657 ashore 3679 at 1061793 (929,518)
+landed 908 from 504389 march - aboard 3657 sailed 3657 ashore 3679 at 1061794 (930,518)
+landed 48 from 746057 (pile 1) march 3657 aboard 3671 sailed 3671 ashore 3689 at 1061794 (930,518)
+landed 125 from 746057 (pile 1) march 3657 aboard 3671 sailed 3671 ashore 3689 at 1061794 (930,518)
+landed 148 from 746057 (pile 1) march 3657 aboard 3671 sailed 3671 ashore 3689 at 1061794 (930,518)
+landed 152 from 746057 (pile 1) march 3657 aboard 3671 sailed 3671 ashore 3689 at 1061794 (930,518)
+landed 172 from 989324 march - aboard 3664 sailed 3664 ashore 3704 at 1061794 (930,518)
+landed 705 from 547437 march 3685 aboard 3720 sailed 3720 ashore 3729 at 623315 (723,304)
+day 3650 at a port with no group 61 groups 12 training 0 room 288000 wantsT false wantsF false gold 131961 aboard 0 piles 60/49
+day 3660 at a port with no group 58 groups 12 training 0 room 288000 wantsT false wantsF false gold 115757 aboard 2 piles 60/49
+day 3670 at a port with no group 55 groups 12 training 0 room 288000 wantsT false wantsF false gold 115713 aboard 3 piles 60/44
+day 3680 at a port with no group 57 groups 12 training 0 room 288000 wantsT false wantsF false gold 115668 aboard 5 piles 60/41
+day 3690 at a port with no group 60 groups 12 training 0 room 288000 wantsT false wantsF false gold 114904 aboard 1 piles 60/41
+day 3700 at a port with no group 60 groups 12 training 0 room 288000 wantsT false wantsF false gold 114859 aboard 1 piles 60/41
+day 3710 at a port with no group 61 groups 12 training 0 room 288000 wantsT false wantsF false gold 114815 aboard 0 piles 60/41
+day 3720 at a port with no group 63 groups 12 training 0 room 288000 wantsT false wantsF false gold 109184 aboard 1 piles 60/43
+day 3730 at a port with no group 65 groups 12 training 0 room 288000 wantsT false wantsF false gold 109140 aboard 0 piles 60/43
+day 3740 at a port with no group 67 groups 12 training 0 room 288000 wantsT false wantsF false gold 109095 aboard 0 piles 60/43

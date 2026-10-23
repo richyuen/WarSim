@@ -1,0 +1,3189 @@
+{
+ "seed": 1129,
+ "bin": "critic/c12_seed1129_y10.bin",
+ "tag": "USA",
+ "piles": [
+  625163,
+  746057
+ ],
+ "portsNear": [
+  {
+   "port": "Milwaukee",
+   "cell": 688651,
+   "steps": 31,
+   "zone": 423,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Chicago",
+   "cell": 705036,
+   "steps": 40,
+   "zone": 423,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Gary",
+   "cell": 709135,
+   "steps": 45,
+   "zone": 423,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Cleveland",
+   "cell": 709167,
+   "steps": 77,
+   "zone": 425,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Buffalo",
+   "cell": 690751,
+   "steps": 84,
+   "zone": 425,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Rochester",
+   "cell": 686662,
+   "steps": 89,
+   "zone": 424,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Kuujjuarapik",
+   "cell": 504389,
+   "steps": 117,
+   "zone": 166,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Baltimore",
+   "cell": 739916,
+   "steps": 121,
+   "zone": 208,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Philadelphia",
+   "cell": 731732,
+   "steps": 125,
+   "zone": 208,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "New York",
+   "cell": 719451,
+   "steps": 126,
+   "zone": 208,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Bridgeport",
+   "cell": 713311,
+   "steps": 127,
+   "zone": 101,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "New York",
+   "cell": 721499,
+   "steps": 127,
+   "zone": 208,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "New Orleans",
+   "cell": 862719,
+   "steps": 128,
+   "zone": 104,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Boston",
+   "cell": 696939,
+   "steps": 131,
+   "zone": 101,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Boston",
+   "cell": 698987,
+   "steps": 132,
+   "zone": 101,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Providence",
+   "cell": 705129,
+   "steps": 133,
+   "zone": 101,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Norfolk",
+   "cell": 772685,
+   "steps": 138,
+   "zone": 208,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Norfolk",
+   "cell": 772686,
+   "steps": 139,
+   "zone": 208,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Savannah",
+   "cell": 836146,
+   "steps": 142,
+   "zone": 395,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Wilmington",
+   "cell": 807492,
+   "steps": 146,
+   "zone": 395,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Jacksonville",
+   "cell": 858671,
+   "steps": 150,
+   "zone": 395,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Tampa",
+   "cell": 887338,
+   "steps": 159,
+   "zone": 104,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Houston",
+   "cell": 864737,
+   "steps": 159,
+   "zone": 105,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Sarasota",
+   "cell": 895530,
+   "steps": 163,
+   "zone": 104,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Sydney",
+   "cell": 645801,
+   "steps": 168,
+   "zone": 110,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "West Palm Beach",
+   "cell": 903736,
+   "steps": 181,
+   "zone": 395,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Corpus Christi",
+   "cell": 891349,
+   "steps": 184,
+   "zone": 105,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Miami",
+   "cell": 916023,
+   "steps": 186,
+   "zone": 395,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Matamoros",
+   "cell": 913877,
+   "steps": 195,
+   "zone": 105,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Seattle",
+   "cell": 622920,
+   "steps": 196,
+   "zone": 279,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Tacoma",
+   "cell": 627015,
+   "steps": 197,
+   "zone": 279,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Bremerton",
+   "cell": 622918,
+   "steps": 198,
+   "zone": 279,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "St. John's",
+   "cell": 623315,
+   "steps": 201,
+   "zone": 206,
+   "closed": false,
+   "marches": false
+  },
+  {
+   "port": "Eureka",
+   "cell": 719166,
+   "steps": 251,
+   "zone": 224,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Guaymas",
+   "cell": 887177,
+   "steps": 258,
+   "zone": 76,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "San Francisco",
+   "cell": 760135,
+   "steps": 262,
+   "zone": 236,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "San Jose",
+   "cell": 766282,
+   "steps": 262,
+   "zone": 236,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Los Angeles",
+   "cell": 811359,
+   "steps": 263,
+   "zone": 236,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Irvine",
+   "cell": 815457,
+   "steps": 263,
+   "zone": 236,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Oceanside",
+   "cell": 821604,
+   "steps": 263,
+   "zone": 236,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "San Diego",
+   "cell": 825701,
+   "steps": 264,
+   "zone": 236,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "San Diego",
+   "cell": 827749,
+   "steps": 265,
+   "zone": 236,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Santa Barbara",
+   "cell": 805206,
+   "steps": 269,
+   "zone": 236,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Anchorage",
+   "cell": 401579,
+   "steps": 461,
+   "zone": 53,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Cayenne",
+   "cell": 1166038,
+   "steps": 467,
+   "zone": 218,
+   "closed": false,
+   "marches": false
+  },
+  {
+   "port": "Prudhoe Bay",
+   "cell": 227506,
+   "steps": 539,
+   "zone": 32,
+   "closed": true,
+   "marches": true
+  },
+  {
+   "port": "Nome",
+   "cell": 342099,
+   "steps": 578,
+   "zone": 264,
+   "closed": false,
+   "marches": true
+  },
+  {
+   "port": "Utqiaġvik",
+   "cell": 206980,
+   "steps": 595,
+   "zone": 14,
+   "closed": true,
+   "marches": true
+  },
+  {
+   "port": "Point Hope",
+   "cell": 266317,
+   "steps": 621,
+   "zone": 52,
+   "closed": true,
+   "marches": true
+  }
+ ],
+ "summary": {
+  "division": 12460,
+  "landed": 8,
+  "landedFromPiles": [
+   0,
+   4
+  ],
+  "stillAboard": 0,
+  "stillMarching": 14,
+  "meanMarchDays": 18.2,
+  "meanWaitDays": 0,
+  "meanSeaDays": 20.6,
+  "groupDays": {
+   "P": 807,
+   "W": 112,
+   "B": 0,
+   "L": 143,
+   "E": 30,
+   "S": 0,
+   "X": 0
+  },
+  "ferryTurns": 12,
+  "atPortNoGroupMean": 60.8,
+  "atPortNoGroupMax": 67,
+  "orders": 23
+ },
+ "turns": [
+  {
+   "day": 3656,
+   "free": 157,
+   "groups": 12,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "365@Norfolk:board+#1",
+    "549@Kuujjuarapik:board+",
+    "568@Norfolk:board+#1",
+    "571@Norfolk:board+#1",
+    "1015@Norfolk:board+#1",
+    "1122@Corpus Christi:board+#9",
+    "574@San Juan:sail-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-",
+    "1123@Pearl Harbor:sail+#1"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  },
+  {
+   "day": 3663,
+   "free": 151,
+   "groups": 10,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "365@Norfolk:board+#2",
+    "568@Norfolk:board+#1",
+    "571@Norfolk:board+#1",
+    "1015@Norfolk:board+#1",
+    "1123@Hilo:board+",
+    "574@San Juan:sail-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  },
+  {
+   "day": 3670,
+   "free": 149,
+   "groups": 9,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "365@Norfolk:board+",
+    "568@Norfolk:board+#1",
+    "571@Norfolk:board+#1",
+    "1015@Norfolk:board+#1",
+    "574@San Juan:sail-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  },
+  {
+   "day": 3677,
+   "free": 147,
+   "groups": 5,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "574@San Juan:sail-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  },
+  {
+   "day": 3684,
+   "free": 150,
+   "groups": 7,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "1122@Kuujjuarapik:board+#1",
+    "549@Bathurst:sail-",
+    "574@San Juan:sail-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 549,
+     "port": "Bathurst",
+     "nearest": [
+      "612 260 cells landmass 510 ports 0",
+      "618 260 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 309 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  },
+  {
+   "day": 3691,
+   "free": 149,
+   "groups": 11,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "1122@Kuujjuarapik:board+#2",
+    "365@Bathurst:sail-",
+    "549@Bathurst:same-",
+    "568@Bathurst:same-",
+    "571@Bathurst:same-",
+    "574@San Juan:sail-",
+    "1015@Bathurst:same-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 365,
+     "port": "Bathurst",
+     "nearest": [
+      "612 260 cells landmass 510 ports 0",
+      "618 260 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 309 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  },
+  {
+   "day": 3698,
+   "free": 147,
+   "groups": 11,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "1122@Kuujjuarapik:board+#1",
+    "365@Bathurst:sail-",
+    "549@Bathurst:same-",
+    "568@Bathurst:same-",
+    "571@Bathurst:same-",
+    "574@San Juan:sail-",
+    "1015@Bathurst:same-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 365,
+     "port": "Bathurst",
+     "nearest": [
+      "612 260 cells landmass 510 ports 0",
+      "618 260 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 309 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  },
+  {
+   "day": 3705,
+   "free": 146,
+   "groups": 12,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "1122@Kuujjuarapik:board+#2",
+    "365@Bathurst:sail-",
+    "549@Bathurst:same-",
+    "568@Bathurst:same-",
+    "571@Bathurst:same-",
+    "574@San Juan:sail-",
+    "1015@Bathurst:same-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-",
+    "1123@Bathurst:same-"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 365,
+     "port": "Bathurst",
+     "nearest": [
+      "612 260 cells landmass 510 ports 0",
+      "618 260 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 309 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  },
+  {
+   "day": 3712,
+   "free": 146,
+   "groups": 12,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "1122@Kuujjuarapik:board+#1",
+    "365@Bathurst:sail-",
+    "549@Bathurst:same-",
+    "568@Bathurst:same-",
+    "571@Bathurst:same-",
+    "574@San Juan:sail-",
+    "1015@Bathurst:same-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-",
+    "1123@Bathurst:same-"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 365,
+     "port": "Bathurst",
+     "nearest": [
+      "612 260 cells landmass 510 ports 0",
+      "618 260 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 309 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  },
+  {
+   "day": 3719,
+   "free": 146,
+   "groups": 12,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "1122@Kuujjuarapik:board+",
+    "365@Bathurst:sail-",
+    "549@Bathurst:same-",
+    "568@Bathurst:same-",
+    "571@Bathurst:same-",
+    "574@San Juan:sail-",
+    "1015@Bathurst:same-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-",
+    "1123@Bathurst:same-"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 365,
+     "port": "Bathurst",
+     "nearest": [
+      "612 260 cells landmass 510 ports 0",
+      "618 260 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 309 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  },
+  {
+   "day": 3726,
+   "free": 147,
+   "groups": 11,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "365@Bathurst:sail-",
+    "549@Bathurst:same-",
+    "568@Bathurst:same-",
+    "571@Bathurst:same-",
+    "574@San Juan:sail-",
+    "1015@Bathurst:same-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-",
+    "1123@Bathurst:same-"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 365,
+     "port": "Bathurst",
+     "nearest": [
+      "612 260 cells landmass 510 ports 0",
+      "618 260 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 309 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  },
+  {
+   "day": 3733,
+   "free": 147,
+   "groups": 12,
+   "tries": [
+    "126@Nuuk:board-#1",
+    "138@Nuuk:same-",
+    "1122@St. John's:board+#2",
+    "365@Bathurst:sail-",
+    "549@Bathurst:same-",
+    "568@Bathurst:same-",
+    "571@Bathurst:same-",
+    "574@San Juan:sail-",
+    "1015@Bathurst:same-",
+    "1119@Bissau:sail-",
+    "1120@Roseau:sail-",
+    "1123@Bathurst:same-"
+   ],
+   "refusedSails": [
+    {
+     "fleet": 365,
+     "port": "Bathurst",
+     "nearest": [
+      "612 260 cells landmass 510 ports 0",
+      "618 260 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 309 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 574,
+     "port": "San Juan",
+     "nearest": [
+      "612 51 cells landmass 510 ports 0",
+      "618 51 cells landmass 510 ports 0",
+      "1321 52 cells landmass 529 ports 0",
+      "611 56 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1119,
+     "port": "Bissau",
+     "nearest": [
+      "612 274 cells landmass 510 ports 0",
+      "618 274 cells landmass 510 ports 0",
+      "1321 305 cells landmass 529 ports 0",
+      "611 313 cells landmass 521 ports 0"
+     ]
+    },
+    {
+     "fleet": 1120,
+     "port": "Roseau",
+     "nearest": [
+      "612 7 cells landmass 510 ports 0",
+      "618 7 cells landmass 510 ports 0",
+      "1321 62 cells landmass 529 ports 0",
+      "611 66 cells landmass 521 ports 0"
+     ]
+    }
+   ]
+  }
+ ],
+ "groups": [
+  {
+   "fleet": 126,
+   "line": "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+   "P": 91,
+   "W": 0,
+   "B": 0,
+   "L": 0,
+   "E": 0,
+   "S": 0,
+   "X": 0,
+   "orders": [],
+   "where": [
+    "3650 Nuuk"
+   ]
+  },
+  {
+   "fleet": 138,
+   "line": "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+   "P": 91,
+   "W": 0,
+   "B": 0,
+   "L": 0,
+   "E": 0,
+   "S": 0,
+   "X": 0,
+   "orders": [],
+   "where": [
+    "3650 Nuuk"
+   ]
+  },
+  {
+   "fleet": 365,
+   "line": "PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLLLLLLLLLLPWPPPPPPPPPPPPPPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+   "P": 56,
+   "W": 17,
+   "B": 0,
+   "L": 18,
+   "E": 0,
+   "S": 0,
+   "X": 0,
+   "orders": [
+    "3656:board",
+    "3663:board",
+    "3670:board"
+   ],
+   "where": [
+    "3650 Norfolk",
+    "3671 (610,365)",
+    "3672 (636,365)",
+    "3673 (661,369)",
+    "3674 (678,384)",
+    "3675 (696,401)",
+    "3676 (713,416)",
+    "3677 (729,431)",
+    "3678 (745,446)",
+    "3679 (763,456)",
+    "3680 (782,463)",
+    "3681 (801,471)",
+    "3682 (819,477)",
+    "3683 (838,485)",
+    "3684 (856,491)",
+    "3685 (875,499)",
+    "3686 (893,505)",
+    "3687 (911,512)",
+    "3688 Bathurst"
+   ]
+  },
+  {
+   "fleet": 549,
+   "line": "PPPPPPPLLLLLLLLLLLLLLLLLLLLLLPWWPPPPPPPPWPPPPPPPPPPPPPPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+   "P": 64,
+   "W": 5,
+   "B": 0,
+   "L": 22,
+   "E": 0,
+   "S": 0,
+   "X": 0,
+   "orders": [
+    "3656:board"
+   ],
+   "where": [
+    "3650 Kuujjuarapik",
+    "3657 (554,230)",
+    "3658 (552,202)",
+    "3659 (572,180)",
+    "3660 (613,179)",
+    "3661 (648,192)",
+    "3662 (681,204)",
+    "3663 (708,223)",
+    "3664 (734,242)",
+    "3665 (757,260)",
+    "3666 (778,281)",
+    "3667 (798,302)",
+    "3668 (810,323)",
+    "3669 (823,344)",
+    "3670 (834,363)",
+    "3671 (846,383)",
+    "3672 (857,401)",
+    "3673 (869,420)",
+    "3674 (879,438)",
+    "3675 (890,455)",
+    "3676 (900,473)",
+    "3677 (911,490)",
+    "3678 (920,506)",
+    "3679 Bathurst"
+   ]
+  },
+  {
+   "fleet": 568,
+   "line": "PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLLLLLLLLLLPWPPPPPPPPPPPPPPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+   "P": 56,
+   "W": 17,
+   "B": 0,
+   "L": 18,
+   "E": 0,
+   "S": 0,
+   "X": 0,
+   "orders": [
+    "3656:board",
+    "3663:board",
+    "3670:board"
+   ],
+   "where": [
+    "3650 Norfolk",
+    "3671 (610,365)",
+    "3672 (636,365)",
+    "3673 (661,369)",
+    "3674 (678,384)",
+    "3675 (696,401)",
+    "3676 (713,416)",
+    "3677 (729,431)",
+    "3678 (745,446)",
+    "3679 (763,456)",
+    "3680 (782,463)",
+    "3681 (801,471)",
+    "3682 (819,477)",
+    "3683 (838,485)",
+    "3684 (856,491)",
+    "3685 (875,499)",
+    "3686 (893,505)",
+    "3687 (911,512)",
+    "3688 Bathurst"
+   ]
+  },
+  {
+   "fleet": 571,
+   "line": "PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLLLLLLLLLLPWPPPPPPPPPPPPPPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+   "P": 56,
+   "W": 17,
+   "B": 0,
+   "L": 18,
+   "E": 0,
+   "S": 0,
+   "X": 0,
+   "orders": [
+    "3656:board",
+    "3663:board",
+    "3670:board"
+   ],
+   "where": [
+    "3650 Norfolk",
+    "3671 (610,365)",
+    "3672 (636,365)",
+    "3673 (661,369)",
+    "3674 (678,384)",
+    "3675 (696,401)",
+    "3676 (713,416)",
+    "3677 (729,431)",
+    "3678 (745,446)",
+    "3679 (763,456)",
+    "3680 (782,463)",
+    "3681 (801,471)",
+    "3682 (819,477)",
+    "3683 (838,485)",
+    "3684 (856,491)",
+    "3685 (875,499)",
+    "3686 (893,505)",
+    "3687 (911,512)",
+    "3688 Bathurst"
+   ]
+  },
+  {
+   "fleet": 574,
+   "line": "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+   "P": 91,
+   "W": 0,
+   "B": 0,
+   "L": 0,
+   "E": 0,
+   "S": 0,
+   "X": 0,
+   "orders": [],
+   "where": [
+    "3650 San Juan"
+   ]
+  },
+  {
+   "fleet": 1015,
+   "line": "PPPPPPPWWWWWWWWWWWWWWLLLLLLLLLLLLLLLLLLPWPPPPPPPPPPPPPPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+   "P": 56,
+   "W": 17,
+   "B": 0,
+   "L": 18,
+   "E": 0,
+   "S": 0,
+   "X": 0,
+   "orders": [
+    "3656:board",
+    "3663:board",
+    "3670:board"
+   ],
+   "where": [
+    "3650 Norfolk",
+    "3671 (610,365)",
+    "3672 (636,365)",
+    "3673 (661,369)",
+    "3674 (678,384)",
+    "3675 (696,401)",
+    "3676 (713,416)",
+    "3677 (729,431)",
+    "3678 (745,446)",
+    "3679 (763,456)",
+    "3680 (782,463)",
+    "3681 (801,471)",
+    "3682 (819,477)",
+    "3683 (838,485)",
+    "3684 (856,491)",
+    "3685 (875,499)",
+    "3686 (893,505)",
+    "3687 (911,512)",
+    "3688 Bathurst"
+   ]
+  },
+  {
+   "fleet": 1119,
+   "line": "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+   "P": 91,
+   "W": 0,
+   "B": 0,
+   "L": 0,
+   "E": 0,
+   "S": 0,
+   "X": 0,
+   "orders": [],
+   "where": [
+    "3650 Bissau"
+   ]
+  },
+  {
+   "fleet": 1120,
+   "line": "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+   "P": 91,
+   "W": 0,
+   "B": 0,
+   "L": 0,
+   "E": 0,
+   "S": 0,
+   "X": 0,
+   "orders": [],
+   "where": [
+    "3650 Roseau"
+   ]
+  },
+  {
+   "fleet": 1122,
+   "line": "PPPPPPPEEEEEEEEEEEEEEEEEEEEEEEPPPPPWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWLLLLLLLLLPWWPPEEEEPPP",
+   "P": 18,
+   "W": 37,
+   "B": 0,
+   "L": 9,
+   "E": 27,
+   "S": 0,
+   "X": 0,
+   "orders": [
+    "3656:board",
+    "3684:board",
+    "3691:board",
+    "3698:board",
+    "3705:board",
+    "3712:board",
+    "3719:board",
+    "3733:board"
+   ],
+   "where": [
+    "3650 Corpus Christi",
+    "3657 (492,437)",
+    "3658 (513,440)",
+    "3659 (535,443)",
+    "3660 (556,446)",
+    "3661 West Palm Beach",
+    "3662 (585,427)",
+    "3663 (597,410)",
+    "3664 (610,392)",
+    "3665 (624,373)",
+    "3666 (637,355)",
+    "3667 (652,335)",
+    "3668 (673,322)",
+    "3669 (678,304)",
+    "3670 (691,284)",
+    "3671 (712,265)",
+    "3672 (725,243)",
+    "3673 (701,221)",
+    "3674 (675,200)",
+    "3675 (640,190)",
+    "3676 (606,177)",
+    "3677 (563,180)",
+    "3678 (570,209)",
+    "3679 (578,236)",
+    "3680 Kuujjuarapik",
+    "3720 (554,230)",
+    "3721 (552,202)",
+    "3722 (572,180)",
+    "3723 (613,179)",
+    "3724 (648,192)",
+    "3725 (674,213)",
+    "3726 (699,235)",
+    "3727 (722,254)",
+    "3728 (724,281)",
+    "3729 St. John's",
+    "3734 (710,315)",
+    "3735 (685,322)",
+    "3736 (661,330)",
+    "3737 (635,331)",
+    "3738 Boston"
+   ]
+  },
+  {
+   "fleet": 1123,
+   "line": "PPPPPPPEEEPPPPLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLPWWPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+   "P": 46,
+   "W": 2,
+   "B": 0,
+   "L": 40,
+   "E": 3,
+   "S": 0,
+   "X": 0,
+   "orders": [
+    "3656:sail",
+    "3663:board"
+   ],
+   "where": [
+    "3650 Pearl Harbor",
+    "3657 (126,456)",
+    "3658 (131,456)",
+    "3659 (138,474)",
+    "3660 Hilo",
+    "3664 (162,486)",
+    "3665 (182,489)",
+    "3666 (203,492)",
+    "3667 (223,494)",
+    "3668 (243,497)",
+    "3669 (263,500)",
+    "3670 (283,503)",
+    "3671 (302,506)",
+    "3672 (322,508)",
+    "3673 (342,511)",
+    "3674 (361,515)",
+    "3675 (380,520)",
+    "3676 (399,524)",
+    "3677 (419,528)",
+    "3678 (438,532)",
+    "3679 (457,536)",
+    "3680 (475,540)",
+    "3681 (494,544)",
+    "3682 (513,548)",
+    "3683 (532,552)",
+    "3684 (551,556)",
+    "3685 (569,553)",
+    "3686 (576,538)",
+    "3687 (593,530)",
+    "3688 (610,521)",
+    "3689 (628,514)",
+    "3690 (648,514)",
+    "3691 (669,515)",
+    "3692 (690,515)",
+    "3693 (711,515)",
+    "3694 (731,516)",
+    "3695 (752,516)",
+    "3696 (773,516)",
+    "3697 (793,517)",
+    "3698 (814,517)",
+    "3699 (835,517)",
+    "3700 (856,518)",
+    "3701 (876,518)",
+    "3702 (897,518)",
+    "3703 (918,519)",
+    "3704 Bathurst"
+   ]
+  }
+ ],
+ "after": [
+  {
+   "fleet": 126,
+   "ladenAt": -1,
+   "stood": 0,
+   "standingAtEnd": false
+  },
+  {
+   "fleet": 138,
+   "ladenAt": -1,
+   "stood": 0,
+   "standingAtEnd": false
+  },
+  {
+   "fleet": 365,
+   "ladenAt": 21,
+   "ladenDays": 18,
+   "stood": 52,
+   "standingAtEnd": true
+  },
+  {
+   "fleet": 549,
+   "ladenAt": 7,
+   "ladenDays": 22,
+   "stood": 62,
+   "standingAtEnd": true
+  },
+  {
+   "fleet": 568,
+   "ladenAt": 21,
+   "ladenDays": 18,
+   "stood": 52,
+   "standingAtEnd": true
+  },
+  {
+   "fleet": 571,
+   "ladenAt": 21,
+   "ladenDays": 18,
+   "stood": 52,
+   "standingAtEnd": true
+  },
+  {
+   "fleet": 574,
+   "ladenAt": -1,
+   "stood": 0,
+   "standingAtEnd": false
+  },
+  {
+   "fleet": 1015,
+   "ladenAt": 21,
+   "ladenDays": 18,
+   "stood": 52,
+   "standingAtEnd": true
+  },
+  {
+   "fleet": 1119,
+   "ladenAt": -1,
+   "stood": 0,
+   "standingAtEnd": false
+  },
+  {
+   "fleet": 1120,
+   "ladenAt": -1,
+   "stood": 0,
+   "standingAtEnd": false
+  },
+  {
+   "fleet": 1122,
+   "ladenAt": 70,
+   "ladenDays": 9,
+   "stood": 5,
+   "standingAtEnd": false
+  },
+  {
+   "fleet": 1123,
+   "ladenAt": 14,
+   "ladenDays": 40,
+   "stood": 37,
+   "standingAtEnd": true
+  }
+ ],
+ "landed": [
+  {
+   "id": 507,
+   "from": 504389,
+   "aboard": 3657,
+   "fleet": 549,
+   "sailed": 3657,
+   "ashore": 3679,
+   "at": 1061793,
+   "marchDays": null,
+   "waitDays": 0,
+   "seaDays": 22,
+   "fromPile": -1,
+   "gap": 620
+  },
+  {
+   "id": 908,
+   "from": 504389,
+   "aboard": 3657,
+   "fleet": 549,
+   "sailed": 3657,
+   "ashore": 3679,
+   "at": 1061794,
+   "marchDays": null,
+   "waitDays": 0,
+   "seaDays": 22,
+   "fromPile": -1,
+   "gap": 621
+  },
+  {
+   "id": 48,
+   "from": 746057,
+   "march": 3657,
+   "aboard": 3671,
+   "fleet": 365,
+   "sailed": 3671,
+   "ashore": 3689,
+   "at": 1061794,
+   "marchDays": 14,
+   "waitDays": 0,
+   "seaDays": 18,
+   "fromPile": 1,
+   "gap": 499
+  },
+  {
+   "id": 125,
+   "from": 746057,
+   "march": 3657,
+   "aboard": 3671,
+   "fleet": 568,
+   "sailed": 3671,
+   "ashore": 3689,
+   "at": 1061794,
+   "marchDays": 14,
+   "waitDays": 0,
+   "seaDays": 18,
+   "fromPile": 1,
+   "gap": 499
+  },
+  {
+   "id": 148,
+   "from": 746057,
+   "march": 3657,
+   "aboard": 3671,
+   "fleet": 571,
+   "sailed": 3671,
+   "ashore": 3689,
+   "at": 1061794,
+   "marchDays": 14,
+   "waitDays": 0,
+   "seaDays": 18,
+   "fromPile": 1,
+   "gap": 499
+  },
+  {
+   "id": 152,
+   "from": 746057,
+   "march": 3657,
+   "aboard": 3671,
+   "fleet": 1015,
+   "sailed": 3671,
+   "ashore": 3689,
+   "at": 1061794,
+   "marchDays": 14,
+   "waitDays": 0,
+   "seaDays": 18,
+   "fromPile": 1,
+   "gap": 499
+  },
+  {
+   "id": 172,
+   "from": 989324,
+   "aboard": 3664,
+   "fleet": 1123,
+   "sailed": 3664,
+   "ashore": 3704,
+   "at": 1061794,
+   "marchDays": null,
+   "waitDays": 0,
+   "seaDays": 40,
+   "fromPile": -1,
+   "gap": 825
+  },
+  {
+   "id": 705,
+   "from": 547437,
+   "march": 3685,
+   "aboard": 3720,
+   "fleet": 1122,
+   "sailed": 3720,
+   "ashore": 3729,
+   "at": 623315,
+   "marchDays": 35,
+   "waitDays": 0,
+   "seaDays": 9,
+   "fromPile": -1,
+   "gap": 139
+  }
+ ],
+ "marchingLeft": [
+  {
+   "id": 162,
+   "from": 746057,
+   "march": 3664,
+   "target": 772686,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Norfolk"
+  },
+  {
+   "id": 168,
+   "from": 746057,
+   "march": 3664,
+   "target": 772686,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Norfolk"
+  },
+  {
+   "id": 174,
+   "from": 746057,
+   "march": 3664,
+   "target": 772686,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Norfolk"
+  },
+  {
+   "id": 224,
+   "from": 746057,
+   "march": 3664,
+   "target": 772686,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Norfolk"
+  },
+  {
+   "id": 257,
+   "from": 746057,
+   "march": 3664,
+   "target": 772686,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Norfolk"
+  },
+  {
+   "id": 288,
+   "from": 746057,
+   "march": 3671,
+   "target": 772686,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Norfolk"
+  },
+  {
+   "id": 343,
+   "from": 746057,
+   "march": 3671,
+   "target": 772686,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Norfolk"
+  },
+  {
+   "id": 347,
+   "from": 746057,
+   "march": 3671,
+   "target": 772686,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Norfolk"
+  },
+  {
+   "id": 616,
+   "from": 629308,
+   "march": 3692,
+   "target": 504389,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Kuujjuarapik"
+  },
+  {
+   "id": 766,
+   "from": 545391,
+   "march": 3692,
+   "target": 504389,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Kuujjuarapik"
+  },
+  {
+   "id": 718,
+   "from": 561777,
+   "march": 3699,
+   "target": 504389,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Kuujjuarapik"
+  },
+  {
+   "id": 915,
+   "from": 567920,
+   "march": 3706,
+   "target": 504389,
+   "moving": 1,
+   "hoursLeft": 19,
+   "port": "Kuujjuarapik"
+  },
+  {
+   "id": 1365,
+   "from": 569968,
+   "march": 3706,
+   "target": 504389,
+   "moving": 0,
+   "hoursLeft": 0,
+   "port": "Kuujjuarapik"
+  },
+  {
+   "id": 648,
+   "from": 574063,
+   "march": 3713,
+   "target": 504389,
+   "moving": 1,
+   "hoursLeft": 204,
+   "port": "Kuujjuarapik"
+  }
+ ],
+ "daily": [
+  {
+   "day": 3650,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 131961,
+   "aboard": 0,
+   "piles": [
+    60,
+    49
+   ]
+  },
+  {
+   "day": 3651,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 131957,
+   "aboard": 0,
+   "piles": [
+    60,
+    53
+   ]
+  },
+  {
+   "day": 3652,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 131953,
+   "aboard": 0,
+   "piles": [
+    60,
+    53
+   ]
+  },
+  {
+   "day": 3653,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115788,
+   "aboard": 0,
+   "piles": [
+    60,
+    53
+   ]
+  },
+  {
+   "day": 3654,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115784,
+   "aboard": 0,
+   "piles": [
+    60,
+    53
+   ]
+  },
+  {
+   "day": 3655,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115779,
+   "aboard": 0,
+   "piles": [
+    60,
+    53
+   ]
+  },
+  {
+   "day": 3656,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115775,
+   "aboard": 0,
+   "piles": [
+    60,
+    53
+   ]
+  },
+  {
+   "day": 3657,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115770,
+   "aboard": 2,
+   "piles": [
+    60,
+    49
+   ]
+  },
+  {
+   "day": 3658,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115766,
+   "aboard": 2,
+   "piles": [
+    60,
+    49
+   ]
+  },
+  {
+   "day": 3659,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115761,
+   "aboard": 2,
+   "piles": [
+    60,
+    49
+   ]
+  },
+  {
+   "day": 3660,
+   "atPortNoGroup": 58,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115757,
+   "aboard": 2,
+   "piles": [
+    60,
+    49
+   ]
+  },
+  {
+   "day": 3661,
+   "atPortNoGroup": 58,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115753,
+   "aboard": 2,
+   "piles": [
+    60,
+    49
+   ]
+  },
+  {
+   "day": 3662,
+   "atPortNoGroup": 58,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115748,
+   "aboard": 2,
+   "piles": [
+    60,
+    49
+   ]
+  },
+  {
+   "day": 3663,
+   "atPortNoGroup": 58,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115744,
+   "aboard": 2,
+   "piles": [
+    60,
+    49
+   ]
+  },
+  {
+   "day": 3664,
+   "atPortNoGroup": 55,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115739,
+   "aboard": 3,
+   "piles": [
+    60,
+    44
+   ]
+  },
+  {
+   "day": 3665,
+   "atPortNoGroup": 55,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115735,
+   "aboard": 3,
+   "piles": [
+    60,
+    44
+   ]
+  },
+  {
+   "day": 3666,
+   "atPortNoGroup": 55,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115730,
+   "aboard": 3,
+   "piles": [
+    60,
+    44
+   ]
+  },
+  {
+   "day": 3667,
+   "atPortNoGroup": 55,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115726,
+   "aboard": 3,
+   "piles": [
+    60,
+    44
+   ]
+  },
+  {
+   "day": 3668,
+   "atPortNoGroup": 55,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115721,
+   "aboard": 3,
+   "piles": [
+    60,
+    44
+   ]
+  },
+  {
+   "day": 3669,
+   "atPortNoGroup": 55,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115717,
+   "aboard": 3,
+   "piles": [
+    60,
+    44
+   ]
+  },
+  {
+   "day": 3670,
+   "atPortNoGroup": 55,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115713,
+   "aboard": 3,
+   "piles": [
+    60,
+    44
+   ]
+  },
+  {
+   "day": 3671,
+   "atPortNoGroup": 53,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115708,
+   "aboard": 7,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3672,
+   "atPortNoGroup": 53,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115704,
+   "aboard": 7,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3673,
+   "atPortNoGroup": 53,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115699,
+   "aboard": 7,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3674,
+   "atPortNoGroup": 53,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115695,
+   "aboard": 7,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3675,
+   "atPortNoGroup": 53,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115690,
+   "aboard": 7,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3676,
+   "atPortNoGroup": 57,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115686,
+   "aboard": 7,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3677,
+   "atPortNoGroup": 57,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115681,
+   "aboard": 7,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3678,
+   "atPortNoGroup": 57,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115677,
+   "aboard": 7,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3679,
+   "atPortNoGroup": 57,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115673,
+   "aboard": 5,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3680,
+   "atPortNoGroup": 57,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115668,
+   "aboard": 5,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3681,
+   "atPortNoGroup": 57,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115664,
+   "aboard": 5,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3682,
+   "atPortNoGroup": 57,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115659,
+   "aboard": 5,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3683,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 115655,
+   "aboard": 5,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3684,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114931,
+   "aboard": 5,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3685,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114926,
+   "aboard": 5,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3686,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114922,
+   "aboard": 5,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3687,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114917,
+   "aboard": 5,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3688,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114913,
+   "aboard": 5,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3689,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114908,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3690,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114904,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3691,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114899,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3692,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114895,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3693,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114891,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3694,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114886,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3695,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114882,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3696,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114877,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3697,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114873,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3698,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114868,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3699,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114864,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3700,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114859,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3701,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114855,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3702,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114851,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3703,
+   "atPortNoGroup": 60,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114846,
+   "aboard": 1,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3704,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114842,
+   "aboard": 0,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3705,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114837,
+   "aboard": 0,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3706,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114833,
+   "aboard": 0,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3707,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114828,
+   "aboard": 0,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3708,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114824,
+   "aboard": 0,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3709,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114819,
+   "aboard": 0,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3710,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114815,
+   "aboard": 0,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3711,
+   "atPortNoGroup": 61,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114811,
+   "aboard": 0,
+   "piles": [
+    60,
+    41
+   ]
+  },
+  {
+   "day": 3712,
+   "atPortNoGroup": 63,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 114806,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3713,
+   "atPortNoGroup": 63,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109215,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3714,
+   "atPortNoGroup": 63,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109211,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3715,
+   "atPortNoGroup": 63,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109207,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3716,
+   "atPortNoGroup": 63,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109202,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3717,
+   "atPortNoGroup": 63,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109198,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3718,
+   "atPortNoGroup": 63,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109193,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3719,
+   "atPortNoGroup": 63,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109189,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3720,
+   "atPortNoGroup": 63,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109184,
+   "aboard": 1,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3721,
+   "atPortNoGroup": 64,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109180,
+   "aboard": 1,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3722,
+   "atPortNoGroup": 64,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109175,
+   "aboard": 1,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3723,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109171,
+   "aboard": 1,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3724,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109167,
+   "aboard": 1,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3725,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109162,
+   "aboard": 1,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3726,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109158,
+   "aboard": 1,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3727,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109153,
+   "aboard": 1,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3728,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109149,
+   "aboard": 1,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3729,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109144,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3730,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109140,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3731,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109135,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3732,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109131,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3733,
+   "atPortNoGroup": 65,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109127,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3734,
+   "atPortNoGroup": 66,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109122,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3735,
+   "atPortNoGroup": 66,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109118,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3736,
+   "atPortNoGroup": 66,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109113,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3737,
+   "atPortNoGroup": 66,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109109,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3738,
+   "atPortNoGroup": 66,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109104,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3739,
+   "atPortNoGroup": 67,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109100,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  },
+  {
+   "day": 3740,
+   "atPortNoGroup": 67,
+   "groups": 12,
+   "training": 0,
+   "room": 288000,
+   "wantsTransport": false,
+   "wantsFerry": false,
+   "gold": 109095,
+   "aboard": 0,
+   "piles": [
+    60,
+    43
+   ]
+  }
+ ]
+}

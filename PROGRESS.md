@@ -22408,3 +22408,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   from the Baltimore pile (746057), a march of 14 days; 8 more of it, sent on days 3664 and 3671, reached
   Norfolk after its groups had sailed and stand there with no group to day 90. The causes and parts
   7.90b–e are unchanged. `docs/evidence/7.90/a.md` §1–§3 and the 7.90a line amended.
+
+## 2026-10-22 — PLAN 7.90b: a ferry turn bounded by its refusals' searches (ADR-645)
+
+- **Rule:** `planFerry` no longer ends at SAIL_TRIES groups that gave no order; it ends once its refusals'
+  route searches reach FERRY_SEARCHES (68, ADR-642's worst), and a group at a port that refused since the
+  turn's last order takes that refusal with no search (`same` in the probe).
+- **Read** (`docs/evidence/7.90/b.md`, `ferryTrip.ts` now prints each try's searches): groups never tried
+  a turn, days 30–90, 6.5 → 0 on 1129 year 10 and 26.3 → 0 on 6421 year 20; refusals searched at most 18
+  a turn. The groups now tried refuse the sail back (7.90c), so the landed barely move (7 → 8, 77 → 78).
+- **Test:** `strandedFerry1938.test.ts` "tries a group past five refusing at one port" (red without).
+- **Timing** (`.cache/prof90b/`): invasion AI within the pairs' spread (ADR-645). Seed 99's 5-year mean
+  tick 1.87 / 1.81 → 1.80 / 1.87 ms, the same history.
+- **Pin:** unchanged, 8a571863.
+- **Next:** PLAN 7.90c.

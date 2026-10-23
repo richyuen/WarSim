@@ -125,12 +125,16 @@ them, are 7.81–7.86. A task each, split when taken up:
       orders a turn (6421 year 20: 0.22). The 49 stand at Baltimore, a port with no group; the 60's
       nearest sea port is 121 cells off (the Great Lakes' water its own). `wantsFerry` false with 131,961
       gold. 7.90's bar on the 60 is out of reach in 30 days by the ferry alone (§6: ~26 groups needed).
-    - [ ] 7.90b The turn's refusals (a.md §2): the turn ends at `SAIL_TRIES` groups that gave no order,
+    - [x] 7.90b The turn's refusals (a.md §2): the turn ends at `SAIL_TRIES` groups that gave no order,
       and the same ones refuse first every week (Nuuk's two, sorted first by `onArmy`, then Bathurst's,
       San Juan's, Bissau's; 6421: Freetown, Dakar, Roseau, Port-of-Spain), so the rest are never tried.
       AT: on 1129 year 10 and 6421 year 20, days 30–90 (`ferryTrip.ts`), the groups at a port never tried
       a turn 6.5 and 26.3 → 0, the turn's cost bounded (`--profile`, the invasion AI's longest call);
       a unit test (red without); the ADR; the pin's entry.
+      Done (ADR-645, `docs/evidence/7.90/b.md`): the turn is bounded by its refusals' route searches
+      (FERRY_SEARCHES 68), a refusal at a port taken by the groups after it there until an order; never
+      tried 6.5 → 0 and 26.3 → 0 (every turn); the refusals searched at most 18 a turn. The groups now
+      tried refuse the sail back (7.90c's), so the landed barely move (7 → 8, 77 → 78). The pin unchanged.
     - [ ] 7.90c The way back (a.md §2): a group away from the army sails for a port by the free army's 4
       formations nearest it, and from Bathurst, San Juan and Roseau those are garrisons on islands with no
       port of the nation, so the sail is refused every week and the mainland army never tried. AT: on 1129

@@ -49,7 +49,7 @@ import { isDayStart } from '../../shared/calendar';
 import { neighbours4, type MobilityId, type Passage } from '../nav/grid';
 import { frontierOf } from '../systems/territory';
 import { marchingToPort, orderLanding, transportRoom } from '../systems/amphibious';
-import { findRoute, mayReach } from '../nav/provinceGraph';
+import { CORRIDOR_REFUSAL, findRoute, mayReach } from '../nav/provinceGraph';
 import { marchHoursLeft, orderMove, passageOf, snapTarget } from '../systems/movement';
 import { AT_PORT_CELLS, keyAt, seaKm, waterKeys } from '../systems/navalCombat';
 import { portShut } from '../systems/bombing';
@@ -541,8 +541,10 @@ function frontReach(world: World, n: number, front: readonly number[], pass: Pas
  *
  * - its transports: its groups standing at its ports (`transportGroupsAtPort`), those on the land
  *   of an army they would carry first, then the most room, the lower id, each taking the turn in
- *   turn until the room of those that gave an order covers the army's men, or SAIL_TRIES of them
- *   gave none (PLAN 7.88b, ADR-642; PLAN 7.88a, ADR-638, tried them until one gave an order; before
+ *   turn until the room of those that gave an order covers the army's men, or the refusals' route
+ *   searches reach FERRY_SEARCHES, a refusal at a port taken by the groups after it there until an
+ *   order (PLAN 7.90b, ADR-645; PLAN 7.88b, ADR-642, ended it at SAIL_TRIES groups that gave none,
+ *   always the same; PLAN 7.88a, ADR-638, tried them until one gave an order; before
  *   that, the most room's alone, as a landing's, and on critic run 12's saves that one could never act);
  * - standing at a port on a front's land, or on a land with none of its island army, they sail for
  *   a port of its on that army's land (`sailToArmy`, its formations nearest the transports first);
@@ -614,20 +616,39 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
   // groups gave none (each refusal may cost searches of the map). A formation ordered is no longer
   // standing, so the next group takes others. Before, the first group that acted ended the turn:
   // one group (24,000 men) a week while 60 divisions stood on 1129 year 10.
+  //
+  // The turn's bound is the route searches its refusals made (PLAN 7.90b, ADR-645): it ends once they
+  // reach FERRY_SEARCHES. A group at a port where one refused since the turn's last order takes that
+  // refusal (`same`) with no search: the army it would carry and its port's ways are the same. Before,
+  // the turn ended at SAIL_TRIES groups that gave no order, and the same ones refused first every
+  // week (critic run 12, 1129 year 10: Nuuk's two, then Bathurst's or San Juan's; 6421 year 20: Freetown,
+  // Dakar, Roseau, Port-of-Spain), most of them refusing with no search at all: of the groups at a port,
+  // 6.5 of 11.4 and 26.3 of 30.6 were never tried in a turn, 30 at Norfolk among them.
   let men = 0;
   for (const id of island) men += c.strength[id]!;
   const tries: FerryTry[] = [];
   let acted = false;
-  let refused = 0;
+  let searched = 0;
+  const refusedAt = new Set<number>();
   for (const g of groups) {
-    if (men <= 0 || refused >= SAIL_TRIES) break;
-    const t: FerryTry = { fleet: g.fleet, port: g.port, room: g.room, way: 'board', acted: false };
+    if (men <= 0 || searched >= FERRY_SEARCHES) break;
+    const t: FerryTry = { fleet: g.fleet, port: g.port, room: g.room, way: 'board', acted: false, searches: 0 };
     tries.push(t);
+    if (refusedAt.has(g.port)) {
+      t.way = 'same';
+      continue;
+    }
+    const was = CORRIDOR_REFUSAL.searches;
     t.acted = ferryGroup(g.fleet, g.room, g.port, t);
+    t.searches = CORRIDOR_REFUSAL.searches - was;
     if (t.acted) {
       acted = true;
       men -= g.room;
-    } else refused++;
+      refusedAt.clear();
+    } else {
+      refusedAt.add(g.port);
+      searched += t.searches;
+    }
   }
   FERRY_PROBE.turn?.({ nation: n, free: island.length, island, groups: groups.length, tries });
   return acted;
@@ -723,13 +744,15 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
   }
 }
 
-/** One transport group a ferry turn tried (`FERRY_PROBE`): its way (`sail` to the army, `noPort` on a front's land, `board`) and whether it gave an order. */
+/** One transport group a ferry turn tried (`FERRY_PROBE`): its way (`sail` to the army, `noPort` on a front's land, `board`, `same`: a refusal at its port since the turn's last order taken as its own, PLAN 7.90b) and whether it gave an order. */
 export interface FerryTry {
   fleet: number;
   port: number;
   room: number;
-  way: 'sail' | 'noPort' | 'board';
+  way: 'sail' | 'noPort' | 'board' | 'same';
   acted: boolean;
+  /** The route searches it made (`CORRIDOR_REFUSAL.searches`; 0 for `same`, PLAN 7.90b). */
+  searches: number;
 }
 /** One ferry turn (`FERRY_PROBE`): the nation, its army free for the ferry, its groups standing at its ports, and those tried. */
 export interface FerryTurn {
@@ -827,8 +850,16 @@ function board(world: World, fleet: number, room: number, port: number, goal: nu
   return sendToPort(world, by.map(([, id]) => id), px, py, left, pass) > 0 || (there.size > 0 && aboard(atPort));
 }
 
-/** How many formations, and of the ports nearest each, a sail to the army tries (PLAN 7.54b); and how many transport groups that gave no order end a ferry turn (PLAN 7.88b, ADR-642). */
+/** How many formations, and of the ports nearest each, a sail to the army tries (PLAN 7.54b). */
 export const SAIL_TRIES = 4;
+
+/**
+ * The route searches (`CORRIDOR_REFUSAL.searches`) the refusals of a ferry turn may make before it
+ * ends (PLAN 7.90b, ADR-645; it replaced ADR-642's SAIL_TRIES refusing groups). A refusal's worst is
+ * a march refused and a sail to the army refused (1 + SAIL_TRIES × SAIL_TRIES searches, up to about
+ * 10 ms each, PLAN 7.7), so the turn's refusals cost about what ADR-642's four groups' could.
+ */
+export const FERRY_SEARCHES = 4 * (1 + SAIL_TRIES * SAIL_TRIES);
 
 /** Whether land formation `id` may march to `cell` under `pass` (as `orderMove` routes it; a route asked again is the passage's). */
 function marches(world: World, id: number, cell: number, pass: Passage): boolean {

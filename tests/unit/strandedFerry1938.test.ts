@@ -280,3 +280,52 @@ describe('a formation aboard does not hold the ferry’s turn (PLAN 7.89)', () =
     });
   }
 });
+
+// PLAN 7.90b, ADR-645: the ferry's turn ended at SAIL_TRIES (4) groups that gave no order, and the
+// same ones refused first every week, most with no search at all: critic run 12, 1129 year 10, 6.5 of
+// the USA's 11.4 groups at a port never tried a turn; 6421 year 20, 26.3 of 30.6, the 30 at Norfolk
+// among them. Here five German groups, the lower ids, stand at Baku (handed to Germany, on the
+// Caspian: no port on its front's land is reached by sea), and a sixth of the same room at the
+// division's home port. Baku's first refuses with no search, the other four take its refusal, and
+// the sixth takes the division aboard. Before, the turn ended at Baku's fourth and nobody went.
+describe('a ferry turn is not ended by refusals that cost nothing (PLAN 7.90b)', () => {
+  it('tries a group past five refusing at one port', () => {
+    const { w, div, tp, home, europe, reaches } = stranded();
+    const c = w.formations.cols;
+    const comp = navOf(w).grid.component;
+    const water = portSeaOf(w);
+    const baku = w.ports.findIndex((p) => p.name === 'Baku');
+    expect(baku).toBeGreaterThanOrEqual(0);
+    w.cells.controller[w.ports[baku]!.cell] = GER;
+    const sea = water[home.i]!;
+    const groups = [tp];
+    for (let i = 0; i < 5; i++) {
+      const before = new Set<number>();
+      w.formations.forEach((f) => before.add(f));
+      expect(placeFleet(w, GER, c.template[tp]!, (sea % W) + 0.5, Math.floor(sea / W) + 0.5)).toBe(Refusal.None);
+      w.formations.forEach((f) => {
+        if (!before.has(f)) groups.push(f);
+      });
+    }
+    expect(groups).toHaveLength(6);
+    for (const f of groups) {
+      expect(transportRoom(w, f)).toBe(transportRoom(w, tp));
+      w.station.delete(f);
+      c.moving[f] = 0;
+    }
+    // The five lower ids at Baku, the highest at the home port.
+    groups.sort((a, b) => a - b);
+    const good = groups.pop()!;
+    const caspian = water[baku]!;
+    for (const f of groups) [c.x[f], c.y[f]] = [(caspian % W) + 0.5, Math.floor(caspian / W) + 0.5];
+    [c.x[good], c.y[good]] = [(sea % W) + 0.5, Math.floor(sea / W) + 0.5];
+    w.settings.aiEnabled = true;
+    invasionAi(w);
+    w.settings.aiEnabled = false;
+    for (const f of groups) expect(c.moving[f]).toBe(0);
+    expect(w.embarked.get(div)?.target).toBeDefined();
+    const target = w.embarked.get(div)!.target;
+    expect(comp[target]).toBe(europe);
+    expect(reaches(target)).toBe(true);
+  });
+});
