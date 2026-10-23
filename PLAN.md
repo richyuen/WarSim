@@ -237,52 +237,14 @@ them, are 7.81–7.86. A task each, split when taken up:
   first. AT: on 10 unseen seeds × 30 years no stasis over 15 years (the critic's measure, read the same
   way), and the share of cells changing hands by a front battle in years 10–30 measured and at least
   HEAD's; the gate green.
-- [ ] 7.83 Performance (performance 6, needs 7): seed 99's mean tick 1.785–1.790 ms pinned on HEAD
-  against 1.388 on `dd3b730` (+29 %), over the 1.5 ms budget; year 1 2.45 ms (budget 2.4); p95 6.8–8.5 ms
-  against 3.3–5.9; the page's late years 23–32 s at Max (21–24 s). Part is a busier world (64,120 cells
-  flipped by year 5 against 19,531). Evidence: `critic/c12_perf_seed99_5y_solo.log`, `…_solo2.log`,
-  `…_dd3b730.log`. Measure first with `--profile` on both commits, the same session, pinned, which
-  systems grew. AT: `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF` mean tick
-  ≤ 1.5 ms and year 1 ≤ 2.4 ms, twice; no rule's outcome changed only to save time (a rule change logged
-  in DECISIONS with its own reason); the gate green. In parts:
-    - [x] 7.83a Measured (read only): `--profile` on `dd3b730` and HEAD, seed 99 × 5 years, both at once on
-      separate P-cores and swapped (`.cache/prof83/`), by year: each system's mean ms, share, longest call,
-      calls of 1 ms or more, beside the world's size (formations, wars, cells flipped); and HEAD's AT
-      figure read alone on 0xFFFF without `--profile`, twice. AT: the table, the systems that grew by
-      more work and by dearer work told apart, each a part with its own AT; no rule: the pin unchanged.
-      Measured (`docs/evidence/7.83/a.md`): HEAD 1.829 / 1.821 ms mean, 2.294 / 2.258 in year 1 (bar
-      1.5 missed by 0.33; 2.4 met). On one saved world HEAD's rules cost +0.40–0.41 ms over `dd3b730`'s:
-      invasion AI +0.11–0.22 (slow calls 5–20 → 327–339 a year), supply +0.08, capitals +0.01–0.05; the
-      other ~0.6 is the busier world (operational AI, territory, combat the same on the same world).
-    - [x] 7.83b The invasion AI's ferry turn, dearer since ADR-612: profile its calls by function on HEAD's
-      year-4 save of seed 99 (`.cache/prof83/`, `node --cpu-prof`), then cut what dominates without
-      changing an outcome. AT: invasionAi's mean a tick on that save's year down by at least half (HEAD
-      0.236 ms profiled, pairs swapped); the pin unchanged (5161de24) and the year's final hash from the
-      save unchanged (f278491d); the gate green.
-      Closed not done (BLOCKERS 2026-10-23; `docs/evidence/7.83/b.md`): ten exact cuts (Normandy's
-      front distance by row, the ferry's ports nearest the front first, one passage and one list of
-      transports a turn, ...), every one with the year's hash f278491d; seed 7 × 3 years the same.
-      invasionAi 0.238 → 0.160 ms a tick (−33 %, pairs swapped; bar 0.119). What is left is the rules'
-      own work: the reach walks (37 a year), the bounded route searches, `seaReach` (shared with
-      supply). No rule changed; the pin unchanged.
-    - [x] 7.83c Supply's beach layer (ADR-622, ADR-630): the same, on the same save. AT: supply's mean a
-      tick down to `dd3b730`'s rules' +0.03 or less (HEAD 0.217 against 0.138); the pin and the save's
-      year hash unchanged; the gate green.
-      Closed not done (BLOCKERS 2026-10-23; `docs/evidence/7.83/c.md`): the beach layer an array by cell
-      (`SparseLayer`; the flood's set and the formations' lookups an index), hash f278491d; supply 0.202
-      → 0.188 ms a tick (−7 %, three swapped pairs; bar 0.153 against the pairs' HEAD, 0.168 absolute).
-      What is left is the coast scan (27,619 cells each refresh, scattered reads; the network changed at
-      every one of 240 refresh hours), `seaWay` and the flood. No rule changed; the pin unchanged.
-    - [x] 7.83d The capitals system (ADR-620, 640, 641): the same. AT: capitals' mean a tick at most
-      0.035 ms on that save's year (HEAD 0.075, `dd3b730`'s rules 0.027); the pin and the save's year
-      hash unchanged; the gate green.
-      Done (`docs/evidence/7.83/d.md`): the hourly loop a `for` over the city ids (no call a city); the
-      field capital's search stopped at its targets, its buffers kept; a city's safety the diamond of
-      rings around it (the open grid's steps are |dx| + |dy|); `held`'s pass only with cities on two
-      landmasses. 0.0732 → 0.0270 ms a tick (three swapped pairs), longest call 26 → 16–24 ms; hash
-      f278491d, seed 7 × 3 years, random and toy worlds the same. No rule changed; the pin unchanged.
-    Then 7.83's AT read again (alone, 0xFFFF, twice); if it misses, the busier world's systems
-    (operational AI first) as parts, or the bar's scope to the user.
+
+- [ ] 7.94 The operational AI's cost on the busier world (found at 7.83's AT; performance 6, needs 7;
+  waits on ADR-654: taken under (a) or (c), dropped under (b)): 0.60 ms a tick on HEAD's year-4 world of
+  seed 99 (31 % of the tick), the same under `dd3b730`'s rules (`docs/evidence/7.83/at.md` §3).
+  Profile it by function there first (`node --cpu-prof`), then cut what dominates without changing an
+  outcome. AT: operationalAi's mean a tick on a year from that save at most 0.40 ms (profiled, swapped
+  pairs against HEAD's in the same session); the year's hash f278491d and the pin unchanged
+  (5161de24); seed 7 × 3 years, the random and toy worlds the same hash; the gate green.
 - [ ] 7.84 Naval (naval 7, needs 8): a carrier strike's row, clicked, shows two US destroyer counters and
   no aircraft (`sorties` 0 at 84 m/px, `critic/shots/c12n4_8693_rowless_clicked.png`); the Japan–USA
   battle at 85 m/px shows the American side as a pale ring and nothing else
@@ -612,3 +574,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.89 The invasion turn held by one formation aboard (found at 7.88b; R12-B1): `invasionAi` skips a […]
 - [x] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at […]
 - [x] 7.92 A far army of the enemy side weighed as the one overrunning the striker (found at 7.91, […]
+- [x] 7.83 Performance (performance 6, needs 7): seed 99's mean tick 1.785–1.790 ms pinned on HEAD […]

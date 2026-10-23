@@ -5,6 +5,18 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.83: the tick 1.94–1.97 ms against 1.5; the busier world holds most of it (2026-10-23, ADR-654 proposed; the user's decision)
+- **The bar:** `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF`, mean tick ≤ 1.5 ms
+  and year 1 ≤ 2.4 ms, twice; no outcome changed only to save time.
+- **What moved** (7.83b–d, `docs/evidence/7.83/at.md`): the invasion AI −33 %, supply −7 %, capitals
+  −63 %, all with hash f278491d. From 1938, paired against the code before them: 1.993 → 1.849 ms (−7 %).
+  On one world, the new rules' extra cost went from +0.41 to +0.15 ms.
+- **What is left:** read alone, 1.970 / 1.938 ms (year 1 2.57 / 2.53, which is machine drift: 2.36 / 2.39
+  paired). `dd3b730`'s own rules cost 1.82 ms on HEAD's year-4 world. The busier world (the land war,
+  1.5–2.7 × the cells flipped) holds about 0.6 ms, and the operational AI is its largest system (0.60
+  ms). The user's decision (ADR-654): (a) a bar on the rules' cost on one world, plus PLAN 7.94
+  (recommended); (b) a budget of 2.0 / 2.6 ms; (c) keep 1.5 and optimise the busier world's systems.
+
 ### PLAN 7.83c: supply's beach layer −7 %, short of `dd3b730` + 0.03 (2026-10-23)
 - **The bar:** supply's mean a tick on a year from HEAD's year-4 save of seed 99 at most `dd3b730`'s rules'
   + 0.03 (0.168 ms; 0.153 against the pairs' own HEAD), the year's hash f278491d and the pin unchanged.

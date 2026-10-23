@@ -22650,3 +22650,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   open and looping maps). Related run by hand: 263 files, 1,330 tests green; the pin green (sweep config).
 - **No rule changed:** no ADR; the pin unchanged (5161de24).
 - **Next:** 7.83's AT read again (alone, 0xFFFF, twice; 7.83a: 1.829 / 1.821 against 1.5).
+
+## 2026-10-23 — PLAN 7.83's AT read: missed, 1.94–1.97 ms against 1.5; the bar's scope to the user (ADR-654)
+
+- **Start:** gate green on `18895a39`; critic not due. ADR-651 and ADR-653 still the user's.
+- **Read** (`docs/evidence/7.83/at.md`, logs in `at/`): alone on 0xFFFF, seed 99 × 5 years, mean 1.970 /
+  1.938 ms, year 1 2.566 / 2.535. Both bars missed. Year 1 is machine drift: HEAD's year 1 paired reads
+  2.36 / 2.39, and today the machine is slower than at 7.83a.
+- **The cuts, paired** against `048d251c` (before 7.83b), from 1938, swapped: 1.993 → 1.849 ms (−7 %), hash
+  f278491d. That is about the sum of 7.83b–d's own savings (0.138).
+- **On HEAD's year-4 world** (save rebuilt, c9bb34b2), profiled pairs: `dd3b730`'s rules 1.821 against
+  HEAD's 1.966 (+0.145; 7.83a +0.41). Invasion AI +0.136, supply +0.051, capitals 0. The operational AI is
+  0.60–0.66 ms under either rule set. The busier world is over 1.5 ms with the old rules alone.
+- **Verdict:** missed; BLOCKERS entry; 7.83 closed not done. ADR-654 proposed: (a) a bar on the rules' cost
+  on one world, plus PLAN 7.94 (recommended); (b) a budget of 2.0 / 2.6 ms; (c) keep 1.5 and optimise the
+  busier world's systems. PLAN 7.94 (the operational AI, no outcome changed) is filed and waits on it.
+  No rule changed; the pin is unchanged (5161de24).
+- **Next:** every open task waits on a decision of the user's: 7.79's AT read (ADR-653), 7.91 and 7.90g
+  (ADR-651), 7.94 (ADR-654). 7.82, 7.85 and 7.86 come after 7.79. 7.84 (naval) is independent of all
+  three, so it is next.

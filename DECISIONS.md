@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-654 · 2026-10-23 · proposed (the user's decision) — The tick budget against a busier world (PLAN 7.83's AT missed)
+
+- **Context** (`docs/evidence/7.83/at.md`). PLAN 7.83's AT is seed 99 × 5 years, alone on 0xFFFF:
+  a mean tick of at most 1.5 ms (SPEC §8's budget) and year 1 at most 2.4 ms. After 7.83b–d it reads
+  1.970 / 1.938 ms and 2.57 / 2.53. The cuts are real. A swapped pair from 1938 against the code
+  before them reads 1.993 → 1.849 (−7 %), with the same hash, and today's machine reads slower than
+  7.83a's did (year 1 in the pair 2.36 / 2.39). Three parts cut the new rules' cost on one world from
+  +0.41 to +0.15 ms. That is the invasion AI and supply, and their own BLOCKERS entries say what is
+  left there is the rules' own work.
+- **Why out of reach without a change of outcome:** on HEAD's year-4 world, `dd3b730`'s rules alone
+  cost 1.82 ms a tick (profiled). The land war that the critic asked for (R11-B1, R12-B1) makes the
+  world busier: it flips 1.5–2.7 × the cells from year 2. The operational AI is 31 % of the tick and
+  costs the same under either rule set. Halving it would still leave about 1.65 ms. In felt terms, a
+  headless year is 13.1 s at 1.5 ms and 17.0 s at 1.95 ms. The page's late years at Max were 23–32 s
+  in run 12.
+- **Options:**
+  - **(a)** The budget counts the rules' cost, not the war's size. 7.83 closes as missed. The
+    budget becomes a bar on one saved world: HEAD's rules at most +0.2 ms over `dd3b730`'s on HEAD's
+    year-4 world of seed 99 (read now at +0.145, met). SPEC §8 keeps 1.5 ms for the 1938 world as
+    it was measured, and says so. PLAN 7.94 (the operational AI's cost, no outcome changed) is taken
+    for the critic's felt speed.
+  - **(b)** Raise the budget to 2.0 ms mean and 2.6 ms year 1, logged as a deviation from SPEC §8
+    with this reason. 7.83's AT is then met by today's reads. 7.94 is dropped.
+  - **(c)** Keep 1.5 ms and work 7.94 and then the other systems the busier world loads (territory,
+    combat, air AI), each optimised as it is. It is unlikely to reach 1.5 without changing outcomes.
+- **Recommended: (a).** The extra ~0.6 ms is the war the critic asked for, and a budget that punishes
+  that war works against R12-B1. The bar on one world still catches a rule that makes the same work
+  dearer, which is what 7.83a found.
+- **Consequences:** no rule changed; the pin is unchanged (5161de24). Under (a) or (c), the loop takes
+  7.94 after the open tasks before it.
+
 ### ADR-653 · 2026-10-23 · proposed (the user's decision) — The piles bar on the critic's saves, or on fresh worlds (PLAN 7.90's AT missed)
 
 - **Context** (`docs/evidence/7.90/at.md`). PLAN 7.90's bar, piles of 30 or more of a nation at war on
