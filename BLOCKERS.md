@@ -12,8 +12,8 @@ entries are kept and marked **RESOLVED** with the date and fix.
   Poland strikes with the patch faces France, Poland's ally in this same war, in a theatre of about
   half the enemy side: a fair target by the rules as written. HEAD's burst on Germany is a German city
   by its output (334,000 dead), decided on a day the city led the Italians by 0.006.
-- **What is left:** the user's (ADR-651). (a) drop the test's "on Germany" (the burst on the enemy side
-  stays asserted), then 7.91 and 7.90g land from their patches; (b) a rule weighing the striker's own
+- **What is left:** the user's (ADR-651). (a) replace the test's "on Germany" by "on Germany, or on a place of
+  at least 50,000 enemy men", then 7.91 and 7.90g land from their patches; (b) a rule weighing the striker's own
   front first; (c) open. Meanwhile the loop takes PLAN 7.90h.
 
 ### PLAN 7.89: a formation aboard holds no ferry turn now, but the lift is short of the army; piles 2 → 2 (2026-10-22, ADR-643)

@@ -183,9 +183,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   −0.024, the Italians −0.030 the day before), not by a rule. By the rules as written (`nukeTargets`,
   the enemy's most massed men within FRONT_KM of the striker's side, allies included) the Italian
   army is a fair target.
-- **Options:** (a) The far army is fair: the test's last assertion ("on Germany") goes, the one before
-  it ("on the land of a nation of the enemy side") stays; then PLAN 7.91 is committed from its patch,
-  and 7.90g from its. No rule; the pin unchanged by this. (b) A rule: a place's enemy men facing none of
+- **Options:** (a) The far army is fair: the test's last assertion ("on Germany") is replaced, not
+  dropped (CLAUDE.md: no test weakened to pass), by "on Germany, or on a place of at least 50,000 enemy
+  men": HEAD's three bursts pass the first clause, the patch's 5591 (64,445 men, all Italian) the second,
+  and a city of 10,000 men of another nation still fails; "on the land of a nation of the enemy side"
+  stays. Then PLAN 7.91 is committed from its patch, and 7.90g from its. No rule; the pin unchanged by
+  this. (b) A rule: a place's enemy men facing none of
   the striker's own formations (its allies' fronts) weighed down, or the nation overrunning the striker
   weighed first. On these seeds that sends Poland's bomb to the German city, 334,000 dead and about
   10,000 men, the output target the user kept in ADR-632 b, rather than an army of 150,000–230,000
