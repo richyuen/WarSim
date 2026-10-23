@@ -16,7 +16,7 @@ the next turn's groups are others (`transportGroupsAtPort` takes none that moves
 | save | HEAD (`docs/evidence/7.88/b.md`) | rule |
 |---|---|---|
 | 1129 year 10 | USA 60 at 625163, 49 at 746057 | USA 60 at 625163, 53 at 746057 (41 on day 30) |
-| 6421 year 20 | none (75 boarded after 23 days) | none (74 boarded from day 4) |
+| 6421 year 20 | none in 30 days (the 74 marched to Norfolk and stood there; aboard after day 30) | none (74 boarded from day 4) |
 | 7019 year 10 | none | none |
 
 **The AT's bar** (2 → 0): 2 → 2. Missed.
