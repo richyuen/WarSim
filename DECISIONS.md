@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-656 · 2026-10-23 · proposed (the user's decision) — The navies after year 2 and the war reserve's cut (PLAN 7.84d's AT missed)
+### ADR-656 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — The navies after year 2 and the war reserve's cut (PLAN 7.84d's AT missed)
 
 - **Context** (`docs/evidence/7.84/d.md`). On the critic's seeds HEAD's navies are not rebuilt after
   year 2: armed fleets in years 10–20 51.3 against `dd3b730`'s 73.7, and late sea battles 9.68
@@ -201,6 +201,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   reaches 7.84d's fleets bar on the evidence so far; (b) and (c) clear the battles bar on the seeds read.
 - **Consequences:** no rule changed; the pin is unchanged (5161de24). `navyRebuild.ts` now reads the
   ferry's transports and a division's room as the AI does, and `navySave.ts` is new.
+- **Decided** (2026-10-23, the user: option b, as recommended). PLAN 7.95 is filed: at war with no naval
+  enemy, a nation with a shipyard and no armed fleet saves for its cheapest warship while its army is at
+  or over a share of its peacetime share. Its AT is 7.84d's two bars on 10 unseen seeds × 20 years and
+  ADR-615's own measure not under HEAD's. 7.84's second bar waits on 7.95; ADR-615 stands.
 
 ### ADR-655 · 2026-10-23 · accepted — A carrier's wing drawn over its target between its strikes (PLAN 7.84b)
 
@@ -218,7 +222,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Consequences.** View only: the pin is unchanged (5161de24). The battle record keeps no first hour,
   so a wing is drawn over its target up to two cycles before its first strike, as its flight home was.
 
-### ADR-654 · 2026-10-23 · proposed (the user's decision) — The tick budget against a busier world (PLAN 7.83's AT missed)
+### ADR-654 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The tick budget against a busier world (PLAN 7.83's AT missed)
 
 - **Context** (`docs/evidence/7.83/at.md`). PLAN 7.83's AT is seed 99 × 5 years, alone on 0xFFFF:
   a mean tick of at most 1.5 ms (SPEC §8's budget) and year 1 at most 2.4 ms. After 7.83b–d it reads
@@ -248,8 +252,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   dearer, which is what 7.83a found.
 - **Consequences:** no rule changed; the pin is unchanged (5161de24). Under (a) or (c), the loop takes
   7.94 after the open tasks before it.
+- **Decided** (2026-10-23, the user: option a, as recommended). 7.83 stays closed as missed. The budget's
+  bar for a rule change is HEAD's rules at most +0.2 ms a tick over `dd3b730`'s on HEAD's year-4 world of
+  seed 99 (read +0.145, met); SPEC §8 keeps 1.5 ms for the 1938 world as first measured and says so.
+  PLAN 7.94 (the operational AI's cost, no outcome changed) is taken for the felt speed.
 
-### ADR-653 · 2026-10-23 · proposed (the user's decision) — The piles bar on the critic's saves, or on fresh worlds (PLAN 7.90's AT missed)
+### ADR-653 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The piles bar on the critic's saves, or on fresh worlds (PLAN 7.90's AT missed)
 
 - **Context** (`docs/evidence/7.90/at.md`). PLAN 7.90's bar, piles of 30 or more of a nation at war on
   one cell 30 days running on run 12's 1129 year 10, 6421 year 20 and 7019 year 10, 2 → 0, read 2 → 2
@@ -269,6 +277,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   year. **Recommended: (a)**, since the save's piles are history the new rules did not write, and 7.79's
   read from 1938 shows whether they form now; (b) or (c) is filed then if they do.
 - **Consequences:** under (a) the loop reads 7.79's AT next; 7.90 stays open only for 7.90g (ADR-651).
+- **Decided** (2026-10-23, the user: option a, as recommended). The saves measure the lift, not a bar:
+  7.90's piles bar closes as missed, and whether HEAD's rules build such piles is judged from 1938 by
+  7.79's AT clause (no pile of 30+ of a nation at war for 30 days on 10 unseen seeds × 20 years). No
+  rule; PLAN 7.93 is not filed. 7.90 stays open only for 7.90g.
 
 ### ADR-652 · 2026-10-23 · accepted — The ferry's sail to the army passes over formations cut off from their ports (PLAN 7.90h; amends ADR-646)
 
@@ -294,7 +306,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   enclave"; red without.
 - **Pin.** Unchanged (5161de24): seed 99's first year is hash for hash HEAD's.
 
-### ADR-651 · 2026-10-22 · proposed (the user's decision) — An overrun nation's warhead on the enemy side's densest army before its ally, or on the nation overrunning it (PLAN 7.92)
+### ADR-651 · 2026-10-22 · accepted, option a (the user's decision, 2026-10-23) — An overrun nation's warhead on the enemy side's densest army before its ally, or on the nation overrunning it (PLAN 7.92)
 
 - **Context** (PLAN 7.91, 7.92; `docs/evidence/7.92/measure.md`). With 7.91's deploy rule
   (`docs/evidence/7.91/patch`, ADR-650 held) `nukePoland1938` seed 5591 is red on its last assertion:
@@ -322,6 +334,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   before its ally; a unit test of it, an ADR, the pin. (c) Open. Recommended: (a), the weighing's
   intent met and a strike on an army before a city's people. Meanwhile 7.91 and 7.90g wait; the loop
   takes PLAN 7.90h.
+- **Decided** (2026-10-23, the user: option a, as recommended). `nukePoland1938`'s last assertion becomes
+  "on Germany, or on a place of at least 50,000 enemy men" (the land of a nation of the enemy side
+  kept); then PLAN 7.91 is committed from its patch, and 7.90g from its. No nuclear rule.
 
 ### ADR-648 · 2026-10-22 · accepted — The ferry's transport want counts the army on a front's land that reaches no front cell (PLAN 7.90e; amends ADR-614)
 

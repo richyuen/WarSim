@@ -121,9 +121,9 @@ them, are 7.81–7.86. A task each, split when taken up:
   Ruled, not committed (`docs/evidence/7.91/case.md`, `patch`, ADR-650 in the patch): the lines and
   files of a stack counted with those from within 60° of its own side; HEAD 69/70 → 96/99, g.patch 86/97
   → 72/75; the test red without (0.87 cells against 0.72); pin 5161de24 → 41d60509. The whole unit suite
-  1870 of 1871: `nukePoland1938` 5591, a nuclear weighing cause: waits on ADR-651 (the user's; PLAN
-  7.92's measure). With (a) the test's last assertion goes and this is committed from its patch; with
-  (b) after that rule. Meanwhile the loop takes PLAN 7.90h.
+  1870 of 1871: `nukePoland1938` 5591, a nuclear weighing cause. The user chose ADR-651 a (2026-10-23):
+  the test's last assertion becomes "on Germany, or on a place of at least 50,000 enemy men", then
+  this is committed from its patch, and 7.90g from its.
 - [ ] 7.90 The ferry's lift short of the army (found at 7.89; R12-B1): on critic run 12's 1129 year 10 the
   USA's 12 transport groups hold 288,000 men (24,000 each) against about 1.35 million in two piles of a
   nation at war (60 divisions at 625163 by Chicago, 53 at 746057 by Norfolk). A round trip of Norfolk's
@@ -228,8 +228,8 @@ them, are 7.81–7.86. A task each, split when taken up:
     Then 7.90's AT, read after 7.90b–h (a.md §6: on the 60 it is likely missed; that goes to BLOCKERS).
     Read (`docs/evidence/7.90/at.md`): 2 → 2, missed (BLOCKERS 2026-10-23). The Baltimore pile 53 → 31 by
     day 30 (7 by day 85), the 60 by Chicago unmoved; the same with g.patch. Both piles predate the rules;
-    the bar's scope is the user's (ADR-653: (a) judged from 1938 by 7.79's AT, recommended; (b), (c) a
-    PLAN 7.93). Open only for 7.90g (ADR-651).
+    the user chose (a) (ADR-653, 2026-10-23): the piles bar closed as missed, the piles judged from 1938 by
+    7.79's AT; no PLAN 7.93. Open only for 7.90g (ADR-651 a: after 7.91).
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts
@@ -239,7 +239,7 @@ them, are 7.81–7.86. A task each, split when taken up:
   HEAD's; the gate green.
 
 - [ ] 7.94 The operational AI's cost on the busier world (found at 7.83's AT; performance 6, needs 7;
-  waits on ADR-654: taken under (a) or (c), dropped under (b)): 0.60 ms a tick on HEAD's year-4 world of
+  taken: ADR-654 a, the user's decision of 2026-10-23): 0.60 ms a tick on HEAD's year-4 world of
   seed 99 (31 % of the tick), the same under `dd3b730`'s rules (`docs/evidence/7.83/at.md` §3).
   Profile it by function there first (`node --cpu-prof`), then cut what dominates without changing an
   outcome. AT: operationalAi's mean a tick on a year from that save at most 0.40 ms (profiled, swapped
@@ -288,6 +288,17 @@ them, are 7.81–7.86. A task each, split when taken up:
       no reserve (ADR-615); the war reserve back at 3 gives fleets in years 2–10 of 26.7 → 40.8 and
       45.9 → 52.1 against 54.4 and 62.5, battles 16.0 against 12.7–12.8; the fleet step at the war's reserve
       changes nothing. The other half is losses. No rule; the pin unchanged (5161de24).
+    The user chose ADR-656 b (2026-10-23): the battles bar waits on PLAN 7.95.
+- [ ] 7.95 A warship's saving in a land war (found at 7.84d; naval 7, needs 8; ADR-656 b, the user's
+  decision): HEAD's depleted navies are stopped by gold after year 2, the treasury 0.44–0.45 of the
+  warship's line against `dd3b730`'s 0.71–0.76, since the army's orders at war keep no reserve (ADR-615)
+  and a war with no naval enemy saves for no warship (`docs/evidence/7.84/d.md`). Rule: at war with no
+  naval enemy, a nation with a shipyard and no armed fleet saves for its cheapest warship while its army
+  is at or over a share of its peacetime share (the share read first on 3613 and 4219, `navySave.ts`).
+  AT: on 10 unseen seeds × 20 years (`seaYears.ts`) armed fleets in years 10–20 at least 0.9 of
+  `dd3b730`'s and late sea battles a world-year not below its, both read on the same seeds; ADR-615's
+  own measure (the band's formations after 180 days on the critic's 48 saves) not under HEAD's; a unit
+  test (red without); the ADR; the pin's entry.
 - [ ] 7.85 Aircraft (aircraft 7, needs 8): air battles after year 1 153 a world-year against 2,853 in year 1
   (0.054; 7.51b closed not done on the land-war cause, BLOCKERS 2026-10-22); a carrier strike shows no
   aircraft (7.84 shares the case). Taken up after 7.79, re-read on its HEAD first. AT: on 10 unseen seeds ×

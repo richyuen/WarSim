@@ -5,31 +5,6 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.84d: the navies not rebuilt after year 2 for ADR-615's war reserve; the fleets bar out of reach without the user (2026-10-23, ADR-656 proposed; the user's decision)
-- **The bar:** on 7.84c's 10 seeds × 20 years (`seaYears.ts`), armed fleets in years 10–20 at least 0.9 of
-  `dd3b730`'s (73.7; HEAD 51.3) and late sea battles not below its 13.43.
-- **What moved** (`docs/evidence/7.84/d.md`, read on 3613 and 4219 × 10 years): the cause read. HEAD's
-  depleted navies are stopped by gold, the treasury at 0.44–0.45 of the warship's line against 0.71–0.76,
-  because the army's orders at war spend toward zero (ADR-615, `WAR_RESERVE_MONTHS` 0). With the reserve
-  back at 3, fleets in years 2–10 are 26.7 → 40.8 and 45.9 → 52.1 (`dd3b730` 54.4, 62.5) and battles 7.9 →
-  16.0 and 14.8 → 16.0 (12.8, 12.7). The fleet step keeping the war's reserve changes nothing.
-- **What is left:** the user's (ADR-656). (a) accept, drop 7.84's battles bar; (b) PLAN 7.95, a warship's
-  saving in a land war for a nation with no armed fleet and an army near its peacetime share
-  (recommended, unmeasured); (c) undo ADR-615. The other half of the fleets' gap is losses in the busier
-  world (7.79, 7.82).
-
-### PLAN 7.83: the tick 1.94–1.97 ms against 1.5; the busier world holds most of it (2026-10-23, ADR-654 proposed; the user's decision)
-- **The bar:** `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF`, mean tick ≤ 1.5 ms
-  and year 1 ≤ 2.4 ms, twice; no outcome changed only to save time.
-- **What moved** (7.83b–d, `docs/evidence/7.83/at.md`): the invasion AI −33 %, supply −7 %, capitals
-  −63 %, all with hash f278491d. From 1938, paired against the code before them: 1.993 → 1.849 ms (−7 %).
-  On one world, the new rules' extra cost went from +0.41 to +0.15 ms.
-- **What is left:** read alone, 1.970 / 1.938 ms (year 1 2.57 / 2.53, which is machine drift: 2.36 / 2.39
-  paired). `dd3b730`'s own rules cost 1.82 ms on HEAD's year-4 world. The busier world (the land war,
-  1.5–2.7 × the cells flipped) holds about 0.6 ms, and the operational AI is its largest system (0.60
-  ms). The user's decision (ADR-654): (a) a bar on the rules' cost on one world, plus PLAN 7.94
-  (recommended); (b) a budget of 2.0 / 2.6 ms; (c) keep 1.5 and optimise the busier world's systems.
-
 ### PLAN 7.83c: supply's beach layer −7 %, short of `dd3b730` + 0.03 (2026-10-23)
 - **The bar:** supply's mean a tick on a year from HEAD's year-4 save of seed 99 at most `dd3b730`'s rules'
   + 0.03 (0.168 ms; 0.153 against the pairs' own HEAD), the year's hash f278491d and the pin unchanged.
@@ -53,17 +28,6 @@ entries are kept and marked **RESOLVED** with the date and fix.
   `seaReach`, which supply reads after it in the hour. Less needs fewer searches a turn, a rule change.
   No decision of the user's waits on it; the loop takes PLAN 7.83c, and 7.83's AT is read after 7.83d.
 
-### PLAN 7.90: the ferry carries the Baltimore pile off, but not within 30 days, and the 60 by Chicago do not move; piles 2 → 2 (2026-10-23, ADR-653 proposed; the user's decision)
-- **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
-  year 20 and 7019 year 10 (`piles.ts --days 30`) 2 → 0.
-- **What moved** (7.90b–h, `docs/evidence/7.90/at.md`): every group tried a turn, the way back, two
-  divisions a trip, transports bought for the far army, the sail past cut-off remnants. The Baltimore
-  pile 53 → 31 by day 30 (7.89: 41) and 7 by day 85; 6421 and 7019 none. With 7.90g's held patch the same.
-- **What is left:** the 60 by Chicago (121 cells from a sea port, never the nearest to a group), and the
-  Baltimore pile's one division over the bar on day 30. Both piles predate the rules that move them; no
-  rule meets the bar from the save in 30 days. The user's (ADR-653): (a) judge piles from 1938 by 7.79's
-  AT, (b) a staging march (PLAN 7.93), (c) more lift (PLAN 7.93). 7.90g still waits on ADR-651.
-
 ### PLAN 7.91 (and 7.90g after it): held on `nukePoland1938` seed 5591, whose "on Germany" is the user's to keep or drop (2026-10-22, ADR-651 proposed; the user's decision)
 - **The bar:** with 7.91's patch, `nukePoland1938` green on its three seeds with the first burst on
   Germany (PLAN 7.92's AT, first branch), so that 7.91 and then 7.90g can be committed.
@@ -71,7 +35,9 @@ entries are kept and marked **RESOLVED** with the date and fix.
   Poland strikes with the patch faces France, Poland's ally in this same war, in a theatre of about
   half the enemy side: a fair target by the rules as written. HEAD's burst on Germany is a German city
   by its output (334,000 dead), decided on a day the city led the Italians by 0.006.
-- **What is left:** the user's (ADR-651). (a) replace the test's "on Germany" by "on Germany, or on a place of
+- **Decided** (2026-10-23, the user: ADR-651 a): the assertion widened, then 7.91 and 7.90g land from their
+  patches; this entry is resolved by that commit.
+- **What was left:** the user's (ADR-651). (a) replace the test's "on Germany" by "on Germany, or on a place of
   at least 50,000 enemy men", then 7.91 and 7.90g land from their patches; (b) a rule weighing the striker's own
   front first; (c) open. Meanwhile the loop takes PLAN 7.90h.
 
@@ -85,6 +51,42 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** PLAN 7.90. The USA's 12 groups hold 288,000 men against about 1.35 million in the two
   piles; a round trip carries 4–8 divisions. No decision of the user's waits on it; the loop takes it after
   PLAN 7.80b.
+
+### RESOLVED 2026-10-23 (option b, the user's decision: PLAN 7.95, a warship's saving in a land war; 7.84's battles bar waits on it) · PLAN 7.84d: the navies not rebuilt after year 2 for ADR-615's war reserve; the fleets bar out of reach without the user (2026-10-23, ADR-656 proposed; the user's decision)
+- **The bar:** on 7.84c's 10 seeds × 20 years (`seaYears.ts`), armed fleets in years 10–20 at least 0.9 of
+  `dd3b730`'s (73.7; HEAD 51.3) and late sea battles not below its 13.43.
+- **What moved** (`docs/evidence/7.84/d.md`, read on 3613 and 4219 × 10 years): the cause read. HEAD's
+  depleted navies are stopped by gold, the treasury at 0.44–0.45 of the warship's line against 0.71–0.76,
+  because the army's orders at war spend toward zero (ADR-615, `WAR_RESERVE_MONTHS` 0). With the reserve
+  back at 3, fleets in years 2–10 are 26.7 → 40.8 and 45.9 → 52.1 (`dd3b730` 54.4, 62.5) and battles 7.9 →
+  16.0 and 14.8 → 16.0 (12.8, 12.7). The fleet step keeping the war's reserve changes nothing.
+- **What is left:** the user's (ADR-656). (a) accept, drop 7.84's battles bar; (b) PLAN 7.95, a warship's
+  saving in a land war for a nation with no armed fleet and an army near its peacetime share
+  (recommended, unmeasured); (c) undo ADR-615. The other half of the fleets' gap is losses in the busier
+  world (7.79, 7.82).
+
+### RESOLVED 2026-10-23 (option a, the user's decision: the budget's bar is the rules' cost on one world, +0.145 ms against +0.2, met; SPEC §8 says so; PLAN 7.94 taken) · PLAN 7.83: the tick 1.94–1.97 ms against 1.5; the busier world holds most of it (2026-10-23, ADR-654 proposed; the user's decision)
+- **The bar:** `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF`, mean tick ≤ 1.5 ms
+  and year 1 ≤ 2.4 ms, twice; no outcome changed only to save time.
+- **What moved** (7.83b–d, `docs/evidence/7.83/at.md`): the invasion AI −33 %, supply −7 %, capitals
+  −63 %, all with hash f278491d. From 1938, paired against the code before them: 1.993 → 1.849 ms (−7 %).
+  On one world, the new rules' extra cost went from +0.41 to +0.15 ms.
+- **What is left:** read alone, 1.970 / 1.938 ms (year 1 2.57 / 2.53, which is machine drift: 2.36 / 2.39
+  paired). `dd3b730`'s own rules cost 1.82 ms on HEAD's year-4 world. The busier world (the land war,
+  1.5–2.7 × the cells flipped) holds about 0.6 ms, and the operational AI is its largest system (0.60
+  ms). The user's decision (ADR-654): (a) a bar on the rules' cost on one world, plus PLAN 7.94
+  (recommended); (b) a budget of 2.0 / 2.6 ms; (c) keep 1.5 and optimise the busier world's systems.
+
+### RESOLVED 2026-10-23 (option a, the user's decision: 7.90's piles bar closed as missed; the piles judged from 1938 by 7.79's AT; 7.90 open only for 7.90g) · PLAN 7.90: the ferry carries the Baltimore pile off, but not within 30 days, and the 60 by Chicago do not move; piles 2 → 2 (2026-10-23, ADR-653 proposed; the user's decision)
+- **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
+  year 20 and 7019 year 10 (`piles.ts --days 30`) 2 → 0.
+- **What moved** (7.90b–h, `docs/evidence/7.90/at.md`): every group tried a turn, the way back, two
+  divisions a trip, transports bought for the far army, the sail past cut-off remnants. The Baltimore
+  pile 53 → 31 by day 30 (7.89: 41) and 7 by day 85; 6421 and 7019 none. With 7.90g's held patch the same.
+- **What is left:** the 60 by Chicago (121 cells from a sea port, never the nearest to a group), and the
+  Baltimore pile's one division over the bar on day 30. Both piles predate the rules that move them; no
+  rule meets the bar from the save in 30 days. The user's (ADR-653): (a) judge piles from 1938 by 7.79's
+  AT, (b) a staging march (PLAN 7.93), (c) more lift (PLAN 7.93). 7.90g still waits on ADR-651.
 
 ### RESOLVED 2026-10-22 (PLAN 7.89 took the lock off the ferry, ADR-643; what is left is PLAN 7.90) · PLAN 7.88b: every group carries now, but one formation aboard holds the nation's turn; piles 3 → 2 (2026-10-22, ADR-642)
 - **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421

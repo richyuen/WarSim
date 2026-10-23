@@ -2811,7 +2811,11 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
 
 **Performance budgets.** T0 ≥ 60 fps with 100+ nations at M size. T2 ≥ 30 fps with
 10 000 visible proxies. Snapshot build ≤ 2 ms. Main-thread frame CPU ≤ 6 ms.
-Sim tick ≤ 1.5 ms average (Node, M, 1938). Dev-GPU translation (ADR-4): T0 frame ≤ 1.0 ms
+Sim tick ≤ 1.5 ms average (Node, M, 1938). *Since ADR-654 a (2026-10-23, the user's decision):* the
+1.5 ms stands for the 1938 world as first measured; the busier land war since R11-B1/R12-B1 reads
+1.94–1.97 ms on seed 99 × 5 years, and a rule change is judged instead by its cost on one world:
+HEAD's rules at most +0.2 ms a tick over `dd3b730`'s on HEAD's year-4 world of seed 99 (+0.145 at
+PLAN 7.83). Dev-GPU translation (ADR-4): T0 frame ≤ 1.0 ms
 GPU and T2 frame with 10k proxies ≤ 2.0 ms GPU at 1080p on the bench machine (Phase 0:
 0.46 and 0.41 ms). *As built (PLAN 7.1j, ADR-402):* `npm run bench -- G` measures the game
 itself, the 1938 world at 1080p with the game running: T0 190.6 fps, T2 108.9 fps with 10,752

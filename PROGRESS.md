@@ -22745,3 +22745,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** 7.84 waits on ADR-656 (its first bar, the carrier strike's spec, is met by 7.84a/b). 7.79,
   7.90g, 7.91 and 7.94 wait on ADR-651, 653 and 654; 7.82 and 7.85 come after 7.79. 7.86 (AI nuclear use,
   measure which change raised the bursts) waits on none: it is next.
+
+## 2026-10-23 — The user's decisions: ADR-651 a, ADR-653 a, ADR-654 a, ADR-656 b (documents)
+
+- **Decided** (the user accepted every recommendation): ADR-651 a (`nukePoland1938`'s last assertion
+  "on Germany, or on a place of at least 50,000 enemy men"; then 7.91 and 7.90g land from their
+  patches); ADR-653 a (7.90's piles bar closed as missed, the piles judged from 1938 by 7.79's AT);
+  ADR-654 a (the budget's bar is the rules' cost on one world, +0.2 ms over `dd3b730`'s on HEAD's year-4
+  world of seed 99, read +0.145; SPEC §8 says so; 7.94 taken); ADR-656 b (PLAN 7.95 filed, a warship's
+  saving in a land war; 7.84's battles bar waits on it).
+- **Files:** DECISIONS (four ADRs accepted, a Decided line each), BLOCKERS (7.84d, 7.83, 7.90 resolved;
+  7.91's resolved with its commit), SPEC §8, PLAN (7.90, 7.91, 7.84, 7.94 notes; 7.95 new).
+- **Meanwhile:** PLAN 7.86's read runs in the background (`tools/diag/nukeVolume.ts`, 12 of the critic's
+  seeds × 30 years on `dd3b730`, HEAD, and HEAD with `dd3b730`'s `nuclear.ts`); the first queue of 9
+  was stopped by Claude Code for low memory (each run holds 2.4–4 GB by year 20), now 6 at a time.
+- **Next:** ADR-651 a in code (the test, 7.91's patch, then 7.90g's), gated once the runs leave the
+  memory; then 7.86's read.
