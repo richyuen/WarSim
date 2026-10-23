@@ -1,0 +1,40 @@
+start: day 1825 wars 1 ports 64 fleets at ports Pearl Harbor:3 St. John's:1
+  (585,364) land 116 32 formations; nearest port Baltimore 6 cells; state mov/eng/ret/home {"0000":32}
+  war: USA,PHI vs ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO,
+  day 1829 landing foes ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO, target 832143 order
+  day 1829 skip landing
+  day 1836 landing foes ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO, target 832143 order
+  day 1836 skip landing
+  day 1843 landing foes ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO, target 832143 order
+  day 1843 skip landing
+  day 1850 landing foes ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO, target 832143 order
+  day 1850 skip landing
+day +30: day 1855 wars 1 ports 64 fleets at ports Pearl Harbor:3
+  (585,364) land 116 32 formations; nearest port Baltimore 6 cells; state mov/eng/ret/home {"0000":32}
+  day 1857 landing foes ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO, target 905792 order
+  day 1857 skip landing
+  day 1864 landing foes ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO, target 1010251 order
+  day 1864 skip landing
+  day 1871 turn frontNotHeld
+  day 1871 turn ferry
+  free by land {"116":102,"489":1}
+  day 1871 ferry: free 103 groups 4 tried 4 orders 4: Pearl Harbor/25200/sail! Pearl Harbor/25200/sail! Kingston/25200/sail! Pearl Harbor/25200/sail!
+  day 1878 turn frontNotHeld
+  day 1878 turn ferry
+  free by land {"0":2,"116":103,"489":1}
+  day 1878 ferry: free 106 groups 1 tried 1 orders 1: Baltimore/25200/board!
+day +60: day 1885 wars 1 ports 67 fleets at ports Anchorage:3 Kingston:1
+  (585,364) land 116 32 formations; nearest port Baltimore 6 cells; state mov/eng/ret/home {"0000":32}
+  day 1885 landing foes ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO, target 443373 order
+  day 1885 skip landing
+  day 1892 landing foes ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO, target 443373 order
+  day 1892 skip landing
+  day 1899 landing foes ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO, target 443373 order
+  day 1899 skip landing
+  day 1906 landing foes ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO, target 443373 order
+  day 1906 skip landing
+  day 1913 landing foes ENG,EGY,SUD,BEA,SRH,NIG,GCO,OMN,RAJ,CEY,MAL,SAR,FRA,NSP,AOF,AEF,MAD,INC,NED,DEI,SAU,YEM,POR,AST,BCO, target 443373 order
+  day 1913 skip landing
+day +90: day 1915 wars 1 ports 67 fleets at ports Anchorage:3 Kingston:1
+  (585,364) land 116 33 formations; nearest port Baltimore 6 cells; state mov/eng/ret/home {"0000":33}
+done: ferry turns 2, groups that gave orders 5

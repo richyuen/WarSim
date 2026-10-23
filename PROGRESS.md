@@ -22910,3 +22910,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   7.97). First sight: on 835 the USA and Canada at war with nobody in years 12–13.
 - **No rule;** the pin unchanged (the gate's pin test).
 - **Next:** 7.97.
+
+## 2026-10-23 — PLAN 7.97's AT: American piles 18 → 12, bar 4 missed (ADR-662 to the user)
+
+- **Cause read** (`tools/diag/pileWhy.ts`, new; saves of 822 y5, 825 y17, 827 y14): the transports stand
+  away from the army and a group that gives no order at its port stays (822: the landing's group at
+  Pearl Harbor `noArmy` every week, 32–36 at Washington; 825: 14 ferry groups refusing at Tallinn,
+  Bizerte, Djibouti, 166 free in the Americas). Not the army inland: Washington is 6 cells from Baltimore.
+- **Rule tried** (`docs/evidence/7.97/patch`): `sailToMost`, a group with no order sails for the land and
+  cell of most of the free army; the landing takes a group on an army's land first. Unit test
+  `transportsToMost1938` red without.
+- **AT** (821–830 × 20 years, `docs/evidence/7.97/at/`): American piles 18 → 12 (bar 4), all 32 → 31;
+  engaged per war 0.477 → 0.480 (bar held); Washington's pile on 1 seed (was 5). Left: the lift's size
+  (827: 69 at Nome, two groups, both acting; `wantsFerry` one group in training at a time).
+- **Verdict:** not ticked; code restored, patch kept; BLOCKERS entry; ADR-662 proposed: (a) commit +
+  PLAN 7.98 for the lift (recommended), (b) commit, no task, (c) drop.
+- **No rule;** the pin unchanged (7098dd29).
+- **Next:** 7.97 waits on ADR-662; the loop takes 7.82b.

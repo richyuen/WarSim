@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-662 · 2026-10-23 · proposed, the user's decision — The American piles: the transports go to the army, and the lift is short (PLAN 7.97's AT missed)
+
+- **Context** (`docs/evidence/7.97/at.md`). PLAN 7.97 (ADR-661 a): on 821–830 × 20 years American piles of
+  30+ held 30 days 18 → at most 4, engaged per war in years 2–20 not below 0.477.
+- **Cause read** (`tools/diag/pileWhy.ts`, saves of 822 year 5 and 825 year 17): not the army inland
+  (Washington's pile is 6 cells from Baltimore) but the transports away from it. The lift is tried only
+  from the ports where the groups stand; a group that gives no order there stays: the landing's group
+  at Pearl Harbor finds nobody on Hawaii every week (822, the USA's war with no front), the ferry's 14
+  at Tallinn, Bizerte and Djibouti refuse week after week while 166 free formations stand in the
+  Americas (825).
+- **Rule tried** (`docs/evidence/7.97/patch`, not committed; `sailToMost` in `ai/invasion.ts`): a group
+  that gives no order at its port sails for the land of most of the free army by men, to the cell where
+  most of it stands; the landing takes a group on a land with free army first. Unit test red without.
+- **Read:** American piles **18 → 12** (bar 4), all piles 32 → 31; engaged per war 0.477 → **0.480**
+  (bar held). Washington's pile on 1 seed of 10 (was 5). What is left (827 year 14, the rule in): 69 US
+  divisions at Nome, a port, the front across the Bering Strait, 2 groups at ports, both acting: the
+  lift's size. The economic AI keeps one transport group in training at a time for the ferry
+  (`wantsFerry`, ADR-614), whatever the army waiting.
+- **Options:**
+  - **(a)** Commit the rule (it moves the piles 18 → 12 and holds the engaged figure); 7.97 closed not
+    done at its bar; PLAN 7.98 filed for the lift: the ferry's want sized to the army waiting (more than
+    one group in training while the free army's men exceed the room), AT on 821–830 × 20 years American
+    piles 12 → at most 4, engaged per war not below 0.480. Then 7.82.
+  - **(b)** Commit the rule; 7.97 closed not done; no task filed: the piles go to the next critic report.
+    The loop takes 7.82.
+  - **(c)** Drop the rule (the patch kept in the evidence); 7.97 closed not done; the loop takes 7.82.
+- **Recommended: (a).** The rule removes the cause it was read for (Washington 5 seeds → 1) and costs
+  the land war nothing; the piles left have a second read cause, the lift's size, which is a rule of the
+  economic AI of its own (one cause per commit) and gets its own AT.
+- **Consequences:** under (a) or (b) the patch is applied, its pin read and moved in DECISIONS, the gate
+  run, and committed under 7.97. Until decided: no rule; the pin unchanged (7098dd29).
+
 ### ADR-661 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The land war after year 1 on fresh worlds: both of 7.79's bars missed (PLAN 7.79's AT)
 
 - **Context** (`docs/evidence/7.79/at.md`). PLAN 7.79's AT (R12-B1) on 10 unseen seeds × 20 years

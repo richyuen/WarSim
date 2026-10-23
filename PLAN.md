@@ -48,6 +48,9 @@ them, are 7.81–7.86. A task each, split when taken up:
   have a transport group before the lift. AT: on 821–830 × 20 years (`tools/diag/landAt.ts`) American
   piles of 30+ held 30 days 18 → at most 4, engaged per war in years 2–20 not below 0.477 (HEAD's); a
   unit test, red without; the ADR; the pin's entry. Then the loop takes 7.82.
+  Read (`docs/evidence/7.97/at.md`): the cause is the transports away from the army, not the army
+  inland; the rule tried (`patch`: a group with no order sails for the land of most of the free army)
+  18 → 12 American piles, engaged 0.480; the bar missed. Waits on ADR-662 (BLOCKERS).
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts

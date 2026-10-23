@@ -1,0 +1,24 @@
+start: day 5110 wars 1 ports 68 fleets at ports Palana:9 San Juan:4 Kodiak:3 San Jose:1
+  (83,167) land 116 69 formations; nearest port Nome 0 cells; state mov/eng/ret/home {"0000":69}
+  (671,235) land 116 13 formations; nearest port Nain 1 cells; state mov/eng/ret/home {"0000":13}
+  (1915,277) land 56 11 formations; nearest port Petropavlovsk-Kamchatsky 25 cells; state mov/eng/ret/home {"0000":11}
+  war: USA,CAN,MEX vs SOV,CHI,MON
+  day 5112 skip aboard
+  day 5112 turn aboard
+  day 5119 skip aboard
+  day 5119 turn aboard
+  free by land {"56":38,"67":2,"116":151,"490":7}
+  day 5119 ferry: free 198 groups 2 tried 2 orders 2: Canton/25200/board! Okha/25200/sail!
+  day 5126 normandy foes SOV,CHI,MON target -1 noTarget
+  day 5126 turn ferry
+  free by land {"56":38,"67":2,"116":151,"490":7}
+  day 5126 ferry: free 198 groups 2 tried 2 orders 2: Petropavlovsk-Kamchatsky/25200/board! Petropavlovsk-Kamchatsky/25200/board!
+  day 5133 normandy foes SOV,CHI,MON target 636121 order
+  day 5133 skip normandy
+  day 5133 turn normandy
+day +30: day 5140 wars 1 ports 65 fleets at ports Petropavlovsk-Kamchatsky:3 Palana:9 San Juan:4 Kodiak:3 San Jose:1
+  (83,167) land 116 69 formations; nearest port Nome 0 cells; state mov/eng/ret/home {"0000":69}
+  (671,235) land 116 13 formations; nearest port Nain 1 cells; state mov/eng/ret/home {"0000":13}
+  (1915,277) land 56 11 formations; nearest port Petropavlovsk-Kamchatsky 25 cells; state mov/eng/ret/home {"0000":11}
+  (2010,149) land 56 10 formations; nearest port Anadyr 39 cells; state mov/eng/ret/home {"0000":10}
+done: ferry turns 2, groups that gave orders 4

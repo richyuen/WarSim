@@ -1,0 +1,67 @@
+start: day 6205 wars 1 ports 117 fleets at ports Tallinn:5 Tunis:2 Bizerte:2 Djibouti:1 Balboa:3 San Juan:4 Hilo:3
+  (585,364) land 116 74 formations; nearest port Baltimore 6 cells; state mov/eng/ret/home {"0000":74}
+  (476,486) land 116 34 formations; nearest port Veracruz 0 cells; state mov/eng/ret/home {"0000":34}
+  (488,197) land 116 19 formations; nearest port Arviat 0 cells; state mov/eng/ret/home {"0000":19}
+  (729,169) land 4 13 formations; nearest port Nuuk 0 cells; state mov/eng/ret/home {"0000":13}
+  (980,571) land 56 12 formations; nearest port Annaba 282 cells; state mov/eng/ret/home {"0000":12}
+  (708,568) land 116 11 formations; nearest port Paramaribo 6 cells; state mov/eng/ret/home {"0000":11}
+  war: ,MEX,CAN,DEN,BRA,VEN,OMN,USA,GUA,CUB,URU,ARG,ECU,PRU,BOL,PAR,, vs SOV,FIN,YUG,TUR,IRN,MON,TAN
+  day 6211 skip aboard
+  day 6211 turn aboard
+  free by land {"4":13,"56":32,"116":166,"240":3,"278":12,"476":2,"489":2,"490":2,"503":2,"552":2,"562":2}
+  day 6211 ferry: free 238 groups 9 tried 9 orders 9: Tallinn/25200/toMost! Tallinn/25200/toMost! Tallinn/25200/toMost! Tallinn/25200/toMost! Bizerte/25200/toMost! Djibouti/25200/toMost! Tallinn/25200/toMost! Norfolk/25200/board! Bizerte/25200/toMost!
+  day 6218 skip aboard
+  day 6218 turn aboard
+  free by land {"4":13,"56":32,"116":164,"240":3,"278":12,"476":2,"489":2,"490":2,"503":2,"552":2,"562":2}
+  day 6218 ferry: free 236 groups 6 tried 6 orders 6: Norfolk/25200/board! Tallinn/23100/toMost! Tallinn/23100/toMost! Tallinn/21000/toMost! Tallinn/21000/toMost! Tallinn/14700/toMost!
+  day 6225 skip aboard
+  day 6225 turn aboard
+  free by land {"0":2,"4":13,"56":32,"116":123,"240":3,"278":12,"476":2,"489":2,"490":2,"503":2,"552":2,"562":2}
+  day 6225 ferry: free 197 groups 1 tried 1 orders 1: Norfolk/25200/board!
+  day 6232 skip aboard
+  day 6232 turn aboard
+  free by land {"0":12,"4":13,"56":32,"116":115,"240":3,"278":12,"476":2,"489":2,"490":2,"503":2,"552":2,"562":2}
+  day 6232 ferry: free 199 groups 6 tried 6 orders 6: Naga/25200/board! Arviat/25200/board! Arviat/25200/board! Arviat/25200/board! Arviat/25200/board! Arviat/25200/board!
+day +30: day 6235 wars 2 ports 116 fleets at ports Baltimore:2 Balboa:3 Hilo:3
+  (585,364) land 116 70 formations; nearest port Baltimore 6 cells; state mov/eng/ret/home {"0000":70}
+  (476,486) land 116 34 formations; nearest port Veracruz 0 cells; state mov/eng/ret/home {"0000":34}
+  (707,577) land 116 13 formations; nearest port Paramaribo 16 cells; state mov/eng/ret/home {"1000":13}
+  (729,169) land 4 13 formations; nearest port Nuuk 0 cells; state mov/eng/ret/home {"0000":13}
+  (980,571) land 56 12 formations; nearest port Annaba 282 cells; state mov/eng/ret/home {"0000":12}
+  day 6239 skip aboard
+  day 6239 turn aboard
+  free by land {"0":9,"4":13,"56":32,"116":106,"240":3,"278":12,"476":2,"489":2,"490":2,"503":2,"552":2,"562":2}
+  day 6239 ferry: free 187 groups 8 tried 8 orders 8: Saigon/25200/board! Baltimore/25200/board! Baltimore/25200/board! Arviat/23100/board! Arviat/23100/board! Arviat/21000/board! Arviat/21000/board! Arviat/14700/board!
+  day 6246 normandy foes SOV,FIN,YUG,TUR,IRN,MON,TAN,ARG,ECU,PRU,BOL,PAR target 1364553 order
+  day 6246 skip normandy
+  day 6246 turn normandy
+  day 6253 normandy foes SOV,FIN,YUG,TUR,IRN,MON,TAN,ARG,ECU,PRU,BOL,PAR target 1364553 order
+  day 6253 skip normandy
+  day 6253 turn normandy
+  day 6260 landing foes SOV,FIN,YUG,TUR,IRN,MON,TAN target 687854 order
+  day 6260 skip landing
+day +60: day 6265 wars 2 ports 116 fleets at ports Saigon:12 Hong Kong:1 Paramaribo:1 Balboa:3 Hilo:3
+  (585,364) land 116 67 formations; nearest port Baltimore 6 cells; state mov/eng/ret/home {"0000":67}
+  (476,486) land 116 34 formations; nearest port Veracruz 0 cells; state mov/eng/ret/home {"0000":34}
+  (729,169) land 4 13 formations; nearest port Nuuk 0 cells; state mov/eng/ret/home {"0000":13}
+  (980,571) land 56 12 formations; nearest port Annaba 282 cells; state mov/eng/ret/home {"0000":12}
+  day 6267 skip aboard
+  day 6267 turn aboard
+  free by land {"0":5,"4":13,"56":34,"116":107,"240":3,"278":12,"476":2,"489":1,"490":2,"503":2,"552":2,"562":2}
+  day 6267 ferry: free 185 groups 4 tried 4 orders 4: Saigon/25200/board! Hong Kong/25200/board! Saigon/25200/board! Paramaribo/25200/board!
+  day 6274 landing foes SOV,FIN,YUG,TUR,IRN,MON,TAN target 632620 order
+  day 6274 skip landing
+  day 6281 normandy foes SOV,FIN,YUG,TUR,IRN,MON,TAN,ARG,ECU,PRU,BOL,PAR target 1364553 order
+  day 6281 skip normandy
+  day 6281 turn normandy
+  day 6288 normandy foes SOV,FIN,YUG,TUR,IRN,MON,TAN,ARG,ECU,PRU,BOL,PAR target 1364553 noArmy
+  day 6288 turn ferry
+  free by land {"0":4,"4":13,"56":38,"116":110,"240":3,"278":12,"476":2,"489":1,"490":2,"503":2,"552":2,"562":2}
+  day 6288 ferry: free 191 groups 3 tried 3 orders 3: Norfolk/25200/board! Saigon/25200/board! Yuzhno Sakhalinsk/25200/sail!
+day +90: day 6295 wars 2 ports 118 fleets at ports Saigon:7 Balboa:3 Hilo:3
+  (585,364) land 116 72 formations; nearest port Baltimore 6 cells; state mov/eng/ret/home {"0000":72}
+  (476,486) land 116 34 formations; nearest port Veracruz 0 cells; state mov/eng/ret/home {"0000":34}
+  (729,169) land 4 13 formations; nearest port Nuuk 0 cells; state mov/eng/ret/home {"0000":13}
+  (980,571) land 56 12 formations; nearest port Annaba 282 cells; state mov/eng/ret/home {"0000":12}
+  (1630,535) land 56 10 formations; nearest port Saigon 0 cells; state mov/eng/ret/home {"0000":10}
+done: ferry turns 7, groups that gave orders 37

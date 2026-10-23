@@ -1415,3 +1415,15 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
   variant tried to move the seed: that would take the luck, not the cause. The test is not narrowed.
 - **Left:** PLAN 7.92; then `git apply docs/evidence/7.91/patch`, its pin read again, and 7.91
   committed. No user decision waits on 7.91 itself; 7.92's may (its AT).
+
+## 2026-10-23 — PLAN 7.97's AT missed: American piles 18 → 12, bar 4 (ADR-662 waits on the user)
+
+- **Bar:** on 821–830 × 20 years American piles of 30+ held 30 days at most 4, engaged per war not below
+  0.477 (`docs/evidence/7.97/at.md`).
+- **What moved:** the cause read was the transports away from the army (822: the landing's group at
+  Pearl Harbor, 32–36 divisions at Washington; 825: 14 groups refusing at Tallinn, Bizerte, Djibouti).
+  The rule (`docs/evidence/7.97/patch`: a group with no order sails for the land and cell of most of the
+  free army) moved the piles 18 → 12 and engaged per war 0.477 → 0.480.
+- **Left:** the lift's size (827: 69 at Nome, a port, two groups, both acting; `wantsFerry` keeps one
+  transport group in training at a time). ADR-662: (a) commit the rule + PLAN 7.98 for the lift
+  (recommended), (b) commit the rule, no task, (c) drop it. The code is restored; the pin unchanged.

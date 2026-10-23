@@ -1,0 +1,45 @@
+start: day 6205 wars 1 ports 117 fleets at ports Tallinn:5 Tunis:2 Bizerte:2 Djibouti:1 Balboa:3 San Juan:4 Hilo:3
+  (585,364) land 116 74 formations; nearest port Baltimore 6 cells; state mov/eng/ret/home {"0000":74}
+  (476,486) land 116 34 formations; nearest port Veracruz 0 cells; state mov/eng/ret/home {"0000":34}
+  (488,197) land 116 19 formations; nearest port Arviat 0 cells; state mov/eng/ret/home {"0000":19}
+  (729,169) land 4 13 formations; nearest port Nuuk 0 cells; state mov/eng/ret/home {"0000":13}
+  (980,571) land 56 12 formations; nearest port Annaba 282 cells; state mov/eng/ret/home {"0000":12}
+  (708,568) land 116 11 formations; nearest port Paramaribo 6 cells; state mov/eng/ret/home {"0000":11}
+  war: ,MEX,CAN,DEN,BRA,VEN,OMN,USA,GUA,CUB,URU,ARG,ECU,PRU,BOL,PAR,, vs SOV,FIN,YUG,TUR,IRN,MON,TAN
+  day 6211 skip aboard
+  day 6211 turn aboard
+  day 6211 ferry: free 238 groups 9 tried 9 orders 1: Tallinn/25200/board Tallinn/25200/same Tallinn/25200/same Tallinn/25200/same Bizerte/25200/board Djibouti/25200/board Tallinn/25200/same Norfolk/25200/board! Bizerte/25200/board
+  day 6218 skip aboard
+  day 6218 turn aboard
+  day 6218 ferry: free 236 groups 14 tried 14 orders 1: Tallinn/25200/board Tallinn/25200/same Tallinn/25200/same Tallinn/25200/same Bizerte/25200/board Djibouti/25200/board Tallinn/25200/same Norfolk/25200/board! Bizerte/25200/board Tallinn/23100/board Tallinn/23100/same Tallinn/21000/same Tallinn/21000/same Tallinn/14700/same
+  day 6225 skip aboard
+  day 6225 turn aboard
+  day 6225 ferry: free 197 groups 14 tried 14 orders 1: Tallinn/25200/board Tallinn/25200/same Tallinn/25200/same Tallinn/25200/same Bizerte/25200/board Djibouti/25200/board Tallinn/25200/same Norfolk/25200/board! Bizerte/25200/board Tallinn/23100/board Tallinn/23100/same Tallinn/21000/same Tallinn/21000/same Tallinn/14700/same
+  day 6232 skip aboard
+  day 6232 turn aboard
+  day 6232 ferry: free 199 groups 14 tried 14 orders 1: Naga/25200/board! Tallinn/25200/board Tallinn/25200/same Tallinn/25200/same Tallinn/25200/same Bizerte/25200/board Djibouti/25200/board Tallinn/25200/same Bizerte/25200/same Tallinn/23100/same Tallinn/23100/same Tallinn/21000/same Tallinn/21000/same Tallinn/14700/same
+day +30: day 6235 wars 2 ports 116 fleets at ports Tallinn:10 Bizerte:2 Djibouti:1 Balboa:3 Hilo:3
+  (585,364) land 116 70 formations; nearest port Baltimore 6 cells; state mov/eng/ret/home {"0000":70}
+  (476,486) land 116 34 formations; nearest port Veracruz 0 cells; state mov/eng/ret/home {"0000":34}
+  (488,197) land 116 19 formations; nearest port Arviat 0 cells; state mov/eng/ret/home {"0000":19}
+  (707,577) land 116 13 formations; nearest port Paramaribo 16 cells; state mov/eng/ret/home {"1000":13}
+  (729,169) land 4 13 formations; nearest port Nuuk 0 cells; state mov/eng/ret/home {"0000":13}
+  (980,571) land 56 12 formations; nearest port Annaba 282 cells; state mov/eng/ret/home {"0000":12}
+  day 6239 skip aboard
+  day 6239 turn aboard
+  day 6239 ferry: free 197 groups 14 tried 14 orders 1: Saigon/25200/board! Tallinn/25200/board Tallinn/25200/same Tallinn/25200/same Tallinn/25200/same Bizerte/25200/board Djibouti/25200/board Tallinn/25200/same Bizerte/25200/same Tallinn/23100/same Tallinn/23100/same Tallinn/21000/same Tallinn/21000/same Tallinn/14700/same
+  day 6246 normandy foes SOV,FIN,YUG,TUR,IRN,MON,TAN,ARG,ECU,PRU,BOL,PAR target 1364553 order
+  day 6246 skip normandy
+  day 6246 turn normandy
+  day 6253 normandy foes SOV,FIN,YUG,TUR,IRN,MON,TAN,ARG,ECU,PRU,BOL,PAR target 1364553 order
+  day 6253 skip normandy
+  day 6253 turn normandy
+  day 6260 landing foes SOV,FIN,YUG,TUR,IRN,MON,TAN target 687854 order
+  day 6260 skip landing
+day +60: day 6265 wars 2 ports 116 fleets at ports Saigon:12 Hong Kong:1 Tallinn:10 Bizerte:2 Djibouti:1 Balboa:3 Hilo:3
+  (585,364) land 116 71 formations; nearest port Baltimore 6 cells; state mov/eng/ret/home {"0000":71}
+  (476,486) land 116 34 formations; nearest port Veracruz 0 cells; state mov/eng/ret/home {"0000":34}
+  (488,197) land 116 19 formations; nearest port Arviat 0 cells; state mov/eng/ret/home {"0000":19}
+  (729,169) land 4 13 formations; nearest port Nuuk 0 cells; state mov/eng/ret/home {"0000":13}
+  (980,571) land 56 12 formations; nearest port Annaba 282 cells; state mov/eng/ret/home {"0000":12}
+done: ferry turns 5, groups that gave orders 5
