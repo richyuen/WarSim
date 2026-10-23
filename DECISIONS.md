@@ -167,6 +167,38 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-672 · 2026-10-23 · proposed (the user's decision) — An air war at the enemy's air: the sorties meet nothing without a defence that rises (PLAN 7.99)
+
+- **Context** (`docs/evidence/7.99/read.md`). PLAN 7.99 (ADR-668 b): a wing at war with no enemy land
+  formation in range flies at the enemy's airbases or fleets within its range; AT on 10 unseen seeds × 20
+  years air battles in years 2–20 at least a tenth of year 1's. Read first on 871 and 872 (`airIdle.ts`).
+- **Read:** after year 1, of 35–57 idle fighters and strikers at war a day, **82–90 % have nothing of the
+  enemy in range**, airbase and fleet included; an enemy airbase is in range of 8–13 % (manned 2–7 %), a
+  fleet of 3–7 %; the nearest enemy land formation is over four ranges off for 61–65 %.
+- **The rule, tried** (`rule.patch`: after its rebase hop, a fighter sweeps over a manned enemy airbase,
+  else a fleet, else any enemy airbase; a striker hits a fleet first; unit test red without, green with).
+  On 871–872 × 20 years (`airLate.ts`, HEAD in a worktree): air battles late 0.074 → **0.082** of year 1's
+  pooled (871 0.033 → 0.049, 872 0.213 → 0.195 as its wars drifted 7.3 → 5.2); sorties aloft late
+  +40–55 %. `airSweeps.ts` (years 2–10, both seeds): of 120,472 such sorties **1.0 % came within 150 km of
+  any air battle**; on 872 in years 8–10, 33,833 of them and 21 air battles in all, none near one.
+- **Why:** an air battle needs both sides aloft within `INTERCEPT_KM`. A sweep over an enemy base meets the
+  base's wings only when they chose to fly on their own; nothing on the ground takes off against a raid,
+  and `strikes` does not touch wings on the ground. The rule flies for the count, which ADR-520 rules out.
+- **Options:**
+  - **(a)** 7.99 closed not done, no rule; the aircraft score to the next critic report.
+  - **(b)** 7.99 closed not done; a numbered task for a defence that rises: a fighter wing at an airbase
+    with no mission takes off against an enemy sortie that comes within its reach (it flies only when
+    there is something to meet), with 7.99's sweep kept to manned enemy airbases and fleets (no flights
+    to empty bases). Read first on 871–872 how many sweeps it turns into fights; AT the tenth on 10 unseen
+    seeds × 20 years, and at least half of the sweep sorties meeting a defender.
+  - **(c)** The rule as tried committed (battles +11 % pooled on two seeds), 7.99 closed not done.
+- **Recommended: (b).** The read bounds what any offensive rule can reach to a tenth or a fifth of the idle
+  wings, and of those the sorties meet nothing unless the other side rises: a sweep over a manned base
+  with a scramble is a fight each time. By the read, manned bases in range of 0.7–4 idle wings a day late
+  would give some 250–1,500 fights a year at one a sortie, against the ~130 a year more the pooled bar
+  needs over HEAD on these seeds (871 alone ~260). (c) adds sorties ADR-520 calls flying for the count.
+- **Consequences:** until decided, no rule; the pin unchanged (7c2e4700). The loop takes PLAN 7.100.
+
 ### ADR-671 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — Emergent dynamics: the stasis gone, the front battle's share under its bar (PLAN 7.82's AT on 851–860)
 
 - **Context** (`docs/evidence/7.82/at.md`, last section). PLAN 7.82's AT: on 10 unseen seeds × 30 years

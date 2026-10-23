@@ -48,7 +48,8 @@ them, are 7.81–7.86. A task each, split when taken up:
   enemy's lies within their range (ADR-520 measured patrols over home as meeting little). AT: on 10 unseen
   seeds × 20 years (881–890, `airLate.ts`) air battles a year in years 2–20 at least a tenth of year 1's;
   engaged per war in years 2–20 not below HEAD's on the same seeds; a unit test, red without; the ADR;
-  the pin's entry.
+  the pin's entry. Read 2026-10-23 (`docs/evidence/7.99/read.md`): the rule's sorties meet nothing (1.0 %
+  near an air battle); no rule; waits on ADR-672.
 
 - [ ] 7.100 Fronts, not walk-ins (found at 7.82; emergent 6, needs 7; ADR-671 b): on 851–860 × 30 years
   the front battle 1.67 % of the cells changing hands in years 10–30, walk-ins 57 %, revolts 30 %

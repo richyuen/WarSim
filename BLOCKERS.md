@@ -5,6 +5,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.99: the sweeps at the enemy's air meet nothing, battles late 0.074 → 0.082 on two seeds (2026-10-23, ADR-672 proposed; the user's decision)
+- **The bar:** on 10 unseen seeds × 20 years air battles a year in years 2–20 at least a tenth of year 1's.
+- **What moved** (`docs/evidence/7.99/read.md`): the rule tried on 871–872 × 20 years against HEAD, 0.074 →
+  0.082 pooled, sorties aloft late +40–55 %; of 120,472 sweep sorties in years 2–10, 1.0 % near any air
+  battle. 82–90 % of idle wings at war have nothing of the enemy in range at all.
+- **What is left:** the user's (ADR-672): (a) 7.99 closed not done; (b) closed not done, a numbered task
+  for a defence that rises against a raid, the sweep kept to manned bases and fleets (recommended); (c) the
+  rule as tried committed. No rule committed; the full AT not run on a rule that flies for the count.
+
 ### RESOLVED 2026-10-23 (option a, the user's decision: 7.79 closed not done, PLAN 7.97 for the American piles) · PLAN 7.79: the land war after year 1 on fresh worlds, engaged per war 0.074 of year 1's, 32 piles held 30 days (2026-10-23, ADR-661 proposed; the user's decision)
 - **The bar:** on 10 unseen seeds × 20 years engaged land formations a war in years 2–20 at least a tenth
   of year 1's, and no pile of 30 or more of a nation at war on one cell for 30 days.

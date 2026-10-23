@@ -23091,3 +23091,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   unseen seeds × 30 years, read first where the walk-ins come from).
 - No rule; the pin unchanged (7c2e4700).
 - **Next:** PLAN 7.99, then 7.100.
+
+## 2026-10-23 — PLAN 7.99: the sweeps at the enemy's air meet nothing (ADR-672 to the user)
+
+- **Read** (`docs/evidence/7.99/read.md`; `tools/diag/airIdle.ts`, new; 871–872 × 20 years): after year 1,
+  82–90 % of the idle fighters and strikers at war have nothing of the enemy in range; an enemy airbase
+  8–13 % (manned 2–7 %), a fleet 3–7 %; the nearest enemy land formation over four ranges off for 61–65 %.
+- **Rule tried** (`rule.patch`): after its rebase hop, a wing with no land target flies at a manned enemy
+  airbase, a fleet or any enemy airbase in range; unit test red without, green with. `airLate.ts` on
+  871–872 × 20, HEAD in the `WarSim_rule` worktree: 0.074 → 0.082 pooled, aloft late +40–55 %.
+  `tools/diag/airSweeps.ts` (new): 1.0 % of 120,472 sweep sorties in years 2–10 near any air battle.
+- **Verdict:** flying for the count (ADR-520); the full AT not run; BLOCKERS entry; ADR-672 proposed: (a)
+  closed not done; (b) plus a task for a defence that rises against a raid (recommended); (c) the rule anyway.
+- **No rule;** the pin unchanged (7c2e4700).
+- **Next:** PLAN 7.100 (it does not wait on ADR-672).
