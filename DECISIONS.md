@@ -191,7 +191,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     there is something to meet), with 7.99's sweep kept to manned enemy airbases and fleets (no flights
     to empty bases). Read first on 871–872 how many sweeps it turns into fights; AT the tenth on 10 unseen
     seeds × 20 years, and at least half of the sweep sorties meeting a defender.
-  - **(c)** The rule as tried committed (battles +11 % pooled on two seeds), 7.99 closed not done.
+  - **(c)** The rule as tried committed (battles +11 % pooled on two seeds; engaged per war late 0.469 →
+    0.401 on 871, 0.480 → 0.508 on 872, pooled under HEAD's, which the AT forbids), 7.99 closed not done.
 - **Recommended: (b).** The read bounds what any offensive rule can reach to a tenth or a fifth of the idle
   wings, and of those the sorties meet nothing unless the other side rises: a sweep over a manned base
   with a scramble is a fight each time. By the read, manned bases in range of 0.7–4 idle wings a day late
