@@ -23071,3 +23071,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **7.82c** closed not done: no rule; ADR-664's patch stays a candidate in `docs/evidence/7.82/`.
 - No rule; the pin unchanged (7c2e4700).
 - **Next:** 7.82's AT on 851–860 × 30 years (running).
+
+## 2026-10-23 — PLAN 7.82's AT on 851–860: stasis met, battle share 1.67 % (ADR-671 to the user)
+
+- **Run** (`docs/evidence/7.82/at.md`, last section; `at851/`): HEAD `923c2950`, `churnAt.ts`, 851–860 ×
+  30 years, 5 at a time (~35 min a batch).
+- **Read:** longest stasis 7–15 years, none over 15 (841–850: 3 of 10); 856 at 15, Denmark at war 357 days
+  a year, untouched. Battle share in years 10–30 pooled 1.67 % (bar 1.96 %; 841–850 before 7.82d 1.82 %);
+  walk-in 57 %, revolt 30 %, peace 10 %.
+- **Verdict:** missed on the share clause; BLOCKERS entry; ADR-671 proposed: (a) ticked on the stasis;
+  (b) closed not done, a task for the walk-in and revolt churn (recommended); (c) as (b), the bar
+  re-scoped to HEAD's on the same seeds.
+- **No rule;** the pin unchanged (7c2e4700).
+- **Next:** PLAN 7.99 (an air war beyond the land war); 7.82 waits on ADR-671.

@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-671 · 2026-10-23 · proposed (the user's decision) — Emergent dynamics: the stasis gone, the front battle's share under its bar (PLAN 7.82's AT on 851–860)
+
+- **Context** (`docs/evidence/7.82/at.md`, last section). PLAN 7.82's AT: on 10 unseen seeds × 30 years
+  no stasis over 15 years (the critic's measure), and the share of cells changing hands by a front battle
+  in years 10–30 at least 1.96 % (7.82a's HEAD on 831–840, before 7.97).
+- **Read** (851–860, HEAD `923c2950`): longest stasis 7–15 years, **none over 15** (841–850: 3 of 10, 17–19);
+  856 at 15 with Denmark at war and untouched (843's shape). Battle share pooled **1.67 %** (1.3–2.2 by
+  seed); walk-in 57 %, revolt 30 %, peace 10 %. The share was under the bar before 7.82d (1.77 % on
+  834–835 and 1.82 % on 841–850 after 7.97); 7.82d raised battles on its two seeds (845 ×2.6, 844 ×1.2)
+  and walk-ins and revolts more. The critic's complaint was "statelets and walk-ins, not fronts": the
+  share is that complaint's figure, and it has not moved toward the bar.
+- **Options** (a further part of 7.82 on the share is barred by ADR-554):
+  - **(a)** 7.82 ticked on its stasis clause (the critic's own measure, met on 10 of 10); the share's
+    clause judged by the next critic report.
+  - **(b)** 7.82 closed not done; a numbered task filed for the churn by walk-in and revolt over the
+    front battle (read first on two of 851–860 where the walk-ins in years 10–30 come from: lands with
+    no garrison at war, revolts' cells, and why no front holds them), its AT the share at least 1.96 %
+    on 10 unseen seeds × 30 years with the stasis clause kept.
+  - **(c)** As (b), but the share's bar re-scoped to HEAD's on the same seeds (a run of `eca2f3a2`, before
+    7.82d, on 851–860 as its control).
+- **Recommended: (b).** The stasis is gone on 20 unseen seeds' worth of reads since 7.82d (845 19 → 5,
+  851–860 at most 15), but the emergent score's complaint is the share, which three reads put at
+  1.67–1.82 % against 1.96 %. (a) leaves the fronts to the critic with the cause unread; (c) lowers a bar
+  every read since 7.97 has missed.
+- **Consequences:** until decided, no rule; the pin unchanged (7c2e4700). The loop takes PLAN 7.99.
+
 ### ADR-670 · 2026-10-23 · accepted — A war across the sea: with no land target over the bar, the nations a nation could land on (PLAN 7.82d)
 
 - **Context** (`docs/evidence/7.82/d/at.md`). PLAN 7.82d (ADR-665 b): on seed 845 the United States,

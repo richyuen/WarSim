@@ -99,6 +99,9 @@ them, are 7.81–7.86. A task each, split when taken up:
       those it could land on (`seaTargets`). 845: stasis 19 → 5, days at war USA 310, CAN 358, DEN 122;
       engaged per war on 821–830 0.480 → 0.493; battle share 1.9 → 1.4 % (the battles up 2.6×, all
       changes up 3.7×). Pin 7c2e4700.
+  7.82's AT read again (`docs/evidence/7.82/at.md`, last section; 851–860 × 30 years): stasis over 15
+  years on 0 of 10 (856 at 15), met; battle share 1.67 % (bar 1.96 %), missed. No rule; waits on ADR-671
+  (BLOCKERS).
 
 - [ ] 7.99 An air war beyond the land war (found at 7.85; aircraft 7, needs 8; ADR-668 b, 7.51b's (c)):
   air battles in years 2–20 0.066 of year 1's on 871–880, the air war flying only at enemy land forces in
