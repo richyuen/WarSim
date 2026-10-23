@@ -266,10 +266,23 @@ them, are 7.81–7.86. A task each, split when taken up:
       (a flight in the air at every quarter-hour the page plays while the strike stands); the pin unchanged.
       Done (`afdb7f3a`, ADR-655): each flight over its target the cycle's hours its flights out and back
       leave; the spec's planes 2, 2, 2, 2, 2; the unit test red on HEAD at hour 44.75.
-    - [ ] 7.84c Late sea battles: 13.29 → 9.30 a world-year, wars of two navies 1.14 → 0.29
+    - [x] 7.84c Late sea battles: 13.29 → 9.30 a world-year, wars of two navies 1.14 → 0.29
       (`critic/c12_fleets.json`). Read first whether the fall is in wars of two navies (7.79's land war)
       or in battles a naval war (a naval rule). AT: the parent's second bar, or the measured cause to
       the numbered task that owns it.
+      Read (`docs/evidence/7.84/c.md`, `seaYears.ts` × 20 years on 10 of the critic's seeds, HEAD and
+      `dd3b730`): late battles 13.43 → 9.68; battles per pair at war sharing a basin 9.1 → 18.4, those
+      pairs 1.48 → 0.53 a day, pairs at war 234 → 327. The navies are not rebuilt after year 2: armed
+      fleets years 2–20 65 → 49 (year 20 81 → 49), navies 18.4 → 12.8. A naval-economic cause: 7.84d.
+    - [ ] 7.84d The navies' rebuild after year 2 (7.84c): on the 10 seeds of `docs/evidence/7.84/c.md`
+      both commits fall to 43–46 armed fleets by year 2; `dd3b730` rebuilds to 66 at year 10 and 81 at
+      year 20 (navies 20–22), HEAD stays at 52 and 49 (navies 12–15). Read first, on two of those seeds
+      over years 2–10, the warships each navy of year 1 queues and launches against `dd3b730`, its gold
+      and what its economic AI buys instead (the ferry's transports since 7.49d3, 7.66, 7.90e among
+      them); then the rule it names. AT: on those 10 seeds × 20 years (`seaYears.ts`) armed fleets in
+      years 10–20 at least 0.9 of `dd3b730`'s (73.7; HEAD 51.3) and late sea battles not below its
+      13.43, or the read shows the old rebuild wrong (closed so, the reason in the note); a unit test
+      (red without) with a rule; the ADR; the pin's entry.
 - [ ] 7.85 Aircraft (aircraft 7, needs 8): air battles after year 1 153 a world-year against 2,853 in year 1
   (0.054; 7.51b closed not done on the land-war cause, BLOCKERS 2026-10-22); a carrier strike shows no
   aircraft (7.84 shares the case). Taken up after 7.79, re-read on its HEAD first. AT: on 10 unseen seeds ×

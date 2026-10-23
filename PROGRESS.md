@@ -22708,3 +22708,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   `carrierStrikeRow1938`, `seaRow1938` (3), `seaClosingRow1938`. 2251's strike row opens at 396 m/px (the
   T1–T2 band): both sides as counters, the British planes on the struck German fleet. `carrierStrikes`'
   doc and ADR-655 say a wing is drawn over its target up to two cycles before a battle's first strike.
+
+## 2026-10-23 — PLAN 7.84c: the late sea battles fell with the navies, not the battles a war (read only)
+
+- **Start:** gate green on `2934cb33`; critic not due. ADR-651, ADR-653 and ADR-654 still the user's.
+- **Read** (`docs/evidence/7.84/c.md`; `seaYears.ts` × 20 years on 10 of the critic's seeds, on HEAD and on
+  `dd3b730` in a worktree, 7 at a time): late sea battles 13.43 → 9.68 a world-year (the critic's own data:
+  the same in years 1–2, a step down from year 3). Where two navies at war share a basin, HEAD fights twice
+  as many battles (9.1 → 18.4 a pair-year); such pairs fall 1.48 → 0.53 a day while pairs at war rise 234
+  → 327. The cause: the navies are not rebuilt after year 2 (armed fleets at year 20 81 → 49, navies 21.6
+  → 11.8; both 43–46 fleets at year 2).
+- **Filed:** PLAN 7.84d, the navies' rebuild (read the warships queued and the economic AI's spending
+  against `dd3b730` first; AT armed fleets years 10–20 ≥ 0.9 of `dd3b730`'s and late battles not below it).
+- **No rule:** no ADR; the pin unchanged (5161de24).
+- **Next:** 7.84d.
