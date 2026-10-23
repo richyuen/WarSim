@@ -119,6 +119,39 @@ describe('amphibious movement (PLAN 4.5a)', () => {
     expect(w.embarked.get(second)?.fleet).toBe(fleet);
   });
 
+  // PLAN 7.90g (ADR-649): with the group it names full, a formation is refused, and no other group at
+  // the port sails with it alone (critic run 12, 6421 year 20: 21 groups at Norfolk sailed with one
+  // division each on one ferry turn; 1129 year 10: four divisions aboard three groups, 2 / 1 / 1).
+  it('a formation ordered on a full group is refused, and Portsmouth\'s other group stays', () => {
+    const s = sim();
+    const w = s.world;
+    const c = w.formations.cols;
+    const [cx, cy] = at(1.86, 50.95);
+    const divs = [atPortsmouth(w), atPortsmouth(w), atPortsmouth(w)];
+    const groupsUnderWay = (): number => {
+      let k = 0;
+      w.formations.forEach((o) => {
+        if (w.isFleet(o) && c.nation[o] === ENG && transportRoom(w, o) > 0 && c.moving[o] === 1) k++;
+      });
+      return k;
+    };
+    expect(groupsUnderWay()).toBe(0);
+    expect(orderLanding(w, divs[0]!, cx, cy)).toBe(true);
+    const fleet = w.embarked.get(divs[0]!)!.fleet;
+    expect(orderLanding(w, divs[1]!, cx, cy, fleet)).toBe(true);
+    // Full: the third is refused, though the port's other group has room for it.
+    expect(orderLanding(w, divs[2]!, cx, cy, fleet)).toBe(false);
+    expect(w.embarked.has(divs[2]!)).toBe(false);
+    expect(groupsUnderWay()).toBe(1);
+    // Named, the other group takes it.
+    let other = 0;
+    w.formations.forEach((o) => {
+      if (other === 0 && o !== fleet && w.isFleet(o) && c.nation[o] === ENG && transportRoom(w, o) > 0 && c.moving[o] === 0 && orderLanding(w, divs[2]!, cx, cy, o)) other = o;
+    });
+    expect(other).toBeGreaterThan(0);
+    expect(w.embarked.get(divs[2]!)?.fleet).toBe(other);
+  });
+
   it('transports sunk with a division aboard take it with them', () => {
     const s = sim();
     const w = s.world;

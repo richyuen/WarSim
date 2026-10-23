@@ -14337,3 +14337,127 @@ Of 7.33 (open in PLAN.md):
   Done (ADR-650, from `docs/evidence/7.91/patch`, its DECISIONS hunk by hand): `nukePoland1938` green on
   its three seeds (5591 on 64,445 Italian men; 7127 and 3929 on Germany, as before), `deploy.test.ts`
   green; pin 5161de24 → 41d60509.
+
+<!-- moved 2026-10-23 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.90 The ferry's lift short of the army (found at 7.89; R12-B1): on critic run 12's 1129 year 10 the
+  USA's 12 transport groups hold 288,000 men (24,000 each) against about 1.35 million in two piles of a
+  nation at war (60 divisions at 625163 by Chicago, 53 at 746057 by Norfolk). A round trip of Norfolk's
+  four groups (the divisions sent to the port on one turn, aboard on the next, about 20 days at sea)
+  carries 4–8 divisions; in 30 days the 53 fall to 41, and the 60, never the nearest the port, do not
+  move (`docs/evidence/7.89/a.md` §3). AT: piles of 30 or more of a nation at war on one cell 30 days
+  running on 1129 year 10, 6421 year 20 and 7019 year 10 2 → 0 (`piles.ts --days 30`); a unit test (red
+  without); the ADR; the pin's entry; `--profile`. In parts:
+    - [x] 7.90a Measured, on 1129 year 10 over 90 days (read only): the US groups' round trip by step
+      (days marching to the port, waiting to board, at sea, back), the transports the economic AI buys
+      the USA (`transportWant.ts`; PLAN 7.49d3, 7.66), and what else stands between the piles and the
+      lift (the 60's march to a port, any port of the USA's nearer them). AT: the table, and the rule it
+      names, each a part with its own AT; no rule: the pin unchanged.
+      Measured (`docs/evidence/7.90/a.md`, `tools/diag/ferryTrip.ts`, `ferryStuck.ts`): 14–15 days to
+      board, 18 at sea to Bathurst, and no way back (the five groups there stood 52–62 days); one
+      division a group (12,460 in 24,000); 7 landed in 90 days, 4 from the Baltimore pile; after day 30 0.88
+      orders a turn (6421 year 20: 0.22). The 49 stand at Baltimore, a port with no group; the 60's
+      nearest sea port is 121 cells off (the Great Lakes' water its own). `wantsFerry` false with 131,961
+      gold. 7.90's bar on the 60 is out of reach in 30 days by the ferry alone (§6: ~26 groups needed).
+    - [x] 7.90b The turn's refusals (a.md §2): the turn ends at `SAIL_TRIES` groups that gave no order,
+      and the same ones refuse first every week (Nuuk's two, sorted first by `onArmy`, then Bathurst's,
+      San Juan's, Bissau's; 6421: Freetown, Dakar, Roseau, Port-of-Spain), so the rest are never tried.
+      AT: on 1129 year 10 and 6421 year 20, days 30–90 (`ferryTrip.ts`), the groups at a port never tried
+      a turn 6.5 and 26.3 → 0, the turn's cost bounded (`--profile`, the invasion AI's longest call);
+      a unit test (red without); the ADR; the pin's entry.
+      Done (ADR-645, `docs/evidence/7.90/b.md`): the turn is bounded by its refusals' route searches
+      (FERRY_SEARCHES 68), a refusal at a port taken by the groups after it there until an order; never
+      tried 6.5 → 0 and 26.3 → 0 (every turn); the refusals searched at most 18 a turn. The groups now
+      tried refuse the sail back (7.90c's), so the landed barely move (7 → 8, 77 → 78). The pin unchanged.
+    - [x] 7.90c The way back (a.md §2): a group away from the army sails for a port by the free army's 4
+      formations nearest it, and from Bathurst, San Juan and Roseau those are garrisons on islands with no
+      port of the nation, so the sail is refused every week and the mainland army never tried. AT: on 1129
+      year 10 the five groups that land at Bathurst under way within 14 days of landing (HEAD: standing
+      52–62 days, to day 90); a unit test (red without); the ADR; the pin's entry.
+      Done (ADR-646, `docs/evidence/7.90/c.md`): the four tried are the nearest of the free army on a
+      land with a port of the nation's; every group landing at Bathurst under way within 2–6 days, San
+      Juan's, Roseau's, Bissau's on the first turn; 1129's landed 8 → 19 (15 from the Baltimore pile),
+      piles on day 90 60/43 → 60/17; 6421's 78 → 87. The pin unchanged.
+    - [x] 7.90d A division over half the room (a.md §4): `TRANSPORT_MEN` gives a group 24,000 men, "two
+      infantry divisions of 1938", and the template is 12,460, so every trip carries one a group. The rule
+      changes every landing's lift too (ADR when taken up). AT: on 1129 year 10 the divisions a group
+      carries a trip (`ferryTrip.ts`, `landed` by fleet) 1 → 2; a unit test (red without); the ADR; the
+      pin's entry.
+      Done (ADR-647, `docs/evidence/7.90/d.md`): a transport 2,100 men, a group 25,200; on 1129 year 10 a
+      trip 1.12 → 1.87, trips of two 2 → 13 of 15 (the mode 2), landed 19 → 28, piles on day 90 60/17 →
+      60/7; the two of one are three groups splitting a port's last four (7.90g). 6421: 87 landed either
+      way. Pin 8a571863 → 5ea2c9d8.
+    - [x] 7.90e The ferry's transports (a.md §5): `wantsFerry` counts only the army on landmasses with a port
+      and no front, not the army on a fronted landmass that reaches no front (the ferry's since ADR-636),
+      so it is false on 1129 year 10 with ~150 such formations and 131,961 gold. AT: on 1129 year 10
+      `wantsFerry` true on day 0 and a US transport group in training by day 30 (HEAD: false, none); a unit
+      test (red without); the ADR; the pin's entry.
+      Done (ADR-648, `docs/evidence/7.90/e.md`): on a front's land with a port of its own, the standing
+      formations that reach no front cell (`frontReach`, the ferry's test) count against the room; on 1129
+      year 10 `wantsFerry` false → true on day 0, groups in training 0 → 1 from day 10. Pin 5ea2c9d8 →
+      5161de24.
+    - [x] 7.90f The board refused at Dakar (found at 7.90c, `docs/evidence/7.90/c.md`): on 6421 year 20,
+      with the way back mended, 25 US groups stand at Dakar (and 2–4 at Bathurst) from day 56 to day 90
+      and refuse a `board` every turn (9 searches each, no order), on the African front's land with free
+      army on it. Read first why (`ferryTurns.ts`, `ferryStuck.ts`: the board's target, the nearest's
+      march to the port); then the rule it names. AT: on 6421 year 20, days 30–90 (`ferryTrip.ts`), the
+      groups at Dakar and Bathurst that give no order on every turn they stand there 27–29 → 0, or the
+      read shows the refusal right (no formation there the ferry should carry: then closed so, the
+      reason in c.md); a unit test (red without) with a rule; the ADR; the pin's entry.
+      Closed so (`docs/evidence/7.90/c.md` "7.90f: the read"): on HEAD the stand moved with 7.90d/e; the
+      figure 27–29 → 3 (107, 141, 285 at Dakar from day 7386, one turn), Bathurst 0. The free army on
+      Dakar's land is four remnants (7,440 men) on a US enclave at (1032,335) that march to none of the
+      USA's six ports there (`ferryFree.ts`): the ferry boards only at a port, so the refusal is right.
+      No rule; the pin unchanged (5161de24). The idle stand is now sails refused: 7.90h.
+    - [x] 7.90g A port's army split over its groups (found at 7.90d, `docs/evidence/7.90/d.md`): on 1129 year
+      10, four divisions of the Baltimore pile sent on day 3664 were aboard three groups at Norfolk (365,
+      568, 571) on day 3713, 2 / 1 / 1, where two groups had room for the four; 568's and 571's tries of
+      the day-3712 turn were sends (a route search), and by what rule the four went aboard which group is
+      unread. 6421 year 20's 27 trips of one are unread too. Read first whose
+      the trips of one are on both saves (the port's free army when the group went, the room left); then the
+      rule it names. AT: on 1129 year 10 and 6421 year 20 (`ferryTrip.ts`, `landed` by fleet and sail day)
+      the trips of one that left at their port a free formation the group had room for (1129: 2; 6421:
+      read first) → 0, or the read shows each right (closed so, the reason in the note); a unit test (red
+      without) with a rule; the ADR; the pin's entry.
+      Read and ruled, not committed (`docs/evidence/7.90/g.md`, `g.patch`, `tools/diag/ferrySplit.ts`):
+      `tryLanding` took `via` as one more group, so with `fleet` full the next went on another group at
+      the port, which sailed with it alone; in g.patch `via` named is that group or a refusal. AT met:
+      1129 1 → 0, 6421 21 → 0 (strict; loosely 2 → 0, 23 → 1, the one right); test red without; ADR-649
+      and pin f9344f0e in the patch. The gate red on `deploy.test.ts`'s day-60 share (0.887 < 0.9) on the
+      new history, a deploy cause: waits on PLAN 7.91 (itself on ADR-651), then applied (its `src/` and
+      `tests/unit/` parts; the DECISIONS and pin hunks by hand, the pin read again) and committed.
+      Done (ADR-649, from g.patch on 7.91's tree): the AT read again there, the same figures (1129 strict
+      0, 6421 strict 0; `g_split_*_on7.91.log`); `amphibious1938`, `deploy`, `nukePoland1938` green; pin
+      41d60509 → 7098dd29.
+    - [x] 7.90h The sail to cut-off remnants (found at 7.90f, `docs/evidence/7.90/c.md` "7.90f: the read"): a
+      group away from the army sails for the four nearest of the free army on lands with a port of the
+      nation's (7.90c's rule), whether or not they march to one. On 6421 year 20 day 7387 those four are
+      the remnants on landmass 56 cut off from all six US ports there: the groups at Norfolk, Baltimore,
+      Tampico, Corpus Christi and Port-of-Spain each search them again (8 searches; the rest `same`) and
+      are refused, while division 16 at Glasgow, 1 cell from a US port it marches to, is never tried; 9
+      groups at Port-of-Spain and 6 at Baltimore stand to day 90. AT: on 6421 year 20 over 120 days
+      (`ferryTrip.ts`, `ferryFree.ts` on each turn with a sail refused) the turns on which a sail was
+      refused while a free formation that marches to a port of its land was not tried (HEAD: 1 in 90
+      days, day 7387; the 120 read first) → 0; a unit test (red without) with a rule; the ADR; the pin's
+      entry. One division: it does not move 7.90's bar on the piles.
+      Done (ADR-652, `docs/evidence/7.90/h.md`, `tools/diag/sailCut.ts`): the ferry's sail asks past the
+      formations cut off from their land's ports, kept in a set of the turn, within the turn's searches
+      left; HEAD 1 in 120 days → 0 (no sail refused), day 7387's five sails ordered; landed 87 either
+      way. The pin unchanged (5161de24).
+    Then 7.90's AT, read after 7.90b–h (a.md §6: on the 60 it is likely missed; that goes to BLOCKERS).
+    Read (`docs/evidence/7.90/at.md`): 2 → 2, missed (BLOCKERS 2026-10-23). The Baltimore pile 53 → 31 by
+    day 30 (7 by day 85), the 60 by Chicago unmoved; the same with g.patch. Both piles predate the rules;
+    the user chose (a) (ADR-653, 2026-10-23): the piles bar closed as missed, the piles judged from 1938 by
+    7.79's AT; no PLAN 7.93. Closed not done with 7.90g (ADR-653 a).

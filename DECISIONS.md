@@ -365,6 +365,29 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   5161de24 → 41d60509, on 5161de24's tree.
 - **Deviation from AoC:** none; AoC has no blocks of elements.
 
+### ADR-649 · 2026-10-22 · accepted — A formation ordered on a named transport group goes on that group or is refused (PLAN 7.90g; amends ADR-625)
+
+- **Context** (`docs/evidence/7.90/g.md`). The invasion AI's `board` orders a port's formations
+  aboard its group one by one (`orderLanding(…, via = fleet)`, ADR-625), until one is refused. But
+  `tryLanding` took `via` as one more group it might use: of the groups of the nation standing at the
+  port with room, the first by id. With `fleet` full, the next formation went on another group
+  standing there and set it sailing with it alone, and the loop went on. Critic run 12, 1129 year 10
+  day 3712: four divisions at Norfolk aboard three groups, 2 / 1 / 1; 6421 year 20 day 7324: one
+  group's try at Norfolk sent 21 more groups to sea with one division each.
+- **Decision** (`systems/amphibious.ts`, `tryLanding`): `via` named, that group alone is tried (its
+  nation, in no fight, standing or under way carrying a formation aboard, at a port the formation
+  stands at, with room); otherwise `NoTransports`. A player's order (no `via`) searches the port's
+  groups as before. The next group of the ferry's turn takes the port's rest in its own try.
+- **Read** (`tools/diag/ferrySplit.ts`, 90 days): trips of one that left at their port a free
+  formation the group had room for, standing or aboard a group tried after it: 1129 year 10 1 → 0
+  (2 → 0 counted loosely, any group), 6421 year 20 21 → 0 (23 → 1; the one left is right: the group
+  before it filled first). Every nation's landings (`tools/diag/landingsAb.ts`, 90 days): 6421's
+  trips 52 → 30 and trips of one 43 → 11, men landed 460,589 → 459,853; 1129's and 7019 year 10's the
+  same to the man. No nation's Normandy or landing moved on the three saves.
+- **Test.** `amphibious1938.test.ts`, "a formation ordered on a full group is refused, and
+  Portsmouth's other group stays"; red without.
+- **Pin.** 41d60509 → 7098dd29 (on ADR-650's tree; the patch's read on 5161de24's was 5161de24 → f9344f0e).
+
 ### ADR-648 · 2026-10-22 · accepted — The ferry's transport want counts the army on a front's land that reaches no front cell (PLAN 7.90e; amends ADR-614)
 
 - **Context** (`docs/evidence/7.90/a.md` §5). `wantsFerry` (ADR-614) counted against the transports'

@@ -22774,3 +22774,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Pin:** 5161de24 → 41d60509 (ADR-650).
 - **Next:** 7.90g from `docs/evidence/7.90/g.patch`, then 7.86's read (`nukeVolume.ts`, its event buffer
   now cleared each hour: the first runs counted every hour's events again and grew to 4 GB).
+
+## 2026-10-23 — PLAN 7.90g: a formation ordered on a named transport group goes on it or is refused (ADR-649); 7.90 closed not done (ADR-653 a)
+
+- **Applied** `docs/evidence/7.90/g.patch` on 7.91's tree (its DECISIONS, PARITY and pin hunks by hand:
+  ADR-649 between 650 and 648, the naval row's note appended, the pin read again).
+- **AT read again on this tree** (`ferrySplit.ts`, 90 days): 1129 year 10 strict 0, 6421 year 20 strict 0,
+  trips 23 / 18, the same as the patch's read (`g_split_*_on7.91.log`). `amphibious1938`, `deploy`,
+  `nukePoland1938` green (19 tests).
+- **Pin:** 41d60509 → 7098dd29.
+- **7.90** closed not done: its piles bar missed (BLOCKERS 2026-10-23), judged from 1938 by 7.79's AT
+  (the user's ADR-653 a).
+- **Next:** 7.86's read (`nukeVolume.ts` on this HEAD, `dd3b730`, and this HEAD with `dd3b730`'s
+  `nuclear.ts`).

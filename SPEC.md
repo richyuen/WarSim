@@ -2095,7 +2095,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   Its free formations at that port (within 3 cells of its land cell or of its water, as an
   order over the sea takes them: PLAN 7.49f, ADR-593) go aboard there, one after another on the
   one transport group, under way once the first is aboard, until it has no room for the next
-  (PLAN 7.72, ADR-625: before, every trip carried one formation); with none there, the nearest on the port's
+  (PLAN 7.72, ADR-625: before, every trip carried one formation), and on no other group: one
+  ordered on a full group is refused, and the port's next group takes the rest in its own try (PLAN
+  7.90g, ADR-649: before, it went on another group standing there, which sailed with it alone); with none there, the nearest on the port's
   land are sent to it to fill the room (one whose march there is refused is passed over, the send
   ending at the third refused march that was a search: PLAN 7.54a, ADR-594); with the nearest
   unable to march there (the transports in an exclave), the transports sail instead for a port

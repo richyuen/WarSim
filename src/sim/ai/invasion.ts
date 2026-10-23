@@ -889,7 +889,8 @@ function board(world: World, fleet: number, room: number, port: number, goal: nu
     let sent = 0;
     for (const id of ids) {
       // On `fleet` though the first's order set it sailing (PLAN 7.72, ADR-625: before, the standing
-      // test refused the rest, and every landing and ferry trip carried one formation).
+      // test refused the rest, and every landing and ferry trip carried one formation), and on no
+      // other group (PLAN 7.90g, ADR-649): the next group at the port takes the rest in its own try.
       if (orderLanding(world, id, tx, ty, fleet)) sent++;
       // A group passes over one with no room left for it, for a smaller one after it.
       else if (!group) break;

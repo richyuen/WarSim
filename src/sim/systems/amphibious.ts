@@ -135,11 +135,15 @@ export function orderLanding(world: World, id: number, x: number, y: number, via
 }
 
 /**
- * `orderLanding`, with why it refused (`RejectReason`, PLAN 4.9a); 0 when ordered. `via`: a
- * transport group that may be under way already, when it carries a formation embarked on it (a
- * group going aboard one after another in one hour, PLAN 7.70b: the first's order sets the
- * transports sailing, and the standing test refused the rest; every landing and ferry trip of the
- * invasion AI passes its group, PLAN 7.72, ADR-625).
+ * `orderLanding`, with why it refused (`RejectReason`, PLAN 4.9a); 0 when ordered. `via`: the
+ * transport group to take it, and no other (PLAN 7.90g, ADR-649), which may be under way already
+ * when it carries a formation embarked on it (a group going aboard one after another in one hour,
+ * PLAN 7.70b: the first's order sets the transports sailing, and the standing test refused the
+ * rest; every landing and ferry trip of the invasion AI passes its group, PLAN 7.72, ADR-625).
+ * Before PLAN 7.90g, `via` was one more group the search might take: with `via` full, the next
+ * formation went on another group standing at the port and set it sailing with it alone (critic
+ * run 12, 1129 year 10: four divisions at Norfolk aboard three groups, 2 / 1 / 1; 6421 year 20: 21
+ * groups at Norfolk sailed with one each on one turn).
  */
 export function tryLanding(world: World, id: number, x: number, y: number, via = 0): 0 | RejectReason {
   const f = world.formations;
@@ -168,7 +172,8 @@ export function tryLanding(world: World, id: number, x: number, y: number, via =
   let fleet = 0;
   for (const i of at) {
     f.forEach((o) => {
-      if (fleet !== 0 || !world.isFleet(o) || c.nation[o] !== nation || c.engaged[o] === 1) return;
+      // `via` named: that group alone (PLAN 7.90g, ADR-649).
+      if (fleet !== 0 || (via !== 0 && o !== via) || !world.isFleet(o) || c.nation[o] !== nation || c.engaged[o] === 1) return;
       if (c.moving[o] === 1 && !(o === via && carrying(world, o))) return;
       if (!near(world, cellOfPlace(world, o), water[i]!, world.atSize(AT_PORT_CELLS))) return;
       if (transportRoom(world, o) - aboard(world, o) >= men) fleet = o;
