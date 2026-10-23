@@ -26,7 +26,7 @@
  */
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
-import { navOf, type World } from '../world';
+import { FlipCause, navOf, type World } from '../world';
 import { leaveAlliance } from './alliances';
 import { destroyFormation } from './elements';
 import { releasePuppet } from './puppets';
@@ -265,7 +265,7 @@ export function captureCapital(world: World, loser: number, capturer: number, ci
     for (let c = 0; c < controller.length; c++) {
       if (controller[c] === loser) {
         world.setOwner(c, capturer);
-        world.setController(c, capturer);
+        world.setController(c, capturer, false, FlipCause.capital);
       } else if (owner[c] === loser && controller[c] === capturer) {
         world.setOwner(c, capturer); // the capturer's own occupation of the loser becomes its land
       }
@@ -353,7 +353,7 @@ function leaveLand(world: World, n: number): void {
   for (let c = 0; c < owner.length; c++) {
     const o = owner[c]!;
     const k = controller[c]!;
-    if (k === n && o !== n) world.setController(c, o);
+    if (k === n && o !== n) world.setController(c, o, false, FlipCause.capital);
     else if (o === n && k !== n && k !== 0 && nc.living[k] === 1) {
       world.setOwner(c, k);
       const g = got.get(k) ?? { cells: 0, sx: 0, sy: 0 };

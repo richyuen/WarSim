@@ -22877,3 +22877,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   the rise and ticked. 7.79 counts 6 commits by its number (plus 7.88–7.91).
 - **No rule;** the pin unchanged (7098dd29).
 - **Next:** 7.79 waits on ADR-661; the loop takes 7.82 (re-read on this HEAD first).
+
+## 2026-10-23 — PLAN 7.82a: stasis and the land's changes by cause on HEAD; 7.82b filed
+
+- **Instrument:** `World.flipsBy` tallies controller changes by `FlipCause` (derived, not state; each
+  `setController` site tagged; territory's flip is a battle when the defence was over the garrison, else a
+  walk-in); unit test in `territory.test.ts`. `tools/diag/churnAt.ts`, new.
+- **Read** (`docs/evidence/7.82/measure.md`; unseen 831–840 × 30 years, 5 at a time, ~1 h): stasis as the
+  critic reads it over 15 years on 2 of 10 (834 17, 835 18; others 6–12). Years 10–30: walk-in 57.3 %,
+  revolt 29.6 %, peace 10.4 %, battle 1.96 % (7.82's bar), landing 0.02 %.
+- **Cause:** the long spans' last places are overseas holders that never move (835: the USA at 77,534 cells
+  for 18 years, Canada fixed 12, Greenland at war 297 days a year with nothing engaged). Filed 7.82b.
+- **No rule;** the pin unchanged.
+- **Next:** 7.82b.

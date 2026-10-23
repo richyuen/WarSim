@@ -34,7 +34,7 @@
 import { EventKind, RejectReason } from '../../shared/events';
 import { isLand } from '../../shared/terrain';
 import { nearestCellWhere } from '../data/ownership';
-import { navOf, portSeaOf, seaOf, type World } from '../world';
+import { FlipCause, navOf, portSeaOf, seaOf, type World } from '../world';
 import { destroyFormation, elementIndex } from './elements';
 import { AT_PORT_CELLS, sailHome } from './navalCombat';
 import { orderMove } from './movement';
@@ -263,7 +263,7 @@ function land(world: World, id: number, cell: number, target: number): void {
   if (held !== 0 && world.wars.atWar(held, n)) {
     const o = world.cells.owner[cell]!;
     const freed = o !== 0 && o !== n && world.nations.cols.living[o] === 1 && !world.wars.atWar(n, o);
-    world.setController(cell, freed ? o : n);
+    world.setController(cell, freed ? o : n, false, FlipCause.landing);
   }
   world.out.emit(world.tick, EventKind.FormationLanded, id, c.nation[id]!, c.x[id]!, c.y[id]!);
   if (target !== cell) {

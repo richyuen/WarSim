@@ -66,7 +66,7 @@ import { capitalCell } from './capitals';
 import { warsWithFront } from './warFront';
 import { ATTACKERS, DEFENDERS, type War } from '../wars';
 import type { LandCounts } from '../landCounts';
-import type { World } from '../world';
+import { FlipCause, type World } from '../world';
 
 export const WHITE_PEACE = 10;
 export const PUPPET_SCORE = 90;
@@ -229,7 +229,7 @@ export function leaveBondedWars(world: World, n: number): void {
   const { owner, controller } = world.cells;
   for (let c = 0; c < owner.length; c++) {
     const o = owner[c]!;
-    if (controller[c] !== o && back.has(key(o, controller[c]!))) world.setController(c, o);
+    if (controller[c] !== o && back.has(key(o, controller[c]!))) world.setController(c, o, false, FlipCause.peace);
   }
 }
 
@@ -534,12 +534,12 @@ export function makePeace(world: World, war: War): void {
           candidates.push(c);
           occupied += km2;
         }
-      } else if (inW.has(o) && inL.has(k)) world.setController(c, o);
+      } else if (inW.has(o) && inL.has(k)) world.setController(c, o, false, FlipCause.peace);
     }
   }
   for (const c of candidates) {
     if (s >= WHITE_PEACE) world.setOwner(c, controller[c]!);
-    else world.setController(c, owner[c]!);
+    else world.setController(c, owner[c]!, false, FlipCause.peace);
   }
   if (s >= WHITE_PEACE) settlePockets(world, W, L, candidates);
   const wl = W[0]!;
@@ -669,7 +669,7 @@ function settlePockets(world: World, W: number[], L: number[], annexed: number[]
     for (let i = pStart[p]!; i < pStart[p]! + pSize[p]!; i++) {
       const c = cells[i]!;
       world.setOwner(c, to);
-      world.setController(c, to);
+      world.setController(c, to, false, FlipCause.peace);
     }
   }
 }

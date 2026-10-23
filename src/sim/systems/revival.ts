@@ -45,7 +45,7 @@ import { isMonthStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
 import { nearestCellWhere } from '../data/ownership';
-import { navOf, type World } from '../world';
+import { FlipCause, navOf, type World } from '../world';
 import { releasePuppet } from './puppets';
 import { defect, REVOLT_FROM, spawnRebels } from './revolts';
 import { capitalCell, eliminateNation } from './capitals';
@@ -100,7 +100,7 @@ export function reviveNation(world: World, n: number, area: number[], war = true
     for (let cell = 0; cell < owner.length; cell++) {
       if (owner[cell] !== h || controller[cell] !== h || province[cell] !== 0) continue;
       world.setOwner(cell, n);
-      world.setController(cell, n);
+      world.setController(cell, n, false, FlipCause.revival);
     }
     // With no cell under its control it is gone now, as `relocateToField` would find in an hour.
     if (!controller.includes(h)) eliminateNation(world, h);
@@ -371,7 +371,7 @@ function killNation(world: World, c: number, rest: number[], capitalProvince: nu
     const holder = owner[g.centre[province[cell]!] ?? -1] ?? 0;
     const to = province[cell] !== 0 && living(holder) ? holder : heir;
     world.setOwner(cell, to);
-    if (controller[cell] === c) world.setController(cell, to);
+    if (controller[cell] === c) world.setController(cell, to, false, FlipCause.revival);
     if (to === heir) continue;
     const got = returned.get(to) ?? { cells: 0, sx: 0, sy: 0 };
     got.cells++;
@@ -428,7 +428,7 @@ function leaveToNeighbour(world: World, c: number): void {
   }
   for (const cell of mine) {
     world.setOwner(cell, to);
-    world.setController(cell, to);
+    world.setController(cell, to, false, FlipCause.revival);
   }
   world.out.emit(world.tick, EventKind.LandCeded, to, c, sx, sy);
 }

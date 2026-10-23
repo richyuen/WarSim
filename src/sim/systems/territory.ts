@@ -36,7 +36,7 @@ import terrainJson from '../../../data/terrain.json' with { type: 'json' };
 import { acrossOf } from '../nav/crossings';
 import { neighbours4 } from '../nav/grid';
 import { CORRIDOR_PRESSURE, CORRIDOR_RATE, inCorridor } from './majorBattles';
-import { navOf, type World } from '../world';
+import { FlipCause, type FlipCauseId, navOf, type World } from '../world';
 import { blocOf } from './supply';
 
 export const PRESSURE_RADIUS = 2;
@@ -301,7 +301,7 @@ export function territorySystem(world: World): void {
   });
 
   // Decide on start-of-tick control; apply afterwards.
-  const flips: [number, number][] = [];
+  const flips: [number, number, FlipCauseId][] = [];
   const nb: number[] = [];
   // Candidates: frontier cells under pressure, plus cells holding progress (which may reset).
   // Every other frontier cell would compute best = 0 with flip already 0: a no-op.
@@ -355,7 +355,7 @@ export function territorySystem(world: World): void {
     if (bestNation !== 0 && best > defence) {
       flip[c] = Math.min(255, flip[c]! + (inCorridor(world, bestNation, c) ? CORRIDOR_RATE : 1));
       flipping.add(c);
-      if (flip[c]! >= hold) flips.push([c, bestNation]);
+      if (flip[c]! >= hold) flips.push([c, bestNation, defence > GARRISON ? FlipCause.battle : FlipCause.walkIn]);
     } else {
       flip[c] = 0;
       flipping.delete(c);
@@ -364,12 +364,12 @@ export function territorySystem(world: World): void {
   for (let i = 0; i < count; i++) head[candidates[i]!] = -1;
   const { owner } = world.cells;
   const living = world.nations.cols.living;
-  for (const [c, n] of flips) {
+  for (const [c, n, why] of flips) {
     flip[c] = 0;
     flipping.delete(c);
     const o = owner[c]!;
     const freed = o !== 0 && o !== n && living[o] === 1 && !world.wars.atWar(n, o);
-    world.setController(c, freed ? o : n, true);
+    world.setController(c, freed ? o : n, true, why);
   }
   // Local frontier upkeep around flipped cells.
   for (const [c] of flips) {

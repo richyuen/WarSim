@@ -19,7 +19,7 @@
  */
 import { isMonthStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
-import type { World } from '../world';
+import { FlipCause, type World } from '../world';
 import { eliminateNation } from './capitals';
 import { declareWar, leaveBondedWars } from './war';
 
@@ -137,7 +137,7 @@ function annexInto(world: World, to: number, from: number): void {
     // owner; else its owner's again (PLAN 5.8w2, as a cell taken with no war is, ADR-147).
     if (controller[c] === subject) {
       const o = owner[c]!;
-      world.setController(c, o === 0 || o === overlord || world.wars.atWar(overlord, o) ? overlord : o);
+      world.setController(c, o === 0 || o === overlord || world.wars.atWar(overlord, o) ? overlord : o, false, FlipCause.puppet);
     }
   }
   const f = world.formations.cols;

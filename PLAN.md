@@ -114,7 +114,29 @@ them, are 7.81–7.86. A task each, split when taken up:
   (`critic/c12_cmp_all.txt`, `c12_summary_all.txt`). Taken up after 7.79 and 7.80, re-read on their HEAD
   first. AT: on 10 unseen seeds × 30 years no stasis over 15 years (the critic's measure, read the same
   way), and the share of cells changing hands by a front battle in years 10–30 measured and at least
-  HEAD's; the gate green.
+  HEAD's (1.96 % pooled on 831–840, 7.82a); the gate green.
+  In parts:
+    - [x] 7.82a Measured, on HEAD, unseen seeds 831–840 × 30 years (`tools/diag/churnAt.ts`, new; the
+      changes tallied by cause in `World.flipsBy`, derived, not state): the longest stasis per seed as the
+      critic reads it (the five holding the most cells by controller, yearly, as a set), its span's five
+      with their cells, days at war and engaged formations; the changes of controller in years 10–30 by
+      cause (front battle: a cell taken over its garrison and a formation of its side; walk-in: over the
+      garrison alone; peace, revolt, revival, capital, puppet, landing). AT: the table in
+      `docs/evidence/7.82/measure.md`, HEAD's front-battle share written into 7.82's AT as its bar, and
+      the cause it names, each a part with its own AT; no rule: the pin unchanged.
+      Measured (`docs/evidence/7.82/measure.md`): stasis over 15 years on 2 of 10 (834 17, 835 18; the
+      rest 6–12); the long spans are held by the fifth and sixth places, land no front reaches (in 835
+      the USA at 77,534 cells for 18 years, Canada 44,798 for 12, Denmark's Greenland 25.5–25.9k at war
+      297 days a year with 0.01 engaged, Australia sixth). Changes in years 10–30: walk-in 57.3 %, revolt
+      29.6 %, peace 10.4 %, battle 1.96 % (1.3–2.5 by seed), landing 0.02 %.
+    - [ ] 7.82b The overseas holders that hold still (7.82a: Canada, the United States, Denmark's
+      Greenland and Australia keep their cells to the hundred for a decade or more, at war or not, and
+      hold the five's last places; landings 0.02 % of the changes). Read first on 834's and 835's spans
+      who is at war with them, and whether an enemy's landing is ever planned on their coasts and why
+      not (`amphibious.ts`'s targets), then a rule on what it names. AT: on 834 and 835 × 30 years the
+      longest stasis at most 15 years (17, 18 on HEAD), the battle share in years 10–30 not under 1.68 %
+      pooled on the two (HEAD's); a unit test, red without; the ADR; the pin's entry. Then 7.82's AT on 10 unseen
+      seeds × 30 years (841 on).
 
 - [ ] 7.94 The operational AI's cost on the busier world (found at 7.83's AT; performance 6, needs 7;
   taken: ADR-654 a, the user's decision of 2026-10-23): 0.60 ms a tick on HEAD's year-4 world of

@@ -118,6 +118,14 @@ export const PRODUCTION_SCHEMA = {
 export const Domain = { land: 0, sea: 1, air: 2 } as const;
 export type DomainId = (typeof Domain)[keyof typeof Domain];
 
+/**
+ * Why a cell's controller changed (PLAN 7.82a), tallied by `World.setController` in `flipsBy`
+ * for tools; no rule reads it. `battle` is a front cell taken from a defender with a formation of
+ * its side there (pressure over the garrison), `walkIn` one taken over the garrison alone.
+ */
+export const FlipCause = { other: 0, battle: 1, walkIn: 2, peace: 3, revolt: 4, revival: 5, capital: 6, puppet: 7, landing: 8 } as const;
+export type FlipCauseId = (typeof FlipCause)[keyof typeof FlipCause];
+
 /** Scenario rules the sim needs to apply commands (not state: fixed by the scenario). */
 export interface TemplateRule {
   /** Of the land, or a fleet (PLAN 4.2a): all its elements are of the one domain. */
@@ -893,6 +901,8 @@ export class World {
    */
   flipLog: number[] = [];
   flipLogBase = 0;
+  /** Derived (not state): the controller changes by `FlipCause` since the world was made or loaded (PLAN 7.82a). */
+  flipsBy = new Float64Array(9);
   /** Derived (not state): the cell of each change of `flipLog`, at the same index (PLAN 7.30b). */
   flipCells: number[] = [];
   /**
@@ -1328,9 +1338,10 @@ export class World {
    * Sets the controller of cell `i`, marking its tile dirty when it changes. Invalidates the
    * frontier set unless the caller (the territory system) maintains it itself.
    */
-  setController(i: number, nation: number, keepFrontier = false): void {
+  setController(i: number, nation: number, keepFrontier = false, cause: FlipCauseId = FlipCause.other): void {
     const c = this.cells;
     if (c.controller[i] === nation) return;
+    this.flipsBy[cause]!++;
     if (this.land) {
       const km2 = this.land.rowKm2[Math.floor(i / c.w)]!;
       this.land.cell(c.owner[i]!, c.controller[i]!, -km2);

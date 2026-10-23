@@ -55,7 +55,7 @@ import { EventKind } from '../../shared/events';
 import { hash32, hashToUnit } from '../core/hash';
 import { nearestCellWhere } from '../data/ownership';
 import { techMask, type TechMask } from '../tech';
-import { navOf, provinceCellsOf, type World } from '../world';
+import { FlipCause, navOf, provinceCellsOf, type World } from '../world';
 import { relocateCapital } from './capitals';
 import { deadClaimant, reviveNation } from './revival';
 import { equipFormation } from './elements';
@@ -324,7 +324,7 @@ export function defect(world: World, area: number[], holder: number, to: number,
   for (const c of inArea) {
     if (owner[c] !== holder) continue;
     world.setOwner(c, to);
-    world.setController(c, to);
+    world.setController(c, to, false, FlipCause.revolt);
     cells++;
     sx += (c % w) + 0.5;
     sy += Math.floor(c / w) + 0.5;
@@ -479,7 +479,7 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
   for (let c = 0; c < owner.length; c++) {
     if (owner[c] !== holder || !inArea.has(province[c]!)) continue;
     world.setOwner(c, id);
-    world.setController(c, id);
+    world.setController(c, id, false, FlipCause.revolt);
     cells++;
     sx += (c % w) + 0.5;
     sy += Math.floor(c / w) + 0.5;

@@ -8,7 +8,7 @@ import { Sim } from '../../src/sim/sim';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import { frontierOf, HOLD_TICKS, territorySystem } from '../../src/sim/systems/territory';
 import { Wars } from '../../src/sim/wars';
-import { laneOf, navOf, type World } from '../../src/sim/world';
+import { FlipCause, laneOf, navOf, type World } from '../../src/sim/world';
 import { acrossOf } from '../../src/sim/nav/crossings';
 import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
@@ -404,5 +404,26 @@ describe('a cell taken from its occupier by a third nation (PLAN 3.4Rj)', () => 
       expect(after.ger, `owner ${owner}`).toBeGreaterThan(before.ger);
       expect(after.noWar).toBe(0);
     }
+  });
+});
+
+describe('the changes of controller by cause (PLAN 7.82a)', () => {
+  it('a front cell taken with no defender of its side is a walk-in, one taken from a defender a battle', () => {
+    const open = block(3);
+    const a = open.world;
+    for (const y of [Y0 + 3, Y0 + 6, Y0 + 9]) spawn(a, GER, SPLIT - 1, y);
+    const before = Float64Array.from(a.flipsBy);
+    open.step(24 * 10);
+    const walk = a.flipsBy[FlipCause.walkIn]! - before[FlipCause.walkIn]!;
+    expect(walk).toBeGreaterThan(0);
+    expect(a.flipsBy[FlipCause.battle]! - before[FlipCause.battle]!).toBe(0);
+
+    const held = block(3);
+    const b = held.world;
+    for (const y of [Y0 + 5, Y0 + 6]) for (let k = 0; k < 4; k++) spawn(b, GER, SPLIT - 1, y);
+    spawn(b, POL, SPLIT, Y0 + 6);
+    const was = Float64Array.from(b.flipsBy);
+    held.step(24 * 10);
+    expect(b.flipsBy[FlipCause.battle]! - was[FlipCause.battle]!).toBeGreaterThan(0);
   });
 });

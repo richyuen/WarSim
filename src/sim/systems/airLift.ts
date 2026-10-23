@@ -17,7 +17,7 @@
  */
 import { EventKind, RejectReason } from '../../shared/events';
 import { isLand } from '../../shared/terrain';
-import type { World } from '../world';
+import { FlipCause, type World } from '../world';
 import { BASE_PICK_CELLS, isTransport, wingRange } from './air';
 import { AA_CELLS } from './airCombat';
 import { elementIndex, wrapDx } from './elements';
@@ -140,7 +140,7 @@ export function orderParadrop(world: World, id: number, x: number, y: number): 0
   if (held !== 0 && world.wars.atWar(held, nation)) {
     const o = world.cells.owner[cell]!;
     const freed = o !== 0 && o !== nation && world.nations.cols.living[o] === 1 && !world.wars.atWar(nation, o);
-    world.setController(cell, freed ? o : nation);
+    world.setController(cell, freed ? o : nation, false, FlipCause.landing);
   }
   world.out.emit(world.tick, EventKind.FormationLanded, id, nation, px, py);
   return 0;
