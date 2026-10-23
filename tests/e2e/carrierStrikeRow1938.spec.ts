@@ -54,8 +54,8 @@ test("a carrier's strike has its row, which shows the struck ships and the bombs
   const strike = battle.strike!;
   const row = page.getByTestId('sea-battle-row').nth(k);
   await expect(row).toContainText('Carrier strike');
-  // PLAN 7.35c (left by 7.35a): its tooltip says what it shows, the struck fleet, not "both fleets".
-  await expect(row).toHaveAttribute('title', 'Show the struck fleet');
+  // PLAN 7.35c (left by 7.35a): its tooltip says what it shows; since PLAN 7.84a the carrier and the struck fleet.
+  await expect(row).toHaveAttribute('title', 'Show the carrier and the struck fleet');
   const rowText = await row.innerText();
   await row.click();
   await landed(page);

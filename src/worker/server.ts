@@ -1541,7 +1541,15 @@ export class SimServer {
         // With no such pair, the fleet its carriers' wings strike (PLAN 7.35a): a row of its own.
         const hit = pair[2] < 0 ? strikeTarget(world, live) : null;
         const strike = hit ? [fc0.x[hit.target]!, fc0.y[hit.target]!, fc0.nation[hit.carrier]!] : [0, 0, 0];
-        return [b.x, b.y, r, b.a, b.b, mx, my, x1 - x0, y1 - y0, ...pair, ...strike, ...near];
+        // The carrier's fleet and the fleet it strikes (PLAN 7.84a): their middle and the cells
+        // between them, the row's frame; the struck fleet alone left the carrier up to 250 km off.
+        let both: [number, number, number, number] = [0, 0, -1, -1];
+        if (hit) {
+          const [kx, ky, tx, ty] = [fc0.x[hit.carrier]!, fc0.y[hit.carrier]!, fc0.x[hit.target]!, fc0.y[hit.target]!];
+          const dx = wrapDx(world, kx, tx);
+          both = [(((kx + dx / 2) % w) + w) % w, ky + (ty - ky) / 2, Math.abs(dx), Math.abs(ty - ky)];
+        }
+        return [b.x, b.y, r, b.a, b.b, mx, my, x1 - x0, y1 - y0, ...pair, ...strike, ...near, ...both];
       }),
     );
     // The sorties in the air (PLAN 5.7a): what `sortieAt` needs, the launch from this tick.

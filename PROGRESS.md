@@ -22669,3 +22669,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** every open task waits on a decision of the user's: 7.79's AT read (ADR-653), 7.91 and 7.90g
   (ADR-651), 7.94 (ADR-654). 7.82, 7.85 and 7.86 come after 7.79. 7.84 (naval) is independent of all
   three, so it is next.
+
+## 2026-10-23 — PLAN 7.84a: a carrier strike's row frames the carrier and the struck fleet
+
+- **Start:** gate green on `d4f8f6f7`; critic not due. ADR-651, ADR-653 and ADR-654 still the user's.
+- **Split** 7.84 (naval 7) by cause: a (the row's frame), b (the wing's flight drawn only about each
+  strike), c (late sea battles, the volume bar).
+- **Cause:** the row centred the struck fleet, 2.4 cells across; on the critic's 8693 (Japan on the USA,
+  hour 326) the Japanese carrier group stood ~10 cells off, so the view held two American destroyer
+  flotillas and nothing else.
+- **Change:** a sea battle's snapshot row carries the carrier's fleet and its target's middle and the cells
+  between them (`SEA_STRIDE` 20 → 24); the row frames that box with `STRIKE_MARGIN` (1.2 cells) about it,
+  no less than 2.4 cells; tooltip "Show the carrier and the struck fleet". View only: the pin unchanged.
+- **AT:** `carrierStrikeView1938.spec.ts` (new) red on HEAD (0 Japanese ships, 16 American, 84 m/px), green
+  after (50 Japanese, 16 American, 214 m/px); `carrierStrikeRow1938.spec.ts` green (2251, 376 m/px, its
+  struck ships and bombs). Looked at: both fleets in the frame, their counters clear of the edges.
+- **Next:** 7.84b (the wing in the air through the strike's cycle).

@@ -887,7 +887,7 @@ export class MapView {
     const out: SeaBattleView[] = [];
     for (let i = 0; i + SEA_STRIDE <= this.seas.length; i += SEA_STRIDE) {
       const s = this.seas;
-      out.push({ x: s[i]!, y: s[i + 1]!, r: s[i + 2]!, a: s[i + 3]!, b: s[i + 4]!, cx: s[i + 5]!, cy: s[i + 6]!, span: [s[i + 7]!, s[i + 8]!], pair: s[i + 11]! < 0 ? null : { x: s[i + 9]!, y: s[i + 10]!, w: s[i + 11]!, h: s[i + 12]! }, strike: s[i + 15]! > 0 ? { x: s[i + 13]!, y: s[i + 14]!, by: s[i + 15]! } : null, closing: s[i + 18]! < 0 ? null : { x: s[i + 16]!, y: s[i + 17]!, w: s[i + 18]!, h: s[i + 19]! } });
+      out.push({ x: s[i]!, y: s[i + 1]!, r: s[i + 2]!, a: s[i + 3]!, b: s[i + 4]!, cx: s[i + 5]!, cy: s[i + 6]!, span: [s[i + 7]!, s[i + 8]!], pair: s[i + 11]! < 0 ? null : { x: s[i + 9]!, y: s[i + 10]!, w: s[i + 11]!, h: s[i + 12]! }, strike: s[i + 15]! > 0 ? { x: s[i + 13]!, y: s[i + 14]!, by: s[i + 15]!, both: { x: s[i + 20]!, y: s[i + 21]!, w: s[i + 22]!, h: s[i + 23]! } } : null, closing: s[i + 18]! < 0 ? null : { x: s[i + 16]!, y: s[i + 17]!, w: s[i + 18]!, h: s[i + 19]! } });
     }
     return out;
   }
@@ -2338,9 +2338,11 @@ export interface SeaBattleView {
   pair: { x: number; y: number; w: number; h: number } | null;
   /**
    * Where no pair is: the fleet its carriers' wings strike, and the striker's nation (PLAN 7.35a,
-   * `strikeTarget`); the ticker lists a carrier strike's row for it. Null for none.
+   * `strikeTarget`); the ticker lists a carrier strike's row for it. Null for none. `both`: the
+   * middle of the carrier's fleet and that fleet and the cells between them, the row's frame
+   * (PLAN 7.84a).
    */
-  strike: { x: number; y: number; by: number } | null;
+  strike: { x: number; y: number; by: number; both: { x: number; y: number; w: number; h: number } } | null;
   /**
    * Its nearest two fleets at war with each other whatever their distance (PLAN 7.41a): their
    * middle and the cells between them, as `pair`; null for none. Where neither `pair` nor

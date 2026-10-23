@@ -252,6 +252,19 @@ them, are 7.81–7.86. A task each, split when taken up:
   1.14 → 0.29 (`c12_fleets.json`). AT: an e2e spec on seed 8693's Japan–USA carrier strike, red before:
   clicking its row shows the striking aircraft and both sides' ships at the zoom it opens; on 10 unseen
   seeds × 20 years late sea battles a world-year not below `dd3b730`'s on the same seeds; the gate green.
+  In parts (one cause each):
+    - [x] 7.84a The row's frame: it centred the struck fleet 2.4 cells across, the carrier up to 250 km
+      off (on 8693 the Japanese fleets ~10 cells away, off the screen). AT: `carrierStrikeView1938.spec.ts`
+      on 8693's Japan–USA strike, red before (0 Japanese ships): from the row both sides' ships on the
+      screen (> 0 each); `carrierStrikeRow1938.spec.ts` green; the pin unchanged (view only).
+    - [ ] 7.84b The wing's flight: drawn only about each strike (`carrierStrikes`, `over` 0), 250 km at
+      380 km/h in the air 1.3 hours of every 4. AT: the spec's planes of the striker on the screen from
+      the row and at each of the next 4 hours (HEAD: 0, 2, 0, 0); `carrierStrikes1938.test.ts` red without
+      (a flight in the air at every quarter-hour the page plays while the strike stands); the pin unchanged.
+    - [ ] 7.84c Late sea battles: 13.29 → 9.30 a world-year, wars of two navies 1.14 → 0.29
+      (`critic/c12_fleets.json`). Read first whether the fall is in wars of two navies (7.79's land war)
+      or in battles a naval war (a naval rule). AT: the parent's second bar, or the measured cause to
+      the numbered task that owns it.
 - [ ] 7.85 Aircraft (aircraft 7, needs 8): air battles after year 1 153 a world-year against 2,853 in year 1
   (0.054; 7.51b closed not done on the land-war cause, BLOCKERS 2026-10-22); a carrier strike shows no
   aircraft (7.84 shares the case). Taken up after 7.79, re-read on its HEAD first. AT: on 10 unseen seeds ×

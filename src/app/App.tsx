@@ -33,8 +33,10 @@ import { imageToRuns, NATION_MAX_DIST, TERRAIN_MAX_DIST } from './importImage';
 
 /** Cells about the pair of fleets a sea battle's row shows (PLAN 7.10b): their blocks and their fire. */
 export const SEA_PAIR_MARGIN = 0.6;
-/** Cells across the view of the fleet a carrier strike's row shows (PLAN 7.35a): its ships and the bombs on them. */
+/** The least cells across the view a carrier strike's row shows (PLAN 7.35a, 7.84a): the struck ships and the bombs on them. */
 export const STRIKE_VIEW_CELLS = 2.4;
+/** Cells about the carrier's fleet and the fleet it strikes in its row's view (PLAN 7.84a): their counters stand beside their ships, and SEA_PAIR_MARGIN put the carrier's at the view's edge. */
+export const STRIKE_MARGIN = 1.2;
 
 export function App({
   hud,
@@ -148,8 +150,13 @@ export function App({
             // show. The box of all its fleets (PLAN 4.12a) was 24 cells across for seed 9043's
             // first battle: counters at 668 m/px, and no fire.
             if (b?.pair) hud.onShowSeaBattle(b.pair.x, b.pair.y, [b.pair.w + 2 * SEA_PAIR_MARGIN, b.pair.h + 2 * SEA_PAIR_MARGIN]);
-            // A carrier's strike (PLAN 7.35a): the fleet it strikes, its ships and the bombs on them.
-            else if (b?.strike) hud.onShowSeaBattle(b.strike.x, b.strike.y, [STRIKE_VIEW_CELLS, STRIKE_VIEW_CELLS]);
+            // A carrier's strike (PLAN 7.35a): the carrier's fleet and the fleet it strikes, with
+            // the wing between them (PLAN 7.84a: the struck fleet alone left the carrier off the
+            // screen, up to 250 km away), and no nearer than STRIKE_VIEW_CELLS across.
+            else if (b?.strike) {
+              const k = b.strike.both;
+              hud.onShowSeaBattle(k.x, k.y, [Math.max(STRIKE_VIEW_CELLS, k.w + 2 * STRIKE_MARGIN), Math.max(STRIKE_VIEW_CELLS, k.h + 2 * STRIKE_MARGIN)]);
+            }
             // Its fleets closing (PLAN 7.41a): its nearest two at war, both on the screen.
             else if (b?.closing) hud.onShowSeaBattle(b.closing.x, b.closing.y, [b.closing.w + 2 * SEA_PAIR_MARGIN, b.closing.h + 2 * SEA_PAIR_MARGIN]);
           }}

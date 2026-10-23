@@ -294,7 +294,9 @@ export interface Snapshot {
    * the striker's nation; by 0 for none. Then [nx, ny, nw, nh] (PLAN 7.41a): the middle of its
    * nearest two fleets at war with each other whatever their distance and the cells between
    * them; nw −1 for none. A battle with neither a pair nor a strike has the row of its fleets
-   * closing, which frames these two.
+   * closing, which frames these two. Then [kx, ky, kw, kh] (PLAN 7.84a): where a strike is, the
+   * middle of the carrier's fleet and the fleet it strikes and the cells between them, the frame
+   * of its row; kw −1 for none.
    */
   seas: Float32Array;
   /**
@@ -741,7 +743,7 @@ export interface OrderNews {
 }
 
 /** Numbers per sea battle in a snapshot's `seas` (PLAN 4.10b). */
-export const SEA_STRIDE = 20;
+export const SEA_STRIDE = 24;
 /** A sortie in a snapshot (PLAN 5.7a): [bx, by, tx, ty, launch, kmh, km, over, nation, aircraft, role]. */
 export const SORTIE_STRIDE = 11;
 /** A sortie's role, by its aircraft's class (PLAN 5.7a): what the page draws. */
