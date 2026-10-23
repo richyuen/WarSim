@@ -513,19 +513,30 @@ export function groundReader(world: World, pass: Passage): (c: number) => number
  * wide grounds joined by the cells. `groundAt`: `groundReader` of `pass`, kept across the calls.
  */
 export function reachesOnLand(world: World, pass: Passage, groundAt: (c: number) => number, from: number, to: number): boolean {
+  return reachOnLand(world, pass, groundAt, from, to, true) === 1;
+}
+
+/**
+ * `reachesOnLand` as 1 (reaches) or 0 (does not); with `walk` false, -1 where only `wideJoined`
+ * would tell, which may walk the cells of the passage (PLAN 7.83b: a caller with several cells to
+ * reach asks them all without it first, and walks only when none answers).
+ */
+export function reachOnLand(world: World, pass: Passage, groundAt: (c: number) => number, from: number, to: number, walk: boolean): 1 | 0 | -1 {
   const nav = navOf(world);
   const land = nav.grid.component;
-  if (land[from] === 0 || land[from] !== land[to]) return false;
+  if (land[from] === 0 || land[from] !== land[to]) return 0;
   const nodeOf = nav.graph.nodeOf;
   const node = nodeOf[from]!;
   const g = node !== 0 && pass.ok[pass.holder[from]!] === 1 ? pass.group![node]! : -1;
-  if (g < 0) return true;
-  if (nodeOf[to] !== 0 && pass.group![nodeOf[to]!] !== g) return false;
+  if (g < 0) return 1;
+  if (nodeOf[to] !== 0 && pass.group![nodeOf[to]!] !== g) return 0;
   const ground = nodeOf[to] === 0 ? 0 : groundAt(to);
   const mine = groundAt(from);
-  if (ground === mine) return true;
-  if (ground > 0 || mine > 0) return false;
-  return ground === 0 || mine === 0 || wideJoined(nav.grid, nav.graph, pass, -mine, -ground);
+  if (ground === mine) return 1;
+  if (ground > 0 || mine > 0) return 0;
+  if (ground === 0 || mine === 0) return 1;
+  if (!walk) return -1;
+  return wideJoined(nav.grid, nav.graph, pass, -mine, -ground) ? 1 : 0;
 }
 
 /** A holder's frontier cells, in the frontier's order. */

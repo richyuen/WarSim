@@ -1,3 +1,4 @@
+/* global process, console */
 // Tabulate --profile logs: node agg.mjs <logA1> <logA2> -- <logB1> <logB2>
 import { readFileSync } from 'node:fs';
 const args = process.argv.slice(2);

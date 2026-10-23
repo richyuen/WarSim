@@ -1,0 +1,15 @@
+import { readFileSync } from 'node:fs';
+import { JOIN_PROBE } from '../../src/sim/nav/provinceGraph';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { loadAssets1938 } from '../../tools/headless/assets';
+const s = new Sim({ scenario: '1938', seed: 99, assets: loadAssets1938(SIZE_1938.w) });
+s.load(new Uint8Array(readFileSync('.cache/prof83/h0_y4.bin')));
+const by = new Map<string, number>();
+JOIN_PROBE.walk = () => {
+  const st = new Error().stack!.split('\n').slice(2, 14).map((l) => l.trim().split(' ')[1]).join('<');
+  const sys = ['invasionAi', 'planNation', 'operationalAi', 'airAi', 'supply', 'economicAi', 'movement'].find((k) => st.includes(k)) ?? st;
+  by.set(sys, (by.get(sys) ?? 0) + 1);
+};
+for (let d = 0; d < 365; d++) s.step(24);
+console.log([...by].sort((a, b) => b[1] - a[1]));

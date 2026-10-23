@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.83b: the invasion AI's turn −33 %, short of half (2026-10-23)
+- **The bar:** invasionAi's mean a tick on a year from HEAD's year-4 save of seed 99 at most half of
+  HEAD's in the same swapped pairs (0.238 → 0.119 ms), the year's hash f278491d and the pin unchanged.
+- **What moved** (`docs/evidence/7.83/b.md`): ten cuts that change no outcome (hash f278491d after each;
+  seed 7 × 3 years the same): 0.238 → 0.160 ms (−32 % and −33 % by core), share of the tick 11.2 % →
+  7.9 %, calls of 1 ms or more 340 → 270 a year.
+- **What is left:** the rules' own work, about 0.05–0.06 ms a tick: the passage's reach walks the ferry's
+  port pick needs (37 a year), the route searches bounded by FERRY_SEARCHES and SEND_SEARCHES, and
+  `seaReach`, which supply reads after it in the hour. Less needs fewer searches a turn, a rule change.
+  No decision of the user's waits on it; the loop takes PLAN 7.83c, and 7.83's AT is read after 7.83d.
+
 ### PLAN 7.90: the ferry carries the Baltimore pile off, but not within 30 days, and the 60 by Chicago do not move; piles 2 → 2 (2026-10-23, ADR-653 proposed; the user's decision)
 - **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
   year 20 and 7019 year 10 (`piles.ts --days 30`) 2 → 0.

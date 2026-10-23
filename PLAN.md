@@ -254,11 +254,17 @@ them, are 7.81–7.86. A task each, split when taken up:
       1.5 missed by 0.33; 2.4 met). On one saved world HEAD's rules cost +0.40–0.41 ms over `dd3b730`'s:
       invasion AI +0.11–0.22 (slow calls 5–20 → 327–339 a year), supply +0.08, capitals +0.01–0.05; the
       other ~0.6 is the busier world (operational AI, territory, combat the same on the same world).
-    - [ ] 7.83b The invasion AI's ferry turn, dearer since ADR-612: profile its calls by function on HEAD's
+    - [x] 7.83b The invasion AI's ferry turn, dearer since ADR-612: profile its calls by function on HEAD's
       year-4 save of seed 99 (`.cache/prof83/`, `node --cpu-prof`), then cut what dominates without
       changing an outcome. AT: invasionAi's mean a tick on that save's year down by at least half (HEAD
       0.236 ms profiled, pairs swapped); the pin unchanged (5161de24) and the year's final hash from the
       save unchanged (f278491d); the gate green.
+      Closed not done (BLOCKERS 2026-10-23; `docs/evidence/7.83/b.md`): ten exact cuts (Normandy's
+      front distance by row, the ferry's ports nearest the front first, one passage and one list of
+      transports a turn, ...), every one with the year's hash f278491d; seed 7 × 3 years the same.
+      invasionAi 0.238 → 0.160 ms a tick (−33 %, pairs swapped; bar 0.119). What is left is the rules'
+      own work: the reach walks (37 a year), the bounded route searches, `seaReach` (shared with
+      supply). No rule changed; the pin unchanged.
     - [ ] 7.83c Supply's beach layer (ADR-622, ADR-630): the same, on the same save. AT: supply's mean a
       tick down to `dd3b730`'s rules' +0.03 or less (HEAD 0.217 against 0.138); the pin and the save's
       year hash unchanged; the gate green.

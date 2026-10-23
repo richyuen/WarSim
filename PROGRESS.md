@@ -22598,3 +22598,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Filed:** 7.83b (the ferry turn), 7.83c (supply's beach layer), 7.83d (capitals), each with the pin
   and the save's year hash unchanged. No rule; the pin unchanged (5161de24).
 - **Next:** PLAN 7.83b.
+
+## 2026-10-23 — PLAN 7.83b: the invasion AI's turn cut by a third, no outcome changed; bar missed
+
+- **Start:** gate green on `048d251c`; critic not due. ADR-651 and ADR-653 still the user's.
+- **Read** (`docs/evidence/7.83/b.md`, `node --cpu-prof` on a year from HEAD's year-4 save of seed 99):
+  of 1,811 ms in the year's invasionAi, the ferry 876 (its reach test 497, `joinWide` 251), Normandy
+  481 (`toFront2` 272: every front cell for every enemy city), the allies'-front loop 184 self.
+- **Cut** (ten, each the year's hash f278491d after it; seed 7 × 3 years from 1938 the same, 14ce18f9):
+  Normandy's front distance by row (`nearestSq`) after the shore test; the ferry's ports nearest the
+  front first and `ported` per land, lazily; `frontReach` asks every cell before a walk
+  (`reachOnLand` in `operational.ts`); `sailToArmy`'s ports by land once; one passage per ferry turn
+  handed to `board`; the transport groups at port once an actor turn; cheaper tests first in scans.
+- **AT** (pairs swapped, `--profile`): invasionAi 0.238 → 0.160 ms a tick (−33 %; bar 0.119): missed.
+  What is left is the rules' own: 37 reach walks a year, route searches bounded by FERRY_SEARCHES,
+  `seaReach` shared with supply. BLOCKERS entry; 7.83b closed not done.
+- **No rule changed:** no ADR; the pin unchanged (5161de24), the save's year hash unchanged.
+- **Next:** PLAN 7.83c (supply's beach layer).
