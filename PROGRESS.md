@@ -22722,3 +22722,26 @@ No rule changed and nothing on screen changed. One task came out of it.
   against `dd3b730` first; AT armed fleets years 10–20 ≥ 0.9 of `dd3b730`'s and late battles not below it).
 - **No rule:** no ADR; the pin unchanged (5161de24).
 - **Next:** 7.84d.
+
+## 2026-10-23 — PLAN 7.84d: the navies not rebuilt for ADR-615's war reserve; closed not done (ADR-656)
+
+- **Start:** gate green on `875cf676`; critic not due. ADR-651, ADR-653 and ADR-654 still the user's.
+- **Read** (`docs/evidence/7.84/d.md`; `navyRebuild.ts` on HEAD and `dd3b730`, seeds 3613 and 4219 × 10
+  years): HEAD's depleted navies are stopped by gold (1,556 / 1,734 months in years 2–10 against 1,224 /
+  749), the treasury at 0.44–0.45 of the warship's line against 0.71–0.76. In those months the army's
+  orders take 117–186 gold a month against 24–37, mostly in wars with no naval enemy, where no warship is
+  saved for. Cause: ADR-615 (PLAN 7.65, the user's ADR-592 a), the war reserve of the army's orders 0.
+  With a naval enemy the saving holds (`navySave.ts`, new); the army orders in its off months, mostly
+  ADR-590's `FEW_FORMATIONS` on small nations.
+- **A/Bs** (`seaYears.ts` × 10 years, patches in `d/`): the war reserve back at 3 gives fleets in years 2–10
+  of 26.7 → 40.8 and 45.9 → 52.1 (`dd3b730` 54.4, 62.5) and battles 7.9 → 16.0 and 14.8 → 16.0 (12.8,
+  12.7). The fleet step at the war's zero reserve changes nothing (the army spends first). The rest is
+  losses in the busier world.
+- **Verdict:** missed; BLOCKERS entry; 7.84d closed not done. ADR-656 proposed: (a) accept and drop 7.84's
+  battles bar; (b) PLAN 7.95, a warship's saving in a land war for a nation with no armed fleet and its
+  army near its peacetime share (recommended); (c) undo ADR-615.
+- **Tools:** `navyRebuild.ts` reads the ferry's transports and a division's room as the AI does;
+  `navySave.ts` new. No rule; the pin unchanged (5161de24).
+- **Next:** 7.84 waits on ADR-656 (its first bar, the carrier strike's spec, is met by 7.84a/b). 7.79,
+  7.90g, 7.91 and 7.94 wait on ADR-651, 653 and 654; 7.82 and 7.85 come after 7.79. 7.86 (AI nuclear use,
+  measure which change raised the bursts) waits on none: it is next.

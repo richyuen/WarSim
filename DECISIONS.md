@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-656 · 2026-10-23 · proposed (the user's decision) — The navies after year 2 and the war reserve's cut (PLAN 7.84d's AT missed)
+
+- **Context** (`docs/evidence/7.84/d.md`). On the critic's seeds HEAD's navies are not rebuilt after
+  year 2: armed fleets in years 10–20 51.3 against `dd3b730`'s 73.7, and late sea battles 9.68
+  against 13.43 (7.84c). On 3613 and 4219, the depleted navies' months stopped by gold are 1,556 and
+  1,734 against 1,224 and 749, with the treasury at 0.44–0.45 of the warship's line against 0.71–0.76.
+  In those months the army's orders take 117–186 gold a month against 24–37. Most of it comes in wars
+  with no naval enemy, where no warship is saved for (ADR-557, ADR-575). That is ADR-615 (PLAN 7.65,
+  the user's ADR-592 a): at war, while the army is under its peacetime share, its orders keep no
+  reserve, so the treasury no longer holds the three months the fleet step needs over a warship's
+  price.
+- **Read, years 2–10 means on 3613 / 4219** (`dd3b730` 54.4 / 62.5 armed fleets, 12.8 / 12.7 battles):
+  HEAD 26.7 / 45.9 and 7.9 / 14.8. The army's war reserve back at 3 (`reserve3.patch`): 40.8 / 52.1
+  and 16.0 / 16.0. The fleet step keeping the war's zero reserve, the army's cut kept
+  (`fleetres0.patch`): the same as HEAD in every year, since the army spends first. The rest of the gap
+  is losses in the busier world (more pairs at war, more ships sunk in years 2–4).
+- **Options:**
+  - **(a)** Accept the smaller late navies as the price of ADR-615's defenders. 7.84's second bar
+    (late sea battles not below `dd3b730`'s) is dropped, and 7.84 is judged by its first bar (the
+    carrier strike's spec, met by 7.84a/b) and the next critic report.
+  - **(b)** A rule of its own (PLAN 7.95, filed under (b)): at war with no naval enemy, a nation with
+    a shipyard and no armed fleet saves for its cheapest warship while its army is at or over some
+    share of its peacetime share, so the cut still serves an army far under it. Its AT is the fleets
+    and battles bars on 10 unseen seeds × 20 years, and ADR-615's own measure read again (the band's
+    formations after 180 days on the critic's 48 saves) not under HEAD's. It is
+    unmeasured, and it amends ADR-557/575's "a war's army under it is not starved for a ship".
+  - **(c)** Undo ADR-615 (`WAR_RESERVE_MONTHS` 3). It recovers half the fleets and more than the
+    battles on the two seeds read, does not meet the fleets bar, and brings back the defenders'
+    months stopped by gold that ADR-592 a was taken to end.
+- **Recommended: (b).** It is the only option that may reach both bars while keeping the user's
+  ADR-592 a for the armies that need it. (a) is the fallback if (b)'s run misses. None of the three
+  reaches 7.84d's fleets bar on the evidence so far; (b) and (c) clear the battles bar on the seeds read.
+- **Consequences:** no rule changed; the pin is unchanged (5161de24). `navyRebuild.ts` now reads the
+  ferry's transports and a division's room as the AI does, and `navySave.ts` is new.
+
 ### ADR-655 · 2026-10-23 · accepted — A carrier's wing drawn over its target between its strikes (PLAN 7.84b)
 
 - **Context.** The sim strikes once in `CARRIER_CYCLE` (4) hours, at once (PLAN 4.12b). The page drew

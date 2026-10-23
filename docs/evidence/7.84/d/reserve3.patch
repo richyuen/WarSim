@@ -1,0 +1,13 @@
+diff --git a/src/sim/ai/economic.ts b/src/sim/ai/economic.ts
+index a1a5791e..ba69cceb 100644
+--- a/src/sim/ai/economic.ts
++++ b/src/sim/ai/economic.ts
+@@ -163,7 +163,7 @@ export const DELIVERY_RESERVE_MONTHS = 1;
+  * income of 150-500 a month were stopped by gold in 549 of 751 months at war (PLAN 7.49e). The
+  * warship's saving, the refills, the fleets and the wings keep RESERVE_MONTHS.
+  */
+-export const WAR_RESERVE_MONTHS = 0;
++export const WAR_RESERVE_MONTHS = 3;
+ export const PARALLEL_INCOME = 400;
+ export const MAX_PARALLEL = 6;
+ export const POOR_INCOME = 20;

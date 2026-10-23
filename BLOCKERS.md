@@ -5,6 +5,19 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.84d: the navies not rebuilt after year 2 for ADR-615's war reserve; the fleets bar out of reach without the user (2026-10-23, ADR-656 proposed; the user's decision)
+- **The bar:** on 7.84c's 10 seeds × 20 years (`seaYears.ts`), armed fleets in years 10–20 at least 0.9 of
+  `dd3b730`'s (73.7; HEAD 51.3) and late sea battles not below its 13.43.
+- **What moved** (`docs/evidence/7.84/d.md`, read on 3613 and 4219 × 10 years): the cause read. HEAD's
+  depleted navies are stopped by gold, the treasury at 0.44–0.45 of the warship's line against 0.71–0.76,
+  because the army's orders at war spend toward zero (ADR-615, `WAR_RESERVE_MONTHS` 0). With the reserve
+  back at 3, fleets in years 2–10 are 26.7 → 40.8 and 45.9 → 52.1 (`dd3b730` 54.4, 62.5) and battles 7.9 →
+  16.0 and 14.8 → 16.0 (12.8, 12.7). The fleet step keeping the war's reserve changes nothing.
+- **What is left:** the user's (ADR-656). (a) accept, drop 7.84's battles bar; (b) PLAN 7.95, a warship's
+  saving in a land war for a nation with no armed fleet and an army near its peacetime share
+  (recommended, unmeasured); (c) undo ADR-615. The other half of the fleets' gap is losses in the busier
+  world (7.79, 7.82).
+
 ### PLAN 7.83: the tick 1.94–1.97 ms against 1.5; the busier world holds most of it (2026-10-23, ADR-654 proposed; the user's decision)
 - **The bar:** `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF`, mean tick ≤ 1.5 ms
   and year 1 ≤ 2.4 ms, twice; no outcome changed only to save time.

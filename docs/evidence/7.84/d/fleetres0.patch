@@ -1,0 +1,13 @@
+diff --git a/src/sim/ai/economic.ts b/src/sim/ai/economic.ts
+index a1a5791e..486d9814 100644
+--- a/src/sim/ai/economic.ts
++++ b/src/sim/ai/economic.ts
+@@ -533,7 +533,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
+       if (fleet >= 0 && shipyard(world, n) >= 0) {
+         const rule = rules.templates[fleet]!;
+         const u = upkeepOfTemplate(fleet);
+-        if (balance - u > need && nc.gold[n]! >= rule.gold + RESERVE_MONTHS * income && nc.manpower[n]! >= rule.manpower && queueFormation(world, n, fleet) !== 0) {
++        if (balance - u > need && nc.gold[n]! >= rule.gold + (atWar && upkeep < peace ? WAR_RESERVE_MONTHS : RESERVE_MONTHS) * income && nc.manpower[n]! >= rule.manpower && queueFormation(world, n, fleet) !== 0) {
+           nc.builds[n] = nc.builds[n]! + 1;
+           balance -= u;
+         }

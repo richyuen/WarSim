@@ -27,7 +27,7 @@
  */
 import { writeFileSync } from 'node:fs';
 import { isMonthStart } from '../../src/shared/calendar';
-import { budgetOf, fleetPrice, NAVY_SHARE, peaceShare, pickFleet, POOR_INCOME, RESERVE_MONTHS, wantsTransport } from '../../src/sim/ai/economic';
+import { budgetOf, fleetPrice, NAVY_SHARE, peaceShare, pickFleet, POOR_INCOME, RESERVE_MONTHS, wantsFerry, wantsTransport } from '../../src/sim/ai/economic';
 import type { System } from '../../src/sim/tick';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, size1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -237,8 +237,9 @@ const monthRead = (w: World, y: Year, day: number): void => {
       const d = warshipLeft.get(n)!;
       const b = d <= 90 ? 'le90' : d <= 180 ? 'le180' : d <= 365 ? 'le365' : 'more';
       y.inTraining[b] = (y.inTraining[b] ?? 0) + 1;
-    } else if (transportPending.has(n)) reason = 'transportInTraining';
-    else if (atWar && wantsTransport(w, n, kinds.transport, fleets.get(n) ?? [])) reason = 'transportWanted';
+    } else if (atWar && wantsTransport(w, n, kinds.transport, fleets.get(n) ?? [], ECONOMY_TABLES_1938.templateStrength[BUILD_MIX_1938.infantry] ?? 0)) reason = 'transportWanted';
+    // PLAN 7.84d: the ferry's transports in training stop no warship while it wants them (ADR-614).
+    else if (transportPending.has(n) && !(atWar && wantsFerry(w, n, fleets.get(n) ?? []))) reason = 'transportInTraining';
     else if ((navy.get(n) ?? 0) >= NAVY_SHARE * income) {
       reason = 'navyShare';
       const k = String(Math.min(50, Math.round((100 * (navy.get(n) ?? 0)) / Math.max(1, income))));
