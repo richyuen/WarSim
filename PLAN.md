@@ -73,83 +73,32 @@ them, are 7.81–7.86. A task each, split when taken up:
       enemy formations pulled ×3) 9, 13, 1.84 %, not separable from chance; kept as a candidate.
   7.82's AT read (`docs/evidence/7.82/at.md`, 841–850 × 30 years): stasis over 15 years on 3 of 10 (843
   19: Denmark at war, untouched; 844 17 and 845 19: Denmark, Canada, the USA at peace), battle share
-  1.82 %. Missed; waits on ADR-665 (BLOCKERS).
+  1.82 %. Missed; ADR-665 b (the user's decision, 2026-10-23): two parts, then the AT again on 851–860.
+    - [ ] 7.82c The remnant at war (ADR-665 b; 843: Denmark at war 315 days a year, nothing engaged, its
+      cells rising 35k → 43k over a 19-year span): the candidate of ADR-664 (`docs/evidence/7.82/b.patch`,
+      a target on a land where the planner's enemies stand with at most 2 land formations pulled ×3; its
+      unit test `b/landingEmptyLand1938.test.ts.txt`). AT: from HEAD's save of 843 at year 11, 10 years
+      run with the rule and without (`overseasHold.ts`'s landings on Denmark, `churnAt.ts`'s cells): with
+      it Denmark loses at least 10,000 cells and is landed on at least 10 times, without it under 2,000;
+      engaged per war on 821–830 × 20 years not below 0.480 (`landAt.ts`); the unit test red without; the
+      ADR; the pin's entry.
+    - [ ] 7.82d The holders at peace (ADR-665 b; 844, 845: Denmark, Canada and the USA at war 12–29 days a
+      year and fixed to 2 % of their cells for 17–19 years). Read first on 845 over its span (years 8–26):
+      which nations could reach each of them (a land front, a port in range of their transports), how the
+      strategic AI scores them as a target against the one it picks (`ai/strategic.ts`), and why none is
+      picked; then a rule on what it names. AT: on 845 × 30 years the longest stasis at most 15 years
+      (19 on HEAD), wars on the three in years 8–26 at least 60 days a year each on average; a unit test,
+      red without; the ADR; the pin's entry. Then 7.82's AT on 851–860 × 30 years.
 
-- [ ] 7.94 The operational AI's cost on the busier world (found at 7.83's AT; performance 6, needs 7;
-  taken: ADR-654 a, the user's decision of 2026-10-23): 0.60 ms a tick on HEAD's year-4 world of
-  seed 99 (31 % of the tick), the same under `dd3b730`'s rules (`docs/evidence/7.83/at.md` §3).
-  Profile it by function there first (`node --cpu-prof`), then cut what dominates without changing an
-  outcome. AT: operationalAi's mean a tick on a year from that save at most 0.40 ms (profiled, swapped
-  pairs against HEAD's in the same session); the year's hash f278491d and the pin unchanged
-  (5161de24); seed 7 × 3 years, the random and toy worlds the same hash; the gate green.
-  Measured (`docs/evidence/7.94/measure.md`, HEAD `87263bc9`, year-5 hash ca1b3d47): 0.794 and 0.770
-  ms; caches could take about 5 % (2 of 15 `joinWide` walks, 42 repeated 'long' orders); the rest is
-  first-time searches. Waits on ADR-666 (BLOCKERS).
-- [ ] 7.84 Naval (naval 7, needs 8): a carrier strike's row, clicked, shows two US destroyer counters and
-  no aircraft (`sorties` 0 at 84 m/px, `critic/shots/c12n4_8693_rowless_clicked.png`); the Japan–USA
-  battle at 85 m/px shows the American side as a pale ring and nothing else
-  (`c12n_8693_JAP_USA_0_live.png`); late sea battles 13.29 → 9.30 a world-year, wars of two navies
-  1.14 → 0.29 (`c12_fleets.json`). AT: an e2e spec on seed 8693's Japan–USA carrier strike, red before:
-  clicking its row shows the striking aircraft and both sides' ships at the zoom it opens; on 10 unseen
-  seeds × 20 years late sea battles a world-year not below `dd3b730`'s on the same seeds; the gate green.
-  In parts (one cause each):
-    - [x] 7.84a The row's frame: it centred the struck fleet 2.4 cells across, the carrier up to 250 km
-      off (on 8693 the Japanese fleets ~10 cells away, off the screen). AT: `carrierStrikeView1938.spec.ts`
-      on 8693's Japan–USA strike, red before (0 Japanese ships): from the row both sides' ships on the
-      screen (> 0 each); `carrierStrikeRow1938.spec.ts` green; the pin unchanged (view only).
-      Done (`ccbb3623`): the snapshot's sea row carries the carrier–target box (SEA_STRIDE 24), framed with
-      STRIKE_MARGIN 1.2 cells; 8693 0 → 50 Japanese ships beside 16 American at 214 m/px; 2251 at 396 m/px
-      (the T1–T2 band: both sides as counters).
-    - [x] 7.84b The wing's flight: drawn only about each strike (`carrierStrikes`, `over` 0), 250 km at
-      380 km/h in the air 1.3 hours of every 4. AT: the spec's planes of the striker on the screen from
-      the row and at each of the next 4 hours (HEAD: 0, 2, 0, 0); `carrierStrikes1938.test.ts` red without
-      (a flight in the air at every quarter-hour the page plays while the strike stands); the pin unchanged.
-      Done (`afdb7f3a`, ADR-655): each flight over its target the cycle's hours its flights out and back
-      leave; the spec's planes 2, 2, 2, 2, 2; the unit test red on HEAD at hour 44.75.
-    - [x] 7.84c Late sea battles: 13.29 → 9.30 a world-year, wars of two navies 1.14 → 0.29
-      (`critic/c12_fleets.json`). Read first whether the fall is in wars of two navies (7.79's land war)
-      or in battles a naval war (a naval rule). AT: the parent's second bar, or the measured cause to
-      the numbered task that owns it.
-      Read (`docs/evidence/7.84/c.md`, `seaYears.ts` × 20 years on 10 of the critic's seeds, HEAD and
-      `dd3b730`): late battles 13.43 → 9.68; battles per pair at war sharing a basin 9.1 → 18.4, those
-      pairs 1.48 → 0.53 a day, pairs at war 234 → 327. The navies are not rebuilt after year 2: armed
-      fleets years 2–20 65 → 49 (year 20 81 → 49), navies 18.4 → 12.8. A naval-economic cause: 7.84d.
-    - [x] 7.84d The navies' rebuild after year 2 (7.84c): on the 10 seeds of `docs/evidence/7.84/c.md`
-      both commits fall to 43–46 armed fleets by year 2; `dd3b730` rebuilds to 66 at year 10 and 81 at
-      year 20 (navies 20–22), HEAD stays at 52 and 49 (navies 12–15). Read first, on two of those seeds
-      over years 2–10, the warships each navy of year 1 queues and launches against `dd3b730`, its gold
-      and what its economic AI buys instead (the ferry's transports since 7.49d3, 7.66, 7.90e among
-      them); then the rule it names. AT: on those 10 seeds × 20 years (`seaYears.ts`) armed fleets in
-      years 10–20 at least 0.9 of `dd3b730`'s (73.7; HEAD 51.3) and late sea battles not below its
-      13.43, or the read shows the old rebuild wrong (closed so, the reason in the note); a unit test
-      (red without) with a rule; the ADR; the pin's entry.
-      Closed not done (ADR-656 proposed, BLOCKERS 2026-10-23; `docs/evidence/7.84/d.md`): stopped by gold,
-      the treasury 0.44–0.45 of the warship's line against 0.71–0.76, because the army's orders at war keep
-      no reserve (ADR-615); the war reserve back at 3 gives fleets in years 2–10 of 26.7 → 40.8 and
-      45.9 → 52.1 against 54.4 and 62.5, battles 16.0 against 12.7–12.8; the fleet step at the war's reserve
-      changes nothing. The other half is losses. No rule; the pin unchanged (5161de24).
-    The user chose ADR-656 b (2026-10-23): the battles bar waits on PLAN 7.95.
-- [ ] 7.95 A warship's saving in a land war (found at 7.84d; naval 7, needs 8; ADR-656 b, the user's
-  decision): HEAD's depleted navies are stopped by gold after year 2, the treasury 0.44–0.45 of the
-  warship's line against `dd3b730`'s 0.71–0.76, since the army's orders at war keep no reserve (ADR-615)
-  and a war with no naval enemy saves for no warship (`docs/evidence/7.84/d.md`). Rule: at war with no
-  naval enemy, a nation with a shipyard and no armed fleet saves for its cheapest warship while its army
-  is at or over a share of its peacetime share (the share read first on 3613 and 4219, `navySave.ts`).
-  AT: on 10 unseen seeds × 20 years (`seaYears.ts`) armed fleets in years 10–20 at least 0.9 of
-  `dd3b730`'s and late sea battles a world-year not below its, both read on the same seeds; ADR-615's
-  own measure (the band's formations after 180 days on the critic's 48 saves) not under HEAD's; a unit
-  test (red without); the ADR; the pin's entry.
-  Share read (`docs/evidence/7.95/share.md`, `navySave95.ts`): the months a saving would stop are of
-  armies under half their peacetime share (72 of 88, 93 of 100); S ≥ 0.5 changes 16 and 7 in ten years.
-  Waits on ADR-667 (BLOCKERS).
-- [ ] 7.85 Aircraft (aircraft 7, needs 8): air battles after year 1 153 a world-year against 2,853 in year 1
-  (0.054; 7.51b closed not done on the land-war cause, BLOCKERS 2026-10-22); a carrier strike shows no
-  aircraft (7.84 shares the case). Taken up after 7.79, re-read on its HEAD first. AT: on 10 unseen seeds ×
-  20 years air battles a year in years 2–20 at least a tenth of year 1's, or, if 7.79's land war does
-  not carry the air war there, the measured cause and the choice of 7.51b's (c) (an air war not tied to
-  the land war) to the user; the gate green.
-  Re-read (`docs/evidence/7.85/at.md`, 871–880 × 20 years): 0.066 (7.51b 0.065), the cause the land war's
-  as before (engaged per war late 0.071 of year 1's). Waits on ADR-668 (BLOCKERS).
+- [ ] 7.99 An air war beyond the land war (found at 7.85; aircraft 7, needs 8; ADR-668 b, 7.51b's (c)):
+  air battles in years 2–20 0.066 of year 1's on 871–880, the air war flying only at enemy land forces in
+  range (ADR-377), so it stands where the late land war stands. Rule: a nation at war whose wings have no
+  enemy land formation in range flies them at the enemy's airbases (or its fleets at sea) within their
+  range. Read first on two of 871–880 how many wings at war stand with nothing in range and what of the
+  enemy's lies within their range (ADR-520 measured patrols over home as meeting little). AT: on 10 unseen
+  seeds × 20 years (881–890, `airLate.ts`) air battles a year in years 2–20 at least a tenth of year 1's;
+  engaged per war in years 2–20 not below HEAD's on the same seeds; a unit test, red without; the ADR;
+  the pin's entry.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
@@ -464,3 +413,7 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.79 The land war after year 1, again (R12-B1; R11-B1 not fixed by 7.49): on the critic's same 48 […]
 - [x] 7.97 The American piles (found at 7.79's AT; R12-B1; ADR-661 a, as ADR-653's (b)): on unseen seeds […]
 - [x] 7.98 The lift's size (found at 7.97's AT; R12-B1; ADR-662 a): with 7.97's rule in, 12 American […]
+- [x] 7.94 The operational AI's cost on the busier world (found at 7.83's AT; performance 6, needs 7; […]
+- [x] 7.84 Naval (naval 7, needs 8): a carrier strike's row, clicked, shows two US destroyer counters and […]
+- [x] 7.95 A warship's saving in a land war (found at 7.84d; naval 7, needs 8; ADR-656 b, the user's […]
+- [x] 7.85 Aircraft (aircraft 7, needs 8): air battles after year 1 153 a world-year against 2,853 in year 1 […]

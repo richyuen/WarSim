@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-668 · 2026-10-23 · proposed, the user's decision — The late air war still follows the land war (PLAN 7.85)
+### ADR-668 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — The late air war still follows the land war (PLAN 7.85)
 
 - **Context** (`docs/evidence/7.85/at.md`). PLAN 7.85: on 10 unseen seeds × 20 years air battles a year in
   years 2–20 at least a tenth of year 1's, or, if 7.79's land war does not carry the air war there, the
@@ -187,7 +187,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   move. (a) leaves it to the critic with the cause unchanged.
 - **Consequences:** until decided, no rule; the pin unchanged (b9bff4bd).
 
-### ADR-667 · 2026-10-23 · proposed, the user's decision — A warship's saving in a land war: the share that would save is ADR-615's army (PLAN 7.95)
+### ADR-667 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — A warship's saving in a land war: the share that would save is ADR-615's army (PLAN 7.95)
 
 - **Context** (`docs/evidence/7.95/share.md`). PLAN 7.95 (ADR-656 b): at war with no naval enemy, a nation
   with a shipyard and no armed fleet saves for its cheapest warship while its army is at or over a share
@@ -210,7 +210,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   its first bar.
 - **Consequences:** until decided, no rule; the pin unchanged (b9bff4bd).
 
-### ADR-666 · 2026-10-23 · proposed, the user's decision — The operational AI's half is not in caches (PLAN 7.94)
+### ADR-666 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The operational AI's half is not in caches (PLAN 7.94)
 
 - **Context** (`docs/evidence/7.94/measure.md`). PLAN 7.94 (ADR-654 a): operationalAi's mean a tick on a
   year from HEAD's year-4 save of seed 99 at most 0.40 ms, without changing an outcome (the year's hash
@@ -234,7 +234,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   did, and wants its own measure of the land war.
 - **Consequences:** until decided, no change; the pin unchanged (b9bff4bd).
 
-### ADR-665 · 2026-10-23 · proposed, the user's decision — Stasis on unseen seeds: one remnant at war, two holders at peace (PLAN 7.82's AT missed)
+### ADR-665 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — Stasis on unseen seeds: one remnant at war, two holders at peace (PLAN 7.82's AT missed)
 
 - **Context** (`docs/evidence/7.82/at.md`). PLAN 7.82's AT on 841–850 × 30 years: no stasis over 15
   years (the critic's measure), the battle share in years 10–30 at least 1.96 % (7.82a's, read before

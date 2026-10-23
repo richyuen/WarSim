@@ -23020,3 +23020,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   done; (b) an air rule not tied to the land war, its own task (recommended).
 - **No rule;** the pin unchanged (b9bff4bd).
 - **Next:** 7.85 waits on ADR-668. Every open task before 7.5 now waits on the user (ADR-665–668).
+
+## 2026-10-23 — ADR-665 b, 666 a, 667 a, 668 b (the user's decisions; documents)
+
+- **7.82** (665 b): parts 7.82c (the remnant at war: ADR-664's candidate from an 843 save) and 7.82d (the
+  holders at peace: the strategic AI's choice of target, read on 845), then the AT on 851–860.
+- **7.94** (666 a): closed not done; performance to the next critic report.
+- **7.95** (667 a): closed not done; the smaller late navies accepted; **7.84** done on its first bar.
+- **7.85** (668 b): closed not done; **PLAN 7.99** filed: an air war beyond the land war.
+- No rule; the pin unchanged (b9bff4bd).
+- **Next:** 7.82c.

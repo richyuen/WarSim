@@ -843,7 +843,7 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
   (recommended); (b) drop it and file PLAN 7.99 to read what holds a landed army at its beachhead; (c)
   commit it anyway. The code is restored; the pin unchanged (b9bff4bd).
 
-## 2026-10-23 — PLAN 7.82's AT missed: stasis over 15 years on 3 of 10 unseen seeds (ADR-665 waits on the user)
+## RESOLVED 2026-10-23 (option b, the user's decision: PLAN 7.82c and 7.82d, then the AT on 851–860) · PLAN 7.82's AT missed: stasis over 15 years on 3 of 10 unseen seeds (ADR-665)
 
 - **Bar:** on 10 unseen seeds × 30 years no stasis over 15 years; the battle share in years 10–30 at least
   1.96 % (`docs/evidence/7.82/at.md`).
@@ -853,7 +853,7 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
   save) and 7.82d (the holders at peace: the war choice), then the AT on 851–860 (recommended); (c) 7.82c
   only. No rule; the pin unchanged (b9bff4bd).
 
-## 2026-10-23 — PLAN 7.94: the operational AI's half is not in caches (ADR-666 waits on the user)
+## RESOLVED 2026-10-23 (option a, the user's decision: 7.94 closed not done) · PLAN 7.94: the operational AI's half is not in caches (ADR-666)
 
 - **Bar:** operationalAi's mean a tick on a year from HEAD's year-4 save of seed 99 at most 0.40 ms, no
   outcome changed (`docs/evidence/7.94/measure.md`).
@@ -862,7 +862,7 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 - **Left:** ADR-666: (a) closed not done (recommended); (b) a rule of fewer searches, the pin moves;
   (c) the 3 % cache, closed not done. The pin unchanged (b9bff4bd).
 
-## 2026-10-23 — PLAN 7.95: the share that would save is ADR-615's army (ADR-667 waits on the user)
+## RESOLVED 2026-10-23 (option a, the user's decision: 7.95 closed not done, 7.84 done on its first bar) · PLAN 7.95: the share that would save is ADR-615's army (ADR-667)
 
 - **Bar:** fleets in years 10–20 at least 0.9 of `dd3b730`'s and late sea battles not below its, on 10
   unseen seeds × 20 years, with S read first (`docs/evidence/7.95/share.md`).
@@ -871,7 +871,7 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 - **Left:** ADR-667: (a) the smaller navies accepted, 7.95 closed not done, 7.84 on its first bar
   (recommended); (b) S = 0.25; (c) S = 0.5. The pin unchanged (b9bff4bd).
 
-## 2026-10-23 — PLAN 7.85: the late air war at 0.066 of year 1's, still the land war's (ADR-668 waits on the user)
+## RESOLVED 2026-10-23 (option b, the user's decision: 7.85 closed not done, PLAN 7.99 for an air war beyond the land war) · PLAN 7.85: the late air war at 0.066 of year 1's, still the land war's (ADR-668)
 
 - **Bar:** on 10 unseen seeds × 20 years air battles in years 2–20 at least a tenth of year 1's, or the
   cause and 7.51b's (c) to the user (`docs/evidence/7.85/at.md`).
