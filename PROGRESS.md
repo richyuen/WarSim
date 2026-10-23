@@ -22585,3 +22585,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   No rule; the pin unchanged (5161de24). 7.90 stays open for 7.90g (ADR-651).
 - **Next:** under ADR-653 (a), 7.79's AT on 10 unseen seeds × 20 years (HEAD's figure); else PLAN 7.93.
   7.83 (performance) is independent of both user decisions.
+
+## 2026-10-23 — PLAN 7.83a: the tick against `dd3b730` measured; three dearer systems filed (7.83b–d)
+
+- **Start:** gate green on `e0c5433e`; critic not due. ADR-651 and ADR-653 the user's; 7.79's AT read
+  waits on 653 and on 7.90, and a tick over budget comes before a task that needs long runs (PROMPT).
+- **Read** (`docs/evidence/7.83/a.md`): HEAD alone on 0xFFFF, seed 99 × 5 years, mean 1.829 / 1.821 ms,
+  year 1 2.294 / 2.258 (bar 1.5 missed by 0.33; 2.4 met). From 1938, profiled pairs: 1.334 → 1.986.
+  Both rule sets from each commit's year-4 save: HEAD's rules +0.40 / +0.41 ms on the same world
+  (invasion AI +0.11 / +0.22, slow calls 5–20 → 327–339 a year; supply +0.08; capitals +0.01 / +0.05);
+  the busier world +0.62 under either rules (operational AI, territory, combat the same on one world).
+- **Filed:** 7.83b (the ferry turn), 7.83c (supply's beach layer), 7.83d (capitals), each with the pin
+  and the save's year hash unchanged. No rule; the pin unchanged (5161de24).
+- **Next:** PLAN 7.83b.

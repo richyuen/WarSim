@@ -244,7 +244,29 @@ them, are 7.81–7.86. A task each, split when taken up:
   `…_dd3b730.log`. Measure first with `--profile` on both commits, the same session, pinned, which
   systems grew. AT: `npm run sim -- --scenario 1938 --seed 99 --years 5 --affinity 0xFFFF` mean tick
   ≤ 1.5 ms and year 1 ≤ 2.4 ms, twice; no rule's outcome changed only to save time (a rule change logged
-  in DECISIONS with its own reason); the gate green.
+  in DECISIONS with its own reason); the gate green. In parts:
+    - [x] 7.83a Measured (read only): `--profile` on `dd3b730` and HEAD, seed 99 × 5 years, both at once on
+      separate P-cores and swapped (`.cache/prof83/`), by year: each system's mean ms, share, longest call,
+      calls of 1 ms or more, beside the world's size (formations, wars, cells flipped); and HEAD's AT
+      figure read alone on 0xFFFF without `--profile`, twice. AT: the table, the systems that grew by
+      more work and by dearer work told apart, each a part with its own AT; no rule: the pin unchanged.
+      Measured (`docs/evidence/7.83/a.md`): HEAD 1.829 / 1.821 ms mean, 2.294 / 2.258 in year 1 (bar
+      1.5 missed by 0.33; 2.4 met). On one saved world HEAD's rules cost +0.40–0.41 ms over `dd3b730`'s:
+      invasion AI +0.11–0.22 (slow calls 5–20 → 327–339 a year), supply +0.08, capitals +0.01–0.05; the
+      other ~0.6 is the busier world (operational AI, territory, combat the same on the same world).
+    - [ ] 7.83b The invasion AI's ferry turn, dearer since ADR-612: profile its calls by function on HEAD's
+      year-4 save of seed 99 (`.cache/prof83/`, `node --cpu-prof`), then cut what dominates without
+      changing an outcome. AT: invasionAi's mean a tick on that save's year down by at least half (HEAD
+      0.236 ms profiled, pairs swapped); the pin unchanged (5161de24) and the year's final hash from the
+      save unchanged (f278491d); the gate green.
+    - [ ] 7.83c Supply's beach layer (ADR-622, ADR-630): the same, on the same save. AT: supply's mean a
+      tick down to `dd3b730`'s rules' +0.03 or less (HEAD 0.217 against 0.138); the pin and the save's
+      year hash unchanged; the gate green.
+    - [ ] 7.83d The capitals system (ADR-620, 640, 641): the same. AT: capitals' mean a tick at most
+      0.035 ms on that save's year (HEAD 0.075, `dd3b730`'s rules 0.027); the pin and the save's year
+      hash unchanged; the gate green.
+    Then 7.83's AT read again (alone, 0xFFFF, twice); if it misses, the busier world's systems
+    (operational AI first) as parts, or the bar's scope to the user.
 - [ ] 7.84 Naval (naval 7, needs 8): a carrier strike's row, clicked, shows two US destroyer counters and
   no aircraft (`sorties` 0 at 84 m/px, `critic/shots/c12n4_8693_rowless_clicked.png`); the Japan–USA
   battle at 85 m/px shows the American side as a pale ring and nothing else
