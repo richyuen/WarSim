@@ -9,7 +9,7 @@ import { placeFleet } from '../../src/sim/placeForces';
 import { AT_PORT_CELLS } from '../../src/sim/systems/navalCombat';
 import { Sim } from '../../src/sim/sim';
 import { destroyFormation } from '../../src/sim/systems/elements';
-import { transportRoom } from '../../src/sim/systems/amphibious';
+import { orderLanding, transportRoom } from '../../src/sim/systems/amphibious';
 import { passageOf } from '../../src/sim/systems/movement';
 import { declareWar } from '../../src/sim/systems/war';
 import { navOf, portSeaOf } from '../../src/sim/world';
@@ -224,4 +224,59 @@ describe('every group with an army to carry acts in the ferry’s turn (PLAN 7.8
       expect(reaches(target!)).toBe(true);
     }
   });
+});
+
+// PLAN 7.89, ADR-643: the invasion AI skipped a nation's whole turn (landing, Normandy, ferry) while
+// any formation of its was aboard (PLAN 4.6b's lock). With every group carrying (ADR-642), the first
+// turn's boarders held every other group for their voyage: critic run 12, seed 1129 year 10, 2 US
+// divisions aboard for 22 days, three ferry turns skipped, while 49 and 60 stood on two cells. The
+// lock now holds a landing and a Normandy while a landing is at sea, and never the ferry. Here a
+// second German group, at the home port, has taken a second division aboard, once for a German cell
+// (a ferry's trip) and once for a Lithuanian one (a landing); the ferry's turn still puts the first
+// division aboard Germany's other group. Before, the turn was skipped and it stood.
+describe('a formation aboard does not hold the ferry’s turn (PLAN 7.89)', () => {
+  for (const trip of ['ferry', 'landing'] as const) {
+    it(`a ${trip} at sea, the ferry still carries`, () => {
+      const { w, div, tp, home, europe, reaches, more } = stranded(1);
+      const c = w.formations.cols;
+      const comp = navOf(w).grid.component;
+      const water = portSeaOf(w);
+      const ctl = w.cells.controller;
+      const sea = water[home.i]!;
+      const before = new Set<number>();
+      w.formations.forEach((f) => before.add(f));
+      expect(placeFleet(w, GER, c.template[tp]!, (sea % W) + 0.5, Math.floor(sea / W) + 0.5)).toBe(Refusal.None);
+      let second = 0;
+      w.formations.forEach((f) => {
+        if (!before.has(f)) second = f;
+      });
+      expect(second).toBeGreaterThan(0);
+      w.station.delete(second);
+      [c.x[second], c.y[second]] = [(sea % W) + 0.5, Math.floor(sea / W) + 0.5];
+      for (const f of [tp, second]) c.moving[f] = 0;
+      // The second division at the home port goes aboard the second group: for a German port from
+      // which the front is reached, or for a Lithuanian port.
+      const goal = w.ports.find((p, i) => water[i]! >= 0 && (trip === 'ferry' ? ctl[p.cell] === GER && comp[p.cell] === europe && reaches(p.cell) : ctl[p.cell] === LIT));
+      expect(goal).toBeDefined();
+      const div2 = more[0]!;
+      [c.x[div2], c.y[div2]] = w.cellPoint(home.p.cell);
+      c.moving[div2] = 0;
+      c.engaged[div2] = 0;
+      c.retreat[div2] = 0;
+      c.home[div2] = 0;
+      w.paths.delete(div2);
+      const [gx, gy] = w.cellPoint(goal!.cell);
+      w.settings.aiEnabled = true;
+      expect(orderLanding(w, div2, gx, gy, second)).toBe(true);
+      expect(w.embarked.get(div2)?.fleet).toBe(second);
+      expect(c.moving[second]).toBe(1);
+      invasionAi(w);
+      w.settings.aiEnabled = false;
+      // The first division aboard the other group, for a cell on Europe from which the front is reached.
+      const e = w.embarked.get(div);
+      expect(e?.fleet).toBe(tp);
+      expect(comp[e!.target]).toBe(europe);
+      expect(reaches(e!.target)).toBe(true);
+    });
+  }
 });

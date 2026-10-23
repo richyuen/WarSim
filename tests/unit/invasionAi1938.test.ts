@@ -81,18 +81,26 @@ describe('the AI\'s invasions (PLAN 4.6b)', () => {
     let away = 0;
     let landed = -1;
     let where = -1;
+    // The formations aboard for a cell of Siam's side: the landing. Since PLAN 7.89 (ADR-643) the
+    // ferry sails while a landing is at sea, and Japan's ferry to its China front lands first.
+    const bound = new Set<number>();
     for (let d = 0; d < 90 && landed < 0; d++) {
       s.step(24, (world) => {
         const ev = world.out.events;
         for (let i = 0; i < ev.length; i += 6) {
           if (ev[i + 3] !== JAP) continue;
-          if (ev[i + 1] === EventKind.FormationEmbarked && embarked < 0) {
-            const cells = front();
-            [embarked, frontThen, away] = [d, world.wars.atWar(JAP, CHI) && cells.length > 0, fromFront(ev[i + 2]!, cells)];
-          }
           const f = ev[i + 2]!;
+          if (ev[i + 1] === EventKind.FormationEmbarked) {
+            const target = world.embarked.get(f)?.target;
+            if (target === undefined || !siam.includes(world.cells.controller[target]!)) continue;
+            bound.add(f);
+            if (embarked < 0) {
+              const cells = front();
+              [embarked, frontThen, away] = [d, world.wars.atWar(JAP, CHI) && cells.length > 0, fromFront(f, cells)];
+            }
+          }
           const cell = Math.floor(world.formations.cols.y[f]!) * W + Math.floor(world.formations.cols.x[f]!);
-          if (ev[i + 1] === EventKind.FormationLanded && landed < 0 && navOf(world).grid.component[cell] !== home) [landed, where] = [d, cell];
+          if (ev[i + 1] === EventKind.FormationLanded && landed < 0 && bound.has(f) && navOf(world).grid.component[cell] !== home) [landed, where] = [d, cell];
         }
       });
     }

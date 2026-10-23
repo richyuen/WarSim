@@ -3,7 +3,9 @@
  * enemy's coast.
  *
  * Daily at 00:00, each nation in a war (living, its AI on; staggered by `STAGGER` days as the
- * strategic AI) with no formation aboard plans one landing, in its wars in which it has no land
+ * strategic AI) with no landing at sea (a formation of its aboard for a cell held by a nation it is
+ * at war with; PLAN 7.89, ADR-643: before, any formation aboard, a ferry's too) plans one landing,
+ * in its wars in which it has no land
  * front today (no cell it holds beside a cell held by a nation of the war's other side: ADR-267
  * counted the long wars with a rare front, the British bloc against Ireland for 800 days in every
  * seed). The front is judged per war (PLAN 7.26c3a, ADR-511): before, a front in any of its wars
@@ -108,15 +110,28 @@ export function invasionAi(world: World): void {
       }
     }
   }
-  const aboard = new Set<number>();
-  for (const id of world.embarked.keys()) aboard.add(world.formations.cols.nation[id]!);
+  // The nations with a landing at sea: a formation aboard for a cell held by a nation it is at war
+  // with. They plan no other landing nor Normandy until it is ashore (PLAN 4.6b's lock); the ferry
+  // is not held by it (PLAN 7.89, ADR-643): a group that gave an order is under way, so the next
+  // turn's groups are others. Before, any formation aboard held the nation's whole turn: on critic
+  // run 12's 1129 year 10, 2 US divisions aboard for 22 days skipped three ferry turns while 49 and
+  // 60 stood on two cells.
+  const landing = new Set<number>();
+  for (const [id, e] of world.embarked) {
+    const n = world.formations.cols.nation[id]!;
+    const at = controller[e.target]!;
+    if (at !== 0 && at !== n && world.wars.atWar(n, at)) landing.add(n);
+  }
   for (const n of actors) {
-    if (aboard.has(n)) {
-      FERRY_PROBE.skip?.(n, 'aboard');
-      continue;
-    }
     // The enemies of its wars in which it has no front (PLAN 7.26c3a).
     const mine = faced.get(n);
+    const front = frontCells.get(n) ?? [];
+    const ferried = front.length > 0 ? front : (allyFront.get(n) ?? []);
+    if (landing.has(n)) {
+      FERRY_PROBE.skip?.(n, 'aboard');
+      if (ferried.length > 0) planFerry(world, n, ferried);
+      continue;
+    }
     const foes = new Set<number>();
     for (const war of world.wars.list) {
       const i = war.sides[0].includes(n) ? 0 : war.sides[1].includes(n) ? 1 : -1;
@@ -125,7 +140,6 @@ export function invasionAi(world: World): void {
       if (mine && other.some((e) => mine.has(e))) continue;
       for (const e of other) if (e !== n) foes.add(e);
     }
-    const front = frontCells.get(n) ?? [];
     if (foes.size > 0 && planLanding(world, n, foes, front)) {
       FERRY_PROBE.skip?.(n, 'landing');
       continue;
@@ -136,7 +150,6 @@ export function invasionAi(world: World): void {
       FERRY_PROBE.skip?.(n, 'normandy');
       continue;
     }
-    const ferried = front.length > 0 ? front : (allyFront.get(n) ?? []);
     if (ferried.length > 0) planFerry(world, n, ferried);
     else FERRY_PROBE.skip?.(n, 'noFront');
   }
@@ -527,9 +540,10 @@ function frontReach(world: World, n: number, front: readonly number[], pass: Pas
  * fought in Asia; of the land formations at war, 21–30 % stood so on the critic's 48 saves).
  *
  * - its transports: its groups standing at its ports (`transportGroupsAtPort`), those on the land
- *   of an army they would carry first, then the most room, the lower id, tried in turn until one
- *   gives an order, up to SAIL_TRIES of them (PLAN 7.88a, ADR-638; before, the most room's alone,
- *   as a landing's, and on critic run 12's saves that one could never act);
+ *   of an army they would carry first, then the most room, the lower id, each taking the turn in
+ *   turn until the room of those that gave an order covers the army's men, or SAIL_TRIES of them
+ *   gave none (PLAN 7.88b, ADR-642; PLAN 7.88a, ADR-638, tried them until one gave an order; before
+ *   that, the most room's alone, as a landing's, and on critic run 12's saves that one could never act);
  * - standing at a port on a front's land, or on a land with none of its island army, they sail for
  *   a port of its on that army's land (`sailToArmy`, its formations nearest the transports first);
  * - else the target: of its ports on a front's land (its water in a zone open, not shut by bombs,
@@ -552,9 +566,10 @@ function frontReach(world: World, n: number, front: readonly number[], pass: Pas
  *   Before, it was never ferried (critic run 11: 793 island formations of such nations on day 1 of
  *   the 48 saves, Latvia's 40 on 5309 year 20).
  *
- * In the landing's turn and lock: a nation's actor day, with none of its formations aboard, and a
- * landing in a war with no front planned first (the ferry takes the turn when it gave no order).
- * Whether it acted.
+ * In the landing's turn: a nation's actor day, a landing in a war with no front planned first (the
+ * ferry takes the turn when it gave no order). Not in the landing's lock (PLAN 7.89, ADR-643): with
+ * a landing of its at sea, the ferry still takes the turn; a group already under way is not
+ * standing, so it is not tried again. Whether it acted.
  */
 function planFerry(world: World, n: number, front: readonly number[]): boolean {
   const f = world.formations;
@@ -583,8 +598,8 @@ function planFerry(world: World, n: number, front: readonly number[]): boolean {
   });
   if (island.length === 0) return false;
   // Its transport groups standing at its ports (PLAN 7.88a, ADR-638): those on the land of an army
-  // they would carry first, then the most room, the lower id; tried in turn until one gives an
-  // order, up to SAIL_TRIES. Before, the turn was the one with the most room's, and on critic run
+  // they would carry first, then the most room, the lower id (each takes the turn, below). Before
+  // PLAN 7.88a, the turn was the one with the most room's, and on critic run
   // 12's saves that one could never act (1129 year 10: at Nuuk, Greenland's army does not march to
   // it; 6421 year 20: at Port-of-Spain and Roseau, the sail to the army refused) while 11 and 33
   // more stood idle at the USA's ports: 0 orders in 4 turns on each.
@@ -723,7 +738,7 @@ export interface FerryTurn {
   groups: number;
   tries: FerryTry[];
 }
-/** A read-only probe of the invasion AI's turns (PLAN 7.88a, `tools/diag/ferryTurns.ts`): `skip` for an actor whose turn did not reach the ferry, `turn` for each that did. */
+/** A read-only probe of the invasion AI's turns (PLAN 7.88a, `tools/diag/ferryTurns.ts`): `skip` for an actor whose turn did not reach the ferry (`aboard`: a landing at sea held its landing and Normandy, and the ferry's turn follows; PLAN 7.89), `turn` for each that did. */
 export const FERRY_PROBE: { turn?: (t: FerryTurn) => void; skip?: (n: number, why: 'aboard' | 'landing' | 'normandy' | 'noFront') => void } = {};
 
 /**
@@ -810,7 +825,7 @@ function board(world: World, fleet: number, room: number, port: number, goal: nu
   return sendToPort(world, by.map(([, id]) => id), px, py, left, pass) > 0 || (there.size > 0 && aboard(atPort));
 }
 
-/** How many formations, and of the ports nearest each, a sail to the army tries (PLAN 7.54b); and how many transport groups a ferry turn tries (PLAN 7.88a). */
+/** How many formations, and of the ports nearest each, a sail to the army tries (PLAN 7.54b); and how many transport groups that gave no order end a ferry turn (PLAN 7.88b, ADR-642). */
 export const SAIL_TRIES = 4;
 
 /** Whether land formation `id` may march to `cell` under `pass` (as `orderMove` routes it; a route asked again is the passage's). */

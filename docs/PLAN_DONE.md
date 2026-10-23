@@ -14123,3 +14123,32 @@ Of 7.33 (open in PLAN.md):
       first turn's groups that gave an order 1 → 6 on 1129, 1 → 26 on 6421); piles 3 → 2 (6421's
       cleared; 1129's 60 and 49 stay). The lock that holds a nation's turn while one of its formations is
       aboard skipped the next three turns: PLAN 7.89.
+
+<!-- moved 2026-10-23 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.89 The invasion turn held by one formation aboard (found at 7.88b; R12-B1): `invasionAi` skips a
+  nation's whole turn (landing, Normandy, ferry) while any formation of its is aboard (PLAN 4.6b). With
+  every group acting (ADR-637 a), the first turn's boarders hold every other group of the nation for
+  their voyage: 1129 year 10, 2 US divisions aboard days 3657–3679 and the USA's three actor days after
+  skipped, while 49 and 60 stood on two cells; 6421 year 20, 74 at Norfolk waited 23 days to board
+  (`docs/evidence/7.88/b.md`). AT: piles of 30 or more of a nation at war on one cell 30 days running on
+  1129 year 10, 6421 year 20 and 7019 year 10 2 → 0 (`piles.ts --days 30`); transports at sea and
+  formations aboard read (`ferryLift.ts`); a unit test (red without); the ADR; the pin's entry;
+  `--profile`.
+  Closed not done (ADR-643, BLOCKERS 2026-10-22; `docs/evidence/7.89/a.md`): the lock holds a landing and a
+  Normandy only while a landing is at sea, never the ferry (the USA's ferry turns on 1129 1 → 4; ferry
+  boardings in 30 days 3 → 7, 3 → 78, 0 → 1; landings the same); piles 2 → 2 (1129's 53 fall to 41, its 60
+  by Chicago do not move). The USA's 12 groups hold 288,000 men against about 1.35 million: PLAN 7.90.
+  `planFerry`'s and `SAIL_TRIES`'s docs restated to ADR-642. Pin b7653c3c → 0b3aea1f.

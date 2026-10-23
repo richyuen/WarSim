@@ -103,20 +103,9 @@ them, are 7.81–7.86. A task each, split when taken up:
       is reached takes no ferry); piles 3 → 3. The turn's one transport group is one that cannot act
       (Nuuk; Port-of-Spain, Roseau), and one group a turn carries two of 1129's 60 divisions: PLAN 7.88.
       Pin e6c74731 → e66bef2e.
-    Then, after PLAN 7.88 and 7.89 (7.87 dropped, ADR-635 b), 7.79's AT on 10 unseen seeds × 20
+    Then, after PLAN 7.88, 7.89 and 7.90 (7.87 dropped, ADR-635 b), 7.79's AT on 10 unseen seeds × 20
     years (HEAD's figure read on them first).
 
-- [ ] 7.89 The invasion turn held by one formation aboard (found at 7.88b; R12-B1): `invasionAi` skips a
-  nation's whole turn (landing, Normandy, ferry) while any formation of its is aboard (PLAN 4.6b). With
-  every group acting (ADR-637 a), the first turn's boarders hold every other group of the nation for
-  their voyage: 1129 year 10, 2 US divisions aboard days 3657–3679 and the USA's three actor days after
-  skipped, while 49 and 60 stood on two cells; 6421 year 20, 74 at Norfolk waited 23 days to board
-  (`docs/evidence/7.88/b.md`). AT: piles of 30 or more of a nation at war on one cell 30 days running on
-  1129 year 10, 6421 year 20 and 7019 year 10 2 → 0 (`piles.ts --days 30`); transports at sea and
-  formations aboard read (`ferryLift.ts`); a unit test (red without); the ADR; the pin's entry;
-  `--profile`.
-  In the same commit: `planFerry`'s doc ("its transports" bullet) and `SAIL_TRIES`'s still say a turn tries
-  groups until one acts (7.88a); since ADR-642 every group acts and SAIL_TRIES counts the refusals that end it.
 - [ ] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at
   year 20 1,174 a world on HEAD against 837 on `dd3b730` (469 at the 1938 start), worse on 24 of 24
   seeds; founded statelets at year 20 20.7 a world (6.6). 7247's Russia German grey and Soviet red
@@ -142,6 +131,20 @@ them, are 7.81–7.86. A task each, split when taken up:
       loser's back to the loser; never a capital's piece nor a nation's largest. AT: on 10 unseen seeds
       × 20 years small pieces at year 20 not above `dd3b730`'s on the same seeds (read first), founded
       statelets read; a unit test (red without); the ADR; the pin's entry; `--profile`.
+
+- [ ] 7.90 The ferry's lift short of the army (found at 7.89; R12-B1): on critic run 12's 1129 year 10 the
+  USA's 12 transport groups hold 288,000 men (24,000 each) against about 1.35 million in two piles of a
+  nation at war (60 divisions at 625163 by Chicago, 53 at 746057 by Norfolk). A round trip of Norfolk's
+  four groups (the divisions sent to the port on one turn, aboard on the next, about 20 days at sea)
+  carries 4–8 divisions; in 30 days the 53 fall to 41, and the 60, never the nearest the port, do not
+  move (`docs/evidence/7.89/a.md` §3). AT: piles of 30 or more of a nation at war on one cell 30 days
+  running on 1129 year 10, 6421 year 20 and 7019 year 10 2 → 0 (`piles.ts --days 30`); a unit test (red
+  without); the ADR; the pin's entry; `--profile`. In parts:
+    - [ ] 7.90a Measured, on 1129 year 10 over 90 days (read only): the US groups' round trip by step
+      (days marching to the port, waiting to board, at sea, back), the transports the economic AI buys
+      the USA (`transportWant.ts`; PLAN 7.49d3, 7.66), and what else stands between the piles and the
+      lift (the 60's march to a port, any port of the USA's nearer them). AT: the table, and the rule it
+      names, each a part with its own AT; no rule: the pin unchanged.
 
 - [ ] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21
   years, two worlds of 32 over 20 (was one); the churn is statelets and walk-ins, not fronts
@@ -483,3 +486,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.81 Map visuals (mapVisuals 6, needs 7, beyond R12-B2): the map tooltip is stale, sixth run […]
 - [x] 7.87 The far march to a threatened sector, over a season (found at 7.79d; R12-B1; waits on the […]
 - [x] 7.88 The ferry's transport groups (found at 7.79c; R12-B1): `transportsAtPort` gives the ferry one group a […]
+- [x] 7.89 The invasion turn held by one formation aboard (found at 7.88b; R12-B1): `invasionAi` skips a […]

@@ -22332,3 +22332,28 @@ No rule changed and nothing on screen changed. One task came out of it.
   on the gap (the second within 30 days of the first; ADR-642), claim kept.
 - **Pin:** dc72fc97 → b7653c3c.
 - **Next:** PLAN 7.89 (the lock), then 7.80b.
+
+## 2026-10-22 — PLAN 7.89 closed not done: a formation aboard no longer holds the ferry's turn (ADR-643)
+
+- **Rule:** PLAN 4.6b's lock holds a nation's landing and Normandy only while a landing of its is at sea (a
+  formation aboard for a cell held by a nation at war with it), and never the ferry; before, any formation
+  aboard skipped the nation's whole turn.
+- **Read** (`docs/evidence/7.89/a.md`, 30 days on run 12's saves): the USA's ferry turns on 1129 year 10 1 → 4;
+  ferry boardings, the world, 3 → 7 (1129), 3 → 78 (6421), 0 → 1 (7019); landings the same, 0, 3, 5
+  (`tools/diag/boardKinds.ts`, new). Piles of 30+ for 30 days 2 → 2 (bar 0): 1129's 53 fall to 41, its 60 by
+  Chicago never move. The USA's 12 groups hold 288,000 men against about 1.35 million in the piles; a round
+  trip carries 4–8 divisions. Closed not done (BLOCKERS); the lift is PLAN 7.90 (after 7.80b).
+- **Test:** `strandedFerry1938.test.ts` "a formation aboard does not hold the ferry's turn" (a ferry and a
+  landing at sea); both red on HEAD.
+- **Docs:** `planFerry`'s "its transports" bullet and `SAIL_TRIES` restated to ADR-642 (7.88b's note).
+- **Gate found:** `invasionAi1938` "the landing per war" took the first Japanese formation ashore off its home
+  island; a ferry to its China front now lands first. Restated to the formations bound for Siam's side (ADR-643),
+  the same figures on HEAD and the rule (aboard day 2, ashore on Siam day 17).
+- **Timing** (pairs on separate P-cores, swapped, `.cache/prof89/`): invasion AI a tick, HEAD → rule, from 1129
+  year 10 0.302 / 0.254 → 0.267 / 0.312 ms, from 6421 year 20 0.399 / 0.354 → 0.394 / 0.448: within the noise.
+  Seed 99's year 1 the same (tick 2.44 / 2.28 → 2.31 / 2.36 ms, invasion 0.085 / 0.072 → 0.075 / 0.081); its
+  5-year mean tick 1.82 / 1.77 → 2.13 / 2.17 ms is another history from the ferry's first turns (year 5 cells
+  flipped 44,354 → 70,041, operational AI 0.52 → 0.68 ms). PLAN 7.83 (performance, seed 99's tick pinned at
+  1.785–1.790 ms on its HEAD) reads it again on its own HEAD.
+- **Pin:** b7653c3c → 0b3aea1f.
+- **Next:** PLAN 7.80b.

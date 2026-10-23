@@ -5,7 +5,18 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.88b: every group carries now, but one formation aboard holds the nation's turn; piles 3 → 2 (2026-10-22, ADR-642)
+### PLAN 7.89: a formation aboard holds no ferry turn now, but the lift is short of the army; piles 2 → 2 (2026-10-22, ADR-643)
+- **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
+  year 20 and 7019 year 10 (`piles.ts --days 30`) 2 → 0; a unit test red without; the ADR; the pin.
+- **What moved** (`docs/evidence/7.89/a.md`): the rule is in: the lock holds a landing and a Normandy only
+  while a landing is at sea, never the ferry. The USA's ferry turns on 1129 1 → 4; ferry boardings in 30
+  days 3 → 7 (1129), 3 → 78 (6421), 0 → 1 (7019); landings the same; a unit test red without; pin
+  b7653c3c → 0b3aea1f. Piles 2 → 2: 1129's 53 fall to 41, its 60 by Chicago do not move.
+- **What is left:** PLAN 7.90. The USA's 12 groups hold 288,000 men against about 1.35 million in the two
+  piles; a round trip carries 4–8 divisions. No decision of the user's waits on it; the loop takes it after
+  PLAN 7.80b.
+
+### RESOLVED 2026-10-22 (PLAN 7.89 took the lock off the ferry, ADR-643; what is left is PLAN 7.90) · PLAN 7.88b: every group carries now, but one formation aboard holds the nation's turn; piles 3 → 2 (2026-10-22, ADR-642)
 - **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
   year 20 and 7019 year 10 (`piles.ts --days 30`) 3 → 0; a unit test red without; the ADR; the pin.
 - **What moved** (`docs/evidence/7.88/b.md`): the rule is in (the user's ADR-637 a): the first ferry

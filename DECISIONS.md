@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-643 · 2026-10-22 · accepted — A formation aboard holds a nation's landing while a landing is at sea, and never the ferry (PLAN 7.89; amends PLAN 4.6b's lock)
+
+- **Context** (`docs/evidence/7.89/a.md`). The invasion AI skipped a nation's whole turn (landing,
+  Normandy, ferry) while any formation of its was aboard (PLAN 4.6b). With every transport group
+  carrying (ADR-642), the first turn's boarders held every other group for their voyage: critic run 12,
+  1129 year 10, 2 US divisions aboard for 22 days skipped three ferry turns while 49 and 60 stood on two
+  cells; 6421 year 20, 74 at Norfolk waited 23 days to board.
+- **Decision** (`ai/invasion.ts`, `invasionAi`): the lock holds a nation's landing and Normandy only
+  while a landing of its is at sea (a formation aboard for a cell held by a nation at war with it), as
+  PLAN 4.6b's "one landing" meant; the ferry takes the turn in any case. A group that gave an order is
+  under way, so the next turn's groups are others. Edge: a landing whose target is taken by its side
+  during the voyage reads as a ferry and frees the lock a few days early.
+- **Read** (`a.md`, 30 days): the USA's ferry turns on 1129 1 → 4; boardings by ferry, the world, 3 → 7
+  (1129), 3 → 78 (6421), 0 → 1 (7019); landings the same (0, 3, 5). Piles of 30 or more for 30 days on
+  1129 year 10, 6421 year 20 and 7019 year 10: 2 → 2 (the AT's bar 0; missed). 1129's 53 fall to 41; its
+  60 by Chicago are never the nearest the port. The USA's 12 groups hold 288,000 men against about
+  1.35 million in the piles: the lift is short of the army (PLAN 7.90).
+- **Test.** `strandedFerry1938.test.ts`, "a formation aboard does not hold the ferry's turn" (a ferry
+  and a landing at sea); red with the nation's turn skipped.
+- **Test restated** (history moved, claim kept): `invasionAi1938` "the landing per war" took Japan's first
+  formation ashore off its home island as the Siam landing; with the ferry sailing while the landing is
+  at sea, a ferry to Japan's front on Chinese land comes ashore first. It now follows the formations
+  aboard for a cell of Siam's side: aboard day 2, 99 cells from the China front, ashore on Siam day 17,
+  the same on HEAD and with the rule.
+- **Pin.** b7653c3c → 0b3aea1f.
+
 ### ADR-642 · 2026-10-22 · accepted — Every transport group with an army to carry acts in the ferry's turn (PLAN 7.88b; the user's ADR-637 a; amends ADR-638)
 
 - **Context** (`docs/evidence/7.88/b.md`). After ADR-638 the ferry's turn ended at the first transport
