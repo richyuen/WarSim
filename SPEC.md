@@ -726,7 +726,12 @@ not say `founded`), the made one; a cached flag is made again when what it was m
     annexes all of the losers' land it occupies, and the losers' occupations of the winners
     revert (ADR-51; until then round(|score|% of the occupied land), nearest first); a cell of the
     annexed that a third nation holds stays that nation's, in an annexation or an integration
-    (ADR-269, as at a death: ADR-112). At ≥ 90
+    (ADR-269, as at a death: ADR-112). Then the settlement's pockets go with the land round
+    them (PLAN 7.80b, ADR-644): a piece (4-connected cells of one holder) of a loser's own land
+    of at most 400 cells whose land rim, water aside, is the winners' own land alone goes to the
+    winner holding most of that rim; a piece of a winner's made only of land this peace annexed,
+    so inside the losers' land, goes back to the loser holding most of its rim. Never a piece
+    with the nation's capital, nor its largest. At ≥ 90
     the loser's leader also becomes a puppet when the annexed land is ≥ 30% of the losers' land.
     A nation made a puppet leaves, with its own puppets, every other war in which it stands
     against a nation it now has a bond with; the land held between them goes back (ADR-180).

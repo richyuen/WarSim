@@ -14152,3 +14152,50 @@ Of 7.33 (open in PLAN.md):
   boardings in 30 days 3 → 7, 3 → 78, 0 → 1; landings the same); piles 2 → 2 (1129's 53 fall to 41, its 60
   by Chicago do not move). The USA's 12 groups hold 288,000 men against about 1.35 million: PLAN 7.90.
   `planFerry`'s and `SAIL_TRIES`'s docs restated to ADR-642. Pin b7653c3c → 0b3aea1f.
+
+<!-- moved 2026-10-23 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at
+  year 20 1,174 a world on HEAD against 837 on `dd3b730` (469 at the 1938 start), worse on 24 of 24
+  seeds; founded statelets at year 20 20.7 a world (6.6). 7247's Russia German grey and Soviet red
+  mottled with Czechoslovak pockets; 6421 Hungary's orange with Soviet islands; West Africa in shards.
+  Evidence: `critic/c12_frag_head_w12.json`, `c12_frag_head_w3.json`, `c11_frag_head.json`,
+  `critic/shots/c12x_7247_y20_eurasia.png`, `c12y_6421_gersov_d60.png`. Measure first, by bisecting
+  `dd3b730..896ff779` on the critic's count, which change cuts the map (walk-in occupation without
+  fronts, revolts and statelets ×3, moving capitals, beach-fed coastal pockets). If pockets on a supplied
+  beach (ADR-630, the user's) are the main cause, the count goes to the user as that rule's price.
+  AT: on 10 unseen seeds, pieces of 2–400 cells at year 20 not above `dd3b730`'s on the same seeds
+  (read first); founded statelets at year 20 not above `dd3b730`'s; the gate green. In parts:
+    - [x] 7.80a Measured: the small pieces by kind on the critic's saves (occupied, founded, own;
+      coastal; enclaves, at war or not), and the step bisected at year 10 over `dd3b730..896ff779`'s sim
+      commits, 8 seeds each (`tools/diag/fragKinds.ts`, read only). AT: the tables and the commit they
+      name; no rule: the pin unchanged.
+      Done (`docs/evidence/7.80/a.md`): the step is `d15131c4`, PLAN 7.65's reserve cut (ADR-615, the
+      user's ADR-592 a), 755 → 865, 8 of 8 seeds; nothing else beyond the noise. Owned land, not
+      occupation (+288 of +337 at year 20); 358 of the 1,174 enclaves at peace (229); more land changes
+      hands (1.51 ×) and pieces per flip fell. To the user as the cut's price (ADR-639, proposed).
+    - [x] 7.80b At a peace, the settlement's pockets go with the land round them (the user's ADR-639 a,
+      2026-10-22; what the rule leaves over the bar is the reserve cut's price, b): a piece of the loser's of at most 400 cells left wholly
+      inside the winner's land (water aside) goes to the winner, a piece of the winner's so inside the
+      loser's back to the loser; never a capital's piece nor a nation's largest. AT: on 10 unseen seeds
+      × 20 years small pieces at year 20 not above `dd3b730`'s on the same seeds (read first), founded
+      statelets read; a unit test (red without); the ADR; the pin's entry; `--profile`.
+      Done (ADR-644, `docs/evidence/7.80/b.md`; unseen 801–810 × 20 years): small pieces 840 a world
+      against `dd3b730`'s 863 (HEAD 1,288; under the base on 5 of 10), enclaves 427 → 183. Founded
+      statelets read: 7.2, HEAD 20.2, the rule 20.0 (untouched: revolts, not a treaty's). The gate found
+      a swap (a winner's piece handed back beside a pocket handed over); the rule keeps such a piece.
+      `peacePockets1938` red without; pin 0b3aea1f → 8a571863; the war system +0.02–0.04 ms a tick.
+    7.80 done: small pieces under the base (7.80b); the founded statelets' count (20.0 against 7.2) is
+    the reserve cut's war (7.80a: founded pieces 15 → 28 at its step), the user's ADR-639 (b).

@@ -106,32 +106,6 @@ them, are 7.81–7.86. A task each, split when taken up:
     Then, after PLAN 7.88, 7.89 and 7.90 (7.87 dropped, ADR-635 b), 7.79's AT on 10 unseen seeds × 20
     years (HEAD's figure read on them first).
 
-- [ ] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at
-  year 20 1,174 a world on HEAD against 837 on `dd3b730` (469 at the 1938 start), worse on 24 of 24
-  seeds; founded statelets at year 20 20.7 a world (6.6). 7247's Russia German grey and Soviet red
-  mottled with Czechoslovak pockets; 6421 Hungary's orange with Soviet islands; West Africa in shards.
-  Evidence: `critic/c12_frag_head_w12.json`, `c12_frag_head_w3.json`, `c11_frag_head.json`,
-  `critic/shots/c12x_7247_y20_eurasia.png`, `c12y_6421_gersov_d60.png`. Measure first, by bisecting
-  `dd3b730..896ff779` on the critic's count, which change cuts the map (walk-in occupation without
-  fronts, revolts and statelets ×3, moving capitals, beach-fed coastal pockets). If pockets on a supplied
-  beach (ADR-630, the user's) are the main cause, the count goes to the user as that rule's price.
-  AT: on 10 unseen seeds, pieces of 2–400 cells at year 20 not above `dd3b730`'s on the same seeds
-  (read first); founded statelets at year 20 not above `dd3b730`'s; the gate green. In parts:
-    - [x] 7.80a Measured: the small pieces by kind on the critic's saves (occupied, founded, own;
-      coastal; enclaves, at war or not), and the step bisected at year 10 over `dd3b730..896ff779`'s sim
-      commits, 8 seeds each (`tools/diag/fragKinds.ts`, read only). AT: the tables and the commit they
-      name; no rule: the pin unchanged.
-      Done (`docs/evidence/7.80/a.md`): the step is `d15131c4`, PLAN 7.65's reserve cut (ADR-615, the
-      user's ADR-592 a), 755 → 865, 8 of 8 seeds; nothing else beyond the noise. Owned land, not
-      occupation (+288 of +337 at year 20); 358 of the 1,174 enclaves at peace (229); more land changes
-      hands (1.51 ×) and pieces per flip fell. To the user as the cut's price (ADR-639, proposed).
-    - [ ] 7.80b At a peace, the settlement's pockets go with the land round them (the user's ADR-639 a,
-      2026-10-22; what the rule leaves over the bar is the reserve cut's price, b): a piece of the loser's of at most 400 cells left wholly
-      inside the winner's land (water aside) goes to the winner, a piece of the winner's so inside the
-      loser's back to the loser; never a capital's piece nor a nation's largest. AT: on 10 unseen seeds
-      × 20 years small pieces at year 20 not above `dd3b730`'s on the same seeds (read first), founded
-      statelets read; a unit test (red without); the ADR; the pin's entry; `--profile`.
-
 - [ ] 7.90 The ferry's lift short of the army (found at 7.89; R12-B1): on critic run 12's 1129 year 10 the
   USA's 12 transport groups hold 288,000 men (24,000 each) against about 1.35 million in two piles of a
   nation at war (60 divisions at 625163 by Chicago, 53 at 746057 by Norfolk). A round trip of Norfolk's
@@ -487,3 +461,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.87 The far march to a threatened sector, over a season (found at 7.79d; R12-B1; waits on the […]
 - [x] 7.88 The ferry's transport groups (found at 7.79c; R12-B1): `transportsAtPort` gives the ferry one group a […]
 - [x] 7.89 The invasion turn held by one formation aboard (found at 7.88b; R12-B1): `invasionAi` skips a […]
+- [x] 7.80 The late map shreds (R12-B2; carries map visuals 6): pieces of 2–400 cells of one holder at […]

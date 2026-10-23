@@ -22357,3 +22357,28 @@ No rule changed and nothing on screen changed. One task came out of it.
   1.785–1.790 ms on its HEAD) reads it again on its own HEAD.
 - **Pin:** b7653c3c → 0b3aea1f.
 - **Next:** PLAN 7.80b.
+
+## 2026-10-22 — PLAN 7.80b: the settlement's pockets go with the land round them (ADR-644); 7.80 done
+
+- **Rule** (the user's ADR-639 a): after a decisive peace's terms, a piece of a loser's own land of at most
+  400 cells whose land rim (water aside) is the winners' own land alone goes to the winner holding most of
+  that rim; a piece of a winner's made only of land this peace annexed, so inside the losers', goes back.
+  Never a capital's piece nor a nation's largest; a third nation on the rim or in the piece keeps it.
+  Formations left there go home by the repatriation march. A winner's piece beside a loser's pocket the
+  winners take stays (the gate found the swap: `war.test.ts`, 39 of 2,525 cells Germany took at the map's
+  seam handed back and the Soviet sliver beyond to Germany; the test passes unchanged with the clause).
+- **Read** (`docs/evidence/7.80/b.md`, `fragKinds.ts`, unseen 801–810 × 20 years; `dd3b730`, HEAD and the
+  rule in worktrees): small pieces at year 20 863.4, 1,287.8, 839.5 (under the base on 5 of 10; the first
+  version without the no-swap clause 887.8, mostly the seeds' noise); enclaves 293, 427, 183; founded
+  statelets living 7.2, 20.2, 20.0, the reserve cut's war (ADR-639 b). The bar met; 7.80 ticked.
+- **Test:** `peacePockets1938.test.ts` (a Polish pocket inside German-won land goes to Germany; a lone
+  conquest inside Poland goes back; a ring won round a pocket is kept with it; a white peace hands nothing
+  over); the first two red without the rule, the third without the no-swap clause.
+- **Gotcha:** the worktrees' `node_modules` junctions were not removed (`cmd //c rmdir` failed on its
+  quoting in Git Bash) and `git worktree remove` took 16 packages; `npm ci` restored them once an orphan
+  `vite --port 5311` of 2026-10-21 holding rolldown's binary was stopped. Memory updated.
+- **Timing** (`.cache/prof780b/`, pairs on separate P-cores, swapped): the war system 0.034–0.049 → 0.032–0.087
+  ms a tick, its longest call 15–26 → up to 60 ms (a peace's grid pass); for PLAN 7.83. Mean tick 2.22 / 2.11 →
+  1.93 / 1.92 ms, another history (year 5 cells flipped 70,041 → 46,720).
+- **Pin:** 0b3aea1f → 8a571863.
+- **Next:** PLAN 7.90a.

@@ -35,7 +35,10 @@
  *   otherwise the winner annexes every cell of the losers that it occupies (critic B1, ADR-51:
  *   until 2026-10-03 only round(|score|/100 × occupied), so a war worth score 20 kept a fifth of
  *   a conquest that was small to begin with, and the map hardly changed at a peace); the losers'
- *   occupations of the winners revert;
+ *   occupations of the winners revert; then the settlement's pockets go with the land round them
+ *   (`settlePockets`, PLAN 7.80b, ADR-644): a piece of a loser's of at most POCKET_CELLS left
+ *   wholly inside the winners' land goes to a winner, a piece of just-annexed land so inside the
+ *   losers' back to a loser; never a capital's piece nor a nation's largest;
  *   ≥ PUPPET_SCORE: when the annexed land is at least PUPPET_SHARE of the losers' land, the
  *   loser's leader also becomes a puppet of the winner's leader, and leaves the wars it fights
  *   against its new realm and that realm's allies (`leaveBondedWars`, PLAN 3.8d);
@@ -56,8 +59,10 @@
 import { isDayStart } from '../../shared/calendar';
 import { Refusal } from '../../shared/commands';
 import { EventKind } from '../../shared/events';
+import { Terrain } from '../../shared/terrain';
 import { annexNation, makePuppet } from './puppets';
 import { forceMen } from './seaControl';
+import { capitalCell } from './capitals';
 import { warsWithFront } from './warFront';
 import { ATTACKERS, DEFENDERS, type War } from '../wars';
 import type { LandCounts } from '../landCounts';
@@ -536,6 +541,7 @@ export function makePeace(world: World, war: War): void {
     if (s >= WHITE_PEACE) world.setOwner(c, controller[c]!);
     else world.setController(c, owner[c]!);
   }
+  if (s >= WHITE_PEACE) settlePockets(world, W, L, candidates);
   const wl = W[0]!;
   const ll = L[0]!;
   const nc = world.nations.cols;
@@ -551,4 +557,119 @@ export function makePeace(world: World, war: War): void {
   if (s >= WHITE_PEACE && nc.living[ll] === 1 && nc.living[wl] === 1 && (left < SMALL_STATE_KM2 || (left < STATELET_KM2 && isFounded(world, ll)))) annexNation(world, wl, ll);
   else if (s >= PUPPET_SCORE && nc.living[ll] === 1 && occupied >= PUPPET_SHARE * loserLand) makePuppet(world, wl, ll, PEACE_PUPPET_AUTONOMY);
   world.wars.truces.push({ a: wl, b: ll, untilTick: world.tick + TRUCE_TICKS });
+}
+
+/**
+ * A piece (4-connected cells of one holder) of at most this many cells that a decisive peace leaves
+ * wholly inside the other side's land goes with that land (PLAN 7.80b, ADR-644).
+ */
+export const POCKET_CELLS = 400;
+
+/** Scratch for `settlePockets`: piece labels and the cells of each piece, reused across peaces. */
+let pocketScratch: { label: Int32Array; cells: Int32Array; annexed: Uint8Array } | null = null;
+
+/**
+ * The settlement's pockets (PLAN 7.80b, the user's ADR-639 a; ADR-644). After a decisive peace's
+ * terms, a piece of a loser's own land (held and owned by it) of at most POCKET_CELLS whose land rim
+ * (water aside) is held, and owned, by the winners alone goes to the winner holding most of that
+ * rim; a piece of a winner's made wholly of land this peace annexed, so inside the losers' land,
+ * goes back to the loser holding most of its rim (ties to the lower id). Never a piece with the
+ * nation's capital, nor its largest (or one tied for it). Until then the treaty kept the
+ * occupation's pattern cell by cell (ADR-51), and the late map was cut into enclaves at peace (critic
+ * run 12, R12-B2: 358 of year 20's 1,174 small pieces).
+ * One pass over the grid: the pieces of the two sides' holders labelled by a flood fill.
+ */
+function settlePockets(world: World, W: number[], L: number[], annexed: number[]): void {
+  const { w, h, owner, controller, terrain } = world.cells;
+  const N = w * h;
+  if (!pocketScratch || pocketScratch.label.length !== N) pocketScratch = { label: new Int32Array(N), cells: new Int32Array(N), annexed: new Uint8Array(N) };
+  const { label, cells, annexed: fresh } = pocketScratch;
+  label.fill(0);
+  fresh.fill(0);
+  for (const c of annexed) fresh[c] = 1;
+  const side = new Int8Array(world.nations.highWater); // 1 a winner, 2 a loser
+  for (const n of W) side[n] = 1;
+  for (const n of L) side[n] = 2;
+  const capital = new Map<number, number>();
+  for (const n of [...W, ...L]) capital.set(n, capitalCell(world, n));
+  const wrap = world.settings.loopingMap;
+  const last = N - w;
+  // Each piece: its holder, its cells (`cells[start, start + size)`), and the one it would go to (0: none).
+  const pHolder: number[] = [];
+  const pStart: number[] = [];
+  const pSize: number[] = [];
+  const pTo: number[] = [];
+  const largest = new Map<number, number>();
+  const rim = new Map<number, number>();
+  let top = 0;
+  for (let c0 = 0; c0 < N; c0++) {
+    const k = controller[c0]!;
+    if (side[k] === 0 || label[c0] !== 0) continue;
+    const id = pHolder.length + 1;
+    const start = top;
+    const other = 3 - side[k]!;
+    let ok = true;
+    label[c0] = id;
+    cells[top++] = c0;
+    rim.clear();
+    for (let i = start; i < top; i++) {
+      const c = cells[i]!;
+      if (owner[c] !== k || (side[k] === 1 && fresh[c] === 0) || capital.get(k) === c) ok = false;
+      const x = c % w;
+      for (let j = 0; j < 4; j++) {
+        const n = j === 0 ? (c >= w ? c - w : -1) : j === 1 ? (c < last ? c + w : -1) : j === 2 ? (x > 0 ? c - 1 : wrap ? c + w - 1 : -1) : x < w - 1 ? c + 1 : wrap ? c - w + 1 : -1;
+        if (n < 0) continue;
+        const kn = controller[n]!;
+        if (kn === k) {
+          if (label[n] === 0) {
+            label[n] = id;
+            cells[top++] = n;
+          }
+          continue;
+        }
+        const t = terrain[n]!;
+        if (t === Terrain.Water || t === Terrain.Crossing) continue;
+        if (side[kn] !== other || owner[n] !== kn) ok = false;
+        else rim.set(kn, (rim.get(kn) ?? 0) + 1);
+      }
+    }
+    const size = top - start;
+    let to = 0;
+    if (ok && size <= POCKET_CELLS) {
+      let most = 0;
+      for (const [m, count] of rim) if (count > most || (count === most && m < to)) [to, most] = [m, count];
+    }
+    pHolder.push(k);
+    pStart.push(start);
+    pSize.push(size);
+    pTo.push(to);
+    largest.set(k, Math.max(largest.get(k) ?? 0, size));
+  }
+  for (let p = 0; p < pHolder.length; p++) if (pTo[p]! !== 0 && pSize[p]! >= largest.get(pHolder[p]!)!) pTo[p] = 0;
+  // A winner's piece that touches a loser's pocket the winners take stays: handing both over at
+  // once swapped them and left two pockets (a strip won at the map's seam and the sliver beyond it).
+  for (let p = 0; p < pHolder.length; p++) {
+    if (pTo[p]! === 0 || side[pHolder[p]!] !== 1) continue;
+    for (let i = pStart[p]!; i < pStart[p]! + pSize[p]! && pTo[p]! !== 0; i++) {
+      const c = cells[i]!;
+      const x = c % w;
+      for (let j = 0; j < 4; j++) {
+        const n = j === 0 ? (c >= w ? c - w : -1) : j === 1 ? (c < last ? c + w : -1) : j === 2 ? (x > 0 ? c - 1 : wrap ? c + w - 1 : -1) : x < w - 1 ? c + 1 : wrap ? c - w + 1 : -1;
+        const q = n < 0 ? 0 : label[n]!;
+        if (q !== 0 && side[pHolder[q - 1]!] === 2 && pTo[q - 1]! !== 0) {
+          pTo[p] = 0;
+          break;
+        }
+      }
+    }
+  }
+  for (let p = 0; p < pHolder.length; p++) {
+    const to = pTo[p]!;
+    if (to === 0) continue;
+    for (let i = pStart[p]!; i < pStart[p]! + pSize[p]!; i++) {
+      const c = cells[i]!;
+      world.setOwner(c, to);
+      world.setController(c, to);
+    }
+  }
 }

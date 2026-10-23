@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-644 · 2026-10-22 · accepted — At a decisive peace, the settlement's pockets go with the land round them (PLAN 7.80b; the user's ADR-639 a; amends ADR-51)
+
+- **Context** (PLAN 7.80a, `docs/evidence/7.80/a.md`). The treaty hands over the occupied land cell by
+  cell (ADR-51), so a peace kept the occupation's pattern: 358 of critic run 12's 1,174 small pieces
+  (2–400 cells of one holder) at year 20 were enclaves at peace. The user chose a treaty-time rule
+  (ADR-639 a), what it leaves over the bar being the reserve cut's price (b).
+- **Decision** (`settlePockets`, `src/sim/systems/war.ts`). After the terms of a peace at |score| ≥
+  WHITE_PEACE: a piece (4-connected cells of one holder) of a loser's own land (held and owned by it)
+  of at most POCKET_CELLS (400) whose land rim, water and crossings aside, is held and owned by winners
+  alone goes to the winner holding most of that rim (ties to the lower id); a piece of a winner's made
+  only of land this peace annexed, so inside the losers' land, goes back to the loser holding most of
+  its rim. "Back" is read as the treaty's own conquest: a pre-war exclave of the winner's inside the
+  loser stays. Never a piece holding the nation's capital, nor its largest (or one tied for it); a piece
+  with a cell of a third nation's, or a rim touching a third nation or unheld land, stays. A winner's
+  piece that touches a loser's pocket the winners take stays too: handed over at once the two swapped
+  and left two pockets (the gate's `war.test.ts` case: a strip won at the map's seam and the Soviet
+  sliver beyond it; 39 of 2,525 cells handed back). One pass,
+  before the small-loser annexation is judged (so a loser left tiny by its pockets is annexed whole, as
+  any other). Formations left on handed-over land go home by the repatriation march (`movement.ts`),
+  as at a white peace.
+- **Read** (`docs/evidence/7.80/b.md`, `tools/diag/fragKinds.ts`, unseen seeds 801–810 × 20 years):
+  small pieces at year 20 a world `dd3b730` 863.4, HEAD 1,287.8, the rule 839.5 (under `dd3b730` on 5 of
+  10; 887.8 before the no-swap clause); enclaves 293.2, 426.6, 182.5; founded statelets living 7.2,
+  20.2, 20.0. The bar (not above `dd3b730`) met by 23.9. The founded statelets are not the treaty's
+  (revolts); their count is the reserve cut's war, the user's ADR-639 (b).
+- **Pin:** 0b3aea1f → 8a571863.
+- **Timing** (`--profile`, seed 99 × 5 years, HEAD and the rule at once on separate P-cores, swapped,
+  `.cache/prof780b/`): the war system 0.034–0.049 → 0.032–0.087 ms a tick, its longest call 15–26 → up to
+  60 ms (a peace: one pass over the grid, two scratch arrays cleared); the mean tick 2.22 / 2.11 → 1.93 /
+  1.92 ms is another history (year 5 cells flipped 70,041 → 46,720), not a saving.
+
 ### ADR-643 · 2026-10-22 · accepted — A formation aboard holds a nation's landing while a landing is at sea, and never the ferry (PLAN 7.89; amends PLAN 4.6b's lock)
 
 - **Context** (`docs/evidence/7.89/a.md`). The invasion AI skipped a nation's whole turn (landing,
