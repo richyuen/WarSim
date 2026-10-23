@@ -106,6 +106,18 @@ them, are 7.81–7.86. A task each, split when taken up:
     Then, after PLAN 7.88, 7.89 and 7.90 (7.87 dropped, ADR-635 b), 7.79's AT on 10 unseen seeds × 20
     years (HEAD's figure read on them first).
 
+- [ ] 7.91 Blocks stacked on one enemy out of its view (found at 7.90g, `docs/evidence/7.90/g.md` "The gate"):
+  with 7.90g's rule (`docs/evidence/7.90/g.patch`) seed 99's 60-day world of `deploy.test.ts` has 97
+  formations in contact, 86 (89%) sharing a view at 20 m/px with their nearest enemy, against the test's
+  bar of 90% (HEAD: 69 of 70). All 11 are Chinese blocks against two Japanese formations
+  (`tools/diag/deployView.ts`, `g_deploy_seed99_rule.log`): three stacked on one cell 1.0–1.5 cells from
+  393, its block deployed against another, the Chinese blocks 1.0–1.35 apart from it with none of either
+  seen; seven from four cells against 366 (landed day 12.9, 45 elements), 0.75–1.15 apart. HEAD has one
+  such pair (410 against 393, `g_deploy_seed99_head.log`). A deploy rule (`deployOf`, ADR-89, ADR-133),
+  not the ferry's. AT: with g.patch applied, `deploy.test.ts` all green (the day-60 share ≥ 0.9, from
+  0.887) and green on HEAD; a unit test of the case (several divisions on one cell coming up to an enemy
+  whose block faces another, each in one view with it), red without; the ADR. Then 7.90g is committed
+  from g.patch (its AT read, its pin f9344f0e).
 - [ ] 7.90 The ferry's lift short of the army (found at 7.89; R12-B1): on critic run 12's 1129 year 10 the
   USA's 12 transport groups hold 288,000 men (24,000 each) against about 1.35 million in two piles of a
   nation at war (60 divisions at 625163 by Chicago, 53 at 746057 by Norfolk). A round trip of Norfolk's
@@ -185,6 +197,12 @@ them, are 7.81–7.86. A task each, split when taken up:
       the trips of one that left at their port a free formation the group had room for (1129: 2; 6421:
       read first) → 0, or the read shows each right (closed so, the reason in the note); a unit test (red
       without) with a rule; the ADR; the pin's entry.
+      Read and ruled, not committed (`docs/evidence/7.90/g.md`, `g.patch`, `tools/diag/ferrySplit.ts`):
+      `tryLanding` took `via` as one more group, so with `fleet` full the next went on another group at
+      the port, which sailed with it alone; in g.patch `via` named is that group or a refusal. AT met:
+      1129 1 → 0, 6421 21 → 0 (strict; loosely 2 → 0, 23 → 1, the one right); test red without; ADR-649
+      and pin f9344f0e in the patch. The gate red on `deploy.test.ts`'s day-60 share (0.887 < 0.9) on the
+      new history, a deploy cause: waits on PLAN 7.91, then applied (`git apply`) and committed.
     - [ ] 7.90h The sail to cut-off remnants (found at 7.90f, `docs/evidence/7.90/c.md` "7.90f: the read"): a
       group away from the army sails for the four nearest of the free army on lands with a port of the
       nation's (7.90c's rule), whether or not they march to one. On 6421 year 20 day 7387 those four are

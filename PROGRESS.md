@@ -22496,3 +22496,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   refused, while division 16 at Glasgow (1 cell from its port) is never tried; 9 groups stand at
   Port-of-Spain and 6 at Baltimore to day 90.
 - **Next:** PLAN 7.90g.
+
+## 2026-10-22 — PLAN 7.90g read and ruled, held back for a deploy test; PLAN 7.91 filed
+
+- **Read** (`docs/evidence/7.90/g.md`, new probe `tools/diag/ferrySplit.ts`, 90 days): the trips of one on
+  both saves have one cause. `board` orders a port's formations aboard with `via = fleet`, but `tryLanding`
+  took `via` as one more group to search: with `fleet` full, the next went on another group standing at
+  the port and set it sailing alone (1129 day 3712: 2 / 1 / 1 at Norfolk; 6421 day 7324: 21 groups to sea
+  with one division each).
+- **Rule (in `docs/evidence/7.90/g.patch`, not on main):** `via` named, that group or a refusal. AT met:
+  1129 1 → 0, 6421 21 → 0; every nation's landings (`tools/diag/landingsAb.ts`) the same men with 6421's
+  trips 52 → 30. Test red without; ADR-649; pin 5161de24 → f9344f0e.
+- **Gate:** red on `deploy.test.ts`'s day-60 share 0.887 < 0.9 on the new history: 11 Chinese blocks
+  stacked against two Japanese formations out of one view (`tools/diag/deployView.ts`); HEAD has one
+  such pair. A deploy cause, as at ADR-132. Not committed; BLOCKERS entry.
+- **Filed:** PLAN 7.91, before 7.90: the deploy case, then 7.90g from its patch.
+- **Next:** PLAN 7.91.

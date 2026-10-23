@@ -1275,3 +1275,14 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
     editorDrag1938 (a timeout, green alone) and declutter1938 (red once alone, then green alone
     on this commit and the one before). The ten-year stage: all three seeds through their ten
     years with no rule broken, seeds 1 and 3 over the 600 s (719 and 731 s).
+
+## 2026-10-22 — PLAN 7.90g waits on PLAN 7.91 (a deploy test on a new history)
+
+- **What:** 7.90g's rule (a formation ordered on a named transport group goes on it or is refused,
+  ADR-649) meets its AT (`docs/evidence/7.90/g.md`), but with it `deploy.test.ts`'s day-60 share of
+  formations in one view with their enemy is 0.887 against 0.9 (HEAD 0.986). Every failing pair is a
+  Chinese block stacked against a Japanese formation: a deploy layout case, one of which HEAD has too.
+- **Tried:** read the pairs (`tools/diag/deployView.ts`); `deployOf` is not a bounded change for the
+  ferry's commit. The test is not narrowed.
+- **Left:** PLAN 7.91 mends the deploy case; then `git apply docs/evidence/7.90/g.patch` and commit
+  7.90g. No user decision waits.
