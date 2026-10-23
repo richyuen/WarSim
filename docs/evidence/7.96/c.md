@@ -43,3 +43,9 @@ too restrained) and run 12 (strikes in volleys: a habit). Which wins is the user
 rule is committed: `c.patch` holds the second (EXTREME_GAP_DAYS 7; the first is the same with
 EXTREME_GAP_DAYS 60), its test and SPEC's line. The pin is unchanged by either (7098dd29: seed 99's first
 year has no second strike within 60 days).
+
+## Decided (ADR-660 a, the user's)
+
+The flat 60 days, committed as read above (`gap 60 flat`). `nukeStrikeAgain1938` restated: France strikes
+again as soon as its side's wait allows (days 33 and 93 in 120), the second within STRIKE_GAP_DAYS + 7
+days of the first.

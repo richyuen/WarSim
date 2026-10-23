@@ -59,6 +59,19 @@ describe('the gap after a launch (PLAN 7.25b, 7.28)', () => {
     }
   }, 300_000);
 
+  // PLAN 7.96c (ADR-660 a, the user's decision; critic run 12's volleys: on unseen seeds the bursts by a
+  // striker within 30 days of its own last 31 % against `dd3b730`'s 29 %): the side waits two months
+  // for the answer, not a week.
+  it('a side that burst a warhead holds its next first use in the war for two months', () => {
+    const { w, war } = launched(0, 1);
+    for (const day of [7, 30, 59]) {
+      w.tick = war.lastStrike![0] + day * 24;
+      expect(strikePaused(w, war, 0), `day ${day}`).toBe(true);
+    }
+    w.tick = war.lastStrike![0] + 60 * 24;
+    expect(strikePaused(w, war, 0), 'day 60').toBe(false);
+  }, 300_000);
+
   it('a war of an older save, with no count of live launches, holds as before', () => {
     const w = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) }).world;
     const war = w.wars.start([ENG], [GER], 0);

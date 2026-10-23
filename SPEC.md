@@ -2004,6 +2004,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     and recovers slowly. When both sides have assured second strike (**MAD**), the
     utility of first use is ≤ 0 unless desperation is extreme (fightToDeath or capital falling).
     In extreme desperation the taboo weighs half (PLAN 6.7).
+    After a burst a side waits STRIKE_GAP_DAYS for the answer before its next first use in that
+    war (PLAN 7.25b, a week; two months since PLAN 7.96c, ADR-660 a: the broken taboo made a week's
+    wait a volley), a nation fighting for its life as well. A strike back is not held.
   - allianceCost: 0.05 for each ally not at the striker's side in that war, to 0.3; half of it in
     extreme desperation, as the taboo (PLAN 7.48, ADR-581: the critic's overrun France, three
     allies apart, its bomber's strike on Berlin 0.017–0.020 under the floor for 15 days).

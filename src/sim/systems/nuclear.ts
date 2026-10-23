@@ -1462,8 +1462,13 @@ export function dayIndustry(world: World): () => Float64Array {
  * burst gives none: PLAN 6.12b, e). A launch stopped short (shot down, or its bomber lost on the way)
  * starts no gap (PLAN 7.28, ADR-491's promise): none of what the gap waits for follows it, and under
  * the enemy's air the side launches again the next day (`War.strikesLive`).
+ * Two months since PLAN 7.96c (ADR-660 a, the user's decision; critic run 12's volleys): with the taboo
+ * one burst breaks (7.96a), a week's wait let a side strike again five times in four months. On unseen
+ * seeds 811–820 × 30 years the bursts by a striker within 30 days of its own last 31 % → 5 % (`dd3b730`
+ * 29 %); 30 days left a quarter. It holds a nation fighting for its life as well: most volleys were
+ * theirs, and keeping the week for them left 30 %.
  */
-export const STRIKE_GAP_DAYS = 7;
+export const STRIKE_GAP_DAYS = 60;
 
 /**
  * Whether `side` of `war` launched within STRIKE_GAP_DAYS (PLAN 7.25b) a warhead not stopped short

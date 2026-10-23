@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-660 · 2026-10-23 · proposed (the user's decision) — The volleys are mostly fight-for-life strikes: R7-B1's France against run 12's volleys (PLAN 7.96c's AT missed)
+### ADR-660 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — The volleys are mostly fight-for-life strikes: R7-B1's France against run 12's volleys (PLAN 7.96c's AT missed)
 
 - **Context** (`docs/evidence/7.96/c.md`). 7.96's bar (ADR-658 b): bursts by a striker within 30 days of
   its own last, and the civilian share, not above `dd3b730`'s on 10 unseen seeds × 30 years. A side waits
@@ -191,6 +191,13 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   latest objection is the volleys; R7-B1 (run 7) asked that France strike at all before it was lost,
   which a second strike two months on still does.
 - **Consequences:** no rule committed; the pin unchanged by any option (7098dd29).
+- **Decided** (2026-10-23, the user: option a, as recommended; "I'm not sure there's much we can do to
+  balance everything to the critic's taste"). STRIKE_GAP_DAYS 7 → 60 for every nation (the flat rule read
+  on 811–820, not `c.patch`'s exemption). `nukeStrikeAgain1938` restated: France strikes again in the war
+  as soon as its side's wait allows, the second within STRIKE_GAP_DAYS + 7 days of the first, in 120
+  days (days 33 and 93); R7-B1's claim kept, its 30 days moved with the rule. New test:
+  `nukeGapShort1938.test.ts`, "a side that burst a warhead holds its next first use in the war for two
+  months", red without. The pin unchanged (7098dd29).
 
 ### ADR-658 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — 7.96's bar against what the nuclear AI owns (PLAN 7.96b's A/B missed)
 

@@ -22855,3 +22855,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   code first, then tick.
 - **No rule;** the pin unchanged (7098dd29).
 - **Next:** 7.96 waits on ADR-660; the loop takes 7.79's AT.
+
+## 2026-10-23 — PLAN 7.96c, 7.96: a side waits two months after its burst (ADR-660 a, the user's decision)
+
+- **Rule:** STRIKE_GAP_DAYS 7 → 60 for every nation, as read on 811–820 × 30 years: volleys 5 % (`dd3b730`
+  29 %, HEAD 31 %), civilian share 16 % (32 %), bursts 276 (91, HEAD 244) reported. 7.96's bar met.
+- **Tests:** `nukeGapShort1938`'s two months (red without); `nukeStrikeAgain1938` restated by the user's
+  decision (France again as soon as the wait allows: days 33 and 93 in 120). SPEC §6.4, PARITY row 6.
+- **Pin:** unchanged (7098dd29).
+- **Next:** 7.79's AT (10 unseen seeds × 20 years; 821 on).

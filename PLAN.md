@@ -181,40 +181,6 @@ them, are 7.81–7.86. A task each, split when taken up:
   not carry the air war there, the measured cause and the choice of 7.51b's (c) (an air war not tied to
   the land war) to the user; the gate green.
 
-- [ ] 7.96 The nuclear rate in the busier war (found at 7.86; aiNukes 7, needs 8; ADR-657 b, the user's
-  decision): `dd3b730`'s own nuclear rule fires 1.93 × as often a holder-day at war in HEAD's world as in
-  its own (years 11–20 on 12 of the critic's seeds: 19 → 72 bursts at 31.7 / 32.6 holder-years at war;
-  `docs/evidence/7.86/measure.md`). AT (ADR-658 b, the user's decision; was the bursts a world): on 10
-  unseen seeds × 30 years the share of bursts by a striker within 30 days of its own last, and the share of
-  civilian bursts (over 10 × men), not above `dd3b730`'s on the same seeds (811–819 read; 820 first);
-  bursts a world reported; a unit test, red without; the ADR; the pin's entry. In parts:
-    - [x] 7.96a Read which input of the decision moved: daily, for each nation with warheads at war, the
-      best place's utility and its parts (desperation, value, the chance through, the strike back, the
-      costs) under `dd3b730`'s rule, in its world and in HEAD's (the old and rule trees of 7.86), years
-      11–20 on two seeds. AT: the input whose shift accounts for at least half of the days over the floor
-      gained, named with its figures, and the rule it points to as 7.96b; no rule: the pin unchanged.
-      Read (`docs/evidence/7.96/a.md`, `tools/diag/nukeRate.ts`, 2953 and 3613 years 10–20): the broken taboo.
-      17 of the 23 strike days in HEAD's world fall under the floor with the world's taboo whole: one burst
-      (TABOO_AFTER 0.3, four years to recover) pays for the next ones, the volleys. The trigger is the
-      busier war (`noThreat` 91 → 68 % and 61 → 34 % of holder-war-days, desperation 0.15–0.22 → 0.30–0.31,
-      a first strike passing with the taboo whole); extreme desperation holds 1. The pin unchanged.
-    - [x] 7.96b The taboo after a burst (7.96a): TABOO_AFTER 0.3 lets one burst lower every nation's taboo
-      cost for about four years; first order on 7.96a's 23 strike days, 0.6 keeps 8 and 1.0 keeps 6. Rule:
-      a burst breaks the taboo less (TABOO_AFTER raised), or only for the war it fell in; chosen on a
-      `nukeVolume.ts` A/B on 4 of 7.86's seeds × 30 years, then read on 10 unseen seeds against `dd3b730`.
-      AT: 7.96's bar; a unit test (red without); the ADR; the pin's entry.
-      Closed not done (ADR-658 proposed, BLOCKERS 2026-10-23; `docs/evidence/7.96/b.md`): TABOO_AFTER 0.6 / 0.7
-      on four seeds × 30 years: bursts 122 → 97 / 101 against `dd3b730`'s 12; volleys 42 → 27 / 31. A dearer
-      taboo delays strikes whose gain stays. `dd3b730` on unseen 811–819: 89 bursts, 28 civilian. No rule.
-    - [ ] 7.96c The volleys (ADR-658 b): HEAD's bursts by a striker within 30 days of its own last 34 % on
-      7.96b's four seeds (`dd3b730` 8 %); a side waits STRIKE_GAP_DAYS (7) after its strike before its next
-      first use in the war. Rule: a longer wait for the answer, chosen on a `nukeVolume.ts` A/B on those four
-      seeds × 30 years (the volleys table of `b.md`), then read on 811–820. AT: 7.96's bar.
-      Ruled, not committed (ADR-660 proposed, BLOCKERS 2026-10-23; `docs/evidence/7.96/c.md`, `c.patch`): on
-      811–820 a flat 60 days gives volleys 5 % (`dd3b730` 29 %, HEAD 31 %) and turns `nukeStrikeAgain1938`
-      (R7-B1) red; the week kept for the desperate, 30 %, the test green. Which critic finding wins is the
-      user's. The pin unchanged.
-
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -524,3 +490,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.91 Blocks stacked on one enemy out of its view (found at 7.90g, `docs/evidence/7.90/g.md` "The gate"): […]
 - [x] 7.90 The ferry's lift short of the army (found at 7.89; R12-B1): on critic run 12's 1129 year 10 the […]
 - [x] 7.86 AI nuclear use (aiNukes 7, needs 8, beyond R11-B2): bursts on the same 24 seeds 188 → 497 […]
+- [x] 7.96 The nuclear rate in the busier war (found at 7.86; aiNukes 7, needs 8; ADR-657 b, the user's […]
