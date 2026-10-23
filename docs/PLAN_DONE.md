@@ -14199,3 +14199,40 @@ Of 7.33 (open in PLAN.md):
       `peacePockets1938` red without; pin 0b3aea1f → 8a571863; the war system +0.02–0.04 ms a tick.
     7.80 done: small pieces under the base (7.80b); the founded statelets' count (20.0 against 7.2) is
     the reserve cut's war (7.80a: founded pieces 15 → 28 at its step), the user's ADR-639 (b).
+
+<!-- moved 2026-10-23 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.92 A far army of the enemy side weighed as the one overrunning the striker (found at 7.91,
+  `docs/evidence/7.91/case.md`; 7.18j's case again): with 7.91's rule (`docs/evidence/7.91/patch`)
+  `nukePoland1938` seed 5591 is red: Poland's first burst falls on an Italian army on the Alps front of
+  Italy's war on France, about 1,000 km from Warsaw (64,445 men, u 0.027, day 21), where HEAD's fell on a
+  German city (9,924 men and 334,000 people, u 0.081, day 23). On HEAD too the Italian army is Poland's
+  best place on days 12–21 (`nukeCase.ts 5591 POL GER 10 26 bomber`). A place's men are weighed against
+  its theatre, the enemy side's men within FRONT_KM (1,000 km) of the place (PLAN 7.18c), which there
+  takes in the German army in Poland (1.08 million), so THEATRE_FLOOR (ADR-492) never binds. Measure
+  first, on the test's three seeds with 7.91's patch and on HEAD: each day's best place in reach, its
+  men, its theatre, and the enemies of the striker's war there (a nation of the enemy side at war with
+  another nation alone, or on the striker). AT: with 7.91's patch, `nukePoland1938` green on its three
+  seeds with the first burst on Germany, and green on HEAD; a unit test of the case (a dense army of the
+  enemy side on another front against the army overrunning the striker), red without; the ADR; the
+  pin's entry; or, if the measure shows the far army a fair target by the rules' intent, the choice put
+  to the user in an ADR (as 7.86's AT), the test standing. Then 7.91 is committed from its patch (its
+  pin read again).
+  Done, the AT's second branch (ADR-651 proposed, the user's decision; `docs/evidence/7.92/measure.md`,
+  new probe `tools/diag/nukeTheatre.ts`): the Italian army faces France, of Poland's side in this same
+  war, in a theatre of 0.97–1.36 million men; the best place in reach on 11–15 of 22–28 days on every
+  seed, either rule; the German army in Poland stands spread (12,000–72,000 a place), and HEAD's German
+  burst is a city by its output, on the day the decision came. The test stands; no rule; the pin
+  unchanged (5161de24).

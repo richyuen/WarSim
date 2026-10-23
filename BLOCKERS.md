@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.91 (and 7.90g after it): held on `nukePoland1938` seed 5591, whose "on Germany" is the user's to keep or drop (2026-10-22, ADR-651 proposed; the user's decision)
+- **The bar:** with 7.91's patch, `nukePoland1938` green on its three seeds with the first burst on
+  Germany (PLAN 7.92's AT, first branch), so that 7.91 and then 7.90g can be committed.
+- **What moved:** nothing; no rule written (PLAN 7.92, `docs/evidence/7.92/measure.md`). The Italian army
+  Poland strikes with the patch faces France, Poland's ally in this same war, in a theatre of about
+  half the enemy side: a fair target by the rules as written. HEAD's burst on Germany is a German city
+  by its output (334,000 dead), decided on a day the city led the Italians by 0.006.
+- **What is left:** the user's (ADR-651). (a) drop the test's "on Germany" (the burst on the enemy side
+  stays asserted), then 7.91 and 7.90g land from their patches; (b) a rule weighing the striker's own
+  front first; (c) open. Meanwhile the loop takes PLAN 7.90h.
+
 ### PLAN 7.89: a formation aboard holds no ferry turn now, but the lift is short of the army; piles 2 → 2 (2026-10-22, ADR-643)
 - **The bar:** piles of 30 or more of a nation at war on one cell 30 days running on 1129 year 10, 6421
   year 20 and 7019 year 10 (`piles.ts --days 30`) 2 → 0; a unit test red without; the ADR; the pin.

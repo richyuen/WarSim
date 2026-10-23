@@ -22536,3 +22536,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Filed:** PLAN 7.92 before 7.91. Order now 7.92, 7.91 (its pin read again), 7.90g (its `src/` and
   `tests/unit/` hunks; DECISIONS and pin by hand). Both held pins are stale by construction.
 - **Next:** PLAN 7.92.
+
+## 2026-10-22 — PLAN 7.92 measured: the far army is fair by the rules; the choice to the user (ADR-651)
+
+- **Start:** gate green on `46b39276`; critic not due.
+- **Read** (`docs/evidence/7.92/measure.md`, new probe `tools/diag/nukeTheatre.ts`, the test's set-up,
+  seeds 5591, 7127, 3929, on HEAD and with `docs/evidence/7.91/patch`): every Italian mass among Poland's
+  best places (100,000–232,000 men) faces France, of Poland's side in this same war, 25–90 km off; the
+  theatre 0.97–1.36 million men, so THEATRE_FLOOR rightly does not bind. Best place in reach Italian on
+  11–15 of 22–28 days on every seed and either rule. The German army in Poland stands spread
+  (12,000–72,000 a place); HEAD's burst on Germany is a city by its output (econShare 0.054, 334,000
+  dead), on the day the decision came (5591: −0.024 against −0.030 the day before).
+- **Done, the AT's second branch:** ADR-651 proposed, the user's: (a) drop the test's "on Germany", then
+  7.91 and 7.90g from their patches; (b) a rule weighing the striker's own front first, which here sends
+  the bomb to the German city; (c) open. No rule; the test stands; the pin unchanged (5161de24).
+  BLOCKERS entry for 7.91 and 7.90g.
+- **Next:** PLAN 7.90h.

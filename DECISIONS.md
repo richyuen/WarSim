@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-651 · 2026-10-22 · proposed (the user's decision) — An overrun nation's warhead on the enemy side's densest army before its ally, or on the nation overrunning it (PLAN 7.92)
+
+- **Context** (PLAN 7.91, 7.92; `docs/evidence/7.92/measure.md`). With 7.91's deploy rule
+  (`docs/evidence/7.91/patch`, ADR-650 held) `nukePoland1938` seed 5591 is red on its last assertion:
+  Poland's first burst falls on an Italian army on the Alps (64,445 dead, all men) where HEAD's fell on
+  a German city (343,924 dead, about 10,000 of them men). The test's "on Germany" came from PLAN 7.18j's
+  AT (ADR-492: "not an Italian army near Rome", a theatre of 6 % of the side).
+- **Measured** (the test's set-up, three seeds, HEAD and the patch, `tools/diag/nukeTheatre.ts`): the
+  Italian army faces France, which is on Poland's side of this same war; its theatre is 0.97–1.36
+  million men, about half the side, so it is no light theatre and THEATRE_FLOOR rightly does not bind.
+  It is the best place in reach on 11 to 15 of the 22 to 28 days weighed on every seed, on either rule.
+  The German army in Poland stands spread (12,000 to 72,000 men a place); the German place that wins on
+  HEAD is a city by its output. HEAD's "on Germany" held by the day the decision came (5591: the city
+  −0.024, the Italians −0.030 the day before), not by a rule. By the rules as written (`nukeTargets`,
+  the enemy's most massed men within FRONT_KM of the striker's side, allies included) the Italian
+  army is a fair target.
+- **Options:** (a) The far army is fair: the test's last assertion ("on Germany") goes, the one before
+  it ("on the land of a nation of the enemy side") stays; then PLAN 7.91 is committed from its patch,
+  and 7.90g from its. No rule; the pin unchanged by this. (b) A rule: a place's enemy men facing none of
+  the striker's own formations (its allies' fronts) weighed down, or the nation overrunning the striker
+  weighed first. On these seeds that sends Poland's bomb to the German city, 334,000 dead and about
+  10,000 men, the output target the user kept in ADR-632 b, rather than an army of 150,000–230,000
+  before its ally; a unit test of it, an ADR, the pin. (c) Open. Recommended: (a), the weighing's
+  intent met and a strike on an army before a city's people. Meanwhile 7.91 and 7.90g wait; the loop
+  takes PLAN 7.90h.
+
 ### ADR-648 · 2026-10-22 · accepted — The ferry's transport want counts the army on a front's land that reaches no front cell (PLAN 7.90e; amends ADR-614)
 
 - **Context** (`docs/evidence/7.90/a.md` §5). `wantsFerry` (ADR-614) counted against the transports'
