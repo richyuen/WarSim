@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-669 · 2026-10-23 · proposed (the user's decision) — The remnant at war: the landing rule adds orders, not landings (PLAN 7.82c's AT missed)
+
+- **Context** (`docs/evidence/7.82/c/at.md`). PLAN 7.82c (ADR-665 b): ADR-664's candidate (`b.patch`: a
+  target on a land where the planner's enemies stand with at most 2 land formations pulled ×3), judged
+  from HEAD's save of 843 at year 10, 10 years each way: Denmark loses at least 10,000 cells and is
+  landed on at least 10 times with the rule, under 2,000 without; engaged per war on 821–830 × 20 years
+  not below 0.480.
+- **Read:** Denmark **−2.3k cells** with the rule (bar 10,000), +4.0k without; landed on **20** times with,
+  **22** without. Orders aimed at Denmark 19 → 65, but 82–95 % of the plans that look at its places end
+  with no transport group at hand: the lift, not the target choice, holds the remnant. Its loss with the
+  rule follows a war that ends (at peace from year 18), not the landings. Engaged per war **0.480 →
+  0.421** (6 seeds of 10 lower): landings sent to empty lands take formations from the fronts. Unit test
+  red without, green with.
+- **Options:**
+  - **(a)** No rule (the patch stays a candidate in the evidence); 7.82c closed not done. The loop takes
+    7.82d (the holders at peace), then 7.82's AT on 851–860.
+  - **(b)** As (a), and PLAN 7.100 filed: the lift for a remnant overseas (the plans on Denmark that end
+    with no transports), read first on the 843 save: whose transports exist, where, and what they do
+    instead; then a rule on what it names, its AT the cells Denmark loses from that save and engaged per
+    war on 821–830 not below 0.480.
+  - **(c)** Commit the rule anyway, judged by 7.82's AT on 851–860.
+- **Recommended: (a).** The rule misses both of its bars and lowers the land war; the lift was tried at
+  7.98 (ADR-663) and made the American piles worse. Of 7.82's three failing seeds, 7.82d's cause holds
+  two (844, 845).
+- **Consequences:** until decided, no rule; the pin unchanged (b9bff4bd). The loop takes 7.82d.
+
 ### ADR-668 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — The late air war still follows the land war (PLAN 7.85)
 
 - **Context** (`docs/evidence/7.85/at.md`). PLAN 7.85: on 10 unseen seeds × 20 years air battles a year in

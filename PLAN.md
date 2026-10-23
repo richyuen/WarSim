@@ -82,6 +82,9 @@ them, are 7.81–7.86. A task each, split when taken up:
       it Denmark loses at least 10,000 cells and is landed on at least 10 times, without it under 2,000;
       engaged per war on 821–830 × 20 years not below 0.480 (`landAt.ts`); the unit test red without; the
       ADR; the pin's entry.
+      Missed (`docs/evidence/7.82/c/at.md`): Denmark −2.3k cells with the rule, +4.0k without; landed on
+      20 times with, 22 without (orders 19 → 65; 82–95 % of the plans on it end with no transports);
+      engaged per war 0.421. No rule; BLOCKERS; ADR-669 to the user. The loop takes 7.82d.
     - [ ] 7.82d The holders at peace (ADR-665 b; 844, 845: Denmark, Canada and the USA at war 12–29 days a
       year and fixed to 2 % of their cells for 17–19 years). Read first on 845 over its span (years 8–26):
       which nations could reach each of them (a land front, a port in range of their transports), how the

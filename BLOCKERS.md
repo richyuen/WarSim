@@ -879,6 +879,17 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 - **Left:** ADR-668: (a) closed not done; (b) an air rule not tied to the land war, its own task
   (recommended). The pin unchanged (b9bff4bd).
 
+## 2026-10-23 · PLAN 7.82c's AT missed: the landing rule adds orders, not landings (ADR-669)
+
+- **Bar:** from HEAD's save of 843 at year 10, 10 years: with the rule Denmark loses at least 10,000 cells
+  and is landed on at least 10 times, without under 2,000; engaged per war on 821–830 × 20 years not
+  below 0.480 (`docs/evidence/7.82/c/at.md`).
+- **What moved:** Denmark −2.3k cells with the rule, +4.0k without; landed on 20 times with, 22 without;
+  orders aimed at it 19 → 65, 82–95 % of the plans on it ending with no transports. Engaged per war
+  0.480 → 0.421.
+- **Left:** ADR-669: (a) no rule, 7.82c closed not done, 7.82d next (recommended); (b) as (a) and PLAN
+  7.100 for the lift to a remnant overseas; (c) the rule committed anyway. The pin unchanged (b9bff4bd).
+
 ## Watch list (not blocking)
 
 - **From the tenth independent read (PLAN 4.8a, 2026-10-12), suspicions not run:**

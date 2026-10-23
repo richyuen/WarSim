@@ -23030,3 +23030,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **7.85** (668 b): closed not done; **PLAN 7.99** filed: an air war beyond the land war.
 - No rule; the pin unchanged (b9bff4bd).
 - **Next:** 7.82c.
+
+## 2026-10-23 — PLAN 7.82c: the landing rule adds orders, not landings (ADR-669 to the user)
+
+- **Run** (`docs/evidence/7.82/c/at.md`): ADR-664's `b.patch` on HEAD; its unit test red on HEAD, green
+  with, red with the empty-land test off. Seed 843 from HEAD's year-10 save (HEAD worktree, the save
+  copied byte for byte), years 11–20 each way with `overseasHold.ts`; `landAt.ts` on 821–830 × 20.
+- **Read:** Denmark −2.3k cells with the rule (bar 10,000), +4.0k without; landed on 20 times with, 22
+  without; orders on it 19 → 65, but 82–95 % of the plans looking at it end with no transports.
+  Engaged per war 0.480 → 0.421 (bar 0.480).
+- **Verdict:** missed on two clauses; no rule committed (the patch stays in the evidence); BLOCKERS
+  entry; ADR-669 proposed: (a) closed not done, 7.82d next (recommended); (b) plus PLAN 7.100 for the
+  lift; (c) the rule anyway.
+- **No rule;** the pin unchanged (b9bff4bd).
+- **Next:** 7.82d (it does not wait on ADR-669).
