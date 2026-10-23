@@ -184,9 +184,10 @@ them, are 7.81–7.86. A task each, split when taken up:
 - [ ] 7.96 The nuclear rate in the busier war (found at 7.86; aiNukes 7, needs 8; ADR-657 b, the user's
   decision): `dd3b730`'s own nuclear rule fires 1.93 × as often a holder-day at war in HEAD's world as in
   its own (years 11–20 on 12 of the critic's seeds: 19 → 72 bursts at 31.7 / 32.6 holder-years at war;
-  `docs/evidence/7.86/measure.md`). AT: on 10 unseen seeds × 30 years bursts a world and civilian bursts
-  (over 10 × men) not above `dd3b730`'s on the same seeds (read there first); a unit test, red without;
-  the ADR; the pin's entry. In parts:
+  `docs/evidence/7.86/measure.md`). AT (ADR-658 b, the user's decision; was the bursts a world): on 10
+  unseen seeds × 30 years the share of bursts by a striker within 30 days of its own last, and the share of
+  civilian bursts (over 10 × men), not above `dd3b730`'s on the same seeds (811–819 read; 820 first);
+  bursts a world reported; a unit test, red without; the ADR; the pin's entry. In parts:
     - [x] 7.96a Read which input of the decision moved: daily, for each nation with warheads at war, the
       best place's utility and its parts (desperation, value, the chance through, the strike back, the
       costs) under `dd3b730`'s rule, in its world and in HEAD's (the old and rule trees of 7.86), years
@@ -205,6 +206,10 @@ them, are 7.81–7.86. A task each, split when taken up:
       Closed not done (ADR-658 proposed, BLOCKERS 2026-10-23; `docs/evidence/7.96/b.md`): TABOO_AFTER 0.6 / 0.7
       on four seeds × 30 years: bursts 122 → 97 / 101 against `dd3b730`'s 12; volleys 42 → 27 / 31. A dearer
       taboo delays strikes whose gain stays. `dd3b730` on unseen 811–819: 89 bursts, 28 civilian. No rule.
+    - [ ] 7.96c The volleys (ADR-658 b): HEAD's bursts by a striker within 30 days of its own last 34 % on
+      7.96b's four seeds (`dd3b730` 8 %); a side waits STRIKE_GAP_DAYS (7) after its strike before its next
+      first use in the war. Rule: a longer wait for the answer, chosen on a `nukeVolume.ts` A/B on those four
+      seeds × 30 years (the volleys table of `b.md`), then read on 811–820. AT: 7.96's bar.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

@@ -5,15 +5,6 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.96b: the taboo after a burst cuts bursts a fifth, the bar is a tenth; 7.96's bar is the user's (2026-10-23, ADR-658 proposed; the user's decision)
-- **The bar:** 7.96's: on 10 unseen seeds × 30 years bursts a world and civilian bursts not above
-  `dd3b730`'s (read on 811–819: 89 and 28; 820 not run).
-- **What moved** (`docs/evidence/7.96/b.md`, four of 7.86's seeds × 30 years): TABOO_AFTER 0.6 bursts 122 →
-  97, 0.7 101 (`dd3b730` 12); volleys within 30 days 42 → 27 and 31, not in order. Not run on the unseen
-  seeds: 10 × short.
-- **What is left:** the user's (ADR-658): (a) accept the volume; (b) re-scope the bar to volleys and
-  civilian share, then PLAN 7.96c (recommended); (c) a restraint on desperation's strike.
-
 ### PLAN 7.83c: supply's beach layer −7 %, short of `dd3b730` + 0.03 (2026-10-23)
 - **The bar:** supply's mean a tick on a year from HEAD's year-4 save of seed 99 at most `dd3b730`'s rules'
   + 0.03 (0.168 ms; 0.153 against the pairs' own HEAD), the year's hash f278491d and the pin unchanged.
@@ -47,6 +38,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** PLAN 7.90. The USA's 12 groups hold 288,000 men against about 1.35 million in the two
   piles; a round trip carries 4–8 divisions. No decision of the user's waits on it; the loop takes it after
   PLAN 7.80b.
+
+### RESOLVED 2026-10-23 (option b, the user's decision: 7.96's bar on volleys and the civilian share; PLAN 7.96c) · PLAN 7.96b: the taboo after a burst cuts bursts a fifth, the bar is a tenth; 7.96's bar is the user's (2026-10-23, ADR-658 proposed; the user's decision)
+- **The bar:** 7.96's: on 10 unseen seeds × 30 years bursts a world and civilian bursts not above
+  `dd3b730`'s (read on 811–819: 89 and 28; 820 not run).
+- **What moved** (`docs/evidence/7.96/b.md`, four of 7.86's seeds × 30 years): TABOO_AFTER 0.6 bursts 122 →
+  97, 0.7 101 (`dd3b730` 12); volleys within 30 days 42 → 27 and 31, not in order. Not run on the unseen
+  seeds: 10 × short.
+- **What is left:** the user's (ADR-658): (a) accept the volume; (b) re-scope the bar to volleys and
+  civilian share, then PLAN 7.96c (recommended); (c) a restraint on desperation's strike.
 
 ### RESOLVED 2026-10-23 (option b, the user's decision: PLAN 7.96, the input that doubled the rate, then a rule on it; 7.86 closed into it) · PLAN 7.86: the AI's bursts ×2.5 follow the busier war; the nuclear rules since `dd3b730` are not the cause (2026-10-23, ADR-657 proposed; the user's decision)
 - **The bar:** on 10 unseen seeds × 30 years, bursts a world and civilian bursts (over 10 × men) not above

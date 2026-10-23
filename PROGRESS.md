@@ -22836,3 +22836,8 @@ No rule changed and nothing on screen changed. One task came out of it.
   on volleys and civilian share, then 7.96c (recommended), (c) a restraint on desperation's strike.
 - **No rule;** the pin unchanged (7098dd29).
 - **Next:** 7.96 waits on ADR-658; the loop takes 7.79's AT.
+
+## 2026-10-23 — ADR-658 b (the user's decision): 7.96's bar on volleys and the civilian share; 7.96c filed (documents)
+
+- 7.96's AT: the share of bursts by a striker within 30 days of its own last, and the civilian share, not
+  above `dd3b730`'s on 10 unseen seeds × 30 years; the volume reported. 7.96c: a longer wait after a strike.

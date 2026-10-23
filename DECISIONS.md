@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-658 · 2026-10-23 · proposed (the user's decision) — 7.96's bar against what the nuclear AI owns (PLAN 7.96b's A/B missed)
+### ADR-658 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — 7.96's bar against what the nuclear AI owns (PLAN 7.96b's A/B missed)
 
 - **Context** (`docs/evidence/7.96/a.md`, `b.md`). 7.96a: in HEAD's world 17 of 23 strike days pass the
   floor only with the world's taboo broken by an earlier burst (TABOO_AFTER 0.3, four years to recover);
@@ -193,6 +193,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   aiNukes at 7 on the volume, and (c) changes the doctrine the user kept in ADR-632 b.
 - **Consequences:** no rule changed; the pin unchanged (7098dd29). 7.96b closed not done; 7.96 waits on
   this.
+- **Decided** (2026-10-23, the user: option b, as recommended). 7.96's bar: on 10 unseen seeds × 30 years
+  the share of bursts by a striker within 30 days of its own last, and the share of civilian bursts, not
+  above `dd3b730`'s; bursts a world reported, not barred. PLAN 7.96c, a rule on the volleys, is taken next.
 
 ### ADR-657 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — The AI's bursts follow the busier war, not its warheads or the nuclear rules (PLAN 7.86's AT)
 
