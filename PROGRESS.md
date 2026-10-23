@@ -23010,3 +23010,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   done, 7.84 on its first bar (recommended); (b) S = 0.25; (c) S = 0.5.
 - **No rule;** the pin unchanged (b9bff4bd).
 - **Next:** 7.95 waits on ADR-667; the loop takes 7.85.
+
+## 2026-10-23 — PLAN 7.85 re-read on HEAD: the late air war at 0.066 of year 1's (ADR-668 to the user)
+
+- **Read** (`docs/evidence/7.85/at.md`; `airLate.ts`, 871–880 × 20 years): air battles in years 2–20
+  0.066 of year 1's pooled (bar 0.10; 7.51b 0.065), two seeds of ten at a tenth. Engaged per war late
+  0.071 of year 1's (7.51b 0.057); air battles against engaged r 0.36.
+- **Verdict:** missed, the cause the land war's as before; BLOCKERS entry; ADR-668 proposed: (a) closed not
+  done; (b) an air rule not tied to the land war, its own task (recommended).
+- **No rule;** the pin unchanged (b9bff4bd).
+- **Next:** 7.85 waits on ADR-668. Every open task before 7.5 now waits on the user (ADR-665–668).

@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-668 · 2026-10-23 · proposed, the user's decision — The late air war still follows the land war (PLAN 7.85)
+
+- **Context** (`docs/evidence/7.85/at.md`). PLAN 7.85: on 10 unseen seeds × 20 years air battles a year in
+  years 2–20 at least a tenth of year 1's, or, if 7.79's land war does not carry the air war there, the
+  measured cause and 7.51b's (c) (an air war not tied to the land war) to the user.
+- **Read** (`airLate.ts`, seeds 871–880, HEAD `d2fd6ac4`): **0.066** pooled (7.51b: 0.065); two of ten
+  seeds at a tenth or over. Engaged per war late 0.071 of year 1's (7.51b 0.057); air battles against
+  land formations engaged r 0.36 over the 190 seed-years. The land war's late rise since 7.51b has not
+  carried the air war.
+- **Options:**
+  - **(a)** 7.85 closed not done; the aircraft score waits for the next critic report (as 7.51b's (b)).
+  - **(b)** 7.51b's (c): an air rule not tied to the land war, its own task (wings at war with no enemy
+    land formation in range fly at the enemy's airbases or fleets within their range), AT the tenth on
+    10 unseen seeds × 20 years. ADR-520 measured a patrol over home as meeting little; an offensive
+    mission over the enemy's airbases is not yet measured.
+- **Recommended: (b).** The aircraft score is under its bar (7, needs 8) and the cause is now read twice
+  on 20 unseen seeds: the late land war's ratio rose by a quarter since 7.51b and the air war's did not
+  move. (a) leaves it to the critic with the cause unchanged.
+- **Consequences:** until decided, no rule; the pin unchanged (b9bff4bd).
+
 ### ADR-667 · 2026-10-23 · proposed, the user's decision — A warship's saving in a land war: the share that would save is ADR-615's army (PLAN 7.95)
 
 - **Context** (`docs/evidence/7.95/share.md`). PLAN 7.95 (ADR-656 b): at war with no naval enemy, a nation

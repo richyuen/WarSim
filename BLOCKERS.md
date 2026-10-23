@@ -871,6 +871,14 @@ the state of 3.10c1a's game read by today's code), France (nation 19) against It
 - **Left:** ADR-667: (a) the smaller navies accepted, 7.95 closed not done, 7.84 on its first bar
   (recommended); (b) S = 0.25; (c) S = 0.5. The pin unchanged (b9bff4bd).
 
+## 2026-10-23 — PLAN 7.85: the late air war at 0.066 of year 1's, still the land war's (ADR-668 waits on the user)
+
+- **Bar:** on 10 unseen seeds × 20 years air battles in years 2–20 at least a tenth of year 1's, or the
+  cause and 7.51b's (c) to the user (`docs/evidence/7.85/at.md`).
+- **What moved:** 0.065 (7.51b) → 0.066 on 871–880; the land war's late ratio 0.057 → 0.071.
+- **Left:** ADR-668: (a) closed not done; (b) an air rule not tied to the land war, its own task
+  (recommended). The pin unchanged (b9bff4bd).
+
 ## Watch list (not blocking)
 
 - **From the tenth independent read (PLAN 4.8a, 2026-10-12), suspicions not run:**

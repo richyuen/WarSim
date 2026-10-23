@@ -148,6 +148,8 @@ them, are 7.81–7.86. A task each, split when taken up:
   20 years air battles a year in years 2–20 at least a tenth of year 1's, or, if 7.79's land war does
   not carry the air war there, the measured cause and the choice of 7.51b's (c) (an air war not tied to
   the land war) to the user; the gate green.
+  Re-read (`docs/evidence/7.85/at.md`, 871–880 × 20 years): 0.066 (7.51b 0.065), the cause the land war's
+  as before (engaged per war late 0.071 of year 1's). Waits on ADR-668 (BLOCKERS).
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
