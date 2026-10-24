@@ -49,17 +49,6 @@ ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the di
 beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
 reused:
 
-- [ ] 7.115 The operational AI spreads a larger army over its front (found at 7.110b; R13-B1; ADR-692 b, the user's
-  decision): with `docs/evidence/7.110b/rule.patch` applied (a quarter of a strike's fire on a land formation out of
-  contact), `operationalAi`'s Germany–Poland duel (seed 1938) has Poland 24 formations near the front covering 14 of 27
-  sectors on day 30 (0.519), where HEAD's 14 cover 17 (0.607): the formations the strikes no longer kill stand piled.
-  Measure first why (sector allotment, holds at the same front cell, the stacks' places). Then commit the spread's rule
-  with 7.110b's rule, its pin, its unit case, and `wholeTanks` restated to the 48 hours from division 41's first hour
-  with 9 or more volleys at its armour (`docs/evidence/7.110b/wt2.ts.txt`). AT: with both rules, `operationalAi` as it
-  stands green (both nations at least 0.6 on days 10 and 30); Poland's day-30 coverage at least 0.6 on HEAD's code
-  with 7.110b's rule; on 971–980 × 20 against HEAD on them (`docs/evidence/7.110b/at_971-980.json`), land formations
-  of nations at war a war in years 2–20 not below 7.110b's rule's 62.54 and engaged a war not below its 0.671; a unit
-  test of the spread, red without; the gate green.
 - [ ] 7.111 The late tick's exact remainder (found at 7.105; performance 5; ADR-680 b, the user's decision): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one
   Map of keys past the small integers), `sectorShape`'s sort and holders, `industryHeld` once a day for
   every reader. AT: year 21 of 4877 from `critic/c13_seed4877_y20.bin`, `npm run sim -- --affinity
@@ -409,3 +398,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.113 The air force at war late (found at 7.108b; aircraft 7, needs 8; ADR-685 b, the user's decision): the […]
 - [x] 7.109 AI nuclear use (aiNukes 7, needs 8): of two AI strikes a day apart (1129 year 15: the UK on a […]
 - [x] 7.110 The army at war late (found at 7.104; R13-B1; ADR-679 a, the user's decision): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196 […]
+- [x] 7.115 The operational AI spreads a larger army over its front (found at 7.110b; R13-B1; ADR-692 b, the user's […]

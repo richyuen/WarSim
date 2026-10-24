@@ -15,6 +15,9 @@ import { nationId } from '../helpers/sim1938';
 // Restated by PLAN 7.79b (ADR-634): with the army allotted to the threatened sectors first, the
 // division marches east to the Polish front and is first fired at in hour 237 (before, France's 220
 // from hour 72); the 48 hours are from hour 231, about its contact.
+// Restated by PLAN 7.115 (ADR-692, ADR-693 b): the hour found, not pinned (a quarter of a strike's fire on a
+// formation out of contact moved it, from hour 238 to 348): the 48 hours are from the first hour with 9 or more volleys at the division's armour, its first heavy fight
+// (`docs/evidence/7.110b/wt2.ts.txt`; from its first volley, the hours that follow can hold no tank lost).
 
 /** A world of one element, for the loss alone. */
 function one(strength: number, wound = 0): World {
@@ -57,23 +60,38 @@ describe("the critic's armour fight (seed 3929, Germany on Poland and France)", 
       const sim = new Sim({ scenario: '1938', seed: 3929, assets: assets1938(SIZE_1938.w) });
       sim.command({ kind: 'declareWar', attacker: nationId('GER'), defender: nationId('POL') });
       sim.command({ kind: 'declareWar', attacker: nationId('GER'), defender: nationId('FRA') });
-      sim.step(231);
       const w = sim.world;
       const ec = w.elements.cols;
       const units = w.rules!.units;
       const tanks = (): Map<number, number> => new Map((elementIndex(w).get(41) ?? []).filter((e) => (units[ec.unit[e]!]!.arm & ARM_ARMOUR) !== 0).map((e) => [e, ec.strength[e]!]));
+      const atArmour = (e: number): boolean => w.elements.has(e) && ec.formation[e] === 41 && (units[ec.unit[e]!]!.arm & ARM_ARMOUR) !== 0;
       let was = tanks();
       expect(was.size).toBe(34);
       let lost = 0;
       let offFire = 0;
-      for (let h = 0; h < 48; h++) {
+      // Hour by hour until one with 9 or more volleys at the division's armour (within 60 days), then 48 hours from that hour.
+      let from = -1;
+      for (let h = 0; from < 0 ? h < 60 * 24 : h < from + 48; h++) {
         const fired = new Set<number>();
+        let volleys = 0;
         sim.step(1, (world) => {
           const f = world.out.fires;
-          for (let i = 0; i + FIRE_STRIDE <= f.length; i += FIRE_STRIDE) fired.add(f.data[i + FireField.target]!);
+          for (let i = 0; i + FIRE_STRIDE <= f.length; i += FIRE_STRIDE) {
+            const e = f.data[i + FireField.target]!;
+            fired.add(e);
+            if (atArmour(e)) volleys++;
+          }
           world.out.fires.length = 0;
           world.out.events.length = 0;
         });
+        if (from < 0) {
+          if (volleys < 9) {
+            was = tanks();
+            continue;
+          }
+          from = h;
+          expect(was.size).toBe(34);
+        }
         const now = tanks();
         for (const [e, had] of was) {
           const has = now.get(e) ?? 0;
@@ -84,11 +102,12 @@ describe("the critic's armour fight (seed 3929, Germany on Poland and France)", 
         }
         was = now;
       }
+      expect(from, 'an hour with 9 or more volleys at its armour within 60 days').toBeGreaterThanOrEqual(0);
       return { lost, offFire, hash: sim.hash() };
     };
     const a = run();
     // 3.5 tanks of fire in the 48 hours: lost whole and under fire (breakdowns and attrition carry as before).
-    process.stderr.write(`division 41: ${a.lost} tanks lost in 48 hours
+    process.stderr.write(`division 41: ${a.lost} tanks lost in the 48 hours from its first heavy fight
 `);
     expect(a.lost).toBeGreaterThanOrEqual(1);
     expect(a.offFire).toBe(0);

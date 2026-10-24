@@ -15234,3 +15234,32 @@ Of 7.33 (open in PLAN.md):
       formation out of contact, 51.38 → 62.54 (× 1.217, bar × 1.3), engaged a war 0.497 → 0.671; `operationalAi` and
       `wholeTanks` red with it. Closed not done (ADR-692 b, the user's decision, 2026-10-24): the rule waits on PLAN
       7.115 and is committed with it.
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.115 The operational AI spreads a larger army over its front (found at 7.110b; R13-B1; ADR-692 b, the user's
+  decision): with `docs/evidence/7.110b/rule.patch` applied (a quarter of a strike's fire on a land formation out of
+  contact), `operationalAi`'s Germany–Poland duel (seed 1938) has Poland 24 formations near the front covering 14 of 27
+  sectors on day 30 (0.519), where HEAD's 14 cover 17 (0.607): the formations the strikes no longer kill stand piled.
+  Measure first why (sector allotment, holds at the same front cell, the stacks' places). Then commit the spread's rule
+  with 7.110b's rule, its pin, its unit case, and `wholeTanks` restated to the 48 hours from division 41's first hour
+  with 9 or more volleys at its armour (`docs/evidence/7.110b/wt2.ts.txt`). AT: with both rules, `operationalAi` as it
+  stands green (both nations at least 0.6 on days 10 and 30); Poland's day-30 coverage at least 0.6 on HEAD's code
+  with 7.110b's rule; on 971–980 × 20 against HEAD on them (`docs/evidence/7.110b/at_971-980.json`), land formations
+  of nations at war a war in years 2–20 not below 7.110b's rule's 62.54 and engaged a war not below its 0.671; a unit
+  test of the spread, red without; the gate green.
+  Closed not done 2026-10-24 (ADR-693 b, the user's decision; `docs/evidence/7.115/at.md`): the spread missed (56.77 a
+  war, 0.664 engaged); 7.110b's rule committed alone, `operationalAi` read as the mean of days 10–30, `wholeTanks`
+  from its first heavy fight.

@@ -23525,3 +23525,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a `git stash` of a source file while `tsx` runs are starting races their module load; swap files only
   between runs.
 - **Next:** PLAN 7.111 while ADR-693 waits.
+
+## 2026-10-24 — PLAN 7.115 closed not done, the strike rule committed (ADR-693 b, the user's decision)
+
+- ADR-692's rule committed alone: a strike puts a quarter of its fire on a land formation out of contact; pin 1ef5c241
+  → 4347c49c. `operationalAi` reads coverage daily on days 10–30, the mean at least 0.6 (Germany 0.754, Poland 0.693;
+  Germany takes 883 cells). `wholeTanks` from division 41's first heavy fight (hour 348, 1 tank lost). The spread stays
+  in `docs/evidence/7.115/rule.patch`; `nukeAlertStop1938` unchanged. Tests run by hand: `operationalAi`,
+  `wholeTanks`, `airStrike1938`, `nukeAlertStop1938`, the pin.
+- **Next:** PLAN 7.111.

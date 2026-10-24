@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-693 · 2026-10-24 · proposed (the user's decision) — The threatened sectors manned one each before a second, with ADR-692's strike rule: the AT missed (PLAN 7.115)
+### ADR-693 · 2026-10-24 · accepted, option b (the user's decision, 2026-10-24) — The threatened sectors manned one each before a second, with ADR-692's strike rule: the AT missed (PLAN 7.115)
 
 - **Context** (`docs/evidence/7.115/at.md`). With ADR-692's rule (a quarter of a strike's fire on a land formation out
   of contact) Poland's day-30 coverage in `operationalAi`'s duel is 0.519 (bar 0.6). Measured (`tools/diag/coverWhy.ts`):
@@ -196,6 +196,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     spread's miss is a share of the army moved off the main fight, which the AT was not about.)
   - **(c)** Both rules, as in the patch: × 1.105 and × 1.34 of HEAD, the nuke scene's bound 24 → 48 hours; 7.115
     closed not done.
+- **Done (b).** ADR-692's rule committed (`DISPERSED_STRIKE` in `airCombat.ts`, its case in `airStrike1938`); the
+  pin 1ef5c241 → 4347c49c (a quarter of a strike's fire on a land formation out of contact). `operationalAi`'s
+  coverage read daily on days 10–30, the mean at least 0.6 (with the rule Germany 0.754, Poland 0.693; Germany takes
+  883 cells, Poland none). `wholeTanks` from division 41's first hour with 9 or more volleys at its armour (with the
+  rule hour 348, 1 tank lost; the bar at least 1). The spread is not committed (`docs/evidence/7.115/rule.patch`
+  keeps it); `nukeAlertStop1938` unchanged. 7.115 closed not done; no task.
 
 ### ADR-692 · 2026-10-24 · accepted, option b (the user's decision, 2026-10-24) — A strike on a land formation out of contact puts a quarter of its fire on it: the AT missed (PLAN 7.110b)
 

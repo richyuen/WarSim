@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.115's AT missed: land formations at war a war 56.77 (bar: not below the strike rule's 62.54), engaged 0.664 (bar 0.671) (ADR-693; waits on the user)
+### RESOLVED 2026-10-24 (option b, the user's decision: the strike rule alone, coverage read as the mean of days 10–30, 7.115 closed not done) · PLAN 7.115's AT missed: land formations at war a war 56.77 (bar: not below the strike rule's 62.54), engaged 0.664 (bar 0.671) (ADR-693; waits on the user)
 - **The bar:** with 7.110b's strike rule and the spread, `operationalAi` green; Poland's day-30 coverage at least 0.6;
   on 971–980 × 20, land formations of nations at war a war in years 2–20 not below 62.54 and engaged a war not below
   0.671; a unit test, red without; the gate green.

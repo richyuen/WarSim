@@ -81,19 +81,24 @@ describe('operational AI (PLAN 1.25)', () => {
     const war = w.wars.between(GER, POL)!.war;
     war.fightToDeath = [true, true];
     runEvents(s, 24 * 10 - 1);
-    const cov10 = [coverage(w, GER), coverage(w, POL)];
-    runEvents(s, 24 * 20);
-    const cov30 = [coverage(w, GER), coverage(w, POL)];
+    // Coverage read daily on days 10–30 and taken as the mean (PLAN 7.115, ADR-693 b, the user's decision): one
+    // day's read swings with a battle's retreat (HEAD's Poland 0.52–0.56 on days 16, 17 and 29, 0.607 on day 30).
+    const days: number[][] = [];
+    for (let d = 10; d <= 30; d++) {
+      days.push([coverage(w, GER), coverage(w, POL)]);
+      if (d < 30) runEvents(s, 24);
+    }
+    const mean = [0, 1].map((k) => days.reduce((t, c) => t + c[k]!, 0) / days.length);
     runEvents(s, 24 * 30);
     const gerGain = taken(w, owner0, POL, GER);
     const polGain = taken(w, owner0, GER, POL);
     const log = process.env['OPAI_LOG'];
-    if (log) writeFileSync(log, JSON.stringify({ cov10, cov30, gerGain, polGain, score: war.score }));
+    if (log) writeFileSync(log, JSON.stringify({ mean, days, gerGain, polGain, score: war.score }));
     // The larger nation advances (and the smaller one's early raids are pushed back).
     expect(gerGain).toBeGreaterThan(300);
     expect(gerGain).toBeGreaterThan(4 * polGain);
-    // Formations are spread along the front: most front sectors have a division within 2 sectors.
-    for (const c of [...cov10, ...cov30]) expect(c).toBeGreaterThanOrEqual(0.6);
+    // Formations are spread along the front: most front sectors have a division within 2 sectors, on the mean of days 10–30.
+    for (const c of mean) expect(c).toBeGreaterThanOrEqual(0.6);
     expect(H).toBe(SIZE_1938.h);
   }, 180_000);
 });

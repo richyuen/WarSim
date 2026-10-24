@@ -4,7 +4,7 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { orderMission } from '../../src/sim/systems/air';
-import { STRIKE_FIRE, strikes } from '../../src/sim/systems/airCombat';
+import { DISPERSED_STRIKE, STRIKE_FIRE, strikes } from '../../src/sim/systems/airCombat';
 import { effectiveness } from '../../src/sim/systems/combat';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import type { World } from '../../src/sim/world';
@@ -12,7 +12,8 @@ import { assets1938 } from '../helpers/earth';
 import { addDivision, nationId } from '../helpers/sim1938';
 
 // PLAN 5.4b: a strike sortie at its target fires once on the enemy's land elements there by its
-// aircraft's soft and hard attack; the losses as on the land.
+// aircraft's soft and hard attack; the losses as on the land. On a formation not in contact, DISPERSED_STRIKE of
+// that fire (PLAN 7.110b).
 
 const [GER, POL] = ['GER', 'POL'].map(nationId) as [number, number];
 const template = (t: string): number => TEMPLATES_1938.findIndex((x) => x.id === t);
@@ -55,9 +56,10 @@ const strikesOf = (w: World): number[][] => {
 };
 
 describe('CAS and tactical bombing (PLAN 5.4b)', () => {
-  it('a close support group on a Polish infantry division: its fire by the rule, once, on arriving', () => {
+  it('a close support group on a Polish infantry division in contact: its fire by the rule, once, on arriving', () => {
     const w = world();
     const div = addDivision(w, POL, cx, cy, template('infantry_div'));
+    w.formations.cols.engaged[div] = 1;
     const wing = stukas(w);
     const ec = w.elements.cols;
     const rules = w.rules!;
@@ -88,6 +90,22 @@ describe('CAS and tactical bombing (PLAN 5.4b)', () => {
     const after = units(w, div);
     strikes(w);
     expect(units(w, div)).toBe(after);
+  });
+
+  it('on a division in no contact, DISPERSED_STRIKE of the fire it puts on one in contact (PLAN 7.110b)', () => {
+    const took = (engaged: boolean): number => {
+      const w = world();
+      const div = addDivision(w, POL, cx, cy, template('infantry_div'));
+      w.formations.cols.engaged[div] = engaged ? 1 : 0;
+      const before = units(w, div);
+      arriving(w, stukas(w), TARGET);
+      strikes(w);
+      return before - units(w, div);
+    };
+    const line = took(true);
+    expect(line).toBeGreaterThan(60);
+    expect(DISPERSED_STRIKE).toBe(0.25);
+    expect(took(false)).toBeCloseTo(DISPERSED_STRIKE * line, 9);
   });
 
   it('on armour, by its hard attack: a panzer division loses tanks', () => {
