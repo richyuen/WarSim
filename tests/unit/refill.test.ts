@@ -198,7 +198,9 @@ describe("a formation is refilled from its nation's pool (PLAN 7.3e1)", () => {
         return u;
       };
       expect(army()).toBeGreaterThan(peaceShare(nc.aggression[GER]!) * income);
-      const price = w.rules!.templates[BUILD_MIX_1938.infantry]!.gold;
+      // Of the cadre division (PLAN 7.100): at war an order falls to it where the infantry's price
+      // is short, and 0.9 of the infantry's pays for it.
+      const price = w.rules!.templates[BUILD_MIX_1938.cadre]!.gold;
       nc.gold[GER] = RESERVE_MONTHS * income + 0.9 * price;
       const before = w.formations.cols.strength[id]!;
       month(w);
@@ -208,7 +210,7 @@ describe("a formation is refilled from its nation's pool (PLAN 7.3e1)", () => {
     const { w, id, before } = atWarWith(true);
     expect(w.formations.cols.strength[id]!).toBeGreaterThan(before + 0.95 * REFILL_MONTH * fullOf(w, id) - 1);
     // PLAN 7.47 (ADR-579): at war with an enemy that has an armed fleet, a navy under its share keeps
-    // a warship's price over the reserve from the refills too: none on 0.9 of a division over it.
+    // a warship's price over the reserve from the refills too: none on 0.9 of a cadre division over it.
     const naval = atWarWith(false);
     expect(naval.w.formations.cols.strength[naval.id]!).toBe(naval.before);
   });

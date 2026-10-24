@@ -23152,3 +23152,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   sweep picked at launch.
 - **No rule;** the pin unchanged (7c2e4700).
 - **Next:** ADR-673's override (the user's): `docs/evidence/7.100/rule.patch` committed.
+
+## 2026-10-23 — ADR-673: the cadre rule committed (the user's override of the stasis condition)
+
+- `docs/evidence/7.100/rule.patch` applied: at war, an unaffordable army order falls to the cadre division.
+  On 861–870 against HEAD: the share 1.53 → 1.85 %, battles +45 %; stasis over 15 years 1 → 2 of 10.
+- **Pin 7c2e4700 → f9d18365** (ADR-673). 7.100 stays closed not done (the share's bar 1.96 % unmet).
+- **Next:** PLAN 7.5 is the only open task left after 7.101 (waiting on ADR-674).

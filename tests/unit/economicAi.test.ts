@@ -153,8 +153,34 @@ describe('economic AI (PLAN 1.26)', () => {
     expect(order((income) => panzer + WAR_RESERVE_MONTHS * income + 1)[0]).toBe(PANZER);
     // Enough for infantry only: infantry is ordered (before PLAN 1.42c nothing was).
     expect(order((income) => infantry + WAR_RESERVE_MONTHS * income + 1)).toEqual([BUILD_MIX_1938.infantry]);
-    // Not enough for either: nothing.
-    expect(order((income) => WAR_RESERVE_MONTHS * income + infantry - 1)).toEqual([]);
+    // Not enough for any division, the cadre one either (PLAN 7.100): nothing.
+    const cadre = RULES_1938.templates[BUILD_MIX_1938.cadre]!.gold;
+    expect(order((income) => WAR_RESERVE_MONTHS * income + cadre - 1)).toEqual([]);
+  });
+
+  it('at war, an order the treasury cannot pay for falls to the cadre division where it can pay for that (PLAN 7.100)', () => {
+    // Germany with no army and gold between the cadre division's price and the infantry's, at war
+    // and in peace (the gold gate of 91 of the 101 nations at war with 0-4 divisions in year 10 of
+    // seeds 856 and 859, `docs/evidence/7.100/read.md`).
+    const order = (atWar: boolean): number[] => {
+      const s = peaceful();
+      const w = s.world;
+      const nc = w.nations.cols;
+      if (atWar) w.wars.set(GER!, LUX!, true);
+      nc.aiOff[LUX!] = 1;
+      for (const id of w.formations.ids()) if (w.formations.cols.nation[id] === GER!) destroyFormation(w, id);
+      nc.manpower[GER!] = 1e7;
+      const income = Math.max(0, monthlyAccounts(w, ECONOMY_TABLES_1938).gross[GER!]!);
+      const cadre = RULES_1938.templates[BUILD_MIX_1938.cadre]!.gold;
+      const infantry = RULES_1938.templates[BUILD_MIX_1938.infantry]!.gold;
+      expect(cadre).toBeLessThan(infantry);
+      nc.gold[GER!] = (atWar ? WAR_RESERVE_MONTHS : RESERVE_MONTHS) * income + (cadre + infantry) / 2;
+      runEvents(s, 1);
+      return w.production.ids().filter((id) => land(w, id) && w.production.cols.nation[id] === GER!).map((id) => w.production.cols.template[id]!);
+    };
+    expect(order(true)).toEqual([BUILD_MIX_1938.cadre]);
+    // In peace the treasury saves for the division it wants (the rule is the war's).
+    expect(order(false)).toEqual([]);
   });
 });
 
@@ -260,8 +286,9 @@ describe('the mix (PLAN 3.5d)', () => {
     expect(WAR_RESERVE_MONTHS).toBe(0);
     const inf = BUILD_MIX_1938.infantry;
     expect(saving(() => price(inf) + 1, false)).toEqual([inf, inf]);
-    // Under the price: nothing.
-    expect(saving(() => price(inf) - 1, false)).toEqual([inf]);
+    // Under the price: the cadre division (PLAN 7.100; before, nothing), and under the cadre's nothing.
+    expect(saving(() => price(inf) - 1, false)).toEqual([inf, BUILD_MIX_1938.cadre]);
+    expect(saving(() => price(BUILD_MIX_1938.cadre) - 1, false)).toEqual([inf]);
     // In peace the reserve is RESERVE_MONTHS: the same gold orders nothing more, and the price
     // with the reserve one division more.
     const atPeace = (gold: (income: number) => number): number[] => {

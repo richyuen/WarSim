@@ -197,7 +197,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   base's fighters are out flying, which no target pick changes much.
 - **Consequences:** until decided, no rule; the pin unchanged (7c2e4700).
 
-### ADR-673 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23); the rule dropped by its terms — The cadre division at war: more front battles, the bar missed (PLAN 7.100)
+### ADR-673 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23); the rule committed, the user overriding the stasis condition — The cadre division at war: more front battles, the bar missed (PLAN 7.100)
 
 - **Context** (`docs/evidence/7.100/read.md`, `at.md`). PLAN 7.100 (ADR-671 b): the front battle's share of
   the cells changing hands in years 10–30 at least 1.96 % on 10 unseen seeds × 30 years, no stasis over
@@ -229,8 +229,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   1.85 % with it (+21 %, 7 of 10 seeds; battles +45 %); stasis over 15 years on 1 of 10 without (864 17),
   2 of 10 with (864 22, 868 17), the mean longest 7.7 → 9.0. The share holds, the stasis is worse: by
   (b)'s terms the rule is dropped.
-- **Consequences:** no rule; the pin unchanged (7c2e4700). 7.100 closed not done; `rule.patch` kept as a
-  candidate (it applies to `12280555`).
+- **The user's override** (2026-10-23): the stasis condition set aside, the rule committed for the share
+  (1.53 → 1.85 % on the same seeds, battles +45 %), knowing it read 2 stases over 15 years against 1 (864
+  22, 868 17) on 861–870.
+- **Consequences:** the rule in `ai/economic.ts` (`armyOrders`); the pin 7c2e4700 → f9d18365 (at war, an
+  army order the treasury cannot pay for falls to the cadre division where it can pay for that; before,
+  to the infantry division alone). 7.100 stays closed not done: the share's bar (1.96 %) is not met.
 
 ### ADR-672 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — An air war at the enemy's air: the sorties meet nothing without a defence that rises (PLAN 7.99)
 

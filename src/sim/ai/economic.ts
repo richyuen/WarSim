@@ -493,6 +493,12 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
             t = mix.infantry;
             rule = plain;
           }
+          // At war, the cadre division where the treasury cannot pay for that one (PLAN 7.100).
+          const cadre = rules.templates[mix.cadre];
+          if (atWar && cadre && rule.gold > cadre.gold && nc.gold[n]! < rule.gold + reserve) {
+            t = mix.cadre;
+            rule = cadre;
+          }
           // And one it has not the techs for by the plain division, or the cadre one, which asks for none (PLAN 3.1a).
           for (const next of [mix.infantry, mix.cadre]) {
             if (knowsTechs(world, n, rule.techs)) break;
