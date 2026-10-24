@@ -23424,3 +23424,9 @@ No rule changed and nothing on screen changed. One task came out of it.
   rule). `airLate.ts` fills a loaded save's empty start from the seed's fresh world.
 - **Pin** c848f884 → 1ef5c241. Specs: none drawn changed.
 - **Next:** PLAN 7.113b (the crossing on this code) or the user's word on it; then 7.109.
+
+## 2026-10-24 — PLAN 7.113 done (7.113b closed, not run: the user's decision)
+
+- 7.113a's paired reads give air battles 1.32 × and 1.31 × with the land war not below; the crossing (7.108b) is not
+  run on it. The late war across the sea waits for the next critic report.
+- **Next:** PLAN 7.109 (AI nuclear use; seeds from 961).
