@@ -54,7 +54,7 @@ import { SLOT_GAP_CELLS, shipFrameMinPx, shipSideCells } from '../render/units/s
 import { appendWakes } from '../render/units/wakes';
 import { contactLines, drawContactLines, type ContactForm, type ContactLine } from '../render/units/contactLines';
 import { drawEnemyPointers, enemyPointers, POINTER_FONT, type EnemyPointer, type PointerSource } from '../render/units/enemyPointers';
-import { SEA_COLOR, shipTint, spriteTint } from '../render/units/tint';
+import { isLightGround, SEA_COLOR, shipTint, spriteTint } from '../render/units/tint';
 import { hash2 } from '../render/hash';
 import { CameraController } from './input/CameraController';
 import type { MapLayers, SimClient } from './simClient';
@@ -162,6 +162,9 @@ export class MapView {
   private readonly ownerGrid: Uint16Array;
   private provinceGrid: Uint16Array | null = null;
   private terrainColors: number[] | null = null;
+  /** The terrain of each cell, and of each terrain whether it is a light ground for a grey's tint (ADR-676). */
+  private terrainCells: Uint8Array | null = null;
+  private lightTerrain: boolean[] = [];
   /**
    * The fine land mask the worker sent, as its coast (PLAN 2.9b, 7.1l7): where nothing of the
    * scatter stands. The mask itself is on the GPU, for the coast of T2 and T3.
@@ -404,6 +407,7 @@ export class MapView {
     sim.onTerrain((data, landChanged) => {
       if (!this.terrainColors) return;
       this.map.setTerrain(this.geo.w, this.geo.h, data, this.terrainColors);
+      this.terrainCells = data;
       // Imported land/water: coasts follow the cells until it matches the start again.
       this.map.useLand(!landChanged);
       this.hasFineCoast = !landChanged;
@@ -480,6 +484,8 @@ export class MapView {
       this.map.setLand(m.land.w, m.land.h, m.land.data);
       this.map.setTerrain(m.terrain.w, m.terrain.h, m.terrain.data, m.terrainColors);
       this.terrainColors = m.terrainColors;
+      this.terrainCells = m.terrain.data;
+      this.lightTerrain = m.terrainColors.map(isLightGround);
       this.cities = m.cities;
       this.templates = m.templates;
       this.map.setProvinces(this.geo.w, this.geo.h, m.province);
@@ -1094,7 +1100,7 @@ export class MapView {
       p.data[o + 6] = shownFrame(e.frame[i]!, (e.flags[i]! & FormationFlag.engaged) !== 0) + (marching(e.flags[i]!) ? marchFraction(e.id[i]!) : 0);
       // What is left of the element: its share of its size (PLAN 2.11g; an empty one is gone from the sim).
       p.data[o + 7] = spriteAlpha(e.strength[i]!, e.size[i]!);
-      p.colors.set(this.spriteRgba(e.nation[i]!, e.frame[i]!), i * 4);
+      p.colors.set(this.spriteRgba(e.nation[i]!, e.frame[i]!, e.x[i]!, e.y[i]!), i * 4);
     }
     this.elementTurrets = hulls;
     this.elementTurretOwner = new Uint32Array(hulls);
@@ -1262,7 +1268,7 @@ export class MapView {
       const x = this.unwrapped(e.x[i]!, e.prevX[i]!) + near;
       const px0 = e.prevX[i]! + near;
       const moving = marching(e.flags[i]!);
-      const rgba = this.spriteRgba(e.nation[i]!, frame);
+      const rgba = this.spriteRgba(e.nation[i]!, frame, e.x[i]!, e.y[i]!);
       for (let k = 0; k < n; k++, j++) {
         const o = j * PROXY_STRIDE;
         const dx = off[k * 2]! * s;
@@ -2142,9 +2148,20 @@ export class MapView {
    * PLAN 3.11e), is what sets a sprite off against the ground. A ship's is lighter where its hue
    * is the sea's (`shipTint`, PLAN 7.41b).
    */
-  private spriteRgba(id: number, frame: number): [number, number, number, number] {
-    const col = isShipFrame(frame) ? shipTint(this.ownColor.get(id) ?? 0x888888) : this.nationColor(id);
+  private spriteRgba(id: number, frame: number, x: number, y: number): [number, number, number, number] {
+    const own = this.ownColor.get(id) ?? 0x888888;
+    const col = isShipFrame(frame) ? shipTint(own) : spriteTint(own, this.lightGroundAt(x, y));
     return [(col >> 16) & 255, (col >> 8) & 255, col & 255, 255];
+  }
+
+  /** Whether the terrain of the cell at (`x`, `y`) is a light ground for a grey's tint (ADR-676). */
+  private lightGroundAt(x: number, y: number): boolean {
+    const t = this.terrainCells;
+    if (!t) return false;
+    const { w, h } = this.geo;
+    const cx = ((Math.floor(x) % w) + w) % w;
+    const cy = Math.min(h - 1, Math.max(0, Math.floor(y)));
+    return this.lightTerrain[t[cy * w + cx]!] ?? false;
   }
 
   /** x on the side of prevX: across the seam of a looping map an interpolation must not sweep the whole map. */

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import terrain from '../../data/terrain.json' with { type: 'json' };
 import { NATIONS_1938 } from '../../src/sim/scenario1938';
-import { GREY_LIGHT, hueOf, leastLight, SEA_COLOR, SEA_HUE, SEA_HUE_FAR, SEA_HUE_NEAR, SHIP_SEA_LIGHT, shipTint, SPRITE_LIGHT, spriteTint } from '../../src/render/units/tint';
+import { GREY_DARK, GREY_LIGHT, hueOf, isLightGround, leastLight, SEA_COLOR, SEA_HUE, SEA_HUE_FAR, SEA_HUE_NEAR, SHIP_SEA_LIGHT, shipTint, SPRITE_LIGHT, spriteTint } from '../../src/render/units/tint';
 
 // PLAN 3.11e (the critic's R3-B3: "Soviet tanks are tinted pink, near Poland's own pink",
 // `critic/shots/c3j_12_tank_live_006m_2.png`): a sprite's tint was its nation's colour mixed
@@ -64,6 +65,23 @@ describe('the tint of a nation\'s sprites', () => {
     expect(hsl(spriteTint(own('GER'))).s).toBeLessThan(0.01);
     // Germany's from Poland's and from France's by more than before (61 and the French 47 apart).
     expect(apart(spriteTint(own('GER')), spriteTint(own('FRA')))).toBeGreaterThan(120);
+  });
+
+  // ADR-676 (tankSides1938 at 9ffb0274: on a plain at seed 7781 German tanks 6.8 off the ground's
+  // lightness, the bar 20): GREY_LIGHT is told from a forest, not from a plain. On a light ground a
+  // grey is made dark; a colour with a hue is the same on either ground.
+  it("on a light ground a grey is at GREY_DARK; a hue's tint is the same on either", () => {
+    const colour = (id: string): number => parseInt(terrain.terrain.find((t) => t.id === id)!.color.slice(1), 16);
+    for (const t of ['plains', 'grassland', 'hills', 'mountains', 'desert', 'tundra', 'marsh', 'urban', 'ice']) expect(isLightGround(colour(t)), t).toBe(true);
+    expect(isLightGround(colour('forest'))).toBe(false);
+    const ger = own('GER');
+    expect(hsl(spriteTint(ger, true)).l).toBeCloseTo(GREY_DARK, 2);
+    expect(hsl(spriteTint(0xcccccc, true)).l).toBeCloseTo(GREY_DARK, 2);
+    expect(hsl(spriteTint(ger, false)).l).toBeGreaterThanOrEqual(GREY_LIGHT - 0.005);
+    for (const n of NATIONS_1938) {
+      const c = parseInt(n.color.slice(1), 16);
+      if (hsl(c).s >= 0.3) expect(spriteTint(c, true), n.tag).toBe(spriteTint(c));
+    }
   });
 });
 

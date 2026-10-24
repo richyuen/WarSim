@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-676 · 2026-10-24 · accepted — A grey's tint by the ground under it: light on a forest, dark on open ground (PLAN 7.5, step 2; amends PLAN 7.9b's GREY_LIGHT)
+
+- **Context.** `tankSides1938` at `9ffb0274`, its case found (ADR-675's way): seed 7781, Germany on Poland,
+  armoured division 42 on day 4, 340 German tanks and 929 Polish figures at 10 m/px. German tanks 149
+  at their middles, the ground 156: **6.8 apart in lightness, the bar 20**. PLAN 7.9b lifted a grey to
+  GREY_LIGHT (#cccccc, some 150 once shaded) on the critic's forest (the ground some 106). Every open
+  terrain is lighter than that: plains 165, grassland 183, hills, desert, tundra; on them the lift
+  hides a grey nation's figures. No one grey is told from both a forest and a plain.
+- **Decision.** `spriteTint(own, lightGround)`: on a light ground (`isLightGround`, the terrain's colour
+  over luma 125: every terrain but forest and the waters) a grey (saturation under 0.3) is set to
+  GREY_DARK (0.18, #2e2e2e), rising to SPRITE_LIGHT as its saturation nears 0.3; elsewhere GREY_LIGHT as
+  before. A colour of saturation 0.3 or more is the same on either. `MapView.spriteRgba` reads the
+  terrain of the element's cell for the element sprites (T2) and the figures (T3). Ships keep `shipTint`.
+- **Tried first:** SPRITE_LIGHT on a light ground (#6b6b6b): tankSides green (77 under the ground), but
+  `infantryRanks1938` (seed 6047) red: at 25 m/px German men mixed with the plain 40 from the Polish, bar
+  60. At 0.25, 59.9. At 0.18: 71.
+- **Read** (0.18): tankSides on its case, tanks 34, the ground 156 (122 apart, bar 20), from the Polish
+  149 (bar 40); infantryRanks at 25 m/px 71 apart (bar 60), at 10 m/px 115. Unit test `tint.test.ts`:
+  the light grounds, Germany's two tints, no hue changed.
+- **Consequences.** A grey nation's figures change shade where they cross from a forest to open
+  ground: told from the ground they stand on, which is what the critic asked. Render only: no sim
+  input, the pin unchanged (f9d18365).
+
 ### ADR-675 · 2026-10-23 · accepted — Four 1938 specs find their event instead of pinning its day (PLAN 7.5, step 2)
 
 - **Context.** `npm run check:review` on `9ffb0274` (before critic run 13): five browser tests red twice

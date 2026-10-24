@@ -9,6 +9,27 @@ export const SPRITE_LIGHT = 0.42;
  * under it; at 0.8 (#cccccc) 150, 45 over the ground and 150 from the French.
  */
 export const GREY_LIGHT = 0.8;
+/**
+ * Terrain whose colour is lighter than this (luma, 0–255) is a light ground (ADR-676): plains (165),
+ * grassland, hills, mountains, desert, tundra, marsh (131), urban (140), ice. A grey lifted to GREY_LIGHT is shaded to some 150 at a
+ * tank's middle, 45 over a forest (109) but under a plain's drawn ground (seed 7781, day 4: 149
+ * against 156). On a light ground a grey is made dark instead (`GREY_DARK`). Forest (109) is the
+ * dark ground.
+ */
+export const LIGHT_GROUND_LUMA = 125;
+
+/** Whether a terrain colour (0xRRGGBB) is a light ground for a grey's tint (`LIGHT_GROUND_LUMA`). */
+export function isLightGround(color: number): boolean {
+  return 0.2126 * ((color >> 16) & 255) + 0.7152 * ((color >> 8) & 255) + 0.0722 * (color & 255) > LIGHT_GROUND_LUMA;
+}
+
+/**
+ * The lightness of a grey's tint on a light ground (ADR-676): #2e2e2e. At SPRITE_LIGHT (#6b6b6b)
+ * German men at 25 m/px, mixed with the plain under them, came out 40 from the Polish (seed 6047,
+ * `infantryRanks1938`, the bar 60).
+ */
+export const GREY_DARK = 0.18;
+
 /** Under this saturation (HSL) the least lightness rises from SPRITE_LIGHT toward GREY_LIGHT. */
 export const GREY_SATURATION = 0.3;
 
@@ -26,16 +47,21 @@ export function leastLight(s: number): number {
  * Until PLAN 3.11e it was every colour mixed 45% toward white, "to read against the nation's
  * fill" (the ground of T2 and T3 has been the terrain's since PLAN 2.14d): a dark red and a
  * rose came out two pale reds.
+ *
+ * On a light ground (`lightGround`, ADR-676) a grey is made dark, to GREY_DARK and up to
+ * SPRITE_LIGHT as its saturation nears GREY_SATURATION: a light grey is told from a dark ground, a
+ * dark one from a light ground. A colour of more saturation is the same on either.
  */
-export function spriteTint(own: number): number {
+export function spriteTint(own: number, lightGround = false): number {
   const [r, g, b] = [((own >> 16) & 255) / 255, ((own >> 8) & 255) / 255, (own & 255) / 255];
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
   const light = (max + min) / 2;
   const d = max - min;
   const s = d === 0 ? 0 : d / (1 - Math.abs(2 * light - 1));
-  const least = leastLight(s);
-  if (light >= least) return own;
+  const grey = lightGround && s < GREY_SATURATION;
+  const least = grey ? GREY_DARK + (SPRITE_LIGHT - GREY_DARK) * (s / GREY_SATURATION) : leastLight(s);
+  if (light >= least && !grey) return own;
   // Its hue and saturation, at the least lightness (HSL to RGB).
   const h = d === 0 ? 0 : max === r ? ((g - b) / d + 6) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
   const c = (1 - Math.abs(2 * least - 1)) * s;

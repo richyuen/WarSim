@@ -23,33 +23,8 @@ test("T3: Germany's tanks are told from the enemy's figures and from the ground"
   await page.goto('/?scenario=1938&paused=1&seed=7781');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
   const GER = id('GER');
-  const pick = await page.evaluate(async ([g, p]) => {
-    const { sim, view } = window.__warsim!;
-    sim.command({ kind: 'declareWar', attacker: g!, defender: p! });
-    for (let d = 0; d < 10; d++) {
-      const tick = (await sim.step(24)).tick;
-      await new Promise<void>((done) => {
-        const wait = (): void => (view!.lastTick === tick ? done() : void setTimeout(wait, 5));
-        wait();
-      });
-      const arm = view!.formationsOf(g!).filter((f) => view!.formationEngaged(f) && /Armou?red|Panzer|Tank/i.test(view!.formationTitle(f)?.kind ?? ''));
-      if (arm.length > 0) return { f: arm[0]!, at: view!.formationPos(arm[0]!)! };
-    }
-    return null;
-  }, [GER, id('POL')]);
-  expect(pick, 'a German armoured division in contact within 10 days').not.toBeNull();
-  await page.evaluate(({ x, y }) => {
-    const v = window.__warsim!.view!;
-    v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / 10 });
-  }, { x: pick!.at[0], y: pick!.at[1] });
-  await page.waitForFunction(() => {
-    const v = window.__warsim!.view!;
-    return v.subscription?.tier === 3 && v.individualsShown && v.shares.individuals === 1 && v.individualCount > 0;
-  }, null, { timeout: 15_000 });
-  await page.waitForTimeout(1500);
-
   const turretFrames = Array.from({ length: 32 }, (_, f) => turretOf(f) >= 0);
-  const got = await page.evaluate(({ GER, turretFrames }) => {
+  const count = () => page.evaluate(({ GER, turretFrames }) => {
     const v = window.__warsim!.view!;
     const canvas = document.querySelector('canvas')!;
     const gl = canvas.getContext('webgl2')!;
@@ -98,6 +73,44 @@ test("T3: Germany's tanks are told from the enemy's figures and from the ground"
     };
     return { tanks: tanks.length, enemy: enemy.length, ground: ground.length, tank: mean(tanks), foe: mean(enemy), soil: mean(ground) };
   }, { GER, turretFrames });
+  // The critic's fight was the first German armoured division in contact. Green at `896ff779`, red at
+  // `9ffb0274`: the first one's view at 10 m/px holds fewer than 20 enemy figures there, so the war is stepped a
+  // day at a time, within 15 days, and each armoured division in contact is looked at in turn until a
+  // view holds more than 20 German tanks and more than 20 of the enemy's figures.
+  await page.evaluate(([g, p]) => window.__warsim!.sim.command({ kind: 'declareWar', attacker: g!, defender: p! }), [GER, id('POL')]);
+  let pick: { f: number; at: [number, number]; day: number } | null = null;
+  let got: Awaited<ReturnType<typeof count>> | null = null;
+  for (let day = 1; day <= 15 && pick === null; day++) {
+    const arm = await page.evaluate(async (g) => {
+      const { sim, view } = window.__warsim!;
+      const tick = (await sim.step(24)).tick;
+      await new Promise<void>((done) => {
+        const wait = (): void => (view!.lastTick === tick ? done() : void setTimeout(wait, 5));
+        wait();
+      });
+      return view!.formationsOf(g).filter((f) => view!.formationEngaged(f) && /Armou?red|Panzer|Tank/i.test(view!.formationTitle(f)?.kind ?? '')).map((f) => ({ f, at: view!.formationPos(f)! }));
+    }, GER);
+    for (const a of arm) {
+      await page.evaluate(({ x, y }) => {
+        const v = window.__warsim!.view!;
+        v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / 10 });
+      }, { x: a.at[0], y: a.at[1] });
+      await page.waitForFunction(() => {
+        const v = window.__warsim!.view!;
+        return v.subscription?.tier === 3 && v.individualsShown && v.shares.individuals === 1 && v.individualCount > 0;
+      }, null, { timeout: 15_000 });
+      await page.waitForTimeout(1500);
+      const seen = await count();
+      console.log(`day ${day}, division ${a.f}: German tanks ${seen.tanks}, enemy figures ${seen.enemy}`);
+      if (seen.tanks > 20 && seen.enemy > 20) {
+        pick = { ...a, day };
+        got = seen;
+        break;
+      }
+    }
+  }
+  expect(pick, 'a German armoured division in contact with 20 enemy figures in its view within 15 days').not.toBeNull();
+  if (!got || !pick) return;
   const f = (c: Rgb): string => c.map((x) => Math.round(x)).join(',');
   console.log(`German tanks ${got.tanks} (${f(got.tank)}), enemy figures ${got.enemy} (${f(got.foe)}), ground ${got.ground} (${f(got.soil)}); tank from enemy ${apart(got.tank, got.foe).toFixed(0)}, tank's lightness over the ground's ${(lum(got.tank) - lum(got.soil)).toFixed(0)}`);
   expect(got.tanks).toBeGreaterThan(20);

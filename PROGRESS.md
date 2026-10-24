@@ -23178,3 +23178,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Specs by hand, green:** nukeMeansLost1938, stackBlocks1938 (2), tankHulls1938, turrets1938.
 - **Left:** tankSides1938 is a defect (German tanks 6.8 lightness off a light ground, bar 20): next
   commit. formationFight1938 and tankBattle1938 now fail on content here, not the GPU's: to be looked at.
+
+## 2026-10-24 — PLAN 7.5, step 2: a grey's tint by the ground under it (ADR-676)
+
+- **tankSides1938** restated as ADR-675's four (each German armoured division in contact looked at in
+  turn, within 15 days, until a view holds 20 of each side): its case, division 42 on day 4, failed the
+  claim (German tanks 6.8 lightness off a plain, bar 20). GREY_LIGHT was set on a forest; open ground is
+  lighter.
+- **Rule:** on a light ground (terrain luma over 125, all but forest and water) a grey is GREY_DARK
+  (#2e2e2e). SPRITE_LIGHT (#6b6b6b) first: infantryRanks1938 red (40, bar 60); 0.25: 59.9; 0.18: 71.
+- **Read:** tankSides 122 under the ground (bar 20), 149 from the Polish (bar 40); infantryRanks 71 at
+  25 m/px, 115 at 10.
+- **Specs by hand, green:** tankSides1938, infantryRanks1938, armourT21938, enemyPointer1938,
+  planesT3_1938, smallMark1938, muzzles1938, individuals1938, canvasOpaque1938, groundThings1938,
+  hullsSea1938, fightSeen1938. tankBattle1938 red as before the change (stop 5's flash).
+- Render only; the pin unchanged (f9d18365).
