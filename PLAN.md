@@ -40,18 +40,6 @@ Run 12's (report of 2026-10-22 on `896ff779`, `critic/CRITIC_REPORT.md`; R11-B2 
 and performance 7 → 6): R12-B1 and R12-B2 are PLAN 7.79 and 7.80; the dimensions under the bar, beyond
 them, are 7.81–7.86. A task each, split when taken up:
 
-- [ ] 7.100 Fronts, not walk-ins (found at 7.82; emergent 6, needs 7; ADR-671 b): on 851–860 × 30 years
-  the front battle 1.67 % of the cells changing hands in years 10–30, walk-ins 57 %, revolts 30 %
-  (`docs/evidence/7.82/at.md`, last section); the critic's "statelets and walk-ins, not fronts". Read
-  first on two of 851–860 where the walk-ins of years 10–30 come from (lands with no garrison at war,
-  revolts' and peace's cells, the nations that walk in and those walked on) and why no front holds
-  them; then a rule on what it names. AT: on 10 unseen seeds × 30 years (861 on, `churnAt.ts`) the front
-  battle's share in years 10–30 at least 1.96 % pooled and no stasis over 15 years; a unit test, red
-  without; the ADR; the pin's entry.
-  Read 2026-10-23 (`docs/evidence/7.100/read.md`): 91 of 101 nations at war with 0–4 divisions stopped by
-  the infantry division's price. Rule tried (`rule.patch`, the cadre division at war): AT on 861–870 1.85 %,
-  stasis 22 and 17 on two seeds (`at.md`); missed; waits on ADR-673.
-
 - [ ] 7.101 A defence that rises against a raid (found at 7.99; aircraft 7, needs 8; ADR-672 b): after year 1
   82–90 % of the idle wings at war have nothing of the enemy in range, and of 120,472 sweep sorties over
   the enemy's airbases (7.99's rule, `docs/evidence/7.99/rule.patch`) 1.0 % came within 150 km of an air
@@ -382,3 +370,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.85 Aircraft (aircraft 7, needs 8): air battles after year 1 153 a world-year against 2,853 in year 1 […]
 - [x] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21 […]
 - [x] 7.99 An air war beyond the land war (found at 7.85; aircraft 7, needs 8; ADR-668 b, 7.51b's (c)): […]
+- [x] 7.100 Fronts, not walk-ins (found at 7.82; emergent 6, needs 7; ADR-671 b): on 851–860 × 30 years […]

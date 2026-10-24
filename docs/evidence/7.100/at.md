@@ -34,3 +34,27 @@ before the run.
 
 **Verdict: missed on both clauses.** The rule is not committed: `rule.patch` (`git apply`, its pin
 f9d18365) keeps it. ADR-673 to the user.
+
+## The control: HEAD on 861–870 (2026-10-23, ADR-673 b)
+
+HEAD `12280555` (no rule, the pin 7c2e4700), the same seeds and tool (`control/*.out`, `control/*.json`).
+
+| Seed | HEAD longest (years; the five) | HEAD battle % | Rule longest | Rule battle % |
+|---|---|---|---|---|
+| 861 | 9 (11–19; GER SOV JAP CAN USA) | 1.37 | 9 | 1.45 |
+| 862 | 5 (26–30; SOV DEN JAP CAN USA) | 2.16 | 11 | 2.03 |
+| 863 | 7 (24–30; SOV FRA DEN CAN USA) | 1.34 | 5 | 1.94 |
+| 864 | **17** (14–30; SOV DEN JAP CAN USA) | 1.33 | **22** | 2.10 |
+| 865 | 9 (8–16; SOV ENG JAP CAN USA) | 1.15 | 6 | 1.78 |
+| 866 | 5 (10–14; SOV DEN AST CAN USA) | 1.56 | 3 | 1.98 |
+| 867 | 5 (11–15; SOV FRA JAP CAN USA) | 1.35 | 7 | 2.63 |
+| 868 | 8 (23–30; SOV NED DEN CAN USA) | 1.42 | **17** | 1.74 |
+| 869 | 7 (21–27; SOV DEN AST CAN USA) | 1.95 | 4 | 1.46 |
+| 870 | 5 (11–15; SOV DEN JAP CAN USA) | 1.86 | 6 | 1.70 |
+
+- **Share:** HEAD 1.53 % pooled (239,835 battles of 15.7 M changes), the rule 1.85 % (348,200 of 18.8 M):
+  +21 %, higher on 7 of 10; battles +45 %. HEAD by cause: walk-in 57.1 %, revolt 30.5 %, peace 10.0 %.
+- **Stasis over 15 years:** HEAD 1 of 10 (864, 17), the rule 2 of 10 (864 22, 868 17); the mean longest
+  7.7 → 9.0 years.
+- **By ADR-673 b's terms** (commit if the share is above HEAD's and the stasis no worse): the share holds,
+  the stasis is worse. **The rule is dropped**; `rule.patch` stays as the candidate.

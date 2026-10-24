@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.100: the cadre division at war, battle share 1.85 % against 1.96 %, two stases over 15 years (2026-10-23, ADR-673 proposed; the user's decision)
+### RESOLVED 2026-10-23 (option b, the user's decision: the HEAD control run; the rule dropped by its terms, the stasis worse; 7.100 closed not done) · PLAN 7.100: the cadre division at war, battle share 1.85 % against 1.96 %, two stases over 15 years (ADR-673)
 - **The bar:** on 10 unseen seeds × 30 years the front battle's share in years 10–30 at least 1.96 % pooled,
   no stasis over 15 years.
 - **What moved** (`docs/evidence/7.100/at.md`, 861–870): with the rule (`rule.patch`) 1.85 % pooled; stasis

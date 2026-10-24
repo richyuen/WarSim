@@ -23128,3 +23128,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   control on 861–870 first (recommended); (c) drop.
 - **No rule;** the code restored, the pin unchanged (7c2e4700).
 - **Next:** PLAN 7.101 (7.100 waits on ADR-673).
+
+## 2026-10-23 — ADR-673 b (the user's decision): the control run; the cadre rule dropped
+
+- **Control** (`docs/evidence/7.100/at.md`, last section; HEAD `12280555`, 861–870 × 30, `churnAt.ts`):
+  share 1.53 % without the rule against 1.85 % with it (+21 %, 7 of 10 seeds; battles +45 %); stasis over
+  15 years on 1 of 10 without (864 17), 2 of 10 with (864 22, 868 17), mean longest 7.7 → 9.0.
+- **By (b)'s terms** (commit if the share is above HEAD's and the stasis no worse) the rule is dropped;
+  `rule.patch` kept as the candidate. 7.100 closed not done.
+- No rule; the pin unchanged (7c2e4700).
+- **Next:** PLAN 7.101.

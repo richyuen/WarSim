@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-673 · 2026-10-23 · proposed (the user's decision) — The cadre division at war: more front battles, the bar missed (PLAN 7.100)
+### ADR-673 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23); the rule dropped by its terms — The cadre division at war: more front battles, the bar missed (PLAN 7.100)
 
 - **Context** (`docs/evidence/7.100/read.md`, `at.md`). PLAN 7.100 (ADR-671 b): the front battle's share of
   the cells changing hands in years 10–30 at least 1.96 % on 10 unseen seeds × 30 years, no stasis over
@@ -195,7 +195,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Recommended: (b).** The same-seed A/B covers three years of two seeds; the AT's seeds have no HEAD
   run, so whether the 1.85 % is the rule's or the seeds' is unread, and 2 stases over 15 on 861–870
   against 0 on 851–860 may be either. The control settles both for one run.
-- **Consequences:** until decided, no rule; the pin unchanged (7c2e4700).
+- **The control** (`at.md`, last section; HEAD `12280555` on 861–870): share 1.53 % without the rule,
+  1.85 % with it (+21 %, 7 of 10 seeds; battles +45 %); stasis over 15 years on 1 of 10 without (864 17),
+  2 of 10 with (864 22, 868 17), the mean longest 7.7 → 9.0. The share holds, the stasis is worse: by
+  (b)'s terms the rule is dropped.
+- **Consequences:** no rule; the pin unchanged (7c2e4700). 7.100 closed not done; `rule.patch` kept as a
+  candidate (it applies to `12280555`).
 
 ### ADR-672 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — An air war at the enemy's air: the sorties meet nothing without a defence that rises (PLAN 7.99)
 

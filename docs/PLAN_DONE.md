@@ -14883,3 +14883,31 @@ Of 7.33 (open in PLAN.md):
   engaged per war in years 2–20 not below HEAD's on the same seeds; a unit test, red without; the ADR;
   the pin's entry. Read 2026-10-23 (`docs/evidence/7.99/read.md`): the rule's sorties meet nothing (1.0 %
   near an air battle); no rule. Closed not done (ADR-672 b, the user's decision, 2026-10-23): PLAN 7.101.
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.100 Fronts, not walk-ins (found at 7.82; emergent 6, needs 7; ADR-671 b): on 851–860 × 30 years
+  the front battle 1.67 % of the cells changing hands in years 10–30, walk-ins 57 %, revolts 30 %
+  (`docs/evidence/7.82/at.md`, last section); the critic's "statelets and walk-ins, not fronts". Read
+  first on two of 851–860 where the walk-ins of years 10–30 come from (lands with no garrison at war,
+  revolts' and peace's cells, the nations that walk in and those walked on) and why no front holds
+  them; then a rule on what it names. AT: on 10 unseen seeds × 30 years (861 on, `churnAt.ts`) the front
+  battle's share in years 10–30 at least 1.96 % pooled and no stasis over 15 years; a unit test, red
+  without; the ADR; the pin's entry.
+  Read 2026-10-23 (`docs/evidence/7.100/read.md`): 91 of 101 nations at war with 0–4 divisions stopped by
+  the infantry division's price. Rule tried (`rule.patch`, the cadre division at war): AT on 861–870 1.85 %,
+  stasis 22 and 17 on two seeds (`at.md`); missed. ADR-673 b (the user's decision, 2026-10-23): HEAD's control
+  on 861–870 1.53 %, stasis over 15 on 1 of 10 (the rule's 2): the stasis worse, the rule dropped; closed
+  not done.
