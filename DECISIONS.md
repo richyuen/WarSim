@@ -185,7 +185,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Found, not changed** (one cause a commit): 302, 306 and 310 stand 0.05 cells apart, and the 60° test
   of "from the side of the one the enemy faces" falls either way between them (0.54 for 310, under 0.5
   for 302 and 306): 310 counts 342 as a line ahead, they do not. It moves 310's `short`, not its file.
-- **Read.** Seed 4242 day 21: the furthest 15.8 km (Chinese 413, bar under 20, over 14), the tallest 13.0
+  No task: it moves a block by about one line's depth (0.17 cells) at most, `free` reads the blocks as
+  they stand either way, and no claim of a spec reads it.
+- **Read.** Seed 4242 day 21: 310 in the file on the other side, 10.2 km from 256's block (was 21.4); the furthest 15.8 km (Chinese 413, bar under 20, over 14), the tallest 13.0
   km north–south (817, over 8). `formationFight1938` green alone (2.7 min). Unit case in
   `deploy.test.ts` (a coast with sea south of the line, three divisions on one cell: the third north of
   it, on land, within 0.6 cells of the enemy's block): red without the rule, green with it.
