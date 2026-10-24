@@ -49,24 +49,6 @@ ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the di
 beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
 reused:
 
-- [ ] 7.109 AI nuclear use (aiNukes 7, needs 8): of two AI strikes a day apart (1129 year 15: the UK on a
-  US army near Molepolole on 25 October 1952, the US on London on 26 October) only the second gets an
-  alert banner, and at Max the pause comes on 1 November, 155 game hours after the first; the answer in
-  kind lands on a capital (London, 248,000 civilians and 160 men, for 67,951 US soldiers); the largest
-  burst 3,125,000 civilians for 2,032 men (7583, year 26). Evidence: `critic/c13_np_1129.json`,
-  `critic/shots/c13np_1129_paused.png`, `c13_f_1129.json`, `c13_cmp_all.txt`. In two parts:
-    - [x] 7.109a Every AI strike gets its banner, and the pause at Max comes on the strike's day. AT: an e2e spec, red
-      before, two AI strikes within a day each shown in a banner of its own and the game paused within 24 game hours
-      of the first.
-      Done 2026-10-24 (ADR-690): `tests/e2e/nukeAlertTwo1938.spec.ts` (Poland and France, each armed and fighting to
-      the death, strike a day apart): on HEAD paused 48 game hours after the first strike (past the second) and no
-      banner with the pause off; now paused at the end of each strike's hour, two banners. The worker stops its step
-      at a strike and pauses there itself; every strike since the last message is sent; one banner a strike.
-    - [ ] 7.109b An answer in kind weighed against the strike it answers (a city for an army only when nothing of the
-      striker's forces is worth the warhead). AT: on 10 unseen seeds × 30 years, bursts killing over ten times more
-      civilians than men at most 0.75 of HEAD's on the same seeds; a unit test, red without; the gate green.
-      AT missed 2026-10-24 (ADR-691, BLOCKERS; `docs/evidence/7.109b/at.md`): on 961–970 36 → 34 (bar 27), strikes back
-      among them 17 → 14; the rule not committed (`rule.patch`). Waits on the user's word on ADR-691.
 - [ ] 7.110 The army at war late (found at 7.104; R13-B1; ADR-679 a, the user's decision): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196
   formations, 3.6 M → 1.4 M men; the world's income flat; the USA at peace with 37–60 % of the world's
   men). Measure first, on HEAD's year-10 and year-20 checkpoints of 901–910 (`tools/diag/contactAt.ts` writes them), why:
@@ -84,7 +66,8 @@ reused:
   AT: on that year, `pocketOf`'s cells walked a tick at most 0.5 × HEAD's; engaged land formations a war
   in it, from the same save, not below HEAD's; the round trip's test green; a unit test, red without;
   the pin moved once, with its ADR; the gate green.
-- [ ] 7.114 The answer weighed by its own toll (found at 7.109b; aiNukes 7; ADR-691, the user's decision): answering a
+- [ ] 7.114 The answer weighed by its own toll (found at 7.109b; aiNukes 7; ADR-691 a, the user's decision; on 7.109b's
+  rule, committed): answering a
   strike on forces, a place whose burst is expected to kill over ten times more civilians than men is no answer, and
   with no place of forces in reach the answer waits (within the grievance's days) or lapses; 7.109b's places of
   forces out of range with a city in it (964: 86,000 civilians, no men) and its garrisons counted as forces (968:
@@ -420,3 +403,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.107 Naval (naval 7, needs 8): the late sea war is a sixth of year 1's (57.6 battles in year 1, […]
 - [x] 7.108 Aircraft (aircraft 7, needs 8): air battles after year 1 155 → 121 a world-year on the same […]
 - [x] 7.113 The air force at war late (found at 7.108b; aircraft 7, needs 8; ADR-685 b, the user's decision): the […]
+- [x] 7.109 AI nuclear use (aiNukes 7, needs 8): of two AI strikes a day apart (1129 year 15: the UK on a […]

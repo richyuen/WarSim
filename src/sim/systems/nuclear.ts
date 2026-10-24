@@ -133,6 +133,9 @@
  * strike back spends the grievance (one for one), and its burst gives the nation it falls on none
  * (PLAN 6.12e, `world.nukeAnswers`: with 6.12d, the Soviet Union and the United Kingdom struck each
  * other daily, each answer a new grievance).
+ * An answer is weighed against the strike it answers (PLAN 7.109b, `forcesWorth`): a strike on
+ * forces (men killed, civilians at most ARMY_STRIKE_CIVILIANS times them) is answered at the places
+ * with an army in the blast, a city for an army only when none of them is worth its warhead and in reach.
  *
  * A burst's consequences (PLAN 6.5a, SPEC §6.4 "a stability shock and a war-exhaustion jump ...
  * economic shocks follow"; `aftermath`), on the nation whose land it burst on (none at sea or on
@@ -919,7 +922,8 @@ export interface PlaceParts {
 /** The parts of a burst's value at (x, y) for `n` in `war` on `side` (a diagnostic's). */
 export function placeParts(world: World, n: number, war: War, side: number, x: number, y: number): PlaceParts {
   const shared = warInputs(world, n, war, side, retaliates(world, n, war, side));
-  return partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared), shared.retaliating);
+  const view = strikeView(world, n, war, side, () => industryHeld(world));
+  return partsIn(world, n, view, x, y, byUtility(shared), shared.retaliating && !armyFirst(world, n, war, side, shared, view));
 }
 
 /** What a yield's burst at a place is weighed by: its value, the chance it gets there and the people it kills. */
@@ -948,7 +952,7 @@ function byUtility(shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'
  * strike's utility was about 0.27 and 0.23 (`docs/evidence/7.38/measure-e.md`). Only the value and
  * the dead differ between the yields, so the dead's cost decides against a value a little higher.
  */
-function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, score: YieldScore, retaliating: boolean): PlaceParts {
+function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, score: YieldScore, capitalWhole: boolean): PlaceParts {
   const { radius, enemy } = v;
   const { w, h, econ, controller } = world.cells;
   // The radii weighed: the holder's widest, and a fission one's when that is wider (PLAN 7.38b).
@@ -1016,8 +1020,9 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, s
     // A capital of weight to the enemy side (PLAN 7.18d, critic R8-B1: the Soviet Union struck Nepal's,
     // 1,000 dead, at war with China): its nation holds CAPITAL_WEIGHT of the side's output. On a first
     // strike only with an army in the blast (PLAN 7.62, ADR-629): CAPITAL_MEN_MIN of the theatre's men
-    // at this yield, so a capital may count at the wider yield alone.
-    for (const m of retaliating || menShare >= CAPITAL_MEN_MIN ? enemy : []) {
+    // at this yield, so a capital may count at the wider yield alone. A strike back weighs it whole,
+    // but for one on forces while a place of forces is worth its warhead (`armyFirst`, PLAN 7.109b).
+    for (const m of capitalWhole || menShare >= CAPITAL_MEN_MIN ? enemy : []) {
       if (nc.living[m] !== 1 || blastShare(seaKm(world, x, y, nc.capitalX[m]!, nc.capitalY[m]!), radii[r]!) === 0) continue;
       const all = v.econAll();
       if (all > 0 && (v.held()[m] ?? 0) >= CAPITAL_WEIGHT * all) capital = TARGET_CAPITAL;
@@ -1039,7 +1044,8 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, s
  */
 export function nukeInputs(world: World, n: number, war: War, side: number, x: number, y: number, retaliating = false): NukeInputs {
   const shared = warInputs(world, n, war, side, retaliating);
-  const p = partsIn(world, n, strikeView(world, n, war, side, () => industryHeld(world)), x, y, byUtility(shared), shared.retaliating);
+  const view = strikeView(world, n, war, side, () => industryHeld(world));
+  const p = partsIn(world, n, view, x, y, byUtility(shared), shared.retaliating && !armyFirst(world, n, war, side, shared, view));
   return { targetValue: p.value, through: p.through, people: p.people, ...shared };
 }
 
@@ -1420,14 +1426,51 @@ export function weighWar(world: World, n: number, war: War, side: number, indust
   if (aim.at.size === 0) return { aim, shared: null, places: [] };
   const shared = warInputs(world, n, war, side, retaliates(world, n, war, side));
   const view = strikeView(world, n, war, side, industry);
+  const targets = nukeTargets(world, n, war, side, aim);
+  const forces = shared.retaliating ? forcesWorth(world, n, war, side, shared, view, targets) : null;
+  if (forces) return { aim, shared, places: forces };
   return {
     aim,
     shared,
-    places: nukeTargets(world, n, war, side, aim).map(([x, y]) => {
+    places: targets.map(([x, y]) => {
       const p = partsIn(world, n, view, x, y, byUtility(shared), shared.retaliating);
       return { x, y, value: p.value, through: p.through, yieldN: p.yieldN, people: p.people };
     }),
   };
+}
+
+/**
+ * The civilians a burst kills, at most, for each man it kills, to be a strike on forces (PLAN 7.109b):
+ * the critic's measure of a massacre turned round (a burst that kills over ten times more civilians
+ * than men).
+ */
+export const ARMY_STRIKE_CIVILIANS = 10;
+
+/**
+ * An answer to a strike on forces is weighed against it (PLAN 7.109b, critic run 13: the United
+ * Kingdom killed 67,951 US soldiers and no civilians near Molepolole, and the United States answered
+ * on London the next day, 248,000 civilians and 160 men; seed 1129, year 15). `n`, retaliating in
+ * `war` on `side` for a grievance of a strike on forces (`army`), weighs first only the places with
+ * an army in the blast (CAPITAL_MEN_MIN of the theatre's men), a capital among them as a first strike
+ * weighs it (not whole): those places when one of them is worth its warhead (over its floor) and in
+ * reach. Else null: none is, and it weighs every place, a capital whole, as any strike back.
+ */
+function forcesWorth(world: World, n: number, war: War, side: number, shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'>, view: StrikeView, targets: readonly [number, number][]): WarWeighing['places'] | null {
+  if (!world.nukeGrievance.get(n)?.army || grievanceIn(world, n, war, side) === 0) return null;
+  const places: WarWeighing['places'] = [];
+  let worth = false;
+  for (const [x, y] of targets) {
+    const p = partsIn(world, n, view, x, y, byUtility(shared), false);
+    if (p.menShare < CAPITAL_MEN_MIN) continue;
+    places.push({ x, y, value: p.value, through: p.through, yieldN: p.yieldN, people: p.people });
+    if (!worth && nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...shared }) > strikeFloor(p.people, p.through) && reaches(world, n, x, y)) worth = true;
+  }
+  return worth ? places : null;
+}
+
+/** Whether `n`'s strike back in `war` on `side` weighs forces first (`forcesWorth`): its capitals then not whole. */
+function armyFirst(world: World, n: number, war: War, side: number, shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'>, view: StrikeView): boolean {
+  return shared.retaliating && world.nukeGrievance.get(n)?.army === true && forcesWorth(world, n, war, side, shared, view, nukeTargets(world, n, war, side)) !== null;
 }
 
 /** Whether `n` holds a grievance against an enemy in one of its wars (PLAN 6.12b): it then weighs that war alone. */
@@ -1784,9 +1827,13 @@ export function detonate(world: World, nation: number, yieldN: number, x: number
   rememberBurst(world, nation, x, y);
   const owner = ownerAt(world, x, y);
   const struck = owner !== 0 && world.nations.cols.overlord[owner]! !== 0 ? world.nations.cols.overlord[owner]! : owner;
-  // A strike back settles the score (PLAN 6.12e): its burst gives no grievance.
-  if (nation !== 0 && struck !== 0 && struck !== nation && !answer) world.nukeGrievance.set(struck, { by: nation, until: world.tick + RETALIATION_DAYS * 24 });
   const toll = blast(world, yieldN, x, y);
+  // A strike back settles the score (PLAN 6.12e): its burst gives no grievance. One on forces
+  // (PLAN 7.109b: men killed, and civilians at most ARMY_STRIKE_CIVILIANS times them) is answered at forces first.
+  if (nation !== 0 && struck !== 0 && struck !== nation && !answer) {
+    const army = toll.men > 0 && toll.people <= ARMY_STRIKE_CIVILIANS * toll.men;
+    world.nukeGrievance.set(struck, { by: nation, until: world.tick + RETALIATION_DAYS * 24, ...(army ? { army } : {}) });
+  }
   layFallout(world, yieldN, x, y);
   aftermath(world, nation, yieldN, x, y, toll);
 }

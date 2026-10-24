@@ -23463,3 +23463,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `TaskStop` on a queue script leaves its loop running: it started its queued seeds again after the
   first stop (duplicates of deterministic runs, killed). Kill the bash loop's process too.
 - **Next:** PLAN 7.110 while ADR-691 waits.
+
+## 2026-10-24 — PLAN 7.109b closed not done; the rule committed (ADR-691 a, the user's decision)
+
+- The answer to a strike on forces weighs places of forces first (`docs/evidence/7.109b/rule.patch` as it stood: a
+  grievance remembers a strike on forces, `world.nukeGrievanceArmy`); its unit test `nukeAnswerInKind1938.test.ts`.
+  The gate green, the pin unchanged. 7.109 ticked (both parts closed); PLAN 7.114 builds on the rule.
+- **Next:** PLAN 7.110.

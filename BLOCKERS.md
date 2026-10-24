@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### 2026-10-24 · PLAN 7.109b's AT missed: bursts killing over ten times more civilians than men 36 → 34 (0.94 ×, bar 0.75 ×) (ADR-691; waits on the user)
+### RESOLVED 2026-10-24 (option a, the user's decision: the rule committed, 7.109b closed not done, PLAN 7.114) · PLAN 7.109b's AT missed: bursts killing over ten times more civilians than men 36 → 34 (0.94 ×, bar 0.75 ×) (ADR-691; waits on the user)
 - **The bar:** on 10 unseen seeds × 30 years, bursts killing over ten times more civilians than men at most 0.75 ×
   HEAD's on the same seeds; a unit test, red without; the gate green.
 - **What moved** (`docs/evidence/7.109b/at.md`; 961–970): the rule tried (`rule.patch`: a grievance remembers a

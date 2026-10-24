@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-691 · 2026-10-24 · proposed (the user's decision) — An answer to a strike on forces weighs forces first: the AT missed (PLAN 7.109b)
+### ADR-691 · 2026-10-24 · accepted, option a (the user's decision, 2026-10-24) — An answer to a strike on forces weighs forces first: the AT missed (PLAN 7.109b)
 
 - **Context.** Critic run 13: the United Kingdom killed 67,951 US soldiers near Molepolole and the United States
   answered on London, 248,000 civilians and 160 men (1129, year 15). A strike back weighs an enemy capital whole
@@ -185,6 +185,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   none in reach waits for one or lets the grievance lapse (recommended: the rule takes three massacres out and adds
   none, and 7.114 builds on its grievance kind). (b) 7.109b closed not done, no rule; 7.114 on HEAD. (c) Commit the
   rule, close 7.109b not done, no task.
+- **Decision** (the user's, 2026-10-24): (a). The rule committed as `rule.patch` stood (`nuclear.ts`, `world.ts`'s
+  `nukeGrievanceArmy`, `tests/unit/nukeAnswerInKind1938.test.ts`); the pin unchanged. 7.109b closed not done, 7.109
+  ticked; PLAN 7.114 is the next step of the answer.
 
 ### ADR-690 · 2026-10-24 · accepted — The worker pauses itself on a nuclear strike; one alert a strike (PLAN 7.109a)
 

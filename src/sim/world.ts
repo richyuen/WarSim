@@ -454,6 +454,8 @@ class WorldCore implements Stateful {
       ...(w.nukeAnswers.size === 0 ? [] : [{ name: 'world.nukeAnswers', dtype: 'f64' as const, data: Float64Array.from([...w.nukeAnswers].sort((a, b) => a - b)) }]),
       // Grievances (PLAN 6.4b): [nation, by, until] each, by nation, only while there is one.
       ...(w.nukeGrievance.size === 0 ? [] : [{ name: 'world.nukeGrievance', dtype: 'f64' as const, data: Float64Array.from([...w.nukeGrievance].sort((a, b) => a[0] - b[0]).flatMap(([n, g]) => [n, g.by, g.until])) }]),
+      // The grievances for a strike on forces (PLAN 7.109b): their nations, a section of its own, only while there is one.
+      ...([...w.nukeGrievance.values()].some((g) => g.army) ? [{ name: 'world.nukeGrievanceArmy', dtype: 'f64' as const, data: Float64Array.from([...w.nukeGrievance].filter(([, g]) => g.army).map(([n]) => n).sort((a, b) => a - b)) }] : []),
       // The nuclear taboo (PLAN 6.4a), only while it is under 1.
       ...(w.nukeTaboo === 1 ? [] : [{ name: 'world.nukeTaboo', dtype: 'f64' as const, data: Float64Array.of(w.nukeTaboo) }]),
       // Fallout (PLAN 6.3b): [cell, level] each, by cell, only while there is some.
@@ -580,6 +582,10 @@ class WorldCore implements Stateful {
     w.nukeGrievance = new Map();
     const gr = sections.find((s) => s.name === 'world.nukeGrievance')?.data as Float64Array | undefined;
     for (let at = 0; gr && at + 3 <= gr.length; at += 3) w.nukeGrievance.set(gr[at]!, { by: gr[at + 1]!, until: gr[at + 2]! });
+    for (const n of (sections.find((s) => s.name === 'world.nukeGrievanceArmy')?.data as Float64Array | undefined) ?? []) {
+      const g = w.nukeGrievance.get(n);
+      if (g) g.army = true;
+    }
     w.fallout = new Map();
     const fo = sections.find((s) => s.name === 'world.fallout')?.data as Float64Array | undefined;
     for (let at = 0; fo && at + 2 <= fo.length; at += 2) w.fallout.set(fo[at]!, fo[at + 1]!);
@@ -1210,8 +1216,12 @@ export class World {
   nukeTaboo = 1;
   /** The bursts of the last RESTRIKE_DAYS, oldest first (PLAN 6.11b, `nuclear.ts`): state, saved while not empty. */
   nukeBursts: { x: number; y: number; tick: number; yieldN: number }[] = [];
-  /** Who struck each nation last and until when it may strike back (PLAN 6.4b): state, saved while not empty. */
-  nukeGrievance = new Map<number, { by: number; until: number }>();
+  /**
+   * Who struck each nation last and until when it may strike back (PLAN 6.4b): state, saved while not
+   * empty. `army` when that burst struck forces (PLAN 7.109b: it killed men and at most ten times as
+   * many civilians), answered first at forces; absent, the answer weighs a capital whole.
+   */
+  nukeGrievance = new Map<number, { by: number; until: number; army?: boolean }>();
   /** The launches in flight that are strikes back (PLAN 6.12e): their bursts give no grievance. */
   nukeAnswers = new Set<number>();
   /** War exhaustion a nation struck carries, decaying (PLAN 6.5a): state, saved while not empty. */
