@@ -65,6 +65,8 @@ reused:
     - [ ] 7.109b An answer in kind weighed against the strike it answers (a city for an army only when nothing of the
       striker's forces is worth the warhead). AT: on 10 unseen seeds × 30 years, bursts killing over ten times more
       civilians than men at most 0.75 of HEAD's on the same seeds; a unit test, red without; the gate green.
+      AT missed 2026-10-24 (ADR-691, BLOCKERS; `docs/evidence/7.109b/at.md`): on 961–970 36 → 34 (bar 27), strikes back
+      among them 17 → 14; the rule not committed (`rule.patch`). Waits on the user's word on ADR-691.
 - [ ] 7.110 The army at war late (found at 7.104; R13-B1; ADR-679 a, the user's decision): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196
   formations, 3.6 M → 1.4 M men; the world's income flat; the USA at peace with 37–60 % of the world's
   men). Measure first, on HEAD's year-10 and year-20 checkpoints of 901–910 (`tools/diag/contactAt.ts` writes them), why:
@@ -82,6 +84,13 @@ reused:
   AT: on that year, `pocketOf`'s cells walked a tick at most 0.5 × HEAD's; engaged land formations a war
   in it, from the same save, not below HEAD's; the round trip's test green; a unit test, red without;
   the pin moved once, with its ADR; the gate green.
+- [ ] 7.114 The answer weighed by its own toll (found at 7.109b; aiNukes 7; ADR-691, the user's decision): answering a
+  strike on forces, a place whose burst is expected to kill over ten times more civilians than men is no answer, and
+  with no place of forces in reach the answer waits (within the grievance's days) or lapses; 7.109b's places of
+  forces out of range with a city in it (964: 86,000 civilians, no men) and its garrisons counted as forces (968:
+  96,000 civilians, no men). AT: on the next 10 unseen seeds × 30 years against HEAD on them, strikes back killing
+  over ten times more civilians than men at most 0.25 × HEAD's, and all bursts so at most 0.75 × HEAD's; a unit
+  test, red without; the gate green.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

@@ -23447,3 +23447,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Notes:** the setting is sent by an `effect` on its signal; the page builds its worker once (`SimClient`), so it is
   not lost. A strike cuts a Max slice and forces one statistics build, at most one a pump: the tick is unchanged.
 - **Next:** PLAN 7.109b (seeds from 961).
+
+## 2026-10-24 — PLAN 7.109b: the AT missed, to the user (ADR-691)
+
+- **Start:** gate green on `99e796c1`; critic not due; no decision waiting.
+- **Rule tried** (`docs/evidence/7.109b/rule.patch`, not committed): a grievance remembers a strike on forces (men
+  killed, civilians at most 10 times them); its answer weighs only places with an army in the blast while one is over
+  its floor and in reach, a city whole only after that. Unit test `nukeAnswerInKind1938.test.ts` (in the patch): red
+  on HEAD in 2 of 4 cases, green with the rule.
+- **AT** (961–970 × 30, `tools/diag/nukeVolume.ts`, which now tags strikes back): bursts killing over ten times more
+  civilians than men 36 → 34 (bar 27); of them strikes back 17 → 14; bursts 278 → 277. Missed: BLOCKERS, ADR-691.
+- **Why:** 19 of the 36 are first strikes; of the answers left, forces out of range with a city in it (964), and a
+  city with a hundredth of the theatre's men taken for forces (968). PLAN 7.114 filed for the answer weighed by its
+  own toll.
+- **Gotcha:** `TaskStop` on a queue script leaves its loop running: it started its queued seeds again after the
+  first stop (duplicates of deterministic runs, killed). Kill the bash loop's process too.
+- **Next:** PLAN 7.110 while ADR-691 waits.

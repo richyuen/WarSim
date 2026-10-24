@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-691 · 2026-10-24 · proposed (the user's decision) — An answer to a strike on forces weighs forces first: the AT missed (PLAN 7.109b)
+
+- **Context.** Critic run 13: the United Kingdom killed 67,951 US soldiers near Molepolole and the United States
+  answered on London, 248,000 civilians and 160 men (1129, year 15). A strike back weighs an enemy capital whole
+  (`TARGET_CAPITAL`, PLAN 7.62), whatever the strike it answers hit.
+- **Tried** (`docs/evidence/7.109b/rule.patch`). A grievance remembers whether its burst struck forces (men killed,
+  civilians at most 10 times them; `world.nukeGrievanceArmy`, a save section of its own). Answering one, a nation
+  weighs only places with `CAPITAL_MEN_MIN` of the theatre's men in the blast, a capital among them not whole, while
+  one of them is over its floor and in reach; else every place as before.
+- **Result** (`docs/evidence/7.109b/at.md`, 961–970 × 30): bursts killing over ten times more civilians than men 36 →
+  34 (bar 27); of them strikes back 17 → 14. Two causes left: forces worth the warhead out of range with a city in
+  it (the fallback), and a city with a hundredth of the theatre's men counted as forces. 19 of the 36 are first
+  strikes.
+- **Options.** (a) Commit the rule; 7.109b closed not done; PLAN 7.114: an answer to a strike on forces weighs each
+  place by its own expected toll (no place whose expected civilians are over ten times its expected men), and with
+  none in reach waits for one or lets the grievance lapse (recommended: the rule takes three massacres out and adds
+  none, and 7.114 builds on its grievance kind). (b) 7.109b closed not done, no rule; 7.114 on HEAD. (c) Commit the
+  rule, close 7.109b not done, no task.
+
 ### ADR-690 · 2026-10-24 · accepted — The worker pauses itself on a nuclear strike; one alert a strike (PLAN 7.109a)
 
 - **Context.** The critic's run 13 (`critic/c13_np_1129.json`): of two AI strikes a day apart only the second had a

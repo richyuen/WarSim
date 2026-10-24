@@ -5,6 +5,20 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### 2026-10-24 · PLAN 7.109b's AT missed: bursts killing over ten times more civilians than men 36 → 34 (0.94 ×, bar 0.75 ×) (ADR-691; waits on the user)
+- **The bar:** on 10 unseen seeds × 30 years, bursts killing over ten times more civilians than men at most 0.75 ×
+  HEAD's on the same seeds; a unit test, red without; the gate green.
+- **What moved** (`docs/evidence/7.109b/at.md`; 961–970): the rule tried (`rule.patch`: a grievance remembers a
+  strike on forces, and its answer weighs the places with an army in the blast first, a city only when none of them
+  is over its floor and in reach) takes the strikes back among those bursts 17 → 14, all 36 → 34; bursts 278 → 277.
+  Not committed; the pin unchanged. Its unit test is red on HEAD and green with it.
+- **What is left:** 19 of HEAD's 36 are first strikes, out of the answer's reach. Of the answers, the places of
+  forces are worth the warhead but out of the answerer's range while a city is in it (964: 65 days at ~0.68, none in
+  reach; 86,000 civilians, no men), and a city with a hundredth of the theatre's men counts as forces (968: 96,000
+  civilians, no men). The user's (ADR-691): (a) commit the rule, 7.109b closed not done, PLAN 7.114 for the answer
+  weighed by its own toll (recommended); (b) 7.109b closed not done, no rule, 7.114 on HEAD; (c) commit the rule,
+  close 7.109b not done, no task.
+
 ### RESOLVED 2026-10-24 (the user's decisions: the rebuild to the start's wings, ADR-689; 7.113a done on paired reads) · PLAN 7.113a's AT missed twice: engaged per war 0.598 → 0.395 (0.1) and 0.369 (0.035) with wings 2.3–2.4 × (ADR-687, ADR-688, 2026-10-24)
 - **The bar:** on 951–960 × 20 against HEAD, wings of living nations in years 2–20 at least 1.25 × HEAD's; engaged
   per war there not below HEAD's; a unit test, red without.

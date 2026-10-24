@@ -12,6 +12,10 @@
  * nation-days at war; holder-days (stock ≥ 1), holder-war-days (stock ≥ 1 and at war) and the stock
  * summed over those days; warheads built (each day's rise of a stock); and the same by 10-year third.
  *
+ * PLAN 7.109b: each burst's `back`, whether it was a strike back (its striker held a grievance at the
+ * hour of its decision: launches of a striker are matched to its bursts in order, a stopped one
+ * taken off), and `backCiv`, the strikes back among `civOver10x`.
+ *
  * Usage: npx tsx tools/diag/nukeVolume.ts <seed> <years> [out.json]
  */
 import { writeFileSync } from 'node:fs';
@@ -28,10 +32,12 @@ const SZ = size1938(undefined);
 const sim = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SZ.w) });
 const w = sim.world;
 
-type Third = { bursts: number; decided: number; civOver10x: number; wars: number; warDays: number; holderDays: number; holderWarDays: number; stockWarDays: number; built: number };
-const third = (): Third => ({ bursts: 0, decided: 0, civOver10x: 0, wars: 0, warDays: 0, holderDays: 0, holderWarDays: 0, stockWarDays: 0, built: 0 });
+type Third = { bursts: number; decided: number; civOver10x: number; backs: number; backCiv: number; wars: number; warDays: number; holderDays: number; holderWarDays: number; stockWarDays: number; built: number };
+const third = (): Third => ({ bursts: 0, decided: 0, civOver10x: 0, backs: 0, backCiv: 0, wars: 0, warDays: 0, holderDays: 0, holderWarDays: 0, stockWarDays: 0, built: 0 });
 const thirds: Third[] = [third(), third(), third()];
-const bursts: { year: number; by: number; on: number; yieldN: number; dead: number; men: number }[] = [];
+const bursts: { year: number; by: number; on: number; yieldN: number; dead: number; men: number; back: boolean }[] = [];
+// Each striker's launches in flight, in order: whether each is a strike back.
+const inFlight = new Map<number, boolean[]>();
 let pending: (typeof bursts)[number] | undefined;
 const lastStock = new Map<number, number>();
 const holders = new Set<number>();
@@ -39,22 +45,32 @@ const T = years * 365 * 24;
 const t0 = performance.now();
 
 while (w.tick < T) {
+  const avenging = new Set(w.nukeGrievance.keys());
   sim.step(1, (world) => {
     const k = Math.min(2, Math.floor(world.tick / (8760 * 10)));
     const ev = world.out.events;
     for (let i = 0; i < ev.length; i += 6) {
       const kind = ev[i + 1]!;
       if (kind === EventKind.WarDeclared) thirds[k]!.wars++;
-      else if (kind === EventKind.NukeDecided) thirds[k]!.decided++;
+      else if (kind === EventKind.NukeDecided) {
+        thirds[k]!.decided++;
+        const by = ev[i + 2]!;
+        inFlight.set(by, [...(inFlight.get(by) ?? []), avenging.has(by)]);
+      } else if (kind === EventKind.NukeIntercepted) inFlight.get(ev[i + 2]!)?.shift();
       else if (kind === EventKind.NukeCasualties) {
         const s = nukeStrike(ev[i + 3]!);
-        pending = { year: +(world.tick / 8760).toFixed(2), by: ev[i + 2]!, on: s.nation, yieldN: s.yieldN, dead: s.dead, men: 0 };
+        const back = ev[i + 2]! !== 0 && (inFlight.get(ev[i + 2]!)?.shift() ?? false);
+        pending = { year: +(world.tick / 8760).toFixed(2), by: ev[i + 2]!, on: s.nation, yieldN: s.yieldN, dead: s.dead, men: 0, back };
         bursts.push(pending);
         thirds[k]!.bursts++;
+        if (back) thirds[k]!.backs++;
       } else if (kind === EventKind.NukeToll && pending) {
         pending.men = nukeToll(ev[i + 3]!).men;
         const civ = pending.dead - pending.men;
-        if ((pending.men === 0 && civ > 0) || civ > 10 * pending.men) thirds[k]!.civOver10x++;
+        if ((pending.men === 0 && civ > 0) || civ > 10 * pending.men) {
+          thirds[k]!.civOver10x++;
+          if (pending.back) thirds[k]!.backCiv++;
+        }
         pending = undefined;
       }
     }
@@ -84,6 +100,6 @@ while (w.tick < T) {
 }
 
 const sum = (f: (t: Third) => number): number => thirds.reduce((a, t) => a + f(t), 0);
-const total: Third = { bursts: sum((t) => t.bursts), decided: sum((t) => t.decided), civOver10x: sum((t) => t.civOver10x), wars: sum((t) => t.wars), warDays: sum((t) => t.warDays), holderDays: sum((t) => t.holderDays), holderWarDays: sum((t) => t.holderWarDays), stockWarDays: sum((t) => t.stockWarDays), built: sum((t) => t.built) };
+const total: Third = { bursts: sum((t) => t.bursts), decided: sum((t) => t.decided), civOver10x: sum((t) => t.civOver10x), backs: sum((t) => t.backs), backCiv: sum((t) => t.backCiv), wars: sum((t) => t.wars), warDays: sum((t) => t.warDays), holderDays: sum((t) => t.holderDays), holderWarDays: sum((t) => t.holderWarDays), stockWarDays: sum((t) => t.stockWarDays), built: sum((t) => t.built) };
 writeFileSync(out, JSON.stringify({ seed, years, total, thirds, holders: holders.size, bursts }, null, 1));
 process.stderr.write(`done: seed ${seed} bursts ${total.bursts} holderWarDays ${total.holderWarDays} ${((performance.now() - t0) / 1000).toFixed(0)} s\n`);
