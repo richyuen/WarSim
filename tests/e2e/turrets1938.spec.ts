@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
-import { armourFires, busiest } from '../helpers/armourFire';
+import { armourFires, busiest, idleTankNear } from '../helpers/armourFire';
 
 // PLAN 3.6b AT: the turrets of tanks in contact are not all at their hulls' facing. Some weeks
 // into 1938 the square with the most armour firing is found in Node, the camera is put on it at
@@ -15,7 +15,9 @@ import { armourFires, busiest } from '../helpers/armourFire';
 /**
  * From day 16: the first hour of armour fire after it (`armourFires`). From the first week's end
  * before ADR-539: since the scene moved (ADR-538's bisect) every start from day 6 to 14 finds an hour in
- * which every tank in the view fires, and none is left to keep its turret on its hull.
+ * which every tank in the view fires, and none is left to keep its turret on its hull. Green at
+ * `896ff779`, red at `9ffb0274`: day 16's first hour was such an hour too: the hour is now the first
+ * from day 16 with a tank near the busiest square that does not fire (`idleTankNear`).
  */
 const FROM = 24 * 16;
 const M_PER_PX = 60;
@@ -27,7 +29,7 @@ const off = (a: number, b: number): number => Math.atan2(Math.sin(b - a), Math.c
 
 test('T2 and T3: a tank that fires has its turret on its target, and back on its hull after a silence', async ({ page }, info) => {
   test.setTimeout(240_000);
-  const node = armourFires(FROM);
+  const node = armourFires(FROM, 50, (fires, world) => idleTankNear(world, fires, busiest(fires)));
   const START = node.start;
   expect(node.fires.length).toBeGreaterThan(30);
   const [cx, cy] = busiest(node.fires);

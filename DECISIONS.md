@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-675 · 2026-10-23 · accepted — Four 1938 specs find their event instead of pinning its day (PLAN 7.5, step 2)
+
+- **Context.** `npm run check:review` on `9ffb0274` (before critic run 13): five browser tests red twice
+  and not on `knownRed.json`. Green at `896ff779` (critic run 12's review); the cadre rule (ADR-673)
+  ruled out: with `src/sim/ai/economic.ts` at `2640964c` the five are still red. Not bisected further:
+  each was probed on HEAD in Node (`.cache/probe/`, not kept) for whether its event still happens.
+- **Decision** (history moved, claim kept, as ADR-634 did): each spec steps to its event within a cap
+  instead of taking a fixed day or hour.
+  - `nukeMeansLost1938`: Prague's airbase now falls on day 15 (13 then 14 before): a day at a time until
+    the "Nuclear means lost" row is in the history, within 30 days.
+  - `stackBlocks1938`: seed 1212's stack of Soviet armour (six on day 6 at 3.11c1) has four on day 9 and
+    no column beside it: a day at a time, within 30, to the first day whose view at 40 m/px holds five
+    armour formations in contact within a cell, ten pairs in contact and a pair not in contact (day 16).
+  - `tankHulls1938`: seed 3929's panzer divisions now all go to Poland, more than 20 cells from France
+    for 30 days: the first German armour formation in contact within 1.5 cells of a French one, within
+    15 days (tank brigade 49, day 9; a hull alight 12 s in at Speed x1).
+  - `turrets1938`: day 16's first hour of armour fire had every tank in the view firing (256 = 256): the
+    first hour from day 16 with a tank near the busiest square that fires none of the hour's shots
+    (`idleTankNear`, `tests/helpers/armourFire.ts`; `armourFires` takes an `accept` check).
+- **Not this ADR:** `tankSides1938`, the fifth. Its first fair case (division 42, day 4, 929 enemy
+  figures) fails the claim itself: German tanks 6.8 lightness off a light ground, bar 20. A defect, not
+  history: its own commit.
+- **Consequences:** no rule; the pin unchanged (f9d18365).
+
 ### ADR-674 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — A defence that rises: the sweeps still meet nothing (PLAN 7.101)
 
 - **Context** (`docs/evidence/7.101/read.md`). PLAN 7.101 (ADR-672 b): a fighter wing at an airbase with no

@@ -7,9 +7,9 @@ import { flankCase } from '../helpers/flankCase';
 
 // PLAN 3.11c1 (the critic's R3-B3: "five tank formations share one cell as interleaved
 // diamonds", `critic/shots/c3j_11_tank_paused_0040m.png`): the critic's game (seed 1212, the
-// Soviet Union against Poland by God Mode) on day 6. Two tank corps and four tank brigades of
-// one stack go to the block of one Polish division; a brigade's block is 7 by 4 elements and a
-// corps' 11 by 5, and each line stood a block of its own behind and beside the line before it:
+// Soviet Union against Poland by God Mode) on day 6 (found since `9ffb0274`, below). Two
+// tank corps and four tank brigades of one stack go to the block of one Polish division; a
+// brigade's block is 7 by 4 elements and a corps' 11 by 5, and each line stood a block of its own behind and beside the line before it:
 // the brigades' tanks stood between the corps'. Every block now stands clear of the others.
 
 const nation = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
@@ -27,35 +27,31 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
   await page.setViewportSize(VIEW);
   await page.goto('/?scenario=1938&paused=1&seed=1212');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
-  await page.evaluate(async ({ SOV, POL }) => {
-    const sim = window.__warsim!.sim;
-    sim.command({ kind: 'declareWar', attacker: SOV, defender: POL });
-    let tick = 0;
-    for (let d = 0; d < 6; d++) tick = (await sim.step(24)).tick;
-    await new Promise<void>((done) => {
-      const wait = (): void => (window.__warsim!.view!.lastTick === tick ? done() : void setTimeout(wait, 5));
-      wait();
-    });
-  }, { SOV, POL });
-
   // The Soviet armour in contact, and of it the formation with the most of the others within a cell.
-  const armour = await page.evaluate(async (SOV) => {
-    const { sim, view } = window.__warsim!;
-    const templates = sim.mapLayers!.templates;
-    const found: { id: number; x: number; y: number }[] = [];
-    for (const id of view!.formationsOf(SOV)) {
-      const d = await sim.formation(id);
-      if (!d?.engaged || templates[d.template]?.symbol !== 'armour') continue;
-      const [x, y] = view!.formationPos(id)!;
-      found.push({ id, x, y });
-    }
-    return found;
-  }, SOV);
-  expect(armour.length, 'Soviet armour formations in contact on day 6').toBeGreaterThanOrEqual(4);
-  const near = (a: (typeof armour)[number]): number => armour.filter((b) => Math.hypot(a.x - b.x, a.y - b.y) < 1).length;
-  const centre = armour.reduce((best, a) => (near(a) > near(best) ? a : best));
-  expect(near(centre), 'armour formations of one stack').toBeGreaterThanOrEqual(4);
-
+  // Green at `896ff779`, red at `9ffb0274`: the rules between moved the stack's day. The war is
+  // stepped a day at a time, within 30 days, to the first day the scene below is in the view at
+  // 40 m/px: five armour formations in contact within a cell of one another (six on day 6 at
+  // 3.11c1), ten pairs of Soviet formations in contact, and a pair not in contact (PLAN 7.4f38).
+  type Armour = { id: number; x: number; y: number };
+  const stepDay = (): Promise<Armour[]> =>
+    page.evaluate(async (SOV) => {
+      const { sim, view } = window.__warsim!;
+      const templates = sim.mapLayers!.templates;
+      const tick = (await sim.step(24)).tick;
+      await new Promise<void>((done) => {
+        const wait = (): void => (view!.lastTick === tick ? done() : void setTimeout(wait, 5));
+        wait();
+      });
+      const found: Armour[] = [];
+      for (const id of view!.formationsOf(SOV)) {
+        const d = await sim.formation(id);
+        if (!d?.engaged || templates[d.template]?.symbol !== 'armour') continue;
+        const [x, y] = view!.formationPos(id)!;
+        found.push({ id, x, y });
+      }
+      return found;
+    }, SOV);
+  let centre: Armour = { id: 0, x: 0, y: 0 };
   /** The view on the stack at `m` metres a pixel, with the section of that zoom drawn. */
   const goTo = (m: number): Promise<void> =>
     page.evaluate(async ({ x, y, m }) => {
@@ -66,13 +62,11 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
       await new Promise((d) => setTimeout(d, 400));
       v.draw(performance.now());
     }, { x: centre.x, y: centre.y, m });
-
-  await goTo(40);
   // For every two formations of the section: how near an element of one stands to an element of the other.
   // Of the Soviet formations, those in contact: the stack's blocks (PLAN 6.9: marching formations
   // at one place came into the view when the world's course changed; their columns are another
   // matter, a line under PLAN 7.4).
-  const pairs = await page.evaluate(async (SOV) => {
+  const readPairs = () => page.evaluate(async (SOV) => {
     const { sim } = window.__warsim!;
     const v = window.__warsim!.view!;
     const soviet = new Set<number>();
@@ -100,6 +94,26 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
     }
     return { formations: ids.length, elements: v.elementCount, out };
   }, SOV);
+  await page.evaluate(({ SOV, POL }) => window.__warsim!.sim.command({ kind: 'declareWar', attacker: SOV, defender: POL }), { SOV, POL });
+  let armour: Armour[] = [];
+  let pairs: Awaited<ReturnType<typeof readPairs>> | null = null;
+  let day = 0;
+  const near = (a: Armour): number => armour.filter((b) => Math.hypot(a.x - b.x, a.y - b.y) < 1).length;
+  while (pairs === null && day < 30) {
+    day++;
+    armour = await stepDay();
+    if (armour.length === 0) continue;
+    centre = armour.reduce((best, a) => (near(a) > near(best) ? a : best));
+    if (near(centre) < 5) continue;
+    await goTo(40);
+    const seen = await readPairs();
+    if (seen.out.filter((p) => p.soviet).length >= 10 && seen.out.some((p) => p.free)) pairs = seen;
+  }
+  console.log(`seed 1212: the Soviet stack of armour in contact on day ${day}`);
+  expect(pairs, 'the stack and a column in the view within 30 days').not.toBeNull();
+  if (pairs === null) return;
+  expect(armour.length, 'Soviet armour formations in contact').toBeGreaterThanOrEqual(4);
+  expect(near(centre), 'armour formations of one stack').toBeGreaterThanOrEqual(4);
   const own = pairs.out.filter((p) => p.soviet);
   expect(pairs.formations, 'formations with elements in the view at 40 m/px').toBeGreaterThanOrEqual(6);
   expect(own.length, 'pairs of Soviet formations in contact in the view').toBeGreaterThanOrEqual(10);

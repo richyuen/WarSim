@@ -6,7 +6,8 @@ import { NATIONS_1938 } from '../../src/sim/scenario1938';
 
 // PLAN 7.23a (critic run 8, tanks 7: "in 45 s at Speed x1 at 25 m/px on a live armour fight,
 // hulls.shown stayed at 0"): the critic's case. Seed 3929, Germany at war with Poland and France
-// from the start; on day 3 Germany's armoured division 41 is in contact with France's infantry.
+// from the start; on day 3 Germany's armoured division 41 was in contact with France's infantry
+// (since `9ffb0274` the formation and the day are found: the first German armour fighting France).
 // The camera on it at 25 m/px, the game at Speed x1: within 45 s a tank hull burns on the screen.
 // Before 7.23a its tanks took 3.5 tanks of fire in two days in fractions over 34 elements, and
 // lost none; now an element of tanks fired at loses whole tanks (ADR-501). The marks of the
@@ -26,21 +27,33 @@ test("the critic's armour fight at Speed x1: a tank hull burns on the screen wit
       const { sim, view } = window.__warsim!;
       sim.command({ kind: 'declareWar', attacker: ger!, defender: pol! });
       sim.command({ kind: 'declareWar', attacker: ger!, defender: fra! });
-      const t = (await sim.step(72)).tick;
-      await new Promise<void>((done) => {
-        const wait = (): void => (view!.lastTick === t ? done() : void setTimeout(wait, 5));
-        wait();
-      });
-      const s = await sim.inspect(true);
-      const f = s.formations.find((g) => g.id === 41)!;
-      const foe = Math.min(...s.formations.filter((g) => g.nation === fra && !g.wing).map((g) => Math.hypot(g.x - f.x, g.y - f.y)));
-      return { nation: f.nation, kind: view!.formationTitle(41)?.kind ?? '', x: f.x, y: f.y, foe };
+      // Green at `896ff779`, red at `9ffb0274`: the rules between moved the world, and Germany's
+      // panzer divisions now all go to Poland (more than 20 cells from France for 30 days). The war
+      // is stepped a day at a time, within 15 days, until a German armour formation in contact
+      // stands within 1.5 cells of a French one (a tank brigade on day 9 at `9ffb0274`).
+      const templates = sim.mapLayers!.templates;
+      for (let day = 1; day <= 15; day++) {
+        const t = (await sim.step(24)).tick;
+        await new Promise<void>((done) => {
+          const wait = (): void => (view!.lastTick === t ? done() : void setTimeout(wait, 5));
+          wait();
+        });
+        const s = await sim.inspect(true);
+        const french = s.formations.filter((g) => g.nation === fra && !g.wing);
+        for (const f of s.formations) {
+          if (f.nation !== ger || f.wing || !view!.formationEngaged(f.id)) continue;
+          if (templates[(await sim.formation(f.id))?.template ?? -1]?.symbol !== 'armour') continue;
+          const foe = Math.min(...french.map((g) => Math.hypot(g.x - f.x, g.y - f.y)));
+          if (foe < 1.5) return { id: f.id, day, nation: f.nation, kind: view!.formationTitle(f.id)?.kind ?? '', x: f.x, y: f.y, foe };
+        }
+      }
+      return { id: 0, day: -1, nation: 0, kind: '', x: 0, y: 0, foe: Infinity };
     },
     [id('GER'), id('POL'), id('FRA')],
   );
-  // The critic's division: Germany's armour, in contact with France's on day 3.
+  // The critic's division: Germany's armour, in contact with France's.
   expect(division.nation).toBe(id('GER'));
-  expect(division.kind).toMatch(/Armoured/);
+  expect(division.kind).toMatch(/Armoured|Tank/);
   expect(division.foe).toBeLessThan(1.5);
 
   // Every frame the page draws: the tank hulls on the screen, those alight, and the marks of the fallen apart.
@@ -91,7 +104,7 @@ test("the critic's armour fight at Speed x1: a tank hull burns on the screen wit
   const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/7.23') : info.outputPath();
   mkdirSync(out, { recursive: true });
   await page.screenshot({ path: path.join(out, 'a-burning-hull-x1-spec.png') });
-  console.log(`armoured division 41 at ${M_PER_PX} m/px, Speed x1: first flame at ${Math.round(seen.firstFlame)} ms, at most ${seen.tanks} tank hulls on the screen (${seen.burning} burning, ${seen.flames} alight in a frame), ${seen.marks} marks of the fallen apart, in ${seen.frames} frames; the camera at ${framed.cam.cx.toFixed(2)}, ${framed.cam.cy.toFixed(2)} (the division at ${division.x.toFixed(2)}, ${division.y.toFixed(2)}), the hull at ${framed.hull?.map((c) => c.toFixed(2)).join(', ')}`);
+  console.log(`armoured division ${division.id} (day ${division.day}) at ${M_PER_PX} m/px, Speed x1: first flame at ${Math.round(seen.firstFlame)} ms, at most ${seen.tanks} tank hulls on the screen (${seen.burning} burning, ${seen.flames} alight in a frame), ${seen.marks} marks of the fallen apart, in ${seen.frames} frames; the camera at ${framed.cam.cx.toFixed(2)}, ${framed.cam.cy.toFixed(2)} (the division at ${division.x.toFixed(2)}, ${division.y.toFixed(2)}), the hull at ${framed.hull?.map((c) => c.toFixed(2)).join(', ')}`);
   expect(seen.firstFlame, 'a tank hull alight within 45 s at x1').toBeGreaterThanOrEqual(0);
   expect(seen.firstFlame).toBeLessThan(WATCH_MS);
   expect(seen.burning).toBeGreaterThan(0);

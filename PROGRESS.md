@@ -23166,3 +23166,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   score to the next critic report.
 - The pin unchanged (f9d18365).
 - **Next:** PLAN 7.5 (the critic run: `npm run check:review`, then the critic).
+
+## 2026-10-23 — PLAN 7.5, step 2: check:review red before critic run 13; four specs restated (ADR-675)
+
+- **check:review on `9ffb0274`:** red, 5 not known (nukeMeansLost1938, stackBlocks1938, tankHulls1938,
+  tankSides1938, turrets1938), 3 known (formationFight1938, tankBattle1938, zoomDemo1938). Green at
+  `896ff779`; the cadre rule ruled out (the five red with `economic.ts` at `2640964c`).
+- **Probed in Node on HEAD:** each event still happens, on another day. Restated to find it within a cap
+  (ADR-675): means lost day 15; the Soviet stack with a column in view day 16; German armour on France,
+  tank brigade 49 day 9; the turrets' hour with a tank that holds fire.
+- **Specs by hand, green:** nukeMeansLost1938, stackBlocks1938 (2), tankHulls1938, turrets1938.
+- **Left:** tankSides1938 is a defect (German tanks 6.8 lightness off a light ground, bar 20): next
+  commit. formationFight1938 and tankBattle1938 now fail on content here, not the GPU's: to be looked at.

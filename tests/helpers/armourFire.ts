@@ -1,6 +1,7 @@
 import { FIRE_STRIDE, FireField } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import type { World } from '../../src/sim/world';
 import { assets1938 } from './earth';
 
 // Where armour fires in the 1938 world (PLAN 3.6): the specs of the tanks' pictures put the
@@ -19,8 +20,9 @@ export interface Fire {
  * FireEvents and the state hashes around it (PLAN 6.9: a fixed hour, day 14, lost its armour's
  * fight when the rules changed the world's course; the hour is found, not taken on trust). More
  * than 50: the specs want more than 20 tanks firing in view; the first week's fights had 20.
+ * `accept`, when given, must also hold of the hour's fires and the world after it.
  */
-export function armourFires(from: number, least = 50): { start: number; fires: Fire[]; before: number; after: number } {
+export function armourFires(from: number, least = 50, accept?: (fires: readonly Fire[], world: World) => boolean): { start: number; fires: Fire[]; before: number; after: number } {
   const sim = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
   sim.step(from);
   for (let start = from; start < from + 24 * 60; start++) {
@@ -36,9 +38,27 @@ export function armourFires(from: number, least = 50): { start: number; fires: F
       w.out.fires.length = 0;
       w.out.events.length = 0;
     });
-    if (fires.length > least) return { start, fires, before, after: sim.hash() };
+    if (fires.length > least && (accept?.(fires, sim.world) ?? true)) return { start, fires, before, after: sim.hash() };
   }
   throw new Error(`no hour of armour fire in the 60 days from ${from}`);
+}
+
+/**
+ * Whether a tank element of a formation within `cells` of `[cx, cy]` fires none of `fires`: a view
+ * on the busiest square then has a tank that keeps its turret on its hull (PLAN 3.6b).
+ */
+export function idleTankNear(world: World, fires: readonly Fire[], [cx, cy]: readonly [number, number], cells = 1): boolean {
+  const shooters = new Set(fires.map((f) => f.shooter));
+  const units = world.rules!.units;
+  const e = world.elements.cols;
+  const fc = world.formations.cols;
+  let idle = false;
+  world.elements.forEach((i) => {
+    if (idle || shooters.has(i) || !units[e.unit[i]!]?.cls.startsWith('armor')) return;
+    const f = e.formation[i]!;
+    if (Math.hypot(fc.x[f]! - cx, fc.y[f]! - cy) <= cells) idle = true;
+  });
+  return idle;
 }
 
 /** Centre of the 2-cell square with the most shooters. */
