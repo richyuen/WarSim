@@ -4,7 +4,8 @@
  * one over its target circles there (a patrol over its zone). The place is the sim's function of
  * the sortie's launch, so a frame between two ticks is where the sortie is then, not a guess. One
  * plane for a few aircraft, up to three in a vee; a bomber's larger than a fighter's. Every tier;
- * at T3 a plane is PLANE_MEN men's figures wide (PLAN 7.51a).
+ * at T3 a plane is PLANE_MEN men's figures wide (PLAN 7.51a), and from HAND_FAR_MPP in it gives way
+ * to the plane at its wingspan (PLAN 7.108a).
  */
 import { SORTIE_STRIDE, SortieRole } from '../../shared/protocol';
 import { Leg, sortieAt, type Sortie } from '../../shared/sorties';
@@ -39,6 +40,27 @@ export function planeSpan(role: number, scale: number, unit = 1): number {
   return Math.max(px * unit * planeZoom(scale), (PLANE_MEN * px * LINE_CELLS * sizeScale * scale * unit) / PLANE_PX[SortieRole.fighter]);
 }
 
+/**
+ * A plane's wingspan, metres, by role (PLAN 7.108a): a Bf 109's, a Ju 87's, an He 111's, a B-17's,
+ * a B5N's, a Ju 52's. At close zoom a plane is drawn at it: the symbol above, five men's figures
+ * wide, was about 450 m across, "larger than a company" at 3 m/px (critic run 13).
+ */
+export const WINGSPAN_M = [9.9, 13.8, 22.6, 31.6, 15.5, 29.3] as const;
+/** m/px where the handover from the symbol to the plane at its wingspan starts (none of it drawn) and ends (all of it). */
+export const HAND_FAR_MPP = 8;
+export const HAND_NEAR_MPP = 4;
+/** A plane narrower than this, CSS px, is drawn without its edge and blur (`vee`). */
+export const SMALL_PLANE_PX = 12;
+
+/** The share of a plane drawn at its wingspan at `mpp` metres a px: 0 from HAND_FAR_MPP out, 1 from HAND_NEAR_MPP in, smooth in log m/px between. */
+export function planeHandover(mpp: number): number {
+  const f = Math.min(1, Math.max(0, Math.log(HAND_FAR_MPP / mpp) / Math.log(HAND_FAR_MPP / HAND_NEAR_MPP)));
+  return f * f * (3 - 2 * f);
+}
+
+/** A plane's span at its wingspan, CSS px, of `role` at `mpp` metres a px and unit size `unit`. */
+export const trueSpan = (role: number, mpp: number, unit = 1): number => ((WINGSPAN_M[role] ?? WINGSPAN_M[SortieRole.fighter]) * unit) / mpp;
+
 /** The air's marks' size (`AirFx.draw`): a fighter's span against its PLANE_PX, so that a fight is the size of its planes. */
 export const airFxSize = (scale: number, unit = 1): number => planeSpan(SortieRole.fighter, scale, unit) / PLANE_PX[SortieRole.fighter];
 
@@ -53,8 +75,14 @@ export interface PlacedSortie {
   leg: Leg;
   planes: number;
   nation: number;
+  /** The span of the drawing that is most of it (the symbol's below a handover of 0.5, else the wingspan's); `at` its planes. */
   span: number;
   at: [number, number][];
+  /** The share drawn at the wingspan (`planeHandover`), and that span, CSS px. */
+  handover: number;
+  trueSpan: number;
+  /** Its role (`SortieRole`). */
+  role: number;
 }
 
 /** Planes drawn for a wing of `aircraft`: one, two or three. */
@@ -86,7 +114,7 @@ export function sortiePlace(rows: ArrayLike<number>, i: number, t: number, w: nu
 }
 
 /** One plane: fuselage, wings and tail, its nose along `heading`; its edge under its fill, so a small plane is its colour (PLAN 7.51a: the edge over it made it white). */
-function plane(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, span: number): void {
+function plane(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, span: number, edge = true): void {
   const h = span / 2;
   ctx.save();
   ctx.translate(x, y);
@@ -105,7 +133,7 @@ function plane(ctx: CanvasRenderingContext2D, x: number, y: number, heading: num
   ctx.lineTo(0, h);
   ctx.lineTo(h * 0.2, h * 0.12);
   ctx.closePath();
-  ctx.stroke();
+  if (edge) ctx.stroke();
   ctx.fill();
   ctx.restore();
 }
@@ -135,20 +163,21 @@ export function drawSorties(
   const offs = itemOffsets(cam, geo, vw);
   // Smaller the further out: at T0 (a cell a px or two) a plane is half its T1 size.
   size *= planeZoom(cam.scale);
+  // Close in, the symbol gives way to the plane at its wingspan (PLAN 7.108a), crossfaded.
+  const mpp = (geo.kmPerCell * 1000) / cam.scale;
+  const hand = planeHandover(mpp);
   ctx.save();
-  ctx.globalAlpha = alpha;
   // A light edge and a shadow: a plane is seen over its own nation's land, of its own colour.
-  ctx.lineWidth = 1.25;
   const edge = close >= 0.5 ? 'rgba(20, 20, 20, 0.9)' : 'rgba(255, 255, 255, 0.95)';
   ctx.strokeStyle = edge;
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
-  ctx.shadowBlur = 3;
   for (let i = 0; i + SORTIE_STRIDE <= rows.length; i += SORTIE_STRIDE) {
     // The short way round only where the map loops.
     const at = sortiePlace(rows, i, t, geo.wrapX ? geo.w : 0);
     if (!at) continue;
     const role = rows[i + 10]!;
-    const span = planeSpan(role, cam.scale, unit);
+    const symbol = planeSpan(role, cam.scale, unit);
+    const wing = trueSpan(role, mpp, unit);
+    const span = Math.max(symbol, wing);
     const n = planesOf(rows[i + 9]!);
     for (const off of offs) {
       let [x, y] = worldToScreen(cam, at.x + off, at.y, vw, vh);
@@ -161,31 +190,46 @@ export function drawSorties(
         [x, y] = [ox + r * Math.cos(at.orbit.angle), oy + r * Math.sin(at.orbit.angle)];
       }
       if (x < -3 * span || y < -3 * span || x > vw + 3 * span || y > vh + 3 * span) continue;
-      const placed: PlacedSortie = { x, y, heading: at.heading, leg: at.leg, planes: n, nation: rows[i + 8]!, span, at: [] };
+      const placed: PlacedSortie = { x, y, heading: at.heading, leg: at.leg, planes: n, nation: rows[i + 8]!, span: hand < 0.5 ? symbol : wing, at: [], handover: hand, trueSpan: wing, role };
       out.push(placed);
-      // A short trail behind it.
-      ctx.save();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x - Math.cos(at.heading) * span * 2.2, y - Math.sin(at.heading) * span * 2.2);
-      ctx.stroke();
-      ctx.restore();
       ctx.fillStyle = colour(rows[i + 8]!);
-      // A vee: the leader, then one either side behind it.
-      const back = span * 0.9;
-      const side = span * 0.8;
-      const cos = Math.cos(at.heading);
-      const sin = Math.sin(at.heading);
-      for (let k = 0; k < n; k++) {
-        const b = k === 0 ? 0 : back;
-        const sgn = k === 1 ? -1 : k === 2 ? 1 : 0;
-        const [px, py] = [x - cos * b - sin * side * sgn, y - sin * b + cos * side * sgn];
-        placed.at.push([px, py]);
-        plane(ctx, px, py, at.heading, span);
-      }
+      // The symbol, then the plane at its wingspan, each at its share of the handover.
+      if (hand < 1) vee(ctx, x, y, at.heading, n, symbol, alpha * (1 - hand), hand < 0.5 ? placed.at : null);
+      if (hand > 0) vee(ctx, x, y, at.heading, n, wing, alpha * hand, hand < 0.5 ? null : placed.at);
     }
   }
   ctx.restore();
   return out;
+}
+
+/** A wing's planes of `span` at `alpha` with a short trail: a vee, the leader, then one either side behind it; each plane's middle into `at`. */
+function vee(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, n: number, span: number, alpha: number, at: [number, number][] | null): void {
+  if (alpha <= 0.01) return;
+  ctx.globalAlpha = alpha;
+  // A plane under SMALL_PLANE_PX (one at its wingspan, close in) has no edge and no blur, or they
+  // are all of it: its fill alone, and its shadow cast to the side on the ground below.
+  const small = span < SMALL_PLANE_PX;
+  ctx.lineWidth = small ? Math.max(0.5, span * 0.3) : 1.25;
+  ctx.shadowBlur = small ? 0 : 3;
+  ctx.shadowOffsetX = small ? span * 0.5 : 0;
+  ctx.shadowOffsetY = small ? span * 0.7 : 0;
+  ctx.shadowColor = small ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.75)';
+  const cos = Math.cos(heading);
+  const sin = Math.sin(heading);
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x - cos * span * 2.2, y - sin * span * 2.2);
+  ctx.stroke();
+  ctx.restore();
+  const back = span * 0.9;
+  const side = span * 0.8;
+  for (let k = 0; k < n; k++) {
+    const b = k === 0 ? 0 : back;
+    const sgn = k === 1 ? -1 : k === 2 ? 1 : 0;
+    const [px, py] = [x - cos * b - sin * side * sgn, y - sin * b + cos * side * sgn];
+    at?.push([px, py]);
+    plane(ctx, px, py, heading, span, !small);
+  }
 }

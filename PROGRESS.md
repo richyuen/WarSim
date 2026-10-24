@@ -23315,3 +23315,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   rebuild; (c) the war choice of naval powers.
 - **Pin** f9d18365 → c848f884. Tools: `seaYears` `SAVE_AT`/`SAVE_DIR`, `seaWars` `LOAD`, `seaPhantom` hours and range.
 - **Next:** 7.107 waits on ADR-683; the loop takes 7.108 (seeds from 931).
+
+## 2026-10-24 — PLAN 7.108a: close in, a plane at its wingspan (ADR-684)
+
+- **Start:** gate green on `1891a6fb`; critic not due. The user chose ADR-683 (a) mid-iteration: 7.107's re-scoped
+  read runs beside this part (921–930 × 20 on HEAD, `.cache/7107/at/`).
+- **Cause:** ADR-609 made a plane at T3 five men's figures wide; a figure is 88 m, so a fighter was ~440 m and grew with
+  the zoom: 144.7 px at 3 m/px on the 7019 front (the critic's ~140).
+- **Rule** (`render/units/sorties.ts`): from 8 m/px in the symbol crossfades into the plane at its wingspan
+  (`WINGSPAN_M` by role), all of it from 4 m/px; a plane under 12 px has no edge or blur, its shadow cast to the side.
+  The air's marks keep their size. Render only: the pin unchanged.
+- **AT:** `tests/e2e/planesClose1938.spec.ts` (new), red before (144.7 px against 4.95), green after (~3 px).
+  Specs run by hand: `planesClose1938`, `planesT3_1938` (5.00 men, unchanged), `airT3_1938`, `sortiesSeen1938`.
+- **Next:** 7.107's read (ADR-683 a), then 7.108b (seeds from 931).

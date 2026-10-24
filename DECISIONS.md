@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-684 · 2026-10-24 · accepted — Close in, a plane gives way to itself at its wingspan (PLAN 7.108a)
+
+- **Context.** Critic run 13 (`critic/shots/c13z_5861_17.png`): the wheel zoom ends on three plane silhouettes
+  about 140 px wide at 3 m/px, "larger than a company". ADR-609 (PLAN 7.51a) made a plane at T3 PLANE_MEN = 5
+  men's figures wide, against run 11's "the size of a squad" at 10 m/px; a figure is 0.0045 cells (88 m), so
+  a fighter was some 440 m across, and it grew with the zoom.
+- **Decision.** From HAND_FAR_MPP = 8 m/px in, `drawSorties` crossfades the symbol (ADR-609's size, unchanged
+  further out) into the plane at its wingspan (`WINGSPAN_M` by role: Bf 109 9.9 m, Ju 87 13.8, He 111 22.6,
+  B-17 31.6, B5N 15.5, Ju 52 29.3), all of it from HAND_NEAR_MPP = 4 m/px (smoothstep in log m/px). A plane
+  under 12 px has no edge and no blur (they were all of it): its fill, and a shadow cast to the side. The
+  air's marks (fights, bombs, flak) keep their size. No sim input: the pin unchanged.
+- **Why a handover, not a cap.** The two findings ask ~45 px at 10 m/px and at most ~5 px at 3 m/px for a
+  fighter; no size that only grows as the camera closes in meets both. A symbol further out and the thing
+  itself close in is differentiator 1's pattern (a marker, then its men), crossfaded, so nothing pops.
+- **AT** (`tests/e2e/planesClose1938.spec.ts`, the 7019 front at 3 m/px; each plane's pixels of its nation's
+  tint on the overlay, given to the nearest plane's middle): red before, three German fighters 144.5–144.7 px
+  wide against a bar of 4.95 px (1.5 × 9.9 m ÷ 3 m/px); after, 0.7–2.0 px of tint read, under it (the plane
+  is about 3.3 px; `docs/evidence/7.108/a-planes-close-3m.png`). `planesT3_1938` (10 m/px) unchanged: 5.00 men.
+- **Consequences.** At 3 m/px a fighter is a speck a little smaller than a tree, as it is to scale. A bomber is
+  7.5 px, a heavy bomber 10.5 px. At the 1 m/px limit a fighter is 10 px.
+
 ### ADR-683 · 2026-10-24 · proposed (the user's decision) — The late war at sea is the navies' count, not their meeting (PLAN 7.107's first bar missed)
 
 - **Context** (`docs/evidence/7.107/measure.md`). PLAN 7.107 (naval 7): on 10 unseen seeds × 20 years against
