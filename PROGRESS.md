@@ -23430,3 +23430,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - 7.113a's paired reads give air battles 1.32 × and 1.31 × with the land war not below; the crossing (7.108b) is not
   run on it. The late war across the sea waits for the next critic report.
 - **Next:** PLAN 7.109 (AI nuclear use; seeds from 961).
+
+## 2026-10-24 — PLAN 7.109a: every AI strike its banner; the pause at Max on the strike's hour (ADR-690)
+
+- **Start:** gate green on `2dd0ff25`; critic not due.
+- **Cause:** the pause rode the statistics message (once a second, hundreds of ticks at Max); the alert read the
+  ticker's last five rows and showed the last.
+- **Fix:** the worker knows the pause setting and stops its step after an hour with a strike, pausing there when the
+  setting is on; the statistics carry every strike since the last message; one banner a strike, stacked (at most 3).
+- **AT:** `tests/e2e/nukeAlertTwo1938.spec.ts` (new; seed 1, Poland and France armed and fighting to the death strike
+  at ticks 25 and 49): on HEAD paused at tick 73 (48 h after the first) and no banner with the pause off; now paused
+  at the end of each strike's hour and two banners, with the pause on and off. Unit: `nukeAlertStop1938.test.ts`
+  (the worker stops and pauses at Max, owes the rest at a speed; the alert list), red on HEAD's worker.
+- **Specs run by hand:** `nukeAlertTwo1938`, `nukeAlert1938` (both), `nukeAlertPhone1938`, `nukeDemo1938`,
+  `godTools1938`. Render and worker only: the pin unchanged.
+- **Next:** PLAN 7.109b (seeds from 961).

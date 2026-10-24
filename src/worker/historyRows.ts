@@ -194,7 +194,6 @@ const PLACE_OF_B: ReadonlySet<number> = new Set([EventKind.WarDeclared, EventKin
  */
 export function tickerRows(world: World, nationName: (id: number) => string, cityName: (row: number) => string = () => '', defName: (def: number) => string = () => ''): TickerRow[] {
   const rows = world.history.rows;
-  const nc = world.nations.cols;
   const nation = (v: number): string => (v !== 0 && world.nations.has(v) ? nationName(v) : '');
   const out: TickerRow[] = [];
   /** Whether a row of the hour of row `i` is the annexation of `dead` by `by`. */
@@ -207,7 +206,7 @@ export function tickerRows(world: World, nationName: (id: number) => string, cit
   /** tick * 256 + kind of the one-an-hour rows taken (PLAN 5.11a). */
   const taken = new Set<number>();
   for (let i = rows.length - HISTORY_STRIDE; i >= 0 && out.length < TICKER_ROWS; i -= HISTORY_STRIDE) {
-    const [tick, kind, a, b, x, y] = [rows[i]!, rows[i + 1]!, rows[i + 2]!, rows[i + 3]!, rows[i + 4]!, rows[i + 5]!];
+    const [tick, kind, a, b] = [rows[i]!, rows[i + 1]!, rows[i + 2]!, rows[i + 3]!];
     if (world.tick - tick > TICKER_HOURS) break;
     if (!TICKER_KINDS.has(kind)) continue;
     if (TICKER_ONE_AN_HOUR.has(kind)) {
@@ -220,21 +219,49 @@ export function tickerRows(world: World, nationName: (id: number) => string, cit
       if (told) continue;
     }
     if (kind === EventKind.PeaceSigned && annexedThen(i, b, a)) continue;
-    const at = PLACE_OF_B.has(kind) ? b : a;
-    const placed = !Number.isNaN(x) && !Number.isNaN(y);
-    const [ra, rb] = HISTORY_ROLES[kind] ?? ['number', 'number'];
-    // A side is its nation and a count (PLAN 5.11a: the air's rows); a strike the nation struck (PLAN 6.6a).
-    const who = (role: HistoryRole, v: number): string => (role === 'nation' ? nation(v) : role === 'side' ? nation(seaSide(v).nation) : role === 'strike' ? nation(nukeStrike(v).nation) : '');
-    const row: TickerRow = { i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: ra === 'side' ? who(ra, a) : ra === 'town' ? townName(world, i, kind, a, defName) : nation(a), bn: who(rb, b), of: '' };
-    const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
-    if (over) [row.as, row.cn] = ['puppet', over];
-    const near = NEAR_KINDS.has(kind) ? strikeNear(world, x, y, cityName) : '';
-    if (near) row.near = near;
-    const toll = kind === EventKind.NukeCasualties ? tollAfter(rows, i) : undefined;
-    if (toll) row.toll = toll;
-    out.push(row);
+    out.push(tickerRowAt(world, i, nation, cityName, defName));
   }
   return out.reverse();
+}
+
+/** The ticker's row of the log's row at `i` (an index into `rows`, a multiple of HISTORY_STRIDE). */
+function tickerRowAt(world: World, i: number, nation: (v: number) => string, cityName: (row: number) => string, defName: (def: number) => string): TickerRow {
+  const rows = world.history.rows;
+  const nc = world.nations.cols;
+  const [tick, kind, a, b, x, y] = [rows[i]!, rows[i + 1]!, rows[i + 2]!, rows[i + 3]!, rows[i + 4]!, rows[i + 5]!];
+  const at = PLACE_OF_B.has(kind) ? b : a;
+  const placed = !Number.isNaN(x) && !Number.isNaN(y);
+  const [ra, rb] = HISTORY_ROLES[kind] ?? ['number', 'number'];
+  // A side is its nation and a count (PLAN 5.11a: the air's rows); a strike the nation struck (PLAN 6.6a).
+  const who = (role: HistoryRole, v: number): string => (role === 'nation' ? nation(v) : role === 'side' ? nation(seaSide(v).nation) : role === 'strike' ? nation(nukeStrike(v).nation) : '');
+  const row: TickerRow = { i: i / HISTORY_STRIDE, tick, kind, a, b, x: placed ? x : (nc.capitalX[at] ?? 0), y: placed ? y : (nc.capitalY[at] ?? 0), an: ra === 'side' ? who(ra, a) : ra === 'town' ? townName(world, i, kind, a, defName) : nation(a), bn: who(rb, b), of: '' };
+  const over = kind === EventKind.WarEnded ? nation(overlordThen(rows, i)) : '';
+  if (over) [row.as, row.cn] = ['puppet', over];
+  const near = NEAR_KINDS.has(kind) ? strikeNear(world, x, y, cityName) : '';
+  if (near) row.near = near;
+  const toll = kind === EventKind.NukeCasualties ? tollAfter(rows, i) : undefined;
+  if (toll) row.toll = toll;
+  return row;
+}
+
+/**
+ * The nuclear strikes from row `from` of the log to its end, as the ticker tells them, every one
+ * (PLAN 7.109a: the ticker's last five rows at Max had lost the first of two strikes a day apart,
+ * and the alert showed one of them). Each is an alert banner of its own.
+ */
+export function strikeRows(world: World, from: number, nationName: (id: number) => string, cityName: (row: number) => string = () => '', defName: (def: number) => string = () => ''): TickerRow[] {
+  const rows = world.history.rows;
+  const nation = (v: number): string => (v !== 0 && world.nations.has(v) ? nationName(v) : '');
+  const out: TickerRow[] = [];
+  for (let i = Math.max(0, from) * HISTORY_STRIDE; i < rows.length; i += HISTORY_STRIDE) if (rows[i + 1] === EventKind.NukeCasualties) out.push(tickerRowAt(world, i, nation, cityName, defName));
+  return out;
+}
+
+/** Whether the log's rows from row `from` hold a nuclear strike (PLAN 7.109a: the worker stops its step there). */
+export function struckSince(world: World, from: number): boolean {
+  const rows = world.history.rows;
+  for (let i = Math.max(0, from) * HISTORY_STRIDE; i < rows.length; i += HISTORY_STRIDE) if (rows[i + 1] === EventKind.NukeCasualties) return true;
+  return false;
 }
 
 /**

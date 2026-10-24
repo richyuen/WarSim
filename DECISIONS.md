@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-690 · 2026-10-24 · accepted — The worker pauses itself on a nuclear strike; one alert a strike (PLAN 7.109a)
+
+- **Context.** The critic's run 13 (`critic/c13_np_1129.json`): of two AI strikes a day apart only the second had a
+  banner, and at Max the pause came 155 game hours after the first. The host paused on the statistics message, sent
+  at most once a second (`STATS_INTERVAL_MS`), hundreds of ticks at Max; the alert took its strikes from the ticker's
+  last five rows and showed the last of them.
+- **Decision.** The host tells the worker the pause setting (`nukePause`). The worker's step, at a speed or at Max,
+  stops after an hour that logged a strike (`struckSince`); with the setting on it pauses there, and the statistics
+  go at once. At a speed the ticks a strike stopped short of are owed still. Explicit steps (`step`) do not stop. The
+  statistics message carries every strike since the one before (`strikes`, built as the ticker's rows); each has a
+  banner of its own, oldest on top, each going after its own time (ADR of PLAN 7.25d), the newest three kept
+  (`NUKE_ALERTS_MAX`). Escape closes the newest. The statistics interval is not lowered (performance 5).
+- **Consequences.** Render and worker only: the pin unchanged. A strike shortens a Max slice; the pause lands at the
+  end of the strike's hour.
+
 ### ADR-689 · 2026-10-24 · accepted (the user's decisions, 2026-10-24) — A nation rebuilds its air force to its start's wings at 0.035 of its income (PLAN 7.113a)
 
 - **Context.** ADR-686–688: at 0.1 and 0.035 of income the air forces grew past 1938's (the USA 21 → 165–172 wings,

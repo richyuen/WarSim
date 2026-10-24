@@ -9,7 +9,7 @@ import { dateOfTick } from '../shared/calendar';
 import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { clampSpeedLevel, DEFAULT_SPEED_LEVEL, speedOfLevel } from '../shared/speed';
 import type { Command } from '../shared/commands';
-import type { TickerRow } from '../shared/history';
+import type { ShownAlert } from '../shared/nukeAlert';
 import type { NationStats, SimClient } from './simClient';
 import type { FormationDetail, OrderNews, TechInfo, TemplateInfo } from '../shared/protocol';
 import type { SeaBattleView } from './MapView';
@@ -53,8 +53,8 @@ export class Hud {
   readonly tick = signal(0);
   readonly speedLevel = signal(DEFAULT_SPEED_LEVEL);
   readonly paused = signal(true);
-  /** The last nuclear strike, for its alert banner (PLAN 6.6a); null when closed or none. */
-  readonly nukeAlert = signal<TickerRow | null>(null);
+  /** The nuclear strikes' alert banners (PLAN 6.6a), oldest first: one a strike (PLAN 7.109a). */
+  readonly nukeAlerts = signal<readonly ShownAlert[]>([]);
   /** Map mode (PLAN 1.17), persisted; `onMapMode` applies it to the map view. */
   readonly mapMode = signal<MapMode>('political');
   /** The ground of T2 and T3 is the most of the picture (PLAN 7.4f3): the legend says occupied land is a tint. */
@@ -298,7 +298,7 @@ export class Hud {
     else if (this.showEditor.value || this.showCharts.value || this.showHistory.value || this.showSettings.value) {
       this.closeCentre('none');
       this.lineStart.value = null;
-    } else if (this.nukeAlert.value !== null) this.nukeAlert.value = null;
+    } else if (this.nukeAlerts.value.length > 0) this.nukeAlerts.value = this.nukeAlerts.value.slice(0, -1);
     else if (this.formation.value !== 0) this.selectFormation(0);
     else if (this.selected.value !== 0) this.onSelectNation(0);
     else return false;

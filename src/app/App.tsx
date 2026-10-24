@@ -12,7 +12,7 @@ import { NationPanel } from '../ui/NationPanel';
 import { StatsRanking } from '../ui/StatsRanking';
 import { WarBanners } from '../ui/WarBanners';
 import { Ticker } from '../ui/Ticker';
-import { NukeAlert } from '../ui/NukeAlert';
+import { NukeAlerts } from '../ui/NukeAlert';
 import { GodToolbar } from '../ui/GodToolbar';
 import { orderNewsText } from '../ui/orderNewsText';
 import { TopBar } from '../ui/TopBar';
@@ -167,15 +167,8 @@ export function App({
           }}
         />
       ) : null}
-      {stats && hud.nukeAlert.value ? (
-        <NukeAlert
-          row={hud.nukeAlert.value}
-          onGo={() => {
-            const r = hud.nukeAlert.value;
-            if (r) hud.onShowPlace(r.x, r.y);
-          }}
-          onClose={() => (hud.nukeAlert.value = null)}
-        />
+      {stats && hud.nukeAlerts.value.length > 0 ? (
+        <NukeAlerts alerts={hud.nukeAlerts.value} onGo={(r) => hud.onShowPlace(r.x, r.y)} onClose={(r) => (hud.nukeAlerts.value = hud.nukeAlerts.value.filter((a) => a.row.i !== r.i))} />
       ) : null}
       {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} onBattle={(war) => hud.toBattle(war)} /> : null}
       {hud.showSettings.value ? (

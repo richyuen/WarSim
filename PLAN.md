@@ -54,13 +54,17 @@ reused:
   alert banner, and at Max the pause comes on 1 November, 155 game hours after the first; the answer in
   kind lands on a capital (London, 248,000 civilians and 160 men, for 67,951 US soldiers); the largest
   burst 3,125,000 civilians for 2,032 men (7583, year 26). Evidence: `critic/c13_np_1129.json`,
-  `critic/shots/c13np_1129_paused.png`, `c13_f_1129.json`, `c13_cmp_all.txt`. In two parts: (a) every AI
-  strike gets its banner, and the pause at Max comes on the strike's day: AT, an e2e spec, red before,
-  two AI strikes within a day each shown in a banner of its own and the game paused within 24 game hours of the first;
-  (b) an answer in kind weighed against the strike it answers (a city for an army only when nothing of
-  the striker's forces is worth the warhead): AT, on 10 unseen seeds × 30 years, bursts killing over ten
-  times more civilians than men at most 0.75 of HEAD's on the same seeds; a unit test, red without; the
-  gate green.
+  `critic/shots/c13np_1129_paused.png`, `c13_f_1129.json`, `c13_cmp_all.txt`. In two parts:
+    - [x] 7.109a Every AI strike gets its banner, and the pause at Max comes on the strike's day. AT: an e2e spec, red
+      before, two AI strikes within a day each shown in a banner of its own and the game paused within 24 game hours
+      of the first.
+      Done 2026-10-24 (ADR-690): `tests/e2e/nukeAlertTwo1938.spec.ts` (Poland and France, each armed and fighting to
+      the death, strike a day apart): on HEAD paused 48 game hours after the first strike (past the second) and no
+      banner with the pause off; now paused at the end of each strike's hour, two banners. The worker stops its step
+      at a strike and pauses there itself; every strike since the last message is sent; one banner a strike.
+    - [ ] 7.109b An answer in kind weighed against the strike it answers (a city for an army only when nothing of the
+      striker's forces is worth the warhead). AT: on 10 unseen seeds × 30 years, bursts killing over ten times more
+      civilians than men at most 0.75 of HEAD's on the same seeds; a unit test, red without; the gate green.
 - [ ] 7.110 The army at war late (found at 7.104; R13-B1; ADR-679 a, the user's decision): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196
   formations, 3.6 M → 1.4 M men; the world's income flat; the USA at peace with 37–60 % of the world's
   men). Measure first, on HEAD's year-10 and year-20 checkpoints of 901–910 (`tools/diag/contactAt.ts` writes them), why:

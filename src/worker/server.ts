@@ -18,7 +18,7 @@ import { frameOf, symbolOf, Weapon, weaponOf, wreckOf } from '../shared/unitLook
 import { Terrain, TERRAIN_IDS } from '../shared/terrain';
 import { wayLine } from '../shared/wayLine';
 import { encodeRuns } from '../shared/mapImport';
-import { historyRows, tickerNews, tickerRows } from './historyRows';
+import { historyRows, strikeRows, struckSince, tickerNews, tickerRows } from './historyRows';
 import { Lives } from './lives';
 import { fileOffsets } from './files';
 import { economyBreakdown } from '../sim/systems/economy';
@@ -201,6 +201,8 @@ export class SimServer {
   private lastStatsMs = -1;
   /** The log's length at the last statistics message: the next one's news begins there (PLAN 3.12Rh2). Below 0: a world's first message, whose log is its past. */
   private newsFrom = -1;
+  /** Whether the game pauses at the tick of a nuclear strike (PLAN 7.109a): the host's setting, kept here so the pause is not a statistics message late. */
+  private nukePause = false;
 
   handle(msg: ToWorker, nowMs: number): void {
     try {
@@ -345,6 +347,9 @@ export class SimServer {
         this.owed = 0;
         this.lastPump = nowMs;
         this.forceSend = true;
+        break;
+      case 'nukePause':
+        this.nukePause = msg.on;
         break;
       case 'subscribe':
         this.sub = msg.sub;
@@ -611,13 +616,15 @@ export class SimServer {
     if (this.lastPump < 0) this.lastPump = nowMs;
     if (this.speed === 'max') {
       const start = clock();
-      do this.advance(1);
+      do if (this.advance(1, true) < 0) break;
       while (clock() - start < MAX_SLICE_MS);
     } else {
       this.owed += ((nowMs - this.lastPump) * this.speed) / 1000;
       const n = Math.min(MAX_TICKS_PER_PUMP, Math.floor(this.owed));
       this.owed -= n;
-      if (n > 0) this.advance(n);
+      // The ticks a strike stopped short of are owed still, unless it paused the game.
+      const done = n > 0 ? this.advance(n, true) : 0;
+      if (done < 0 && !this.paused) this.owed += n + done;
     }
     this.lastPump = nowMs;
     this.maybeSend();
@@ -642,8 +649,9 @@ export class SimServer {
       if (world.nations.cols.living[id] !== 1) dead.push({ id, name: this.nameOf(id), color: world.nations.cols.color[id]! });
     });
     const news = this.newsFrom < 0 ? [] : tickerNews(world, this.newsFrom);
+    const strikes = this.newsFrom < 0 ? [] : strikeRows(world, this.newsFrom, (id) => this.nameOf(id), (v) => this.cityName(v), (d) => cities1938.cities[d]?.name ?? '');
     this.newsFrom = world.history.length;
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, lives: this.lives.of(world), aiEnabled: world.settings.aiEnabled, nukesEnabled: world.settings.nukesEnabled, rules: { winnerTakesAll: world.settings.winnerTakesAll, revoltMode: world.settings.revoltMode, ceMode: world.settings.ceMode }, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id), (v) => this.cityName(v), (d) => cities1938.cities[d]?.name ?? ''), news, world: this.worldNo, wings: playerWings(world) }, []);
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, lives: this.lives.of(world), aiEnabled: world.settings.aiEnabled, nukesEnabled: world.settings.nukesEnabled, rules: { winnerTakesAll: world.settings.winnerTakesAll, revoltMode: world.settings.revoltMode, ceMode: world.settings.ceMode }, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id), (v) => this.cityName(v), (d) => cities1938.cities[d]?.name ?? ''), news, strikes, world: this.worldNo, wings: playerWings(world) }, []);
   }
 
   /**
@@ -1032,12 +1040,27 @@ export class SimServer {
     return `=${foundedName(id, origins[id] ?? 0, this.provinceNames, foundedNth(id, origins, this.provinceNames))}`;
   }
 
-  private advance(n: number): void {
+  /**
+   * Steps `n` ticks; with `atStrike`, stops after a tick that logged a nuclear strike (PLAN
+   * 7.109a): the statistics with its alert go at once, not up to a second later (155 game hours at
+   * Max, the critic's run 13), and with the setting on the game pauses on that tick. Returns `n`,
+   * or minus the ticks stepped when a strike stopped it.
+   */
+  private advance(n: number, atStrike = false): number {
     const sim = this.requireSim();
     for (let i = 0; i < n; i++) {
       this.snapshotPrev(sim.world);
+      const from = sim.world.history.length;
       sim.step(1, (w) => this.drainEvents(w));
+      if (atStrike && struckSince(sim.world, from)) {
+        if (this.nukePause) this.paused = true;
+        this.statsTick = -1;
+        this.lastStatsMs = -1;
+        this.forceSend = true;
+        return -(i + 1);
+      }
     }
+    return n;
   }
 
   private snapshotPrev(world: World): void {

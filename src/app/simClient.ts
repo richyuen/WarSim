@@ -372,6 +372,11 @@ export class SimClient {
     this.send({ type: 'pause', paused });
   }
 
+  /** Whether the worker pauses itself on a nuclear strike (PLAN 7.109a). */
+  setNukePause(on: boolean): void {
+    this.send({ type: 'nukePause', on });
+  }
+
   subscribe(sub: Subscription): void {
     this.send({ type: 'subscribe', sub });
   }

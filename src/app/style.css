@@ -983,23 +983,32 @@ body {
   border-left-color: #8ec5ff;
 }
 
-/* The nuclear alert banner (PLAN 6.6a): below the top bar, centred, over the map. */
-.nuke-alert {
+/* The nuclear alert banners (PLAN 6.6a): below the top bar, centred, over the map; one a strike,
+   the oldest on top (PLAN 7.109a). */
+.nuke-alerts {
   position: absolute;
   top: 3.4rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  max-width: min(44rem, calc(100% - 2rem));
+  z-index: 30;
+}
+.nuke-alert {
+  display: flex;
   align-items: center;
   gap: 0.6rem;
-  max-width: min(44rem, calc(100% - 2rem));
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 0.45rem 0.7rem;
   background: rgba(58, 12, 8, 0.94);
   border: 2px solid #f2c230;
   border-radius: 6px;
   color: #fff3d6;
   box-shadow: 0 0 18px rgba(242, 194, 48, 0.45);
-  z-index: 30;
 }
 .nuke-icon {
   font-size: 1.5rem;
@@ -1161,13 +1170,14 @@ body {
   }
   /* The nuclear alert stands on the bottom bar, not over the panels at the top (PLAN 7.16d;
      critic run 7: "on the phone the nuke alert covers the nation panel"). */
-  .nuke-alert {
+  .nuke-alerts {
     top: auto;
     bottom: calc(var(--bar-top, 2.8rem) + 0.4rem);
     left: 0.5rem;
     right: 0.5rem;
     transform: none;
     max-width: none;
+    align-items: stretch;
   }
 }
 

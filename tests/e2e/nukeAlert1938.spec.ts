@@ -120,7 +120,7 @@ test('the alert: the panels of the centre below it; it goes after its days, not 
   await page.waitForTimeout(NUKE_ALERT_MIN_MS + 500);
   await expect(page.getByTestId('nuke-alert')).toBeVisible();
   // Run: it goes, with the strike at least its hours old.
-  const struck = await page.evaluate(() => window.__warsim!.hud.nukeAlert.value!.tick);
+  const struck = await page.evaluate(() => window.__warsim!.hud.nukeAlerts.value.at(-1)!.row.tick);
   await running(page);
   await expect(page.getByTestId('nuke-alert')).toHaveCount(0, { timeout: 120_000 });
   const tick = await page.evaluate(() => window.__warsim!.hud.stats.value!.tick);

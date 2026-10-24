@@ -13,7 +13,7 @@ import { saveScreenshot, Settings } from './settings';
 import { screenshotLabel } from './screenshotLabel';
 import { SimClient } from './simClient';
 import { Sound } from './sound';
-import { alertExpired, newStrikes } from '../shared/nukeAlert';
+import { newStrikes, nextAlerts } from '../shared/nukeAlert';
 import type { Heard } from '../shared/sound';
 import { installTestApi } from './testApi';
 import { MAP_MODES } from '../shared/mapModes';
@@ -137,18 +137,17 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
   for (const type of ['pointerdown', 'keydown'] as const) window.addEventListener(type, () => sound.unlock(), { capture: true });
   sim.onStats((m) => sound.onTicker(m.ticker, m.world, m.news));
   const settings = new Settings(view, sound);
-  // The nuclear alert (PLAN 6.6a): a new strike's banner, and a pause when the setting asks.
+  // The nuclear alert (PLAN 6.6a): each new strike's banner (PLAN 7.109a), and a pause when the
+  // setting asks. The worker pauses itself on the strike's tick (PLAN 7.109a); the host follows.
   let seenStrikes: Heard | null = null;
-  // When the alert's strike was first shown: it goes after its days of the game and a few seconds (PLAN 7.25d).
-  let alertShownAt = 0;
+  effect(() => sim.setNukePause(settings.nukePause.value));
   sim.onStats((m) => {
-    const s = newStrikes(m.ticker, m.world, seenStrikes, m.news);
-    if (seenStrikes && seenStrikes.world !== m.world) hud.nukeAlert.value = null;
+    const s = newStrikes(m.strikes, m.world, seenStrikes, m.news);
+    const shown = seenStrikes && seenStrikes.world !== m.world ? [] : hud.nukeAlerts.value;
     seenStrikes = s.seen;
-    if (s.rows.length > 0) {
-      hud.nukeAlert.value = s.rows[s.rows.length - 1]!;
-      alertShownAt = performance.now();
-    } else if (hud.nukeAlert.value && alertExpired(hud.nukeAlert.value.tick, m.tick, performance.now() - alertShownAt)) hud.nukeAlert.value = null;
+    // An alert goes after its days of the game and a few seconds (PLAN 7.25d).
+    const next = nextAlerts(shown, s.rows, m.tick, performance.now());
+    if (next !== hud.nukeAlerts.value) hud.nukeAlerts.value = next;
     if (s.struck && settings.nukePause.value && !hud.paused.value) hud.togglePause();
   });
   // F2 saves a screenshot of the map (PLAN 1.39a; AoC uses F11, which browsers keep for fullscreen).

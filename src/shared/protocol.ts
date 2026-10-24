@@ -89,6 +89,8 @@ export type ToWorker =
   | { type: 'load'; reqId: number; bytes: Uint8Array }
   | { type: 'speed'; speed: Speed }
   | { type: 'pause'; paused: boolean }
+  /** Whether the worker pauses itself at the tick of a nuclear strike (PLAN 7.109a: the host's pause came a second late, ~155 game hours at Max). */
+  | { type: 'nukePause'; on: boolean }
   | { type: 'subscribe'; sub: Subscription }
   | { type: 'ack'; seq: number; buffers: ArrayBuffer[] }
   /** Builds the admin-1 province raster at w×h from the map assets under `assetBase`. */
@@ -433,7 +435,7 @@ export type FromWorker =
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance; the ticker's rows (PLAN 3.12c), the kinds of every major event since the message before (`news`, PLAN 3.12Rh2: the ticker's rows are the last five), and the number of the worker's world, which a new game or a load changes (PLAN 3.12d). */
-  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; lives: NationLife[]; aiEnabled: boolean; nukesEnabled: boolean; rules: WorldRules; player: number; edits: { undo: number; redo: number }; ticker: TickerRow[]; news: number[]; world: number; wings: PlayerWing[] };
+  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; lives: NationLife[]; aiEnabled: boolean; nukesEnabled: boolean; rules: WorldRules; player: number; edits: { undo: number; redo: number }; ticker: TickerRow[]; news: number[]; strikes: TickerRow[]; world: number; wings: PlayerWing[] };
 
 /** A buildable land template for the production UI (PLAN 1.33b). */
 export interface TemplateInfo {
