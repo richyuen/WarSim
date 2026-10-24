@@ -1,0 +1,86 @@
+diff --git a/src/sim/ai/economic.ts b/src/sim/ai/economic.ts
+index 6d868043..3c3a4d1d 100644
+--- a/src/sim/ai/economic.ts
++++ b/src/sim/ai/economic.ts
+@@ -69,7 +69,9 @@
+  *    ADR-590).
+  *    Then a wing (PLAN 5.8s2, `pickWing`), as a fleet: a nation not poor with an airfield and no
+  *    wing in training orders one while its air force's upkeep is under AIR_SHARE of its army's,
+- *    a fighter group while fighters are under half its wings, else a tactical bomber group.
++ *    a fighter group while fighters are under half its wings, else a tactical bomber group. Its gold
++ *    is the price and the army's reserve: at war, the army under its peacetime share, none (PLAN
++ *    7.113a, ADR-686); else RESERVE_MONTHS of income.
+  * 2b. A means of delivery (PLAN 7.6b, `deliveryWing`), before research takes the month's surplus:
+  *    a nation with warheads and no means of delivery (`canDeliver`: no missiles, no strategic
+  *    bomber with a base) and no wing in training orders a strategic bomber group, whatever its air
+@@ -161,7 +163,8 @@ export const DELIVERY_RESERVE_MONTHS = 1;
+  * its armour, while its army (with its orders in training) stands under its peacetime share
+  * (PLAN 7.65, ADR-615; ADR-592 a, the user's): none. With RESERVE_MONTHS, the defenders of an
+  * income of 150-500 a month were stopped by gold in 549 of 751 months at war (PLAN 7.49e). The
+- * warship's saving, the refills, the fleets and the wings keep RESERVE_MONTHS.
++ * warship's saving, the refills and the fleets keep RESERVE_MONTHS; a wing keeps the army's (PLAN
++ * 7.113a, ADR-686).
+  */
+ export const WAR_RESERVE_MONTHS = 0;
+ export const PARALLEL_INCOME = 400;
+@@ -550,7 +553,11 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
+       if (wing >= 0 && airfield(world, n, wing) >= 0) {
+         const rule = rules.templates[wing]!;
+         const u = upkeepOfTemplate(wing);
+-        if (balance - u > need && nc.gold[n]! >= rule.gold + RESERVE_MONTHS * income && nc.manpower[n]! >= rule.manpower && queueFormation(world, n, wing) !== 0) {
++        // The army's reserve at war (PLAN 7.113a, ADR-686; ADR-615's for its orders): at war, the
++        // army under its peacetime share, the treasury held the price and not three months more in
++        // most months a wing was due, and the air forces lost in year 1 were not rebuilt.
++        const reserve = (atWar && upkeep < peace ? WAR_RESERVE_MONTHS : RESERVE_MONTHS) * income;
++        if (balance - u > need && nc.gold[n]! >= rule.gold + reserve && nc.manpower[n]! >= rule.manpower && queueFormation(world, n, wing) !== 0) {
+           nc.builds[n] = nc.builds[n]! + 1;
+           balance -= u;
+         }
+diff --git a/tests/unit/airBudget1938.test.ts b/tests/unit/airBudget1938.test.ts
+index e0b71992..e07c3948 100644
+--- a/tests/unit/airBudget1938.test.ts
++++ b/tests/unit/airBudget1938.test.ts
+@@ -1,8 +1,8 @@
+ import { describe, expect, it } from 'vitest';
+-import { AIR_SHARE } from '../../src/sim/ai/economic';
++import { AIR_SHARE, peaceShare, RESERVE_MONTHS, WAR_RESERVE_MONTHS } from '../../src/sim/ai/economic';
+ import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
+ import { Sim } from '../../src/sim/sim';
+-import { UPKEEP_SCALE } from '../../src/sim/systems/economy';
++import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
+ import { destroyFormation } from '../../src/sim/systems/elements';
+ import { Domain, type World } from '../../src/sim/world';
+ import { assets1938 } from '../helpers/earth';
+@@ -68,4 +68,32 @@ describe('the air force\'s cost (PLAN 5.8s2)', () => {
+     runEvents(v, 1);
+     expect(ordered(v.world, GER)).toEqual([]);
+   });
++
++  // PLAN 7.113a (ADR-686): at war, under its air share, the treasury held a wing's price and not
++  // RESERVE_MONTHS of income more in most of the months a wing was due (941–942: 1,063 and 1,578
++  // nation-months), and the air forces lost in year 1 were not rebuilt. A wing at war keeps the
++  // army's reserve (ADR-615): none while the army is under its peacetime share.
++  it('at war, its army under its peacetime share, France orders a fighter group with its price alone; in peace it keeps three months', () => {
++    const order = (atWar: boolean): number[] => {
++      const s = peaceful([]);
++      const w = s.world;
++      const nc = w.nations.cols;
++      const FRA = id('FRA');
++      if (atWar) w.wars.start([FRA], [id('ITA')], 0);
++      nc.aggression[FRA] = 100; // room in its peacetime share
++      const income = Math.max(0, monthlyAccounts(w, T).gross[FRA]!);
++      expect(upkeep(w, FRA, (f) => w.isWing(f)), 'under its air share').toBeLessThan(AIR_SHARE * upkeep(w, FRA, (f) => army(w, f)));
++      expect(upkeep(w, FRA, (f) => army(w, f)), 'its army under its peacetime share').toBeLessThan(peaceShare(100) * income);
++      const rule = w.rules!.templates[wingsMix.fighter]!;
++      // The price and a little, under three months' income more; men for the wing, not a division.
++      nc.gold[FRA] = rule.gold + 1;
++      expect(nc.gold[FRA]!).toBeLessThan(rule.gold + RESERVE_MONTHS * income);
++      nc.manpower[FRA] = rule.manpower;
++      runEvents(s, 1);
++      return ordered(w, FRA);
++    };
++    expect(WAR_RESERVE_MONTHS).toBe(0);
++    expect(order(true)).toEqual([wingsMix.fighter]);
++    expect(order(false)).toEqual([]);
++  });
+ });

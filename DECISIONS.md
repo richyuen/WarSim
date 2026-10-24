@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-686 · 2026-10-24 · proposed (the user's decision) — The air force at war late is capped by a small army, not by gold (PLAN 7.113a's rule dead before its AT)
+
+- **Context.** PLAN 7.113 (ADR-685 b): wings of living nations 165.5 a world in year 1, 90.8 after it on HEAD
+  (951–960). The read (`docs/evidence/7.113/read.md`, 941–942): the fall is year 1's (88 and 145 wings shot
+  down, 22 and 19 built); after it ~8 built and ~8–10 lost a world-year.
+- **7.113a as filed** (`reserve.patch`: a wing at war keeps the army's war reserve, ADR-615's): its unit test red
+  without, green with; but over 90 days from run 13's six saves it reads the same as HEAD on all six: it never
+  fires. The read's "price held, not the reserve" (1,020 and 1,521 nation-months) was the treasury read after the
+  month's income came in. Counted inside `economicAi` step 3c (941, nation-months at war a year after year 1):
+  poor 262–299, a wing in training 39–86, **the air force at its share 153–310 and growing**, reaching the gold
+  test 36–73, ordered 6–15.
+- **The cause.** AIR_SHARE caps the air force at 0.1 of its army's upkeep; late, the armies at war cost 5–7 % of
+  their nations' income, so the air force is capped at well under 1 % of income while the treasuries hold ~5
+  wing prices. At the 1938 start the world's air force is 1.56 % of income, the great powers' 3–4 %.
+- **Options (the user's).**
+  (a) **(recommended)** At war, the air force may also grow to AIR_INCOME_SHARE of income, set at the great
+  powers' 1938 level (0.035; Italy 0.034, Japan 0.036, the Soviet Union 0.040): 7.113a re-scoped to it, its AT
+  as filed (wings at least 1.25 × HEAD's, engaged per war not below HEAD's, 951–960).
+  (b) The same at the world's 1938 mean (0.0156): data-derived, but the nations capped late already spend ~1.4 %,
+  so it would move little.
+  (c) 7.113 closed not done, no rule.
+- **Now.** No rule; the pin unchanged (c848f884). HEAD's AT baseline on 951–960 is read (`head/`).
+
 ### ADR-685 · 2026-10-24 · accepted, option b (the user's decision, 2026-10-24) — The late air war: fighters across the sea spend the air forces (PLAN 7.108b's AT missed)
 
 - **Context.** Critic run 13: air battles after year 1 155 → 121 a world-year on its seeds (aircraft 7, needs 8).

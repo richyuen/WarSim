@@ -49,6 +49,28 @@ ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the di
 beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
 reused:
 
+- [ ] 7.113 The air force at war late (found at 7.108b; aircraft 7, needs 8; ADR-685 b, the user's decision): the
+  AI's wings of living nations 168.6 a world in year 1, 87.9 after it (931–940 on HEAD, `docs/evidence/7.108b/at.md`);
+  the sea crossing (`docs/evidence/7.108b/rule.patch`) spent them faster (68.9) and its late battles fell with them.
+  Read first, on two of the next unseen seeds, what the AI buys and loses in the air after year 1 (wings built,
+  lost in fights, lost with bases, disbanded; the air budget against income at war). Then a rule on what it names,
+  and the crossing re-measured on its code. AT: on 10 unseen seeds × 20 years against HEAD on them, wings of living
+  nations in years 2–20 at least 1.25 × HEAD's, and air battles a world-year after year 1 at least 1.25 × HEAD's;
+  engaged per war there not below HEAD's; a unit test, red without; the gate green.
+  Taken up before 7.109 (the user's choice, 2026-10-24). Read 2026-10-24 (`docs/evidence/7.113/read.md`, 941–942,
+  `tools/diag/airForce.ts`): the fall is year 1's (88 and 145 wings lost, 22 and 19 built), and after it ~5–15 built
+  a world-year; at war, under the air share, the wing's order stopped most by the treasury holding its price but not
+  RESERVE_MONTHS of income more (1,063 and 1,578 nation-months), then one wing in training at a time, then no
+  airfield. Seeds: the AT on 951–960, all parts against one HEAD baseline; three arms (HEAD, a, a+b). In two parts:
+    - [ ] 7.113a A wing at war keeps the army's war reserve: at war, under its air share, a wing's order keeps
+      WAR_RESERVE_MONTHS of income back, not RESERVE_MONTHS (ADR-615's for the army). AT: on 951–960 × 20, wings of
+      living nations in years 2–20 at least 1.25 × HEAD's; engaged per war there not below HEAD's; a unit test,
+      red without; the pin moved with its ADR; the gate green.
+      Tried 2026-10-24 before its AT (`docs/evidence/7.113/read.md` §3, `reserve.patch`): the same as HEAD on six
+      saves over 90 days; the binding gate late is AIR_SHARE of a small army's upkeep. Waits on ADR-686.
+    - [ ] 7.113b The crossing on 7.113a's code (`docs/evidence/7.108b/rule.patch`, its unit test with it). AT: on
+      951–960 × 20, air battles a world-year after year 1 at least 1.25 × HEAD's; engaged per war not below HEAD's;
+      the unit test red without; the pin moved with its ADR; the gate green.
 - [ ] 7.109 AI nuclear use (aiNukes 7, needs 8): of two AI strikes a day apart (1129 year 15: the UK on a
   US army near Molepolole on 25 October 1952, the US on London on 26 October) only the second gets an
   alert banner, and at Max the pause comes on 1 November, 155 game hours after the first; the answer in
@@ -78,15 +100,6 @@ reused:
   AT: on that year, `pocketOf`'s cells walked a tick at most 0.5 × HEAD's; engaged land formations a war
   in it, from the same save, not below HEAD's; the round trip's test green; a unit test, red without;
   the pin moved once, with its ADR; the gate green.
-- [ ] 7.113 The air force at war late (found at 7.108b; aircraft 7, needs 8; ADR-685 b, the user's decision): the
-  AI's wings of living nations 168.6 a world in year 1, 87.9 after it (931–940 on HEAD, `docs/evidence/7.108b/at.md`);
-  the sea crossing (`docs/evidence/7.108b/rule.patch`) spent them faster (68.9) and its late battles fell with them.
-  Read first, on two of the next unseen seeds, what the AI buys and loses in the air after year 1 (wings built,
-  lost in fights, lost with bases, disbanded; the air budget against income at war). Then a rule on what it names,
-  and the crossing re-measured on its code. AT: on 10 unseen seeds × 20 years against HEAD on them, wings of living
-  nations in years 2–20 at least 1.25 × HEAD's, and air battles a world-year after year 1 at least 1.25 × HEAD's;
-  engaged per war there not below HEAD's; a unit test, red without; the gate green.
-
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

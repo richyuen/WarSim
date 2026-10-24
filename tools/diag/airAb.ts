@@ -1,7 +1,7 @@
 /**
  * PLAN 7.108b's A/B from one save: steps a checkpoint `days` days and counts the air battles
  * (`EventKind.AirBattle`), the sortie-hours aloft and battles per thousand of them, and the land
- * formations engaged a day, and the wings of living nations before and after. Run once per rule on
+ * formations engaged a day, the wings of living nations before and after, and wings built. Run once per rule on
  * the same save.
  *
  * Usage: npx tsx tools/diag/airAb.ts <save.bin> [days = 90] [out = .cache/airAb.json]
@@ -27,12 +27,16 @@ const wingCount = (): number => {
 };
 const wingsBefore = wingCount();
 let battles = 0;
+let built = 0;
 let aloft = 0;
 let engaged = 0;
 for (let d = 0; d < days; d++) {
   s.step(24, (ww) => {
     const ev = ww.out.events;
-    for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.AirBattle) battles++;
+    for (let i = 0; i < ev.length; i += 6) {
+      if (ev[i + 1] === EventKind.AirBattle) battles++;
+      if (ev[i + 1] === EventKind.FormationSpawned && ww.formations.has(ev[i + 2]!) && ww.isWing(ev[i + 2]!)) built++;
+    }
     ev.length = 0;
     ww.out.fires.length = 0;
     aloft += ww.sorties.size;
@@ -42,6 +46,6 @@ for (let d = 0; d < days; d++) {
     if (w.nations.cols.living[c.nation[id]!] === 1 && !w.isWing(id) && !w.isFleet(id) && !w.offLand(id) && c.engaged[id] === 1) engaged++;
   });
 }
-const r = { save, days, battles, aloftHours: aloft, perK: +((1000 * battles) / Math.max(1, aloft)).toFixed(2), engagedDay: +(engaged / days).toFixed(2), wingsBefore, wingsAfter: wingCount() };
+const r = { save, days, battles, aloftHours: aloft, perK: +((1000 * battles) / Math.max(1, aloft)).toFixed(2), engagedDay: +(engaged / days).toFixed(2), wingsBefore, wingsAfter: wingCount(), built };
 writeFileSync(out, JSON.stringify(r, null, 1));
 console.log(`done: ${JSON.stringify(r)}`);

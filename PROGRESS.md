@@ -23362,3 +23362,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - PLAN 7.108b closed not done (7.108 with it; 7.108a done); PLAN 7.113, the air force at war late, filed before 7.5,
   the crossing re-measured on its code. BLOCKERS entry resolved; 7.108 archived.
 - **Next:** PLAN 7.109 (seeds from 941).
+
+## 2026-10-24 — PLAN 7.113 (taken before 7.109, the user's choice): the read; 7.113a's rule dead before its AT (ADR-686 to the user)
+
+- **Read** (`docs/evidence/7.113/read.md`; `tools/diag/airForce.ts`, new; 941–942 × 20): the fall is year 1's (88
+  and 145 wings shot down, 22 and 19 built); after it ~8 built and ~8–10 lost a world-year, almost all in the air.
+  Wings never refilled (81–87 % of their aircraft).
+- **Parts filed** before any AT: 7.113a (a wing at war keeps the army's war reserve), 7.113b (the crossing on its
+  code); the AT on 951–960 against one HEAD baseline (read: wings 165.5 in year 1, 90.8 late; battles 171.0).
+- **7.113a's rule** (`reserve.patch`, unit test red without): over 90 days from run 13's six saves the same as HEAD
+  on all six. The read's main gate was the treasury read after the month's income. Counted inside step 3c: the
+  binding gate late is AIR_SHARE of the army's upkeep (153–310 nation-months a year at war), the armies at war
+  costing 5–7 % of income. ADR-686: (a) at war an income share at the great powers' 1938 level, 0.035
+  (recommended); (b) at the world's 1938 mean, 0.0156; (c) close 7.113.
+- **No rule;** the pin unchanged (c848f884). `airAb.ts` counts wings built.
