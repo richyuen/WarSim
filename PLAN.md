@@ -40,19 +40,6 @@ Run 12's (report of 2026-10-22 on `896ff779`, `critic/CRITIC_REPORT.md`; R11-B2 
 and performance 7 → 6): R12-B1 and R12-B2 are PLAN 7.79 and 7.80; the dimensions under the bar, beyond
 them, are 7.81–7.86. A task each, split when taken up:
 
-- [ ] 7.101 A defence that rises against a raid (found at 7.99; aircraft 7, needs 8; ADR-672 b): after year 1
-  82–90 % of the idle wings at war have nothing of the enemy in range, and of 120,472 sweep sorties over
-  the enemy's airbases (7.99's rule, `docs/evidence/7.99/rule.patch`) 1.0 % came within 150 km of an air
-  battle: nothing on the ground takes off against a raid. Rule: a fighter wing at an airbase with no
-  mission takes off against an enemy sortie that comes within its reach (it flies only when there is
-  something to meet), with 7.99's sweep kept to manned enemy airbases and fleets (no flights to empty
-  bases). Read first on 871–872 how many sweeps it turns into fights. AT: on 10 unseen seeds × 20 years
-  (891 on, `airLate.ts`) air battles a year in years 2–20 at least a tenth of year 1's, at least half of the
-  sweep sorties meeting a defender (`airSweeps.ts`), engaged per war in years 2–20 not below HEAD's on the
-  same seeds; a unit test, red without; the ADR; the pin's entry.
-  Read 2026-10-23 (`docs/evidence/7.101/read.md`): the sweeps that fought 1.6–1.8 % (the swept bases empty
-  or bombers' when reached); late battles 0.098 pooled on 871–872 with both rules; no rule; waits on ADR-674.
-
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -373,3 +360,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21 […]
 - [x] 7.99 An air war beyond the land war (found at 7.85; aircraft 7, needs 8; ADR-668 b, 7.51b's (c)): […]
 - [x] 7.100 Fronts, not walk-ins (found at 7.82; emergent 6, needs 7; ADR-671 b): on 851–860 × 30 years […]
+- [x] 7.101 A defence that rises against a raid (found at 7.99; aircraft 7, needs 8; ADR-672 b): after year 1 […]

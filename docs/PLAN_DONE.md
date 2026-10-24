@@ -14911,3 +14911,31 @@ Of 7.33 (open in PLAN.md):
   stasis 22 and 17 on two seeds (`at.md`); missed. ADR-673 b (the user's decision, 2026-10-23): HEAD's control
   on 861–870 1.53 %, stasis over 15 on 1 of 10 (the rule's 2): the stasis worse, the rule dropped; closed
   not done.
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.101 A defence that rises against a raid (found at 7.99; aircraft 7, needs 8; ADR-672 b): after year 1
+  82–90 % of the idle wings at war have nothing of the enemy in range, and of 120,472 sweep sorties over
+  the enemy's airbases (7.99's rule, `docs/evidence/7.99/rule.patch`) 1.0 % came within 150 km of an air
+  battle: nothing on the ground takes off against a raid. Rule: a fighter wing at an airbase with no
+  mission takes off against an enemy sortie that comes within its reach (it flies only when there is
+  something to meet), with 7.99's sweep kept to manned enemy airbases and fleets (no flights to empty
+  bases). Read first on 871–872 how many sweeps it turns into fights. AT: on 10 unseen seeds × 20 years
+  (891 on, `airLate.ts`) air battles a year in years 2–20 at least a tenth of year 1's, at least half of the
+  sweep sorties meeting a defender (`airSweeps.ts`), engaged per war in years 2–20 not below HEAD's on the
+  same seeds; a unit test, red without; the ADR; the pin's entry.
+  Read 2026-10-23 (`docs/evidence/7.101/read.md`): the sweeps that fought 1.6–1.8 % (the swept bases empty
+  or bombers' when reached); late battles 0.098 pooled on 871–872 with both rules; no rule. Closed not done (ADR-674 a, the user's decision,
+  2026-10-23): the aircraft score to the next critic report.

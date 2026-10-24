@@ -23159,3 +23159,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   On 861–870 against HEAD: the share 1.53 → 1.85 %, battles +45 %; stasis over 15 years 1 → 2 of 10.
 - **Pin 7c2e4700 → f9d18365** (ADR-673). 7.100 stays closed not done (the share's bar 1.96 % unmet).
 - **Next:** PLAN 7.5 is the only open task left after 7.101 (waiting on ADR-674).
+
+## 2026-10-23 — ADR-674 a (the user's decision; documents)
+
+- **7.101** closed not done, no rule; `docs/evidence/7.101/rule.patch` kept as a candidate; the aircraft
+  score to the next critic report.
+- The pin unchanged (f9d18365).
+- **Next:** PLAN 7.5 (the critic run: `npm run check:review`, then the critic).

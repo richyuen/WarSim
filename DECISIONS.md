@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-674 · 2026-10-23 · proposed (the user's decision) — A defence that rises: the sweeps still meet nothing (PLAN 7.101)
+### ADR-674 · 2026-10-23 · accepted, option a (the user's decision, 2026-10-23) — A defence that rises: the sweeps still meet nothing (PLAN 7.101)
 
 - **Context** (`docs/evidence/7.101/read.md`). PLAN 7.101 (ADR-672 b): a fighter wing at an airbase with no
   mission takes off against an enemy sortie in its reach, with 7.99's sweep kept to manned enemy airbases
@@ -195,7 +195,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   they raise engaged per war; whether that holds is the first clause's run on unseen seeds, which costs
   two hours and no more design. (c) chases the sweep clause, whose cause is the enemy's own missions: a
   base's fighters are out flying, which no target pick changes much.
-- **Consequences:** until decided, no rule; the pin unchanged (7c2e4700).
+- **Consequences:** no rule; the pin unchanged (f9d18365, ADR-673's). 7.101 closed not done; `rule.patch`
+  kept as a candidate; the aircraft score to the next critic report.
 
 ### ADR-673 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23); the rule committed, the user overriding the stasis condition — The cadre division at war: more front battles, the bar missed (PLAN 7.100)
 

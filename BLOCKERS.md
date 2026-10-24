@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.101: the scramble and the narrowed sweep, sweeps that fought 1.6–1.8 % against half (2026-10-23, ADR-674 proposed; the user's decision)
+### RESOLVED 2026-10-23 (option a, the user's decision: 7.101 closed not done, no rule) · PLAN 7.101: the scramble and the narrowed sweep, sweeps that fought 1.6–1.8 % against half (ADR-674)
 - **The bar:** on 10 unseen seeds × 20 years late air battles at least a tenth of year 1's, at least half
   of the sweep sorties meeting a defender, engaged per war not under HEAD's.
 - **What moved** (`docs/evidence/7.101/read.md`, 871–872): sweeps that fought 1.2/0.9 % → 1.6/1.8 %; late
