@@ -22,10 +22,6 @@
    "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
   },
   {
-   "id": "tests/e2e/formationFight1938.spec.ts › the panel of a formation in contact leads to its fight: both sides on the screen at T3",
-   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
-  },
-  {
    "id": "tests/e2e/handover1938.spec.ts › T0 ↔ T1: a resting camera shows one unit layer in full, never a half-faded copy of the other",
    "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
   },
@@ -43,10 +39,6 @@
   },
   {
    "id": "tests/e2e/precision.spec.ts › sprite positions are stable to ≤ 0.5 px while panning at 1 m/px at lon 179°",
-   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
-  },
-  {
-   "id": "tests/e2e/tankBattle1938.spec.ts › the tank battle: one zoom from a marker to a burning hull, with turrets on their targets and a flash at a muzzle on the way",
    "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
   },
   {

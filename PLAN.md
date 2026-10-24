@@ -40,6 +40,25 @@ Run 12's (report of 2026-10-22 on `896ff779`, `critic/CRITIC_REPORT.md`; R11-B2 
 and performance 7 → 6): R12-B1 and R12-B2 are PLAN 7.79 and 7.80; the dimensions under the bar, beyond
 them, are 7.81–7.86. A task each, split when taken up:
 
+Found by `npm run check:review` before critic run 13 (2026-10-24; ADR-675, ADR-676): two browser tests
+green here at `896ff779` and red at `9ffb0274` on what they claim, taken off `tools/gate/knownRed.json`
+(BLOCKERS). The critic waits on them (PROMPT step 2a):
+
+- [ ] 7.102 A block no further than 20 km from the block it faces (`formationFight1938`, seed 4242, Germany on
+  Poland, day 21): Polish infantry division 310's block stands 21.4 km from its foe 256 (span 0.40 by 1.02
+  cells), where 3.11c3a's layout left 18.1 at most; 310 itself stands 0.64 cells north of divisions 302 and
+  306 on the same foe. Engaged with a move order held is the norm (160–190 formations on days 21–22), not
+  the cause. Read first: the deploy of 310's block at `896ff779` and at HEAD; then a history (ADR-675's
+  way, the bar kept) or a defect of the deploy (its own rule, ADR).
+  AT: `formationFight1938` green on this machine, alone and in `npm run check:review`: the furthest block
+  under 20 km, every claim of the spec kept.
+- [ ] 7.103 A tank's flash at its own muzzle (`tankBattle1938`, seed 1, stop 5): the flash of element 1112
+  0.278 of a figure from the nearest of its figures, the bar 0.3. The spec measures to the nearest figure
+  of the shooter's element, not to the figure that fired (`Shot.from`: `originOf` puts the flash at that
+  figure's muzzle); in a packed block another of its tanks may stand nearer. Read first which figure is
+  nearest; then the measure aimed at the firing figure (the bar kept) or the muzzle's drawing fixed.
+  AT: `tankBattle1938` green on this machine, alone and in `npm run check:review`, every claim kept.
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

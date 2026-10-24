@@ -5,6 +5,20 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### Critic run 13 waits on PLAN 7.102 and 7.103: two tests off the known-red list (2026-10-24)
+
+- **What:** `npm run check:review` on `9ffb0274` listed `formationFight1938` and `tankBattle1938` as known red
+  (`tools/gate/knownRed.json`: a software GPU in a cloud container). Here they fail on what they claim
+  (a block 21.4 km from its foe, bar 20; a flash 0.278 of a figure from its tank, bar 0.3), and both were
+  green here at `896ff779` (critic run 12's review). The list's own rule: a test leaves it when it passes
+  here. Taken off; PLAN 7.102 and 7.103 hold them.
+- **Tried:** formationFight's furthest block probed (Polish division 310, engaged with a move order held,
+  as 160–190 others are on days 21–22: not a stuck march). tankBattle's measure read (to the nearest
+  figure of the shooter's element, not the firing figure). Neither cause found yet.
+- **Left:** 7.102, 7.103; then `npm run check:review` again (the code key moved: from the start, alone on
+  the machine), then the critic. Not verified: `zoomDemo1938`'s red here (a strength over 64 at its
+  line 315) is a claim's too, not the GPU's; it was red here at `896ff779` as well.
+
 ### RESOLVED 2026-10-23 (option a, the user's decision: 7.101 closed not done, no rule) · PLAN 7.101: the scramble and the narrowed sweep, sweeps that fought 1.6–1.8 % against half (ADR-674)
 - **The bar:** on 10 unseen seeds × 20 years late air battles at least a tenth of year 1's, at least half
   of the sweep sorties meeting a defender, engaged per war not under HEAD's.

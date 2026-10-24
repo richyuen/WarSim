@@ -23193,3 +23193,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   planesT3_1938, smallMark1938, muzzles1938, individuals1938, canvasOpaque1938, groundThings1938,
   hullsSea1938, fightSeen1938. tankBattle1938 red as before the change (stop 5's flash).
 - Render only; the pin unchanged (f9d18365).
+
+## 2026-10-24 — PLAN 7.5: two known reds are the code's here; PLAN 7.102 and 7.103 filed
+
+- `formationFight1938` (block 21.4 km from its foe, bar 20) and `tankBattle1938` (flash 0.278 of a figure,
+  bar 0.3) fail on their claims here and were green at `896ff779`: off `tools/gate/knownRed.json`
+  (15 → 13), BLOCKERS entry, PLAN 7.102 and 7.103 before 7.5.
+- Probed: 310 (formationFight's furthest) is engaged with its move order held, as 160–190 formations are;
+  tankBattle measures to the nearest figure of the element, not the one that fired.
+- **No critic run:** check:review is red until 7.102 and 7.103 (and its code key moved with ADR-675/676).
+- **Next:** PLAN 7.102.
