@@ -23411,3 +23411,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   the histories' drift, over two years at least. `airLate.ts` takes LOAD.
 - **Paired from year 10** (ADR-688 a; 951–960, 5 years each arm): engaged per war 0.648 → 0.541 (−17 %; −7 % without 954),
   6 of 10 lower; air battles +4 % as wings grow by 50. The commit's condition not met; to the user.
+
+## 2026-10-24 — PLAN 7.113a done: a nation rebuilds its air force to its start's wings (ADR-689, the user's)
+
+- **Rule** (`economic.ts` 3c, `world.airStart` saved, `startAir` in `Sim`): under its start's wings a nation orders as
+  many in training as its army's order slots while its air force costs under 0.035 of its income; at or over it, the
+  old rule. A save from before, and a nation founded later, has no start.
+- **AT** (re-scoped by the user to paired reads from HEAD's saves of 951–960): from year 1 over 2 years engaged per war
+  0.688 → 0.692, air battles 1,148 → 1,519; from year 10 over 5 years 0.648 → 0.687, 545 → 715. Wings at the ends
+  107 → 112, 85 → 94 (the 20-year wings clause, of the growth ruled out, not read).
+- **Tests:** `airBudget1938.test.ts` (rebuild by slots, red on HEAD; the start saved and loaded; Germany's case to the
+  rule). `airLate.ts` fills a loaded save's empty start from the seed's fresh world.
+- **Pin** c848f884 → 1ef5c241. Specs: none drawn changed.
+- **Next:** PLAN 7.113b (the crossing on this code) or the user's word on it; then 7.109.

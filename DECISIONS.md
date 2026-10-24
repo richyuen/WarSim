@@ -167,7 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-688 · 2026-10-24 · proposed (the user's decision) — The air force at 0.035 of income grows past 1938's and thins the land war from year 4 (PLAN 7.113a's AT missed again)
+### ADR-689 · 2026-10-24 · accepted (the user's decisions, 2026-10-24) — A nation rebuilds its air force to its start's wings at 0.035 of its income (PLAN 7.113a)
+
+- **Context.** ADR-686–688: at 0.1 and 0.035 of income the air forces grew past 1938's (the USA 21 → 165–172 wings,
+  `docs/evidence/7.113/at.md`), and the 20-year AT's land-war clause was missed. Paired from HEAD's year-1 saves the
+  0.035 rule left the land war as it was (0.689 → 0.686): the miss was the histories parting. Paired from year 10 it
+  lowered it (0.648 → 0.541) for +4 % air battles: the late growth fights little. Strikes end almost no contact
+  (`contactEnds.ts`); the great powers do not rebuild for the treasury's reserve (`gates_951.txt`).
+- **Decision** (the user's: rebuild, then the old pace; `economic.ts` 3c, `world.airStart`, `startAir` in `Sim`): each
+  nation's wings as the world is made are saved as its start. Under it (its wings with those in training), it orders
+  as many in training as the army's order slots while its air force with them costs under AIR_REBUILD_SHARE (0.035, the
+  great powers' of 1938) of its income, their upkeep counted against the balance as the army's orders in training are;
+  at it or over it, the old rule (one at a time under AIR_SHARE of its army's upkeep). The reserve stays RESERVE_MONTHS.
+  A nation founded later, and every nation of a save from before, has no start: the old rule.
+- **AT** (re-scoped by the user to paired reads; `rb1/`, `rb10/` against `fromY1/head_*`, `fromY10/head_*`): engaged
+  per war 0.688 → 0.692 (2 years from year 1) and 0.648 → 0.687 (5 years from year 10): not below, met; air battles
+  1,148 → 1,519 and 545 → 715 (1.32 ×, 1.31 ×). Wings at the reads' ends 107 → 112 and 85 → 94.
+- **Tests.** `airBudget1938.test.ts`: France, five wings lost, orders three (its slots), two lost two, back to its 15;
+  at its start one (red on HEAD's rule); the start saved and loaded; Germany's case (its other wings destroyed, so now
+  under its start) asserts the pick's first and its slots where it asserted one wing.
+- **Pin** c848f884 → 1ef5c241.
+
+### ADR-688 · 2026-10-24 · accepted, option a (the user's decision, 2026-10-24): the year-10 read; then ADR-689 — The air force at 0.035 of income grows past 1938's and thins the land war from year 4 (PLAN 7.113a's AT missed again)
 
 - **AT** (`docs/evidence/7.113/at.md`, last section; 951–960 × 20): wings 90.8 → 210.0 (met); air battles 171.0 →
   263.8; engaged per war 0.598 → 0.369 (missed). Better than HEAD's in years 2–3 (0.794 → 1.236, 0.583 → 0.805) while

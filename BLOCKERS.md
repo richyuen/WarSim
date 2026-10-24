@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.113a's AT missed twice: engaged per war 0.598 → 0.395 (0.1) and 0.369 (0.035) with wings 2.3–2.4 × (ADR-687, ADR-688, 2026-10-24)
+### RESOLVED 2026-10-24 (the user's decisions: the rebuild to the start's wings, ADR-689; 7.113a done on paired reads) · PLAN 7.113a's AT missed twice: engaged per war 0.598 → 0.395 (0.1) and 0.369 (0.035) with wings 2.3–2.4 × (ADR-687, ADR-688, 2026-10-24)
 - **The bar:** on 951–960 × 20 against HEAD, wings of living nations in years 2–20 at least 1.25 × HEAD's; engaged
   per war there not below HEAD's; a unit test, red without.
 - **What moved** (`docs/evidence/7.113/at.md`): the user's rule (ADR-686: the air force under 0.1 of income, wings

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { AIR_SHARE } from '../../src/sim/ai/economic';
+import { AIR_REBUILD_SHARE, AIR_SHARE, MAX_PARALLEL, PARALLEL_INCOME } from '../../src/sim/ai/economic';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { UPKEEP_SCALE } from '../../src/sim/systems/economy';
+import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import { Domain, type World } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -34,6 +34,8 @@ const upkeep = (w: World, n: number, of: (f: number) => boolean): number => {
   return u;
 };
 const army = (w: World, f: number): boolean => !w.offLand(f);
+const income = (w: World, n: number): number => Math.max(0, monthlyAccounts(w, T).gross[n]!);
+const slots = (w: World, n: number): number => Math.min(MAX_PARALLEL, 1 + Math.floor(income(w, n) / PARALLEL_INCOME));
 
 describe('the air force\'s cost (PLAN 5.8s2)', () => {
   it('under its share France orders a fighter group, one at a time; Britain, over it, none; the Soviet Union, short of money, none', () => {
@@ -51,7 +53,9 @@ describe('the air force\'s cost (PLAN 5.8s2)', () => {
     expect(ordered(w, FRA)).toHaveLength(1);
   });
 
-  it('with fighters half its wings or more, a tactical bomber group; with no airfield, none', () => {
+  // Germany, its other wings destroyed, is under its start's wings and rebuilds (PLAN 7.113a): several
+  // in training, the first a tactical bomber group by the pick.
+  it('with fighters half its wings or more, a tactical bomber group first; with no airfield, none', () => {
     const s = peaceful(['GER']);
     const w = s.world;
     const GER = id('GER');
@@ -60,12 +64,53 @@ describe('the air force\'s cost (PLAN 5.8s2)', () => {
     const others = [...w.wingBase.keys()].filter((f) => c.nation[f] === GER && c.template[f] !== wingsMix.fighter).sort((a, b) => a - b);
     for (const f of others.slice(2)) destroyFormation(w, f);
     runEvents(s, 1);
-    expect(ordered(w, GER)).toEqual([wingsMix.tactical]);
+    const got = ordered(w, GER);
+    expect(got[0]).toBe(wingsMix.tactical);
+    expect(got.length).toBeLessThanOrEqual(slots(w, GER));
     const v = peaceful(['GER']);
     v.world.airbases.forEach((b) => {
       if (v.world.cells.controller[b.cell] === GER) v.world.cells.controller[b.cell] = id('POL');
     });
     runEvents(v, 1);
     expect(ordered(v.world, GER)).toEqual([]);
+  });
+  // PLAN 7.113a (ADR-689, the user's decision, 2026-10-24): the wings shot down in year 1 were not
+  // rebuilt (88 and 145 of 216 on seeds 941 and 942), one at a time under a tenth of armies that cost
+  // 5-7 % of their income late. Under its start's wings a nation rebuilds: as many in training as its
+  // army's order slots while its air force costs under AIR_REBUILD_SHARE of its income; at its
+  // start's, one at a time under AIR_SHARE of its army's, as before.
+  it("under its start's wings France rebuilds a wing a slot, no more than it lost; at its start's, one at a time", () => {
+    const order = (lose: number): { got: number[]; start: number; left: number } => {
+      const s = peaceful(['FRA']);
+      const w = s.world;
+      const FRA = id('FRA');
+      const c = w.formations.cols;
+      const own = [...w.wingBase.keys()].filter((f) => c.nation[f] === FRA).sort((a, b) => a - b);
+      for (const f of own.slice(0, lose)) destroyFormation(w, f);
+      runEvents(s, 1);
+      return { got: ordered(w, FRA), start: w.airStart.get(FRA)!, left: own.length - lose };
+    };
+    const at = order(0);
+    expect(at.start, "France's start: its 1938 wings").toBe(15);
+    expect(at.got, 'at its start, one at a time').toEqual([wingsMix.fighter]);
+    // Three slots (an income of about 1,070): it lost five, it orders three.
+    const lost = order(5);
+    expect(lost.got).toHaveLength(3);
+    expect(lost.left + lost.got.length).toBeLessThanOrEqual(lost.start);
+    // Lost two: it orders two, back to its start, and no more.
+    const two = order(2);
+    expect(two.got).toHaveLength(2);
+    expect(two.left + two.got.length).toBe(two.start);
+    expect(AIR_REBUILD_SHARE).toBe(0.035);
+  });
+
+  it("a nation's start of wings is saved and loaded (PLAN 7.113a)", () => {
+    const s = peaceful([]);
+    const before = [...s.world.airStart].sort((a, b) => a[0] - b[0]);
+    expect(before.length).toBeGreaterThan(10);
+    const t = new Sim({ scenario: '1938', seed: 2, assets: assets1938(SIZE_1938.w) });
+    t.world.airStart.clear();
+    t.load(s.save());
+    expect([...t.world.airStart].sort((a, b) => a[0] - b[0])).toEqual(before);
   });
 });

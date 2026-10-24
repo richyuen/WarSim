@@ -19,7 +19,12 @@ const seed = Number(process.argv[2]);
 const years = Number(process.argv[3] ?? 20);
 const out = process.argv[4] ?? `.cache/airLate_${seed}.json`;
 const s = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SIZE_1938.w) });
-if (process.env.LOAD) s.load(new Uint8Array(readFileSync(process.env.LOAD)));
+if (process.env.LOAD) {
+  s.load(new Uint8Array(readFileSync(process.env.LOAD)));
+  // A save from before PLAN 7.113a has no start of wings: the fresh world's of the seed (its 1938 forces).
+  const fresh = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SIZE_1938.w) }).world;
+  if (s.world.airStart.size === 0) for (const [n, k] of fresh.airStart) s.world.airStart.set(n, k);
+}
 const w = s.world;
 const rows: { year: number; airBattles: number; aloft: number; wars: number; wings: number; engaged: number; perWar: number }[] = [];
 for (let y = 1; y <= years; y++) {

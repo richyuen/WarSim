@@ -459,6 +459,8 @@ class WorldCore implements Stateful {
       // Fallout (PLAN 6.3b): [cell, level] each, by cell, only while there is some.
       ...(w.fallout.size === 0 ? [] : [{ name: 'world.fallout', dtype: 'f64' as const, data: Float64Array.from([...w.fallout].sort((a, b) => a[0] - b[0]).flat()) }]),
       // The warheads (PLAN 6.1b): [nation, stock, paid] each, only while there is one.
+      // Each nation's wings at the start (PLAN 7.113a): [nation, wings] each, only while there is one.
+      ...(w.airStart.size === 0 ? [] : [{ name: 'world.airStart', dtype: 'f64' as const, data: Float64Array.from([...w.airStart].sort((a, b) => a[0] - b[0]).flat()) }]),
       ...(w.warheads.size === 0 ? [] : [{ name: 'world.warheads', dtype: 'f64' as const, data: Float64Array.from([...w.warheads].sort((a, b) => a[0] - b[0]).flatMap(([n, h]) => [n, h.stock, h.paid])) }]),
       // Each nation's air totals (PLAN 5.11b): [nation, lost, bombed] each, only while there is one.
       ...(w.airTotals.size === 0 ? [] : [{ name: 'world.airTotals', dtype: 'f64' as const, data: Float64Array.from([...w.airTotals].sort((a, b) => a[0] - b[0]).flatMap(([n, t]) => [n, t.lost, t.bombed])) }]),
@@ -581,6 +583,10 @@ class WorldCore implements Stateful {
     w.fallout = new Map();
     const fo = sections.find((s) => s.name === 'world.fallout')?.data as Float64Array | undefined;
     for (let at = 0; fo && at + 2 <= fo.length; at += 2) w.fallout.set(fo[at]!, fo[at + 1]!);
+    // A save from before PLAN 7.113a has none: its nations rebuild by the rule of a nation with no start.
+    w.airStart = new Map();
+    const starts = sections.find((s) => s.name === 'world.airStart')?.data as Float64Array | undefined;
+    for (let at = 0; starts && at + 2 <= starts.length; at += 2) w.airStart.set(starts[at]!, starts[at + 1]!);
     w.warheads = new Map();
     const heads = sections.find((s) => s.name === 'world.warheads')?.data as Float64Array | undefined;
     for (let at = 0; heads && at + 3 <= heads.length; at += 3) w.warheads.set(heads[at]!, { stock: heads[at + 1]!, paid: heads[at + 2]! });
@@ -1188,6 +1194,12 @@ export class World {
   airTotals = new Map<number, { lost: number; bombed: number }>();
   /** The nations God Mode has barred from nuclear weapons (PLAN 6.1a, `setNukes`): state, saved while not empty. */
   nukesBanned = new Set<number>();
+  /**
+   * Each nation's wings when the world was made (PLAN 7.113a, `startAir`): the size its economic AI
+   * rebuilds its air force to at its share of its income. State, a section of its own saved while not
+   * empty (a save from before has none).
+   */
+  airStart = new Map<number, number>();
   /** Each nation's warheads and the gold paid toward the next (PLAN 6.1b, `nuclearSystem`): state, a section of its own saved while not empty. */
   warheads = new Map<number, { stock: number; paid: number }>();
   /** The warheads in flight (PLAN 6.2, `nuclearSystem`), and the id the next launch takes: state, a section of its own saved while there is one. */

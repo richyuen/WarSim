@@ -939,8 +939,11 @@ Element (authoritative unit proxy) {
       poor, with an airfield and no wing in training, orders one while its wings' upkeep is
       under a tenth of its army's (with the orders in training), if its balance stays above
       the need and its gold covers the price and three months of income: a fighter group while
-      fighters are under half its wings, else a tactical bomber group. After the army's orders
-      and a fleet's.
+      fighters are under half its wings (those in training with them), else a tactical bomber
+      group. After the army's orders and a fleet's. Under its start's wings (PLAN 7.113a,
+      ADR-689; `world.airStart`, each nation's wings as the world was made, saved) it rebuilds:
+      as many wings in training as the army's order slots, while its air force with them costs
+      under `AIR_REBUILD_SHARE` (0.035) of its income, their upkeep counted against the balance.
   - **A fleet sails** (PLAN 4.2c, ADR-250; `src/sim/systems/sail.ts`).
     - *The order* (`orderSail`; `orderMove` and so the `moveFormation` command hand a fleet
       to it): to water with a zone, or to a port by its land cell (the port's water, its

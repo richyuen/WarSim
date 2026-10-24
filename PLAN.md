@@ -62,14 +62,21 @@ reused:
   a world-year; at war, under the air share, the wing's order stopped most by the treasury holding its price but not
   RESERVE_MONTHS of income more (1,063 and 1,578 nation-months), then one wing in training at a time, then no
   airfield. Seeds: the AT on 951–960, all parts against one HEAD baseline; three arms (HEAD, a, a+b). In two parts:
-    - [ ] 7.113a The air force's share of income, its wings trained side by side (re-scoped 2026-10-24, ADR-686, the
+    - [x] 7.113a The air force's share of income, its wings trained side by side (re-scoped 2026-10-24, ADR-686, the
       user's decision): the air force, with its wings in training, under AIR_SHARE (0.1) of its nation's income, not
       of its army's upkeep; as many wings in training as the army's order slots, not one. AT: on 951–960 × 20, wings of
       living nations in years 2–20 at least 1.25 × HEAD's; engaged per war there not below HEAD's; a unit test,
       red without; the pin moved with its ADR; the gate green.
       Tried 2026-10-24 before its AT (`docs/evidence/7.113/read.md` §3, `reserve.patch`): the same as HEAD on six
       saves over 90 days; the binding gate late is AIR_SHARE of a small army's upkeep (ADR-686). The user's rule's AT
-      (`at.md`, `income.patch`): wings 2.40 × (met), engaged per war 0.66 × (missed). At 0.035 (ADR-687 a): wings 2.31 ×, engaged per war 0.62 ×: missed. Waits on ADR-688 (BLOCKERS).
+      (`at.md`, `income.patch`): wings 2.40 × (met), engaged per war 0.66 × (missed). At 0.035 (ADR-687 a): wings 2.31 ×, engaged per war 0.62 ×: missed (ADR-688). Done 2026-10-24 (ADR-689, the
+      user's decisions in conversation): the 20-year clause's land-war miss is the histories parting (paired from
+      year-1 saves 0.689 → 0.686 at 0.035); the rule rebuilds to each nation's start of wings (`world.airStart`) at
+      0.035 of income, several in training, and grows past it by the old rule; the AT re-scoped to paired reads from
+      HEAD's year-1 (2 years) and year-10 (5 years) saves of 951–960: engaged per war 0.688 → 0.692 and 0.648 → 0.687
+      (not below: met), air battles 1,148 → 1,519 and 545 → 715 (1.32 ×, 1.31 ×); the wings clause, a proxy of the
+      growth the user ruled out, not read (wings 107 → 112, 85 → 94 at the reads' ends). `airBudget1938.test.ts`
+      (red without); the pin c848f884 → 1ef5c241.
     - [ ] 7.113b The crossing on 7.113a's code (`docs/evidence/7.108b/rule.patch`, its unit test with it). AT: on
       951–960 × 20, air battles a world-year after year 1 at least 1.25 × HEAD's; engaged per war not below HEAD's;
       the unit test red without; the pin moved with its ADR; the gate green.

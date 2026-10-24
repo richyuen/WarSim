@@ -67,9 +67,11 @@
  *    under NAVY_SHARE, saves too (PLAN 7.47, ADR-579: the first destroyer ended the saving); but
  *    not at war with FEW_FORMATIONS land formations or fewer, whose army orders first (PLAN 7.49c,
  *    ADR-590).
- *    Then a wing (PLAN 5.8s2, `pickWing`), as a fleet: a nation not poor with an airfield and no
- *    wing in training orders one while its air force's upkeep is under AIR_SHARE of its army's,
- *    a fighter group while fighters are under half its wings, else a tactical bomber group.
+ *    Then wings (PLAN 5.8s2, `pickWing`): a nation not poor with an airfield and no wing in training
+ *    orders one while its air force's upkeep is under AIR_SHARE of its army's, a fighter group while
+ *    fighters are under half its wings, else a tactical bomber group. Under its start's wings
+ *    (`world.airStart`, PLAN 7.113a, ADR-689) it rebuilds: as many in training as its army's order
+ *    slots while its air force costs under AIR_REBUILD_SHARE of its income.
  * 2b. A means of delivery (PLAN 7.6b, `deliveryWing`), before research takes the month's surplus:
  *    a nation with warheads and no means of delivery (`canDeliver`: no missiles, no strategic
  *    bomber with a base) and no wing in training orders a strategic bomber group, whatever its air
@@ -215,6 +217,25 @@ export function peaceShare(aggression: number): number {
 export const AIR_SHARE = 0.1;
 
 /**
+ * The share of its income a nation's air force (with its wings in training) may cost while it
+ * rebuilds to its start's wings (PLAN 7.113a, ADR-689, the user's): the great powers' of 1938
+ * (Italy 0.034, Japan 0.036, the Soviet Union 0.040). The wings shot down in year 1 (88 and 145 of a
+ * world's 216 on 941 and 942) were not rebuilt under AIR_SHARE of armies that cost 5-7 % of their
+ * income late, one at a time; at this share past the start's size the USA grew from 21 wings to 170.
+ */
+export const AIR_REBUILD_SHARE = 0.035;
+
+/** Sets each nation's start of wings (`world.airStart`, PLAN 7.113a): its wings as the world is made. */
+export function startAir(world: World): void {
+  world.airStart.clear();
+  for (const [id] of world.wingBase) {
+    if (!world.formations.has(id)) continue;
+    const n = world.formations.cols.nation[id]!;
+    world.airStart.set(n, (world.airStart.get(n) ?? 0) + 1);
+  }
+}
+
+/**
  * The share of its income a nation keeps its navy's upkeep near (PLAN 4.6e1): it builds below it (the
  * upkeep of its armed fleets, PLAN 7.46b1) and lays up above it when short (the upkeep of all its fleets).
  */
@@ -293,6 +314,9 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     /** Per nation: the fleets in training, and the wings (PLAN 5.8s2). */
     const shipsPending = new Map<number, number>();
     const wingsPending = new Map<number, number>();
+    /** Per nation: the upkeep of its wings in training and their templates (PLAN 7.113a). */
+    const wingsTraining = new Map<number, number>();
+    const wingTemplates = new Map<number, number[]>();
     /** The nations with a transport group in training (PLAN 7.26h2), and how many each. */
     const transportsPending = new Map<number, number>();
     world.production.forEach((id) => {
@@ -305,6 +329,10 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       }
       if (world.rules?.templates[t]?.domain === Domain.air) {
         wingsPending.set(n, (wingsPending.get(n) ?? 0) + 1);
+        wingsTraining.set(n, (wingsTraining.get(n) ?? 0) + upkeepOfTemplate(t));
+        const kinds = wingTemplates.get(n) ?? [];
+        kinds.push(t);
+        wingTemplates.set(n, kinds);
         return;
       }
       pending.set(n, (pending.get(n) ?? 0) + 1);
@@ -544,15 +572,31 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           balance -= u;
         }
       }
-      // 3c. A wing (PLAN 5.8s2), with what is left: one at a time, while the air force is under
-      // its share of the army's upkeep (the orders in training with it).
-      const wing = mix.wings && !carried && income >= POOR_INCOME && (wingsPending.get(n) ?? 0) === 0 && (air.get(n) ?? 0) < AIR_SHARE * upkeep ? pickWing(world, n, mix.wings, wings.get(n) ?? []) : -1;
-      if (wing >= 0 && airfield(world, n, wing) >= 0) {
-        const rule = rules.templates[wing]!;
-        const u = upkeepOfTemplate(wing);
-        if (balance - u > need && nc.gold[n]! >= rule.gold + RESERVE_MONTHS * income && nc.manpower[n]! >= rule.manpower && queueFormation(world, n, wing) !== 0) {
+      // 3c. Wings (PLAN 5.8s2), with what is left. Under its start's wings (PLAN 7.113a, ADR-689: its
+      // wings with those in training under `world.airStart`'s), a nation rebuilds: while its air
+      // force's upkeep, with its wings in training, is under AIR_REBUILD_SHARE of its income, as many
+      // in training as the army's order slots. At its start's or over it, one at a time, while the air
+      // force is under AIR_SHARE of the army's upkeep (the orders in training with it).
+      if (mix.wings && !carried && income >= POOR_INCOME) {
+        const start = world.airStart.get(n) ?? 0;
+        let count = (wings.get(n)?.length ?? 0) + (wingsPending.get(n) ?? 0);
+        let airUpkeep = (air.get(n) ?? 0) + (wingsTraining.get(n) ?? 0);
+        let left = balance - (wingsTraining.get(n) ?? 0);
+        const kinds = [...(wings.get(n) ?? []).map((id) => f.template[id]!), ...(wingTemplates.get(n) ?? [])];
+        for (let k = wingsPending.get(n) ?? 0; ; k++) {
+          const rebuild = count < start;
+          if (rebuild ? k >= slots || airUpkeep >= AIR_REBUILD_SHARE * income : k >= 1 || (air.get(n) ?? 0) >= AIR_SHARE * upkeep) break;
+          const wing = pickWing(world, n, mix.wings, kinds);
+          if (wing < 0 || airfield(world, n, wing) < 0) break;
+          const rule = rules.templates[wing]!;
+          const u = upkeepOfTemplate(wing);
+          if (!((rebuild ? left : balance) - u > need && nc.gold[n]! >= rule.gold + RESERVE_MONTHS * income && nc.manpower[n]! >= rule.manpower) || queueFormation(world, n, wing) === 0) break;
           nc.builds[n] = nc.builds[n]! + 1;
           balance -= u;
+          left -= u;
+          airUpkeep += u;
+          count++;
+          kinds.push(wing);
         }
       }
     });
@@ -676,7 +720,8 @@ export function fleetPrice(world: World, income: number, kinds: NonNullable<Buil
 
 /**
  * The wing nation `n` orders next (PLAN 5.8s2), its air force under its share: a fighter group
- * while fighters are under half its wings `own`, else a tactical bomber group; the other when it
+ * while fighters are under half its wings `own` (their templates, those in training and ordered
+ * this month with them, PLAN 7.113a), else a tactical bomber group; the other when it
  * lacks the techs of that one; -1 when it lacks both.
  */
 /**
@@ -690,9 +735,8 @@ export function deliveryWing(world: World, n: number, kinds: NonNullable<BuildMi
   return rule && knowsTechs(world, n, rule.techs) ? t : -1;
 }
 
-function pickWing(world: World, n: number, kinds: NonNullable<BuildMix['wings']>, own: number[]): number {
-  const f = world.formations.cols;
-  const fighters = own.filter((id) => f.template[id] === kinds.fighter).length;
+function pickWing(world: World, n: number, kinds: NonNullable<BuildMix['wings']>, own: readonly number[]): number {
+  const fighters = own.filter((t) => t === kinds.fighter).length;
   const order = 2 * fighters < own.length || own.length === 0 ? [kinds.fighter, kinds.tactical] : [kinds.tactical, kinds.fighter];
   return order.find((t) => world.rules!.templates[t] !== undefined && knowsTechs(world, n, world.rules!.templates[t]!.techs)) ?? -1;
 }
