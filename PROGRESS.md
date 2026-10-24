@@ -23470,3 +23470,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   grievance remembers a strike on forces, `world.nukeGrievanceArmy`); its unit test `nukeAnswerInKind1938.test.ts`.
   The gate green, the pin unchanged. 7.109 ticked (both parts closed); PLAN 7.114 builds on the rule.
 - **Next:** PLAN 7.110.
+
+## 2026-10-24 — PLAN 7.110a: why the army at war is smaller after year 1 (measured)
+
+- **Start:** gate green on `88e46041`; critic not due; no decision waiting.
+- **Figure** (901–910 × 20, `tools/diag/armyAtWarAt.ts`): land formations of nations at war a war 75.8 in year 1,
+  48.5 in years 2–20 (per seed 0.49–0.79 of year 1); engaged a war 0.488. The world raises ~90–100 land formations
+  a year from year 2; the army settles where its losses fall to that rate. The income of nations at war rises by half.
+- **Money** (`armyGatesNow.ts`, 6,779 nation-months on the 20 saves): CE cost 0.20 of income at war, suppression
+  0.10, land upkeep 0.08, refills 0.07–0.13; new orders take what is left. The 0.6 share never binds; under 100 a
+  month gold stops every order, 100–400 one slot, over 1,000 slots, the warship's saving and armour. The cadre
+  rule is 301 of 393 orders under 1,000 a month. The air force costs under 1 % of income.
+- **Losses** (`armyLossBySystem.ts`, each system wrapped, 60 days from five year-10 saves): the air's strikes take
+  648,000 men against combat's 536,000 and supply's 231,000, 88 % of it from formations in no contact, and end 95
+  formations to combat's 63. `docs/evidence/7.110/measure.md`.
+- **Gotcha:** `Sim`'s systems can be wrapped from a tool as `profile` does (`systems`, `systemNames`): a per-system
+  read of any state, the game unchanged.
+- **Next:** PLAN 7.110b (the rule; seeds 971–980).

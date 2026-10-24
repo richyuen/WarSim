@@ -56,6 +56,17 @@ reused:
   kept), the cadre rule's reach (ADR-673). AT: on the next 10 unseen seeds × 20 years against HEAD on them,
   land formations of nations at war a war, mean of daily samples in years 2–20, at least 1.3 × HEAD's;
   engaged per war there not below HEAD's; a unit test, red without; the gate green.
+    - [x] 7.110a Measured (on HEAD's 901–910 × 20 and their year-10 and year-20 saves): the figure, upkeep against
+      income, what the money buys, the cadre rule's reach, and where the men go.
+      Done 2026-10-24 (`docs/evidence/7.110/measure.md`; tools `armyAtWarAt.ts`, `armyGatesNow.ts`,
+      `armyLosses.ts`, `armyLossBySystem.ts`): 75.8 a war in year 1, 48.5 in years 2–20; ~90–100 raised a year,
+      the army standing where its losses meet them. Money: CE cost 0.20 of income at war, suppression 0.10, the
+      army's upkeep 0.08, new orders and refills the rest; the cadre division 301 of 393 orders under 1,000 a month.
+      Losses: the air's strikes take more than combat on 4 of 5 year-10 saves, 88 % of it from formations in no
+      contact.
+    - [ ] 7.110b The rule, on 7.110a's lever, with 7.110's AT on 971–980 × 20 against HEAD on them: land formations
+      of nations at war a war in years 2–20 at least 1.3 × HEAD's; engaged per war there not below HEAD's; a unit
+      test, red without; the gate green.
 - [ ] 7.111 The late tick's exact remainder (found at 7.105; performance 5; ADR-680 b, the user's decision): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one
   Map of keys past the small integers), `sectorShape`'s sort and holders, `industryHeld` once a day for
   every reader. AT: year 21 of 4877 from `critic/c13_seed4877_y20.bin`, `npm run sim -- --affinity
