@@ -68,3 +68,44 @@ the year's hash 6d6103a7. `pair.sh` (`p1_*.log`; h0 HEAD, h1 the cut):
 | 0x000F | 5.274 | 5.152 |
 
 About −0.17 ms (−3.5 %); operationalAi 2.22/2.38 → 2.04/2.21.
+
+## The AT read on cut 1
+
+`npm run sim -- --scenario 1938 --load critic/c13_seed4877_y20.bin --years 1 --affinity 0xFFFF`, alone:
+**4.224** (`head_3y.log`, year 21 of three) and **4.256** (`at_cut1_read2.log`). The bar, 3.0 twice:
+missed. Engaged per war in the year: the same as HEAD's (the same hash, 6d6103a7).
+
+## Why the tick is 2.4 × the critic's 896ff77
+
+The critic ran both commits in one session (`critic/c13_perf_4877_y21_896ff77.log`, on that commit's
+own year-20 save of 4877, another world): 1.82 ms a tick, 20,708 cells flipped, operationalAi 0.54;
+HEAD 4.42, 89,542, 2.04. The world is 4.3 × as churned; the reach tests grow with it (the mixed nodes,
+whose open cells the far walks and `joinWide` walk). ADR-654 (a) took the cost of a busier world as
+the rules'. The page: 23–32 s a game year at Max there against 46–59 s here, × 2.0 against the
+headless × 2.4: the page's share did not grow, so the drop is the sim's.
+
+## The page against the headless year (same years, 21–23)
+
+| year | page at Max (`critic/c13_l_4877_alone.json`) | its pauses resumed | headless, cut 1 (`head_3y.log`) | × |
+|---|---|---|---|---|
+| 21 | 46.3 s | 6 | 37.1 s | 1.25 |
+| 22 | 59.4 s | 13 | 40.1 s | 1.48 |
+| 23 | 59.4 s | 16 | 42.9 s | 1.38 |
+
+The pauses at Max are the game's own (an AI strike pauses it; PLAN 7.109a wants that pause prompter),
+so a felt-speed bar that counts them works against 7.109.
+
+## What is left, sized (none reaches 3.0)
+
+- **Exact cuts** (the same answers): `snapTarget`'s Map by landmass and cell (~0.1 ms; the lookup is
+  the function's time, 30 % of its keys past the small integers), `sectorShape`'s sort and holders
+  (~0.05), `industryHeld` (~0.03): about 0.3 together, to about 3.9.
+- **The pockets as a rule** (~0.2–0.3 more, to about 3.6): each start's own walk, no answer taken from
+  another walk's marks, then kept across ticks while no flip between an open and a closed holder of the
+  set touches a walked cell or its neighbour and the node parts hold. Not a cache of today's walk
+  (7.94's option c's kind): a walk ends on the marks of the walks before it in its tick, so a mark kept
+  from an earlier tick gives an answer a fresh walk need not give, and a loaded world (no marks) would
+  step otherwise than the one saved: the round trip's test. Only an answer that is the start's own is
+  kept exactly, and that changes today's answers: a rule, the pin moved.
+- **The operational AI's cadence** (each nation's turn every other day, not daily): about 1.0 ms, the
+  only lever of the bar's size, and against R13-B1 (7.104, 7.110: the land war late).

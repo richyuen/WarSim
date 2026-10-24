@@ -78,6 +78,9 @@ reused:
   at Max. AT: that late year's mean tick at most 3.0 ms headless pinned on 0xFFFF, twice; engaged land
   formations a war in that year not below HEAD's; a rule that changes an outcome has its own ADR (ADR-666
   b's fewer searches is one candidate); the gate green.
+  Blocked (2026-10-24, ADR-680 proposed, BLOCKERS; `docs/evidence/7.105/measure.md`): HEAD 4.50 ms; with
+  `joinWide`'s cells sorted by digits (`8dd20446`, the same answers) 4.224 and 4.256. The reach tests of a
+  world 4.3 × as churned as 896ff77's; what is left is PLAN 7.111 and 7.112.
 - [ ] 7.106 Emergent dynamics (emergent 6, needs 7, beyond R13-B1): on the same 32 seeds the churn grew
   in statelets: revolts 125 → 195 a world, founded nations alive at year 30 23 → 37, "Land handed over"
   1,075 rows in 3 late years of 4877. The longest stasis 22 → 25 years (3491) is noted, not scored
@@ -119,6 +122,18 @@ reused:
   kept), the cadre rule's reach (ADR-673). AT: on the next 10 unseen seeds × 20 years against HEAD on them,
   land formations of nations at war a war, mean of daily samples in years 2–20, at least 1.3 × HEAD's;
   engaged per war there not below HEAD's; a unit test, red without; the gate green.
+- [ ] 7.111 The late tick's exact remainder (found at 7.105; performance 5; waits on the user's ADR-680:
+  option a or b): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one
+  Map of keys past the small integers), `sectorShape`'s sort and holders, `industryHeld` once a day for
+  every reader. AT: year 21 of 4877 from `critic/c13_seed4877_y20.bin`, `npm run sim -- --affinity
+  0xFFFF`, at most 3.9 ms a tick, twice; its hash 6d6103a7 and the pin unchanged; the gate green.
+- [ ] 7.112 The pockets as a rule (found at 7.105; performance 5; waits on the user's ADR-680: option b
+  or c): `pocketOf` answers each start by its own walk (no answer taken from another walk's marks), and
+  keeps that answer across ticks while no flip between an open and a closed holder of its set touches a
+  walked cell or a neighbour and the node parts hold (exact, so a loaded world steps as the saved one).
+  AT: on that year, `pocketOf`'s cells walked a tick at most 0.5 × HEAD's; engaged land formations a war
+  in it, from the same save, not below HEAD's; the round trip's test green; a unit test, red without;
+  the pin moved once, with its ADR; the gate green.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

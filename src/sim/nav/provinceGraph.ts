@@ -655,7 +655,9 @@ export function sortCells(cells: readonly number[], size: number): Int32Array {
   let to = new Int32Array(n);
   const count = new Int32Array(1 << SORT_BITS);
   const mask = (1 << SORT_BITS) - 1;
-  for (let shift = 0; size - 1 >>> shift > 0; shift += SORT_BITS) {
+  // The digits `size` needs (a shift of 32 or more would be read modulo 32).
+  const bits = 32 - Math.clz32(size - 1);
+  for (let shift = 0; shift < bits; shift += SORT_BITS) {
     count.fill(0);
     for (let i = 0; i < n; i++) count[(from[i]! >>> shift) & mask]!++;
     let sum = 0;

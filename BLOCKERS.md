@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.105's AT missed: year 21 of 4877 at 4.22–4.26 ms a tick, bar 3.0 (ADR-680, 2026-10-24)
+- **The bar:** year 21 of 4877 from critic run 13's year-20 save at most 3.0 ms a tick headless pinned on
+  0xFFFF, twice; engaged per war not below HEAD's.
+- **What moved** (`docs/evidence/7.105/measure.md`): HEAD 4.50; `joinWide`'s cells sorted by digits
+  (`8dd20446`, the same answers, the pin unchanged) −0.17 paired; the AT read 4.224 and 4.256.
+- **What is left:** the reach tests (`pocketOf` 0.48 ms, `joinWide` 0.44) of a world 4.3 × as churned as
+  896ff77's. Sized: the exact remainder ~0.3 (to ~3.9, PLAN 7.111), the pockets as a rule ~0.2–0.3 (to
+  ~3.6, PLAN 7.112), the operational AI's turn every other day ~1.0 (against R13-B1). The user's
+  (ADR-680): (a) 7.111 alone; (b) 7.111 and 7.112 (recommended); (c) both and the cadence. No rule;
+  the pin unchanged (f9d18365).
+
 ### PLAN 7.104's AT missed: engaged per war late 0.112 of year 1 on HEAD, 0.104 with two rules, bar 0.15 (ADR-679, 2026-10-24)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD, engaged land formations a war in years 2–20 at
   least 0.15 of year 1's; formations under 500 men at year 20 not above HEAD's; a unit test, red without.

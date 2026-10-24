@@ -23259,3 +23259,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **No rule;** the code restored; the pin unchanged (f9d18365). New diag tools: `contactGap.ts`,
   `armyTotals.ts`, `nationFront.ts`, `planOf.ts`, `spareHot.ts`, `engagedWindow.ts`, `contactAt.ts`.
 - **Next:** PLAN 7.105.
+
+## 2026-10-24 — PLAN 7.105: the late tick, one exact cut, the AT missed (ADR-680 to the user)
+
+- **Measured** (`docs/evidence/7.105/measure.md`; year 21 of 4877 from `critic/c13_seed4877_y20.bin`): 4.50 ms a
+  tick; operationalAi 2.09, of it `pocketOf` 23 %, `joinWide` 20 %, the searches 6 % (7.94's year: 34 %). Each
+  pocket start walked ~10 × in 30 days, across ticks; `joinWide` 27 walks of 11 ms, 1–2 pairs each.
+- **Cut 1** (`8dd20446`): `joinWide`'s walked cells sorted by digits (`sortCells`), not as packed floats: the
+  same answers (hash 6d6103a7, the pin f9d18365), −0.17 ms paired (`pair.sh`, two bundles on separate P-cores).
+- **AT:** 4.224 and 4.256 (bar 3.0): missed. The world flips 4.3 × the cells of 896ff77's (the critic's
+  1.82 ms); the page's share over headless did not grow (× 1.25–1.48 here, its strikes' pauses in it).
+- **Found:** a cache of today's pocket marks across ticks would not be exact (a walk ends on the marks of the
+  walks before it; a loaded world would step otherwise): kept answers need each start's own walk, a rule.
+- **Filed:** 7.111 (the exact remainder, to ~3.9), 7.112 (the pockets as a rule, to ~3.6); both wait on ADR-680.
+  `sortCells`' digit count fixed for maps over 2^22 cells (the shipped 2^21 unaffected).
+- **Next:** PLAN 7.106.

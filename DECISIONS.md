@@ -167,6 +167,44 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-680 · 2026-10-24 · proposed (the user's decision) — The late tick: 4.2 ms against 3.0, the cost of a churned world's reach tests (PLAN 7.105's AT missed)
+
+- **Context** (`docs/evidence/7.105/measure.md`). PLAN 7.105 (performance 5): year 21 of 4877, from
+  critic run 13's year-20 save, at most 3.0 ms a tick headless pinned on 0xFFFF, twice; engaged per war
+  not below HEAD's; a rule that changes an outcome its own ADR.
+- **Measured:** HEAD 4.50 ms; operationalAi 2.09. Not 7.94's year: the searches are 6 % of the system
+  (34 % there), so ADR-666 (b)'s fewer searches reaches little. The reach tests lead: `pocketOf` 0.48 ms
+  a tick (95 % of its walks come to a wide ground; each start walked about 10 times in 30 days, across
+  ticks, 82 % of the repeats over the same cells), `joinWide` 0.44 (27 walks in 30 days, 11 ms each, each
+  answering 1–2 pairs before a flip undoes it). The world flips 4.3 × the cells of the critic's
+  `896ff779` world (89,542 against 20,708), and the tick is 2.4 × (1.82 there); the page's share over the
+  headless year did not grow (× 2.0 there, 1.25–1.48 here, the strikes' pauses in it), so the drop to 5
+  is the sim's. ADR-654 (a) took a busier world's cost as the rules'.
+- **Committed** (`8dd20446`): `joinWide`'s walked cells sorted by digits, not as packed floats (half
+  of each walk). The same answers (year 21's hash 6d6103a7, the pin f9d18365); −0.17 ms paired. The AT
+  read **4.224 and 4.256**: missed.
+- **Why not a cache of the pockets:** a walk ends on the marks of the walks before it in its tick, so a
+  mark kept from an earlier tick gives an answer a fresh walk need not give, and a loaded world (no
+  marks) would step otherwise than the one saved. Only a start's own walk can be kept exactly, and
+  making every answer the start's own changes today's answers: a rule.
+- **Sized, none reaches 3.0:** the exact remainder (`snapTarget`'s Map by landmass and cell ~0.1,
+  `sectorShape`'s sort and holders ~0.05, `industryHeld` ~0.03), to about 3.9; the pockets as a rule
+  (each start's own walk, kept across ticks while no flip between an open and a closed holder touches
+  a walked cell or a neighbour and the node parts hold) ~0.2–0.3 more, to about 3.6; the operational
+  AI's turn every other day ~1.0, the one lever of the bar's size, against R13-B1 (7.104, 7.110).
+- **Options:**
+  - **(a)** 7.105 closed not done, cut 1 kept; PLAN 7.111 (the exact remainder: year 21's tick at most
+    3.9 ms, twice, its hash 6d6103a7 and the pin unchanged); 7.112 dropped. The rest to the next report.
+  - **(b)** As (a), and PLAN 7.112 (the pockets as a rule: `pocketOf`'s cells walked a tick in year 21
+    at most 0.5 × HEAD's; engaged per war in that year from the same save not below HEAD's; the round
+    trip's test green; the pin moved once, here).
+  - **(c)** As (b), and a task for the operational AI's turn every other day, judged by 7.104's land war
+    on 10 unseen seeds.
+- **Recommended: (b).** The two together are about 0.6 ms (14 %), the rule narrow (which ground a cell
+  of a churned front lies in, read only for the reach of a class) and judged by the land war. (c) buys
+  the bar with the plans that R13-B1, the report's one blocking finding, says are already too few.
+- **Meanwhile** the loop takes PLAN 7.106. Until decided, no rule; the pin unchanged (f9d18365).
+
 ### ADR-679 · 2026-10-24 · proposed (the user's decision) — The land war after year 1: the allotment's rules miss on fresh worlds; the army at war is a third of year 1's (PLAN 7.104's AT missed)
 
 - **Context** (`docs/evidence/7.104/measure.md`). PLAN 7.104 (R13-B1): on 10 unseen seeds × 20 years
