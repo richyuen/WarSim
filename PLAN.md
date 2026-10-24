@@ -55,6 +55,8 @@ reused:
   AT: on that year, `pocketOf`'s cells walked a tick at most 0.5 × HEAD's; engaged land formations a war
   in it, from the same save, not below HEAD's; the round trip's test green; a unit test, red without;
   the pin moved once, with its ADR; the gate green.
+  AT missed 2026-10-24 (ADR-696, BLOCKERS; `docs/evidence/7.112/measure.md`): own walks, kept, 141,368 cells a tick
+  against HEAD's 7,134 (bar 3,567); engaged 0.2528 against 0.2647. Waits on the user's word on ADR-696.
 - [ ] 7.114 The answer weighed by its own toll (found at 7.109b; aiNukes 7; ADR-691 a, the user's decision; on 7.109b's
   rule, committed): answering a
   strike on forces, a place whose burst is expected to kill over ten times more civilians than men is no answer, and

@@ -380,6 +380,12 @@ const IN_HAND = -0x7fffffff;
 const MARK_ZERO = -0x7ffffffe;
 
 /**
+ * What `pocketOf` has done since a tool last read it (PLAN 7.112's measure; never read by the
+ * game): its calls, the walks and the cells they walked.
+ */
+export const POCKET_PROBE = { calls: 0, walks: 0, cells: 0 };
+
+/**
  * The pocket a cell of open ground lies in (PLAN 3.10c2b, ADR-192): when the cells a route may
  * come to from it (`findPath`'s steps, over ground open in `pass`; by the terrain a formation on
  * foot enters) are no more than POCKET_CELLS, the pocket's number (that of the cell it was
@@ -393,6 +399,7 @@ const MARK_ZERO = -0x7ffffffe;
 export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell: number) => number): number {
   const { w, h, wrapX, component } = g;
   const { ok, holder } = pass;
+  POCKET_PROBE.calls++;
   if (component[start] === 0 || ok[holder[start]!] !== 1) return 0;
   // The marks in one array (PLAN 7.1i: a stamp beside them was a second read of each cell).
   if (!g.pockets || g.pockets.id.length !== w * h) g.pockets = { id: new Int32Array(w * h), walked: [], pass: null };
@@ -454,6 +461,8 @@ export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell:
     }
     if (walked.length - first > POCKET_CELLS) far = true;
   }
+  POCKET_PROBE.walks++;
+  POCKET_PROBE.cells += walked.length - first;
   const pocket = far ? ground : start + 1;
   const mark = pocket === 0 ? MARK_ZERO : pocket;
   for (let k = first; k < walked.length; k++) id[walked[k]!] = mark;

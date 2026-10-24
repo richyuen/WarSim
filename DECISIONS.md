@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-696 · 2026-10-24 · proposed (the user's decision) — Each start's own walk costs 20 × HEAD's pocket walks: the AT missed (PLAN 7.112)
+
+- **Context** (`docs/evidence/7.112/measure.md`). PLAN 7.112 (ADR-680 b): `pocketOf` answers each start by its own
+  walk and keeps the answer across ticks while no flip touches its cells; on year 21 of 4877 from
+  `critic/c13_seed4877_y20.bin`, cells walked a tick at most 0.5 × HEAD's; engaged a war not below HEAD's; the
+  round trip's test green; a unit test, red without; the pin moved once; the gate green.
+- **Rule tried** (`docs/evidence/7.112/rule.patch`, not committed): own walks (a pocket's number its least cell + 1),
+  kept on the passage's node parts while `open` and `shut` hold, judged by a per-world stamp of each flip on its cell
+  and 8 neighbours.
+- **Measured** (`tools/diag/pocketWalks.ts`, committed with the probe `POCKET_PROBE`): HEAD 7,134 cells a tick (33.7
+  walks of 212 cells), engaged a war 0.2647, 35 s a year. Own walks without the keep 254,083 (252 walks of 1,009);
+  with it **141,368** (61 walks of 2,319), engaged **0.2528**, 86 s a year. The bar 3,567: missed 40-fold, and the
+  engaged clause missed. The keep is exact (the year's hash 086a4a82 with it and without it) and answers 76 % of
+  the calls: the cost is the rule's.
+- **Why:** HEAD's walks are short because they end on the walks before them in the tick. Walked out from each start,
+  the walks that reach the 4,096-cell cap with no wide ground are 13 % of the walks and 53 % of the cells. ADR-680's
+  0.2–0.3 ms took the kept walks to be as short as HEAD's shared ones; they are 11 × longer.
+- **Options:**
+  - **(a)** 7.112 closed not done; no rule; the probe and the tool kept. (Recommended: no order-independent answer
+    by start is cheap, and the late tick's lever of the bar's size is the cadence, ADR-680 c.)
+  - **(b)** As (a), and a numbered task for an answer shared by region (the open cells joined outside the wide
+    ground, flooded once and named by their least cell or least wide cell met), its AT 7.112's. The risk: those
+    regions are the fronts, where the flips are, and a capped region has no answer that is not its start's.
+  - **(c)** As (a), and ADR-680 (c)'s task: the operational AI's turn every other day, judged by 7.104's land war
+    on 10 unseen seeds.
+- **Meanwhile** the loop takes PLAN 7.114. Until decided, no rule; the pin unchanged.
+
 ### ADR-695 · 2026-10-24 · accepted, option a (the user's decision, 2026-10-24) — The late tick's exact remainder: 4.44 → 4.23 ms, bar 4.12 (PLAN 7.111's AT missed)
 
 - **Context** (`docs/evidence/7.111/measure.md`). PLAN 7.111 (ADR-680 b; restated by ADR-694 after ADR-693 b moved

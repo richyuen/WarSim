@@ -5,6 +5,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.112's AT missed: own walks 141,368 cells a tick, bar 3,567 (ADR-696; waits on the user)
+- **The bar** (ADR-680 b): on year 21 of 4877 from `critic/c13_seed4877_y20.bin`, `pocketOf`'s cells walked a tick
+  at most 0.5 × HEAD's (7,134); engaged land formations a war not below HEAD's (0.2647); the round trip's test green;
+  a unit test, red without; the pin moved once; the gate green.
+- **What moved** (`docs/evidence/7.112/measure.md`, `rule.patch`): each start's own walk, kept across ticks: 141,368
+  cells a tick, engaged 0.2528, 86 s a year against 35. The keep is exact (the same hash with and without it).
+- **What is left:** nothing of this rule; the user's (ADR-696): (a) close it, the probe kept (recommended); (b) a
+  task for an answer shared by region; (c) the operational AI's cadence (ADR-680 c).
+
 ### RESOLVED 2026-10-24 (option a, the user's decision: 7.111 closed not done, the cuts kept, no task) · PLAN 7.111's AT missed: year 21 of 4877 at 4.24 and 4.22 ms a tick, bar 4.12 (ADR-695; waits on the user)
 - **The bar** (ADR-694): year 21 from `critic/c13_seed4877_y20.bin`, `npm run sim -- --affinity 0xFFFF`, at most 4.12
   ms a tick, twice; the hash dba7fdae and the pin unchanged; the gate green.

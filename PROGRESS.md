@@ -23552,3 +23552,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 
 - The three exact cuts kept (4.44 → 4.23 ms on year 21 of 4877); 7.112's AT unchanged; no task.
 - **Next:** PLAN 7.112.
+
+## 2026-10-24 — PLAN 7.112: the AT missed, to the user (ADR-696)
+
+- **Start:** gate green on `28029585`; critic not due; no decision waiting.
+- **Probe** (committed): `POCKET_PROBE` in `pocketOf` (calls, walks, cells) and `tools/diag/pocketWalks.ts` (a year
+  from a save: cells walked a tick, engaged a war, the hash). HEAD on year 21 of 4877: 7,134 cells a tick, engaged
+  0.2647, hash dba7fdae.
+- **Rule tried** (`docs/evidence/7.112/rule.patch`, not committed): each start's own walk, a pocket named by its least
+  cell, kept on the node parts and judged by a per-world stamp of the flips. 141,368 cells a tick (bar 3,567),
+  engaged 0.2528, 86 s a year against 35. The keep exact: hash 086a4a82 with it and without it (`NOKEEP=1`).
+- **Why:** HEAD's walks end on the walks before them; walked out, the capped walks with no wide ground are 53 % of
+  the cells. ADR-680's sizing took the kept walks to be as short as HEAD's.
+- **Gotcha:** an own walk is 11 × HEAD's shared one: size a cache of a walk by the walk it replaces, not by the
+  repeats it saves.
+- **Next:** PLAN 7.114 while ADR-696 waits.

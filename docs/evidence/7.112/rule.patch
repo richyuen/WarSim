@@ -1,0 +1,304 @@
+diff --git a/src/sim/nav/grid.ts b/src/sim/nav/grid.ts
+index 4d64663c..592b4da5 100644
+--- a/src/sim/nav/grid.ts
++++ b/src/sim/nav/grid.ts
+@@ -48,10 +48,10 @@ export interface NavGrid {
+   /** The last search in a corridor that found no way on closed ground (`findRoute`). */
+   barred: BarredSearch | null;
+   /**
+-   * The pockets found on one `Passage` (`pocketOf`; derived, never saved): `id[c]` is a cell's
+-   * mark, 0 for none (`markOf`); `walked` the cells marked, cleared when another passage asks.
++   * `pocketOf`'s scratch (derived, never saved): `seen[c]` is `gen` for a cell of the walk in
++   * hand, whose cells are `walked`.
+    */
+-  pockets: { id: Int32Array; walked: number[]; pass: Passage | null } | null;
++  pockets: { seen: Uint32Array; gen: number; walked: number[] } | null;
+ }
+ 
+ /** Row scales for a Miller w×h grid (cell height in radians of latitude × R, width × cos φ). */
+@@ -334,7 +334,9 @@ export interface Passage {
+    * (`passageOf`, PLAN 7.1i): until the nodes' parts change, or a cell's flip between an open and
+    * a closed holder that the runs of its walk (`runs`) cannot rule out changing it (PLAN 7.30c2).
+    */
+-  keep?: { joined?: Int32Array | undefined; runs?: JoinRuns | undefined; coarse?: Map<number, number[] | null> };
++  keep?: { joined?: Int32Array | undefined; runs?: JoinRuns | undefined; coarse?: Map<number, number[] | null>; pockets?: PocketKeep | undefined };
++  /** The world's flips by cell, stamped when the passage was made: what `pocketOf` judges its kept walks by. */
++  touch?: FlipTouch;
+   /**
+    * The routes `findRoute` has answered on this passage, by mobility and ends (PLAN 7.1l3): the
+    * formations of a stack sent to one cell asked for the same search each, 18 of 3 ms in one plan
+@@ -374,44 +376,106 @@ export interface JoinRuns {
+ 
+ /** The most cells of open ground that are a pocket (`pocketOf`). */
+ export const POCKET_CELLS = 4096;
+-/** `pocketOf`'s mark of a cell of the walk in hand (no pocket and no wide ground has the number). */
+-const IN_HAND = -0x7fffffff;
+-/** `pocketOf`'s mark of a cell whose answer is 0 (0 is no mark). */
+-const MARK_ZERO = -0x7ffffffe;
++/** The most cells the walks kept on one set of node parts hold together (`PocketKeep`); more, and all are dropped. */
++const POCKET_KEPT_CELLS = 1 << 20;
++
++/**
++ * What `pocketOf` has done since a tool last read it (PLAN 7.112's measure; never read by the
++ * game): its calls, the walks and the cells they walked. `keep` false walks every start afresh
++ * (the same answers: a tool's check of the kept ones).
++ */
++export const POCKET_PROBE = { calls: 0, walks: 0, cells: 0, keep: true };
++
++/**
++ * A start's walk of `pocketOf`, kept (PLAN 7.112): its answer, the cells it walked, and the count
++ * of flips (`FlipTouch.to`) up to which it is known to hold.
++ */
++export interface PocketWalk {
++  answer: number;
++  cells: Int32Array;
++  checked: number;
++}
++
++/**
++ * The walks kept on one set of node parts (`Passage.keep`): by start, made on the wide answers
++ * `wide` (the parts' `wide`, of their `open` and `shut`), and the cells they hold together.
++ */
++export interface PocketKeep {
++  wide: Int32Array | undefined;
++  byStart: Map<number, PocketWalk>;
++  cells: number;
++}
++
++/**
++ * By world, the flips of `World.flipLog` stamped by cell (`Passage.touch`, PLAN 7.112): `stamp[c]`
++ * is the count of the last flip of c or of one of its 8 neighbours, stamped up to count `to`. A
++ * walk checked before `floor` holds no more (a gap in the log).
++ */
++export interface FlipTouch {
++  stamp: Int32Array;
++  to: number;
++  floor: number;
++}
++
++/**
++ * Whether a kept walk still holds: no flip since it was checked has touched a cell it walked or a
++ * neighbour of one (the cells whose holders it read). A flip between two open holders or two
++ * closed ones is counted too: it keeps less, never a wrong answer.
++ */
++function walkHolds(walk: PocketWalk, t: FlipTouch): boolean {
++  if (walk.checked === t.to) return true;
++  if (walk.checked < t.floor) return false;
++  const { stamp } = t;
++  const { cells, checked } = walk;
++  for (let i = 0; i < cells.length; i++) if (stamp[cells[i]!]! > checked) return false;
++  walk.checked = t.to;
++  return true;
++}
+ 
+ /**
+  * The pocket a cell of open ground lies in (PLAN 3.10c2b, ADR-192): when the cells a route may
+  * come to from it (`findPath`'s steps, over ground open in `pass`; by the terrain a formation on
+- * foot enters) are no more than POCKET_CELLS, the pocket's number (that of the cell it was
+- * first asked for, and 1). Below 0: wider ground whose cells come to a wide ground (PLAN
+- * 3.10c2b3a, ADR-193), minus that ground's number. 0: wider ground that was not walked to its
+- * end and came to none, or a cell of closed ground. A pocket
+- * is walked once a passage: every cell of it is marked, and so are the cells walked of wider
+- * ground. `wide`: by cell, the number of the wide ground it is known to lie in (`wideNode`; 0:
+- * none), where the walk ends.
++ * foot enters) are no more than POCKET_CELLS, the pocket's number (its least cell, and 1). Below
++ * 0: wider ground whose cells come to a wide ground (PLAN 3.10c2b3a, ADR-193), minus the number of
++ * the first wide ground the walk meets. 0: wider ground that was not walked to its end and came to
++ * none, or a cell of closed ground. `wide`: by cell, the number of the wide ground it is known to
++ * lie in (`wideNode`; 0: none), where the walk ends.
++ * Each start's answer is that of its own walk (PLAN 7.112, ADR-696): no walk ends on another's
++ * cells, so the answer is the same whoever asked before. With `wide`, a passage with node parts
++ * (`keep`) and the world's flips (`touch`), the walk is kept on the parts and asked again only when
++ * a flip has touched its cells (`walkHolds`); every cell of a pocket has the pocket's walk.
+  */
+ export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell: number) => number): number {
+   const { w, h, wrapX, component } = g;
+   const { ok, holder } = pass;
++  POCKET_PROBE.calls++;
+   if (component[start] === 0 || ok[holder[start]!] !== 1) return 0;
+-  // The marks in one array (PLAN 7.1i: a stamp beside them was a second read of each cell).
+-  if (!g.pockets || g.pockets.id.length !== w * h) g.pockets = { id: new Int32Array(w * h), walked: [], pass: null };
++  const touch = pass.touch;
++  const parts = touch !== undefined && wide !== undefined && POCKET_PROBE.keep ? pass.keep : undefined;
++  let kept: PocketKeep | undefined;
++  if (parts !== undefined) {
++    kept = parts.pockets;
++    if (kept === undefined || kept.wide !== pass.wide) parts.pockets = kept = { wide: pass.wide, byStart: new Map(), cells: 0 };
++    const was = kept.byStart.get(start);
++    if (was !== undefined) {
++      if (walkHolds(was, touch!)) return was.answer;
++      kept.byStart.delete(start);
++    }
++  }
++  if (!g.pockets || g.pockets.seen.length !== w * h) g.pockets = { seen: new Uint32Array(w * h), gen: 0, walked: [] };
+   const p = g.pockets;
+-  const { id, walked } = p;
+-  if (p.pass !== pass) {
+-    p.pass = pass;
+-    for (const c of walked) id[c] = 0;
+-    walked.length = 0;
++  if (++p.gen === 0xffffffff) {
++    p.seen.fill(0);
++    p.gen = 1;
+   }
+-  if (id[start] !== 0) return id[start] === MARK_ZERO ? 0 : id[start]!;
+-  // In hand: marked. Ground that an earlier walk found wider is wider from here too, and comes
+-  // to the wide ground that walk came to.
+-  const first = walked.length;
++  const { seen, gen, walked } = p;
++  walked.length = 0;
+   walked.push(start);
+-  id[start] = IN_HAND;
++  seen[start] = gen;
+   let far = false;
+   let ground = 0;
+-  for (let at = first; at < walked.length && !far; at++) {
++  let least = start;
++  for (let at = 0; at < walked.length && !far; at++) {
+     const c = walked[at]!;
+     const cx = c % w;
+     const cy = (c - cx) / w;
+@@ -432,32 +496,37 @@ export function pocketOf(g: NavGrid, pass: Passage, start: number, wide?: (cell:
+         }
+         n = ny * w + nx;
+       }
+-      if (component[n] === 0 || ok[holder[n]!] !== 1) continue;
++      if (seen[n] === gen || component[n] === 0 || ok[holder[n]!] !== 1) continue;
+       // No corner cutting, as in `findPath`: by the terrain, whoever holds the two cells (the
+       // one of c's row and n's column, and the one of n's row and c's column).
+       if (k >= 4 && (component[n - dy * w] === 0 || component[inner ? c + dy * w : n - (n % w) + cx] === 0)) continue;
+-      const was = id[n]!;
+-      if (was !== 0) {
+-        if (was < 0 && was !== IN_HAND) {
+-          far = true;
+-          if (ground === 0) ground = was === MARK_ZERO ? 0 : was;
+-        }
+-        continue;
+-      }
+-      id[n] = IN_HAND;
++      seen[n] = gen;
+       walked.push(n);
++      if (n < least) least = n;
+       const met = wide === undefined ? 0 : wide(n);
+       if (met !== 0) {
+         far = true;
+         if (ground === 0) ground = -met;
+       }
+     }
+-    if (walked.length - first > POCKET_CELLS) far = true;
++    if (walked.length > POCKET_CELLS) far = true;
++  }
++  POCKET_PROBE.walks++;
++  POCKET_PROBE.cells += walked.length;
++  const answer = far ? ground : least + 1;
++  if (kept !== undefined) {
++    if (kept.cells + walked.length > POCKET_KEPT_CELLS) {
++      kept.byStart.clear();
++      kept.cells = 0;
++    }
++    const walk: PocketWalk = { answer, cells: Int32Array.from(walked), checked: touch!.to };
++    kept.cells += walked.length;
++    kept.byStart.set(start, walk);
++    // Each cell of a pocket walks its cells to its answer, the start among them; the start's own
++    // walk does not ask whether the start lies in a wide ground, so the walk is theirs only if not.
++    if (!far && wide!(start) === 0) for (const c of walked) kept.byStart.set(c, walk);
+   }
+-  const pocket = far ? ground : start + 1;
+-  const mark = pocket === 0 ? MARK_ZERO : pocket;
+-  for (let k = first; k < walked.length; k++) id[walked[k]!] = mark;
+-  return pocket;
++  return answer;
+ }
+ 
+ /** A search between two cells further apart than this (the larger of dx and dy) is a long one. */
+diff --git a/src/sim/systems/movement.ts b/src/sim/systems/movement.ts
+index 52f47d2f..1a679eb0 100644
+--- a/src/sim/systems/movement.ts
++++ b/src/sim/systems/movement.ts
+@@ -65,7 +65,7 @@
+  */
+ import { EventKind, RejectReason } from '../../shared/events';
+ import { atan2 } from '../core/dmath';
+-import { Mobility, MOVE_COST, stepKm, type JoinRuns, type MobilityId, type NavGrid, type Passage } from '../nav/grid';
++import { Mobility, MOVE_COST, stepKm, type FlipTouch, type JoinRuns, type MobilityId, type NavGrid, type Passage, type PocketKeep } from '../nav/grid';
+ import { exitsOf } from '../nav/crossings';
+ import { nearestCellWhere } from '../data/ownership';
+ import { dropRuns, findDirectRoute, findRoute, JOIN_PROBE, joinedKept, nodeGroups, type ProvinceGraph } from '../nav/provinceGraph';
+@@ -151,11 +151,56 @@ function passageWith(world: World, ok: Uint8Array, parts: NodeParts): Passage {
+   }
+   parts.flips = now;
+   const { open, shut, group, wide, joined } = parts;
+-  const pass: Passage = { ok, holder: world.cells.controller, open, group, shut, wide, keep: parts, ...(joined ? { joined } : {}) };
++  const pass: Passage = { ok, holder: world.cells.controller, open, group, shut, wide, keep: parts, touch: touchOf(world), ...(joined ? { joined } : {}) };
+   if (judged && joined !== undefined) JOIN_PROBE.kept?.(pass);
+   return pass;
+ }
+ 
++/** By world, its flips stamped by cell (`FlipTouch`): what `pocketOf`'s kept walks are judged by. */
++const TOUCH = new WeakMap<World, FlipTouch>();
++
++/**
++ * The world's flips stamped by cell up to now (PLAN 7.112): each flip since the last stamp writes
++ * its count on its cell and the cell's 8 neighbours, so a walk whose cells bear no count above its
++ * own read the same holders around it. A gap in the log (or a log begun again) sets the floor.
++ */
++function touchOf(world: World): FlipTouch {
++  const now = world.flipLogBase + world.flipLog.length;
++  const { w, h } = world.cells;
++  let t = TOUCH.get(world);
++  if (t === undefined || t.stamp.length !== w * h) {
++    TOUCH.set(world, (t = { stamp: new Int32Array(w * h), to: now, floor: now }));
++    return t;
++  }
++  if (t.to < world.flipLogBase || t.to > now) {
++    t.to = t.floor = now;
++    return t;
++  }
++  const { stamp } = t;
++  const wrapX = navOf(world).grid.wrapX;
++  const cells = world.flipCells;
++  for (let k = t.to - world.flipLogBase; k < cells.length; k++) {
++    const c = cells[k]!;
++    const count = world.flipLogBase + k + 1;
++    const cx = c % w;
++    const cy = (c - cx) / w;
++    for (let dy = -1; dy <= 1; dy++) {
++      const y = cy + dy;
++      if (y < 0 || y >= h) continue;
++      for (let dx = -1; dx <= 1; dx++) {
++        let x = cx + dx;
++        if (x < 0 || x >= w) {
++          if (!wrapX) continue;
++          x = (x + w) % w;
++        }
++        stamp[y * w + x] = count;
++      }
++    }
++  }
++  t.to = now;
++  return t;
++}
++
+ function dropJoined(parts: NodeParts): void {
+   parts.joined = undefined;
+   if (parts.runs !== undefined) dropRuns(parts.runs);
+@@ -183,6 +228,11 @@ interface NodeParts {
+    * PLAN 1.42h): a route is of `open` and `shut` alone, so it is kept while they are.
+    */
+   coarse: Map<number, number[] | null>;
++  /**
++   * `pocketOf`'s walks on these parts (PLAN 7.112): of `wide`'s answers and the cells' holders, so
++   * kept while `open` and `shut` are and the cells were all written by `setController` since.
++   */
++  pockets?: PocketKeep | undefined;
+ }
+ /** By world, the node parts last made for each set of open holders (`Passage.ok` as a string). */
+ const NODE_PARTS = new WeakMap<World, { graph: ProvinceGraph; parts: Map<string, NodeParts> }>();
+@@ -255,6 +305,7 @@ function nodeParts(world: World, ok: Uint8Array, key: string): NodeParts {
+     flips: same && patched ? was.flips : -1,
+     runs: same && patched ? was.runs : undefined,
+     coarse: same && was.coarse.size < COARSE_KEPT ? was.coarse : new Map(),
++    pockets: same && patched ? was.pockets : undefined,
+   };
+   // Runs not carried over judge nothing more: their place among the kept is freed.
+   if (was?.runs !== undefined && parts.runs === undefined) dropRuns(was.runs);
