@@ -49,13 +49,6 @@ ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the di
 beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
 reused:
 
-- [ ] 7.106 Emergent dynamics (emergent 6, needs 7, beyond R13-B1): on the same 32 seeds the churn grew
-  in statelets: revolts 125 → 195 a world, founded nations alive at year 30 23 → 37, "Land handed over"
-  1,075 rows in 3 late years of 4877. The longest stasis 22 → 25 years (3491) is noted, not scored
-  (ADR-673). Evidence: `critic/c13_cmp_all.txt`, `c13_l_4877.json`. Measure first what founds the
-  statelets that live (revolt, revival, release, God none) and why they last. AT: on 10 unseen seeds × 30
-  years against HEAD on the same seeds, founded nations alive at year 30 at most 0.75 of HEAD's, and the
-  land moved in the last five years not below 0.9 of HEAD's; a unit test, red without; the gate green.
 - [ ] 7.107 Naval (naval 7, needs 8): the late sea war is a sixth of year 1's (57.6 battles in year 1,
   9.4 a world-year after); sea battles that sink nothing 3.6 % → 7.2 %; a carrier strike is three
   silhouettes over two counters on open sea. Evidence: `critic/c13_cmp_all.txt`,
@@ -425,3 +418,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.103 A tank's flash at its own muzzle (`tankBattle1938`, seed 1, stop 5): the flash of element 1112 […]
 - [x] 7.104 The land war after year 1, a third time (R13-B1; R12-B1 improved by 7.79, not fixed; carries […]
 - [x] 7.105 Performance (performance 5, needs 7): the late game at Max 46.3, 59.4, 59.4 s a game year […]
+- [x] 7.106 Emergent dynamics (emergent 6, needs 7, beyond R13-B1): on the same 32 seeds the churn grew […]

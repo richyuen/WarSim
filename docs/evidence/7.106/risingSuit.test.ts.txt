@@ -1,0 +1,72 @@
+import { describe, expect, it } from 'vitest';
+import { EventKind } from '../../src/shared/events';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { forceRevolt } from '../../src/sim/systems/revolts';
+import { CRUSHED, PEACE_ACCEPT_EXHAUSTION } from '../../src/sim/systems/war';
+import { navOf, type World } from '../../src/sim/world';
+import { assets1938 } from '../helpers/earth';
+import { eventKinds as ofKind, nationId, runEvents as events } from '../helpers/sim1938';
+
+// PLAN 7.106 (ADR-681): the score of a war is relative to the smaller party (REL_CAP), so a
+// rising's militia walking into as much of the holder's empty land as it holds read as a crushing
+// defeat of the holder within days, and the holder sued: the rebels won their war, and that land,
+// against an army that had not fought them (911–915, years 20–22: 31 of 57 founding wars ended so,
+// most within 30 days at an exhaustion of 1–3). Against its own rising, a holder whose side is not
+// worn does not sue on the score alone; worn, it does, and any other war is as before.
+
+const SOV = nationId('SOV');
+
+/** A 1938 world, the AI off, with a rising forced in a province of the Soviet Union; its id and war. */
+function rising(): { s: Sim; w: World; rebel: number } {
+  const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
+  const w = s.world;
+  w.settings.aiEnabled = false;
+  const g = navOf(w).graph;
+  let p = 1;
+  while (p < w.provinces.count && w.cells.owner[g.centre[p] ?? 0] !== SOV) p++;
+  const first = w.nations.highWater;
+  expect(forceRevolt(w, p)).toBe(true);
+  return { s, w, rebel: first };
+}
+
+/** The rebels take as much of the holder's land next to theirs as they own and a tenth more (the score ≤ −90 through a day's front flips). */
+function walkIn(w: World, rebel: number): void {
+  const { owner, controller } = w.cells;
+  const own = w.landCounts().owned[rebel]!;
+  const cx = w.nations.cols.capitalX[rebel]!;
+  const cy = w.nations.cols.capitalY[rebel]!;
+  const W = w.cells.w;
+  const cells: number[] = [];
+  owner.forEach((o, c) => o === SOV && controller[c] === SOV && cells.push(c));
+  cells.sort((a, b) => ((a % W) + 0.5 - cx) ** 2 + (Math.floor(a / W) + 0.5 - cy) ** 2 - (((b % W) + 0.5 - cx) ** 2 + (Math.floor(b / W) + 0.5 - cy) ** 2) || a - b);
+  for (const c of cells) {
+    if ((w.landCounts().occupied.get(SOV * 65536 + rebel) ?? 0) >= 1.1 * own) break;
+    w.setController(c, rebel);
+  }
+}
+
+describe('a holder against its own rising (PLAN 7.106)', () => {
+  it('does not sue on a crushing score alone while its side is not worn; worn, it sues', () => {
+    const { s, w, rebel } = rising();
+    const war = w.wars.list.find((x) => x.sides[0]![0] === SOV && x.sides[1]![0] === rebel)!;
+    expect(war.rising).toBe(rebel);
+    walkIn(w, rebel);
+    const ev = events(s, 24);
+    expect(war.score).toBeLessThanOrEqual(-CRUSHED);
+    expect(war.exhaustion[0]).toBeLessThanOrEqual(PEACE_ACCEPT_EXHAUSTION);
+    expect(ofKind(ev, EventKind.PeaceSigned)).toEqual([]);
+    expect(w.wars.atWar(SOV, rebel)).toBe(true);
+    // Worn (a shock on the holder's side): it sues, and the rebels win the land they hold.
+    w.nukeShock.set(SOV, PEACE_ACCEPT_EXHAUSTION + 20); // less its day's decay, still over the bar
+    expect(ofKind(events(s, 24), EventKind.PeaceSigned)).toEqual([[rebel, SOV]]);
+  });
+
+  it('any other war: the crushed side sues as before', () => {
+    const { s, w, rebel } = rising();
+    const war = w.wars.list.find((x) => x.sides[0]![0] === SOV && x.sides[1]![0] === rebel)!;
+    delete war.rising;
+    walkIn(w, rebel);
+    expect(ofKind(events(s, 24), EventKind.PeaceSigned)).toEqual([[rebel, SOV]]);
+  });
+});

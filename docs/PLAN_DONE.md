@@ -15031,3 +15031,27 @@ Of 7.33 (open in PLAN.md):
   Closed not done, cut 1 kept (2026-10-24, ADR-680 b, the user's decision; BLOCKERS; `docs/evidence/7.105/measure.md`): HEAD 4.50 ms; with
   `joinWide`'s cells sorted by digits (`8dd20446`, the same answers) 4.224 and 4.256. The reach tests of a
   world 4.3 × as churned as 896ff77's; what is left is PLAN 7.111 and 7.112.
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.106 Emergent dynamics (emergent 6, needs 7, beyond R13-B1): on the same 32 seeds the churn grew
+  in statelets: revolts 125 → 195 a world, founded nations alive at year 30 23 → 37, "Land handed over"
+  1,075 rows in 3 late years of 4877. The longest stasis 22 → 25 years (3491) is noted, not scored
+  (ADR-673). Evidence: `critic/c13_cmp_all.txt`, `c13_l_4877.json`. Measure first what founds the
+  statelets that live (revolt, revival, release, God none) and why they last. AT: on 10 unseen seeds × 30
+  years against HEAD on the same seeds, founded nations alive at year 30 at most 0.75 of HEAD's, and the
+  land moved in the last five years not below 0.9 of HEAD's; a unit test, red without; the gate green.
+  Done (2026-10-24, ADR-681; `docs/evidence/7.106/measure.md`, seeds 911–920): statelets of one people
+  come together (`kinUnion`); founded alive 42.6 → 28.2 (0.662), land moved 22.4 → 25.1 % (1.118).

@@ -1,0 +1,50 @@
+diff --git a/src/sim/systems/revolts.ts b/src/sim/systems/revolts.ts
+index 2c2e5a6c..daeba72b 100644
+--- a/src/sim/systems/revolts.ts
++++ b/src/sim/systems/revolts.ts
+@@ -548,6 +548,9 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
+   // A revolt is a war of independence (AoC; PLAN 1.40 tuning): rebels keep their land only by
+   // winning it. (Half of the revolts used to start in peace and stayed independent for good: the
+   // 50-year sweep counted 300–600 nations.)
+-  if (war) declareWar(world, holder, id, true);
++  if (war) {
++    const rising = declareWar(world, holder, id, true);
++    if (rising) rising.rising = id;
++  }
+   return id;
+ }
+diff --git a/src/sim/systems/war.ts b/src/sim/systems/war.ts
+index effbd7cd..78636853 100644
+--- a/src/sim/systems/war.ts
++++ b/src/sim/systems/war.ts
+@@ -477,7 +477,12 @@ export function warSystem(world: World): void {
+       const leader = war.sides[s]![0]!;
+       const broke = nc.gold[leader]! < 0 || nc.bankrupt[leader] === 1;
+       const own = s === ATTACKERS ? war.score : -war.score;
+-      if (broke || own <= -CRUSHED) return true;
++      if (broke) return true;
++      // Against its own rising (PLAN 7.106, ADR-681), a holder does not sue on the score alone
++      // while its side is not worn: the score is relative to the smaller party, so rebels' militia
++      // walking into as much empty land as they hold read as a crushing defeat in ten days, and
++      // the rebels won their war, and that land, against an army that had not fought them.
++      if (own <= -CRUSHED) return !(war.rising !== undefined && war.sides[1 - s]![0] === war.rising && war.exhaustion[s]! <= PEACE_ACCEPT_EXHAUSTION);
+       // Exhausted, it sues; the other side, winning, not worn and still gaining, fights on (PLAN
+       // 7.27c), unless a nuclear shock is on the suing side: the peace response is the shock's
+       // purpose (PLAN 6.5a).
+diff --git a/src/sim/wars.ts b/src/sim/wars.ts
+index 912de592..15722f31 100644
+--- a/src/sim/wars.ts
++++ b/src/sim/wars.ts
+@@ -57,6 +57,12 @@ export interface War {
+    */
+   peakHeld?: [number, number];
+   peakTick?: [number, number];
++  /**
++   * The rebel nation of a war of independence, declared by the holder on a revolt's founding
++   * (PLAN 7.106: the holder does not sue on the score alone while unworn; absent: none, and an
++   * older save's).
++   */
++  rising?: number;
+ }
+ 
+ export interface Truce {

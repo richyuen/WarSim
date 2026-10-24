@@ -167,6 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-681 · 2026-10-24 · accepted — Statelets of one people come together: a founded nation joins its living people beside it (PLAN 7.106)
+
+- **Context** (`docs/evidence/7.106/measure.md`). PLAN 7.106 (emergent 6): on 10 unseen seeds × 30
+  years against HEAD, founded nations alive at year 30 at most 0.75 of HEAD's, the land moved in the
+  last five years not below 0.9 of HEAD's; a unit test, red without.
+- **Measured** (911–920, `tools/diag/foundedAt.ts`): HEAD 42.6 founded alive a world, all of them
+  founded by revolts; 69 of 82 founding revolts (years 20–22 of 911–915) on non-core land of a holder at
+  war elsewhere. Their founding wars: 31 of 57 won on a score tripwire (the militia walk into as much
+  empty land as they own; the score, relative to the smaller party, reads −90 in 3–30 days and the
+  holder sues). At year 30, 204 of the 426 alive have a living people (`nations.people`), most of them
+  beside it, at war with it in 20.
+- **Tried first, dropped** (`docs/evidence/7.106/suit.patch`): the holder of a rising does not sue on the
+  score alone while not worn. From the year-25 saves founded alive 209 against 205: the suit came later
+  and the rebels won more.
+- **Decision.** PLAN 7.3d1 (ADR-431) sent a revolt's land to its living kin next door, but only at the
+  revolt: a statelet founded while its people was dead, or under a dead founded people, stayed apart for
+  good when its people lived again beside it. At a month's start (`kinUnion`, before the revolts) a
+  founded nation, free, whose people is another living nation, free (or, when its people is a dead
+  founded nation, that one's people: `kinOf`), that its land borders, with no war and no truce between
+  them, is annexed by it (`annexNation`: land, formations, cores; what a third nation holds of it is that
+  nation's, as at a death). Not a nation founded on its people's own land against it (a rising against
+  its own nation, whose `people` is the holder) nor one God Mode set down (Spawn nation): those are
+  marked at founding in `world.unionBarred`, saved while not empty (a save from before has none, and its
+  risings of that kind may join once).
+- **AT** (911–920 × 30 years): founded alive 42.6 → **28.2 (0.662)**, 9 seeds of 10 down (915: 50 → 53);
+  land moved in the last five years 22.4 → **25.1 % (1.118)**. Met. Unit test `kinUnion.test.ts` (red
+  without: no `kinUnion`). The pin unchanged (f9d18365): no union in seed 99's first year.
+- **Consequences.** More `NationAnnexed` rows (a union is told as an annexation). The cooldown of a
+  revival is kept (PROMPT: finite, with cooldown): a statelet of a dead nation of the start that may
+  return is left to that nation's revival.
+
 ### ADR-680 · 2026-10-24 · accepted, option b (the user's decision, 2026-10-24) — The late tick: 4.2 ms against 3.0, the cost of a churned world's reach tests (PLAN 7.105's AT missed)
 
 - **Context** (`docs/evidence/7.105/measure.md`). PLAN 7.105 (performance 5): year 21 of 4877, from

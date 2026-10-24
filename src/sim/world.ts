@@ -444,6 +444,8 @@ class WorldCore implements Stateful {
       ...(w.nukeDead.size === 0 ? [] : [{ name: 'world.nukeDead', dtype: 'f64' as const, data: Float64Array.from([...w.nukeDead].sort((a, b) => a[0] - b[0]).flat()) }]),
       // The shock of a strike (PLAN 6.5a): [nation, exhaustion] each, by nation, only while there is one.
       ...(w.nukeShock.size === 0 ? [] : [{ name: 'world.nukeShock', dtype: 'f64' as const, data: Float64Array.from([...w.nukeShock].sort((a, b) => a[0] - b[0]).flat()) }]),
+      // The founded nations barred from a union with their people (PLAN 7.106), by id, only while there is one.
+      ...(w.unionBarred.size === 0 ? [] : [{ name: 'world.unionBarred', dtype: 'f64' as const, data: Float64Array.from([...w.unionBarred].sort((a, b) => a - b)) }]),
       // The last days' bursts (PLAN 6.11b): [x, y, tick] each, in the order they burst, only while there is one.
       ...(w.nukeBursts.length === 0 ? [] : [{ name: 'world.nukeBursts', dtype: 'f64' as const, data: Float64Array.from(w.nukeBursts.flatMap((b) => [b.x, b.y, b.tick])) }]),
       // Their classes (PLAN 7.20: 1 fission, 2 thermonuclear), a section of their own: a save without it is of fission bursts.
@@ -567,6 +569,7 @@ class WorldCore implements Stateful {
     w.nukeShock = new Map();
     const sh = sections.find((s) => s.name === 'world.nukeShock')?.data as Float64Array | undefined;
     for (let at = 0; sh && at + 2 <= sh.length; at += 2) w.nukeShock.set(sh[at]!, sh[at + 1]!);
+    w.unionBarred = new Set((sections.find((s) => s.name === 'world.unionBarred')?.data as Float64Array | undefined) ?? []);
     w.nukeBursts = [];
     const nb = sections.find((s) => s.name === 'world.nukeBursts')?.data as Float64Array | undefined;
     const ny = sections.find((s) => s.name === 'world.nukeBurstYields')?.data as Uint8Array | undefined;
@@ -1201,6 +1204,12 @@ export class World {
   nukeAnswers = new Set<number>();
   /** War exhaustion a nation struck carries, decaying (PLAN 6.5a): state, saved while not empty. */
   nukeShock = new Map<number, number>();
+  /**
+   * The founded nations that do not join their people's nation (PLAN 7.106, `kinUnion`): those
+   * founded on their people's own land against it, and God Mode's set down. State, saved while not
+   * empty; a save from before has none.
+   */
+  unionBarred = new Set<number>();
   /** The world's outrage at each nation that struck another's land, 0 to 100, decaying (PLAN 6.5b): state, saved while not empty. */
   nukeOutrage = new Map<number, number>();
   /** The dead of nuclear bursts on each nation's land, men and people, all told (PLAN 7.12: its statistics); state, saved while not empty. */

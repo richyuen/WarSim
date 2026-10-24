@@ -23281,3 +23281,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **ADR-680 (b):** PLAN 7.105 closed not done, cut 1 (`8dd20446`) kept; PLAN 7.111 (the exact remainder) and
   7.112 (the pockets as a rule) stand. BLOCKERS entries resolved; both tasks archived.
 - **Next:** PLAN 7.106 (in progress: measured on 911–920, a first rule missed, not committed).
+
+## 2026-10-24 — PLAN 7.106: statelets of one people come together (ADR-681)
+
+- **Measured** (`docs/evidence/7.106/measure.md`; 911–920 × 30, HEAD 5770d532): 42.6 founded nations alive at year
+  30, all founded by revolts, most on non-core land of a holder at war elsewhere. Their founding wars mostly won on a
+  score tripwire (militia walk into their own land's worth of empty land; −90 in 3–30 days). At year 30, 204 of 426
+  alive have a living people, most beside it. 6–29 % of the late moved land touches founded nations.
+- **Rule 1 dropped** (`suit.patch`: the holder does not sue on the score alone while unworn): 209 against 205 from the
+  year-25 saves; the suit only came later.
+- **Rule 2** (`kinUnion`, ADR-681): a founded nation joins its living people's nation beside it at a month's start,
+  no war, no truce; risings against their own nation and God's Spawn nation barred (`world.unionBarred`, saved).
+- **AT:** founded alive 42.6 → 28.2 (0.662, bar 0.75); land moved in the last 5 years 22.4 → 25.1 % (1.118, bar
+  0.9). Unit test `kinUnion.test.ts`. The pin unchanged (f9d18365). Seeds 911–920 taken; 7.107 starts at 921.
+- **Tools:** `foundedAt.ts`, `foundedFrom.ts`, `movedBy.ts`, `rebelPeace.ts`, `revoltWhy.ts`.
+- **Gotcha:** ten 30-year sims at once ran the machine low on memory (the shell was reaped, the sims lived on);
+  five at a time was fine.
+- **Next:** PLAN 7.107.

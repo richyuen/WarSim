@@ -60,6 +60,7 @@ import { relocateCapital } from './capitals';
 import { deadClaimant, reviveNation } from './revival';
 import { equipFormation } from './elements';
 import { spawnPoint } from './production';
+import { annexNation } from './puppets';
 import { declareWar, wornNations } from './war';
 
 export const NON_CORE = 4;
@@ -140,6 +141,7 @@ export function revoltSystem(world: World): void {
   const garrisonCells = world.atSizeWhole(GARRISON_CELLS);
   const pv = world.provinces;
   if (pv.count === 0 || !isMonthStart(world.startDay, world.tick)) return;
+  kinUnion(world);
   const g = navOf(world).graph;
   // Taken anew after every revolt below: one that founds a nation may move the table (PLAN 2.12).
   let nc = world.nations.cols;
@@ -216,6 +218,64 @@ export function revoltSystem(world: World): void {
     for (const q of revolt(world, p, o)) revolted[q] = 1;
     nc = world.nations.cols;
   }
+}
+
+/**
+ * Statelets of one people come together again (PLAN 7.106, ADR-681; PLAN 7.3d1 did so only at a
+ * revolt): at a month's start, a founded nation, free, whose people (`kinOf` of a dead founded
+ * people: the people that one rose from, as `kinNeighbour` reads it) is another living nation, free,
+ * that its land borders, with no war and no truce between them, joins that nation (`annexNation`:
+ * its land, formations and cores; what a third nation holds of it is that nation's, as at a death).
+ * Not one risen on its people's own land against it, nor one God Mode set down (`unionBarred`).
+ * By id, each against the map as the unions before it left it. On 911–920 at year 30, 204 of the 426
+ * founded nations alive had a living people, most of them beside it, and a war with it in 20.
+ */
+export function kinUnion(world: World): void {
+  const nc = world.nations.cols;
+  const { owner, w } = world.cells;
+  const want: number[] = [];
+  const target = new Map<number, number>();
+  world.nations.forEach((f) => {
+    if (nc.living[f] !== 1 || nc.origin[f] === 0 || nc.overlord[f] !== 0 || world.unionBarred.has(f)) return;
+    const p = kinTarget(world, f);
+    if (p === 0 || nc.overlord[p] !== 0) return;
+    if (world.wars.atWar(f, p) || world.wars.truces.some((t) => (t.a === f && t.b === p) || (t.a === p && t.b === f))) return;
+    want.push(f);
+    target.set(f, p);
+  });
+  if (want.length === 0) return;
+  // The pairs of owners side by side (east and south neighbours; the map's seam on a looping map).
+  const wanted = new Set(want);
+  const touch = new Set<number>();
+  const h = owner.length / w;
+  for (let y = 0, c = 0; y < h; y++) {
+    for (let x = 0; x < w; x++, c++) {
+      const o = owner[c]!;
+      const e = x + 1 < w ? owner[c + 1]! : world.settings.loopingMap ? owner[c + 1 - w]! : o;
+      const s = y + 1 < h ? owner[c + w]! : o;
+      for (const n of [e, s]) {
+        if (n === o) continue;
+        if (wanted.has(o)) touch.add(o * 65536 + n);
+        if (wanted.has(n)) touch.add(n * 65536 + o);
+      }
+    }
+  }
+  for (const f of want) {
+    const p = target.get(f)!;
+    if (nc.living[f] !== 1 || nc.living[p] !== 1 || nc.overlord[f] !== 0 || nc.overlord[p] !== 0 || !touch.has(f * 65536 + p)) continue;
+    annexNation(world, p, f);
+  }
+}
+
+/** The living nation (not `f`) of founded nation f's people (`kinUnion`): its people, or that one's people when it is a dead founded nation; else 0. */
+function kinTarget(world: World, f: number): number {
+  const nc = world.nations.cols;
+  const live = (n: number): boolean => n !== 0 && n !== f && world.nations.has(n) && nc.living[n] === 1;
+  const p = nc.people[f]!;
+  if (p === 0 || p === f || !world.nations.has(p)) return 0;
+  if (live(p)) return p;
+  const q = kinOf(world, p);
+  return q !== p && live(q) ? q : 0;
 }
 
 /** Province p (held by `holder`) revolts: returns the provinces that left. */
@@ -487,6 +547,10 @@ export function spawnRebels(world: World, area: number[], holder: number, revive
   // Its people (PLAN 7.3c): the core of the land it rises on, before the land is its own; a
   // revived nation is its own people. Set on a reused id too, which would keep the dead one's.
   nc.people[id] = revive !== 0 ? id : world.provinces.core[area[0]!]!;
+  // Risen on its people's own land against it, or set down by God Mode: it does not join that
+  // nation again (`kinUnion`, PLAN 7.106). A reused id does not keep a dead one's bar.
+  world.unionBarred.delete(id);
+  if (revive === 0 && (nc.people[id] === holder || kind === EventKind.NationSpawned)) world.unionBarred.add(id);
   for (const q of area) {
     world.provinces.core[q] = id;
     world.provinces.unrest[q] = AFTER_REVOLT;

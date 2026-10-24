@@ -1374,6 +1374,13 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
     nation (that nation's `people`, or the nation itself: a 1938 nation is its own people),
     and becomes its core, unless that people is the holder's (PLAN 7.3d1, ADR-431). Only
     otherwise does it found a new nation.
+  - *Statelets of one people come together (PLAN 7.106, ADR-681):* at each month's start,
+    before the revolts, a founded nation (no overlord) whose people is a living nation (no
+    overlord) other than itself, or whose people is a dead founded nation whose own people is
+    living, joins that nation (`kinUnion`, an annexation: `NationAnnexed`) when its land borders
+    that nation's and the two have no war and no truce. Not a nation founded on its people's own
+    land against it (its `people` was its holder) nor one God Mode set down (`world.unionBarred`,
+    saved while not empty). On 911–920 × 30 years founded nations alive at year 30 42.6 → 28.2.
   - *Land handed over (PLAN 2.15d, ADR-102):* a defection, and each handover of a God Kill, is
     the event `LandCeded` (a = who received the land, b = who held it), as is the land of a
     dead nation that goes to its occupier (ADR-112), not a revolt. An area that joins a rebel
