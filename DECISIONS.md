@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-685 · 2026-10-24 · proposed (the user's decision) — The late air war: fighters across the sea spend the air forces (PLAN 7.108b's AT missed)
+### ADR-685 · 2026-10-24 · accepted, option b (the user's decision, 2026-10-24) — The late air war: fighters across the sea spend the air forces (PLAN 7.108b's AT missed)
 
 - **Context.** Critic run 13: air battles after year 1 155 → 121 a world-year on its seeds (aircraft 7, needs 8).
   PLAN 7.108b's bar: on 10 unseen seeds × 20 years, late air battles at least 1.25 × HEAD's. 7.99 and 7.101
@@ -199,6 +199,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   diverging histories, not this task's.
 - **Now.** No rule committed; the pin unchanged (c848f884; the rule's would be f0a21e5e). Tools kept: `airWhy.ts`,
   `airAb.ts`.
+- **Chosen (b), 2026-10-24.** PLAN 7.108b closed not done (7.108 closed with it, 7.108a done); PLAN 7.113, the air
+  force at war late, with the crossing re-measured on its code.
 
 ### ADR-684 · 2026-10-24 · accepted — Close in, a plane gives way to itself at its wingspan (PLAN 7.108a)
 

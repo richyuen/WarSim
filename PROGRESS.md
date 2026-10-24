@@ -23356,3 +23356,9 @@ No rule changed and nothing on screen changed. One task came out of it.
   (recommended); (c) commit the crossing as it stands.
 - **No rule;** the code restored; the pin unchanged (c848f884; the rule's f0a21e5e).
 - **Next:** 7.108b waits on ADR-685; the loop takes PLAN 7.109 (seeds from 941).
+
+## 2026-10-24 — ADR-685 b (the user's decision)
+
+- PLAN 7.108b closed not done (7.108 with it; 7.108a done); PLAN 7.113, the air force at war late, filed before 7.5,
+  the crossing re-measured on its code. BLOCKERS entry resolved; 7.108 archived.
+- **Next:** PLAN 7.109 (seeds from 941).

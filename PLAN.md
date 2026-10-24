@@ -49,21 +49,6 @@ ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the di
 beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
 reused:
 
-- [ ] 7.108 Aircraft (aircraft 7, needs 8): air battles after year 1 155 → 121 a world-year on the same
-  seeds (year 1 2,868 → 2,599); the wheel zoom ends on three plane silhouettes about 140 px wide at 3
-  m/px, larger than a company. Evidence: `critic/c13_cmp_all.txt`, `critic/shots/c13z_5861_17.png`.
-  In two parts: (a) the planes at close zoom drawn at their scale: AT, an e2e spec, red before, a plane
-  at 3 m/px no wider on screen than its wingspan at that scale (bar 1.5 ×); (b) the late air war: AT, on
-  10 unseen seeds × 20 years, air battles a world-year after year 1 at least 1.25 × HEAD's on the same
-  seeds; a unit test, red without; the gate green.
-    - [x] 7.108a The planes at close zoom drawn at their scale: at 3 m/px on the 7019 front each plane no
-      wider on screen than 1.5 × its wingspan there (`tests/e2e/planesClose1938.spec.ts`, red before:
-      144.7 px against 4.95). Done (ADR-684): the symbol crossfades into the plane at its wingspan from 8 to
-      4 m/px; about 3 px, under the bar; `planesT3_1938` (10 m/px) unchanged.
-    - [ ] 7.108b The late air war: on 10 unseen seeds × 20 years, air battles a world-year after year 1 at
-      least 1.25 × HEAD's on the same seeds; a unit test, red without; the gate green.
-      Read and tried 2026-10-24 (`docs/evidence/7.108b/`, 931–940): fighters across the sea to the front
-      (`rule.patch`) 176.2 → 174.5 (0.99 ×): missed, not committed. Waits on ADR-685 (BLOCKERS).
 - [ ] 7.109 AI nuclear use (aiNukes 7, needs 8): of two AI strikes a day apart (1129 year 15: the UK on a
   US army near Molepolole on 25 October 1952, the US on London on 26 October) only the second gets an
   alert banner, and at Max the pause comes on 1 November, 155 game hours after the first; the answer in
@@ -93,6 +78,14 @@ reused:
   AT: on that year, `pocketOf`'s cells walked a tick at most 0.5 × HEAD's; engaged land formations a war
   in it, from the same save, not below HEAD's; the round trip's test green; a unit test, red without;
   the pin moved once, with its ADR; the gate green.
+- [ ] 7.113 The air force at war late (found at 7.108b; aircraft 7, needs 8; ADR-685 b, the user's decision): the
+  AI's wings of living nations 168.6 a world in year 1, 87.9 after it (931–940 on HEAD, `docs/evidence/7.108b/at.md`);
+  the sea crossing (`docs/evidence/7.108b/rule.patch`) spent them faster (68.9) and its late battles fell with them.
+  Read first, on two of the next unseen seeds, what the AI buys and loses in the air after year 1 (wings built,
+  lost in fights, lost with bases, disbanded; the air budget against income at war). Then a rule on what it names,
+  and the crossing re-measured on its code. AT: on 10 unseen seeds × 20 years against HEAD on them, wings of living
+  nations in years 2–20 at least 1.25 × HEAD's, and air battles a world-year after year 1 at least 1.25 × HEAD's;
+  engaged per war there not below HEAD's; a unit test, red without; the gate green.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
@@ -421,3 +414,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.105 Performance (performance 5, needs 7): the late game at Max 46.3, 59.4, 59.4 s a game year […]
 - [x] 7.106 Emergent dynamics (emergent 6, needs 7, beyond R13-B1): on the same 32 seeds the churn grew […]
 - [x] 7.107 Naval (naval 7, needs 8): the late sea war is a sixth of year 1's (57.6 battles in year 1, […]
+- [x] 7.108 Aircraft (aircraft 7, needs 8): air battles after year 1 155 → 121 a world-year on the same […]

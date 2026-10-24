@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.108b's AT missed: late air battles 176.2 → 174.5 a world-year (0.99 ×, bar 1.25 ×) (ADR-685, 2026-10-24)
+### RESOLVED 2026-10-24 (option b, the user's decision: 7.108b closed not done; PLAN 7.113) · PLAN 7.108b's AT missed: late air battles 176.2 → 174.5 a world-year (0.99 ×, bar 1.25 ×) (ADR-685, 2026-10-24)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD on them, air battles a world-year after year 1 at least
   1.25 × HEAD's; a unit test, red without; the gate green.
 - **What moved** (`docs/evidence/7.108b/read.md`, `at.md`; 931–940): late, most idle fighters at war whose enemy

@@ -15083,3 +15083,34 @@ Of 7.33 (open in PLAN.md):
   **Done** (2026-10-24, ADR-683 a, the user's decision: bar 1 re-scoped to battles per armed fleet-year at war
   with a navy, late, not below 0.8 × year 1's): on ADR-682's code, 921–930, year 1 2.75, year 11 6.34, year 21
   3.45 (bar 2.20; `docs/evidence/7.107/measure.md` §6). Met.
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.108 Aircraft (aircraft 7, needs 8): air battles after year 1 155 → 121 a world-year on the same
+  seeds (year 1 2,868 → 2,599); the wheel zoom ends on three plane silhouettes about 140 px wide at 3
+  m/px, larger than a company. Evidence: `critic/c13_cmp_all.txt`, `critic/shots/c13z_5861_17.png`.
+  In two parts: (a) the planes at close zoom drawn at their scale: AT, an e2e spec, red before, a plane
+  at 3 m/px no wider on screen than its wingspan at that scale (bar 1.5 ×); (b) the late air war: AT, on
+  10 unseen seeds × 20 years, air battles a world-year after year 1 at least 1.25 × HEAD's on the same
+  seeds; a unit test, red without; the gate green.
+    - [x] 7.108a The planes at close zoom drawn at their scale: at 3 m/px on the 7019 front each plane no
+      wider on screen than 1.5 × its wingspan there (`tests/e2e/planesClose1938.spec.ts`, red before:
+      144.7 px against 4.95). Done (ADR-684): the symbol crossfades into the plane at its wingspan from 8 to
+      4 m/px; about 3 px, under the bar; `planesT3_1938` (10 m/px) unchanged.
+    - [x] 7.108b The late air war: on 10 unseen seeds × 20 years, air battles a world-year after year 1 at
+      least 1.25 × HEAD's on the same seeds; a unit test, red without; the gate green.
+      Read and tried 2026-10-24 (`docs/evidence/7.108b/`, 931–940): fighters across the sea to the front
+      (`rule.patch`) 176.2 → 174.5 (0.99 ×): missed, not committed. Closed not done (ADR-685 b, the user's
+      decision, 2026-10-24): PLAN 7.113.
