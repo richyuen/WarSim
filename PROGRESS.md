@@ -23444,4 +23444,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   (the worker stops and pauses at Max, owes the rest at a speed; the alert list), red on HEAD's worker.
 - **Specs run by hand:** `nukeAlertTwo1938`, `nukeAlert1938` (both), `nukeAlertPhone1938`, `nukeDemo1938`,
   `godTools1938`. Render and worker only: the pin unchanged.
+- **Notes:** the setting is sent by an `effect` on its signal; the page builds its worker once (`SimClient`), so it is
+  not lost. A strike cuts a Max slice and forces one statistics build, at most one a pump: the tick is unchanged.
 - **Next:** PLAN 7.109b (seeds from 961).
