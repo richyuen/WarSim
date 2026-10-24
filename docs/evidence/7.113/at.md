@@ -69,3 +69,21 @@ The growth is the USA's (and rich nations of small 1938 air forces: the Netherla
 57 % of the world's wings at year 20. The great powers whose air forces year 1 destroyed do not rebuild under 0.035
 either: Italy at 0.003 of an income of 2,420, the Soviet Union at 0.004 of 1,389, far under the share. Their gate is
 not the share.
+
+## Why the great powers do not rebuild under 0.035 (`gates_951.txt`; an uncommitted counter in step 3c, 951, years 2–20)
+
+Each month, each of seven powers, the first gate that stops its first wing:
+
+| | months stopped by the reserve (price + RESERVE_MONTHS of income) | under the price itself | ordered | gold, mean | income a month |
+|---|---|---|---|---|---|
+| the Soviet Union | 167 | 49 | 6 | 3,257 | 2,649 |
+| Italy | 131 | 48 | 16 | 1,108 | 728 |
+| Japan | 131 | 42 | 19 | 1,250 | 933 |
+| Britain | 116 | 73 | 4 | 902 | 1,323 |
+| France | 95 | 49 | 11 | 717 | 517 |
+| Germany (58 months alive) | 39 | 8 | 3 | 2,057 | 1,941 |
+| the USA | 5 | 0 | 79 | 70,234 | 5,981 |
+
+Their books are in surplus (the Soviet Union's balance over its need +798 a month) and their treasuries hold about
+a month's income: the army at war spends with no reserve (ADR-615) before the wings' turn, and the wings' three
+months are never there. The USA, hoarding a year's income, is stopped by the share and its slots alone.

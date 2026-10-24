@@ -23397,3 +23397,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Per nation** (`tools/diag/airNations.ts`, new; 951–952 year 20, `docs/evidence/7.113/at.md` last section): at 0.035
   the USA holds 165 and 172 wings (HEAD 44, 32; 1938 21), 57–62 % of the world's; the Soviet Union, Italy and Japan
   stay at 2–7 wings, far under the share (Italy 0.003 of 2,420): their gate is another.
+- **The powers' gate** (`docs/evidence/7.113/gates_951.txt`, an uncommitted counter, 951 under 0.035): the Soviet Union,
+  Italy, Japan, Britain and France stopped by the wings' reserve (price + 3 months' income) in 95–167 of 228 months,
+  their treasuries at ~1 month's income (the army at war spends with none, ADR-615); the USA hoards 70,234 gold.
