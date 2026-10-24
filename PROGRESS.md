@@ -23394,3 +23394,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   20 (1938's 166); 0.1 and 0.035 give the same count. Six saves × 90 days: no change (the effect is the years').
 - ADR-688: (a) a ceiling at the 1938 share, 0.016 (recommended); (b) at war only; (c) commit 0.035; (d) close.
 - **Not committed** (`income035.patch`); the pin unchanged (c848f884). `airAb.ts` counts the land army at war.
+- **Per nation** (`tools/diag/airNations.ts`, new; 951–952 year 20, `docs/evidence/7.113/at.md` last section): at 0.035
+  the USA holds 165 and 172 wings (HEAD 44, 32; 1938 21), 57–62 % of the world's; the Soviet Union, Italy and Japan
+  stay at 2–7 wings, far under the share (Italy 0.003 of 2,420): their gate is another.

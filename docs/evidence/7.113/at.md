@@ -53,3 +53,19 @@ The land war is better than HEAD's while the air forces rebuild (years 2–3), a
 past it, to 1.6 × 1938's by year 20: the share at either size is not what stops them (0.1 and 0.035 give the same
 count); the air force grows while the money lasts. From run 13's six saves over 90 days (`ab035/`) the rule builds
 the same wings as HEAD and the land armies at war are the same: its effect is the years' growth, not a month's.
+
+## Whose wings (`tools/diag/airNations.ts`, `nations/`; 951 and 952 at year 20, HEAD and 0.035)
+
+| | 1938 | HEAD 951 | 0.035 951 | HEAD 952 | 0.035 952 |
+|---|---|---|---|---|---|
+| world's wings | 216 | 92 | 266 | 79 | 303 |
+| the USA's | 21 (0.006 of income) | 44 (0.006) | **165 (0.025)** | 32 (0.004) | **172 (0.034)** |
+| the Soviet Union's | 30 (0.040) | 4 | 5 (0.004, income 1,389) | 2 | — |
+| Italy's | 17 (0.034) | 2 | 7 (0.003, income 2,420) | 2 | — |
+| Japan's | 22 (0.036) | 7 | 6 (0.011) | 2 | 3 (0.011) |
+| Britain's | 26 (0.018) | 2 | — | 10 | 13 (0.034) |
+
+The growth is the USA's (and rich nations of small 1938 air forces: the Netherlands 2 → 25, Australia 1 → 9): 62 % and
+57 % of the world's wings at year 20. The great powers whose air forces year 1 destroyed do not rebuild under 0.035
+either: Italy at 0.003 of an income of 2,420, the Soviet Union at 0.004 of 1,389, far under the share. Their gate is
+not the share.
