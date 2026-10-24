@@ -13,7 +13,8 @@ entries are kept and marked **RESOLVED** with the date and fix.
   unit case red on HEAD, green with it. Not committed; the pin unchanged.
 - **What is left:** two history tests red with it: `operationalAi` (Poland's day-30 front coverage 0.519, bar 0.6,
   HEAD 0.607: the operational AI piles the formations the strikes no longer kill) and `wholeTanks` (division 41's
-  first fight later and lighter). The user's (ADR-692): (a) commit, the two tests restated, no task; (b) PLAN 7.115
+  first fight later and lighter). The user's (ADR-692): (a) commit, the two tests restated (`wholeTanks` from the first heavy fight: 6 tanks lost on
+  HEAD, 1 with the rule), no task; (b) PLAN 7.115
   for the spread of a larger army, the rule committed with it (recommended); (c) no rule, no task.
 
 ### RESOLVED 2026-10-24 (option a, the user's decision: the rule committed, 7.109b closed not done, PLAN 7.114) · PLAN 7.109b's AT missed: bursts killing over ten times more civilians than men 36 → 34 (0.94 ×, bar 0.75 ×) (ADR-691; waits on the user)

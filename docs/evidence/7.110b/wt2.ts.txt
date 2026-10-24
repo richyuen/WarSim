@@ -1,0 +1,37 @@
+// Scratch: division 41 of seed 3929, from its first hour with 9+ volleys at its armour, tanks over 48 hours.
+import { FIRE_STRIDE, FireField } from '../../src/shared/events';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { elementIndex } from '../../src/sim/systems/elements';
+import { ARM_ARMOUR } from '../../src/sim/world';
+import { assets1938 } from '../../tests/helpers/earth';
+import { nationId } from '../../tests/helpers/sim1938';
+
+const sim = new Sim({ scenario: '1938', seed: 3929, assets: assets1938(SIZE_1938.w) });
+sim.command({ kind: 'declareWar', attacker: nationId('GER'), defender: nationId('POL') });
+sim.command({ kind: 'declareWar', attacker: nationId('GER'), defender: nationId('FRA') });
+const w = sim.world;
+const ec = w.elements.cols;
+const isArmour = (e: number): boolean => (w.rules!.units[ec.unit[e]!]!.arm & ARM_ARMOUR) !== 0;
+const tanks = (): number => (elementIndex(w).get(41) ?? []).filter(isArmour).reduce((a, e) => a + ec.strength[e]!, 0);
+let from = -1;
+let atFrom = 0;
+let volleys = 0;
+for (let h = 1; h <= 1440 && (from < 0 || h < from + 48); h++) {
+  let armour = 0;
+  sim.step(1, (world) => {
+    const f = world.out.fires;
+    for (let i = 0; i + FIRE_STRIDE <= f.length; i += FIRE_STRIDE) {
+      const e = f.data[i + FireField.target]!;
+      if (w.elements.has(e) && ec.formation[e] === 41 && isArmour(e)) armour++;
+    }
+    world.out.fires.length = 0;
+    world.out.events.length = 0;
+  });
+  if (from < 0 && armour >= 9) {
+    from = h;
+    atFrom = tanks();
+  }
+  if (from >= 0) volleys += armour;
+}
+console.log(from < 0 ? 'no hour with 9+ volleys at armour in 60 days' : `first heavy hour ${from}: tanks ${atFrom} -> ${tanks()} in 48 hours, ${volleys} volleys at armour`);

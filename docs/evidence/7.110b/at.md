@@ -71,5 +71,6 @@ Neither is of the rule's own code; both read a seeded 1938 history.
 2. `wholeTanks.test.ts` (seed 3929, armoured division 41 loses whole tanks in contact in the 48 hours from hour
    231): with the rule the division is first fired at in hour 306 (HEAD: 237), a lighter fight (2–8 volleys an
    hour at its armour, HEAD 9–14), and loses no tank in the 48 hours from it. A restatement that finds the hour
-   (in `rule.patch`) passes on HEAD (6 tanks) and not with the rule (0): the claim would need a longer window or
-   another case.
+   (in `rule.patch`) passes on HEAD (6 tanks) and not with the rule (0). From the first hour with 9 or more volleys at
+   its armour (`wt2.ts.txt`): HEAD hour 238, 340 → 334 tanks in 48 hours (640 volleys at armour); the rule hour 348,
+   340 → 339 (517): that restatement holds on both.

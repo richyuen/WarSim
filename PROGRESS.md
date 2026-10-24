@@ -23496,7 +23496,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **AT** (971–980 × 20, HEAD in a worktree of `3c05e7d7`): land formations at war a war 51.38 → 62.54 (× 1.217, bar
   × 1.3: missed); engaged a war 0.497 → 0.671 (met). Two history tests red with it: `operationalAi` (Poland's day-30
   coverage 0.519, bar 0.6; HEAD 0.607: more formations near the front, fewer sectors covered) and `wholeTanks`
-  (division 41's fight later and lighter). Seed 901 before ADR-689: 56.6 a war against HEAD's 39.8.
+  (division 41's fight later and lighter). Seed 901 before ADR-689: 56.6 a war against HEAD's 39.8 (one seed; it
+  agrees with the rebuilt air striking more, and does not show it).
 - **Gotcha:** Git Bash converts an argument that begins with `/c/...` to `C:\...`, but not one inside `seed:/c/...`:
   node then opens `C:\c\...`. Use paths relative to the worktree in `seed:path` arguments.
 - **Next:** PLAN 7.111 while ADR-692 waits.

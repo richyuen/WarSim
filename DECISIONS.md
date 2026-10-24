@@ -189,14 +189,16 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   sectors on day 30, bar 0.6, HEAD 0.607: as long a front, 10 formations more near it, fewer sectors covered: the
   operational AI piles what the strikes no longer grind away); `wholeTanks` (division 41's first fight comes in hour
   306, not 237, and is lighter: no tank lost in the 48 hours, by a pinned hour or a found one).
-- **Seed 901 before ADR-689** (one seed): 56.6 a war in years 2–20 against HEAD's 39.8, 1,971 land formations
-  destroyed against 2,433: the rebuilt air forces strike more.
+- **Seed 901 before ADR-689** (one seed, its history parting from year 2): 56.6 a war in years 2–20 against HEAD's
+  39.8, 1,971 land formations destroyed against 2,433. It agrees with the rebuilt air forces striking more; one seed
+  does not show it.
 - **Not committed** (`docs/evidence/7.110b/rule.patch`: the rule, its unit case, the pin, `wholeTanks` restated to
   find its hour); the pin unchanged.
 - **Options.**
   - **(a)** Commit the rule; `operationalAi`'s coverage read as the mean of days 10–30 (Poland: HEAD 0.668, the rule
-    0.690; both nations over 0.6), `wholeTanks` on the first 48 hours with a tank of fire at the division; 7.110b
-    closed not done; no task.
+    0.690; both nations over 0.6), `wholeTanks`'s 48 hours from the division's first hour with 9 or more volleys at its
+    armour (`docs/evidence/7.110b/wt2.ts.txt`: HEAD hour 238, 6 tanks lost; the rule hour 348, 1; the restatement in
+    `rule.patch`, from the first volley, is red with the rule and is replaced); 7.110b closed not done; no task.
   - **(b)** 7.110b closed not done; PLAN 7.115: the operational AI spreads a larger army over its front (AT:
     `operationalAi` as it stands, green with `rule.patch` applied; Poland's day-30 coverage at least 0.6), then the
     rule committed with it and `wholeTanks` given a case of its own fight. (Recommended: the rule moves the critic's
