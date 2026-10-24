@@ -23409,3 +23409,5 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Paired from HEAD's year-1 saves** (951–960, 2 years each arm, `docs/evidence/7.113/at.md` last section): engaged per
   war 0.689 HEAD, 0.686 under 0.035 (5 up, 5 down); wings +26 %, air battles +73 % by year 3. The AT's land-war miss is
   the histories' drift, over two years at least. `airLate.ts` takes LOAD.
+- **Paired from year 10** (ADR-688 a; 951–960, 5 years each arm): engaged per war 0.648 → 0.541 (−17 %; −7 % without 954),
+  6 of 10 lower; air battles +4 % as wings grow by 50. The commit's condition not met; to the user.

@@ -138,3 +138,17 @@ From the same world the rule leaves the land war as it was: engaged per war over
 seeds up and five down; wings +26 % and air battles +73 % by year 3. The 20-year AT's miss on that clause is the
 histories parting from year 1, not the rule's effect over two years. Its effect over longer (as the wings grow to 265)
 is not read paired.
+
+## Paired from year 10 (`fromY10/`; HEAD's year-10 saves of 951–960, 5 years each arm; ADR-688 a, the user's)
+
+| year | wings HEAD | 0.035 | air battles HEAD | 0.035 | engaged per war HEAD | 0.035 |
+|---|---|---|---|---|---|---|
+| 11 | 85.7 | 90.5 | 57 | 72 | 0.599 | 0.577 |
+| 12 | 86.1 | 109.6 | 135 | 149 | 0.923 | 0.639 |
+| 13 | 86.2 | 122.2 | 124 | 98 | 0.671 | 0.551 |
+| 14 | 85.3 | 130.8 | 124 | 165 | 0.583 | 0.495 |
+| 15 | 84.7 | 137.7 | 106 | 84 | 0.463 | 0.445 |
+
+Engaged per war over the five years 0.648 → 0.541 (lower on 6 of 10; 954 alone 2.084 → 1.324, the rest 0.488 → 0.454,
+−7 %). Air battles 546 → 568 in all (+4 %) as the wings grow by 50: the late wings meet little (7.108b's sea). The
+condition of ADR-688 a (the land war holding over the years the air forces grow) is not met.
