@@ -355,7 +355,19 @@ interface SectorShape {
 function sectorShape(world: World, side: number[], frontier: Map<number, Front>, enemyKey: string, enemyOf: Uint8Array, enemies: number[], n: number, fighting: Set<number>, stand: Standings, w: number, bw: number): SectorShape {
   /** The sectors in the order they were met. */
   const made: SectorShape['list'] = [];
-  const at = new Map<number, number>();
+  // By sector bucket, the sector's number in `made` while `stamp` is this call's (PLAN 7.111: in place
+  // of a `Map` by key, as `SLOTS`).
+  const buckets = bw * Math.ceil(world.cells.h / sector);
+  if (SHAPE.stamp.length !== buckets) {
+    SHAPE.stamp = new Uint32Array(buckets);
+    SHAPE.at = new Int32Array(buckets);
+    SHAPE.gen = 0;
+  }
+  if (++SHAPE.gen === 0xffffffff) {
+    SHAPE.stamp.fill(0);
+    SHAPE.gen = 1;
+  }
+  const { stamp, at, gen } = SHAPE;
   for (const holder of side) {
     const id = `${holder}:${enemyKey}`;
     let part = stand.fronts.get(id);
@@ -367,9 +379,11 @@ function sectorShape(world: World, side: number[], frontier: Map<number, Front>,
     }
     for (let j = 0; j < part.keys.length; j++) {
       const key = part.keys[j]!;
-      let i = at.get(key);
-      if (i === undefined) {
-        at.set(key, (i = made.length));
+      let i: number;
+      if (stamp[key] === gen) i = at[key]!;
+      else {
+        stamp[key] = gen;
+        at[key] = i = made.length;
         made.push({ key, cells: [], count: 0, cx: 0, cy: 0, hold: -1, holders: [] });
       }
       const s = made[i]!;
@@ -382,7 +396,12 @@ function sectorShape(world: World, side: number[], frontier: Map<number, Front>,
       if (s.holders[s.holders.length - 1] !== holder) s.holders.push(holder);
     }
   }
-  const list = made.slice().sort((a, b) => a.key - b.key);
+  // By ascending key (the keys are distinct): sorted as numbers in a typed array, not as objects.
+  const keys = new Float64Array(made.length);
+  for (let i = 0; i < made.length; i++) keys[i] = made[i]!.key;
+  keys.sort();
+  const list = new Array<SectorShape['list'][number]>(made.length);
+  for (let i = 0; i < keys.length; i++) list[i] = made[at[keys[i]!]!]!;
   for (const s of list) {
     s.cx /= s.count;
     s.cy /= s.count;
@@ -472,6 +491,8 @@ function standings(world: World, w: number): Standings {
  * one after another.
  */
 const SLOTS = { stamp: new Uint32Array(0), at: new Int32Array(0), summed: new Uint32Array(0), enemy: new Float64Array(0), gen: 0 };
+/** By sector bucket, a sector of the `sectorShape` call in hand: `at[k]` while `stamp[k]` is its `gen`. */
+const SHAPE = { stamp: new Uint32Array(0), at: new Int32Array(0), gen: 0 };
 
 /** Nation m's enemies among `fighting`, as a mask by nation: once a tick (PLAN 7.1g). */
 function foesOf(world: World, m: number, fighting: Set<number>, stand: Standings): Uint8Array {
