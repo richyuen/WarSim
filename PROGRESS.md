@@ -23534,3 +23534,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   in `docs/evidence/7.115/rule.patch`; `nukeAlertStop1938` unchanged. Tests run by hand: `operationalAi`,
   `wholeTanks`, `airStrike1938`, `nukeAlertStop1938`, the pin.
 - **Next:** PLAN 7.111.
+
+## 2026-10-24 — PLAN 7.111: the AT missed, to the user (ADR-694, ADR-695)
+
+- **Start:** gate green on `3e58eb61`; critic not due; no decision waiting.
+- **Restated** (ADR-694): ADR-693 (b) moved year 21's hash to dba7fdae and HEAD's read to 4.43–4.46; the AT is the
+  same 0.32 ms cut, at most 4.12.
+- **Cuts** (exact; each by its function in a `--cpu-prof` of the year): `snapTarget` by landmass then cell 1,860 →
+  430 ms a year; `sectorShape` by stamped bucket and a numeric sort 3,124 → 2,766; `industryHeld` over the cells with
+  industry 820 → 254. The hash dba7fdae and the pin unchanged each time; the gate green on each commit.
+- **AT:** 4.242 and 4.220 (bar 4.12): missed. `docs/evidence/7.111/measure.md`.
+- **Gotcha:** paired whole-tick reads swing ±5 % on untouched systems; a 0.05 ms cut is read by its function's time
+  in `--cpu-prof` (esbuild bundles of the CLI, `docs/evidence/7.105/top.mjs`, `lines.mjs`).
+- **Next:** PLAN 7.112 while ADR-695 waits.

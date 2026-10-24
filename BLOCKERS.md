@@ -5,6 +5,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.111's AT missed: year 21 of 4877 at 4.24 and 4.22 ms a tick, bar 4.12 (ADR-695; waits on the user)
+- **The bar** (ADR-694): year 21 from `critic/c13_seed4877_y20.bin`, `npm run sim -- --affinity 0xFFFF`, at most 4.12
+  ms a tick, twice; the hash dba7fdae and the pin unchanged; the gate green.
+- **What moved** (`docs/evidence/7.111/measure.md`): three exact cuts committed, HEAD 4.457 / 4.431 → 4.242 / 4.220;
+  the hash and the pin unchanged; the gate green on each.
+- **What is left:** `sectorShape`'s inner loop and sort (~0.08), the pockets (PLAN 7.112, a rule), the operational
+  AI's cadence (~1.0, against R13-B1). The user's (ADR-695): (a) close it, the cuts kept (recommended); (b) as (a),
+  and 7.112 read on the late tick too.
+
 ### RESOLVED 2026-10-24 (option b, the user's decision: the strike rule alone, coverage read as the mean of days 10–30, 7.115 closed not done) · PLAN 7.115's AT missed: land formations at war a war 56.77 (bar: not below the strike rule's 62.54), engaged 0.664 (bar 0.671) (ADR-693; waits on the user)
 - **The bar:** with 7.110b's strike rule and the spread, `operationalAi` green; Poland's day-30 coverage at least 0.6;
   on 971–980 × 20, land formations of nations at war a war in years 2–20 not below 62.54 and engaged a war not below

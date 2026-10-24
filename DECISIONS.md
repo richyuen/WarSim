@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-695 · 2026-10-24 · proposed (the user's decision) — The late tick's exact remainder: 4.44 → 4.23 ms, bar 4.12 (PLAN 7.111's AT missed)
+
+- **Context** (`docs/evidence/7.111/measure.md`). PLAN 7.111 (ADR-680 b; restated by ADR-694 after ADR-693 b moved
+  the hash): year 21 of 4877 at most 4.12 ms a tick, twice, the hash dba7fdae and the pin unchanged.
+- **Committed** (exact, the same answers; each by its function in a `--cpu-prof` of the year): `snapTarget`'s map by
+  landmass and then cell (1,860 → 430 ms a year), `sectorShape`'s sectors by stamped bucket and its sort as numbers
+  (3,124 → 2,766), `industryHeld` over the cells with industry (820 → 254). The AT read **4.242 and 4.220** against
+  HEAD's 4.457 and 4.431: missed by 0.10–0.12. ADR-680 had sized the three at 0.18.
+- **Options.**
+  - **(a)** 7.111 closed not done, the cuts kept; the rest to PLAN 7.112 (the pockets) and the next report.
+    (Recommended: nothing exact of the size is left, and 7.112 is the next lever.)
+  - **(b)** As (a), and 7.112's AT given the late tick too (year 21 at most 4.12 with its rule).
+- **Meanwhile** the loop takes PLAN 7.112.
+
 ### ADR-694 · 2026-10-24 · accepted — PLAN 7.111's AT restated to HEAD after ADR-693 (b): the same cut, the new hash
 
 - **Context.** PLAN 7.111's AT (ADR-680 a/b) reads year 21 of 4877 from `critic/c13_seed4877_y20.bin` at most 3.9
