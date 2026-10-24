@@ -49,7 +49,9 @@
  * is under fire (a volley or a carrier strike on it that hour, PLAN 7.31; until then it stands in
  * the battle, engaged, and the enemy closes on it), breaks off unless it is at its port
  * (`atOwnPort`, PLAN 7.31: it has nowhere to go, and fights there) (`breakOff`: `BREAK_HOURS` out of
- * every sea battle, sailing for its nearest home port, `nearestOwnPort`).
+ * every sea battle, sailing for its nearest home port, `nearestOwnPort`). A fleet that breaks off
+ * leaves no wound carried (PLAN 7.107, ADR-682): each holed ship of it is lost or healed on a seeded
+ * roll whose chance is its wound, counted to its side's losses.
  * A battle with no fleet of one side left, or with no contact in an hour, is over: one row in the
  * history log (`SeaBattle`: each side with the ships it lost; where it began).
  *
@@ -60,7 +62,7 @@
  *
  * Not here: sea control (PLAN 4.4); the AI's orders (PLAN 4.6).
  */
-import { hash32 } from '../core/hash';
+import { hash32, hashToUnit } from '../core/hash';
 import { pickByHealth, type HealthTable } from './pickByHealth';
 import { atan2, hypot } from '../core/dmath';
 import { EventKind } from '../../shared/events';
@@ -69,7 +71,7 @@ import { isLand } from '../../shared/terrain';
 import { nearestCellWhere } from '../data/ownership';
 import { airOf, basinOf, laneOf, navOf, portSeaOf, seaOf, type SeaBattle, type World } from '../world';
 import { orderSail, sailStep } from './sail';
-import { applyLoss, elementIndex, elementPlace, loopW, noteMove, settleFormation, slotCount } from './elements';
+import { applyLoss, applyWholeLoss, elementIndex, elementPlace, loopW, noteMove, settleFormation, slotCount } from './elements';
 import { ARMOR_PEN, COOLDOWN } from './combat';
 import { wingRange } from './air';
 import { NAVAL_STRIKE_FIRE, shipEffectiveness } from './airCombat';
@@ -91,6 +93,7 @@ export const BREAK_HOURS = 24;
 /** The slack of a reach (km, `inReach`): a micrometre. */
 export const REACH_EPS_KM = 1e-9;
 const SALT_SUBTICK = 0x5e48;
+const SALT_HOLED = 0x5e4b;
 /**
  * How far a carrier's wings see and strike for its fleet (PLAN 5.4d): this share of the wing's
  * range (`wingRange`; a search out and back and its strike): a naval bomber group's 1,000 km
@@ -816,7 +819,19 @@ export function navalCombatSystem(world: World): void {
       if (!world.formations.has(id)) return void out.add(id);
       const theirs = world.wars.atWar(first, f.nation[id]!) ? reachA : reachB;
       if ((2 * shipsOf(world, id) < rec.ships[k]! || (reachOf(id) === 0 && theirs > 0 && hit.has(id))) && !atOwnPort(world, id)) {
-        breakOff(world, id);
+        // Its holed ships are not carried out (PLAN 7.107, ADR-682): each live ship's wound is lost
+        // whole or healed on a seeded roll (`applyWholeLoss`, its mean the wound), counted to its
+        // side's losses in the battle's row. Carried, a transport hit once in the first hour slipped
+        // away with 0.3–0.8 of a ship's damage and the row said nothing was sunk: every such row of
+        // seeds 921–930 (`docs/evidence/7.107/measure.md`).
+        const n = f.nation[id]!;
+        const had = shipsOf(world, id);
+        for (const el of idx.get(id) ?? []) if (ec.strength[el]! > 0 && ec.wound[el]! > 0) applyWholeLoss(world, el, 0, hashToUnit(hash32(world.seed, world.tick, el, SALT_HOLED)));
+        settleFormation(world, id);
+        const sunk = had - shipsOf(world, id);
+        if (world.wars.atWar(first, n)) rec.lostB += sunk;
+        else rec.lostA += sunk;
+        if (world.formations.has(id)) breakOff(world, id);
         out.add(id);
       }
     });

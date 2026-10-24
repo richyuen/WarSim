@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-683 · 2026-10-24 · proposed (the user's decision) — The late war at sea is the navies' count, not their meeting (PLAN 7.107's first bar missed)
+
+- **Context** (`docs/evidence/7.107/measure.md`). PLAN 7.107 (naval 7): on 10 unseen seeds × 20 years against
+  HEAD, sea battles a world-year after year 1 at least 1.3 × HEAD's, battles sinking nothing at most 4 %.
+- **Measured** (921–930, `seaWars` one year from 1938 and from the year-10 and year-20 saves): battles per armed
+  fleet-year of a nation at war with a navy 2.91 in year 1, 2.43 at year 11, 1.71 at year 21 (3.1 without 924,
+  whose US fleets stand by enemy fleets stranded on cells of no sea zone, 4 % of the world's armed power, the
+  only such save). Such fleets: 14.0 a world in year 1, 2.8 and 4.6 late. The armed fleets halve (ADR-667 a's
+  smaller late navies) and the share of them at war with another navy halves (wars of two navies 36.6 → 16.8–24.3
+  war-weeks); the rest blockade coasts with no navy (`awayStation`, 597–924 fleet-weeks late).
+- **AT** (with ADR-682): battles sinking nothing 7.28 → 2.56 % (met); late battles 10.37 → 9.83 (0.95 ×, missed).
+- **Options.**
+  - **a (recommended):** bar 1 re-scoped to what the naval AI owns: battles per armed fleet-year at war with a
+    navy, late, not below year 1's 0.8 ×, read on this run's seeds (HEAD holds it but for 924's year 21); PLAN
+    7.107 closed on it with ADR-682's rule. The navies' size stays ADR-667 a's.
+  - **b:** a numbered task, the navies' rebuild late (AT: armed fleets years 10–20 ≥ 1.3 × HEAD's), reopening
+    ADR-667 a's acceptance; PLAN 7.107 closed not done.
+  - **c:** a numbered task, the war choice: a naval power at war weighs a naval enemy's ports and fleets in reach
+    (AT: wars of two navies late ≥ 1.5 × HEAD's war-weeks); PLAN 7.107 closed not done.
+- **Pin** moved by ADR-682 alone (f9d18365 → c848f884).
+
+### ADR-682 · 2026-10-24 · accepted — A fleet that breaks off carries no wound away (PLAN 7.107)
+
+- **Context** (`docs/evidence/7.107/measure.md` §3). Battles that sink nothing were 7.28 % on 921–930 (the critic's
+  3.6 → 7.2 %). Every one, in year 1 and late, was a transport group (no weapon) that a warfleet hit in the
+  battle's first hour; it broke off (ADR-526) and was out of every battle for `BREAK_HOURS`. The hour's damage was
+  kept as a wound (`applyLoss` carries the fraction): 0.30–0.80 of a ship on the single transports of 921's year 21.
+- **Decision.** In `navalCombatSystem`, a fleet that breaks off first has each live ship's wound lost whole or
+  healed on a seeded roll (`applyWholeLoss` with `hash32(seed, tick, element, SALT_HOLED)`, the chance its
+  wound: the mean kept, as PLAN 7.23a's tanks), counted to its side's losses on the battle's row; one sunk whole
+  by it goes out of the battle as a fleet sunk does. No constant. Nothing else in the sim takes a wound away, so
+  the roll moves losses in time, not in mean. Armed fleets that break off by their losses roll too.
+- **AT** (921–930 × 20 years): battles sinking nothing 7.28 → **2.56 %** (bar 4 %, met); ships sunk a year 93.3 →
+  101.8; armed fleets in years 2–20 43.7 → 41.0; late battles 10.37 → 9.83 (ADR-683). On 921's year-20 save, 6 of 16
+  rows sinking nothing → 3 of 15. Unit test in `navalBattle1938.test.ts` (red without: the wounds go home).
+- **Pin** f9d18365 → c848f884.
+
 ### ADR-681 · 2026-10-24 · accepted — Statelets of one people come together: a founded nation joins its living people beside it (PLAN 7.106)
 
 - **Context** (`docs/evidence/7.106/measure.md`). PLAN 7.106 (emergent 6): on 10 unseen seeds × 30

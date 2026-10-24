@@ -12,6 +12,8 @@
  * Also the ships lost on the rows (`shipsLost`), the fleets that broke off with no port of their
  * nation to sail for (`brokeNoPort`), and the battles that stood more than a day (`long`: hours, ships lost), to see one that cannot
  * close (no sea way) and stands, engaged, with nothing sunk.
+ * Each row also has its battle's hours and the nearest its two sides came (`minKm`, PLAN 7.107), and the
+ * summary its zero rows by hours (`zeroHours`) and by that range (`zeroKm`).
  *
  * Usage: npx tsx tools/diag/seaPhantom.ts <seed> <save.bin | new> [days = 120] [out = .cache/seaPhantom_<seed>.json]
  */
@@ -51,9 +53,10 @@ const basinAt = (id: number): number => {
   return basinOf(w).basin[seaOf(w).zoneOf[cell]!] ?? -1;
 };
 
-type Row = { tick: number; a: string; b: string; lostA: number; lostB: number; x: number; y: number; cause: string; broke: { id: number; nation: string; template: string; armed: boolean; nearestKm: number; nearestArmed: boolean; sameBasin: boolean; noPort: boolean }[] };
+type Row = { tick: number; a: string; b: string; lostA: number; lostB: number; x: number; y: number; cause: string; hours?: number; minKm?: number; broke: { id: number; nation: string; template: string; armed: boolean; nearestKm: number; nearestArmed: boolean; sameBasin: boolean; noPort: boolean }[] };
 const rows: Row[] = [];
 const age = new Map<object, number>();
+const minKm = new Map<object, number>();
 const long: { tick: number; a: string; b: string; hours: number; lost: number; x: number; y: number }[] = [];
 for (let t = 0; t < days * 24; t++) {
   sim.step(1, (world) => {
@@ -86,10 +89,16 @@ for (let t = 0; t < days * 24; t++) {
     for (const [rec, h] of age) {
       if (live.has(rec)) continue;
       const r = rec as (typeof world.seaBattles)[number];
+      const row = rows.find((q) => q.tick === world.tick && q.x === r.x && q.y === r.y && q.hours === undefined);
+      if (row) [row.hours, row.minKm] = [h, Math.round(minKm.get(rec) ?? r.range)];
+      minKm.delete(rec);
       if (h > 24) long.push({ tick: world.tick, a: tag(r.a), b: tag(r.b), hours: h, lost: r.lostA + r.lostB, x: r.x, y: r.y });
       age.delete(rec);
     }
-    for (const rec of world.seaBattles) age.set(rec, (age.get(rec) ?? 0) + 1);
+    for (const rec of world.seaBattles) {
+      age.set(rec, (age.get(rec) ?? 0) + 1);
+      minKm.set(rec, Math.min(minKm.get(rec) ?? Infinity, rec.range));
+    }
     e.length = 0;
     world.out.fires.length = 0;
   });
@@ -112,6 +121,15 @@ for (const r of rows) {
 const zero = rows.filter((r) => r.lostA + r.lostB === 0).length;
 const shipsLost = rows.reduce((t, r) => t + r.lostA + r.lostB, 0);
 const brokeNoPort = rows.reduce((t, r) => t + r.broke.filter((b) => b.noPort).length, 0);
-const summary = { seed, bin, days, n: rows.length, zero, shipsLost, brokeNoPort, causes, long: long.length, longNoLoss: long.filter((l) => l.lost === 0).length, longest: long.sort((p, q) => q.hours - p.hours).slice(0, 8), places: Object.fromEntries(Object.entries(places).sort((p, q) => q[1].n - p[1].n).slice(0, 25)) };
+const zeroHours: Record<string, number> = {};
+const zeroKm: Record<string, number> = {};
+for (const r of rows) {
+  if (r.lostA + r.lostB > 0) continue;
+  const h = r.hours === undefined ? '?' : r.hours <= 1 ? '1' : r.hours <= 6 ? '2-6' : r.hours <= 24 ? '7-24' : '>24';
+  zeroHours[h] = (zeroHours[h] ?? 0) + 1;
+  const k = r.minKm === undefined ? '?' : r.minKm <= 5 ? '<=5' : r.minKm <= 15 ? '5-15' : r.minKm <= 30 ? '15-30' : '>30';
+  zeroKm[k] = (zeroKm[k] ?? 0) + 1;
+}
+const summary = { seed, bin, days, n: rows.length, zero, zeroHours, zeroKm, shipsLost, brokeNoPort, causes, long: long.length, longNoLoss: long.filter((l) => l.lost === 0).length, longest: long.sort((p, q) => q.hours - p.hours).slice(0, 8), places: Object.fromEntries(Object.entries(places).sort((p, q) => q[1].n - p[1].n).slice(0, 25)) };
 writeFileSync(out, JSON.stringify({ ...summary, rows: rows.slice(0, 300) }, null, 1));
 console.log(JSON.stringify(summary, null, 1));

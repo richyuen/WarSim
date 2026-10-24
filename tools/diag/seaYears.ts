@@ -12,6 +12,7 @@
  * navies at war that stay in port (under way).
  *
  * Usage: npx tsx tools/diag/seaYears.ts <seed> <years> [out = .cache/seaYears_<seed>.json]
+ *   SAVE_AT=10,20 SAVE_DIR=<dir>: also a checkpoint at the end of those years (`<dir>/s<seed>_y<year>.bin`, PLAN 7.107).
  */
 import { writeFileSync } from 'node:fs';
 import { EventKind } from '../../src/shared/events';
@@ -28,6 +29,8 @@ const years = Number(process.argv[3] ?? 30);
 const out = process.argv[4] ?? `.cache/seaYears_${seed}.json`;
 const SZ = size1938(undefined);
 const sim = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SZ.w) });
+const saveAt = new Set((process.env.SAVE_AT ?? '').split(',').filter(Boolean).map(Number));
+const saveDir = process.env.SAVE_DIR ?? '.cache';
 const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
 
 type Year = {
@@ -117,6 +120,7 @@ for (let year = 1; year <= years; year++) {
   for (const k of ['fleets', 'power', 'navies', 'warPairs', 'seaPairs', 'seaPairFleets', 'seaPairPower', 'underWay'] as const) y[k] = Math.round((y[k] / Math.max(1, days)) * 10) / 10;
   y.pairs = Object.fromEntries(Object.entries(y.pairs).sort((p, q) => q[1].battles - p[1].battles).slice(0, 5));
   rows.push(y);
+  if (saveAt.has(year)) writeFileSync(`${saveDir}/s${seed}_y${year}.bin`, sim.save());
   const { pairs, ...rest } = y;
   console.log(JSON.stringify({ ...rest, top: Object.keys(pairs).slice(0, 3) }));
 }

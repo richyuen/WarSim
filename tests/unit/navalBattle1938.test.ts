@@ -287,6 +287,34 @@ describe('gunnery by range: the AT (PLAN 4.3a)', () => {
     expect(w.seaBattles).toEqual([]);
   });
 
+  it('PLAN 7.107: a fleet that breaks off carries no wound away: its holed ships are lost on a roll, and the row counts them', () => {
+    // Seeds 921–930 (ADR-682): every row that sank nothing was a transport group hit in its first
+    // hour, gone with 0.3–0.8 of a ship's damage carried, its row "lost 0 ships".
+    const s = atWar();
+    const w = s.world;
+    const ec = w.elements.cols;
+    const sea = openSea(w, 10);
+    fleet(w, GER, 'cruiser_squadron', sea.x, sea.y);
+    const tp = fleet(w, ENG, 'transport_group', sea.x2, sea.y);
+    const els = elementIndex(w).get(tp)!.filter((e) => ec.strength[e]! > 0);
+    const before = els.reduce((t, e) => t + ec.strength[e]!, 0);
+    expect(before).toBeGreaterThanOrEqual(8);
+    // Half a ship's damage on each, as a hit an hour before would leave.
+    for (const e of els) ec.wound[e] = 0.5;
+    const run = hours(s, 1, () => true);
+    expect(run.broke).toEqual([{ h: 1, id: tp }]);
+    expect(run.rows).toHaveLength(1);
+    const left = w.formations.has(tp) ? elementIndex(w).get(tp)!.filter((e) => ec.strength[e]! > 0) : [];
+    // No ship of it leaves holed: each was lost or healed.
+    expect(left.map((e) => ec.wound[e])).toEqual(left.map(() => 0));
+    const lost = left.reduce((t, e) => t - ec.strength[e]!, before);
+    // About half of them lost (each at a chance a little over its wound), and the row says so.
+    expect(lost).toBeGreaterThan(0);
+    expect(lost).toBeLessThan(before);
+    expect(seaSide(run.rows[0]!.row[3]!).ships).toBe(lost);
+    expect(seaSide(run.rows[0]!.row[2]!).ships).toBe(0);
+  });
+
   it('PLAN 7.31: a fleet with no weapon under fire at its own port does not break off: it has nowhere to go, and the battle goes on until it is sunk', () => {
     const s = atWar();
     const w = s.world;

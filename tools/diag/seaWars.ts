@@ -16,8 +16,9 @@
  * Counts are week-samples (a fleet-week, a war-week).
  *
  * Usage: npx tsx tools/diag/seaWars.ts <seed> [years = 30] [out = .cache/seaWars_<seed>.json]
+ *   LOAD=<save.bin>: from that checkpoint instead of 1938 (PLAN 7.107); its years count on from there.
  */
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { EventKind, RejectReason } from '../../src/shared/events';
 import { seaSide } from '../../src/shared/history';
 import { size1938, TAGS_1938 } from '../../src/sim/scenario1938';
@@ -33,6 +34,7 @@ const years = Number(process.argv[3] ?? 30);
 const out = process.argv[4] ?? `.cache/seaWars_${seed}.json`;
 const SZ = size1938(undefined);
 const sim = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SZ.w) });
+if (process.env.LOAD) sim.load(new Uint8Array(readFileSync(process.env.LOAD)));
 const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
 const reason = Object.fromEntries(Object.entries(RejectReason).map(([k, v]) => [v, k]));
 

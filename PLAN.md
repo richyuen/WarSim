@@ -56,6 +56,9 @@ reused:
   sea are and why they do not meet. AT: on 10 unseen seeds × 20 years against HEAD on the same seeds,
   sea battles a world-year after year 1 at least 1.3 × HEAD's, and battles sinking nothing at most 4 %;
   a unit test, red without; the gate green.
+  **AT run** (2026-10-24, `docs/evidence/7.107/measure.md`; 921–930): battles sinking nothing 7.28 → 2.56 % (met,
+  ADR-682's rule committed); late battles 10.37 → 9.83 a world-year (0.95 ×, missed: the navies' count, not their
+  meeting). **Waits on ADR-683** (BLOCKERS); seeds 921–930 taken, 7.108 starts at 931.
 - [ ] 7.108 Aircraft (aircraft 7, needs 8): air battles after year 1 155 → 121 a world-year on the same
   seeds (year 1 2,868 → 2,599); the wheel zoom ends on three plane silhouettes about 140 px wide at 3
   m/px, larger than a company. Evidence: `critic/c13_cmp_all.txt`, `critic/shots/c13z_5861_17.png`.

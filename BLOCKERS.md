@@ -5,6 +5,20 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.107's AT: battles sinking nothing met (7.28 → 2.56 %), late sea battles missed (0.95 × HEAD, bar 1.3 ×) (ADR-683, 2026-10-24)
+- **The bar:** on 10 unseen seeds × 20 years against HEAD on them, sea battles a world-year after year 1 at least
+  1.3 × HEAD's, and battles sinking nothing at most 4 %; a unit test, red without.
+- **What moved** (`docs/evidence/7.107/measure.md`, 921–930): every battle that sank nothing was a transport group
+  hit in its first hour that broke off with its damage carried as a wound. ADR-682's rule (a fleet that breaks off
+  leaves no wound carried: each holed ship lost or healed on a seeded roll) takes them to 2.56 % (met). Late sea
+  battles 10.37 → 9.83 a world-year (0.95 ×): 6 % more ships sunk, 6 % fewer armed fleets late.
+- **What is left:** the late fall is the navies' count, not their meeting. A fleet at war with a navy fights 2.9
+  battles a fleet-year in year 1, 2.4 at year 11, 3.1 at year 21 (924's stranded fleets aside); such fleets are 14.0
+  a world in year 1 and 2.8–4.6 late (the armed fleets halve, and the share of them at war with a navy halves).
+  The user's (ADR-683): (a) bar 1 re-scoped to battles per armed fleet-year at war with a navy (recommended);
+  (b) a numbered task for the navies' rebuild (reopens ADR-667 a); (c) a numbered task for the war choice of
+  naval powers. The rule committed; the pin moved f9d18365 → c848f884.
+
 ### RESOLVED 2026-10-24 (option b, the user's decision: 7.105 closed not done, cut 1 kept; PLAN 7.111 and 7.112) · PLAN 7.105's AT missed: year 21 of 4877 at 4.22–4.26 ms a tick, bar 3.0 (ADR-680, 2026-10-24)
 - **The bar:** year 21 of 4877 from critic run 13's year-20 save at most 3.0 ms a tick headless pinned on
   0xFFFF, twice; engaged per war not below HEAD's.

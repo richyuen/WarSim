@@ -23298,3 +23298,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** ten 30-year sims at once ran the machine low on memory (the shell was reaped, the sims lived on);
   five at a time was fine.
 - **Next:** PLAN 7.107.
+
+## 2026-10-24 — PLAN 7.107: a fleet that breaks off carries no wound away (ADR-682); the late battles missed (ADR-683 to the user)
+
+- **Start:** gate green on `49c0064f`; critic not due.
+- **Measured** (`docs/evidence/7.107/measure.md`; 921–930 × 20 years, `seaYears` with year-10 and year-20 saves;
+  `seaWars` and `seaPhantom` from them): HEAD 40.8 sea battles in year 1, 10.37 a world-year after, 7.28 % sinking
+  nothing. A fleet at war with a navy fights 2.9 battles a fleet-year in year 1, 2.4 and 3.1 late (924's year 21
+  aside: enemy fleets stranded on cells of zone 0); such fleets 14.0 a world → 2.8–4.6. The late fall is the navies'
+  count and their wars, not their meeting. Every row sinking nothing: a transport group hit in its first hour,
+  broken off with 0.3–0.8 of a ship's wound carried.
+- **Rule** (ADR-682): a fleet that breaks off rolls each holed ship lost or healed (`applyWholeLoss`, seeded, the
+  chance its wound), counted on the row. Unit test in `navalBattle1938.test.ts`, red without.
+- **AT:** sinking nothing 7.28 → 2.56 % (met); late battles 10.37 → 9.83 (0.95 ×, bar 1.3 ×: missed). BLOCKERS
+  entry; ADR-683: (a) bar 1 re-scoped to battles per fleet at war with a navy (recommended); (b) the navies'
+  rebuild; (c) the war choice of naval powers.
+- **Pin** f9d18365 → c848f884. Tools: `seaYears` `SAVE_AT`/`SAVE_DIR`, `seaWars` `LOAD`, `seaPhantom` hours and range.
+- **Next:** 7.107 waits on ADR-683; the loop takes 7.108 (seeds from 931).
