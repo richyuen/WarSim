@@ -69,3 +69,20 @@ Nothing in the sim takes a wound away except a loss, so a roll whose chance is t
 
 The mechanism check (`seaPhantom` on 921's year-20 save, 365 days): rows sinking nothing 6 of 16 → 3 of 15, the
 three left transports whose roll healed them.
+
+## 6. Bar 1 re-scoped (ADR-683 a, the user's decision), read on ADR-682's code
+
+`9b6a2734` (the sim as `0f8678e8`), the same seeds; raw files in `.cache/7107/at/` (`seaWars` one year from 1938 and
+from each seed's year-10 and year-20 saves written by `seaYears` with `SAVE_AT=10,20`). Battles per armed fleet-year
+of a nation at war with a navy: the year's sea battles ÷ (`vsNavy` fleet-weeks ÷ 52), pooled over the seeds.
+
+| | year 1 | year 11 | year 21 |
+|---|---|---|---|
+| sea battles, a world | 36.1 | 12.7 | 9.3 |
+| armed fleets at war with a navy, a world | 13.1 | 2.0 | 2.7 |
+| battles per such fleet-year | 2.75 | **6.34** | **3.45** (4.29 without 924) |
+| bar (0.8 × year 1's) | — | 2.20 | 2.20 |
+
+Met on both late reads (pooled 4.69). As in §2 the battles are all of the world's, so with few such fleets late the
+ratio runs high: what the naval AI owns, a fleet at war with a navy meeting it, holds; their count (13.1 → 2.0–2.7)
+is the navies' size (ADR-667 a) and the war choice, which the user's option a leaves as they are.

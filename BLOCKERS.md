@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.107's AT: battles sinking nothing met (7.28 → 2.56 %), late sea battles missed (0.95 × HEAD, bar 1.3 ×) (ADR-683, 2026-10-24)
+### RESOLVED 2026-10-24 (option a, the user's decision: bar 1 re-scoped; read on ADR-682's code 2.75 → 6.34 and 3.45 late, bar 2.20; PLAN 7.107 done) · PLAN 7.107's AT: battles sinking nothing met (7.28 → 2.56 %), late sea battles missed (0.95 × HEAD, bar 1.3 ×) (ADR-683, 2026-10-24)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD on them, sea battles a world-year after year 1 at least
   1.3 × HEAD's, and battles sinking nothing at most 4 %; a unit test, red without.
 - **What moved** (`docs/evidence/7.107/measure.md`, 921–930): every battle that sank nothing was a transport group

@@ -23328,3 +23328,11 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **AT:** `tests/e2e/planesClose1938.spec.ts` (new), red before (144.7 px against 4.95), green after (~3 px).
   Specs run by hand: `planesClose1938`, `planesT3_1938` (5.00 men, unchanged), `airT3_1938`, `sortiesSeen1938`.
 - **Next:** 7.107's read (ADR-683 a), then 7.108b (seeds from 931).
+
+## 2026-10-24 — PLAN 7.107 done (ADR-683 a, the user's decision)
+
+- **Read** (`docs/evidence/7.107/measure.md` §6; 921–930 on `9b6a2734`, the sim as `0f8678e8`): battles per armed
+  fleet-year at war with a navy, year 1 2.75, year 11 6.34, year 21 3.45 (4.29 without 924); bar 0.8 × year 1's =
+  2.20: met. Such fleets 13.1 a world in year 1, 2.0–2.7 late (the navies' count stays ADR-667 a's).
+- BLOCKERS entry resolved; 7.107 ticked and archived.
+- **Next:** PLAN 7.108b (seeds from 931).

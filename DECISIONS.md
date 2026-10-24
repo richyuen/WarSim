@@ -188,7 +188,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Consequences.** At 3 m/px a fighter is a speck a little smaller than a tree, as it is to scale. A bomber is
   7.5 px, a heavy bomber 10.5 px. At the 1 m/px limit a fighter is 10 px.
 
-### ADR-683 · 2026-10-24 · proposed (the user's decision) — The late war at sea is the navies' count, not their meeting (PLAN 7.107's first bar missed)
+### ADR-683 · 2026-10-24 · accepted, option a (the user's decision, 2026-10-24) — The late war at sea is the navies' count, not their meeting (PLAN 7.107's first bar missed)
 
 - **Context** (`docs/evidence/7.107/measure.md`). PLAN 7.107 (naval 7): on 10 unseen seeds × 20 years against
   HEAD, sea battles a world-year after year 1 at least 1.3 × HEAD's, battles sinking nothing at most 4 %.
@@ -209,6 +209,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **c:** a numbered task, the war choice: a naval power at war weighs a naval enemy's ports and fleets in reach
     (AT: wars of two navies late ≥ 1.5 × HEAD's war-weeks); PLAN 7.107 closed not done.
 - **Pin** moved by ADR-682 alone (f9d18365 → c848f884).
+- **Read on ADR-682's code** (option a; `docs/evidence/7.107/measure.md` §6, `9b6a2734`, 921–930): battles per armed
+  fleet-year at war with a navy, year 1 2.75, year 11 6.34, year 21 3.45 (4.29 without 924), late pooled 4.69; bar
+  0.8 × 2.75 = 2.20: met. PLAN 7.107 done. The battles are the world's (as HEAD's read): with 2.0–2.7 such fleets a
+  world late against 13.1 in year 1, the late ratio runs high; the navies' count stays ADR-667 a's.
 
 ### ADR-682 · 2026-10-24 · accepted — A fleet that breaks off carries no wound away (PLAN 7.107)
 

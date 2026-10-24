@@ -15055,3 +15055,31 @@ Of 7.33 (open in PLAN.md):
   land moved in the last five years not below 0.9 of HEAD's; a unit test, red without; the gate green.
   Done (2026-10-24, ADR-681; `docs/evidence/7.106/measure.md`, seeds 911–920): statelets of one people
   come together (`kinUnion`); founded alive 42.6 → 28.2 (0.662), land moved 22.4 → 25.1 % (1.118).
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.107 Naval (naval 7, needs 8): the late sea war is a sixth of year 1's (57.6 battles in year 1,
+  9.4 a world-year after); sea battles that sink nothing 3.6 % → 7.2 %; a carrier strike is three
+  silhouettes over two counters on open sea. Evidence: `critic/c13_cmp_all.txt`,
+  `c13n4_8693_rowless_clicked.png`. Measure first, on a late save, where the fleets of nations at war at
+  sea are and why they do not meet. AT: on 10 unseen seeds × 20 years against HEAD on the same seeds,
+  sea battles a world-year after year 1 at least 1.3 × HEAD's, and battles sinking nothing at most 4 %;
+  a unit test, red without; the gate green.
+  **AT run** (2026-10-24, `docs/evidence/7.107/measure.md`; 921–930): battles sinking nothing 7.28 → 2.56 % (met,
+  ADR-682's rule committed); late battles 10.37 → 9.83 a world-year (0.95 ×, missed: the navies' count, not their
+  meeting). **Waits on ADR-683** (BLOCKERS); seeds 921–930 taken, 7.108 starts at 931.
+  **Done** (2026-10-24, ADR-683 a, the user's decision: bar 1 re-scoped to battles per armed fleet-year at war
+  with a navy, late, not below 0.8 × year 1's): on ADR-682's code, 921–930, year 1 2.75, year 11 6.34, year 21
+  3.45 (bar 2.20; `docs/evidence/7.107/measure.md` §6). Met.
