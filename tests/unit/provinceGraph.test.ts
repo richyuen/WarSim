@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { encodeRuns } from '../../src/shared/mapImport';
 import { Terrain } from '../../src/shared/terrain';
 import { boundKm, MIN_COST, Mobility, type MobilityId, type NavGrid, type Passage } from '../../src/sim/nav/grid';
-import { coarseRoute, findRoute, mayReach, nodeGroups, SHUT_PRICE, type ProvinceGraph } from '../../src/sim/nav/provinceGraph';
+import { coarseRoute, findRoute, mayReach, nodeGroups, SHUT_PRICE, sortCells, type ProvinceGraph } from '../../src/sim/nav/provinceGraph';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -295,5 +295,19 @@ describe('a route asked again on its passage is not searched again (PLAN 7.1l3)'
     expect(grid.scratch!.gen).toBe(gen + 2);
     expect(again).not.toBe(first);
     expect(again.cells).toEqual(first.cells);
+  });
+});
+
+describe('the cells of a walk sorted by digits (PLAN 7.105)', () => {
+  it('distinct cells ascending, as a sort by value, for a map of one, two and three digits', () => {
+    for (const size of [1500, 2048 * 1024, 8192 * 4096]) {
+      for (const n of [0, 1, 2, 1000, 20000]) {
+        // Distinct cells in a fixed scramble (a stride prime to the size).
+        const cells: number[] = [];
+        for (let i = 0; i < Math.min(n, size); i++) cells.push((i * 1000003 + 17) % size);
+        const want = [...cells].sort((a, b) => a - b);
+        expect(Array.from(sortCells(cells, size))).toEqual(want);
+      }
+    }
   });
 });

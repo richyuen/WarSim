@@ -1,0 +1,30 @@
+  3116 joinWide:12164         const packed = Float64Array.from(runCells).sort();
+  2795 pocketOf:11280         if (component[n] === 0 || ok[holder[n]] !== 1) continue;
+  2081 snapTarget:22913       let to = snaps.get(key);
+   767 joinWide:12142         if (component[n] === 0 || ok[holder[n]] !== 1) continue;
+   583 pocketOf:11269         if (inner) n = c + dy * w + dx;
+   507 sectorShape:23581      const list = made.slice().sort((a, b) => a.key - b.key);
+   492 pocketOf:11262         const cx = c % w;
+   458 sectorShape:23578      if (s.holders[s.holders.length - 1] !== holder) s.holders.push(holder);
+   413 joinWide:12128         if (keepRuns) runCells.push(c * RUN_SPAN + (run2 - groups));
+   403 pocketOf:11281         if (k >= 4 && (component[n - dy * w] === 0 || component[inner ? c + dy * w : n - n % w + cx] === 0)) continue;
+   371 planNation:23727       const ids = stand.byBucket.get(k);
+   352 pocketOf:11291         walked.push(n);
+   338 frontPart:23600        if (foe[c >= w ? controller[c - w] : 0] !== 1 && foe[c < (h - 1) * w ? controller[c + w] : 0] !== 1 && foe[x > 0 ? controller[c - 
+   318 joinWide:12144         const met = group[nodeOf[n]];
+   310 joinWide:12117         if (stamp[first] === gen || component[first] === 0 || ok[holder[first]] !== 1) continue;
+   304 frontPart:23606        const known = at.get(key);
+   299 pocketOf:11282         const was = id[n];
+   274 planNation:23851       if (land2[from] !== land2[hold] || land2[hold] === 0) {
+   271 frontPart:23603        const key = Math.floor(y / sector) * bw + Math.floor(x / sector);
+   260 planNation:23750       let dx = Math.abs(f.x[id] - s.cx);
+   247 snapTarget:10274       const c = yy * w + ((cx + dx) % w + w) % w;
+   238 pocketOf:11263         const cy = (c - cx) / w;
+   237 pocketOf:11265         for (let k = 0; k < 8; k++) {
+   235 joinWide:12131         for (let k = 0; k < 8; k++) {
+   232 planNation:23957       const byThreat = list.map((_, i) => i).sort((a, b) => list[b].threat - list[a].threat || list[a].key - list[b].key);
+   231 planNation:23854       if (known === void 0) other.set(land2[from], to);
+   230 frontPart:23608        at.set(key, j = part2.keys.length);
+   225 pocketOf:11266         const dx = DIR_X[k];
+   218 pocketOf:11284         if (was < 0 && was !== IN_HAND) {
+   210 planNation:23714       if (!shape) stand.sectors.set(sideKey, shape = sectorShape(world, side2, frontier, enemyKey, enemyOf, enemies, n, fighting, stand,

@@ -299,8 +299,11 @@ function cellsByNode(pg: ProvinceGraph): { start: Int32Array; list: Int32Array }
   return made;
 }
 const CELLS_BY_NODE = new WeakMap<ProvinceGraph, { start: Int32Array; list: Int32Array }>();
-/** By grid, the cells `joinWide` has walked: `stamp[c]` is `gen` for those of the walk in hand. */
-const JOIN_SCRATCH = new WeakMap<NavGrid, { stamp: Uint32Array; gen: number; stack: number[] }>();
+/**
+ * By grid, the cells `joinWide` has walked: `stamp[c]` is `gen` for those of the walk in hand,
+ * and `runOf[c]` their run where the runs are kept (made when first needed).
+ */
+const JOIN_SCRATCH = new WeakMap<NavGrid, { stamp: Uint32Array; gen: number; stack: number[]; runOf?: Int32Array }>();
 const STEP_X = [1, -1, 0, 0, 1, 1, -1, -1];
 const STEP_Y = [0, 0, 1, -1, 1, -1, 1, -1];
 
@@ -556,9 +559,10 @@ function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage, keepRuns: boolea
     sc.gen = 1;
   }
   const { stamp, gen, stack } = sc;
+  const runOf = keepRuns ? (sc.runOf ??= new Int32Array(w * h)) : undefined;
   const { start, list } = cellsByNode(pg);
-  // The runs (PLAN 7.30c2), when kept: each cell walked with its run, the first group each run
-  // met, and whether it met another.
+  // The runs (PLAN 7.30c2), when kept: each cell walked (`runOf` its run), the first group each
+  // run met, and whether it met another.
   const runCells: number[] = [];
   const firstMet: number[] = [];
   const metTwo: number[] = [];
@@ -578,7 +582,10 @@ function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage, keepRuns: boolea
       stack.push(first);
       while (stack.length > 0) {
         const c = stack.pop()!;
-        if (keepRuns) runCells.push(c * RUN_SPAN + (run - groups));
+        if (runOf) {
+          runCells.push(c);
+          runOf[c] = run - groups;
+        }
         const cx = c % w;
         const cy = (c - cx) / w;
         for (let k = 0; k < 8; k++) {
@@ -614,15 +621,12 @@ function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage, keepRuns: boolea
   }
   const joined = new Int32Array(nodeCount);
   for (let a = 1; a < nodeCount; a++) if (group[a] !== 0) joined[a] = find(group[a]!);
-  if (!keepRuns) return { joined };
-  const packed = Float64Array.from(runCells).sort();
-  const cells = new Int32Array(packed.length);
-  const run = new Int32Array(packed.length);
-  for (let i = 0; i < packed.length; i++) {
-    const r = packed[i]! % RUN_SPAN;
-    cells[i] = (packed[i]! - r) / RUN_SPAN;
-    run[i] = r;
-  }
+  if (!runOf) return { joined };
+  // Each cell is walked once, so by cell alone (PLAN 7.105: a sort of the packed numbers was half
+  // the walk in a late world).
+  const cells = sortCells(runCells, w * h);
+  const run = new Int32Array(cells.length);
+  for (let i = 0; i < cells.length; i++) run[i] = runOf[cells[i]!]!;
   const runs: JoinRuns = {
     cells,
     run,
@@ -637,8 +641,36 @@ function joinWide(g: NavGrid, pg: ProvinceGraph, pass: Passage, keepRuns: boolea
   holdRuns(g, runs);
   return { joined, runs };
 }
-/** A walked cell and its run packed in one number (cell · RUN_SPAN + run, RUN_SPAN = 2^24), sorted by cell. */
-const RUN_SPAN = 16777216;
+/** The bits of a digit of `sortCells`. */
+const SORT_BITS = 11;
+
+/**
+ * `cells` (distinct, each below `size`) ascending: a sort by digits of SORT_BITS bits, the lowest
+ * first, as many as `size` needs.
+ */
+export function sortCells(cells: readonly number[], size: number): Int32Array {
+  const n = cells.length;
+  let from = Int32Array.from(cells);
+  if (n < 2) return from;
+  let to = new Int32Array(n);
+  const count = new Int32Array(1 << SORT_BITS);
+  const mask = (1 << SORT_BITS) - 1;
+  for (let shift = 0; size - 1 >>> shift > 0; shift += SORT_BITS) {
+    count.fill(0);
+    for (let i = 0; i < n; i++) count[(from[i]! >>> shift) & mask]!++;
+    let sum = 0;
+    for (let d = 0; d <= mask; d++) {
+      const k = count[d]!;
+      count[d] = sum;
+      sum += k;
+    }
+    for (let i = 0; i < n; i++) to[count[(from[i]! >>> shift) & mask]!++] = from[i]!;
+    const t = from;
+    from = to;
+    to = t;
+  }
+  return from;
+}
 
 /**
  * What `findRoute` asks before any search: the two cells are of one landmass, and, from a start
