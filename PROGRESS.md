@@ -23501,3 +23501,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** Git Bash converts an argument that begins with `/c/...` to `C:\...`, but not one inside `seed:/c/...`:
   node then opens `C:\c\...`. Use paths relative to the worktree in `seed:path` arguments.
 - **Next:** PLAN 7.111 while ADR-692 waits.
+
+## 2026-10-24 — PLAN 7.110b closed not done (ADR-692 b, the user's decision)
+
+- The dispersed-strike rule waits on PLAN 7.115 (filed after 7.110): the operational AI spreads the larger army the rule
+  keeps (Poland's day-30 coverage with the rule 0.519, bar 0.6), then both rules are committed together with the pin,
+  the strike test's case and `wholeTanks` restated to the first heavy fight. 7.110 ticked.
+- **Next:** PLAN 7.115.

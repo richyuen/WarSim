@@ -49,27 +49,17 @@ ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the di
 beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
 reused:
 
-- [ ] 7.110 The army at war late (found at 7.104; R13-B1; ADR-679 a, the user's decision): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196
-  formations, 3.6 M → 1.4 M men; the world's income flat; the USA at peace with 37–60 % of the world's
-  men). Measure first, on HEAD's year-10 and year-20 checkpoints of 901–910 (`tools/diag/contactAt.ts` writes them), why:
-  upkeep against income of the nations at war, what the AI buys instead (navy, air, research, gold
-  kept), the cadre rule's reach (ADR-673). AT: on the next 10 unseen seeds × 20 years against HEAD on them,
-  land formations of nations at war a war, mean of daily samples in years 2–20, at least 1.3 × HEAD's;
-  engaged per war there not below HEAD's; a unit test, red without; the gate green.
-    - [x] 7.110a Measured (on HEAD's 901–910 × 20 and their year-10 and year-20 saves): the figure, upkeep against
-      income, what the money buys, the cadre rule's reach, and where the men go.
-      Done 2026-10-24 (`docs/evidence/7.110/measure.md`; tools `armyAtWarAt.ts`, `armyGatesNow.ts`,
-      `armyLosses.ts`, `armyLossBySystem.ts`): 75.8 a war in year 1, 48.5 in years 2–20; ~90–100 raised a year,
-      the army standing where its losses meet them. Money: CE cost 0.20 of income at war, suppression 0.10, the
-      army's upkeep 0.08, new orders and refills the rest; the cadre division 301 of 393 orders under 1,000 a month.
-      Losses: the air's strikes take more than combat on 4 of 5 year-10 saves, 88 % of it from formations in no
-      contact.
-    - [ ] 7.110b The rule, on 7.110a's lever, with 7.110's AT on 971–980 × 20 against HEAD on them: land formations
-      of nations at war a war in years 2–20 at least 1.3 × HEAD's; engaged per war there not below HEAD's; a unit
-      test, red without; the gate green.
-      AT missed 2026-10-24 (ADR-692, BLOCKERS; `docs/evidence/7.110b/at.md`): a quarter of a strike's fire on a land
-      formation out of contact, 51.38 → 62.54 (× 1.217, bar × 1.3), engaged a war 0.497 → 0.671; `operationalAi` and
-      `wholeTanks` red with it. Not committed (`rule.patch`). Waits on the user's word on ADR-692.
+- [ ] 7.115 The operational AI spreads a larger army over its front (found at 7.110b; R13-B1; ADR-692 b, the user's
+  decision): with `docs/evidence/7.110b/rule.patch` applied (a quarter of a strike's fire on a land formation out of
+  contact), `operationalAi`'s Germany–Poland duel (seed 1938) has Poland 24 formations near the front covering 14 of 27
+  sectors on day 30 (0.519), where HEAD's 14 cover 17 (0.607): the formations the strikes no longer kill stand piled.
+  Measure first why (sector allotment, holds at the same front cell, the stacks' places). Then commit the spread's rule
+  with 7.110b's rule, its pin, its unit case, and `wholeTanks` restated to the 48 hours from division 41's first hour
+  with 9 or more volleys at its armour (`docs/evidence/7.110b/wt2.ts.txt`). AT: with both rules, `operationalAi` as it
+  stands green (both nations at least 0.6 on days 10 and 30); Poland's day-30 coverage at least 0.6 on HEAD's code
+  with 7.110b's rule; on 971–980 × 20 against HEAD on them (`docs/evidence/7.110b/at_971-980.json`), land formations
+  of nations at war a war in years 2–20 not below 7.110b's rule's 62.54 and engaged a war not below its 0.671; a unit
+  test of the spread, red without; the gate green.
 - [ ] 7.111 The late tick's exact remainder (found at 7.105; performance 5; ADR-680 b, the user's decision): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one
   Map of keys past the small integers), `sectorShape`'s sort and holders, `industryHeld` once a day for
   every reader. AT: year 21 of 4877 from `critic/c13_seed4877_y20.bin`, `npm run sim -- --affinity
@@ -418,3 +408,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.108 Aircraft (aircraft 7, needs 8): air battles after year 1 155 → 121 a world-year on the same […]
 - [x] 7.113 The air force at war late (found at 7.108b; aircraft 7, needs 8; ADR-685 b, the user's decision): the […]
 - [x] 7.109 AI nuclear use (aiNukes 7, needs 8): of two AI strikes a day apart (1129 year 15: the UK on a […]
+- [x] 7.110 The army at war late (found at 7.104; R13-B1; ADR-679 a, the user's decision): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196 […]

@@ -15197,3 +15197,40 @@ Of 7.33 (open in PLAN.md):
       AT missed 2026-10-24 (ADR-691, BLOCKERS; `docs/evidence/7.109b/at.md`): on 961–970 36 → 34 (bar 27), strikes back
       among them 17 → 14. Closed not done (ADR-691 a, the user's decision, 2026-10-24): the rule committed
       (`rule.patch`, its unit test `nukeAnswerInKind1938.test.ts`; the pin unchanged); PLAN 7.114.
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.110 The army at war late (found at 7.104; R13-B1; ADR-679 a, the user's decision): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196
+  formations, 3.6 M → 1.4 M men; the world's income flat; the USA at peace with 37–60 % of the world's
+  men). Measure first, on HEAD's year-10 and year-20 checkpoints of 901–910 (`tools/diag/contactAt.ts` writes them), why:
+  upkeep against income of the nations at war, what the AI buys instead (navy, air, research, gold
+  kept), the cadre rule's reach (ADR-673). AT: on the next 10 unseen seeds × 20 years against HEAD on them,
+  land formations of nations at war a war, mean of daily samples in years 2–20, at least 1.3 × HEAD's;
+  engaged per war there not below HEAD's; a unit test, red without; the gate green.
+    - [x] 7.110a Measured (on HEAD's 901–910 × 20 and their year-10 and year-20 saves): the figure, upkeep against
+      income, what the money buys, the cadre rule's reach, and where the men go.
+      Done 2026-10-24 (`docs/evidence/7.110/measure.md`; tools `armyAtWarAt.ts`, `armyGatesNow.ts`,
+      `armyLosses.ts`, `armyLossBySystem.ts`): 75.8 a war in year 1, 48.5 in years 2–20; ~90–100 raised a year,
+      the army standing where its losses meet them. Money: CE cost 0.20 of income at war, suppression 0.10, the
+      army's upkeep 0.08, new orders and refills the rest; the cadre division 301 of 393 orders under 1,000 a month.
+      Losses: the air's strikes take more than combat on 4 of 5 year-10 saves, 88 % of it from formations in no
+      contact.
+    - [x] 7.110b The rule, on 7.110a's lever, with 7.110's AT on 971–980 × 20 against HEAD on them: land formations
+      of nations at war a war in years 2–20 at least 1.3 × HEAD's; engaged per war there not below HEAD's; a unit
+      test, red without; the gate green.
+      AT missed 2026-10-24 (ADR-692, BLOCKERS; `docs/evidence/7.110b/at.md`): a quarter of a strike's fire on a land
+      formation out of contact, 51.38 → 62.54 (× 1.217, bar × 1.3), engaged a war 0.497 → 0.671; `operationalAi` and
+      `wholeTanks` red with it. Closed not done (ADR-692 b, the user's decision, 2026-10-24): the rule waits on PLAN
+      7.115 and is committed with it.

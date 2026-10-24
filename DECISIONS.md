@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-692 · 2026-10-24 · proposed (the user's decision) — A strike on a land formation out of contact puts a quarter of its fire on it: the AT missed (PLAN 7.110b)
+### ADR-692 · 2026-10-24 · accepted, option b (the user's decision, 2026-10-24) — A strike on a land formation out of contact puts a quarter of its fire on it: the AT missed (PLAN 7.110b)
 
 - **Context** (`docs/evidence/7.110/measure.md`, PLAN 7.110a). The land army of nations at war is 75.8 formations a war in
   year 1 and 48.5 in years 2–20 (901–910). The world raises ~90–100 land formations a year whatever its income, and the
@@ -204,6 +204,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     rule committed with it and `wholeTanks` given a case of its own fight. (Recommended: the rule moves the critic's
     own figure × 1.35, and the red test is right that the spread is short.)
   - **(c)** 7.110b closed not done; no rule, no task; the late land war to the next critic report.
+- **Decision** (the user's, 2026-10-24): (b). 7.110b closed not done, 7.110 ticked; PLAN 7.115 filed after it, and the
+  rule is committed with 7.115's. The pin unchanged until then.
 
 ### ADR-691 · 2026-10-24 · accepted, option a (the user's decision, 2026-10-24) — An answer to a strike on forces weighs forces first: the AT missed (PLAN 7.109b)
 

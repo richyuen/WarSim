@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### 2026-10-24 · PLAN 7.110b's AT missed: land formations at war a war 51.38 → 62.54 (× 1.217, bar × 1.3) (ADR-692; waits on the user)
+### RESOLVED 2026-10-24 (option b, the user's decision: 7.110b closed not done, PLAN 7.115, the rule committed with it) · PLAN 7.110b's AT missed: land formations at war a war 51.38 → 62.54 (× 1.217, bar × 1.3) (ADR-692; waits on the user)
 - **The bar:** on 971–980 × 20 against HEAD on them, land formations of nations at war a war in years 2–20 at least
   1.3 × HEAD's; engaged per war there not below HEAD's; a unit test, red without; the gate green.
 - **What moved** (`docs/evidence/7.110b/at.md`): the rule (`rule.patch`: a strike puts a quarter of its fire on a land
