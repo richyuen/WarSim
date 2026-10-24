@@ -1,0 +1,158 @@
+diff --git a/src/sim/ai/operational.ts b/src/sim/ai/operational.ts
+index 98b6df07..1226a279 100644
+--- a/src/sim/ai/operational.ts
++++ b/src/sim/ai/operational.ts
+@@ -1198,19 +1198,110 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
+       }
+     }
+   }
++  // To the threatened (PLAN 7.104b, ADR-680): on the nation's day in `MARCH_DAYS`, a threatened
++  // sector of n's own front short of OFFENSIVE_RATIO × its threat draws the shortfall from the
++  // formations near the front that stand or hold in a sector with no threat (not on an errand, not
++  // on the march to an enemy cell), beyond the range of it and within the spare's range, on its
++  // landmass and of a class that reaches it, nearest first: the most threatened sector first, as
++  // many in all as the reserve's share.
++  if (ownFront && (day + n) % MARCH_DAYS === 0) {
++    const short: number[] = [];
++    for (let i = 0; i < sn; i++) {
++      const s = list[i]!;
++      if (s.own && s.threat > 0 && s.strength < OFFENSIVE_RATIO * s.threat) short.push(i);
++    }
++    short.sort((a, b) => list[b]!.threat - list[a]!.threat || list[a]!.key - list[b]!.key);
++    if (short.length > 0) {
++      const sectorOf = new Map<number, number>();
++      for (let i = 0; i < sn; i++) for (const id of list[i]!.formations) sectorOf.set(id, i);
++      const ctl = world.cells.controller;
++      const free = ranked.filter((id) => {
++        const i = sectorOf.get(id);
++        if (i !== undefined && list[i]!.threat > 0) return false;
++        if (f.moving[id] === 1 && enemy(ctl[f.targetCell[id]!]!)) return false;
++        return !onErrand(id);
++      });
++      let most = Math.max(1, ranked.length - active.length);
++      const sent = new Set<number>();
++      for (const i of short) {
++        if (most <= 0) break;
++        const s = list[i]!;
++        let need = OFFENSIVE_RATIO * s.threat - s.strength;
++        const cands: [number, number][] = [];
++        for (const id of free) {
++          if (sent.has(id)) continue;
++          const d = dist2(id, s);
++          if (d <= range2 || d > spare2) continue;
++          const ci = classOf[id]!;
++          if (land[s.hold] !== land[classCell[ci]!] || !reached[ci]!.includes(i) || !reaches(ci, i)) continue;
++          cands.push([id, d]);
++        }
++        cands.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
++        for (const [id] of cands) {
++          if (need <= 0 || most <= 0) break;
++          if (askMove(world, id, s.hold, pass) !== 'ok') continue;
++          sent.add(id);
++          need -= f.strength[id]!;
++          most--;
++          // It leaves the sector the allotment gave it: no order of that sector below.
++          const was = sectorOf.get(id);
++          if (was !== undefined) {
++            const at = list[was]!.formations.indexOf(id);
++            list[was]!.formations.splice(at, 1);
++            list[was]!.strength -= f.strength[id]!;
++          }
++        }
++      }
++    }
++  }
+   mark();
+   if (OP_PROBE.sectors) OP_PROBE.sectors({ nation: n, tick: world.tick, classes: probeClasses, empty: probeEmpty, sectors: list.map((s) => ({ threat: s.threat, n: s.formations.length, strength: s.strength, attack: s.formations.length > 0 && s.strength >= OFFENSIVE_RATIO * s.threat, cx: s.cx, cy: s.cy, inRange: s.threat > 0 && all.some((id) => dist2(id, s) <= range2) })) });
+   // Orders.
++  /**
++   * The enemy formation nearest the sector's centre of those its threat sums (its 3 × 3 sector
++   * neighbourhood, `enemyAt`'s), lowest id on ties; -1 if none (PLAN 7.104, ADR-679).
++   */
++  const foeNear = (s: Sector): number => {
++    const sy = Math.floor(s.key / bw);
++    const sx = s.key - sy * bw;
++    const aboard = world.embarked.size !== stand.embarked;
++    let best = -1;
++    let bd = Infinity;
++    for (let dx = -1; dx <= 1; dx++) {
++      const x = bucketX(sx, dx);
++      if (x < 0) continue;
++      for (let dy = -1; dy <= 1; dy++) {
++        const k = (sy + dy) * bw + x;
++        if (k < 0 || k >= buckets) continue;
++        for (const id of stand.byBucket.get(k) ?? []) {
++          if (enemyOf[f.nation[id]!] !== 1 || (aboard && world.offLand(id))) continue;
++          let ex = Math.abs(f.x[id]! - s.cx);
++          if (loop && ex > w / 2) ex = w - ex;
++          const ey = f.y[id]! - s.cy;
++          const d = ex * ex + ey * ey;
++          if (d < bd || (d === bd && id < best)) {
++            bd = d;
++            best = id;
++          }
++        }
++      }
++    }
++    return best;
++  };
+   const isArmour = (id: number): boolean => (armour[f.template[id]!] ?? 0) >= SPEARHEAD_ARMOUR;
+   for (const s of list) {
+     if (s.formations.length === 0) continue;
+     const attack = s.strength >= OFFENSIVE_RATIO * s.threat;
+-    const target = attack ? attackCell(world, s, enemy, nb) : s.hold;
++    // A threatened sector faces the enemy (PLAN 7.104, ADR-679): its cells are those nearest the
++    // enemy formation nearest its centre, of those its threat counts, not nearest the centre.
++    const foe = s.threat > 0 ? foeNear(s) : -1;
++    const hold = foe < 0 ? s.hold : holdCell(s, w, f.x[foe]!, f.y[foe]!);
++    const target = attack ? (foe < 0 ? attackCell(world, s, enemy, nb) : attackCell(world, s, enemy, nb, f.x[foe]!, f.y[foe]!)) : hold;
+     if (target < 0) continue;
+     // Spearheads: armour leads the attack, and where it does the rest hold the front.
+     const lead = attack && s.formations.some(isArmour);
+     for (const id of s.formations) {
+-      const to = lead && !isArmour(id) ? s.hold : target;
++      const to = lead && !isArmour(id) ? hold : target;
+       // Already heading there, or to a cell within one sector of it: no new route.
+       if (f.moving[id] === 1 && cellDist(f.targetCell[id]!, to, w, loop) <= sector) continue;
+       const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
+@@ -1360,14 +1451,14 @@ function cellDist(a: number, b: number, w: number, loop: boolean): number {
+   return Math.max(dx, Math.abs(Math.floor(a / w) - Math.floor(b / w)));
+ }
+ 
+-/** The own front cell nearest the sector centre (lowest id on ties). */
+-function holdCell(s: Pick<Sector, 'cells' | 'cx' | 'cy'>, w: number): number {
++/** The own front cell nearest the sector centre, or the point (px, py) given (lowest id on ties). */
++function holdCell(s: Pick<Sector, 'cells' | 'cx' | 'cy'>, w: number, px = s.cx, py = s.cy): number {
+   let best = -1;
+   let bd = Infinity;
+   for (const cells of s.cells) {
+     for (const c of cells) {
+-      const ex = (c % w) + 0.5 - s.cx;
+-      const ey = Math.floor(c / w) + 0.5 - s.cy;
++      const ex = (c % w) + 0.5 - px;
++      const ey = Math.floor(c / w) + 0.5 - py;
+       const d = ex * ex + ey * ey;
+       if (d < bd || (d === bd && c < best)) {
+         bd = d;
+@@ -1378,8 +1469,8 @@ function holdCell(s: Pick<Sector, 'cells' | 'cx' | 'cy'>, w: number): number {
+   return best;
+ }
+ 
+-/** The enemy cell touching the sector's front nearest its centre (lowest id on ties); over a crossing too (`frontNeighbours`). */
+-function attackCell(world: World, s: Sector, enemy: (m: number) => boolean, nb: number[]): number {
++/** The enemy cell touching the sector's front nearest its centre, or the point (px, py) given (lowest id on ties); over a crossing too (`frontNeighbours`). */
++function attackCell(world: World, s: Sector, enemy: (m: number) => boolean, nb: number[], px = s.cx, py = s.cy): number {
+   const { w, controller } = world.cells;
+   let best = -1;
+   let bd = Infinity;
+@@ -1387,8 +1478,8 @@ function attackCell(world: World, s: Sector, enemy: (m: number) => boolean, nb:
+     for (const c of cells) {
+       for (const k of frontNeighbours(world, c, nb)) {
+         if (!enemy(controller[k]!)) continue;
+-        const ex = (k % w) + 0.5 - s.cx;
+-        const ey = Math.floor(k / w) + 0.5 - s.cy;
++        const ex = (k % w) + 0.5 - px;
++        const ey = Math.floor(k / w) + 0.5 - py;
+         const d = ex * ex + ey * ey;
+         if (d < bd || (d === bd && k < best)) {
+           bd = d;

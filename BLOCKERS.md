@@ -5,7 +5,19 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### Critic run 13 waits on PLAN 7.102 and 7.103: two tests off the known-red list (2026-10-24)
+### PLAN 7.104's AT missed: engaged per war late 0.112 of year 1 on HEAD, 0.104 with two rules, bar 0.15 (ADR-679, 2026-10-24)
+- **The bar:** on 10 unseen seeds × 20 years against HEAD, engaged land formations a war in years 2–20 at
+  least 0.15 of year 1's; formations under 500 men at year 20 not above HEAD's; a unit test, red without.
+- **What moved** (`docs/evidence/7.104/measure.md`, 901–910): HEAD 0.112 (567 under 500 men); with both
+  rules of `rule.patch` (a threatened sector faces the nearest enemy formation; one short of
+  OFFENSIVE_RATIO × its threat draws from 60–180 cells) 0.104 (489). On run 13's year-20 saves the rules
+  lift contact ×1.32 over 180 days; from the AT's year-10 checkpoints ×0.83.
+- **What is left:** the army at war a war is a third of year 1's by year 20, and its share within 12
+  cells of an enemy a third or less. The user's (ADR-679): (a) PLAN 7.110, the army at war's size
+  (recommended); (b) PLAN 7.87 reopened instead; (c) neither, to the next critic report. The code
+  restored; the pin unchanged (f9d18365).
+
+### RESOLVED 2026-10-24 (critic run 13 ran on `0c80db1e` after `npm run check:review` green) · Critic run 13 waits on PLAN 7.102 and 7.103: two tests off the known-red list
 
 - **What:** `npm run check:review` on `9ffb0274` listed `formationFight1938` and `tankBattle1938` as known red
   (`tools/gate/knownRed.json`: a software GPU in a cloud container). Here they fail on what they claim

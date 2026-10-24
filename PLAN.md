@@ -64,6 +64,9 @@ reused:
   engaged land formations a war, mean of daily samples in years 2–20, at least 0.15 of year 1's (HEAD on
   run 12's seeds 0.11); land formations under 500 men at year 20 not above HEAD's; a unit test, red
   without; the gate green.
+  Blocked (2026-10-24, ADR-679 proposed, BLOCKERS; `docs/evidence/7.104/measure.md`): on 901–910 HEAD
+  0.112, two rules (`rule.patch`: face the nearest enemy formation; a short threatened sector draws from
+  60–180 cells) 0.104, under HEAD. No rule; the pin unchanged. The cause found is PLAN 7.110.
 - [ ] 7.105 Performance (performance 5, needs 7): the late game at Max 46.3, 59.4, 59.4 s a game year
   (4877 from year 20) against 23.2, 32.2, 28.1 s on `896ff779`, same session; headless year 21 of 4877
   4.42 ms a tick (1.82), the operational AI 2.04 ms of it (0.54), the invasion AI 0.36 (0.09), p95 26.2
@@ -108,6 +111,14 @@ reused:
   the striker's forces is worth the warhead): AT, on 10 unseen seeds × 30 years, bursts killing over ten
   times more civilians than men at most 0.75 of HEAD's on the same seeds; a unit test, red without; the
   gate green.
+- [ ] 7.110 The army at war late (found at 7.104; R13-B1; waits on the user's ADR-679: option a; dropped on
+  b or c): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196
+  formations, 3.6 M → 1.4 M men; the world's income flat; the USA at peace with 37–60 % of the world's
+  men). Measure first, on HEAD's year-10 and year-20 checkpoints of 901–910 (`tools/diag/contactAt.ts` writes them), why:
+  upkeep against income of the nations at war, what the AI buys instead (navy, air, research, gold
+  kept), the cadre rule's reach (ADR-673). AT: on 911–920 × 20 years against HEAD on the same seeds,
+  land formations of nations at war a war, mean of daily samples in years 2–20, at least 1.3 × HEAD's;
+  engaged per war there not below HEAD's; a unit test, red without; the gate green.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-679 · 2026-10-24 · proposed (the user's decision) — The land war after year 1: the allotment's rules miss on fresh worlds; the army at war is a third of year 1's (PLAN 7.104's AT missed)
+
+- **Context** (`docs/evidence/7.104/measure.md`). PLAN 7.104 (R13-B1): on 10 unseen seeds × 20 years
+  against HEAD, engaged land formations a war in years 2–20 at least 0.15 of year 1's; formations under
+  500 men at year 20 not above HEAD's; a unit test, red without.
+- **Measured** (run 13's saves of 4877 and 7019, years 10 and 20): nobody engaged the day after any of
+  them; 90–100 % of the cells taken are walk-ins. Engaged per war is two factors, each about 3 × down by
+  year 20: the land army at war a war (529 → 196 formations, 3.6 M → 1.4 M men on 4877; the world's
+  income flat; the USA at peace with 37–60 % of the world's men), and its share within 12 cells of an
+  enemy formation (18–33 % in year 1, 0–5 % at year 20). The task's three cases: idle (7019's #127, 28
+  divisions 228 cells from a front its class reaches by no land: a ferry case); planned to no
+  threatened sector (4877's Poland, 27 formations on 821 sectors, two divisions holding 4–6 cells from
+  Soviet ones at their sectors' centres); hollow (few, not the lever).
+- **Tried** (`rule.patch`): (1) a threatened sector holds or attacks at the front cell nearest the enemy
+  formation its threat counts; (2) a threatened sector short of OFFENSIVE_RATIO × its threat draws the
+  shortfall from formations holding quiet sectors 60–180 cells off (ADR-191's spare range; not ADR-635's
+  far march). A/B over 180 days: run 13's year-20 saves ×1.32 (5 of 6 up), the AT's own year-10
+  checkpoints ×0.83 (1 of 5 up).
+- **The AT** (901–910 × 20 years, `contactAt.ts`): HEAD **0.112** of year 1 (late 0.586 a war; 3 seeds of
+  10 at 0.15), 567 under 500 men; both rules **0.104** (late 0.519), 489. The bar missed, and under HEAD.
+  No rule; the code restored; the pin unchanged (f9d18365).
+- **Options:**
+  - **(a)** 7.104 closed not done; PLAN 7.110 as filed: the army at war's size late (measure first why
+    the land army at war a war is a third of year 1's by year 20: upkeep against income, what the AI buys
+    instead, the cadre rule's reach), AT on 911–920 × 20 years against HEAD: land formations of nations at
+    war a war in years 2–20 at least 1.3 × HEAD's, engaged per war there not below HEAD's, a unit test
+    red without. Taken after 7.105–7.109.
+  - **(b)** 7.104 closed not done; 7.110 dropped; PLAN 7.87 reopened instead (the far march to a
+    threatened sector over a season, ADR-635 a), with 7.104's AT on 911–920.
+  - **(c)** 7.104 closed not done, 7.110 dropped; the late land war to the next critic report.
+- **Recommended: (a).** The share near the enemy is the allotment's, worked by 7.49, 7.79 (seven parts),
+  7.100 and this task, and every rule of it moved late saves and not fresh worlds. The size is the other
+  half of the gap and no task has worked it. 7.87's far formations stood 200–350 cells off with 83–98 %
+  reaching no threatened sector by land (7.79d), and this task's spare-range draw, the nearer form of the
+  same idea, read under HEAD. (c) leaves a blocking finding with no task, on its third report.
+- **Meanwhile** the loop takes PLAN 7.105.
+
 ### ADR-678 · 2026-10-24 · accepted — A flash is measured from the tank that fired it (PLAN 7.103; `tankBattle1938`)
 
 - **Context.** `tankBattle1938` (seed 1, stop 5, 4 m/px) red at `9ffb0274`: the flash of element 1112 0.278

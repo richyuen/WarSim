@@ -1,0 +1,190 @@
+[
+ {
+  "seed": 4877,
+  "src": "critic/c13_seed4877_y20.bin",
+  "day": 7302,
+  "formations": 196,
+  "states": {
+   "engaged": 0,
+   "retreat": 0,
+   "home": 4,
+   "aboard": 9,
+   "attack": 48,
+   "hold": 43,
+   "elsewhere": 2,
+   "noFront": 0,
+   "island": 47,
+   "near": 17,
+   "far": 26
+  },
+  "marching": 93,
+  "stalled": 14,
+  "flips": 102,
+  "walkIns": 97,
+  "nationsAtWar": 66,
+  "noFrontNations": 0,
+  "piles": [
+   [
+    "ENG island 1078,359",
+    15
+   ],
+   [
+    "NZL island 43,675",
+    5
+   ],
+   [
+    "POL far 1053,201",
+    4
+   ],
+   [
+    "ENG island 1075,357",
+    4
+   ],
+   [
+    "NED far 1254,672",
+    4
+   ]
+  ]
+ },
+ {
+  "seed": 7019,
+  "src": "critic/c13_seed7019_y20.bin",
+  "day": 7302,
+  "formations": 151,
+  "states": {
+   "engaged": 0,
+   "retreat": 0,
+   "home": 0,
+   "aboard": 0,
+   "attack": 24,
+   "hold": 29,
+   "elsewhere": 5,
+   "noFront": 0,
+   "island": 16,
+   "near": 14,
+   "far": 63
+  },
+  "marching": 58,
+  "stalled": 13,
+  "flips": 43,
+  "walkIns": 43,
+  "nationsAtWar": 46,
+  "noFrontNations": 0,
+  "piles": [
+   [
+    "#127 far 1107,301",
+    28
+   ],
+   [
+    "CHI island 1551,527",
+    6
+   ],
+   [
+    "#127 far 1138,306",
+    5
+   ],
+   [
+    "FRA far 1110,621",
+    4
+   ],
+   [
+    "SOV far 1418,348",
+    4
+   ]
+  ]
+ },
+ {
+  "seed": 4877,
+  "src": "critic/c13_seed4877_y10.bin",
+  "day": 3652,
+  "formations": 342,
+  "states": {
+   "engaged": 0,
+   "retreat": 1,
+   "home": 2,
+   "aboard": 3,
+   "attack": 49,
+   "hold": 89,
+   "elsewhere": 0,
+   "noFront": 4,
+   "island": 96,
+   "near": 15,
+   "far": 83
+  },
+  "marching": 138,
+  "stalled": 14,
+  "flips": 111,
+  "walkIns": 100,
+  "nationsAtWar": 45,
+  "noFrontNations": 3,
+  "piles": [
+   [
+    "FRA far 1037,294",
+    12
+   ],
+   [
+    "USA island 283,239",
+    10
+   ],
+   [
+    "FRA far 1267,596",
+    7
+   ],
+   [
+    "FRA far 1093,625",
+    5
+   ],
+   [
+    "USA island 1796,670",
+    5
+   ]
+  ]
+ },
+ {
+  "seed": 7019,
+  "src": "critic/c13_seed7019_y10.bin",
+  "day": 3652,
+  "formations": 546,
+  "states": {
+   "engaged": 0,
+   "retreat": 2,
+   "home": 5,
+   "aboard": 2,
+   "attack": 71,
+   "hold": 353,
+   "elsewhere": 1,
+   "noFront": 11,
+   "island": 28,
+   "near": 45,
+   "far": 28
+  },
+  "marching": 425,
+  "stalled": 30,
+  "flips": 165,
+  "walkIns": 155,
+  "nationsAtWar": 57,
+  "noFrontNations": 3,
+  "piles": [
+   [
+    "USA near 1111,570",
+    7
+   ],
+   [
+    "SOV near 1113,587",
+    5
+   ],
+   [
+    "#127 noFront 1142,287",
+    5
+   ],
+   [
+    "USA island 1072,362",
+    4
+   ],
+   [
+    "USA far 947,472",
+    4
+   ]
+  ]
+ }
+]

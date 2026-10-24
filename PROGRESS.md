@@ -23241,3 +23241,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Filed:** 7.104 (R13-B1); 7.105 performance 5 (the late game at Max 46–59 s a year); 7.106 emergent 6 (the
   statelets); 7.107 naval 7; 7.108 aircraft 7; 7.109 aiNukes 7 (a strike's banner and pause late at Max).
 - **Next:** PLAN 7.104.
+
+## 2026-10-24 — PLAN 7.104: the land war after year 1; two rules tried, the AT missed (ADR-679 to the user)
+
+- **Measured** (`docs/evidence/7.104/measure.md`; run 13's saves of 4877 and 7019, years 10 and 20): nobody
+  engaged on any of them, 90–100 % of cells taken are walk-ins. Engaged per war is two factors, each ~3 ×
+  down by year 20: the land army at war a war (4877: 529 → 196 formations), and its share within 12 cells
+  of an enemy (18–33 % → 0–5 %). Cases: 7019's #127 (28 divisions, no land way to its African front: a
+  ferry case); 4877's Poland (27 formations on 821 sectors, two holding 4–6 cells from Soviets).
+- **Noted, not this task's:** the USA at peace holds 37–60 % of the world's men at year 20.
+- **Rules tried** (`rule.patch`): a threatened sector faces the nearest enemy formation; one short of
+  OFFENSIVE_RATIO × threat draws from 60–180 cells. A/B 180 days: run 13's year-20 saves ×1.32, the AT's
+  year-10 checkpoints ×0.83.
+- **AT** (901–910 × 20, `tools/diag/contactAt.ts`, new): HEAD 0.112 of year 1, 567 under 500 men; both rules
+  0.104, 489. Missed, under HEAD. BLOCKERS entry; ADR-679: (a) PLAN 7.110, the army at war's size
+  (recommended); (b) reopen 7.87; (c) neither.
+- **No rule;** the code restored; the pin unchanged (f9d18365). New diag tools: `contactGap.ts`,
+  `armyTotals.ts`, `nationFront.ts`, `planOf.ts`, `spareHot.ts`, `engagedWindow.ts`, `contactAt.ts`.
+- **Next:** PLAN 7.105.
