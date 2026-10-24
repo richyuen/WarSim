@@ -44,13 +44,6 @@ Found by `npm run check:review` before critic run 13 (2026-10-24; ADR-675, ADR-6
 green here at `896ff779` and red at `9ffb0274` on what they claim, taken off `tools/gate/knownRed.json`
 (BLOCKERS). The critic waits on them (PROMPT step 2a):
 
-- [ ] 7.103 A tank's flash at its own muzzle (`tankBattle1938`, seed 1, stop 5): the flash of element 1112
-  0.278 of a figure from the nearest of its figures, the bar 0.3. The spec measures to the nearest figure
-  of the shooter's element, not to the figure that fired (`Shot.from`: `originOf` puts the flash at that
-  figure's muzzle); in a packed block another of its tanks may stand nearer. Read first which figure is
-  nearest; then the measure aimed at the firing figure (the bar kept) or the muzzle's drawing fixed.
-  AT: `tankBattle1938` green on this machine, alone and in `npm run check:review`, every claim kept.
-
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -373,3 +366,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.100 Fronts, not walk-ins (found at 7.82; emergent 6, needs 7; ADR-671 b): on 851–860 × 30 years […]
 - [x] 7.101 A defence that rises against a raid (found at 7.99; aircraft 7, needs 8; ADR-672 b): after year 1 […]
 - [x] 7.102 A block no further than 20 km from the block it faces (`formationFight1938`, seed 4242, Germany on […]
+- [x] 7.103 A tank's flash at its own muzzle (`tankBattle1938`, seed 1, stop 5): the flash of element 1112 […]

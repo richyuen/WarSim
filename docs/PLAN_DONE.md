@@ -14962,3 +14962,24 @@ Of 7.33 (open in PLAN.md):
   way, the bar kept) or a defect of the deploy (its own rule, ADR).
   AT: `formationFight1938` green on this machine, alone and in `npm run check:review`: the furthest block
   under 20 km, every claim of the spec kept.
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.103 A tank's flash at its own muzzle (`tankBattle1938`, seed 1, stop 5): the flash of element 1112
+  0.278 of a figure from the nearest of its figures, the bar 0.3. The spec measures to the nearest figure
+  of the shooter's element, not to the figure that fired (`Shot.from`: `originOf` puts the flash at that
+  figure's muzzle); in a packed block another of its tanks may stand nearer. Read first which figure is
+  nearest; then the measure aimed at the firing figure (the bar kept) or the muzzle's drawing fixed.
+  AT: `tankBattle1938` green on this machine, alone and in `npm run check:review`, every claim kept.

@@ -23218,3 +23218,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - AT's second clause (green in `npm run check:review`) is read by 7.5's run after 7.103, as BLOCKERS has it.
 - Not state; the pin unchanged (f9d18365).
 - **Next:** PLAN 7.103.
+
+## 2026-10-24 — PLAN 7.103: a flash measured from the tank that fired it (ADR-678)
+
+- **Read** (a probe in `tankBattle1938`, stop 5, 19 shots of armour): the figure that fired is drawn at its
+  place in every shot (0 cells off), its flash 0.405 of a figure out (a light tank's gun, 26/64). In 12 of 19
+  another tank of the block is nearer the muzzle; 1112's 0.278 was to its neighbour. The drawing is right.
+- **Spec:** the figure that fired found at its place (claim: under 0.05 of a figure), both bars read from it
+  (not over 0.5, over 0.3); the nearest-tank claim (not over 0.5) kept.
+- `tankBattle1938` green alone (3.0 min). The AT's second clause (green in `npm run check:review`) is read
+  by 7.5's run, as for 7.102.
+- A test only; the pin unchanged (f9d18365).
+- **Next:** PLAN 7.5: `npm run check:review`, then critic run 13.

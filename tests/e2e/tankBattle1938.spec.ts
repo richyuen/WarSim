@@ -356,10 +356,29 @@ test('the tank battle: one zoom from a marker to a burning hull, with turrets on
         const flashes = v.fire.shots.filter((s) => tanks.has(s.shooter)).sort((a, b) => a.start - b.start).map((s) => {
           v.draw(s.start + 1);
           const f = v.fire.flashAt.find((f) => f.shot === s);
-          // How far the flash is from the nearest figure of its shooter in this frame, in cells.
+          // How far the flash is from the nearest figure of its shooter in this frame, and from the
+          // figure that fired (`Shot.from`: the drawn figure at its place), in cells. In a packed
+          // block another tank of the element may stand nearer the muzzle than the one that fired
+          // (PLAN 7.103), so "not at the middle of a hull" is read from the one that fired.
           let reach = Infinity;
-          if (f && s.from) for (let j = 0; j < v.individualCount; j++) if (v.individualOwner[j] === s.shooter) reach = Math.min(reach, Math.hypot(v.individualX[j]! - f.x, v.individualY[j]! - f.y));
-          return { shooter: s.shooter, start: s.start, flashed: f !== undefined, inView: inside(s.x0, s.y0), held: s.from !== null, reach, side: s.from ? s.from.side : 0, fit: s.from?.fit ?? 1, scale: cam.scale };
+          let placed = Infinity;
+          let own = Infinity;
+          if (f && s.from) {
+            const fx = s.x0 + s.from.dx;
+            const fy = s.y0 + s.from.dy;
+            for (let j = 0; j < v.individualCount; j++) {
+              if (v.individualOwner[j] !== s.shooter) continue;
+              const x = v.individualX[j]!;
+              const y = v.individualY[j]!;
+              reach = Math.min(reach, Math.hypot(x - f.x, y - f.y));
+              const off = Math.hypot(x - fx, y - fy);
+              if (off < placed) {
+                placed = off;
+                own = Math.hypot(x - f.x, y - f.y);
+              }
+            }
+          }
+          return { shooter: s.shooter, start: s.start, flashed: f !== undefined, inView: inside(s.x0, s.y0), held: s.from !== null, reach, placed, own, side: s.from ? s.from.side : 0, fit: s.from?.fit ?? 1, scale: cam.scale };
         });
         // The hulls a tenth of a second after they were made, and the time of a frame with them, flames
         // on: the script's part, as `individuals1938` takes it (the test's browser draws on the CPU).
@@ -386,7 +405,9 @@ test('the tank battle: one zoom from a marker to a burning hull, with turrets on
         const side = figureCells(f.side) * f.fit;
         expect(side * f.scale, `${name}: a tank of ${f.shooter}, px`).toBeGreaterThan(2.5);
         expect(f.reach / side, `${name}: the flash of ${f.shooter} from its nearest tank, figures`).toBeLessThanOrEqual(0.5);
-        expect(f.reach / side, `${name}: the flash of ${f.shooter}, not at the middle of a hull`).toBeGreaterThan(0.3);
+        expect(f.placed / side, `${name}: the figure that fired ${f.shooter}'s shot is drawn at its place, figures`).toBeLessThan(0.05);
+        expect(f.own / side, `${name}: the flash of ${f.shooter} from the tank that fired, figures`).toBeLessThanOrEqual(0.5);
+        expect(f.own / side, `${name}: the flash of ${f.shooter}, not at the middle of the hull that fired`).toBeGreaterThan(0.3);
       }
       // (A shot without a flash is of a tank whose muzzle is outside the viewport: `muzzles1938` has that to the shot.)
       expect(drawn.length, `${name}: flashes at a tank's muzzle`).toBeGreaterThanOrEqual(3);

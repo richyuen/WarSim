@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-678 · 2026-10-24 · accepted — A flash is measured from the tank that fired it (PLAN 7.103; `tankBattle1938`)
+
+- **Context.** `tankBattle1938` (seed 1, stop 5, 4 m/px) red at `9ffb0274`: the flash of element 1112 0.278
+  of a figure from the nearest of its tanks, the bar "over 0.3, not at the middle of a hull". The spec
+  measured to the nearest figure of the shooter's element; the flash is drawn at the muzzle of the
+  figure that fired (`Shot.from`, `originOf`).
+- **Read** (a probe in the spec, 19 shots of armour): the figure that fired is drawn at its place in
+  every shot (0.0000 cells off); the flash is 0.405 of a figure from it for a light tank (GUN_LIGHT 26 of
+  ATLAS_FRAME 64 = 0.406): the drawing is right. In 12 of the 19 another tank of the same element stands
+  nearer the muzzle (1112: 0.0024 cells against 0.0035): a packed block, a barrel over the tank ahead.
+- **Decision.** The spec finds the figure that fired (the drawn figure of the element nearest its place,
+  `x0 + from.dx`), claims it is drawn there (under 0.05 of a figure), and reads both bars from it: the
+  flash not over half a figure from it, and over 0.3 (not at the middle of the hull that fired). The
+  nearest-figure claim (not over 0.5) is kept. Each bar is kept; the claim is stronger, not weaker: the
+  nearest tank is never further than the one that fired.
+- **Found, not changed:** a tank's barrel may reach over the hull of the next tank of its block (a
+  figure 0.28 of a side from another's muzzle). No task: a figure's place is the block's layout
+  (`figureOffsets`), and no claim reads hulls' gaps at 4 m/px.
+- **Consequences.** A test only; the pin unchanged (f9d18365).
+
 ### ADR-677 · 2026-10-24 · accepted — A file to the side that is sea: the next file out with land (PLAN 7.102; extends ADR-133)
 
 - **Context.** `formationFight1938` (seed 4242, Germany on Poland, day 21) red at `9ffb0274`: the furthest
