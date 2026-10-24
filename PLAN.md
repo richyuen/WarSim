@@ -116,7 +116,7 @@ reused:
   formations, 3.6 M → 1.4 M men; the world's income flat; the USA at peace with 37–60 % of the world's
   men). Measure first, on HEAD's year-10 and year-20 checkpoints of 901–910 (`tools/diag/contactAt.ts` writes them), why:
   upkeep against income of the nations at war, what the AI buys instead (navy, air, research, gold
-  kept), the cadre rule's reach (ADR-673). AT: on 911–920 × 20 years against HEAD on the same seeds,
+  kept), the cadre rule's reach (ADR-673). AT: on the next 10 unseen seeds × 20 years against HEAD on them,
   land formations of nations at war a war, mean of daily samples in years 2–20, at least 1.3 × HEAD's;
   engaged per war there not below HEAD's; a unit test, red without; the gate green.
 

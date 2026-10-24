@@ -100,7 +100,7 @@ Under the ×1.36 the AT needs from run 12's 0.11: not a rule for this task on it
 
 ## 6. Rules 1 and 2 together
 
-`rule.patch` (both rules, `ai/operational.ts`; not committed). A/B over 180 days (`ab180/`), both trees
+`rule.patch` (both rules, `ai/operational.ts`; not committed; the ADR-679/680 in its comments are placeholders). A/B over 180 days (`ab180/`), both trees
 from the same saves:
 
 | saves | HEAD per war | both rules | × | seeds up | under 500 men, HEAD → rules |

@@ -191,11 +191,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Options:**
   - **(a)** 7.104 closed not done; PLAN 7.110 as filed: the army at war's size late (measure first why
     the land army at war a war is a third of year 1's by year 20: upkeep against income, what the AI buys
-    instead, the cadre rule's reach), AT on 911–920 × 20 years against HEAD: land formations of nations at
+    instead, the cadre rule's reach), AT on the next 10 unseen seeds × 20 years against HEAD: land formations of nations at
     war a war in years 2–20 at least 1.3 × HEAD's, engaged per war there not below HEAD's, a unit test
     red without. Taken after 7.105–7.109.
   - **(b)** 7.104 closed not done; 7.110 dropped; PLAN 7.87 reopened instead (the far march to a
-    threatened sector over a season, ADR-635 a), with 7.104's AT on 911–920.
+    threatened sector over a season, ADR-635 a), with 7.104's AT on the next 10 unseen seeds.
   - **(c)** 7.104 closed not done, 7.110 dropped; the late land war to the next critic report.
 - **Recommended: (a).** The share near the enemy is the allotment's, worked by 7.49, 7.79 (seven parts),
   7.100 and this task, and every rule of it moved late saves and not fresh worlds. The size is the other
