@@ -1,0 +1,365 @@
+diff --git a/src/sim/ai/air.ts b/src/sim/ai/air.ts
+index ace660b2..f0477f78 100644
+--- a/src/sim/ai/air.ts
++++ b/src/sim/ai/air.ts
+@@ -40,6 +40,14 @@
+  * (FERRY_RANGE ranges), nearest the front's formation nearest it, where that is nearer than its base.
+  * Of the front, the formations an airbase of its side has in range; with none such, the enemy's
+  * land forces that one has; with none of those either, the whole front (PLAN 7.26b).
++ *
++ * A wing that has none of the enemy's land forces in range and stays where it is flies at the
++ * enemy's air and ships within its range (PLAN 7.99, 7.101: after year 1 the air war stood at 0.066
++ * of year 1's, following the land war alone): a fighter sweeps over an airbase of the enemy's with
++ * the enemy's wings on it, else its fleet afloat; a close support, tactical or naval bomber strikes
++ * the fleet first, then such an airbase. Spread as the front is (`aimed`). Not over an airbase with
++ * no wing on it (ADR-672: 99 % of such sweeps met nothing); its defenders rise against it
++ * (`scramble`, `systems/air.ts`).
+  */
+ import { isDayStart } from '../../shared/calendar';
+ import { basePlace, FERRY_RANGE, kmFromBase, ofSide, orderMission, orderRebase, wingAircraft, wingRange } from '../systems/air';
+@@ -133,6 +141,19 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly
+     for (const [o, b] of world.wingBase) if (b > 0 && world.formations.has(o)) used.set(b, (used.get(b) ?? 0) + wingAircraft(world, c.template[o]!));
+     return used;
+   };
++  // The wings at each airbase, for the enemy's air (PLAN 7.99): made when one is looked for.
++  let atBase: Map<number, number[]> | null = null;
++  const wingsAt = (): Map<number, number[]> => {
++    if (atBase) return atBase;
++    atBase = new Map();
++    for (const [o, b] of world.wingBase) {
++      if (b <= 0 || !world.formations.has(o)) continue;
++      const l = atBase.get(b);
++      if (l) l.push(o);
++      else atBase.set(b, [o]);
++    }
++    return atBase;
++  };
+   for (const n of [...wings.keys()].sort((a, b) => a - b)) {
+     const list = wings.get(n)!;
+     if (!atWar.has(n)) {
+@@ -150,6 +171,9 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly
+     const strikes = new Map<number, number>();
+     const lifts = new Map<number, number>();
+     const reserve = nuclearReserve(world, n);
++    // The enemy's airbases (PLAN 7.99), and the nation's wings sent to each this day.
++    let enemyAir: EnemyBases | null = null;
++    const aimed = new Map<number, number>();
+     for (const id of list) {
+       const role = roleOf(world, id);
+       let target: [number, number] | null = null;
+@@ -165,14 +189,24 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly
+         target = nearest(world, id, short.filter((g) => c.nation[g] === n), lifts);
+         kind = 'supply';
+       }
+-      if (!target) {
+-        world.wingMission.delete(id);
++      if (!target && (role === 'patrol' || role === 'front' || role === 'naval')) {
+         // A front out of its range: a hop toward it (PLAN 5.12a); with no front, or none of it in
+         // reach of a base of the side, the enemy's land forces (PLAN 5.12b, 7.26b).
+-        if (role === 'patrol' || role === 'front' || role === 'naval') {
+-          const front = role === 'patrol' ? own : role === 'front' ? enemy : enemyFleets.length > 0 ? enemyFleets : enemy;
+-          toward(world, id, [front, enemyForces()], usedAt(), reachable);
++        const front = role === 'patrol' ? own : role === 'front' ? enemy : enemyFleets.length > 0 ? enemyFleets : enemy;
++        const from = world.wingBase.get(id);
++        toward(world, id, [front, enemyForces()], usedAt(), reachable);
++        // Where it stays (PLAN 7.99): at the enemy's air, or its fleets, within its range.
++        if (world.wingBase.get(id) === from) {
++          const bases = (enemyAir ??= enemyBases(world, n, wingsAt()));
++          const atFleets = (): [number, number] | null => nearest(world, id, enemyFleets, strikes);
++          const atManned = (): [number, number] | null => nearestPlace(world, id, bases.manned, aimed);
++          // A fighter sweeps over the enemy's wings first; a bomber hits its ships first.
++          for (const pick of role === 'patrol' ? [atManned, atFleets] : [atFleets, atManned]) if ((target = pick())) break;
++          if (target) kind = role === 'patrol' ? 'patrol' : 'strike';
+         }
++      }
++      if (!target) {
++        world.wingMission.delete(id);
+         continue;
+       }
+       const m = world.wingMission.get(id);
+@@ -301,6 +335,53 @@ function toward(world: World, id: number, fronts: readonly (readonly number[])[]
+   used.set(best, (used.get(best) ?? 0) + need);
+ }
+ 
++/** The airbases held by nations at war with a nation with a wing of such a nation on them (PLAN 7.99, 7.101). */
++interface EnemyBases {
++  manned: readonly BasePlace[];
++}
++
++/** An airbase's index + 1 (`world.wingBase`'s) and its place. */
++interface BasePlace {
++  base: number;
++  x: number;
++  y: number;
++}
++
++/** The manned airbases held by nations at war with `n` (`EnemyBases`); `wingsAt`: the wings at each airbase. */
++function enemyBases(world: World, n: number, wingsAt: Map<number, number[]>): EnemyBases {
++  const manned: BasePlace[] = [];
++  const nation = world.formations.cols.nation;
++  world.airbases.forEach((b, i) => {
++    if (!world.wars.atWar(n, world.cells.controller[b.cell]!)) return;
++    const [x, y] = world.cellPoint(b.cell);
++    if ((wingsAt.get(i + 1) ?? []).some((o) => world.wars.atWar(n, nation[o]!))) manned.push({ base: i + 1, x, y });
++  });
++  return { manned };
++}
++
++/**
++ * The place of the airbase of `among` nearest wing `id`'s base within its range, of those with the
++ * fewest of its nation's wings sent there this day (`sent`, by airbase; it counts this wing's), as
++ * `nearestOf`; null for none (PLAN 7.99).
++ */
++function nearestPlace(world: World, id: number, among: readonly BasePlace[], sent: Map<number, number>): [number, number] | null {
++  const at = basePlace(world, world.wingBase.get(id)!);
++  if (!at || among.length === 0) return null;
++  const range = wingRange(world, id);
++  let best: BasePlace | null = null;
++  let bd = Infinity;
++  let bn = Infinity;
++  for (const p of among) {
++    const km = seaKm(world, at[0], at[1], p.x, p.y);
++    if (km > range) continue;
++    const k = sent.get(p.base) ?? 0;
++    if (k < bn || (k === bn && km < bd)) [best, bd, bn] = [p, km, k];
++  }
++  if (!best) return null;
++  sent.set(best.base, bn + 1);
++  return [best.x, best.y];
++}
++
+ /** The places of the airbases nation `nation`'s side holds (`ofSide`), [x, y] pairs by ascending y (PLAN 7.26b). */
+ function sideBasePoints(world: World, nation: number): Float64Array {
+   const pts: [number, number][] = [];
+diff --git a/src/sim/systems/air.ts b/src/sim/systems/air.ts
+index ff68f977..f0aad5d7 100644
+--- a/src/sim/systems/air.ts
++++ b/src/sim/systems/air.ts
+@@ -70,6 +70,7 @@ export function airSystem(world: World): void {
+     }
+     schedule(world, id, relayOf);
+   }
++  scramble(world);
+   const byZone = world.sorties.size > 0 ? airborne(world, world.tick) : new Map<number, number[]>();
+   if (byZone.size > 0 || world.airPower.size > 0) airPowerSystem(world, byZone);
+   strikes(world);
+@@ -78,6 +79,69 @@ export function airSystem(world: World): void {
+   antiAir(world);
+ }
+ 
++/** The fighter wings that rise against one raid in an hour (PLAN 7.101). */
++export const SCRAMBLE_PER_RAID = 1;
++
++/**
++ * The defence that rises (PLAN 7.101, ADR-672 b): each hour, against each raid (a sortie of a wing
++ * with a mission, on its way out or over its target, by wing id), the idle fighter wing nearest it
++ * of a nation at war with the raider's takes off: an AI nation's fighter wing at an airbase, with no
++ * mission and no sortie, whose range of its base reaches the raid where it is. It patrols over the
++ * raid's target where its range reaches that, else over the raid's place now, as a patrol does
++ * (`patrolHours`); with no mission, it is no raid itself. Up to SCRAMBLE_PER_RAID a raid; the nearest
++ * base first, the lowest wing id on it. Before, nothing on the ground rose: of 120,472 sweeps over the
++ * enemy's airbases 1.0 % came within INTERCEPT_KM of an air battle (PLAN 7.99).
++ */
++export function scramble(world: World): void {
++  if (!world.settings.aiEnabled || world.sorties.size === 0 || !world.rules) return;
++  const c = world.formations.cols;
++  const nc = world.nations.cols;
++  const rules = world.rules;
++  const fighting = world.wars.nations();
++  // The idle fighters, by airbase (ascending ids within each).
++  const idle = new Map<number, number[]>();
++  for (const [id, base] of world.wingBase) {
++    if (base <= 0 || world.sorties.has(id) || world.wingMission.has(id) || !world.formations.has(id)) continue;
++    const n = c.nation[id]!;
++    if (!fighting.has(n) || nc.aiOff[n] === 1 || nc.living[n] !== 1) continue;
++    const t = rules.templates[c.template[id]!]!;
++    if (rules.units[t.elements[0]!.unit]!.cls !== 'fighter') continue;
++    const l = idle.get(base);
++    if (l) l.push(id);
++    else idle.set(base, [id]);
++  }
++  if (idle.size === 0) return;
++  const bases = [...idle.keys()].sort((a, b) => a - b).map((b) => ({ base: b, at: basePlace(world, b)!, wings: idle.get(b)!.sort((x, y) => x - y) }));
++  const w = loopW(world);
++  for (const [raid, s] of [...world.sorties].sort((a, b) => a[0] - b[0])) {
++    if (!world.wingMission.has(raid) || !world.formations.has(raid)) continue;
++    const p = sortieAt(s, world.tick, w);
++    if (p.leg !== Leg.Out && p.leg !== Leg.Over) continue;
++    const rn = c.nation[raid]!;
++    for (let k = 0; k < SCRAMBLE_PER_RAID; k++) {
++      let best = -1;
++      let bestBase: (typeof bases)[number] | null = null;
++      let bd = Infinity;
++      for (const b of bases) {
++        const km = seaKm(world, b.at[0], b.at[1], p.x, p.y);
++        if (km >= bd) continue;
++        const id = b.wings.find((o) => !world.sorties.has(o) && world.wars.atWar(c.nation[o]!, rn) && km <= wingRange(world, o));
++        if (id === undefined) continue;
++        best = id;
++        bestBase = b;
++        bd = km;
++      }
++      if (best < 0 || !bestBase) break;
++      const range = wingRange(world, best);
++      const [b0, b1] = bestBase.at;
++      const toTarget = seaKm(world, b0, b1, s.tx, s.ty);
++      const [tx, ty, km] = toTarget <= range ? [s.tx, s.ty, toTarget] : [p.x, p.y, bd];
++      const kmh = rules.templates[c.template[best]!]!.speedKmh;
++      world.sorties.set(best, { bx: b0, by: b1, tx, ty, launch: world.tick, kmh, km, over: patrolHours(range, kmh, km) });
++    }
++  }
++}
++
+ /** Whether `holder` is nation `nation` or of its side: its supply bloc, or fighting beside it. */
+ export function ofSide(world: World, nation: number, holder: number): boolean {
+   return holder === nation || blocOf(world, holder) === blocOf(world, nation) || world.wars.sameSide(nation, holder);
+diff --git a/tests/unit/airEnemyAir1938.test.ts b/tests/unit/airEnemyAir1938.test.ts
+new file mode 100644
+index 00000000..bd4d5196
+--- /dev/null
++++ b/tests/unit/airEnemyAir1938.test.ts
+@@ -0,0 +1,76 @@
++import { describe, expect, it } from 'vitest';
++import { airAi } from '../../src/sim/ai/air';
++import { SIZE_1938 } from '../../src/sim/scenario1938';
++import { Sim } from '../../src/sim/sim';
++import { kmFromBase, wingRange } from '../../src/sim/systems/air';
++import { destroyFormation } from '../../src/sim/systems/elements';
++import type { World } from '../../src/sim/world';
++import { assets1938 } from '../helpers/earth';
++import { nationId } from '../helpers/sim1938';
++
++// PLAN 7.99, 7.101 (ADR-672 b): the air war followed the land war alone (ADR-377), so after year 1
++// it stood at 0.066 of year 1's (PLAN 7.85). A wing at war with no enemy land formation in range,
++// which does not rebase toward one, flies at the enemy's air or ships within its range: a fighter
++// sweeps over an enemy airbase with the enemy's wings on it first, then a fleet afloat; a striker hits
++// a fleet first, then such an airbase. Never over an airbase with no enemy wing on it (7.99's sweeps
++// there met nothing).
++
++const [GER, POL] = ['GER', 'POL'].map(nationId) as [number, number];
++const cls = (w: World, id: number): string => w.rules!.units[w.rules!.templates[w.formations.cols.template[id]!]!.elements[0]!.unit]!.cls;
++
++describe('the air war at the enemy air with no land forces in range (PLAN 7.99, 7.101)', () => {
++  it('German wings fly at Polish airbases and ships once Poland has no army', () => {
++    const w: World = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) }).world;
++    const c = w.formations.cols;
++    w.wars.start([GER], [POL], 0);
++    // Poland's land forces gone; nothing in contact anywhere.
++    const army: number[] = [];
++    w.formations.forEach((id) => {
++      if (c.nation[id] === POL && !w.isFleet(id) && !w.isWing(id)) army.push(id);
++    });
++    for (const id of army) destroyFormation(w, id);
++    w.formations.forEach((id) => (c.engaged[id] = 0));
++    // Poland's airbases, and those with a Polish wing on them; its fleets afloat.
++    const manned = new Set<number>();
++    for (const [o, b] of w.wingBase) if (b > 0 && w.formations.has(o) && c.nation[o] === POL) manned.add(b);
++    const bases: { base: number; x: number; y: number }[] = [];
++    w.airbases.forEach((b, i) => {
++      if (w.cells.controller[b.cell] !== POL) return;
++      const [x, y] = w.cellPoint(b.cell);
++      bases.push({ base: i + 1, x, y });
++    });
++    expect(manned.size, 'Polish airbases with wings').toBeGreaterThan(0);
++    const fleets: number[] = [];
++    w.formations.forEach((id) => {
++      if (w.isFleet(id) && c.nation[id] === POL && !w.embarked.has(id)) fleets.push(id);
++    });
++    const before = new Map(w.wingBase);
++    airAi(w);
++    let checked = 0;
++    for (const [id, base] of [...w.wingBase].sort((a, b) => a[0] - b[0])) {
++      const k = cls(w, id);
++      if (base <= 0 || c.nation[id] !== GER || !['fighter', 'cas', 'bomber_tac', 'naval_bomber'].includes(k)) continue;
++      expect(base, `wing ${id} stays: no front to rebase toward`).toBe(before.get(id));
++      const range = wingRange(w, id);
++      const inRange = (x: number, y: number): boolean => kmFromBase(w, id, x, y) <= range;
++      const m = w.wingMission.get(id);
++      const anyBase = bases.filter((p) => manned.has(p.base) && inRange(p.x, p.y));
++      const anyFleet = fleets.filter((g) => inRange(c.x[g]!, c.y[g]!));
++      if (anyBase.length === 0 && anyFleet.length === 0) {
++        expect(m, `wing ${id}: nothing in range`).toBeUndefined();
++        continue;
++      }
++      expect(m, `wing ${id} (${k}) with Poland's air or ships in range`).toBeDefined();
++      expect(m!.kind).toBe(k === 'fighter' ? 'patrol' : 'strike');
++      const atBase = bases.find((p) => p.x === m!.x && p.y === m!.y);
++      const atFleet = fleets.find((g) => c.x[g] === m!.x && c.y[g] === m!.y);
++      expect(atBase !== undefined || atFleet !== undefined, `wing ${id} at a Polish airbase or fleet`).toBe(true);
++      if (atBase) expect(manned.has(atBase.base), `wing ${id} over a manned base, not an empty one`).toBe(true);
++      // The order of preference: a fighter at a manned base when one is in range; a striker at a fleet.
++      if (k === 'fighter' && anyBase.length > 0) expect(atBase, `fighter ${id} over a manned base`).toBeDefined();
++      if (k !== 'fighter' && anyFleet.length > 0) expect(atFleet, `striker ${id} at a fleet`).toBeDefined();
++      checked++;
++    }
++    expect(checked, 'German wings with Polish air or ships in range').toBeGreaterThan(2);
++  });
++});
+diff --git a/tests/unit/airScramble1938.test.ts b/tests/unit/airScramble1938.test.ts
+new file mode 100644
+index 00000000..27ac933c
+--- /dev/null
++++ b/tests/unit/airScramble1938.test.ts
+@@ -0,0 +1,62 @@
++import { describe, expect, it } from 'vitest';
++import { SIZE_1938 } from '../../src/sim/scenario1938';
++import { Sim } from '../../src/sim/sim';
++import { airSystem, basePlace, wingRange } from '../../src/sim/systems/air';
++import { seaKm } from '../../src/sim/systems/navalCombat';
++import { legHours, patrolHours } from '../../src/sim/systems/sorties';
++import type { World } from '../../src/sim/world';
++import { assets1938 } from '../helpers/earth';
++import { nationId } from '../helpers/sim1938';
++
++// PLAN 7.101 (ADR-672 b): a defence that rises. Of 120,472 sweeps over the enemy's airbases 1.0 % came
++// within INTERCEPT_KM of an air battle (PLAN 7.99): nothing on the ground took off against a raid. Now,
++// each hour, the idle fighter wing nearest a raid (a sortie of a wing with a mission, out or over its
++// target) of a nation at war with the raider's, whose range reaches it, takes off over the raid's target.
++
++const [GER, POL] = ['GER', 'POL'].map(nationId) as [number, number];
++const cls = (w: World, id: number): string => w.rules!.units[w.rules!.templates[w.formations.cols.template[id]!]!.elements[0]!.unit]!.cls;
++
++/** A German wing over a Polish airbase with a Polish fighter wing on it, idle; the Polish wing. */
++function raid(atWar: boolean): { w: World; raider: number; defender: number; target: [number, number] } {
++  const w: World = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) }).world;
++  const c = w.formations.cols;
++  if (atWar) w.wars.start([GER], [POL], 0);
++  const wings = [...w.wingBase].sort((a, b) => a[0] - b[0]);
++  const defender = wings.find(([id, b]) => b > 0 && c.nation[id] === POL && cls(w, id) === 'fighter')?.[0];
++  const raider = wings.find(([id, b]) => b > 0 && c.nation[id] === GER && cls(w, id) === 'fighter')?.[0];
++  expect(defender, 'a Polish fighter wing at an airbase').toBeDefined();
++  expect(raider, 'a German fighter wing at an airbase').toBeDefined();
++  // Every other wing grounded: the raid and the defender alone.
++  for (const [id] of wings) if (id !== raider) w.wingMission.delete(id);
++  w.sorties.clear();
++  const target = basePlace(w, w.wingBase.get(defender!)!)!;
++  const from = basePlace(w, w.wingBase.get(raider!)!)!;
++  const kmh = w.rules!.templates[c.template[raider!]!]!.speedKmh;
++  const km = seaKm(w, from[0], from[1], target[0], target[1]);
++  w.wingMission.set(raider!, { kind: 'patrol', x: target[0], y: target[1] });
++  // Over its target now, with an hour of its patrol left at the least.
++  const s = { bx: from[0], by: from[1], tx: target[0], ty: target[1], launch: 0, kmh, km, over: Math.max(2, patrolHours(wingRange(w, raider!), kmh, km)) };
++  s.launch = w.tick - legHours(s) - 0.5;
++  w.sorties.set(raider!, s);
++  return { w, raider: raider!, defender: defender!, target };
++}
++
++describe('a defence that rises against a raid (PLAN 7.101)', () => {
++  it('at war, an idle fighter wing takes off over the raid on its airbase', () => {
++    const { w, defender, target } = raid(true);
++    expect(w.sorties.has(defender)).toBe(false);
++    airSystem(w);
++    const s = w.sorties.get(defender);
++    expect(s, 'the Polish fighter rises').toBeDefined();
++    expect([s!.tx, s!.ty]).toEqual(target);
++    expect(s!.launch).toBe(w.tick);
++    // With no mission it is no raid itself (no scramble rises against a scramble).
++    expect(w.wingMission.has(defender)).toBe(false);
++  });
++
++  it('in peace nothing rises', () => {
++    const { w, defender } = raid(false);
++    airSystem(w);
++    expect(w.sorties.has(defender)).toBe(false);
++  });
++});

@@ -23138,3 +23138,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   `rule.patch` kept as the candidate. 7.100 closed not done.
 - No rule; the pin unchanged (7c2e4700).
 - **Next:** PLAN 7.101.
+
+## 2026-10-23 — PLAN 7.101: a defence that rises; the sweeps still meet nothing (ADR-674 to the user)
+
+- **Rule tried** (`docs/evidence/7.101/rule.patch`): `scramble` (each hour the idle fighter nearest a raid
+  rises over its target, one a raid) and 7.99's sweep narrowed to manned bases and fleets; two unit tests.
+- **Read** (`read.md`; `tools/diag/airScrambleWhy.ts`, new): sweeps that fought 1.6 % (871), 1.8 % (872),
+  bar half; the swept base empty when reached 10 % / 76 % of sweep-hours, bombers only 39 % / 19 %, its
+  fighters out on their own missions. Late air battles (`airLate.ts`, 871–872 × 20): pooled 0.074 HEAD,
+  0.098 both rules, 0.074 the scramble alone; engaged per war late up (0.47/0.48 → 0.65/0.71).
+- **Verdict:** the sweep clause out of reach; the full AT not run; BLOCKERS entry; ADR-674: (a) close; (b)
+  clauses 1 and 3 on 891–900 with a HEAD control, commit if they hold (recommended); (c) a task for the
+  sweep picked at launch.
+- **No rule;** the pin unchanged (7c2e4700).
+- **Next:** ADR-673's override (the user's): `docs/evidence/7.100/rule.patch` committed.

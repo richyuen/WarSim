@@ -5,6 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.101: the scramble and the narrowed sweep, sweeps that fought 1.6–1.8 % against half (2026-10-23, ADR-674 proposed; the user's decision)
+- **The bar:** on 10 unseen seeds × 20 years late air battles at least a tenth of year 1's, at least half
+  of the sweep sorties meeting a defender, engaged per war not under HEAD's.
+- **What moved** (`docs/evidence/7.101/read.md`, 871–872): sweeps that fought 1.2/0.9 % → 1.6/1.8 %; late
+  air battles pooled 0.074 → 0.098 with both rules (the scramble alone 0.074).
+- **What is left:** the swept bases are empty (10 %, 76 %) or hold bombers (39 %, 19 %) when the sweep is
+  over them; the user's (ADR-674): (a) close, no rule; (b) the first and third clauses on 891–900 with a
+  HEAD control, commit if they hold (recommended); (c) a task for the sweep picked at launch. The code
+  restored; the pin unchanged (7c2e4700).
+
 ### RESOLVED 2026-10-23 (option b, the user's decision: the HEAD control run; the rule dropped by its terms, the stasis worse; 7.100 closed not done) · PLAN 7.100: the cadre division at war, battle share 1.85 % against 1.96 %, two stases over 15 years (ADR-673)
 - **The bar:** on 10 unseen seeds × 30 years the front battle's share in years 10–30 at least 1.96 % pooled,
   no stasis over 15 years.

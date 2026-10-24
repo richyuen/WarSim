@@ -50,6 +50,8 @@ them, are 7.81–7.86. A task each, split when taken up:
   (891 on, `airLate.ts`) air battles a year in years 2–20 at least a tenth of year 1's, at least half of the
   sweep sorties meeting a defender (`airSweeps.ts`), engaged per war in years 2–20 not below HEAD's on the
   same seeds; a unit test, red without; the ADR; the pin's entry.
+  Read 2026-10-23 (`docs/evidence/7.101/read.md`): the sweeps that fought 1.6–1.8 % (the swept bases empty
+  or bombers' when reached); late battles 0.098 pooled on 871–872 with both rules; no rule; waits on ADR-674.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

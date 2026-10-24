@@ -167,6 +167,36 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-674 · 2026-10-23 · proposed (the user's decision) — A defence that rises: the sweeps still meet nothing (PLAN 7.101)
+
+- **Context** (`docs/evidence/7.101/read.md`). PLAN 7.101 (ADR-672 b): a fighter wing at an airbase with no
+  mission takes off against an enemy sortie in its reach, with 7.99's sweep kept to manned enemy airbases
+  and fleets. AT on 10 unseen seeds × 20 years: late air battles at least a tenth of year 1's, at least
+  half the sweep sorties meeting a defender, engaged per war not under HEAD's. Read first on 871–872 how
+  many sweeps it turns into fights.
+- **The rule, tried** (`rule.patch`: `scramble` in `systems/air.ts`, one defender a raid, a scramble no raid
+  itself; the sweep narrowed; two unit tests, the scramble's red without).
+- **Read:** of the sweep sorties **1.6 % (871) and 1.8 % (872) fought** (7.99's 1.2 and 0.9 %). Why
+  (`airScrambleWhy.ts`, new): in the hours a sweep is over its base, the base has no enemy wing left in
+  10 % (871) and 76 % (872) of them (it was picked at the day's start), only bombers in 39 % and 19 %, and
+  its fighters are out on their own missions; idle fighters on it 9–11 wing-hours in four years. On 872
+  no sweep-hour over a base met a battle.
+- **The late air war** (`airLate.ts`, 871–872 × 20): pooled 0.074 (HEAD), 0.082 (7.99's sweep), 0.074 (the
+  scramble alone), **0.098** (the two together); engaged per war late 0.469/0.480 (HEAD), 0.654/0.710
+  (both). Two seeds whose histories part in year 1.
+- **Options:**
+  - **(a)** 7.101 closed not done, no rule; the aircraft score to the next critic report.
+  - **(b)** 7.101 closed not done; the AT's first and third clauses run on 891–900 with both rules
+    (the tenth, engaged per war not under HEAD's, a HEAD control beside it: some 2 hours), and the rule
+    committed if both hold, else dropped. The second clause given up: the read puts it out of reach.
+  - **(c)** 7.101 closed not done; a numbered task for the sweep's target picked at launch, hourly, as a
+    base with an enemy fighter on the ground then (the cause §2 names), with the scramble.
+- **Recommended: (b).** The two rules together are the only variant near the tenth on the two seeds, and
+  they raise engaged per war; whether that holds is the first clause's run on unseen seeds, which costs
+  two hours and no more design. (c) chases the sweep clause, whose cause is the enemy's own missions: a
+  base's fighters are out flying, which no target pick changes much.
+- **Consequences:** until decided, no rule; the pin unchanged (7c2e4700).
+
 ### ADR-673 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23); the rule dropped by its terms — The cadre division at war: more front battles, the bar missed (PLAN 7.100)
 
 - **Context** (`docs/evidence/7.100/read.md`, `at.md`). PLAN 7.100 (ADR-671 b): the front battle's share of
