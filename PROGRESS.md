@@ -23508,3 +23508,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   keeps (Poland's day-30 coverage with the rule 0.519, bar 0.6), then both rules are committed together with the pin,
   the strike test's case and `wholeTanks` restated to the first heavy fight. 7.110 ticked.
 - **Next:** PLAN 7.115.
+
+## 2026-10-24 — PLAN 7.115: the AT missed, to the user (ADR-693)
+
+- **Start:** gate green on `6589d576`; critic not due; no decision waiting.
+- **Why** (`tools/diag/coverWhy.ts`, the duel with 7.110b's strike rule): on day 30 Poland's 9 free formations went to 5
+  of 14 threatened sectors (HEAD: 7 to 7), the allotment by threat flooring the small threats to none; and 12 of 26
+  on the retreat, 9 on one cell (`retreat.ts`, not touched). HEAD's own coverage is under 0.6 on days 16, 17 and 29.
+- **Rule tried** (`docs/evidence/7.115/rule.patch`, not committed): the threatened sectors one each, most threatened
+  first, before a second. Poland 0.870 on day 30, both nations over 0.6 on days 10–30; `operationalAi` green; the unit
+  case red without; the gate green on it (pin would be cdca91eb).
+- **AT** (971–980 × 20): at war a war 51.38 / 62.54 / 56.77 (HEAD / strike / both; bar 62.54: missed); engaged
+  0.497 / 0.671 / 0.664 (bar 0.671: missed). A/B 180 days: 43.37 → 43.90, engaged down on 3 of 5.
+- **Tests the patch restates:** `wholeTanks` (first heavy fight, 6 tanks); `nukeAlertStop1938`'s gap 24 → 48 h (France's
+  strike hour 49 → 73), named in the options.
+- **Gotcha:** a `git stash` of a source file while `tsx` runs are starting races their module load; swap files only
+  between runs.
+- **Next:** PLAN 7.111 while ADR-693 waits.

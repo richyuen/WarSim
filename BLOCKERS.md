@@ -5,6 +5,19 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.115's AT missed: land formations at war a war 56.77 (bar: not below the strike rule's 62.54), engaged 0.664 (bar 0.671) (ADR-693; waits on the user)
+- **The bar:** with 7.110b's strike rule and the spread, `operationalAi` green; Poland's day-30 coverage at least 0.6;
+  on 971–980 × 20, land formations of nations at war a war in years 2–20 not below 62.54 and engaged a war not below
+  0.671; a unit test, red without; the gate green.
+- **What moved** (`docs/evidence/7.115/at.md`): the spread (a class's threatened sectors one each, the most threatened
+  first, before a second) puts Poland at 0.870 on day 30, both nations over 0.6 on every day of 10–30; `operationalAi`
+  green; its unit case red on HEAD, green with it; the gate green on the patch. The army at war 56.77 (HEAD 51.38,
+  strike alone 62.54), engaged 0.664 (0.497, 0.671). Not committed (`rule.patch`); the pin unchanged.
+- **What is left:** the spread takes part of what the strike rule kept off the main fight; HEAD's own coverage is under
+  0.6 on days 16, 17 and 29; the retreat piles one battle's formations on one cell (`retreat.ts`, untouched); the patch
+  loosens `nukeAlertStop1938`'s gap 24 → 48 hours. The user's (ADR-693): (a) neither rule, a task to measure the
+  spread's cost; (b) the strike rule alone, coverage read as the mean of days 10–30 (recommended); (c) both rules.
+
 ### RESOLVED 2026-10-24 (option b, the user's decision: 7.110b closed not done, PLAN 7.115, the rule committed with it) · PLAN 7.110b's AT missed: land formations at war a war 51.38 → 62.54 (× 1.217, bar × 1.3) (ADR-692; waits on the user)
 - **The bar:** on 971–980 × 20 against HEAD on them, land formations of nations at war a war in years 2–20 at least
   1.3 × HEAD's; engaged per war there not below HEAD's; a unit test, red without; the gate green.

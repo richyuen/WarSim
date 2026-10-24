@@ -167,6 +167,36 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-693 · 2026-10-24 · proposed (the user's decision) — The threatened sectors manned one each before a second, with ADR-692's strike rule: the AT missed (PLAN 7.115)
+
+- **Context** (`docs/evidence/7.115/at.md`). With ADR-692's rule (a quarter of a strike's fire on a land formation out
+  of contact) Poland's day-30 coverage in `operationalAi`'s duel is 0.519 (bar 0.6). Measured (`tools/diag/coverWhy.ts`):
+  at tick 696 HEAD's Poland put 7 free formations in 7 sectors; with the rule 9 in 5, with 14 threatened, the northern
+  sectors (12,000–44,000 men of threat) floored to none by the allotment by threat (PLAN 7.79b, ADR-634). A second
+  cause, not the operational AI's: 12 of 26 on the retreat, 9 on one cell, from one battle (`retreat.ts`).
+- **Found on the way:** HEAD's own Poland coverage is under 0.6 on days 16, 17 and 29 (0.52–0.56) and 0.607 on day 30:
+  the test's two one-day reads are a noisy measure on HEAD too.
+- **Rule tried** (`docs/evidence/7.115/rule.patch`, not committed): before "every sector gets one", a class's
+  threatened sectors with none, the most threatened first, each take one from the largest allotment of the threatened.
+  Both nations then hold 0.6 on every day of 10–30 (Poland 0.870 on day 30); `operationalAi` green; its unit case red on
+  HEAD, green with it; the pin would move 1ef5c241 → cdca91eb.
+- **The AT** (971–980 × 20): land formations at war a war in years 2–20 HEAD 51.38, the strike 62.54, both 56.77 (bar:
+  not below 62.54, missed; × 1.105 of HEAD); engaged a war 0.497 / 0.671 / 0.664 (bar 0.671, missed; × 1.34 of HEAD).
+  The seeds swing far (977: 47.1 / 85.2 / 37.4). The A/B (180 days, five year-10 saves): 43.37 → 43.90 a war, engaged
+  down on 3 of 5.
+- **A test loosened in the patch:** the spread moves France's strike in PLAN 7.109a's scene (`nukeAlertStop1938`) from
+  hour 49 to 73; the patch takes the gap's bound from 24 hours to 48 (each pause on its strike's tick stays exact).
+  `wholeTanks` restated to its first heavy fight (6 tanks lost with both).
+- **Options.**
+  - **(a)** Neither rule; 7.115 closed not done; PLAN 7.116: the spread's cost to the army at war, measured, with an AT of
+    its own.
+  - **(b)** ADR-692's strike rule alone, as ADR-692 (a): `operationalAi`'s coverage read as the mean of days 10–30
+    (HEAD 0.668, the rule 0.690), `wholeTanks` from its first heavy fight; 7.115 closed not done; no task.
+    (Recommended: it moves the army at war × 1.217 and engaged × 1.35, the coverage bar is shown noisy on HEAD, and the
+    spread's miss is a share of the army moved off the main fight, which the AT was not about.)
+  - **(c)** Both rules, as in the patch: × 1.105 and × 1.34 of HEAD, the nuke scene's bound 24 → 48 hours; 7.115
+    closed not done.
+
 ### ADR-692 · 2026-10-24 · accepted, option b (the user's decision, 2026-10-24) — A strike on a land formation out of contact puts a quarter of its fire on it: the AT missed (PLAN 7.110b)
 
 - **Context** (`docs/evidence/7.110/measure.md`, PLAN 7.110a). The land army of nations at war is 75.8 formations a war in
