@@ -181,7 +181,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Options.**
   - **a (recommended):** bar 1 re-scoped to what the naval AI owns: battles per armed fleet-year at war with a
     navy, late, not below year 1's 0.8 ×, read on this run's seeds (HEAD holds it but for 924's year 21); PLAN
-    7.107 closed on it with ADR-682's rule. The navies' size stays ADR-667 a's.
+    7.107 closed on it with ADR-682's rule, after one `seaWars` read on ADR-682's code (this run kept no late
+    saves: the per-fleet figure above is HEAD's). The navies' size stays ADR-667 a's.
   - **b:** a numbered task, the navies' rebuild late (AT: armed fleets years 10–20 ≥ 1.3 × HEAD's), reopening
     ADR-667 a's acceptance; PLAN 7.107 closed not done.
   - **c:** a numbered task, the war choice: a naval power at war weighs a naval enemy's ports and fleets in reach
