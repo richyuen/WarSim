@@ -1,0 +1,1510 @@
+{
+ "summary": {
+  "seed": 952,
+  "years": 20,
+  "land": 509.6,
+  "men": 3645485,
+  "engaged": 3.95,
+  "wings": 98.1,
+  "usa": 0.67,
+  "vsUsa": 1.04,
+  "rest": 2.24,
+  "hash": "ccbe3bb"
+ },
+ "rows": [
+  {
+   "nation": 82,
+   "tag": "USA",
+   "land": 136,
+   "men": 1417412,
+   "engaged": 0.67,
+   "atWar": 0.84,
+   "wings": 24
+  },
+  {
+   "nation": 1,
+   "tag": "GER",
+   "land": 18.3,
+   "men": 143276,
+   "engaged": 0.56,
+   "atWar": 0.79,
+   "wings": 4
+  },
+  {
+   "nation": 75,
+   "tag": "JAP",
+   "land": 57.8,
+   "men": 283063,
+   "engaged": 0.42,
+   "atWar": 0.99,
+   "wings": 5.3
+  },
+  {
+   "nation": 10,
+   "tag": "SOV",
+   "land": 24.1,
+   "men": 190192,
+   "engaged": 0.33,
+   "atWar": 0.9,
+   "wings": 3.6
+  },
+  {
+   "nation": 20,
+   "tag": "ENG",
+   "land": 68.6,
+   "men": 464230,
+   "engaged": 0.3,
+   "atWar": 0.85,
+   "wings": 14.8
+  },
+  {
+   "nation": 15,
+   "tag": "ITA",
+   "land": 14.5,
+   "men": 104399,
+   "engaged": 0.22,
+   "atWar": 0.89,
+   "wings": 4.9
+  },
+  {
+   "nation": 19,
+   "tag": "FRA",
+   "land": 18.2,
+   "men": 98421,
+   "engaged": 0.22,
+   "atWar": 0.93,
+   "wings": 6.1
+  },
+  {
+   "nation": 59,
+   "tag": "RAJ",
+   "land": 15.3,
+   "men": 74106,
+   "engaged": 0.09,
+   "atWar": 0.85,
+   "wings": 1.7
+  },
+  {
+   "nation": 4,
+   "tag": "POL",
+   "land": 9,
+   "men": 47753,
+   "engaged": 0.08,
+   "atWar": 0.97,
+   "wings": 0.4
+  },
+  {
+   "nation": 69,
+   "tag": "CHI",
+   "land": 2.3,
+   "men": 10527,
+   "engaged": 0.07,
+   "atWar": 1,
+   "wings": 0.2
+  },
+  {
+   "nation": 78,
+   "tag": "AST",
+   "land": 4.6,
+   "men": 23173,
+   "engaged": 0.06,
+   "atWar": 0.82,
+   "wings": 1.9
+  },
+  {
+   "nation": 107,
+   "tag": "#107",
+   "land": 2.9,
+   "men": 15245,
+   "engaged": 0.05,
+   "atWar": 0.84,
+   "wings": 0.4
+  },
+  {
+   "nation": 3,
+   "tag": "CZS",
+   "land": 3.9,
+   "men": 25192,
+   "engaged": 0.04,
+   "atWar": 0.35,
+   "wings": 0.5
+  },
+  {
+   "nation": 23,
+   "tag": "NSP",
+   "land": 1.4,
+   "men": 8744,
+   "engaged": 0.04,
+   "atWar": 0.94,
+   "wings": 0.2
+  },
+  {
+   "nation": 28,
+   "tag": "NED",
+   "land": 7.3,
+   "men": 36419,
+   "engaged": 0.04,
+   "atWar": 0.92,
+   "wings": 2.5
+  },
+  {
+   "nation": 39,
+   "tag": "SAF",
+   "land": 1.5,
+   "men": 4911,
+   "engaged": 0.04,
+   "atWar": 0.75,
+   "wings": 0.6
+  },
+  {
+   "nation": 67,
+   "tag": "DEI",
+   "land": 2.3,
+   "men": 15543,
+   "engaged": 0.04,
+   "atWar": 0.27,
+   "wings": 0.8
+  },
+  {
+   "nation": 14,
+   "tag": "YUG",
+   "land": 5.6,
+   "men": 36243,
+   "engaged": 0.03,
+   "atWar": 0.76,
+   "wings": 0.9
+  },
+  {
+   "nation": 134,
+   "tag": "#134",
+   "land": 4.2,
+   "men": 34611,
+   "engaged": 0.03,
+   "atWar": 0.38,
+   "wings": 0.4
+  },
+  {
+   "nation": 142,
+   "tag": "#142",
+   "land": 0.6,
+   "men": 990,
+   "engaged": 0.03,
+   "atWar": 0.4,
+   "wings": 0
+  },
+  {
+   "nation": 30,
+   "tag": "DEN",
+   "land": 1.7,
+   "men": 11830,
+   "engaged": 0.02,
+   "atWar": 0.59,
+   "wings": 0.8
+  },
+  {
+   "nation": 32,
+   "tag": "SWE",
+   "land": 2.7,
+   "men": 23805,
+   "engaged": 0.02,
+   "atWar": 0.42,
+   "wings": 0.7
+  },
+  {
+   "nation": 44,
+   "tag": "AOF",
+   "land": 1.8,
+   "men": 9701,
+   "engaged": 0.02,
+   "atWar": 0.29,
+   "wings": 0.5
+  },
+  {
+   "nation": 64,
+   "tag": "INC",
+   "land": 1,
+   "men": 7736,
+   "engaged": 0.02,
+   "atWar": 0.29,
+   "wings": 0.3
+  },
+  {
+   "nation": 80,
+   "tag": "CAN",
+   "land": 1.5,
+   "men": 7001,
+   "engaged": 0.02,
+   "atWar": 0.88,
+   "wings": 0.8
+  },
+  {
+   "nation": 81,
+   "tag": "NFL",
+   "land": 0.4,
+   "men": 2161,
+   "engaged": 0.02,
+   "atWar": 0.65,
+   "wings": 0
+  },
+  {
+   "nation": 83,
+   "tag": "MEX",
+   "land": 1.8,
+   "men": 12488,
+   "engaged": 0.02,
+   "atWar": 0.78,
+   "wings": 0.3
+  },
+  {
+   "nation": 93,
+   "tag": "COL",
+   "land": 0.7,
+   "men": 2539,
+   "engaged": 0.02,
+   "atWar": 0.71,
+   "wings": 0.5
+  },
+  {
+   "nation": 96,
+   "tag": "PRU",
+   "land": 1.5,
+   "men": 6075,
+   "engaged": 0.02,
+   "atWar": 0.56,
+   "wings": 0.3
+  },
+  {
+   "nation": 97,
+   "tag": "BRA",
+   "land": 1.9,
+   "men": 7130,
+   "engaged": 0.02,
+   "atWar": 0.87,
+   "wings": 0.2
+  },
+  {
+   "nation": 100,
+   "tag": "CHL",
+   "land": 5.2,
+   "men": 25596,
+   "engaged": 0.02,
+   "atWar": 0.52,
+   "wings": 2
+  },
+  {
+   "nation": 101,
+   "tag": "ARG",
+   "land": 7.2,
+   "men": 42806,
+   "engaged": 0.02,
+   "atWar": 0.71,
+   "wings": 1.9
+  },
+  {
+   "nation": 112,
+   "tag": "#112",
+   "land": 0.8,
+   "men": 6884,
+   "engaged": 0.02,
+   "atWar": 0.16,
+   "wings": 0
+  },
+  {
+   "nation": 114,
+   "tag": "#114",
+   "land": 1.5,
+   "men": 9172,
+   "engaged": 0.02,
+   "atWar": 0.66,
+   "wings": 0.5
+  },
+  {
+   "nation": 143,
+   "tag": "#143",
+   "land": 0.4,
+   "men": 4611,
+   "engaged": 0.02,
+   "atWar": 0.15,
+   "wings": 0
+  },
+  {
+   "nation": 158,
+   "tag": "#158",
+   "land": 0.6,
+   "men": 6075,
+   "engaged": 0.02,
+   "atWar": 0.15,
+   "wings": 0
+  },
+  {
+   "nation": 6,
+   "tag": "LIT",
+   "land": 0.7,
+   "men": 2986,
+   "engaged": 0.01,
+   "atWar": 0.68,
+   "wings": 0.3
+  },
+  {
+   "nation": 11,
+   "tag": "ROM",
+   "land": 2.1,
+   "men": 12578,
+   "engaged": 0.01,
+   "atWar": 0.47,
+   "wings": 0.4
+  },
+  {
+   "nation": 16,
+   "tag": "ALB",
+   "land": 0.9,
+   "men": 2696,
+   "engaged": 0.01,
+   "atWar": 0.26,
+   "wings": 0
+  },
+  {
+   "nation": 18,
+   "tag": "TUR",
+   "land": 0.1,
+   "men": 552,
+   "engaged": 0.01,
+   "atWar": 0.89,
+   "wings": 0.1
+  },
+  {
+   "nation": 27,
+   "tag": "BEL",
+   "land": 13.8,
+   "men": 37986,
+   "engaged": 0.01,
+   "atWar": 0.89,
+   "wings": 2
+  },
+  {
+   "nation": 31,
+   "tag": "NOR",
+   "land": 0.2,
+   "men": 704,
+   "engaged": 0.01,
+   "atWar": 0.88,
+   "wings": 0.1
+  },
+  {
+   "nation": 33,
+   "tag": "EGY",
+   "land": 1.2,
+   "men": 6175,
+   "engaged": 0.01,
+   "atWar": 0.92,
+   "wings": 0.4
+  },
+  {
+   "nation": 45,
+   "tag": "AEF",
+   "land": 1,
+   "men": 6450,
+   "engaged": 0.01,
+   "atWar": 0.29,
+   "wings": 0.3
+  },
+  {
+   "nation": 47,
+   "tag": "FMO",
+   "land": 0.7,
+   "men": 4001,
+   "engaged": 0.01,
+   "atWar": 0.94,
+   "wings": 0
+  },
+  {
+   "nation": 48,
+   "tag": "TUN",
+   "land": 0.5,
+   "men": 4766,
+   "engaged": 0.01,
+   "atWar": 0.56,
+   "wings": 0
+  },
+  {
+   "nation": 49,
+   "tag": "SYR",
+   "land": 1.1,
+   "men": 6444,
+   "engaged": 0.01,
+   "atWar": 0.65,
+   "wings": 0
+  },
+  {
+   "nation": 53,
+   "tag": "IRQ",
+   "land": 1.6,
+   "men": 5856,
+   "engaged": 0.01,
+   "atWar": 0.89,
+   "wings": 0.4
+  },
+  {
+   "nation": 57,
+   "tag": "IRN",
+   "land": 0.2,
+   "men": 960,
+   "engaged": 0.01,
+   "atWar": 0.92,
+   "wings": 0.1
+  },
+  {
+   "nation": 58,
+   "tag": "AFG",
+   "land": 0.1,
+   "men": 345,
+   "engaged": 0.01,
+   "atWar": 0.88,
+   "wings": 0
+  },
+  {
+   "nation": 63,
+   "tag": "SIA",
+   "land": 4.7,
+   "men": 38304,
+   "engaged": 0.01,
+   "atWar": 0.08,
+   "wings": 1.7
+  },
+  {
+   "nation": 70,
+   "tag": "CCP",
+   "land": 0.2,
+   "men": 1558,
+   "engaged": 0.01,
+   "atWar": 0.43,
+   "wings": 0
+  },
+  {
+   "nation": 74,
+   "tag": "SIN",
+   "land": 0.6,
+   "men": 3942,
+   "engaged": 0.01,
+   "atWar": 0.81,
+   "wings": 0.2
+  },
+  {
+   "nation": 89,
+   "tag": "PAN",
+   "land": 1.6,
+   "men": 3827,
+   "engaged": 0.01,
+   "atWar": 0.3,
+   "wings": 0
+  },
+  {
+   "nation": 94,
+   "tag": "VEN",
+   "land": 0.9,
+   "men": 3635,
+   "engaged": 0.01,
+   "atWar": 0.96,
+   "wings": 0.1
+  },
+  {
+   "nation": 110,
+   "tag": "#110",
+   "land": 0.6,
+   "men": 4818,
+   "engaged": 0.01,
+   "atWar": 0.14,
+   "wings": 0
+  },
+  {
+   "nation": 111,
+   "tag": "#111",
+   "land": 0,
+   "men": 127,
+   "engaged": 0.01,
+   "atWar": 0.01,
+   "wings": 0
+  },
+  {
+   "nation": 115,
+   "tag": "#115",
+   "land": 0.5,
+   "men": 2912,
+   "engaged": 0.01,
+   "atWar": 0.75,
+   "wings": 0
+  },
+  {
+   "nation": 118,
+   "tag": "#118",
+   "land": 0.6,
+   "men": 3111,
+   "engaged": 0.01,
+   "atWar": 0.61,
+   "wings": 0
+  },
+  {
+   "nation": 141,
+   "tag": "#141",
+   "land": 0.1,
+   "men": 424,
+   "engaged": 0.01,
+   "atWar": 0.42,
+   "wings": 0
+  },
+  {
+   "nation": 147,
+   "tag": "#147",
+   "land": 0.6,
+   "men": 7501,
+   "engaged": 0.01,
+   "atWar": 0.01,
+   "wings": 0
+  },
+  {
+   "nation": 156,
+   "tag": "#156",
+   "land": 0.1,
+   "men": 326,
+   "engaged": 0.01,
+   "atWar": 0.18,
+   "wings": 0
+  },
+  {
+   "nation": 160,
+   "tag": "#160",
+   "land": 0.1,
+   "men": 315,
+   "engaged": 0.01,
+   "atWar": 0.05,
+   "wings": 0
+  },
+  {
+   "nation": 5,
+   "tag": "DAN",
+   "land": 0.9,
+   "men": 5657,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 7,
+   "tag": "LAT",
+   "land": 0.2,
+   "men": 1137,
+   "engaged": 0,
+   "atWar": 0.23,
+   "wings": 0
+  },
+  {
+   "nation": 8,
+   "tag": "EST",
+   "land": 0,
+   "men": 62,
+   "engaged": 0,
+   "atWar": 0.22,
+   "wings": 0
+  },
+  {
+   "nation": 9,
+   "tag": "FIN",
+   "land": 0.2,
+   "men": 948,
+   "engaged": 0,
+   "atWar": 0.89,
+   "wings": 0.1
+  },
+  {
+   "nation": 12,
+   "tag": "BUL",
+   "land": 0.5,
+   "men": 3977,
+   "engaged": 0,
+   "atWar": 0.23,
+   "wings": 0
+  },
+  {
+   "nation": 17,
+   "tag": "GRE",
+   "land": 0.5,
+   "men": 2497,
+   "engaged": 0,
+   "atWar": 0.59,
+   "wings": 0.3
+  },
+  {
+   "nation": 21,
+   "tag": "IRE",
+   "land": 2,
+   "men": 12456,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 1
+  },
+  {
+   "nation": 22,
+   "tag": "ICE",
+   "land": 0.5,
+   "men": 3038,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 24,
+   "tag": "REP",
+   "land": 3.4,
+   "men": 25232,
+   "engaged": 0,
+   "atWar": 0.01,
+   "wings": 1
+  },
+  {
+   "nation": 25,
+   "tag": "POR",
+   "land": 2.2,
+   "men": 17469,
+   "engaged": 0,
+   "atWar": 0.6,
+   "wings": 1.3
+  },
+  {
+   "nation": 26,
+   "tag": "SWI",
+   "land": 1.1,
+   "men": 6577,
+   "engaged": 0,
+   "atWar": 0.06,
+   "wings": 0.3
+  },
+  {
+   "nation": 29,
+   "tag": "LUX",
+   "land": 0.1,
+   "men": 208,
+   "engaged": 0,
+   "atWar": 0.05,
+   "wings": 0
+  },
+  {
+   "nation": 34,
+   "tag": "SUD",
+   "land": 0.5,
+   "men": 1135,
+   "engaged": 0,
+   "atWar": 0.89,
+   "wings": 0.9
+  },
+  {
+   "nation": 35,
+   "tag": "BEA",
+   "land": 0.2,
+   "men": 539,
+   "engaged": 0,
+   "atWar": 0.27,
+   "wings": 0
+  },
+  {
+   "nation": 36,
+   "tag": "BCO",
+   "land": 0,
+   "men": 142,
+   "engaged": 0,
+   "atWar": 0.27,
+   "wings": 0
+  },
+  {
+   "nation": 37,
+   "tag": "ANG",
+   "land": 0.1,
+   "men": 342,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 38,
+   "tag": "MOZ",
+   "land": 0.1,
+   "men": 303,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 40,
+   "tag": "SRH",
+   "land": 0.1,
+   "men": 164,
+   "engaged": 0,
+   "atWar": 0.79,
+   "wings": 0
+  },
+  {
+   "nation": 41,
+   "tag": "NIG",
+   "land": 0.6,
+   "men": 2448,
+   "engaged": 0,
+   "atWar": 0.27,
+   "wings": 0.3
+  },
+  {
+   "nation": 42,
+   "tag": "GCO",
+   "land": 0.3,
+   "men": 732,
+   "engaged": 0,
+   "atWar": 0.27,
+   "wings": 0
+  },
+  {
+   "nation": 43,
+   "tag": "LIB",
+   "land": 1,
+   "men": 3000,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 46,
+   "tag": "MAD",
+   "land": 0,
+   "men": 36,
+   "engaged": 0,
+   "atWar": 0.29,
+   "wings": 0
+  },
+  {
+   "nation": 50,
+   "tag": "LEB",
+   "land": 0.2,
+   "men": 256,
+   "engaged": 0,
+   "atWar": 0.41,
+   "wings": 0
+  },
+  {
+   "nation": 51,
+   "tag": "PAL",
+   "land": 0.3,
+   "men": 728,
+   "engaged": 0,
+   "atWar": 0.89,
+   "wings": 0
+  },
+  {
+   "nation": 52,
+   "tag": "TRJ",
+   "land": 0.5,
+   "men": 1421,
+   "engaged": 0,
+   "atWar": 0.62,
+   "wings": 0
+  },
+  {
+   "nation": 54,
+   "tag": "SAU",
+   "land": 0,
+   "men": 273,
+   "engaged": 0,
+   "atWar": 0.3,
+   "wings": 0
+  },
+  {
+   "nation": 55,
+   "tag": "YEM",
+   "land": 0,
+   "men": 141,
+   "engaged": 0,
+   "atWar": 0.03,
+   "wings": 0
+  },
+  {
+   "nation": 56,
+   "tag": "OMN",
+   "land": 1.5,
+   "men": 4649,
+   "engaged": 0,
+   "atWar": 0.27,
+   "wings": 0
+  },
+  {
+   "nation": 60,
+   "tag": "BUR",
+   "land": 0.8,
+   "men": 3452,
+   "engaged": 0,
+   "atWar": 0.89,
+   "wings": 0.5
+  },
+  {
+   "nation": 61,
+   "tag": "CEY",
+   "land": 1,
+   "men": 3037,
+   "engaged": 0,
+   "atWar": 0.71,
+   "wings": 0
+  },
+  {
+   "nation": 62,
+   "tag": "NEP",
+   "land": 0.8,
+   "men": 6304,
+   "engaged": 0,
+   "atWar": 0.25,
+   "wings": 0
+  },
+  {
+   "nation": 65,
+   "tag": "MAL",
+   "land": 0.9,
+   "men": 3976,
+   "engaged": 0,
+   "atWar": 0.69,
+   "wings": 0
+  },
+  {
+   "nation": 66,
+   "tag": "SAR",
+   "land": 1,
+   "men": 3000,
+   "engaged": 0,
+   "atWar": 0.3,
+   "wings": 0
+  },
+  {
+   "nation": 68,
+   "tag": "PHI",
+   "land": 2.7,
+   "men": 19524,
+   "engaged": 0,
+   "atWar": 0.36,
+   "wings": 1.4
+  },
+  {
+   "nation": 71,
+   "tag": "MAN",
+   "land": 0.1,
+   "men": 298,
+   "engaged": 0,
+   "atWar": 0.18,
+   "wings": 0.2
+  },
+  {
+   "nation": 72,
+   "tag": "MEN",
+   "land": 0,
+   "men": 0,
+   "engaged": 0,
+   "atWar": 0.18,
+   "wings": 0
+  },
+  {
+   "nation": 73,
+   "tag": "TIB",
+   "land": 0.1,
+   "men": 188,
+   "engaged": 0,
+   "atWar": 0.42,
+   "wings": 0
+  },
+  {
+   "nation": 76,
+   "tag": "MON",
+   "land": 0,
+   "men": 31,
+   "engaged": 0,
+   "atWar": 0.51,
+   "wings": 0
+  },
+  {
+   "nation": 77,
+   "tag": "TAN",
+   "land": 0.1,
+   "men": 323,
+   "engaged": 0,
+   "atWar": 0.49,
+   "wings": 0
+  },
+  {
+   "nation": 79,
+   "tag": "NZL",
+   "land": 2.8,
+   "men": 22702,
+   "engaged": 0,
+   "atWar": 0.02,
+   "wings": 1
+  },
+  {
+   "nation": 84,
+   "tag": "GUA",
+   "land": 1,
+   "men": 3252,
+   "engaged": 0,
+   "atWar": 0.16,
+   "wings": 0
+  },
+  {
+   "nation": 85,
+   "tag": "HON",
+   "land": 1,
+   "men": 3000,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 86,
+   "tag": "ELS",
+   "land": 1,
+   "men": 3000,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 87,
+   "tag": "NIC",
+   "land": 1,
+   "men": 3000,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 88,
+   "tag": "COS",
+   "land": 1,
+   "men": 3000,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 90,
+   "tag": "CUB",
+   "land": 0.9,
+   "men": 3020,
+   "engaged": 0,
+   "atWar": 0.04,
+   "wings": 0.6
+  },
+  {
+   "nation": 91,
+   "tag": "HAI",
+   "land": 1,
+   "men": 2668,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 92,
+   "tag": "DOM",
+   "land": 1.7,
+   "men": 7031,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 95,
+   "tag": "ECU",
+   "land": 2,
+   "men": 12480,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 98,
+   "tag": "BOL",
+   "land": 0.1,
+   "men": 384,
+   "engaged": 0,
+   "atWar": 0.05,
+   "wings": 0
+  },
+  {
+   "nation": 99,
+   "tag": "PAR",
+   "land": 0.2,
+   "men": 1461,
+   "engaged": 0,
+   "atWar": 0.05,
+   "wings": 0
+  },
+  {
+   "nation": 102,
+   "tag": "URU",
+   "land": 2.8,
+   "men": 16004,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 1
+  },
+  {
+   "nation": 104,
+   "tag": "#104",
+   "land": 0,
+   "men": 15,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 105,
+   "tag": "#105",
+   "land": 0,
+   "men": 169,
+   "engaged": 0,
+   "atWar": 0.01,
+   "wings": 0
+  },
+  {
+   "nation": 106,
+   "tag": "#106",
+   "land": 0.1,
+   "men": 71,
+   "engaged": 0,
+   "atWar": 0.06,
+   "wings": 0
+  },
+  {
+   "nation": 108,
+   "tag": "#108",
+   "land": 0.1,
+   "men": 1366,
+   "engaged": 0,
+   "atWar": 0.01,
+   "wings": 0
+  },
+  {
+   "nation": 109,
+   "tag": "#109",
+   "land": 0,
+   "men": 406,
+   "engaged": 0,
+   "atWar": 0.03,
+   "wings": 0
+  },
+  {
+   "nation": 113,
+   "tag": "#113",
+   "land": 0.2,
+   "men": 3056,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0.1
+  },
+  {
+   "nation": 116,
+   "tag": "#116",
+   "land": 0.1,
+   "men": 1108,
+   "engaged": 0,
+   "atWar": 0.05,
+   "wings": 0
+  },
+  {
+   "nation": 117,
+   "tag": "#117",
+   "land": 0.4,
+   "men": 5397,
+   "engaged": 0,
+   "atWar": 0.03,
+   "wings": 0
+  },
+  {
+   "nation": 119,
+   "tag": "#119",
+   "land": 0.1,
+   "men": 90,
+   "engaged": 0,
+   "atWar": 0.03,
+   "wings": 0
+  },
+  {
+   "nation": 120,
+   "tag": "#120",
+   "land": 0.3,
+   "men": 1928,
+   "engaged": 0,
+   "atWar": 0.09,
+   "wings": 0
+  },
+  {
+   "nation": 121,
+   "tag": "#121",
+   "land": 0.2,
+   "men": 2019,
+   "engaged": 0,
+   "atWar": 0.04,
+   "wings": 0
+  },
+  {
+   "nation": 122,
+   "tag": "#122",
+   "land": 0.2,
+   "men": 2786,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 123,
+   "tag": "#123",
+   "land": 0,
+   "men": 90,
+   "engaged": 0,
+   "atWar": 0.02,
+   "wings": 0
+  },
+  {
+   "nation": 124,
+   "tag": "#124",
+   "land": 0.1,
+   "men": 905,
+   "engaged": 0,
+   "atWar": 0.08,
+   "wings": 0
+  },
+  {
+   "nation": 125,
+   "tag": "#125",
+   "land": 0.1,
+   "men": 1328,
+   "engaged": 0,
+   "atWar": 0.16,
+   "wings": 0
+  },
+  {
+   "nation": 126,
+   "tag": "#126",
+   "land": 0.2,
+   "men": 2073,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 127,
+   "tag": "#127",
+   "land": 0.2,
+   "men": 592,
+   "engaged": 0,
+   "atWar": 0.04,
+   "wings": 0
+  },
+  {
+   "nation": 128,
+   "tag": "#128",
+   "land": 0,
+   "men": 20,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 129,
+   "tag": "#129",
+   "land": 0.3,
+   "men": 3382,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 130,
+   "tag": "#130",
+   "land": 0.1,
+   "men": 623,
+   "engaged": 0,
+   "atWar": 0.07,
+   "wings": 0
+  },
+  {
+   "nation": 131,
+   "tag": "#131",
+   "land": 0,
+   "men": 59,
+   "engaged": 0,
+   "atWar": 0.16,
+   "wings": 0
+  },
+  {
+   "nation": 132,
+   "tag": "#132",
+   "land": 0.5,
+   "men": 2026,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 133,
+   "tag": "#133",
+   "land": 0,
+   "men": 8,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 135,
+   "tag": "#135",
+   "land": 0.2,
+   "men": 1133,
+   "engaged": 0,
+   "atWar": 0.07,
+   "wings": 0
+  },
+  {
+   "nation": 136,
+   "tag": "#136",
+   "land": 0,
+   "men": 342,
+   "engaged": 0,
+   "atWar": 0.01,
+   "wings": 0
+  },
+  {
+   "nation": 137,
+   "tag": "#137",
+   "land": 0.1,
+   "men": 394,
+   "engaged": 0,
+   "atWar": 0.18,
+   "wings": 0
+  },
+  {
+   "nation": 138,
+   "tag": "#138",
+   "land": 0,
+   "men": 2,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 139,
+   "tag": "#139",
+   "land": 0,
+   "men": 21,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 140,
+   "tag": "#140",
+   "land": 0.1,
+   "men": 854,
+   "engaged": 0,
+   "atWar": 0.07,
+   "wings": 0
+  },
+  {
+   "nation": 144,
+   "tag": "#144",
+   "land": 0.1,
+   "men": 605,
+   "engaged": 0,
+   "atWar": 0.11,
+   "wings": 0
+  },
+  {
+   "nation": 145,
+   "tag": "#145",
+   "land": 0,
+   "men": 439,
+   "engaged": 0,
+   "atWar": 0.23,
+   "wings": 0
+  },
+  {
+   "nation": 146,
+   "tag": "#146",
+   "land": 0.2,
+   "men": 2518,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 148,
+   "tag": "#148",
+   "land": 0,
+   "men": 89,
+   "engaged": 0,
+   "atWar": 0.06,
+   "wings": 0
+  },
+  {
+   "nation": 149,
+   "tag": "#149",
+   "land": 0.1,
+   "men": 919,
+   "engaged": 0,
+   "atWar": 0.08,
+   "wings": 0
+  },
+  {
+   "nation": 150,
+   "tag": "#150",
+   "land": 0,
+   "men": 60,
+   "engaged": 0,
+   "atWar": 0.08,
+   "wings": 0
+  },
+  {
+   "nation": 151,
+   "tag": "#151",
+   "land": 0,
+   "men": 173,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 152,
+   "tag": "#152",
+   "land": 0,
+   "men": 572,
+   "engaged": 0,
+   "atWar": 0.07,
+   "wings": 0
+  },
+  {
+   "nation": 153,
+   "tag": "#153",
+   "land": 0,
+   "men": 146,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 154,
+   "tag": "#154",
+   "land": 0,
+   "men": 89,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 155,
+   "tag": "#155",
+   "land": 0.2,
+   "men": 2125,
+   "engaged": 0,
+   "atWar": 0.02,
+   "wings": 0
+  },
+  {
+   "nation": 157,
+   "tag": "#157",
+   "land": 0.1,
+   "men": 166,
+   "engaged": 0,
+   "atWar": 0.06,
+   "wings": 0
+  },
+  {
+   "nation": 159,
+   "tag": "#159",
+   "land": 0.3,
+   "men": 2983,
+   "engaged": 0,
+   "atWar": 0.08,
+   "wings": 0
+  },
+  {
+   "nation": 161,
+   "tag": "#161",
+   "land": 0,
+   "men": 423,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 162,
+   "tag": "#162",
+   "land": 0,
+   "men": 558,
+   "engaged": 0,
+   "atWar": 0.04,
+   "wings": 0
+  },
+  {
+   "nation": 163,
+   "tag": "#163",
+   "land": 0,
+   "men": 82,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 164,
+   "tag": "#164",
+   "land": 0.1,
+   "men": 85,
+   "engaged": 0,
+   "atWar": 0.02,
+   "wings": 0
+  },
+  {
+   "nation": 165,
+   "tag": "#165",
+   "land": 0,
+   "men": 276,
+   "engaged": 0,
+   "atWar": 0.02,
+   "wings": 0
+  },
+  {
+   "nation": 166,
+   "tag": "#166",
+   "land": 0,
+   "men": 266,
+   "engaged": 0,
+   "atWar": 0.02,
+   "wings": 0
+  },
+  {
+   "nation": 167,
+   "tag": "#167",
+   "land": 0,
+   "men": 81,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 168,
+   "tag": "#168",
+   "land": 0,
+   "men": 406,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  },
+  {
+   "nation": 169,
+   "tag": "#169",
+   "land": 0,
+   "men": 100,
+   "engaged": 0,
+   "atWar": 0,
+   "wings": 0
+  }
+ ]
+}

@@ -87,3 +87,20 @@ Each month, each of seven powers, the first gate that stops its first wing:
 Their books are in surplus (the Soviet Union's balance over its need +798 a month) and their treasuries hold about
 a month's income: the army at war spends with no reserve (ADR-615) before the wings' turn, and the wings' three
 months are never there. The USA, hoarding a year's income, is stopped by the share and its slots alone.
+
+## Where the land war's loss is (`tools/diag/landNations.ts`, `land/`; 951 and 952, years 2–20, a day)
+
+| | HEAD 951 | 0.035 951 | HEAD 952 | 0.035 952 |
+|---|---|---|---|---|
+| land formations, the world | 510 | 559 | 510 | 513 |
+| their men | 3.63 M | 4.21 M | 3.65 M | 3.81 M |
+| wings (the USA's) | 88 (29) | 209 (114) | 98 (24) | 252 (113) |
+| engaged | 5.00 | 2.94 | 3.95 | 2.16 |
+| — the USA's | 0.48 | 0.18 | 0.67 | 0.20 |
+| — of nations at war with the USA | 0.79 | 0.28 | 1.04 | 0.40 |
+| — the rest | 3.75 | 2.54 | 2.24 | 1.61 |
+
+Not money: the armies are as large or larger (men +5–16 %). Contact falls by two thirds in the USA's wars (its army
+the same size, at war as often, its air force × 4) and by a third elsewhere. The air war thins the land war where it is
+heavy, as 7.108b's strikers did (`docs/evidence/7.108b/read.md` §3). What a strike does to a formation in contact is
+not read.

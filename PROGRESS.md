@@ -23400,3 +23400,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **The powers' gate** (`docs/evidence/7.113/gates_951.txt`, an uncommitted counter, 951 under 0.035): the Soviet Union,
   Italy, Japan, Britain and France stopped by the wings' reserve (price + 3 months' income) in 95–167 of 228 months,
   their treasuries at ~1 month's income (the army at war spends with none, ADR-615); the USA hoards 70,234 gold.
+- **Where the loss is** (`tools/diag/landNations.ts`, new; 951–952 under 0.035): the armies as large or larger (men
+  +5–16 %); engaged falls two thirds in the USA's wars (its air force × 4) and a third elsewhere: the air war thins the
+  land war, not its cost. What a strike does to a formation in contact is next to read.
