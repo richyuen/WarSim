@@ -67,6 +67,9 @@ reused:
     - [ ] 7.110b The rule, on 7.110a's lever, with 7.110's AT on 971–980 × 20 against HEAD on them: land formations
       of nations at war a war in years 2–20 at least 1.3 × HEAD's; engaged per war there not below HEAD's; a unit
       test, red without; the gate green.
+      AT missed 2026-10-24 (ADR-692, BLOCKERS; `docs/evidence/7.110b/at.md`): a quarter of a strike's fire on a land
+      formation out of contact, 51.38 → 62.54 (× 1.217, bar × 1.3), engaged a war 0.497 → 0.671; `operationalAi` and
+      `wholeTanks` red with it. Not committed (`rule.patch`). Waits on the user's word on ADR-692.
 - [ ] 7.111 The late tick's exact remainder (found at 7.105; performance 5; ADR-680 b, the user's decision): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one
   Map of keys past the small integers), `sectorShape`'s sort and holders, `industryHeld` once a day for
   every reader. AT: year 21 of 4877 from `critic/c13_seed4877_y20.bin`, `npm run sim -- --affinity

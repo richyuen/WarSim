@@ -1,0 +1,67 @@
+// Scratch: the operational AI test's Polish and German coverage, daily on days 10-40 of its duel.
+import { SECTOR_CELLS } from '../../src/sim/ai/operational';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { frontierOf } from '../../src/sim/systems/territory';
+import { neighbours4 } from '../../src/sim/nav/grid';
+import type { World } from '../../src/sim/world';
+import { assets1938 } from '../../tests/helpers/earth';
+import { nationId, runEvents } from '../../tests/helpers/sim1938';
+const [GER, POL] = ['GER', 'POL'].map(nationId) as [number, number];
+function coverageOf(w: World, n: number): { sectors: number; covered: number; near: number; all: number } {
+  const { w: mw, h, controller } = w.cells;
+  const nb: number[] = [];
+  const bw = Math.ceil(mw / SECTOR_CELLS);
+  const sectors = new Map<number, [number, number, number]>();
+  for (const c of frontierOf(w)) {
+    if (controller[c] !== n) continue;
+    if (!neighbours4(c, mw, h, true, nb).some((k) => controller[k] !== 0 && w.wars.atWar(n, controller[k]!))) continue;
+    const x = c % mw;
+    const y = (c - x) / mw;
+    const key = Math.floor(y / SECTOR_CELLS) * bw + Math.floor(x / SECTOR_CELLS);
+    const s = sectors.get(key) ?? [0, 0, 0];
+    sectors.set(key, [s[0] + x + 0.5, s[1] + y + 0.5, s[2] + 1]);
+  }
+  const f = w.formations.cols;
+  const own = w.formations.ids().filter((id) => f.nation[id] === n);
+  let covered = 0;
+  const near = new Set<number>();
+  for (const [sx, sy, k] of sectors.values()) {
+    const cx = sx / k;
+    const cy = sy / k;
+    const by = own.filter((id) => (f.x[id]! - cx) ** 2 + (f.y[id]! - cy) ** 2 <= (2 * SECTOR_CELLS) ** 2);
+    if (by.length > 0) covered++;
+    for (const id of by) near.add(id);
+  }
+  const land = own.filter((id) => !w.isWing(id) && !w.isFleet(id));
+  return { sectors: sectors.size, covered, near: near.size, all: land.length };
+}
+function coverage(w: World, n: number): string {
+  const c = coverageOf(w, n);
+  return `${(c.sectors === 0 ? 1 : c.covered / c.sectors).toFixed(2)} (${c.covered}/${c.sectors} sectors; ${c.near} of ${c.all} formations near)`;
+}
+const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
+const w = s.world;
+for (const n of [GER, POL]) {
+  w.alliances.leave(n);
+  w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
+}
+w.nations.forEach((n) => {
+  if (n !== GER && n !== POL) w.nations.cols.aiOff[n] = 1;
+});
+w.nations.cols.aggression[GER] = 0;
+w.nations.cols.aggression[POL] = 0;
+s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+runEvents(s, 1);
+w.wars.between(GER, POL)!.war.fightToDeath = [true, true];
+runEvents(s, 24 * 10 - 1);
+const out: string[] = [];
+for (let d = 10; d <= 36; d++) {
+  let polF = 0;
+  w.formations.forEach((id) => {
+    if (w.formations.cols.nation[id] === POL && !w.isWing(id) && !w.isFleet(id)) polF++;
+  });
+  out.push(`${d}: POL ${coverage(w, POL)}`);
+  runEvents(s, 24);
+}
+console.log(out.join('\n'));

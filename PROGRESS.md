@@ -23487,3 +23487,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `Sim`'s systems can be wrapped from a tool as `profile` does (`systems`, `systemNames`): a per-system
   read of any state, the game unchanged.
 - **Next:** PLAN 7.110b (the rule; seeds 971–980).
+
+## 2026-10-24 — PLAN 7.110b: the AT missed, to the user (ADR-692)
+
+- **Rule tried** (`docs/evidence/7.110b/rule.patch`, not committed): a strike puts `DISPERSED_STRIKE` (0.25) of its fire
+  on a land formation not in contact (7.110a's lever: the strikes on armies at rest were the largest loss late).
+- **A/B** (180 days from five year-10 saves, `tools/diag/armyAtWarAb.ts`): at war a war 39.73 → 43.37, up on 5 of 5.
+- **AT** (971–980 × 20, HEAD in a worktree of `3c05e7d7`): land formations at war a war 51.38 → 62.54 (× 1.217, bar
+  × 1.3: missed); engaged a war 0.497 → 0.671 (met). Two history tests red with it: `operationalAi` (Poland's day-30
+  coverage 0.519, bar 0.6; HEAD 0.607: more formations near the front, fewer sectors covered) and `wholeTanks`
+  (division 41's fight later and lighter). Seed 901 before ADR-689: 56.6 a war against HEAD's 39.8.
+- **Gotcha:** Git Bash converts an argument that begins with `/c/...` to `C:\...`, but not one inside `seed:/c/...`:
+  node then opens `C:\c\...`. Use paths relative to the worktree in `seed:path` arguments.
+- **Next:** PLAN 7.111 while ADR-692 waits.

@@ -167,6 +167,42 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-692 · 2026-10-24 · proposed (the user's decision) — A strike on a land formation out of contact puts a quarter of its fire on it: the AT missed (PLAN 7.110b)
+
+- **Context** (`docs/evidence/7.110/measure.md`, PLAN 7.110a). The land army of nations at war is 75.8 formations a war in
+  year 1 and 48.5 in years 2–20 (901–910). The world raises ~90–100 land formations a year whatever its income, and the
+  army settles where its losses meet that. The largest loss late is the air's: where no front is in its reach a wing
+  strikes the enemy's land forces in contact or not (PLAN 5.12b), and on five year-10 saves the strikes took 648,000
+  men in 60 days against combat's 536,000, 88 % of it of formations in no contact, and ended 95 formations to combat's 63.
+- **Decision.** A strike's fire on a land formation that is not `engaged` is `DISPERSED_STRIKE` (0.25) of
+  `STRIKE_FIRE`: its men are spread out and under cover. On one in contact, and on ships, as before. The air AI's
+  missions, the sorties and the air fights are unchanged.
+- **Why this and not the aim.** Without 5.12b's strikes the bombers sit when no front is in reach (seed 7321's year
+  13), and the late air battles come of the sorties the enemy's fighters meet (aircraft 7). The cut takes the loss and
+  keeps the sorties.
+- **A/B** (180 days from the year-10 saves of 901, 903, 905, 907, 909; `tools/diag/armyAtWarAb.ts`): land formations at
+  war a war 40.9 → 44.6 (up on 5 of 5), engaged a war up on 4 of 5.
+- **The AT** (971–980 × 20, `docs/evidence/7.110b/at.md`): land formations of nations at war a war in years 2–20 51.38 →
+  62.54 (× 1.217, bar × 1.3: missed; up on 8 of 10); engaged a war 0.497 → 0.671 (× 1.35; up on 8 of 10). Its unit
+  case (in `rule.patch`) is red on HEAD and green with it; the pin would move 1ef5c241 → 4347c49c.
+- **Two unit tests red with it**, both on a seeded 1938 history: `operationalAi` (Poland covers 0.519 of its front
+  sectors on day 30, bar 0.6, HEAD 0.607: as long a front, 10 formations more near it, fewer sectors covered: the
+  operational AI piles what the strikes no longer grind away); `wholeTanks` (division 41's first fight comes in hour
+  306, not 237, and is lighter: no tank lost in the 48 hours, by a pinned hour or a found one).
+- **Seed 901 before ADR-689** (one seed): 56.6 a war in years 2–20 against HEAD's 39.8, 1,971 land formations
+  destroyed against 2,433: the rebuilt air forces strike more.
+- **Not committed** (`docs/evidence/7.110b/rule.patch`: the rule, its unit case, the pin, `wholeTanks` restated to
+  find its hour); the pin unchanged.
+- **Options.**
+  - **(a)** Commit the rule; `operationalAi`'s coverage read as the mean of days 10–30 (Poland: HEAD 0.668, the rule
+    0.690; both nations over 0.6), `wholeTanks` on the first 48 hours with a tank of fire at the division; 7.110b
+    closed not done; no task.
+  - **(b)** 7.110b closed not done; PLAN 7.115: the operational AI spreads a larger army over its front (AT:
+    `operationalAi` as it stands, green with `rule.patch` applied; Poland's day-30 coverage at least 0.6), then the
+    rule committed with it and `wholeTanks` given a case of its own fight. (Recommended: the rule moves the critic's
+    own figure × 1.35, and the red test is right that the spread is short.)
+  - **(c)** 7.110b closed not done; no rule, no task; the late land war to the next critic report.
+
 ### ADR-691 · 2026-10-24 · accepted, option a (the user's decision, 2026-10-24) — An answer to a strike on forces weighs forces first: the AT missed (PLAN 7.109b)
 
 - **Context.** Critic run 13: the United Kingdom killed 67,951 US soldiers near Molepolole and the United States

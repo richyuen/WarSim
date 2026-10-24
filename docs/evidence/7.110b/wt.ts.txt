@@ -1,0 +1,31 @@
+// Scratch: division 41 of seed 3929, the hours it is fired at (volleys at its tank elements and all) in 600 hours.
+import { FIRE_STRIDE, FireField } from '../../src/shared/events';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { elementIndex } from '../../src/sim/systems/elements';
+import { ARM_ARMOUR } from '../../src/sim/world';
+import { assets1938 } from '../../tests/helpers/earth';
+import { nationId } from '../../tests/helpers/sim1938';
+const sim = new Sim({ scenario: '1938', seed: 3929, assets: assets1938(SIZE_1938.w) });
+sim.command({ kind: 'declareWar', attacker: nationId('GER'), defender: nationId('POL') });
+sim.command({ kind: 'declareWar', attacker: nationId('GER'), defender: nationId('FRA') });
+const w = sim.world;
+const ec = w.elements.cols;
+const out: string[] = [];
+for (let h = 1; h <= 600; h++) {
+  let all = 0;
+  let armour = 0;
+  sim.step(1, (world) => {
+    const f = world.out.fires;
+    for (let i = 0; i + FIRE_STRIDE <= f.length; i += FIRE_STRIDE) {
+      const e = f.data[i + FireField.target]!;
+      if (!w.elements.has(e) || ec.formation[e] !== 41) continue;
+      all++;
+      if ((w.rules!.units[ec.unit[e]!]!.arm & ARM_ARMOUR) !== 0) armour++;
+    }
+    world.out.fires.length = 0;
+    world.out.events.length = 0;
+  });
+  if (all > 0) out.push(`h${h}: ${all} volleys (${armour} at armour), engaged ${w.formations.cols.engaged[41]}, tanks ${(elementIndex(w).get(41) ?? []).filter((e) => (w.rules!.units[ec.unit[e]!]!.arm & ARM_ARMOUR) !== 0).reduce((a, e) => a + ec.strength[e]!, 0)}`);
+}
+console.log(out.slice(0, 40).join('\n'));
