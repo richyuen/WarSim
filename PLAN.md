@@ -69,7 +69,7 @@ reused:
       red without; the pin moved with its ADR; the gate green.
       Tried 2026-10-24 before its AT (`docs/evidence/7.113/read.md` §3, `reserve.patch`): the same as HEAD on six
       saves over 90 days; the binding gate late is AIR_SHARE of a small army's upkeep (ADR-686). The user's rule's AT
-      (`at.md`, `income.patch`): wings 2.40 × (met), engaged per war 0.66 × (missed). Waits on ADR-687 (BLOCKERS).
+      (`at.md`, `income.patch`): wings 2.40 × (met), engaged per war 0.66 × (missed). At 0.035 (ADR-687 a): wings 2.31 ×, engaged per war 0.62 ×: missed. Waits on ADR-688 (BLOCKERS).
     - [ ] 7.113b The crossing on 7.113a's code (`docs/evidence/7.108b/rule.patch`, its unit test with it). AT: on
       951–960 × 20, air battles a world-year after year 1 at least 1.25 × HEAD's; engaged per war not below HEAD's;
       the unit test red without; the pin moved with its ADR; the gate green.

@@ -167,7 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-687 · 2026-10-24 · proposed (the user's decision) — The air force at 0.1 of income rebuilds the air war and thins the land war (PLAN 7.113a's AT missed)
+### ADR-688 · 2026-10-24 · proposed (the user's decision) — The air force at 0.035 of income grows past 1938's and thins the land war from year 4 (PLAN 7.113a's AT missed again)
+
+- **AT** (`docs/evidence/7.113/at.md`, last section; 951–960 × 20): wings 90.8 → 210.0 (met); air battles 171.0 →
+  263.8; engaged per war 0.598 → 0.369 (missed). Better than HEAD's in years 2–3 (0.794 → 1.236, 0.583 → 0.805) while
+  the air forces rebuild; worse from year 4 as they grow past it, to 265 wings by year 20 (1938's 166). 0.1 and 0.035
+  give the same count: the share at either size does not bind; the air force grows while the money lasts.
+- **Options (the user's).**
+  (a) **(recommended)** A ceiling at the 1938 start's size: the air force under its 1938 share of income (the
+  world's 0.016), the wings side by side kept; the AT again on 951–960 (the rebuild of years 2–3 without the growth).
+  (b) The share of income at war only (in peace the old rule, one wing at a time under 0.1 of the army's).
+  (c) Commit 0.035 as it stands (the air war rebuilt, the land war at 0.62 ×).
+  (d) 7.113 closed not done, no rule.
+- **Now.** Not committed (`income035.patch`); the pin unchanged (c848f884).
+
+### ADR-687 · 2026-10-24 · accepted, option a (the user's decision, 2026-10-24); its AT missed (ADR-688) — The air force at 0.1 of income rebuilds the air war and thins the land war (PLAN 7.113a's AT missed)
 
 - **Context.** ADR-686 (the user's): the air force measured against income, 0.1, wings side by side.
 - **AT** (`docs/evidence/7.113/at.md`, 951–960 × 20): wings late 90.8 → 218.3 (2.40 ×, bar 1.25 ×: met); air battles

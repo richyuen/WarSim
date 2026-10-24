@@ -5,14 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.113a's AT missed: engaged per war 0.598 → 0.395 with wings 2.40 × (ADR-687, 2026-10-24)
+### PLAN 7.113a's AT missed twice: engaged per war 0.598 → 0.395 (0.1) and 0.369 (0.035) with wings 2.3–2.4 × (ADR-687, ADR-688, 2026-10-24)
 - **The bar:** on 951–960 × 20 against HEAD, wings of living nations in years 2–20 at least 1.25 × HEAD's; engaged
   per war there not below HEAD's; a unit test, red without.
 - **What moved** (`docs/evidence/7.113/at.md`): the user's rule (ADR-686: the air force under 0.1 of income, wings
   side by side) took wings 90.8 → 218.3 (met) and air battles 171.0 → 292.7, and engaged per war 0.598 → 0.395
   (missed, lower on 9 of 10). Not committed (`income.patch`); the pin unchanged.
 - **What is left:** the share's size: at 0.1 of income the air force costs ~6 × the 1938 world's share, from the
-  army's money. The user's (ADR-687): (a) 0.035 and the AT again (recommended); (b) commit as it stands; (c) close.
+  army's money. The user's (ADR-687): (a) 0.035 and the AT again (chosen): wings 210.0, engaged per war 0.369, the
+  land war better in years 2–3 and worse from year 4 as the air forces grow past 1938's. ADR-688: (a) a ceiling at
+  the 1938 share of income, 0.016 (recommended); (b) the income share at war only; (c) commit 0.035; (d) close.
 
 ### RESOLVED 2026-10-24 (option b, the user's decision: 7.108b closed not done; PLAN 7.113) · PLAN 7.108b's AT missed: late air battles 176.2 → 174.5 a world-year (0.99 ×, bar 1.25 ×) (ADR-685, 2026-10-24)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD on them, air battles a world-year after year 1 at least

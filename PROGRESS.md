@@ -23386,3 +23386,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   per war 0.598 → 0.395 (0.66 ×, missed, 9 of 10 lower). BLOCKERS entry; ADR-687: (a) 0.035 of income and the AT
   again (recommended); (b) commit as it stands; (c) close 7.113.
 - **Not committed;** the pin unchanged (c848f884; the rule's 3a38b3bf).
+
+## 2026-10-24 — PLAN 7.113a at 0.035 of income (ADR-687 a, the user's); the AT missed again (ADR-688 to the user)
+
+- **AT** (951–960 × 20, `docs/evidence/7.113/at.md`): wings 90.8 → 210.0 (met), air battles 171.0 → 263.8, engaged
+  per war 0.598 → 0.369 (missed). The land war better in years 2–3, worse from year 4 as wings grow to 265 by year
+  20 (1938's 166); 0.1 and 0.035 give the same count. Six saves × 90 days: no change (the effect is the years').
+- ADR-688: (a) a ceiling at the 1938 share, 0.016 (recommended); (b) at war only; (c) commit 0.035; (d) close.
+- **Not committed** (`income035.patch`); the pin unchanged (c848f884). `airAb.ts` counts the land army at war.

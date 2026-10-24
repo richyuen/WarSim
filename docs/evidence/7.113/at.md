@@ -25,3 +25,31 @@ many in training as the army's order slots) in the tree (`rule/`; its pin would 
 
 At 0.1 of income the air force costs some six times the 1938 world's share of income (0.016), and the money it takes
 from month to month is the army's: land formations engaged 4.10 → 2.84 a world.
+
+## The share at 0.035 (ADR-687 a, the user's; `income035.patch`, `r035/`; its pin would be 604f65f2)
+
+| | HEAD | 0.1 | 0.035 |
+|---|---|---|---|
+| wings, years 2–20 | 90.8 | 218.3 | 210.0 (2.31 ×: met) |
+| engaged per war | 0.598 | 0.395 | **0.369 (0.62 ×: missed)** |
+| land formations engaged | 4.10 | 2.84 | 2.47 |
+| air battles a world-year | 171.0 | 292.7 | 263.8 (1.54 ×) |
+| battles per thousand sortie-hours | 1.62 | 1.89 | 2.04 |
+
+By year (ten worlds' mean):
+
+| year | wings HEAD | 0.035 | engaged per war HEAD | 0.035 | wars HEAD | 0.035 |
+|---|---|---|---|---|---|---|
+| 1 | 166 | 171 | 5.031 | 5.155 | 7.37 | 7.34 |
+| 2 | 123 | 153 | 0.794 | 1.236 | 7.65 | 7.05 |
+| 3 | 107 | 152 | 0.583 | 0.805 | 7.82 | 6.70 |
+| 4 | 99 | 160 | 0.605 | 0.500 | 7.72 | 6.98 |
+| 5 | 91 | 163 | 0.617 | 0.303 | 9.00 | 8.66 |
+| 10 | 85 | 200 | 0.644 | 0.326 | 7.40 | 6.96 |
+| 13 | 86 | 230 | 0.671 | 0.224 | 7.09 | 6.90 |
+| 20 | 91 | 265 | 0.388 | 0.353 | 6.67 | 5.58 |
+
+The land war is better than HEAD's while the air forces rebuild (years 2–3), and worse from year 4 as they grow
+past it, to 1.6 × 1938's by year 20: the share at either size is not what stops them (0.1 and 0.035 give the same
+count); the air force grows while the money lasts. From run 13's six saves over 90 days (`ab035/`) the rule builds
+the same wings as HEAD and the land armies at war are the same: its effect is the years' growth, not a month's.
