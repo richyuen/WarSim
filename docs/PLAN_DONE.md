@@ -14939,3 +14939,26 @@ Of 7.33 (open in PLAN.md):
   Read 2026-10-23 (`docs/evidence/7.101/read.md`): the sweeps that fought 1.6–1.8 % (the swept bases empty
   or bombers' when reached); late battles 0.098 pooled on 871–872 with both rules; no rule. Closed not done (ADR-674 a, the user's decision,
   2026-10-23): the aircraft score to the next critic report.
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.102 A block no further than 20 km from the block it faces (`formationFight1938`, seed 4242, Germany on
+  Poland, day 21): Polish infantry division 310's block stands 21.4 km from its foe 256 (span 0.40 by 1.02
+  cells), where 3.11c3a's layout left 18.1 at most; 310 itself stands 0.64 cells north of divisions 302 and
+  306 on the same foe. Engaged with a move order held is the norm (160–190 formations on days 21–22), not
+  the cause. Read first: the deploy of 310's block at `896ff779` and at HEAD; then a history (ADR-675's
+  way, the bar kept) or a defect of the deploy (its own rule, ADR).
+  AT: `formationFight1938` green on this machine, alone and in `npm run check:review`: the furthest block
+  under 20 km, every claim of the spec kept.

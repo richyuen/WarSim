@@ -242,6 +242,48 @@ describe('the blocks of formations in contact are deployed against each other (P
     }
   });
 
+  // PLAN 7.102 (ADR-677): on day 21 of `formationFight1938` an Italian division, the third line on a
+  // French block, went to the file to the side, which was sea from its place to that block; it
+  // stood two eighths of its way forward, 21.4 km from the block it faced, with land and room in
+  // the file on the other side.
+  it('a line whose file to the side is sea takes the file on the other side: on land, in one view with the enemy', () => {
+    const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    const { w: cw, h: ch } = w.cells;
+    // A cell of one nation with one of another a cell east, land between, and the strip south of that
+    // line sea where a block of the first file to the side would stand (`DEPLOY_ABREAST`'s right of an
+    // eastward line), land north. The two nations are set at war.
+    const apart = slotGrid(28).cols * SLOT_SPACING + DEPLOY_GAP;
+    const ownerAt = (x: number, y: number): number => w.cells.owner[Math.floor(y) * cw + Math.floor(x)]!;
+    const EIGHTHS = Array.from({ length: 9 }, (_, k) => k / 8);
+    let site: [number, number] | null = null;
+    for (let y = 2; y < ch - 2 && !site; y++) {
+      for (let x = 2; x < cw - 3 && !site; x++) {
+        const [sx, sy] = [x + 0.5, y + 0.5];
+        const [na, nb] = [ownerAt(sx, sy), ownerAt(sx + 1, sy)];
+        if (na === 0 || nb === 0 || na === nb) continue;
+        if (!EIGHTHS.every((t) => w.onLand(sx + t, sy) && w.onLand(sx + t, sy - apart))) continue;
+        if (EIGHTHS.slice(1, 7).every((t) => !w.onLand(sx + t, sy + apart))) site = [sx, sy];
+      }
+    }
+    expect(site, 'a coast with sea south of an eastward line between two nations').not.toBeNull();
+    const [sx, sy] = site!;
+    const [na, nb] = [ownerAt(sx, sy), ownerAt(sx + 1, sy)];
+    const stack = [addDivision(w, na, sx, sy), addDivision(w, na, sx, sy), addDivision(w, na, sx, sy)];
+    const b = addDivision(w, nb, sx + 1, sy);
+    w.wars.set(na, nb, true);
+    s.step(2);
+    expect(contactsOf(w).get(b)).toBe(stack[0]);
+    const theirs = deployOf(w, b, 28)!;
+    const third = deployOf(w, stack[2]!, 28)!;
+    // North of the line, the file on the other side, and on land; as near the enemy's block as a third line of a stack stands.
+    expect(third.y).toBeLessThan(sy - apart / 2);
+    expect(w.onLand(third.x, third.y)).toBe(true);
+    expect(Math.abs(theirs.x - third.x)).toBeLessThan(VIEW.w / 2);
+    expect(Math.hypot(theirs.x - third.x, theirs.y - third.y)).toBeLessThan(0.6);
+  });
+
   // PLAN 7.91: the lines of a stack were counted with those of every formation nearer the enemy,
   // from whatever side. On day 60 of the test below (with ADR-649's ferry) six Chinese divisions
   // from the south-west of a Japanese one took files 0 to 5, and ten from the south-east began at

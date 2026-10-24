@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-677 · 2026-10-24 · accepted — A file to the side that is sea: the next file out with land (PLAN 7.102; extends ADR-133)
+
+- **Context.** `formationFight1938` (seed 4242, Germany on Poland, day 21) red at `9ffb0274`: the furthest
+  block in contact 21.4 km from the block it faces, the bar 20. Green at `896ff779` on another history
+  (144 formations in contact, not 179; Italy and France not at war; the furthest 15.2 km). The case
+  (`tools/diag/deployFar.ts`, `deployFarNear.ts`): Italian division 310, the third line of a stack on
+  French block 256 (342 the one 256 faces, 302 and 306 the first two of the stack), goes to file 1, 0.29
+  cells to the side. That file is sea from its place to the French block (the Riviera; `onLand` at the
+  eighths of its way: `..L......`); the block stood at the one eighth with land, 0.31 cells from its
+  place. File −0.29 had 0.76 cells of room and land at all nine.
+- **Decision.** In `deployOf`, a file to the side (not the line's own, side 0) whose block would stand on
+  the sea at its full way forward counts as one with no room (ADR-133's loop): the line goes to the next
+  file out that has room and land there. Where no file out has both, it stands as before (the first
+  with room, as far forward as there is land). The line's own file is unchanged: across a strait the
+  two sides stay on their shores.
+- **Found, not changed** (one cause a commit): 302, 306 and 310 stand 0.05 cells apart, and the 60° test
+  of "from the side of the one the enemy faces" falls either way between them (0.54 for 310, under 0.5
+  for 302 and 306): 310 counts 342 as a line ahead, they do not. It moves 310's `short`, not its file.
+- **Read.** Seed 4242 day 21: the furthest 15.8 km (Chinese 413, bar under 20, over 14), the tallest 13.0
+  km north–south (817, over 8). `formationFight1938` green alone (2.7 min). Unit case in
+  `deploy.test.ts` (a coast with sea south of the line, three divisions on one cell: the third north of
+  it, on land, within 0.6 cells of the enemy's block): red without the rule, green with it.
+- **Consequences.** Where a block stands is not state (`deployOf`); the pin unchanged (f9d18365).
+
 ### ADR-676 · 2026-10-24 · accepted — A grey's tint by the ground under it: light on a forest, dark on open ground (PLAN 7.5, step 2; amends PLAN 7.9b's GREY_LIGHT)
 
 - **Context.** `tankSides1938` at `9ffb0274`, its case found (ADR-675's way): seed 7781, Germany on Poland,

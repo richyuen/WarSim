@@ -23203,3 +23203,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   tankBattle measures to the nearest figure of the element, not the one that fired.
 - **No critic run:** check:review is red until 7.102 and 7.103 (and its code key moved with ADR-675/676).
 - **Next:** PLAN 7.102.
+
+## 2026-10-24 — PLAN 7.102: a file to the side that is sea goes to the next file out (ADR-677)
+
+- **Case** (`tools/diag/deployFar.ts`, `deployFarNear.ts`, new): `formationFight1938`'s furthest, division 310, is
+  Italian (not Polish), the third line of a stack on French block 256; its file to the side was sea from its
+  place to that block, and it stood one eighth of its way forward, 21.4 km off. At `896ff779` another history
+  (Italy and France not at war; the furthest 15.2 km): a new case, not the old one regressed.
+- **Rule** (`deployOf`): a side file with sea where its block would stand counts as one without room; the next
+  file out with room and land. The line's own file unchanged. Found and left: the 60° side test falls either
+  way between three blocks 0.05 cells apart (moves `short`, not the file).
+- **Read:** seed 4242 day 21, the furthest 15.8 km (bar 20), the tallest 13.0 north–south (bar over 8).
+  `formationFight1938` green alone (2.7 min); deploy unit files 24 of 24 (one new: red without the rule).
+- AT's second clause (green in `npm run check:review`) is read by 7.5's run after 7.103, as BLOCKERS has it.
+- Not state; the pin unchanged (f9d18365).
+- **Next:** PLAN 7.103.

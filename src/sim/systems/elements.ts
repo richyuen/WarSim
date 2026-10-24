@@ -422,18 +422,36 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
       };
       // A file with no room before the formation's place (a block of another bearing stands in
       // it): the next file out that has room, as a line with no room does (ADR-133).
+      // How far forward a file's block goes on the way to a block, by the side it stands to and its room.
+      const lineShift = (side: number, room: number): number => Math.min(sqrt(world.atSize(DEPLOY_REACH) * world.atSize(DEPLOY_REACH) - side * side), Math.max(0, d - short), Math.max(0, room));
+      // A file to the side whose block would stand on the sea at its full way forward has no
+      // land to go to either (PLAN 7.102, ADR-677: an Italian division's file to the side was
+      // sea from its place to the French block, and it stood 21 km from it with land and room
+      // in the file on the other side). Its own line's file goes as far as there is land.
+      const ashore = (side: number, room: number): boolean => {
+        if (side === 0 || short < 0) return true;
+        const go = lineShift(side, room);
+        return world.onLand(fx + ux * go - uy * side, fy + uy * go + ux * side);
+      };
       let side = sideOf(file);
       let room = free(side);
-      for (let k = file + 1; room < -1e-9 && Math.ceil(k / 2) * apart <= DEPLOY_ABREAST; k++) {
-        const there = free(sideOf(k));
-        if (there < -1e-9) continue;
-        side = sideOf(k);
-        room = there;
+      if (room < -1e-9 || !ashore(side, room)) {
+        // The next file out with room, and of those the first with land (or the first with room, as before, where none has land).
+        let first: [number, number] | null = null;
+        for (let k = file + 1; Math.ceil(k / 2) * apart <= DEPLOY_ABREAST; k++) {
+          const there = free(sideOf(k));
+          if (there < -1e-9) continue;
+          if (room < -1e-9) first ??= [sideOf(k), there];
+          if (!ashore(sideOf(k), there)) continue;
+          first = [sideOf(k), there];
+          break;
+        }
+        if (first) [side, room] = first;
       }
       // Each other's nearest: to the middle between the two, less half the gap and half its depth.
       // No further from its own place than `DEPLOY_REACH` (it binds only on the way to a block).
       let shift = Math.min(world.atSize(DEPLOY_REACH), Math.max(0, d / 2 - world.atSize(DEPLOY_GAP) / 2 - depth / 2));
-      if (short >= 0) shift = Math.min(sqrt(world.atSize(DEPLOY_REACH) * world.atSize(DEPLOY_REACH) - side * side), Math.max(0, d - short), Math.max(0, room));
+      if (short >= 0) shift = lineShift(side, room);
       out = { x: fx, y: fy, facing: atan2(dy, dx) };
       // As far forward as the block's middle has land under it, in eighths of the way.
       for (let k = 8; k >= (side === 0 ? 1 : 0); k--) {

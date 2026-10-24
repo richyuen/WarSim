@@ -15,7 +15,8 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **Tried:** formationFight's furthest block probed (Polish division 310, engaged with a move order held,
   as 160–190 others are on days 21–22: not a stuck march). tankBattle's measure read (to the nearest
   figure of the shooter's element, not the firing figure). Neither cause found yet.
-- **Left:** 7.102, 7.103; then `npm run check:review` again (the code key moved: from the start, alone on
+- **2026-10-24:** 7.102 done (ADR-677: a file to the side over the sea; `formationFight1938` green alone).
+- **Left:** 7.103; then `npm run check:review` again (the code key moved: from the start, alone on
   the machine), then the critic. Not verified: `zoomDemo1938`'s red here (a strength over 64 at its
   line 315) is a claim's too, not the GPU's; it was red here at `896ff779` as well.
 
