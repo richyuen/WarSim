@@ -1,0 +1,624 @@
+{
+ "seed": 859,
+ "years": 30,
+ "from": 10,
+ "walks": 930298,
+ "perYear": [
+  {
+   "year": 1,
+   "walkIn": 32523,
+   "battle": 6527,
+   "revolt": 0,
+   "peace": 3503
+  },
+  {
+   "year": 2,
+   "walkIn": 31925,
+   "battle": 1512,
+   "revolt": 5458,
+   "peace": 1785
+  },
+  {
+   "year": 3,
+   "walkIn": 35266,
+   "battle": 888,
+   "revolt": 5454,
+   "peace": 11167
+  },
+  {
+   "year": 4,
+   "walkIn": 38366,
+   "battle": 808,
+   "revolt": 5363,
+   "peace": 1348
+  },
+  {
+   "year": 5,
+   "walkIn": 34047,
+   "battle": 693,
+   "revolt": 15861,
+   "peace": 4963
+  },
+  {
+   "year": 6,
+   "walkIn": 43743,
+   "battle": 903,
+   "revolt": 18067,
+   "peace": 7643
+  },
+  {
+   "year": 7,
+   "walkIn": 43092,
+   "battle": 1270,
+   "revolt": 15873,
+   "peace": 17690
+  },
+  {
+   "year": 8,
+   "walkIn": 26717,
+   "battle": 324,
+   "revolt": 8398,
+   "peace": 4680
+  },
+  {
+   "year": 9,
+   "walkIn": 36785,
+   "battle": 657,
+   "revolt": 7219,
+   "peace": 4310
+  },
+  {
+   "year": 10,
+   "walkIn": 54038,
+   "battle": 558,
+   "revolt": 11134,
+   "peace": 6095
+  },
+  {
+   "year": 11,
+   "walkIn": 58866,
+   "battle": 395,
+   "revolt": 19654,
+   "peace": 5242
+  },
+  {
+   "year": 12,
+   "walkIn": 63880,
+   "battle": 500,
+   "revolt": 59633,
+   "peace": 5191
+  },
+  {
+   "year": 13,
+   "walkIn": 30928,
+   "battle": 661,
+   "revolt": 22891,
+   "peace": 8954
+  },
+  {
+   "year": 14,
+   "walkIn": 48890,
+   "battle": 915,
+   "revolt": 35374,
+   "peace": 2431
+  },
+  {
+   "year": 15,
+   "walkIn": 38855,
+   "battle": 773,
+   "revolt": 24148,
+   "peace": 12542
+  },
+  {
+   "year": 16,
+   "walkIn": 30405,
+   "battle": 249,
+   "revolt": 45015,
+   "peace": 6577
+  },
+  {
+   "year": 17,
+   "walkIn": 24785,
+   "battle": 643,
+   "revolt": 20279,
+   "peace": 5127
+  },
+  {
+   "year": 18,
+   "walkIn": 41354,
+   "battle": 1080,
+   "revolt": 16428,
+   "peace": 18738
+  },
+  {
+   "year": 19,
+   "walkIn": 35437,
+   "battle": 1105,
+   "revolt": 35005,
+   "peace": 9389
+  },
+  {
+   "year": 20,
+   "walkIn": 20412,
+   "battle": 1000,
+   "revolt": 18338,
+   "peace": 759
+  },
+  {
+   "year": 21,
+   "walkIn": 23306,
+   "battle": 1551,
+   "revolt": 10971,
+   "peace": 7164
+  },
+  {
+   "year": 22,
+   "walkIn": 60580,
+   "battle": 1150,
+   "revolt": 2566,
+   "peace": 1032
+  },
+  {
+   "year": 23,
+   "walkIn": 32267,
+   "battle": 957,
+   "revolt": 13389,
+   "peace": 17776
+  },
+  {
+   "year": 24,
+   "walkIn": 30330,
+   "battle": 450,
+   "revolt": 12544,
+   "peace": 15365
+  },
+  {
+   "year": 25,
+   "walkIn": 65900,
+   "battle": 2317,
+   "revolt": 22424,
+   "peace": 6816
+  },
+  {
+   "year": 26,
+   "walkIn": 74717,
+   "battle": 3424,
+   "revolt": 10761,
+   "peace": 14953
+  },
+  {
+   "year": 27,
+   "walkIn": 26205,
+   "battle": 854,
+   "revolt": 49378,
+   "peace": 2793
+  },
+  {
+   "year": 28,
+   "walkIn": 39261,
+   "battle": 430,
+   "revolt": 15392,
+   "peace": 1942
+  },
+  {
+   "year": 29,
+   "walkIn": 59926,
+   "battle": 1004,
+   "revolt": 10084,
+   "peace": 7536
+  },
+  {
+   "year": 30,
+   "walkIn": 69956,
+   "battle": 797,
+   "revolt": 22021,
+   "peace": 10361
+  }
+ ],
+ "tables": {
+  "loser": [
+   [
+    "scenario",
+    756107
+   ],
+   [
+    "scenario puppet",
+    109006
+   ],
+   [
+    "founded",
+    49618
+   ],
+   [
+    "founded puppet",
+    15567
+   ]
+  ],
+  "loserCells": [
+   [
+    "50k+",
+    377601
+   ],
+   [
+    "10k-50k",
+    272224
+   ],
+   [
+    "1k-10k",
+    243740
+   ],
+   [
+    "<1k",
+    36733
+   ]
+  ],
+  "loserArmy": [
+   [
+    "5-19",
+    311690
+   ],
+   [
+    "1-4",
+    287990
+   ],
+   [
+    "0",
+    196160
+   ],
+   [
+    "60+",
+    90025
+   ],
+   [
+    "20-59",
+    44433
+   ]
+  ],
+  "taker": [
+   [
+    "scenario",
+    875979
+   ],
+   [
+    "founded",
+    54319
+   ]
+  ],
+  "cell": [
+   [
+    "loser's own",
+    867281
+   ],
+   [
+    "taker's own (taken back)",
+    62447
+   ],
+   [
+    "a third's, held by the loser",
+    570
+   ]
+  ],
+  "lastChange": [
+   [
+    "revolt >1y",
+    255089
+   ],
+   [
+    "none since 1938",
+    210889
+   ],
+   [
+    "walkIn >1y",
+    161440
+   ],
+   [
+    "revolt 30d-1y",
+    85680
+   ],
+   [
+    "peace >1y",
+    69445
+   ],
+   [
+    "walkIn 30d-1y",
+    58198
+   ],
+   [
+    "walkIn <30d",
+    25407
+   ],
+   [
+    "puppet >1y",
+    24633
+   ],
+   [
+    "peace 30d-1y",
+    16411
+   ],
+   [
+    "revolt <30d",
+    8888
+   ],
+   [
+    "battle <30d",
+    4587
+   ],
+   [
+    "battle >1y",
+    3624
+   ],
+   [
+    "capital >1y",
+    2539
+   ],
+   [
+    "battle 30d-1y",
+    1937
+   ],
+   [
+    "peace <30d",
+    1358
+   ],
+   [
+    "landing >1y",
+    42
+   ],
+   [
+    "landing 30d-1y",
+    40
+   ],
+   [
+    "capital 30d-1y",
+    34
+   ],
+   [
+    "puppet 30d-1y",
+    30
+   ],
+   [
+    "landing <30d",
+    21
+   ],
+   [
+    "puppet <30d",
+    4
+   ],
+   [
+    "capital <30d",
+    2
+   ]
+  ],
+  "pair": [
+   [
+    "GER on SOV",
+    134348
+   ],
+   [
+    "JAP on SOV",
+    50270
+   ],
+   [
+    "USA on CAN",
+    36717
+   ],
+   [
+    "GER on AST",
+    26638
+   ],
+   [
+    "USA on JAP",
+    21391
+   ],
+   [
+    "USA on GER",
+    21363
+   ],
+   [
+    "ITA on CAN",
+    20921
+   ],
+   [
+    "GER on JAP",
+    20258
+   ],
+   [
+    "SOV on JAP",
+    20060
+   ],
+   [
+    "SOV on GER",
+    19233
+   ],
+   [
+    "GER on ENG",
+    18738
+   ],
+   [
+    "GER on SUD",
+    16776
+   ],
+   [
+    "GER on FRA",
+    16311
+   ],
+   [
+    "GER on BCO",
+    13830
+   ],
+   [
+    "USA on FRA",
+    12029
+   ],
+   [
+    "USA on SOV",
+    12001
+   ],
+   [
+    "GER on DEI",
+    11181
+   ],
+   [
+    "USA on BRA",
+    10436
+   ],
+   [
+    "GER on USA",
+    9678
+   ],
+   [
+    "JAP on GER",
+    9405
+   ],
+   [
+    "USA on CHI",
+    8696
+   ],
+   [
+    "GER on POR",
+    7966
+   ],
+   [
+    "ENG on FRA",
+    7387
+   ],
+   [
+    "SOV on CCP",
+    6884
+   ],
+   [
+    "SOV on RAJ",
+    6622
+   ]
+  ],
+  "nearestDoing": [
+   [
+    "15+ marching to its side",
+    290937
+   ],
+   [
+    "15+ marching on an enemy cell",
+    207643
+   ],
+   [
+    "15+ standing",
+    147966
+   ],
+   [
+    "<15 marching to its side",
+    54475
+   ],
+   [
+    "<15 marching on an enemy cell",
+    32895
+   ],
+   [
+    "15+ engaged",
+    21798
+   ],
+   [
+    "15+ retreat",
+    12701
+   ],
+   [
+    "<15 retreat",
+    12120
+   ],
+   [
+    "<15 engaged",
+    10206
+   ],
+   [
+    "<15 standing",
+    8204
+   ]
+  ],
+  "defence": [
+   [
+    "nearest 40+",
+    570575
+   ],
+   [
+    "nearest 15-40",
+    110470
+   ],
+   [
+    "none on the landmass",
+    108945
+   ],
+   [
+    "nearest 6-15",
+    66541
+   ],
+   [
+    "nearest 3-6",
+    43352
+   ],
+   [
+    "no land formation on its side",
+    22408
+   ],
+   [
+    "nearest <3",
+    8007
+   ]
+  ],
+  "defenceByLoser": [
+   [
+    "scenario: nearest 40+",
+    543427
+   ],
+   [
+    "scenario: none on the landmass",
+    107978
+   ],
+   [
+    "scenario: nearest 15-40",
+    101705
+   ],
+   [
+    "scenario: nearest 6-15",
+    58960
+   ],
+   [
+    "scenario: nearest 3-6",
+    37875
+   ],
+   [
+    "founded: nearest 40+",
+    27148
+   ],
+   [
+    "founded: no land formation on its side",
+    14039
+   ],
+   [
+    "founded: nearest 15-40",
+    8765
+   ],
+   [
+    "scenario: no land formation on its side",
+    8369
+   ],
+   [
+    "founded: nearest 6-15",
+    7581
+   ],
+   [
+    "scenario: nearest <3",
+    6799
+   ],
+   [
+    "founded: nearest 3-6",
+    5477
+   ],
+   [
+    "founded: nearest <3",
+    1208
+   ],
+   [
+    "founded: none on the landmass",
+    967
+   ]
+  ]
+ }
+}

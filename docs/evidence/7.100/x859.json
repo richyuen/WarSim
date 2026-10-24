@@ -1,0 +1,501 @@
+{
+ "seed": 859,
+ "years": 12,
+ "from": 10,
+ "walks": 176784,
+ "perYear": [
+  {
+   "year": 10,
+   "walkIn": 54038,
+   "battle": 558,
+   "revolt": 11134,
+   "peace": 6095
+  },
+  {
+   "year": 11,
+   "walkIn": 58866,
+   "battle": 395,
+   "revolt": 19654,
+   "peace": 5242
+  },
+  {
+   "year": 12,
+   "walkIn": 63880,
+   "battle": 500,
+   "revolt": 59633,
+   "peace": 5191
+  }
+ ],
+ "tables": {
+  "loser": [
+   [
+    "scenario",
+    151302
+   ],
+   [
+    "scenario puppet",
+    19407
+   ],
+   [
+    "founded",
+    4784
+   ],
+   [
+    "founded puppet",
+    1291
+   ]
+  ],
+  "loserCells": [
+   [
+    "50k+",
+    83827
+   ],
+   [
+    "1k-10k",
+    47780
+   ],
+   [
+    "10k-50k",
+    38739
+   ],
+   [
+    "<1k",
+    6438
+   ]
+  ],
+  "loserArmy": [
+   [
+    "1-4",
+    79033
+   ],
+   [
+    "0",
+    43670
+   ],
+   [
+    "5-19",
+    41141
+   ],
+   [
+    "20-59",
+    9305
+   ],
+   [
+    "60+",
+    3635
+   ]
+  ],
+  "taker": [
+   [
+    "scenario",
+    175209
+   ],
+   [
+    "founded",
+    1575
+   ]
+  ],
+  "cell": [
+   [
+    "loser's own",
+    171435
+   ],
+   [
+    "taker's own (taken back)",
+    5346
+   ],
+   [
+    "a third's, held by the loser",
+    3
+   ]
+  ],
+  "lastChange": [
+   [
+    "none since 1938",
+    135109
+   ],
+   [
+    "revolt 30d-1y",
+    23570
+   ],
+   [
+    "walkIn 30d-1y",
+    5619
+   ],
+   [
+    "revolt <30d",
+    2940
+   ],
+   [
+    "revolt >1y",
+    2928
+   ],
+   [
+    "walkIn <30d",
+    2281
+   ],
+   [
+    "peace >1y",
+    1822
+   ],
+   [
+    "walkIn >1y",
+    1504
+   ],
+   [
+    "peace 30d-1y",
+    547
+   ],
+   [
+    "battle <30d",
+    314
+   ],
+   [
+    "peace <30d",
+    109
+   ],
+   [
+    "battle 30d-1y",
+    35
+   ],
+   [
+    "landing 30d-1y",
+    4
+   ],
+   [
+    "puppet 30d-1y",
+    2
+   ]
+  ],
+  "pair": [
+   [
+    "GER on SOV",
+    33974
+   ],
+   [
+    "USA on CAN",
+    27613
+   ],
+   [
+    "JAP on SOV",
+    10085
+   ],
+   [
+    "GER on FRA",
+    8148
+   ],
+   [
+    "GER on ENG",
+    8029
+   ],
+   [
+    "GER on SUD",
+    6096
+   ],
+   [
+    "GER on ITA",
+    5819
+   ],
+   [
+    "GER on BCO",
+    5581
+   ],
+   [
+    "GER on POR",
+    4252
+   ],
+   [
+    "USA on MEX",
+    4177
+   ],
+   [
+    "USA on SOV",
+    3852
+   ],
+   [
+    "ENG on MEX",
+    3401
+   ],
+   [
+    "USA on FRA",
+    3175
+   ],
+   [
+    "GER on IRN",
+    2603
+   ],
+   [
+    "JAP on SIN",
+    2056
+   ],
+   [
+    "ITA on ENG",
+    2020
+   ],
+   [
+    "ENG on ITA",
+    1764
+   ],
+   [
+    "NFL on CAN",
+    1752
+   ],
+   [
+    "RAJ on SIA",
+    1569
+   ],
+   [
+    "GER on JAP",
+    1485
+   ],
+   [
+    "JAP on #124",
+    1446
+   ],
+   [
+    "SOV on SIN",
+    1336
+   ],
+   [
+    "GER on IRQ",
+    1315
+   ],
+   [
+    "RAJ on FRA",
+    1259
+   ],
+   [
+    "USA on NSP",
+    1246
+   ]
+  ],
+  "loserWars": [
+   [
+    "0-4: at war with 4+",
+    117202
+   ],
+   [
+    "5-19: at war with 4+",
+    40693
+   ],
+   [
+    "20+: at war with 4+",
+    12727
+   ],
+   [
+    "0-4: at war with 2-3",
+    5475
+   ],
+   [
+    "5-19: at war with 2-3",
+    444
+   ],
+   [
+    "20+: at war with 1",
+    189
+   ],
+   [
+    "0-4: at war with 1",
+    26
+   ],
+   [
+    "20+: at war with 2-3",
+    24
+   ],
+   [
+    "5-19: at war with 1",
+    4
+   ]
+  ],
+  "nearestDoing": [
+   [
+    "15+ marching to its side",
+    47876
+   ],
+   [
+    "15+ marching on an enemy cell",
+    39296
+   ],
+   [
+    "15+ standing",
+    38710
+   ],
+   [
+    "<15 marching to its side",
+    4886
+   ],
+   [
+    "15+ engaged",
+    3035
+   ],
+   [
+    "<15 marching on an enemy cell",
+    2773
+   ],
+   [
+    "15+ retreat",
+    1440
+   ],
+   [
+    "<15 retreat",
+    1118
+   ],
+   [
+    "<15 engaged",
+    882
+   ],
+   [
+    "<15 standing",
+    601
+   ]
+  ],
+  "armyByDefence": [
+   [
+    "0-4: 60+",
+    70870
+   ],
+   [
+    "0-4: none on the landmass",
+    30017
+   ],
+   [
+    "5-19: 60+",
+    29156
+   ],
+   [
+    "0-4: 15-60 (deploy range)",
+    12497
+   ],
+   [
+    "5-19: 15-60 (deploy range)",
+    7815
+   ],
+   [
+    "20+: 60+",
+    7662
+   ],
+   [
+    "0-4: <15",
+    5485
+   ],
+   [
+    "0-4: no side army",
+    3834
+   ],
+   [
+    "20+: <15",
+    2906
+   ],
+   [
+    "20+: 15-60 (deploy range)",
+    2357
+   ],
+   [
+    "5-19: none on the landmass",
+    2301
+   ],
+   [
+    "5-19: <15",
+    1869
+   ],
+   [
+    "20+: none on the landmass",
+    15
+   ]
+  ],
+  "defence": [
+   [
+    "nearest 40+",
+    118039
+   ],
+   [
+    "none on the landmass",
+    32333
+   ],
+   [
+    "nearest 15-40",
+    12318
+   ],
+   [
+    "nearest 6-15",
+    5654
+   ],
+   [
+    "nearest 3-6",
+    3911
+   ],
+   [
+    "no land formation on its side",
+    3834
+   ],
+   [
+    "nearest <3",
+    695
+   ]
+  ],
+  "defenceByLoser": [
+   [
+    "scenario: nearest 40+",
+    115013
+   ],
+   [
+    "scenario: none on the landmass",
+    32333
+   ],
+   [
+    "scenario: nearest 15-40",
+    11962
+   ],
+   [
+    "scenario: nearest 6-15",
+    5247
+   ],
+   [
+    "scenario: nearest 3-6",
+    3621
+   ],
+   [
+    "founded: nearest 40+",
+    3026
+   ],
+   [
+    "scenario: no land formation on its side",
+    1923
+   ],
+   [
+    "founded: no land formation on its side",
+    1911
+   ],
+   [
+    "scenario: nearest <3",
+    610
+   ],
+   [
+    "founded: nearest 6-15",
+    407
+   ],
+   [
+    "founded: nearest 15-40",
+    356
+   ],
+   [
+    "founded: nearest 3-6",
+    290
+   ],
+   [
+    "founded: nearest <3",
+    85
+   ]
+  ],
+  "nearestAttacking": [
+   [
+    "the taker",
+    4363
+   ],
+   [
+    "another enemy",
+    859
+   ]
+  ]
+ }
+}

@@ -23105,3 +23105,26 @@ No rule changed and nothing on screen changed. One task came out of it.
   closed not done; (b) plus a task for a defence that rises against a raid (recommended); (c) the rule anyway.
 - **No rule;** the pin unchanged (7c2e4700).
 - **Next:** PLAN 7.100 (it does not wait on ADR-672).
+
+## 2026-10-23 — ADR-672 b (the user's decision; documents)
+
+- **7.99** closed not done; **PLAN 7.101** filed: a defence that rises against a raid (a fighter wing at an
+  airbase with no mission takes off against an enemy sortie in its reach; 7.99's sweep kept to manned
+  enemy airbases and fleets). AT: the tenth on 10 unseen seeds × 20 years, half the sweeps meeting a
+  defender.
+- No rule; the pin unchanged (7c2e4700).
+
+## 2026-10-23 — PLAN 7.100: the walk-ins are the price of a division; the cadre rule misses (ADR-673 to the user)
+
+- **Read** (`docs/evidence/7.100/read.md`; `tools/diag/walkIns.ts`, new, wraps `setController` on the
+  instance, counts match `churnAt.ts` to the cell; 856 and 859 × 30 years): walk-ins are big scenario
+  nations' own land; in 65–69 % the loser has 0–4 divisions, at war with 4+; its side's nearest division
+  40+ cells off in 61–66 %. `armyGates.ts` at year 10: 91 of 101 such nations stopped by the infantry
+  division's 1,001 gold.
+- **Rule tried** (`rule.patch`): at war, an unaffordable order falls to the cadre division. Same seeds
+  from year 10, 3 years: front battles ×1.3, ×2.0. Gate green (pin f9d18365).
+- **AT** (`at.md`, 861–870 × 30, `churnAt.ts`): share 1.85 % pooled (bar 1.96 %); stasis 22 (864) and 17
+  (868), Denmark at war and untouched in both. Missed; BLOCKERS entry; ADR-673: (a) commit; (b) HEAD
+  control on 861–870 first (recommended); (c) drop.
+- **No rule;** the code restored, the pin unchanged (7c2e4700).
+- **Next:** PLAN 7.101 (7.100 waits on ADR-673).

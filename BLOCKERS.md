@@ -5,7 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.99: the sweeps at the enemy's air meet nothing, battles late 0.074 → 0.082 on two seeds (2026-10-23, ADR-672 proposed; the user's decision)
+### PLAN 7.100: the cadre division at war, battle share 1.85 % against 1.96 %, two stases over 15 years (2026-10-23, ADR-673 proposed; the user's decision)
+- **The bar:** on 10 unseen seeds × 30 years the front battle's share in years 10–30 at least 1.96 % pooled,
+  no stasis over 15 years.
+- **What moved** (`docs/evidence/7.100/at.md`, 861–870): with the rule (`rule.patch`) 1.85 % pooled; stasis
+  864 22 years, 868 17 (Denmark at war, untouched). Same seeds from year 10: front battles ×1.3 and ×2.0.
+- **What is left:** the user's (ADR-673): (a) commit the rule; (b) a HEAD control on 861–870 first, then
+  commit or drop (recommended); (c) drop it. 7.100 closed not done in each. The code restored; the pin
+  unchanged (7c2e4700).
+
+### RESOLVED 2026-10-23 (option b, the user's decision: 7.99 closed not done, PLAN 7.101 for a defence that rises) · PLAN 7.99: the sweeps at the enemy's air meet nothing, battles late 0.074 → 0.082 on two seeds (ADR-672)
 - **The bar:** on 10 unseen seeds × 20 years air battles a year in years 2–20 at least a tenth of year 1's.
 - **What moved** (`docs/evidence/7.99/read.md`): the rule tried on 871–872 × 20 years against HEAD, 0.074 →
   0.082 pooled, sorties aloft late +40–55 %; of 120,472 sweep sorties in years 2–10, 1.0 % near any air

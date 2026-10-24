@@ -14858,3 +14858,28 @@ Of 7.33 (open in PLAN.md):
   7.82's AT read again (`docs/evidence/7.82/at.md`, last section; 851–860 × 30 years): stasis over 15
   years on 0 of 10 (856 at 15), met; battle share 1.67 % (bar 1.96 %), missed. No rule. Closed not done (2026-10-23, the user's
   decision: ADR-671 b); the share is PLAN 7.100.
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.99 An air war beyond the land war (found at 7.85; aircraft 7, needs 8; ADR-668 b, 7.51b's (c)):
+  air battles in years 2–20 0.066 of year 1's on 871–880, the air war flying only at enemy land forces in
+  range (ADR-377), so it stands where the late land war stands. Rule: a nation at war whose wings have no
+  enemy land formation in range flies them at the enemy's airbases (or its fleets at sea) within their
+  range. Read first on two of 871–880 how many wings at war stand with nothing in range and what of the
+  enemy's lies within their range (ADR-520 measured patrols over home as meeting little). AT: on 10 unseen
+  seeds × 20 years (881–890, `airLate.ts`) air battles a year in years 2–20 at least a tenth of year 1's;
+  engaged per war in years 2–20 not below HEAD's on the same seeds; a unit test, red without; the ADR;
+  the pin's entry. Read 2026-10-23 (`docs/evidence/7.99/read.md`): the rule's sorties meet nothing (1.0 %
+  near an air battle); no rule. Closed not done (ADR-672 b, the user's decision, 2026-10-23): PLAN 7.101.

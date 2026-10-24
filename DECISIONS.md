@@ -167,7 +167,37 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-672 · 2026-10-23 · proposed (the user's decision) — An air war at the enemy's air: the sorties meet nothing without a defence that rises (PLAN 7.99)
+### ADR-673 · 2026-10-23 · proposed (the user's decision) — The cadre division at war: more front battles, the bar missed (PLAN 7.100)
+
+- **Context** (`docs/evidence/7.100/read.md`, `at.md`). PLAN 7.100 (ADR-671 b): the front battle's share of
+  the cells changing hands in years 10–30 at least 1.96 % on 10 unseen seeds × 30 years, no stasis over
+  15 years. Read first on 856 and 859 where the walk-ins come from (`tools/diag/walkIns.ts`, new).
+- **Read:** the walk-ins are big scenario nations' own land (92–93 % the loser's own cells, 69–70 % of
+  losers with 10k cells or more), not statelets or fresh revolt land. In 65–69 % the loser has 0–4 land
+  divisions, at war with 4 nations or more; its side's nearest division 40+ cells off in 61–66 %. Of the
+  101 nations at war with 0–4 divisions in year 10 (`armyGates.ts`), 91 are stopped by gold: the
+  infantry division's 1,001 gold against treasuries of 200–1,000 (France 880, income 288, army 15 % of
+  it), as the at-war refills spend each month's surplus (ADR-514). Moving armies cannot front a nation
+  that has none.
+- **The rule, tried** (`rule.patch`: at war, an order the treasury cannot pay for falls to the cadre
+  division where it can pay for that; two tests changed to the new case, one added, red without; pin
+  7c2e4700 → f9d18365). Same seeds, from the year-10 states, three years: front battles ×1.3 (856) and
+  ×2.0 (859). The AT on 861–870: share **1.85 %** pooled (1.45–2.63), stasis over 15 years on **2 of 10**
+  (864 22 years, 868 17), both with Denmark in the five at war and untouched (7.82c's remnant, ADR-669 a).
+  HEAD's 1.67 % was on 851–860: no control on 861–870.
+- **Options:**
+  - **(a)** Commit the rule (it adds front battles where the read said it would), 7.100 closed not done;
+    the share and the stasis to the next critic report.
+  - **(b)** Run HEAD on 861–870 first (about 70 minutes) as the control: commit the rule if the share
+    with it is above HEAD's on the same seeds and the stasis no worse, else drop it; 7.100 closed not
+    done either way.
+  - **(c)** Drop the rule; 7.100 closed not done.
+- **Recommended: (b).** The same-seed A/B covers three years of two seeds; the AT's seeds have no HEAD
+  run, so whether the 1.85 % is the rule's or the seeds' is unread, and 2 stases over 15 on 861–870
+  against 0 on 851–860 may be either. The control settles both for one run.
+- **Consequences:** until decided, no rule; the pin unchanged (7c2e4700).
+
+### ADR-672 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — An air war at the enemy's air: the sorties meet nothing without a defence that rises (PLAN 7.99)
 
 - **Context** (`docs/evidence/7.99/read.md`). PLAN 7.99 (ADR-668 b): a wing at war with no enemy land
   formation in range flies at the enemy's airbases or fleets within its range; AT on 10 unseen seeds × 20
@@ -198,7 +228,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   with a scramble is a fight each time. By the read, manned bases in range of 0.7–4 idle wings a day late
   would give some 250–1,500 fights a year at one a sortie, against the ~130 a year more the pooled bar
   needs over HEAD on these seeds (871 alone ~260). (c) adds sorties ADR-520 calls flying for the count.
-- **Consequences:** until decided, no rule; the pin unchanged (7c2e4700). The loop takes PLAN 7.100.
+- **Consequences:** no rule; the pin unchanged (7c2e4700). 7.99 closed not done; PLAN 7.101 filed (a
+  defence that rises against a raid, the sweep kept to manned enemy airbases and fleets).
 
 ### ADR-671 · 2026-10-23 · accepted, option b (the user's decision, 2026-10-23) — Emergent dynamics: the stasis gone, the front battle's share under its bar (PLAN 7.82's AT on 851–860)
 

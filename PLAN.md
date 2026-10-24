@@ -40,17 +40,6 @@ Run 12's (report of 2026-10-22 on `896ff779`, `critic/CRITIC_REPORT.md`; R11-B2 
 and performance 7 → 6): R12-B1 and R12-B2 are PLAN 7.79 and 7.80; the dimensions under the bar, beyond
 them, are 7.81–7.86. A task each, split when taken up:
 
-- [ ] 7.99 An air war beyond the land war (found at 7.85; aircraft 7, needs 8; ADR-668 b, 7.51b's (c)):
-  air battles in years 2–20 0.066 of year 1's on 871–880, the air war flying only at enemy land forces in
-  range (ADR-377), so it stands where the late land war stands. Rule: a nation at war whose wings have no
-  enemy land formation in range flies them at the enemy's airbases (or its fleets at sea) within their
-  range. Read first on two of 871–880 how many wings at war stand with nothing in range and what of the
-  enemy's lies within their range (ADR-520 measured patrols over home as meeting little). AT: on 10 unseen
-  seeds × 20 years (881–890, `airLate.ts`) air battles a year in years 2–20 at least a tenth of year 1's;
-  engaged per war in years 2–20 not below HEAD's on the same seeds; a unit test, red without; the ADR;
-  the pin's entry. Read 2026-10-23 (`docs/evidence/7.99/read.md`): the rule's sorties meet nothing (1.0 %
-  near an air battle); no rule; waits on ADR-672.
-
 - [ ] 7.100 Fronts, not walk-ins (found at 7.82; emergent 6, needs 7; ADR-671 b): on 851–860 × 30 years
   the front battle 1.67 % of the cells changing hands in years 10–30, walk-ins 57 %, revolts 30 %
   (`docs/evidence/7.82/at.md`, last section); the critic's "statelets and walk-ins, not fronts". Read
@@ -59,6 +48,20 @@ them, are 7.81–7.86. A task each, split when taken up:
   them; then a rule on what it names. AT: on 10 unseen seeds × 30 years (861 on, `churnAt.ts`) the front
   battle's share in years 10–30 at least 1.96 % pooled and no stasis over 15 years; a unit test, red
   without; the ADR; the pin's entry.
+  Read 2026-10-23 (`docs/evidence/7.100/read.md`): 91 of 101 nations at war with 0–4 divisions stopped by
+  the infantry division's price. Rule tried (`rule.patch`, the cadre division at war): AT on 861–870 1.85 %,
+  stasis 22 and 17 on two seeds (`at.md`); missed; waits on ADR-673.
+
+- [ ] 7.101 A defence that rises against a raid (found at 7.99; aircraft 7, needs 8; ADR-672 b): after year 1
+  82–90 % of the idle wings at war have nothing of the enemy in range, and of 120,472 sweep sorties over
+  the enemy's airbases (7.99's rule, `docs/evidence/7.99/rule.patch`) 1.0 % came within 150 km of an air
+  battle: nothing on the ground takes off against a raid. Rule: a fighter wing at an airbase with no
+  mission takes off against an enemy sortie that comes within its reach (it flies only when there is
+  something to meet), with 7.99's sweep kept to manned enemy airbases and fleets (no flights to empty
+  bases). Read first on 871–872 how many sweeps it turns into fights. AT: on 10 unseen seeds × 20 years
+  (891 on, `airLate.ts`) air battles a year in years 2–20 at least a tenth of year 1's, at least half of the
+  sweep sorties meeting a defender (`airSweeps.ts`), engaged per war in years 2–20 not below HEAD's on the
+  same seeds; a unit test, red without; the ADR; the pin's entry.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
@@ -378,3 +381,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.95 A warship's saving in a land war (found at 7.84d; naval 7, needs 8; ADR-656 b, the user's […]
 - [x] 7.85 Aircraft (aircraft 7, needs 8): air battles after year 1 153 a world-year against 2,853 in year 1 […]
 - [x] 7.82 Emergent dynamics (emergent 6, needs 7, beyond R12-B1 and R12-B2): the longest stasis 21 […]
+- [x] 7.99 An air war beyond the land war (found at 7.85; aircraft 7, needs 8; ADR-668 b, 7.51b's (c)): […]
