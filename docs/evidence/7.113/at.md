@@ -123,3 +123,18 @@ Strikes end almost no contact (68 and 49 of ~15,000), and there are fewer of the
 the air). Contacts are as many and shorter (28.9 → 21.7 hours), ending as formations come apart. No mechanism of the
 air war's lowers the land war here; the histories part from year 1 (who fights whom), which a 20-year comparison
 by seed cannot tell from a rule's effect.
+
+## Paired from one state (`fromY1/`; HEAD's year-1 saves of 951–960, `npm run sim -- --save`; 2 years each arm, `airLate.ts` with LOAD)
+
+| | year 2 HEAD | 0.035 | year 3 HEAD | 0.035 |
+|---|---|---|---|---|
+| wings | 122.8 | 129.5 | 107.1 | 134.4 |
+| air battles | 819 | 832 | 329 | 570 |
+| land formations engaged | 6.27 | 6.07 | 4.41 | 4.59 |
+| engaged per war | 0.794 | 0.765 | 0.583 | 0.606 |
+| wars | 7.65 | 7.69 | 7.82 | 7.86 |
+
+From the same world the rule leaves the land war as it was: engaged per war over the two years 0.689 and 0.686, five
+seeds up and five down; wings +26 % and air battles +73 % by year 3. The 20-year AT's miss on that clause is the
+histories parting from year 1, not the rule's effect over two years. Its effect over longer (as the wings grow to 265)
+is not read paired.

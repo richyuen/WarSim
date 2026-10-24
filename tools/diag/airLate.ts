@@ -7,8 +7,9 @@
  * against year 1's (bar: at least a tenth), on PLAN 7.49's unseen seeds 7401–7410.
  *
  * Usage: npx tsx tools/diag/airLate.ts <seed> [years = 20] [out = .cache/airLate_<seed>.json]
+ *   LOAD=<save.bin>: from that checkpoint instead of 1938 (PLAN 7.113); its years count on from there.
  */
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { EventKind } from '../../src/shared/events';
@@ -18,6 +19,7 @@ const seed = Number(process.argv[2]);
 const years = Number(process.argv[3] ?? 20);
 const out = process.argv[4] ?? `.cache/airLate_${seed}.json`;
 const s = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SIZE_1938.w) });
+if (process.env.LOAD) s.load(new Uint8Array(readFileSync(process.env.LOAD)));
 const w = s.world;
 const rows: { year: number; airBattles: number; aloft: number; wars: number; wings: number; engaged: number; perWar: number }[] = [];
 for (let y = 1; y <= years; y++) {

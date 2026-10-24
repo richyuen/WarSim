@@ -23406,3 +23406,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **How contact ends** (`tools/diag/contactEnds.ts`, new; 951 years 2–8): strikes end almost none (68 and 49 of ~15,000
   contacts) and are fewer under 0.035; contacts are as many and shorter. No air mechanism found; the land-war bar may
   have been missed by the histories parting from year 1. Next: both arms from HEAD's year-1 saves of 951–960.
+- **Paired from HEAD's year-1 saves** (951–960, 2 years each arm, `docs/evidence/7.113/at.md` last section): engaged per
+  war 0.689 HEAD, 0.686 under 0.035 (5 up, 5 down); wings +26 %, air battles +73 % by year 3. The AT's land-war miss is
+  the histories' drift, over two years at least. `airLate.ts` takes LOAD.
