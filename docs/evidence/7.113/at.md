@@ -104,3 +104,22 @@ Not money: the armies are as large or larger (men +5–16 %). Contact falls by t
 the same size, at war as often, its air force × 4) and by a third elsewhere. The air war thins the land war where it is
 heavy, as 7.108b's strikers did (`docs/evidence/7.108b/read.md` §3). What a strike does to a formation in contact is
 not read.
+
+## How contact ends (`tools/diag/contactEnds.ts`, `ends/`; 951, years 2–8, HEAD and 0.035)
+
+| | HEAD | 0.035 |
+|---|---|---|
+| land formation-hours in contact | 429,561 | 342,599 |
+| contacts ended | 14,880 | 15,771 |
+| — destroyed, struck in the last 24 hours | 68 | 49 |
+| — destroyed otherwise | 254 | 272 |
+| — retreating | 5,000 | 4,184 |
+| — out of contact otherwise | 9,558 | 11,266 |
+| strikes on formations in contact | 37,063 | 15,322 |
+| strikes behind the front | 166,537 | 103,920 |
+| air battles | 1,521 | 2,407 |
+
+Strikes end almost no contact (68 and 49 of ~15,000), and there are fewer of them under the rule (its wings fight in
+the air). Contacts are as many and shorter (28.9 → 21.7 hours), ending as formations come apart. No mechanism of the
+air war's lowers the land war here; the histories part from year 1 (who fights whom), which a 20-year comparison
+by seed cannot tell from a rule's effect.

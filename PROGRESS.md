@@ -23403,3 +23403,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Where the loss is** (`tools/diag/landNations.ts`, new; 951–952 under 0.035): the armies as large or larger (men
   +5–16 %); engaged falls two thirds in the USA's wars (its air force × 4) and a third elsewhere: the air war thins the
   land war, not its cost. What a strike does to a formation in contact is next to read.
+- **How contact ends** (`tools/diag/contactEnds.ts`, new; 951 years 2–8): strikes end almost none (68 and 49 of ~15,000
+  contacts) and are fewer under 0.035; contacts are as many and shorter. No air mechanism found; the land-war bar may
+  have been missed by the histories parting from year 1. Next: both arms from HEAD's year-1 saves of 951–960.
