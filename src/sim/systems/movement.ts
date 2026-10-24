@@ -379,15 +379,18 @@ export function snapTarget(world: World, origin: number, tx: number, ty: number)
   const from = comp[origin]!;
   const target = ty * w + tx;
   if (from !== 0 && comp[target] === from) return target;
-  // By landmass and target: the land does not change, and a planner asks again every day.
-  let snaps = SNAPS.get(grid);
-  if (!snaps) SNAPS.set(grid, (snaps = new Map()));
-  const key = from * w * h + target;
-  let to = snaps.get(key);
-  if (to === undefined) snaps.set(key, (to = nearestCellWhere((k) => comp[k] !== 0 && comp[k] === from, tx + 0.5, ty + 0.5, w, h, world.atSize(TARGET_SNAP_CELLS), world.settings.loopingMap)));
+  // By landmass and then target: the land does not change, and a planner asks again every day. Two
+  // maps of small integers (PLAN 7.111): one key of landmass × cells went past them, and its lookup
+  // was the function's time.
+  let byLand = SNAPS.get(grid);
+  if (!byLand) SNAPS.set(grid, (byLand = new Map()));
+  let snaps = byLand.get(from);
+  if (!snaps) byLand.set(from, (snaps = new Map()));
+  let to = snaps.get(target);
+  if (to === undefined) snaps.set(target, (to = nearestCellWhere((k) => comp[k] !== 0 && comp[k] === from, tx + 0.5, ty + 0.5, w, h, world.atSize(TARGET_SNAP_CELLS), world.settings.loopingMap)));
   return to;
 }
-const SNAPS = new WeakMap<object, Map<number, number>>();
+const SNAPS = new WeakMap<object, Map<number, Map<number, number>>>();
 
 /**
  * Applies a move order; returns false (and emits MoveRejected) when no land route exists that

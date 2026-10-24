@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-694 · 2026-10-24 · accepted — PLAN 7.111's AT restated to HEAD after ADR-693 (b): the same cut, the new hash
+
+- **Context.** PLAN 7.111's AT (ADR-680 a/b) reads year 21 of 4877 from `critic/c13_seed4877_y20.bin` at most 3.9
+  ms a tick with its hash 6d6103a7: 0.32 ms under that day's HEAD (4.22–4.26). ADR-693 (b) committed ADR-692's rule
+  (a quarter of a strike's fire on a land formation out of contact): more formations live, year 21's hash is
+  dba7fdae, and HEAD reads 4.43 and 4.46 (`npm run sim -- --affinity 0xFFFF --profile`).
+- **Decision.** The AT is the same cut from today's HEAD: year 21 at most 4.12 ms a tick, twice (HEAD 4.44 less
+  0.32), its hash dba7fdae and the pin unchanged; the gate green. Each cut is shown by `snapTarget`'s,
+  `sectorShape`'s or `industryHeld`'s time in a `--cpu-prof` of the year (an esbuild bundle of the CLI, both bundles
+  at once on 0x0F00): paired reads of the whole tick swing ±5 % on untouched systems, more than a cut.
+- **Note.** ADR-680 sized the three cuts at about 0.18 ms together (0.1, 0.05, 0.03); the restated bar may be
+  missed even so, and a miss goes to BLOCKERS (step 8). The bar is not lowered to the sizing.
+
 ### ADR-693 · 2026-10-24 · accepted, option b (the user's decision, 2026-10-24) — The threatened sectors manned one each before a second, with ADR-692's strike rule: the AT missed (PLAN 7.115)
 
 - **Context** (`docs/evidence/7.115/at.md`). With ADR-692's rule (a quarter of a strike's fire on a land formation out
