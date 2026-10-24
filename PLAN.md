@@ -44,6 +44,71 @@ Found by `npm run check:review` before critic run 13 (2026-10-24; ADR-675, ADR-6
 green here at `896ff779` and red at `9ffb0274` on what they claim, taken off `tools/gate/knownRed.json`
 (BLOCKERS). The critic waits on them (PROMPT step 2a):
 
+Run 13's (report of 2026-10-24 on `0c80db1e`, `critic/CRITIC_REPORT.md`; R12-B2 no longer blocking by
+ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the dimensions under the bar,
+beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
+reused:
+
+- [ ] 7.104 The land war after year 1, a third time (R13-B1; R12-B1 improved by 7.79, not fixed; carries
+  emergent 6): on run 12's 32 seeds, engaged land formations a war a day after year 1 0.34 → 0.57 against
+  5.16 in year 1 (11 %); all engaged after year 1 4.15 a day against 40.3; at the year-10/20 checkpoints
+  4.09 engaged of about 439 formations of nations at war, 10 of 64 checkpoints with nobody in contact.
+  In the page: 4877 year 20, 0–4 engaged over 60 days with 7 wars; 7019 year 20, 0 in 5 of 7 samples
+  with 6 wars; 40 US divisions (367,096 men) idle at war on 8693. Formations under 500 men at year 20
+  36 → 64 a world ("Heavy armoured division 708: 2 men"). Evidence: `critic/c13_cmp_checkpoints.json`,
+  `c13_cmp_all.txt`, `c13_y2_4877_y20.json`, `c13_y2_7019_y20.json`, `c13_stacks_y10_w1.json`. The
+  critic's fix: the armies are there but stand idle or arrive hollow; raise contact per war after year 1
+  toward a real fraction of year 1's. Measure first, on a late save of 4877 and 7019 (HEAD's code), why
+  a nation at war with free formations has none in contact: idle with no plan, planned to no threatened
+  sector, or sent hollow. AT: on 10 unseen seeds × 20 years against HEAD read on the same seeds first,
+  engaged land formations a war, mean of daily samples in years 2–20, at least 0.15 of year 1's (HEAD on
+  run 12's seeds 0.11); land formations under 500 men at year 20 not above HEAD's; a unit test, red
+  without; the gate green.
+- [ ] 7.105 Performance (performance 5, needs 7): the late game at Max 46.3, 59.4, 59.4 s a game year
+  (4877 from year 20) against 23.2, 32.2, 28.1 s on `896ff779`, same session; headless year 21 of 4877
+  4.42 ms a tick (1.82), the operational AI 2.04 ms of it (0.54), the invasion AI 0.36 (0.09), p95 26.2
+  ms; the world flips 89,542 cells in the year (20,708); seed 99 2.54–2.58 ms (1.79). The cost per cell
+  flipped is not higher (ADR-654 a: the budget counts the rules' cost); ADR-666 a sent the felt speed to
+  this report. Evidence: `critic/c13_l_4877_alone.json`, `c13o_l_4877.json`, `c13_perf_4877_y21_head.log`,
+  `c13_perf_seed99_5y_head1.log`. Measure first, `--profile` on a late year (HEAD's year-20 save of a seed
+  run to it here, its year 21), which systems carry the tick, and the page's cost over the headless tick
+  at Max. AT: that late year's mean tick at most 3.0 ms headless pinned on 0xFFFF, twice; engaged land
+  formations a war in that year not below HEAD's; a rule that changes an outcome has its own ADR (ADR-666
+  b's fewer searches is one candidate); the gate green.
+- [ ] 7.106 Emergent dynamics (emergent 6, needs 7, beyond R13-B1): on the same 32 seeds the churn grew
+  in statelets: revolts 125 → 195 a world, founded nations alive at year 30 23 → 37, "Land handed over"
+  1,075 rows in 3 late years of 4877. The longest stasis 22 → 25 years (3491) is noted, not scored
+  (ADR-673). Evidence: `critic/c13_cmp_all.txt`, `c13_l_4877.json`. Measure first what founds the
+  statelets that live (revolt, revival, release, God none) and why they last. AT: on 10 unseen seeds × 30
+  years against HEAD on the same seeds, founded nations alive at year 30 at most 0.75 of HEAD's, and the
+  land moved in the last five years not below 0.9 of HEAD's; a unit test, red without; the gate green.
+- [ ] 7.107 Naval (naval 7, needs 8): the late sea war is a sixth of year 1's (57.6 battles in year 1,
+  9.4 a world-year after); sea battles that sink nothing 3.6 % → 7.2 %; a carrier strike is three
+  silhouettes over two counters on open sea. Evidence: `critic/c13_cmp_all.txt`,
+  `c13n4_8693_rowless_clicked.png`. Measure first, on a late save, where the fleets of nations at war at
+  sea are and why they do not meet. AT: on 10 unseen seeds × 20 years against HEAD on the same seeds,
+  sea battles a world-year after year 1 at least 1.3 × HEAD's, and battles sinking nothing at most 4 %;
+  a unit test, red without; the gate green.
+- [ ] 7.108 Aircraft (aircraft 7, needs 8): air battles after year 1 155 → 121 a world-year on the same
+  seeds (year 1 2,868 → 2,599); the wheel zoom ends on three plane silhouettes about 140 px wide at 3
+  m/px, larger than a company. Evidence: `critic/c13_cmp_all.txt`, `critic/shots/c13z_5861_17.png`.
+  In two parts: (a) the planes at close zoom drawn at their scale: AT, an e2e spec, red before, a plane
+  at 3 m/px no wider on screen than its wingspan at that scale (bar 1.5 ×); (b) the late air war: AT, on
+  10 unseen seeds × 20 years, air battles a world-year after year 1 at least 1.25 × HEAD's on the same
+  seeds; a unit test, red without; the gate green.
+- [ ] 7.109 AI nuclear use (aiNukes 7, needs 8): of two AI strikes a day apart (1129 year 15: the UK on a
+  US army near Molepolole on 25 October 1952, the US on London on 26 October) only the second gets an
+  alert banner, and at Max the pause comes on 1 November, 155 game hours after the first; the answer in
+  kind lands on a capital (London, 248,000 civilians and 160 men, for 67,951 US soldiers); the largest
+  burst 3,125,000 civilians for 2,032 men (7583, year 26). Evidence: `critic/c13_np_1129.json`,
+  `critic/shots/c13np_1129_paused.png`, `c13_f_1129.json`, `c13_cmp_all.txt`. In two parts: (a) every AI
+  strike gets its banner, and the pause at Max comes on the strike's day: AT, an e2e spec, red before,
+  two AI strikes within a day each shown in a banner of its own and the game paused within 24 game hours of the first;
+  (b) an answer in kind weighed against the strike it answers (a city for an army only when nothing of
+  the striker's forces is worth the warhead): AT, on 10 unseen seeds × 30 years, bursts killing over ten
+  times more civilians than men at most 0.75 of HEAD's on the same seeds; a unit test, red without; the
+  gate green.
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

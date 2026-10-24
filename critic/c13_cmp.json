@@ -1,0 +1,393 @@
+{
+ "c12_same": {
+  "worlds": 32,
+  "worldsWithBurst": 31,
+  "bursts": 642,
+  "burstsPerWorld": 20.1,
+  "sea1": 52.4,
+  "seaLatePerWorldYear": 9.04,
+  "seaLateZeroShare": 3.6,
+  "air1": 2868,
+  "eng1": 33.71,
+  "engLate": 2.11,
+  "engLateShareOfLandAtWarPct": 0.6,
+  "airLate": 155,
+  "aloftLate": 10.9,
+  "stasisMax": 22,
+  "stasisOver20": 3,
+  "stasis": [
+   10,
+   16,
+   6,
+   9,
+   21,
+   12,
+   12,
+   6,
+   10,
+   8,
+   8,
+   12,
+   21,
+   9,
+   6,
+   20,
+   9,
+   5,
+   6,
+   20,
+   9,
+   15,
+   6,
+   9,
+   14,
+   7,
+   6,
+   18,
+   12,
+   12,
+   8,
+   22
+  ],
+  "living": [
+   77,
+   118
+  ],
+  "founded": [
+   9,
+   43
+  ],
+  "late5flip": [
+   9.1,
+   59.0
+  ],
+  "warsLateMean": 6.96,
+  "worldYearsLe1War": 22,
+  "civOver10x": 143,
+  "livingFoundedTinyMean": {
+   "10": [
+    91.3,
+    15.2,
+    27.6
+   ],
+   "20": [
+    95.2,
+    20.9,
+    29.8
+   ],
+   "30": [
+    92.9,
+    23.3,
+    30.1
+   ]
+  },
+  "eventsPerWorld": {
+   "WarDeclared": 430.8,
+   "RevoltSpawned": 125.2,
+   "CapitalCaptured": 421.2,
+   "CapitalMoved": 894.8,
+   "NationRevived": 35.3,
+   "PuppetCreated": 72.1,
+   "UnionFormed": 18.1,
+   "NationAnnexed": 39.6
+  },
+  "lowUtilMillionCiv": [],
+  "lowUtilHalfMillionCiv": [
+   [
+    3613,
+    23,
+    "Soviet Union",
+    "Japan",
+    2,
+    797253,
+    20253,
+    0.085
+   ],
+   [
+    3847,
+    24,
+    "Germany",
+    "founded#136",
+    2,
+    674809,
+    10809,
+    0.081
+   ],
+   [
+    6737,
+    29,
+    "Soviet Union",
+    "Czechoslovakia",
+    2,
+    573820,
+    11820,
+    0.067
+   ]
+  ],
+  "sameSpotWithinYear": 1
+ },
+ "c13_same": {
+  "worlds": 32,
+  "worldsWithBurst": 32,
+  "bursts": 783,
+  "burstsPerWorld": 24.5,
+  "sea1": 57.6,
+  "seaLatePerWorldYear": 9.37,
+  "seaLateZeroShare": 7.2,
+  "air1": 2599,
+  "eng1": 40.29,
+  "engLate": 4.15,
+  "engLateShareOfLandAtWarPct": 0.97,
+  "airLate": 121,
+  "aloftLate": 10.9,
+  "stasisMax": 25,
+  "stasisOver20": 1,
+  "stasis": [
+   7,
+   15,
+   4,
+   11,
+   13,
+   4,
+   8,
+   20,
+   8,
+   13,
+   6,
+   9,
+   13,
+   6,
+   19,
+   10,
+   25,
+   13,
+   9,
+   19,
+   17,
+   11,
+   13,
+   13,
+   13,
+   11,
+   9,
+   6,
+   5,
+   8,
+   16,
+   8
+  ],
+  "living": [
+   82,
+   134
+  ],
+  "founded": [
+   16,
+   70
+  ],
+  "late5flip": [
+   24.1,
+   70.0
+  ],
+  "warsLateMean": 8.28,
+  "worldYearsLe1War": 1,
+  "civOver10x": 139,
+  "livingFoundedTinyMean": {
+   "10": [
+    91.9,
+    18.8,
+    27.9
+   ],
+   "20": [
+    97.5,
+    28.1,
+    32.4
+   ],
+   "30": [
+    101.3,
+    36.8,
+    33.8
+   ]
+  },
+  "eventsPerWorld": {
+   "WarDeclared": 520.5,
+   "RevoltSpawned": 194.9,
+   "CapitalCaptured": 497.6,
+   "CapitalMoved": 662.9,
+   "NationRevived": 46.4,
+   "PuppetCreated": 73.1,
+   "UnionFormed": 17.8,
+   "NationAnnexed": 59.3
+  },
+  "lowUtilMillionCiv": [],
+  "lowUtilHalfMillionCiv": [
+   [
+    7583,
+    20,
+    "Soviet Union",
+    "founded#176",
+    2,
+    661947,
+    8947,
+    0.072
+   ],
+   [
+    4513,
+    17,
+    "Soviet Union",
+    "founded#151",
+    2,
+    526889,
+    16889,
+    0.083
+   ],
+   [
+    8011,
+    26,
+    "United States",
+    "Germany",
+    2,
+    604531,
+    35531,
+    0.098
+   ],
+   [
+    6737,
+    20,
+    "Soviet Union",
+    "Germany",
+    2,
+    568720,
+    20720,
+    0.058
+   ]
+  ],
+  "sameSpotWithinYear": 2
+ },
+ "c13_new": {
+  "worlds": 8,
+  "worldsWithBurst": 8,
+  "bursts": 179,
+  "burstsPerWorld": 22.4,
+  "sea1": 53.1,
+  "seaLatePerWorldYear": 9.09,
+  "seaLateZeroShare": 6.6,
+  "air1": 1989,
+  "eng1": 37.81,
+  "engLate": 3.92,
+  "engLateShareOfLandAtWarPct": 0.96,
+  "airLate": 134,
+  "aloftLate": 10.9,
+  "stasisMax": 15,
+  "stasisOver20": 0,
+  "stasis": [
+   11,
+   7,
+   13,
+   15,
+   4,
+   8,
+   10,
+   6
+  ],
+  "living": [
+   78,
+   110
+  ],
+  "founded": [
+   10,
+   59
+  ],
+  "late5flip": [
+   24.6,
+   65.6
+  ],
+  "warsLateMean": 8.09,
+  "worldYearsLe1War": 0,
+  "civOver10x": 23,
+  "livingFoundedTinyMean": {
+   "10": [
+    88.6,
+    18,
+    25.2
+   ],
+   "20": [
+    93.2,
+    23.8,
+    32.6
+   ],
+   "30": [
+    99.6,
+    36.5,
+    34.6
+   ]
+  },
+  "eventsPerWorld": {
+   "WarDeclared": 498.2,
+   "RevoltSpawned": 185.2,
+   "CapitalCaptured": 478.6,
+   "CapitalMoved": 658.8,
+   "NationRevived": 46.0,
+   "PuppetCreated": 69.9,
+   "UnionFormed": 15.8,
+   "NationAnnexed": 56.6
+  },
+  "lowUtilMillionCiv": [],
+  "lowUtilHalfMillionCiv": [
+   [
+    5521,
+    19,
+    "Germany",
+    "Austria",
+    2,
+    708160,
+    22160,
+    0.077
+   ]
+  ],
+  "sameSpotWithinYear": 0
+ },
+ "seedsSame": [
+  1307,
+  2081,
+  2953,
+  3613,
+  4219,
+  4877,
+  5309,
+  5861,
+  6421,
+  7019,
+  7583,
+  8167,
+  8693,
+  9437,
+  1129,
+  2347,
+  3491,
+  4513,
+  5683,
+  6151,
+  7247,
+  8011,
+  8849,
+  9781,
+  1523,
+  2671,
+  3847,
+  4391,
+  5147,
+  6737,
+  7901,
+  9203
+ ],
+ "seedsNew": [
+  1061,
+  2417,
+  3253,
+  4561,
+  5521,
+  6833,
+  7351,
+  8423
+ ]
+}

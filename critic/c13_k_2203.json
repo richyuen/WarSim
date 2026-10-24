@@ -1,0 +1,62 @@
+{
+ "seed": 2203,
+ "steps": [
+  {
+   "s": "breakthrough",
+   "before": {
+    "all": 1467,
+    "land": 1270,
+    "engaged": 0,
+    "nations": 103
+   },
+   "after": {
+    "all": 1467,
+    "land": 1270,
+    "engaged": 0,
+    "nations": 103
+   },
+   "ticker": [
+    "1 January 1938 · Paused"
+   ]
+  },
+  {
+   "s": "day1",
+   "c": {
+    "all": 1467,
+    "land": 1270,
+    "engaged": 2,
+    "nations": 103
+   },
+   "ticker": [
+    "2 January 1938 · Paused"
+   ]
+  },
+  {
+   "s": "day3",
+   "c": {
+    "all": 1467,
+    "land": 1270,
+    "engaged": 10,
+    "nations": 103
+   },
+   "ticker": [
+    "4 January 1938 · Paused"
+   ]
+  },
+  {
+   "s": "day7",
+   "c": {
+    "all": 1466,
+    "land": 1270,
+    "engaged": 18,
+    "nations": 103
+   },
+   "ticker": [
+    "8 January 1938 · Paused"
+   ]
+  }
+ ],
+ "hintBattle": "Click the start, then the end of the breakthrough.",
+ "killVisible": false,
+ "errors": []
+}

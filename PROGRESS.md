@@ -23230,3 +23230,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   by 7.5's run, as for 7.102.
 - A test only; the pin unchanged (f9d18365).
 - **Next:** PLAN 7.5: `npm run check:review`, then critic run 13.
+
+## 2026-10-24 — PLAN 7.5: critic run 13 on `0c80db1e` (after check:review green); PLAN 7.104–7.109 filed
+
+- **check:review** on `0c80db1e`: green, 1 known red (zoomDemo1938), 0 not known. 7.102 and 7.103 green in the
+  chunked suite. The evidence pictures the specs rewrite restored.
+- **Scores:** mapVisuals 7 (6), diplomacy 7, emergent 6, godMode 7, editor 7, stats 7, uiUx 7, performance 5 (6),
+  stability 7; semanticZoom 8, tanks 8, naval 7, aircraft 7, aiNukes 7. **Blocking: 1** (R13-B1, the land war
+  after year 1: 0.34 → 0.57 engaged a war a day against 5.16 in year 1). R12-B2 no longer blocking (ADR-639).
+- **Filed:** 7.104 (R13-B1); 7.105 performance 5 (the late game at Max 46–59 s a year); 7.106 emergent 6 (the
+  statelets); 7.107 naval 7; 7.108 aircraft 7; 7.109 aiNukes 7 (a strike's banner and pause late at Max).
+- **Next:** PLAN 7.104.

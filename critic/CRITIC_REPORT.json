@@ -1,14 +1,14 @@
 {
-  "commit": "896ff7799d1cefa7f891091bc249423fa0c2998a",
+  "commit": "0c80db1ef2224a8ad3813d68d5c085e83159a106",
   "scores": {
-    "mapVisuals": 6,
+    "mapVisuals": 7,
     "diplomacyWarDepth": 7,
     "emergentDynamics": 6,
     "godMode": 7,
     "editorScenarios": 7,
     "statsHistory": 7,
     "uiUxPolish": 7,
-    "performance": 6,
+    "performance": 5,
     "stability": 7,
     "semanticZoom": 8,
     "naval": 7,
@@ -18,38 +18,20 @@
   },
   "blocking": [
     {
-      "id": "R12-B1",
-      "title": "After year 1 the land war still has almost no battles (R11-B1 not fixed). Same 48 checkpoints (years 10/20, run 11's 24 seeds), same script: 1.52 engaged land formations (dd3b730: 0.50) of 358 belonging to nations at war, with 7.3 wars running (4.6). Daily over 30 years on 32 HEAD worlds: 33.7 engaged in year 1, 2.11 after (5.1 a war in year 1, 0.34 after). In the page: 6421's year-21 Germany-Soviet war shows 0-2 engaged over 60 days; 60 idle US divisions (714,480 men) stand in one place at war (1129, year 10).",
+      "id": "R13-B1",
+      "title": "The land war after year 1 is still thin (R12-B1 improved, not fixed). Same 32 seeds, both commits: engaged land formations per war a day after year 1 0.34 -> 0.57 against 5.16 in year 1 (11 %); year-10/20 checkpoints 1.50 -> 4.09 engaged, 10 of 64 with nobody in contact (24). In the page 4877 year 20 shows 0-4 engaged over 60 days with 7 wars, 7019 year 20 zero in 5 of 7 samples; the good case exists (1129 year 10, up to 51 engaged in Italy) but a player cannot count on it.",
       "evidence": [
-        "critic/c12_cmp_checkpoints.json",
-        "critic/c12_cmp_all.txt",
-        "critic/c12_engaged_w1.json",
-        "critic/c12_engaged_w2.json",
-        "critic/c12_engaged_w3.json",
-        "critic/c11_engaged_head.json",
-        "critic/c12_y_6421_gersov.json",
-        "critic/shots/c12y_6421_gersov_d30.png",
-        "critic/c12_w_3301.json",
-        "critic/c12_stacks_y10_w1.json",
-        "critic/c12_u_6421.json"
+        "critic/c13_cmp_checkpoints.json",
+        "critic/c13_cmp_all.txt",
+        "critic/c13_y2_4877_y20.json",
+        "critic/c13_y2_7019_y20.json",
+        "critic/c13_y2_1129_y10.json",
+        "critic/shots/c13y2_4877_y20_d30_3000m.png",
+        "critic/shots/c13y2_1129_y10_d30_250m.png",
+        "critic/c13_w_3301.json"
       ],
-      "fix": "Make a nation at war send its standing army to its fronts and hold a front line it fights for, so contact per war after year 1 is a real fraction of year 1's. Measure engaged formations per war after year 1 on unseen seeds, with a bar."
-    },
-    {
-      "id": "R12-B2",
-      "title": "The late map shreds, worse than run 11 on every seed: pieces of 2-400 cells of one holder at year 20 are 1,174 a world on HEAD against 837 on dd3b730, worse on 24 of 24 same seeds (469 at the 1938 start); founded statelets at year 20 20.7 a world (6.6). Russia reads as grey-and-red confetti with blue pockets (7247), Soviet land as red islands in Hungarian orange (6421), West Africa in shards.",
-      "evidence": [
-        "critic/c12_cmp_checkpoints.json",
-        "critic/c12_frag_head_w12.json",
-        "critic/c12_frag_head_w3.json",
-        "critic/c11_frag_head.json",
-        "critic/c12_cmp_all.txt",
-        "critic/shots/c12x_7247_y20_eurasia.png",
-        "critic/shots/c12x_7247_y20_world.png",
-        "critic/shots/c12y_6421_gersov_d60.png"
-      ],
-      "fix": "Measure which of this run's changes cuts the map (walk-in occupation without fronts, revolts and statelets x3, capitals that move, beach-fed coastal pockets). Pockets that hold on a supplied beach are the user's (ADR-630); if they are the main cause, put the count to the user as the price of that rule. Otherwise make conquest follow fronts so occupation does not leave confetti, and bar the pieces count at year 20 on unseen seeds against dd3b730."
+      "fix": "Keep raising contact per war after year 1 toward a real fraction of year 1's, measured on unseen seeds with a bar; the armies of nations at war are there (439 land formations a checkpoint) but stand idle or arrive hollow."
     }
   ],
-  "timestamp": "2026-10-22T18:18:47Z"
+  "timestamp": "2026-10-24T08:00:10Z"
 }
