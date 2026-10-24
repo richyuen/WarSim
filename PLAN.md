@@ -62,6 +62,8 @@ reused:
       4 m/px; about 3 px, under the bar; `planesT3_1938` (10 m/px) unchanged.
     - [ ] 7.108b The late air war: on 10 unseen seeds × 20 years, air battles a world-year after year 1 at
       least 1.25 × HEAD's on the same seeds; a unit test, red without; the gate green.
+      Read and tried 2026-10-24 (`docs/evidence/7.108b/`, 931–940): fighters across the sea to the front
+      (`rule.patch`) 176.2 → 174.5 (0.99 ×): missed, not committed. Waits on ADR-685 (BLOCKERS).
 - [ ] 7.109 AI nuclear use (aiNukes 7, needs 8): of two AI strikes a day apart (1129 year 15: the UK on a
   US army near Molepolole on 25 October 1952, the US on London on 26 October) only the second gets an
   alert banner, and at Max the pause comes on 1 November, 155 game hours after the first; the answer in

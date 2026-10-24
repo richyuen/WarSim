@@ -23336,3 +23336,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   2.20: met. Such fleets 13.1 a world in year 1, 2.0–2.7 late (the navies' count stays ADR-667 a's).
 - BLOCKERS entry resolved; 7.107 ticked and archived.
 - **Next:** PLAN 7.108b (seeds from 931).
+
+## 2026-10-24 — PLAN 7.108b: the late air war; fighters across the sea tried, the AT missed (ADR-685 to the user)
+
+- **Start:** gate green on `2b7f2474`; critic not due.
+- **Read** (`docs/evidence/7.108b/read.md`; `tools/diag/airWhy.ts`, new; run 13's saves of 4877, 5861, 6421, 7019
+  stepped under HEAD's rules): late, most idle fighters and strikers at war whose enemy has air have a base of
+  their side in reach of the enemy past a ferry flight, and no chain of ferry flights to it (872 of 872 reads):
+  the war across the sea, 4,400–8,800 km. Enemy pairs' sorties within 150 km in 11 of 2,042 pair-hours.
+- **A/B from the saves** (`tools/diag/airAb.ts`, new; 90 days): a sea hop for every role lifts battles 92 → 389 but
+  halves land formations engaged (20.1 → 10.0 a day, R13-B1's figure); fighters only 92 → 341, engaged 18.9,
+  battles per thousand sortie-hours 1.18 → 1.52.
+- **Rule tried** (`rule.patch`): with no hop nearer, a fighter with no chain of ferry flights to the front crosses
+  to the nearest base of its side in range of the goal (ADR-515's bend kept). Unit test in `airToward1938.test.ts`,
+  red without, green with.
+- **AT** (`at.md`, 931–940 × 20): HEAD 176.2 late battles a world-year, the rule 174.5 (0.99 ×, bar 220.2): missed.
+  Wings late 87.9 → 68.9; battles +15 % in years 2–7, −16 % and −27 % after; the crossers spent within 90 days.
+  BLOCKERS entry; ADR-685: (a) closed not done; (b) closed not done and a task for the air force at war late
+  (recommended); (c) commit the crossing as it stands.
+- **No rule;** the code restored; the pin unchanged (c848f884; the rule's f0a21e5e).
+- **Next:** 7.108b waits on ADR-685; the loop takes PLAN 7.109 (seeds from 941).

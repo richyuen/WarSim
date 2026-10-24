@@ -167,6 +167,39 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-685 · 2026-10-24 · proposed (the user's decision) — The late air war: fighters across the sea spend the air forces (PLAN 7.108b's AT missed)
+
+- **Context.** Critic run 13: air battles after year 1 155 → 121 a world-year on its seeds (aircraft 7, needs 8).
+  PLAN 7.108b's bar: on 10 unseen seeds × 20 years, late air battles at least 1.25 × HEAD's. 7.99 and 7.101
+  (ADR-672, ADR-674) tried missions over the enemy's bases and a scramble against raids; their sorties met
+  nothing.
+- **Read** (`docs/evidence/7.108b/read.md`, `tools/diag/airWhy.ts`; run 13's saves of 4877, 5861, 6421 and 7019,
+  stepped under HEAD's rules): late, most idle fighters and strikers at war whose enemy has air have a base of
+  their side in reach of the enemy's land forces, past a ferry flight; in every one of 872 reads no chain of
+  ferry flights leads there: the war is across the sea (4,400–8,800 km). The USA's fighters against Germany,
+  Japan or #95, Japan's against Australia, the Netherlands' against #80. Enemy pairs' sorties come within 150 km
+  in 11 of 2,042 pair-hours.
+- **Rule tried** (`rule.patch`, with its unit test in `airToward1938.test.ts`, red without): with no hop nearer
+  the front, a fighter whose side has a base in range of the goal and no chain of ferry flights from its base
+  to one in reach of the front (ADR-515's bend kept) rebases to the nearest such base with room, however far.
+  Strikers too wore down the land war (engaged 20.1 → 10.0 a day over six saves, R13-B1's figure); fighters
+  alone 18.9. From the saves, 90 days: air battles 92 → 341, battles per thousand sortie-hours 1.18 → 1.52.
+- **AT** (`at.md`, 931–940 × 20 from 1938): late air battles 176.2 → 174.5 a world-year (0.99 ×, bar 220.2):
+  **missed.** Wings of living nations late 87.9 → 68.9 (−22 %), sorties aloft 12.61 → 14.03; battles +15 % in
+  years 2–7, −16 % and −27 % after. On the saves the crossers are spent within 90 days (wings 466 → 448 against
+  HEAD's 466 → 472), most where they met the enemy's air; whether in those fights or with a borrowed base that
+  falls is not read. HEAD's own air forces fall from 168.6 wings a world in year 1 to 87.9 after it. Engaged per
+  war 0.527 → 0.647 (ten histories that part from year 1; not this task's figure).
+- **Options (the user's).**
+  (a) 7.108b closed not done, no rule; the aircraft score to the next critic report (ADR-674 a's shape).
+  (b) **(recommended)** 7.108b closed not done, no rule; a numbered task for the air force at war late (the AI's
+  wings half of year 1's on HEAD alone, and the crossing spends them faster): read first what the AI buys and
+  loses in the air after year 1, then a rule on it; the crossing re-measured on its code once that holds.
+  (c) Commit the crossing as it stands: it misses its own bar; the engaged-per-war gain is 7.110's figure on ten
+  diverging histories, not this task's.
+- **Now.** No rule committed; the pin unchanged (c848f884; the rule's would be f0a21e5e). Tools kept: `airWhy.ts`,
+  `airAb.ts`.
+
 ### ADR-684 · 2026-10-24 · accepted — Close in, a plane gives way to itself at its wingspan (PLAN 7.108a)
 
 - **Context.** Critic run 13 (`critic/shots/c13z_5861_17.png`): the wheel zoom ends on three plane silhouettes

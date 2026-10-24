@@ -5,6 +5,20 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.108b's AT missed: late air battles 176.2 → 174.5 a world-year (0.99 ×, bar 1.25 ×) (ADR-685, 2026-10-24)
+- **The bar:** on 10 unseen seeds × 20 years against HEAD on them, air battles a world-year after year 1 at least
+  1.25 × HEAD's; a unit test, red without; the gate green.
+- **What moved** (`docs/evidence/7.108b/read.md`, `at.md`; 931–940): late, most idle fighters at war whose enemy
+  has air sit with a base of their side in reach of the enemy across the sea and no chain of ferry flights to
+  it (872 of 872 reads). The rule tried (`rule.patch`: such a fighter crosses to that base) lifts battles × 3.7
+  over 90 days from run 13's saves, but from 1938 the late battles were 174.5 against HEAD's 176.2: the wings
+  late fall 87.9 → 68.9 a world (+15 % battles in years 2–7, −16 % and −27 % after). Not committed; the pin
+  unchanged (c848f884).
+- **What is left:** the air force at war late: HEAD's wings 168.6 a world in year 1, 87.9 after; the crossers
+  are spent within 90 days of crossing and not replaced (in their fights or with borrowed bases that fall: not
+  read). The user's (ADR-685): (a) 7.108b closed not done, no rule; (b) closed not done and a numbered task for
+  the air force at war late, the crossing re-measured on it (recommended); (c) the crossing committed as it stands.
+
 ### RESOLVED 2026-10-24 (option a, the user's decision: bar 1 re-scoped; read on ADR-682's code 2.75 → 6.34 and 3.45 late, bar 2.20; PLAN 7.107 done) · PLAN 7.107's AT: battles sinking nothing met (7.28 → 2.56 %), late sea battles missed (0.95 × HEAD, bar 1.3 ×) (ADR-683, 2026-10-24)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD on them, sea battles a world-year after year 1 at least
   1.3 × HEAD's, and battles sinking nothing at most 4 %; a unit test, red without.
