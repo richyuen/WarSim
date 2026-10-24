@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.111's AT missed: year 21 of 4877 at 4.24 and 4.22 ms a tick, bar 4.12 (ADR-695; waits on the user)
+### RESOLVED 2026-10-24 (option a, the user's decision: 7.111 closed not done, the cuts kept, no task) · PLAN 7.111's AT missed: year 21 of 4877 at 4.24 and 4.22 ms a tick, bar 4.12 (ADR-695; waits on the user)
 - **The bar** (ADR-694): year 21 from `critic/c13_seed4877_y20.bin`, `npm run sim -- --affinity 0xFFFF`, at most 4.12
   ms a tick, twice; the hash dba7fdae and the pin unchanged; the gate green.
 - **What moved** (`docs/evidence/7.111/measure.md`): three exact cuts committed, HEAD 4.457 / 4.431 → 4.242 / 4.220;

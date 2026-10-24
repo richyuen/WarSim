@@ -49,13 +49,6 @@ ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the di
 beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
 reused:
 
-- [ ] 7.111 The late tick's exact remainder (found at 7.105; performance 5; ADR-680 b, the user's decision): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one
-  Map of keys past the small integers), `sectorShape`'s sort and holders, `industryHeld` once a day for
-  every reader. AT (restated by ADR-694 after ADR-693 b: the same 0.32 ms cut from HEAD's 4.44): year 21 of
-  4877 from `critic/c13_seed4877_y20.bin`, `npm run sim -- --affinity 0xFFFF`, at most 4.12 ms a tick, twice;
-  its hash dba7fdae and the pin unchanged; the gate green.
-  AT missed 2026-10-24 (ADR-695, BLOCKERS; `docs/evidence/7.111/measure.md`): three exact cuts committed, 4.44 →
-  4.23 ms (bar 4.12). Waits on the user's word on ADR-695.
 - [ ] 7.112 The pockets as a rule (found at 7.105; performance 5; ADR-680 b, the user's decision): `pocketOf` answers each start by its own walk (no answer taken from another walk's marks), and
   keeps that answer across ticks while no flip between an open and a closed holder of its set touches a
   walked cell or a neighbour and the node parts hold (exact, so a loaded world steps as the saved one).
@@ -402,3 +395,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.109 AI nuclear use (aiNukes 7, needs 8): of two AI strikes a day apart (1129 year 15: the UK on a […]
 - [x] 7.110 The army at war late (found at 7.104; R13-B1; ADR-679 a, the user's decision): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196 […]
 - [x] 7.115 The operational AI spreads a larger army over its front (found at 7.110b; R13-B1; ADR-692 b, the user's […]
+- [x] 7.111 The late tick's exact remainder (found at 7.105; performance 5; ADR-680 b, the user's decision): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one […]

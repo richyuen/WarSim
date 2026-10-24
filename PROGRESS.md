@@ -23547,3 +23547,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** paired whole-tick reads swing ±5 % on untouched systems; a 0.05 ms cut is read by its function's time
   in `--cpu-prof` (esbuild bundles of the CLI, `docs/evidence/7.105/top.mjs`, `lines.mjs`).
 - **Next:** PLAN 7.112 while ADR-695 waits.
+
+## 2026-10-24 — PLAN 7.111 closed not done (ADR-695 a, the user's decision)
+
+- The three exact cuts kept (4.44 → 4.23 ms on year 21 of 4877); 7.112's AT unchanged; no task.
+- **Next:** PLAN 7.112.

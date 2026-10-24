@@ -15263,3 +15263,25 @@ Of 7.33 (open in PLAN.md):
   Closed not done 2026-10-24 (ADR-693 b, the user's decision; `docs/evidence/7.115/at.md`): the spread missed (56.77 a
   war, 0.664 engaged); 7.110b's rule committed alone, `operationalAi` read as the mean of days 10–30, `wholeTanks`
   from its first heavy fight.
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.111 The late tick's exact remainder (found at 7.105; performance 5; ADR-680 b, the user's decision): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one
+  Map of keys past the small integers), `sectorShape`'s sort and holders, `industryHeld` once a day for
+  every reader. AT (restated by ADR-694 after ADR-693 b: the same 0.32 ms cut from HEAD's 4.44): year 21 of
+  4877 from `critic/c13_seed4877_y20.bin`, `npm run sim -- --affinity 0xFFFF`, at most 4.12 ms a tick, twice;
+  its hash dba7fdae and the pin unchanged; the gate green.
+  AT missed 2026-10-24 (ADR-695, BLOCKERS; `docs/evidence/7.111/measure.md`): three exact cuts committed, 4.44 →
+  4.23 ms (bar 4.12). Closed not done (ADR-695 a, the user's decision): the cuts kept, no task.
