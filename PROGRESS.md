@@ -23376,3 +23376,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   costing 5–7 % of income. ADR-686: (a) at war an income share at the great powers' 1938 level, 0.035
   (recommended); (b) at the world's 1938 mean, 0.0156; (c) close 7.113.
 - **No rule;** the pin unchanged (c848f884). `airAb.ts` counts wings built.
+
+## 2026-10-24 — PLAN 7.113a: the air force against income (ADR-686, the user's); the AT missed on the land war (ADR-687 to the user)
+
+- **Rule** (`docs/evidence/7.113/income.patch`): the air force with its wings in training under 0.1 of income (of its
+  army's upkeep before), as many wings in training as the army's order slots (one before). `airBudget1938.test.ts`'s
+  two cases rewritten to the rule (red on HEAD's).
+- **AT** (`at.md`, 951–960 × 20): wings late 90.8 → 218.3 (2.40 ×, met); air battles 171.0 → 292.7 (1.71 ×); engaged
+  per war 0.598 → 0.395 (0.66 ×, missed, 9 of 10 lower). BLOCKERS entry; ADR-687: (a) 0.035 of income and the AT
+  again (recommended); (b) commit as it stands; (c) close 7.113.
+- **Not committed;** the pin unchanged (c848f884; the rule's 3a38b3bf).

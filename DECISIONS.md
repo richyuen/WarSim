@@ -167,7 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-686 · 2026-10-24 · proposed (the user's decision) — The air force at war late is capped by a small army, not by gold (PLAN 7.113a's rule dead before its AT)
+### ADR-687 · 2026-10-24 · proposed (the user's decision) — The air force at 0.1 of income rebuilds the air war and thins the land war (PLAN 7.113a's AT missed)
+
+- **Context.** ADR-686 (the user's): the air force measured against income, 0.1, wings side by side.
+- **AT** (`docs/evidence/7.113/at.md`, 951–960 × 20): wings late 90.8 → 218.3 (2.40 ×, bar 1.25 ×: met); air battles
+  171.0 → 292.7 a world-year (1.71 ×, 7.113b's bar met without the crossing), per thousand sortie-hours 1.62 → 1.89;
+  **engaged per war 0.598 → 0.395 (0.66 ×, bar not below HEAD's: missed; lower on 9 of 10)**, land formations engaged
+  4.10 → 2.84 a world. At 0.1 of income the air force costs ~6 × the 1938 world's share (0.016); its money is the army's.
+- **Options (the user's).**
+  (a) **(recommended)** The share at the great powers' 1938 level, 0.035 of income, wings side by side kept; the AT
+  run again on 951–960 against the same HEAD baseline.
+  (b) Commit it as it stands: the air war's bars met, the land war (R13-B1's) at 0.66 ×.
+  (c) 7.113 closed not done, no rule.
+- **Now.** Not committed (`income.patch`, its tests rewritten to the rule, red on HEAD's); the pin unchanged (c848f884).
+
+### ADR-686 · 2026-10-24 · accepted, the user's choice (2026-10-24): the share of income, 0.1, and wings side by side — The air force at war late is capped by a small army, not by gold (PLAN 7.113a's rule dead before its AT)
 
 - **Context.** PLAN 7.113 (ADR-685 b): wings of living nations 165.5 a world in year 1, 90.8 after it on HEAD
   (951–960). The read (`docs/evidence/7.113/read.md`, 941–942): the fall is year 1's (88 and 145 wings shot
@@ -189,6 +203,16 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   so it would move little.
   (c) 7.113 closed not done, no rule.
 - **Now.** No rule; the pin unchanged (c848f884). HEAD's AT baseline on 951–960 is read (`head/`).
+- **Chosen (the user's, 2026-10-24), none of (a)–(c) as written:** the air force measured against income, as the
+  navy is (NAVY_SHARE): AIR_SHARE 0.1 of the nation's income, its wings in training counted; and wings trained side
+  by side, as many as the army's order slots (1 + income/400, at most 6; one at a time before, which held a nation to
+  ~2 wings a year at 150–360 days a wing). Two causes in one rule, by the user's choice. The reserve stays
+  RESERVE_MONTHS (`reserve.patch` freed nothing). Their upkeep counts against the balance as the army's orders in
+  training do; the fighter/bomber pick counts the wings in training and those ordered that month.
+- **Tests.** `airBudget1938.test.ts`'s two cases asserted the old rule (one wing at a time; Britain over 0.1 of its
+  army): rewritten to the new (France orders one wing a slot, three, alternating by the pick; Britain, its income cut
+  to 0.15, over the share, none; Germany's first a tactical bomber group, within its slots; no airfield, none), red
+  on HEAD's rule. Pin c848f884 → 3a38b3bf.
 
 ### ADR-685 · 2026-10-24 · accepted, option b (the user's decision, 2026-10-24) — The late air war: fighters across the sea spend the air forces (PLAN 7.108b's AT missed)
 

@@ -62,12 +62,14 @@ reused:
   a world-year; at war, under the air share, the wing's order stopped most by the treasury holding its price but not
   RESERVE_MONTHS of income more (1,063 and 1,578 nation-months), then one wing in training at a time, then no
   airfield. Seeds: the AT on 951–960, all parts against one HEAD baseline; three arms (HEAD, a, a+b). In two parts:
-    - [ ] 7.113a A wing at war keeps the army's war reserve: at war, under its air share, a wing's order keeps
-      WAR_RESERVE_MONTHS of income back, not RESERVE_MONTHS (ADR-615's for the army). AT: on 951–960 × 20, wings of
+    - [ ] 7.113a The air force's share of income, its wings trained side by side (re-scoped 2026-10-24, ADR-686, the
+      user's decision): the air force, with its wings in training, under AIR_SHARE (0.1) of its nation's income, not
+      of its army's upkeep; as many wings in training as the army's order slots, not one. AT: on 951–960 × 20, wings of
       living nations in years 2–20 at least 1.25 × HEAD's; engaged per war there not below HEAD's; a unit test,
       red without; the pin moved with its ADR; the gate green.
       Tried 2026-10-24 before its AT (`docs/evidence/7.113/read.md` §3, `reserve.patch`): the same as HEAD on six
-      saves over 90 days; the binding gate late is AIR_SHARE of a small army's upkeep. Waits on ADR-686.
+      saves over 90 days; the binding gate late is AIR_SHARE of a small army's upkeep (ADR-686). The user's rule's AT
+      (`at.md`, `income.patch`): wings 2.40 × (met), engaged per war 0.66 × (missed). Waits on ADR-687 (BLOCKERS).
     - [ ] 7.113b The crossing on 7.113a's code (`docs/evidence/7.108b/rule.patch`, its unit test with it). AT: on
       951–960 × 20, air battles a world-year after year 1 at least 1.25 × HEAD's; engaged per war not below HEAD's;
       the unit test red without; the pin moved with its ADR; the gate green.

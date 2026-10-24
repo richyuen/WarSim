@@ -1,0 +1,201 @@
+diff --git a/src/sim/ai/economic.ts b/src/sim/ai/economic.ts
+index 6d868043..83b6b6e9 100644
+--- a/src/sim/ai/economic.ts
++++ b/src/sim/ai/economic.ts
+@@ -67,9 +67,11 @@
+  *    under NAVY_SHARE, saves too (PLAN 7.47, ADR-579: the first destroyer ended the saving); but
+  *    not at war with FEW_FORMATIONS land formations or fewer, whose army orders first (PLAN 7.49c,
+  *    ADR-590).
+- *    Then a wing (PLAN 5.8s2, `pickWing`), as a fleet: a nation not poor with an airfield and no
+- *    wing in training orders one while its air force's upkeep is under AIR_SHARE of its army's,
+- *    a fighter group while fighters are under half its wings, else a tactical bomber group.
++ *    Then wings (PLAN 5.8s2, `pickWing`): a nation not poor with an airfield orders them while its
++ *    air force's upkeep, with its wings in training, is under AIR_SHARE of its income, as many in
++ *    training as its army's order slots (PLAN 7.113a, ADR-686, the user's: of its army's upkeep and
++ *    one at a time before), a fighter group while fighters are under half its wings, else a
++ *    tactical bomber group.
+  * 2b. A means of delivery (PLAN 7.6b, `deliveryWing`), before research takes the month's surplus:
+  *    a nation with warheads and no means of delivery (`canDeliver`: no missiles, no strategic
+  *    bomber with a base) and no wing in training orders a strategic bomber group, whatever its air
+@@ -208,9 +210,11 @@ export function peaceShare(aggression: number): number {
+ }
+ 
+ /**
+- * The share of its army's upkeep a nation keeps its air force's under (PLAN 5.8s2): it orders a
+- * wing below it. At the start of 1938 the world's is 0.064, a great power's 0.04 to 0.11 (Britain's
+- * and the United States', with small armies, 0.8).
++ * The share of its income a nation keeps its air force's upkeep (with its wings in training) under
++ * (PLAN 7.113a, ADR-686, the user's): it orders wings below it. Of its army's upkeep before (PLAN
++ * 5.8s2; 0.1): late in a run the armies at war cost 5-7 % of their income and capped their air
++ * forces under 1 % of it, the wings shot down in year 1 never rebuilt. At the start of 1938 the
++ * world's air force is 0.016 of income, a great power's 0.03 to 0.04.
+  */
+ export const AIR_SHARE = 0.1;
+ 
+@@ -293,6 +297,9 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
+     /** Per nation: the fleets in training, and the wings (PLAN 5.8s2). */
+     const shipsPending = new Map<number, number>();
+     const wingsPending = new Map<number, number>();
++    /** Per nation: the upkeep of its wings in training and their templates (PLAN 7.113a). */
++    const wingsTraining = new Map<number, number>();
++    const wingTemplates = new Map<number, number[]>();
+     /** The nations with a transport group in training (PLAN 7.26h2), and how many each. */
+     const transportsPending = new Map<number, number>();
+     world.production.forEach((id) => {
+@@ -305,6 +312,10 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
+       }
+       if (world.rules?.templates[t]?.domain === Domain.air) {
+         wingsPending.set(n, (wingsPending.get(n) ?? 0) + 1);
++        wingsTraining.set(n, (wingsTraining.get(n) ?? 0) + upkeepOfTemplate(t));
++        const kinds = wingTemplates.get(n) ?? [];
++        kinds.push(t);
++        wingTemplates.set(n, kinds);
+         return;
+       }
+       pending.set(n, (pending.get(n) ?? 0) + 1);
+@@ -544,15 +555,25 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
+           balance -= u;
+         }
+       }
+-      // 3c. A wing (PLAN 5.8s2), with what is left: one at a time, while the air force is under
+-      // its share of the army's upkeep (the orders in training with it).
+-      const wing = mix.wings && !carried && income >= POOR_INCOME && (wingsPending.get(n) ?? 0) === 0 && (air.get(n) ?? 0) < AIR_SHARE * upkeep ? pickWing(world, n, mix.wings, wings.get(n) ?? []) : -1;
+-      if (wing >= 0 && airfield(world, n, wing) >= 0) {
+-        const rule = rules.templates[wing]!;
+-        const u = upkeepOfTemplate(wing);
+-        if (balance - u > need && nc.gold[n]! >= rule.gold + RESERVE_MONTHS * income && nc.manpower[n]! >= rule.manpower && queueFormation(world, n, wing) !== 0) {
++      // 3c. Wings (PLAN 5.8s2), with what is left: while the air force, with its wings in training,
++      // is under AIR_SHARE of the income (PLAN 7.113a, ADR-686: of the army's upkeep before), as
++      // many in training as the army's order slots; their upkeep counts against the balance as
++      // the army's orders in training do.
++      if (mix.wings && !carried && income >= POOR_INCOME) {
++        let airUpkeep = (air.get(n) ?? 0) + (wingsTraining.get(n) ?? 0);
++        let left = balance - (wingsTraining.get(n) ?? 0);
++        const kinds = [...(wings.get(n) ?? []).map((id) => f.template[id]!), ...(wingTemplates.get(n) ?? [])];
++        for (let k = wingsPending.get(n) ?? 0; k < slots && airUpkeep < AIR_SHARE * income; k++) {
++          const wing = pickWing(world, n, mix.wings, kinds);
++          if (wing < 0 || airfield(world, n, wing) < 0) break;
++          const rule = rules.templates[wing]!;
++          const u = upkeepOfTemplate(wing);
++          if (!(left - u > need && nc.gold[n]! >= rule.gold + RESERVE_MONTHS * income && nc.manpower[n]! >= rule.manpower) || queueFormation(world, n, wing) === 0) break;
+           nc.builds[n] = nc.builds[n]! + 1;
+           balance -= u;
++          left -= u;
++          airUpkeep += u;
++          kinds.push(wing);
+         }
+       }
+     });
+@@ -676,7 +697,8 @@ export function fleetPrice(world: World, income: number, kinds: NonNullable<Buil
+ 
+ /**
+  * The wing nation `n` orders next (PLAN 5.8s2), its air force under its share: a fighter group
+- * while fighters are under half its wings `own`, else a tactical bomber group; the other when it
++ * while fighters are under half its wings `own` (their templates, those in training and ordered
++ * this month with them, PLAN 7.113a), else a tactical bomber group; the other when it
+  * lacks the techs of that one; -1 when it lacks both.
+  */
+ /**
+@@ -690,9 +712,8 @@ export function deliveryWing(world: World, n: number, kinds: NonNullable<BuildMi
+   return rule && knowsTechs(world, n, rule.techs) ? t : -1;
+ }
+ 
+-function pickWing(world: World, n: number, kinds: NonNullable<BuildMix['wings']>, own: number[]): number {
+-  const f = world.formations.cols;
+-  const fighters = own.filter((id) => f.template[id] === kinds.fighter).length;
++function pickWing(world: World, n: number, kinds: NonNullable<BuildMix['wings']>, own: readonly number[]): number {
++  const fighters = own.filter((t) => t === kinds.fighter).length;
+   const order = 2 * fighters < own.length || own.length === 0 ? [kinds.fighter, kinds.tactical] : [kinds.tactical, kinds.fighter];
+   return order.find((t) => world.rules!.templates[t] !== undefined && knowsTechs(world, n, world.rules!.templates[t]!.techs)) ?? -1;
+ }
+diff --git a/tests/unit/airBudget1938.test.ts b/tests/unit/airBudget1938.test.ts
+index e0b71992..4e1588c7 100644
+--- a/tests/unit/airBudget1938.test.ts
++++ b/tests/unit/airBudget1938.test.ts
+@@ -1,16 +1,20 @@
+ import { describe, expect, it } from 'vitest';
+-import { AIR_SHARE } from '../../src/sim/ai/economic';
++import { AIR_SHARE, MAX_PARALLEL, PARALLEL_INCOME } from '../../src/sim/ai/economic';
+ import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938, TAGS_1938 } from '../../src/sim/scenario1938';
+ import { Sim } from '../../src/sim/sim';
+-import { UPKEEP_SCALE } from '../../src/sim/systems/economy';
++import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
+ import { destroyFormation } from '../../src/sim/systems/elements';
+ import { Domain, type World } from '../../src/sim/world';
+ import { assets1938 } from '../helpers/earth';
+ import { runEvents } from '../helpers/sim1938';
+ 
+-// PLAN 5.8s2: the economic AI keeps its air force under AIR_SHARE of its army's upkeep: under it,
+-// with the gold and an airfield, it orders a wing a time, a fighter group while fighters are under
+-// half its wings, else a tactical bomber group; over it, none.
++// PLAN 5.8s2: the economic AI keeps its air force under AIR_SHARE: under it, with the gold and an
++// airfield, it orders wings, a fighter group while fighters are under half its wings, else a tactical
++// bomber group; over it, none. PLAN 7.113a (ADR-686, the user's decision, 2026-10-24): the share is of
++// its income (of its army's upkeep before), with its wings in training, and it has as many wings in
++// training as the army's order slots (one at a time before). Late in a run the armies at war cost
++// 5-7 % of their income and capped their air forces under 1 % of it; the wings shot down in year 1
++// were not rebuilt (`docs/evidence/7.113/read.md`).
+ 
+ const id = (t: string): number => TAGS_1938.indexOf(t) + 1;
+ const T = ECONOMY_TABLES_1938;
+@@ -33,25 +37,40 @@ const upkeep = (w: World, n: number, of: (f: number) => boolean): number => {
+   });
+   return u;
+ };
+-const army = (w: World, f: number): boolean => !w.offLand(f);
+ 
+-describe('the air force\'s cost (PLAN 5.8s2)', () => {
+-  it('under its share France orders a fighter group, one at a time; Britain, over it, none; the Soviet Union, short of money, none', () => {
++const income = (w: World, n: number): number => Math.max(0, monthlyAccounts(w, T).gross[n]!);
++const slots = (w: World, n: number): number => Math.min(MAX_PARALLEL, 1 + Math.floor(income(w, n) / PARALLEL_INCOME));
++
++describe('the air force\'s cost (PLAN 5.8s2, 7.113a)', () => {
++  it('under its share of its income France orders a wing for each order slot; Britain, its income cut, over it, none; the Soviet Union, short of money, none', () => {
+     const s = peaceful(['FRA', 'ENG']);
+     const w = s.world;
+     const [FRA, ENG, SOV] = [id('FRA'), id('ENG'), id('SOV')];
+-    for (const n of [FRA, SOV]) expect(upkeep(w, n, (f) => w.isWing(f))).toBeLessThan(AIR_SHARE * upkeep(w, n, (f) => army(w, f)));
+-    expect(upkeep(w, ENG, (f) => w.isWing(f))).toBeGreaterThan(AIR_SHARE * upkeep(w, ENG, (f) => army(w, f)));
++    // Britain's income cut until its air force is over the share (1938's are all under it: 0.6-4 %).
++    w.nations.cols.incomeMult[ENG] = 0.15;
++    for (const n of [FRA, SOV]) expect(upkeep(w, n, (f) => w.isWing(f))).toBeLessThan(AIR_SHARE * income(w, n));
++    expect(upkeep(w, ENG, (f) => w.isWing(f))).toBeGreaterThan(AIR_SHARE * income(w, ENG));
++    const n = slots(w, FRA);
++    expect(n, "France's order slots (an income of about 1,070)").toBe(3);
+     runEvents(s, 1);
+-    expect(ordered(w, FRA)).toEqual([wingsMix.fighter]);
++    // A fighter group while fighters are under half its wings (those ordered with them), else a tactical bomber group.
++    const got = ordered(w, FRA);
++    expect(got).toHaveLength(n);
++    const c = w.formations.cols;
++    const kinds = [...w.wingBase.keys()].filter((f) => c.nation[f] === FRA).map((f) => c.template[f]!);
++    for (const t of got) {
++      expect(t).toBe(2 * kinds.filter((k) => k === wingsMix.fighter).length < kinds.length ? wingsMix.fighter : wingsMix.tactical);
++      kinds.push(t);
++    }
+     expect(ordered(w, ENG)).toEqual([]);
+     // Its books short (its balance under what it needs), the Soviet Union orders none.
+     expect(ordered(w, SOV)).toEqual([]);
++    // A month on, its slots full of wings in training: none more.
+     runEvents(s, 24 * 31);
+-    expect(ordered(w, FRA)).toHaveLength(1);
++    expect(ordered(w, FRA)).toHaveLength(n);
+   });
+ 
+-  it('with fighters half its wings or more, a tactical bomber group; with no airfield, none', () => {
++  it('with fighters half its wings or more, a tactical bomber group first; with no airfield, none', () => {
+     const s = peaceful(['GER']);
+     const w = s.world;
+     const GER = id('GER');
+@@ -60,7 +79,10 @@ describe('the air force\'s cost (PLAN 5.8s2)', () => {
+     const others = [...w.wingBase.keys()].filter((f) => c.nation[f] === GER && c.template[f] !== wingsMix.fighter).sort((a, b) => a - b);
+     for (const f of others.slice(2)) destroyFormation(w, f);
+     runEvents(s, 1);
+-    expect(ordered(w, GER)).toEqual([wingsMix.tactical]);
++    const got = ordered(w, GER);
++    expect(got[0]).toBe(wingsMix.tactical);
++    expect(got.length).toBeGreaterThan(1);
++    expect(got.length).toBeLessThanOrEqual(slots(w, GER));
+     const v = peaceful(['GER']);
+     v.world.airbases.forEach((b) => {
+       if (v.world.cells.controller[b.cell] === GER) v.world.cells.controller[b.cell] = id('POL');
