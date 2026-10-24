@@ -23274,3 +23274,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Filed:** 7.111 (the exact remainder, to ~3.9), 7.112 (the pockets as a rule, to ~3.6); both wait on ADR-680.
   `sortCells`' digit count fixed for maps over 2^22 cells (the shipped 2^21 unaffected).
 - **Next:** PLAN 7.106.
+
+## 2026-10-24 — ADR-679 a and ADR-680 b (the user's decisions)
+
+- **ADR-679 (a):** PLAN 7.104 closed not done; PLAN 7.110 (the army at war's size late) stands, after 7.106–7.109.
+- **ADR-680 (b):** PLAN 7.105 closed not done, cut 1 (`8dd20446`) kept; PLAN 7.111 (the exact remainder) and
+  7.112 (the pockets as a rule) stand. BLOCKERS entries resolved; both tasks archived.
+- **Next:** PLAN 7.106 (in progress: measured on 911–920, a first rule missed, not committed).

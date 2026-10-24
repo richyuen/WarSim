@@ -49,38 +49,6 @@ ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the di
 beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
 reused:
 
-- [ ] 7.104 The land war after year 1, a third time (R13-B1; R12-B1 improved by 7.79, not fixed; carries
-  emergent 6): on run 12's 32 seeds, engaged land formations a war a day after year 1 0.34 → 0.57 against
-  5.16 in year 1 (11 %); all engaged after year 1 4.15 a day against 40.3; at the year-10/20 checkpoints
-  4.09 engaged of about 439 formations of nations at war, 10 of 64 checkpoints with nobody in contact.
-  In the page: 4877 year 20, 0–4 engaged over 60 days with 7 wars; 7019 year 20, 0 in 5 of 7 samples
-  with 6 wars; 40 US divisions (367,096 men) idle at war on 8693. Formations under 500 men at year 20
-  36 → 64 a world ("Heavy armoured division 708: 2 men"). Evidence: `critic/c13_cmp_checkpoints.json`,
-  `c13_cmp_all.txt`, `c13_y2_4877_y20.json`, `c13_y2_7019_y20.json`, `c13_stacks_y10_w1.json`. The
-  critic's fix: the armies are there but stand idle or arrive hollow; raise contact per war after year 1
-  toward a real fraction of year 1's. Measure first, on a late save of 4877 and 7019 (HEAD's code), why
-  a nation at war with free formations has none in contact: idle with no plan, planned to no threatened
-  sector, or sent hollow. AT: on 10 unseen seeds × 20 years against HEAD read on the same seeds first,
-  engaged land formations a war, mean of daily samples in years 2–20, at least 0.15 of year 1's (HEAD on
-  run 12's seeds 0.11); land formations under 500 men at year 20 not above HEAD's; a unit test, red
-  without; the gate green.
-  Blocked (2026-10-24, ADR-679 proposed, BLOCKERS; `docs/evidence/7.104/measure.md`): on 901–910 HEAD
-  0.112, two rules (`rule.patch`: face the nearest enemy formation; a short threatened sector draws from
-  60–180 cells) 0.104, under HEAD. No rule; the pin unchanged. The cause found is PLAN 7.110.
-- [ ] 7.105 Performance (performance 5, needs 7): the late game at Max 46.3, 59.4, 59.4 s a game year
-  (4877 from year 20) against 23.2, 32.2, 28.1 s on `896ff779`, same session; headless year 21 of 4877
-  4.42 ms a tick (1.82), the operational AI 2.04 ms of it (0.54), the invasion AI 0.36 (0.09), p95 26.2
-  ms; the world flips 89,542 cells in the year (20,708); seed 99 2.54–2.58 ms (1.79). The cost per cell
-  flipped is not higher (ADR-654 a: the budget counts the rules' cost); ADR-666 a sent the felt speed to
-  this report. Evidence: `critic/c13_l_4877_alone.json`, `c13o_l_4877.json`, `c13_perf_4877_y21_head.log`,
-  `c13_perf_seed99_5y_head1.log`. Measure first, `--profile` on a late year (HEAD's year-20 save of a seed
-  run to it here, its year 21), which systems carry the tick, and the page's cost over the headless tick
-  at Max. AT: that late year's mean tick at most 3.0 ms headless pinned on 0xFFFF, twice; engaged land
-  formations a war in that year not below HEAD's; a rule that changes an outcome has its own ADR (ADR-666
-  b's fewer searches is one candidate); the gate green.
-  Blocked (2026-10-24, ADR-680 proposed, BLOCKERS; `docs/evidence/7.105/measure.md`): HEAD 4.50 ms; with
-  `joinWide`'s cells sorted by digits (`8dd20446`, the same answers) 4.224 and 4.256. The reach tests of a
-  world 4.3 × as churned as 896ff77's; what is left is PLAN 7.111 and 7.112.
 - [ ] 7.106 Emergent dynamics (emergent 6, needs 7, beyond R13-B1): on the same 32 seeds the churn grew
   in statelets: revolts 125 → 195 a world, founded nations alive at year 30 23 → 37, "Land handed over"
   1,075 rows in 3 late years of 4877. The longest stasis 22 → 25 years (3491) is noted, not scored
@@ -114,21 +82,18 @@ reused:
   the striker's forces is worth the warhead): AT, on 10 unseen seeds × 30 years, bursts killing over ten
   times more civilians than men at most 0.75 of HEAD's on the same seeds; a unit test, red without; the
   gate green.
-- [ ] 7.110 The army at war late (found at 7.104; R13-B1; waits on the user's ADR-679: option a; dropped on
-  b or c): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196
+- [ ] 7.110 The army at war late (found at 7.104; R13-B1; ADR-679 a, the user's decision): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196
   formations, 3.6 M → 1.4 M men; the world's income flat; the USA at peace with 37–60 % of the world's
   men). Measure first, on HEAD's year-10 and year-20 checkpoints of 901–910 (`tools/diag/contactAt.ts` writes them), why:
   upkeep against income of the nations at war, what the AI buys instead (navy, air, research, gold
   kept), the cadre rule's reach (ADR-673). AT: on the next 10 unseen seeds × 20 years against HEAD on them,
   land formations of nations at war a war, mean of daily samples in years 2–20, at least 1.3 × HEAD's;
   engaged per war there not below HEAD's; a unit test, red without; the gate green.
-- [ ] 7.111 The late tick's exact remainder (found at 7.105; performance 5; waits on the user's ADR-680:
-  option a or b): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one
+- [ ] 7.111 The late tick's exact remainder (found at 7.105; performance 5; ADR-680 b, the user's decision): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one
   Map of keys past the small integers), `sectorShape`'s sort and holders, `industryHeld` once a day for
   every reader. AT: year 21 of 4877 from `critic/c13_seed4877_y20.bin`, `npm run sim -- --affinity
   0xFFFF`, at most 3.9 ms a tick, twice; its hash 6d6103a7 and the pin unchanged; the gate green.
-- [ ] 7.112 The pockets as a rule (found at 7.105; performance 5; waits on the user's ADR-680: option b
-  or c): `pocketOf` answers each start by its own walk (no answer taken from another walk's marks), and
+- [ ] 7.112 The pockets as a rule (found at 7.105; performance 5; ADR-680 b, the user's decision): `pocketOf` answers each start by its own walk (no answer taken from another walk's marks), and
   keeps that answer across ticks while no flip between an open and a closed holder of its set touches a
   walked cell or a neighbour and the node parts hold (exact, so a loaded world steps as the saved one).
   AT: on that year, `pocketOf`'s cells walked a tick at most 0.5 × HEAD's; engaged land formations a war
@@ -458,3 +423,5 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.101 A defence that rises against a raid (found at 7.99; aircraft 7, needs 8; ADR-672 b): after year 1 […]
 - [x] 7.102 A block no further than 20 km from the block it faces (`formationFight1938`, seed 4242, Germany on […]
 - [x] 7.103 A tank's flash at its own muzzle (`tankBattle1938`, seed 1, stop 5): the flash of element 1112 […]
+- [x] 7.104 The land war after year 1, a third time (R13-B1; R12-B1 improved by 7.79, not fixed; carries […]
+- [x] 7.105 Performance (performance 5, needs 7): the late game at Max 46.3, 59.4, 59.4 s a game year […]

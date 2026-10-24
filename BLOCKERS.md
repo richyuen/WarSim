@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.105's AT missed: year 21 of 4877 at 4.22–4.26 ms a tick, bar 3.0 (ADR-680, 2026-10-24)
+### RESOLVED 2026-10-24 (option b, the user's decision: 7.105 closed not done, cut 1 kept; PLAN 7.111 and 7.112) · PLAN 7.105's AT missed: year 21 of 4877 at 4.22–4.26 ms a tick, bar 3.0 (ADR-680, 2026-10-24)
 - **The bar:** year 21 of 4877 from critic run 13's year-20 save at most 3.0 ms a tick headless pinned on
   0xFFFF, twice; engaged per war not below HEAD's.
 - **What moved** (`docs/evidence/7.105/measure.md`): HEAD 4.50; `joinWide`'s cells sorted by digits
@@ -16,7 +16,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   (ADR-680): (a) 7.111 alone; (b) 7.111 and 7.112 (recommended); (c) both and the cadence. No rule;
   the pin unchanged (f9d18365).
 
-### PLAN 7.104's AT missed: engaged per war late 0.112 of year 1 on HEAD, 0.104 with two rules, bar 0.15 (ADR-679, 2026-10-24)
+### RESOLVED 2026-10-24 (option a, the user's decision: 7.104 closed not done; PLAN 7.110) · PLAN 7.104's AT missed: engaged per war late 0.112 of year 1 on HEAD, 0.104 with two rules, bar 0.15 (ADR-679, 2026-10-24)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD, engaged land formations a war in years 2–20 at
   least 0.15 of year 1's; formations under 500 men at year 20 not above HEAD's; a unit test, red without.
 - **What moved** (`docs/evidence/7.104/measure.md`, 901–910): HEAD 0.112 (567 under 500 men); with both

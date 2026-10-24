@@ -14983,3 +14983,51 @@ Of 7.33 (open in PLAN.md):
   figure's muzzle); in a packed block another of its tanks may stand nearer. Read first which figure is
   nearest; then the measure aimed at the firing figure (the bar kept) or the muzzle's drawing fixed.
   AT: `tankBattle1938` green on this machine, alone and in `npm run check:review`, every claim kept.
+
+<!-- moved 2026-10-24 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.104 The land war after year 1, a third time (R13-B1; R12-B1 improved by 7.79, not fixed; carries
+  emergent 6): on run 12's 32 seeds, engaged land formations a war a day after year 1 0.34 → 0.57 against
+  5.16 in year 1 (11 %); all engaged after year 1 4.15 a day against 40.3; at the year-10/20 checkpoints
+  4.09 engaged of about 439 formations of nations at war, 10 of 64 checkpoints with nobody in contact.
+  In the page: 4877 year 20, 0–4 engaged over 60 days with 7 wars; 7019 year 20, 0 in 5 of 7 samples
+  with 6 wars; 40 US divisions (367,096 men) idle at war on 8693. Formations under 500 men at year 20
+  36 → 64 a world ("Heavy armoured division 708: 2 men"). Evidence: `critic/c13_cmp_checkpoints.json`,
+  `c13_cmp_all.txt`, `c13_y2_4877_y20.json`, `c13_y2_7019_y20.json`, `c13_stacks_y10_w1.json`. The
+  critic's fix: the armies are there but stand idle or arrive hollow; raise contact per war after year 1
+  toward a real fraction of year 1's. Measure first, on a late save of 4877 and 7019 (HEAD's code), why
+  a nation at war with free formations has none in contact: idle with no plan, planned to no threatened
+  sector, or sent hollow. AT: on 10 unseen seeds × 20 years against HEAD read on the same seeds first,
+  engaged land formations a war, mean of daily samples in years 2–20, at least 0.15 of year 1's (HEAD on
+  run 12's seeds 0.11); land formations under 500 men at year 20 not above HEAD's; a unit test, red
+  without; the gate green.
+  Closed not done (2026-10-24, ADR-679 a, the user's decision; BLOCKERS; `docs/evidence/7.104/measure.md`): on 901–910 HEAD
+  0.112, two rules (`rule.patch`: face the nearest enemy formation; a short threatened sector draws from
+  60–180 cells) 0.104, under HEAD. No rule; the pin unchanged. The cause found is PLAN 7.110.
+
+- [x] 7.105 Performance (performance 5, needs 7): the late game at Max 46.3, 59.4, 59.4 s a game year
+  (4877 from year 20) against 23.2, 32.2, 28.1 s on `896ff779`, same session; headless year 21 of 4877
+  4.42 ms a tick (1.82), the operational AI 2.04 ms of it (0.54), the invasion AI 0.36 (0.09), p95 26.2
+  ms; the world flips 89,542 cells in the year (20,708); seed 99 2.54–2.58 ms (1.79). The cost per cell
+  flipped is not higher (ADR-654 a: the budget counts the rules' cost); ADR-666 a sent the felt speed to
+  this report. Evidence: `critic/c13_l_4877_alone.json`, `c13o_l_4877.json`, `c13_perf_4877_y21_head.log`,
+  `c13_perf_seed99_5y_head1.log`. Measure first, `--profile` on a late year (HEAD's year-20 save of a seed
+  run to it here, its year 21), which systems carry the tick, and the page's cost over the headless tick
+  at Max. AT: that late year's mean tick at most 3.0 ms headless pinned on 0xFFFF, twice; engaged land
+  formations a war in that year not below HEAD's; a rule that changes an outcome has its own ADR (ADR-666
+  b's fewer searches is one candidate); the gate green.
+  Closed not done, cut 1 kept (2026-10-24, ADR-680 b, the user's decision; BLOCKERS; `docs/evidence/7.105/measure.md`): HEAD 4.50 ms; with
+  `joinWide`'s cells sorted by digits (`8dd20446`, the same answers) 4.224 and 4.256. The reach tests of a
+  world 4.3 × as churned as 896ff77's; what is left is PLAN 7.111 and 7.112.

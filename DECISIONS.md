@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-680 · 2026-10-24 · proposed (the user's decision) — The late tick: 4.2 ms against 3.0, the cost of a churned world's reach tests (PLAN 7.105's AT missed)
+### ADR-680 · 2026-10-24 · accepted, option b (the user's decision, 2026-10-24) — The late tick: 4.2 ms against 3.0, the cost of a churned world's reach tests (PLAN 7.105's AT missed)
 
 - **Context** (`docs/evidence/7.105/measure.md`). PLAN 7.105 (performance 5): year 21 of 4877, from
   critic run 13's year-20 save, at most 3.0 ms a tick headless pinned on 0xFFFF, twice; engaged per war
@@ -205,7 +205,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   the bar with the plans that R13-B1, the report's one blocking finding, says are already too few.
 - **Meanwhile** the loop takes PLAN 7.106. Until decided, no rule; the pin unchanged (f9d18365).
 
-### ADR-679 · 2026-10-24 · proposed (the user's decision) — The land war after year 1: the allotment's rules miss on fresh worlds; the army at war is a third of year 1's (PLAN 7.104's AT missed)
+### ADR-679 · 2026-10-24 · accepted, option a (the user's decision, 2026-10-24) — The land war after year 1: the allotment's rules miss on fresh worlds; the army at war is a third of year 1's (PLAN 7.104's AT missed)
 
 - **Context** (`docs/evidence/7.104/measure.md`). PLAN 7.104 (R13-B1): on 10 unseen seeds × 20 years
   against HEAD, engaged land formations a war in years 2–20 at least 0.15 of year 1's; formations under
