@@ -814,13 +814,31 @@ export function desperationOf(world: World, n: number, war: War, side: number): 
   return { desperation, extreme: desperation >= 1 && (ftd || threatened || fallen) };
 }
 
-/** The industry (`cells.econ`) each nation controls, by nation id: one pass over the cells. */
+/**
+ * The industry (`cells.econ`) each nation controls, by nation id: a pass over the cells with industry
+ * (PLAN 7.111: before, over every cell of the map). Those cells are kept per `econ` array and taken
+ * again when `world.citiesVersion` moves: only a city of the editor gives a cell industry it had not
+ * (as `byIndustry`, `ai/air.ts`), and a loaded world has new arrays. Their industry is read as it is,
+ * in the cells' order: the same sums as the whole pass.
+ */
 export function industryHeld(world: World): Float64Array {
   const { econ, controller } = world.cells;
+  let kept = ECON_CELLS.get(econ);
+  if (!kept || kept.cities !== world.citiesVersion) {
+    const cells: number[] = [];
+    for (let c = 0; c < econ.length; c++) if (econ[c] !== 0) cells.push(c);
+    ECON_CELLS.set(econ, (kept = { cells: Uint32Array.from(cells), cities: world.citiesVersion }));
+  }
   const out = new Float64Array(world.nations.highWater);
-  for (let c = 0; c < econ.length; c++) if (econ[c] !== 0) out[controller[c]!]! += econ[c]!;
+  const cells = kept.cells;
+  for (let k = 0; k < cells.length; k++) {
+    const c = cells[k]!;
+    out[controller[c]!]! += econ[c]!;
+  }
   return out;
 }
+/** The cells with industry, per `econ` array, and `world.citiesVersion` when they were taken (`industryHeld`). */
+const ECON_CELLS = new WeakMap<Uint32Array, { cells: Uint32Array; cities: number }>();
 
 /** How many times `industryHeld` has been summed for the decisions (PLAN 6.10: once a day at most). */
 let industrySums = 0;
