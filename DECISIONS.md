@@ -180,8 +180,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Decision.** The spec finds the figure that fired (the drawn figure of the element nearest its place,
   `x0 + from.dx`), claims it is drawn there (under 0.05 of a figure), and reads both bars from it: the
   flash not over half a figure from it, and over 0.3 (not at the middle of the hull that fired). The
-  nearest-figure claim (not over 0.5) is kept. Each bar is kept; the claim is stronger, not weaker: the
-  nearest tank is never further than the one that fired.
+  nearest-figure claim (not over 0.5) is kept. The bars' figures are kept; the lower one (over 0.3) moved
+  from the nearest figure to the one that fired, the task's option: a flash over a neighbour's hull now
+  passes, which the next point leaves as found.
 - **Found, not changed:** a tank's barrel may reach over the hull of the next tank of its block (a
   figure 0.28 of a side from another's muzzle). No task: a figure's place is the block's layout
   (`figureOffsets`), and no claim reads hulls' gaps at 4 m/px.
