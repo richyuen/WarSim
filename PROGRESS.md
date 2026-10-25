@@ -23567,3 +23567,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** an own walk is 11 × HEAD's shared one: size a cache of a walk by the walk it replaces, not by the
   repeats it saves.
 - **Next:** PLAN 7.114 while ADR-696 waits.
+
+## 2026-10-25 — PLAN 7.112 closed not done (ADR-696 a, the user's decision)
+
+- No rule; the probe `POCKET_PROBE` and `tools/diag/pocketWalks.ts` kept; no task.
+- **Next:** PLAN 7.114 (its AT running, seeds 981–990).
+- **ADR-698** (the user's decision): the sim tick's budget is at most 5.0 ms a tick in any year (200 game hours a
+  second); SPEC's budget line restated; 7.105's 3.0 ms bar withdrawn.

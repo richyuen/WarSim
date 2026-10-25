@@ -167,7 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-696 · 2026-10-24 · proposed (the user's decision) — Each start's own walk costs 20 × HEAD's pocket walks: the AT missed (PLAN 7.112)
+### ADR-698 · 2026-10-25 · accepted (the user's decision, 2026-10-25) — The sim tick's budget: at most 5.0 ms a tick, any year
+
+- **Context.** Critic run 13 scored performance 5 on the late game: year 21 of 4877 at 4.42 ms a tick headless
+  (1.82 on `896ff77`), 46–59 s a game year at Max in the page; the mean tick over 30 years × 32 seeds 3.88 ms. PLAN
+  7.105 set itself a bar of 3.0 ms on that year; 7.105, 7.111 and 7.112 missed it (ADR-680, ADR-695, ADR-696), and the
+  one lever of that size, the operational AI every other day, works against the land war (R13-B1). A tick is a game
+  hour: 5 ms is 200 game hours a second, 8.3 game days, a game year in about 44 s headless.
+- **Decision** (the user's: "that's fast enough"). The sim tick's budget is **at most 5.0 ms a tick** headless
+  (`npm run sim -- --affinity 0xFFFF`, M, the 1938 world), in any year, the late game's busiest among them: at least
+  200 game hours a second. HEAD's late game (year 21 of 4877 at 4.2–4.4 ms) is within it, and so the page's late game
+  year at Max of about 45–60 s. It replaces the 1.5 ms average (SPEC "Performance budgets") and 7.105's 3.0 ms; the
+  check of a rule's own cost (ADR-654 a: at most +0.2 ms on seed 99's year-4 world over `dd3b730`'s rules) stays.
+- **Consequences.** A late tick under 5.0 ms is the design (CRITIC_PROMPT: a behaviour the user decided is judged by
+  how well it is done, not as a defect); over it, or a frame rate under its budget, is a defect as before. No task is
+  filed for the 3.0 ms bar; performance work is taken where it keeps the tick under 5.0 ms or cuts the long ticks.
+
+### ADR-696 · 2026-10-24 · accepted, option a (the user's decision, 2026-10-25) — Each start's own walk costs 20 × HEAD's pocket walks: the AT missed (PLAN 7.112)
 
 - **Context** (`docs/evidence/7.112/measure.md`). PLAN 7.112 (ADR-680 b): `pocketOf` answers each start by its own
   walk and keeps the answer across ticks while no flip touches its cells; on year 21 of 4877 from
@@ -193,6 +209,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(c)** As (a), and ADR-680 (c)'s task: the operational AI's turn every other day, judged by 7.104's land war
     on 10 unseen seeds.
 - **Meanwhile** the loop takes PLAN 7.114. Until decided, no rule; the pin unchanged.
+- **Done (a).** 7.112 closed not done; no rule; `POCKET_PROBE` and `tools/diag/pocketWalks.ts` kept; no task.
 
 ### ADR-695 · 2026-10-24 · accepted, option a (the user's decision, 2026-10-24) — The late tick's exact remainder: 4.44 → 4.23 ms, bar 4.12 (PLAN 7.111's AT missed)
 

@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.112's AT missed: own walks 141,368 cells a tick, bar 3,567 (ADR-696; waits on the user)
+### RESOLVED 2026-10-25 (option a, the user's decision: 7.112 closed not done, no rule, the probe kept, no task) · PLAN 7.112's AT missed: own walks 141,368 cells a tick, bar 3,567 (ADR-696; waits on the user)
 - **The bar** (ADR-680 b): on year 21 of 4877 from `critic/c13_seed4877_y20.bin`, `pocketOf`'s cells walked a tick
   at most 0.5 × HEAD's (7,134); engaged land formations a war not below HEAD's (0.2647); the round trip's test green;
   a unit test, red without; the pin moved once; the gate green.

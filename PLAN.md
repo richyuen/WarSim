@@ -49,14 +49,6 @@ ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the di
 beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
 reused:
 
-- [ ] 7.112 The pockets as a rule (found at 7.105; performance 5; ADR-680 b, the user's decision): `pocketOf` answers each start by its own walk (no answer taken from another walk's marks), and
-  keeps that answer across ticks while no flip between an open and a closed holder of its set touches a
-  walked cell or a neighbour and the node parts hold (exact, so a loaded world steps as the saved one).
-  AT: on that year, `pocketOf`'s cells walked a tick at most 0.5 × HEAD's; engaged land formations a war
-  in it, from the same save, not below HEAD's; the round trip's test green; a unit test, red without;
-  the pin moved once, with its ADR; the gate green.
-  AT missed 2026-10-24 (ADR-696, BLOCKERS; `docs/evidence/7.112/measure.md`): own walks, kept, 141,368 cells a tick
-  against HEAD's 7,134 (bar 3,567); engaged 0.2528 against 0.2647. Waits on the user's word on ADR-696.
 - [ ] 7.114 The answer weighed by its own toll (found at 7.109b; aiNukes 7; ADR-691 a, the user's decision; on 7.109b's
   rule, committed): answering a
   strike on forces, a place whose burst is expected to kill over ten times more civilians than men is no answer, and
@@ -398,3 +390,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.110 The army at war late (found at 7.104; R13-B1; ADR-679 a, the user's decision): by year 20 the land army of nations at war a war is a third of year 1's (4877: 529 → 196 […]
 - [x] 7.115 The operational AI spreads a larger army over its front (found at 7.110b; R13-B1; ADR-692 b, the user's […]
 - [x] 7.111 The late tick's exact remainder (found at 7.105; performance 5; ADR-680 b, the user's decision): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one […]
+- [x] 7.112 The pockets as a rule (found at 7.105; performance 5; ADR-680 b, the user's decision): `pocketOf` answers each start by its own walk (no answer taken from another walk's marks), and […]

@@ -2831,7 +2831,8 @@ and upload f32 positions relative to it. The vertex shader never sees absolute w
 
 **Performance budgets.** T0 ≥ 60 fps with 100+ nations at M size. T2 ≥ 30 fps with
 10 000 visible proxies. Snapshot build ≤ 2 ms. Main-thread frame CPU ≤ 6 ms.
-Sim tick ≤ 1.5 ms average (Node, M, 1938). *Since ADR-654 a (2026-10-23, the user's decision):* the
+Sim tick ≤ 5.0 ms in any year, the late game's busiest among them (headless, pinned, M, 1938: at least 200 game hours
+a second; ADR-698, 2026-10-25, the user's decision; before, ≤ 1.5 ms average). *Since ADR-654 a (2026-10-23, the user's decision):* the
 1.5 ms stands for the 1938 world as first measured; the busier land war since R11-B1/R12-B1 reads
 1.94–1.97 ms on seed 99 × 5 years, and a rule change is judged instead by its cost on one world:
 HEAD's rules at most +0.2 ms a tick over `dd3b730`'s on HEAD's year-4 world of seed 99 (+0.145 at
