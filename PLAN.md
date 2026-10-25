@@ -49,16 +49,6 @@ ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the di
 beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
 reused:
 
-- [ ] 7.114 The answer weighed by its own toll (found at 7.109b; aiNukes 7; ADR-691 a, the user's decision; on 7.109b's
-  rule, committed): answering a
-  strike on forces, a place whose burst is expected to kill over ten times more civilians than men is no answer, and
-  with no place of forces in reach the answer waits (within the grievance's days) or lapses; 7.109b's places of
-  forces out of range with a city in it (964: 86,000 civilians, no men) and its garrisons counted as forces (968:
-  96,000 civilians, no men). AT: on the next 10 unseen seeds × 30 years against HEAD on them, strikes back killing
-  over ten times more civilians than men at most 0.25 × HEAD's, and all bursts so at most 0.75 × HEAD's; a unit
-  test, red without; the gate green.
-  AT missed 2026-10-25 (ADR-697, BLOCKERS; `docs/evidence/7.114/at.md`): strikes back so 8 → 0 (met); all bursts so
-  32 → 25 (bar 24). Waits on the user's word on ADR-697.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -393,3 +383,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.115 The operational AI spreads a larger army over its front (found at 7.110b; R13-B1; ADR-692 b, the user's […]
 - [x] 7.111 The late tick's exact remainder (found at 7.105; performance 5; ADR-680 b, the user's decision): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one […]
 - [x] 7.112 The pockets as a rule (found at 7.105; performance 5; ADR-680 b, the user's decision): `pocketOf` answers each start by its own walk (no answer taken from another walk's marks), and […]
+- [x] 7.114 The answer weighed by its own toll (found at 7.109b; aiNukes 7; ADR-691 a, the user's decision; on 7.109b's […]

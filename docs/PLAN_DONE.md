@@ -15308,3 +15308,28 @@ Of 7.33 (open in PLAN.md):
   the pin moved once, with its ADR; the gate green.
   AT missed 2026-10-24 (ADR-696, BLOCKERS; `docs/evidence/7.112/measure.md`): own walks, kept, 141,368 cells a tick
   against HEAD's 7,134 (bar 3,567); engaged 0.2528 against 0.2647. Waits on the user's word on ADR-696.
+
+<!-- moved 2026-10-25 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.114 The answer weighed by its own toll (found at 7.109b; aiNukes 7; ADR-691 a, the user's decision; on 7.109b's
+  rule, committed): answering a
+  strike on forces, a place whose burst is expected to kill over ten times more civilians than men is no answer, and
+  with no place of forces in reach the answer waits (within the grievance's days) or lapses; 7.109b's places of
+  forces out of range with a city in it (964: 86,000 civilians, no men) and its garrisons counted as forces (968:
+  96,000 civilians, no men). AT: on the next 10 unseen seeds × 30 years against HEAD on them, strikes back killing
+  over ten times more civilians than men at most 0.25 × HEAD's, and all bursts so at most 0.75 × HEAD's; a unit
+  test, red without; the gate green.
+  AT missed 2026-10-25 (ADR-697, BLOCKERS; `docs/evidence/7.114/at.md`): strikes back so 8 → 0 (met); all bursts so
+  32 → 25 (bar 24). Waits on the user's word on ADR-697.

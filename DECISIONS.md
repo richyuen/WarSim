@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-697 · 2026-10-25 · proposed (the user's decision) — An answer to a strike on forces only at places whose toll is of forces: the AT missed by one burst (PLAN 7.114)
+### ADR-697 · 2026-10-25 · accepted, option a (the user's decision, 2026-10-25) — An answer to a strike on forces only at places whose toll is of forces: the AT missed by one burst (PLAN 7.114)
 
 - **Context** (`docs/evidence/7.114/at.md`). PLAN 7.114 (ADR-691 a): answering a strike on forces, a place whose burst
   is expected to kill over ten times more civilians than men is no answer, and with no place of forces in reach the
@@ -187,6 +187,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     25 here), its AT on the next 10 unseen seeds.
   - **(c)** 7.114 closed not done, no rule.
 - **Meanwhile** the loop takes PLAN 7.5 (the critic's run, the next task). Until decided, no rule; the pin unchanged.
+- **Done (a).** The rule committed as `rule.patch` stood (`nuclear.ts`, `nukeAnswerInKind1938.test.ts`); the pin
+  unchanged; 7.114 closed not done; no task.
 
 ### ADR-698 · 2026-10-25 · accepted (the user's decision, 2026-10-25) — The sim tick's budget: at most 5.0 ms a tick, any year
 

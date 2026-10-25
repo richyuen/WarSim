@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.114's AT missed by one burst: all bursts killing over ten times more civilians than men 32 → 25, bar 24 (ADR-697; waits on the user)
+### RESOLVED 2026-10-25 (option a, the user's decision: the rule committed, 7.114 closed not done, no task) · PLAN 7.114's AT missed by one burst: all bursts killing over ten times more civilians than men 32 → 25, bar 24 (ADR-697; waits on the user)
 - **The bar:** on 10 unseen seeds × 30 years against HEAD, strikes back killing over ten times more civilians than men
   at most 0.25 × HEAD's, all bursts so at most 0.75 × HEAD's; a unit test, red without; the gate green.
 - **What moved** (`docs/evidence/7.114/at.md`, `rule.patch`; 981–990): strikes back so 8 → 0 (met); all bursts so

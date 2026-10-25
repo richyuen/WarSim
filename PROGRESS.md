@@ -23584,3 +23584,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **AT** (981–990 × 30, `tools/diag/nukeVolume.ts`, HEAD `b912a78a` in `WarSim_chase`): strikes back killing over ten
   times more civilians than men 8 → 0 (bar 2: met); all bursts so 32 → 25 (bar 24: missed). The 25 are first strikes.
 - **Next:** PLAN 7.5 while ADR-697 waits.
+
+## 2026-10-25 — PLAN 7.114 closed not done, the rule committed (ADR-697 a, the user's decision)
+
+- The answer to a strike on forces only at places whose expected toll is of forces, else it waits or lapses
+  (`docs/evidence/7.114/rule.patch` as it stood); the gate green, the pin unchanged.
+- **Next:** PLAN 7.5 (the critic's run: `npm run check:review` first).

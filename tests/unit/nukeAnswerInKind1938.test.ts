@@ -3,7 +3,7 @@ import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { destroyFormation } from '../../src/sim/systems/elements';
-import { blastRadius, CAPITAL_MEN_MIN, dayIndustry, detonate, placeParts, restraintOf, TARGET_CAPITAL, weighWar } from '../../src/sim/systems/nuclear';
+import { ARMY_STRIKE_CIVILIANS, blastRadius, CAPITAL_MEN_MIN, dayIndustry, detonate, placeParts, restraintOf, TARGET_CAPITAL, weighWar } from '../../src/sim/systems/nuclear';
 import { seaKm } from '../../src/sim/systems/navalCombat';
 import { grantTechs, techMask } from '../../src/sim/tech';
 import type { World } from '../../src/sim/world';
@@ -13,8 +13,8 @@ import { addDivision, nationId } from '../helpers/sim1938';
 // PLAN 7.109b (critic run 13, seed 1129 year 15: the United Kingdom killed 67,951 US soldiers and no
 // civilians near Molepolole, and the United States answered on London, 248,000 civilians and 160
 // men): an answer is weighed against the strike it answers. Struck at its forces, Germany answers at
-// the French places with an army in the blast, not at an emptied Paris; Paris only when no French
-// force is worth a warhead, and whole when the strike it answers fell on a city.
+// the French places with an army in the blast, not at an emptied Paris, and whole when the strike it
+// answers fell on a city. PLAN 7.114: only at places whose toll is of forces, and with none it waits.
 
 const { w: W, h: H } = SIZE_1938;
 const [FRA, GER] = ['FRA', 'GER'].map(nationId) as [number, number];
@@ -65,7 +65,9 @@ describe('an answer weighed against the strike it answers (PLAN 7.109b)', () => 
     expect(placeParts(w, GER, war, 0, px, py).capital).toBe(TARGET_CAPITAL);
   }, 300_000);
 
-  it('struck at its forces with no French force left: Paris, whole', () => {
+  // PLAN 7.114 (ADR-697): with no place of forces, the answer waits or lapses. Until then (7.109b)
+  // Germany fell back on Paris, whole: a city for an army.
+  it('struck at its forces with no French force left: no place, the answer waits', () => {
     const { w, px, py } = world();
     const c = w.formations.cols;
     w.formations.ids().forEach((id) => {
@@ -74,8 +76,31 @@ describe('an answer weighed against the strike it answers (PLAN 7.109b)', () => 
     const war = w.wars.start([GER], [FRA], 0);
     w.nukeGrievance.set(GER, { by: FRA, until: w.tick + 24 * 90, army: true });
     const r = weighWar(w, GER, war, 0, dayIndustry(w));
-    expect(r.places.some((p) => nearParis(w, px, py, p.x, p.y))).toBe(true);
-    expect(placeParts(w, GER, war, 0, px, py).capital).toBe(TARGET_CAPITAL);
+    expect(r.places).toEqual([]);
+    expect(placeParts(w, GER, war, 0, px, py).capital).toBe(0);
+    expect(restraintOf(w, GER, war, 0).reason).toBe('noPlace');
+  }, 300_000);
+
+  // PLAN 7.114 (critic run 13's measure; seed 968 of 7.109b: a garrison with a hundredth of the
+  // theatre's men taken for forces, 96,000 civilians dead and no men): a place whose burst is expected
+  // to kill over ten times more civilians than men is no answer to a strike on forces.
+  it('a garrison in Paris is no place of forces: its burst would kill a city', () => {
+    const { w, px, py } = world();
+    const c = w.formations.cols;
+    w.formations.ids().forEach((id) => {
+      if (c.nation[id] === FRA) destroyFormation(w, id);
+    });
+    addDivision(w, FRA, px, py);
+    const war = w.wars.start([GER], [FRA], 0);
+    w.nukeGrievance.set(GER, { by: FRA, until: w.tick + 24 * 90, army: true });
+    const parts = placeParts(w, GER, war, 0, px, py);
+    process.stderr.write(`garrison: men share ${parts.menShare.toFixed(4)}, men ${parts.men.toFixed(0)}, people ${parts.people}\n`);
+    // Forces in the blast as 7.109b counted them, and a city's toll.
+    expect(parts.menShare).toBeGreaterThanOrEqual(CAPITAL_MEN_MIN);
+    expect(parts.people).toBeGreaterThan(ARMY_STRIKE_CIVILIANS * parts.men);
+    const r = weighWar(w, GER, war, 0, dayIndustry(w));
+    expect(r.places.some((p) => nearParis(w, px, py, p.x, p.y))).toBe(false);
+    expect(restraintOf(w, GER, war, 0).reason).not.toBe('strikes');
   }, 300_000);
 
   it("a burst's grievance knows what it struck, and a save keeps it", () => {
