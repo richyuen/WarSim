@@ -23609,3 +23609,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Fix 3** (ADR-700, view only): the fight view goes out to `T3_MAX_M` (30 m/px, was 28): 253 on 47, 18.8 km
   north–south, whole at 30. formationFight1938, fightSeen1938 (both), toBattle1938 green by hand; warBattle.test.ts's
   case restated to `T3_MAX_M`. Left: fallen1938 and stackBlocks1938 (history re-picks), then `check:review` again.
+- **Re-picks** (history after `3e58eb61` and ADR-699): fallen1938's division 556 → 558 (in contact on day 21, loses
+  2,659 on day 22); stackBlocks1938's search 30 → 60 days (the stacks of days 17, 28, 29 have no pair out of contact in
+  the view; the scene on day 41). Both green by hand.

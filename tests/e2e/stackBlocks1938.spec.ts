@@ -21,7 +21,7 @@ const SPACING = 0.03;
 const GAP = 0.05;
 
 test('the blocks of a stack of tank corps and tank brigades in contact do not stand in one another', async ({ page }, info) => {
-  test.setTimeout(300_000);
+  test.setTimeout(900_000);
   const out = process.env['EVIDENCE'] !== undefined ? path.resolve(import.meta.dirname, '../../docs/evidence/3.11') : info.outputPath();
   mkdirSync(out, { recursive: true });
   await page.setViewportSize(VIEW);
@@ -29,9 +29,11 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
   // The Soviet armour in contact, and of it the formation with the most of the others within a cell.
   // Green at `896ff779`, red at `9ffb0274`: the rules between moved the stack's day. The war is
-  // stepped a day at a time, within 30 days, to the first day the scene below is in the view at
+  // stepped a day at a time, within 60 days, to the first day the scene below is in the view at
   // 40 m/px: five armour formations in contact within a cell of one another (six on day 6 at
   // 3.11c1), ten pairs of Soviet formations in contact, and a pair not in contact (PLAN 7.4f38).
+  // Within 30 until the strike rule of `3e58eb61` and ADR-699: since, the stacks of days 17, 28 and
+  // 29 have no pair out of contact in the view, and the scene is on day 41.
   type Armour = { id: number; x: number; y: number };
   const stepDay = (): Promise<Armour[]> =>
     page.evaluate(async (SOV) => {
@@ -99,7 +101,7 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
   let pairs: Awaited<ReturnType<typeof readPairs>> | null = null;
   let day = 0;
   const near = (a: Armour): number => armour.filter((b) => Math.hypot(a.x - b.x, a.y - b.y) < 1).length;
-  while (pairs === null && day < 30) {
+  while (pairs === null && day < 60) {
     day++;
     armour = await stepDay();
     if (armour.length === 0) continue;
@@ -110,7 +112,7 @@ test('the blocks of a stack of tank corps and tank brigades in contact do not st
     if (seen.out.filter((p) => p.soviet).length >= 10 && seen.out.some((p) => p.free)) pairs = seen;
   }
   console.log(`seed 1212: the Soviet stack of armour in contact on day ${day}`);
-  expect(pairs, 'the stack and a column in the view within 30 days').not.toBeNull();
+  expect(pairs, 'the stack and a column in the view within 60 days').not.toBeNull();
   if (pairs === null) return;
   expect(armour.length, 'Soviet armour formations in contact').toBeGreaterThanOrEqual(4);
   expect(near(centre), 'armour formations of one stack').toBeGreaterThanOrEqual(4);
