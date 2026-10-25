@@ -23574,3 +23574,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 7.114 (its AT running, seeds 981–990).
 - **ADR-698** (the user's decision): the sim tick's budget is at most 5.0 ms a tick in any year (200 game hours a
   second); SPEC's budget line restated; 7.105's 3.0 ms bar withdrawn.
+
+## 2026-10-25 — PLAN 7.114: the AT missed by one burst, to the user (ADR-697)
+
+- **Rule tried** (`docs/evidence/7.114/rule.patch`, not committed): answering a strike on forces, only places of forces
+  whose expected civilians are at most ten times their expected men (`PlaceParts.men`) and in reach; with none, the
+  answer waits or lapses (no fallback on a city). Unit cases in `nukeAnswerInKind1938.test.ts`: red on HEAD, green with
+  it; the gate green (1,353 related tests), the pin unchanged.
+- **AT** (981–990 × 30, `tools/diag/nukeVolume.ts`, HEAD `b912a78a` in `WarSim_chase`): strikes back killing over ten
+  times more civilians than men 8 → 0 (bar 2: met); all bursts so 32 → 25 (bar 24: missed). The 25 are first strikes.
+- **Next:** PLAN 7.5 while ADR-697 waits.

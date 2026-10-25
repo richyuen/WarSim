@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-697 · 2026-10-25 · proposed (the user's decision) — An answer to a strike on forces only at places whose toll is of forces: the AT missed by one burst (PLAN 7.114)
+
+- **Context** (`docs/evidence/7.114/at.md`). PLAN 7.114 (ADR-691 a): answering a strike on forces, a place whose burst
+  is expected to kill over ten times more civilians than men is no answer, and with no place of forces in reach the
+  answer waits or lapses. AT on 10 unseen seeds × 30 years against HEAD: strikes back so at most 0.25 × HEAD's, all
+  bursts so at most 0.75 × HEAD's; a unit test, red without; the gate green.
+- **Rule tried** (`docs/evidence/7.114/rule.patch`, not committed): the places of forces (an army in the blast) whose
+  expected civilians are at most `ARMY_STRIKE_CIVILIANS` times their expected men (`PlaceParts.men`) and in reach; with
+  none, no place (no fallback on every place, a capital whole). Two unit cases, red on HEAD; the gate green on it, the
+  pin unchanged.
+- **Measured** (981–990 × 30, HEAD `b912a78a`): strikes back killing over ten times more civilians than men **8 → 0**
+  (bar 2: met); all bursts so **32 → 25** (bar 24: missed by one). The 25 are first strikes (24 on HEAD), which no rule
+  of the answer reaches; bursts 242 → 249, strikes back 64 → 59.
+- **Options:**
+  - **(a)** Commit the rule; 7.114 closed not done (its answer clause met, the whole missed by one first strike).
+    (Recommended: the rule does what it is for, with no case against it, and the miss is in bursts it does not touch.)
+  - **(b)** As (a), and a numbered task for first strikes that kill over ten times more civilians than men (24 of the
+    25 here), its AT on the next 10 unseen seeds.
+  - **(c)** 7.114 closed not done, no rule.
+- **Meanwhile** the loop takes PLAN 7.5 (the critic's run, the next task). Until decided, no rule; the pin unchanged.
+
 ### ADR-698 · 2026-10-25 · accepted (the user's decision, 2026-10-25) — The sim tick's budget: at most 5.0 ms a tick, any year
 
 - **Context.** Critic run 13 scored performance 5 on the late game: year 21 of 4877 at 4.42 ms a tick headless

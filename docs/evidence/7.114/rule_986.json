@@ -1,0 +1,88 @@
+{
+ "seed": 986,
+ "years": 30,
+ "total": {
+  "bursts": 3,
+  "decided": 3,
+  "civOver10x": 1,
+  "backs": 1,
+  "backCiv": 0,
+  "wars": 435,
+  "warDays": 575631,
+  "holderDays": 32083,
+  "holderWarDays": 26950,
+  "stockWarDays": 634356,
+  "built": 172
+ },
+ "thirds": [
+  {
+   "bursts": 0,
+   "decided": 0,
+   "civOver10x": 0,
+   "backs": 0,
+   "backCiv": 0,
+   "wars": 181,
+   "warDays": 197066,
+   "holderDays": 930,
+   "holderWarDays": 844,
+   "stockWarDays": 2504,
+   "built": 12
+  },
+  {
+   "bursts": 0,
+   "decided": 0,
+   "civOver10x": 0,
+   "backs": 0,
+   "backCiv": 0,
+   "wars": 137,
+   "warDays": 187840,
+   "holderDays": 13392,
+   "holderWarDays": 10649,
+   "stockWarDays": 203216,
+   "built": 97
+  },
+  {
+   "bursts": 3,
+   "decided": 3,
+   "civOver10x": 1,
+   "backs": 1,
+   "backCiv": 0,
+   "wars": 117,
+   "warDays": 190725,
+   "holderDays": 17761,
+   "holderWarDays": 15457,
+   "stockWarDays": 428636,
+   "built": 63
+  }
+ ],
+ "holders": 5,
+ "bursts": [
+  {
+   "year": 27.18,
+   "by": 20,
+   "on": 69,
+   "yieldN": 1,
+   "dead": 188637,
+   "men": 5637,
+   "back": false
+  },
+  {
+   "year": 28.88,
+   "by": 1,
+   "on": 59,
+   "yieldN": 1,
+   "dead": 45830,
+   "men": 45830,
+   "back": false
+  },
+  {
+   "year": 28.88,
+   "by": 10,
+   "on": 1,
+   "yieldN": 1,
+   "dead": 33043,
+   "men": 32043,
+   "back": true
+  }
+ ]
+}

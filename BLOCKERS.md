@@ -5,6 +5,14 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.114's AT missed by one burst: all bursts killing over ten times more civilians than men 32 → 25, bar 24 (ADR-697; waits on the user)
+- **The bar:** on 10 unseen seeds × 30 years against HEAD, strikes back killing over ten times more civilians than men
+  at most 0.25 × HEAD's, all bursts so at most 0.75 × HEAD's; a unit test, red without; the gate green.
+- **What moved** (`docs/evidence/7.114/at.md`, `rule.patch`; 981–990): strikes back so 8 → 0 (met); all bursts so
+  32 → 25 (missed by one); the unit cases red on HEAD, green with the rule; the gate green, the pin unchanged.
+- **What is left:** the 25 are first strikes. The user's (ADR-697): (a) commit the rule, close it (recommended); (b)
+  as (a), and a task for first strikes; (c) close it, no rule.
+
 ### RESOLVED 2026-10-25 (option a, the user's decision: 7.112 closed not done, no rule, the probe kept, no task) · PLAN 7.112's AT missed: own walks 141,368 cells a tick, bar 3,567 (ADR-696; waits on the user)
 - **The bar** (ADR-680 b): on year 21 of 4877 from `critic/c13_seed4877_y20.bin`, `pocketOf`'s cells walked a tick
   at most 0.5 × HEAD's (7,134); engaged land formations a war not below HEAD's (0.2647); the round trip's test green;

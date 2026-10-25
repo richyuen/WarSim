@@ -57,6 +57,8 @@ reused:
   96,000 civilians, no men). AT: on the next 10 unseen seeds × 30 years against HEAD on them, strikes back killing
   over ten times more civilians than men at most 0.25 × HEAD's, and all bursts so at most 0.75 × HEAD's; a unit
   test, red without; the gate green.
+  AT missed 2026-10-25 (ADR-697, BLOCKERS; `docs/evidence/7.114/at.md`): strikes back so 8 → 0 (met); all bursts so
+  32 → 25 (bar 24). Waits on the user's word on ADR-697.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

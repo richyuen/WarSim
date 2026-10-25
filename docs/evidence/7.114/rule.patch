@@ -1,0 +1,180 @@
+diff --git a/src/sim/systems/nuclear.ts b/src/sim/systems/nuclear.ts
+index b228655b..a138a28a 100644
+--- a/src/sim/systems/nuclear.ts
++++ b/src/sim/systems/nuclear.ts
+@@ -133,9 +133,9 @@
+  * strike back spends the grievance (one for one), and its burst gives the nation it falls on none
+  * (PLAN 6.12e, `world.nukeAnswers`: with 6.12d, the Soviet Union and the United Kingdom struck each
+  * other daily, each answer a new grievance).
+- * An answer is weighed against the strike it answers (PLAN 7.109b, `forcesWorth`): a strike on
+- * forces (men killed, civilians at most ARMY_STRIKE_CIVILIANS times them) is answered at the places
+- * with an army in the blast, a city for an army only when none of them is worth its warhead and in reach.
++ * An answer is weighed against the strike it answers (PLAN 7.109b, 7.114, `forcesIn`): a strike on
++ * forces (men killed, civilians at most ARMY_STRIKE_CIVILIANS times them) is answered only at places
++ * in reach with an army in the blast and an expected toll of the same kind; with none, it waits or lapses.
+  *
+  * A burst's consequences (PLAN 6.5a, SPEC §6.4 "a stability shock and a war-exhaustion jump ...
+  * economic shocks follow"; `aftermath`), on the nation whose land it burst on (none at sea or on
+@@ -935,13 +935,15 @@ export interface PlaceParts {
+   yieldN: number;
+   /** The people (not men) its burst is expected to kill at that yield, anyone's (PLAN 7.38c; `expectedPeople`). */
+   people: number;
++  /** The men its burst is expected to kill at that yield, either side's within FRONT_KM (PLAN 7.114). */
++  men: number;
+ }
+ 
+ /** The parts of a burst's value at (x, y) for `n` in `war` on `side` (a diagnostic's). */
+ export function placeParts(world: World, n: number, war: War, side: number, x: number, y: number): PlaceParts {
+   const shared = warInputs(world, n, war, side, retaliates(world, n, war, side));
+   const view = strikeView(world, n, war, side, () => industryHeld(world));
+-  return partsIn(world, n, view, x, y, byUtility(shared), shared.retaliating && !armyFirst(world, n, war, side, shared, view));
++  return partsIn(world, n, view, x, y, byUtility(shared), shared.retaliating && !armyAnswer(world, n, war, side, shared));
+ }
+ 
+ /** What a yield's burst at a place is weighed by: its value, the chance it gets there and the people it kills. */
+@@ -1039,7 +1041,7 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, s
+     // 1,000 dead, at war with China): its nation holds CAPITAL_WEIGHT of the side's output. On a first
+     // strike only with an army in the blast (PLAN 7.62, ADR-629): CAPITAL_MEN_MIN of the theatre's men
+     // at this yield, so a capital may count at the wider yield alone. A strike back weighs it whole,
+-    // but for one on forces while a place of forces is worth its warhead (`armyFirst`, PLAN 7.109b).
++    // but for one on forces (`armyAnswer`, PLAN 7.109b, 7.114).
+     for (const m of capitalWhole || menShare >= CAPITAL_MEN_MIN ? enemy : []) {
+       if (nc.living[m] !== 1 || blastShare(seaKm(world, x, y, nc.capitalX[m]!, nc.capitalY[m]!), radii[r]!) === 0) continue;
+       const all = v.econAll();
+@@ -1049,7 +1051,7 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, s
+     // The smaller yield first: the larger is taken only where its strike's utility is higher (PLAN 7.44).
+     const sc = score(value, through, dead[r]!);
+     if (best === null || sc > bestScore) {
+-      best = { econShare, menShare, ownShare, menAll, theatreMen, sideMen: v.enemyMen, capital, through, value, yieldN: radii[r] === fission ? 1 : 2, people: dead[r]! };
++      best = { econShare, menShare, ownShare, menAll, theatreMen, sideMen: v.enemyMen, capital, through, value, yieldN: radii[r] === fission ? 1 : 2, people: dead[r]!, men: menHit[r]! + ownHit[r]! };
+       bestScore = sc;
+     }
+   }
+@@ -1063,7 +1065,7 @@ function partsIn(world: World, n: number, v: StrikeView, x: number, y: number, s
+ export function nukeInputs(world: World, n: number, war: War, side: number, x: number, y: number, retaliating = false): NukeInputs {
+   const shared = warInputs(world, n, war, side, retaliating);
+   const view = strikeView(world, n, war, side, () => industryHeld(world));
+-  const p = partsIn(world, n, view, x, y, byUtility(shared), shared.retaliating && !armyFirst(world, n, war, side, shared, view));
++  const p = partsIn(world, n, view, x, y, byUtility(shared), shared.retaliating && !armyAnswer(world, n, war, side, shared));
+   return { targetValue: p.value, through: p.through, people: p.people, ...shared };
+ }
+ 
+@@ -1445,7 +1447,7 @@ export function weighWar(world: World, n: number, war: War, side: number, indust
+   const shared = warInputs(world, n, war, side, retaliates(world, n, war, side));
+   const view = strikeView(world, n, war, side, industry);
+   const targets = nukeTargets(world, n, war, side, aim);
+-  const forces = shared.retaliating ? forcesWorth(world, n, war, side, shared, view, targets) : null;
++  const forces = shared.retaliating ? forcesIn(world, n, war, side, shared, view, targets) : null;
+   if (forces) return { aim, shared, places: forces };
+   return {
+     aim,
+@@ -1468,27 +1470,28 @@ export const ARMY_STRIKE_CIVILIANS = 10;
+  * An answer to a strike on forces is weighed against it (PLAN 7.109b, critic run 13: the United
+  * Kingdom killed 67,951 US soldiers and no civilians near Molepolole, and the United States answered
+  * on London the next day, 248,000 civilians and 160 men; seed 1129, year 15). `n`, retaliating in
+- * `war` on `side` for a grievance of a strike on forces (`army`), weighs first only the places with
++ * `war` on `side` for a grievance of a strike on forces (`army`), weighs only the places of forces:
+  * an army in the blast (CAPITAL_MEN_MIN of the theatre's men), a capital among them as a first strike
+- * weighs it (not whole): those places when one of them is worth its warhead (over its floor) and in
+- * reach. Else null: none is, and it weighs every place, a capital whole, as any strike back.
++ * weighs it (not whole), whose burst is expected to kill at most ARMY_STRIKE_CIVILIANS civilians for
++ * each man (PLAN 7.114, ADR-697), and in reach. With none, it weighs none: the answer waits for one
++ * within the grievance's days, or lapses (before, it fell back on every place, a capital whole, and
++ * struck a city in reach for an army out of it: seed 964's 86,000 civilians and no men; and a
++ * garrison counted as forces, 968's 96,000 and no men). Null when the grievance is of no such strike.
+  */
+-function forcesWorth(world: World, n: number, war: War, side: number, shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'>, view: StrikeView, targets: readonly [number, number][]): WarWeighing['places'] | null {
+-  if (!world.nukeGrievance.get(n)?.army || grievanceIn(world, n, war, side) === 0) return null;
++function forcesIn(world: World, n: number, war: War, side: number, shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'>, view: StrikeView, targets: readonly [number, number][]): WarWeighing['places'] | null {
++  if (!armyAnswer(world, n, war, side, shared)) return null;
+   const places: WarWeighing['places'] = [];
+-  let worth = false;
+   for (const [x, y] of targets) {
+     const p = partsIn(world, n, view, x, y, byUtility(shared), false);
+-    if (p.menShare < CAPITAL_MEN_MIN) continue;
++    if (p.menShare < CAPITAL_MEN_MIN || p.people > ARMY_STRIKE_CIVILIANS * p.men || !reaches(world, n, x, y)) continue;
+     places.push({ x, y, value: p.value, through: p.through, yieldN: p.yieldN, people: p.people });
+-    if (!worth && nuclearUtility({ targetValue: p.value, through: p.through, people: p.people, ...shared }) > strikeFloor(p.people, p.through) && reaches(world, n, x, y)) worth = true;
+   }
+-  return worth ? places : null;
++  return places;
+ }
+ 
+-/** Whether `n`'s strike back in `war` on `side` weighs forces first (`forcesWorth`): its capitals then not whole. */
+-function armyFirst(world: World, n: number, war: War, side: number, shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'>, view: StrikeView): boolean {
+-  return shared.retaliating && world.nukeGrievance.get(n)?.army === true && forcesWorth(world, n, war, side, shared, view, nukeTargets(world, n, war, side)) !== null;
++/** Whether `n`'s strike back in `war` on `side` answers a strike on forces (`forcesIn`): its capitals then not whole. */
++function armyAnswer(world: World, n: number, war: War, side: number, shared: Omit<NukeInputs, 'targetValue' | 'through' | 'people'>): boolean {
++  return shared.retaliating && world.nukeGrievance.get(n)?.army === true && grievanceIn(world, n, war, side) !== 0;
+ }
+ 
+ /** Whether `n` holds a grievance against an enemy in one of its wars (PLAN 6.12b): it then weighs that war alone. */
+diff --git a/tests/unit/nukeAnswerInKind1938.test.ts b/tests/unit/nukeAnswerInKind1938.test.ts
+index 5442f351..544c4265 100644
+--- a/tests/unit/nukeAnswerInKind1938.test.ts
++++ b/tests/unit/nukeAnswerInKind1938.test.ts
+@@ -3,7 +3,7 @@ import { cellOf } from '../../src/sim/data/terrain';
+ import { SIZE_1938 } from '../../src/sim/scenario1938';
+ import { Sim } from '../../src/sim/sim';
+ import { destroyFormation } from '../../src/sim/systems/elements';
+-import { blastRadius, CAPITAL_MEN_MIN, dayIndustry, detonate, placeParts, restraintOf, TARGET_CAPITAL, weighWar } from '../../src/sim/systems/nuclear';
++import { ARMY_STRIKE_CIVILIANS, blastRadius, CAPITAL_MEN_MIN, dayIndustry, detonate, placeParts, restraintOf, TARGET_CAPITAL, weighWar } from '../../src/sim/systems/nuclear';
+ import { seaKm } from '../../src/sim/systems/navalCombat';
+ import { grantTechs, techMask } from '../../src/sim/tech';
+ import type { World } from '../../src/sim/world';
+@@ -13,8 +13,8 @@ import { addDivision, nationId } from '../helpers/sim1938';
+ // PLAN 7.109b (critic run 13, seed 1129 year 15: the United Kingdom killed 67,951 US soldiers and no
+ // civilians near Molepolole, and the United States answered on London, 248,000 civilians and 160
+ // men): an answer is weighed against the strike it answers. Struck at its forces, Germany answers at
+-// the French places with an army in the blast, not at an emptied Paris; Paris only when no French
+-// force is worth a warhead, and whole when the strike it answers fell on a city.
++// the French places with an army in the blast, not at an emptied Paris, and whole when the strike it
++// answers fell on a city. PLAN 7.114: only at places whose toll is of forces, and with none it waits.
+ 
+ const { w: W, h: H } = SIZE_1938;
+ const [FRA, GER] = ['FRA', 'GER'].map(nationId) as [number, number];
+@@ -65,7 +65,9 @@ describe('an answer weighed against the strike it answers (PLAN 7.109b)', () =>
+     expect(placeParts(w, GER, war, 0, px, py).capital).toBe(TARGET_CAPITAL);
+   }, 300_000);
+ 
+-  it('struck at its forces with no French force left: Paris, whole', () => {
++  // PLAN 7.114 (ADR-697): with no place of forces, the answer waits or lapses. Until then (7.109b)
++  // Germany fell back on Paris, whole: a city for an army.
++  it('struck at its forces with no French force left: no place, the answer waits', () => {
+     const { w, px, py } = world();
+     const c = w.formations.cols;
+     w.formations.ids().forEach((id) => {
+@@ -74,8 +76,31 @@ describe('an answer weighed against the strike it answers (PLAN 7.109b)', () =>
+     const war = w.wars.start([GER], [FRA], 0);
+     w.nukeGrievance.set(GER, { by: FRA, until: w.tick + 24 * 90, army: true });
+     const r = weighWar(w, GER, war, 0, dayIndustry(w));
+-    expect(r.places.some((p) => nearParis(w, px, py, p.x, p.y))).toBe(true);
+-    expect(placeParts(w, GER, war, 0, px, py).capital).toBe(TARGET_CAPITAL);
++    expect(r.places).toEqual([]);
++    expect(placeParts(w, GER, war, 0, px, py).capital).toBe(0);
++    expect(restraintOf(w, GER, war, 0).reason).toBe('noPlace');
++  }, 300_000);
++
++  // PLAN 7.114 (critic run 13's measure; seed 968 of 7.109b: a garrison with a hundredth of the
++  // theatre's men taken for forces, 96,000 civilians dead and no men): a place whose burst is expected
++  // to kill over ten times more civilians than men is no answer to a strike on forces.
++  it('a garrison in Paris is no place of forces: its burst would kill a city', () => {
++    const { w, px, py } = world();
++    const c = w.formations.cols;
++    w.formations.ids().forEach((id) => {
++      if (c.nation[id] === FRA) destroyFormation(w, id);
++    });
++    addDivision(w, FRA, px, py);
++    const war = w.wars.start([GER], [FRA], 0);
++    w.nukeGrievance.set(GER, { by: FRA, until: w.tick + 24 * 90, army: true });
++    const parts = placeParts(w, GER, war, 0, px, py);
++    process.stderr.write(`garrison: men share ${parts.menShare.toFixed(4)}, men ${parts.men.toFixed(0)}, people ${parts.people}\n`);
++    // Forces in the blast as 7.109b counted them, and a city's toll.
++    expect(parts.menShare).toBeGreaterThanOrEqual(CAPITAL_MEN_MIN);
++    expect(parts.people).toBeGreaterThan(ARMY_STRIKE_CIVILIANS * parts.men);
++    const r = weighWar(w, GER, war, 0, dayIndustry(w));
++    expect(r.places.some((p) => nearParis(w, px, py, p.x, p.y))).toBe(false);
++    expect(restraintOf(w, GER, war, 0).reason).not.toBe('strikes');
+   }, 300_000);
+ 
+   it("a burst's grievance knows what it struck, and a save keeps it", () => {
