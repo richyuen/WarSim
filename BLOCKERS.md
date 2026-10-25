@@ -5,6 +5,14 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.116a's AT missed: hollow divisions 685 → 1, but engaged a war 0.874 × HEAD's, bar 0.95 (ADR-701; waits on the user)
+- **The bar:** on 10 unseen seeds × 20 years against HEAD, land formations under 500 men at year 20 at most 0.5 ×
+  HEAD's, engaged land formations a war (years 2–20) not below 0.95 × HEAD's; a unit test, red without; the gate green.
+- **What moved** (`docs/evidence/7.116a/at.md`, `rule.patch`; 991–1000): hollow 685 → 1 (met); engaged a war 0.644 →
+  0.562 (missed); land formations −11 %, engaged −5 %, wars +8 % a world-year; the unit cases red without the hook.
+- **What is left:** the user's (ADR-701): (a) commit the rule, close it (recommended); (b) no rule, PLAN 7.122 for a
+  fold that keeps the counter; (c) close it, no rule.
+
 ### RESOLVED 2026-10-25 (option a, the user's decision: the rule committed, 7.114 closed not done, no task) · PLAN 7.114's AT missed by one burst: all bursts killing over ten times more civilians than men 32 → 25, bar 24 (ADR-697; waits on the user)
 - **The bar:** on 10 unseen seeds × 30 years against HEAD, strikes back killing over ten times more civilians than men
   at most 0.25 × HEAD's, all bursts so at most 0.75 × HEAD's; a unit test, red without; the gate green.

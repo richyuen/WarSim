@@ -23637,3 +23637,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Filed:** R14-B1 PLAN 7.116 (a: hollow divisions; b: late contact), R14-B2 PLAN 7.117; under the bar beyond them,
   emergent 7.118, performance 7.119 (stalls at Max), naval 7.120, aircraft 7.121. Unseen seeds 991 on.
 - **Next:** PLAN 7.116a.
+
+## 2026-10-25 — PLAN 7.116a: the AT missed on contact, to the user (ADR-701)
+
+- **Measure first** (`tools/diag/hollowWhy.ts` on the critic's year-20 saves): of 89–120 hollow divisions a world, 0–2
+  engaged, 28–63 on land their nation does not control (never refilled), 39–60 within 25 km of one of their own with
+  room; mostly infantry and cadre divisions.
+- **Rule tried** (`docs/evidence/7.116a/rule.patch`, not committed): daily, an AI nation's land formation under 500
+  men out of contact folds into the nearest of its own with room on the same landmass within 50 km, else is disbanded
+  (half its men to the pool). From the saves, 0–3 hollow on any day of the next 30 (`tools/diag/hollowStep.ts`).
+  Three unit cases, red without the hook.
+- **AT** (991–1000 × 20, `tools/diag/armyAtWarAt.ts` and `hollowAt.ts`; HEAD `a5867a5b` in `WarSim_chase`): hollow at
+  year 20 685 → 1 (bar 0.5 ×: met); engaged a war years 2–20 0.644 → 0.562, 0.874 × (bar 0.95: missed). A world-year:
+  land formations −11 %, engaged −5 %, wars +8 %.
+- **Filed:** BLOCKERS, ADR-701 (proposed), PLAN 7.122 (a fold that keeps the counter, if (b)).
+- **Next:** PLAN 7.116b while ADR-701 waits.

@@ -1,0 +1,280 @@
+diff --git a/SPEC.md b/SPEC.md
+index cfe0d97d..ce7bf5eb 100644
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -1013,6 +1013,13 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
+   month's surplus to the reserve and an order was never paid for). Only in peace: at war the
+   refills take what is over the reserve (PLAN 7.26c2b, ADR-514: a nation saving for a division
+   refilled nothing through a war of six months). Fleets and wings are not refilled.
++- Hollow divisions (PLAN 7.116a, ADR-701; `ai/hollow.ts`, step 0 of the economic AI): daily at
++  00:00, a land formation of a living AI nation with fewer than HOLLOW_MEN (500) men and fewer than
++  its template's, not engaged and not retreating, on land, is folded: its men go to the nearest
++  land formation of its nation on the same landmass within MERGE_KM (50 km on the map) below its
++  template's strength (`refillFormation`, so they become that formation's units), and it is
++  removed; the men no such formation takes go back to the pool at DISBAND_MANPOWER. In the order
++  of the ids. A nation without AI keeps its remnants (which to merge is the player's choice).
+ 
+ **Techs v1: what a nation knows, and the gate (PLAN 3.1a, ADR-127; `src/sim/tech.ts`).**
+ - *The tree* reaches the sim as `ScenarioRules.techs` (id, year, prerequisites), the tech files
+diff --git a/src/sim/ai/economic.ts b/src/sim/ai/economic.ts
+index e4031516..0a2368e9 100644
+--- a/src/sim/ai/economic.ts
++++ b/src/sim/ai/economic.ts
+@@ -2,6 +2,9 @@
+  * Economic AI v1 (SPEC §7, PLAN 1.26): budget balance, suppression and the build mix. Monthly,
+  * just before the economy charges the month, for every living AI nation:
+  *
++ * 0. Daily at 00:00, before the month (PLAN 7.116a, ADR-701; `ai/hollow.ts`): its land formations
++ *    under HOLLOW_MEN men and out of contact are folded into the nearest of its own with room on
++ *    the same landmass within MERGE_KM, or disbanded (DISBAND_MANPOWER of the men to the pool).
+  * 1. Balance: with B = projected gross − upkeep − admin − CE cost − suppression − tribute (the
+  *    month about to be charged), the nation needs B ≥ DEBT_PAYBACK × max(0, −gold) +
+  *    MARGIN × income (pay any debt back within a year, keep a margin). While it is short by S =
+@@ -121,6 +124,7 @@ import { SUPPRESSION_COST } from '../systems/revolts';
+ import { frontierOf } from '../systems/territory';
+ import { neighbours4 } from '../nav/grid';
+ import { airfield, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
++import { foldHollow } from './hollow';
+ import { transportRoom } from '../systems/amphibious';
+ import { passageOf } from '../systems/movement';
+ import { frontReach } from './invasion';
+@@ -256,6 +260,8 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
+     return full > 0 ? (UPKEEP_SCALE * (tables.templateUpkeep[t] ?? 0) * f.strength[id]!) / full : 0;
+   };
+   return function economicAiSystem(world: World): void {
++    // Daily, before the month: hollow divisions folded into their neighbours or sent home (PLAN 7.116a, ADR-701).
++    foldHollow(world, DISBAND_MANPOWER);
+     if (!isMonthStart(world.startDay, world.tick)) return;
+     const nc = world.nations.cols;
+     if (!world.settings.aiEnabled && !world.rules) return;
+diff --git a/src/sim/ai/hollow.ts b/src/sim/ai/hollow.ts
+new file mode 100644
+index 00000000..4eb23417
+--- /dev/null
++++ b/src/sim/ai/hollow.ts
+@@ -0,0 +1,99 @@
++/**
++ * Hollow divisions (PLAN 7.116a, ADR-701): daily at 00:00, before the economic AI's month, every
++ * land formation of a living AI nation with fewer than HOLLOW_MEN men (and fewer than its
++ * template's) that is out of contact (not engaged, not retreating) and on land is folded into
++ * another: its men go to the nearest land formation of its nation on the same landmass within
++ * MERGE_KM that is below its template's strength (`refillFormation`: by its slots, as a refill;
++ * the men become the receiver's units), and it is removed; the men the receiver has no room for,
++ * and all its men when there is no such receiver, go back to the pool as a disbanded formation's
++ * (DISBAND_MANPOWER). In the order of the ids; a receiver may be engaged (the men walk to the
++ * line), and a formation that took men in and is still hollow is folded in its turn.
++ *
++ * Before (critic run 14, R14-B1): a remnant on occupied land is never refilled (`refillable`
++ * wants its nation's cell), and 63.5 → 76.3 of them a world stood at year 20, 19–367 men each,
++ * crowding the late fronts' labels; 0–2 of ~100 a world were in contact.
++ *
++ * A nation without AI keeps its remnants: which of its formations to merge is the player's.
++ */
++import { isDayStart } from '../../shared/calendar';
++import { kmPerCell } from '../data/projection';
++import { cellX, destroyFormation, elementIndex, wrapDx } from '../systems/elements';
++import { refillFormation } from '../systems/production';
++import { Domain, navOf, type World } from '../world';
++
++/** A land formation with fewer men than this is hollow. */
++export const HOLLOW_MEN = 500;
++/** The furthest a hollow formation's men walk to the formation they join, km on the map. */
++export const MERGE_KM = 50;
++/** The cell a formation stands on, or -1. */
++function cellOf(world: World, id: number): number {
++  const fc = world.formations.cols;
++  const cx = cellX(world, Math.floor(fc.x[id]!));
++  const cy = Math.floor(fc.y[id]!);
++  if (cx === null || cy < 0 || cy >= world.cells.h) return -1;
++  return cy * world.cells.w + cx;
++}
++
++/**
++ * Folds the day's hollow formations (module comment); `backToPool` is the share of the men no
++ * receiver takes that go back to the pool (the economic AI's DISBAND_MANPOWER). Returns how many
++ * were folded.
++ */
++export function foldHollow(world: World, backToPool: number): number {
++  const rules = world.rules;
++  if (!rules || !world.settings.aiEnabled || !isDayStart(world.tick)) return 0;
++  const fc = world.formations.cols;
++  const nc = world.nations.cols;
++  // The land formations of living AI nations on land, by nation, in the order of their ids.
++  const byNation = new Map<number, number[]>();
++  let any = false;
++  const index = elementIndex(world);
++  world.formations.forEach((id) => {
++    const n = fc.nation[id]!;
++    if (nc.living[n] !== 1 || nc.aiOff[n] === 1 || world.isFleet(id) || world.isWing(id) || world.offLand(id)) return;
++    const rule = rules.templates[fc.template[id]!];
++    if (!rule || rule.domain !== Domain.land || rule.manpower <= 0 || !index.has(id)) return;
++    const l = byNation.get(n) ?? [];
++    l.push(id);
++    byNation.set(n, l);
++    if (fc.strength[id]! < Math.min(HOLLOW_MEN, rule.manpower)) any = true;
++  });
++  if (!any) return 0;
++  const comp = navOf(world).grid.component;
++  // MERGE_KM in cells, squared (no root: the comparison is exact on every engine).
++  const reach = MERGE_KM / kmPerCell(world.cells.w);
++  const reach2 = reach * reach;
++  let folded = 0;
++  for (const [n, list] of byNation) {
++    for (const id of list) {
++      if (!world.formations.has(id)) continue;
++      const men = fc.strength[id]!;
++      const rule = rules.templates[fc.template[id]!]!;
++      if (men >= Math.min(HOLLOW_MEN, rule.manpower) || fc.engaged[id] === 1 || fc.retreat[id] !== 0) continue;
++      const cell = cellOf(world, id);
++      const land = cell >= 0 ? comp[cell]! : 0;
++      let best = -1;
++      let bestD = Infinity;
++      if (land !== 0) {
++        for (const o of list) {
++          if (o === id || !world.formations.has(o)) continue;
++          if (fc.strength[o]! >= rules.templates[fc.template[o]!]!.manpower) continue;
++          const oc = cellOf(world, o);
++          if (oc < 0 || comp[oc] !== land) continue;
++          const dx = wrapDx(world, fc.x[id]!, fc.x[o]!);
++          const dy = fc.y[o]! - fc.y[id]!;
++          const d = dx * dx + dy * dy;
++          if (d <= reach2 && d < bestD) {
++            bestD = d;
++            best = o;
++          }
++        }
++      }
++      const took = best >= 0 ? refillFormation(world, best, men) : 0;
++      nc.manpower[n] = nc.manpower[n]! + backToPool * (men - took);
++      destroyFormation(world, id);
++      folded++;
++    }
++  }
++  return folded;
++}
+diff --git a/tests/unit/hollow1938.test.ts b/tests/unit/hollow1938.test.ts
+new file mode 100644
+index 00000000..4b5f27e6
+--- /dev/null
++++ b/tests/unit/hollow1938.test.ts
+@@ -0,0 +1,120 @@
++import { describe, expect, it } from 'vitest';
++import { DISBAND_MANPOWER, economicAi } from '../../src/sim/ai/economic';
++import { HOLLOW_MEN, MERGE_KM } from '../../src/sim/ai/hollow';
++import { isDayStart, isMonthStart } from '../../src/shared/calendar';
++import { kmPerCell } from '../../src/sim/data/projection';
++import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
++import { Sim } from '../../src/sim/sim';
++import { bleedFormation, elementIndex } from '../../src/sim/systems/elements';
++import { Domain, type World } from '../../src/sim/world';
++import { assets1938 } from '../helpers/earth';
++import { nationId } from '../helpers/sim1938';
++
++// PLAN 7.116a (ADR-701): a land formation of an AI nation under HOLLOW_MEN men, out of contact,
++// is folded daily into the nearest formation of its nation with room on the same landmass within
++// MERGE_KM, or disbanded with DISBAND_MANPOWER of its men back to the pool. Before (critic run 14,
++// R14-B1), 63.5 → 76.3 such remnants a world stood at year 20, never refilled on occupied land.
++
++const GER = nationId('GER');
++
++/** The 1938 world on day 2 at 00:00: a day's start that is not a month's, so the economic AI's day is the fold alone. */
++function world1938(): World {
++  const w = new Sim({ scenario: '1938', seed: 5, assets: assets1938(SIZE_1938.w) }).world;
++  w.tick = 24;
++  expect(isDayStart(w.tick)).toBe(true);
++  expect(isMonthStart(w.startDay, w.tick)).toBe(false);
++  return w;
++}
++
++/** The economic AI's system as the 1938 game runs it, one call. */
++const day = (w: World): void => economicAi(ECONOMY_TABLES_1938, BUILD_MIX_1938)(w);
++
++/** Germany's land formations on land with elements, at their template's strength, ids ascending. */
++function fullGerman(w: World): number[] {
++  const fc = w.formations.cols;
++  return w.formations.ids().filter((id) => {
++    const rule = w.rules!.templates[fc.template[id]!];
++    return fc.nation[id] === GER && !!rule && rule.domain === Domain.land && !w.offLand(id) && fc.strength[id] === rule.manpower && (elementIndex(w).get(id)?.length ?? 0) >= 4;
++  });
++}
++
++/** Germany's land formations on land below their template's strength. */
++function germanWithRoom(w: World): number[] {
++  const fc = w.formations.cols;
++  return w.formations.ids().filter((id) => {
++    const rule = w.rules!.templates[fc.template[id]!];
++    return fc.nation[id] === GER && !!rule && rule.domain === Domain.land && !w.offLand(id) && fc.strength[id]! < rule.manpower;
++  });
++}
++
++/** Bleeds `id` until it has fewer than HOLLOW_MEN men and some left. */
++function hollowOut(w: World, id: number): number {
++  const fc = w.formations.cols;
++  bleedFormation(w, id, 1 - 300 / fc.strength[id]!);
++  const men = fc.strength[id]!;
++  expect(men).toBeGreaterThan(0);
++  expect(men).toBeLessThan(HOLLOW_MEN);
++  return men;
++}
++
++describe('hollow divisions are folded or sent home (PLAN 7.116a)', () => {
++  it("a hollow division's men join the formation of its nation beside it with room, and it is gone", () => {
++    const w = world1938();
++    // Germany's other formations full, so the one bled to half is the only one with room.
++    expect(germanWithRoom(w)).toEqual([]);
++    const [a, b] = fullGerman(w);
++    const fc = w.formations.cols;
++    bleedFormation(w, b!, 0.5);
++    const room = w.rules!.templates[fc.template[b!]!]!.manpower - fc.strength[b!]!;
++    const men = hollowOut(w, a!);
++    expect(room).toBeGreaterThan(men);
++    // The hollow one stands 10 km from the receiver.
++    fc.x[a!] = fc.x[b!]! + 10 / kmPerCell(w.cells.w);
++    fc.y[a!] = fc.y[b!]!;
++    const before = fc.strength[b!]!;
++    const pool = w.nations.cols.manpower[GER]!;
++    day(w);
++    expect(w.formations.has(a!)).toBe(false);
++    // Its men are the receiver's, to a unit (the receiver's units are of up to a few dozen men).
++    expect(fc.strength[b!]! - before).toBeGreaterThan(men - 100);
++    expect(fc.strength[b!]! - before).toBeLessThanOrEqual(men);
++    const left = men - (fc.strength[b!]! - before);
++    expect(w.nations.cols.manpower[GER]! - pool).toBeCloseTo(DISBAND_MANPOWER * left, 6);
++  });
++
++  it('with no formation of its nation with room within MERGE_KM, it is disbanded, half its men to the pool', () => {
++    const w = world1938();
++    const [a, b] = fullGerman(w);
++    const fc = w.formations.cols;
++    bleedFormation(w, b!, 0.5);
++    const men = hollowOut(w, a!);
++    // The only one with room is beyond MERGE_KM.
++    fc.x[a!] = fc.x[b!]! + (MERGE_KM + 20) / kmPerCell(w.cells.w);
++    fc.y[a!] = fc.y[b!]!;
++    const before = fc.strength[b!]!;
++    const pool = w.nations.cols.manpower[GER]!;
++    day(w);
++    expect(w.formations.has(a!)).toBe(false);
++    expect(fc.strength[b!]).toBe(before);
++    expect(w.nations.cols.manpower[GER]! - pool).toBeCloseTo(DISBAND_MANPOWER * men, 6);
++  });
++
++  it('a hollow division in contact, or of a nation without AI, is kept', () => {
++    const w = world1938();
++    const [a, c] = fullGerman(w);
++    const fc = w.formations.cols;
++    hollowOut(w, a!);
++    hollowOut(w, c!);
++    fc.engaged[a!] = 1;
++    day(w);
++    expect(w.formations.has(a!)).toBe(true);
++    expect(w.formations.has(c!)).toBe(false);
++
++    const w2 = world1938();
++    const [a2] = fullGerman(w2);
++    hollowOut(w2, a2!);
++    w2.nations.cols.aiOff[GER] = 1;
++    day(w2);
++    expect(w2.formations.has(a2!)).toBe(true);
++  });
++});

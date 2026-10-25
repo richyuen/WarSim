@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-701 · 2026-10-25 · proposed (the user's decision) — Hollow divisions folded: the remnants gone, the late contact a war −13 % (PLAN 7.116a's AT missed)
+
+- **The conflict.** The rule clears one half of R14-B1 (hollow divisions at year 20 685 → 1) and moves the other half,
+  the late contact a war that PLAN 7.116b is to raise, 13 % the wrong way.
+- **Context.** PLAN 7.116a (R14-B1, critic run 14): a land formation under 500 men is merged into one of its nation
+  near it, or disbanded. AT on 10 unseen seeds × 20 years against HEAD on the same seeds: under 500 men at year 20 at
+  most 0.5 × HEAD's; engaged land formations a war (years 2–20) not below 0.95 × HEAD's; a unit test, red without.
+- **Rule tried** (`docs/evidence/7.116a/rule.patch`, not committed; `src/sim/ai/hollow.ts`, step 0 of the economic AI):
+  daily at 00:00, an AI nation's land formation with fewer than 500 men (and its template's), not engaged, not
+  retreating, on land, gives its men to the nearest land formation of its nation on the same landmass within 50 km
+  below its template's strength (`refillFormation`) and is removed; the men none takes go to the pool at
+  DISBAND_MANPOWER. A nation without AI keeps its remnants. Three unit cases, red without the hook.
+- **Before** (critic's year-20 saves, `tools/diag/hollowWhy.ts`): 89–120 hollow a world, 0–2 engaged, 28–63 on land
+  their nation does not control (never refilled: `refillable` wants its cell), 39–60 within 25 km of one of their own
+  with room. With the rule, 0–3 on any day of the next 30 (`hollowStep.ts`).
+- **Measured** (`docs/evidence/7.116a/at.md`, 991–1000, HEAD `a5867a5b`): hollow at year 20 **685 → 1** (bar 0.5 ×:
+  met); engaged a war **0.644 → 0.562, 0.874 ×** (bar 0.95: missed; per seed 0.71–1.33, 7 of 10 down). A world-year,
+  years 2–20: land formations 599 → 532 (−11 %), engaged 5.03 → 4.76 (−5 %), wars 7.81 → 8.47 (+8 %), raised 85 → 89.
+  The remnants took their turns in contact about as often as any formation; the men they give back raise few new ones.
+- **Options:**
+  - **(a)** Commit the rule (the pin moves); 7.116a closed not done; PLAN 7.122 dropped; 7.116b raises the contact
+    from there. (Recommended: the critic's fix as asked, the screen's clutter gone; contact itself falls 5 %, and the
+    per-war figure partly by more wars.)
+  - **(b)** No rule now; PLAN 7.122, a fold that keeps the counter (a remnant refilled where it stands, or the receiver
+    taking its place), its AT on the next 10 unseen seeds.
+  - **(c)** 7.116a closed not done, no rule; 7.122 dropped.
+- **Meanwhile** the loop takes PLAN 7.116b on HEAD's rules (no fold). Until decided, no rule; the pin unchanged.
+
 ### ADR-700 · 2026-10-25 · accepted — A formation's fight view goes out to T3's limit, 30 m/px (PLAN 7.5; amends PLAN 3.11b)
 
 - **Context.** After ADR-699, `formationFight1938` red on the tallest: seed 4242, day 21, French 253 18.8 km
