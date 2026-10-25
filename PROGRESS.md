@@ -23590,3 +23590,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - The answer to a strike on forces only at places whose expected toll is of forces, else it waits or lapses
   (`docs/evidence/7.114/rule.patch` as it stood); the gate green, the pin unchanged.
 - **Next:** PLAN 7.5 (the critic's run: `npm run check:review` first).
+
+## 2026-10-25 — PLAN 7.5: `npm run check:review` red, fixes before critic run 14
+
+- **Review run** on `3cdcbb43`: red on three browser tests not on `tools/gate/knownRed.json` (fallen1938,
+  formationFight1938, stackBlocks1938), and fightSeen1938 (Poland) red on its claim, not the machine. All four green at
+  `88e46041`, red at `3e58eb61` (ADR-693 b's strike rule: a history change); run in `WarSim_chase`.
+- **Fix 1** (`155ec0e7`, view only): a formation in contact whose paired enemy died later in the hour had no fight in
+  its panel (seed 5381, German 10 on Polish 572); the worker takes the nearest live enemy in reach then. fightSeen
+  (Poland) green, off knownRed.
+- **Fix 2** (ADR-699, pin 4347c49c → 2ead5b7e): files of a stack past those that fit within `DEPLOY_ABREAST` were all
+  put on the last side, a column (seed 4242, Soviet 193 24.2 km from its enemy's block); they now wrap to the inner
+  lanes as further lines. Furthest 24.2 → 18.8 km (bar 20). Unit suite 1,908 green by hand. formationFight still red
+  on the tallest (253 on 47, 18.8 km north–south, not whole at 28 m/px): next.
+- **Gotcha:** the review run writes `docs/evidence/` PNGs; `git checkout -- docs/evidence` before a commit. And a
+  Playwright run in another worktree serves the same port (`reuseExistingServer`): a probe run beside it tests that
+  worktree's build.

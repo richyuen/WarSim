@@ -242,6 +242,46 @@ describe('the blocks of formations in contact are deployed against each other (P
     }
   });
 
+  // PLAN 7.5 (ADR-699): on day 21 of `formationFight1938` (seed 4242, since `3e58eb61`) six Soviet
+  // blocks on one division took files 3 to 5; file 5 stood on the last side `DEPLOY_ABREAST` allows,
+  // 0.24 cells from file 3 and in its way, and the four stood a column, the last 24 km from the
+  // block it faced (the test's bar: 20). A file past the last that fits is a further line of the files before it.
+  it('more divisions on one cell than files fit to each side: the files past them are further lines of the files before, none a column on a side', () => {
+    // As on that day: the stack 1.4 cells from the enemy, room for a third line before its place.
+    const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+    const w = s.world;
+    w.settings.aiEnabled = false;
+    const site = border(w);
+    expect(w.onLand(site[0] + 1.4, site[1])).toBe(true);
+    const a = addDivision(w, GER, site[0], site[1]);
+    const b = addDivision(w, POL, site[0] + 1.4, site[1]);
+    s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+    const stack = [a, ...Array.from({ length: 17 }, () => addDivision(w, GER, site[0], site[1]))];
+    s.step(2);
+    const blocks = stack.map((f) => deployOf(w, f, 28)!);
+    const theirs = deployOf(w, b, 28)!;
+    const grid = slotGrid(28);
+    const [width, depth] = [grid.cols * SLOT_SPACING, grid.rows * SLOT_SPACING];
+    for (let i = 0; i < blocks.length; i++) {
+      for (let j = i + 1; j < blocks.length; j++) {
+        const [dx, dy] = [Math.abs(blocks[i]!.x - blocks[j]!.x), Math.abs(blocks[i]!.y - blocks[j]!.y)];
+        expect(dx > depth + DEPLOY_GAP - 1e-9 || dy > width + DEPLOY_GAP - 1e-9, `blocks ${i} and ${j}`).toBe(true);
+      }
+    }
+    // The stack's files: no more than the lanes that fit within a cell to each side, and on the
+    // furthest side no more lines than on the line to the enemy.
+    const sides = [...new Set(blocks.map((d) => Math.round((d.y - site[1]) * 1000)))];
+    const onSide = (y: number): number => blocks.filter((d) => Math.round((d.y - site[1]) * 1000) === y).length;
+    const outer = sides.reduce((m, y) => (Math.abs(y) > Math.abs(m) ? y : m));
+    expect(onSide(outer), 'lines on the furthest side').toBeLessThanOrEqual(onSide(0));
+    for (const d of blocks) {
+      // Under 20 km from the Pole's block, and in one view with it at 20 m/px.
+      expect(cellDist(w, d.x, d.y, theirs.x, theirs.y), 'cells to the enemy\'s block').toBeLessThan(20 / 19.57);
+      expect(cellDist(w, d.x, d.y, site[0], site[1])).toBeLessThanOrEqual(DEPLOY_REACH);
+      expect(w.onLand(d.x, d.y)).toBe(true);
+    }
+  });
+
   // PLAN 7.102 (ADR-677): on day 21 of `formationFight1938` an Italian division, the third line on a
   // French block, went to the file to the side, which was sea from its place to that block; it
   // stood two eighths of its way forward, 21.4 km from the block it faced, with land and room in

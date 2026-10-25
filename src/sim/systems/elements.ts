@@ -393,7 +393,15 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
       // No further from its own place than `DEPLOY_REACH` (it binds only on the way to a block).
       const ux = dx / d;
       const uy = dy / d;
-      const sideOf = (k: number): number => Math.min(DEPLOY_ABREAST, Math.ceil(k / 2) * apart) * (k % 2 === 1 ? 1 : -1);
+      // The files that fit within `DEPLOY_ABREAST` to each side; one past them is a further line
+      // of the files before it, from the one on its line out (PLAN 7.5, ADR-699: on seed 4242 six
+      // Soviet blocks on one division took files 3 to 5, file 5 stood on the last side, 0.24 cells
+      // from file 3, in its way, and the four stood a column, the last 24 km from the block it faced).
+      const lanes = apart > 0 ? 1 + 2 * Math.max(1, Math.floor(DEPLOY_ABREAST / apart)) : 1;
+      const sideOf = (k: number): number => {
+        const lane = k % lanes;
+        return Math.min(DEPLOY_ABREAST, Math.ceil(lane / 2) * apart) * (lane % 2 === 1 ? 1 : -1);
+      };
       // How far forward a file is free: the gap short of each block that stands in its way,
       // whatever side of that block it comes to. A block is twice as wide as deep, and one that
       // came to a flank stood in it (PLAN 3.11c2). In its way: across the file's width and the

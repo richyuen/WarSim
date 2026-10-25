@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-699 · 2026-10-25 · accepted — A file of a stack past those that fit to each side is a further line of the files before it (PLAN 7.5; amends ADR-133)
+
+- **Context.** `npm run check:review` before critic run 14: `formationFight1938` red, the furthest block 24.2 km from
+  the block it faces (bar: under 20; a column of more than `DEPLOY_LINES`, ADR-202, is what it catches). Green at
+  `88e46041`, red at `3e58eb61` (ADR-693 b's strike rule, a history change). Seed 4242, day 21: six Soviet blocks
+  (163, 179, 180, 191, 192, 193) on one division (701) took files 3, 4 and 5. Files stand `apart` 0.38 cells, so
+  file 5 at 1.14 was put on `DEPLOY_ABREAST`, 1 cell, 0.24 from file 3, in its way: the four blocks of files 3 and 5
+  stood one column, 193 0.14 cells forward of its place, 24.2 km from 701's block. ADR-133's own "not done": "More
+  files than fit in a cell to each side stand on the last."
+- **Tried and not taken:** file 5 past the cap, at 1.14 cells to the side: 22 km and more from the enemy's block by
+  the side alone, and out of the battle's view (ADR-650's concern).
+- **Decision** (`deployOf`, `sideOf`): the files within `DEPLOY_ABREAST` to each side are `lanes` (1 + 2 ×
+  ⌊DEPLOY_ABREAST / apart⌋, 3 at least, as before); file k stands in lane k mod `lanes`, the one on its line first: a
+  file past the last lane is a further line of the files before it, its room the blocks in its way as for any line.
+  Every file within the lanes stands as before, to the digit.
+- **Read.** Seed 4242, day 21 (the worker's `formation` answers): the furthest block 24.2 → 18.8 km from the block it
+  faces (253 on 47); 192 and 193 no longer among the twelve furthest: the test's bar met. `formationFight1938` still
+  red, on a cause of its own: the tallest (253 on 47, 18.8 km north–south) has 22 of the enemy's 24 elements on the
+  screen at the fight view's 28 m/px (before the rule the tallest was 193, 21.6 km north–south).
+- **Test.** `deploy.test.ts`, "more divisions on one cell than files fit to each side": eighteen German divisions 1.4
+  cells from a Pole; none on another, each under 20 km from the Pole's block, the furthest side no more lines than
+  the middle. Red without: blocks 16 and 17 on one another at the stack's place, 14 and 15 on the last side.
+- **Pin** (the blocks are read by the air AI's patrols and the fires' places): 4347c49c → 2ead5b7e.
+- **Deviation from AoC:** none; AoC has no blocks of elements.
+
 ### ADR-697 · 2026-10-25 · accepted, option a (the user's decision, 2026-10-25) — An answer to a strike on forces only at places whose toll is of forces: the AT missed by one burst (PLAN 7.114)
 
 - **Context** (`docs/evidence/7.114/at.md`). PLAN 7.114 (ADR-691 a): answering a strike on forces, a place whose burst
