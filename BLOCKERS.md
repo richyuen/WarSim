@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.116a's AT missed: hollow divisions 685 → 1, but engaged a war 0.874 × HEAD's, bar 0.95 (ADR-701; waits on the user)
+### RESOLVED 2026-10-25 (option a, the user's decision: the rule committed, 7.116a closed not done, PLAN 7.122 dropped) · PLAN 7.116a's AT missed: hollow divisions 685 → 1, but engaged a war 0.874 × HEAD's, bar 0.95 (ADR-701)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD, land formations under 500 men at year 20 at most 0.5 ×
   HEAD's, engaged land formations a war (years 2–20) not below 0.95 × HEAD's; a unit test, red without; the gate green.
 - **What moved** (`docs/evidence/7.116a/at.md`, `rule.patch`; 991–1000): hollow 685 → 1 (met); engaged a war 0.644 →

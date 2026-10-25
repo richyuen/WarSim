@@ -1013,6 +1013,13 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
   month's surplus to the reserve and an order was never paid for). Only in peace: at war the
   refills take what is over the reserve (PLAN 7.26c2b, ADR-514: a nation saving for a division
   refilled nothing through a war of six months). Fleets and wings are not refilled.
+- Hollow divisions (PLAN 7.116a, ADR-701; `ai/hollow.ts`, step 0 of the economic AI): daily at
+  00:00, a land formation of a living AI nation with fewer than HOLLOW_MEN (500) men and fewer than
+  its template's, not engaged and not retreating, on land, is folded: its men go to the nearest
+  land formation of its nation on the same landmass within MERGE_KM (50 km on the map) below its
+  template's strength (`refillFormation`, so they become that formation's units), and it is
+  removed; the men no such formation takes go back to the pool at DISBAND_MANPOWER. In the order
+  of the ids. A nation without AI keeps its remnants (which to merge is the player's choice).
 
 **Techs v1: what a nation knows, and the gate (PLAN 3.1a, ADR-127; `src/sim/tech.ts`).**
 - *The tree* reaches the sim as `ScenarioRules.techs` (id, year, prerequisites), the tech files

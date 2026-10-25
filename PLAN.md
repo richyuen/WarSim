@@ -64,23 +64,12 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
   a real fraction of year 1's, and merge or disband sub-500-man divisions instead of fielding them. Two
   causes, two parts; not again the rules already tried (`docs/evidence/7.104/rule.patch`, ADR-679;
   `docs/evidence/7.115/rule.patch`, ADR-693):
-  - [ ] 7.116a Hollow divisions (AT missed, BLOCKERS; ADR-701 waits on the user): a formation under 500 men is merged into a formation of its nation
-    near it, or disbanded, instead of being fielded. AT: on 10 unseen seeds × 20 years against HEAD read
-    on the same seeds first, land formations under 500 men at year 20 at most 0.5 × HEAD's, and engaged
-    land formations a war (mean of daily samples, years 2–20) not below 0.95 × HEAD's; a unit test, red
-    without; the gate green.
+  - [x] 7.116a Hollow divisions (closed not done, ADR-701 a, the user's decision): a formation under 500 men is merged into a formation of its nation […]
   - [ ] 7.116b Late contact: measure first, on a late save (HEAD's code) of 6421 year 20 and 1129 year
     10, why a nation at war with free formations has none in contact. AT: on 10 unseen seeds × 20 years
     against HEAD read on the same seeds first, engaged land formations a war, mean of daily samples in
     years 2–20, at least 0.15 of year 1's (HEAD on run 13's seeds 0.114); a unit test, red without; the
     gate green.
-
-- [ ] 7.122 A fold that keeps the counter (from 7.116a, ADR-701; waits on the user's (b), dropped by (a) or (c)):
-  7.116a's fold (`docs/evidence/7.116a/rule.patch`) took hollow divisions at year 20 685 → 1 on 991–1000 but engaged a
-  war 0.644 → 0.562, the remnants a sixth of the formations and in contact as often as the rest. A remnant under 500 men
-  out of contact is made whole where it stands (refilled on occupied land, or a receiver's men split to it) rather
-  than removed. AT: on 10 unseen seeds × 20 years against HEAD, under 500 men at year 20 at most 0.5 × HEAD's, engaged
-  land formations a war (years 2–20) not below 0.95 × HEAD's; a unit test, red without; the gate green.
 
 - [ ] 7.117 The late tick over its budget (R14-B2; carries performance 5): ADR-698's budget is at most
   5.0 ms a tick in any year. Pinned and alone on HEAD: 8167 year 19 13.3 ms (p95 49.9, longest tick 611
@@ -469,3 +458,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.111 The late tick's exact remainder (found at 7.105; performance 5; ADR-680 b, the user's decision): `snapTarget`'s kept answers by landmass and then cell (its time is the lookup of one […]
 - [x] 7.112 The pockets as a rule (found at 7.105; performance 5; ADR-680 b, the user's decision): `pocketOf` answers each start by its own walk (no answer taken from another walk's marks), and […]
 - [x] 7.114 The answer weighed by its own toll (found at 7.109b; aiNukes 7; ADR-691 a, the user's decision; on 7.109b's […]
+- [x] 7.122 A fold that keeps the counter (from 7.116a, ADR-701; dropped by ADR-701 a, the user's decision): […]

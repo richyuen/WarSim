@@ -35,8 +35,13 @@ function strategicWings(world: World): number {
 // every place within reach under German air cover (the chance through 0.2), the costs weighed whole
 // against a gain × that chance. With the costs × the chance as well (they fall only on a burst), it
 // strikes there too.
+// Re-picked at PLAN 7.116a (ADR-701 a: an AI nation's remnants under 500 men folded daily): 7127 and
+// 3929 lost the bomber (days 87, 67) with the best place in reach just under NUKE_FLOOR. In their
+// place 4010 and 4014, the same case (the place struck under German air cover, through 0.20; the
+// bomber lost on days 97 and 98), struck both before and after the fold; of seeds 4001-4020 Poland
+// strikes before its bomber is gone on 17 before it and 15 after (`tools/diag/nukePolandGates.ts`).
 describe("the critic's Poland strikes (PLAN 7.18f, 7.18i)", () => {
-  it.each([5591, 7127, 3929])("seed %i: given 10 warheads and a strategic bomber group at Warsaw, it strikes in Germany's war on it before its bomber is gone", (seed) => {
+  it.each([5591, 4010, 4014])("seed %i: given 10 warheads and a strategic bomber group at Warsaw, it strikes in Germany's war on it before its bomber is gone", (seed) => {
     const s = new Sim({ scenario: '1938', seed, assets: assets1938(W) });
     const w = s.world;
     const warsaw = w.airbases.find((b) => b.name === 'Warsaw' && w.cells.controller[b.cell] === POL);

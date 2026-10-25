@@ -15333,3 +15333,32 @@ Of 7.33 (open in PLAN.md):
   test, red without; the gate green.
   AT missed 2026-10-25 (ADR-697, BLOCKERS; `docs/evidence/7.114/at.md`): strikes back so 8 → 0 (met); all bursts so
   32 → 25 (bar 24). Waits on the user's word on ADR-697.
+
+<!-- moved 2026-10-25 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.116 (open in PLAN.md):
+
+  - [x] 7.116a Hollow divisions (closed not done, ADR-701 a, the user's decision): a formation under 500 men is merged into a formation of its nation
+    near it, or disbanded, instead of being fielded. AT: on 10 unseen seeds × 20 years against HEAD read
+    on the same seeds first, land formations under 500 men at year 20 at most 0.5 × HEAD's, and engaged
+    land formations a war (mean of daily samples, years 2–20) not below 0.95 × HEAD's; a unit test, red
+    without; the gate green.
+
+- [x] 7.122 A fold that keeps the counter (from 7.116a, ADR-701; dropped by ADR-701 a, the user's decision):
+  7.116a's fold (`docs/evidence/7.116a/rule.patch`) took hollow divisions at year 20 685 → 1 on 991–1000 but engaged a
+  war 0.644 → 0.562, the remnants a sixth of the formations and in contact as often as the rest. A remnant under 500 men
+  out of contact is made whole where it stands (refilled on occupied land, or a receiver's men split to it) rather
+  than removed. AT: on 10 unseen seeds × 20 years against HEAD, under 500 men at year 20 at most 0.5 × HEAD's, engaged
+  land formations a war (years 2–20) not below 0.95 × HEAD's; a unit test, red without; the gate green.

@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-701 · 2026-10-25 · proposed (the user's decision) — Hollow divisions folded: the remnants gone, the late contact a war −13 % (PLAN 7.116a's AT missed)
+### ADR-701 · 2026-10-25 · accepted, option a (the user's decision, 2026-10-25) — Hollow divisions folded: the remnants gone, the late contact a war −13 % (PLAN 7.116a's AT missed)
 
 - **The conflict.** The rule clears one half of R14-B1 (hollow divisions at year 20 685 → 1) and moves the other half,
   the late contact a war that PLAN 7.116b is to raise, 13 % the wrong way.
@@ -194,6 +194,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     taking its place), its AT on the next 10 unseen seeds.
   - **(c)** 7.116a closed not done, no rule; 7.122 dropped.
 - **Meanwhile** the loop takes PLAN 7.116b on HEAD's rules (no fold). Until decided, no rule; the pin unchanged.
+- **Done (a).** The rule committed as `rule.patch` stood (`ai/hollow.ts`, the economic AI's step 0, SPEC, `hollow1938.test.ts`);
+  pin 2ead5b7e → e28dbfa1; 7.116a closed not done; PLAN 7.122 dropped. Re-pick: `nukePoland1938`'s 7127 and 3929 lost
+  the bomber (days 87, 67) with the best place in reach just under NUKE_FLOOR (Poland's remnants folded, its army gone
+  sooner); 4010 and 4014 in their place, the same case (through 0.20), struck before and after the fold. Of seeds
+  4001–4020 Poland strikes before its bomber is gone on 17 on HEAD, 15 with the fold (`tools/diag/nukePolandGates.ts`).
 
 ### ADR-700 · 2026-10-25 · accepted — A formation's fight view goes out to T3's limit, 30 m/px (PLAN 7.5; amends PLAN 3.11b)
 

@@ -23652,3 +23652,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   land formations −11 %, engaged −5 %, wars +8 %.
 - **Filed:** BLOCKERS, ADR-701 (proposed), PLAN 7.122 (a fold that keeps the counter, if (b)).
 - **Next:** PLAN 7.116b while ADR-701 waits.
+
+## 2026-10-25 — PLAN 7.116a closed not done, the rule committed (ADR-701 a, the user's decision)
+
+- The hollow-division fold (`src/sim/ai/hollow.ts`, the economic AI's step 0) as `docs/evidence/7.116a/rule.patch`
+  stood; pin 2ead5b7e → e28dbfa1; PLAN 7.122 dropped.
+- **Re-pick** (history after the fold): `nukePoland1938`'s seeds 7127, 3929 → 4010, 4014 (7127 and 3929 lost the
+  bomber with the best place in reach just under NUKE_FLOOR; of 4001–4020 Poland strikes on 17 on HEAD, 15 with the
+  fold; `tools/diag/nukePolandGates.ts`).
+- **Next:** PLAN 7.116b (late contact), on the rules with the fold.

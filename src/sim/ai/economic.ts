@@ -2,6 +2,9 @@
  * Economic AI v1 (SPEC §7, PLAN 1.26): budget balance, suppression and the build mix. Monthly,
  * just before the economy charges the month, for every living AI nation:
  *
+ * 0. Daily at 00:00, before the month (PLAN 7.116a, ADR-701; `ai/hollow.ts`): its land formations
+ *    under HOLLOW_MEN men and out of contact are folded into the nearest of its own with room on
+ *    the same landmass within MERGE_KM, or disbanded (DISBAND_MANPOWER of the men to the pool).
  * 1. Balance: with B = projected gross − upkeep − admin − CE cost − suppression − tribute (the
  *    month about to be charged), the nation needs B ≥ DEBT_PAYBACK × max(0, −gold) +
  *    MARGIN × income (pay any debt back within a year, keep a margin). While it is short by S =
@@ -121,6 +124,7 @@ import { SUPPRESSION_COST } from '../systems/revolts';
 import { frontierOf } from '../systems/territory';
 import { neighbours4 } from '../nav/grid';
 import { airfield, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
+import { foldHollow } from './hollow';
 import { transportRoom } from '../systems/amphibious';
 import { passageOf } from '../systems/movement';
 import { frontReach } from './invasion';
@@ -256,6 +260,8 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     return full > 0 ? (UPKEEP_SCALE * (tables.templateUpkeep[t] ?? 0) * f.strength[id]!) / full : 0;
   };
   return function economicAiSystem(world: World): void {
+    // Daily, before the month: hollow divisions folded into their neighbours or sent home (PLAN 7.116a, ADR-701).
+    foldHollow(world, DISBAND_MANPOWER);
     if (!isMonthStart(world.startDay, world.tick)) return;
     const nc = world.nations.cols;
     if (!world.settings.aiEnabled && !world.rules) return;
