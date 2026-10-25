@@ -2867,11 +2867,11 @@ on screen.
   its id, and at a load (ADR-115). The formation is marked on the map while the panel is open.
   A formation in contact has a button beside its status, "To its fight" (PLAN 3.11b,
   ADR-199): `FormationDetail.fight` is the middle between its block and the block of the
-  nearest enemy it is in contact with (`contactsOf`, the one its block faces), that enemy's
+  nearest enemy it is in contact with (`contactsOf`, the one its block faces; where that one died later in the hour, the nearest live enemy in reach), that enemy's
   id, and how far apart the two blocks' middles stand east-west and north-south. The camera
   flies there (`MapView.showBattle` with that span): at 20 m/px, or further out, as far as
-  holds both blocks (28 m/px at most where the view is large enough for 20, so that it stays
-  T3; a smaller view, which has a battle at T2 already, as far out as holds the two). No rule of `deployOf` changed for it: a line behind its side's front stands up to a
+  holds both blocks (`T3_MAX_M`, 30 m/px, at most where the view is large enough for 20, so that it stays
+  T3; 28 before ADR-700; a smaller view, which has a battle at T2 already, as far out as holds the two). No rule of `deployOf` changed for it: a line behind its side's front stands up to a
   cell from the enemy's block.
 - **Statistics ranking and war banners** (implemented PLAN 1.31b, `src/ui/StatsRanking.tsx`,
   `src/ui/WarBanners.tsx`, `src/shared/ranking.ts`): top-15 ranking (land, army, income,

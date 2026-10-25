@@ -1,3 +1,5 @@
+import { T3_MAX_M } from '../render/units/individuals';
+
 /**
  * How far in the camera goes for a battle (`MapView.showBattle`), as one function of the view's
  * size and of how far apart the two blocks stand: the map view takes its zoom from here, and a
@@ -25,12 +27,14 @@ export const SEA_VIEW_MAX_M = 1800;
  * both blocks' middles with this much ground around the two, the half of a block and its tag
  * on each side, in the FIGHT_VIEW_CLEAR of the view's height that the bars at its top and its
  * bottom leave free (the war banners stood on a block at the view's lower edge), at up to
- * FIGHT_VIEW_MAX_M a pixel: under T3's limit, so that figures are what is drawn (in a view of
- * 1400 × 800; a smaller one goes on as a battle's does).
+ * FIGHT_VIEW_MAX_M a pixel: T3's limit, so that figures are what is drawn (in a view of
+ * 1400 × 800; a smaller one goes on as a battle's does). 28 before ADR-700: a block 18.8 km north
+ * of its enemy's (seed 4242, day 21) was not whole in 800 px at 28; at 30 it is, and the view drawn
+ * on arriving cold from 200 m/px has its figures (`T3_MAX_M` is inclusive).
  */
 export const FIGHT_PAD_KM = 6;
 export const FIGHT_VIEW_CLEAR = 0.7;
-export const FIGHT_VIEW_MAX_M = 28;
+export const FIGHT_VIEW_MAX_M = T3_MAX_M;
 
 /**
  * Metres a CSS pixel of the view the camera takes for a battle, in a view `viewW` × `viewH`

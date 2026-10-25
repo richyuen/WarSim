@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-700 · 2026-10-25 · accepted — A formation's fight view goes out to T3's limit, 30 m/px (PLAN 7.5; amends PLAN 3.11b)
+
+- **Context.** After ADR-699, `formationFight1938` red on the tallest: seed 4242, day 21, French 253 18.8 km
+  north–south of German 47's block; at the fight view's cap of 28 m/px an 800 px view is 22.4 km high, and 22 of 47's
+  24 elements were on the screen. 253 is per design: a second line of its file, held 0.176 cells forward by German 25's
+  block in its way (a block of an enemy going elsewhere, before it in the hour's order: PLAN 3.11c3b, ADR-650). PLAN
+  3.11b's claim ("a zoom of T3 that holds both") and the cap's margin under T3 (2 m/px) disagreed; history hid it.
+- **Decision** (`battleView.ts`): `FIGHT_VIEW_MAX_M = T3_MAX_M` (30). `T3_MAX_M` is inclusive (`MapView`: T3 while
+  `m <= T3_MAX_M`), so the view at 30 draws figures. Probe: the fight of 253 reached from 200 m/px, cold: 30.0 m/px,
+  tier 3, 5,747 figures, the individuals' share 1.
+- **Read.** `formationFight1938`: 253 on 47 at 30.0 m/px, 25 of 25 and 24 of 24 on the screen; with `fightSeen1938`
+  (both wars) and `toBattle1938` green by hand; `warBattle.test.ts`'s case restated to `T3_MAX_M` (the claim: the fight
+  stays where figures are drawn).
+- **Left:** a block over about 21 km north–south of its enemy's (`DEPLOY_REACH` allows 29) is still not whole at T3 in
+  800 px. No task: none such seen.
+- **Not state:** the pin stands (2ead5b7e).
+- **Deviation from AoC:** none; AoC has no blocks of elements.
+
 ### ADR-699 · 2026-10-25 · accepted — A file of a stack past those that fit to each side is a further line of the files before it (PLAN 7.5; amends ADR-133)
 
 - **Context.** `npm run check:review` before critic run 14: `formationFight1938` red, the furthest block 24.2 km from

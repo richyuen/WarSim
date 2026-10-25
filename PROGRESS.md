@@ -23606,3 +23606,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** the review run writes `docs/evidence/` PNGs; `git checkout -- docs/evidence` before a commit. And a
   Playwright run in another worktree serves the same port (`reuseExistingServer`): a probe run beside it tests that
   worktree's build.
+- **Fix 3** (ADR-700, view only): the fight view goes out to `T3_MAX_M` (30 m/px, was 28): 253 on 47, 18.8 km
+  north–south, whole at 30. formationFight1938, fightSeen1938 (both), toBattle1938 green by hand; warBattle.test.ts's
+  case restated to `T3_MAX_M`. Left: fallen1938 and stackBlocks1938 (history re-picks), then `check:review` again.

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { battleViewM, SEA_VIEW_MAX_M } from '../../src/app/battleView';
+import { T3_MAX_M } from '../../src/render/units/individuals';
 import { maskLand } from '../../src/shared/landMask';
 import type { FromWorker, Inspection, WarBattle } from '../../src/shared/protocol';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
@@ -276,8 +277,8 @@ describe('the largest battle of a war across water (PLAN 4.1d1)', () => {
     expect(m).toBeGreaterThan(35);
     expect(m).toBeLessThan(60);
     expect(wholeInView(w, b, m)).toBe(true);
-    // A formation's fight stays where figures are drawn (PLAN 3.11b): that view is not this one.
-    expect(battleViewM(1400, 800, 19.57, b.span, true)).toBe(28);
+    // A formation's fight stays where figures are drawn (PLAN 3.11b; at T3's limit since ADR-700, 28 before): that view is not this one.
+    expect(battleViewM(1400, 800, 19.57, b.span, true)).toBe(T3_MAX_M);
 
     // Front to front: the blocks' middles 3.3 km apart, and the camera where it was.
     const open = largestBattle(w, warOf(w, CZS, POL))!;
