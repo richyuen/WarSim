@@ -49,6 +49,84 @@ ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the di
 beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
 reused:
 
+Run 14's (report of 2026-10-25 on `311988d7`, `critic/CRITIC_REPORT.md`; R13-B1 improved, not fixed;
+aiNukes 7 → 8): R14-B1 and R14-B2 are PLAN 7.116 and 7.117; the dimensions under the bar, beyond them,
+are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a task, none reused:
+
+- [ ] 7.116 The land war after year 1, a fourth time (R14-B1; R13-B1 improved by 7.110 and ADR-693 b,
+  not fixed; carries emergent 6): on run 13's 40 seeds, engaged land formations a war a day after year 1
+  0.564 → 0.722 against 6.11 in year 1 (11.4 %; was 10.3 %); at the year-10/20 checkpoints 4.36 → 5.34
+  engaged, 4 of 80 with nobody in contact (was 12); new seeds 0.558 → 0.780. Formations under 500 men at
+  year 20 63.5 → 76.3 a world (late armour of 19–367 men on 5147's front). In the page: 5147 year 20
+  holds 21–50 engaged; 6421 year 20 0–8; 1129 year 10 0–2. Evidence: `critic/c14_cmp_checkpoints.json`,
+  `c14_cmp_all.txt`, `c14_y2_5147_y20.json`, `c14_y2_6421_y20.json`, `c14_y2_1129_y10.json`,
+  `critic/shots/c14y2_5147_y20_d30_250m.png`. The critic's fix: keep raising late contact per war toward
+  a real fraction of year 1's, and merge or disband sub-500-man divisions instead of fielding them. Two
+  causes, two parts; not again the rules already tried (`docs/evidence/7.104/rule.patch`, ADR-679;
+  `docs/evidence/7.115/rule.patch`, ADR-693):
+  - [ ] 7.116a Hollow divisions: a formation under 500 men is merged into a formation of its nation
+    near it, or disbanded, instead of being fielded. AT: on 10 unseen seeds × 20 years against HEAD read
+    on the same seeds first, land formations under 500 men at year 20 at most 0.5 × HEAD's, and engaged
+    land formations a war (mean of daily samples, years 2–20) not below 0.95 × HEAD's; a unit test, red
+    without; the gate green.
+  - [ ] 7.116b Late contact: measure first, on a late save (HEAD's code) of 6421 year 20 and 1129 year
+    10, why a nation at war with free formations has none in contact. AT: on 10 unseen seeds × 20 years
+    against HEAD read on the same seeds first, engaged land formations a war, mean of daily samples in
+    years 2–20, at least 0.15 of year 1's (HEAD on run 13's seeds 0.114); a unit test, red without; the
+    gate green.
+
+- [ ] 7.117 The late tick over its budget (R14-B2; carries performance 5): ADR-698's budget is at most
+  5.0 ms a tick in any year. Pinned and alone on HEAD: 8167 year 19 13.3 ms (p95 49.9, longest tick 611
+  ms; the operational AI 11.5 ms of it), year 23 11.2 ms; 6151 year 22 7.9 ms; 4877 year 21 5.26 ms; on
+  `0c80db1` 9437 years 24–27 6.1–8.6 ms (not a regression: the budget's first test). In the page 8167's
+  year 19 at Max takes 142 s with 40 stalls over 500 ms. Evidence: `critic/c14_perf_8167_y19_head.log`,
+  `c14_perf_8167_y21_23_head.log`, `c14_perf_6151_y21_22_head.log`, `c14_perf_4877_y21_head.log`,
+  `c14_perf_9437_y21_27_0c80db1.log`, `c14_l_8167.json`; saves `critic/c14_seed8167_y18.bin`,
+  `c14_seed8167_y20.bin` (HEAD `311988d7`'s code: valid while the sim's rules are unchanged; else made
+  again from seed 8167). The critic's fix: profile the operational AI on 8167's year 19 and cap its work
+  per tick (time-slice or amortise across hours). Measure first (`--profile`, `--cpu-prof`) what in the
+  operational AI takes the 11.5 ms. AT: pinned (`--affinity 0xFFFF`) and alone, 8167's year 19 at most
+  5.0 ms a tick, and the worst year of 10 unseen seeds × 25 years at most 5.0 ms (each year a world-year
+  read by `npm run sim -- --profile`); a change meant to keep the rules keeps the pin; the gate green.
+
+- [ ] 7.118 Emergent dynamics (emergent 6, needs 7, beyond R14-B1): on run 13's 40 seeds the land
+  moved in a world's last five years falls to 13.1 % in the least of them (24.1 % at least on `0c80db1`;
+  the most 95.4 %); founded statelets alive at year 30 36.8 → 28.1 on the same seeds but 31.4 → 30.4 on
+  new ones; the longest stasis 21 years. Evidence: `critic/c14_cmp_all.txt` (`late5flip`,
+  `livingFoundedTinyMean`, `stasis`). Measure first which of the worlds that move least late are frozen,
+  and why (no war, wars with no front, a hegemon). AT: on 10 unseen seeds × 30 years against HEAD on the
+  same seeds, the least land moved in a world's last five years at least 20 %, and the mean not below
+  HEAD's; founded nations alive at year 30 not above HEAD's; a unit test, red without; the gate green.
+
+- [ ] 7.119 Performance (performance 5, needs 7, beyond R14-B2's mean tick): the stalls the player
+  sees at Max. In the page, 8167's year 19 at Max has 40 stalls over 500 ms (the longest tick 611 ms
+  headless, p95 49.9 ms); ADR-698 takes 45–60 s a late year at Max as the design, and 4877's three late
+  years at 144 s are inside it. The Large map's 2.5 min a game year early in 1938 was read beside a batch:
+  read it alone first and record it. Evidence: `critic/c14_l_8167.json`, `c14_perf_8167_y19_head.log`.
+  AT: in the page, from `critic/c14_seed8167_y18.bin` (or its remake), year 19 at Max with at most 4
+  stalls over 500 ms (an e2e or `tools/` measure, run alone), and headless the longest single tick of
+  that year at most 200 ms; the gate green.
+
+- [ ] 7.120 Naval (naval 7, needs 8): the late sea war is about a fifth of year 1's battles: on the same
+  40 seeds year-1 battles 56.7 → 42.0 a world (ships sunk 16,378 → 14,210 over 24 seeds), late battles
+  9.32 → 8.58 a world-year; new seeds year 1 41 → 48. Battles sinking nothing 7.1 → 3.4 % (fixed).
+  Evidence: `critic/c14_cmp_all.txt`, `c14_g4_standoff.json`,
+  `critic/shots/c14n4_8693_rowless_clicked.png`. The critic reads sea battles a world-year after year 1
+  against year 1's, not ADR-683's battles per armed fleet-year at war (met at 7.107): this task reads the
+  critic's figure. Measure first, on a late save, how many armed fleets nations at war with a navy hold
+  late against year 1, and where those at war at sea are. AT: on 10 unseen seeds × 20 years against HEAD
+  on the same seeds, sea battles a world-year after year 1 at least 1.3 × HEAD's, year-1 battles not
+  below 0.9 × HEAD's, battles sinking nothing at most 4 %; a unit test, red without; the gate green.
+
+- [ ] 7.121 Aircraft (aircraft 7, needs 8): on the same 40 seeds air battles after year 1 123 → 183 a
+  world-year (sorties aloft 10.9 → 15.8, ADR-689), but on new seeds only 154 → 161, and the late air war
+  is still 7 % of year 1's (2,415 battles). Evidence: `critic/c14_cmp_all.txt`,
+  `critic/shots/c14y2_5147_y20_d20_3000m.png`, `c14_u_6421.json`. Not again what 7.108b tried
+  (`docs/evidence/7.108b/rule.patch`, ADR-685). Measure first, on a late save, the air forces of nations
+  at war late: planes held, planes aloft, and why the rest stay on the ground. AT: on 10 unseen seeds ×
+  20 years against HEAD on the same seeds, air battles a world-year after year 1 at least 1.3 × HEAD's,
+  year-1 battles not below 0.9 × HEAD's; a unit test, red without; the gate green.
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

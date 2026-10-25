@@ -23624,3 +23624,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Fix** (view-test only, no pin): `CounterLayer.laidOut` (every counter of the last frame, shown or folded); at a
   finer level the spec asks for more clusters and never fewer counters. Both declutter specs green by hand.
 - **Next:** `npm run check:review` again (the code key changed: a full run), then critic run 14.
+
+## 2026-10-25 — PLAN 7.5: `check:review` green on `311988d7`; critic run 14; PLAN 7.116–7.121 filed
+
+- **Review run** on `311988d7`: the first try was cut at the unit step (300 vitest workers dead at start, 0xC0000142,
+  and "the code changed during the run": the previous session still working beside it); run again alone, resumed from
+  the four stages done: every step green, no red test.
+- **Critic run 14** on `311988d7`: map visuals 7, diplomacy 7, emergent 6, God Mode 7, editor 7, stats 7, UI/UX 7,
+  performance 5, stability 7; semantic zoom 8, naval 7, tanks 8, aircraft 7, AI nuclear use 8 (up from 7). Blocking 2:
+  R14-B1 (the land war after year 1 11.4 % of year 1's; hollow divisions 63.5 → 76.3 a world) and R14-B2 (ADR-698's
+  5.0 ms budget broken late: 8167 year 19 13.3 ms).
+- **Filed:** R14-B1 PLAN 7.116 (a: hollow divisions; b: late contact), R14-B2 PLAN 7.117; under the bar beyond them,
+  emergent 7.118, performance 7.119 (stalls at Max), naval 7.120, aircraft 7.121. Unseen seeds 991 on.
+- **Next:** PLAN 7.116a.

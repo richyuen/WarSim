@@ -1,0 +1,267 @@
+{
+ "seed": 4877,
+ "steps": [
+  {
+   "label": "GER fleet North Sea",
+   "before": {
+    "all": 87,
+    "wings": 28
+   },
+   "after": {
+    "all": 88,
+    "wings": 28
+   },
+   "refusal": null
+  },
+  {
+   "label": "GER fleet 2",
+   "before": {
+    "all": 88,
+    "wings": 28
+   },
+   "after": {
+    "all": 89,
+    "wings": 28
+   },
+   "refusal": null
+  },
+  {
+   "label": "ENG fleet North Sea",
+   "before": {
+    "all": 74,
+    "wings": 26
+   },
+   "after": {
+    "all": 75,
+    "wings": 26
+   },
+   "refusal": null
+  },
+  {
+   "label": "ENG fleet 2",
+   "before": {
+    "all": 75,
+    "wings": 26
+   },
+   "after": {
+    "all": 76,
+    "wings": 26
+   },
+   "refusal": null
+  },
+  {
+   "label": "POL bomber Warsaw",
+   "before": {
+    "all": 49,
+    "wings": 4
+   },
+   "after": {
+    "all": 50,
+    "wings": 5
+   },
+   "refusal": null
+  },
+  {
+   "label": "GER fleet Berlin (should refuse)",
+   "before": {
+    "all": 89,
+    "wings": 28
+   },
+   "after": {
+    "all": 89,
+    "wings": 28
+   },
+   "refusal": "Not done: no water of a sea is near the place."
+  }
+ ],
+ "editorText": "Map editor\n×\nBrushLineBucketRadius\nNation\nTerrain\nUnowned\nAfghanistan\nAlbania\nAnglo-Egyptian Sudan\nAngola\nArgentina\nAustralia\nAustria\nBelgian Congo\nBelgium\nBolivia\nBrazil\nBritish East Africa\nBritish India\nBritish Malaya\nBulgaria\nBurma\nCanada\nCeylon\nChile\nChina\nColombia\nCommunist China\nCosta Rica\nCuba\nCzechoslovakia\nDenmark\nDominican Republic\nDutch East Indies\nEcuador\nEgypt\nEl Salvador\nEstonia\nFinland\nFrance\nFree City of Danzig\nFrench Equatorial Africa\nFrench Indochina\nFrench Morocco\nFrench West Africa\nGermany\nGold Coast\nGreece\nGuatemala\nHaiti\nHonduras\nHungary\nIceland\nIran\nIraq\nIreland\nItaly\nJapan\nLatvia\nLebanon\nLiberia\nLithuania\nLuxembourg\nMadagascar\nManchukuo\nMengjiang\nMexico\nMongolia\nMozambique\nNationalist Spain\nNepal\nNetherlands\nNew Zealand\nNewfoundland\nNicaragua\nNigeria\nNorway\nOman\nPalestine\nPanama\nParaguay\nPeru\nPhilippines\nPoland\nPortugal\nRomania\nSarawak\nSaudi Arabia\nSiam\nSouth Africa\nSouthern Rhodesia\nSoviet Union\nSpanish Republic\nSweden\nSwitzerland\nSyria\nTannu Tuva\nTibet\nTransjordan\nTunisia\nTurkey\nUnited Kingdom\nUnited States\nUruguay\nVenezuela\nXinjiang\nYemen\nYugoslavia\nEthiopia (dead)\nOnly on\neverything\nterrain\nnation\nUndo (0)Redo (0)\nScenario\nPlace cityRemove cityMake capitalAdd coreRemove core\nForces\nFleetAir wing\nImport image\nas terrain (terrain colours)\nas nations (nation colours)\nScenario file\nExport\nLoad scenario\nClick or drag on the map to paint. The right button moves the map.",
+ "templates": [],
+ "templatesWing": [
+  "Fighter group",
+  "Tactical bomber group",
+  "Strategic bomber group",
+  "Close support group",
+  "Naval bomber group",
+  "Air transport group"
+ ],
+ "polWarheads": 10,
+ "warheadsText": "Poland has 10 warheads. Add more:",
+ "placed": {
+  "GER": {
+   "all": 89,
+   "wings": 28
+  },
+  "ENG": {
+   "all": 76,
+   "wings": 26
+  },
+  "POL": {
+   "all": 50,
+   "wings": 5
+  }
+ },
+ "pendingText": "Critic standoff 8\nWorld, 1938 · 1 January 1938\nStart this scenario\nCancel",
+ "afterCancelUrl": "http://localhost:5314/",
+ "afterCancelPending": 0,
+ "loaded": {
+  "GER": {
+   "all": 89,
+   "wings": 28
+  },
+  "ENG": {
+   "all": 76,
+   "wings": 26
+  },
+  "POL": {
+   "all": 50,
+   "wings": 5
+  },
+  "polWarheads": 10
+ },
+ "marks": [
+  {
+   "days": 1,
+   "polWarheads": 10,
+   "polForces": {
+    "all": 50,
+    "wings": 5
+   },
+   "alerts": null,
+   "sea": 0,
+   "fleetsNear": {
+    "GER": {
+     "afloat": 11,
+     "within15": 2
+    },
+    "ENG": {
+     "afloat": 38,
+     "within15": 2
+    }
+   },
+   "histSea": [],
+   "tickerSea": []
+  },
+  {
+   "days": 2,
+   "polWarheads": 10,
+   "polForces": {
+    "all": 50,
+    "wings": 5
+   },
+   "alerts": null,
+   "sea": 0,
+   "fleetsNear": {
+    "GER": {
+     "afloat": 11,
+     "within15": 1
+    },
+    "ENG": {
+     "afloat": 38,
+     "within15": 14
+    }
+   },
+   "histSea": [],
+   "tickerSea": []
+  },
+  {
+   "days": 3,
+   "polWarheads": 10,
+   "polForces": {
+    "all": 48,
+    "wings": 3
+   },
+   "alerts": null,
+   "sea": 1,
+   "fleetsNear": {
+    "GER": {
+     "afloat": 10,
+     "within15": 0
+    },
+    "ENG": {
+     "afloat": 38,
+     "within15": 14
+    }
+   },
+   "histSea": [
+    "⚓ Sea battle: France against Germany"
+   ],
+   "tickerSea": [
+    "⚓ Sea battle: France against Germany"
+   ]
+  },
+  {
+   "days": 10,
+   "polWarheads": 10,
+   "polForces": {
+    "all": 46,
+    "wings": 1
+   },
+   "alerts": null,
+   "sea": 0,
+   "fleetsNear": {
+    "GER": {
+     "afloat": 3,
+     "within15": 2
+    },
+    "ENG": {
+     "afloat": 36,
+     "within15": 3
+    }
+   },
+   "histSea": [],
+   "tickerSea": []
+  },
+  {
+   "days": 30,
+   "polWarheads": 10,
+   "polForces": {
+    "all": 40,
+    "wings": 1
+   },
+   "alerts": null,
+   "sea": 2,
+   "fleetsNear": {
+    "GER": {
+     "afloat": 3,
+     "within15": 2
+    },
+    "ENG": {
+     "afloat": 26,
+     "within15": 2
+    }
+   },
+   "histSea": [
+    "⚓ Sea battle: United Kingdom against Japan",
+    "⚓ Sea battle: United Kingdom against Japan"
+   ],
+   "tickerSea": [
+    "⚓ Sea battle: United Kingdom against Japan",
+    "⚓ Sea battle: United Kingdom against Japan"
+   ]
+  },
+  {
+   "days": 60,
+   "polWarheads": 8,
+   "polForces": {
+    "all": 18,
+    "wings": 1
+   },
+   "alerts": null,
+   "sea": 0,
+   "fleetsNear": {
+    "GER": {
+     "afloat": 3,
+     "within15": 2
+    },
+    "ENG": {
+     "afloat": 6,
+     "within15": 2
+    }
+   },
+   "histSea": [],
+   "tickerSea": []
+  }
+ ],
+ "fatal": "page.waitForFunction: Timeout 900000ms exceeded.\n    at C:\\Git\\WarSim\\critic\\scripts\\c14_g_editor.mjs:95:16",
+ "errors": []
+}

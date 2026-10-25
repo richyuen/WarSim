@@ -1,0 +1,116 @@
+== old_same
+   worlds 40
+   worldsWithBurst 40
+   bursts 962
+   burstsPerWorld 24.1
+   sea1 56.7
+   seaLatePerWorldYear 9.32
+   seaLateZeroShare 7.1
+   air1 2477
+   eng1 39.79
+   engLate 4.11
+   engLateShareOfLandAtWarPct 0.97
+   airLate 123
+   aloftLate 10.9
+   stasisMax 25
+   stasisOver20 1
+   stasis [7, 15, 4, 11, 13, 4, 8, 20, 8, 13, 6, 9, 13, 6, 19, 10, 25, 13, 9, 19, 17, 11, 13, 13, 13, 11, 9, 6, 5, 8, 16, 8, 11, 7, 13, 15, 4, 8, 10, 6]
+   living (78, 134)
+   founded (10, 70)
+   late5flip (24.1, 70.0)
+   warsLateMean 8.24
+   worldYearsLe1War 1
+   civOver10x 162
+   livingFoundedTinyMean {10: (91.3, 18.6, 27.4), 20: (96.6, 27.2, 32.5), 30: (101.0, 36.8, 34.0)}
+   eventsPerWorld {'WarDeclared': 516.0, 'RevoltSpawned': 193.0, 'CapitalCaptured': 493.8, 'CapitalMoved': 662.1, 'NationRevived': 46.3, 'PuppetCreated': 72.5, 'UnionFormed': 17.4, 'NationAnnexed': 58.8}
+   lowUtilMillionCiv []
+   lowUtilHalfMillionCiv [(7583, 20, 'Soviet Union', 'founded#176', 2, 661947, 8947, 0.072), (4513, 17, 'Soviet Union', 'founded#151', 2, 526889, 16889, 0.083), (8011, 26, 'United States', 'Germany', 2, 604531, 35531, 0.098), (6737, 20, 'Soviet Union', 'Germany', 2, 568720, 20720, 0.058), (5521, 19, 'Germany', 'Austria', 2, 708160, 22160, 0.077)]
+   sameSpotWithinYear 2
+== head_same
+   worlds 40
+   worldsWithBurst 40
+   bursts 777
+   burstsPerWorld 19.4
+   sea1 42.0
+   seaLatePerWorldYear 8.58
+   seaLateZeroShare 3.4
+   air1 2415
+   eng1 44.25
+   engLate 5.04
+   engLateShareOfLandAtWarPct 1.09
+   airLate 183
+   aloftLate 15.8
+   stasisMax 21
+   stasisOver20 1
+   stasis [5, 5, 7, 13, 10, 15, 8, 13, 5, 19, 21, 10, 15, 16, 13, 13, 6, 9, 18, 9, 5, 7, 10, 8, 16, 5, 10, 6, 16, 19, 18, 13, 8, 7, 4, 16, 5, 7, 10, 4]
+   living (78, 117)
+   founded (13, 58)
+   late5flip (13.1, 95.4)
+   warsLateMean 7.61
+   worldYearsLe1War 3
+   civOver10x 73
+   livingFoundedTinyMean {10: (88.5, 13.1, 25.1), 20: (93.5, 21.2, 27.2), 30: (94.2, 28.1, 28.3)}
+   eventsPerWorld {'WarDeclared': 456.4, 'RevoltSpawned': 175.5, 'CapitalCaptured': 474.9, 'CapitalMoved': 617.0, 'NationRevived': 45.8, 'PuppetCreated': 77.5, 'UnionFormed': 16.7, 'NationAnnexed': 67.2}
+   lowUtilMillionCiv []
+   lowUtilHalfMillionCiv [(4877, 19, 'United Kingdom', 'Hungary', 2, 840910, 19910, 0.086), (6737, 23, 'Soviet Union', 'Germany', 2, 748458, 5458, 0.083)]
+   sameSpotWithinYear 0
+== old_new
+   worlds 8
+   worldsWithBurst 8
+   bursts 239
+   burstsPerWorld 29.9
+   sea1 41
+   seaLatePerWorldYear 10.5
+   seaLateZeroShare 8.1
+   air1 2081
+   eng1 39.63
+   engLate 4.27
+   engLateShareOfLandAtWarPct 1.05
+   airLate 154
+   aloftLate 10.9
+   stasisMax 23
+   stasisOver20 1
+   stasis [11, 6, 18, 11, 9, 9, 11, 23]
+   living (87, 112)
+   founded (20, 44)
+   late5flip (34.0, 74.1)
+   warsLateMean 8.55
+   worldYearsLe1War 0
+   civOver10x 52
+   livingFoundedTinyMean {10: (86.9, 14.2, 26.2), 20: (92.1, 23.2, 29.4), 30: (97.4, 31.4, 29.5)}
+   eventsPerWorld {'WarDeclared': 497.1, 'RevoltSpawned': 170.4, 'CapitalCaptured': 485.1, 'CapitalMoved': 630.9, 'NationRevived': 44.9, 'PuppetCreated': 70.2, 'UnionFormed': 17.8, 'NationAnnexed': 49.5}
+   lowUtilMillionCiv []
+   lowUtilHalfMillionCiv [(6967, 28, 'Soviet Union', 'Italy', 2, 515798, 12798, 0.066), (6967, 29, 'Soviet Union', 'United Kingdom', 2, 886112, 11112, 0.09)]
+   sameSpotWithinYear 0
+== head_new
+   worlds 8
+   worldsWithBurst 8
+   bursts 210
+   burstsPerWorld 26.2
+   sea1 48.1
+   seaLatePerWorldYear 8.62
+   seaLateZeroShare 3.6
+   air1 2826
+   eng1 49.02
+   engLate 5.5
+   engLateShareOfLandAtWarPct 1.3
+   airLate 161
+   aloftLate 15.8
+   stasisMax 18
+   stasisOver20 0
+   stasis [6, 17, 6, 18, 10, 10, 11, 10]
+   living (75, 122)
+   founded (10, 62)
+   late5flip (28.0, 78.1)
+   warsLateMean 7.83
+   worldYearsLe1War 0
+   civOver10x 22
+   livingFoundedTinyMean {10: (86.8, 12, 21.9), 20: (89.1, 18, 27.6), 30: (94.6, 30.4, 30.5)}
+   eventsPerWorld {'WarDeclared': 483.8, 'RevoltSpawned': 191.4, 'CapitalCaptured': 477.6, 'CapitalMoved': 625.1, 'NationRevived': 46.0, 'PuppetCreated': 76.8, 'UnionFormed': 15.0, 'NationAnnexed': 70.0}
+   lowUtilMillionCiv []
+   lowUtilHalfMillionCiv []
+   sameSpotWithinYear 0
+== seedsSame
+   [1307, 2081, 2953, 3613, 4219, 4877, 5309, 5861, 6421, 7019, 7583, 8167, 8693, 9437, 1129, 2347, 3491, 4513, 5683, 6151, 7247, 8011, 8849, 9781, 1523, 2671, 3847, 4391, 5147, 6737, 7901, 9203, 1061, 2417, 3253, 4561, 5521, 6833, 7351, 8423]
+== seedsNew
+   [1187, 2539, 3359, 4673, 5651, 6967, 7411, 8539]

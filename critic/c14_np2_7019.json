@@ -1,0 +1,66 @@
+{
+ "seed": 7019,
+ "bin": "critic/c14_seed7019_y20.bin",
+ "nukePause": true,
+ "pauses": [
+  {
+   "k": 1,
+   "date": "14 October 1958",
+   "tick": 182186,
+   "alerts": [
+    "Japan struck France with an atomic bomb near Madaoua: 0 civilians killed; 15,572 men and 60 guns lost"
+   ]
+  },
+  {
+   "k": 2,
+   "date": "31 October 1958",
+   "tick": 182599,
+   "alerts": [
+    "Japan struck France with an atomic bomb near Madaoua: 0 civilians killed; 15,572 men and 60 guns lost",
+    "Soviet Union struck Germany with an atomic bomb near Kirkwall: 0 civilians killed; 31,971 men, 107 guns and 76 tanks lost"
+   ]
+  },
+  {
+   "k": 3,
+   "date": "1 November 1958",
+   "tick": 182618,
+   "alerts": [
+    "Japan struck France with an atomic bomb near Madaoua: 0 civilians killed; 15,572 men and 60 guns lost",
+    "Soviet Union struck Germany with an atomic bomb near Kirkwall: 0 civilians killed; 31,971 men, 107 guns and 76 tanks lost",
+    "Germany struck Soviet Union with an atomic bomb near Boyarka: 0 civilians killed; 3,596 men and 14 guns lost"
+   ]
+  }
+ ],
+ "events": [
+  {
+   "k": "running",
+   "tick": 175200
+  },
+  {
+   "k": "alert",
+   "tick": 182186,
+   "text": "Japan struck France with an atomic bomb near Madaoua: 0 civilians killed; 15,572 men and 60 guns lost"
+  },
+  {
+   "k": "paused",
+   "tick": 182186
+  },
+  {
+   "k": "running",
+   "tick": 182186
+  },
+  {
+   "k": "paused",
+   "tick": 182599
+  },
+  {
+   "k": "running",
+   "tick": 182599
+  },
+  {
+   "k": "paused",
+   "tick": 182618
+  }
+ ],
+ "errors": []
+}

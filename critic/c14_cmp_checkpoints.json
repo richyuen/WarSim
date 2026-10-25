@@ -1,0 +1,246 @@
+{
+ "engaged": {
+  "old_same": {
+   "checkpoints": 80,
+   "engagedMean": 4.36,
+   "wars": 8.0,
+   "landAtWar": 428,
+   "zero": 12,
+   "perWar": 0.619,
+   "maxDaily": 52
+  },
+  "head_same": {
+   "checkpoints": 80,
+   "engagedMean": 5.34,
+   "wars": 7.8,
+   "landAtWar": 482,
+   "zero": 4,
+   "perWar": 0.744,
+   "maxDaily": 48
+  },
+  "same_pairs": 80,
+  "same_higher": 46,
+  "same_lower": 32,
+  "old_new": {
+   "checkpoints": 16,
+   "engagedMean": 4.41,
+   "wars": 8.5,
+   "landAtWar": 417,
+   "zero": 0,
+   "perWar": 0.519,
+   "maxDaily": 23
+  },
+  "head_new": {
+   "checkpoints": 16,
+   "engagedMean": 7.16,
+   "wars": 7.9,
+   "landAtWar": 422,
+   "zero": 0,
+   "perWar": 0.972,
+   "maxDaily": 40
+  },
+  "new_pairs": 16,
+  "new_higher": 8,
+  "new_lower": 8,
+  "headBestCheckpoints": [
+   [
+    48,
+    [
+     5147,
+     "y20"
+    ]
+   ],
+   [
+    40,
+    [
+     8693,
+     "y10"
+    ]
+   ],
+   [
+    40,
+    [
+     2671,
+     "y10"
+    ]
+   ],
+   [
+    40,
+    [
+     1187,
+     "y10"
+    ]
+   ],
+   [
+    28,
+    [
+     1307,
+     "y10"
+    ]
+   ],
+   [
+    23,
+    [
+     8849,
+     "y10"
+    ]
+   ]
+  ]
+ },
+ "frag2": {
+  "same": {
+   "seeds": 40,
+   "pieces2to400": [
+    1024.2,
+    1045.9,
+    21
+   ],
+   "enclaves": [
+    256.1,
+    277.6,
+    26
+   ],
+   "enclavesAtPeace": [
+    205.9,
+    222.4,
+    26
+   ],
+   "enclavesAtWar": [
+    50.1,
+    55.2,
+    18
+   ],
+   "cellsInThem": [
+    41744.3,
+    41960.6,
+    18
+   ]
+  },
+  "new": {
+   "seeds": 8,
+   "pieces2to400": [
+    1041.8,
+    1027.5,
+    4
+   ],
+   "enclaves": [
+    277.8,
+    265.2,
+    5
+   ],
+   "enclavesAtPeace": [
+    203.9,
+    201.6,
+    5
+   ],
+   "enclavesAtWar": [
+    73.9,
+    63.6,
+    4
+   ],
+   "cellsInThem": [
+    42193.9,
+    42390,
+    4
+   ]
+  }
+ },
+ "hollow": {
+  "same": {
+   "seeds": 40,
+   "land": [
+    558.3,
+    607.1,
+    28
+   ],
+   "under500": [
+    63.5,
+    76.3,
+    25
+   ],
+   "under1000": [
+    86.6,
+    102.5,
+    26
+   ],
+   "under500AtWar": [
+    57.8,
+    67,
+    23
+   ],
+   "meanMen": [
+    6766.7,
+    6635.1,
+    19
+   ]
+  },
+  "new": {
+   "seeds": 8,
+   "land": [
+    550.8,
+    492.8,
+    2
+   ],
+   "under500": [
+    54.2,
+    52.9,
+    5
+   ],
+   "under1000": [
+    73.2,
+    74.9,
+    5
+   ],
+   "under500AtWar": [
+    49.8,
+    48.5,
+    5
+   ],
+   "meanMen": [
+    7185.8,
+    6797.1,
+    4
+   ]
+  }
+ },
+ "frag_vs_dd3b730": {
+  "seeds": 24,
+  "dd3b730": 836.6,
+  "head": 1040.7,
+  "headAbove": 23
+ },
+ "perWar": {
+  "old_same": {
+   "worlds": 40,
+   "perWarY1": 5.06,
+   "perWarLate": 0.564,
+   "engagedY1": 39.79,
+   "engagedLate": 4.11,
+   "lateShareOfY1Pct": 10.3
+  },
+  "head_same": {
+   "worlds": 40,
+   "perWarY1": 6.11,
+   "perWarLate": 0.722,
+   "engagedY1": 44.25,
+   "engagedLate": 5.04,
+   "lateShareOfY1Pct": 11.4
+  },
+  "old_new": {
+   "worlds": 8,
+   "perWarY1": 5.25,
+   "perWarLate": 0.558,
+   "engagedY1": 39.63,
+   "engagedLate": 4.27,
+   "lateShareOfY1Pct": 10.8
+  },
+  "head_new": {
+   "worlds": 8,
+   "perWarY1": 6.92,
+   "perWarLate": 0.78,
+   "engagedY1": 49.02,
+   "engagedLate": 5.5,
+   "lateShareOfY1Pct": 11.2
+  }
+ }
+}

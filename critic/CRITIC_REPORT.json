@@ -1,5 +1,5 @@
 {
-  "commit": "0c80db1ef2224a8ad3813d68d5c085e83159a106",
+  "commit": "311988d78a325ac696980ac9534a73c85d421edd",
   "scores": {
     "mapVisuals": 7,
     "diplomacyWarDepth": 7,
@@ -14,24 +14,36 @@
     "naval": 7,
     "tanks": 8,
     "aircraft": 7,
-    "aiNukes": 7
+    "aiNukes": 8
   },
   "blocking": [
     {
-      "id": "R13-B1",
-      "title": "The land war after year 1 is still thin (R12-B1 improved, not fixed). Same 32 seeds, both commits: engaged land formations per war a day after year 1 0.34 -> 0.57 against 5.16 in year 1 (11 %); year-10/20 checkpoints 1.50 -> 4.09 engaged, 10 of 64 with nobody in contact (24). In the page 4877 year 20 shows 0-4 engaged over 60 days with 7 wars, 7019 year 20 zero in 5 of 7 samples; the good case exists (1129 year 10, up to 51 engaged in Italy) but a player cannot count on it.",
+      "id": "R14-B1",
+      "title": "The land war after year 1 is still about a ninth of year 1's (R13-B1 improved, not fixed). Same 40 seeds, both commits: engaged per war a day after year 1 0.564 -> 0.722 (year 1 5.06 -> 6.11), all engaged after year 1 10.3 % -> 11.4 % of year 1's; checkpoints 4.36 -> 5.34 engaged, 4 of 80 with nobody in contact (12); hollow divisions under 500 men at year 20 63.5 -> 76.3 a world. New seeds both commits 0.558 -> 0.780. In the page the best late front (5147 y20) holds 21-50 engaged; 6421 y20 0-8 and 1129 y10 0-2.",
       "evidence": [
-        "critic/c13_cmp_checkpoints.json",
-        "critic/c13_cmp_all.txt",
-        "critic/c13_y2_4877_y20.json",
-        "critic/c13_y2_7019_y20.json",
-        "critic/c13_y2_1129_y10.json",
-        "critic/shots/c13y2_4877_y20_d30_3000m.png",
-        "critic/shots/c13y2_1129_y10_d30_250m.png",
-        "critic/c13_w_3301.json"
+        "critic/c14_cmp_checkpoints.json",
+        "critic/c14_cmp_all.txt",
+        "critic/c14_y2_5147_y20.json",
+        "critic/c14_y2_6421_y20.json",
+        "critic/c14_y2_1129_y10.json",
+        "critic/shots/c14y2_5147_y20_d30_250m.png"
       ],
-      "fix": "Keep raising contact per war after year 1 toward a real fraction of year 1's, measured on unseen seeds with a bar; the armies of nations at war are there (439 land formations a checkpoint) but stand idle or arrive hollow."
+      "fix": "Keep raising late contact per war toward a real fraction of year 1's, measured on unseen seeds with a bar, and merge or disband sub-500-man divisions instead of fielding them."
+    },
+    {
+      "id": "R14-B2",
+      "title": "The 5.0 ms tick budget (ADR-698) fails in the late game: pinned and alone, 8167 year 19 ticks 13.3 ms (operational AI 11.5 ms, longest 611 ms), year 23 11.2 ms, 6151 year 22 7.9 ms, 4877 year 21 5.26 ms; in the page 8167's year 19 at Max takes 142 s with 40 stalls over 500 ms. 0c80db1 also exceeds it (9437 years 24-27 at 6.1-8.6 ms), so not a regression; ADR-698's named case is near the line (4877 y21 4.50 ms on 0c80db1), but its any-year bound fails by more than double.",
+      "evidence": [
+        "critic/c14_perf_8167_y19_head.log",
+        "critic/c14_perf_8167_y21_23_head.log",
+        "critic/c14_perf_6151_y21_22_head.log",
+        "critic/c14_perf_4877_y21_head.log",
+        "critic/c14_perf_9437_y21_27_0c80db1.log",
+        "critic/c14_l_8167.json",
+        "critic/c14_seed8167_y18.bin"
+      ],
+      "fix": "Profile the operational AI on 8167's year 19 (from critic/c14_seed8167_y18.bin) and cap its work per tick (time-slice or amortise across hours) so no year exceeds 5.0 ms; measure the worst year over unseen seeds, not seed 99 or 4877 alone."
     }
   ],
-  "timestamp": "2026-10-24T08:00:10Z"
+  "timestamp": "2026-10-25T22:48:02Z"
 }

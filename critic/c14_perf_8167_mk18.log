@@ -1,0 +1,14 @@
+
+> warsim@0.0.1 sim
+> tsx tools/headless/cli.ts --scenario 1938 --seed 8167 --load critic/c14_seed8167_y10.bin --years 8 --save critic/c14_seed8167_y18.bin --affinity 0xFFFF
+
+pinned to CPUs 0xffff
+year  11  tick 96360  hash 0b8b9a69  nations 79  formations 723  flipped 50301  tick ms mean 2.4951 p95 12.9397  (21.91 s)
+year  12  tick 105120  hash bd7af165  nations 80  formations 778  flipped 27751  tick ms mean 1.8110 p95 8.6314  (15.91 s)
+year  13  tick 113880  hash 3a28b73c  nations 81  formations 833  flipped 75793  tick ms mean 2.0794 p95 9.2735  (18.26 s)
+year  14  tick 122640  hash 39335018  nations 79  formations 819  flipped 38904  tick ms mean 1.9253 p95 11.3582  (16.91 s)
+year  15  tick 131400  hash 657ba667  nations 84  formations 862  flipped 72826  tick ms mean 2.8454 p95 14.1844  (24.97 s)
+year  16  tick 140160  hash 6e394814  nations 82  formations 849  flipped 55089  tick ms mean 3.1031 p95 15.3668  (27.22 s)
+year  17  tick 148920  hash e9eebb58  nations 80  formations 913  flipped 88593  tick ms mean 3.6337 p95 20.0934  (31.87 s)
+year  18  tick 157680  hash 2baf4850  nations 78  formations 924  flipped 58535  tick ms mean 3.0538 p95 16.4087  (26.78 s)
+done: 8 years, 183.8 s wall, mean tick 2.6183 ms, final hash 2baf4850 → .cache/runs/1938-seed8167-8y.json
