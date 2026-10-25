@@ -82,12 +82,23 @@ test('T0 counters never overlap: what does not fit is folded into a neighbour, a
     // into seed 1938 one did between 6 and 8 px per cell, in a world where formations walked
     // round the map (the defect of 2.11i); without them none does (24 and 24). So: more where
     // the level changes, never fewer within a level, more over the whole way in.
+    //
+    // Restated with PLAN 7.5 (ADR-79, sixth addendum). "More where the level changes" is of the
+    // clusters, which the nested grids make more: the counters drawn are those the declutter
+    // leaves, and a new cluster can stand on another nation's counter. A year into seed 1938
+    // after ADR-699, 5 → 3 at 6 px per cell: 8 → 9 clusters, 7 and 7 counters, nation 4's two
+    // folded into the German armies they are in contact with. So at a finer level: more
+    // clusters (shown or folded), and never fewer counters.
     const [x0, y0] = cellOf(5, 55, W, H);
     const [x1, y1] = cellOf(25, 45, W, H);
-    const central = (): Promise<{ n: number; level: number | null }> =>
+    const central = (): Promise<{ n: number; clusters: number; level: number | null }> =>
       page.evaluate(({ x0, y0, x1, y1 }) => {
         const c = window.__warsim!.view!.counters;
-        return { n: c.drawn.filter((d) => d.wx >= x0 && d.wx <= x1 && d.wy >= y0 && d.wy <= y1).length, level: c.level };
+        return {
+          n: c.drawn.filter((d) => d.wx >= x0 && d.wx <= x1 && d.wy >= y0 && d.wy <= y1).length,
+          clusters: c.laidOut.filter((d) => d.x >= x0 && d.x <= x1 && d.y >= y0 && d.y <= y1).length,
+          level: c.level,
+        };
       }, { x0, y0, x1, y1 });
     const first = await central();
     let before = first;
@@ -99,7 +110,8 @@ test('T0 counters never overlap: what does not fit is folded into a neighbour, a
       const now = await central();
       if (now.level !== before.level) {
         finer++;
-        expect(now.n, `${when}, ${scale} px per cell, a finer level of clusters (${before.level} → ${now.level})`).toBeGreaterThan(before.n);
+        expect(now.clusters, `${when}, ${scale} px per cell, a finer level of clusters (${before.level} → ${now.level})`).toBeGreaterThan(before.clusters);
+        expect(now.n, `${when}, ${scale} px per cell, a finer level of clusters (${before.level} → ${now.level}), counters`).toBeGreaterThanOrEqual(before.n);
       } else expect(now.n, `${when}, ${scale} px per cell, the same level of clusters (${now.level})`).toBeGreaterThanOrEqual(before.n);
       before = now;
       if (scale === 3) await page.screenshot({ path: path.join(out, `declutter-europe-${tag}.png`) });

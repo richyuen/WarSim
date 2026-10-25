@@ -23612,3 +23612,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Re-picks** (history after `3e58eb61` and ADR-699): fallen1938's division 556 → 558 (in contact on day 21, loses
   2,659 on day 22); stackBlocks1938's search 30 → 60 days (the stacks of days 17, 28, 29 have no pair out of contact in
   the view; the scene on day 41). Both green by hand.
+
+## 2026-10-25 — PLAN 7.5: `check:review` on `ca436457`, one red; declutter1938 restated (ADR-79, sixth addendum)
+
+- **Review run** on `ca436457`: every step done; one test red twice and not on `knownRed.json`: declutter1938's "T0
+  counters never overlap" (a year in, 6 px per cell: a finer level, 7 counters and 7). Green on `3cdcbb43`; ADR-699's
+  history change (this run's own fix 2) moved it.
+- **Why** (a probe of the layer): level 5 → 3 over central Europe, 8 → 9 clusters; nation 4's two clusters stand on the
+  German armies they are in contact with and are folded into them. The declutter is right; the check asked the
+  counters drawn for what the nested grids give the clusters.
+- **Fix** (view-test only, no pin): `CounterLayer.laidOut` (every counter of the last frame, shown or folded); at a
+  finer level the spec asks for more clusters and never fewer counters. Both declutter specs green by hand.
+- **Next:** `npm run check:review` again (the code key changed: a full run), then critic run 14.

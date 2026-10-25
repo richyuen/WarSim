@@ -19693,6 +19693,19 @@ is written here, because a rule change can break it.
   - *Left as it is, on the list under PLAN 7.4:* the cities themselves. 140 of 5,757 have
     their place in a water pixel of the mask and 387 not on sure land; their dots are drawn
     there.
+- **Sixth addendum, PLAN 7.5 (2026-10-25): at a finer level of clusters, more clusters, not more counters drawn.**
+  - *Found by:* `npm run check:review` before critic run 14, on `ca436457`; green on `3cdcbb43`.
+    ADR-699 moved the history (pin 4347c49c → 2ead5b7e).
+  - *The case:* `declutter1938.spec.ts`, a year into seed 1938, over central Europe: level 5 → 3
+    at 6 px per cell, 8 → 9 clusters there and 7 and 7 counters drawn. Nation 4's two clusters
+    stand on the German armies they are in contact with and are folded into them (their
+    strength in the German counters' numbers; the sum holds).
+  - *The rule the layer owns:* the nested grids give a finer level at least the clusters of the
+    coarser one; the declutter folds by room, so a new cluster on another nation's counter adds
+    no counter. The spec's check at a change of level is restated to that: more clusters (shown
+    or folded, `CounterLayer.laidOut`, a test field), and never fewer counters. The checks of
+    no overlap, the sum, at least two finer levels and more than twice the counters over the
+    whole way in are unchanged.
 
 ### ADR-78 · 2026-10-04 · accepted — The ground at T2 and T3: hillshade and texture in the map pass, instances over it (PLAN 2.8)
 

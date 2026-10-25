@@ -262,6 +262,11 @@ export class CounterLayer {
   /** `alpha`: the opacity drawn; `own`: the counter's own part of it, without the layer's (a fold or a split in flight). */
   boxes: { x: number; y: number; w: number; h: number; alpha: number; own: number }[] = [];
 
+  /** Every counter of the last frame, in cells, shown or folded into a neighbour (tests): the clusters of the level. */
+  get laidOut(): readonly { key: string; x: number; y: number; folded: boolean }[] {
+    return this.last.map((o) => ({ key: o.key, x: o.x, y: o.y, folded: o.state.folded }));
+  }
+
   /** True while a split/merge or a fold animation runs (the view keeps redrawing). */
   animating(now: number): boolean {
     return (this.trans !== null && running(now, this.trans.start, SPLIT_MS)) || running(now, this.foldStart, FOLD_MS);
