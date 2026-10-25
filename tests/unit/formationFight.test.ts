@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { FormationDetail, FromWorker } from '../../src/shared/protocol';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
-import { contactsOf, deployOf, elementIndex, slotCount } from '../../src/sim/systems/elements';
+import { contactsOf, deployOf, destroyFormation, elementIndex, slotCount } from '../../src/sim/systems/elements';
 import type { World } from '../../src/sim/world';
 import { SimServer } from '../../src/worker/server';
 import { assets1938 } from '../helpers/earth';
@@ -85,6 +85,49 @@ describe('the worker\'s answer to `formation` says where a formation in contact 
     expect(far[0]).toBeLessThan(0.25);
     expect(far[1]).toBeCloseTo(far[0]!, 9);
     expect(far[2]).toBeGreaterThan(far[0]! + 0.1);
+    // Asking changes nothing.
+    expect(server.sim!.hash()).toBe(hash);
+    expect(replies.filter((r) => r.type === 'error')).toEqual([]);
+  }, 120_000);
+
+  // Seed 5381, Germany against Poland, day 21 (since the strike rule of PLAN 7.115, `3e58eb61`):
+  // German division 10 was paired with Polish 572 in the hour's combat, and 572 died later in that
+  // hour; 574 stood 1.41 cells off, in reach and not yet paired. The panel's fight was none.
+  it('when the enemy it was paired with died later in the hour: the nearest live enemy in reach, the one the next hour pairs it with', () => {
+    const replies: FromWorker[] = [];
+    const server = new SimServer((msg) => replies.push(msg));
+    server.handle({ type: 'init', reqId: 1, init: { scenario: '1938', seed: 99, assets: assets1938(W) } }, 0);
+    const w = server.sim!.world;
+    const { owner, w: cw, h: ch } = w.cells;
+    let site: [number, number] | null = null;
+    for (let y = 1; y < ch - 1 && !site; y++) for (let x = 2; x < cw - 3 && !site; x++) if (owner[y * cw + x - 1] === GER && owner[y * cw + x] === GER && owner[y * cw + x + 1] === POL && [-0.5, 0, 0.5, 1, 1.5].every((d) => w.onLand(x + d, y + 0.5))) site = [x + 0.5, y + 0.5];
+    expect(site).not.toBeNull();
+    const [sx, sy] = site!;
+    server.handle({ type: 'cmd', cmd: { kind: 'setSetting', key: 'aiEnabled', value: false } }, 0);
+    // A German division, a Polish one a cell east of it and a second Polish one 1.3 cells east.
+    server.handle({ type: 'cmd', cmd: { kind: 'spawnFormation', nation: GER, x: sx, y: sy, strength: 0, template: INF_DIV } }, 0);
+    server.handle({ type: 'cmd', cmd: { kind: 'spawnFormation', nation: POL, x: sx + 1, y: sy, strength: 0, template: INF_DIV } }, 0);
+    server.handle({ type: 'cmd', cmd: { kind: 'spawnFormation', nation: POL, x: sx + 1.3, y: sy, strength: 0, template: INF_DIV } }, 0);
+    server.handle({ type: 'step', reqId: 2, n: 1 }, 0);
+    const [ger, pol, pol2] = w.formations.ids().slice(-3) as [number, number, number];
+    const fc = w.formations.cols;
+    expect([fc.nation[ger], fc.nation[pol], fc.nation[pol2]]).toEqual([GER, POL, POL]);
+    server.handle({ type: 'cmd', cmd: { kind: 'declareWar', attacker: GER, defender: POL } }, 0);
+    server.handle({ type: 'step', reqId: 3, n: 2 }, 0);
+    expect(fc.engaged[ger]).toBe(1);
+    expect(contactsOf(w).get(ger)).toBe(pol);
+    expect(ask(server, replies, ger).fight?.enemy).toBe(pol);
+
+    // Polish `pol` dies after the hour's combat (a strike, a collapse): the hour's contacts still name it.
+    destroyFormation(w, pol);
+    expect(w.formations.has(pol)).toBe(false);
+    expect(fc.engaged[ger]).toBe(1);
+    expect(contactsOf(w).get(ger)).toBe(pol);
+    const hash = server.sim!.hash();
+    const d = ask(server, replies, ger);
+    expect(d.engaged).toBe(true);
+    expect(d.fight, 'a fight to go to').not.toBeNull();
+    expect(d.fight!.enemy).toBe(pol2);
     // Asking changes nothing.
     expect(server.sim!.hash()).toBe(hash);
     expect(replies.filter((r) => r.type === 'error')).toEqual([]);

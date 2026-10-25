@@ -68,7 +68,7 @@ import { buildPoliticalMap } from '../sim/data/politicalMap';
 import { politicalMapInput1938, TAGS_1938 } from '../sim/scenario1938';
 import { landStandings } from '../sim/landArea';
 import { Sim } from '../sim/sim';
-import { contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace, wrapDx } from '../sim/systems/elements';
+import { CONTACT_CELLS, cellDist, contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace, wrapDx } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
 import { airOf, Domain, laneOf, seaOf, TILE, type World } from '../sim/world';
@@ -969,9 +969,9 @@ export class SimServer {
     const pose = this.blockPose(world, id);
     const place = { x: pose.x, y: pose.y };
     // Where it fights: half way to the block of the enemy it faces (PLAN 3.11b).
-    const enemy = fc.engaged[id] === 1 ? contactsOf(world).get(id) : undefined;
+    const enemy = this.enemyOf(world, id);
     let fight: FormationDetail['fight'] = null;
-    if (enemy !== undefined && world.formations.has(enemy)) {
+    if (enemy > 0) {
       const theirs = this.blockPose(world, enemy);
       const w = world.cells.w;
       // Brought back onto a map that loops, where a block may stand over the seam with its x unfolded (`slotPlace`).
@@ -1085,6 +1085,31 @@ export class SimServer {
    */
   private born(world: World, id: number): boolean {
     return id >= this.prevAlive.length || this.prevAlive[id] !== 1 || this.prevGeneration[id] !== world.formations.generation[id];
+  }
+
+  /**
+   * The enemy a formation in contact faces, for its panel's fight and the snapshot (PLAN 3.11b,
+   * 7.34d): the one combat paired it with this hour (`contactsOf`); when that one is gone since
+   * (died later in the hour), the nearest live enemy on land within `CONTACT_CELLS`, the one the
+   * next hour pairs it with (the lower id on a tie). 0 when none is in reach, or not in contact.
+   */
+  private enemyOf(world: World, id: number): number {
+    const fc = world.formations.cols;
+    if (fc.engaged[id] !== 1) return 0;
+    const held = contactsOf(world).get(id);
+    if (held !== undefined && world.formations.has(held)) return held;
+    const reach = world.atSize(CONTACT_CELLS);
+    let best = 0;
+    let bestD = Infinity;
+    world.formations.forEach((o) => {
+      if (o === id || world.offLand(o) || world.isWing(o) || world.isFleet(o) || !world.wars.atWar(fc.nation[id]!, fc.nation[o]!)) return;
+      const d = cellDist(world, fc.x[id]!, fc.y[id]!, fc.x[o]!, fc.y[o]!);
+      if (d <= reach && (d < bestD || (d === bestD && o < best))) {
+        best = o;
+        bestD = d;
+      }
+    });
+    return best;
   }
 
   /**
@@ -1486,9 +1511,8 @@ export class SimServer {
       const moving = ft.cols.moving[id] === 1;
       fflags[j] = (moving ? FormationFlag.moving : 0) | (ft.cols.engaged[id] === 1 ? FormationFlag.engaged : 0) | (ft.cols.retreat[id]! > 0 ? FormationFlag.retreating : 0);
       ftarget[j] = moving ? ft.cols.targetCell[id]! : 0;
-      // The enemy it is in contact with (PLAN 7.34d), as the panel's fight has it: its nearest (`contactsOf`).
-      const enemy = ft.cols.engaged[id] === 1 ? contactsOf(world).get(id) : undefined;
-      fenemy[j] = enemy !== undefined && ft.has(enemy) ? enemy : 0;
+      // The enemy it is in contact with (PLAN 7.34d), as the panel's fight has it (`enemyOf`).
+      fenemy[j] = this.enemyOf(world, id);
       const path = moving && world.afloat(id) ? world.paths.get(id) : undefined;
       let way: number[] = path ? wayLine(fx[j]!, fy[j]!, path, ft.cols.pathStep[id]!, world.cells.w, world.settings.loopingMap) : [];
       // A march on land (PLAN 7.4g3): from its place to where it will stand, the target cell's
