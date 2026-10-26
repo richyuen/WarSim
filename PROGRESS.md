@@ -23787,3 +23787,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   scan); a profile's `__name` or a stray native frame (`set TextDecoder`) beside it points at such a closure.
 - **Next:** PLAN 7.5 (the critic: due for the DONE condition, PROMPT step 2a).
 - Browser specs run by hand: `smoke.spec.ts`, `loadedWorld1938.spec.ts` (green).
+- **Note:** the commit's subject says "worst 148 ms": that is the first try's (the caches in `Sim`'s constructor); the
+  committed design reads 150–151 ms (`docs/evidence/7.125/measure.md` §4). The gate's related unit run with the
+  change: 272 files, 147 s (the template builds the caches once a file).
