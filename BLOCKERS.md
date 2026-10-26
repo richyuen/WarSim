@@ -5,6 +5,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.117's AT missed: one world-year of 250 at 9.31 ms a tick, bar 5.0 (ADR-703; waits on the user)
+- **The bar:** pinned and alone, 8167's year 19 at most 5.0 ms a tick, and the worst year of 10 unseen seeds × 25
+  years at most 5.0 ms; the gate green.
+- **What moved** (`docs/evidence/7.117/measure.md`, `at.md`, `rule.patch`; 1021–1030): a refused march from afar waits
+  40 days; 8167's year 19 4.09 ms (met); 1014's year 22 6.86 → 4.63; of 1021–1030 every year at most 4.79 but 1021's
+  year 6, 9.31 (missed): the orders' refused searches (7,968 a year at 5.7 ms) in a war of the rule's history.
+- **What is left:** the user's (ADR-703): (a) commit the rule, PLAN 7.124 for the orders' refused searches
+  (recommended); (b) as (a), 7.117 done on the late years; (c) no rule, 7.124 for both.
+
 ### RESOLVED 2026-10-25 (option d, the user's decision: no rule, no task, 7.116 and 7.116b closed not done, PLAN 7.123 dropped) · PLAN 7.116b's AT missed: engaged a war late 0.111 → 0.113 of year 1's, bar 0.15 (ADR-702)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD read first on the same seeds, engaged land formations a war,
   years 2–20, at least 0.15 of year 1's; a unit test, red without; the gate green.

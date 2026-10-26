@@ -23684,3 +23684,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 
 - No rule; 7.116b and 7.116 closed not done; PLAN 7.123 dropped; the patch and the four tools kept; the pin unchanged.
 - **Next:** PLAN 7.117 (R14-B2, the late tick).
+
+## 2026-10-25 — PLAN 7.117: the AT missed by one world-year, to the user (ADR-703)
+
+- **Start:** gate green on `ba5d78c3`; critic not due; no decision waiting.
+- **Measured** (`docs/evidence/7.117/measure.md`): on HEAD's rules the critic's 8167 case is gone (years 19–25 at most
+  5.03 ms); fresh seeds 1011–1020 break the budget late (1014's year 22 6.86 ms alone), 60 % of the operational AI the
+  marches from afar's refused searches (4,432 of 4,711 a year, 5–6 ms each). New tool `tools/diag/farAsks.ts`.
+- **Rule tried** (`docs/evidence/7.117/rule.patch`, not committed): a refused march from afar waits 40 days
+  (`World.farWait`, saved). 1014's year 22 → 4.63 ms; pin → 3a90f72d; unit suite 1,912 green; its case red on HEAD.
+- **AT** (1021–1030 × 25): 8167's year 19 4.09 ms (met); worst year 9.31 ms, 1021's year 6 (missed; next 4.79): the
+  orders' refused searches in a war of the rule's history (HEAD's own year 6: 1.90 ms).
+- **Gotcha:** an eight-wide pinned screen reads ≈ 1.13 × a paired read; screen first, then re-read what is over.
+- **Gotcha:** check a claim of "the same history" by the hash: a rule of the AI moves a seed's history from its first
+  refused order, and an over-budget year can be the rule's own.
+- **Filed:** BLOCKERS, ADR-703 (proposed), PLAN 7.124 (the orders' refused searches, if (a)).
+- **Next:** PLAN 7.118 while ADR-703 waits.

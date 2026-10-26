@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-703 · 2026-10-25 · proposed (the user's decision) — A refused march from afar waits 40 days: the late cost gone, one early year over the budget (PLAN 7.117's AT missed)
+
+- **Context.** PLAN 7.117 (R14-B2): ADR-698's budget, at most 5.0 ms a tick in any year. AT: pinned and alone, 8167's
+  year 19 at most 5.0 ms, and the worst year of 10 unseen seeds × 25 years at most 5.0 ms; the gate green.
+- **Measured** (`docs/evidence/7.117/measure.md`): on HEAD's rules the critic's case is gone (8167's years 19–25
+  3.0–5.03 ms; the critic's 13.3 ms was of `311988d7`'s rules, before ADR-701's fold). On fresh seeds (1011–1020) HEAD
+  breaks the budget late: 1014's year 22 6.86 ms alone (7.04 paired), 1016's year 24 6.61 paired. There 60 % of the
+  operational AI is the marches from afar: 4,432 of 4,711 such orders a year are refused, each a failed search of the
+  whole way (5–6 ms), asked again every MARCH_DAYS because any flip voids the refusal kept.
+- **Rule tried** (`docs/evidence/7.117/rule.patch`, not committed): a formation whose march from afar or to spare is
+  refused is given none so again for FAR_RETRY_DAYS (40), saved as `World.farWait` (an optional section, gone with its
+  formation). 1014's year 22 from one save 6.86 → **4.63 ms**; 8167's year 19 4.75 → **4.09**. Pin e28dbfa1 → 3a90f72d.
+  Unit case `farWait1938.test.ts` red on HEAD, green with it; the unit suite 1,912 green.
+- **The AT** (`docs/evidence/7.117/at.md`, 1021–1030 × 25): clause 1 met (4.09); clause 2 **missed** by one world-year
+  of 250: 1021's year 6, **9.31 ms** alone (the next worst 4.79). That year is of the rule's history (HEAD's own reads
+  1.90 ms, another war): England, Belgium and France on fronts of 964–1,174 sectors, and 73 % of the operational AI is
+  the orders near the front: 7,968 refused a year, 5.7 ms each, made again at each plan (flips void the refusal kept).
+  The same failed-search cost, in the part the rule does not touch.
+- **Options:**
+  - **(a)** Commit the rule (the pin moves); 7.117 closed not done; PLAN 7.124: the orders' refused searches, measured
+    on 1021's year 6 (a save of the rule's history), AT on 1031–1040 × 25 years: the worst year at most 5.0 ms.
+    (Recommended: the late cost the critic found is gone wherever read, 249 of 250 world-years under the budget, and
+    what is left has a cause and a number.)
+  - **(b)** As (a), and 7.117 done on the late years (the critic's finding: years 15–25 worst 4.79 ms): ADR-698's "any
+    year" left to 7.124.
+  - **(c)** No rule; 7.117 closed not done; 7.124 for both kinds of refused search.
+- **Meanwhile** the loop takes PLAN 7.118. Until decided, no rule; the pin unchanged (e28dbfa1).
+
 ### ADR-702 · 2026-10-25 · accepted, option d (the user's decision, 2026-10-25) — An attack marches on the enemy formation in reach: contact up, the figure flat (PLAN 7.116b's AT missed)
 
 - **Context.** PLAN 7.116b (R14-B1, late contact): on 10 unseen seeds × 20 years against HEAD read first on the same

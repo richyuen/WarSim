@@ -67,6 +67,11 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
   5.0 ms a tick, and the worst year of 10 unseen seeds × 25 years at most 5.0 ms (each year a world-year
   read by `npm run sim -- --profile`); a change meant to keep the rules keeps the pin; the gate green.
 
+  Measured and tried (2026-10-25, `docs/evidence/7.117/`): the AT missed by one world-year of 250 (1021's year 6,
+  9.31 ms: the orders' refused searches); a refused march from afar waiting 40 days takes the late cost off (1014's
+  year 22 6.86 → 4.63 ms; 8167's year 19 4.09). BLOCKERS, ADR-703 (proposed). Waits on the user. Seeds 1011–1020 went
+  to the measure, 1021–1030 to the AT; next unseen 1031.
+
 - [ ] 7.118 Emergent dynamics (emergent 6, needs 7, beyond R14-B1): on run 13's 40 seeds the land
   moved in a world's last five years falls to 13.1 % in the least of them (24.1 % at least on `0c80db1`;
   the most 95.4 %); founded statelets alive at year 30 36.8 → 28.1 on the same seeds but 31.4 → 30.4 on
@@ -104,6 +109,15 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
   at war late: planes held, planes aloft, and why the rest stay on the ground. AT: on 10 unseen seeds ×
   20 years against HEAD on the same seeds, air battles a world-year after year 1 at least 1.3 × HEAD's,
   year-1 battles not below 0.9 × HEAD's; a unit test, red without; the gate green.
+
+- [ ] 7.124 The orders' refused searches (from 7.117, ADR-703 (a); dropped if the user takes another option): on the
+  rule's history of seed 1021, year 6 reads 9.31 ms a tick (HEAD's own 1.90): the operational AI 7.3 ms, 73 % of it
+  the orders of formations near the front, 7,968 refused a year, each a failed search of 5.6–5.9 ms (37–45 cells),
+  made again at each plan because a flip voids the refusal kept (England 48.7 ms a plan, Belgium 36.2, France 21.7).
+  Evidence: `docs/evidence/7.117/at.md`, `.cache/7117/opCalls_1021_y6.txt` (remade from `rule.patch` and seed 1021).
+  Measure first on a save of 1021's year 5 (the rule's code) which orders are refused and why their search fails.
+  AT: pinned, 1021's year 6 at most 5.0 ms, and the worst year of 10 unseen seeds × 25 years (1031 on) at most 5.0 ms;
+  a change meant to keep the rules keeps the pin; the gate green.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
