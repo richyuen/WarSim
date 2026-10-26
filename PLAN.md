@@ -76,6 +76,10 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
   stalls over 500 ms (an e2e or `tools/` measure, run alone), and headless the longest single tick of
   that year at most 200 ms; the gate green.
 
+  Measured (2026-10-26, `docs/evidence/7.119/measure.md`): on HEAD's rules the page has 0 stalls over 500 ms (the
+  year 31 s); headless the critic's measure 166 ms, whole ticks over 200 ms only just after a load (231 ms; 426 in
+  a new process). The Large map's first year alone 59.5 s. BLOCKERS, ADR-705 (proposed). Waits on the user.
+
 - [ ] 7.120 Naval (naval 7, needs 8): the late sea war is about a fifth of year 1's battles: on the same
   40 seeds year-1 battles 56.7 → 42.0 a world (ships sunk 16,378 → 14,210 over 24 seeds), late battles
   9.32 → 8.58 a world-year; new seeds year 1 41 → 48. Battles sinking nothing 7.1 → 3.4 % (fixed).

@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-705 · 2026-10-26 · proposed (the user's decision) — Stalls at Max: none in the page on HEAD's rules; whole ticks over 200 ms only just after a load (PLAN 7.119)
+
+- **Context.** PLAN 7.119 (performance 5, needs 7): 8167's year 19 at Max had 40 stalls over 500 ms in the page, the
+  longest tick 611 ms headless. AT: in the page at most 4 stalls over 500 ms; headless the longest single tick of
+  that year at most 200 ms; the gate green.
+- **Measured** (`docs/evidence/7.119/measure.md`, HEAD `d826e6fd`; tools `maxStalls.ts`, `tickMax.ts`): the page,
+  two reads alone: **0** stalls over 500 ms, the longest gap 158–162 ms, the year 31 s (the critic's 142 s).
+  Headless, the critic's measure (`--profile`, the longest call): 166 ms. Whole ticks: over 200 ms only the first
+  after a load (231 ms warmed: the operational AI rebuilding what is not saved) and, in a new process, the
+  invasion AI's first run (426 ms); in play at most 143 ms. The Large map's first year at Max alone: 59.5 s.
+- **Nothing changed in the code.** The critic's case was of the rules before ADR-701 and ADR-703.
+- **Options:**
+  - **(a)** 7.119 done: the page met (0 of 4), the critic's headless measure met (166 of 200); PLAN 7.125 for
+    the first ticks after a load (the invasion AI's one-time build, the operational AI's rebuild): AT the first
+    tick after a load of 8167's year 18 save at most 200 ms in a new process. (Recommended: what the player saw is
+    gone, and what is left is a load's cost with a cause.)
+  - **(b)** 7.119 done, no task: a load's first ticks are part of loading.
+  - **(c)** 7.119 open until every tick of the year, the first after the load among them, is at most 200 ms.
+- **Meanwhile** the loop takes PLAN 7.120.
+
 ### ADR-704 · 2026-10-26 · proposed (the user's decision) — Land moved late: the critic's case gone on HEAD's rules, a quiet tail of one world in 38 (PLAN 7.118)
 
 - **Context.** PLAN 7.118 (emergent 6, needs 7): on run 14's seeds the land moved in a world's last five years fell

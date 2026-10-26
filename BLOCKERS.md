@@ -5,6 +5,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.119's AT: the page met, whole ticks over 200 ms just after a load (ADR-705; waits on the user)
+- **The bar:** in the page 8167's year 19 at Max with at most 4 stalls over 500 ms; headless the longest single
+  tick of that year at most 200 ms; the gate green.
+- **What moved** (`docs/evidence/7.119/measure.md`): nothing changed; the page 40 → 0 stalls on HEAD's rules; the
+  critic's headless measure 611 → 166 ms; whole ticks over 200 ms only the first after a load (231 ms) and, in a new
+  process, the invasion AI's first run (426 ms).
+- **What is left:** the user's (ADR-705): (a) done, PLAN 7.125 for a load's first ticks (recommended); (b) done, no
+  task; (c) open until every tick is at most 200 ms.
+
 ### PLAN 7.118's AT not met on HEAD: one world of 38 under 20 % (ADR-704; waits on the user)
 - **The bar:** on 10 unseen seeds × 30 years against HEAD on the same seeds, the least land moved in a world's last
   five years at least 20 %, the mean not below HEAD's; founded at year 30 not above; a unit test, red without.

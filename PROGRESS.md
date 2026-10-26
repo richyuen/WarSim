@@ -23717,3 +23717,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a diag that writes into a new folder must make it first (`mkdirSync`), or node dies with no line.
 - **Filed:** BLOCKERS, ADR-704 (proposed). No rule.
 - **Next:** PLAN 7.119 while ADR-704 waits.
+
+## 2026-10-26 — PLAN 7.119: the stalls gone on HEAD's rules, a load's first ticks to the user (ADR-705)
+
+- **Measured** (`docs/evidence/7.119/measure.md`; new tools `maxStalls.ts`, `tickMax.ts`): 8167's year 19 at Max in
+  the page 0 stalls over 500 ms, twice (the critic's 40); the critic's headless measure 166 ms (611). Whole ticks
+  over 200 ms only the first after a load (231 ms warmed) and the invasion AI's first run in a new process (426
+  ms). The Large map's first year at Max alone 59.5 s.
+- **Gotcha:** a fresh process's first ticks carry the engine's warm-up and one-time builds; read a tick's maximum
+  with `tickMax.ts warm` beside the cold read to tell them apart.
+- **Filed:** BLOCKERS, ADR-705 (proposed). No code change to the sim.
+- **Next:** PLAN 7.120 while ADR-704 and ADR-705 wait.
