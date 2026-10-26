@@ -36,7 +36,9 @@ describe('a nation fighting for its life that struck once strikes again (PLAN 7.
     for (const b of ['attack', 'defense', 'speed'] as const) sim.command({ kind: 'grantBuff', targetKind: 'nation', target: GER, buff: b, magnitude: 0.6, hours: 24 * 200, nameKey: 'god.buff' });
     sim.command({ kind: 'setEfficiency', nation: GER, value: 2 });
     sim.command({ kind: 'setEfficiency', nation: FRA, value: 0.5 });
-    for (let d = 1; d <= 120; d++) {
+    // To the second strike, within 180 days (120 until ADR-711, PLAN 7.5 before critic run 15: France's
+    // first strike moved to day 62, and the side's wait puts the second past day 120).
+    for (let d = 1; d <= 180 && decided.length < 2; d++) {
       if (d === 2) {
         sim.command({ kind: 'setWarFightToDeath', war: war.id, side: 1, value: true });
         sim.command({ kind: 'setWarFightToDeath', war: war.id, side: 0, value: true });
@@ -53,7 +55,7 @@ describe('a nation fighting for its life that struck once strikes again (PLAN 7.
     // months) after its burst for the answer, a nation fighting for its life as well (most of run 12's
     // volleys were theirs). The claim kept is R7-B1's: France strikes again while it is losing, as
     // soon as the wait allows (days 33 and 93), not 49 days and more past it.
-    expect(decided.length, 'strikes in 120 days').toBeGreaterThanOrEqual(2);
+    expect(decided.length, 'strikes in 180 days').toBeGreaterThanOrEqual(2);
     expect(decided[1]! - decided[0]!, 'hours from the first strike to the second').toBeLessThanOrEqual(24 * (STRIKE_GAP_DAYS + 7));
     // The war it struck in is still on: the later strikes are of a France that keeps losing.
     expect(world.wars.list.includes(war)).toBe(true);

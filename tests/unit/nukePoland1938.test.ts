@@ -40,8 +40,12 @@ function strategicWings(world: World): number {
 // place 4010 and 4014, the same case (the place struck under German air cover, through 0.20; the
 // bomber lost on days 97 and 98), struck both before and after the fold; of seeds 4001-4020 Poland
 // strikes before its bomber is gone on 17 before it and 15 after (`tools/diag/nukePolandGates.ts`).
+// Re-picked at ADR-711 (PLAN 7.5 before critic run 15: a deploy rule, the history moved): 4010's first
+// burst fell on nation 15, 20,921 men, under ADR-651 a's bar. In its place 4017, the same case (through
+// 0.20, a burst on Germany on day 36, the bomber held to day 106). Of 4001-4020 the first burst off
+// Germany on fewer than MASSED_MEN: 2 before (4009, 4020), 4 after (4009, 4010, 4012, 4016); PLAN 7.127.
 describe("the critic's Poland strikes (PLAN 7.18f, 7.18i)", () => {
-  it.each([5591, 4010, 4014])("seed %i: given 10 warheads and a strategic bomber group at Warsaw, it strikes in Germany's war on it before its bomber is gone", (seed) => {
+  it.each([5591, 4017, 4014])("seed %i: given 10 warheads and a strategic bomber group at Warsaw, it strikes in Germany's war on it before its bomber is gone", (seed) => {
     const s = new Sim({ scenario: '1938', seed, assets: assets1938(W) });
     const w = s.world;
     const warsaw = w.airbases.find((b) => b.name === 'Warsaw' && w.cells.controller[b.cell] === POL);

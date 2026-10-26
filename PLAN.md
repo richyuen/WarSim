@@ -53,6 +53,14 @@ Run 14's (report of 2026-10-25 on `311988d7`, `critic/CRITIC_REPORT.md`; R13-B1 
 aiNukes 7 → 8): R14-B1 and R14-B2 are PLAN 7.116 and 7.117; the dimensions under the bar, beyond them,
 are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a task, none reused:
 
+Found by `npm run check:review` before critic run 15 (2026-10-26; ADR-711):
+
+- [ ] 7.127 The critic's Poland: a first burst off Germany on fewer than `MASSED_MEN`. `nukePoland1938`'s set-up (10
+  warheads and a strategic bomber group at Warsaw, Germany's war on Poland) on seeds 4001–4020: the first burst falls
+  off Germany on fewer than 50,000 men (ADR-651 a's bar) on 4 (4009, 4010, 4012, 4016; nation 15 or 10, 17–21k men),
+  2 before ADR-711 (4009, 4020) (`tools/diag/nukePolandGates.ts … summary`). AT: on 4001–4020, such bursts 0 of 20;
+  Poland's strikes before its bomber is gone not fewer than 15; `nukePoland1938` green; the gate green.
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

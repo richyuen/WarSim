@@ -404,9 +404,13 @@ export function deployOf(world: World, f: number, count: number): Deployment | n
       };
       // How far forward a file is free: the gap short of each block that stands in its way,
       // whatever side of that block it comes to. A block is twice as wide as deep, and one that
-      // came to a flank stood in it (PLAN 3.11c2). In its way: across the file's width and the
-      // gap, before the formation's place.
-      const half = (slotGrid(count).cols * world.atSize(SLOT_SPACING)) / 2 + world.atSize(DEPLOY_GAP) - 1e-9;
+      // came to a flank stood in it (PLAN 3.11c2). In its way: across the file's width and half
+      // the gap, before the formation's place. (A whole gap until PLAN 7.5 before critic run 15,
+      // ADR-711: files stand `apart`, a width and a gap, measured from each formation's own place;
+      // on seed 4242 two Italian blocks whose places stood 0.05 cells off the others' found the
+      // next lane's blocks 0.283 across, within 0.29, and stood two lines behind them, 20.1 km
+      // from the French block they faced.)
+      const half = (slotGrid(count).cols * world.atSize(SLOT_SPACING)) / 2 + world.atSize(DEPLOY_GAP) / 2;
       // Of each such block: where its near side is along this one's line, and its middle and its reach across it.
       const inWay: [number, number, number][] = [];
       for (const [b, slots] of stand) {

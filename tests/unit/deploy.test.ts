@@ -282,6 +282,32 @@ describe('the blocks of formations in contact are deployed against each other (P
     }
   });
 
+  // PLAN 7.5 before critic run 15 (ADR-711): on day 23 of `formationFight1938` eight Italian
+  // divisions stood on one French one, and the two whose places stood 0.05 cells off the others'
+  // found the next lane's blocks 0.283 cells across, within the 0.29 of a width and a gap: the
+  // outer lane stood behind both lines of the next, the last 20.1 km from the French block.
+  it('a stack whose places stand a hair apart keeps its lanes abreast: none behind the next lane\'s lines', () => {
+    const lay = (across: number): number => {
+      const s = new Sim({ scenario: '1938', seed: 99, assets: assets1938(W) });
+      const w = s.world;
+      w.settings.aiEnabled = false;
+      const site = border(w);
+      const b = addDivision(w, POL, site[0] + 1.4, site[1]);
+      s.command({ kind: 'declareWar', attacker: GER, defender: POL });
+      // Two of the eight (the outer lane's) a twentieth of a cell back from the others' place, and a hair across.
+      const stack = Array.from({ length: 8 }, (_, i) => (across !== 0 && i >= 6 ? addDivision(w, GER, site[0] - 0.05, site[1] + across) : addDivision(w, GER, site[0], site[1])));
+      s.step(2);
+      const theirs = deployOf(w, b, 28)!;
+      return Math.max(...stack.map((f) => {
+        const d = deployOf(w, f, 28)!;
+        return cellDist(w, d.x, d.y, theirs.x, theirs.y);
+      }));
+    };
+    const even = lay(0);
+    // As far as with every place the same, and the 0.05 those two stand back, a hair to either side.
+    for (const across of [0.007, -0.007]) expect(lay(across), `cells from the furthest block to the enemy's, ${across} across`).toBeLessThanOrEqual(even + 0.05 + 1e-6);
+  });
+
   // PLAN 7.102 (ADR-677): on day 21 of `formationFight1938` an Italian division, the third line on a
   // French block, went to the file to the side, which was sea from its place to that block; it
   // stood two eighths of its way forward, 21.4 km from the block it faced, with land and room in

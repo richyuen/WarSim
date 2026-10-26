@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-711 · 2026-10-26 · accepted — A block in another lane is in a file's way within half the gap of it, not a whole one (PLAN 7.5; amends ADR-699)
+
+- **Context.** `npm run check:review` before critic run 15: `formationFight1938` red, the furthest block 20.06 km from
+  the block it faces (bar under 20, ADR-699). Seed 4242, day 23 (`tools/diag/deployFar.ts`): eight Italian divisions
+  on French 242 in four lanes 0.29 cells apart, two lines each, but the outer lane's first line 0.677 cells deep
+  against 0.17 in the middle: Italian 339, its second line, 0.845 deep and 0.58 across, 20.1 km off. Files stand
+  `apart`, a width and a gap, measured from each formation's own place; 339's and 342's places stood 0.05 cells off
+  the others', so the next lane's blocks were 0.283 across in their frame, inside the in-way reach of a width and a
+  whole gap (0.29), and the outer lane stood behind both of that lane's lines.
+- **Decision** (`deployOf`, `half`): a block of another lane is in a file's way when it comes within half
+  `DEPLOY_GAP` of it across (0.025 cells, half a kilometre), not a whole gap less 1e-9: blocks still keep off each
+  other, and lanes abreast stay abreast when the places stand a hair apart.
+- **Read.** On HEAD's new history (the blocks are read by the air AI's patrols and the fires): seed 4242's furthest
+  block from the block it faces 16.9 km on day 21, 16.3 km on day 23. `deploy.test.ts`, "a stack whose places stand a
+  hair apart": two of eight places 0.05 back and 0.007 across; red without (0.893 cells from the enemy's block, bar
+  0.722, the even stack's and the 0.05), green with; ADR-699's eighteen-divisions case green.
+- **Pin:** 3a90f72d → ac54bc2d.
+- **History re-picks** (claims kept): `farWait1938` seed 99 from day 90 → seed 7 from day 180 (seed 99 has no refused
+  far march in 400 days now; seed 7 on day 198, `tools/diag/firstWait.ts`); `nukeStrikeAgain1938` to the second strike
+  within 180 days, not 120 (France's first on day 62, the second on 122, the side's wait between); `nukePoland1938`
+  seed 4010 → 4017 (4010's first burst fell on nation 15, 20,921 men, under ADR-651 a's bar). Of seeds 4001–4020 such
+  bursts are 2 before and 4 after: PLAN 7.127 filed.
+- **Deviation from AoC:** none; AoC has no blocks of elements.
+
 ### ADR-710 · 2026-10-26 · accepted — A load's first ticks: the border scan inline, the map's static caches built with the world (PLAN 7.125)
 
 - **Context.** PLAN 7.125 (ADR-705 a): from seed 8167's year-18 save, in a new process, the first tick after the load
