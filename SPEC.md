@@ -2283,6 +2283,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     The plans ask it pair by pair (`wideLinked`, PLAN 7.129, ADR-719): the runs are walked
     outwards from the two grounds only until they are joined or one side has nothing left, each
     run once in the passage's hour; the answer is the whole walk's.
+    A class's reach to a sector is asked where the plan reads it and kept for the plan (PLAN
+    7.129, ADR-720): the sectors within 60 cells of one of its formations, the empty sectors a
+    march from afar looks at, and a long way's other sectors; not every sector for every class.
     Ground that was walked 4,096 cells and came to no wide ground is taken to reach any.
   - *Allotment:* the rest go to the threatened sectors first (PLAN 7.79b, ADR-634): those with a
     threat share, by largest remainders over their threat, as many as there are of the class

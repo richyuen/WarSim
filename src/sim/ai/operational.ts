@@ -22,6 +22,11 @@
  * ground, or on open ground whose cells come to one, are a class by that ground, and it reaches
  * a sector whose front cell is in another wide ground, or comes to another, only when the cells
  * join the two (`wideJoined`; asked pair by pair, `wideLinked`, PLAN 7.129).
+ * Whether a class reaches a sector is asked where it is read and kept for the plan (PLAN 7.129,
+ * ADR-720): for the sectors within the range of a formation of the class, the empty sectors of
+ * its landmass that a march from afar looks at, and a long way's other sectors; before, it was
+ * asked of every sector for every class, and the ground of each sector's cell walked
+ * (`pocketOf`), 2,000 sectors for 3 formations in a late world.
  * Each class is allotted by itself, to the
  * sectors it reaches: in what follows "they" is one class and "sectors" those.
  * They are allotted to the threatened sectors first (PLAN 7.79b, ADR-634): those with a threat
@@ -777,8 +782,9 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     }
   }
   const sn = list.length;
-  // reached[ci]: the sectors class ci reaches, ascending.
-  const reached: number[][] = classCell.map(() => []);
+  // known[ci][i]: whether class ci reaches sector i, asked where it is read: 0 not asked yet, 1
+  // reaches, 2 does not.
+  const known: Uint8Array[] = classCell.map(() => new Uint8Array(sn));
   // unasked[ci]: of those, the sectors in another wide ground than the class's, with that ground:
   // whether the cells join the two is asked where it is read (`reaches`; PLAN 3.10c2c1: the
   // first to ask has the cells walked, and three plans in four read none of them).
@@ -794,51 +800,57 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     return r;
   };
   const probeReach = OP_PROBE.sectors ? classCell.map((c, ci) => ({ cell: c, ground: classGround[ci]!, provinceGroup: classGroup[ci]!, far: 0, reached: 0, snap: 0, group: 0, pocket: 0 })) : undefined;
-  for (let i = 0; i < sn; i++) {
-    const s = list[i]!;
-    const hold = s.hold;
-    // From another landmass: the cell of it within the snap of an order, once per landmass.
-    let other: Map<number, number> | undefined;
-    // The cell last asked for its ground, and the answer.
-    let asked = -1;
-    let ground = 0;
-    for (let ci = 0; ci < classCell.length; ci++) {
-      const from = classCell[ci]!;
-      const g = classGroup[ci]!;
-      let to = hold;
-      if (land[from] !== land[hold] || land[hold] === 0) {
-        const known = (other ??= new Map()).get(land[from]!);
-        to = known ?? snapTarget(world, from, hold % w, Math.floor(hold / w));
-        if (known === undefined) other.set(land[from]!, to);
-      }
-      if (to < 0 || (g >= 0 && nodeOf[to] !== 0 && group[nodeOf[to]!] !== g)) {
-        if (probeReach) probeReach[ci]![to < 0 ? 'snap' : 'group']++;
-        continue;
-      }
-      // The pocket of the order's cell is the class's, or neither is in one (PLAN 3.10c2b2:
-      // the cells are walked from the sector's cell too, once a cell). A class on closed ground
-      // walks out of it, into a pocket too: it is not asked.
-      if (g < 0) {
-        reached[ci]!.push(i);
-        continue;
-      }
-      if (to !== asked) {
-        asked = to;
-        ground = nodeOf[to] === 0 ? 0 : groundOf(to);
-      }
-      const mine = classGround[ci]!;
-      if (ground !== mine) {
-        if (ground > 0 || mine > 0) {
-          if (probeReach) probeReach[ci]!.pocket++;
-          continue;
-        }
-        // Two wide grounds: the cells join them or the class does not reach the sector (PLAN
-        // 3.10c2b3a, ADR-193). Ground that came to no wide ground may be joined to any.
-        if (ground < 0 && mine < 0) (unasked[ci] ??= new Map()).set(i, ground);
-      }
-      reached[ci]!.push(i);
+  // From another landmass: the cell of it within the snap of an order, once per landmass and sector.
+  const snapped = new Map<number, number>();
+  // The ground of a cell asked for it (`groundOf`), once a plan.
+  const groundTo = new Map<number, number>();
+  const reachOf = (ci: number, i: number): boolean => {
+    const was = known[ci]![i]!;
+    if (was !== 0) return was === 1;
+    const r = reachAsk(ci, i);
+    known[ci]![i] = r ? 1 : 2;
+    return r;
+  };
+  const reachAsk = (ci: number, i: number): boolean => {
+    const hold = list[i]!.hold;
+    const from = classCell[ci]!;
+    const g = classGroup[ci]!;
+    let to = hold;
+    if (land[from] !== land[hold] || land[hold] === 0) {
+      const key = land[from]! * sn + i;
+      const had = snapped.get(key);
+      to = had ?? snapTarget(world, from, hold % w, Math.floor(hold / w));
+      if (had === undefined) snapped.set(key, to);
     }
-  }
+    if (to < 0 || (g >= 0 && nodeOf[to] !== 0 && group[nodeOf[to]!] !== g)) {
+      if (probeReach) probeReach[ci]![to < 0 ? 'snap' : 'group']++;
+      return false;
+    }
+    // The pocket of the order's cell is the class's, or neither is in one (PLAN 3.10c2b2:
+    // the cells are walked from the sector's cell too, once a cell). A class on closed ground
+    // walks out of it, into a pocket too: it is not asked.
+    if (g < 0) return true;
+    let ground = groundTo.get(to);
+    if (ground === undefined) groundTo.set(to, (ground = nodeOf[to] === 0 ? 0 : groundOf(to)));
+    const mine = classGround[ci]!;
+    if (ground !== mine) {
+      if (ground > 0 || mine > 0) {
+        if (probeReach) probeReach[ci]!.pocket++;
+        return false;
+      }
+      // Two wide grounds: the cells join them or the class does not reach the sector (PLAN
+      // 3.10c2b3a, ADR-193). Ground that came to no wide ground may be joined to any.
+      if (ground < 0 && mine < 0) (unasked[ci] ??= new Map()).set(i, ground);
+    }
+    return true;
+  };
+  /** Every sector class ci reaches, ascending (the probes' reading). */
+  const reachedOf = (ci: number): number[] => {
+    const r: number[] = [];
+    for (let i = 0; i < sn; i++) if (reachOf(ci, i)) r.push(i);
+    return r;
+  };
+  if (probeReach) for (let ci = 0; ci < classCell.length; ci++) reachedOf(ci);
   if (timing) timing.classes = classCell.length;
   mark();
   // Reserve: the farthest RESERVE share of free formations within range of a sector they reach
@@ -847,13 +859,25 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   for (let k = 0; k < near.length; k++) {
     const id = near[k]!;
     const ci = classOf[id]!;
-    let d = nearD[k]!;
-    if (reached[ci]!.length < sn || unasked[ci]) {
-      // A sector beyond the range is not asked for: it does not put the formation within it.
-      d = Infinity;
-      for (const i of reached[ci]!) {
+    // A sector beyond the range is not asked for: it does not put the formation within it. Only
+    // a sector of the rows within the range can be within it (PLAN 7.1g). Those it reaches with no
+    // two wide grounds to join first: whether the cells join them (`reaches`) is asked only of a
+    // sector nearer than the nearest of those.
+    let d = Infinity;
+    const y = f.y[id]!;
+    const first = rowStart(Math.floor((y - range) / sector));
+    const last = rowStart(Math.floor((y + range) / sector) + 1);
+    let toJoin = false;
+    for (let i = first; i < last; i++) {
+      const di = dist2(id, list[i]!);
+      if (di > range2 || di >= d || !reachOf(ci, i)) continue;
+      if (unasked[ci]?.has(i) === true) toJoin = true;
+      else d = di;
+    }
+    if (toJoin) {
+      for (let i = first; i < last; i++) {
         const di = dist2(id, list[i]!);
-        if (di < d && (di > range2 || reaches(ci, i))) d = di;
+        if (di < d && di <= range2 && unasked[ci]!.has(i) && reaches(ci, i)) d = di;
       }
     }
     if (d <= range2) nearest.set(id, d);
@@ -959,7 +983,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     const byY = ids.slice().sort((a, b) => f.y[a]! - f.y[b]!);
     const ys = new Float64Array(byY.length);
     for (let k = 0; k < byY.length; k++) ys[k] = f.y[byY[k]!]!;
-    for (const i of reached[ci]!) {
+    for (let i = 0; i < sn; i++) {
       const s = list[i]!;
       let lo = 0;
       let hi = ys.length;
@@ -970,7 +994,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       }
       let p = 0;
       for (let k = lo; k < ys.length && ys[k]! <= s.cy + range; k++) if (dist2(byY[k]!, s) <= range2) p++;
-      if (p === 0 || !reaches(ci, i)) continue;
+      if (p === 0 || !reachOf(ci, i) || !reaches(ci, i)) continue;
       front.push(i);
       pool.push(p);
     }
@@ -1156,7 +1180,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       for (const id of far) {
         const ci = classOf[id]!;
         let bd = Infinity;
-        for (const i of reached[ci]!) if (list[i]!.threat > 0 && land[list[i]!.hold] === land[classCell[ci]!]) bd = Math.min(bd, dist2(id, list[i]!));
+        for (const i of reachedOf(ci)) if (list[i]!.threat > 0 && land[list[i]!.hold] === land[classCell[ci]!]) bd = Math.min(bd, dist2(id, list[i]!));
         if (bd < Infinity) {
           probeEmpty.farHot++;
           probeEmpty.farHotCells += Math.sqrt(bd);
@@ -1167,7 +1191,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       probeEmpty.far = far.length;
       if (probeReach) {
         for (const id of far) probeReach[classOf[id]!]!.far++;
-        for (let ci = 0; ci < probeReach.length; ci++) probeReach[ci]!.reached = reached[ci]!.filter((i) => empty[i] !== 0).length;
+        for (let ci = 0; ci < probeReach.length; ci++) probeReach[ci]!.reached = reachedOf(ci).filter((i) => empty[i] !== 0).length;
         probeEmpty.classes = probeReach.filter((r) => r.far > 0);
       }
     }
@@ -1187,7 +1211,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       for (let kind = 1; kind <= (lone ? 1 : 2); kind++) {
         let best = -1;
         let bd = lone ? spare2 : Infinity;
-        for (const i of reached[ci]!) {
+        for (let i = 0; i < sn; i++) {
           // Not to the shore across the water from it (where an order to another landmass ends).
           if (empty[i] !== kind) continue;
           if (land[list[i]!.hold] !== land[classCell[ci]!]) {
@@ -1195,12 +1219,12 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
             continue;
           }
           const d = dist2(id, list[i]!);
-          if (d < bd && (!lone || isAlone(i)) && reaches(ci, i)) {
+          if (d < bd && (!lone || isAlone(i)) && reachOf(ci, i) && reaches(ci, i)) {
             bd = d;
             best = i;
           } else if (probeEmpty && !lone && d < bd) probeEmpty.unreached++;
         }
-        if (probeEmpty && !lone) probeEmpty.reachedEmpty += reached[ci]!.filter((i) => empty[i] === kind).length;
+        if (probeEmpty && !lone) probeEmpty.reachedEmpty += reachedOf(ci).filter((i) => empty[i] === kind).length;
         if (best >= 0) return [best, bd];
       }
       return [-1, Infinity];
@@ -1271,7 +1295,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
       // it reaches by a way that is not, by the sector's own front cell; else it holds.
       const ci = classOf[id]!;
       const others: number[] = [];
-      for (const i of reached[ci]!) if (list[i] !== s && dist2(id, list[i]!) <= range2 && reaches(ci, i)) others.push(i);
+      for (let i = 0; i < sn; i++) if (list[i] !== s && dist2(id, list[i]!) <= range2 && reachOf(ci, i) && reaches(ci, i)) others.push(i);
       others.sort((a, b) => dist2(id, list[a]!) - dist2(id, list[b]!) || a - b);
       for (let k = 0; k < others.length && k < DIVERTS; k++) {
         const hold = list[others[k]!]!.hold;

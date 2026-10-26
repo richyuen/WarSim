@@ -167,6 +167,27 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-720 · 2026-10-26 · accepted — A class's reach to a sector asked where it is read, not of every sector (PLAN 7.129, part 2)
+
+- **Context.** PLAN 7.129 after ADR-719: 6421's year 28 7.32 ms. `tools/diag/opCalls.ts` over the year on HEAD: of
+  the plans' 48.9 s, the classes' reach 22.2 s, its `groundOf` 11.75 M calls (19.2 s, `pocketOf`'s walks). A plan
+  asked every class's reach to every sector (2,000–3,200 sectors in the late world) and walked the ground of each
+  sector's front cell; AEF, SOV, RAJ, CHI and PHI planned so for 1–5 free formations. Reach is read only by the
+  reserve and the allotment (sectors within the range of a formation of the class), the marches from afar and to
+  spare (the empty sectors of the class's landmass) and a long way's diversions (other sectors within the range).
+- **Decision.** Each (class, sector) is asked where it is read and kept for the plan (`reachOf`, the same test as the
+  loop's: the snap to another landmass, the group, the ground of the order's cell, kept by cell); the reserve takes
+  the nearest sector reached with no two wide grounds to join first, and asks `reaches` only of a nearer one.
+- **Exactness.** The same answers wherever both ask: with every reach asked first in the old loop's order (a switch in
+  a scratch tree, not committed), 6421's 150 days from its year-27 save hash hour by hour as HEAD's. What changes
+  is which ground walks run and in which order: `pocketOf`'s answer may rest on the walks before it in the tick
+  (ADR-680: a walk ends on their marks, and a capped one marks its cells "came to none"). Without the switch,
+  6421's history parts from HEAD's at hour 468 (day 19 of the year); the seed-99 pin (ac54bc2d), 1129's year 21
+  (7fb02d06) and year 1 of all 48 of the critic's run-15 seeds are unchanged (land contact 39.96 a day in both,
+  `tools/diag/yearScreen.ts`). A rule in principle, no rule moved in practice; the pin unchanged.
+- **Consequences.** 6421's year 28 7.32 → **5.41, 5.42 ms** alone (HEAD 7.99), the operational AI 5.39 → 2.89;
+  1129's year 21 **4.48** (the critic 6.39–6.54). Year 1's tick unchanged (3.505 ms on the 48 seeds, eight at once).
+
 ### ADR-719 · 2026-10-26 · accepted — Two wide grounds' join asked pair by pair (`wideLinked`), not by a walk of every run (PLAN 7.129, part 1)
 
 - **Context.** PLAN 7.129 (R15-B2): pinned and alone, 6421's year 28 7.99 ms a tick on HEAD (hash a9602269), 1129's

@@ -8,9 +8,9 @@ import { at1938 } from '../helpers/checkpoint';
 // PLAN 7.129: `wideLinked` walks the runs of open cells pair by pair, outwards from the two wide
 // grounds, where `joinWide` walks them all; its answer is `joinWide`'s for every pair.
 describe('wideLinked (PLAN 7.129)', () => {
+  // Seed 1938 two years in (made once, at collection, as economyBreakdown's): many wars.
+  const w = at1938(1938, 24 * 730).world;
   it("answers every pair of wide grounds as joinWide's walk of all the runs does, on each warring nation's passage", () => {
-    const s = at1938(1938, 24 * 730);
-    const w = s.world;
     const nav = navOf(w);
     const nations = [...w.wars.nations()].filter((n) => w.nations.cols.living[n] === 1).sort((a, b) => a - b);
     expect(nations.length).toBeGreaterThan(4);
