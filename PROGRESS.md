@@ -23843,3 +23843,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** two destroyer flotillas against one in a unit case: the lone one loses half its ships in the first hour
   and breaks off (`retreat` 24), so nothing is engaged after the step; battle squadrons hold the hour.
 - **Next:** PLAN 7.127.
+
+## 2026-10-26 — PLAN 7.127: the AT missed, to the user (ADR-715)
+
+- **Start:** gate green on `d2a3e223`; critic not due; no decision waiting.
+- **Measured** (`docs/evidence/7.127/measure.md`; new tool `nukeDecisionHour.ts`): of the four first bursts off Germany
+  on under 50,000 men, three (4009, 4010, 4012) are on an Italian army in a light theatre, weighed against the quarter
+  floor at through 0.6, before the Polish front at 0.2 (17,594–20,721 men killed, no civilians); one (4016) is in
+  Poland's Soviet war, on a theatre of its own men.
+- **Rule tried** (`change.patch`, not committed): THEATRE_FLOOR 0.5. Such bursts 4 → 1 (bar 0), strikes 15 (bar 15).
+  On 1101–1110 × 20 against HEAD: bursts 74 → 60, civilian-heavy bursts (over 10 × the men) 3 → 10: the floor halves
+  the men share and keeps the output share, so cities gain on armies.
+- **Filed:** BLOCKERS, ADR-715 (proposed). Seeds 1101–1110 spent here; 7.128 takes 1111 on.
+- **Gotcha:** a strike in `nukePoland1938`'s set-up can be in another war of Poland's (4016: the Soviet Union's); a
+  probe of the German war's places never shows it. Weigh each of the striker's wars at the decision hour.
+- **Next:** PLAN 7.128 while ADR-715 waits.

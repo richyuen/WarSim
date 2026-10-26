@@ -5,6 +5,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### 2026-10-26 · PLAN 7.127's AT missed: Poland's first burst off Germany on under 50,000 men 4 → 1 of 20, and strikes turned toward cities (ADR-715)
+- **The bar:** on 4001–4020 such bursts 0 of 20; Poland's strikes before its bomber is gone not fewer than 15;
+  `nukePoland1938` green; the gate green.
+- **What moved** (`docs/evidence/7.127/measure.md`, `change.patch`, not committed): THEATRE_FLOOR 0.25 → 0.5; such
+  bursts 4 → 1 (4016, a strike in Poland's Soviet war, stays), strikes 15 (met); in 1101–1110 × 20 bursts 74 → 60 and
+  bursts of over ten times more civilians than men 3 → 10.
+- **What is left:** the user's (ADR-715): (a) no rule, closed not done (recommended); (b) the half floor committed,
+  closed not done; (c) as (a), and PLAN 7.134 for ADR-651 b narrowed (men facing none of the striker's side).
+
 ### RESOLVED 2026-10-26 (option a with ADR-709's 5.5 ms budget, the user's decision: the change committed, 7.124 done) · PLAN 7.124's AT missed: three world-years of 250 at 5.02–5.43 ms, bar 5.0 (ADR-708)
 - **The bar:** pinned, 1021's year 6 at most 5.0 ms, and the worst year of 10 unseen seeds × 25 years at most 5.0 ms;
   the pin kept; the gate green.

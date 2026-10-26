@@ -60,6 +60,8 @@ Found by `npm run check:review` before critic run 15 (2026-10-26; ADR-711, ADR-7
   off Germany on fewer than 50,000 men (ADR-651 a's bar) on 4 (4009, 4010, 4012, 4016; nation 15 or 10, 17–21k men),
   2 before ADR-711 (4009, 4020) (`tools/diag/nukePolandGates.ts … summary`). AT: on 4001–4020, such bursts 0 of 20;
   Poland's strikes before its bomber is gone not fewer than 15; `nukePoland1938` green; the gate green.
+  Missed (2026-10-26, `docs/evidence/7.127/measure.md`): the half theatre floor 4 → 1 and civilian-heavy bursts 3 → 10
+  in ordinary worlds; not committed; waits on the user (ADR-715, BLOCKERS). Seeds 1101–1110 spent; the next tasks 1111 on.
 
 Run 15's (report of 2026-10-26 on `7739a78f`, `critic/CRITIC_REPORT.md`; R14-B1's hollow divisions fixed, 72.4 → 0.4 a
 world; performance 5 → 6): R15-B1 and R15-B2 are PLAN 7.128 and 7.129; the dimensions under the bar, beyond them, are

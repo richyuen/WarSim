@@ -1,0 +1,96 @@
+diff --git a/SPEC.md b/SPEC.md
+index bcca1c62..dfff7ae4 100644
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -1997,8 +1997,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
+     strike back it counts whole (PLAN 7.62, ADR-629, the user's decision: an empty capital is no
+     first strike's target). Men are weighed as a share
+     of the enemy side's men in the place's theatre (within 1,000 km), and that theatre counts
+-    for at least a quarter of all the side's men: a lone garrison is not the whole of its
+-    theatre (PLAN 7.18c, 7.18j, ADR-492). It counts for at least 250,000 men too: a burst is
++    for at least half of all the side's men: a lone garrison is not the whole of its
++    theatre, nor an army in a light theatre worth twice the same men on the main front (PLAN
++    7.18c, 7.18j, ADR-492; a quarter until PLAN 7.127, ADR-715). It counts for at least 250,000 men too: a burst is
+     weighed by what it destroys, whole at 25,000 men, not by its share of a beaten side's last
+     men (PLAN 7.32a, ADR-528).
+     Only an enemy that can threaten the striker is struck first: it holds a warhead, its income
+diff --git a/src/sim/systems/nuclear.ts b/src/sim/systems/nuclear.ts
+index a138a28a..9fe051f1 100644
+--- a/src/sim/systems/nuclear.ts
++++ b/src/sim/systems/nuclear.ts
+@@ -1233,9 +1233,13 @@ export const FRONT_KM = 1000;
+  * The least a theatre's enemy men count for, as a share of all the enemy side's men (PLAN 7.18j,
+  * ADR-492): a place's men are weighed against at least THEATRE_FLOOR of the side, so a lone garrison
+  * is not the whole of its theatre (seed 4's Britain on Japanese garrisons of 2,267 to 5,229 men, 935
+- * to 2,305 dead; seed 1's on #114's of 456 to 1,380, 168 to 2,875 dead).
++ * to 2,305 dead; seed 1's on #114's of 456 to 1,380, 168 to 2,875 dead). Half the side, not a
++ * quarter (PLAN 7.127, ADR-715): at a quarter an army in a light theatre still counted twice the
++ * same men on the main front, and the critic's Poland struck 37,380 Italian men in the south of
++ * Italy (a theatre of 355,000 of a side of 1.43 million, through 0.6) before 167,000 Germans and
++ * Italians facing it (a theatre of 895,000, through 0.2): 17,594 men killed (seed 4009; 4010, 4012).
+  */
+-export const THEATRE_FLOOR = 0.25;
++export const THEATRE_FLOOR = 0.5;
+ /**
+  * The least a theatre's enemy men count for, in men (PLAN 7.32, ADR-528, critic R9-B2): a burst is
+  * worth TARGET_SCALE ÷ this, full value at 25,000 men in its blast (two divisions massed). Measured
+diff --git a/tests/unit/nukeTheatre1938.test.ts b/tests/unit/nukeTheatre1938.test.ts
+index 4f7403f2..330a5001 100644
+--- a/tests/unit/nukeTheatre1938.test.ts
++++ b/tests/unit/nukeTheatre1938.test.ts
+@@ -13,7 +13,7 @@ import { nationId } from '../helpers/sim1938';
+ // the side's men, and at least THEATRE_MEN_MIN men (PLAN 7.32, ADR-528).
+ 
+ const { w: W, h: H } = SIZE_1938;
+-const [ENG, JAP] = ['ENG', 'JAP'].map(nationId) as [number, number];
++const [ENG, JAP, POL, GER, ITA] = ['ENG', 'JAP', 'POL', 'GER', 'ITA'].map(nationId) as [number, number, number, number, number];
+ 
+ describe("a place's men weighed against a theatre of weight (PLAN 7.18j)", () => {
+   it('a lone Japanese garrison is a small share of the side, not the whole of its theatre; a massed army is weighed as before', () => {
+@@ -68,4 +68,46 @@ describe("a place's men weighed against a theatre of weight (PLAN 7.18j)", () =>
+     expect(m.theatreMen).toBe(m.menAll);
+     expect(TARGET_SCALE * m.menShare).toBeGreaterThan(TARGET_SCALE * g.menShare);
+   }, 300_000);
++
++  // PLAN 7.127 (ADR-715): at a quarter of the side, an army in a light theatre still counted twice
++  // what the same men count on the main front. Seed 4009 of `nukePoland1938`'s set-up: Poland's first
++  // warhead went to 37,380 Italian men in the south of Italy (a theatre of 355,000, the floor, of a
++  // side of 1.43 million; through 0.6), before 76,000 German and 91,000 Italian men facing it (a
++  // theatre of 895,000; through 0.2): 17,594 men killed, under ADR-651 a's 50,000. Now such a
++  // theatre counts for half the side.
++  it('an army in a theatre under half its side is weighed against half the side, not its own theatre', () => {
++    const s = new Sim({ scenario: '1938', seed: 7, assets: assets1938(W) });
++    const w = s.world;
++    const war = w.wars.start([POL], [GER, ITA], 0);
++    const c = w.formations.cols;
++    const nc = w.nations.cols;
++    // The place of most Italian men within a blast, in Italy south of the Alps (y beyond Rome's).
++    let best = { men: -1, x: 0, y: 0 };
++    const ita: number[] = [];
++    w.formations.forEach((id) => {
++      if (c.nation[id] === ITA && !w.offLand(id)) ita.push(id);
++    });
++    for (const id of ita) {
++      if (c.y[id]! < nc.capitalY[ITA]!) continue;
++      let men = 0;
++      for (const o of ita) if (seaKm(w, c.x[id]!, c.y[id]!, c.x[o]!, c.y[o]!) < 30) men += c.strength[o]!;
++      if (men > best.men) best = { men, x: c.x[id]!, y: c.y[id]! };
++    }
++    expect(best.men, 'an Italian army south of Rome').toBeGreaterThan(0);
++    // The rest of the side's armies gone to the Polish front, as on day 102 of seed 4009 (136,000
++    // Italian men there): each set down at Warsaw, the army in the south left where it stands.
++    w.formations.forEach((id) => {
++      if (w.offLand(id) || (c.nation[id] !== GER && c.nation[id] !== ITA)) return;
++      if (c.nation[id] === ITA && seaKm(w, c.x[id]!, c.y[id]!, best.x, best.y) < 30) return;
++      c.x[id] = nc.capitalX[POL]!;
++      c.y[id] = nc.capitalY[POL]!;
++    });
++    const p = placeParts(w, POL, war, 0, best.x, best.y);
++    process.stderr.write(`Italian army of ${best.men} men: theatre ${Math.round(p.menAll)} of ${Math.round(p.sideMen)}, weighed against ${Math.round(p.theatreMen)}, men share ${p.menShare.toFixed(4)}\n`);
++    // A light theatre: under half the side within FRONT_KM of it.
++    expect(p.menAll).toBeLessThan(0.5 * p.sideMen);
++    // Its men are a share of half the side (before: of its own theatre, at least a quarter of the side).
++    expect(p.theatreMen).toBeGreaterThanOrEqual(0.5 * p.sideMen - 1e-6);
++    expect(p.menShare).toBeLessThanOrEqual(best.men / (0.5 * p.sideMen) + 1e-9);
++  }, 300_000);
+ });

@@ -167,6 +167,36 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-715 · 2026-10-26 · proposed (the user's decision) — The critic's Poland's light-theatre strikes: the half floor fixes three of four and turns strikes toward cities (PLAN 7.127's AT missed)
+
+- **Context.** PLAN 7.127 (from ADR-711's re-picks): in `nukePoland1938`'s set-up on 4001–4020, Poland's first burst
+  falls off Germany on fewer than 50,000 men (ADR-651 a's bar) on 4 seeds. AT: such bursts 0 of 20; Poland's strikes
+  before its bomber is gone not fewer than 15; `nukePoland1938` green; the gate green.
+- **Measured** (`docs/evidence/7.127/measure.md`; new tool `nukeDecisionHour.ts`). Two causes:
+  - 4009, 4010, 4012: an Italian army in a light theatre (37,380 men south of Rome; 24,238 in Sicily), its men weighed
+    against THEATRE_FLOOR (a quarter of the side: 355,000–442,000), at through 0.6, beat the Germans and Italians on the
+    Polish front (theatres of 55–75 % of the side) at through 0.2: 17,594–20,721 men killed, no civilians. In 4009 and
+    4012 none of Poland's side stands within 776 and 865 km of it; in 4010 French Tunisia stands 84 km off, ADR-651's
+    "army before an ally".
+  - 4016: a strike in Poland's other war, the Soviet Union's on it: 37,800 Soviet men by a city (52,000 dead), a
+    theatre of its own men (43 % of the side), through 0.2. The AT counts it because it reads the first burst in any
+    war; no theatre floor reaches it.
+- **The rule tried** (`change.patch`, not committed): THEATRE_FLOOR 0.25 → 0.5. On 4001–4020 such bursts **4 → 1**
+  (4016 stays; bar 0: missed); strikes 15 → 15 (met); the nuclear unit tests green; its unit case red without. In
+  ordinary worlds (1101–1110 × 20, `nukeVolume.ts`, against HEAD): bursts **74 → 60**, strikes back 21 → 13, bursts of
+  over ten times more civilians than men **3 → 10** (1110's 2,871,528 dead and 5,528 men among them). Not noise alone:
+  the floor halves a place's men share in every floor-bound theatre and leaves its output share whole, so cities gain
+  on armies wherever a side's armies stand apart.
+- **Options:**
+  - **(a)** No rule; 7.127 closed not done. The three Italian strikes are on armies (17–21k men, no civilians), the
+    target ADR-651 a calls fair; the 50,000 is the test's bar, not the rule's; 4016 is a strike in another war.
+    (Recommended: the half floor's cost falls on the critic's own measure of a massacre.)
+  - **(b)** THEATRE_FLOOR 0.5 committed from `change.patch`: 3 of 4 fixed, with the cost above; 7.127 closed not done.
+  - **(c)** As (a), and PLAN 7.134: ADR-651 b narrowed, a place's enemy men facing no land formation of the striker's
+    side within some distance weighed down, with an AT of its own (4009 and 4012 at most, 2 of 20; the A/B of
+    `measure.md` §2 against a rise in civilian-heavy bursts).
+- **Meanwhile** the loop takes PLAN 7.128. Seeds 1101–1110 went to this A/B; 7.128 and on take 1111 on.
+
 ### ADR-714 · 2026-10-26 · accepted — A fleet in a sea battle has a fight for its panel: the nearest enemy fleet of its battle, the two fleets' ships framed as a sea battle's row (PLAN 7.126; amends ADR-712)
 
 - **Context.** ADR-712: the panel of a fleet in a sea battle read "In contact" with no button to its fight (seed 5381,
