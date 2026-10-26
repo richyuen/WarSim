@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-719 · 2026-10-26 · accepted — Two wide grounds' join asked pair by pair (`wideLinked`), not by a walk of every run (PLAN 7.129, part 1)
+
+- **Context.** PLAN 7.129 (R15-B2): pinned and alone, 6421's year 28 7.99 ms a tick on HEAD (hash a9602269), 1129's
+  year 21 6.39–6.54 (critic); the budget 5.5 (ADR-709). A CPU profile of 60 days of 6421's year 28
+  (`tools/diag/spanProf.ts`, new): of the operational AI's 8.4 s, `pocketOf` 3.6, `joinWide` 2.0. `joinWide` walks
+  every run of open cells in the provinces of open and closed ground to join the wide grounds (ADR-193), 12 ms a walk,
+  ~1,000 walks a year; on the variant of part 2 each walk answered about 4 pairs before its passage's hour ended.
+- **Decision.** The operational AI's `reaches` asks `wideLinked`: the passage's `joined` where it has one; else the
+  same runs walked outwards from the two grounds' groups, each run once a passage (`Passage.link`, one hour's),
+  until the two are joined or one has no group left to walk from. A run meets a group only next to one of its cells,
+  so in a node next to one of the group's nodes (`adjacent8`, by cells, diagonals too; built with the map's static
+  caches); a run joins groups only if one of its cells is in a node of open and closed ground, where `joinWide`'s
+  runs start. The same answer as `joinWide`'s for every pair: `wideLinked1938.test.ts` asks 5,657 pairs on 14
+  passages of the 1938 world's year 2 (1,748 joined, 3,909 apart) against `joinWideAfresh`. Other callers of
+  `wideJoined` (the ferry's `reachOnLand`) are as before.
+- **Consequences.** No rule moves: the pin, 6421's year-28 hash a9602269 and its tick's every answer are the same.
+  6421's year 28 7.99 → 7.32 ms alone. A passage's `joined` is no longer made by the plans, so the next hours'
+  passages keep none from them (`Passage.keep`); the pairs are asked afresh each hour, cheaper than the walks were.
+
 ### ADR-718 · 2026-10-26 · proposed (the user's decision) — Year 1's land contact: the fold is the whole fall; 7.135's "other half" was the sample (PLAN 7.135 measured, no rule)
 
 - **Context.** PLAN 7.135 (from ADR-716): with no fold, year 1 on 1111–1120 read 0.939 × `311988d7`, so "half the

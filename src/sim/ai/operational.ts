@@ -21,7 +21,7 @@
  * 3.10c2b2). Wide ground is not one either (PLAN 3.10c2b3a, ADR-193): those that stand in a wide
  * ground, or on open ground whose cells come to one, are a class by that ground, and it reaches
  * a sector whose front cell is in another wide ground, or comes to another, only when the cells
- * join the two (`wideJoined`).
+ * join the two (`wideJoined`; asked pair by pair, `wideLinked`, PLAN 7.129).
  * Each class is allotted by itself, to the
  * sectors it reaches: in what follows "they" is one class and "sectors" those.
  * They are allotted to the threatened sectors first (PLAN 7.79b, ADR-634): those with a threat
@@ -73,7 +73,7 @@ import { atAnyPort, marchingToPort, transportPorts } from '../systems/amphibious
 import { orderMove, passageOf, snapTarget, wasLong } from '../systems/movement';
 import { frontierOf, frontNeighbours, GARRISON, PRESSURE_RADIUS } from '../systems/territory';
 import { pocketOf, type MobilityId, type Passage } from '../nav/grid';
-import { CORRIDOR_REFUSAL, keepRegions, openRoute, wideJoined, wideNode, type CorridorRefusal } from '../nav/provinceGraph';
+import { CORRIDOR_REFUSAL, keepRegions, openRoute, wideJoined, wideLinked, wideNode, type CorridorRefusal } from '../nav/provinceGraph';
 import { navOf, type World } from '../world';
 
 export const STAGGER = 4;
@@ -786,9 +786,9 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const reaches = (ci: number, i: number): boolean => {
     const ground = unasked[ci]?.get(i);
     if (ground === undefined) return true;
-    if (!timing) return wideJoined(nav.grid, nav.graph, pass, -classGround[ci]!, -ground);
+    if (!timing) return wideLinked(nav.grid, nav.graph, pass, -classGround[ci]!, -ground);
     const t = OP_PROBE.now!();
-    const r = wideJoined(nav.grid, nav.graph, pass, -classGround[ci]!, -ground);
+    const r = wideLinked(nav.grid, nav.graph, pass, -classGround[ci]!, -ground);
     timing.joins++;
     timing.joinMs += OP_PROBE.now!() - t;
     return r;

@@ -4,7 +4,7 @@
  */
 import { makeNavGrid, type NavGrid } from './nav/grid';
 import { buildLaneGraph, portWaters, seaBasins, type LaneGraph, type SeaBasins, type SeaPassage } from './nav/lanes';
-import { buildProvinceGraph, type CorridorRefusal, type ProvinceGraph } from './nav/provinceGraph';
+import { adjacent8, buildProvinceGraph, type CorridorRefusal, type ProvinceGraph } from './nav/provinceGraph';
 import { buildSeaZones, type SeaSeed, type SeaZones } from './nav/seaZones';
 import { buildAirZones, type AirZones } from './nav/airZones';
 import type { Port } from './data/ports';
@@ -698,6 +698,7 @@ export function buildMapCaches(world: World): void {
   airOf(world);
   basinOf(world);
   portSeaOf(world);
+  adjacent8(navOf(world).grid, navOf(world).graph);
 }
 
 const basins = new WeakMap<SeaZones, SeaBasins>();

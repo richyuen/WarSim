@@ -6,7 +6,7 @@
  * province), so it is rebuilt identically after a load and never saved.
  */
 import { Terrain } from '../../shared/terrain';
-import { boundKm, findPath, neighbours4, MIN_COST, MOVE_COST, POCKET_CELLS, type JoinRuns, type MobilityId, type NavGrid, type Passage, type PathResult } from './grid';
+import { boundKm, findPath, neighbours4, MIN_COST, MOVE_COST, POCKET_CELLS, type JoinRuns, type MobilityId, type NavGrid, type Passage, type PathResult, type WideLinks } from './grid';
 
 export interface ProvinceGraph {
   /** Node per cell (0 = none: water). Every walkable cell has one. */
@@ -327,6 +327,197 @@ export function wideJoined(g: NavGrid, pg: ProvinceGraph, pass: Passage, a: numb
     JOIN_PROBE.walk?.(pass, joined);
   }
   return joined[a] === joined[b];
+}
+
+/**
+ * `wideJoined`'s answer for one pair, walking no more than it needs (PLAN 7.129): from the
+ * passage's `joined` where it has one; else the runs of open cells that `joinWide` walks are
+ * walked outwards from the two grounds' groups, each run once a passage (`Passage.link`), until
+ * the two are joined or one of them has no group left to walk from. The same answer as
+ * `joinWide`'s: a run that meets a group has a cell next to a cell of it, in a node next to one of
+ * the group's nodes (`adjacent8`, diagonals too), and the open cells of every such node are walked.
+ * A run is of `joinWide`'s only if one of its cells is in a node of open and closed ground (where
+ * `joinWide`'s runs start), and only such a run joins groups here. `joined` is not made.
+ */
+export function wideLinked(g: NavGrid, pg: ProvinceGraph, pass: Passage, a: number, b: number): boolean {
+  if (a === b) return true;
+  if (pass.joined) return pass.joined[a] === pass.joined[b];
+  const sc = linkScratch(g);
+  let st = pass.link;
+  if (!st || st.epoch !== sc.epoch) pass.link = st = makeLinks(pg, pass, sc);
+  const ga = st.group[a]!;
+  const gb = st.group[b]!;
+  // `joined` is 0 for a node of no group, and a group's root otherwise.
+  if (ga === 0 || gb === 0) return ga === gb;
+  for (;;) {
+    const ra = linkRoot(st.parent, ga);
+    const rb = linkRoot(st.parent, gb);
+    if (ra === rb) return true;
+    const pa = (st.pending[ra] ??= [ra]);
+    const pb = (st.pending[rb] ??= [rb]);
+    if (pa.length === 0 || pb.length === 0) return false;
+    walkGroup(g, pg, pass, st, sc, (pa.length <= pb.length ? pa : pb).pop()!);
+  }
+}
+
+interface LinkScratch {
+  stamp: Uint32Array;
+  gen: number;
+  epoch: number;
+  stack: number[];
+}
+
+/** By grid, `wideLinked`'s cell stamps; `epoch` moves when they are cleared. */
+const LINK_SCRATCH = new WeakMap<NavGrid, LinkScratch>();
+
+function linkScratch(g: NavGrid): LinkScratch {
+  let sc = LINK_SCRATCH.get(g);
+  if (!sc || sc.stamp.length !== g.w * g.h) LINK_SCRATCH.set(g, (sc = { stamp: new Uint32Array(g.w * g.h), gen: 0, epoch: 0, stack: [] }));
+  return sc;
+}
+
+function makeLinks(pg: ProvinceGraph, pass: Passage, sc: LinkScratch): WideLinks {
+  if (++sc.gen === 0xffffffff) {
+    sc.stamp.fill(0);
+    sc.gen = 1;
+    sc.epoch++;
+  }
+  const open = pass.open!;
+  const shut = pass.shut!;
+  const { nodeCount } = pg;
+  const clear = new Uint8Array(nodeCount);
+  for (let a = 1; a < nodeCount; a++) if (open[a] === 1 && shut[a] !== 1) clear[a] = 1;
+  const group = nodeGroups(pg, clear);
+  let groups = 0;
+  for (let a = 1; a < nodeCount; a++) if (group[a]! > groups) groups = group[a]!;
+  const start = new Int32Array(groups + 2);
+  for (let a = 1; a < nodeCount; a++) if (group[a] !== 0) start[group[a]! + 1]!++;
+  for (let k = 0; k <= groups; k++) start[k + 1]! += start[k]!;
+  const nodes = new Int32Array(start[groups + 1]!);
+  const at = start.slice();
+  for (let a = 1; a < nodeCount; a++) if (group[a] !== 0) nodes[at[group[a]!]!++] = a;
+  const parent = new Int32Array(groups + 1);
+  for (let k = 0; k <= groups; k++) parent[k] = k;
+  return { group, start, nodes, parent, pending: [], walked: new Uint8Array(nodeCount), gen: sc.gen, epoch: sc.epoch };
+}
+
+function linkRoot(parent: Int32Array, x: number): number {
+  while (parent[x] !== x) x = parent[x] = parent[parent[x]!]!;
+  return x;
+}
+
+/** Joins two groups' sets, and their groups still to walk from. */
+function linkUnion(st: WideLinks, x: number, y: number): void {
+  let rx = linkRoot(st.parent, x);
+  let ry = linkRoot(st.parent, y);
+  if (rx === ry) return;
+  let px = (st.pending[rx] ??= [rx]);
+  let py = (st.pending[ry] ??= [ry]);
+  if (px.length < py.length) {
+    [rx, ry] = [ry, rx];
+    [px, py] = [py, px];
+  }
+  st.parent[ry] = rx;
+  for (const k of py) px.push(k);
+  st.pending[ry] = undefined;
+}
+
+/** Walks the runs of open cells in the nodes of no group next to group `k`'s nodes. */
+function walkGroup(g: NavGrid, pg: ProvinceGraph, pass: Passage, st: WideLinks, sc: LinkScratch, k: number): void {
+  const { w, h, wrapX, component } = g;
+  const { ok, holder } = pass;
+  const open = pass.open!;
+  const shut = pass.shut!;
+  const { nodeOf } = pg;
+  const { group, walked } = st;
+  const { stamp, stack } = sc;
+  const gen = st.gen;
+  const adj = adjacent8(g, pg);
+  const cells = cellsByNode(pg);
+  const met: number[] = [];
+  for (let j = st.start[k]!; j < st.start[k + 1]!; j++) {
+    const v = st.nodes[j]!;
+    for (let e = adj.start[v]!; e < adj.start[v + 1]!; e++) {
+      const u = adj.list[e]!;
+      if (group[u] !== 0 || walked[u] === 1) continue;
+      walked[u] = 1;
+      for (let i = cells.start[u]!; i < cells.start[u + 1]!; i++) {
+        const first = cells.list[i]!;
+        if (stamp[first] === gen || component[first] === 0 || ok[holder[first]!] !== 1) continue;
+        // One run, as `joinWide` walks it: the groups it meets, and whether it is one of `joinWide`'s.
+        met.length = 0;
+        let mixed = false;
+        stamp[first] = gen;
+        stack.push(first);
+        while (stack.length > 0) {
+          const c = stack.pop()!;
+          const node = nodeOf[c]!;
+          if (open[node] === 1 && shut[node] === 1) mixed = true;
+          const cx = c % w;
+          const cy = (c - cx) / w;
+          for (let d = 0; d < 8; d++) {
+            const dx = STEP_X[d]!;
+            const dy = STEP_Y[d]!;
+            const ny = cy + dy;
+            if (ny < 0 || ny >= h) continue;
+            let nx = cx + dx;
+            if (nx < 0 || nx >= w) {
+              if (!wrapX) continue;
+              nx = (nx + w) % w;
+            }
+            const n = ny * w + nx;
+            if (component[n] === 0 || ok[holder[n]!] !== 1) continue;
+            // No corner cutting, as in `findPath`: by the terrain, whoever holds the two cells.
+            if (dx !== 0 && dy !== 0 && (component[cy * w + nx] === 0 || component[ny * w + cx] === 0)) continue;
+            const m = group[nodeOf[n]!]!;
+            if (m !== 0) {
+              met.push(m);
+              continue;
+            }
+            if (stamp[n] === gen) continue;
+            stamp[n] = gen;
+            stack.push(n);
+          }
+        }
+        if (mixed) for (let q = 1; q < met.length; q++) linkUnion(st, met[0]!, met[q]!);
+      }
+    }
+  }
+}
+
+/** By node, the nodes that one of its cells is next to, diagonals too (`adjacent8`). */
+const ADJ8 = new WeakMap<ProvinceGraph, { start: Int32Array; list: Int32Array }>();
+
+/** The province graph's nodes by cells next to each other, diagonals too (`wideLinked`): built once a graph. */
+export function adjacent8(g: NavGrid, pg: ProvinceGraph): { start: Int32Array; list: Int32Array } {
+  let made = ADJ8.get(pg);
+  if (made) return made;
+  const { w, h, wrapX } = g;
+  const { nodeOf, nodeCount } = pg;
+  const near: Set<number>[] = Array.from({ length: nodeCount }, () => new Set<number>());
+  for (let c = 0; c < w * h; c++) {
+    const a = nodeOf[c]!;
+    if (a === 0) continue;
+    const cx = c % w;
+    const cy = (c - cx) / w;
+    for (let d = 0; d < 8; d++) {
+      const ny = cy + STEP_Y[d]!;
+      if (ny < 0 || ny >= h) continue;
+      let nx = cx + STEP_X[d]!;
+      if (nx < 0 || nx >= w) {
+        if (!wrapX) continue;
+        nx = (nx + w) % w;
+      }
+      const b = nodeOf[ny * w + nx]!;
+      if (b !== 0 && b !== a) near[a]!.add(b);
+    }
+  }
+  const start = new Int32Array(nodeCount + 1);
+  for (let a = 0; a < nodeCount; a++) start[a + 1] = start[a]! + near[a]!.size;
+  const list = new Int32Array(start[nodeCount]!);
+  for (let a = 0; a < nodeCount; a++) list.set([...near[a]!].sort((x, y) => x - y), start[a]!);
+  ADJ8.set(pg, (made = { start, list }));
+  return made;
 }
 
 /**

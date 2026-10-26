@@ -342,6 +342,29 @@ export interface Passage {
    * are given; the answer is not written to (its callers copy the cells).
    */
   routes?: Map<number, PathResult | null>;
+  /**
+   * What `wideLinked` (nav/provinceGraph.ts) has walked of `joined`'s answer on this passage, pair
+   * by pair (PLAN 7.129): made at its first ask, read by those after it in the passage's hour.
+   */
+  link?: WideLinks;
+}
+
+/** `wideLinked`'s walk so far on a passage: the groups of `joinWide`, joined as far as walked. */
+export interface WideLinks {
+  /** By node, its group of nodes with open ground and no closed ground (`nodeGroups`), 0 none. */
+  group: Int32Array;
+  /** The nodes of each group: those of group k from `start[k]` to `start[k + 1]`. */
+  start: Int32Array;
+  nodes: Int32Array;
+  /** Union-find over the groups. */
+  parent: Int32Array;
+  /** By a set's root, its groups whose neighbouring nodes have not been walked yet. */
+  pending: (number[] | undefined)[];
+  /** By node of open and closed ground: 1 once its open cells have been walked. */
+  walked: Uint8Array;
+  /** The cells walked carry `gen` in the grid's stamps of `wideLinked`, while `epoch` is theirs. */
+  gen: number;
+  epoch: number;
 }
 
 /**
