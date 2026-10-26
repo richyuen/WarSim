@@ -23815,3 +23815,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `git checkout` in a spare worktree fails on untracked leftovers that a commit tracks; the failed
   checkout leaves the old commit, and a bisect then reads one commit three times. Check the output of each checkout.
 - **Next:** `npm run check:review` again (the code changed), then critic run 15.
+
+## 2026-10-26 — PLAN 7.5: critic run 15 on `7739a78f` (after `check:review` green); PLAN 7.128–7.133 filed
+
+- **Review run** on `7739a78f`: green (0 known red); unit 1,917, ten-year 18, every browser spec. Red once and green
+  on the retry alone: declutter1938, fire1938, seaRow1938.
+- **Critic run 15:** map 7, diplomacy/war 7, emergent 6, God 7, editor 7, stats 7, UI 7, performance 6 (up from 5),
+  stability 7, semantic zoom 8, naval 7, tanks 8, aircraft 7, AI nukes 8; blocking 2 (R15-B1 the land war thinner, year
+  1 −11 % and later −15 % against `311988d`; R15-B2 the 5.5 ms budget fails late, 6421 y28 7.9 ms, 1129 y21 6.5 ms).
+- **Filed:** R15-B1 7.128, R15-B2 7.129; the dimensions under the bar beyond them: emergent 7.130 (the top five's
+  stasis), performance 7.131 (a late year at Max in the page), naval 7.132 (a sea battle seen close; its panel 7.126),
+  aircraft 7.133 (sorties aloft late). Unseen seeds from 1101, none a critic seed.
+- **Note:** the review's browser specs rewrote 20-odd screenshots under `docs/evidence/` (left out of the commit).
+- **Next:** PLAN 7.126.

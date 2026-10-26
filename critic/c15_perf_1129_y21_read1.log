@@ -1,0 +1,38 @@
+
+> warsim@0.0.1 sim
+> tsx tools/headless/cli.ts --scenario 1938 --seed 1129 --load critic/c15_seed1129_y20.bin --years 1 --profile --affinity 0xFFFF
+
+pinned to CPUs 0xffff
+year  21  tick 183960  hash 7fb02d06  nations 97  formations 596  flipped 82843  tick ms mean 6.5413 p95 41.1174  (57.35 s)
+  operationalAi  4.3498 ms   66.6 %  max   105.0  slow  1460 calls 4.3495 ms
+  movement       0.3018 ms    4.6 %  max     7.1  slow   113 calls 0.0343 ms
+  territory      0.2955 ms    4.5 %  max     7.7  slow    67 calls 0.0276 ms
+  invasionAi     0.2803 ms    4.3 %  max    33.0  slow   361 calls 0.2797 ms
+  supply         0.2610 ms    4.0 %  max    32.5  slow   734 calls 0.2000 ms
+  airAi          0.2222 ms    3.4 %  max    44.1  slow   365 calls 0.2220 ms
+  combat         0.1545 ms    2.4 %  max     4.0  slow    34 calls 0.0085 ms
+  war            0.1271 ms    1.9 %  max    43.3  slow   348 calls 0.1247 ms
+  air            0.1012 ms    1.5 %  max     3.6  slow    24 calls 0.0070 ms
+  economicAi     0.0754 ms    1.2 %  max    64.1  slow    12 calls 0.0712 ms
+  navalCombat    0.0535 ms    0.8 %  max     4.4  slow     9 calls 0.0023 ms
+  nuclear        0.0525 ms    0.8 %  max    12.7  slow   238 calls 0.0454 ms
+  economy        0.0445 ms    0.7 %  max    34.6  slow    12 calls 0.0442 ms
+  capitals       0.0412 ms    0.6 %  max    19.2  slow    17 calls 0.0273 ms
+  strategicAi    0.0374 ms    0.6 %  max    11.0  slow    86 calls 0.0161 ms
+  bombardment    0.0259 ms    0.4 %  max     2.6  slow     5 calls 0.0013 ms
+  navalAi        0.0254 ms    0.4 %  max    19.1  slow    27 calls 0.0103 ms
+  seaControl     0.0244 ms    0.4 %  max     1.9  slow    30 calls 0.0047 ms
+  revolts        0.0182 ms    0.3 %  max    34.3  slow    12 calls 0.0173 ms
+  retreat        0.0145 ms    0.2 %  max     0.9  slow     0 calls 0.0000 ms
+  production     0.0095 ms    0.1 %  max    14.2  slow    13 calls 0.0084 ms
+  repatriation   0.0061 ms    0.1 %  max     7.3  slow    10 calls 0.0037 ms
+  stats          0.0057 ms    0.1 %  max     5.7  slow    12 calls 0.0055 ms
+  research       0.0032 ms    0.0 %  max     0.6  slow     0 calls 0.0000 ms
+  efficiency     0.0011 ms    0.0 %  max     1.5  slow     1 calls 0.0002 ms
+  amphibious     0.0009 ms    0.0 %  max     0.5  slow     0 calls 0.0000 ms
+  alliances      0.0006 ms    0.0 %  max     0.2  slow     0 calls 0.0000 ms
+  orgLoss        0.0004 ms    0.0 %  max     0.0  slow     0 calls 0.0000 ms
+  buffs          0.0003 ms    0.0 %  max     0.0  slow     0 calls 0.0000 ms
+  puppets        0.0003 ms    0.0 %  max     0.2  slow     0 calls 0.0000 ms
+  collapse       0.0003 ms    0.0 %  max     0.1  slow     0 calls 0.0000 ms
+done: 1 years, 57.4 s wall, mean tick 6.5413 ms, final hash 7fb02d06 → .cache/runs/1938-seed1129-1y.json

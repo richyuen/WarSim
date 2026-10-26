@@ -1,5 +1,5 @@
 {
-  "commit": "311988d78a325ac696980ac9534a73c85d421edd",
+  "commit": "7739a78fdbd99e85a42aea6d652aab6d1f57bb5d",
   "scores": {
     "mapVisuals": 7,
     "diplomacyWarDepth": 7,
@@ -8,7 +8,7 @@
     "editorScenarios": 7,
     "statsHistory": 7,
     "uiUxPolish": 7,
-    "performance": 5,
+    "performance": 6,
     "stability": 7,
     "semanticZoom": 8,
     "naval": 7,
@@ -18,32 +18,32 @@
   },
   "blocking": [
     {
-      "id": "R14-B1",
-      "title": "The land war after year 1 is still about a ninth of year 1's (R13-B1 improved, not fixed). Same 40 seeds, both commits: engaged per war a day after year 1 0.564 -> 0.722 (year 1 5.06 -> 6.11), all engaged after year 1 10.3 % -> 11.4 % of year 1's; checkpoints 4.36 -> 5.34 engaged, 4 of 80 with nobody in contact (12); hollow divisions under 500 men at year 20 63.5 -> 76.3 a world. New seeds both commits 0.558 -> 0.780. In the page the best late front (5147 y20) holds 21-50 engaged; 6421 y20 0-8 and 1129 y10 0-2.",
+      "id": "R15-B1",
+      "title": "The land war got thinner (R14-B1 not fixed): same 48 seeds 311988d -> HEAD, engaged a day in year 1 45.05 -> 40.01 (lower on 35 of 48), years 2-30 5.11 -> 4.35 (lower on 42 of 48, 10.9 % of year 1), per war 0.732 -> 0.636; checkpoints with nobody in contact 4 -> 17 of 96. New seeds on both commits agree (year 1 43.7 -> 38.0, late 4.93 -> 4.47, empty checkpoints 1 -> 4 of 16). In the page 7019 y20: 6 wars, 422 land formations at war, 0 in contact on 6 of 7 samples. Hollow divisions fixed (72.4 -> 0.4 a world).",
       "evidence": [
-        "critic/c14_cmp_checkpoints.json",
-        "critic/c14_cmp_all.txt",
-        "critic/c14_y2_5147_y20.json",
-        "critic/c14_y2_6421_y20.json",
-        "critic/c14_y2_1129_y10.json",
-        "critic/shots/c14y2_5147_y20_d30_250m.png"
+        "critic/c15_cmp_checkpoints.json",
+        "critic/c15_cmp_all.txt",
+        "critic/c15_y2_7019_y20.json",
+        "critic/shots/c15y2_7019_y20_d20_3000m.png"
       ],
-      "fix": "Keep raising late contact per war toward a real fraction of year 1's, measured on unseen seeds with a bar, and merge or disband sub-500-man divisions instead of fielding them."
+      "fix": "Measure year 1 too in any contact AT; bring year 1 back to 311988d's level on the same seeds, then raise late contact per war, on unseen seeds with a bar."
     },
     {
-      "id": "R14-B2",
-      "title": "The 5.0 ms tick budget (ADR-698) fails in the late game: pinned and alone, 8167 year 19 ticks 13.3 ms (operational AI 11.5 ms, longest 611 ms), year 23 11.2 ms, 6151 year 22 7.9 ms, 4877 year 21 5.26 ms; in the page 8167's year 19 at Max takes 142 s with 40 stalls over 500 ms. 0c80db1 also exceeds it (9437 years 24-27 at 6.1-8.6 ms), so not a regression; ADR-698's named case is near the line (4877 y21 4.50 ms on 0c80db1), but its any-year bound fails by more than double.",
+      "id": "R15-B2",
+      "title": "The 5.5 ms tick budget (ADR-709) fails in the late game (R14-B2 improved, not fixed): pinned and alone, 6421 year 28 7.88/7.92/7.98 ms (operational AI 5.3-5.4), year 29 7.14, year 30 5.89, year 25 5.51; 1129 year 21 6.39/6.54/6.53 ms, year 20 5.77 (inside the 25 years PLAN 7.124's AT reads). 6421's year 28 is 81.5 s at Max in the page. Run 14's case is gone (8167 y19 13.3 -> 1.9 ms).",
       "evidence": [
-        "critic/c14_perf_8167_y19_head.log",
-        "critic/c14_perf_8167_y21_23_head.log",
-        "critic/c14_perf_6151_y21_22_head.log",
-        "critic/c14_perf_4877_y21_head.log",
-        "critic/c14_perf_9437_y21_27_0c80db1.log",
-        "critic/c14_l_8167.json",
-        "critic/c14_seed8167_y18.bin"
+        "critic/c15_perf_6421_y21_30_head.log",
+        "critic/c15_perf_6421_y28_read1.log",
+        "critic/c15_perf_6421_y28_read2.log",
+        "critic/c15_perf_1129_y11_21_head.log",
+        "critic/c15_perf_1129_y21_read1.log",
+        "critic/c15_perf_1129_y21_read2.log",
+        "critic/c15_l_6421.json",
+        "critic/c15_seed6421_y27.bin",
+        "critic/c15_seed1129_y20.bin"
       ],
-      "fix": "Profile the operational AI on 8167's year 19 (from critic/c14_seed8167_y18.bin) and cap its work per tick (time-slice or amortise across hours) so no year exceeds 5.0 ms; measure the worst year over unseen seeds, not seed 99 or 4877 alone."
+      "fix": "Profile the operational AI on 6421's year 28 (from critic/c15_seed6421_y27.bin) and 1129's year 21 and cut its per-tick work so no year exceeds 5.5 ms; read the budget on unseen seeds run to 30 years, not 25."
     }
   ],
-  "timestamp": "2026-10-25T22:48:02Z"
+  "timestamp": "2026-10-26T16:52:06Z"
 }

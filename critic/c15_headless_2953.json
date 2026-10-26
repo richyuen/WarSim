@@ -1,0 +1,6231 @@
+{
+ "seed": 2953,
+ "size": "default",
+ "years": 30,
+ "totalS": 896.8587648,
+ "rows": [
+  {
+   "year": 1,
+   "wallS": 35.9,
+   "tickMs": 4.094,
+   "p95ms": 12.45,
+   "maxMs": 232.6,
+   "living": 96,
+   "founded": 0,
+   "tiny": 20,
+   "flipped": 30051,
+   "wars": 7,
+   "top": [
+    "Soviet Union 26.7%",
+    "Canada 12.3%",
+    "United States 7.3%",
+    "Denmark 5.4%",
+    "Australia 4.0%",
+    "Brazil 3.7%",
+    "China 3.4%",
+    "French West Africa 2.3%"
+   ],
+   "wings": 104,
+   "missions": 46,
+   "meanSortiesAloft": 73.1,
+   "engagedMean": 40.21,
+   "engagedMax": 121,
+   "landAtWarMean": 657.2,
+   "warheads": {},
+   "falloutCells": 0,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {},
+   "ev": {
+    "AllianceJoined": 17,
+    "ProductionQueued": 148,
+    "StrikeHit": 205051,
+    "AirStrike": 69377,
+    "AirBattle": 4554,
+    "FlakFired": 49544,
+    "WarDeclared": 32,
+    "FormationEmbarked": 100,
+    "ElementDestroyed": 6659,
+    "FormationArrived": 12496,
+    "FormationRetreated": 3042,
+    "FormationDestroyed": 707,
+    "SeaBattle": 50,
+    "MajorBattleStarted": 44,
+    "FormationLanded": 98,
+    "MajorBattleEnded": 44,
+    "CapitalCaptured": 41,
+    "CapitalMoved": 54,
+    "AirWar": 32,
+    "AirRaids": 33,
+    "PuppetReleased": 3,
+    "MoveRejected": 3607,
+    "PeaceSigned": 27,
+    "PuppetCreated": 13,
+    "FormationSpawned": 111,
+    "ConvoyRaided": 9,
+    "TechResearched": 22,
+    "NationAnnexed": 1,
+    "AllianceLeft": 6,
+    "AllianceDissolved": 2,
+    "NationEliminated": 6,
+    "UnionFormed": 4,
+    "LandingRepulsed": 2,
+    "LandCeded": 5,
+    "FormationsDisbanded": 5
+   },
+   "sea": {
+    "n": 50,
+    "zero": 0,
+    "sunk": 727
+   },
+   "seaTop": [],
+   "hash": "536cfd8e"
+  },
+  {
+   "year": 2,
+   "wallS": 19.8,
+   "tickMs": 2.252,
+   "p95ms": 7.69,
+   "maxMs": 114.2,
+   "living": 93,
+   "founded": 0,
+   "tiny": 20,
+   "flipped": 30350,
+   "wars": 6,
+   "top": [
+    "Soviet Union 27.2%",
+    "Canada 12.3%",
+    "United States 7.3%",
+    "Denmark 5.4%",
+    "Australia 4.1%",
+    "China 4.1%",
+    "Brazil 3.8%",
+    "Italy 3.7%"
+   ],
+   "wings": 85,
+   "missions": 30,
+   "meanSortiesAloft": 32.3,
+   "engagedMean": 10.07,
+   "engagedMax": 41,
+   "landAtWarMean": 459.7,
+   "warheads": {},
+   "falloutCells": 0,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {},
+   "ev": {
+    "FormationDestroyed": 288,
+    "ProductionQueued": 117,
+    "FormationsDisbanded": 17,
+    "ConvoyRaided": 12,
+    "AirWar": 17,
+    "AirRaids": 36,
+    "FormationArrived": 7486,
+    "StrikeHit": 80971,
+    "AirStrike": 37503,
+    "FlakFired": 17218,
+    "FormationRetreated": 1029,
+    "MoveRejected": 420,
+    "AirBattle": 372,
+    "FormationEmbarked": 65,
+    "ElementDestroyed": 2219,
+    "FormationLanded": 62,
+    "FormationSpawned": 110,
+    "TechResearched": 44,
+    "SeaBattle": 18,
+    "CapitalCaptured": 18,
+    "CapitalMoved": 22,
+    "PeaceSigned": 15,
+    "WarDeclared": 14,
+    "PuppetCreated": 4,
+    "AllianceJoined": 4,
+    "MajorBattleStarted": 1,
+    "MajorBattleEnded": 1,
+    "NationAnnexed": 2,
+    "AllianceLeft": 1,
+    "NationEliminated": 4,
+    "RevoltSpawned": 1,
+    "LandCeded": 3,
+    "UnionFormed": 2,
+    "PuppetReleased": 4
+   },
+   "sea": {
+    "n": 18,
+    "zero": 0,
+    "sunk": 139
+   },
+   "seaTop": [],
+   "hash": "6b4551e3"
+  },
+  {
+   "year": 3,
+   "wallS": 17.6,
+   "tickMs": 2.007,
+   "p95ms": 6.89,
+   "maxMs": 90.2,
+   "living": 91,
+   "founded": 1,
+   "tiny": 20,
+   "flipped": 42193,
+   "wars": 9,
+   "top": [
+    "Soviet Union 27.2%",
+    "Canada 12.3%",
+    "United States 7.3%",
+    "Italy 7.2%",
+    "Denmark 5.4%",
+    "Australia 4.0%",
+    "Brazil 4.0%",
+    "China 2.5%"
+   ],
+   "wings": 90,
+   "missions": 17,
+   "meanSortiesAloft": 22.6,
+   "engagedMean": 7.56,
+   "engagedMax": 45,
+   "landAtWarMean": 343.3,
+   "warheads": {},
+   "falloutCells": 0,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {},
+   "ev": {
+    "FormationEmbarked": 33,
+    "TechResearched": 54,
+    "FormationDestroyed": 190,
+    "ProductionQueued": 122,
+    "ConvoyRaided": 12,
+    "AirRaids": 36,
+    "FlakFired": 18050,
+    "LandCeded": 18,
+    "StrikeHit": 20986,
+    "AirStrike": 17522,
+    "FormationArrived": 5625,
+    "FormationRetreated": 752,
+    "ElementDestroyed": 1360,
+    "FormationLanded": 37,
+    "CapitalCaptured": 24,
+    "CapitalMoved": 27,
+    "MoveRejected": 500,
+    "FormationSpawned": 114,
+    "AirBattle": 39,
+    "AirWar": 3,
+    "AllianceLeft": 2,
+    "AllianceDissolved": 2,
+    "SeaBattle": 4,
+    "WarDeclared": 12,
+    "PeaceSigned": 9,
+    "MajorBattleStarted": 1,
+    "MajorBattleEnded": 1,
+    "FormationsDisbanded": 1,
+    "AllianceJoined": 2,
+    "PuppetCreated": 3,
+    "RevoltSpawned": 1,
+    "NationEliminated": 3
+   },
+   "sea": {
+    "n": 4,
+    "zero": 0,
+    "sunk": 22
+   },
+   "seaTop": [],
+   "hash": "af0567ae"
+  },
+  {
+   "year": 4,
+   "wallS": 21.7,
+   "tickMs": 2.48,
+   "p95ms": 8.95,
+   "maxMs": 101.1,
+   "living": 88,
+   "founded": 3,
+   "tiny": 19,
+   "flipped": 53820,
+   "wars": 11,
+   "top": [
+    "Soviet Union 27.9%",
+    "Canada 12.8%",
+    "Italy 9.8%",
+    "United States 7.9%",
+    "Denmark 5.4%",
+    "Australia 4.0%",
+    "Brazil 3.8%",
+    "British India 2.0%"
+   ],
+   "wings": 83,
+   "missions": 29,
+   "meanSortiesAloft": 23.3,
+   "engagedMean": 9.19,
+   "engagedMax": 30,
+   "landAtWarMean": 347.4,
+   "warheads": {},
+   "falloutCells": 0,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {},
+   "ev": {
+    "FormationArrived": 6924,
+    "FlakFired": 22019,
+    "AirStrike": 18234,
+    "StrikeHit": 22065,
+    "ProductionQueued": 124,
+    "ConvoyRaided": 12,
+    "AirRaids": 36,
+    "LandCeded": 57,
+    "RevoltSpawned": 6,
+    "WarDeclared": 18,
+    "NationRevived": 4,
+    "MoveRejected": 570,
+    "FormationRetreated": 758,
+    "AirBattle": 364,
+    "FormationEmbarked": 72,
+    "ElementDestroyed": 2005,
+    "FormationDestroyed": 194,
+    "CapitalCaptured": 25,
+    "CapitalMoved": 18,
+    "FormationSpawned": 132,
+    "FormationLanded": 66,
+    "TechResearched": 28,
+    "AirWar": 13,
+    "PeaceSigned": 15,
+    "PuppetCreated": 5,
+    "NationAnnexed": 1,
+    "AllianceLeft": 6,
+    "NationEliminated": 9,
+    "SeaBattle": 10,
+    "AllianceDissolved": 3,
+    "PuppetReleased": 1,
+    "AllianceJoined": 8,
+    "UnionFormed": 1,
+    "WarEnded": 1
+   },
+   "sea": {
+    "n": 10,
+    "zero": 0,
+    "sunk": 111
+   },
+   "seaTop": [],
+   "hash": "f8e42a51"
+  },
+  {
+   "year": 5,
+   "wallS": 20.2,
+   "tickMs": 2.299,
+   "p95ms": 8.92,
+   "maxMs": 134.9,
+   "living": 90,
+   "founded": 7,
+   "tiny": 16,
+   "flipped": 75439,
+   "wars": 11,
+   "top": [
+    "Soviet Union 26.8%",
+    "Canada 12.7%",
+    "United States 9.6%",
+    "Denmark 5.2%",
+    "Italy 4.6%",
+    "Australia 4.3%",
+    "Brazil 3.4%",
+    "Argentina 2.3%"
+   ],
+   "wings": 83,
+   "missions": 17,
+   "meanSortiesAloft": 22.6,
+   "engagedMean": 5.96,
+   "engagedMax": 22,
+   "landAtWarMean": 352.2,
+   "warheads": {},
+   "falloutCells": 0,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {},
+   "ev": {
+    "MoveRejected": 834,
+    "FormationArrived": 4989,
+    "AirStrike": 15968,
+    "StrikeHit": 19262,
+    "AirBattle": 613,
+    "FlakFired": 15221,
+    "FormationRetreated": 683,
+    "ProductionQueued": 148,
+    "ConvoyRaided": 12,
+    "AirWar": 22,
+    "AirRaids": 36,
+    "LandCeded": 78,
+    "RevoltSpawned": 9,
+    "CapitalCaptured": 13,
+    "CapitalMoved": 23,
+    "ElementDestroyed": 833,
+    "TechResearched": 43,
+    "FormationDestroyed": 114,
+    "SeaBattle": 10,
+    "FormationSpawned": 149,
+    "FormationLanded": 57,
+    "PeaceSigned": 11,
+    "PuppetCreated": 4,
+    "WarDeclared": 11,
+    "NationRevived": 1,
+    "FormationEmbarked": 56,
+    "AllianceJoined": 3,
+    "UnionFormed": 2,
+    "PuppetIntegrated": 2,
+    "NationEliminated": 4,
+    "FormationsDisbanded": 4,
+    "NationAnnexed": 1
+   },
+   "sea": {
+    "n": 10,
+    "zero": 0,
+    "sunk": 85
+   },
+   "seaTop": [],
+   "hash": "14a28d7f"
+  },
+  {
+   "year": 6,
+   "wallS": 20,
+   "tickMs": 2.283,
+   "p95ms": 9.17,
+   "maxMs": 116.3,
+   "living": 97,
+   "founded": 14,
+   "tiny": 23,
+   "flipped": 54123,
+   "wars": 8,
+   "top": [
+    "Soviet Union 26.9%",
+    "Canada 12.1%",
+    "United States 10.4%",
+    "Denmark 4.9%",
+    "Australia 4.6%",
+    "Italy 4.3%",
+    "Brazil 3.4%",
+    "Argentina 2.3%"
+   ],
+   "wings": 82,
+   "missions": 12,
+   "meanSortiesAloft": 11.9,
+   "engagedMean": 6.11,
+   "engagedMax": 22,
+   "landAtWarMean": 366.6,
+   "warheads": {},
+   "falloutCells": 0,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {},
+   "ev": {
+    "FormationDestroyed": 125,
+    "StrikeHit": 19726,
+    "AirStrike": 11848,
+    "FlakFired": 7738,
+    "FormationArrived": 5499,
+    "ElementDestroyed": 833,
+    "FormationRetreated": 564,
+    "AllianceJoined": 13,
+    "MoveRejected": 948,
+    "ProductionQueued": 130,
+    "FormationsDisbanded": 2,
+    "ConvoyRaided": 12,
+    "AirRaids": 36,
+    "LandCeded": 63,
+    "FormationLanded": 111,
+    "FormationEmbarked": 115,
+    "CapitalCaptured": 30,
+    "CapitalMoved": 33,
+    "PeaceSigned": 31,
+    "SeaBattle": 13,
+    "AirBattle": 279,
+    "FormationSpawned": 134,
+    "TechResearched": 36,
+    "AirWar": 10,
+    "RevoltSpawned": 17,
+    "WarDeclared": 29,
+    "NationEliminated": 9,
+    "AllianceLeft": 2,
+    "NationRevived": 5,
+    "NationAnnexed": 4,
+    "AllianceDissolved": 1,
+    "PuppetCreated": 1
+   },
+   "sea": {
+    "n": 13,
+    "zero": 0,
+    "sunk": 80
+   },
+   "seaTop": [],
+   "hash": "c3b5dbe9"
+  },
+  {
+   "year": 7,
+   "wallS": 20.8,
+   "tickMs": 2.37,
+   "p95ms": 9.65,
+   "maxMs": 108.6,
+   "living": 103,
+   "founded": 16,
+   "tiny": 28,
+   "flipped": 39268,
+   "wars": 13,
+   "top": [
+    "Soviet Union 27.1%",
+    "Canada 11.8%",
+    "United States 10.6%",
+    "Italy 5.5%",
+    "Denmark 4.9%",
+    "Australia 4.6%",
+    "Brazil 3.4%",
+    "Argentina 2.3%"
+   ],
+   "wings": 82,
+   "missions": 10,
+   "meanSortiesAloft": 12.2,
+   "engagedMean": 5.34,
+   "engagedMax": 17,
+   "landAtWarMean": 357.9,
+   "warheads": {},
+   "falloutCells": 0,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {},
+   "ev": {
+    "TechResearched": 43,
+    "FormationArrived": 5919,
+    "StrikeHit": 34486,
+    "AirStrike": 14537,
+    "FlakFired": 7480,
+    "FormationRetreated": 515,
+    "ProductionQueued": 132,
+    "ConvoyRaided": 12,
+    "AirRaids": 36,
+    "LandCeded": 49,
+    "FormationEmbarked": 127,
+    "ElementDestroyed": 735,
+    "SeaBattle": 5,
+    "MoveRejected": 788,
+    "FormationDestroyed": 118,
+    "FormationLanded": 133,
+    "WarDeclared": 19,
+    "FormationSpawned": 123,
+    "CapitalCaptured": 25,
+    "CapitalMoved": 31,
+    "PeaceSigned": 14,
+    "FormationsDisbanded": 3,
+    "RevoltSpawned": 7,
+    "NationRevived": 4,
+    "AllianceJoined": 9,
+    "AirBattle": 30,
+    "AirWar": 1,
+    "UnionFormed": 1,
+    "PuppetReleased": 1,
+    "NationAnnexed": 1,
+    "AllianceLeft": 1,
+    "NationEliminated": 1,
+    "PuppetCreated": 2
+   },
+   "sea": {
+    "n": 5,
+    "zero": 0,
+    "sunk": 47
+   },
+   "seaTop": [],
+   "hash": "b430e7cd"
+  },
+  {
+   "year": 8,
+   "wallS": 24.6,
+   "tickMs": 2.8,
+   "p95ms": 12.42,
+   "maxMs": 199.4,
+   "living": 88,
+   "founded": 13,
+   "tiny": 22,
+   "flipped": 55296,
+   "wars": 8,
+   "top": [
+    "Soviet Union 27.4%",
+    "Canada 11.8%",
+    "United States 9.9%",
+    "Denmark 4.8%",
+    "Australia 4.6%",
+    "Italy 4.1%",
+    "France 3.2%",
+    "Brazil 2.9%"
+   ],
+   "wings": 76,
+   "missions": 10,
+   "meanSortiesAloft": 12,
+   "engagedMean": 6.45,
+   "engagedMax": 29,
+   "landAtWarMean": 403.4,
+   "warheads": {},
+   "falloutCells": 0,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {},
+   "ev": {
+    "MoveRejected": 1638,
+    "FormationSpawned": 125,
+    "StrikeHit": 15987,
+    "AirStrike": 11179,
+    "FlakFired": 10892,
+    "FormationArrived": 5902,
+    "FormationLanded": 78,
+    "ElementDestroyed": 883,
+    "FormationRetreated": 836,
+    "AirBattle": 90,
+    "FormationEmbarked": 80,
+    "ProductionQueued": 127,
+    "FormationDestroyed": 143,
+    "FormationsDisbanded": 11,
+    "ConvoyRaided": 12,
+    "AirWar": 4,
+    "AirRaids": 36,
+    "LandCeded": 88,
+    "CapitalCaptured": 23,
+    "CapitalMoved": 23,
+    "PeaceSigned": 20,
+    "NationAnnexed": 5,
+    "AllianceLeft": 9,
+    "NationEliminated": 18,
+    "TechResearched": 31,
+    "PuppetCreated": 2,
+    "WarDeclared": 16,
+    "SeaBattle": 7,
+    "AllianceDissolved": 4,
+    "UnionFormed": 1,
+    "RevoltSpawned": 3,
+    "PuppetReleased": 1,
+    "PuppetIntegrated": 7,
+    "AllianceJoined": 3,
+    "NationRevived": 1
+   },
+   "sea": {
+    "n": 7,
+    "zero": 0,
+    "sunk": 64
+   },
+   "seaTop": [],
+   "hash": "4ecea1d"
+  },
+  {
+   "year": 9,
+   "wallS": 20.4,
+   "tickMs": 2.321,
+   "p95ms": 11.31,
+   "maxMs": 105.3,
+   "living": 83,
+   "founded": 10,
+   "tiny": 21,
+   "flipped": 39121,
+   "wars": 8,
+   "top": [
+    "Soviet Union 28.1%",
+    "Canada 11.8%",
+    "United States 10.9%",
+    "Australia 5.0%",
+    "Denmark 4.8%",
+    "Italy 4.0%",
+    "France 3.0%",
+    "Brazil 2.9%"
+   ],
+   "wings": 78,
+   "missions": 12,
+   "meanSortiesAloft": 6.5,
+   "engagedMean": 2.91,
+   "engagedMax": 18,
+   "landAtWarMean": 359.5,
+   "warheads": {
+    "Germany": 2,
+    "Soviet Union": 2,
+    "United States": 2
+   },
+   "falloutCells": 0,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {},
+   "ev": {
+    "FormationEmbarked": 67,
+    "FormationSpawned": 118,
+    "TechResearched": 30,
+    "FormationDestroyed": 105,
+    "StrikeHit": 7762,
+    "AirStrike": 6614,
+    "FormationArrived": 3501,
+    "FlakFired": 5235,
+    "FormationRetreated": 355,
+    "MoveRejected": 1453,
+    "ElementDestroyed": 667,
+    "AllianceJoined": 8,
+    "ProductionQueued": 108,
+    "FormationsDisbanded": 3,
+    "ConvoyRaided": 12,
+    "AirWar": 4,
+    "AirRaids": 36,
+    "LandCeded": 58,
+    "AirBattle": 31,
+    "PeaceSigned": 8,
+    "CapitalCaptured": 30,
+    "CapitalMoved": 49,
+    "FormationLanded": 67,
+    "SeaBattle": 8,
+    "WarDeclared": 10,
+    "PuppetCreated": 1,
+    "NationEliminated": 5,
+    "AllianceLeft": 5,
+    "AllianceDissolved": 4,
+    "NuclearPower": 3
+   },
+   "sea": {
+    "n": 8,
+    "zero": 0,
+    "sunk": 60
+   },
+   "seaTop": [],
+   "hash": "af6ed196"
+  },
+  {
+   "year": 10,
+   "wallS": 17.7,
+   "tickMs": 2.02,
+   "p95ms": 8.5,
+   "maxMs": 149,
+   "living": 87,
+   "founded": 14,
+   "tiny": 23,
+   "flipped": 36174,
+   "wars": 11,
+   "top": [
+    "Soviet Union 26.8%",
+    "Canada 11.8%",
+    "United States 10.7%",
+    "Australia 5.5%",
+    "Denmark 4.5%",
+    "Italy 4.0%",
+    "Germany 3.6%",
+    "Brazil 2.8%"
+   ],
+   "wings": 81,
+   "missions": 9,
+   "meanSortiesAloft": 10.9,
+   "engagedMean": 3.68,
+   "engagedMax": 17,
+   "landAtWarMean": 444,
+   "warheads": {
+    "Germany": 6,
+    "Soviet Union": 6,
+    "United States": 6
+   },
+   "falloutCells": 0,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {},
+   "ev": {
+    "FormationSpawned": 107,
+    "FormationArrived": 4567,
+    "FlakFired": 10945,
+    "StrikeHit": 9046,
+    "AirStrike": 7139,
+    "FormationRetreated": 345,
+    "CapitalMoved": 27,
+    "ProductionQueued": 109,
+    "ConvoyRaided": 12,
+    "AirRaids": 36,
+    "LandCeded": 36,
+    "ElementDestroyed": 454,
+    "FormationDestroyed": 81,
+    "FormationEmbarked": 104,
+    "MoveRejected": 806,
+    "FormationLanded": 105,
+    "AirBattle": 3,
+    "CapitalCaptured": 20,
+    "PeaceSigned": 20,
+    "NationEliminated": 6,
+    "WarDeclared": 24,
+    "AllianceLeft": 2,
+    "TechResearched": 20,
+    "RevoltSpawned": 10,
+    "PuppetCreated": 4,
+    "FormationsDisbanded": 1,
+    "SeaBattle": 10,
+    "NationRevived": 4,
+    "AllianceJoined": 1,
+    "NationAnnexed": 1,
+    "WarEnded": 1
+   },
+   "sea": {
+    "n": 10,
+    "zero": 0,
+    "sunk": 91
+   },
+   "seaTop": [],
+   "hash": "191d82df"
+  },
+  {
+   "year": 11,
+   "wallS": 25.7,
+   "tickMs": 2.923,
+   "p95ms": 15.56,
+   "maxMs": 104.8,
+   "living": 90,
+   "founded": 16,
+   "tiny": 26,
+   "flipped": 57083,
+   "wars": 8,
+   "top": [
+    "Soviet Union 25.5%",
+    "United States 12.3%",
+    "Canada 11.8%",
+    "Australia 5.5%",
+    "Germany 5.1%",
+    "Denmark 4.5%",
+    "Italy 3.3%",
+    "Argentina 3.1%"
+   ],
+   "wings": 74,
+   "missions": 5,
+   "meanSortiesAloft": 10.7,
+   "engagedMean": 4.69,
+   "engagedMax": 22,
+   "landAtWarMean": 447.1,
+   "warheads": {
+    "Germany": 10,
+    "Soviet Union": 9,
+    "United States": 10
+   },
+   "falloutCells": 0,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {},
+   "ev": {
+    "FormationEmbarked": 66,
+    "FormationSpawned": 92,
+    "FormationArrived": 6319,
+    "StrikeHit": 11920,
+    "AirStrike": 7388,
+    "FlakFired": 13412,
+    "FormationRetreated": 551,
+    "MoveRejected": 883,
+    "ProductionQueued": 91,
+    "FormationDestroyed": 136,
+    "FormationsDisbanded": 1,
+    "ConvoyRaided": 12,
+    "AirRaids": 34,
+    "LandCeded": 79,
+    "FormationLanded": 65,
+    "TechResearched": 21,
+    "ElementDestroyed": 856,
+    "PeaceSigned": 18,
+    "NationAnnexed": 1,
+    "NationEliminated": 3,
+    "AllianceJoined": 10,
+    "PuppetCreated": 4,
+    "WarDeclared": 16,
+    "SeaBattle": 16,
+    "PuppetReleased": 2,
+    "RevoltSpawned": 7,
+    "AirBattle": 50,
+    "CapitalCaptured": 16,
+    "CapitalMoved": 17,
+    "AirWar": 3,
+    "NationRevived": 2,
+    "AllianceLeft": 3,
+    "AllianceDissolved": 2,
+    "NukeLaunched": 1,
+    "NukeDecided": 1,
+    "NukeIntercepted": 1
+   },
+   "sea": {
+    "n": 16,
+    "zero": 0,
+    "sunk": 186
+   },
+   "seaTop": [],
+   "hash": "3022ba2e"
+  },
+  {
+   "year": 12,
+   "wallS": 21.3,
+   "tickMs": 2.432,
+   "p95ms": 10.77,
+   "maxMs": 146.4,
+   "living": 92,
+   "founded": 16,
+   "tiny": 31,
+   "flipped": 64316,
+   "wars": 12,
+   "top": [
+    "Soviet Union 21.1%",
+    "United States 12.5%",
+    "Canada 11.8%",
+    "Germany 6.4%",
+    "Australia 5.2%",
+    "Romania 4.9%",
+    "Denmark 4.5%",
+    "France 3.2%"
+   ],
+   "wings": 80,
+   "missions": 8,
+   "meanSortiesAloft": 8.8,
+   "engagedMean": 0.8,
+   "engagedMax": 11,
+   "landAtWarMean": 429.8,
+   "warheads": {
+    "Germany": 13,
+    "Soviet Union": 8,
+    "United States": 14
+   },
+   "falloutCells": 108,
+   "landCells": 627843,
+   "taboo": 0.36,
+   "outrage": {
+    "Soviet Union": 37
+   },
+   "ev": {
+    "FormationArrived": 8182,
+    "FormationRetreated": 106,
+    "StrikeHit": 14348,
+    "AirStrike": 8930,
+    "FlakFired": 5655,
+    "MoveRejected": 975,
+    "ElementDestroyed": 302,
+    "FormationSpawned": 99,
+    "CapitalCaptured": 7,
+    "CapitalMoved": 14,
+    "WarDeclared": 19,
+    "FormationLanded": 130,
+    "ProductionQueued": 109,
+    "ConvoyRaided": 12,
+    "AirRaids": 36,
+    "LandCeded": 67,
+    "TechResearched": 29,
+    "FormationDestroyed": 59,
+    "FormationEmbarked": 159,
+    "PeaceSigned": 13,
+    "NationEliminated": 5,
+    "PuppetCreated": 1,
+    "FormationsDisbanded": 3,
+    "SeaBattle": 2,
+    "RevoltSpawned": 7,
+    "NationRevived": 4,
+    "AllianceJoined": 1,
+    "NukeLaunched": 2,
+    "NukeDecided": 2,
+    "NukeDetonated": 1,
+    "NukeCasualties": 1,
+    "NukeToll": 1,
+    "NukeIntercepted": 1,
+    "NationAnnexed": 3,
+    "AllianceLeft": 1
+   },
+   "sea": {
+    "n": 2,
+    "zero": 0,
+    "sunk": 23
+   },
+   "seaTop": [],
+   "hash": "21c8bcd9"
+  },
+  {
+   "year": 13,
+   "wallS": 15.5,
+   "tickMs": 1.768,
+   "p95ms": 7.02,
+   "maxMs": 124.7,
+   "living": 91,
+   "founded": 18,
+   "tiny": 31,
+   "flipped": 42200,
+   "wars": 4,
+   "top": [
+    "Soviet Union 21.3%",
+    "United States 12.2%",
+    "Canada 11.8%",
+    "Germany 7.6%",
+    "Australia 5.3%",
+    "Romania 4.7%",
+    "Denmark 4.3%",
+    "France 3.7%"
+   ],
+   "wings": 75,
+   "missions": 5,
+   "meanSortiesAloft": 2.8,
+   "engagedMean": 1.66,
+   "engagedMax": 11,
+   "landAtWarMean": 398.8,
+   "warheads": {
+    "Germany": 17,
+    "Soviet Union": 8,
+    "United States": 18
+   },
+   "falloutCells": 103,
+   "landCells": 627843,
+   "taboo": 0.542,
+   "outrage": {
+    "Soviet Union": 27.88
+   },
+   "ev": {
+    "FormationArrived": 3616,
+    "StrikeHit": 3793,
+    "AirStrike": 2236,
+    "FlakFired": 3290,
+    "FormationEmbarked": 147,
+    "FormationSpawned": 113,
+    "FormationDestroyed": 63,
+    "MoveRejected": 481,
+    "WarDeclared": 18,
+    "ProductionQueued": 107,
+    "ConvoyRaided": 11,
+    "AirRaids": 15,
+    "NationAnnexed": 4,
+    "AllianceLeft": 7,
+    "AllianceDissolved": 3,
+    "NationEliminated": 7,
+    "LandCeded": 44,
+    "CapitalCaptured": 22,
+    "CapitalMoved": 20,
+    "FormationLanded": 175,
+    "ElementDestroyed": 368,
+    "FormationRetreated": 107,
+    "PeaceSigned": 24,
+    "PuppetCreated": 5,
+    "AirBattle": 25,
+    "MajorBattleStarted": 1,
+    "MajorBattleEnded": 1,
+    "AllianceJoined": 6,
+    "FormationsDisbanded": 2,
+    "AirWar": 2,
+    "TechResearched": 24,
+    "SeaBattle": 3,
+    "RevoltSpawned": 6,
+    "WarEnded": 1
+   },
+   "sea": {
+    "n": 3,
+    "zero": 0,
+    "sunk": 147
+   },
+   "seaTop": [],
+   "hash": "73866499"
+  },
+  {
+   "year": 14,
+   "wallS": 38.2,
+   "tickMs": 4.361,
+   "p95ms": 24.21,
+   "maxMs": 126.6,
+   "living": 86,
+   "founded": 14,
+   "tiny": 28,
+   "flipped": 72268,
+   "wars": 5,
+   "top": [
+    "Soviet Union 20.5%",
+    "United States 13.1%",
+    "Canada 11.8%",
+    "Romania 7.8%",
+    "Germany 6.0%",
+    "Australia 5.2%",
+    "Denmark 4.3%",
+    "France 3.5%"
+   ],
+   "wings": 77,
+   "missions": 10,
+   "meanSortiesAloft": 9,
+   "engagedMean": 11.08,
+   "engagedMax": 44,
+   "landAtWarMean": 493.1,
+   "warheads": {
+    "Germany": 21,
+    "Soviet Union": 8,
+    "United States": 22,
+    "United Kingdom": 3
+   },
+   "falloutCells": 89,
+   "landCells": 627843,
+   "taboo": 0.725,
+   "outrage": {
+    "Soviet Union": 18.75
+   },
+   "ev": {
+    "StrikeHit": 22634,
+    "AirStrike": 10483,
+    "FlakFired": 4317,
+    "FormationArrived": 11056,
+    "FormationSpawned": 87,
+    "FormationRetreated": 1260,
+    "ElementDestroyed": 1657,
+    "FormationDestroyed": 170,
+    "SeaBattle": 8,
+    "MoveRejected": 1872,
+    "ProductionQueued": 91,
+    "FormationsDisbanded": 7,
+    "ConvoyRaided": 12,
+    "AirRaids": 36,
+    "LandCeded": 50,
+    "FormationEmbarked": 35,
+    "FormationLanded": 37,
+    "WarDeclared": 12,
+    "CapitalCaptured": 20,
+    "CapitalMoved": 17,
+    "TechResearched": 22,
+    "NuclearPower": 1,
+    "PeaceSigned": 10,
+    "AirBattle": 31,
+    "AirWar": 2,
+    "AllianceLeft": 3,
+    "AllianceDissolved": 1,
+    "NationEliminated": 7,
+    "NationAnnexed": 2,
+    "MajorBattleStarted": 6,
+    "MajorBattleEnded": 6,
+    "PuppetCreated": 2,
+    "PuppetReleased": 1,
+    "RevoltSpawned": 2,
+    "NationRevived": 1
+   },
+   "sea": {
+    "n": 8,
+    "zero": 0,
+    "sunk": 68
+   },
+   "seaTop": [],
+   "hash": "cebd4f9c"
+  },
+  {
+   "year": 15,
+   "wallS": 37.4,
+   "tickMs": 4.271,
+   "p95ms": 22.4,
+   "maxMs": 169.1,
+   "living": 97,
+   "founded": 22,
+   "tiny": 33,
+   "flipped": 81644,
+   "wars": 9,
+   "top": [
+    "Soviet Union 20.0%",
+    "United States 12.7%",
+    "Canada 11.8%",
+    "Romania 6.8%",
+    "Australia 5.3%",
+    "Denmark 4.4%",
+    "Argentina 3.8%",
+    "France 3.7%"
+   ],
+   "wings": 84,
+   "missions": 4,
+   "meanSortiesAloft": 10.8,
+   "engagedMean": 6.33,
+   "engagedMax": 38,
+   "landAtWarMean": 471.5,
+   "warheads": {
+    "Germany": 25,
+    "Soviet Union": 8,
+    "United States": 26,
+    "United Kingdom": 7
+   },
+   "falloutCells": 73,
+   "landCells": 627843,
+   "taboo": 0.907,
+   "outrage": {
+    "Soviet Union": 9.63
+   },
+   "ev": {
+    "MoveRejected": 1611,
+    "FormationDestroyed": 163,
+    "FormationRetreated": 614,
+    "FormationArrived": 6356,
+    "StrikeHit": 13506,
+    "AirStrike": 10907,
+    "FlakFired": 8584,
+    "ElementDestroyed": 1277,
+    "CapitalCaptured": 15,
+    "CapitalMoved": 15,
+    "WarDeclared": 26,
+    "FormationSpawned": 100,
+    "TechResearched": 19,
+    "AllianceJoined": 11,
+    "ProductionQueued": 89,
+    "FleetsLaidUp": 4,
+    "FormationsDisbanded": 1,
+    "ConvoyRaided": 12,
+    "AirRaids": 35,
+    "LandCeded": 124,
+    "RevoltSpawned": 14,
+    "PeaceSigned": 21,
+    "FormationEmbarked": 42,
+    "SeaBattle": 11,
+    "FormationLanded": 39,
+    "NationRevived": 4,
+    "AirBattle": 95,
+    "AirWar": 3,
+    "PuppetCreated": 3,
+    "NationEliminated": 3,
+    "NationAnnexed": 1,
+    "AllianceLeft": 2,
+    "AllianceDissolved": 1
+   },
+   "sea": {
+    "n": 11,
+    "zero": 0,
+    "sunk": 90
+   },
+   "seaTop": [],
+   "hash": "6044fb6f"
+  },
+  {
+   "year": 16,
+   "wallS": 34.2,
+   "tickMs": 3.899,
+   "p95ms": 21.81,
+   "maxMs": 154.3,
+   "living": 104,
+   "founded": 25,
+   "tiny": 36,
+   "flipped": 50742,
+   "wars": 9,
+   "top": [
+    "Soviet Union 22.0%",
+    "Canada 11.8%",
+    "United States 9.3%",
+    "Australia 5.1%",
+    "Romania 4.8%",
+    "France 4.7%",
+    "Denmark 4.4%",
+    "Argentina 3.8%"
+   ],
+   "wings": 87,
+   "missions": 5,
+   "meanSortiesAloft": 8.4,
+   "engagedMean": 5.47,
+   "engagedMax": 20,
+   "landAtWarMean": 423.3,
+   "warheads": {
+    "Germany": 29,
+    "Soviet Union": 8,
+    "United States": 30,
+    "United Kingdom": 11
+   },
+   "falloutCells": 46,
+   "landCells": 627843,
+   "taboo": 1,
+   "outrage": {
+    "Soviet Union": 0.5
+   },
+   "ev": {
+    "FormationSpawned": 97,
+    "StrikeHit": 8880,
+    "AirStrike": 6686,
+    "FlakFired": 4774,
+    "FormationArrived": 3107,
+    "MoveRejected": 687,
+    "CapitalMoved": 17,
+    "TechResearched": 26,
+    "AllianceJoined": 7,
+    "ProductionQueued": 118,
+    "ConvoyRaided": 12,
+    "AirRaids": 35,
+    "LandCeded": 72,
+    "RevoltSpawned": 9,
+    "WarDeclared": 18,
+    "NationRevived": 4,
+    "PeaceSigned": 17,
+    "FormationRetreated": 524,
+    "ElementDestroyed": 836,
+    "FormationDestroyed": 135,
+    "SeaBattle": 10,
+    "FormationLanded": 55,
+    "FormationEmbarked": 54,
+    "CapitalCaptured": 8,
+    "PuppetCreated": 2,
+    "AllianceLeft": 2,
+    "NationEliminated": 2,
+    "FormationsDisbanded": 3,
+    "AllianceDissolved": 1,
+    "LandingRepulsed": 1
+   },
+   "sea": {
+    "n": 10,
+    "zero": 1,
+    "sunk": 63
+   },
+   "seaTop": [
+    [
+     "Romania/Japan",
+     1
+    ]
+   ],
+   "hash": "f158ce75"
+  },
+  {
+   "year": 17,
+   "wallS": 40.3,
+   "tickMs": 4.593,
+   "p95ms": 30.55,
+   "maxMs": 174.3,
+   "living": 100,
+   "founded": 22,
+   "tiny": 36,
+   "flipped": 69172,
+   "wars": 12,
+   "top": [
+    "Soviet Union 20.4%",
+    "Canada 11.8%",
+    "United States 9.9%",
+    "Romania 6.2%",
+    "Australia 5.1%",
+    "Denmark 4.4%",
+    "France 4.4%",
+    "Argentina 4.1%"
+   ],
+   "wings": 88,
+   "missions": 16,
+   "meanSortiesAloft": 12.4,
+   "engagedMean": 5.28,
+   "engagedMax": 19,
+   "landAtWarMean": 433.6,
+   "warheads": {
+    "Germany": 31,
+    "Soviet Union": 6,
+    "United States": 34,
+    "United Kingdom": 15
+   },
+   "falloutCells": 333,
+   "landCells": 627843,
+   "taboo": 0.353,
+   "outrage": {
+    "Soviet Union": 75.77,
+    "Germany": 75.8
+   },
+   "ev": {
+    "FormationSpawned": 121,
+    "FlakFired": 10387,
+    "StrikeHit": 14100,
+    "AirStrike": 11450,
+    "FormationArrived": 9956,
+    "MoveRejected": 803,
+    "FormationRetreated": 455,
+    "ElementDestroyed": 1030,
+    "FormationDestroyed": 136,
+    "ProductionQueued": 108,
+    "FormationsDisbanded": 8,
+    "ConvoyRaided": 11,
+    "AirRaids": 36,
+    "LandCeded": 66,
+    "FormationEmbarked": 48,
+    "FormationLanded": 48,
+    "TechResearched": 15,
+    "CapitalMoved": 22,
+    "WarDeclared": 14,
+    "PeaceSigned": 11,
+    "AllianceJoined": 3,
+    "RevoltSpawned": 1,
+    "CapitalCaptured": 11,
+    "AllianceLeft": 4,
+    "NationEliminated": 5,
+    "NationAnnexed": 3,
+    "AllianceDissolved": 2,
+    "PuppetCreated": 2,
+    "AirBattle": 119,
+    "AirWar": 8,
+    "NukeLaunched": 4,
+    "NukeDecided": 4,
+    "NukeDetonated": 4,
+    "NukeCasualties": 4,
+    "NukeToll": 4,
+    "PuppetReleased": 1,
+    "SeaBattle": 3
+   },
+   "sea": {
+    "n": 3,
+    "zero": 0,
+    "sunk": 28
+   },
+   "seaTop": [],
+   "hash": "44d42f30"
+  },
+  {
+   "year": 18,
+   "wallS": 33.3,
+   "tickMs": 3.799,
+   "p95ms": 18.79,
+   "maxMs": 158.6,
+   "living": 98,
+   "founded": 25,
+   "tiny": 32,
+   "flipped": 54957,
+   "wars": 8,
+   "top": [
+    "Soviet Union 19.7%",
+    "Canada 11.9%",
+    "United States 8.9%",
+    "Romania 7.2%",
+    "Australia 5.1%",
+    "France 5.1%",
+    "Denmark 4.4%",
+    "Argentina 4.3%"
+   ],
+   "wings": 95,
+   "missions": 17,
+   "meanSortiesAloft": 10.6,
+   "engagedMean": 3.9,
+   "engagedMax": 17,
+   "landAtWarMean": 404.9,
+   "warheads": {
+    "Germany": 35,
+    "Soviet Union": 6,
+    "United States": 38,
+    "United Kingdom": 17
+   },
+   "falloutCells": 294,
+   "landCells": 627843,
+   "taboo": 0.535,
+   "outrage": {
+    "Soviet Union": 66.65,
+    "Germany": 66.67
+   },
+   "ev": {
+    "MoveRejected": 2320,
+    "FormationEmbarked": 40,
+    "FormationArrived": 5591,
+    "FlakFired": 6302,
+    "StrikeHit": 13375,
+    "AirStrike": 10515,
+    "FormationRetreated": 405,
+    "FormationDestroyed": 131,
+    "FormationSpawned": 106,
+    "FormationLanded": 40,
+    "ProductionQueued": 104,
+    "ConvoyRaided": 12,
+    "AirRaids": 36,
+    "LandCeded": 50,
+    "RevoltSpawned": 7,
+    "WarDeclared": 12,
+    "ElementDestroyed": 611,
+    "CapitalCaptured": 19,
+    "CapitalMoved": 20,
+    "PeaceSigned": 15,
+    "TechResearched": 15,
+    "NationEliminated": 8,
+    "AllianceJoined": 3,
+    "AllianceLeft": 5,
+    "AirBattle": 22,
+    "FormationsDisbanded": 4,
+    "AllianceDissolved": 2,
+    "SeaBattle": 2,
+    "NationAnnexed": 2,
+    "MajorBattleStarted": 1,
+    "MajorBattleEnded": 1,
+    "AirWar": 1,
+    "NuclearPower": 1
+   },
+   "sea": {
+    "n": 2,
+    "zero": 0,
+    "sunk": 17
+   },
+   "seaTop": [],
+   "hash": "9d2cb518"
+  },
+  {
+   "year": 19,
+   "wallS": 42.4,
+   "tickMs": 4.833,
+   "p95ms": 17.47,
+   "maxMs": 177.5,
+   "living": 95,
+   "founded": 25,
+   "tiny": 33,
+   "flipped": 36516,
+   "wars": 6,
+   "top": [
+    "Soviet Union 20.8%",
+    "Canada 11.9%",
+    "United States 7.8%",
+    "Romania 7.2%",
+    "France 5.3%",
+    "Australia 5.2%",
+    "Denmark 4.4%",
+    "Argentina 4.3%"
+   ],
+   "wings": 92,
+   "missions": 4,
+   "meanSortiesAloft": 13.3,
+   "engagedMean": 2.19,
+   "engagedMax": 12,
+   "landAtWarMean": 386.2,
+   "warheads": {
+    "Germany": 39,
+    "Soviet Union": 6,
+    "United States": 42,
+    "United Kingdom": 18
+   },
+   "falloutCells": 258,
+   "landCells": 627843,
+   "taboo": 0.717,
+   "outrage": {
+    "Soviet Union": 57.52,
+    "Germany": 57.55
+   },
+   "ev": {
+    "FormationSpawned": 113,
+    "FlakFired": 8027,
+    "FormationArrived": 3498,
+    "StrikeHit": 23603,
+    "AirStrike": 11304,
+    "ElementDestroyed": 706,
+    "MoveRejected": 4013,
+    "FormationDestroyed": 104,
+    "FormationLanded": 34,
+    "ProductionQueued": 104,
+    "ConvoyRaided": 12,
+    "AirRaids": 36,
+    "FormationRetreated": 215,
+    "LandCeded": 39,
+    "CapitalCaptured": 19,
+    "CapitalMoved": 26,
+    "TechResearched": 13,
+    "FormationEmbarked": 36,
+    "SeaBattle": 9,
+    "PeaceSigned": 8,
+    "AllianceLeft": 3,
+    "NationEliminated": 5,
+    "WarDeclared": 6,
+    "AirBattle": 61,
+    "AirWar": 2,
+    "PuppetReleased": 1,
+    "RevoltSpawned": 3,
+    "AllianceJoined": 2,
+    "FormationsDisbanded": 1
+   },
+   "sea": {
+    "n": 9,
+    "zero": 0,
+    "sunk": 213
+   },
+   "seaTop": [],
+   "hash": "95e232e8"
+  },
+  {
+   "year": 20,
+   "wallS": 26.5,
+   "tickMs": 3.026,
+   "p95ms": 16.09,
+   "maxMs": 114.8,
+   "living": 92,
+   "founded": 26,
+   "tiny": 31,
+   "flipped": 53190,
+   "wars": 7,
+   "top": [
+    "Soviet Union 18.4%",
+    "Canada 11.8%",
+    "Romania 10.2%",
+    "United States 7.8%",
+    "Australia 5.1%",
+    "France 5.0%",
+    "Denmark 4.4%",
+    "Argentina 4.3%"
+   ],
+   "wings": 93,
+   "missions": 6,
+   "meanSortiesAloft": 5.5,
+   "engagedMean": 1.5,
+   "engagedMax": 35,
+   "landAtWarMean": 440.1,
+   "warheads": {
+    "Germany": 43,
+    "Soviet Union": 5,
+    "United States": 46,
+    "United Kingdom": 18
+   },
+   "falloutCells": 259,
+   "landCells": 627843,
+   "taboo": 0.391,
+   "outrage": {
+    "Soviet Union": 88.4,
+    "Germany": 48.42
+   },
+   "ev": {
+    "MoveRejected": 441,
+    "FormationDestroyed": 55,
+    "FlakFired": 3355,
+    "StrikeHit": 4074,
+    "AirStrike": 4549,
+    "FormationArrived": 6564,
+    "WarDeclared": 12,
+    "FormationRetreated": 145,
+    "FormationSpawned": 97,
+    "ProductionQueued": 116,
+    "ConvoyRaided": 12,
+    "AirRaids": 31,
+    "LandCeded": 68,
+    "CapitalCaptured": 6,
+    "CapitalMoved": 28,
+    "FormationEmbarked": 47,
+    "FormationLanded": 50,
+    "TechResearched": 15,
+    "PeaceSigned": 11,
+    "AllianceJoined": 2,
+    "AllianceLeft": 5,
+    "NationEliminated": 7,
+    "ElementDestroyed": 222,
+    "AirBattle": 4,
+    "AirWar": 1,
+    "MajorBattleStarted": 2,
+    "MajorBattleEnded": 2,
+    "RevoltSpawned": 4,
+    "PuppetCreated": 2,
+    "NukeLaunched": 1,
+    "NukeDecided": 1,
+    "NukeDetonated": 1,
+    "NukeCasualties": 1,
+    "NukeToll": 1,
+    "NationAnnexed": 1,
+    "PuppetReleased": 1,
+    "SeaBattle": 2,
+    "FormationsDisbanded": 1
+   },
+   "sea": {
+    "n": 2,
+    "zero": 0,
+    "sunk": 15
+   },
+   "seaTop": [],
+   "hash": "a9e0fa56"
+  },
+  {
+   "year": 21,
+   "wallS": 29.4,
+   "tickMs": 3.356,
+   "p95ms": 17.67,
+   "maxMs": 138.4,
+   "living": 105,
+   "founded": 37,
+   "tiny": 34,
+   "flipped": 66051,
+   "wars": 6,
+   "top": [
+    "Soviet Union 19.2%",
+    "Canada 11.8%",
+    "United States 8.5%",
+    "Romania 7.5%",
+    "Australia 5.3%",
+    "France 5.1%",
+    "Argentina 4.5%",
+    "Denmark 4.4%"
+   ],
+   "wings": 101,
+   "missions": 6,
+   "meanSortiesAloft": 9.9,
+   "engagedMean": 4.36,
+   "engagedMax": 45,
+   "landAtWarMean": 482.6,
+   "warheads": {
+    "Germany": 47,
+    "Soviet Union": 5,
+    "United States": 50,
+    "United Kingdom": 18,
+    "Japan": 1
+   },
+   "falloutCells": 187,
+   "landCells": 627843,
+   "taboo": 0.573,
+   "outrage": {
+    "Soviet Union": 79.27,
+    "Germany": 39.3
+   },
+   "ev": {
+    "FormationArrived": 5881,
+    "StrikeHit": 11454,
+    "AirStrike": 9448,
+    "FlakFired": 7815,
+    "MoveRejected": 2017,
+    "FormationRetreated": 439,
+    "FormationSpawned": 122,
+    "ElementDestroyed": 983,
+    "ProductionQueued": 109,
+    "ConvoyRaided": 12,
+    "AirRaids": 35,
+    "RevoltSpawned": 20,
+    "WarDeclared": 29,
+    "LandCeded": 61,
+    "TechResearched": 10,
+    "FormationEmbarked": 38,
+    "FormationLanded": 39,
+    "FormationDestroyed": 134,
+    "CapitalCaptured": 10,
+    "CapitalMoved": 18,
+    "FormationsDisbanded": 12,
+    "PuppetReleased": 7,
+    "PeaceSigned": 29,
+    "NationAnnexed": 2,
+    "NationEliminated": 4,
+    "AllianceJoined": 22,
+    "SeaBattle": 4,
+    "AllianceLeft": 2,
+    "NationRevived": 3,
+    "PuppetCreated": 4
+   },
+   "sea": {
+    "n": 4,
+    "zero": 0,
+    "sunk": 39
+   },
+   "seaTop": [],
+   "hash": "b41d8c65"
+  },
+  {
+   "year": 22,
+   "wallS": 33.7,
+   "tickMs": 3.848,
+   "p95ms": 22.07,
+   "maxMs": 145,
+   "living": 109,
+   "founded": 40,
+   "tiny": 40,
+   "flipped": 53920,
+   "wars": 7,
+   "top": [
+    "Soviet Union 17.9%",
+    "Canada 11.8%",
+    "United States 9.9%",
+    "Australia 6.0%",
+    "France 5.1%",
+    "Romania 5.0%",
+    "Argentina 4.5%",
+    "Denmark 4.4%"
+   ],
+   "wings": 101,
+   "missions": 14,
+   "meanSortiesAloft": 11.3,
+   "engagedMean": 2.04,
+   "engagedMax": 10,
+   "landAtWarMean": 415.9,
+   "warheads": {
+    "Germany": 48,
+    "Soviet Union": 5,
+    "United States": 54,
+    "United Kingdom": 18,
+    "Japan": 1
+   },
+   "falloutCells": 273,
+   "landCells": 627843,
+   "taboo": 0.374,
+   "outrage": {
+    "Soviet Union": 70.15,
+    "Germany": 70.17,
+    "Japan": 35.95
+   },
+   "ev": {
+    "FormationArrived": 5552,
+    "ElementDestroyed": 1384,
+    "FlakFired": 6100,
+    "StrikeHit": 12247,
+    "AirStrike": 11620,
+    "MoveRejected": 1028,
+    "FormationSpawned": 122,
+    "FormationDestroyed": 224,
+    "FormationRetreated": 177,
+    "ProductionQueued": 130,
+    "FormationsDisbanded": 13,
+    "ConvoyRaided": 12,
+    "AirRaids": 35,
+    "LandCeded": 47,
+    "FormationEmbarked": 21,
+    "WarDeclared": 29,
+    "TechResearched": 13,
+    "FormationLanded": 20,
+    "PeaceSigned": 28,
+    "PuppetReleased": 4,
+    "RevoltSpawned": 12,
+    "AirBattle": 183,
+    "CapitalCaptured": 11,
+    "CapitalMoved": 19,
+    "AirWar": 9,
+    "UnionFormed": 1,
+    "NationRevived": 2,
+    "AllianceJoined": 9,
+    "SeaBattle": 5,
+    "AllianceLeft": 8,
+    "NationEliminated": 6,
+    "PuppetCreated": 4,
+    "NukeLaunched": 2,
+    "NukeDecided": 2,
+    "NukeDetonated": 2,
+    "NukeCasualties": 2,
+    "NukeToll": 2,
+    "AllianceDissolved": 2,
+    "NationAnnexed": 1
+   },
+   "sea": {
+    "n": 5,
+    "zero": 0,
+    "sunk": 52
+   },
+   "seaTop": [],
+   "hash": "56e42eed"
+  },
+  {
+   "year": 23,
+   "wallS": 33.8,
+   "tickMs": 3.854,
+   "p95ms": 22.01,
+   "maxMs": 170.8,
+   "living": 109,
+   "founded": 38,
+   "tiny": 34,
+   "flipped": 45433,
+   "wars": 6,
+   "top": [
+    "Soviet Union 16.2%",
+    "Canada 11.8%",
+    "United States 11.2%",
+    "Australia 6.1%",
+    "Argentina 5.2%",
+    "France 5.1%",
+    "Denmark 4.4%",
+    "Germany 4.4%"
+   ],
+   "wings": 109,
+   "missions": 3,
+   "meanSortiesAloft": 8.9,
+   "engagedMean": 2.24,
+   "engagedMax": 16,
+   "landAtWarMean": 419.7,
+   "warheads": {
+    "Germany": 49,
+    "Soviet Union": 5,
+    "United States": 56,
+    "United Kingdom": 6
+   },
+   "falloutCells": 265,
+   "landCells": 627843,
+   "taboo": 0.367,
+   "outrage": {
+    "Soviet Union": 61.02,
+    "Germany": 61.05,
+    "Japan": 66.82
+   },
+   "ev": {
+    "FormationArrived": 5213,
+    "StrikeHit": 13070,
+    "AirStrike": 8706,
+    "MoveRejected": 1952,
+    "FormationRetreated": 199,
+    "ElementDestroyed": 473,
+    "FormationSpawned": 115,
+    "FormationDestroyed": 101,
+    "WarDeclared": 19,
+    "FormationEmbarked": 41,
+    "ProductionQueued": 104,
+    "ConvoyRaided": 12,
+    "AirRaids": 35,
+    "LandCeded": 38,
+    "AllianceJoined": 6,
+    "FlakFired": 3361,
+    "FormationLanded": 38,
+    "AllianceLeft": 2,
+    "AllianceDissolved": 1,
+    "NationEliminated": 4,
+    "SeaBattle": 5,
+    "RevoltSpawned": 5,
+    "PeaceSigned": 19,
+    "PuppetCreated": 5,
+    "TechResearched": 11,
+    "AirBattle": 124,
+    "AirWar": 3,
+    "FormationsDisbanded": 1,
+    "NationRevived": 3,
+    "CapitalCaptured": 3,
+    "CapitalMoved": 5,
+    "NationAnnexed": 3,
+    "NukeLaunched": 1,
+    "NukeDecided": 1,
+    "NukeDetonated": 1,
+    "NukeCasualties": 1,
+    "NukeToll": 1
+   },
+   "sea": {
+    "n": 5,
+    "zero": 0,
+    "sunk": 56
+   },
+   "seaTop": [],
+   "hash": "85b84ca0"
+  },
+  {
+   "year": 24,
+   "wallS": 26.8,
+   "tickMs": 3.052,
+   "p95ms": 16.53,
+   "maxMs": 197.5,
+   "living": 107,
+   "founded": 36,
+   "tiny": 28,
+   "flipped": 55226,
+   "wars": 9,
+   "top": [
+    "Soviet Union 18.0%",
+    "Canada 11.8%",
+    "United States 9.6%",
+    "Germany 6.0%",
+    "Australia 5.3%",
+    "Argentina 5.2%",
+    "France 5.1%",
+    "Denmark 4.4%"
+   ],
+   "wings": 107,
+   "missions": 8,
+   "meanSortiesAloft": 8.5,
+   "engagedMean": 1.72,
+   "engagedMax": 12,
+   "landAtWarMean": 436.1,
+   "warheads": {
+    "Germany": 49,
+    "Soviet Union": 5,
+    "United States": 56,
+    "United Kingdom": 2
+   },
+   "falloutCells": 222,
+   "landCells": 627843,
+   "taboo": 0.549,
+   "outrage": {
+    "Soviet Union": 51.9,
+    "Germany": 51.92,
+    "Japan": 57.7
+   },
+   "ev": {
+    "FormationSpawned": 97,
+    "AirStrike": 7341,
+    "FlakFired": 6892,
+    "FormationArrived": 6124,
+    "StrikeHit": 8233,
+    "MoveRejected": 1891,
+    "FormationRetreated": 185,
+    "TechResearched": 15,
+    "ProductionQueued": 100,
+    "FormationDestroyed": 77,
+    "FormationsDisbanded": 11,
+    "ConvoyRaided": 11,
+    "AirRaids": 34,
+    "AllianceLeft": 6,
+    "LandCeded": 63,
+    "RevoltSpawned": 2,
+    "WarDeclared": 15,
+    "FormationLanded": 25,
+    "ElementDestroyed": 261,
+    "AllianceJoined": 4,
+    "PeaceSigned": 10,
+    "PuppetReleased": 3,
+    "PuppetCreated": 3,
+    "AllianceDissolved": 2,
+    "FormationEmbarked": 27,
+    "CapitalMoved": 12,
+    "NationAnnexed": 1,
+    "NationEliminated": 4,
+    "CapitalCaptured": 6,
+    "SeaBattle": 2
+   },
+   "sea": {
+    "n": 2,
+    "zero": 0,
+    "sunk": 15
+   },
+   "seaTop": [],
+   "hash": "e1c42cdd"
+  },
+  {
+   "year": 25,
+   "wallS": 33,
+   "tickMs": 3.768,
+   "p95ms": 22.7,
+   "maxMs": 153.5,
+   "living": 108,
+   "founded": 36,
+   "tiny": 31,
+   "flipped": 48592,
+   "wars": 8,
+   "top": [
+    "Soviet Union 18.3%",
+    "Canada 11.8%",
+    "United States 11.1%",
+    "Germany 5.6%",
+    "Australia 5.4%",
+    "Argentina 5.2%",
+    "France 5.0%",
+    "Denmark 4.4%"
+   ],
+   "wings": 101,
+   "missions": 8,
+   "meanSortiesAloft": 10.2,
+   "engagedMean": 3.56,
+   "engagedMax": 25,
+   "landAtWarMean": 444.8,
+   "warheads": {
+    "Germany": 51,
+    "Soviet Union": 5,
+    "United States": 56,
+    "United Kingdom": 4
+   },
+   "falloutCells": 169,
+   "landCells": 627843,
+   "taboo": 0.732,
+   "outrage": {
+    "Soviet Union": 42.77,
+    "Germany": 42.8,
+    "Japan": 48.58
+   },
+   "ev": {
+    "FlakFired": 8426,
+    "FormationArrived": 4985,
+    "StrikeHit": 8977,
+    "AirStrike": 8822,
+    "ElementDestroyed": 621,
+    "MoveRejected": 6950,
+    "FormationDestroyed": 106,
+    "FormationSpawned": 95,
+    "FormationRetreated": 206,
+    "FormationLanded": 55,
+    "ProductionQueued": 96,
+    "ConvoyRaided": 12,
+    "AirRaids": 35,
+    "PuppetReleased": 1,
+    "LandCeded": 58,
+    "RevoltSpawned": 4,
+    "WarDeclared": 17,
+    "NationRevived": 1,
+    "AllianceJoined": 7,
+    "CapitalCaptured": 5,
+    "CapitalMoved": 7,
+    "FormationEmbarked": 49,
+    "TechResearched": 9,
+    "FormationsDisbanded": 5,
+    "PeaceSigned": 17,
+    "SeaBattle": 2,
+    "AirBattle": 140,
+    "NukeMeansLost": 1,
+    "AirWar": 7,
+    "NationAnnexed": 2,
+    "AllianceLeft": 4,
+    "NationEliminated": 3,
+    "AllianceDissolved": 1,
+    "PuppetCreated": 1,
+    "WarEnded": 1,
+    "UnionFormed": 2
+   },
+   "sea": {
+    "n": 2,
+    "zero": 0,
+    "sunk": 19
+   },
+   "seaTop": [],
+   "hash": "17c5017a"
+  },
+  {
+   "year": 26,
+   "wallS": 43.3,
+   "tickMs": 4.94,
+   "p95ms": 29.85,
+   "maxMs": 150.6,
+   "living": 106,
+   "founded": 34,
+   "tiny": 29,
+   "flipped": 47545,
+   "wars": 8,
+   "top": [
+    "Soviet Union 16.3%",
+    "United States 13.1%",
+    "Canada 12.1%",
+    "Australia 5.5%",
+    "Germany 5.5%",
+    "France 5.2%",
+    "Argentina 5.2%",
+    "Denmark 4.4%"
+   ],
+   "wings": 102,
+   "missions": 15,
+   "meanSortiesAloft": 14,
+   "engagedMean": 11.96,
+   "engagedMax": 66,
+   "landAtWarMean": 450,
+   "warheads": {
+    "Germany": 53,
+    "Soviet Union": 4,
+    "United States": 56,
+    "United Kingdom": 8
+   },
+   "falloutCells": 189,
+   "landCells": 627843,
+   "taboo": 0.345,
+   "outrage": {
+    "Soviet Union": 73.65,
+    "Germany": 33.67,
+    "Japan": 39.45
+   },
+   "ev": {
+    "MoveRejected": 6488,
+    "FlakFired": 12749,
+    "FormationArrived": 4871,
+    "StrikeHit": 16886,
+    "AirStrike": 12218,
+    "FormationDestroyed": 173,
+    "TechResearched": 14,
+    "FormationSpawned": 100,
+    "ElementDestroyed": 1526,
+    "CapitalMoved": 9,
+    "ProductionQueued": 91,
+    "FormationsDisbanded": 3,
+    "ConvoyRaided": 12,
+    "AirRaids": 36,
+    "LandCeded": 51,
+    "FormationRetreated": 1111,
+    "AllianceLeft": 2,
+    "NationEliminated": 3,
+    "FormationEmbarked": 51,
+    "FormationLanded": 49,
+    "CapitalCaptured": 9,
+    "PeaceSigned": 6,
+    "UnionFormed": 1,
+    "WarDeclared": 6,
+    "AllianceDissolved": 1,
+    "SeaBattle": 4,
+    "MajorBattleStarted": 1,
+    "NukeLaunched": 1,
+    "NukeDecided": 1,
+    "NukeDetonated": 1,
+    "NukeCasualties": 1,
+    "NukeToll": 1,
+    "MajorBattleEnded": 1,
+    "AllianceJoined": 1,
+    "RevoltSpawned": 1
+   },
+   "sea": {
+    "n": 4,
+    "zero": 0,
+    "sunk": 45
+   },
+   "seaTop": [],
+   "hash": "ee290d7d"
+  },
+  {
+   "year": 27,
+   "wallS": 47.2,
+   "tickMs": 5.385,
+   "p95ms": 30.84,
+   "maxMs": 161.9,
+   "living": 104,
+   "founded": 34,
+   "tiny": 28,
+   "flipped": 49991,
+   "wars": 7,
+   "top": [
+    "Soviet Union 15.7%",
+    "United States 13.0%",
+    "Canada 12.1%",
+    "France 5.8%",
+    "Australia 5.4%",
+    "Argentina 5.2%",
+    "Germany 4.5%",
+    "Denmark 4.4%"
+   ],
+   "wings": 104,
+   "missions": 17,
+   "meanSortiesAloft": 16.1,
+   "engagedMean": 4.72,
+   "engagedMax": 25,
+   "landAtWarMean": 336.8,
+   "warheads": {
+    "Germany": 53,
+    "Soviet Union": 1,
+    "United States": 56,
+    "United Kingdom": 12
+   },
+   "falloutCells": 427,
+   "landCells": 627843,
+   "taboo": 0.343,
+   "outrage": {
+    "Soviet Union": 97.85,
+    "Germany": 24.55,
+    "Japan": 30.33
+   },
+   "ev": {
+    "AirStrike": 17263,
+    "FlakFired": 10888,
+    "FormationArrived": 3505,
+    "StrikeHit": 20737,
+    "ElementDestroyed": 1062,
+    "MoveRejected": 1380,
+    "FormationRetreated": 382,
+    "TechResearched": 9,
+    "FormationDestroyed": 123,
+    "FormationSpawned": 83,
+    "NukeLaunched": 3,
+    "NukeDecided": 3,
+    "NukeDetonated": 3,
+    "NukeCasualties": 3,
+    "NukeToll": 3,
+    "PeaceSigned": 12,
+    "CapitalMoved": 8,
+    "AllianceJoined": 2,
+    "ProductionQueued": 98,
+    "ConvoyRaided": 12,
+    "AirRaids": 36,
+    "LandCeded": 50,
+    "FormationLanded": 17,
+    "CapitalCaptured": 6,
+    "AllianceLeft": 3,
+    "NationEliminated": 4,
+    "WarDeclared": 11,
+    "PuppetReleased": 1,
+    "FormationEmbarked": 21,
+    "RevoltSpawned": 2,
+    "SeaBattle": 3,
+    "FormationsDisbanded": 1,
+    "AirBattle": 72,
+    "PuppetCreated": 1
+   },
+   "sea": {
+    "n": 3,
+    "zero": 0,
+    "sunk": 13
+   },
+   "seaTop": [],
+   "hash": "adf806f4"
+  },
+  {
+   "year": 28,
+   "wallS": 44.3,
+   "tickMs": 5.054,
+   "p95ms": 28.95,
+   "maxMs": 168.6,
+   "living": 107,
+   "founded": 39,
+   "tiny": 28,
+   "flipped": 53489,
+   "wars": 9,
+   "top": [
+    "United States 12.6%",
+    "Canada 12.1%",
+    "Soviet Union 10.4%",
+    "Germany 7.1%",
+    "France 5.6%",
+    "Australia 5.5%",
+    "Argentina 5.2%",
+    "Denmark 4.4%"
+   ],
+   "wings": 103,
+   "missions": 5,
+   "meanSortiesAloft": 10.7,
+   "engagedMean": 1.63,
+   "engagedMax": 14,
+   "landAtWarMean": 350.6,
+   "warheads": {
+    "Germany": 53,
+    "United States": 56,
+    "United Kingdom": 16
+   },
+   "falloutCells": 1900,
+   "landCells": 627843,
+   "taboo": 0.418,
+   "outrage": {
+    "Soviet Union": 94.1,
+    "Germany": 15.42,
+    "Japan": 21.2,
+    "United States": 34.13
+   },
+   "ev": {
+    "StrikeHit": 11660,
+    "AirStrike": 10720,
+    "AirBattle": 202,
+    "FlakFired": 6085,
+    "FormationArrived": 4663,
+    "ElementDestroyed": 346,
+    "MoveRejected": 1880,
+    "FormationSpawned": 111,
+    "FormationDestroyed": 79,
+    "FormationRetreated": 174,
+    "FormationLanded": 13,
+    "ProductionQueued": 109,
+    "ConvoyRaided": 12,
+    "AirWar": 6,
+    "AirRaids": 36,
+    "PuppetReleased": 3,
+    "LandCeded": 33,
+    "RevoltSpawned": 10,
+    "WarDeclared": 25,
+    "SeaBattle": 7,
+    "PeaceSigned": 22,
+    "TechResearched": 11,
+    "AllianceJoined": 6,
+    "CapitalCaptured": 7,
+    "CapitalMoved": 6,
+    "NationAnnexed": 4,
+    "NationEliminated": 5,
+    "NukeLaunched": 2,
+    "NukeDecided": 2,
+    "NukeDetonated": 2,
+    "NukeCasualties": 2,
+    "NukeToll": 2,
+    "FormationEmbarked": 16,
+    "AllianceLeft": 2,
+    "FormationsDisbanded": 2
+   },
+   "sea": {
+    "n": 7,
+    "zero": 0,
+    "sunk": 41
+   },
+   "seaTop": [],
+   "hash": "2a442d2a"
+  },
+  {
+   "year": 29,
+   "wallS": 33.7,
+   "tickMs": 3.843,
+   "p95ms": 21.65,
+   "maxMs": 146.7,
+   "living": 110,
+   "founded": 42,
+   "tiny": 31,
+   "flipped": 49312,
+   "wars": 6,
+   "top": [
+    "United States 14.1%",
+    "Canada 12.3%",
+    "Soviet Union 9.3%",
+    "Australia 5.8%",
+    "Germany 5.8%",
+    "France 5.5%",
+    "Argentina 5.2%",
+    "Mexico 4.8%"
+   ],
+   "wings": 105,
+   "missions": 2,
+   "meanSortiesAloft": 6.7,
+   "engagedMean": 0.69,
+   "engagedMax": 9,
+   "landAtWarMean": 422.5,
+   "warheads": {
+    "Germany": 54,
+    "United States": 56,
+    "United Kingdom": 18
+   },
+   "falloutCells": 1706,
+   "landCells": 627843,
+   "taboo": 0.6,
+   "outrage": {
+    "Soviet Union": 84.97,
+    "Germany": 6.3,
+    "Japan": 12.08,
+    "United States": 25
+   },
+   "ev": {
+    "StrikeHit": 9456,
+    "AirStrike": 8058,
+    "FormationArrived": 3700,
+    "MoveRejected": 1741,
+    "FormationLanded": 37,
+    "FlakFired": 1903,
+    "FormationSpawned": 121,
+    "ProductionQueued": 125,
+    "FormationDestroyed": 47,
+    "FormationsDisbanded": 10,
+    "ConvoyRaided": 12,
+    "AirRaids": 34,
+    "LandCeded": 48,
+    "CapitalCaptured": 3,
+    "CapitalMoved": 4,
+    "FormationEmbarked": 30,
+    "ElementDestroyed": 120,
+    "TechResearched": 9,
+    "PeaceSigned": 9,
+    "UnionFormed": 1,
+    "RevoltSpawned": 3,
+    "WarDeclared": 6,
+    "FormationRetreated": 77,
+    "AllianceJoined": 1,
+    "AirBattle": 99,
+    "AirWar": 3,
+    "AllianceLeft": 1
+   },
+   "sea": {
+    "n": 0,
+    "zero": 0,
+    "sunk": 0
+   },
+   "seaTop": [],
+   "hash": "4f223109"
+  },
+  {
+   "year": 30,
+   "wallS": 37.5,
+   "tickMs": 4.28,
+   "p95ms": 23.8,
+   "maxMs": 167.8,
+   "living": 110,
+   "founded": 42,
+   "tiny": 35,
+   "flipped": 79306,
+   "wars": 8,
+   "top": [
+    "Soviet Union 13.8%",
+    "Canada 12.3%",
+    "United States 10.7%",
+    "Australia 6.3%",
+    "France 5.6%",
+    "Mexico 5.6%",
+    "Argentina 5.2%",
+    "Germany 5.0%"
+   ],
+   "wings": 104,
+   "missions": 8,
+   "meanSortiesAloft": 8.1,
+   "engagedMean": 1.64,
+   "engagedMax": 10,
+   "landAtWarMean": 488.5,
+   "warheads": {
+    "Germany": 54,
+    "United States": 57,
+    "United Kingdom": 18
+   },
+   "falloutCells": 1429,
+   "landCells": 627843,
+   "taboo": 0.782,
+   "outrage": {
+    "Soviet Union": 75.85,
+    "Japan": 2.95,
+    "United States": 15.88
+   },
+   "ev": {
+    "FormationArrived": 4370,
+    "AirStrike": 8637,
+    "StrikeHit": 10577,
+    "MoveRejected": 2235,
+    "CapitalCaptured": 11,
+    "CapitalMoved": 10,
+    "FormationSpawned": 117,
+    "FlakFired": 5635,
+    "FormationLanded": 40,
+    "FormationRetreated": 149,
+    "AllianceJoined": 5,
+    "ProductionQueued": 114,
+    "ConvoyRaided": 12,
+    "AirWar": 1,
+    "AirRaids": 32,
+    "LandCeded": 82,
+    "ElementDestroyed": 227,
+    "FormationDestroyed": 74,
+    "FormationsDisbanded": 5,
+    "FormationEmbarked": 38,
+    "AirBattle": 20,
+    "PeaceSigned": 16,
+    "WarDeclared": 21,
+    "NationEliminated": 3,
+    "TechResearched": 6,
+    "AllianceLeft": 2,
+    "PuppetCreated": 2,
+    "RevoltSpawned": 3,
+    "SeaBattle": 2,
+    "NationAnnexed": 1
+   },
+   "sea": {
+    "n": 2,
+    "zero": 0,
+    "sunk": 21
+   },
+   "seaTop": [],
+   "hash": "55ae25d7"
+  }
+ ],
+ "nukeLog": [
+  {
+   "year": 11,
+   "tick": 95137,
+   "k": "launched",
+   "by": "Soviet Union",
+   "missile": 0,
+   "at": [
+    1149.0625,
+    376.0625
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 95137,
+   "k": "decided",
+   "by": "Soviet Union",
+   "utility": 0.026,
+   "at": [
+    1149.0625,
+    376.0625
+   ],
+   "targetOwner": "United States"
+  },
+  {
+   "year": 11,
+   "tick": 95142,
+   "k": "intercepted",
+   "by": "Soviet Union",
+   "at": [
+    1149.0625,
+    376.0625
+   ]
+  },
+  {
+   "year": 12,
+   "tick": 102217,
+   "k": "launched",
+   "by": "Soviet Union",
+   "missile": 0,
+   "at": [
+    1100.2288355555554,
+    267.3981779047986
+   ]
+  },
+  {
+   "year": 12,
+   "tick": 102217,
+   "k": "decided",
+   "by": "Soviet Union",
+   "utility": 0.099,
+   "at": [
+    1100.2288355555554,
+    267.3981779047986
+   ],
+   "targetOwner": "Germany"
+  },
+  {
+   "year": 12,
+   "tick": 102224,
+   "k": "burst",
+   "by": "Soviet Union",
+   "yieldN": 1,
+   "at": [
+    1100.2288355555554,
+    267.3981779047986
+   ]
+  },
+  {
+   "year": 12,
+   "tick": 102224,
+   "k": "toll",
+   "by": "Soviet Union",
+   "struck": "Germany",
+   "yieldN": 1,
+   "dead": 356526,
+   "at": [
+    1100.2288355555554,
+    267.3981779047986
+   ]
+  },
+  {
+   "year": 12,
+   "tick": 102224,
+   "k": "forces",
+   "by": "Soviet Union",
+   "men": 22526,
+   "guns": 80,
+   "tanks": 0,
+   "at": [
+    1100.2288355555554,
+    267.3981779047986
+   ]
+  },
+  {
+   "year": 12,
+   "tick": 102241,
+   "k": "launched",
+   "by": "Germany",
+   "missile": 0,
+   "at": [
+    1201.7664,
+    421.0532841896246
+   ]
+  },
+  {
+   "year": 12,
+   "tick": 102241,
+   "k": "decided",
+   "by": "Germany",
+   "utility": 0.132,
+   "at": [
+    1201.7664,
+    421.0532841896246
+   ],
+   "targetOwner": "Soviet Union"
+  },
+  {
+   "year": 12,
+   "tick": 102248,
+   "k": "intercepted",
+   "by": "Germany",
+   "at": [
+    1201.7664,
+    421.0532841896246
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 144841,
+   "k": "launched",
+   "by": "Soviet Union",
+   "missile": 0,
+   "at": [
+    1095.2704607357484,
+    539.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 144841,
+   "k": "decided",
+   "by": "Soviet Union",
+   "utility": 0.083,
+   "at": [
+    1095.2704607357484,
+    539.5
+   ],
+   "targetOwner": "United Kingdom"
+  },
+  {
+   "year": 17,
+   "tick": 144849,
+   "k": "burst",
+   "by": "Soviet Union",
+   "yieldN": 1,
+   "at": [
+    1095.2704607357484,
+    539.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 144849,
+   "k": "toll",
+   "by": "Soviet Union",
+   "struck": "United Kingdom",
+   "yieldN": 1,
+   "dead": 6878,
+   "at": [
+    1095.2704607357484,
+    539.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 144849,
+   "k": "forces",
+   "by": "Soviet Union",
+   "men": 6878,
+   "guns": 24,
+   "tanks": 0,
+   "at": [
+    1095.2704607357484,
+    539.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 144865,
+   "k": "launched",
+   "by": "Germany",
+   "missile": 1,
+   "at": [
+    1603.5,
+    260.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 144865,
+   "k": "decided",
+   "by": "Germany",
+   "utility": 0.673,
+   "at": [
+    1603.5,
+    260.5
+   ],
+   "targetOwner": "Soviet Union"
+  },
+  {
+   "year": 17,
+   "tick": 144866,
+   "k": "burst",
+   "by": "Germany",
+   "yieldN": 1,
+   "at": [
+    1603.5,
+    260.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 144866,
+   "k": "toll",
+   "by": "Germany",
+   "struck": "Soviet Union",
+   "yieldN": 1,
+   "dead": 7459,
+   "at": [
+    1603.5,
+    260.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 144866,
+   "k": "forces",
+   "by": "Germany",
+   "men": 7459,
+   "guns": 28,
+   "tanks": 22,
+   "at": [
+    1603.5,
+    260.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 146353,
+   "k": "launched",
+   "by": "Soviet Union",
+   "missile": 0,
+   "at": [
+    1154.5,
+    529.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 146353,
+   "k": "decided",
+   "by": "Soviet Union",
+   "utility": 0.043,
+   "at": [
+    1154.5,
+    529.5
+   ],
+   "targetOwner": "France"
+  },
+  {
+   "year": 17,
+   "tick": 146360,
+   "k": "burst",
+   "by": "Soviet Union",
+   "yieldN": 1,
+   "at": [
+    1154.5,
+    529.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 146360,
+   "k": "toll",
+   "by": "Soviet Union",
+   "struck": "France",
+   "yieldN": 1,
+   "dead": 6701,
+   "at": [
+    1154.5,
+    529.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 146360,
+   "k": "forces",
+   "by": "Soviet Union",
+   "men": 6701,
+   "guns": 31,
+   "tanks": 0,
+   "at": [
+    1154.5,
+    529.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 146377,
+   "k": "launched",
+   "by": "Germany",
+   "missile": 1,
+   "at": [
+    1452.2697050314566,
+    283.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 146377,
+   "k": "decided",
+   "by": "Germany",
+   "utility": 0.555,
+   "at": [
+    1452.2697050314566,
+    283.5
+   ],
+   "targetOwner": "Soviet Union"
+  },
+  {
+   "year": 17,
+   "tick": 146378,
+   "k": "burst",
+   "by": "Germany",
+   "yieldN": 1,
+   "at": [
+    1452.2697050314566,
+    283.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 146378,
+   "k": "toll",
+   "by": "Germany",
+   "struck": "Soviet Union",
+   "yieldN": 1,
+   "dead": 9085,
+   "at": [
+    1452.2697050314566,
+    283.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 146378,
+   "k": "forces",
+   "by": "Germany",
+   "men": 9085,
+   "guns": 40,
+   "tanks": 0,
+   "at": [
+    1452.2697050314566,
+    283.5
+   ]
+  },
+  {
+   "year": 20,
+   "tick": 170809,
+   "k": "launched",
+   "by": "Soviet Union",
+   "missile": 0,
+   "at": [
+    1738.5,
+    532.5
+   ]
+  },
+  {
+   "year": 20,
+   "tick": 170809,
+   "k": "decided",
+   "by": "Soviet Union",
+   "utility": 0.354,
+   "at": [
+    1738.5,
+    532.5
+   ],
+   "targetOwner": "Japan"
+  },
+  {
+   "year": 20,
+   "tick": 170816,
+   "k": "burst",
+   "by": "Soviet Union",
+   "yieldN": 1,
+   "at": [
+    1738.5,
+    532.5
+   ]
+  },
+  {
+   "year": 20,
+   "tick": 170816,
+   "k": "toll",
+   "by": "Soviet Union",
+   "struck": "Japan",
+   "yieldN": 1,
+   "dead": 36802,
+   "at": [
+    1738.5,
+    532.5
+   ]
+  },
+  {
+   "year": 20,
+   "tick": 170816,
+   "k": "forces",
+   "by": "Soviet Union",
+   "men": 36802,
+   "guns": 126,
+   "tanks": 0,
+   "at": [
+    1738.5,
+    532.5
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 188809,
+   "k": "launched",
+   "by": "Japan",
+   "missile": 1,
+   "at": [
+    1177.5,
+    236.5
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 188809,
+   "k": "decided",
+   "by": "Japan",
+   "utility": 0.082,
+   "at": [
+    1177.5,
+    236.5
+   ],
+   "targetOwner": "Germany"
+  },
+  {
+   "year": 22,
+   "tick": 188810,
+   "k": "burst",
+   "by": "Japan",
+   "yieldN": 1,
+   "at": [
+    1177.5,
+    236.5
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 188810,
+   "k": "toll",
+   "by": "Japan",
+   "struck": "Germany",
+   "yieldN": 1,
+   "dead": 294665,
+   "at": [
+    1177.5,
+    236.5
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 188810,
+   "k": "forces",
+   "by": "Japan",
+   "men": 294665,
+   "guns": 1110,
+   "tanks": 80,
+   "at": [
+    1177.5,
+    236.5
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 189169,
+   "k": "launched",
+   "by": "Germany",
+   "missile": 1,
+   "at": [
+    1526.5,
+    466.143488801707
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 189169,
+   "k": "decided",
+   "by": "Germany",
+   "utility": 0.661,
+   "at": [
+    1526.5,
+    466.143488801707
+   ],
+   "targetOwner": "British India"
+  },
+  {
+   "year": 22,
+   "tick": 189170,
+   "k": "burst",
+   "by": "Germany",
+   "yieldN": 1,
+   "at": [
+    1526.5,
+    466.143488801707
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 189170,
+   "k": "toll",
+   "by": "Germany",
+   "struck": "British India",
+   "yieldN": 1,
+   "dead": 5468,
+   "at": [
+    1526.5,
+    466.143488801707
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 189170,
+   "k": "forces",
+   "by": "Germany",
+   "men": 5468,
+   "guns": 20,
+   "tanks": 0,
+   "at": [
+    1526.5,
+    466.143488801707
+   ]
+  },
+  {
+   "year": 23,
+   "tick": 198241,
+   "k": "launched",
+   "by": "Japan",
+   "missile": 1,
+   "at": [
+    1573.888484018979,
+    459.111515981021
+   ]
+  },
+  {
+   "year": 23,
+   "tick": 198241,
+   "k": "decided",
+   "by": "Japan",
+   "utility": 0.976,
+   "at": [
+    1573.888484018979,
+    459.111515981021
+   ],
+   "targetOwner": "Burma"
+  },
+  {
+   "year": 23,
+   "tick": 198242,
+   "k": "burst",
+   "by": "Japan",
+   "yieldN": 1,
+   "at": [
+    1573.888484018979,
+    459.111515981021
+   ]
+  },
+  {
+   "year": 23,
+   "tick": 198242,
+   "k": "toll",
+   "by": "Japan",
+   "struck": "Burma",
+   "yieldN": 1,
+   "dead": 32469,
+   "at": [
+    1573.888484018979,
+    459.111515981021
+   ]
+  },
+  {
+   "year": 23,
+   "tick": 198242,
+   "k": "forces",
+   "by": "Japan",
+   "men": 32469,
+   "guns": 120,
+   "tanks": 0,
+   "at": [
+    1573.888484018979,
+    459.111515981021
+   ]
+  },
+  {
+   "year": 26,
+   "tick": 225577,
+   "k": "launched",
+   "by": "Soviet Union",
+   "missile": 0,
+   "at": [
+    1154.5,
+    378.5
+   ]
+  },
+  {
+   "year": 26,
+   "tick": 225577,
+   "k": "decided",
+   "by": "Soviet Union",
+   "utility": 0.817,
+   "at": [
+    1154.5,
+    378.5
+   ],
+   "targetOwner": "United States"
+  },
+  {
+   "year": 26,
+   "tick": 225583,
+   "k": "burst",
+   "by": "Soviet Union",
+   "yieldN": 1,
+   "at": [
+    1154.5,
+    378.5
+   ]
+  },
+  {
+   "year": 26,
+   "tick": 225583,
+   "k": "toll",
+   "by": "Soviet Union",
+   "struck": "United States",
+   "yieldN": 1,
+   "dead": 44732,
+   "at": [
+    1154.5,
+    378.5
+   ]
+  },
+  {
+   "year": 26,
+   "tick": 225583,
+   "k": "forces",
+   "by": "Soviet Union",
+   "men": 44732,
+   "guns": 160,
+   "tanks": 0,
+   "at": [
+    1154.5,
+    378.5
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 227857,
+   "k": "launched",
+   "by": "Soviet Union",
+   "missile": 0,
+   "at": [
+    1111.7038933333333,
+    203.0332106819461
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 227857,
+   "k": "decided",
+   "by": "Soviet Union",
+   "utility": 0.843,
+   "at": [
+    1111.7038933333333,
+    203.0332106819461
+   ],
+   "targetOwner": "United States"
+  },
+  {
+   "year": 27,
+   "tick": 227862,
+   "k": "burst",
+   "by": "Soviet Union",
+   "yieldN": 1,
+   "at": [
+    1111.7038933333333,
+    203.0332106819461
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 227862,
+   "k": "toll",
+   "by": "Soviet Union",
+   "struck": "United States",
+   "yieldN": 1,
+   "dead": 35549,
+   "at": [
+    1111.7038933333333,
+    203.0332106819461
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 227862,
+   "k": "forces",
+   "by": "Soviet Union",
+   "men": 33549,
+   "guns": 120,
+   "tanks": 0,
+   "at": [
+    1111.7038933333333,
+    203.0332106819461
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 232249,
+   "k": "launched",
+   "by": "Soviet Union",
+   "missile": 0,
+   "at": [
+    1317.4317511111112,
+    303.4916108740778
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 232249,
+   "k": "decided",
+   "by": "Soviet Union",
+   "utility": 0.796,
+   "at": [
+    1317.4317511111112,
+    303.4916108740778
+   ],
+   "targetOwner": "United States"
+  },
+  {
+   "year": 27,
+   "tick": 232252,
+   "k": "burst",
+   "by": "Soviet Union",
+   "yieldN": 1,
+   "at": [
+    1317.4317511111112,
+    303.4916108740778
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 232252,
+   "k": "toll",
+   "by": "Soviet Union",
+   "struck": "United States",
+   "yieldN": 1,
+   "dead": 34549,
+   "at": [
+    1317.4317511111112,
+    303.4916108740778
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 232252,
+   "k": "forces",
+   "by": "Soviet Union",
+   "men": 33549,
+   "guns": 120,
+   "tanks": 0,
+   "at": [
+    1317.4317511111112,
+    303.4916108740778
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 234433,
+   "k": "launched",
+   "by": "Soviet Union",
+   "missile": 0,
+   "at": [
+    1375.7627733333334,
+    372.8001674504443
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 234433,
+   "k": "decided",
+   "by": "Soviet Union",
+   "utility": 0.8,
+   "at": [
+    1375.7627733333334,
+    372.8001674504443
+   ],
+   "targetOwner": "United States"
+  },
+  {
+   "year": 27,
+   "tick": 234439,
+   "k": "burst",
+   "by": "Soviet Union",
+   "yieldN": 1,
+   "at": [
+    1375.7627733333334,
+    372.8001674504443
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 234439,
+   "k": "toll",
+   "by": "Soviet Union",
+   "struck": "United States",
+   "yieldN": 1,
+   "dead": 38549,
+   "at": [
+    1375.7627733333334,
+    372.8001674504443
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 234439,
+   "k": "forces",
+   "by": "Soviet Union",
+   "men": 33549,
+   "guns": 120,
+   "tanks": 0,
+   "at": [
+    1375.7627733333334,
+    372.8001674504443
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 239593,
+   "k": "launched",
+   "by": "Soviet Union",
+   "missile": 0,
+   "at": [
+    1374.8144355555557,
+    309.76455413577645
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 239593,
+   "k": "decided",
+   "by": "Soviet Union",
+   "utility": 0.779,
+   "at": [
+    1374.8144355555557,
+    309.76455413577645
+   ],
+   "targetOwner": "United States"
+  },
+  {
+   "year": 28,
+   "tick": 239598,
+   "k": "burst",
+   "by": "Soviet Union",
+   "yieldN": 1,
+   "at": [
+    1374.8144355555557,
+    309.76455413577645
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 239598,
+   "k": "toll",
+   "by": "Soviet Union",
+   "struck": "United States",
+   "yieldN": 1,
+   "dead": 56915,
+   "at": [
+    1374.8144355555557,
+    309.76455413577645
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 239598,
+   "k": "forces",
+   "by": "Soviet Union",
+   "men": 55915,
+   "guns": 200,
+   "tanks": 0,
+   "at": [
+    1374.8144355555557,
+    309.76455413577645
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 239617,
+   "k": "launched",
+   "by": "United States",
+   "missile": 1,
+   "at": [
+    1218.1396489033123,
+    276.8603510966876
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 239617,
+   "k": "decided",
+   "by": "United States",
+   "utility": 1.892,
+   "at": [
+    1218.1396489033123,
+    276.8603510966876
+   ],
+   "targetOwner": "Soviet Union"
+  },
+  {
+   "year": 28,
+   "tick": 239618,
+   "k": "burst",
+   "by": "United States",
+   "yieldN": 2,
+   "at": [
+    1218.1396489033123,
+    276.8603510966876
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 239618,
+   "k": "toll",
+   "by": "United States",
+   "struck": "Soviet Union",
+   "yieldN": 2,
+   "dead": 205078,
+   "at": [
+    1218.1396489033123,
+    276.8603510966876
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 239618,
+   "k": "forces",
+   "by": "United States",
+   "men": 22078,
+   "guns": 80,
+   "tanks": 0,
+   "at": [
+    1218.1396489033123,
+    276.8603510966876
+   ]
+  }
+ ],
+ "seaLog": [
+  {
+   "year": 1,
+   "tick": 41,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Netherlands",
+   "lostB": 5,
+   "at": [
+    1032.5,
+    276.50735465743077
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 51,
+   "a": "United Kingdom",
+   "lostA": 10,
+   "b": "Netherlands",
+   "lostB": 8,
+   "at": [
+    1051.5,
+    261.13459990978566
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 258,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Netherlands",
+   "lostB": 6,
+   "at": [
+    1677.5,
+    568.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 275,
+   "a": "United Kingdom",
+   "lostA": 7,
+   "b": "Netherlands",
+   "lostB": 7,
+   "at": [
+    1677.5,
+    568.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 321,
+   "a": "Nationalist Spain",
+   "lostA": 0,
+   "b": "Spanish Republic",
+   "lostB": 7,
+   "at": [
+    999.6189150572693,
+    379.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 504,
+   "a": "Japan",
+   "lostA": 1,
+   "b": "Netherlands",
+   "lostB": 3,
+   "at": [
+    1684.5,
+    561.3276702175392
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 700,
+   "a": "Nationalist Spain",
+   "lostA": 0,
+   "b": "Spanish Republic",
+   "lostB": 1,
+   "at": [
+    1006.5,
+    332.6955873039342
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 1025,
+   "a": "Italy",
+   "lostA": 10,
+   "b": "Denmark",
+   "lostB": 8,
+   "at": [
+    1096.5,
+    242.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 1931,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Romania",
+   "lostB": 8,
+   "at": [
+    1187.5,
+    328.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 1955,
+   "a": "Soviet Union",
+   "lostA": 2,
+   "b": "Yugoslavia",
+   "lostB": 8,
+   "at": [
+    1200.0233926689884,
+    312.02339266898855
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 3005,
+   "a": "Italy",
+   "lostA": 0,
+   "b": "Greece",
+   "lostB": 8,
+   "at": [
+    1157.9375,
+    370.9375
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4718,
+   "a": "British India",
+   "lostA": 8,
+   "b": "Germany",
+   "lostB": 0,
+   "at": [
+    1106.9375,
+    384.9375
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4781,
+   "a": "United Kingdom",
+   "lostA": 14,
+   "b": "Germany",
+   "lostB": 5,
+   "at": [
+    1042.5357648501329,
+    373.46423514986725
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4785,
+   "a": "United Kingdom",
+   "lostA": 5,
+   "b": "Germany",
+   "lostB": 0,
+   "at": [
+    1042.1356158217066,
+    372.8643841782935
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4803,
+   "a": "United Kingdom",
+   "lostA": 19,
+   "b": "Germany",
+   "lostB": 11,
+   "at": [
+    1025.1892831247783,
+    377.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4818,
+   "a": "United Kingdom",
+   "lostA": 24,
+   "b": "Japan",
+   "lostB": 2,
+   "at": [
+    1056.972371826988,
+    369.02762817301215
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4819,
+   "a": "United Kingdom",
+   "lostA": 33,
+   "b": "Japan",
+   "lostB": 56,
+   "at": [
+    1043.0235658405682,
+    372.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4836,
+   "a": "United Kingdom",
+   "lostA": 6,
+   "b": "Germany",
+   "lostB": 0,
+   "at": [
+    994.5,
+    382.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4852,
+   "a": "United Kingdom",
+   "lostA": 6,
+   "b": "Italy",
+   "lostB": 0,
+   "at": [
+    1106.9375,
+    384.9375
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4872,
+   "a": "United Kingdom",
+   "lostA": 6,
+   "b": "Japan",
+   "lostB": 3,
+   "at": [
+    994.5,
+    382.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4873,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 22,
+   "at": [
+    1029.0426720881342,
+    376.23501876591666
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4905,
+   "a": "United Kingdom",
+   "lostA": 72,
+   "b": "Japan",
+   "lostB": 32,
+   "at": [
+    1027.6975246922752,
+    376.70281882036306
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4913,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 4,
+   "at": [
+    1013.8613082163757,
+    379.1386917836242
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 4977,
+   "a": "United Kingdom",
+   "lostA": 69,
+   "b": "Japan",
+   "lostB": 24,
+   "at": [
+    1012.0837172339872,
+    379.4983925393424
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5109,
+   "a": "France",
+   "lostA": 22,
+   "b": "Japan",
+   "lostB": 9,
+   "at": [
+    981.4626076295324,
+    383.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5121,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Italy",
+   "lostB": 8,
+   "at": [
+    1000.9733393541773,
+    381.2921006965897
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5121,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Poland",
+   "lostB": 8,
+   "at": [
+    1189.8125,
+    348.0625
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5127,
+   "a": "Italy",
+   "lostA": 4,
+   "b": "France",
+   "lostB": 5,
+   "at": [
+    1079.5,
+    329.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5133,
+   "a": "Italy",
+   "lostA": 4,
+   "b": "France",
+   "lostB": 0,
+   "at": [
+    1079.5,
+    329.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5198,
+   "a": "Soviet Union",
+   "lostA": 2,
+   "b": "Norway",
+   "lostB": 7,
+   "at": [
+    1130.5,
+    343.0763522519863
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5243,
+   "a": "United Kingdom",
+   "lostA": 3,
+   "b": "Germany",
+   "lostB": 0,
+   "at": [
+    1031.7573862965412,
+    275.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5321,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Germany",
+   "lostB": 7,
+   "at": [
+    1013.4438486676439,
+    282.556151332356
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5345,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Germany",
+   "lostB": 1,
+   "at": [
+    1030.5,
+    275.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5538,
+   "a": "France",
+   "lostA": 5,
+   "b": "Italy",
+   "lostB": 23,
+   "at": [
+    932.5,
+    413.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5591,
+   "a": "France",
+   "lostA": 1,
+   "b": "Italy",
+   "lostB": 8,
+   "at": [
+    932.5,
+    413.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5625,
+   "a": "France",
+   "lostA": 5,
+   "b": "Italy",
+   "lostB": 0,
+   "at": [
+    990.0625,
+    384.0625
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5647,
+   "a": "Canada",
+   "lostA": 0,
+   "b": "Italy",
+   "lostB": 1,
+   "at": [
+    990.3634726171935,
+    383.6365273828065
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5698,
+   "a": "France",
+   "lostA": 4,
+   "b": "Italy",
+   "lostB": 11,
+   "at": [
+    932.5,
+    413.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5792,
+   "a": "Canada",
+   "lostA": 9,
+   "b": "Italy",
+   "lostB": 3,
+   "at": [
+    990.1718968290565,
+    383.80036773652427
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5908,
+   "a": "Australia",
+   "lostA": 0,
+   "b": "Italy",
+   "lostB": 2,
+   "at": [
+    1073.974565102929,
+    328.0254348970709
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 5923,
+   "a": "Italy",
+   "lostA": 9,
+   "b": "France",
+   "lostB": 0,
+   "at": [
+    932.6098886428473,
+    413.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 6334,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Norway",
+   "lostB": 1,
+   "at": [
+    1161.4774824071055,
+    210.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 6445,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 7,
+   "at": [
+    1048.4368348634969,
+    368.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 6593,
+   "a": "Japan",
+   "lostA": 12,
+   "b": "France",
+   "lostB": 0,
+   "at": [
+    1718.5,
+    372.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 6609,
+   "a": "Japan",
+   "lostA": 0,
+   "b": "France",
+   "lostB": 1,
+   "at": [
+    1720.3300743309428,
+    372.3300743309428
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 6714,
+   "a": "Japan",
+   "lostA": 3,
+   "b": "France",
+   "lostB": 0,
+   "at": [
+    1720.1927987023116,
+    372.35222533157685
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 6956,
+   "a": "Australia",
+   "lostA": 1,
+   "b": "Japan",
+   "lostB": 1,
+   "at": [
+    1105.5,
+    351.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 7161,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 12,
+   "at": [
+    1717.2340157720548,
+    372.23401577205476
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 8333,
+   "a": "Japan",
+   "lostA": 0,
+   "b": "France",
+   "lostB": 2,
+   "at": [
+    1714.5,
+    372.5
+   ]
+  },
+  {
+   "year": 1,
+   "tick": 8352,
+   "a": "Japan",
+   "lostA": 0,
+   "b": "France",
+   "lostB": 6,
+   "at": [
+    1714.5,
+    372.5
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 9349,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 6,
+   "at": [
+    1721.5,
+    384.725473261492
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 9725,
+   "a": "France",
+   "lostA": 0,
+   "b": "Italy",
+   "lostB": 12,
+   "at": [
+    1129.7370582726476,
+    248.5
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 10164,
+   "a": "Italy",
+   "lostA": 0,
+   "b": "Dutch East Indies",
+   "lostB": 12,
+   "at": [
+    1199.5,
+    397.5
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 11409,
+   "a": "France",
+   "lostA": 0,
+   "b": "Germany",
+   "lostB": 4,
+   "at": [
+    1129.709325473311,
+    248.73397453315377
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 12249,
+   "a": "France",
+   "lostA": 0,
+   "b": "Germany",
+   "lostB": 2,
+   "at": [
+    1129.709325473311,
+    248.73397453315377
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 12417,
+   "a": "France",
+   "lostA": 0,
+   "b": "Germany",
+   "lostB": 1,
+   "at": [
+    1129.709325473311,
+    248.73397453315377
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 13366,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United States",
+   "lostB": 1,
+   "at": [
+    998.4715680201647,
+    382.5
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 13528,
+   "a": "Germany",
+   "lostA": 5,
+   "b": "Portugal",
+   "lostB": 5,
+   "at": [
+    971.5,
+    366.5
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 13623,
+   "a": "Germany",
+   "lostA": 1,
+   "b": "Portugal",
+   "lostB": 3,
+   "at": [
+    971.5,
+    366.5
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 13995,
+   "a": "France",
+   "lostA": 3,
+   "b": "Soviet Union",
+   "lostB": 18,
+   "at": [
+    1246.5,
+    473.5
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 14068,
+   "a": "France",
+   "lostA": 2,
+   "b": "Soviet Union",
+   "lostB": 7,
+   "at": [
+    1246.5,
+    473.5
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 14184,
+   "a": "France",
+   "lostA": 10,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "at": [
+    1246.5,
+    473.5
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 14255,
+   "a": "France",
+   "lostA": 1,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "at": [
+    1269.5,
+    530.5
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 14537,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Soviet Union",
+   "lostB": 13,
+   "at": [
+    1309.9375,
+    443.0625
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 15014,
+   "a": "Soviet Union",
+   "lostA": 2,
+   "b": "Sweden",
+   "lostB": 0,
+   "at": [
+    1006.5450921867267,
+    380.4549078132732
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 15025,
+   "a": "Soviet Union",
+   "lostA": 1,
+   "b": "Sweden",
+   "lostB": 0,
+   "at": [
+    1006.8535939560784,
+    380.14640604392156
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 15272,
+   "a": "France",
+   "lostA": 2,
+   "b": "Soviet Union",
+   "lostB": 3,
+   "at": [
+    932.7156526994249,
+    413.2843473005751
+   ]
+  },
+  {
+   "year": 2,
+   "tick": 16369,
+   "a": "United Kingdom",
+   "lostA": 11,
+   "b": "Soviet Union",
+   "lostB": 14,
+   "at": [
+    1202.1760035772331,
+    407.1760035772332
+   ]
+  },
+  {
+   "year": 3,
+   "tick": 18561,
+   "a": "China",
+   "lostA": 4,
+   "b": "Sweden",
+   "lostB": 0,
+   "at": [
+    1704.9375,
+    445.0625
+   ]
+  },
+  {
+   "year": 3,
+   "tick": 20962,
+   "a": "Germany",
+   "lostA": 2,
+   "b": "United Kingdom",
+   "lostB": 6,
+   "at": [
+    1142.7875097242397,
+    242.5
+   ]
+  },
+  {
+   "year": 3,
+   "tick": 21712,
+   "a": "Germany",
+   "lostA": 5,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "at": [
+    1213.9375,
+    387.0625
+   ]
+  },
+  {
+   "year": 3,
+   "tick": 22879,
+   "a": "Italy",
+   "lostA": 1,
+   "b": "United Kingdom",
+   "lostB": 4,
+   "at": [
+    1019.2807076699246,
+    383.5
+   ]
+  },
+  {
+   "year": 4,
+   "tick": 28614,
+   "a": "Ireland",
+   "lostA": 12,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "at": [
+    1005.5,
+    260.5
+   ]
+  },
+  {
+   "year": 4,
+   "tick": 28629,
+   "a": "United States",
+   "lostA": 0,
+   "b": "France",
+   "lostB": 9,
+   "at": [
+    1482.3631765725186,
+    540.5
+   ]
+  },
+  {
+   "year": 4,
+   "tick": 29105,
+   "a": "United States",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 8,
+   "at": [
+    1006.5,
+    216.5
+   ]
+  },
+  {
+   "year": 4,
+   "tick": 29421,
+   "a": "Germany",
+   "lostA": 12,
+   "b": "Denmark",
+   "lostB": 0,
+   "at": [
+    1014.5,
+    288.5
+   ]
+  },
+  {
+   "year": 4,
+   "tick": 30124,
+   "a": "Japan",
+   "lostA": 8,
+   "b": "Denmark",
+   "lostB": 2,
+   "at": [
+    1767.0625,
+    396.0625
+   ]
+  },
+  {
+   "year": 4,
+   "tick": 31109,
+   "a": "United Kingdom",
+   "lostA": 10,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1009.0298230475139,
+    289.97017695248616
+   ]
+  },
+  {
+   "year": 4,
+   "tick": 32169,
+   "a": "United Kingdom",
+   "lostA": 11,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1009.0659778849639,
+    289.9340221150361
+   ]
+  },
+  {
+   "year": 4,
+   "tick": 33553,
+   "a": "United Kingdom",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1018.1875,
+    280.9375
+   ]
+  },
+  {
+   "year": 4,
+   "tick": 33818,
+   "a": "Argentina",
+   "lostA": 19,
+   "b": "Brazil",
+   "lostB": 4,
+   "at": [
+    616.7681751753065,
+    534.7947669975347
+   ]
+  },
+  {
+   "year": 4,
+   "tick": 33829,
+   "a": "Argentina",
+   "lostA": 0,
+   "b": "Brazil",
+   "lostB": 4,
+   "at": [
+    617.1130197943455,
+    534.1846572869272
+   ]
+  },
+  {
+   "year": 5,
+   "tick": 35373,
+   "a": "United Kingdom",
+   "lostA": 3,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1000.5,
+    284.5
+   ]
+  },
+  {
+   "year": 5,
+   "tick": 35761,
+   "a": "United Kingdom",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1018.1875,
+    280.9375
+   ]
+  },
+  {
+   "year": 5,
+   "tick": 37125,
+   "a": "Australia",
+   "lostA": 0,
+   "b": "Denmark",
+   "lostB": 6,
+   "at": [
+    727.5643060663582,
+    170.51957141150032
+   ]
+  },
+  {
+   "year": 5,
+   "tick": 37969,
+   "a": "United Kingdom",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1018.1875,
+    280.9375
+   ]
+  },
+  {
+   "year": 5,
+   "tick": 39226,
+   "a": "United States",
+   "lostA": 10,
+   "b": "Netherlands",
+   "lostB": 0,
+   "at": [
+    1720.1744783654976,
+    575.5
+   ]
+  },
+  {
+   "year": 5,
+   "tick": 39393,
+   "a": "United States",
+   "lostA": 2,
+   "b": "Netherlands",
+   "lostB": 0,
+   "at": [
+    1720.1744783654976,
+    575.5
+   ]
+  },
+  {
+   "year": 5,
+   "tick": 40369,
+   "a": "Netherlands",
+   "lostA": 0,
+   "b": "Canada",
+   "lostB": 12,
+   "at": [
+    673.5,
+    536.5
+   ]
+  },
+  {
+   "year": 5,
+   "tick": 40620,
+   "a": "Netherlands",
+   "lostA": 5,
+   "b": "Mexico",
+   "lostB": 8,
+   "at": [
+    508.5,
+    482.5
+   ]
+  },
+  {
+   "year": 5,
+   "tick": 40773,
+   "a": "Netherlands",
+   "lostA": 3,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    710.5,
+    551.4609887121819
+   ]
+  },
+  {
+   "year": 5,
+   "tick": 43244,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 12,
+   "at": [
+    1030.5,
+    275.5
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 43977,
+   "a": "United Kingdom",
+   "lostA": 7,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    702.4616409584182,
+    549.5383590415818
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 44001,
+   "a": "United States",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 5,
+   "at": [
+    693.5,
+    557.5
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 46640,
+   "a": "Japan",
+   "lostA": 6,
+   "b": "Norway",
+   "lostB": 3,
+   "at": [
+    1032.5,
+    276.4036674364281
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 46947,
+   "a": "United Kingdom",
+   "lostA": 12,
+   "b": "Japan",
+   "lostB": 0,
+   "at": [
+    1279.5,
+    537.5
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 46997,
+   "a": "Australia",
+   "lostA": 7,
+   "b": "United Kingdom",
+   "lostB": 4,
+   "at": [
+    975.8856182949812,
+    378.5
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 47027,
+   "a": "United Kingdom",
+   "lostA": 3,
+   "b": "Norway",
+   "lostB": 2,
+   "at": [
+    975.0210738471031,
+    378.5
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 47371,
+   "a": "Australia",
+   "lostA": 1,
+   "b": "United Kingdom",
+   "lostB": 1,
+   "at": [
+    946.9338211961175,
+    437.93382119611744
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 47442,
+   "a": "Sweden",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 2,
+   "at": [
+    1704.9375,
+    357.9375
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 48261,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Norway",
+   "lostB": 3,
+   "at": [
+    1279.5,
+    536.8838399570977
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 49813,
+   "a": "United Kingdom",
+   "lostA": 8,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1008.9998987856297,
+    379.5
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 49837,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 4,
+   "at": [
+    994.5,
+    382.5
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 51997,
+   "a": "United Kingdom",
+   "lostA": 10,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1008.9998987856297,
+    379.5
+   ]
+  },
+  {
+   "year": 6,
+   "tick": 52021,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "United Kingdom",
+   "lostB": 2,
+   "at": [
+    994.5,
+    382.5
+   ]
+  },
+  {
+   "year": 7,
+   "tick": 52711,
+   "a": "Japan",
+   "lostA": 11,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "at": [
+    1757.5,
+    600.390038091968
+   ]
+  },
+  {
+   "year": 7,
+   "tick": 53852,
+   "a": "Switzerland",
+   "lostA": 9,
+   "b": "Sweden",
+   "lostB": 0,
+   "at": [
+    1005.6649796120694,
+    287.3350203879307
+   ]
+  },
+  {
+   "year": 7,
+   "tick": 54353,
+   "a": "Switzerland",
+   "lostA": 3,
+   "b": "Sweden",
+   "lostB": 0,
+   "at": [
+    1005.8154583202391,
+    287.1845416797609
+   ]
+  },
+  {
+   "year": 7,
+   "tick": 57088,
+   "a": "Switzerland",
+   "lostA": 12,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "at": [
+    1065.2990462307262,
+    333.70095376927395
+   ]
+  },
+  {
+   "year": 7,
+   "tick": 60930,
+   "a": "South Africa",
+   "lostA": 0,
+   "b": "Philippines",
+   "lostB": 12,
+   "at": [
+    1733.5,
+    547.5285656896182
+   ]
+  },
+  {
+   "year": 8,
+   "tick": 62020,
+   "a": "Italy",
+   "lostA": 8,
+   "b": "Japan",
+   "lostB": 4,
+   "at": [
+    1345.3418397717278,
+    440.3418397717278
+   ]
+  },
+  {
+   "year": 8,
+   "tick": 63554,
+   "a": "Germany",
+   "lostA": 4,
+   "b": "South Africa",
+   "lostB": 8,
+   "at": [
+    1729.8770925575893,
+    538.2609815964923
+   ]
+  },
+  {
+   "year": 8,
+   "tick": 64468,
+   "a": "Brazil",
+   "lostA": 8,
+   "b": "Argentina",
+   "lostB": 0,
+   "at": [
+    694.5,
+    803.5
+   ]
+  },
+  {
+   "year": 8,
+   "tick": 65168,
+   "a": "Sweden",
+   "lostA": 0,
+   "b": "South Africa",
+   "lostB": 12,
+   "at": [
+    1187.5,
+    329.5592163389585
+   ]
+  },
+  {
+   "year": 8,
+   "tick": 65387,
+   "a": "Peru",
+   "lostA": 0,
+   "b": "Colombia",
+   "lostB": 5,
+   "at": [
+    574.5,
+    644.5
+   ]
+  },
+  {
+   "year": 8,
+   "tick": 65480,
+   "a": "Peru",
+   "lostA": 0,
+   "b": "Colombia",
+   "lostB": 3,
+   "at": [
+    574.5,
+    644.5
+   ]
+  },
+  {
+   "year": 8,
+   "tick": 70005,
+   "a": "France",
+   "lostA": 12,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "at": [
+    1042.6544039058726,
+    377.3455960941275
+   ]
+  },
+  {
+   "year": 9,
+   "tick": 70859,
+   "a": "Italy",
+   "lostA": 8,
+   "b": "Sweden",
+   "lostB": 4,
+   "at": [
+    1193.5,
+    413.5
+   ]
+  },
+  {
+   "year": 9,
+   "tick": 72034,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Italy",
+   "lostB": 6,
+   "at": [
+    1207.5,
+    413.5
+   ]
+  },
+  {
+   "year": 9,
+   "tick": 74316,
+   "a": "Japan",
+   "lostA": 12,
+   "b": "France",
+   "lostB": 0,
+   "at": [
+    994.2143145680303,
+    277.78568543196974
+   ]
+  },
+  {
+   "year": 9,
+   "tick": 76331,
+   "a": "Japan",
+   "lostA": 11,
+   "b": "France",
+   "lostB": 0,
+   "at": [
+    994.2143145680303,
+    277.78568543196974
+   ]
+  },
+  {
+   "year": 9,
+   "tick": 76558,
+   "a": "Switzerland",
+   "lostA": 12,
+   "b": "Sweden",
+   "lostB": 0,
+   "at": [
+    1213.9375,
+    387.0625
+   ]
+  },
+  {
+   "year": 9,
+   "tick": 76705,
+   "a": "Sweden",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 1,
+   "at": [
+    1207.5,
+    413.5
+   ]
+  },
+  {
+   "year": 9,
+   "tick": 76705,
+   "a": "Soviet Union",
+   "lostA": 1,
+   "b": "Japan",
+   "lostB": 3,
+   "at": [
+    1269.5,
+    530.5
+   ]
+  },
+  {
+   "year": 9,
+   "tick": 76983,
+   "a": "Soviet Union",
+   "lostA": 1,
+   "b": "Japan",
+   "lostB": 1,
+   "at": [
+    1310.0204877247909,
+    443.1270460081708
+   ]
+  },
+  {
+   "year": 10,
+   "tick": 83531,
+   "a": "Peru",
+   "lostA": 3,
+   "b": "Colombia",
+   "lostB": 7,
+   "at": [
+    574.5,
+    644.5
+   ]
+  },
+  {
+   "year": 10,
+   "tick": 83624,
+   "a": "Peru",
+   "lostA": 1,
+   "b": "Colombia",
+   "lostB": 1,
+   "at": [
+    574.5,
+    644.5
+   ]
+  },
+  {
+   "year": 10,
+   "tick": 84012,
+   "a": "Brazil",
+   "lostA": 7,
+   "b": "Chile",
+   "lostB": 0,
+   "at": [
+    622.5,
+    734.5
+   ]
+  },
+  {
+   "year": 10,
+   "tick": 84165,
+   "a": "Brazil",
+   "lostA": 1,
+   "b": "Chile",
+   "lostB": 0,
+   "at": [
+    584.5,
+    666.5
+   ]
+  },
+  {
+   "year": 10,
+   "tick": 84653,
+   "a": "Germany",
+   "lostA": 6,
+   "b": "France",
+   "lostB": 8,
+   "at": [
+    1078.3434260296156,
+    574.9070923229997
+   ]
+  },
+  {
+   "year": 10,
+   "tick": 84905,
+   "a": "Chile",
+   "lostA": 1,
+   "b": "Argentina",
+   "lostB": 8,
+   "at": [
+    609.1797683562024,
+    849.8202316437976
+   ]
+  },
+  {
+   "year": 10,
+   "tick": 85035,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "France",
+   "lostB": 12,
+   "at": [
+    1078.5,
+    574.5
+   ]
+  },
+  {
+   "year": 10,
+   "tick": 85221,
+   "a": "Chile",
+   "lostA": 6,
+   "b": "Argentina",
+   "lostB": 13,
+   "at": [
+    640.5,
+    878.5
+   ]
+  },
+  {
+   "year": 10,
+   "tick": 85239,
+   "a": "Chile",
+   "lostA": 16,
+   "b": "Argentina",
+   "lostB": 0,
+   "at": [
+    640.5,
+    878.5
+   ]
+  },
+  {
+   "year": 10,
+   "tick": 85397,
+   "a": "Chile",
+   "lostA": 1,
+   "b": "Argentina",
+   "lostB": 0,
+   "at": [
+    609.5,
+    848.5
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 88302,
+   "a": "Sweden",
+   "lostA": 16,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1675.0625,
+    617.9375
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 88413,
+   "a": "Germany",
+   "lostA": 10,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "at": [
+    1023.4087873170192,
+    583.4087873170192
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 88597,
+   "a": "Sweden",
+   "lostA": 4,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1733.5,
+    548.5
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 88810,
+   "a": "Soviet Union",
+   "lostA": 6,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1707.5,
+    466.5
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 89121,
+   "a": "Japan",
+   "lostA": 0,
+   "b": "Soviet Union",
+   "lostB": 12,
+   "at": [
+    1819.5,
+    386.5
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 90461,
+   "a": "Australia",
+   "lostA": 10,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "at": [
+    932.6757503662011,
+    413.32424963379896
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 91469,
+   "a": "Soviet Union",
+   "lostA": 0,
+   "b": "Australia",
+   "lostB": 11,
+   "at": [
+    932.5,
+    413.5
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 92233,
+   "a": "Germany",
+   "lostA": 4,
+   "b": "Japan",
+   "lostB": 0,
+   "at": [
+    1043.5625,
+    560.3125
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 92286,
+   "a": "Germany",
+   "lostA": 2,
+   "b": "Japan",
+   "lostB": 0,
+   "at": [
+    1038.5,
+    561.5
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 93811,
+   "a": "United States",
+   "lostA": 60,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "at": [
+    932.5004979748666,
+    413.4995020251334
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 94378,
+   "a": "United States",
+   "lostA": 12,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "at": [
+    932.5000460866778,
+    413.5
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 94882,
+   "a": "United States",
+   "lostA": 12,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "at": [
+    932.3278392206798,
+    413.67216077932017
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 95355,
+   "a": "Japan",
+   "lostA": 7,
+   "b": "Germany",
+   "lostB": 6,
+   "at": [
+    1006.5,
+    275.8532145630315
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 95423,
+   "a": "Japan",
+   "lostA": 1,
+   "b": "Germany",
+   "lostB": 1,
+   "at": [
+    1005.5,
+    260.5
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 95885,
+   "a": "Soviet Union",
+   "lostA": 9,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1701.5,
+    465.5762555346021
+   ]
+  },
+  {
+   "year": 11,
+   "tick": 96325,
+   "a": "Soviet Union",
+   "lostA": 3,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1712.404654602051,
+    450.59534539794896
+   ]
+  },
+  {
+   "year": 12,
+   "tick": 99558,
+   "a": "Italy",
+   "lostA": 11,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1099.5,
+    368.5
+   ]
+  },
+  {
+   "year": 12,
+   "tick": 101813,
+   "a": "Japan",
+   "lostA": 12,
+   "b": "France",
+   "lostB": 0,
+   "at": [
+    1107.8249608485821,
+    384.82496084858207
+   ]
+  },
+  {
+   "year": 13,
+   "tick": 107524,
+   "a": "Japan",
+   "lostA": 12,
+   "b": "France",
+   "lostB": 0,
+   "at": [
+    1107.8249608485821,
+    384.82496084858207
+   ]
+  },
+  {
+   "year": 13,
+   "tick": 113405,
+   "a": "Ireland",
+   "lostA": 56,
+   "b": "France",
+   "lostB": 15,
+   "at": [
+    997.4195965457268,
+    258.5
+   ]
+  },
+  {
+   "year": 13,
+   "tick": 113758,
+   "a": "Ireland",
+   "lostA": 0,
+   "b": "France",
+   "lostB": 64,
+   "at": [
+    997.4195965457268,
+    258.5
+   ]
+  },
+  {
+   "year": 14,
+   "tick": 113913,
+   "a": "Ireland",
+   "lostA": 0,
+   "b": "Germany",
+   "lostB": 1,
+   "at": [
+    984.5,
+    395.31828420458436
+   ]
+  },
+  {
+   "year": 14,
+   "tick": 117589,
+   "a": "Germany",
+   "lostA": 0,
+   "b": "Mexico",
+   "lostB": 12,
+   "at": [
+    1091.5,
+    227.5
+   ]
+  },
+  {
+   "year": 14,
+   "tick": 117693,
+   "a": "Germany",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1102.8375129861224,
+    381.8375129861225
+   ]
+  },
+  {
+   "year": 14,
+   "tick": 117829,
+   "a": "Germany",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1000.5,
+    284.5
+   ]
+  },
+  {
+   "year": 14,
+   "tick": 117854,
+   "a": "Germany",
+   "lostA": 11,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1029.2823486630523,
+    374.5
+   ]
+  },
+  {
+   "year": 14,
+   "tick": 117857,
+   "a": "Norway",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1051.9375,
+    263.8125
+   ]
+  },
+  {
+   "year": 14,
+   "tick": 117881,
+   "a": "Germany",
+   "lostA": 7,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1091.5,
+    227.5
+   ]
+  },
+  {
+   "year": 14,
+   "tick": 117905,
+   "a": "Germany",
+   "lostA": 1,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1096.5,
+    242.5
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 123361,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Germany",
+   "lostB": 8,
+   "at": [
+    1082.5,
+    252.5
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 124961,
+   "a": "Japan",
+   "lostA": 1,
+   "b": "British India",
+   "lostB": 0,
+   "at": [
+    1463.088504858064,
+    551.5
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 125126,
+   "a": "Argentina",
+   "lostA": 1,
+   "b": "Peru",
+   "lostB": 4,
+   "at": [
+    574.1798267072693,
+    644.5
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 125968,
+   "a": "Colombia",
+   "lostA": 7,
+   "b": "Venezuela",
+   "lostB": 4,
+   "at": [
+    637.5,
+    536.5
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 125995,
+   "a": "Japan",
+   "lostA": 6,
+   "b": "Siam",
+   "lostB": 0,
+   "at": [
+    1702.4982810880433,
+    456.5017189119566
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 126122,
+   "a": "Colombia",
+   "lostA": 1,
+   "b": "Venezuela",
+   "lostB": 1,
+   "at": [
+    616.9992561275154,
+    532.0007438724846
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 126251,
+   "a": "Venezuela",
+   "lostA": 3,
+   "b": "Argentina",
+   "lostB": 0,
+   "at": [
+    616.5,
+    535.5
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 126317,
+   "a": "Siam",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 6,
+   "at": [
+    1702.5,
+    456.5
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 129703,
+   "a": "United States",
+   "lostA": 37,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "at": [
+    932.4606305433775,
+    413.5393694566225
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 129805,
+   "a": "United Kingdom",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 6,
+   "at": [
+    1158.4269759079953,
+    372.4269759079952
+   ]
+  },
+  {
+   "year": 15,
+   "tick": 129992,
+   "a": "United States",
+   "lostA": 5,
+   "b": "Soviet Union",
+   "lostB": 0,
+   "at": [
+    932.050690952768,
+    413.949309047232
+   ]
+  },
+  {
+   "year": 16,
+   "tick": 131613,
+   "a": "Soviet Union",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1209.1875,
+    422.9375
+   ]
+  },
+  {
+   "year": 16,
+   "tick": 131813,
+   "a": "Japan",
+   "lostA": 10,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1210.546382791684,
+    426.54638279168404
+   ]
+  },
+  {
+   "year": 16,
+   "tick": 131837,
+   "a": "Japan",
+   "lostA": 2,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1202.9185135032378,
+    407.91851350323776
+   ]
+  },
+  {
+   "year": 16,
+   "tick": 133301,
+   "a": "United Kingdom",
+   "lostA": 8,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1158.300537414258,
+    371.64056239424696
+   ]
+  },
+  {
+   "year": 16,
+   "tick": 134397,
+   "a": "British India",
+   "lostA": 6,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1552.0625,
+    481.9375
+   ]
+  },
+  {
+   "year": 16,
+   "tick": 134397,
+   "a": "British India",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1545.5,
+    468.5
+   ]
+  },
+  {
+   "year": 16,
+   "tick": 134421,
+   "a": "British India",
+   "lostA": 1,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1545.5,
+    468.5
+   ]
+  },
+  {
+   "year": 16,
+   "tick": 138517,
+   "a": "British India",
+   "lostA": 11,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1546.5,
+    480.61863120637986
+   ]
+  },
+  {
+   "year": 16,
+   "tick": 138541,
+   "a": "British India",
+   "lostA": 1,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1545.5,
+    468.5
+   ]
+  },
+  {
+   "year": 16,
+   "tick": 138886,
+   "a": "Romania",
+   "lostA": 0,
+   "b": "Japan",
+   "lostB": 0,
+   "at": [
+    1303.5,
+    582.5587682156093
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 146948,
+   "a": "United States",
+   "lostA": 1,
+   "b": "France",
+   "lostB": 0,
+   "at": [
+    645.4603046786939,
+    365.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 148026,
+   "a": "Brazil",
+   "lostA": 8,
+   "b": "Argentina",
+   "lostB": 0,
+   "at": [
+    695.5,
+    920.5
+   ]
+  },
+  {
+   "year": 17,
+   "tick": 148432,
+   "a": "Romania",
+   "lostA": 16,
+   "b": "United States",
+   "lostB": 3,
+   "at": [
+    1137.5,
+    408.5
+   ]
+  },
+  {
+   "year": 18,
+   "tick": 152917,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Sweden",
+   "lostB": 9,
+   "at": [
+    1137.5,
+    408.5
+   ]
+  },
+  {
+   "year": 18,
+   "tick": 156615,
+   "a": "Soviet Union",
+   "lostA": 8,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    82.5,
+    167.5
+   ]
+  },
+  {
+   "year": 19,
+   "tick": 158393,
+   "a": "Germany",
+   "lostA": 8,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1006.5,
+    216.5
+   ]
+  },
+  {
+   "year": 19,
+   "tick": 158577,
+   "a": "Germany",
+   "lostA": 35,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    995.5,
+    244.5
+   ]
+  },
+  {
+   "year": 19,
+   "tick": 160736,
+   "a": "Romania",
+   "lostA": 0,
+   "b": "Canada",
+   "lostB": 11,
+   "at": [
+    1198.5,
+    378.5
+   ]
+  },
+  {
+   "year": 19,
+   "tick": 160881,
+   "a": "Germany",
+   "lostA": 111,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1028.5,
+    275.5
+   ]
+  },
+  {
+   "year": 19,
+   "tick": 161009,
+   "a": "Germany",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1068.5,
+    376.5
+   ]
+  },
+  {
+   "year": 19,
+   "tick": 161037,
+   "a": "Germany",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1110.5,
+    373.5
+   ]
+  },
+  {
+   "year": 19,
+   "tick": 161051,
+   "a": "Romania",
+   "lostA": 8,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1213.0443329558589,
+    386.0443329558588
+   ]
+  },
+  {
+   "year": 19,
+   "tick": 163215,
+   "a": "Germany",
+   "lostA": 8,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1006.5,
+    216.5
+   ]
+  },
+  {
+   "year": 19,
+   "tick": 165961,
+   "a": "Japan",
+   "lostA": 8,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1767.0625,
+    396.0625
+   ]
+  },
+  {
+   "year": 20,
+   "tick": 173654,
+   "a": "France",
+   "lostA": 0,
+   "b": "British India",
+   "lostB": 7,
+   "at": [
+    1405.5,
+    453.5
+   ]
+  },
+  {
+   "year": 20,
+   "tick": 174813,
+   "a": "Japan",
+   "lostA": 8,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1824.5,
+    345.5
+   ]
+  },
+  {
+   "year": 21,
+   "tick": 176456,
+   "a": "France",
+   "lostA": 8,
+   "b": "Australia",
+   "lostB": 2,
+   "at": [
+    1897.5,
+    761.5
+   ]
+  },
+  {
+   "year": 21,
+   "tick": 179641,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Soviet Union",
+   "lostB": 8,
+   "at": [
+    1774.9375,
+    336.9375
+   ]
+  },
+  {
+   "year": 21,
+   "tick": 179765,
+   "a": "Argentina",
+   "lostA": 1,
+   "b": "Netherlands",
+   "lostB": 8,
+   "at": [
+    619.5,
+    527.2877400455039
+   ]
+  },
+  {
+   "year": 21,
+   "tick": 182885,
+   "a": "Philippines",
+   "lostA": 12,
+   "b": "Japan",
+   "lostB": 0,
+   "at": [
+    1720.5,
+    537.0075318520207
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 187503,
+   "a": "China",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1644.0625,
+    473.9375
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 189897,
+   "a": "China",
+   "lostA": 8,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1698.2989270796447,
+    456.70107292035516
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 191449,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Soviet Union",
+   "lostB": 12,
+   "at": [
+    1748.5,
+    401.1656471384668
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 191469,
+   "a": "Soviet Union",
+   "lostA": 8,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1750.5,
+    358.5
+   ]
+  },
+  {
+   "year": 22,
+   "tick": 191748,
+   "a": "Australia",
+   "lostA": 0,
+   "b": "Sweden",
+   "lostB": 12,
+   "at": [
+    1221.7290323220716,
+    379.27096767792847
+   ]
+  },
+  {
+   "year": 23,
+   "tick": 194168,
+   "a": "Australia",
+   "lostA": 0,
+   "b": "Sweden",
+   "lostB": 3,
+   "at": [
+    1221.9814246529468,
+    379.01857534705334
+   ]
+  },
+  {
+   "year": 23,
+   "tick": 196433,
+   "a": "Argentina",
+   "lostA": 4,
+   "b": "Brazil",
+   "lostB": 8,
+   "at": [
+    760.5850914304939,
+    737.0156366396733
+   ]
+  },
+  {
+   "year": 23,
+   "tick": 198611,
+   "a": "Japan",
+   "lostA": 29,
+   "b": "Australia",
+   "lostB": 0,
+   "at": [
+    1631.5,
+    631.5
+   ]
+  },
+  {
+   "year": 23,
+   "tick": 200361,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Poland",
+   "lostB": 10,
+   "at": [
+    1636.5,
+    501.5
+   ]
+  },
+  {
+   "year": 23,
+   "tick": 200385,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Poland",
+   "lostB": 2,
+   "at": [
+    1636.5,
+    501.5
+   ]
+  },
+  {
+   "year": 24,
+   "tick": 208895,
+   "a": "Japan",
+   "lostA": 6,
+   "b": "Dutch East Indies",
+   "lostB": 7,
+   "at": [
+    1597.0625,
+    524.0625
+   ]
+  },
+  {
+   "year": 24,
+   "tick": 209073,
+   "a": "Japan",
+   "lostA": 2,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1616.486421950345,
+    577.486421950345
+   ]
+  },
+  {
+   "year": 25,
+   "tick": 211888,
+   "a": "Australia",
+   "lostA": 6,
+   "b": "Germany",
+   "lostB": 2,
+   "at": [
+    1675.0625,
+    617.9375
+   ]
+  },
+  {
+   "year": 25,
+   "tick": 213069,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Soviet Union",
+   "lostB": 11,
+   "at": [
+    1937.5677696091639,
+    275.43223039083614
+   ]
+  },
+  {
+   "year": 26,
+   "tick": 224061,
+   "a": "France",
+   "lostA": 14,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1743.0625,
+    386.1875
+   ]
+  },
+  {
+   "year": 26,
+   "tick": 224077,
+   "a": "Germany",
+   "lostA": 12,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1744.5,
+    374.5
+   ]
+  },
+  {
+   "year": 26,
+   "tick": 224515,
+   "a": "United Kingdom",
+   "lostA": 14,
+   "b": "United States",
+   "lostB": 3,
+   "at": [
+    1752.5,
+    397.5
+   ]
+  },
+  {
+   "year": 26,
+   "tick": 224674,
+   "a": "United Kingdom",
+   "lostA": 2,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1762.2108802531545,
+    383.7891197468455
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 230845,
+   "a": "Germany",
+   "lostA": 10,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1743.6161789702817,
+    397.5
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 230869,
+   "a": "Germany",
+   "lostA": 2,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1761.5,
+    385.6046459903612
+   ]
+  },
+  {
+   "year": 27,
+   "tick": 234141,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Soviet Union",
+   "lostB": 1,
+   "at": [
+    1749.9375,
+    361.9375
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 236745,
+   "a": "Germany",
+   "lostA": 10,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1168.526080211622,
+    816.5
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 236765,
+   "a": "Germany",
+   "lostA": 1,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1182.5,
+    792.5
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 236807,
+   "a": "United States",
+   "lostA": 1,
+   "b": "Italy",
+   "lostB": 7,
+   "at": [
+    1248.6467158679347,
+    780.5
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 236900,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Germany",
+   "lostB": 8,
+   "at": [
+    1670.8592392638207,
+    466.680357581125
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 236904,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Germany",
+   "lostB": 2,
+   "at": [
+    1075.9539971805316,
+    730.9539971805316
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 236955,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Italy",
+   "lostB": 1,
+   "at": [
+    1206.0831650082066,
+    779.0831650082067
+   ]
+  },
+  {
+   "year": 28,
+   "tick": 242691,
+   "a": "Japan",
+   "lostA": 11,
+   "b": "United Kingdom",
+   "lostB": 0,
+   "at": [
+    1221.5,
+    408.5
+   ]
+  },
+  {
+   "year": 30,
+   "tick": 257624,
+   "a": "United States",
+   "lostA": 0,
+   "b": "Italy",
+   "lostB": 8,
+   "at": [
+    1356.981973315209,
+    710.018026684791
+   ]
+  },
+  {
+   "year": 30,
+   "tick": 261181,
+   "a": "Romania",
+   "lostA": 13,
+   "b": "United States",
+   "lostB": 0,
+   "at": [
+    1176.5,
+    367.5
+   ]
+  }
+ ]
+}

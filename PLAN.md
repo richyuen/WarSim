@@ -67,6 +67,42 @@ Found by `npm run check:review` before critic run 15 (2026-10-26; ADR-711, ADR-7
   2 before ADR-711 (4009, 4020) (`tools/diag/nukePolandGates.ts … summary`). AT: on 4001–4020, such bursts 0 of 20;
   Poland's strikes before its bomber is gone not fewer than 15; `nukePoland1938` green; the gate green.
 
+Run 15's (report of 2026-10-26 on `7739a78f`, `critic/CRITIC_REPORT.md`; R14-B1's hollow divisions fixed, 72.4 → 0.4 a
+world; performance 5 → 6): R15-B1 and R15-B2 are PLAN 7.128 and 7.129; the dimensions under the bar, beyond them, are
+7.130–7.133 (naval's panel is 7.126). A task each, split when taken up. Unseen seeds: 1101 on, ten a task, none reused,
+none a seed the critic has run (`critic/c*_seed*`):
+
+- [ ] 7.128 R15-B1: the land war got thinner. Same 48 seeds `311988d` → HEAD: engaged land formations a day in year 1
+  45.05 → 40.01 (lower on 35 of 48), years 2–30 5.11 → 4.35, per war 0.732 → 0.636; checkpoints (y10/y20, 7 days) with
+  nobody in contact 4 → 17 of 96; 7019's year 20, 422 land formations at war, 0 in contact on 6 of 7 samples
+  (`critic/c15_cmp_all.txt`, `c15_cmp_checkpoints.json`, `c15_y2_7019_y20.json`). AT: on 10 unseen seeds × 30 years,
+  `311988d`'s rules and HEAD's read on the same seeds: engaged a day in year 1 at least 0.98 × `311988d`'s; years 2–30
+  at least 1.15 × HEAD's; checkpoints with nobody in contact not above `311988d`'s count; land formations under 500 men
+  at year 20 at most 2 a world; a unit test, red without; the gate green.
+- [ ] 7.129 R15-B2: the 5.5 ms budget (ADR-709) fails late. Pinned and alone, 6421's year 28 7.88–7.98 ms (operational
+  AI 5.3–5.4), years 29 and 30 7.14 and 5.89; 1129's year 21 6.39–6.54 ms, year 20 5.77 (`critic/c15_perf_*`; saves
+  `critic/c15_seed6421_y27.bin`, `c15_seed1129_y20.bin`). AT: pinned and alone, 6421's year 28 and 1129's year 21 at
+  most 5.5 ms a tick, from those saves; the worst year of 10 unseen seeds × 30 years at most 5.5 ms; the gate green.
+- [ ] 7.130 Emergent dynamics 6: the top five stand still. Beyond 7.128's contact: the longest run of years with the same
+  top five nations 19 in 56 worlds × 30 years (`critic/scripts/c15_cmp.py`, `stasisMax`; 21 on run 14); the least
+  land moved in a world's last five years 25.2 %. AT: on 10 unseen seeds × 30 years, read as the critic's script
+  reads it against HEAD on the same seeds: the longest stasis at most 12 years, the mean not above HEAD's; the least
+  land moved in the last five years not below 20 %; a unit test, red without; the gate green.
+- [ ] 7.131 Performance 6: a late year at Max in the page. Beyond 7.129's tick: 6421's year 28 is 81.5 s at Max in the
+  page (`critic/c15_l_6421.json`), past ADR-698's 45–60 s a late year. AT: in the page from `critic/c15_seed6421_y27.bin`,
+  year 28 at Max at most 60 s, alone, two reads; no stall over 500 ms; 4877's late years at Max not above run 15's 112 s;
+  the gate green.
+- [ ] 7.132 Naval 7: a sea battle seen close. A sea battle at 15–150 m/px is a few small hulls far apart (3613's
+  Spanish cruiser squadron against a British transport group of 300, `critic/shots/c15e_3613_sea_01_row_live_1.png`);
+  the late sea war is a fifth of year 1's (ADR-706 a: no rule for it). AT: on that case and 4 more sea battles from the
+  history's rows, the row's press ends with ship elements of both sides on the screen, the nearest enemy hulls within
+  a third of the view's width, each hull at least 12 px long; `seaBattleSeen1938` and `seaRow1938` green; the gate green.
+- [ ] 7.133 Aircraft 7: an empty sky late. At 6421's year 20, 2 sorties aloft in the whole world on the sampled hour;
+  late air battles 181 a world-year, unchanged (ADR-707 a: no rule for reach) (`critic/c15_u_6421.json`,
+  `critic/shots/c15u_6421_f0_0250m.png`). AT: on 10 unseen seeds × 20 years against HEAD on the same seeds, mean sorties
+  aloft a world-hour in years 2–20 at least 1.5 × HEAD's, year 1 not below 0.9 ×; a unit test, red without; the gate
+  green.
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
