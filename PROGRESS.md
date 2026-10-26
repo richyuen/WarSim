@@ -23858,3 +23858,19 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a strike in `nukePoland1938`'s set-up can be in another war of Poland's (4016: the Soviet Union's); a
   probe of the German war's places never shows it. Weigh each of the striker's wars at the decision hour.
 - **Next:** PLAN 7.128 while ADR-715 waits.
+
+## 2026-10-26 — PLAN 7.128 (R15-B1): year 1's fall is ADR-701's fold; split into 7.128a and 7.128b
+
+- **Start:** gate green on `3d7bb72b`; critic not due; ADR-715 waits on the user.
+- **Bisect** (`tools/diag/contactYears.ts`, new: counted as the critic counts, hour 12 daily, land = not fleet, wing
+  or embarked; y10/y20 checkpoints of 7 days; under 500 men): year 1 on the critic's 8 seeds that fell most,
+  `311988d` (2 read: 3359 61.40, 4391 56.64; the critic's 61.08, 56.21) → the fold's `1cbc0bf3` 39.74 a day,
+  `d826e6fd` (with ADR-703's wait) 39.29, `8f6732e3` (before ADR-711) 39.29, HEAD 37.33. The fold is the whole fall.
+- **Why** (`tools/diag/hollowContact.ts`, new): before the fold 45–50 remnants a day stood in year 1, 16–18 % of them
+  in contact (the army 7 %); the rest of the army was in contact more too (3359: 53.5 of 824 → 42.4 of 856 a day).
+- **Fold variants** (scratch worktree, not committed; year 1 on 16 other critic seeds, `311988d`'s from run 14's files):
+  no fold 1.059 × `311988d`; a remnant within 50 km of an enemy land formation or on its own land kept 0.994; own land
+  kept 0.965; near an enemy kept 0.959; HEAD 0.948. A seed swings ±10 a day: 16 seeds read a mean to about ±4 %.
+- **Stopped:** the 20-year runs of those variants (under 500 men at year 20, 5 seeds) were stopped by Claude Code for
+  low memory (15 sims at once); not restarted, waits on the user.
+- **Filed:** 7.128a (year 1 back, the fold's cost; AT on 1111–1120 × 30), 7.128b (the late contact; 1121–1130).

@@ -75,6 +75,16 @@ none a seed the critic has run (`critic/c*_seed*`):
   `311988d`'s rules and HEAD's read on the same seeds: engaged a day in year 1 at least 0.98 × `311988d`'s; years 2–30
   at least 1.15 × HEAD's; checkpoints with nobody in contact not above `311988d`'s count; land formations under 500 men
   at year 20 at most 2 a world; a unit test, red without; the gate green.
+  - [ ] 7.128a Year 1 back: ADR-701's fold is the whole fall. Year 1 on the critic's 8 seeds that fell most
+    (`tools/diag/contactYears.ts`, counted as the critic counts): `311988d` (2 read: 61.40, 56.64, the critic's 61.08,
+    56.21) → the fold's commit `1cbc0bf3` 39.74 a day; ADR-703's wait and ADR-711's gap move nothing; HEAD 37.33. In
+    year 1 before the fold 45–50 remnants a day stood, 16–18 % of them in contact (the army 7 %), and the army's
+    others were in contact more too (`tools/diag/hollowContact.ts`, 3359: 53.5 of 824 → 42.4 of 856). AT: on seeds
+    1111–1120 × 30 years, `311988d`'s rules and the change's read on the same seeds: engaged a day in year 1 at least
+    0.98 × `311988d`'s; land formations under 500 men at year 20 at most 2 a world; years 2–30 not below HEAD's; a
+    unit test, red without; the gate green.
+  - [ ] 7.128b The late contact: years 2–30 at least 1.15 × HEAD's and checkpoints with nobody in contact not above
+    `311988d`'s count, on seeds 1121–1130, against 7.128a's rules.
 - [ ] 7.129 R15-B2: the 5.5 ms budget (ADR-709) fails late. Pinned and alone, 6421's year 28 7.88–7.98 ms (operational
   AI 5.3–5.4), years 29 and 30 7.14 and 5.89; 1129's year 21 6.39–6.54 ms, year 20 5.77 (`critic/c15_perf_*`; saves
   `critic/c15_seed6421_y27.bin`, `c15_seed1129_y20.bin`). AT: pinned and alone, 6421's year 28 and 1129's year 21 at
