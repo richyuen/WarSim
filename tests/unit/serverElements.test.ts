@@ -3,7 +3,7 @@ import type { Command } from '../../src/shared/commands';
 import { EVENT_STRIDE, EventKind } from '../../src/shared/events';
 import { SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
 import { tierOf, type FromWorker, type Snapshot, type Subscription } from '../../src/shared/protocol';
-import { NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
+import { keepWorldTemplates, NATIONS_1938, SIZE_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { elementIndex, slotCount } from '../../src/sim/systems/elements';
 import { SimServer } from '../../src/worker/server';
@@ -433,7 +433,8 @@ describe('an element\'s size in snapshots (PLAN 2.10b, ADR-80)', () => {
 });
 
 // PLAN 4.8e: the lane graph took 2 s in the tick of a game's first sail (the naval AI's, hour 48
-// of 1938). The worker builds it after it answers an init or a load, before any tick.
+// of 1938). The worker builds it after it answers an init or a load, before any tick. The world is
+// built without a template (PLAN 7.125: a template keeps the map's caches, built).
 describe('the lane graph built before the first tick (PLAN 4.8e)', () => {
   const later = (): Promise<void> => new Promise((done) => setTimeout(done, 0));
   it('after an init of 1938 and after a load; the toy world has none and asks for none', async () => {
@@ -441,7 +442,12 @@ describe('the lane graph built before the first tick (PLAN 4.8e)', () => {
     const server = new SimServer((m: FromWorker) => {
       if (m.type === 'reply') replies.push(m.reqId);
     });
-    server.handle({ type: 'init', reqId: 1, init: { scenario: '1938', seed: 99, assets: assets1938(SIZE_1938.w) } }, 0);
+    keepWorldTemplates(false);
+    try {
+      server.handle({ type: 'init', reqId: 1, init: { scenario: '1938', seed: 99, assets: assets1938(SIZE_1938.w) } }, 0);
+    } finally {
+      if (process.env['NOTEMPLATES'] === undefined) keepWorldTemplates(true);
+    }
     expect(replies).toEqual([1]);
     expect(server.sim!.world.lanes).toBeNull();
     await later();

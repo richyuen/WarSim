@@ -13,21 +13,36 @@
 function onBorder(ctl: Uint16Array, w: number, h: number, c: number): boolean {
   const a = ctl[c]!;
   if (a === 0) return false;
-  const differs = (k: number): boolean => {
-    const b = ctl[k]!;
-    return b !== 0 && b !== a;
-  };
   const x = c % w;
-  if (c >= w && differs(c - w)) return true;
-  if (c < (h - 1) * w && differs(c + w)) return true;
-  if (differs(x > 0 ? c - 1 : c + w - 1)) return true;
-  return differs(x < w - 1 ? c + 1 : c - w + 1);
+  let b: number;
+  if (c >= w && (b = ctl[c - w]!) !== 0 && b !== a) return true;
+  if (c < (h - 1) * w && (b = ctl[c + w]!) !== 0 && b !== a) return true;
+  if ((b = ctl[x > 0 ? c - 1 : c + w - 1]!) !== 0 && b !== a) return true;
+  return (b = ctl[x < w - 1 ? c + 1 : c - w + 1]!) !== 0 && b !== a;
 }
 
-/** The border of the map, by a scan of its cells. */
+/**
+ * The border of the map, by a scan of its cells, row by row (PLAN 7.125: the cell's test inline, no
+ * call per cell; 137 ms of a load's first tick, the first frontier's rebuild, on the 1938 map).
+ */
 export function scanBorder(ctl: Uint16Array, w: number, h: number): Uint32Array {
   const bits = new Uint32Array((w * h + 31) >>> 5);
-  for (let c = 0; c < w * h; c++) if (onBorder(ctl, w, h, c)) bits[c >>> 5]! |= 1 << (c & 31);
+  for (let y = 0, c = 0; y < h; y++) {
+    const up = y > 0;
+    const down = y < h - 1;
+    for (let x = 0; x < w; x++, c++) {
+      const a = ctl[c]!;
+      if (a === 0) continue;
+      let b: number;
+      if (
+        (up && (b = ctl[c - w]!) !== 0 && b !== a) ||
+        (down && (b = ctl[c + w]!) !== 0 && b !== a) ||
+        ((b = ctl[x > 0 ? c - 1 : c + w - 1]!) !== 0 && b !== a) ||
+        ((b = ctl[x < w - 1 ? c + 1 : c - w + 1]!) !== 0 && b !== a)
+      )
+        bits[c >>> 5]! |= 1 << (c & 31);
+    }
+  }
   return bits;
 }
 

@@ -19,7 +19,10 @@ const seed = Number(process.argv[2]);
 const src = process.argv[3]!;
 const hours = Number(process.argv[4] ?? 8760);
 const s = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SIZE_1938.w) });
-s.load(new Uint8Array(readFileSync(src)));
+const bytes = new Uint8Array(readFileSync(src));
+const l0 = performance.now();
+s.load(bytes);
+const loadMs = performance.now() - l0;
 if (process.argv[5] === 'warm') {
   s.step(240, (w) => {
     w.out.events.length = 0;
@@ -52,6 +55,6 @@ for (let h = 0; h < hours; h++) {
 const over = (x: number): number => ticks.filter((t) => t.ms > x).length;
 const mean = ticks.reduce((a, t) => a + t.ms, 0) / ticks.length;
 ticks.sort((a, b) => b.ms - a.ms);
-console.log(`seed ${seed} ${src}, ${hours} h: mean ${mean.toFixed(3)} ms, over 50 ms ${over(50)}, over 100 ms ${over(100)}, over 200 ms ${over(200)}`);
+console.log(`seed ${seed} ${src}, load ${loadMs.toFixed(0)} ms, ${hours} h: mean ${mean.toFixed(3)} ms, over 50 ms ${over(50)}, over 100 ms ${over(100)}, over 200 ms ${over(200)}`);
 for (const t of ticks.slice(0, 12)) console.log(`  ${t.ms.toFixed(1)} ms  day ${Math.floor((t.tick - t0) / 24)} hour ${t.tick % 24}  ${t.by}`);
 console.log('done:');

@@ -15523,3 +15523,24 @@ Of 7.116 (open in PLAN.md):
   Measured and changed (2026-10-26, `docs/evidence/7.124/`): refused searches not made again (no rule moved):
   1021's year 6 9.33 → 4.85 ms; the AT missed by three world-years of 250 (5.02–5.43 alone, the plans at large, the
   same on HEAD's code). BLOCKERS, ADR-708 a and ADR-709 (the user's decisions, 2026-10-26): the change committed; on the 5.5 ms budget the AT is met (worst 5.43). Seeds 1031–1040 AT; next unseen 1087.
+
+<!-- moved 2026-10-26 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.125 A load's first ticks (from 7.119, ADR-705 a, the user's decision): from 8167's year-18 save, the first tick
+  after the load reads 231 ms with the engine warmed (the operational AI 160 ms: what is not saved, its refusals and the
+  frontier, made again) and, in a new process, the invasion AI's first run 426 ms (a one-time build). Evidence:
+  `docs/evidence/7.119/measure.md`, `tools/diag/tickMax.ts`. Measure first what the two build. AT: from that save
+  (remade on HEAD), every tick of the first 10 days at most 200 ms in a new process (`tickMax.ts`, cold), alone; a change
+  meant to keep the rules keeps the pin; the gate green.

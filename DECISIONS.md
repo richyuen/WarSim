@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-710 · 2026-10-26 · accepted — A load's first ticks: the border scan inline, the map's static caches built with the world (PLAN 7.125)
+
+- **Context.** PLAN 7.125 (ADR-705 a): from seed 8167's year-18 save, in a new process, the first tick after the load
+  305 ms and day 2's 460 ms. AT: every tick of the first 10 days at most 200 ms (`tickMax.ts`, cold, alone); the pin
+  kept; the gate green.
+- **Measured** (`docs/evidence/7.125/measure.md`, `tools/diag/tickProf.ts`): day 2 is the lane graph's first build at
+  the first sail order (`seedDistances` 405 ms), once a process; day 0 is the border index's scan (137 ms, a closure
+  per cell) and the air zones' first build (25 ms).
+- **Decision.** The border scan's cell test inline (137 → 7 ms). The map's static caches (lane graph, air zones,
+  basins, ports' waters; `buildMapCaches`) built by `Sim.load`, on a world kept as a template, and by the worker
+  after its init's reply (ADR-288's `warmLanes`, which built the lanes alone): each is of the static layers alone,
+  so the game is the same (pin 3a90f72d kept; `mapCaches1938.test.ts`). Not in `Sim`'s constructor (tried: it held
+  the page's reply 0.45 s, against ADR-288).
+- **Consequences.** The AT met: two cold reads, worst tick 150–151 ms (the month's economy, day 4), day 0 133, day 2
+  33. A load in a new process takes ~0.5 s (44 → 495–501 ms), once; in the page the worker has built them after its
+  init. The unit tests pay it once a file (templates). A headless new game with no load still builds the lanes at its
+  first sail. The lane graph itself was not made faster: its paths' ties are of the heap's order, and the edges'
+  cells steer every sail.
+
 ### ADR-709 · 2026-10-26 · accepted (the user's decision) — The sim tick's budget: at most 5.5 ms a tick, any year (ADR-698's 5.0 raised)
 
 - **Context.** ADR-698 set at most 5.0 ms a tick in any year (headless, pinned, M, 1938). PLAN 7.117 and 7.124 read it

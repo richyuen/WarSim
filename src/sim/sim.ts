@@ -39,7 +39,7 @@ import { warSystem } from './systems/war';
 import { economySystem } from './systems/economy';
 import { createRandomWorld } from './randomWorld';
 import { createToyWorld, TOY_SYSTEMS } from './toy';
-import type { World } from './world';
+import { buildMapCaches, type World } from './world';
 
 /** The systems of the 1938 rules by name, in their order (several are closures without one). */
 const SYSTEM_NAMES_1938 = ['buffs', 'strategicAi', 'operationalAi', 'invasionAi', 'navalAi', 'airAi', 'production', 'research', 'nuclear', 'economicAi', 'economy', 'efficiency', 'supply', 'repatriation', 'movement', 'amphibious', 'air', 'retreat', 'combat', 'navalCombat', 'bombardment', 'seaControl', 'orgLoss', 'territory', 'capitals', 'war', 'alliances', 'puppets', 'revolts', 'collapse', 'stats'] as const;
@@ -194,5 +194,7 @@ export class Sim {
   /** Replaces the state with a save produced by a Sim of the same scenario and map size. */
   load(bytes: Uint8Array): void {
     loadBytes(this.world.parts(), bytes);
+    // A new process's first load builds the map's caches here, not in the ticks after (PLAN 7.125).
+    if (this.scenario !== 'toy') buildMapCaches(this.world);
   }
 }

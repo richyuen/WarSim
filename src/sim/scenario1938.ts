@@ -70,7 +70,7 @@ import { Table } from './core/table';
 import { RngStreams } from './core/rng';
 import { loadBytes, saveBytes } from './core/state';
 import { millerLat, Y_TOP } from './data/projection';
-import { freshGrid, World } from './world';
+import { buildMapCaches, freshGrid, World } from './world';
 
 export const NATIONS_1938 = nations1938.nations as unknown as NationDef[];
 export const TEMPLATES_LAND = templatesLand.templates as TemplateDef[];
@@ -501,6 +501,8 @@ export function createWorld1938(seed: number, assets: ScenarioAssets, size = SIZ
   if (!t) {
     const built = buildWorld1938(seed, assets, size);
     const b = built.world;
+    // The template keeps the map's caches for every world made from it (PLAN 7.125).
+    buildMapCaches(b);
     byMask.set(key, { bytes: saveBytes(b.parts()), islandCells: built.islandCells, ports: b.ports, airbases: b.airbases, capacities: b.parts().map((part) => (part instanceof Table ? part.capacity : -1)), nav: b.nav, navKey: b.navKey, sea: b.sea, lanes: b.lanes, portSea: b.portSea });
     return built.world;
   }

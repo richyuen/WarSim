@@ -53,13 +53,6 @@ Run 14's (report of 2026-10-25 on `311988d7`, `critic/CRITIC_REPORT.md`; R13-B1 
 aiNukes 7 → 8): R14-B1 and R14-B2 are PLAN 7.116 and 7.117; the dimensions under the bar, beyond them,
 are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a task, none reused:
 
-- [ ] 7.125 A load's first ticks (from 7.119, ADR-705 a, the user's decision): from 8167's year-18 save, the first tick
-  after the load reads 231 ms with the engine warmed (the operational AI 160 ms: what is not saved, its refusals and the
-  frontier, made again) and, in a new process, the invasion AI's first run 426 ms (a one-time build). Evidence:
-  `docs/evidence/7.119/measure.md`, `tools/diag/tickMax.ts`. Measure first what the two build. AT: from that save
-  (remade on HEAD), every tick of the first 10 days at most 200 ms in a new process (`tickMax.ts`, cold), alone; a change
-  meant to keep the rules keeps the pin; the gate green.
-
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -404,3 +397,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.120 Naval (closed not done, ADR-706 a, the user's decision; naval 7, needs 8): the late sea war is about a fifth of year 1's battles: on the same […]
 - [x] 7.121 Aircraft (closed not done, ADR-707 a, the user's decision; aircraft 7, needs 8): on the same 40 seeds air battles after year 1 123 → 183 a […]
 - [x] 7.124 The orders' refused searches (done under ADR-709's 5.5 ms, ADR-708 a, the user's decision; from 7.117, ADR-703 a, the user's decision): on the […]
+- [x] 7.125 A load's first ticks (from 7.119, ADR-705 a, the user's decision): from 8167's year-18 save, the first tick […]

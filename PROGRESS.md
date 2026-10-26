@@ -23768,3 +23768,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - ADR-708 a: the refused-search change committed from `docs/evidence/7.124/change.patch` (pin and hashes unchanged;
   unit case `refusedRegions1938.test.ts`). ADR-709: the tick budget 5.0 → 5.5 ms; 7.124's AT met on it (worst 5.43).
 - **Next:** PLAN 7.125.
+
+## 2026-10-26 — PLAN 7.125: a load's first ticks under 200 ms (ADR-710)
+
+- **Start:** gate green on `e84bbde2`; critic not due; no decision waiting.
+- **Measured** (`docs/evidence/7.125/measure.md`; new tools `tickProf.ts`, `simInitMs.ts`; `tickMax.ts` now prints the
+  load's ms): HEAD cold from 8167's year-18 save (remade on HEAD) day 2 460 ms (the lane graph's first build at the
+  first sail order, `seedDistances` 405), day 0 305 ms (the border index's scan 137, a closure per cell; air zones 25).
+- **Change** (pin kept): the border scan's cell test inline (137 → 7 ms); `buildMapCaches` builds the lane graph, air
+  zones, basins and ports' waters in `Sim.load`, on `createWorld1938`'s template, and in the worker's `warmLanes`
+  after an init's reply (PLAN 4.8e built the lanes alone there). Unit case `mapCaches1938.test.ts`, red on HEAD.
+- **AT** (two cold reads, alone): over 200 ms 0; worst 150–151 ms (day 4, the month's economy), day 0 133, day 2 33
+  (bar 200: met). A new process's load 44 → ~500 ms, once.
+- **Gotcha:** the gate's `serverElements.test.ts` holds ADR-288's order (the worker replies, then builds the lanes); a
+  build in `Sim`'s constructor broke it and would hold the page's reply 0.45 s. Its world is now built without a
+  template, since a template carries the caches.
+- **Gotcha:** under tsx a closure made in a hot loop is wrapped by `__name` each time (68 ms of 137 in a 2 M-cell
+  scan); a profile's `__name` or a stray native frame (`set TextDecoder`) beside it points at such a closure.
+- **Next:** PLAN 7.5 (the critic: due for the DONE condition, PROMPT step 2a).
+- Browser specs run by hand: `smoke.spec.ts`, `loadedWorld1938.spec.ts` (green).

@@ -71,7 +71,7 @@ import { Sim } from '../sim/sim';
 import { CONTACT_CELLS, cellDist, contactsOf, deployOf, elementFacing, elementIndex, slotCount, slotPlace, wrapDx } from '../sim/systems/elements';
 import { blockReach, SLOT_SPACING } from '../sim/core/pose';
 import { AssetStore } from './assets';
-import { airOf, Domain, laneOf, seaOf, TILE, type World } from '../sim/world';
+import { airOf, buildMapCaches, Domain, seaOf, TILE, type World } from '../sim/world';
 import { airHolders } from '../sim/systems/airSuperiority';
 import type { AirZones } from '../sim/nav/airZones';
 import { BufferPool } from './pool';
@@ -439,12 +439,13 @@ export class SimServer {
   /**
    * The lane graph built now (PLAN 4.8e): a game builds it at its first sail, 2 s in one tick of a
    * game under way (the naval AI's at hour 48 of 1938). After the reply, before any tick: the page
-   * has its game, paused, and a derived cache changes no state.
+   * has its game, paused, and a derived cache changes no state. With it the map's other static
+   * caches, the air zones' first among them (PLAN 7.125: 25 ms of a first tick; `buildMapCaches`).
    */
   private warmLanes(): void {
     setTimeout(() => {
       const world = this.sim?.world;
-      if (world && world.ports.length > 0 && world.seaSeeds.length > 0) laneOf(world);
+      if (world && world.ports.length > 0 && world.seaSeeds.length > 0) buildMapCaches(world);
     }, 0);
   }
 

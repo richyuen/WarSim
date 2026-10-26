@@ -685,8 +685,23 @@ export function laneOf(world: World): LaneGraph {
   return (world.lanes ??= buildLaneGraph(navOf(world).grid, seaOf(world), world.seaPassages, world.ports, world.portReach));
 }
 
+/**
+ * Builds the map's static sea and air caches now, not at their first use inside a tick (PLAN 7.125):
+ * the lane graph (0.43 s on the 1938 map, at the first sail order: a new process's load, day 2), the
+ * air zones, the basins, the ports' waters. Called by `Sim.load`, by the worker after it answers an
+ * init (PLAN 4.8e) and on a world kept as a template. Each is of the static layers alone, so its
+ * content does not depend on when it is built; one already built for the same map is kept
+ * (`checkNav`, the templates).
+ */
+export function buildMapCaches(world: World): void {
+  laneOf(world);
+  airOf(world);
+  basinOf(world);
+  portSeaOf(world);
+}
+
 const basins = new WeakMap<SeaZones, SeaBasins>();
-const airZones = new WeakMap<ProvinceGraph, WeakMap<SeaZones, AirZones>>();
+const airZones =new WeakMap<ProvinceGraph, WeakMap<SeaZones, AirZones>>();
 
 /** The world's air zones (`buildAirZones`, PLAN 5.1a): built once for its province graph and sea zones, cached by them. */
 export function airOf(world: World): AirZones {
