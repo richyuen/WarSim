@@ -15544,3 +15544,24 @@ Of 7.116 (open in PLAN.md):
   `docs/evidence/7.119/measure.md`, `tools/diag/tickMax.ts`. Measure first what the two build. AT: from that save
   (remade on HEAD), every tick of the first 10 days at most 200 ms in a new process (`tickMax.ts`, cold), alone; a change
   meant to keep the rules keeps the pin; the gate green.
+
+<!-- moved 2026-10-26 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.126 A fleet in a sea battle: its panel's way to the battle. The panel of a fleet in contact reads "In contact"
+  with no button to its fight (`enemyOf` in `worker/server.ts` pairs land formations alone; seed 5381, Germany on Poland
+  by God Mode, fleet 1199 on day 22, `tools/diag/noFight.ts`); a land formation's flies to its fight (PLAN 3.11b).
+  AT: on that case, the fleet's panel has the button, and its press ends with the fleet and the enemy fleet it fights
+  both on the screen (every ship element of the two in the view); of the fleets of the two nations in contact in days
+  21–35 there, none without the button (0 of N); `fightSeen1938` and `formationFight1938` green; the gate green.

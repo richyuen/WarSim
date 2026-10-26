@@ -18,6 +18,7 @@ import { t } from '../ui/i18n';
 import type { EditorState } from '../shared/editorState';
 import type { EconomyBreakdown, RefusedBase } from '../shared/protocol';
 import { RANK_LISTS, type RankList } from '../shared/ranking';
+import { SEA_PAIR_MARGIN } from './battleView';
 
 /** Order news kept on the screen at most (PLAN 4.9c). */
 const ORDER_NEWS_KEPT = 4;
@@ -98,7 +99,9 @@ export class Hud {
   /** To the fight of the formation whose panel is open (PLAN 3.11b): its block and the block of the enemy it faces, both in the view. Out of contact the camera stays. */
   toFight(): void {
     const f = this.formationInfo.value?.fight;
-    if (f) this.onShowBattle(f.x, f.y, f.span, true);
+    // A fleet's (PLAN 7.126): the box of its ships and the enemy fleet's, as a sea battle's row frames its pair.
+    if (f?.sea) this.onShowSeaBattle(f.x, f.y, [f.span[0] + 2 * SEA_PAIR_MARGIN, f.span[1] + 2 * SEA_PAIR_MARGIN]);
+    else if (f) this.onShowBattle(f.x, f.y, f.span, true);
   }
 
   /** The formation whose panel is open (0 = none; PLAN 2.14b), set by map clicks, and what the sim says of it. */

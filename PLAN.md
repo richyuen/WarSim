@@ -55,12 +55,6 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
 
 Found by `npm run check:review` before critic run 15 (2026-10-26; ADR-711, ADR-712):
 
-- [ ] 7.126 A fleet in a sea battle: its panel's way to the battle. The panel of a fleet in contact reads "In contact"
-  with no button to its fight (`enemyOf` in `worker/server.ts` pairs land formations alone; seed 5381, Germany on Poland
-  by God Mode, fleet 1199 on day 22, `tools/diag/noFight.ts`); a land formation's flies to its fight (PLAN 3.11b).
-  AT: on that case, the fleet's panel has the button, and its press ends with the fleet and the enemy fleet it fights
-  both on the screen (every ship element of the two in the view); of the fleets of the two nations in contact in days
-  21–35 there, none without the button (0 of N); `fightSeen1938` and `formationFight1938` green; the gate green.
 - [ ] 7.127 The critic's Poland: a first burst off Germany on fewer than `MASSED_MEN`. `nukePoland1938`'s set-up (10
   warheads and a strategic bomber group at Warsaw, Germany's war on Poland) on seeds 4001–4020: the first burst falls
   off Germany on fewer than 50,000 men (ADR-651 a's bar) on 4 (4009, 4010, 4012, 4016; nation 15 or 10, 17–21k men),
@@ -448,3 +442,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.121 Aircraft (closed not done, ADR-707 a, the user's decision; aircraft 7, needs 8): on the same 40 seeds air battles after year 1 123 → 183 a […]
 - [x] 7.124 The orders' refused searches (done under ADR-709's 5.5 ms, ADR-708 a, the user's decision; from 7.117, ADR-703 a, the user's decision): on the […]
 - [x] 7.125 A load's first ticks (from 7.119, ADR-705 a, the user's decision): from 8167's year-18 save, the first tick […]
+- [x] 7.126 A fleet in a sea battle: its panel's way to the battle. The panel of a fleet in contact reads "In contact" […]

@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-714 · 2026-10-26 · accepted — A fleet in a sea battle has a fight for its panel: the nearest enemy fleet of its battle, the two fleets' ships framed as a sea battle's row (PLAN 7.126; amends ADR-712)
+
+- **Context.** ADR-712: the panel of a fleet in a sea battle read "In contact" with no button to its fight (seed 5381,
+  Germany on Poland by God Mode, fleet 1199 on day 22): the worker's `enemyOf` pairs land formations alone
+  (`contactsOf`, ADR-337), and a fleet's only way to its battle was the history's row.
+- **Decision** (`worker/server.ts`). A fleet's fight (`seaEnemyOf`): of the fleets of its sea battle's record
+  (`world.seaBattles`) at war with it, the nearest (the lower id on a tie); 0 out of contact. Its middle and span
+  (`seaFight`): the box of the two fleets' ships where the view draws them (`elementSection`'s slots), marked `sea`.
+  The panel's button (`hud.toFight`) frames that box with `SEA_PAIR_MARGIN` cells about it by `MapView.showSeaBattle`,
+  as a sea battle's row frames its pair (clear of the panels at the view's sides; up to `SEA_VIEW_MAX_M`), not by
+  `showBattle`'s T3 zoom for two blocks on land. The snapshot's `enemy` (the enemy pointers, PLAN 7.34d) stays of land
+  formations. `SEA_PAIR_MARGIN` moves from `App.tsx` to `battleView.ts`, which `hud.ts` imports.
+- **Read.** `tools/diag/fleetFight.ts 5381 21 35`, hourly: of the fleets of the two in contact, 0 of 13 fleet-hours
+  (fleets 1199, 1203) with no fight; of every fleet in those wars, 0 of 91. `fleetFight1938` (seed 5381, the first
+  German or Polish fleet in contact from day 21: 1203 against Danish 1245, hour 12): the button, and after its press
+  72.1 m/px, 8 of 8 of its ships and 8 of 8 of the enemy's on the screen, none under a panel
+  (`docs/evidence/7.126/`). `fleetFight.test.ts` red without. `formationFight1938`'s furthest-block scan skips sea fights
+  (it measures blocks on land; its assertions unchanged).
+- **Deviation from AoC:** none; AoC has no fleets.
+
 ### ADR-713 · 2026-10-26 · accepted — A tag with no clear place goes only on blocks whose own tags stand by them, else it is left out (PLAN 7.5; amends PLAN 7.4f37)
 
 - **Context.** `npm run check:review` before critic run 15: `tagsCrowd1938` red, "tags over a block whose own tag is

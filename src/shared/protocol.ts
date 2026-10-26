@@ -644,8 +644,10 @@ export interface FormationDetail {
    * faces (`contactsOf`), in cells; and how far apart the two blocks' middles stand, east-west
    * and north-south, in cells. A block a line or more behind its own side's front stands up to
    * a cell from that enemy's: the panel's way to the fight shows both (`MapView.showBattle`).
+   * A fleet's (`sea`, PLAN 7.126): `enemy` is the nearest enemy fleet of its sea battle, and the
+   * middle and the span are those of the box of the two fleets' ships (`MapView.showSeaBattle`).
    */
-  fight: { x: number; y: number; enemy: number; span: [number, number] } | null;
+  fight: { x: number; y: number; enemy: number; span: [number, number]; sea: boolean } | null;
   /** Its elements by unit type, in the template's order: how many elements, their units now and when whole. */
   units: { nameKey: string; cls: string; elements: number; strength: number; size: number }[];
 }

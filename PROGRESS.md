@@ -23828,3 +23828,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   aircraft 7.133 (sorties aloft late). Unseen seeds from 1101, none a critic seed.
 - **Note:** the review's browser specs rewrote 20-odd screenshots under `docs/evidence/` (left out of the commit).
 - **Next:** PLAN 7.126.
+
+## 2026-10-26 — PLAN 7.126: a fleet in a sea battle has a way to its fight (ADR-714)
+
+- **Rule** (view only, no sim input): the worker gives a fleet in contact the nearest enemy fleet of its sea battle's
+  record (`seaEnemyOf`) and the box of the two fleets' ships (`seaFight`, `sea: true`); the panel's "To its fight"
+  frames it by `MapView.showSeaBattle` with `SEA_PAIR_MARGIN`, as a sea battle's row does. The snapshot's enemy (the
+  pointers) stays of land formations.
+- **AT:** seed 5381, Germany on Poland, days 21–35 hourly (`tools/diag/fleetFight.ts`): German and Polish fleets in
+  contact with no fight 0 of 13 fleet-hours (fleets 1199, 1203); every fleet of the two wars 0 of 91.
+  `fleetFight1938` (new): fleet 1203 against Danish submarines 1245, hour 12 past day 21; after the press 72.1 m/px,
+  8 of 8 ships of each on the screen, none under a panel (`docs/evidence/7.126/`). `fleetFight.test.ts` red without.
+- **Specs by hand:** fleetFight1938, formationFight1938, fightSeen1938 (both wars): green.
+- **Gotcha:** two destroyer flotillas against one in a unit case: the lone one loses half its ships in the first hour
+  and breaks off (`retreat` 24), so nothing is engaged after the step; battle squadrons hold the hour.
+- **Next:** PLAN 7.127.

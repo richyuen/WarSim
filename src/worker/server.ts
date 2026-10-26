@@ -969,15 +969,18 @@ export class SimServer {
     // Where its block stands, as the snapshot has it (PLAN 3.11a).
     const pose = this.blockPose(world, id);
     const place = { x: pose.x, y: pose.y };
-    // Where it fights: half way to the block of the enemy it faces (PLAN 3.11b).
-    const enemy = this.enemyOf(world, id);
+    // Where it fights: half way to the block of the enemy it faces (PLAN 3.11b); a fleet's, the
+    // box of its ships and those of the enemy fleet it fights (PLAN 7.126).
+    const fleet = world.isFleet(id);
+    const enemy = fleet ? this.seaEnemyOf(world, id) : this.enemyOf(world, id);
     let fight: FormationDetail['fight'] = null;
-    if (enemy > 0) {
+    if (enemy > 0 && fleet) fight = this.seaFight(world, id, enemy);
+    else if (enemy > 0) {
       const theirs = this.blockPose(world, enemy);
       const w = world.cells.w;
       // Brought back onto a map that loops, where a block may stand over the seam with its x unfolded (`slotPlace`).
       const dx = wrapDx(world, pose.x, theirs.x);
-      fight = { x: (((pose.x + dx / 2) % w) + w) % w, y: (pose.y + theirs.y) / 2, enemy, span: [Math.abs(dx), Math.abs(theirs.y - pose.y)] };
+      fight = { x: (((pose.x + dx / 2) % w) + w) % w, y: (pose.y + theirs.y) / 2, enemy, span: [Math.abs(dx), Math.abs(theirs.y - pose.y)], sea: false };
     }
     return {
       id,
@@ -1111,6 +1114,56 @@ export class SimServer {
       }
     });
     return best;
+  }
+
+  /**
+   * The enemy fleet a fleet in a sea battle fights, for its panel's fight (PLAN 7.126): of the
+   * fleets of its battle's record (`world.seaBattles`) at war with it, the nearest (the lower id
+   * on a tie). 0 when it is not in contact or its battle has none left. `enemyOf` pairs land
+   * formations alone (`contactsOf`, ADR-337), and a fleet's panel had no way to its battle.
+   */
+  private seaEnemyOf(world: World, id: number): number {
+    const fc = world.formations.cols;
+    if (fc.engaged[id] !== 1) return 0;
+    const rec = world.seaBattles.find((b) => b.fleets.includes(id));
+    if (!rec) return 0;
+    let best = 0;
+    let bestD = Infinity;
+    for (const o of rec.fleets) {
+      if (o === id || !world.formations.has(o) || !world.isFleet(o) || !world.wars.atWar(fc.nation[id]!, fc.nation[o]!)) continue;
+      const d = cellDist(world, fc.x[id]!, fc.y[id]!, fc.x[o]!, fc.y[o]!);
+      if (d < bestD || (d === bestD && o < best)) {
+        best = o;
+        bestD = d;
+      }
+    }
+    return best;
+  }
+
+  /**
+   * A fleet's fight (PLAN 7.126): the box of the ships of fleet `id` and of `enemy`, where the
+   * view draws them (`elementSection`: each on its slot about its block), its middle and its
+   * cells across, east-west and north-south; the panel's way to it frames the box as a sea
+   * battle's row does (`MapView.showSeaBattle`).
+   */
+  private seaFight(world: World, id: number, enemy: number): NonNullable<FormationDetail['fight']> {
+    const pose = this.blockPose(world, id);
+    let [x0, x1, y0, y1] = [0, 0, 0, 0];
+    const idx = elementIndex(world);
+    for (const f of [id, enemy]) {
+      const list = idx.get(f) ?? [];
+      const at = this.blockPose(world, f);
+      const slots = slotCount(world, f, list.length);
+      const places: [number, number][] = [[at.x, at.y]];
+      for (const e of list) places.push(slotPlace(world, at.x, at.y, at.facing, world.elements.cols.slot[e]!, slots, at.deployed ? e : undefined));
+      for (const [px, py] of places) {
+        const dx = wrapDx(world, pose.x, px);
+        const dy = py - pose.y;
+        [x0, x1, y0, y1] = [Math.min(x0, dx), Math.max(x1, dx), Math.min(y0, dy), Math.max(y1, dy)];
+      }
+    }
+    const w = world.cells.w;
+    return { x: (((pose.x + (x0 + x1) / 2) % w) + w) % w, y: pose.y + (y0 + y1) / 2, enemy, span: [x1 - x0, y1 - y0], sea: true };
   }
 
   /**

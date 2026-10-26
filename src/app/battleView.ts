@@ -21,6 +21,8 @@ export const BATTLE_VIEW_MAX_M = 250;
  * T1 (under T1_MAX_M, 2,000, less the handover's margin), where fleets are markers.
  */
 export const SEA_VIEW_MAX_M = 1800;
+/** Cells about the pair of fleets a sea battle's row shows (PLAN 7.10b), and a fleet's fight (PLAN 7.126): their blocks and their fire. */
+export const SEA_PAIR_MARGIN = 0.6;
 /**
  * A formation's fight (PLAN 3.11b): its block and the block of the enemy it faces, which stand
  * up to a cell apart for a formation a line or more behind its side's front. The view holds

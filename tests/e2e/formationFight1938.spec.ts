@@ -190,7 +190,8 @@ test('the panel of a formation in contact leads to its fight: both sides on the 
     for (const n of window.__warsim!.hud.stats.value!.nations) {
       for (const id of view!.formationsOf(n.id)) {
         const d = await sim.formation(id);
-        if (!d?.fight) continue;
+        // Of blocks on land: a fleet's fight is the box of two fleets' ships at sea (PLAN 7.126), framed as a sea battle's row.
+        if (!d?.fight || d.fight.sea) continue;
         if (Math.hypot(...d.fight.span) * km > furthest.km) furthest = { id, enemy: d.fight.enemy, km: Math.hypot(...d.fight.span) * km };
         if (d.fight.span[1] * km > tallest.km) tallest = { id, enemy: d.fight.enemy, km: d.fight.span[1] * km };
       }

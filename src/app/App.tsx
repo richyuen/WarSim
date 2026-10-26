@@ -30,9 +30,8 @@ import { useEffect, useState } from 'preact/hooks';
 import type { ReadonlySignal } from '@preact/signals';
 import { encodeRuns } from '../shared/mapImport';
 import { imageToRuns, NATION_MAX_DIST, TERRAIN_MAX_DIST } from './importImage';
+import { SEA_PAIR_MARGIN } from './battleView';
 
-/** Cells about the pair of fleets a sea battle's row shows (PLAN 7.10b): their blocks and their fire. */
-export const SEA_PAIR_MARGIN = 0.6;
 /** The least cells across the view a carrier strike's row shows (PLAN 7.35a, 7.84a): the struck ships and the bombs on them. */
 export const STRIKE_VIEW_CELLS = 2.4;
 /** Cells about the carrier's fleet and the fleet it strikes in its row's view (PLAN 7.84a): their counters stand beside their ships, and SEA_PAIR_MARGIN put the carrier's at the view's edge. */
