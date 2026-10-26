@@ -3,6 +3,7 @@ import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { NATIONS_1938 } from '../../src/sim/scenario1938';
+import { Domain } from '../../src/sim/world';
 import { settle } from './settle';
 
 // PLAN 3.11b (the critic's R3-B3: "the largest fight on the map is one division alone in
@@ -21,6 +22,9 @@ const nation = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === 
 const GER = nation('GER');
 const POL = nation('POL');
 const VIEW = { width: 1400, height: 800 };
+/** The critic's day, and the days past it within which the scene is looked for. */
+const DAYS = 21;
+const LATER = 14;
 
 interface Seen {
   id: number;
@@ -45,32 +49,47 @@ test('the panel of a formation in contact leads to its fight: both sides on the 
   await page.setViewportSize(VIEW);
   await page.goto('/?scenario=1938&paused=1&seed=4242');
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
-  await page.evaluate(async ({ GER, POL }) => {
+  /** Steps `days` days (declaring the war first, when `declare`) and waits for the view to have the last of them. */
+  const stepDays = (days: number, declare: boolean): Promise<void> => page.evaluate(async ({ GER, POL, days, declare }) => {
     const sim = window.__warsim!.sim;
-    sim.command({ kind: 'declareWar', attacker: GER, defender: POL });
+    if (declare) sim.command({ kind: 'declareWar', attacker: GER, defender: POL });
     let tick = 0;
-    for (let d = 0; d < 21; d++) tick = (await sim.step(24)).tick;
+    for (let d = 0; d < days; d++) tick = (await sim.step(24)).tick;
     await new Promise<void>((done) => {
       const wait = (): void => (window.__warsim!.view!.lastTick === tick ? done() : void setTimeout(wait, 5));
       wait();
     });
-  }, { GER, POL });
+  }, { GER, POL, days, declare });
+  await stepDays(DAYS, true);
 
   // The two nations' formations in contact, as the panel has them, and the enemy each faces.
-  const engaged = await page.evaluate(async (nations) => {
+  // Of land formations: a fleet in a sea battle is in contact too, and is not this test's (PLAN 7.5
+  // before critic run 15, ADR-712: its way to its battle is the history's row, PLAN 7.22a; PLAN 7.126).
+  const contacts = () => page.evaluate(async ({ nations, land }) => {
     const { sim, view } = window.__warsim!;
     const templates = sim.mapLayers!.templates;
     const out: { id: number; enemy: number; armour: boolean; km: number; fight: boolean }[] = [];
     for (const n of nations) {
       for (const id of view!.formationsOf(n)) {
         const d = await sim.formation(id);
-        if (!d?.engaged) continue;
+        if (!d?.engaged || templates[d.template]?.domain !== land) continue;
         out.push({ id, enemy: d.fight?.enemy ?? 0, armour: templates[d.template]?.symbol === 'armour', km: d.fight ? (Math.hypot(...d.fight.span) * view!.metresPerPx * view!.controller.cam.scale) / 1000 : -1, fight: d.fight !== null });
       }
     }
     return out;
-  }, [GER, POL]);
-  expect(engaged.length, 'German and Polish formations in contact on day 21').toBeGreaterThan(20);
+  }, { nations: [GER, POL], land: Domain.land });
+  // From day 21, the first day with more than 20 of them in contact (PLAN 7.5 before critic run 15:
+  // 16 on day 21 since ADR-701's fold moved the history, 23 on day 23; 28 on day 21 after ADR-711's
+  // deploy rule). A day picked by hand breaks
+  // at each AI rule; the scene is found, within two weeks.
+  let day = DAYS;
+  let engaged = await contacts();
+  while (engaged.length <= 20 && day < DAYS + LATER) {
+    await stepDays(1, false);
+    day++;
+    engaged = await contacts();
+  }
+  expect(engaged.length, `German and Polish formations in contact on day ${day}`).toBeGreaterThan(20);
   expect(engaged.every((e) => e.fight), 'every formation in contact has a fight to go to').toBe(true);
 
   /** The view on formation `id` at `m` metres a pixel, with the section of that zoom drawn. */
@@ -139,7 +158,7 @@ test('the panel of a formation in contact leads to its fight: both sides on the 
     seen.push({ id: e.id, enemy: e.enemy, armour: e.armour, before, m: at.m, own: own.all, ownOn: own.on, foe: foe.all, foeOn: foe.on, figures: at.figures, km: e.km });
   }
   const blind = seen.filter((s) => s.before === 0);
-  console.log(`seed 4242, day 21: ${seen.length} German and Polish formations in contact, ${seen.filter((s) => s.armour).length} of them armour; ${blind.length} with none of their enemy's elements on the screen at 6 m/px on their own block (${blind.map((s) => `${s.id}: ${s.km.toFixed(1)} km`).join(', ')}); after the way to the fight: ${Math.min(...seen.map((s) => s.m)).toFixed(1)} to ${Math.max(...seen.map((s) => s.m)).toFixed(1)} m/px, the blocks ${Math.min(...seen.map((s) => s.km)).toFixed(1)} to ${Math.max(...seen.map((s) => s.km)).toFixed(1)} km apart, own elements on the screen ${Math.min(...seen.map((s) => s.ownOn / s.own)).toFixed(2)} of them at least, the enemy's ${Math.min(...seen.map((s) => s.foeOn / s.foe)).toFixed(2)}`);
+  console.log(`seed 4242, day ${day}: ${seen.length} German and Polish formations in contact, ${seen.filter((s) => s.armour).length} of them armour; ${blind.length} with none of their enemy's elements on the screen at 6 m/px on their own block (${blind.map((s) => `${s.id}: ${s.km.toFixed(1)} km`).join(', ')}); after the way to the fight: ${Math.min(...seen.map((s) => s.m)).toFixed(1)} to ${Math.max(...seen.map((s) => s.m)).toFixed(1)} m/px, the blocks ${Math.min(...seen.map((s) => s.km)).toFixed(1)} to ${Math.max(...seen.map((s) => s.km)).toFixed(1)} km apart, own elements on the screen ${Math.min(...seen.map((s) => s.ownOn / s.own)).toFixed(2)} of them at least, the enemy's ${Math.min(...seen.map((s) => s.foeOn / s.foe)).toFixed(2)}`);
   // What the part is for: some of them had no enemy in the close view of their block.
   expect(blind.length, 'formations with no enemy element on the screen at 6 m/px on their block').toBeGreaterThan(0);
   for (const s of seen) {

@@ -18,12 +18,14 @@ import { NATIONS_1938 } from '../../src/sim/scenario1938';
 // contact all of it). Division 556 since the rules after `bcbc99c` (PLAN 7.37 to 7.48 moved the
 // pin; 568 no longer in contact on day 21; 556 loses 1,871 on day 22, in contact all of it).
 // Division 558 since the strike rule of `3e58eb61` and ADR-699 (556 no longer in contact on day 21;
-// 558 loses 2,659 on day 22, in contact 18 of its hours).
+// 558 loses 2,659 on day 22, in contact 18 of its hours). Division 540 since ADR-701's fold of hollow
+// divisions (`1cbc0bf3`; 558 no longer in contact on day 21; 540 loses 1,823 on day 22, in contact 18
+// of its hours; `tools/diag/contactPick.ts`); after ADR-711's deploy rule 2,175, in contact all of it.
 
 const nation = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
 const GER = nation('GER');
 const POL = nation('POL');
-const POLE = 558;
+const POLE = 540;
 const VIEW = { width: 1600, height: 900 };
 const HOURS = 24;
 const key = (h: { element: number; figure: number }): string => `${h.element}:${h.figure}`;

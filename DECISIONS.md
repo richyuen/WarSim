@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-712 · 2026-10-26 · accepted — The T3 fight specs are of land formations; a fleet's panel has no way to its sea battle (PLAN 7.5; PLAN 7.126 filed)
+
+- **Context.** `npm run check:review` before critic run 15: `fightSeen1938` (Germany on Poland, seed 5381) red on
+  "every formation in contact has a fight to go to". `tools/diag/noFight.ts`: on day 22 the one German or Polish
+  formation in contact with no enemy for its panel's fight is fleet 1199, in a sea battle in the Baltic (engaged by
+  `navalCombat.ts`, `enemyOf` in `worker/server.ts` pairs land formations alone). Every land formation in contact has
+  its fight. Until ADR-701 moved the history no fleet of the two was in a battle on the days these specs read.
+- **Decision.** `fightSeen1938` and `formationFight1938` (PLAN 3.11, written before fleets fought, Phase 4) take the
+  land formations in contact (the template's `domain`); every assertion as it was, over them. A fleet in a sea battle
+  reaches it by the history's row (PLAN 7.22a, `seaRow1938`); its panel reads "In contact" with no button to it:
+  filed as PLAN 7.126.
+- **Also** (history re-picks, no assertion changed): both specs look for their scene from day 21 within two weeks
+  (formationFight: more than 20 in contact; fightSeen's war with armour: an armour formation in contact) instead of
+  stepping to day 21 alone; `fallen1938`'s division re-picked (`tools/diag/contactPick.ts`).
+- **Deviation from AoC:** none; AoC has neither panels nor fleets.
+
 ### ADR-711 · 2026-10-26 · accepted — A block in another lane is in a file's way within half the gap of it, not a whole one (PLAN 7.5; amends ADR-699)
 
 - **Context.** `npm run check:review` before critic run 15: `formationFight1938` red, the furthest block 20.06 km from

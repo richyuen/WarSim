@@ -53,8 +53,14 @@ Run 14's (report of 2026-10-25 on `311988d7`, `critic/CRITIC_REPORT.md`; R13-B1 
 aiNukes 7 → 8): R14-B1 and R14-B2 are PLAN 7.116 and 7.117; the dimensions under the bar, beyond them,
 are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a task, none reused:
 
-Found by `npm run check:review` before critic run 15 (2026-10-26; ADR-711):
+Found by `npm run check:review` before critic run 15 (2026-10-26; ADR-711, ADR-712):
 
+- [ ] 7.126 A fleet in a sea battle: its panel's way to the battle. The panel of a fleet in contact reads "In contact"
+  with no button to its fight (`enemyOf` in `worker/server.ts` pairs land formations alone; seed 5381, Germany on Poland
+  by God Mode, fleet 1199 on day 22, `tools/diag/noFight.ts`); a land formation's flies to its fight (PLAN 3.11b).
+  AT: on that case, the fleet's panel has the button, and its press ends with the fleet and the enemy fleet it fights
+  both on the screen (every ship element of the two in the view); of the fleets of the two nations in contact in days
+  21–35 there, none without the button (0 of N); `fightSeen1938` and `formationFight1938` green; the gate green.
 - [ ] 7.127 The critic's Poland: a first burst off Germany on fewer than `MASSED_MEN`. `nukePoland1938`'s set-up (10
   warheads and a strategic bomber group at Warsaw, Germany's war on Poland) on seeds 4001–4020: the first burst falls
   off Germany on fewer than 50,000 men (ADR-651 a's bar) on 4 (4009, 4010, 4012, 4016; nation 15 or 10, 17–21k men),

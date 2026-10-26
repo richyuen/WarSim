@@ -3,6 +3,7 @@ import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { NATIONS_1938 } from '../../src/sim/scenario1938';
+import { Domain } from '../../src/sim/world';
 import { settle } from './settle';
 
 // PLAN 3.11 (the critic's R3-B3: "zooming to a formation in contact shows its fight"), the
@@ -15,6 +16,8 @@ import { settle } from './settle';
 
 const SEED = 5381;
 const DAYS = 21;
+/** Days past `DAYS` within which the scene is looked for. */
+const LATER = 14;
 const nation = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
 interface War {
   name: string;
@@ -59,7 +62,8 @@ for (const war of WARS) test(`PLAN 3.11 on a seed not used: every formation in c
   await page.setViewportSize(VIEW);
   await page.goto(`/?scenario=1938&paused=1&seed=${SEED}`);
   await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.sim.mapLayers !== null, null, { timeout: 60_000 });
-  const start = await page.evaluate(async ({ days, declare }) => {
+  /** Steps `days` days (declaring the war first, when it is God Mode's) and waits for the view to have the last of them. */
+  const stepDays = (days: number, declare: [number, number] | null): Promise<number> => page.evaluate(async ({ days, declare }) => {
     const sim = window.__warsim!.sim;
     if (declare) sim.command({ kind: 'declareWar', attacker: declare[0], defender: declare[1] });
     let tick = 0;
@@ -69,23 +73,36 @@ for (const war of WARS) test(`PLAN 3.11 on a seed not used: every formation in c
       wait();
     });
     return tick;
-  }, { days: DAYS, declare: war.declare });
+  }, { days, declare });
+  let start = await stepDays(DAYS, war.declare);
 
   // The formations in contact of the war's nations, as the panel has them, and the enemy each faces.
-  const engaged = await page.evaluate(async (nations) => {
+  // Of land formations: a fleet in a sea battle is in contact too, and is not this test's (PLAN 7.5
+  // before critic run 15, ADR-712: its way to its battle is the history's row, PLAN 7.22a; PLAN 7.126).
+  const contacts = () => page.evaluate(async ({ nations, land }) => {
     const { sim, view } = window.__warsim!;
     const templates = sim.mapLayers!.templates;
     const out: { id: number; nation: number; enemy: number; armour: boolean; km: number; fight: boolean; at: [number, number] | null }[] = [];
     for (const n of nations) {
       for (const id of view!.formationsOf(n)) {
         const d = await sim.formation(id);
-        if (!d?.engaged) continue;
+        if (!d?.engaged || templates[d.template]?.domain !== land) continue;
         out.push({ id, nation: n, enemy: d.fight?.enemy ?? 0, armour: templates[d.template]?.symbol === 'armour', km: d.fight ? (Math.hypot(...d.fight.span) * view!.metresPerPx * view!.controller.cam.scale) / 1000 : -1, fight: d.fight !== null, at: d.fight ? [d.fight.x, d.fight.y] : null });
       }
     }
     return out;
-  }, SIDES);
-  expect(engaged.length, `formations in contact of ${war.name} on day ${DAYS}`).toBeGreaterThanOrEqual(10);
+  }, { nations: SIDES, land: Domain.land });
+  // The war with armour among it: from day 21, the first day with an armour formation in contact
+  // (PLAN 7.5 before critic run 15: none on day 21 since ADR-701's fold moved the history; one on
+  // day 22). A day picked by hand breaks at each AI rule; the scene is found, within two weeks.
+  let day = DAYS;
+  let engaged = await contacts();
+  while (war.armour && !engaged.some((e) => e.armour) && day < DAYS + LATER) {
+    start = await stepDays(1, null);
+    day++;
+    engaged = await contacts();
+  }
+  expect(engaged.length, `formations in contact of ${war.name} on day ${day}`).toBeGreaterThanOrEqual(10);
   expect(new Set(engaged.map((e) => e.nation)).size, 'nations of the war with a formation in contact').toBeGreaterThanOrEqual(2);
   expect(engaged.every((e) => e.fight), 'every formation in contact has a fight to go to').toBe(true);
 
@@ -158,7 +175,7 @@ for (const war of WARS) test(`PLAN 3.11 on a seed not used: every formation in c
     seen.push({ id: e.id, enemy: e.enemy, nation: e.nation, armour: e.armour, before, m: at.m, own: own.all, ownOn: own.on, foe: foe.all, foeOn: foe.on, figures: at.figures, km: e.km });
   }
   const blind = seen.filter((s) => s.before === 0);
-  info.annotations.push({ type: 'fights', description: `seed ${SEED}, day ${DAYS}: ${seen.length} formations in contact of ${new Set(seen.map((s) => s.nation)).size} nations of ${war.name}, ${seen.filter((s) => s.armour).length} of them armour; ${blind.length} with none of their enemy's elements on the screen at 6 m/px on their own block; after the way to the fight: ${Math.min(...seen.map((s) => s.m)).toFixed(1)} to ${Math.max(...seen.map((s) => s.m)).toFixed(1)} m/px, the blocks ${Math.min(...seen.map((s) => s.km)).toFixed(1)} to ${Math.max(...seen.map((s) => s.km)).toFixed(1)} km apart, own elements on the screen ${Math.min(...seen.map((s) => s.ownOn / s.own)).toFixed(2)} of them at least, the enemy's ${Math.min(...seen.map((s) => s.foeOn / s.foe)).toFixed(2)}` });
+  info.annotations.push({ type: 'fights', description: `seed ${SEED}, day ${day}: ${seen.length} formations in contact of ${new Set(seen.map((s) => s.nation)).size} nations of ${war.name}, ${seen.filter((s) => s.armour).length} of them armour; ${blind.length} with none of their enemy's elements on the screen at 6 m/px on their own block; after the way to the fight: ${Math.min(...seen.map((s) => s.m)).toFixed(1)} to ${Math.max(...seen.map((s) => s.m)).toFixed(1)} m/px, the blocks ${Math.min(...seen.map((s) => s.km)).toFixed(1)} to ${Math.max(...seen.map((s) => s.km)).toFixed(1)} km apart, own elements on the screen ${Math.min(...seen.map((s) => s.ownOn / s.own)).toFixed(2)} of them at least, the enemy's ${Math.min(...seen.map((s) => s.foeOn / s.foe)).toFixed(2)}` });
   console.log(info.annotations.at(-1)!.description);
   for (const s of seen) {
     const what = `formation ${s.id}${s.armour ? ' (armour)' : ''} against ${s.enemy}, ${s.km.toFixed(1)} km off`;
@@ -250,7 +267,7 @@ for (const war of WARS) test(`PLAN 3.11 on a seed not used: every formation in c
       await lookAt(fx, fy, 6);
     }
   }
-  info.annotations.push({ type: 'marks', description: `day ${DAYS + 1} at 6 m/px on the fight of formation ${near.id}${near.armour ? ' (armour)' : ''} against ${near.enemy} (${near.km.toFixed(1)} km apart): the elements the view held lost ${Math.round(lost)} of strength, the first in hour ${firstLoss}; ${marks} marks (${hulls} of them hulls), ${inView} in the view, the first in hour ${firstMark}` });
+  info.annotations.push({ type: 'marks', description: `day ${day + 1} at 6 m/px on the fight of formation ${near.id}${near.armour ? ' (armour)' : ''} against ${near.enemy} (${near.km.toFixed(1)} km apart): the elements the view held lost ${Math.round(lost)} of strength, the first in hour ${firstLoss}; ${marks} marks (${hulls} of them hulls), ${inView} in the view, the first in hour ${firstMark}` });
   console.log(info.annotations.at(-1)!.description);
   // The critic's bar: a fight that costs strength has a mark within the day.
   expect(lost, 'strength lost in the day by the elements in the view').toBeGreaterThan(0);
