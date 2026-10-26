@@ -164,7 +164,8 @@ const GRID_PX = 64;
  * Places the tags of `items` in a view of vw × vh px. `measure(text, font)` is the width of a
  * line. The picked formation first, then the stronger ones (the lower id on a tie), so the
  * layout does not depend on the order of the list. No tag stands on one of `avoid`, nor nearer to it than to another tag.
- * None stands on another formation's elements unless every place of its own is on some (ADR-168).
+ * None stands on another formation's elements unless every place of its own is on some (ADR-168),
+ * and then only on those whose own tags stand by them (ADR-713).
  * Returns the placed tags and how many found no place.
  */
 export function layoutTags(items: readonly TagInput[], measure: (text: string, font: string) => number, vw: number, vh: number, scale = 1, avoid: readonly TagObstacle[] = []): { placed: PlacedTag[]; left: number } {
@@ -183,6 +184,8 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
   const reach = new BoxGrid(vw, vh, GRID_PX);
   /** Whether a placed tag is nearer than `d` to (x, y). */
   const tagNearer = (x: number, y: number, d: number): boolean => tags.some(x - d, y - d, x + d, y + d, (j) => far(placed[j]!, x, y) < d);
+  /** Each formation's placed tag nearest its block (a looping map's copies have one each). */
+  const byOwn = new Map<number, PlacedTag>();
   const sorted = [...items].sort((a, b) => Number(b.picked === true) - Number(a.picked === true) || b.strength - a.strength || a.id - b.id);
   /** Places the tag of `it` at the first place the passes allow; false: none did. */
   const place = (it: TagInput, passes: readonly number[]): boolean => {
@@ -225,7 +228,8 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
     // First a place by the block, clear of every other formation's elements, that is not
     // nearer to the middle of another block than that block's own tag, placed before it (PLAN
     // 3.11f: a reader would take it for that block's); then the nearest place clear of the
-    // elements; with none, any free place (once every other tag has had its clear place).
+    // elements; with none, a free place on no block but those whose own tags stand by them (once
+    // every other tag has had its clear place); with none of those, it is left out (ADR-713).
     for (const pass of passes) {
       const clear = pass < 2;
       for (const at of pass === 0 ? tries.slice(0, byBlock) : tries) {
@@ -237,12 +241,19 @@ export function layoutTags(items: readonly TagInput[], measure: (text: string, f
         const gap = Math.max(vx0 - (box.x + w), box.x - vx1, vy0 - (box.y + h), box.y - vy1, 0);
         if (clear && gap > TAG_FAR * scale) continue;
         if (clear && blocks.some(box.x, box.y, bx1, by1, (j) => items[j] !== it && box.x < items[j]!.x1 && items[j]!.x0 < bx1 && box.y < items[j]!.y1 && items[j]!.y0 < by1)) continue;
+        // Not on a block whose own tag stands off it, or has none (PLAN 7.5 before critic run 15,
+        // ADR-713): a reader takes the tag on it for that block's. Until then any free place: in an
+        // Alpine fight of Italian and French blocks mixed, a tag stood on two blocks whose tags stood
+        // 98 px off, and one at the view's edge on a block whose tag the page's panels held 72 px off.
+        if (pass === 2 && blocks.some(box.x, box.y, bx1, by1, (j) => items[j]!.id !== it.id && box.x < items[j]!.x1 && items[j]!.x0 < bx1 && box.y < items[j]!.y1 && items[j]!.y0 < by1 && !((byOwn.get(items[j]!.id)?.gap ?? Infinity) <= TAG_LINE_FROM))) continue;
         if (pass === 0 && reach.some(box.x, box.y, bx1, by1, (j) => far(box, placed[j]!.tx, placed[j]!.ty) < far(placed[j]!, placed[j]!.tx, placed[j]!.ty))) continue;
         // Nor one that a tag placed before it is nearer to this block's middle than (PLAN
         // 4.2b1): it would have a line (ADR-188) where a place by the block has none.
         if (pass === 0 && tagNearer(tx, ty, far(box, tx, ty))) continue;
         const tag: PlacedTag = { id: it.id, nation: it.nation, strength: it.strength, text: it.text, name: it.name, engaged: it.engaged, picked: it.picked === true, ...box, gap, line: gap > TAG_LINE_FROM, tx, ty, flag: false };
         const j = placed.push(tag) - 1;
+        const was = byOwn.get(it.id);
+        if (!was || gap < was.gap) byOwn.set(it.id, tag);
         tags.add(j, box.x, box.y, bx1, by1);
         const d = far(tag, tx, ty);
         if (d > 0) reach.add(j, tx - d, ty - d, tx + d, ty + d);

@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-713 · 2026-10-26 · accepted — A tag with no clear place goes only on blocks whose own tags stand by them, else it is left out (PLAN 7.5; amends PLAN 7.4f37)
+
+- **Context.** `npm run check:review` before critic run 15: `tagsCrowd1938` red, "tags over a block whose own tag is
+  not by it" at 60 m/px by (1061.4, 317.1) (seed 1938, Germany on Poland, day 21): an Alpine fight of Italian and French
+  blocks mixed. Italian 307's tag on French 239's and 303's blocks (their tags 98 px off, on lines), 241's on 238's,
+  and 216's (24 px of its block in the view, at its bottom edge) on 221's, whose tag the history panel held 72 px off.
+  Each was a tag with no place clear of other blocks: the layout's last pass took any free place.
+- **Decision** (`layoutTags`): that pass takes a free place on no block but those whose own tag stands by them (gap
+  at most `TAG_LINE_FROM`); a tag with none is left out and counted, as the layout's header has said since PLAN 2.14a.
+  Tried first and not taken: such a place first, then any free one, as before: 216's was left on 221's block.
+- **Read.** The spot: 4 such tags → 0; `tagsCrowd1938` green (60 m/px 180 tags, 4 over 120 px off; 12 m/px 58, 1);
+  `tags1938` (no tag left out in its views) and `tankBattle1938` green; `tags.test.ts` green, its reference layout
+  given the same rule.
+- **Deviation from AoC:** none; AoC has no formation tags.
+
 ### ADR-712 · 2026-10-26 · accepted — The T3 fight specs are of land formations; a fleet's panel has no way to its sea battle (PLAN 7.5; PLAN 7.126 filed)
 
 - **Context.** `npm run check:review` before critic run 15: `fightSeen1938` (Germany on Poland, seed 5381) red on

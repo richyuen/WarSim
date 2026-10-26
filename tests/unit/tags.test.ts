@@ -63,7 +63,8 @@ function layoutPlain(items: readonly TagInput[], measure: (text: string, font: s
     // First a place by the block, clear of every other formation's elements, that is not
     // nearer to the middle of another block than that block's own tag, placed before it (PLAN
     // 3.11f: a reader would take it for that block's); then the nearest place clear of the
-    // elements; with none, any free place, once every other tag has had its clear place (PLAN 7.4f37).
+    // elements; with none, once every other tag has had its clear place (PLAN 7.4f37), a free place
+    // on no block but those whose own tags stand by them; with none of those, left out (ADR-713).
     for (const pass of passes) {
       const clear = pass < 2;
       for (const at of pass === 0 ? tries.slice(0, byBlock) : tries) {
@@ -72,6 +73,8 @@ function layoutPlain(items: readonly TagInput[], measure: (text: string, font: s
         // A clear place only within TAG_FAR of its elements (PLAN 7.4f36).
         if (clear && Math.max(vx0 - (box.x + w), box.x - vx1, vy0 - (box.y + h), box.y - vy1, 0) > TAG_FAR * scale) continue;
         if (clear && items.some((o) => o !== it && box.x < o.x1 && o.x0 < box.x + w && box.y < o.y1 && o.y0 < box.y + h)) continue;
+        // Forced: not on a block whose own tag stands off it or has none (ADR-713).
+        if (pass === 2 && items.some((o) => o.id !== it.id && box.x < o.x1 && o.x0 < box.x + w && box.y < o.y1 && o.y0 < box.y + h && !placed.some((p) => p.id === o.id && p.gap <= TAG_LINE_FROM))) continue;
         if (pass === 0 && placed.some((p) => far(box, p.tx, p.ty) < far(p, p.tx, p.ty))) continue;
         // Nor one that a tag placed before it is nearer to this block's middle than (PLAN
         // 4.2b1): it would have a line (ADR-188) where a place by the block has none.

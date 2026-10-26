@@ -23790,3 +23790,28 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Note:** the commit's subject says "worst 148 ms": that is the first try's (the caches in `Sim`'s constructor); the
   committed design reads 150–151 ms (`docs/evidence/7.125/measure.md` §4). The gate's related unit run with the
   change: 272 files, 147 s (the template builds the caches once a file).
+
+## 2026-10-26 — PLAN 7.5: `check:review` on `8f6732e3` red on four browser tests; three fixes before critic run 15
+
+- **Review run** on `8f6732e3`: every stage done; red twice and not on `knownRed.json`: fallen1938, fightSeen1938
+  (Poland), formationFight1938, tagsCrowd1938. seaRow1938 red once, green on its retry (the 6 s timing under load).
+- **Cause** (`tools/diag/contactDays.ts` at `311988d7`, `1cbc0bf3`, `c95202e7`, HEAD): ADR-701's fold moved seed 4242's
+  and 5381's Polish war (day 21: 31 → 16 in contact; no armour in contact on 5381's day 21). The re-run of the re-picked
+  specs found two more causes, not luck: a fleet in a sea battle in contact with no fight for its panel, and a stack's
+  outer lane two lines back (20.06 km, bar 20).
+- **Fix 1** (`8267a3a1`, ADR-711, pin 3a90f72d → ac54bc2d): a block of another lane is in a file's way within half
+  `DEPLOY_GAP`, not a whole one (lanes from places 0.05 cells apart stood a lane behind both lines of the next). Unit
+  case red without. Re-picks, claims kept: farWait1938 (seed 7 from day 180), nukeStrikeAgain1938 (180 days),
+  nukePoland1938 (4010 → 4017). PLAN 7.127 filed: Poland's first burst off Germany on under 50,000 men, 2 → 4 of 20.
+- **Fix 2** (`509693b8`, ADR-712): fightSeen and formationFight take land formations and find their scene from day 21;
+  fallen's division 540. PLAN 7.126 filed: a fleet's panel has no way to its sea battle.
+- **Fix 3** (ADR-713, view only): a tag with no clear place goes only on blocks whose own tags stand by them, else it is
+  left out (an Alpine fight: 4 tags on blocks whose tags stood 72–98 px off → 0). tagsCrowd1938, tags1938,
+  tankBattle1938 green by hand.
+- Browser specs run by hand: fallen1938, fightSeen1938 (both), formationFight1938, tagsCrowd1938, tags1938,
+  tankBattle1938 (green). Unit suite by hand on Fix 1: 1,917 tests, the three re-picked then green.
+- **Gotcha:** a fleet in a sea battle is `engaged` too (`navalCombat.ts`); a count of formations "in contact" for a
+  land fight filters by the template's domain.
+- **Gotcha:** `git checkout` in a spare worktree fails on untracked leftovers that a commit tracks; the failed
+  checkout leaves the old commit, and a bisect then reads one commit three times. Check the output of each checkout.
+- **Next:** `npm run check:review` again (the code changed), then critic run 15.
