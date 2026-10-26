@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-706 · 2026-10-26 · proposed (the user's decision) — A naval rival weighs more in the war choice: year 1's sea war ×1.56, the late one flat (PLAN 7.120's AT missed)
+
+- **Context.** PLAN 7.120 (naval 7, needs 8): sea battles a world-year after year 1 about a fifth of year 1's. AT: on
+  10 unseen seeds × 20 years against HEAD, late battles at least 1.3 × HEAD's, year-1 battles not below 0.9 ×,
+  battles sinking nothing at most 4 %; a unit test, red without.
+- **Measured** (`docs/evidence/7.120/measure.md`, 1061–1065 on HEAD): late battles 0.17 × year 1's; armed fleets
+  0.51 ×; pairs at war with navies in one basin **0.15 ×**; battles per fleet of such a pair the same (3.4, 3.0).
+- **Rule tried** (`rule.patch`, not committed; ADR-683's option c): a war on a nation with an armed fleet in a
+  basin where the attacker has one weighs NAVAL_RIVAL (0.3) more. A/B from the year-10 saves: late ×1.27.
+- **The AT** (1077–1086 × 20): late battles 9.51 → 9.89 (**1.04 ×**, missed); year 1 35.7 → 55.6 (1.56 ×); sinking
+  nothing 1.48 %; armed fleets late 42 → 23.5, navies 10.3 → 6.6; war pairs late +22 %. The navies meet sooner and
+  are spent: the late sea war is bound by the navies' count (ADR-683, ADR-667 a).
+- **Options:**
+  - **(a)** No rule; 7.120 closed not done; the late sea war stays the navies' count (ADR-683). (Recommended: the
+    rule moves the sea war into year 1 and halves the late navies, and adds wars.)
+  - **(b)** No rule; PLAN 7.126: the navies' rebuild late (ADR-683's option b, reopening ADR-667 a): AT armed fleets
+    years 10–20 at least 1.3 × HEAD's and late battles at least 1.3 ×, on 10 unseen seeds × 20 years.
+  - **(c)** Commit the rule for year 1's sea war (×1.56), 7.120 closed not done.
+- **Meanwhile** the loop takes PLAN 7.121. Seeds 1061–1065 went to the measure, 1077–1086 to the AT; next unseen 1087.
+
 ### ADR-705 · 2026-10-26 · proposed (the user's decision) — Stalls at Max: none in the page on HEAD's rules; whole ticks over 200 ms only just after a load (PLAN 7.119)
 
 - **Context.** PLAN 7.119 (performance 5, needs 7): 8167's year 19 at Max had 40 stalls over 500 ms in the page, the

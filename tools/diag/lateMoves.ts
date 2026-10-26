@@ -5,8 +5,9 @@
  * nations at war, the largest nation's share and the events that move land without a war.
  *
  * Usage: npx tsx tools/diag/lateMoves.ts <seed> <years> <out.jsonl> [saveDir] [saveYears = 20,25]
+ * LOAD=<state.bin>: from that state instead of 1938 (years counted from it).
  */
-import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -21,6 +22,7 @@ const KINDS = ['WarDeclared', 'RevoltSpawned', 'NationAnnexed', 'UnionFormed', '
 const kindOf = new Map<number, string>(KINDS.map((k) => [EventKind[k as keyof typeof EventKind] as number, k]));
 
 const sim = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SIZE_1938.w) });
+if (process.env.LOAD) sim.load(new Uint8Array(readFileSync(process.env.LOAD)));
 const world = sim.world;
 writeFileSync(out, '');
 if (saveDir) mkdirSync(saveDir, { recursive: true });

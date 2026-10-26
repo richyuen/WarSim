@@ -5,6 +5,14 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.120's AT missed: late sea battles 1.04 × HEAD's, bar 1.3 (ADR-706; waits on the user)
+- **The bar:** on 10 unseen seeds × 20 years against HEAD, late battles at least 1.3 ×, year 1 not below 0.9 ×,
+  sinking nothing at most 4 %; a unit test, red without; the gate green.
+- **What moved** (`docs/evidence/7.120/measure.md`, `rule.patch`; 1077–1086): a naval rival weighs 0.3 more in the
+  war choice; late 9.51 → 9.89 (missed), year 1 ×1.56, sinking nothing 1.48 %, armed fleets late 42 → 23.5.
+- **What is left:** the user's (ADR-706): (a) no rule, closed not done (recommended); (b) PLAN 7.126, the navies'
+  rebuild late; (c) commit the rule for year 1.
+
 ### PLAN 7.119's AT: the page met, whole ticks over 200 ms just after a load (ADR-705; waits on the user)
 - **The bar:** in the page 8167's year 19 at Max with at most 4 stalls over 500 ms; headless the longest single
   tick of that year at most 200 ms; the gate green.

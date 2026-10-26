@@ -91,6 +91,10 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
   on the same seeds, sea battles a world-year after year 1 at least 1.3 × HEAD's, year-1 battles not
   below 0.9 × HEAD's, battles sinking nothing at most 4 %; a unit test, red without; the gate green.
 
+  Measured and tried (2026-10-26, `docs/evidence/7.120/`): pairs at war with navies in one basin 0.15 × year 1's;
+  a naval rival weighing 0.3 more: AT late 1.04 × (missed), year 1 ×1.56, the late navies halved. BLOCKERS,
+  ADR-706 (proposed). Waits on the user. Seeds 1061–1065 measure, 1077–1086 AT; next unseen 1087.
+
 - [ ] 7.121 Aircraft (aircraft 7, needs 8): on the same 40 seeds air battles after year 1 123 → 183 a
   world-year (sorties aloft 10.9 → 15.8, ADR-689), but on new seeds only 154 → 161, and the late air war
   is still 7 % of year 1's (2,415 battles). Evidence: `critic/c14_cmp_all.txt`,

@@ -23728,3 +23728,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   with `tickMax.ts warm` beside the cold read to tell them apart.
 - **Filed:** BLOCKERS, ADR-705 (proposed). No code change to the sim.
 - **Next:** PLAN 7.120 while ADR-704 and ADR-705 wait.
+
+## 2026-10-26 — PLAN 7.120: the AT missed (late sea battles 1.04 ×, bar 1.3), to the user (ADR-706)
+
+- **Measured** (`docs/evidence/7.120/measure.md`, `seaYears.ts` with a new `LOAD=`; `lateMoves.ts` too): late
+  battles 0.17 × year 1's; pairs at war with navies in one basin 0.15 ×; per fleet of such a pair the same.
+- **Rule tried** (`rule.patch`, not committed): a naval rival weighs 0.3 more in the war choice. A/B late ×1.27;
+  AT (1077–1086 × 20) late 1.04 ×, year 1 ×1.56, armed fleets late 42 → 23.5: the navies spent sooner.
+- **Gotcha:** an A/B from year-10 saves reads 5 years of a navy already there; the AT from 1938 lets the rule
+  spend the navies in year 1. Read an AI rule on a navy's whole life before trusting a late-start A/B.
+- **Filed:** BLOCKERS, ADR-706 (proposed).
+- **Next:** PLAN 7.121 while ADR-704, ADR-705 and ADR-706 wait.

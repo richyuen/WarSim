@@ -1,0 +1,135 @@
+diff --git a/src/sim/ai/strategic.ts b/src/sim/ai/strategic.ts
+index 0f1d8b0d..37449477 100644
+--- a/src/sim/ai/strategic.ts
++++ b/src/sim/ai/strategic.ts
+@@ -39,8 +39,8 @@ import { makePeace, declareWar, whyNotWar } from '../systems/war';
+ import { canJoin, LEAVE_LOYALTY, leaveAlliance, noWarAmong } from '../systems/alliances';
+ import { relationHit, worstPariah } from '../systems/nuclear';
+ import { transportGroupsAtPort } from '../systems/amphibious';
+-import { keyAt, waterKeys } from '../systems/navalCombat';
+-import { forceMen, seaHolder } from '../systems/seaControl';
++import { basinAt, keyAt, waterKeys } from '../systems/navalCombat';
++import { fleetPower, forceMen, seaHolder } from '../systems/seaControl';
+ import { navOf, portSeaOf, seaOf, type World } from '../world';
+ 
+ export const STAGGER = 7;
+@@ -65,6 +65,11 @@ export const ALLY_P = 0.3;
+ export const HEGEMON_SHARE = 0.25;
+ /** The war utility's weight of a neighbour's nuclear outrage (PLAN 6.5b). */
+ export const PARIAH_WAR = 0.5;
++/**
++ * A naval rival (PLAN 7.120): a war on a nation with an armed fleet in a basin where the attacker has one
++ * weighs NAVAL_RIVAL more (the late sea war was the wars of two navies, 2.4 a day in year 1, 0.37 late).
++ */
++export const NAVAL_RIVAL = 0.3;
+ /**
+  * Restlessness (PLAN 7.14, ADR-481): a nation at peace grows readier for war, RESTLESS at most,
+  * reached after RESTLESS_YEARS without a war of its own (`Wars.lastFought`). Measured before
+@@ -203,9 +208,38 @@ export interface WarUtility {
+   wars: number;
+   pariah: number;
+   restless: number;
++  naval: number;
+   u: number;
+ }
+ 
++const basinsCache = new WeakMap<World, { tick: number; of: Map<number, Set<number>> }>();
++/** The basins (`basinAt`) of each nation's armed fleets (`fleetPower` > 0), once a tick (derived, not saved). */
++function navalBasins(world: World): Map<number, Set<number>> {
++  const hit = basinsCache.get(world);
++  if (hit && hit.tick === world.tick) return hit.of;
++  const m = new Map<number, Set<number>>();
++  const c = world.formations.cols;
++  world.formations.forEach((id) => {
++    if (!world.isFleet(id) || fleetPower(world, id) <= 0) return;
++    const n = c.nation[id]!;
++    let b = m.get(n);
++    if (!b) m.set(n, (b = new Set()));
++    b.add(basinAt(world, c.x[id]!, c.y[id]!));
++  });
++  basinsCache.set(world, { tick: world.tick, of: m });
++  return m;
++}
++
++/** Whether `n` and `t` both have an armed fleet in one basin (PLAN 7.120). */
++export function navalRivals(world: World, n: number, t: number): boolean {
++  const b = navalBasins(world);
++  const a = b.get(n);
++  const d = b.get(t);
++  if (!a || !d) return false;
++  for (const k of a) if (d.has(k)) return true;
++  return false;
++}
++
+ /**
+  * The utility of `n`'s war on `t` (the module's formula): `attack` is `n`'s strength with its allies,
+  * `defence` the target's (`sides`), `wars` how many wars `n` is in, `restless` its restlessness
+@@ -219,8 +253,9 @@ export function warUtility(world: World, n: number, t: number, attack: number, d
+   const exhaustion = exhaustionOf(world, n) / 100;
+   const warsTerm = WARS_PENALTY * wars;
+   const pariah = PARIAH_WAR * relationHit(world, n, t);
+-  const u = strength + opportunity + claim - exhaustion - warsTerm + pariah + restless;
+-  return { strength, opportunity, claim, exhaustion, wars: warsTerm, pariah, restless, u };
++  const naval = navalRivals(world, n, t) ? NAVAL_RIVAL : 0;
++  const u = strength + opportunity + claim - exhaustion - warsTerm + pariah + restless + naval;
++  return { strength, opportunity, claim, exhaustion, wars: warsTerm, pariah, restless, naval, u };
+ }
+ 
+ /** The great powers: the GREAT_POWERS strongest living nations that are no puppet, by `str` (`strengths`), lowest id on ties. */
+diff --git a/tests/unit/navalRival1938.test.ts b/tests/unit/navalRival1938.test.ts
+new file mode 100644
+index 00000000..b4a4d3f8
+--- /dev/null
++++ b/tests/unit/navalRival1938.test.ts
+@@ -0,0 +1,51 @@
++import { describe, expect, it } from 'vitest';
++import { NAVAL_RIVAL, navalRivals, sides, strengths, warUtility } from '../../src/sim/ai/strategic';
++import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
++import { Sim } from '../../src/sim/sim';
++import { destroyFormation } from '../../src/sim/systems/elements';
++import { basinAt } from '../../src/sim/systems/navalCombat';
++import { fleetPower } from '../../src/sim/systems/seaControl';
++import { assets1938 } from '../helpers/earth';
++
++// PLAN 7.120 (ADR-706): the late sea war was the wars of two navies (pairs at war with armed fleets in one
++// basin 2.4 a day in year 1, 0.37 late), not the navies' meeting once at war. A war on a nation with an
++// armed fleet in a basin where the attacker has one weighs NAVAL_RIVAL more. Italy and France in 1938:
++// both navies in the Mediterranean.
++
++const { w: W } = SIZE_1938;
++const id = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
++const ITA = id('ITA');
++const FRA = id('FRA');
++
++describe('a naval rival (PLAN 7.120)', () => {
++  it('weighs NAVAL_RIVAL more while both have an armed fleet in one basin, and nothing once one has none', () => {
++    const s = new Sim({ scenario: '1938', seed: 4602, assets: assets1938(W) });
++    const w = s.world;
++    const c = w.formations.cols;
++    const armed = (n: number): number[] => {
++      const l: number[] = [];
++      w.formations.forEach((f) => {
++        if (w.isFleet(f) && c.nation[f] === n && fleetPower(w, f) > 0) l.push(f);
++      });
++      return l;
++    };
++    const basins = (n: number): Set<number> => new Set(armed(n).map((f) => basinAt(w, c.x[f]!, c.y[f]!)));
++    expect([...basins(ITA)].some((b) => basins(FRA).has(b))).toBe(true);
++    expect(navalRivals(w, ITA, FRA)).toBe(true);
++    expect(navalRivals(w, FRA, ITA)).toBe(true);
++
++    const { withAllies, defence } = sides(w, strengths(w));
++    const attack = withAllies(ITA);
++    const d = defence(FRA);
++    const before = warUtility(w, ITA, FRA, attack, d, 0, 0);
++    expect(before.naval).toBe(NAVAL_RIVAL);
++    expect(before.u).toBeCloseTo(before.strength + before.opportunity + before.claim - before.exhaustion - before.wars + before.pariah + before.restless + NAVAL_RIVAL, 9);
++
++    // France's armed fleets gone: no rival, the same war weighs NAVAL_RIVAL less (the other terms as they were).
++    for (const f of armed(FRA)) destroyFormation(w, f);
++    expect(navalRivals(w, ITA, FRA)).toBe(false);
++    const after = warUtility(w, ITA, FRA, attack, d, 0, 0);
++    expect(after.naval).toBe(0);
++    expect(before.u - after.u).toBeCloseTo(NAVAL_RIVAL, 9);
++  });
++});

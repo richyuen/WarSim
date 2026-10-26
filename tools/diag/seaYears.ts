@@ -13,8 +13,9 @@
  *
  * Usage: npx tsx tools/diag/seaYears.ts <seed> <years> [out = .cache/seaYears_<seed>.json]
  *   SAVE_AT=10,20 SAVE_DIR=<dir>: also a checkpoint at the end of those years (`<dir>/s<seed>_y<year>.bin`, PLAN 7.107).
+ *   LOAD=<state.bin>: from that state instead of 1938 (PLAN 7.120's A/B; years counted from it).
  */
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { EventKind } from '../../src/shared/events';
 import { seaSide } from '../../src/shared/history';
 import { size1938, TAGS_1938 } from '../../src/sim/scenario1938';
@@ -29,6 +30,7 @@ const years = Number(process.argv[3] ?? 30);
 const out = process.argv[4] ?? `.cache/seaYears_${seed}.json`;
 const SZ = size1938(undefined);
 const sim = new Sim({ scenario: '1938', seed, assets: loadAssets1938(SZ.w) });
+if (process.env.LOAD) sim.load(new Uint8Array(readFileSync(process.env.LOAD)));
 const saveAt = new Set((process.env.SAVE_AT ?? '').split(',').filter(Boolean).map(Number));
 const saveDir = process.env.SAVE_DIR ?? '.cache';
 const tag = (n: number): string => TAGS_1938[n - 1] ?? `#${n}`;
