@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-702 · 2026-10-25 · proposed (the user's decision) — An attack marches on the enemy formation in reach: contact up, the figure flat (PLAN 7.116b's AT missed)
+### ADR-702 · 2026-10-25 · accepted, option d (the user's decision, 2026-10-25) — An attack marches on the enemy formation in reach: contact up, the figure flat (PLAN 7.116b's AT missed)
 
 - **Context.** PLAN 7.116b (R14-B1, late contact): on 10 unseen seeds × 20 years against HEAD read first on the same
   seeds, engaged land formations a war in years 2–20 at least 0.15 of year 1's; a unit test, red without.
@@ -203,6 +203,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   with a number; (c) is the honest bar for this system and the user's to set; (b) buys +5 % contact with +14 % losses.
   PLAN 7.117 (R14-B2, the late tick) is the other blocking finding and waits.
 - **Meanwhile** the loop takes PLAN 7.117 on HEAD's rules. Until decided, no rule; the pin unchanged (e28dbfa1).
+- **Done (d).** No rule (`docs/evidence/7.116b/rule.patch` kept as the record); 7.116b and 7.116 closed not done;
+  PLAN 7.123 dropped; the measuring tools kept; the pin unchanged (e28dbfa1). R14-B1's late contact waits for the
+  next critic report.
 
 ### ADR-701 · 2026-10-25 · accepted, option a (the user's decision, 2026-10-25) — Hollow divisions folded: the remnants gone, the late contact a war −13 % (PLAN 7.116a's AT missed)
 

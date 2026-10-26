@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.116b's AT missed: engaged a war late 0.111 → 0.113 of year 1's, bar 0.15 (ADR-702; waits on the user)
+### RESOLVED 2026-10-25 (option d, the user's decision: no rule, no task, 7.116 and 7.116b closed not done, PLAN 7.123 dropped) · PLAN 7.116b's AT missed: engaged a war late 0.111 → 0.113 of year 1's, bar 0.15 (ADR-702)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD read first on the same seeds, engaged land formations a war,
   years 2–20, at least 0.15 of year 1's; a unit test, red without; the gate green.
 - **What moved** (`docs/evidence/7.116b/measure.md`, `at.md`, `rule.patch`; 1001–1010): an attack marches on the enemy

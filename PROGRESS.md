@@ -23679,3 +23679,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** Git Bash rewrites `seed:/c/...` arguments (a path list); give the diag tools paths relative to the tree.
 - **Filed:** BLOCKERS, ADR-702 (proposed), PLAN 7.123 (the rule's wars and losses, if (a)).
 - **Next:** PLAN 7.117 while ADR-702 waits.
+
+## 2026-10-25 — PLAN 7.116b closed not done, no rule (ADR-702 d, the user's decision)
+
+- No rule; 7.116b and 7.116 closed not done; PLAN 7.123 dropped; the patch and the four tools kept; the pin unchanged.
+- **Next:** PLAN 7.117 (R14-B2, the late tick).

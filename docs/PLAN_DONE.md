@@ -15362,3 +15362,49 @@ Of 7.116 (open in PLAN.md):
   out of contact is made whole where it stands (refilled on occupied land, or a receiver's men split to it) rather
   than removed. AT: on 10 unseen seeds × 20 years against HEAD, under 500 men at year 20 at most 0.5 × HEAD's, engaged
   land formations a war (years 2–20) not below 0.95 × HEAD's; a unit test, red without; the gate green.
+
+<!-- moved 2026-10-26 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.116 The land war after year 1, a fourth time (closed not done, ADR-702 d, the user's decision; R14-B1; R13-B1 improved by 7.110 and ADR-693 b,
+  not fixed; carries emergent 6): on run 13's 40 seeds, engaged land formations a war a day after year 1
+  0.564 → 0.722 against 6.11 in year 1 (11.4 %; was 10.3 %); at the year-10/20 checkpoints 4.36 → 5.34
+  engaged, 4 of 80 with nobody in contact (was 12); new seeds 0.558 → 0.780. Formations under 500 men at
+  year 20 63.5 → 76.3 a world (late armour of 19–367 men on 5147's front). In the page: 5147 year 20
+  holds 21–50 engaged; 6421 year 20 0–8; 1129 year 10 0–2. Evidence: `critic/c14_cmp_checkpoints.json`,
+  `c14_cmp_all.txt`, `c14_y2_5147_y20.json`, `c14_y2_6421_y20.json`, `c14_y2_1129_y10.json`,
+  `critic/shots/c14y2_5147_y20_d30_250m.png`. The critic's fix: keep raising late contact per war toward
+  a real fraction of year 1's, and merge or disband sub-500-man divisions instead of fielding them. Two
+  causes, two parts; not again the rules already tried (`docs/evidence/7.104/rule.patch`, ADR-679;
+  `docs/evidence/7.115/rule.patch`, ADR-693):
+  - [x] 7.116a Hollow divisions (closed not done, ADR-701 a, the user's decision): a formation under 500 men is merged into a formation of its nation […]
+  - [x] 7.116b Late contact (closed not done, ADR-702 d, the user's decision): measure first, on a late save (HEAD's code) of 6421 year 20 and 1129 year
+    10, why a nation at war with free formations has none in contact. AT: on 10 unseen seeds × 20 years
+    against HEAD read on the same seeds first, engaged land formations a war, mean of daily samples in
+    years 2–20, at least 0.15 of year 1's (HEAD on run 13's seeds 0.114); a unit test, red without; the
+    gate green.
+    Measured and tried (2026-10-25, `docs/evidence/7.116b/`): the AT missed, HEAD 0.111, an attack on the
+    enemy formation in reach 0.113 (wars +11 %, losses +14 %); BLOCKERS, ADR-702 (proposed). Waits on the
+    user; until then the loop takes 7.117. Decided (d): no rule, no task; R14-B1's late contact to the next
+    critic report.
+
+- [x] 7.123 Contact that costs the army (from 7.116b, ADR-702; dropped by ADR-702 d, the user's decision): on
+  fresh worlds 7.116b's rule (an attack on the enemy formation in reach) raises the share of the army at war in
+  contact +10 % and contact a world-year +5 %, but the wars running +11 % and land formations destroyed +14 % a year,
+  and the army at war a war falls 13 % (1001–1010; on the saves the same rule reads late ×1.15 with the wars the same).
+  Evidence: `docs/evidence/7.116b/at.md`, `rule.patch`. Measure first, with the rule on 3 of 1001–1010 against HEAD,
+  where the extra losses fall (combat, the air's strikes on the formations brought near, supply) and which wars are
+  the extra ones (who declares them, at what army). AT: on 10 unseen seeds × 20 years (1011 on) against HEAD on the
+  same seeds, engaged land formations a war in years 2–20 at least 1.2 × HEAD's, year-1's not below 0.95 × HEAD's; a
+  unit test, red without; the gate green.
