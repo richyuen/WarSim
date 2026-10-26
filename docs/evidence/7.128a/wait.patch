@@ -1,0 +1,249 @@
+diff --git a/SPEC.md b/SPEC.md
+index bcca1c62..a06198d7 100644
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -1020,6 +1020,10 @@ items take days and draw gold, industry and manpower. Upkeep runs monthly.
+   template's strength (`refillFormation`, so they become that formation's units), and it is
+   removed; the men no such formation takes go back to the pool at DISBAND_MANPOWER. In the order
+   of the ids. A nation without AI keeps its remnants (which to merge is the player's choice).
++  It is folded only once it has been so (hollow, out of contact, not retreating) for HOLLOW_WAIT_DAYS
++  (7) days on end (PLAN 7.128a, ADR-716): `World.hollowSince` holds the day each was first seen so,
++  kept day by day while it stays so, saved while not empty. A fresh remnant is often refilled or
++  back in a line within days; folded the next day, year 1's land contact fell by a third.
+ 
+ **Techs v1: what a nation knows, and the gate (PLAN 3.1a, ADR-127; `src/sim/tech.ts`).**
+ - *The tree* reaches the sim as `ScenarioRules.techs` (id, year, prerequisites), the tech files
+diff --git a/src/sim/ai/hollow.ts b/src/sim/ai/hollow.ts
+index 4eb23417..22d82a33 100644
+--- a/src/sim/ai/hollow.ts
++++ b/src/sim/ai/hollow.ts
+@@ -9,6 +9,12 @@
+  * (DISBAND_MANPOWER). In the order of the ids; a receiver may be engaged (the men walk to the
+  * line), and a formation that took men in and is still hollow is folded in its turn.
+  *
++ * A remnant is folded only after HOLLOW_WAIT_DAYS days hollow and out of contact on end (PLAN
++ * 7.128a, ADR-716; `World.hollowSince`): fresh from a fight it is often refilled or back in a line
++ * within days. Folded the next day (ADR-701 as it stood), year 1's land contact fell 61.1 → 39.7
++ * a day on the critic's 8 seeds that fell most; the wait gives it back, while the late remnants,
++ * which stand for months, still go.
++ *
+  * Before (critic run 14, R14-B1): a remnant on occupied land is never refilled (`refillable`
+  * wants its nation's cell), and 63.5 → 76.3 of them a world stood at year 20, 19–367 men each,
+  * crowding the late fronts' labels; 0–2 of ~100 a world were in contact.
+@@ -25,6 +31,8 @@ import { Domain, navOf, type World } from '../world';
+ export const HOLLOW_MEN = 500;
+ /** The furthest a hollow formation's men walk to the formation they join, km on the map. */
+ export const MERGE_KM = 50;
++/** Days a remnant stays hollow and out of contact before it is folded (ADR-716). */
++export const HOLLOW_WAIT_DAYS = 7;
+ /** The cell a formation stands on, or -1. */
+ function cellOf(world: World, id: number): number {
+   const fc = world.formations.cols;
+@@ -58,7 +66,13 @@ export function foldHollow(world: World, backToPool: number): number {
+     byNation.set(n, l);
+     if (fc.strength[id]! < Math.min(HOLLOW_MEN, rule.manpower)) any = true;
+   });
+-  if (!any) return 0;
++  if (!any) {
++    if (world.hollowSince.size > 0) world.hollowSince.clear();
++    return 0;
++  }
++  // The day each waiting remnant was first seen so (kept only while it stays so, day by day).
++  const day = Math.floor(world.tick / 24);
++  const since = new Map<number, number>();
+   const comp = navOf(world).grid.component;
+   // MERGE_KM in cells, squared (no root: the comparison is exact on every engine).
+   const reach = MERGE_KM / kmPerCell(world.cells.w);
+@@ -70,6 +84,11 @@ export function foldHollow(world: World, backToPool: number): number {
+       const men = fc.strength[id]!;
+       const rule = rules.templates[fc.template[id]!]!;
+       if (men >= Math.min(HOLLOW_MEN, rule.manpower) || fc.engaged[id] === 1 || fc.retreat[id] !== 0) continue;
++      const first = world.hollowSince.get(id) ?? day;
++      if (day - first < HOLLOW_WAIT_DAYS) {
++        since.set(id, first);
++        continue;
++      }
+       const cell = cellOf(world, id);
+       const land = cell >= 0 ? comp[cell]! : 0;
+       let best = -1;
+@@ -95,5 +114,6 @@ export function foldHollow(world: World, backToPool: number): number {
+       folded++;
+     }
+   }
++  world.hollowSince = since;
+   return folded;
+ }
+diff --git a/src/sim/systems/elements.ts b/src/sim/systems/elements.ts
+index e2cab0a4..84d50374 100644
+--- a/src/sim/systems/elements.ts
++++ b/src/sim/systems/elements.ts
+@@ -751,6 +751,7 @@ export function destroyFormation(world: World, fid: number): void {
+   world.seaBound.delete(fid);
+   world.station.delete(fid);
+   world.farWait.delete(fid);
++  world.hollowSince.delete(fid);
+   // A wing's base goes with it; the wings a carrier's fleet carried are lost with it at the air
+   // system's hour (PLAN 5.1d), and a formation given the id again carries none.
+   world.wingBase.delete(fid);
+diff --git a/src/sim/world.ts b/src/sim/world.ts
+index 1b1e38a6..bcf9198d 100644
+--- a/src/sim/world.ts
++++ b/src/sim/world.ts
+@@ -426,6 +426,8 @@ class WorldCore implements Stateful {
+       ...(w.supplyBeach.size === 0 ? [] : [{ name: 'world.supplyBeach', dtype: 'i32' as const, data: Int32Array.from([...w.supplyBeach].sort((a, b) => a[0] - b[0]).flat()) }]),
+       // The formations waiting after a refused march from afar (PLAN 7.117): [id, day] each, only while there is one.
+       ...(w.farWait.size === 0 ? [] : [{ name: 'world.farWait', dtype: 'i32' as const, data: Int32Array.from([...w.farWait].sort((a, b) => a[0] - b[0]).flat()) }]),
++      // The remnants waiting to be folded (PLAN 7.128a): [id, day] each, only while there is one.
++      ...(w.hollowSince.size === 0 ? [] : [{ name: 'world.hollowSince', dtype: 'i32' as const, data: Int32Array.from([...w.hollowSince].sort((a, b) => a[0] - b[0]).flat()) }]),
+       ...(w.station.size === 0 ? [] : [{ name: 'world.station', dtype: 'f64' as const, data: Float64Array.from([...w.station].sort((a, b) => a[0] - b[0]).flatMap(([id, [x, y]]) => [id, x, y])) }]),
+       ...(w.embarked.size === 0 ? [] : [{ name: 'world.embarked', dtype: 'f64' as const, data: Float64Array.from([...w.embarked].sort((a, b) => a[0] - b[0]).flatMap(([id, e]) => [id, e.fleet, e.land, e.water, e.target])) }]),
+       // Sea control (PLAN 4.4a): [zones + 1, holders..., days...], only while a zone is held.
+@@ -539,6 +541,9 @@ class WorldCore implements Stateful {
+     w.farWait = new Map();
+     const waits = sections.find((s) => s.name === 'world.farWait')?.data as Int32Array | undefined;
+     for (let at = 0; waits && at < waits.length; at += 2) w.farWait.set(waits[at]!, waits[at + 1]!);
++    w.hollowSince = new Map();
++    const hollow = sections.find((s) => s.name === 'world.hollowSince')?.data as Int32Array | undefined;
++    for (let at = 0; hollow && at < hollow.length; at += 2) w.hollowSince.set(hollow[at]!, hollow[at + 1]!);
+     const stations = sections.find((s) => s.name === 'world.station')?.data as Float64Array | undefined;
+     for (let at = 0; stations && at < stations.length; at += 3) w.station.set(stations[at]!, [stations[at + 1]!, stations[at + 2]!]);
+     w.embarked = new Map();
+@@ -1277,6 +1282,12 @@ export class World {
+    * not empty; an entry goes with its formation (`destroyFormation`) and when it is read past its day.
+    */
+   farWait = new Map<number, number>();
++  /**
++   * The hollow land formations waiting to be folded (PLAN 7.128a, ADR-716; `ai/hollow.ts`), by id:
++   * the day (tick / 24) each was first seen hollow and out of contact, kept while it stays so. State,
++   * saved while not empty (an older save has none: its remnants wait from the day it is loaded).
++   */
++  hollowSince = new Map<number, number>();
+   /**
+    * The air wings' bases (PLAN 5.1d), by wing: an airbase's index + 1, or a carrier's fleet as its
+    * id negated; 0 for a wing whose carrier is gone (`airSystem` loses it). State, saved while not empty.
+diff --git a/tests/unit/hollow1938.test.ts b/tests/unit/hollow1938.test.ts
+index 4b5f27e6..0ef53c54 100644
+--- a/tests/unit/hollow1938.test.ts
++++ b/tests/unit/hollow1938.test.ts
+@@ -1,6 +1,6 @@
+ import { describe, expect, it } from 'vitest';
+ import { DISBAND_MANPOWER, economicAi } from '../../src/sim/ai/economic';
+-import { HOLLOW_MEN, MERGE_KM } from '../../src/sim/ai/hollow';
++import { HOLLOW_MEN, HOLLOW_WAIT_DAYS, MERGE_KM } from '../../src/sim/ai/hollow';
+ import { isDayStart, isMonthStart } from '../../src/shared/calendar';
+ import { kmPerCell } from '../../src/sim/data/projection';
+ import { BUILD_MIX_1938, ECONOMY_TABLES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
+@@ -14,18 +14,33 @@ import { nationId } from '../helpers/sim1938';
+ // is folded daily into the nearest formation of its nation with room on the same landmass within
+ // MERGE_KM, or disbanded with DISBAND_MANPOWER of its men back to the pool. Before (critic run 14,
+ // R14-B1), 63.5 → 76.3 such remnants a world stood at year 20, never refilled on occupied land.
++// PLAN 7.128a (ADR-716): only after HOLLOW_WAIT_DAYS days hollow and out of contact on end.
+ 
+ const GER = nationId('GER');
+ 
+-/** The 1938 world on day 2 at 00:00: a day's start that is not a month's, so the economic AI's day is the fold alone. */
+-function world1938(): World {
+-  const w = new Sim({ scenario: '1938', seed: 5, assets: assets1938(SIZE_1938.w) }).world;
++/** The 1938 sim on day 2 at 00:00: a day's start that is not a month's, so the economic AI's day is the fold alone. */
++function sim1938(): Sim {
++  const sim = new Sim({ scenario: '1938', seed: 5, assets: assets1938(SIZE_1938.w) });
++  const w = sim.world;
+   w.tick = 24;
+   expect(isDayStart(w.tick)).toBe(true);
+   expect(isMonthStart(w.startDay, w.tick)).toBe(false);
++  return sim;
++}
++
++/** The 1938 world on day 2 at 00:00 (`sim1938`). */
++function world1938(): World {
++  const w = sim1938().world;
++  expect(isDayStart(w.tick)).toBe(true);
++  expect(isMonthStart(w.startDay, w.tick)).toBe(false);
+   return w;
+ }
+ 
++/** Marks `ids` as hollow and out of contact since HOLLOW_WAIT_DAYS days: today's fold takes them. */
++function waited(w: World, ...ids: number[]): void {
++  for (const id of ids) w.hollowSince.set(id, Math.floor(w.tick / 24) - HOLLOW_WAIT_DAYS);
++}
++
+ /** The economic AI's system as the 1938 game runs it, one call. */
+ const day = (w: World): void => economicAi(ECONOMY_TABLES_1938, BUILD_MIX_1938)(w);
+ 
+@@ -73,6 +88,7 @@ describe('hollow divisions are folded or sent home (PLAN 7.116a)', () => {
+     fc.y[a!] = fc.y[b!]!;
+     const before = fc.strength[b!]!;
+     const pool = w.nations.cols.manpower[GER]!;
++    waited(w, a!);
+     day(w);
+     expect(w.formations.has(a!)).toBe(false);
+     // Its men are the receiver's, to a unit (the receiver's units are of up to a few dozen men).
+@@ -93,6 +109,7 @@ describe('hollow divisions are folded or sent home (PLAN 7.116a)', () => {
+     fc.y[a!] = fc.y[b!]!;
+     const before = fc.strength[b!]!;
+     const pool = w.nations.cols.manpower[GER]!;
++    waited(w, a!);
+     day(w);
+     expect(w.formations.has(a!)).toBe(false);
+     expect(fc.strength[b!]).toBe(before);
+@@ -106,6 +123,7 @@ describe('hollow divisions are folded or sent home (PLAN 7.116a)', () => {
+     hollowOut(w, a!);
+     hollowOut(w, c!);
+     fc.engaged[a!] = 1;
++    waited(w, a!, c!);
+     day(w);
+     expect(w.formations.has(a!)).toBe(true);
+     expect(w.formations.has(c!)).toBe(false);
+@@ -114,7 +132,52 @@ describe('hollow divisions are folded or sent home (PLAN 7.116a)', () => {
+     const [a2] = fullGerman(w2);
+     hollowOut(w2, a2!);
+     w2.nations.cols.aiOff[GER] = 1;
++    waited(w2, a2!);
+     day(w2);
+     expect(w2.formations.has(a2!)).toBe(true);
+   });
++
++  it('a fresh remnant waits HOLLOW_WAIT_DAYS days out of contact before it is folded; contact starts the wait again (PLAN 7.128a)', () => {
++    const w = world1938();
++    const fc = w.formations.cols;
++    const all = fullGerman(w);
++    const a = all[0]!;
++    // c stands beyond MERGE_KM of a, so a's men do not fill it when a goes.
++    const reach = (MERGE_KM + 10) / kmPerCell(w.cells.w);
++    const c = all.find((o) => Math.hypot(fc.x[o]! - fc.x[a]!, fc.y[o]! - fc.y[a]!) > reach);
++    expect(c).toBeDefined();
++    hollowOut(w, a);
++    hollowOut(w, c!);
++    const first = Math.floor(w.tick / 24);
++    // Days 0 .. HOLLOW_WAIT_DAYS - 1 of the wait: both kept; on day 2, c is in contact for the day.
++    for (let d = 0; d < HOLLOW_WAIT_DAYS; d++) {
++      expect(isMonthStart(w.startDay, w.tick)).toBe(false);
++      fc.engaged[c!] = d === 2 ? 1 : 0;
++      day(w);
++      expect(w.formations.has(a!)).toBe(true);
++      expect(w.formations.has(c!)).toBe(true);
++      expect(w.hollowSince.get(a!)).toBe(first);
++      w.tick += 24;
++    }
++    // Day HOLLOW_WAIT_DAYS: a has waited its days and goes; c's wait began again after its contact.
++    expect(isMonthStart(w.startDay, w.tick)).toBe(false);
++    day(w);
++    expect(w.formations.has(a!)).toBe(false);
++    expect(w.formations.has(c!)).toBe(true);
++    expect(w.hollowSince.get(c!)).toBe(first + 3);
++    expect(w.hollowSince.has(a!)).toBe(false);
++  });
++
++  it("a remnant's wait is state: a save and load keep it", () => {
++    const sim = sim1938();
++    const w = sim.world;
++    const [a] = fullGerman(w);
++    hollowOut(w, a!);
++    day(w);
++    const first = Math.floor(w.tick / 24);
++    expect(w.hollowSince.get(a!)).toBe(first);
++    const copy = new Sim({ scenario: '1938', seed: 5, assets: assets1938(SIZE_1938.w) });
++    copy.load(sim.save());
++    expect([...copy.world.hollowSince]).toEqual([[a!, first]]);
++  });
+ });

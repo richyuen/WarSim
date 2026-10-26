@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-716 · 2026-10-26 · proposed (the user's decision) — Year 1's land contact: no wait before the fold brings it back, and the fold is half the fall (PLAN 7.128a's AT missed)
+
+- **Context.** PLAN 7.128a (R15-B1): year 1's land contact back to at least 0.98 × `311988d`'s on 1111–1120, with under
+  500 men at year 20 at most 2 a world and years 2–30 not below HEAD's. 7.128's split read ADR-701's fold as the whole
+  fall, from a bisect on the critic's 8 seeds that fell most.
+- **Probes** (scratch, 16 critic seeds, year 1 against run 14's figures; `docs/evidence/7.128a/at.md`): a remnant kept
+  on its own land or near an enemy 0.959–0.994, but those on own land are never refilled and 71 of 113 stand at year 20;
+  a wait of 7–30 days before the fold 1.008–1.034, with 0–9 remnants late between bursts.
+- **The rule tried** (`wait.patch`, not committed): fold a remnant only after HOLLOW_WAIT_DAYS = 7 days hollow and out
+  of contact on end (`World.hollowSince`, saved). On 1111–1120: year 1 **0.889 ×** `311988d` (HEAD 0.894 ×; bar 0.98:
+  missed), under 500 at year 20 **2.7** a world (HEAD 0.4; bar 2: missed), years 2–30 **0.966 ×** HEAD (missed). The
+  probes' gain was the light sample (those seeds read HEAD at 0.948, the critic's 48 at 0.888).
+- **No fold** on 1111–1120: **0.939 ×**. On ordinary seeds the fold is about half of year 1's fall (45.11 → 42.38 a
+  day); the rest is elsewhere in the 7 commits to `src/` from `311988d7` to HEAD. Even with no fold the bar is missed.
+- **Options:**
+  - **(a)** No rule; 7.128a closed not done; the fold kept (ADR-701 a); PLAN 7.135 finds and mends the other half
+    (bisect year 1 on 1111–1120 with the fold off; AT on 1131–1140). (Recommended: the half that is not the fold is
+    unexplained, and the fold's half costs the critic's R14-B1 fix to win back.)
+  - **(b)** The fold reverted (ADR-701 c in effect): about half of the fall back, R14-B1's remnants back (68.5 a world
+    at year 20); 7.135 as in (a).
+  - **(c)** As (a), and 7.128's year-1 bar re-scoped to 0.98 × `311988d`'s with no fold's cost in it (0.95 ×), what is
+    reachable with the fold kept.
+- **Meanwhile** the loop takes 7.128b on HEAD's rules. Seeds 1111–1120 went here; 7.128b takes 1121–1130, 7.135
+  1131–1140.
+
 ### ADR-715 · 2026-10-26 · proposed (the user's decision) — The critic's Poland's light-theatre strikes: the half floor fixes three of four and turns strikes toward cities (PLAN 7.127's AT missed)
 
 - **Context.** PLAN 7.127 (from ADR-711's re-picks): in `nukePoland1938`'s set-up on 4001–4020, Poland's first burst

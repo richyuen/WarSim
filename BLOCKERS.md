@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### 2026-10-26 · PLAN 7.128a's AT missed: a 7-day wait before the fold moves year 1 nowhere (0.889 × `311988d`, bar 0.98; ADR-716)
+- **The bar:** on 1111–1120 × 30 years, engaged land formations a day in year 1 at least 0.98 × `311988d`'s; under 500
+  men at year 20 at most 2 a world; years 2–30 not below HEAD's; a unit test, red without; the gate green.
+- **What moved** (`docs/evidence/7.128a/at.md`, `wait.patch`, not committed): a remnant folded only after 7 days hollow
+  and out of contact. Year 1 40.33 → 40.12 a day (HEAD 0.894 ×, the wait 0.889 ×); under 500 at year 20 0.4 → 2.7;
+  years 2–30 0.966 × HEAD. Its unit cases red without. No fold at all reads 0.939 ×: on ordinary seeds the fold is
+  about half of the fall, not the whole (the bisect was on the critic's 8 seeds that fell most).
+- **What is left:** PLAN 7.135 (the other half: a bisect of year 1 on these seeds with the fold off, its own AT); the
+  user's (ADR-716): (a) 7.128a closed not done, the fold kept, 7.135 (recommended); (b) the fold reverted; (c) 7.128's
+  year-1 bar re-scoped to what 7.135 finds.
+
 ### 2026-10-26 · PLAN 7.127's AT missed: Poland's first burst off Germany on under 50,000 men 4 → 1 of 20, and strikes turned toward cities (ADR-715)
 - **The bar:** on 4001–4020 such bursts 0 of 20; Poland's strikes before its bomber is gone not fewer than 15;
   `nukePoland1938` green; the gate green.

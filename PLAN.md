@@ -83,8 +83,17 @@ none a seed the critic has run (`critic/c*_seed*`):
     1111–1120 × 30 years, `311988d`'s rules and the change's read on the same seeds: engaged a day in year 1 at least
     0.98 × `311988d`'s; land formations under 500 men at year 20 at most 2 a world; years 2–30 not below HEAD's; a
     unit test, red without; the gate green.
+    Missed (2026-10-26, `docs/evidence/7.128a/at.md`): a 7-day wait before the fold, year 1 0.894 → 0.889 ×, under 500
+    at year 20 0.4 → 2.7, years 2–30 0.966 × HEAD; no fold at all 0.939 ×, so the fold is half the fall on these
+    seeds. Not committed; waits on the user (ADR-716, BLOCKERS); the other half is PLAN 7.135.
   - [ ] 7.128b The late contact: years 2–30 at least 1.15 × HEAD's and checkpoints with nobody in contact not above
-    `311988d`'s count, on seeds 1121–1130, against 7.128a's rules.
+    `311988d`'s count, on seeds 1121–1130, against HEAD's rules while 7.128a waits (ADR-716).
+- [ ] 7.135 Year 1's other half (from 7.128a, ADR-716): with no fold, year 1's land contact on 1111–1120 is 0.939 ×
+  `311988d`'s (42.38 against 45.11 a day; HEAD 40.33), so half the fall is in the other 6 commits to `src/` from
+  `311988d7` to HEAD. Found by a bisect of year 1 on 1111–1120 with the fold off (`tools/diag/contactYears.ts`).
+  AT: on 1131–1140 × 30 years, `311988d`'s rules and the change's read on the same seeds: year 1 at least 0.95 ×
+  `311988d`'s with the fold kept; years 2–30 not below HEAD's; under 500 men at year 20 at most 2 a world; a unit
+  test, red without; the gate green.
 - [ ] 7.129 R15-B2: the 5.5 ms budget (ADR-709) fails late. Pinned and alone, 6421's year 28 7.88–7.98 ms (operational
   AI 5.3–5.4), years 29 and 30 7.14 and 5.89; 1129's year 21 6.39–6.54 ms, year 20 5.77 (`critic/c15_perf_*`; saves
   `critic/c15_seed6421_y27.bin`, `c15_seed1129_y20.bin`). AT: pinned and alone, 6421's year 28 and 1129's year 21 at

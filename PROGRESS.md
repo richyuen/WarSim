@@ -23874,3 +23874,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Stopped:** the 20-year runs of those variants (under 500 men at year 20, 5 seeds) were stopped by Claude Code for
   low memory (15 sims at once); not restarted, waits on the user.
 - **Filed:** 7.128a (year 1 back, the fold's cost; AT on 1111–1120 × 30), 7.128b (the late contact; 1121–1130).
+
+## 2026-10-26 — PLAN 7.128a: the AT missed, to the user (ADR-716)
+
+- **Start:** gate green on `779a24a2`; critic not due; ADR-715 waits on the user.
+- **Probes** (scratch worktree `C:/Git/WarSim_rule`, `HV`/`HN` variants in `ai/hollow.ts` and `tools/diag/hollowWho.ts`,
+  left uncommitted there; 16 critic seeds, year 1 against run 14): keeping remnants on own land or near an enemy
+  0.959–0.994 × `311988d`, but own-land remnants are never refilled (71 of 113 at year 20 from run 14's saves); a wait
+  before the fold of 7–30 days 1.008–1.034, 0–9 remnants late between bursts.
+- **AT** (`docs/evidence/7.128a/at.md`, `wait.patch`, not committed; 1111–1120 × 30, 30 sims 8 at a time, ~2 h): a
+  7-day wait, year 1 **0.889 ×** (HEAD 0.894 ×; bar 0.98), under 500 at year 20 **2.7** (bar 2), years 2–30 **0.966 ×**
+  HEAD. Missed on all three. No fold at all reads **0.939 ×**: on ordinary seeds the fold is half the fall.
+- **Filed:** BLOCKERS, ADR-716 (proposed), PLAN 7.135 (the other half, a bisect with the fold off; AT on 1131–1140);
+  7.128b now runs on HEAD's rules. The code is restored; the pin unchanged.
+- **Gotcha:** 16 seeds read a year-1 mean to about ±1.5 a day, more than the bar's margin (0.9); the probe seeds read
+  HEAD at 0.948 × where the critic's 48 read 0.888. A probe's gain under 5 % on a light sample is not a result.
+- **Gotcha:** run 14's pre-fold saves (`critic/c14_seed*_y20.bin`) load on HEAD: a year-20 fold probe takes minutes
+  (`tools/diag/hollowStep.ts`), not a 20-year run.
+- **Next:** PLAN 7.128b (seeds 1121–1130) while ADR-715 and ADR-716 wait.
