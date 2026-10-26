@@ -424,6 +424,8 @@ class WorldCore implements Stateful {
       // The fleets placed by the editor that hold their place (PLAN 7.22c): [id, x, y] each, only while there is one.
       // The beach's supply layer (PLAN 7.75): [cell, bloc] each, only while there is one.
       ...(w.supplyBeach.size === 0 ? [] : [{ name: 'world.supplyBeach', dtype: 'i32' as const, data: Int32Array.from([...w.supplyBeach].sort((a, b) => a[0] - b[0]).flat()) }]),
+      // The formations waiting after a refused march from afar (PLAN 7.117): [id, day] each, only while there is one.
+      ...(w.farWait.size === 0 ? [] : [{ name: 'world.farWait', dtype: 'i32' as const, data: Int32Array.from([...w.farWait].sort((a, b) => a[0] - b[0]).flat()) }]),
       ...(w.station.size === 0 ? [] : [{ name: 'world.station', dtype: 'f64' as const, data: Float64Array.from([...w.station].sort((a, b) => a[0] - b[0]).flatMap(([id, [x, y]]) => [id, x, y])) }]),
       ...(w.embarked.size === 0 ? [] : [{ name: 'world.embarked', dtype: 'f64' as const, data: Float64Array.from([...w.embarked].sort((a, b) => a[0] - b[0]).flatMap(([id, e]) => [id, e.fleet, e.land, e.water, e.target])) }]),
       // Sea control (PLAN 4.4a): [zones + 1, holders..., days...], only while a zone is held.
@@ -534,6 +536,9 @@ class WorldCore implements Stateful {
     const bound = sections.find((s) => s.name === 'world.seaBound')?.data as Float64Array | undefined;
     for (let at = 0; bound && at < bound.length; at += 2) w.seaBound.set(bound[at]!, bound[at + 1]!);
     w.station = new Map();
+    w.farWait = new Map();
+    const waits = sections.find((s) => s.name === 'world.farWait')?.data as Int32Array | undefined;
+    for (let at = 0; waits && at < waits.length; at += 2) w.farWait.set(waits[at]!, waits[at + 1]!);
     const stations = sections.find((s) => s.name === 'world.station')?.data as Float64Array | undefined;
     for (let at = 0; stations && at < stations.length; at += 3) w.station.set(stations[at]!, [stations[at + 1]!, stations[at + 2]!]);
     w.embarked = new Map();
@@ -1251,6 +1256,12 @@ export class World {
    * it breaks off beaten (`breakOff`). State, saved while not empty.
    */
   station = new Map<number, [number, number]>();
+  /**
+   * The formations whose march from afar (or to spare) was refused (PLAN 7.117, ADR-703), by id: the
+   * day (tick / 24) before which the operational AI gives it no such march again. State, saved while
+   * not empty; an entry goes with its formation (`destroyFormation`) and when it is read past its day.
+   */
+  farWait = new Map<number, number>();
   /**
    * The air wings' bases (PLAN 5.1d), by wing: an airbase's index + 1, or a carrier's fleet as its
    * id negated; 0 for a wing whose carrier is gone (`airSystem` loses it). State, saved while not empty.

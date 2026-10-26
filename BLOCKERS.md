@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.117's AT missed: one world-year of 250 at 9.31 ms a tick, bar 5.0 (ADR-703; waits on the user)
+### RESOLVED 2026-10-26 (option a, the user's decision: the rule committed, 7.117 closed not done, PLAN 7.124 kept) · PLAN 7.117's AT missed: one world-year of 250 at 9.31 ms a tick, bar 5.0 (ADR-703)
 - **The bar:** pinned and alone, 8167's year 19 at most 5.0 ms a tick, and the worst year of 10 unseen seeds × 25
   years at most 5.0 ms; the gate green.
 - **What moved** (`docs/evidence/7.117/measure.md`, `at.md`, `rule.patch`; 1021–1030): a refused march from afar waits

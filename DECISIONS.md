@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-703 · 2026-10-25 · proposed (the user's decision) — A refused march from afar waits 40 days: the late cost gone, one early year over the budget (PLAN 7.117's AT missed)
+### ADR-703 · 2026-10-25 · accepted, option a (the user's decision, 2026-10-26) — A refused march from afar waits 40 days: the late cost gone, one early year over the budget (PLAN 7.117's AT missed)
 
 - **Context.** PLAN 7.117 (R14-B2): ADR-698's budget, at most 5.0 ms a tick in any year. AT: pinned and alone, 8167's
   year 19 at most 5.0 ms, and the worst year of 10 unseen seeds × 25 years at most 5.0 ms; the gate green.
@@ -194,6 +194,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     year" left to 7.124.
   - **(c)** No rule; 7.117 closed not done; 7.124 for both kinds of refused search.
 - **Meanwhile** the loop takes PLAN 7.118. Until decided, no rule; the pin unchanged (e28dbfa1).
+- **Decision** (2026-10-26, the user's): (a). The rule committed from `rule.patch`; the pin e28dbfa1 → 3a90f72d;
+  7.117 closed not done; PLAN 7.124 kept.
 
 ### ADR-702 · 2026-10-25 · accepted, option d (the user's decision, 2026-10-25) — An attack marches on the enemy formation in reach: contact up, the figure flat (PLAN 7.116b's AT missed)
 

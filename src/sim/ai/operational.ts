@@ -48,7 +48,9 @@
  * (no formation of it stands in the sector or next to it, the allotment gave it none, none is on
  * the march into it) takes the nearest formation on its landmass that is far from every sector it
  * reaches and stands still: one a sector, to the sector's front cell, on the formation's day in
- * MARCH_DAYS. The march is not planned again before it ends or comes within the range.
+ * MARCH_DAYS. The march is not planned again before it ends or comes within the range. One whose
+ * order so (or to spare, below) is refused is given none so again for FAR_RETRY_DAYS (PLAN 7.117,
+ * ADR-703: `World.farWait`, saved).
  * A partner's front (PLAN 7.26c1a, ADR-509): a planner with no front cell of its own in its wars
  * sends its far formations so to the sectors of its partners' front that have nobody of the side
  * (no formation of the planner or of a nation on its side stands in the sector or next to it).
@@ -105,6 +107,13 @@ export const MARCH_DAYS = 8;
  * DEPLOY_RANGE_CELLS away (PLAN 3.10c1d, ADR-191): the far end of its front, not another theatre.
  */
 export const SPARE_RANGES = 3;
+/**
+ * A formation whose march from afar or to spare was refused is given no such march again for this
+ * many days (PLAN 7.117, ADR-703; `World.farWait`): late in a war nearly every such order is refused
+ * (1014's year 22: 4,432 of 4,711), each a search of the whole way that fails, 5–6 ms, asked again on
+ * the formation's day in MARCH_DAYS because any flip of the map voids the refusal kept.
+ */
+export const FAR_RETRY_DAYS = 40;
 let spare2 = SPARE_RANGES * SPARE_RANGES * range2;
 /** This world's `takeMen`: set by `operationalAi` for the world it plans. */
 let take = 1500;
@@ -658,7 +667,15 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   // PLAN 3.4Rm): nothing below would give an order, and the ground is not asked for.
   const ownFront = list.some((s) => s.own);
   const day = Math.floor(world.tick / 24);
-  const idle = (id: number): boolean => f.moving[id] !== 1 && (day + id) % MARCH_DAYS === 0;
+  /** Whether a refused march from afar holds the formation back today (`World.farWait`; one past its day is let go). */
+  const waits = (id: number): boolean => {
+    const until = world.farWait.get(id);
+    if (until === undefined) return false;
+    if (until > day) return true;
+    world.farWait.delete(id);
+    return false;
+  };
+  const idle = (id: number): boolean => f.moving[id] !== 1 && (day + id) % MARCH_DAYS === 0 && !waits(id);
   const near: number[] = [];
   const nearD: number[] = [];
   const out: number[] = [];
@@ -906,7 +923,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
   const spare: number[] = [];
   if (ownFront && (day + n) % MARCH_DAYS === 0) {
     const most = Math.max(1, ranked.length - active.length);
-    for (let k = ranked.length - 1; k >= 0 && spare.length < most; k--) if (!onErrand(ranked[k]!)) spare.push(ranked[k]!);
+    for (let k = ranked.length - 1; k >= 0 && spare.length < most; k--) if (!onErrand(ranked[k]!) && !waits(ranked[k]!)) spare.push(ranked[k]!);
   }
   const byThreat = list.map((_, i) => i).sort((a, b) => list[b]!.threat - list[a]!.threat || list[a]!.key - list[b]!.key);
   const byClass: number[][] = classCell.map(() => []);
@@ -1205,7 +1222,8 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
         empty[i] = 0;
         empties--;
         const to = list[i]!.hold;
-        askMove(world, id, to, pass);
+        // Refused, it is not sent so again for FAR_RETRY_DAYS (PLAN 7.117, ADR-703).
+        if (askMove(world, id, to, pass) !== 'ok') world.farWait.set(id, day + FAR_RETRY_DAYS);
         // One to spare leaves the sector the allotment gave it: no order of that sector below.
         if (lone === 1) {
           for (const s of list) {

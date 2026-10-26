@@ -53,25 +53,6 @@ Run 14's (report of 2026-10-25 on `311988d7`, `critic/CRITIC_REPORT.md`; R13-B1 
 aiNukes 7 → 8): R14-B1 and R14-B2 are PLAN 7.116 and 7.117; the dimensions under the bar, beyond them,
 are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a task, none reused:
 
-- [ ] 7.117 The late tick over its budget (R14-B2; carries performance 5): ADR-698's budget is at most
-  5.0 ms a tick in any year. Pinned and alone on HEAD: 8167 year 19 13.3 ms (p95 49.9, longest tick 611
-  ms; the operational AI 11.5 ms of it), year 23 11.2 ms; 6151 year 22 7.9 ms; 4877 year 21 5.26 ms; on
-  `0c80db1` 9437 years 24–27 6.1–8.6 ms (not a regression: the budget's first test). In the page 8167's
-  year 19 at Max takes 142 s with 40 stalls over 500 ms. Evidence: `critic/c14_perf_8167_y19_head.log`,
-  `c14_perf_8167_y21_23_head.log`, `c14_perf_6151_y21_22_head.log`, `c14_perf_4877_y21_head.log`,
-  `c14_perf_9437_y21_27_0c80db1.log`, `c14_l_8167.json`; saves `critic/c14_seed8167_y18.bin`,
-  `c14_seed8167_y20.bin` (HEAD `311988d7`'s code: valid while the sim's rules are unchanged; else made
-  again from seed 8167). The critic's fix: profile the operational AI on 8167's year 19 and cap its work
-  per tick (time-slice or amortise across hours). Measure first (`--profile`, `--cpu-prof`) what in the
-  operational AI takes the 11.5 ms. AT: pinned (`--affinity 0xFFFF`) and alone, 8167's year 19 at most
-  5.0 ms a tick, and the worst year of 10 unseen seeds × 25 years at most 5.0 ms (each year a world-year
-  read by `npm run sim -- --profile`); a change meant to keep the rules keeps the pin; the gate green.
-
-  Measured and tried (2026-10-25, `docs/evidence/7.117/`): the AT missed by one world-year of 250 (1021's year 6,
-  9.31 ms: the orders' refused searches); a refused march from afar waiting 40 days takes the late cost off (1014's
-  year 22 6.86 → 4.63 ms; 8167's year 19 4.09). BLOCKERS, ADR-703 (proposed). Waits on the user. Seeds 1011–1020 went
-  to the measure, 1021–1030 to the AT; next unseen 1031.
-
 - [ ] 7.118 Emergent dynamics (emergent 6, needs 7, beyond R14-B1): on run 13's 40 seeds the land
   moved in a world's last five years falls to 13.1 % in the least of them (24.1 % at least on `0c80db1`;
   the most 95.4 %); founded statelets alive at year 30 36.8 → 28.1 on the same seeds but 31.4 → 30.4 on
@@ -110,7 +91,7 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
   20 years against HEAD on the same seeds, air battles a world-year after year 1 at least 1.3 × HEAD's,
   year-1 battles not below 0.9 × HEAD's; a unit test, red without; the gate green.
 
-- [ ] 7.124 The orders' refused searches (from 7.117, ADR-703 (a); dropped if the user takes another option): on the
+- [ ] 7.124 The orders' refused searches (from 7.117, ADR-703 a, the user's decision): on the
   rule's history of seed 1021, year 6 reads 9.31 ms a tick (HEAD's own 1.90): the operational AI 7.3 ms, 73 % of it
   the orders of formations near the front, 7,968 refused a year, each a failed search of 5.6–5.9 ms (37–45 cells),
   made again at each plan because a flip voids the refusal kept (England 48.7 ms a plan, Belgium 36.2, France 21.7).
@@ -457,3 +438,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.122 A fold that keeps the counter (from 7.116a, ADR-701; dropped by ADR-701 a, the user's decision): […]
 - [x] 7.116 The land war after year 1, a fourth time (closed not done, ADR-702 d, the user's decision; R14-B1; R13-B1 improved by 7.110 and ADR-693 b, […]
 - [x] 7.123 Contact that costs the army (from 7.116b, ADR-702; dropped by ADR-702 d, the user's decision): on […]
+- [x] 7.117 The late tick over its budget (closed not done, ADR-703 a, the user's decision; R14-B2; carries performance 5): ADR-698's budget is at most […]

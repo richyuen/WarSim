@@ -23700,3 +23700,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   refused order, and an over-budget year can be the rule's own.
 - **Filed:** BLOCKERS, ADR-703 (proposed), PLAN 7.124 (the orders' refused searches, if (a)).
 - **Next:** PLAN 7.118 while ADR-703 waits.
+
+## 2026-10-26 — PLAN 7.117 closed not done, the rule committed (ADR-703 a, the user's decision)
+
+- A refused march from afar or to spare waits FAR_RETRY_DAYS (40) days (`World.farWait`, saved); applied from
+  `docs/evidence/7.117/rule.patch`; unit case `tests/unit/farWait1938.test.ts`; the pin e28dbfa1 → 3a90f72d.
+- 7.117 closed not done; PLAN 7.124 (the orders' refused searches) kept.
+- **Next:** PLAN 7.118 (its HEAD read now on these rules).

@@ -2236,7 +2236,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     landmass, more than 60 cells from every sector it reaches; the nearest first. It is
     ordered to the sector's front cell and not planned again before the march ends or
     comes within the range (then it is a march into a sector, kept as below). A formation
-    is looked at for this on one day in eight (`MARCH_DAYS`, by its id).
+    is looked at for this on one day in eight (`MARCH_DAYS`, by its id). One whose order
+    from afar or to spare is refused is given none so again for 40 days (`FAR_RETRY_DAYS`,
+    PLAN 7.117, ADR-703; `World.farWait`, saved): late in a war nearly all such orders are
+    refused, each a failed search of the whole way.
   - *To spare* (PLAN 3.10c1d, ADR-191): such a sector that no formation of the nation is
     within 60 cells of also takes one of the formations near the front. On the nation's day
     in eight, of the free formations within the range of a sector that are not on an errand

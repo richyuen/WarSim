@@ -15408,3 +15408,36 @@ Of 7.116 (open in PLAN.md):
   the extra ones (who declares them, at what army). AT: on 10 unseen seeds × 20 years (1011 on) against HEAD on the
   same seeds, engaged land formations a war in years 2–20 at least 1.2 × HEAD's, year-1's not below 0.95 × HEAD's; a
   unit test, red without; the gate green.
+
+<!-- moved 2026-10-26 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.117 The late tick over its budget (closed not done, ADR-703 a, the user's decision; R14-B2; carries performance 5): ADR-698's budget is at most
+  5.0 ms a tick in any year. Pinned and alone on HEAD: 8167 year 19 13.3 ms (p95 49.9, longest tick 611
+  ms; the operational AI 11.5 ms of it), year 23 11.2 ms; 6151 year 22 7.9 ms; 4877 year 21 5.26 ms; on
+  `0c80db1` 9437 years 24–27 6.1–8.6 ms (not a regression: the budget's first test). In the page 8167's
+  year 19 at Max takes 142 s with 40 stalls over 500 ms. Evidence: `critic/c14_perf_8167_y19_head.log`,
+  `c14_perf_8167_y21_23_head.log`, `c14_perf_6151_y21_22_head.log`, `c14_perf_4877_y21_head.log`,
+  `c14_perf_9437_y21_27_0c80db1.log`, `c14_l_8167.json`; saves `critic/c14_seed8167_y18.bin`,
+  `c14_seed8167_y20.bin` (HEAD `311988d7`'s code: valid while the sim's rules are unchanged; else made
+  again from seed 8167). The critic's fix: profile the operational AI on 8167's year 19 and cap its work
+  per tick (time-slice or amortise across hours). Measure first (`--profile`, `--cpu-prof`) what in the
+  operational AI takes the 11.5 ms. AT: pinned (`--affinity 0xFFFF`) and alone, 8167's year 19 at most
+  5.0 ms a tick, and the worst year of 10 unseen seeds × 25 years at most 5.0 ms (each year a world-year
+  read by `npm run sim -- --profile`); a change meant to keep the rules keeps the pin; the gate green.
+
+  Measured and tried (2026-10-25, `docs/evidence/7.117/`): the AT missed by one world-year of 250 (1021's year 6,
+  9.31 ms: the orders' refused searches); a refused march from afar waiting 40 days takes the late cost off (1014's
+  year 22 6.86 → 4.63 ms; 8167's year 19 4.09). BLOCKERS, ADR-703 a (the user's decision, 2026-10-26): the rule committed, closed not done, PLAN 7.124. Seeds 1011–1020 went
+  to the measure, 1021–1030 to the AT; next unseen 1031.
