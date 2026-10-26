@@ -23892,3 +23892,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** run 14's pre-fold saves (`critic/c14_seed*_y20.bin`) load on HEAD: a year-20 fold probe takes minutes
   (`tools/diag/hollowStep.ts`), not a 20-year run.
 - **Next:** PLAN 7.128b (seeds 1121–1130) while ADR-715 and ADR-716 wait.
+
+## 2026-10-26 — PLAN 7.128b: the late contact measured, no rule; to the user (ADR-717)
+
+- **Start:** gate green on `75237567`; critic not due; ADR-715 and ADR-716 wait on the user.
+- **The AT's seeds** (1121–1130; `311988d7` × 20 years, HEAD × 30, `tools/diag/contactYears.ts`; `docs/evidence/7.128b/`):
+  checkpoints with nobody in contact `311988d` 4 of 20, HEAD 1 (met on HEAD's rules); years 2–30 HEAD 4.37 a day,
+  bar 5.03, `311988d`'s own level (years 2–20 5.04 against HEAD's 4.61); under 500 at year 20 77.8 → 0.9.
+- **Bisect from saves** (`tools/diag/lateContactAb.ts`, new; 16 year-20 worlds × 90 days in each tree): run 15's
+  folded worlds `311988d` 4.06, HEAD 4.08; run 14's worlds `311988d` 3.655 → the fold 2.958 → the wait 2.893 →
+  HEAD 2.893 (ADR-711 nothing). Of `311988d`'s 3.655, 0.32 are remnants and the rest their enemies. The rules fight
+  as before; the late gap is the remnants' fights that ADR-701 (a) folded.
+- **Seen** (`tools/diag/lateWarFronts.ts`, new): 7019's year 20, war 265, 419 formations against 62 within range of
+  3,000–4,000 frontier cells, nearest pair 8–12 cells, nobody engaged in 20 days: long thin fronts, as ADR-702 found.
+- **Filed:** BLOCKERS, ADR-717 (proposed). No rule, the pin unchanged. Seeds 1121–1130 spent.
+- **Gotcha:** the Write tool overwrote an existing `tools/diag/warFronts.ts` (PLAN 7.14's) without a word; restored
+  from git. `ls` a diag name before writing a new tool.
+- **Gotcha:** from pre-fold saves HEAD folds ~100 remnants on day 1 and the contact falls at once; to compare two
+  rule sets' fighting, step worlds that both rule sets could have made (run 15's folded saves).
+- **Next:** PLAN 7.135 (seeds 1131–1140) while ADR-715, ADR-716 and ADR-717 wait.

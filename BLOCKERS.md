@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### 2026-10-26 · PLAN 7.128b: the late contact measured, no rule; the gap to `311988d` is the folded remnants' fights (ADR-717)
+- **The bar:** on 1121–1130 × 30 years, years 2–30 at least 1.15 × HEAD's; checkpoints with nobody in contact not
+  above `311988d`'s count.
+- **What moved** (`docs/evidence/7.128b/measure.md`): nothing changed. Checkpoints with nobody in contact `311988d` 4,
+  HEAD 1 (met); years 2–30 HEAD 4.37, bar 5.03 (`311988d`'s own level, years 2–20 5.04). From one folded world
+  `311988d`'s rules and HEAD's fight the same (4.06 against 4.08 a day over 90 days, 16 saves); from worlds with
+  remnants, the fold's first day takes 19 % of the contact, the remnants and the enemies engaged with them.
+- **What is left:** the user's (ADR-717): (a) no rule, closed not done, to the next critic report (recommended);
+  (b) as (a), and PLAN 7.136 for a contact rule against long thin fronts; (c) done on a re-scoped bar (the rules'
+  own share).
+
 ### 2026-10-26 · PLAN 7.128a's AT missed: a 7-day wait before the fold moves year 1 nowhere (0.889 × `311988d`, bar 0.98; ADR-716)
 - **The bar:** on 1111–1120 × 30 years, engaged land formations a day in year 1 at least 0.98 × `311988d`'s; under 500
   men at year 20 at most 2 a world; years 2–30 not below HEAD's; a unit test, red without; the gate green.

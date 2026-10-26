@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-717 · 2026-10-26 · proposed (the user's decision) — The late land contact: the rules fight as `311988d`'s from one world, and the gap is the folded remnants' fights (PLAN 7.128b measured, no rule)
+
+- **Context.** PLAN 7.128b (R15-B1's late half): on 1121–1130, years 2–30 at least 1.15 × HEAD's and checkpoints
+  with nobody in contact not above `311988d`'s count, against HEAD's rules while ADR-716 waits.
+- **Measured** (`docs/evidence/7.128b/measure.md`; `tools/diag/lateContactAb.ts`, `lateWarFronts.ts`, new). On
+  1121–1130: checkpoints with nobody in contact `311988d` 4 of 20, HEAD **1** (met on HEAD); HEAD's years 2–30
+  4.37 a day, so the bar is 5.03, `311988d`'s own level (years 2–20 5.04; HEAD 4.61, 0.915 ×).
+- **Bisect from saves** (16 year-20 worlds, 90 days each): on run 15's folded worlds `311988d`'s rules 4.06, HEAD's
+  **4.08**; on run 14's worlds, remnants in them, `311988d` 3.655 → the fold 2.958 → the wait 2.893 → HEAD 2.893.
+  Of `311988d`'s 3.655, 0.32 are the remnants themselves and the rest their enemies, engaged with them. The
+  operational AI comes to battle as often as before; what `311988d` had more of late is the fights of 78 remnants
+  a world at year 20 (HEAD 0.9), the critic's R14-B1 that ADR-701 (a) folded.
+- **Options:**
+  - **(a)** No rule; 7.128b closed not done, its checkpoint bar met on HEAD; the late figure and this measure to the
+    next critic report (the fall is ADR-701 a's cost, which that ADR measured: −5 % a world-year). (Recommended: the
+    one cause found is a fix the user chose; a fourth contact rule of the operational AI is ADR-702's story.)
+  - **(b)** As (a), and PLAN 7.136 for a contact rule against the long thin fronts (seed 7019's year 20: 419
+    formations against 62 within range of 3,000–4,000 frontier cells, nobody engaged for 20 days), its AT 1.15 ×
+    HEAD's on 1141–1150; ADR-702's rule (+5 % on fresh worlds) the starting point.
+  - **(c)** 7.128b done on a bar re-scoped to the rules' own share: from one world, `311988d`'s rules and HEAD's
+    at most 5 % apart (4.06 against 4.08), with the checkpoints met.
+- **Meanwhile** the loop takes PLAN 7.135 (seeds 1131–1140). No rule; the pin unchanged.
+
 ### ADR-716 · 2026-10-26 · proposed (the user's decision) — Year 1's land contact: no wait before the fold brings it back, and the fold is half the fall (PLAN 7.128a's AT missed)
 
 - **Context.** PLAN 7.128a (R15-B1): year 1's land contact back to at least 0.98 × `311988d`'s on 1111–1120, with under

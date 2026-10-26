@@ -88,6 +88,9 @@ none a seed the critic has run (`critic/c*_seed*`):
     seeds. Not committed; waits on the user (ADR-716, BLOCKERS); the other half is PLAN 7.135.
   - [ ] 7.128b The late contact: years 2–30 at least 1.15 × HEAD's and checkpoints with nobody in contact not above
     `311988d`'s count, on seeds 1121–1130, against HEAD's rules while 7.128a waits (ADR-716).
+    Measured (2026-10-26, `docs/evidence/7.128b/measure.md`): checkpoints met on HEAD (1 against 4); years 2–30 4.37,
+    bar 5.03, `311988d`'s own level; from one folded world the two rules fight the same (4.06, 4.08), and the gap is
+    the folded remnants' fights. No rule; waits on the user (ADR-717, BLOCKERS).
 - [ ] 7.135 Year 1's other half (from 7.128a, ADR-716): with no fold, year 1's land contact on 1111–1120 is 0.939 ×
   `311988d`'s (42.38 against 45.11 a day; HEAD 40.33), so half the fall is in the other 6 commits to `src/` from
   `311988d7` to HEAD. Found by a bisect of year 1 on 1111–1120 with the fold off (`tools/diag/contactYears.ts`).
