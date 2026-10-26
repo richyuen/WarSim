@@ -100,10 +100,7 @@ none a seed the critic has run (`critic/c*_seed*`):
   Measured (2026-10-26, `docs/evidence/7.135/measure.md`): on the critic's 48 seeds no fold reads 1.027 × `311988d`
   (se 0.014), HEAD 0.888 ×: no other half, the fold is the whole fall; 7.128a's 0.939 was the 10-seed sample. No
   rule; seeds 1131–1140 not spent; waits on the user (ADR-718, with ADR-716; BLOCKERS).
-- [ ] 7.129 R15-B2: the 5.5 ms budget (ADR-709) fails late. Pinned and alone, 6421's year 28 7.88–7.98 ms (operational
-  AI 5.3–5.4), years 29 and 30 7.14 and 5.89; 1129's year 21 6.39–6.54 ms, year 20 5.77 (`critic/c15_perf_*`; saves
-  `critic/c15_seed6421_y27.bin`, `c15_seed1129_y20.bin`). AT: pinned and alone, 6421's year 28 and 1129's year 21 at
-  most 5.5 ms a tick, from those saves; the worst year of 10 unseen seeds × 30 years at most 5.5 ms; the gate green.
+
 - [ ] 7.130 Emergent dynamics 6: the top five stand still. Beyond 7.128's contact: the longest run of years with the same
   top five nations 19 in 56 worlds × 30 years (`critic/scripts/c15_cmp.py`, `stasisMax`; 21 on run 14); the least
   land moved in a world's last five years 25.2 %. AT: on 10 unseen seeds × 30 years, read as the critic's script
@@ -470,3 +467,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.124 The orders' refused searches (done under ADR-709's 5.5 ms, ADR-708 a, the user's decision; from 7.117, ADR-703 a, the user's decision): on the […]
 - [x] 7.125 A load's first ticks (from 7.119, ADR-705 a, the user's decision): from 8167's year-18 save, the first tick […]
 - [x] 7.126 A fleet in a sea battle: its panel's way to the battle. The panel of a fleet in contact reads "In contact" […]
+- [x] 7.129 R15-B2: the 5.5 ms budget (ADR-709) fails late. Pinned and alone, 6421's year 28 7.88–7.98 ms (operational […]

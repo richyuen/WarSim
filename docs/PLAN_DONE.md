@@ -15565,3 +15565,22 @@ Of 7.116 (open in PLAN.md):
   AT: on that case, the fleet's panel has the button, and its press ends with the fleet and the enemy fleet it fights
   both on the screen (every ship element of the two in the view); of the fleets of the two nations in contact in days
   21–35 there, none without the button (0 of N); `fightSeen1938` and `formationFight1938` green; the gate green.
+
+<!-- moved 2026-10-26 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.129 R15-B2: the 5.5 ms budget (ADR-709) fails late. Pinned and alone, 6421's year 28 7.88–7.98 ms (operational
+  AI 5.3–5.4), years 29 and 30 7.14 and 5.89; 1129's year 21 6.39–6.54 ms, year 20 5.77 (`critic/c15_perf_*`; saves
+  `critic/c15_seed6421_y27.bin`, `c15_seed1129_y20.bin`). AT: pinned and alone, 6421's year 28 and 1129's year 21 at
+  most 5.5 ms a tick, from those saves; the worst year of 10 unseen seeds × 30 years at most 5.5 ms; the gate green.

@@ -23927,3 +23927,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   (`WarSim_chase` was readied with ADR-711 reverted and restored unused).
 - **Gotcha:** a 10-seed mean of year-1 contact reads to about ±2.3 a day (5 %); a cause under 10 % needs the 48.
 - **Next:** PLAN 7.129 (R15-B2, the late tick) while ADR-715–718 wait.
+
+## 2026-10-26 — PLAN 7.129: the late tick under 5.5 ms (ADR-719, ADR-720), done
+
+- **Start:** gate green on `b04717b5`; critic not due; ADR-715–718 wait on the user.
+- **Measured** (`docs/evidence/7.129/measure.md`): 6421's year 28 7.99 ms alone, the operational AI 5.39; the plans'
+  time in the classes' reach (every class to every sector, 2,000–3,200 late, the ground of each sector's cell walked
+  by `pocketOf`) and `joinWide`'s whole-map walks (~1,000 a year, 3–4 pairs each). New tools `spanProf.ts` (a CPU
+  profile over a span of hours), `hashSteps.ts` (the hash each hour), `yearScreen.ts` (the AT's screen).
+- **`7be651ab`** (ADR-719): `wideLinked`, the join asked pair by pair; exact (5,657 pairs against `joinWideAfresh`,
+  hashes kept); 7.99 → 7.32.
+- **`9ef07384`** (ADR-720): reach asked where it is read; the same answers wherever both ask (checked by asking all
+  first in the old order: 150 days bit-identical), the ground walks differ, so 6421 parts at day 19; pin, 1129's year
+  21 and year 1 of the critic's 48 seeds unchanged. 6421's year 28 **5.41, 5.42**; 1129's year 21 **4.48**.
+- **AT** (1141–1150 × 30, screened eight at once): one year over 5.5 on the screen (1148 y25 5.70), **5.07, 5.13**
+  alone. Met. Seeds 1141–1150 spent; the next tasks 1151 on.
+- **Gotcha:** a unit test that builds a checkpoint inside `it` can time out at 90 s in the parallel suite after a
+  `src/sim` change (the key changes): make the world at collection, as `economyBreakdown.test.ts` does.
+- **Gotcha:** `pocketOf`'s answers rest on the walks before them in the tick, so asking fewer grounds is a rule in
+  principle even when the logic is equal; prove the logic by asking everything first in the old order (`WARM`).
+- **Next:** PLAN 7.130 (emergent dynamics) while ADR-715–718 wait.
