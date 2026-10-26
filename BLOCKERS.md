@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.124's AT missed: three world-years of 250 at 5.02–5.43 ms, bar 5.0 (ADR-708; waits on the user)
+### RESOLVED 2026-10-26 (option a with ADR-709's 5.5 ms budget, the user's decision: the change committed, 7.124 done) · PLAN 7.124's AT missed: three world-years of 250 at 5.02–5.43 ms, bar 5.0 (ADR-708)
 - **The bar:** pinned, 1021's year 6 at most 5.0 ms, and the worst year of 10 unseen seeds × 25 years at most 5.0 ms;
   the pin kept; the gate green.
 - **What moved** (`docs/evidence/7.124/measure.md`, `change.patch`): refused searches not made again (no rule moved);
@@ -13,7 +13,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** the user's (ADR-708): (a) commit, closed not done (recommended); (b) as (a) and PLAN 7.128 for the
   plans' late cost; (c) no commit.
 
-### PLAN 7.121: the late air war's cause measured, no rule (ADR-707; waits on the user)
+### RESOLVED 2026-10-26 (option a, the user's decision: no rule, 7.121 closed not done) · PLAN 7.121: the late air war's cause measured, no rule (ADR-707)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD, late air battles at least 1.3 ×, year 1 not below 0.9 ×;
   a unit test, red without; the gate green.
 - **What moved** (`docs/evidence/7.121/measure.md`): nothing; 62 % of late wing-days at war have no chain of their
@@ -21,7 +21,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** the user's (ADR-707): (a) closed not done (recommended); (b) PLAN 7.127, wings cross the sea;
   (c) PLAN 7.127, the war choice weighs the air force's reach.
 
-### PLAN 7.120's AT missed: late sea battles 1.04 × HEAD's, bar 1.3 (ADR-706; waits on the user)
+### RESOLVED 2026-10-26 (option a, the user's decision: no rule, 7.120 closed not done) · PLAN 7.120's AT missed: late sea battles 1.04 × HEAD's, bar 1.3 (ADR-706)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD, late battles at least 1.3 ×, year 1 not below 0.9 ×,
   sinking nothing at most 4 %; a unit test, red without; the gate green.
 - **What moved** (`docs/evidence/7.120/measure.md`, `rule.patch`; 1077–1086): a naval rival weighs 0.3 more in the
@@ -29,7 +29,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** the user's (ADR-706): (a) no rule, closed not done (recommended); (b) PLAN 7.126, the navies'
   rebuild late; (c) commit the rule for year 1.
 
-### PLAN 7.119's AT: the page met, whole ticks over 200 ms just after a load (ADR-705; waits on the user)
+### RESOLVED 2026-10-26 (option a, the user's decision: 7.119 done, PLAN 7.125 for a load's first ticks) · PLAN 7.119's AT: the page met, whole ticks over 200 ms just after a load (ADR-705)
 - **The bar:** in the page 8167's year 19 at Max with at most 4 stalls over 500 ms; headless the longest single
   tick of that year at most 200 ms; the gate green.
 - **What moved** (`docs/evidence/7.119/measure.md`): nothing changed; the page 40 → 0 stalls on HEAD's rules; the
@@ -38,7 +38,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** the user's (ADR-705): (a) done, PLAN 7.125 for a load's first ticks (recommended); (b) done, no
   task; (c) open until every tick is at most 200 ms.
 
-### PLAN 7.118's AT not met on HEAD: one world of 38 under 20 % (ADR-704; waits on the user)
+### RESOLVED 2026-10-26 (option a, the user's decision: no rule, 7.118 closed not done) · PLAN 7.118's AT not met on HEAD: one world of 38 under 20 % (ADR-704)
 - **The bar:** on 10 unseen seeds × 30 years against HEAD on the same seeds, the least land moved in a world's last
   five years at least 20 %, the mean not below HEAD's; founded at year 30 not above; a unit test, red without.
 - **What moved** (`docs/evidence/7.118/measure.md`): nothing changed; the critic's 9203 13.1 → 73.6 % and 2081

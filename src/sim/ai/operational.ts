@@ -72,8 +72,8 @@
 import { atAnyPort, marchingToPort, transportPorts } from '../systems/amphibious';
 import { orderMove, passageOf, snapTarget, wasLong } from '../systems/movement';
 import { frontierOf, frontNeighbours, GARRISON, PRESSURE_RADIUS } from '../systems/territory';
-import { pocketOf, type Passage } from '../nav/grid';
-import { CORRIDOR_REFUSAL, wideJoined, wideNode, type CorridorRefusal } from '../nav/provinceGraph';
+import { pocketOf, type MobilityId, type Passage } from '../nav/grid';
+import { CORRIDOR_REFUSAL, keepRegions, openRoute, wideJoined, wideNode, type CorridorRefusal } from '../nav/provinceGraph';
 import { navOf, type World } from '../world';
 
 export const STAGGER = 4;
@@ -272,8 +272,21 @@ export function operationalAiOf(tables: { templateArmour: readonly number[] }) {
   return (world: World): void => operationalAi(world, tables.templateArmour);
 }
 
-/** `armour`: the tanks' share of the upkeep by template; none given, no formation is armour. */
+/**
+ * `armour`: the tanks' share of the upkeep by template; none given, no formation is armour. While it plans
+ * no cell changes hands: the route searches keep the regions they found no way out of (`keepRegions`,
+ * PLAN 7.124), and forget them after.
+ */
 export function operationalAi(world: World, armour: readonly number[] = []): void {
+  keepRegions(true);
+  try {
+    planAll(world, armour);
+  } finally {
+    keepRegions(false);
+  }
+}
+
+function planAll(world: World, armour: readonly number[]): void {
   sector = world.atSize(SECTOR_CELLS);
   range = world.atSize(DEPLOY_RANGE_CELLS);
   range2 = range * range;
@@ -1313,7 +1326,7 @@ function asked(world: World, id: number, to: number, pass: Passage): 'ok' | 'ref
   const base = kept && was !== undefined && was.from === from && was.template === f.template[id] && was.grid === nav.grid && was.flips >= world.flipLogBase && sameOk(was.ok, pass.ok);
   const same = base && lastMixed(world, pass) <= was!.flips;
   // A refusal by the cells of a corridor holds while what it read does (PLAN 7.30b).
-  if ((same && (was!.to === to || was!.long.includes(to))) || (base && was!.to === to && corridorHolds(world, was!, from, pass))) {
+  if ((same && (was!.to === to || was!.long.includes(to))) || (base && was!.to === to && corridorHolds(world, was!, from, to, pass))) {
     world.seaBound.delete(id);
     return was!.to === to ? 'refused' : 'long';
   }
@@ -1346,12 +1359,21 @@ function asked(world: World, id: number, to: number, pass: Passage): 'ok' | 'ref
  * a cell that has gone from open to closed takes a way from it and gives none, and a flip outside
  * the corridor is not read by it. Asked again, it would be refused again.
  */
-function corridorHolds(world: World, was: { since: number; corridor?: CorridorRefusal | undefined }, from: number, pass: Passage): boolean {
+function corridorHolds(world: World, was: { since: number; template: number; corridor?: CorridorRefusal | undefined }, from: number, to: number, pass: Passage): boolean {
   const read = was.corridor;
   if (!read || !pass.open || !pass.shut || pass.ok[pass.holder[from]!] !== 1) return false;
-  if (read.open !== pass.open && !sameOk(read.open, pass.open)) return false;
-  if (read.shut !== pass.shut && !sameOk(read.shut, pass.shut)) return false;
-  const nodeOf = navOf(world).graph.nodeOf;
+  const nav = navOf(world);
+  if ((read.open !== pass.open && !sameOk(read.open, pass.open)) || (read.shut !== pass.shut && !sameOk(read.shut, pass.shut))) {
+    // The nodes' open or shut changed (PLAN 7.124): the route over them planned again; the same route,
+    // the same corridor, and the same cells searched (the flips in it read below).
+    const mobility = world.rules?.templates[was.template]?.mobility as MobilityId | undefined;
+    if (mobility === undefined) return false;
+    const route = openRoute(nav.grid, nav.graph, mobility, from, to, pass);
+    if (!route || !sameRoute(route, read.route)) return false;
+    read.open = pass.open;
+    read.shut = pass.shut;
+  }
+  const nodeOf = nav.graph.nodeOf;
   const { flipLog: log, flipCells: cells } = world;
   const { ok } = pass;
   if (was.since < world.flipLogBase) return false;
@@ -1361,6 +1383,12 @@ function corridorHolds(world: World, was: { since: number; corridor?: CorridorRe
   }
   // None up to now: the next ask reads the flips after.
   was.since = world.flipLogBase + log.length;
+  return true;
+}
+
+function sameRoute(a: readonly number[], b: readonly number[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
   return true;
 }
 

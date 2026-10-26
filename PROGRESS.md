@@ -23761,3 +23761,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   first answer again, with no search; make the world again for a "before".
 - **Filed:** BLOCKERS, ADR-708 (proposed).
 - **Next:** the next task while ADR-704 to ADR-708 wait.
+
+## 2026-10-26 — The user's decisions: ADR-704 to ADR-708 option a, and a 5.5 ms tick budget (ADR-709)
+
+- 7.118, 7.120, 7.121 closed not done, no rule; 7.119 done, PLAN 7.125 (a load's first ticks) filed.
+- ADR-708 a: the refused-search change committed from `docs/evidence/7.124/change.patch` (pin and hashes unchanged;
+  unit case `refusedRegions1938.test.ts`). ADR-709: the tick budget 5.0 → 5.5 ms; 7.124's AT met on it (worst 5.43).
+- **Next:** PLAN 7.125.

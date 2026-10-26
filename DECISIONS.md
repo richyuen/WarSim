@@ -167,7 +167,18 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-708 · 2026-10-26 · proposed (the user's decision) — Refused searches not made again: 1021's year 6 9.33 → 4.85 ms, three late world-years 5.02–5.43 (PLAN 7.124's AT missed)
+### ADR-709 · 2026-10-26 · accepted (the user's decision) — The sim tick's budget: at most 5.5 ms a tick, any year (ADR-698's 5.0 raised)
+
+- **Context.** ADR-698 set at most 5.0 ms a tick in any year (headless, pinned, M, 1938). PLAN 7.117 and 7.124 read it
+  on 10 unseen seeds × 25 years each; with ADR-703's far-march wait and ADR-708's refused searches, 3 world-years of
+  250 stay over it, 5.02–5.43 ms alone (`docs/evidence/7.124/measure.md`), the operational AI's plans at large.
+- **Decision** (the user's, 2026-10-26): the budget is at most **5.5 ms** a tick in any year (at least 180 game hours a
+  second). SPEC's performance budgets read so. ADR-654 a's per-rule cost test (+0.2 ms on seed 99's year-4 world)
+  stands.
+- **Consequences.** PLAN 7.124's AT read on 5.5: met (1021's year 6 4.85, the worst of 1031–1040 5.43). Later
+  tick-time ATs read 5.5.
+
+### ADR-708 · 2026-10-26 · accepted, option a (the user's decision, 2026-10-26) — Refused searches not made again: 1021's year 6 9.33 → 4.85 ms, three late world-years 5.02–5.43 (PLAN 7.124's AT missed)
 
 - **Context.** PLAN 7.124 (from 7.117, ADR-703 a): 1021's year 6 at 9.33 ms a tick, the orders' refused searches. AT:
   pinned, 1021's year 6 at most 5.0 ms, and the worst year of 10 unseen seeds × 25 years (1031 on) at most 5.0 ms; a
@@ -188,8 +199,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     on 10 unseen seeds from 1087.
   - **(c)** No commit; 7.124 open.
 - **Meanwhile** the loop takes the next task. Seeds 1031–1040 went to the AT; next unseen 1087.
+- **Decision** (2026-10-26, the user's): (a). The change committed from `change.patch` (pin and hashes unchanged); with ADR-709's 5.5 ms the AT's worst year (5.43) is under the budget: 7.124 done.
 
-### ADR-707 · 2026-10-26 · proposed (the user's decision) — The late air war: wings at war with no enemy any chain of their side's airbases reaches (PLAN 7.121)
+### ADR-707 · 2026-10-26 · accepted, option a (the user's decision, 2026-10-26) — The late air war: wings at war with no enemy any chain of their side's airbases reaches (PLAN 7.121)
 
 - **Context.** PLAN 7.121 (aircraft 7, needs 8): the late air war 7 % of year 1's. AT: on 10 unseen seeds × 20
   years against HEAD, air battles a world-year after year 1 at least 1.3 × HEAD's, year 1 not below 0.9 ×; a unit
@@ -208,8 +220,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     enemy, or carried by transports), AT as 7.121's on 10 unseen seeds from 1087.
   - **(c)** PLAN 7.127: the war choice weighs an enemy in reach of the air force; AT as 7.121's.
 - **Meanwhile** the loop takes the next task (7.124).
+- **Decision** (2026-10-26, the user's): (a). No rule; 7.121 closed not done.
 
-### ADR-706 · 2026-10-26 · proposed (the user's decision) — A naval rival weighs more in the war choice: year 1's sea war ×1.56, the late one flat (PLAN 7.120's AT missed)
+### ADR-706 · 2026-10-26 · accepted, option a (the user's decision, 2026-10-26) — A naval rival weighs more in the war choice: year 1's sea war ×1.56, the late one flat (PLAN 7.120's AT missed)
 
 - **Context.** PLAN 7.120 (naval 7, needs 8): sea battles a world-year after year 1 about a fifth of year 1's. AT: on
   10 unseen seeds × 20 years against HEAD, late battles at least 1.3 × HEAD's, year-1 battles not below 0.9 ×,
@@ -228,8 +241,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     years 10–20 at least 1.3 × HEAD's and late battles at least 1.3 ×, on 10 unseen seeds × 20 years.
   - **(c)** Commit the rule for year 1's sea war (×1.56), 7.120 closed not done.
 - **Meanwhile** the loop takes PLAN 7.121. Seeds 1061–1065 went to the measure, 1077–1086 to the AT; next unseen 1087.
+- **Decision** (2026-10-26, the user's): (a). No rule; 7.120 closed not done; the patch kept.
 
-### ADR-705 · 2026-10-26 · proposed (the user's decision) — Stalls at Max: none in the page on HEAD's rules; whole ticks over 200 ms only just after a load (PLAN 7.119)
+### ADR-705 · 2026-10-26 · accepted, option a (the user's decision, 2026-10-26) — Stalls at Max: none in the page on HEAD's rules; whole ticks over 200 ms only just after a load (PLAN 7.119)
 
 - **Context.** PLAN 7.119 (performance 5, needs 7): 8167's year 19 at Max had 40 stalls over 500 ms in the page, the
   longest tick 611 ms headless. AT: in the page at most 4 stalls over 500 ms; headless the longest single tick of
@@ -248,8 +262,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(b)** 7.119 done, no task: a load's first ticks are part of loading.
   - **(c)** 7.119 open until every tick of the year, the first after the load among them, is at most 200 ms.
 - **Meanwhile** the loop takes PLAN 7.120.
+- **Decision** (2026-10-26, the user's): (a). 7.119 done; PLAN 7.125 for a load's first ticks.
 
-### ADR-704 · 2026-10-26 · proposed (the user's decision) — Land moved late: the critic's case gone on HEAD's rules, a quiet tail of one world in 38 (PLAN 7.118)
+### ADR-704 · 2026-10-26 · accepted, option a (the user's decision, 2026-10-26) — Land moved late: the critic's case gone on HEAD's rules, a quiet tail of one world in 38 (PLAN 7.118)
 
 - **Context.** PLAN 7.118 (emergent 6, needs 7): on run 14's seeds the land moved in a world's last five years fell
   to 13.1 % in the least (9203). AT: on 10 unseen seeds × 30 years against HEAD on the same seeds, the least at
@@ -267,6 +282,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(c)** Keep 7.118 open as PLAN 7.125: wars between the blocs (great powers' blocs at peace with each other
     late), measured on quiet worlds from seeds 1077 on; AT as 7.118's on 1051–1060 against HEAD's column read.
 - **Meanwhile** the loop takes PLAN 7.119.
+- **Decision** (2026-10-26, the user's): (a). 7.118 closed not done, no rule.
 
 ### ADR-703 · 2026-10-25 · accepted, option a (the user's decision, 2026-10-26) — A refused march from afar waits 40 days: the late cost gone, one early year over the budget (PLAN 7.117's AT missed)
 

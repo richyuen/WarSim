@@ -492,9 +492,10 @@ export function boundWeight(cells: number): number {
  * Cell A* from `start` to `goal` for a mobility class. `corridor` further restricts the search,
  * and `pass` the ground by its holder. Returns null when the goal is unreachable. The bound is
  * scaled by `boundWeight` of the distance between the two ends, or by `weight` when one is given
- * (the tests ask for 1, the cheapest way).
+ * (the tests ask for 1, the cheapest way). `closedOut`, given, gets every cell the search closes: of a
+ * search that finds no way, every cell it reaches (PLAN 7.124, `searchRoute`'s refused regions).
  */
-export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: number, corridor?: Corridor, pass?: Passage, weight?: number): PathResult | null {
+export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: number, corridor?: Corridor, pass?: Passage, weight?: number, closedOut?: number[]): PathResult | null {
   const costRow = MOVE_COST[mobility]!;
   const { w, h, wrapX, terrain, kx, ky, kd } = g;
   // The corridor as two typed arrays read in the loop (PLAN 1.42f: a callback per neighbour and
@@ -546,6 +547,7 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
     if (c === goal) break;
     if (stamp[c] === CLOSED) continue;
     stamp[c] = CLOSED;
+    closedOut?.push(c);
     const cx = c % w;
     const cy = (c - cx) / w;
     const gc = gs[c]!;

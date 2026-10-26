@@ -53,73 +53,12 @@ Run 14's (report of 2026-10-25 on `311988d7`, `critic/CRITIC_REPORT.md`; R13-B1 
 aiNukes 7 → 8): R14-B1 and R14-B2 are PLAN 7.116 and 7.117; the dimensions under the bar, beyond them,
 are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a task, none reused:
 
-- [ ] 7.118 Emergent dynamics (emergent 6, needs 7, beyond R14-B1): on run 13's 40 seeds the land
-  moved in a world's last five years falls to 13.1 % in the least of them (24.1 % at least on `0c80db1`;
-  the most 95.4 %); founded statelets alive at year 30 36.8 → 28.1 on the same seeds but 31.4 → 30.4 on
-  new ones; the longest stasis 21 years. Evidence: `critic/c14_cmp_all.txt` (`late5flip`,
-  `livingFoundedTinyMean`, `stasis`). Measure first which of the worlds that move least late are frozen,
-  and why (no war, wars with no front, a hegemon). AT: on 10 unseen seeds × 30 years against HEAD on the
-  same seeds, the least land moved in a world's last five years at least 20 %, and the mean not below
-  HEAD's; founded nations alive at year 30 not above HEAD's; a unit test, red without; the gate green.
-
-  Measured (2026-10-26, `docs/evidence/7.118/measure.md`): the critic's quiet worlds on HEAD's rules 9203 73.6 %,
-  2081 47.0 %; 26 fresh worlds least 24.9 %; the AT's seeds on HEAD least 18.4 % (1052): one world of 38 under the
-  bar. No rule. BLOCKERS, ADR-704 (proposed). Waits on the user. Seeds 1041–1050 and 1061–1076 went to the measure,
-  1051–1060 to HEAD's AT column; next unseen 1077 (1031–1040 kept for 7.124).
-
-- [ ] 7.119 Performance (performance 5, needs 7, beyond R14-B2's mean tick): the stalls the player
-  sees at Max. In the page, 8167's year 19 at Max has 40 stalls over 500 ms (the longest tick 611 ms
-  headless, p95 49.9 ms); ADR-698 takes 45–60 s a late year at Max as the design, and 4877's three late
-  years at 144 s are inside it. The Large map's 2.5 min a game year early in 1938 was read beside a batch:
-  read it alone first and record it. Evidence: `critic/c14_l_8167.json`, `c14_perf_8167_y19_head.log`.
-  AT: in the page, from `critic/c14_seed8167_y18.bin` (or its remake), year 19 at Max with at most 4
-  stalls over 500 ms (an e2e or `tools/` measure, run alone), and headless the longest single tick of
-  that year at most 200 ms; the gate green.
-
-  Measured (2026-10-26, `docs/evidence/7.119/measure.md`): on HEAD's rules the page has 0 stalls over 500 ms (the
-  year 31 s); headless the critic's measure 166 ms, whole ticks over 200 ms only just after a load (231 ms; 426 in
-  a new process). The Large map's first year alone 59.5 s. BLOCKERS, ADR-705 (proposed). Waits on the user.
-
-- [ ] 7.120 Naval (naval 7, needs 8): the late sea war is about a fifth of year 1's battles: on the same
-  40 seeds year-1 battles 56.7 → 42.0 a world (ships sunk 16,378 → 14,210 over 24 seeds), late battles
-  9.32 → 8.58 a world-year; new seeds year 1 41 → 48. Battles sinking nothing 7.1 → 3.4 % (fixed).
-  Evidence: `critic/c14_cmp_all.txt`, `c14_g4_standoff.json`,
-  `critic/shots/c14n4_8693_rowless_clicked.png`. The critic reads sea battles a world-year after year 1
-  against year 1's, not ADR-683's battles per armed fleet-year at war (met at 7.107): this task reads the
-  critic's figure. Measure first, on a late save, how many armed fleets nations at war with a navy hold
-  late against year 1, and where those at war at sea are. AT: on 10 unseen seeds × 20 years against HEAD
-  on the same seeds, sea battles a world-year after year 1 at least 1.3 × HEAD's, year-1 battles not
-  below 0.9 × HEAD's, battles sinking nothing at most 4 %; a unit test, red without; the gate green.
-
-  Measured and tried (2026-10-26, `docs/evidence/7.120/`): pairs at war with navies in one basin 0.15 × year 1's;
-  a naval rival weighing 0.3 more: AT late 1.04 × (missed), year 1 ×1.56, the late navies halved. BLOCKERS,
-  ADR-706 (proposed). Waits on the user. Seeds 1061–1065 measure, 1077–1086 AT; next unseen 1087.
-
-- [ ] 7.121 Aircraft (aircraft 7, needs 8): on the same 40 seeds air battles after year 1 123 → 183 a
-  world-year (sorties aloft 10.9 → 15.8, ADR-689), but on new seeds only 154 → 161, and the late air war
-  is still 7 % of year 1's (2,415 battles). Evidence: `critic/c14_cmp_all.txt`,
-  `critic/shots/c14y2_5147_y20_d20_3000m.png`, `c14_u_6421.json`. Not again what 7.108b tried
-  (`docs/evidence/7.108b/rule.patch`, ADR-685). Measure first, on a late save, the air forces of nations
-  at war late: planes held, planes aloft, and why the rest stay on the ground. AT: on 10 unseen seeds ×
-  20 years against HEAD on the same seeds, air battles a world-year after year 1 at least 1.3 × HEAD's,
-  year-1 battles not below 0.9 × HEAD's; a unit test, red without; the gate green.
-
-  Measured (2026-10-26, `docs/evidence/7.121/measure.md`): 62 % of late wing-days at war have no chain of their
-  side's airbases reaching the enemy (26 % in year 1); wings in reach tasked as in year 1. No rule. BLOCKERS,
-  ADR-707 (proposed). Waits on the user. Seeds 1066–1070 (the measure's); next unseen 1087.
-
-- [ ] 7.124 The orders' refused searches (from 7.117, ADR-703 a, the user's decision): on the
-  rule's history of seed 1021, year 6 reads 9.31 ms a tick (HEAD's own 1.90): the operational AI 7.3 ms, 73 % of it
-  the orders of formations near the front, 7,968 refused a year, each a failed search of 5.6–5.9 ms (37–45 cells),
-  made again at each plan because a flip voids the refusal kept (England 48.7 ms a plan, Belgium 36.2, France 21.7).
-  Evidence: `docs/evidence/7.117/at.md`, `.cache/7117/opCalls_1021_y6.txt` (remade from `rule.patch` and seed 1021).
-  Measure first on a save of 1021's year 5 (the rule's code) which orders are refused and why their search fails.
-  AT: pinned, 1021's year 6 at most 5.0 ms, and the worst year of 10 unseen seeds × 25 years (1031 on) at most 5.0 ms;
-  a change meant to keep the rules keeps the pin; the gate green.
-
-  Measured and changed (2026-10-26, `docs/evidence/7.124/`): refused searches not made again (no rule moved):
-  1021's year 6 9.33 → 4.85 ms; the AT missed by three world-years of 250 (5.02–5.43 alone, the plans at large, the
-  same on HEAD's code). BLOCKERS, ADR-708 (proposed). Waits on the user. Seeds 1031–1040 AT; next unseen 1087.
+- [ ] 7.125 A load's first ticks (from 7.119, ADR-705 a, the user's decision): from 8167's year-18 save, the first tick
+  after the load reads 231 ms with the engine warmed (the operational AI 160 ms: what is not saved, its refusals and the
+  frontier, made again) and, in a new process, the invasion AI's first run 426 ms (a one-time build). Evidence:
+  `docs/evidence/7.119/measure.md`, `tools/diag/tickMax.ts`. Measure first what the two build. AT: from that save
+  (remade on HEAD), every tick of the first 10 days at most 200 ms in a new process (`tickMax.ts`, cold), alone; a change
+  meant to keep the rules keeps the pin; the gate green.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
@@ -460,3 +399,8 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.116 The land war after year 1, a fourth time (closed not done, ADR-702 d, the user's decision; R14-B1; R13-B1 improved by 7.110 and ADR-693 b, […]
 - [x] 7.123 Contact that costs the army (from 7.116b, ADR-702; dropped by ADR-702 d, the user's decision): on […]
 - [x] 7.117 The late tick over its budget (closed not done, ADR-703 a, the user's decision; R14-B2; carries performance 5): ADR-698's budget is at most […]
+- [x] 7.118 Emergent dynamics (closed not done, ADR-704 a, the user's decision; emergent 6, needs 7, beyond R14-B1): on run 13's 40 seeds the land […]
+- [x] 7.119 Performance (done, ADR-705 a, the user's decision; performance 5, needs 7, beyond R14-B2's mean tick): the stalls the player […]
+- [x] 7.120 Naval (closed not done, ADR-706 a, the user's decision; naval 7, needs 8): the late sea war is about a fifth of year 1's battles: on the same […]
+- [x] 7.121 Aircraft (closed not done, ADR-707 a, the user's decision; aircraft 7, needs 8): on the same 40 seeds air battles after year 1 123 → 183 a […]
+- [x] 7.124 The orders' refused searches (done under ADR-709's 5.5 ms, ADR-708 a, the user's decision; from 7.117, ADR-703 a, the user's decision): on the […]
