@@ -5,6 +5,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### 2026-10-26 · PLAN 7.135: no other half to find; the fold is the whole of year 1's fall (ADR-718)
+- **The bar:** on 1131–1140 × 30 years, year 1 at least 0.95 × `311988d`'s with the fold kept; years 2–30 not below
+  HEAD's; under 500 men at year 20 at most 2 a world.
+- **What moved** (`docs/evidence/7.135/measure.md`): nothing changed. Year 1 on the critic's 48 seeds: `311988d`
+  45.03, HEAD with the fold off 46.23 (1.027 ×, se 0.64 a day), HEAD 40.01. The task's premise (no fold 0.939 × on
+  1111–1120) was the 10-seed sample. The AT not run: no rule to run it on.
+- **What is left:** the user's (ADR-718, with ADR-716): (a) closed not done, the fold kept, the fall stated to the
+  next critic report (recommended); (b) the fold reverted; (c) 7.128's year-1 bar re-scoped to the fold's cost.
+
 ### 2026-10-26 · PLAN 7.128b: the late contact measured, no rule; the gap to `311988d` is the folded remnants' fights (ADR-717)
 - **The bar:** on 1121–1130 × 30 years, years 2–30 at least 1.15 × HEAD's; checkpoints with nobody in contact not
   above `311988d`'s count.

@@ -23913,3 +23913,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Left standing:** worktree `C:/Git/WarSim_fold` at `1cbc0bf3` with a `node_modules` junction, for 7.135's bisect;
   remove the junction first (`[System.IO.Directory]::Delete(..., $false)`), never `worktree remove --force`.
 - **Next:** PLAN 7.135 (seeds 1131–1140) while ADR-715, ADR-716 and ADR-717 wait.
+
+## 2026-10-26 — PLAN 7.135: no other half; the fold is the whole of year 1's fall (ADR-718, to the user)
+
+- **Start:** gate green on `b1c599cb`; critic not due; ADR-715, ADR-716, ADR-717 wait on the user.
+- **Checked the premise first:** 7.128a's no-fold 0.939 × on 1111–1120 was a 2.73-a-day gap with a per-seed paired
+  sd of about 7, 1.2 standard errors on 10 seeds.
+- **Run** (`docs/evidence/7.135/measure.md`, `runs/`): year 1 on the critic's 48 seeds through `contactYears.ts`,
+  `311988d7` (worktree `WarSim_old`) and HEAD with the fold off (`WarSim_rule`, `HV=none`), 96 one-year sims 8 at a
+  time, about 40 minutes. `311988d` 45.03 (the critic's 45.05), no fold **46.23 (1.027 ×, se 0.64)**, HEAD (critic)
+  40.01. The other six `src/` commits do not lower year 1; ADR-716's "half the fall" withdrawn there.
+- **Filed:** BLOCKERS, ADR-718 (proposed). No rule, the pin unchanged, seeds 1131–1140 not spent. No bisect
+  (`WarSim_chase` was readied with ADR-711 reverted and restored unused).
+- **Gotcha:** a 10-seed mean of year-1 contact reads to about ±2.3 a day (5 %); a cause under 10 % needs the 48.
+- **Next:** PLAN 7.129 (R15-B2, the late tick) while ADR-715–718 wait.

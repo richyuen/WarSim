@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-718 · 2026-10-26 · proposed (the user's decision) — Year 1's land contact: the fold is the whole fall; 7.135's "other half" was the sample (PLAN 7.135 measured, no rule)
+
+- **Context.** PLAN 7.135 (from ADR-716): with no fold, year 1 on 1111–1120 read 0.939 × `311988d7`, so "half the
+  fall" was put in the other commits to `src/`. AT: on 1131–1140, year 1 at least 0.95 × `311988d`'s with the fold
+  kept. On 10 seeds that gap was 1.2 standard errors.
+- **Measured** (`docs/evidence/7.135/measure.md`; the critic's 48 seeds, year 1, `tools/diag/contactYears.ts`):
+  `311988d7` 45.03 a day (the critic's 45.05); HEAD with the fold off **46.23 (1.027 ×**, +1.20, se 0.64); HEAD
+  40.01 (0.888 ×, the critic's). The other six commits do not lower year 1; the fold costs 6.2 a day (0.865 ×).
+  ADR-716's "the fold is half the fall" is withdrawn: it read a light sample (1117 alone gave 17.3 of 27.3).
+- **So** the AT asks the fold to cost under 5 % of year 1, and every variant of it tried (ADR-716: kept on own land
+  or near an enemy, waits of 3–30 days) either left remnants standing or moved year 1 nowhere on unseen seeds.
+  No rule; the pin unchanged; seeds 1131–1140 not spent.
+- **Options** (with ADR-716, which this one answers):
+  - **(a)** 7.135 closed not done; the fold kept (ADR-701 a); R15-B1's year-1 fall is the fold's price for R14-B1's
+    remnants (72.4 → 0.4 a world), stated so to the next critic report. (Recommended: no cause besides the fold is
+    left, and the fold's variants failed on unseen seeds.)
+  - **(b)** The fold reverted: year 1 back to 1.027 × `311988d`, R14-B1's remnants back (about 70 a world at year 20).
+  - **(c)** As (a), and 7.128's year-1 bar re-scoped to the fold's cost (0.86–0.89 ×), 7.128a closed done on it.
+- **Meanwhile** the loop takes PLAN 7.129 (R15-B2, the late tick).
+
 ### ADR-717 · 2026-10-26 · proposed (the user's decision) — The late land contact: the rules fight as `311988d`'s from one world, and the gap is the folded remnants' fights (PLAN 7.128b measured, no rule)
 
 - **Context.** PLAN 7.128b (R15-B1's late half): on 1121–1130, years 2–30 at least 1.15 × HEAD's and checkpoints
@@ -215,6 +235,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     reachable with the fold kept.
 - **Meanwhile** the loop takes 7.128b on HEAD's rules. Seeds 1111–1120 went here; 7.128b takes 1121–1130, 7.135
   1131–1140.
+- **Corrected 2026-10-26 (ADR-718):** on the critic's 48 seeds, no fold reads 1.027 × `311988d` in year 1: the fold
+  is the whole fall, and the "other half" above was the 10-seed sample.
 
 ### ADR-715 · 2026-10-26 · proposed (the user's decision) — The critic's Poland's light-theatre strikes: the half floor fixes three of four and turns strikes toward cities (PLAN 7.127's AT missed)
 

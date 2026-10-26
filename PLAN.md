@@ -97,6 +97,9 @@ none a seed the critic has run (`critic/c*_seed*`):
   AT: on 1131–1140 × 30 years, `311988d`'s rules and the change's read on the same seeds: year 1 at least 0.95 ×
   `311988d`'s with the fold kept; years 2–30 not below HEAD's; under 500 men at year 20 at most 2 a world; a unit
   test, red without; the gate green.
+  Measured (2026-10-26, `docs/evidence/7.135/measure.md`): on the critic's 48 seeds no fold reads 1.027 × `311988d`
+  (se 0.014), HEAD 0.888 ×: no other half, the fold is the whole fall; 7.128a's 0.939 was the 10-seed sample. No
+  rule; seeds 1131–1140 not spent; waits on the user (ADR-718, with ADR-716; BLOCKERS).
 - [ ] 7.129 R15-B2: the 5.5 ms budget (ADR-709) fails late. Pinned and alone, 6421's year 28 7.88–7.98 ms (operational
   AI 5.3–5.4), years 29 and 30 7.14 and 5.89; 1129's year 21 6.39–6.54 ms, year 20 5.77 (`critic/c15_perf_*`; saves
   `critic/c15_seed6421_y27.bin`, `c15_seed1129_y20.bin`). AT: pinned and alone, 6421's year 28 and 1129's year 21 at
