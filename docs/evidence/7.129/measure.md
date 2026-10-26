@@ -46,7 +46,7 @@ Each (class, sector) asked by the reserve, the allotment, the marches and the di
 ## 4. The AT (1141–1150 × 30 years)
 
 Screen: `tools/diag/yearScreen.ts <seed> 30`, eight at once, one P-core each (≈ 1.13 × a read alone), each year
-saved (`.cache/7129/screen/`, not committed). 300 world-years; over 5.5 only **1148's year 25 (5.70)**; next 4.59
+saved (`.cache/7129/screen/`, deleted after the AT). 300 world-years; over 5.5 only **1148's year 25 (5.70)**; next 4.59
 (1148 y18), 4.56 (1146 y16), 4.38 (1148 y30). 1148's year 25 alone from its year-24 save: **5.07, 5.13 ms** (hash
 a8bd9687, operational AI 2.80).
 

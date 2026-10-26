@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### 2026-10-26 · PLAN 7.135: no other half to find; the fold is the whole of year 1's fall (ADR-718)
+### RESOLVED 2026-10-26 (option a, the user's decision: 7.135 closed not done, the fold kept, the fall to the next critic report) · PLAN 7.135: no other half to find; the fold is the whole of year 1's fall (ADR-718)
 - **The bar:** on 1131–1140 × 30 years, year 1 at least 0.95 × `311988d`'s with the fold kept; years 2–30 not below
   HEAD's; under 500 men at year 20 at most 2 a world.
 - **What moved** (`docs/evidence/7.135/measure.md`): nothing changed. Year 1 on the critic's 48 seeds: `311988d`
@@ -14,7 +14,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** the user's (ADR-718, with ADR-716): (a) closed not done, the fold kept, the fall stated to the
   next critic report (recommended); (b) the fold reverted; (c) 7.128's year-1 bar re-scoped to the fold's cost.
 
-### 2026-10-26 · PLAN 7.128b: the late contact measured, no rule; the gap to `311988d` is the folded remnants' fights (ADR-717)
+### RESOLVED 2026-10-26 (option a, the user's decision: no rule, 7.128b closed not done) · PLAN 7.128b: the late contact measured, no rule; the gap to `311988d` is the folded remnants' fights (ADR-717)
 - **The bar:** on 1121–1130 × 30 years, years 2–30 at least 1.15 × HEAD's; checkpoints with nobody in contact not
   above `311988d`'s count.
 - **What moved** (`docs/evidence/7.128b/measure.md`): nothing changed. Checkpoints with nobody in contact `311988d` 4,
@@ -25,7 +25,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   (b) as (a), and PLAN 7.136 for a contact rule against long thin fronts; (c) done on a re-scoped bar (the rules'
   own share).
 
-### 2026-10-26 · PLAN 7.128a's AT missed: a 7-day wait before the fold moves year 1 nowhere (0.889 × `311988d`, bar 0.98; ADR-716)
+### RESOLVED 2026-10-26 (option a, the user's decision: the fold kept, 7.128a closed not done) · PLAN 7.128a's AT missed: a 7-day wait before the fold moves year 1 nowhere (0.889 × `311988d`, bar 0.98; ADR-716)
 - **The bar:** on 1111–1120 × 30 years, engaged land formations a day in year 1 at least 0.98 × `311988d`'s; under 500
   men at year 20 at most 2 a world; years 2–30 not below HEAD's; a unit test, red without; the gate green.
 - **What moved** (`docs/evidence/7.128a/at.md`, `wait.patch`, not committed): a remnant folded only after 7 days hollow
@@ -37,7 +37,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   year-1 bar re-scoped to what 7.135 finds.
 - **2026-10-26:** 7.135 found no other half (ADR-718): on the critic's 48 seeds no fold reads 1.027 × `311988d`.
 
-### 2026-10-26 · PLAN 7.127's AT missed: Poland's first burst off Germany on under 50,000 men 4 → 1 of 20, and strikes turned toward cities (ADR-715)
+### RESOLVED 2026-10-26 (option a, the user's decision: no rule, 7.127 closed not done) · PLAN 7.127's AT missed: Poland's first burst off Germany on under 50,000 men 4 → 1 of 20, and strikes turned toward cities (ADR-715)
 - **The bar:** on 4001–4020 such bursts 0 of 20; Poland's strikes before its bomber is gone not fewer than 15;
   `nukePoland1938` green; the gate green.
 - **What moved** (`docs/evidence/7.127/measure.md`, `change.patch`, not committed): THEATRE_FLOOR 0.25 → 0.5; such

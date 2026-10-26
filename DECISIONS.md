@@ -207,7 +207,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   6421's year 28 7.99 → 7.32 ms alone. A passage's `joined` is no longer made by the plans, so the next hours'
   passages keep none from them (`Passage.keep`); the pairs are asked afresh each hour, cheaper than the walks were.
 
-### ADR-718 · 2026-10-26 · proposed (the user's decision) — Year 1's land contact: the fold is the whole fall; 7.135's "other half" was the sample (PLAN 7.135 measured, no rule)
+### ADR-718 · 2026-10-26 · accepted, option a (the user's decision, 2026-10-26) — Year 1's land contact: the fold is the whole fall; 7.135's "other half" was the sample (PLAN 7.135 measured, no rule)
 
 - **Context.** PLAN 7.135 (from ADR-716): with no fold, year 1 on 1111–1120 read 0.939 × `311988d7`, so "half the
   fall" was put in the other commits to `src/`. AT: on 1131–1140, year 1 at least 0.95 × `311988d`'s with the fold
@@ -226,8 +226,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(b)** The fold reverted: year 1 back to 1.027 × `311988d`, R14-B1's remnants back (about 70 a world at year 20).
   - **(c)** As (a), and 7.128's year-1 bar re-scoped to the fold's cost (0.86–0.89 ×), 7.128a closed done on it.
 - **Meanwhile** the loop takes PLAN 7.129 (R15-B2, the late tick).
+- **Decision** (2026-10-26, the user's): (a). 7.135 closed not done, the fold kept; year 1's fall (the fold's cost, 46.23 → 40.01 a day on the critic's 48 seeds) stated to the next critic report. 7.128 closed not done with its parts.
 
-### ADR-717 · 2026-10-26 · proposed (the user's decision) — The late land contact: the rules fight as `311988d`'s from one world, and the gap is the folded remnants' fights (PLAN 7.128b measured, no rule)
+### ADR-717 · 2026-10-26 · accepted, option a (the user's decision, 2026-10-26) — The late land contact: the rules fight as `311988d`'s from one world, and the gap is the folded remnants' fights (PLAN 7.128b measured, no rule)
 
 - **Context.** PLAN 7.128b (R15-B1's late half): on 1121–1130, years 2–30 at least 1.15 × HEAD's and checkpoints
   with nobody in contact not above `311988d`'s count, against HEAD's rules while ADR-716 waits.
@@ -250,8 +251,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(c)** 7.128b done on a bar re-scoped to the rules' own share: from one world, `311988d`'s rules and HEAD's
     at most 5 % apart (4.06 against 4.08), with the checkpoints met.
 - **Meanwhile** the loop takes PLAN 7.135 (seeds 1131–1140). No rule; the pin unchanged.
+- **Decision** (2026-10-26, the user's): (a). No rule; 7.128b closed not done; the late contact to the next critic report, which judges it.
 
-### ADR-716 · 2026-10-26 · proposed (the user's decision) — Year 1's land contact: no wait before the fold brings it back, and the fold is half the fall (PLAN 7.128a's AT missed)
+### ADR-716 · 2026-10-26 · accepted, option a (the user's decision, 2026-10-26) — Year 1's land contact: no wait before the fold brings it back, and the fold is half the fall (PLAN 7.128a's AT missed)
 
 - **Context.** PLAN 7.128a (R15-B1): year 1's land contact back to at least 0.98 × `311988d`'s on 1111–1120, with under
   500 men at year 20 at most 2 a world and years 2–30 not below HEAD's. 7.128's split read ADR-701's fold as the whole
@@ -277,8 +279,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   1131–1140.
 - **Corrected 2026-10-26 (ADR-718):** on the critic's 48 seeds, no fold reads 1.027 × `311988d` in year 1: the fold
   is the whole fall, and the "other half" above was the 10-seed sample.
+- **Decision** (2026-10-26, the user's): (a). The fold kept; 7.128a closed not done; with ADR-718 a, year 1's fall is stated to the next critic report.
 
-### ADR-715 · 2026-10-26 · proposed (the user's decision) — The critic's Poland's light-theatre strikes: the half floor fixes three of four and turns strikes toward cities (PLAN 7.127's AT missed)
+### ADR-715 · 2026-10-26 · accepted, option a (the user's decision, 2026-10-26) — The critic's Poland's light-theatre strikes: the half floor fixes three of four and turns strikes toward cities (PLAN 7.127's AT missed)
 
 - **Context.** PLAN 7.127 (from ADR-711's re-picks): in `nukePoland1938`'s set-up on 4001–4020, Poland's first burst
   falls off Germany on fewer than 50,000 men (ADR-651 a's bar) on 4 seeds. AT: such bursts 0 of 20; Poland's strikes
@@ -307,6 +310,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     side within some distance weighed down, with an AT of its own (4009 and 4012 at most, 2 of 20; the A/B of
     `measure.md` §2 against a rise in civilian-heavy bursts).
 - **Meanwhile** the loop takes PLAN 7.128. Seeds 1101–1110 went to this A/B; 7.128 and on take 1111 on.
+- **Decision** (2026-10-26, the user's): (a). No rule; 7.127 closed not done; `change.patch` kept, not committed; no task.
 
 ### ADR-714 · 2026-10-26 · accepted — A fleet in a sea battle has a fight for its panel: the nearest enemy fleet of its battle, the two fleets' ships framed as a sea battle's row (PLAN 7.126; amends ADR-712)
 

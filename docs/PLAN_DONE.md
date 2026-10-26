@@ -15584,3 +15584,59 @@ Of 7.116 (open in PLAN.md):
   AI 5.3–5.4), years 29 and 30 7.14 and 5.89; 1129's year 21 6.39–6.54 ms, year 20 5.77 (`critic/c15_perf_*`; saves
   `critic/c15_seed6421_y27.bin`, `c15_seed1129_y20.bin`). AT: pinned and alone, 6421's year 28 and 1129's year 21 at
   most 5.5 ms a tick, from those saves; the worst year of 10 unseen seeds × 30 years at most 5.5 ms; the gate green.
+
+<!-- moved 2026-10-26 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.127 (closed not done, ADR-715 a, the user's decision) The critic's Poland: a first burst off Germany on fewer than `MASSED_MEN`. `nukePoland1938`'s set-up (10
+  warheads and a strategic bomber group at Warsaw, Germany's war on Poland) on seeds 4001–4020: the first burst falls
+  off Germany on fewer than 50,000 men (ADR-651 a's bar) on 4 (4009, 4010, 4012, 4016; nation 15 or 10, 17–21k men),
+  2 before ADR-711 (4009, 4020) (`tools/diag/nukePolandGates.ts … summary`). AT: on 4001–4020, such bursts 0 of 20;
+  Poland's strikes before its bomber is gone not fewer than 15; `nukePoland1938` green; the gate green.
+  Missed (2026-10-26, `docs/evidence/7.127/measure.md`): the half theatre floor 4 → 1 and civilian-heavy bursts 3 → 10
+  in ordinary worlds; not committed; waits on the user (ADR-715, BLOCKERS). Seeds 1101–1110 spent; the next tasks 1111 on.
+
+- [x] 7.128 (closed not done, ADR-716 a, ADR-717 a, ADR-718 a, the user's decision; to the next critic report) R15-B1: the land war got thinner. Same 48 seeds `311988d` → HEAD: engaged land formations a day in year 1
+  45.05 → 40.01 (lower on 35 of 48), years 2–30 5.11 → 4.35, per war 0.732 → 0.636; checkpoints (y10/y20, 7 days) with
+  nobody in contact 4 → 17 of 96; 7019's year 20, 422 land formations at war, 0 in contact on 6 of 7 samples
+  (`critic/c15_cmp_all.txt`, `c15_cmp_checkpoints.json`, `c15_y2_7019_y20.json`). AT: on 10 unseen seeds × 30 years,
+  `311988d`'s rules and HEAD's read on the same seeds: engaged a day in year 1 at least 0.98 × `311988d`'s; years 2–30
+  at least 1.15 × HEAD's; checkpoints with nobody in contact not above `311988d`'s count; land formations under 500 men
+  at year 20 at most 2 a world; a unit test, red without; the gate green.
+  - [x] 7.128a (closed not done, ADR-716 a, the user's decision: the fold kept) Year 1 back: ADR-701's fold is the whole fall. Year 1 on the critic's 8 seeds that fell most
+    (`tools/diag/contactYears.ts`, counted as the critic counts): `311988d` (2 read: 61.40, 56.64, the critic's 61.08,
+    56.21) → the fold's commit `1cbc0bf3` 39.74 a day; ADR-703's wait and ADR-711's gap move nothing; HEAD 37.33. In
+    year 1 before the fold 45–50 remnants a day stood, 16–18 % of them in contact (the army 7 %), and the army's
+    others were in contact more too (`tools/diag/hollowContact.ts`, 3359: 53.5 of 824 → 42.4 of 856). AT: on seeds
+    1111–1120 × 30 years, `311988d`'s rules and the change's read on the same seeds: engaged a day in year 1 at least
+    0.98 × `311988d`'s; land formations under 500 men at year 20 at most 2 a world; years 2–30 not below HEAD's; a
+    unit test, red without; the gate green.
+    Missed (2026-10-26, `docs/evidence/7.128a/at.md`): a 7-day wait before the fold, year 1 0.894 → 0.889 ×, under 500
+    at year 20 0.4 → 2.7, years 2–30 0.966 × HEAD; no fold at all 0.939 ×, so the fold is half the fall on these
+    seeds. Not committed; waits on the user (ADR-716, BLOCKERS); the other half is PLAN 7.135.
+  - [x] 7.128b (closed not done, ADR-717 a, the user's decision: no rule) The late contact: years 2–30 at least 1.15 × HEAD's and checkpoints with nobody in contact not above
+    `311988d`'s count, on seeds 1121–1130, against HEAD's rules while 7.128a waits (ADR-716).
+    Measured (2026-10-26, `docs/evidence/7.128b/measure.md`): checkpoints met on HEAD (1 against 4); years 2–30 4.37,
+    bar 5.03, `311988d`'s own level; from one folded world the two rules fight the same (4.06, 4.08), and the gap is
+    the folded remnants' fights. No rule; waits on the user (ADR-717, BLOCKERS).
+
+- [x] 7.135 (closed not done, ADR-718 a, the user's decision) Year 1's other half (from 7.128a, ADR-716): with no fold, year 1's land contact on 1111–1120 is 0.939 ×
+  `311988d`'s (42.38 against 45.11 a day; HEAD 40.33), so half the fall is in the other 6 commits to `src/` from
+  `311988d7` to HEAD. Found by a bisect of year 1 on 1111–1120 with the fold off (`tools/diag/contactYears.ts`).
+  AT: on 1131–1140 × 30 years, `311988d`'s rules and the change's read on the same seeds: year 1 at least 0.95 ×
+  `311988d`'s with the fold kept; years 2–30 not below HEAD's; under 500 men at year 20 at most 2 a world; a unit
+  test, red without; the gate green.
+  Measured (2026-10-26, `docs/evidence/7.135/measure.md`): on the critic's 48 seeds no fold reads 1.027 × `311988d`
+  (se 0.014), HEAD 0.888 ×: no other half, the fold is the whole fall; 7.128a's 0.939 was the 10-seed sample. No
+  rule; seeds 1131–1140 not spent; waits on the user (ADR-718, with ADR-716; BLOCKERS).
