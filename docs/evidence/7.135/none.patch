@@ -1,0 +1,56 @@
+diff --git a/src/sim/ai/hollow.ts b/src/sim/ai/hollow.ts
+index 4eb23417..56b4a39f 100644
+--- a/src/sim/ai/hollow.ts
++++ b/src/sim/ai/hollow.ts
+@@ -25,6 +25,7 @@ import { Domain, navOf, type World } from '../world';
+ export const HOLLOW_MEN = 500;
+ /** The furthest a hollow formation's men walk to the formation they join, km on the map. */
+ export const MERGE_KM = 50;
++const SINCE = new Map<number, number>();
+ /** The cell a formation stands on, or -1. */
+ function cellOf(world: World, id: number): number {
+   const fc = world.formations.cols;
+@@ -69,8 +70,34 @@ export function foldHollow(world: World, backToPool: number): number {
+       if (!world.formations.has(id)) continue;
+       const men = fc.strength[id]!;
+       const rule = rules.templates[fc.template[id]!]!;
+-      if (men >= Math.min(HOLLOW_MEN, rule.manpower) || fc.engaged[id] === 1 || fc.retreat[id] !== 0) continue;
++      if (men >= Math.min(HOLLOW_MEN, rule.manpower) || fc.engaged[id] === 1 || fc.retreat[id] !== 0) {
++        SINCE.delete(id);
++        continue;
++      }
+       const cell = cellOf(world, id);
++      const V = process.env.HV ?? '';
++      if (V === 'none') continue;
++      if (V === 'timer' || V === 'fronttimer' || (V === 'owntimer' && cell >= 0 && world.cells.controller[cell] === n)) {
++        let since = SINCE.get(id);
++        if (since === undefined) {
++          since = world.tick;
++          SINCE.set(id, since);
++        }
++        if (world.tick - since < Number(process.env.HN ?? 30) * 24) continue;
++      }
++      if ((V === 'own' || V === 'both') && cell >= 0 && world.cells.controller[cell] === n) continue;
++      if (V === 'front' || V === 'both' || V === 'fronttimer') {
++        const fr = (Number(process.env.HKM ?? 50) / kmPerCell(world.cells.w)) ** 2;
++        let near = false;
++        world.formations.forEach((o) => {
++          if (near || world.isFleet(o) || world.isWing(o) || world.offLand(o)) return;
++          if (!world.wars.atWar(n, fc.nation[o]!)) return;
++          const dx = wrapDx(world, fc.x[id]!, fc.x[o]!);
++          const dy = fc.y[o]! - fc.y[id]!;
++          if (dx * dx + dy * dy <= fr) near = true;
++        });
++        if (near) continue;
++      }
+       const land = cell >= 0 ? comp[cell]! : 0;
+       let best = -1;
+       let bestD = Infinity;
+@@ -92,6 +119,7 @@ export function foldHollow(world: World, backToPool: number): number {
+       const took = best >= 0 ? refillFormation(world, best, men) : 0;
+       nc.manpower[n] = nc.manpower[n]! + backToPool * (men - took);
+       destroyFormation(world, id);
++      SINCE.delete(id);
+       folded++;
+     }
+   }

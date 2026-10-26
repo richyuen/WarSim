@@ -10,7 +10,7 @@ Counted as the critic's run 15 counts (`tools/diag/contactYears.ts <seed> 1`): e
 of each day, year 1's mean. Arms, each through that tool:
 
 - `old`: `311988d7` (worktree at that commit).
-- `none`: HEAD's `src/` (identical to `3d7bb72b`'s) with the fold off (`HV=none` in `ai/hollow.ts`, 7.128a's scratch
+- `none`: HEAD's `src/` (identical to `3d7bb72b`'s) with the fold off (`HV=none` in `ai/hollow.ts`, `none.patch`, 7.128a's scratch
   variant: `foldHollow` skips every remnant).
 - HEAD itself: the critic's own run-15 figures (`critic/c15_headless_<seed>.json`), the same commit's rules. The tool
   agrees with the critic's count: `old` here 45.03, the critic's 45.05.

@@ -35,6 +35,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** PLAN 7.135 (the other half: a bisect of year 1 on these seeds with the fold off, its own AT); the
   user's (ADR-716): (a) 7.128a closed not done, the fold kept, 7.135 (recommended); (b) the fold reverted; (c) 7.128's
   year-1 bar re-scoped to what 7.135 finds.
+- **2026-10-26:** 7.135 found no other half (ADR-718): on the critic's 48 seeds no fold reads 1.027 × `311988d`.
 
 ### 2026-10-26 · PLAN 7.127's AT missed: Poland's first burst off Germany on under 50,000 men 4 → 1 of 20, and strikes turned toward cities (ADR-715)
 - **The bar:** on 4001–4020 such bursts 0 of 20; Poland's strikes before its bomber is gone not fewer than 15;
