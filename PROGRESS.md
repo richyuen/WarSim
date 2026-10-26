@@ -23910,4 +23910,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   from git. `ls` a diag name before writing a new tool.
 - **Gotcha:** from pre-fold saves HEAD folds ~100 remnants on day 1 and the contact falls at once; to compare two
   rule sets' fighting, step worlds that both rule sets could have made (run 15's folded saves).
+- **Left standing:** worktree `C:/Git/WarSim_fold` at `1cbc0bf3` with a `node_modules` junction, for 7.135's bisect;
+  remove the junction first (`[System.IO.Directory]::Delete(..., $false)`), never `worktree remove --force`.
 - **Next:** PLAN 7.135 (seeds 1131–1140) while ADR-715, ADR-716 and ADR-717 wait.

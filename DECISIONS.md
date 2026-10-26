@@ -173,7 +173,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   with nobody in contact not above `311988d`'s count, against HEAD's rules while ADR-716 waits.
 - **Measured** (`docs/evidence/7.128b/measure.md`; `tools/diag/lateContactAb.ts`, `lateWarFronts.ts`, new). On
   1121–1130: checkpoints with nobody in contact `311988d` 4 of 20, HEAD **1** (met on HEAD); HEAD's years 2–30
-  4.37 a day, so the bar is 5.03, `311988d`'s own level (years 2–20 5.04; HEAD 4.61, 0.915 ×).
+  4.37 a day, so the bar is 5.03, `311988d`'s own level (years 2–20 5.04; HEAD 4.61, 0.915 ×). On like years the
+  bar is 1.15 × 4.61 = 5.30, above `311988d`'s 5.04: out of reach on these seeds even with the fold undone.
 - **Bisect from saves** (16 year-20 worlds, 90 days each): on run 15's folded worlds `311988d`'s rules 4.06, HEAD's
   **4.08**; on run 14's worlds, remnants in them, `311988d` 3.655 → the fold 2.958 → the wait 2.893 → HEAD 2.893.
   Of `311988d`'s 3.655, 0.32 are the remnants themselves and the rest their enemies, engaged with them. The
