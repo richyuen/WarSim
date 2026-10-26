@@ -104,6 +104,10 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
   20 years against HEAD on the same seeds, air battles a world-year after year 1 at least 1.3 × HEAD's,
   year-1 battles not below 0.9 × HEAD's; a unit test, red without; the gate green.
 
+  Measured (2026-10-26, `docs/evidence/7.121/measure.md`): 62 % of late wing-days at war have no chain of their
+  side's airbases reaching the enemy (26 % in year 1); wings in reach tasked as in year 1. No rule. BLOCKERS,
+  ADR-707 (proposed). Waits on the user. Seeds 1066–1070 (the measure's); next unseen 1087.
+
 - [ ] 7.124 The orders' refused searches (from 7.117, ADR-703 a, the user's decision): on the
   rule's history of seed 1021, year 6 reads 9.31 ms a tick (HEAD's own 1.90): the operational AI 7.3 ms, 73 % of it
   the orders of formations near the front, 7,968 refused a year, each a failed search of 5.6–5.9 ms (37–45 cells),

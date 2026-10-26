@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-707 · 2026-10-26 · proposed (the user's decision) — The late air war: wings at war with no enemy any chain of their side's airbases reaches (PLAN 7.121)
+
+- **Context.** PLAN 7.121 (aircraft 7, needs 8): the late air war 7 % of year 1's. AT: on 10 unseen seeds × 20
+  years against HEAD, air battles a world-year after year 1 at least 1.3 × HEAD's, year 1 not below 0.9 ×; a unit
+  test, red without.
+- **Measured** (`docs/evidence/7.121/measure.md`, 1066–1070; new tool `airStuck.ts`): late air battles 0.07 × year
+  1's; wings 0.57 ×; wings with an enemy land formation in range 0.29 ×, tasked as in year 1 (0.84, 0.89); land
+  contact 0.10 ×. Of the wing-days at war of rebasing roles, **62 %** late (26 % in year 1) have no chain of ferry
+  flights over their side's airbases (its bloc's and its co-belligerents') reaching the enemy: wars across the
+  oceans. With a mission 17 % late, 64 % in year 1.
+- **No rule tried:** the tasking holds; the remedies are a new mechanic or a war choice that moves the war.
+- **Options:**
+  - **(a)** 7.121 closed not done, no rule: the late air war follows the wars an air force can reach and the land
+    contact (ADR-702 d). (Recommended: the AI uses the wings that can reach; ADR-706 shows a war-choice weight
+    moves the fighting rather than adding to it.)
+  - **(b)** PLAN 7.127: wings cross the sea (a ferry flight over water to a base of their side in reach of the
+    enemy, or carried by transports), AT as 7.121's on 10 unseen seeds from 1087.
+  - **(c)** PLAN 7.127: the war choice weighs an enemy in reach of the air force; AT as 7.121's.
+- **Meanwhile** the loop takes the next task (7.124).
+
 ### ADR-706 · 2026-10-26 · proposed (the user's decision) — A naval rival weighs more in the war choice: year 1's sea war ×1.56, the late one flat (PLAN 7.120's AT missed)
 
 - **Context.** PLAN 7.120 (naval 7, needs 8): sea battles a world-year after year 1 about a fifth of year 1's. AT: on

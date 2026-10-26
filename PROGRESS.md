@@ -23739,3 +23739,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   spend the navies in year 1. Read an AI rule on a navy's whole life before trusting a late-start A/B.
 - **Filed:** BLOCKERS, ADR-706 (proposed).
 - **Next:** PLAN 7.121 while ADR-704, ADR-705 and ADR-706 wait.
+
+## 2026-10-26 — PLAN 7.121: the late air war's cause measured, to the user (ADR-707)
+
+- **Measured** (`docs/evidence/7.121/measure.md`; new tool `airStuck.ts`): late air battles 0.07 × year 1's, wings
+  0.57 ×, wings with an enemy in range 0.29 × and tasked as in year 1; 62 % of late wing-days at war have no chain of
+  their side's airbases reaching the enemy (26 % in year 1).
+- **Filed:** BLOCKERS, ADR-707 (proposed). No rule.
+- **Next:** PLAN 7.124 while ADR-704 to ADR-707 wait.

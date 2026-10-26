@@ -5,6 +5,14 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.121: the late air war's cause measured, no rule (ADR-707; waits on the user)
+- **The bar:** on 10 unseen seeds × 20 years against HEAD, late air battles at least 1.3 ×, year 1 not below 0.9 ×;
+  a unit test, red without; the gate green.
+- **What moved** (`docs/evidence/7.121/measure.md`): nothing; 62 % of late wing-days at war have no chain of their
+  side's airbases reaching the enemy (26 % in year 1); tasking of wings in reach as in year 1.
+- **What is left:** the user's (ADR-707): (a) closed not done (recommended); (b) PLAN 7.127, wings cross the sea;
+  (c) PLAN 7.127, the war choice weighs the air force's reach.
+
 ### PLAN 7.120's AT missed: late sea battles 1.04 × HEAD's, bar 1.3 (ADR-706; waits on the user)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD, late battles at least 1.3 ×, year 1 not below 0.9 ×,
   sinking nothing at most 4 %; a unit test, red without; the gate green.
