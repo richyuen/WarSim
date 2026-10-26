@@ -5,6 +5,14 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.124's AT missed: three world-years of 250 at 5.02–5.43 ms, bar 5.0 (ADR-708; waits on the user)
+- **The bar:** pinned, 1021's year 6 at most 5.0 ms, and the worst year of 10 unseen seeds × 25 years at most 5.0 ms;
+  the pin kept; the gate green.
+- **What moved** (`docs/evidence/7.124/measure.md`, `change.patch`): refused searches not made again (no rule moved);
+  1021's year 6 9.33 → 4.85 (met); 1038 y25 5.43, y21 5.07, 1037 y17 5.02 alone (missed; HEAD's code the same there).
+- **What is left:** the user's (ADR-708): (a) commit, closed not done (recommended); (b) as (a) and PLAN 7.128 for the
+  plans' late cost; (c) no commit.
+
 ### PLAN 7.121: the late air war's cause measured, no rule (ADR-707; waits on the user)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD, late air battles at least 1.3 ×, year 1 not below 0.9 ×;
   a unit test, red without; the gate green.

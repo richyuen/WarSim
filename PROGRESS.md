@@ -23747,3 +23747,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   their side's airbases reaching the enemy (26 % in year 1).
 - **Filed:** BLOCKERS, ADR-707 (proposed). No rule.
 - **Next:** PLAN 7.124 while ADR-704 to ADR-707 wait.
+
+## 2026-10-26 — PLAN 7.124: the AT missed by three world-years (5.02–5.43 ms), to the user (ADR-708)
+
+- **Measured** (`docs/evidence/7.124/measure.md`; new tool `asksWhy.ts`): 1021's year 6, 31.3 of 47.2 s of asks were
+  corridor refusals voided by a province's open or shut changing anywhere; 6.3 s refusals for another goal in a province.
+- **Change** (`change.patch`, not committed; pin and hash kept): the route over the provinces planned again before a
+  corridor's refusal is dropped; a refused search's region answers other goals outside it within the AI's run. 1021's
+  year 6 9.33 → 4.85 ms. Unit case red on HEAD.
+- **AT** (1031–1040 × 25): three years over 5.0 alone (1038 y25 5.43, y21 5.07, 1037 y17 5.02); HEAD's code the same
+  on 1038 y25 (5.41).
+- **Gotcha:** a passage keeps its routes' answers (`Passage.routes`): a test that asks twice on one passage reads the
+  first answer again, with no search; make the world again for a "before".
+- **Filed:** BLOCKERS, ADR-708 (proposed).
+- **Next:** the next task while ADR-704 to ADR-708 wait.

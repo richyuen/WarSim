@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-708 · 2026-10-26 · proposed (the user's decision) — Refused searches not made again: 1021's year 6 9.33 → 4.85 ms, three late world-years 5.02–5.43 (PLAN 7.124's AT missed)
+
+- **Context.** PLAN 7.124 (from 7.117, ADR-703 a): 1021's year 6 at 9.33 ms a tick, the orders' refused searches. AT:
+  pinned, 1021's year 6 at most 5.0 ms, and the worst year of 10 unseen seeds × 25 years (1031 on) at most 5.0 ms; a
+  change meant to keep the rules keeps the pin; the gate green.
+- **Measured** (`docs/evidence/7.124/measure.md`; new tool `asksWhy.ts`): of 47.2 s of asks in the year, 31.3 s were
+  corridor refusals voided by a province's open or shut changing anywhere, 6.3 s refusals kept for another goal in the
+  same province; each a 6 ms search refused again.
+- **The change** (`change.patch`, not committed; no rule moved: the pin and 1021's hash unchanged): a corridor's refusal
+  holds while the route over the provinces planned again is the same; within the operational AI's run, the region a
+  refused search reached answers a goal outside it with the same refusal and no search. Unit case red on HEAD.
+- **The AT:** 1021's year 6 **4.85 ms** (met); 1031–1040 × 25: three world-years over 5.0 alone, 1038 y25 **5.43**, y21
+  5.07, 1037 y17 5.02 (missed). 1038 y25 on HEAD's code 5.41: not the refused searches; the plans' cost at large.
+- **Options:**
+  - **(a)** Commit the change (no rule moves); 7.124 closed not done; the three late years recorded under ADR-698's
+    budget with no task. (Recommended: a pure speed-up, 1021's year 6 ×0.52, no year slower; what is left is 0.4 ms
+    in 3 of 250 world-years with no single cause.)
+  - **(b)** As (a), and PLAN 7.128: the operational AI's plans late (1038 y25), measured on a save of it, AT as 7.124's
+    on 10 unseen seeds from 1087.
+  - **(c)** No commit; 7.124 open.
+- **Meanwhile** the loop takes the next task. Seeds 1031–1040 went to the AT; next unseen 1087.
+
 ### ADR-707 · 2026-10-26 · proposed (the user's decision) — The late air war: wings at war with no enemy any chain of their side's airbases reaches (PLAN 7.121)
 
 - **Context.** PLAN 7.121 (aircraft 7, needs 8): the late air war 7 % of year 1's. AT: on 10 unseen seeds × 20

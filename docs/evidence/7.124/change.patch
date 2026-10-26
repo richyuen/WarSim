@@ -1,0 +1,386 @@
+diff --git a/src/sim/ai/operational.ts b/src/sim/ai/operational.ts
+index 5e154fe1..ccab337d 100644
+--- a/src/sim/ai/operational.ts
++++ b/src/sim/ai/operational.ts
+@@ -72,8 +72,8 @@
+ import { atAnyPort, marchingToPort, transportPorts } from '../systems/amphibious';
+ import { orderMove, passageOf, snapTarget, wasLong } from '../systems/movement';
+ import { frontierOf, frontNeighbours, GARRISON, PRESSURE_RADIUS } from '../systems/territory';
+-import { pocketOf, type Passage } from '../nav/grid';
+-import { CORRIDOR_REFUSAL, wideJoined, wideNode, type CorridorRefusal } from '../nav/provinceGraph';
++import { pocketOf, type MobilityId, type Passage } from '../nav/grid';
++import { CORRIDOR_REFUSAL, keepRegions, openRoute, wideJoined, wideNode, type CorridorRefusal } from '../nav/provinceGraph';
+ import { navOf, type World } from '../world';
+ 
+ export const STAGGER = 4;
+@@ -272,8 +272,21 @@ export function operationalAiOf(tables: { templateArmour: readonly number[] }) {
+   return (world: World): void => operationalAi(world, tables.templateArmour);
+ }
+ 
+-/** `armour`: the tanks' share of the upkeep by template; none given, no formation is armour. */
++/**
++ * `armour`: the tanks' share of the upkeep by template; none given, no formation is armour. While it plans
++ * no cell changes hands: the route searches keep the regions they found no way out of (`keepRegions`,
++ * PLAN 7.124), and forget them after.
++ */
+ export function operationalAi(world: World, armour: readonly number[] = []): void {
++  keepRegions(true);
++  try {
++    planAll(world, armour);
++  } finally {
++    keepRegions(false);
++  }
++}
++
++function planAll(world: World, armour: readonly number[]): void {
+   sector = world.atSize(SECTOR_CELLS);
+   range = world.atSize(DEPLOY_RANGE_CELLS);
+   range2 = range * range;
+@@ -1313,7 +1326,7 @@ function asked(world: World, id: number, to: number, pass: Passage): 'ok' | 'ref
+   const base = kept && was !== undefined && was.from === from && was.template === f.template[id] && was.grid === nav.grid && was.flips >= world.flipLogBase && sameOk(was.ok, pass.ok);
+   const same = base && lastMixed(world, pass) <= was!.flips;
+   // A refusal by the cells of a corridor holds while what it read does (PLAN 7.30b).
+-  if ((same && (was!.to === to || was!.long.includes(to))) || (base && was!.to === to && corridorHolds(world, was!, from, pass))) {
++  if ((same && (was!.to === to || was!.long.includes(to))) || (base && was!.to === to && corridorHolds(world, was!, from, to, pass))) {
+     world.seaBound.delete(id);
+     return was!.to === to ? 'refused' : 'long';
+   }
+@@ -1346,12 +1359,21 @@ function asked(world: World, id: number, to: number, pass: Passage): 'ok' | 'ref
+  * a cell that has gone from open to closed takes a way from it and gives none, and a flip outside
+  * the corridor is not read by it. Asked again, it would be refused again.
+  */
+-function corridorHolds(world: World, was: { since: number; corridor?: CorridorRefusal | undefined }, from: number, pass: Passage): boolean {
++function corridorHolds(world: World, was: { since: number; template: number; corridor?: CorridorRefusal | undefined }, from: number, to: number, pass: Passage): boolean {
+   const read = was.corridor;
+   if (!read || !pass.open || !pass.shut || pass.ok[pass.holder[from]!] !== 1) return false;
+-  if (read.open !== pass.open && !sameOk(read.open, pass.open)) return false;
+-  if (read.shut !== pass.shut && !sameOk(read.shut, pass.shut)) return false;
+-  const nodeOf = navOf(world).graph.nodeOf;
++  const nav = navOf(world);
++  if ((read.open !== pass.open && !sameOk(read.open, pass.open)) || (read.shut !== pass.shut && !sameOk(read.shut, pass.shut))) {
++    // The nodes' open or shut changed (PLAN 7.124): the route over them planned again; the same route,
++    // the same corridor, and the same cells searched (the flips in it read below).
++    const mobility = world.rules?.templates[was.template]?.mobility as MobilityId | undefined;
++    if (mobility === undefined) return false;
++    const route = openRoute(nav.grid, nav.graph, mobility, from, to, pass);
++    if (!route || !sameRoute(route, read.route)) return false;
++    read.open = pass.open;
++    read.shut = pass.shut;
++  }
++  const nodeOf = nav.graph.nodeOf;
+   const { flipLog: log, flipCells: cells } = world;
+   const { ok } = pass;
+   if (was.since < world.flipLogBase) return false;
+@@ -1364,6 +1386,12 @@ function corridorHolds(world: World, was: { since: number; corridor?: CorridorRe
+   return true;
+ }
+ 
++function sameRoute(a: readonly number[], b: readonly number[]): boolean {
++  if (a.length !== b.length) return false;
++  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
++  return true;
++}
++
+ function sameOk(a: Uint8Array, b: Uint8Array): boolean {
+   if (a.length !== b.length) return false;
+   for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+diff --git a/src/sim/nav/grid.ts b/src/sim/nav/grid.ts
+index 00988957..10f975ad 100644
+--- a/src/sim/nav/grid.ts
++++ b/src/sim/nav/grid.ts
+@@ -492,9 +492,10 @@ export function boundWeight(cells: number): number {
+  * Cell A* from `start` to `goal` for a mobility class. `corridor` further restricts the search,
+  * and `pass` the ground by its holder. Returns null when the goal is unreachable. The bound is
+  * scaled by `boundWeight` of the distance between the two ends, or by `weight` when one is given
+- * (the tests ask for 1, the cheapest way).
++ * (the tests ask for 1, the cheapest way). `closedOut`, given, gets every cell the search closes: of a
++ * search that finds no way, every cell it reaches (PLAN 7.124, `searchRoute`'s refused regions).
+  */
+-export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: number, corridor?: Corridor, pass?: Passage, weight?: number): PathResult | null {
++export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: number, corridor?: Corridor, pass?: Passage, weight?: number, closedOut?: number[]): PathResult | null {
+   const costRow = MOVE_COST[mobility]!;
+   const { w, h, wrapX, terrain, kx, ky, kd } = g;
+   // The corridor as two typed arrays read in the loop (PLAN 1.42f: a callback per neighbour and
+@@ -546,6 +547,7 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal:
+     if (c === goal) break;
+     if (stamp[c] === CLOSED) continue;
+     stamp[c] = CLOSED;
++    closedOut?.push(c);
+     const cx = c % w;
+     const cy = (c - cx) / w;
+     const gc = gs[c]!;
+diff --git a/src/sim/nav/provinceGraph.ts b/src/sim/nav/provinceGraph.ts
+index 5f67233c..662dc20f 100644
+--- a/src/sim/nav/provinceGraph.ts
++++ b/src/sim/nav/provinceGraph.ts
+@@ -763,14 +763,16 @@ function steps(g: NavGrid, a: number, b: number): number {
+  * What a refusal by the cells of a corridor read (PLAN 7.30b): the corridor's nodes (`on`), and the
+  * passage's `open` and `shut` that the route over the nodes was planned on. A search from open
+  * ground in a corridor enters open cells only, and reads the holders of the corridor's cells
+- * alone; the route is of `open` and `shut` alone. So it is refused again while those are the
+- * same, its start is open, and no cell of the corridor's nodes has gone from a closed holder to an
+- * open one (`corridorHolds`, ai/operational.ts).
++ * alone; the route is of `open` and `shut` alone. So it is refused again while the route over the
++ * nodes is the same (`route`: kept while `open` and `shut` are, else planned again, PLAN 7.124), its
++ * start is open, and no cell of the corridor's nodes has gone from a closed holder to an open one
++ * (`corridorHolds`, ai/operational.ts).
+  */
+ export interface CorridorRefusal {
+   on: Uint8Array;
+   open: Uint8Array;
+   shut: Uint8Array;
++  route: readonly number[];
+ }
+ 
+ /**
+@@ -780,6 +782,75 @@ export interface CorridorRefusal {
+  */
+ export const CORRIDOR_REFUSAL: { searches: number; at: number; read: CorridorRefusal | undefined } = { searches: 0, at: -1, read: undefined };
+ 
++/**
++ * The route over the nodes that `searchRoute` plans for a start on open ground (PLAN 7.124): null where
++ * it plans none (no route: refused with no search), undefined where it plans no corridor (an end on no
++ * node, or the start on closed ground). Read by `corridorHolds` (ai/operational.ts) when the passage's
++ * `open` or `shut` has changed since a corridor's refusal: the same route, the same corridor searched.
++ */
++export function openRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass: Passage): readonly number[] | null | undefined {
++  if (!mayReach(g, pg, start, goal, pass)) return null;
++  const a = pg.nodeOf[start]!;
++  const b = pg.nodeOf[goal]!;
++  if (pass.ok[pass.holder[start]!] !== 1 || pass.open === undefined || a === 0 || b === 0) return undefined;
++  return routeOver(g, pg, mobility, a, b, pass.open, pass);
++}
++
++/** The route over the nodes from `a` to `b` for a start on open ground (`open`: the passage's), as `searchRoute` plans it. */
++function routeOver(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, a: number, b: number, open: Uint8Array | undefined, pass: Passage | undefined): number[] | null {
++  if (a === b) return [a];
++  if (open === undefined || pass!.keep === undefined) return coarseRoute(g, pg, mobility, a, b, open, open !== undefined ? pass!.shut : undefined);
++  // Of the open and shut nodes alone: kept with them (PLAN 1.42h, `Passage.keep`).
++  const coarse = (pass!.keep.coarse ??= new Map());
++  const key = (mobility * pg.nodeCount + a) * pg.nodeCount + b;
++  let route = coarse.get(key) ?? null;
++  if (!coarse.has(key)) coarse.set(key, (route = coarseRoute(g, pg, mobility, a, b, open, pass!.shut)));
++  return route;
++}
++
++/**
++ * The regions of searches in a corridor over open ground that found no way (PLAN 7.124): every cell a
++ * refused search reached, by the nodes of its ends, its mobility and its passage's `ok`. Kept only while
++ * `keepRegions(true)` (the operational AI's plans, while no cell changes hands), at most MAX_REGIONS, the
++ * oldest dropped. The cells a search reaches from open ground are open (it enters closed ground only from
++ * its own holder's), and a step between open cells is allowed both ways: from any cell of such a region the
++ * same corridor's search reaches the same cells, and a goal outside them is refused again. Not state.
++ */
++let regions: { a: number; b: number; mobility: MobilityId; ok: Uint8Array; cells: Int32Array }[] | null = null;
++const MAX_REGIONS = 16;
++/** Refusals answered by a region (`keepRegions`), for the tools. Not state. */
++export const REGION_REFUSALS = { n: 0 };
++
++/** Keeps the regions of refused searches (`searchRoute`) from now on, or stops and forgets them. */
++export function keepRegions(on: boolean): void {
++  regions = on ? [] : null;
++}
++
++function keepRegion(a: number, b: number, mobility: MobilityId, ok: Uint8Array, closed: number[]): void {
++  const cells = Int32Array.from(closed).sort();
++  regions!.push({ a, b, mobility, ok, cells });
++  if (regions!.length > MAX_REGIONS) regions!.shift();
++}
++
++function hasCell(cells: Int32Array, c: number): boolean {
++  let lo = 0;
++  let hi = cells.length - 1;
++  while (lo <= hi) {
++    const m = (lo + hi) >> 1;
++    const v = cells[m]!;
++    if (v === c) return true;
++    if (v < c) lo = m + 1;
++    else hi = m - 1;
++  }
++  return false;
++}
++
++/** Whether a kept region of the same ends' nodes, mobility and passage holds `start` and not `goal`. */
++function refusedIn(a: number, b: number, mobility: MobilityId, ok: Uint8Array, start: number, goal: number): boolean {
++  for (const r of regions!) if (r.a === a && r.b === b && r.mobility === mobility && r.ok === ok && hasCell(r.cells, start) && !hasCell(r.cells, goal)) return true;
++  return false;
++}
++
+ /** `longest`: of `findDirectRoute`, 'long' where the coarse route is longer than COARSE_SLACK times it. */
+ function searchRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start: number, goal: number, pass?: Passage, longest = Infinity): PathResult | null | 'long' {
+   const search = ++CORRIDOR_REFUSAL.searches;
+@@ -794,16 +865,7 @@ function searchRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start:
+   if (a !== 0 && b !== 0 && (open !== undefined || (a !== b && boundKm(g, start, goal) > COARSE_ABOVE_KM))) {
+     const was = g.barred;
+     if (open !== undefined && was && was.goal === goal && was.from === a && was.mobility === mobility && was.ok === pass!.ok && g.scratch!.stamp[start] === was.closed) return null;
+-    let route: number[] | null;
+-    if (a === b) route = [a];
+-    else if (open === undefined || pass!.keep === undefined) route = coarseRoute(g, pg, mobility, a, b, open, open !== undefined ? pass!.shut : undefined);
+-    else {
+-      // Of the open and shut nodes alone: kept with them (PLAN 1.42h, `Passage.keep`).
+-      const coarse = (pass!.keep.coarse ??= new Map());
+-      const key = (mobility * pg.nodeCount + a) * pg.nodeCount + b;
+-      route = coarse.get(key) ?? null;
+-      if (!coarse.has(key)) coarse.set(key, (route = coarseRoute(g, pg, mobility, a, b, open, pass!.shut)));
+-    }
++    const route = routeOver(g, pg, mobility, a, b, open, pass);
+     if (!route) return null;
+     if (longest < Infinity && route.length > 2) {
+       let way = steps(g, start, pg.centre[route[1]!]!) + steps(g, pg.centre[route[route.length - 2]!]!, goal);
+@@ -815,13 +877,23 @@ function searchRoute(g: NavGrid, pg: ProvinceGraph, mobility: MobilityId, start:
+       corridor[node] = 1;
+       for (const nb of pg.adj[node]!) corridor[nb] = 1;
+     }
++    // A region a search of this plan found no way out of (PLAN 7.124): from it to a goal outside it,
++    // with the same ends' nodes, the same corridor is searched and refused again.
++    if (open !== undefined && regions !== null && refusedIn(a, b, mobility, pass!.ok, start, goal)) {
++      CORRIDOR_REFUSAL.at = search;
++      CORRIDOR_REFUSAL.read = { on: corridor, open, shut: pass!.shut!, route };
++      REGION_REFUSALS.n++;
++      return null;
++    }
+     const before = g.scratch?.gen;
+-    const inCorridor = findPath(g, mobility, start, goal, { nodeOf: pg.nodeOf, on: corridor }, pass);
++    const closed = open !== undefined && regions !== null ? [] : undefined;
++    const inCorridor = findPath(g, mobility, start, goal, { nodeOf: pg.nodeOf, on: corridor }, pass, undefined, closed);
++    if (!inCorridor && closed !== undefined && closed.length > 0) keepRegion(a, b, mobility, pass!.ok, closed);
+     // (A search that was refused at once has no stamps of its own.)
+     if (!inCorridor && open !== undefined && g.scratch && g.scratch.gen !== before) g.barred = { closed: 2 * g.scratch.gen + 1, from: a, goal, mobility, ok: pass!.ok };
+     if (!inCorridor && open !== undefined) {
+       CORRIDOR_REFUSAL.at = search;
+-      CORRIDOR_REFUSAL.read = { on: corridor, open, shut: pass!.shut! };
++      CORRIDOR_REFUSAL.read = { on: corridor, open, shut: pass!.shut!, route };
+     }
+     if (inCorridor || open !== undefined) return inCorridor;
+   }
+diff --git a/tests/unit/refusedRegions1938.test.ts b/tests/unit/refusedRegions1938.test.ts
+new file mode 100644
+index 00000000..9e720ecd
+--- /dev/null
++++ b/tests/unit/refusedRegions1938.test.ts
+@@ -0,0 +1,125 @@
++import { describe, expect, it } from 'vitest';
++import { askMove } from '../../src/sim/ai/operational';
++import { cellOf } from '../../src/sim/data/terrain';
++import { keepRegions, REGION_REFUSALS } from '../../src/sim/nav/provinceGraph';
++import { SIZE_1938 } from '../../src/sim/scenario1938';
++import { Sim } from '../../src/sim/sim';
++import { passageOf } from '../../src/sim/systems/movement';
++import { EventKind } from '../../src/shared/events';
++import { navOf, type World } from '../../src/sim/world';
++import { assets1938 } from '../helpers/earth';
++import { addDivision, nationId } from '../helpers/sim1938';
++
++// PLAN 7.124: the orders the operational AI gives again after a refused search. (1) A refusal in a
++// corridor (PLAN 7.30b) was read again whenever any province's open or shut changed, anywhere: now the
++// route over the provinces is planned again, and the refusal holds while it is the same. (2) Within a
++// plan (no cell changes hands), the region a refused search reached is kept: from any cell of it to a
++// goal outside it, with the same ends' provinces, the answer is the same refusal, with no search.
++// Either way the answers are those of the search (seed 1021's year 6: the same hash, 9.3 → 4.8 ms).
++
++const W = SIZE_1938.w;
++const H = SIZE_1938.h;
++const [GER, SWI] = ['GER', 'SWI'].map(nationId) as [number, number];
++
++function refusals(w: World, id: number): number {
++  const ev = w.out.events;
++  let n = 0;
++  for (let i = 0; i < ev.length; i += 6) if (ev[i + 1] === EventKind.MoveRejected && ev[i + 2] === id) n++;
++  ev.length = 0;
++  return n;
++}
++
++/** A cell of `nation` with the cells within `reach` of it its own, nearest (lon, lat). */
++function inner(w: World, nation: number, lon: number, lat: number, reach = 1): number {
++  const [x0, y0] = cellOf(lon, lat, W, H).map(Math.floor) as [number, number];
++  const own = (x: number, y: number): boolean => w.cells.controller[y * W + x] === nation;
++  for (let r = 0; r < 20; r++) {
++    for (let y = y0 - r; y <= y0 + r; y++) {
++      for (let x = x0 - r; x <= x0 + r; x++) {
++        let all = true;
++        for (let dy = -reach; dy <= reach && all; dy++) for (let dx = -reach; dx <= reach && all; dx++) all = own(x + dx, y + dy);
++        if (all) return y * W + x;
++      }
++    }
++  }
++  throw new Error(`no inner cell of ${nation}`);
++}
++
++/** The 1938 world with a German pocket by Leipzig walled in by Swiss cells two cells out: its centre and wall. */
++function walled(seed: number): { w: World; goal: number; ring: number[] } {
++  const s = new Sim({ scenario: '1938', seed, assets: assets1938(W) });
++  const w = s.world;
++  const goal = inner(w, GER, 12.5, 50.0, 3);
++  const ring: number[] = [];
++  for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === 2) ring.push(goal + dy * W + dx);
++  for (const c of ring) w.setController(c, SWI);
++  return { w, goal, ring };
++}
++
++describe('refused searches not made again (PLAN 7.124)', () => {
++  it("a corridor's refusal holds when a province's shut changes away from it and its route is the same", () => {
++    const { w, goal, ring } = walled(1942);
++    const home = inner(w, GER, 11.5, 48.5);
++    const id = addDivision(w, GER, (home % W) + 0.5, Math.floor(home / W) + 0.5);
++    refusals(w, id);
++    expect(askMove(w, id, goal, passageOf(w, GER))).toBe('refused');
++    expect(refusals(w, id)).toBe(1);
++    expect(w.refusedOrders.get(id)?.corridor).toBeDefined();
++    // A German cell by Königsberg to Switzerland: that province now has closed ground, far from the way.
++    const shut = passageOf(w, GER).shut!.slice();
++    w.setController(inner(w, GER, 20.5, 54.7), SWI);
++    expect(passageOf(w, GER).shut).not.toEqual(shut);
++    expect(askMove(w, id, goal, passageOf(w, GER))).toBe('refused');
++    expect(refusals(w, id)).toBe(0);
++    // A cell of the wall opened: asked again, and the way through it is found.
++    w.setController(ring[0]!, GER);
++    expect(askMove(w, id, goal, passageOf(w, GER))).toBe('ok');
++    expect(w.refusedOrders.has(id)).toBe(false);
++  }, 120_000);
++
++  it('within a plan, from the region a refused search reached to a goal outside it: refused with no search', () => {
++    const { w, goal } = walled(1943);
++    const nodeOf = navOf(w).graph.nodeOf;
++    const home = inner(w, GER, 11.5, 48.5);
++    const a = addDivision(w, GER, (home % W) + 0.5, Math.floor(home / W) + 0.5);
++    const next = home + 1;
++    expect(nodeOf[next]).toBe(nodeOf[home]);
++    const b = addDivision(w, GER, (next % W) + 0.5, Math.floor(next / W) + 0.5);
++    const other = goal + W;
++    expect(nodeOf[other]).toBe(nodeOf[goal]);
++    // Without the regions (the same world made again: a passage keeps its answers), both are searched and refused.
++    {
++      const { w: w0 } = walled(1943);
++      const p0 = passageOf(w0, GER);
++      const a0 = addDivision(w0, GER, (home % W) + 0.5, Math.floor(home / W) + 0.5);
++      const b0 = addDivision(w0, GER, (next % W) + 0.5, Math.floor(next / W) + 0.5);
++      expect(askMove(w0, a0, goal, p0)).toBe('refused');
++      expect(askMove(w0, b0, other, p0)).toBe('refused');
++    }
++    const pass = passageOf(w, GER);
++    keepRegions(true);
++    try {
++      const n = REGION_REFUSALS.n;
++      expect(askMove(w, a, goal, pass)).toBe('refused');
++      expect(REGION_REFUSALS.n).toBe(n);
++      const gen = navOf(w).grid.scratch!.gen;
++      // Another formation of the region, another goal in the pocket: the same refusal, no search.
++      expect(askMove(w, b, other, pass)).toBe('refused');
++      expect(REGION_REFUSALS.n).toBe(n + 1);
++      expect(navOf(w).grid.scratch!.gen).toBe(gen);
++      // A goal of the pocket's province outside the wall (in the region): searched, and found.
++      let near = -1;
++      for (let r = 3; r < 30 && near < 0; r++)
++        for (let dy = -r; dy <= r && near < 0; dy++)
++          for (let dx = -r; dx <= r && near < 0; dx++) {
++            const c = goal + dy * W + dx;
++            if (Math.max(Math.abs(dx), Math.abs(dy)) === r && nodeOf[c] === nodeOf[goal] && w.cells.controller[c] === GER) near = c;
++          }
++      expect(near).toBeGreaterThanOrEqual(0);
++      expect(askMove(w, b, near, pass)).toBe('ok');
++      expect(REGION_REFUSALS.n).toBe(n + 1);
++    } finally {
++      keepRegions(false);
++    }
++  }, 120_000);
++});

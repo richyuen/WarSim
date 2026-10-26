@@ -117,6 +117,10 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
   AT: pinned, 1021's year 6 at most 5.0 ms, and the worst year of 10 unseen seeds × 25 years (1031 on) at most 5.0 ms;
   a change meant to keep the rules keeps the pin; the gate green.
 
+  Measured and changed (2026-10-26, `docs/evidence/7.124/`): refused searches not made again (no rule moved):
+  1021's year 6 9.33 → 4.85 ms; the AT missed by three world-years of 250 (5.02–5.43 alone, the plans at large, the
+  same on HEAD's code). BLOCKERS, ADR-708 (proposed). Waits on the user. Seeds 1031–1040 AT; next unseen 1087.
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
