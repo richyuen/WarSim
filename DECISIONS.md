@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-702 · 2026-10-25 · proposed (the user's decision) — An attack marches on the enemy formation in reach: contact up, the figure flat (PLAN 7.116b's AT missed)
+
+- **Context.** PLAN 7.116b (R14-B1, late contact): on 10 unseen seeds × 20 years against HEAD read first on the same
+  seeds, engaged land formations a war in years 2–20 at least 0.15 of year 1's; a unit test, red without.
+- **Measured** (`docs/evidence/7.116b/measure.md`; HEAD's saves of 6421 years 10 and 20 and 1129 years 10 and 20; new
+  tools `warContact.ts`, `nearIdle.ts`, `contactSpells.ts`, `hoverers.ts`): the weaker side of a war is armed late
+  (1129 year 10: 28 formations a war) but 5–7 % of it is in contact against 23–25 % in year 1. Not the retreat:
+  contact begins 3–3.6 × less often a war late and lasts about as long once begun. About 20 formations a day attack
+  within 12 cells of an enemy formation and march past it, on the enemy cell nearest their sector's centre, in year 1
+  and late alike; late fronts are 4 × longer (536 sectors a plan against 138) with the same army a plan.
+- **Rule tried** (`docs/evidence/7.116b/rule.patch`, not committed): a sector that attacks, with an enemy land formation
+  in no battle among those its threat counts, marches on that formation's cell (the nearest its centre, on the
+  landmass of its hold cell). Four variants A/B'd from the saves (§5): late ×1.15 for each. The one taken to the AT
+  costs year 1 least (−3.7 % engaged); two others read a higher late ÷ year-1 ratio (×1.37) only by lowering year 1
+  (×0.84), which is not the fix asked for.
+- **The AT** (`docs/evidence/7.116b/at.md`, 1001–1010): HEAD **0.111**, the rule **0.113** (bar 0.15: missed; 5 of 10
+  seeds up). Late a war 0.666 → 0.632, year 1 6.00 → 5.59. A world-year, years 2–20: engaged 4.9 → 5.2 (+5 %), the
+  share of the army at war in contact 0.0119 → 0.0131 (+10 %), wars running 7.36 → 8.16 (+11 %), land formations
+  destroyed 99.9 → 113.6 a year (+14 %), the army at war a war 57.3 → 49.7 (−13 %). More contact, and the wars it
+  brings to battle cost more formations and run more wars: the per-war figure is held by the wars and the army's
+  size. The third contact rule so (7.104, ADR-679; 7.115, ADR-693): up on saves, flat on fresh worlds.
+- **Options:**
+  - **(a)** No rule; 7.116b closed not done (7.116 with it); PLAN 7.123: measure first why a rule that brings more of
+    the army to battle raises the wars running (+11 %) and the formations destroyed (+14 %) on fresh worlds and not on
+    the saves, with its AT on the next 10 unseen seeds (1011 on).
+  - **(b)** Commit the rule: contact a world-year +5 %, the share of the army at war in contact +10 %, the AT's figure
+    flat (0.113), year 1 −7 %, losses +14 % a year; the pin moves; 7.116b closed not done; no task.
+  - **(c)** Re-scope 7.116b's bar to what the operational AI owns: the share of the army at war in contact, years 2–20
+    against HEAD's, with the critic's per-war figure left to the next report; on that bar the rule reads ×1.10, and
+    the task would take a bar the user sets for it (memory of earlier flat ATs: the bar questioned before a split).
+  - **(d)** No rule, no task; 7.116 closed not done; R14-B1's late contact to the next critic report.
+- **Recommended: (d).** Three tasks have moved contact on saves and not the per-war figure on fresh worlds; each rule
+  of the operational AI changes the wars and the army as much as the contact. (a) is the one new cause the runs found,
+  with a number; (c) is the honest bar for this system and the user's to set; (b) buys +5 % contact with +14 % losses.
+  PLAN 7.117 (R14-B2, the late tick) is the other blocking finding and waits.
+- **Meanwhile** the loop takes PLAN 7.117 on HEAD's rules. Until decided, no rule; the pin unchanged (e28dbfa1).
+
 ### ADR-701 · 2026-10-25 · accepted, option a (the user's decision, 2026-10-25) — Hollow divisions folded: the remnants gone, the late contact a war −13 % (PLAN 7.116a's AT missed)
 
 - **The conflict.** The rule clears one half of R14-B1 (hollow divisions at year 20 685 → 1) and moves the other half,

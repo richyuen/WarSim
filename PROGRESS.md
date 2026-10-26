@@ -23661,3 +23661,21 @@ No rule changed and nothing on screen changed. One task came out of it.
   bomber with the best place in reach just under NUKE_FLOOR; of 4001–4020 Poland strikes on 17 on HEAD, 15 with the
   fold; `tools/diag/nukePolandGates.ts`).
 - **Next:** PLAN 7.116b (late contact), on the rules with the fold.
+
+## 2026-10-25 — PLAN 7.116b: the AT missed, to the user (ADR-702)
+
+- **Start:** gate green on `1cbc0bf3`; critic not due; no decision waiting.
+- **Measure first** (`docs/evidence/7.116b/measure.md`; HEAD's saves of 6421 and 1129, years 10 and 20; new tools
+  `tools/diag/warContact.ts`, `nearIdle.ts`, `contactSpells.ts`, `hoverers.ts`): the weaker side of a war is armed late
+  but 5–7 % of it is in contact (year 1: 23–25 %); contact begins 3–3.6 × less often a war and lasts as long (not the
+  retreat); ~20 formations a day attack within 12 cells of an enemy formation and march past it, in year 1 and late.
+- **Rule tried** (`docs/evidence/7.116b/rule.patch`, not committed): an attack with an enemy formation in reach in no
+  battle marches on its cell. Four variants A/B'd from the saves, late ×1.15 each; the one costing year 1 least taken.
+  Unit case `pursuit1938.test.ts` (in the patch) red on HEAD, green with it.
+- **AT** (1001–1010 × 20, `armyAtWarAt.ts`; HEAD `1cbc0bf3` in `WarSim_chase` first): 0.111 → 0.113 of year 1 (bar
+  0.15: missed). Contact a world-year +5 %, share of the army at war engaged +10 %, wars +11 %, destroyed +14 %.
+- **Gotcha:** a queue that starts seeds later loads the source on disk then: do not edit `src/` until the last seed of
+  an AT has started (or run the rule from a worktree).
+- **Gotcha:** Git Bash rewrites `seed:/c/...` arguments (a path list); give the diag tools paths relative to the tree.
+- **Filed:** BLOCKERS, ADR-702 (proposed), PLAN 7.123 (the rule's wars and losses, if (a)).
+- **Next:** PLAN 7.117 while ADR-702 waits.

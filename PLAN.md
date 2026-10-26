@@ -70,6 +70,9 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
     against HEAD read on the same seeds first, engaged land formations a war, mean of daily samples in
     years 2–20, at least 0.15 of year 1's (HEAD on run 13's seeds 0.114); a unit test, red without; the
     gate green.
+    Measured and tried (2026-10-25, `docs/evidence/7.116b/`): the AT missed, HEAD 0.111, an attack on the
+    enemy formation in reach 0.113 (wars +11 %, losses +14 %); BLOCKERS, ADR-702 (proposed). Waits on the
+    user; until then the loop takes 7.117.
 
 - [ ] 7.117 The late tick over its budget (R14-B2; carries performance 5): ADR-698's budget is at most
   5.0 ms a tick in any year. Pinned and alone on HEAD: 8167 year 19 13.3 ms (p95 49.9, longest tick 611
@@ -122,6 +125,16 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
   at war late: planes held, planes aloft, and why the rest stay on the ground. AT: on 10 unseen seeds ×
   20 years against HEAD on the same seeds, air battles a world-year after year 1 at least 1.3 × HEAD's,
   year-1 battles not below 0.9 × HEAD's; a unit test, red without; the gate green.
+
+- [ ] 7.123 Contact that costs the army (from 7.116b, ADR-702 (a); dropped if the user takes another option): on
+  fresh worlds 7.116b's rule (an attack on the enemy formation in reach) raises the share of the army at war in
+  contact +10 % and contact a world-year +5 %, but the wars running +11 % and land formations destroyed +14 % a year,
+  and the army at war a war falls 13 % (1001–1010; on the saves the same rule reads late ×1.15 with the wars the same).
+  Evidence: `docs/evidence/7.116b/at.md`, `rule.patch`. Measure first, with the rule on 3 of 1001–1010 against HEAD,
+  where the extra losses fall (combat, the air's strikes on the formations brought near, supply) and which wars are
+  the extra ones (who declares them, at what army). AT: on 10 unseen seeds × 20 years (1011 on) against HEAD on the
+  same seeds, engaged land formations a war in years 2–20 at least 1.2 × HEAD's, year-1's not below 0.95 × HEAD's; a
+  unit test, red without; the gate green.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

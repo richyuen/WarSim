@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.116b's AT missed: engaged a war late 0.111 → 0.113 of year 1's, bar 0.15 (ADR-702; waits on the user)
+- **The bar:** on 10 unseen seeds × 20 years against HEAD read first on the same seeds, engaged land formations a war,
+  years 2–20, at least 0.15 of year 1's; a unit test, red without; the gate green.
+- **What moved** (`docs/evidence/7.116b/measure.md`, `at.md`, `rule.patch`; 1001–1010): an attack marches on the enemy
+  formation in reach in no battle; HEAD 0.111, the rule 0.113 (5 of 10 up); contact a world-year +5 %, the share of
+  the army at war in contact +10 %, wars +11 %, formations destroyed +14 % a year, the army at war a war −13 %; year 1
+  −7 %. The unit case red on HEAD, green with the rule.
+- **What is left:** the user's (ADR-702): (a) no rule, PLAN 7.123 (why the rule raises wars and losses on fresh
+  worlds); (b) commit the rule; (c) re-scope the bar to the share of the army at war in contact; (d) no rule, no task,
+  to the next critic report (recommended).
+
 ### RESOLVED 2026-10-25 (option a, the user's decision: the rule committed, 7.116a closed not done, PLAN 7.122 dropped) · PLAN 7.116a's AT missed: hollow divisions 685 → 1, but engaged a war 0.874 × HEAD's, bar 0.95 (ADR-701)
 - **The bar:** on 10 unseen seeds × 20 years against HEAD, land formations under 500 men at year 20 at most 0.5 ×
   HEAD's, engaged land formations a war (years 2–20) not below 0.95 × HEAD's; a unit test, red without; the gate green.

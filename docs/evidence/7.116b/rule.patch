@@ -1,0 +1,118 @@
+diff --git a/src/sim/ai/operational.ts b/src/sim/ai/operational.ts
+index 35655d14..0ae03e43 100644
+--- a/src/sim/ai/operational.ts
++++ b/src/sim/ai/operational.ts
+@@ -1223,10 +1223,50 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
+   if (OP_PROBE.sectors) OP_PROBE.sectors({ nation: n, tick: world.tick, classes: probeClasses, empty: probeEmpty, sectors: list.map((s) => ({ threat: s.threat, n: s.formations.length, strength: s.strength, attack: s.formations.length > 0 && s.strength >= OFFENSIVE_RATIO * s.threat, cx: s.cx, cy: s.cy, inRange: s.threat > 0 && all.some((id) => dist2(id, s) <= range2) })) });
+   // Orders.
+   const isArmour = (id: number): boolean => (armour[f.template[id]!] ?? 0) >= SPEARHEAD_ARMOUR;
++  const ctl = world.cells.controller;
++  const comp = navOf(world).grid.component;
++  /**
++   * The enemy land formation nearest the sector's centre of those its threat sums (its
++   * 3 × 3 sector neighbourhood, `enemyAt`'s), in no battle (not engaged, not on the retreat), lowest
++   * id on ties, whose cell is an enemy's and on the landmass of the sector's hold cell; -1 if none
++   * (PLAN 7.116b).
++   */
++  const foeOf = (s: Sector): number => {
++    const sy = Math.floor(s.key / bw);
++    const sx = s.key - sy * bw;
++    const aboard = world.embarked.size !== stand.embarked;
++    let bid = -1;
++    let bd = Infinity;
++    for (let dx = -1; dx <= 1; dx++) {
++      const x = bucketX(sx, dx);
++      if (x < 0) continue;
++      for (let dy = -1; dy <= 1; dy++) {
++        const k = (sy + dy) * bw + x;
++        if (k < 0 || k >= buckets) continue;
++        for (const id of stand.byBucket.get(k) ?? []) {
++          if (enemyOf[f.nation[id]!] !== 1 || f.retreat[id]! > 0 || f.engaged[id] === 1 || (aboard && world.offLand(id))) continue;
++          const c = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
++          if (!enemy(ctl[c]!) || comp[c] !== comp[s.hold]) continue;
++          let ex = Math.abs(f.x[id]! - s.cx);
++          if (loop && ex > w / 2) ex = w - ex;
++          const ey = f.y[id]! - s.cy;
++          const d = ex * ex + ey * ey;
++          if (d < bd || (d === bd && id < bid)) {
++            bd = d;
++            bid = id;
++          }
++        }
++      }
++    }
++    return bid;
++  };
+   for (const s of list) {
+     if (s.formations.length === 0) continue;
+     const attack = s.strength >= OFFENSIVE_RATIO * s.threat;
+-    const target = attack ? attackCell(world, s, enemy, nb) : s.hold;
++    // An attack with an enemy formation in reach in no battle marches on it (PLAN 7.116b), not on
++    // the enemy cell nearest the sector's centre.
++    const foe = attack && s.threat > 0 ? foeOf(s) : -1;
++    const target = attack ? (foe >= 0 ? Math.floor(f.y[foe]!) * w + Math.floor(f.x[foe]!) : attackCell(world, s, enemy, nb)) : s.hold;
+     if (target < 0) continue;
+     // Spearheads: armour leads the attack, and where it does the rest hold the front.
+     const lead = attack && s.formations.some(isArmour);
+diff --git a/tests/unit/pursuit1938.test.ts b/tests/unit/pursuit1938.test.ts
+new file mode 100644
+index 00000000..f0f19937
+--- /dev/null
++++ b/tests/unit/pursuit1938.test.ts
+@@ -0,0 +1,56 @@
++import { describe, expect, it } from 'vitest';
++import { STAGGER } from '../../src/sim/ai/operational';
++import { cellOf } from '../../src/sim/data/terrain';
++import { neighbours4 } from '../../src/sim/nav/grid';
++import { SIZE_1938 } from '../../src/sim/scenario1938';
++import { Sim } from '../../src/sim/sim';
++import { destroyFormation } from '../../src/sim/systems/elements';
++import { assets1938 } from '../helpers/earth';
++import { addDivision, nationId, runEvents } from '../helpers/sim1938';
++
++// PLAN 7.116b: a sector that attacks with an enemy formation in reach (one its threat counts) marches
++// on that formation's cell, not on the enemy cell by its front nearest its centre: late in a war the
++// fronts are long and thin, and the attack walked past the enemy (docs/evidence/7.116b/measure.md).
++
++const W = SIZE_1938.w;
++const H = SIZE_1938.h;
++
++describe('an attack marches on the enemy formation in reach (PLAN 7.116b)', () => {
++  it('four German divisions on the Lithuanian border are sent at the Lithuanian division standing behind it', () => {
++    const GER = nationId('GER');
++    const LTU = nationId('LIT');
++    const s = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(W) });
++    const w = s.world;
++    const f = w.formations.cols;
++    for (const n of [GER, LTU]) {
++      w.alliances.leave(n);
++      w.alliances.guarantees = w.alliances.guarantees.filter((g) => g.guarantor !== n && g.target !== n);
++    }
++    w.nations.forEach((n) => {
++      if (n !== GER) w.nations.cols.aiOff[n] = 1;
++    });
++    w.nations.cols.aggression[GER] = 0;
++    runEvents(s, 1);
++    w.wars.start([GER], [LTU], w.tick).fightToDeath = [true, true];
++    w.wars.changed();
++    for (const id of w.formations.ids()) destroyFormation(w, id);
++    // East from East Prussia to the first Lithuanian cell, and three cells on: a cell of Lithuania's
++    // that touches no German one, so no attack on the front's edge goes there.
++    const ctl = w.cells.controller;
++    const [kx, ky] = cellOf(20.5, 54.7, W, H).map(Math.floor) as [number, number];
++    let bx = kx;
++    while (ctl[ky * W + bx] !== LTU) bx++;
++    const foeAt = ky * W + bx + 3;
++    expect(ctl[foeAt]).toBe(LTU);
++    const nb: number[] = [];
++    expect(neighbours4(foeAt, W, H, true, nb).some((k) => ctl[k] === GER)).toBe(false);
++    const foe = addDivision(w, LTU, bx + 3.5, ky + 0.5);
++    const ger = Array.from({ length: 4 }, (_, k) => addDivision(w, GER, bx - 1.5, ky - 1 + k + 0.5));
++    // To the hour after Germany's next plan; the Lithuanian stands (its AI is off).
++    do runEvents(s, 1);
++    while (w.tick % 6 !== 1 || ((w.tick - 1) / 6 + GER) % STAGGER !== 0);
++    expect(Math.floor(f.y[foe]!) * W + Math.floor(f.x[foe]!)).toBe(foeAt);
++    const sent = ger.filter((id) => f.moving[id] === 1 && f.targetCell[id] === foeAt);
++    expect(sent.length, 'German divisions sent at the Lithuanian one').toBeGreaterThan(0);
++  });
++});
