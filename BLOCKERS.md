@@ -5,6 +5,14 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.118's AT not met on HEAD: one world of 38 under 20 % (ADR-704; waits on the user)
+- **The bar:** on 10 unseen seeds × 30 years against HEAD on the same seeds, the least land moved in a world's last
+  five years at least 20 %, the mean not below HEAD's; founded at year 30 not above; a unit test, red without.
+- **What moved** (`docs/evidence/7.118/measure.md`): nothing changed; the critic's 9203 13.1 → 73.6 % and 2081
+  19.2 → 47.0 % on HEAD's rules; 26 fresh worlds least 24.9 %; the AT's seeds on HEAD least 18.4 % (1052).
+- **What is left:** the user's (ADR-704): (a) closed not done, no rule (recommended); (b) done on the critic's
+  figure; (c) PLAN 7.125, wars between the blocs.
+
 ### RESOLVED 2026-10-26 (option a, the user's decision: the rule committed, 7.117 closed not done, PLAN 7.124 kept) · PLAN 7.117's AT missed: one world-year of 250 at 9.31 ms a tick, bar 5.0 (ADR-703)
 - **The bar:** pinned and alone, 8167's year 19 at most 5.0 ms a tick, and the worst year of 10 unseen seeds × 25
   years at most 5.0 ms; the gate green.

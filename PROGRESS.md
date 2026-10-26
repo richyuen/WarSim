@@ -23707,3 +23707,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   `docs/evidence/7.117/rule.patch`; unit case `tests/unit/farWait1938.test.ts`; the pin e28dbfa1 → 3a90f72d.
 - 7.117 closed not done; PLAN 7.124 (the orders' refused searches) kept.
 - **Next:** PLAN 7.118 (its HEAD read now on these rules).
+
+## 2026-10-26 — PLAN 7.118: the critic's case gone on HEAD's rules, to the user (ADR-704)
+
+- **Start:** gate green on `c95202e7`; critic not due; no decision waiting.
+- **Measured** (`docs/evidence/7.118/measure.md`; new tools `lateMoves.ts`, `lateGates.ts`, `warMoves.ts`): the
+  critic's 9203 and 2081 read 73.6 and 47.0 % on HEAD; 26 fresh worlds least 24.9 %; the AT's seeds on HEAD least
+  18.4 % (1052). A quiet world is at war, blocs against minors in short wars, no war between the blocs.
+- **Gotcha:** a diag that writes into a new folder must make it first (`mkdirSync`), or node dies with no line.
+- **Filed:** BLOCKERS, ADR-704 (proposed). No rule.
+- **Next:** PLAN 7.119 while ADR-704 waits.

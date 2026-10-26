@@ -62,6 +62,11 @@ are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a
   same seeds, the least land moved in a world's last five years at least 20 %, and the mean not below
   HEAD's; founded nations alive at year 30 not above HEAD's; a unit test, red without; the gate green.
 
+  Measured (2026-10-26, `docs/evidence/7.118/measure.md`): the critic's quiet worlds on HEAD's rules 9203 73.6 %,
+  2081 47.0 %; 26 fresh worlds least 24.9 %; the AT's seeds on HEAD least 18.4 % (1052): one world of 38 under the
+  bar. No rule. BLOCKERS, ADR-704 (proposed). Waits on the user. Seeds 1041–1050 and 1061–1076 went to the measure,
+  1051–1060 to HEAD's AT column; next unseen 1077 (1031–1040 kept for 7.124).
+
 - [ ] 7.119 Performance (performance 5, needs 7, beyond R14-B2's mean tick): the stalls the player
   sees at Max. In the page, 8167's year 19 at Max has 40 stalls over 500 ms (the longest tick 611 ms
   headless, p95 49.9 ms); ADR-698 takes 45–60 s a late year at Max as the design, and 4877's three late

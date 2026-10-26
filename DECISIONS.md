@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-704 · 2026-10-26 · proposed (the user's decision) — Land moved late: the critic's case gone on HEAD's rules, a quiet tail of one world in 38 (PLAN 7.118)
+
+- **Context.** PLAN 7.118 (emergent 6, needs 7): on run 14's seeds the land moved in a world's last five years fell
+  to 13.1 % in the least (9203). AT: on 10 unseen seeds × 30 years against HEAD on the same seeds, the least at
+  least 20 % and the mean not below HEAD's; founded alive at year 30 not above HEAD's; a unit test, red without.
+- **Measured** (`docs/evidence/7.118/measure.md`, HEAD `c95202e7`; tools `lateMoves.ts`, `lateGates.ts`,
+  `warMoves.ts`): the critic's quiet worlds on HEAD's rules read 9203 **73.6 %**, 2081 **47.0 %**. 26 fresh worlds
+  (1041–1050, 1061–1076): least 24.9 %, mean 53.8 %. The AT's seeds on HEAD (1051–1060, HEAD's column): least
+  **18.4 %** (1052), mean 46.6 %. One world of 38 under the bar. A quiet world (1046) is at war (85 % of the land
+  held by nations at war) but its wars are blocs against minors, short; the blocs fight no war with each other.
+- **No rule written.** The AT's "a unit test, red without" needs one; the tail is one world in 38.
+- **Options:**
+  - **(a)** 7.118 closed not done, no rule: the critic's case gone on HEAD's rules, the tail recorded.
+    (Recommended: what the critic found is gone, and a rule for one world in 38 would move every world's wars.)
+  - **(b)** 7.118 done on the critic's own figure: its quiet worlds re-read on HEAD and 26 fresh worlds over 20 %.
+  - **(c)** Keep 7.118 open as PLAN 7.125: wars between the blocs (great powers' blocs at peace with each other
+    late), measured on quiet worlds from seeds 1077 on; AT as 7.118's on 1051–1060 against HEAD's column read.
+- **Meanwhile** the loop takes PLAN 7.119.
+
 ### ADR-703 · 2026-10-25 · accepted, option a (the user's decision, 2026-10-26) — A refused march from afar waits 40 days: the late cost gone, one early year over the budget (PLAN 7.117's AT missed)
 
 - **Context.** PLAN 7.117 (R14-B2): ADR-698's budget, at most 5.0 ms a tick in any year. AT: pinned and alone, 8167's
