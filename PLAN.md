@@ -60,14 +60,6 @@ world; performance 5 → 6): R15-B1 and R15-B2 are PLAN 7.128 and 7.129; the dim
 7.130–7.133 (naval's panel is 7.126). A task each, split when taken up. Unseen seeds: 1101 on, ten a task, none reused,
 none a seed the critic has run (`critic/c*_seed*`):
 
-- [ ] 7.130 Emergent dynamics 6: the top five stand still. Beyond 7.128's contact: the longest run of years with the same
-  top five nations 19 in 56 worlds × 30 years (`critic/scripts/c15_cmp.py`, `stasisMax`; 21 on run 14); the least
-  land moved in a world's last five years 25.2 %. AT: on 10 unseen seeds × 30 years, read as the critic's script
-  reads it against HEAD on the same seeds: the longest stasis at most 12 years, the mean not above HEAD's; the least
-  land moved in the last five years not below 20 %; a unit test, red without; the gate green.
-  Read 2026-10-26 (`docs/evidence/7.130/at.md`, 1151–1160): HEAD 12, mean 8.3, 27.8 %; the rule tried (a far
-  member's separate peace, `rule.patch`) 19, 9.9, 34.4 %; missed. Waits on the user (ADR-721).
-
 - [ ] 7.133 Aircraft 7: an empty sky late. At 6421's year 20, 2 sorties aloft in the whole world on the sampled hour;
   late air battles 181 a world-year, unchanged (ADR-707 a: no rule for reach) (`critic/c15_u_6421.json`,
   `critic/shots/c15u_6421_f0_0250m.png`). AT: on 10 unseen seeds × 20 years against HEAD on the same seeds, mean sorties
@@ -434,3 +426,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.135 (closed not done, ADR-718 a, the user's decision) Year 1's other half (from 7.128a, ADR-716): with no fold, year 1's land contact on 1111–1120 is 0.939 × […]
 - [x] 7.131 Performance 6: a late year at Max in the page. Beyond 7.129's tick: 6421's year 28 is 81.5 s at Max in the […]
 - [x] 7.132 Naval 7: a sea battle seen close. A sea battle at 15–150 m/px is a few small hulls far apart (3613's […]
+- [x] 7.130 (closed not done, ADR-721 a, the user's decision) Emergent dynamics 6: the top five stand still. Beyond 7.128's contact: the longest run of years with the same […]

@@ -15681,3 +15681,25 @@ Of 7.116 (open in PLAN.md):
   the late sea war is a fifth of year 1's (ADR-706 a: no rule for it). AT: on that case and 4 more sea battles from the
   history's rows, the row's press ends with ship elements of both sides on the screen, the nearest enemy hulls within
   a third of the view's width, each hull at least 12 px long; `seaBattleSeen1938` and `seaRow1938` green; the gate green.
+
+<!-- moved 2026-10-27 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.130 (closed not done, ADR-721 a, the user's decision) Emergent dynamics 6: the top five stand still. Beyond 7.128's contact: the longest run of years with the same
+  top five nations 19 in 56 worlds × 30 years (`critic/scripts/c15_cmp.py`, `stasisMax`; 21 on run 14); the least
+  land moved in a world's last five years 25.2 %. AT: on 10 unseen seeds × 30 years, read as the critic's script
+  reads it against HEAD on the same seeds: the longest stasis at most 12 years, the mean not above HEAD's; the least
+  land moved in the last five years not below 20 %; a unit test, red without; the gate green.
+  Read 2026-10-26 (`docs/evidence/7.130/at.md`, 1151–1160): HEAD 12, mean 8.3, 27.8 %; the rule tried (a far
+  member's separate peace, `rule.patch`) 19, 9.9, 34.4 %; missed. Waits on the user (ADR-721).

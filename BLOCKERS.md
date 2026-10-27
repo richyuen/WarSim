@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.130's AT missed: a far member's separate peace, the longest stasis 19 on 1151–1160 (HEAD 12; ADR-721)
+### RESOLVED 2026-10-26 (option a, the user's decision: 7.130 closed not done, no rule, to the next critic report) · PLAN 7.130's AT missed: a far member's separate peace, the longest stasis 19 on 1151–1160 (HEAD 12; ADR-721)
 - **The bar:** on 10 unseen seeds × 30 years the longest stasis at most 12 years, the mean not above HEAD's; the
   least land moved in the last five years not below 20 %; a unit test, red without.
 - **What moved** (`docs/evidence/7.130/at.md`): from the critic's saves the rule broke the long spans (3 of 6 over 12

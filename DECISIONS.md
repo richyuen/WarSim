@@ -222,7 +222,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Tests.** `shipElementSize` (new, red without), `seaClose1938` (new, red on HEAD: 5.3 px); the naval specs
   green.
 
-### ADR-721 · 2026-10-26 · proposed, the user's decision — The top five stand still: a far member's separate peace tried, the AT missed; HEAD meets the figures (PLAN 7.130)
+### ADR-721 · 2026-10-26 · accepted, option a (the user's decision, 2026-10-26) — The top five stand still: a far member's separate peace tried, the AT missed; HEAD meets the figures (PLAN 7.130)
 
 - **Context.** PLAN 7.130 (critic run 15, emergent 6): the longest run of years with the same five largest nations
   19 in 56 worlds. AT: on 10 unseen seeds × 30 years the longest at most 12, the mean not above HEAD's; the least
@@ -247,6 +247,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     member whose realm can reach the enemy neither by land nor by its transports, with the separate peace; AT on
     10 unseen seeds (1161 on) × 30 years as 7.130's.
 - **Meanwhile** the loop takes PLAN 7.131 (performance, a late year at Max in the page).
+- **Decision** (2026-10-26, the user's): (a). 7.130 closed not done, no rule; HEAD's figures on 1151–1160 (12, 8.3, 27.8 %) and the read to the next critic report, which judges it.
 
 ### ADR-720 · 2026-10-26 · accepted — A class's reach to a sector asked where it is read, not of every sector (PLAN 7.129, part 2)
 
