@@ -45,6 +45,9 @@ HEAD's strike-hours by year (each world): they come in bursts in the years a car
 year 5: 135; 1237 year 7: 113; 1234 year 2: 114), and are 0 in most world-years after year 8. Year 1 alone has 1.8 ×
 the hours of years 2–20 together.
 
+Part 1 moved transports down, not up (0.955 ×): the slot was not the cause of the critic's transport drop since
+`7739a78` (−9 %); the gold the carriers and the warships now ordered beside them cost is the likelier one.
+
 ## 3. Reading
 
 The late carrier is idle because its enemies have no ships, not because of an order the naval AI fails to give. No

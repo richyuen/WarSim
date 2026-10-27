@@ -202,8 +202,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   transports are not, ADR-614), and while one is in training `pickFleet` does not take a second (the next warship
   of its income instead). `tests/unit/carrierSlot1938.test.ts`, red without.
 - **Consequences.** A nation keeping carriers may have two fleets in training, the group and one other. The pin
-  unchanged if no carrier group is ordered in seed 99's first year (ADR-726). Whether it moves transports and ships
-  sunk is read by 7.141's AT arm.
+  unchanged if no carrier group is ordered in seed 99's first year (ADR-726). Read by 7.141's AT arm (ADR-735) on
+  1233–1242: armed ships at year 20 1.086 ×, ships sunk 1.031 ×, transports at year 20 0.955 × (down, not up): the
+  slot was not the cause of the critic's transport drop; the gold spent on carriers and warships is the likelier.
 
 ### ADR-733 · 2026-10-27 · proposed (the user's decision) — Fronts held and not fought: thin on both sides late; a standoff breaker read flat on the saves, no AT spent (PLAN 7.138)
 
