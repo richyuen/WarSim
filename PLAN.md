@@ -82,6 +82,9 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   unchanged more than 12 years at most half HEAD's count (and at least one fewer), the mean longest run at most
   0.8 × HEAD's; no world with one nation over a third of the land at year 30 where HEAD has none; a unit test, red
   without; the gate green.
+  Read 2026-10-27 (ADR-730, BLOCKERS; `docs/evidence/7.140/measure.md`): HEAD on 1223–1232 mean longest 8.1, 1 over
+  12; Canada and Greenland, in nearly every long set, are reached by no mechanism; a treaty rule read and dropped.
+  No rule; waits on the user's choice (ADR-730); seeds 1223–1232 spent on HEAD alone.
 - [ ] 7.141 Naval 7: the carriers built wait in port, and the late sea war is no bigger. 7019's US group built in year 21
   sat in port a year at war, 0 strikes; carrier strike hours 30 in 8 world-years; transports at year 20 548 → 498 and
   ships sunk late −7 % since `7739a78`, ADR-726's carrier group in training (800 days) the likely cause

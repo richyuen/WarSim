@@ -24084,3 +24084,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** caching a list that was built lazily (`industry` stopped at its first hit) as an eager filter made
   the air AI 2.5 × slower; keep a cache as lazy as the loop it replaces.
 - **Next:** PLAN 7.140.
+
+## 2026-10-27 — PLAN 7.140: the same five giants read; no rule reaches them (ADR-730, to the user)
+
+- **Start:** gate green on `840342c1`; critic not due. ADR-728 still waits on the user.
+- **HEAD** on 1223–1232 × 30 (`churnAt.ts`, five at a time, ~25 min): longest 5–14, mean 8.1, over 12 on 1 (1224);
+  largest at year 30 17.9–32.2 %. The AT would need 0 over 12 and a mean of 6.5 or less.
+- **Read** (`docs/evidence/7.140/measure.md`; new `tools/diag/giants.ts`, `tools/diag/peaceOverseas.ts`): the
+  critic's 14 long sets all hold Canada, the Soviet Union and the USA, 12 Denmark. Canada (a puppet at autonomy
+  82–85, 1–8 formations) and Greenland (81–84 % ice, 0–4 formations, no land neighbour) hold to a point while at war
+  most of the year; no war, landing, peace term, revolt or integration reaches them.
+- **Treaty lever read, not built:** undefended overseas land to a winner at a decisive peace would move 130–253k
+  cells a world in 20 years, mostly to Germany, the USA and Japan, and change the set 2 times in ~680 peaces;
+  Denmark is never a decisive loser.
+- **Filed:** BLOCKERS, ADR-730 (proposed). No sim change; the pin unchanged.
+- **Next:** PLAN 7.141 (naval) while ADR-728 and ADR-730 wait.

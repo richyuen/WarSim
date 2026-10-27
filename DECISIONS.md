@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-730 · 2026-10-27 · proposed (the user's decision) — The same five giants: Canada and Greenland are held by every mechanism; no rule (PLAN 7.140)
+
+- **Context.** PLAN 7.140 (critic run 16, emergent 6): on 1223–1232 × 30 years against HEAD, worlds with the same top
+  five over 12 years at most half HEAD's (and one fewer), the mean longest at most 0.8 × HEAD's, no world over a
+  third of the land at year 30 where HEAD has none; a unit test, red without.
+- **HEAD** (`docs/evidence/7.140/measure.md`): longest 5–14, mean **8.1**, over 12 **1** (1224), largest at year 30
+  17.9–32.2 %. The bar: 0 over 12 and a mean of 6.5 or less.
+- **Read.** All 14 of the critic's runs over 12 years hold Canada, the Soviet Union and the United States, 12 hold
+  Denmark. The Soviet Union and the United States change a great deal inside them; Canada (1–8 land formations, a
+  puppet at autonomy 82–85) and Denmark (Greenland, 81–84 % ice, 0–4 formations, no land neighbour but Germany) hold
+  their cells to a point while at war most of the year. No land war reaches them (`warUtility` weighs no prize; no
+  land neighbour but an overlord or ally), the lift cannot (ADR-669), a peace keeps what is occupied and its annex
+  and puppet tests are by km² (Greenland's ~2 M km² never under SMALL_STATE_KM2, never 30 % occupied), a revolt and
+  overextension stay under DECAY, a puppet integrates only under autonomy 50.
+- **Tried as a read, not built** (`tools/diag/peaceOverseas.ts`): a decisive peace giving the losers' undefended land
+  off their capital's landmass to a winner within 64 cells. On four of the critic's long worlds × 20 years: 130–253k
+  cells a world moved, chiefly to Germany, the USA and Japan; Denmark never a decisive loser; the set changed by 2 of
+  ~680 peaces. **[AoC-DEVIATION]** it would have been one (AoC's peace is the occupation's), for no gain.
+- **Options:**
+  - **(a)** 7.140 closed not done, no rule; HEAD's figures on 1223–1232 and the read to the next critic report.
+    (Recommended: no mechanism of the sim reaches the fixed members, and a fifth-slot rule cannot reach the bar.)
+  - **(b)** As (a), and a numbered task: a puppet held long at high autonomy drifts down so that it integrates
+    (Canada into its overlord). A one-time change of the set in a world, which would push 1223's largest (32.2 %)
+    past a third with Canada's ~10 %; its AT must be written without this one's third clause.
+  - **(c)** As (a), and a data question for the user: whether Greenland's uninhabited ice (5.4 % of the land cells)
+    is land a nation holds in the count, as the scenario's data has it.
+- **Meanwhile** the loop takes PLAN 7.141 (naval). The pin unchanged.
+
 ### ADR-729 · 2026-10-27 · accepted — The operational AI's plans late made cheaper with the same answers; the late tick under 5.5 ms (PLAN 7.139)
 
 - **Context.** R16-B2: pinned and alone, 3847's year 27 6.14–6.21 ms a tick, 5683's year 26 5.82–6.09; the budget

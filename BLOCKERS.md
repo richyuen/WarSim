@@ -5,6 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.140: no rule reaches the fixed members of the top five (ADR-730, waits on the user)
+- **The bar:** on 1223–1232 × 30 years, worlds with the same top five over 12 years at most half HEAD's (one fewer),
+  the mean longest at most 0.8 × HEAD's, no world over a third at year 30 where HEAD has none.
+- **What moved** (`docs/evidence/7.140/measure.md`): nothing built. HEAD: mean longest 8.1, 1 world over 12, largest
+  at year 30 17.9–32.2 %. Canada and Denmark's Greenland are in nearly every long set and no mechanism of the sim
+  reaches them (no land neighbour, no lift, peace and annex by km², integration under autonomy 50 only). A treaty
+  rule read on four critic worlds moved 130–253k cells a world and changed the set twice in ~680 peaces.
+- **What is left:** the user's (ADR-730): (a) closed not done (recommended); (b) a puppet-integration task; (c) the
+  data question of Greenland's ice.
+
 ### PLAN 7.138's AT missed: a pursuit rule 0.974 × late on 1201–1211 (ADR-728, waits on the user)
 - **The bar:** on 1201–1206, 1208–1211 × 30 years, engaged land formations a day in years 2–30 at least 1.15 × HEAD's,
   year 1 not below 0.95 ×, worlds with the same top five over 12 years not above HEAD's.
