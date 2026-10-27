@@ -5,6 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.145's AT missed on the sea battles: battles 0.867 ×, ships sunk in them 0.923 × HEAD's on 1284–1293 (bar 0.95 ×; ADR-738, waits on the user)
+- **The bar:** on 1284–1293 × 20 years against HEAD, carrier strike-hours (in a sea battle or on their own mission)
+  in years 2–20 at least 2 ×; sea battles and ships sunk in years 2–20 not below 0.95 ×; a strike ashore in the page;
+  a unit test, red without.
+- **What moved** (`docs/evidence/7.145/at.md`): the rule (ADR-738, committed `60e008c6`; an AI's carrier wings out of
+  a sea battle take a naval bomber's missions from the deck): strike-hours 1,444 → 152,144 (105 ×), page and test met;
+  sea battles 0.867 ×, ships sunk in them 0.923 ×. Part 1 (`57a00adb`, the flights drawn at the battle's reach) kept.
+- **What is left:** the user's (ADR-738): (a) kept, 7.145 closed not done, PLAN 7.148 the sea battles (recommended);
+  (b) kept, the clauses read as ships sunk by any means; (c) reverted.
+
 ### PLAN 7.144's AT missed on year 1: land contact in year 1 0.86 × HEAD's on 1294–1303 (bar 0.95 ×; ADR-737, waits on the user)
 - **The bar:** on 1294–1303 × 20 years against HEAD, land formations engaged a day in years 2–20 at least 1.25 ×,
   wings and sorties aloft in years 2–20 not below 0.9 ×, year 1 not below 0.95 ×.

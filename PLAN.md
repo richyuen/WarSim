@@ -110,6 +110,17 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   a carrier wing's strike in the air, in a sea battle or on its own mission, in years 2–20 at least 2 × HEAD's; sea
   battles and ships sunk in years 2–20 not below 0.95 × HEAD's; a carrier strike ashore seen in the page; a unit
   test, red without; the gate green.
+  Run 2026-10-27 (ADR-738, to the user; BLOCKERS; `docs/evidence/7.145/at.md`): part 1 (`57a00adb`) the flights drawn
+  at the battle's reach (`inReach`); part 2 (`60e008c6`) the rule. AT on 1284–1293: strike-hours 105 ×, the page and
+  the test, met; sea battles 0.867 ×, ships sunk in them 0.923 ×, missed. Waits on ADR-738; seeds 1284–1293 spent.
+
+- [ ] 7.148 The sea battles under ADR-738 (found by 7.145's AT; waits on ADR-738, dropped with its (b) or (c)): on
+  1284–1293 × 20 years sea battles in years 2–20 1,641 → 1,423 (0.867 ×, lower on 7) and ships sunk in them 16,043 →
+  14,811 (0.923 ×) since the carriers' wings fly their own missions. Read first, from saves stepped both ways (HEAD and
+  the carrier wings' missions off), whether the carrier fleets find fewer enemy fleets (a fleet sees only by its wings
+  at home, `carrierWings`) or the air sinks ships before a battle (count ships sunk from the air). AT: on 10 unseen
+  seeds from 1314 × 20 years against `57a00adb` on the same seeds, sea battles and ships sunk in them in years 2–20 not
+  below 0.95 ×, carrier strike-hours at least 2 ×; a unit test, red without; the gate green.
 
 - [ ] 7.146 R16-B1: the land army of long-front wars late, both sides (ADR-733 a, the user's decision; from 7.138).
   Late, per war with a land front of 100 cells or more, the weaker side has ~4 formations near a ~1,700-cell front

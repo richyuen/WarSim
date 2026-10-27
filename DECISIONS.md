@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-738 · 2026-10-27 · accepted (ADR-735 a, the user's decision) — A carrier's wings strike ashore: out of a sea battle they take a naval bomber's missions from the deck (PLAN 7.145)
+### ADR-738 · 2026-10-27 · proposed (the user's decision) — A carrier's wings strike ashore: strike-hours 105 ×, sea battles 0.867 ×, ships sunk in them 0.923 × (PLAN 7.145's AT missed on the battles)
 
 - **Context.** ADR-735 (a): the carriers at war stood by ports of enemies with no armed fleet (1,880 of 1,880 such
   fleet-days at year 10 on the critic's run-16 saves) and their wings struck only in a sea battle. AT on 10 unseen
@@ -192,7 +192,19 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Seen in the page** (`tests/e2e/carrierStrikeAshore1938.spec.ts`, `docs/evidence/7.145/`): seed 99, hour 3,
   Japan's naval bombers from its fleet off Kyushu over the Chinese division at (1711.5, 430.2), drawn as a
   land-based wing's sortie, 2 on the screen at 24 px a cell.
-- **AT:** see PROGRESS (pending at this commit).
+- **AT** (`docs/evidence/7.145/at.md`; 1284–1293 × 20, HEAD `57a00adb` from a worktree, `carrierAt.ts`): carrier
+  strike-hours in years 2–20 1,444 → 152,144 (**105 ×**, bar 2 ×, all ten), met; the page and the unit test met;
+  sea battles 1,641 → 1,423 (**0.867 ×**, bar 0.95 ×, lower on 7) and ships sunk in them 16,043 → 14,811 (**0.923 ×**,
+  lower on 5), **missed**. Not read: a fleet sees only by its wings at home (`carrierWings`), and they are now aloft on
+  their own missions most hours; and the carrier wings now sink ships out of a battle, not in the battle rows. Seeds
+  spent.
+- **Options:**
+  - **(a)** Kept; 7.145 closed not done; PLAN 7.148 (the sea battles under ADR-738: read first whether the fleets see
+    less or the air sinks first, then a rule on what it finds; AT on seeds from 1314). (Recommended: the carriers now
+    fight, which is the critic's complaint, and the battle loss is the smaller effect, with two clear channels.)
+  - **(b)** Kept, and the battle clauses read as ships sunk at sea by any means (battles and the air) against HEAD's;
+    7.145 done if that holds (a read on the spent seeds' rerun, about 50 minutes).
+  - **(c)** Reverted (`60e008c6`; part 1, `57a00adb`, kept: reads only).
 
 ### ADR-737 · 2026-10-27 · proposed (the user's decision) — The k-th strike of a day on a land formation at 1 / (1 + k): land contact late 1.61 ×, year 1 0.86 × (PLAN 7.144's AT missed on year 1)
 

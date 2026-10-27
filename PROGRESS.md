@@ -24206,3 +24206,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a 60-day A/B from one save cannot show a rule that acts through what is built over years (the reserve
   flip read identical); cut the built thing at load instead (`AB_KEEP`), or switch off its effects.
 - **Next:** PLAN 7.145 while ADR-737 waits.
+
+## 2026-10-27 — PLAN 7.145: carriers strike ashore; strike-hours 105 ×, sea battles 0.867 × (ADR-738, to the user)
+
+- **Start:** gate green on `52f71a5a`; critic not due. ADR-737 still waits on the user.
+- **Part 1** (`57a00adb`): `carrierStrikes`, the flights drawn, read `<` against the wings' reach while the battle
+  strikes by `inReach`; seed 8693 on the new history had Japan's carriers at 250.0000000000016 km from the fleet they
+  struck and no plane drawn (`carrierStrikeView1938.spec.ts` red). Unit test in `carrierStrikes1938.test.ts`, red
+  without; reads only, the pin unchanged.
+- **Part 2** (`60e008c6`, ADR-738): an AI's carrier wings, their fleet at war and in no sea battle, take a naval
+  bomber's missions from the deck, never rebase; an AI's carrier wing whose fleet is in a sea battle ends its mission
+  in that hour (`inSeaBattle`, `airSystem`). `carrierAshore1938.test.ts`, red without. `farWait1938` seed 1 → 7
+  (history). Pin 6e048cce → b08ba7c9. Page: `carrierStrikeAshore1938.spec.ts`, `docs/evidence/7.145/` (seed 99,
+  hour 3, Japan's naval bombers from off Kyushu to a Chinese division). Specs run by hand: that one,
+  `carrierStrikeView1938`, `carrierStrikeRow1938`.
+- **AT** on 1284–1293 × 20 (`carrierAt.ts` with a new `cvAirH`, HEAD `57a00adb` from `WarSim_base`, six at a time,
+  ~50 min; `docs/evidence/7.145/at.md`): strike-hours years 2–20 1,444 → 152,144 (105 ×), met; sea battles 0.867 ×,
+  ships sunk in them 0.923 ×, missed (bar 0.95). Seeds spent. Tick on 1284: 518 → 542 s (side by side, not a pair).
+- **Filed:** BLOCKERS, ADR-738 (proposed), PLAN 7.148 (the sea battles, seeds from 1314, waits on ADR-738).
+- **Gotcha:** `EVIDENCE=1` on several specs at once rewrites every one's screenshots (7.35, 7.84 here); run it on
+  the new spec alone, or `git checkout` the others after.
+- **Next:** PLAN 7.146 (the late land army) while ADR-737 and ADR-738 wait.
