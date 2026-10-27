@@ -204,6 +204,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(d)** As (a) or (b), and a numbered task for the cut-off army (the ferry's throughput, or passage through
     a neutral): it would bring the stronger side's far army to the front's empty sectors; contact little moved
     by it on this read.
+  - **(e)** The standoff breaker's AT run anyway, as PLAN 7.138's note of 2026-10-27 has it ("judged on unseen
+    seeds"): 1274–1283 × 30 years against HEAD, two arms, ~50 minutes, the seeds spent. The save filter that
+    stopped it was the loop's call, not the user's; expected flat (0.94 × on the saves, and saves have read higher
+    than fresh worlds for ADR-723 and ADR-728).
 - **Meanwhile** the loop takes PLAN 7.141 (naval). No sim change.
 
 ### ADR-732 · 2026-10-27 · accepted (the user's decision, 2026-10-27) — The design: the largest by area may stay; change at the top is read by power and order (answers ADR-730, PLAN 7.140)

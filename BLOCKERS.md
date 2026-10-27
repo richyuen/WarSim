@@ -29,7 +29,8 @@ entries are kept and marked **RESOLVED** with the date and fix.
   stronger side's near ones mostly stand 60+ cells from any enemy; the near pairs split into standoffs, marches
   away and attacks elsewhere. The one untried lever, a standoff breaker, read 0.94 × on 8 late saves (filter bar
   1.5 ×): no AT run, seeds 1274 on kept. Options to the user: the late army's size (recommended), closed not done,
-  or the late front by design.
+  the late front by design, a cut-off-army task, or the standoff breaker's AT on 1274–1283 anyway (the save filter
+  was the loop's call, not the task's).
 
 ### RESOLVED 2026-10-26 (option a, the user's standing instruction: kept, 7.137 closed not done) · PLAN 7.137's AT missed: carriers 3.3 a world at year 20 on 1191–1200 (ADR-727)
 - **The bar:** carriers afloat with a wing aboard at year 20 at least 6 a world; sea battles late not below HEAD's.
