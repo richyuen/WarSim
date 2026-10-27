@@ -203,7 +203,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     less or the air sinks first, then a rule on what it finds; AT on seeds from 1314). (Recommended: the carriers now
     fight, which is the critic's complaint, and the battle loss is the smaller effect, with two clear channels.)
   - **(b)** Kept, and the battle clauses read as ships sunk at sea by any means (battles and the air) against HEAD's;
-    7.145 done if that holds (a read on the spent seeds' rerun, about 50 minutes).
+    7.145 done if that holds (a new run counting ships sunk from the air, on unseen seeds 1314–1323, about 50 minutes;
+    7.148's seeds then from 1324).
   - **(c)** Reverted (`60e008c6`; part 1, `57a00adb`, kept: reads only).
 
 ### ADR-737 · 2026-10-27 · proposed (the user's decision) — The k-th strike of a day on a land formation at 1 / (1 + k): land contact late 1.61 ×, year 1 0.86 × (PLAN 7.144's AT missed on year 1)

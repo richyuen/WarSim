@@ -13,7 +13,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   a sea battle take a naval bomber's missions from the deck): strike-hours 1,444 → 152,144 (105 ×), page and test met;
   sea battles 0.867 ×, ships sunk in them 0.923 ×. Part 1 (`57a00adb`, the flights drawn at the battle's reach) kept.
 - **What is left:** the user's (ADR-738): (a) kept, 7.145 closed not done, PLAN 7.148 the sea battles (recommended);
-  (b) kept, the clauses read as ships sunk by any means; (c) reverted.
+  (b) kept, the clauses read as ships sunk by any means (a new run on 1314–1323); (c) reverted.
 
 ### PLAN 7.144's AT missed on year 1: land contact in year 1 0.86 × HEAD's on 1294–1303 (bar 0.95 ×; ADR-737, waits on the user)
 - **The bar:** on 1294–1303 × 20 years against HEAD, land formations engaged a day in years 2–20 at least 1.25 ×,
