@@ -61,14 +61,17 @@ describe('ship types and fleet templates in the rules (PLAN 4.2a)', () => {
     for (const u of RULES_1938.units.slice(unitsLand.types.length, unitsLand.types.length + SHIPS.length)) expect(u.size).toBe(1);
   });
 
-  it('a fleet has the pace of its slowest ship, and the cost, days, crew and upkeep of its ships', () => {
+  it("a fleet has the pace of its slowest ship, and the cost, days, crew and upkeep of its ships, and of a carrier's air group for each carrier", () => {
     const units = new Map(unitsSea.types.map((u) => [u.id, u]));
     for (const t of TEMPLATES_SEA) {
       const i = template(t.id);
       const rule = RULES_1938.templates[i]!;
       const sum = (of: (u: (typeof unitsSea.types)[number]) => number): number => t.elements.reduce((s, e) => s + of(units.get(e.type)!) * e.count, 0);
       expect(rule.speedKmh, t.id).toBe(Math.min(...t.elements.map((e) => units.get(e.type)!.stats.speed_kmh)));
-      expect(rule.gold, t.id).toBeCloseTo(PRODUCTION_COST_SCALE * sum((u) => u.cost.gold), 9);
+      // And a carrier wing's for each carrier (PLAN 7.137, ADR-725): it is delivered with its air groups.
+      const carriers = sum((u) => (u.class === 'cv' ? 1 : 0));
+      const wing = RULES_1938.templates[RULES_1938.carrierWing!]!;
+      expect(rule.gold, t.id).toBeCloseTo(PRODUCTION_COST_SCALE * sum((u) => u.cost.gold) + carriers * wing.gold, 9);
       expect(rule.manpower, t.id).toBe(sum((u) => u.cost.manpower));
       // Its slowest ship's own days since PLAN 4.2e (ADR-252); by the land's scale, 3 ×, before.
       expect(rule.days, t.id).toBe(SHIP_TIME_SCALE * Math.max(...t.elements.map((e) => units.get(e.type)!.cost.days)));

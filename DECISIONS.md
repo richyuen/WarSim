@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-725 · 2026-10-26 · accepted — A carrier group is delivered with its air groups (PLAN 7.137, part 1)
+
+- **Context.** PLAN 7.137: the start's 18 carriers sunk by year 20 and none built again (ADR-723). Before the AI
+  orders any, a carrier built must be a carrier: `deliver` made the fleet and nothing aboard, while the start gives
+  each carrier a `CARRIER_WING` (`addWings`).
+- **Decision.** The scenario names the wing a carrier is delivered with (`ScenarioRules.carrierWing`, the 1938 one's
+  `naval_bomber_group`); a fleet delivered gets one aboard each carrier afloat with none (`manDecks`), each told
+  as a formation spawned. Their gold is in the carrier group's price (`airGroupsGold`): 4,172 gold with 2 naval
+  bomber groups, 800 days. Not their manpower: a fleet's manpower is its crews, its strength (`fleets1938`).
+- **Not changed:** the editor's `spawnFleet` of a carrier group places it with empty decks, as before (a separate
+  path, `placeFleet`).
+- **Consequences.** No AI orders a carrier group yet, so the pin is unchanged; the player's price of one is higher.
+
 ### ADR-724 · 2026-10-26 · accepted, option a (the user's standing instruction of 2026-10-26: the recommended option overnight) — The sea ferry kept; PLAN 7.133's AT missed, 1.08 × (PLAN 7.133)
 
 - **Context.** PLAN 7.133's AT: on 10 unseen seeds × 20 years against HEAD, sorties aloft a world-hour in years 2–20

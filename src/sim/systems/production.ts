@@ -37,7 +37,7 @@
  * base, on its ready day; with none then, the order waits.
  */
 import { airbaseRoom } from '../data/airbases';
-import { wingAircraft } from './air';
+import { manDecks, wingAircraft } from './air';
 import { cellX, elementIndex, equipFormation, recomputeStrength, wrapDx } from './elements';
 import { isDayStart } from '../../shared/calendar';
 import { EventKind } from '../../shared/events';
@@ -391,5 +391,7 @@ function deliver(world: World, rules: NonNullable<World['rules']>): void {
     if (field >= 0) world.wingBase.set(fid, field + 1);
     p.remove(id);
     world.out.emit(world.tick, EventKind.FormationSpawned, fid, nation, at[0], at[1]);
+    // Its carriers' air groups with it (PLAN 7.137).
+    if (domain === Domain.sea) manDecks(world, fid);
   }
 }

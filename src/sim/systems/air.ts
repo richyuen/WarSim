@@ -15,7 +15,7 @@ import { airCombat, antiAir, strikes } from './airCombat';
 import { airLift } from './airLift';
 import { airPowerSystem } from './airSuperiority';
 import { repairSystem } from './bombing';
-import { destroyFormation, elementIndex, loopW, wrapDx } from './elements';
+import { destroyFormation, elementIndex, equipFormation, loopW, wrapDx } from './elements';
 import { seaKm } from './navalCombat';
 import { Leg, patrolHours, sortieAt, sortieEnd } from './sorties';
 import { blocOf } from './supply';
@@ -124,6 +124,38 @@ export function liveCarriers(world: World, fleet: number): number {
   let n = 0;
   for (const e of els) if (ec.strength[e]! > 0 && units[ec.unit[e]!]!.cls === 'cv') n++;
   return n;
+}
+
+/**
+ * Puts a wing of the scenario's carrier wing (`rules.carrierWing`) aboard each carrier afloat of fleet `fleet` that
+ * has none (PLAN 7.137): a fleet delivered with carriers carries their air groups, as the start's do
+ * (`addWings`), their price in its own. Whole, in supply, at the fleet's place; each told as a formation
+ * spawned. The wings made, by ascending id; none with no such template.
+ */
+export function manDecks(world: World, fleet: number): number[] {
+  const t = world.rules?.carrierWing;
+  if (t === undefined || !world.formations.has(fleet)) return [];
+  let free = liveCarriers(world, fleet);
+  for (const [, b] of world.wingBase) if (b === -fleet) free--;
+  const out: number[] = [];
+  for (; free > 0; free--) {
+    const id = world.formations.create();
+    // Read the columns after the create: a table that grows replaces them.
+    const c = world.formations.cols;
+    const nation = c.nation[fleet]!;
+    c.nation[id] = nation;
+    c.x[id] = c.x[fleet]!;
+    c.y[id] = c.y[fleet]!;
+    c.facing[id] = 0;
+    c.template[id] = t;
+    c.supply[id] = 1;
+    c.org[id] = 1;
+    equipFormation(world, id, t);
+    world.wingBase.set(id, -fleet);
+    world.out.emit(world.tick, EventKind.FormationSpawned, id, nation, c.x[id]!, c.y[id]!);
+    out.push(id);
+  }
+  return out;
 }
 
 /** Hours a wing is on its base after a sortie before it can fly the next (refuelled, rearmed). */

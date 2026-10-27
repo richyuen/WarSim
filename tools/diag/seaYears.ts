@@ -19,6 +19,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { EventKind } from '../../src/shared/events';
 import { seaSide } from '../../src/shared/history';
 import { size1938, TAGS_1938 } from '../../src/sim/scenario1938';
+import { liveCarriers } from '../../src/sim/systems/air';
 import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from '../headless/assets';
 import { basinAt } from '../../src/sim/systems/navalCombat';
@@ -49,6 +50,10 @@ type Year = {
   seaPairFleets: number;
   seaPairPower: number;
   underWay: number;
+  /** At the year's end (PLAN 7.137): carriers afloat (`liveCarriers`), those with a wing aboard, carrier groups in training. */
+  carriers: number;
+  carriersManned: number;
+  carriersTraining: number;
 };
 const rows: Year[] = [];
 const t0 = Date.now();
@@ -95,7 +100,7 @@ const sample = (w: World, y: Year): void => {
 };
 
 for (let year = 1; year <= years; year++) {
-  const y: Year = { year, battles: 0, sinking: 0, shipsSunk: 0, pairs: {}, fleets: 0, power: 0, navies: 0, warPairs: 0, seaPairs: 0, seaPairFleets: 0, seaPairPower: 0, underWay: 0 };
+  const y: Year = { year, battles: 0, sinking: 0, shipsSunk: 0, pairs: {}, fleets: 0, power: 0, navies: 0, warPairs: 0, seaPairs: 0, seaPairFleets: 0, seaPairPower: 0, underWay: 0, carriers: 0, carriersManned: 0, carriersTraining: 0 };
   let days = 0;
   sim.step(24 * 365, (w) => {
     const ev = w.out.events;
@@ -121,6 +126,21 @@ for (let year = 1; year <= years; year++) {
   });
   for (const k of ['fleets', 'power', 'navies', 'warPairs', 'seaPairs', 'seaPairFleets', 'seaPairPower', 'underWay'] as const) y[k] = Math.round((y[k] / Math.max(1, days)) * 10) / 10;
   y.pairs = Object.fromEntries(Object.entries(y.pairs).sort((p, q) => q[1].battles - p[1].battles).slice(0, 5));
+  {
+    const w = sim.world;
+    const aboard = new Map<number, number>();
+    for (const [id, b] of w.wingBase) if (b < 0 && w.formations.has(id)) aboard.set(-b, (aboard.get(-b) ?? 0) + 1);
+    w.formations.forEach((id) => {
+      if (!w.isFleet(id)) return;
+      const k = liveCarriers(w, id);
+      y.carriers += k;
+      y.carriersManned += Math.min(k, aboard.get(id) ?? 0);
+    });
+    const rules = w.rules!;
+    w.production.forEach((q) => {
+      if (rules.templates[w.production.cols.template[q]!]!.elements.some((e) => rules.units[e.unit]!.cls === 'cv')) y.carriersTraining++;
+    });
+  }
   rows.push(y);
   if (saveAt.has(year)) writeFileSync(`${saveDir}/s${seed}_y${year}.bin`, sim.save());
   const { pairs, ...rest } = y;

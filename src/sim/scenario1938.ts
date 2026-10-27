@@ -164,8 +164,20 @@ const TECHS_1938: readonly TechRule[] = TECH_DEFS.map((t) => ({ id: t.id, year: 
 const GIVEN_TECHS_1938 = new Map(NATIONS_1938.flatMap((n, i) => (n.techs ? [[i + 1, n.techs.map((t) => techIndex.get(t)!)] as const] : [])));
 /** The arm of a unit class, as a bit: infantry 1, artillery 2, armour 4 (`ARM_ALL`), the AT guns 8 (`ARM_AT`). */
 const ARM_OF_CLASS = new Map<string, number>([combatJson.combinedArms.arms.infantry, combatJson.combinedArms.arms.artillery, combatJson.combinedArms.arms.armour, combatJson.gunsOnGuns.shooter].flatMap((classes, i) => classes.map((c) => [c, 1 << i] as const)));
+/** Each carrier of a fleet of the start carries a wing of this template (PLAN 5.1d), and so does each carrier delivered (PLAN 7.137). */
+export const CARRIER_WING = 'naval_bomber_group';
+const carrierWingDef = TEMPLATES_1938.find((t) => t.id === CARRIER_WING)!;
+/**
+ * What the air groups of template `t`'s carriers cost in gold (PLAN 7.137): a CARRIER_WING's for each carrier, in the
+ * carrier group's price, since it is delivered with them. Not their manpower: a fleet's is its crews (its strength).
+ */
+function airGroupsGold(t: (typeof TEMPLATES_1938)[number]): number {
+  const carriers = t.elements.reduce((s, e) => s + (unitTypes.get(e.type)!.class === 'cv' ? e.count : 0), 0);
+  return carriers * carrierWingDef.elements.reduce((s, e) => s + unitTypes.get(e.type)!.cost.gold * e.count, 0);
+}
 export const RULES_1938: ScenarioRules = {
   namedNations: NATIONS_1938.length,
+  carrierWing: TEMPLATES_1938.indexOf(carrierWingDef),
   techs: TECHS_1938,
   units: UNITS.map((u) => ({
     cls: u.class,
@@ -201,7 +213,7 @@ export const RULES_1938: ScenarioRules = {
         return req === undefined ? [] : [techIndex.get(req)!];
       }),
     ),
-    gold: PRODUCTION_COST_SCALE * t.elements.reduce((s, e) => s + unitTypes.get(e.type)!.cost.gold * e.count, 0),
+    gold: PRODUCTION_COST_SCALE * (t.elements.reduce((s, e) => s + unitTypes.get(e.type)!.cost.gold * e.count, 0) + airGroupsGold(t)),
     manpower: t.elements.reduce((s, e) => s + unitTypes.get(e.type)!.cost.manpower * e.count, 0),
     // A fleet's ships are built side by side in its nation's yards, each in its own days (PLAN 4.2e).
     days: (unitTypes.get(t.elements[0]!.type)!.domain === 'sea' ? SHIP_TIME_SCALE : TRAIN_TIME_SCALE) * Math.max(...t.elements.map((e) => unitTypes.get(e.type)!.cost.days)),
@@ -302,8 +314,6 @@ export const PORTS_1938 = ports1938 as unknown as PortRules;
 export const AIRBASES_1938 = airbases1938 as unknown as AirbaseRules;
 /** The air forces of the 1938 start (PLAN 5.1d). */
 export const AIR_1938 = air1938.groups as WingGroup[];
-/** Each carrier of a fleet of the start carries a wing of this template (PLAN 5.1d). */
-export const CARRIER_WING = 'naval_bomber_group';
 /** The fleets of the 1938 start (PLAN 4.2b). */
 export const FLEETS_1938 = fleets1938.groups as unknown as FleetGroup[];
 

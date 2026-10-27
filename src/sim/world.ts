@@ -205,6 +205,8 @@ export interface ScenarioRules {
   units: readonly UnitRule[];
   /** The tech tree (PLAN 3.1a); a tech's index is its bit in a nation's `tech0`/`tech1`. */
   techs: readonly TechRule[];
+  /** The template of the wing a carrier is delivered with (PLAN 7.137): one aboard each carrier of a fleet built. None, a carrier is delivered empty. */
+  carrierWing?: number;
   /** Nations 1..n have a name in the scenario's nation table; a nation after them has the name in `World.names`, or that of the province it was founded in. */
   namedNations: number;
 }
