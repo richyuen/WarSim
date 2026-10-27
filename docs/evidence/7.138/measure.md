@@ -58,7 +58,8 @@ No order of the operational AI reaches them.
 (ADR-702's rule from 3 × 3 to (2P+1)², with a strength test); (b) a free formation still standing after
 the orders marches on the nearest beatable enemy formation within HUNT cells on its landmass.
 
-A/B from 8 year-10 saves × 60 days (`ab/`): HEAD 2.290 a day; PURSUIT 3 2.169, 6 2.464; HUNT 30 2.277,
+The radii are environment knobs in the patch (`PURSUIT`, sector buckets; `HUNT`, cells; 0 = off).
+A/B from 8 year-10 saves × 60 days (`ab/`, `tools/diag/lateContactAb.ts`, seeds 1061 1187 2347 2789 3467 4513 5521 6151): HEAD 2.290 a day; PURSUIT 3 2.169, 6 2.464; HUNT 30 2.277,
 60 2.341, 120 2.296 (several saves equal to HEAD to the digit: the hunt seldom finds a foe it can reach).
 
 ## 4. The AT (`runs/`, `at_summary.txt`): 1201–1206, 1208–1211 × 30 years, PURSUIT 6 + HUNT 60
