@@ -112,6 +112,8 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly 
   // The cells of industry, richest first, for a strategic bomber: made when one is tasked.
   let rich: readonly number[] | null = null;
   const richest = (): readonly number[] => (rich ??= byIndustry(world));
+  // By nation, the cells its strategic bombers may bomb, richest first (`Bombable`): made when one is tasked.
+  const bombCells = new Map<number, Bombable>();
   const atWar = world.wars.nations();
   // The formations of a front within a range of an airbase of a nation's side (PLAN 7.26b), for the day.
   const reach = new Map<readonly number[], Map<string, ReadonlySet<number>>>();
@@ -163,7 +165,13 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly 
         kind = 'patrol';
       } else if (role === 'front') target = nearest(world, id, enemy, strikes) ?? nearest(world, id, enemyForces(), strikes);
       else if (role === 'naval') target = nearest(world, id, enemyFleets, strikes) ?? nearest(world, id, enemy, strikes) ?? nearest(world, id, enemyForces(), strikes);
-      else if (role === 'bomb') target = id === reserve ? null : industry(world, id, n, richest);
+      else if (role === 'bomb') {
+        if (id !== reserve) {
+          let cells = bombCells.get(n);
+          if (!cells) bombCells.set(n, (cells = bombable(world, n)));
+          target = industry(world, id, n, cells, richest);
+        }
+      }
       else if (role === 'lift') {
         target = nearest(world, id, short.filter((g) => c.nation[g] === n), lifts);
         kind = 'supply';
@@ -445,23 +453,51 @@ function nearestOf(world: World, id: number, among: readonly number[], sent?: Ma
 }
 
 /**
- * The middle of the cell with the most industry within wing `id`'s range held by a nation at war
- * with `n`, in an air zone where `n`'s superiority is `BOMB_SUPERIORITY` or more; null for none.
- * `rich()`: the cells of industry, richest first (`byIndustry`). Such a zone is one where
- * someone has flown (`world.airPower`; a half elsewhere), so those are looked at first.
+ * What `n`'s strategic bombers may bomb in a day's missions: the air zones where `n`'s superiority
+ * is `BOMB_SUPERIORITY` or more (`won`; such a zone is one where someone has flown, `world.airPower`,
+ * a half elsewhere), and of the cells of industry, richest first, those found so far in one of them
+ * held by a nation at war with `n`. The same for each of `n`'s bombers of the day (PLAN 7.139: each
+ * worked out the zones and read the cells again; neither the air power nor a cell's holder changes
+ * in the missions).
  */
-function industry(world: World, id: number, n: number, rich: () => readonly number[]): [number, number] | null {
+interface Bombable {
+  won: Set<number>;
+  /** Those found, and how far into `rich()` they were looked for. */
+  cells: number[];
+  read: number;
+}
+
+function bombable(world: World, n: number): Bombable {
   const won = new Set<number>();
   for (const z of world.airPower.keys()) if (airSuperiority(world, n, z) >= BOMB_SUPERIORITY) won.add(z);
-  if (won.size === 0) return null;
+  return { won, cells: [], read: 0 };
+}
+
+/**
+ * The middle of the first of `n`'s bombable cells (`Bombable`) within wing `id`'s range; null for
+ * none. They are looked for in `rich()` only as far as a bomber reads them.
+ */
+function industry(world: World, id: number, n: number, b: Bombable, rich: () => readonly number[]): [number, number] | null {
+  if (b.won.size === 0) return null;
   const { w, controller } = world.cells;
   const zones = airOf(world).zoneOf;
   const range = wingRange(world, id);
-  for (const cell of rich()) {
-    if (!won.has(zones[cell]!) || !world.wars.atWar(n, controller[cell]!)) continue;
+  const inRange = (cell: number): [number, number] | null => {
     const x = (cell % w) + 0.5;
     const y = Math.floor(cell / w) + 0.5;
-    if (kmFromBase(world, id, x, y) <= range) return [x, y];
+    return kmFromBase(world, id, x, y) <= range ? [x, y] : null;
+  };
+  for (const cell of b.cells) {
+    const at = inRange(cell);
+    if (at) return at;
+  }
+  const all = rich();
+  while (b.read < all.length) {
+    const cell = all[b.read++]!;
+    if (!b.won.has(zones[cell]!) || !world.wars.atWar(n, controller[cell]!)) continue;
+    b.cells.push(cell);
+    const at = inRange(cell);
+    if (at) return at;
   }
   return null;
 }
