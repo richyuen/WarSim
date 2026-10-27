@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-723 · 2026-10-26 · accepted (the user's decision, 2026-10-26) — An empty sky late: wings cross the sea to a base of their side in reach of the enemy (ADR-707's option b, PLAN 7.133); the carriers die out (PLAN 7.137)
+
+- **Context.** PLAN 7.133 (critic run 15, aircraft 7): at 6421's year 20, 2 sorties aloft in the world. AT: on 10
+  unseen seeds × 20 years against HEAD, sorties aloft a world-hour in years 2–20 at least 1.5 × HEAD's, year 1 not
+  below 0.9 ×; a unit test, red without.
+- **Read** (`docs/evidence/7.133/measure.md`; `airWhy.ts`'s new columns, new `airNoWings.ts`, `carriers.ts`; the
+  critic's year-20 saves of 6421, 1129, 4877, 60 days): the idle fighters and strikers a day are 17.5, 29.7, 49.5
+  with a base of their side in range of the enemy past the sea (no chain of ferry flights reaches it: 99–100 %),
+  against 8.2, 12.5, 6.0 with a mission; 0, 6.3, 37.5 with no base of the side in range at all. What else could
+  fly: strategic bombers of zones nobody flies in (~1.5 a day), and the nations at war with no wing that could
+  build one with an enemy within 600 km (0.8–4.7 a world; most belligerents with no wing have an income of 4–7):
+  some +25–45 %, under the bar. The 1.5 × is in the reach ADR-707 (a) left alone.
+- **Carriers:** 18 at the start (6 each of Britain, the United States, Japan); at year 10 4–12, at year 20 none on
+  the three saves, and no carrier group ever in training: the economic AI's fleet mix has no carrier
+  (`BuildMix.fleets`: battle, cruiser, destroyer, transport). Filed as PLAN 7.137.
+- **Decision** (the user's, asked after the read): build the sea ferry for 7.133. A wing whose hop toward its front
+  finds no airbase (`toward`) goes by sea to the base of its side with room nearest it that has a formation of its
+  front within its range; it is in transit for the days a transport takes over the straight line, out of the air
+  war, and is at its new base on arrival (if the base is still its side's with room; else it stays). Room is
+  reserved at the order. No path and no interception at sea: a simplification, logged here.
+- **Consequences.** The pin moves in the commit of the rule (old and new hash there). The AT on 1171–1180 against
+  HEAD's arm (`.cache/7133/head`, read before the rule).
+
 ### ADR-722 · 2026-10-26 · accepted — A ship's hull at T2 at least 13 px, every class (PLAN 7.132)
 
 - **Context.** Critic run 15, naval 7: "a sea battle at 15–150 m/px is a few small hulls far apart" (seed 3613,

@@ -73,6 +73,14 @@ none a seed the critic has run (`critic/c*_seed*`):
   `critic/shots/c15u_6421_f0_0250m.png`). AT: on 10 unseen seeds × 20 years against HEAD on the same seeds, mean sorties
   aloft a world-hour in years 2–20 at least 1.5 × HEAD's, year 1 not below 0.9 ×; a unit test, red without; the gate
   green.
+  Read 2026-10-26 (`docs/evidence/7.133/measure.md`): the idle wings late are across the sea from the enemy; the
+  sea ferry built for it (ADR-723, the user's decision: ADR-707's option b).
+
+- [ ] 7.137 Aircraft 7, naval 7: the carriers die out. 18 carriers at the start; at year 20 none on 6421, 1129 and 4877
+  (`tools/diag/carriers.ts`), and no carrier group ever in training: the AI's fleet mix has no carrier (ADR-723).
+  AT: on 10 unseen seeds × 20 years against HEAD on the same seeds, carriers afloat at year 20 at least 6 a world
+  on the mean (HEAD 0 on the three saves), sea battles a world-year in years 2–20 not below HEAD's; a unit test,
+  red without; the gate green.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

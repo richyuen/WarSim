@@ -23998,3 +23998,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `cat > file` with no input in a Bash call waits for ever; and a Playwright run from `tests/e2e`
   finds no projects (run it from the root).
 - **Next:** PLAN 7.133 (aircraft: an empty sky late) while ADR-721 waits.
+
+## 2026-10-26 — PLAN 7.133: the empty sky late measured; the sea ferry the user's decision (ADR-723); carriers filed (7.137)
+
+- **Start:** gate green on `b3ccee95`; critic not due; ADR-721 waits on the user.
+- **Read** (`docs/evidence/7.133/measure.md`; `airWhy.ts` new columns, new `airNoWings.ts`, `carriers.ts`; the critic's
+  y20 saves of 6421, 1129, 4877): idle fighters and strikers with a base of their side in range of the enemy past
+  the sea 17.5–49.5 a day against 6.0–12.5 tasked; bombers of unflown zones and wingless nations that could build
+  with an enemy near add some +25–45 % at most. Carriers 18 → 4–12 (y10) → 0 (y20), none ever in training.
+- **HEAD's arm** (1171–1180 × 20, `airWar.ts`): year 1 54.40, years 2–20 15.97 sorties aloft an hour; bars 23.96 late,
+  48.96 year 1.
+- **Decision** (the user's, ADR-723): build the sea ferry (ADR-707 b). PLAN 7.137 filed for the carriers.
+- **Gotcha:** `TemplateRule` has no `id`; `findIndex((t) => t.id === …)` typechecks only under the gate. Tell a
+  template by its elements' classes.

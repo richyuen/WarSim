@@ -22,6 +22,8 @@ import { seaKm } from '../../src/sim/systems/navalCombat';
 import { carriesNuke } from '../../src/sim/systems/nuclear';
 import { loopW } from '../../src/sim/systems/elements';
 import { sortieAt } from '../../src/shared/sorties';
+import { AIR_HELD, airSuperiority } from '../../src/sim/systems/airSuperiority';
+import { airOf as airGrid } from '../../src/sim/world';
 import type { World } from '../../src/sim/world';
 
 const save = process.argv[2]!;
@@ -47,7 +49,14 @@ function read(w: World): void {
     else if (!w.isFleet(id) && !w.offLand(id) && !w.embarked.has(id)) land.push(id);
   });
   add('days');
+  // PLAN 7.133: the nations at war with no wing; the carriers' wings at war.
+  for (const n of atWar) {
+    if (nc.living[n] !== 1 || nc.aiOff[n] === 1) continue;
+    add('nationsAtWar');
+    if (!airOf.has(n)) add('nationsAtWarNoWings');
+  }
   for (const [id, base] of w.wingBase) {
+    if (base < 0 && w.formations.has(id) && atWar.has(c.nation[id]!)) add('carrier:atWar');
     if (base <= 0 || !w.formations.has(id) || carriesNuke(w, id)) continue;
     const n = c.nation[id]!;
     if (nc.living[n] !== 1 || nc.aiOff[n] === 1 || !atWar.has(n)) continue;
@@ -59,15 +68,24 @@ function read(w: World): void {
     const at = basePlace(w, base)!;
     if (role === 'bomb') {
       let rich = false;
+      let held = false;
+      let contested = false;
+      const zones = airGrid(w).zoneOf;
       for (const cell of byIndustry(w)) {
         if (!w.wars.atWar(n, w.cells.controller[cell]!)) continue;
         const [x, y] = w.cellPoint(cell);
         if (seaKm(w, at[0], at[1], x, y) <= range) {
           rich = true;
-          break;
+          const z = zones[cell]!;
+          if (w.airPower.has(z)) {
+            contested = true;
+            if (airSuperiority(w, n, z) >= AIR_HELD) held = true;
+          }
         }
       }
       add(rich ? 'bomb.industryIn' : 'bomb.noIndustryIn');
+      // PLAN 7.133: of those, any such cell in a zone flown in (`airPower`), and one held there.
+      if (rich) add(held ? 'bomb.in.held' : contested ? 'bomb.in.notHeld' : 'bomb.in.unflown');
       continue;
     }
     const enemyAir = [...airOf].some((o) => w.wars.atWar(n, o));
