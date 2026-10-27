@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-742 · 2026-10-27 · proposed (the user's decision) — PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet; ships sunk at sea by any means 0.98 ×
+
+- **Context.** PLAN 7.148 (ADR-738 a): with a carrier's wings on their own missions, sea battles in years 2–20 fell
+  0.867 × and ships sunk in them 0.923 × on 1284–1293 (7.145's AT; paired −21.8 ± 10.0 battles a seed, 2.2 standard
+  errors). AT: on 1314–1323 × 20 against `57a00adb`, both not below 0.95 ×, carrier strike-hours at least 2 ×.
+- **Read** (`docs/evidence/7.148/read.md`; new `tools/diag/seaChannels.ts`, `seaSaves.ts`, `seaWindow.ts`; two
+  temporary switches in the sim, removed): 96 HEAD saves of 1284–1291 (days 90–1,080), each stepped 60 days with the
+  missions on, off, and with the fleets seeing by their wings aloft. Missions on against off: battles **0.944 ×**
+  (−0.20 ± 0.16 a window), ships sunk in them 0.870 ×, ships sunk by carrier wings out of a battle +539 against −615 in
+  battles: ships sunk at sea by any means **0.977 ×**. Seeing by the wings aloft gives no battle back (0.964 ×). Of
+  the battles missing with the missions on, 67 % had a fleet the carriers' wings had struck before (it lost ships in
+  every case, sunk by the window's end in 10 of 16), against 19 % of the battles found both ways. The carriers' wings
+  take the enemy's fleet nearest in range first (ADR-738) and sink or thin it before a battle.
+- **Options:**
+  - **(a)** PLAN 7.148 closed not done, no rule: the battles' clauses read as ships sunk at sea by any means, 0.98 × on
+    HEAD's windows; the carriers keep striking fleets at range. (Recommended: the sinkings moved from the battle rows
+    to the air, which is what a carrier does; restoring the battle count means less of what ADR-738 (a) kept.)
+  - **(b)** A rule: a carrier wing's own mission skips the enemy's fleets and takes the front or the land forces only;
+    the enemy's fleets are fought in sea battles (PLAN 5.4d). The battles come back by construction; the carriers no
+    longer pick off fleets at range. AT as filed, on 1314–1323.
+  - **(c)** Revert `60e008c6` (the carriers' own missions): the critic's complaint (carriers idle by empty ports,
+    PLAN 7.141) returns.
+- No code changed; the pin unchanged. Seeds 1314–1323 unspent.
+
 ### ADR-741 · 2026-10-27 · proposed (the user's decision) — PLAN 7.147: year 1's contact is back on HEAD; the task's cause is gone
 
 - **Context.** PLAN 7.147 (ADR-737 a): with the strike falloff, engaged land formations a day in year 1 fell 0.86 × on

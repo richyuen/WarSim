@@ -5,6 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet (ADR-742, waits on the user)
+- **The bar:** on 1314–1323 × 20 years against `57a00adb`, sea battles and ships sunk in them in years 2–20 not below
+  0.95 ×, carrier strike-hours at least 2 ×.
+- **What moved** (`docs/evidence/7.148/read.md`): nothing was changed. In 60-day windows from 96 HEAD saves, the
+  carriers' own missions cost 0.944 × the battles and 0.870 × the ships sunk in them, and sink +539 ships out of a
+  battle against −615 in one (ships sunk at sea by any means 0.977 ×). Not detection: fleets seeing by their wings
+  aloft give no battle back. The missing battles' fleets were struck by carrier wings first (67 % against 19 %).
+- **Left:** ADR-742: (a) close 7.148 not done, the clauses read as ships sunk by any means (recommended), (b) a rule
+  keeping carrier wings' own missions off the enemy's fleets, (c) revert the missions. Seeds 1314–1323 unspent.
+
 ### PLAN 7.147: year 1's contact is back on HEAD, the task's cause gone (ADR-741, waits on the user)
 - **The bar:** on 1304–1313 × 20 years against HEAD, engaged land formations a day in year 1 at least 1.1 × HEAD's.
 - **What moved** (`docs/evidence/7.147/read.md`): nothing was changed. On HEAD year 1 reads 42.4 a day against 44.1

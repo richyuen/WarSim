@@ -81,6 +81,9 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   at home, `carrierWings`) or the air sinks ships before a battle (count ships sunk from the air). AT: on 10 unseen
   seeds from 1314 × 20 years against `57a00adb` on the same seeds, sea battles and ships sunk in them in years 2–20 not
   below 0.95 ×, carrier strike-hours at least 2 ×; a unit test, red without; the gate green.
+  **Read** (2026-10-27, `docs/evidence/7.148/read.md`): in 60-day windows from HEAD saves the carriers' own missions
+  cost 0.944 × the battles; their wings sink the enemy's fleets before they meet (ships sunk at sea by any means
+  0.977 ×); not detection. Waits on ADR-742 (the user's decision).
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

@@ -24285,3 +24285,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** zeroing `formations.struck` from a step callback is not the rule off: strikes arriving in the same hour
   still dim each other. The exact arm needs the switch in `strikeShare`.
 - **Next:** PLAN 7.148 (the sea battles) while ADR-741 waits.
+
+## 2026-10-27 — PLAN 7.148 read: the carriers' wings sink the enemy's fleets before they meet; no rule (ADR-742, to the user)
+
+- **Start:** gate green on `4fd8b91c`; critic not due. ADR-741 waits on the user.
+- **Read** (`docs/evidence/7.148/read.md`; new `tools/diag/seaChannels.ts`, `seaSaves.ts`, `seaWindow.ts`; two
+  temporary switches in the sim, `NOCV` and `CVSEE`, removed): five years from 1938 on 1284–1293 part the worlds within
+  months (battles 0.86 ×, −11.7 ± 9.2 a seed). 96 HEAD saves of 1284–1291 (days 90–1,080) stepped 60 days each way:
+  battles 0.944 ×, ships sunk in them 0.870 ×, ships sunk by carrier wings out of a battle +539 against −615 in battles
+  (by any means 0.977 ×). Seeing by the wings aloft gives no battle back. The missing battles' fleets were struck by
+  carrier wings first, 67 % against 19 % of battles found both ways.
+- **Filed:** ADR-742 (proposed), BLOCKERS, a read line under PLAN 7.148. No code changed; seeds 1314–1323 unspent.
+- **Next:** PLAN 7.5 waits on 7.147 and 7.148 (ADR-741, ADR-742), both the user's.
