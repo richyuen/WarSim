@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-734 · 2026-10-27 · accepted — A carrier group in training holds back no other warship (PLAN 7.141, part 1)
+
+- **Context.** ADR-726: a nation of a battle fleet's income under `CARRIERS_KEPT` carriers afloat orders a carrier
+  group first, and the economic AI's 3b orders one fleet at a time: the group's 800 days held every other warship of
+  the nation back. Critic run 16: transports at year 20 548 → 498, ships sunk late −7 % since `7739a78`, this the
+  likely cause.
+- **Decision.** A carrier group in training is not counted among the nation's warships in training (as the ferry's
+  transports are not, ADR-614), and while one is in training `pickFleet` does not take a second (the next warship
+  of its income instead). `tests/unit/carrierSlot1938.test.ts`, red without.
+- **Consequences.** A nation keeping carriers may have two fleets in training, the group and one other. The pin
+  unchanged if no carrier group is ordered in seed 99's first year (ADR-726). Whether it moves transports and ships
+  sunk is read by 7.141's AT arm.
+
 ### ADR-733 · 2026-10-27 · proposed (the user's decision) — Fronts held and not fought: thin on both sides late; a standoff breaker read flat on the saves, no AT spent (PLAN 7.138)
 
 - **Context.** PLAN 7.138 (R16-B1), open as a defect by the user's rule (ADR-731 withdrawn, ADR-728): wars with a

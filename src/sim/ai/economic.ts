@@ -56,8 +56,8 @@
  *    PLAN 1.42c: the queue used to wait for the dearer division, slots empty, for months of a war).
  *    So is one whose techs the nation does not know (PLAN 3.1a).
  *    Then a fleet (PLAN 4.6e1, `pickFleet`), with what the army's orders left: a nation with a
- *    shipyard and no fleet in training orders one while the upkeep of its armed fleets is under
- *    NAVY_SHARE of its income (PLAN 7.46b1, ADR-574: its submarine flotillas and transport groups,
+ *    shipyard and no fleet in training (a carrier group's aside, PLAN 7.141) orders one while the
+ *    upkeep of its armed fleets is under NAVY_SHARE of its income (PLAN 7.46b1, ADR-574: its submarine flotillas and transport groups,
  *    of no `fleetPower`, are not counted; France with nine submarine flotillas and no warship
  *    built none for years), if its balance stays above the need with the fleet's upkeep and its gold
  *    covers the price and RESERVE_MONTHS of income; none while it wants a transport group (2c).
@@ -327,12 +327,15 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
     const wingTemplates = new Map<number, number[]>();
     /** The nations with a transport group in training (PLAN 7.26h2), and how many each. */
     const transportsPending = new Map<number, number>();
+    /** The nations with a carrier group in training (PLAN 7.141), and how many each: it holds back no other warship. */
+    const carriersPending = new Map<number, number>();
     world.production.forEach((id) => {
       const n = world.production.cols.nation[id]!;
       const t = world.production.cols.template[id]!;
       if (world.rules?.templates[t]?.domain === Domain.sea) {
         shipsPending.set(n, (shipsPending.get(n) ?? 0) + 1);
         if (t === mix.fleets?.transport) transportsPending.set(n, (transportsPending.get(n) ?? 0) + 1);
+        if (t === mix.fleets?.carrier) carriersPending.set(n, (carriersPending.get(n) ?? 0) + 1);
         return;
       }
       if (world.rules?.templates[t]?.domain === Domain.air) {
@@ -471,7 +474,11 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // and its transports in training do not hold back 3b's warships (else none would come).
       const ferrying = !wants && mix.fleets !== undefined && atWar && income >= POOR_INCOME && wantsFerry(world, n, fleets.get(n) ?? []);
       const ferry = ferrying && !transportsPending.has(n);
-      const warshipsPending = (shipsPending.get(n) ?? 0) - (ferrying ? (transportsPending.get(n) ?? 0) : 0);
+      // Nor does a carrier group in training (PLAN 7.141): its 800 days held every other warship of
+      // the nation back, and the late navies thinned (transports at year 20 −9 %, ships sunk late −7 %
+      // since ADR-726, critic run 16).
+      const carrierTraining = carriersPending.get(n) ?? 0;
+      const warshipsPending = (shipsPending.get(n) ?? 0) - (ferrying ? (transportsPending.get(n) ?? 0) : 0) - carrierTraining;
       if ((wants || ferry) && shipyard(world, n) >= 0) {
         const t = mix.fleets!.transport;
         const rule = world.rules.templates[t]!;
@@ -571,7 +578,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // 3b. A fleet (PLAN 4.6e1), with what the army's orders left: one at a time, while the
       // armed navy is under its share of the income (PLAN 7.46b1, ADR-574: its submarines and
       // transports are not of the battle line it builds).
-      const fleet = mix.fleets && !wants && warshipsPending === 0 && (armed.get(n) ?? 0) < NAVY_SHARE * income ? pickFleet(world, n, income, mix.fleets) : -1;
+      const fleet = mix.fleets && !wants && warshipsPending === 0 && (armed.get(n) ?? 0) < NAVY_SHARE * income ? pickFleet(world, n, income, mix.fleets, carrierTraining > 0) : -1;
       if (fleet >= 0 && shipyard(world, n) >= 0) {
         const rule = rules.templates[fleet]!;
         const u = upkeepOfTemplate(fleet);
@@ -703,7 +710,7 @@ function nextOrderPrice(world: World, n: number, income: number, mix: BuildMix):
  * cruiser squadron from RICH_INCOME, a destroyer flotilla. -1 for a poor nation, or one that can
  * pay for none of them. (Its transport group is step 2c's, PLAN 7.26h2.)
  */
-export function pickFleet(world: World, n: number, income: number, kinds: NonNullable<BuildMix['fleets']>): number {
+export function pickFleet(world: World, n: number, income: number, kinds: NonNullable<BuildMix['fleets']>, carrierTraining = false): number {
   if (income < POOR_INCOME) return -1;
   const templates = world.rules!.templates;
   const gold = world.nations.cols.gold[n]!;
@@ -711,8 +718,9 @@ export function pickFleet(world: World, n: number, income: number, kinds: NonNul
   const wanted = fleetsWanted(income, kinds);
   // A nation of a battle fleet's income with fewer than CARRIERS_KEPT carriers afloat orders a carrier group first,
   // where it knows its techs (PLAN 7.137): the start's 18 carriers were all sunk by year 20 and none was built again.
+  // Not while one is in training (`carrierTraining`, PLAN 7.141): that one holds no other warship back, so the next is one.
   const cv = kinds.carrier;
-  if (cv !== undefined && cv >= 0 && templates[cv] && income >= BATTLE_FLEET_INCOME && carriersAfloat(world, n) < CARRIERS_KEPT && knowsTechs(world, n, templates[cv]!.techs)) wanted.unshift(cv);
+  if (!carrierTraining && cv !== undefined && cv >= 0 && templates[cv] && income >= BATTLE_FLEET_INCOME && carriersAfloat(world, n) < CARRIERS_KEPT && knowsTechs(world, n, templates[cv]!.techs)) wanted.unshift(cv);
   return wanted.find(pays) ?? -1;
 }
 
