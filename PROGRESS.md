@@ -24273,3 +24273,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   States forms every month but weighs 0.04–0.4 of it). PLAN 7.140 done on ADR-732's two clauses left, met on HEAD on
   1253–1263 and on 1264–1273 (at most 7 and 8 years). BLOCKERS' 7.140 entry resolved.
 - **Next:** PLAN 7.147 (year 1's land contact).
+
+## 2026-10-27 — PLAN 7.147 read: year 1's land contact is back on HEAD; no rule (ADR-741, to the user)
+
+- **Start:** gate green on `0f67ccb4`; critic not due.
+- **Read** (`docs/evidence/7.147/read.md`; new `tools/diag/yearOneContact.ts`): `airWar.ts` on HEAD × 2 years on
+  1294–1303, paired with 7.144's AT files: year 1 42.4 a day against 44.1 before ADR-737 (0.96 ×, paired −1.8 ± 2.2)
+  and 37.8 at ADR-737's commit. The falloff switched off on HEAD (a temporary switch in `strikeShare`, removed): 40.4
+  against 44.2 on eight seeds. The loss 7.147 was filed for is not on HEAD; 7.145 (carriers ashore) the likely mover.
+- **Filed:** ADR-741 (proposed), BLOCKERS. No code changed; seeds 1304–1313 unspent.
+- **Gotcha:** zeroing `formations.struck` from a step callback is not the rule off: strikes arriving in the same hour
+  still dim each other. The exact arm needs the switch in `strikeShare`.
+- **Next:** PLAN 7.148 (the sea battles) while ADR-741 waits.

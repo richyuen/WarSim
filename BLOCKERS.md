@@ -5,6 +5,14 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.147: year 1's contact is back on HEAD, the task's cause gone (ADR-741, waits on the user)
+- **The bar:** on 1304–1313 × 20 years against HEAD, engaged land formations a day in year 1 at least 1.1 × HEAD's.
+- **What moved** (`docs/evidence/7.147/read.md`): nothing was changed. On HEAD year 1 reads 42.4 a day against 44.1
+  before ADR-737 (0.96 ×, paired −1.8 ± 2.2) and 37.8 at ADR-737's commit; the falloff switched off on HEAD gives no
+  more (40.4 against 44.2). The loss 7.147 was filed for is not on HEAD.
+- **Left:** ADR-741: (a) close 7.147 not done (recommended), (b) seek a rule for 1.1 × HEAD's year 1, (c) tick it on
+  7.144's year-1 clause. Seeds 1304–1313 unspent.
+
 ### RESOLVED 2026-10-27 (option a, the user's decision: kept, 7.146 closed not done, the worlds over a third to PLAN 7.143) · PLAN 7.146's AT missed: engaged late 1.127 × HEAD's on 1274–1283 (bar 1.15 ×), two worlds over a third against none (ADR-739, waits on the user)
 - **The bar:** on 1274–1283 × 30 years against HEAD, engaged land formations a day per war with a front of 100 cells or
   more in years 2–30 at least 1.15 ×, year 1 not below 0.95 ×; the floors in every world; ADR-732's clauses not worse.

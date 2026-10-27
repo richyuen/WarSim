@@ -71,6 +71,8 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   formations (the struck side's formations in contact, retreats, the attacker's orders). AT: on 10 unseen seeds from
   1304 × 20 years against HEAD on the same seeds, engaged in year 1 at least 1.1 × HEAD's, in years 2–20 not below
   0.95 ×, sorties aloft in years 1–20 not below 0.9 ×; a unit test, red without; the gate green.
+  **Read** (2026-10-27, `docs/evidence/7.147/read.md`): on HEAD year 1 is 0.96 × the world before ADR-737 and the
+  falloff switched off gives no more; the cause is gone. Waits on ADR-741 (the user's decision).
 
 - [ ] 7.148 The sea battles under ADR-738 (found by 7.145's AT; ADR-738 a, the user's decision): on
   1284–1293 × 20 years sea battles in years 2–20 1,641 → 1,423 (0.867 ×, lower on 7) and ships sunk in them 16,043 →

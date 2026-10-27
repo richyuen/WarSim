@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-741 · 2026-10-27 · proposed (the user's decision) — PLAN 7.147: year 1's contact is back on HEAD; the task's cause is gone
+
+- **Context.** PLAN 7.147 (ADR-737 a): with the strike falloff, engaged land formations a day in year 1 fell 0.86 × on
+  1294–1303 at `4da68474`. AT: on 1304–1313 × 20 against HEAD, year 1 at least 1.1 × HEAD's, years 2–20 not below
+  0.95 ×, sorties not below 0.9 ×.
+- **Read** (`docs/evidence/7.147/read.md`; `tools/diag/airWar.ts` on HEAD `0f67ccb4` paired with 7.144's AT files;
+  new `tools/diag/yearOneContact.ts`). On HEAD, year 1 is 42.4 a day against 44.1 before ADR-737 (**0.96 ×**, paired
+  −1.8 ± 2.2, over 7.144's 0.95 × floor) and 37.8 at ADR-737's commit. The falloff switched off on HEAD (a temporary
+  switch, removed) reads 40.4 against HEAD's 44.2 on eight seeds (+3.9 ± 2.1): no deficit of the falloff left.
+  PLAN 7.145 (carriers ashore) is the likely mover; 7.146's AT read year 1 at 1.008 ×.
+- **Options:**
+  - **(a)** PLAN 7.147 closed not done, no rule: its cause is not on HEAD and year 1 meets 7.144's clause.
+    (Recommended: the 1.1 × bar would ask year 1 for 1.06 × the world before ADR-737, with no finding behind it.)
+  - **(b)** The AT kept as filed; a rule sought for 1.1 × HEAD's year 1 on 1304–1313.
+  - **(c)** PLAN 7.147 ticked done on 7.144's year-1 clause (0.95 × the world before ADR-737), met on HEAD.
+- No code changed; the pin unchanged. Seeds 1304–1313 unspent.
+
 ### ADR-740 · 2026-10-27 · accepted (the user's decision, 2026-10-27) — No bar on the largest nation's share: "over a third of the land" and "no hegemon" dropped
 
 - **Context.** ADR-732's bar held "no nation over a third of the land at year 30", and the DONE condition "no
