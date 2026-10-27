@@ -974,6 +974,12 @@ export class World {
   };
   /** Derived (not state): territory frontier cells and the wars version it was built for. */
   frontier: Set<number> | null = null;
+  /**
+   * Derived (not state): the operational AI's fronts of the holders, kept from one tick's plans to
+   * the next (`operational.ts`'s `FrontParts`, PLAN 7.139). Read against `flipLog`, so dropped with
+   * the land counts.
+   */
+  frontParts: unknown = null;
   /** Derived (not state): cells by node of the province graph and holder (`heldByNode`). */
   private held: { graph: ProvinceGraph; count: Map<number, number> } | null = null;
   /**
@@ -1487,6 +1493,7 @@ export class World {
     this.land = null;
     this.held = null;
     this.border = null;
+    this.frontParts = null;
     this.refusedOrders.clear();
   }
 
