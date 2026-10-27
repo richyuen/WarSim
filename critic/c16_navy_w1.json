@@ -1,0 +1,353 @@
+[
+ {
+  "seed": 1129,
+  "file": "critic/c16_seed1129_y10.bin",
+  "tick": 87600,
+  "fleets": 126,
+  "ships": {
+   "dd": 198,
+   "tp": 352,
+   "cv": 2,
+   "ca": 23,
+   "cl": 23,
+   "bb": 27,
+   "ss": 410
+  },
+  "carriers": 2,
+  "carriersManned": 2,
+  "cvNations": 1,
+  "training": {
+   "ca+cv+dd": 1,
+   "tp": 1,
+   "dd": 1
+  }
+ },
+ {
+  "seed": 1129,
+  "file": "critic/c16_seed1129_y20.bin",
+  "tick": 175200,
+  "fleets": 156,
+  "ships": {
+   "dd": 228,
+   "cl": 36,
+   "ca": 40,
+   "tp": 596,
+   "cv": 4,
+   "bb": 27,
+   "ss": 410
+  },
+  "carriers": 4,
+  "carriersManned": 4,
+  "cvNations": 1,
+  "training": {
+   "ca+cl+dd": 1,
+   "tp": 2,
+   "bb+ca+cl+dd": 1,
+   "dd": 1
+  }
+ },
+ {
+  "seed": 2081,
+  "file": "critic/c16_seed2081_y10.bin",
+  "tick": 87600,
+  "fleets": 109,
+  "ships": {
+   "tp": 263,
+   "dd": 255,
+   "bb": 32,
+   "cl": 28,
+   "ca": 30,
+   "ss": 384
+  },
+  "carriers": 0,
+  "carriersManned": 0,
+  "cvNations": 0,
+  "training": {
+   "dd": 2,
+   "tp": 1
+  }
+ },
+ {
+  "seed": 2081,
+  "file": "critic/c16_seed2081_y20.bin",
+  "tick": 175200,
+  "fleets": 134,
+  "ships": {
+   "dd": 206,
+   "tp": 596,
+   "cl": 28,
+   "ca": 34,
+   "bb": 32,
+   "cv": 4,
+   "ss": 382
+  },
+  "carriers": 4,
+  "carriersManned": 4,
+  "cvNations": 1,
+  "training": {
+   "dd": 1,
+   "ca+cl+dd": 2
+  }
+ },
+ {
+  "seed": 6421,
+  "file": "critic/c16_seed6421_y10.bin",
+  "tick": 87600,
+  "fleets": 130,
+  "ships": {
+   "tp": 474,
+   "dd": 290,
+   "cl": 46,
+   "ca": 52,
+   "bb": 48,
+   "ss": 318,
+   "cv": 6
+  },
+  "carriers": 6,
+  "carriersManned": 6,
+  "cvNations": 1,
+  "training": {
+   "tp": 1
+  }
+ },
+ {
+  "seed": 6421,
+  "file": "critic/c16_seed6421_y20.bin",
+  "tick": 175200,
+  "fleets": 150,
+  "ships": {
+   "tp": 1053,
+   "dd": 156,
+   "cl": 18,
+   "ca": 20,
+   "bb": 39,
+   "ss": 239
+  },
+  "carriers": 0,
+  "carriersManned": 0,
+  "cvNations": 0,
+  "training": {
+   "tp": 3,
+   "ca+cv+dd": 1,
+   "dd": 2
+  }
+ },
+ {
+  "seed": 7019,
+  "file": "critic/c16_seed7019_y10.bin",
+  "tick": 87600,
+  "fleets": 97,
+  "ships": {
+   "tp": 363,
+   "dd": 111,
+   "cl": 4,
+   "ca": 5,
+   "bb": 4,
+   "ss": 350
+  },
+  "carriers": 0,
+  "carriersManned": 0,
+  "cvNations": 0,
+  "training": {
+   "ca+cv+dd": 1,
+   "dd": 1,
+   "tp": 2
+  }
+ },
+ {
+  "seed": 7019,
+  "file": "critic/c16_seed7019_y20.bin",
+  "tick": 175200,
+  "fleets": 94,
+  "ships": {
+   "tp": 391,
+   "dd": 88,
+   "cl": 2,
+   "ca": 2,
+   "bb": 4,
+   "ss": 334
+  },
+  "carriers": 0,
+  "carriersManned": 0,
+  "cvNations": 0,
+  "training": {
+   "ca+cv+dd": 1,
+   "tp": 1
+  }
+ },
+ {
+  "seed": 4877,
+  "file": "critic/c16_seed4877_y10.bin",
+  "tick": 87600,
+  "fleets": 135,
+  "ships": {
+   "tp": 452,
+   "dd": 290,
+   "bb": 28,
+   "cl": 15,
+   "ca": 19,
+   "ss": 382,
+   "cv": 6
+  },
+  "carriers": 6,
+  "carriersManned": 6,
+  "cvNations": 1,
+  "training": {
+   "tp": 3,
+   "dd": 1
+  }
+ },
+ {
+  "seed": 4877,
+  "file": "critic/c16_seed4877_y20.bin",
+  "tick": 175200,
+  "fleets": 132,
+  "ships": {
+   "dd": 289,
+   "bb": 36,
+   "cl": 21,
+   "ca": 27,
+   "tp": 535,
+   "cv": 5,
+   "ss": 294
+  },
+  "carriers": 5,
+  "carriersManned": 5,
+  "cvNations": 1,
+  "training": {
+   "dd": 3,
+   "tp": 2,
+   "ca+cl+dd": 1,
+   "bb+ca+cl+dd": 1
+  }
+ },
+ {
+  "seed": 9437,
+  "file": "critic/c16_seed9437_y10.bin",
+  "tick": 87600,
+  "fleets": 125,
+  "ships": {
+   "dd": 260,
+   "tp": 308,
+   "ca": 26,
+   "cl": 20,
+   "bb": 24,
+   "ss": 402,
+   "cv": 6
+  },
+  "carriers": 6,
+  "carriersManned": 6,
+  "cvNations": 1,
+  "training": {
+   "tp": 2
+  }
+ },
+ {
+  "seed": 9437,
+  "file": "critic/c16_seed9437_y20.bin",
+  "tick": 175200,
+  "fleets": 128,
+  "ships": {
+   "dd": 186,
+   "tp": 562,
+   "cl": 20,
+   "ca": 26,
+   "cv": 4,
+   "bb": 28,
+   "ss": 338
+  },
+  "carriers": 4,
+  "carriersManned": 4,
+  "cvNations": 1,
+  "training": {
+   "tp": 1,
+   "bb+ca+cl+dd": 1
+  }
+ },
+ {
+  "seed": 1307,
+  "file": "critic/c16_seed1307_y10.bin",
+  "tick": 87600,
+  "fleets": 129,
+  "ships": {
+   "dd": 334,
+   "tp": 367,
+   "cl": 26,
+   "ca": 32,
+   "bb": 28,
+   "cv": 6,
+   "ss": 397
+  },
+  "carriers": 6,
+  "carriersManned": 6,
+  "cvNations": 1,
+  "training": {
+   "tp": 2
+  }
+ },
+ {
+  "seed": 1307,
+  "file": "critic/c16_seed1307_y20.bin",
+  "tick": 175200,
+  "fleets": 112,
+  "ships": {
+   "dd": 291,
+   "tp": 328,
+   "cl": 25,
+   "ca": 27,
+   "bb": 28,
+   "ss": 301
+  },
+  "carriers": 0,
+  "carriersManned": 0,
+  "cvNations": 0,
+  "training": {
+   "tp": 2
+  }
+ },
+ {
+  "seed": 8167,
+  "file": "critic/c16_seed8167_y10.bin",
+  "tick": 87600,
+  "fleets": 113,
+  "ships": {
+   "tp": 392,
+   "dd": 125,
+   "cl": 14,
+   "ca": 23,
+   "bb": 24,
+   "cv": 7,
+   "ss": 387
+  },
+  "carriers": 7,
+  "carriersManned": 7,
+  "cvNations": 2,
+  "training": {
+   "tp": 1,
+   "dd": 2
+  }
+ },
+ {
+  "seed": 8167,
+  "file": "critic/c16_seed8167_y20.bin",
+  "tick": 175200,
+  "fleets": 108,
+  "ships": {
+   "tp": 444,
+   "dd": 131,
+   "cl": 14,
+   "ca": 23,
+   "bb": 24,
+   "ss": 361,
+   "cv": 6
+  },
+  "carriers": 6,
+  "carriersManned": 6,
+  "cvNations": 1,
+  "training": {
+   "ca+cl+dd": 1,
+   "tp": 1,
+   "dd": 2
+  }
+ }
+]

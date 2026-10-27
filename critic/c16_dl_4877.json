@@ -1,0 +1,18 @@
+{
+ "seed": 4877,
+ "bin": "critic/c16_seed4877_y20.bin",
+ "count": "3850 of 3850 events",
+ "csv": {
+  "name": "warsim-history.csv",
+  "bytes": 460814,
+  "lines": 3852,
+  "head": "date,tick,type,a,aName,b,bName,text\r\n1938-01-01,0,AllianceJoined,83,Mexico,8,Coalition,Mexico founded a Coalition\r\n1938-01-01,0,AllianceJoined,90,Cuba,8,Coalition,Cuba joined the Coalition of Mexico\r\n1938-01-03,48,WarDeclared,75,Japan,24,Spanish Republic,Japan declared war on Spanish Republic\r\n1938-01-04,93,MajorBattleStarted,1,Wuhu,1209,Wuhu,A major battle began near Wuhu\r\n1938-01-05,96,AllianceJoined,31,Norway,9,Defensive Pact,Norway founded a Defensive Pact\r\n1938-01-05,96,AllianceJoined,4,Poland,9,Defensive Pact,Poland joined the Defensive Pact of Norway\r\n1938-01-06,120,AllianceJoined,9,Fin"
+ },
+ "json": {
+  "name": "warsim-history.json",
+  "bytes": 908977,
+  "lines": 38502,
+  "head": "[\n  {\n    \"date\": \"1938-01-01\",\n    \"tick\": 0,\n    \"type\": \"AllianceJoined\",\n    \"a\": 83,\n    \"aName\": \"Mexico\",\n    \"b\": 8,\n    \"bName\": \"Coalition\",\n    \"text\": \"Mexico founded a Coalition\"\n  },\n  {\n    \"date\": \"1938-01-01\",\n    \"tick\": 0,\n    \"type\": \"AllianceJoined\",\n    \"a\": 90,\n    \"aName\": \"Cuba\",\n    \"b\": 8,\n    \"bName\": \"Coalition\",\n    \"text\": \"Cuba joined the Coalition of Mexico\"\n  },\n  {\n    \"date\": \"1938-01-03\",\n    \"tick\": 48,\n    \"type\": \"WarDeclared\",\n    \"a\": 75,\n    \"aName\": \"Japan\",\n    \"b\": 24,\n    \"bName\": \"Spanish Republic\",\n    \"text\": \"Japan declared war on Spanish Repu"
+ },
+ "errors": []
+}

@@ -1,5 +1,5 @@
 {
-  "commit": "7739a78fdbd99e85a42aea6d652aab6d1f57bb5d",
+  "commit": "7b883084ca5b5bb43d8fc5c868dc0a2bb35410f6",
   "scores": {
     "mapVisuals": 7,
     "diplomacyWarDepth": 7,
@@ -8,7 +8,7 @@
     "editorScenarios": 7,
     "statsHistory": 7,
     "uiUxPolish": 7,
-    "performance": 6,
+    "performance": 7,
     "stability": 7,
     "semanticZoom": 8,
     "naval": 7,
@@ -18,32 +18,32 @@
   },
   "blocking": [
     {
-      "id": "R15-B1",
-      "title": "The land war got thinner (R14-B1 not fixed): same 48 seeds 311988d -> HEAD, engaged a day in year 1 45.05 -> 40.01 (lower on 35 of 48), years 2-30 5.11 -> 4.35 (lower on 42 of 48, 10.9 % of year 1), per war 0.732 -> 0.636; checkpoints with nobody in contact 4 -> 17 of 96. New seeds on both commits agree (year 1 43.7 -> 38.0, late 4.93 -> 4.47, empty checkpoints 1 -> 4 of 16). In the page 7019 y20: 6 wars, 422 land formations at war, 0 in contact on 6 of 7 samples. Hollow divisions fixed (72.4 -> 0.4 a world).",
+      "id": "R16-B1",
+      "title": "The late world stays still (R15-B1's late half, not fixed; ADR-717 a and ADR-721 a sent it here to judge): same 56 seeds 7739a78 -> HEAD, engaged land formations a day in years 2-30 4.36 -> 4.13 (se 0.105, lower on 34), per war 0.638 -> 0.602, 10.1 % of year 1's; new seeds on both commits 4.42 -> 4.02. The same five largest nations for more than 12 years in 13 of 56 worlds (8 on 7739a78), longest 19 -> 23 (4877, years 8-30). In the page 7019 y20: 559 land formations at war, engaged 4, 5, 0, 3, 0, 0, 0 over 60 days. Year 1 is level (39.72 -> 40.67); its run-15 fall is the fold's cost by ADR-718 a.",
       "evidence": [
-        "critic/c15_cmp_checkpoints.json",
-        "critic/c15_cmp_all.txt",
-        "critic/c15_y2_7019_y20.json",
-        "critic/shots/c15y2_7019_y20_d20_3000m.png"
+        "critic/c16_cmp_y30.json",
+        "critic/c16_cmp_checkpoints.json",
+        "critic/c16_y2_7019_y20.json",
+        "critic/c16_y2_4877_y20.json",
+        "critic/shots/c16y2_7019_y20_d20_3000m.png",
+        "critic/c16_headless_4877.json"
       ],
-      "fix": "Measure year 1 too in any contact AT; bring year 1 back to 311988d's level on the same seeds, then raise late contact per war, on unseen seeds with a bar."
+      "fix": "A late contact rule judged on unseen seeds against HEAD over years 2-30, with a stasis bar (top five unchanged at most 12 years) in the same AT; start from the two causes already found: ADR-717 b's long thin fronts and ADR-721 c's alliance members that cannot reach their enemy."
     },
     {
-      "id": "R15-B2",
-      "title": "The 5.5 ms tick budget (ADR-709) fails in the late game (R14-B2 improved, not fixed): pinned and alone, 6421 year 28 7.88/7.92/7.98 ms (operational AI 5.3-5.4), year 29 7.14, year 30 5.89, year 25 5.51; 1129 year 21 6.39/6.54/6.53 ms, year 20 5.77 (inside the 25 years PLAN 7.124's AT reads). 6421's year 28 is 81.5 s at Max in the page. Run 14's case is gone (8167 y19 13.3 -> 1.9 ms).",
+      "id": "R16-B2",
+      "title": "The 5.5 ms budget (ADR-709, any year) still fails pinned on two late years (R15-B2's cases fixed: 6421 y28 7.9 -> 5.2 ms, 1129 y21 6.5 -> 4.3 ms): pinned and alone from HEAD's own saves, 3847 year 27 6.14 / 6.19 ms, 5683 year 26 6.02 / 5.82 ms; 2633 y26 5.44 / 5.56 and 9203 y29 5.42 / 5.44 at the line. 3847's year 27 is 60.4 s at Max in the page. PLAN 7.129 is ticked on 10 seeds; on 64 seeds x 30 years 2 of 1,920 world-years break it.",
       "evidence": [
-        "critic/c15_perf_6421_y21_30_head.log",
-        "critic/c15_perf_6421_y28_read1.log",
-        "critic/c15_perf_6421_y28_read2.log",
-        "critic/c15_perf_1129_y11_21_head.log",
-        "critic/c15_perf_1129_y21_read1.log",
-        "critic/c15_perf_1129_y21_read2.log",
-        "critic/c15_l_6421.json",
-        "critic/c15_seed6421_y27.bin",
-        "critic/c15_seed1129_y20.bin"
+        "critic/c16_perf_3847_y27_read1.log",
+        "critic/c16_perf_3847_y27_read2.log",
+        "critic/c16_perf_5683_y26_read1.log",
+        "critic/c16_perf_5683_y26_read2.log",
+        "critic/c16_l_3847.json",
+        "critic/c16_seed3847_y26.bin",
+        "critic/c16_seed5683_y25.bin"
       ],
-      "fix": "Profile the operational AI on 6421's year 28 (from critic/c15_seed6421_y27.bin) and 1129's year 21 and cut its per-tick work so no year exceeds 5.5 ms; read the budget on unseen seeds run to 30 years, not 25."
+      "fix": "Profile 3847's year 27 (from critic/c16_seed3847_y26.bin) and 5683's year 26 (from critic/c16_seed5683_y25.bin), operational AI 3.0-3.2 ms of each, and cut both under 5.5 ms; read the budget on more than ten seeds to 30 years."
     }
   ],
-  "timestamp": "2026-10-26T16:52:06Z"
+  "timestamp": "2026-10-27T07:21:48Z"
 }

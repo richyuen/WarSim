@@ -60,6 +60,45 @@ world; performance 5 → 6): R15-B1 and R15-B2 are PLAN 7.128 and 7.129; the dim
 7.130–7.133 (naval's panel is 7.126). A task each, split when taken up. Unseen seeds: 1101 on, ten a task, none reused,
 none a seed the critic has run (`critic/c*_seed*`):
 
+Run 16's (report of 2026-10-27 on `7b883084`, `critic/CRITIC_REPORT.md`; R15-B2's two cases fixed; performance 6 → 7):
+R16-B1 and R16-B2 are PLAN 7.138 and 7.139; the dimensions under the bar, beyond them, are 7.140–7.142. A task each,
+split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed the critic has run (1207, 1213, 1259):
+
+- [ ] 7.138 R16-B1: the late world stays still. Same 56 seeds `7739a78` → HEAD, engaged land formations a day in years
+  2–30 4.36 → 4.13 (se 0.105), 10.1 % of year 1's; in the page 7019 y20 engaged 4, 5, 0, 3, 0, 0, 0 of 559 at war
+  (`critic/c16_cmp_y30.json`, `critic/c16_y2_7019_y20.json`, `critic/c16_y2_4877_y20.json`). Causes already found:
+  ADR-717 b's long thin fronts, ADR-721 c's alliance members that cannot reach their enemy. AT: on seeds 1201–1206 and
+  1208–1211 × 30 years against HEAD on the same seeds, engaged land formations a day in years 2–30 at least 1.15 ×
+  HEAD's, year 1 not below 0.95 ×, and worlds with the same five largest nations for more than 12 years not above
+  HEAD's count; a unit test, red without; the gate green.
+- [ ] 7.139 R16-B2: the 5.5 ms budget (ADR-709) still fails late. Pinned and alone, 3847's year 27 6.14 / 6.19 ms,
+  5683's year 26 6.02 / 5.82 ms, operational AI 3.0–3.2 ms of each (`critic/c16_perf_3847_y27_read*.log`,
+  `critic/c16_perf_5683_y26_read*.log`; saves `critic/c16_seed3847_y26.bin`, `critic/c16_seed5683_y25.bin`). AT:
+  pinned and alone, 3847's year 27 and 5683's year 26 at most 5.5 ms a tick from those saves (read twice); the worst
+  year of seeds 1212 and 1214–1222 × 30 years at most 5.5 ms; the pinned hash unchanged or its change logged; the gate
+  green.
+- [ ] 7.140 Emergent 6: the same five giants. The top five unchanged for more than 12 years in 13 of 56 worlds (8 on
+  `7739a78`), the longest 23 (4877, years 8–30: the United States, the Soviet Union, France, Canada, Denmark)
+  (`critic/c16_cmp_checkpoints.json`, `critic/c16_headless_4877.json`); beyond 7.138's contact, the order of the
+  largest nations late. AT: on seeds 1223–1232 × 30 years against HEAD on the same seeds, worlds whose top five stand
+  unchanged more than 12 years at most half HEAD's count (and at least one fewer), the mean longest run at most
+  0.8 × HEAD's; no world with one nation over a third of the land at year 30 where HEAD has none; a unit test, red
+  without; the gate green.
+- [ ] 7.141 Naval 7: the carriers built wait in port, and the late sea war is no bigger. 7019's US group built in year 21
+  sat in port a year at war, 0 strikes; carrier strike hours 30 in 8 world-years; transports at year 20 548 → 498 and
+  ships sunk late −7 % since `7739a78`, ADR-726's carrier group in training (800 days) the likely cause
+  (`critic/c16_cvfollow_7019_18.json`, `critic/c16_cvworld_*.json`, `critic/shots/c16cv_8167_save_fleet1096_60m.png`).
+  AT: on seeds 1233–1242 × 20 years against HEAD on the same seeds, hours with a carrier strike in the air in years
+  2–20 at least 2 × HEAD's, transports at year 20 and ships sunk in years 2–20 not below 0.95 × HEAD's; a unit test,
+  red without; the gate green.
+- [ ] 7.142 Aircraft 7: the air forces a third smaller late. Wings late 95 → 69 a world, lower on every one of 56
+  worlds; ~18 sorties aloft a world-hour late, 2 in 6421 y20 and 1 in 4877 y20 in the page; the ferried wings are lost
+  faster than rebuilt (ADR-724) and are invisible (no row, mark or panel state) (`critic/c16_cmp_y30.json`,
+  `critic/c16_u_6421.json`, `critic/c16_u_4877.json`, `critic/shots/c16u_6421_f0_0250m.png`). AT: on seeds 1243–1252
+  × 20 years against HEAD on the same seeds, wings a world in years 2–20 at least 1.2 × HEAD's and sorties aloft a
+  world-hour in years 2–20 at least 1.2 × HEAD's, year 1 not below 0.9 ×; a wing at sea shown as such on its panel; a
+  unit test, red without; the gate green.
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

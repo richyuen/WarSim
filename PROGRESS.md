@@ -24037,3 +24037,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **AT** (1191–1200 × 20, `seaYears.ts`): carriers manned at year 20 1.8 → 3.3 (bar 6); sea battles late 8.66 → 8.40
   (0.97 ×). Missed; kept under the user's standing instruction (ADR-727 a). Seeds 1191–1200 spent.
 - **Next:** `npm run check:review`, then critic run 16 (PLAN 7.5).
+
+## 2026-10-27 — PLAN 7.5: critic run 16 on `7b883084` (after `check:review` green); PLAN 7.138–7.142 filed
+
+- **Review run** on `7b883084`: green (0 known red); unit 1,931, ten-year 18, every browser spec. Red once and green on
+  the retry alone: scenario1938's build time (beside the suite's load).
+- **Critic run 16:** map 7, diplomacy/war 7, emergent 6, God 7, editor 7, stats 7, UI 7, performance 7 (up from 6),
+  stability 7, semantic zoom 8, naval 7, tanks 8, aircraft 7, AI nukes 8; blocking 2 (R16-B1 the late world still:
+  land contact years 2–30 4.36 → 4.13 a day on the same 56 seeds, top five unchanged over 12 years 8 → 13 worlds;
+  R16-B2 the 5.5 ms budget pinned, 3847 y27 6.14 / 6.19 ms, 5683 y26 6.02 / 5.82 ms; run 15's two cases fixed).
+- **Filed:** R16-B1 7.138, R16-B2 7.139; the dimensions under the bar beyond them: emergent 7.140 (the top five's
+  stasis), naval 7.141 (carriers in port, the late sea war), aircraft 7.142 (the air forces a third smaller late).
+  Unseen seeds from 1201, none a critic seed (1207, 1213, 1259 skipped).
+- **Note:** the review's browser specs rewrote screenshots under `docs/evidence/` (left out of the commit).
+- **Next:** PLAN 7.138.

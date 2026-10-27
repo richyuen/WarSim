@@ -1,0 +1,634 @@
+{
+ "engaged": {
+  "same": {
+   "n": 112,
+   "old": 4.269,
+   "head": 3.541,
+   "delta": -0.728,
+   "se": 0.664,
+   "lower": 59,
+   "higher": 50
+  },
+  "sameZero": [
+   21,
+   10
+  ],
+  "samePerWar": {
+   "n": 112,
+   "old": 0.611,
+   "head": 0.488,
+   "delta": -0.123,
+   "se": 0.105,
+   "lower": 57,
+   "higher": 54
+  },
+  "new": {
+   "n": 16,
+   "old": 5.5,
+   "head": 3.203,
+   "delta": -2.297,
+   "se": 1.405,
+   "lower": 11,
+   "higher": 5
+  },
+  "newZero": [
+   0,
+   3
+  ],
+  "headBest": [
+   [
+    38,
+    [
+     8861,
+     "y10"
+    ]
+   ],
+   [
+    36,
+    [
+     8011,
+     "y10"
+    ]
+   ],
+   [
+    32,
+    [
+     5651,
+     "y20"
+    ]
+   ],
+   [
+    24,
+    [
+     7723,
+     "y20"
+    ]
+   ],
+   [
+    21,
+    [
+     8933,
+     "y10"
+    ]
+   ]
+  ]
+ },
+ "frag2": {
+  "pieces2to400": {
+   "same": {
+    "n": 56,
+    "old": 1046.661,
+    "head": 1014.518,
+    "delta": -32.143,
+    "se": 17.446,
+    "lower": 35,
+    "higher": 20
+   },
+   "new": {
+    "n": 8,
+    "old": 1076,
+    "head": 982.25,
+    "delta": -93.75,
+    "se": 59.597,
+    "lower": 6,
+    "higher": 2
+   }
+  },
+  "enclaves": {
+   "same": {
+    "n": 56,
+    "old": 276.071,
+    "head": 253.464,
+    "delta": -22.607,
+    "se": 7.49,
+    "lower": 38,
+    "higher": 18
+   },
+   "new": {
+    "n": 8,
+    "old": 260.625,
+    "head": 233.75,
+    "delta": -26.875,
+    "se": 16.932,
+    "lower": 5,
+    "higher": 3
+   }
+  }
+ },
+ "hollow": {
+  "land": {
+   "same": {
+    "n": 56,
+    "old": 560.179,
+    "head": 530.768,
+    "delta": -29.411,
+    "se": 18.407,
+    "lower": 34,
+    "higher": 22
+   },
+   "new": {
+    "n": 8,
+    "old": 540.375,
+    "head": 542.75,
+    "delta": 2.375,
+    "se": 67.517,
+    "lower": 4,
+    "higher": 4
+   }
+  },
+  "under500": {
+   "same": {
+    "n": 56,
+    "old": 0.411,
+    "head": 0.25,
+    "delta": -0.161,
+    "se": 0.098,
+    "lower": 11,
+    "higher": 6
+   },
+   "new": {
+    "n": 8,
+    "old": 0.625,
+    "head": 0.25,
+    "delta": -0.375,
+    "se": 0.375,
+    "lower": 4,
+    "higher": 2
+   }
+  },
+  "under1000": {
+   "same": {
+    "n": 56,
+    "old": 26.339,
+    "head": 20.536,
+    "delta": -5.804,
+    "se": 1.711,
+    "lower": 42,
+    "higher": 13
+   },
+   "new": {
+    "n": 8,
+    "old": 23.5,
+    "head": 18,
+    "delta": -5.5,
+    "se": 4.452,
+    "lower": 6,
+    "higher": 2
+   }
+  },
+  "meanMen": {
+   "same": {
+    "n": 56,
+    "old": 7779.429,
+    "head": 8182.929,
+    "delta": 403.5,
+    "se": 148.565,
+    "lower": 22,
+    "higher": 34
+   },
+   "new": {
+    "n": 8,
+    "old": 7886.75,
+    "head": 8412.875,
+    "delta": 526.125,
+    "se": 601.855,
+    "lower": 2,
+    "higher": 6
+   }
+  }
+ },
+ "navy": {
+  "y10_same_carriers": {
+   "n": 56,
+   "old": 3.018,
+   "head": 4.679,
+   "delta": 1.661,
+   "se": 0.558,
+   "lower": 13,
+   "higher": 31
+  },
+  "y10_same_carriersManned": {
+   "n": 56,
+   "old": 3.018,
+   "head": 4.679,
+   "delta": 1.661,
+   "se": 0.558,
+   "lower": 13,
+   "higher": 31
+  },
+  "y10_same_fleets": {
+   "n": 56,
+   "old": 128.321,
+   "head": 125.107,
+   "delta": -3.214,
+   "se": 3.06,
+   "lower": 29,
+   "higher": 27
+  },
+  "y10_same_tp": {
+   "n": 56,
+   "old": 416.571,
+   "head": 403.321,
+   "delta": -13.25,
+   "se": 15.735,
+   "lower": 36,
+   "higher": 20
+  },
+  "y10_same_bb": {
+   "n": 56,
+   "old": 27.286,
+   "head": 24.964,
+   "delta": -2.321,
+   "se": 2.181,
+   "lower": 30,
+   "higher": 21
+  },
+  "y10_same_dd": {
+   "n": 56,
+   "old": 248.143,
+   "head": 259.268,
+   "delta": 11.125,
+   "se": 15.44,
+   "lower": 23,
+   "higher": 33
+  },
+  "y10_same_ss": {
+   "n": 56,
+   "old": 397.268,
+   "head": 368.929,
+   "delta": -28.339,
+   "se": 7.912,
+   "lower": 36,
+   "higher": 18
+  },
+  "y10_same_cvNations": {
+   "n": 56,
+   "old": 0.589,
+   "head": 1.018,
+   "delta": 0.429,
+   "se": 0.091,
+   "lower": 4,
+   "higher": 26
+  },
+  "y10_same_trainingCv": {
+   "n": 56,
+   "old": 0,
+   "head": 0.286,
+   "delta": 0.286,
+   "se": 0.061,
+   "lower": 0,
+   "higher": 16
+  },
+  "y10_same_trainingAll": {
+   "n": 56,
+   "old": 3.339,
+   "head": 3.518,
+   "delta": 0.179,
+   "se": 0.332,
+   "lower": 22,
+   "higher": 22
+  },
+  "y10_same_trainingTp": {
+   "n": 56,
+   "old": 1.732,
+   "head": 1.589,
+   "delta": -0.143,
+   "se": 0.211,
+   "lower": 22,
+   "higher": 15
+  },
+  "y10_same_worldsNoCarrier": {
+   "n": 56,
+   "old": 0.464,
+   "head": 0.125,
+   "delta": -0.339,
+   "se": 0.073,
+   "lower": 21,
+   "higher": 2
+  },
+  "y10_new_carriers": {
+   "n": 8,
+   "old": 1.625,
+   "head": 3.625,
+   "delta": 2,
+   "se": 1.783,
+   "lower": 1,
+   "higher": 7
+  },
+  "y10_new_carriersManned": {
+   "n": 8,
+   "old": 1.625,
+   "head": 3.625,
+   "delta": 2,
+   "se": 1.783,
+   "lower": 1,
+   "higher": 7
+  },
+  "y10_new_fleets": {
+   "n": 8,
+   "old": 119.375,
+   "head": 121.5,
+   "delta": 2.125,
+   "se": 8.412,
+   "lower": 3,
+   "higher": 5
+  },
+  "y10_new_tp": {
+   "n": 8,
+   "old": 425.125,
+   "head": 399,
+   "delta": -26.125,
+   "se": 62.205,
+   "lower": 4,
+   "higher": 4
+  },
+  "y10_new_bb": {
+   "n": 8,
+   "old": 24.25,
+   "head": 20,
+   "delta": -4.25,
+   "se": 4.742,
+   "lower": 5,
+   "higher": 3
+  },
+  "y10_new_dd": {
+   "n": 8,
+   "old": 200.375,
+   "head": 234.375,
+   "delta": 34,
+   "se": 25.811,
+   "lower": 2,
+   "higher": 6
+  },
+  "y10_new_ss": {
+   "n": 8,
+   "old": 376,
+   "head": 365.75,
+   "delta": -10.25,
+   "se": 21.167,
+   "lower": 4,
+   "higher": 4
+  },
+  "y10_new_cvNations": {
+   "n": 8,
+   "old": 0.375,
+   "head": 1,
+   "delta": 0.625,
+   "se": 0.263,
+   "lower": 1,
+   "higher": 6
+  },
+  "y10_new_trainingCv": {
+   "n": 8,
+   "old": 0,
+   "head": 0.625,
+   "delta": 0.625,
+   "se": 0.183,
+   "lower": 0,
+   "higher": 5
+  },
+  "y10_new_trainingAll": {
+   "n": 8,
+   "old": 2.5,
+   "head": 3.625,
+   "delta": 1.125,
+   "se": 1.043,
+   "lower": 2,
+   "higher": 4
+  },
+  "y10_new_trainingTp": {
+   "n": 8,
+   "old": 1.5,
+   "head": 1.5,
+   "delta": 0,
+   "se": 0.567,
+   "lower": 2,
+   "higher": 2
+  },
+  "y10_new_worldsNoCarrier": {
+   "n": 8,
+   "old": 0.75,
+   "head": 0,
+   "delta": -0.75,
+   "se": 0.164,
+   "lower": 6,
+   "higher": 0
+  },
+  "y20_same_carriers": {
+   "n": 56,
+   "old": 0.982,
+   "head": 3.125,
+   "delta": 2.143,
+   "se": 0.436,
+   "lower": 6,
+   "higher": 38
+  },
+  "y20_same_carriersManned": {
+   "n": 56,
+   "old": 0.982,
+   "head": 3.125,
+   "delta": 2.143,
+   "se": 0.436,
+   "lower": 6,
+   "higher": 38
+  },
+  "y20_same_fleets": {
+   "n": 56,
+   "old": 130.982,
+   "head": 123.018,
+   "delta": -7.964,
+   "se": 3.549,
+   "lower": 33,
+   "higher": 22
+  },
+  "y20_same_tp": {
+   "n": 56,
+   "old": 548.214,
+   "head": 497.518,
+   "delta": -50.696,
+   "se": 23.999,
+   "lower": 36,
+   "higher": 20
+  },
+  "y20_same_bb": {
+   "n": 56,
+   "old": 32.429,
+   "head": 27.429,
+   "delta": -5,
+   "se": 2.548,
+   "lower": 31,
+   "higher": 19
+  },
+  "y20_same_dd": {
+   "n": 56,
+   "old": 222.161,
+   "head": 212.536,
+   "delta": -9.625,
+   "se": 17.741,
+   "lower": 28,
+   "higher": 28
+  },
+  "y20_same_ss": {
+   "n": 56,
+   "old": 351.446,
+   "head": 331.929,
+   "delta": -19.518,
+   "se": 9.581,
+   "lower": 34,
+   "higher": 22
+  },
+  "y20_same_cvNations": {
+   "n": 56,
+   "old": 0.214,
+   "head": 0.804,
+   "delta": 0.589,
+   "se": 0.091,
+   "lower": 4,
+   "higher": 35
+  },
+  "y20_same_trainingCv": {
+   "n": 56,
+   "old": 0,
+   "head": 0.196,
+   "delta": 0.196,
+   "se": 0.059,
+   "lower": 0,
+   "higher": 10
+  },
+  "y20_same_trainingAll": {
+   "n": 56,
+   "old": 3.446,
+   "head": 3.5,
+   "delta": 0.054,
+   "se": 0.327,
+   "lower": 21,
+   "higher": 27
+  },
+  "y20_same_trainingTp": {
+   "n": 56,
+   "old": 1.25,
+   "head": 1.321,
+   "delta": 0.071,
+   "se": 0.173,
+   "lower": 18,
+   "higher": 21
+  },
+  "y20_same_worldsNoCarrier": {
+   "n": 56,
+   "old": 0.804,
+   "head": 0.268,
+   "delta": -0.536,
+   "se": 0.08,
+   "lower": 33,
+   "higher": 3
+  },
+  "y20_new_carriers": {
+   "n": 8,
+   "old": 0,
+   "head": 2.75,
+   "delta": 2.75,
+   "se": 0.726,
+   "lower": 0,
+   "higher": 6
+  },
+  "y20_new_carriersManned": {
+   "n": 8,
+   "old": 0,
+   "head": 2.75,
+   "delta": 2.75,
+   "se": 0.726,
+   "lower": 0,
+   "higher": 6
+  },
+  "y20_new_fleets": {
+   "n": 8,
+   "old": 121,
+   "head": 115.625,
+   "delta": -5.375,
+   "se": 6.761,
+   "lower": 6,
+   "higher": 2
+  },
+  "y20_new_tp": {
+   "n": 8,
+   "old": 538.75,
+   "head": 480.625,
+   "delta": -58.125,
+   "se": 64.07,
+   "lower": 5,
+   "higher": 3
+  },
+  "y20_new_bb": {
+   "n": 8,
+   "old": 23.25,
+   "head": 21.25,
+   "delta": -2,
+   "se": 5.726,
+   "lower": 5,
+   "higher": 3
+  },
+  "y20_new_dd": {
+   "n": 8,
+   "old": 170.875,
+   "head": 184.5,
+   "delta": 13.625,
+   "se": 24.032,
+   "lower": 3,
+   "higher": 5
+  },
+  "y20_new_ss": {
+   "n": 8,
+   "old": 329,
+   "head": 324.25,
+   "delta": -4.75,
+   "se": 29.526,
+   "lower": 5,
+   "higher": 3
+  },
+  "y20_new_cvNations": {
+   "n": 8,
+   "old": 0,
+   "head": 0.75,
+   "delta": 0.75,
+   "se": 0.164,
+   "lower": 0,
+   "higher": 6
+  },
+  "y20_new_trainingCv": {
+   "n": 8,
+   "old": 0,
+   "head": 0.125,
+   "delta": 0.125,
+   "se": 0.125,
+   "lower": 0,
+   "higher": 1
+  },
+  "y20_new_trainingAll": {
+   "n": 8,
+   "old": 2.75,
+   "head": 3,
+   "delta": 0.25,
+   "se": 0.75,
+   "lower": 3,
+   "higher": 3
+  },
+  "y20_new_trainingTp": {
+   "n": 8,
+   "old": 0.875,
+   "head": 1.5,
+   "delta": 0.625,
+   "se": 0.324,
+   "lower": 1,
+   "higher": 5
+  },
+  "y20_new_worldsNoCarrier": {
+   "n": 8,
+   "old": 1,
+   "head": 0.25,
+   "delta": -0.75,
+   "se": 0.164,
+   "lower": 6,
+   "higher": 0
+  }
+ }
+}

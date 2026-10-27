@@ -1,0 +1,701 @@
+{
+ "years": 30,
+ "same": {
+  "n": 56,
+  "seeds": [
+   1129,
+   2081,
+   6421,
+   7019,
+   4877,
+   9437,
+   1307,
+   8167,
+   2347,
+   3491,
+   4513,
+   5683,
+   6151,
+   7247,
+   8011,
+   8849,
+   9781,
+   2953,
+   3613,
+   4219,
+   5309,
+   5861,
+   7583,
+   8693,
+   1523,
+   2671,
+   3847,
+   4391,
+   5147,
+   6737,
+   7901,
+   9203,
+   1061,
+   2417,
+   3253,
+   4561,
+   5521,
+   6833,
+   7351,
+   8423,
+   1187,
+   2539,
+   3359,
+   4673,
+   5651,
+   6967,
+   7411,
+   8539,
+   1213,
+   2633,
+   3467,
+   4789,
+   5531,
+   6659,
+   7723,
+   8861
+  ],
+  "eng1": {
+   "old": 39.72,
+   "head": 40.665,
+   "delta": 0.945,
+   "se": 0.671,
+   "lower": 31,
+   "higher": 25
+  },
+  "engLate": {
+   "old": 4.363,
+   "head": 4.125,
+   "delta": -0.238,
+   "se": 0.105,
+   "lower": 34,
+   "higher": 22
+  },
+  "engPerAtWarLatePct": {
+   "old": 1.067,
+   "head": 1.063,
+   "delta": -0.004,
+   "se": 0.035,
+   "lower": 31,
+   "higher": 25
+  },
+  "engPerWarLate": {
+   "old": 0.638,
+   "head": 0.602,
+   "delta": -0.036,
+   "se": 0.025,
+   "lower": 34,
+   "higher": 22
+  },
+  "sea1": {
+   "old": 40.232,
+   "head": 41.196,
+   "delta": 0.964,
+   "se": 1.986,
+   "lower": 24,
+   "higher": 30
+  },
+  "seaLate": {
+   "old": 8.54,
+   "head": 8.199,
+   "delta": -0.341,
+   "se": 0.232,
+   "lower": 33,
+   "higher": 22
+  },
+  "seaZeroLatePct": {
+   "old": 2.469,
+   "head": 2.676,
+   "delta": 0.207,
+   "se": 0.324,
+   "lower": 27,
+   "higher": 29
+  },
+  "sunkLate": {
+   "old": 87.17,
+   "head": 81.252,
+   "delta": -5.918,
+   "se": 2.214,
+   "lower": 36,
+   "higher": 20
+  },
+  "air1": {
+   "old": 2391.554,
+   "head": 2398.518,
+   "delta": 6.964,
+   "se": 117.546,
+   "lower": 29,
+   "higher": 27
+  },
+  "airLate": {
+   "old": 185.978,
+   "head": 233.911,
+   "delta": 47.933,
+   "se": 8.073,
+   "lower": 14,
+   "higher": 42
+  },
+  "aloft1": {
+   "old": 51.486,
+   "head": 54.634,
+   "delta": 3.148,
+   "se": 0.753,
+   "lower": 11,
+   "higher": 45
+  },
+  "aloftLate": {
+   "old": 15.329,
+   "head": 18.226,
+   "delta": 2.897,
+   "se": 0.325,
+   "lower": 6,
+   "higher": 50
+  },
+  "wingsY20": {
+   "old": 97.679,
+   "head": 64.393,
+   "delta": -33.286,
+   "se": 2.8,
+   "lower": 54,
+   "higher": 2
+  },
+  "wingsLate": {
+   "old": 95.403,
+   "head": 68.83,
+   "delta": -26.573,
+   "se": 1.555,
+   "lower": 56,
+   "higher": 0
+  },
+  "warsLate": {
+   "old": 7.656,
+   "head": 7.705,
+   "delta": 0.049,
+   "se": 0.219,
+   "lower": 29,
+   "higher": 27
+  },
+  "stasis": {
+   "old": 8.875,
+   "head": 9.679,
+   "delta": 0.804,
+   "se": 0.721,
+   "lower": 25,
+   "higher": 28
+  },
+  "flipLast5Pct": {
+   "old": 47.538,
+   "head": 51.337,
+   "delta": 3.799,
+   "se": 2.637,
+   "lower": 31,
+   "higher": 25
+  },
+  "bursts": {
+   "old": 21.375,
+   "head": 22.446,
+   "delta": 1.071,
+   "se": 2.708,
+   "lower": 23,
+   "higher": 30
+  },
+  "burstsCivOver1M": {
+   "old": 0.196,
+   "head": 0.161,
+   "delta": -0.036,
+   "se": 0.099,
+   "lower": 9,
+   "higher": 7
+  },
+  "burstsCiv10x": {
+   "old": 2.071,
+   "head": 2.268,
+   "delta": 0.196,
+   "se": 0.414,
+   "lower": 22,
+   "higher": 24
+  },
+  "ev_WarDeclared": {
+   "old": 460.304,
+   "head": 482.571,
+   "delta": 22.268,
+   "se": 11.453,
+   "lower": 26,
+   "higher": 30
+  },
+  "ev_RevoltSpawned": {
+   "old": 177.054,
+   "head": 194.411,
+   "delta": 17.357,
+   "se": 8.867,
+   "lower": 21,
+   "higher": 35
+  },
+  "ev_PuppetCreated": {
+   "old": 79.393,
+   "head": 80.786,
+   "delta": 1.393,
+   "se": 2.232,
+   "lower": 25,
+   "higher": 30
+  },
+  "ev_NationAnnexed": {
+   "old": 64.696,
+   "head": 70.482,
+   "delta": 5.786,
+   "se": 2.904,
+   "lower": 16,
+   "higher": 37
+  },
+  "ev_CapitalCaptured": {
+   "old": 485.357,
+   "head": 506,
+   "delta": 20.643,
+   "se": 12.555,
+   "lower": 23,
+   "higher": 33
+  },
+  "ev_CapitalMoved": {
+   "old": 623.625,
+   "head": 656.589,
+   "delta": 32.964,
+   "se": 18.973,
+   "lower": 23,
+   "higher": 33
+  },
+  "ev_ConvoyRaided": {
+   "old": 339.714,
+   "head": 342.125,
+   "delta": 2.411,
+   "se": 2.004,
+   "lower": 24,
+   "higher": 29
+  },
+  "ev_FormationEmbarked": {
+   "old": 2580.393,
+   "head": 2493.554,
+   "delta": -86.839,
+   "se": 74.745,
+   "lower": 30,
+   "higher": 26
+  },
+  "ev_FormationLanded": {
+   "old": 2555.768,
+   "head": 2475.482,
+   "delta": -80.286,
+   "se": 74.777,
+   "lower": 30,
+   "higher": 26
+  },
+  "ev_LandingRepulsed": {
+   "old": 7.518,
+   "head": 5.875,
+   "delta": -1.643,
+   "se": 0.849,
+   "lower": 29,
+   "higher": 22
+  },
+  "ev_MajorBattleStarted": {
+   "old": 97,
+   "head": 108.75,
+   "delta": 11.75,
+   "se": 4.725,
+   "lower": 22,
+   "higher": 33
+  },
+  "ev_PeaceSigned": {
+   "old": 442.839,
+   "head": 463.661,
+   "delta": 20.821,
+   "se": 10.893,
+   "lower": 25,
+   "higher": 31
+  },
+  "ev_FleetsLaidUp": {
+   "old": 4.036,
+   "head": 3.482,
+   "delta": -0.554,
+   "se": 0.683,
+   "lower": 28,
+   "higher": 22
+  },
+  "ev_AirStrike": {
+   "old": 458054.839,
+   "head": 486724.732,
+   "delta": 28669.893,
+   "se": 9801.96,
+   "lower": 20,
+   "higher": 36
+  },
+  "ev_StrikeHit": {
+   "old": 897797.268,
+   "head": 983801.625,
+   "delta": 86004.357,
+   "se": 44454.924,
+   "lower": 17,
+   "higher": 39
+  },
+  "tickMeanLate": {
+   "old": 3.205,
+   "head": 2.804,
+   "delta": -0.401,
+   "se": 0.052,
+   "lower": 51,
+   "higher": 5
+  },
+  "tickMax": {
+   "old": 5.579,
+   "head": 4.399,
+   "delta": -1.179,
+   "se": 0.151,
+   "lower": 50,
+   "higher": 6
+  },
+  "living30": {
+   "old": 93.946,
+   "head": 95.714,
+   "delta": 1.768,
+   "se": 2.437,
+   "lower": 23,
+   "higher": 31
+  },
+  "stasisOver12": [
+   8,
+   13
+  ],
+  "stasisMax": [
+   19,
+   23
+  ]
+ },
+ "new": {
+  "n": 8,
+  "seeds": [
+   1259,
+   2789,
+   3571,
+   4801,
+   5653,
+   6703,
+   7789,
+   8933
+  ],
+  "eng1": {
+   "old": 37.616,
+   "head": 38.324,
+   "delta": 0.707,
+   "se": 1.802,
+   "lower": 4,
+   "higher": 4
+  },
+  "engLate": {
+   "old": 4.415,
+   "head": 4.023,
+   "delta": -0.392,
+   "se": 0.338,
+   "lower": 6,
+   "higher": 2
+  },
+  "engPerAtWarLatePct": {
+   "old": 1.149,
+   "head": 1.037,
+   "delta": -0.112,
+   "se": 0.103,
+   "lower": 5,
+   "higher": 3
+  },
+  "engPerWarLate": {
+   "old": 0.612,
+   "head": 0.555,
+   "delta": -0.057,
+   "se": 0.042,
+   "lower": 7,
+   "higher": 1
+  },
+  "sea1": {
+   "old": 39.625,
+   "head": 46.625,
+   "delta": 7,
+   "se": 5.994,
+   "lower": 2,
+   "higher": 5
+  },
+  "seaLate": {
+   "old": 8.629,
+   "head": 7.862,
+   "delta": -0.767,
+   "se": 0.592,
+   "lower": 5,
+   "higher": 3
+  },
+  "seaZeroLatePct": {
+   "old": 1.908,
+   "head": 2.089,
+   "delta": 0.181,
+   "se": 1.06,
+   "lower": 4,
+   "higher": 4
+  },
+  "sunkLate": {
+   "old": 91.009,
+   "head": 77.409,
+   "delta": -13.599,
+   "se": 6.863,
+   "lower": 6,
+   "higher": 2
+  },
+  "air1": {
+   "old": 1841.125,
+   "head": 2233.125,
+   "delta": 392,
+   "se": 351.723,
+   "lower": 2,
+   "higher": 6
+  },
+  "airLate": {
+   "old": 207.642,
+   "head": 258.293,
+   "delta": 50.651,
+   "se": 20.046,
+   "lower": 1,
+   "higher": 7
+  },
+  "aloft1": {
+   "old": 51.35,
+   "head": 53.562,
+   "delta": 2.213,
+   "se": 2.756,
+   "lower": 3,
+   "higher": 5
+  },
+  "aloftLate": {
+   "old": 15.899,
+   "head": 17.967,
+   "delta": 2.069,
+   "se": 0.816,
+   "lower": 2,
+   "higher": 6
+  },
+  "wingsY20": {
+   "old": 97,
+   "head": 65.25,
+   "delta": -31.75,
+   "se": 9.654,
+   "lower": 7,
+   "higher": 1
+  },
+  "wingsLate": {
+   "old": 95.353,
+   "head": 67.677,
+   "delta": -27.677,
+   "se": 4.174,
+   "lower": 8,
+   "higher": 0
+  },
+  "warsLate": {
+   "old": 7.845,
+   "head": 7.815,
+   "delta": -0.03,
+   "se": 0.385,
+   "lower": 4,
+   "higher": 4
+  },
+  "stasis": {
+   "old": 11.5,
+   "head": 6.75,
+   "delta": -4.75,
+   "se": 2.776,
+   "lower": 5,
+   "higher": 2
+  },
+  "flipLast5Pct": {
+   "old": 49.83,
+   "head": 50.839,
+   "delta": 1.009,
+   "se": 7.404,
+   "lower": 5,
+   "higher": 3
+  },
+  "bursts": {
+   "old": 28.125,
+   "head": 20.5,
+   "delta": -7.625,
+   "se": 5.467,
+   "lower": 5,
+   "higher": 3
+  },
+  "burstsCivOver1M": {
+   "old": 0.125,
+   "head": 0.375,
+   "delta": 0.25,
+   "se": 0.313,
+   "lower": 1,
+   "higher": 2
+  },
+  "burstsCiv10x": {
+   "old": 2.75,
+   "head": 1.625,
+   "delta": -1.125,
+   "se": 0.972,
+   "lower": 4,
+   "higher": 3
+  },
+  "ev_WarDeclared": {
+   "old": 470.5,
+   "head": 458.625,
+   "delta": -11.875,
+   "se": 33.983,
+   "lower": 4,
+   "higher": 4
+  },
+  "ev_RevoltSpawned": {
+   "old": 177.5,
+   "head": 182.75,
+   "delta": 5.25,
+   "se": 33.553,
+   "lower": 4,
+   "higher": 4
+  },
+  "ev_PuppetCreated": {
+   "old": 79.875,
+   "head": 71.25,
+   "delta": -8.625,
+   "se": 7.091,
+   "lower": 6,
+   "higher": 2
+  },
+  "ev_NationAnnexed": {
+   "old": 62.75,
+   "head": 64.5,
+   "delta": 1.75,
+   "se": 10.44,
+   "lower": 5,
+   "higher": 3
+  },
+  "ev_CapitalCaptured": {
+   "old": 470.875,
+   "head": 457.375,
+   "delta": -13.5,
+   "se": 34.409,
+   "lower": 4,
+   "higher": 4
+  },
+  "ev_CapitalMoved": {
+   "old": 613.625,
+   "head": 611.25,
+   "delta": -2.375,
+   "se": 48.406,
+   "lower": 3,
+   "higher": 5
+  },
+  "ev_ConvoyRaided": {
+   "old": 340.125,
+   "head": 348.875,
+   "delta": 8.75,
+   "se": 3.564,
+   "lower": 0,
+   "higher": 7
+  },
+  "ev_FormationEmbarked": {
+   "old": 2785.375,
+   "head": 2387.75,
+   "delta": -397.625,
+   "se": 328.013,
+   "lower": 5,
+   "higher": 3
+  },
+  "ev_FormationLanded": {
+   "old": 2759.375,
+   "head": 2360.5,
+   "delta": -398.875,
+   "se": 321.849,
+   "lower": 5,
+   "higher": 3
+  },
+  "ev_LandingRepulsed": {
+   "old": 7.875,
+   "head": 8.75,
+   "delta": 0.875,
+   "se": 1.959,
+   "lower": 3,
+   "higher": 5
+  },
+  "ev_MajorBattleStarted": {
+   "old": 100.375,
+   "head": 107.5,
+   "delta": 7.125,
+   "se": 12.002,
+   "lower": 2,
+   "higher": 5
+  },
+  "ev_PeaceSigned": {
+   "old": 450.5,
+   "head": 441.25,
+   "delta": -9.25,
+   "se": 30.774,
+   "lower": 4,
+   "higher": 4
+  },
+  "ev_FleetsLaidUp": {
+   "old": 2.125,
+   "head": 2.25,
+   "delta": 0.125,
+   "se": 1.246,
+   "lower": 5,
+   "higher": 2
+  },
+  "ev_AirStrike": {
+   "old": 463792.875,
+   "head": 485268.875,
+   "delta": 21476,
+   "se": 26943.064,
+   "lower": 3,
+   "higher": 5
+  },
+  "ev_StrikeHit": {
+   "old": 828853.875,
+   "head": 944208.625,
+   "delta": 115354.75,
+   "se": 74518.464,
+   "lower": 3,
+   "higher": 5
+  },
+  "tickMeanLate": {
+   "old": 3.319,
+   "head": 3.005,
+   "delta": -0.314,
+   "se": 0.173,
+   "lower": 5,
+   "higher": 3
+  },
+  "tickMax": {
+   "old": 5.87,
+   "head": 4.663,
+   "delta": -1.207,
+   "se": 0.297,
+   "lower": 8,
+   "higher": 0
+  },
+  "living30": {
+   "old": 94.875,
+   "head": 91.75,
+   "delta": -3.125,
+   "se": 5.908,
+   "lower": 5,
+   "higher": 3
+  },
+  "stasisOver12": [
+   4,
+   1
+  ],
+  "stasisMax": [
+   23,
+   13
+  ]
+ }
+}
