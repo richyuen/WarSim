@@ -144,6 +144,7 @@ export const BUILD_MIX_1938 = {
     cruiser: TEMPLATES_1938.findIndex((t) => t.id === 'cruiser_squadron'),
     destroyer: TEMPLATES_1938.findIndex((t) => t.id === 'destroyer_flotilla'),
     transport: TEMPLATES_1938.findIndex((t) => t.id === 'transport_group'),
+    carrier: TEMPLATES_1938.findIndex((t) => t.id === 'carrier_group'),
   },
   wings: {
     fighter: TEMPLATES_1938.findIndex((t) => t.id === 'fighter_group'),

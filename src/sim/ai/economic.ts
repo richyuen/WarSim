@@ -124,6 +124,7 @@ import { SUPPRESSION_COST } from '../systems/revolts';
 import { frontierOf } from '../systems/territory';
 import { neighbours4 } from '../nav/grid';
 import { airfield, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
+import { liveCarriers } from '../systems/air';
 import { foldHollow } from './hollow';
 import { transportRoom } from '../systems/amphibious';
 import { passageOf } from '../systems/movement';
@@ -199,7 +200,8 @@ export interface BuildMix {
   /** The armoured divisions, the best first (PLAN 3.1c). */
   armour: readonly number[];
   /** The fleets the AI builds (PLAN 4.6e1); none, it builds no fleet. */
-  fleets?: { battle: number; cruiser: number; destroyer: number; transport: number };
+  /** The fleets the AI builds (PLAN 4.6e1); `carrier`, a carrier group (PLAN 7.137). */
+  fleets?: { battle: number; cruiser: number; destroyer: number; transport: number; carrier?: number };
   /** The wings the AI builds (PLAN 5.8s2); none, it builds no wing. */
   wings?: { fighter: number; tactical: number; strategic?: number };
 }
@@ -706,7 +708,29 @@ export function pickFleet(world: World, n: number, income: number, kinds: NonNul
   const templates = world.rules!.templates;
   const gold = world.nations.cols.gold[n]!;
   const pays = (t: number): boolean => templates[t] !== undefined && gold >= templates[t]!.gold + RESERVE_MONTHS * income;
-  return fleetsWanted(income, kinds).find(pays) ?? -1;
+  const wanted = fleetsWanted(income, kinds);
+  // A nation of a battle fleet's income with fewer than CARRIERS_KEPT carriers afloat orders a carrier group first,
+  // where it knows its techs (PLAN 7.137): the start's 18 carriers were all sunk by year 20 and none was built again.
+  const cv = kinds.carrier;
+  if (cv !== undefined && cv >= 0 && templates[cv] && income >= BATTLE_FLEET_INCOME && carriersAfloat(world, n) < CARRIERS_KEPT && knowsTechs(world, n, templates[cv]!.techs)) wanted.unshift(cv);
+  return wanted.find(pays) ?? -1;
+}
+
+/**
+ * The carriers a nation of a battle fleet's income keeps afloat (PLAN 7.137): two carrier groups' (the 1938 start's
+ * were six each of Britain, the United States and Japan). One group's kept 1.8 a world at year 20 on 1191–1200 to
+ * about 3 (the United States alone builds, most worlds); the bar is 6.
+ */
+export const CARRIERS_KEPT = 4;
+
+/** Nation `n`'s carriers afloat (PLAN 7.137). */
+function carriersAfloat(world: World, n: number): number {
+  const c = world.formations.cols;
+  let k = 0;
+  world.formations.forEach((id) => {
+    if (c.nation[id] === n && world.isFleet(id)) k += liveCarriers(world, id);
+  });
+  return k;
 }
 
 /** The warships a nation of `income` orders (PLAN 4.6e1), the best first. */

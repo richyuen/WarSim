@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-726 · 2026-10-26 · accepted — The AI keeps two carrier groups afloat (PLAN 7.137, part 2)
+
+- **Context.** PLAN 7.137 after ADR-725: a carrier group delivered is manned, and no AI orders one (the fleet mix had
+  none). HEAD on 1191–1200: carriers afloat and manned at year 20 **1.8** a world (3 of 10 worlds keep the United
+  States' six, 7 have none); bar 6.
+- **Decision.** The fleet mix has the carrier group (`BuildMix.fleets.carrier`). A nation of a battle fleet's income
+  (`BATTLE_FLEET_INCOME`) with fewer than `CARRIERS_KEPT` (4) carriers afloat takes a carrier group as its next
+  warship, before the battle squadron, where it knows the techs and can pay (else the next as before). Tried first
+  with "none afloat": from the critic's year-10 saves the United States alone ordered one, a group (2) a world,
+  about 3.2 on the mean by the arithmetic of HEAD's arm.
+- **Consequences.** The pin unchanged (none ordered in seed 99's first year). A carrier group in training holds the
+  nation's other warships for its 800 days (one fleet in training at a time, as any).
+
 ### ADR-725 · 2026-10-26 · accepted — A carrier group is delivered with its air groups (PLAN 7.137, part 1)
 
 - **Context.** PLAN 7.137: the start's 18 carriers sunk by year 20 and none built again (ADR-723). Before the AI
