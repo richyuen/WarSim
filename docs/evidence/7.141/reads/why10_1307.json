@@ -1,0 +1,32 @@
+{
+ "seed": 1307,
+ "src": "critic/c16_seed1307_y10.bin",
+ "days": 60,
+ "cvDays": 180,
+ "cv": {
+  "awayStation": 180
+ },
+ "other": {
+  "awayStation": 1674,
+  "moving": 46,
+  "take": 67
+ },
+ "who": {
+  "USA": 180
+ },
+ "prey": {
+  "none": 180
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "awayStation": [
+   "d3650 USA f1096: on station at Saint George's",
+   "d3650 USA f1097: on station at Saint George's",
+   "d3650 USA f1113: on station at Saint George's",
+   "d3651 USA f1096: on station at Saint George's",
+   "d3651 USA f1097: on station at Saint George's",
+   "d3651 USA f1113: on station at Saint George's"
+  ]
+ }
+}

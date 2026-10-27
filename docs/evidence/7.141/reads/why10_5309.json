@@ -1,0 +1,55 @@
+{
+ "seed": 5309,
+ "src": "critic/c16_seed5309_y10.bin",
+ "days": 60,
+ "cvDays": 249,
+ "cv": {
+  "awayStation": 162,
+  "moving": 66,
+  "awayHunt": 9,
+  "take": 12
+ },
+ "other": {
+  "awayStation": 1107,
+  "moving": 344,
+  "awayHunt": 8,
+  "take": 52,
+  "engaged": 2
+ },
+ "who": {
+  "ENG": 69,
+  "JAP": 180
+ },
+ "prey": {
+  "none": 162
+ },
+ "strikeH": 11,
+ "cvBattleH": 18,
+ "texts": {
+  "awayStation": [
+   "d3650 ENG f1057: on station at Massawa",
+   "d3650 ENG f1063: on station at Massawa",
+   "d3650 ENG f1080: on station at Massawa",
+   "d3651 ENG f1057: on station at Massawa",
+   "d3651 ENG f1063: on station at Massawa",
+   "d3651 ENG f1080: on station at Massawa"
+  ],
+  "moving": [],
+  "awayHunt": [
+   "d3660 JAP f1130: a battle 1417 km",
+   "d3660 JAP f1138: a battle 1417 km",
+   "d3660 JAP f1145: a battle 1417 km",
+   "d3661 JAP f1130: a battle 1417 km",
+   "d3661 JAP f1138: a battle 1417 km",
+   "d3661 JAP f1145: a battle 1417 km"
+  ],
+  "take": [
+   "d3666 JAP f1130: Cherbourg 501 km, enemy 0 ≤ 48500",
+   "d3666 JAP f1138: Cherbourg 501 km, enemy 0 ≤ 48500",
+   "d3666 JAP f1145: Cherbourg 501 km, enemy 0 ≤ 48500",
+   "d3667 JAP f1130: Cherbourg 501 km, enemy 0 ≤ 48350",
+   "d3667 JAP f1138: Cherbourg 501 km, enemy 0 ≤ 48350",
+   "d3667 JAP f1145: Cherbourg 501 km, enemy 0 ≤ 48350"
+  ]
+ }
+}

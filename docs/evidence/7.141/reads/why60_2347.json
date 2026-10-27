@@ -1,0 +1,33 @@
+{
+ "seed": 2347,
+ "src": "critic/c16_seed2347_y20.bin",
+ "days": 60,
+ "cvDays": 120,
+ "cv": {
+  "awayStation": 120
+ },
+ "other": {
+  "awayStation": 1140,
+  "take": 378,
+  "moving": 126,
+  "awayHome": 336
+ },
+ "who": {
+  "USA": 120
+ },
+ "prey": {
+  "far": 120
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "awayStation": [
+   "d7300 USA f195: on station at Gwangju",
+   "d7300 USA f578: on station at Gwangju",
+   "d7301 USA f195: on station at Gwangju",
+   "d7301 USA f578: on station at Gwangju",
+   "d7302 USA f195: on station at Gwangju",
+   "d7302 USA f578: on station at Gwangju"
+  ]
+ }
+}

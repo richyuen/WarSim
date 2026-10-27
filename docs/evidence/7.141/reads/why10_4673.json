@@ -1,0 +1,47 @@
+{
+ "seed": 4673,
+ "src": "critic/c16_seed4673_y10.bin",
+ "days": 60,
+ "cvDays": 360,
+ "cv": {
+  "awayStation": 342,
+  "awayNewStation": 12,
+  "moving": 6
+ },
+ "other": {
+  "awayStation": 1684,
+  "moving": 38,
+  "awayNewStation": 48,
+  "take": 18,
+  "awayHome": 6,
+  "stage": 6
+ },
+ "who": {
+  "USA": 180,
+  "JAP": 180
+ },
+ "prey": {
+  "none": 342
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "awayStation": [
+   "d3650 USA f1096: on station at Oslo",
+   "d3650 USA f1097: on station at Oslo",
+   "d3650 USA f1113: on station at Oslo",
+   "d3650 JAP f1130: on station at Antwerp",
+   "d3650 JAP f1138: on station at Antwerp",
+   "d3650 JAP f1145: on station at Antwerp"
+  ],
+  "awayNewStation": [
+   "d3652 USA f1096: a station 561 km",
+   "d3652 USA f1097: a station 561 km",
+   "d3652 USA f1113: a station 561 km",
+   "d3653 USA f1096: a station 561 km",
+   "d3653 USA f1097: a station 561 km",
+   "d3653 USA f1113: a station 561 km"
+  ],
+  "moving": []
+ }
+}

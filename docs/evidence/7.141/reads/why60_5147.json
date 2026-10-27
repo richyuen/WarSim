@@ -1,0 +1,67 @@
+{
+ "seed": 5147,
+ "src": "critic/c16_seed5147_y20.bin",
+ "days": 60,
+ "cvDays": 180,
+ "cv": {
+  "awayStation": 66,
+  "awayNewStation": 3,
+  "awayHome": 3,
+  "moving": 15,
+  "noTarget": 24,
+  "stage": 69
+ },
+ "other": {
+  "awayStation": 936,
+  "awayNewStation": 28,
+  "awayHome": 28,
+  "moving": 129,
+  "noTarget": 236,
+  "stage": 651
+ },
+ "who": {
+  "USA": 180
+ },
+ "prey": {
+  "none": 66
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "awayStation": [
+   "d7300 USA f1096: on station at Athens",
+   "d7300 USA f1097: on station at Athens",
+   "d7300 USA f1113: on station at Athens",
+   "d7301 USA f1096: on station at Athens",
+   "d7301 USA f1097: on station at Athens",
+   "d7301 USA f1113: on station at Athens"
+  ],
+  "awayNewStation": [
+   "d7322 USA f1096: a station 1155 km",
+   "d7322 USA f1097: a station 1155 km",
+   "d7322 USA f1113: a station 1155 km"
+  ],
+  "awayHome": [
+   "d7323 USA f1096: no station",
+   "d7323 USA f1097: no station",
+   "d7323 USA f1113: no station"
+  ],
+  "moving": [],
+  "noTarget": [
+   "d7325 USA f1096: no open enemy port",
+   "d7325 USA f1097: no open enemy port",
+   "d7325 USA f1113: no open enemy port",
+   "d7326 USA f1096: no open enemy port",
+   "d7326 USA f1097: no open enemy port",
+   "d7326 USA f1113: no open enemy port"
+  ],
+  "stage": [
+   "d7336 USA f1096: stage Antalya 534 km",
+   "d7336 USA f1097: stage Antalya 534 km",
+   "d7336 USA f1113: stage Antalya 534 km",
+   "d7337 USA f1096: stage Antalya 534 km",
+   "d7337 USA f1097: stage Antalya 534 km",
+   "d7337 USA f1113: stage Antalya 534 km"
+  ]
+ }
+}

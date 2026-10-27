@@ -1,0 +1,42 @@
+{
+ "seed": 9437,
+ "src": "critic/c16_seed9437_y20.bin",
+ "days": 60,
+ "cvDays": 90,
+ "cv": {
+  "stage": 10,
+  "moving": 46,
+  "take": 34
+ },
+ "other": {
+  "awayStation": 900,
+  "stage": 40,
+  "moving": 198,
+  "take": 122
+ },
+ "who": {
+  "USA": 90
+ },
+ "prey": {},
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "stage": [
+   "d7305 USA f125: stage Aqaba 4273 km",
+   "d7305 USA f769: stage Aqaba 4273 km",
+   "d7306 USA f125: stage Aqaba 4273 km",
+   "d7306 USA f769: stage Aqaba 4273 km",
+   "d7307 USA f125: stage Aqaba 4273 km",
+   "d7307 USA f769: stage Aqaba 4273 km"
+  ],
+  "moving": [],
+  "take": [
+   "d7321 USA f125: Muscat 2448 km, enemy 0 ≤ 7400",
+   "d7321 USA f769: Muscat 2448 km, enemy 0 ≤ 7400",
+   "d7322 USA f125: Muscat 2448 km, enemy 0 ≤ 7400",
+   "d7322 USA f769: Muscat 2448 km, enemy 0 ≤ 7400",
+   "d7323 USA f125: Muscat 2448 km, enemy 0 ≤ 85300",
+   "d7323 USA f769: Muscat 2448 km, enemy 0 ≤ 85300"
+  ]
+ }
+}

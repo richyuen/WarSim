@@ -1,0 +1,52 @@
+{
+ "seed": 8167,
+ "src": "critic/c16_seed8167_y10.bin",
+ "days": 60,
+ "cvDays": 180,
+ "cv": {
+  "moving": 78,
+  "take": 75,
+  "stage": 3,
+  "awayStation": 24
+ },
+ "other": {
+  "moving": 580,
+  "awayStation": 479,
+  "take": 377,
+  "awayHome": 4,
+  "stage": 22,
+  "engaged": 9
+ },
+ "who": {
+  "USA": 180
+ },
+ "prey": {
+  "none": 24
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "moving": [],
+  "take": [
+   "d3651 USA f1096: Tarakan 411 km, enemy 0 ≤ 13200",
+   "d3651 USA f1097: Tarakan 411 km, enemy 0 ≤ 13200",
+   "d3651 USA f1113: Tarakan 411 km, enemy 0 ≤ 13200",
+   "d3652 USA f1096: Tarakan 411 km, enemy 0 ≤ 13200",
+   "d3652 USA f1097: Tarakan 411 km, enemy 0 ≤ 13200",
+   "d3652 USA f1113: Tarakan 411 km, enemy 0 ≤ 13200"
+  ],
+  "stage": [
+   "d3676 USA f1096: stage Jeddah 8907 km",
+   "d3676 USA f1097: stage Jeddah 8907 km",
+   "d3676 USA f1113: stage Jeddah 8907 km"
+  ],
+  "awayStation": [
+   "d3702 USA f1096: on station at Athens",
+   "d3702 USA f1097: on station at Athens",
+   "d3702 USA f1113: on station at Athens",
+   "d3703 USA f1096: on station at Athens",
+   "d3703 USA f1097: on station at Athens",
+   "d3703 USA f1113: on station at Athens"
+  ]
+ }
+}

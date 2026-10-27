@@ -108,6 +108,10 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   AT: on seeds 1233–1242 × 20 years against HEAD on the same seeds, hours with a carrier strike in the air in years
   2–20 at least 2 × HEAD's, transports at year 20 and ships sunk in years 2–20 not below 0.95 × HEAD's; a unit test,
   red without; the gate green.
+  AT missed 2026-10-27 (ADR-735, BLOCKERS; `docs/evidence/7.141/measure.md`): part 1 (ADR-734, kept) frees the warship
+  slot from a carrier group in training: strike-hours 847 → 1,014 (1.197 ×), ships sunk 1.031 ×, transports 0.955 ×.
+  The carriers at war stand by ports of enemies with no armed fleet, and their wings strike only ships in a sea battle.
+  Seeds 1233–1242 spent. Waits on the user: carriers strike ashore (recommended), or closed not done.
 - [ ] 7.142 Aircraft 7: the air forces a third smaller late. Wings late 95 → 69 a world, lower on every one of 56
   worlds; ~18 sorties aloft a world-hour late, 2 in 6421 y20 and 1 in 4877 y20 in the page; the ferried wings are lost
   faster than rebuilt (ADR-724) and are invisible (no row, mark or panel state) (`critic/c16_cmp_y30.json`,

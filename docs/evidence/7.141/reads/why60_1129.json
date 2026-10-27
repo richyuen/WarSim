@@ -1,0 +1,44 @@
+{
+ "seed": 1129,
+ "src": "critic/c16_seed1129_y20.bin",
+ "days": 60,
+ "cvDays": 94,
+ "cv": {
+  "take": 34,
+  "moving": 4,
+  "awayStation": 56
+ },
+ "other": {
+  "awayStation": 737,
+  "take": 392,
+  "stage": 4,
+  "moving": 55
+ },
+ "who": {
+  "USA": 94
+ },
+ "prey": {
+  "none": 56
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "take": [
+   "d7313 USA f15: Horten 176 km, enemy 0 ≤ 99550",
+   "d7313 USA f340: Horten 176 km, enemy 0 ≤ 99550",
+   "d7314 USA f15: Horten 176 km, enemy 0 ≤ 99550",
+   "d7314 USA f340: Horten 176 km, enemy 0 ≤ 99550",
+   "d7315 USA f15: Horten 176 km, enemy 0 ≤ 99550",
+   "d7315 USA f340: Horten 176 km, enemy 0 ≤ 99550"
+  ],
+  "moving": [],
+  "awayStation": [
+   "d7332 USA f15: escorts a landing",
+   "d7332 USA f340: escorts a landing",
+   "d7333 USA f15: escorts a landing",
+   "d7333 USA f340: escorts a landing",
+   "d7334 USA f15: escorts a landing",
+   "d7334 USA f340: escorts a landing"
+  ]
+ }
+}

@@ -1,0 +1,49 @@
+{
+ "seed": 8011,
+ "src": "critic/c16_seed8011_y20.bin",
+ "days": 60,
+ "cvDays": 180,
+ "cv": {
+  "awayHunt": 24,
+  "moving": 6,
+  "awayStation": 150
+ },
+ "other": {
+  "moving": 121,
+  "awayStation": 882,
+  "awayHunt": 70,
+  "awayHome": 5,
+  "engaged": 7,
+  "take": 53,
+  "tooStrong": 5,
+  "stage": 3
+ },
+ "who": {
+  "USA": 180
+ },
+ "prey": {
+  "underWay": 3,
+  "none": 147
+ },
+ "strikeH": 2,
+ "cvBattleH": 2,
+ "texts": {
+  "awayHunt": [
+   "d7300 USA f1096: a battle 955 km",
+   "d7300 USA f1097: a battle 955 km",
+   "d7300 USA f1113: a battle 955 km",
+   "d7301 USA f1096: a battle 955 km",
+   "d7301 USA f1097: a battle 955 km",
+   "d7301 USA f1113: a battle 955 km"
+  ],
+  "moving": [],
+  "awayStation": [
+   "d7310 USA f1096: on station at Sapporo",
+   "d7310 USA f1097: on station at Sapporo",
+   "d7310 USA f1113: on station at Sapporo",
+   "d7311 USA f1096: on station at Sapporo",
+   "d7311 USA f1097: on station at Sapporo",
+   "d7311 USA f1113: on station at Sapporo"
+  ]
+ }
+}

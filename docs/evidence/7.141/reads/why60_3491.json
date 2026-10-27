@@ -1,0 +1,41 @@
+{
+ "seed": 3491,
+ "src": "critic/c16_seed3491_y20.bin",
+ "days": 60,
+ "cvDays": 167,
+ "cv": {
+  "awayStation": 74,
+  "noTarget": 93
+ },
+ "other": {
+  "awayStation": 1227,
+  "noTarget": 527
+ },
+ "who": {
+  "NED": 74,
+  "USA": 93
+ },
+ "prey": {
+  "none": 74
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "awayStation": [
+   "d7300 NED f37: on station at Valencia",
+   "d7300 NED f1237: on station at Valencia",
+   "d7301 NED f37: on station at Valencia",
+   "d7301 NED f1237: on station at Valencia",
+   "d7302 NED f37: on station at Valencia",
+   "d7302 NED f1237: on station at Valencia"
+  ],
+  "noTarget": [
+   "d7300 USA f1096: no open enemy port",
+   "d7300 USA f1097: no open enemy port",
+   "d7300 USA f1113: no open enemy port",
+   "d7301 USA f1096: no open enemy port",
+   "d7301 USA f1097: no open enemy port",
+   "d7301 USA f1113: no open enemy port"
+  ]
+ }
+}

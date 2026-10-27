@@ -1,0 +1,34 @@
+{
+ "seed": 4877,
+ "src": "critic/c16_seed4877_y10.bin",
+ "days": 60,
+ "cvDays": 180,
+ "cv": {
+  "awayStation": 180
+ },
+ "other": {
+  "moving": 52,
+  "noBase": 178,
+  "awayStation": 1492,
+  "take": 26,
+  "engaged": 4
+ },
+ "who": {
+  "USA": 180
+ },
+ "prey": {
+  "none": 180
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "awayStation": [
+   "d3650 USA f1096: on station at Magadan",
+   "d3650 USA f1097: on station at Magadan",
+   "d3650 USA f1113: on station at Magadan",
+   "d3651 USA f1096: on station at Magadan",
+   "d3651 USA f1097: on station at Magadan",
+   "d3651 USA f1113: on station at Magadan"
+  ]
+ }
+}

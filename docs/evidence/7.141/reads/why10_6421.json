@@ -1,0 +1,33 @@
+{
+ "seed": 6421,
+ "src": "critic/c16_seed6421_y10.bin",
+ "days": 60,
+ "cvDays": 180,
+ "cv": {
+  "awayStation": 180
+ },
+ "other": {
+  "awayStation": 1048,
+  "take": 960,
+  "moving": 33,
+  "noBase": 21
+ },
+ "who": {
+  "USA": 180
+ },
+ "prey": {
+  "none": 180
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "awayStation": [
+   "d3650 USA f1096: on station at Tangier",
+   "d3650 USA f1097: on station at Tangier",
+   "d3650 USA f1113: on station at Tangier",
+   "d3651 USA f1096: on station at Tangier",
+   "d3651 USA f1097: on station at Tangier",
+   "d3651 USA f1113: on station at Tangier"
+  ]
+ }
+}

@@ -24135,3 +24135,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `World.farWait` holds a day, not a tick. A year-20 save steps 60 days in about a minute: a save
   A/B of 8 × 3 arms takes ~2 minutes six at a time.
 - **Next:** PLAN 7.141 (naval) while ADR-733 waits.
+
+## 2026-10-27 — PLAN 7.141: the late carrier has no ship to strike; the warship slot freed, AT missed (ADR-734, ADR-735 to the user)
+
+- **Start:** gate green on `ee7355b7`; critic not due. ADR-733 still waits on the user.
+- **Read** (`docs/evidence/7.141/measure.md`; new `tools/diag/carrierWhy.ts`, `tools/diag/carrierAt.ts`; the critic's
+  run-16 saves, 60 days each): carrier groups at war stand on station by an enemy port, and the enemy has no armed
+  fleet anywhere on 1,880 of 1,880 such fleet-days at year 10 and 445 of 568 at year 20; no battle declined. A
+  carrier strike is flown only in a sea battle. Found, not the cause: a carrier counts nothing in fleet power.
+- **Part 1** (`441d3465`, ADR-734): a carrier group in training holds back no other warship
+  (`carrierSlot1938.test.ts`, red without); the pin unchanged.
+- **AT** on 1233–1242 × 20 (HEAD `ee7355b7` from a worktree; five at a time, ~25 min an arm): strike-hours in years
+  2–20 847 → 1,014 (1.197 ×, bar 2 ×), missed; ships sunk 1.031 ×, transports at year 20 0.955 ×, met. Seeds spent.
+- **Filed:** BLOCKERS, ADR-735 (proposed): carriers strike ashore (recommended), or closed not done; a carrier's
+  weight in fleet power as a task beside either.
+- **Gotcha:** `w.out.events` is flat `[tick, kind, a, b, x, y]` (stride 6); `EVENT_STRIDE` (7) is the snapshot's
+  buffer with a sequence number, not the tick's array.
+- **Next:** PLAN 7.142 (air) while ADR-733 and ADR-735 wait.

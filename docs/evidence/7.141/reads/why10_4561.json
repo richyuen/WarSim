@@ -1,0 +1,38 @@
+{
+ "seed": 4561,
+ "src": "critic/c16_seed4561_y10.bin",
+ "days": 60,
+ "cvDays": 300,
+ "cv": {
+  "awayStation": 299,
+  "moving": 1
+ },
+ "other": {
+  "noBase": 205,
+  "awayStation": 502,
+  "stage": 16,
+  "take": 39,
+  "moving": 74,
+  "awayNewStation": 1
+ },
+ "who": {
+  "USA": 120,
+  "JAP": 180
+ },
+ "prey": {
+  "none": 299
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "awayStation": [
+   "d3650 USA f226: on station at Lisbon",
+   "d3650 USA f337: on station at Tunis",
+   "d3650 JAP f1130: on station at Vladivostok",
+   "d3650 JAP f1138: on station at Vladivostok",
+   "d3650 JAP f1145: on station at Vladivostok",
+   "d3651 USA f226: on station at Lisbon"
+  ],
+  "moving": []
+ }
+}

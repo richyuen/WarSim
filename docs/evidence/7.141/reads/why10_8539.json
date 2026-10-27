@@ -1,0 +1,42 @@
+{
+ "seed": 8539,
+ "src": "critic/c16_seed8539_y10.bin",
+ "days": 60,
+ "cvDays": 180,
+ "cv": {
+  "moving": 93,
+  "take": 48,
+  "stage": 39
+ },
+ "other": {
+  "moving": 689,
+  "noBase": 268,
+  "take": 393,
+  "stage": 299
+ },
+ "who": {
+  "ENG": 180
+ },
+ "prey": {},
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "moving": [],
+  "take": [
+   "d3663 ENG f1057: Monrovia 2477 km, enemy 0 ≤ 23500",
+   "d3663 ENG f1063: Monrovia 2477 km, enemy 0 ≤ 23500",
+   "d3663 ENG f1080: Monrovia 2477 km, enemy 0 ≤ 23500",
+   "d3664 ENG f1057: Monrovia 2477 km, enemy 0 ≤ 23500",
+   "d3664 ENG f1063: Monrovia 2477 km, enemy 0 ≤ 23500",
+   "d3664 ENG f1080: Monrovia 2477 km, enemy 0 ≤ 23500"
+  ],
+  "stage": [
+   "d3684 ENG f1057: stage Churchill 9226 km",
+   "d3684 ENG f1063: stage Churchill 9226 km",
+   "d3684 ENG f1080: stage Churchill 9226 km",
+   "d3685 ENG f1057: stage Churchill 9226 km",
+   "d3685 ENG f1063: stage Churchill 9226 km",
+   "d3685 ENG f1080: stage Churchill 9226 km"
+  ]
+ }
+}

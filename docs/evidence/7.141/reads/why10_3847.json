@@ -1,0 +1,55 @@
+{
+ "seed": 3847,
+ "src": "critic/c16_seed3847_y10.bin",
+ "days": 60,
+ "cvDays": 236,
+ "cv": {
+  "awayStation": 153,
+  "stage": 12,
+  "moving": 50,
+  "awayNewStation": 21
+ },
+ "other": {
+  "awayStation": 638,
+  "take": 6,
+  "moving": 576,
+  "stage": 144,
+  "awayNewStation": 79
+ },
+ "who": {
+  "ENG": 180,
+  "USA": 56
+ },
+ "prey": {
+  "none": 153
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "awayStation": [
+   "d3650 ENG f1057: on station at Ferrol",
+   "d3650 ENG f1063: on station at Ferrol",
+   "d3650 ENG f1080: on station at Ferrol",
+   "d3651 ENG f1057: on station at Ferrol",
+   "d3651 ENG f1063: on station at Ferrol",
+   "d3651 ENG f1080: on station at Ferrol"
+  ],
+  "stage": [
+   "d3664 USA f152: stage Tallinn 11643 km",
+   "d3664 USA f984: stage Tallinn 11643 km",
+   "d3665 USA f152: stage Tallinn 11643 km",
+   "d3665 USA f984: stage Tallinn 11643 km",
+   "d3666 USA f152: stage Tallinn 11643 km",
+   "d3666 USA f984: stage Tallinn 11643 km"
+  ],
+  "moving": [],
+  "awayNewStation": [
+   "d3676 ENG f1057: a station 547 km",
+   "d3676 ENG f1063: a station 547 km",
+   "d3676 ENG f1080: a station 547 km",
+   "d3677 ENG f1057: a station 547 km",
+   "d3677 ENG f1063: a station 547 km",
+   "d3677 ENG f1080: a station 547 km"
+  ]
+ }
+}

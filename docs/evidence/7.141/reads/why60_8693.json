@@ -1,0 +1,34 @@
+{
+ "seed": 8693,
+ "src": "critic/c16_seed8693_y20.bin",
+ "days": 60,
+ "cvDays": 129,
+ "cv": {
+  "moving": 27,
+  "awayStation": 102
+ },
+ "other": {
+  "awayStation": 1307,
+  "moving": 279,
+  "take": 67
+ },
+ "who": {
+  "USA": 129
+ },
+ "prey": {
+  "none": 102
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "moving": [],
+  "awayStation": [
+   "d7326 USA f1096: on station at Praia",
+   "d7326 USA f1097: on station at Praia",
+   "d7326 USA f1113: on station at Praia",
+   "d7327 USA f1096: on station at Praia",
+   "d7327 USA f1097: on station at Praia",
+   "d7327 USA f1113: on station at Praia"
+  ]
+ }
+}

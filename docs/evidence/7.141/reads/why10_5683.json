@@ -1,0 +1,36 @@
+{
+ "seed": 5683,
+ "src": "critic/c16_seed5683_y10.bin",
+ "days": 60,
+ "cvDays": 180,
+ "cv": {
+  "awayStation": 180
+ },
+ "other": {
+  "awayStation": 2094,
+  "take": 27,
+  "moving": 393,
+  "noBase": 390,
+  "awayChase": 56,
+  "awayHome": 14,
+  "awayHunt": 4
+ },
+ "who": {
+  "USA": 180
+ },
+ "prey": {
+  "none": 180
+ },
+ "strikeH": 0,
+ "cvBattleH": 0,
+ "texts": {
+  "awayStation": [
+   "d3650 USA f1096: on station at Vladivostok",
+   "d3650 USA f1097: on station at Vladivostok",
+   "d3650 USA f1113: on station at Vladivostok",
+   "d3651 USA f1096: on station at Vladivostok",
+   "d3651 USA f1097: on station at Vladivostok",
+   "d3651 USA f1113: on station at Vladivostok"
+  ]
+ }
+}

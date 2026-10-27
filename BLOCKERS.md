@@ -5,6 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.141's AT missed: carrier strike-hours 1.20 × HEAD's in years 2–20 on 1233–1242 (bar 2 ×; ADR-735, waits on the user)
+- **The bar:** on 1233–1242 × 20 years, hours with a carrier strike in the air in years 2–20 at least 2 × HEAD's;
+  transports at year 20 and ships sunk in years 2–20 not below 0.95 × HEAD's.
+- **What moved** (`docs/evidence/7.141/measure.md`): part 1 (ADR-734, a carrier group in training holds back no
+  other warship, kept): strike-hours 847 → 1,014, ships sunk 1.031 ×, transports 0.955 ×. The carriers at war stand
+  on station by enemy ports whose holders have no armed fleet at all (year 10: every such fleet-day read; year 20:
+  445 of 568); a carrier's wings strike only ships in a sea battle.
+- **What is left:** the user's (ADR-735): (a) carriers strike ashore, a numbered task (recommended); (b) closed not
+  done, to the next critic report; (c) with either, a carrier weighs in fleet power.
+
 ### PLAN 7.140's AT (ADR-732's bar) missed on HEAD: one nation over a third at year 30 in 2 of 10 (waits on PLAN 7.143)
 - **The bar** (ADR-732, the user's decision, 2026-10-27): on 10 unseen seeds × 30 years, the five largest by area in
   the same order at most 12 years in every world; the five strongest at most 12 years in 9 of 10; no nation over a

@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-735 · 2026-10-27 · proposed (the user's decision) — The late carrier has no ship to strike: PLAN 7.141's AT missed (1.20 ×, bar 2 ×)
+
+- **Context.** PLAN 7.141 (critic run 16, naval 7): AI-built carriers wait in port; the bar is 2 × HEAD's hours with
+  a carrier strike in the air (`carrierStrikes`, flown only in a sea battle, SPEC 5.4d) in years 2–20.
+- **Measured** (`docs/evidence/7.141/measure.md`; `tools/diag/carrierWhy.ts`, `carrierAt.ts`). On the critic's saves
+  the carrier groups at war stand on station by an enemy port, and the enemy has no armed fleet anywhere on 445 of
+  568 such fleet-days at year 20 and 1,880 of 1,880 at year 10; no battle declined. Part 1 (ADR-734, kept: the
+  slot) on 1233–1242 × 20: strike-hours 847 → 1,014 (**1.197 ×**), ships sunk 1.031 ×, transports at year 20
+  0.955 ×. HEAD's strike-hours come in bursts in the years a carrier's nation fights a navy and are 0 in most
+  world-years after year 8. Seeds 1233–1242 spent.
+- **Options:**
+  - **(a)** A numbered task: carriers strike ashore. A carrier's wings, their fleet at war and in no sea battle,
+    take the naval bomber's missions from the deck (`airAi`: the enemy's fleet nearest in range, else the enemy's
+    land formations in range), as land-based wings do; SPEC 5.4d changed (a carrier's wings strike for its fleet
+    in a sea battle, and on their own missions out of one). AT on 10 unseen seeds from 1284 × 20 years against
+    HEAD: hours with a carrier wing's strike in the air, in a sea battle or on its own mission, in years 2–20 at
+    least 2 × HEAD's; sea battles and ships sunk in years 2–20 not below 0.95 ×; a carrier strike ashore seen in
+    the page; a unit test, red without. 7.141 closed not done into it. (Recommended: it is what a carrier at war
+    without an enemy fleet did, and the critic's complaint is a carrier that does nothing.)
+  - **(b)** 7.141 closed not done, part 1 kept; `measure.md` to the next critic report, which judges it.
+  - **(c)** As (a) or (b), and a numbered task: a carrier weighs in fleet power. It counts nothing in `fleetPower`
+    and `navalPower` (no gun, no torpedo), so a carrier group weighs as its escorts alone in every fight-or-avoid
+    test and in sea control; a defect, but no declined battle on this read.
+- **Meanwhile** the loop takes PLAN 7.142. No sim change beyond ADR-734.
+
 ### ADR-734 · 2026-10-27 · accepted — A carrier group in training holds back no other warship (PLAN 7.141, part 1)
 
 - **Context.** ADR-726: a nation of a battle fleet's income under `CARRIERS_KEPT` carriers afloat orders a carrier
