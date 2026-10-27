@@ -55,7 +55,15 @@ export function airSystem(world: World): void {
       world.wingBase.set(id, to);
       world.wingMission.delete(id);
       world.sorties.delete(id);
+      world.wingFerry.delete(id);
       [c.x[id], c.y[id]] = basePlace(world, to)!;
+    }
+    const due = world.wingFerry.get(id);
+    if (due !== undefined) {
+      // At sea (PLAN 7.133): it flies nothing until it is at its new base.
+      if (world.tick < due) continue;
+      world.wingFerry.delete(id);
+      [c.x[id], c.y[id]] = basePlace(world, world.wingBase.get(id)!)!;
     }
     if (base < 0) {
       const left = decks.get(-base) ?? liveCarriers(world, -base);
@@ -263,7 +271,7 @@ export function isTransport(world: World, id: number): boolean {
 export function orderMission(world: World, id: number, kind: WingMission['kind'], x: number, y: number): 0 | RejectReason {
   if (!world.formations.has(id) || !world.isWing(id) || !world.wingBase.has(id)) return reject(world, id, RejectReason.NotLand);
   // A carrier sunk this hour leaves its wings no base until the air system loses them (PLAN 5.8j).
-  if (!basePlace(world, world.wingBase.get(id)!)) return reject(world, id, RejectReason.NoBase);
+  if (!basePlace(world, world.wingBase.get(id)!) || world.wingFerry.has(id)) return reject(world, id, RejectReason.NoBase);
   // Supply is flown by transports alone (PLAN 5.8u1).
   if (kind === 'supply' && !isTransport(world, id)) return reject(world, id, RejectReason.NotLand);
   if (kmFromBase(world, id, x, y) > wingRange(world, id)) return reject(world, id, RejectReason.OutOfRange);
@@ -290,7 +298,7 @@ export function orderRebase(world: World, id: number, x: number, y: number): 0 |
   if (!world.formations.has(id) || !world.isWing(id) || !world.wingBase.has(id)) return reject(world, id, RejectReason.NotLand);
   // No base to fly from (its carrier sunk this hour, PLAN 5.8j): nowhere it reaches.
   const from = basePlace(world, world.wingBase.get(id)!);
-  if (!from) return reject(world, id, RejectReason.NoBase);
+  if (!from || world.wingFerry.has(id)) return reject(world, id, RejectReason.NoBase);
   const c = world.formations.cols;
   const nation = c.nation[id]!;
   const near = (px: number, py: number): boolean => Math.abs(wrapDx(world, x, px)) <= world.atSize(BASE_PICK_CELLS) && Math.abs(py - y) <= world.atSize(BASE_PICK_CELLS);
@@ -334,5 +342,43 @@ export function orderRebase(world: World, id: number, x: number, y: number): 0 |
   world.wingMission.delete(id);
   world.sorties.delete(id); // the flight there is PLAN 5.3's; it is ready at its new base
   [c.x[id], c.y[id]] = basePlace(world, best)!;
+  return 0;
+}
+
+/** A wing crosses the sea at this speed, km/h, where the scenario has no transport fleet to read it from (PLAN 7.133). */
+export const SEA_FERRY_KMH = 30;
+
+/** The speed a wing crosses the sea at, km/h (PLAN 7.133): the slowest fleet of transports alone (a convoy's), else SEA_FERRY_KMH. */
+export function seaFerryKmh(world: World): number {
+  const rules = world.rules!;
+  let kmh = Infinity;
+  for (const t of rules.templates) if (t.elements.length > 0 && t.elements.every((e) => rules.units[e.unit]!.cls === 'tp')) kmh = Math.min(kmh, t.speedKmh);
+  return Number.isFinite(kmh) && kmh > 0 ? kmh : SEA_FERRY_KMH;
+}
+
+/**
+ * Orders wing `id` over the sea to airbase `base` (its index + 1; PLAN 7.133, ADR-723): an airbase held by
+ * its nation or one of its side (`ofSide`), not its own, with room for it (counting the wings sailing to it). Its
+ * base is the new one at once (the room is its), and it is there (`world.wingFerry`) after the hours a
+ * convoy takes over the km between (`seaFerryKmh`, at least one): until then it flies nothing and takes no
+ * order. No path and no interception at sea. Its mission and sortie end. Refused (`NoBase`) from a carrier,
+ * at sea already, or to a base that is not such; `NotLand` for no wing. 0 when ordered.
+ */
+export function orderFerry(world: World, id: number, base: number): 0 | RejectReason {
+  if (!world.formations.has(id) || !world.isWing(id) || !world.wingBase.has(id)) return reject(world, id, RejectReason.NotLand);
+  const now = world.wingBase.get(id)!;
+  const from = now > 0 ? basePlace(world, now) : null;
+  const b = world.airbases[base - 1];
+  const c = world.formations.cols;
+  if (!from || world.wingFerry.has(id) || !b || base === now || !ofSide(world, c.nation[id]!, world.cells.controller[b.cell]!)) return reject(world, id, RejectReason.NoBase);
+  let aircraft = wingAircraft(world, c.template[id]!);
+  for (const [o, ob] of world.wingBase) if (ob === base && o !== id) aircraft += wingAircraft(world, c.template[o]!);
+  if (aircraft > airbaseRoom(b)) return reject(world, id, RejectReason.NoBase);
+  const [px, py] = world.cellPoint(b.cell);
+  const hours = Math.max(1, Math.ceil(seaKm(world, from[0], from[1], px, py) / seaFerryKmh(world)));
+  world.wingBase.set(id, base);
+  world.wingFerry.set(id, world.tick + hours);
+  world.wingMission.delete(id);
+  world.sorties.delete(id);
   return 0;
 }

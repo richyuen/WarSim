@@ -12,10 +12,11 @@ import { assets1938 } from '../helpers/earth';
 // whole way (5–6 ms), and was asked again every MARCH_DAYS: the operational AI's largest cost.
 
 describe('a refused march from afar waits (PLAN 7.117, ADR-703)', () => {
-  it('seed 7: the first formation refused waits FAR_RETRY_DAYS with no order refused, and the wait is saved', () => {
-    // Seed 7 from day 180 since ADR-711 (PLAN 7.5 before critic run 15): seed 99 has none in its first
-    // 400 days on that history (`tools/diag/firstWait.ts`); before, from day 90.
-    const s = at1938(7, 180 * 24);
+  it('seed 4: the first formation refused waits FAR_RETRY_DAYS with no order refused, and the wait is saved', () => {
+    // Seed 4 from day 180 since ADR-723 (PLAN 7.133, the wings over the sea): seeds 7 and 99 have none in
+    // their first 400 days on that history, seeds 1-6 each one (4: day 185; `tools/diag/firstWait.ts`).
+    // Seed 7 from day 180 since ADR-711 (PLAN 7.5 before critic run 15); before, seed 99 from day 90.
+    const s = at1938(4, 180 * 24);
     const w = s.world;
     const refused = new Map<number, number[]>();
     const step = (): void =>
@@ -32,7 +33,7 @@ describe('a refused march from afar waits (PLAN 7.117, ADR-703)', () => {
         ww.out.fires.length = 0;
       });
     // Day by day to the first wait (seed 99 on 2026-10-25's rules: formation 571 on day 117; seed 7 on
-    // ADR-711's: formation 35 on day 198).
+    // ADR-711's: formation 35 on day 198; seed 4 on ADR-723's: formation 32 on day 185).
     let id = -1;
     let until = -1;
     for (let d = 0; d < 120 && id < 0; d++) {
@@ -48,7 +49,7 @@ describe('a refused march from afar waits (PLAN 7.117, ADR-703)', () => {
     // It was refused on the day the wait began.
     expect(refused.get(id) ?? []).toContain(from);
     // Saved and loaded with the state.
-    const u = new Sim({ scenario: '1938', seed: 7, assets: assets1938(SIZE_1938.w) });
+    const u = new Sim({ scenario: '1938', seed: 4, assets: assets1938(SIZE_1938.w) });
     u.load(s.save());
     expect(u.world.farWait.get(id)).toBe(until);
     expect(u.hash()).toBe(s.hash());

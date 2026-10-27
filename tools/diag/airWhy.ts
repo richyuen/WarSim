@@ -204,6 +204,7 @@ for (let d = 0; d < days; d++) {
     ev.length = 0;
     ww.out.fires.length = 0;
     add('aloftHours', ww.sorties.size);
+    add('atSeaHours', ww.wingFerry.size);
     meet(ww);
     if (isDayStart(ww.tick - 1)) read(ww);
   });

@@ -755,6 +755,7 @@ export function destroyFormation(world: World, fid: number): void {
   // system's hour (PLAN 5.1d), and a formation given the id again carries none.
   world.wingBase.delete(fid);
   world.wingMission.delete(fid);
+  world.wingFerry.delete(fid);
   world.sorties.delete(fid);
   for (const [wing, base] of world.wingBase) if (base === -fid) world.wingBase.set(wing, 0);
 }

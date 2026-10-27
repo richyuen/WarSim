@@ -419,6 +419,8 @@ class WorldCore implements Stateful {
       ...(w.sorties.size === 0 ? [] : [{ name: 'world.sorties', dtype: 'f64' as const, data: Float64Array.from([...w.sorties].sort((a, b) => a[0] - b[0]).flatMap(([id, o]) => [id, o.bx, o.by, o.tx, o.ty, o.launch, o.kmh, o.km, o.over])) }]),
       // The air wings' bases (PLAN 5.1d): [id, base] each, only while there is one.
       ...(w.wingBase.size === 0 ? [] : [{ name: 'world.wingBase', dtype: 'f64' as const, data: Float64Array.from([...w.wingBase].sort((a, b) => a[0] - b[0]).flat()) }]),
+      // The wings crossing the sea (PLAN 7.133): [id, arrive] each, only while there is one.
+      ...(w.wingFerry.size === 0 ? [] : [{ name: 'world.wingFerry', dtype: 'f64' as const, data: Float64Array.from([...w.wingFerry].sort((a, b) => a[0] - b[0]).flat()) }]),
       // A player's order over the sea marching to its port (PLAN 4.9b): [id, target] each, only while there is one.
       ...(w.seaBound.size === 0 ? [] : [{ name: 'world.seaBound', dtype: 'f64' as const, data: Float64Array.from([...w.seaBound].sort((a, b) => a[0] - b[0]).flat()) }]),
       // The fleets placed by the editor that hold their place (PLAN 7.22c): [id, x, y] each, only while there is one.
@@ -533,6 +535,9 @@ class WorldCore implements Stateful {
     for (let at = 0; missions && at < missions.length; at += 4) w.wingMission.set(missions[at]!, { kind: missions[at + 1] === 1 ? 'strike' : missions[at + 1] === 2 ? 'supply' : 'patrol', x: missions[at + 2]!, y: missions[at + 3]! });
     const wings = sections.find((s) => s.name === 'world.wingBase')?.data as Float64Array | undefined;
     for (let at = 0; wings && at < wings.length; at += 2) w.wingBase.set(wings[at]!, wings[at + 1]!);
+    w.wingFerry = new Map();
+    const ferries = sections.find((s) => s.name === 'world.wingFerry')?.data as Float64Array | undefined;
+    for (let at = 0; ferries && at < ferries.length; at += 2) w.wingFerry.set(ferries[at]!, ferries[at + 1]!);
     const bound = sections.find((s) => s.name === 'world.seaBound')?.data as Float64Array | undefined;
     for (let at = 0; bound && at < bound.length; at += 2) w.seaBound.set(bound[at]!, bound[at + 1]!);
     w.station = new Map();
@@ -1283,6 +1288,11 @@ export class World {
    * id negated; 0 for a wing whose carrier is gone (`airSystem` loses it). State, saved while not empty.
    */
   wingBase = new Map<number, number>();
+  /**
+   * The air wings crossing the sea (PLAN 7.133, ADR-723, `orderFerry`), by wing: the tick it is at its
+   * base (`wingBase`, the airbase it sails to). Until then it flies nothing. State, saved while not empty.
+   */
+  wingFerry = new Map<number, number>();
   /** The air wings' missions (PLAN 5.1e, `orderMission`): state, saved while not empty; the scheduler of PLAN 5.2 reads them. */
   wingMission = new Map<number, WingMission>();
   /**

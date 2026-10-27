@@ -40,9 +40,11 @@
  * (FERRY_RANGE ranges), nearest the front's formation nearest it, where that is nearer than its base.
  * Of the front, the formations an airbase of its side has in range; with none such, the enemy's
  * land forces that one has; with none of those either, the whole front (PLAN 7.26b).
+ * With no such hop, and a base of its side with room in range of the front, it goes there over the sea (PLAN 7.133,
+ * `overSea`): flown within a ferry flight, else sailed (`orderFerry`: at sea for the days a convoy takes).
  */
 import { isDayStart } from '../../shared/calendar';
-import { basePlace, FERRY_RANGE, kmFromBase, ofSide, orderMission, orderRebase, wingAircraft, wingRange } from '../systems/air';
+import { basePlace, FERRY_RANGE, kmFromBase, ofSide, orderFerry, orderMission, orderRebase, wingAircraft, wingRange } from '../systems/air';
 import { airbaseRoom } from '../data/airbases';
 import { seaKm } from '../systems/navalCombat';
 import { canParadrop, orderParadrop } from '../systems/airLift';
@@ -76,7 +78,8 @@ export function airAi(world: World): void {
   const wings = new Map<number, number[]>();
   for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
     // A wing carrying a warhead flies on (PLAN 6.2).
-    if (base <= 0 || !world.formations.has(id) || carriesNuke(world, id)) continue;
+    // A wing at sea (PLAN 7.133) takes no order until it is at its base.
+    if (base <= 0 || !world.formations.has(id) || carriesNuke(world, id) || world.wingFerry.has(id)) continue;
     const n = c.nation[id]!;
     if (nc.living[n] !== 1 || nc.aiOff[n] === 1) continue;
     let list = wings.get(n);
@@ -294,10 +297,72 @@ function toward(world: World, id: number, fronts: readonly (readonly number[])[]
     const d = seaKm(world, px, py, gx, gy);
     if (d < bd) [best, bd] = [i + 1, d];
   });
-  if (best === 0) return;
+  if (best === 0) {
+    // No hop nearer: over the sea to a base of the side in reach of the front (PLAN 7.133).
+    if (ok.size > 0) overSea(world, id, front.filter((f) => ok.has(f)), used);
+    return;
+  }
   const [px, py] = world.cellPoint(world.airbases[best - 1]!.cell);
   if (orderRebase(world, id, px, py) !== 0 || world.wingBase.get(id) !== best) return;
   if (base > 0) used.set(base, (used.get(base) ?? 0) - need);
+  used.set(best, (used.get(best) ?? 0) + need);
+}
+
+/**
+ * Sends wing `id`, which no hop brings nearer its front (`toward`), over the sea (PLAN 7.133, ADR-723): to
+ * the airbase of its side with room for it (`used`, kept up to date) with a formation of `goals` (those of
+ * its front a base of the side has in range) within its range, the nearest its base by km; the lowest index of
+ * equals. Within a ferry flight it flies there (`orderRebase`); beyond, it sails (`orderFerry`), only to a base
+ * on another landmass (`grid.component`) than its own: over the sea, not past a neutral on land. The wings
+ * at war late sat across the sea from every enemy: on the critic's year-20 saves of 6421, 1129 and 4877, 17.5 to
+ * 49.5 a day with a base of their side in range of the enemy beyond any chain of ferry flights, against 6 to 12.5
+ * with a mission (`docs/evidence/7.133/measure.md`).
+ */
+function overSea(world: World, id: number, goals: readonly number[], used: Map<number, number>): void {
+  const base = world.wingBase.get(id)!;
+  const at = basePlace(world, base);
+  if (!at || goals.length === 0) return;
+  const c = world.formations.cols;
+  const nation = c.nation[id]!;
+  const need = wingAircraft(world, c.template[id]!);
+  const range = wingRange(world, id);
+  // The goals by ascending y, for each base a window of rows (as `inReachOf`).
+  const pts = goals.map((g) => [c.x[g]!, c.y[g]!] as const).sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+  let kyMin = Infinity;
+  for (const k of navOf(world).grid.ky) kyMin = Math.min(kyMin, k);
+  const rows = range / kyMin;
+  // Beyond a ferry flight, only over the sea: to a base on another landmass (ADR-723). A chain broken over
+  // land (a neutral between) is left as it was (ADR-515, ADR-707 a).
+  const comp = navOf(world).grid.component;
+  const home = base > 0 ? comp[world.airbases[base - 1]!.cell]! : 0;
+  const ferry = FERRY_RANGE * range;
+  let best = 0;
+  let bd = Infinity;
+  world.airbases.forEach((b, i) => {
+    if (i + 1 === base || !ofSide(world, nation, world.cells.controller[b.cell]!) || (used.get(i + 1) ?? 0) + need > airbaseRoom(b)) return;
+    const [px, py] = world.cellPoint(b.cell);
+    const d = seaKm(world, at[0], at[1], px, py);
+    if (d >= bd || (d > ferry && comp[b.cell] === home)) return;
+    let lo = 0;
+    let hi = pts.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (pts[mid]![1] < py - rows) lo = mid + 1;
+      else hi = mid;
+    }
+    for (let k = lo; k < pts.length && pts[k]![1] <= py + rows; k++) {
+      if (seaKm(world, px, py, pts[k]![0], pts[k]![1]) <= range) {
+        [best, bd] = [i + 1, d];
+        return;
+      }
+    }
+  });
+  if (best === 0) return;
+  if (bd <= ferry) {
+    const [px, py] = world.cellPoint(world.airbases[best - 1]!.cell);
+    if (orderRebase(world, id, px, py) !== 0 || world.wingBase.get(id) !== best) return;
+  } else if (orderFerry(world, id, best) !== 0) return;
+  used.set(base, (used.get(base) ?? 0) - need);
   used.set(best, (used.get(best) ?? 0) + need);
 }
 

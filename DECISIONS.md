@@ -187,8 +187,15 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   front within its range; it is in transit for the days a transport takes over the straight line, out of the air
   war, and is at its new base on arrival (if the base is still its side's with room; else it stays). Room is
   reserved at the order. No path and no interception at sea: a simplification, logged here.
-- **Consequences.** The pin moves in the commit of the rule (old and new hash there). The AT on 1171–1180 against
-  HEAD's arm (`.cache/7133/head`, read before the rule).
+- **Built** (`orderFerry`, `world.wingFerry` saved while not empty; the AI's `overSea`): the base is the new one at
+  the order (the room is its), the wing flies nothing and takes no order until it is there (convoy speed: the
+  transport group's 30 km/h, `seaFerryKmh`). Beyond a ferry flight, only to a base on another landmass
+  (`grid.component`). The first cut had no such limit: Soviet wings "sailed" from Moscow to Czech and Romanian
+  bases over neutral Poland, Prague held past day 110 (day 13 before) in `nukeMeansLost1938` and Poland's first
+  burst on seed 4017 fell off Germany; with the limit both are as before. A chain broken over land stays as
+  ADR-515 and ADR-707 (a) left it.
+- **Consequences.** The pin `ac54bc2d` → `2b4bc96e`. The AT on 1171–1180 against HEAD's arm (`.cache/7133/head`,
+  read before the rule).
 
 ### ADR-722 · 2026-10-26 · accepted — A ship's hull at T2 at least 13 px, every class (PLAN 7.132)
 
