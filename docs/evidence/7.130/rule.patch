@@ -1,0 +1,157 @@
+diff --git a/src/sim/systems/war.ts b/src/sim/systems/war.ts
+index effbd7cd..cd93d88f 100644
+--- a/src/sim/systems/war.ts
++++ b/src/sim/systems/war.ts
+@@ -63,7 +63,7 @@ import { Terrain } from '../../shared/terrain';
+ import { annexNation, makePuppet } from './puppets';
+ import { forceMen } from './seaControl';
+ import { capitalCell } from './capitals';
+-import { warsWithFront } from './warFront';
++import { frontPairs, warsWithFront } from './warFront';
+ import { ATTACKERS, DEFENDERS, type War } from '../wars';
+ import type { LandCounts } from '../landCounts';
+ import { FlipCause, type World } from '../world';
+@@ -89,6 +89,16 @@ export const MAX_WAR_DAYS = 5 * 365;
+  * of the stalemate peace, or fights to the death to 1,767 days, nobody fighting anybody.
+  */
+ export const FRONTLESS_DAYS = 365;
++/**
++ * A member of a war, not a side's leader, whose realm (it and its puppets on the side) has met the
++ * other side on no land front this many days running, and holds none of its land nor it any of the
++ * realm's, makes a separate peace (PLAN 7.130, ADR-721; `separatePeace`). Measured before (critic run
++ * 15, 4513's years 11–14): Canada, Denmark's Greenland, Australia and Brazil in the five largest
++ * and the sixth, each at war all year in alliance wars with Japan, Turkey, Siam, Portugal, England or
++ * Saudi Arabia, their cells the same to 0.3 % in four years: a far ally's war kept it from the
++ * wars it could fight (MAX_WARS, the WARS_PENALTY, no restlessness) and its land from moving.
++ */
++export const MEMBER_FRONTLESS_DAYS = 365;
+ export const TRUCE_TICKS = 24 * 730;
+ /** Autonomy of a puppet created by peace terms (a satellite-to-puppet border case). */
+ export const PEACE_PUPPET_AUTONOMY = 30;
+@@ -428,7 +438,8 @@ export function warSystem(world: World): void {
+   const sideMen = (side: number[]): number => side.reduce((s, n) => s + (men.get(n) ?? 0), 0);
+   // Who fought today (PLAN 7.14: a nation's years at peace), and which wars have a land front.
+   for (const war of world.wars.list) for (const side of war.sides) for (const n of side) world.wars.lastFought.set(n, world.tick);
+-  const fronts = warsWithFront(world);
++  const pairs = frontPairs(world);
++  const fronts = warsWithFront(world, pairs);
+   for (const war of [...world.wars.list]) {
+     // A peace earlier in the day may have ended this one: its terms annexed the last member of a
+     // side (`Wars.endAllOf`). It has no leader to sue or to sign (PLAN 3.5f).
+@@ -472,6 +483,7 @@ export function warSystem(world: World): void {
+       makePeace(world, war);
+       continue;
+     }
++    separatePeace(world, war, pairs, land, men);
+     if (war.fightToDeath[0] || war.fightToDeath[1]) continue;
+     const sues = [ATTACKERS, DEFENDERS].map((s) => {
+       const leader = war.sides[s]![0]!;
+@@ -487,6 +499,47 @@ export function warSystem(world: World): void {
+   }
+ }
+ 
++/**
++ * A far member's separate peace (PLAN 7.130, ADR-721): each member of `war` but a side's leader and
++ * a puppet whose overlord is on its side counts the days its realm (it and its puppets on the side)
++ * has met the other side on no land front (`frontPairs`); a day on a front, or on which the realm
++ * holds land of the other side or it land of the realm, sets the count to 0. At
++ * MEMBER_FRONTLESS_DAYS the realm leaves the war (`Wars.leave`), with a truce with the other side's
++ * leader and `PeaceSigned` (a = the member, b = that leader); the side's men at the start are scaled
++ * to those who stay, as in `leaveBondedWars`. Not on a side that fights to the death. Nothing is held
++ * between them, so no land changes hands.
++ */
++function separatePeace(world: World, war: War, pairs: ReadonlySet<number>, land: LandCounts, men: Map<number, number>): void {
++  const nc = world.nations.cols;
++  const quiet = (war.quiet ??= {});
++  for (const s of [ATTACKERS, DEFENDERS]) {
++    if (war.fightToDeath[s]) continue;
++    const enemies = war.sides[1 - s]!;
++    for (const m of war.sides[s]!.slice(1)) {
++      const side = war.sides[s]!; // anew: a separate peace before this one left it shorter
++      if (!side.includes(m) || side.includes(nc.overlord[m]!)) continue;
++      const realm = side.filter((x) => x === m || nc.overlord[x] === m);
++      const met = realm.some((r) =>
++        enemies.some((e) => pairs.has(r * 65536 + e) || (land.occupied.get(r * 65536 + e) ?? 0) > 0 || (land.occupied.get(e * 65536 + r) ?? 0) > 0),
++      );
++      const days = met ? 0 : (quiet[m] ?? 0) + 1;
++      if (days < MEMBER_FRONTLESS_DAYS) {
++        if (days > 0) quiet[m] = days;
++        else delete quiet[m];
++        continue;
++      }
++      for (const r of realm) delete quiet[r];
++      const of = (xs: number[]): number => xs.reduce((sum, x) => sum + (men.get(x) ?? 0), 0);
++      const before = of(side);
++      const leader = enemies[0]!;
++      world.wars.leave(war, realm);
++      if (before > 0) war.startMen[s] = war.startMen[s]! * (of(war.sides[s]!) / before);
++      world.wars.truces.push({ a: m, b: leader, untilTick: world.tick + TRUCE_TICKS });
++      world.out.emit(world.tick, EventKind.PeaceSigned, m, leader, NaN, NaN);
++    }
++  }
++}
++
+ /** Concludes `war` on its current score (see the module comment for the terms). */
+ /**
+  * A peace offer by `from` in war `warId` (player diplomacy, PLAN 1.33b). The other side accepts
+diff --git a/src/sim/systems/warFront.ts b/src/sim/systems/warFront.ts
+index 10bf2db9..bc19093c 100644
+--- a/src/sim/systems/warFront.ts
++++ b/src/sim/systems/warFront.ts
+@@ -9,23 +9,31 @@ import { frontierOf } from './territory';
+  * a war whose sides meet nowhere on land, across a sea or with neutral land between them, has none;
+  * a landing that holds ground has one.
+  */
+-export function warsWithFront(world: World): Set<number> {
++export function warsWithFront(world: World, pairs: ReadonlySet<number> = frontPairs(world)): Set<number> {
+   const out = new Set<number>();
+-  if (world.wars.list.length === 0) return out;
++  for (const war of world.wars.list) {
++    const [A, D] = war.sides;
++    if (A.some((a) => D.some((d) => pairs.has(a * 65536 + d)))) out.add(war.id);
++  }
++  return out;
++}
++
++/**
++ * The pairs of nations that meet on a land front (`warsWithFront`'s cells), as a × 65536 + b, each
++ * pair both ways; empty when no war exists.
++ */
++export function frontPairs(world: World): Set<number> {
++  const pairs = new Set<number>();
++  if (world.wars.list.length === 0) return pairs;
+   const { w, h, controller } = world.cells;
+   const wrap = world.settings.loopingMap;
+-  const pairs = new Set<number>();
+   const nb: number[] = [];
+   for (const c of frontierOf(world)) {
+     const a = controller[c]!;
+     for (const k of neighbours4(c, w, h, wrap, nb)) {
+       const b = controller[k]!;
+-      if (b !== 0 && b !== a) pairs.add(a * 65536 + b);
++      if (b !== 0 && b !== a) pairs.add(a * 65536 + b).add(b * 65536 + a);
+     }
+   }
+-  for (const war of world.wars.list) {
+-    const [A, D] = war.sides;
+-    if (A.some((a) => D.some((d) => pairs.has(a * 65536 + d)))) out.add(war.id);
+-  }
+-  return out;
++  return pairs;
+ }
+diff --git a/src/sim/wars.ts b/src/sim/wars.ts
+index 912de592..bc00bab0 100644
+--- a/src/sim/wars.ts
++++ b/src/sim/wars.ts
+@@ -29,6 +29,11 @@ export interface War {
+    * older save has none (read as 0).
+    */
+   frontless?: number;
++  /**
++   * Per member (by id), the days running its realm has met the other side on no land front (PLAN
++   * 7.130, `separatePeace`); a member at 0 is not kept; absent: none, an older save's.
++   */
++  quiet?: Record<string, number>;
+   /** The nations of the war whose capital an enemy of it took (PLAN 7.18a; absent: none). */
+   capitalsLost?: number[];
+   /** The tick of each side's last nuclear strike decided in the war (PLAN 7.18e; absent: none). */

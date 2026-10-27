@@ -5,6 +5,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.130's AT missed: a far member's separate peace, the longest stasis 19 on 1151–1160 (HEAD 12; ADR-721)
+- **The bar:** on 10 unseen seeds × 30 years the longest stasis at most 12 years, the mean not above HEAD's; the
+  least land moved in the last five years not below 20 %; a unit test, red without.
+- **What moved** (`docs/evidence/7.130/at.md`): from the critic's saves the rule broke the long spans (3 of 6 over 12
+  → 0); from 1938 on 1151–1160 it read 19, mean 9.9 (HEAD 12, 8.3); land moved late 34.4 % (HEAD 27.8 %). The far
+  members leave and are called into the next war of their alliance. Patch and test in the evidence, not committed.
+- **What is left:** the user's (ADR-721): (a) closed not done, no rule (recommended); (b) ticked on HEAD's figures;
+  (c) a numbered task: the call into a war skips a member that cannot reach the enemy.
+
 ### RESOLVED 2026-10-26 (option a, the user's decision: 7.135 closed not done, the fold kept, the fall to the next critic report) · PLAN 7.135: no other half to find; the fold is the whole of year 1's fall (ADR-718)
 - **The bar:** on 1131–1140 × 30 years, year 1 at least 0.95 × `311988d`'s with the fold kept; years 2–30 not below
   HEAD's; under 500 men at year 20 at most 2 a world.

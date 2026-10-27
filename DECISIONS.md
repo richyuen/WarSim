@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-721 · 2026-10-26 · proposed, the user's decision — The top five stand still: a far member's separate peace tried, the AT missed; HEAD meets the figures (PLAN 7.130)
+
+- **Context.** PLAN 7.130 (critic run 15, emergent 6): the longest run of years with the same five largest nations
+  19 in 56 worlds. AT: on 10 unseen seeds × 30 years the longest at most 12, the mean not above HEAD's; the least
+  land moved in the last five years not below 20 %; a unit test, red without.
+- **Read** (`docs/evidence/7.130/at.md`; `tools/diag/stasisFrom.ts`, new): in the critic's long worlds the five are
+  the Soviet Union, the United States, Canada and two of Denmark (Greenland), Australia, France, their cells the
+  same to 0.3 % for years; 4513's years 11–14: each at war all year in alliance wars with enemies on other
+  continents, nothing engaged.
+- **Rule tried** (`rule.patch`, not committed): a war's member, not a side's leader, whose realm meets the other side
+  on no land front and holds none of its land for 365 days running makes a separate peace. From the critic's six
+  year-10 saves, 20 years: over 12 years 3 of 6 → 0 of 6, the mean 12.7 → 8.5.
+- **AT** (1151–1160 × 30 years, `churnAt.ts`): HEAD longest **12**, mean **8.3**, least land moved late **27.8 %**;
+  the rule **19**, **9.9**, 34.4 %. Missed. With the rule Denmark, Canada and Australia are still at war 190–320
+  days a year: a member that leaves is called into its alliance's or guarantor's next war within weeks, and its
+  land is as far from any enemy. No rule; the pin unchanged; seeds 1151–1160 spent.
+- **Options:**
+  - **(a)** 7.130 closed not done, no rule; HEAD's figures on 1151–1160 (12, 8.3, 27.8 %) and the read stated to the
+    next critic report. (Recommended: HEAD meets the figures here, and the critic's 48 put 17 % of worlds over
+    12, so ten seeds cannot tell a rule worth a few years from chance.)
+  - **(b)** 7.130 ticked on HEAD's figures, its unit-test clause set aside (no rule to test).
+  - **(c)** As (a), and a numbered task for the cause found: an alliance's or guarantor's call does not bring in a
+    member whose realm can reach the enemy neither by land nor by its transports, with the separate peace; AT on
+    10 unseen seeds (1161 on) × 30 years as 7.130's.
+- **Meanwhile** the loop takes PLAN 7.131 (performance, a late year at Max in the page).
+
 ### ADR-720 · 2026-10-26 · accepted — A class's reach to a sector asked where it is read, not of every sector (PLAN 7.129, part 2)
 
 - **Context.** PLAN 7.129 after ADR-719: 6421's year 28 7.32 ms. `tools/diag/opCalls.ts` over the year on HEAD: of

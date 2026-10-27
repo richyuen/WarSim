@@ -1,0 +1,59 @@
+import { describe, expect, it } from 'vitest';
+import { EventKind } from '../../src/shared/events';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { MEMBER_FRONTLESS_DAYS } from '../../src/sim/systems/war';
+import { frontPairs } from '../../src/sim/systems/warFront';
+import { assets1938 } from '../helpers/earth';
+import { nationId } from '../helpers/sim1938';
+
+// PLAN 7.130 (critic run 15, emergent dynamics 6: the same five largest for 19 years; ADR-721): a
+// member of a war, not its side's leader, whose realm meets the other side on no land front for
+// MEMBER_FRONTLESS_DAYS running makes a separate peace; a member on a front stays.
+
+const { w: W } = SIZE_1938;
+const [GER, ITA, JAP, MAN, FRA] = ['GER', 'ITA', 'JAP', 'MAN', 'FRA'].map(nationId) as [number, number, number, number, number];
+
+describe("a far member's separate peace (PLAN 7.130)", () => {
+  it('Germany on France: Japan, with no front on the Allies, leaves at MEMBER_FRONTLESS_DAYS with its puppets; Italy, on a front, stays', () => {
+    const s = new Sim({ scenario: '1938', seed: 11, assets: assets1938(W) });
+    s.command({ kind: 'setSetting', key: 'aiEnabled', value: false });
+    s.step(1);
+    s.command({ kind: 'declareWar', attacker: GER, defender: FRA });
+    s.step(24);
+    const w = s.world;
+    const war = w.wars.list.find((x) => x.sides[0][0] === GER && x.sides[1][0] === FRA)!;
+    expect(war).toBeTruthy();
+    expect(war.sides[0]).toEqual(expect.arrayContaining([ITA, JAP, MAN]));
+    // Japan's realm (Japan, Manchukuo, Mengjiang) meets none of the defenders on land; Italy does.
+    const pairs = frontPairs(w);
+    const meets = (realm: number[]): boolean => realm.some((r) => war.sides[1].some((d) => pairs.has(r * 65536 + d)));
+    const japan = war.sides[0].filter((n) => n === JAP || w.nations.cols.overlord[n] === JAP);
+    expect(japan.length).toBeGreaterThanOrEqual(3);
+    expect(meets(japan)).toBe(false);
+    expect(meets([ITA])).toBe(true);
+    // A day short of the bound, Japan is at war; the count is saved.
+    s.step(24 * (MEMBER_FRONTLESS_DAYS - 3));
+    expect(war.sides[0]).toContain(JAP);
+    expect(war.quiet?.[JAP]).toBeGreaterThanOrEqual(MEMBER_FRONTLESS_DAYS - 3);
+    expect(war.quiet?.[ITA]).toBeUndefined();
+    const t = new Sim({ scenario: '1938', seed: 11, assets: assets1938(W) });
+    t.load(s.save());
+    expect(t.world.wars.list.find((x) => x.id === war.id)!.quiet).toEqual(war.quiet);
+    expect(t.hash()).toBe(s.hash());
+    const peace: [number, number][] = [];
+    s.step(24 * 5, (ww) => {
+      const ev = ww.out.events; // tick, kind, a, b, x, y
+      for (let i = 0; i + 5 < ev.length; i += 6) if (ev[i + 1] === EventKind.PeaceSigned) peace.push([ev[i + 2]!, ev[i + 3]!]);
+      ww.out.events.length = 0;
+      ww.out.fires.length = 0;
+    });
+    // Japan has left with its puppets, at a truce with France; Germany's war on France goes on, Italy in it.
+    expect(w.wars.list).toContain(war);
+    for (const n of japan) expect(war.sides[0]).not.toContain(n);
+    expect(war.sides[0]).toContain(ITA);
+    expect(w.wars.atWar(JAP, FRA)).toBe(false);
+    expect(w.wars.truces.some((x) => x.a === JAP && x.b === FRA)).toBe(true);
+    expect(peace).toContainEqual([JAP, FRA]);
+  }, 300_000);
+});

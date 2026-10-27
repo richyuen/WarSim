@@ -65,6 +65,8 @@ none a seed the critic has run (`critic/c*_seed*`):
   land moved in a world's last five years 25.2 %. AT: on 10 unseen seeds × 30 years, read as the critic's script
   reads it against HEAD on the same seeds: the longest stasis at most 12 years, the mean not above HEAD's; the least
   land moved in the last five years not below 20 %; a unit test, red without; the gate green.
+  Read 2026-10-26 (`docs/evidence/7.130/at.md`, 1151–1160): HEAD 12, mean 8.3, 27.8 %; the rule tried (a far
+  member's separate peace, `rule.patch`) 19, 9.9, 34.4 %; missed. Waits on the user (ADR-721).
 - [ ] 7.131 Performance 6: a late year at Max in the page. Beyond 7.129's tick: 6421's year 28 is 81.5 s at Max in the
   page (`critic/c15_l_6421.json`), past ADR-698's 45–60 s a late year. AT: in the page from `critic/c15_seed6421_y27.bin`,
   year 28 at Max at most 60 s, alone, two reads; no stall over 500 ms; 4877's late years at Max not above run 15's 112 s;

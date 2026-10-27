@@ -23947,3 +23947,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `pocketOf`'s answers rest on the walks before them in the tick, so asking fewer grounds is a rule in
   principle even when the logic is equal; prove the logic by asking everything first in the old order (`WARM`).
 - **Next:** PLAN 7.130 (emergent dynamics) while ADR-715–718 wait.
+
+## 2026-10-26 — PLAN 7.130: a far member's separate peace tried, the AT missed; to the user (ADR-721)
+
+- **Start:** gate green on `3895b4fa`; critic not due; ADR-715–718 decided (option a each).
+- **Read** (critic run 15's files; `tools/diag/stasisFrom.ts`, new: the top seven yearly from a save, with days at
+  war, aggression, overlord and enemies): the long spans' five are SOV, USA, CAN and two of DEN (Greenland,
+  5.0–5.4 % unchanged 20 years), AST, FRA; in 4513's years 11–14 CAN, DEN, AST and BRA at war all year in alliance
+  wars on other continents, cells the same to 0.3 %.
+- **Rule tried** (`docs/evidence/7.130/rule.patch`, test `separatePeace1938.test.ts.txt`; not committed): a member,
+  not a side's leader, with no land front on the other side and nothing held between them for 365 days makes a
+  separate peace. From the critic's six y10 saves × 20 years (HEAD in worktree `C:/Git/WarSim_base`): over 12 years
+  3 of 6 → 0, mean 12.7 → 8.5.
+- **AT** (1151–1160 × 30, `churnAt.ts`, 8 at a time, ~1.5 h an arm): HEAD longest 12, mean 8.3, least land moved
+  late 27.8 %; the rule 19, 9.9, 34.4 %. Missed. The far members leave and are called into the next alliance war
+  (at war 190–320 days a year with the rule). Seeds 1151–1160 spent; the next tasks 1161 on.
+- **Filed:** BLOCKERS, ADR-721 (proposed). The code restored; the pin unchanged.
+- **Gotcha:** a gain from the critic's long-world saves is selected on worlds that were long by luck: HEAD's own
+  arm from those saves regresses too. Confirm on unseen seeds from 1938 before trusting it.
+- **Left standing:** worktree `C:/Git/WarSim_base` at `3895b4fa` with a `node_modules` junction; remove the junction
+  first, never `worktree remove --force`.
+- **Next:** PLAN 7.131 while ADR-721 waits.
