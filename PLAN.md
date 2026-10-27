@@ -60,14 +60,6 @@ world; performance 5 → 6): R15-B1 and R15-B2 are PLAN 7.128 and 7.129; the dim
 7.130–7.133 (naval's panel is 7.126). A task each, split when taken up. Unseen seeds: 1101 on, ten a task, none reused,
 none a seed the critic has run (`critic/c*_seed*`):
 
-- [ ] 7.133 Aircraft 7: an empty sky late. At 6421's year 20, 2 sorties aloft in the whole world on the sampled hour;
-  late air battles 181 a world-year, unchanged (ADR-707 a: no rule for reach) (`critic/c15_u_6421.json`,
-  `critic/shots/c15u_6421_f0_0250m.png`). AT: on 10 unseen seeds × 20 years against HEAD on the same seeds, mean sorties
-  aloft a world-hour in years 2–20 at least 1.5 × HEAD's, year 1 not below 0.9 ×; a unit test, red without; the gate
-  green.
-  Read 2026-10-26 (`docs/evidence/7.133/measure.md`): the idle wings late are across the sea from the enemy; the
-  sea ferry built for it (ADR-723, the user's decision: ADR-707's option b).
-
 - [ ] 7.137 Aircraft 7, naval 7: the carriers die out. 18 carriers at the start; at year 20 none on 6421, 1129 and 4877
   (`tools/diag/carriers.ts`), and no carrier group ever in training: the AI's fleet mix has no carrier (ADR-723).
   AT: on 10 unseen seeds × 20 years against HEAD on the same seeds, carriers afloat at year 20 at least 6 a world
@@ -427,3 +419,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.131 Performance 6: a late year at Max in the page. Beyond 7.129's tick: 6421's year 28 is 81.5 s at Max in the […]
 - [x] 7.132 Naval 7: a sea battle seen close. A sea battle at 15–150 m/px is a few small hulls far apart (3613's […]
 - [x] 7.130 (closed not done, ADR-721 a, the user's decision) Emergent dynamics 6: the top five stand still. Beyond 7.128's contact: the longest run of years with the same […]
+- [x] 7.133 (closed not done, ADR-724 a, the user's standing instruction) Aircraft 7: an empty sky late. At 6421's year 20, 2 sorties aloft in the whole world on the sampled hour; […]

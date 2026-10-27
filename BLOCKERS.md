@@ -5,6 +5,13 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### RESOLVED 2026-10-26 (option a, the user's standing instruction: the ferry kept, 7.133 closed not done) · PLAN 7.133's AT missed: the sea ferry 1.08 × late on 1171–1180 (ADR-724)
+- **The bar:** on 10 unseen seeds × 20 years, sorties aloft a world-hour in years 2–20 at least 1.5 × HEAD's, year 1
+  not below 0.9 ×.
+- **What moved** (`docs/evidence/7.133/at.md`): late 15.97 → 17.23 (1.08 ×), year 1 0.98 ×; late air battles 1.23 ×;
+  wings late 0.74 ×, the ferried wings lost in the air faster than the rebuild replaces them.
+- **What is left:** the air forces' size late (losses against a gold-held rebuild), to the next critic report.
+
 ### RESOLVED 2026-10-26 (option a, the user's decision: 7.130 closed not done, no rule, to the next critic report) · PLAN 7.130's AT missed: a far member's separate peace, the longest stasis 19 on 1151–1160 (HEAD 12; ADR-721)
 - **The bar:** on 10 unseen seeds × 30 years the longest stasis at most 12 years, the mean not above HEAD's; the
   least land moved in the last five years not below 20 %; a unit test, red without.

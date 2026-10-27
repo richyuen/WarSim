@@ -24011,3 +24011,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Decision** (the user's, ADR-723): build the sea ferry (ADR-707 b). PLAN 7.137 filed for the carriers.
 - **Gotcha:** `TemplateRule` has no `id`; `findIndex((t) => t.id === …)` typechecks only under the gate. Tell a
   template by its elements' classes.
+
+## 2026-10-26 — PLAN 7.133: the sea ferry built (ADR-723), the AT missed 1.08 ×, closed not done (ADR-724 a); 7.130 closed (ADR-721 a)
+
+- **Standing instruction** (the user, 2026-10-26 night): take the recommended option of each decision overnight and
+  go on through the critic's run. ADR-721 (a) and ADR-724 (a) were taken so.
+- **Built** (`cad3d3d5`): `orderFerry`, `world.wingFerry`, the AI's `overSea` (beyond a ferry flight only to another
+  landmass; the first cut sent Soviet wings over neutral Poland and moved Prague's fall day 13 → 110+). Pin
+  `ac54bc2d` → `2b4bc96e`; `airSeaFerry1938` (new, red without); `farWait1938` re-picked to seed 4 (seeds 7 and 99
+  have no case in 400 days on this history, 1–6 each one).
+- **A/B** (critic's y20 saves, 120 days): aloft 7.9 → 18.6, 12.8 → 18.9, 6.1 → 10.9.
+- **AT** (1171–1180 × 20): late 15.97 → 17.23 (1.08 ×, bar 1.5 ×), year 1 0.98 ×; air battles late 1.23 ×; wings late
+  0.74 ×: the ferried wings are shot down faster than the gold-held rebuild replaces them (`airForce.ts`).
+- **Gotcha:** a year-20 save over 120 days cannot see attrition: the A/B promised 1.5–2.3 ×, 20 years from 1938 gave
+  1.08 ×. Saves picked by the critic for an empty sky regress too (as in 7.130).
+- **Next:** PLAN 7.137 (carriers), then `npm run check:review` and critic run 16 (PLAN 7.5).

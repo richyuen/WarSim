@@ -15703,3 +15703,25 @@ Of 7.116 (open in PLAN.md):
   land moved in the last five years not below 20 %; a unit test, red without; the gate green.
   Read 2026-10-26 (`docs/evidence/7.130/at.md`, 1151–1160): HEAD 12, mean 8.3, 27.8 %; the rule tried (a far
   member's separate peace, `rule.patch`) 19, 9.9, 34.4 %; missed. Waits on the user (ADR-721).
+
+<!-- moved 2026-10-27 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.133 (closed not done, ADR-724 a, the user's standing instruction) Aircraft 7: an empty sky late. At 6421's year 20, 2 sorties aloft in the whole world on the sampled hour;
+  late air battles 181 a world-year, unchanged (ADR-707 a: no rule for reach) (`critic/c15_u_6421.json`,
+  `critic/shots/c15u_6421_f0_0250m.png`). AT: on 10 unseen seeds × 20 years against HEAD on the same seeds, mean sorties
+  aloft a world-hour in years 2–20 at least 1.5 × HEAD's, year 1 not below 0.9 ×; a unit test, red without; the gate
+  green.
+  Read 2026-10-26 (`docs/evidence/7.133/measure.md`): the idle wings late are across the sea from the enemy; the
+  sea ferry built for it (ADR-723, the user's decision: ADR-707's option b).

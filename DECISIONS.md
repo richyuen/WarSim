@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-724 · 2026-10-26 · accepted, option a (the user's standing instruction of 2026-10-26: the recommended option overnight) — The sea ferry kept; PLAN 7.133's AT missed, 1.08 × (PLAN 7.133)
+
+- **Context.** PLAN 7.133's AT: on 10 unseen seeds × 20 years against HEAD, sorties aloft a world-hour in years 2–20
+  at least 1.5 × HEAD's, year 1 not below 0.9 ×.
+- **AT** (`docs/evidence/7.133/at.md`, 1171–1180): late 15.97 → **17.23 (1.08 ×)**, missed; year 1 0.98 ×. Late air
+  battles 206 → 254 a world-year (1.23 ×). Wings late 94.5 → 69.7 (0.74 ×): the ferried wings meet the enemy's air
+  and are lost faster (1174 years 3–6 84 against 49 shot down) than the gold-held rebuild replaces them; of the
+  wings at war, tasked 0.23 → 0.39.
+- **Options:**
+  - **(a)** The ferry kept, 7.133 closed not done; the gain and the read to the next critic report. (Recommended:
+    more air battles and sorties late, the figures the critic reads; the ferry is a real reach and does what it
+    was built for.)
+  - **(b)** The ferry reverted (back to 15.97 aloft, 94.5 wings).
+  - **(c)** As (a), and a numbered task: an air force that fights rebuilds its losses (the rebuild's gold gates),
+    AT on 10 unseen seeds (1181 on).
+- **Decision** (2026-10-26, under the user's standing instruction to take the recommended options overnight): (a).
+
 ### ADR-723 · 2026-10-26 · accepted (the user's decision, 2026-10-26) — An empty sky late: wings cross the sea to a base of their side in reach of the enemy (ADR-707's option b, PLAN 7.133); the carriers die out (PLAN 7.137)
 
 - **Context.** PLAN 7.133 (critic run 15, aircraft 7): at 6421's year 20, 2 sorties aloft in the world. AT: on 10
