@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
-import { BATTLE_FLEET_INCOME, budgetOf, FEW_FORMATIONS, NAVY_SHARE, outnumberedOnLand, peaceShare, RESERVE_MONTHS, wantsFerry, wantsTransport } from '../../src/sim/ai/economic';
+import { BATTLE_FLEET_INCOME, budgetOf, FEW_FORMATIONS, NAVY_SHARE, OUTNUMBERED_SLOTS, outnumberedOnLand, PARALLEL_INCOME, peaceShare, RESERVE_MONTHS, wantsFerry, wantsTransport } from '../../src/sim/ai/economic';
 import { frontReach } from '../../src/sim/ai/invasion';
 import { neighbours4 } from '../../src/sim/nav/grid';
 import { passageOf } from '../../src/sim/systems/movement';
@@ -353,6 +353,17 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
     expect(outnumberedOnLand(w, landArmies(w)).has(id('SWE'))).toBe(false);
     runEvents(s, 1);
     expect(land(w, NOR)).toBeGreaterThan(0);
+    expect(ships(w, NOR)).toEqual([]);
+  });
+
+  // PLAN 7.146b (ADR-739): and it has OUTNUMBERED_SLOTS order slots more. Norway's income gives it one
+  // (under PARALLEL_INCOME); with the gold for three divisions it orders 1 + OUTNUMBERED_SLOTS.
+  it('holding a land front where its side is outnumbered on land, it has OUTNUMBERED_SLOTS order slots more (red without: one order)', () => {
+    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'SWE', army: true, four: true });
+    expect(budgetOf(w, NOR, monthlyAccounts(w, T)).income).toBeLessThan(PARALLEL_INCOME);
+    w.nations.cols.gold[NOR] = 3 * w.rules!.templates[BUILD_MIX_1938.infantry]!.gold;
+    runEvents(s, 1);
+    expect(land(w, NOR)).toBe(1 + OUTNUMBERED_SLOTS);
     expect(ships(w, NOR)).toEqual([]);
   });
 

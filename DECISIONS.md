@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-739 · 2026-10-27 · accepted — The weak side of a land war saves for no warship; one more order slot (PLAN 7.146)
+### ADR-739 · 2026-10-27 · accepted — The weak side of a land war saves for no warship and has one more order slot (PLAN 7.146)
 
 - **Context.** ADR-733 (a): the late long-front war is thin on both sides, and the one lever with a measured effect on
   contact is the army's size. PLAN 7.146: read what holds the late army down, then a rule on it.
@@ -195,6 +195,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **History restated:** `farWait1938` seed 7 from day 180 → seed 5 from day 90 (seeds 1 and 7 have no wait in their
   first 400 days on the new history; seed 5's first on day 129).
 - **Pin** b08ba7c9 → cb976680 (part a).
+- **Decision (part b).** Such a nation has OUTNUMBERED_SLOTS (1) army order slots more than 1 + income /
+  PARALLEL_INCOME (at most MAX_PARALLEL). `navyBudget1938`: Norway against Sweden, under PARALLEL_INCOME, with the gold
+  for three divisions orders two (red without: one). Pin cb976680 → 2283b28a.
 
 ### ADR-738 · 2026-10-27 · proposed (the user's decision) — A carrier's wings strike ashore: strike-hours 105 ×, sea battles 0.867 ×, ships sunk in them 0.923 × (PLAN 7.145's AT missed on the battles)
 

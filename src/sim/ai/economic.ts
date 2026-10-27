@@ -32,7 +32,8 @@
  *    else 0. B then takes the level set (PLAN 7.3e2, ADR-436: from the surplus alone, France with
  *    5,000 gold suppressed nothing while its far core land rose, and four fifths of the land given
  *    back by revolt was ceded by holders that suppressed, at the half level).
- * 3. Build: up to 1 + income/PARALLEL_INCOME orders in training at once (at most MAX_PARALLEL),
+ * 3. Build: up to 1 + income/PARALLEL_INCOME orders in training at once (and OUTNUMBERED_SLOTS more for a nation
+ *    holding a land front where its side is outnumbered on land, PLAN 7.146b; at most MAX_PARALLEL),
  *    while army upkeep (with the orders in training) is below ARMY_SHARE × (PEACE_ARMY_BASE +
  *    (1 − PEACE_ARMY_BASE) × aggression/100) (peace: placid nations keep smaller standing
  *    armies) / ARMY_SHARE_WAR (war) of income, B stays positive after the new upkeep, and gold covers the
@@ -175,6 +176,12 @@ export const DELIVERY_RESERVE_MONTHS = 1;
 export const WAR_RESERVE_MONTHS = 0;
 export const PARALLEL_INCOME = 400;
 export const MAX_PARALLEL = 6;
+/**
+ * The army's order slots more for a nation that holds a land front where its side is outnumbered on
+ * land (`outnumberedOnLand`; PLAN 7.146b, ADR-739): the weak side's nations of 100–400 a month had
+ * one, full in a third of their months, while their front thinned.
+ */
+export const OUTNUMBERED_SLOTS = 1;
 export const POOR_INCOME = 20;
 export const RICH_INCOME = 200;
 export const ARMOUR_HEAVY = 0.2;
@@ -385,7 +392,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       }
       return { balance, upkeep };
     };
-    // Who fights on land outnumbered, for the warship's saving (PLAN 7.146, ADR-739).
+    // Who fights on land outnumbered, for the warship's saving and the order slots (PLAN 7.146, ADR-739).
     const outnumbered = world.settings.aiEnabled ? outnumberedOnLand(world, own) : new Set<number>();
     world.nations.forEach((n) => {
       if (nc.living[n] !== 1) return;
@@ -520,7 +527,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
       balance -= nc.research[n]! * DAYS_PER_MONTH;
       // 3. Build.
-      const slots = Math.min(MAX_PARALLEL, 1 + Math.floor(income / PARALLEL_INCOME));
+      const slots = Math.min(MAX_PARALLEL, 1 + Math.floor(income / PARALLEL_INCOME) + (outnumbered.has(n) ? OUTNUMBERED_SLOTS : 0));
       // The orders in training count as army already, and against the balance.
       let upkeep = (army.get(n) ?? 0) + (training.get(n) ?? 0);
       let inTanks = tanks.get(n) ?? 0;
