@@ -3,7 +3,7 @@ import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { transportRoom } from '../../src/sim/systems/amphibious';
 import { destroyFormation } from '../../src/sim/systems/elements';
-import { CARRIER_CYCLE, carrierStrikes, strikeTarget } from '../../src/sim/systems/navalCombat';
+import { CARRIER_CYCLE, CARRIER_SPOT_SHARE, carrierStrikes, REACH_EPS_KM, strikeTarget } from '../../src/sim/systems/navalCombat';
 import { fleetPower } from '../../src/sim/systems/seaControl';
 import { Leg, sortieAt } from '../../src/sim/systems/sorties';
 import { assets1938 } from '../helpers/earth';
@@ -79,5 +79,32 @@ describe('a carrier\'s strikes as flights (PLAN 4.12b)', () => {
     }
     expect(held, 'hours of carriers striking after the first flight').toBeGreaterThanOrEqual(2);
     expect(gaps, "times between two strikes' flights out and back among them").toBeGreaterThan(0);
+  });
+
+  it('a fleet at its reach by a sum of floats (within REACH_EPS_KM) is drawn struck, as the battle strikes it (PLAN 7.145)', () => {
+    // Seed 8693 on ADR-738's history: Japan's carrier fleet stood 250.0000000000016 km from the American fleet it
+    // struck; the battle's strike reads `inReach`, the flight's read `<`, and the row showed no plane.
+    const sim = new Sim({ scenario: '1938', seed: 6131, assets: assets1938(SIZE_1938.w) });
+    sim.command({ kind: 'declareWar', attacker: id('JAP'), defender: id('USA') });
+    sim.command({ kind: 'declareWar', attacker: id('GER'), defender: id('ENG') });
+    let flights: ReturnType<typeof carrierStrikes> = [];
+    for (let hour = 0; hour < 200 && flights.length === 0; hour++) sim.step(1, (w) => (flights = carrierStrikes(w)));
+    expect(flights.length, "a carrier's strike by hour 200").toBeGreaterThan(0);
+    const w = sim.world;
+    const { wing, sortie } = flights[0]!;
+    const units = w.rules!.templates[w.formations.cols.template[wing]!]!.elements.map((e) => w.rules!.units[e.unit]!);
+    const kept = units.map((u) => u.rangeKm);
+    const reachAt = (km: number): void => units.forEach((u) => (u.rangeKm = km / CARRIER_SPOT_SHARE));
+    try {
+      // Its reach a hair under the km, within REACH_EPS_KM: struck, and drawn.
+      reachAt(sortie.km - REACH_EPS_KM / 10);
+      expect(w.seaBattles.some((b) => strikeTarget(w, b.fleets) !== null)).toBe(true);
+      expect(carrierStrikes(w).some((f) => f.wing === wing)).toBe(true);
+      // Beyond it: neither.
+      reachAt(sortie.km - 1);
+      expect(carrierStrikes(w).some((f) => f.wing === wing)).toBe(false);
+    } finally {
+      units.forEach((u, k) => (u.rangeKm = kept[k]!));
+    }
   });
 });

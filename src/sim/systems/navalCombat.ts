@@ -884,7 +884,9 @@ export function carrierStrikes(world: World): { wing: number; nation: number; so
       if (target < 0) continue;
       for (const wing of wings) {
         const kmh = rules.templates[c.template[wing]!]?.speedKmh ?? 0;
-        if (kmh <= 0 || CARRIER_SPOT_SHARE * wingRange(world, wing) < km) continue;
+        // In reach as the battle's strike is (`inReach`, PLAN 7.145): a fleet closed to its reach by a sum of floats
+        // (250.0000000000016 km on seed 8693) was struck in the battle and drawn with no flight.
+        if (kmh <= 0 || !inReach(km, CARRIER_SPOT_SHARE * wingRange(world, wing))) continue;
         const hours = km / kmh;
         // Over the target from its strike until the next flight's comes (PLAN 7.84b): the cycle's
         // hours the flights out and back leave. With none (`over` 0) a wing 180 km off was in the
