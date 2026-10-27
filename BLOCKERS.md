@@ -24,6 +24,12 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** no longer the user's (2026-10-27: ADR-731 withdrawn on its read, 7.138 open as a defect by the
   user's rule). The late world has as many fronts of 100+ cells as year 1 and fights them at 6–13 % of its rate
   (`docs/evidence/7.140/design.md`); the next rule aims at fronts held and not fought.
+- **2026-10-27, fronts held and not fought** (ADR-733, waits on the user; `docs/evidence/7.138/held.md`): per
+  long-front war late the weaker side has ~4 formations near a ~1,700-cell front (year 1: 8–13 near ~280) and the
+  stronger side's near ones mostly stand 60+ cells from any enemy; the near pairs split into standoffs, marches
+  away and attacks elsewhere. The one untried lever, a standoff breaker, read 0.94 × on 8 late saves (filter bar
+  1.5 ×): no AT run, seeds 1274 on kept. Options to the user: the late army's size (recommended), closed not done,
+  or the late front by design.
 
 ### RESOLVED 2026-10-26 (option a, the user's standing instruction: kept, 7.137 closed not done) · PLAN 7.137's AT missed: carriers 3.3 a world at year 20 on 1191–1200 (ADR-727)
 - **The bar:** carriers afloat with a wing aboard at year 20 at least 6 a world; sea battles late not below HEAD's.

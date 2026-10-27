@@ -81,6 +81,10 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   next rule is aimed at that and judged on unseen seeds as above, with the engaged per war with a front of 100 cells
   or more in years 2–30 at least 1.15 × HEAD's, and as floors land changing hands at least 2 % of the land cells
   each year and front battles every year in every world; its stasis clause read by ADR-732's measure.
+  Read 2026-10-27 (ADR-733, BLOCKERS; `docs/evidence/7.138/held.md`): late both sides are thin on long fronts (the
+  weaker ~4 near ~1,700 cells; year 1 8–13 near ~280); a standoff breaker read 0.94 × on 8 late saves, under the
+  filter's 1.5 ×, so no AT run and seeds 1274 on kept. Waits on the user: the late army's size (recommended),
+  closed not done, or by design.
 
 - [ ] 7.140 Emergent 6: the same five giants. The top five unchanged for more than 12 years in 13 of 56 worlds (8 on
   `7739a78`), the longest 23 (4877, years 8–30: the United States, the Soviet Union, France, Canada, Denmark)

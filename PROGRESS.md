@@ -24114,3 +24114,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   rewritten to the bar, BLOCKERS; the cause filed as PLAN 7.143 (seeds from 1264). SPEC §7 has ADR-732's text.
 - **No sim change;** the pin unchanged.
 - **Next:** PLAN 7.138 (fronts held and not fought), then 7.141–7.143.
+
+## 2026-10-27 — PLAN 7.138: fronts held and not fought read; a standoff breaker flat on the saves (ADR-733, to the user)
+
+- **Start:** gate green on `a24f2aa7`; critic not due (run 16 names `7b883084`).
+- **Read** (`docs/evidence/7.138/held.md`; new `warArmy.ts`, `nearPairs.ts`, `groupSplit.ts`, `planWhy.ts`,
+  `farStill.ts`, `frontHeld.ts`, `heldAb.ts`; 19 of the critic's run-16 late saves, day 60 of three worlds): per
+  war with a front of 100+ cells late (~1,700 cells; year 1 ~280) the weaker side ~16 land formations, 4 near the
+  front, 0.35 engaged (year 1 25–30, 8–13, 2.7–7.3); the stronger side 15 near, 0.5 engaged, most of them 60+
+  cells from any enemy, two thirds of its army far off. Near pairs that do not fight: a third each standoffs a
+  sector apart, marches away, attacks elsewhere.
+- **Cut-off armies** (not this task's lever): 7019 y20's USA has 198 of 282 free formations in Africa and the Middle
+  East, cut off from its front with Japan by neutral land; the far march reaches no sector for them, the ferry
+  ships them at its pace.
+- **Rule read** (`standoff.patch`, not committed): a holding sector at 1.0 / 1.2 × its threat marches on a
+  standing foe. 8 late saves × 60 days: 0.850 → 0.799 a long-front war (0.94 ×; the filter's bar 1.5 ×). No AT run;
+  seeds 1274 on kept; code restored; the pin unchanged.
+- **Filed:** ADR-733 (proposed), BLOCKERS. Recommended: a task on the late army's size (7.110b's rule moved
+  engaged a war × 1.35).
+- **Gotcha:** `World.farWait` holds a day, not a tick. A year-20 save steps 60 days in about a minute: a save
+  A/B of 8 × 3 arms takes ~2 minutes six at a time.
+- **Next:** PLAN 7.141 (naval) while ADR-733 waits.

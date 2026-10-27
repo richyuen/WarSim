@@ -1,0 +1,1036 @@
+[
+ {
+  "seed": 1061,
+  "bin": "1938",
+  "day": 62,
+  "warsADay": 3.5,
+  "frontAWar": 281,
+  "weak": {
+   "engaged": 2.71,
+   "near": 9.71,
+   "mid": 5.14,
+   "cutStill": 0.29,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 4.57,
+   "allyLand": 2.71,
+   "allyAway": 0,
+   "away": 0.29
+  },
+  "strong": {
+   "engaged": 21.14,
+   "near": 28.71,
+   "mid": 13.71,
+   "cutStill": 0,
+   "cutMoving": 0,
+   "farStill": 17.71,
+   "farMoving": 50.43,
+   "allyLand": 16.71,
+   "allyAway": 0.29,
+   "away": 0.57
+  },
+  "gapWeak": [
+   4.86,
+   1.86,
+   0.43,
+   2.29,
+   0.29,
+   0
+  ],
+  "gapStrong": [
+   20.86,
+   2.86,
+   1.57,
+   2.43,
+   1,
+   0
+  ]
+ },
+ {
+  "seed": 1061,
+  "bin": "critic/c16_seed1061_y20.bin",
+  "day": 7302,
+  "warsADay": 4,
+  "frontAWar": 2034,
+  "weak": {
+   "engaged": 0,
+   "near": 3.25,
+   "mid": 2.25,
+   "cutStill": 0,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 0,
+   "allyLand": 1.5,
+   "allyAway": 2.5,
+   "away": 3.25
+  },
+  "strong": {
+   "engaged": 1,
+   "near": 9.88,
+   "mid": 8.88,
+   "cutStill": 2,
+   "cutMoving": 0,
+   "farStill": 0.5,
+   "farMoving": 24.25,
+   "allyLand": 16.75,
+   "allyAway": 2.25,
+   "away": 4.5
+  },
+  "gapWeak": [
+   1.63,
+   0.13,
+   0,
+   0.25,
+   0,
+   1.25
+  ],
+  "gapStrong": [
+   1.5,
+   0.63,
+   0.63,
+   2,
+   0.75,
+   4.38
+  ]
+ },
+ {
+  "seed": 1129,
+  "bin": "critic/c16_seed1129_y20.bin",
+  "day": 7302,
+  "warsADay": 5,
+  "frontAWar": 1535,
+  "weak": {
+   "engaged": 0.1,
+   "near": 5.3,
+   "mid": 1.4,
+   "cutStill": 1.2,
+   "cutMoving": 0,
+   "farStill": 2.2,
+   "farMoving": 0.8,
+   "allyLand": 7.5,
+   "allyAway": 1.4,
+   "away": 3
+  },
+  "strong": {
+   "engaged": 0.1,
+   "near": 22.4,
+   "mid": 19.6,
+   "cutStill": 1.4,
+   "cutMoving": 0,
+   "farStill": 7.7,
+   "farMoving": 24.1,
+   "allyLand": 0.8,
+   "allyAway": 0.6,
+   "away": 4.6
+  },
+  "gapWeak": [
+   0.7,
+   0.1,
+   1.4,
+   1.2,
+   0.6,
+   1.3
+  ],
+  "gapStrong": [
+   0.4,
+   0.5,
+   3.3,
+   2.7,
+   3,
+   12.5
+  ]
+ },
+ {
+  "seed": 1187,
+  "bin": "critic/c16_seed1187_y20.bin",
+  "day": 7302,
+  "warsADay": 4,
+  "frontAWar": 2853,
+  "weak": {
+   "engaged": 0.13,
+   "near": 8.38,
+   "mid": 4.63,
+   "cutStill": 0.25,
+   "cutMoving": 0,
+   "farStill": 0.13,
+   "farMoving": 6,
+   "allyLand": 0.75,
+   "allyAway": 0.75,
+   "away": 1.75
+  },
+  "strong": {
+   "engaged": 0.38,
+   "near": 16.38,
+   "mid": 11.13,
+   "cutStill": 1,
+   "cutMoving": 0,
+   "farStill": 48.5,
+   "farMoving": 5.38,
+   "allyLand": 12,
+   "allyAway": 3.25,
+   "away": 9.75
+  },
+  "gapWeak": [
+   0.63,
+   0.88,
+   1.13,
+   1.63,
+   2,
+   2.13
+  ],
+  "gapStrong": [
+   1,
+   1.25,
+   2,
+   5.38,
+   3.25,
+   3.5
+  ]
+ },
+ {
+  "seed": 2081,
+  "bin": "critic/c16_seed2081_y20.bin",
+  "day": 7302,
+  "warsADay": 6,
+  "frontAWar": 677,
+  "weak": {
+   "engaged": 0.5,
+   "near": 2.08,
+   "mid": 0.67,
+   "cutStill": 0.17,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 0.58,
+   "allyLand": 0.67,
+   "allyAway": 0.67,
+   "away": 1.33
+  },
+  "strong": {
+   "engaged": 0.83,
+   "near": 7.58,
+   "mid": 4.67,
+   "cutStill": 0.17,
+   "cutMoving": 0,
+   "farStill": 1.33,
+   "farMoving": 31.83,
+   "allyLand": 7.08,
+   "allyAway": 1.83,
+   "away": 2.5
+  },
+  "gapWeak": [
+   0.33,
+   0.33,
+   0.17,
+   0.25,
+   0,
+   1
+  ],
+  "gapStrong": [
+   0.42,
+   0.25,
+   0.75,
+   1.42,
+   2.17,
+   2.58
+  ]
+ },
+ {
+  "seed": 2347,
+  "bin": "critic/c16_seed2347_y20.bin",
+  "day": 7302,
+  "warsADay": 3,
+  "frontAWar": 2992,
+  "weak": {
+   "engaged": 1.17,
+   "near": 8.67,
+   "mid": 2.17,
+   "cutStill": 0.33,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 1.67,
+   "allyLand": 0,
+   "allyAway": 3.67,
+   "away": 7.67
+  },
+  "strong": {
+   "engaged": 1.33,
+   "near": 35,
+   "mid": 23.83,
+   "cutStill": 0.67,
+   "cutMoving": 0,
+   "farStill": 13.17,
+   "farMoving": 28,
+   "allyLand": 46,
+   "allyAway": 4.33,
+   "away": 10
+  },
+  "gapWeak": [
+   0.83,
+   1.17,
+   1.5,
+   0.33,
+   1,
+   3.83
+  ],
+  "gapStrong": [
+   0.67,
+   9.83,
+   2,
+   3.33,
+   7.5,
+   11.67
+  ]
+ },
+ {
+  "seed": 2539,
+  "bin": "critic/c16_seed2539_y20.bin",
+  "day": 7302,
+  "warsADay": 3,
+  "frontAWar": 506,
+  "weak": {
+   "engaged": 0,
+   "near": 1,
+   "mid": 0.67,
+   "cutStill": 1,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 1,
+   "allyLand": 1.67,
+   "allyAway": 0.33,
+   "away": 1
+  },
+  "strong": {
+   "engaged": 0,
+   "near": 3.83,
+   "mid": 1.83,
+   "cutStill": 0,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 1,
+   "allyLand": 8,
+   "allyAway": 15.33,
+   "away": 4
+  },
+  "gapWeak": [
+   0.33,
+   0,
+   0,
+   0,
+   0,
+   0.67
+  ],
+  "gapStrong": [
+   0.67,
+   0.67,
+   0,
+   0.67,
+   0.33,
+   1.5
+  ]
+ },
+ {
+  "seed": 2633,
+  "bin": "critic/c16_seed2633_y25.bin",
+  "day": 9127,
+  "warsADay": 5,
+  "frontAWar": 3363,
+  "weak": {
+   "engaged": 0.6,
+   "near": 1.2,
+   "mid": 3.8,
+   "cutStill": 0.2,
+   "cutMoving": 0,
+   "farStill": 0.1,
+   "farMoving": 1.5,
+   "allyLand": 0.2,
+   "allyAway": 0.2,
+   "away": 0.4
+  },
+  "strong": {
+   "engaged": 0.6,
+   "near": 13.1,
+   "mid": 4.7,
+   "cutStill": 4.8,
+   "cutMoving": 1.8,
+   "farStill": 1.9,
+   "farMoving": 8.9,
+   "allyLand": 5.2,
+   "allyAway": 4.2,
+   "away": 25.7
+  },
+  "gapWeak": [
+   0.1,
+   0.1,
+   0.2,
+   0.2,
+   0.4,
+   0.2
+  ],
+  "gapStrong": [
+   0,
+   0,
+   0.8,
+   0.7,
+   1.5,
+   10.1
+  ]
+ },
+ {
+  "seed": 2953,
+  "bin": "critic/c16_seed2953_y20.bin",
+  "day": 7302,
+  "warsADay": 3,
+  "frontAWar": 370,
+  "weak": {
+   "engaged": 0.67,
+   "near": 1.67,
+   "mid": 3.33,
+   "cutStill": 0,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 0,
+   "allyLand": 2.67,
+   "allyAway": 0.67,
+   "away": 6.33
+  },
+  "strong": {
+   "engaged": 0.33,
+   "near": 7.67,
+   "mid": 3.5,
+   "cutStill": 0,
+   "cutMoving": 0,
+   "farStill": 2.67,
+   "farMoving": 25,
+   "allyLand": 17.67,
+   "allyAway": 32.33,
+   "away": 131.83
+  },
+  "gapWeak": [
+   0.67,
+   0.33,
+   0.67,
+   0,
+   0,
+   0
+  ],
+  "gapStrong": [
+   1,
+   0.33,
+   0.33,
+   1,
+   4.33,
+   0.67
+  ]
+ },
+ {
+  "seed": 3467,
+  "bin": "critic/c16_seed3467_y20.bin",
+  "day": 7302,
+  "warsADay": 5,
+  "frontAWar": 1868,
+  "weak": {
+   "engaged": 0.2,
+   "near": 2,
+   "mid": 3.8,
+   "cutStill": 1.2,
+   "cutMoving": 0,
+   "farStill": 0.3,
+   "farMoving": 3.5,
+   "allyLand": 2,
+   "allyAway": 1.1,
+   "away": 7.6
+  },
+  "strong": {
+   "engaged": 0.1,
+   "near": 28.9,
+   "mid": 19.3,
+   "cutStill": 0.4,
+   "cutMoving": 0,
+   "farStill": 2.3,
+   "farMoving": 24.2,
+   "allyLand": 16.8,
+   "allyAway": 6.6,
+   "away": 38
+  },
+  "gapWeak": [
+   0.6,
+   0.4,
+   0.3,
+   0.3,
+   0.1,
+   0.3
+  ],
+  "gapStrong": [
+   4,
+   2.5,
+   3.5,
+   2.6,
+   2.7,
+   13.6
+  ]
+ },
+ {
+  "seed": 3847,
+  "bin": "critic/c16_seed3847_y26.bin",
+  "day": 9492,
+  "warsADay": 5,
+  "frontAWar": 2082,
+  "weak": {
+   "engaged": 0.7,
+   "near": 4.3,
+   "mid": 3.3,
+   "cutStill": 0.8,
+   "cutMoving": 0,
+   "farStill": 2,
+   "farMoving": 3.1,
+   "allyLand": 0,
+   "allyAway": 0,
+   "away": 0.2
+  },
+  "strong": {
+   "engaged": 0.7,
+   "near": 18.3,
+   "mid": 12.9,
+   "cutStill": 26,
+   "cutMoving": 5.9,
+   "farStill": 4.3,
+   "farMoving": 9.6,
+   "allyLand": 3.4,
+   "allyAway": 9.4,
+   "away": 22.2
+  },
+  "gapWeak": [
+   0.1,
+   0.4,
+   0.9,
+   1.3,
+   1.4,
+   0.2
+  ],
+  "gapStrong": [
+   1.3,
+   1,
+   0.3,
+   0.2,
+   1.4,
+   14.1
+  ]
+ },
+ {
+  "seed": 4513,
+  "bin": "critic/c16_seed4513_y20.bin",
+  "day": 7302,
+  "warsADay": 4,
+  "frontAWar": 651,
+  "weak": {
+   "engaged": 0,
+   "near": 1.25,
+   "mid": 1.5,
+   "cutStill": 1.25,
+   "cutMoving": 0,
+   "farStill": 1.5,
+   "farMoving": 0.75,
+   "allyLand": 2,
+   "allyAway": 0,
+   "away": 1.5
+  },
+  "strong": {
+   "engaged": 0,
+   "near": 17.25,
+   "mid": 13.5,
+   "cutStill": 9.75,
+   "cutMoving": 0,
+   "farStill": 6.13,
+   "farMoving": 13.63,
+   "allyLand": 15.75,
+   "allyAway": 6,
+   "away": 8
+  },
+  "gapWeak": [
+   0.25,
+   0.5,
+   0,
+   0,
+   0.5,
+   0
+  ],
+  "gapStrong": [
+   0.5,
+   0.25,
+   0,
+   0,
+   0,
+   16.5
+  ]
+ },
+ {
+  "seed": 4877,
+  "bin": "1938",
+  "day": 62,
+  "warsADay": 4,
+  "frontAWar": 239,
+  "weak": {
+   "engaged": 3.88,
+   "near": 12.75,
+   "mid": 8.75,
+   "cutStill": 0.25,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 2.63,
+   "allyLand": 0.75,
+   "allyAway": 0,
+   "away": 0.25
+  },
+  "strong": {
+   "engaged": 28.5,
+   "near": 39.63,
+   "mid": 10.38,
+   "cutStill": 4.5,
+   "cutMoving": 0,
+   "farStill": 1.13,
+   "farMoving": 22.25,
+   "allyLand": 10.63,
+   "allyAway": 23,
+   "away": 19
+  },
+  "gapWeak": [
+   8.88,
+   2.13,
+   0.5,
+   1.25,
+   0,
+   0
+  ],
+  "gapStrong": [
+   22.88,
+   9.13,
+   5.25,
+   2.38,
+   0,
+   0
+  ]
+ },
+ {
+  "seed": 4877,
+  "bin": "critic/c16_seed4877_y20.bin",
+  "day": 7302,
+  "warsADay": 3,
+  "frontAWar": 2938,
+  "weak": {
+   "engaged": 0.33,
+   "near": 4.33,
+   "mid": 1.67,
+   "cutStill": 0.67,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 1.33,
+   "allyLand": 7.67,
+   "allyAway": 6.67,
+   "away": 1
+  },
+  "strong": {
+   "engaged": 0.33,
+   "near": 6,
+   "mid": 0.5,
+   "cutStill": 16.33,
+   "cutMoving": 3,
+   "farStill": 0,
+   "farMoving": 0,
+   "allyLand": 48.67,
+   "allyAway": 7.67,
+   "away": 12.33
+  },
+  "gapWeak": [
+   0.83,
+   1,
+   0.83,
+   0.33,
+   0.33,
+   1
+  ],
+  "gapStrong": [
+   0.67,
+   0.33,
+   0.17,
+   0.33,
+   0.67,
+   3.83
+  ]
+ },
+ {
+  "seed": 5521,
+  "bin": "critic/c16_seed5521_y20.bin",
+  "day": 7302,
+  "warsADay": 4,
+  "frontAWar": 1234,
+  "weak": {
+   "engaged": 0,
+   "near": 0.5,
+   "mid": 0,
+   "cutStill": 0,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 0,
+   "allyLand": 0.25,
+   "allyAway": 0,
+   "away": 4.25
+  },
+  "strong": {
+   "engaged": 0,
+   "near": 19,
+   "mid": 11.75,
+   "cutStill": 1,
+   "cutMoving": 0,
+   "farStill": 5.75,
+   "farMoving": 8.5,
+   "allyLand": 19.75,
+   "allyAway": 2.25,
+   "away": 19.25
+  },
+  "gapWeak": [
+   0,
+   0.25,
+   0,
+   0.25,
+   0,
+   0
+  ],
+  "gapStrong": [
+   0,
+   0.25,
+   0,
+   0,
+   0.38,
+   18.38
+  ]
+ },
+ {
+  "seed": 5683,
+  "bin": "critic/c16_seed5683_y25.bin",
+  "day": 9127,
+  "warsADay": 5,
+  "frontAWar": 2854,
+  "weak": {
+   "engaged": 0.1,
+   "near": 12.3,
+   "mid": 9.6,
+   "cutStill": 0.2,
+   "cutMoving": 0,
+   "farStill": 0.4,
+   "farMoving": 0.4,
+   "allyLand": 0,
+   "allyAway": 0,
+   "away": 3
+  },
+  "strong": {
+   "engaged": 0.5,
+   "near": 25.1,
+   "mid": 19.8,
+   "cutStill": 2.2,
+   "cutMoving": 0.4,
+   "farStill": 2.7,
+   "farMoving": 28.1,
+   "allyLand": 23.6,
+   "allyAway": 4.6,
+   "away": 22.4
+  },
+  "gapWeak": [
+   0.1,
+   1.5,
+   0.5,
+   0,
+   0.4,
+   9.8
+  ],
+  "gapStrong": [
+   0.3,
+   2,
+   1,
+   2.9,
+   4.5,
+   14.4
+  ]
+ },
+ {
+  "seed": 6151,
+  "bin": "critic/c16_seed6151_y20.bin",
+  "day": 7302,
+  "warsADay": 5,
+  "frontAWar": 458,
+  "weak": {
+   "engaged": 0.2,
+   "near": 1.3,
+   "mid": 0,
+   "cutStill": 0,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 1.2,
+   "allyLand": 0.4,
+   "allyAway": 1.8,
+   "away": 8.9
+  },
+  "strong": {
+   "engaged": 0.3,
+   "near": 16.5,
+   "mid": 16.5,
+   "cutStill": 3.2,
+   "cutMoving": 8.6,
+   "farStill": 6.3,
+   "farMoving": 39.7,
+   "allyLand": 14.2,
+   "allyAway": 10.1,
+   "away": 32.5
+  },
+  "gapWeak": [
+   0.1,
+   0,
+   0,
+   0.2,
+   0.6,
+   0.4
+  ],
+  "gapStrong": [
+   0.1,
+   0.4,
+   0,
+   0,
+   0,
+   16
+  ]
+ },
+ {
+  "seed": 6421,
+  "bin": "critic/c16_seed6421_y20.bin",
+  "day": 7302,
+  "warsADay": 3,
+  "frontAWar": 1836,
+  "weak": {
+   "engaged": 0.83,
+   "near": 6.67,
+   "mid": 4.5,
+   "cutStill": 2.33,
+   "cutMoving": 0,
+   "farStill": 0.67,
+   "farMoving": 0,
+   "allyLand": 3.67,
+   "allyAway": 0.67,
+   "away": 2.33
+  },
+  "strong": {
+   "engaged": 1.67,
+   "near": 7.67,
+   "mid": 13.5,
+   "cutStill": 2,
+   "cutMoving": 0,
+   "farStill": 5.83,
+   "farMoving": 5.17,
+   "allyLand": 10.83,
+   "allyAway": 11,
+   "away": 13.33
+  },
+  "gapWeak": [
+   0.67,
+   0.83,
+   1.83,
+   1,
+   1,
+   1.33
+  ],
+  "gapStrong": [
+   0.5,
+   0.67,
+   0.67,
+   1,
+   1.33,
+   3.5
+  ]
+ },
+ {
+  "seed": 7019,
+  "bin": "1938",
+  "day": 62,
+  "warsADay": 2,
+  "frontAWar": 312,
+  "weak": {
+   "engaged": 7.25,
+   "near": 8.25,
+   "mid": 5,
+   "cutStill": 0,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 0.5,
+   "allyLand": 0,
+   "allyAway": 0,
+   "away": 1
+  },
+  "strong": {
+   "engaged": 44.5,
+   "near": 36.5,
+   "mid": 9.5,
+   "cutStill": 0,
+   "cutMoving": 0,
+   "farStill": 1.25,
+   "farMoving": 44.25,
+   "allyLand": 0.5,
+   "allyAway": 0,
+   "away": 0
+  },
+  "gapWeak": [
+   4,
+   2.25,
+   0.25,
+   1.25,
+   0.5,
+   0
+  ],
+  "gapStrong": [
+   16.25,
+   8,
+   9.75,
+   1.5,
+   0.5,
+   0.5
+  ]
+ },
+ {
+  "seed": 7019,
+  "bin": "critic/c16_seed7019_y20.bin",
+  "day": 7302,
+  "warsADay": 4,
+  "frontAWar": 682,
+  "weak": {
+   "engaged": 0.5,
+   "near": 2.75,
+   "mid": 2.25,
+   "cutStill": 0,
+   "cutMoving": 0,
+   "farStill": 0.25,
+   "farMoving": 0,
+   "allyLand": 5.5,
+   "allyAway": 0.5,
+   "away": 4.25
+  },
+  "strong": {
+   "engaged": 1,
+   "near": 9.13,
+   "mid": 6,
+   "cutStill": 39,
+   "cutMoving": 15.5,
+   "farStill": 0.75,
+   "farMoving": 15.38,
+   "allyLand": 5,
+   "allyAway": 3.5,
+   "away": 19.25
+  },
+  "gapWeak": [
+   0,
+   0.13,
+   0.63,
+   0,
+   0.13,
+   1.88
+  ],
+  "gapStrong": [
+   1.13,
+   0.75,
+   0.38,
+   0.13,
+   0.38,
+   6.38
+  ]
+ },
+ {
+  "seed": 8167,
+  "bin": "critic/c16_seed8167_y20.bin",
+  "day": 7302,
+  "warsADay": 6,
+  "frontAWar": 1372,
+  "weak": {
+   "engaged": 0.42,
+   "near": 8.08,
+   "mid": 9,
+   "cutStill": 0,
+   "cutMoving": 0.67,
+   "farStill": 1,
+   "farMoving": 0.5,
+   "allyLand": 5,
+   "allyAway": 5.17,
+   "away": 2.67
+  },
+  "strong": {
+   "engaged": 0.25,
+   "near": 15.83,
+   "mid": 35.42,
+   "cutStill": 4.83,
+   "cutMoving": 3.17,
+   "farStill": 10.25,
+   "farMoving": 11.08,
+   "allyLand": 8.67,
+   "allyAway": 7.17,
+   "away": 20.5
+  },
+  "gapWeak": [
+   0.42,
+   0.42,
+   0.83,
+   1.67,
+   2.42,
+   2.33
+  ],
+  "gapStrong": [
+   0.58,
+   2,
+   3.67,
+   2.33,
+   2,
+   5.25
+  ]
+ },
+ {
+  "seed": 9203,
+  "bin": "critic/c16_seed9203_y28.bin",
+  "day": 10222,
+  "warsADay": 7,
+  "frontAWar": 1047,
+  "weak": {
+   "engaged": 0.14,
+   "near": 1,
+   "mid": 1.43,
+   "cutStill": 0.43,
+   "cutMoving": 0,
+   "farStill": 0,
+   "farMoving": 2,
+   "allyLand": 0.71,
+   "allyAway": 0.71,
+   "away": 1.86
+  },
+  "strong": {
+   "engaged": 0.43,
+   "near": 7.14,
+   "mid": 24.14,
+   "cutStill": 3.36,
+   "cutMoving": 0.86,
+   "farStill": 15.79,
+   "farMoving": 24.14,
+   "allyLand": 16.29,
+   "allyAway": 20,
+   "away": 30.29
+  },
+  "gapWeak": [
+   0.07,
+   0.21,
+   0.43,
+   0.14,
+   0.14,
+   0
+  ],
+  "gapStrong": [
+   0.07,
+   0.07,
+   0.43,
+   1,
+   1.29,
+   4.29
+  ]
+ }
+]

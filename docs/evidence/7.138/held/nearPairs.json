@@ -1,0 +1,522 @@
+[
+ {
+  "seed": 1129,
+  "bin": "critic/c16_seed1129_y20.bin",
+  "warsADay": 5,
+  "weakNearFree": 5.45,
+  "detail": {
+   "strongAttackAway long b2 r0.67-1.5": 0.05,
+   "strongAttackAway long b3 r0.67-1.5": 0.05,
+   "strongAttackAway long b3 r<0.67": 0.15,
+   "strongAttackAway long b3 r>1.5": 0.05,
+   "strongAttackCloses long b0 r0.67-1.5": 0.1,
+   "strongAttackCloses long b1 r0.67-1.5": 0.05,
+   "strongShiftAway long b3 r0.67-1.5": 0.35,
+   "strongShiftAway long b3 r<0.67": 0.15,
+   "strongShiftAway long b3 r>1.5": 0.45,
+   "strongShiftAway short b1 r0.67-1.5": 0.2,
+   "strongShiftAway short b1 r<0.67": 0.2,
+   "strongShiftAway short b1 r>1.5": 0.2,
+   "strongShiftCloses long b1 r0.67-1.5": 0.05,
+   "strongShiftCloses short b1 r>1.5": 0.2
+  },
+  "pairs": {
+   "strongAttackAway": {
+    "aWar": 0.3,
+    "gap": 6.54,
+    "strongOrg": 1
+   },
+   "strongAttackCloses": {
+    "aWar": 0.15,
+    "gap": 10.79,
+    "strongOrg": 1
+   },
+   "strongShiftAway": {
+    "aWar": 1.55,
+    "gap": 6.45,
+    "strongOrg": 0.99
+   },
+   "strongShiftCloses": {
+    "aWar": 0.25,
+    "gap": 7.23,
+    "strongOrg": 1
+   },
+   "weakMoves": {
+    "aWar": 0.05,
+    "gap": 2.43,
+    "strongOrg": 1
+   }
+  }
+ },
+ {
+  "seed": 1187,
+  "bin": "critic/c16_seed1187_y20.bin",
+  "warsADay": 4,
+  "weakNearFree": 8.5,
+  "detail": {
+   "strongAttackAway long b3 r0.67-1.5": 0.25,
+   "strongAttackAway short b1 r>1.5": 0.06,
+   "strongShiftAway long b2 r0.67-1.5": 0.19,
+   "strongShiftAway long b2 r<0.67": 0.06,
+   "strongShiftAway long b3 r0.67-1.5": 0.44,
+   "strongShiftAway long b3 r<0.67": 0.25,
+   "strongShiftAway long b3 r>1.5": 0.31,
+   "strongShiftAway short b0 r0.67-1.5": 0.06,
+   "strongShiftAway short b1 r0.67-1.5": 0.19,
+   "strongShiftCloses short b1 r0.67-1.5": 0.31,
+   "strongShiftCloses short b1 r>1.5": 0.06,
+   "strongShiftCloses short b2 r>1.5": 0.06
+  },
+  "pairs": {
+   "retreat": {
+    "aWar": 0.25,
+    "gap": 1.86,
+    "strongOrg": 1
+   },
+   "strongAttackAway": {
+    "aWar": 0.31,
+    "gap": 3.23,
+    "strongOrg": 1
+   },
+   "strongShiftAway": {
+    "aWar": 1.5,
+    "gap": 6.08,
+    "strongOrg": 1
+   },
+   "strongShiftCloses": {
+    "aWar": 0.44,
+    "gap": 6.24,
+    "strongOrg": 1
+   },
+   "weakMoves": {
+    "aWar": 0.13,
+    "gap": 5.33,
+    "strongOrg": 1
+   }
+  }
+ },
+ {
+  "seed": 2347,
+  "bin": "critic/c16_seed2347_y20.bin",
+  "warsADay": 3,
+  "weakNearFree": 8.75,
+  "detail": {
+   "strongAttackAway long b3 r0.67-1.5": 0.33,
+   "strongAttackAway long b3 r>1.5": 0.25,
+   "strongAttackAway short b1 r>1.5": 0.08,
+   "strongAttackCloses short b0 r<0.67": 0.08,
+   "strongAttackCloses short b1 r>1.5": 0.33,
+   "strongShiftAway long b3 r0.67-1.5": 0.42,
+   "strongShiftAway long b3 r>1.5": 0.33,
+   "strongShiftAway short b1 r<0.67": 0.25,
+   "strongShiftAway short b1 r>1.5": 0.17,
+   "strongShiftCloses long b0 r<0.67": 0.17,
+   "strongShiftCloses long b1 r<0.67": 0.17,
+   "strongShiftCloses short b0 r<0.67": 0.08,
+   "strongShiftCloses short b1 r<0.67": 0.08
+  },
+  "pairs": {
+   "retreat": {
+    "aWar": 0.33,
+    "gap": 2.13,
+    "strongOrg": 0.83
+   },
+   "strongAttackAway": {
+    "aWar": 0.67,
+    "gap": 6.56,
+    "strongOrg": 1
+   },
+   "strongAttackCloses": {
+    "aWar": 0.42,
+    "gap": 4.22,
+    "strongOrg": 1
+   },
+   "strongShiftAway": {
+    "aWar": 1.17,
+    "gap": 5.91,
+    "strongOrg": 1
+   },
+   "strongShiftCloses": {
+    "aWar": 0.5,
+    "gap": 9.14,
+    "strongOrg": 1
+   },
+   "weakMoves": {
+    "aWar": 0.08,
+    "gap": 8.13,
+    "strongOrg": 1
+   }
+  }
+ },
+ {
+  "seed": 3467,
+  "bin": "critic/c16_seed3467_y20.bin",
+  "warsADay": 5,
+  "weakNearFree": 2,
+  "detail": {
+   "strongAttackAway long b2 r<0.67": 0.1,
+   "strongAttackAway long b2 r>1.5": 0.15,
+   "strongAttackCloses short b0 r>1.5": 0.1,
+   "strongAttackCloses short b3 r>1.5": 0.05,
+   "strongShiftAway long b1 r<0.67": 0.1,
+   "strongShiftAway long b2 r<0.67": 0.15,
+   "strongShiftAway long b3 r<0.67": 0.15,
+   "strongShiftCloses short b0 r>1.5": 0.05,
+   "strongShiftCloses short b1 r>1.5": 0.05,
+   "strongShiftCloses short b3 r>1.5": 0.05
+  },
+  "pairs": {
+   "retreat": {
+    "aWar": 0.2,
+    "gap": 1.32,
+    "strongOrg": 1
+   },
+   "strongAttackAway": {
+    "aWar": 0.25,
+    "gap": 2.53,
+    "strongOrg": 1
+   },
+   "strongAttackCloses": {
+    "aWar": 0.15,
+    "gap": 6.11,
+    "strongOrg": 1
+   },
+   "strongShiftAway": {
+    "aWar": 0.4,
+    "gap": 6.02,
+    "strongOrg": 0.09
+   },
+   "strongShiftCloses": {
+    "aWar": 0.15,
+    "gap": 5.91,
+    "strongOrg": 1
+   },
+   "water": {
+    "aWar": 0.05,
+    "gap": 3,
+    "strongOrg": 1
+   },
+   "weakMoves": {
+    "aWar": 0.15,
+    "gap": 5.63,
+    "strongOrg": 1
+   }
+  }
+ },
+ {
+  "seed": 4877,
+  "bin": "1938",
+  "warsADay": 4,
+  "weakNearFree": 11.56,
+  "detail": {
+   "strongShiftAway long b1 r0.67-1.5": 0.19,
+   "strongShiftAway long b1 r>1.5": 0.13,
+   "strongShiftAway long b2 r0.67-1.5": 0.25,
+   "strongShiftAway long b2 r<0.67": 0.06,
+   "strongShiftAway long b2 r>1.5": 0.13,
+   "strongShiftAway long b3 r0.67-1.5": 0.5,
+   "strongShiftAway long b3 r<0.67": 0.5,
+   "strongShiftAway long b3 r>1.5": 0.13,
+   "strongShiftAway short b1 r0.67-1.5": 0.44,
+   "strongShiftAway short b1 r<0.67": 0.13,
+   "strongShiftAway short b1 r>1.5": 0.5,
+   "strongShiftAway short b2 r0.67-1.5": 0.13,
+   "strongShiftAway short b2 r>1.5": 0.25,
+   "strongShiftCloses long b1 r0.67-1.5": 0.13,
+   "strongShiftCloses short b0 r0.67-1.5": 0.75,
+   "strongShiftCloses short b0 r<0.67": 0.13,
+   "strongShiftCloses short b0 r>1.5": 0.38,
+   "strongShiftCloses short b1 r0.67-1.5": 0.94,
+   "strongShiftCloses short b1 r<0.67": 0.38,
+   "strongShiftCloses short b1 r>1.5": 0.25
+  },
+  "pairs": {
+   "bothStill": {
+    "aWar": 0.13,
+    "gap": 2.24,
+    "strongOrg": 1
+   },
+   "retreat": {
+    "aWar": 3.13,
+    "gap": 1.58,
+    "strongOrg": 0.94
+   },
+   "strongShiftAway": {
+    "aWar": 3.31,
+    "gap": 3.82,
+    "strongOrg": 1
+   },
+   "strongShiftCloses": {
+    "aWar": 2.94,
+    "gap": 2.78,
+    "strongOrg": 1
+   },
+   "weakMoves": {
+    "aWar": 0.56,
+    "gap": 2.61,
+    "strongOrg": 1
+   }
+  }
+ },
+ {
+  "seed": 4877,
+  "bin": "critic/c16_seed4877_y20.bin",
+  "warsADay": 3,
+  "weakNearFree": 4.25,
+  "detail": {
+   "strongAttackAway long b3 r0.67-1.5": 0.17,
+   "strongAttackAway long b3 r>1.5": 0.17,
+   "strongShiftAway long b1 r0.67-1.5": 0.08,
+   "strongShiftAway short b1 r0.67-1.5": 0.25,
+   "strongShiftCloses long b0 r0.67-1.5": 0.08,
+   "strongShiftCloses long b1 r<0.67": 0.08,
+   "strongShiftCloses short b0 r0.67-1.5": 0.08,
+   "strongShiftCloses short b1 r0.67-1.5": 0.33,
+   "strongShiftCloses short b2 r0.67-1.5": 0.17
+  },
+  "pairs": {
+   "retreat": {
+    "aWar": 0.67,
+    "gap": 3.59,
+    "strongOrg": 0.16
+   },
+   "strongAttackAway": {
+    "aWar": 0.33,
+    "gap": 4.62,
+    "strongOrg": 1
+   },
+   "strongShiftAway": {
+    "aWar": 0.33,
+    "gap": 3.04,
+    "strongOrg": 0.99
+   },
+   "strongShiftCloses": {
+    "aWar": 0.75,
+    "gap": 6.79,
+    "strongOrg": 0.97
+   }
+  }
+ },
+ {
+  "seed": 5683,
+  "bin": "critic/c16_seed5683_y25.bin",
+  "warsADay": 5,
+  "weakNearFree": 12.15,
+  "detail": {
+   "strongAttackAway long b3 r>1.5": 0.35,
+   "strongAttackCloses short b0 r0.67-1.5": 0.15,
+   "strongAttackCloses short b0 r>1.5": 0.1,
+   "strongAttackCloses short b1 r0.67-1.5": 0.1,
+   "strongAttackCloses short b1 r>1.5": 0.05,
+   "strongShiftAway long b3 r>1.5": 0.15,
+   "strongShiftAway short b1 r0.67-1.5": 0.1,
+   "strongShiftAway short b1 r<0.67": 0.05,
+   "strongShiftAway short b1 r>1.5": 0.1,
+   "strongShiftCloses short b1 r0.67-1.5": 0.05,
+   "strongShiftCloses short b1 r>1.5": 0.25,
+   "strongShiftCloses short b2 r0.67-1.5": 0.05
+  },
+  "pairs": {
+   "bothStill": {
+    "aWar": 0.05,
+    "gap": 3,
+    "strongOrg": 1
+   },
+   "retreat": {
+    "aWar": 0.1,
+    "gap": 1.51,
+    "strongOrg": 0.55
+   },
+   "strongAttackAway": {
+    "aWar": 0.35,
+    "gap": 4.27,
+    "strongOrg": 1
+   },
+   "strongAttackCloses": {
+    "aWar": 0.4,
+    "gap": 4.03,
+    "strongOrg": 1
+   },
+   "strongShiftAway": {
+    "aWar": 0.4,
+    "gap": 6.11,
+    "strongOrg": 0.99
+   },
+   "strongShiftCloses": {
+    "aWar": 0.35,
+    "gap": 4.93,
+    "strongOrg": 1
+   },
+   "weakMoves": {
+    "aWar": 0.4,
+    "gap": 5.75,
+    "strongOrg": 1
+   }
+  }
+ },
+ {
+  "seed": 6421,
+  "bin": "critic/c16_seed6421_y20.bin",
+  "warsADay": 3,
+  "weakNearFree": 7.08,
+  "detail": {
+   "strongAttackAway long b3 r0.67-1.5": 0.25,
+   "strongAttackAway long b3 r<0.67": 0.92,
+   "strongAttackAway long b3 r>1.5": 0.17,
+   "strongAttackAway short b0 r<0.67": 0.17,
+   "strongAttackAway short b1 r<0.67": 0.17,
+   "strongShiftAway long b3 r0.67-1.5": 0.08,
+   "strongShiftAway long b3 r<0.67": 0.67,
+   "strongShiftAway long b3 r>1.5": 0.08,
+   "strongShiftAway short b0 r<0.67": 0.08,
+   "strongShiftAway short b1 r0.67-1.5": 0.08,
+   "strongShiftAway short b1 r<0.67": 0.08,
+   "strongShiftCloses short b1 r<0.67": 0.08,
+   "strongShiftCloses short b2 r<0.67": 0.08
+  },
+  "pairs": {
+   "retreat": {
+    "aWar": 0.58,
+    "gap": 2.99,
+    "strongOrg": 0.03
+   },
+   "strongAttackAway": {
+    "aWar": 1.67,
+    "gap": 5.93,
+    "strongOrg": 0.13
+   },
+   "strongShiftAway": {
+    "aWar": 1.08,
+    "gap": 5.42,
+    "strongOrg": 0.23
+   },
+   "strongShiftCloses": {
+    "aWar": 0.17,
+    "gap": 6.74,
+    "strongOrg": 0.45
+   }
+  }
+ },
+ {
+  "seed": 7019,
+  "bin": "1938",
+  "warsADay": 2.5,
+  "weakNearFree": 14.1,
+  "detail": {
+   "strongAttackAway long b2 r0.67-1.5": 0.2,
+   "strongAttackAway long b2 r<0.67": 0.2,
+   "strongAttackAway long b3 r<0.67": 0.3,
+   "strongAttackCloses long b0 r<0.67": 0.2,
+   "strongAttackCloses short b0 r0.67-1.5": 0.1,
+   "strongAttackCloses short b0 r>1.5": 0.1,
+   "strongAttackCloses short b1 r0.67-1.5": 0.1,
+   "strongShiftAway long b1 r<0.67": 0.2,
+   "strongShiftAway long b2 r0.67-1.5": 0.2,
+   "strongShiftAway long b2 r<0.67": 0.1,
+   "strongShiftAway long b2 r>1.5": 0.1,
+   "strongShiftAway long b3 r0.67-1.5": 0.2,
+   "strongShiftAway long b3 r<0.67": 0.2,
+   "strongShiftAway long b3 r>1.5": 0.1,
+   "strongShiftAway short b0 r0.67-1.5": 0.1,
+   "strongShiftAway short b0 r<0.67": 0.1,
+   "strongShiftAway short b1 r0.67-1.5": 0.3,
+   "strongShiftAway short b1 r<0.67": 0.7,
+   "strongShiftAway short b1 r>1.5": 0.3,
+   "strongShiftAway short b2 r<0.67": 0.1,
+   "strongShiftCloses long b0 r<0.67": 0.1,
+   "strongShiftCloses short b0 r>1.5": 0.1,
+   "strongShiftCloses short b1 r0.67-1.5": 0.1,
+   "strongShiftCloses short b1 r<0.67": 0.1,
+   "strongShiftCloses short b2 r>1.5": 0.1,
+   "strongShiftCloses short b3 r0.67-1.5": 0.1
+  },
+  "pairs": {
+   "retreat": {
+    "aWar": 1.8,
+    "gap": 1.24,
+    "strongOrg": 0.56
+   },
+   "strongAttackAway": {
+    "aWar": 0.7,
+    "gap": 4.2,
+    "strongOrg": 1
+   },
+   "strongAttackCloses": {
+    "aWar": 0.5,
+    "gap": 5.84,
+    "strongOrg": 1
+   },
+   "strongShiftAway": {
+    "aWar": 2.7,
+    "gap": 2.99,
+    "strongOrg": 1
+   },
+   "strongShiftCloses": {
+    "aWar": 0.6,
+    "gap": 7.04,
+    "strongOrg": 0.99
+   },
+   "weakMoves": {
+    "aWar": 0.1,
+    "gap": 9.26,
+    "strongOrg": 1
+   }
+  }
+ },
+ {
+  "seed": 8167,
+  "bin": "critic/c16_seed8167_y20.bin",
+  "warsADay": 6,
+  "weakNearFree": 8,
+  "detail": {
+   "strongAttackAway long b3 r0.67-1.5": 0.04,
+   "strongAttackAway long b3 r<0.67": 0.04,
+   "strongAttackAway short b0 r0.67-1.5": 0.13,
+   "strongAttackCloses long b1 r<0.67": 0.04,
+   "strongAttackCloses short b0 r0.67-1.5": 0.08,
+   "strongAttackCloses short b0 r>1.5": 0.08,
+   "strongAttackCloses short b1 r<0.67": 0.13,
+   "strongAttackCloses short b1 r>1.5": 0.04,
+   "strongShiftAway long b3 r<0.67": 0.04,
+   "strongShiftAway short b1 r>1.5": 0.08,
+   "strongShiftAway short b2 r0.67-1.5": 0.17,
+   "strongShiftAway short b2 r>1.5": 0.17,
+   "strongShiftAway short b3 r>1.5": 0.17,
+   "strongShiftCloses long b0 r<0.67": 0.08,
+   "strongShiftCloses long b1 r0.67-1.5": 0.04,
+   "strongShiftCloses long b1 r<0.67": 0.04,
+   "strongShiftCloses short b0 r>1.5": 0.04,
+   "strongShiftCloses short b1 r0.67-1.5": 0.04,
+   "strongShiftCloses short b1 r<0.67": 0.08,
+   "strongShiftCloses short b2 r0.67-1.5": 0.08,
+   "strongShiftCloses short b2 r<0.67": 0.04
+  },
+  "pairs": {
+   "retreat": {
+    "aWar": 0.04,
+    "gap": 1.45,
+    "strongOrg": 0.96
+   },
+   "strongAttackAway": {
+    "aWar": 0.21,
+    "gap": 5.33,
+    "strongOrg": 1
+   },
+   "strongAttackCloses": {
+    "aWar": 0.38,
+    "gap": 5.18,
+    "strongOrg": 0.52
+   },
+   "strongShiftAway": {
+    "aWar": 0.63,
+    "gap": 7.08,
+    "strongOrg": 1
+   },
+   "strongShiftCloses": {
+    "aWar": 0.46,
+    "gap": 7.41,
+    "strongOrg": 1
+   }
+  }
+ }
+]

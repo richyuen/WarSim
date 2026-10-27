@@ -167,6 +167,45 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-733 · 2026-10-27 · proposed (the user's decision) — Fronts held and not fought: thin on both sides late; a standoff breaker read flat on the saves, no AT spent (PLAN 7.138)
+
+- **Context.** PLAN 7.138 (R16-B1), open as a defect by the user's rule (ADR-731 withdrawn, ADR-728): wars with a
+  land front of 100 cells or more are as many late as in year 1 and fought at 6–13 % of its rate; the next rule
+  was to aim at those fronts.
+- **Measured** (`docs/evidence/7.138/held.md`; new `tools/diag/warArmy.ts`, `nearPairs.ts`, `groupSplit.ts`,
+  `planWhy.ts`, `farStill.ts`, `frontHeld.ts`, `heldAb.ts`; 19 of the critic's run-16 late saves, year 1 from
+  three worlds). Per such war late, on a front of ~1,700 cells (year 1 ~280): the weaker side some 16 land
+  formations, 4 near the front, 0.35 engaged (year 1: 25–30, 8–13, 2.7–7.3); the stronger side 15 near, 0.5
+  engaged (29–40, 21–45), most of its near formations more than 60 cells from any enemy one, and two thirds of
+  its army far from the front (cut off by a neutral's land: 7019 y20's USA 198 of 282 free formations; beyond
+  the range; allies elsewhere; other landmasses). The near pairs that do not fight split three ways, ~0.6 a
+  war each: a standoff a sector apart (both hold, 5–7 cells between), a march away to another sector, an attack
+  elsewhere (ADR-702's ground).
+- **Rule read** (`standoff.patch`, not committed): a sector that holds with strength at least 1.0 (1.2) × its
+  threat marches on a standing enemy formation its threat counts. From 8 late saves × 60 days, engaged a
+  long-front war **0.850 → 0.799** (0.94 ×) at either ratio. The filter's bar was 1.5 × on saves (save A/Bs read
+  high before: ADR-723, ADR-728); no AT run, unseen seeds 1274 on kept. Code restored; the pin unchanged.
+- **Reading.** Contact late is held by how thin both sides are on long fronts, not by an order the operational
+  AI fails to give: six of its rules have now read flat (ADR-679, ADR-693, ADR-702, ADR-728, 7.128b's read, this
+  one). The one lever with a measured effect on contact is the army's size: PLAN 7.110b's rule raised the army
+  at war a war × 1.22 and engaged a war × 1.35 (ADR-692, ADR-693 b).
+- **Options:**
+  - **(a)** A numbered task: the land army of long-front wars late, both sides. Read first what holds it down
+    (the losses by system late, the economy of the weaker side, what it buys, the fold), then a rule on that
+    lever; AT on 10 unseen seeds from 1274 × 30 years against HEAD on them: engaged land formations a day per
+    war with a front of 100 cells or more in years 2–30 at least 1.15 × HEAD's, year 1 not below 0.95 ×; the
+    floors (land changing hands at least 2 % of the land cells each year, front battles every year, every
+    world); ADR-732's clauses not worse than HEAD's; a unit test, red without. 7.138 closed not done into it.
+    (Recommended: the one lever with a measured effect on contact.)
+  - **(b)** 7.138 closed not done, no rule; `held.md` to the next critic report, which judges it.
+  - **(c)** The late front by design (ADR-731's idea for real fronts: a war of manoeuvre, long fronts thinly
+    held and walked over), with a task to make it readable; the user's rule of 2026-10-27 set that aside, so
+    it is listed only for completeness.
+  - **(d)** As (a) or (b), and a numbered task for the cut-off army (the ferry's throughput, or passage through
+    a neutral): it would bring the stronger side's far army to the front's empty sectors; contact little moved
+    by it on this read.
+- **Meanwhile** the loop takes PLAN 7.141 (naval). No sim change.
+
 ### ADR-732 · 2026-10-27 · accepted (the user's decision, 2026-10-27) — The design: the largest by area may stay; change at the top is read by power and order (answers ADR-730, PLAN 7.140)
 
 - **Context.** Critic run 16 scores emergent dynamics 6, in part on "the same five giants for 13–23 years in a fifth
