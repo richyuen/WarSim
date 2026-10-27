@@ -15725,3 +15725,23 @@ Of 7.116 (open in PLAN.md):
   green.
   Read 2026-10-26 (`docs/evidence/7.133/measure.md`): the idle wings late are across the sea from the enemy; the
   sea ferry built for it (ADR-723, the user's decision: ADR-707's option b).
+
+<!-- moved 2026-10-27 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.137 (closed not done, ADR-727 a, the user's standing instruction) Aircraft 7, naval 7: the carriers die out. 18 carriers at the start; at year 20 none on 6421, 1129 and 4877
+  (`tools/diag/carriers.ts`), and no carrier group ever in training: the AI's fleet mix has no carrier (ADR-723).
+  AT: on 10 unseen seeds × 20 years (1191–1200; 1181–1190 holds 1187, a critic seed) against HEAD on the same seeds,
+  carriers afloat with a wing aboard at year 20 at least 6 a world on the mean (HEAD 0 on the three saves), sea battles a world-year in years 2–20 not below HEAD's; a unit test,
+  red without; the gate green.

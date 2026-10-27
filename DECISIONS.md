@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-727 · 2026-10-26 · accepted, option a (the user's standing instruction of 2026-10-26: the recommended option overnight) — Carriers kept afloat; PLAN 7.137's AT missed, 3.3 a world (PLAN 7.137)
+
+- **Context.** PLAN 7.137's AT: on 10 unseen seeds × 20 years, carriers afloat with a wing aboard at year 20 at least 6
+  a world, sea battles a world-year in years 2–20 not below HEAD's.
+- **AT** (`docs/evidence/7.137/at.md`, 1191–1200): carriers 1.8 → **3.3**, missed; sea battles late 8.66 → 8.40
+  (0.97 ×), missed by 0.26 a world-year; year 1 the same.
+- **Options:**
+  - **(a)** ADR-725 and ADR-726 kept, 7.137 closed not done; the read to the next critic report. (Recommended:
+    carriers built and manned where none were, the sea battles' fall within the seeds' spread.)
+  - **(b)** Both reverted.
+  - **(c)** As (a), and a numbered task for more carriers (a share of the navy in carriers, or two in training),
+    AT on 10 unseen seeds (1201 on).
+- **Decision** (2026-10-26, under the user's standing instruction to take the recommended options overnight): (a).
+
 ### ADR-726 · 2026-10-26 · accepted — The AI keeps two carrier groups afloat (PLAN 7.137, part 2)
 
 - **Context.** PLAN 7.137 after ADR-725: a carrier group delivered is manned, and no AI orders one (the fleet mix had

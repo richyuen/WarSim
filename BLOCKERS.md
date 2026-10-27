@@ -5,6 +5,11 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### RESOLVED 2026-10-26 (option a, the user's standing instruction: kept, 7.137 closed not done) · PLAN 7.137's AT missed: carriers 3.3 a world at year 20 on 1191–1200 (ADR-727)
+- **The bar:** carriers afloat with a wing aboard at year 20 at least 6 a world; sea battles late not below HEAD's.
+- **What moved** (`docs/evidence/7.137/at.md`): carriers 1.8 → 3.3; sea battles late 0.97 ×.
+- **What is left:** more carriers late (two worlds of ten end with none), to the next critic report.
+
 ### RESOLVED 2026-10-26 (option a, the user's standing instruction: the ferry kept, 7.133 closed not done) · PLAN 7.133's AT missed: the sea ferry 1.08 × late on 1171–1180 (ADR-724)
 - **The bar:** on 10 unseen seeds × 20 years, sorties aloft a world-hour in years 2–20 at least 1.5 × HEAD's, year 1
   not below 0.9 ×.

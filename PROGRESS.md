@@ -24026,3 +24026,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a year-20 save over 120 days cannot see attrition: the A/B promised 1.5–2.3 ×, 20 years from 1938 gave
   1.08 ×. Saves picked by the critic for an empty sky regress too (as in 7.130).
 - **Next:** PLAN 7.137 (carriers), then `npm run check:review` and critic run 16 (PLAN 7.5).
+
+## 2026-10-26 — PLAN 7.137: carriers built and manned (ADR-725, ADR-726); the AT missed 3.3 a world, closed not done (ADR-727 a)
+
+- **Part 1** (`e40a33c5`, ADR-725): a carrier group delivered carries a naval bomber group aboard each carrier
+  (`manDecks`, `ScenarioRules.carrierWing`), their gold in its price (4,172). `seaTemplates` restated (a fleet's
+  price is its ships' and its carriers' air groups'); manpower stays the crews (`fleets1938`).
+- **Part 2** (`de59f92d`, ADR-726): a battle fleet's nation with fewer than 4 carriers afloat orders a carrier group
+  first. "None afloat" first: one group a world by the A/B, too few. Pin unchanged.
+- **AT** (1191–1200 × 20, `seaYears.ts`): carriers manned at year 20 1.8 → 3.3 (bar 6); sea battles late 8.66 → 8.40
+  (0.97 ×). Missed; kept under the user's standing instruction (ADR-727 a). Seeds 1191–1200 spent.
+- **Next:** `npm run check:review`, then critic run 16 (PLAN 7.5).

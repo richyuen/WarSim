@@ -60,12 +60,6 @@ world; performance 5 → 6): R15-B1 and R15-B2 are PLAN 7.128 and 7.129; the dim
 7.130–7.133 (naval's panel is 7.126). A task each, split when taken up. Unseen seeds: 1101 on, ten a task, none reused,
 none a seed the critic has run (`critic/c*_seed*`):
 
-- [ ] 7.137 Aircraft 7, naval 7: the carriers die out. 18 carriers at the start; at year 20 none on 6421, 1129 and 4877
-  (`tools/diag/carriers.ts`), and no carrier group ever in training: the AI's fleet mix has no carrier (ADR-723).
-  AT: on 10 unseen seeds × 20 years (1191–1200; 1181–1190 holds 1187, a critic seed) against HEAD on the same seeds,
-  carriers afloat with a wing aboard at year 20 at least 6 a world on the mean (HEAD 0 on the three saves), sea battles a world-year in years 2–20 not below HEAD's; a unit test,
-  red without; the gate green.
-
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -420,3 +414,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.132 Naval 7: a sea battle seen close. A sea battle at 15–150 m/px is a few small hulls far apart (3613's […]
 - [x] 7.130 (closed not done, ADR-721 a, the user's decision) Emergent dynamics 6: the top five stand still. Beyond 7.128's contact: the longest run of years with the same […]
 - [x] 7.133 (closed not done, ADR-724 a, the user's standing instruction) Aircraft 7: an empty sky late. At 6421's year 20, 2 sorties aloft in the whole world on the sampled hour; […]
+- [x] 7.137 (closed not done, ADR-727 a, the user's standing instruction) Aircraft 7, naval 7: the carriers die out. 18 carriers at the start; at year 20 none on 6421, 1129 and 4877 […]
