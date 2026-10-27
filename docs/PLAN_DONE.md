@@ -15661,3 +15661,23 @@ Of 7.116 (open in PLAN.md):
   the gate green.
   Done 2026-10-26 on HEAD, no code change (`docs/evidence/7.131/at.md`): 6421's year 28 58.4 and 56.4 s, longest gap
   262 ms; 4877's years 21–23 99.6 s. 7.129's tick (7.99 → 5.41 ms) moved it.
+
+<!-- moved 2026-10-27 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.132 Naval 7: a sea battle seen close. A sea battle at 15–150 m/px is a few small hulls far apart (3613's
+  Spanish cruiser squadron against a British transport group of 300, `critic/shots/c15e_3613_sea_01_row_live_1.png`);
+  the late sea war is a fifth of year 1's (ADR-706 a: no rule for it). AT: on that case and 4 more sea battles from the
+  history's rows, the row's press ends with ship elements of both sides on the screen, the nearest enemy hulls within
+  a third of the view's width, each hull at least 12 px long; `seaBattleSeen1938` and `seaRow1938` green; the gate green.

@@ -68,11 +68,6 @@ none a seed the critic has run (`critic/c*_seed*`):
   Read 2026-10-26 (`docs/evidence/7.130/at.md`, 1151–1160): HEAD 12, mean 8.3, 27.8 %; the rule tried (a far
   member's separate peace, `rule.patch`) 19, 9.9, 34.4 %; missed. Waits on the user (ADR-721).
 
-- [ ] 7.132 Naval 7: a sea battle seen close. A sea battle at 15–150 m/px is a few small hulls far apart (3613's
-  Spanish cruiser squadron against a British transport group of 300, `critic/shots/c15e_3613_sea_01_row_live_1.png`);
-  the late sea war is a fifth of year 1's (ADR-706 a: no rule for it). AT: on that case and 4 more sea battles from the
-  history's rows, the row's press ends with ship elements of both sides on the screen, the nearest enemy hulls within
-  a third of the view's width, each hull at least 12 px long; `seaBattleSeen1938` and `seaRow1938` green; the gate green.
 - [ ] 7.133 Aircraft 7: an empty sky late. At 6421's year 20, 2 sorties aloft in the whole world on the sampled hour;
   late air battles 181 a world-year, unchanged (ADR-707 a: no rule for reach) (`critic/c15_u_6421.json`,
   `critic/shots/c15u_6421_f0_0250m.png`). AT: on 10 unseen seeds × 20 years against HEAD on the same seeds, mean sorties
@@ -430,3 +425,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.128 (closed not done, ADR-716 a, ADR-717 a, ADR-718 a, the user's decision; to the next critic report) R15-B1: the land war got thinner. Same 48 seeds `311988d` → HEAD: engaged land formations a day in year 1 […]
 - [x] 7.135 (closed not done, ADR-718 a, the user's decision) Year 1's other half (from 7.128a, ADR-716): with no fold, year 1's land contact on 1111–1120 is 0.939 × […]
 - [x] 7.131 Performance 6: a late year at Max in the page. Beyond 7.129's tick: 6421's year 28 is 81.5 s at Max in the […]
+- [x] 7.132 Naval 7: a sea battle seen close. A sea battle at 15–150 m/px is a few small hulls far apart (3613's […]

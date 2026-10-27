@@ -13,6 +13,27 @@ import { Frame, isShipFrame } from '../../shared/unitLooks';
 export const ATLAS_FRAME = 64;
 export const ATLAS_FRAMES = Object.keys(Frame).length;
 
+/**
+ * Each ship frame's hull from stern to bow along its facing, atlas px from the frame's middle (the
+ * frames below draw them; PLAN 7.132 reads a hull's length on the screen from them).
+ */
+const SHIP_HULL: Readonly<Partial<Record<Frame, readonly [number, number]>>> = {
+  [Frame.ship]: [-28, 30],
+  [Frame.battleship]: [-30, 31],
+  [Frame.carrier]: [-30, 30],
+  [Frame.submarine]: [-26, 26],
+  [Frame.transport]: [-24, 26],
+  [Frame.destroyer]: [-22, 24],
+};
+const sternOf = (f: Frame): number => SHIP_HULL[f]![0];
+const bowOf = (f: Frame): number => SHIP_HULL[f]![1];
+
+/** A ship frame's hull length as a share of the sprite's side, its outline left out; 0 for what is no ship. */
+export function shipHullShare(frame: number): number {
+  const h = SHIP_HULL[frame as Frame];
+  return h ? (h[1] - h[0]) / ATLAS_FRAME : 0;
+}
+
 /** How far the gun of each turret reaches from its ring, atlas px. */
 const GUN_LIGHT = 26;
 const GUN_MEDIUM = 29;
@@ -145,13 +166,13 @@ export function drawUnitAtlas(): HTMLCanvasElement {
   };
   // A ship of no class of its own (a cruiser's frame): a pointed hull, two turrets and a bridge.
   frame(Frame.ship, (g) => {
-    pointed(g, 30, -28, 11);
+    pointed(g, bowOf(Frame.ship), sternOf(Frame.ship), 11);
     gunTurret(g, 15, 5, 7, 1);
     bridge(g, -10, 4, 5, true);
     gunTurret(g, -19, 5, 7, -1);
   });
   frame(Frame.battleship, (g) => {
-    pointed(g, 31, -30, 12);
+    pointed(g, bowOf(Frame.battleship), sternOf(Frame.battleship), 12);
     gunTurret(g, 18, 6, 8, 1);
     gunTurret(g, 7, 6, 6, 1);
     bridge(g, -12, 0, 6, true);
@@ -159,7 +180,7 @@ export function drawUnitAtlas(): HTMLCanvasElement {
   });
   frame(Frame.carrier, (g) => {
     g.beginPath();
-    g.rect(-30, -11, 60, 22);
+    g.rect(sternOf(Frame.carrier), -11, bowOf(Frame.carrier) - sternOf(Frame.carrier), 22);
     g.stroke();
     g.fill();
     // The flight deck's edges and its centre line, dark; the island to starboard.
@@ -177,7 +198,7 @@ export function drawUnitAtlas(): HTMLCanvasElement {
   });
   frame(Frame.submarine, (g) => {
     g.beginPath();
-    g.ellipse(0, 0, 26, 5.5, 0, 0, Math.PI * 2);
+    g.ellipse(0, 0, bowOf(Frame.submarine), 5.5, 0, 0, Math.PI * 2);
     g.stroke();
     g.fill();
     g.fillStyle = SHIP_DETAIL;
@@ -185,10 +206,10 @@ export function drawUnitAtlas(): HTMLCanvasElement {
   });
   frame(Frame.transport, (g) => {
     g.beginPath();
-    g.moveTo(26, 0);
+    g.moveTo(bowOf(Frame.transport), 0);
     g.lineTo(18, -11);
-    g.lineTo(-24, -11);
-    g.lineTo(-24, 11);
+    g.lineTo(sternOf(Frame.transport), -11);
+    g.lineTo(sternOf(Frame.transport), 11);
     g.lineTo(18, 11);
     g.closePath();
     g.stroke();
@@ -201,7 +222,7 @@ export function drawUnitAtlas(): HTMLCanvasElement {
     bridge(g, -21, -12, 6, true);
   });
   frame(Frame.destroyer, (g) => {
-    pointed(g, 24, -22, 6.5);
+    pointed(g, bowOf(Frame.destroyer), sternOf(Frame.destroyer), 6.5);
     gunTurret(g, 12, 3.5, 5, 1);
     bridge(g, -4, 4, 3.5, true);
     gunTurret(g, -14, 3.5, 5, -1);

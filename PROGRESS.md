@@ -23978,3 +23978,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   moved it; no rule, the pin unchanged.
 - **Margin:** 1.6 s under the bar on the worse read; two reads differ by ~4 %, so the next critic may read either side.
 - **Next:** PLAN 7.132 (naval: a sea battle seen close) while ADR-721 waits.
+
+## 2026-10-26 — PLAN 7.132: a sea battle seen close, a ship's hull at T2 at least 13 px (ADR-722), done
+
+- **Start:** gate green on `6d343679`; critic not due; ADR-721 waits on the user.
+- **Read** (`docs/evidence/7.132/at.md`; `tools/diag/seaPairs.ts`, new): the critic's battle is on HEAD in 3613 with
+  Germany at war with Poland and Britain, hour 1268, British transports against a cruiser squadron 20.4 km apart;
+  four more rows of that game (destroyers; a battle fleet against submarines and against destroyers; cruisers
+  against destroyers). Rows of 1161–1166 pair at 3–19 km, most 6–12.
+- **HEAD** (`tests/e2e/seaClose1938.spec.ts`, new, 1600 × 900): from each row both sides on the screen and within a
+  third of the width (the critic's 32.6 %); the least hull 5.3–7.8 px: at T2 a ship was an element sprite of
+  0.026 cells like any element.
+- **Change:** a ship frame's element sprite at T2 is at least a 13-px hull over the class's hull share of its
+  atlas frame (`shipElementMinPx`, `shipHullShare`). Render only; the pin unchanged. Least hull 13.0–15.0 px.
+  T3's 26-px table tried first: a fleet's ships lay over each other bow to stern (slots 13 px apart at 47 m/px).
+- **Tests:** `shipElementSize` (new, red without), `seaClose1938` (new, red on HEAD); the naval specs green
+  (`seaRow1938`'s Speed x1 test missed both sides in one frame under a 12-spec parallel run, green alone twice).
+- **Left** (ADR-722): from about 50 m/px a column under way touches end to end and a wake falls on the hull astern.
+- **Gotcha:** `cat > file` with no input in a Bash call waits for ever; and a Playwright run from `tests/e2e`
+  finds no projects (run it from the root).
+- **Next:** PLAN 7.133 (aircraft: an empty sky late) while ADR-721 waits.

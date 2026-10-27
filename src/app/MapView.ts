@@ -47,10 +47,10 @@ import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
 import { MapRenderer } from '../render/map/MapRenderer';
 import { coastBit, coastMask, nearestSure, type CoastMask } from '../shared/landMask';
 import { cityIndex, groundCap, scatter, SCATTER_STRIDE, type Scatter, type ScatterWorld } from '../render/map/scatter';
-import { ATLAS_FRAMES, drawUnitAtlas } from '../render/units/atlas';
+import { ATLAS_FRAMES, drawUnitAtlas, shipHullShare } from '../render/units/atlas';
 import { marchFraction, PROXY_STRIDE, ProxyRenderer } from '../render/units/ProxyRenderer';
 import { appendTurrets, TurretAims } from '../render/units/turrets';
-import { SLOT_GAP_CELLS, shipFrameMinPx, shipSideCells } from '../render/units/ships';
+import { SLOT_GAP_CELLS, shipElementMinPx, shipFrameMinPx, shipSideCells } from '../render/units/ships';
 import { appendWakes } from '../render/units/wakes';
 import { contactLines, drawContactLines, type ContactForm, type ContactLine } from '../render/units/contactLines';
 import { drawEnemyPointers, enemyPointers, POINTER_FONT, type EnemyPointer, type PointerSource } from '../render/units/enemyPointers';
@@ -117,8 +117,13 @@ const ELEMENT_MIN_PX = 5;
  * are at ELEMENT_MIN_PX.
  */
 export const TANK_ELEMENT_MIN_PX = 8;
-/** `TANK_ELEMENT_MIN_PX` by atlas frame, for the renderer: the hulls and the small mark. */
-const ELEMENT_FRAME_MIN_PX: readonly number[] = Array.from({ length: ATLAS_FRAMES }, (_, f) => (turretOf(f) >= 0 || f === Frame.tankSmall ? TANK_ELEMENT_MIN_PX : 0));
+/**
+ * The least size of each frame's element sprite at T2, CSS px, for the renderer: `TANK_ELEMENT_MIN_PX`
+ * for the tank hulls and the small mark, a ship's whose hull is SHIP_ELEMENT_MIN_HULL_PX (PLAN 7.132).
+ */
+const ELEMENT_FRAME_MIN_PX: readonly number[] = Array.from({ length: ATLAS_FRAMES }, (_, f) =>
+  isShipFrame(f) ? shipElementMinPx(f) : turretOf(f) >= 0 || f === Frame.tankSmall ? TANK_ELEMENT_MIN_PX : 0,
+);
 /** Where the camera goes for an event of the ticker (`showPlace`, PLAN 3.12c): this many km across the view, a country and its neighbours. */
 const PLACE_VIEW_KM = 1500;
 /** T3 (PLAN 2.6): a figure is at least this many px, so that a block reads at 30 m/px. */
@@ -1626,6 +1631,23 @@ export class MapView {
   /** Side of an element sprite in CSS px (the shader's rule: ELEMENT_CELLS, at least ELEMENT_MIN_PX, × the size setting). */
   get elementPx(): number {
     return Math.max(ELEMENT_CELLS * sizeScale * this.controller.cam.scale, ELEMENT_MIN_PX) * this.unitScale;
+  }
+
+  /**
+   * The hull of element `i`'s ship on the screen, CSS px from stern to bow, by the shader's rule of
+   * the layer that draws most of it (the elements at T2, the figures at T3); 0 for what is no ship
+   * (PLAN 7.132; tests).
+   */
+  shipHullPx(i: number): number {
+    const frame = this.elementFrame(i);
+    const share = shipHullShare(frame);
+    if (share === 0) return 0;
+    const scale = this.controller.cam.scale;
+    const side =
+      this.shares.individuals > 0.5
+        ? Math.max(shipSideCells(frame, this.geo.kmPerCell) * scale, FIGURE_MIN_PX, this.shipMinPx(SLOT_GAP_CELLS * sizeScale * scale)[frame]!)
+        : Math.max(ELEMENT_CELLS * sizeScale * scale, ELEMENT_MIN_PX, ELEMENT_FRAME_MIN_PX[frame]!);
+    return side * this.unitScale * share;
   }
 
   /**

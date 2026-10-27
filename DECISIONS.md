@@ -167,6 +167,31 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-722 · 2026-10-26 · accepted — A ship's hull at T2 at least 13 px, every class (PLAN 7.132)
+
+- **Context.** Critic run 15, naval 7: "a sea battle at 15–150 m/px is a few small hulls far apart" (seed 3613,
+  Germany at war with Poland and Britain; British transports against a Nationalist Spanish cruiser squadron, its
+  row at 46.8 m/px). AT: on that case and 4 more rows, from the row's press ship elements of both sides on the
+  screen, the nearest enemy hulls within a third of the view's width, each hull at least 12 px long.
+- **Read** (`docs/evidence/7.132/at.md`; `tools/diag/seaPairs.ts`, new; `tests/e2e/seaClose1938.spec.ts`, new):
+  the critic's battle is on HEAD at hour 1268, 20.4 km; four more rows of the same game (destroyers, a battle
+  fleet against submarines and against destroyers, cruisers against destroyers). On HEAD both sides on the screen
+  and within a third of the width in all five (the critic's 32.6 %); the least hull 5.3–7.8 px: at T2 a ship was
+  an element sprite of 0.026 cells, at least 5 px, as any element.
+- **Decision.** A ship frame's element sprite at T2 is at least `SHIP_ELEMENT_MIN_HULL_PX` (13) over its hull's
+  share of the atlas frame (`shipElementMinPx`, `shipHullShare`; the frames draw from `SHIP_HULL`): a 13-px hull
+  for every class, as every element is the same size at T2. Render only; the pin unchanged; the row's frame as
+  it was.
+- **Not chosen.** T3's least sizes at T2 (`SHIP_FRAME_MIN_PX`, 26 px for a battleship): a fleet's slots are
+  0.03 cells apart (13 px at 47 m/px), and the ships lay over each other bow to stern. A rule that brings fleets
+  within a nearer range (`navalCombat`'s closing): not needed for the AT, and it would move who reaches whom.
+- **Effect.** The five rows' least hull 13.0–15.0 px (bar 12); nearest of the two sides 7.2–32.6 % of the width.
+- **Left** (to the next critic report): from about 50 m/px a fleet's slots are closer than 13 px, so a column
+  under way touches end to end (60 m/px: three ships read as one bar) and a ship's wake falls on the hull astern;
+  wider spacing is the sim's element layout.
+- **Tests.** `shipElementSize` (new, red without), `seaClose1938` (new, red on HEAD: 5.3 px); the naval specs
+  green.
+
 ### ADR-721 · 2026-10-26 · proposed, the user's decision — The top five stand still: a far member's separate peace tried, the AT missed; HEAD meets the figures (PLAN 7.130)
 
 - **Context.** PLAN 7.130 (critic run 15, emergent 6): the longest run of years with the same five largest nations

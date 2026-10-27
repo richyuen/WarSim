@@ -21,7 +21,7 @@
  * about 19 px and a submarine's 15 at 20 m/px, the classes in their order (ADR-548). Closer in,
  * where a ship is drawn its own length, the proportions are true again.
  */
-import { ATLAS_FRAMES } from './atlas';
+import { ATLAS_FRAMES, shipHullShare } from './atlas';
 import { Frame } from '../../shared/unitLooks';
 
 /** Metres from bow to stern, by frame, of the sprite's side: the battleship's whole. */
@@ -86,3 +86,19 @@ export function shipFrameMinPx(slotPx: number): number[] {
 
 /** The same where there is no room to spare: SHIP_MIN_PX for a battleship. */
 export const SHIP_FRAME_MIN_PX: readonly number[] = shipFrameMinPx(0);
+
+/**
+ * A ship's least hull at T2, CSS px from stern to bow, before the unit size (PLAN 7.132, critic run 15:
+ * "a sea battle at 15–150 m/px is a few small hulls far apart"): a ship was an element sprite of
+ * 0.026 cells like any other, its hull 5–8 px at a sea battle row's 47–69 m/px. Every class the same,
+ * as every element is at T2; no more, for a fleet's ships stand SLOT_GAP_CELLS apart (13 px at
+ * 47 m/px): T3's least sizes (`SHIP_FRAME_MIN_PX`, 26 px for a battleship) laid them over each other
+ * bow to stern.
+ */
+export const SHIP_ELEMENT_MIN_HULL_PX = 13;
+
+/** The least side of a ship of `frame`'s element sprite at T2, CSS px: its hull SHIP_ELEMENT_MIN_HULL_PX long; 0 for what is no ship. */
+export function shipElementMinPx(frame: number): number {
+  const share = shipHullShare(frame);
+  return share > 0 ? SHIP_ELEMENT_MIN_HULL_PX / share : 0;
+}
