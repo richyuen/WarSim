@@ -23968,3 +23968,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Left standing:** worktree `C:/Git/WarSim_base` at `3895b4fa` with a `node_modules` junction; remove the junction
   first, never `worktree remove --force`.
 - **Next:** PLAN 7.131 while ADR-721 waits.
+
+## 2026-10-26 — PLAN 7.131: a late year at Max in the page under 60 s on HEAD, done (no code change)
+
+- **Start:** gate green on `a0dec592`; critic not due; ADR-721 waits on the user.
+- **Measured** (`docs/evidence/7.131/at.md`): the critic's page measure with its view (`tools/diag/maxStalls.ts`, now
+  with `CAM=cx,cy,m`), production build, alone. 6421's year 28 **58.4, 56.4 s** (run 15 81.5; bar 60), longest gap
+  262 ms; 4877's years 21–23 **99.6 s** (run 15 111.7; bar 112). 7.129's tick (7.99 → 5.41 ms, ADR-719, ADR-720)
+  moved it; no rule, the pin unchanged.
+- **Margin:** 1.6 s under the bar on the worse read; two reads differ by ~4 %, so the next critic may read either side.
+- **Next:** PLAN 7.132 (naval: a sea battle seen close) while ADR-721 waits.

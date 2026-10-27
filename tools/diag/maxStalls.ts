@@ -6,7 +6,8 @@
  *
  * Usage: `npm run build`, `npx vite preview --port 5299`, then
  * `npx tsx tools/diag/maxStalls.ts <seed> <state.bin | -> [years = 1] [out.json] [size]`. Run alone. `-`: no
- * save, the 1938 world from its start; `size` the map's (S, M, L, XL).
+ * save, the 1938 world from its start; `size` the map's (S, M, L, XL). `CAM=cx,cy,m` sets the view first
+ * (the critic's run 15: `CAM=1100,267,3000`, Berlin at 3,000 m/px; PLAN 7.131).
  */
 /* eslint-disable @typescript-eslint/no-explicit-any -- the page's debug handle, `window.__warsim`, is read untyped */
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -36,6 +37,14 @@ if (bytes)
     return (window as any).__warsim.sim.load(b);
   });
 await page.waitForTimeout(3000);
+// `CAM=cx,cy,m`: the view's centre cell and metres a pixel during the run (the critic's run 15 looks at
+// Berlin, `CAM=1100,267,3000`); unset, the view the page opens with.
+const cam = process.env.CAM?.split(',').map(Number) as [number, number, number] | undefined;
+if (cam)
+  await page.evaluate(([cx, cy, m]) => {
+    const v = (window as any).__warsim.view;
+    v.controller.set({ cx, cy, scale: (v.metresPerPx * v.controller.cam.scale) / m });
+  }, cam);
 await page.evaluate(() => {
   const w = (window as any).__warsim;
   w.__gaps = [];

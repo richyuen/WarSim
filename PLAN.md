@@ -67,10 +67,7 @@ none a seed the critic has run (`critic/c*_seed*`):
   land moved in the last five years not below 20 %; a unit test, red without; the gate green.
   Read 2026-10-26 (`docs/evidence/7.130/at.md`, 1151–1160): HEAD 12, mean 8.3, 27.8 %; the rule tried (a far
   member's separate peace, `rule.patch`) 19, 9.9, 34.4 %; missed. Waits on the user (ADR-721).
-- [ ] 7.131 Performance 6: a late year at Max in the page. Beyond 7.129's tick: 6421's year 28 is 81.5 s at Max in the
-  page (`critic/c15_l_6421.json`), past ADR-698's 45–60 s a late year. AT: in the page from `critic/c15_seed6421_y27.bin`,
-  year 28 at Max at most 60 s, alone, two reads; no stall over 500 ms; 4877's late years at Max not above run 15's 112 s;
-  the gate green.
+
 - [ ] 7.132 Naval 7: a sea battle seen close. A sea battle at 15–150 m/px is a few small hulls far apart (3613's
   Spanish cruiser squadron against a British transport group of 300, `critic/shots/c15e_3613_sea_01_row_live_1.png`);
   the late sea war is a fifth of year 1's (ADR-706 a: no rule for it). AT: on that case and 4 more sea battles from the
@@ -432,3 +429,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.127 (closed not done, ADR-715 a, the user's decision) The critic's Poland: a first burst off Germany on fewer than `MASSED_MEN`. `nukePoland1938`'s set-up (10 […]
 - [x] 7.128 (closed not done, ADR-716 a, ADR-717 a, ADR-718 a, the user's decision; to the next critic report) R15-B1: the land war got thinner. Same 48 seeds `311988d` → HEAD: engaged land formations a day in year 1 […]
 - [x] 7.135 (closed not done, ADR-718 a, the user's decision) Year 1's other half (from 7.128a, ADR-716): with no fold, year 1's land contact on 1111–1120 is 0.939 × […]
+- [x] 7.131 Performance 6: a late year at Max in the page. Beyond 7.129's tick: 6421's year 28 is 81.5 s at Max in the […]

@@ -15640,3 +15640,24 @@ Of 7.116 (open in PLAN.md):
   Measured (2026-10-26, `docs/evidence/7.135/measure.md`): on the critic's 48 seeds no fold reads 1.027 × `311988d`
   (se 0.014), HEAD 0.888 ×: no other half, the fold is the whole fall; 7.128a's 0.939 was the 10-seed sample. No
   rule; seeds 1131–1140 not spent; waits on the user (ADR-718, with ADR-716; BLOCKERS).
+
+<!-- moved 2026-10-27 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.131 Performance 6: a late year at Max in the page. Beyond 7.129's tick: 6421's year 28 is 81.5 s at Max in the
+  page (`critic/c15_l_6421.json`), past ADR-698's 45–60 s a late year. AT: in the page from `critic/c15_seed6421_y27.bin`,
+  year 28 at Max at most 60 s, alone, two reads; no stall over 500 ms; 4877's late years at Max not above run 15's 112 s;
+  the gate green.
+  Done 2026-10-26 on HEAD, no code change (`docs/evidence/7.131/at.md`): 6421's year 28 58.4 and 56.4 s, longest gap
+  262 ms; 4877's years 21–23 99.6 s. 7.129's tick (7.99 → 5.41 ms) moved it.
