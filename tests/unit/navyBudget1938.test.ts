@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
-import { BATTLE_FLEET_INCOME, budgetOf, FEW_FORMATIONS, NAVY_SHARE, peaceShare, RESERVE_MONTHS, wantsFerry, wantsTransport } from '../../src/sim/ai/economic';
+import { BATTLE_FLEET_INCOME, budgetOf, FEW_FORMATIONS, NAVY_SHARE, outnumberedOnLand, peaceShare, RESERVE_MONTHS, wantsFerry, wantsTransport } from '../../src/sim/ai/economic';
 import { frontReach } from '../../src/sim/ai/invasion';
 import { neighbours4 } from '../../src/sim/nav/grid';
 import { passageOf } from '../../src/sim/systems/movement';
@@ -235,7 +235,7 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
   // Norway's army of 1938 stands just under its peacetime share (aggression 0), Brazil's at 1.9 of it.
   // `four`: Norway's three divisions of 1938 and a fourth like them, each bled to half, so that
   // its army is over FEW_FORMATIONS and under its peacetime share (PLAN 7.49c, ADR-590).
-  const setUp = (opts: { tag: string; enemy?: string; army: boolean; bleed?: boolean; flotilla?: boolean; four?: boolean }): { s: Sim; w: World; NOR: number } => {
+  const setUp = (opts: { tag: string; enemy?: string; army: boolean; bleed?: boolean; flotilla?: boolean; four?: boolean; foeArmy?: boolean }): { s: Sim; w: World; NOR: number } => {
     const s = peaceful();
     const w = s.world;
     const NOR = id(opts.tag);
@@ -263,6 +263,12 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
       expect(navyUpkeep(w, NOR)).toBeLessThan(NAVY_SHARE * budgetOf(w, NOR, monthlyAccounts(w, T)).income);
     }
     if (opts.enemy) expect(declareWar(w, NOR, id(opts.enemy), true)).not.toBeNull();
+    // `foeArmy: false`: the enemy's land formations gone (its fleets kept), so that it is not
+    // outnumbered on its land front (PLAN 7.146, ADR-739).
+    if (opts.enemy && opts.foeArmy === false) {
+      const FOE = id(opts.enemy);
+      for (const f of w.formations.ids()) if (w.formations.cols.nation[f] === FOE && !w.isFleet(f) && !w.isWing(f)) destroyFormation(w, f);
+    }
     w.nations.cols.manpower[NOR] = 1e7;
     // A division bled to half, so the refills have men to give back.
     if (opts.bleed) {
@@ -277,6 +283,16 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
     w.nations.cols.gold[NOR] = line + 100;
     expect(w.nations.cols.gold[NOR]! - w.rules!.templates[BUILD_MIX_1938.infantry]!.gold).toBeLessThan(line);
     return { s, w, NOR };
+  };
+  /** Per nation, its land formations on land, as the economic AI gathers them. */
+  const landArmies = (w: World): Map<number, number[]> => {
+    const m = new Map<number, number[]>();
+    w.formations.forEach((f) => {
+      if (w.isFleet(f) || w.isWing(f) || w.offLand(f)) return;
+      const n = w.formations.cols.nation[f]!;
+      (m.get(n) ?? m.set(n, []).get(n)!).push(f);
+    });
+    return m;
   };
   const land = (w: World, n: number): number => w.production.ids().filter((p) => w.production.cols.nation[p] === n && w.rules!.templates[w.production.cols.template[p]!]!.domain === Domain.land).length;
 
@@ -309,8 +325,11 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
   // PLAN 7.46b2 (ADR-575): Britain, its battle line sunk by the chase (seeds 7019, 3613), spent
   // each month on its army at war and ordered its first warship years later.
   // Norway's army of four bled divisions since PLAN 7.49c (ADR-590): with none, its army orders first.
+  // Sweden's land army gone since PLAN 7.146 (ADR-739): outnumbered on its land front, Norway's army
+  // orders first (the case below); not outnumbered, it saves.
   it('at war with an enemy that has an armed fleet, its army under its peacetime share, it orders a destroyer and no division (red without)', () => {
-    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'SWE', army: true, four: true });
+    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'SWE', army: true, four: true, foeArmy: false });
+    expect(outnumberedOnLand(w, landArmies(w)).has(NOR)).toBe(false);
     runEvents(s, 1);
     expect(ships(w, NOR)).toEqual([fleets.destroyer]);
     expect(land(w, NOR)).toBe(0);
@@ -319,10 +338,22 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
   // PLAN 7.47: Britain's first destroyer rebuilt ended the saving (seeds 7019, 3613 with the
   // chase): its army's orders took the gold again while its navy stood far under its peak.
   it('with a navy rebuilt to one flotilla under its share, at war with an enemy that has an armed fleet, it orders a destroyer and no division (red without)', () => {
-    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'SWE', army: true, flotilla: true, four: true });
+    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'SWE', army: true, flotilla: true, four: true, foeArmy: false });
     runEvents(s, 1);
     expect(ships(w, NOR)).toEqual([fleets.destroyer]);
     expect(land(w, NOR)).toBe(0);
+  });
+
+  // PLAN 7.146 (ADR-739): the weak side of the late long-front wars, 100–1,000 a month, saved for a
+  // destroyer in a third of its months while its front thinned. Norway's four bled divisions against
+  // Sweden's army across their border: outnumbered on a land front, it saves for no warship.
+  it('holding a land front where its side is outnumbered on land, at war with an enemy that has an armed fleet, the army orders first: no ship is saved for (red without)', () => {
+    const { s, w, NOR } = setUp({ tag: 'NOR', enemy: 'SWE', army: true, four: true });
+    expect(outnumberedOnLand(w, landArmies(w)).has(NOR)).toBe(true);
+    expect(outnumberedOnLand(w, landArmies(w)).has(id('SWE'))).toBe(false);
+    runEvents(s, 1);
+    expect(land(w, NOR)).toBeGreaterThan(0);
+    expect(ships(w, NOR)).toEqual([]);
   });
 
   // PLAN 7.49c (ADR-590): 6421's Soviet Union, one division and 2,407 gold at war with Germany in

@@ -167,6 +167,35 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-739 · 2026-10-27 · accepted — The weak side of a land war saves for no warship; one more order slot (PLAN 7.146)
+
+- **Context.** ADR-733 (a): the late long-front war is thin on both sides, and the one lever with a measured effect on
+  contact is the army's size. PLAN 7.146: read what holds the late army down, then a rule on it.
+- **Measured** (`docs/evidence/7.146/measure.md`; HEAD saves of 1294, 1297, 1300, 1303 at years 10 and 20; new
+  `tools/diag/longWarArmy.ts`, `frontedRoles.ts`, `longWarGates.ts`, `dryArmy.ts`). In wars with a front of 100 cells or
+  more the weak side (fewer men on land) is 50–60 land formations of 19–23 nations against 311–387, and loses 2.2–2.5 ×
+  what it raises and refills (combat in contact first, then the air on formations out of contact). The strong side's
+  largest loss, supply attrition out of contact, is of formations far from the front on the march (not a lever on
+  contact). Three quarters of the weak side's nation-months are under 100 gold a month (no order rule reaches them);
+  its money is in the 100–1,000 band, where the warship's saving (ADR-557, ADR-575) holds the army's orders and
+  refills in 35–42 of ~100–130 months, and the one order slot another ~40.
+- **Filter** (seeds 1294–1303, spent by 7.144, × 20 years from 1938, `designBars.ts`, mean of the seeds): engaged land
+  formations a day per war with a front of 100 cells or more, years 2–20: HEAD 1.023; no saving for the outnumbered
+  1.182 (1.16 ×); with one order slot more for them as well 1.293 (1.26 ×, up on 7 of 10); year 1 9.20 / 9.60 / 9.20;
+  least land changing hands a year 2.24 / 2.95 / 2.60 %; a nation over a third of the land at year 20: 1 / 0 / 0.
+- **Decision (part a).** `outnumberedOnLand`, monthly in the economic AI: a nation that holds a cell beside one of the
+  other side's in a war where its side's men on land (its members' land formations on land, none aboard) are fewer
+  than the other side's. Such a nation saves for no warship (ADR-557's saving and its refills' keep are off for it);
+  3b's fleet order with what is left is unchanged. Britain's case for the saving (ADR-575) had no land front.
+- **Tests.** `navyBudget1938`: new case, Norway's four bled divisions at war with Sweden across their border, outnumbered,
+  orders a division and no destroyer (red without). The two cases of ADR-575 and ADR-579 that stood on the same scene
+  (Norway against Sweden) now have Sweden's land army removed, so that Norway is not outnumbered on its front: the claim
+  (an army over FEW_FORMATIONS at war with an enemy that has an armed fleet saves) is the same; against Britain, the
+  scene with no land front, a transport group for a landing comes first (2c), another rule.
+- **History restated:** `farWait1938` seed 7 from day 180 → seed 5 from day 90 (seeds 1 and 7 have no wait in their
+  first 400 days on the new history; seed 5's first on day 129).
+- **Pin** b08ba7c9 → cb976680 (part a).
+
 ### ADR-738 · 2026-10-27 · proposed (the user's decision) — A carrier's wings strike ashore: strike-hours 105 ×, sea battles 0.867 ×, ships sunk in them 0.923 × (PLAN 7.145's AT missed on the battles)
 
 - **Context.** ADR-735 (a): the carriers at war stood by ports of enemies with no armed fleet (1,880 of 1,880 such

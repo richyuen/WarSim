@@ -2214,6 +2214,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   holds too for a navy rebuilt to a ship or two, its armed fleets' upkeep under the share (PLAN
   7.47, ADR-579). Not for a nation of FEW_FORMATIONS (3) land formations or fewer: at war with
   such an enemy its army orders first, as against an enemy with no fleet (PLAN 7.49c, ADR-590).
+  Nor, in peace or war, for a nation that holds a land front (a cell beside one of the other side's)
+  in a war where its side has fewer men on land than the other (`outnumberedOnLand`; PLAN 7.146,
+  ADR-739): the weak side of a long-front war orders for its front first.
   Its transport group is bought apart (PLAN 7.26h2, ADR-518), before research and the army's
   orders, outside the navy's share, on a month of reserve: at war, in a war in which it has no
   land front and whose enemy holds a port, with a free formation on a land with a port of its

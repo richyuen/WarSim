@@ -69,7 +69,8 @@
  *    years later); at war with such an enemy a navy rebuilt to a ship or two, its armed fleets
  *    under NAVY_SHARE, saves too (PLAN 7.47, ADR-579: the first destroyer ended the saving); but
  *    not at war with FEW_FORMATIONS land formations or fewer, whose army orders first (PLAN 7.49c,
- *    ADR-590).
+ *    ADR-590), nor one that holds a land front in a war where its side is outnumbered on land
+ *    (`outnumberedOnLand`; PLAN 7.146, ADR-739).
  *    Then wings (PLAN 5.8s2, `pickWing`): a nation not poor with an airfield and no wing in training
  *    orders one while its air force's upkeep is under AIR_SHARE of its army's, a fighter group while
  *    fighters are under half its wings, else a tactical bomber group. Under its start's wings
@@ -384,6 +385,8 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       }
       return { balance, upkeep };
     };
+    // Who fights on land outnumbered, for the warship's saving (PLAN 7.146, ADR-739).
+    const outnumbered = world.settings.aiEnabled ? outnumberedOnLand(world, own) : new Set<number>();
     world.nations.forEach((n) => {
       if (nc.living[n] !== 1) return;
       // Projected accounts for the month about to be charged (the AI runs before the economy).
@@ -509,7 +512,10 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // Not with an army of a few formations or none (PLAN 7.49c, ADR-590): 6421's Soviet Union, one
       // division and 2,407 gold at war with Germany in year 20, bought nothing while Germany walked in.
       const saves = !atWar || (navalFoe && (own.get(n)?.length ?? 0) > FEW_FORMATIONS);
-      const shipPrice = mix.fleets && !wants && warshipsPending === 0 && income >= POOR_INCOME && (armed.get(n) ?? 0) < NAVY_SHARE * income && (navalFoe || !(fleets.get(n) ?? []).some((id) => fleetPower(world, id) > 0)) && shipyard(world, n) >= 0 ? fleetPrice(world, income, mix.fleets) : 0;
+      // Nor while it holds a land front where its side is outnumbered on land (PLAN 7.146, ADR-739):
+      // the weak side of the late long-front wars, 100–1,000 a month, saved for a destroyer in a third
+      // of its months while its front thinned (Britain's case, ADR-575, had no land front).
+      const shipPrice = !outnumbered.has(n) && mix.fleets && !wants && warshipsPending === 0 && income >= POOR_INCOME && (armed.get(n) ?? 0) < NAVY_SHARE * income && (navalFoe || !(fleets.get(n) ?? []).some((id) => fleetPower(world, id) > 0)) && shipyard(world, n) >= 0 ? fleetPrice(world, income, mix.fleets) : 0;
       // 4. Research.
       nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
       balance -= nc.research[n]! * DAYS_PER_MONTH;
@@ -780,6 +786,41 @@ function pickWing(world: World, n: number, kinds: NonNullable<BuildMix['wings']>
   const fighters = own.filter((t) => t === kinds.fighter).length;
   const order = 2 * fighters < own.length || own.length === 0 ? [kinds.fighter, kinds.tactical] : [kinds.tactical, kinds.fighter];
   return order.find((t) => world.rules!.templates[t] !== undefined && knowsTechs(world, n, world.rules!.templates[t]!.techs)) ?? -1;
+}
+
+/**
+ * The nations that hold a land front in a war in which their side is outnumbered on land (PLAN
+ * 7.146, ADR-739): each war's front is the cells of either side beside a cell of the other's, and a
+ * side's men are those of its members' land formations on land (`own`, as the economic AI gathers
+ * them; none aboard). A nation of the side with fewer men that holds a cell of that front is one.
+ */
+export function outnumberedOnLand(world: World, own: ReadonlyMap<number, readonly number[]>): Set<number> {
+  const f = world.formations.cols;
+  const { w, h, controller } = world.cells;
+  const nb: number[] = [];
+  const list = world.wars.list;
+  /** Per war (index into the list): the nations of either side holding a cell beside one of the other side's. */
+  const fronted = new Map<number, Set<number>>();
+  for (const c of frontierOf(world)) {
+    const a = controller[c]!;
+    if (a === 0) continue;
+    for (const k of neighbours4(c, w, h, world.settings.loopingMap, nb)) {
+      const b = controller[k]!;
+      if (b === 0 || b === a || !world.wars.atWar(a, b)) continue;
+      for (let i = 0; i < list.length; i++) {
+        const s = list[i]!.sides;
+        if ((s[0].includes(a) && s[1].includes(b)) || (s[1].includes(a) && s[0].includes(b))) (fronted.get(i) ?? fronted.set(i, new Set()).get(i)!).add(a);
+      }
+    }
+  }
+  const menOf = (n: number): number => (own.get(n) ?? []).reduce((t, id) => (world.embarked.has(id) ? t : t + f.strength[id]!), 0);
+  const out = new Set<number>();
+  for (const [i, holders] of fronted) {
+    const s = list[i]!.sides;
+    const men = s.map((side) => side.reduce((t, n) => t + menOf(n), 0));
+    for (let k = 0; k < 2; k++) if (men[k]! < men[1 - k]!) for (const n of s[k]!) if (holders.has(n)) out.add(n);
+  }
+  return out;
 }
 
 /**

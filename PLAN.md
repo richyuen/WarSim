@@ -132,6 +132,11 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   2–30 at least 1.15 × HEAD's, year 1 not below 0.95 ×; as floors, land changing hands at least 2 % of the land
   cells each year and front battles every year, in every world; ADR-732's clauses not worse than HEAD's; a unit
   test, red without; the gate green.
+  Read 2026-10-27 (ADR-739; `docs/evidence/7.146/measure.md`): the weak side is 50–60 formations of ~20 nations, ground
+  down 2.2–2.5 × faster than it rebuilds; its money (100–1,000 a month) held by the warship's saving in a third of its
+  months and by its one order slot. Filter on 1294–1303 × 20: no saving 1.16 ×, with a slot more 1.26 ×.
+  - [x] 7.146a An AI nation holding a land front where its side is outnumbered on land saves for no warship (ADR-739).
+  - [ ] 7.146b And has one order slot more (ADR-739).
 
 - [ ] 7.143 The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of
   the land at year 30 in 2 of 10 unseen worlds (1261 39.4 %, first from year 15; 1263 48.7 %, from year 28, growing
