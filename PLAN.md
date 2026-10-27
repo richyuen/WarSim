@@ -64,28 +64,6 @@ Run 16's (report of 2026-10-27 on `7b883084`, `critic/CRITIC_REPORT.md`; R15-B2'
 R16-B1 and R16-B2 are PLAN 7.138 and 7.139; the dimensions under the bar, beyond them, are 7.140–7.142. A task each,
 split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed the critic has run (1207, 1213, 1259):
 
-- [ ] 7.138 R16-B1: the late world stays still. Same 56 seeds `7739a78` → HEAD, engaged land formations a day in years
-  2–30 4.36 → 4.13 (se 0.105), 10.1 % of year 1's; in the page 7019 y20 engaged 4, 5, 0, 3, 0, 0, 0 of 559 at war
-  (`critic/c16_cmp_y30.json`, `critic/c16_y2_7019_y20.json`, `critic/c16_y2_4877_y20.json`). Causes already found:
-  ADR-717 b's long thin fronts, ADR-721 c's alliance members that cannot reach their enemy. AT: on seeds 1201–1206 and
-  1208–1211 × 30 years against HEAD on the same seeds, engaged land formations a day in years 2–30 at least 1.15 ×
-  HEAD's, year 1 not below 0.95 ×, and worlds with the same five largest nations for more than 12 years not above
-  HEAD's count; a unit test, red without; the gate green.
-  AT missed 2026-10-27 (ADR-728, BLOCKERS; `docs/evidence/7.138/measure.md`): a pursuit rule read late 0.974 × HEAD
-  (4.042 → 3.937), year 1 0.998 ×, worlds over 12 years 1 → 2; the enemies near an army late stand past the sea or a
-  neutral. No rule; seeds 1201–1211 spent.
-  Read 2026-10-27 (ADR-731 withdrawn, ADR-728; `tools/diag/designBars.ts`, `docs/evidence/7.140/design.md`): on
-  1223–1229 × 30 years the wars with a land front of 100 cells or more are as many late as in year 1 (4.4–6.8 a day
-  against 3.6–5.5) and are fought at 6–13 % of year 1's rate (engaged a day per such war 6.8–11.5 → 0.5–1.1): the
-  quiet is on fronts held and not fought, not wars without one. Open as a defect (the user's rule, 2026-10-27); its
-  next rule is aimed at that and judged on unseen seeds as above, with the engaged per war with a front of 100 cells
-  or more in years 2–30 at least 1.15 × HEAD's, and as floors land changing hands at least 2 % of the land cells
-  each year and front battles every year in every world; its stasis clause read by ADR-732's measure.
-  Read 2026-10-27 (ADR-733, BLOCKERS; `docs/evidence/7.138/held.md`): late both sides are thin on long fronts (the
-  weaker ~4 near ~1,700 cells; year 1 8–13 near ~280); a standoff breaker read 0.94 × on 8 late saves, under the
-  filter's 1.5 ×, so no AT run and seeds 1274 on kept. Waits on the user: the late army's size (recommended),
-  closed not done, or by design.
-
 - [ ] 7.140 Emergent 6: the same five giants. The top five unchanged for more than 12 years in 13 of 56 worlds (8 on
   `7739a78`), the longest 23 (4877, years 8–30: the United States, the Soviet Union, France, Canada, Denmark)
   (`critic/c16_cmp_checkpoints.json`, `critic/c16_headless_4877.json`); beyond 7.138's contact, the order of the
@@ -118,6 +96,17 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   SPEC 5.4d changed to match. AT: on 10 unseen seeds from 1284 × 20 years against HEAD on the same seeds, hours with
   a carrier wing's strike in the air, in a sea battle or on its own mission, in years 2–20 at least 2 × HEAD's; sea
   battles and ships sunk in years 2–20 not below 0.95 × HEAD's; a carrier strike ashore seen in the page; a unit
+  test, red without; the gate green.
+
+- [ ] 7.146 R16-B1: the land army of long-front wars late, both sides (ADR-733 a, the user's decision; from 7.138).
+  Late, per war with a land front of 100 cells or more, the weaker side has ~4 formations near a ~1,700-cell front
+  (year 1: 8–13 near ~280) and the stronger side's near ones mostly stand 60+ cells from any enemy
+  (`docs/evidence/7.138/held.md`); six operational rules read flat; the one lever measured to move contact is the
+  army's size (ADR-692, ADR-693 b). Read first what holds the late army down (the losses by system late, the weaker
+  side's economy, what it buys, the fold), then a rule on that lever. AT: on 10 unseen seeds from 1274 × 30 years
+  against HEAD on the same seeds, engaged land formations a day per war with a front of 100 cells or more in years
+  2–30 at least 1.15 × HEAD's, year 1 not below 0.95 ×; as floors, land changing hands at least 2 % of the land
+  cells each year and front battles every year, in every world; ADR-732's clauses not worse than HEAD's; a unit
   test, red without; the gate green.
 
 - [ ] 7.143 The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of
@@ -487,3 +476,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.139 R16-B2: the 5.5 ms budget (ADR-709) still fails late. Pinned and alone, 3847's year 27 6.14 / 6.19 ms, […]
 - [x] 7.142 Aircraft 7: the air forces a third smaller late. Wings late 95 → 69 a world, lower on every one of 56 […]
 - [x] 7.141 (closed not done, ADR-735 a, the user's decision) Naval 7: the carriers built wait in port, and the late sea war is no bigger. 7019's US group built in year 21 […]
+- [x] 7.138 (closed not done, ADR-733 a, the user's decision) R16-B1: the late world stays still. Same 56 seeds `7739a78` → HEAD, engaged land formations a day in years […]

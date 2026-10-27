@@ -15819,3 +15819,39 @@ Of 7.116 (open in PLAN.md):
   slot from a carrier group in training: strike-hours 847 → 1,014 (1.197 ×), ships sunk 1.031 ×, transports 0.955 ×.
   The carriers at war stand by ports of enemies with no armed fleet, and their wings strike only ships in a sea battle.
   Seeds 1233–1242 spent. Closed not done 2026-10-27 (ADR-735 a, the user's decision): PLAN 7.145.
+
+<!-- moved 2026-10-27 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.138 (closed not done, ADR-733 a, the user's decision) R16-B1: the late world stays still. Same 56 seeds `7739a78` → HEAD, engaged land formations a day in years
+  2–30 4.36 → 4.13 (se 0.105), 10.1 % of year 1's; in the page 7019 y20 engaged 4, 5, 0, 3, 0, 0, 0 of 559 at war
+  (`critic/c16_cmp_y30.json`, `critic/c16_y2_7019_y20.json`, `critic/c16_y2_4877_y20.json`). Causes already found:
+  ADR-717 b's long thin fronts, ADR-721 c's alliance members that cannot reach their enemy. AT: on seeds 1201–1206 and
+  1208–1211 × 30 years against HEAD on the same seeds, engaged land formations a day in years 2–30 at least 1.15 ×
+  HEAD's, year 1 not below 0.95 ×, and worlds with the same five largest nations for more than 12 years not above
+  HEAD's count; a unit test, red without; the gate green.
+  AT missed 2026-10-27 (ADR-728, BLOCKERS; `docs/evidence/7.138/measure.md`): a pursuit rule read late 0.974 × HEAD
+  (4.042 → 3.937), year 1 0.998 ×, worlds over 12 years 1 → 2; the enemies near an army late stand past the sea or a
+  neutral. No rule; seeds 1201–1211 spent.
+  Read 2026-10-27 (ADR-731 withdrawn, ADR-728; `tools/diag/designBars.ts`, `docs/evidence/7.140/design.md`): on
+  1223–1229 × 30 years the wars with a land front of 100 cells or more are as many late as in year 1 (4.4–6.8 a day
+  against 3.6–5.5) and are fought at 6–13 % of year 1's rate (engaged a day per such war 6.8–11.5 → 0.5–1.1): the
+  quiet is on fronts held and not fought, not wars without one. Open as a defect (the user's rule, 2026-10-27); its
+  next rule is aimed at that and judged on unseen seeds as above, with the engaged per war with a front of 100 cells
+  or more in years 2–30 at least 1.15 × HEAD's, and as floors land changing hands at least 2 % of the land cells
+  each year and front battles every year in every world; its stasis clause read by ADR-732's measure.
+  Read 2026-10-27 (ADR-733, BLOCKERS; `docs/evidence/7.138/held.md`): late both sides are thin on long fronts (the
+  weaker ~4 near ~1,700 cells; year 1 8–13 near ~280); a standoff breaker read 0.94 × on 8 late saves, under the
+  filter's 1.5 ×, so no AT run and seeds 1274 on kept. Closed not done 2026-10-27 (ADR-733 a, the user's decision):
+  PLAN 7.146.

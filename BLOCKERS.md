@@ -25,7 +25,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** PLAN 7.143 (the late American runaway), then 7.140's AT again on unseen seeds. No user decision
   waits.
 
-### PLAN 7.138's AT missed: a pursuit rule 0.974 × late on 1201–1211 (ADR-728; open as a defect, 2026-10-27)
+### RESOLVED 2026-10-27 (ADR-733 option a, the user's decision: 7.138 closed not done, PLAN 7.146 the late army of long-front wars) · PLAN 7.138's AT missed: a pursuit rule 0.974 × late on 1201–1211 (ADR-728)
 - **The bar:** on 1201–1206, 1208–1211 × 30 years, engaged land formations a day in years 2–30 at least 1.15 × HEAD's,
   year 1 not below 0.95 ×, worlds with the same top five over 12 years not above HEAD's.
 - **What moved** (`docs/evidence/7.138/measure.md`): nothing: late 4.042 → 3.937, year 1 0.998 ×, worlds over 12

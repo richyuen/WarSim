@@ -244,7 +244,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   1233–1242: armed ships at year 20 1.086 ×, ships sunk 1.031 ×, transports at year 20 0.955 × (down, not up): the
   slot was not the cause of the critic's transport drop; the gold spent on carriers and warships is the likelier.
 
-### ADR-733 · 2026-10-27 · proposed (the user's decision) — Fronts held and not fought: thin on both sides late; a standoff breaker read flat on the saves, no AT spent (PLAN 7.138)
+### ADR-733 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, the late army's size) — Fronts held and not fought: thin on both sides late; a standoff breaker read flat on the saves, no AT spent (PLAN 7.138)
 
 - **Context.** PLAN 7.138 (R16-B1), open as a defect by the user's rule (ADR-731 withdrawn, ADR-728): wars with a
   land front of 100 cells or more are as many late as in year 1 and fought at 6–13 % of its rate; the next rule
@@ -285,6 +285,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     seeds"): 1274–1283 × 30 years against HEAD, two arms, ~50 minutes, the seeds spent. The save filter that
     stopped it was the loop's call, not the user's; expected flat (0.94 × on the saves, and saves have read higher
     than fresh worlds for ADR-723 and ADR-728).
+- **Decision** (the user's, 2026-10-27): **(a).** PLAN 7.138 closed not done into PLAN 7.146 (the land army of
+  long-front wars late), its AT as drafted (seeds from 1274), after 7.145. (d) and (e) not taken.
 - **Meanwhile** the loop takes PLAN 7.141 (naval). No sim change.
 
 ### ADR-732 · 2026-10-27 · accepted (the user's decision, 2026-10-27) — The design: the largest by area may stay; change at the top is read by power and order (answers ADR-730, PLAN 7.140)

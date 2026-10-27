@@ -24174,10 +24174,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   paths relative to the tool's cwd.
 - **Next:** PLAN 7.144 unless the user takes ADR-736 (b).
 
-## 2026-10-27 — The user's decisions: ADR-736 (a), ADR-735 (a)
+## 2026-10-27 — The user's decisions: ADR-736 (a), ADR-735 (a), ADR-733 (a)
 
 - **ADR-736 (a):** the wing rebuild's war reserve kept; PLAN 7.144 (the land read) next.
 - **ADR-735 (a):** PLAN 7.141 closed not done, part 1 kept; PLAN 7.145 (carriers strike ashore) filed after 7.144,
   its AT as drafted (seeds from 1284). BLOCKERS' 7.141 entry resolved.
-- **Still open:** ADR-733 (PLAN 7.138's fronts held and not fought), not answered.
+- **ADR-733 (a):** PLAN 7.138 closed not done; PLAN 7.146 (the land army of long-front wars late) filed after
+  7.145, its AT as drafted (seeds from 1274). BLOCKERS' 7.138 entry resolved.
 - **Next:** PLAN 7.144.
