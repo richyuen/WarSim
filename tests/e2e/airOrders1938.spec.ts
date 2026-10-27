@@ -3,6 +3,7 @@ import type {} from '../../src/app/testApi';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
+import { orderFerry } from '../../src/sim/systems/air';
 import { assets1938 } from '../helpers/earth';
 import { lookAt, open1938 } from './mapView';
 
@@ -135,4 +136,49 @@ test('a fighter group built from the Actions tab; with no airfield of room, its 
   await page.getByTestId('tab-actions').click();
   await expect(page.getByTestId(`act-build-${fighter}`)).toBeDisabled();
   await expect(page.getByTestId(`act-build-${fighter}`).locator('xpath=..')).toContainText('no airfield with room');
+});
+
+// PLAN 7.142: a wing at sea on its way to a new base (the sea ferry, ADR-723) says so on its row of
+// the Actions tab, with the days left, and its order buttons are off
+// (it takes none at sea); a wing at its airbase says that. A US fighter group ordered over
+// the Atlantic to a British base in Node, the United States and Britain at war
+// with Germany, the save loaded into the page, the United States taken.
+test('a wing at sea to its new base says so on its row, with the days left', async ({ page }) => {
+  test.setTimeout(150_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  const USA = NATIONS_1938.findIndex((n) => n.tag === 'USA') + 1;
+  const ENG = NATIONS_1938.findIndex((n) => n.tag === 'ENG') + 1;
+  const node = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
+  const w = node.world;
+  const fighter = TEMPLATES_1938.findIndex((t) => t.id === 'fighter_group');
+  const ids = [...w.wingBase].filter(([id, b]) => b > 0 && w.formations.cols.nation[id] === USA && w.formations.cols.template[id] === fighter).map(([id]) => id).sort((a, b) => a - b);
+  const [sailing, home] = [ids[0]!, ids[1]!];
+  // Britain of its side: both at war with Germany.
+  w.wars.start([USA, ENG], [NATIONS_1938.findIndex((n) => n.tag === 'GER') + 1], 0);
+  const eng = w.airbases.findIndex((b) => w.cells.controller[b.cell] === ENG) + 1;
+  expect(orderFerry(w, sailing, eng)).toBe(0);
+  const days = Math.ceil((w.wingFerry.get(sailing)! - w.tick) / 24);
+  expect(days).toBeGreaterThan(1);
+  const saved = Buffer.from(node.save()).toString('base64');
+
+  await open1938(page);
+  await page.evaluate(async (b64) => {
+    const sim = window.__warsim!.sim;
+    const before = window.__warsim!.view!.snapshots;
+    await sim.load(Uint8Array.from(atob(b64), (ch) => ch.charCodeAt(0)));
+    await new Promise<void>((done) => {
+      const wait = (): void => (window.__warsim!.view!.snapshots > before ? done() : void setTimeout(wait, 5));
+      wait();
+    });
+  }, saved);
+  await page.evaluate((n) => window.__warsim!.view!.select(n), USA);
+  await page.getByTestId('take-control').click();
+  await page.getByTestId('tab-actions').click();
+  await expect.poll(async () => (await wings(page)).find((x) => x.id === sailing)?.ferryDays, { timeout: 30_000 }).toBe(days);
+  await expect(page.getByTestId(`act-wing-${sailing}`)).toContainText(`at sea to its new base, ${days} days`);
+  await expect(page.getByTestId(`act-wing-${sailing}-strike`)).toBeDisabled();
+  await expect(page.getByTestId(`act-wing-${home}-strike`)).toBeEnabled();
+  await expect(page.getByTestId(`act-wing-${home}`)).toContainText('at an airbase');
+  await expect(page.getByTestId(`act-wing-${home}`)).not.toContainText('at sea');
+  await page.getByTestId('tab-actions').locator('xpath=ancestor::aside[1]').screenshot({ path: 'docs/evidence/7.142/a-wing-at-sea-row.png' });
 });

@@ -102,7 +102,7 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
                 {t((templates[wg.template]?.nameKey ?? 'template.fighter_group') as MessageKey)}
                 <span class="act-cost">
                   {' '}
-                  {t(wg.carrier ? 'act.wingCarrier' : 'act.wingAirbase')} · {t(`act.mission.${wg.mission ?? 'none'}` as MessageKey)}
+                  {wg.ferryDays > 0 ? t('act.wingFerry', { n: wg.ferryDays }) : t(wg.carrier ? 'act.wingCarrier' : 'act.wingAirbase')} · {t(`act.mission.${wg.mission ?? 'none'}` as MessageKey)}
                   {wg.flying ? ` · ${t('act.wingFlying')}` : ''}
                 </span>
               </span>
@@ -114,6 +114,8 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
                     key={k}
                     class={wingOrder && wingOrder.wing === wg.id && wingOrder.kind === k ? 'god-btn active' : 'god-btn'}
                     data-testid={`act-wing-${wg.id}-${k}`}
+                    // At sea it takes no order until it is at its new base (PLAN 7.142, `orderFerry`).
+                    disabled={wg.ferryDays > 0}
                     title={t(`act.wingOrder.${k}` as MessageKey)}
                     onClick={() => onArmWing(wg.id, k)}
                   >

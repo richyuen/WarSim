@@ -1723,6 +1723,12 @@ export function sortieSection(world: World): Float32Array {
   return Float32Array.from(rows);
 }
 
+/** The whole days, rounded up, until wing `id` at sea reaches its new base (PLAN 7.142); 0 when it is not at sea. */
+export function ferryDays(world: World, id: number): number {
+  const due = world.wingFerry.get(id);
+  return due === undefined ? 0 : Math.max(1, Math.ceil((due - world.tick) / 24));
+}
+
 /** The player's wings (PLAN 5.8v1), by ascending id; none without a player. */
 function playerWings(world: World): PlayerWing[] {
   const n = world.settings.player;
@@ -1731,7 +1737,7 @@ function playerWings(world: World): PlayerWing[] {
   const out: PlayerWing[] = [];
   for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
     if (!world.formations.has(id) || c.nation[id] !== n) continue;
-    out.push({ id, template: c.template[id]!, transport: isTransport(world, id), carrier: base < 0, mission: world.wingMission.get(id)?.kind ?? null, flying: world.sorties.has(id) });
+    out.push({ id, template: c.template[id]!, transport: isTransport(world, id), carrier: base < 0, mission: world.wingMission.get(id)?.kind ?? null, flying: world.sorties.has(id), ferryDays: ferryDays(world, id) });
   }
   return out;
 }

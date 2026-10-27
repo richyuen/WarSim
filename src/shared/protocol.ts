@@ -524,6 +524,11 @@ export interface PlayerWing {
   mission: 'patrol' | 'strike' | 'supply' | null;
   /** In the air on a sortie now. */
   flying: boolean;
+  /**
+   * At sea on its way to a new base (the sea ferry, PLAN 7.142, ADR-723): the whole days, rounded
+   * up, until it is there; 0 when it is not at sea.
+   */
+  ferryDays: number;
 }
 
 /** The airbase a refused wing of the editor could go to (PLAN 7.24b): its name and km from the click. */
