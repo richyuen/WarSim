@@ -82,12 +82,18 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
     const s = new Sim({ scenario: '1938', seed: 7127, assets: assets1938(W) });
     const w = s.world;
     s.command({ kind: 'declareWar', attacker: GER, defender: FRA });
-    for (let d = 0; d < 100; d++) {
+    // To the fall of Paris, within 200 days (PLAN 7.144, ADR-737: with the k-th strike of a day on a
+    // formation dimmed, Paris falls on day 120; before, about day 79).
+    let fell = -1;
+    for (let d = 0; d < 200 && fell < 0; d++) {
       s.step(24, (ww) => {
         ww.out.events.length = 0;
         ww.out.fires.length = 0;
       });
+      if (w.wars.list.find((x) => x.sides[1].includes(FRA))?.capitalsLost?.includes(FRA)) fell = d + 1;
     }
+    process.stderr.write(`Paris fell on day ${fell}
+`);
     // Paris fell: France is in the war's capitals lost and, desperate, still extreme with no German near its new capital.
     const war = w.wars.list.find((x) => x.sides[1].includes(FRA))!;
     expect(war, 'the war goes on').toBeDefined();

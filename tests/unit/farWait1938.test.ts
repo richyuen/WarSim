@@ -12,11 +12,13 @@ import { assets1938 } from '../helpers/earth';
 // whole way (5–6 ms), and was asked again every MARCH_DAYS: the operational AI's largest cost.
 
 describe('a refused march from afar waits (PLAN 7.117, ADR-703)', () => {
-  it('seed 4: the first formation refused waits FAR_RETRY_DAYS with no order refused, and the wait is saved', () => {
+  it('seed 1: the first formation refused waits FAR_RETRY_DAYS with no order refused, and the wait is saved', () => {
+    // Seed 1 from day 180 since ADR-737 (PLAN 7.144, the k-th strike of a day dimmed): seed 4 has none in its
+    // first 400 days on that history, seeds 1-3 and 5-7 one each (1: day 183; `tools/diag/firstWait.ts`).
     // Seed 4 from day 180 since ADR-723 (PLAN 7.133, the wings over the sea): seeds 7 and 99 have none in
     // their first 400 days on that history, seeds 1-6 each one (4: day 185; `tools/diag/firstWait.ts`).
     // Seed 7 from day 180 since ADR-711 (PLAN 7.5 before critic run 15); before, seed 99 from day 90.
-    const s = at1938(4, 180 * 24);
+    const s = at1938(1, 180 * 24);
     const w = s.world;
     const refused = new Map<number, number[]>();
     const step = (): void =>
@@ -49,7 +51,7 @@ describe('a refused march from afar waits (PLAN 7.117, ADR-703)', () => {
     // It was refused on the day the wait began.
     expect(refused.get(id) ?? []).toContain(from);
     // Saved and loaded with the state.
-    const u = new Sim({ scenario: '1938', seed: 4, assets: assets1938(SIZE_1938.w) });
+    const u = new Sim({ scenario: '1938', seed: 1, assets: assets1938(SIZE_1938.w) });
     u.load(s.save());
     expect(u.world.farWait.get(id)).toBe(until);
     expect(u.hash()).toBe(s.hash());

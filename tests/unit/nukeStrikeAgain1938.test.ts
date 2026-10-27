@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { STRIKE_GAP_DAYS } from '../../src/sim/systems/nuclear';
+import { restraintOf, STRIKE_GAP_DAYS, type RestraintReason } from '../../src/sim/systems/nuclear';
 import { assets1938 } from '../helpers/earth';
 import { nationId } from '../helpers/sim1938';
 
@@ -38,12 +38,15 @@ describe('a nation fighting for its life that struck once strikes again (PLAN 7.
     sim.command({ kind: 'setEfficiency', nation: FRA, value: 0.5 });
     // To the second strike, within 180 days (120 until ADR-711, PLAN 7.5 before critic run 15: France's
     // first strike moved to day 62, and the side's wait puts the second past day 120).
+    // What held France each day after its first strike and before its second (PLAN 7.144).
+    const held: RestraintReason[] = [];
     for (let d = 1; d <= 180 && decided.length < 2; d++) {
       if (d === 2) {
         sim.command({ kind: 'setWarFightToDeath', war: war.id, side: 1, value: true });
         sim.command({ kind: 'setWarFightToDeath', war: war.id, side: 0, value: true });
       }
       sim.step(24, watch);
+      if (decided.length === 1 && world.wars.list.includes(war)) held.push(restraintOf(world, FRA, war, 1).reason);
     }
     process.stderr.write(`France's strike decisions on days ${decided.map((t) => Math.floor(t / 24)).join(', ')}\n`);
     // Restated (PLAN 7.88b, ADR-642; history moved, claim kept): the claim is a second strike soon
@@ -56,7 +59,14 @@ describe('a nation fighting for its life that struck once strikes again (PLAN 7.
     // volleys were theirs). The claim kept is R7-B1's: France strikes again while it is losing, as
     // soon as the wait allows (days 33 and 93), not 49 days and more past it.
     expect(decided.length, 'strikes in 180 days').toBeGreaterThanOrEqual(2);
-    expect(decided[1]! - decided[0]!, 'hours from the first strike to the second').toBeLessThanOrEqual(24 * (STRIKE_GAP_DAYS + 7));
+    // Restated (PLAN 7.144, ADR-737; history moved, claim kept): with the k-th strike of a day on a
+    // formation dimmed, France's army holds longer and its strikes fall on days 65 and 145; past the
+    // wait it is held 3 days by its places out of reach and 17 by the outrage, at desperation 1.7
+    // (extreme), not by a France that is not desperate (R7-B1's cause). The claim: within 30 days of
+    // the wait, and every day held past it held by reach or the costs, never by desperation.
+    expect(decided[1]! - decided[0]!, 'hours from the first strike to the second').toBeLessThanOrEqual(24 * (STRIKE_GAP_DAYS + 30));
+    const notDesperate: RestraintReason[] = ['noValue', 'notDesperate', 'doctrine'];
+    expect(held.filter((r) => notDesperate.includes(r)), 'days France was held for want of desperation').toEqual([]);
     // The war it struck in is still on: the later strikes are of a France that keeps losing.
     expect(world.wars.list.includes(war)).toBe(true);
   });

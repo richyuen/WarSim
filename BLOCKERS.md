@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.144's AT missed on year 1: land contact in year 1 0.86 × HEAD's on 1294–1303 (bar 0.95 ×; ADR-737, waits on the user)
+- **The bar:** on 1294–1303 × 20 years against HEAD, land formations engaged a day in years 2–20 at least 1.25 ×,
+  wings and sorties aloft in years 2–20 not below 0.9 ×, year 1 not below 0.95 ×.
+- **What moved** (`docs/evidence/7.144/measure.md`, `at.md`): the larger air forces lowered contact through their
+  strikes, piled on the few enemy formations in range. The rule (the k-th strike of a day on a land formation at
+  1 / (1 + k), committed): engaged years 2–20 3.34 → 5.39 (1.61 ×, higher on all ten), wings 1.01 ×, aloft 1.31 ×;
+  engaged in year 1 44.1 → 37.8 (0.86 ×), moved into year 2 (9.2 → 18.6). The air's damage to the land on the saves
+  990 → 363 units a day. One test bound loosened (`nukeStrikeAgain1938`, ADR-737).
+- **What is left:** the user's (ADR-737): (a) kept, 7.144 closed not done, PLAN 7.147 the year-1 shift
+  (recommended); (b) kept, the year-1 clause read on years 1–2, 7.144 done; (c) reverted.
+
 ### RESOLVED 2026-10-27 (option a, the user's decision: 7.141 closed not done, PLAN 7.145 carriers strike ashore) · PLAN 7.141's AT missed: carrier strike-hours 1.20 × HEAD's in years 2–20 on 1233–1242 (bar 2 ×; ADR-735, waits on the user)
 - **The bar:** on 1233–1242 × 20 years, hours with a carrier strike in the air in years 2–20 at least 2 × HEAD's;
   transports at year 20 and ships sunk in years 2–20 not below 0.95 × HEAD's.

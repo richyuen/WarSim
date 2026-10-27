@@ -167,6 +167,48 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-737 · 2026-10-27 · proposed (the user's decision) — The k-th strike of a day on a land formation at 1 / (1 + k): land contact late 1.61 ×, year 1 0.86 × (PLAN 7.144's AT missed on year 1)
+
+- **Context.** PLAN 7.144 (found by 7.142's AT, ADR-736 a): with the wing rebuild's war reserve, land formations
+  engaged a day in years 2–20 fell 0.76 ×. AT: on 1294–1303 × 20 against HEAD, engaged in years 2–20 at least
+  1.25 ×, wings and sorties aloft in years 2–20 not below 0.9 ×, year 1 not below 0.95 ×.
+- **Read** (`docs/evidence/7.144/measure.md`; new `tools/diag/airGround.ts`, `tools/diag/strikeTrace.ts`; HEAD saves
+  of 1243/1246/1249/1252 at years 8 and 14, each stepped 60 days per arm with temporary switches, removed). The
+  channel is the strikes: the air's factors on fire and on supply move nothing (1.01 ×, 1.00 ×); strikes off 1.37 ×,
+  about the 20-year gap (1 / 0.76 = 1.32 ×), so a short read predicts the long one; half of it strikes on
+  formations out of contact (their fire at 0: 1.19 ×), half in contact. The task's own A/B (the reserve flipped back
+  on a save) reads the same to the last digit: in 60 days it changes no order. The pile: on 1246's year-8 save a
+  nation at war with Japan has 4 formations, 24,000 men, out of contact, struck 44–59 times a day, 1,000 men left
+  on day 19; strike wings fly sortie after sortie at the few enemy formations in range.
+- **Rule** (`strikes`, `strikeShare`; `formations.struck`, a u8 column cleared at 00:00 by `airSystem`): the k-th
+  strike in a day that hits a land formation (k that hit it already that day, by any wing) fires at 1 / (1 + k) on
+  it. Fleets are not dimmed. On the saves: contact 1.30 ×, aloft 1.30 ×; **the air's damage to the land 990 → 363
+  units a day (−63 %)**, with strikes that hit 103 → 133 a day (the targets live on, the wings keep their missions).
+  1 / √(1 + k) read 1.18 ×, the rule out of contact alone 1.14 ×. Unit test `airStrike1938.test.ts` (the second and
+  third strike of a day on a division at a half and a third of the first, the next day in full), red without.
+- **AT** (`docs/evidence/7.144/at.md`; HEAD `4da68474` from a worktree, `airWar.ts`): engaged years 2–20 3.34 → 5.39
+  (**1.61 ×**, higher on 10 of 10), wings 1.01 ×, aloft 1.31 ×: met. Engaged in year 1 44.1 → 37.8 (**0.86 ×**,
+  lower on 9): **missed**. Year 1's contact moves into year 2 (9.2 → 18.6; years 1 and 2 together 53.3 → 56.4), wars
+  and nations at war in year 1 alike: the opening fights last longer. Seeds 1294–1303 spent.
+- **Tests restated, history moved** (each green on HEAD, red on the rule's history, claim kept):
+  `farWait1938` seed 4 → seed 1 from day 180 (seed 4 has no refused march in 400 days now; seed 1 on day 183);
+  `fleets1938` counts the Chinese division's engaged days only with no enemy land formation in contact (a Japanese
+  division comes within 1.49 cells on days 59–60: a land fight, not the fleet); `nukeOverrun1938` steps to the fall
+  of Paris within 200 days (day 79 → 120); `wholeTanks` takes the first heavy fight that costs a tank (its first,
+  hour 246, costs none; before, hour 241, 2 tanks); `nukeStrikeAgain1938`: France strikes on days 65 and 145 (52 and
+  112 before), held past the 60-day wait 3 days by places out of reach and 17 by the outrage at desperation 1.7.
+  **Its bound loosened**: the second strike within the wait + 30 days (was + 7), and added: no day past the wait
+  held for want of desperation (`noValue`, `notDesperate`, `doctrine`; R7-B1's cause).
+- **Pin:** 0ef648b5 → 6e048cce.
+- **Options:**
+  - **(a)** Kept; PLAN 7.144 closed not done; the year-1 shift filed as PLAN 7.147 (read which opening fights hold
+    fewer formations at once, a rule for it; its own AT). (Recommended: the late figure is met with room on every
+    seed and the air flies more; year 1's contact is moved a year on, not lost.)
+  - **(b)** Kept; the year-1 clause read on years 1 and 2 together (1.06 ×), PLAN 7.144 ticked done; 7.147 dropped.
+  - **(c)** Reverted (the pin and the five tests back); 7.144 open, a rule sought that keeps year 1.
+  - With (a) or (b): the loosened bound of `nukeStrikeAgain1938` kept, or held at + 7 and France's 17 days of
+    outrage filed as a task.
+
 ### ADR-736 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, kept) — At war, the wing rebuild keeps the war's reserve; land contact late 0.76 ×
 
 - **Context.** PLAN 7.142 (critic run 16, aircraft 7): wings late 95 → 69 a world, the ferried wings lost faster

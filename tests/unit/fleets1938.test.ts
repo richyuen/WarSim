@@ -11,7 +11,7 @@ import { budgetOf } from '../../src/sim/ai/economic';
 import { Sim } from '../../src/sim/sim';
 import { STAT_FIELDS, STAT_STRIDE, statsSystem } from '../../src/sim/stats';
 import { monthlyAccounts, UPKEEP_SCALE } from '../../src/sim/systems/economy';
-import { elementIndex } from '../../src/sim/systems/elements';
+import { cellDist, CONTACT_CELLS, elementIndex } from '../../src/sim/systems/elements';
 import { knowsTechs } from '../../src/sim/tech';
 import { Domain, laneOf, seaOf } from '../../src/sim/world';
 import { assets1938 } from '../helpers/earth';
@@ -244,7 +244,15 @@ describe('the fleets of the 1938 start (PLAN 4.2b)', () => {
         if (e[1] === EventKind.FormationsDisbanded && e[2] === eng) disbanded += e[3]!;
         if (e[1] === EventKind.Bankruptcy && e[2] === eng && e[3] === 1) bankrupt++;
       }
-      if (w.formations.has(division) && fc.engaged[division] === 1) engagedHours++;
+      // In contact with no enemy land formation in reach: the fleet's doing (PLAN 7.144, ADR-737: on
+      // that history a Japanese division comes within 1.49 cells of it on days 59-60, a land fight).
+      if (w.formations.has(division) && fc.engaged[division] === 1) {
+        let land = false;
+        w.formations.forEach((g) => {
+          if (!w.isFleet(g) && !w.isWing(g) && !w.offLand(g) && w.wars.atWar(chi, fc.nation[g]!) && cellDist(w, fc.x[g]!, fc.y[g]!, fc.x[division]!, fc.y[division]!) <= w.atSize(CONTACT_CELLS)) land = true;
+        });
+        if (!land) engagedHours++;
+      }
       expect(fleets.day(w), `day ${day + 1}`).toEqual([]);
     }
     expect(rejected).toContain(fleet);

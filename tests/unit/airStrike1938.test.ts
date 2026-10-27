@@ -3,8 +3,8 @@ import { EventKind } from '../../src/shared/events';
 import { cellOf } from '../../src/sim/data/terrain';
 import { SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
-import { orderMission } from '../../src/sim/systems/air';
-import { DISPERSED_STRIKE, STRIKE_FIRE, strikes } from '../../src/sim/systems/airCombat';
+import { airSystem, orderMission } from '../../src/sim/systems/air';
+import { DISPERSED_STRIKE, STRIKE_FIRE, strikeShare, strikes } from '../../src/sim/systems/airCombat';
 import { effectiveness } from '../../src/sim/systems/combat';
 import { destroyFormation } from '../../src/sim/systems/elements';
 import type { World } from '../../src/sim/world';
@@ -106,6 +106,34 @@ describe('CAS and tactical bombing (PLAN 5.4b)', () => {
     expect(line).toBeGreaterThan(60);
     expect(DISPERSED_STRIKE).toBe(0.25);
     expect(took(false)).toBeCloseTo(DISPERSED_STRIKE * line, 9);
+  });
+
+  it('the k-th strike of a day on one division fires at 1 / (1 + k); a new day, in full again (PLAN 7.144)', () => {
+    const w = world();
+    const div = addDivision(w, POL, cx, cy, template('infantry_div'));
+    w.formations.cols.engaged[div] = 1;
+    const wing = stukas(w);
+    const strike = (tick: number): number => {
+      w.tick = tick;
+      const before = units(w, div);
+      arriving(w, wing, TARGET);
+      strikes(w);
+      return before - units(w, div);
+    };
+    const first = strike(25);
+    expect(first).toBeGreaterThan(60);
+    expect(w.formations.cols.struck[div]).toBe(1);
+    // The same wing again two and four hours on: half, then a third of the first (the division's
+    // men a little fewer, so to within 0.05).
+    expect(strike(27) / first).toBeCloseTo(0.5, 1);
+    expect(strike(29) / first).toBeCloseTo(1 / 3, 1);
+    expect(w.formations.cols.struck[div]).toBe(3);
+    expect(strikeShare(3)).toBe(0.25);
+    // The next day's start clears it: the strike after fires in full.
+    w.tick = 48;
+    airSystem(w);
+    expect(w.formations.cols.struck[div]).toBe(0);
+    expect(strike(49) / first).toBeGreaterThan(0.97);
   });
 
   it('on armour, by its hard attack: a panzer division loses tanks', () => {

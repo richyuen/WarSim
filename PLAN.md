@@ -88,6 +88,19 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   from 1294 × 20 years against HEAD on the same seeds, engaged land formations a day in years 2–20 at least
   1.25 × HEAD's, wings and sorties aloft in years 2–20 not below 0.9 × HEAD's, year 1 not below 0.95 ×; a unit
   test, red without; the gate green.
+  Read and run 2026-10-27 (ADR-737, to the user; BLOCKERS; `docs/evidence/7.144/measure.md`, `at.md`): the channel
+  is the strikes, piled on the few enemy formations in range (strikes off 1.37 × on eight saves × 60 days; the air's
+  factors on fire and supply 1.00 ×). Rule committed: the k-th strike of a day on a land formation at 1 / (1 + k).
+  AT on 1294–1303: engaged years 2–20 1.61 ×, wings 1.01 ×, aloft 1.31 ×, met; engaged in year 1 0.86 ×, missed
+  (moved into year 2). Waits on ADR-737; seeds 1294–1303 spent.
+
+- [ ] 7.147 Year 1's land contact under ADR-737 (found by 7.144's AT; waits on ADR-737, dropped with its (b) or (c)): on
+  1294–1303 × 20 years engaged land formations a day in year 1 44.1 → 37.8 (0.86 ×, lower on nine), year 2 9.2 → 18.6, wars
+  and nations at war alike: the opening fights hold fewer formations at once and last longer. Read first, on the
+  year-1 days of a few of those seeds stepped both ways (HEAD and `strikeShare` at 1), which fights hold fewer
+  formations (the struck side's formations in contact, retreats, the attacker's orders). AT: on 10 unseen seeds from
+  1304 × 20 years against HEAD on the same seeds, engaged in year 1 at least 1.1 × HEAD's, in years 2–20 not below
+  0.95 ×, sorties aloft in years 1–20 not below 0.9 ×; a unit test, red without; the gate green.
 
 - [ ] 7.145 Carriers strike ashore (ADR-735 a, the user's decision; from 7.141, naval 7): the carriers at war stand by
   ports of enemies with no armed fleet, and their wings strike only ships in a sea battle (`carrierStrikes`, SPEC

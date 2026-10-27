@@ -69,7 +69,9 @@ describe("the critic's armour fight (seed 3929, Germany on Poland and France)", 
       expect(was.size).toBe(34);
       let lost = 0;
       let offFire = 0;
-      // Hour by hour until one with 9 or more volleys at the division's armour (within 60 days), then 48 hours from that hour.
+      // Hour by hour until one with 9 or more volleys at the division's armour (within 60 days), then 48 hours from that hour;
+      // 48 hours with no tank lost and the search goes on, to the first heavy fight that costs one (PLAN 7.144, ADR-737:
+      // with the k-th strike of a day dimmed, its first, at hour 246, costs none; before, hour 241, 2 tanks).
       let from = -1;
       for (let h = 0; from < 0 ? h < 60 * 24 : h < from + 48; h++) {
         const fired = new Set<number>();
@@ -101,13 +103,14 @@ describe("the critic's armour fight (seed 3929, Germany on Poland and France)", 
           }
         }
         was = now;
+        if (h === from + 47 && lost === 0) from = -1;
       }
       expect(from, 'an hour with 9 or more volleys at its armour within 60 days').toBeGreaterThanOrEqual(0);
       return { lost, offFire, hash: sim.hash() };
     };
     const a = run();
     // 3.5 tanks of fire in the 48 hours: lost whole and under fire (breakdowns and attrition carry as before).
-    process.stderr.write(`division 41: ${a.lost} tanks lost in the 48 hours from its first heavy fight
+    process.stderr.write(`division 41: ${a.lost} tanks lost in the 48 hours from its first heavy fight that costs one
 `);
     expect(a.lost).toBeGreaterThanOrEqual(1);
     expect(a.offFire).toBe(0);

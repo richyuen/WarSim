@@ -1922,7 +1922,11 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
 - *As built (PLAN 5.4b, ADR-317; `strikes`):* a strike sortie at its target fires once on the
   enemy's land elements within a cell: its aircraft × soft or hard attack × 0.2, in units over
   their hp, spread by their health; carried as on the land. A close support group takes about
-  117 men of an infantry division a strike.
+  117 men of an infantry division a strike. On a formation not in contact, a quarter of it
+  (PLAN 7.110b, ADR-692). The k-th strike in a day that hits one land formation fires at
+  1 / (1 + k) on it (PLAN 7.144, ADR-737; `formations.struck`, cleared at 00:00): what the first
+  left is dug in or scattered. Without it, the larger air forces of ADR-736 wore the few
+  formations of a war away from the air before they met the enemy's; ships are not dimmed.
 - *As built (PLAN 5.4c, ADR-318):* a strike on enemy ships fires its aircraft's hard attack
   (halved on armour beyond its piercing) × 1 in hit points; each squadron's share on the ships
   (their health of the whole) goes on one ship, picked by hit points (PLAN 7.61, ADR-606: spread

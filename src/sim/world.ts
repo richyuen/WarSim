@@ -232,6 +232,8 @@ export const FORMATION_SCHEMA = {
   org: 'f64',
   /** 1 while in contact with an enemy (PLAN 1.13): holds position and fights. */
   engaged: 'u8',
+  /** Strikes from the air that hit it since the day's start (PLAN 7.144, ADR-737): the next fires at 1 / (1 + this) on it (`strikes`). */
+  struck: 'u8',
   /** Hours of its retreat left (PLAN 3.5a): out of battles, of the fronts' pressure and of the AI's orders. 0 = none. */
   retreat: 'u8',
   /** 1 on a march home (PLAN 3.7h, ADR-169): `repatriationSystem`'s order, which crosses any nation's ground. Any other order and its arrival clear it. 2 on the walk back from a step that was barred in its middle (PLAN 3.7l, ADR-172). */

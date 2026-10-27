@@ -24182,3 +24182,27 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **ADR-733 (a):** PLAN 7.138 closed not done; PLAN 7.146 (the land army of long-front wars late) filed after
   7.145, its AT as drafted (seeds from 1274). BLOCKERS' 7.138 entry resolved.
 - **Next:** PLAN 7.144.
+
+## 2026-10-27 — PLAN 7.144: the strikes piled on few formations; a day's k-th strike at 1 / (1 + k); AT met late, year 1 missed (ADR-737, to the user)
+
+- **Start:** gate green on `4da68474`; critic not due. No decision waited on the user.
+- **Read** (`docs/evidence/7.144/measure.md`; new `tools/diag/airGround.ts`, `tools/diag/strikeTrace.ts`; HEAD saves of
+  1243/1246/1249/1252 at years 8 and 14, 60 days per arm, temporary switches removed): strikes off 1.37 × land
+  contact, the air's factors on fire and supply 1.00 ×, the reserve flipped back on a save identical (no order changes
+  in 60 days). Half the strikes' effect is on formations out of contact. On 1246 y8 a small nation's 4 formations
+  out of contact were struck 44–59 times a day and gone in 19 days.
+- **Rule** (ADR-737): the k-th strike of a day that hits a land formation fires at 1 / (1 + k) (`strikeShare`,
+  `formations.struck` cleared at 00:00 in `airSystem`); fleets not dimmed. Unit test in `airStrike1938.test.ts`, red
+  without. On the saves the air's damage to the land 990 → 363 units a day, strikes that hit 103 → 133. Pin
+  0ef648b5 → 6e048cce.
+- **Five tests restated** (history moved; ADR-737 names each): `farWait1938` seed 4 → 1; `fleets1938` counts the
+  fleet's contact only; `nukeOverrun1938` to the fall of Paris (day 79 → 120); `wholeTanks` the first heavy fight
+  that costs a tank; `nukeStrikeAgain1938` second strike within the wait + 30 days (was + 7: France held 3 days by
+  reach and 17 by the outrage at desperation 1.7), plus no day held for want of desperation.
+- **AT** on 1294–1303 × 20 (`airWar.ts`, HEAD from `WarSim_base`, seven at a time, ~35 min; `docs/evidence/7.144/at.md`):
+  engaged years 2–20 3.34 → 5.39 (1.61 ×, all ten), wings 1.01 ×, aloft 1.31 ×, met; engaged year 1 44.1 → 37.8
+  (0.86 ×, bar 0.95), missed, moved into year 2 (9.2 → 18.6). Seeds spent.
+- **Filed:** BLOCKERS, ADR-737 (proposed), PLAN 7.147 (year 1, waits on ADR-737). Tick cost: a u8 fill a day.
+- **Gotcha:** a 60-day A/B from one save cannot show a rule that acts through what is built over years (the reserve
+  flip read identical); cut the built thing at load instead (`AB_KEEP`), or switch off its effects.
+- **Next:** PLAN 7.145 while ADR-737 waits.

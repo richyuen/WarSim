@@ -334,6 +334,19 @@ export const STRIKE_FIRE = 0.2;
  */
 export const DISPERSED_STRIKE = 0.25;
 /**
+ * The k-th strike in a day that hits a land formation (k strikes on it already since the day's
+ * start, `formations.struck`) fires at 1 / (1 + k) on it (PLAN 7.144, ADR-737): what the first
+ * strikes left of it is dug in or scattered, and the targets worth a bomb are hit. Before, a strike
+ * wing flew sortie after sortie at the few enemy formations in its range, and with ADR-736's larger
+ * air forces the small armies of a war were worn away from the air before they met the enemy's
+ * (on 1246's year-8 save four formations of 24,000 men struck 44–59 times a day, 1,000 men left on
+ * day 19; land contact on eight saves × 60 days 3.17 a day, 4.33 with no strikes, 4.12 with this;
+ * `docs/evidence/7.144/measure.md`). Fleets are not dimmed: a ship is hit or not.
+ */
+export function strikeShare(struck: number): number {
+  return 1 / (1 + struck);
+}
+/**
  * Hit points an hour of an aircraft per point of its hard attack on a ship, a naval strike's
  * fire (PLAN 5.4c): a bomb or torpedo on a ship counts in full, where on the land the fire is
  * spread over men in cover (`STRIKE_FIRE`).
@@ -411,7 +424,9 @@ function formationsByCell(world: World, aims: readonly { tx: number; ty: number 
  * `effectiveness` on the target (soft, or hard on armour, halved where armour beats piercing)
  * × `STRIKE_FIRE` (× `DISPERSED_STRIKE` on a land formation not in contact, PLAN 7.110b), spread over the elements by their health (strength × hp, as a land element
  * picks its targets); its share on the ships (their health of the whole) × `shipEffectiveness` ×
- * `NAVAL_STRIKE_FIRE` goes on one ship, picked by hit points (PLAN 7.61); in units lost: ÷ the target's `hpPerUnit`; carried as on the land. Run
+ * `NAVAL_STRIKE_FIRE` goes on one ship, picked by hit points (PLAN 7.61); in units lost: ÷ the target's `hpPerUnit`; carried as on the land.
+ * On a land formation the fire is × `strikeShare` of the strikes that hit it earlier that day, and each strike that
+ * hits one counts on it (`formations.struck`, cleared at the day's start by `airSystem`; PLAN 7.144, ADR-737). Run
  * before the hour's air fights, so a sortie turned home in them strikes nothing. Emits
  * `AirStrike` per strike that found a target.
  */
@@ -476,7 +491,8 @@ export function strikes(world: World): void {
       targets.forEach((t, k) => {
         const ut = rules.units[ec.unit[t]!]!;
         if (ut.domain === Domain.sea) return;
-        const fire = effectiveness(us, ut) * STRIKE_FIRE * (fc.engaged[ec.formation[t]!] === 1 ? 1 : DISPERSED_STRIKE);
+        const tf = ec.formation[t]!;
+        const fire = effectiveness(us, ut) * STRIKE_FIRE * (fc.engaged[tf] === 1 ? 1 : DISPERSED_STRIKE) * strikeShare(fc.struck[tf]!);
         const units = (ec.strength[e]! * fire * air * health[k]!) / total / ut.hpPerUnit;
         if (units > 0) loss.set(t, (loss.get(t) ?? 0) + units);
       });
@@ -502,6 +518,8 @@ export function strikes(world: World): void {
       addAirTotal(world, struck, 0, n);
     }
     for (const g of [...hit].sort((a, b) => a - b)) {
+      // The day's strikes on it (PLAN 7.144), before it may go; a fleet's are not counted.
+      if (!world.isFleet(g) && fc.struck[g]! < 255) fc.struck[g] = fc.struck[g]! + 1;
       // Where its bombs fell, for the view at T3 (PLAN 5.9): the formation, before it may go.
       world.out.emit(world.tick, EventKind.StrikeHit, g, id, fc.x[g]!, fc.y[g]!);
       settleFormation(world, g);

@@ -10,6 +10,7 @@
  * of the land reads a wing yet (`World.offLand`).
  */
 import { EventKind, RejectReason } from '../../shared/events';
+import { isDayStart } from '../../shared/calendar';
 import { airbaseRoom } from '../data/airbases';
 import { airCombat, antiAir, strikes } from './airCombat';
 import { airLift } from './airLift';
@@ -23,6 +24,8 @@ import { airOf, type World } from '../world';
 
 export function airSystem(world: World): void {
   repairSystem(world);
+  // The day's strikes on each formation (PLAN 7.144, `strikes`): a new day, none yet.
+  if (isDayStart(world.tick)) world.formations.cols.struck.fill(0);
   if (world.wingBase.size === 0) {
     // No wing left: what was flown fades all the same (PLAN 5.8k).
     if (world.airPower.size > 0) airPowerSystem(world, new Map());
