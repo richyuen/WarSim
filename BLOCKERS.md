@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.146's AT missed: engaged late 1.127 × HEAD's on 1274–1283 (bar 1.15 ×), two worlds over a third against none (ADR-739, waits on the user)
+- **The bar:** on 1274–1283 × 30 years against HEAD, engaged land formations a day per war with a front of 100 cells or
+  more in years 2–30 at least 1.15 ×, year 1 not below 0.95 ×; the floors in every world; ADR-732's clauses not worse.
+- **What moved** (`docs/evidence/7.146/at.md`; the rule, ADR-739, committed `e5e3d85a` and `87fee701`: an AI nation
+  holding a land front where its side is outnumbered on land saves for no warship and has one order slot more): engaged
+  late 0.964 → 1.086 (1.127 ×, paired +0.121 ± 0.097 se; the filter on 1294–1303 × 20 read 1.26 ×); year 1 1.008 ×; the
+  floors and the runs of the five met; the United States over a third at year 30 in 1279 and 1280 (HEAD none).
+- **What is left:** the user's (ADR-739): (a) kept, 7.146 closed not done, the worlds over a third to PLAN 7.143
+  (recommended); (b) reverted; (c) part a alone, with a run on unseen seeds from 1334. The weak side's nations under 100 a
+  month (three quarters of its nation-months) are reached by no order rule (`measure.md` §3).
+
 ### PLAN 7.145's AT missed on the sea battles: battles 0.867 ×, ships sunk in them 0.923 × HEAD's on 1284–1293 (bar 0.95 ×; ADR-738, waits on the user)
 - **The bar:** on 1284–1293 × 20 years against HEAD, carrier strike-hours (in a sea battle or on their own mission)
   in years 2–20 at least 2 ×; sea battles and ships sunk in years 2–20 not below 0.95 ×; a strike ashore in the page;

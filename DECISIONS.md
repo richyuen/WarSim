@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-739 · 2026-10-27 · accepted — The weak side of a land war saves for no warship and has one more order slot (PLAN 7.146)
+### ADR-739 · 2026-10-27 · proposed (the user's decision) — The weak side of a land war saves for no warship and has one more order slot: engaged late 1.127 ×, two worlds over a third (PLAN 7.146's AT missed)
 
 - **Context.** ADR-733 (a): the late long-front war is thin on both sides, and the one lever with a measured effect on
   contact is the army's size. PLAN 7.146: read what holds the late army down, then a rule on it.
@@ -198,6 +198,23 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Decision (part b).** Such a nation has OUTNUMBERED_SLOTS (1) army order slots more than 1 + income /
   PARALLEL_INCOME (at most MAX_PARALLEL). `navyBudget1938`: Norway against Sweden, under PARALLEL_INCOME, with the gold
   for three divisions orders two (red without: one). Pin cb976680 → 2283b28a.
+- **The AT** (1274–1283 × 30 years, `87fee701` against `49bf9d01`, `docs/evidence/7.146/at.md`, mean of the seeds):
+  engaged a day per war with a front of 100 cells or more, years 2–30, 0.964 → 1.086 (**1.127 ×**, bar 1.15 ×; up on 6 of
+  10; paired +0.121 ± 0.097 se, the bar +0.145): missed. Year 1 1.008 ×, met. Floors met in every world (least land
+  changing hands 2.19 %, front battles every year). ADR-732: the five in order at most 9 years, the strongest five over 12
+  in no world, met; a nation over a third of the land at year 30 in **2** worlds against HEAD's 0 (the United States,
+  1279 39.3 %, 1280 35.2 %): missed. The United States is the largest at year 30 in 8 of 10 (HEAD 4). The rule does not
+  reach it (6 slots, the cap; no warship's saving; the strong side of its wars): its share is of what the rule does to
+  others, or of the seeds (HEAD had 2 of 10 over a third on 1253–1263, and on the filter HEAD 1, the rule 0). Run time
+  as HEAD's (8,660 s against 8,612 s, side by side). Seeds 1274–1283 spent.
+- **Options:**
+  - **(a)** Kept; 7.146 closed not done; the worlds over a third to PLAN 7.143 (the American runaway, whose AT reads
+    "no nation over a third, no more worlds over 30 % than HEAD's"), its HEAD now with ADR-739. (Recommended: contact up
+    an eighth on fresh worlds and a quarter on the filter, year 1 and the floors unchanged, and the rule cannot reach the
+    nation that ran away.)
+  - **(b)** Reverted (`87fee701`, `e5e3d85a`; the read tools and `docs/evidence/7.146/` kept); 7.146 closed not done.
+  - **(c)** Part a alone (`87fee701` reverted): the filter read it 1.16 × at 20 years; no 30-year read exists, a run on
+    unseen seeds from 1334 (about 50 minutes) decides it.
 
 ### ADR-738 · 2026-10-27 · proposed (the user's decision) — A carrier's wings strike ashore: strike-hours 105 ×, sea battles 0.867 ×, ships sunk in them 0.923 × (PLAN 7.145's AT missed on the battles)
 

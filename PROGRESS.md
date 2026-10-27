@@ -24227,3 +24227,28 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `EVIDENCE=1` on several specs at once rewrites every one's screenshots (7.35, 7.84 here); run it on
   the new spec alone, or `git checkout` the others after.
 - **Next:** PLAN 7.146 (the late land army) while ADR-737 and ADR-738 wait.
+
+## 2026-10-27 — PLAN 7.146: the weak side of long-front wars saves for no warship, one slot more; AT missed (ADR-739, to the user)
+
+- **Start:** gate green on `49bf9d01`; critic not due. ADR-737 and ADR-738 still wait on the user.
+- **Read** (`docs/evidence/7.146/measure.md`; new `tools/diag/longWarArmy.ts`, `frontedRoles.ts`, `longWarGates.ts`,
+  `dryArmy.ts`; HEAD saves of 1294/1297/1300/1303 at years 10 and 20): in wars with a front of 100+ cells the weak side
+  is 50–60 formations of ~20 nations against 311–387, losing 2.2–2.5 × what it raises (combat in contact, then the air
+  out of contact). The strong side's top loss, supply attrition, is far from the front on the march: no lever. Three
+  quarters of the weak side's nation-months are under 100 gold; its money (100–1,000 a month) is held by the warship's
+  saving in a third of its months and by its one order slot.
+- **Filter** (1294–1303 × 20, three arms, `designBars.ts` + new `designCompare.ts`): no saving 1.16 ×, with a slot
+  more 1.26 ×, year 1 1.00 ×.
+- **Part a** (`e5e3d85a`): `outnumberedOnLand`; such a nation saves for no warship. `navyBudget1938` new case, red
+  without; the ADR-575/579 scenes keep their claim with Sweden's land army removed. `farWait1938` seed 7 → 5 (history).
+  Pin b08ba7c9 → cb976680.
+- **Part b** (`87fee701`): OUTNUMBERED_SLOTS (1) more order slots; its case red without. Pin cb976680 → 2283b28a.
+  Whole unit suite green by hand (1,942).
+- **AT** on 1274–1283 × 30 (base `49bf9d01` from `WarSim_base`, seven at a time, ~75 min; `docs/evidence/7.146/at.md`):
+  engaged years 2–30 1.127 × (bar 1.15, paired +0.121 ± 0.097), missed; year 1 1.008 ×, floors, the runs of the five,
+  met; over a third at year 30 in 2 worlds (USA) against 0, missed. The rule does not reach the USA (6 slots, no
+  saving). Run time as HEAD's. Seeds spent.
+- **Filed:** BLOCKERS, ADR-739 (proposed), a line under PLAN 7.143.
+- **Gotcha:** an untracked file named `nul` at the root (a `> nul` from a tool run) makes `git add -A` fail, so the
+  gate's `worktreeTree()` returns null and `gate.test` goes red; removed.
+- **Next:** PLAN 7.143 (the American runaway) while ADR-737, ADR-738 and ADR-739 wait.

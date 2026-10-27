@@ -137,6 +137,9 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   months and by its one order slot. Filter on 1294–1303 × 20: no saving 1.16 ×, with a slot more 1.26 ×.
   - [x] 7.146a An AI nation holding a land front where its side is outnumbered on land saves for no warship (ADR-739).
   - [x] 7.146b And has one order slot more (ADR-739).
+  Run 2026-10-27 (ADR-739, to the user; BLOCKERS; `docs/evidence/7.146/at.md`): AT on 1274–1283 × 30: engaged years 2–30
+  1.127 × (bar 1.15 ×), missed; year 1 1.008 ×, the floors, ADR-732's runs, met; a nation over a third at year 30 in 2
+  worlds against HEAD's 0 (the United States, not reached by the rule), missed. Waits on ADR-739; seeds 1274–1283 spent.
 
 - [ ] 7.143 The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of
   the land at year 30 in 2 of 10 unseen worlds (1261 39.4 %, first from year 15; 1263 48.7 %, from year 28, growing
@@ -146,6 +149,9 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   over a third of the land at year 30, and no more worlds over 30 % than HEAD's; ADR-732's ordered and strongest
   five still at most 12 years; land changing hands at least 2 % of the land cells each year in every world where
   HEAD's does; a unit test, red without; the gate green.
+  With ADR-739 (PLAN 7.146, if kept): on 1274–1283 × 30 the United States over a third in 2 worlds (1279 39.3 %, 1280
+  35.2 %) against HEAD's 0, and the largest at year 30 in 8 of 10 against 4, the rule not reaching it
+  (`docs/evidence/7.146/at.md`).
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
