@@ -15793,3 +15793,29 @@ Of 7.116 (open in PLAN.md):
   Done 2026-10-27 (ADR-736; `docs/evidence/7.142/at.md`): part 1 (`6f5b2c83`) the row of a wing at sea; part 2 at
   war the wing rebuild keeps the war's reserve. 1243–1252: wings 1.69 ×, aloft 1.46 ×, year 1 0.99 ×. Land contact
   late 0.76 × (PLAN 7.144).
+
+<!-- moved 2026-10-27 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.141 (closed not done, ADR-735 a, the user's decision) Naval 7: the carriers built wait in port, and the late sea war is no bigger. 7019's US group built in year 21
+  sat in port a year at war, 0 strikes; carrier strike hours 30 in 8 world-years; transports at year 20 548 → 498 and
+  ships sunk late −7 % since `7739a78`, ADR-726's carrier group in training (800 days) the likely cause
+  (`critic/c16_cvfollow_7019_18.json`, `critic/c16_cvworld_*.json`, `critic/shots/c16cv_8167_save_fleet1096_60m.png`).
+  AT: on seeds 1233–1242 × 20 years against HEAD on the same seeds, hours with a carrier strike in the air in years
+  2–20 at least 2 × HEAD's, transports at year 20 and ships sunk in years 2–20 not below 0.95 × HEAD's; a unit test,
+  red without; the gate green.
+  AT missed 2026-10-27 (ADR-735, BLOCKERS; `docs/evidence/7.141/measure.md`): part 1 (ADR-734, kept) frees the warship
+  slot from a carrier group in training: strike-hours 847 → 1,014 (1.197 ×), ships sunk 1.031 ×, transports 0.955 ×.
+  The carriers at war stand by ports of enemies with no armed fleet, and their wings strike only ships in a sea battle.
+  Seeds 1233–1242 spent. Closed not done 2026-10-27 (ADR-735 a, the user's decision): PLAN 7.145.

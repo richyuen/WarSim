@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-736 · 2026-10-27 · accepted (the rule, PLAN 7.142's AT met); proposed (the user's decision): kept or reverted for the land read — At war, the wing rebuild keeps the war's reserve; land contact late 0.76 ×
+### ADR-736 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, kept) — At war, the wing rebuild keeps the war's reserve; land contact late 0.76 ×
 
 - **Context.** PLAN 7.142 (critic run 16, aircraft 7): wings late 95 → 69 a world, the ferried wings lost faster
   than rebuilt (ADR-724, option c). AT: on 1243–1252 × 20 against HEAD, wings and sorties aloft a world-hour in
@@ -202,9 +202,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     a rule sought that meets both.
   - **(c)** As (a), and the wing rebuild's war reserve held to nations whose army is at its peacetime share or
     over it (ADR-615's condition turned round), read on new seeds: less air (the months it frees are few late).
-- **Meanwhile** (a) stands in the code; the loop takes PLAN 7.144.
+- **Decision** (the user's, 2026-10-27): **(a).** The rule kept, PLAN 7.142 done; PLAN 7.144 (the land read) next.
 
-### ADR-735 · 2026-10-27 · proposed (the user's decision) — The late carrier has no ship to strike: PLAN 7.141's AT missed (1.20 ×, bar 2 ×)
+### ADR-735 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, carriers strike ashore) — The late carrier has no ship to strike: PLAN 7.141's AT missed (1.20 ×, bar 2 ×)
 
 - **Context.** PLAN 7.141 (critic run 16, naval 7): AI-built carriers wait in port; the bar is 2 × HEAD's hours with
   a carrier strike in the air (`carrierStrikes`, flown only in a sea battle, SPEC 5.4d) in years 2–20.
@@ -227,7 +227,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(c)** As (a) or (b), and a numbered task: a carrier weighs in fleet power. It counts nothing in `fleetPower`
     and `navalPower` (no gun, no torpedo), so a carrier group weighs as its escorts alone in every fight-or-avoid
     test and in sea control; a defect, but no declined battle on this read.
-- **Meanwhile** the loop takes PLAN 7.142. No sim change beyond ADR-734.
+- **Decision** (the user's, 2026-10-27): **(a).** PLAN 7.141 closed not done, part 1 kept; PLAN 7.145 (carriers strike
+  ashore) filed with the AT above, after 7.144. (c) not taken.
 
 ### ADR-734 · 2026-10-27 · accepted — A carrier group in training holds back no other warship (PLAN 7.141, part 1)
 

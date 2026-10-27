@@ -101,17 +101,6 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   years in 9 of 10; no nation over a third of the land at year 30 (`tools/diag/designBars.ts`). Read on HEAD,
   1253–1263 but 1259 (`docs/evidence/7.140/design.md`): at most 6 and 8 years, met; over a third in 2 of 10 (the
   United States, 39.4 % and 48.7 %), missed (BLOCKERS). Waits on PLAN 7.143; seeds 1253–1263 spent.
-- [ ] 7.141 Naval 7: the carriers built wait in port, and the late sea war is no bigger. 7019's US group built in year 21
-  sat in port a year at war, 0 strikes; carrier strike hours 30 in 8 world-years; transports at year 20 548 → 498 and
-  ships sunk late −7 % since `7739a78`, ADR-726's carrier group in training (800 days) the likely cause
-  (`critic/c16_cvfollow_7019_18.json`, `critic/c16_cvworld_*.json`, `critic/shots/c16cv_8167_save_fleet1096_60m.png`).
-  AT: on seeds 1233–1242 × 20 years against HEAD on the same seeds, hours with a carrier strike in the air in years
-  2–20 at least 2 × HEAD's, transports at year 20 and ships sunk in years 2–20 not below 0.95 × HEAD's; a unit test,
-  red without; the gate green.
-  AT missed 2026-10-27 (ADR-735, BLOCKERS; `docs/evidence/7.141/measure.md`): part 1 (ADR-734, kept) frees the warship
-  slot from a carrier group in training: strike-hours 847 → 1,014 (1.197 ×), ships sunk 1.031 ×, transports 0.955 ×.
-  The carriers at war stand by ports of enemies with no armed fleet, and their wings strike only ships in a sea battle.
-  Seeds 1233–1242 spent. Waits on the user: carriers strike ashore (recommended), or closed not done.
 
 - [ ] 7.144 The air rebuild lowers land contact (found by 7.142's AT, ADR-736): on 1243–1252 × 20 years land
   formations engaged a day in years 2–20 4.48 → 3.41 (0.76 ×, lower on all ten), year 1 0.97 ×, the armies as
@@ -120,6 +109,15 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   (strikes on formations out of contact, attacks given or refused by the operational AI). AT: on 10 unseen seeds
   from 1294 × 20 years against HEAD on the same seeds, engaged land formations a day in years 2–20 at least
   1.25 × HEAD's, wings and sorties aloft in years 2–20 not below 0.9 × HEAD's, year 1 not below 0.95 ×; a unit
+  test, red without; the gate green.
+
+- [ ] 7.145 Carriers strike ashore (ADR-735 a, the user's decision; from 7.141, naval 7): the carriers at war stand by
+  ports of enemies with no armed fleet, and their wings strike only ships in a sea battle (`carrierStrikes`, SPEC
+  5.4d). A carrier's wings, their fleet at war and in no sea battle, take the naval bomber's missions from the deck
+  (`airAi`: the enemy's fleet nearest in range, else the enemy's land formations in range), as land-based wings do;
+  SPEC 5.4d changed to match. AT: on 10 unseen seeds from 1284 × 20 years against HEAD on the same seeds, hours with
+  a carrier wing's strike in the air, in a sea battle or on its own mission, in years 2–20 at least 2 × HEAD's; sea
+  battles and ships sunk in years 2–20 not below 0.95 × HEAD's; a carrier strike ashore seen in the page; a unit
   test, red without; the gate green.
 
 - [ ] 7.143 The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of
@@ -488,3 +486,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.137 (closed not done, ADR-727 a, the user's standing instruction) Aircraft 7, naval 7: the carriers die out. 18 carriers at the start; at year 20 none on 6421, 1129 and 4877 […]
 - [x] 7.139 R16-B2: the 5.5 ms budget (ADR-709) still fails late. Pinned and alone, 3847's year 27 6.14 / 6.19 ms, […]
 - [x] 7.142 Aircraft 7: the air forces a third smaller late. Wings late 95 → 69 a world, lower on every one of 56 […]
+- [x] 7.141 (closed not done, ADR-735 a, the user's decision) Naval 7: the carriers built wait in port, and the late sea war is no bigger. 7019's US group built in year 21 […]

@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.141's AT missed: carrier strike-hours 1.20 × HEAD's in years 2–20 on 1233–1242 (bar 2 ×; ADR-735, waits on the user)
+### RESOLVED 2026-10-27 (option a, the user's decision: 7.141 closed not done, PLAN 7.145 carriers strike ashore) · PLAN 7.141's AT missed: carrier strike-hours 1.20 × HEAD's in years 2–20 on 1233–1242 (bar 2 ×; ADR-735, waits on the user)
 - **The bar:** on 1233–1242 × 20 years, hours with a carrier strike in the air in years 2–20 at least 2 × HEAD's;
   transports at year 20 and ships sunk in years 2–20 not below 0.95 × HEAD's.
 - **What moved** (`docs/evidence/7.141/measure.md`): part 1 (ADR-734, a carrier group in training holds back no
