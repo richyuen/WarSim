@@ -944,6 +944,8 @@ Element (authoritative unit proxy) {
       ADR-689; `world.airStart`, each nation's wings as the world was made, saved) it rebuilds:
       as many wings in training as the army's order slots, while its air force with them costs
       under `AIR_REBUILD_SHARE` (0.035) of its income, their upkeep counted against the balance.
+      At war it keeps the war's reserve past a wing's price (`WAR_RESERVE_MONTHS`, none; PLAN 7.142,
+      ADR-736), at peace `RESERVE_MONTHS`.
   - **A fleet sails** (PLAN 4.2c, ADR-250; `src/sim/systems/sail.ts`).
     - *The order* (`orderSail`; `orderMove` and so the `moveFormation` command hand a fleet
       to it): to water with a zone, or to a port by its land cell (the port's water, its

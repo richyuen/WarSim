@@ -167,6 +167,43 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-736 · 2026-10-27 · accepted (the rule, PLAN 7.142's AT met); proposed (the user's decision): kept or reverted for the land read — At war, the wing rebuild keeps the war's reserve; land contact late 0.76 ×
+
+- **Context.** PLAN 7.142 (critic run 16, aircraft 7): wings late 95 → 69 a world, the ferried wings lost faster
+  than rebuilt (ADR-724, option c). AT: on 1243–1252 × 20 against HEAD, wings and sorties aloft a world-hour in
+  years 2–20 at least 1.2 ×, year 1 not below 0.9 ×; a wing at sea shown as such on its panel.
+- **Read** (`tools/diag/airForce.ts`, HEAD, 1171/1174/1177/1180 years 1–9; `docs/evidence/7.142/at.md`): late,
+  10–15 wings built a world-year against 10–20 lost, nearly all in the air. Of the months a nation at war under its
+  air share is stopped, the largest gate is `goldPriceHeld` (the wing's price held, not RESERVE_MONTHS' three
+  months of income past it), 60–117 a year.
+- **Rule** (`economicAi` 3c): a nation at war under its start's wings (`world.airStart`, the rebuild of ADR-689)
+  keeps WAR_RESERVE_MONTHS (0) past a wing's price, as its army's orders do under ADR-615; at peace, and past its
+  start, RESERVE_MONTHS as before. The rebuild's other bounds stand: its start's count, AIR_REBUILD_SHARE of
+  income, the order slots. Unit test `airBudget1938.test.ts` (France, the price and one month of income: at war a
+  wing, at peace none), red without. Part 1 (`6f5b2c83`): a wing at sea reads "at sea to its new base, N days" on
+  its Actions tab row, its orders off.
+- **AT** (unseen 1243–1252 × 20, HEAD `6f5b2c83` against the rule): wings years 2–20 72.5 → 122.6 (**1.69 ×**),
+  sorties aloft 20.4 → 29.7 (**1.46 ×**), year 1 0.99 ×; higher on every seed; air battles 2.36 ×. **Met.**
+  Tick (seed 99, years 1–15, the two arms at once on separate cores): mean 2.15 → 1.91 ms, worst year
+  2.81 → 2.48 (HEAD on the other cores 2.06): not slower.
+- **But:** land formations engaged a day in years 2–20 4.48 → 3.41 (**0.76 ×**), lower on all ten (on the spent
+  four 4.84 → 3.24); year 1 0.97 ×; wars and nations at war unchanged. R16-B1's figure. Not the gold: at year 8
+  of 1243 and 1246 the rule's land armies are as large or larger (622 / 523 and 491 / 487 formations) and the
+  army's orders stopped by gold as often (83 % against 86 % of nations at war, `armyGates.ts`). Air takes more
+  men from formations out of contact (100k against 80k in 90 days, `armyLossBySystem.ts`), but the worlds have
+  diverged by then; the cause is not found.
+- **Pin:** 2b4bc96e → 0ef648b5.
+- **Options:**
+  - **(a)** Kept; PLAN 7.142 ticked; the land read filed as PLAN 7.144 (why the larger air forces lower land
+    contact, read from one saved state stepped both ways, and a rule for it), before 7.143. (Recommended: the
+    critic's aircraft finding is fixed with room, and the land figure falls from an interaction to be found, not
+    from the economy; a revert loses the air war to keep a figure that is 10 % of year 1's either way.)
+  - **(b)** Reverted; 7.142 reopened, its AT given a land floor (engaged years 2–20 not below 0.95 × HEAD's) and
+    a rule sought that meets both.
+  - **(c)** As (a), and the wing rebuild's war reserve held to nations whose army is at its peacetime share or
+    over it (ADR-615's condition turned round), read on new seeds: less air (the months it frees are few late).
+- **Meanwhile** (a) stands in the code; the loop takes PLAN 7.144.
+
 ### ADR-735 · 2026-10-27 · proposed (the user's decision) — The late carrier has no ship to strike: PLAN 7.141's AT missed (1.20 ×, bar 2 ×)
 
 - **Context.** PLAN 7.141 (critic run 16, naval 7): AI-built carriers wait in port; the bar is 2 × HEAD's hours with

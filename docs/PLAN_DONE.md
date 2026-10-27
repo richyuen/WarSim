@@ -15768,3 +15768,28 @@ Of 7.116 (open in PLAN.md):
   green.
   Done 2026-10-27 (ADR-729, `docs/evidence/7.139/measure.md`): 3847's year 27 5.39 / 5.40 ms, 5683's year 26 5.12 /
   5.11, hashes unchanged; the worst year of the ten seeds 4.27 alone (1216 y29, 5.06 on the screen); pin unchanged.
+
+<!-- moved 2026-10-27 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.142 Aircraft 7: the air forces a third smaller late. Wings late 95 → 69 a world, lower on every one of 56
+  worlds; ~18 sorties aloft a world-hour late, 2 in 6421 y20 and 1 in 4877 y20 in the page; the ferried wings are lost
+  faster than rebuilt (ADR-724) and are invisible (no row, mark or panel state) (`critic/c16_cmp_y30.json`,
+  `critic/c16_u_6421.json`, `critic/c16_u_4877.json`, `critic/shots/c16u_6421_f0_0250m.png`). AT: on seeds 1243–1252
+  × 20 years against HEAD on the same seeds, wings a world in years 2–20 at least 1.2 × HEAD's and sorties aloft a
+  world-hour in years 2–20 at least 1.2 × HEAD's, year 1 not below 0.9 ×; a wing at sea shown as such on its panel; a
+  unit test, red without; the gate green.
+  Done 2026-10-27 (ADR-736; `docs/evidence/7.142/at.md`): part 1 (`6f5b2c83`) the row of a wing at sea; part 2 at
+  war the wing rebuild keeps the war's reserve. 1243–1252: wings 1.69 ×, aloft 1.46 ×, year 1 0.99 ×. Land contact
+  late 0.76 × (PLAN 7.144).

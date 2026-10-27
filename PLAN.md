@@ -112,13 +112,15 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   slot from a carrier group in training: strike-hours 847 → 1,014 (1.197 ×), ships sunk 1.031 ×, transports 0.955 ×.
   The carriers at war stand by ports of enemies with no armed fleet, and their wings strike only ships in a sea battle.
   Seeds 1233–1242 spent. Waits on the user: carriers strike ashore (recommended), or closed not done.
-- [ ] 7.142 Aircraft 7: the air forces a third smaller late. Wings late 95 → 69 a world, lower on every one of 56
-  worlds; ~18 sorties aloft a world-hour late, 2 in 6421 y20 and 1 in 4877 y20 in the page; the ferried wings are lost
-  faster than rebuilt (ADR-724) and are invisible (no row, mark or panel state) (`critic/c16_cmp_y30.json`,
-  `critic/c16_u_6421.json`, `critic/c16_u_4877.json`, `critic/shots/c16u_6421_f0_0250m.png`). AT: on seeds 1243–1252
-  × 20 years against HEAD on the same seeds, wings a world in years 2–20 at least 1.2 × HEAD's and sorties aloft a
-  world-hour in years 2–20 at least 1.2 × HEAD's, year 1 not below 0.9 ×; a wing at sea shown as such on its panel; a
-  unit test, red without; the gate green.
+
+- [ ] 7.144 The air rebuild lowers land contact (found by 7.142's AT, ADR-736): on 1243–1252 × 20 years land
+  formations engaged a day in years 2–20 4.48 → 3.41 (0.76 ×, lower on all ten), year 1 0.97 ×, the armies as
+  large and the army's orders held by gold as often. Read first, from one saved state stepped both ways (HEAD and
+  `WAR_RESERVE_MONTHS` → `RESERVE_MONTHS` in the wing rebuild), what the larger air forces change on the ground
+  (strikes on formations out of contact, attacks given or refused by the operational AI). AT: on 10 unseen seeds
+  from 1294 × 20 years against HEAD on the same seeds, engaged land formations a day in years 2–20 at least
+  1.25 × HEAD's, wings and sorties aloft in years 2–20 not below 0.9 × HEAD's, year 1 not below 0.95 ×; a unit
+  test, red without; the gate green.
 
 - [ ] 7.143 The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of
   the land at year 30 in 2 of 10 unseen worlds (1261 39.4 %, first from year 15; 1263 48.7 %, from year 28, growing
@@ -485,3 +487,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.133 (closed not done, ADR-724 a, the user's standing instruction) Aircraft 7: an empty sky late. At 6421's year 20, 2 sorties aloft in the whole world on the sampled hour; […]
 - [x] 7.137 (closed not done, ADR-727 a, the user's standing instruction) Aircraft 7, naval 7: the carriers die out. 18 carriers at the start; at year 20 none on 6421, 1129 and 4877 […]
 - [x] 7.139 R16-B2: the 5.5 ms budget (ADR-709) still fails late. Pinned and alone, 3847's year 27 6.14 / 6.19 ms, […]
+- [x] 7.142 Aircraft 7: the air forces a third smaller late. Wings late 95 → 69 a world, lower on every one of 56 […]

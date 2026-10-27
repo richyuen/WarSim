@@ -74,7 +74,8 @@
  *    orders one while its air force's upkeep is under AIR_SHARE of its army's, a fighter group while
  *    fighters are under half its wings, else a tactical bomber group. Under its start's wings
  *    (`world.airStart`, PLAN 7.113a, ADR-689) it rebuilds: as many in training as its army's order
- *    slots while its air force costs under AIR_REBUILD_SHARE of its income.
+ *    slots while its air force costs under AIR_REBUILD_SHARE of its income; at war keeping
+ *    WAR_RESERVE_MONTHS past a wing's price, not RESERVE_MONTHS (PLAN 7.142, ADR-736).
  * 2b. A means of delivery (PLAN 7.6b, `deliveryWing`), before research takes the month's surplus:
  *    a nation with warheads and no means of delivery (`canDeliver`: no missiles, no strategic
  *    bomber with a base) and no wing in training orders a strategic bomber group, whatever its air
@@ -605,7 +606,9 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           if (wing < 0 || airfield(world, n, wing) < 0) break;
           const rule = rules.templates[wing]!;
           const u = upkeepOfTemplate(wing);
-          if (!((rebuild ? left : balance) - u > need && nc.gold[n]! >= rule.gold + RESERVE_MONTHS * income && nc.manpower[n]! >= rule.manpower) || queueFormation(world, n, wing) === 0) break;
+          // At war, the rebuild keeps the war's reserve (PLAN 7.142, ADR-736; ADR-615's for the army).
+          const reserve = (rebuild && atWar ? WAR_RESERVE_MONTHS : RESERVE_MONTHS) * income;
+          if (!((rebuild ? left : balance) - u > need && nc.gold[n]! >= rule.gold + reserve && nc.manpower[n]! >= rule.manpower) || queueFormation(world, n, wing) === 0) break;
           nc.builds[n] = nc.builds[n]! + 1;
           balance -= u;
           left -= u;

@@ -104,6 +104,29 @@ describe('the air force\'s cost (PLAN 5.8s2)', () => {
     expect(AIR_REBUILD_SHARE).toBe(0.035);
   });
 
+  // PLAN 7.142 (ADR-736): late, the wings shot down were not rebuilt for the three months of income the
+  // rebuild kept in the treasury past a wing's price (`goldPriceHeld`, the largest of its gates on 1171-1180
+  // years 2-9). At war a nation under its start's wings keeps the war's reserve, as its army's orders do
+  // (ADR-615); at peace the three months.
+  it("under its start's wings, with the price and less than three months more, France rebuilds at war and not at peace", () => {
+    const order = (war: boolean): number[] => {
+      const s = peaceful([]);
+      const w = s.world;
+      const [FRA, GER] = [id('FRA'), id('GER')];
+      const c = w.formations.cols;
+      const own = [...w.wingBase.keys()].filter((f) => c.nation[f] === FRA).sort((a, b) => a - b);
+      for (const f of own.slice(0, 5)) destroyFormation(w, f);
+      if (war) w.wars.start([GER], [FRA], 0);
+      // The price of a fighter group and one month of its income: under RESERVE_MONTHS' three.
+      w.nations.cols.gold[FRA] = w.rules!.templates[wingsMix.fighter]!.gold + income(w, FRA);
+      w.nations.cols.manpower[FRA] = 1e7;
+      runEvents(s, 1);
+      return ordered(w, FRA);
+    };
+    expect(order(false)).toEqual([]);
+    expect(order(true).length).toBeGreaterThan(0);
+  });
+
   it("a nation's start of wings is saved and loaded (PLAN 7.113a)", () => {
     const s = peaceful([]);
     const before = [...s.world.airStart].sort((a, b) => a[0] - b[0]);

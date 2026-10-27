@@ -24152,3 +24152,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** `w.out.events` is flat `[tick, kind, a, b, x, y]` (stride 6); `EVENT_STRIDE` (7) is the snapshot's
   buffer with a sequence number, not the tick's array.
 - **Next:** PLAN 7.142 (air) while ADR-733 and ADR-735 wait.
+
+## 2026-10-27 — PLAN 7.142: the air forces rebuild at war; AT met; land contact 0.76 × (ADR-736 to the user, PLAN 7.144)
+
+- **Start:** gate green on `5f1eab92`; critic not due. ADR-733 and ADR-735 still wait on the user.
+- **Read** (`tools/diag/airForce.ts`, HEAD, 1171/1174/1177/1180 years 1–9): late 10–15 wings built a world-year against
+  10–20 lost, nearly all in the air; the largest gate of the wings' orders at war `goldPriceHeld` (the price held, not
+  the three months of income past it).
+- **Part 1** (`6f5b2c83`): a wing at sea reads "at sea to its new base, N days" on its Actions tab row, its orders off
+  (`PlayerWing.ferryDays`; `tests/e2e/airOrders1938.spec.ts`, its four tests run by hand; `a-wing-at-sea-row.png`).
+- **Part 2** (ADR-736): at war, the wing rebuild (under a nation's start of wings) keeps WAR_RESERVE_MONTHS past a
+  wing's price, as the army's orders do (ADR-615). Unit test in `airBudget1938.test.ts`, red without. Pin 2b4bc96e →
+  0ef648b5.
+- **AT** on 1243–1252 × 20 (`airWar.ts`, four of each arm at a time, ~50 min; `docs/evidence/7.142/at.md`): wings years
+  2–20 72.5 → 122.6 (1.69 ×), aloft 20.4 → 29.7 (1.46 ×), year 1 0.99 ×: met, higher on every seed. Seeds spent.
+- **But** land formations engaged a day years 2–20 4.48 → 3.41 (0.76 ×, lower on all ten): not the gold (armies as
+  large at year 8, the army's orders held by gold as often). Filed as PLAN 7.144; keep or revert is ADR-736, to the user.
+- **Tick** (seed 99, years 1–15 only, both arms at once on separate cores): mean 2.15 → 1.91 ms, worst year 2.81 →
+  2.48; not slower. The late years (26–29) of R16-B2 not read.
+- **Gotcha:** the diag tools' `seed:path` arguments split at the first colon, so `C:/…` or `/c/…` paths break; pass
+  paths relative to the tool's cwd.
+- **Next:** PLAN 7.144 unless the user takes ADR-736 (b).
