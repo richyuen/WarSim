@@ -64,22 +64,6 @@ Run 16's (report of 2026-10-27 on `7b883084`, `critic/CRITIC_REPORT.md`; R15-B2'
 R16-B1 and R16-B2 are PLAN 7.138 and 7.139; the dimensions under the bar, beyond them, are 7.140–7.142. A task each,
 split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed the critic has run (1207, 1213, 1259):
 
-- [ ] 7.140 Emergent 6: the same five giants. The top five unchanged for more than 12 years in 13 of 56 worlds (8 on
-  `7739a78`), the longest 23 (4877, years 8–30: the United States, the Soviet Union, France, Canada, Denmark)
-  (`critic/c16_cmp_checkpoints.json`, `critic/c16_headless_4877.json`); beyond 7.138's contact, the order of the
-  largest nations late. AT: on seeds 1223–1232 × 30 years against HEAD on the same seeds, worlds whose top five stand
-  unchanged more than 12 years at most half HEAD's count (and at least one fewer), the mean longest run at most
-  0.8 × HEAD's; no world with one nation over a third of the land at year 30 where HEAD has none; a unit test, red
-  without; the gate green.
-  Read 2026-10-27 (ADR-730, BLOCKERS; `docs/evidence/7.140/measure.md`): HEAD on 1223–1232 mean longest 8.1, 1 over
-  12; Canada and Greenland, in nearly every long set, are reached by no mechanism; a treaty rule read and dropped.
-  No rule; seeds 1223–1232 spent on HEAD alone.
-  AT rewritten 2026-10-27 (ADR-732, the user's decision): on 10 unseen seeds × 30 years, the same five largest by
-  area in the same order for at most 12 years in every world; the same five strongest (`strengths`) for at most 12
-  years in 9 of 10; no nation over a third of the land at year 30 (`tools/diag/designBars.ts`). Read on HEAD,
-  1253–1263 but 1259 (`docs/evidence/7.140/design.md`): at most 6 and 8 years, met; over a third in 2 of 10 (the
-  United States, 39.4 % and 48.7 %), missed (BLOCKERS). Waits on PLAN 7.143; seeds 1253–1263 spent.
-
 - [ ] 7.147 Year 1's land contact under ADR-737 (found by 7.144's AT; ADR-737 a, the user's decision): on
   1294–1303 × 20 years engaged land formations a day in year 1 44.1 → 37.8 (0.86 ×, lower on nine), year 2 9.2 → 18.6, wars
   and nations at war alike: the opening fights hold fewer formations at once and last longer. Read first, on the
@@ -95,18 +79,6 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   at home, `carrierWings`) or the air sinks ships before a battle (count ships sunk from the air). AT: on 10 unseen
   seeds from 1314 × 20 years against `57a00adb` on the same seeds, sea battles and ships sunk in them in years 2–20 not
   below 0.95 ×, carrier strike-hours at least 2 ×; a unit test, red without; the gate green.
-
-- [ ] 7.143 The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of
-  the land at year 30 in 2 of 10 unseen worlds (1261 39.4 %, first from year 15; 1263 48.7 %, from year 28, growing
-  at year 30), and 31–32.2 % in five more of twenty, four of them the United States or the Soviet Union
-  (`docs/evidence/7.140/design.md`). Read first: what it takes and why nothing stops it (coalitions, overextension,
-  revolts on its far land). AT: on 10 unseen seeds from 1264 × 30 years against HEAD on the same seeds, no nation
-  over a third of the land at year 30, and no more worlds over 30 % than HEAD's; ADR-732's ordered and strongest
-  five still at most 12 years; land changing hands at least 2 % of the land cells each year in every world where
-  HEAD's does; a unit test, red without; the gate green.
-  With ADR-739 (PLAN 7.146, if kept): on 1274–1283 × 30 the United States over a third in 2 worlds (1279 39.3 %, 1280
-  35.2 %) against HEAD's 0, and the largest at year 30 in 8 of 10 against 4, the rule not reaching it
-  (`docs/evidence/7.146/at.md`).
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
@@ -470,3 +442,5 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.144 (closed not done, ADR-737 a, the user's decision) The air rebuild lowers land contact (found by 7.142's AT, ADR-736): on 1243–1252 × 20 years land […]
 - [x] 7.145 (closed not done, ADR-738 a, the user's decision) Carriers strike ashore (ADR-735 a, the user's decision; from 7.141, naval 7): the carriers at war stand by […]
 - [x] 7.146 (closed not done, ADR-739 a, the user's decision) R16-B1: the land army of long-front wars late, both sides (ADR-733 a, the user's decision; from 7.138). […]
+- [x] 7.140 Emergent 6: the same five giants. The top five unchanged for more than 12 years in 13 of 56 worlds (8 on […]
+- [x] 7.143 (closed, no rule: ADR-740, the user's decision) The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of […]

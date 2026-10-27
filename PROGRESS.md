@@ -24265,3 +24265,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   Soviet Union, Canada, later France and China), and revolts cost it less than it takes. The AT's HEAD arm on 1264–1273
   is running from `WarSim_base` at `221e2164`.
 - **Next:** PLAN 7.143's rule.
+
+## 2026-10-27 — The user's decision: no bar on the largest nation's share (ADR-740)
+
+- "No nation over a third of the land" (ADR-732, SPEC §7) and "no hegemon" (PROMPT.md's DONE condition and baseline)
+  struck. PLAN 7.143 closed with no rule; its read in `docs/evidence/7.143/read.md` (the coalition against the United
+  States forms every month but weighs 0.04–0.4 of it). PLAN 7.140 done on ADR-732's two clauses left, met on HEAD on
+  1253–1263 and on 1264–1273 (at most 7 and 8 years). BLOCKERS' 7.140 entry resolved.
+- **Next:** PLAN 7.147 (year 1's land contact).

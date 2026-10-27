@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-740 · 2026-10-27 · accepted (the user's decision, 2026-10-27) — No bar on the largest nation's share: "over a third of the land" and "no hegemon" dropped
+
+- **Context.** ADR-732's bar held "no nation over a third of the land at year 30", and the DONE condition "no
+  hegemon" (PROMPT.md). On HEAD the United States ends over a third in about one world of ten (1279 39.3 %, 1280
+  35.2 %; on the HEAD before ADR-739, 1261 39.4 %, 1263 48.7 %), and in none of 1264–1273 (largest 15.1–29.9 %).
+  PLAN 7.143's read (`docs/evidence/7.143/read.md`): it grows late by walking into empty land (the Soviet Union, Canada,
+  later France and China); the coalition against a nation over HEGEMON_SHARE of world income forms every month from
+  1938 but weighs 0.04–0.4 of its strength, its members the United States' unaligned neighbours alone.
+- **Decision** (the user's, 2026-10-27). The largest nation's share of the land is no requirement: SPEC §7's "no
+  nation over a third of the land" (ADR-732), PROMPT.md's "no hegemon" in the DONE condition and "or a runaway
+  hegemon" in the baseline's long-run dynamism are struck. What stays of the long run: the world keeps changing
+  (borders still moving at the end; ADR-732's ordered five by area and five strongest, each at most 12 years).
+- **Consequences.** PLAN 7.143 closed, no rule (its read kept, `tools/diag/runaway.ts`). PLAN 7.140's AT is ADR-732's
+  two other clauses, met on HEAD: on 1253–1263 but 1259 the ordered five at most 6 years and the strongest five at most
+  8; on 1264–1273 (`.cache/7143/at/head/`, HEAD `221e2164`) at most 7 and 8, land changing hands at least 2.43 % a
+  year. 7.140 ticked. The anti-hegemon mechanisms of SPEC §7 stay as built.
+
 ### ADR-739 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, kept) — The weak side of a land war saves for no warship and has one more order slot: engaged late 1.127 ×, two worlds over a third (PLAN 7.146's AT missed)
 
 - **Context.** ADR-733 (a): the late long-front war is thin on both sides, and the one lever with a measured effect on
@@ -426,7 +443,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   long-front wars late), its AT as drafted (seeds from 1274), after 7.145. (d) and (e) not taken.
 - **Meanwhile** the loop takes PLAN 7.141 (naval). No sim change.
 
-### ADR-732 · 2026-10-27 · accepted (the user's decision, 2026-10-27) — The design: the largest by area may stay; change at the top is read by power and order (answers ADR-730, PLAN 7.140)
+### ADR-732 · 2026-10-27 · accepted (the user's decision, 2026-10-27; its "no nation over a third" struck by ADR-740) — The design: the largest by area may stay; change at the top is read by power and order (answers ADR-730, PLAN 7.140)
 
 - **Context.** Critic run 16 scores emergent dynamics 6, in part on "the same five giants for 13–23 years in a fifth
   of worlds" (R16-B1's second half; PLAN 7.140). The read (ADR-730, `docs/evidence/7.140/measure.md`): the set is

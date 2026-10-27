@@ -2408,7 +2408,7 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   lands far from any war (the Canadian north, Greenland, Siberia, Australia), which change hands
   seldom; the set of the five largest by area may stand for decades. The world's change at the top
   is the order of those five and the five strongest by `strengths`, each the same for at most 12
-  years, and no nation over a third of the land.
+  years. The largest nation's share of the land has no bar (ADR-740, the user's decision).
 
 ---
 

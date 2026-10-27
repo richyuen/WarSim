@@ -54,7 +54,8 @@ World simulation:
 - Major Battles that pierce frontlines; combat-efficiency modes (dynamic,
   progressive, static, locked, random); temporary buffs/debuffs with timers.
 - Long-run dynamism: with sensible settings, the world keeps changing for
-  many simulated decades without freezing or a runaway hegemon.
+  many simulated decades without freezing (no bar on the largest nation's
+  share: ADR-740, 2026-10-27, the user's decision).
 
 Player tools:
 - Observer-first play, plus God Mode: rename; force war/peace/alliance/
@@ -359,7 +360,8 @@ Only when ALL are true:
 - tests, lint, typecheck, build and `npm run parity` pass;
 - a headless 30-minute soak run of the 1938 scenario completes without crashes
   or desyncs, and a seeded multi-decade sweep over 10+ seeds shows borders
-  still moving at the end and no hegemon;
+  still moving at the end ("no hegemon" struck 2026-10-27, ADR-740, the
+  user's decision);
 - a scripted Playwright run demonstrates seamless zoom from world view to
   unit/proxy level, a naval battle, a tank battle, an air battle, and an AI
   nuclear strike;

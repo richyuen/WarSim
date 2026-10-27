@@ -47,7 +47,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** the user's (ADR-735): (a) carriers strike ashore, a numbered task (recommended); (b) closed not
   done, to the next critic report; (c) with either, a carrier weighs in fleet power.
 
-### PLAN 7.140's AT (ADR-732's bar) missed on HEAD: one nation over a third at year 30 in 2 of 10 (waits on PLAN 7.143)
+### RESOLVED 2026-10-27 (ADR-740, the user's decision: "no nation over a third" struck; 7.140 done, 7.143 closed) · PLAN 7.140's AT (ADR-732's bar) missed on HEAD: one nation over a third at year 30 in 2 of 10 (waits on PLAN 7.143)
 - **The bar** (ADR-732, the user's decision, 2026-10-27): on 10 unseen seeds × 30 years, the five largest by area in
   the same order at most 12 years in every world; the five strongest at most 12 years in 9 of 10; no nation over a
   third of the land at year 30.

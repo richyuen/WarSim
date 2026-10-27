@@ -15914,3 +15914,47 @@ Of 7.116 (open in PLAN.md):
   Run 2026-10-27 (ADR-739, to the user; BLOCKERS; `docs/evidence/7.146/at.md`): AT on 1274–1283 × 30: engaged years 2–30
   1.127 × (bar 1.15 ×), missed; year 1 1.008 ×, the floors, ADR-732's runs, met; a nation over a third at year 30 in 2
   worlds against HEAD's 0 (the United States, not reached by the rule), missed. Waits on ADR-739; seeds 1274–1283 spent.
+
+<!-- moved 2026-10-27 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.140 Emergent 6: the same five giants. The top five unchanged for more than 12 years in 13 of 56 worlds (8 on
+  `7739a78`), the longest 23 (4877, years 8–30: the United States, the Soviet Union, France, Canada, Denmark)
+  (`critic/c16_cmp_checkpoints.json`, `critic/c16_headless_4877.json`); beyond 7.138's contact, the order of the
+  largest nations late. AT: on seeds 1223–1232 × 30 years against HEAD on the same seeds, worlds whose top five stand
+  unchanged more than 12 years at most half HEAD's count (and at least one fewer), the mean longest run at most
+  0.8 × HEAD's; no world with one nation over a third of the land at year 30 where HEAD has none; a unit test, red
+  without; the gate green.
+  Read 2026-10-27 (ADR-730, BLOCKERS; `docs/evidence/7.140/measure.md`): HEAD on 1223–1232 mean longest 8.1, 1 over
+  12; Canada and Greenland, in nearly every long set, are reached by no mechanism; a treaty rule read and dropped.
+  No rule; seeds 1223–1232 spent on HEAD alone.
+  AT rewritten 2026-10-27 (ADR-732, the user's decision): on 10 unseen seeds × 30 years, the same five largest by
+  area in the same order for at most 12 years in every world; the same five strongest (`strengths`) for at most 12
+  years in 9 of 10; no nation over a third of the land at year 30 (`tools/diag/designBars.ts`). Read on HEAD,
+  1253–1263 but 1259 (`docs/evidence/7.140/design.md`): at most 6 and 8 years, met; over a third in 2 of 10 (the
+  United States, 39.4 % and 48.7 %), missed (BLOCKERS). Waits on PLAN 7.143; seeds 1253–1263 spent.
+  Done 2026-10-27 (ADR-740, the user's decision: the clause "no nation over a third" struck): the two clauses left
+  met on HEAD, on 1253–1263 but 1259 (at most 6 and 8 years) and on 1264–1273 (at most 7 and 8). No rule.
+
+- [x] 7.143 (closed, no rule: ADR-740, the user's decision) The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of
+  the land at year 30 in 2 of 10 unseen worlds (1261 39.4 %, first from year 15; 1263 48.7 %, from year 28, growing
+  at year 30), and 31–32.2 % in five more of twenty, four of them the United States or the Soviet Union
+  (`docs/evidence/7.140/design.md`). Read first: what it takes and why nothing stops it (coalitions, overextension,
+  revolts on its far land). AT: on 10 unseen seeds from 1264 × 30 years against HEAD on the same seeds, no nation
+  over a third of the land at year 30, and no more worlds over 30 % than HEAD's; ADR-732's ordered and strongest
+  five still at most 12 years; land changing hands at least 2 % of the land cells each year in every world where
+  HEAD's does; a unit test, red without; the gate green.
+  With ADR-739 (PLAN 7.146, if kept): on 1274–1283 × 30 the United States over a third in 2 worlds (1279 39.3 %, 1280
+  35.2 %) against HEAD's 0, and the largest at year 30 in 8 of 10 against 4, the rule not reaching it
+  (`docs/evidence/7.146/at.md`).
