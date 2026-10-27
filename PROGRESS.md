@@ -24068,3 +24068,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   arm of ten seeds is ~25 min. And the Write tool overwrites an existing tool file without a word: check
   `ls tools/diag/<name>` before writing a new one (`warSides.ts` was restored).
 - **Next:** PLAN 7.139 (R16-B2, the late tick) while ADR-728 waits.
+
+## 2026-10-27 — PLAN 7.139: the late tick under 5.5 ms, the same answers (ADR-729)
+
+- **Start:** gate green on `d246579a`; critic not due. ADR-728 still waits on the user; the loop took 7.139.
+- **Read** (`docs/evidence/7.139/measure.md`): HEAD 3847 y27 6.21, 5683 y26 6.09 alone; the operational AI half
+  of it, ~3,000 sectors a plan paid for by nations with 2–3 formations free. New `tools/diag/lineProf.ts` (a CPU
+  profile by line; bundle it with esbuild, tsx puts a module on one line).
+- **Changes** (`162010d2` operational AI, `b68b99ce` air AI; hashes and pin unchanged): pooled plan sectors set
+  back where written, the class's front sorted by threat, banded pool counts, stamped bucket arrays, front parts
+  kept between ticks (`frontParts1938.test.ts`, red without the neighbours' holders), a bomber's targets once a
+  nation and day.
+- **AT met:** 3847 5.39 / 5.40, 5683 5.12 / 5.11; 1212, 1214–1222 × 30 worst 5.06 on the screen, 4.27 alone (1216
+  y29). Seeds spent.
+- **Gotcha:** caching a list that was built lazily (`industry` stopped at its first hit) as an eager filter made
+  the air AI 2.5 × slower; keep a cache as lazy as the loop it replaces.
+- **Next:** PLAN 7.140.

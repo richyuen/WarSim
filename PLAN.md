@@ -74,12 +74,7 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   AT missed 2026-10-27 (ADR-728, BLOCKERS; `docs/evidence/7.138/measure.md`): a pursuit rule read late 0.974 × HEAD
   (4.042 → 3.937), year 1 0.998 ×, worlds over 12 years 1 → 2; the enemies near an army late stand past the sea or a
   neutral. No rule; waits on the user's choice (ADR-728); seeds 1201–1211 spent.
-- [ ] 7.139 R16-B2: the 5.5 ms budget (ADR-709) still fails late. Pinned and alone, 3847's year 27 6.14 / 6.19 ms,
-  5683's year 26 6.02 / 5.82 ms, operational AI 3.0–3.2 ms of each (`critic/c16_perf_3847_y27_read*.log`,
-  `critic/c16_perf_5683_y26_read*.log`; saves `critic/c16_seed3847_y26.bin`, `critic/c16_seed5683_y25.bin`). AT:
-  pinned and alone, 3847's year 27 and 5683's year 26 at most 5.5 ms a tick from those saves (read twice); the worst
-  year of seeds 1212 and 1214–1222 × 30 years at most 5.5 ms; the pinned hash unchanged or its change logged; the gate
-  green.
+
 - [ ] 7.140 Emergent 6: the same five giants. The top five unchanged for more than 12 years in 13 of 56 worlds (8 on
   `7739a78`), the longest 23 (4877, years 8–30: the United States, the Soviet Union, France, Canada, Denmark)
   (`critic/c16_cmp_checkpoints.json`, `critic/c16_headless_4877.json`); beyond 7.138's contact, the order of the
@@ -457,3 +452,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.130 (closed not done, ADR-721 a, the user's decision) Emergent dynamics 6: the top five stand still. Beyond 7.128's contact: the longest run of years with the same […]
 - [x] 7.133 (closed not done, ADR-724 a, the user's standing instruction) Aircraft 7: an empty sky late. At 6421's year 20, 2 sorties aloft in the whole world on the sampled hour; […]
 - [x] 7.137 (closed not done, ADR-727 a, the user's standing instruction) Aircraft 7, naval 7: the carriers die out. 18 carriers at the start; at year 20 none on 6421, 1129 and 4877 […]
+- [x] 7.139 R16-B2: the 5.5 ms budget (ADR-709) still fails late. Pinned and alone, 3847's year 27 6.14 / 6.19 ms, […]

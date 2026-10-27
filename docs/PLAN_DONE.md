@@ -15745,3 +15745,26 @@ Of 7.116 (open in PLAN.md):
   AT: on 10 unseen seeds × 20 years (1191–1200; 1181–1190 holds 1187, a critic seed) against HEAD on the same seeds,
   carriers afloat with a wing aboard at year 20 at least 6 a world on the mean (HEAD 0 on the three saves), sea battles a world-year in years 2–20 not below HEAD's; a unit test,
   red without; the gate green.
+
+<!-- moved 2026-10-27 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.139 R16-B2: the 5.5 ms budget (ADR-709) still fails late. Pinned and alone, 3847's year 27 6.14 / 6.19 ms,
+  5683's year 26 6.02 / 5.82 ms, operational AI 3.0–3.2 ms of each (`critic/c16_perf_3847_y27_read*.log`,
+  `critic/c16_perf_5683_y26_read*.log`; saves `critic/c16_seed3847_y26.bin`, `critic/c16_seed5683_y25.bin`). AT:
+  pinned and alone, 3847's year 27 and 5683's year 26 at most 5.5 ms a tick from those saves (read twice); the worst
+  year of seeds 1212 and 1214–1222 × 30 years at most 5.5 ms; the pinned hash unchanged or its change logged; the gate
+  green.
+  Done 2026-10-27 (ADR-729, `docs/evidence/7.139/measure.md`): 3847's year 27 5.39 / 5.40 ms, 5683's year 26 5.12 /
+  5.11, hashes unchanged; the worst year of the ten seeds 4.27 alone (1216 y29, 5.06 on the screen); pin unchanged.

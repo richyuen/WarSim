@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-729 · 2026-10-27 · accepted — The operational AI's plans late made cheaper with the same answers; the late tick under 5.5 ms (PLAN 7.139)
+
+- **Context.** R16-B2: pinned and alone, 3847's year 27 6.14–6.21 ms a tick, 5683's year 26 5.82–6.09; the budget
+  5.5 (ADR-709). The operational AI 3.0–3.2 ms of each: late, most plans are of a nation with a few formations free
+  on a side of ~3,000 sectors, and each paid for all of them (`docs/evidence/7.139/measure.md`).
+- **Decision.** No rule moves. A plan's sectors come from one pool, set from the plan's shape when it changes and
+  set back only where the last plan wrote; a planner's own sectors from its front part's keys; a class's front
+  sorted by threat alone, its pool counted over the rows within its range alone; counts by bucket in stamped
+  arrays. A holder's front part is kept from tick to tick (`World.frontParts`, derived, dropped with the land
+  counts) while no war changed and no logged flip touched the holder's cells or their four neighbours: a flip of
+  cell c drops its two holders and the holders of c's neighbours now (one that held a neighbour then and not now
+  lost it by a flip logged after). The air AI works out a nation's won zones and bombable cells once a day's
+  missions, read as far as its bombers read them.
+- **Consequences.** 3847's year 27 **5.39, 5.40** ms, 5683's year 26 **5.12, 5.11**, hashes unchanged; the worst
+  year of 1212, 1214–1222 × 30 4.27 alone (5.06 on the screen); the pin unchanged. `frontParts1938.test.ts`
+  checks every kept part against one made afresh, hour by hour.
+
 ### ADR-728 · 2026-10-27 · proposed (the user's decision) — The late land contact: the enemies near an army are past the sea or a neutral; a pursuit rule read flat (PLAN 7.138's AT missed)
 
 - **Context.** PLAN 7.138 (R16-B1): on 1201–1206, 1208–1211 × 30 years against HEAD, engaged land formations a day
