@@ -24099,3 +24099,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   Denmark is never a decisive loser.
 - **Filed:** BLOCKERS, ADR-730 (proposed). No sim change; the pin unchanged.
 - **Next:** PLAN 7.141 (naval) while ADR-728 and ADR-730 wait.
+
+## 2026-10-27 — ADR-731 and ADR-732 (the user's design decisions); ADR-731 withdrawn on its read; PLAN 7.143 filed
+
+- **Decided** (the user's): ADR-732, the five largest by area may stand; change at the top is read by their order
+  and by the five strongest. ADR-731 (the late war in bursts, by design) accepted with its third bar to read first,
+  and the user's rule: if wars with a real front are not fought near year 1's rate, 7.138 stays open as a defect.
+- **Read** (`docs/evidence/7.140/design.md`; new `tools/diag/designBars.ts`; 20 seeds × 30 years, 7 at a time,
+  ~45 min): wars with a front of 100+ cells are as many late as in year 1 (4.4–6.8 a day against 3.6–5.5) and fought
+  at 6–13 % of its rate. ADR-731 withdrawn, its SPEC text not added; 7.138 open as a defect, its next rule aimed at
+  fronts held and not fought (ADR-728 updated).
+- **ADR-732's bar** on unseen 1253–1263 (1259 out, a critic seed): ordered five at most 6 years, strongest five at
+  most 8, met; the United States over a third at year 30 on 1261 (39.4 %) and 1263 (48.7 %), missed. 7.140's AT
+  rewritten to the bar, BLOCKERS; the cause filed as PLAN 7.143 (seeds from 1264). SPEC §7 has ADR-732's text.
+- **No sim change;** the pin unchanged.
+- **Next:** PLAN 7.138 (fronts held and not fought), then 7.141–7.143.

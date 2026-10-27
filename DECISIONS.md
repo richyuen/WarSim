@@ -167,7 +167,81 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-730 · 2026-10-27 · proposed (the user's decision) — The same five giants: Canada and Greenland are held by every mechanism; no rule (PLAN 7.140)
+### ADR-732 · 2026-10-27 · accepted (the user's decision, 2026-10-27) — The design: the largest by area may stay; change at the top is read by power and order (answers ADR-730, PLAN 7.140)
+
+- **Context.** Critic run 16 scores emergent dynamics 6, in part on "the same five giants for 13–23 years in a fifth
+  of worlds" (R16-B1's second half; PLAN 7.140). The read (ADR-730, `docs/evidence/7.140/measure.md`): the set is
+  held by Canada and Denmark's Greenland, empty, remote and unthreatened lands that no mechanism of the sim reaches
+  (no land neighbour, no lift, peace and annex by km², integration under autonomy 50 only). Inside those runs the
+  rest moves: on 4877 the United States 7 → 40 %, the Soviet Union 29 → 9 %. Three rules aimed at the set missed
+  (ADR-721, ADR-728, ADR-730's treaty read).
+- **Decision** (the user's, 2026-10-27, as drafted). The five largest nations by area may stay the same for long spans: empty land far from
+  any war (the Canadian north, Greenland, Siberia, Australia) changes hands seldom, as it did in history. That the
+  world is still changing at the top is judged by what moves, not by cells of ice:
+  - the five largest by area **in their order** (who is first, second, ...);
+  - the five strongest (`strengths`: an overlord with its puppets, its army's men and its navy's weight).
+  Not by the set of the five largest by area alone.
+- **SPEC text on acceptance** (§7, after "Anti-hegemon dynamics"):
+  > - **The long run's shape** (ADR-732): the largest nations by area include empty lands far from any war, which
+  >   change hands seldom; the set of the five largest by area may stand for decades. The world's change at the top
+  >   is the order of those five and the five strongest by `strengths`.
+- **The bar it would become** (for PLAN 7.140 and the critic's emergent count), on 10 unseen seeds × 30 years:
+  the same five by area **in the same order** for at most 12 years in every world; the same five strongest for at
+  most 12 years in 9 worlds of 10; no nation over a third of the land at year 30. HEAD on 1223–1232: the ordered
+  five's longest run **2–6 years** (mean 4.4; the set's 5–14); the strongest five to be read on HEAD before the
+  bar is fixed (one arm, ~25 min).
+- **Not changed:** the critic's measure is the critic's (`CRITIC_PROMPT.md` is the user's to change). This ADR
+  makes the set's stasis a decided behaviour, which the critic judges by its execution and by how clearly the
+  player reads it (its "Design objections" otherwise), not a defect.
+- **What it is not:** a hide for a frozen world. Three rules were tried and missed before it (ADR-721, ADR-728,
+  ADR-730); the land still moving late is ADR-731's bar.
+- **Alternative to it:** ADR-730 (c), Greenland's ice left out of a nation's held land in the scenario's data.
+- **Read on HEAD** (2026-10-27, `docs/evidence/7.140/design.md`, `tools/diag/designBars.ts`): the strongest five's
+  longest run 3–12 on 1223–1232. On unseen 1253–1263 (1259 out): the ordered five at most **6** years, the strongest
+  five at most **8**, both met; one nation over a third at year 30 in **2 of 10** (the United States, 39.4 % on 1261,
+  48.7 % on 1263), missed. PLAN 7.140's AT becomes this bar; it waits on PLAN 7.143 (the late American runaway).
+
+### ADR-731 · 2026-10-27 · withdrawn (the read after the user's acceptance refutes it; the user's rule for that case, 2026-10-27: 7.138 stays open as a defect) — The design: the late war is fought in bursts across seas and alliances; the quiet is shown (answers ADR-728, PLAN 7.138)
+
+- **Context.** Critic run 16, R16-B1 (blocking): engaged land formations a day in years 2–30 at 10 % of year 1's
+  (4.36 → 4.13 on 56 seeds); 7019 y20 engaged 4, 5, 0, 3, 0, 0, 0 of 559 at war. The read (ADR-728,
+  `docs/evidence/7.138/measure.md`): late, the enemies near an army stand across the sea or past a neutral; the
+  marches to those on the same landmass are refused for want of a way (5521 y10: 88 of 88). A pursuit rule read
+  0.974 ×. Armies do go after the enemies they can reach; late, few are within reach.
+- **Decision** (the user's, 2026-10-27, as drafted). After the first year's continental wars the world settles into blocs: most wars are
+  between alliances across seas, their armies stand guard, and land fighting comes in bursts where a war has a
+  land front (a revolt, a neighbour's war, a landing). A quiet front is not a defect when the war has none to
+  fight on. What must hold instead:
+  - the map keeps changing late: land changing hands every year;
+  - wars that have a land front fight on it;
+  - the player can see why a war is quiet.
+- **SPEC text on acceptance** (§7, after "Anti-hegemon dynamics"):
+  > - **The late war** (ADR-731): after the opening wars the world forms blocs; most late wars are fought across
+  >   seas and alliances, with no land front, and their armies stand guard. Land fighting comes in bursts where a
+  >   war has a front. A war with no land front between its sides is shown as such (wars map mode, the war's
+  >   panel and its history line).
+- **The bar it would become** (for PLAN 7.138 and the critic's late-contact count), on 10 unseen seeds × 30 years:
+  - land changing hands (net cells, the critic's `flipped`) at least 2 % of the land cells in every year 2–30 of
+    every world (HEAD on 1223–1232: the least **2.2 %**, years 26–30 mean 5.6–17.1 %);
+  - cells taken in front battles in every year 2–30 of every world (HEAD: at least **134** a year, no year with
+    none);
+  - engaged land formations a day per war **with a land front** in years 2–30 not below year 1's × 0.5 (to read on
+    HEAD before the bar is fixed: the counts so far are per war of every kind);
+  - year 1 not below HEAD's × 0.95.
+- **Its price:** a task to make the quiet readable (a war's "no front" state in the wars map mode, its panel and the
+  history log), filed on acceptance with its own AT; until it is done the critic will rightly read a quiet war as
+  a dead one.
+- **Not changed:** as ADR-732, the critic's prompt and the DONE condition are the user's.
+- **Withdrawn** (2026-10-27). The user accepted it with its third bar to be read first, and chose, before that read,
+  that the bar stands if wars with a real land front fight near year 1's rate and that 7.138 stays open as a
+  defect if they do not (`tools/diag/designBars.ts`, fronts of at least 1, 10, 30, 100 cells). On 1223–1229 × 30
+  years: wars a day with a front of 100 cells or more **3.6–5.5** in year 1, **4.4–6.8** in years 2–30; engaged land
+  formations a day per such war **6.8–11.5 → 0.5–1.1**, **6–13 %** of year 1's, at every threshold. The late world
+  has as many real fronts as the first year, and fights on them a tenth as hard: the quiet is not the shape of the
+  wars. Its SPEC text is not added and no "no front" task is filed. Its first two bars (land changing hands at
+  least 2 % of the land cells each year, front battles every year) stay as floors under any 7.138 rule.
+
+### ADR-730 · 2026-10-27 · accepted, option a with ADR-732 (the user's decision, 2026-10-27) — The same five giants: Canada and Greenland are held by every mechanism; no rule (PLAN 7.140)
 
 - **Context.** PLAN 7.140 (critic run 16, emergent 6): on 1223–1232 × 30 years against HEAD, worlds with the same top
   five over 12 years at most half HEAD's (and one fewer), the mean longest at most 0.8 × HEAD's, no world over a
@@ -194,6 +268,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(c)** As (a), and a data question for the user: whether Greenland's uninhabited ice (5.4 % of the land cells)
     is land a nation holds in the count, as the scenario's data has it.
 - **Meanwhile** the loop takes PLAN 7.141 (naval). The pin unchanged.
+- **Decision** (2026-10-27, the user's): (a), no rule, with ADR-732: the set of the five largest by area is a decided
+  behaviour; PLAN 7.140's AT becomes ADR-732's bar.
 
 ### ADR-729 · 2026-10-27 · accepted — The operational AI's plans late made cheaper with the same answers; the late tick under 5.5 ms (PLAN 7.139)
 
@@ -212,7 +288,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   year of 1212, 1214–1222 × 30 4.27 alone (5.06 on the screen); the pin unchanged. `frontParts1938.test.ts`
   checks every kept part against one made afresh, hour by hour.
 
-### ADR-728 · 2026-10-27 · proposed (the user's decision) — The late land contact: the enemies near an army are past the sea or a neutral; a pursuit rule read flat (PLAN 7.138's AT missed)
+### ADR-728 · 2026-10-27 · open: 7.138 stays open as a defect (the user's rule of 2026-10-27, after ADR-731 was withdrawn) — The late land contact: the enemies near an army are past the sea or a neutral; a pursuit rule read flat (PLAN 7.138's AT missed)
 
 - **Context.** PLAN 7.138 (R16-B1): on 1201–1206, 1208–1211 × 30 years against HEAD, engaged land formations a day
   in years 2–30 at least 1.15 × HEAD's, year 1 not below 0.95 ×, worlds with the same top five over 12 years not
@@ -237,6 +313,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(c)** As (a), and a numbered task for the invasion AI: landings on the enemy coast an army stands across the
     sea from (the "another landmass" sightings), AT as 7.138's.
 - **Meanwhile** the loop takes PLAN 7.139 (R16-B2, the late tick).
+- **2026-10-27:** the user took (a) with ADR-731's design; ADR-731 was withdrawn on its own read (real fronts as many
+  late as in year 1, fought at 6–13 % of its rate), and by the user's rule for that case 7.138 stays open as a defect.
+  The read narrows the cause: not enemies out of reach alone but long fronts held and not fought (ADR-717 b's long
+  thin fronts). The options above are void; 7.138 waits for a rule on that cause.
 
 ### ADR-727 · 2026-10-26 · accepted, option a (the user's standing instruction of 2026-10-26: the recommended option overnight) — Carriers kept afloat; PLAN 7.137's AT missed, 3.3 a world (PLAN 7.137)
 

@@ -5,24 +5,25 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.140: no rule reaches the fixed members of the top five (ADR-730, waits on the user)
-- **The bar:** on 1223–1232 × 30 years, worlds with the same top five over 12 years at most half HEAD's (one fewer),
-  the mean longest at most 0.8 × HEAD's, no world over a third at year 30 where HEAD has none.
-- **What moved** (`docs/evidence/7.140/measure.md`): nothing built. HEAD: mean longest 8.1, 1 world over 12, largest
-  at year 30 17.9–32.2 %. Canada and Denmark's Greenland are in nearly every long set and no mechanism of the sim
-  reaches them (no land neighbour, no lift, peace and annex by km², integration under autonomy 50 only). A treaty
-  rule read on four critic worlds moved 130–253k cells a world and changed the set twice in ~680 peaces.
-- **What is left:** the user's (ADR-730): (a) closed not done (recommended); (b) a puppet-integration task; (c) the
-  data question of Greenland's ice.
+### PLAN 7.140's AT (ADR-732's bar) missed on HEAD: one nation over a third at year 30 in 2 of 10 (waits on PLAN 7.143)
+- **The bar** (ADR-732, the user's decision, 2026-10-27): on 10 unseen seeds × 30 years, the five largest by area in
+  the same order at most 12 years in every world; the five strongest at most 12 years in 9 of 10; no nation over a
+  third of the land at year 30.
+- **What moved** (`docs/evidence/7.140/design.md`; HEAD, no rule): on 1253–1263 but 1259 the ordered five at most 6
+  years and the strongest five at most 8, met; the United States over a third at year 30 on 1261 (39.4 %) and 1263
+  (48.7 %), missed. ADR-730's read stands: the set of the five by area is held by Canada and Greenland, now by design.
+- **What is left:** PLAN 7.143 (the late American runaway), then 7.140's AT again on unseen seeds. No user decision
+  waits.
 
-### PLAN 7.138's AT missed: a pursuit rule 0.974 × late on 1201–1211 (ADR-728, waits on the user)
+### PLAN 7.138's AT missed: a pursuit rule 0.974 × late on 1201–1211 (ADR-728; open as a defect, 2026-10-27)
 - **The bar:** on 1201–1206, 1208–1211 × 30 years, engaged land formations a day in years 2–30 at least 1.15 × HEAD's,
   year 1 not below 0.95 ×, worlds with the same top five over 12 years not above HEAD's.
 - **What moved** (`docs/evidence/7.138/measure.md`): nothing: late 4.042 → 3.937, year 1 0.998 ×, worlds over 12
   years 1 → 2. The rule (an attack and a standing formation march on a beatable enemy formation within 24–60 cells)
   seldom finds one it can reach: the enemies near an army late are across the sea or past a neutral's land.
-- **What is left:** the user's (ADR-728): (a) closed not done (recommended); (b) a strategic-AI task (wars an army
-  can fight by land); (c) an invasion-AI task (landings on the coast an army faces).
+- **What is left:** no longer the user's (2026-10-27: ADR-731 withdrawn on its read, 7.138 open as a defect by the
+  user's rule). The late world has as many fronts of 100+ cells as year 1 and fights them at 6–13 % of its rate
+  (`docs/evidence/7.140/design.md`); the next rule aims at fronts held and not fought.
 
 ### RESOLVED 2026-10-26 (option a, the user's standing instruction: kept, 7.137 closed not done) · PLAN 7.137's AT missed: carriers 3.3 a world at year 20 on 1191–1200 (ADR-727)
 - **The bar:** carriers afloat with a wing aboard at year 20 at least 6 a world; sea battles late not below HEAD's.

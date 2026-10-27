@@ -73,7 +73,14 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   HEAD's count; a unit test, red without; the gate green.
   AT missed 2026-10-27 (ADR-728, BLOCKERS; `docs/evidence/7.138/measure.md`): a pursuit rule read late 0.974 × HEAD
   (4.042 → 3.937), year 1 0.998 ×, worlds over 12 years 1 → 2; the enemies near an army late stand past the sea or a
-  neutral. No rule; waits on the user's choice (ADR-728); seeds 1201–1211 spent.
+  neutral. No rule; seeds 1201–1211 spent.
+  Read 2026-10-27 (ADR-731 withdrawn, ADR-728; `tools/diag/designBars.ts`, `docs/evidence/7.140/design.md`): on
+  1223–1229 × 30 years the wars with a land front of 100 cells or more are as many late as in year 1 (4.4–6.8 a day
+  against 3.6–5.5) and are fought at 6–13 % of year 1's rate (engaged a day per such war 6.8–11.5 → 0.5–1.1): the
+  quiet is on fronts held and not fought, not wars without one. Open as a defect (the user's rule, 2026-10-27); its
+  next rule is aimed at that and judged on unseen seeds as above, with the engaged per war with a front of 100 cells
+  or more in years 2–30 at least 1.15 × HEAD's, and as floors land changing hands at least 2 % of the land cells
+  each year and front battles every year in every world; its stasis clause read by ADR-732's measure.
 
 - [ ] 7.140 Emergent 6: the same five giants. The top five unchanged for more than 12 years in 13 of 56 worlds (8 on
   `7739a78`), the longest 23 (4877, years 8–30: the United States, the Soviet Union, France, Canada, Denmark)
@@ -84,7 +91,12 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   without; the gate green.
   Read 2026-10-27 (ADR-730, BLOCKERS; `docs/evidence/7.140/measure.md`): HEAD on 1223–1232 mean longest 8.1, 1 over
   12; Canada and Greenland, in nearly every long set, are reached by no mechanism; a treaty rule read and dropped.
-  No rule; waits on the user's choice (ADR-730); seeds 1223–1232 spent on HEAD alone.
+  No rule; seeds 1223–1232 spent on HEAD alone.
+  AT rewritten 2026-10-27 (ADR-732, the user's decision): on 10 unseen seeds × 30 years, the same five largest by
+  area in the same order for at most 12 years in every world; the same five strongest (`strengths`) for at most 12
+  years in 9 of 10; no nation over a third of the land at year 30 (`tools/diag/designBars.ts`). Read on HEAD,
+  1253–1263 but 1259 (`docs/evidence/7.140/design.md`): at most 6 and 8 years, met; over a third in 2 of 10 (the
+  United States, 39.4 % and 48.7 %), missed (BLOCKERS). Waits on PLAN 7.143; seeds 1253–1263 spent.
 - [ ] 7.141 Naval 7: the carriers built wait in port, and the late sea war is no bigger. 7019's US group built in year 21
   sat in port a year at war, 0 strikes; carrier strike hours 30 in 8 world-years; transports at year 20 548 → 498 and
   ships sunk late −7 % since `7739a78`, ADR-726's carrier group in training (800 days) the likely cause
@@ -99,6 +111,15 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   × 20 years against HEAD on the same seeds, wings a world in years 2–20 at least 1.2 × HEAD's and sorties aloft a
   world-hour in years 2–20 at least 1.2 × HEAD's, year 1 not below 0.9 ×; a wing at sea shown as such on its panel; a
   unit test, red without; the gate green.
+
+- [ ] 7.143 The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of
+  the land at year 30 in 2 of 10 unseen worlds (1261 39.4 %, first from year 15; 1263 48.7 %, from year 28, growing
+  at year 30), and 31–32.2 % in five more of twenty, four of them the United States or the Soviet Union
+  (`docs/evidence/7.140/design.md`). Read first: what it takes and why nothing stops it (coalitions, overextension,
+  revolts on its far land). AT: on 10 unseen seeds from 1264 × 30 years against HEAD on the same seeds, no nation
+  over a third of the land at year 30, and no more worlds over 30 % than HEAD's; ADR-732's ordered and strongest
+  five still at most 12 years; land changing hands at least 2 % of the land cells each year in every world where
+  HEAD's does; a unit test, red without; the gate green.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
