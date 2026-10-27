@@ -1,0 +1,1440 @@
+[
+ {
+  "seed": 2081,
+  "bin": "critic/c16_seed2081_y10.bin",
+  "skip": 0,
+  "sum": {
+   "gap": [
+    81,
+    186,
+    326,
+    217,
+    347,
+    867,
+    454
+   ],
+   "doing": {
+    "3:attack": 61,
+    "3:march": 120,
+    "6:stand": 244,
+    "6:march": 154,
+    "6:attack": 56,
+    "5:attack": 44,
+    "5:march": 559,
+    "4:march": 197,
+    "4:stand": 70,
+    "5:stand": 254,
+    "5:retreat": 5,
+    "4:attack": 80,
+    "0:stand": 11,
+    "0:attack": 16,
+    "1:attack": 65,
+    "0:march": 39,
+    "1:stand": 19,
+    "2:march": 230,
+    "1:march": 102,
+    "2:stand": 33,
+    "2:attack": 58,
+    "3:stand": 36,
+    "0:retreat": 5,
+    "5:engaged": 5,
+    "0:engaged": 10,
+    "2:engaged": 5
+   }
+  },
+  "perWar": [
+   {
+    "id": 116,
+    "a": "NSP",
+    "b": "#129",
+    "af": 1,
+    "bf": 2,
+    "gap": [
+     0,
+     0,
+     0,
+     3,
+     0,
+     0,
+     0
+    ],
+    "doing": {
+     "3:attack": 1,
+     "3:march": 2
+    }
+   },
+   {
+    "id": 183,
+    "a": "ENG RAJ CEY MAL NFL FRA",
+    "b": "SAF MEX CAN PHI",
+    "af": 107,
+    "bf": 3,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     110
+    ],
+    "doing": {
+     "6:stand": 56,
+     "6:march": 46,
+     "6:attack": 8
+    }
+   },
+   {
+    "id": 188,
+    "a": "GER LAT ITA GRE SUD TUN",
+    "b": "POR ENG RAJ CEY MAL NFL",
+    "af": 80,
+    "bf": 10,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     7,
+     79,
+     4
+    ],
+    "doing": {
+     "5:attack": 10,
+     "5:march": 55,
+     "4:march": 3,
+     "4:stand": 2,
+     "5:stand": 12,
+     "5:retreat": 2,
+     "6:stand": 3,
+     "6:attack": 1,
+     "4:attack": 2
+    }
+   },
+   {
+    "id": 189,
+    "a": "ELS",
+    "b": "GUA",
+    "af": 1,
+    "bf": 1,
+    "gap": [
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "doing": {
+     "0:stand": 1,
+     "0:attack": 1
+    }
+   },
+   {
+    "id": 190,
+    "a": "#142 MEN ITA SWI CZS AUT",
+    "b": "SAU AFG IRN #141",
+    "af": 19,
+    "bf": 3,
+    "gap": [
+     2,
+     2,
+     0,
+     2,
+     2,
+     13,
+     1
+    ],
+    "doing": {
+     "5:march": 2,
+     "5:stand": 11,
+     "1:attack": 1,
+     "3:attack": 1,
+     "6:stand": 1,
+     "4:march": 2,
+     "0:attack": 1,
+     "3:march": 1,
+     "0:march": 1,
+     "1:stand": 1
+    }
+   },
+   {
+    "id": 191,
+    "a": "SOV FIN ROM TUR SWE OMN",
+    "b": "POL GER LAT NSP SUD TUN",
+    "af": 76,
+    "bf": 97,
+    "gap": [
+     11,
+     25,
+     31,
+     20,
+     47,
+     32,
+     7
+    ],
+    "doing": {
+     "5:march": 29,
+     "4:attack": 23,
+     "2:march": 23,
+     "1:march": 10,
+     "4:march": 15,
+     "1:attack": 14,
+     "0:march": 4,
+     "0:attack": 5,
+     "3:attack": 8,
+     "3:march": 8,
+     "4:stand": 9,
+     "2:stand": 2,
+     "2:attack": 6,
+     "3:stand": 4,
+     "5:stand": 3,
+     "0:retreat": 2,
+     "6:stand": 6,
+     "1:stand": 1,
+     "6:march": 1
+    }
+   },
+   {
+    "id": 194,
+    "a": "SOV FIN ROM TUR NOR SWE",
+    "b": "IRQ #138",
+    "af": 76,
+    "bf": 5,
+    "gap": [
+     0,
+     5,
+     25,
+     15,
+     20,
+     16,
+     0
+    ],
+    "doing": {
+     "5:march": 14,
+     "2:march": 21,
+     "4:march": 17,
+     "3:march": 15,
+     "4:stand": 3,
+     "5:stand": 2,
+     "2:stand": 3,
+     "1:march": 2,
+     "1:attack": 3,
+     "2:attack": 1
+    }
+   },
+   {
+    "id": 197,
+    "a": "#144",
+    "b": "SAF MEX CAN PHI",
+    "af": 4,
+    "bf": 3,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     7
+    ],
+    "doing": {
+     "6:march": 4,
+     "6:stand": 3
+    }
+   }
+  ]
+ },
+ {
+  "seed": 7019,
+  "bin": "critic/c16_seed7019_y20.bin",
+  "skip": 0,
+  "sum": {
+   "gap": [
+    47,
+    34,
+    5,
+    19,
+    117,
+    1403,
+    1025
+   ],
+   "doing": {
+    "6:stand": 437,
+    "6:march": 406,
+    "6:attack": 164,
+    "5:attack": 54,
+    "5:march": 568,
+    "5:stand": 781,
+    "4:march": 92,
+    "3:march": 13,
+    "1:march": 14,
+    "2:march": 5,
+    "1:attack": 9,
+    "4:attack": 14,
+    "0:march": 12,
+    "0:stand": 5,
+    "0:retreat": 3,
+    "0:engaged": 22,
+    "4:stand": 11,
+    "6:retreat": 6,
+    "6:engaged": 12,
+    "1:retreat": 3,
+    "1:stand": 8,
+    "0:attack": 5,
+    "3:attack": 6
+   }
+  },
+  "perWar": [
+   {
+    "id": 282,
+    "a": "SOV GER EST FIN YUG ENG",
+    "b": "ROM MEX LIB LAT BRA VEN",
+    "af": 81,
+    "bf": 29,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     29,
+     81
+    ],
+    "doing": {
+     "6:stand": 30,
+     "6:march": 31,
+     "6:attack": 20,
+     "5:attack": 3,
+     "5:march": 22,
+     "5:stand": 4
+    }
+   },
+   {
+    "id": 285,
+    "a": "USA SUD SYR SAU #146 #153",
+    "b": "JAP SIA SIN DEN AST",
+    "af": 287,
+    "bf": 4,
+    "gap": [
+     0,
+     2,
+     1,
+     1,
+     16,
+     226,
+     45
+    ],
+    "doing": {
+     "5:stand": 136,
+     "6:stand": 17,
+     "5:march": 87,
+     "6:march": 28,
+     "4:march": 15,
+     "3:march": 1,
+     "1:march": 1,
+     "5:attack": 3,
+     "2:march": 1,
+     "1:attack": 1,
+     "4:attack": 1
+    }
+   },
+   {
+    "id": 286,
+    "a": "ITA",
+    "b": "#162",
+    "af": 26,
+    "bf": 4,
+    "gap": [
+     11,
+     3,
+     0,
+     0,
+     0,
+     0,
+     16
+    ],
+    "doing": {
+     "6:stand": 14,
+     "0:march": 4,
+     "0:stand": 1,
+     "0:retreat": 2,
+     "6:march": 2,
+     "0:engaged": 4,
+     "1:attack": 1,
+     "1:march": 2
+    }
+   },
+   {
+    "id": 287,
+    "a": "FRA ITA NSP BCO #136 #150",
+    "b": "POR CUB LIB LAT BRA VEN",
+    "af": 66,
+    "bf": 25,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     10,
+     26,
+     55
+    ],
+    "doing": {
+     "5:stand": 17,
+     "6:stand": 26,
+     "4:stand": 3,
+     "5:march": 6,
+     "6:march": 12,
+     "6:retreat": 2,
+     "5:attack": 3,
+     "6:engaged": 2,
+     "4:march": 4,
+     "4:attack": 3,
+     "6:attack": 13
+    }
+   },
+   {
+    "id": 288,
+    "a": "JAP SIA SIN DEN AST",
+    "b": "NIC",
+    "af": 4,
+    "bf": 1,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5
+    ],
+    "doing": {
+     "6:march": 3,
+     "6:stand": 2
+    }
+   }
+  ]
+ },
+ {
+  "seed": 4877,
+  "bin": "critic/c16_seed4877_y20.bin",
+  "skip": 0,
+  "sum": {
+   "gap": [
+    41,
+    31,
+    35,
+    40,
+    381,
+    986,
+    408
+   ],
+   "doing": {
+    "5:stand": 772,
+    "4:stand": 319,
+    "4:march": 36,
+    "6:stand": 399,
+    "5:march": 156,
+    "0:engaged": 22,
+    "0:attack": 9,
+    "4:attack": 26,
+    "2:march": 9,
+    "1:attack": 12,
+    "2:attack": 6,
+    "1:march": 15,
+    "1:stand": 4,
+    "0:march": 6,
+    "3:march": 10,
+    "5:attack": 58,
+    "2:stand": 20,
+    "3:attack": 15,
+    "3:stand": 15,
+    "0:retreat": 3,
+    "6:march": 9,
+    "0:stand": 1
+   }
+  },
+  "perWar": [
+   {
+    "id": 303,
+    "a": "POR BCO FRA GER SWI #120",
+    "b": "ENG SUD SRH IRQ TUR IRN",
+    "af": 205,
+    "bf": 14,
+    "gap": [
+     6,
+     6,
+     2,
+     1,
+     47,
+     126,
+     31
+    ],
+    "doing": {
+     "5:stand": 110,
+     "4:stand": 39,
+     "4:march": 4,
+     "6:stand": 31,
+     "5:march": 16,
+     "0:engaged": 4,
+     "0:attack": 1,
+     "4:attack": 4,
+     "2:march": 1,
+     "1:attack": 2,
+     "2:attack": 1,
+     "1:march": 3,
+     "1:stand": 1,
+     "0:march": 1,
+     "3:march": 1
+    }
+   },
+   {
+    "id": 305,
+    "a": "#119 FIN YUG",
+    "b": "AST FMO",
+    "af": 15,
+    "bf": 3,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     17,
+     1
+    ],
+    "doing": {
+     "5:stand": 11,
+     "5:march": 5,
+     "5:attack": 1,
+     "6:stand": 1
+    }
+   },
+   {
+    "id": 310,
+    "a": "ARG BRA CHL MEX PAN CUB",
+    "b": "SOV GRE NOR AFG TAN MON",
+    "af": 42,
+    "bf": 8,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     29,
+     21
+    ],
+    "doing": {
+     "6:stand": 21,
+     "5:stand": 22,
+     "5:attack": 6,
+     "5:march": 1
+    }
+   },
+   {
+    "id": 311,
+    "a": "RAJ MEX PAN CUB CAN ARG",
+    "b": "#119 ITA JAP YUG AST FMO",
+    "af": 49,
+    "bf": 37,
+    "gap": [
+     0,
+     0,
+     5,
+     7,
+     29,
+     16,
+     29
+    ],
+    "doing": {
+     "6:stand": 29,
+     "2:stand": 4,
+     "4:stand": 24,
+     "4:march": 5,
+     "5:march": 7,
+     "3:march": 1,
+     "5:attack": 1,
+     "3:attack": 3,
+     "5:stand": 8,
+     "3:stand": 3,
+     "2:attack": 1
+    }
+   },
+   {
+    "id": 312,
+    "a": "POL",
+    "b": "SOV GRE NOR AFG TAN MON",
+    "af": 7,
+    "bf": 1,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     8,
+     0
+    ],
+    "doing": {
+     "5:stand": 4,
+     "5:attack": 4
+    }
+   }
+  ]
+ },
+ {
+  "seed": 6421,
+  "bin": "critic/c16_seed6421_y20.bin",
+  "skip": 0,
+  "sum": {
+   "gap": [
+    55,
+    76,
+    43,
+    253,
+    183,
+    896,
+    567
+   ],
+   "doing": {
+    "6:stand": 546,
+    "5:stand": 654,
+    "5:march": 213,
+    "3:stand": 217,
+    "5:engaged": 7,
+    "3:march": 27,
+    "4:march": 104,
+    "5:attack": 22,
+    "3:attack": 9,
+    "4:stand": 37,
+    "4:engaged": 7,
+    "6:march": 21,
+    "0:engaged": 25,
+    "1:attack": 24,
+    "4:attack": 35,
+    "0:march": 17,
+    "1:march": 49,
+    "2:march": 28,
+    "2:stand": 4,
+    "0:stand": 4,
+    "1:stand": 3,
+    "2:attack": 11,
+    "0:attack": 2,
+    "0:retreat": 7
+   }
+  },
+  "perWar": [
+   {
+    "id": 249,
+    "a": "AFG CAN ECU CHL BOL GUA",
+    "b": "NSP SOV NOR CHI JAP",
+    "af": 86,
+    "bf": 12,
+    "gap": [
+     0,
+     0,
+     0,
+     6,
+     1,
+     61,
+     30
+    ],
+    "doing": {
+     "6:stand": 30,
+     "5:stand": 37,
+     "5:march": 22,
+     "3:stand": 4,
+     "5:engaged": 1,
+     "3:march": 1,
+     "4:march": 1,
+     "5:attack": 1,
+     "3:attack": 1
+    }
+   },
+   {
+    "id": 259,
+    "a": "ITA VEN",
+    "b": "NSP CHI JAP",
+    "af": 41,
+    "bf": 7,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     3,
+     43,
+     2
+    ],
+    "doing": {
+     "5:stand": 40,
+     "4:stand": 2,
+     "6:stand": 2,
+     "5:march": 3,
+     "4:march": 1
+    }
+   },
+   {
+    "id": 263,
+    "a": "ITA VEN",
+    "b": "NED POL LIT LAT ROM ALB",
+    "af": 41,
+    "bf": 41,
+    "gap": [
+     0,
+     0,
+     0,
+     40,
+     19,
+     9,
+     14
+    ],
+    "doing": {
+     "3:stand": 38,
+     "5:stand": 9,
+     "6:stand": 10,
+     "4:march": 16,
+     "4:engaged": 1,
+     "6:march": 4,
+     "4:stand": 2,
+     "3:march": 2
+    }
+   },
+   {
+    "id": 264,
+    "a": "SIA ICE COS",
+    "b": "LEB",
+    "af": 6,
+    "bf": 1,
+    "gap": [
+     3,
+     1,
+     0,
+     0,
+     0,
+     1,
+     2
+    ],
+    "doing": {
+     "6:stand": 2,
+     "0:engaged": 3,
+     "5:stand": 1,
+     "1:attack": 1
+    }
+   },
+   {
+    "id": 265,
+    "a": "ENG IRE SUD PAL MEN NFL",
+    "b": "NED POL LIT LAT ROM ALB",
+    "af": 106,
+    "bf": 41,
+    "gap": [
+     8,
+     16,
+     6,
+     4,
+     12,
+     56,
+     45
+    ],
+    "doing": {
+     "5:stand": 40,
+     "5:march": 14,
+     "5:attack": 2,
+     "4:stand": 4,
+     "6:stand": 45,
+     "4:attack": 4,
+     "0:march": 3,
+     "0:engaged": 4,
+     "1:march": 11,
+     "3:attack": 1,
+     "1:attack": 4,
+     "2:march": 5,
+     "2:stand": 1,
+     "3:stand": 1,
+     "4:march": 4,
+     "0:stand": 1,
+     "3:march": 2,
+     "1:stand": 1
+    }
+   },
+   {
+    "id": 266,
+    "a": "AST SAF BUR",
+    "b": "NSP SOV NOR CHI JAP FIN",
+    "af": 22,
+    "bf": 12,
+    "gap": [
+     0,
+     0,
+     2,
+     0,
+     2,
+     9,
+     21
+    ],
+    "doing": {
+     "6:stand": 21,
+     "5:attack": 1,
+     "2:march": 1,
+     "5:stand": 4,
+     "2:attack": 1,
+     "5:march": 4,
+     "4:attack": 2
+    }
+   }
+  ]
+ },
+ {
+  "seed": 1129,
+  "bin": "critic/c16_seed1129_y20.bin",
+  "skip": 0,
+  "sum": {
+   "gap": [
+    27,
+    182,
+    111,
+    199,
+    1074,
+    595,
+    622
+   ],
+   "doing": {
+    "5:march": 291,
+    "4:march": 578,
+    "1:march": 143,
+    "5:stand": 282,
+    "4:stand": 167,
+    "2:attack": 17,
+    "1:stand": 3,
+    "2:march": 88,
+    "3:march": 78,
+    "6:stand": 424,
+    "4:attack": 329,
+    "6:march": 164,
+    "3:stand": 93,
+    "2:stand": 5,
+    "6:attack": 31,
+    "3:attack": 28,
+    "0:stand": 1,
+    "0:march": 20,
+    "0:retreat": 2,
+    "5:attack": 22,
+    "6:retreat": 3,
+    "1:attack": 36,
+    "0:attack": 4,
+    "2:retreat": 1
+   }
+  },
+  "perWar": [
+   {
+    "id": 397,
+    "a": "GER LAT FIN BUL ALB GRE",
+    "b": "ITA BRA CAN SAF #131 TUN",
+    "af": 176,
+    "bf": 29,
+    "gap": [
+     0,
+     7,
+     6,
+     8,
+     81,
+     96,
+     7
+    ],
+    "doing": {
+     "5:march": 48,
+     "4:march": 73,
+     "1:march": 6,
+     "5:stand": 48,
+     "4:stand": 7,
+     "2:attack": 3,
+     "1:stand": 1,
+     "2:march": 3,
+     "3:march": 8,
+     "6:stand": 7,
+     "4:attack": 1
+    }
+   },
+   {
+    "id": 399,
+    "a": "GER LAT FIN BUL ALB GRE",
+    "b": "ENG IRE POR SUD BCO OMN",
+    "af": 176,
+    "bf": 47,
+    "gap": [
+     6,
+     12,
+     17,
+     24,
+     106,
+     14,
+     44
+    ],
+    "doing": {
+     "4:march": 35,
+     "4:attack": 57,
+     "3:march": 3,
+     "6:march": 17,
+     "3:stand": 17,
+     "2:stand": 1,
+     "5:stand": 12,
+     "4:stand": 14,
+     "6:attack": 4,
+     "3:attack": 4,
+     "0:stand": 1,
+     "1:march": 12,
+     "2:march": 13,
+     "5:march": 2,
+     "2:attack": 3,
+     "6:stand": 23,
+     "0:march": 4,
+     "0:retreat": 1
+    }
+   },
+   {
+    "id": 400,
+    "a": "#200 AST MAL",
+    "b": "SOV NOR IRN AFG TAN #121",
+    "af": 7,
+    "bf": 4,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     6,
+     4,
+     1
+    ],
+    "doing": {
+     "5:march": 3,
+     "4:march": 2,
+     "6:stand": 1,
+     "5:attack": 1,
+     "4:stand": 4
+    }
+   },
+   {
+    "id": 405,
+    "a": "#197 AST MAL #200",
+    "b": "CHI NEP JAP ICE",
+    "af": 11,
+    "bf": 6,
+    "gap": [
+     0,
+     0,
+     0,
+     2,
+     11,
+     2,
+     2
+    ],
+    "doing": {
+     "4:march": 8,
+     "4:attack": 3,
+     "6:stand": 2,
+     "5:stand": 1,
+     "3:march": 1,
+     "5:march": 1,
+     "3:stand": 1
+    }
+   },
+   {
+    "id": 406,
+    "a": "ENG IRE POR SUD BCO OMN",
+    "b": "#202",
+    "af": 37,
+    "bf": 4,
+    "gap": [
+     3,
+     4,
+     0,
+     0,
+     0,
+     0,
+     34
+    ],
+    "doing": {
+     "6:stand": 19,
+     "6:march": 14,
+     "6:retreat": 1,
+     "0:march": 1,
+     "1:attack": 2,
+     "0:attack": 2,
+     "1:march": 2
+    }
+   },
+   {
+    "id": 407,
+    "a": "POL ENG IRE POR SUD BCO",
+    "b": "TUR BRA CAN SAF ITA IRQ",
+    "af": 39,
+    "bf": 29,
+    "gap": [
+     0,
+     6,
+     3,
+     7,
+     12,
+     3,
+     37
+    ],
+    "doing": {
+     "6:stand": 32,
+     "3:march": 6,
+     "2:march": 2,
+     "1:march": 6,
+     "5:march": 2,
+     "4:march": 5,
+     "2:retreat": 1,
+     "6:march": 5,
+     "3:attack": 1,
+     "4:stand": 6,
+     "5:attack": 1,
+     "4:attack": 1
+    }
+   }
+  ]
+ },
+ {
+  "seed": 7019,
+  "bin": "1938",
+  "skip": 60,
+  "sum": {
+   "gap": [
+    619,
+    320,
+    320,
+    362,
+    325,
+    823,
+    67
+   ],
+   "doing": {
+    "6:march": 21,
+    "0:engaged": 314,
+    "2:march": 188,
+    "3:march": 246,
+    "3:attack": 79,
+    "4:march": 204,
+    "0:attack": 57,
+    "0:march": 203,
+    "1:stand": 5,
+    "1:march": 231,
+    "2:attack": 115,
+    "0:stand": 20,
+    "3:stand": 37,
+    "1:attack": 83,
+    "1:retreat": 1,
+    "0:retreat": 25,
+    "6:stand": 46,
+    "5:engaged": 187,
+    "5:march": 476,
+    "5:retreat": 13,
+    "5:stand": 140,
+    "4:attack": 13,
+    "5:attack": 7,
+    "4:stand": 70,
+    "4:engaged": 36,
+    "4:retreat": 2,
+    "2:stand": 17
+   }
+  },
+  "perWar": [
+   {
+    "id": 2,
+    "a": "JAP MAN MEN",
+    "b": "CHI CCP",
+    "af": 43,
+    "bf": 137,
+    "gap": [
+     98,
+     44,
+     9,
+     18,
+     9,
+     0,
+     2
+    ],
+    "doing": {
+     "6:march": 2,
+     "0:engaged": 50,
+     "2:march": 5,
+     "3:march": 15,
+     "3:attack": 2,
+     "4:march": 9,
+     "0:attack": 11,
+     "0:march": 26,
+     "1:stand": 1,
+     "1:march": 34,
+     "2:attack": 4,
+     "0:stand": 5,
+     "3:stand": 1,
+     "1:attack": 8,
+     "1:retreat": 1,
+     "0:retreat": 6
+    }
+   },
+   {
+    "id": 7,
+    "a": "USA PHI",
+    "b": "EST LAT LIT",
+    "af": 13,
+    "bf": 1,
+    "gap": [
+     0,
+     0,
+     3,
+     0,
+     0,
+     0,
+     11
+    ],
+    "doing": {
+     "2:attack": 2,
+     "6:march": 6,
+     "6:stand": 5,
+     "2:march": 1
+    }
+   },
+   {
+    "id": 8,
+    "a": "CHI CCP",
+    "b": "TIB",
+    "af": 137,
+    "bf": 1,
+    "gap": [
+     0,
+     0,
+     0,
+     3,
+     18,
+     117,
+     0
+    ],
+    "doing": {
+     "5:engaged": 40,
+     "5:march": 68,
+     "5:retreat": 7,
+     "5:stand": 2,
+     "4:march": 15,
+     "4:attack": 3,
+     "3:march": 3
+    }
+   },
+   {
+    "id": 11,
+    "a": "TUR GRE IRN AFG",
+    "b": "BUL",
+    "af": 51,
+    "bf": 8,
+    "gap": [
+     20,
+     3,
+     15,
+     3,
+     0,
+     18,
+     0
+    ],
+    "doing": {
+     "0:march": 6,
+     "0:engaged": 12,
+     "1:march": 3,
+     "2:march": 15,
+     "3:stand": 3,
+     "0:retreat": 1,
+     "5:march": 12,
+     "5:stand": 3,
+     "5:attack": 3,
+     "0:attack": 1
+    }
+   },
+   {
+    "id": 12,
+    "a": "SOV SIN MON TAN",
+    "b": "LAT EST LIT",
+    "af": 170,
+    "bf": 1,
+    "gap": [
+     0,
+     32,
+     48,
+     23,
+     10,
+     58,
+     0
+    ],
+    "doing": {
+     "1:march": 28,
+     "3:march": 15,
+     "2:march": 26,
+     "3:attack": 2,
+     "4:stand": 10,
+     "5:stand": 50,
+     "5:march": 8,
+     "3:stand": 6,
+     "1:attack": 4,
+     "2:attack": 22
+    }
+   }
+  ]
+ },
+ {
+  "seed": 4877,
+  "bin": "1938",
+  "skip": 60,
+  "sum": {
+   "gap": [
+    1079,
+    465,
+    372,
+    265,
+    1009,
+    1047,
+    860
+   ],
+   "doing": {
+    "5:stand": 234,
+    "0:engaged": 408,
+    "6:march": 67,
+    "2:attack": 121,
+    "3:attack": 22,
+    "3:march": 113,
+    "2:march": 214,
+    "4:march": 640,
+    "0:attack": 85,
+    "1:attack": 69,
+    "0:march": 452,
+    "0:stand": 57,
+    "0:retreat": 77,
+    "3:stand": 130,
+    "1:march": 361,
+    "5:engaged": 226,
+    "5:march": 540,
+    "4:engaged": 161,
+    "4:stand": 191,
+    "4:retreat": 5,
+    "5:retreat": 47,
+    "4:attack": 12,
+    "1:stand": 32,
+    "6:stand": 789,
+    "2:stand": 37,
+    "1:engaged": 1,
+    "6:engaged": 2,
+    "1:retreat": 2,
+    "6:retreat": 2
+   }
+  },
+  "perWar": [
+   {
+    "id": 2,
+    "a": "JAP MAN MEN",
+    "b": "CHI CCP",
+    "af": 38,
+    "bf": 143,
+    "gap": [
+     109,
+     30,
+     12,
+     16,
+     12,
+     1,
+     1
+    ],
+    "doing": {
+     "5:stand": 1,
+     "0:engaged": 53,
+     "6:march": 1,
+     "2:attack": 5,
+     "3:attack": 4,
+     "3:march": 11,
+     "2:march": 7,
+     "4:march": 12,
+     "0:attack": 5,
+     "1:attack": 5,
+     "0:march": 38,
+     "0:stand": 9,
+     "0:retreat": 4,
+     "3:stand": 1,
+     "1:march": 25
+    }
+   },
+   {
+    "id": 6,
+    "a": "CHI CCP",
+    "b": "TIB",
+    "af": 143,
+    "bf": 1,
+    "gap": [
+     0,
+     0,
+     5,
+     2,
+     51,
+     86,
+     0
+    ],
+    "doing": {
+     "4:march": 39,
+     "5:engaged": 38,
+     "5:march": 45,
+     "4:engaged": 5,
+     "4:stand": 5,
+     "4:retreat": 1,
+     "5:stand": 2,
+     "5:retreat": 1,
+     "4:attack": 1,
+     "2:march": 4,
+     "2:attack": 1,
+     "3:march": 2
+    }
+   },
+   {
+    "id": 7,
+    "a": "TUR GRE",
+    "b": "BUL",
+    "af": 33,
+    "bf": 8,
+    "gap": [
+     35,
+     3,
+     0,
+     3,
+     0,
+     0,
+     0
+    ],
+    "doing": {
+     "0:march": 20,
+     "1:stand": 1,
+     "1:march": 2,
+     "0:attack": 5,
+     "0:stand": 4,
+     "3:attack": 1,
+     "3:stand": 2,
+     "0:retreat": 6
+    }
+   },
+   {
+    "id": 9,
+    "a": "JAP REP MAN MEN GER ITA",
+    "b": "LIT LAT EST",
+    "af": 179,
+    "bf": 5,
+    "gap": [
+     0,
+     0,
+     0,
+     3,
+     115,
+     64,
+     2
+    ],
+    "doing": {
+     "4:engaged": 12,
+     "4:march": 80,
+     "5:stand": 31,
+     "4:stand": 22,
+     "3:march": 3,
+     "6:stand": 1,
+     "5:engaged": 10,
+     "6:march": 1,
+     "5:march": 21,
+     "5:retreat": 2,
+     "4:attack": 1
+    }
+   },
+   {
+    "id": 11,
+    "a": "FRA AOF AEF MAD FMO TUN",
+    "b": "BRA",
+    "af": 171,
+    "bf": 10,
+    "gap": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     14,
+     167
+    ],
+    "doing": {
+     "6:stand": 154,
+     "6:march": 13,
+     "5:stand": 4,
+     "5:march": 10
+    }
+   },
+   {
+    "id": 12,
+    "a": "ITA ALB GER JAP REP MAN",
+    "b": "YUG AUT CZS ROM",
+    "af": 179,
+    "bf": 68,
+    "gap": [
+     87,
+     46,
+     29,
+     19,
+     18,
+     46,
+     2
+    ],
+    "doing": {
+     "0:engaged": 17,
+     "0:march": 42,
+     "4:stand": 18,
+     "3:march": 8,
+     "2:march": 14,
+     "1:march": 31,
+     "3:stand": 10,
+     "1:attack": 13,
+     "0:stand": 15,
+     "2:stand": 4,
+     "6:stand": 1,
+     "1:stand": 2,
+     "5:stand": 13,
+     "5:engaged": 10,
+     "6:march": 1,
+     "5:march": 21,
+     "5:retreat": 2,
+     "0:attack": 7,
+     "0:retreat": 6,
+     "2:attack": 11,
+     "3:attack": 1
+    }
+   },
+   {
+    "id": 13,
+    "a": "POL NOR FIN",
+    "b": "LAT EST",
+    "af": 56,
+    "bf": 3,
+    "gap": [
+     0,
+     8,
+     34,
+     14,
+     3,
+     0,
+     0
+    ],
+    "doing": {
+     "2:march": 25,
+     "1:attack": 6,
+     "3:stand": 14,
+     "1:march": 2,
+     "2:stand": 3,
+     "2:attack": 6,
+     "4:stand": 3
+    }
+   }
+  ]
+ }
+]

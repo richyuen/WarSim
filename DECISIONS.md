@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-728 · 2026-10-27 · proposed (the user's decision) — The late land contact: the enemies near an army are past the sea or a neutral; a pursuit rule read flat (PLAN 7.138's AT missed)
+
+- **Context.** PLAN 7.138 (R16-B1): on 1201–1206, 1208–1211 × 30 years against HEAD, engaged land formations a day
+  in years 2–30 at least 1.15 × HEAD's, year 1 not below 0.95 ×, worlds with the same top five over 12 years not
+  above HEAD's; a unit test, red without.
+- **Measured** (`docs/evidence/7.138/measure.md`; the critic's run-16 saves). The far alliance members are not what
+  changed (10–29 % of the land army at war late, 23–25 % on day 60). Late, 1–3 % of a war's land formations stand
+  within 3 cells of an enemy one (day 60: 21–22 %) and 55–90 % more than 120 cells away or on another landmass. Of
+  the free formations standing after the orders with a beatable enemy formation within 60 cells, that enemy stands
+  on another landmass or a neutral's cell in most sightings, and the marches to one on enemy ground of the same
+  landmass are refused for want of a way (5521 y10: 88 of 88; 4513: 40 of 42).
+- **Rule tried** (`rule.patch`, not committed): an attacking sector marches on the nearest beatable enemy formation
+  within 6 sector buckets (ADR-702's rule widened), and a free formation still standing marches on one within 60
+  cells. A/B from 8 year-10 saves: 0.95–1.08 × for every radius.
+- **AT** (`docs/evidence/7.138/at_summary.txt`): late **4.042 → 3.937** (0.974 ×, paired se 0.36; bar 1.15 ×); year 1
+  0.998 ×; worlds over 12 years 1 → 2. Missed. Code restored; the pin unchanged; seeds 1201–1211 (but 1207) spent.
+- **Options:**
+  - **(a)** 7.138 closed not done, no rule; the measure to the next critic report, which judges it. (Recommended:
+    the read shows the enemies within reach late cannot be reached by land; a sixth operational rule has no target.)
+  - **(b)** As (a), and a numbered task for the strategic AI: a nation at war whose enemies its army cannot reach
+    by land (nor its transports) weighs a war it can fight on land higher, or makes peace sooner; AT on 10 unseen
+    seeds × 30 years as 7.138's.
+  - **(c)** As (a), and a numbered task for the invasion AI: landings on the enemy coast an army stands across the
+    sea from (the "another landmass" sightings), AT as 7.138's.
+- **Meanwhile** the loop takes PLAN 7.139 (R16-B2, the late tick).
+
 ### ADR-727 · 2026-10-26 · accepted, option a (the user's standing instruction of 2026-10-26: the recommended option overnight) — Carriers kept afloat; PLAN 7.137's AT missed, 3.3 a world (PLAN 7.137)
 
 - **Context.** PLAN 7.137's AT: on 10 unseen seeds × 20 years, carriers afloat with a wing aboard at year 20 at least 6

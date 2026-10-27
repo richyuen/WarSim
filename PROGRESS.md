@@ -24051,3 +24051,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   Unseen seeds from 1201, none a critic seed (1207, 1213, 1259 skipped).
 - **Note:** the review's browser specs rewrote screenshots under `docs/evidence/` (left out of the commit).
 - **Next:** PLAN 7.138.
+
+## 2026-10-27 — PLAN 7.138: the late contact measured; a pursuit rule tried, the AT missed (ADR-728, to the user)
+
+- **Start:** gate green on `4da64a8f`; critic not due (run 16 names `7b883084`, HEAD is its docs commit).
+- **Read** (`docs/evidence/7.138/measure.md`; new `stillAt.ts`, `farArmy.ts`, `warBalance.ts`, `warGaps.ts`; the
+  critic's run-16 saves): the far alliance members are no more of the army late than in year 1 (10–29 % against
+  23–25 %). What changed: 1–3 % of a war's land formations stand within 3 cells of an enemy one late (day 60
+  21–22 %), and the enemies near a standing army are across the sea or past a neutral; marches to those on enemy
+  ground of the same landmass are refused for want of a way (5521 y10 88 of 88).
+- **Rule tried** (`rule.patch`, not committed): attacks and standing formations march on a beatable enemy formation
+  within 24–60 cells. A/B from 8 year-10 saves 0.95–1.08 ×.
+- **AT** (1201–1206, 1208–1211 × 30, `stillAt.ts`): late 4.042 → 3.937 (0.974 ×, bar 1.15 ×), year 1 0.998 ×,
+  worlds over 12 years 1 → 2. Missed; code restored; pin unchanged; seeds spent. BLOCKERS, ADR-728 (proposed).
+- **Gotcha:** a 30-year 1938 run takes ~11 min here (six side by side), not the 1.5 h an arm the notes said: an AT
+  arm of ten seeds is ~25 min. And the Write tool overwrites an existing tool file without a word: check
+  `ls tools/diag/<name>` before writing a new one (`warSides.ts` was restored).
+- **Next:** PLAN 7.139 (R16-B2, the late tick) while ADR-728 waits.

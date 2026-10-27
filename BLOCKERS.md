@@ -5,6 +5,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.138's AT missed: a pursuit rule 0.974 × late on 1201–1211 (ADR-728, waits on the user)
+- **The bar:** on 1201–1206, 1208–1211 × 30 years, engaged land formations a day in years 2–30 at least 1.15 × HEAD's,
+  year 1 not below 0.95 ×, worlds with the same top five over 12 years not above HEAD's.
+- **What moved** (`docs/evidence/7.138/measure.md`): nothing: late 4.042 → 3.937, year 1 0.998 ×, worlds over 12
+  years 1 → 2. The rule (an attack and a standing formation march on a beatable enemy formation within 24–60 cells)
+  seldom finds one it can reach: the enemies near an army late are across the sea or past a neutral's land.
+- **What is left:** the user's (ADR-728): (a) closed not done (recommended); (b) a strategic-AI task (wars an army
+  can fight by land); (c) an invasion-AI task (landings on the coast an army faces).
+
 ### RESOLVED 2026-10-26 (option a, the user's standing instruction: kept, 7.137 closed not done) · PLAN 7.137's AT missed: carriers 3.3 a world at year 20 on 1191–1200 (ADR-727)
 - **The bar:** carriers afloat with a wing aboard at year 20 at least 6 a world; sea battles late not below HEAD's.
 - **What moved** (`docs/evidence/7.137/at.md`): carriers 1.8 → 3.3; sea battles late 0.97 ×.

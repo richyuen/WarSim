@@ -1,0 +1,122 @@
+diff --git a/src/sim/ai/operational.ts b/src/sim/ai/operational.ts
+index 62a4efbf..8a77301a 100644
+--- a/src/sim/ai/operational.ts
++++ b/src/sim/ai/operational.ts
+@@ -119,6 +119,8 @@ export const SPARE_RANGES = 3;
+  * the formation's day in MARCH_DAYS because any flip of the map voids the refusal kept.
+  */
+ export const FAR_RETRY_DAYS = 40;
++/** PLAN 7.138 A/B knob (temporary). */
++export const PURSUIT_TEST = { buckets: Number(process.env.PURSUIT ?? 0), hunt: Number(process.env.HUNT ?? 0), stats: { otherLand: 0, neutralCell: 0, sideCell: 0, enemyCell: 0, cand: 0, foeAny: 0, foeBeat: 0, found: 0, ok: 0, refused: 0, long: 0 } };
+ let spare2 = SPARE_RANGES * SPARE_RANGES * range2;
+ /** This world's `takeMen`: set by `operationalAi` for the world it plans. */
+ let take = 1500;
+@@ -1278,10 +1280,49 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
+   if (OP_PROBE.sectors) OP_PROBE.sectors({ nation: n, tick: world.tick, classes: probeClasses, empty: probeEmpty, sectors: list.map((s) => ({ threat: s.threat, n: s.formations.length, strength: s.strength, attack: s.formations.length > 0 && s.strength >= OFFENSIVE_RATIO * s.threat, cx: s.cx, cy: s.cy, inRange: s.threat > 0 && all.some((id) => dist2(id, s) <= range2) })) });
+   // Orders.
+   const isArmour = (id: number): boolean => (armour[f.template[id]!] ?? 0) >= SPEARHEAD_ARMOUR;
++  const ctl = world.cells.controller;
++  const aboard = world.embarked.size !== stand.embarked;
++  const reachB = PURSUIT_TEST.buckets;
++  /**
++   * The enemy land formation nearest the sector's centre within PURSUIT_BUCKETS sector buckets of
++   * it, in no battle (not engaged, not on the retreat), on an enemy's cell of the landmass of the
++   * sector's hold cell, that the sector's strength beats by OFFENSIVE_RATIO; lowest id on ties; -1
++   * if none (PLAN 7.138).
++   */
++  const foeOf = (s: Sector): number => {
++    const sy = Math.floor(s.key / bw);
++    const sx = s.key - sy * bw;
++    let bid = -1;
++    let bd = Infinity;
++    for (let dx = -reachB; dx <= reachB; dx++) {
++      const x = bucketX(sx, dx);
++      if (x < 0) continue;
++      for (let dy = -reachB; dy <= reachB; dy++) {
++        const k = (sy + dy) * bw + x;
++        if (sy + dy < 0 || k >= buckets) continue;
++        for (const id of stand.byBucket.get(k) ?? []) {
++          if (enemyOf[f.nation[id]!] !== 1 || f.retreat[id]! > 0 || f.engaged[id] === 1 || (aboard && world.offLand(id))) continue;
++          if (OFFENSIVE_RATIO * f.strength[id]! > s.strength) continue;
++          const c = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
++          if (!enemy(ctl[c]!) || land[c] !== land[s.hold]) continue;
++          let ex = Math.abs(f.x[id]! - s.cx);
++          if (loop && ex > w / 2) ex = w - ex;
++          const ey = f.y[id]! - s.cy;
++          const d = ex * ex + ey * ey;
++          if (d < bd || (d === bd && id < bid)) {
++            bd = d;
++            bid = id;
++          }
++        }
++      }
++    }
++    return bid;
++  };
+   for (const s of list) {
+     if (s.formations.length === 0) continue;
+     const attack = s.strength >= OFFENSIVE_RATIO * s.threat;
+-    const target = attack ? attackCell(world, s, enemy, nb) : s.hold;
++    const foe = attack && reachB > 0 ? foeOf(s) : -1;
++    const target = attack ? (foe >= 0 ? Math.floor(f.y[foe]!) * w + Math.floor(f.x[foe]!) : attackCell(world, s, enemy, nb)) : s.hold;
+     if (target < 0) continue;
+     // Spearheads: armour leads the attack, and where it does the rest hold the front.
+     const lead = attack && s.formations.some(isArmour);
+@@ -1303,6 +1344,57 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
+       }
+     }
+   }
++  // Hunt (PLAN 7.138 test): a free formation still standing marches on the nearest beatable enemy
++  // land formation within HUNT cells on its landmass.
++  const hunt = PURSUIT_TEST.hunt;
++  if (hunt > 0) {
++    const hb = Math.ceil(hunt / sector);
++    for (const id of mine) {
++      if (f.moving[id] === 1 || f.engaged[id] === 1) continue;
++      PURSUIT_TEST.stats.cand++;
++      let any = false;
++      let beat = false;
++      const here = Math.floor(f.y[id]!) * w + Math.floor(f.x[id]!);
++      const sy = Math.floor(f.y[id]! / sector);
++      const sx = Math.floor(f.x[id]! / sector);
++      let bid = -1;
++      let bd = hunt * hunt;
++      for (let dx = -hb; dx <= hb; dx++) {
++        const x = bucketX(sx, dx);
++        if (x < 0) continue;
++        for (let dy = -hb; dy <= hb; dy++) {
++          const k = (sy + dy) * bw + x;
++          if (sy + dy < 0 || k >= buckets) continue;
++          for (const e of stand.byBucket.get(k) ?? []) {
++            if (enemyOf[f.nation[e]!] !== 1 || f.retreat[e]! > 0 || f.engaged[e] === 1 || (aboard && world.offLand(e))) continue;
++            any = true;
++            if (OFFENSIVE_RATIO * f.strength[e]! > f.strength[id]!) continue;
++            beat = true;
++            const c = Math.floor(f.y[e]!) * w + Math.floor(f.x[e]!);
++            if (land[c] !== land[here]) PURSUIT_TEST.stats.otherLand++;
++            else if (enemy(ctl[c]!)) PURSUIT_TEST.stats.enemyCell++;
++            else if (ctl[c] === n || wars.sameSide(ctl[c]!, n)) PURSUIT_TEST.stats.sideCell++;
++            else PURSUIT_TEST.stats.neutralCell++;
++            if (!enemy(ctl[c]!) || land[c] !== land[here]) continue;
++            let ex = Math.abs(f.x[e]! - f.x[id]!);
++            if (loop && ex > w / 2) ex = w - ex;
++            const ey = f.y[e]! - f.y[id]!;
++            const d = ex * ex + ey * ey;
++            if (d < bd || (d === bd && e < bid)) {
++              bd = d;
++              bid = e;
++            }
++          }
++        }
++      }
++      if (any) PURSUIT_TEST.stats.foeAny++;
++      if (beat) PURSUIT_TEST.stats.foeBeat++;
++      if (bid >= 0) {
++        PURSUIT_TEST.stats.found++;
++        PURSUIT_TEST.stats[askMove(world, id, Math.floor(f.y[bid]!) * w + Math.floor(f.x[bid]!), pass)]++;
++      }
++    }
++  }
+ }
+ 
+ /**

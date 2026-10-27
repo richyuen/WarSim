@@ -1,0 +1,13 @@
+import { readFileSync } from 'node:fs';
+import { PURSUIT_TEST } from '../../src/sim/ai/operational';
+import { SIZE_1938 } from '../../src/sim/scenario1938';
+import { Sim } from '../../src/sim/sim';
+import { loadAssets1938 } from '../headless/assets';
+for (const a of process.argv.slice(2)) {
+  const [seed, bin] = a.split(':');
+  const s = new Sim({ scenario: '1938', seed: Number(seed), assets: loadAssets1938(SIZE_1938.w) });
+  s.load(new Uint8Array(readFileSync(bin!)));
+  for (const k of Object.keys(PURSUIT_TEST.stats)) (PURSUIT_TEST.stats as Record<string, number>)[k] = 0;
+  for (let d = 0; d < 10; d++) s.step(24, (ww) => ((ww.out.events.length = 0), (ww.out.fires.length = 0)));
+  console.log(seed, JSON.stringify(PURSUIT_TEST.stats));
+}

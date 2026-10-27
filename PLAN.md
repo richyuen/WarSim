@@ -71,6 +71,9 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   1208–1211 × 30 years against HEAD on the same seeds, engaged land formations a day in years 2–30 at least 1.15 ×
   HEAD's, year 1 not below 0.95 ×, and worlds with the same five largest nations for more than 12 years not above
   HEAD's count; a unit test, red without; the gate green.
+  AT missed 2026-10-27 (ADR-728, BLOCKERS; `docs/evidence/7.138/measure.md`): a pursuit rule read late 0.974 × HEAD
+  (4.042 → 3.937), year 1 0.998 ×, worlds over 12 years 1 → 2; the enemies near an army late stand past the sea or a
+  neutral. No rule; waits on the user's choice (ADR-728); seeds 1201–1211 spent.
 - [ ] 7.139 R16-B2: the 5.5 ms budget (ADR-709) still fails late. Pinned and alone, 3847's year 27 6.14 / 6.19 ms,
   5683's year 26 6.02 / 5.82 ms, operational AI 3.0–3.2 ms of each (`critic/c16_perf_3847_y27_read*.log`,
   `critic/c16_perf_5683_y26_read*.log`; saves `critic/c16_seed3847_y26.bin`, `critic/c16_seed5683_y25.bin`). AT:
