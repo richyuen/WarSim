@@ -3,6 +3,9 @@
  * - `strikeH`: hours with a carrier strike in the air (`carrierStrikes`, the critic's `c16_cvworld.ts` count; the AT's figure);
  * - `cvBattleH`: hours with a carrier's fleet in a sea battle;
  * - `cvMissionH`: hours with a wing based on a carrier (`wingBase` < 0) holding a mission of its own (`wingMission`);
+ * - `cvAirH` (PLAN 7.145's AT figure): hours with a carrier wing's strike in the air, in a sea battle (`strikeH`) or on
+ *   its own strike mission (a sortie of a wing based on a carrier, out, over or back: `sortieAt`'s leg not home);
+ * - `cvOwnH`: of those, hours with a carrier wing's own strike in the air;
  * - `battles`, `sunk`: sea battles fought (`SeaBattle` rows) and ships sunk in them;
  * and at the year's end: `transports` (transport ships afloat), `carriers` (carriers afloat) and `manned` (of them with
  * a wing aboard), `warships` (armed ships afloat: a gun or torpedoes, no submarine), `training` (fleets in training by
@@ -16,7 +19,8 @@ import { seaSide } from '../../src/shared/history';
 import { size1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { loadAssets1938 } from '../headless/assets';
-import { elementIndex } from '../../src/sim/systems/elements';
+import { elementIndex, loopW } from '../../src/sim/systems/elements';
+import { Leg, sortieAt } from '../../src/sim/systems/sorties';
 import { liveCarriers } from '../../src/sim/systems/air';
 import { carrierStrikes } from '../../src/sim/systems/navalCombat';
 
@@ -28,7 +32,7 @@ if (process.env.LOAD) sim.load(new Uint8Array(readFileSync(process.env.LOAD)));
 const rows: Record<string, unknown>[] = [];
 const t0 = Date.now();
 for (let year = 1; year <= years; year++) {
-  const y = { year, strikeH: 0, cvBattleH: 0, cvMissionH: 0, battles: 0, sunk: 0 };
+  const y = { year, strikeH: 0, cvBattleH: 0, cvMissionH: 0, cvAirH: 0, cvOwnH: 0, battles: 0, sunk: 0 };
   sim.step(24 * 365, (w) => {
     const ev = w.out.events;
     for (let i = 0; i < ev.length; i += 6) {
@@ -38,8 +42,12 @@ for (let year = 1; year <= years; year++) {
     }
     ev.length = 0;
     w.out.fires.length = 0;
+    let inBattle = false;
     if (w.seaBattles.length > 0) {
-      if (carrierStrikes(w).length > 0) y.strikeH++;
+      if (carrierStrikes(w).length > 0) {
+        y.strikeH++;
+        inBattle = true;
+      }
       if (w.seaBattles.some((r) => r.fleets.some((f) => w.formations.has(f) && liveCarriers(w, f) > 0))) y.cvBattleH++;
     }
     for (const [id, base] of w.wingBase) {
@@ -48,6 +56,16 @@ for (let year = 1; year <= years; year++) {
         break;
       }
     }
+    let own = false;
+    for (const [id, base] of w.wingBase) {
+      const s = base < 0 && w.wingMission.get(id)?.kind === 'strike' ? w.sorties.get(id) : undefined;
+      if (s && w.tick >= s.launch && sortieAt(s, w.tick, loopW(w)).leg !== Leg.Home) {
+        own = true;
+        break;
+      }
+    }
+    if (own) y.cvOwnH++;
+    if (own || inBattle) y.cvAirH++;
   });
   const w = sim.world;
   const units = w.rules!.units;

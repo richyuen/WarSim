@@ -167,6 +167,33 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-738 · 2026-10-27 · accepted (ADR-735 a, the user's decision) — A carrier's wings strike ashore: out of a sea battle they take a naval bomber's missions from the deck (PLAN 7.145)
+
+- **Context.** ADR-735 (a): the carriers at war stood by ports of enemies with no armed fleet (1,880 of 1,880 such
+  fleet-days at year 10 on the critic's run-16 saves) and their wings struck only in a sea battle. AT on 10 unseen
+  seeds from 1284 × 20 years against HEAD: hours with a carrier wing's strike in the air, in a sea battle or on its
+  own mission, in years 2–20 at least 2 × HEAD's; sea battles and ships sunk in years 2–20 not below 0.95 ×; a
+  carrier strike ashore seen in the page; a unit test, red without.
+- **Rule** (`airAi`, `airSystem`): an AI nation's carrier wings, their fleet at war and in no sea battle, are tasked
+  as its naval bombers are (the enemy's fleet nearest in range, else its front, else its land forces in range, the
+  spread of PLAN 7.24a); they never rebase (`toward`, `overSea` are for land bases). Each hour, an AI's carrier wing
+  whose fleet is in a sea battle ends its mission (`inSeaBattle`); a sortie aloft flies out, and the wing strikes
+  for the fleet once home (PLAN 5.4d). A player's order to a carrier wing stands in a battle. The scheduler flew a
+  mission from a deck already (the player's orders): no change there. Unit test `carrierAshore1938.test.ts` (a
+  British carrier wing at Scapa Flow strikes a German division in Scotland from the deck; with none in range no
+  mission and no rebase; its fleet in a battle no mission, a held one ended in the hour, a player's kept), red
+  without. Pin 6e048cce → b08ba7c9.
+- **Found on the way** (`57a00adb`, part 1): `carrierStrikes`, the flights drawn, read a strict `<` against the
+  wings' reach while the battle strikes by `inReach` (ADR-526); on seed 8693 under this rule Japan's carrier fleet
+  stood 250.0000000000016 km from the American fleet it struck, and the row showed no plane
+  (`carrierStrikeView1938.spec.ts`). Fixed to `inReach`; reads only.
+- **Tests restated, history moved:** `farWait1938` seed 1 → seed 7 from day 180 (seed 1 has no refused march in its
+  first 400 days now; seed 7 on day 261, formation 732; `tools/diag/firstWait.ts`).
+- **Seen in the page** (`tests/e2e/carrierStrikeAshore1938.spec.ts`, `docs/evidence/7.145/`): seed 99, hour 3,
+  Japan's naval bombers from its fleet off Kyushu over the Chinese division at (1711.5, 430.2), drawn as a
+  land-based wing's sortie, 2 on the screen at 24 px a cell.
+- **AT:** see PROGRESS (pending at this commit).
+
 ### ADR-737 · 2026-10-27 · proposed (the user's decision) — The k-th strike of a day on a land formation at 1 / (1 + k): land contact late 1.61 ×, year 1 0.86 × (PLAN 7.144's AT missed on year 1)
 
 - **Context.** PLAN 7.144 (found by 7.142's AT, ADR-736 a): with the wing rebuild's war reserve, land formations

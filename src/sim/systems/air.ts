@@ -38,6 +38,8 @@ export function airSystem(world: World): void {
   // The patrols' relays (PLAN 7.36a), made when a patrol is first ready to take off this hour.
   let relay: Map<string, Relay> | null = null;
   const relayOf = (): Map<string, Relay> => (relay ??= relays(world));
+  // The fleets in a sea battle, made when a carrier's wing with a mission is first looked at (PLAN 7.145).
+  let battling: Set<number> | null = null;
   for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
     if (!f.has(id)) {
       world.wingBase.delete(id);
@@ -78,6 +80,10 @@ export function airSystem(world: World): void {
       decks.set(-base, left - 1);
       c.x[id] = c.x[-base]!;
       c.y[id] = c.y[-base]!;
+      // Its fleet in a sea battle (PLAN 7.145, ADR-738): an AI's wing ends its mission and strikes for
+      // the fleet (PLAN 5.4d); one aloft flies its sortie out. A player's order stands.
+      const n = c.nation[id]!;
+      if (world.settings.aiEnabled && world.nations.cols.aiOff[n] !== 1 && world.wingMission.has(id) && (battling ??= inSeaBattle(world)).has(-base)) world.wingMission.delete(id);
     }
     schedule(world, id, relayOf);
   }
@@ -87,6 +93,13 @@ export function airSystem(world: World): void {
   airLift(world);
   if (byZone.size > 0) airCombat(world, byZone);
   antiAir(world);
+}
+
+/** The fleets in a sea battle now (`world.seaBattles`; PLAN 7.145). */
+export function inSeaBattle(world: World): Set<number> {
+  const set = new Set<number>();
+  for (const r of world.seaBattles) for (const id of r.fleets) set.add(id);
+  return set;
 }
 
 /** Whether `holder` is nation `nation` or of its side: its supply bloc, or fighting beside it. */

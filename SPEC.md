@@ -1936,6 +1936,12 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   hours they strike the enemy's surface ships of the battle as a naval strike does, but each
   squadron puts its whole fire on one ship, picked by hit points as a gun picks (PLAN 7.60, ADR-605):
   spread over all, alike ships sank together, a whole fleet in one strike.
+  Out of a sea battle (PLAN 7.145, ADR-738; `airAi`): an AI nation's carrier wings, their fleet at
+  war, take a naval bomber's missions from the deck, as land-based wings do: the enemy's fleet
+  nearest in range, else its front, else its land forces in range; they never rebase. When their
+  fleet is in a sea battle, an AI's carrier wing ends its mission in that hour (`airSystem`; one
+  aloft flies its sortie out) and strikes for the fleet. Until then they struck only in a sea
+  battle, and the carriers at war stood by ports of enemies with no fleet afloat (PLAN 7.141).
 - *As built (PLAN 5.5a, ADR-320; `bombIndustry`, `repairSystem`):* a strike on land drops its
   aircraft's bombs (`bomb_t`) on the enemy's industry within a cell of its target: each cell
   there out of work by tons × 2 $M over their industry together (at most 0.9); the monthly income

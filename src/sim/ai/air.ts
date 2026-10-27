@@ -1,7 +1,14 @@
 /**
  * The AI's air forces (PLAN 5.6, SPEC §7): each day at 00:00, each nation at war with its AI on
- * gives its land-based wings their missions (a carrier's stay with its fleet, PLAN 5.4d). The
- * front is where its land formations and the enemy's are in contact (`engaged`).
+ * gives its wings their missions. The front is where its land formations and the enemy's are in
+ * contact (`engaged`).
+ *
+ * A carrier's wings (PLAN 7.145, ADR-738), their fleet in no sea battle, take a naval bomber's
+ * missions from the deck: the enemy's fleet nearest in range, else its front, else its land
+ * forces; they never rebase. In a sea battle they strike for their fleet (PLAN 5.4d), and the air
+ * system ends their mission in its hour (`airSystem`). Until then a carrier's wings struck only
+ * in a sea battle, and the carriers at war stood by the ports of enemies with no fleet afloat
+ * (on the critic's run-16 saves 1,880 of 1,880 such fleet-days at year 10; PLAN 7.141).
  *
  * - Fighters patrol over the front: over its own engaged formation nearest their base within
  *   their range; none in range, no mission. Over the formation's men (PLAN 7.24d): the middle of
@@ -44,7 +51,7 @@
  * `overSea`): flown within a ferry flight, else sailed (`orderFerry`: at sea for the days a convoy takes).
  */
 import { isDayStart } from '../../shared/calendar';
-import { basePlace, FERRY_RANGE, kmFromBase, ofSide, orderFerry, orderMission, orderRebase, wingAircraft, wingRange } from '../systems/air';
+import { basePlace, FERRY_RANGE, inSeaBattle, kmFromBase, ofSide, orderFerry, orderMission, orderRebase, wingAircraft, wingRange } from '../systems/air';
 import { airbaseRoom } from '../data/airbases';
 import { seaKm } from '../systems/navalCombat';
 import { canParadrop, orderParadrop } from '../systems/airLift';
@@ -76,10 +83,13 @@ export function airAi(world: World): void {
   const nc = world.nations.cols;
   const c = world.formations.cols;
   const wings = new Map<number, number[]>();
+  const battling = inSeaBattle(world);
   for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
     // A wing carrying a warhead flies on (PLAN 6.2).
     // A wing at sea (PLAN 7.133) takes no order until it is at its base.
-    if (base <= 0 || !world.formations.has(id) || carriesNuke(world, id) || world.wingFerry.has(id)) continue;
+    // A carrier's (PLAN 7.145): only while its fleet is in no sea battle, where it strikes for the fleet (PLAN 5.4d).
+    if (base === 0 || !world.formations.has(id) || carriesNuke(world, id) || world.wingFerry.has(id)) continue;
+    if (base < 0 && (!world.formations.has(-base) || battling.has(-base))) continue;
     const n = c.nation[id]!;
     if (nc.living[n] !== 1 || nc.aiOff[n] === 1) continue;
     let list = wings.get(n);
@@ -178,6 +188,8 @@ function missions(world: World, wings: Map<number, number[]>, engaged: readonly 
       }
       if (!target) {
         world.wingMission.delete(id);
+        // A carrier's wing stays on its deck (PLAN 7.145): no rebase.
+        if (world.wingBase.get(id)! < 0) continue;
         // A front out of its range: a hop toward it (PLAN 5.12a); with no front, or none of it in
         // reach of a base of the side, the enemy's land forces (PLAN 5.12b, 7.26b).
         if (role === 'patrol' || role === 'front' || role === 'naval') {
