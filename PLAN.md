@@ -80,21 +80,7 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   1253–1263 but 1259 (`docs/evidence/7.140/design.md`): at most 6 and 8 years, met; over a third in 2 of 10 (the
   United States, 39.4 % and 48.7 %), missed (BLOCKERS). Waits on PLAN 7.143; seeds 1253–1263 spent.
 
-- [ ] 7.144 The air rebuild lowers land contact (found by 7.142's AT, ADR-736): on 1243–1252 × 20 years land
-  formations engaged a day in years 2–20 4.48 → 3.41 (0.76 ×, lower on all ten), year 1 0.97 ×, the armies as
-  large and the army's orders held by gold as often. Read first, from one saved state stepped both ways (HEAD and
-  `WAR_RESERVE_MONTHS` → `RESERVE_MONTHS` in the wing rebuild), what the larger air forces change on the ground
-  (strikes on formations out of contact, attacks given or refused by the operational AI). AT: on 10 unseen seeds
-  from 1294 × 20 years against HEAD on the same seeds, engaged land formations a day in years 2–20 at least
-  1.25 × HEAD's, wings and sorties aloft in years 2–20 not below 0.9 × HEAD's, year 1 not below 0.95 ×; a unit
-  test, red without; the gate green.
-  Read and run 2026-10-27 (ADR-737, to the user; BLOCKERS; `docs/evidence/7.144/measure.md`, `at.md`): the channel
-  is the strikes, piled on the few enemy formations in range (strikes off 1.37 × on eight saves × 60 days; the air's
-  factors on fire and supply 1.00 ×). Rule committed: the k-th strike of a day on a land formation at 1 / (1 + k).
-  AT on 1294–1303: engaged years 2–20 1.61 ×, wings 1.01 ×, aloft 1.31 ×, met; engaged in year 1 0.86 ×, missed
-  (moved into year 2). Waits on ADR-737; seeds 1294–1303 spent.
-
-- [ ] 7.147 Year 1's land contact under ADR-737 (found by 7.144's AT; waits on ADR-737, dropped with its (b) or (c)): on
+- [ ] 7.147 Year 1's land contact under ADR-737 (found by 7.144's AT; ADR-737 a, the user's decision): on
   1294–1303 × 20 years engaged land formations a day in year 1 44.1 → 37.8 (0.86 ×, lower on nine), year 2 9.2 → 18.6, wars
   and nations at war alike: the opening fights hold fewer formations at once and last longer. Read first, on the
   year-1 days of a few of those seeds stepped both ways (HEAD and `strikeShare` at 1), which fights hold fewer
@@ -102,44 +88,13 @@ split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed
   1304 × 20 years against HEAD on the same seeds, engaged in year 1 at least 1.1 × HEAD's, in years 2–20 not below
   0.95 ×, sorties aloft in years 1–20 not below 0.9 ×; a unit test, red without; the gate green.
 
-- [ ] 7.145 Carriers strike ashore (ADR-735 a, the user's decision; from 7.141, naval 7): the carriers at war stand by
-  ports of enemies with no armed fleet, and their wings strike only ships in a sea battle (`carrierStrikes`, SPEC
-  5.4d). A carrier's wings, their fleet at war and in no sea battle, take the naval bomber's missions from the deck
-  (`airAi`: the enemy's fleet nearest in range, else the enemy's land formations in range), as land-based wings do;
-  SPEC 5.4d changed to match. AT: on 10 unseen seeds from 1284 × 20 years against HEAD on the same seeds, hours with
-  a carrier wing's strike in the air, in a sea battle or on its own mission, in years 2–20 at least 2 × HEAD's; sea
-  battles and ships sunk in years 2–20 not below 0.95 × HEAD's; a carrier strike ashore seen in the page; a unit
-  test, red without; the gate green.
-  Run 2026-10-27 (ADR-738, to the user; BLOCKERS; `docs/evidence/7.145/at.md`): part 1 (`57a00adb`) the flights drawn
-  at the battle's reach (`inReach`); part 2 (`60e008c6`) the rule. AT on 1284–1293: strike-hours 105 ×, the page and
-  the test, met; sea battles 0.867 ×, ships sunk in them 0.923 ×, missed. Waits on ADR-738; seeds 1284–1293 spent.
-
-- [ ] 7.148 The sea battles under ADR-738 (found by 7.145's AT; waits on ADR-738, dropped with its (b) or (c)): on
+- [ ] 7.148 The sea battles under ADR-738 (found by 7.145's AT; ADR-738 a, the user's decision): on
   1284–1293 × 20 years sea battles in years 2–20 1,641 → 1,423 (0.867 ×, lower on 7) and ships sunk in them 16,043 →
   14,811 (0.923 ×) since the carriers' wings fly their own missions. Read first, from saves stepped both ways (HEAD and
   the carrier wings' missions off), whether the carrier fleets find fewer enemy fleets (a fleet sees only by its wings
   at home, `carrierWings`) or the air sinks ships before a battle (count ships sunk from the air). AT: on 10 unseen
   seeds from 1314 × 20 years against `57a00adb` on the same seeds, sea battles and ships sunk in them in years 2–20 not
   below 0.95 ×, carrier strike-hours at least 2 ×; a unit test, red without; the gate green.
-
-- [ ] 7.146 R16-B1: the land army of long-front wars late, both sides (ADR-733 a, the user's decision; from 7.138).
-  Late, per war with a land front of 100 cells or more, the weaker side has ~4 formations near a ~1,700-cell front
-  (year 1: 8–13 near ~280) and the stronger side's near ones mostly stand 60+ cells from any enemy
-  (`docs/evidence/7.138/held.md`); six operational rules read flat; the one lever measured to move contact is the
-  army's size (ADR-692, ADR-693 b). Read first what holds the late army down (the losses by system late, the weaker
-  side's economy, what it buys, the fold), then a rule on that lever. AT: on 10 unseen seeds from 1274 × 30 years
-  against HEAD on the same seeds, engaged land formations a day per war with a front of 100 cells or more in years
-  2–30 at least 1.15 × HEAD's, year 1 not below 0.95 ×; as floors, land changing hands at least 2 % of the land
-  cells each year and front battles every year, in every world; ADR-732's clauses not worse than HEAD's; a unit
-  test, red without; the gate green.
-  Read 2026-10-27 (ADR-739; `docs/evidence/7.146/measure.md`): the weak side is 50–60 formations of ~20 nations, ground
-  down 2.2–2.5 × faster than it rebuilds; its money (100–1,000 a month) held by the warship's saving in a third of its
-  months and by its one order slot. Filter on 1294–1303 × 20: no saving 1.16 ×, with a slot more 1.26 ×.
-  - [x] 7.146a An AI nation holding a land front where its side is outnumbered on land saves for no warship (ADR-739).
-  - [x] 7.146b And has one order slot more (ADR-739).
-  Run 2026-10-27 (ADR-739, to the user; BLOCKERS; `docs/evidence/7.146/at.md`): AT on 1274–1283 × 30: engaged years 2–30
-  1.127 × (bar 1.15 ×), missed; year 1 1.008 ×, the floors, ADR-732's runs, met; a nation over a third at year 30 in 2
-  worlds against HEAD's 0 (the United States, not reached by the rule), missed. Waits on ADR-739; seeds 1274–1283 spent.
 
 - [ ] 7.143 The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of
   the land at year 30 in 2 of 10 unseen worlds (1261 39.4 %, first from year 15; 1263 48.7 %, from year 28, growing
@@ -512,3 +467,6 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.142 Aircraft 7: the air forces a third smaller late. Wings late 95 → 69 a world, lower on every one of 56 […]
 - [x] 7.141 (closed not done, ADR-735 a, the user's decision) Naval 7: the carriers built wait in port, and the late sea war is no bigger. 7019's US group built in year 21 […]
 - [x] 7.138 (closed not done, ADR-733 a, the user's decision) R16-B1: the late world stays still. Same 56 seeds `7739a78` → HEAD, engaged land formations a day in years […]
+- [x] 7.144 (closed not done, ADR-737 a, the user's decision) The air rebuild lowers land contact (found by 7.142's AT, ADR-736): on 1243–1252 × 20 years land […]
+- [x] 7.145 (closed not done, ADR-738 a, the user's decision) Carriers strike ashore (ADR-735 a, the user's decision; from 7.141, naval 7): the carriers at war stand by […]
+- [x] 7.146 (closed not done, ADR-739 a, the user's decision) R16-B1: the land army of long-front wars late, both sides (ADR-733 a, the user's decision; from 7.138). […]

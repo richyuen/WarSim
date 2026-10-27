@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-739 · 2026-10-27 · proposed (the user's decision) — The weak side of a land war saves for no warship and has one more order slot: engaged late 1.127 ×, two worlds over a third (PLAN 7.146's AT missed)
+### ADR-739 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, kept) — The weak side of a land war saves for no warship and has one more order slot: engaged late 1.127 ×, two worlds over a third (PLAN 7.146's AT missed)
 
 - **Context.** ADR-733 (a): the late long-front war is thin on both sides, and the one lever with a measured effect on
   contact is the army's size. PLAN 7.146: read what holds the late army down, then a rule on it.
@@ -215,8 +215,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(b)** Reverted (`87fee701`, `e5e3d85a`; the read tools and `docs/evidence/7.146/` kept); 7.146 closed not done.
   - **(c)** Part a alone (`87fee701` reverted): the filter read it 1.16 × at 20 years; no 30-year read exists, a run on
     unseen seeds from 1334 (about 50 minutes) decides it.
+- **Decision** (the user's, 2026-10-27): **(a).** Both parts kept; PLAN 7.146 closed not done; the worlds over a third
+  go to PLAN 7.143, whose HEAD has the rule.
 
-### ADR-738 · 2026-10-27 · proposed (the user's decision) — A carrier's wings strike ashore: strike-hours 105 ×, sea battles 0.867 ×, ships sunk in them 0.923 × (PLAN 7.145's AT missed on the battles)
+### ADR-738 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, kept) — A carrier's wings strike ashore: strike-hours 105 ×, sea battles 0.867 ×, ships sunk in them 0.923 × (PLAN 7.145's AT missed on the battles)
 
 - **Context.** ADR-735 (a): the carriers at war stood by ports of enemies with no armed fleet (1,880 of 1,880 such
   fleet-days at year 10 on the critic's run-16 saves) and their wings struck only in a sea battle. AT on 10 unseen
@@ -255,8 +257,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     7.145 done if that holds (a new run counting ships sunk from the air, on unseen seeds 1314–1323, about 50 minutes;
     7.148's seeds then from 1324).
   - **(c)** Reverted (`60e008c6`; part 1, `57a00adb`, kept: reads only).
+- **Decision** (the user's, 2026-10-27): **(a).** Kept; PLAN 7.145 closed not done; PLAN 7.148 (the sea battles) open,
+  its AT as filed (seeds from 1314).
 
-### ADR-737 · 2026-10-27 · proposed (the user's decision) — The k-th strike of a day on a land formation at 1 / (1 + k): land contact late 1.61 ×, year 1 0.86 × (PLAN 7.144's AT missed on year 1)
+### ADR-737 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, kept) — The k-th strike of a day on a land formation at 1 / (1 + k): land contact late 1.61 ×, year 1 0.86 × (PLAN 7.144's AT missed on year 1)
 
 - **Context.** PLAN 7.144 (found by 7.142's AT, ADR-736 a): with the wing rebuild's war reserve, land formations
   engaged a day in years 2–20 fell 0.76 ×. AT: on 1294–1303 × 20 against HEAD, engaged in years 2–20 at least
@@ -297,6 +301,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(c)** Reverted (the pin and the five tests back); 7.144 open, a rule sought that keeps year 1.
   - With (a) or (b): the loosened bound of `nukeStrikeAgain1938` kept, or held at + 7 and France's 17 days of
     outrage filed as a task.
+- **Decision** (the user's, 2026-10-27): **(a).** Kept; PLAN 7.144 closed not done; PLAN 7.147 (year 1's land
+  contact) open, its AT as filed (seeds from 1304). The loosened bound of `nukeStrikeAgain1938` stays as committed.
 
 ### ADR-736 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, kept) — At war, the wing rebuild keeps the war's reserve; land contact late 0.76 ×
 

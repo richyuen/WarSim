@@ -24252,3 +24252,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** an untracked file named `nul` at the root (a `> nul` from a tool run) makes `git add -A` fail, so the
   gate's `worktreeTree()` returns null and `gate.test` goes red; removed.
 - **Next:** PLAN 7.143 (the American runaway) while ADR-737, ADR-738 and ADR-739 wait.
+
+## 2026-10-27 — The user's decisions: ADR-737 (a), ADR-738 (a), ADR-739 (a)
+
+- **ADR-737 (a):** the strike falloff kept; PLAN 7.144 closed not done; PLAN 7.147 (year 1's land contact) open.
+- **ADR-738 (a):** carriers strike ashore kept; PLAN 7.145 closed not done; PLAN 7.148 (the sea battles) open.
+- **ADR-739 (a):** the outnumbered's rule kept; PLAN 7.146 closed not done; the worlds over a third to PLAN 7.143.
+  BLOCKERS' three entries resolved.
+- **Under way:** PLAN 7.143's read (new `tools/diag/runaway.ts`, not yet committed; HEAD on 1279, 1280, 1276 × 30 with
+  saves at years 10–25 in `.cache/7143/read/`): the United States earns 29–58 % of world income from 1938; the
+  coalition against it forms but weighs 0.04–0.4 of its strength; it grows mostly by walking into empty land (the
+  Soviet Union, Canada, later France and China), and revolts cost it less than it takes. The AT's HEAD arm on 1264–1273
+  is running from `WarSim_base` at `221e2164`.
+- **Next:** PLAN 7.143's rule.

@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.146's AT missed: engaged late 1.127 × HEAD's on 1274–1283 (bar 1.15 ×), two worlds over a third against none (ADR-739, waits on the user)
+### RESOLVED 2026-10-27 (option a, the user's decision: kept, 7.146 closed not done, the worlds over a third to PLAN 7.143) · PLAN 7.146's AT missed: engaged late 1.127 × HEAD's on 1274–1283 (bar 1.15 ×), two worlds over a third against none (ADR-739, waits on the user)
 - **The bar:** on 1274–1283 × 30 years against HEAD, engaged land formations a day per war with a front of 100 cells or
   more in years 2–30 at least 1.15 ×, year 1 not below 0.95 ×; the floors in every world; ADR-732's clauses not worse.
 - **What moved** (`docs/evidence/7.146/at.md`; the rule, ADR-739, committed `e5e3d85a` and `87fee701`: an AI nation
@@ -16,7 +16,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   (recommended); (b) reverted; (c) part a alone, with a run on unseen seeds from 1334. The weak side's nations under 100 a
   month (three quarters of its nation-months) are reached by no order rule (`measure.md` §3).
 
-### PLAN 7.145's AT missed on the sea battles: battles 0.867 ×, ships sunk in them 0.923 × HEAD's on 1284–1293 (bar 0.95 ×; ADR-738, waits on the user)
+### RESOLVED 2026-10-27 (option a, the user's decision: kept, 7.145 closed not done, PLAN 7.148 the sea battles) · PLAN 7.145's AT missed on the sea battles: battles 0.867 ×, ships sunk in them 0.923 × HEAD's on 1284–1293 (bar 0.95 ×; ADR-738, waits on the user)
 - **The bar:** on 1284–1293 × 20 years against HEAD, carrier strike-hours (in a sea battle or on their own mission)
   in years 2–20 at least 2 ×; sea battles and ships sunk in years 2–20 not below 0.95 ×; a strike ashore in the page;
   a unit test, red without.
@@ -26,7 +26,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **What is left:** the user's (ADR-738): (a) kept, 7.145 closed not done, PLAN 7.148 the sea battles (recommended);
   (b) kept, the clauses read as ships sunk by any means (a new run on 1314–1323); (c) reverted.
 
-### PLAN 7.144's AT missed on year 1: land contact in year 1 0.86 × HEAD's on 1294–1303 (bar 0.95 ×; ADR-737, waits on the user)
+### RESOLVED 2026-10-27 (option a, the user's decision: kept, 7.144 closed not done, PLAN 7.147 year 1) · PLAN 7.144's AT missed on year 1: land contact in year 1 0.86 × HEAD's on 1294–1303 (bar 0.95 ×; ADR-737, waits on the user)
 - **The bar:** on 1294–1303 × 20 years against HEAD, land formations engaged a day in years 2–20 at least 1.25 ×,
   wings and sorties aloft in years 2–20 not below 0.9 ×, year 1 not below 0.95 ×.
 - **What moved** (`docs/evidence/7.144/measure.md`, `at.md`): the larger air forces lowered contact through their
