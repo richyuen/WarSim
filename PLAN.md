@@ -78,6 +78,8 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   From 7.150 (ADR-745 a, the user's decision): with the levy, year-20 worlds of 1401–1410 with nobody in contact on
   more than two of seven samples 2 of 10 (1406: armed sides quiet for a month; 1408: the United States against
   nations with no men left to levy, and a war days old), HEAD 4 (`docs/evidence/7.150/at.md`).
+  Read on HEAD (ADR-749, waits on the user): on 1421–1430 empty checkpoints 1 of 20, the ordered five at most 10
+  years (met), the ten-day measure 1 world of 10 (`docs/evidence/7.153/read.md`).
 - [ ] 7.154 Naval 6: beyond 7.151's decks, the sea war fell a third. Same 64 seeds, sea battles late 8.16 → 5.32 a
   world-year (lower on 61), year 1 41.9 → 35.5, ships sunk in battles 80.8 → 59.7, transports at year 20 495 → 456,
   with surface warships afloat 278 → 306; a carrier's strike ashore has no row and reads as land-based planes

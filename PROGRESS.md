@@ -24428,3 +24428,17 @@ No rule changed and nothing on screen changed. One task came out of it.
   without: no defect was found to take out.
 - **7.152:** both parts done; AT met (the format with its pin, the page equal to headless, the gate green).
 - **Next:** PLAN 7.153 (emergent 6).
+
+## 2026-10-28 — PLAN 7.153 read: HEAD at the AT's floor on both clauses; ADR-749 waits on the user
+
+- **Start:** gate green on `f1515d37`; critic not due.
+- **Read** (`docs/evidence/7.153/read.md`, HEAD on the AT's seeds 1421–1430 × 30): checkpoints with nobody in contact
+  1 of 20 (the critic's 17 of 128 was on `cfedb50a`, before the levy); the same five largest in the same order at
+  most 10 years by cells, 7 by km², in every world (the clause met); 7.150's ten-day measure 1 world of 10 (1428).
+- **Cause:** none left to fix. 1428's and 1406's long quiet wars are China fighting to the death at score ±100,
+  ended by MAX_WAR_DAYS at five years, as specified.
+- **Tool:** `tools/diag/contactYears.ts` reads the five largest at each year's end by cells and km² (`orderedRun`,
+  `orderedRunKm2`).
+- **Decision waiting:** ADR-749 (a) close not done, no rule (recommended); (b) a rule for 0 of 20; (c) re-scope to
+  the ten-day measure on 1441–1450. BLOCKERS entry. No sim code; pin unchanged.
+- **Next:** PLAN 7.154 (naval 6) while ADR-749 waits.

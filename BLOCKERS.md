@@ -5,6 +5,16 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.153: HEAD at the AT's floor on both clauses, no cause found (ADR-749, waits on the user)
+- **The bar:** on 1421–1430 × 30 years against HEAD, checkpoints at years 10 and 20 (7 days) with nobody in contact
+  at most half HEAD's count and at least one fewer; no world with the same five largest in the same order over 12
+  years.
+- **What moved** (`docs/evidence/7.153/read.md`): nothing was changed. HEAD: empty checkpoints 1 of 20 (the critic's
+  17 of 128 was before the levy); the ordered five at most 10 years in every world (met); 7.150's ten-day measure 1
+  world of 10. The long quiet wars are fights to the death, as specified.
+- **Left:** ADR-749: (a) close 7.153 not done, no rule (recommended); (b) seek a rule for 0 of 20; (c) re-scope to
+  the ten-day measure on 1441–1450.
+
 ### RESOLVED 2026-10-28 (option a, the user's decision: the levy kept, 7.150 closed not done, the quiet worlds to PLAN 7.153) · PLAN 7.150's AT missed on its second clause: two late worlds of ten with nobody in contact on more than two of seven samples (ADR-745, waits on the user)
 - **The bar:** on 1401–1410 × 30 years, engaged land formations a day in years 2–30 at least 0.2 × the same runs' year 1,
   year 1 not below 0.95 × HEAD's; from the year-20 saves, no world with a war on land showing nobody in contact on more

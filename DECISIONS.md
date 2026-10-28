@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-749 · 2026-10-28 · proposed (the user's decision) — PLAN 7.153: HEAD is at the AT's floor on both clauses; no rule
+
+- **Context.** PLAN 7.153 (critic run 17, emergent 6): checkpoints with nobody in contact 13 → 17 of 128 on
+  `cfedb50a`, and ADR-732's ordered five over 12 years in 2 of 64 worlds. AT: on 1421–1430 × 30 against HEAD, empty
+  checkpoints at most half HEAD's count (and at least one fewer); no world with the same five largest in the same
+  order for more than 12 years; a unit test, red without.
+- **Read** (`docs/evidence/7.153/read.md`, HEAD `f1515d37` on the AT's seeds; `tools/diag/contactYears.ts` now reads
+  the ordered five by cells and by km²). Empty checkpoints **1 of 20** (the critic's count was before the levy,
+  ADR-745; 7.150's levy arm 0 of 20). The ordered five's longest run **10 years** by cells, 7 by km²: the clause is
+  met on HEAD in every world. 7.150's ten-day measure: 1 world of 10 (1428) over two empty samples of seven. The
+  long quiet wars read (1428, 1406) are China fighting to the death at score ±100, which the stance and the
+  five-year cap (MAX_WAR_DAYS) govern as specified.
+- **Options:**
+  - **(a)** PLAN 7.153 closed not done, no rule: both clauses at the floor on HEAD; the next critic report judges.
+    (Recommended: the first clause asks 0 of 20, one checkpoint inside ten seeds' noise, with no cause found.)
+  - **(b)** The AT kept as filed; a rule sought for 0 empty checkpoints on 1421–1430.
+  - **(c)** Re-scoped to 7.150's ten-day measure: on unseen seeds 1441–1450 × 20, no world over two empty samples
+    of seven, and empty samples at most half HEAD's; a rule sought for it.
+- No sim code changed; the pin unchanged. Seeds 1421–1430 read by HEAD only (no rule tuned on them).
+
 ### ADR-748 · 2026-10-28 · accepted — The 1307 browser mismatch not reproduced: 20 of 20 page runs equal to headless; a guard on the worker's queries (PLAN 7.152b)
 
 - **Context.** Critic run 17 (Stability 5): one of four runs of its 1307 probe in the page hashed apart from headless

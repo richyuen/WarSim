@@ -6,10 +6,15 @@
  * - At the end of years 10 and 20 (checkpoints): the world saved, then a copy loaded and stepped 7
  *   days, engaged read at hour 0 and after each day (8 reads); "nobody in contact" when their mean
  *   is 0. Under 500 men: land formations with strength under 500 at the checkpoint.
+ * - Each year's end: the five largest by land cells controlled, in order (PLAN 7.153; ADR-732's
+ *   ordered five, as the critic's `c17_cmp.py` reads it), and by km²; `orderedRun`, `orderedRunKm2` the
+ *   longest run of one order.
  *
  * Usage: [SAVE_DIR=<dir>] npx tsx tools/diag/contactYears.ts <seed> <years> <out.json>
  */
 import { writeFileSync } from 'node:fs';
+import { isLand as isLandTerrain } from '../../src/shared/terrain';
+import { cellAreaByRow } from '../../src/sim/nav/grid';
 import { size1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import type { World } from '../../src/sim/world';
@@ -36,7 +41,19 @@ const engagedNow = (ww: World): number => {
   return e;
 };
 
-const rows: { year: number; engaged: number; wars: number }[] = [];
+const rows: { year: number; engaged: number; wars: number; top5: number[]; top5km2: number[] }[] = [];
+const rowArea = cellAreaByRow(w.cells.w, w.cells.h);
+// The five largest by land cells controlled (the critic's count) and by km² (ADR-732, `criteria.ts`).
+const top5Now = (ww: World, byKm2: boolean): number[] => {
+  const held = new Map<number, number>();
+  const ctl = ww.cells.controller;
+  const ter = ww.cells.terrain;
+  for (let i = 0; i < ctl.length; i++) {
+    if (ctl[i] === 0 || !isLandTerrain(ter[i]!)) continue;
+    held.set(ctl[i]!, (held.get(ctl[i]!) ?? 0) + (byKm2 ? rowArea[Math.floor(i / ww.cells.w)]! : 1));
+  }
+  return [...held].sort((a, b) => b[1] - a[1] || a[0] - b[0]).slice(0, 5).map(([n]) => n);
+};
 const checkpoints: { year: number; daily: number[]; mean: number; empty: boolean; land: number; under500: number }[] = [];
 for (let y = 1; y <= years; y++) {
   let eng = 0;
@@ -47,7 +64,7 @@ for (let y = 1; y <= years; y++) {
     wars += w.wars.list.length;
     sim.step(12, clear);
   }
-  rows.push({ year: y, engaged: eng / 365, wars: wars / 365 });
+  rows.push({ year: y, engaged: eng / 365, wars: wars / 365, top5: top5Now(w, false), top5km2: top5Now(w, true) });
   process.stderr.write(`${seed} year ${y}: engaged ${(eng / 365).toFixed(2)}, wars ${(wars / 365).toFixed(2)}\n`);
   if (y === 10 || y === 20) {
     const copy = new Sim({ scenario: '1938', seed, assets });
@@ -74,6 +91,16 @@ for (let y = 1; y <= years; y++) {
   }
 }
 const late = rows.slice(1);
+const longestRun = (key: (r: (typeof rows)[number]) => string): number => {
+  let best = rows.length > 0 ? 1 : 0;
+  for (let i = 1, run = 1; i < rows.length; i++) {
+    run = key(rows[i]!) === key(rows[i - 1]!) ? run + 1 : 1;
+    best = Math.max(best, run);
+  }
+  return best;
+};
+const orderedRun = longestRun((r) => r.top5.join());
+const orderedRunKm2 = longestRun((r) => r.top5km2.join());
 const summary = {
   seed,
   years,
@@ -81,6 +108,8 @@ const summary = {
   late: late.length > 0 ? late.reduce((a, r) => a + r.engaged, 0) / late.length : 0,
   emptyCheckpoints: checkpoints.filter((c) => c.empty).length,
   under500y20: checkpoints.find((c) => c.year === 20)?.under500 ?? null,
+  orderedRun,
+  orderedRunKm2,
 };
 writeFileSync(out, JSON.stringify({ summary, rows, checkpoints }, null, 1));
 process.stderr.write(`done: ${JSON.stringify(summary)}\n`);
