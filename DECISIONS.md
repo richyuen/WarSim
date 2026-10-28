@@ -203,7 +203,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Pin** 2283b28a → b22bcdd1.
 - **The AT** (`docs/evidence/7.150/at.md`, seeds 1401–1410 × 30): years 2–30 0.309 × year 1, every seed over 0.2,
   year 1 1.27 × HEAD's: met. From the year-20 saves, worlds with nobody in contact on more than two of seven samples 2
-  of 10 (1406, 1408) against HEAD's 4: missed. Run time on 1408 × 30 1.065 ×, the worst year 4.75 ms.
+  of 10 (1406, 1408) against HEAD's 4: missed. Run time on 1408 × 30 1.065 ×, the worst year 4.75 ms; disband months (`FormationsDisbanded`, one a nation-month) 101 → 119 in the 30 years: the levies are not raised to be folded.
 - **Proposed, the user's decision:** (a) the levy kept, 7.150 closed not done, the quiet worlds left to PLAN 7.153
   (recommended: half of HEAD's quiet worlds, the contact late nearly doubled, and 7.153 already counts the
   checkpoints with nobody in contact); (b) kept and 7.150 ticked on its first clause; (c) reverted.

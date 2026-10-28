@@ -46,4 +46,5 @@ Missed: 2 worlds of 10 (HEAD 4); empty samples 8 against 20; mean engaged at the
 ## Run time (seed 1408 × 30 years, both arms at once on separate cores, `--affinity` 0x00FF / 0xFF00)
 
 Mean tick 2.94 → 3.13 ms (1.065 ×); the worst year 3.88 (year 12) → 4.75 ms (year 28); formations (all kinds) at years 10,
-20, 30: 666, 787, 683 → 1,022, 1,293, 1,099.
+20, 30: 666, 787, 683 → 1,022, 1,293, 1,099. Disband months (`FormationsDisbanded`, one a nation-month) in the 30
+years 101 → 119.
