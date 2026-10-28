@@ -1,4 +1,5 @@
 import { render } from 'preact';
+import { sameStateFormat } from '../shared/saveFormat';
 import { LISTED_SCENARIOS, SCENARIO_INFO, scenarioIdOf, scenarioPreviewPath } from '../shared/scenarios';
 import { TitleScreen } from '../ui/TitleScreen';
 import { readAutosave, type SaveRecord } from './autosave';
@@ -33,7 +34,7 @@ if (scenarioId !== null) {
     save = await readAutosave();
     const id = save ? scenarioIdOf(save.scenario) : null;
     if (!save || id === null) return null;
-    return { info: SCENARIO_INFO[id], tick: save.tick, savedAt: save.savedAt };
+    return { info: SCENARIO_INFO[id], tick: save.tick, savedAt: save.savedAt, older: !sameStateFormat(save.format) };
   };
   if (uiRoot) {
     render(

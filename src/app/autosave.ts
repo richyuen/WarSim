@@ -7,6 +7,7 @@
  */
 import type { GameOptions } from '../shared/gameOptions';
 import { packSave, unpackSave } from '../shared/saveCodec';
+import { sameStateFormat, STATE_FORMAT } from '../shared/saveFormat';
 import type { ScenarioId } from '../shared/protocol';
 import { getRecord, putRecord } from './saveDb';
 import type { SimClient } from './simClient';
@@ -24,6 +25,8 @@ export interface SaveRecord extends Partial<GameSetup> {
   slot: string;
   scenario: ScenarioId;
   tick: number;
+  /** The state format it was written in (PLAN 7.152a, `saveFormat.ts`); absent before the field. */
+  format?: number;
   /** Wall-clock time of the save (app side; never enters the sim). */
   savedAt: number;
   bytes: Uint8Array;
@@ -50,7 +53,7 @@ export class Autosave {
   async saveNow(): Promise<number> {
     const { bytes: raw, status } = await this.sim.saveWithStatus();
     const bytes = await packSave(raw);
-    const rec: SaveRecord = { slot: SLOT, scenario: this.scenario, tick: status.tick, savedAt: Date.now(), bytes, ...this.setup() };
+    const rec: SaveRecord = { slot: SLOT, scenario: this.scenario, tick: status.tick, format: STATE_FORMAT, savedAt: Date.now(), bytes, ...this.setup() };
     await putRecord(rec);
     this.last = { tick: status.tick, bytes: bytes.length };
     return status.tick;
@@ -61,10 +64,14 @@ export class Autosave {
     return readAutosave();
   }
 
-  /** Loads the stored autosave into the sim if it belongs to this scenario; returns its tick. */
+  /**
+   * Loads the stored autosave into the sim if it belongs to this scenario; returns its tick. A save
+   * of another state format is refused before the sim sees it (PLAN 7.152a): it throws.
+   */
   async restore(): Promise<number | null> {
     const rec = await this.read();
     if (!rec || rec.scenario !== this.scenario) return null;
+    if (!sameStateFormat(rec.format)) throw new Error(`the autosave is of state format ${rec.format ?? 0}; this version reads ${STATE_FORMAT}`);
     await this.sim.load(await unpackSave(rec.bytes));
     return rec.tick;
   }

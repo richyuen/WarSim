@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-747 · 2026-10-28 · accepted — A save's state format: the autosave carries it, the title reads it before Continue (PLAN 7.152a)
+
+- **Context.** Critic run 17, Stability 5: ADR-737's column `formations.struck` broke every save made before it, and
+  each new column would do it again. PLAN 7.149 (ADR-744) refuses such a save whole when it is loaded; the player still
+  saw a Continue that could only fail.
+- **Decision.** `src/shared/saveFormat.ts`: `STATE_FORMAT` (1), the format of the sim's state sections. The autosave
+  record carries `format`; a record without one is from before the field (format 0). The title screen reads it with
+  the record and, for another format, shows "from an older version of WarSim and cannot be continued", with no
+  Continue (`title-save-older`); `Autosave.restore` refuses it before the sim sees it, so the game's own URL
+  (`?continue=1`) goes back to the title (`?failed=save`, ADR-744's way). The record is kept.
+- **Where it lives.** In the app's record, not in the sections: a section or a `world.meta` slot would enter the state
+  hash and move the pin for no rule. Nor is it the section codec's version (`sections.ts`, the byte layout), which a
+  new column leaves alone. Scenario files keep their own `SCENARIO_FORMAT`; one that does not fit is refused whole at
+  its load (ADR-744).
+- **The pin.** `tests/unit/saveFormat.test.ts` pins, for each format, the sections a load reads: those of the 1938
+  start by name and type (122: every table column, the world's core sections). A section added, dropped or retyped
+  under the same number fails it, naming them; the fix is to raise `STATE_FORMAT` and pin the new list
+  (`SAVE_FORMAT_PIN=1`). The world's optional sections, which come with play, are read with a fallback and load when
+  absent: not pinned. Red with a column added (`formations.probeCol`, tried and taken out).
+- **Cost.** Every autosave now in a player's browser is shown as from an older version once: they have no format.
+  Those from after ADR-737 would load. Taken: there is no telling them from the ones that would not, and a Continue
+  that may fail is what the critic scored.
+- **AoC.** AoC's saves are its own. No deviation.
+- **Tests.** `tests/unit/saveFormat.test.ts`; `tests/e2e/title.spec.ts` (an autosave without a format: the message, no
+  Continue, the URL refused, the record kept; a new autosave carries the format and is offered; 7.149's case now
+  writes a record of this format, its claim unchanged).
+- **Pin** unchanged (b22bcdd1): no sim code changed.
+
 ### ADR-746 · 2026-10-28 · accepted — A carrier's deck re-manned: a fleet a deck a month, at the carrier wing's price (PLAN 7.151)
 
 - **Context.** R17-B3: AI carriers sail with empty decks, carriers with a wing aboard at year 20 3.08 → 1.30 a world on

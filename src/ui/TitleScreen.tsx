@@ -14,6 +14,8 @@ export interface SavedGame {
   tick: number;
   /** Wall-clock time of the save (ms since the epoch). */
   savedAt: number;
+  /** Written by another version, in a state format this one does not read (PLAN 7.152a): not offered. */
+  older?: boolean;
 }
 
 export interface TitleScreenProps {
@@ -85,7 +87,11 @@ export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContin
               <div class="title-scenario-name">{t(save.info.nameKey as MessageKey)}</div>
               <div data-testid="title-save-date">{dateAt(save.info.startDay, save.tick)}</div>
               <div class="title-scenario-date">{t('title.savedAt', { time: new Date(save.savedAt).toLocaleString() })}</div>
-              {saveFailed ? (
+              {save.older ? (
+                <div class="panel-warn" data-testid="title-save-older">
+                  {t('title.saveOlder')}
+                </div>
+              ) : saveFailed ? (
                 <div class="panel-warn" data-testid="title-save-error">
                   {t('title.saveFailed')}
                 </div>

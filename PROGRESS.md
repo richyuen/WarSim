@@ -24400,3 +24400,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a formation id freed by a destroy is given to the next wing made: a test counts the wings aboard, it does
   not compare ids.
 - **Next:** PLAN 7.152 (stability: the save's format version).
+
+## 2026-10-28 — PLAN 7.152a: a save's state format; the title shows an older one as such (ADR-747)
+
+- **Start:** gate green on `d47aa187`; critic not due. 7.152 split: a (the format), b (the 1307 probe).
+- **Change:** `src/shared/saveFormat.ts` `STATE_FORMAT` 1; the autosave record carries `format` (absent: older). The
+  title reads it with the record: another format shows "from an older version … cannot be continued", no Continue;
+  `Autosave.restore` refuses it before the sim, so `?continue=1` returns to the title (`?failed=save`). No sim code;
+  pin unchanged (b22bcdd1).
+- **Tests:** `saveFormat.test.ts` new: pins the 122 sections of the 1938 start (name:type) for format 1, red with a
+  column added; `title.spec.ts` two new cases (a record without a format; a new autosave carries it) and 7.149's case
+  writing a record of this format. `title.spec.ts` (10), `autosave1938.spec.ts`, `randomWorld.spec.ts` (3) green by
+  hand. Screenshot `docs/evidence/1.43/title-save-older.png`.
+- **Gotcha:** the world's optional `world.*` sections come only with play and load when absent: a schema read from one
+  world misses them, and they need no format change. The pin is of the start's sections.
+- **Next:** PLAN 7.152b (the 1307 probe).

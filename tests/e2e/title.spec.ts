@@ -5,6 +5,7 @@ import type {} from '../../src/app/testApi';
 import type { Inspection } from '../../src/shared/protocol';
 import { encodeScenarioFile, SCENARIO_FORMAT } from '../../src/shared/scenarioFile';
 import { packSave } from '../../src/shared/saveCodec';
+import { STATE_FORMAT } from '../../src/shared/saveFormat';
 import { SCENARIO_INFO } from '../../src/shared/scenarios';
 import { decodeSections, encodeSections } from '../../src/sim/core/sections';
 import { cellOf } from '../../src/sim/data/terrain';
@@ -461,20 +462,21 @@ test('Continue with a save that does not fit returns to the title, which says so
   const b64 = Buffer.from(packed).toString('base64');
   await page.goto('/');
   await expect(page.getByTestId('title-screen')).toBeVisible();
+  // Of this version's state format (PLAN 7.152a): a save that claims to fit and does not.
   await page.evaluate(
-    (b) =>
+    ([b, format]) =>
       new Promise<void>((resolve, reject) => {
         const bytes = Uint8Array.from(atob(b), (c) => c.charCodeAt(0));
         const open = indexedDB.open('warsim', 1);
         open.onupgradeneeded = () => open.result.createObjectStore('saves', { keyPath: 'slot' });
         open.onerror = () => reject(open.error ?? new Error('indexedDB open failed'));
         open.onsuccess = () => {
-          const put = open.result.transaction('saves', 'readwrite').objectStore('saves').put({ slot: 'autosave', scenario: '1938', tick: 72, savedAt: Date.now(), bytes, seed: 55, options: {} });
+          const put = open.result.transaction('saves', 'readwrite').objectStore('saves').put({ slot: 'autosave', scenario: '1938', tick: 72, format, savedAt: Date.now(), bytes, seed: 55, options: {} });
           put.onerror = () => reject(put.error ?? new Error('indexedDB put failed'));
           put.onsuccess = () => resolve();
         };
       }),
-    b64,
+    [b64, STATE_FORMAT] as const,
   );
   await page.reload();
   await expect(page.getByTestId('title-save-date')).toHaveText('4 January 1938');
@@ -506,4 +508,90 @@ test('Continue with a save that does not fit returns to the title, which says so
   expect(kept).toEqual({ tick: 72, length: packed.length });
   await page.screenshot({ path: path.join(evidence(info), 'title-save-refused.png') });
   expect(errors).toEqual([]);
+});
+
+// PLAN 7.152a AT (critic run 17, Stability 5): an autosave from before the state format (every
+// save made before PLAN 7.152a; the same for any older format) is shown on the title as from an
+// older version, with no Continue, though its bytes load whole here; and the game's own URL of
+// it (?continue=1) refuses it before the sim sees it, back to the title. The autosave is kept.
+test('an autosave of an older state format is shown as from an older version, not offered to continue', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.setViewportSize({ width: 1400, height: 800 });
+  const node = new Sim({ scenario: '1938', seed: 55, assets: assets1938(SIZE_1938.w) });
+  node.step(72);
+  const packed = await packSave(node.save());
+  const b64 = Buffer.from(packed).toString('base64');
+  await page.goto('/');
+  await expect(page.getByTestId('title-screen')).toBeVisible();
+  // A record as every autosave before PLAN 7.152a: no format.
+  await page.evaluate(
+    (b) =>
+      new Promise<void>((resolve, reject) => {
+        const bytes = Uint8Array.from(atob(b), (c) => c.charCodeAt(0));
+        const open = indexedDB.open('warsim', 1);
+        open.onupgradeneeded = () => open.result.createObjectStore('saves', { keyPath: 'slot' });
+        open.onerror = () => reject(open.error ?? new Error('indexedDB open failed'));
+        open.onsuccess = () => {
+          const put = open.result.transaction('saves', 'readwrite').objectStore('saves').put({ slot: 'autosave', scenario: '1938', tick: 72, savedAt: Date.now(), bytes, seed: 55, options: {} });
+          put.onerror = () => reject(put.error ?? new Error('indexedDB put failed'));
+          put.onsuccess = () => resolve();
+        };
+      }),
+    b64,
+  );
+  await page.reload();
+  await expect(page.getByTestId('title-save-date')).toHaveText('4 January 1938');
+  await expect(page.getByTestId('title-save-older')).toContainText('older version');
+  await expect(page.getByTestId('title-continue')).toHaveCount(0);
+  await page.screenshot({ path: path.join(evidence(info), 'title-save-older.png') });
+  // The game's URL of it: refused before the sim loads it, back to the title, nothing running.
+  await Promise.all([page.waitForURL(/failed=save/, { timeout: 60_000 }), page.goto('/?scenario=1938&seed=55&continue=1')]);
+  await expect(page.getByTestId('title-screen')).toBeVisible();
+  await expect(page.getByTestId('title-save-older')).toBeVisible();
+  await expect(page.getByTestId('title-continue')).toHaveCount(0);
+  await expect(page.locator('canvas#map')).toHaveCount(0);
+  expect(await page.evaluate(() => window.__warsim?.sim === undefined)).toBe(true);
+  const kept = await page.evaluate(
+    () =>
+      new Promise<{ tick: number; length: number; format: unknown } | null>((resolve, reject) => {
+        const open = indexedDB.open('warsim', 1);
+        open.onerror = () => reject(open.error ?? new Error('indexedDB open failed'));
+        open.onsuccess = () => {
+          const get = open.result.transaction('saves', 'readonly').objectStore('saves').get('autosave');
+          get.onerror = () => reject(get.error ?? new Error('indexedDB get failed'));
+          get.onsuccess = () => {
+            const r = get.result as { tick: number; bytes: Uint8Array; format?: number } | undefined;
+            resolve(r ? { tick: r.tick, length: r.bytes.length, format: r.format ?? null } : null);
+          };
+        };
+      }),
+  );
+  expect(kept).toEqual({ tick: 72, length: packed.length, format: null });
+  expect(errors).toEqual([]);
+});
+
+// PLAN 7.152a: a game's autosave carries this version's state format, and the title offers it.
+test('an autosave written by this version carries its state format and is offered to continue', async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.goto('/?scenario=1938&seed=55&paused=1');
+  await page.waitForFunction(() => (window.__warsim?.hud.worker.value ?? null) !== null, null, { timeout: 90_000 });
+  await page.evaluate(() => window.__warsim!.autosave.saveNow());
+  const format = await page.evaluate(
+    () =>
+      new Promise<unknown>((resolve, reject) => {
+        const open = indexedDB.open('warsim', 1);
+        open.onerror = () => reject(open.error ?? new Error('indexedDB open failed'));
+        open.onsuccess = () => {
+          const get = open.result.transaction('saves', 'readonly').objectStore('saves').get('autosave');
+          get.onerror = () => reject(get.error ?? new Error('indexedDB get failed'));
+          get.onsuccess = () => resolve((get.result as { format?: number } | undefined)?.format ?? null);
+        };
+      }),
+  );
+  expect(format).toBe(STATE_FORMAT);
+  await page.goto('/');
+  await expect(page.getByTestId('title-continue')).toBeVisible();
+  await expect(page.getByTestId('title-save-older')).toHaveCount(0);
 });

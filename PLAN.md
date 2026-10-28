@@ -76,6 +76,9 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   not as a game to continue; a unit test that fails when a state section is added without raising the version; the
   critic's 1307 probe run 10 times in the page with each year's hash equal to headless every time, or the mismatch's
   cause found and fixed with a test red without; the gate green.
+  - [x] 7.152a The state format: the autosave carries it, the title reads it before it offers Continue and shows an […]
+  - [ ] 7.152b The critic's 1307 probe run 10 times in the page, each year's hash equal to headless every time, or the
+    mismatch's cause found and fixed with a test red without.
 - [ ] 7.153 Emergent 6: beyond 7.150's contact, checkpoints with nobody in contact 13 → 17 of 128 (y10 and y20, 7
   days each), and ADR-732's ordered-five bar fails in 2 of 64 worlds (5521 18 years, 7901 14)
   (`critic/c17_engaged_w*.json`, `critic/c17_cmp_y30.txt`, `critic/c17_headless_5521.json`). AT: on seeds 1421–1430 ×
