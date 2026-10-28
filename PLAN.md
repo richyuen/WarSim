@@ -90,7 +90,7 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
 
 - [ ] 7.155 The transports' sailings refused for no sea way, 3 × since `7b883084` (7.154b's read: on 1411–1416 × 20
   years 2–20 10,202 → 30,082, year 1 49 → 708; on 1415 year 1 all 384 transport groups from `sailToArmy`, 352 of them
-  Canada's, two fleets asking day after day; `tools/diag/noSeaWay.ts`). AT: on 1441–1446 × 20 against HEAD, refusals
+  Canada's, two fleets asking day after day; `tools/diag/noSeaWay.ts`). AT: on 1441–1450 × 20 against HEAD, refusals
   for no sea way at most 0.5 × HEAD's, transports at year 20 and landings not below HEAD's; a unit test of the case,
   red without; the gate green. Read first which port and which water each refused sail is for.
 
