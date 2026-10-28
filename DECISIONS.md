@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-743 · 2026-10-28 · accepted — Browser specs re-anchored after PLAN 7.139–7.146 moved their 1938 histories
+
+- **Context.** `npm run check:review` before critic run 17, on `4c0cb833`: six browser specs red twice, green at
+  `7b883084` (run 16's review). No drawing code changed between; the AI rules of PLAN 7.139–7.146 moved the seeded
+  worlds the specs find their case in. Each is made to find its case again; where the case itself changes, a bullet
+  here says how. No bar is lowered.
+- **shipMarks1938 (7.35c):** only a ship with no other figure's middle within 24 px is measured. Seed 2251's first
+  Italy–UK battle is now a melee of British and French ships, and a British bow over a French hull (read as the sea)
+  measured a destroyer 16 px. Uncrowded: 18 px (bar 17).
+- **tankHulls1938 (7.23a):** Germany's armour may be in contact with Poland's as well as France's. On seed 3929 no
+  German armoured division or tank brigade comes within 1.5 cells of a French formation in 90 days now (a light
+  mechanised division does, on day 1; the kind check refuses it, as before). The case is a live armour fight at
+  Speed x1 and a hull alight within 45 s; its enemy was the critic's seed's. Found: armoured division 40 on day 4,
+  first flame at 11 s.
+
 ### ADR-742 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, no rule) — PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet; ships sunk at sea by any means 0.98 ×
 
 - **Context.** PLAN 7.148 (ADR-738 a): with a carrier's wings on their own missions, sea battles in years 2–20 fell

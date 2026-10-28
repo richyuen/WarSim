@@ -30,7 +30,9 @@ test("the critic's armour fight at Speed x1: a tank hull burns on the screen wit
       // Green at `896ff779`, red at `9ffb0274`: the rules between moved the world, and Germany's
       // panzer divisions now all go to Poland (more than 20 cells from France for 30 days). The war
       // is stepped a day at a time, within 15 days, until a German armour formation in contact
-      // stands within 1.5 cells of a French one (a tank brigade on day 9 at `9ffb0274`).
+      // stands within 1.5 cells of a French one (a tank brigade on day 9 at `9ffb0274`). Since
+      // PLAN 7.139–7.146 no German armoured division or tank brigade meets France's within 90
+      // days, so Poland's count too (ADR-743): the case is the armour fight, not its enemy.
       const templates = sim.mapLayers!.templates;
       for (let day = 1; day <= 15; day++) {
         const t = (await sim.step(24)).tick;
@@ -39,11 +41,14 @@ test("the critic's armour fight at Speed x1: a tank hull burns on the screen wit
           wait();
         });
         const s = await sim.inspect(true);
-        const french = s.formations.filter((g) => g.nation === fra && !g.wing);
+        const foes = s.formations.filter((g) => (g.nation === fra || g.nation === pol) && !g.wing);
         for (const f of s.formations) {
           if (f.nation !== ger || f.wing || !view!.formationEngaged(f.id)) continue;
           if (templates[(await sim.formation(f.id))?.template ?? -1]?.symbol !== 'armour') continue;
-          const foe = Math.min(...french.map((g) => Math.hypot(g.x - f.x, g.y - f.y)));
+          // An armoured division or a tank brigade, as the critic's: since PLAN 7.139–7.146 a light
+          // mechanised division (armour by its symbol, its tanks light) is found first, on day 1.
+          if (!/Armoured|Tank/.test(view!.formationTitle(f.id)?.kind ?? '')) continue;
+          const foe = Math.min(...foes.map((g) => Math.hypot(g.x - f.x, g.y - f.y)));
           if (foe < 1.5) return { id: f.id, day, nation: f.nation, kind: view!.formationTitle(f.id)?.kind ?? '', x: f.x, y: f.y, foe };
         }
       }
@@ -51,7 +56,7 @@ test("the critic's armour fight at Speed x1: a tank hull burns on the screen wit
     },
     [id('GER'), id('POL'), id('FRA')],
   );
-  // The critic's division: Germany's armour, in contact with France's.
+  // The critic's division: Germany's armour, in contact with France's or Poland's.
   expect(division.nation).toBe(id('GER'));
   expect(division.kind).toMatch(/Armoured|Tank/);
   expect(division.foe).toBeLessThan(1.5);
